@@ -1,0 +1,124 @@
+{
+  "scope": "PRESSURE_SUPPORT_NOT_PREDICTIVE_EFFECT",
+  "max_age_us": 1000000,
+  "primary_features": [
+    "directional_queue_imbalance_1",
+    "directional_endpoint_ofi_per_touch_depth"
+  ],
+  "cohorts": {
+    "C2": {
+      "prospective_candidates": 10,
+      "gates": {
+        "PASS": 10
+      },
+      "valid_primary": 10,
+      "signs": {
+        "DISAGREE": 4,
+        "BOTH_WITH_DIRECTION": 1,
+        "SOME_NEUTRAL": 4,
+        "BOTH_AGAINST_DIRECTION": 1
+      },
+      "primary_distinct_values": {
+        "primary_qi": 5,
+        "primary_ofi": 10
+      }
+    },
+    "MIRROR_50": {
+      "prospective_candidates": 58,
+      "gates": {
+        "PASS": 53,
+        "STALE_OVER_1000MS": 5
+      },
+      "valid_primary": 53,
+      "signs": {
+        "BOTH_WITH_DIRECTION": 14,
+        "SOME_NEUTRAL": 23,
+        "DISAGREE": 14,
+        "BOTH_AGAINST_DIRECTION": 2
+      },
+      "primary_distinct_values": {
+        "primary_qi": 13,
+        "primary_ofi": 38
+      }
+    }
+  },
+  "retained_nonprospective_rows": 33,
+  "all_mirror_receipts": 161,
+  "mirror_receipt_status": {
+    "INVALID_BEFORE_LANDMARK": 70,
+    "CAUSAL_LANDMARK_OBSERVED": 58,
+    "A_ALREADY_REACHED_AT_OBSERVATION": 3,
+    "LANDMARK_ALREADY_REACHED_AT_FIRST_OBSERVATION": 30
+  },
+  "source_sha256": {
+    "events": "d81628f539b0f69118b26621303d9444bf61c59de5a07aa18b6d9074c7670bf0",
+    "receipts": "0270fdb1abf0627f4ed8711785d39b47acb19ff7ebe442c6d6d1f491eff0a340",
+    "l1": "2a941209c88f053bf69b3a8373001172237420d3e95aa7fa511efd5ea569bdd1"
+  },
+  "runner_sha256": "2be34f6e7b1c00bf4307cc6b909b422c54ce14bf001a34db6861301de5ca92a0",
+  "models_fitted": 0,
+  "outcomes_computed": false,
+  "frequency_audit": {
+    "profile": "C2_EXACT4_DENSAS",
+    "floor": 4,
+    "listed_session_ids": 21,
+    "sessions_at_least4": 20,
+    "all_listed_ids_pass": false,
+    "exceptions": {
+      "20260201": 0
+    },
+    "min_including_zero": 0,
+    "min_positive": 20,
+    "max": 152,
+    "per_session": {
+      "20260201": 0,
+      "20260202": 135,
+      "20260203": 152,
+      "20260204": 142,
+      "20260205": 104,
+      "20260206": 85,
+      "20260209": 74,
+      "20260210": 58,
+      "20260211": 84,
+      "20260212": 108,
+      "20260213": 83,
+      "20260216": 20,
+      "20260217": 94,
+      "20260218": 67,
+      "20260219": 68,
+      "20260220": 92,
+      "20260223": 97,
+      "20260224": 89,
+      "20260225": 71,
+      "20260226": 92,
+      "20260227": 102
+    },
+    "source_zip_sha256": "bfb99fb37e7fd3c1e18a479817f48879e29cdfb928cbf8a0a986ad002d41a3a4",
+    "scope": "FEBRUARY_GEOMETRY_CENSUS_NO_L2_NO_RAW_PUBLICATION_CERTIFICATION",
+    "zero_session_data_completeness": "UNKNOWN_DO_NOT_DROP"
+  },
+  "independent_checks": {
+    "panel_rows_checked": 101,
+    "historical_baseline": "PASS",
+    "census_recount": "PASS",
+    "no_future_labels": "PASS",
+    "tests_new": 9
+  },
+  "head_start": "38ebd5123dba0cf9c62e64d833adc1dd273f8f4f",
+  "comparison_plan": [
+    {
+      "grain": "each listed sessionID",
+      "unit": "C2 zones",
+      "population": "all21 IDs includingzero",
+      "disposition": "chart",
+      "reason": "Show threshold4 exception, not guarantee of future frequency"
+    },
+    {
+      "grain": "prospective event cohort",
+      "unit": "primary pressure support/signs",
+      "population": "C2 and mirrors separately",
+      "disposition": "table",
+      "reason": "Feature adequacy rather than predicted success"
+    }
+  ]
+}

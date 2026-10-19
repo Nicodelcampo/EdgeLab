@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/success_event.json",
+  "title": "EdgeLab Success Event",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "success_id",
+    "episode_id",
+    "step_id",
+    "description",
+    "verified_invariants",
+    "occurred_at_utc"
+  ],
+  "properties": {
+    "success_id": {
+      "type": "string",
+      "pattern": "^SUCCESS-[A-Za-z0-9._:-]+$"
+    },
+    "episode_id": {
+      "type": "string"
+    },
+    "step_id": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "verified_invariants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lesson_candidate_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "occurred_at_utc": {
+      "type": "string"
+    }
+  }
+}

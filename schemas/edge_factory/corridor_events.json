@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CorridorEventsSchema",
+  "description": "Schema for corridor structures and density channels computed across active zones.",
+  "type": "object",
+  "required": [
+    "instrument",
+    "contract",
+    "session_id",
+    "corridor_id",
+    "active_ts",
+    "bar_key",
+    "floor_price",
+    "ceiling_price",
+    "height_ticks",
+    "density_score",
+    "contributing_zones_count",
+    "status",
+    "source_sha256"
+  ],
+  "properties": {
+    "instrument": { "type": "string" },
+    "contract": { "type": "string" },
+    "session_id": { "type": "string" },
+    "corridor_id": { "type": "string" },
+    "active_ts": { "type": "integer" },
+    "bar_key": { "type": "string" },
+    "floor_price": { "type": "number" },
+    "ceiling_price": { "type": "number" },
+    "height_ticks": { "type": "number" },
+    "density_score": { "type": "number" },
+    "contributing_zones_count": { "type": "integer" },
+    "status": { "type": "string", "enum": ["OPEN", "COMPACTING", "TRAVERSED", "CLOSED"] },
+    "source_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+  },
+  "additionalProperties": false
+}

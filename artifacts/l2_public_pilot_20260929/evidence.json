@@ -1,0 +1,172 @@
+{
+  "status": "EXPLORATORY_LAB_ONLY_NOT_STRATEGY",
+  "head_start": "632dedd316d246cb43545ea8b758b6a866c655ac",
+  "head_end": "632dedd316d246cb43545ea8b758b6a866c655ac",
+  "code_identity": "standalone_file_sha256_not_git_worktree",
+  "code_sha256": "1f50f5b11604a1b5001d93d3537174aaffbac88fa07b8d562a8dff08caad9a5b",
+  "plan_registered_commit": "632dedd316d246cb43545ea8b758b6a866c655ac",
+  "dataset": "martinsn/high-frequency-crypto-limit-order-book-data",
+  "version": 1,
+  "file": "BTC_1min.csv",
+  "sha256": "1a4bf5d19f0f9b41f93a7fadacb44f015f8f7eb3212995b77bd70182d99afa93",
+  "raw_rows": 17113,
+  "raw_columns": 156,
+  "window_utc": [
+    "2021-04-07T11:33:41.122161+00:00",
+    "2021-04-19T09:54:00.386544+00:00"
+  ],
+  "duplicates": 0,
+  "null_cells": 0,
+  "invalid_spreads": 0,
+  "non_exact_60s_intervals": 71,
+  "interior_gap_exclusions": 132,
+  "interior_nonfinite_proxy_exclusions": 579,
+  "zero_market_denominator_raw_rows": 633,
+  "interior_days": [
+    "2021-04-08",
+    "2021-04-09",
+    "2021-04-10",
+    "2021-04-11",
+    "2021-04-12",
+    "2021-04-13",
+    "2021-04-14",
+    "2021-04-15",
+    "2021-04-16",
+    "2021-04-17",
+    "2021-04-18"
+  ],
+  "test_start_day": "2021-04-15",
+  "train_rows": 9630,
+  "test_rows": 5435,
+  "row_reconciliation": {
+    "edge_day_rows": 1337,
+    "interior_excluded_gap_or_nonfinite": 711,
+    "boundary_purged": 0
+  },
+  "warning_resolutions": [
+    "system_time parsed UTC; no assumed exchange timestamp",
+    "Unnamed: 0 verified serial row index and dropped; summation plausibility hint inapplicable",
+    "first/last partial calendar days excluded by prospective plan; interior days have gaps, not 1440-row completeness",
+    "zero denominators return missing, not imputed; excluded as nonfinite",
+    "aggregated moving level ranks are not fixed price queues"
+  ],
+  "baseline": {
+    "rmse_bps": 14.512176637161415,
+    "mse_bps2": 210.6032707481736,
+    "r2_test_mean": -0.003664048301029288
+  },
+  "l2_augmented": {
+    "rmse_bps": 14.524138703563827,
+    "mse_bps2": 210.9506050803607,
+    "r2_test_mean": -0.005319326401499458
+  },
+  "rmse_improvement_percent": -0.08242778944531187,
+  "correlations": {
+    "market_proxy": {
+      "current_minute": -0.02762289965320349,
+      "next_minute": -0.002293153529828188
+    },
+    "net_limit_proxy": {
+      "current_minute": 0.1796699240728199,
+      "next_minute": 0.060034060628031904
+    }
+  },
+  "by_day": [
+    {
+      "day": "2021-04-15",
+      "n": 1385,
+      "baseline_rmse_bps": 6.823812137732442,
+      "l2_rmse_bps": 6.8486520681915355,
+      "delta_mse": 0.3396230600796031
+    },
+    {
+      "day": "2021-04-16",
+      "n": 1351,
+      "baseline_rmse_bps": 8.826613876363053,
+      "l2_rmse_bps": 8.802381455396517,
+      "delta_mse": -0.42719323609628645
+    },
+    {
+      "day": "2021-04-17",
+      "n": 1362,
+      "baseline_rmse_bps": 7.575279453472871,
+      "l2_rmse_bps": 7.5767418013355305,
+      "delta_mse": 0.022157525896943753
+    },
+    {
+      "day": "2021-04-18",
+      "n": 1337,
+      "baseline_rmse_bps": 25.8978442611383,
+      "l2_rmse_bps": 25.926194375148935,
+      "delta_mse": 1.469217403830271
+    }
+  ],
+  "coefficients_standardized": {
+    "baseline": {
+      "intercept": 0.08853097652871765,
+      "ret_prev_bps": 0.2081950934190156,
+      "abs_ret_prev_bps": 0.15052844157968026,
+      "spread_bps": -0.1666091437861063
+    },
+    "l2_augmented": {
+      "intercept": 0.08853097652871765,
+      "ret_prev_bps": 0.06670977895666312,
+      "abs_ret_prev_bps": 0.14792404563647935,
+      "spread_bps": -0.17156107937339465,
+      "market_proxy": -0.06975972871353811,
+      "net_limit_proxy": 0.624359997160533
+    }
+  },
+  "checks": {
+    "raw_rows_independently_counted": true,
+    "mse_independent_sum": true,
+    "no_future_feature_dependency_fixture": true,
+    "no_train_target_crosses_test": true
+  },
+  "limitations": [
+    "one asset, approximately 12 days; only four evaluation days",
+    "timestamps are system_time; publication lag not verified",
+    "minute snapshots/flows cannot identify intrasecond sequence, wall persistence at absolute prices or real fills",
+    "market and net-limit proxies are NOT exact event OFI or queue imbalance",
+    "side convention and aggregation mechanics are based on dataset labels, not audited against raw executions",
+    "no costs, latency, own impact, strategy trades or transfer to NQ tested",
+    "evaluation is exposed exploratory data; no significance/confirmatory claim"
+  ],
+  "comparison_plan": [
+    {
+      "grain": "UTC day",
+      "population": "eligible next-minute predictions, chronological evaluation",
+      "unit": "basis points, L2 minus baseline daily RMSE",
+      "finding": "Adding proxies worsens 3 days and improves 1; pooled change is small",
+      "derivation": "daily L2 RMSE minus baseline RMSE",
+      "disposition": "chart",
+      "reason": "direct same-population error gap retains day reversal; raw RMSE kept in report table"
+    },
+    {
+      "grain": "eligible minute",
+      "population": "all interior days",
+      "unit": "Pearson correlation",
+      "finding": "contemporaneous association is distinct from prediction",
+      "derivation": "corr(proxy, current/next minute log return)",
+      "disposition": "table",
+      "reason": "secondary diagnostic; no extra plot needed"
+    }
+  ],
+  "environment": {
+    "python": "3.13.14",
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "git_worktree": false,
+    "dirty_clean": "not_applicable_standalone_script_sha256"
+  },
+  "day_comparison": {
+    "worse": 3,
+    "better": 1,
+    "rmse_gap_bps": [
+      0.02483993045909383,
+      -0.024232420966535884,
+      0.001462347862659641,
+      0.028350114010635252
+    ]
+  }
+}

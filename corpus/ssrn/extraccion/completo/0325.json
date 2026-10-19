@@ -1,0 +1,109 @@
+{
+  "doc_id": 325,
+  "titulo": "The Efficiency Costs of Separating Carbon Markets Under the EU Emissions Trading Scheme: A Quantitative Assessment for Germany",
+  "resumen_operativo": "Analiza los costos de eficiencia de la regulación híbrida de carbono bajo el EU-ETS, donde solo sectores seleccionados (DIR) participan en el mercado internacional de emisiones mientras los demás (NDIR) requieren regulación doméstica complementaria. Muestra que el regulador nacional necesita información perfecta sobre el precio internacional del carbono y las curvas de abatimiento marginal para implementar la partición óptima del presupuesto de emisiones. Cuantifica con datos de Alemania que desviaciones del factor de cumplimiento eficiente pueden cuadruplicar los costos totales (de 305 a 1,363 millones EUR para un precio de CO2 de 10 EUR/ton).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Hybrid carbon regulation",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Esquema donde el mercado de emisiones se segmenta en un mercado internacional (EU-ETS, sectores DIR) y múltiples mercados domésticos (sectores NDIR), destruyendo la eficiencia de mecanismos de mercado descentralizados porque el regulador debe conocer perfectamente el precio internacional y las curvas de abatimiento marginal.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Single comprehensive emission market"},
+        {"tipo": "PARTE_DE", "objeto": "EU Emissions Trading Scheme"}
+      ],
+      "cita_textual": "The segmentation of the emission market into multiple domestic markets and a single international market creates a fundamental information problem for environmental regulation."
+    },
+    {
+      "nombre": "National Allocation Plan (NAP)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Plan que cada Estado Miembro de la UE debe presentar definiendo el cap de allowances para sectores cubiertos por el EU-ETS y la regla de asignación gratuita (grandfathering). El cumplimiento se mide con el fulfillment factor lambda = asignación / emisiones business-as-usual.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "EU Emissions Trading Scheme"},
+        {"tipo": "REQUIERE", "objeto": "EU Burden Sharing Agreement"}
+      ],
+      "cita_textual": "Each Member State is obligated to set up a National Allocation Plan (NAP) where it defines the cap on emission allowances for sectors included in the trading scheme and the specific allocation rule for grandfathering."
+    },
+    {
+      "nombre": "Fulfillment factor (lambda)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Fracción de emisiones business-as-usual que se asigna gratuitamente como allowances a los sectores DIR. Lambda* es el valor eficiente; desviaciones generan pérdidas de eficiencia. Para Alemania, lambda negociado = 1, mientras que lambda* es menor para todos los precios de CO2 considerados.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Allowance allocation generosity"},
+        {"tipo": "CAUSA", "objeto": "Excess compliance costs"}
+      ],
+      "cita_textual": "As to Germany, the fulfillment factor is 1, i.e., the DIR sectors are more or less endowed with their business-as-usual emissions."
+    },
+    {
+      "nombre": "Marginal Abatement Cost (MAC) curves",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Curvas polinómicas de tercer grado que representan los costos marginales de reducir emisiones de carbono por sector: -C_i'(e_i) = a_{1,i}(e_{0i} - e_i) + a_{2,i}(e_{0i} - e_i)^2 + a_{3,i}(e_{0i} - e_i)^3. Calibradas con el modelo CGE PACE usando datos GTAP5 para Alemania.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "PACE computable general equilibrium model"},
+        {"tipo": "PARTE_DE", "objeto": "Numerical simulation framework"}
+      ],
+      "cita_textual": "For the empirical specification of sector-specific marginal abatement costs curves we adopt a flexible polynomial function of third degree."
+    },
+    {
+      "nombre": "EU Burden Sharing Agreement (EU-BSA)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Acuerdo que establece metas de reducción de emisiones por país: Alemania debe reducir 21% respecto a 1990. Implementado a través del EU-ETS que cubre solo sectores seleccionados (producción de hierro/acero, cemento, vidrio, cerámica, transformación energética, refinerías).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "National Allocation Plan (NAP)"},
+        {"tipo": "PARTE_DE", "objeto": "Kyoto Protocol"}
+      ],
+      "cita_textual": "Germany committed itself under the EU-BSA to an emissions reduction target of 21% compared to 1990 emission levels."
+    },
+    {
+      "nombre": "PACE model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de equilibrio general computable multi-sector y multi-región de comercio internacional y uso de energía usado para generar observaciones discretas de costos marginales de abatimiento que luego se ajustan por mínimos cuadrados a curvas polinómicas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "GTAP5 database"},
+        {"tipo": "GENERA", "objeto": "Marginal Abatement Cost (MAC) curves"}
+      ],
+      "cita_textual": "These values are generated with PACE - a standard multi-sector, multi-region computable general equilibrium model of international trade and energy use."
+    },
+    {
+      "nombre": "Excess costs of hybrid regulation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Costos adicionales que surgen cuando el regulador nacional no puede implementar la partición óptima del presupuesto de emisiones por falta de información perfecta. Ilustrados como áreas sombreadas (abc o bde) en el análisis gráfico de equilibrio parcial entre curvas MAC y precio internacional de CO2.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Welfare loss"},
+        {"tipo": "SE_OPONE_A", "objeto": "First-best efficient solution"}
+      ],
+      "cita_textual": "These deviations will induce efficiency losses as indicated by the shaded areas abc (if the international emissions price presumed by the national authority is above the actual international price p) or bde."
+    },
+    {
+      "nombre": "DIR vs NDIR sectors",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sectores cubiertos por la Directiva EU-ETS (DIR: hierro/acero, cemento, vidrio, cerámica, generación eléctrica, refinerías) vs sectores no cubiertos (NDIR: resto de la economía doméstica como transporte). Para Alemania en 2005: DIR = 131.24 MtC, NDIR = 91.20 MtC de un total de 222.44 MtC.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Hybrid carbon regulation"},
+        {"tipo": "SE_OPONE_A", "objeto": "Single emission market"}
+      ],
+      "cita_textual": "DIR sectors that are covered by the ETS-Directive and NDIR sectors that are not covered by the ETS-Directive."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Para Alemania, con un precio internacional de CO2 de 10 EUR/ton, los costos totales de cumplimiento con factor eficiente lambda* son 305 millones EUR2002, pero se cuadruplican a 1,362.8 millones EUR2002 cuando el factor de cumplimiento negociado es lambda=1.",
+      "mercado": "EU-ETS carbon allowances (Alemania)",
+      "periodo": "2005 (primera fase EU-ETS)",
+      "magnitud": "Costos eficientes: 305 mill. EUR2002 (DIR: 260.2, NDIR: 44.8); Con lambda=1: 1,362.8 mill. EUR2002 (DIR: -215.9 por exportación de allowances gratuitos, NDIR: 1,578.7).",
+      "condiciones": "Precio CO2 = 10 EUR/ton; emisiones totales Alemania 2005: 222.44 MtC; reducción efectiva requerida 8.7% vs business-as-usual",
+      "robustez": "media",
+      "cita_textual": "Consider an international permit price of 10 EUR per ton of CO2: With an efficient lambda*, total compliance costs for Germany amount to 305 mill. EUR2002... If the fulfillment factor is chosen at 1, total compliance costs more than quadruple to 1,362.8 mill. EUR2002."
+    },
+    {
+      "afirmacion": "Si el regulador asume un precio internacional de CO2 equivocado (10 EUR/ton vs 15 EUR/ton real), el costo de eficiencia incremental es de 23.6 millones EUR2002, una prima de 8.9% sobre el costo mínimo del planificador central.",
+      "mercado": "EU-ETS (Alemania)",
+      "periodo": "2005",
+      "magnitud": "Excess cost: 23.6 mill. EUR2002 (8.9% sobre el mínimo). Costo mínimo con CO2 a 15 EUR/ton: ~265 mill., costo con lambda calibrado para CO2 a 10 EUR: ~288.6 mill.",
+      "condiciones": "Diferencia de 5 EUR/ton entre precio esperado y realizado",
+      "robustez": "media",
+      "cita_textual": "If the national regulator expects an international CO2 price at 10 EUR per ton of CO2 and the 'real' market price should materialize at 15 EUR per ton of CO2, the implied excess costs amounts to 23.6 EUR2002 which constitutes a cost premium of 8.9%."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "nula", "nota": "Paper de economía ambiental sobre regulación de mercados de carbono; sin relación con trading algorítmico o finanzas cuantitativas."}
+}

@@ -1,0 +1,2652 @@
+ Electronic copy available at: https://ssrn.com/abstract=3101716 
+ 
+ 
+Statistical Arbitrage and Information Flow in an 
+Electricity Balancing Market 
+ 
+Derek W. Bunn 
+London Business School, UK, dbunn@london.edu 
+ 
+Stefan O.E. Kermer 
+Energy Markets Group, London Business School, London 
+Energy Economics Group, Technical University of Vienna, Austria, stefan_kermer@gmx.at 
+ 
+ 
+We analyse the operational effects of market participants responding to price incentives for spillage 
+and shortage positions in a single price, electricity balancing market. We consider optimal real-time 
+decisions by generators and speculators based upon forecasts of the conditional distribution of the system 
+imbalance and examine the effects of time delays for the consequent statistical arbitrage positions. We 
+apply this to the Austrian imbalance settlement process within the German/Austrian integrated market. 
+Results suggest that permitting additional intraday flexibility from a physical or a non-physical agent can 
+be beneficial for the agents themselves, the system operator and market efficiency. 
+Key words:  Electricity, Real-time Markets; Trading, Forecasting; Statistical Arbitrage 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+ Electronic copy available at: https://ssrn.com/abstract=3101716 
+2 
+=
+1. Introduction 
+In progressing towards more efficient competitive electricity markets, the liberalizing intent has 
+generally been to replace central control with price signals and markets wherever possible. This is 
+becoming the norm in forward, day ahead, and intraday trading, but in the provision of real-time 
+balancing, progress in this direction has been more cautious. Balancing market arrangements tend to be 
+idiosyncratic in details, according to jurisdictions around the world, but a common element is that at some 
+point in time ahead of delivery, trading between market participants has to stop and participants must 
+confirm their physical intentions for production and consumption. In many markets this represents the 
+point (“gate closure”) at which voluntary bilateral forward trading between producers and consumers stops 
+and the system operator becomes counter-party to any further real-time trades; in other markets where 
+mandatory engagement in optimized dispatching procedures is required (eg markets setting locational 
+marginal prices) this is the point at which final dispatch instructions are received. In either case, thereafter, 
+the real-time imbalances between these commitments (to produce or consume) and the subsequent 
+metered volumes need to be managed through the balancing directives of the system operator and any 
+deviations settled financially ex post. Conventional wisdom used to be that, for system control purposes, 
+market participants should be obliged to keep to these real-time commitments, either through central 
+control or the application of penalties on their imbalances. However, it is an open question if further 
+liberalization, involving a relaxation of this obligation in order to permit or even encourage a degree of 
+imbalance would be beneficial, and if so, how might market participants manage their operations 
+accordingly.  
+The economic efficiency argument for this relaxation is appealing.  If the settlement price faced by the 
+participants for their imbalances reflect the actual-real time cost of the balancing actions taken by the 
+system operator, market participants that correctly anticipate the direction of imbalance for the whole 
+system can profit by being out of balance in the opposite direction. Thus, if the system as a whole is short 
+and the system operator is therefore buying balancing energy, the real-time price will be higher than the 
+forward market prices, and so a generator that “spills” extra power will be paid for this at the higher 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+3 
+=
+imbalance price. The situation is similar for active consumers and analogously beneficial in reverse when 
+the system as a whole is long.  By attempting to profit from “opportunistic imbalancing,” active 
+participants would seek to correctly anticipate the direction of system imbalance and would effectively be 
+undertaking statistical arbitrage.  If successful (and permitted), they would thereby gain balancing 
+revenues for themselves and reduce the balancing needs of the system operator.  
+Such speculation is risky and raises the question of what aspects of market design render the riskreturn payoffs for participants taking these actions to be profitable. Beyond that question are the obvious 
+system operations concerns that if there were to be excessively synchronized multi-agent responses to 
+real-time price signals, lagged to some extent by information flows, the stability of the network may be 
+put at risk. In this paper, therefore, we analyse the incentives for both asset-backed physical traders and 
+non-physical (“virtual”) traders to engage in this statistical arbitrage through opportunistic imbalancing, 
+how this might become more profitable as short-term wind and solar forecast errors increase the level of 
+imbalances faced by the system, and whether these activities can reduce the overall balancing costs to the 
+system operator whilst limiting any potential  detrimental effects on system instability.  
+The first pre-condition to attract this statistical arbitrage is evidently a single price settlement process. 
+In markets where real-time balancing is undertaken through repeatedly optimized dispatching adjustment 
+algorithms, eg every 5mins as in California, New York and various other ISOs, these final-run, real time 
+prices are naturally used as the basis for settlement (Wang et al. 2015). In other markets, the system 
+operator may be calling upon reserves for up or down regulation minute by minute, and/or accepting bids 
+and offers from generators and consumers continuously during each delivery period, eg in Britain and 
+Germany. In the continuous case, the system operator may be taking balancing actions in opposite 
+directions many times during each delivery periods. In these circumstances, the duration of delivery 
+periods may be hourly, half hourly or 15 mins and so identifying a single price is usually quite detailed 
+and specific. Usually some procedure is followed to identify the net imbalance over the delivery period 
+and the corresponding marginal cost (eg. Elexon, 2016).  
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+4 
+=
+In contrast, several markets use dual settlement prices derived from this continuous process to 
+represent the different average, or marginal, costs of buying and selling actions by the system operator 
+during each delivery period (eg France, Spain, Italy). Dual settlement prices are generally applied in order 
+to deter the opportunistic imbalancing, as indicated above. In this case, to the extent that the system 
+operator’s buying/selling prices will be above/below the market price before delivery, it would always be 
+better for a strategic player to buy/sell in the forward market pre-delivery, rather than seeking to be 
+imbalanced during the delivery period. 
+Thus, imbalance and settlement issues have attracted an increasing amount of research, mainly 
+because the need for balancing is growing with the substantial introduction of intermittent renewable 
+resources and the growth in demand-side engagement. In this respect, Vandezande et al. (2010) focused 
+on the design of balancing markets in Europe with the penetration of wind power, van der Veen and 
+Hakvoort (2016)  identified the relevant variables and performance criteria that play a role in the design 
+and analysis of European balancing markets, van der Veen et al. (2012) analysed the impact of alternative 
+imbalance pricing mechanisms on balancing market performance, and carried out an agent-based 
+simulation using reinforcement learning, whilst Möller et al. (2011) determined strategic positions in the 
+balancing market and identified corresponding economic incentives in Germany. Statistical arbitrage 
+between day ahead and balancing markets was analysed in Boogert and Dupont (2005). The authors found 
+that the associated risk of loss for arbitrage potential 24 hours ahead is significant and profits were rarely 
+positive. More generally the provision of flexibility and demand-side management has been studied 
+extensively as a response to increased balancing requirements, eg reducing reserve requirements through 
+demand side management Kies et al. (2016), the impact of renewables on flexibility needs Koltsaklis et al. 
+(2017), the market design requirements Bertsch et al. (2016), the benefits of solar  power forecasting for 
+imbalance markets (Kaur et al. 2016) and optimal bidding of wind production Pinson et al. (2007). Using 
+hierarchical optimisation, Dowling et al. (2017) show that balancing services can contribute more than 
+half the revenue stream from flexible generating units. Nevertheless, a clear analysis of the issues that 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+5 
+=
+would favour a more liberalised approach to imbalance, and whether it would be beneficial to both the 
+market pariticipants and the system, has not apparently been thoroughly analysed in research publications. 
+To motivate our analysis of the benefits or otherwise of statistical arbitrageurs operating in the 
+balancing and settlements process, we record a “natual experiment” in the progressively liberalized 
+evolution of balancing arrangements in the British wholesale market. When the British market was first 
+liberalized in the 1990s, central control was retained with a mandatory day-ahead competitive auction 
+providing an algorithmic unit commitment and disptach, followed by socialized balancing costs recovered 
+through an “uplift” in the wholesale purchase costs for the retailers. When the trading was further 
+liberalized to voluntary bilateral transactions in 2001, dual settlement prices were initially implemented to 
+incentivize self-balancing by market participants.  
+Shortly afterwards, a modification was introduced to avoid penalising those imbalances that were 
+beneficial to the system (ie individual imbalances counter to the direction of system imbalance) by having 
+one of the dual settlement prices revert to the pre-delivery, forward market price if it were in the counterdirection to the system. But this still did not incentivise opportunistic imbalancing. Then in 2015, the dual 
+settlement system was changed to a single price, mainly to privide a clearer signal for the provision of 
+flexible reserve capacity and innovative services. In proposing this, the regulatory body noted that the 
+previous dual pricing ‘drives inefficiency in balancing by over-incentivising parties to balance’ and that 
+‘under a single price parties with reducing imbalances benefit from the cost saving their reducing 
+imbalances deliver for the System Operator’ OFGEM (2014). 
+However, despite this rather clear regulatory message, there were mixed signals on “opportunistic 
+imbalancing” as it was still a license condition that large generators should not deliberately take action to 
+be out of balance. However, this condition was not imposed upon retailers because of the uncertainty in 
+the behaviour of their customers and not thereby imposed upon their distributed energy resources (eg 
+small embedded generating units) or upon their demand-side response activities. Hence, there is an 
+opportunity with single imbalance price systems for a vertically integrated company to use real-time 
+demand response contracts with its retail customers to hedge any real-time production problems. For 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+6 
+=
+example Dong Energy initiated a “Renewable Balancing Reserve” contract to commercial customers in 
+which it hedges output deviations during settlement periods from its large wind farms by activating 
+demand response with commercial customers. The company is thereby out of balance on both its retail and 
+generation accounts, but they balance out for the integrated company  (Brendan, 2017). Improving the risk 
+management flexibility options in this way may indeed be the most persuasive case for liberalising 
+balancing requiremnts. Furthermore, to the extent that speculators generally improve market efficiency by 
+providing extra liquidity, “non-physical” market participants (virtual traders) have also been permitted to 
+engage in deliberate out of balance positions. Essentially they would  to leave open positions from prior 
+trading in the power exchange to be settled against imbalance payments .  
+Thus, following the change from dual to single imbalance pricing in November 2015, we see in Figure 
+1 that the imbalance volumes for the “non-physical traders” in particular started to increase substantially. 
+Furthermore in Figure 2 we see that this became profitable. They had paid a net imbalance charge of £1.94 
+million in 2014/15, which became a net credit of £21.4million in 2015/16 leading to a profitability of 
+about £10/MWh, or a profit margin of about 20% on the average power exchange prices at the time.  
+ 
+Figure 1: Imbalance Volumes by Type of Participant (Source: Elexon, 2017) 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+7 
+=
+Figure 2: Imbalance Charges for Non-Physical Trader (Source: Elexon, 2017) 
+ 
+Motivated by this circumstantial evidence, the research in this paper seeks to analyse the potential 
+effectiveness of this statistical arbitrage more formally. We specify optimal decision-making by physical 
+and non-physical participants on the basis of realistic ex ante forecasts. By means of quantile regressions 
+we predict the conditional distribution of the system imbalance and presume that these participants will 
+take optimal expected value positions on deliberate imbalance spillage or shortage. We consider timedelayed information lags in the forecast (15 minutes to 120 minutes) of the system imbalance, as well as 
+wind and solar generations. We chose to calibrate and back-test the model on the Austrian system using 
+real time data from 2015. The reason for choosing Austria is because there is a well-defined formula for 
+deriving the imbalance prices and the data is sufficiently transparent. In addition, it was apparent at the 
+time that the statistical arbitrage being envisaged was not against the Austrian (as distinct from German) 
+market rules. 
+The paper is structured as followed: in sections 2 and 3 we clarify the market design and the role of 
+the agents in the simulations. In section 4 the model set up is described and in section 5 the results are 
+presented. 
+2. Market Design  
+The German/Austrian intra-day power exchange is operated by EPEX Spot SE and the power market 
+area comprises 5 delivery zones managed by 5 Transmission System Operators (TSOs), one of which is 
+the Austrian Power Grid (APG). Intraday-trading occurs continuously 7 days a week and the five delivery 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+8 
+=
+zones are traded from one order book. The basic intraday delivery period is 15min which can be traded 
+until 30 minutes before delivery begins. For the Austrian delivery zone, internal schedule changes (within 
+the zone) are allowed up to 15mins before delivery (but international flows require 45min notice). APG 
+publishes every 15mins the preliminary estimate of system imbalance, with a lag of 10mins. 
+APG is part of the synchronised European grid and follows the standard process of acquiring control 
+power to ensure the frequency stability and operational security (Electricity and Organisation Act 2010, 
+2010). Primary and Secondary control power is deployed automatically within 30secs and 5mins 
+respectively, whilst Tertiary is activated by the TSO on a 15min basis to replace the Secondary reserves.  
+The imbalance (imb) of the system for a delivery period is the deficit or surplus of load compared to 
+the aggregate nominated values by the market participants. The balancing price ݌஻஺ for these imbalances 
+is determined from a “basis price” and a “transfer function”. The basis price ݌஻௔௦௜௦ is 
+ 
+݌஻௔௦௜௦
+ەۖ
+۔ۖ
+ۓ min൫ptert,pID, pDA൯  for imb<0 and activated tertary     
+min൫pID, pDA൯  for imb<0 and no tertiary                       
+max൫ptert,pID, pDA൯  for imb>0 and activated tertary     
+max൫pID, pDA൯  for imb>0 and no tertiary                        
+ 
+(1) 
+where ݌ூ஽ is the hourly average intraday price for that 15min period as traded previously on the wholesale 
+power exchange (EPEX Spot), ݌஽஺  is the previous relevant hourly day ahead auction price (administered 
+by EXAA) and ݌௧௘௥௧ is the volume-weighted average price for any activated tertiary control power in that 
+15min delivery period. The “transfer function” is defined as  
+ ܶ
+ൌmin ሺܷ
+௠௜௡൅ܷ
+௠௔௫െܷ
+௠௜௡ܾ݅݉
+௠௔௫
+ଶ
+ൈܾ݅݉
+²;ܷ
+௠௔௫ሻ 
+(2) 
+where  ܷ
+௠௔௫ൌ40 ܧܷܴ
+/ܯܹ݄
+  and ܷ
+௠௜௡ൌ3 ܧܷܴ
+/ܯܹ݄
+. These are the constant maximum and 
+minimum parameter values of the transfer function ܶ  for the monthly data in our analysis.  
+The ex post balancing price is then:  
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+9 
+=
+݌஻஺ൌ݌஻௔௦௜௦േܶ
+ 
+(3) 
+Figure 3 shows graphically the principle of the price mechanism. Depending on the state of the 
+imbalance the balancing price function follows a quadratic term within the range േܾ݅݉
+௠௔௫ and is 
+constant for the outer ranges |ܾ݅݉
+| ൒ܾ݅݉
+௠௔௫ൌ70 ܯܹ݄
+. The transfer function is positive if the 
+imbalance of the system is positive and vice versa negative.   
+Figure 3: Balancing price function (source: APCS, 2017) 
+ 
+Table 1 shows the system imbalance data for February (winter) and August (summer) 2015. The 
+system imbalance was  in the summer month  on average 3 MWh short.  In that month the system was 
+short in 1758 periods  with a cumulated control power requirement of 35 GWh and long for 1218 periods 
+with a cumulated control power requirement of 26 GWh. In contrast, in the winter month, the system 
+imbalance was on average 7.7 MWh long. In that month the system was short in 1097 periods with a 
+cumulated control power requirement of 20 GWh and long for 1218 periods long with a cumulated control 
+power requirement of 41 GWh. 
+Table 1: Imbalance data February (winter) and August (summer) 2015 
+summer  
+ imbalance 
+[MWh]  
+ imbalance 
+price 
+[EUR/MWh] 
+  
+ winter  
+ imbalance 
+[MWh]  
+ imbalance 
+price 
+[EUR/MWh] 
+max short system 
+          123.95          247.66      
+max short system 
+       84.19          238.47    
+max long system  
+         -160.24         -475.36   
+  
+max long system  
+    -172.29         -327.62   
+arithmetic mean 
+             3.05           30.84    
+  
+arithmetic mean 
+       -7.79           24.51    
+standard deviation             27.71           47.11    
+  
+standard deviation
+       29.89           70.47    
+ 
+imb 
+݌ܤܣ
+݌ ܤܽݏ݅ݏ ܾ݅݉݉ܽ
+ݔ
+System long
+System short
+Under Production 
+Short position 
+Over Production 
+Long position
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+10 
+=
+Figure 4: Imbalance, tertiary activation imbalance price in summer month (source: APCS, 2017) 
+ 
+In Figure 4, 200 imbalance observations [MWh] (blue) and activated tertiary in [MWh] (red) are 
+plotted for August 2015. The balancing price is very sensitive to activation of tertiary control power, 
+which is shown by high values for the settled balancing price in EUR/MWh (green). But, in the summer 
+month 2015 (2976 intervals), tertiary was activated quite rarely (48 times) and the average activation time 
+was 4.8 delivery periods. Prices for the activation of tertiary were within a range of -400 EUR to +EUR 
+250 depending on the magnitude of activated tertiary control power. 
+3. STATISTICAL ARBITRAGE 
+From the market players’ perspectives, the purchase of balancing energy (short position) leads to costs 
+if ݌஻஺൐0 and to revenue otherwise. The supply of balancing energy (long position) leads to revenue if 
+݌஻஺൐0 and to costs otherwise (compare Figure 3). If a market player has a rational expectation ଓܾ݉෢ for 
+the imbalance of the system and deliberately intends to have an imbalance of x, it would be able to 
+calculate a conditional balancing price expectation ݌̂|ଓܾ݉෢ based on (4): ܶ
+෠ሺݔሻൌmin ሺܷ
+௠௜௡൅ܷ
+௠௔௫െܷ
+௠௜௡ܾ݅݉
+௠௔௫
+ଶ
+∗ሺଓܾ݉෢൅ݔሻଶ;ܷ
+௠௔௫ 
+݌̂|x, ଓܾ݉෢
+ൌ݌̂஻௔௦௜௦േܶ෠ሺݔሻ 
+(4) 
+‐300
+‐200
+‐100
+0
+100
+200
+300
+‐200
+‐150
+‐100
+‐50
+0
+50
+100
+150
+1
+9
+17
+25
+33
+41
+49
+57
+65
+73
+81
+89
+97
+105
+113
+121
+129
+137
+145
+153
+161
+169
+177
+185
+193
+balancing price in [EUR/MWh]
+imbalance and tertiary activation in 
+[MWh]
+time in 15 minutes
+activated tertiary
+imbalance
+imbalance prices
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+11 
+=
+Referring to (1), and for a particular delivery period j, we consider for ݌̂୨
+୆ୟୱ୧ୱ the EPEX spot reported 
+average intraday price  ݌̂୨୍
+ୈ  shortly before gate closure and the day ahead price ݌୨
+ୈ୅ from day-ahead 
+auctions. Since tertiary is hard for market participants to predict and was activated only 48 times, we 
+assume pragmatically that agents may generally not seek to anticipate its effect in this conditional price 
+expectation (we backtest under this assumption later). 
+Figure 5  shows the basic principle of how the imbalance can be reduced. The market player reacts to 
+expected price spreads. If the spread between marginal costs ݉ܿ
+ and the expected balancing energy price 
+is positive, ݌̂|ଓܾ݉෢൐݉ܿ
+, it is beneficial for the market participant to take a long position (“spill”) and 
+reduce system imbalance, and vice versa for a negative spread. The player's pay-off function can be 
+written as: 
+ݒൌሺ݌̂|ݔ, ଓܾ݉෢െ݉ܿ
+ሻ∗ݔ 
+(5) 
+Figure 5: Expected imbalance and price response of spillage  
+ 
+With regard to the marginal costs in Equation (5) we consider two different market players:  
+Physical player 
+Consider a part-loaded thermal player who has nominated a production schedule before gate closure 
+and who is able to adapt production output (up-regulation and down-regulation) with short-run marginal 
+costs ݉ܿ
+. We presume the generator to be operating, either because it is in merit, or because it is in a ܾ݅݉
+෢ 
+ ݌̂|ܾ݅݉ෞ  ܾ݅݉
+෢െݔ
+݌̂|x, ଓܾ݉෢  
+ݔܾܽ
+ݏ݁ܿܽ
+ݏ݁
+݋݌ݐ݅݉݅
+ݖ݁݀ܿܽ
+ݏ݁
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+12 
+=
+must-run regime through local system conditions or CHP obligations. We consider a simple characteristic 
+model of a gas turbine with efficiency ߟൌ0.5, and market prices for the gas.  
+For overproduction, ie long position (spillage), the payoff value is determined by the price difference 
+of the expected imbalance price p|x, ଓܾ݉෢ and the marginal costs, ݉ܿ
+௚௔௦೗೚೙೒ൌ݌݃ܽ
+ݏ݈݋݊݃
+൅݌ܥܱ2 ൅݌݃ݎ݅݀
+൅݌ݐܽݔ݁ݏ
+ߟ
+ 
+(6)
+where  ݌௚௔௦೗೚೙೒ is the price of balancing gas, ݌஼ைଶ is the price of carbon in the EU ETS, ݌௚௥௜ௗ is the use 
+of transmission system charge and ptaxes are the various levies on production. If pො|x, ଓܾ݉෢൐݉ܿ
+௚௔௦೗೚೙೒ the 
+physical player is incentivized to spill x with payoff:  
+v௟௢௡௚ൌሺ݌̂|ݔ, ଓܾ݉෢െ݉ܿ݃ܽ
+ݏ݈݋݊݃ሻ∗ݔ 
+(7)
+The marginal costs in case of underproduction (curtail/shortage) are influenced by the costs for 
+production locked in on the day ahead market, ݉ܿ
+஽஺ൌሺ݌௚௔௦ವಲ൅݌஼ைଶ൅݌௚௥௜ௗሻ
+ߟ
+ 
+(8)
+and the costs for selling balancing gas, 
+݌௚௔௦ೞ೓೚ೝ೟ൌ݌௚௔௦್ೌ
+೗_ೞ೓೚ೝ೟
+ߟ
+ 
+(9)
+In Austria a two price system for balancing gas is in place and the gas imbalance settlement costs have a 
+mark-up of +-3% on day-ahead gas prices or in case of higher imbalances, on a volume weighted mean 
+value for gas balancing costs.  
+If pො|x, ଓܾ݉෢൏݉ܿ
+ܦܣ‐ ݌௚௔௦ೞ೓೚ೝ೟ , the physical player is incentivized to take a short position with pay-off: 
+v௦௛௢௥௧ൌሺ݉ܿ
+஽஺െ݌௚௔௦ೞ೓೚ೝ೟െ݌̂|ݔ, ଓܾ݉෢ሻ∗ݔ 
+(10) 
+Comparing the pay-offs, if the agent correctly anticipates the direction of imbalance, then being short 
+is relatively more profitable as there is a saving on the production costs.  Note, also, there is asymmetry in 
+the regret if the player speculates wrongly. If the physical player expects the system to be short and 
+therefore goes long, but the system is actually long, he will pay the imbalance charge and the extra 
+marginal cost of production; whereas if he wrongly goes short, he will pay the imbalance charge but save 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+13 
+=
+the marginal cost of production. So, ceteris paribus, it appears there may be a tendency for the speculators 
+to go short, but in practice it will depend upon the actual specification of the expected imbalance price 
+distribution. 
+Figure 6: Timing and information for a physical player 
+ 
+The time-line for such actions by a physical player is depicted in Figure 6. The TSO publishes the 
+latest information on imbalance 10 minutes after the previous delivery period. Based on that information 
+and the latest wind and solar generation forecast errors, the physical player can make a decision to up- or 
+down regulate the thermal power plant. We therefore assume a decision lead-time for a physical player to 
+be 30 minutes, ie a rational expectation is lagging by two periods (including the delivery period itself).  
+Non-physical player 
+A non-physical player is a trading company who is active on the wholesale power exchange (EPEX 
+Spot) but does not physically control production or consumption after gate closure. This agent buys or 
+sells on the power exchange but does not close its position with a counterparty retailer or generator, rather 
+it is left open, exposed to imbalance, in order to speculate upon a margin from the Imbalance price in the 
+settlement process. The pay-off function of the non-physical player is therefore the same for both short 
+and long positions:  
+ݒൌ൫ ݌̂หݔ, ଓܾ݉෢െ݉ܿ
+ா௉ா௑൯∗ݔ 
+(11) 
+However, the regret function is not symmetric: if the agent buys expecting the system to be short (so 
+that he will be long in imbalance), but the system turns out to be long, he will have incurred both the 
+imbalance and purchase costs. But if the agents sells expecting the system to be long (so that he will be 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+14 
+=
+short) and the system is short, he will pay the imbalance but that will be offset partially by the sale of the 
+power. Evidently, we therefore hypothesise that, ceteris paribus and excluding the risk of tertiary 
+activation, the nonphysical trader will also tend to take short positions in the Austrian market regime. 
+Again in practice, it will depend upon the specification of the expected imbalance price distribution. 
+We assume that the non-physical player is able to buy/sell last price EPEX spot (at ݉ܿ
+ா௉ா௑ሻ in the 
+Austrian/German intraday market with delivery in the Austrian TSO zone. This is facilitated by the high 
+market liquidity due to the integrated German/Austrian intraday market comprising 5 delivery zones. 
+Table 2 provides price data for the two months in our study. Evidently the average price spreads between 
+the power exchange and balancing prices provides intuition for the potential arbitrage by speculators. 
+Thus, the lower average balancing prices compared to the final exchanged traded prices may also tempt 
+more short compared to long speculative position. The volatility, and hence risk, is high, however. 
+Table 2: Average Prices and Volatility in the two Summer and Winter months 
+Monthly prices in 
+[EUR/MWh] 
+EXXA day 
+Ahead Price 
+Volume 
+Weighted Price 
+EPEX intraday 
+Last price EPEX 
+intraday 
+ Balancing price 
+average price summer 
+31.49
+32.53
+33.19 
+26.24
+average price winter 
+36.00
+36.39
+36.64 
+30.84
+standard deviation winter 
+11.76
+14.96
+18.90 
+47.11
+standard deviation summer 
+8.90
+13.23
+19.05 
+47.13
+ 
+The time-line for the non-physical player is shown in Figure 7. The crucial difference to the physical 
+player is that the non-physical player is constrained by the Austrian regulations for nomination of cross 
+boarder schedules which requires a gate closure at 45 minutes before delivery and a delivery time of a full 
+hour (see APG (2016)).  The variable x therefore needs to be taken for 4 consecutive 15min intervals, and 
+our time steps are hourly for the nonphysical trader. The TSOs processing lag to publish the latest 
+information on the imbalance is 10 minutes as it was for the physical player. This leads to a decision lead 
+time of between 75 minutes and 120 minutes. Evidently these administrative restrictions create a more 
+challenging forecasting problem for the non-physical player. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+15 
+=
+Figure 7: Timing and information for the non-physical player 
+ 
+4. Optimal Positions 
+We assume risk neutral players seeking to maximise expected value. Let ൛ଓܾ݉෢௜ൟ represent a set of 
+expected imbalance states (in MWh), being a discretisation of the imbalance variable,  such that  
+݌ݎ݋ܾሺଓܾ݉෢௜ሻ is the probability of occurrence of each estimated state and ݔ௞ are the discrete actions 
+(deliberate spillage/shortage decisions) in MWh with index  ݇ that can be taken by the market player. 
+Then for every time interval  ݆∈ሼ1, . . . ,ܶሽ  a spillage or shortage decision ݔ௝,௞ which maximizes expected 
+outcomes, is chosen. The decision ݔ௝,௞ is dependent on the imbalance estimates for every time interval ݆, 
+ଓܾ݉෢௜,௝ , and the anticipated price response to ݔ௝,௞,   ݌̂ሺݔ, ଓܾ݉
+ሻ
+෣௜,௝,௞. For each state and action the 
+corresponding payoff value is therefore: 
+ݒ௜,௝,௞ൌሺ ݌̂ሺݔ, ଓܾ݉
+ሻ
+෣௜,௝,௞െ݉ܿ
+௜,௝,௞ሻ∗ݔ௝,௞ 
+(12) 
+Hence the optimal expected value action is:  
+ݔ௝
+∗ൌmax
+௞
+൭෍ݒ௜,௝,௞∗
+௜∈ூ
+݌ݎ݋ܾሺଓܾ݉෢௜ሻ൱
+௝
+ 
+(6) 
+In order to model the conditional dependence of the discrete imbalance state probability distribution 
+on the short term flow of information  to the agents, quantile regression (QR) is used Davino and Furno 
+(2014). The formulation of a discrete set of conditional quantile functions can be solved based on the 
+minimization problem proposed by Koenker and Bassett (1978) for the ݍ-th quantile regression 0 ൏ݍ൏
+1, with a modification of the Koenker and D’Orey (1987) algorithm. With this formulation, the discrete 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+16 
+=
+imbalance state ଓܾ݉෢௜ corresponds to the ݍ-th quantile estimation function. To estimate the winter and 
+summer models (February and August), we used the 15min data for the respectively preceding months, 
+January and July, 2015. Thus, to provide dynamic quantile estimates for  ଓܾ݉෢௜,௝, we investigated a plausible 
+set of potential explanatory variables, from which we identified 3 generally significant regressors to 
+describe the response variable for each discrete quantile estimate  and time interval. Furthermore, since we 
+required different models to reflect the effects of different information time delays, the backshift jെݎ, with 
+ݎ∈ܴ
+ ሼ1. . 8ሽ, indicates the time-lagged structure for each decision-making context. The agent's estimation 
+function for imbalance was then specified as: 
+ଓܾ݉
+ప,ఫ
+෣ൌβ୧ଵ,୨ି୰∗ܾ݅݉
+௝ି௥൅β୧ଶ,୨ି୰ൈݓ݅݊݀
+௝ି௥൅β௜ଷ,୨ି୰∗ݏ݋݈ܽ
+ݎ௝ି௥ൈܦ௦൅ܿ
+୧,୨ି୰ 
+(7) 
+being estimated separately for 10 discrete quantiles, indexed through i, in which: 
+ ܾ݅݉
+௝ି௥  is the imbalance variable with a time lag of r,  
+ݓ݅݊݀
+௝ି௥ is the wind forecast error, calculated as the difference between the day ahead forecast and the 
+latest  value  measured at (j-r), and 
+ݏ݋݈ܽ
+ݎ௝ି௥ is the solar forecast error, calculated as the difference between the day ahead forecast and the 
+latest  value  measured at (j-r). Since the solar error was significant only in summer, there is a binary 
+variable ܦ௦ which is 0 in winter and 1 in summer. 
+ We used wind and solar day ahead forecasts and measured data from Zentralanstalt für Meteorologie 
+und Geodynamik ZAMG. Forecast error is calculated as difference between day ahead forecasts and 
+measured wind force and solar radiation. Forecast data is only available in hourly resolution whilst 
+realization values are in 10 minutes resolution and so the values were linearly interpolated into 15 minutes 
+intervals. Finally, from a discrete set of 10 quantile estimates, we interpolated to create the discrete 
+probability mass functions required for computing the optimal expected values as (6). 
+To undertake a back testing analysis and evaluate the system behaviour based on measured imbalance 
+data, following the estimations based on January and July, the months of February and August 2015 were 
+evaluated as out-of-sample simulations of the statistical arbitrage trading. For the evaluation of the 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+17 
+=
+deliberate spillage/shortage positions, we compare evolving system costs, profit potential and measures 
+for the volatility of system imbalances. As baseline, in the absence of statistical arbitrage actions, we 
+define the system costs for balancing as: 
+ݏݕݏݐ݁݉
+ ܿ݋ݏݐݏ௕௔௦௘ൌ෍p௝|ܾ݅݉
+௝
+௥௘௔௟∗ܾ݅݉
+௝
+௥௘௔௟
+௝ఢ்
+ 
+(8) 
+With statistical arbitrage, the balancing system costs in the optimized case (ݏݕݏݐ݁݉
+ ܿ݋ݏݐݏ௢௣௧ሻ are 
+determined by the balancing price function p௝|ݔ௝
+∗,ܾ݅݉
+௝
+௥௘௔௟ adjusted by the optimized imbalance due to 
+long/shortage position ܾ݅݉
+ሺݔሻ௝
+௢௣௧ൌܾ݅݉
+௝
+௥௘௔௟൅ݔ௝
+∗ 
+ݏݕݏݐ݁݉
+ ܿ݋ݏݐݏ௢௣௧ൌ෍p௝|ݔ௝
+∗,ܾ݅݉
+ሺݔሻ௝
+௥௘௔௟∗ܾ݅݉
+ሺݔሻ௝
+௢௣௧
+௝ఢ்
+ 
+(9) 
+The profit for the market player is defined as  
+݌ݎ݋݂݅
+ݐൌ෍ݔ௝
+∗∗ሺp௝|ݔ௝
+∗,ܾ݅݉
+ሺݔሻ௝
+௥௘௔௟െ݉ܿ
+௝ሻ
+௝ఢ்
+ 
+(10) 
+In consideration of the general size of system imbalances, as shown in Table 1 and Figure 4, we set 
+the maximum long position for ݔ௝
+∗ at 60 MWh and the maximum short ݔ௝
+∗ at 100 MWh.  
+The effect of volatility and the impact of time delayed decisions are measured by the monthly 
+cumulated absolute imbalance and the system imbalance standard deviation before and after optimization. 
+Furthermore, to investigate potential dynamic instability due to lagged responses, following Larsen (2015) 
+we also use imbalance half cycles, measures as switches between positive and negative imbalances, as a 
+system imbalance indicator of cycling.  
+Since the physical and the non-physical agents face different time lags, we undertake a dynamic 
+analysis for both players. For that purpose we vary information time delays for the decision model starting 
+with lag 1 up to lag 8 forecasts and run simulations for summer and winter to study the effect of time 
+delayed decision making. Even though the very short lags may be infeasible under the current Austrian 
+market rules (recall Figure 6 and 7), we considered the full range of lags in order to inform a debate upon 
+the benefit of market rule changes. 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+18 
+=
+5. Results 
+This section consists of three parts. First the results of the dynamic prediction models are presented. 
+Then the physical and non-physical player’s profitability and impact on system imbalance in the current 
+policy setting is analysed and thirdly the impact of time delayed decisions in a dynamic setting is 
+evaluated. 
+Prediction model 
+The estimation results, reported in Table 4 and Table 5 in the supplementary Appendix, can be 
+summarized as follows: 
+imb୧,୨ି୰ had significant positive coefficients for the whole range of quantile regressions and time 
+delays. As expected, this reveals the adaptive market conditions at 15min intervals.  
+ݓ݅݊݀
+_݁௜,௝ି௥ had negative coefficients, as expected, being significant for almost all quantiles. In 
+summer and winter for quantiles above q0.6 wind production error has no significant impact if time delay 
+is longer than 5 intervals. This implies that there may be dynamic corrections to imbalances at these lags. 
+In summer q0.025 is insignificant. This could be due to generally lower wind production in summer and 
+hence less impact on imbalance.  
+ݏ݋݈ܽ
+ݎ_݁௜,௝ି௥ had significant negative coefficients in summer except for those quantiles above q0.7. 
+High system imbalances are presumably caused by other factors.  
+Figure 8 shows the winter month prediction intervals for the lag 1 and lag 8 models. The observed 
+imbalance is shown in black. For the lag 1 (15mins ) model the time series forecast adapts quickly to new 
+information and the predictive density function of the forecast is narrow and apparently accurate. As 
+expected, the 8 lag (120 mins) model adapts slowly and the predictive density is wide, but still apparently 
+accurate in coverage. The conditional distribution gets wider for the extreme quantiles with the longer 
+time delay. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+19 
+=
+Figure 8: Comparison of Lag 1 and Lag 8 Prediction Intervals 
+=
+=
+Back Test Simulations for the Physical and Non-Physical Player 
+The empirical back testing confirmed the ex post profitability to the two different players of 
+optimising their ex ante imbalance positions. The relative profits expressed as a ratio of MWh traded 
+(Figure 10) were substantial, being in winter €89/MWh for the physical player and €24/MWh for the nonphysical player, whereas in summer the physical player achieved €52/MWh profitability whilst the nonphysical player achieved €7/MWh. Recall from Table 2 that the average traded closing price in the power 
+exchange prior to balancing was €36/MWh in winter. So the nonphysical player is making a profit in 
+winter of 67% on the spread between power exchange and imbalance prices. The fundamentals for the 
+physical player are different, relying upon the spread between marginal production costs (gas) and the 
+imbalance price. Evidently, optimising this gave even higher profitability to the physical player, and of 
+course, in practice, the physical player could also engage in the same speculation as the nonphysical.  
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+20 
+=
+Figure 9: Imbalance distribution winter below -70 MWh and above 60 MWh; Cumulative short and long 
+positions in winter 2015 [MWh] 
+ 
+Figure 10: System Costs and average profit per traded volume 
+=
+=
+ 
+Furthermore, as shown in Figure 10 the physical player reduces system balancing costs by 25% in 
+winter and 13% in summer. In contrast, whilst system costs for the non-physical player in winter remained 
+constant, in summer they increased by 23%. The standard deviations of imbalances, as an indicator of 
+system volatility, decreased through the actions of the physical player by 8-9% but increased for the nonphysical player by 4-10% (Figure 11). Furthermore Figure 11 shows that absolute system imbalances in 
+winter and summer decreased 5-6% for the physical player and increased for the non-physical player by 414%. In Figure 9 the upper and lower tails of the imbalance distributions for winter is plotted. We observe 
+that negative imbalances are reduced by additional shortage positions from both the physical and the non-
+‐20
+‐10
+0
+10
+20
+30
+non‐physical
+player
+physical player
+cumulatve traded GWh winter 2015
+Long
+Short
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+summer
+winter
+system costs in [Mio. EUR]
+observation
+physical player
+non‐physical player
+0
+20
+40
+60
+80
+100
+winter
+summer
+average profit per traded 
+volume [EUR/MWh]
+physical player
+non‐physical player
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+21 
+=
+physical players. For positive imbalances we see that the non-physical player increased the imbalance 
+somewhat in the upper tail.  
+Figure 11: Standard Deviation of system imbalance and cumulative absolute imbalance 
+=
+=
+=
+Whilst the actions of the physical player were evidently beneficial in reducing total system costs and 
+therefore welfare enhancing from both producer and consumer perspectives, the nonphysical player's 
+effects were more detrimental to the system. We note that this could be due to the extra delay in 
+information processing with the physical player acting within15 mins and the nonphysical acting 60mins 
+ahead. In the next Section we consider the beneficial effects if the administrative restrictions on the 
+nonphysical player were relaxed so that it could act on information as quickly as the physical player.  
+The backtesting also confirmed the expectations identified earlier that both players would be 
+incentivised to take more short positions in the current market framework. Table 3 and Figure 9 show the 
+actual number and cumulative magnitude of short and long positions. This tendency towards shortage 
+applies to both physical and nonphysical players, and is despite the underlying market circumstances in 
+which, as we noted earlier, there were 50% more settlement periods when the system was short compared 
+to being long (and to be profitable, a player has to be out of balance in the opposite direction to the 
+market). There is evidently asymmetry in the profitability function and perhaps also in the accuracy of the 
+forecasts. The market fundamentals (average prices in table 2) indicate the incentive to take higher 
+volumes of short positions than long positions for the non-physical player. The physical player also has 
+ 20
+ 22
+ 24
+ 26
+ 28
+ 30
+ 32
+summer
+winter
+standard deviation in [MWh]
+observation
+physical player
+non‐physical player
+48
+50
+52
+54
+56
+58
+60
+62
+64
+66
+summer
+winter
+cumulative  absolute 
+imbalance in [GWh]
+observation
+physical player
+non‐physical player
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+22 
+=
+more incentive to take a short position. Once the power plant is activated in part load on the day-ahead 
+market it is more profitable to curtail then spill. 86%/72% of the trading volume are shortage deals for the 
+physical/non-physical players in winter 2015. 
+Table 3: Short/long positions in winter and summer 
+  
+  
+physical player 
+non-physical player 
+short positions 
+winter 
+380 
+1641 
+summer 
+271 
+1466 
+long positions 
+winter 
+63 
+867 
+summer 
+53 
+1050 
+ 
+We also observe in Table 3, the increased activity of the nonphysical player. In summer the nonphysical player took 2516 positions whereas the physical player took only 324 (out of 2684 possible 
+intervals). Figure 9 shows that effect by cumulative traded volume. Evidently, the incentives for the 
+physical player present fewer opportunities (gas turbine generation needs to be in merit) but the payoffs 
+are greater.  
+Information Flow 
+As an opportunistic process, the flow of information is a key aspect of the microstructure and trading 
+performance. One concern that has attracted research is the effect of information time delays on the 
+stability of the system. For example,  Nutaro and Protopopescu (2009) studied the effect of market 
+clearing time and price signal delays in electric power markets and found that there is an upper limit on 
+the market clearing time and the delay of the price signal beyond which the system becomes unstable. 
+Similarly,  Larsen (2015) argued that activating demand response in existing electricity markets can be 
+unstable, resulting in oscillations and increased volatility in supply and demand due to the cobweb effect. 
+In the context of our research, therefore, to the extent that there may be benefits in further liberalisation to 
+encourage opportunistic imbalancing, a market design question is whether the flow of information needs 
+to be accelerated.  
+Figure 12 shows the overall system balancing costs for both players in both months and for all time 
+lags simulated. The actual observed imbalance costs are shown for comparison. Thus, for the physical 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+23 
+=
+player simulating 1 lag, system costs were cut by 23% in winter and 13% in summer. In the current 
+context, this means that the physical player would have five minutes to act, unless the information were 
+provided with a lag of less than ten minutes (recall Figure 6).  
+Figure 12: Lagged system costs and profit per traded volume 
+ 
+ 
+ 
+Figure 13: Lagged cumulative absolute imbalance and system imbalance standard deviation 
+ 
+ 
+Figure 13 shows the cumulative absolute imbalance and standard deviation of imbalances. In the 
+cumulative absolute imbalance, we see similar indications as with the imbalance costs, whist the standard 
+deviations also show a further benefit in terms of reducing volatility. More surprisingly in Figure 12 to 
+Figure 14, we see that the conjecture, advanced in the previous section, that the detrimental system 
+1
+2
+2
+3
+3
+4
+imb_observation
+non‐phys lag 1
+non‐phys lag 2
+non‐phys lag 3
+non‐phys lag 4
+non‐phys lag 5
+non‐phys lag 6
+non‐phys lag 7
+non‐phys lag 8
+phy lag 1
+ phys lag 2
+phys lag 3
+phys lag 4
+phys lag 5
+phys lag 6
+phys lag 7
+phys lag 8
+system costs [ Mio. EUR]
+system costs winter
+system costs summer
+0
+20
+40
+60
+80
+100
+non‐phys lag 1
+non‐phys lag 2
+non‐phys lag 3
+non‐phys lag 4
+non‐phys lag 5
+non‐phys lag 6
+non‐phys lag 7
+non‐phys lag 8
+phy lag 1
+ phys lag 2
+phys lag 3
+phys lag 4
+phys lag 5
+phys lag 6
+phys lag 7
+phys lag 8
+profit per traded volume 
+[EUR/MWh]
+profit per MWh  winter
+profit  per MWh summer
+40
+45
+50
+55
+60
+65
+70
+imb_observation
+non‐phys lag 1
+non‐phys lag 2
+non‐phys lag 3
+non‐phys lag 4
+non‐phys lag 5
+non‐phys lag 6
+non‐phys lag 7
+non‐phys lag 8
+phy lag 1
+ phys lag 2
+phys lag 3
+phys lag 4
+phys lag 5
+phys lag 6
+phys lag 7
+phys lag 8
+cumulative absolute imbalance [GWh]
+absolute imbalance  winter
+absolute imbalance summer
+20
+22
+24
+26
+28
+30
+32
+34
+imb_observation
+non‐phys lag 1
+non‐phys lag 2
+non‐phys lag 3
+non‐phys lag 4
+non‐phys lag 5
+non‐phys lag 6
+non‐phys lag 7
+non‐phys lag 8
+phy lag 1
+ phys lag 2
+phys lag 3
+phys lag 4
+phys lag 5
+phys lag 6
+phys lag 7
+phys lag 8
+standard deviation [MWh]
+standard deviation winter
+standard deviation summer
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+24 
+=
+performance of the nonphysical player was due to its longer information lag (60mins) does indeed appear 
+to be upheld and furthermore that if the lags can be shortened, it can in fact provide even more system 
+benefits than the physical player.  A 36% reduction in system costs in winter and 19% in summer can be 
+achieved at lag 1. In contrast, with longer information lags, the effect was more sensitive for the nonphysical player and the deterioration of performance more marked at longer lags. Whilst the physical 
+player improved system balancing costs for all lags considered up to 8, the nonphysical started to increase 
+system costs after lag 6 in winter and lag 3 in summer. Profits however, remain positive at all lags 
+considered (Figure 12). 
+Figure 14: Lagged Imbalance Half Cycles 
+ 
+Figure 14 shows the number of system imbalance half cycles (ie switches in sign in the time series of 
+15min imbalances) for summer and winter. Imbalance half cycles increased slightly for the physical 
+player, but for the non-physical player changes of signs of the system imbalance increased substantially. 
+For the lag 1 model we noted an increase of 50-80%, which decreases for longer time delays in winter and 
+summer but remained above the actual observed data. Expressed in minutes for changes between positive 
+and negative imbalance we observed in the actual observed data on average 80/73 minutes for system 
+imbalances in winter/summer. For the non-physical lag 1 simulations the average duration of imbalance 
+was reduced to 44/47 minutes in winter/summer. It is not obvious whether an increase in imbalance half 
+cycles is a good or bad effect. Whilst an increase of half cycles could be interpreted as an undesirable 
+indicator from the TSO perspective requiring more activation of control power, one could also take the 
+view that if the system was well balanced in expectation, imbalance volumes would be a zero mean, 
+0
+200
+400
+600
+800
+1,000
+imbalance half cycles [‐]
+half cycles winter
+half cycles summer
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+25 
+=
+stationary process with a high speed of mean reversion, implying a high rate of sign switching. In any 
+case, this increased effect here does not seem to be seriously detrimental. 
+In Figure 15 we compare 100 time intervals for the non-physical lag 1 model and the observed 
+imbalance in summer. It can be seen, that the higher frequency of half cycles are often caused by small 
+overreactions which lead to sign switches.  
+Figure 15: Summer imbalance observations and non-physical lag 1 model 
+=
+=
+Figure 16: Quantity of short and long positions in winter 
+=
+ 
+Finally in Figure 16 we show the quantity of actions in winter 2015. The non-physical player took, in 
+the lag 1 simulation, more than 1500 position (out of 2684 possible time intervals). With longer time 
+delays the non-physical player took more short positions (1657 at lag 8), which is rather surprising. In 
+slight contrast, long positions for the non-physical player were taken 1000 times in the lag 1 decreasing to 
+830 times in the lag 8 model. On the other hand the physical player was more selective. In the previous 
+‐120
+‐100
+‐80
+‐60
+‐40
+‐20
+0
+20
+40
+imbalance [MWh]
+non‐physical lag 1 summer
+observed imbalance
+ ‐
+ 500.0
+ 1000.0
+ 1500.0
+ 2000.0
+ 2500.0
+ 3000.0
+non‐phys lag 1
+non‐phys lag 2
+non‐phys lag 3
+non‐phys lag 4
+non‐phys lag 5
+non‐phys lag 6
+non‐phys lag 7
+non‐phys lag 8
+phy lag 1
+ phys lag 2
+phys lag 3
+phys lag 4
+phys lag 5
+phys lag 6
+phys lag 7
+phys lag 8
+quantity summer
+short positions  winter
+long positions winter
+all 15  minutes intervals
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+26 
+=
+section, we considered whether the difference in behaviours between the players was due to the 
+nonphysical player having to decide on actions sooner than the physical. Here, controlling for information 
+flow, there is still a substantial difference in behaviour. The difference is therefore mostly due to the 
+different arbitrage spreads, between imbalance and marginal cost for the physical and between imbalance 
+and closing power exchange price for the non-physical. 
+ 
+6. Conclusion  
+Motivated by a natural experiment in the British market design involving a switch from dual to single 
+imbalance settlement prices, we considered the incentive for physical and speculative participants to 
+optimise their expected imbalance positions. Not every jurisdiction permits participants to be deliberately 
+out of balance and so we analysed the behaviour, not only in terms of its profitability for the participants, 
+but in terms of system effects. We conclude that market liberalisation to permit agent optimisation of 
+imbalance positions appears to be beneficial to the system as well as for the agents, whether physical or 
+speculative. Furthermore, the case for more timely and transparent information on the state of the system 
+is supported by our analysis.  
+For reasons of computational precision, we analyzed the effect of statistical arbitrage from a market 
+agent´s perspective (a physical and non-physical player) in the current Austrian policy framework (in 
+which there is a precise formula for the imbalance price) and in a dynamic setting with information time 
+delays between 15 minutes and 120 minutes. For the physical player we found that statistical arbitrage is 
+profitable and has a convincing potential to reduce system costs, absolute imbalances and imbalance 
+extremes. With long time delays this effect diminishes as forecasting and actions become more difficult. 
+The frequency of trades and imbalance half cycles were observed to adequately stable. We concluded that 
+profitable operations and market efficiency increase by these actions.  
+For the non-physical actions, whilst profitable for the player, the system benefits were less substantial 
+and declined with longer information lags. The dynamic analysis shows that up to a time lag of 45 minutes 
+in winter and 30 minutes in summer the non-physical player decreases system costs, system imbalance 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+27 
+=
+deviation and absolute imbalance. The market design implication is that consideration should be given to 
+reducing the extra information lags required for non-physical compared to physical players, at least to 
+these levels. With a well-designed imbalance price settlement process and timely information flows, 
+agents can thus be incentivised to contribute to stabilizing the power-system. Finally we should emphasize 
+that in referring to physical and non-physical players, these are simple examples of engagement actions; a 
+company could be involved in both or indeed in more complex portfolio positions (e.g. by also offering 
+tertiary control power to the market). 
+The main contribution therefore concerns the optimal real-time operations of market participants and 
+the principle of more liberalized engagement.  Evidently, as in any arbitrage opportunity which markets 
+present, the more agents that engage, the more the marginal arbitrage benefits become eroded. We have 
+not addressed the multi-agent aspects. In many respects, that aspect is common to other instruments of 
+active real-time responses to market signals, in particular those of demand management, storage or electric 
+vehicle charging. Thus, we also recognize the system stability issue posed, but consider it not specific to 
+this type of activity but rather part of the much broader topic of smart, real-time consumer and producer 
+engagement, which is outside the scope of this analysis. 
+Overall, it may seem counter-intuitive that the system may be better served by allowing agents to 
+forecast the system imbalance and trade against its direction, than requiring agents to maintain their own 
+balanced positions and leave the System Operator responsible for centralised balancing actions. The 
+intuition behind our results, which suggest this is not the case, is that System Operator in most 
+jurisdictions activates reserve for balancing in response to the actual state of the system, whereas in our 
+modelling the market agents are more proactive in forecasting the imbalance states, and thereby take 
+actions which are less costly. Furthermore, the license condition for an independent system operator may 
+preclude them from acting speculatively in the market in the same way as market participants. 
+There are several technical limitations to this study, but we do not consider them to affect the broad 
+implications. Evidently the agents could be using better predictive models than the simple linear quantile 
+regression estimates. This may also involve effective prediction of tertiary control activation. That would 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+28 
+=
+presumably improve the performance of the statistical arbitrage compared to our results. There are also 
+other technological classes of players that could engage, eg storage operators or renewable generators with 
+turn-down capabilities, but they would bring special operational constraints that would moderate, or 
+possibly eliminate, their attractiveness. Overall, however, this research makes a strong contribution in 
+demonstrating the operational benefit of opportunistic imbalancing and suggests that it should be 
+positively viewed as a desirable step in market liberalization. 
+ 
+ 
+Acknowledgments 
+Stefan Kermer thanks Gregor Preisl and Oliver Albrecht for discussions in the model specification. 
+ 
+ 
+References 
+ 
+Anon (2010) Electricity and Organisation Act 2010 (National Assembly Austria). 
+APG (2016) Rules regarding nomination of cross-border schedules  
+Bertsch J, Growitsch C, Lorenczik S, Nagl S (2016) Flexibility in Europe’s power sector — An additional 
+requirement or an automatic complement? Energy Econ. 53:118–131. 
+Boogert A, Dupont D (2005) On the effectiveness of the anti-gaming policy between the day-ahead and 
+real-time electricity markets in The Netherlands. Energy Econ. 27(5):752–770. 
+Brendan C (2017) Dong Energy enters demand-side response with wind power balancing services. THE 
+ENERGYST. 
+Davino C, Furno M VD (2014) Quantile Regression: Theory and Applications (Wiley). 
+Dowling AW, Kumar R, Zavala VM (2017) A multi-scale optimization framework for electricity market 
+participation. Appl. Energy 190(Supplement C):147–164. 
+Elexon (2016) Imbalance Pricing Guidance  
+Kaur A, Nonnenmacher L, Pedro HTC, Coimbra CFM (2016) Benefits of solar forecasting for energy 
+imbalance markets. Renew. Energy 86:819–830. 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+29 
+=
+Kies A, Schyska B, von Bremen L (2016) The Demand Side Management Potential to Balance a Highly 
+Renewable European Power System. Energies 9(11):955. 
+Koenker R, Bassett G (1978) Regression Quantiles. Econometrica 46(1):33–50. 
+Koenker RW, D’Orey V (1987) Algorithm AS 229: Computing Regression Quantiles. J. R. Stat. Soc. Ser. 
+C (Applied Stat. 36(3):383–393. 
+Koltsaklis NE, Dagoumas AS, Panapakidis IP (2017) Impact of the penetration of renewables on 
+flexibility needs. Energy Policy 109:360–369. 
+Larsen EM (2015) The Cobweb Effect in Balancing Markets with Demand Response. Proc. Eur. Electr. 
+Mark. Conf. 
+Möller C, Rachev ST, Fabozzi FJ (2011) Balancing energy strategies in electricity portfolio management. 
+Energy Econ. 33(1):2–11. 
+Nutaro J, Protopopescu V (2009) The Impact of Market Clearing Time and Price Signal Delay on the 
+Stability of Electric Power Markets. IEEE Trans. Power Syst. 24(3):1337–1345. 
+OFGEM (2014) Electricity Balancing Significant Code Review  
+Pinson P, Chevallier C, Kariniotakis GN (2007) Trading wind generation from short-term probabilistic 
+forecasts of wind power. IEEE Trans. Power Syst. 22(3):1148–1156. 
+Vandezande L, Meeus L, Belmans R, Saguan M, Glachant JM (2010) Well-functioning balancing 
+markets: A prerequisite for wind power integration. Energy Policy 38(7):3146–3154. 
+van der Veen RAC, Abbasy A, Hakvoort RA (2012) Agent-based analysis of the impact of the imbalance 
+pricing mechanism on market behavior in electricity balancing markets. Energy Econ. 34(4):874–
+881. 
+van der Veen RAC, Hakvoort RA (2016) The electricity balancing market: Exploring the design 
+challenge. Util. Policy 43:186–194. 
+Wang Q, Zhang C, Ding Y, Xydis G, Wang J, Østergaard J (2015) Review of real-time electricity markets 
+for integrating Distributed Energy Resources and Demand Response. Appl. Energy 138(Supplement 
+C):695–706.=
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+30 
+=
+Appendix: Supplementary Material 
+Table 4: Estimated quantile regression coefficients January 2015 
+  
+  
+coefficients 
+p‐values 
+  
+  
+j‐1 
+j‐2 
+j‐3 
+j‐4 
+j‐5 
+j‐6 
+j‐7 
+j‐8 
+t‐1 
+t‐2 
+t‐3 
+t‐4 
+t‐5 
+t‐6 
+t‐7 
+t‐8 
+IMBALANCE (j‐k) 
+q0,025  0.89 
+0.8 
+0.7
+0.6
+0.5
+0.4
+0.4
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+q0,1 
+0.88 
+0.8 
+0.7
+0.6
+0.6
+0.5
+0.5
+0.5
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+q0,2 
+0.88 
+0.7 
+0.7
+0.6
+0.5
+0.5
+0.5
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,3 
+0.88 
+0.7 
+0.6
+0.6
+0.5
+0.5
+0.4
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,4 
+0.87 
+0.7 
+0.6
+0.6
+0.5
+0.5
+0.4
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,5 
+0.86 
+0.7 
+0.6
+0.6
+0.5
+0.4
+0.4
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,6 
+0.86 
+0.7 
+0.6
+0.6
+0.5
+0.4
+0.4
+0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,7 
+0.84 
+0.7 
+0.6
+0.6
+0.5
+0.4
+0.4
+0.3
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,8 
+0.83 
+0.7 
+0.6
+0.5
+0.4
+0.4
+0.3
+0.3
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,9 
+0.83 
+0.7 
+0.6
+0.5
+0.4
+0.4
+0.3
+0.3
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,975  0.76 
+0.6 
+0.5
+0.5
+0.5
+0.4
+0.4
+0.3
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+C 
+q0,025 
+‐42 
+‐60 
+‐74
+‐69
+‐75
+‐80
+‐79
+‐81
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,1 
+‐25 
+‐35 
+‐36
+‐41
+‐44
+‐44
+‐45
+‐45
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,2 
+‐16 
+‐23 
+‐24
+‐25
+‐28
+‐28
+‐28
+‐28
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,3 
+‐14 
+‐15 
+‐17
+‐18
+‐18
+‐18
+‐18
+‐19
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,4 
+‐7 
+‐9 
+‐10
+‐11
+‐10
+‐10
+‐10
+‐11
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,5 
+‐1.6 
+‐3.4 
+‐3.8
+‐4.8
+‐3.2
+‐2.5
+‐3.6
+‐4.2
+0.1
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,6 
+3.9 
+2.4 
+1.1
+2.6
+5.2
+3.5
+2.6
+2.6
+0.0
+0.0
+0.3
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,7 
+9.8 
+8.9 
+8.6
+10.9
+12.0
+9.9
+11.3
+10.9
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,8 
+16.7  17.1  17.8
+19.8
+19.1
+18.8
+18.3
+19.5
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,9 
+27.1  30.1  29.6
+30.9
+31.1
+30.0
+30.8
+31.7
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,975  45.7  50.6  48.3
+53.2
+55.2
+61.6
+61.8
+67.1
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+ERROR_DA WIND  (j‐k) 
+q0,025 
+‐1.3 
+‐1.8 
+‐1.0
+‐1.2
+‐0.6
+‐0.7
+0.5
+0.9
+0.0
+0.0
+0.1
+0.1 
+0.4 
+0.4 
+0.3
+0.4
+q0,1 
+‐1.1 
+‐1.4 
+‐1.6
+‐1.7
+‐1.7
+‐1.5
+‐1.0
+‐1.0
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+q0,2 
+‐1.1 
+‐1.3 
+‐1.3
+‐1.4
+‐1.3
+‐1.2
+‐1.2
+‐1.0
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+q0,3 
+‐0.8 
+‐1.0 
+‐1.1
+‐1.1
+‐1.0
+‐0.9
+‐0.8
+‐0.9
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,4 
+‐0.5 
+‐0.9 
+‐0.8
+‐0.9
+‐0.9
+‐0.7
+‐0.6
+‐0.5
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,5 
+‐0.4 
+‐0.7 
+‐0.7
+‐0.7
+‐0.6
+‐0.7
+‐0.6
+‐0.4
+0.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+  
+q0,6 
+‐0.2 
+‐0.5 
+‐0.6
+‐0.4
+‐0.5
+‐0.4
+‐0.3
+‐0.3
+0.1
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.1
+0.1
+  
+q0,7 
+‐0.2 
+‐0.5 
+‐0.6
+‐0.4
+‐0.3
+‐0.3
+‐0.2
+‐0.3
+0.3
+0.0
+0.0
+0.1 
+0.2 
+0.1 
+0.4
+0.2
+  
+q0,8 
+‐0.5 
+‐0.5 
+‐0.4
+‐0.4
+‐0.3
+‐0.5
+‐0.2
+‐0.1
+0.0
+0.0
+0.1
+0.1 
+0.1 
+0.0 
+0.3
+0.7
+  
+q0,9 
+‐0.5 
+‐0.7 
+‐0.5
+‐0.7
+‐0.7
+‐0.7
+‐0.3
+‐0.4
+0.1
+0.0
+0.1
+0.0 
+0.0 
+0.0 
+0.4
+0.2
+  
+q0,975 
+‐0.9 
+‐0.8 
+‐1.4
+‐1.8
+‐1.6
+‐0.7
+‐1.0
+0.5
+0.1
+0.2
+0.0
+0.0 
+0.0 
+0.4 
+0.2
+0.6
+=
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716
+
+31 
+=
+Table 5:=Estimated quantile regression coefficients July 2015 
+  
+  
+coefficients 
+p‐‐values 
+  
+  
+j‐1 
+j‐2 
+j‐3 
+j‐4 
+j‐5 
+j‐6 
+j‐7 
+j‐8 
+t‐1 
+t‐2 
+t‐3 
+t‐4 
+t‐5 
+t‐6 
+t‐7 
+t‐8 
+IMBALANCE (j‐k) 
+q0,025 
+0.8 
+0.9 
+0.8
+0.7
+0.6
+0.6
+0.4
+0.3
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,1 
+0.8 
+0.9 
+0.7
+0.7
+0.6
+0.5
+0.4
+0.4
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,2 
+0.7 
+0.9 
+0.7
+0.7
+0.6
+0.4
+0.4
+0.4
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,3 
+0.7 
+0.9 
+0.7
+0.6
+0.5
+0.4
+0.4
+0.3
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,4 
+0.7 
+0.9 
+0.6
+0.6
+0.5
+0.4
+0.3
+0.3
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,5 
+0.7 
+0.8 
+0.6
+0.5
+0.4
+0.3
+0.3
+0.3
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,6 
+0.6 
+0.8 
+0.5
+0.5
+0.4
+0.3
+0.3
+0.3
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,7 
+0.6 
+0.8 
+0.5
+0.5
+0.3
+0.3
+0.2
+0.2
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,8 
+0.6 
+0.8 
+0.5
+0.4
+0.3
+0.2
+0.2
+0.2
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,9 
+0.5 
+0.7 
+0.4
+0.4
+0.3
+0.2
+0.2
+0.2
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,975 
+0.5 
+0.7 
+0.4
+0.3
+0.2
+0.1
+0.2
+0.2
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+C 
+q0,025 
+‐64 
+‐42 
+‐77
+‐86
+‐97
+‐100
+‐104
+‐110
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,1 
+‐34 
+‐25 
+‐40
+‐42
+‐47
+‐52
+‐52
+‐53
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,2 
+‐21 
+‐15 
+‐22
+‐25
+‐27
+‐27
+‐28
+‐31
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,3 
+‐13 
+‐10 
+‐14
+‐15
+‐16
+‐15
+‐16
+‐17
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,4 
+‐6.9 
+‐4.7 
+‐8.3
+‐8.6
+‐8.4
+‐6.7
+‐8.2
+‐9.0
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,5 
+‐2.2 
+‐1.4 
+‐1.9
+‐2.7
+‐2.2
+‐1.0
+‐1.8
+‐1.9
+0.0
+0.1
+0.2 
+0.0 
+0.0 
+0.0
+0.1
+0.1
+  
+q0,6 
+4.7 
+2.1 
+3.8
+2.0
+4.3
+4.8
+4.6
+4.7
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,7 
+11 
+7 
+10
+8
+11
+12
+12
+12
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,8 
+19 
+13 
+17
+15
+18
+21
+21
+19
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,9 
+30 
+23 
+29
+31
+32
+33
+33
+34
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,975 
+49 
+39 
+49
+51
+55
+58
+60
+58
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+ERROR_DA WIND(j‐k) 
+q0,025 
+0.0 
+‐0.5 
+‐1.1
+‐2.6
+‐2.9
+‐2.3
+‐2.2
+‐2.1
+1.0
+0.4
+0.2 
+0.0 
+0.1 
+0.0
+0.1
+0.1
+q0,1 
+‐1.1 
+‐0.7 
+‐1.2
+‐1.7
+‐1.9
+‐2.2
+‐2.5
+‐2.6
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,2 
+‐0.9 
+‐0.4 
+‐1.1
+‐1.2
+‐1.4
+‐1.5
+‐1.6
+‐1.9
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,3 
+‐0.7 
+‐0.4 
+‐0.8
+‐0.9
+‐1.0
+‐1.1
+‐1.1
+‐1.2
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,4 
+‐0.7 
+‐0.3 
+‐0.8
+‐0.6
+‐0.8
+‐0.6
+‐0.8
+‐0.8
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,5 
+‐0.7 
+‐0.3 
+‐0.5
+‐0.6
+‐0.6
+‐0.7
+‐0.9
+‐0.6
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,6 
+‐0.4 
+‐0.3 
+‐0.5
+‐0.6
+‐0.4
+‐0.6
+‐0.5
+‐0.4
+0.0
+0.0
+0.2 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,7 
+‐0.2 
+‐0.3 
+‐0.3
+‐0.5
+‐0.4
+‐0.5
+‐0.3
+‐0.3
+0.2
+0.0
+0.1 
+0.0 
+0.1 
+0.0
+0.1
+0.2
+  
+q0,8 
+‐0.1 
+‐0.1 
+‐0.5
+‐0.4
+‐0.4
+‐0.4
+‐0.3
+‐0.4
+0.7
+0.6
+0.2 
+0.1 
+0.1 
+0.0
+0.3
+0.2
+  
+q0,9 
+0.1 
+0.2 
+‐0.3
+‐0.2
+‐0.4
+‐0.4
+‐0.3
+0.2
+0.7
+0.4
+0.2 
+0.5 
+0.2 
+0.0
+0.5
+0.7
+  
+q0,975 
+‐0.4 
+‐0.1 
+‐0.1
+0.5
+0.7
+1.0
+1.3
+1.2
+0.5
+0.8
+0.0 
+0.3 
+0.3 
+0.0
+0.0
+0.0
+ERROR_DA_SOLAR (j‐k) 
+q0,025 
+0.02 
+0.01  0.03
+0.04
+0.04
+0.04
+0.05
+0.05
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,1 
+0.01 
+0.01  0.01
+0.01
+0.01
+0.02
+0.02
+0.02
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,2 
+0.01 
+0.00  0.01
+0.01
+0.01
+0.01
+0.01
+0.01
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+q0,3 
+0.01 
+0.00  0.01
+0.01
+0.01
+0.01
+0.01
+0.01
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,4 
+0.00 
+0.00  0.01
+0.01
+0.01
+0.01
+0.01
+0.01
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,5 
+0.00 
+0.00  0.01
+0.01
+0.01
+0.01
+0.01
+0.01
+0.0
+0.0
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,6 
+0.00 
+0.00  0.00
+0.01
+0.01
+0.01
+0.01
+0.01
+0.1
+0.2
+0.0 
+0.0 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,7 
+0.00 
+0.00  0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.5
+1.0
+0.0 
+0.1 
+0.0 
+0.0
+0.0
+0.0
+  
+q0,8 
+0.00 
+0.00  0.00
+0.00
+0.00
+0.00
+0.00
+0.00
+0.7
+0.8
+0.2 
+0.8 
+0.9 
+0.0
+0.8
+0.3
+  
+q0,9 
+0.00 
+0.00  0.00
+0.00
+0.00
+‐
+0.01
+0.00
+‐
+0.01
+0.3
+0.8
+0.0 
+0.4 
+0.2 
+0.0
+0.2
+0.0
+  
+q0,975 
+‐
+0.01 
+‐
+0.01  0.00
+‐
+0.01
+‐
+0.01
+‐
+0.01
+‐
+0.01
+‐
+0.01
+0.1
+0.0
+0.4 
+0.3 
+0.0 
+0.0
+0.2
+0.5
+ 
+Electronic copy available at: https://ssrn.com/abstract=3101716

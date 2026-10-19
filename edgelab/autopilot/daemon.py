@@ -26,8 +26,13 @@ class Autopilot:
         with self.log.open("a") as f: f.write(json.dumps(k, default=str) + "\n")
         return k
 
+    def pause_files(self) -> tuple:
+        """Dos interruptores: el de consola (sólo un humano en la máquina lo crea y lo borra) y el de la sala (Chaski).
+        La sala nunca puede levantar una pausa de consola; el ciclo se detiene si existe cualquiera de los dos."""
+        return (Path(self.cfg.get("kill_switch", self.root / "PAUSE")), Path(self.cfg.get("kill_switch_sala", self.root / "PAUSE_SALA")))
+
     def _paused(self) -> bool:
-        return Path(self.cfg.get("kill_switch", self.root / "PAUSE")).exists()
+        return any(p.exists() for p in self.pause_files())
 
     def tick(self, candidates: list, now: float | None = None) -> dict:
         """Un solo controlador por directorio de estado: bloqueo exclusivo no bloqueante (cubre CLI, timer y generador que apunten al mismo estado)."""
@@ -103,5 +108,5 @@ class Autopilot:
         led = self.ledger.db.execute("SELECT status, COUNT(*) FROM runs GROUP BY status").fetchall()
         last = [json.loads(l) for l in self.log.read_text().splitlines()[-5:]] if self.log.exists() else []
         hb = json.loads((self.root / "heartbeat.json").read_text()) if (self.root / "heartbeat.json").exists() else None
-        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
+        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), pausas=[str(p) for p in self.pause_files() if p.exists()], alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
                     heartbeat_age_s=None if not hb else round(time.time() - hb["ts"]), last_events=[{k: v for k, v in e.items() if k in ("event", "launched", "closed", "blocked")} for e in last])

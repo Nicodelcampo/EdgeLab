@@ -1,0 +1,669 @@
+Electronic copy available at: http://ssrn.com/abstract=2021182
+1
+Non-Parametric Prediction of the Mid-Price
+Dynamics in a Limit Order Book
+Deepan Palguna and Ilya Pollak
+Abstract
+Many securities markets are organized as double auctions where each incoming limit order—i.e., an
+order to buy or sell at a speciﬁc price—is stored in a data structure called the limit order book. A trade
+happens whenever a market order arrives—i.e., an order to buy or sell at the best currently available price.
+This order ﬂow is visible to every market participant in real time. We propose a novel non-parametric
+approach to short-term forecasting of the mid-price change in a limit order book (i.e., of the change in
+the average of the best offer and the best bid prices). We construct a state vector characterizing the order
+book at each time instant and compute a feature vector for each value of the state vector. The features
+get updated during the course of a trading day, as new order ﬂow information arrives. We cluster similar
+states together so that each cluster has enough observations for reliable feature estimation. The feature
+vector of a cluster is the average of the feature vectors of its constituent states. Our prediction at every
+time instant during the trading day is based on the feature vector of the cluster observed at that time
+instant. The distinction of our approach from the previous ones is that it does not impose a restrictive
+parametric model. Implicit assumptions of our method are very mild. Initial experiments with real order
+book data from NYSE suggest that our algorithms show promise. We illustrate their usage in a practical
+application of executing a large trade.
+Index Terms
+Non-parametric regression, limit order books
+I. INTRODUCTION
+Many securities markets are organized as double auctions where each incoming limit order—i.e., an
+order to buy or sell at a speciﬁc price—is stored in a data structure called the limit order book. The
+The authors are with the School of Electrical and Computer Engineering, Purdue University, West Lafayette, IN, email
+dpalguna,ipollak@purdue.edu, phone 1-765-494-5916, fax 1-765-494-3358.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+Electronic copy available at: http://ssrn.com/abstract=2021182
+2
+order ﬂow is visible to every market participant in real time, with a delay determined by the speed of the
+data connection between the entity maintaining the orders and the market participant.1 A trade happens
+whenever a market order arrives—i.e., an order to buy or sell at the best currently available price. To
+construct a trade, the incoming market order is matched with the best possible entry (or, if necessary,
+multiple entries) of the opposite side of the order book.
+Accurately forecasting the dynamics of the order book is crucial in a variety of application scenarios,
+for example:
+(1) A broker charged with executing a trade. The broker’s ability to forecast the behavior of the order
+book would help him optimize the trade execution schedule—i.e., decide how to partition the total
+number of units to be traded into small amounts, how to time each small order, and how aggressively
+to trade it [1], [2], [3].
+(2) An asset manager contemplating a portfolio rebalancing. A predictor of the order book dynamics
+would help forecast the cost incurred through the price impact of the trades required to perform
+the rebalancing [4], [5], [6].
+(3) An exchange or a regulator charged with maintaining orderly markets. Order book forecasting tools
+would help exchanges and regulators quickly detect the possibility of abnormal events (such as the
+Flash Crash of May 6, 2010 [7], [8]) and take timely measures to prevent such events or to dampen
+their effects.
+The importance of order book forecasting has motivated academic research in modeling the order book
+dynamics, developing the prediction algorithms, and empirically studying the behavior of order books [9].
+In the problem of optimal trade execution, order book dynamics is a critical element for studying the
+price impact of order sizes. Much previous work on optimal execution relies on macro-level modeling
+of the price impact of a trade [10], [11], [12]. The execution algorithms proposed in this literature do
+not model the state or the dynamics of the order book, and hence produce trading decisions that do not
+take into account the order book information.
+A number of more recent papers on optimal execution methods do take the order book information
+into account. In [1], [2], [3], it is assumed that the order book has an underlying simple shape to which
+it returns in the absence of large orders, a property called resilience. While the assumption of order book
+resilience has some grounding in empirical observations [13], [14], the assumption of a single steady-state
+shape is not supported by empirical studies and appears to be too strong and too simplistic to enable
+1We do not consider here hidden or partially hidden orders which are allowed by some markets.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+Electronic copy available at: http://ssrn.com/abstract=2021182
+3
+accurate modeling of price and size dynamics in practice.
+Other recent contributions model order arrivals as marked point processes [15], [4], [16], [17]. These
+models are used to estimate the price impact of trades to help in making order placement decisions.
+Such marked point process models have also been used to formulate optimal order execution and market
+making strategies, which have been explored in [18], [19]. Due to the high dimensionality of limit order
+books, these methods necessitate reliable estimation of many parameters, which can be a challenge to
+preform.
+Another recent paper [20] uses the order book information in the form of order book imbalance to
+solve an optimal stopping problem for deciding the time to liquidate a single share. It uses historical
+order book data to compare with a benchmark that is very similar to the uniform benchmark used in our
+work.
+In the present paper, we propose a novel non-parametric approach to short-term forecasting of the
+mid-price change (i.e., the change in the average of the best offer and the best bid prices). We introduce
+a state vector describing the state of the order book at each time, similar to the state used in [16]. The
+state vector can assume a ﬁnite number of discrete values. We construct a distance metric to characterize
+the similarity of any two states, and develop a clustering algorithm to group similar states into clusters.
+The purpose of clustering is to reduce the number of parameters that our prediction algorithm will need
+to estimate from the data.
+We compute two features for each state cluster, as well as a feature that does not depend on the
+state. The features get updated during the course of a trading day, as new order ﬂow information arrives.
+We propose two predictors based on the feature values. The ﬁrst algorithm predicts whether or not the
+mid-price will change a ﬁxed amount of time in the future. The second algorithm predicts whether the
+mid-price change will be positive or negative.
+In order to evaluate our predictors, we incorporate them into an order execution strategy. Through
+simulations on a set of liquid US stocks from NYSE’s OpenBook dataset, we show that our predictors
+result in a statistically signiﬁcant average gain around three basis points.
+The distinction of our approach from the previous ones is that it does not impose a restrictive parametric
+model. Implicit assumptions of our method are very mild. The ﬁrst assumption is that the order ﬂow
+is not temporally independent, and this assumption is supported by our experiments on real data. The
+second assumption is that the order ﬂow is temporally Markov, with a small state dimension. While this
+assumption is unrealistic, our experiments show that it leads to promising empirical results. The third
+assumption is that mid-price changes are approximately stationary and ergodic over short time intervals.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+4
+In our experiments, we use time windows of up to one trading day; however, if it is believed that markets
+are changing more rapidly, our computations can be performed over shorter windows.
+We start our exposition in Section II by introducing some terminology. Section III describes our
+prediction algorithms. In Section IV, we take a simple order execution strategy and describe how to
+improve it using our predictors. Section V presents simulations of the strategy, with and without our
+predictors, using real data from NYSE’s OpenBook.
+II. TERMINOLOGY
+A limit order is an order to buy or sell a desired number of units of an asset at a desired price. The
+order book at any time t is the collection of all outstanding limit orders at all prices at that time. The
+highest price among all the buy limit orders at time t is called the best bid price at time t. The lowest
+price among all the sell limit orders at time t is called the best ask price or best offer price at time t.
+The difference between the best ask and the best bid prices is called the bid-ask spread. The average of
+the best ask and the best bid is called the mid-price. We denote this quantity V (t).
+A market order is an order to buy or sell a desired number of units of an asset at the best currently
+available price. When a buy market order comes in, it gets executed against the current limit orders at
+the best ask price. If there are not enough units offered by the sellers at the best ask price to ﬁll the
+entire market order, the remainder of the market order gets executed at the next best price, etc, until the
+entire market order is executed. In the same way, incoming sell market orders get executed against the
+bid side of the order book.
+We assume that only three kinds of events can change the conﬁguration of an order book: limit orders,
+limit order cancellations, and market orders. Figs. 1 and 2 illustrate the order book and its changes in
+response to incoming orders.
+III. PREDICTING ORDER BOOK EVOLUTION
+A. States
+We describe the state of the order book at time t with a three-dimensional vector S(t) whose entries
+are:
+S1(t) =
+j
+Number of shares at the best bid price at time t
+100
+k
+;
+S2(t) =
+j
+Number of shares at the best ask price at time t
+100
+k
+;
+S3(t) = the bid-ask spread (in cents) at time t.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+5
+500
+5000
+500
+2000
+3000
+Bid Side
+100
+100
+1000
+200
+5000
+Bid Side
+200
+1000
+100
+100
+11.73
+11.74
+11.76
+11.77
+11.77
+11.76
+11.74
+11.73
+Ask Side
+Ask Side
+per share
+shares at $11.77
+Offer to sell 100
+Bid to buy 5000
+shares at
+$11.73 per
+share
+A market order to sell
+1000 shares
+Fig. 1.
+Incoming market order
+500
+5000
+500
+Bid Side
+100
+5000
+Bid Side
+200
+100
+3000
+Limit order to buy 600
+100
+1000
+3000
+11.73
+11.74
+11.76
+11.77
+11.73
+11.74
+11.76
+11.77
+600
+shares at $11.74
+200
+1000
+100
+Ask Side
+Ask Side
+Fig. 2.
+Incoming limit order
+These states are similar to those used in [16]; however, in [16] it is assumed that all orders have equal
+sizes whereas we do not make this assumption and use shares instead of orders. We denote V (t) the
+mid-price at time t, and let
+D(t, δ) = V (t + δ) −V (t)
+be the price change between time t and time t + δ. In our data set, every price is an integer number of
+cents. Therefore, the mid-prices and their changes are integer multiples of 0.5 cents. We assume that the
+price changes D(t, δ) are temporally stationary over our estimation windows (up to one trading day),
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+6
+in particular, that the marginal distribution of D(t, δ) does not depend on t and that the conditional
+distribution of D(t, δ) given the state S(t) does not depend on t.
+B. The need for reducing the number of states
+Our plan for mid-price prediction at time t is to use recently observed order book data to empirically
+estimate certain conditional expectations given the state vector S(t), and then to use these estimates for
+nonparametric prediction. In order for the empirical estimates of conditional expectations to be reliable,
+there would need to be many occurrences of the state S(t) in recent order book data. On the other hand,
+note that bid-ask spreads can range from one cent for highly liquid stocks to many dollars for illiquid
+ones. The number of shares at the best bid and best ask can be in the tens of thousands. Therefore, the
+number of possible values for the state vector S(t) as deﬁned in the previous subsection, is on the order
+of 106. During a typical day’s trading for a particular stock, most of these states will either not occur at
+all or occur very infrequently. This would make it meaningless to condition on such states.
+To circumvent this problem, we group states into clusters, and condition our estimates on clusters
+instead of individual states. The main purpose of clustering is to insure that each cluster has many states
+that occurred in recently observed order book data. We deﬁne a similarity criterion for states and present
+our clustering algorithm in the next two subsections.
+C. Similarity criterion for states
+For state S = {S1, S2, S3}, we deﬁne order imbalance as S1−S2. If two states S and R have the same
+sign of the order imbalance, we deﬁne the distance between them to simply be the Euclidean distance
+between S and R. Otherwise, we deﬁne the distance between S and R to be inﬁnite:
+d(S, R) =
+
+
+
+
+
+dE(S, R)
+if sgn(S1 −S2) = sgn(R1 −R2),
+∞
+otherwise,
+where dE is the Euclidean distance between the states.
+D. Clustering via iterative merging
+Suppose we have a sequence A of states computed from historical data. We compute the empirical
+probability of occurrence of state S as the number of occurrences of S in A divided by the size of A.
+We let the number of distinct states in A be K. We denote the states themselves by S1, . . . , SK, and
+their respective probabilities by P1, . . . , PK.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+7
+A cluster is a set of states. We use Ωi to denote the ith cluster. The center yi of the ith cluster is
+deﬁned as the centroid of the elements of Ωi. The empirical probability of the ith cluster, PΩi, is equal
+to the sum of empirical probabilities of its elements. The distance between any two clusters is equal to
+the distance between their centers.
+At the initialization step of the algorithm that we call PERFORMCLUSTERING, we assign each state
+to a distinct cluster so that each cluster is a singleton set. Hence, at this step, the center of every cluster
+is the single state itself and there are as many clusters as there are states. We then select the cluster
+with the lowest probability and merge it with the cluster closest to it. The center of this merged cluster
+is calculated as the centroid of its elements. The merge process is repeated until each cluster has a
+probability larger than a threshold Pmin which is an input parameter. Fig. 3 uses pseudocode to describe
+this procedure.
+In addition to the off-line clustering accomplished by PERFORMCLUSTERING, we often need to perform
+clustering in an on-line mode, when observations of states arrive one by one. In this situation, it could be
+costly to call PERFORMCLUSTERING every time a new state is encountered, especially if the threshold
+Pmin is large. We therefore construct another routine, called UPDATECLUSTERS, that adds a newly
+encountered state to the closest existing cluster without redoing the entire clustering procedure. The
+procedure UPDATECLUSTERS takes as input a newly encountered state S, the number of clusters N, and
+the set of all clusters {Ω1, . . . , ΩN}. It outputs the set of all clusters after the update. Fig. 4 presents the
+pseudocode for this procedure.
+E. Features
+For any cluster of states Ωand any time interval δ, we deﬁne two features:
+• The conditional probability of non-zero mid-price change,
+P[D(t, δ)̸ = 0|S(t) ∈Ω]
+(1)
+• The conditional expectation of the mid-price change
+E[D(t, δ)|S(t) ∈Ω]
+(2)
+We in addition use the unconditional expected mid-price change which does not depend on the state:
+E[D(t, δ)]
+(3)
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+8
+function [N, Ω1, . . . , ΩN, PΩ1, . . . , PΩN ] ←PERFORMCLUSTERING(K, S1, . . . , SK, P1, . . . , PK, Pmin)
+%Inputs: Number of states K; states S1 to SK; state probabilities P1 to PK; threshold Pmin.
+%Outputs: Number of clusters N; clusters Ω1 to ΩN; cluster probabilities PΩ1 to PΩN .
+for (k = 1; k ≤K; k + +) do
+% Iterate over all states.
+Ωk ←{Sk}
+% Initialize clusters.
+yk ←Sk
+% Initialize cluster centroids.
+PΩk ←Pk
+% Initialize cluster probabilities.
+end for
+N ←K
+% Initialize the number of clusters, N.
+i ←arg min
+j
+(PΩj)
+% Select the lowest-probability cluster.
+while (PΩi < Pmin) do
+% Loop until all cluster probabilities are at least Pmin.
+k ←arg min
+j
+(d(yi, yj))
+% Find the cluster closest to the lowest-probability cluster.
+Ωk ←Ωi ∪Ωk
+% Merge clusters.
+PΩk ←PΩi + PΩk
+% Compute the probability of the newly formed cluster.
+yk ←
+1
+|Ωk|
+X
+S∈Ωk
+S
+% Compute the centroid of the newly formed cluster.
+remove Ωi from the cluster list
+N ←N −1
+% Update the number of clusters.
+i ←arg min
+j
+(PΩj)
+% Select the lowest probability cluster.
+end while
+end function
+Fig. 3.
+Pseudocode for clustering state vectors.
+function [Ω1, . . . , ΩN] ←UPDATECLUSTERS(S, N, Ω1, . . . , ΩN)
+%Inputs: New state S; number of clusters N; clusters Ω1 to ΩN.
+%Outputs: Updated clusters Ω1 to ΩN.
+for (n = 1; n ≤N; n + +) do
+% Iterate over all clusters.
+yn ←
+1
+|Ωn|
+X
+s∈Ωn
+s
+% Compute centroids.
+end for
+k ←arg min
+j
+(d(yj, S))
+% Find the cluster closest to S.
+Ωk ←{S} ∪Ωk
+% Add the state to the cluster.
+end function
+Fig. 4.
+Pseudocode for the routine that performs online cluster update on encountering a new state.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+9
+F. Estimating features from data
+We assume ergodicity and empirically estimate these features as temporal averages. Our temporal
+discretization step is ∆t = 1ms. We compute all our empirical estimates within a single trading day, and
+set t = 0 at the beginning of the trading day. We assume that δ in Eqs. (1,2) contains an integer number
+of discretization steps. Let Ωbe a cluster of states. At any time t = N∆t during the trading day, we
+deﬁne
+#{S(τ)∈Ω}[0, t]
+to be the number of occurrences of the event S(τ) ∈Ωamong the times τ = 0, ∆t, 2∆t, . . . , t −δ. We
+similarly deﬁne
+#{S(τ)∈Ωand D(τ,δ)̸=0}[0, t]
+to be the number of occurrences of both {S(τ) ∈Ω} and {D(τ, δ)̸ = 0} among the times τ =
+0, ∆t, 2∆t, . . . , t −δ. We estimate the conditional probability in Eq. (1) as the ratio
+#{S(τ)∈Ωand D(τ,δ)̸=0}[0, t]
+#{S(τ)∈Ω}[0, t]
+We estimate the conditional expectation in Eq. (2) as
+X
+τ:S(τ)∈Ω
+D(τ, δ)
+#{S(τ)∈Ω}[0, t] ,
+where the summation in the numerator is performed over all the times τ = 0, ∆t, 2∆t, . . . , t −δ when
+event S(τ) ∈Ωoccurs.
+The unconditional expected mid-price change of Eq. (3) is estimated at any time t = N∆t as the
+following sample mean:
+
+∆t
+t −δ + ∆t
+
+X
+τ=0,∆t,2∆t,...,t−δ
+D(τ, δ).
+G. Prediction of the mid-price change
+We propose two hypothesis testing algorithms: one for predicting whether the mid-price will change
+a ﬁxed amount of time into the future, and the second one to predict whether the mid-price change is
+positive or negative.
+At time t, we cluster the state vectors that occurred during the interval [0, t). We compute the state
+S(t), identify the cluster Ωto which S(t) belongs, and estimate the three features of Eqs. (1,2,3) over the
+interval [0, t], as described above. Our ﬁrst algorithm solves a binary hypothesis testing problem where
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+10
+the null hypothesis is that the mid-price change is zero and the alternative hypothesis is that the mid-price
+change is nonzero. Our algorithm selects the alternative hypothesis of a nonzero mid-price change if both
+the following conditions hold:
+• the estimated conditional mid-price change probability (1) is above a threshold θ, and
+• the absolute value of the estimated conditional expected mid-price change (2) is larger than the
+absolute value of the estimated unconditional expected mid-price change (3).
+If either one of these conditions does not hold, the algorithm selects the null hypothesis of zero mid-price
+change. We call this algorithm the change detection algorithm.
+The second algorithm predicts the sign of the mid-price change as the sign of the estimated conditional
+expected mid-price change E[D(t, δ)|S(t) ∈Ω] from Eq. (2). We call this algorithm the sign prediction
+algorithm.
+IV. ORDER EXECUTION STRATEGY
+To evaluate our predictors, we incorporate them into an order execution strategy for buying M shares
+of a stock over a given time interval (Niδ, Nfδ], where M, Ni, and Nf are given positive integers with
+Nf > Ni. The objective of such a strategy is to obtain a low average price per share. In other words,
+strategy A is better than strategy B if A can be demonstrated to achieve a smaller average purchase price
+per share than B.
+Note that sending the entire purchase order at once is likely to adversely affect the price. Therefore,
+it is typically better to partition the order into smaller orders and send them gradually during the alloted
+time period. Many strategies for doing this have been proposed that do not attempt to use the prediction
+of price changes [21], [20]. If one has the ability to predict price changes, then it is natural to expect
+that any such execution strategy can be improved by incorporating the predictions into it. If, on the other
+hand, our predictors do not work (i.e., if their output is independent of the price moves that actually
+occur), then they would not enable improved execution.
+In order to demonstrate that our predictors do work, we show in Section V that they produce a
+statistically signiﬁcant improvement of a simple execution strategy. In the present section, we describe
+this strategy and our modiﬁcation.
+Our benchmark is a uniform execution strategy2 which uses market orders of size M/(Nf −Ni) at
+times t = (Ni + 1)δ, (Ni + 2)δ, . . . , (Nf)δ.
+2In the literature, such strategies are sometimes called TWAP, for time-weighted average price. This is because the average
+price paid by this strategy is approximately equal to the average price of the security during (Niδ, Nfδ].
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+11
+We propose a modiﬁcation of this strategy that makes use of our predictors. Speciﬁcally, if at time t
+we believe that the price will go up soon, we buy more than suggested by the uniform strategy. If at time
+t we believe that the price will go down in the near future, we buy less than suggested by the uniform
+strategy. We simply follow the uniform strategy if zero change is predicted. We use parameter π ∈[0, 1]
+to indicate by how much we accelerate or decelerate buying in response to our predictions. The value
+π = 1 means a 100% increase in the number of shares in response to an upward change prediction and a
+100% reduction in the number of shares in response to a downward change prediction. The value π = 0
+corresponds to the uniform strategy.
+To precisely describe our strategy, we let Mt be the number of shares still to be bought just before
+time t. At each time t = (Ni + 1)δ, (Ni + 2)δ, . . . , (Nf)δ, we apply our prediction algorithm and use
+market orders to buy the following number of shares:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+min
+
+Mt,
+M
+Nf −Ni
+
+if the price is predicted to stay the same,
+min
+
+Mt, M(1 + π)
+Nf −Ni
+
+if the price is predicted to go up,
+min
+
+Mt, M(1 −π)
+Nf −Ni
+
+if the price is predicted to go down.
+Our strategy depends on the following parameters:
+• Probability threshold Pmin used by the state clustering algorithm of Section III-D.
+• Prediction time interval δ used by the predictors, Sections III-E through III-G.
+• Discretization time step ∆t, Section III-F.
+• Mid-price change threshold θ used by the predictors, Section III-G.
+• Trade acceleration-deceleration parameter π explained just above.
+V. PERFORMANCE OF THE ALGORITHMS
+We use order book data from NYSE OpenBook for June 30, 2010 which is available from NYSE’s
+website. This data set provides the complete order series from which limit order books can be constructed
+for all securities traded on the NYSE. In this data set, stocks are divided into channels that are arranged
+in alphabetical order.
+For our order execution strategy to buy M shares, we use the following quantity to measure the
+execution cost improvement relative to the uniform strategy:
+Cost of uniform execution−Cost of our strategy
+Cost of uniform execution
+(4)
+Note that positive values of this quantity correspond to our strategy outperforming the uniform strategy.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+12
+A. Order execution experiments
+One important issue in simulating execution strategies with order book data is that it is not possible
+to replicate permanent market impact with historical data. This is because future data points, which are
+made up of public orders, cannot respond to simulated orders. In our experiments with market orders, we
+execute a market order at time t as if it will get executed when the order book is in the historical state
+at time t. But we do not modify the order book since there is no way of simulating permanent market
+impact. We now explain the simulation procedure and how the simulation parameters are chosen.
+The stock universe consists of 100 liquid3 stocks as measured over the period June 1 to June 29, 2010.
+We perform simulations by collecting features during June 30, 2010 starting at 9:30am and execute M
+shares between 3 pm and 4 pm. In a real application scenario, a client would send an order to a broker
+and specify M. Therefore, the broker who runs the execution algorithm would not have any control over
+M. It is widely understood that if M is a signiﬁcant fraction of the market volume, then executing such a
+large order might have an adverse impact on the execution price. Therefore, clients are typically reluctant
+to request values of M that correspond to large fractions of the market volume. We assume here that M
+is 1% of the average hourly volume, which corresponds to a realistic trade execution scenario.
+We ﬁx δ = 1 second, π = 1, and conduct experiments with threshold values θ = 0, 0.1, and 0.5, and
+with minimum cluster probability values Pmin = 0 and 0.0001.
+In order to ﬁnd out whether our results are statistically signiﬁcant, we compute the standard errors,
+ˆη, for the average relative improvement of our strategy’s execution cost. Speciﬁcally, suppose that we
+simulate both the uniform strategy and our execution strategy with some ﬁxed values of the parameters,
+on S stocks, to produce the following relative execution cost improvement values (calculated through
+Eq. (4)): R1, R2, · · · , RS. We estimate the mean relative cost improvement and the standard deviation of
+relative cost improvement using the sample mean ˆµ and the sample standard deviation ˆσ, respectively.
+We assume that R1, R2, · · · , RS are uncorrelated across stocks and have a common standard deviation.
+Then the standard error (i.e., the standard deviation of the sample mean) can be estimated as
+ˆσ
+√
+S .
+We tabulate these results in Table I with the columns denoting different settings of (θ, Pmin). This table
+provides substantial evidence that our strategy’s outperformance of the uniform strategy is statistically
+signiﬁcant. This is because the mean relative cost improvement is at least 1.5 standard deviations above
+zero in all six experiments; and in three out of the six experiments, it is more than three standard
+3Liquidity in our work is deﬁned as the average share volume, averaged over June 1 to June 29, 2010. We pick 100 stocks
+with the highest average trade volume over this interval.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+13
+deviations above zero. The improvements are economically signiﬁcant as well. For example, for three
+out of the six parameter settings, the improvements are between 2.5 and 3.5 basis points. For a company
+that needs to trade $100 million worth of shares every day, a three-basis-point improvement in the trading
+costs would translate to annual savings of $7.5 million (assuming 250 trading days per year).
+TABLE I
+SAMPLE MEAN, SAMPLE STANDARD DEVIATION, AND STANDARD ERRORS OF RELATIVE EXECUTION COST IMPROVEMENTS
+FOR S = 100 LIQUID STOCKS. COLUMNS CORRESPOND TO ORDERED PAIRS OF (THRESHOLD θ, MINIMUM CLUSTER
+PROBABILITY Pmin).
+(0.5,0)
+(0.1,0)
+(0,0)
+(0.5,0.0001)
+(0.1,0.0001)
+(0,0.0001)
+Mean improvement ˆµ
+1.08 × 10−5
+0.00018
+0.00029
+3.15 × 10−5
+0.00025
+0.00035
+Sample standard deviation ˆσ
+6.9 × 10−5
+0.00049
+0.0011
+0.00013
+0.00055
+0.0011
+Standard error ˆη =
+ˆσ
+√
+S
+6.9 × 10−6
+0.000049
+0.00011
+1.3 × 10−5
+5.5 × 10−5
+0.00011
+ˆµ
+ˆη
+1.57
+3.67
+2.63
+2.42
+4.45
+3.18
+VI. CONCLUSIONS
+We have presented an algorithm for predicting mid-price changes in limit order books using features
+that are estimated for different order book states. In order to reliably estimate the features that our
+algorithm requires, we have also introduced an algorithm to cluster similar states. Incorporating these
+two algorithms into an execution strategy that uses market orders alone shows statistically signiﬁcant
+performance improvements over a benchmark that does not take the predictions into account. The average
+improvement in performance is economically signiﬁcant in the context of institutional investors.
+REFERENCES
+[1] A. Obizhaeva and J. Wang, “Optimal trading strategy and supply/demand dynamics,” working paper, 2006.
+[2] A. Alfonsi, A. Fruth, and A. Schied, “Optimal execution strategies in limit order books with general shape functions,”
+Quantitative Finance, vol. 10, no. 2, pp. 143–157, June 2010.
+[3] S. Predoiu, G. Shaikhet, and S. Shreve, “Optimal execution in a general one-sided limit order book,” SIAM Journal on
+Financial Mathematics, vol. 2, pp. 183–212, March 2011.
+[4] E. Smith, J. D. Farmer, L. Gillemot, and S. Krishnamurthy,
+“Statistical theory of the continuous double auction,”
+Quantitative Finance, vol. 3, no. 6, pp. 481–514, 2003.
+[5] M. Potters and J.-P. Bouchaud, “More statistical properties of order books and price impact,” Physica A, vol. 324, no.
+1–2, pp. 133–140, June 2003.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182
+
+14
+[6] R. Cont, A. Kukanov, and S. Stoikov, “The price impact of order book events,” Working paper, available at SSRN:
+http://ssrn.com/abstract=1712822, March 1 2011.
+[7] A. A. Kirilenko, A. S. Kyle, M. Samadi, and T. Tuzun, “The ﬂash crash: The impact of high frequency trading on an
+electronic market,” Working paper, available at SSRN: http://ssrn.com/abstract=1686004, May 26, 2011.
+[8] D. Easley, M. M. Lopez de Prado, and M. O’Hara, “The microstructure of the ’ﬂash crash’: Flow toxicity, liquidity crashes
+and the probability of informed trading,” The Journal of Portfolio Management, vol. 37, no. 2, pp. 118–128, Winter 2011.
+[9] R. Cont, “Statistical modeling of high frequency ﬁnancial data: Facts, models and challenges,” IEEE Signal Processing
+Magazine, vol. 28, no. 5, pp. 16–25, September 2011.
+[10] D. Bertsimas and A. W. Lo, “Optimal control of execution costs,” Journal of Financial Markets, vol. 1, pp. 1–50, 1998.
+[11] R. Almgren and N. Chriss, “Optimal execution of portfolio transactions,” Journal of Risk, vol. 3, no. 2, pp. 5–40, 2001.
+[12] R. C. Grinold and R. N. Kahn, Active Portfolio Management: A Quantitative Approach for Providing Superior Returns
+and Controlling Risk, McGraw-Hill, 2nd edition edition, 2000.
+[13] J. Large, “Measuring the resiliency of an electronic limit order book,” Journal of Financial Markets, vol. 10, no. 1, pp.
+1–25, February 2007.
+[14] B. Biais, P. Hillion, and C. Spatt, “An empirical analysis of the limit order book and the order ﬂow in the Paris Bourse,”
+Journal of Finance, vol. 50, no. 5, pp. 1655–1689, December 1995.
+[15] R. F. Engle, “The econometrics of ultra-high frequency data,” Econometrica, vol. 68, no. 1, pp. 1–22, January 2000.
+[16] R. Cont, S. Stoikov, and R. Talreja, “A stochastic model for order book dynamics,” Operations Research, vol. 58, no. 3,
+pp. 549–563, May–June 2010.
+[17] R. Cont and A. Larrard, “Price dynamics in a markovian limit order market,” February 2012, Working paper, available
+at SSRN: http://ssrn.com/abstract=1735338.
+[18] E. Bayraktar and M. Ludkovski, “Liquidation in limit order books with controlled intensity,” January 2012, Working
+paper, available at arXiv: http://arxiv.org/abs/1105.0247.
+[19] F. Guilbaud and H. Pham, “Optimal high-frequency trading with limit and market orders,” Quantitative Finance, pp. 1–16,
+August 2012.
+[20] S. Stoikov and R. Waeber, “Optimal asset liquidation using limit order book information,” September 2012, Working
+paper, available at SSRN: http://ssrn.com/abstract=2113827.
+[21] R. Cesari, M. Marzo, and P. Zagaglia,
+“Effective trade execution,”
+June 2012,
+Working paper, available at SSRN:
+http://ssrn.com/abstract=2088800.
+January 14, 2013
+DRAFT
+Electronic copy available at: https://ssrn.com/abstract=2021182

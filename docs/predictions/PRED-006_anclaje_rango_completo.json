@@ -1,0 +1,39 @@
+{
+  "id": "PRED-006",
+  "titulo": "El ancla se equivoca porque juzga unicidad con el rango de busqueda TRUNCADO, no porque el OHLCV sea mal criterio",
+  "fecha_registro": "2026-08-09T00:40:00-03:00",
+  "estado": "PREREGISTRADA_ANTES_DE_TOCAR_CODIGO",
+  "autoriza": "Nico, en chat",
+  "clasificacion_previa": "hecha y medida; ver docs/research/PRED-006_DIAGNOSTICO_K50.md",
+
+  "causa_clasificada": {
+    "hecho_1_barras_correctas": "el OHLCV de las barras de NT8 coincide con bars.build_tick_bars(50) en 790/790 barras con mismatch. El constructor de barras NO es la causa.",
+    "hecho_2_firma_no_inyectiva": "la barra 1 en K=50 es MONOTONA descendente (open=high=23296, close=low=23292) y tiene precio repetido en los dos bordes con volumenes iguales (px[49]==px[50], px[98]==px[99], vol[49]==vol[99]). Las ventanas [49,99) y [50,100) producen OHLCV IDENTICO: o=23296 h=23296 l=23292 c=23292 vol=215. En K=10,15,25,100 la barra 1 tiene exactamente UN offset que la reproduce.",
+    "hecho_3_rango_truncado": "BigTrap2.cs:430 `int tope = Math.Min(maxOff, disp - largo)` trunca el rango por lo que hay en buffer, y :441 solo espera mas stream cuando `hallados == 0`. Con `hallados == 1` y rango corto, ancla igual.",
+    "hecho_4_cadena_causal": "ANCLAJE_VERIFICADO en bar=1 con offset=0 (las cuatro resoluciones que pasan eligieron offset>=1: 5, 1, 1, 1). Los 790 mismatches caen en barras 2..1285, y el re-ancla ocurre en bar=1286: el tramo de mismatch es EXACTAMENTE [ancla mala, re-ancla). Cero mismatches fuera.",
+    "conclusion": "con el rango completo habria encontrado hallados==2 y se habria ABSTENIDO, que es el comportamiento correcto. Anclo corrido un evento porque 'unico' significo 'unico entre los offsets que alcance a probar'."
+  },
+
+  "implicacion_que_califica_a_PRED-004": "el defecto es LATENTE en todas las resoluciones. Que 10, 15, 25 y 100 hayan pasado depende de que su barra de anclaje no tuviera firma degenerada Y de cuantos eventos hubiera bufereados en ese instante -batching de NT8, no una propiedad de K-. El PASS de PRED-004 es real para esa ventana pero NO esta garantizado estructuralmente.",
+
+  "cambio_permitido": "solo el bloque de anclaje de DrenarPorOHLCV y el payload de sus eventos de diagnostico. Nada de deteccion economica, nada del camino de tiempo, nada del kernel Python.",
+
+  "diseno_del_fix": {
+    "regla": "el rango de busqueda debe estar COMPLETO antes de juzgar unicidad. Si `tope < maxOff` y todavia puede llegar stream (`pendCutAt < 0`), se ESPERA. Si no puede llegar mas -la sesion cierra- se ABSTIENE: la unicidad es inverificable y no se adivina.",
+    "por_que_no_se_cambia_el_criterio_OHLCV": "el criterio no fallo: fallo la ventana de busqueda sobre la que se lo evaluo. Con rango completo, la colision de K=50 se DETECTA (2 candidatos) y dispara abstencion. Cambiar el criterio -por ejemplo agregar el timestamp del primer evento- seria arreglar lo que no estaba roto y perder la propiedad de que el ancla se verifica contra el snapshot.",
+    "observabilidad": "ANCLAJE_VERIFICADO y ANCLAJE_AMBIGUO pasan a publicar `disp`, `tope` y `maxOff`. Esta vez la truncacion hubo que INFERIRLA; con esos campos se mide."
+  },
+
+  "predicciones": [
+    {"id":"R1","medida":"FOOTPRINT_MISMATCH K=50 con el fix","esperado":"<=1%","refuta_si":">1%"},
+    {"id":"R2","medida":"anclaje en K=50","esperado":"offset correcto con rango completo, O ANCLAJE_AMBIGUO por los 2 candidatos","refuta_si":"ancla con tope<maxOff"},
+    {"id":"R3","medida":"K=10,15,25,100 con el fix","esperado":"siguen en 0.0000%","refuta_si":"cualquier regresion"},
+    {"id":"R4","medida":"time:1 con el fix","esperado":"identidad economica con la captura v2.4 (2282 eventos)","refuta_si":"cualquier diferencia economica"},
+    {"id":"R5","medida":"campos disp/tope/maxOff en los eventos de anclaje","esperado":"presentes en las cinco resoluciones","refuta_si":"ausentes -- la truncacion volveria a ser inobservable"}
+  ],
+
+  "que_pasa_si_K50_ABSTIENE": "es un resultado ACEPTABLE, no un fallo. Abstenerse ante una firma ambigua es el comportamiento correcto; produce menos zonas, no zonas equivocadas. Si K=50 abstiene sistematicamente, la grilla de §2-ter se recorta por una razon MEDIDA y declarada, no por un defecto silencioso.",
+
+  "orden_de_ejecucion": ["gate de compilacion con control negativo", "suite", "time:1 (R4)", "K=50 (R1,R2)", "K=10,15,25,100 (R3)"],
+  "outcomes_accessed": false
+}

@@ -1,0 +1,38 @@
+{
+  "id": "PRED-005",
+  "titulo": "La atribucion BIP1->barra es general en TODA la grilla de §2-ter, no solo en K=25 y K=10",
+  "fecha_registro": "2026-08-08T23:30:00-03:00",
+  "estado": "PREREGISTRADA_ANTES_DE_CAPTURAR",
+  "autoriza": "Nico -- 'avancemos con el barrido de resolucion, 50 ticks incluido'",
+  "naturaleza": "extension outcome-free de PRED-004. NO es parte de su preregistro original: se declara como prediccion propia, con el mismo criterio y el mismo instrumento.",
+  "por_que": "PRED-004 quedo CONFIRMADA con 0.0000% en K=25 y K=10, pero su cierre declara el limite: 'Solo K=25 y K=10. El barrido de §2-ter (10,15,25,50,100) NO esta cubierto. Que el fix sea general en dos resoluciones es fuerte, no concluyente para las otras tres.' Esta prediccion cierra esa brecha ANTES de que el barrido economico se apoye en ella.",
+  "evidencia_ya_vista": {
+    "pred004": "CONFIRMADA: K25=0.0000% sobre 12.397 barras, K10=0.0000% sobre 30.992",
+    "pred003": "REFUTADA: K25=3.91%, K10=81.78%",
+    "python_bar_builder": "build_tick_bars exacto en las cinco resoluciones sobre la ventana: 10.00/15.00/25.00/49.98/99.95 ticks por barra"
+  },
+  "cambio_permitido": "ninguno. No se toca codigo. Solo se capturan y se miden las tres resoluciones que faltan.",
+  "muestra": {
+    "instrumento": "6E 09-26",
+    "ventana": "End date 18/06/2026, Days to load 5 (2026-06-14..06-18)",
+    "por_que_esa": "pre-holdout, cuatro dias APTO ya vetados en PEDIDOS_NT8_2026-07-27, y la MISMA que uso PRED-004: si cambia la ventana, una diferencia entre resoluciones seria inatribuible",
+    "parametros": "defaults, Maximum bars look back 256 -- identicos a P1/P2",
+    "cs": "BigTrap2.cs v2.4 sha256 9b63959a62f08860a8114809078d53f16c60a0af8e8c7a743317fb68398258e3"
+  },
+  "predicciones": [
+    {"id":"Q1","medida":"FOOTPRINT_MISMATCH K=15","esperado":"<=1% sobre barras procesadas","refuta_si":">1%"},
+    {"id":"Q2","medida":"FOOTPRINT_MISMATCH K=50","esperado":"<=1% con el mismo codigo","refuta_si":">1%"},
+    {"id":"Q3","medida":"FOOTPRINT_MISMATCH K=100","esperado":"<=1% con el mismo codigo","refuta_si":">1%"},
+    {"id":"Q4","medida":"OHLCV del bloque atribuido (P3) en las tres","esperado":"100% en barras procesadas","refuta_si":"cualquier par procesado sin igualdad"},
+    {"id":"Q5","medida":"ambiguedad de anclaje (P4) en las tres","esperado":"0 barras procesadas cuando candidatos != 1","refuta_si":"seleccion arbitraria"},
+    {"id":"Q6","medida":"BARRA_PROCESADA presente en las tres","esperado":"denominador real, no vacio","refuta_si":"ausente -- seria PASS por construccion, el defecto H2"}
+  ],
+  "que_NO_prueba": [
+    "no es un oraculo de paridad contra el kernel Python: mide la atribucion interna del .cs",
+    "no dice nada sobre expectativa economica: es outcome-free",
+    "una ventana de 4 sesiones no es evidencia sobre el universo de 201"
+  ],
+  "consecuencia_si_falla": "si alguna resolucion supera 1%, la grilla de §2-ter NO puede correrse completa con este .cs. Habria que recortarla ANTES de medir economia y declararlo, nunca despues de ver resultados.",
+  "orden_de_ejecucion": ["K15", "K50", "K100"],
+  "outcomes_accessed": false
+}

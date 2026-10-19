@@ -1,0 +1,94 @@
+{
+  "doc_id": 112,
+  "titulo": "Electricity Markets as a Sabzi Mandi: Market Microstructure Lessons from Indian Power Exchanges",
+  "resumen_operativo": "Ensayo conceptual que mapea la dinámica de los mercados eléctricos indios (IEX, PXIL) a los mercados informales de vegetales (sabzi mandi) usando teoría de market microstructure. Desarrolla cuatro proposiciones: (1) la perecibilidad crea urgencia en el pricing, (2) la asimetría de información reduce eficiencia de bidding, (3) la volatilidad tiene componentes conductuales (herding, anchoring), y (4) los participantes flexibles capturan valor desproporcionado. No contiene backtests ni evidencia empírica cuantitativa; el valor está en el framework analógico para diseño de mercados y estrategia de procurement de utilities.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estudio de los mecanismos de price discovery, bidding y clearing en mercados formales e informales. El paper aplica teoría de microstructure al contraste entre power exchanges indios (DAM, RTM, GDAM) y mercados agrícolas tradicionales.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "price discovery"},
+        {"tipo": "USA", "objeto": "auction theory"}
+      ],
+      "cita_textual": "Drawing on market microstructure theory, auction design literature, and practitioner-informed perspectives on Indian power markets"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso mediante el cual los precios agregan información de oferta y demanda. En el contexto del paper, tanto el sabzi mandi como el power exchange son mecanismos de price discovery que responden a señales de escasez, perecibilidad y calidad.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "limit order book"}
+      ],
+      "cita_textual": "The sabzi mandi, in its most sophisticated form, is not a chaotic bazaar — it is a sophisticated price discovery mechanism"
+    },
+    {
+      "nombre": "information asymmetry",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Acceso desigual a información de mercado (precios en otros exchanges, pronósticos de demanda, datos meteorológicos, congestión de red) que otorga ventaja sistemática a utilities grandes con mejor forecasting frente a DISCOMs pequeños.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "APLICA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "the experienced mandi trader who has built relationships with truckers, mandis in other states, and retail buyers has a decisive advantage"
+    },
+    {
+      "nombre": "auction theory",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Teoría de subastas aplicada al diseño de mercados eléctricos (DAM, RTM, GDAM). El mecanismo de double-sided auction con merit-order clearing se analiza en contraste con el bargaining informal del mandi.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "market microstructure"},
+        {"tipo": "PARTE_DE", "objeto": "price discovery"}
+      ],
+      "cita_textual": "Market clearing in both the DAM and GDAM follows a double-sided auction mechanism"
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "metrica",
+      "definicion_en_contexto": "No mencionado explícitamente, pero el concepto de Market Clearing Price (MCP) en power exchanges es análogo: precio uniforme al que se liquidan todas las transacciones aceptadas en la subasta.",
+      "relaciones": [],
+      "cita_textual": ""
+    },
+    {
+      "nombre": "behavioral finance",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Sesgos conductuales (herding, anchoring) que amplifican la volatilidad en RTM más allá de lo que justifican los fundamentals de oferta-demanda. Un spike en una ventana de clearing puede inducir sobre-bidding en ventanas subsecuentes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "herding behavior is well documented in financial markets and agricultural spot markets alike. Power exchanges are not immune to similar dynamics"
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Agrupamiento de volatilidad en precios de RTM causado parcialmente por comportamiento de los participantes (anclaje a precios recientes) más que por condiciones fundamentales de oferta-demanda.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "behavioral finance"}
+      ],
+      "cita_textual": "A spike in one clearing window — driven, say, by a sudden thermal unit outage — may cause utilities to overbid in the subsequent window even as the outage is resolved"
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "concepto",
+      "definicion_en_contexto": "En el contexto del paper, se refiere a la necesidad de requisitos mínimos de liquidez en RTM para evitar thin-market spikes donde un solo comprador desesperado enfrenta a un vendedor con poder de monopolio bilateral.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "Designing mechanisms to prevent such thin-market spikes — through minimum liquidity requirements or price caps with backstop supply obligations"
+    },
+    {
+      "nombre": "sentiment analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "No usado en el paper, pero el concepto de 'behavioral anchoring' y 'herding' en RTM es análogo a cómo el sentimiento distorsiona expectativas.",
+      "relaciones": [],
+      "cita_textual": ""
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Paper estrictamente conceptual sobre mercados eléctricos indios, sin datos de trading, backtests ni aplicación a mercados financieros. El framework de microstructure conductual podría inspirar análisis de comportamiento de participantes en el libro de ES pero no ofrece herramientas directamente utilizables."
+  }
+}

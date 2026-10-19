@@ -1,0 +1,600 @@
+The Inverted Parabola World of Classical Quantitative Finance:
+Non-Equilibrium and Non-Perturbative Finance Perspective
+Igor Halperin
+NYU Tandon School of Engineering
+e-mail: ighalp@gmail.com
+August 8, 2020
+Abstract:
+Classical quantitative ﬁnance models such as the Geometric Brownian Motion or its later extensions such as local or stochastic volatility models do not make sense when seen from a
+physics-based perspective, as they are all equivalent to a negative mass oscillator with a noise.
+This paper presents an alternative formulation based on insights from physics.
+I would like to thank Peter Carr for critical remarks. All possible errors are my own.
+1
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+1
+Introduction
+The novel ”The Inverted World” by Christopher Priest paints a fascinating image of a world
+where a city called the City of Earth slowly travels on railway tracks across an alien planet.
+The city’s engineers keep laying a fresh track for the city, and pick up the old track as it moves.
+The city must move on to stay within 10 miles of the Optimum - which is a location where the
+gravitational ﬁeld is not distorted, and matches the gravitational ﬁeld of the planet Earth.
+But the world of the novel is not Earth. In this world, the ground is in a constant move
+from the north to the south, as a result of some sort of a global gravitational catastrophe that
+happened at some point in the past. Even as the Optimum stays in the same position, the
+City will drift away from the Optimum if it does not move all the time. If the City of Earth
+ﬁnds itself too far from the Optimum, gravitational distortions become too strong as a result of
+moving grounds and their drift to the south. This is what makes the City crawls to the North
+all the time. If it ever stops, it will eventually be pulled to the South, and destroyed at the
+end by gravitational distortion forces, along with all its citizens. So it has to move forward
+through a devastated land full of hostile tribes. The only alternative to a constant move in such
+an inverted world, where the grounds are moving and the Sun looks like a rotating parabola, is
+death.
+The resolution of the many puzzles and gaps of history of the Inverted World comes only
+towards the end of the book. The City of Earth was crawling the planet of Earth, never leaving
+it. Moving grounds, a parabolic Sun, and other related puzzles of the Inverted World was caused
+by side neurological eﬀects of a UV radiation that was produced by the city’s power generator.
+The generator was based on an alternative energy method that was developed by a founder of
+the city.
+This novel, which I ﬁrst read many years ago, came repeatedly to my mind when I worked
+on a model of asset price dynamic in an open and non-equilibrium market called the Quantum
+Equilibrium-Disequilibrium (QED) model [5]. The QED model generalizes the Geometric Brownian Motion (GBM) model by introducing two additional parameters, along with a non-linear
+extension of a diﬀusion equation driving the dynamics of the model, see also [4]. Surprisingly,
+the QED model suggests that the notions of a market growth and market stability in this model
+and in the GBM model are essentially opposite.
+What was ’equilibrium’ dynamics in the GBM model becomes non-equilibrium dynamics
+from the perspective of the QED model. What was the commonly excepted average exponential
+growth of asset prices becomes a fall from a point of instability towards a point of local stability.
+This sounds much like an Inverted World vs a Normal World, the only question is which one is
+the Inverted World?
+This paper oﬀers a non-technical introduction to the QED model, along with a reasoning
+why it corresponds to a ’Normal World’, while the GBM model, along with its multiple direct
+descendants such as local or stochastic volatility models, describes an ’Inverted World’.
+As
+I will try to argue, assumptions of closed-system dynamics, (quasi-)stationarity and linearity
+made in classical ﬁnancial models do not adequately capture realities of real world ﬁnancial
+markets, and in a sense can be viewed as ‘wrong limits’ of a (yet unknown) ‘right’ theory. Then
+I show how these deﬁciencies are addressed in the QED model that treats markets as open
+and non-linear systems, and does not rely on a linearization of dynamics within a perturbation
+theory to treat non-linearities. Instead, the QED model presents a non-perturbative approach to
+handle non-linearities. This position paper discusses how insights from modern non-equilibrium
+and non-perturbative physics can be fruitfully used for ﬁnancial modeling with non-linear and
+non-equilibrium models such as the QED to better capture the true market dynamics.
+2
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+2
+GBM, Langevin equation, and Inverted Parabola
+2.1
+GBM and the Langevin equation
+Since the groundbreaking work of Samuelson in 1965 [11], Geometric Brownian Motion (GBM)
+model, also known as the the log-normal asset return model,
+dXt = µXtdt + σXtdWt
+(1)
+remains the main work-horse of ﬁnancial engineering. In Eq.(1), Xt is an asset price at time t,
+µ is the stock drift, σ is the stock volatility, and Wt is a standard Brownian motion. For what
+follows, we can view the GBM model as a special linear case of a more general model called It´o’s
+diﬀusion
+dXt = µ(Xt)dt + σ(Xt)dWt
+(2)
+with a linear drift function µ(Xt) = µXt and a multiplicative (i.e. proportional to Xt) diﬀusion
+function σ(Xt) = σXt. Samuelson proposed the GBM model (1) as an improvement over an
+Arithmetic Brownian Motion (ABM) model suggested by Bachelier in 1900 [1]. His objective
+was to modify the ABM model to ensure non-negativity of stock prices. Note that the ABM
+model itself can be viewed as a model with a constant drift and volatility terms.
+A few years after Bachelier published his 1900 thesis that gave birth to the ABM model,
+Paul Langevin proposed in 1908 an equation that later became known as the Langevin equation.
+Langevin’s work focused on a simpliﬁed analysis of overdamped Brownian particles within the
+Einstein-Smoluchovski theory of classical diﬀusion in the presence of an external potential ﬁeld
+U(X). Such a ﬁeld can represent an impact of heavy molecules, a external gravitational or
+electromagnetic ﬁeld, etc. [8]. The Langevin equation can be written in similar terms to It´o’s
+diﬀusion (2), except that in the Langevin dynamics, a drift term is given by the negative gradient
+of the potential U(X). The (overdamped) Langevin equation with a multiplicative noise reads
+dXt = −∂U(Xt)
+∂Xt
+dt + σXtdWt
+(3)
+Therefore, the Langevin equation that is rooted in physics provides an interpretation to the drift
+term µ(Xt) in the mathematical construction of It´o’s diﬀusion (2): any drift function µ(Xt) can
+be viewed as a negative gradient of a potential U(Xt) in the equivalent Langevin dynamics (3).
+In particular, when the potential U(Xt) has a minimum, the Langevin equation describes a
+stochastic relaxation towards this minimum, where the gradient of the potential vanishes.
+While this observation applies to any drift function µ(Xt) in Eq.(2), it is of particular interest
+to explore its consequences for the GBM model (1). Comparing Eqs.(3) and (1), we observe
+that the GBM model corresponds to a special case of a more general Langevin equation for the
+following choice of the force potential U(X):
+UGBM(X) = −µ
+2 X2
+(4)
+When the drift µ is positive, this is the potential of an inverted harmonic oscillator with ’mass’
+µ! Such a potential has a maximum at X = 0 and no minimum, see Fig. 1. From elementary
+physics, a classical motion in such potential describes an unstable system.1
+1A similar analysis can be performed by changing to log-prices yt := log Xt. When expressed in terms of logprices yt, the noise term becomes additive, while the y-space potential is V (y) = −
+
+µ −σ2
+2
+
+y. When µ > σ2
+2 ,
+this potential corresponding to a uniform force pushing the particle away from the negative inﬁnity y = −∞
+corresponding to a ﬁnancial distress or a bankruptcy. On the other hand, taking µ < σ2
+2 would produce a linear
+attraction to y = −∞and defaults (bankruptcies) happening too fast.
+3
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+Figure 1: The classical potential U(x) corresponding to the GBM model with µ > 0. Red dots
+correspond to a “particle” representing the ﬁrm, coordinate Xt being the ﬁrm’s stock price.
+This is the potential of a harmonic oscillator with a negative mass. Such a system is globally
+unstable, and the default state Xt = 0 is unreachable as the force of the negative gradient of
+the potential pushes the particle away from the default boundary Xt = 0 for any value Xt > 0,
+producing an ever-accelerating and unbounded fall in this potential.
+2.2
+The Inverted Parabola World of the GBM model and its descendants
+The inverted parabola potential (4) thus describes the most classical example of an unstable
+system in physics - an inverted (negative mass) harmonic oscillator. Of course, the fact that
+the GBM model is non-stationary for µ̸ = 0 is evident and well known in the literature. On
+the other hand, ’classical’ ﬁnancial inter-temporal models (e.g.
+the Black-Scholes model [2,
+10] or inter-temporal versions of the CAMP model [12]) often work under assumptions of a
+general equilibrium or competitive market equilibrium.
+In these approaches, one assumes a
+dynamic market equilibrium between rational ﬁnancial agents having instantaneous access to
+either symmetric or asymmetric information. Here the concept of a market equilibrium refers
+not to a price process, but rather to an equilibrium of supply and demand given a price level
+(recall the Equilibrium in ”Inverted World”). Thus, the stock price is considered a ’reference
+frame’ to describe the supply-demand balance equations. As the stock price dynamics is nonstationary, the same holds for the full system given by both ﬁnancial agents (traders) and price
+dynamics. This means that the concept of a market equilibrium under a non-stationary price
+process can be at best applied only approximately for short times, as a local approximation.
+To illustrate this point, imagine you step into an elevator on a top ﬂoor of a skyscraper. All
+of a sudden, the elevator cable breaks, and now the elevator is in a free fall, with you trapped
+inside.2 According to elementary physics, as long as the elevator continues to freely fall, you
+will be levitating inside of the elevator, being in a state of a local ‘equilibrium’. This is because
+being inside of a freely falling elevator is equivalent to residing in a non-inertial reference frame,
+where a ﬁctitious ’anti-gravitational’ force exactly cancels the gravitational force. This simple
+example illustrates the point that from the point of view of an external observer who observes
+both the elevator and you inside of the elevator, the dynamics of the full system most deﬁnitely
+cannot be described as equilibrium dynamics proceeding indeﬁnitely in time.
+Far from being a purely theoretical observation, the inverted parabola potential (4) implies a
+2Of course, this is largely a hypothetical scenario, see e.g.
+https://science.howstuﬀworks.com/science-vsmyth/everyday-myths/question730.htm regarding practical safety measures to prevent it from happening.
+4
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+completely absurd behavior of stock prices in the GBM model, as well as its all direct descendants
+such as local or stochastic volatility models, that becomes especially transparent in a small noise
+limit.3 While the fact the the zero-price level X = 0 is not attainable in the GBM model is well
+known, the nature of this mechanism is rarely discussed. A critical observation is that not only
+the GBM model is incompatible with corporate defaults due to its inability to reach the zero
+level X = 0, but rather that non-negative prices are obtained in the GBM model at the cost of
+introducing a completely ﬁctitious and absurd force, due to the negative gradient of the GBM
+potential, that somehow saves a ﬁrm from default once it gets close to the zero level. More
+than that, this force becomes unboundedly stronger as the price increases! The presence of such
+an absurd ever-growing force for all positive prices appears to be too steep a price to pay for
+non-negativity of stock prices, which was the original motivation for the GBM model.
+Interestingly, the last observation that the repelling force actually increasses rather than
+decreases as the price moves away from the default boundary Xt = 0 also implies the model
+behavior should also become progressively less trustworthy for large values of Xt, that could be
+expected in a long run for the GBM dynamics (1). The GBM model predicts that on average,
+the price of a given stock should grow exponentially in time, but empirically, a very few stocks
+have observable prices for a long period of, say, 100 years.4 Most of stocks live much shorter
+than this, and often end their life via mergers, acquisitions, or corporate bankruptcies. Recall
+that none of such events should be possible according to the GBM model, again suggesting that
+it contradicts the reality.5 Also note that it would not be fair to use a long history of market
+index portfolios such as e.g. Dow Jones or S&P500 as an evidence of an average exponential
+long-term growth for individual stocks. Due to the fact that the composition of such market
+index portfolios continuously changes, it embeds a survivorship bias that allows it to ignore the
+fact that stocks can default, and proceed away with the implicit assumption that stocks are
+immortal.
+An analogy with the Inverted World mentioned in the introduction should become more
+transparent to the reader at this point. An unlimited fall in an unbounded potential (4) describing a small noise dynamics of the GBM model and all its descendants can only be perceived
+as an exponential growth only if the observer is somehow ‘inverted’ as well. When viewed from
+the perspective of the Langevin dynamics, an unbounded average exponential growth of assets
+according to the GBM model turns out to be an unbounded fall in the inverted parabolic potential. This is obviously a catastrophic scenario for most models in physics except dedicated
+models designed to describe short-lived unstable systems (e.g. in some cosmological models).
+3Analysis of a small noise limit is useful in order to not get ’fooled by randomness’. Note that this is not
+the same as setting volatility σ to zero exactly.
+In such a strict limit, a stock becomes a riskless asset that
+should earn a risk-free rate r according to a no-arbitrage argument, and thus should be the same as cash in
+a bank account. As the exponential growth ert follows as a solution of a compound interest equation, ﬁnancial
+mathematicians typically have no issue with taking the exponential law ert on its face value, and formally applying
+it for arbitrary times t →∞arguing that ’we believe this will continue in the next 100 years or so, given
+the past experience’.
+I believe that an appeal to the money bank account law ert as a ‘justiﬁcation’ for an
+unbounded average exponential growth for stocks would be erroneous both ﬁnancially and mathematically. It
+is wrong ﬁnancially because stocks are not cash, they can default, while a bank account is protected by state
+regulations. It is also wrong mathematically because the limit σ = 0 is a singular limit: corporate defaults become
+mathematically impossible in this limit, while their probability may remain small but non-zero for arbitrarily small
+but non-zero values σ > 0.
+4I would like to thank Peter Carr for pointing out one such stock: Sotheby’s (BID).
+5While this only becomes evident in a long run, it does not mean that the GBM model is only ‘asymptotically
+wrong’ rather than being ‘qualitatively wrong’. As I argued above, a ﬁctitious ever-growing force equal to the
+negative gradient of the GBM potential is absurd on the whole positive semi-axis X ≥0, that is, at each time
+moment. On the other hand, the simplicity of the GBM potential (4) does not justify invoking of an asymptotic
+analysis to identify regions of the state space X ≥0 where the model becomes ‘too’ wrong - it is wrong everywhere.
+5
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+As an unbounded exponential expansion never occurs in most of other natural systems known to
+physics, real ‘physical’ markets should have mechanisms that eventually stop such an unbounded
+expansion. As I argue next, such stabilization can arise from taking into account interactions
+and non-linearities in the market dynamics.
+2.3
+Stabilization of dynamics by non-linearities
+Both the classical GBM model and a majority of models used in quantitative trading6 are
+linear models, in the sense that they have a linear (or constant) drift. A linear or a constant
+speciﬁcation of a drift term for stock dynamics might appear a simplest reasonable choice, given
+that a drift is harder to measure at small time steps ∆t than a diﬀusion term7.
+As is known in physics, linear dynamic systems can typically be only considered approximations to real-world dynamics of natural systems, which are often non-linear. Non-linearities
+capture interactions in physical systems, that could be produced either by interactions between
+diﬀerent elements of a system, or interactions with some external potential. In particular, within
+the Langevin approach, the most common approach to incorporate complex interactions in a
+physical system is to consider more complex potentials than a harmonic oscillator potential. One
+popular choice are potentials expressed as polynomials in a state variable X. While the use of
+a general polynomial potential can be justiﬁed as a Taylor expansion of an arbitrary potential,
+for most systems encountered in statistical and quantum physics it usually suﬃces to consider
+polynomial potentials up to the fourth degree [7] (see also references in [5]).
+One of the most popular non-linear potentials describing many systems in physics is the
+so-called quartic potential
+U(X) = −1
+2θX2 + 1
+3κX3 + 1
+4gX4,
+(5)
+where parameters θ, κ and g may depend on time through their dependence on various predictors,
+but can be taken constant in a simplest case. Obviously, if we set κ = g = 0 and θ = µ, this
+potential recovers the GBM potential (4). Otherwise, for non-zero values of κ, g, the GBM
+potential (4) can serve as a local approximation, valid for small values of X, to the non-linear
+potential (5).
+The fact that linear models such as the GBM model are only approximations to more general
+non-linear models that incorporate market impact, transaction costs etc. is well known in the
+literature. However, there exists a common belief among both market practitioners and academics that such non-linear eﬀects are only important for large players who ‘move the market’,
+while for small trades the standard linear models that neglect market impact can still be used.
+I propose that even for classical quantitative ﬁnance models such as the GBM that do not
+assume a large trader, capturing non-linear eﬀects of market interactions is critically important
+for constructing more reasonable models that would not produce the absurd ever-accelerating
+unbounded decay in the inverted parabola potential (4) of the GBM model.
+Indeed, assume for a moment that the quartic potential (5) is a ‘right’ model of the world
+(I will argue later in favor of this choice, so that the example is not hypothetical).
+When
+X is suﬃciently small, the cubic and quartic terms can be neglected, and upon setting θ =
+µ, we recover the GBM potential (4) as a small-ﬁeld approximation to the quartic potential
+6Excluding more specialized models speciﬁcally addressing market impact, for example for optimal stock
+execution.
+7This is because a drift and diﬀusion term scale as O (∆t) and O
+√
+∆t
+
+, respectively, therefore the second
+term dominates when ∆t →0.
+6
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+(5). Depending on model parameters, the behavior of the potential can match the quadratic
+approximation well in a parametrically wide range of the price Xt. Clearly, if we set parameters
+κ and g to zero exactly, then the two potentials are identical on the whole semi-axis X ≥0.
+On the other hand, for non-vanishing values of parameters κ and g that control, respectively,
+the cubic and quartic non-linear terms in the potential U(x), the latter can produce a wide variety
+of shapes, depending on the values of parameters, as illustrated in Fig. 2.
+Figure 2: Under diﬀerent parameter choices in the quartic potential U(x) of Eq.(5), it can take
+diﬀerent forms. A stable state of the system corresponds to a minimum of the potential. The
+potential on the left describes a metastable system with a local minimum at zero and a global
+minimum at x = 3.3. If a particle is initially released near the global minimum, most of the time
+it will experience a small diﬀusive relaxation towards the global minimum, which, with a small
+probability, can be replaced at each instance by a large sudden jump across the potential barrier
+separating the two minima. The minimum at zero corresponds to the default state. For the
+potential in the center, the state x = 3.3 becomes unstable, and the state x = 0 is metastable.
+The potential on the right has two symmetric minima, and the particle can choose any of them
+to minimize its energy. Such a scenario is called “spontaneous symmetry breaking” in physics.
+As was argued in [5], it is the potential in the left graph in Fig. 2 that leads to the most
+interesting dynamics of a stock market price. Instead of unstable dynamics of the GBM model,
+with such a potential, dynamics can rather be metastable. Such metastable dynamics are different from globally stable dynamics such as e.g. the harmonic oscillator dynamics in that they
+eventually change, though the time for this change to occur may be long, or very long, depending
+on the parameters. In between of such infrequent transitions, dynamics are approximately equilibrium (stationary) or quasi-equilibrium. Changes of the dynamics correspond to rare events
+of transitions between local minima of the potential.
+While an explanation of how this happens will be given momentarily, it is very important to
+emphasize a critical role of a non-vanishing noise σ > 0 for a realization of a scenario described
+below. This is because any transitions between diﬀerent local minima of a potential are only
+possible when thermal ﬂuctuations are turned on by allowing for a non-zero σ > 0. If σ is large,
+ﬂuctuations become stronger and transitions happen more often, but in the strict opposite limit
+σ = 0, any ﬂuctuations die oﬀ, and transitions between local minima of the potential are no
+longer possible. Dynamics obtained in the strict limit σ = 0 are qualitatively diﬀerent from
+dynamics obtained for non-zero values σ > 0, even though the actual numerical value of σ may
+be very small numerically. This is the reason why appealing to an exponential bank account
+law as a justiﬁcation for a similar average behavior for stocks would be mathematically wrong
+7
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+- as was mentioned in Sect. 2.2, the limit σ →0 is singular (non-analytic).8
+The potential shown on the left of Fig. 2 has a potential barrier between a metastable point
+at the bottom of the local well, and the part of the potential for small values of x, where the
+motion against the gradient of the potential means a fall to the zero price level x = 0. Due
+to noise-induced ﬂuctuations, a particle representing a stock with value xt at time t placed
+initially to the right of the barrier, can hop over to the left of the barrier. In physics, solutions
+of dynamics equations that describe such “barrier-hopping” transitions are called instantons.
+The reason for this nomenclature is that the transitions between the meta-stable state and the
+regime of instability (a “fall” to the zero level x = 0) happens almost instantaneously in time.
+What might take a long time though is the time for this hopping to occur: depending on model
+parameters, the waiting time can in principle even exceed the age of the observed universe. See
+Fig. 3 for examples of an instanton, anti-instanton (an instanton going backward in time), and
+a bounce (an instanton-anti-instanton pair, i.e. an instanton followed by an anti-instanton)
+Figure 3: Instanton, anti-instanton, and bounce solutions. The instanton hops from the right
+of a global maximum to the left of it, the anti-instanton proceeds in an opposite order, and the
+bounce is made of the instanton followed by the anti-instanton.
+In ﬁnancial terms, an event of hopping over the barrier en route to the zero level at x = 0
+corresponds to a corporate bankruptcy (default). As the GBM model corresponds to the inverted
+harmonic potential where the point x = 0 is unattainable, corporate defaults cannot be captured
+by the GBM model. In contrast, with the quartic potential shown on the left of Fig. 2, corporate
+defaults are perfectly possible, and correspond to the instanton-type hopping transitions between
+diﬀerent local minima of the meta-stable potential.
+Note that both the drift (the negative
+gradient of the potential (5)) and volatility vanish at X = 0. This means the the zero level
+X = 0 is an absorbing state: once the particle reaches this point, it stays there forever. This
+is a highly desirable model behavior as it captures corporate default in a simple diﬀusion-based
+stock price model, in a sharp contrast with a failure of the GBM model to produce a defaultable
+equity model, in addition to unrealistic dynamics for X > 0.
+8A popular example of a non-analytical dependence on a model parameter is given by the function f(g) =
+e−A/g, where g ≥0 is a model parameter, and A > 0 is a constant.
+Functions of such form are frequently
+encountered in quantum ﬁeld theory. While the value of this function is very small for small but non-vanishing
+values g > 0, it does not have a Taylor expansion around the point g = 0, which means that this limit is singular.
+8
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+3
+The “Quantum Equilibrium-Disequilibrium” (QED) model
+Unlike the GBM model, the QED model [5] incorporates capital inﬂows and outﬂows in the
+market, along with capturing their price impact in the model construction.
+As I will show
+below, capturing these phenomena using simple function approximations eﬀectively produces
+the Langevin dynamics with the quartic potential (5), thus oﬀering a plausible mechanism for
+stabilization of market dynamics by non-linearities as described in Sect. 2.3. Before providing a
+mathematical formulation of the model, it is helpful to discuss empirical data.
+3.1
+Markets are open systems: importance of money ﬂows and their impact
+Traditional classical ﬁnance models such as the GBM model of Samuelson [11], the Black-Scholes
+model [2], the CAPM model [12] etc. typically all assume that a market is a closed system that
+does not exchange cash with outside investors (an “outside world”). A common assumption for
+stock dividends often made for modeling stock prices is that any dividends paid by a company
+are immediately re-invested back into the stock by the shareholders. However, in addition to
+current investors in a given stock at any point in time, the normal regime of the market is
+that on average, there is an approximately continuous rate of cash inﬂows into the market from
+new investors, mainly due to various retirement plans programs. In other words, money is not
+conserved in the market due to continuous inﬂows (and outﬂows) of new market participants.
+Fig. 4 demonstrates the dynamics of combined inﬂows into equity, bond, and hybrid funds
+[3]. It shows that on average, there was a steady inﬂow of around $325bn annually into the US
+funds between 2004 and 2016, with a local drop around 2009 as a result of the economic crisis.
+Assuming as a rough estimate that about two thirds of these inﬂows are invested in stocks, this
+gives rise to about $200bn injected every year into the stock market. The main origin of such
+cash injection are retirement plans of the US workers.
+Figure 4: Combined inﬂows into equity, bond, and hybrid funds. The annual rate is approximately constant at the level of $325bn [3].
+Should an annual injection of $200bn in the capital market be considered a large or a negligible eﬀect? The total market capitalization of all stocks in the S&P500 index is about $25.5
+trillion, or $25,500bn, so the inﬂows are of the order of 1% of the total index value, which may
+not be a numerically insigniﬁcant eﬀect. In addition, the answer depends on how exactly these
+9
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+inﬂows are distributed across diﬀerent stocks. If retails or institutional investors are massively
+driven to invest in a particular “hot” stock, after a relatively short period of increased returns
+driven “mechanically” by the momentum, a long term impact of such investor “crowding” in the
+stock normally amounts to diminishing long-term returns. The latter phenomenon is known as
+the “dumb money” eﬀect [9].
+Therefore, to model the impact of investors ﬂows and their impact on stock returns, we should
+simultaneously incorporate two things into the modeling framework, which are both missing in
+most conventional classical models such as the GBM: capital inﬂows, and saturation/market
+friction eﬀects. As we will see next, the QED model incorporates both these eﬀects, and moreover
+it provides an explanation why these eﬀect are critically important to ensure a long-term stability
+(or, more accurately, meta-stability, as will be more clear below) of the resulting dynamics, no
+matter how small these eﬀects may be numerically.
+3.2
+The QED model
+Let Xt be a total capitalization of a ﬁrm at time t, rescaled to a dimensionless quantity of the
+order of one Xt ∼1, e.g. by dividing by a mean capitalization over the observation period. We
+consider discrete-time dynamics described, in general form, by the following equations:
+Xt+∆t = (1 + rt+∆t∆t)(Xt −cXt∆t + utXt∆t),
+rt+∆t = rf + wT zt + f(ut) +
+σ
+√
+∆t
+εt,
+(6)
+where ∆t is a time step, rf is a risk-free rate, c is a dividend rate (assumed constant here), zt is
+a vector of predictors with weights w, ut ≡ut(Xt, zt) is a percentage rate of cash inﬂow/outﬂow
+from outside investors9, f(ut) is a market impact factor, and εt ∼N(·|0, 1) is white noise. Here
+the ﬁrst equation deﬁnes the change of the total market cap10 in the time step [t, t + ∆t] as
+a composition of two changes to its time-t value Xt. First, at the beginning of the interval, a
+dividend cXt∆t is paid to the investors, while they also may inject the amount utXt∆t of capital
+in the stock. After that, the new capital value Xt +(ut −c)Xt∆t grows at rate rt+∆t. The latter
+is given by the second of Eqs.(6), where the term f(ut) describes the price impact of the money
+inﬂow or outﬂow. In [5], we used a simple linear trade impact speciﬁcation
+f(ut) = −µut
+(7)
+where µ is a market impact parameter.
+Assuming that µ > 0, the chosen sign convention
+corresponds to a market saturation eﬀect, which may be a proper setting for long-term asset
+returns. On the other hand, µ < 0 corresponds to a positive impact of money inﬂow ut > 0, which
+may be a relevant setting to describe a short-term impact of money inﬂows due to momentum
+eﬀects. Note that ut can be either zero or non-zero, including both positive values and negative
+values, with a ‘normal’ market corresponding to ut > 0. Another possible speciﬁcation of the
+impact function f(ut) will be presented below, after we introduce the basic setting.
+The reason that the same quantity ut appears in both equations in (6) is simple. In the ﬁrst
+equation, ut enters as a capital injection utXt∆t, while in the second equation it enters via the
+market impact term f(ut) because adding capital utXt∆t means trading a quantity of the stock
+that is proportional to ut. Using a linear impact approximation, this produces the impact term
+f(ut) = −µut.
+9Note that here we deﬁne cash inﬂows ut as multiples of the total market cap (or equivalently, of the stock
+market price) Xt, while it was deﬁned in the absolute terms in [5].
+10or, equivalently, the stock price, if the number of outstanding shares is kept constant.
+10
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+In general, the rate of capital injection ut injected by investors in the market at time t should
+depend on the current market capitalization Xt (or current returns), plus possibly other factors
+(e.g. alpha signals). In [5], we considered a simple quadratic choice for ut
+ut = ¯u + φXt + λX2
+t
+(8)
+with three parameters ¯u, φ and λ.11 Note that Eq.(8) implies that the total money ﬂow utXt →0
+in Eq.(6) when Xt →0. This ensures that no investor would invest in a stock with a strictly
+zero price. Also note that the Eq.(8) can always be viewed as a leading-order Taylor expansion
+of a more general nonlinear “capital supply” function u(Xt, zt) that can depend on both Xt and
+signals zt. (alternatively, the capital supply u can be made a function of returns rather than
+prices [6]). Respectively, parameters ¯u, φ and λ could be slowly varying functions of signals zt.
+Here we consider a limiting case when they are treated as ﬁxed parameters, which may be a
+reasonable assumption for time periods when an economic regime does not change too much.
+Substituting Eq.(8) into Eqs.(6), neglecting terms O(∆t)2 and taking the continuous time
+limit ∆t →dt we obtain the “Quantum Equilibrium-Disequilibrium” (QED) model:
+dXt = κXt
+θ + wT zt
+κ
+−Xt −g
+κX2
+t
+
+dt + σXtdWt,
+(9)
+where Wt is the standard Brownian motion, and parameters are deﬁned as follows:
+θ = rf −c + ¯u, κ = (µ −1)φ, g = (µ −1)λ.
+(10)
+The dynamics of the QED model is therefore given by the Langevin equation (3) with the
+following potential
+U(X) = −
+ θ + wT zt
+
+X2 + κ
+3X3 + g
+4X4
+(11)
+When the signals zt are turned oﬀ, this is exactly the quartic potential of Eq.(5). As discussed in
+Sect. 2.3, for some choices of model parameters, this potential leads to stabilization of dynamics
+around a metastable potential minimum that prevents the stock price from an indeﬁnite growth,
+while also allowing for corporate defaults (Fig. 2). The latter proceed via instanton transitions
+that correspond to sudden thermally induced jumps over the top of a potential barrier separating
+diﬀerent local minima of the potential (11). Instanton solutions in the QED model are illustrated
+in Fig. 3.
+It should be noted that the linear impact function (7) may be overly simplistic. Indeed,
+assuming that µ > 0 and ut > 0, it implies that when new money are invested in the stock, it
+produces an immediate negative impact on the next-period returns. This goes contrary to the
+presence of momentum eﬀects in the markets that predict that, unless the stock is “saturated”
+or “crowded”, an injection of the new money increases the demand and should increase rather
+than decrease returns. As shown in [6], instead of a linear impact model, a quadratic model with
+time-dependent parameters can better capture the ’dumb money’ eﬀect [9] that predicts that
+an initial ﬂow into a stock should increase expected returns, but a continuous buildup of inﬂows
+into the stock leads (crowding) leads to diminishing long-term returns. With such a choice of
+the impact function, we can retain only the linear term in Eq.(8) to come up with the same
+QED dynamics (9) and the potential (11), albeit with diﬀerent expression for parameters θ, κ
+and g in terms of original model parameters entering Eq.(6).
+11A slight diﬀerence between Eq.(8) and a similar formula presented in [5] is because here we deﬁne ut as a
+rate, rather than in absolute terms as was deﬁned in [5]. This diﬀerence is inessential as it only produces redeﬁned parameter values of the ﬁnal model, given by Eq.(9) below, in terms of original model parameters entering
+equations (6) and (8).
+11
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+3.3
+QED model and instantons: non-perturbative ﬁnance
+For some physical systems, non-linearities can be handled approximately, by treating them as
+small perturbations around a linear regime, using e.g. a perturbation theory in a small parameter
+that quantiﬁes the stength of non-linearity. However, in many other cases arising in the natural
+sciences, non-linearities should be treated as key ingredients of the dynamics.
+For example, non-linearity is critical for self-organizing systems which cannot be described
+using a perturbation theory around a linear regime. Another well-known example is provided by
+instantons - barrier transition phenomena in statistical and quantum physics discussed above.
+Probabilities of such barrier transitions cannot be obtained at any ﬁnite order of a perturbation theory in a small parameter controlling the non-linearity. They are examples of so-called
+non-perturbative phenomena. While instantons and other non-perturbative phenomena are very
+important in many models of statistical physics and quantum ﬁeld theory12, they are not traceable using tools of perturbation theory, see e.g. references cited in [5].
+Similarly, instantons in the QED model (see Fig. 3) are non-perturbative phenomena in
+parameters κ, g, and thus could not be seen at any ﬁnite order of a perturbation theory constructed around a strict limit κ = 0, g = 0 of the QED dynamics. As in this strict limit the
+QED model would be identical to the GBM model, this means that while the latter could formally be considered as a ’baseline’, unperturbed model for construction of such a perturbative
+expansion, instantons (and hence corporate defaults) would be entirely lost in such a scheme.
+Non-perturbative methods to compute instanton-induced transition probabilities associated with
+probabilities of corporate defaults are presented in [5]. As was illustrated in [5], this enables a
+simultaneous calibration of the QED model to equity and credit markets, by a joint ﬁt to equity
+returns and credit default swaps (CDS) spreads. In its turn, it enables using data from credit
+markets to produce information on a long-term equity returns. The QED model is therefore a
+ﬁrst defaultable equity model that captures corporate defaults without introducing additional
+degrees of freedom such as hazard rates.
+4
+Summary
+To summarize, starting with Samuelson’s GBM model, many models used by practitioners for
+modeling stock prices and derivatives prices, such as local or stochastic volatility models, relied
+on the assumption of a linear (and typically positive) drift of a price process, or equivalently a
+constant drift of a log-price process. In this paper I showed that, when interpreted in physics
+terms, these models describe an oscillator with a negative mass (or equivalently a particle in an
+inverted parabolic potential) subject to noise, where diﬀerences between speciﬁc models amount
+to diﬀerent ways of modeling noise.
+This makes them all models of stochastic dynamics in
+an unstable potential, and conﬂicts with conventional ways of analysis of natural systems in
+physics where models typically describe ﬂuctuations around some stable or metastable state.
+A qualitatively wrong behavior describing an unlimited fall in such an unbounded potential is
+obtained as a result. Samuelson’s solution of the problem of negative prices in the ABM model
+of Bachelier is unsatisfactory as it leads to a conﬂict with basic physics.
+I argued that such a pathological behavior can be avoided if the market is modeled as an
+open system with a possible exchange of money with an outside world, along with a price
+impact of the new money on stock prices. For a single-stock market, this produces a simple nonlinear two-parametric extension of the GBM model, with new parameters κ, g, called ”Quantum
+12Including e.g. quantum chromodynamics (QCD), the modern theory of strong interactions. To explain the
+very existence of protons and neutrons, QCD needs to go beyond perturbation theory.
+12
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+Equilibrium-Disequilibrium” (QED) model [5]. The QED model formally transforms into the
+GBM model in the limit κ, g →0. With non-zero parameters, it produces a qualitatively different behavior: while the GBM model describes unstable dynamics, the QED model describes
+metastable dynamics where a diﬀusive relaxation to a metastable state is followed by a rare large
+negative move describing a transition to a distressed state or corporate bankruptcy. Such rare
+large moves are due to noise-induced solutions of the model called instantons. Similarly to instantons in physics, instantons in the QED model are non-perturbative phenomena: they cannot
+be seen in a perturbative expansion of the model that could be attempted when parameters κ, g
+are small but non-zero. In particular, instanton disappear in the strict ’GBM limit’ κ = g = 0.
+The QED model oﬀers a few important theoretical insights. While classical ﬁnancial models
+have traditionally focused on modeling volatility while keeping simple linear assumptions of
+the drift, the QED model suggests that the drift should instead be non-linear, and should
+be identiﬁed prior to analyzing volatility patterns. In particular, it would be interesting to
+reconsider various stochastic volatility and ‘rough volatility’ models after ﬁxing the drift function
+alone the lines suggested in this paper.
+The QED model can be extended along multiple dimensions. In particular, it can be extended
+to a market with multiple assets, producing the IQED (“Interacting-assets QED”) model [6].
+Other possible extensions can make the quartic potential random - for example, by allowing a
+dependence of parameter θ on signals zt as in Eq.(11). This may make the dynamics of the
+model more realistic and avoid a possible negative long-term drift that might be obtained in the
+model if the potential is kept static. Clearly, for applying the model for a long term modeling,
+one should better make some or all model parameters dependent on signals zt, assuming that
+the latter carry information on a contemporaneous market environment. Proceeding in such
+way would eﬀectively promote the potential to a random quartic potential.
+Obviously, an important practical question is that assuming that the QED model is a ‘right’
+model, how important are non-perturbative eﬀects implied by the model? Can we still rely
+on traditional ﬁnancial engineering models that are all based on the assumption of a linear
+or constant drift? If yes, when can we still rely on them? Such questions can (and should)
+be answered for any particular stock market and any traditional model by comparing results
+obtained with that model versus the QED model. In general, non-linear and non-perturbative
+eﬀects are not expected to be critically important for small local price ﬂuctuations. However,
+it is a comparison with a more general non-linear model such as the QED model that should
+answer the question about a range of prices and times where traditional linear models can still
+be used. The QED model could also be used for option pricing, and its predictions could be
+analyzed and compared with traditional models both numerically and analytically using various
+approximations. Results of such analysis will be presented elsewhere.
+References
+[1] L. Bachelier, “Thorie de la speculation”, Annales Scientiﬁques de L?cole Normale Suprieure, 17, 21-86 (1900). (English translation by A. J. Boness in P.H. Cootner (Editor):
+The Random Character of Stock Market Prices, p. 17?75. Cambridge, MA: MIT Press
+(1964).
+[2] F. Black and M. Scholes, “The Pricing of Options and Corporate Liabilities”, Journal of
+Political Economy, Vol. 81(3), 637-654, 1973.
+[3] Deutsche Bank, “Grassroots Crowding Measures” (2016).
+13
+Electronic copy available at: https://ssrn.com/abstract=3669972
+
+[4] M. Dixon, I. Halperin, and P. Bilokon, Machine Learning in Finance: from Theory to
+Practice, Springer 2020.
+[5] I. Halperin and M.F. Dixon, “Quantum Equilibrium-Disequilibrium: Asset Price Dynamics, Symmetry Breaking, and Defaults as Dissipative Instantons”, Physica A 537, 122187,
+https://doi.org/10.1016/j.physa.2019.122187 (2020).
+[6] I. Halperin, “Dumb Money, The Origin of Factors, Skew and Rare Events: Interacting-assets
+“Quantum Equilibrium-Disequilibrium””, forthcoming (2020).
+[7] L.D. Landau and E.M. Lifschitz, Statistical Physics, Elsevier (1980).
+[8] P. Langevin, “Sur la Th´eorie du Mouvement Brownien”, Comps Rendus Acad. Sci. (Paris)
+146, 530-533 (1908).
+[9] A. Frazzini and O.A. Lamont, “Dumb Money: Mutual Fund Flows and the Cross-Section of
+Stock Returns”, Journal of Financial Economics, Elsevier, vol. 88(2), pages 299-322 (2008).
+[10] R. Merton, “Theory of Rational Option Pricing”, Bell Journal of Economics and Management Science, Vol.4(1), 141-183, 1974.
+[11] P. Samuelson, “Rational theory of warrant pricing”, Industrial Management Review, 6
+(Spring), 13-32 (1965).
+[12] W.F. Sharpe, “Capital asset prices: A theory of market equilibrium under conditions of
+risk”, Journal of Finance, 19 (3), 425?442 (1964).
+14
+Electronic copy available at: https://ssrn.com/abstract=3669972

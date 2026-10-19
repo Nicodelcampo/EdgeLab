@@ -1,0 +1,173 @@
+{
+  "titulo": "Recurrent Neural Networks for Dynamic VWAP Execution: Adaptive Trading Strategies with Temporal Kolmogorov-Arnold Networks",
+  "resumen_operativo": "Extiende modelo estatico de ejecucion VWAP con deep learning a un framework dinamico usando RNNs (LSTM y TKAN) que se adaptan en tiempo real a condiciones de mercado. Sobre 5 criptomonedas (BTC, ETH, BNB, ADA, XRP) en Binance perpetual futures con datos horarios, el DynamicVWAP con TKAN y optimizacion absoluta logra mejoras de 10-15% sobre el modelo estatico. El modelo dinamico con TKAN supera consistentemente al LSTM dinamico. Notablemente, la optimizacion con loss absoluta supera a la cuadratica en out-of-sample, contradiciendo expectativas teoricas.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "VWAP Execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de ejecucion que busca minimizar slippage entre precio ejecutado y VWAP de mercado distribuyendo ordenes en el tiempo segun perfil de volumen esperado.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Volume Curve Prediction"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Algorithmic Trading"
+        }
+      ],
+      "cita_textual": "VWAP strategies seek to minimize the market impact of large trades"
+    },
+    {
+      "nombre": "Temporal Kolmogorov-Arnold Network (TKAN)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura que combina RKAN layers con LSTM-like memory management; disenada especificamente para prediccion de volumen en criptomonedas.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "LSTM"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Dynamic Volume Adjustment"
+        }
+      ],
+      "cita_textual": "TKAN provides specialized memory management particularly suited for volume forecasting tasks"
+    },
+    {
+      "nombre": "Dynamic VWAP Framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura con tres componentes: curva base de volumen aprendible, RNN para adaptacion dinamica, y mecanismo secuencial de ajuste de volumen.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Static VWAP"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Temporal Kolmogorov-Arnold Network (TKAN)"
+        }
+      ],
+      "cita_textual": "a dynamic VWAP execution framework that represents a significant advancement"
+    },
+    {
+      "nombre": "Sequential Volume Allocation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Asignacion secuencial de volumen con constraint de conservacion: v_i = clip(alpha_i * v_b(i), 0, 1-sum_{j<i} v_j), v_h = 1 - sum_{i<h} v_i.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Volume Conservation Constraint"
+        }
+      ],
+      "cita_textual": "the sequential nature of the architecture permits straightforward adaptation"
+    },
+    {
+      "nombre": "Absolute vs Quadratic VWAP Loss",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Optimizacion con loss absoluta produce mejor generalization out-of-sample (10.2% mejora) que loss cuadratica, contrario a expectativas teoricas de convergencia.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Quadratic Loss"
+        }
+      ],
+      "cita_textual": "models trained with absolute VWAP loss consistently outperform those trained with quadratic loss in out-of-sample testing"
+    },
+    {
+      "nombre": "Slippage Decomposition",
+      "tipo": "concepto",
+      "definicion_en_contexto": "S_T <= sum|(P_t - VWAP_t)*q_tilde| + sum|VWAP_t*(q_tilde - V_tilde)|; separa error de precio del error de asignacion de volumen.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "VWAP Execution Quality"
+        }
+      ],
+      "cita_textual": "this decomposition separates the overall slippage into a price deviation component and a volume allocation error component"
+    },
+    {
+      "nombre": "Causal Architecture",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Predicciones en tiempo t dependen solo de informacion hasta t; padding con ceros de datos futuros permite usar mismo modelo en training y deployment.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Look-Ahead Bias"
+        }
+      ],
+      "cita_textual": "predictions at time t depend solely on information up to that point"
+    },
+    {
+      "nombre": "Dynamic Volatility Targeting Overlay",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Escala posiciones diariamente basado en volatilidad realizada de 60 dias del portafolio para mantener riesgo constante.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Volatility Risk"
+        }
+      ],
+      "cita_textual": "ensures that the level of risk taken is consistent regardless of market conditions"
+    },
+    {
+      "nombre": "Learnable Base Volume Curve",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Curva de volumen base v_b aprendida durante training inicializada uniformemente; provee fundamento robusto sobre el cual se aplican ajustes dinamicos.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Dynamic VWAP Framework"
+        }
+      ],
+      "cita_textual": "a learnable base volume curve initialized uniformly as v_b = {1/h, 1/h, ..., 1/h}"
+    },
+    {
+      "nombre": "Binance Perpetual Futures",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos horarios de 5 criptomonedas (BTC, ETH, BNB, ADA, XRP) en Binance; horizonte desde inception hasta julio 2024 con split temporal out-of-sample.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "VWAP Execution"
+        }
+      ],
+      "cita_textual": "hourly trading data from five major cryptocurrencies traded on Binance perpetual futures contracts"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "DynamicVWAP con TKAN y Absolute loss en BTC: Absolute VWAP Loss 0.1053 (mejora 11% sobre static TKAN, 16% sobre static TLN).",
+      "mercado": "BTC perpetual futures (Binance)",
+      "periodo": "Desde inception hasta Jul 2024 (OOS: ultimo 20%)",
+      "magnitud": "Absolute VWAP Loss: 0.1053 (Dynamic+ABS) vs 0.1193 (Static TLN); 11-16% mejora",
+      "condiciones": "Lookback 120h, horizon 12h, hourly data, 5 independent runs",
+      "robustez": "alta",
+      "cita_textual": "the DynamicVWAP with TKAN achieves an absolute VWAP loss of 0.121, an 11.0% improvement over its static counterpart"
+    },
+    {
+      "afirmacion": "TKAN dinamico supera consistentemente a LSTM dinamico: mejora 3.3% en ADA, 3.1% en XRP en Absolute VWAP Loss.",
+      "mercado": "ADA, XRP perpetual futures",
+      "periodo": "hasta Jul 2024 OOS",
+      "magnitud": "ADA: 0.178 (TKAN) vs 0.184 (LSTM), mejora 3.3%",
+      "condiciones": "Comparacion directa Dynamic TKAN vs Dynamic LSTM con identica configuracion",
+      "robustez": "alta",
+      "cita_textual": "The superiority of TKAN over LSTM becomes particularly pronounced in the dynamic setting"
+    },
+    {
+      "afirmacion": "Absolute loss supera quadratic loss en OOS: mejora 10.2% en BTC para Dynamic TKAN; modelos absolute loss tambien obtienen mejor quadratic loss en test.",
+      "mercado": "BTC (Binance)",
+      "periodo": "OOS test",
+      "magnitud": "10.2% mejora en Absolute VWAP Loss; ademas menor Quadratic VWAP Loss",
+      "condiciones": "Modelos identicos entrenados con diferente loss function",
+      "robustez": "alta",
+      "cita_textual": "models trained with absolute VWAP loss consistently outperform those trained with quadratic loss"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Usa datos horarios; arquitectura disenada para ejecucion en tiempo real con adaptacion continua a condiciones de mercado cambiantes."
+  },
+  "doc_id": 290
+}

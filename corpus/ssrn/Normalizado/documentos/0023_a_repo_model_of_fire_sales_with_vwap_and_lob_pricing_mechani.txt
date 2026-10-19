@@ -1,0 +1,3321 @@
+A Repo Model of Fire Sales with VWAP and LOB Pricing
+Mechanisms
+Maxim Bichuch ∗
+Zachary Feinstein †
+Tuesday 12th May, 2020
+Abstract
+We consider a network of banks that optimally choose a strategy of asset liquidations and
+borrowing in order to cover short term obligations.
+The borrowing is done in the form of
+collateralized repurchase agreements, the haircut level of which depends on the total liquidations
+of all the banks. Similarly the ﬁre-sale price of the asset obtained by each of the banks depends
+on the amount of assets liquidated by the bank itself and by other banks. By nature of this
+setup, banks’ behavior is considered as a Nash equilibrium. This paper provides two forms for
+market clearing to occur: through a common closing price and through an application of the
+limit order book. The main results of this work are providing suﬃcient conditions for existence
+and uniqueness of the clearing solutions (i.e., liquidations, borrowing, ﬁre sale prices, and haircut
+levels).
+Keywords Finance, Systemic Risk, Price-Mediated Contagion, Repurchase Agreements.
+1
+Introduction
+Historically, ﬁnancial risk was typically measured for individual ﬁrms separately. After the ﬁnancial
+crisis of 2007-2009, a new understanding that risk can spread through the entire ﬁnancial system
+has emerged. This is referred to as systemic risk – the risk that the distress of several banks can
+spread throughout the system to a degree that it may aﬀect the viability of the entire system or
+a signiﬁcant part of it. Such a propagation of risk is known as ﬁnancial contagion. Two types of
+contagion are usually distinguished: those that happen due to local connections (e.g., obligations
+between banks in the network), and those that happen due to their inﬂuence on the entire network
+(e.g., impact to asset prices).
+This study focuses on a form of global contagion through asset
+∗Department of Applied Mathematics and Statistics, Johns Hopkins University 3400 North Charles Street, Baltimore, MD 21218. mbichuch@jhu.edu. Work is partially supported by NSF grant DMS-1736414. Research is partially
+supported by the Acheson J. Duncan Fund for the Advancement of Research in Statistics.
+†School of Business Stevens Institute of Technology, Hoboken NJ 07030, USA, zfeinste@stevens.edu. Corresponding author.
+1
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+prices, and investigates the existence and uniqueness of Nash equilibrium in a model of ﬁre sales
+and collateralized borrowing.
+A seminal paper in the systemic risk literature is Eisenberg and Noe (2001); that work studied
+an equilibrium payment model in a network of banks. That network model of interbank payments
+has been applied in numerous follow-up studies, e.g., Anand et al. (2015); Halaj and Kok (2015);
+Boss et al. (2004); Elsinger et al. (2013); Upper (2011); Gai et al. (2011); Bardoscia et al. (2017).
+The Eisenberg and Noe (2001) model has also been extended to consider bankruptcy costs and asset
+ﬁre sale dynamics (see Elsinger (2009); Rogers and Veraart (2013); Elliott et al. (2014); Glasserman
+and Young (2015); Weber and Weske (2017); Capponi et al. (2016); Elsinger (2009); Elliott et al.
+(2014); Weber and Weske (2017); Gouri´eroux et al. (2012); Cifuentes et al. (2005); Nier et al. (2007);
+Gai and Kapadia (2010); Amini et al. (2013); Chen et al. (2016); Weber and Weske (2017); Amini
+et al. (2016); Feinstein (2017); Feinstein and El-Masri (2017); Feinstein (2019)). We refer to, e.g.,
+Weber and Weske (2017); Staum (2013); H¨user (2015) for detailed review of this literature.
+In this paper we extend the model of Bichuch and Feinstein (2019); that work considered a
+network of banks facing shortfalls on their obligations which can be met through borrowing or by
+liquidating assets. The primary goal of this current paper is to consider the eﬀects of repurchase
+agreement (repo) markets on ﬁnancial stability. Such markets require banks to post collateral above
+the value of the loan in order to secure short term ﬁnancing. In this construction, each bank seeks
+to optimize their strategy between asset liquidations and borrowing in the repo market. As in the
+traditional ﬁre sale literature (see, e.g., Amini et al. (2016)), asset liquidations cause price impacts
+and, thus, the actions of one bank inﬂuence the decisions of all other institutions as well, i.e., we
+consider the Nash equilibrium of strategies. Based on the static setting traditionally followed in
+the literature, we assume that all the trading happens simultaneously and instantaneously.
+Previously, prices were provided by an inverse demand function which was used to price liquidations as well as provide mark-to-market accounting. In undertaking this study, we consider two
+classical and realistic pricing functions in the ﬁre sale process: Volume Weighted Average Pricing
+(VWAP) and a Limit Order Book (LOB) based pricing scheme. Both of these schemes can be
+viewed as pricing limits as order sizes decrease to zero, but with diﬀerent rates of liquidation. This
+allows us to incorporate notions of time dynamics into the static model proposed. The VWAP
+scheme determines prices if ﬁrms place orders at a rate proportional to their total desired liquidations; this, ultimately, results in the same average price for every bank. Such a pricing scheme was
+introduced in Banerjee and Feinstein (2019). The LOB setting distinguishes prices by assuming all
+ﬁrms place orders at the same speed; banks with smaller order volumes will receive a higher price
+than those with a larger order volume (as the latter will continue to eat through the book even
+after the former are done liquidating).
+As highlighted above, the innovation of this work is two-fold. First, we consider realistic pricing
+schemes that allow for banks to receive diﬀerent prices based on the quantity of assets sold instead
+of the, more standard, assumption that there is a unique price at which all transactions occur.
+Second, we consider collateralized borrowing of illiquid assets in a repo market in which the haircut
+2
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+of this collateral also depends on the mark-to-market value of the asset. As opposed to the realized
+liquidation prices, the haircut remains bank independent and only depends on the entire sale
+volume of the entire banking system since the deal depends on the value of the collateralized
+asset rather than the riskiness of the individual banks. Under these constructions, we are able to
+investigate the sensitivity of the resulting market prices to the prevailing repo interest rate. In
+particular, regulators use interest rates as the primary control for ﬁnancial stability.
+This was
+seen in the emergency liquidity injection by the Federal Reserve in September 2019, in order to
+stabilize the repo market Ihrig et al. (2020); Afonso et al. (2020). In fact, Gorton and Metrick
+(2012); Brunnermeier (2009) consider the 2007-2009 ﬁnancial crisis as a run on the repo market.
+Therefore systematic consideration of repo markets and the impact of interest rates is of paramount
+importance.
+The organization of this paper is as follows. Section 2 introduces the general model with general
+inverse demand pricing functions. In that section we provide the existence of Nash equilibrium under
+a minimal set of assumptions. Section 3 introduces the VWAP and LOB based inverse demand
+pricing functions and discusses the conditions needed for maximal clearing solutions and uniqueness
+of Nash equilibrium. Numerical case studies and comparison of VWAP and LOB inverse demand
+pricing functions is in Section 4. The proofs for the main results are provided in the Appendix.
+Additionally in the Appendix, under the uniqueness conditions, we investigate the sensitivity of
+the clearing solutions to the prevailing repo rate.
+2
+Financial setting
+We begin by assuming a system of n banks. In contrast to works that explicitly depend on the
+network of interbank obligations, e.g., in Eisenberg and Noe (2001); Cifuentes et al. (2005); Amini
+et al. (2016); Feinstein (2017), herein we will consider only ﬁre sale eﬀects and price mediated
+contagion as in, e.g., Greenwood et al. (2015); Braouezec and Wagalath (2018, 2019); Feinstein
+(2020); Banerjee and Feinstein (2019). We will, for simplicity, assume that all the banks i = 1, ..., n
+are facing a (cash) shortfall hi > 0, all while holding ai > 0 shares of illiquid assets; any banks
+without either a shortfall or illiquid asset holdings will not participate in any ﬁre sale or borrowing
+and thus are extraneous to the considerations of this model. The banks are faced with the task
+of ﬁnding the optimal strategy to raise hi cash in order to cover this shortfall. We assume that
+they can do so by either selling their illiquid asset, borrowing, or both. It will be assumed that the
+borrowing is going to be collateralized using the same illiquid asset. As is standard in the literature,
+due to the illiquidity, the price of the illiquid asset declines as assets are being sold; this is due to
+supply-demand dynamics so that the equilibrium is maintained. The same eﬀect is assumed for the
+collateral value of the asset.
+Herein we introduce two “pricing” functions. Let ¯fi : Rn
++ →[0, 1] denote the average price
+obtained by bank i = 1, ..., n given the set of system liquidations (s1, ..., sn) ∈D := Qn
+j=1[0, aj].
+Note that we implicitly impose a no short selling constraint throughout this work. Here, without
+3
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+loss of generality, it was assumed that the current, highest price of the asset, before any sales
+happened is 1, and it can only decrease thereafter. Notably, the construction of ¯fi implies that
+diﬀerent banks may obtain diﬀerent prices in the market due to the market design or diﬀerent order
+sizes. Let g : R+ →[0, 1] denote the price of the collateralized asset in the repurchase agreements
+under study, i.e., the function g
+Pn
+j=1 sj
+
+encodes the haircut on the asset as a mapping of the
+total liquidations by all the banks. Note that while the price obtained by bank i may be unique due
+to the diﬀerent quantities diﬀerent banks are selling, since the repo transaction is collateralized it
+is assumed that the repo market oﬀers the same repo rate r to all banks and uses the same haircut
+g
+Pn
+j=1 sj
+
+. Though we call g the “haircut”, it is more appropriate to denote 1 −g to be the true
+haircut on the asset in the repo market. At various times in this work we will refer to g as the
+haircut and others 1 −g will be given that name.
+Assuming banks sell s := (s1, ..., sn) ∈D, the realized loss to bank i from the sale is si(1−¯fi(s)).
+The bank obtained si ¯fi(s) through this sale, therefore it needs to borrow an additional (hi−si ¯fi(s))
+for the cost of r(hi −si ¯fi(s)). We will abuse notation and denote for convenience ¯fi to be both
+¯fi(si, s−i) and ¯fi(s). Therefore, bank i seeks to optimize:
+s∗
+i = s∗
+i (s−i) = arg min
+si∈[0,ai]
+si
+ 1 −¯fi(si, s−i)
+
++ r
+ hi −si ¯fi(si, s−i)
+
+s.t.
+si ≤
+hi
+¯fi(si, s−i), si ≥
+hi −aig
+Pn
+j=1 sj
+
+¯fi(si, s−i) −g
+Pn
+j=1 sj
+.
+(2.1)
+Here, the ﬁrst inequality ensures that bank i does not obtain more than hi through the asset sale,
+and the second inequality constraint is used to ensure that hi −si ¯fi(si, s−i) ≤(ai −si)g
+Pn
+j=1 sj
+
+,
+i.e., after the sale, bank i has enough collateral (ai −si)g
+Pn
+j=1 sj
+
+to cover its loan. The paper
+of Bichuch and Feinstein (2019) considers the case in which no haircut is taken, i.e., g ≡1.
+In (2.1), it follows that bank i is solvent if and only if
+hi −aig
+Pn
+j=1 sj
+
+¯fi(si, s−i) −g
+Pn
+j=1 sj
+ ≤
+hi
+¯fi(si, s−i) ≤ai.
+By construction of the haircut for repurchase agreements 0 ≤g
+Pn
+j=1 sj
+
+< ¯fi(si, s−i). Under
+such a construction bank i is solvent if and only if hi ≤ai ¯fi(si, s−i), i.e., if at the current price
+realized by bank i it is possible for said bank to cover its shortfall by liquidations alone. If bank i
+is insolvent then we will assume that it is forced to liquidate all of its asset holdings, i.e., s∗
+i = ai.
+For convenience, for the remainder of this work, denote ¯qi = ¯fi(si, s−i), i = 1, ..., n, and
+q = g
+Pn
+j=1 sj
+
+.
+With this notation, we modify (2.1) (similarly as in Bichuch and Feinstein
+4
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+(2019)) such that we seek a Nash equilibrium of the game for each bank i
+s∗
+i = s∗
+i (s−i, q, ¯q) = arg min
+si∈[0,ai]
+si
+ 1 −¯fi(si, s−i)
+
++ r
+ hi −si ¯fi(si, s−i)
+
+(2.2)
+s.t.
+si ≤hi
+¯qi
+, si ≥hi −aiq
+¯qi −q .
+The goal is then to ﬁnd a Nash equilibrium for (2.2), such that (q, ¯q) are, additionally, ﬁxed points
+of
+q = g
+
+
+n
+X
+j=1
+s∗
+j
+
+,
+¯qi = ¯fi(s∗).
+As noted above, bank i is defaulting if hi ≥ai¯qi and, in such a situation, s∗
+i = ai. Our goal is
+primarily to ﬁnd conditions for existence and uniqueness of this Nash game in the ﬁnancial system.
+In order to do that we need assumptions on the inverse demand functions ¯fi and g.
+Assumption 2.1. Let M ≥Pn
+i=1 ai be the total initial market capitalization of the illiquid asset.
+For i = 1, ..., n we assume that ¯fi : Rn
++ →[0, 1] are each continuous and strictly decreasing in
+every argument with ¯fi(0, ..., 0) = 1 and ¯fi(a1, ..., an) > 0.
+Additionally, for i = 1, ..., n and
+s−i ∈Qn
+j=1,j̸=1[0, aj] we assume that si 7→si ¯fi(s, s−i) is concave.
+The haircut function g : R+ →[0, 1] is continuous and strictly decreasing, with min1≤i≤n ¯fi(s) >
+g
+Pn
+j=1 sj
+
+for every s ∈D.
+Existence of a Nash equilibrium easily follows as a consequence of Brouwer’s ﬁxed-point theorem:
+Theorem 2.2 (Existence of Nash Equilibrium). Assume the inverse demand functions ¯fi, i =
+1, ..., n and haircut function g satisfy Assumption 2.1. Then there exists a Nash equilibrium liquidating strategy s∗∗∈D with equilibrium prices (q∗∗, ¯q∗∗
+1 , ..., ¯q∗∗
+n ) =
+ g (Pn
+i=1 s∗∗
+i ) , ¯f1 (s∗∗) , ..., ¯fn (s∗∗)
+
+.
+Proof of Theorem 2.2. Fix bank i and consider (2.2) as a function of (s−i, q, ¯qi) such that 0 ≤q < ¯qi,
+with ¯fi(a1, ..., an) ≤¯qi, and s∗
+−i ∈Qn
+j=1,̸=i[0, aj]. Since the objective function of (2.2) is convex in
+si and the constraint set is a convex interval, the set of minimizers for a ﬁxed set of parameters
+(s−i, q, ¯qi) is convex. An application of Berge maximum theorem (on ¯qi ≥hi
+ai due to the continuity
+of the objective and constraint functions) yields upper continuity and convex-valuedness of the set
+of maximizers. This is extended for the region of insolvency by the assumption that s∗
+i = ai on
+hi > ai¯qi. Thus a joint equilibrium (s∗∗, q∗∗, ¯q∗∗
+1 , ..., ¯q∗∗
+n ) can be found via Kakutani’s ﬁxed point
+theorem.
+It turns out that the conditions for existence of equilibrium are very mild, compared to the
+uniqueness conditions. This is not surprising considering the following example.
+Example 2.3. Consider an n = 1 bank setting with r = 0 repo rate. This bank has assets and
+shortfall so that a1 ¯f1(a1) < h1 < a1g(0). Therefore, two possible solutions exist:
+5
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+1. If the bank liquidates no assets then (q∗∗, ¯q∗∗
+1 , s∗∗
+1 ) = (g(0), 1, 0) is an equilibrium solution;
+2. If the bank defaults and liquidates all its assets then (q∗∗, ¯q∗∗
+1 , s∗∗
+1 ) = (g(a1), ¯f1(a1), a1) is an
+equilibrium solution.
+We now concentrate our eﬀorts into understanding properties of these equilibria and ﬁnd conditions to guarantee their uniqueness. In what follows we will concentrate on two examples for the
+inverse demand functions ¯fi, i = 1, ..., n.
+3
+Main results
+We now concentrate our eﬀorts into understanding when the above equilibrium is unique. In what
+follows we will concentrate on two sample functions. However, instead of specifying the inverse
+demand functions ¯fi directly, we derive them from a density function of limit order book together
+with some trading rules. Let this density be given by f : R+ →[0, 1]. Alternatively, this f can be
+viewed as a the price of the next inﬁnitely small trade. We concentrate on two realistic examples
+of price constructions given the liquidations, i.e., market rules, to construct the price of the trade
+with functional forms ¯fi : Rn
++ →[0, 1] which provides the average price obtained by ﬁrm i given
+the set of system liquidations.
+1. Volume Weighted Average Price (VWAP): For i = 1, ..., n set ¯fi(s) :=
+R Pn
+j=1 sj
+0
+f(σ)dσ
+Pn
+j=1 sj
+.
+Note that in this case ¯fi(s) = ¯fj(s) for i, j ∈{1, 2, ..., n}.
+2. Limit Order Book Based Price (LOB): For i = 1, ..., n set
+¯fi(s) := 1
+si
+k
+X
+j=1
+1
+n −(j −1)
+Z Pj
+l=1(n−(l−1))(s[l]−s[l−1])
+Pj−1
+l=1 (n−(l−1))(s[l]−s[l−1])
+f(σ)dσ,
+where 0 =: s[0] ≤s[1] ≤s[2] ≤... ≤s[n] are the order statistics and si = s[k].
+Note that the VWAP example corresponds to how some exchanges calculate the closing price
+(e.g., in Mexico, India and Saudi Arabia1). Therefore, given our assumption that this is an illiquid
+asset, this is a good representation of price paid by banks given the amounts of trades they (collectively) want to make. Whereas the LOB example is an example of how to price market trades all
+coming at the same time using an existing limit order trades already in the book. This is a very
+interesting and novel example, as in this case, diﬀerent banks pay diﬀerent prices. As far as the
+authors are aware, this LOB construction has never previously been formulated.
+Alternatively, these speciﬁc pricing functionals can be viewed as a limit as order sizes decrease
+to zero at diﬀerent rates. VWAP can be viewed as the limit when all banks submit their orders at
+a rate proportional to the total desired liquidation; as such, every bank ﬁnishes trading at the same
+“time” and thus all banks obtain the same average price. In contrast, the LOB is the limit when
+1research.ftserussell.com/products/downloads/Closing_Prices_Used_For_Index_Calculation.pdf
+6
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+all banks submit their orders at the same rate; as such, banks ﬁnish their transactions at diﬀerent
+times based on the desired quantity of assets to be liquidated which generates heterogeneous prices
+for diﬀerent trading strategies. Therefore, though this model is static, these constructions allow us
+to approximate simple time dynamics.
+The following assumptions are placed on the order book density function f:
+Assumption 3.1. Let M ≥Pn
+i=1 ai be the total initial market capitalization of the illiquid asset.
+The order book density function f : R+ →[0, 1] is strictly decreasing and twice continuously diﬀerentiable, with f(0) = 1 and f(s) > 0 for any s ∈[0, M]. Additionally it will be assumed that the
+ﬁrst derivative f ′ : R+ →−R+ is nondecreasing.
+Throughout the remainder of this work we often wish to consider a comparison of vectors of
+(q, ¯q); this is accomplished in the usual way, i.e., (q1, ¯q1) ≥(q2, ¯q2) if and only if q1 ≥q2 and
+¯q1
+i ≥¯q2
+i for every i = 1, ..., n.
+Our next goal is to ultimately establish uniqueness-type properties of the Nash equilibrium.
+In order to do so, similarly to Bichuch and Feinstein (2019), we consider the problem with ﬁxed
+liquidation price(s) and the haircut value as described in (2.2). As opposed to Theorem 2.2 above,
+we ﬁrst show that there exist unique Nash equilibrium liquidations for these ﬁxed prices as shown
+in Proposition 3.2 below, the proof of which is delayed until Appendix A.1.
+Proposition 3.2. Let bQ := {(q, ¯q) ∈(0, 1] × (0, 1]n | q < ¯qi ∀i = 1, 2, ..., n}. Under VWAP or LOB
+structure and Assumption 3.1, given (q, ¯q1, ..., ¯qn) ∈bQ there exists a unique set of equilibrium
+liquidations ¯s(q, ¯q1, ..., ¯qn) = s∗(¯s(q, ¯q1, ..., ¯qn), q, ¯q1, ..., ¯qn) to (2.2).
+From Example 2.3 it is clear the that uniqueness of the equilibrium does not hold without further
+assumptions, but we can show, as done in Theorem 3.3, that the set of all ﬁxed points prices (q∗, ¯q∗)
+in the Nash equilibrium of (2.2) is a lattice under a VWAP pricing scheme; notably, as demonstrated
+below in Example 3.4, the LOB pricing scheme does not satisfy the typical conditions for this result.
+The proof of the theorem is presented in the Appendix A.2.
+Theorem 3.3. Under the VWAP structure and Assumption 3.1, the set of clearing haircuts and
+prices is a lattice; in particular, there exists a greatest and least clearing haircut and set of clearing
+prices: (q↑, ¯q↑
+1, ..., ¯q↑
+n) ≥(q↓, ¯q↓
+1, ..., ¯q↓
+n).
+Sketch of proof. Taking advantage of Proposition 3.2, we ﬁnd that the sum Pn
+i=1 ¯si is monotonic
+in (q, ¯q1, ..., ¯qn).
+Therefore we apply Tarski’s ﬁxed point theorem.
+The details are provided in
+Appendix A.2.
+Importantly, Theorem 3.3 is not applied to the LOB structure. To demonstrate the lack of such
+a result for the LOB, we present here a counterexample to the monotonicity property utilized in
+the proof of Theorem 3.3.
+Example 3.4. Consider an n = 2 bank system with r = 5% repo rate. Let bank 1 have shortfall
+h1 = 1.98 and a1 = 10 assets. Let bank 2 have shortfall h2 = 5 and a2 = 10 assets. Consider
+7
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+a linear order density function f(s) = 1 −0.0095s and haircut function g(s) = 0.9 −0.0095s.
+We then consider two possible inputs to the clearing system (q1, ¯q1) := (0.9, (1, 1)) and (q2, ¯q2) :=
+(0.9, (0.99, 0.98)).
+1. Under initial prices of (q1, ¯q1), the banks sell ¯s(q1, ¯q1) = (1.98, 3.02) assets each. This results
+in LOB based prices of ¯q1,†
+1
+:= 0.9811 and ¯q1,†
+2
+:= 0.9729 for banks 1 and 2 respectively. The
+resulting haircut is q1,† := 0.8524.
+2. Under initial prices of (q2, ¯q2), the banks sell ¯s(q2, ¯q2) = (2, 3) assets each. This results in
+LOB based prices of ¯q2,†
+1
+:= 0.9810 and ¯q2,†
+2
+:= 0.9730 for banks 1 and 2 respectively. The
+resulting haircut is q2,† := 0.8524.
+Notably, though (q1, ¯q1) ≥(q2, ¯q2), this monotonicity does not hold for the resulting prices as
+(q1,†, ¯q1,†)̸ ≥(q2,†, ¯q2,†).
+Finally, we introduce additional assumptions and establish uniqueness of the equilibrium in
+Theorem 3.6 below, the proof of which is delayed until the Appendix A.3. For such a result we
+introduce a simpliﬁed notation, let ∂x :=
+∂
+∂x denote the partial derivative operator with respect to
+some variable x.
+Deﬁnition 3.5. We will say that bank i ∈{1, ..., n} is fundamentally solvent if it is able to cover
+its shortfall in any case, that is if hi ≤ai ¯fi(a), where a = (a1, ..., an)⊤.
+Remark 1. If bank i is fundamentally solvent then there is a feasible solution to the maximization
+problem (2.2), provided (q, ¯q) = (g(Pn
+i=1 si),¯f(s)) for some s ∈D, since the feasible region is
+non-empty. Indeed,
+1.
+hi
+¯qi ≤ai if and only if hi ≤ai¯qi.
+2.
+hi−aiq
+¯qi−q
+≤ai if and only if hi ≤ai¯qi.
+3.
+hi−aiq
+¯qi−q
+≤hi
+¯qi if and only if hi ≤ai¯qi.
+Theorem 3.6. Assume all banks are fundamentally solvent. Under VWAP or LOB structure and
+Assumption 3.1, if additionally, −cM
+ minj,k ∂sk ¯fj(0n) ∧g′(0)
+
+< minj mins∈D
+  ¯fj(s) −g(Pn
+i=1 si)
+
+with c = 3 and c = n in case of VWAP and LOB, respectively, then there exists a unique clearing
+haircut and set of actualized prices (q∗, ¯q∗).
+Sketch of proof. The proof follows from the Banach ﬁxed point theorem and is presented in Appendix A.3.
+Remark 2. At this point we wish to recall Example 2.3 which highlights a case of non-uniqueness
+of the clearing solution. In that single bank setting, the bank is not fundamentally solvent since, by
+construction, a1 ¯f1(a1) < h1. This highlights the importance of the assumption that all banks are
+fundamentally solvent in Theorem 3.6 for the uniqueness of the clearing prices.
+8
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Remark 3. With the consideration of existence and uniqueness of the clearing solution, the sensitivity of the equilibrium liquidations and prices to the repo rate r is of great interest. This is studied
+mathematically in Appendix B. Intuitively, we expect that as the repo rate rises, and borrowing
+becomes more expensive the liquidation of the illiquid asset increase. It also follows from here that,
+the higher the interest rate, the lower the terminal asset price. Alternatively, from a regulator’s
+perspective, if the goal is to limit the extent of the ﬁre sales, it can be achieved by controlling the
+interest rates, as was done recently in September 2019, and was also used extensively during the
+crisis (see Quinn et al. (2020) and Cecchetti (2009) respectively). We refer to the case studies in
+Section 4 for visualizations of this notion.
+4
+Comparative statics
+Before considering speciﬁc examples, we will ﬁrst introduce a consideration for the computation
+of the clearing prices (q, ¯q) = (g(Pn
+i=1 ¯si(q, ¯q)),¯f(¯s(q, ¯q))). This approach will always converge for
+the VWAP setting due to Theorem 3.3; though the LOB setting does not satisfy monotonicity, this
+algorithm converged for every choice of parameters attempted by the authors indicating a stronger
+result than found thus far. Speciﬁcally, these are computed via Picard iterations beginning from
+(q0, ¯q0) := 1n+1. However, ¯s(q, ¯q) will require consideration for computation itself due to its game
+theoretic construction.
+As provided in Proposition 3.2 these liquidations exist and are unique.
+In fact, due to the construction of the problem as discussed in the proof of that proposition, we
+are able to apply the algorithm provided in Rosen (1965). This is summarized in Algorithm 2
+of Bichuch and Feinstein (2019) for the VWAP setting. We wish to note that in the LOB setting,
+the computation can be improved signiﬁcantly via an iterative approach of determining the banks
+liquidating the fewest number of assets.
+In this section we will consider two primary case studies. The ﬁrst is a consideration of the
+VWAP and LOB structures to determine their relative ordering, i.e., is one better than the other.
+This is important from a mechanism design perspective as diﬀerent markets consider the closing
+price using diﬀerent rule sets. The second case study we will consider is an implementation of
+European banking data to determine the impacts of interest rates and haircut functions on the
+clearing prices.
+4.1
+Mechanism design
+In this ﬁrst case study, we will investigate two networks in detail in order to show that some system
+constructions ﬁnd that VWAP has more total liquidations with less system-wide use of the repo
+markets than LOB, while other constructions have the reverse ordering. In particular, we will ﬁrst
+consider a system of n identical banks and second a speciﬁc system of n = 2 banks only.
+9
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+4.1.1
+Symmetric case study
+Consider a system of n identical banks. Each of these banks has shortfall h > 0 and assets a > 0.
+The prevailing repo rate is provided by r ∈(0, 1
+3). For the purposes of this example, consider the
+order book density f(s) = 1 −αs and haircut function g(s) = 1
+2 −αs for α ∈
+
+2r
+(1+r)(n+1)a,
+1
+2na
+
+;
+notably these constructions satisfy Assumption 3.1 and taken so as to construct an example in
+which ﬁrms have a choice of behavior. Consider now our two market mechanisms: VWAP and
+LOB.
+1. VWAP: By construction ¯fi(s) := 1−α
+2
+Pn
+j=1 sj for every bank i in the VWAP construction.
+Additionally, we take advantage of the symmetric setup to conclude that all banks should
+follow the same strategy, i.e., sV W AP = sV W AP1n for some singleton sV W AP ∈[0, a] and
+¯qV W AP = ¯qV W AP1n for some singleton ¯qV W AP ∈[0, 1]. Consider game (2.2) for ﬁxed values
+(q, ¯q) with q < ¯q:
+s∗
+i (q, ¯q1n) = arg min
+si∈[0,a]
+
+
+
+α
+2 (1 + r)
+
+X
+j̸=i
+s∗
+j(q, ¯q1n) + si
+
+si + r(h −si)
+ si ∈
+h −aq
+¯q −q , h
+¯q
+
+
+
+= arg min
+si∈[0,a]
+α
+2 (1 + r)s2
+i +
+hα
+2 (1 + r)(n −1)sV W AP(q, ¯q) −r
+i
+si + rh
+ si ∈
+h −aq
+¯q −q , h
+¯q
+
+= h −aq
+¯q −q ∨
+
+r
+(1 + r)α −n −1
+2
+sV W AP(q, ¯q)
+
+∧h
+¯q ,
+if h < a¯q (and sV W AP(q, ¯q) = a if h ≥a¯q). In particular, this provides a single ﬁxed point
+problem to ﬁnd sV W AP(q, ¯q), i.e.,
+sV W AP(q, ¯q) = h −aq
+¯q −q ∨
+
+r
+(1 + r)α −n −1
+2
+sV W AP(q, ¯q)
+
+∧h
+¯q ,
+⇒sV W AP(q, ¯q) = h −aq
+¯q −q ∨
+
+2r
+α(1 + r)(n + 1)
+
+∧h
+¯q
+if h < a¯q. We wish to note that the existence of sV W AP(q, ¯q) justiﬁes our choice of sV W AP =
+sV W AP1n as, due to Proposition 3.2, sV W AP is unique and thus must equal sV W AP1n. Finally,
+it remains to ﬁnd the equilibrium prices (qV W AP, ¯qV W AP):
+qV W AP =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−1
+2 +
+√
+1 −2αnh
+if h ∈HV W AP
+1
+,
+1
+2 −
+2rn
+(1+r)(n+1)
+if h ∈HV W AP
+2
+,
+1 −αna −1
+2
+p
+1 + 8αn(h −a) + 4(αna)2
+if h ∈HV W AP
+3
+,
+1
+2 −αna
+if h ∈HV W AP
+4
+,
+10
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+¯qV W AP =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1+
+√
+1−2αnh
+2
+if h ∈HV W AP
+1
+,
+1 −
+rn
+(1+r)(n+1)
+if h ∈HV W AP
+2
+5
+4 −αna
+2
+−1
+4
+p
+1 + 8αn(h −a) + 4(αna)2
+if h ∈HV W AP
+3
+,
+1 −α
+2 na
+if h ∈HV W AP
+4
+,
+with borrowing/liquidation regions
+HV W AP
+1
+=
+
+0 ,
+2r
+α(1 + r)(n + 1)
+
+1 −
+rn
+(1 + r)(1 + n)
+
+,
+HV W AP
+2
+=
+
+2r
+α(1 + r)(n + 1)
+
+1 −
+rn
+(1 + r)(1 + n)
+
+,
+2r
+α(1 + r)(n + 1)
+1
+2 +
+rn
+(1 + r)(n + 1)
+
++ a
+1
+2 −
+2rn
+(1 + r)(n + 1)
+
+,
+HV W AP
+3
+=
+
+2r
+α(1 + r)(n + 1)
+1
+2 +
+rn
+(1 + r)(n + 1)
+
++ a
+1
+2 −
+2rn
+(1 + r)(n + 1)
+
+, a
+
+1 −α
+2 na
+
+,
+HV W AP
+4
+=
+h
+a
+
+1 −α
+2 na
+
+, ∞
+
+.
+We wish to note that all square roots are well deﬁned on the intervals on which they are
+considered. Additionally, qV W AP and ¯qV W AP are continuous in h; as such the closures of
+the bounding intervals can be chosen arbitrarily. Though this setting does not satisfy the
+uniqueness conditions of Theorem 3.6, the simplicity of the symmetric system still admits a
+unique clearing solution.
+2. LOB: By construction ¯f[i](s) := 1 −
+α
+2s[i]
+hPi−1
+k=1 s[k](2s[i] −s[k]) + (n −(i −1))s2
+[i]
+i
+for every
+bank [i] (i.e., the bank liquidating the ith most assets) in the LOB construction. Additionally,
+we take advantage of the symmetric setup to conclude that all banks should follow the same
+strategy, i.e., sLOB = sLOB1n for some singleton sLOB ∈[0, a] and ¯qLOB = ¯qLOB1n for some
+singleton ¯qLOB ∈[0, 1]. Consider game (2.2) for ﬁxed values (q, ¯q) with q < ¯q:
+s∗
+i (q, ¯q1n) = arg min
+si∈[0,a]
+
+
+
+
+
+
+
+α
+2 (1 + r)
+h
+ns2
+i I{si≤sLOB(q,¯q)}
++((n −1)sLOB(q, ¯q)2 + 2(n −1)sLOB(q, ¯q)si + s2
+i )I{si>sLOB(q,¯q)}
+i
++r(h −si)
+
+si ∈
+h −aq
+¯q −q , h
+¯q
+
+
+
+
+
+
+
+
+=
+
+
+
+h−aq
+¯q−q ∨
+h
+r
+α(1+r)n
+i
+∧h
+¯q
+if
+r
+α(1+r)n ≤sLOB(q, ¯q),
+h−aq
+¯q−q ∨
+h
+r
+α(1+r) −(n −1)sLOB(q, ¯q)
+i
+∧h
+¯q
+if
+r
+α(1+r)n > sLOB(q, ¯q),
+if h < a¯q (and sLOB(q, ¯q) = a if h ≥a¯q). In particular, this provides a single ﬁxed point
+11
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+problem to ﬁnd sLOB(q, ¯q), i.e., if h < a¯q
+sLOB(q, ¯q) =
+
+
+
+h−aq
+¯q−q ∨
+h
+r
+α(1+r)n
+i
+∧h
+¯q
+if
+r
+α(1+r)n ≤sLOB(q, ¯q),
+h−aq
+¯q−q ∨
+h
+r
+α(1+r) −(n −1)sLOB(q, ¯q)
+i
+∧h
+¯q
+if
+r
+α(1+r)n > sLOB(q, ¯q)
+,
+⇒sLOB(q, ¯q) = h −aq
+¯q −q ∨
+
+r
+α(1 + r)n
+
+∧h
+¯q
+as both provided cases result in the same ﬁxed point. We wish to note that the existence of
+sLOB(q, ¯q) justiﬁes our choice of sLOB = sLOB1n as, due to Proposition 3.2, sLOB is unique
+and thus must equal sLOB1n. Finally, it remains to ﬁnd the equilibrium prices (qLOB, ¯qLOB):
+qLOB =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−1
+2 +
+√
+1 −2αnh
+if h ∈HLOB
+1
+1
+2 −
+r
+1+r
+if h ∈HLOB
+2
+1 −αna −1
+2
+p
+1 + 8αn(h −a) + 4(αna)2
+if h ∈HLOB
+3
+1
+2 −αna
+if h ∈HLOB
+4
+¯qLOB =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1+√1−2αnh
+2
+if h ∈HLOB
+1
+,
+1 −
+r
+2(1+r)
+if h ∈HLOB
+2
+,
+5
+4 −αna
+2
+−1
+4
+p
+1 + 8αn(h −a) + 4(αna)2
+if h ∈HLOB
+3
+,
+1 −α
+2 na
+if h ∈HLOB
+4
+,
+with borrowing/liquidation regions
+HLOB
+1
+=
+
+0 ,
+r
+α(1 + r)n
+
+1 −
+r
+2(1 + r)
+
+,
+HLOB
+2
+=
+
+r
+α(1 + r)n
+
+1 −
+r
+2(1 + r)
+
+,
+r
+2α(1 + r)n
+
+1 +
+r
+1 + r
+
++ a
+1
+2 −
+r
+1 + r
+
+,
+HLOB
+3
+=
+
+r
+2α(1 + r)n
+
+1 +
+r
+1 + r
+
++ a
+1
+2 −
+r
+1 + r
+
+, a
+
+1 −α
+2 na
+
+,
+HLOB
+4
+=
+h
+a
+
+1 −α
+2 na
+
+, ∞
+
+.
+We wish to note that all square roots are well deﬁned on the intervals on which they are
+considered. Additionally, qV W AP and ¯qV W AP are continuous in h; as such the closures of
+the bounding intervals can be chosen arbitrarily. Though this setting does not satisfy the
+uniqueness conditions of Theorem 3.6, the simplicity of the symmetric system still admits a
+unique clearing solution.
+Notably, sV W AP(q, ¯q) ≥sLOB(q, ¯q) for any choice of (q, ¯q) by construction. In fact, if there
+exists n ≥2 banks, then this inequality is strict at equilibrium on HV W AP
+2
+∩HLOB
+2
+, i.e.,
+h ∈
+
+r
+α(1+r)n
+
+1 −
+r
+2(1+r)
+
+,
+2r
+α(1+r)(n+1)
+
+1
+2 +
+rn
+(1+r)(n+1)
+
++ a
+
+1
+2 −
+2rn
+(1+r)(n+1)
+
+.
+12
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+In contrast, by construction of the order book density f, the borrowing by each ﬁrm at equilibrium (and therefore total system wide borrowing) is greater under the VWAP framework than
+the LOB framework, i.e., h −sV W AP(qV W AP, ¯qV W AP)¯qV W AP ≤h −sLOB(qLOB, ¯qLOB)¯qLOB, with
+strict ordering on the same interval as given above.
+4.1.2
+A counterexample to the symmetric ordering
+In contrast to the symmetric system above, we now wish to consider a system in which the VWAP
+setting results in fewer liquidations and more borrowing than the LOB framework. To do this, let’s
+consider a simple heterogeneous n = 2 bank setting with r = 0.01, a = (1, 2), and h = (0.3, 1.2).
+For this example consider the same order book density function f(s) = 1−αs and haircut function
+g(s) = 1
+2 −αs, but with the speciﬁc price impact parameter α = 0.05. With this construction, the
+clearing liquidations and prices can be determined numerically to be
+• sV W AP = (0, 0.4853) with qV W AP = 0.4757 and ¯qV W AP = (0.9879, 0.9879).
+• sLOB = (0.0990, 0.5080) with qLOB = 0.4696 and ¯qLOB = (0.9950, 0.9828).
+As desired at the beginning of this example, total liquidations are less for both banks (i.e., sV W AP <
+sLOB), but borrowing by both banks has the opposite order (i.e., hi −sV W AP
+i
+¯qV W AP
+i
+> hi −
+sLOB
+i
+¯qLOB
+i
+, i = 1, 2.). This is the opposite order from the symmetric case study considered above;
+as such, there is no consistent order between the VWAP and LOB settings that can be determined.
+4.1.3
+Discussion
+As shown in the prior two examples, there is no consistent ordering between the VWAP and LOB
+settings. For symmetric systems and, more generally, systems close to symmetric, if the market
+regulators wish to promote borrowing over liquidations, then the LOB framework is preferable;
+however, for certain heterogeneous systems, the VWAP framework may be preferable to that same
+regulator. As such, the use of stress testing of diﬀerent market mechanisms is of the paramount
+importance in order to determine the optimal market mechanism.
+We wish to make one ﬁnal consideration on the comparison of the VWAP and LOB frameworks. We conjecture that the distinction between the two setting occurs only if some bank is both
+liquidating and borrowing. Most prior works, e.g., Amini et al. (2016), consider only the situation
+in which ﬁrms can only liquidate in order to cover their liabilities. Without borrowing allowed, the
+VWAP and LOB frameworks will always coincide at the aggregate level. As such the mechanism
+choice of ¯f is irrelevant when considered in the standard literature (which is written in a VWAP
+style manner).
+4.2
+EBA case study
+We conclude this work with a consideration of ﬁnancial system calibrated to 2011 European banking
+data.
+This stress test data has been utilized in numerous prior studies for studying interbank
+13
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+Interest rate r
+10-3
+2.15
+2.2
+2.25
+2.3
+2.35
+2.4
+Total liquidations
+107
+Impact of Interest Rates on Liquidations
+VWAP
+LOB
+(a) Total liquidations
+0
+0.5
+1
+1.5
+2
+2.5
+3
+3.5
+4
+Interest rate r
+10-3
+0
+0.5
+1
+1.5
+2
+2.5
+Total borrowing
+106
+Impact of Interest Rates on Borrowing
+VWAP
+LOB
+(b) Total borrowing
+Figure 1: Summary statistics of the European banking sector’s response to a changing interest rate
+environment.
+liability networks (e.g., Gandy and Veraart (2016); Chen et al. (2016); Feinstein (2019)).
+We
+will calibrate and utilize this EBA dataset in much the same way as in Bichuch and Feinstein
+(2019), i.e., to have a more realistic system but one that still requires heuristics and, as such, is for
+demonstration purposes only.
+As a stylized bank balance sheet, we will consider two categories of assets: cash assets ci and
+illiquid assets ai. We will additionally consider two categories of liabilities: external liabilities ¯pi
+and capital Ci. In order to determine these values, we calibrate the system as in Bichuch and
+Feinstein (2019) but ignoring all interbank obligations considered as cash so as to discount default
+contagion and focus solely on price-mediate contagion as discussed in the remainder of this work.
+The total assets Ti and capital Ci are provided by this dataset directly for each bank i. The external
+liabilities ¯pi = Ti −Ci are computed by balance sheet construction. It remains to split the total
+assets into cash and illiquid assets; we make this split according to the tier 1 capital ratio Ri, i.e.,
+ci = RiTi and ai = (1 −Ri)Ti.
+In order to complete our model, we need to consider the remaining parameters of the system.
+We set the market capitalization M = Pn
+i=1 ai to be the total number of shares of the illiquid
+assets held by the banks. For this example we consider the linear order book density function
+f(s) = 1 −αs and haircut function g(s) =
+7
+10 −αs for α =
+1
+300M (i.e., a 0.30 euro haircut is
+charged on top of the “market price” f(s)). By construction, this setting satisﬁes all conditions
+of Theorem 3.6. We will focus on the impacts of altering the interest rate environment in order
+to compare the VWAP and LOB settings. This is undertaken in the prevailing low interest rate
+environment during the period from which this data is collected. For this study, no external shock
+is applied to the ﬁnancial system.
+For our consideration, we compare the VWAP and LOB settings while varying the interest
+rate environment. The results of varying the interest rate is displayed in Figure 1. As expected,
+14
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+total liquidations (Figure 1a) increase as the interest rate increases, whereas the total borrowing
+(Figure 1b) is exactly the reverse of the total liquidations and, as such, is decreasing as the interest
+rate increases. Notably, as discussed in the case studies of Section 4.1, under some interest rate
+environments VWAP encourages more borrowing than LOB and vice versa under other interest
+rate environments. We ﬁnd that, system-wide, there is less selling and more borrowing in the LOB
+setting for higher interest rates. Notably, the LOB setting results in a non-smooth response as a
+function of the interest rate r. This results from the heterogeneous prices actualized by all banks;
+due to these varying prices, each bank switches strategies at varying interest rates.
+This is in
+contrast to the VWAP setting in which, though the banks are heterogeneous, the strategies of the
+banks mostly overlap. With this notion, it becomes clear that LOB provides greater ﬂexibility for
+an intervention to control ﬁre sales through the manipulation of interest rates.
+5
+Conclusion
+In this work, we have considered a model of a system of banks that need to raise funds to cover
+their liquidity shortfalls. These ﬁrms decide on an optimal combination to raise the money through
+borrowing in a repo market and selling an illiquid asset in a ﬁre-sale, with both the haircut and the
+ﬁre-sale prices dependent on actions of other banks. We focused on two frameworks to determine
+the ﬁre-sale prices: the volume weighted average price and a notion of the limit order book in
+order to capture notions of pricing dynamics in this, otherwise, static model. We found suﬃcient
+conditions for existence and uniqueness of the Nash equilibrium in this game. Finally, we have
+compared the VWAP and the LOB settings analytically when the banks are identical and perform
+a numerical study using the 2011 EBA data.
+References
+Afonso, G., Kim, K., Martin, A., Nosal, E., Potter, S., and Schulhofer-Wohl, S. (2020). Monetary policy
+implementation with an ample supply of reserves. FRB of New York StaﬀReport, (910).
+Amini, H., Filipovi´c, D., and Minca, A. (2013). Systemic risk with central counterparty clearing. Swiss
+Finance Institute Research Paper No. 13-34, Swiss Finance Institute.
+Amini, H., Filipovi´c, D., and Minca, A. (2016).
+Uniqueness of equilibrium in a payment system with
+liquidation costs. Operations Research Letters, 44(1):1–5.
+Anand, K., Craig, B., and Von Peter, G. (2015). Filling in the blanks: Network structure and interbank
+contagion. Quantitative Finance, 15(4):625–636.
+Banerjee, T. and Feinstein, Z. (2019). Price mediated contagion through capital ratio requirements. Working
+paper.
+Bardoscia, M., Barucca, P., Brinley Codd, A., and Hill, J. (2017). The decline of solvency contagion risk.
+Bank of England StaﬀWorking Paper, 662.
+15
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Bichuch, M. and Feinstein, Z. (2019). Optimization of ﬁre sales and borrowing in systemic risk. SIAM
+Journal on Financial Mathematics, 10:68–88.
+Boss, M., Elsinger, H., Summer, M., and Thurner, S. (2004). Network topology of the interbank market.
+Quantitative Finance, 4(6):677–684.
+Braouezec, Y. and Wagalath, L. (2018). Risk-based capital requirements and optimal liquidation in a stress
+scenario. Review of Finance, 22(2):747–782.
+Braouezec, Y. and Wagalath, L. (2019). Strategic ﬁre-sales and price-mediated contagion in the banking
+system. European Journal of Operational Research, 274(3):1180–1197.
+Brunnermeier, M. K. (2009). Deciphering the liquidity and credit crunch 2007-2008. The Journal of Economic
+Perspectives, 23(1):77–100.
+Capponi, A., Chen, P.-C., and Yao, D. D. (2016). Liability concentration and systemic losses in ﬁnancial
+networks. Operations Research, 64(5):1121–1134.
+Cecchetti, S. G. (2009). Crisis and responses: the federal reserve in the early stages of the ﬁnancial crisis.
+Journal of Economic Perspectives, 23(1):51–75.
+Chen, N., Liu, X., and Yao, D. D. (2016). An optimization view of ﬁnancial systemic risk modeling: The
+network eﬀect and the market liquidity eﬀect. Operations Research, 64(5).
+Cifuentes, R., Shin, H. S., and Ferrucci, G. (2005). Liquidity risk and contagion. Journal of the European
+Economic Association, 3(2-3):556–566.
+Eisenberg, L. and Noe, T. H. (2001). Systemic risk in ﬁnancial systems. Management Science, 47(2):236–249.
+Elliott, M., Golub, B., and Jackson, M. O. (2014). Financial networks and contagion. American Economic
+Review, 104(10):3115–3153.
+Elsinger, H. (2009). Financial networks, cross holdings, and limited liability. ¨Osterreichische Nationalbank
+(Austrian Central Bank), 156.
+Elsinger, H., Lehar, A., and Summer, M. (2013). Network models and systemic risk assessment. In Handbook
+on Systemic Risk, pages 287–305. Cambridge University Press.
+Feinstein, Z. (2017).
+Financial contagion and asset liquidation strategies.
+Operations Research Letters,
+45(2):109–114.
+Feinstein, Z. (2019). Obligations with physical delivery in a multi-layered ﬁnancial network. SIAM Journal
+on Financial Mathematics, 10(4):877–906.
+Feinstein, Z. (2020). Capital regulation under price impacts and dynamic ﬁnancial contagion. European
+Journal of Operational Research, 281(2):449–463.
+Feinstein, Z. and El-Masri, F. (2017). The eﬀects of leverage requirements and ﬁre sales on ﬁnancial contagion
+via asset liquidation strategies in ﬁnancial networks. Statistics & Risk Modeling, 34(3-4):109–114.
+Gai, P., Haldane, A., and Kapadia, S. (2011). Complexity, concentration and contagion. Journal of Monetary
+Economics, 58(5):453–470.
+16
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Gai, P. and Kapadia, S. (2010). Contagion in ﬁnancial networks. Bank of England Working Papers 383,
+Bank of England.
+Gandy, A. and Veraart, L. A. (2016). A Bayesian methodology for systemic risk assessment in ﬁnancial
+networks. Management Science. DOI: 10.1287/mnsc.2016.2546.
+Glasserman, P. and Young, H. P. (2015). How likely is contagion in ﬁnancial networks? Journal of Banking
+and Finance, 50:383–399.
+Gorton, G. B. and Metrick, A. (2012). Securitized banking and the run on repo. Journal of Financial
+Economics, 104(3):425–451.
+Gouri´eroux, C., H´eam, J.-C., and Monfort, A. (2012).
+Bilateral exposures and systemic solvency risk.
+Canadian Journal of Economics, 45(4):1273–1309.
+Greenwood, R., Landier, A., and Thesmar, D. (2015). Vulnerable banks. Journal of Financial Economics,
+115(3):3–28.
+Halaj, G. and Kok, C. (2015). Modelling the emergence of the interbank networks. Quantitative Finance,
+15(4):653–671.
+H¨user, A.-C. (2015). Too interconnected to fail: A survey of the interbank networks literature. Journal of
+Network Theory in Finance, 1(3):1–50.
+Ihrig, J., Senyuz, Z., and Weinbach, G. C. (2020). The fed’s “ample-reserves” approach to implementing
+monetary policy. DOI: 10.17016/FEDS.2020.022.
+Nier, E., Yang, J., Yorulmazer, T., and Alentorn, A. (2007). Network models and ﬁnancial stability. Journal
+of Economic Dynamics and Control, 31(6):2033–2060.
+Quinn, S., Roberds, W., and Kahn, C. M. (2020). Standing repo facilities, then and now. Federal Reserve
+Bank of Atlanta’s Policy Hub, (1).
+Rogers, L. C. and Veraart, L. A. (2013). Failure and rescue in an interbank network. Management Science,
+59(4):882–898.
+Rosen, J. B. (1965). Existence and uniqueness of equilibrium points for concave n-person games. Econometrica, 33(3):520–534.
+Staum, J. (2013). Counterparty contagion in context: Contributions to systemic risk.
+In Handbook on
+Systemic Risk, pages 512–548. Cambridge University Press.
+Upper, C. (2011). Simulation methods to assess the danger of contagion in interbank markets. Journal of
+Financial Stability, 7(3):111–125.
+Weber, S. and Weske, K. (2017). The joint impact of bankruptcy costs, ﬁre sales and cross-holdings on
+systemic risk in ﬁnancial networks. Probability, Uncertainty and Quantitative Risk, 2(1):9.
+17
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+A
+Proofs of Section 3
+A.1
+Proof of Proposition 3.2
+In both the VWAP and LOB settings, for a ﬁxed (q, ¯q1, ..., ¯qn) ∈bQ the existence of an equilibrium ¯s(q, ¯q1, ..., ¯qn)
+follows along the same steps as the proof of Theorem 2.2. We next show the uniqueness of ¯s(q, ¯q1, ..., ¯qn) by
+utilizing the results of Rosen (1965) on convex games.
+A.1.1
+Volume weighted averaged price
+Proof. In this case, the uniqueness of ¯s(q, ¯q1, ..., ¯qn) follows from Bichuch and Feinstein (2019)[Theorem 3.2],
+as soon as we verify that the assumptions of that theorem hold.
+Recall that ¯fi is independent of the index i. Also, note that that we can write ¯fi as a function of the
+total liquidation s−i, where
+s−i =
+n
+X
+j̸=i,j=1
+sj,
+(A.1)
+¯fi(si, s−i) =: ˆf(si + s−i) =
+1
+si + s−i
+Z si+s−i
+0
+f(s)ds.
+(A.2)
+We assume that f satisﬁes Assumption 3.1, and proceed to verify that Bichuch and Feinstein (2019) [Assumption 2.1] is also satisﬁed by ˆf. Indeed, ˆf ′(s) = −1
+s2
+R s
+0 f(u)du + f(s)
+s
+≤−sf(s)
+s2
++ f(s)
+s
+= 0. It is also
+easily seen that
+d2
+ds2 (s ˆf(s)) = f ′(s) < 0.
+Lastly we need to show that ˆf ′′ ≥0. Calculate that s2 ˆf ′′(s) = 2
+s
+R s
+0 f(u)du −2f(s) + sf ′(s). Since f is
+convex, we have that f(s)−f(0) ≤sf ′(s), and thus it is suﬃcient to show that 2
+s
+R s
+0 f(u)du−f(0)−f(s) ≥0.
+Using the fact that f is convex, we have that λf(s1)+(1−λ)f(s2) ≤f(λs1+(1−λ)s2), λ ∈[0, 1]. Integrating
+over λ ∈[0, 1] gives f(s1)+f(s2)
+2
+≤
+1
+s2−s1
+R s2
+s1 f(u)du, which gives the desired result.
+A.1.2
+Limit order book
+Proof. Recall from Rosen (1965) that for s ∈Rn, the function s 7→H(s; ρ) is diagonally strictly convex, if for
+some (ﬁxed) ρ ∈Rn
++ and for every s0, s1 ∈Rn, s0̸ = s1, we have (s1 −s0)⊤γ(s0; ρ) −(s1 −s0)⊤γ(s1; ρ) < 0,
+where
+γ(s; ρ) =
+
+
+
+
+∂s1H1(s; ρ1)
+...
+∂snHn(s; ρn)
+
+
+
+=
+
+
+
+
+
+ρ1
+
+1 −(1 + r)f
+Pk1
+ℓ=1(n −(ℓ−1))(s[ℓ] −s[ℓ−1])
+
+...
+ρn
+
+1 −(1 + r)f
+Pkn
+ℓ=1(n −(ℓ−1))(s[ℓ] −s[ℓ−1])
+
+
+
+
+
+,
+where ki is such that s[ki] = si. Additionally, (Rosen, 1965, Theorem 6) shows that a suﬃcient condition for
+H to be diagonally strictly convex is if Γ(s; ρ) + Γ(s; ρ)⊤is a symmetric positive deﬁnite matrix for every
+s ∈Rn and some ρ ∈Rn
++, where Γ is the Jacobian matrix of γ with respect to s. Without loss of generality,
+for ﬁxed value s, assume ki = i for every bank.
+Set ρi =
+1
+1+r then
+
+Γ(s; ρ) + (Γ(s; ρ))⊤
+ij = −(1 + I{i=j}[2(n −i) + 1])f ′
+ i∨j−1
+X
+ℓ=1
+sℓ+ (n −(i ∨j −1))si∨j
+!
+.
+18
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Thus, in full matrix notation, we ﬁnd
+Γ(s; ρ) + Γ(s; ρ)⊤= A(s) +
+n
+X
+j=1
+Bj(s)
+A(s) = −diag
+ 
+[2(n −i) + 1]f ′
+ i−1
+X
+ℓ=1
+sℓ+ (n −(i −1))si
+!!
+Bj(s) =
+
+
+
+
+
+
+
+
+
+
+f ′
+j−1
+P
+ℓ=1
+sℓ+ (n −(j −1))sj
+
+−f ′
+ jP
+ℓ=1
+sℓ+ (n −j)sj+1
+ 
+
+1j×j
+0j×(n−j)
+0(n−j)×j
+0(n−j)×(n−j)
+
+
+if j < n
+−f ′ (Pn
+ℓ=1 sℓ) 1n×n
+if j = n.
+For any liquidations s, by construction, the matrix A(s) is positive deﬁnite and Bj(s) is positive semideﬁnite
+(by nondecreasing property of f ′). The uniqueness of ¯s(q, ¯q1, ..., ¯qn) follows from Rosen (1965)[Theorem
+2].
+A.2
+Proof of Theorem 3.3
+Our goal is to apply Tarski’s ﬁxed point theorem, to do which, we need to prove that
+n
+X
+i=1
+¯si(q↓, ¯q↓) ≥
+n
+X
+i=1
+¯si(q↑, ¯q↑),
+(A.3)
+for (q↓, ¯q↓) ≤(q↑, ¯q↑).
+Proof. Recall the deﬁnitions of ˆf and s−i given in (A.2) and (A.1) respectively. Therefore, we can assume
+that ¯q := ¯q1 = ... = ¯qn. First we note that for i = 1, ..., n
+¯si(q, ¯q1n) =
+
+
+
+ai
+if hi ≥ai¯q,
+
+hi−aiq
+¯q−q
++
+∨
+h
+s0
+i (¯s−i(q, ¯q1n)) ∧hi
+¯q
+i
+if hi < ai¯q,
+(A.4)
+where s0
+i is the solution to
+1 −(1 + r)( ˆf(s0
+i + ¯s−i(q, ¯q1n)) + s0
+i ˆf ′(s0
+i + ¯s−i(q, ¯q1n))) = 0.
+(A.5)
+With this construction we wish to note that bank i is defaulting and has no other option but to liquidate
+all its assets if and only if hi ≥ai¯q. Indeed, as noted previously in the body of this work, in the opposite
+case hi < ai¯q, we have that:
+1.
+hi
+¯q < ai if and only if hi < ai¯q.
+2.
+hi−aiq
+¯q−q
+< ai if and only if hi < ai¯q.
+3.
+hi−aiq
+¯q−q
+< hi
+¯q if and only if hi < ai¯q.
+Therefore, ¯si(q, ¯q1n), i = 1, ..., n is well deﬁned in (A.4), and ¯si(q, ¯q) < ai in all those cases.
+First consider the case when all banks keep at the same liquidation strategy, in other words the deﬁnition
+of ¯si in (A.4) is equal to the same term (i.e., among ai, hi
+¯q ,
+
+hi−aiq
+¯q−q
++
+, and s0
+i ). Then for i = 1, ..., n:
+• If ¯si = ai then ∂q¯si, ∂¯q¯si = 0.
+19
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+• If ¯si = hi
+¯q , then ∂q¯si = 0, ∂¯q¯si < 0.
+• If ¯si =
+
+hi−aiq
+¯q−q
++
+, ﬁrst assume that hi ≥aiq, in addition to hi < ai¯q. The former results in ∂¯q¯si ≤0,
+while it follows from the latter that ∂q¯si < 0. If, instead, hi < aiq then ∂¯q¯si = ∂q¯si = 0. Note that we
+have also used our assumption that ¯q > q.
+• The last case to consider is when ¯si = s0
+i . This is the most interesting case because (s0
+i )′ ∈(−1, 0]
+as shown in Bichuch and Feinstein (2019)[Theorem 3.2], therefore the derivative has the opposite sign
+∂¯qs0
+i = (s0
+i )′∂¯qs−i ≥0. This case, requires a more careful analysis as follows.
+Let I0 be the set of banks j = 1, ..., n, such that ¯sj = s0
+j, then diﬀerentiating (A.5) w.r.t. ¯q, and using
+the fact that (s0
+i )′ ∈(−1, 0], we see that
+∂¯q¯sI0 = −(diag(1|I0| −c) + c1⊤
+|I0|)−1c
+X
+j̸∈I0
+∂¯q¯sj,
+for some c ∈[0, 1)|I0|. First, we wish to show that diag(1|I0| −c) + c1⊤
+|I0| is invertible:
+det
+
+diag(1|I0| −c) + c1⊤
+|I0|
+
+= det
+
+
+
+
+
+
+1
+ci1
+· · ·
+ci1
+ci2
+1
+· · ·
+ci2
+...
+...
+...
+...
+ci|I0|
+ci|I0|
+· · ·
+1
+
+
+
+
+
+
+= det
+
+
+
+
+
+
+1
+−(1 −ci1)
+· · ·
+−(1 −ci1)
+ci2
+1 −ci2
+· · ·
+0
+...
+...
+...
+...
+ci|I0|
+0
+· · ·
+1 −ci|I0|
+
+
+
+
+
+
+=
+
+1 + (1 −ci1)
+X
+i∈I0\{i1}
+ci
+1 −ci
+
+
+Y
+i∈I0\{i1}
+(1 −ci)
+=
+ 
+1 + (1 −ci1)
+X
+i∈I0
+ci
+1 −ci
+−(1 −ci1)
+ci1
+1 −ci1
+!
+Y
+i∈I0\{i1}
+(1 −ci)
+=
+ 
+1 +
+X
+i∈I0
+ci
+1 −ci
+! Y
+i∈I0
+(1 −ci),
+where the 2nd line follows from subtracting the ﬁrst column from every subsequent column and the
+3rd line by using the Schur complement to determine the determinant. Thus we ﬁnd that
+det
+
+diag(1|I0| −c) + c1⊤
+|I0|
+
+=
+ 
+1 +
+X
+i∈I0
+ci
+1 −ci
+! Y
+i∈I0
+(1 −ci) > 0.
+Taking this all together:
+n
+X
+i=1
+∂¯q¯si =
+X
+j̸∈I0
+∂¯q∂¯sj −1⊤
+|I0|(diag(1|I0| −c) + c1⊤
+|I0|)−1c
+X
+j̸∈I0
+∂¯q¯sj
+=
+
+1 −1⊤
+|I0|(diag(1|I0| −c) + c1⊤
+|I0|)−1c
+ X
+j̸∈I0
+∂¯q¯sj.
+(A.6)
+20
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Moreover 1 −1⊤
+|I0|(diag(1|I0| −c) + c1⊤
+|I0|)−1c ≥0, since:
+1⊤
+|I0|(diag(1|I0| −c) + c1⊤
+|I0|)−1c = 1⊤
+|I0|
+ 
+diag(1|I0| −c)−1 −
+diag(1|I0| −c)−1c1⊤
+|I0| diag(1|I0| −c)−1
+1 + 1⊤
+|I0| diag(1|I0| −c)−1c
+!
+c
+=
+X
+i∈I0
+ci
+1 −ci
+−
+1
+1 + P
+i∈I0
+ci
+1−ci
+X
+i∈I0
+X
+j∈I0
+cicj
+(1 −ci)(1 −cj)
+=
+
+1 −
+1
+1 + P
+i∈I0
+ci
+1−ci
+X
+j∈I0
+cj
+1 −cj
+
+X
+i∈I0
+ci
+1 −ci
+=
+ 
+1 +
+X
+i∈I0
+ci
+1 −ci
+!−1 X
+i∈I0
+ci
+1 −ci
+≤1,
+where the ﬁrst equality follows from the Sherman-Morrison matrix identity.
+It now follows from (A.6) that Pn
+i=1 ∂¯q¯si ≤0, as desired.
+The same calculation also shows that
+Pn
+i=1 ∂q¯si ≤0, and therefore (A.3) holds.
+Finally, in the case, that some banks may switch liquidation strategies, we use the fact that the mappings ¯si(·, ·), s0
+i (·) i = 1, ..., n are continuous. If there is a switch in strategies for bank i at some ﬁxed
+point q0, ¯q0, then by continuity, of all the mappings in (A.4) it follows that both one sided derivatives
+Pn
+i=1 ∂+
+¯q0 ¯si, Pn
+i=1 ∂−
+¯q0¯si ≤0.
+Therefore Pn
+i=1 ¯si is decreasing in ¯q.
+Similar result also holds for q.
+We
+conclude that (A.3) holds.
+A.3
+Proof of Theorem 3.6
+To show uniqueness, we consider the equilibrium prices, as a mapping of (q∗, ¯q∗) to liquidating positions of
+banks ¯s(q∗, ¯q∗), and then to the resulting prices, and show the uniqueness of a ﬁxed point to this mapping.
+To simplify notation throughout this proof, let Qi, i ∈{1, n}, denote the set of attainable prices. The case
+of VWAP corresponds to i = 1 and Q1 :=
+n
+(g(s), ˆf(s)) | s ∈[0, M]
+o
+and the case of LOB corresponds to
+i = 1, and Qn :=
+
+(g(Pn
+i=1 si), ¯f1(s), ..., fn(s)) | s ∈D
+	
+. Moreover, for convenience deﬁne
+I0 :=
+
+i ∈{1, ..., n} | ¯si = s0
+i
+	
+, IU :=
+
+i ∈{1, ..., n} | ¯si = hi
+¯qi
+
+,
+(A.7)
+Ia := {i ∈{1, ..., n} | ¯si = ai} , IL :=
+(
+i ∈{1, ..., n} | ¯si =
+hi −aiq
+¯qi −q
++)
+.
+(A.8)
+As before, we divide the proof into the VWAP and LOB cases:
+A.3.1
+Volume weighted average price
+Proof. We ﬁrst ﬁx ¯q = ˆf(s), q = g(s) for some s ∈[0, M] (recall the deﬁnition of ˆf from (A.2)) and look
+for an equilibrium ¯si(q, ¯q1n) = s∗
+i (P
+j̸=i ¯sj(q, ¯q1n), q, ¯q1n) for all i = 1, ..., n. That is for the modiﬁed Nash
+equilibrium given by (2.2) and formulated explicitly in (A.4).
+The next goal is to show (q, ¯q) 7→(Φ(q, ¯q), ¯Φ(q, ¯q)) = (g(Pn
+j=1 ¯sj(q, ¯q1n)), ˆf(Pn
+j=1 ¯sj(q, ¯q1n))), is a
+contraction mapping. That is, our goal is to show that
+¯Φ(q1, ¯q1) −¯Φ(q2, ¯q2)
+ ≤¯L
+(q1, ¯q1) −(q2, ¯q2)
+
+∞,
+and
+Φ(q1, ¯q1) −Φ(q2, ¯q2)
+ ≤L
+(q1, ¯q1) −(q2, ¯q2)
+
+∞with L, ¯L < 1 for any attainable set of prices (q1, ¯q1),
+21
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+(q2, ¯q2) ∈Q1. Without loss of generality, for this proof we will assume q1 ≤q2; therefore (q1, ¯q2) ∈b
+Q as
+well.
+Indeed, with the convention that 0/0 = 0:
+¯Φ(q1, ¯q1) −¯Φ(q2, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
+≤
+¯Φ(q1, ¯q1) −¯Φ(q1, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
++
+¯Φ(q1, ¯q2) −¯Φ(q2, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
+≤
+¯Φ(q1, ¯q1) −¯Φ(q1, ¯q2)
+
+|¯q1 −¯q2|
++
+¯Φ(q1, ¯q2) −¯Φ(q2, ¯q2)
+
+|q1 −q2|
+=
+1
+|¯q1 −¯q2|
+
+ˆf
+
+
+n
+X
+j=1
+¯sj(q1, ¯q11n)
+
+−ˆf
+
+
+n
+X
+j=1
+¯sj(q1, ¯q21n)
+
+
+
++
+1
+|q1 −q2|
+
+ˆf
+
+
+n
+X
+j=1
+¯sj(q1, ¯q21n)
+
+−ˆf
+
+
+n
+X
+j=1
+¯sj(q2, ¯q21n)
+
+
+
+≤−ˆf ′(0)
+
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂¯q¯sj(q, ¯q1n)
+
++
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂q¯sj(q, ¯q1n)
+
+
+.
+(A.9)
+Similarly for Φ(q, ¯q). Thus to be a contraction mapping, it is suﬃcient to show that
+−ˆf ′(0)
+
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂¯q¯sj(q, ¯q1n)
+
++
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂q¯sj(q, ¯q1n)
+
+
+< 1,
+−g′(0)
+
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂¯q¯sj(q, ¯q1n)
+
++
+max
+(q,¯q)∈Q1
+
+n
+X
+j=1
+∂q¯sj(q, ¯q1n)
+
+
+< 1.
+In order to show this, consider the sensitivity of ¯s(q, ¯q1n) with respect to q, ¯q. Recall the construction of ¯s given by (A.4). Recall the deﬁnitions of IU, IL, I0 from (A.7) and (A.8). Assume that ai,
+hi
+¯q ,
+s0
+i (P
+j̸=i ¯sj(q, ¯q1n)), hi−aiq
+¯q−q
+are all diﬀerent for all i = 1, ..., n, so that together with the continuity of s0 it
+follows that ¯s is diﬀerentiable with respect to q, ¯q and its derivatives for a given bank i are given by
+∂¯q¯si(q, ¯q1n) =
+ 
+−I{i∈IU }
+hi
+¯q2 −I{i∈IL}
+hi −aiq
+(¯q −q)2 + (s0
+i )′(
+X
+j̸=i
+¯sj(q, ¯q1n))(
+X
+j̸=i
+∂¯q¯sj(q, ¯q1n))I{i∈I0}
+!
+,
+∂q¯si(q, ¯q1n) =
+ 
+I{i∈IL}
+hi −ai¯q
+(¯q −q)2 + (s0
+i )′(
+X
+j̸=i
+¯sj(q, ¯q1n))(
+X
+j̸=i
+∂q¯sj(q, ¯q1n))I{i∈I0}
+!
+.
+(A.10)
+Here, the derivative of the optimal liquidations (s0
+i (s−i)) can be found via implicit diﬀerentiation: (s0
+i )′(s−i) =
+−
+ˆ
+f ′(s−i+s0
+i (s−i))+s0
+i (s−i) ˆ
+f ′′(s−i+s0
+i (s−i))
+2 ˆf ′(s−i+s0
+i (s−i))+s0
+i (s−i) ˆf ′′(s−i+s0
+i (s−i)). Therefore (s0
+i )′(s−i) ∈(−1, 0] for all banks i such that ¯si = s0
+i if
+ˆf ′(s) + s ˆf ′′(s) ≤0 for every s ∈[0, M].
+22
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Solving the system (A.10), it follows that
+∂¯q¯s(q, ¯q)
+= −
+
+I −diag
+
+
+
+(s0
+i )′(
+X
+j̸=i
+¯sj(q, ¯q1n))(
+X
+j̸=i
+∂¯q¯sj(q, ¯q1n))I{i∈I0}
+
+
+i=1,...,n
+
+(1n×n −I)
+
+
+−1
+×
+
+diag
+
+I{i∈IU }
+
+i=1,...,n
+ h
+¯q2 + diag
+
+I{i∈IL}
+
+i=1,...,n
+ h −qa
+(¯q −q)2
+
+,
+∂q¯s(q, ¯q)
+=
+
+I −diag
+
+
+
+(s0
+i )′(
+X
+j̸=i
+¯sj(q, ¯q1n))(
+X
+j̸=i
+∂q¯sj(q, ¯q1n))Ii∈I0}
+
+
+i=1,...,n
+
+(1n×n −I)
+
+
+−1
+× diag
+
+Ii∈IL}
+
+i=1,...,n
+ h −¯qa
+(¯q −q)2 .
+Using the fact that (s0
+i )′(s−i) ∈(−1, 0] for i = 1, ..., n as follows from the suﬃcient assumption of the
+theorem, it thus follows that
+1⊤
+n ∂¯q¯s(q, ¯q)
+
+≤
+max
+d∈[0,1)n
+1⊤
+n (I + diag(d)(1n×n −I))−1
+
+diag
+
+I{di=0,i∈IU }
+
+i=1,...,n
+ h
+¯q2 + diag
+
+I{di=0,i∈IL}
+
+i=1,...,n
+ h −qa
+(¯q −q)2
+ .
+To compute this maximum, let B(d) := I + diag(d)(1n×n −I) = diag (1n −d) + d1⊤
+n . By the ShermanMorrison formula B(d)−1 = diag (1n −d)−1 −
+1
+1+1⊤
+n diag(1n−d)−1d diag (1n −d)−1 d1⊤
+n diag (1n −d)−1. It
+now follows that for any j = 1, ..., n
+n
+X
+i=1
+ B(d)−1
+ij I{dj=0} =
+1
+1 + Pn
+k=1
+dk
+1−dk
+
+1 +
+n
+X
+k=1
+dk
+1 −dk
+−
+X
+k̸=j
+dk
+1 −dk
+
+I{dj=0} =
+I{dj=0}
+1 + Pn
+k=1
+dk
+1−dk
+.
+Together with Remark 1 we conclude that
+max
+(q,¯q)∈Q1
+1⊤
+n ∂¯q¯s(q, ¯q)
+ ≤
+max
+(q,¯q)∈Q1,d∈[0,1)n
+1⊤
+n B(d)−1
+(A.11)
+×
+
+diag
+
+I{di=0,i∈IU }
+
+i=1,...,n
+ h
+¯q2 + diag
+
+I{di=0,i∈IL}
+
+i=1,...,n
+ h −qa
+(¯q −q)2
+ 
+≤
+max
+¯q∈[ ˆf(M),1]
+1⊤
+n
+h
+¯q ∧a
+¯q
+ +
+max
+(q,¯q)∈Q1
+1⊤
+n
+h−qa
+¯q−q ∧a
+¯q −q
+ ≤
+max
+¯q∈[ ˆf(M),1]
+Pn
+i=1 ai
+¯q
++
+max
+(q,¯q)∈Q1
+Pn
+i=1 ai
+¯q −q
+≤
+M
+ˆf(M)
++
+M
+mins∈[0,M]
+
+ˆf(s) −g(s)
+.
+23
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Similarly,
+max
+(q,¯q)∈Q1
+1⊤
+n ∂q¯s(q, ¯q)
+ ≤
+max
+(q,¯q)∈Q1,d∈[0,1)n
+1⊤
+n B(d)−1 diag
+
+I{di=0,i∈IL}
+
+i=1,...,n
+ h −¯qa
+(¯q −q)2
+
+≤
+max
+(q,¯q)∈Q1
+1⊤
+n
+h−¯qa
+¯q−q
+¯q −q
+ ≤
+max
+(q,¯q)∈Q1
+Pn
+i=1 ai
+¯q −q
+≤
+M
+mins∈[0,M]
+
+ˆf(s) −g(s)
+,
+where in the last inequality we have used that fact that ai ≥hi−aiq
+¯q−q
+≥hi−ai ¯q
+¯q−q
+= −ai+ hi−aiq
+¯q−q
+≥−ai. Recalling
+(A.9), we conclude that (Φ, ¯Φ) is a contraction mapping if −3M( ˆf ′(0) ∧¯g′(0)) < mins∈[0,M]
+
+ˆf(s) −g(s)
+
+.
+Finally, it can be seen that ˆf ′(s) = f(s)−ˆ
+f(s)
+s
+. Therefore, ˆf ′(0) = 1
+2f ′(0).
+Recall that it was assumed that ai, hi
+¯q , hi−aiq
+¯q−q , s0
+i (P
+j̸=i ¯sj(q, ¯q1n)) are all diﬀerent. If this assumption is
+violated, say s0
+i (P
+j̸=i ¯sj(q, ¯q1n)) < hi−aiq
+¯q−q
+= hi
+¯q , then we need to consider one-sided derivatives. In that case,
+the derivative from the right ∂¯q+¯si(q, ¯q1n) = −h
+¯q2 , while the derivative from the left ∂¯q−¯si(q, ¯q1n) = −hi−aiq
+(¯q−q)2 .
+In this case, both one-sided derivatives would satisfy (A.11). The other cases, can be treated similarly.
+A.3.2
+Limit order book
+Proof. We ﬁrst ﬁx ¯q = ¯f(s), q = g(Pn
+i=1 si) for some s ∈D and look for an equilibrium ¯si(q, ¯q) =
+s∗
+i (¯s−i(q, ¯q), q, ¯q) which is explicitly provided by
+¯si(q, ¯q) =
+
+
+
+ai
+if hi ≥ai¯qi
+
+hi−aiq
+¯qi−q
++
+∨
+h
+s0
+i (¯s−i(q, ¯q)) ∧hi
+¯qi
+i
+if hi < ai¯qi
+(A.12)
+where s0
+i (¯s−i) solves the ﬁrst order condition
+1 −(1 + r)f
+
+
+n
+X
+j=1
+I{¯sj<si}¯sj + (n −(ki −1))si
+
+= 0,
+(A.13)
+where we recall that ki is such that s[ki] = si. For simplicity, we will continue to assume that q1 ≥q2 ≥... ≥
+qn.
+The next goal is to show (q, ¯q) 7→(Φ(q, ¯q), ¯Φ(q, ¯q)) = (g(Pn
+j=1 ¯sj(q, ¯q)),¯f1(¯s(q, ¯q))) is a contraction mapping, i.e., to show that
+ ¯Φ(q1, ¯q1) −¯Φ(q2, ¯q2)
+
+∞≤¯L
+(q1, ¯q1) −(q2, ¯q2)
+
+∞and
+Φ(q1, ¯q1) −Φ(q2, ¯q2)
+ ≤
+L
+(q1, ¯q1) −(q2, ¯q2)
+
+∞with L, ¯L < 1 for any (q1, ¯q1), (q2, ¯q2) ∈Qn. Without loss of generality, for this
+proof we will assume q1 ≤q2; therefore (q1, ¯q2) ∈bQ.
+24
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Indeed, with the convention that 0/0 = 0, for any 1 ≤j ≤n:
+¯Φj(q1, ¯q1) −¯Φj(q2, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
+≤
+¯Φj(q1, ¯q1) −¯Φj(q1, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
++
+¯Φj(q1, ¯q2) −¯Φj(q2, ¯q2)
+
+∥(q1, ¯q1) −(q2, ¯q2)∥∞
+≤
+n
+X
+k=1
+¯Φj(q1, ¯q2
+{1,...,k−1}, ¯q1
+{k,...,n}) −¯Φj(q1, ¯q2
+{1,...,k}, ¯q1
+{k+1,...,n})
+
+∥¯q1 −¯q2∥∞
++
+¯Φj(q1, ¯q2) −¯Φj(q2, ¯q2)
+
+|q1 −q2|
+≤
+n
+X
+k=1
+¯Φj(q1, ¯q2
+{1,...,k−1}, ¯q1
+{k,...,n}) −¯Φj(q1, ¯q2
+{1,...,k}, ¯q1
+{k+1,...,n})
+
+|¯q1
+k −¯q2
+k|
++
+¯Φj(q1, ¯q2) −¯Φj(q2, ¯q2)
+
+|q1 −q2|
+=
+n
+X
+k=1
+1
+|¯q1
+k −¯q2
+k|
+ ¯fj
+
+¯s(q1, ¯q2
+{1,...,k−1}, ¯q1
+{k,...,n})
+
+−¯fj
+
+¯s(q1, ¯q2
+{1,...,k}, ¯q1
+{k+1,...,n})
+
++
+1
+|q1 −q2|
+ ¯fj
+ ¯s(q1, ¯q2)
+
+−¯fj
+ ¯s(q2, ¯q2)
+
+≤
+n
+X
+k=1
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂¯qk ¯si(q, ¯q)
+ +
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂q¯si(q, ¯q)
+ .
+Similarly for Φ(q, ¯q). Thus to be a contraction mapping, it is suﬃcient to show that for every j = 1, ..., n
+n
+X
+k=1
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂¯qk ¯si(q, ¯q)
+ +
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂q¯si(q, ¯q)
+ < 1,
+(A.14)
+−g′(0)
+ n
+X
+k=1
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂¯qk ¯si(q, ¯q)
+ −
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂q¯si(q, ¯q)
+
+!
+< 1.
+In order to show this, consider the sensitivity of ¯s(q, ¯q) with respect to q, ¯q. Recall again the deﬁnitions
+of IU, IL, I0 from (A.7) and (A.8). Assume that ai, hi
+¯qi , s0
+i (¯s−i(q, ¯q)), hi−aiq
+¯qi−q
+are all diﬀerent for all i = 1, ..., n.
+Note that for diﬀerent i, some of these quantities may be equal, namely, we must have s0
+i = s0
+j, since if there
+is a solution s0, it is unique. Similar to the proof in Section A.3.1, otherwise, one sided derivatives can be
+considered. Together with the continuity of s0 it follows that ¯si is diﬀerentiable with respect to q, ¯q and its
+derivatives for a given bank i are given by
+∂¯qk ¯si(q, ¯q) =
+ 
+−I{i=k,i∈IU }
+hi
+¯q2
+i
+−I{i=k,i∈IL}
+hi −aiq
+(¯qi −q)2 + ∇s0
+i (¯s−i(q, ¯q)) ·
+h
+∂¯qk ¯sj(q, ¯q)I{¯sj<s0
+i }
+i
+j=1,...,n,j̸=i I{i∈I0}
+!
+,
+∂q¯si(q, ¯q) =
+ 
+I{i∈IL}
+hi −ai¯qi
+(¯qi −q)2 + ∇s0
+i (¯s−i(q, ¯q)) · ∂q¯s−i(q, ¯q)I{i∈I0}
+!
+.
+Here, the derivative of the optimal liquidations (s0
+k(s−i)) can be found via implicit diﬀerentiation of 1 −(1 +
+r)f
+Pn
+j=1 I{¯sj<s0
+i }¯sj + (n −ki+1)si
+
+= 0 to be ∂sjs0
+i (s−i) = −
+I{¯sj<s0
+i }
+n−(ki−1). Set ¯q′ = minj,k ∂sk ¯fj(0n) < 0. Similarly to before, we have that ∂sk ¯fj(0n) = 1
+2f ′(0n)I{1≤k≤j}. Recall that hi
+¯q2
+i , hi−aiq
+(¯qi−q)2 ≤
+ai
+mins∈D( ¯
+fj(s)−g(Pn
+i=1 si)).
+Thus, for any i0 ∈I0, we have that P
+i∈I0 ∂¯qj ¯si(q, ¯q) > −I{¯sj<s0
+i0 }
+P
+k∈{k : ¯sk<s0
+i0 }
+ak
+mins∈D( ¯fj(s)−g(Pn
+i=1 si)), for
+j = 1, ..., n. Therefore,
+Pm
+k=l ∂¯qj ¯sk(q, ¯q)
+ ≤
+P
+k∈{k : ¯sk̸=s0
+i0 }
+ak
+mins∈D( ¯
+fj(s)−g(Pn
+i=1 si)) ≤
+M
+mins∈D( ¯
+fj(s)−g(Pn
+i=1 si)),
+for any 1 ≤l ≤m ≤n.
+25
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+We conclude that for any j = 1, ..., n, we have that
+n
+X
+k=1
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂¯qk ¯si(q, ¯q)
+ ≤|¯q′|
+nM
+mins∈D
+  ¯fj(s) −g(Pn
+i=1 si)
+.
+Similarly, since |Pn
+i=1 ∂q¯si(q, ¯q)| ≤
+M
+mins∈D,m( ¯
+fm(s)−g(Pn
+i=1 si)), we get that
+max
+(q,¯q)∈Qn
+
+n
+X
+i=1
+∂si ¯fj(0n)∂q¯si(q, ¯q)
+ ≤|¯q′|
+M
+mins∈D
+  ¯fj(s) −g(Pn
+i=1 si)
+.
+Recalling (A.14) we conclude that ¯Φ is a contraction mapping if
+−nM min
+j,k ∂sk ¯fj(0n) < min
+j
+min
+s∈D
+ 
+¯fj(s) −g(
+n
+X
+i=1
+si)
+!
+.
+Similar −nMg′(0) < minj mins∈D
+  ¯fj(s) −g(Pn
+i=1 si)
+
+ensures that Φ is a contraction mapping.
+B
+Sensitivity of the clearing solutions to interest rates r
+In this section we consider the assumptions of Theorem 3.6 with the goal of investigating the sensitivity of
+the (unique) equilibrium to the interest rate r. To simplify notation, for this section we write ¯si := ¯si(q, ¯q1n)
+or ¯si := ¯si(q, ¯q) where the values of (q, ¯q) and (q, ¯q) is clear from context for the VWAP and LOB settings
+respectively. In the following, we derive ∂r¯s, the derivatives of the equilibrium liquidations w.r.t. r. We
+then provide conditions under which the intuition of Remark 3 holds, i.e., the system-wide total liquidations
+increase with increase of r.
+B.1
+Volume weighted average price
+Initially, as in the prior proofs, assume that for each i = 1, ..., n, the possible solutions to the optimization
+for ¯si from (A.4), namely ai, hi
+¯q , hi−aiq
+¯q−q , s0
+i (P
+j̸=i ¯sj), are all diﬀerent. We want to study ∂r¯si for i = 1, ..., n.
+From the previous assumption it follows that
+∂r¯si =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+if i ∈Ia
+−hi
+¯q2 ∂r¯q
+if i ∈IU
+
+hi−ai ¯q
+(¯q−q)2
+
+∂rq −
+
+hi−aiq
+(¯q−q)2
+
+∂r¯q
+if i ∈IL
+∂rs0
+i
+if i ∈I0
+where Ia, IU, IL, I0 were deﬁned in (A.7) and (A.8).
+Before continuing, we will consider ∂r¯si for i ∈I0. By construction, we have
+−( ˆf(s0
+i +
+X
+j̸=i
+¯sj) + s0
+i ˆf ′(s0
+i +
+X
+j̸=i
+¯sj)) −(1 + r)(2 ˆf ′(s0
+i +
+X
+j̸=i
+¯sj) + s0
+i ˆf ′′(s0
+i +
+X
+j̸=i
+¯sj))∂r¯si
+−(1 + r)
+X
+j̸=i
+( ˆf ′(s0
+i +
+X
+j̸=i
+¯sj) + s0
+i ˆf ′′(s0
+i +
+X
+j̸=i
+¯sj))∂r¯sj = 0.
+26
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Recall that every bank i ∈I0 will satisfy the same condition, i.e., ∂r¯si = ∂r¯sj for every i, j ∈I0. For notational simplicity let s0 = s0
+i , ∂rs0 = ∂rs0
+i for arbitrary i ∈I0. Let c =
+ˆ
+f ′(|I0|s0+P
+j̸∈I0 ¯sj)+s0 ˆ
+f ′′(|I0|s0+P
+j̸∈I0 ¯sj)
+2 ˆ
+f ′(|I0|s0+P
+j̸∈I0 ¯sj)+s0 ˆ
+f ′′(|I0|s0+P
+j̸∈I0 ¯sj)
+and d = −
+ˆ
+f(|I0|s0+P
+j̸∈I0 ¯sj)+s0 ˆf ′(|I0|s0+P
+j̸∈I0 ¯sj)
+(1+r)(2 ˆf ′(|I0|s0+P
+j̸∈I0 ¯sj)+s0 ˆf ′′(|I0|s0+P
+j̸∈I0 ¯sj)). Recall that by our Assumption 2.1, 0 ≤c < 1 and
+d > 0. Therefore, it can be shown that
+∂rs0 =
+d
+1 + c(|I0| −1) −
+c
+1 + c(|I0| −1)
+X
+j̸∈I0
+∂r¯sj.
+We can now consider the joint sensitivity of the haircut q and price ¯q to interest rates:
+∂rq =
+
+X
+i∈I0
+∂rs0 +
+X
+i̸∈I0
+∂r¯si
+
+g′(
+n
+X
+i=1
+¯si)
+=
+
+
+|I0|d
+1 + c(|I0| −1) +
+1 −c
+1 + c(|I0| −1)
+X
+j̸∈I0
+∂r¯si
+
+g′(
+n
+X
+i=1
+¯si)
+∂r¯q =
+
+X
+i∈I0
+∂rs0 +
+X
+i̸∈I0
+∂r¯si
+
+ˆf ′(
+n
+X
+i=1
+¯si)
+=
+
+
+|I0|d
+1 + c(|I0| −1) +
+1 −c
+1 + c(|I0| −1)
+X
+j̸∈I0
+∂r¯si
+
+ˆf ′(
+n
+X
+i=1
+¯si).
+To simplify notation, let ˜c =
+1−c
+1+c(|I0|−1) and ˜d =
+|I0|d
+1+c(|I0|−1). Therefore
+∂rq =
+
+˜d + ˜c
+ h −a¯q
+(¯q −q)2 [I{i∈IL}]i −h
+¯q2
+
+∂rq −˜c
+ h −aq
+(¯q −q)2 [I{i∈IL}]i[I{i∈IU }]i
+
+∂r¯q
+
+g′(
+n
+X
+i=1
+¯si),
+∂r¯q =
+
+˜d + ˜c
+ h −a¯q
+(¯q −q)2 [I{i∈IL}]i −h
+¯q2
+
+∂rq −˜c
+ h −aq
+(¯q −q)2 [I{i∈IL}]i[I{i∈IU }]i
+
+∂r¯q
+
+ˆf ′(
+n
+X
+i=1
+¯si).
+That is, the sensitivity of the haircut and prices (q, ¯q) w.r.t. the interest rate r is the solution of a linear
+system
+ 
+∂rq
+∂r¯q
+!
+= [I −W]−1
+ 
+g′(Pn
+i=1 ¯si) ˜d
+ˆf ′(Pn
+i=1 ¯si)
+!
+=
+
+
+I +
+ 
+g′(Pn
+i=1 ¯si)
+ˆf ′(Pn
+i=1 ¯si)
+! 
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+−
+h
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+i 
+˜c
+1 −˜c
+h
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+
+g′(Pn
+i=1 ¯si) −
+
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+
+ˆf ′(Pn
+i=1 ¯si)
+i
+
+
+×
+ 
+g′(Pn
+i=1 ¯si) ˜d
+ˆf ′(Pn
+i=1 ¯si)
+!
+,
+W =
+ 
+g′(Pn
+i=1 ¯si)
+ˆf ′(Pn
+i=1 ¯si)
+! 
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+−
+h
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+i 
+˜c.
+27
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+Moreover, it also follows that
+∂r
+n
+X
+i=1
+¯si =
+∂rq
+g′(Pn
+i=1 ¯si)
+= 1 +
+˜c
+
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+
+g′(Pn
+i=1 ¯si) −
+
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+
+ˆf ′(Pn
+i=1 ¯si)
+
+1 −˜c
+h
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+
+g′(Pn
+i=1 ¯si) −
+
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+
+ˆf ′(Pn
+i=1 ¯si)
+i
+=
+1
+1 −˜c
+h
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+
+g′(Pn
+i=1 ¯si) −
+
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+
+ˆf ′(Pn
+i=1 ¯si)
+i.
+It follows that ∂r
+Pn
+i=1 ¯si > 0 if
+
+h−a¯q
+(¯q−q)2 [I{i∈IL}]i
+
+g′(Pn
+i=1 ¯si)−
+
+h−aq
+(¯q−q)2 [I{i∈IL}]i + h
+¯q2 [I{i∈IU }]i
+
+ˆf ′(Pn
+i=1 ¯si) <
+1
+˜c, which happens if, for example, ˆf ′ is small enough.
+B.2
+Limit order book
+Initially, again assume that for each i = 1, ..., n, the possible solutions (ai, hi
+¯qi , hi−aiq
+¯qi−q , s0
+i (P
+j̸=i ¯sj)) to the
+optimization (A.12) are all diﬀerent. As in the VWAP case, we want to study ∂r¯si for i ∈{1, ..., n}. From
+the previous assumption it follows that
+∂r¯si =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+if i ∈Ia,
+−hi
+¯q2
+i ∂r¯qi
+if i ∈IU,
+
+hi−ai ¯qi
+(¯qi−q)2
+
+∂rq −
+
+hi−aiq
+(¯qi−q)2
+
+∂r¯qi
+if i ∈IL,
+∂rs0
+i
+if i ∈I0,
+where Ia, IU, IL, I0 were deﬁned in (A.7) and (A.8).
+Recall s0
+i (¯s−i) solves the ﬁrst order condition
+1 −(1 + r)f
+
+
+n
+X
+j=1
+I{¯sj<si}¯sj + (n −(ki −1))si
+
+= 0,
+where ki is such that s[ki] = si. As noted in the proof of Theorem 3.6 in the LOB case, we have that ¯si = s0
+i
+is unique, and independent of i. In fact, s0
+i = s0
+j for every i, j ∈I0. We will denote this common value as s0.
+If ¯si = s0 then from implicit diﬀerentiation of (A.13), we get that
+∂rs0 = −
+f
+Pn
+j=1 I{¯sj<s0}¯sj + (n −(|I0 ∪IL| −1))s0
+(1 + r)f ′
+Pn
+j=1 I{¯sj<s0}¯sj + (n −(|I0 ∪IL| −1))s0
+
+(n −(|I0 ∪IL| −1))
+−
+P
+i∈IU ∂r¯si
+n −(|I0 ∪IL| −1).
+Now we want to consider the case of ∂r¯si for i ∈IU. Notably, ¯si < s0 for i ∈IU by construction (see
+(A.12)). Therefore for such banks, there is no change to the attained prices ¯qi by a change in the interest
+rate, i.e., ∂r¯qi = 0 for i ∈IU. This allows us to simplify ∂rs0.
+28
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+We can now consider the joint sensitivity of the haircut q and prices ¯q to interest rates:
+∂rq =
+" X
+i∈I0∪IL
+∂r¯si
+#
+g′(
+n
+X
+i=1
+¯si)
+=
+
+−
+|I0|f
+Pn
+j=1 I{¯sj<s0}¯sj + (n −(|I0 ∪IL| −1))s0
+(1 + r)f ′
+Pn
+j=1 I{¯sj<s0}¯sj + (n −(|I0 ∪IL| −1))s0
+
+(n −(|I0 ∪IL| −1))
++
+X
+i∈IL
+∂r¯si
+
+g′(
+n
+X
+i=1
+¯si),
+∂r¯qi =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+0
+if i ∈Ia ∪IU,
+−
+f
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+(1+r)f ′
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+
+(n−(|I0∪IL|−1))∂si ¯fi(¯s)
+if i ∈I0,
+−
+|I0|f
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+(1+r)f ′
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+
+(n−(|I0∪IL|−1))∂si0 ¯fi(¯s) + P
+j∈IL
+¯sj≤¯si
+(∂r¯sj) ∂sj ¯fi(¯s)
+if i ∈IL,
+for arbitrary i0 ∈I0.
+To simplify notation, let ˜c = −
+f
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+(1+r)f ′
+Pn
+j=1 I{¯sj<s0}¯sj+(n−(|I0∪IL|−1))s0
+
+(n−(|I0∪IL|−1)). It then follows
+that
+ 
+∂r¯q
+∂rq
+!
+= W−1b,
+where
+W = (wi,j)1≤i,j≤n+1,
+b = (bi)i=1,...,n+1,
+wi,j = I{i=j<n+1} + I{i,j∈IL,¯si≥¯sj}
+hj −ajqj
+(¯qj −q)2 ∂sj ¯fi(¯s) −I{i∈IL,j=n+1}
+X
+k∈IL,¯sk≤¯si
+hk −ak¯qk
+(¯qk −q)2 ∂sk ¯fi(¯s),
+wn+1,j = I{j∈IL}
+hj −ajq
+(¯qj −q)2 g′ + I{j=n+1}
+ 
+1 −g′ X
+i∈IL
+hi −aiq
+(¯qi −q)2
+!
+,
+bi = ˜c∂si ¯fi(¯s)I{i∈I0} + |I0| ˜c∂si0 ¯fi(¯s)I{i∈IL} + |I0|˜cg′I{i=n+1}.
+We note, without loss of generality, that if we assume that for any i ∈Ia, j ∈IU, k ∈I0, l ∈IL, we have
+that i < j < k < l, and that for any i, j ∈IL, such that i < j then ¯si ≤¯sj, we then have that W is lower
+triangular, but has an addition of one full n + 1 column. W is invertible, and we can ﬁnd its inverse as
+follows: Note that W can be written as
+W =
+
+W0 + (0, 0, ..., 0, 1)⊤
+"
+I{j∈IL}
+hj −ajq
+(¯qj −q)2 g′ −I{j=n+1}g′ X
+i∈IL
+hi −aiq
+(¯qi −q)2
+#
+j=1,...,n+1
+
+
+⊤
+,
+where W0 = D (I + N) with
+D = diag
+
+
+"
+1 + I{j∈IL}
+hj −ajqj
+(¯qj −q)2 ∂sj ¯fj(¯s)
+#
+j=1,...,n
+
+
+29
+Electronic copy available at: https://ssrn.com/abstract=3701847
+
+is a diagonal matrix and a nilpotent matrix
+N =
+
+
+ 
+I{i,j∈IL,¯si>¯sj}
+hj −ajqj
+(¯qj −q)2 ∂sj ¯fi(¯s)
+!
+j,i
+
+
+1≤i,j≤n+1
+.
+Note that N is such that Nn+1 = 0. Therefore, we have that
+W−1
+0
+= (I + N)−1 D−1 =
+ I −N + N2 + ... + (−1)nNn
+D−1.
+Finally,
+W−1 =
+
+
+W−1
+0
+−
+W−1
+0 (0, 0, ..., 0, 1)⊤h
+I{j∈IL}
+hj−ajq
+(¯qj−q)2 g′ −I{j=n+1}g′ P
+i∈IL
+hi−aiq
+(¯qi−q)2
+i
+j=1,...,n+1 W−1
+0
+1 +
+h
+I{j∈IL}
+hj−ajq
+(¯qj−q)2 g′ −I{j=n+1}g′ P
+i∈IL
+hi−aiq
+(¯qi−q)2
+i
+j=1,...,n+1 W−1
+0 (0, 0, ..., 0, 1)⊤
+
+
+
+⊤
+.
+To calculate ∂r
+Pn
+i=1 ¯si, recall that ∂r¯qi = 0 for i ∈IU, and from (B.2) it follows that
+∂r
+n
+X
+i=1
+¯si =
+X
+i∈I0∪IL
+∂r¯si =
+∂rq
+g′(Pn
+i=1 ¯si) = (0, 0, ..., 0, 1)⊤W−1b
+g′(Pn
+i=1 ¯si)
+.
+It follows that ∂r
+Pn
+i=1 ¯si ≥0 if (0, 0, ..., 0, 1)⊤W−1b ≤0.
+30
+Electronic copy available at: https://ssrn.com/abstract=3701847

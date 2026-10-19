@@ -1,0 +1,102 @@
+{
+ "doc_id": 198,
+ "titulo": "LLM-Augmented Quantitative Finance: A Simple but Rigorous Framework for Market Understanding and Forecasting",
+ "resumen_operativo": "El paper propone un marco teórico, modular y matemáticamente explícito para integrar salidas de LLMs (sentimiento y embeddings de texto) como features en modelos cuantitativos tradicionales. Formaliza un pipeline que agrega estas variables semánticas a predictores numéricos, demostrando teóricamente que, en regresión lineal, la adición de features LLM no puede empeorar el riesgo in-sample. Además, provee condiciones de proyección L2 para que el sentimiento sea incrementalmente informativo y una interpretación media-varianza de los regímenes de texto (clústers de embeddings). Sin embargo, carece de validación empírica real (los resultados y tablas son placeholders ilustrativos), sirviendo únicamente como blueprint conceptual.",
+ "calidad_paper": "baja",
+ "conceptos": [
+  {
+   "nombre": "LLM Sentiment and Embedding",
+   "tipo": "dato",
+   "definicion_en_contexto": "Extracción de un puntaje de sentimiento escalar y un vector semántico denso a partir de documentos de texto (noticias, reportes) procesados por un LLM, promediados diariamente.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Hybrid Feature Vector"
+    }
+   ],
+   "cita_textual": "Given a document dt,i, the LLM produces: s(dt,i) ∈ [-1, 1] (scalar sentiment), e(dt,i) ∈ R^k (semantic embedding)."
+  },
+  {
+   "nombre": "Textual Regimes",
+   "tipo": "dato",
+   "definicion_en_contexto": "Variables categóricas (one-hot) obtenidas aplicando algoritmos de clustering (ej. k-means) sobre la serie de tiempo de embeddings diarios generados por el LLM.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "LLM Sentiment and Embedding"
+    },
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Hybrid Feature Vector"
+    }
+   ],
+   "cita_textual": "LLM embeddings can also help identify textual regimes, such as 'crisis', 'policy change', or 'earnings optimism'. We use a simple clustering procedure."
+  },
+  {
+   "nombre": "Hybrid Feature Vector",
+   "tipo": "dato",
+   "definicion_en_contexto": "Vector que concatena las características numéricas tradicionales del mercado con los datos semánticos extraídos por el LLM (sentimiento agregado, embeddings y regímenes textuales).",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "next-day excess return"
+    }
+   ],
+   "cita_textual": "We combine numerical and textual features into a single feature vector zt := (xt^⊤, St, Et^⊤, Rt^⊤)^⊤"
+  },
+  {
+   "nombre": "Linear Hybrid Predictor",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo de regresión lineal (Ordinary Least Squares) que utiliza el vector de características híbrido para predecir variables como el exceso de retorno del día siguiente.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Hybrid Feature Vector"
+    }
+   ],
+   "cita_textual": "We start with a linear model: ˆyt+1 = β0 + β^⊤zt"
+  },
+  {
+   "nombre": "Incremental Informativeness of Sentiment",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Condición estadística que estipula que el sentimiento proporciona información adicional valiosa si altera la expectativa condicional del retorno esperado frente al uso exclusivo de variables numéricas.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "LLM Sentiment and Embedding"
+    }
+   ],
+   "cita_textual": "We say that LLM sentiment S is incrementally informative for Y beyond X if E[Y | X, S] ≠ E[Y | X] with positive probability."
+  },
+  {
+   "nombre": "Regime-Optimal Position",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Asignación óptima de capital a un activo, según una función de utilidad de media-varianza, condicionada a los momentos estadísticos (media y varianza) dependientes del régimen textual actual.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "Textual Regimes"
+    }
+   ],
+   "cita_textual": "the optimal position in regime k is w⋆_k = μk / (λσ_k^2)"
+  }
+ ],
+ "hallazgos": [
+  {
+   "descripcion": "Se prueba teóricamente que añadir features generadas por LLM (sentimiento, embeddings, regímenes) a un modelo lineal basado en variables numéricas nunca incrementa el riesgo in-sample (RSS hibrido <= RSS numérico).",
+   "relevancia": "Provee una garantía matemática básica de que los modelos lineales pueden incorporar señales semánticas sin degradar el ajuste in-sample, apoyando su inclusión."
+  },
+  {
+   "descripcion": "Si el sentimiento de un LLM es incrementalmente informativo, la proyección L2 demuestra que el predictor que incluye el sentimiento tendrá un Error Cuadrático Medio estrictamente menor.",
+   "relevancia": "Justificación teórica de por qué el NLP puede mejorar la precisión de los pronósticos cuantitativos."
+  },
+  {
+   "descripcion": "Las posiciones dependientes del régimen derivadas de los clústeres de embeddings pueden alcanzar una utilidad esperada estrictamente mayor que las estrategias de ponderación constante si existe dispersión en los ratios de Sharpe entre regímenes.",
+   "relevancia": "Respalda matemáticamente la aplicación de asignación dinámica de activos (dynamic asset allocation) basada en macro-regímenes identificados por procesamiento de lenguaje natural."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El paper carece de validación empírica real (presenta datos ilustrativos en placeholders) y no evalúa datos intradía, latencias de procesamiento de LLMs ni costos operacionales. Sirve como marco teórico, pero no demuestra eficacia aplicable al ecosistema ES."
+ }
+}

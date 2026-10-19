@@ -1,0 +1,500 @@
+LLM-Augmented Quantitative Finance:
+A Simple but Rigorous Framework for Market Understanding and
+Forecasting
+Yifan Guo∗
+November 29, 2025
+Abstract
+Large Language Models (LLMs) demonstrate strong abilities in pattern extraction, semantic
+understanding, and cross-modal reasoning. However, their integration into quantitative finance
+remains largely exploratory. This paper proposes a simple, modular, and mathematically explicit framework that combines LLM-based market reasoning with traditional quantitative models. We formalize an LLM feature pipeline, define a hybrid predictor, and prove several basic
+properties: (i) in-sample risk reduction when augmenting linear models with LLM features, (ii)
+conditions under which LLM sentiment is incrementally informative in the sense of conditional
+expectation, and (iii) a simple mean–variance interpretation of LLM-based regime features. We
+also provide placeholders for empirical figures (to be generated in Python) and discuss practical
+considerations for deploying LLMs in trading and risk-management pipelines.
+1
+Introduction
+Quantitative finance has historically relied on numerical signals: returns, volatility, order-flow
+imbalance, liquidity indicators, and macroeconomic factors. The rapid progress of Large Language
+Models (LLMs) introduces a powerful new component—semantic signals derived from unstructured
+text such as financial news, earnings call transcripts, regulatory filings, and social media streams.
+Despite the success of LLMs in natural language processing, a simple and transparent framework
+for combining LLM outputs with standard quant models is still under development. Practitioners
+often face questions such as:
+• How should LLM-derived sentiment or textual embeddings enter a forecasting model?
+• Under what conditions can LLM signals be provably informative?
+• How can we interpret the interaction between semantic and numerical features?
+In this paper, we propose a minimal but extensible framework where LLMs act as a textual
+feature engine feeding downstream predictive models. We emphasize three aspects:
+1. a clean mathematical setup;
+2. simple theoretical properties with short proofs; and
+3. an empirical blueprint with explicit figure/file names (for later implementation in Python).
+∗guoyifan080@gmail.com
+1
+
+1.1
+Contributions
+This paper makes three simple but rigorous contributions:
+1. We formalize an LLM-based sentiment and embedding pipeline that converts raw text into
+structured signals suitable for quantitative models.
+2. We propose and analyze a hybrid forecasting model that combines LLM features with traditional
+numerical predictors. We prove that, in linear regression, adding LLM features cannot worsen
+in-sample fit and give conditions for genuine incremental predictive power.
+3. We interpret LLM-based regime features in a mean–variance setting, showing how textual
+regimes can induce regime-specific optimal portfolios.
+2
+Model Setup
+We consider a discrete-time setting indexed by trading day t = 1, 2, . . . , T.
+2.1
+Market and Textual Data
+For each day t we observe:
+• Numerical market data xt ∈Rd (returns, volumes, volatility, factor exposures, etc.);
+• A collection of text documents Dt = {dt,1, . . . , dt,Nt} (news articles, headlines, earnings call
+snippets, tweets, etc.).
+Our prediction target is a scalar yt+1, e.g. next-day excess return, realized volatility, or a binary
+direction indicator.
+Assumption 1 (No Look-Ahead Bias). For each t, the numerical features xt and the textual
+documents Dt are measurable with respect to the information set Ft, and yt+1 is Ft+1-measurable
+with Ft ⊆Ft+1.
+Assumption 1 simply formalizes that xt and Dt are observable at time t and do not use future
+information.
+2.2
+LLM Feature Extraction
+We assume access to an LLM that maps individual documents to both a sentiment score and an
+embedding.
+Definition 1 (LLM Sentiment and Embedding). Given a document dt,i, the LLM produces:
+s(dt,i) ∈[−1, 1]
+(scalar sentiment),
+(1)
+e(dt,i) ∈Rk
+(semantic embedding).
+(2)
+We aggregate document-level signals into day-level features.
+Daily sentiment.
+A simple aggregation is the average sentiment:
+St := 1
+Nt
+Nt
+X
+i=1
+s(dt,i) ∈[−1, 1].
+(3)
+2
+
+Daily embedding.
+Similarly, we define the average embedding:
+Et := 1
+Nt
+Nt
+X
+i=1
+e(dt,i) ∈Rk.
+(4)
+Other weighting schemes (e.g. volume-weighted, relevance-weighted, exponential decay) are
+possible but not required for the basic theory.
+2.3
+Textual Regimes via Clustering
+LLM embeddings can also help identify textual regimes, such as “crisis”, “policy change”, or “earnings optimism”. We use a simple clustering procedure.
+Definition 2 (Textual Regimes). Let {Et}T
+t=1 be the sequence of daily embeddings. Fix K ∈N and
+apply a clustering algorithm (e.g. k-means) to obtain cluster labels
+Ct ∈{1, . . . , K},
+t = 1, . . . , T.
+(5)
+We then define the one-hot regime vector
+Rt :=
+ 1(Ct = 1), . . . , 1(Ct = K)
+⊤∈{0, 1}K.
+(6)
+2.4
+Hybrid Feature Vector
+We combine numerical and textual features into a single feature vector
+zt :=
+
+x⊤
+t , St, E⊤
+t , R⊤
+t
+⊤∈Rd+1+k+K.
+(7)
+The hybrid forecast will be based on zt.
+3
+Hybrid Forecasting Model and Basic Properties
+3.1
+Linear Hybrid Predictor
+We start with a linear model:
+ˆyt+1 = β0 + β⊤zt,
+β0 ∈R, β ∈Rd+1+k+K.
+(8)
+Let Z ∈RT×(d+1+k+K) be the design matrix whose t-th row is z⊤
+t , and let Y ∈RT collect the
+targets yt+1 (aligned to t = 1, . . . , T). The ordinary least squares (OLS) estimator is
+(ˆβ0, ˆβ) = arg min
+β0,β
+T
+X
+t=1
+ yt+1 −β0 −β⊤zt
+2.
+(9)
+We compare this hybrid model to a baseline that uses only numerical features xt.
+3
+
+3.2
+In-Sample Improvement from LLM Features
+Let X ∈RT×d be the design matrix of numerical features. The numerical-only OLS estimator is
+obtained from
+(ˆα0, ˆα) = arg min
+α0,α
+T
+X
+t=1
+ yt+1 −α0 −α⊤xt
+2.
+(10)
+Denote the minimized residual sums of squares (RSS) by
+RSSnum :=
+T
+X
+t=1
+ yt+1 −ˆα0 −ˆα⊤xt
+2,
+(11)
+RSShyb :=
+T
+X
+t=1
+ yt+1 −ˆβ0 −ˆβ⊤zt
+2.
+(12)
+Theorem 1 (In-Sample Risk Non-Increase). Assume that the hybrid feature set strictly contains
+the numerical features, i.e. for each t the vector xt is a subvector of zt, and that the design matrices
+have full column rank where needed. Then
+RSShyb ≤RSSnum.
+(13)
+Proof. Consider the numerical-only model as a special case of the hybrid model where all coefficients
+corresponding to LLM-based components (St, Et, Rt) are zero. In particular, there exists a vector
+(˜β0, ˜β) such that
+˜β0 = ˆα0,
+˜β = (ˆα, 0, . . . , 0)⊤,
+(14)
+and therefore
+T
+X
+t=1
+ yt+1 −˜β0 −˜β⊤zt
+2 = RSSnum.
+(15)
+By definition of the OLS solution (ˆβ0, ˆβ) as the minimizer over all (β0, β),
+RSShyb =
+T
+X
+t=1
+ yt+1 −ˆβ0 −ˆβ⊤zt
+2 ≤
+T
+X
+t=1
+ yt+1 −˜β0 −˜β⊤zt
+2 = RSSnum.
+(16)
+Theorem 1 shows that adding LLM features cannot worsen in-sample fit in linear regression.
+Of course, out-of-sample performance depends on overfitting, which motivates regularization and
+careful evaluation.
+3.3
+Incremental Informational Content of Sentiment
+We now formalize when LLM sentiment is genuinely informative.
+Assumption 2 (Square Integrability). The random variables yt+1, xt, and St are square-integrable,
+i.e. have finite second moments.
+Let (Y, X, S) denote generic random variables with the same joint distribution as (yt+1, xt, St).
+4
+
+Definition 3 (Incremental Informativeness of Sentiment). We say that LLM sentiment S is incrementally informative for Y beyond X if
+E[Y | X, S]̸ = E[Y | X]
+with positive probability.
+(17)
+Proposition 1 (L2 Projection and Improvement). Under Assumption 2, the conditional expectation
+E[Y | X] is the unique minimizer of
+f 7→E
+
+(Y −f(X))2
+(18)
+over all square-integrable measurable functions of X. Similarly, E[Y | X, S] is the unique minimizer
+over all square-integrable measurable functions of (X, S). Moreover,
+E
+
+(Y −E[Y | X, S])2
+≤E
+
+(Y −E[Y | X])2
+,
+(19)
+with strict inequality if and only if S is incrementally informative for Y beyond X.
+Proof. This is the standard Hilbert-space projection property of conditional expectations. The
+space L2 of square-integrable random variables is a Hilbert space with inner product ⟨U, V ⟩=
+E[UV ]. The set of X-measurable functions is a closed subspace, and E[Y | X] is the orthogonal
+projection of Y onto this subspace, minimizing squared error.
+The same holds for the (X, S)-
+measurable subspace, which contains the X-measurable one. Projection onto a larger subspace can
+only reduce (or leave unchanged) the squared distance. Strict inequality occurs exactly when Y
+has a non-zero component orthogonal to the smaller subspace but not orthogonal to the larger one,
+which corresponds to incremental informativeness.
+Proposition 1 gives a clean theoretical justification: if LLM sentiment captures information
+about Y that is not already in X, then the optimal predictor using (X, S) has strictly smaller mean
+squared error than the optimal predictor using X alone.
+4
+Textual Regimes and Mean–Variance Interpretation
+We now interpret textual regimes in a simple mean–variance framework.
+4.1
+Conditional Mean–Variance Frontier
+Consider a single traded asset with random excess return Rt+1 and a risk-free rate normalized to
+zero. Suppose we condition on the textual regime Ct at time t.
+Assumption 3 (Regime-Dependent Moments). For each regime k ∈{1, . . . , K}, define
+µk := E[Rt+1 | Ct = k],
+(20)
+σ2
+k := Var(Rt+1 | Ct = k),
+(21)
+and assume 0 < σ2
+k < ∞for all k.
+Given a regime k, a mean–variance investor chooses a position wk ∈R in the asset to maximize
+Uk(w) := wµk −λ
+2 w2σ2
+k,
+(22)
+where λ > 0 is a risk aversion parameter.
+5
+
+Proposition 2 (Regime-Optimal Position). Under Assumption 3, the optimal position in regime
+k is
+w⋆
+k = µk
+λσ2
+k
+,
+(23)
+and the corresponding maximum expected utility is
+Uk(w⋆
+k) =
+µ2
+k
+2λσ2
+k
+.
+(24)
+Proof. This is a one-dimensional quadratic optimization problem. The derivative of Uk with respect
+to w is
+∂Uk
+∂w = µk −λσ2
+kw.
+(25)
+Setting this to zero yields w⋆
+k = µk/(λσ2
+k). Substituting back:
+Uk(w⋆
+k) = µk
+λσ2
+k
+µk −λ
+2
+ µk
+λσ2
+k
+2
+σ2
+k = µ2
+k
+λσ2
+k
+−1
+2
+µ2
+k
+λσ2
+k
+=
+µ2
+k
+2λσ2
+k
+.
+(26)
+Proposition 2 shows that the LLM-based regime label Ct can directly induce regime-specific
+optimal positions. Even a simple two-regime structure (e.g. “risk-on” vs. “risk-off”) can be useful
+if µk and σ2
+k differ across k.
+5
+Experimental Blueprint (with Figure Placeholders)
+We outline a minimal empirical design and provide explicit .png filenames in figure captions. All
+plots can later be generated using Python.
+5.1
+Data Description
+• Assets: A single index (e.g. S&P 500 ETF) or a small set of liquid stocks.
+• Numerical data: Daily close prices, volumes, and realized volatility, transformed into returns
+and technical indicators.
+• Text data: News headlines or articles aligned by date, restricted to finance-related sources to
+reduce noise.
+5.2
+Targets and Baselines
+We define the prediction target as next-day excess return:
+yt+1 = rt+1 −rrf
+t+1.
+(27)
+Baselines:
+• Naive: Predict zero excess return.
+• Numeric-only: Linear or tree-based model using only xt.
+LLM-augmented models:
+• Sentiment-only: Use St alone (possibly with lags).
+• Hybrid: Use zt combining xt, St, Et, and Rt.
+6
+
+5.3
+Evaluation Metrics
+We can evaluate predictive performance with both statistical and economic metrics:
+• Mean-squared error (MSE) of return forecasts;
+• Directional accuracy: P(sign(ˆyt+1) = sign(yt+1));
+• Simple long/short strategy returns based on the sign of ˆyt+1;
+• Sharpe ratio of the strategy.
+5.4
+Tables and Figures (with File Names)
+Table 1: Illustrative comparison of baseline and LLM-augmented models.
+Suggested filename:
+performance comparison table.png.
+Model
+MSE
+Directional Acc.
+Strategy Return
+Sharpe Ratio
+Naive (Zero)
+1.000
+0.50
+0.00%
+0.00
+Numeric-only
+0.842
+0.54
+3.20%
+0.18
+Sentiment-only
+0.903
+0.56
+4.75%
+0.27
+Hybrid (Numeric + LLM)
+0.768
+0.61
+8.40%
+0.46
+Figure 1: Time series of daily LLM sentiment St and asset excess returns.
+7
+
+Figure 2: 2D PCA projection of daily LLM embeddings Et colored by textual regime Ct.
+Figure 3: Equity curves of the numerical-only baseline and the LLM-augmented hybrid strategy.
+8
+
+6
+Discussion
+6.1
+Interpretability
+Treating LLM outputs as features rather than direct predictors has interpretability benefits. We
+can examine:
+• The empirical correlation between St and yt+1;
+• Which regimes Ct tend to precede large drawdowns or rallies;
+• Representative documents associated with extreme St or specific regimes.
+These analyses can be illustrated by further figures, for example:
+• Scatter plot of St vs. yt+1 (filename: sentiment return scatter.png);
+• Bar plot of average returns by regime (filename: regime return bar.png).
+6.2
+Robustness and Overfitting
+Text data is noisy and non-stationary. To mitigate overfitting:
+• Use regularization (ridge, LASSO) or simple models;
+• Reduce embedding dimensionality via PCA before forecasting;
+• Use rolling or expanding windows and realistic train/test splits.
+6.3
+Practical Considerations
+In real deployments, additional issues arise:
+• Latency: LLM inference may be slow; pre-computation and caching of embeddings and sentiment scores are useful.
+• Costs: Commercial LLM APIs can be expensive at scale, motivating smaller, fine-tuned models.
+• Data alignment: Timestamps must be handled carefully to avoid look-ahead bias and to match
+text to the correct trading day.
+• Regulation: The use of alternative data and AI-based decision systems can be subject to
+regulatory requirements.
+7
+Conclusion
+We presented a simple but rigorous framework for integrating LLMs into quantitative finance workflows. LLMs function as semantic feature generators, producing sentiment, embeddings, and textual
+regimes that can be merged with standard numerical factors. We provided a clean mathematical
+setup, basic theoretical guarantees for linear models, and a mean–variance interpretation of regimes.
+Although the framework is intentionally minimal, it can be extended in many directions:
+cross-sectional forecasting across many assets, intraday applications using high-frequency news,
+or reinforcement-learning-based policies that incorporate LLM features. Our main message is that
+LLM + quant does not need to begin with a complex end-to-end model; a transparent feature-based
+approach already provides a solid foundation.
+9
+
+A
+Additional Proof: Regime-Specific Improvement
+This appendix provides a short argument that textual regimes can improve risk-adjusted performance in a mean–variance setting, under simple conditions.
+Proposition 3 (Regime-Based Improvement Over Constant Position). Consider two strategies:
+1. A constant position w in the asset for all t.
+2. A regime-based position w⋆
+Ct with w⋆
+k as in Proposition 2.
+Assume Assumption 3 and that regimes occur with stationary probabilities πk := P(Ct = k). If
+there is non-trivial dispersion in the regime-specific Sharpe ratios µk/σk, then for suitable λ the
+regime-based strategy can achieve strictly higher expected utility than any constant position.
+Sketch of Proof. The expected utility of a constant position w is
+E[U(w)] =
+K
+X
+k=1
+πk
+ wµk −λ
+2w2σ2
+k
+
+.
+(28)
+Maximizing over w yields an optimal constant position w⋆that depends on the mixture moments
+¯µ :=
+X
+k
+πkµk,
+¯σ2 :=
+X
+k
+πkσ2
+k + cross terms.
+(29)
+By contrast, the regime-based strategy achieves expected utility
+K
+X
+k=1
+πkUk(w⋆
+k) =
+K
+X
+k=1
+πk
+µ2
+k
+2λσ2
+k
+.
+(30)
+If the Sharpe ratios µk/σk vary across k, this convex combination can strictly exceed the utility
+corresponding to any single constant position, for appropriate λ. A fully rigorous proof can be
+obtained by comparing the two quadratic forms and using the fact that choosing w⋆
+k optimizes each
+regime separately.
+Proposition 3 gives a simple justification for using LLM-based regimes Ct: they can naturally
+induce regime switches in optimal exposure, which can be beneficial when the distribution of returns
+truly changes with the textual narrative.
+References
+[1] A. Author and B. Author. Large language models in finance: A survey. Journal of Financial
+Technology, 2025.
+[2] C. Author. Textual sentiment and stock returns. International Review of Finance, 2020.
+[3] D. Author and E. Author. Representation learning for financial text. Machine Learning in
+Finance, 2022.
+[4] F. Author. Natural language processing for asset pricing. Journal of Financial Data Science,
+2021.
+10

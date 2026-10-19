@@ -1,0 +1,118 @@
+{
+  "doc_id": 304,
+  "titulo": "Semi-Parametric Markov Chain Analysis of Strategy Performance Regimes in Algorithmic Forex Trading",
+  "resumen_operativo": "Introduce el framework Semi-Parametric Markov Chain (SPMC) para modelar regímenes de desempeño de estrategias de trading algorítmico. A diferencia de los métodos tradicionales que detectan regímenes en retornos de precios, SPMC se ajusta directamente sobre la secuencia cronológica de resultados de trades (win/loss en pips). Usando 10,252 trades en 6 pares de divisas (2019-2026) generados por una estrategia de mean-reversion, encuentra persistencia simétrica de estados (p_GG = p_BB ≈ 0.793), rechaza Markov de primer orden a favor de segundo orden, y muestra que el filtro bayesiano óptimo mejora ~10% el rendimiento acumulado versus la heurística del practicante. Demuestra que los regímenes de desempeño son empíricamente ortogonales a los regímenes de volatilidad de mercado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Semi-Parametric Markov Chain (SPMC)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Framework que modela la secuencia cronológica de resultados de trades como cadena de Markov con dos estados (Good/Bad), definidos discretizando el P&L acumulado en ventana móvil. Semi-paramétrico porque no impone distribución en los retornos dentro de cada estado; la distribución empírica sirve como likelihood para el filtro bayesiano.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Markov Switching Model (MSM)"},
+        {"tipo": "USA", "objeto": "Bayesian Filter"}
+      ],
+      "cita_textual": "SPMC is fitted directly on the sequence of strategy trade outcomes: the chronological record of wins and losses."
+    },
+    {
+      "nombre": "Optimal Bayesian Filter for Trade Decisions",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro recursivo que calcula β_t = P(S_t = G | r_1,...,r_t). Paso de predicción: β̂_{t|t-1} = p_GG·β_{t-1} + p_BG·(1-β_{t-1}). Paso de actualización incorpora likelihood empírico f(r_t|S). Regla: tomar trade si β_t > τ. La heurística del practicante (ventana móvil fija con umbral cero) es un caso especial.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Rolling Performance Filter"},
+        {"tipo": "REQUIERE", "objeto": "SPMC Transition Matrix"}
+      ],
+      "cita_textual": "The optimal filter for deciding whether to take the next trade is the posterior probability of being in the Good state given the observed outcome history."
+    },
+    {
+      "nombre": "Strategy Performance Persistence",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Persistencia de estados de desempeño: p_GG = p_BB = 0.793-0.794. Una vez en régimen Good, probabilidad de permanecer es ~79%; mismo valor para régimen Bad. La simetría es estructuralmente significativa y distinta de la persistencia en regímenes de volatilidad de precios.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "SPMC Transition Matrix"},
+        {"tipo": "SE_OPONE_A", "objeto": "Price-Based Volatility Regimes"}
+      ],
+      "cita_textual": "Once in a Good regime, the probability of remaining Good is 0.793; once in a Bad regime, the probability of remaining Bad is 0.794. This symmetry is structurally meaningful."
+    },
+    {
+      "nombre": "Second-Order Markov Specification",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del SPMC cuando se rechaza Markov de primer orden (test chi-cuadrado). Usa 4 estados observables (GG, GB, BG, BB) donde cada historia de dos trades consecutivos tiene probabilidad condicional distinta para el siguiente trade. Preserva simplicidad computacional del framework.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "First-Order Markov Chain"},
+        {"tipo": "REQUIERE", "objeto": "Chi-Squared Markov Property Test"}
+      ],
+      "cita_textual": "A formal chi-squared test rejects the first-order Markov property, indicating that a second-order specification with four history-dependent states better captures the dynamics."
+    },
+    {
+      "nombre": "Stationary Distribution of Performance States",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Distribución estacionaria π = (π_G, π_B) que satisface πP = π. Para el caso 2×2: π_G = p_BG/(p_GB + p_BG). Proporciona la proporción teórica de largo plazo de trades en cada estado. Consistencia con la proporción ON empírica valida internamente el modelo.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "Long-Run State Proportions"},
+        {"tipo": "REQUIERE", "objeto": "Irreducible Aperiodic Chain"}
+      ],
+      "cita_textual": "The stationary distribution provides the theoretical long-run proportion of trades in each state. Consistency between π_G and the empirically observed ON-percentage constitutes an internal validity check."
+    },
+    {
+      "nombre": "Expected State Duration",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Duración esperada en cada estado antes de cambiar: E[D_G] = 1/p_GB, E[D_B] = 1/p_BG. Implicación práctica directa: una ventana móvil de longitud k está bien calibrada si k ≈ E[D_G].",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Rolling Window Calibration"},
+        {"tipo": "USA", "objeto": "SPMC Transition Matrix"}
+      ],
+      "cita_textual": "The expected duration in each state before switching has direct practical implications for filter design: a rolling window of length k is well-calibrated if k ≈ E[D_G]."
+    },
+    {
+      "nombre": "Orthogonality of Strategy vs Market Regimes",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Hallazgo central: los regímenes de desempeño de estrategia (SPMC) son empíricamente ortogonales a los regímenes de volatilidad identificados por un Markov Switching Model sobre precios. Correlación de solo 0.026 entre indicadores de estado. Lo que importa al trader no es el mercado sino si el edge de la estrategia está activo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Markov Switching Model (MSM)"},
+        {"tipo": "CONTRADICE_A", "objeto": "Price-Based Regime Trading"}
+      ],
+      "cita_textual": "SPMC transition dynamics are shown to be empirically orthogonal to those of a price-based Markov Switching Model estimated over the same period."
+    },
+    {
+      "nombre": "Rolling Performance Filter (Practitioner Heuristic)",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Heurística del practicante: tomar posición solo si el resultado neto medio en pips de los últimos k=10 trades es positivo. Es una aproximación del filtro bayesiano óptimo con ponderación uniforme en ventana fija y umbral duro en cero.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Special Case of Bayesian Filter"},
+        {"tipo": "USA", "objeto": "Mean-Reversion Strategy"}
+      ],
+      "cita_textual": "The strategy employs a rolling-performance filter: it takes positions only when the mean net pip outcome over the preceding ten trades is positive."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La persistencia de estados de desempeño es altamente simétrica: p_GG = 0.793 y p_BB = 0.794 (10,252 trades, 6 pares FX, 2019-2026).",
+      "mercado": "Forex (EURUSD, GBPUSD, USDCAD, USDCHF, USDJPY, AUDUSD)",
+      "periodo": "2019-2026",
+      "magnitud": "p_GG = 0.793, p_BB = 0.794",
+      "condiciones": "Estrategia mean-reversion con filtro rolling de 10 trades; 10,252 trades totales",
+      "robustez": "media",
+      "cita_textual": "Once in a Good regime, the probability of remaining Good is 0.793; once in a Bad regime, the probability of remaining Bad is 0.794."
+    },
+    {
+      "afirmacion": "La correlación entre el indicador de estado del MSM (basado en precios) y el indicador SPMC (basado en desempeño) es solo 0.026, confirmando ortogonalidad empírica.",
+      "mercado": "Forex (6 pares principales)",
+      "periodo": "2019-2026",
+      "magnitud": "Correlación = 0.026",
+      "condiciones": "Markov Switching Model sobre retornos de precio vs SPMC sobre secuencia de trades",
+      "robustez": "media",
+      "cita_textual": "Performance regimes identified by SPMC are empirically orthogonal to volatility regimes identified by a price-based Markov Switching Model, with a correlation of only 0.026."
+    },
+    {
+      "afirmacion": "El filtro bayesiano óptimo produce una mejora de aproximadamente 10% en el rendimiento acumulado respecto a la heurística del practicante (ventana móvil fija).",
+      "mercado": "Forex (6 pares principales)",
+      "periodo": "2019-2026",
+      "magnitud": "~10% mejora en rendimiento acumulado",
+      "condiciones": "Comparación SPMC Bayesian filter vs rolling-k heuristic filter",
+      "robustez": "media",
+      "cita_textual": "An approximately ten percent improvement in cumulative performance under the optimal Bayesian filter."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "El framework SPMC es agnóstico a la frecuencia de trading; aplicable a estrategias intradiarias ya que modela directamente la secuencia de outcomes de trades individuales."}
+}

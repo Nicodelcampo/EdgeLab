@@ -1,0 +1,207 @@
+{
+ "schema_version": "F1.1_regimen_dow_vol_v1",
+ "fase": "F1.1_regimen_dow_vol",
+ "que_es": "brecha de atraccion (real vs nulo-B, F1.1) estratificada por dia de semana y por volatilidad de sesion (terciles de rango realizado). Mismo protocolo nulo-B, misma semilla, misma ventana local que F1_nulo_zonas_aleatorias.py. No es F4 (no mide retornos); no es F5.3 (no propone entrada).",
+ "plan": "docs/REGISTRO_NO_MEDIDO_2026-08-10.md #3.5",
+ "outcomes_accessed": false,
+ "smoke_test": false,
+ "semilla": 20260810,
+ "max_age_bars": 2000,
+ "ventana_local_barras": 180,
+ "session_count": 201,
+ "max_fecha_universo": "2026-06-30",
+ "firewall_max_fecha": "2026-06-30",
+ "firewall_corte_iso": "2026-06-30 22:00:00+00:00",
+ "universe_filter_report": {
+  "descartados_holdout": 24,
+  "fechas_holdout": [
+   "2026-07-01",
+   "2026-07-02",
+   "2026-07-03",
+   "2026-07-06",
+   "2026-07-07",
+   "2026-07-08",
+   "2026-07-09",
+   "2026-07-10",
+   "2026-07-13",
+   "2026-07-14",
+   "2026-07-15",
+   "2026-07-16",
+   "2026-07-17",
+   "2026-07-20",
+   "2026-07-21",
+   "2026-07-22",
+   "2026-07-23",
+   "2026-07-24",
+   "2026-07-27",
+   "2026-07-28",
+   "2026-07-29",
+   "2026-07-30",
+   "2026-07-31",
+   "2026-08-03"
+  ],
+  "descartados_cuarentena": 18,
+  "fechas_cuarentena": [
+   "2026-07-01",
+   "2026-07-02",
+   "2026-07-03",
+   "2026-07-06",
+   "2026-07-07",
+   "2026-07-08",
+   "2026-07-09",
+   "2026-07-10",
+   "2026-07-13",
+   "2026-07-14",
+   "2026-07-15",
+   "2026-07-16",
+   "2026-07-17",
+   "2026-07-20",
+   "2026-07-21",
+   "2026-07-22",
+   "2026-07-23",
+   "2026-07-24"
+  ]
+ },
+ "global_ancla": {
+  "n_sesiones": 201,
+  "tocada_real_media_sesion": 0.979399,
+  "tocada_nulo_media_sesion": 0.511522,
+  "brecha_pareada_media": 0.467877,
+  "brecha_pareada_mediana": 0.463768,
+  "sesiones_real_mayor": 201,
+  "se_pareado": 0.004432,
+  "mde_z196": 0.008686,
+  "mde_z350": 0.01551
+ },
+ "por_dia_semana": {
+  "lunes": {
+   "n_sesiones": 42,
+   "tocada_real_media_sesion": 0.984486,
+   "tocada_nulo_media_sesion": 0.512661,
+   "brecha_pareada_media": 0.471825,
+   "brecha_pareada_mediana": 0.46552,
+   "sesiones_real_mayor": 42,
+   "se_pareado": 0.010148,
+   "mde_z196": 0.01989,
+   "mde_z350": 0.035518
+  },
+  "martes": {
+   "n_sesiones": 42,
+   "tocada_real_media_sesion": 0.981165,
+   "tocada_nulo_media_sesion": 0.51596,
+   "brecha_pareada_media": 0.465205,
+   "brecha_pareada_mediana": 0.459325,
+   "sesiones_real_mayor": 42,
+   "se_pareado": 0.007293,
+   "mde_z196": 0.014294,
+   "mde_z350": 0.025526
+  },
+  "miercoles": {
+   "n_sesiones": 39,
+   "tocada_real_media_sesion": 0.981097,
+   "tocada_nulo_media_sesion": 0.520856,
+   "brecha_pareada_media": 0.460242,
+   "brecha_pareada_mediana": 0.465517,
+   "sesiones_real_mayor": 39,
+   "se_pareado": 0.009562,
+   "mde_z196": 0.018742,
+   "mde_z350": 0.033467
+  },
+  "jueves": {
+   "n_sesiones": 38,
+   "tocada_real_media_sesion": 0.979278,
+   "tocada_nulo_media_sesion": 0.499537,
+   "brecha_pareada_media": 0.479741,
+   "brecha_pareada_mediana": 0.481436,
+   "sesiones_real_mayor": 38,
+   "se_pareado": 0.010653,
+   "mde_z196": 0.020881,
+   "mde_z350": 0.037287
+  },
+  "viernes": {
+   "n_sesiones": 40,
+   "tocada_real_media_sesion": 0.97066,
+   "tocada_nulo_media_sesion": 0.507949,
+   "brecha_pareada_media": 0.462711,
+   "brecha_pareada_mediana": 0.461901,
+   "sesiones_real_mayor": 40,
+   "se_pareado": 0.011762,
+   "mde_z196": 0.023054,
+   "mde_z350": 0.041168
+  }
+ },
+ "por_volatilidad": {
+  "cortes_ticks": {
+   "tercil1": 95.0,
+   "tercil2": 140.0
+  },
+  "rango_ticks_minmax": [
+   47.0,
+   466.0
+  ],
+  "celdas": {
+   "bajo": {
+    "n_sesiones": 68,
+    "tocada_real_media_sesion": 0.983641,
+    "tocada_nulo_media_sesion": 0.52237,
+    "brecha_pareada_media": 0.461272,
+    "brecha_pareada_mediana": 0.458301,
+    "sesiones_real_mayor": 68,
+    "se_pareado": 0.007941,
+    "mde_z196": 0.015565,
+    "mde_z350": 0.027795
+   },
+   "medio": {
+    "n_sesiones": 67,
+    "tocada_real_media_sesion": 0.983477,
+    "tocada_nulo_media_sesion": 0.528632,
+    "brecha_pareada_media": 0.454845,
+    "brecha_pareada_mediana": 0.462264,
+    "sesiones_real_mayor": 67,
+    "se_pareado": 0.006608,
+    "mde_z196": 0.012952,
+    "mde_z350": 0.023129
+   },
+   "alto": {
+    "n_sesiones": 66,
+    "tocada_real_media_sesion": 0.970887,
+    "tocada_nulo_media_sesion": 0.482975,
+    "brecha_pareada_media": 0.487912,
+    "brecha_pareada_mediana": 0.481224,
+    "sesiones_real_mayor": 66,
+    "se_pareado": 0.007907,
+    "mde_z196": 0.015497,
+    "mde_z350": 0.027674
+   }
+  }
+ },
+ "por_contrato": {
+  "6E_03-26_ticks.parquet": {
+   "estado": "OK",
+   "zonas": 5094
+  },
+  "6E_06-26_ticks.parquet": {
+   "estado": "OK",
+   "zonas": 5209
+  },
+  "6E_09-26_ticks.parquet": {
+   "estado": "OK",
+   "zonas": 988
+  },
+  "6E_12-25_ticks.parquet": {
+   "estado": "OK",
+   "zonas": 4656
+  }
+ },
+ "code_commit": "58e1cc7a8859f6fc2e271e12412c1b574e12541d",
+ "head_start": "58e1cc7a8859f6fc2e271e12412c1b574e12541d",
+ "head_end": "58e1cc7a8859f6fc2e271e12412c1b574e12541d",
+ "dirty_start": false,
+ "dirty_end": false,
+ "measurement_code_sha256": "79d784e132f0a2b5c0a9b84613c145f818b03ac64062b1d5222ee4ec4f46a1bd",
+ "entorno": {
+  "python": "3.12.7",
+  "plataforma": "Windows-10-10.0.19045-SP0"
+ },
+ "payload_sha256": "405ea0117c281f0d951bc9d56edea03a6d478525e57f89ec96fa21d3c50ff9c8"
+}

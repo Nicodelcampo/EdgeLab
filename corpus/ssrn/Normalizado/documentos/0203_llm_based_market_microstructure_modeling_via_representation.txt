@@ -1,0 +1,607 @@
+LLM-Based Market Microstructure Modeling
+via Representation-Induced Stochastic Games
+Yifan Guo
+February 24, 2026
+Abstract
+We develop a unified framework for high-frequency market modeling that couples (i)
+microstructure-level dynamics of the limit order book (LOB), (ii) large language model (LLM)
+representation learning over message-level sequences, and (iii) game-theoretic reinforcement
+learning (RL) for strategic agents. Our core object is a representation-induced stochastic
+game: agents observe an embedding Zt = Φ(Xt−k+1:t) produced by a transformer-style
+encoder Φ applied to LOB histories, and choose actions as functions of Zt (and private
+states). We formalize equilibrium concepts restricted to the representation filtration, establish
+existence under standard continuity/compactness hypotheses, and provide stability results
+that connect Lipschitz geometry of Φ to smoothness of best responses, robustness of equilibria
+under encoder perturbations, and convergence behavior of RL updates. We further derive a
+representation–game–impact chain linking local embedding geometry to liquidity formation,
+price impact, volatility, and mixing rates of the induced Markov kernel. Finally, we outline
+an empirical blueprint using reconstructed message streams, simulator-in-the-loop RL, and
+adversarial stress testing in embedding space. Placeholder figures and algorithms are included
+for a reproducible paper structure.
+Contents
+1
+Introduction
+2
+2
+Market Environment and Microstructure Dynamics
+3
+2.1
+LOB State and Message-Level Evolution . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.2
+Strategic Agents and Actions . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+3
+LLM-Based Representation Layer
+3
+3.1
+Encoder Map and Representation Filtration . . . . . . . . . . . . . . . . . . . . .
+3
+3.2
+Economic Interpretation of Embedding Geometry . . . . . . . . . . . . . . . . . .
+4
+4
+Representation-Induced Stochastic Game
+4
+4.1
+Game Definition
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+4.2
+Policies Restricted to the Representation . . . . . . . . . . . . . . . . . . . . . . .
+4
+4.3
+Equilibrium Concepts
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+5
+Existence and Stability of Representation-Based Equilibria
+5
+5.1
+Existence
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+5.2
+Lipschitz Stability of Equilibria . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+5.3
+Robustness to Encoder Perturbations . . . . . . . . . . . . . . . . . . . . . . . . .
+5
+6
+Representation Dynamics, Spectral Stability, and Mixing
+6
+6.1
+Local Spectral Stability
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+6.2
+Spectral Gap and Mixing
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+1
+
+7
+RL Dynamics on Representation States
+6
+7.1
+Policy Parameterization and Learning
+. . . . . . . . . . . . . . . . . . . . . . . .
+6
+7.2
+Coupled Learning–Game Fixed Points . . . . . . . . . . . . . . . . . . . . . . . .
+7
+8
+Representation–Strategy–Impact–Volatility Coupling
+7
+8.1
+Impact Model in Representation Space . . . . . . . . . . . . . . . . . . . . . . . .
+7
+8.2
+Volatility Sensitivity . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+8.3
+A Unified Chain
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+9
+Empirical Framework and Algorithms
+8
+9.1
+Data Pipeline (Message Reconstruction) . . . . . . . . . . . . . . . . . . . . . . .
+8
+9.2
+Encoder Training Objectives
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+9.3
+Simulator-in-the-Loop Multi-Agent RL . . . . . . . . . . . . . . . . . . . . . . . .
+8
+9.4
+Adversarial Stress Testing in Embedding Space . . . . . . . . . . . . . . . . . . .
+8
+10 Figures
+8
+11 Limitations and Future Directions
+8
+11.1 Endogenous Representation Learning . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+11.2 Multi-Asset and Multi-Venue Structure
+. . . . . . . . . . . . . . . . . . . . . . .
+9
+11.3 Global Dynamics and Rare Events . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+11.4 Interpretability . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+12 Conclusion
+9
+A Additional Proof Details
+11
+A.1 A Lipschitz Composition Lemma . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+A.2 Variance Perturbation Bound . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+11
+B Implementation Notes
+11
+1
+Introduction
+Market microstructure studies the mechanism by which orders are submitted, executed, cancelled,
+and strategically arranged by market participants. At high frequencies, the price formation
+process is not purely statistical: it reflects strategic interaction among heterogeneous agents
+with latency constraints, inventory objectives, and asymmetric information. Classical models
+(e.g., Glosten–Milgrom, Kyle, and Almgren–Chriss) are foundational but impose low-dimensional
+and parametric state representations that struggle to accommodate modern electronic markets
+driven by message-level dynamics and rapidly adapting algorithms.
+Recent progress in representation learning suggests that transformer-like encoders can
+compress LOB message sequences into low-dimensional embeddings that preserve economically
+relevant structure: directional order-flow pressure, queue resilience, latent liquidity regimes,
+and adverse selection. In parallel, reinforcement learning provides tools for dynamic control
+(execution, market-making) under uncertainty. However, in markets, agents are strategic: payoffs
+depend on others’ policies, so learning and equilibrium become coupled.
+Contributions.
+This paper proposes a representation-induced stochastic game framework:
+1. We define a representation filtration and formulate a Markov (stochastic) game where the
+public state is Zt = Φ(Xt−k+1:t).
+2
+
+2. We study equilibrium existence and stability when strategies are restricted to depend on the
+embedding.
+3. We analyze how embedding geometry controls (i) sensitivity of best responses, (ii) stability of
+volatility/impact, (iii) mixing of representation dynamics, and (iv) convergence of RL updates
+with Markovian noise.
+4. We provide a practical empirical protocol: message reconstruction, encoder training, simulatorbased multi-agent RL, and adversarial perturbations in embedding space.
+2
+Market Environment and Microstructure Dynamics
+2.1
+LOB State and Message-Level Evolution
+Let (Ω, F, P) be a probability space supporting a discrete-time LOB state process {Xt}t≥0 with
+Xt ∈X, where X is a separable metric space with metric dX . A state Xt includes best quotes,
+depths, K levels of bid/ask price-volume pairs, order arrivals, cancellations, and timestamps.
+The exchange updates the book via a matching operator
+Xt+1 = M(Xt, at, ηt+1),
+at = (a1
+t , . . . , aN
+t ),
+(1)
+where ηt+1 denotes exogenous randomness (background flow, news shocks, etc.).
+2.2
+Strategic Agents and Actions
+Consider N strategic agents indexed by i ∈{1, . . . , N}. Each agent chooses an action ai
+t ∈Ai at
+time t, where Ai may include:
+• limit order placement (size, price level, side),
+• market order submission (aggressive liquidity taking),
+• cancellation / modification of outstanding orders,
+• idling (no action).
+Agent i has private state θi
+t (e.g., inventory, latency type, private signal), and receives reward
+ri(Xt, at, θi
+t).
+We consider discounted objectives
+Ji(πi, π−i) = E
+h X
+t≥0
+γt ri(Xt, at, θi
+t)
+i
+,
+γ ∈(0, 1),
+(2)
+where πi is a policy and π−i denotes opponents’ policies.
+3
+LLM-Based Representation Layer
+3.1
+Encoder Map and Representation Filtration
+Let k ∈N be a history window size. A transformer-style encoder
+Φ : X k →Rd,
+Zt = Φ(Xt−k+1, . . . , Xt)
+(3)
+produces an embedding Zt ∈Rd summarizing recent message-level dynamics.
+3
+
+Assumption 3.1 (Encoder Regularity). The map Φ is Borel measurable and Lipschitz:
+∥Φ(x1:k) −Φ(x′
+1:k)∥≤LΦ
+k
+X
+j=1
+dX (xj, x′
+j),
+(4)
+for some constant LΦ < ∞.
+Define the representation filtration FZ
+t = σ(Z0, . . . , Zt). We emphasize that agents may be
+restricted to policies measurable w.r.t. FZ
+t
+(and private states), reflecting the idea that the
+embedding is the state interface.
+3.2
+Economic Interpretation of Embedding Geometry
+Although Φ is learned, it induces a geometry in Rd in which distances correspond to economically
+meaningful differences in microstructure regimes. We formalize this through a strategic similarity
+modulus.
+Definition 3.2 (Representation-Induced Strategic Similarity). Let U(θ; z) denote a payoff
+functional under strategy profile θ when the public representation state is z ∈Rd. Define
+∆strat(z, z′) = sup
+θ∈Θ
+|U(θ; z) −U(θ; z′)|.
+(5)
+Assumption 3.3 (Strategic Continuity in Embedding). There exists Lstrat > 0 such that
+∆strat(z, z′) ≤Lstrat∥z −z′∥for all z, z′.
+Assumption 3.3 captures the desired property that “nearby” embeddings correspond to
+similar strategic environments.
+4
+Representation-Induced Stochastic Game
+4.1
+Game Definition
+We define a representation-induced stochastic game
+G = (S, {Ai}N
+i=1, K, {ri}N
+i=1, γ),
+(6)
+where S ⊆Rd is the representation state space (support of Zt), and the transition kernel K
+describes the induced law of Zt+1 given (Zt, at):
+K(z, a; B) = P(Zt+1 ∈B | Zt = z, at = a).
+(7)
+This kernel implicitly composes the microstructure operator M with Φ.
+4.2
+Policies Restricted to the Representation
+A (stationary, Markov) policy for agent i is
+πi : S × Θi →∆(Ai),
+ai
+t ∼πi(· | Zt, θi
+t).
+(8)
+Let π = (π1, . . . , πN).
+4
+
+4.3
+Equilibrium Concepts
+We adopt a representation-based Markov Perfect Equilibrium (MPE).
+Definition 4.1 (Representation-Based MPE). A policy profile π⋆is a representation-based
+MPE if for every agent i and every (z, θi),
+πi⋆(· | z, θi) ∈arg max
+πi
+Ji(πi, π−i⋆; Z0 = z, θi
+0 = θi),
+(9)
+where the optimization is over policies measurable w.r.t. the representation state and private
+state.
+We also define a static-in-state equilibrium notion when analyzing local best responses.
+Definition 4.2 (Representation-Based Nash Equilibrium at State z). A profile a⋆(z) =
+(a⋆
+1(z), . . . , a⋆
+N(z)) is a Nash equilibrium at representation state z if for each i,
+Ui(a⋆
+i (z), a⋆
+−i(z); z) ≥Ui(ai, a⋆
+−i(z); z)
+∀ai ∈Ai.
+(10)
+5
+Existence and Stability of Representation-Based Equilibria
+5.1
+Existence
+Assumption 5.1 (Action Sets and Continuity). For each i, the action set Ai is nonempty,
+compact, and convex. For each i, the payoff Ui(ai, a−i; z) is continuous in (ai, a−i, z) and concave
+in ai for fixed (a−i, z).
+Theorem 5.2 (Existence of Representation-Based Nash Equilibrium). Under Assumption 5.1,
+for every z ∈S, there exists at least one representation-based Nash equilibrium a⋆(z).
+Proof. By compactness and convexity of Ai and continuity/concavity of Ui, each best-response
+correspondence is nonempty, convex-valued, and upper hemicontinuous. Kakutani’s fixed-point
+theorem implies existence of a fixed point of the product correspondence, which is a Nash
+equilibrium at state z.
+5.2
+Lipschitz Stability of Equilibria
+Assumption 5.3 (Strong Concavity and Smoothness). For each i, Ui is µ-strongly concave in
+ai (uniformly over (a−i, z)), and ∇aiUi is Lipschitz in z with constant Laz.
+Theorem 5.4 (Lipschitz Stability of Best Responses). Under Assumption 5.3, the equilibrium
+action profile is locally unique and there exists Leq > 0 such that for z, z′ in a neighborhood,
+∥a⋆(z) −a⋆(z′)∥≤Leq∥z −z′∥.
+(11)
+Proof Sketch. Strong concavity yields uniqueness of each agent’s best response.
+The firstorder optimality conditions ∇aiUi(a⋆
+i (z), a⋆
+−i(z); z) = 0 define an implicit system. Lipschitz
+dependence of gradients on z and uniform curvature enable an implicit-function-type argument,
+giving Lipschitz continuity of the solution mapping z 7→a⋆(z).
+5.3
+Robustness to Encoder Perturbations
+Let Φε be a perturbed encoder, producing Zε
+t = Φε(Xt−k+1:t).
+Assumption 5.5 (Uniform Encoder Perturbation). ∥Φε −Φ∥∞≤ε.
+5
+
+Theorem 5.6 (Equilibrium Robustness to Encoder Perturbations). Under Assumptions 5.3
+and 5.5, there exists Ceq > 0 such that the induced equilibrium actions satisfy
+∥a⋆,ε(Zε
+t ) −a⋆(Zt)∥≤Ceqε
+(12)
+whenever both equilibria are defined in the same local region.
+Proof Sketch. Combine ∥Zε
+t −Zt∥≤ε with Theorem 5.4.
+6
+Representation Dynamics, Spectral Stability, and Mixing
+6.1
+Local Spectral Stability
+Let m(z) = E[Zt+1 | Zt = z] denote the conditional mean dynamics. Define the Jacobian
+J(z) = ∇m(z) (when it exists) and spectral radius ρ(J(z)).
+Definition 6.1 (Spectral Stability). The representation process is locally stable at z if ρ(J(z)) <
+1.
+Remark 6.2. This criterion formalizes that small perturbations in embedding space do not
+amplify under the strategic market dynamics induced by Φ and agents’ policies.
+6.2
+Spectral Gap and Mixing
+Let K be the Markov operator acting on test functions f by (Kf)(z) =
+R
+f(z′) K(z, a⋆(z); dz′).
+Assumption 6.3 (Spectral Gap). The operator K admits a spectral gap λ > 0 on a suitable
+function space, with invariant distribution µ.
+Theorem 6.4 (Mixing Bound). Under Assumption 6.3, there exist constants C > 0 and λ > 0
+such that
+∥Kn(z, ·) −µ∥TV ≤Ce−λn,
+∀z ∈S, ∀n ≥0.
+(13)
+Proof Sketch. Standard Markov chain theory: spectral gap implies geometric ergodicity and
+exponential decay in total variation under appropriate minorization and drift conditions.
+7
+RL Dynamics on Representation States
+7.1
+Policy Parameterization and Learning
+Let agent i use a parametric policy πi
+θi(a | z, θi
+t). A generic stochastic-gradient update is
+θi
+t+1 = θi
+t + αt b∇θiJi(θi
+t, θ−i
+t ),
+(14)
+where αt is a step size and gradients are estimated from trajectories.
+Assumption 7.1 (Representation-Stable Gradients). There exists G < ∞such that for all
+z, z′ ∈S,
+∇θiE[ri
+t | Zt = z] −∇θiE[ri
+t | Zt = z′]
+ ≤G∥z −z′∥.
+(15)
+Theorem 7.2 (Convergence to Stationary Points (Informal)). Assume Robbins–Monro step sizes
+P
+t αt = ∞, P
+t α2
+t < ∞, Assumption 7.1, and ergodicity of the induced kernel (Theorem 6.4).
+Then, under standard bounded-variance conditions on the gradient estimator, θi
+t converges almost
+surely to the set of stationary points of the expected objective.
+Proof Sketch. View the recursion as stochastic approximation with Markovian noise. Gradient
+stability controls variability due to state drift; mixing ensures sufficient averaging. Apply classical
+stochastic approximation arguments.
+6
+
+7.2
+Coupled Learning–Game Fixed Points
+Let θt collect all learning parameters in the population. Define the operator
+T(θ) =
+ BR(θ), RLUpdate(θ)
+
+,
+(16)
+capturing both strategic response and learning updates.
+Assumption 7.3 (Contraction of the Coupled Operator). There exists α ∈(0, 1) such that
+∥T(θ) −T(θ′)∥≤α∥θ −θ′∥.
+Theorem 7.4 (Unique Learning–Game Fixed Point). Under Assumption 7.3, there exists a
+unique fixed point θ⋆satisfying θ⋆= T(θ⋆).
+Proof. Banach fixed-point theorem on a complete metric space.
+8
+Representation–Strategy–Impact–Volatility Coupling
+8.1
+Impact Model in Representation Space
+Let Pt denote the mid-price. Define (conditional) market impact
+I(z, a) = E[Pt+1 −Pt | Zt = z, at = a].
+(17)
+Assumption 8.1 (Lipschitz Impact). For any fixed action a, there exists Limp such that
+|I(z, a) −I(z′, a)| ≤Limp∥z −z′∥.
+Theorem 8.2 (Representation-Based Impact Bound). Under Assumption 8.1, small embedding
+perturbations yield controlled impact changes:
+|I(z, a) −I(z′, a)| ≤Limp∥z −z′∥.
+(18)
+8.2
+Volatility Sensitivity
+Assume a one-step price update model
+Pt+1 −Pt = f(a⋆(Zt), εt+1),
+(19)
+where εt+1 is microstructure noise and f is Lipschitz in its first argument.
+Theorem 8.3 (Volatility Sensitivity to Representation). If f is Lf-Lipschitz in a and Theorem 5.4 holds, then there exists Cσ such that the conditional variance σ2
+t = Var(Pt+1 −Pt | Zt)
+satisfies
+|σ2
+t (z) −σ2
+t (z′)| ≤Cσ∥z −z′∥.
+(20)
+Proof Sketch. Lipschitz equilibrium actions imply ∥a⋆(z)−a⋆(z′)∥≲∥z−z′∥. Then Lipschitzness
+of f plus variance perturbation bounds yield the claim.
+8.3
+A Unified Chain
+Theorem 8.4 (Representation–Game–Volatility Coupling). Under the stated Lipschitz and
+stability assumptions, high-frequency price dynamics couple through
+Zt −→a⋆(Zt) −→Qt =
+N
+X
+i=1
+a⋆
+i (Zt) −→(Pt+1 −Pt) −→σ2
+t ,
+(21)
+and each map is locally Lipschitz, yielding robustness to encoder perturbations.
+7
+
+Algorithm 1 Actor–Critic with LLM Representations (High-Level)
+1: Initialize actor parameters θ, critic parameters ψ, replay buffer D
+2: for episode = 1, 2, . . . do
+3:
+Observe initial LOB history X0:k−1; compute Z0 = Φ(X0:k−1)
+4:
+for t = 0, 1, . . . , T −1 do
+5:
+Sample action at ∼πθ(· | Zt)
+6:
+Step simulator: (Xt+1, rt) ←M(Xt, at, ηt+1)
+7:
+Update embedding Zt+1 = Φ(Xt−k+2:t+1)
+8:
+Store (Zt, at, rt, Zt+1) in D
+9:
+Update critic ψ by TD regression on mini-batches from D
+10:
+Update actor θ by policy gradient (critic as baseline)
+11:
+end for
+12: end for
+13: Output trained policy πθ(a | Z)
+9
+Empirical Framework and Algorithms
+9.1
+Data Pipeline (Message Reconstruction)
+We assume access to message-level LOB data enabling reconstruction of Xt. A practical pipeline
+includes: cleaning, synchronization, rebuilding K book levels, and extracting event sequences for
+encoder training.
+9.2
+Encoder Training Objectives
+Training Φ can be done via:
+• self-supervised next-event prediction (order type/price level/size),
+• masked event modeling on message streams,
+• contrastive learning across regime labels (volatility/liquidity buckets),
+• multi-task objectives including impact/volatility proxies.
+9.3
+Simulator-in-the-Loop Multi-Agent RL
+We recommend a microstructure simulator implementing M with realistic queue priority, latency,
+and partial fills. RL agents interact via embedding states.
+9.4
+Adversarial Stress Testing in Embedding Space
+Embedding perturbations can model distribution shifts, adversarial liquidity events, or encoder
+drift.
+10
+Figures
+11
+Limitations and Future Directions
+11.1
+Endogenous Representation Learning
+A natural extension is to make Φ itself an equilibrium object: agents jointly optimize policies
+and representations, leading to a fixed point in the product space of encoders and strategies.
+This requires a game-theoretic treatment of evolving information structures.
+8
+
+Algorithm 2 Adversarial Liquidity Stress Test (Embedding-Space)
+1: Input: trained encoder Φ, policy πθ, radius ε
+2: for evaluation episode do
+3:
+for t = 0, 1, . . . , T −1 do
+4:
+Compute nominal state Zt = Φ(Xt−k+1:t)
+5:
+Choose perturbation ∆Zt with ∥∆Zt∥≤ε to worsen performance
+6:
+Form Zadv
+t
+= Zt + ∆Zt
+7:
+Act at ∼πθ(· | Zadv
+t
+); step simulator
+8:
+Record impact, volatility, execution cost, and welfare proxies
+9:
+end for
+10: end for
+11: Output robustness statistics vs. ε
+Figure 1: Microstructure flow: message arrivals, matching, queue dynamics, and state updates.
+11.2
+Multi-Asset and Multi-Venue Structure
+Real markets are fragmented. Extending Φ to encode multi-venue message streams and cross-asset
+coupling can capture routing, latency races, and predatory strategies.
+11.3
+Global Dynamics and Rare Events
+The present analysis emphasizes local Lipschitz/spectral conditions. Flash crashes and liquidity
+crises likely require global nonlinear tools, potentially combining robust control, distributional
+RL, and stress testing.
+11.4
+Interpretability
+Understanding how embedding coordinates map to economic primitives (inventory pressure, adverse selection, queue imbalance) remains an open problem. Geometry-aware probes, information
+bottlenecks, and causal interventions are promising directions.
+12
+Conclusion
+We presented a representation-induced stochastic game framework that unifies LLM-based
+microstructure embeddings with strategic equilibrium reasoning and RL dynamics. The central
+9
+
+Figure 2: RL feedback loop under LLM-based representation: observe Zt, act, receive reward,
+update.
+Figure 3: Representation-induced transitions: Zt →at →Xt+1 →Zt+1 with strategic feedback.
+claim is that the learned geometry of Zt can stabilize strategic optimization and learning by
+smoothing payoff landscapes, controlling best-response sensitivity, and inducing favorable mixing
+properties. This perspective turns representation learning into a first-class economic object: a
+coordinate system in which markets “perceive” and respond to themselves.
+References
+[1] R. Almgren and N. Chriss. Optimal execution of portfolio transactions. Journal of Risk,
+3(2):5–39, 2001.
+[2] J.-P. Bouchaud, M. Potters, and J. Bonart. Trades, Quotes and Prices: Financial Markets
+Under the Microscope. Cambridge University Press, 2018.
+[3] ´A. Cartea, S. Jaimungal, and J. Penalva. Algorithmic and High-Frequency Trading. Cambridge University Press, 2015.
+[4] R. Cont. Statistical modeling of high-frequency financial data. Annual Review of Financial
+Economics, 3(1):405–416, 2011.
+[5] L. R. Glosten and P. R. Milgrom. Bid, ask and transaction prices in a specialist market with
+heterogeneously informed traders. Journal of Financial Economics, 14(1):71–100, 1985.
+[6] A. S. Kyle. Continuous auctions and insider trading. Econometrica, 53(6):1315–1335, 1985.
+[7] Y. Nevmyvaka, Y. S. Kearns, and M. Kearns. Reinforcement learning for optimal trade
+execution. In Proceedings of ICML, pages 673–680, 2006.
+10
+
+[8] A. Vaswani, N. Shazeer, N. Parmar, et al. Attention is all you need. In NeurIPS, 2017.
+[9] Z. Zhang, S. Zhong, and T. Chan. Deep reinforcement learning for market making in
+high-frequency trading. arXiv preprint arXiv:1911.05892, 2019.
+[10] J. Sirignano and R. Cont. Universal features of price formation in financial markets:
+Perspectives from deep learning. Quantitative Finance, 19(9):1449–1459, 2019.
+[11] A. Fischer, C. A. M. van Leeuwen, and S. Jaimungal. Reinforcement learning in finance.
+Annual Review of Financial Economics, 12:257–280, 2020.
+[12] Y. Guo. LLM-driven market microstructure representation learning for robust high-frequency
+forecasting. SSRN Working Paper, 2025.
+A
+Additional Proof Details
+A.1
+A Lipschitz Composition Lemma
+Lemma A.1 (Lipschitz Composition). Let f : Rd →Rm be Lf-Lipschitz and g : Rm →Rk be
+Lg-Lipschitz. Then g ◦f is LgLf-Lipschitz.
+Proof. For any x, y, ∥g(f(x)) −g(f(y))∥≤Lg∥f(x) −f(y)∥≤LgLf∥x −y∥.
+A.2
+Variance Perturbation Bound
+Lemma A.2 (Variance Perturbation). If Y, eY are square-integrable and |Y −eY | ≤δ a.s., then
+|Var(Y ) −Var(eY )| ≤4δ E[|Y |] + 2δ2.
+Proof. Expand Var(Y ) = E[Y 2] −(E[Y ])2 and apply triangle inequalities and |Y 2 −eY 2| ≤
+|Y −eY |(|Y | + |eY |).
+B
+Implementation Notes
+• State construction: Ensure consistent normalization across assets/venues; avoid leakage
+from future messages.
+• Encoder training: Use time-split evaluation and regime-stratified validation (volatility/liquidity buckets).
+• RL training: Prefer off-policy with replay in nonstationary settings; consider populationbased training for robustness.
+• Stress testing: Evaluate sensitivity curves vs. ε for impact, drawdown, and fill risk.
+11

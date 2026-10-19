@@ -1,0 +1,23 @@
+--- a/nt8/BigTrap2.cs
++++ b/nt8/BigTrap2.cs
+@@
+ 		private StreamWriter eventWriter;
++		private string       resolvedEventLogPath;
+@@
+-					bool exists = File.Exists(EventLogPath);
+-					eventWriter = new StreamWriter(EventLogPath, true) { AutoFlush = true };
+-					if (!exists)
++					string dir = Path.GetDirectoryName(EventLogPath);
++					if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir)) Directory.CreateDirectory(dir);
++					string bs = BarsPeriod.BarsPeriodType.ToString() + BarsPeriod.Value.ToString(CultureInfo.InvariantCulture);
++					string baseName = Path.GetFileNameWithoutExtension(EventLogPath) + "__" + bs;
++					string ext = Path.GetExtension(EventLogPath); if (string.IsNullOrEmpty(ext)) ext = ".csv";
++					resolvedEventLogPath = Path.Combine(dir, baseName + ext);
++					for (int k = 2; File.Exists(resolvedEventLogPath) && k < 1000; k++)
++						resolvedEventLogPath = Path.Combine(dir, baseName + "_" + k.ToString(CultureInfo.InvariantCulture) + ext);
++					eventWriter = new StreamWriter(resolvedEventLogPath, false) { AutoFlush = true };
++					Print("BigTrap2: escribiendo " + resolvedEventLogPath);
++					if (eventSeq == 0)
+@@
+-		public string EventLogPath { get; set; }
++		public string EventLogPath { get; set; } // base; se resuelve a __<bar_spec>[_N].ext, nunca append

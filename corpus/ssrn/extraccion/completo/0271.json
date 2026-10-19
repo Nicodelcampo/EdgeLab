@@ -1,0 +1,51 @@
+{
+  "doc_id": 271,
+  "titulo": "Pairs Trading and Its Implied Timing Ability",
+  "resumen_operativo": "Propone una estrategia de pairs trading intradía entre futuros del NASDAQ 100 (NQ) y Dow Jones (YM), explotando la rotación growth/value: en mercados alcistas, growth (NASDAQ) supera a value (DJIA); en bajistas, value supera a growth. La señal se basa en condiciones de sobrecompra/sobreventa relativa. Reporta 80% de precisión direccional en señales out-of-sample (8/10 señales correctas sobre dirección del mercado). Live OOS en 2015 muestra 'promising risk adjusted returns'. Extiende a Hong Kong (HSI vs HSCEI) y FX (CADJPY). Baja rigurosidad estadística; figuras y datos de performance no son completamente legibles en la extracción.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de mean reversion entre dos índices de futuros: NASDAQ 100 (NQ) y Dow Jones (YM) con ratio 1:1. Cuando NASDAQ está sobrecomprado relativo a DJIA, short NQ / long YM; cuando está sobrevendido, long NQ / short YM.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "mean reversion"},
+        {"tipo": "APLICA_A", "objeto": "futures roll"}
+      ],
+      "cita_textual": "We implement the model on intraday base... If NASDAQ 100 Index is overbought, we will short its future NQ and long Dow Jones Industry Average Index future (YM) with 1-on-1 contract ratio."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Principio subyacente al pairs trading: la relación entre dos securities tiende a revertir a su media de largo plazo. El paper nota que la rentabilidad del pairs trading ha declinado por proliferación de quant funds y grandes flujos de capital.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "the basic idea is still the mean reversion, which people believe that the relationship between two securities tends to reverse to its long-term mean."
+    },
+    {
+      "nombre": "trend following",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Sistema de trend following combinado con pairs trading para mejorar puntos de entrada: se espera a que el spread forme una tendencia antes de abrir posiciones de pairs trading.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "We can improve entry points of the pairs trading with the trend following system both for indices and pairs."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de pairs trading entre NQ e YM tiene una precisión direccional implícita del 80%: en 8 de 10 señales out-of-sample completadas, la dirección del mercado coincidió con la dirección implícita de la señal de pairs trading. Señales 'long NQ/short YM' coincidieron con mercados alcistas; 'short NQ/long YM' con mercados bajistas.",
+      "mercado": "NASDAQ 100 y DJIA futures (NQ, YM)",
+      "periodo": "2015 (live OOS hasta Sep 28, 2015)",
+      "magnitud": "Timing probability: 80% (8/10 señales direccionales correctas)",
+      "condiciones": "Intradiario, 9:30 AM - 4:00 PM EST; datos de performance presentados en figuras no completamente legibles; sin métricas de Sharpe/MaxDD en texto",
+      "robustez": "baja",
+      "cita_textual": "during all 5 completed 'long NDX short DOW' trades, market indices were all up, while in three of five completed 'short NDX long DOW', the market was down. Therefore, the timing probability is 80%!"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Estrategia diseñada específicamente para ejecución intradía con futuros de índices. El concepto de rotación growth/value entre índices es adaptable a otros pares de futuros. La baja rigurosidad estadística limita la confianza en los resultados."
+  }
+}

@@ -6,10 +6,21 @@ para ese host (no hay tokens en este archivo). Verificado el 2026-10-04: push (H
   python tools/kaggle_kernel.py status --slug dueño/slug
   python tools/kaggle_kernel.py output --slug dueño/slug --file discovery_parity.json --out local.json
 Solo datos que ya estén en datasets privados de Kaggle; respetar siempre la custodia (nada desde 2026-10-01)."""
-import argparse,json,subprocess,sys
+import argparse,hashlib,json,os,re,subprocess,sys
+sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 API="https://www.kaggle.com/api/v1"
+REF=re.compile(r"^[a-z0-9][a-z0-9-]{0,48}/[a-z0-9][a-z0-9-]{0,48}$")
+def validate_push(slug,datasets,owner=None):
+    """Chequeos fail-closed antes de cualquier push (traídos de #120): el kernel y cada dataset montado son de la cuenta dueña.
+    Privado y sin competencias ni otros kernels ya está fijo en el cuerpo del push. Devuelve el dueño validado."""
+    owner=owner or os.environ.get("EDGELAB_KAGGLE_OWNER","nicolasbuttaro")
+    if not REF.fullmatch(slug or "") or slug.split("/")[0]!=owner:raise SystemExit(f"NO SE LANZA: el kernel {slug!r} no es de la cuenta {owner!r}")
+    bad=[d for d in datasets if not REF.fullmatch(d) or d.split("/")[0]!=owner]
+    if bad:raise SystemExit(f"NO SE LANZA: datasets fuera de la cuenta {owner!r}: {bad}")
+    return owner
 def curl(args,body=None):
-    cmd=["curl","-sS","-m","120"]+args
+    from kaggle_auth import curl_auth
+    cmd=["curl","-sS","-m","120"]+curl_auth(args[0])+args
     if body is not None:cmd+=["-H","Content-Type: application/json","--data-binary","@-"]
     r=subprocess.run(cmd,input=body,capture_output=True,text=True);return r.stdout
 def main():
@@ -17,7 +28,9 @@ def main():
     ap.add_argument("--internet",action="store_true");ap.add_argument("--dataset",action="append",default=[]);ap.add_argument("--file");ap.add_argument("--out");a=ap.parse_args()
     owner,slug=a.slug.split("/")
     if a.cmd=="push":
-        body=json.dumps({"slug":a.slug,"newTitle":a.title or slug,"text":open(a.script).read(),"language":"python","kernelType":"script","isPrivate":True,"enableGpu":a.gpu,"enableInternet":a.internet,
+        validate_push(a.slug,a.dataset);text=open(a.script).read()
+        print(json.dumps({"payload_sha256":hashlib.sha256(text.encode()).hexdigest()}))      # identidad de lo que se sube
+        body=json.dumps({"slug":a.slug,"newTitle":a.title or slug,"text":text,"language":"python","kernelType":"script","isPrivate":True,"enableGpu":a.gpu,"enableInternet":a.internet,
                          "datasetDataSources":a.dataset,"competitionDataSources":[],"kernelDataSources":[],"modelDataSources":[],"categoryIds":[]})
         print(curl([f"{API}/kernels/push"],body))
     elif a.cmd=="status":print(curl([f"{API}/kernels/status?userName={owner}&kernelSlug={slug}"]))

@@ -1,0 +1,211 @@
+{
+  "doc_id": 217,
+  "titulo": "Machine Learning for Pairs Trading: a Clustering-based Approach",
+  "resumen_operativo": "El paper aplica OPTICS (clustering no supervisado) para seleccionar pares de trading dentro del S&P 500 usando tres métricas de distancia: Euclidiana (SSD), basada en PCA, y correlación parcial (PC). Sobre el período 2000-2023 con backtest walk-forward (formación 3 años, trading 1 mes), se obtienen retornos mensuales netos de costos de transacción entre 36 y 41 puntos básicos, con Sharpe ratios anualizados entre 0.72 y 1.01. La correlación parcial logra el mejor desempeño ajustado por riesgo (Sharpe mensual 0.29) y la mayor pureza de clustering (0.94), con alfas significativos incluso tras controlar por los factores de Fama-French, momentum y liquidez.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje estadístico que explota desviaciones temporales de precios entre dos títulos relacionados, comprando el infravalorado y vendiendo el sobrevalorado, esperando la convergencia de sus precios.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "statistical arbitrage"},
+        {"tipo": "USA", "objeto": "spread"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"},
+        {"tipo": "APLICA_A", "objeto": "clustering"}
+      ],
+      "cita_textual": "Pairs trading strategies are a well-established example of statistical arbitrage investment opportunities, designed to exploit temporary price deviations between related securities and their long-term equilibrium."
+    },
+    {
+      "nombre": "clustering",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de aprendizaje no supervisado que agrupa datos (acciones) en clusters según similitud, medida por una distancia. En este paper se usa como filtro inicial para seleccionar pares candidatos antes de tradear.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "OPTICS"},
+        {"tipo": "APLICA_A", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "partial correlation"}
+      ],
+      "cita_textual": "Clustering algorithms group data points into clusters based on similarity, with similarity determined by a distance metric, such as the traditional Euclidean distance, which serves as the algorithm's starting point."
+    },
+    {
+      "nombre": "OPTICS",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de clustering basado en densidad que detecta clusters de densidades variables, superando una limitación de DBSCAN. En el paper se usa con cardinalidad mínima 2 por cluster para generar muchos clusters pequeños.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "DBSCAN"},
+        {"tipo": "PARTE_DE", "objeto": "clustering"}
+      ],
+      "cita_textual": "Building on DBSCAN, OPTICS (Ordering Points To Identify the Clustering Structure), introduced by Ankerst et al. (1999), is a more advanced clustering algorithm that excels at detecting clusters of varying densities, which is a limitation of DBSCAN."
+    },
+    {
+      "nombre": "DBSCAN",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de clustering basado en densidad que identifica clusters en regiones de alta densidad y clasifica puntos dispersos como ruido, sin requerir especificar el número de clusters a priori.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "clustering"},
+        {"tipo": "SE_OPONE_A", "objeto": "K-means"}
+      ],
+      "cita_textual": "Unlike k-means, DBSCAN does not require the number of clusters to be specified beforehand. Instead, it relies on parameters such as the maximum distance between points to qualify as neighbours and the minimum number of points needed to form a cluster."
+    },
+    {
+      "nombre": "K-means",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de partición que divide los datos en un número predeterminado de clusters, asignando cada punto al centroide más cercano. Su limitación es exigir especificar k a priori, lo que motivó usar OPTICS en el paper.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "clustering"},
+        {"tipo": "SE_OPONE_A", "objeto": "OPTICS"}
+      ],
+      "cita_textual": "A notable limitation of this approach is that it requires the user to specify the number of clusters a priori, which can be challenging when the optimal number of clusters is unknown."
+    },
+    {
+      "nombre": "partial correlation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Métrica de distancia novedosa que aísla la correlación pura entre dos acciones eliminando correlaciones espurias causadas por exposición compartida a un tercer factor (el mercado). Transformada como PC = 1 - |ρ_par| para usarse en clustering.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "MEJORA_A", "objeto": "clustering"},
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "Partial correlation quantifies the extent to which a variable influences the correlation between a pair of other variables, isolating the direct relationship from confounding effects."
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Relación de largo plazo entre dos series de precios que produce un spread estacionario y potencialmente mean-reverting. En el paper se usa el test de Engle-Granger como filtro opcional post-clustering.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "spread"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "two cointegrated price series produce a spread that is stationary and potentially mean-reverting, which is a key assumption underpinning pairs trading strategies."
+    },
+    {
+      "nombre": "spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Residuo de una regresión OLS entre los precios de dos acciones que forman un par. El z-score del spread estandarizado genera señales de entrada: largo/corto cuando |z| > umbral, cierre cuando z cruza cero.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "MIDE", "objeto": "cointegration"}
+      ],
+      "cita_textual": "The spread, traditionally denoted by {Zt}t∈τ, is defined as the OLS residuals of the regression: SY_t = γSX_t + ε."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Propiedad del spread de pares de trading por la cual las desviaciones de su media tienden a revertir, generando oportunidades de ganancia. Define la naturaleza contraria al momentum del pairs trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "pairs trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "pairs trading is inherently a mean-reversion strategy, which bets against trends by shorting stocks that have outperformed (anticipating a reversal) and longing stocks that have underperformed (expecting recovery)."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Categoría de estrategias que explotan ineficiencias estadísticas de precios, no arbitraje puro porque el timing de convergencia es incierto. El pairs trading es su ejemplo más canónico.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "because the timing of this realignment cannot be determined with certainty, pairs trading is categorized as statistical arbitrage rather than pure arbitrage."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de retorno ajustado por riesgo calculada como exceso de retorno sobre desviación estándar. En el paper, el mejor Sharpe mensual es 0.2904 (anualizado 1.01) para la estrategia basada en correlación parcial.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "MITIGA", "objeto": "maximum drawdown"}
+      ],
+      "cita_textual": "the PC distance achieves the highest risk-adjusted performance, with a monthly Sharpe ratio of nearly 0.3, corresponding to an annualized Sharpe ratio of approximately 1."
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mayor caída de pico a valle en el valor del portafolio. En el paper se reportan drawdowns de -0.0845 (SSD), -0.1468 (PCA) y -0.1159 (PC), siendo el SSD el mejor en esta métrica.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "Sharpe ratio"}
+      ],
+      "cita_textual": "the maximum drawdown, which measures the largest peak-to-trough decline in portfolio value, representing the worst potential loss from a peak."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de transacción incorporados usando precios bid y ask de CRSP al abrir y cerrar posiciones. Los costos proporcionales se omiten porque han disminuido sustancialmente para grandes inversores.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "we incorporate transaction costs into our analysis, accounting for them both when a trade is opened and when it is closed. To this end, we use the bid and ask prices provided by CRSP for all stocks."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseño de backtest que usa un período de formación (3 años) para seleccionar pares y un período de trading (1 mes) para ejecutar la estrategia, avanzando de forma rodante. Evita el sesgo de look-ahead.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "USA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "In our benchmark analysis, we employ a rolling three-year formation period combined with a one-month trading period. Within our timeframe, this approach yields a series of 288 monthly excess returns."
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo que ocurre al usar información futura en decisiones de trading. El paper lo mitiga mediante el diseño walk-forward y la inclusión de acciones que entraron y salieron del índice, mitigando también el survivorship bias.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "walk-forward validation"},
+        {"tipo": "MITIGA", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "our analysis includes stocks that are no longer part of the index as of today, while also tracking those that enter and exit the index during the study period. This approach mitigates survivorship bias and establishes a robust trading design."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los retornos mensuales excedentes netos de costos de transacción oscilan entre 36 pb (PCA) y 41 pb (SSD), con Sharpe ratios mensuales entre 0.2085 y 0.2904 (anualizados 0.72 a 1.01), todos estadísticamente significativos al 1%.",
+      "mercado": "S&P 500 constituents",
+      "periodo": "2000-2023 (288 meses)",
+      "magnitud": "Retorno promedio mensual: SSD 41 pb (t=4.27), PCA 36 pb (t=3.48), PC 38 pb (t=4.90). Sharpe mensual: SSD 0.2526, PCA 0.2085, PC 0.2904. Sharpe anualizado: SSD 0.88, PCA 0.72, PC 1.01.",
+      "condiciones": "Formación rodante 3 años, trading 1 mes, z-score threshold ±2, normalización 6 meses, costos bid-ask incluidos, exposición bruta fija 1 USD por par.",
+      "robustez": "alta",
+      "cita_textual": "the average monthly excess returns, net of transaction costs, range between 36 and 41 basis points"
+    },
+    {
+      "afirmacion": "La distancia de correlación parcial (PC) genera el mejor desempeño ajustado por riesgo y la mayor pureza de clustering (0.94), superando significativamente a SSD (0.81) y PCA (0.77) en pureza sectorial.",
+      "mercado": "S&P 500 constituents",
+      "periodo": "Formación: últimos 3 años hasta dic-2023 (753 días, 441 acciones)",
+      "magnitud": "Purity index: PC 0.94, SSD 0.81, PCA 0.77. Sharpe mensual PC: 0.2904. PC retornos positivos en 70.1% de los meses.",
+      "condiciones": "OPTICS con cardinalidad mínima 2. Clusters: 48 (SSD), 109 (PCA), 78 (PC). Pureza medida con clasificación SIC de 2 dígitos.",
+      "robustez": "alta",
+      "cita_textual": "the purity index of the optimally formed clusters was calculated to be 0.81 for clustering based on the SSD distance, 0.77 for the PCA distance, and 0.94 for the PC distance."
+    },
+    {
+      "afirmacion": "Añadir el filtro de cointegración (Engle-Granger) reduce aproximadamente a la mitad el número de pares tradeados y deteriora significativamente el Sharpe de las estrategias PCA y PC, mientras que SSD se mantiene casi inalterado.",
+      "mercado": "S&P 500 constituents",
+      "periodo": "2000-2023",
+      "magnitud": "Pares tradeados diarios sin/con cointegración: SSD 22.41→17.78, PCA 57.86→14.18, PC 43.93→12.12. Sharpe mensual con cointegración: SSD 0.2646, PCA 0.1391, PC 0.2320.",
+      "condiciones": "Test de cointegración univariado de Engle-Granger aplicado en el período de formación de 3 años.",
+      "robustez": "alta",
+      "cita_textual": "Imposing this criterion approximately halves the number of traded pairs. [...] the Sharpe ratios of the PCA- and PC-based strategies decrease substantially, while the Sharpe ratio of the SSD-based strategy remains nearly unchanged."
+    },
+    {
+      "afirmacion": "Las estrategias son neutrales al mercado: el factor MKT no es significativo en la mayoría de especificaciones, y los alfas mensuales (32-40 pb) permanecen significativos al 1% tras controlar por los 5 factores de Fama-French, momentum y liquidez.",
+      "mercado": "S&P 500 constituents",
+      "periodo": "2000-2023",
+      "magnitud": "Alfas en modelo completo: SSD 0.0035***, PCA 0.0028***, PC 0.0032***. Correlación con S&P 500: SSD -0.0284, PCA -0.0485, PC -0.0669.",
+      "condiciones": "Regresiones OLS con errores estándar Newey-West (5 rezagos). Factores: MKT, SMB, HML, RMW, CMA, MOM, LIQ.",
+      "robustez": "alta",
+      "cita_textual": "the alphas persist for all strategies, even under the full-factor model that incorporates all the factors mentioned above. This robustness highlights the distinctiveness and significance of the excess returns generated by the strategies."
+    },
+    {
+      "afirmacion": "En métricas de riesgo a la baja, la correlación parcial domina: obtiene el mayor Sortino (0.3011), Omega (2.6259) y Burke (0.2112), aunque SSD registra el menor drawdown (-0.0845 vs -0.1159 de PC).",
+      "mercado": "S&P 500 constituents",
+      "periodo": "2000-2023",
+      "magnitud": "PC: Omega 2.6259, Sortino 0.3011, Max drawdown -0.1159, Burke 0.2112. SSD: Omega 2.2607, Sortino 0.2824, Max drawdown -0.0845, Burke 0.1524. PCA: Omega 1.8852, Sortino 0.2329, Max drawdown -0.1468, Burke 0.1284.",
+      "condiciones": "Retornos mensuales excedentes no normales (positivamente sesgados y leptocúrticos), motivando el uso de métricas alternativas al Sharpe.",
+      "robustez": "media",
+      "cita_textual": "the PC distance outperforms the other metrics on nearly all downside performance measures, with the exception of the maximum drawdown."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El diseño usa precios diarios, formación de 3 años y trading mensual; la señal se basa en z-score del spread con normalización a 6 meses, lo que lo hace inviable para intradía sin reparametrización completa de frecuencias y umbrales."
+  }
+}

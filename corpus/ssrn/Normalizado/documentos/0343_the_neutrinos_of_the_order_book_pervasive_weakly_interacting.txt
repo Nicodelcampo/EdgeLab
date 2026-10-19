@@ -1,0 +1,1510 @@
+The “Neutrinos” of the Order Book: Pervasive, Weakly
+Interacting Order Flow and its Consequences
+Jakob Albersa,∗, Mihai Cucuringub,a,c, Sam Howisond, Alexander Y. Shestopaloffe,f
+aDepartment of Statistics, University of Oxford, Oxford, UK
+bDepartment of Mathematics, University of California Los Angeles, CA, USA
+cOxford-Man Institute of Quantitative Finance, University of Oxford, Oxford, UK
+dMathematical Institute, University of Oxford, Oxford, UK
+eSchool of Mathematical Sciences, Queen Mary University of London, London, UK
+fDepartment of Mathematics and Statistics, University of Guelph, ON, Canada
+Abstract
+We consider in detail how liquidity in a limit order book (LOB) is replenished
+immediately after the spread widens — the first stage of a price change. To this
+end, we use a highly granular dataset which we acquire directly from the blockchain
+of the blockchain-based exchange Hyperliquid. We analyze the entire message flow
+(approximately 4.5 billion messages over one month) relating to the Bitcoin perpetual
+contract, which has an average daily turnover of approximately $3 billion.
+We reveal the “neutrinos” of the order book: a massive, pervasive, yet weakly
+interacting flow of post-only limit orders—most of which are mechanically rejected
+because they would cross the spread—accounting for approximately 67% of all
+messages sent to the exchange. Such orders, when rejected (which is the vast majority
+of cases) do not appear in any standard market data feed and are effectively invisible
+to all traders except the submitter. Nevertheless, they are submitted in vast quantities
+and almost continuously, by a small group of traders.
+We argue that these traders are implementing a strategy to capture favourable
+queue priority (as part of market-making). They bombard the exchange with orders,
+most of which are rejected, but a small fraction arrive immediately after a spreadwidening event, and secure the desired queue position. We present detailed evidence
+that the traders are submitting in an extraordinarily accurate directional manner,
+presumably in response to private and common signals, and we show how the strategy
+has an embedded risk management which exploits the exchange’s own operational
+controls. We also show that the strategy accounts for a large proportion of “flickering
+∗Corresponding author. Email: jakob.albers@merton.ox.ac.uk
+
+orders” and that it is indeed profitable. Finally, we propose empirical signatures that
+may help detect whether the strategy is being used in markets where data on rejected
+orders is not available.
+Keywords:
+high-frequency trading, queue priority, spread refilling, flickering orders,
+market microstructure, rejected orders
+JEL classification: G14, C55
+1. Introduction
+The study of market microstructure has long adhered to a principle we might
+call ‘Sola Scriptura’ (“by the book alone"). The focus, from foundational models
+[21, 15] to contemporary empirical studies [18, 8], has been almost exclusively on
+the observable events recorded in the Limit Order Book (LOB): accepted orders,
+cancellations, and trades. This perspective is natural, and it has been enormously
+productive, providing evidential underpinnings for many aspects of our understanding
+of the roles played by private and public information in price formation and discovery.
+The perspective has the great virtue of minimising reliance on suppositions about
+unobservable elements such as trader intentions or the precise nature of signals.
+However, perspectives should evolve with the evolution of available data. Although
+they were a huge step forward when they first became widely accessible, standard
+market data feeds—even Level 3 feeds—do not include rejected orders. They report
+what enters the book, not what bounces off the matching engine and vanishes. The
+phenomena we document in this paper were therefore structurally unobservable until
+the advent of blockchain-based exchanges like Hyperliquid, where the full message
+stream can be reconstructed from on-chain records. When richer data become available,
+two things follow. First, phenomena invisible to earlier studies can be documented
+directly. Second—and perhaps more consequentially—established findings can be
+revisited. Some will be confirmed; others may require qualification. Explanations
+that seemed plausible given the old data may now appear incomplete.
+In this paper, we exploit a dataset that is, at present, uniquely granular: it
+captures every message submitted to the exchange, including those rejected by the
+matching engine. This level of detail has not been available for standard exchanges;
+it becomes possible here because Hyperliquid operates a blockchain-based matching
+engine whose full message stream can be reconstructed from on-chain records (see
+Appendix A for details on the exchange architecture).
+What this data reveals is striking. We identify the ‘neutrinos’ of the order book:
+a massive, pervasive, yet weakly interacting flow of rejected ‘post-only’ orders. Like
+their namesakes in physics, these messages are ubiquitous and vastly numerous in
+2
+
+aggregate, yet almost all of them are invisible in standard data feeds—they pass
+through the matching engine without altering the observable state of the book in any
+way.
+The scale of this “neutrino” flow is staggering. In our sample of about 4.5 billion
+messages, rejected orders account for approximately 89% of all liquidity-providing
+submissions and dwarf the visible liquidity resting in the LOB by more than two
+orders of magnitude. This is not random noise or a technical artifact; it is the
+dominant form of interaction with the exchange.
+We present strong evidence to support the hypothesis that
+this hidden flow stems almost entirely from a single, pervasive strategy executed by
+a specialized cohort of high-frequency traders (HFTs) whose goal is to optimise the
+queue position of their orders; we term this the Queue Priority Strategy Hypothesis
+(QPSH).
+The QPS is driven by the immense value of queue priority, namely securing the
+first-in-line (FIL) position at a new price [23, 25]. We show that HFTs engage in
+relentless, anticipatory “spamming”, flooding the market with a constant rain of orders
+structured as what we term submission bursts—volleys of simultaneous post-only
+submissions targeting multiple aggressive price levels. This flow is directional: the
+net direction of rejected orders in the 100 ms before each price change correctly
+predicts the direction of that change 91.3% of the time. This evidence suggests that
+traders are not firing blindly; they are acting on signals that forecast short-term price
+movements with remarkable accuracy. The objective is to exploit latency: traders
+aim for their orders to be “in-flight” precisely when the price changes, usually via
+liquidity removal through a taker order and/or maker cancellation. If the QPS orders
+arrive even milliseconds too early, they are mechanically rejected (generating the
+invisible component of the “neutrino flow”). The small proportion of QPS orders that
+arrive at the optimal time often secure the coveted first-in-line (FIL) queue priority.
+We proceed to examine the implications of the strategy.
+First, it challenges our understanding of how the spread typically refills after it is
+temporarily widened (by taker orders, cancellations, or both). The conventional view
+is reactive: the spread widens, traders observe this, and then react to competitively
+establish the new bid and ask prices[21, 14, 22]. We show instead that spread refilling
+is primarily anticipatory. The liquidity that establishes the new best price is typically
+already “in-flight” before the price change even occurs, implying that the effective
+latency of replenishment is close to zero.
+Second, the QPSH provides a parsimonious explanation for “flickering orders”
+(orders cancelled almost immediately after submission; we operationalize this as
+cancellation within 500 ms). Flickering has been documented as a distinct, puzzling
+3
+
+phenomenon [18]. We show it is, to a large extent, a risk-management byproduct
+of the QPSH. When a submission burst succeeds, the trader instantly cancels the
+unwanted, off-price orders to avoid multi-fill risk. This rapid “cleanup” accounts for
+roughly 30% of the flickering activity in our dataset. We return to flickering orders in
+Section 3.6.
+Returning to our opening point, that previously unavailable data allows us to
+extend the range of our interpretation, our findings allow us to infer more about
+the hidden “private" world that underlies the observable universe of the LOB. In
+particular, our evidence sheds light on the details of the liquidity-provision side of
+price formation, and how market makers submit accurate anticipatory orders well
+before liquidity removal changes the price. Our findings suggest that FIL makers
+are primarily signal-driven in their submissions, whether those signals be private or
+public, and that QPS traders are remarkably effective in replenishing the LOB as
+soon as a taker order (perhaps driven by a stronger signal) has been filled.
+1.1. Related Literature
+This study connects to several strands of the market microstructure literature.
+HFT Strategies and the Speed Race. A large literature examines what high-frequency
+traders actually do. [20] show algorithmic trading improves liquidity; [8] document
+HFTs’ role in price discovery. [10] argue that limit order books generate designinduced latency-arbitrage rents, spurring a socially wasteful “arms race” for speed; [3]
+provide definitive empirical evidence of this race. Our findings complement this work
+by documenting a strategy that operates largely outside the visible LOB, and that is
+less about reacting faster to known events and more about positioning preemptively
+for anticipated events. The massive flow of rejections we document is the byproduct
+of this anticipatory mechanism.
+The Value of Queue Priority. The economic value of queue position is well established.
+[13] model the limit order book as a market for liquidity in which queue position
+determines execution probability.
+[23] show that queue position accounts for a
+substantial fraction of limit order profitability, particularly in large-tick stocks. [25]
+demonstrate that time-priority in limit order books allocates rents to faster traders
+who exploit their speed advantage to secure superior queue positions—crowding out
+slower participants. We take the value of queue priority as given and ask a different
+question: how do traders attempt to capture it? The answer, we argue, is relentless
+anticipatory spamming—a strategy that leaves behind a massive trail of rejected
+orders.
+4
+
+Flickering Orders and Ephemeral Liquidity. The phenomenon of “flickering” or “fleeting” orders—rapid submissions and cancellations—has generated debate. [18] document that a large fraction of limit orders are cancelled within seconds. [17] shows
+that quotes are more volatile at high frequencies than fundamentals would imply,
+and frames this as a puzzle. [4] provide a theoretical model in which fleeting orders
+arise from repeated mixed-strategy equilibria. Others view flickering as potentially
+manipulative [12] or as legitimate risk management [5]; [6] show that flickering quotes
+on European equities are positively correlated with subsequent price changes, are
+concentrated among a handful of high-frequency firms, and—notably—are directional,
+with buy-side flickering clustering after price rises and sell-side after declines; and [24]
+provide an empirical characterization and situate flickering within an ongoing debate
+over mechanism and intent, arguing that the evidence is more consistent with benign
+trading activity rather than with manipulation. We offer a parsimonious mechanism:
+flickering is predominantly the “cleanup” phase of an anticipatory strategy whose objective is to land orders with favourable queue position. It arises endogenously as part
+of the strategy’s risk management. The concentration and directionality documented
+by [6] are consistent with the empirical signatures implied by this mechanism.
+[26] documents that immediately after a price change, displayed depth at the new
+best quote in the direction of the move jumps up and then declines sharply within
+a short time interval, reflecting submissions of new maker orders followed by rapid
+cancellations at that same new best price. He proposes a queueing-based explanation:
+after a spread-widening event, market makers submit multiple orders at the new best
+price because uncertainty arising from latency means they do not know their queue
+position ex ante; once orders are accepted and queue position is revealed (or can
+be inferred), they cancel the orders with inferior priority. Our mechanism shares
+the same economic force—queue position is valuable and uncertain—but differs in
+timing and observability. We instead suggest that a substantial portion of the race
+for priority occurs through anticipatory, in-flight submission attempts that precede
+the observable price change.
+Predictive Order Flow. Numerous studies document that order flow predicts subsequent price changes [19, 11, 9]. In a companion paper, we show this predictive
+relationship extends even to rejected orders—messages that never touch the book.
+The QPSH explains why: the predictive power does not reside in the order itself
+(which, if rejected, has no causal effect on the book). It resides in the information that
+motivated the trader to submit it. Rejected orders are informative precisely because
+they are a byproduct of informed traders anticipating imminent price changes.
+5
+
+2. Data
+Our data are drawn from the Hyperliquid exchange, a highly liquid cryptocurrency
+perpetual futures marketplace. Our sample focuses on the BTC-USD perpetual
+futures contract, the most actively traded instrument on the venue, with an average
+daily trading volume of approximately $3 billion during our sample period. The
+sample spans July 1st to July 29th, 2025, encompassing approximately one month of
+continuous trading.
+The dataset is uniquely granular.
+Unlike standard Level 2 or Level 3 data
+feeds which report only accepted orders and trades, our data include every message
+submitted to the matching engine, including those that are rejected. The result is a
+dataset of approximately 4.5 billion messages. The average message rate is roughly
+112,000 per minute—about 1,860 per second, or one message every 0.54 ms.
+Each message in our dataset is tagged with a unique trader identifier and, where
+applicable, a client order ID (‘cloid’) that traders use to track their own submissions.
+Each message carries a timestamp assigned by the matching engine at the moment
+of processing. These timestamps reflect when the exchange internally recorded each
+event—not when the trader submitted the message. Further technical details regarding
+the construction of this dataset will be provided in a forthcoming companion paper,
+which will also make the data publicly available to the academic community.
+Crucially for our analysis, we observe the full stream of rejected “post-only"
+orders. In this market, traders frequently use the “post-only" instruction to ensure
+they provide liquidity (maker) rather than take it. If a “post-only" order is submitted
+at a price that would cross the spread (e.g., a buy order priced at or above the
+best ask), the matching engine rejects it with the error BadAloPxRejected. These
+rejections are purely mechanical events: they leave no footprint in the order book,
+do not execute, and are not disseminated via standard market data feeds used for
+trading. However, our data captures this “invisible” flow, allowing us to analyze it
+ex-post as a distinct class of market activity, although it is not observable to market
+participants in real time.
+2.1. Order Lifecycle and Event Taxonomy
+To analyze our comprehensive message flow, we identify four distinct categories of
+messages based on outcome and longevity.
+Rejected Orders. Except for a small number of other rejections noted below, these
+are “post-only” submissions that are mechanically rejected by the matching engine
+because they would cross the spread if posted upon arrival. These events are central
+to our study: they do not alter the LOB state, are not disseminated in standard
+market data feeds, and are thus invisible to other participants.
+6
+
+Successful Placements (Accepted Orders). This category encompasses all limit order
+submissions—whether flagged as ‘post-only’ or not—that successfully enter the limit
+order book. This occurs when a ‘post-only’ order does not cross the spread, or when
+a standard limit order is priced passively relative to the current market. These orders
+add liquidity and are visible to all market participants via the standard data feeds.
+Cancellations. A cancellation message attempts to remove an order from the LOB
+prior to execution. Successful cancellations are visible events that reduce liquidity;
+failed attempts (e.g., when the order was already filled or previously cancelled) leave
+no trace in the book. Our message-level statistics include both. Because traders
+frequently submit multiple cancellation requests for the same order—a redundancy
+tactic to maximize the probability of successful cancellation in latency-sensitive
+situations—cancellation messages outnumber accepted orders in our sample.
+Other Order Outcomes. This residual category captures all remaining message types.
+It includes: (i) taker orders—market orders, immediate-or-cancel (IOC) orders, and
+marketable limit orders that cross the spread and execute immediately upon arrival;
+(ii) other order types such as TWAP execution orders offered by the exchange; and
+(iii) other rejections—submissions rejected for reasons unrelated to price, such as ratelimit violations, insufficient margin, self-trade prevention, or invalid order parameters.
+Together, these account for approximately 4.3% of total message traffic and are
+peripheral to our analysis.
+The taxonomy above is purely mechanical. From it, we derive a subset of orders
+that has attracted recent attention in the literature [6]:
+Flickering Orders. We identify a specific subset of observed events characterized by
+their transience. Following [18], we define a flickering order as an accepted order
+that is subsequently cancelled within 500 ms of submission. 1 These events represent
+liquidity that exists in the book only fleetingly.
+Note that flickering is a derived category based on order longevity, not a fundamental message type. An order is classified as flickering only after observing its
+subsequent cancellation; at the moment of submission, it is indistinguishable from
+any other accepted order.
+1In the literature, thresholds vary from sub-second to several seconds. We select 500 ms to
+capture the high-frequency nature of the strategy we describe, though our results are robust to
+thresholds of 100 ms or 1s.
+7
+
+2.2. Message Frequency and Magnitude
+Table 1 reports the frequency of total message traffic directed at the exchange.
+The distribution reveals a striking fact: the majority of interactions with the matching
+engine are either invisible to other participants (rejected orders) or (and much less
+commonly) short-lived (flickering orders).
+Table 1: Frequency and Characteristics of Exchange Message Traffic
+Message Type
+Avg. Count (per min)
+Share of Total
+Panel A: Message Type Breakdown (Exhaustive)
+Rejected Post-Only Orders
+74,928
+67.1%
+Accepted Post-Only Orders
+9,315
+8.3%
+Cancellations
+22,524
+20.2%
+Other (takers, other rejections, etc.)
+4,840
+4.3%
+Total
+111,607
+100.0%
+Panel B: Derived Metrics
+Submission Rejection Rate
+88.9%
+(Rejected / [Rejected + Accepted])
+Accepted Order Flicker Rate (<500 ms)
+29.3%
+(Flickered / Accepted)
+Panel A reports the breakdown of all message traffic by type. “Other” includes taker orders, non-post-only
+limit orders, and orders rejected for technical reasons (e.g., rate limits, invalid parameters). Panel B
+reports derived metrics for post-only order flow.
+As shown in Table 1, the total message traffic averages approximately 112,000
+messages per minute. Rejected ‘post-only’ orders occur at a rate of approximately
+74,928 per minute, accounting for 67.1% of the total traffic.
+However, this figure understates their prevalence among liquidity-providing submissions. Total traffic includes cancellations (which remove liquidity) and taker orders
+(which consume it). When we restrict attention to submissions intended to add
+liquidity to the book—post-only limit orders—the picture changes: 88.9% of these
+submissions are rejected without reaching the book. The overwhelming majority of
+attempts to provide liquidity fail on arrival and do not result in a resting order.
+Furthermore, of the orders that do successfully enter the book, a significant share
+(29.3%) are “flickering” orders—cancelled within 500 ms of submission. The visible
+order book, at any instant, represents only a small residue of the liquidity that traders
+attempt to provide.
+8
+
+Cancellations also constitute a significant portion of the total traffic, at 20.2%.
+Cancellations are more frequent than accepted orders because traders often submit
+multiple cancellation attempts for the same order to maximize their probability of a
+successful cancellation (cf. latency races discussed in [1]).
+2.3. Polarization and Directionality
+To determine if the flow represents a balanced mix of buy and sell messages or a
+one-sided flow, we construct a “Shadow Imbalance” metric. We define Irej
+t
+(N) as the
+imbalance of buy and sell volumes of the last N rejected orders:
+Irej
+t
+(N) =
+PN
+k=1 δt−kvt−k
+PN
+k=1 vt−k
+(1)
+where vt−k is the size of the k-th most recent rejected order, and δt−k ∈{+1, −1}
+indicates its direction (+1 for a buy, −1 for a sell). This metric ranges from −1 (pure
+selling) to +1 (pure buying).
+We analyze the distribution of this “Shadow Imbalance” to determine if the flow
+represents a balanced mix of buy and sell messages or a highly one-sided flow. The
+findings indicate substantial polarization. Using a rolling window of N=50 rejected
+orders, we find that the imbalance is in an extreme state (|Irej
+t
+| > 0.9) 80% of the
+time. 2 This polarization is persistent: the median residence time in an extreme state
+(before the imbalance crosses zero) is approximately 1662 ms. The rejected order
+flow is thus not a featureless mix of buys and sells; instead, it is highly polarized and
+directionally stable, and typically consists almost exclusively of either buy or sell
+attempts for sustained intervals.
+Building on the observation of polarization, we next examine the relationship
+between the direction of this flow and subsequent price changes. We match each
+rejected order to the subsequent price change and ask whether a rejected buy precedes
+a price increase and a rejected sell precedes a price decrease. Across all rejected
+orders, the direction of the submission aligns with the subsequent price change in
+73% of cases.
+This figure is likely conservative. A trader may submit thousands of rejected
+orders during a price epoch, but their directional signal can reverse mid-epoch. When
+it does, their earlier orders appear “wrong” relative to the eventual price change, even
+though they reflected the trader’s belief at the time of submission. When we isolate
+2These results are robust to the choice of window size for other N (e.g., N=10, N=100). The
+polarization signal becomes less distinct for significantly larger windows (e.g., N=500), suggesting
+the directional intensity operates at very high frequencies.
+9
+
+only rejections in the final 100 ms before each price change—capturing the current
+signal rather than older orders—directional accuracy increases to 91.3%.
+Either way, the massive, invisible flow is highly one-sided and systematically
+aligned with short-term price changes.
+2.4. Event Sequencing and Linkage
+Next, we observe that rejections are rarely isolated and instead occur in structured,
+sequential patterns. Orders that end up being rejected are typically not submitted
+in isolation, but in high-frequency batches from individual traders. We define a
+“Submission Burst” as any group of at least five “post-only" submissions from a
+single trader that meet the following criteria:
+• They are submitted in the same millisecond.
+• They share the same 15-character ‘cloid’ prefix.3
+• They have identical order sizes and target the same side of the book (though
+potentially different price levels).
+Note that the definition does not filter for the order’s outcome: a priori, orders
+from a submission burst can experience any fate, whether it be a rejection, or
+acceptance as an open order. We find that a staggering 97.8% of all rejected orders
+are associated with a submission burst, as defined above.
+We analyze the outcomes and lifecycles of all such submission bursts in Table 2.
+The data in Table 2 reveal two distinct outcomes for this submission pattern.
+Panel A confirms that the vast majority of bursts (86.5%) result in all orders being
+rejected. How can a burst designed to cross the spread ever produce accepted orders?
+The answer is that acceptance occurs because of timing. If the price moves during
+the orders’ round-trip latency—between submission and arrival at the matching
+engine—orders that would have been rejected a moment earlier now land as passive
+liquidity at the new price levels. Panel A’s 13.5% acceptance rate reflects exactly
+these cases: bursts that were in-flight when the price moved.
+However, even in those “mixed” bursts, most orders are still rejected. In bursts
+with at least one accepted order, the median number of accepted orders is 2, out of a
+median of 10 targeted price levels; the remaining orders in the burst are rejected.
+3The ‘cloid’ (Client Order ID) is a client-customizable hexadecimal string serving as a unique
+order identifier. We observe that high-frequency traders often use the ‘cloid’ structure to encode
+metadata, such as the specific strategy type, by setting a fixed prefix for related orders.
+10
+
+Table 2: Analysis of Submission Burst Lifecycle
+Metric
+Value
+Panel A: Burst Outcomes (All Submission Bursts)
+% of Bursts: All Orders Rejected
+86.5%
+% of Bursts: At Least One Accepted
+13.5%
+Panel B: Order Lifecycle in Bursts that Straddled a Price Change
+(Restricted to bursts with ≥1 accepted and ≥1 rejected order)
+(Comparing orders from the same accepted burst)
+(a) Best-Price Orders
+% Cancelled within 500 ms (Flickering)
+73.7%
+% Cancelled within 1,000 ms
+84.9%
+Median Lifetime
+341 ms
+Average Lifetime
+4,896 ms
+(b) Off-Price Orders
+% Cancelled within 500 ms (Flickering)
+89.6%
+% Cancelled within 1,000 ms
+97.5%
+Median Lifetime
+219 ms
+Average Lifetime
+1,242 ms
+A “Submission Burst” is at least five orders from a single trader, with identical size and the same
+15-char ‘cloid’ prefix, submitted within the same millisecond. Panel A reports the outcomes of all
+bursts. Panel B reports the order lifecycle within “mixed-outcome” bursts (i.e. bursts containing
+both accepted and rejected orders). Best-Price = at the touch; Off-Price = deeper levels.
+11
+
+Panel B examines bursts with mixed outcomes—those containing both accepted
+and rejected orders. These are bursts that straddled a price change: some orders
+crossed the spread (rejected), while others landed as passive liquidity (accepted). We
+classify the accepted orders into two groups: “Best-Price Orders” (those at the
+best bid or ask at time of acceptance) and “Off-Price Orders” (those at deeper
+price levels).
+The data indicate a marked difference in the longevity of these two groups. OffPrice Orders are cancelled rapidly: 89.6% flicker within 500 ms and 97.5% within one
+second, with an average lifetime of 1,242 ms. Best-Price Orders are more persistent:
+73.7% flicker, but the average lifetime is 4,896 milliseconds—nearly four times longer.4
+In mixed bursts, best-price orders tend to remain in the book, while off-price orders
+are typically cancelled.
+2.5. The Concentration of Rejections: Identifying a Cohort
+We next examine the distribution of rejected orders across traders. Rejection
+activity is highly concentrated among a small number of participants.
+Figure 1 illustrates this concentration. The bars show rejected orders per trader
+per day, ranked in descending order; the line traces the cumulative share. The pattern
+is unmistakable: rejection activity is not merely concentrated but dominated by a
+handful of participants. One trader alone accounts for 39% of all rejections. By the
+eighth trader, 95% of rejections are explained. By the tenth, 97%. By the twentieth,
+over 99%. The remaining 53,000+ traders account for a negligible share of total
+rejections.
+We designate these eight traders as the QPS cohort.5
+This small group is
+responsible for nearly the entire flow of rejected orders. Moreover, their influence is
+evident across two dimensions: they dominate rejected order flow and also account
+for substantial trading volume. All eight rank among the top 50 traders by volume,
+with two in the top 10. Collectively, they account for 13.5% of all maker volume on
+the exchange—a striking concentration for just eight accounts.
+The facts documented above call for explanation. In Section 3, we propose that
+a single strategy—the pursuit of queue priority—provides a unified explanation for
+these findings.
+4This analysis includes cases where the best price moves away from the best-price order shortly
+after its submission, making the 73.7% figure conservative; excluding these transient best-price
+states would yield an even lower flickering rate.
+5The acronym anticipates our hypothesized trading strategy (the Queue Priority Strategy) in
+Section 3; for now, it is simply a label for this group. The top 8 traders account for 95% of rejections.
+Our results are robust to broader cohort definitions (e.g., top 10 or top 20).
+12
+
+Figure 1: Rejection Concentration by Trader. Bars show rejected post-only orders per trader per
+day (left axis); the line shows cumulative share of all rejections (right axis). The top 8 traders
+generate over 95% of rejections.
+13
+
+3. The Queue Priority Strategy (QPS)
+The empirical facts in Section 2 leave us with a strange picture of the market.
+Roughly nine out of ten post-only order submissions are bounced back as
+BadAloPxRejected. This rejected flow is highly polarized—almost pure buy or pure
+sell—and it forecasts the direction of the next price change with 73–91% accuracy. It
+does not arrive as isolated probes, but rather in structured bursts that either vanish
+as rejections or leave behind brief constellations of flickering orders. Orders posted at
+the best price survive substantially longer than their off-price counterparts. Strikingly,
+the entire phenomenon is generated by just eight traders.
+We face three puzzles:
+1. Why so much invisible effort? Why do traders submit such an enormous
+volume of orders that ultimately end up being rejected?
+2. Why are non-events apparently informed? How can mechanically rejected
+orders—events that never touch the LOB—be so strongly directional and so
+predictive of the next price change?
+3. Why this particular choreography? Why do rejected orders almost always
+arrive in bursts, and why does the survival time of accepted orders depend so
+sharply on whether they are off-price or best-price?
+These are not loose patterns that invite multiple interpretations.
+They are
+dominant features of the market, highly structured, and concentrated among just
+eight traders. We propose a single hypothesis to account for all three: the QPS cohort
+is executing a market-making strategy designed to capture queue priority immediately
+following price changes.
+3.1. The Value of Queue Priority
+In price-time priority markets, queue position significantly influences both execution probability and expected profitability. The first order at the best price is
+guaranteed to fill against the next incoming taker order of the opposite side. When
+that best-price queue is large, these fills tend to be profitable, as shown in [2]. This
+makes the FIL position extremely valuable—not just for getting filled, but for getting
+filled profitably.
+When are top-of-book queues large? Liquidity clusters at the top-of-book when
+some combination of the following conditions holds: large tick sizes, meaningful maker
+rebates, low volatility, or substantial “uninformed” taker flow that executes without
+14
+
+regard to short-term price signals.6 In such markets, the difference between first and
+fiftieth in line can be the difference between a profitable fill and a losing one.
+In the analysis that follows, we take as given the value of queue priority [23, 7].
+Our focus is on the less-studied question of how HFTs attempt to secure favourable
+queue positions—that is, what strategies do they use?
+Competition for queue priority is especially fierce immediately after price changes.
+When a taker order and/or cancellation widen the spread, the opportunity to establish
+a new best quote arises. Consider a price rise triggered by a taker buy order that
+clears the best ask. If that taker was informed, the fair price has likely risen—meaning
+the old ask price is now attractive as a bid. Market makers recognize this: if someone
+was willing to take at that price (particularly after accounting for the taker fee), I
+should be willing to make at that price. The result is a race to post the first bid at the
+vacated level, converting it into the new best bid. We now describe a strategy to win
+(or, at least, place highly in) this race. We term it the Queue Priority Strategy (QPS),
+and we show that it explains all the empirical evidence documented in Section 2.
+3.2. The Queue Priority Strategy Hypothesis
+The Queue Priority Strategy Hypothesis (QPSH) states that:
+• A single strategy, the QPS, is the overwhelmingly dominant mechanism that
+causes both the rejected order flow and the immediate replenishment of at-thetouch liquidity following a widening of the spread.
+• The QPS has the goal of optimising same-side queue position for maker orders
+at the touch immediately after the spread is refilled.
+• The QPS is to maintain a high-frequency stream of submission bursts of postonly orders, targeting opposite-side price levels at and adjacent to the best
+opposite-side price.
+• Such orders can only be accepted if the opposite-side best price changes between
+submission and arrival at the exchange. All such accepted orders are immediately
+cancelled unless they are at the new best near-side price. The submission times
+are frequent and untargeted, but the submission direction is determined by the
+trader’s expectation of the direction of the next price change.
+6Hyperliquid’s BTC perpetual exhibits a moderately small tick size (0.1 bp), a meaningful maker
+rebate (0.3 bp), moderate volatility, and substantial retail taker flow. The spread is almost always
+exactly one tick; median top-of-book depth is approximately $500 thousand. These conditions are
+conducive to queue competition.
+15
+
+• ‘Superfluous’ accepted orders are immediately cancelled for risk-management
+purposes.
+Furthermore:
+• There is a small group of specialist traders who use the QPS, generating a very
+large proportion of all message traffic on the exchange.
+This cohort was identified in Section 2.5: the eight traders who account for 95%
+of all rejected orders.
+3.3. Strategy Mechanics and Evidence
+We now present the details of the QPS, then test each of its components against
+the data. Section 3.3.1 describes the strategy as an algorithm; Section 3.3.2 verifies
+that the QPS cohort’s behavior matches each component.
+3.3.1. The Strategy
+The QPS operates as a continuous loop with three phases: signal evaluation, burst
+submission, and cleanup.
+Phase 1: Signal. The trader maintains a directional signal S(t) ∈{BUY, SELL, NEUTRAL},
+updated continuously based on market information. Plausible inputs include order
+book imbalance, recent trade flow, price movements on correlated venues, or proprietary combinations. We do not attempt to identify the inputs to the signal. Nor do we
+have direct evidence of its existence; however, the data we present strongly suggests
+that it exists and is remarkably accurate.
+The NEUTRAL state corresponds to periods of inactivity: no bursts are submitted.
+Any transition between states triggers cancellation of all outstanding orders before
+the new state takes effect.
+Phase 2: Submit Burst. (See Figure 4, panel B.) The trader submits a batch of
+post-only orders targeting price levels on the opposite side of the book from the
+current best quote. Let pa denote the current best ask, pb the current best bid, and δ
+the tick size. Specifically:
+• If S(t) = BUY: submit buy orders at prices {pa, pa + δ, pa + 2δ, . . . , pa + kδ},
+where k is usually 8–10.
+• If S(t) = SELL: submit sell orders at prices {pb, pb −δ, pb −2δ, . . . , pb −kδ}.
+16
+
+This “bracketing” across k + 1 consecutive price levels hedges uncertainty about how
+far the price will move.7 The use of post-only orders ensures that if accepted, orders
+are passive (earning maker rebates and avoiding the taker fee) and that orders which
+would cross the spread are rejected rather than filled.
+Orders are in flight for the network round-trip latency τ (typically 50–150 ms).
+Upon arrival, the outcome depends on whether—and how far—the price has moved:
+• Signal-aligned price move of m ticks: Orders at the first min(m, k) price levels
+become passive and are accepted; orders at more aggressive levels still cross the
+spread and are rejected. For example, if a buy burst targets 10 levels above pa
+and the ask rises by 5 ticks, the first 5 orders are accepted while the remaining
+5 are rejected.
+• No movement (the typical case): All orders would cross the spread. They are
+rejected with BadAloPxRejected and leave no trace on the order book.
+• Signal-contrary movement: The price moves opposite to the signal—e.g., the
+ask falls while a buy burst is in flight. The burst is rejected as above.
+The bracketing structure ensures that some orders are accepted whenever the price
+moves in the anticipated direction, regardless of the exact magnitude.
+Phase 3: Cleanup. When orders are accepted, multiple orders from the same burst
+may land and be accepted at different price levels. The trader retains only the order
+at the new best price—if one exists—and immediately cancels the rest. If the price
+move exceeds the burst’s bracketing range, no order lands at the best price; all are
+cancelled. Either way, the cancelled orders become “flickering orders”—visible briefly
+on the book before vanishing.
+A second form of cleanup occurs when the directional signal reverses. If a trader
+holds open buy orders and their signal flips to SELL, those orders face imminent
+risk of negative-PFPR fills. Prudent risk management then requires cancelling the
+open orders immediately. This signal-driven cancellation is not unique to the QPS;
+it is standard practice for any high-frequency strategy involving passive orders; it is
+arguably not part of the QPS at all.
+The constant rain. Critically, the trader does not attempt to exactly time individual
+burst submissions to coincide with price changes. Instead, bursts are submitted
+continuously at sub-second intervals (ranging from tens to hundreds of milliseconds)
+7On Hyperliquid, δ = $1 for BTC-perp, so a burst with k = 10 spans $10 of price space.
+17
+
+while the signal remains active, ensuring that orders are always in flight. The goal is
+that when a price change occurs, at least one burst’s orders are processed immediately
+after the price-moving LOB operations (cancellations and/or taker orders). Most
+bursts are rejected. But the burst that happens to be submitted just before a price
+change—and processed by the matching engine just after—succeeds: one or more of
+its orders are accepted, likely among the first at the new price level.
+The strategy thus produces three observable outputs: (i) rejected orders, when
+bursts arrive before a price move; (ii) flickering orders, when bursts succeed but
+require cleanup of off-price orders; and (iii) accepted orders at the new best price,
+which are either left in place to be filled or later cancelled as part of routine order
+management (e.g., if the price continues moving, or if the directional signal reverses).
+All three are byproducts of the same underlying mechanism.
+3.3.2. Evidence
+We now test each component of the hypothesized strategy against the behavior
+of the QPS cohort.
+Throughout, we compare the cohort to All Other Traders
+(AOT)—the remaining 52,821 traders in our sample. Table 3 summarizes the key
+metrics.
+Evidence of Directional Signals. Phase 1 posits that traders maintain a directional
+signal and submit bursts only when that signal is active. If true, QPS rejected orders
+should be directionally biased to align with the expected price move.
+We test this by inferring the cohort’s aggregate signal before each price change.
+Within the X ∈{100, 500, 1000, 2000} milliseconds preceding a price move, we count
+QPS rejected buys and rejected sells. If buys exceed sells, the inferred signal is BUY;
+if sells exceed buys, SELL.8
+Three patterns in the data confirm that these rejected orders carry directional
+information, consistent with the use of highly accurate short-term signals.
+First, accuracy increases at shorter horizons. Across all qualifying price changes,
+the inferred signal matches the subsequent move 76.8% of the time at 2 seconds,
+rising to 81.7% at 1000 ms, 87% at 500 ms, and 91.3% at 100 ms (Figure 2a). Shorter
+windows capture fresher signals, less diluted by old orders submitted when the trader’s
+view may have been different.
+8To avoid contamination from earlier epochs, we restrict to price changes where the epoch
+duration exceeds the lookback window; this ensures all counted rejections immediately precede the
+price change in question.
+18
+
+(a) Accuracy by lookback window
+(b) Accuracy by signal strength decile
+Figure 2: Directional forecasting accuracy of QPS rejected orders. (a) Accuracy peaks at
+short lookback windows and declines as stale orders dilute the signal. (b) Accuracy increases
+monotonically with signal strength (net directional volume), reaching near-100% in the top decile.
+Second, stronger signals predict better. We proxy signal strength by the net
+notional volume of rejected orders during each price epoch—the absolute difference
+between buy and sell rejection volume. Partitioning the sample into deciles by this
+measure reveals a monotonic relationship: accuracy rises from roughly 51% in the
+bottom decile (weak or ambiguous signals) to about 97% in the top decile (Figure 2b).
+When the cohort submits substantial volume to a directional bet, they are almost
+always right.
+Third, polarization amplifies accuracy. Polarization—the fraction of orders in the
+majority direction—has a median of 86%, with two-thirds of events exceeding 80%.
+Among the 38% of events with polarization above 90%, accuracy reaches 96%. The
+cohort’s collective conviction is itself informative.
+The cohort’s rejection flow leans heavily in one direction, and that direction
+predicts the next price move with striking accuracy. This accuracy alone implies the
+use of potent short-term signals. But the unanimity of the cohort implies something
+more: that there is commonality among the signals used by different QPS traders.
+On average, 2.8 of the 8 traders are active in the 1000 ms before each price change;
+among them, 82.5% of events show complete agreement—every active trader pointing
+the same way. Split decisions are rare. This degree of alignment suggests traders are
+drawing on common or highly correlated signals—order book imbalance, recent trade
+flow, or similar publicly observable inputs.
+Evidence of Burst Submission and Bracketing. Phase 2 posits that traders submit
+orders in structured bursts spanning multiple price levels on the opposite side of the
+19
+
+book. We test three predictions.
+Test 1: Burst structure. If traders submitted orders individually, even in rapid succession, we would observe distinct timestamps at microsecond granularity. Instead, orders within a burst share identical timestamps (e.g., 2025-07-14 22:12:05.060398).
+On Hyperliquid, this is only possible via a single bulk API request. For the QPS
+cohort, 98.7% of submissions occur in such bursts; for AOT, only 4.2%.9
+Test 2: Multi-level bracketing. QPS bursts span 8.41 price levels on average
+(median 11), consistent with the hypothesized bracketing behavior. The distribution
+of price levels spanned per burst shows QPS bursts clustering around 8–12 levels.10
+The bracketed levels are nearly always contiguous: 96.3% of QPS bursts contain no
+gaps.
+Test 3: Opposite-side targeting. Post-only orders are rejected when they would
+immediately execute—that is, when priced at or through the current best quote.
+The QPS cohort’s 96.74% rejection rate implies that their limit prices almost always
+cross the spread. Among AOT post-only submissions specifically, the rejection rate is
+6.07%. The QPS cohort is not passively posting liquidity; they are bracketing the
+opposite side of the book.
+Evidence of Cleanup Behavior. Phase 3 posits that traders cancel off-price orders
+immediately after a successful burst, retaining only the top-of-book order—and
+cancelling even that if the price moves further.
+Figure 3 shows order survival curves by price level. Almost no cancellations occur
+in the initial flat region of the curve; this reflects a minimum observable lifetime
+imposed by Hyperliquid’s network round-trip time (see Appendix A). For QPS traders,
+off-price orders decay sharply: mean lifetime 375 ms, median 285 ms, with 97.1%
+cancelled within one second. Top-of-book orders last longer (mean: 1.211 s, median:
+345 ms), but only while they remain at the best price. When a continued price
+move leaves them deeper into the book, they are cancelled within 342 ms on average
+(median: 291 ms)—often immediately before a new burst at the updated price.
+AOT traders show no such pattern. Their off-price orders have a mean lifetime of
+68.6 seconds and a median of 2.3 seconds—the gap reflecting a long tail of persistent
+orders. Only 22.6% flicker.
+Beyond cleanup, QPS traders maintain strict directional discipline. We observe
+zero instances of a trader holding an open order in one direction while submitting in
+9The AOT figure is conservative. Excluding the top 50 traders by rejection count, the burst
+participation rate among remaining traders falls to 0.04%.
+10When AOT submit multiple orders in the same millisecond, by contrast, they almost always
+target a single price level (median 1.0; average 1.05).
+20
+
+Figure 3: Order Survival Curves by Price Level. Fraction of orders surviving (not yet cancelled or filled) as a
+function of time since acceptance, separately for top-of-book and off-price orders. QPS traders cancel off-price
+orders rapidly (median 285 ms); AOT orders persist much longer.
+21
+
+the opposite direction.
+Visual Confirmation. Figure 5 illustrates the complete strategy lifecycle using data
+from a single QPSH trader over a 30-second window. All three phases are visible.
+Phase 1: the trader submits only buy-side rejections before the first price rise, then
+switches to sell-side rejections before the decline—the signal governs submission
+direction. Phase 2: rejections arrive in dense vertical bands spanning multiple price
+levels, the signature of bracketed bursts. Phase 3: when orders are accepted (cyan
+circles), most vanish almost immediately; only the best-priced order survives.
+Table 3: The Behavioral Fingerprint: QPS Cohort vs. All Other Traders (AOT)
+Metric
+QPS Cohort
+AOT
+Panel A: Activity & Rejection Tolerance
+Average active messages / minute / trader
+3,473
+0.16
+Fraction of submissions rejected (with BadAloPxRejected)
+96.74%
+1.94%
+Fraction of submissions accepted
+1.29%
+97.28%
+Panel B: Order Lifetime & Flickering
+% of top-of-book orders flickering (<500 ms)
+72.0%
+25.7%
+% of top-of-book orders cancelled (<1,000 ms)
+84.6%
+40.2%
+% of off-price orders flickering (<500 ms)
+81.9%
+22.6%
+% of off-price orders cancelled (<1,000 ms)
+97.1%
+35.4%
+Average lifetime of top-of-book orders (s)
+1.211
+8.844
+Average lifetime of off-price orders (s)
+0.375
+68.570
+Comparison of the QPS cohort (8 traders) with all other traders (AOT). Panel A: submission rates and
+rejection tolerance. Panel B: order lifetimes and flickering rates by price level.
+3.4. Risk and Return Characteristics
+The QPSH is a conjecture about behavior; we now ask whether it is economically
+sensible. A strategy that generates billions of rejected orders must offer commensurate
+rewards, unless the traders running it have discovered a spectacularly intensive way
+to accomplish nothing. We examine the economics in three parts: first, the risks
+inherent in signal-based market making and how QPS modifies them; second, the
+rewards from queue priority; and third, the operational costs required to sustain the
+strategy.
+22
+
+Figure 4: A QPS trader submits post-only buy orders at multiple price levels above the best bid. If the price rises,
+orders landing at the new best bid gain first-in-line (FIL) priority; orders that would cross the spread are rejected.
+23
+
+(a) Zoomed: Price Rise (01:42:07–01:42:13)
+(b) Zoomed: Price Decline (01:42:26–01:42:32)
+Figure 5: Visual Case Study: The QPS Lifecycle in Action. The top panel shows all messages from a single trader over
+30 seconds containing two price changes. Green ‘x’ markers denote rejected buy orders; red ‘x’ markers denote rejected sell
+orders; cyan circles denote accepted orders. (a) Price Rise: Before 01:42:08, a “constant rain” of buy rejections probes price
+levels above the bid. At 01:42:08, the price rises and several orders are accepted (cyan circles at multiple levels). The trader
+cancels all but the best-priced order. (b) Price Decline: The signal reverses. Sell rejections now probe below the ask. At
+01:42:31, the price falls, orders are accepted, and the same cleanup pattern repeats. The symmetry demonstrates that the
+strategy operates identically in both directions. Note: Timestamps reflect when orders are processed by the matching engine,
+not when they were submitted; visual interpretation should account for network latency between submission and processing.
+24
+
+3.4.1. Risks
+A benchmark for comparison. To understand the risk profile of QPS, consider a
+hypothetical alternative: a market maker using the same (or a similar) short-term
+directional signals, but implementing them conventionally—posting a passive limit
+order at the top-of-book in the signal direction, waiting in the queue, and cancelling
+when conditions change. Both approaches are signal-based market making in the
+same economic sense: both aim to capture maker rebates and spread while receiving
+fills with favourable post-fill price returns.
+The difference lies in the execution:
+QPS expresses the signal through crossing post-only bursts that are usually rejected,
+whereas the conventional strategy expresses it through resting quotes that remain in
+the book until cancelled.
+Risks common to both strategies. Both strategies share the same core risks. Both
+depend on accurate signals; both face fast takers who may hit resting quotes before
+cancellation succeeds; both require sophisticated infrastructure. These are endemic to
+short-horizon signal-based market making, not specific to QPS. The PFPR analysis
+below quantifies this risk for the QPS cohort, but the underlying hazard applies
+equally to any maker whose orders can be executed before they can be cancelled.
+QPS advantage: acceptance is gated by a price move in the signal-implied direction.
+QPS differs from conventional posting in one favourable respect: most signal-triggered
+submissions become resting quotes only if the market moves in the same direction
+while the orders are in flight. Mechanically, the burst prices are set so that—at the
+moment of submission—they would cross the spread. Acceptance is effectively gated:
+these post-only orders become resting quotes only if the best quotes move away during
+the latency window—through taker trades and/or cancellations—so that the order
+no longer crosses when processed. However, even a correct directional signal can
+yield rejection if the anticipated move occurs after processing rather than during the
+in-flight interval.
+This gating matters when the signal is wrong or short-lived. If a QPS trader
+submits a burst that does not align with the direction of the next price change, the
+orders are simply rejected. They do not rest in the book at the touch (or near it) and
+therefore are not, even briefly, in the position of being picked off in a latency race that
+can produce negative post-fill price returns at short horizons. Under conventional
+market making, by contrast, the trader typically already has a resting quote in the
+book in the signal direction and must win the cancellation race in precisely these
+wrong-signal episodes to avoid adverse fills.
+The advantage is limited, however. Whenever a burst does succeed and an order
+lands at the touch, the situation begins to resemble conventional market making:
+25
+
+the order must be monitored and may need to be cancelled quickly in response to
+short-term information, including precisely the scenarios that trigger latency races.
+Indeed, the risk can be higher conditional on landing, because QPS is designed to
+secure first-in-line (or near first-in-line) queue position—making its quotes among the
+first to be executed when fast takers arrive.
+QPS-specific risk: multi-fill exposure. The offsetting cost is multi-fill risk. Because
+QPS bursts bracket multiple price levels, a successful burst can result in simultaneous
+acceptance at several prices; until cleanup completes, the trader holds several orders
+across the ladder—a form of exposure that conventional single-level posting does not
+create.
+The exposure can be larger than it first appears. To win the FIL race with
+high probability, QPS traders often maintain several in-flight bursts simultaneously.
+Submission intervals are often less than round-trip latency, so outcomes of earlier
+bursts are unknown when later bursts are sent. At peak activity, we estimate traders
+may have around 10 bursts in flight, each spanning ∼10 price levels—on the order of
+100 orders simultaneously. If all the orders are accepted, and an adverse move with
+high taker volume follows before cleanup succeeds, the loss can be large. Consider
+for example, a trader with 100 in-flight orders, each for $20,000 notional, and all
+filled before cleanup. An adverse price move of 5 bp gives an immediate loss of
+100 × 20,000 × 0.0005 = $1,000, enough to wipe hours of accumulated profit in
+milliseconds.
+We quantify the prevalence and cost of multi-fill events empirically. Define a
+multi-fill as a burst in which orders at two or more distinct price levels are filled
+before cleanup completes. We observe an average of 161 such events per day across
+the QPS cohort. The distribution is right-skewed: the median involves fills at 2 price
+levels, the average is 5.2 levels, and the 99th percentile reaches 11 levels.
+We classify a multi-fill as “adverse” if the volume-weighted return across all filled
+levels is negative at the 5-second horizon; 39.6% of multi-fills fall into this category. On
+aggregate, these adverse events generate losses of approximately $88,000 per month
+for the cohort—losses that are already reflected in the net profitability figures reported
+in the following subsection. Put differently, cohort profits would be correspondingly
+higher absent this source of drag. It bears noting that these losses occur despite
+active management by traders who employ multiple mitigation strategies; the $88,000
+monthly figure is therefore best interpreted as a lower bound on what unmitigated
+multi-fill risk would cost—implying that net profitability is correspondingly higher
+than it would be absent such efforts.
+One mechanism that contributes to this mitigation is margin-based rejection.
+When a trader’s margin is insufficient to support additional positions, Hyperliquid
+26
+
+rejects submissions with PerpMarginRejected. If a burst is accepted and a second
+burst arrives before cleanup completes, the margin constraint can prevent the second
+burst from landing—automatically limiting simultaneous exposure. We observe that
+margin rejections cluster immediately after successful bursts—approximately 1.9%
+of QPS submissions are margin-rejected, with rejections concentrated in the same
+burst as an acceptance or in the burst immediately following—consistent with this
+protective function. Some traders appear to deliberately size their margin to exploit
+this effect, using the exchange’s own risk controls as an automatic backstop.
+Fills with negative returns. We define the post-fill price return (PFPR) as the signed
+change in the midprice following a fill, from the maker’s perspective. A positive
+PFPR indicates that the price moved favourably; a negative PFPR indicates that it
+moved against the maker. Fills with persistently negative PFPRs may reflect classical
+adverse selection—where the taker possesses superior information—but may also arise
+from noise trading or mechanical execution (e.g., TWAP) that happens to move prices
+unfavourably. We adopt this neutral framing throughout. The standard defense is
+rapid cancellation upon a signal change, but for QPS traders this risk is particularly
+acute. The strategy revolves around securing orders at the front of the queue—a
+position that, by construction, places the FIL holder first in line to receive fills when
+fast-moving taker flow arrives at a quote that has just become stale (for example
+in a latency-arbitrage scenario, cf [1]). Such fills often exhibit persistently negative
+PFPRs. If the FIL holder fails to cancel before aggressive flow arrives, the resulting
+fill is likely to be costly.
+We identify negative-PFPR fills using two approaches. First, a threshold test:
+fills where the midprice moves against the maker by at least 1 bp within 500 ms.
+Approximately 0.7% of QPS fills meet this criterion. Second, a persistence test:
+fills (excluding multi-fills) where the PFPR is negative at all of 500 ms, 1 second,
+2 seconds, and 5 seconds: these fills experience short-term sustained adverse price
+movements.
+By the persistence criterion, 2.3% of single fills exhibit persistently negative
+PFPRs, an average of 377 per day. Volume-weighted maker losses for these fills
+average −0.82 bp at 500 ms, −0.91 bp at 1 second, −1.13 bp at 5 seconds, −1.58 bp
+at 10 seconds, and −1.34 bp at 30 seconds. Aggregate losses from negative-PFPR
+fills amount to approximately $41,000 per month.
+Minimizing these losses requires cancelling orders before informed takers arrive11—
+but not so aggressively as to cancel orders that might have yielded profitable fills.
+11Often in the context of latency races; cf. [1]
+27
+
+This is a delicate calibration: the trader must avoid exactly the negative-PFPR fills
+while retaining the positive-PFPR ones.
+Operational risk. Operating the QPS is technically demanding. The trader must
+master the exchange’s API: bulk submission, in-flight order cancellation, rate-limit
+mechanics, order book update latency. Edge cases that occur once in a million
+messages will occur daily at this submission frequency; failure to handle them robustly
+invites disaster.
+Beyond API fluency, the infrastructure itself must be fast, efficient, and correct.
+State must be maintained across hundreds or thousands of orders; no order can be
+forgotten or lost. Code must be low-latency and rigorously tested. A single bug—a
+missed cancellation, a state desync, a malformed message—can produce losses that
+dwarf many days of profits.
+These are practical concerns for trading firms rather than academic questions, so
+we do not elaborate further. We simply note that the operational bar is high, and
+that this may be one reason why only a small number of traders attempt the strategy.
+Having established the risk profile of QPS relative to conventional signal-based
+market making—including the gating advantage, the multi-fill exposure, and the
+vulnerability to negative-PFPR fills—we now turn to the rewards that accrue from
+successful queue capture, and subsequently to the operational costs required to sustain
+the strategy.
+3.4.2. Rewards
+The objective of the QPS is to secure first-in-line—or close to first-in-line—queue
+position at prices that become the new best quote following a directional move.
+Compared with the benchmark of conventional posting, which typically places the
+trader at the back of the queue at the prevailing touch, success in this objective
+confers two advantages: a higher probability of execution (the trader is first to meet
+incoming flow) and more favourable PFPRs (fills occur at quotes that have just
+improved, not quotes about to become stale); [2] provides a formal analysis. The
+empirical question is whether the QPS actually achieves this objective—and if so,
+how valuable the resulting positions are.
+Recall from Section 3.1 that queues at the new best bid (after a price rise) or new
+best ask (after a price decline) tend to become large. These opportunities present
+themselves every 1.8 seconds on average. Does the strategy succeed in capturing
+them? The evidence is clear: the QPS cohort captures 57.5% of all first-in-line fills.
+Eight traders, out of approximately 53,000 active during the sample period, secure
+a majority of some of the market’s most valuable executions. Note that the 57.5%
+figure understates the cohort’s dominance in landing FIL orders. Many FIL orders
+28
+
+are cancelled before any fill occurs—because the price continues moving, or because
+the trader’s signal reverses leading them to cancel to avoid negative-PFPR fills. The
+57.5% reflects fills that actually execute at the FIL position, a conservative measure
+of the cohort’s queue-priority advantage.
+How valuable are these positions? To quantify, we compute markouts for FIL trades
+captured by the QPS cohort: the signed change in the midprice at a given horizon
+(e.g., 5 seconds) relative to the fill price, from the maker’s perspective—positive if the
+price moved favourably for the maker. Volume-weighted markouts average +0.51 bp at
+the 5-second horizon and +0.50 bp at 30 seconds. A full round trip (fill, then unwind
+at the opposite side) would therefore be expected to yield a net profit (before rebates)
+of approximately 1 bp. The QPS cohort systematically profits from queue priority.
+The magnitudes underscore why QPS operates as a maker strategy: markouts on the
+order of a few tenths of a basis point are far smaller than the taker fee, so the same
+directional signals would not be profitably exploited through aggressive orders.
+Not every QPS order lands first-in-line; many secure merely early queue positions.
+These too are valuable. We therefore examine all maker fills captured by the QPS
+cohort, not just FIL trades. Table 4 summarizes the results.
+Table 4: QPS Cohort Maker Fill Statistics
+Metric
+Value
+Avg. Fills per minute
+18.9
+Avg. Fills per day
+27,216
+Median fill size
+$151
+Mean fill size
+$5,850
+90th percentile fill size
+$16,235
+Daily maker volume
+$159M
+Volume-weighted markout (5s)
++0.32 bp
+Maker rebate
++0.30 bp
+Estimated daily profit
+$9,840
+Estimated monthly profit
+$295,000
+Fill statistics for the QPS cohort across all maker trades. Markouts are volume-weighted. The large gap
+between median and mean fill size reflects a fat right tail: most fills are small, but occasional large fills
+pull the mean upward.
+The fill size distribution exhibits a fat right tail: most fills are small ($151 median),
+29
+
+but large fills pull the mean to $5,850 and the 90th percentile to over $16,000.12 In
+aggregate, the cohort captures an average of $159 million in maker volume per day
+in our sample—13.5% of all maker volume on the exchange—across roughly 27,000
+fills, an average of one fill every three seconds. Volume-weighted average +0.32 bp
+at the 5-second horizon, indicating that prices move in the maker’s favour after the
+fill. Combined with the maker rebate, this yields an effective net profit of roughly
+0.62 bp per USD traded and estimated monthly profits of $295,000 for the cohort.13
+The strategy’s profitability comes in part from maximizing the probability of filling
+against taker flow that is not sent in response to short-horizon price signals.
+These markout-based profitability estimates are a paper exercise: they measure
+short-horizon midprice movements, not actual trading profit. As a validation, Table 5
+reports realized profitability from publicly viewable on-chain account data,14 computed
+over a common window (July 2025 through February 2026) that extends well beyond
+our one-month sample.15 All eight traders are consistently profitable, with realized
+profitability of 0.36 bp per dollar traded (including maker rebate/fee and funding rates).
+That this falls somewhat below the markout-implied profitability is unsurprising:
+maker rebates on Hyperliquid are tiered by two-week trailing volume, and several
+cohort members initially faced positive maker fees rather than the maximum 0.3 bp
+rebate assumed above; moreover, profitability varies with market conditions—months
+of sustained downward Bitcoin price movement (late 2025 and early 2026) proved
+materially less profitable for the strategy. Plausible contributing factors include
+reduced exchange-wide trading volumes and lower participation of signal-agnostic
+taker flow during such periods, though we do not investigate the determinants of
+profitability variation further here.
+Counterparty composition. We do not study the counterparties to the QPS cohort’s
+trades in detail. However, given that QPS traders are apparently using commonly
+observed short-horizon directional signals, it is plausible that other informed traders
+condition on similar signals and may therefore be less likely to arrive as takers against
+QPS quotes—they would tend to be on the same side of the market. This in turn
+12Heavy-tailed trade size distributions are well documented in liquid markets; see e.g. [16].
+13Hyperliquid operates a tiered fee structure based on trailing 14-day volume. The 0.3 bp rebate
+is the maximum available.
+14Extracted from https://hypurrscan.io/, a block explorer for Hyperliquid.
+15We cannot verify directly that these traders operated the QPS throughout the full 7.5-month
+window since our message-level data only spans one month. However, their trading activity as of
+February 2026 appears to be consistent with the QPS after cursory inspection. If true, it is plausible
+that they have been operating the QPS continuously during the entire 7.5 month period.
+30
+
+Table 5: QPS Cohort Realized Profitability (On-Chain)
+Trader
+Monthly Volume
+Monthly PnL
+Profitability (bp)
+1
+$1,182M
+$37,982
+0.32
+2
+$1,148M
+$38,400
+0.33
+3
+$1,006M
+$29,497
+0.29
+4
+$933M
+$31,481
+0.34
+5
+$546M
+$16,133
+0.30
+6
+$511M
+$18,667
+0.36
+7
+$459M
+$19,467
+0.42
+8
+$285M
+$28,933
+1.01
+Cohort
+$6,070M
+$220,560
+0.36
+Average monthly realized profitability per cohort member, computed from on-chain account data spanning
+July 1, 2025 through February 2026. Profitability is realized PnL divided by trading volume.
+suggests that QPS fills should come disproportionately from taker flow that is not
+tightly linked to short-horizon price signals (“uninformed” flow, for short).
+While classifying traders along this dimension is not straightforward, one order
+type can be identified with some confidence as mechanically executed and plausibly
+less sensitive to contemporaneous short-term signals: Time-Weighted Average Price
+(TWAP) orders.16 TWAP orders are large taker orders split into child orders executed
+at fixed time intervals; on our timescale these child orders are widely separated and
+are plausibly less sensitive to contemporaneous market conditions than discretionary
+taker orders. TWAP orders account for 6.5% of all trading volume in our sample and
+occur in large numbers, virtually equally divided between buys and sells. Because
+TWAP executes through aggressive child orders, this flow can also contribute to the
+price moves that trigger QPS acceptance.
+Table 6 shows the proportional interaction between TWAP and QPS orders. The
+share of QPS trades filled by TWAP takers (10.8%) exceeds the TWAP share of overall
+volume (6.5%), indicating that QPS traders fill TWAP flow disproportionately often.
+Moreover, the share of all TWAP volume filled by QPS makers (22.7%) substantially
+exceeds the QPS share of total volume (13.5%).
+In fact, this second contrast is a substantial understatement. QPS is designed
+16Hyperliquid offers a native TWAP order type, which executes by placing aggressive child orders
+at fixed 30-second intervals. These orders are identifiable in our data via a non-null twap_id field.
+31
+
+Table 6: TWAP and QPS Interaction
+Metric
+Value
+TWAP share of total volume
+6.5%
+QPS maker share of total volume
+13.5%
+Share of TWAP volume filled by QPS makers
+22.7%
+Share of QPS maker volume from TWAP takers
+10.8%
+Proportional interaction between TWAP taker flow and QPS maker flow.
+The intersection volume is approximately $1.3B over the sample period.
+so that accepted orders rarely fill takers arriving from the same direction as the
+signal; with roughly balanced buy and sell TWAP flow, a 22.7% share of all TWAP
+volume corresponds to roughly 45% of TWAP volume on the side where QPS is
+actually providing liquidity. The remaining gap likely reflects a combination of QPS
+liquidity exhaustion by large TWAP child orders and precautionary cancellation by
+QPS traders whose signals weaken before a fill occurs.
+The pattern is consistent with the hypothesis that queue priority allows QPS
+traders to capture a disproportionate share of non-signal-based flow—the fills that
+are more likely to yield favourable short-horizon returns.
+3.4.3. Costs
+As noted above, both QPS and conventional signal-based market making require
+sophisticated low-latency infrastructure, so their fixed operational requirements are
+broadly similar. In contrast to the benchmark maker’s steady post–cancel rhythm,
+the QPS operates at far higher message throughput and requires more complex
+order-state management—burst submission, in-flight tracking, rapid cleanup, and
+tight rate-limit constraints.
+The QPS (as well as the conventional posting benchmark) does not incur direct
+costs in the form of exchange fees—indeed, per-trade fees are negative. Because QPS
+orders are passive by construction (post-only), every fill earns the maker rebate (0.3
+bp on Hyperliquid) rather than paying the taker fee.
+Instead, the true costs are operational: infrastructure, connectivity, development,
+and the human capital required to build and maintain a low-latency trading system.
+These fixed costs are substantial but are not reflected in per-trade economics. Once
+the infrastructure exists, the marginal cost of submitting an additional rejected
+order is effectively zero. Rate limits imposed by the exchange are a further binding
+constraint: at the submission frequencies the QPS demands, traders are likely to
+32
+
+operate near or at the ceiling, making efficient use of each message slot a first-order
+concern.
+3.4.4. Competition and Barriers to Entry
+Why do only eight traders employ this strategy? The answer has two parts:
+competitive dynamics that limit equilibrium participation, and barriers to entry that
+restrict who can participate at all.
+Competitive dynamics. The strategy’s profitability depends on there being limited
+competition. Each additional trader operating the QPS degrades the expected queue
+position for all other QPS traders. This, in turn, would be expected to produce a
+lower fill probability and poorer post-fill returns for all QPS fills [2], while risks and
+operational demands would remain unchanged.
+This suggests that entry should continue until marginal profitability reaches zero.
+The equilibrium number of participants depends on the volume of non-signal-based
+taker flow (the size of the pie, loosely speaking) and on heterogeneity in infrastructure
+quality across potential entrants. We do not model this formally, but note the
+structural parallel to latency-race models [1, 10], where speed rents are dissipated by
+competition. The QPS is a different kind of race—not to cancel before a taker arrives,
+but to land first when the price moves—but the competitive dynamics are similar.
+Barriers to entry. The QPS requires low-latency connectivity to minimize round-trip
+time; a potent short-term directional signal accurate enough to make the strategy profitable; and a sophisticated order-management system capable of tracking potentially
+thousands of orders while executing cleanup efficiently, and, when the signal reverses,
+cancelling open orders faster than competing taker. Building and maintaining this
+infrastructure is technically demanding and capital-intensive—a fixed cost that filters
+out all but the most sophisticated participants and, in turn, sustains the profitability
+of those who remain.
+3.5. Spread Refilling Is Anticipatory, Not Reactive
+We now examine two empirical regularities often discussed separately—spread
+refilling after spread-widening events, and the prevalence of very short-lived (“flickering”) orders—and ask what the QPSH implies for each. We begin with spread
+refilling.
+The conventional view of spread refilling is reactive: a spread-widening event
+occurs, market participants observe the gap, and new orders arrive to close it [22, 13].
+Under this view, the time between the widening of the spread and its subsequent
+33
+
+narrowing is bounded below by the observe-react-submit cycle—the time for a participant to observe the gap, decide to act, and have a new order processed by the
+exchange.
+If the QPS is active, however, a submission burst that can land in the newlywidened spread is often already in flight when the spread widens, en route to acceptance
+for all orders that land at a vacated price level. This yields three testable predictions:
+1. The aligned side—the side towards which the price moves—should refill first:
+in-flight burst orders land within the widened spread, closing it entirely when
+the bracket range spans the gap and narrowing it otherwise.
+2. Refilling should occur faster than any plausible reaction time (i.e., the liquidity
+was in flight before the spread-widening event, or SWE).
+3. The initial spread-narrowing (or spread-closing) liquidity—the orders that first
+land within the gap—should come predominantly from QPS traders.
+Panel C in Figure 4 illustrates the refilling mechanism for the case of a rising top
+ask. We now test these predictions formally.
+We analyze all spread-widening events (SWEs). An SWE occurs when the spread
+increases from one tick—its typical value—to two or more ticks. We set T = 0 at
+the timestamp of the LOB event—a cancellation or trade—that causes the spread to
+widen beyond one tick, and track which side first posts an order that narrows the
+spread.
+After an SWE triggered by an ask increase, the first spread-narrowing order can
+come from the aligned side (a new bid above the pre-SWE best bid), the contra
+side (a new ask below the post-SWE best ask), or both simultaneously (which we
+operationalize as within 1 ms). Symmetric definitions apply for bid-triggered SWEs.
+For each SWE, we identify which side first narrows the spread and measure the
+time from T = 0 to this first spread-narrowing order. We exclude SWEs where no
+quote improvement occurs within 500 ms. Table 7 reports the results, which confirm
+all three predictions.
+Prediction 1: The aligned side refills first. In 90.4% of SWEs, the first spreadnarrowing order comes from the aligned side. Contra-side refills account for only
+7.0% of cases; simultaneous refills, 2.6%.
+Prediction 2: Refilling is faster than reaction time. The median time to refill for
+aligned-side orders is 89 ms.17 For an order to be a reaction to an SWE, a trader
+must observe the event, decide to act, and submit an order that traverses the network
+and is processed by the matching engine. On Hyperliquid, this cycle takes well over
+17This may appear slow by traditional exchange standards; Hyperliquid’s blockchain-based
+architecture entails materially higher latencies than conventional venues (see Appendix A).
+34
+
+Table 7: Spread Refilling Dynamics
+Metric
+Aligned
+Contra
+Simultaneous
+Frequency
+90.4%
+7.0%
+2.6%
+Median time to refill (ms)
+89
+131
+—
+% of refills from in-flight orders
+81.0%
+58.4%
+—
+% of refills from QPS cohort
+83.0%
+19.4%
+—
+An order is “in-flight” if accepted within 150 ms of the SWE. We exclude
+1.4% of SWEs where no quote improvement occurs within 500 ms.
+100 ms even for the fastest participants. An 89 ms refill is well below plausible
+reaction time—and 81.0% of aligned-side refills arrive within 150 ms, a conservative
+threshold below which reaction is implausible. On the contra side, only 58.4% meet
+this criterion.
+Prediction 3: Refilling liquidity comes from QPS traders. The QPS cohort provides
+83.0% of aligned-side refills.
+These results are consistent with the mechanism described at the start of this
+section: in-flight QPS bursts, submitted before the spread widens, land within the
+gap and close it before any reactive order can arrive. But these same bursts also leave
+behind a distinct byproduct: orders that land at off-price levels and are promptly
+cancelled. We turn to these flickering orders next.
+3.6. A Parsimonious Origin for Flickering Orders
+As noted in Section 1, flickering orders have long puzzled researchers. The QPS
+offers a parsimonious explanation for a substantial share of this activity: flickering
+orders are, in part, the residue of the cleanup phase—the brief visibility of orders
+that landed at off-price levels before being cancelled.
+Recall from Section 3.3.1 that when a submission burst lands orders at multiple
+price levels, then under the QPS, the trader retains at most one order (the one at the
+new best price, if there is one) and immediately cancels the rest. These cancelled
+orders become flickering orders. The data confirm this account.
+Flickering is pervasive. Order lifetimes in our dataset are generally short. Of all
+accepted orders (≈389 million in our sample), 1.5% are cancelled within 100 ms, 7.0%
+within 200 ms, and 29.3% within 500 ms. The median order survives approximately
+1.5 seconds (1,516 ms). At longer horizons, 42.9% are cancelled within 1 second,
+35
+
+69.6% within 5 seconds, and 89.3% within 30 seconds. Short-lived liquidity is not a
+marginal phenomenon; it is the norm.
+Flickering is concentrated. As with rejections, flickering activity is highly concentrated.
+The top 5 traders by flickering volume account for 34.8% of all flickering orders; the
+top 10 account for 55.4%; the top 20 for 73.9%; and the top 100 for 97.2%. The QPS
+cohort generates 31.0% of all flickering orders and falls entirely within the top 40
+traders ranked by flickering volume. (This share is modest despite the cohort’s high
+flickering rate (Table 3), because QPS traders account for only a small fraction of
+all accepted orders in the market.) Flickering is also concentrated in time: 91.3%
+of QPS-generated flickering orders occur within 500 ms of a spread-widening event,
+consistent with the cleanup mechanism described in Section 3.3.1.
+The QPSH thus provides a parsimonious explanation for a substantial share of
+flickering activity. At the same time, the fact that the QPS cohort accounts for “only”
+31.0% indicates that flickering orders have multiple origins in this market. Other
+strategies or phenomena must account for the remainder. The QPS is sufficient to
+generate pervasive flickering; it is not the only source.
+4. Conclusion
+We have documented a massive, invisible flow of rejected orders that constitutes
+the dominant form of interaction with the exchange we study—a venue whose BTC
+perpetual contract alone handles approximately $3 billion in average daily trading
+volume. This flow is not noise. We propose and demonstrate that it is the exhaust of
+a pervasive, anticipatory strategy which we term the Queue Priority Strategy (QPS),
+in which a small cohort of high-frequency traders floods the market with cross-side
+post-only orders, hoping to land first in line when the price moves—and succeeding:
+despite numbering just eight, they capture a staggering 57.5% of all first-in-line fills.
+Moreover, this rejected-order flow carries strong predictive content: using the net
+imbalance of rejected buys versus rejected sells in the final 100 ms before a price
+change as a proxy for the cohort’s latent signal, the implied direction matches the
+direction of the ensuing price change 91.3% of the time; their signals are also strikingly
+unanimous, in that when one trader is net buying, the others almost always are too.
+Taken together, our results suggest a unifying interpretation of two empirical
+regularities: spread refilling and flickering orders. Because QPS bursts are typically
+already in flight when a spread-widening event occurs, the first liquidity at the new
+best price is anticipatory rather than reactive. Because submission bursts often
+land orders at multiple price levels, the off-price orders are cancelled as part of
+risk-management during cleanup—producing flickering orders. We do not claim this
+36
+
+is the only origin of either phenomenon, but it is, at minimum, a quantitatively
+important one.
+What the QPSH Explains—and What It Does Not. This study has told us a combination of everything and nothing. The QPSH is a simple and well-evidenced explanation
+for the way in which the majority of updates to liquidity provision occur on Hyperliquid and possibly on other markets; it sets out the precise mechanism for the initial
+replenishment of liquidity at the touch after a price move, along with an explanation
+for a significant proportion of maker cancellations, and it does so in the context of a
+risk-managed strategy with the clear goal of gaining queue priority. The evidence
+also strongly suggests that the replenishment is targeted in response to an external
+signal. In this last sense, it places liquidity provision on a footing similar to that of
+liquidity removal by informed taker orders or cancellations, where signals also play a
+critical role (in the case of taker orders, the taker fee means that a more convincing
+signal is needed than for maker orders). However, just as for taker orders and many
+maker cancellations, the QPSH has nothing to say about where such signals may
+originate: it simply explains the mechanism by which they are translated into the
+LOB. Nor does it contribute to our understanding of price changes over timescales
+longer than the few seconds that are the immediate focus of high-frequency trading.
+The hidden universe of rejected orders remains as an invisible but integral part of
+the way in which markets translate information into prices; and this itself remains as
+enigmatic as ever.
+Limitations and External Validity. Our analysis is confined to a single venue, Hyperliquid, over a single month. Hyperliquid is a blockchain-based exchange where rejected
+orders can be reconstructed from on-chain records; this data availability makes our
+study possible, but it also raises questions about generalizability. We cannot directly
+observe rejected orders on traditional exchanges like NYSE or NASDAQ. However,
+several indirect signatures of the QPS are in principle observable in standard data.
+These include
+1. Concentration of flickering activity. Flickering orders should cluster temporally
+around spread-widening events, and if trader identifiers are available, cancellations at or worse than the best price should almost always be accompanied by a
+surviving order at the best price from the same trader (the cleanup signature).
+2. Burst structure in acceptances. When trader identifiers are available, successful
+submissions should arrive in multi-level bursts—several orders at adjacent prices
+within milliseconds—rather than as isolated posts.
+37
+
+3. Speed and direction of spread refilling. The side toward which the price moved
+should typically refill first, and refilling latency should be shorter than plausible
+reaction time given the venue’s network latency.
+4. First-fill concentration. If trader identifiers are available, a small cohort should
+capture a disproportionate share of first-in-line fills after price changes.
+Whether the same strategy operates at comparable scale on traditional venues is an
+open empirical question.
+Regulatory Considerations. The QPS involves submitting orders that are expected
+to be rejected, and when accepted, are expected to be cancelled almost immediately
+unless they are at the new best price. The trader generally wants to be filled on only
+a small fraction of the orders submitted. Might this amount to spoofing?
+We think not. First, the rejected orders never reach the book. Therefore, they
+cannot create false impressions of supply or demand because no one sees them. Second,
+the orders that do reach the book represent genuine willingness to trade: the bestprice orders are real bids for queue priority, and the trader actively wants them filled.
+Third, the rapid cancellation of off-price orders is risk management, not manipulation;
+traders cancel to avoid unwanted inventory, not to mislead other participants. Indeed,
+the QPS exploits the exchange’s own mechanics for risk control: the post-only flag
+ensures automatic rejection of orders that would cross the spread (avoiding adverse
+selection), while cleverly exploited margin constraints prevent unwanted exposure
+to multi-fill risk. The intent is to provide liquidity at a specific price, not to create
+phantom depth.
+Whether this activity represents a net benefit or cost to market quality is a
+question we leave open.
+Implications for Market Design. Our findings connect to the broader debate about
+the design of limit order books. [10] argue that continuous trading creates mechanical
+arbitrage rents and spurs socially wasteful speed competition. The QPSH is a vivid
+illustration of this sort of phenomenon: traders invest heavily in infrastructure to
+exploit latency, generating billions of failed attempts as collateral damage. Whether
+alternative market designs—frequent batch auctions, for instance—would eliminate
+or merely reshape this activity is beyond our scope, but the question seems worth
+asking.
+We began by invoking Sola Scriptura—the study of markets through what is written
+in the (limit order) book. We have adhered to this approach, but what has changed is
+the scope of the (limit order) book itself. Because Hyperliquid records every message
+38
+
+submitted to the matching engine—including the majority that leave no mark on
+any conventional data feed—our text is far more detailed than what was previously
+available. The invisible ink of rejected orders becomes legible, and with it an entire
+stratum of trading activity that has, until now, been hidden in plain sight.
+Appendix A. Hyperliquid Exchange Architecture
+Hyperliquid is, to our knowledge, the first exchange where rejected orders can
+be observed at scale. Because it operates as a fully on-chain limit order book on
+a purpose-built blockchain, every interaction with the matching engine—including
+those that produce no observable change in the book—is permanently recorded and
+can be retrieved by anyone running a node. The result is complete visibility into who
+is doing what on the exchange: not only rejected orders, but also trader identifiers,
+profit-and-loss histories for each account, failed cancellation attempts, and the full
+sequence of messages submitted by every participant.
+Hyperliquid operates a limit order book with price-time priority: resting orders
+at each price level are ranked by the sequence in which they were committed to the
+chain, and incoming marketable orders execute against the earliest liquidity first.
+The matching logic is, in this sense, structurally analogous to that of traditional
+central limit order book markets such as NASDAQ, or even other crypto exchanges
+like Binance and Bybit.
+Hyperliquid’s blockchain architecture does, however, introduce a departure from
+traditional price-time priority in how orders are sequenced within each block.
+On a centralized exchange, a single matching engine receives all orders, and “arrival
+time” is unambiguous: it is the instant an order reaches that server. Hyperliquid, by
+contrast, runs on a network of geographically distributed validators, and orders are
+batched into blocks with a median block time of approximately 100 ms.18
+Within each block, a type-based hierarchy takes precedence over temporal priority:
+cancellations and post-only orders are always processed before aggressive (GTC and
+IOC) orders, regardless of arrival sequence. The stated rationale is maker protection:
+by letting cancellations execute first, market makers can update stale quotes before
+being picked off by faster takers, encouraging tighter spreads. From the official
+documentation:
+“Hyperliquid makes a fundamental adjustment to the onchain order book:
+Cancels and post-only orders are prioritized above GTC and IOC orders.
+18See https://hyperliquid-co.gitbook.io/wiki/architecture/hyperbft.
+39
+
+This ordering is enforced onchain by the L1 itself. The only correct way
+for a node to execute a block on the Hyperliquid L1 is to sort cancels and
+post-only orders first.”
+More precisely, within each block Hyperliquid imposes an intra-block action hierarchy:
+it first processes liquidity-adding orders, then processes cancellations, and finally
+processes liquidity-taking orders. Within each category, actions are processed in
+timestamp order.
+The economic consequence is a structural advantage for makers. If a cancellation
+and an aggressive order land in the same block—even if the aggressive order was
+broadcast first—the cancellation executes first.
+While the intra-block type hierarchy structurally favours makers, its practical
+benefit is limited by the unpredictability of block assignment. A trader cannot control
+or reliably predict which block a given message will land in. Two messages sent
+simultaneously may arrive several blocks apart. For instance, a cancellation submitted
+milliseconds after the placement of the order may in fact land in an earlier block,
+causing it to fail because the order it seeks to cancel does not yet exist. The extent
+to which traders can exploit intra-block ordering by type is therefore constrained by
+substantial randomness in message routing—a question for high-frequency traders or
+exchange operators rather than the focus of the present study.
+Minimum observable lifetimes. Throughout this paper, all timestamps reflect the
+moment the matching engine processes a message, not the moment the trader submits
+it (see Section 2). An immediate implication is that no order can appear to live for
+less than one network round trip: even if a trader cancels the instant it learns an
+order has been accepted, the observed lifetime includes the outbound confirmation
+and the inbound cancellation. On Hyperliquid, this floor is approximately 200–300 ms,
+which explains the flat initial region of the order survival curves in Figure 3. The
+same consideration informs our choice of 150 ms as the threshold for “in-flight” orders
+in Section 3.5.
+Generality of the QPS. Nothing in the QPS depends on features peculiar to Hyperliquid. The strategy’s impetus—the economic value of queue position at the best
+price—is universal on exchanges that operate price-time priority, from NASDAQ to
+Binance. Its two key mechanical requisites are equally ubiquitous: post-only order
+types, which provide cost-free rejection of crossing orders, and margin checks on
+leveraged positions, which QPS traders repurpose for risk management. Both are
+standard on modern exchanges. It is natural to ask whether Hyperliquid’s higher
+latency might favour the strategy. We see no reason to think so. If anything, the
+40
+
+opposite seems more likely: higher latency means bursts remain in-flight longer,
+their outcomes uncertain for longer, adding to operational complexity and possibly
+increasing risk. The intra-block type ordering does offer a general advantage to
+makers, QPS traders included, but it is neither specific to the QPS nor sufficient
+to explain it, especially given the unpredictability of block assignment noted above.
+As noted in Section 3.6, empirical patterns documented on conventional equity markets are at least consistent with, and possibly indicative of, QPS activity on those
+venues. In particular, [6] report that flickering orders on European equity markets
+are concentrated among a small number of high-frequency participants and occur
+disproportionately in the direction of recent price moves—buy-side flickering after a
+price rise, sell-side after a decline—precisely the signature the QPS cleanup phase
+would produce. If the QPS does operate on traditional venues, this considerably
+strengthens the case that the strategy does not materially depend on Hyperliquid’s
+idiosyncrasies. What Hyperliquid uniquely provides is not the phenomenon but its
+complete legibility: rejected orders, invisible on conventional venues, are here recorded
+in full.
+References
+[1] Albers, J., Cucuringu, M., Howison, S., Shestopaloff, A.Y., 2024. The good, the
+bad, and latency: Exploratory trading on bybit and binance. SSRN Electronic
+Journal doi:10.2139/ssrn.4677989.
+[2] Albers, J., Cucuringu, M., Howison, S., Shestopaloff, A.Y., 2025. The market
+maker’s dilemma: Navigating the fill probability vs. post-fill returns trade-off
+URL: http://dx.doi.org/10.2139/ssrn.5074873.
+[3] Aquilina, M., Budish, E., O’Neill, P., 2022. Quantifying the high-frequency
+trading “arms race”. The Quarterly Journal of Economics 137, 493–564. doi:10.
+1093/qje/qjab032.
+[4] Baruch, S., Glosten, L.R., 2013. Fleeting orders. SSRN Electronic Journal
+doi:10.2139/ssrn.2278457.
+[5] Biais, B., Foucault, T., 2014. HFT and market quality. Bankers, Markets &
+Investors , 5–19.
+[6] Brogaard, J., Cartea, Á., Chang, P., Graumans, R., 2025. The lasting impact of
+flickering quotes doi:10.2139/ssrn.5963035.
+41
+
+[7] Brogaard, J., Hagströmer, B., Nordén, L., Riordan, R., 2015. Trading fast and
+slow: Colocation and liquidity. The Review of Financial Studies 28, 3407–3443.
+doi:10.1093/rfs/hhv045.
+[8] Brogaard, J., Hendershott, T., Riordan, R., 2014. High-frequency trading and
+price discovery. The Review of Financial Studies 27, 2267–2306. doi:10.1093/
+rfs/hhu032.
+[9] Brogaard, J., Hendershott, T., Riordan, R., 2019. Price discovery without
+trading: Evidence from limit orders. The Journal of Finance 74, 1621–1658.
+doi:10.1111/jofi.12769.
+[10] Budish, E., Cramton, P., Shim, J., 2015. The high-frequency trading arms race:
+Frequent batch auctions as a market design response. The Quarterly Journal of
+Economics 130, 1547–1621. doi:10.1093/qje/qjv027.
+[11] Cont, R., Kukanov, A., Stoikov, S., 2014. The price impact of order book events.
+Journal of Financial Econometrics 12, 47–88. doi:10.1093/jjfinec/nbt008.
+[12] Egginton, J.F., Van Ness, B.F., Van Ness, R.A., 2016. Quote stuffing. Financial
+Management 45, 583–608. doi:10.1111/fima.12126.
+[13] Foucault, T., Kadan, O., Kandel, E., 2005. Limit order book as a market for
+liquidity. The Review of Financial Studies 18, 1171–1217. doi:10.1093/rfs/
+hhi029.
+[14] Garbade, K.D., 1982. Securities Markets. McGraw-Hill, New York.
+[15] Glosten, L.R., Milgrom, P.R., 1985. Bid, ask and transaction prices in a specialist
+market with heterogeneously informed traders. Journal of Financial Economics
+14, 71–100. doi:10.1016/0304-405X(85)90044-3.
+[16] Gopikrishnan, P., Plerou, V., Gabaix, X., Stanley, H.E., 2000.
+Statistical
+properties of share volume traded in financial markets. Physical Review E 62,
+R4493–R4496. doi:10.1103/PhysRevE.62.R4493.
+[17] Hasbrouck, J., 2018. High-frequency quoting: Short-term volatility in bids and
+offers. Journal of Financial and Quantitative Analysis 53, 613–641. doi:10.1017/
+S0022109017001053.
+[18] Hasbrouck, J., Saar, G., 2013. Low-latency trading. Journal of Financial Markets
+16, 646–679. doi:10.1016/j.finmar.2013.05.003.
+42
+
+[19] Hautsch, N., Huang, R., 2012. The market impact of a limit order. Journal of
+Financial Econometrics 10, 464–482. doi:10.1016/j.jedc.2011.09.012.
+[20] Hendershott, T., Jones, C.M., Menkveld, A.J., 2011. Does algorithmic trading
+improve liquidity? The Journal of Finance 66, 1–33. doi:10.1111/j.1540-6261.
+2010.01624.x.
+[21] Kyle, A.S., 1985. Continuous auctions and insider trading. Econometrica 53,
+1315–1335. doi:10.2307/1913210.
+[22] Large, J., 2007. Measuring the resiliency of an electronic limit order book.
+Journal of Financial Markets 10, 1–25. doi:10.1016/j.finmar.2006.09.001.
+[23] Moallemi, C.C., Yuan, K., 2017. A model for queue position valuation in a limit
+order book. SSRN Electronic Journal doi:10.2139/ssrn.2996221.
+[24] Ulze, M., Stadler, J., Rathgeber, A., 2025. The case of fleeting orders and
+flickering quotes. Journal of Futures Markets doi:10.1002/fut.70076.
+[25] Yao, C., Ye, M., 2018. Why trading speed matters: A tale of queue rationing
+under price controls. The Review of Financial Studies 31, 2157–2183. doi:10.
+1093/rfs/hhy002.
+[26] Yueshen, B.Z., 2025. Queuing uncertainty of limit orders. Management Science
+doi:10.1287/mnsc.2023.03371.
+43

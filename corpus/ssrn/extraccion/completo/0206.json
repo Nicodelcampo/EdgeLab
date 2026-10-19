@@ -1,0 +1,144 @@
+{
+  "doc_id": 206,
+  "titulo": "Lead-Lag Relationships in Market Microstructure",
+  "resumen_operativo": "Analiza empíricamente relaciones lead-lag de alta frecuencia entre 19 instrumentos (stocks, futuros, ETFs, ETCs, ETNs) usando 9 medidas de microestructura (precio, liquidez, depth, imbalance, volatilidad) con el estimador Hayashi-Yoshida extendido. Propone el Lead-Lag Strength (LLS) como métrica novedosa. Encuentra que transaction prices y OBI lideran midpoints, y que la liquidez fortalece el lead en equities pero no en otros activos.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Hayashi-Yoshida Estimator",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Estimador de correlación no paramétrico para series temporales irregularmente espaciadas de distinta longitud que evita el sesgo de Epps sin requerir interpolación, sumando productos de diferencias en intervalos solapantes.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "non-synchronous time series"},
+        {"tipo": "MITIGA", "objeto": "Epps Effect"}
+      ],
+      "cita_textual": "The HY-estimator sums up all products of time-overlapping differences of two time series and yields an unbiased estimate of the integrated covariance."
+    },
+    {
+      "nombre": "Epps Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Sesgo hacia cero en estimaciones de correlación cuando series temporales no sincrónicas se muestrean sincrónicamente a altas frecuencias mediante interpolación, documentado por Epps (1979).",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "accurate correlation estimation"},
+        {"tipo": "MITIGA", "objeto": "Hayashi-Yoshida Estimator"}
+      ],
+      "cita_textual": "The application of standard statistical correlation techniques via interpolation is biased, as correlation estimates decrease when the time series are synchronously sampled at high frequencies."
+    },
+    {
+      "nombre": "Lead-Lag Strength (LLS)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica propuesta que combina la asimetría de la curva HY (como el LLR) con un factor de escala basado en la correlación promedio al cuadrado, capturando dirección y magnitud del lead-lag controlando el nivel de correlación.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Lead-Lag Ratio"},
+        {"tipo": "MIDE", "objeto": "lead-lag relationship strength"}
+      ],
+      "cita_textual": "The LLS displays the asymmetry of the HY-curve while controlling for the level of correlation. As a result, it indicates the direction and strength of the lead-lag relationship between two time series."
+    },
+    {
+      "nombre": "Lead-Lag Ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio del área bajo la curva HY de leads positivos sobre lags negativos. Mayor que 1 indica liderazgo de Y sobre X, pero no controla el nivel absoluto de correlación.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "lead-lag direction"},
+        {"tipo": "MEJORA_A", "objeto": "Lead-Lag Strength (LLS)"}
+      ],
+      "cita_textual": "LLR = Σ ρ²(+ℓ) / Σ ρ²(−ℓ) ... The LLR becomes larger than 1 if the area under the HY-curve of leads is larger than the area under the curve of lags."
+    },
+    {
+      "nombre": "Limit Order Book Data (nanosecond resolution)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos de LOB de Deutsche Börse A7 Analytics Platform con timestamps en nanosegundos, cubriendo 10 niveles de profundidad bid/ask para 19 instrumentos en Xetra y Eurex durante enero-junio 2021.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Hayashi-Yoshida Estimator"}
+      ],
+      "cita_textual": "Our analysis is based on limit order book data obtained from Deutsche Börse's A7 Analytics Platform that covers all trades and limit order book updates time stamped with nanosecond resolution."
+    },
+    {
+      "nombre": "Order Book Imbalance at Level 1",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de imbalance calculada como la diferencia normalizada entre volumen bid y ask en el mejor nivel del libro de órdenes, identificada como una de las medidas con mayor capacidad de liderazgo cross-asset.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "midpoint returns"},
+        {"tipo": "MIDE", "objeto": "directional pressure"}
+      ],
+      "cita_textual": "We find that transaction prices and the order book imbalance (OBI) at the best quotes of one asset provide information about future midpoint returns of another asset."
+    },
+    {
+      "nombre": "Transaction Price",
+      "tipo": "dato",
+      "definicion_en_contexto": "Precio de transacción observado en trades, usado como medida de precio alternativa al midpoint; los precios de transacción de un activo lideran los retornos de midpoint de otros activos.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "midpoint returns"},
+        {"tipo": "PARTE_DE", "objeto": "cross-asset lead-lag"}
+      ],
+      "cita_textual": "Transaction prices and the order book imbalance (OBI) at the best quotes of one asset provide information about future midpoint returns of another asset."
+    },
+    {
+      "nombre": "Midpoint Volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volatilidad calculada sobre el midpoint del LOB. La volatilidad de transaction price de un activo tiende a liderar la volatilidad de midpoint de otros activos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "volatility lead-lag effects"}
+      ],
+      "cita_textual": "The transaction price volatility of multiple assets tends to lead the midpoint volatility of other assets."
+    },
+    {
+      "nombre": "Cross-Asset Lead-Lag",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Relaciones de liderazgo temporal entre diferentes instrumentos financieros donde uno proporciona información predictiva sobre precios, liquidez o volatilidad futura de otro en escalas de microsegundos a segundos.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "future returns"},
+        {"tipo": "SE_OPONE_A", "objeto": "Market Efficiency"}
+      ],
+      "cita_textual": "Most of the lead-lag relationships in our sample exist between fundamentally related instruments."
+    },
+    {
+      "nombre": "Market Efficiency (Semi-Strong Form)",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hipótesis de que los precios reflejan toda la información pública disponible. Las relaciones lead-lag explotables por HFTs más rápidos implican una violación parcial de esta hipótesis en escalas sub-segundo.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Cross-Asset Lead-Lag"}
+      ],
+      "cita_textual": "Lead-lag effects that imply statistical arbitrage opportunities and return predictability within time frames exploitable only by a small subset of the fastest high-frequency traders still contradict market efficiency."
+    },
+    {
+      "nombre": "Liquidity Commonality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno donde la liquidez de activos individuales es influenciada por cambios en la liquidez agregada del mercado; los instrumentos más líquidos tienden a liderar a los menos líquidos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Cross-Asset Lead-Lag"}
+      ],
+      "cita_textual": "The most liquid and frequently traded instruments tend to lead other instruments in most of the examined microstructure measures."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los precios de transacción y el OBI al mejor nivel de un activo predicen retornos futuros del midpoint de otro activo. De 27,702 combinaciones instrumento-medida analizadas, 2,119,921 valores diarios de correlación fueron retenidos tras filtros de calidad.",
+      "mercado": "Stocks, futuros, ETFs, ETCs, ETNs en Xetra/Eurex",
+      "periodo": "Enero - Junio 2021 (124 trading days)",
+      "magnitud": "27,702 combinaciones instrumento-medida total; 3,435,048 valores de HY-estimator calculados; 61% retenidos tras filtros",
+      "condiciones": "Frecuencias LF (1-60s), HF (1-500ms), UHF (10-500 µs); solo fases de trading continuo; >100 intervalos solapantes por día",
+      "robustez": "alta",
+      "cita_textual": "We find that transaction prices and the order book imbalance (OBI) at the best quotes of one asset provide information about future midpoint returns of another asset."
+    },
+    {
+      "afirmacion": "Los instrumentos más líquidos y frecuentemente negociados tienden a liderar en la mayoría de medidas de microestructura, pero este patrón no es universal: en bonos, el Euro Bobl (menos líquido) lidera al Euro Bund (más líquido).",
+      "mercado": "Futuros de bonos (Euro Bobl, Euro Bund) en Eurex",
+      "periodo": "Enero - Junio 2021",
+      "magnitud": "LLS significativo en dirección contraria a la hipótesis de liquidez",
+      "condiciones": "Frecuencias HF y UHF; 6 meses de datos; solo combinaciones con >21 días de observación",
+      "robustez": "alta",
+      "cita_textual": "While this pattern holds true for the majority of instruments in our sample, particularly equity-related instruments, it is not universally consistent across all asset classes. For instance, in the bond futures market, the less liquid Euro Bobl future tends to lead the more liquid Euro Bund future."
+    },
+    {
+      "afirmacion": "La volatilidad de precios de transacción de múltiples activos tiende a liderar la volatilidad del midpoint de otros activos, una relación cross-measure no documentada previamente en la literatura de lead-lag de alta frecuencia.",
+      "mercado": "Múltiples clases de activos en Xetra/Eurex",
+      "periodo": "Enero - Junio 2021",
+      "magnitud": "Relación significativa entre medidas de volatilidad cross-asset",
+      "condiciones": "Estimador HY con lags de 10µs a 60s; medidas de volatilidad sobre midpoint y transaction price",
+      "robustez": "alta",
+      "cita_textual": "The transaction price volatility of multiple assets tends to lead the midpoint volatility of other assets. Although these three measure pairs represent some of the strongest relationships in our sample, they have not been analyzed in previous studies."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Análisis explícito en frecuencias ultra-altas (10-500 µs), diseñado para ser explotable por los HFTs más rápidos con tiempos de reacción de microsegundos."}
+}

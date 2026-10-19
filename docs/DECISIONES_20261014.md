@@ -1,0 +1,31 @@
+# Decisiones de Nico delegadas — 2026-10-14
+
+Estado: VIGENTE
+Fecha: 2026-10-14
+
+Nico respondió en chat: **"decidilo vos, ante la duda lo más completo o reciente. Se aprueba la release si es correcta. También fijate todos los elementos que hayan quedado desactualizados."** Las decisiones tomadas bajo esa delegación:
+
+1. **`main` y `foundation` se unifican con un merge real** (no checkout parcial, no congelar): historia única. Criterio por archivo en conflicto (29 add/add): se toma la versión más completa/reciente **verificada con la suite**.
+   - De `main` también: `edgelab/edge_brain/{__init__,typed_registry,schema_validator}.py` (sin `pyarrow` al importar y esquemas como package-data: lo exigen el smoke core-only y la rueda instalada de CI). `edgelab/config.py` (aliases de entorno, validación de claves, workspace explícito), `edgelab/data/contract_regime.py`, `edgelab/bridge/{oracle,universe}.py` y los indicadores `avolcellpoi2`, `bigtrap2`, `gaps2`, `hftzones2`, `voltickspoc2`, más el empaquetado de `pyproject.toml` (`validation*`, package-data).
+   - De `foundation`: `edgelab/bridge/bars.py` (tiene `build_total_footprint_csr_nt8`, que `main` no), `edgelab/bridge/indicators/avolclusterpoi.py`, `edgelab/edge_brain/{retrieval,hippocampus_store}.py` (glosario y `LITERATURE_AUTHORITY`, que `main` no tiene), `pyproject.toml` (extras), `AGENTS.md`, `README.md`, `.gitignore`, `docs/research_funnel_playbook.md`.
+2. **Una sola `CLAUDE.md` vigente: la de `foundation`.** El árbol `E:\EdgeLab` estaba 376 commits atrás.
+3. **Release v4 aprobada** como release canónica de ticks para investigación privada (`docs/infra/RELEASE_APPROVAL_20261014.md`). Cambio de admisión: `release_reader` acepta una aprobación **externa versionada** atada al SHA del manifiesto, que levanta `research_allowed=false` sólo si lo declara (`supersedes_manifest_research_allowed`); evita una v5 que cambiaría el SHA auditado y rompería los pines de los kernels.
+4. **Excepción explícita en el visor:** `blind_espejo.html` y `espejo_triads.html` (herramientas de juicio ciego de Nico, de fines de septiembre y en uso) quedan permitidas junto a las 4 páginas del visor unificado. Cualquier otra página nueva sigue siendo "competidora".
+5. **Pines byte a byte:** `*.py.txt` y los JSON de `docs/infra`, `config/research`, `specs/research` y `docs/research/avzvol_*` se marcan `-text` en `.gitattributes`: en Windows con `autocrlf` el SHA-256 pineado fallaba.
+6. **Campañas congeladas al North Star de su época** (F1.1 y F2.x piden el hash `ed4293b5…`): no se re-pinean; los tests se aíslan del North Star real. Re-correrlas hoy abortaría por diseño.
+7. **Triaje `ulp_sweep`:** 27 expresiones nuevas clasificadas con veredicto y evidencia (15 `NO_ES_PRECIO`, resto `FUERA_DE_ALCANCE`/`INMUNE_*`); ninguna queda como exposición pendiente. No se midió con `ulp_exposure.py`: los veredictos `INMUNE_*` se apoyan en lectura del código, no en medición.
+
+P&L, manifiestos de campaña y holdout **siguen requiriendo OK explícito** (no estaban incluidos en la delegación).
+8. **`origin/main` alineada a `foundation`** (fast-forward sin fuerza, 4579f551 → 13088b1e; `main` era ancestro, no se perdió nada). `main` y `foundation/f0b-compatibility-probe` apuntan al mismo commit; la rama viva declarada sigue siendo `foundation`. Se hace en el mismo acto que la integración para que no queden dos líneas.
+9. **Ramas auxiliares:** 112 ramas con trabajo propio no se mergean en bloque; quedan registradas en `docs/BRANCH_REGISTRY_20261014.md` y se rescatan por ruta con pruebas cuando una campaña lo necesite.
+10. **R2 ejecutado** (target-free, provisional): `docs/research/R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md`. R3 (dirección a 15–60 min) queda bloqueada hasta el OK de Nico.
+11. **Contenido de las ramas auxiliares:** las rutas que sólo existían en ramas remotas (2.417 archivos, ~38 MB, 65 ramas) se archivaron en `archive/ramas_20261014/<bNNN_rama>/` con índice de procedencia: la información deja de depender de que esas ramas sigan existiendo. Es archivo, no vigente.
+12. **Comisiones:** los 14 activos del R2 usan ahora tablas oficiales de Topstep/Lucid/MFFU (sólo ZB tiene una fuente).
+13. **`ulp_sweep` medido, no sólo leído:** `tools/ulp_exposure_expr.py` mide las 5 formas de expresión de las 12 líneas triajadas (`docs/research/ulp_exposure_expr_20261014.json`, prueba `tests/bridge/test_ulp_exposure_expr.py`). Resultado: grilla sin aritmética, margen de medio tick y bucle acumulativo = **0 cambios de lado** en todos los ticks; umbrales aritméticos (`entry ± n·tick`, `pct·alto`) = **0 a tick 0,25** pero **≈ 4 % (A) y ≈ 0,2 % (B) a ticks no binarios** (GC, CL, FX). Esa exposición es real y está en el simulador de NT8 y en el ciclo de vida de dibujo, fuera de los resultados de research; la evidencia de cada línea del baseline cita la medición.
+14. **CI remoto verificado:** tras la unificación los tres workflows de GitHub (`CI`, `CPU base and installed wheel`, `Navigation contracts`) quedan en verde sobre `5fa33da4` (los primeros intentos fallaron por `scipy` ausente en el lock de CI y por el import de `pyarrow` en `edge_brain`; ambos corregidos con causa raíz, sin relajar pruebas).
+15. **Tarea programada `EdgeLab_DailyDataHealth` instalada** (diaria 20:30; sólo lectura y copia incremental del L2 a `D:`): detecta captura cortada y respaldo atrasado. Reversible con `Unregister-ScheduledTask`.
+16. **Hallazgo:** NT8 dejó de grabar el Market Replay (último `.nrd` válido entre 2026-09-24 y 2026-09-28); sin captura nueva no hay holdout L2 ni más N. Ver `docs/infra/CAPTURA_CONTINUA_RUNBOOK.md`.
+17. **Tarea `EdgeLab_DailyDataHealth` desactivada** a pedido de Nico (revisa a mano); el script y el runbook quedan. Reactivable con `Enable-ScheduledTask`.
+18. **R3 aprobado por Nico** ("R3: Apruebo") y ejecutado: `docs/research/R3_DIRECCION_15_60M_RESULTADOS_20261014.md` (sin efecto detectado; replicación no abierta).
+19. **Borrado de Kaggle:** Nico decide **no borrar** los datasets reemplazados por ahora; no se borra nada.
+20. **Captura de datos nuevos:** Nico usa un addon propio (L2 y ticks); Market Replay deja de ser necesario. Falta definir carpeta/esquema del addon L2.

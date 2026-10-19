@@ -1,10 +1,24 @@
 #!/usr/bin/env bash
-# Instala la credencial de Kaggle para el usuario `edgelab` SOLO para www.kaggle.com (curl --netrc), sin tocar otros hosts (las URL firmadas de GCS no la reciben).
-# Uso (como root):  KAGGLE_USERNAME=... KAGGLE_KEY=... ./setup_kaggle_credentials.sh      (la clave se obtiene en kaggle.com → Settings → API → Create New Token)
+# Instala la credencial de Kaggle para el usuario `edgelab`. Nunca la envía a otro host que www.kaggle.com.
+# Uso (como root), según el formato del token de kaggle.com → Settings → API:
+#   token nuevo (KGAT_...):  KAGGLE_API_TOKEN=... ./setup_kaggle_credentials.sh
+#       -> cabecera Bearer en /opt/edgelab/.kaggle_auth_header (0600), que lee tools/kaggle_auth.py.
+#          Con el token nuevo el usuario/clave por .netrc da 401 (verificado 2026-10-16).
+#   clave vieja:             KAGGLE_USERNAME=... KAGGLE_KEY=... ./setup_kaggle_credentials.sh
+#       -> ~/.netrc sólo para www.kaggle.com.
+# Para no dejar el token en el historial:  read -rs KAGGLE_API_TOKEN && export KAGGLE_API_TOKEN && ./setup_kaggle_credentials.sh
 set -euo pipefail
-: "${KAGGLE_USERNAME:?}" "${KAGGLE_KEY:?}"
 H=/opt/edgelab
-printf 'machine www.kaggle.com login %s password %s\n' "$KAGGLE_USERNAME" "$KAGGLE_KEY" > $H/.netrc
-printf 'netrc\n' > $H/.curlrc
-chown edgelab:edgelab $H/.netrc $H/.curlrc; chmod 600 $H/.netrc $H/.curlrc
-echo "Credencial instalada para el usuario edgelab (solo www.kaggle.com)."
+umask 077
+if [ -n "${KAGGLE_API_TOKEN:-}" ]; then
+  printf 'Authorization: Bearer %s\n' "$KAGGLE_API_TOKEN" > "$H/.kaggle_auth_header"
+  chown edgelab:edgelab "$H/.kaggle_auth_header"; chmod 600 "$H/.kaggle_auth_header"
+  rm -f "$H/.curlrc"
+  echo "Token Bearer instalado para el usuario edgelab (sólo se envía a www.kaggle.com)."
+else
+  : "${KAGGLE_USERNAME:?falta KAGGLE_API_TOKEN o KAGGLE_USERNAME/KAGGLE_KEY}" "${KAGGLE_KEY:?}"
+  printf 'machine www.kaggle.com login %s password %s\n' "$KAGGLE_USERNAME" "$KAGGLE_KEY" > "$H/.netrc"
+  printf 'netrc\n' > "$H/.curlrc"
+  chown edgelab:edgelab "$H/.netrc" "$H/.curlrc"; chmod 600 "$H/.netrc" "$H/.curlrc"
+  echo "Credencial instalada para el usuario edgelab (solo www.kaggle.com)."
+fi

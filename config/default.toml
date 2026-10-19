@@ -1,0 +1,28 @@
+# EdgeLab — configuración VERSIONADA (sin rutas personales).
+# Precedencia (gana el primero): config/local.toml > EDGELAB_* env > este archivo
+# > defaults derivados de la raíz del repo (para los directorios internos).
+#
+# Los directorios internos (data, artifacts, runs, cache, manifests, parity,
+# feature_zone_store) resuelven por defecto ROOT-relativos; solo hace falta
+# overridearlos si querés ubicarlos fuera del repo.
+#
+# Las fuentes EXTERNAS del ecosistema (machine-specific) NO se versionan acá:
+# configuralas en config/local.toml (gitignored) o vía variables EDGELAB_*.
+# Ver config/local.toml.example.
+
+[paths]
+# --- internos (descomentar solo para reubicar fuera del repo) ---
+# data_dir = "..."
+# artifacts_dir = "..."
+# runs_dir = "..."
+# cache_dir = "..."
+# manifests_dir = "..."
+# parity_dir = "..."
+# feature_zone_store_dir = "..."
+
+# --- externos (machine-specific): dejar en local.toml, NO acá ---
+# nt8_export_root = ""
+# cerebro_root = ""
+# vectorbt_ecosystem_root = ""
+# nq_raw_dir = ""
+# eurusd_ticks_raw = ""

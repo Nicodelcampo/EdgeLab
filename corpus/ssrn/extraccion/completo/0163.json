@@ -1,0 +1,90 @@
+{
+  "doc_id": 163,
+  "titulo": "High-frequency trading and institutional trading costs",
+  "resumen_operativo": "Este paper demuestra empíricamente que los HFT en mercados de futuros actúan como proveedores de liquidez a corto plazo en vez de realizar estrategias predatorias (back running) frente a inversores institucionales. Sirve para modelar de forma realista el impacto de precio en backtests y entender que la liquidez provista por HFT es superficial y se limita a absorber desequilibrios rápidos de volumen sin acumular inventario significativo.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Participantes del mercado que operan a alta velocidad con baja tolerancia a acumular inventario o asumir riesgos a término, actuando principalmente como contrapartida temporal.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "liquidity provision"},
+        {"tipo": "SE_OPONE_A", "objeto": "back running"}
+      ],
+      "cita_textual": "HFTs in the data act as small-sized liquidity suppliers, and we reject the hypothesis that they engage in back running, a predatory trading strategy."
+    },
+    {
+      "nombre": "back running",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de trading predatoria donde un trader anticipa que una institución (víctima) necesita construir una posición, tomando posiciones anticipadas en la misma dirección para forzar a la institución a pagar un precio más alto.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "informed trading"},
+        {"tipo": "CAUSA", "objeto": "market impact"}
+      ],
+      "cita_textual": "a predator trader buys while a “victim” participant is buying (or sells when the “victim” is selling). The predator’s intention is to build a sizeable position before the victim is ﬁnished trading."
+    },
+    {
+      "nombre": "implementation shortfall",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica global del costo de construir una posición institucional; se mide comparando el precio promedio ponderado de todos los trades con el precio justo vigente antes del primer trade.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Implementation shortfall is the diﬀerence between the volume-weighted average price of a string and the midquote contemporaneous to the ﬁrst trade."
+    },
+    {
+      "nombre": "effective spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de costo de transacción inmediato de un trade particular, calculada como la diferencia con signo entre el precio ejecutado y el punto medio del spread (midquote) contemporáneo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "transaction costs"},
+        {"tipo": "PARTE_DE", "objeto": "implementation shortfall"}
+      ],
+      "cita_textual": "Eﬀective spread is the signed diﬀerence between the trade price and contemporaneous midquote"
+    },
+    {
+      "nombre": "price impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Mide cuánto se movió el precio en respuesta a una transacción u orden, determinado por la diferencia entre el midquote inicial y el midquote en un intervalo posterior especificado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market impact"},
+        {"tipo": "CAUSA", "objeto": "implementation shortfall"}
+      ],
+      "cita_textual": "price impact is the signed diﬀerence between the contemporaneous midquote and the midquote some time interval after the trade"
+    },
+    {
+      "nombre": "trade string",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica heurística para reconstruir la ejecución de órdenes institucionales fragmentadas mediante la agrupación de transacciones consecutivas unidireccionales de un participante realizadas con poco tiempo de separación.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"}
+      ],
+      "cita_textual": "A “trade string” is deﬁned as at least four consecutive unidirectional (all buy or all sell) trades in which one participant builds a net position at least $2 million in size and with no more than a 20-minute gap between the participant’s trades."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los operadores de alta frecuencia asumen posiciones agregadas en la dirección opuesta a las órdenes de los inversores institucionales, actuando como proveedores de liquidez de corto plazo y descartando comportamientos predatorios.",
+      "mercado": "Canadian bond futures",
+      "periodo": "2009-2015",
+      "magnitud": "Las posiciones retenidas por HFTs raramente exceden $100K de nocional en un momento dado, incluso cuando proveen liquidez a secuencias institucionales de más de $100M.",
+      "condiciones": "Evidencia extraída en un mercado consolidado sin fragmentación a nivel de exchanges para el activo, lo que evita la posibilidad de arbitraje transfronterizo no observado.",
+      "robustez": "alta",
+      "cita_textual": "HFT cumulative order ﬂow is always in the opposite direction of the trade string, meaning HFTs, in net, are sellers to buy trade strings and buyers from sell trade strings. They take the counterparty position."
+    },
+    {
+      "afirmacion": "La mayor competencia entre operadores de alta frecuencia disminuye los costos de transacción para las instituciones, pero el efecto positivo está acotado a posiciones pequeñas y de ejecución rápida.",
+      "mercado": "Canadian bond futures",
+      "periodo": "Noviembre 2011",
+      "magnitud": "El implementation shortfall mejoró significativamente en 31 puntos básicos para secuencias operativas pequeñas ($2-10M) tras la entrada de nuevos HFTs.",
+      "condiciones": "Estimado a través de un modelo de diferencia en diferencias alrededor de un evento exógeno de entrada/salida de participantes, empleando como grupo de control a los futuros de tasas de interés.",
+      "robustez": "alta",
+      "cita_textual": "we ﬁnd HFT competition improved implementation shortfall, eﬀective spreads, and certain per-trade price-impact metrics in the bond future relative to the interest-rate future."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Crucial para modelar la profundidad de la liquidez: los HFT en mercados de futuros como el ES actúan como amortiguadores rápidos de trades pequeños pero no tienen el inventario para absorber transacciones direccionales pesadas (market impact no lineal)."
+  }
+}

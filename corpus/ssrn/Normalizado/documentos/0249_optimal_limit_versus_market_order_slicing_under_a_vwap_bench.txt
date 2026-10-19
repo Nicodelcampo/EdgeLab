@@ -1,0 +1,2379 @@
+Optimal Limit-versus-Market Order Slicing under a VWAP
+Bechmark - Continuous Case
+Tianhui Michael Li
+January 27, 2013
+Abstract
+Algorithmic brokers benchmarked to TWAP or VWAP face a limit-order market-order
+tradeoﬀwhen slicing orders. Executing market orders keeps them on schedule but is costly.
+Executing limit orders saves spread but can lead to schedule slippage. We build on our
+results in the discrete shares case Li [2012] to present an optimal solution for execution in
+light of this tradeoﬀin the limit of continuous shares. As in the discrete case, the optimal
+solution is described in terms of a forward and backward boundary which deﬁne how many
+limit orders should be placed on the order book and when to execute market orders. Closedform solutions for the boundaries are derived for the “stationary limit.” These boundaries
+can be computed numerically in the general case.
+1
+Introduction
+A deﬁning hallmark of modern ﬁnancial markets has been the proliferation of algorithmic
+trading.
+According to the Financial Times, 73% of all trading in the US is thought to
+be through algorithmic trading.1
+Many investors lack the speciﬁc experise or resources
+to implement an algorithmic trading platform and delegate the task of order execution to
+algorithmic brokers who execute on their behalf.
+The delegation of order execution to brokers leads to an agency conﬂict between brokers
+and investors. To compare broker performance, investors typically benchmark brokers to
+the Volume Weighted Average Price (VWAP). That is, the broker is asked to execute shares
+1SEC runs eye over high-speed trading, Financial Times, July 29, 2009.
+1
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+over a particular interval and the order’s average execution price will be compared to the
+market VWAP during the the same interval. Brokers are typically penalized for both underperforming with respect to VWAP and for not tracking VWAP closely. This paper studies
+how electronic brokerages should place orders when benchmarked to VWAP.
+The broker faces a risk-reward trade oﬀin deciding whether to execute with market
+(active) or limit (passive) orders.
+Market orders provide execution certainty but require
+paying half a bid-ask spread (relative mid-price) while limit orders save half a bid-ask spread
+at the expense of execution uncertainty. The broker can perfectly replicate interval VWAP
+by choosing an execution schedule of market orders to match the interval volume proﬁle.
+However, he would consistently underperform VWAP by half a bid-ask spread. Alternatively,
+the broker can choose to consistently save half the bid-ask spread by submiting only limit
+orders. But then the realized execution proﬁle may diﬀer wildly from the market volume
+proﬁle, thus incuring VWAP mistracking error. This execution timing versus transaction cost
+decision is the tradeoﬀat the heart of our limit order versus market order slicing problem
+and is the novel feature of our paper.
+In this paper, we present a solution that optimally balances between these two conﬂicting
+objectives. We ﬁnd that the optimal solution consists of forward and backward boundaries
+(˜Lt and ˜
+Mt) that track the ideal VWAP trajectory. The boundaries are time-dependent,
+satisfy ˜
+Mt ≥˜Lt, and bound vt, the total remaining shares to execute
+˜Lt ≤vt ≤˜
+Mt
+(1)
+If the number of shares remaining to execute reaches the backward boundary (vt ≥
+˜
+Mt)
+the broker executes market orders to stay just within the backward boundary (i.e. so that
+(1) is sastisﬁed). At any given point, the broker places vt −˜Lt shares on the order book.
+If he is crossed, at most vt −˜Lt limit orders are executed so that he has vt ≥˜Lt shares
+remaining to be executed after the limit orders are lifted.
+These forward and backward
+boundaries provide an extremely tractable solution that can be implemented in any order
+book placement algorithm. The rest of the paper will both prove why such a strategy is
+optimal and show how to compute the optimal boundaries ˜Lt and ˜
+Mt.
+For the motivation, literature review, and background, we refer the reader to the discrete
+case [Li, 2012] and the references therein. The rest of this paper presents the continuous
+case and assumes notation and familiarity with the discrete case.
+2
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+The subsequent sections are as follows. In Section 2, we introduce the continuous setup
+and the VWAP tracking model with limit and market order controls. The solution is presented in Section 3, as is a proof that the continuous solution is the uniform limit of the
+discrete solution. Special cases are explored in Section 4. We solve the stationary limit
+of the continuous case in Section 5, deriving a closed-form solution for the large-ﬁll case
+Section 5.1 and Fourier-Transform-based solution for the general case Section 5.2, complete
+with examples.
+2
+Setup
+We now brieﬂy give the setup for the continuous problem (see the discrete case for motivation
+and justiﬁcation of our assumptions). We take the continuous-shares limit of the VWAP
+tracking problem. That is, we take v, V →∞so that we may assume X(T −t) and xt are
+continuous quantities. The price of the asset is still given by
+Pt = P0 +
+Z t
+0
+σ(T −u) dWu
+for a deterministic function σ. As before, we assume (without loss of generality) that the
+fraction of shares remaining to be sold X(T −t) and corresponding market VWAP (VWAP)
+are given by
+X(T −t) = T −t
+t
+VWAP =
+Z T
+0
+Pt dX(t) .
+For the agent, number of remaining shares to trade (xL,m
+t
+or xt for short) and corresponding
+VWAP (vwap) are given by
+1 −xL,m
+t
+= lt + mt
+vwap =
+Z T
+0
+Pt dxt .
+That is, the number of shares already executed (1 −x) is the sum of market orders (m) and
+limit orders (l) to be executed and these are now in units of fractions of shares executed and
+not shares as in the discrete case. The limit orders are given in terms of the order boundary
+(L), and the size of the crossing shares (∆Z),
+lt =
+X
+s≤t
+Ls ∧∆Zs .
+3
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+We assume ∆Z are the poisson arrivals which arrive with time-varying but deterministic
+intensity with support on [0, T] × R+ denoted
+ν(T −t, dy)
+and write ν(T −t) =
+R ∞
+0
+ν(T −t, dy) and ν =
+R ∞
+0
+ν(u) du for notational brevity. The objecive
+is given by
+inf
+(L,m)∈A E
+"Z T
+0
+γσ(T −t)2
+2
+(X(T −t) −xt)2 dt + s dmt
+#
+(2)
+where A is to be deﬁned below. We observe that we could rewrite ν(τ, dz) to have support
+on [0, T] × [0, 1]. We choose not to because 1: it is possible for incoming crossing orders to
+be of size greater than 1. More to the point, this convention will be compatible with the
+asymptotic case Section 5.
+Deﬁnition 2.1. The set A is the set of all pairs of processes (L, m) such that
+• L is a pr´evisible R+-valued process and
+• m is an adapted, non-decreasing R+-valued process with m0 = 0
+and such that the trading process x = xL,m remains within
+0 ≤xt ≤1
+P × Leb a.e.
+(3)
+and where all the shares have been executed by time T,
+xT = 0
+a.s.
+(4)
+The objective (2) is thus always ﬁnite. Here, we take the convention that R+ includes 0.
+We now present the continuous analogs of Assumption 2.1 and Assumption 2.2 of Li
+[2012] from the discrete case. They are given in Assumption 2.2 and Assumption 2.3. The
+ﬁrst assumption is standard and technical in nature. The second assumption is necessary
+and the motivation for the analogous discrete assumption is given in Remark 3.6.
+Assumption 2.2. We assume that ν and σ2 are bounded in the sense
+sup
+τ∈[0,T ]
+ν(τ) < ∞
+and
+Z T
+0
+σ2(τ) dτ < ∞.
+4
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Assumption 2.3. We assume that for all x ∈[0, 1], we have the function
+τ 7−→σ2(τ)
+ν(τ) (x −X(τ))
+is (strictly) decreasing and the probability distribution mapping
+τ 7−→ν(τ, ·)
+ν(τ)
+is non-decreasing in the sense of ﬁrst-order stochastic dominance. That is, for τ ≤τ ′, we
+have
+Z ∞
+0
+ν(τ, dy)
+ν(τ)
+f(y) ≤
+Z ∞
+0
+ν(τ ′, dy)
+ν(τ ′)
+f(y)
+for all bounded, non-decreasing functions f : R+ →R.
+Deﬁnition 2.4. For two non-negative Borel measures µ′ and µ on R+ of ﬁnite mass, deﬁne
+the metric function d (µ′, µ) to be the Wasserstein distance, which we deﬁne by its dual
+representation
+d (µ′, µ) = sup
+Z
+R+ (µ′(dz) −µ(dz)) f(z) , ∥f∥Lip ≤1
+
+.
+This supremum is written in terms of the space of all Lipschitz-continuous functions and the
+associated norm
+∥f∥Lip = sup
+x̸=y
+|f(x) −f(y)|
+|x −y|
+,
+(see Theorem 1.14 and Theorem 7.3 in Villani [2000]).
+Lemma 2.5. Let µ be a non-negative Borel measure of ﬁnite mass on R+ and v ∈N+.
+Deﬁne
+µv(k) =
+Z
+( k−1
+v
+, k
+v]
+µ(dz)
+and by abuse of notation deﬁne
+µv(dz) =
+∞
+X
+k=1
+µv(k)δk/v(dz) .
+Then we have that
+d (µv, µ) ≤1
+v
+Z
+R+ µ(dz) .
+5
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Proof. Let f be a Lipschitz-continuous function satisfying ∥f∥Lip ≤1. Then
+Z
+R+ (µv(dz) −µ(dz)) f(z) =
+∞
+X
+k=1
+µv(k)f(k/v) −
+Z
+( k−1
+v
+, k
+v]
+µ(dz)f(z)
+≤
+∞
+X
+k=1
+µv(k)
+sup
+z∈( k−1
+v
+, k
+v]
+f
+  k
+v
+
+−f(z)
+
+and the result then follows.
+If ν(τ, dz) satisﬁes Assumption 2.2 and Assumption 2.3, it is the limit of discrete distributions νv(τ, k) which satisfy Assumption 2.1 and Assumption 2.2 of Li [2012] by taking
+νv(τ, k) =
+Z
+( k−1
+v
+, k
+v]
+ν(τ, dz) .
+(5)
+We abuse notation by taking νv(τ, dz) to be the induced singular measure on R+ given by
+the sum of point masses,
+νv(τ, dz) =
+∞
+X
+k=1
+νv(τ, k)δk/v(dz) .
+(6)
+By Lemma 2.5, d(νv(τ, ·), νv(τ, ·)) →0 for every τ and by Assumption 2.2, this convergence
+is uniform in τ.
+Deﬁne
+J(T −t, x) = inf
+L,m Et
+"Z T
+t
+γσ(T −u)2
+2
+(X(T −u) −xu)2 du + sdmu
+ xt = x
+#
+.
+Then the HJB equation is
+0 = min
+(
+s −∂J(τ, x), γσ2(t)
+2
+(X(τ) −x)2
++ min
+0≤L≤x
+Z ∞
+0
+ν(τ, dy) [J(τ, x −(y ∧L))) −J(τ, x)] −˙J(τ, x)
+)
+.
+(7)
+(Here and throughout this manuscript, we use the convention that ˙J represents derivative
+in τ and ∂J the derivative in x.)
+Remark 2.6. We return to an earlier remark about the non-convexity of A. Let T = 3 and
+ﬁx ν so that we only have arrivals ∆Zt at t = 1, 2. While the point holds true for general ν,
+ﬁxing the arrival times simpliﬁes our discussion. Under this assumption, it suﬃces to only
+consider the number of limit orders L1 and L2 at times 1 and 2. We specify two trading
+6
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+strategies La and Lb with corresponding trading paths xa and xb,
+La
+1 = 1
+La
+2 = xa
+1
+ma
+t = xa
+21t≥3
+Lb
+1 = 1
+3
+Lb
+2 = xb
+1
+mb
+t = xb
+21t≥3
+In words, we place a ﬁxed number of limit orders at time 1, then place the remaining
+unexecuted shares on the limit-book at time 2, and clean-up at time 3 using market orders.
+These strategies are in A as they satisfy (3) and (4) for almost sure ω. Now ﬁx ω such that
+∆Z1 = 2
+3 and ∆Z2 ≥2
+3. Then the path becomes
+xa
+t =
+
+
+
+
+
+
+
+
+
+1
+0 ≤t ≤1
+1
+3
+1 < t ≤2
+0
+2 < t ≤3
+xb
+t =
+
+
+
+
+
+
+
+
+
+1
+0 ≤t ≤1
+2
+3
+1 < t ≤2
+0
+2 < t ≤3
+.
+and our actions are
+La
+1(ω) = 1
+La
+2(ω) = 1
+3
+ma
+t (ω) = 0
+Lb
+1(ω) = 1
+3
+Lb
+2(ω) = 2
+3
+mb
+t(ω) = 0 .
+However, Lc = 1
+2(La
+t + Lb
+t) and mc = 1
+2(ma
+t + mb
+t) results in a trading strategy
+Lc
+1(ω) = 2
+3
+Lc
+2(ω) = 1
+2
+mc
+t(ω) = 0
+with
+xc
+2 = lc
+2 =
+X
+t=1,2
+∆Zt ∧Lc
+t = 2
+3 + 1
+2 > 1 .
+which violates (3). Hence, the set A is not convex. We also see that the variable XT is not
+even quasi-convex (and hence not convex) in the processes (L, m). A moment’s reﬂection
+will convince the reader that this problem holds for general ν.
+3
+General Solution
+We ﬁrst give the analogous theorem to Theorem 3.1.
+Theorem 3.1. The continuation value J is the solution of the following partial integro7
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+diﬀerential equation,
+˙J(τ, x) = min
+
+min
+0≤y<x
+˙J(τ, y), γσ2(τ)
+2
+(X(τ) −x)2
+−
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, x) −J(τ, (x −y) ∨˜L(τ, x))
+i 
+J(τ, 0) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+J(0, x) = sx
+˜L(τ, x) = arg min
+0≤y≤x
+J(τ, y) .
+Again, we have the analogous result
+˜L(τ, x) = x ∧˜L(τ)
+where ˜L(τ) = ˜L(τ, 1). We deﬁne the market and limit order times τm(x) and τl(x) analogously by
+τl(x) = inf {τ ∈[0, T] : ∂J(τ, x) < 0}
+τm(x) = inf {τ ∈[0, T] : ∂J(τ, x) < s} .
+and have the estimate,
+0 ≤τm(x) ≤Tx ≤τl(x) .
+If T −t < τm(xt), the agent executes a singular market order of size
+∆mt = x −inf {y | τm(y) > T −t}
+so that he just exits the region. If T −t = τm(xt), the agent executes market orders at a
+ﬁxed rate
+dmt =
+1
+τ ′m(x)
+so that he just remains on the boundary of the region. The function ˜L(τ) is the inverse of
+τl(x) and is the threshold below which the agent does not place limit orders for execution.
+That is, at time t = T −τ, the agent places Lt = x −˜L(τ) limit orders on the book if the
+agent has x = xt fraction of shares remaining to execute.
+8
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Proof. The proof that J deﬁned in the theorem exists is given in Lemma 3.4. We need
+to prove that this J satisﬁes (7). We have from Theorem 3.2 that τ 7→∂J(τ, x) is a nonincreasing function, hence
+s −∂J(τ, x) = ∂J(0, x) −∂J(τ, x) ≥0 .
+(8)
+Secondly, by deﬁnition,
+γσ2(τ)
+2
+(X(τ) −x)2 −
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, x) −J(τ, (x −y) ∨˜L(τ, x))
+i
+−˙J(τ, x) ≥0 .
+(9)
+We have from Theorem 3.2 that for τ ≥τm(x), equation (8) holds with equality by deﬁnition
+of τm(x). For τ ≤τm(x), equation (9) holds with equality by the continuous version of the
+discrete result (23) of Li [2012] and the convergence result Theorem 3.2 of Li [2012]. The
+rest of the proof is analogous to the one in Theorem 3.1 of Li [2012] where all the claims in
+the continuous case follow from their counterparts in the discrete case and the convergence
+result Theorem 3.2.
+Theorem 3.2. The function J(τ, x) is the uniform limit of the discrete solutions Jn(τ)
+n/v →x as n, v →∞. In particular, J(τ, x) is C1,1-diﬀerentiable, convex in x and nonincreasing in τ. Furthermore, ∂˙J(τ, x) is non-positive and strictly negative for τ > τm(x).
+Proof. Let Jv and ˜Lv be from the solution to the discrete problem from Theorem 3.1 with
+ν = νv given by (5). Deﬁne Gv and F v analogously from (8) and (9) of Li [2012], respectively.
+Second deﬁne ϕv
+G as the linear interpolation of Gv
+·
+ϕv
+G(τ, x) = λGv
+n(τ) + (1 −λ)Gv
+n+1(τ)
+for x = λn
+v + (1 −λ)n + 1
+v
+, λ ∈[0, 1]
+and similarly for ϕv
+F and ϕv
+J. The existence and uniqueness of J deﬁned in the theorem
+is given by Lemma 3.4. However, we will show that Jv converges uniformly to J, which
+provides an independent proof of existence.
+Let v′ = 2k′ and v = 2k for integers k′ > k > 0 so that v′ > v. We ﬁrst show that
+{ϕv
+J}∞
+v=1 is a uniform (in τ and x) Cauchy sequence. Fix
+x = n
+v = n′
+v′
+(10)
+9
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+so that Jv′
+n′(0) = Jv
+n(0). Then from (10) of Li [2012], we have
+Jv′
+n′(τ) −Jv
+n(τ)
+ ≤
+Z τ
+0
+min
+j≤n′
+h
+Gv′
+j (u) −F v′
+j (u)
+i
+−min
+j≤n
+
+Gv
+j(u) −F v
+j (u)
+ du
+=
+Z τ
+0
+min
+y≤x
+h
+ϕv′
+G(u, y) −ϕv′
+F (u, y)
+i
+−min
+y≤x [ϕv
+G(u, y) −ϕv
+F (u, y)]
+ du
+(11)
+≤
+Z τ
+0
+max
+y≤x
+ϕv′
+G(u, y) −ϕv
+G(u, y)
+ + max
+y≤x
+ϕv′
+F (u, y) −ϕv
+F (u, y)
+ du .
+(12)
+The inequality (12) comes from Lemma 3.3. The equality (11) follows because
+ϕv
+G(u, ·) −ϕv
+F (u, ·)
+is a piecewise-linear function whose minimum is attained at a breakpoint y = n/v for some
+n = 1, . . . , v. Furthermore, the breakpoints of the piecewise-linear function
+ϕv′
+G(u, ·) −ϕv
+G(u, ·)
+(13)
+occur at the the points y = n/v′ for n = 0, . . . , v′. Hence, there exists n′′ such that the
+maximum of (13) occurs at some point
+y = n′′
+v′ ∈[0, 1] .
+(14)
+Furthermore, we can ﬁnd n and n in 0, . . . , v′ satisfying n ≤n′′ ≤n and
+n
+v′ = n
+v
+and
+n
+v′ = n + 1
+v
+.
+(15)
+Then by deﬁnition of G, we have
+Gv′
+n (u) = Gv
+n(u)
+and
+Gv′
+n (u) = Gv
+n+1(u)
+and there exists some λ ∈[0, 1] such that
+n′′ = λn + (1 −λ)n
+(16)
+10
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+and so
+max
+y′≤x
+ϕv′
+G(u, y′) −ϕv
+G(u, y′)
+ =
+ϕv′
+G(u, y) −ϕv
+G(u, y)
+
+=
+Gv′
+n′′(u) −λGv
+n(u) −(1 −λ)Gv
+n+1(u)
+
+≤λ
+Gv′
+n′′(u) −Gv′
+n (u)
+ + (1 −λ)
+Gv′
+n′′(u) −Gv′
+n (u)
+
+≤λγσ2(u)n′′ −n
+v′
++ (1 −λ)γσ2(u)n −n′′
+v′
+≤γσ2(u)
+v
+,
+where we have used the bound on G from (31) of Li [2012] and the fact that n−n
+v′
+= 1
+v in the
+last two inequalities. By similar logic, we can ﬁnd a new y, n′′, n, n, and λ ∈[0, 1] satisfying
+(14), (15), (16) and the analogous conditions for F hold such that
+max
+y′≤x
+ϕv′
+F (u, y′) −ϕv
+F (u, y′)
+ =
+ϕv′
+F (u, y) −ϕv
+F (u, y)
+
+=
+F v′
+n′′(u) −λF v
+n(u) −(1 −λ)F v
+n+1(u)
+
+≤λ
+F v′
+n′′(u) −F v′
+n (u)
+ + (1 −λ)
+F v′
+n′′(u) −F v′
+n (u)
+
++ λ
+F v′
+n (u) −F v
+n(u)
+ + (1 −λ)
+F v′
+n (u) −F v
+n+1(u)
+ .
+The bound for the ﬁrst two terms follows from the bound on F and J from (33) of Li [2012]
+λ
+F v′
+n′′(u) −F v′
+n (u)
+ + (1 −λ)
+F v′
+n′′(u) −F v′
+n (u)
+
+≤Kν(u)
+
+λn′′ −n
+v′
++ (1 −λ)n −n′′
+v′
+
+≤Kν(u)
+v
+.
+To show the bound for the second two terms, we ﬁrst deﬁne y and y such that
+y = n
+v′ = n
+v
+and
+y = n
+v′ = n + 1
+v
+.
+11
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+If we take νv(u, dz) as in (6), then we have
+F v
+n(u) =
+X
+j≥1
+νv(u, j)
+h
+Jv
+n(u) −Jv
+(n−j)∨˜Lv(n,u)(u)
+i
+=
+Z ∞
+0
+νv(u, dz)
+h
+ϕv
+J(u, y) −ϕv
+J
+
+u, (y −z) ∨(˜Lv(u, vy)/v)
+i
+=
+Z ∞
+0
+νv(u, dz)ψv(u, y, z)
+where
+ψv(u, y, z) = ϕv
+J(u, y) −ϕv
+J
+
+u, (y −z) ∨(˜Lv(u, vy)/v)
+
+and by similar logic
+F v′
+n (u) =
+Z ∞
+0
+νv′(u, dz)
+h
+ϕv′
+J (u, y) −ϕv′
+J
+
+u, (y −z) ∨(˜Lv′(u, v′y)/v′)
+i
+=
+Z ∞
+0
+νv′(u, dz)ψv′(u, y, z) .
+Then we have by the Triangle Inequality
+F v′
+n (u) −F v
+n(u)
+ ≤
+Z ∞
+0
+νv′(u, dz)ψv′(u, y, z) −νv(u, dz)ψv(u, y, z)
+
+≤
+Z ∞
+0
+
+
+νv′ −νv
+(u, dz)ψv′(u, y, z)
+
++
+Z ∞
+0
+νv(u, dz)
+
+ψv′ −ψv
+(u, y, z)
+
+Observe that since Jv is uniformly bounded in n, τ, and v from Theorem 3.1 of Li [2012],
+we have that the ﬁrst term is bounded by
+Z ∞
+0
+
+
+νv′ −νv
+(u, dz)ψv′(u, y, z)
+ ≤Kd
+
+νv′(u, ·), νv(u, ·)
+
+where the metric d is as deﬁned in Deﬁnition 2.4 and the coeﬃcient K is the Lipschitz
+coeﬃcient for ψv(u, y, z) in z which we showed in (32) of Li [2012] is independent of v. The
+12
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+second term is given by
+Z ∞
+0
+νv(u, dz)
+
+ψv′ −ψv
+(u, y, z)
+
+≤νv(u)
+ϕv′
+J (u, y) −ϕv
+J(u, y)
+
++
+Z ∞
+0
+νv(u, dz)
+ϕv′
+J
+
+u, (y −z) ∨(˜Lv′(u, v′y)/v′)
+
+−ϕv
+J
+
+u, (y −z) ∨(˜Lv(u, vy)/v)
+
+≤2νv(u)
+ϕv′
+J (u, ·) −ϕv
+J(u, ·)
+
+∞
+where we have used Lemma 3.3. Hence, we have
+F v′
+n (u) −F v
+n(u)
+ ≤Kd
+
+νv′(u, ·), νv(u, ·)
+
++ 2νv(u)
+ϕv′
+J (u, ·) −ϕv
+J(u, ·)
+
+∞.
+and we have the identical for
+F v′
+n (u) −F v
+n+1(u)
+. Observe that the bound is independent of
+n and n. Hence, we have
+Jv′
+n′(τ) −Jv
+n(τ)
+ ≤
+Z τ
+0
+1
+v
+ γσ2(u) + Kν(u)
+
++ Kd
+
+νv′(u, ·), νv(u, ·)
+
++ 2νv(u)
+ϕv′
+J (u, ·) −ϕv
+J(u, ·)
+
+∞du .
+Finally observe that for any x′ ∈[0, 1], we can ﬁnd a x such that |x −x′| ≤1
+v with x, n, and
+n′ satisfying (10). Then (32) of Li [2012] and the Triangle Inequality imply
+ϕv′
+J (τ, x′) −ϕv
+J(τ, x′)
+ ≤
+ϕv′
+J (τ, x′) −Jv′
+n′(τ)
+ +
+Jv′
+n′(τ) −Jv
+n(τ)
+ + |Jv
+n(τ) −ϕv
+J(τ, x′)|
+≤
+Jv′
+n′(τ) −Jv
+n(τ)
+ + 2K
+v .
+Finally, an application of Grownwall’s Lemma yields
+ϕv′
+J (τ, ·) −ϕv
+J(τ, ·)
+
+∞≤exp
+ Z T
+0
+2νv(u) du
+!
+"
+2K
+v
++
+Z T
+0
+1
+v
+ γσ2(u) + Kν(u)
+
++ Kd
+
+νv′(u, ·), νv(u, ·)
+
+du
+#
+.
+Then from Assumption 2.1 of Li [2012] and Lemma 2.5, we have that ϕv
+J(τ, x) where v = 2k
+is uniformly Cauchy as v →∞. Hence, the sequence converges to a function, which we dub
+J(τ, x).
+13
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+To show that J satisﬁes the diﬀerential equation in the theorem, ﬁx
+x = n
+v
+for v = 2k, n ≤v, k = 1, 2, . . .
+(17)
+We have from (10) of Li [2012] that
+˙Jv
+n(τ) = min
+j≤n
+
+Gv
+j(τ) −F v
+j (τ)
+
+.
+Taking the limit as n, v →∞with x = n
+v ﬁxed and v = 2k, we see that
+lim
+n,v→∞Gv
+n(τ) = (X(τ) −x)2 γσ2(τ)
+2
+lim
+n,v→∞F v
+j (τ) =
+lim
+n,v→∞
+Z ∞
+0
+νv(τ, dy)
+h
+ϕv
+J(τ, x) −ϕv
+J
+
+u, (y −z) ∨(˜Lv(u, vy)/v)
+i
+=
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, x) −J
+
+τ, (x −y) ∨˜L(τ, x)
+i
+converges (for F v
+j , we again used the fact that Jn(τ) is bounded independently of n, v, and
+τ by Theorem 3.1 of Li [2012]). Hence for x satisfying (17), we have ˙J(τ, x) exists and is
+equal to
+˙J(τ, x) = min
+z≤x
+
+(X(τ) −z)2 γσ2(τ)
+2
+−
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, z) −J
+
+τ, (z −y) ∨˜L(τ, z)
+i
+= min
+
+min
+0≤y<x
+˙J(τ, y), (X(τ) −x)2 γσ2(τ)
+2
+−
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, x) −J
+
+τ, (x −y) ∨˜L(τ, x)
+i 
+.
+This holds for general x by continuity.
+That J(τ, ·) is convex follows from the limit of (17) of Li [2012] and that it is continuous
+follows from (32) of Li [2012]. We now show that J(τ, ·) is diﬀerentiable. We know that
+φv
+J(τ, ·) is diﬀerentiable for all x̸ = n/v for any n. Taking x and y so that
+n −1
+v
+< x < n
+v
+and
+n −1 + k
+v
+< y < n + k
+v
+we obtain from (34) of Li [2012] that
+∂φv
+J(τ, y) −∂φv
+J(τ, x) = v
+ Hv
+n(τ) −Hv
+n+k(τ)
+
+≤k
+v ≤y −x + 1
+v .
+14
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Hence, the sequence ∂φv
+J(τ, y) is equicontinuous and since it is uniformly bounded by (32) of
+Li [2012], we may apply Arzel`a-Ascoli to obtain a uniformly bounded subsequence which
+converges to the continuous function ∂J. That is, as v →∞such that n/v →x, we have
+vHv
+n(τ) →∂J(τ, x)
+In the limit, we have that τ n
+m and τ n
+l approach τm(x) and τl(x). We also have from (10),
+(11), and (12) of Li [2012] that
+˙Hn+1(τ) = −[Gn+1(τ) −Gn(τ) −(Fn+1(τ) −Fn(τ))]−
+= −
+
+Gn+1(τ) −Gn(τ) −
+X
+j≥1
+ν(τ, j)
+ H+
+n+1(τ) −H+
+n+1−j(τ)
+
+
+
+−
+and in the limit as v →∞, we have
+∂˙J(τ, x) = −
+"
+γσ2(τ)(x −X(τ)) −ν(τ)∂J(τ, x) +
+Z ˜L(τ,x)−x
+0
+ν(τ, dy)∂J(τ, x −y)
+#−
+. (18)
+Hence the function is C1,1 diﬀerentiable and non-positive. In fact, it is strictly negative for
+τ > τm(x) by taking the limit of (20) of Li [2012]. By taking the limit as v →∞in (7) of
+Li [2012], we obtain that the thresholds τm(x) and τl(x) satisfy
+τm(x) ≤Tx ≤τl(x) .
+It follows from Proposition 3.4 of Li [2012] that τm(·) and τl(·) are non-decreasing functions.
+It follows from (18) of Li [2012] that the mapping τ 7→∂J(τ, x) is non-increasing. It is easy
+to verify that ˜L(τ) is the right inverse of τl(x). The rest of the theorem then follows.
+Lemma 3.3. Let f, g be two continuous functions on [0, 1]. Then we have
+min
+x f(x) −min
+x g(x)
+ ≤∥f −g∥∞.
+If in addition they are convex and attain their minima on Lf and Lg, respectively, then we
+have
+|f(x ∧Lf) −g(x ∧Lg)| ≤∥f −g∥∞
+for all x ∈[0, 1] .
+15
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Proof. First, observe that Lf and Lg are guaranteed to exist by Weierstrass’s Theorem. For
+the ﬁrst result, observe that
+f(Lf) −g(Lg) ≤f(Lg) −g(Lg) ≤∥f −g∥∞.
+Reversing f and g gives us the ﬁrst result.
+For the second result, assume without loss of generality that Lf ≤Lg. The result is clear
+for x ≤Lf. We now prove the result for Lf ≤x ≤Lg. The function g(x) is non-increasing
+for x ≤Lg so that
+f(Lf) −g(x) = f(Lf) −g(Lf) + g(Lf) −g(x) ≥−∥f −g∥∞.
+Similarly, f(x) is non-decreasing for x ≥Lf so that
+f(Lf) −g(x) ≤(f(Lf) −f(x)) + (f(x) −g(x)) ≤∥f −g∥∞.
+Hence, we have the result for x ≤Lg:
+|f(x ∧Lf) −g(x)| ≤∥f −g∥∞
+The result for x ≥Lg follows from taking the limit of the above as x ↑Lg and observing
+that g(x ∧Lg) = g(Lg) for x ≥Lg. The second result thus attains.
+Lemma 3.4. The equation for J(τ, x) given in Theorem 3.1 is well-deﬁned.
+Proof. The ﬁrst step is to realize that the integro-diﬀerential equation can be written
+˙J(τ, x) = min
+z≤x
+
+(X(τ) −z)2 γσ2(τ)
+2
+−
+Z ∞
+0
+ν(τ, dy)
+h
+J(τ, z) −J
+
+τ, (z −y) ∨˜L(τ, z)
+i
+The proof follows from taking the Picard Iterates
+ΓJ(τ, x) = sx +
+Z τ
+0
+min
+z≤x
+
+(X(u) −z)2 γσ2(u)
+2
+−
+Z ∞
+0
+ν(u, dy)
+h
+J(u, z) −J
+
+u, (z −y) ∨˜L(u, z)
+i 
+du .
+16
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+First, note that ΓJ(0, x) = sx and since ˜L(0, τ) = 0, we have
+ΓJ(τ, 0) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du .
+Hence, regardless of J, we know that ΓJ for will always satisfy the boundary conditions of
+Theorem 3.1. Furthermore, for ﬁxed ˜L ∈R, we have
+
+Z ∞
+0
+ν(τ, dy)
+h
+Ja(τ, z) −Ja
+
+τ, (z −y) ∨˜L
+i
+−
+Z ∞
+0
+ν(τ, dy)
+h
+Jb(τ, z) −Jb
+
+τ, (z −y) ∨˜L
+i  ≤ν(τ) ∥Ja(τ, ·) −Jb(τ, ·)∥∞
+and so by the ﬁrst half of Lemma 3.3 the Picard Iterates are uniformly Lipschitz continuous,
+|ΓJa (τ, x) −ΓJb (τ, x)| ≤ν(τ) ∥Ja(τ, ·) −Jb(τ, ·)∥∞.
+By Assumption 2.2, we have after integrating in τ that
+|ΓJa −ΓJb|∞≤ν ∥Ja −Jb∥∞
+and applying the usual of Picard argument to the complete Banach Metric Space under the
+norm ∥·∥∞, we have that J(τ, x) both exists and is unique.
+We now draw a picture of the (τ, x) plane, which is separated into three regions. The
+ﬁrst region (B) is the ‘behind’ region deﬁned when the pair (τ, x) satisﬁes
+τ < τm(x) .
+In this region, we have ∂J(τ, x) = s. As soon as trading reaches the boundary of this region
+τ = τm(x), the agent executes market orders so as to avoid entering it. The second region is
+the trade region, (T), and is deﬁned by
+τm(x) < τ < τl(x) .
+In this region the agent places x −˜L(τ) limit orders on the order book but is not so far
+behind that he executes market orders. This region contains and tracks the perfect-hedging
+17
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+path, X(τ) = τ/T. The ﬁnal region is the ahead region, (A), and is deﬁned by
+τl(x) < τ .
+The agent never enters this region because he would never execute market orders to enter
+and his limit orders are far enough away to keep him from this region. These regions are
+diagramed in Fig. 1 and labeled (B), (T), and (A) respectively.
+!
+x
+!/T
+(B)
+(A)
+(T)
+!l(x)
+!m(x)
+T
+1
+Figure 1: Diagram of three trading regions: a schematic of three ‘Ahead’ (A), ‘Behind’ (B), and
+‘Trade’ (T) regions. Observe that the shaded (T) region tightly tracks an interval around τ/T.
+4
+Special Cases
+4.1
+Large-ﬁll Distribution
+We give the continuous-time case solution for the Large-ﬁll distribution where ν(τ) is the
+intensity of the (inﬁnitely-sized) crossing orders.
+Corollary 4.1. The continuation value is the solution of the following partial integro18
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+diﬀerential equation
+˙J(τ, x) = min
+
+min
+0≤y<x
+˙J(τ, y), γσ2(τ)
+2
+(X(τ) −x)2 −ν(τ)
+h
+J(τ, x) −J(τ, ˜L(τ, x)))
+i
+J(τ, 0) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+J(0, x) = sx
+˜L(τ, x) = arg min
+0≤y≤x
+J(τ, y) .
+4.2
+Arrival-Price Benchmark
+As in the discrete case, the arrival price benchmark is given by taking X(τ) = 0.
+Corollary 4.2. The continuation value is the solution of the following partial integrodiﬀerential equation
+˙J(τ, x) = min
+
+min
+0≤y<x
+˙J(τ, y), γσ2(τ)
+2
+x2 −
+Z ∞
+0
+ν(τ, dy)
+
+J(τ, x) −J(τ, (x −y)+)
+ 
+J(τ, 0) =
+Z τ
+0
+γσ2(u)
+2
+X2(u) du
+J(0, x) = sx .
+5
+Stationary Limit
+To motivate our stationary limit, observe from Fig. 3 of Li [2012] that the value function
+Jn+1 appears to be the function Jn shifted up and right. This suggests that for some value
+function V and constants a and k, the function J (with continuous ﬁll quantities) has the
+form
+J(τ, x) ≈a + kx + V
+ τ −X−1(x)
+
+= a + kx + V (τ −Tx)
+for large (τ, x) .
+(19)
+We expect this to hold for large τ and x as we move away from the boundary condition at
+τ = 0 and x = 0. We plot a sample function “V ” in Fig. 2.
+We explore the setup of this new stationary problem and eventually reduce it to a new
+simpliﬁed HJB equation (5.1). In this setup, we are able to obtain semi-explicit solutions for
+a large class of processes and closed-form solutions for a rich family of examples. The rest of
+the section is as follows. We ﬁrst solve in Theorem 5.2 for V explicitly for the large-ﬁll case
+19
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+to gain intuition. In Theorem 5.3, we prove that for the large-ﬁll case V precisely equals J
+(that is, (19) holds with exact equality) for suﬃciently large τ. For general ﬁll distributions
+ν(dy), we are able to obtain closed-form solutions for V using Fourier methods when ν(dy)
+is exponential (Example 5.7), or the “sum of Gamma distributions” (Example 5.8).
+0
+1
+2
+3
+4
+5
+6
+Τ=T-t
+4
+5
+6
+7
+8
+V
+Figure 2: A sample of V for the single-lot distribution with v = 20.
+To make this more precise, we must ﬁrst consider some necessary conditions for this
+to hold. In particular, it must be the case that V ‘senses’ the same dynamics parameters
+regardless of whether they are (jointly) small or large. Therefore, we assume ν(τ, dy) and
+σ(τ) are constant in time and the trading volume is still ﬂat throughout the day, that is
+ν(τ, dy) = ν(dy)
+σ(τ) = σ
+X(τ) = τ
+T .
+Hence, the crossing arrivals now occur as a homogenous Poisson process. Under these circumstances, we are able to simplify the problem by reducing the number of state-variables
+from two (τ, x) to one (τ −Tx). Intuitively, the value function V given in (19) depends only
+on the distance from tracking VWAP, τ −Tx. One traditionally measures this distance in
+units of shares but it is equivalent to measure it in units of time as the daily trading rate
+X(τ) provides the conversion between the two. The agent is perfectly tracking VWAP if
+τ = Tx, behind if τ < Tx, and ahead if τ > Tx.
+Assume a diﬀerentiable solution V exists. Then under our ansatz (19), the HJB equation
+20
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+(7) for V would reduce to
+V ′ (τ −Tx) = min
+
+min
+y≥0 V ′ (τ −T (x −y)) , γσ2
+2
+ τ
+T −x
+2
++ min
+L≥0
+Z ∞
+0
+ν(dy) [V (τ −T(x −(y ∧L))) −V (τ −Tx) −k(y ∧L)]
+
+.
+We rewrite our variable
+τ 7−→τ + Tx
+(20)
+so that τ = 0 corresponds to being perfectly hedged (xt = X(T −t)). We expect that the
+market and limit order boundaries are given by the new terms τm and τl,
+τm(x) −Tx 7−→τm
+and
+τl(x) −Tx 7−→τl .
+Observe that ν(dy) induces a measure ν(ds) via
+ν(ds) = Tν(dy)
+where we call both ν by an abuse of notation. Then the HJB equation simpliﬁes to
+V ′ (τ) = min
+
+min
+t≥0 V ′ (τ + t) ,
+γσ2
+2
+ τ
+T
+2
++ min
+t≥0
+Z ∞
+0
+ν(ds)
+
+V (τ + (s ∧t)) −V (τ) −k s ∧t
+T
+ 
+.
+(21)
+We ﬁrst write the right-hand case of the outer minimum of (21) as
+f(τ) = γσ2
+2
+ τ
+T
+2
++ min
+t≥0
+Z ∞
+0
+ν(ds)
+
+V (τ + (s ∧t)) −V (τ) −k s ∧t
+T
+
+.
+Since mint≥0 V ′ (τ + t) ≥V ′ (τ) for all τ we have that V must be convex. We have that
+V ′(τ) =
+
+
+
+mint≥0 V ′ (τ + t)
+for τ ≤τm
+f(τ)
+for τ > τm
+Convexity implies V ′(τ) is nondecreasing so that
+V ′(τ) = V ′(τm)
+for τ < τm .
+21
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Observe that by assumption, V is continuously diﬀerentiable so that
+V ′(τm) = lim
+τ↓τm V ′(τ) = f(τm) .
+Furthermore, diﬀerentiating both sides of (21), we obtain
+V ′′(τ) =
+
+
+
+0
+τ ≤τm
+f ′(τ)
+τ > τm
+.
+f ′(τ) is continuous because V ′(τ) is continuous. Hence, we have that V ′′ is continuous if we
+can show it is continuous at τ = τm. By convexity of V , we know that f ′(τm) ≥0. If the
+equality were strict, then we would have for some ε > 0 that f(τm −ε) < f(τm) and thus
+V ′(τm −ε) = V ′(τm) = f(τm) > f(τm −ε)
+which contradicts (21). Therefore, we have f ′(τm) = 0 and so V ′′ is continuous everywhere.
+We have ∂J(τ, x) = s for τ ≤τm(x) and so
+V ′(τ) = k −s
+T
+for τ ≤τm .
+(22)
+Similarly, since ∂J(τl(x), x) = 0 and so we have
+V ′(τl) = k
+T .
+By convexity of V , we have V ′(τ) ≤k
+T for τ ≤τl and vice-versa. In particular, we have that
+τm < τl. Then for τ ≤τl, we have
+min
+t≥0
+Z ∞
+0
+ν(ds)
+
+V (τ + (s ∧t)) −k s ∧t
+T
+
+=
+Z ∞
+0
+ν(ds)
+
+V ((τ + s) ∧τl) −k s ∧(τl −τ)
+T
+
+.
+When τ > τl, we have V ′(τ + t) ≥k
+T and so
+min
+t≥0
+Z ∞
+0
+ν(ds)
+
+V (τ + (s ∧t)) −k s ∧t
+T
+
+= V (τ) .
+We now summarize our results in the following proposition
+Proposition 5.1. There exists a unique convex C2 solution V to the HJB equation (21)
+22
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+with τl and τm satisfying the free-boundary conditions
+V ′(τm) = k −s
+T
+V ′′(τm) = 0
+V ′(τl) = k
+T .
+These three equations allow us to solve for the 3 unkowns τl, τm, k. The diﬀerential equation
+for V is given by
+V ′(τ) =
+
+
+
+
+
+
+
+
+
+k−s
+T
+τ < τm
+V ′
+0(τ)
+τm ≤τ < τl
+γσ2
+2
+  τ
+T
+2
+τl ≤τ
+where V0 satisﬁes the equation
+V ′
+0 (τ) = γσ2
+2
+ τ
+T
+2
++
+Z ∞
+0
+ν(ds)
+
+V0 ((τ + s) ∧τl) −V0(τ) −k s ∧(τl −τ)
+T
+
+for τ ≤τl.
+5.1
+Large-ﬁll Case
+We prove a result for the large-ﬁll case. That is, we assume that all crossing orders are
+inﬁnitely-sized and we denote by ν the intensity of these orders. Then the HJB equation
+(21) simpliﬁes to
+V ′ (τ) = min
+
+min
+t≥0 V ′ (τ + t) , γσ2
+2
+ τ
+T
+2
++ ν min
+t≥0
+
+V (τ + t) −V (τ) −k t
+T
+
+.
+(23)
+When τ > τl, we have V ′(τ + t) ≥k
+T and so
+min
+t≥0
+
+V (τ + t) −k
+T t
+
+= V (τ) .
+Since V ′(τl) = k
+T ≥V ′(τm), we have that
+V ′ (τl) = γσ2
+2
+τl
+T
+2
++ ν min
+t≥0
+
+V (τl + t) −V (τl) −k t
+T
+
+= γσ2
+2
+τl
+T
+2
+.
+We solve the HJB equation (23) in the next theorem (Theorem 5.2) and compute the
+location of the free boundary conditions τl and τm. It turns out that the two are related
+by the Lambert W function. To illustrate the relationship for readers unfamiliar with this
+23
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+transcendental function, we plot the relationship between τl and τm for diﬀerent values of ν
+in Fig. 3. The other parameters γ, σ, s, T only directly aﬀect the optimal policy through τm.
+We observe that the smaller (more negative) the value of τm, the larger the value of τl, as
+one would expect.
+-0.20
+-0.15
+-0.10
+-0.05
+Τm
+0.5
+1.0
+1.5
+Τl
+Ν=0.4
+Ν=0.2
+Ν=0.1
+Figure 3: A plot of the relationship between τm and τl. The smaller (more negative) the value
+of τm, the larger the value of τl.
+Theorem 5.2. For large-ﬁll crossing orders, the limit-order and market-order boundaries
+are given by
+τm = −νsT
+γσ2
+τl = 1
+ν
+ 1 + W
+ −eντm−1
+with τl > 0 and τm < 0. Here W : [−e−1, ∞) →[−1, ∞) is the Lambert W function.
+Proof. The solution V is divided into three parts,
+V (τ) =
+
+
+
+
+
+
+
+
+
+V0(τm) + s−k
+T (τm −τ)
+τ < τm
+V0(τ)
+τm ≤τ < τl
+V0(τl) +
+R τ
+τl
+γσ2
+2
+  t
+T
+2 dt
+τl ≤τ
+24
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+where V0 is deﬁned by
+V0(τ) = e−ντ
+"
+V0(τl)eντl +
+Z τ
+τl
+eνt
+"
+γσ2
+2
+ t
+T
+2
++ ν
+
+V0 (τl) −k
+T (τl −t)
+#
+dt
+#
+= V0(τl) + e−ντ
+Z τ
+τl
+eνt
+"
+γσ2
+2
+ t
+T
+2
+−ν k
+T (τl −t)
+#
+dt .
+Hence, we see that the constant of integration V0(τl) is a ‘gauge symmetry’ (to use the
+language of theoretical physics): it shifts the value function by a constant but does not
+aﬀect the optimal behavior. This result was guaranteed by the fact that an arbitrary additive
+constant to V0(τl) can be added to the constant a in (19) without consequence. It is easy to
+verify that on τ ≥τm, we have that the right case of the min in (23) is taken and on τ < τm,
+we have that V takes on the left case of the min in (23).
+We have 3 unknowns (τm, τl, k) and 3 transcendental equations given by the boundary
+conditions of Proposition 5.1. The boundary conditions for V ′′
+0 (τm) and V ′
+0(τl) are actually
+algebraic and give (respectively)
+0 = 2ητm + νs
+(24a)
+k = ητ 2
+l
+(24b)
+where η = γσ2
+2T . To obtain (24a), observe that diﬀerentiating (23) for τ ≥τm yields
+V ′′(τ) = γσ2
+T 2 τ + ν [V ′(τl) −V ′(τ)]
+and the result follows from the expressions for V ′(τl) and V ′(τm).
+Hence, the optimal
+boundary comes from solving for the ﬁnal variable in the boundary condition for V ′
+0(τm),
+k −s = d
+dτ
+
+τ=τm
+e−ντ
+Z τ
+τl
+eνt(ηt2 −νk(τl −t)) dt .
+(25)
+Using (24a) and (24b), the t2 terms in the above derivative miraculously cancel and we
+obtain the equation simpliﬁes to
+1 + eν(τl−τm)(ντl −1) = 0 .
+The formulas for τm and τl then follow.
+25
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+We ﬁrst investigate the relationship between τm and τl. Writing ξ = −eντm−1, we note
+that for ξ ∈(−e−1, 0), we have W(ξ) ∈(−1, 0) and so
+τm ≤0
+and
+τl ≥0 .
+Clearly, if τm = 0 then τl = 0. A simple calculation yields
+dτl
+dτm
+= 1
+ν
+W(ξ)
+ξ(1 + W(ξ))
+dξ
+dτm
+= −
+W(ξ)
+1 + W(ξ)
+≥−1 .
+Hence for τm > 0.
+−τm < τl .
+When facing a large-ﬁll distribution, this says that we are more willing to be ahead of the
+trading schedule (τl) than behind (τm).
+We now give an interpretation for k based on (24b). Writing ξ = −exp
+
+−ν2T
+2η s −1
+
+, we
+note that for ξ ∈(−e−1, 0), we have W(ξ) ∈(−1, 0) and so τm < 0 implies τl > 0. We also
+have that
+dk
+ds = 2ητl
+dτl
+ds
+= 2η 1
+ν2 (1 + W(ξ)) · W ′(ξ) · dξ
+ds
+= 2η 1
+ν2 (1 + W(ξ)) ·
+W(ξ)
+ξ(1 + W(ξ)) · −ξ ν2
+2η
+= −W(ξ)
+and for ξ ∈(−e−1, 0), we have dk
+ds = −W(ξ) ∈(0, 1). Observe that k = 0 if s = 0 and so we
+have
+0 ≤k < s .
+Recall from (19) that k is the additional cost of liquidating extra shares dx while keeping the
+tracking error τ −Tx ﬁxed. We expect this quantity to be nonnegative (there is a non-zero
+chance we will have to liquidate these shares via market orders at a marginal cost s) but for
+it to be less than s (there is some chance our limit orders may be ﬁlled). The relative size
+26
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+of k gives the likelihood of each of these two cases. The next theorem gives the conditions
+under which V and J (and hence the optimal policies) coincide. The results are summarized
+in Fig. 4.
+!
+x
+!/T
+(B)
+(A)
+(T)
+!l(x)
+!m(x)
+T
+x*
+!l(x*)
+x*
+1
+Figure 4: A schematic of three ‘Ahead’ (A), ‘Behind’ (B), and ‘Trade’ (T) regions with the
+critical points x∗and x∗. By Theorem 5.3, we have the derivatives of the value functions V
+and J agree for x ≥x∗in the trade region (T) and that the the values agree for x ≥x∗. The
+geometry is much more rigid than in Fig. 1. Observe that the shaded (T) region tightly tracks
+an interval around τ/T.
+Theorem 5.3. Assume large-ﬁll crossing orders. We ﬁrst deﬁne
+x∗= νs
+γσ2 .
+Then for x ≥x∗, we have
+τm(x) = T(x −x∗)
+τl(x) = τl(x∗) + T(x −x∗)
+where
+τl(x∗) = νsT
+γσ2 + 1
+ν
+
+1 + W
+
+−exp
+
+−ν2T
+2η s −1
+
+.
+27
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Then
+∂J(τ, x) = k −TV ′(τ −Tx)
+for τm(x) ≤τ ≤τl(x) .
+Second, deﬁne
+x∗= x∗+ τl(x∗)
+T
+.
+Then for x ≥x∗, we have
+J(τ, x) = a + kx + V (τ −Tx)
+for τm(x) ≤τ ≤τl(x) .
+Proof. We know that for τ ≤τm(x), ∂J(τ, x) = s. By continuity of ∂J(τ, x), we have for
+some a
+lim
+τ↓τm(x) ∂J(τ, x) = s .
+Since ∂˙J(τ, x) is continuous for all (τ, x) by Theorem 5.2, we have that if τm(x) > 0 then
+lim
+τ↓τm(x) ∂˙J(τ, x) =
+lim
+τ↑τm(x) ∂˙J(τ, x) = 0 .
+Recall that ∂˙J(τ, x) ≤0 by Theorem 5.2. For all x such that τm(x) = 0, we have
+0 ≥∂˙J(τm(x), x) = γσ2
+
+x −τm(x)
+T
+
+−ν∂J(τm(x), x) = γσ2
+
+x −τm(x)
+T
+
+−νs
+Note that for x such that τm(x) > 0, this inequality becomes an equality. Hence for x ≥x∗,
+we have the formula for τm(x) follows from
+γσ2
+
+x −τm(x)
+T
+
+−νs = 0 .
+Then from Theorem 5.2 we have the formula for τl(x) and τl(x∗), as desired.
+Observe that we have from (18) that
+∂J(τ, x) = s +
+Z τ
+τm(x)
+γσ2 
+x −u
+T
+
+−ν∂J(u, x) du .
+(26)
+Deﬁne
+V (τ, x) = kx + V (τ −Tx)
+by an abuse of notation. A simple computation will show that ∂V (τm(x), x) satisﬁes the
+28
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+boundary conditions
+∂V (τm(x), x) = s
+∂˙V (τm(x), x) = 0 .
+Furthermore, by the deﬁnition of τm in Theorem 5.2, we have
+τm(x) −Tx = −Tx∗= τm
+for x ≥x∗
+and so ∂V (τ, x) and ∂J(τ, x) satisfy the same equation (26) for x ≥x∗. Hence,
+∂V (τ, x) = ∂J(τ, x)
+for x ≥x∗
+(27)
+Notice that by deﬁnition, τl solves
+∂V (τl + Tx, x) = −TV ′(τl) + k = 0
+and we have have (26) that τl −τm is ﬁxed so thus
+τl(x) −Tx = τl
+for x ≥x∗.
+Hence, x minimizes the function V (τl(x), ·). Then rewriting ˙J(τ, x), we obtain
+˙J(τ, x) = γσ2
+2
+ τ
+T −x
+2
+−ν
+h
+J(τ, x) −J(τ, ˜L(τ))
+i
+for τm(x) ≤τ ≤τl(x)
+where ˜L(τ, x) minimizes J(τ, ·). It is easy to verify that ˙V (τ, x) satisﬁes the above equation as
+well. Recall that ˜L(·) and τl(·) are inverses of one another. For x ≥x∗and τm(x) ≤τ ≤τl(x),
+we have ˜L(τ) ≥x∗(see Fig. 4). Rewriting, we obtain
+˙J(τ, x) = γσ2
+2
+ τ
+T −x
+2
+−ν
+Z x
+˜L(τ)
+∂J(τ, y) dy
+and by the above and (27) we have
+˙J(τ, x) = ˙V (τ, x)
+for x ≥x∗and τm(x) ≤τ ≤τl(x) .
+Finally, we set a such that
+J(τm(x∗), x∗) = a + V (τm(x∗), x∗)
+29
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Therefore, we have
+J(τm(x), x) = J(τm(x∗), x∗) +
+Z x
+x∗
+
+T ˙J(τm(y), y) + ∂J(τm(y), y)
+
+dy
+= V (τm(x∗), x∗) +
+Z x
+x∗
+
+T ˙V (τm(y), y) + ∂V (τm(y), y)
+
+dy
+= V (τm(x), x)
+for x ≥x∗
+and so
+J(τ, x) = J(τm(x), x) +
+Z τ
+τm(x)
+˙J(u, x) du
+= V (τm(x), x) +
+Z τ
+τm(x)
+˙V (u, x) du
+= V (τ, x)
+for x ≥x∗and τm(x) ≤τ ≤τl(x) .
+Hence, we have the desired result.
+5.2
+General Case
+In this section, we solve (21) for general ν. The solution applies to a large class of ν(dy) but
+is presented separately as it does not cover the large-ﬁll distribution case. The solution for
+τ ≥τl and τ < τm are already given by Proposition 5.1. We then must solve for V within
+the range τm ≤τ < τl. We ﬁrst deﬁne the function U by the following integro-diﬀerential
+equation,
+−U ′(t) = γσ2
+2
+τl −t
+T
+2
++
+Z
+[0,t]
+ν(ds)
+
+U(t −s) + k
+T (t −s)
+
++ U(0)
+Z
+(t,∞)
+ν(ds) −νU(t) −kν
+T t
+(28)
+where we now write ν for the total mass of the ﬁnite, non-negative measure ν(dy) for notational clarity. A simple calculation shows that
+−U ′(t) = γσ2
+2
+τl −t
+T
+2
++
+Z ∞
+0
+ν(ds)
+
+U(t −(s ∧t)) −U(t) −k
+T (s ∧t)
+
+and so
+U(t) = V (τl −t)
+for t ≤τl −τm .
+30
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+For convenience, deﬁne the function h to be
+h(t) = γσ2
+2
+τl −t
+T
+2
+−
+Z ∞
+0
+ν(ds)
+ k
+T (s ∧t)
+
+for t ≥0
+and h(t) = 0 for t < 0. Before we begin, we give the following deﬁnition,
+Deﬁnition 5.4. For a function h, we say h ∈M 2 if
+Z
+R
+|h(t)|t2 dt < ∞.
+Similarly, for a non-negative measure ν, we say ν ∈M 2 if
+Z
+R
+ν(dt)t2 dt < ∞.
+Theorem 5.5. Let ν be a non-trivial, non-negative, ﬁnite-mass, M 2 measure with support
+only to R+. Then
+U(t) = U(0) −
+Z t
+0
+ds
+Z
+R
+du
+Z
+R
+dω
+2πiωe2πiuω
+2πiω −ˆν(ω) + ν
+
+h(s −u)
+where
+ˆν(ω) =
+Z
+R
+ν(dt)e−2πiωt
+is the Fourier transform of ν.
+Proof. Like V , we observe that the solution U to (28) is unique up to an additive constant,
+which we ﬁx such that U(0) = 0. We will solve U in terms of it’s Fourier transform,
+ˆU(ω) =
+Z
+R
+U(t)e−2πiωt dt .
+Taking the Fourier transform of both sides of (28), we obtain
+2πiω ˆU(ω) = ˆh(ω) + ˆν(ω) ˆU(ω) −ν ˆU(ω) .
+Here, ˆh and ˆν are the respective Fourier transforms. Hence, we have
+ˆU(ω) = [2πiω −ˆν(ω) + ν]−1 ˆh(ω) .
+31
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+If we can show that the term
+2πiω −
+Z
+R
+e−2πiωtν(dt) +
+Z
+R
+ν(dt)
+(29)
+does not vanish for ω ∈R, then the solution makes sense (at least as a distribution). Unfortunately, the solution has one zero at ω = 0 but has no other real zeros. The former claim
+is obvious. To prove the latter claim, ﬁrst ﬁx ω̸ = 0 and observe that the term (29) can be
+split into its real and imaginary parts
+i
+
+2πω +
+Z
+R
+sin(2πωt)ν(dt)
+
+−
+Z
+R
+cos(2πωt)ν(dt) +
+Z
+R
+ν(dt)
+The real part will vanish only if the support of ν is contained in the set of t where ωt ∈Z
+but then the complex part will never vanish. We have furthermore that the reciprocal of the
+term (29) has an order-one zero at ω = 0,
+2πiω −
+Z
+R
+e−2πiωtν(dt) +
+Z
+R
+ν(dt) ∼2πiκω
+ω ∼0
+where κ is nonzero and given by
+κ =
+ 
+1 +
+Z
+R+
+tν(dt)
+!
+≥1 .
+Since this is the only zero, the function ˆg(ω) deﬁned by
+ˆg(ω) =
+2πiω
+2πiω −ˆν(ω) + ν
+is ﬁnite for all ω ∈R. The transformed equation is then
+ˆU(ω) = ˆg(ω)
+2πiω
+ˆh(ω)
+The solution to U is (up to a constant)
+−1R+ ∗g ∗h = −
+Z
+R
+ds
+Z
+R
+du 1R+(t −s)g(s −u)h(u) = −
+Z t
+−∞
+ds (g ∗h)(s)
+32
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Then by the appropriate choice of the additive constant, we have
+U(t) = U(0) −
+Z t
+0
+ds (g ∗h)(s) .
+(30)
+This is simply the desired result. From Lemma 5.6 and the fact that ν ∈M 2, we have ˆν ∈C2.
+Indeed, since ν is a ﬁnite-measure, we have that ˆν is a proper function. Therefore, ˆg ∈C2
+and by another application of Lemma 5.6, we have g ∈M 2. Observe that h(t) ≤C(1 + t2)
+for some suﬃciently large C and so g ∗h(t) is well-deﬁned and continuous for all t (it is,
+in fact, diﬀerentiable). Therefore, the integral in (30) is well-deﬁned and we have that U is
+well-deﬁned.
+Lemma 5.6. For an arbitrary distribution ϕ on R, we have ϕ ∈M 2 if and only if ˆϕ is C2
+(in the sense of distributions).
+Finally, the boundary conditions for U from Proposition 5.1 are
+−U ′(τl −τm) = k −s
+T
+U ′′(τl −τm) = 0
+−U ′(0) = k
+T .
+Example 5.7. We tackle the special case
+ν(dt) = ae−bt1t≥0 dt .
+In this case,
+h(t) = γσ2
+2
+τl −t
+T
+2
++ ak
+b2T
+
+1 −e−bt
+and
+ˆν(ω) =
+a
+b + 2πiω
+so that we have
+[2πiω −ˆν(ω) + ν]−1 =
+α0
+2πiω +
+α1
+2πiω + β1
+where
+α0 =
+b2
+a + b2
+β1 = a + b2
+b
+α1 =
+a
+a + b2 .
+33
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Then a simple calculation gives us
+U(t) = U(0) −α0
+Z
+R
+1R+(t −u)h(u) du −α1
+Z
+R
+1R+(t −u)e−β1uh(u) du
+= U(0) −α0
+Z t
+0
+h(u) du −α1
+Z t
+0
+e−β1(t−u)h(u) du .
+Unfortunately, no closed-form solutions for τl, τm, and k are known as the miraculous cancellation of the t2 terms that occur in (25) does not occur here. However, we can use the
+explicit form for U to solve for τl, τm, and k numerically.
+Example 5.8. There is a large class of ν for which the answer can be written semi-explicitly.
+This is the class of measures
+ν(dt) = a
+p!tpe−bt1t≥0 dt
+where p ∈N and a, b > 0. Then an elementary calculation yields
+Z ∞
+0
+spe−bs (s ∧t) ds =
+Z ∞
+0
+u
+b
+p e−u
+p!
+u
+b ∧t
+ du
+b
+=
+1
+b2+p
+"Z bt
+0
+up+1
+p! e−u du + bt
+Z ∞
+bt
+up
+p! e−u du
+#
+=
+1
+b2+p
+1
+p! [γ(p + 2, bt) + btΓ(p + 1, bt)]
+=
+1
+b2+p e−bt
+"
+(p + 1)
+ 
+ebt −
+p+1
+X
+k=0
+(bt)k
+k!
+!
++ bt
+p
+X
+k=0
+(bt)k
+k!
+#
+=
+1
+b2+p e−bt
+"
+(p + 1)ebt +
+p
+X
+k=0
+ 1
+k! −
+p + 1
+(k + 1)!
+
+(bt)k+1 −1
+#
+where γ(·, ·) and Γ(·, ·) are the lower and upper incomplete Gamma functions. Then
+h(t) = γσ2
+2
+τl −t
+T
+2
+−ak
+T
+1
+b2+p e−bt
+"
+(p + 1)ebt +
+p
+X
+k=0
+ 1
+k! −
+p + 1
+(k + 1)!
+
+(bt)k+1 −1
+#
+.
+We have that ν =
+a
+bp+1 and by Integration by Parts that
+ˆν(ω) =
+a
+(2πiω + b)p+1
+and so we can write
+[2πiω −ˆν(ω) + ν]−1 =
+(2πiω + b)p+1
+(2πiω + ν)(2πiω + b)p+1 −a .
+34
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+The denominator and numerator are (real) polynomials in 2πiω. Since the degree of the
+denominator is larger than that of the numerator, the Fundamental Theorem of Algebra and
+the Method of Partial Fractions gives us the representation
+[2πiω −ˆν(ω) + ν]−1 =
+m
+X
+k=0
+αk
+(2πiω + βk)qk
+where αk and βk are real, qk ∈N+ for each k = 0, . . . , m, and P
+k qk = p + 1.
+To solve the problem, note that if
+ˆg(ω) =
+1
+(iω + β)q
+then
+g(t) = (t+)q
+q!
+e−βt .
+and thus
+U(t) = U(0) −
+m
+X
+k=0
+αk
+Z t
+0
+(t −s)qk
+qk!
+e−βk(t−s)h(s) ds .
+We can apply numerical integration to obtain a solution and solve for τl, τm, and k numerically.
+Example 5.9. The above analysis can be generalized to the class of measures
+ν(dt) =
+n
+X
+k=0
+ak
+pk!tpke−bkt1t≥0 dt .
+This sum of gamma distributions can be used to approximate virtually any distribution of
+practical importance. Furthermore, it has a near closed-form solution. We can write
+[2πiω −ˆν(ω) + ν]−1 = P(2πiω)
+Q(2πiω)
+where P and Q are (real) polynomials
+deg P =
+n
+X
+k=0
+(pk + 1)
+deg Q = 1 +
+n
+X
+k=0
+(pk + 1)
+and
+ν =
+n
+X
+k=0
+ak
+bpk+1
+k
+.
+35
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+Since deg Q > deg P we have by the Fundamental Theorem of Algebra and the Method of
+Partial Fractions that
+[2πiω −ˆν(ω) + ν]−1 =
+m
+X
+k=0
+αk
+(iω + βk)qk
+where αk and βk are real, qk ∈N+ for each k = 0, . . . , m, and
+m
+X
+k=0
+qk = 1 +
+n
+X
+k=0
+(pk + 1) .
+The expression for U remains as in Example 5.8 except with the new αk, βk, qk and m.
+6
+Conclusion
+We proved the analogous results in the continuous for the discrete case in Theorem 3.1.
+We are able to show that this is the limit of discrete results in Theorem 3.2, which allows
+us to transfer the properties from the discrete result Theorem 3.1 of Li [2012].
+For the
+stationary limit, we are able to derive a general characterization of the optimal solution in
+Proposition 5.1 and a closed-form solution for the large-ﬁll case Theorem 5.2. Furthermore,
+we have that the solution in Theorem 5.2 is equal to the general continuous case when we
+are suﬃciently far from the “boundary conditions” of Theorem 3.1. For the general (non
+large-ﬁll) case, we can derive the solution in terms of a Fourier transform for a number of
+very general classes of ν (see Example 5.7, Example 5.8, and Example 5.9).
+36
+Electronic copy available at: https://ssrn.com/abstract=2318896
+
+References
+T. Li. Optimal limit-versus-market order slicing under a vwap bechmark - continuous case,
+2012.
+C. Villani. Topics in Optimal Transportation. American Mathematical Socity, Providence,
+RI, 2000.
+37
+Electronic copy available at: https://ssrn.com/abstract=2318896

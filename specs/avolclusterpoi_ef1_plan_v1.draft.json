@@ -1,0 +1,84 @@
+{
+  "schema_version": "avolclusterpoi_ef1_plan_v1",
+  "status": "DRAFT_NOT_AUTHORIZED",
+  "parent_ef0_manifest_sha256": "b8eb6dcb490b6e94eff8335e573eee7b59e9e80065bfd722d6eb1234b43d2663",
+  "source_config_id": "96afe12bc9d68695d0d232223c72ad5e1f7e64fb6fa30c37d12b74ecb1e146ff",
+  "roll_policy_id": "previous_complete_session_volume_leader_monotonic_v1",
+  "roll_schedule_sha256": "PENDING_REGIME_CERTIFICATION",
+  "source_trace_sha256s": {
+    "ef0_trace": "83207e18f0e2f267c3b3e71386448b2b1f89eea00658e58c177576d7ad8219bd",
+    "ef0_integrity": "e3dfd55920ce30f93a65ee14e799810bf42b12066293501764a688d0572ff510",
+    "ef0_question_cards": "d959ea21ba9eed8c884c822773ad5fce0c7f3084843006729037511694c8e6f7"
+  },
+  "selected_question_ids": [
+    "Q-THRESHOLD-PRESSURE",
+    "Q-ATPRICE-OFFPRICE"
+  ],
+  "deferred_question_ids": {
+    "Q-GEOMETRY": "abre 3 ejes (median_multiplier, max_gap_ticks, min_cluster_ticks). Un eje por vez: se pospone hasta cerrar el de threshold.",
+    "Q-HISTORY-STATE": "abre 3 ejes mas y la evidencia no lo respalda: ABSTAIN_NO_HISTORY es solo 3,99 por 100 bloques. La historia no es el cuello de botella.",
+    "Q-SESSION-STABILITY": "no requiere barrido: 'minimum effective session count' es un calculo de potencia, previo a cualquier diseno de outcomes. Se resuelve sin corrida."
+  },
+  "configurations": [
+    {
+      "axis": "detection_percentile",
+      "baseline": 98.0,
+      "levels": [
+        96.0,
+        97.0,
+        97.5,
+        98.0,
+        98.5,
+        99.0
+      ],
+      "all_other_params": "RESEARCH_DEFAULTS congelados; un solo eje perturbado"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "population_turnover",
+      "desc": "Jaccard del event fingerprint entre configuraciones vecinas. NO ranking de ganadores."
+    },
+    {
+      "id": "n_create_candidates",
+      "desc": "conteo por configuracion"
+    },
+    {
+      "id": "n_zones_off_price",
+      "desc": "denominador separado de AT_PRICE (Q-ATPRICE-OFFPRICE)"
+    },
+    {
+      "id": "n_at_price_candidates",
+      "desc": "denominador separado de OFF_PRICE (Q-ATPRICE-OFFPRICE)"
+    },
+    {
+      "id": "classification_vs_detection",
+      "desc": "si el cambio de config altera la CLASIFICACION at/off-price o solo la DETECCION de clusters"
+    },
+    {
+      "id": "score_over_threshold_dist",
+      "desc": "distribucion por configuracion"
+    }
+  ],
+  "stopping_rules": [
+    "No se elige configuracion ganadora. EF1 describe sensibilidad, no selecciona.",
+    "No se abren outcomes, retornos, MFE/MAE ni P&L.",
+    "Si el turnover entre 97,5 y 98,5 supera 50%, se registra como fragilidad estructural y se detiene antes de proponer cualquier config para uso formal."
+  ],
+  "expected_compute": {
+    "kaggle_kernels": 1,
+    "rationale": "HALLAZGO: SessionProfile.add_block acumula best_score, que NO depende de detection_percentile. La historia por bucket es identica para toda la grilla, asi que el barrido se recomputa POST-HOC sobre los bloques ya calculados: se reevalua el cuantil y la decision sin recorrer ticks ni reconstruir barras. 6 niveles en 1 corrida en vez de 6.",
+    "reuses": "misma reconstruccion con reset del intervalo operable que EF0 (b48675a)"
+  },
+  "authorization": {
+    "required_from": "Nico",
+    "granted": false,
+    "blocking_preconditions": [
+      "roll_schedule_sha256 sigue en PENDING_REGIME_CERTIFICATION: el manifiesto de regimen no esta certificado (falta evidencia de completitud aprobada y Juneteenth 2026-06-19 sin adjudicar).",
+      "EF1 no puede promoverse a resultado formal mientras esa precondicion siga abierta; si se corre antes, es diagnostico provisional."
+    ]
+  },
+  "auto_execute": false,
+  "outcomes_accessed": false,
+  "holdout_accessed": false
+}

@@ -1,0 +1,100 @@
+{
+  "doc_id": 297,
+  "titulo": "Insider Trading and Sentiment Trading",
+  "resumen_operativo": "Extiende el modelo de Kyle (1985) incorporando traders de sentimiento con demanda parcialmente informativa sobre el valor del activo riesgoso. Deriva el equilibrio en tiempo continuo con solución cerrada para la agresividad de trading del insider y el price impact del market maker. Demuestra que la agresividad y los beneficios esperados del insider decrecen con el contenido informativo del sentimiento, mientras que la actividad de los sentiment traders tiene efecto no-monotónico. La liquidez y el price discovery son independientes del contenido informativo del sentimiento; el insider neutraliza estratégicamente la fuga de información.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Sentiment Trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Demanda agregada de traders no estratégicos correlacionada parcialmente con las innovaciones del valor del activo (parámetro ρ). Combina un componente informativo (correlacionado con dvt) y un componente de ruido puro. No se modela su origen sino su efecto en el equilibrio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Aggregate Order Flow"},
+        {"tipo": "CAUSA", "objeto": "Information Leakage"}
+      ],
+      "cita_textual": "The sentiment traders' demand for the risky asset consists of two parts. One part... is correlated with the gradually released information on the value of the risky asset, whereas the second part... is not."
+    },
+    {
+      "nombre": "Kyle Model Extension",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del modelo de Kyle (1985) en tiempo continuo donde el insider recibe información gradual (dvt) sobre el valor de liquidación del activo. El market maker fija precios como expectativa condicional del valor de liquidación dado el order flow observado.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "Kyle (1985) Model"},
+        {"tipo": "APLICA_A", "objeto": "Continuous-Time Trading Equilibrium"}
+      ],
+      "cita_textual": "We extend Kyle's (1985) model by an additional group of market participants, namely the sentiment traders."
+    },
+    {
+      "nombre": "Trading Aggressiveness β(t)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Parámetro que determina cuán agresivamente el insider explota su ventaja informacional: dxt = β(t)(vt - pt)dt. Es creciente en el tiempo, decreciente en ρ (contenido informativo del sentimiento), y su respuesta a σ²_s (actividad de los sentiment traders) es no-monotónica.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Insider Trading Intensity"},
+        {"tipo": "PREDICE", "objeto": "Insider Expected Profits"}
+      ],
+      "cita_textual": "The insider's trading aggressiveness β(t) is always positive and decreasing in the informational content ρ of the sentiment traders' market order."
+    },
+    {
+      "nombre": "Price Impact λ",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Impacto constante en el precio por unidad de order flow: dpt = λ dyt. Es independiente del contenido informativo ρ del sentimiento pero decreciente en la actividad de trading σ²_s de los sentiment traders, implicando mayor profundidad de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market Depth"},
+        {"tipo": "CAUSA", "objeto": "Adverse Selection"}
+      ],
+      "cita_textual": "The price impact λ of the order flow is constant throughout the whole trading period."
+    },
+    {
+      "nombre": "Autocorrelation of Insider Orders",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Correlación serial de las órdenes del insider para cualquier rezago τ. Es creciente en ρ (contenido informativo) y creciente/decreciente en σ²_s según el signo de ρ (mood de los sentiment traders).",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "Trading Aggressiveness β(t)"},
+        {"tipo": "MIDE", "objeto": "Strategic Trading Pattern"}
+      ],
+      "cita_textual": "The autocorrelation of the insider's market orders is increasing in the informational content ρ of the sentiment traders' market order for the innovation of the risk asset's value."
+    },
+    {
+      "nombre": "Informational Efficiency / Price Discovery",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Velocidad con que el mercado incorpora el valor del activo riesgoso. Medido por el pricing error del market maker: Σ(t) = Σ₀·(1-t). Es independiente del sentimiento porque el insider ajusta su estrategia para neutralizar cualquier efecto.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Market Maker Pricing Error"},
+        {"tipo": "USA", "objeto": "Learning Rate Σ₀"}
+      ],
+      "cita_textual": "The informational efficiency of the market for the risky asset is not affected by sentiment trading."
+    },
+    {
+      "nombre": "Market Liquidity (Depth)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Recíproco del price impact λ. Es independiente del contenido informativo ρ pero creciente en la actividad de trading σ²_s de los sentiment traders. Mayor actividad de sentimiento implica menor adverse selection para el market maker.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "1/λ"},
+        {"tipo": "MIDE", "objeto": "Market Resilience"}
+      ],
+      "cita_textual": "Liquidity is independent of the informational content of the sentiment traders' market order... The liquidity of the market for the risky asset is reported to increase in the sentiment traders' trading activity."
+    },
+    {
+      "nombre": "Non-Monotonic Impact of Sentiment Activity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto no-monotónico de σ²_s sobre β(t) y π₀: existe un umbral ρ* que divide el espacio de mercados. Para ρ > ρ* mayor actividad reduce agresividad y beneficios; para ρ < ρ* los aumenta. Refleja el doble rol del sentimiento como información y ruido.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Dual Role of Sentiment Trading"},
+        {"tipo": "PREDICE", "objeto": "Insider Expected Profits"}
+      ],
+      "cita_textual": "The insider's trading aggressiveness β(t) is decreasing (increasing) in the sentiment traders' trading activity σ²_s if and only if ρ > ρ* (ρ < ρ*)."
+    },
+    {
+      "nombre": "Gradual Information Release",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El valor del activo riesgoso fluctúa aleatoriamente durante el período de trading: dvt = σv dBv_t. El insider observa cada innovación dvt en tiempo real, acumulando ventaja informacional V[v₁] = Σ₀ + σ²_v frente al mercado.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Insider's Informational Advantage"},
+        {"tipo": "APLICA_A", "objeto": "Back and Pedersen (1998)"}
+      ],
+      "cita_textual": "The innovations dvt can be thought of being the monetary equivalent of news which affect the liquidation value of the risky asset."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Modelo teórico en tiempo continuo con implicaciones testeables sobre patrones intradiarios de insider trading y liquidez; no contiene backtesting empírico."}
+}

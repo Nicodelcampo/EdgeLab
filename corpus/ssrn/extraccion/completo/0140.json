@@ -1,0 +1,80 @@
+{
+  "doc_id": 140,
+  "titulo": "GENERALIZED STATISTICAL ARBITRAGE CONCEPTS AND RELATED GAIN STRATEGIES",
+  "resumen_operativo": "El paper generaliza el concepto de arbitraje estadístico utilizando un sistema de información de escenarios futuros. Introduce estrategias prácticas como las binomiales embebidas y de seguimiento de tendencia, basadas en tiempos de parada al cruzar barreras de precios. Permite a un quant diseñar lógicas que explotan la volatilidad con esperanza matemática positiva, asumiendo riesgos asimétricos controlados.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que no es libre de riesgo en cada instante de tiempo, pero que condicionada a un estado final o conjunto de escenarios futuros, presenta una ganancia esperada positiva sin costo inicial.",
+      "relaciones": [],
+      "cita_textual": "A trading strategy with zero initial cost is called statistical arbitrage if (i) the expected payoff is positive and, (ii) the conditional expected payoff is non-negative in each final state of the economy."
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Clásica estrategia de reversión a la media que compra un activo perdedor y vende uno ganador dentro de un par altamente correlacionado históricamente cuando su diferencial se ensancha.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "In this strategy one trades two stocks whose prices have a high historic correlation and whose spread widened recently by buying the looser and shorting the winner."
+    },
+    {
+      "nombre": "embedded binomial strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de tiempo continuo propuesta en el paper, formada por la repetición sucesiva de modelos binomiales de dos períodos basados en tiempos de parada definidos por límites de precio multiplicativos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "We call the trading strategy which results by repeated application of φ at the respective hitting times the embedded binomial trading strategy."
+    },
+    {
+      "nombre": "follow-the-trend strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Variante mejorada de la estrategia binomial embebida que, en vez de cerrar la posición al registrar movimientos repetidos, la mantiene para capturar una deriva direccional prolongada.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "embedded binomial strategy"}
+      ],
+      "cita_textual": "This motivates the introduction of a further step into the embedded model in order to exploit existing trends in the underlying."
+    },
+    {
+      "nombre": "geometric Brownian motion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estocástico continuo para la dinámica de los precios de activos, utilizado en las simulaciones del paper para testear cruces de niveles en las estrategias binomiales embebidas.",
+      "relaciones": [],
+      "cita_textual": "Assume that S is a geometric Brownian motion, i.e. the unique strong solution of the stochastic differential equation dSt = µSt dt + σSt dBt"
+    },
+    {
+      "nombre": "value-at-risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de pérdida extrema que el autor usa para cuantificar el riesgo de cola de las estrategias de arbitraje estadístico propuestas, confirmando que estas asumen riesgos importantes.",
+      "relaciones": [],
+      "cita_textual": "The risk measured by the Value-at-Risk at 95% is 5,320 pointing to the fact that the average gain by the statistical arbitrage is (of course) not without risk."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La estrategia de arbitraje estadístico con modelo binomial incrustado resulta rentable en promedio pero presenta retornos asimétricos, con ganancias pequeñas frecuentes y pérdidas raras pero de gran magnitud.",
+      "mercado": "Simulated geometric Brownian motion (calibrated to S&P 500)",
+      "periodo": "Sep 2016 - Aug 2017 (calibration)",
+      "magnitud": "Ganancia media de 33.4, VaR(0.95) de 5,320, pérdida máxima registrada ocasionalmente severa (fracaso en 13.3% de los escenarios)",
+      "condiciones": "Simulación en tiempo continuo de 1000 pasos, sin costos de transacción y fronteras constantes (c = 0.01 µ/σ).",
+      "robustez": "baja",
+      "cita_textual": "We have a negative outcome in 13.3 percent in average of all simulations with an average size of -628. The risk measured by the Value-at-Risk at 95% is 5,320"
+    },
+    {
+      "afirmacion": "Un aumento de la volatilidad del activo, asumiendo una deriva constante, incrementa de manera drástica las ganancias esperadas de la estrategia binomial incrustada al generar mayor cantidad de cruces de límites y repeticiones operativas.",
+      "mercado": "Simulated geometric Brownian motion",
+      "periodo": "no especificado",
+      "magnitud": "La ganancia anualizada aumenta exponencialmente al bajar el ratio de deriva-volatilidad (η de 2.00 a 0.50 multiplicó ganancias de 8 a 74,500)",
+      "condiciones": "Backtests teóricos sobre caminos simulados variando la desviación estándar contra una deriva fija.",
+      "robustez": "baja",
+      "cita_textual": "Intuitively, larger volatility implies more repetitions and therefore a higher likelihood for the statistical arbitrage to end up with gains."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Es posible estructurar 'embedded binomials' sobre el ES definiendo barras Renko para marcar los cruces de límites; requiere cuidar el slippage e identificar la proporción deriva/volatilidad microestructural."
+  }
+}

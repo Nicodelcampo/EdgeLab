@@ -1,0 +1,2563 @@
+Electronic copy available at: http://ssrn.com/abstract=1955251
+ 
+ 
+ 
+ 
+Ideas in algorithmic trading  
+And system modeling 
+For pedestrians 
+ 
+Laurent Schoeffel (CEA Saclay) 
+France 
+ 
+Abstract: This document explains the different processes and steps involved in building robust and 
+stable algorithms to unfold financial time series into profitable trading strategies. 
+ 
+November 2011
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+Electronic copy available at: http://ssrn.com/abstract=1955251
+ 
+ 
+ 
+ 
+ 
+2 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+TABLE OF CONTENTS 
+ 
+ 
+ 
+CHAPTER I 
+ 
+Introduction on Systematic Algorithmic and Trading Systems   
+3 
+ 
+ 
+CHAPTER II 
+ 
+Systematic Algorithms, Advantages & Disadvantages  
+ 
+         10 
+ 
+ 
+CHAPTER III 
+ 
+A Study of General Guidelines for Building Robust Systematic 
+Systems  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+         16 
+ 
+ 
+CHAPTER IV 
+ 
+Concluding remarks on Robustness Tests in Algorithmic 
+Trading  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+         44 
+ 
+ 
+CHAPTER V 
+ 
+Algorithmic trading system on the NIKKEI 225 Index futures 
+At high frequency   
+ 
+ 
+ 
+ 
+ 
+ 
+         50 
+ 
+ 
+CHAPTER VI 
+ 
+Conclusions on trading systems  
+ 
+ 
+ 
+ 
+         66 
+ 
+ 
+REFERENCES   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+        68 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+3 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER I 
+ 
+Introduction on Systematic Algorithmic and Trading Systems 
+ 
+In the following, we describe the processes involved in ensuring robust and 
+stable systematic trading algorithms used in trading Forex, Futures, and 
+Portfolios of financial products. Those who seek to rely upon or build 
+systematic trading algorithms are generally only concerned with how the 
+parameter settings of the automatic triggers producing the action of buy or 
+sell are decided. We contend these factors represent only half of the story. Our 
+goal with this document is to explain that a robust and stable algorithm 
+requires a much more complex level of research and testing, to achieve robust 
+and stable results.  
+ 
+Since the dawn of systematic trading, there have been many kinds of trading 
+system algorithms, designed to run on a multitude of computational devices. 
+However, all of these algorithms, regardless of the hardware they presently 
+operate on, all share one thing in common.  
+ 
+Each system began as an idea. All systematic trading algorithms start by 
+looking at the market and noting certain behaviors that could be exploited for 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+4 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+profit. At this stage however, it is only a belief, an idea, and a hypothesis. How 
+people come to this hypothetical “idea” step, varies.  
+ 
+A hypothesis can be derived from studying past market data, reviewing 
+trends, advanced economic theory analysis, personal trading experience, a 
+simple hunch, or a whole host of other places. Some ideas may be ingenious 
+in their level of depth and complicity, while others may be simple in the way 
+they assume an edge over the marketplace. At this point, all would agree that 
+it would be fiscally irresponsible to trade, using tangible assists, based on a 
+hypothesis or a belief about the predictions of future market events.   
+ 
+There in begins our first challenge – This being the extraction of quantifiable 
+facts from an idea that can be used to create a list of computational variables, 
+which we can then insert into an existing program sufficient for testing, or 
+used to construct a proprietary program for  testing the hypothesis’ validity.  
+ 
+Invariably, what we are looking for in this initial testing stage, is for the 
+process to produce a rational set of “signals”. These “rational signals” will 
+specify whether the system should prompt us to buy, sell, or hold a financial 
+instrument, during a given point along on a continuous timeline. It should be 
+noted that some systems are constructed that run on the whole, 
+independently, however most systems today are more complicated and utilize 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+5 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+a variety of predetermined sources of input, fluidly inserted throughout the 
+system’s “decision making” process.  
+ 
+These later systems often prove to be more robust but require additional 
+testing than the former. Once the system has been determined to produce 
+reliable signals, the system is considered ready for “Back Testing”. “Back 
+Testing” by virtue of its name is a process of subjecting a system to past 
+historical data, and allowing it to work through a pre-determined timeline.  
+ 
+Pass or failure at this stage is dependent on how the system’s results 
+compare, to historical trading data. A passing grade for any system is dubious 
+at this stage, as all “Back Testing” must be configured to run, utilizing a 
+certain amount of unverifiable assumptions. For instance, we cannot know 
+exactly how the use of our advanced system would have influenced past 
+trades, if it had been in existence at that time. We can never be certain of how 
+it would have affected market liquidity or how it would have been impacted by 
+actual prices at time of sale.  
+ 
+There are a myriad of other real world factors, which can also adversely affect 
+the outcome of “Back Testing”. One must consider carefully and compensate 
+for the speed (or lack of speed) at which transactions could viably have been 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+6 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+executed in the past, along with how the behavior of order book queuing may 
+have played a role in the outcome.  
+ 
+Poor assumptions made at this stage will invalidate the insight, which we could 
+have discovered. It is very possible that using broad parameters in making 
+assumptions could lead to producing a passing grade on a system that 
+ultimately is not fit for trading in today’s market.  
+ 
+Conversely, using overly strict parameters for making assumptions would then 
+lead to an otherwise viable system being rejected during the “Back Testing” 
+phase. However, at this stage it is better to falsely fail a system with 
+assumptions that are overly conservative, rather than to let a poorly contrived 
+hypothesis onto the actual trading floor.   
+ 
+Identifying the correct parameters greatly affects the outcome of autonomous 
+systems, in the way a long mathematical equation being multiplied by one, 
+rather than by two, early in the sequence, would produce vastly different 
+outcomes. 
+ 
+A prudent system designer must then explore a considerable amount of likely 
+parameters to test, and note how the system reacts to each and every set of 
+different parameters in “Back Testing”. He or she will be looking closely at the 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+7 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+systems response, to find parameters that produce the “optimal” results. Here 
+again, it should be noted that the term “optimal” can vary by definition. 
+Optimal may be regarded simply as an overall return on investment. However, 
+overall “optimality” must also take into consideration reward versus risk, in 
+regards to a trader’s ability to contend with drawdown and tail exposure over 
+the timeline in which the system is intended to function.  
+ 
+Again, releasing the system for use on the trading floor based strictly on its 
+“optimality” at this stage would be unwise. At this point, we have only 
+regarded the system’s performance over a pre-specified timeline of events, 
+taken from the past. In fact, we will have optimized the system to this specific 
+timeline, which gives us little idea of how it will perform in the future. Through 
+the optimization process, it can be said that we have trained, or “fitted” our 
+system so that it will work well with historically specific data points. To testout “over fitting” of the system’s performance, it must then again be evaluated 
+using a different set of data points, which it has not yet experienced.  
+ 
+If a system works repeatedly well with old data but fails when new and 
+different data is applied, the system must be considered “over optimized” to 
+the original date or “curve fitted” to that specific set of data points. 
+Conversely, if it works well across all tests, using varied data, it may be 
+considered “robust” and potentially fit for future trading. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+8 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+A successful design team is adept at reducing over optimization to any specific 
+data, however since all testing is conducted using historical data at this point, 
+no design team can ever completely ensure its total elimination through “Back 
+Testing” alone.   
+ 
+The original hypothesis must be closely scrutinized throughout all stages of 
+“Back Testing”. Every positive or negative outcome the system produces 
+during this phase, should be closely considered by the designer. Each outcome 
+may prompt tweaking of the original hypothesis or outright rejection of the 
+whole idea. Even a solid hypothesis from the beginning will still require system 
+designers to revise it repeatedly, until they are comfortable with the final 
+results.   
+ 
+Only after a system has been completely tested, and shows fitness for service 
+in all facets of usability, will a designer release the system for deployment.  
+ 
+A conservative system operator will take an additional step to ensure that any 
+bugs in the system have been worked out, and to gain additional confidence in 
+the system’s ability to react to live data. This phase consists of live paper 
+trading, wherein the system is exposed to live data from market feeds, 
+however, losses and gains are limited to paper only, and no actual trades will 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+9 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+have been made. Success at this stage is usually considered final, resulting in 
+the system ultimately being put into full service.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+10 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER II 
+ 
+Systematic Algorithms, Advantages & Disadvantages 
+ 
+For one to have a fair and equitable conversation concerning systematic 
+trading, one needs to consider the advantages and disadvantages of 
+systematic trading as compared to discretionary trading.   
+ 
+It can be said that a discretionary trader “knows what he knows”. This being 
+that his or her understanding of historical events peaked when he or she left 
+school. From then on, his or her daily life as a trader has been a continual 
+balancing act between analysis and actual trading. After all, there are only 24 
+hours in his or her day. Good decision-making then often relies on his or her 
+ability to remember the facts learned long ago, correctly. Conversely, the 
+developers, of a systematic trading system during the development phase, 
+have the advantage of including all of the historical data available up until, and 
+including the present, which the program can access, easily, instantly and 
+more reliably than a human does.  
+ 
+While raw statistical inferences are known to have caveats, a system with 
+access to a wealth of detailed historical data, (with wide ranging data points, 
+covering many decades of bull and bear markets - including various dramatic 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+11 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+upsetting market events) is better able to draw a more complete picture than 
+its competing discretionary trader, (especially in markets with long histories).  
+Intuition can be said to be shared by both the discretionary trader and a 
+systematic trading system, the later having “intuition” built-in during the 
+process of creation in formulating the basic idea. However, it is always the 
+systematic trading system, which can be relied upon to consistently draw from 
+this source.  
+ 
+A discretionary trader, like anyone, is vulnerable to daily distractions, where 
+as if a developer of a systematic trading system has a “bad day”, any adverse 
+effects of his or her distractions, will be corrected before the system goes into 
+production. The final systematic trading product, will constantly deliver results 
+regardless of the daily distractions. Where as a discretionary trader is 
+susceptible to many distractions, for instance even eating bad sushi for lunch.  
+ 
+A systematic trading system can also provide discretionary traders with a wide 
+range of deep statistical historical data instantly, so they can be better 
+prepared for any adverse financial event that has affected the market in the 
+past, and will likely affect the market in the future.  
+ 
+A discretionary trader, no matter how talented he or she has become, is only 
+one person, with the ability to perform only a handful of tasks at one time. A 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+12 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+discretionary trader who is skilled at the art of multitasking may be able to 
+monitor several markets at one time; however, as the number of markets 
+monitored increases his or her attention to detail diminishes.  
+ 
+The key advantage to systematic trading systems is its inherent ease of 
+scalability. Running a thousand automated trading systems is nearly as easy 
+as running the first, within the correct infrastructure, and with algorithmic 
+systems the cost is negligible, regardless of how many instances the system is 
+applied. Many trading systems are so versatile that they can be applied to 
+many investment instruments at once. Through automation, systematic 
+traders are able to easily monitor and exploit opportunities in thousands of 
+markets, simultaneously. Furthermore, a system plugged into the right 
+infrastructure can access key marketplaces, to limit the market impact of 
+trading in volume, and cut individual transaction costs by trading during the 
+highest levels of liquidity.  
+ 
+Developers and operators can constantly monitor the fitness of a systematic 
+trading algorithm’s performance. This provides the R&D department with hard 
+data for use in continually improving upon the process and increasing the 
+desired outcomes. No such “mechanism” of continual improvement exists in 
+the world of discretionary traders.      
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+13 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+In chapter one, we detailed the process of “Back Testing” a process that uses 
+vast amounts of historical data to construct a system capable of predicting 
+future outcomes with accuracy. The premise here is, that given enough varied 
+past experience, there will be nothing the system will not be prepared to 
+interpret successfully, provided the system has not been over optimized or 
+curve fitted. However, there are new and emerging markets, which have little 
+or no valid historical data, with which to construct viable models. When there 
+is not enough historical data in one market to calibrate a system, a developer 
+may utilize data proxying, to imitate the historical data needed for “Back 
+Testing”.  
+ 
+Systems built using data proxying can be very efficient in some emerging 
+markets that are similar to their older counterparts. However, data proxying 
+must be implemented cautiously. Unfortunately, many emerging markets that 
+are especially young, intrepid, volatile, and full of opportunity, viable systems 
+cannot be created.  
+ 
+A detailed historical study of the marketplace reveals cycles of average 
+volatility during bull and bear markets. It also notes periods when volatility 
+increases exponentially, due to the stress of catastrophic events and also “flat” 
+times when markets seem to plateau or remain widely inactive. This wide 
+range in market dynamics makes the developer’s job of creating a system that 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+14 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+produces optimal results in all of the above circumstances, very challenging. 
+When markets behave in way sufficiently at odds with documented cycles, a 
+system may even breach its parameters and fail completely. The earth 
+quake/tsunami/nuclear meltdown in Japan of March 2011 is one example 
+when certain markets changed so drastically and unpredictably that some 
+trading systems were taken past the breaking point.  
+ 
+Less dramatic but equally abrupt changes have taken place over the years, 
+when governments apply new regulations to markets that change the core 
+dynamics and force all traders to behave differently than they have 
+traditionally in the past. During these times, when fund managers operating 
+autonomous trading systems  believe that the market “IS” or will about to 
+experience a cycle of data, outside of the systems known parameters, he or 
+she can suspend trading, and go to “paper trading” until confidence in the 
+system can be restored. 
+    
+Certain investment opportunities simply cannot be systematically traded. 
+Venture Capital for example, seeks to fund potentially world-changing ideas 
+for profit. This is where business, science, and art converge. Venture Capitol 
+recently spawned innovative businesses, the likes of Google, Facebook, and 
+Twitter. All of these business models were, in their early stages, outside of 
+systematic capabilities. While systematic algorithms may aid a Venture 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+15 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Capitalist in the decision-making process, success or failure in this risky sector 
+relies heavily on gut instinct.  
+ 
+The same can be said of certain Private Equity investments and Event 
+Arbitrage, to name a few, where intangible factors makes programming 
+algorithms virtually impossible. In fact, to work effectively a systematic 
+trading system must not only rely on historical data, but also on a continual 
+diet of fresh information.  
+ 
+This makes the systematic approach vulnerable to the infrastructure to which 
+it is connected. If the system requires data from one source and does not 
+receive the data due to lack of connectivity it will not work properly. Thus, 
+provisions need to be made through redundancies in the infrastructure or 
+through system design, where in small disruptions to the data stream are 
+mitigated through a series of checks and balances, and conservatively timed 
+trading sessions.     
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+16 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER III 
+ 
+A Study of General Guidelines for Building Robust Systematic Systems 
+ 
+Before one can begin building a system, they must ensure that the data they 
+are using to form a hypothesis is valid. At every step to creating a system, 
+valid data is essential. Remember, trading systems require large amounts of 
+data for calibration, also. As more data is collected, the confidence level for a 
+system goes up, as it will increase the system’s ability to be sufficiently 
+prepared with all the information needed to make future predictions. One 
+could say, “If it worked yesterday it should work today” with a certain degree 
+of confidence. However, one becomes even more confident when they know 
+that it worked, not only yesterday but also, last week, last month, and last 
+year.  
+ 
+In fact, confidence generally goes up in relationship to the amount of positive 
+historical data collected. In the case of emerging markets, or anywhere 
+historical information is scarce, designers must look to alternative sources 
+such as data proxying. 
+ 
+Here again, as with ensuring that the historical data was valid from the start, 
+every effort must be taken to ensure that any proxy data to be used, are as 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+17 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+rational as possible. The limitations of proxy data must be taken into 
+consideration throughout system development.   
+ 
+We know now that a system is an algorithm made up of a sequence of rules to 
+define when, if, and how trades should be made. These rules began as ideas, 
+which were validated (or disregarded) for service in a finished system. 
+ 
+When formulating an original idea or hypothesis there are several 
+considerations one should make… 
+ 
+ 
+How to define the potential behavior in the marketplace that you plan 
+to exploit? 
+ 
+What are the possible approaches we could use to exploit it? 
+ 
+What degree of parameterization is desired? 
+ 
+What data might be applied?  
+ 
+What filtering of data might be applied? 
+ 
+What are the potential pitfalls that could exist?  
+ 
+What is the risk profile target?  
+ 
+These questions need to be answered before selecting the rules (signals) for 
+our initial algorithms.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+18 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+After an idea is conceptualized, it needs to be implemented for injection into 
+what is called the “search stage”. At this point, a designer usually tries to 
+implement many variants that can be explored simultaneously.  
+ 
+Typically, each system contains several rules than can be switched on or off, 
+depending on the parameter sets used. This makes for more comprehensive 
+and efficient searching in the following stages. Only when we have isolated a 
+set of rules, is the trading system ready for a series of “Back Testing”. 
+ 
+Throughout a series of preliminary back tests, the parameters of our set of 
+rules will be optimized repeatedly, in order to achieve peak performance to 
+this carefully picked data set. Due to this process, any system at this stage 
+most probably will be considered “over-fitted” to the data set.  
+  
+In order to reduce the level of “over-fitting” to an acceptable level, a designer 
+will need to define an “in-sample”, where the parameters have been tightly 
+fitted, and an “out-sample”, where the system can be observed without fitting. 
+For example, a designer may choose to use an “in sample” of data from the 
+time-period of (2000-2006) with which he or she will tightly fit the parameters 
+of the rules. 
+ 
+Then he or she will use the time-period of (2007-2011) as the “out-sample”, in 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+19 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+which, the system’s behavior can be closely observed, running on this data for 
+which it has not been pre-fitted. Any system that fails during this “out-sample” 
+part of this experiment will be immediately rejected. 
+ 
+Testing the results during the “out-sample” phase is KEY to Validation at this 
+stage (1a). Additional and more complicated “out-sample” testing can also be 
+preformed. This is done through creating simulated additional “out-samples” of 
+data with the same statistical texture as the real “out-sample” data-series. By 
+checking the system, again using slight variations of these simulated “outsample” data series, a designer can become confident in the system’s 
+robustness. An additional optional test can be performed, which we will discuss 
+later in the text in more detail. This test would be to subject the system to a 
+series of automatically generated statistical variations. This is the VALIDATION 
+stage (1b). The key point to observe here is that a high level of redundancy is 
+paramount throughout all the steps of designing a system.   
+ 
+The following points make up a generic checklist for all systems. Each and 
+every point on the list is crucial to any system’s success and should be 
+automatic. A system designer should follow this list carefully - putting check 
+marks behind each point, as they are noted. If one or any of these points do 
+not appear rational, it would be an immediate indication that the system 
+should be rejected.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+20 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+Typical numbers to provide: 
+ 
+o 
+daily Sharpe annualized 
+o 
+yearly return (unleveraged) 
+o 
+yearly return (unleveraged) with double transaction costs 
+o 
+yearly return (unleveraged) with triple transaction costs 
+o 
+fraction of positive days 
+o 
+fraction of positive months 
+o 
+round turn per day average 
+o 
+max Drawdown (DD) (daily basis) 
+o 
+max DD (month end) 
+o 
+max time underwater 
+o 
+fraction of trades stopped 
+o 
+fraction of trades with profits taken 
+o 
+fraction of exit at the end of the day  
+o 
+worse month 
+o 
+best month 
+o 
+worse day 
+o 
+best day 
+o 
+fraction of long trades 
+o 
+fraction of short trades 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+21 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+o 
+% of  Profit and Loss (PL) & Sharpe from long trades 
+o 
+% of  PL & Sharpe from short trades 
+o 
+% of time spent in flat, long, short 
+o 
+% of time exposed to market 
+o 
+table with all returns in % per month and per annum  
+ 
+Typical histograms to provide: 
+ 
+o 
+daily returns 
+o 
+equity curve with max DD 
+o 
+trading frequency 
+o 
+bar plot of monthly returns 
+o 
+bar plot of rolling past 12 month returns 
+o 
+autocorrelation in the PL, average win before or after the very 
+good days, and the very bad days 
+o 
+PL of the first trade of the day, second trade of the day 
+o 
+expectation per time of the opening the position  
+o 
+duration of trades versus PL 
+o 
+expectation versus entry delay when entry/exit signal is received 
+o 
+for non intra-day systems, equity by forcing the exit end of day 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+22 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Checking this list gives us a better understanding of a given system. Each 
+point must be provided for the “in-sample” as well as the “out-sample” dataseries portions of our tests. As stated, any irrational or aberrant numbers 
+appear in our checklist would be reason to reject the system. This is the KEY 
+VALIDATION stage (2). A final item to check at this stage is the distribution of 
+trades for the system. Indeed, trend-following systems or mean-reverting 
+systems present very different characteristic trade distributions.  
+ 
+See below, on the left, a typical trend-follow (TF) system’s trade distributions 
+on the DAX future contract (with returns in points of DAX in abscise axis), and 
+on the right, the typical mean-reverting (MR) system’s characteristic trade 
+distributions have been depicted. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+23 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+The basic goals in building such systems are visible on these two graphs: for a 
+TF, the bulk of the trades will consist of negative returns, and all the work will 
+be in pushing the negative peak towards zero, (or even above zero if 
+possible). The gains for a TF are produced with large winning trades, which 
+extend the distribution towards large values of returns. On the contrary, for a 
+MR, most of the trade will be winners with small returns, and less frequent but 
+large loses will drive the performance to the negative side. 
+ 
+Then, all possibilities around these two basics are possible: 
+ 
+ 
+ 
+For example, a figure like the one 
+on the left is clearly a TF but we 
+observe more. There are peaks of 
+large positive trades. This means 
+that several take profits threshold 
+have been considered and this 
+may be a very good idea. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+24 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+This case on the left seems not to 
+be classified in our categories. In 
+fact, this behavior is simple: we 
+observe a TF with a hole and a 
+large 
+concentration 
+of 
+large 
+positive trades, much larger than 
+for a standard TF. This means that 
+a major feature of this system is a 
+take profit criteria, which makes a 
+natural 
+cut 
+for 
+most 
+of 
+the 
+medium trades. 
+ 
+ 
+The trade distribution characteristics in this instance, are very good indicators 
+of the quality of the system. It tells us if the structure of the system respects 
+our inputs. If we have built a TF system but inadvertently corrupted its 
+structure with spurious or nonsensical conditions, the trade distributions will 
+likewise be absurd. Performing this check will be essential in discovering this 
+important information. Strictly speaking, this is not necessarily criteria for 
+rejecting the system. However, it would give the designer guidance as to 
+whether he or she should come back and redefine the rules of “sequence” for 
+the system. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+25 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Earlier in this text, we noted that systematic trading is highly dependent on 
+information infrastructures. Any lapse in connectivity to a data source not 
+accounted for can cause failure to occur. Of course, this can be mediated 
+through redundancies in the information infrastructure and addressed at the 
+system level, during the design phase, and tested. The purpose of this stage is 
+to test the robustness of the system’s implementation against a plethora of 
+effects, such as data gaps, incorrect data and “jitter” (small variations in the 
+data stream).  
+ 
+Through testing the system’s performance using varied parameters of 
+simulated data interruptions, we can better predict the resilience of the 
+algorithm to these inevitable interruptions to the data stream. All of the best 
+systems are put through this stage to see whether (or not) the overall 
+algorithm is resilient enough to withstand these common but adverse 
+circumstances.  
+ 
+A large number of stress tests can be designed for this purpose. There are 
+approximately 50 stress tests utilized to warrantee the success in “robustness” 
+for the examples following.  
+ 
+To illustrate this qualification stage, a set of stress tests are applied for a 
+specific system on the DAX future contract (FDAX), already mentioned earlier 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+26 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+in the text. FDAX is based upon the DAX stock index, the primary stock index 
+of the Deutsche Boerse (DTB) in Germany. It provides a high liquidity with a 
+tick size of only 0.5 pts, representing a value of 12.5 EUR. In short, this 
+system on FDAX is a simple generic TF algorithm (see above) with main 
+characteristic results indicated below.  
+ 
+First, FDAX and cumulative equity (monthly closes): 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+27 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Second, a few elements of trade features: 
+ 
+Then, some elements on Profit and Loss (P&L) correlations with trades: 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+28 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+To illustrate the qualification stage discussed above, a set of stress tests are 
+pictured below for this specific system on the DAX future contract (FDAX). 
+ 
+ 
+We observe that none of the cases considers the performance of the “Sharpe 
+ratio”, in this plot it is degraded to a non-acceptable level. All these tests must 
+also have been applied to, what we call a degraded version of the system, in 
+which we suppress some conditions or shift parameters by +/-1 sigma. 
+Therefore, the system must be robust to be accepted. This is the KEY 
+VALIDATION stage (3). 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+29 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+These results can be plotted on histograms. See below for “in” and “out” 
+samples of data, again on the FDAX. We observe more clearly the aggregation 
+of Sharpe ratios around the average value, and we can even quantify the 
+deviation and spread (see figure below). 
+ 
+ 
+ 
+In this figure, “Std” refers to the Sharpe R values when running the stressed 
+systems standard data series for DAX future contract (FDAX) and “Default 
+syst” refers to the default system (with nominal parameter values) designed 
+on this financial series. 
+ 
+Histograms on a randomized data series are given below, in comparison with 
+the standard case, for “in” and “out” samples of data. The stability or 
+robustness of the trading system is guaranteed by these observations. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+30 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+In this figure, “Std” refers to the Sharpe R values when running the stressed 
+systems standard data series for DAX future contract (FDAX), “Rand” when 
+running stressed systems on the randomized  data series derived from DAX 
+future contract and “Default syst” refers to the default system (with nominal 
+parameter values) designed on the standard DAX future contract. 
+ 
+It must be noted that with systematic trading a big source of risk stems from 
+the erosion of a trading system’s performance over time. Market dynamics 
+change, and generally become more efficient, not less efficient over time. This 
+makes it rather unlikely that a system will continue to perform well for all 
+eternity. 
+Instead, 
+performance 
+tends 
+to 
+“erode” 
+over 
+time 
+as 
+the 
+“inefficiencies” that the system was designed to exploit, are gradually whittled 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+31 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+away by the marketplace. This erosion will result in a system “flattening”, as 
+the underlying process becomes more and more unpredictable (i.e. random). 
+ 
+A solution may be found in continually performing research and development, 
+on both new strategies and existing strategies, to combat performance 
+degradation. This last point in degradation becomes an issue after 1 or 2 years 
+in existence for any given system. We should always keep this in mind, for 
+“long-lived” systems under production. Therefore, for the system on the FDAX 
+discussed above, we provide the results two years after closing the analysis on 
+this particular system: we observe a satisfactory result, proving the stability of 
+the algorithm, as expected from the robustness tests detailed above. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+32 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+For this particular period, 20102011, we can check that the 
+typical trade distribution is much 
+compatible with the nominal plot 
+extracted from the IN-sample, 
+presented above. 
+ 
+Trade returns in pts (period 2010-2011) 
+ 
+In the battery of robustness tests, one important outcome the designer is 
+looking for is the level randomization from the feed data series (see previous 
+plots), which the system can handle proficiently. The system must behave 
+correctly, when subjected to a moderate level of randomization. This is 
+necessary in order to warrantee the proper behavior of the system, according 
+to certain levels of deviations inherent in market dynamics [1-8].  
+ 
+Consider this effect in the following example: A system that has been 
+optimized to the FDAX should also give a consistent result on another future 
+contract, consistent within the limits of aforementioned stress tests. If 
+parameters are optimized to the FDAX, we do not expect a similar 
+performance and risk-reward on another index. However, the system should 
+behave correctly on average, regardless.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+33 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+Then, we can run an algorithm, similar to the FDAX on other future contracts, 
+like the Euro future contract. Results are provided below in the same format as 
+shown for the FDAX case. The cumulative equity is fine and the stability of the 
+system between IN and OUT samples is clear.  
+ 
+ 
+The battery of stress tests has confirmed the stability and robustness of the 
+system on the Euro future contract and we can check the results two years 
+after closing this analysis, with nice results observed, as expected from our 
+overall stress tests procedure. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+34 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+We can push this argument a bit further: Consider a trend following system.  
+If we run a TF system on a purely simulated random (data) series, the system 
+is not expected to work, and should give a null performance. By design, the 
+goal for this system is not to have it execute any trades on a purely random 
+simulated series. However, this will certainly not be the case, and we need to 
+address this unplanned “flexibility”.  
+ 
+A random simulated series, will present a plethora of sequences, some of them 
+appearing to our system as an apparent trend.  This means, that most 
+probably, an artificial trend will mimic a signal with a sufficient significance, to 
+deceive our system. In this event, a null performance is what we expect and 
+what we want, however, this is not always the outcome. As we address this 
+anomaly, we must consider a second step. In this second step, the designer 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+35 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+will insert real trends into the purely random series. For this example, we will 
+select 20% of the duration of the data series, to insert 3 to 4 real trending 
+periods.  
+ 
+Obviously, a trend following system, which is by design programmed to 
+recognize trends, must detect the ad hoc trends with a good efficiency. 
+Typically, for this test, we can expect such a system to recognize 
+approximately 60% of the ad hoc trends. This is not a trivial point at all. In 
+order to illustrate this idea, we show the following two histograms: 
+ 
+ 
+On the left, the SP500 index is depicted, and on the right, a pure randomly 
+simulated process is shown. Without statistical refinements, it is obvious that 
+both series appear similar (in texture), however our goal in this instant is for 
+our system to extract profitability from a real index, but produce null 
+profitability from random noise.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+36 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+Other factors, which are important to examine, are the sequence of trades 
+made. In short, the trading algorithm is transforming a sequence of market 
+returns, into a sequence of trades, which ultimately are returns for our 
+portfolio. By examining the sequence of trades in this process, it gives us yet 
+another perspective to evaluate the algorithm, thus our interest in this 
+approach. For example, if the analysis of this sequence of trades demonstrates 
+to us that the system was likely to trade during the series of random data, it 
+gives us an indication that the system is not performing well under these 
+conditions. Thus, this test helps us to define clearly, when to “switch off” the 
+system’s ability to trade, until less random market data is obtained. 
+ 
+At this level of the discussion, it makes sense to come back to the very 
+beginning of idea generation [1-8]. There are at least two options: (i) we build 
+a system, whatever it is, until the end and validate the system according to 
+the full analysis or (ii) we can start with quantitative analysis of the data 
+series itself, independently of any given set of rules. Both options are good.  
+ 
+The first one (i) is the most widely used but the second one (ii) may be 
+considered also. This is a matter of the designer’s discretion.   
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+37 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Let’s be more explicit with the second case study (ii). As we consider a data 
+series on an index, we tend to derive from first principles, the main features of 
+this data series. In general, this refers to correlation analysis: prices versus 
+the averages of these prices, prices versus volumes, etc. As we have 
+discussed earlier, a system on index A is supposed to behave correctly also on 
+another (related) index B.  
+ 
+However, a word of caution is in order. Let us suppose that we have a set of 
+rules for an algorithm that produces a performance that can be duplicated 
+almost exactly on both indices A and B. Very simply, this proves 
+(mathematically) that both indices are simply “co-movers”: in this case, they 
+could be considered in a pair-trading approach.  
+ 
+This will not be the case: performances on A and B will be different. However, 
+on average, we should find consistent results in some periods, where we can 
+show externally that both indices are effectively co-movers. We will discuss 
+how this applies, in more detail, later on in the following section. 
+ 
+This research document is intended to highlight a few of the guidelines for 
+systems analysis, essential to a system’s robustness. However, it should be 
+noted that it is not an easy task to build a performing and stable system. We 
+have concluded that the realization of most ideas must be rejected when 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+38 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+subjected to the full logic in a series of regimented tests. Rejection however, 
+does not always mean that the generating idea was incorrect. It could mean 
+that the projection of this idea on the market simply needs more input data, 
+refinements, etc.  
+ 
+Stability should be the major concern of any system developer. Therefore, this 
+document should be considered as a guide, intended to provide important 
+milestones used to validate or reject a system, at different phases of its 
+“evolution”.  
+ 
+In a sense, we have attempted to simulate in advance what “nature” would 
+accomplish on its own, in the long run, devising the triggers that will conserve 
+only mature and stable products, defined through a robust regiment of 
+analysis. 
+ 
+In principle then, when a system constructed using this approach “goes live” 
+we would not expect to gain considerable additional understanding of the 
+algorithm, owing to the fact that the intensive regiment of pre-analysis 
+provides an almost definitive conclusion. However, great care needs to be 
+taken when considering the way some practitioners view co-movers. This is 
+demonstrated by the practice of using a second index as an “out-sample”. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+39 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Within this approach, we must be aware of a potential problem. While indices 
+A and B may appear to be “co-movers” it does not mean that they are.   
+ 
+To conclude with even marginal accuracy that A and B are indeed co-movers, 
+requires a long difficult and extraneous process of analysis. Thus, we 
+determine this method to be inappropriate for our testing. It does not simplify 
+the problem, but instead adds a level of complexity and uncertainty that is not 
+covered by standard analysis.  
+ 
+In the approach discussed within this document, we try to suppress as much 
+as possible the sources of uncertainty and eliminate the “chance factors”. 
+However, this can never be achieved completely, as we are dealing with 
+statistical matters. Nonetheless, elimination of chance is our main goal, in all 
+systems under consideration. Therefore, even a system based on the simplest 
+set of rules, built, and tested to the degree outlined in this document will have 
+a higher probability of success than a system based on more complex rules, 
+which has not been validated at the different specified stages recommended.  
+ 
+In the following of the document, we want to discuss another interesting point 
+to consider in ranking, which is only indirectly related to robustness. In short, 
+we rank systems first according to their stability, with respect to the various 
+stress tests prescribed. Here consider that we have described adequately the 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+40 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+very first steps of ranking systems for usability; first in rejecting unstable 
+systems from our list entirely and secondly, in discerning the faults of 
+comparably less stable systems and ranking according to the level of success, 
+they can attain under scrutiny. However, for systems that we discover are 
+equally robust under the aforementioned parameters, a second step could be 
+used for ranking.  
+ 
+This would be to compare them in relationship to their respective spread of 
+Sharpe ratios (see histogram above). For example, the smaller spread 
+obtained, gives it a better ranking. We do not want to describe in length the 
+question of ranking systems through “Sharpe ratios” in this concise document 
+detailing robustness, as this is a separate and complex topic. However, this is 
+an essential concept to consider in relationship to analyzing “idea generation” 
+and “system robustness” that we will save for later.  
+ 
+Instead, at this point a more important point to considerer is that ranking 
+should never be used to compensate for (known) inefficiencies in systems, or 
+for the purposes of designing added top-infrastructures, in an attempt to dilute 
+known inefficiencies for any reason. Very simply, this approach will mix the 
+various inefficiencies in each different system, and combined they will create 
+an overall system with flaws that are virtually impossible to track-back to their 
+original source, for correction.   
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+41 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+Note that a combination of systems may be a good way to reduce DD and get 
+a better stability of the overall performance. See below for the equity curve of 
+a mix of the previous system on FDAX (discussed above) and a similar system 
+(same strategy) on the German Bund (FGBL), expressed in basis point on the 
+plot below. 
+ 
+ 
+Euro Bund Future (FGBL) is the future based upon the national long-term debt 
+issued by the German federal government with a maturity of 8.5 to 10.5 
+years. The main interest of the FGBL is the very high liquidity as this future is 
+the main instrument for hedging long term interest rates in the Euro zone. The 
+tick size of the FGBL is 0.01, representing a value of 10 EUR. On the plot 
+above, we have scaled the FGBL values by 100, the tick size being then one 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+42 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+basis point. We observe a smooth cumulative equity, which makes the interest 
+of this combination. 
+ 
+Secondly, if we consider that ranking is used to select 10 systems in 
+production out of 50 potentially acceptable systems, then ranking is intimately 
+linked with the concept of persistence. Therefore, if a system is badly ranked 
+at step 1 and then recovers at step N>1, it will enter the active zone with the 
+idea that the recovery will persist throughout the next steps. However, this 
+should not be a foregone conclusion.  
+ 
+For example, we can compute conditional probabilities like P(+,+|+): the 
+probability that after 2 good steps, a third one will occur. If in average, 
+numbers like this P(+|+), P(++|+),… are <0.5, by principle the ranking will 
+lead to a performance exhibiting degradation. Consider what happens if the 
+series alternates as follows P(+|+)>0.5, P(++|+)<0.5 and P(+++|+)>0.5 
+etc. and this system enters into the ranking. This level of extrapolation 
+demonstrates why ranking analysis is very complex to track-back and 
+understand intuitively, and is contrary to pragmatic system design.  
+ 
+An important factor to consider here is whether the rotation of systems is 
+large or small. In a scenario in which ranking is used to select sub-samples of 
+systems to put in a production stage, there would be a consequence if for 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+43 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+example 50% of the systems are changed at each step. This shows clearly, 
+there is something strange that makes all back-test forecasting impossible by 
+construction. However, if only 10% of the systems rotate, (most probably at 
+the lowest ranks), it would seem more reasonable. In this scenario, ranking 
+acts like a diffusion of systems.  In the last case, the immediate question is to 
+know the stability ranking: can we find a set of core systems (50%) that are 
+kept active after N>>1 steps? What is the turn over as a function of N? If it 
+happens that the observed stability is low, then, we are clearly confronted with 
+the issue of persistence, and this becomes an address to the core strategy of 
+each systems.  
+ 
+As stated earlier, this section only serves to introduce a few of the various 
+tenants of system ranking for the reader to consider. These concepts need to 
+be discussed further in another document.   
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+44 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER IV 
+ 
+ Concluding remarks on Robustness Tests in Algorithmic Trading 
+ 
+In this section, we offer a few suggestions as to how to define a system based 
+on quantitative analysis of the data feed series. 
+ 
+To begin, a system should give a positive expectation value for the P&L, and 
+then the money management (ranking, leverage) should come on top, as an 
+optimization toolkit. This is a point to check, as there is an issue if a system 
+presents a quantity of negative expectation or realization value when the 
+portfolio itself is globally null or positive [1-8]. As it is well known there exists, 
+trend, mean reversion, and opportunistic strategies, and that each strategy 
+has its own set of parameters. Each system is defined by the specific 
+parameters and these strategies are usually focused on only a handful of 
+markets across equities, fixed income, and currencies.  
+ 
+Simply put:  
+ 
+ 
+The trend identification strategy looks for movement from point A to 
+point B and has some expectation that the trend will continue in the 
+same direction.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+45 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+ 
+The mean reversion strategy looks for movement from point A to point 
+B and has some expectation that a trend has been exhausted and will 
+reverse direction to the average.  
+ 
+ 
+Opportunistic strategies attempt to take advantage of price movements 
+and patterns during events such as FOMC meetings. These strategies 
+look to find certain price movements, before, during, and after these 
+events.  
+ 
+Each opportunistic strategy is based on exploiting different economic events, 
+and implements its point of view on different markets. Historically, periods 
+where opportunistic strategies focus, are very volatile, and the time-periods 
+will overlap with other trend and mean reversion models. 
+ 
+All of these strategies differ in time-periods, differ from market to market, and 
+differ in profit targets and stop losses. While these definitions have been very 
+simply stated, there is something not at all trivial for your consideration in 
+their regard. It is that when we usually chose to test mean-reversal (MR) or 
+trend (TF) strategies we do so, on an index globally. This means that we will 
+define a set of rules (TF or MR) that we will fit to the index, on its entire 
+history. This is a natural choice, but we may think also of treating the index 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+46 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+with a mix of TF and MR or even opportunistic strategies, as a function of the 
+data feed series itself. 
+ 
+The question of “over-fit” or “not over-fit” has been the core topic of all the 
+previous chapters. However, in our concluding remarks, some summations 
+should be proposed. That being that in certain circumstances, we must admit 
+that over-fitting models to data is not necessarily wrong. In fact, in many 
+cases it is un-avoidable.  
+ 
+In fact, this is what we do purposely, in practice, to a certain extent to ensure 
+models are “fitted” to individual markets and optimized to perform well in 
+back-testing and walk forward analysis. Avoiding as much as possible overfitting during optimization is the biggest hurdle when creating trading systems. 
+ 
+We can address the problem of over-optimization by walking the models over 
+two separate “out sample” data sets, in addition to randomization of the feed 
+data series itself, (as described previously in this document). After which the 
+over-optimized or curve-fit models tend to under-perform in walk forward 
+analysis and are rejected before they make it to the production stage. 
+ 
+Some practitioners will fit one strategy to all markets. As discussed previously, 
+this is one way to overcome over-fitting. However, this choice has the 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+47 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+drawback of severely limiting the quality of a given strategy. One could only 
+hope for marginal success from a system designed on this less specific 
+strategy.    
+ 
+In conclusion, we contended that regardless of the effort required for ensuring 
+robustness, the highest level of success in any market can only be obtained 
+through an intensive process of creating individual strategies for each market, 
+with the specific goal of trading in each market optimally.  
+ 
+Also, in the previous chapter, we have discussed how to run typical stress 
+tests with TF system on FDAX: 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+48 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Let’s remind a point we have mentioned earlier. Similar TF system can be run 
+on other future contracts, with little modifications in the generic parameters of 
+the TF algorithm, like Euro and Pound future contracts, with as good and 
+stable results as obtained on FDAX: 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+49 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+Finally, to illustrate how those trading systems work, we list the main 
+characteristics of the three systems mentioned in this chapter: 
+ 
+Sharpe ratios for the three nominal systems are thus very good, above 2.5. 
+Most importantly, our stress tests procedure allows us to determine de Sharpe 
+ratio at a certain confidence level, according to all possible distortions of the 
+systems or of the data series: 
+ 
+We verify one more time the robustness and stability of each system in view 
+of these numbers. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+50 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER V 
+ 
+Algorithmic trading system on the NIKKEI 225 Index futures at high 
+frequency 
+ 
+In previous chapters, we have discussed some results of robustness on a 
+trading system based on DAX future contracts. In the following, we intend to 
+show that this process of making system is quite universal and we provide 
+another system on another data series. Indeed, this chapter describes some 
+ideas about a systematic trading system Long/short on the NIKKEI 225 Index 
+futures at high frequency with a Sharpe ratio (annualized) above 3. We 
+describe ideas and methodology as well as major elements of the strategy.  
+ 
+First, we present the specifications of the contracts on which we build the 
+system. We also describe precisely the data we are using. This is a very 
+important and basis point in systematic trading technologies and that’s why it 
+makes sense to start directly with these key elements. The next chapters 
+make clear their essential role.  
+ 
+The NIKKEI 225 Index futures contracts we are considering in this chapter are 
+provided on the Singapore exchange electronic market (SGX), which can be 
+traded on the Exchange between 7.45 am to 10.15 am and 11.20 am to 2.30 
+pm Singapore time. We label this product as SGX NK in the document. The 
+contract size is ¥500 times the NIKKEI 225 Index futures price and the 
+minimum price fluctuation is 5 index points (¥2,500).  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+51 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+The trading system we are developing in this document assumes this 
+minimum price fluctuation value. The system works within a five minutes 
+sampling of prices.  
+ 
+A sample of data we are using is reproduced below for one day (30th of August 
+2006). SGX NK values are indicated in points. 
+Year  
+ Month  
+ Day  
+ Hour  
+ Minute  
+ Close (pts) 
+              2 006    
+                    8    
+                  30    
+                    7    
+                  50    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    7    
+                  55    
+              15 835    
+              2 006    
+                    8    
+                  30    
+                    8    
+                   -      
+              15 825    
+              2 006    
+                    8    
+                  30    
+                    8    
+                    5    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  10    
+              15 850    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  15    
+              15 845    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  20    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  25    
+              15 810    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  30    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  35    
+              15 800    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  40    
+              15 790    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  45    
+              15 775    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  50    
+              15 780    
+              2 006    
+                    8    
+                  30    
+                    8    
+                  55    
+              15 795    
+              2 006    
+                    8    
+                  30    
+                    9    
+                   -      
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                    5    
+              15 785    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  10    
+              15 790    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  15    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  20    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  25    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  30    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  35    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  40    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  45    
+              15 805    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  50    
+              15 820    
+              2 006    
+                    8    
+                  30    
+                    9    
+                  55    
+              15 815    
+              2 006    
+                    8    
+                  30    
+                  10    
+                   -      
+              15 825    
+              2 006    
+                    8    
+                  30    
+                  10    
+                    5    
+              15 825    
+              2 006    
+                    8    
+                  30    
+                  10    
+                  10    
+              15 830    
+              2 006    
+                    8    
+                  30    
+                  10    
+                  15    
+              15 830    
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+52 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+              2 006    
+                    8    
+                  30    
+                  11    
+                  20    
+              15 825    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  25    
+              15 825    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  30    
+              15 810    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  35    
+              15 800    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  40    
+              15 770    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  45    
+              15 755    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  50    
+              15 765    
+              2 006    
+                    8    
+                  30    
+                  11    
+                  55    
+              15 745    
+              2 006    
+                    8    
+                  30    
+                  12    
+                   -      
+              15 755    
+              2 006    
+                    8    
+                  30    
+                  12    
+                    5    
+              15 750    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  10    
+              15 765    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  15    
+              15 760    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  20    
+              15 750    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  25    
+              15 750    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  30    
+              15 730    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  35    
+              15 730    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  40    
+              15 720    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  45    
+              15 715    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  50    
+              15 685    
+              2 006    
+                    8    
+                  30    
+                  12    
+                  55    
+              15 665    
+              2 006    
+                    8    
+                  30    
+                  13    
+                   -      
+              15 685    
+              2 006    
+                    8    
+                  30    
+                  13    
+                    5    
+              15 695    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  10    
+              15 710    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  15    
+              15 700    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  20    
+              15 690    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  25    
+              15 725    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  30    
+              15 725    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  35    
+              15 705    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  40    
+              15 720    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  45    
+              15 740    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  50    
+              15 740    
+              2 006    
+                    8    
+                  30    
+                  13    
+                  55    
+              15 750    
+              2 006    
+                    8    
+                  30    
+                  14    
+                   -      
+              15 750    
+              2 006    
+                    8    
+                  30    
+                  14    
+                    5    
+              15 765    
+              2 006    
+                    8    
+                  30    
+                  14    
+                  10    
+              15 785    
+              2 006    
+                    8    
+                  30    
+                  14    
+                  15    
+              15 795    
+              2 006    
+                    8    
+                  30    
+                  14    
+                  20    
+              15 780    
+              2 006    
+                    8    
+                  30    
+                  14    
+                  25    
+              15 780    
+              2 006    
+                    8    
+                  30    
+                  14    
+                  30    
+              15 790    
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+53 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+The corresponding graph of the table presented above is displayed below. 
+SGX NK (pts)
+15 550 
+15 600 
+15 650 
+15 700 
+15 750 
+15 800 
+15 850 
+15 900 
+1
+4
+7
+10 13 16
+19 22 25 28
+31 34 37 40 43
+46 49 52 55
+58 61 64 67
+5min bars
+30th August 2006
+ 
+ 
+ 
+The period on which we build the trading system ranges from January 2000 till 
+March 2007, and then we test this system on early 2009 data flow. The 
+analysis period (January 2000-March 2007) consists of about 118k bars 
+(quotes) of five minutes and has been obtained from the exchange.  
+ 
+How do we aggregate futures contracts to produce a continuous series? 
+Indeed, we need a continuous series of quotes in order to develop and run any 
+strategy. Otherwise, the series would be spoiled by rollover gaps at the 
+connection between different contracts of different expiration dates. As a 
+consequence it would spoil the evaluation of indicators of reasonable memory 
+and would generate fake moves at the connection between two contracts. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+54 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+In order to build a perpetual continuous series of price, we adjust backward 
+each individual futures contract at the expiration date, by the level of the rollover. This means that, at the expiration date, the entire price history of all 
+previous trading days in the series is shifted up or down by the amount of the 
+roll-over differential. In this way, we obtain a backward adjusted series, 
+continuous over the full period, on which we can make an analysis.  
+ 
+Note that at the current time T, the price which enters into the trading system 
+is the real price of the SGX NK. The system is then fed permanently by real 
+prices. When this futures contract expires, we need to consider the new 
+trading contract, which enters the system with its real price also. However, the 
+historical price series, that we record to build indicators, is shifted up or down 
+by the roll-over to ensure the exact continuity between the current prices and 
+historical price series.  
+ 
+Our reference is then the last contract of the analysis period, March 2007, and 
+the price series is built as explained above. The sample of data for 30th August 
+2006 is also backward adjusted starting from March 2007. 
+ 
+Data sampling 
+ 
+We use a five minutes sampling (five minutes bars) and one (and only one) 
+decision is taken each five minutes, based on the current price and the history 
+of the NIKKEI Index futures (SGX NK) sampled within this time unit. SGX NK 
+is well adapted for systematic trading as it is a high liquidity product that can 
+be traded electronically in the trading periods exposed in the first chapter. In 
+general, managed futures are the relevant products for these kinds of 
+strategies. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+55 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Why five minutes sampling? This is a key point. The background idea in 
+building a trading system is that we intend to optimize the risk/reward ratio of 
+a sequence of trades. The first point is to lower the risk for a given reward. In 
+other words, maximize what is usually called the Sharpe ratio: the average 
+returns (reward) divided by the standard deviation of these returns (risk). In 
+general, this ratio is annualized and that’s the convention we use always 
+within this chapter.  
+ 
+The second point is to control and reduce the draw-down. The draw-down is 
+the maximal loss we can face once a top in the equity (cumulative PL) has 
+been reached.  
+ 
+One way to manage the risk with a fine tuning is obviously to consider high 
+frequency data. Indeed, if one looks only to daily or even weekly quotes, the 
+lowest risk is by principle the resolution, daily or weekly, which brings 
+immediately the possible draw-down at large levels. That’s why it is needed to 
+focus any analysis on high frequency data.  
+ 
+Of course, there is a coarse grain resolution, in other words, a resolution 
+below which it is useless to build a model as it would be essentially dominated 
+by noise. The threshold of five minutes is a good compromise. Under certain 
+circumstances, at low volatilities, a threshold of one minute time unit would be 
+interesting but it is very restricted. In order to keep the model as robust as 
+possible, we need to keep only one time unit, the best choice for the long run. 
+Here comes the five minutes sampling. 
+ 
+One efficient way to reduce the risk is thus to cope with high resolution, or 
+high frequency trading. In such case, we need of course to disentangle noise 
+and signals. This can be achieved statistically as explained later.  
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+56 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+A first objection comes immediately. Statistical models based only on series of 
+prices cannot replace good judgement. Indeed, probability simplifies reality, 
+and it does not explain the grounds. In the case of a card game or a dice roll, 
+explanation is unnecessary: we don't need to know the physics behind the dice 
+roll that caused it to land exactly as it did. Markets, however, are significantly 
+more complex than cards or dice [1-8].  
+ 
+Therefore, we need reliable identifications of the signals and severe robustness 
+tests as explained in previous chapters. 
+  
+In the following, we give some simple elements of understanding that 
+complement the previous chapters. What would be the ideal situation? If from 
+past prices, we could build the price at time T with a deterministic function. 
+This would mean that we know exactly the dynamic of the market. However, 
+this is not possible as the noise is large and by principle unpredictable [1-8].  
+ 
+The only positive action we can do is to build a profitable trading system based 
+on a series of prices (for SGX NK). If so, this is a proof that this system is 
+handling correctly some elements of the dynamics of the market. Due to the 
+unavoidable noise, this can be done only statistically, in a probabilistic way. 
+That’s why we need trading system as essential tool in making decision on 
+markets.   
+ 
+Why considering only the series of prices, forgetting about the news? Do we 
+really forget about the news flow? In fact, for high liquidity product like the 
+NIKKEI futures Index (SGX NK), prices adjust very quickly (almost 
+instantaneously) all relevant news. This is also usually called efficiency. The 
+term 'efficiency' when applied to financial markets almost always refers to the 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+57 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+speed with which markets absorb information, how quickly prices change in 
+response to new information. All information relevant to the market price is 
+assumed to become immediately available to all participants. A direct 
+consequence of the large liquidity of major futures is naturally efficiency, as 
+many agents on the market can take decision in parallel of the news flow, with 
+different targets and different investment horizons, and thus this flow is 
+immediately translated into prices movements. In this sense, prices reflect all 
+available information. 
+ 
+A fully efficient market would be a perfect market in which adjustment to a 
+new equilibrium occurs instantaneously as soon as conditions that bear upon 
+the market price change. Of course, this cannot be exactly the case.  
+ 
+This is not the purpose in this chapter to describe in length the concept of 
+efficiency of markets. We need only to mention here that the price series of 
+SGX NK reflect in this way the news flow. A longer dissertation on efficiency 
+would not be very useful and is more an academic debate [1-8].  
+ 
+To the question whether we can build a profitable trading system from the 
+series of prices for SGX NK or not, there is no theoretical answer a priori. The 
+answer will be the model itself and the practice of this model in the next 
+chapters. An essential element of the answer lies also in the procedure itself to 
+build the model.  
+ 
+System description 
+ 
+All ingredients are there. We have described the five minutes sampled data on 
+SGX NK, January 2000-March 2007, which gives about 118k bars (quotes). 
+This is the historical price series of the analysis: we use only the close value 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+58 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+for each five minutes bar. We need to build the system, algorithm that takes 
+decision at time T based on the history of prices. The model used in this 
+chapter is based on a generic TF algorithm and depends on a few parameters. 
+ 
+Following ideas developed in previous chapters, we divide this price series in 
+two parts, from 2000 till 2004 and from 2004 till 2007. The model is 
+developed and optimized on the first part: “in-sample”. By optimisation, we 
+mean that the parameters of the model are fitted on 2000-2004 data to 
+maximize the Sharpe ratio. This makes the reference set of parameters.  
+ 
+Then, the main outputs of the model, daily/monthly returns, Sharpe ratio must 
+be compatible when the system is run of the “out-sample” period (2004-2007) 
+and also on randomized set of data series (see previous chapters). 
+ 
+Of course, there are ideas (or models) that can be fitted nicely on the first part 
+of the data but are not sufficiently robust to follow our other conditions of 
+compatibility within the second part or the full sample of SGX NK. All of them 
+must be rejected. 
+ 
+What is the interest of our triggers of compatibility between data sets and 
+parameters fitted? In fact, this is the only way we have to ensure that the 
+system is robust, in the sense described in previous chapters. Of course, the 
+full procedure is applicable only if the number of parameters is not too large.  
+ 
+Typically, 5 to 10 parameters are acceptable if we consider more that 1000 
+trades for the analysis period. In the following, we fit 9 parameters to the 
+data. Other conditions in our trading system are not optimized. An obvious 
+conjecture can be expressed: the lower the number of parameters, the more 
+robust the model would be. However, there is a compromise to establish 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+59 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+between the performance and the robustness. In order to describe at best 
+different regimes of evolution of the SGX NK, we need a certain number of 
+parameters and this number cannot be too low to avoid the model to fail 
+deeply under certain circumstances. There is a balance to observe and 
+equilibrium to find. 
+ 
+Note that the procedure above makes sense also because we deal with a large 
+statistical sample of about 118k quotes. It would be completely meaningless 
+with daily data, as the reduced daily sample would lead to large statistical 
+uncertainties would wash out any significance. This is also a reason to consider 
+only high frequency data, as we do here.  
+ 
+Except stated explicitly, we always consider a prejudice of 10 points per buy or 
+sell, two times the minimum fluctuation size of the SGX NK. This means that 
+the PL for a long trade is recorded as:  
+ 
+closed price of the trade – opened price of the trade – 2*10. 
+ 
+A prejudice of 20 points is thus considered for the full trade. The formula is 
+obviously symmetric for a short trade. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+60 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Results 
+ 
+First, we present results of the trading system on a monthly basis: graph 
+below with PL in % (net of all fees). 
+ 
+-8,0
+-6,0
+-4,0
+-2,0
+0,0
+2,0
+4,0
+6,0
+8,0
+10,0
+1
+4
+7
+10
+13
+16
+19
+22
+25
+28
+31
+34
+37
+40
+43
+46
+49
+52
+55
+58
+61
+64
+67
+70
+73
+76
+79
+82
+85
+PL monthly (in %)
+Month number
+ 
+ 
+ 
+ 
+In term of Sharpe ratio, the result is 3.6 over the full period 2000-2007 and 
+4.8 on the reference period for optimisation, from 2000-2004. This makes 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+61 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+obviously a very profitable strategy and qualifies the trading system as a good 
+system.  
+ 
+Inversely, we can deduce from these results that the strategy exposed in the 
+previous chapter takes correctly into account some elements of the underlying 
+dynamics of the SGX NK behaviour. The results for the PL (in points) of all 
+trades are displayed in the figure below. 
+ 
+ 
+ 
+An essential plot is displayed below. It gives a comparison between the history 
+of SGX NK and the corresponding total equity (built by long and short trades). 
+The number of trades per month is also displayed. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+62 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+ 
+It is clear from this plot that a buy and hold strategy would deeply fail. In 
+contrast, we observe that the behaviour of the equity is good. It is translated 
+in the Sharpe ratio of about 3 for the full period. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+63 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+Main characteristics of the trading system are provided in the table below: 
+ 
+Average PL monthly  
+319 pts 
+Average PL per trade 
+28.6 pts 
+Average PL per long trade 
+23.3 pts 
+Average PL per short trade 
+35.2 pts 
+Fraction of trades stopped 
+24% 
+Fraction of winning trades 
+32% 
+Fraction of losing trades 
+68% 
+Fraction of long trades 
+54% 
+Fraction of short trades 
+46% 
+ 
+ 
+Looking at this table and the distribution of trades above, it is simple to 
+conclude that the system is trend following. It enters often in the market to 
+test hypothesis of trend. When invalidated, it stops or breaks the trade. When 
+validated, the trend is perused as long as possible, with some gain protection 
+at given threshold (see trade spectrum). That’s why the system is losing often 
+(68% of trade) a small amount of points but makes the performance with 
+large gains on the other 32% of winning trades. 
+ 
+The other important element of the management of risk for a given strategy is 
+the Drawdown (DD). What is the maximal loss starting from a top on the 
+equity curve? We show results on the plot below on a daily or monthly basis. 
+For the daily calculations, we mark to market the trading system at the close 
+of each day, even if the trade itself is not closed. Then, we can compute the 
+equity on a daily basis and thus determine a draw-down daily. We calculate 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+64 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+that the draw-down (DD) daily if 7% and falls to only 3% at month close. This 
+is acceptable but could be improved in further versions of the model. 
+ 
+More stress tests are done to check the consistency of the trading system on 
+SGX NK with different constraints, as detailed in previous chapters. We delay 
+the execution of orders by 5 minutes or 10 minutes, we suppress some 
+conditions in the model and we modify parameters by more than two standard 
+deviations etc. In all cases, the model remains correct with a Sharpe ratio 
+above 2.5. Even if we double the prejudice of 10 points per full trade to 20 
+points, the trading system is still correct. In such case, the Sharpe ratio turns 
+out to be of 1.6, which is still reasonable. 
+ 
+An important test is to run the model on a period completely disconnected 
+from the analysis sample. That’s why we have run the system on 2009 
+Bloomberg flux for SGX NIKKEI futures. Results are shown below for the first 
+months (January till mid-May) in %. 
+ 
+ 
+-2,0 
+-1,0 
+-
+ 
+1,0 
+2,0 
+3,0 
+4,0 
+5,0 
+6,0 
+7,0 
+8,0 
+9,0 
+janv-09
+févr-09
+mars-09
+avr-09
+mai-09
+PL monthly (%)
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+65 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+ 
+This makes very clear the conclusion that the model is valid also on this recent 
+period of data, completely disconnected from the analysis sample. The main 
+idea in this chapter is that a performing trading system on the Nikkei future 
+index is achievable using a reasonable number of parameters that do not 
+over-fit the data series.  
+ 
+The system, as built, can also be proven to be robust against many deviations 
+in the system or against distortion of the data series, as detailed in first 
+chapters of the book. With the same definitions as in previous chapters, the 
+Shape ratio at 90% confidence level (with respect to all possible stress tests 
+on the system described in this chapter and the date series) is about 1.6. This 
+is a good global result and justifies that we do not reject this system.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+66 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+CHAPTER VI 
+ 
+Conclusions on trading systems 
+ 
+The random walk model on price change has been durable because it appears 
+to be nearly correct. The difference between futures prices and certain random 
+walks is too small to be detected using traditional time series analysis, at a 
+given time stamp. However, this difference is detectable using trading 
+systems. These systems or algorithms are using statistical estimators to probe 
+particular features of the price series. Let’s notice that systems do not locate 
+specific features of the price series and are useless for exact prediction.  
+ 
+The modeller can only focus on statistical expectations for a given strategy: 
+see TF or MR algorithms already discussed in this book. As mentioned 
+previously, the possibility to build performing trading system is not guaranteed 
+at the theoretical level and only the practice can give a positive or negative 
+answer.  
+ 
+We have shown several examples of such systems, validated by the 
+robustness tests. In our view, a strategy alone is useless if not completed with 
+robustness tests.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+67 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+We need to be able to track back the full research process and thus ensure the 
+stability of the strategy with various stress tests, including extreme conditions 
+of running. If not, we have no way to deal with any possible performance 
+degradation within time.  
+ 
+A lot of information can be accessed in the references presented at the end of 
+the book [1-8]. More technical publications are referred in [9-11]. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+68 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+REFERENCES 
+ 
+[1] A.I. Khinchin, Mathematical Foundations of Information Theory, Dover, 
+New York, 1957 and Mathematical Foundations of Satistical Mechanics, Dover, 
+New York, 1960; 
+[2] F. Reif, Fundamentals of Statistical and Thermal Physics, McGraw-Hill, 
+Tokyo, 1965; 
+[3] G. Malliaris and W. A. Brock, Stochastic Methods in Economics and 
+Finance, North-Holland, Amsterdam, 1982; 
+[4] C. W. Gardiner, Handbook of Stochastic Methods: for Physics, Chemistry, 
+and the Natural Sciences, 2nd ed., Springer, Berlin, 1985; 
+[5] L. Landau and E.M. Lipschitz, Fluid Mechanics, Pergamon Press, Oxford, 
+1987; 
+[6] E. Ott, Chaos in Dynamical Systems, Cambridge University Press, 
+Cambridge, 1993; 
+[7] R. Mantegna and H. E. Stanley, An Introduction to Econophysics, 
+Cambridge Univ. Press, Cambridge, 2000; 
+[8] J. Voit, The Statistical Mechanics of Financial Markets, Springer, Berlin, 
+2003. 
+[9] T. Mikosch, Elementary Stochastic Calculus: with Finance in View, World 
+Scientific, 1998. 
+Electronic copy available at: https://ssrn.com/abstract=1955251
+
+ 
+ 
+ 
+ 
+ 
+69 
+ALGORITHMIC TRADING FOR PEDESTRIANS 
+ 
+[10] B. Øksendal, Stochastic Differential Equations: an Introduction with 
+Applications, 5th ed., Springer, Berlin, 1998. 
+[11] T. Bjork, Arbitrage Theory in Continuous Time, Oxford Univ. Press, New 
+York, 1998. 
+Electronic copy available at: https://ssrn.com/abstract=1955251

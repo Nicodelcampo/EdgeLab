@@ -1,0 +1,69 @@
+{
+  "doc_id": 258,
+  "titulo": "Optimal VWAP Tracking",
+  "resumen_operativo": "Deriva la estrategia óptima dinámica de tracking VWAP en forma cerrada bajo un modelo con dinámica general de precio y volumen. Demuestra que la diferencia esperada entre el VWAP personal y el de mercado no depende de la estrategia elegida, por lo que la optimización se enfoca en minimizar la varianza de esta diferencia. La estrategia óptima depende de la correlación retorno-volumen, el volumen esperado y la varianza de retornos por intervalo. Validación empírica con datos TAQ de los 30 stocks del Dow Jones: la desviación estándar entre VWAPs es de 6-27 bps, por debajo de los 10 bps típicos que cobran los brokers. Sharpe ratios anualizados alcanzan 2.4-22+ al operar hasta 5% del volumen diario.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Optimal Dynamic VWAP Tracking Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia en forma cerrada que minimiza la varianza de la diferencia entre VWAP personal y de mercado, dependiendo de correlación retorno-volumen, volumen esperado y varianza de retornos. No depende del VWAP corriente ni del precio de la acción.",
+      "relaciones": [{"tipo": "MINIMIZA", "objeto": "VWAP Tracking Error Variance"}, {"tipo": "INDEPENDE_DE", "objeto": "Running VWAP"}],
+      "cita_textual": "the optimal trading strategy is independent of the stock's running VWAP, the stock's price, and the running VWAP of the trading strategy"
+    },
+    {
+      "nombre": "Invariance of Expected VWAP Difference",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Resultado teórico fundamental: bajo los tres supuestos del modelo (market orders, sin impacto en precio, martingala condicional), la diferencia esperada entre VWAP personal y de mercado no depende de la estrategia de trading.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Variance Minimization Focus"}, {"tipo": "CONTRADICE_A", "objeto": "Return Maximization Approach"}],
+      "cita_textual": "the difference between the VWAP achieved by an arbitrary, personal, trading strategy and the market VWAP does not depend on the choice of strategy"
+    },
+    {
+      "nombre": "Volume-Return Correlation Effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cuando la varianza de retornos covaría positivamente con el volumen de negociación, la estrategia óptima se desvía más del perfil esperado de volumen relativo. Intervalos con alto volumen tienen impacto desproporcionado en el cálculo del VWAP.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Deviation from Volume Profile"}, {"tipo": "REQUIERE", "objeto": "Volume-Variance Covariance Estimation"}],
+      "cita_textual": "The deviation is most pronounced when the correlation between stock return variance and trading volume is positive"
+    },
+    {
+      "nombre": "Cross-Sectional Volume-Return Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo calibrado con ventanas rodantes de 60 días que captura patrón U-shape de volumen, correlación positiva volumen-varianza, y autocorrelación de volumen, usando regresión log-log entre varianza de retornos y volumen realizado.",
+      "relaciones": [{"tipo": "USA", "objeto": "Rolling Window Calibration"}, {"tipo": "INCORPORA", "objeto": "U-Shaped Volume Pattern"}],
+      "cita_textual": "We calibrate the model using 60-day rolling windows and find that the out-of-sample performance of the theoretically optimal VWAP strategy improves when the variance of daily logarithmic returns is lower"
+    },
+    {
+      "nombre": "Execution Slippage vs Market Impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Distinción entre dos componentes de coste: market impact (cambio permanente en precio de mercado por el trade) y execution slippage (diferencia entre precio de mercado y precio de ejecución, incluyendo bid-ask spread y profundidad del LOB).",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Transaction Cost Model"}, {"tipo": "CAUSA", "objeto": "VWAP Deviation"}],
+      "cita_textual": "Market impact is permanent and affects the market price of the stock following the trade. Execution slippage only affects the price received for a particular trade"
+    },
+    {
+      "nombre": "Guaranteed VWAP Order Cost Benchmark",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coste típico de órdenes VWAP garantizadas ofrecidas por brokers: 10-20 bps. El estudio demuestra que la estrategia óptima propuesta consistentemente opera por debajo de este umbral, validando su utilidad práctica.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Strategy Cost Effectiveness"}],
+      "cita_textual": "the average difference between personal and market VWAPs remains in all cases below the typical 10 basis points charged by brokerage houses"
+    },
+    {
+      "nombre": "Volume Autocorrelation Modeling",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Incorporación de estructura autorregresiva en el modelo de volumen intradía, capturando la dependencia temporal del volumen que afecta la precisión del tracking VWAP en horizontes intradía.",
+      "relaciones": [{"tipo": "USA", "objeto": "AR Model for Volume"}, {"tipo": "MEJORA_A", "objeto": "Static Volume Profile"}],
+      "cita_textual": "we capture autocorrelation using an autoregressive model of volume"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La desviación estándar entre VWAP personal y de mercado para los 30 stocks del Dow Jones oscila entre 6 y 27 puntos básicos, y el coste promedio de ejecución se mantiene por debajo de los 10 bps típicos de brokers. Los Sharpe ratios anualizados al operar 5% del volumen diario van de 2.4 a más de 22.",
+      "mercado": "NYSE/NASDAQ (30 acciones del Dow Jones Industrial Average)",
+      "periodo": "Estudio empírico con ventanas de 60 días (c. 2010-2013)",
+      "magnitud": "Desviación estándar VWAP: 6-27 bps; coste <10 bps; Sharpe ratios anualizados 2.4-22+",
+      "condiciones": "Datos TAQ; ventanas rodantes de 60 días; modelo con patrón U-shape, autocorrelación de volumen, correlación volumen-varianza; hasta 5% del volumen diario",
+      "robustez": "alta",
+      "cita_textual": "the standard deviation between the personal and the market VWAPs: in our empirical study for the 30 stocks in the Dow Jones Industrial Average this standard deviation ranges between 6 and 27 basis points. ... the average difference between personal and market VWAPs remains in all cases below the typical 10 basis points charged by brokerage houses"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Estrategia cerrada y calibrada con datos TAQ intradía; solución directamente implementable en sistemas de ejecución VWAP; modelo de volumen dinámico actualizable en tiempo real."}
+}

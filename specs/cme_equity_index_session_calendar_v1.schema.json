@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "cme_equity_index_session_calendar_v1.schema.json",
+  "type": "object",
+  "required": ["schema_version", "timezone", "market_hours_only", "source_capture_complete_inferred", "source_capture_policy_id", "sessions", "calendar_sha256"],
+  "properties": {
+    "schema_version": {"const": "cme_equity_index_session_calendar_v1"},
+    "timezone": {"const": "America/Chicago"},
+    "market_hours_only": {"const": true},
+    "source_capture_complete_inferred": {"const": false},
+    "source_capture_policy_id": {"type": "string", "minLength": 1},
+    "calendar_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "sessions": {"type": "array", "items": {"type": "object", "required": ["trade_date", "session_class", "expected_open_ct", "expected_close_ct", "evidence"], "properties": {
+      "trade_date": {"type": "integer", "minimum": 20000101, "maximum": 20991231},
+      "session_class": {"enum": ["NORMAL", "EARLY_CLOSE", "CLOSED"]},
+      "expected_open_ct": {"type": ["string", "null"]},
+      "expected_close_ct": {"type": ["string", "null"]},
+      "evidence": {"type": "array", "minItems": 1}
+    }}}
+  },
+  "additionalProperties": false
+}

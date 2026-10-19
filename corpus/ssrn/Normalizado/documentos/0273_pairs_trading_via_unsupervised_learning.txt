@@ -1,0 +1,3495 @@
+1
+Research on LSTM-A2C Intelligent Futures Pairs 
+2
+Trading Model Integrating Price Spread Features
+3
+Jingyun Suna,b,*, Penglong Zhaia, Zhe Hea
+4
+a School of Statistics and Data Science, Lanzhou University of Finance and Economics, Lanzhou 
+5
+730020, China
+6
+b Key Laboratory of Digital Economy and Social Computing Science, Gansu Province, Lanzhou 
+7
+730020, China
+8
+9
+Acknowledgments
+10
+This work was supported by the National Natural Science Foundation of China (72061020); The 
+11
+Natural Science Foundation of Gansu Province of China (25JRRA979); Gansu Province “Feitian 
+12
+Scholar” Distinguished Professor Program; Financial statistics research integration team of Lanzhou 
+13
+University of Finance and Economics (XKKYRHTD202304)
+14
+15
+Declaration of Interest statement
+16
+The authors declare that they have no known competing financial interests or personal 
+17
+relationships that could have appeared to influence the work reported in this manuscript.
+18
+19
+Corresponding author: Jingyun Sun
+20
+21
+Corresponding author address: a School of Statistics and Data Science, Lanzhou University of 
+22
+Finance and Economics, Lanzhou 730020, China
+23
+b Key Laboratory of Digital Economy and Social Computing Science, Gansu Province, Lanzhou 
+24
+730020, China
+25
+26
+Corresponding author email address: sunjy@lzufe.edu.cn
+27
+28
+CRediT authorship contribution statement
+29
+Jingyun Sun: conceptualization, methodology, project administration, supervision, writing—
+30
+reviewing and editing. Penglong Zhai: conceptualization, data curation, formal analysis, 
+31
+methodology, software, visualization, writing—original draft preparation, writing—reviewing and 
+32
+editing. Zhe He: conceptualization , methodology, writing—reviewing and editing.
+*  Corresponding author. 
+E-mail address: sunjy@lzufe.edu.cn.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+1
+1
+Research on LSTM-A2C Intelligent Futures Pairs 
+2
+Trading Model Integrating Price Spread Features
+3
+A R T I C L E  I N F O
+A B S T R A C T
+Keywords: 
+Pairs Trading
+RL Agent
+LSTM Network
+A2C Algorithm
+Futures Market
+Statistical Arbitrage
+Pairs trading, a market-neutral statistical arbitrage 
+strategy, faces limitations in traditional approaches, 
+including subjective pair selection and rigid trading rules. 
+This paper develops an intelligent futures pairs trading 
+framework integrating system clustering, deep learning 
+prediction, and reinforcement learning (RL) decisionmaking. 
+First, 
+we 
+propose 
+a 
+novel 
+Dynamic 
+Cointegration (DC) distance measure that combines 
+Dynamic Time Warping (DTW) for short-term similarity 
+with cointegration testing for long-term stability, and 
+employs system clustering algorithm for intelligent pair 
+selection. 
+Second, 
+a 
+multi-dimensional 
+technical 
+indicator system covering trend, volatility, and volumeprice metrics is built and fused with Long Short-Term 
+Memory (LSTM) networks to forecast price spreads. 
+Finally, an RL module based on the Advantage ActorCritic (A2C) algorithm incorporates spread predictions 
+into the state space and employs a diversified reward 
+function to learn optimal trading strategies.
+Empirical analysis and out-of-sample tests use daily data 
+from 50 Chinese futures products (2019-2024). Results 
+indicate: (1) DC clustering effectively identifies stable 
+pairs like rebar-hot-rolled coil and coking coal-coke; (2) 
+The LSTM-A2C model with spread features yields strong 
+risk-adjusted returns, with Sharpe ratios typically >1.0, 
+max 2.295; (3) It outperforms baseline A2C and 
+traditional 1.5 SD strategies in profitability, robustness, 
+and efficiency. This study offers a new framework and 
+empirical evidence for intelligent statistical arbitrage in 
+futures markets.
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+2
+5
+1. Introduction
+6
+7
+In the field of asset allocation in financial markets, futures pairs trading, as a market-neutral 
+8
+arbitrage strategy, is widely used in the investment practices of both institutional and individual 
+9
+investors. Gatev et al. [1] first introduced the concept and basic principles of pairs trading, 
+10
+systematically demonstrating its profitability in the stock market. The basic principle of pairs trading 
+11
+is to select two assets with highly correlated historical prices. When the price deviates from the 
+12
+mean, traders short the asset with the higher price while going long on the asset with the lower price. 
+13
+They then close both positions when the price returns to equilibrium, earning the spread profit. Since 
+14
+pairs trading depends on the relative price movements between assets rather than the overall market 
+15
+direction, it is applicable not only to stock and bond markets but also to the futures market and other 
+16
+fields. The advantage of pairs trading lies in its ability to effectively avoid systematic risk during 
+17
+market volatility or significant adjustments, providing investors with a robust arbitrage tool.
+18
+The implementation of traditional pairs trading typically includes two main steps. Firstly, a pairs 
+19
+pool is constructed by selecting asset pairs with strong correlations or cointegration relationships 
+20
+from a broad market. Secondly, after constructing the pairs pool, traders need to set trading rules, 
+21
+such as opening or closing positions when the spread reaches a certain threshold.
+22
+The selection of trading pairs is the core step of a pairs trading strategy, and common methods 
+23
+include the distance methods, correlation methods, and cointegration methods. Goetzmann et al. [2] 
+24
+selected pairs of assets by minimizing the standardized spread of historical prices, achieving an 
+25
+annualized return of 12% from 1962 to 1997. The cointegration theory proposed by Engle and 
+26
+Granger [3] provides the core mathematical framework for pairs trading, confirming the long-term 
+27
+equilibrium relationship by testing the stationarity of residuals. Vidyamurthy [4] proposed a two28
+stage stock selection method, first screening by correlation coefficient (e.g., above 0.90) and then 
+29
+performing cointegration tests, providing a complete theory and methodology for financial asset 
+30
+pairs trading. In addition, Huck et al. [5] conducted a comparative study between cointegration and 
+31
+distance methods, finding that the former significantly outperforms the latter. Blázquez et al. [6] 
+32
+conducted a comprehensive analysis of correlation, distance, random, stochastic differential 
+33
+residuals, and cointegration methods, concluded that cointegration is the most effective method for 
+34
+constructing a pairs trading strategy. Inspired by the cointegration concept, Ramos-Requena et al. 
+35
+[7] introduced the Hurst exponent to identify pairs trading assets and found that the pairs selected 
+36
+using the Hurst exponent had higher statistical arbitrage effects. Bui et al. [8] used the generalized 
+37
+Hurst exponent and cointegration methods to select asset pairs and compared the trading 
+38
+performance of pairs selected by the two methods, finding that pairs selected using the generalized 
+39
+Hurst exponent had better statistical arbitrage effects.
+40
+In recent years, in the selection of pairs, methods such as manual classification or unsupervised 
+41
+learning, particularly clustering techniques, have also been applied to the construction of pairs pools. 
+42
+For example, Do et al. [9] proposed constructing a pairs pool through industry grouping and strict 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+3
+43
+classification criteria, thereby reducing the risks brought by market deviations. Gong et al. [10] used 
+44
+DTW distance combined with attribute reduction techniques to perform multi-dimensional dynamic 
+45
+clustering analysis on stocks, successfully classifying different market sectors and building more 
+46
+stable investment portfolios. Sarmento et al. [11] applied unsupervised learning algorithms to cluster 
+47
+stocks, and within the same category, they combined the Engle-Granger test and Hurst exponent to 
+48
+select pairs, significantly improving the profitability of the pairs trading strategy. Han et al. [12] 
+49
+utilized agglomerative clustering algorithms to classify stocks based on both company 
+50
+characteristics and price information, subsequently selecting pairs based on price correlation, which 
+51
+further improved the risk-adjusted returns of the trading strategy. 
+52
+In terms of pairs trading strategy design, the most common trading model follows the framework 
+53
+proposed by Gatev et al. [1] , which determines the trading threshold through a normalized historical 
+54
+spread method. However, as market inefficiencies gradually improve, the profit opportunities of 
+55
+pairs trading strategies constructed using traditional subjective methods and fixed parameters are 
+56
+becoming increasingly limited. To address this issue, scholars have introduced various optimization 
+57
+algorithms and prediction models to dynamically adjust trading parameters. For example, some 
+58
+researchers use intelligent optimization algorithms to determine the dynamic thresholds in pairs 
+59
+trading strategies. Fu et al. [13] aiming to maximize profits or minimize maximum drawdowns 
+60
+(MDD), applied genetic algorithms (GAs) for optimization, using the optimized results to train 
+61
+machine learning (ML) models, reducing MDD by 73.24% in cryptocurrency. Baek et al. [14] 
+62
+applied ML methods to pairs trading in the futures market, using the error correction model (ECM) 
+63
+framework based on the Engle-Granger method and support vector machine (SVM) algorithms to 
+64
+determine the hedging ratio. The research showed that this algorithmic strategy generated higher 
+65
+risk-adjusted returns and lower market risk exposure across multiple futures markets, maintaining 
+66
+profitability even during systemic negative events like the COVID-19 pandemic.
+67
+In the field of financial time series forecasting, deep learning (DL) methods have demonstrated 
+68
+strong predictive capabilities. Research by Eapen et al. [15] , Ali et al. [16], Srijiranon [17] , and 
+69
+Koo [18] indicated that the LSTM network perform well in capturing complex patterns and 
+70
+dependencies in time series data, making it highly suitable for predicting stock prices. As a result, 
+71
+prediction algorithms to determine dynamic thresholds in pairs trading have also been widely 
+72
+applied. For example, Zhan et al. [19] proposed a strategy that uses ML models to predict the spread 
+73
+and sets trading signals based on the predictions, proving the effectiveness of this method in 
+74
+exploring arbitrage opportunities. Flori et al. [20] studied a method based on the LSTM network to 
+75
+identify and integrate pairs trading opportunities in stocks, using LSTM to estimate the probability 
+76
+of stocks outperforming their peers and combining these predictions with traditional trading 
+77
+practices based on price or return differences. The results showed that strategies incorporating these 
+78
+predictions could significantly improve portfolio performance. Liou et al. [21] focused on high79
+frequency pairs trading scenarios, using intraday continuous trading data from the Taiwan Stock 
+80
+Exchange. By performing feature selection with the eXtreme Gradient Boosting (XGBoost) and 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+4
+81
+combining it with DL models, they predicted the relationship between the spread and boundaries in 
+82
+pairs trading, generating accurate entry and exit signals. This model effectively captured spread 
+83
+change patterns and achieved stable profits in the volatile intraday market environment. These 
+84
+resrarches collectively show that ML and DL technologies have enormous application potential in 
+85
+all aspects of pairs trading, including pair selection, threshold setting, and trading signal generation, 
+86
+injecting new vitality into traditional pairs trading strategies.
+87
+In recent years, deep reinforcement learning (DRL), as a cutting-edge technology in the field of 
+88
+artificial intelligence, has been widely applied in the field of financial quantitative trading (Pippas 
+89
+et al.[22]), particularly showing great potential in pairs trading strategies. Traditional pairs trading 
+90
+relies on static threshold-triggered trading signals; however, as market efficiency improves and 
+91
+dynamics increase, the effectiveness of this method gradually declines. DRL combines the dynamic 
+92
+decision-making ability of RL and the capability of DL to process high-dimensional, complex data 
+93
+(Pippas et al. [22]). Its introduction provides new possibilities for optimizing pairs trading strategies. 
+94
+The following section will review the evolution of DRL applications in pairs trading, summarize 
+95
+key research contributions, and discuss its advantages and challenges.
+96
+In terms of technological evolution, early researches primarily focused on applying basic Deep 
+97
+Q Networks (DQN) to pairs trading. Brim [23] was the first to apply Double Deep Q Networks 
+98
+(DDQN) to stock market pairs trading, demonstrating that the RL system could effectively learn the 
+99
+mean-reversion patterns of cointegrated stock pairs and successfully make predictions based on 
+100
+these patterns. Additionally, by introducing a negative reward multiplier parameter, the system was 
+101
+able to adopt more conservative trading actions. Kim et al. [24] further proposed an optimized pairs 
+102
+trading strategy using DQN to simultaneously optimize trading boundaries and stop-loss boundaries. 
+103
+By discretizing these boundaries, they trained the agent to select the optimal strategies to maximize 
+104
+the expected sum of discounted future profits. Wang et al. [25] made significant contributions to 
+105
+improving learning efficiency by proposing a simple yet effective reward method, using a baseline 
+106
+strategy as input to accelerate and stabilize the learning process. In an empirical analysis of the 
+107
+Nasdaq Nordic market, they achieved higher returns and Sharpe ratios compared to traditional 
+108
+strategies.
+109
+As research advanced, scholars began exploring more complex architectural designs. Wu et al. 
+110
+[26] addressed the time series characteristics of stock market data, used Gated Recurrent Units 
+111
+(GRU) to extract financial features and proposed two adaptive trading strategies, GDQN and GDPG. 
+112
+Among these, GDPG, which has an Actor-Critic (AC) framework, performed more stably in volatile 
+113
+markets. Quintero et al. [27] conducted a comparative study of the A2C and Proximal Policy 
+114
+Optimization (PPO) algorithms in continuous action spaces and found that although RL strategies 
+115
+achieved positive investment metrics in most test pairs, the benchmark model might still outperform 
+116
+in certain situations.
+117
+In the realm of systematic framework design, researchers have proposed more comprehensive 
+118
+solutions. Xu et al. [28] introduced a two-level RL framework that uses an extended option-critic 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+5
+119
+(EOC) method for pair selection and employs a multi-agent MADDPG method to set trading 
+120
+thresholds, achieving excellent performance in the Chinese futures market. Han et al. [29] further 
+121
+proposed a unified pairs trading paradigm, designing a hierarchical RL framework that treats pair 
+122
+selection and trading as a whole task, avoiding the information flow blockage in traditional two123
+step methods. Oyewola et al. [30] adopted the Markov Decision Process (MDP) framework, a 
+124
+widely used RL technique, to train deep LSTM and LSTM-Attention Q-Learning models. The 
+125
+results indicated that their prediction accuracy surpassed that of traditional models.
+126
+In empirical analysis of the Chinese market, Guo et al. [31] applied DRL to the Chinese black 
+127
+futures market. By combining the cointegration method with DRL for portfolio allocation, they 
+128
+compared the performance of five models over three different periods. They found that the DRL 
+129
+method based on cointegrated pairs performed the best in terms of returns and risk control, verifying 
+130
+the feasibility of DRL in the Chinese futures market. Notably, Xia et al. [32] proposed an innovative 
+131
+hierarchical DL framework that combines supervised learning with DRL. The upper layer of the 
+132
+framework uses a Graph Attention Network (GAT) to reveal complex asset relationships and select 
+133
+the best pairs from the asset pool, while the lower layer employs the A2C algorithm to execute 
+134
+automatic and dynamic trading strategies for the selected pairs. In an empirical study on the Nasdaq 
+135
+exchange, this strategy achieved a Sharpe ratio of 1.84 and an annual return of 50.98%, significantly 
+136
+outperforming traditional strategies.
+137
+Overall, the above studies show that the application of DRL in pairs trading has evolved from 
+138
+simple to complex, from single-objective to multi-objective optimization, and from fixed 
+139
+architectures to adaptive frameworks. Researchers have continuously improved pairs trading 
+140
+strategies by introducing techniques such as reward shaping, hybrid architectures, structural 
+141
+breakthrough detection, continuous action spaces, feature extraction, multi-level optimization, and 
+142
+hierarchical learning. These studies have not only advanced the theoretical application of RL in the 
+143
+financial field but have also demonstrated its superiority over traditional methods in practice. 
+144
+However, they also point out that there is still room for improvement in terms of model robustness 
+145
+and adaptability.
+146
+Inspired by the above literature, this paper aims to improve the traditional pairs trading model in 
+147
+terms of pair selection and trading model design. Firstly, we propose a system clustering method 
+148
+based on the DC distance metric to cluster futures price time series data and construct pairs trading 
+149
+combinations. Secondly, based on the pairs combination information, we construct a multi150
+dimensional technical indicator system that includes trend, volatility, and volume-price indicators. 
+151
+A LSTM network is then utilized to predict the price spread time series, providing predictive 
+152
+information input for RL decision-making. Finally, we design a RL decision module based on the 
+153
+A2C algorithm, incorporating the predictive information into the state space and guiding the agent 
+154
+to learn the optimal trading strategy through a diversified reward function. Empirical results show 
+155
+that the proposed strategy demonstrates strong profitability and risk control effects across multiple 
+156
+time windows, particularly performing well in volatile markets.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+6
+157
+The innovations of this paper are as follows: (1) In the pair selection process, a system clustering 
+158
+method based on DC distance is proposed. This method integrates the short-term dynamic similarity 
+159
+of DTW and the long-term stability of cointegration by weighting them, constructing a DC distance 
+160
+metric. This DC distance is then applied to Ward’s minimum variance system clustering, providing 
+161
+a screening framework for futures pairs trading. (2) A multi-dimensional technical indicator feature 
+162
+engineering system for the price spread series is constructed. This system includes trend indicators 
+163
+(
+, 
+), volatility indicators (
+), and volume-price indicators (
+, 
+, 
+164
+). These technical indicators are combined with the LSTM network to predict the price spread, 
+165
+providing predictive input for RL decision-making. (3) The A2C RL trading framework that 
+166
+incorporates predictive information is designed. This framework integrates LSTM-based spread 
+167
+prediction with A2C. By incorporating the predictive information into the state space and designing 
+168
+a diversified reward function, it provides a new decision-making approach for pairs trading 
+169
+strategies.
+170
+The structure of this paper is as follows: Section 2 introduces the methodology, including system 
+171
+clustering, technical indicator construction, and RL model construction; Section 3 conducts the 
+172
+empirical research, evaluating the effectiveness of the strategy through backtesting on historical 
+173
+data; Section 4 concludes and discusses future research directions.
+174
+175
+2. Methodology
+176
+177
+This study constructs an intelligent pairs trading framework that integrates stock selection 
+178
+through clustering, spread prediction, and RL decision-making. The framework achieves the full 
+179
+process from pair selection to trade execution through the organic combination of three core 
+180
+modules. The overall modeling approach follows the "screening-prediction-decision" logic: Firstly, 
+181
+a system clustering method based on DC distance is used to select asset pairs with similar dynamic 
+182
+features and long-term cointegration relationships from a large pool of assets. Secondly, technical 
+183
+indicators are used to construct a spread feature system, and the LSTM network is employed to 
+184
+accurately predict the spread trend. Finally, the predictive information is integrated into the RL 
+185
+environment, with the A2C algorithm used to make trading decisions.
+186
+The core innovation of this framework lies in transforming the traditional subjective decision187
+making process of pairs trading into a data-driven intelligent decision-making process. Compared 
+188
+to traditional methods, this framework combines short-term dynamic similarity from DTW and 
+189
+long-term stability of cointegration relationships in the pair selection phase, and it applies this 
+190
+combination for the first time in system clustering, proposing a new method for asset pair selection. 
+191
+In the trading decision phase, it constructs feature indicators related to the spread and introduces the 
+192
+LSTM spread prediction module, providing forward-looking information to the RL agent, 
+193
+enhancing the scientific basis and timeliness of decision-making. In the strategy execution phase, 
+194
+the A2C algorithm replaces the fixed-threshold method, achieving dynamic optimization of trade 
+SMA
+EMA
+BBW
+RSI
+ROC
+OBV
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+7
+195
+timing and position management.
+196
+197
+Figure.1 Pairs Trading Framework
+198
+As shown in Figure.1, the entire research framework consists of three interrelated core 
+199
+modules:(1) The system clustering module based on DC distance is responsible for identifying and 
+200
+selecting potential asset pairs from the futures pool. By combining DTW distance and cointegration 
+201
+testing, a comprehensive similarity metric is constructed, which is converted into DC distance. The 
+202
+hierarchical clustering algorithm is then used to implement intelligent asset grouping.(2) The 
+203
+spread-based technical indicator construction module extracts trend, volatility, and volume-price 
+204
+indicators to build a multi-dimensional spread feature system and uses the LSTM network to achieve 
+205
+time-series prediction of the spread.(3) The RL-based pairs trading module incorporates the 
+206
+predictive information into the state space, using the A2C algorithm to learn the optimal trading 
+207
+strategy. Continuous interaction with the market environment enables adaptive optimization of the 
+208
+strategy. These three modules form a complete process from asset screening, information extraction, 
+209
+to decision execution, providing a new perspective for pairs trading strategies.
+210
+211
+2.1 System Clustering Based on DC Distance
+212
+213
+In pairs trading strategies, the primary task that determines the success or failure of the strategy 
+214
+is how to select asset pairs with stable arbitrage relationships from a wide range of futures products. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+8
+215
+Traditional methods often use individual indicators such as correlation, cointegration, or distance 
+216
+measures, which are unable to fully capture the complex relationships between assets. This paper 
+217
+proposes an innovative DC distance measurement method, which organically combines two 
+218
+complementary similarity measures—DTW and cointegration testing—and applies them to system 
+219
+clustering, creating a more comprehensive and robust pair selection framework.
+220
+221
+2.1.1 Dynamic Time Warping
+222
+223
+Financial time series often exhibit asynchronous features, such as time misalignment, which 
+224
+makes traditional Euclidean distance inadequate for accurately measuring their similarity. Jeong et 
+225
+al. [33] proposed DTW as an algorithm to measure the dynamic similarity of time series. By 
+226
+allowing non-linear alignment of time series along the time axis, DTW can effectively identify 
+227
+sequence pairs that have similar patterns but exhibit time offsets.
+228
+Given two time series,
+and
+, DTW uses dynamic 
+229
+programming to find the optimal alignment path that minimizes the cumulative distance between 
+230
+the points along the path:
+231
+(2)
+232
+Where
+is the alignment path, 
+is the distance between the corresponding points.
+233
+The smaller the DTW distance, the more similar the short-term dynamic characteristics of the 
+234
+two time series are. DTW is capable of recognizing local similarities and matching overall patterns 
+235
+in time series. It is particularly suited for capturing short-term dynamic features of time series but 
+236
+has limited ability to characterize long-term equilibrium relationships. Therefore, cointegration 
+237
+analysis is introduced as a supplement.
+238
+239
+2.1.2 Cointegration
+240
+241
+The cointegration theory, proposed by Engle and Granger [3] , provides a rigorous statistical 
+242
+framework for the long-term equilibrium relationships of non-stationary time series. Gatev et al. [1] 
+243
+used cointegration testing to select asset pairs with long-term equilibrium relationships, achieving 
+244
+significant results in their pairs trading strategy. In the context of pairs trading, cointegration testing 
+245
+can identify asset pairs with stable spread relationships, serving as the theoretical foundation for 
+246
+constructing mean-reversion strategies.
+247
+The core of cointegration testing is to determine whether the residuals in the following linear 
+248
+regression model are stationary:
+249
+(3)
+P
+i
+j
+x
+y
+
+
+
+
+
+1
+2
+,
+,...,
+t
+n
+X
+x x
+x
+
+
+
+1
+2
+,
+,...
+t
+m
+Y
+y y
+y
+
+( , )
+(
+, )
+min
+i
+j
+i j
+P
+DTW X Y
+x
+y
+
+
+
+
+t
+t
+t
+Y
+X
+
+
+
+
+ò
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+9
+250
+Where
+and
+are two time series, both of which are integrated of the same order, 
+and
+are 
+251
+the regression coefficients, and
+is the residual series. If
+and
+have a cointegrating relationship, 
+252
+then the residual series
+should be stationary.
+253
+To test the residual series
+, the Augmented Dickey-Fuller (ADF) test is used. The model for the 
+254
+ADF test is:
+255
+(4)
+256
+Where
+is the first-difference operator, 
+and
+are parameters to be estimated, and
+is the 
+257
+white noise error term.
+258
+If the p-value of the ADF test is less than the significance level (typically 0.05), the two series 
+259
+are considered to have a significant cointegration relationship. If the p-value is greater than the 
+260
+significance level, the cointegration relationship is not significant.
+261
+Cointegration testing captures the long-term dynamic equilibrium relationship. Asset pairs with 
+262
+significant cointegration characteristics usually have a stable long-term linear relationship, with 
+263
+spreads exhibiting mean-reverting behavior, thus providing a foundation for pairs trading.
+264
+265
+2.1.3 DC Distance Matrix
+266
+267
+DTW is effective in capturing short-term dynamic similarities, while cointegration focuses on 
+268
+long-term equilibrium relationships. To integrate both DTW and cointegration as measurement 
+269
+methods, this paper converts them into similarity indicators, considering both the short-term 
+270
+dynamic similarity and the long-term linear relationship of the time series. This results in the 
+271
+proposed DC distance.
+272
+Since DTW distance and cointegration p-values have different units and value ranges, directly 
+273
+combining them would result in one indicator dominating the final result. Therefore, the first step 
+274
+is to convert both into a unified similarity measure:
+275
+(1) DTW Similarity Conversion:
+276
+DTW distance essentially measures the "difference" between two time series, where a smaller 
+277
+value indicates greater similarity. To convert it into a similarity metric, this paper use the following 
+278
+formula:
+279
+(5)
+280
+Where
+ranges from (0, 1], with larger values indicating greater short-term dynamic 
+281
+similarity between the two series.
+282
+(2) Cointegration Similarity Conversion:
+(
+)
+,
+dtw
+S
+X Y
+t
+X
+tY
+a
+b
+òt
+t
+X
+tY
+òt
+òt
+ò
+ò
+ò
+1
+1
+p
+t
+t
+i
+t
+i
+t
+i
+g
+q
+n
+-
+-
+=
+D
+=
++
+D
++
+å
+òt
+D
+g
+iq
+tn
+
+
+1
+,
+1
+(
+, )
+dtw
+S
+X Y
+DTW X Y
+
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+10
+283
+(6)
+284
+Where
+ranges from [0, 1], with larger values indicating a more significant long-term 
+285
+relationship.
+286
+The integrated similarity indicator is then constructed by combining the DTW and cointegration 
+287
+similarities:
+288
+(7)
+289
+Where
+is the overall similarity between the two time series, 
+and
+are weights used to 
+290
+adjust the relative importance of DTW and cointegration. Greater emphasis on short-term dynamics 
+291
+can be achieved by increasing
+, while greater emphasis on long-term stability is realized by 
+292
+increasing
+.
+293
+To adapt the comprehensive similarity for system clustering algorithms, the overall similarity is 
+294
+converted into a distance metric:
+295
+(8)
+296
+Where
+is the DC distance, with smaller values indicating greater similarity in both the 
+297
+short-term dynamic characteristics and long-term relationships between the time series.
+298
+The core idea of this formula is to balance the short-term dynamic similarity (DTW) with the 
+299
+long-term linear relationship (cointegration) through weighted adjustments, thereby constructing a 
+300
+distance measure suitable for financial time series that can effectively be used for clustering analysis.
+301
+302
+2.1.4 System Clustering
+303
+304
+Based on the constructed DC distance matrix, this paper applies system clustering to group asset 
+305
+time series. System clustering works by progressively merging similar assets, forming a hierarchical 
+306
+tree structure, and providing a flexible framework for pair selection.
+307
+This paper uses the Ward’s minimum variance method as the clustering criterion, which guides 
+308
+the clustering process by minimizing the within-cluster sum of squares (WCSS). The specific steps 
+309
+are as follows:
+310
+(1) Initially, each futures product is treated as an independent cluster;
+311
+(2) The DC distance between all pairs of products is calculated, and the two clusters with the 
+312
+smallest distance are merged;
+313
+(3) The inter-cluster distance matrix is updated;
+314
+(4) The process is repeated until all products are merged into a single cluster.
+315
+In pairs trading, identifying asset pairs with stable arbitrage relationships is fundamental to the 
+,
+(
+)
+S X Y
+
+
+
+
+
+
+,
+1
+coint
+S
+X Y
+p
+
+
+
+,
+coint
+S
+X Y
+(
+, )
+(
+, )
+(
+, )
+1
+             
+(1
+)
+1
+(
+, )
+dnw
+coint
+S X Y
+S
+X Y
+S
+X Y
+p
+DTW X Y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1
+,
+,
+DC X Y
+S X Y
+
+
+
+,
+DC X Y
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+11
+316
+effectiveness of the strategy. Based on the system clustering method, this paper iteratively groups 
+317
+the futures series using the defined DC distance metric. The process uses a bottom-up approach, and 
+318
+the generated dendrogram allows observation of the branching structure. In this paper, the asset 
+319
+pairs that are earliest merged in the system clustering process (i.e., those with the smallest DC 
+320
+distance) are considered to have the strongest relationship. These pairs exhibit both short-term 
+321
+synchronicity and long-term stability, making them the best candidates for pairs trading. 
+322
+Furthermore, by following this process, multiple pairs of assets can be selected. By selecting pairs 
+323
+with the smallest DC distance, this is crucial for building an effective pairs trading strategy.
+324
+325
+2.2 Construction of Spread-Based Technical Indicators
+326
+327
+In pairs trading strategies, the spread time series contains rich market information and serves as 
+328
+an important basis for trading decisions. However, raw spread data often has a single information 
+329
+dimension, making it difficult to fully reflect the complex dynamics of the market. To enhance the 
+330
+RL agent's perception of market conditions, this paper constructs a multi-dimensional technical 
+331
+indicator system for the spread, providing richer and more robust information for trading decisions 
+332
+through systematic feature engineering. The selected technical indicators cover multiple dimensions 
+333
+of the spread, such as trend, volatility, and momentum, emphasizing the complementary nature of 
+334
+information across different categories of indicators.
+335
+336
+2.2.1 Trend Indicators
+337
+338
+Trend indicators aim to capture the directional changes and persistence characteristics of the 
+339
+spread, providing important references for determining mean-reversion opportunities. In pairs 
+340
+trading, reversals in the spread trend often signal the emergence of arbitrage opportunities. The 
+341
+spread is defined as follows:
+342
+(9)
+343
+Where
+is the closing price of asset
+at time , 
+is the closing price of asset
+at time , 
+344
+is the spread at time .
+345
+(1) Simple Moving Average (
+)
+346
+As the most fundamental trend indicator, the
+smooths the spread series by calculating 
+347
+the arithmetic average within a fixed window. The mathematical formula is as follows:
+348
+(10)
+349
+Where
+is the time window (e.g., 20 days).
+350
+(2) Exponential Moving Average (
+)
+A
+B
+t
+t
+t
+Spread
+P
+P
+
+
+A
+tP
+A
+t
+B
+tP
+B
+t
+t
+Spread
+t
+SMA
+(
+)
+t
+SMA N
+1
+i 0
+1
+(
+)
+N
+t
+t i
+SMA N
+Spread
+N
+
+
+
+
+N
+EMA
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+12
+351
+The
+assigns higher weight to more recent spreads, can more sensitively reflect the latest 
+352
+trend changes in the spread. This weighting mechanism allows the
+to maintain smoothness 
+353
+while reducing the lag inherent in traditional moving averages. The mathematical formula is as 
+354
+follows:
+355
+(11)
+356
+Where
+is the smoothing coefficient that controls the rate of weight decay.
+357
+358
+2.2.2 Volatility Indicators
+359
+360
+(1) Bollinger Bands Width (
+)
+361
+Bollinger Bands combine the mean and standard deviation to create a dynamic volatility range 
+362
+for the spread. The
+directly reflects the degree of volatility in the spread and is an effective 
+363
+tool for assessing market conditions (calm periods vs. turbulent periods). The mathematical formula 
+364
+is as follows:
+365
+(12)
+366
+Where the Bollinger Bands consist of three lines: the middle band is
+; the upper band is
+367
+; the lower band is
+. The calculation of the
+is 
+368
+essentially 
+the 
+distance 
+between 
+the 
+upper 
+and 
+lower 
+bands, 
+defined 
+as:
+369
+, 
+is calculated as the standard deviation of the 
+370
+spread over the past 20 periods.
+371
+The expansion of the
+indicates rising volatility and may signal that the spread is about to 
+372
+break out of its equilibrium range. The contraction suggests that the market is becoming calmer, and 
+373
+the spread may oscillate around the mean.
+374
+375
+2.2.3 Volume-Price Indicators
+376
+377
+Volume-price indicators consider both spread changes and trading volume information, 
+378
+evaluating the sustainability of the spread's movement from the perspective of market participation 
+379
+and capital flow. These indicators are crucial for verifying the strength of trends and identifying 
+380
+potential reversal points.
+381
+(1) Relative Strength Index (
+)
+382
+The
+measures the inherent strength of spread changes by comparing the magnitude of price 
+383
+increases and decreases over a specific period. The value ranges from [0, 100]. The mathematical 
+384
+formula is as follows:
+EMA
+EMA
+
+
+1
+(
+)
+(
+)
+1
+t
+t
+t
+EMA N
+Spread
+EMA
+N
+
+
+
+
+
+
+
+
+2
+1
+N
+
+
+BBW
+BBW
+20
+4
+t
+BBW
+STD
+
+
+20
+SMA
+20
+20
+2
+SMA
+STD
+
+20
+20
+2
+SMA
+STD
+
+BBW
+20
+ 
+ 
+4
+upper band
+lower band
+STD
+
+
+
+20
+STD
+BBW
+RSI
+RSI
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+13
+385
+(13)
+386
+The
+above 70 typically indicates that the spread is overbought and may face a correction, 
+387
+while the
+below 30 indicates oversold conditions and may signal a potential rebound. In pairs 
+388
+trading, extreme
+values often correspond to significant deviations of the spread from its mean.
+389
+(2) Rate of Change (
+)
+390
+The
+measures the percentage change in the spread, providing a clear indication of the 
+391
+spread’s momentum. As a measure of trend acceleration, the
+can provide early warnings of 
+392
+trend acceleration or deceleration. The mathematical formula is as follows:
+393
+(14)
+394
+The sign of the
+indicates whether the spread is rising or falling, and the magnitude of the 
+395
+absolute value reflects the speed of the change.
+396
+(3) On-Balance Volume (
+)
+397
+The
+reveals the directional change of market volume, reflecting capital inflows and 
+398
+outflows. In pairs trading, the
+divergence from the spread often signals a potential trend 
+399
+reversal. The mathematical formula is as follows:
+400
+(15)
+401
+Where
+is the
+value at time , 
+is the trading volume at time ,
+402
+is the change in the spread from the previous period to the current period.
+403
+When the spread reaches a new high while
+does not rise accordingly, it indicates 
+404
+insufficient upward momentum. Conversely, when the spread reaches a new low while
+fails 
+405
+to decline, it signals a weakening downward momentum. The trading volume used here is the sum 
+406
+of the volumes of the two constituent futures contracts.
+407
+In summary, these technical indicators describe the market characteristics of the spread from 
+408
+different angles, forming a complementary information system. In practical application, this paper 
+409
+will standardize the data to eliminate dimensional differences between the indicators, ensuring they 
+410
+are comparable on the same scale. A sliding window mechanism will be used to maintain the 
+411
+timeliness of the indicators, ensuring that the model always makes decisions based on the latest 
+412
+market information. Feature selection algorithms will be employed to identify the most effective 
+413
+combination of indicators for spread prediction, avoiding the negative impact of redundant 
+414
+information on model performance.
+415
+This set of technical indicators not only provides a rich set of input features for the LSTM spread 
+100
+100
+(
+)
+1
+t
+RSI N
+Average Gain
+Average Loss
+
+
+
+RSI
+RSI
+RSI
+ROC
+ROC
+ROC
+100
+(
+)
+t
+t N
+t
+t N
+Spread
+Spread
+ROC N
+Spread
+
+
+
+
+
+ROC
+OBV
+OBV
+OBV
+1
+1
+1
+,
+ 
+,
+ 
+0
+0
+,
+t
+t
+t
+t
+t
+t
+t
+t
+f
+Spread
+O
+OBV
+Volume if
+OBV
+Volume i
+OBV
+otherwise
+BV
+Spread
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+t
+OBV
+OBV
+t
+Volumet
+t
+1
+t
+t
+t
+S
+S
+S 
+
+
+
+OBV
+OBV
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+14
+416
+prediction module but also lays the foundation for constructing the state space in the RL 
+417
+environment.
+418
+419
+2.3 Construction of Pairs Trading Model Based on RL
+420
+421
+The core challenge of pairs trading lies in how to make optimal trading decisions in a complex 
+422
+and ever-changing market environment. Traditional methods rely on fixed rules and subjective 
+423
+experience, which makes it difficult to adapt to dynamic market changes. This paper constructs a 
+424
+pairs trading model that integrates LSTM-based spread prediction and A2C RL algorithm. The 
+425
+model implements pairs trading through a prediction-decision process. Firstly, the LSTM network 
+426
+predicts future spread trends based on historical technical indicators, providing forward-looking 
+427
+information for decision-making. Secondly, the A2C algorithm integrates the current market state 
+428
+and the predictive information to learn the optimal trading strategy. Finally, the trading execution 
+429
+module translates the strategy into specific buy and sell actions.
+430
+431
+2.3.1 LSTM Spread Prediction Module
+432
+433
+In the field of financial time series forecasting, LSTM has demonstrated strong predictive 
+434
+capabilities. Hu [34] employed an LSTM model based on PCA and LASSO for stock prediction, 
+435
+significantly improving prediction accuracy, which proved the superiority of LSTM in handling 
+436
+financial data. Ouyang et al. [35] combined wavelet analysis with LSTM neural network to build a 
+437
+prediction model suitable for nonlinear and non-stationary financial time series. Empirical evidence 
+438
+showed that LSTM performed excellently in predicting both long-term and short-term dynamic 
+439
+trends. These researches indicate that LSTM can capture complex dynamic patterns in financial time 
+440
+series, exhibiting high predictive accuracy and generalization ability.
+441
+To enhance time series modeling capabilities, this paper designs a multi-layer LSTM network 
+442
+structure with powerful time series modeling capabilities. The network consists of three LSTM 
+443
+layers, each followed by a dropout layer to prevent overfitting. Finally, the output from the LSTM 
+444
+layers is passed through a fully connected layer to output the prediction result. The input dimension 
+445
+is determined by the number of technical indicators after feature engineering, the hidden layer 
+446
+dimension is set to 50 neurons, and a one-step-ahead forecasting approach is adopted.
+447
+Additionally, this paper uses an exhaustive search-based feature importance analysis algorithm 
+448
+to optimize feature selection. This algorithm explores all possible feature subset combinations and 
+449
+evaluates the prediction performance of each combination using a loss function, automatically 
+450
+selecting the optimal feature set. This method not only discovers the nonlinear interactions between 
+451
+features but also significantly improves prediction accuracy, demonstrating the effectiveness of the 
+452
+technical indicators constructed in this paper for predicting the spread.
+453
+The model is trained using the Adam optimizer, with a learning rate of 0.001, and the Mean 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+15
+454
+Squared Error (
+) as the loss function. To prevent overfitting, in addition to the dropout 
+455
+mechanism, the early stopping strategy is implemented, which halts training if the validation loss 
+456
+shows no improvement for 10 consecutive epochs.
+457
+458
+2.3.2 RL Decision Module
+459
+460
+The RL decision module in this paper is designed based on the AC architecture and implements 
+461
+trading decision intelligence using the A2C algorithm. This module formulates the pairs trading 
+462
+problem as a Markov Decision Process (MDP), learning the optimal trading strategy through 
+463
+interaction with the environment. The specific framework is shown in Figure.2.
+464
+465
+466
+Figure.2 A2C-based Pairs Trading Strategy Framework
+467
+468
+(1) State Space Design
+469
+This paper constructs a multi-dimensional state representation, which consists of three main 
+470
+components: historical technical indicator sequences, LSTM prediction information, and current 
+471
+position status. The historical technical indicator sequence adopts a sliding window mechanism, 
+472
+using the standardized technical indicators from the past N time steps as the foundation of the state. 
+473
+These indicators are processed with Z-score standardization or MinMax scaling to ensure numerical 
+474
+stability. The LSTM prediction information includes the predicted spread sequence, providing the 
+475
+model with a forward-looking perspective. The current position status records the model's position 
+476
+state, including long, short, and flat positions, forming a memory mechanism for the state 
+MSE
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+16
+477
+representation.
+478
+(2) Action Space Definition
+479
+The action space is defined as four discrete actions: Hold, Long, Short, and Close. The Hold 
+480
+action means maintaining the current position; the Long action means establishing a long position 
+481
+by buying the asset pair (buy asset A, sell asset B), with the expectation that the spread will widen 
+482
+for profit; the Short action means selling the asset pair (sell asset A, buy asset B), with the 
+483
+expectation that the spread will narrow for profit; the Close action means clearing all positions and 
+484
+returning to a market-neutral state.
+485
+This action space design fully considers the characteristics of pairs trading. By limiting the 
+486
+simultaneous holding of both long and short positions, it ensures the rationality of the trading 
+487
+strategy. At the same time, the discrete action space stabilizes the strategy learning process, avoiding 
+488
+exploration difficulties present in continuous action spaces.
+489
+(3) Reward Function Design
+490
+The reward function is the core of the RL model, directly determining the model's learning 
+491
+objectives. This paper designs a diversified reward function that comprehensively considers four 
+492
+aspects: return, transaction cost, prediction accuracy, and risk management.
+493
+The basic return reward is calculated based on the position direction and the actual spread change. 
+494
+The reward equals the spread return rate when holding a long position, the negative spread return 
+495
+rate when holding a short position, and zero when in a neutral position. The transaction cost penalty 
+496
+deducts a fixed proportion of the cost each time a position is changed, simulating the impact cost 
+497
+and transaction fees in real trading. The mathematical formula of the basic return portion is as 
+498
+follows: 
+499
+(16)
+500
+Where 1 is the long position, -1 is the short position, and 0 is no position.
+501
+To reflect the real market and account for transaction costs, each time the agent adjusts its position 
+502
+(i.e., when a trade occurs), the reward is deducted by the transaction costs for both sides. The 
+503
+mathematical formula is as follows:
+504
+(17)
+505
+Where
+is the single-side transaction cost, set by default to 0.01%
+506
+The prediction accuracy reward is granted when the LSTM prediction error is below a threshold 
+507
+and the trading direction aligns with the predicted trend, encouraging the model to utilize predictive 
+508
+information for correct decision-making.
+509
+The reward is granted when the prediction error is less than 10% and the trading decision aligns 
+510
+with the predicted direction. The mathematical formula is as follows:
+, 
+ 
+1
+, 
+ 
+1
+0        , 
+ 
+0
+A
+B
+basic
+B
+A
+r
+r
+if position
+R
+r
+r
+if position
+if position
+
+
+
+
+
+
+
+
+
+
+
+2
+, 
+ 
+0      , 
+ 
+trade
+if
+n
+C
+n
+i
+d
+f
+position a justme t
+Position Holdi g
+
+
+
+
+
+
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+17
+511
+(18)
+512
+Where
+is the prediction error, 
+is the predicted spread, 
+is the actual spread, and
+is the 
+513
+trading action.
+514
+The final reward function is scaled by a factor of 100 to increase the learning signal strength. The 
+515
+mathematical formula is as follows:
+516
+(19)
+517
+This reward function integrates basic returns, transaction costs, and prediction accuracy to guide 
+518
+the agent in pursuing profits while controlling costs and risks. The incorporation of LSTM 
+519
+prediction information further enhances decision-making intelligence, allowing the agent to adapt 
+520
+to the dynamic market environment.
+521
+(4) Theoretical Foundation of the A2C Algorithm
+522
+This paper uses the A2C algorithm to construct the pairs trading decision model. As a significant 
+523
+improvement to the AC method, the A2C algorithm effectively reduces the variance in policy 
+524
+gradient estimates by introducing the advantage function, thereby enhancing learning efficiency and 
+525
+stability.
+526
+In the RL framework, the agent's goal is to learn the optimal policy
+to maximize the 
+527
+expected cumulative reward. Policy gradient methods achieve this goal by directly optimizing the 
+528
+parameterized policy
+. According to the policy gradient theorem, the gradient of the 
+529
+objective function
+can be represented as:
+530
+(20)
+531
+The core innovation of the A2C algorithm lies in the introduction of the advantage function
+532
+to further reduce variance. The advantage function is defined as:
+533
+(21)
+534
+The advantage function measures the advantage of taking action
+in state
+relative to the 
+535
+average value of the state. The policy gradient using the advantage function is:
+536
+(22)
+537
+(5) Agent Network Architecture Design
+538
+Based on the A2C theory, this paper designs the AC network architecture integrated with LSTM 
+539
+spread prediction. The network adopts a dual-head structure with a shared feature extractor, 
+540
+consisting of the Actor network and the Critic network, enabling simultaneous policy learning and 
+541
+value evaluation. 
+542
+Firstly, the network uses a two-layer LSTM architecture for sequence modeling. The first layer 
+1
+1
+ˆ(
+ ,
+0.01 , 
+ 
+0.1 
+0.01 , 
+ 
+0.
+ 
+)
+1 
+0      , 
+ˆ(
+ , 
+)      
+t
+t
+t
+e
+t
+pr d
+t
+t
+B
+e
+if
+s
+s
+a
+lo
+oth rwise
+ng
+if
+s
+s
+a
+short
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1
+ˆts 
+ts
+ta
+)
+0 (
+10
+t
+basic
+pred
+trade
+R
+R
+B
+C
+
+
+
+
+*( | )
+a s
+
+( | )
+a s
+
+
+( )
+J
+
+
+
+( )
+[
+(
+)
+(
+)]
+,
+J
+E
+log
+a s
+Q
+s a
+
+
+
+
+
+
+
+
+
+
+
+
+
+∣
+( , )
+A s a
+(
+)
+(
+)
+,
+(
+,
+)
+A s a
+Q s a
+V s
+
+
+a
+s
+( )
+[
+(
+,
+)
+(
+)]
+J
+E
+log
+a s
+A s a
+
+
+
+
+
+
+
+
+
+
+
+∣
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+18
+543
+LSTM receives raw feature input, and the hidden layer dimension is set to 128. The second layer 
+544
+LSTM has an input dimension of 128, with the hidden layer dimension also set to 128. To enhance 
+545
+the model's generalization ability and prevent overfitting, a Dropout regularization mechanism with 
+546
+a rate of 0.2 is introduced between the two LSTM layers.
+547
+The attention mechanism uses multi-head self-attention, with the number of heads set to 4, 
+548
+helping the model focus on important information at key time steps. The attention mechanism's 
+549
+computation process is:
+550
+(23)
+551
+Secondly, an independent fully connected network is also designed to encode the LSTM 
+552
+prediction information. The prediction information includes the predicted spread sequence. This 
+553
+module contains a hidden layer with 32 neurons, and the activation function employs ReLU to 
+554
+enhance the network's nonlinear expressive capability. To prevent overfitting and improve the 
+555
+model's robustness, a Dropout layer with a rate of 0.2 is added after the hidden layer.
+556
+Thirdly, the feature fusion stage concatenates the output from the LSTM attention mechanism 
+557
+with the predicted features:
+558
+(24)
+559
+Finally, the Actor network is responsible for policy output, mapping the feature vector to action 
+560
+probability distributions. The
+activation function is used to ensure the validity of the 
+561
+probabilities:
+562
+(25)
+563
+Where the output dimension is 4, corresponding to the four discrete actions: Hold, Long, Short, 
+564
+and Close.
+565
+The Critic network is responsible for value estimation, outputting the state value function
+to 
+566
+provide a baseline for policy updates:
+567
+(26)
+568
+Where the
+is the expected cumulative reward that can be obtained by following the current 
+569
+policy from the current state.
+570
+The network uses a multi-component loss function for end-to-end training:
+571
+(27)
+572
+Where:
+573
+
+Actor Loss (Policy Loss): 
+;
+574
+
+Critic Loss (Value Loss): 
+;
+575
+
+Entropy Regularization Term: 
+;
+576
+The entropy regularization term encourages the policy to maintain adequate exploration, avoiding 
+(
+)
+output
+Attention
+MultiHead LSTM
+
+(
+)
+, 
+attn
+features
+Combined Features
+Concat LSTM
+Prediction
+
+Softmax
+( )
+(
+)
+actor
+actor
+s
+Softmax W
+Combined Features
+b
+
+
+
+
+( )
+V s
+( )
+critic
+critic
+V s
+W
+Combined Features
+b
+
+
+
+( )
+V s
+total
+actor
+critic
+entropy
+
+
+
+
+L
+L
+L
+L
+[log
+( | )
+( , )]
+actor
+a s
+A s a
+
+
+
+
+E
+L
+2
+[(
+( )
+( )) ]
+critic
+r
+V s
+V s
+
+
+
+
+
+
+
+E
+L
+[
+( | )log
+( | )]
+entropy
+a
+a s
+a s
+
+
+
+
+
+E
+L
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+19
+577
+premature convergence to suboptimal strategies, where
+is the entropy regularization 
+578
+coefficient.
+579
+The two networks share the underlying feature extractor, reducing the number of parameters and 
+580
+promoting consistency in feature learning. The network is trained using the Adam optimizer with a 
+581
+learning rate set to 0.001, a discount factor
+set to 0.99, and gradient clipping (maximum gradient 
+582
+norm set to 0.5) to enhance training stability.
+583
+584
+2.3.3 Model Evaluation and Performance Analysis
+585
+586
+Model evaluation is conducted using a multi-dimensional indicator system, covering prediction 
+587
+accuracy, trading performance, and risk control. Prediction accuracy is assessed using statistical 
+588
+indicators such as 
+, Root Mean Squared Error (
+), and Mean Absolute Error (
+), 
+589
+which comprehensively measure the predictive ability of the LSTM model.
+590
+The mathematical formulas are as follows:
+591
+(28)
+592
+(29)
+593
+(30)
+594
+Where
+is the actual value at the
+sample, 
+is the predicted value at the
+sample, 
+595
+is the total number of samples, 
+is the mean of the actual values.
+596
+Trading performance is evaluated using metrics such as the Sharpe ratio (
+), annualized return, 
+597
+maximum drawdown (
+), Sortino ratio (
+), and trading frequency, reflecting the strategy's 
+598
+profitability and stability.
+599
+(1) Cumulative Return (
+):
+600
+(31)
+601
+Where
+is the return for the
+period, 
+is the total number of trading periods.
+602
+(2)
+:
+603
+(32)
+604
+Where
+is the average return of the asset portfolio, 
+is the risk-free rate, 
+is the standard 
+605
+deviation of the returns.
+0.1
+
+
+MSE
+RMSE
+MAE
+2
+1
+1
+ˆ
+(
+)
+n
+i
+i
+i
+MSE
+y
+y
+n
+=
+=
+-
+å
+2
+1
+1
+ˆ
+(
+)
+n
+i
+i
+i
+RMSE
+MSE
+y
+y
+n
+=
+=
+=
+-
+å
+1
+1
+ˆ
+|
+|
+n
+i
+i
+i
+MAE
+y
+y
+n
+=
+=
+-
+å
+iy
+i
+th
+
+ˆ iy
+i
+th
+
+n
+y
+1
+SR
+MDD
+2
+SR
+CR
+1
+1
+(1
+)
+T
+t
+t
+CR
+r
+=
+= Õ
++
+-
+tr
+i
+th
+
+T
+1
+SR
+1
+f
+R
+R
+R
+SR
+s
+-
+=
+R
+fR
+R
+s
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+20
+606
+(3)
+:
+607
+(33)
+608
+Where
+is the peak of portfolio value, 
+is the trough of portfolio value.
+609
+(4)
+:
+610
+(34)
+611
+Where
+is the downside volatility of the strategy (i.e., the standard deviation of returns below the 
+612
+target or risk-free rate). A higher value for this metric indicates that the strategy has achieved better 
+613
+returns while managing adverse risk.
+614
+615
+3. Empirical Study
+616
+617
+For the empirical analysis of this paper, the daily data of 50 domestic futures varieties from 
+618
+January 1, 2019, to December 31, 2024, provided by the Tushare library in Python, are adopted as 
+619
+the research sample. The sample covers multiple sectors including ferrous metals, chemicals, 
+620
+agricultural products, precious metals and treasury bonds, which systematically verifies the 
+621
+application effect of deep reinforcement learning in pairs trading in the futures market.To ensure 
+622
+the robustness of the results, the study designs three rolling time windows, namely 2019–2022, 
+623
+2020–2023 and 2021–2024. Within each window, the data of the first three years are used for pair 
+624
+selection and model training (with 2 years as the training set and 1 year as the validation set), while 
+625
+the data of the last year are used for out-of-sample backtesting to evaluate the actual investment 
+626
+performance of the strategy.
+627
+628
+3.1 Selection of Paired Assets
+629
+630
+In pairs trading, selecting appropriate asset pairs is one of the key links to the success of the 
+631
+strategy. This study adopts Ward's minimum variance method for systematic clustering, combined 
+632
+with the self-defined DC distance. The clustering process starts with 50 independent varieties, 
+633
+gradually merging the categories with the shortest distance until a single category is formed. The 
+634
+dendrogram generated in this process intuitively demonstrates the hierarchical relationships among 
+635
+various assets, among which the asset pairs merged first have the smallest DC distance and are 
+636
+theoretically most suitable for pairs trading.
+637
+Figures.3–5Figure.4 illustrate the clustering dendrograms corresponding to the three time 
+638
+windows, from which we can observe the dynamic correlation structures among different futures 
+639
+varieties.
+MDD
+max
+peak
+trough
+peak
+M D
+P
+P
+P
+D
+æ
+ö÷
+ç
+÷
+ç
+=
+÷
+çè
+ø
+-
+÷÷
+ç
+peak
+P
+trough
+P
+2
+SR
+2
+D
+f
+R
+R
+SR
+s
+-
+=
+D
+s
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+21
+640
+641
+642
+Figure.3 Futures Systematic Clustering Dendrogram (2019–2021)
+643
+644
+645
+Figure.4 Futures Systematic Clustering Dendrogram (2020–2022)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+22
+646
+647
+648
+Figure.5 Futures Systematic Clustering Dendrogram (2021–2023)
+649
+650
+Based on the clustering order, this study selects the first five aggregated asset pairs in each 
+651
+window as the pairs trading assets (see Table 1), which are named Pair 1 to Pair 5 respectively.
+652
+653
+Table 1
+654
+Systematic Clustering Results Based on DC Distance
+Sample Period
+Pair 1
+Pair 2
+Pair 3
+Pair 4
+Pair 5
+20190102-20211231
+(HC,RB)
+(JM,SF)
+(AL,V)
+(TF,TS)
+(B,Y)
+20200101-20221231
+(HC,RB)
+(TF,TS)
+(CF,CY)
+(Y,ZN)
+(J,JM)
+20210104-20231230
+(HC,RB)
+(SF,SM)
+(J,JM)
+(Y,ZN)
+(EG,V)
+655
+656
+The clustering results indicate that, across different time windows, various asset pairs exhibit 
+657
+strong correlation and stability. For instance, in the time window from 2019 to 2021, pairs with 
+658
+strong correlations include (HC, RB) (hot-rolled coil and rebar futures), (JM, SF) (coking coal and 
+659
+ferrosilicon futures), (AL, V) (aluminum and PVC futures), among others, demonstrating similar 
+660
+price performance and market characteristics. Similarly, in the 2020–2022 window, asset pairs such 
+661
+as (HC, RB) and (TF, TS) (5-year Treasury bond futures and 2-year Treasury bond futures) show 
+662
+comparable price trends. In the 2021–2023 window, pairs like (HC, RB) and (SF, SM) (ferrosilicon 
+663
+and silicomanganese futures) maintain high price consistency. Comparing the results across these 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+23
+664
+three time windows reveals that certain pairing relationships possess strong temporal stability (e.g., 
+665
+HC and RB), while others exhibit evident phased changes (e.g., chemical product pairs evolving 
+666
+from AL and V to EG and V). This dynamic feature suggests that investors, in practical applications, 
+667
+should periodically update their pair selections to adapt to changes in market structures and 
+668
+adjustments in policy environments.
+669
+Furthermore, analysis of these paired combinations reveals that most pairs exhibit a certain degree 
+670
+of industry relevance. Specifically, within the same category of futures, rebar (RB) and hot-rolled 
+671
+coil (HC), as core steel products, share iron ore raw material costs and are driven by demand from 
+672
+construction and manufacturing sectors, displaying strong synergistic fluctuations under policy 
+673
+interventions such as supply-side reforms; between coking coal (JM) and coke (J), there exists a 
+674
+rigid cost transmission chain, with coking coal prices accounting for over 70% of coke production 
+675
+costs, and changes in steel industry capacity synchronously influencing demand for both; cotton 
+676
+(CF) and cotton yarn (CY) form a typical vertical industrial chain relationship, where cotton serves 
+677
+as the direct raw material for cotton yarn, with its price fluctuations dominating downstream 
+678
+production costs and creating a stable linkage effect. Ferrosilicon (SF) and silicomanganese (SM) 
+679
+both belong to ferroalloys used in steelmaking, complementing each other in function within the 
+680
+steel production process, and are collectively constrained by industry energy consumption policies 
+681
+(such as power rationing and production limits) as well as terminal demand cycles; coking coal (JM) 
+682
+and ferrosilicon (SF) are indirectly linked through intermediate demand in steel production, where 
+683
+increased steel mill output leads to synchronous expansion in procurement demand for coking coal 
+684
+(as fuel) and ferrosilicon (as an additive). Treasury bond futures pairs (TF/TS) are governed by 
+685
+unified interest rate policies, with long- and short-term interest rate products responding 
+686
+synchronously during periods of monetary policy easing or tightening.
+687
+Likewise, the associations in cross-category combinations can also be economically explained: 
+688
+although ethylene glycol (EG) and polyvinyl chloride (V) belong to different sub-sectors within the 
+689
+chemical industry, both rely on crude oil as their core cost source, with oil price increases triggering 
+690
+co-directional fluctuations in both through a cost-push mechanism; yellow soybean No. 2 (B) and 
+691
+soybean oil (Y) embody the transmission logic of the agricultural product processing chain, where 
+692
+changes in soybean crushing margins directly link the prices of raw materials and finished products.
+693
+The association mechanisms of these combinations validate their rationality as paired assets: 
+694
+vertically integrated industrial chain varieties (e.g., JM-J and CF-CY) exhibit spread reversion 
+695
+characteristics driven by costs; industry symbiotic varieties (e.g., SF-SM and RB-HC) demonstrate 
+696
+mean reversion due to shared supply and demand sources; macro-sensitive combinations (e.g., TF697
+TS) offer event-driven arbitrage opportunities during policy turning points. This further 
+698
+demonstrates that the systematic clustering method based on Dynamic Correlation (DC) distance 
+699
+proposed in this paper possesses certain applicability, serving as an effective screening approach for 
+700
+pair combinations and laying a foundation for the construction of subsequent statistical arbitrage 
+701
+strategies.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+24
+702
+Therefore, the systematic clustering method based on DC distance proposed in this paper 
+703
+successfully identifies asset combinations with pair trading potential across different industry 
+704
+contexts, providing an asset pool for the design of subsequent trading strategies. Meanwhile, the 
+705
+dynamic nature of the pairing results also indicates that, in practical applications, a dynamic update 
+706
+mechanism should be established to ensure that trading strategies can adapt to the ever-changing 
+707
+market environment.
+708
+709
+3.2 Performance Evaluation of Pair Trading Based on Reinforcement Learning
+710
+711
+In this section, we systematically evaluate the impact of reinforcement learning pair trading 
+712
+strategies that integrate multiple spread information on the top three pair combinations screened 
+713
+using systematic clustering across multiple time windows, through three sets of comparative 
+714
+experiments. The experiments select each pair combination and employ indicators such as the 
+715
+Sharpe ratio, maximum drawdown, Sortino ratio, number of trades, and annualized return for 
+716
+comprehensive assessment.
+717
+718
+3.2.1 Performance Evaluation of the LSTM-A2C Model Integrating Spread Features
+719
+720
+This section constructs technical characteristic indicators based on the price spread and total 
+721
+trading volume of pair combinations. These indicators encompass multiple dimensions such as trend, 
+722
+volatility, and momentum, forming a relatively comprehensive market information capture 
+723
+framework. Meanwhile, to ensure the consistency of dimensions among the constructed 
+724
+characteristic indicators, different normalization methods are applied to these indicators, as shown 
+725
+in Table 2.
+726
+727
+Table 2
+728
+Constructed Features and Normalization Methods
+Features
+Normalization Methods
+Purpose
+SMA(20)
+Z-score Standardization
+Eliminate dimensionality and emphasize the 
+degree of deviation
+EMA(12)
+Z-score Standardization
+Eliminate dimensionality and emphasize the 
+degree of deviation
+RSI(14)
+Min-Max Normalization to 
+[0,1]
+Compress RSI to a fixed interval
+ROC(20)
+Min-Max Normalization to 
+Distinguish between positive and negative 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+25
+[-1,1]
+acceleration
+OBV
+Z-score Standardization
+Eliminate the impact of absolute trading volume 
+scale
+BBWidth
+Z-score Standardization
+Realize cross-variety comparability of volatility
+Spread
+Z-score Standardization
+Eliminate dimensionality and emphasize the 
+degree of deviation
+729
+Subsequently, feature selection is performed on these indicators, and the finally selected technical 
+730
+characteristic indicators are combined with LSTM prediction. The characteristic indicators selected 
+731
+for different pair combinations and the corresponding prediction results are shown in Table 3.
+732
+733
+Table 3
+734
+LSTM Prediction Results of Price Spreads of Paired Assets
+Windows
+Pair 
+MSE
+RMSE
+MAE
+Features
+(HC, RB)
+0.096
+0.309
+0.210
+Spread,EMA(12),SMA(20),RSI(14),OBV
+(JM, SF)
+28.935
+5.379
+4.722
+SMA(20), BBWidth
+2022
+(AL, V)
+0.068
+0.260
+0.213
+Spread, EMA(12), RSI(14)
+(HC, RB)
+0.026
+0.162
+0.124
+Spread,ROC(20), BBWidth
+(TF, TS)
+0.030
+0.173
+0.136
+Spread, EMA(12), SMA(20)
+2023
+(CF, CY)
+0.393
+0.627
+0.473
+Spread, EMA(12), SMA(20), BBWidth,OBV
+(HC, RB)
+0.029
+0.171
+0.029
+Spread, EMA(12), RSI(14)
+(SF, SM)
+0.329
+0.574
+0.330
+Spread, BBWidth
+2024
+(J, JM)
+0.046
+0.215
+0.177
+Spread, ROC(20)
+735
+736
+From the LSTM prediction results in Table 3, the model has achieved satisfactory prediction 
+737
+accuracy for most pair combinations. Moreover, the technical indicators constructed in this paper 
+738
+have played a certain role in predicting price spreads and improved the prediction accuracy. Taking 
+739
+the 2022 test set as an example, the mean squared error (MSE) of the (HC, RB) pair is 0.096, the 
+740
+root mean squared error (RMSE) is 0.309, and the mean absolute error (MAE) is 0.210. These 
+741
+indicators are all at relatively low levels, indicating that the LSTM model can effectively capture 
+742
+the price spread variation patterns of this pair. Similarly, the (AL, V) pair has achieved even higher 
+743
+prediction accuracy, with an MSE of only 0.068, demonstrating the advantages of LSTM in 
+744
+processing relatively stable price spread sequences.
+745
+It is worth noting that there are significant differences in the optimal feature sets among different 
+746
+pairs. For the (HC, RB) pair, the feature importance has changed over different years, shifting from 
+747
+relying on trading volume information (OBV) to pure price-based technical indicators, which 
+748
+reflects the evolution of market microstructure. The (JM, SF) pair exhibited relatively poor 
+749
+prediction performance in 2022 (MSE=28.935), mainly affected by the abnormal fluctuations of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+26
+750
+silicon iron futures. Therefore, it is necessary to establish an anomaly detection and model update 
+751
+mechanism in practical applications.
+752
+Subsequently, this paper utilizes the price spread information predicted by LSTM, combined with 
+753
+the original technical indicators, to form the state space of the A2C model, and ultimately constructs 
+754
+an intelligent decision-making model that integrates historical information, current states, and future 
+755
+expectations. To evaluate the actual performance of this integrated model, backtesting was 
+756
+conducted separately during the testing periods of the three samples, with the results shown in Table 
+757
+4.
+758
+759
+Table 4
+760
+Trading Backtesting Results of the LSTM-A2C Model Incorporating Multiple Price Spread 
+761
+Information
+Window
+s
+Pair
+SR1
+MDD
+SR2
+Number of 
+Trades
+CR
+(HC, RB)
+1.563
+-4.62%
+3.533
+87
+17.32%
+(JM, SF)
+-0.204
+-34.07%
+-0.244
+6
+-17.57%
+2022
+(AL, V)
+0.485
+-19.41%
+0.791
+66
+10.40%
+(HC, RB)
+1.257
+-2.85%
+2.06
+85
+6.96%
+(TF, TS)
+1.308
+-0.60%
+2.346
+70
+1.54%
+2023
+(CF, CY)
+1.820
+-6.70%
+2.626
+75
+19.79%
+(HC, RB)
+2.295
+-2.48%
+3.781
+70
+15.32%
+(SF, SM)
+0.846
+-22.54%
+1.143
+38
+19.24%
+2024
+(J, JM)
+0.923
+-9.09%
+1.167
+87
+14.28%
+762
+763
+The results in Table 4 demonstrate that the LSTM-A2C model incorporating price spread features 
+764
+has exhibited excellent performance in terms of risk-adjusted returns when considering transaction 
+765
+costs (set at 0.01%). It has achieved stable investment returns in the vast majority of testing scenarios.
+766
+From the perspective of risk-adjusted returns, the average Sharpe Ratio of all 9 pair combinations 
+767
+is 1.14, indicating that the strategy can generally obtain excess returns significantly higher than the 
+768
+volatility risk. Specifically, more than half of the combinations have a Sharpe Ratio exceeding 1.0. 
+769
+Among them, the (CF, CY) pair with a Sharpe Ratio of 1.82 and the (HC, RB) pair in 2024 with a 
+770
+Sharpe Ratio of 2.295 performed particularly well, fully demonstrating that these pairs can still 
+771
+maintain a high level of returns after risk adjustment. However, the Sharpe Ratio of the (JM, SF) 
+772
+pair is -0.204, which is negative. This indicates that the pair failed to generate effective returns 
+773
+during the testing period and exhibited high volatility. Thus, caution should be exercised in selecting 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+27
+774
+this pair combination, and dynamic evaluation is required in practical applications.
+775
+In terms of downside risk management, the average Sortino Ratio is 1.91. This result clearly 
+776
+indicates that the strategy has performed extremely effectively in controlling downside risk. In 
+777
+particular, the Sortino Ratio of the (HC, RB) pair in 2024 reaches as high as 3.781, demonstrating 
+778
+that the net value drawdown of this pair is extremely limited and its returns are mainly driven by 
+779
+upside volatility. This characteristic reflects that the strategy possesses favorable return stability, 
+780
+enabling it to effectively capture profit opportunities while controlling losses.
+781
+From the perspective of absolute return performance, the average annualized return rate of all 
+782
+combinations is 9.7%, indicating that the strategy possesses favorable profit potential. It is worth 
+783
+noting that the (HC, RB) pair has achieved stable positive returns (17.32%, 6.96%, 15.32%) during 
+784
+the three-year testing period, demonstrating that this pair trading strategy can generate sustained 
+785
+returns and exhibits robustness.
+786
+In terms of risk control, from the perspective of the Maximum Drawdown indicator, the average 
+787
+Maximum Drawdown of the combinations is -11.37%, indicating effective overall risk control. Most 
+788
+combinations have kept their Maximum Drawdown within 10%. In particular, the (TF, TS) pair 
+789
+(0.6%) and the (HC, RB) pair (2.85% in 2023) have demonstrated extremely strong capital 
+790
+protection capability. However, the Maximum Drawdown of the (JM, SF) pair, as high as 34.07%, 
+791
+is a significant risk signal. It suggests that the downside risk of specific pairs may get out of control 
+792
+under extreme market conditions, and it is necessary to introduce additional risk control mechanisms.
+793
+Finally, taking HC and RB as examples, a visualized presentation is conducted across the three 
+794
+sample periods, as shown in Figures 6-8, to intuitively observe the actual operational effect of the 
+795
+strategy. The generation of trading signals is characterized by a distinct price spread mean reversion 
+796
+orientation—when the price spread deviates from the historical mean by a certain degree, the system 
+797
+can promptly generate corresponding position opening signals. In terms of position management, 
+798
+the A2C algorithm demonstrates dynamic adjustment capability, enabling it to adjust positions 
+799
+according to market conditions. The cumulative return curve generally shows an upward trend, with 
+800
+the drawdown range controlled within a reasonable scope, reflecting the advantages of 
+801
+reinforcement learning in risk control.
+802
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+28
+803
+804
+Figure.6. Trading Signals, Positions and Cumulative Return Chart of HC and RB in 2022
+805
+806
+807
+Figure.7. Trading Signals, Positions and Cumulative Return Chart of HC and RB in 2023
+808
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+29
+809
+810
+Figure.8. Trading Signals, Positions and Cumulative Return Chart of HC and RB in 2024
+811
+812
+3.2.2 Performance Evaluation of the Benchmark A2C Model Without Predictive Information
+813
+814
+To evaluate the marginal contribution of predictive information, this paper designs a benchmark 
+815
+A2C model without the LSTM prediction module. This model makes decisions directly based on 
+816
+historical price spreads and technical indicators, representing a benchmark reinforcement learning 
+817
+approach. Table 5 presents the backtesting results of the benchmark A2C model. From the 
+818
+perspective of risk-adjusted returns, the benchmark model performs significantly worse than the 
+819
+improved model. Regarding the Sharpe Ratio, the 9 pair combinations of the benchmark model 
+820
+exhibit inconsistent performance, with most failing to exceed the 1.0 threshold. Although the (CF, 
+821
+CY) pair (Sharpe Ratio = 2.83) and the (TF, TS) pair (Sharpe Ratio = 2.602) perform relatively well, 
+822
+the (JM, SF) pair shows a negative value of -1.099. The overall stability is significantly inferior to 
+823
+the average level of 1.14 achieved by the LSTM-A2C model.The Sortino Ratio also reflects 
+824
+insufficient downside risk control capability. Despite individual combinations such as (CF, CY) 
+825
+achieving a high value of 5.415, the negative value of -1.33 for (JM, SF) exposes the model’s 
+826
+vulnerability under extreme market conditions. Compared with the average Sortino Ratio of 1.91 
+827
+for the LSTM-A2C model, the benchmark model is clearly at a disadvantage in suppressing 
+828
+downside volatility.
+829
+In terms of absolute return performance, the benchmark model exhibits an extreme polarization 
+830
+phenomenon. On the one hand, the (CF, CY) pair achieves impressive returns of 32.50%; on the 
+831
+other hand, the (JM, SF) pair (-44.66%) and the (J, JM) pair (-6.64%) suffer significant losses. This 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+30
+832
+extreme imbalance in return distribution is far more severe than that of the LSTM-A2C model (with 
+833
+an average of 9.7%), indicating that the benchmark model has significant flaws in terms of return 
+834
+stability and consistency. More seriously, the risk control capability of the benchmark model is 
+835
+clearly ineffective. The maximum drawdown indicator shows that (JM, SF) reaches as high as -
+836
+47.52%, far exceeding the average level of -11.37% of the LSTM-A2C model.
+837
+In terms of trading execution efficiency, the high-frequency trading of the benchmark model has 
+838
+not brought corresponding return improvement; instead, it may have exacerbated the erosion of 
+839
+transaction costs. In contrast, the LSTM-A2C model has achieved superior trading efficiency 
+840
+through more accurate signal recognition. This comparison fully illustrates three key findings: First, 
+841
+the absence of price spread features has prevented the benchmark model from effectively capturing 
+842
+the core signals of pair trading, resulting in a significant decline in strategy performance; second, 
+843
+compared with the basic A2C, the LSTM network has obvious advantages in handling temporal 
+844
+dependence and can better model dynamic price relationships; finally, the high-variance 
+845
+performance of the benchmark model (with both high returns exceeding 30% and huge losses below 
+846
+-40%) highlights the significant improvement in robustness of the improved model. In summary, 
+847
+this comparative analysis demonstrates the effectiveness and necessity of the LSTM-A2C method 
+848
+incorporating price spread features proposed in this study, providing important empirical support 
+849
+for the practical application of pair trading strategies.
+850
+851
+Table 5
+852
+Trading Backtesting Results of the Benchmark A2C Model
+Window
+s
+Pair
+SR1
+MDD
+SR2
+Number of 
+Trades
+CR
+(HC, RB)
+0.927
+-4.17%
+1.374
+83
+9.71%
+(JM, SF)
+-1.099
+-47.52%
+-1.33
+54
+-44.66%
+2022
+(AL, V)
+0.372
+-13.54%
+0.566
+61
+6.82%
+(HC, RB)
+0.25
+-4.76%
+0.424
+61
+1.23%
+(TF, TS)
+2.602
+-0.36%
+5.381
+65
+3.09%
+2023
+(CF, CY)
+2.83
+-6.92%
+5.415
+73
+32.50%
+(HC, RB)
+0.789
+-4.54%
+1.197
+63
+4.93%
+(SF, SM)
+0.936
+-10.81%
+1.533
+89
+21.90%
+2024
+(J, JM)
+-0.354
+-19.01%
+-0.453
+56
+-6.64%
+853
+854
+3.3 Comparative Analysis with Traditional Mean Reversion Strategies
+855
+856
+As a classic statistical arbitrage method, the traditional mean reversion pair trading strategy has 
+857
+been widely applied in financial markets. This strategy relies on the historical price spread 
+858
+characteristics of asset pairs and triggers trading signals by setting fixed trading thresholds (e.g., 1.5 
+859
+times the standard deviation of the price spread). To further verify the superiority of the method 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+31
+860
+proposed in this paper, a comparison is conducted between the reinforcement learning-based pair 
+861
+trading strategy and the traditional mean reversion strategy, evaluating its advantages in terms of 
+862
+profitability, risk control, trading efficiency, and adaptability. The performance data of the 
+863
+traditional strategy are presented in Table 6.
+864
+865
+Table 6
+866
+Trading Backtesting Results of the Traditional 1.5-Times Standard Deviation Pair Trading Strategy
+Window
+s
+Pair
+SR1
+MDD
+SR2
+Number of Trades
+CR
+(HC, RB)
+1.18
+-2.42%
+0.77
+8
+5.16%
+(JM, SF)
+1.09
+-12.49%
+0.76
+6
+21.73%
+2022
+(AL, V)
+-0.12
+-3.56%
+-0.03
+3
+-0.52%
+(HC, RB)
+0.79
+-1.37%
+0.38
+4
+1.84%
+(TF, TS)
+1.63
+-0.50%
+1.08
+6
+0.50%
+2023
+(CF, CY)
+2.38
+-0.65%
+3.28
+8
+10.82%
+(HC, RB)
+1.22
+-1.39%
+1.08
+4
+4.26%
+(SF, SM)
+0.95
+-9.30%
+0.66
+2
+15.06%
+2024
+(J, JM)
+0.64
+-8.63%
+0.22
+10
+5.67%
+867
+868
+From the perspective of overall performance, the traditional strategy exhibits typical stable yet 
+869
+conservative characteristics. In terms of risk-adjusted returns, the Sharpe Ratio performance is 
+870
+mediocre: the (CF, CY) pair (Sharpe Ratio = 2.38) and the (TF, TS) pair (Sharpe Ratio = 1.63) have 
+871
+achieved relatively good performance, but the negative value of -0.12 for the (AL, V) pair indicates 
+872
+that the strategy still faces failure risk in this pair. The Sortino Ratio also reflects moderate-level 
+873
+downside risk control capability, with its overall performance lying between the benchmark A2C 
+874
+model and the LSTM-A2C model.
+875
+In terms of absolute returns, the conservatism of the traditional strategy is more pronounced. The 
+876
+annualized return rates are generally low: except for the (JM, SF) pair with an annualized return rate 
+877
+of 21.73% and the (SF, SM) pair with 15.06%, most combinations have a return rate below 10%, 
+878
+which is far lower than the average level of 9.7% of the LSTM-A2C model. This low-return 
+879
+characteristic reflects the limitations of the fixed-threshold strategy—the subjective setting of 1.5 
+880
+times the standard deviation cannot adapt to the dynamic changes of the market, which may not 
+881
+only miss trading opportunities but also struggle to obtain excess returns in trending markets.
+882
+Risk control is the relative advantage of the traditional strategy. Maximum Drawdowns are 
+883
+generally controlled within a reasonable range: for example, the (TF, TS) pair is only -0.50%, and 
+884
+even the poorly performing (JM, SF) pair is merely -12.49%, far lower than the extreme drawdown 
+885
+level of the benchmark A2C model. This is attributed to the strict statistical threshold control, but 
+886
+such conservatism also limits the profit potential. In addition, the trading frequency of the traditional 
+887
+strategy is significantly lower (most combinations have a Number of Trades below 10). While this 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+32
+888
+reduces transaction costs, it also reflects the strategy’s lack of flexibility.
+889
+From the comprehensive comparison of the three models, it can be seen that: the LSTM-A2C 
+890
+model incorporating price spread features is significantly superior to the other two methods in both 
+891
+risk-adjusted returns and absolute returns, achieving the optimal balance between return rate and 
+892
+robustness; while the traditional 1.5-times standard deviation strategy exhibits stable risk control, 
+893
+the subjectivity of the fixed threshold limits its profit potential; the high-variance performance of 
+894
+the benchmark A2C model verifies the importance of the prediction module and price spread 
+895
+features. The LSTM-A2C method proposed in this study, through an intelligent dynamic decision896
+making mechanism, has successfully overcome the conservatism of traditional methods and the 
+897
+instability of benchmark reinforcement learning, providing a better solution for pair trading 
+898
+strategies.
+899
+900
+4. Conclusion
+901
+902
+This study develops an intelligent futures pair trading strategy based on LSTM-A2C. Through 
+903
+theoretical model design and empirical analysis, the main conclusions are drawn as follows: (1) The 
+904
+DC distance is effective in hierarchical clustering. The DC distance measurement method proposed 
+905
+in this paper, by integrating DTW-based short-term dynamic similarity and cointegration-based 
+906
+long-term relationship stability, can effectively identify futures pairs with stable arbitrage 
+907
+relationships. Empirical results show that the pairs selected by this method have obvious industry 
+908
+relevance and economic interpretability, such as rebar-hot-rolled coil (HRC), coking coal-coke, and 
+909
+cotton-cotton yarn, verifying the rationality and practicality of the clustering results. (2) The LSTM910
+A2C model incorporating price spread features exhibits favorable performance. The A2C 
+911
+reinforcement learning model integrating technical indicator feature engineering and LSTM 
+912
+prediction performs excellently in terms of risk-adjusted returns. In the out-of-sample testing of 9 
+913
+pair combinations, the Sharpe Ratio of this model generally exceeds 1.0, with the highest reaching 
+914
+2.295, and it exhibits favorable annualized return rates. Meanwhile, the Maximum Drawdown is 
+915
+controlled within a reasonable range, reflecting the significant advantages of reinforcement learning 
+916
+in dynamic risk management. (3) It demonstrates the marginal contribution of integrating predictive 
+917
+information. Comparative experiments show that compared with the benchmark A2C model, the 
+918
+A2C model integrated with LSTM predictive information can improve trading performance in most 
+919
+cases, especially exhibiting stronger adaptability in complex market environments.
+920
+Naturally, this study has certain limitations, and future research can be further explored in the 
+921
+following directions: (1) Introduction of high-frequency data and real-time decision-making: Utilize 
+922
+high-frequency data to study intraday pair trading strategies, improving trading frequency and 
+923
+capital utilization efficiency. Meanwhile, explore real-time feature update and online learning 
+924
+mechanisms to enable the strategy to adapt to market changes more quickly. (2) Multi-agent 
+925
+collaboration and portfolio optimization: Develop a multi-agent reinforcement learning framework 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+33
+926
+to realize collaborative trading and risk management of multiple pair combinations. Investigate the 
+927
+problem of dynamic weight allocation and portfolio optimization for pair combinations, 
+928
+constructing a more robust multi-pair trading portfolio. (3) Parameter optimization methods: Given 
+929
+the hyperparameter sensitivity existing in model training and strategy execution (such as neural 
+930
+network structure, reinforcement learning discount factor, trading threshold, etc.), future research 
+931
+should conduct in-depth exploration of more efficient and robust parameter optimization 
+932
+frameworks.
+933
+934
+935
+References
+936
+[1]
+Gatev E, Goetzmann W N, Rouwenhorst K G. Pairs trading: Performance of a relative-value 
+937
+arbitrage rule[J]. The review of financial studies, 2006, 19(3): 797-827.
+938
+[2]
+Goetzmann W, Rouwenhorst K G. Pairs trading: Performance of a relative value arbitrage 
+939
+rule[R]. Yale School of Management, 1998.
+940
+[3]
+Engle R F, Granger C W J. Co-integration and error correction: representation, estimation, and 
+941
+testing[J]. Econometrica, 1987,55(2): 251-276.
+942
+[4]
+Vidyamurthy G. Pairs Trading: quantitative methods and analysis[M]. John Wiley & Sons, 
+943
+2004.
+944
+[5]
+Huck N, Afawubo K. Pairs trading and selection methods: is cointegration superior?[J]. 
+945
+Applied Economics, 2015, 47(6): 599-613.
+946
+[6]
+Blázquez M C, Román C P. Pairs trading techniques: An empirical contrast[J]. European 
+947
+Research on Management and Business Economics, 2018, 24(3): 160-167.
+948
+[7]
+Ramos-Requena J P, Trinidad-Segovia J E, Sanchez-Granero M A. Introducing Hurst 
+949
+Exponent in Pair Trading[J]. Physica A:Statistical Mechanics and Its Applications, 2017, 
+950
+488:39-45.
+951
+[8]
+Bui Q, Ślepaczuk R. Applying Hurst Exponent in pair trading strategies on Nasdaq 100 
+952
+index[J]. Physica A: Statistical Mechanics and its Applications,2022,592:126784.
+953
+[9]
+Do B, Faff R. Does simple pairs trading still work?[J]. Financial Analysts 
+954
+Journal,2010,66(4):83-95.
+955
+[10] Gong J Y, Nan M J, Li H F, et al. The selection of risky assets and investment performance 
+956
+based on attribute reduction and dynamic time warping distances[J]. Management Review, 
+957
+2023, 35(04): 55-65.
+958
+[11] Sarmento S M, Horta N. Enhancing a pairs trading strategy with the application of machine 
+959
+learning[J]. Expert Systems with Applications,2020,158:113490.
+960
+[12] Han C, He Z, Toh A J W. Pairs trading via unsupervised learning[J].European Journal of 
+961
+Operational Research,2023,307(2):929-947.
+962
+[13] Fu N, Kang M, Hong J, et al. Enhanced Genetic-Algorithm-Driven Triple Barrier Labeling 
+963
+Method and Machine Learning Approach for Pair Trading Strategy in Cryptocurrency 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+34
+964
+Markets[J].MATHEMATICS,2024,12(5):780-780.
+965
+[14] Baek S, Glambosky M, Oh S H, et al. Machine learning and algorithmic pairs trading in futures 
+966
+markets[J]. Sustainability, 2020, 12(17): 6791.
+967
+[15] Eapen J, Bein D, Verma A. Novel deep learning model with CNN and bi-directional LSTM 
+968
+for improved stock market index prediction[C]//2019 IEEE 9th annual computing and 
+969
+communication workshop and conference (CCWC). IEEE, 2019: 0264-0270.
+970
+[16] Ali M, Khan D M, Alshanbari H M, et al. Prediction of complex stock market data using an 
+971
+improved hybrid EMD-LSTM model[J]. Applied Sciences, 2023, 13(3): 1429.
+972
+[17] Srijiranon K, Lertratanakham Y, Tanantong T. A hybrid framework using PCA, EMD and 
+973
+LSTM methods for stock market price prediction with sentiment analysis[J]. Applied Sciences, 
+974
+2022, 12(21): 10823.
+975
+[18] Koo E, Kim G. A Hybrid Prediction Model Integrating GARCH Models With a Distribution 
+976
+Manipulation Strategy Based on LSTM Networks for Stock Market Volatility[J].IEEE 
+977
+ACCESS,2022,10:34743-34754.
+978
+[19] Zhan B, Zhang S, Du H S, et al. Exploring statistical arbitrage opportunities using machine 
+979
+learning strategy[J]. Computational Economics,2022,60(3):861-882.
+980
+[20] Flori A, Regoli D. Revealing pairs-trading opportunities with long short-term memory 
+981
+networks[J]. European Journal of Operational Research, 2021, 295(2): 772-791. 
+982
+[21] Liou J H, Liu Y T, Cheng L C. Price spread prediction in high-frequency pairs trading using 
+983
+deep learning architectures[J]. International Review of Financial Analysis, 2024, 96: 103793.
+984
+[22] Pippas N, Ludvig E A, Turkay C. The Evolution of Reinforcement Learning in Quantitative 
+985
+Finance: A Survey[J]. ACM Computing Surveys, 2025, 57(11): 1-51.
+986
+[23] Brim A. Deep reinforcement learning pairs trading with a double deep Q-network[C]//2020 
+987
+10th Annual Computing and Communication Workshop and Conference (CCWC). IEEE, 2020: 
+988
+0222-0227.  
+989
+[24] Kim T, Kim H Y. Optimizing the Pairs‐Trading Strategy Using Deep Reinforcement Learning 
+990
+with Trading and Stop‐Loss Boundaries[J]. Complexity, 2019, 2019(1): 3582516.
+991
+[25] Wang C, Sandås P, Beling P. Improving pairs trading strategies via reinforcement 
+992
+learning[C]//2021 International Conference on Applied Artificial Intelligence (ICAPAI). IEEE, 
+993
+2021: 1-7.
+994
+[26] Wu X, Chen H, Wang J, et al. Adaptive stock trading strategies with deep reinforcement 
+995
+learning methods[J]. Information Sciences, 2020, 538: 142-158.
+996
+[27] Quintero C, Leon D, Sandoval J, et al. Deep Reinforcement Learning in Continuous Action 
+997
+Spaces for Pair Trading: A Comparative Study of A2C and PPO[J]. SN Computer Science, 
+998
+2025, 6(5): 407.
+999
+[28] Xu Z, Luo C. Improved pairs trading strategy using two-level reinforcement learning 
+1000
+framework[J]. Engineering Applications of Artificial Intelligence, 2023, 126: 107148.
+1001
+[29] Han W, Zhang B, Xie Q, et al. Select and trade: Towards unified pair trading with hierarchical 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed
+
+35
+1002
+reinforcement learning[C]//Proceedings of the 29th ACM SIGKDD Conference on Knowledge 
+1003
+Discovery and Data Mining. 2023: 4123-4134.
+1004
+[30] Oyewola D O, Akinwunmi S A, Omotehinwa T O. Deep LSTM and LSTM-Attention Q1005
+learning based reinforcement learning in oil and gas sector prediction[J]. Knowledge-Based 
+1006
+Systems, 2024, 284: 111290.
+1007
+[31] Guo M, Liu J, Luo Z, et al. Deep reinforcement learning for pairs trading: Evidence from China 
+1008
+black series futures[J]. International Review of Economics & Finance, 2024, 93: 981-993.
+1009
+[32] Xia Y, Wang T, Liew S C, et al. A Hierarchical Deep Learning Framework for Pair Trading 
+1010
+with Attention and Graph Networks[J]. Expert Systems with Applications, 2025: 128496.
+1011
+[33] Jeong Y S, Jeong M K, Omitaomu O A. Weighted dynamic time warping for time series 
+1012
+classification[J]. Pattern recognition, 2011, 44(9): 2231-2240.
+1013
+[34] Hu Y W. Stock forecast based on optimized LSTM model. Computer Science, 2021, 48(S1): 
+1014
+151-157.
+1015
+[35] Ouyang H B, Huang K, Yan H J. Prediction of financial time series based on LSTM neural 
+1016
+network. China Journal of Management Science, 2020, 28(04): 27-35.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=6207151
+Preprint not peer reviewed

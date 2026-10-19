@@ -1,0 +1,89 @@
+{
+  "doc_id": 131,
+  "titulo": "Fragmentation under High Frequency Trading: Theory and Evidence",
+  "resumen_operativo": "El paper presenta un modelo de competencia entre exchanges bajo la prevalencia del trading de alta frecuencia. Encuentra empíricamente que una menor fragmentación de mercado aumenta el spread, y demuestra teóricamente que el spread no debería utilizarse como benchmark único de la eficiencia del mercado debido a las pérdidas de bienestar asociadas a los costos tecnológicos del HFT.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Inversión competitiva en velocidad computacional (carrera armamentista) que funciona como un dilema del prisionero, generando beneficios para el operador más veloz pero una pérdida neta de bienestar social.",
+      "relaciones": [],
+      "cita_textual": "this kind of investment is a kind of prisoner’s dilemma. Such investment is needed for HFT traders to win, but does not improve efficiency of society."
+    },
+    {
+      "nombre": "market fragmentation",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "División de la liquidez entre múltiples bolsas, lo que provee más oportunidades de arbitraje y reduce la cantidad de operadores no informados por bolsa, afectando la competitividad.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "bid-ask spread"
+        }
+      ],
+      "cita_textual": "fragmentation gives traders more opportunity of arbitrage, which might improve price discovery but market makers lost their noise traders, which might increase the bid ask spread"
+    },
+    {
+      "nombre": "stale quote sniping",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde algoritmos de alta frecuencia ejecutan órdenes para aprovechar cotizaciones desactualizadas antes de que el market maker logre cancelarlas ante un cambio del valor fundamental.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "bid-ask spread"
+        }
+      ],
+      "cita_textual": "stale quote snipers who submit orders before market maker changes the orders when the fundamental value of the price of the stocks changes."
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sistema tradicional y continuo de negociación donde las transacciones se cruzan inmediatamente al existir contrapartida, propiciando ventajas basadas en la mínima latencia.",
+      "relaciones": [],
+      "cita_textual": "continuous limit order book (CLOB) where the trade occurs whenever the demand and supply crosses."
+    },
+    {
+      "nombre": "frequent batch auction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo alternativo de mercado que procesa operaciones agrupadas en intervalos de tiempo discretos en lugar de procesarlas de forma continua, eliminando la ventaja técnica marginal de la velocidad.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "high-frequency trading"
+        }
+      ],
+      "cita_textual": "if the trading is done by FBA under sufficiently large discrete time, FBA can stop HFT arms race and the bid ask spread becomes 0."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "El diferencial entre precios de oferta y demanda que los creadores de mercado ajustan por el riesgo de ser arbitrados y que, bajo mercados fragmentados, no es un reflejo ideal de eficiencia sistémica.",
+      "relaciones": [],
+      "cita_textual": "this numerical example shows the bid ask spread might not be a benchmark of the efficiency of the market."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La reducción en el número de bolsas operativas (debido a una interrupción técnica exógena) provoca un incremento significativo en el diferencial entre oferta y demanda.",
+      "mercado": "Nikkei 225 futures",
+      "periodo": "2014",
+      "magnitud": "bid ask spread 0.862 yen higher",
+      "condiciones": "Medido durante la sesión nocturna en la bolsa de Osaka, comparando periodos con 2 exchanges activos (por falla técnica de SGX) versus 3 exchanges activos.",
+      "robustez": "media",
+      "cita_textual": "The effect of system down, which means the number of exchanges is two, makes the bid ask spread 0.862 yen higher than that under three security exchange markets."
+    },
+    {
+      "afirmacion": "El bienestar general de los participantes no presenta una escala de mejora monótona conforme el spread disminuye en múltiples bolsas, debido a las pérdidas generadas por las inversiones competitivas del HFT.",
+      "mercado": "no especificado",
+      "periodo": "no especificado",
+      "magnitud": "U-shaped curve of the welfare",
+      "condiciones": "Analizado mediante una simulación teórica basada en competencia paramétrica de Bertrand con bienes diferenciados y costos de adopción tecnológica HFT.",
+      "robustez": "baja",
+      "cita_textual": "the monotonic increasing or decreasing bid ask spread over the number of exchanges and the U-shaped curve of the welfare over the number of the exchanges."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Brinda contexto sobre la relación no lineal entre liquidez aparente (spread estrecho) y riesgo adverso (sniping) al ejecutar órdenes pasivas en mercados electrónicos intensamente fragmentados."
+  }
+}

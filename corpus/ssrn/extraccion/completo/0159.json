@@ -1,0 +1,89 @@
+{
+ "doc_id": 159,
+ "titulo": "High Frequency Trading, Market Volatility and Trading Counterparty Performance",
+ "resumen_operativo": "El documento investiga la relación entre el High Frequency Trading (HFT) y la volatilidad del mercado en la Bolsa de Helsinki (OMXH) durante la crisis financiera de 2007-2008. Utilizando un modelo de clasificación de inversores a nivel cuenta, revela que, en el agregado y en intervalos de varios minutos, el HFT tiene una asociación negativa con la volatilidad, es decir, provee liquidez. Sin embargo, a escala de ultra-alta frecuencia (intervalos de 1 segundo), los algoritmos de HFT parecen evitar proporcionar liquidez ante incrementos de volatilidad. Además, se constata que las grandes firmas de HFT extraen ganancias consistentes en el intradiario operando frente a HFTs más pequeños y otros intermediarios lentos, mientras que los inversores institucionales asumen un costo a corto plazo justificable por la inmediatez de la ejecución.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "Investor Classification Model",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Metodología basada en la obra de Kirilenko et al. (2011) que clasifica cuentas de operadores en función de su comportamiento diario, evaluando especialmente la relación entre la posición neta al final del día (inventario) y la cantidad de transacciones ejecutadas.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "inventory versus turnover analysis"
+    }
+   ],
+   "cita_textual": "This method defines Investors as HFT or non-HFT based on their trading behavior, particularly their daily net holding position in the instrument, the level of activity on the market in terms of value traded, and the quantity of transactions executed..."
+  },
+  {
+   "nombre": "High-Frequency Traders (HFT)",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Subconjunto de intermediarios que representan el 7% superior de las cuentas por cantidad de transacciones diarias, operando con estrategias algorítmicas hiperactivas para capturar micro-beneficios mientras mantienen posiciones netas mínimas al cierre.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "Intermediaries"
+    }
+   ],
+   "cita_textual": "High-Frequency Traders (HFT) can be identified as a subset of Intermediaries and represent the top 7% of trading accounts when ranked by the number of daily transactions in which they are involved."
+  },
+  {
+   "nombre": "Realized Volatility",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Cálculo de volatilidad observado basado en el volumen operado y los desequilibrios entre ventas y compras para cada instrumento en un periodo determinado (1 segundo o 5 minutos).",
+   "relaciones": [
+    {
+     "tipo": "EVALUADO_POR",
+     "objeto": "Vector Autoregressive (VAR) model"
+    }
+   ],
+   "cita_textual": "RealizedV olatilityi,t = (sell$V olumei,t −buy$V olumei,t) −((buyV olumei,t −sellV olumei,t) × Cpricei,t)"
+  },
+  {
+   "nombre": "Vector Autoregressive (VAR) model",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo econométrico implementado para evaluar simultáneamente y en ultra-alta frecuencia (intervalos de 1 segundo o de 5 minutos) las respuestas y asociaciones dinámicas entre la participación del HFT y la volatilidad realizada.",
+   "relaciones": [
+    {
+     "tipo": "EVALUA",
+     "objeto": "Realized Volatility"
+    }
+   ],
+   "cita_textual": "The association between volatility and HFT participation as well as HFT order imbalance is analyzed using a Vactor Autoregressive [VAR] model approach."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "A nivel de resoluciones muy cortas (1-5 segundos), los algoritmos de HFT tienden a retirar su provisión de liquidez ante los repuntes de volatilidad, pudiendo agravar de forma ultra-rápida perturbaciones temporales en el precio.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "A frecuencias de minutos o diarias, una mayor participación de HFT está estadísticamente correlacionada con menor volatilidad en general, actuando como reductor de ineficiencias transitorias de precios.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Las contrapartes que más sufren costos a corto plazo frente a los grandes y veloces HFTs, suministrándoles sus rentabilidades recurrentes, son otras firmas HFT más lentas o menores, y operadores fundamentales o institucionales.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "El estudio analiza el mercado accionario nórdico; sin embargo, los hallazgos relativos a los horizontes de ejecución (resolución por segundo) y las dinámicas HFT vs HFT lenta / institucional, son aplicables al entendimiento microestructural del ES. Advierte que a niveles inferiores al segundo se presentan asimetrías de liquidez que deben considerarse al operar intradía con algoritmos."
+ }
+}

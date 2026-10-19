@@ -1,0 +1,117 @@
+{
+ "doc_id": 67,
+ "titulo": "The Statistical Limit of Arbitrage",
+ "resumen_operativo": "El paper investiga los límites estadísticos del arbitraje en un entorno de alta dimensionalidad donde los agentes no tienen información perfecta del Data Generating Process (DGP) y deben aprender las variables alfa (oportunidades de arbitraje) a partir de datos históricos. Argumenta que cuando los alfas son débiles y raros, incluso las técnicas óptimas de machine learning no pueden explotar todos los errores de precio. Proponen que esto crea una divergencia significativa entre el Sharpe ratio alcanzable de manera 'factible' por un operador y el Sharpe ratio 'inviable' teóricamente máximo. Introducen una estrategia óptima basada en el Bayes empírico (empirical Bayes) y el alisamiento transversal (cross-sectional smoothing) de las señales alfa, superando enfoques de múltiple testeo como Benjamini-Hochberg (B-H), Cross-Sectional Regression (CSR) y LASSO bajo condiciones empíricas.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "feasible Sharpe ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "El Sharpe ratio máximo alcanzable por una estrategia de trading que se restringe a usar únicamente información observable históricamente, sin depender de parámetros latentes del DGP.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "statistical arbitrage"
+    },
+    {
+     "tipo": "SE_OPONE_A",
+     "objeto": "infeasible Sharpe ratio"
+    }
+   ],
+   "cita_textual": "Empirically, it is the feasible Sharpe ratio—not the unattainable, infeasible one—that reveals the minimum reward-to-risk compensation arbitrageurs require."
+  },
+  {
+   "nombre": "infeasible Sharpe ratio",
+   "tipo": "metrica",
+   "definicion_en_contexto": "El Sharpe ratio máximo teórico que alcanzarían los agentes bajo expectativas racionales de información completa (conocimiento perfecto de la verdadera forma funcional y parámetros de los alfas).",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "statistical arbitrage"
+    }
+   ],
+   "cita_textual": "The infeasible Sharpe ratio often serves as the foundation for tests of the APT... While these tests are powerful and can lead to the discovery of alpha signals, they are not relevant for arbitrageurs limited to feasible trading strategies."
+  },
+  {
+   "nombre": "Benjamini-Hochberg procedure",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Método de control del False Discovery Rate (FDR) empleado en testeo múltiple, que en este contexto impone un 'hard-thresholding' descartando señales de alfa consideradas no significativas.",
+   "relaciones": [
+    {
+     "tipo": "MITIGA",
+     "objeto": "false discovery rate"
+    },
+    {
+     "tipo": "SE_OPONE_A",
+     "objeto": "optimal feasible strategy"
+    }
+   ],
+   "cita_textual": "A multiple-testing procedure as in Benjamini and Hochberg (1995) (BH) seeks to prevent false alpha discoveries by applying a p-value threshold... it tends to be overly conservative, falling short of optimality."
+  },
+  {
+   "nombre": "shrinkage approach",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Aplicación de penalizaciones tipo LASSO o Ridge (L1 o L2) a las regresiones transversales de alfa, cuyo objetivo es reducir o eliminar señales débiles para mejorar la estimación fuera de muestra.",
+   "relaciones": [
+    {
+     "tipo": "MEJORA_A",
+     "objeto": "cross-sectional regression"
+    },
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "feasible Sharpe ratio"
+    }
+   ],
+   "cita_textual": "The Lasso approach replaces all smaller signals by zero and shrinks the larger ones by λ in absolute terms. In contrast, the ridge penalty shrinks all signals proportionally... ridge is equivalent to CSR!"
+  },
+  {
+   "nombre": "optimal feasible strategy",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Estrategia que maximiza el Sharpe ratio en base a la información observada, empleando la media a posteriori empírica bayesiana del alfa y suavizando las estimaciones transversalmente en lugar de cortarlas bruscamente.",
+   "relaciones": [
+    {
+     "tipo": "SUPERIOR_A",
+     "objeto": "Benjamini-Hochberg procedure"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "empirical Bayes"
+    }
+   ],
+   "cita_textual": "The optimal strategy involves estimating the empirical distribution of alpha signals and assigning portfolio weights based on the relative magnitudes and associated uncertainty of the alpha estimates."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Alfas débiles y raros restringen severamente la viabilidad del arbitraje estadístico. Debido a la incerteza estadística, el Sharpe ratio máximo real es mucho menor que el Sharpe ratio inasequible asumiendo información perfecta.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "La estrategia de control de FDR (B-H) es demasiado conservadora para portafolios óptimos, ya que penaliza el rendimiento al descartar alfas pequeños que, agregados de forma eficiente (suavizado bayesiano), proveen retornos adicionales.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  },
+  {
+   "afirmacion": "Los Sharpe ratios viables empíricos sobre acciones estadounidenses desde 1965 a 2020 son menores a 0.7, contrastando con Sharpe teóricos de 5 a 20 (infeasible) asumiendo conocimiento perfecto de los parámetros del modelo.",
+   "mercado": "no especificado",
+   "periodo": "no especificado",
+   "magnitud": "",
+   "condiciones": "extraido por Gemini sin desglose de condiciones",
+   "robustez": "baja",
+   "cita_textual": ""
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "baja",
+  "nota": "El enfoque del paper trata el arbitraje estadístico como estrategias neutrales a factores con base en rebalanceo mensual de datos cross-sectional. Su marco teórico sobre los límites estadísticos ante señales débiles/raras usando empirical Bayes versus thresholds estadísticos (FDR) es filosóficamente valioso al buscar ineficiencias intradía, pero sus resultados empíricos y modelos no apuntan a alta frecuencia o datos granulares."
+ }
+}

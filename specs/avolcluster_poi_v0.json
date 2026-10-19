@@ -1,0 +1,47 @@
+{
+  "schema_version": "avolcluster_poi_v0.5",
+  "status": "DETECTOR_FROZEN_PENDING_P2",
+  "date": "2026-08-13",
+  "title": "aVolClusterPOI v0.5: one max-mass cluster per block, at-price split",
+  "complements": "edgelab/bridge/indicators/avolcellpoi2.py",
+  "nt8_source": "nt8/aVolClusterPOI.cs v0.5",
+  "kernel": "edgelab/bridge/indicators/avolclusterpoi.py",
+  "object_off_price": "Best-mass hot cluster whose close is outside the band. This is the level object for later first-passage vs mirror.",
+  "object_at_price": "Same detector, close inside the band. Occupation/congestion. Not S/R. Event AT_PRICE_CREATED. No FIRST_TOUCH lifecycle.",
+  "not_the_object": [
+    "BigTrap2 zones",
+    "single-cell aVolCellPOI2",
+    "QualityScore",
+    "target/stop/MFE/MAE",
+    "ZONE_TOUCHED spam"
+  ],
+  "research_defaults": {
+    "window_bars": 10,
+    "median_multiplier": 2.0,
+    "max_gap_ticks": 1,
+    "min_cluster_ticks": 2,
+    "time_bucket_minutes": 30,
+    "bucket_anchor": "SessionRelative",
+    "lookback_sessions": 20,
+    "detection_percentile": 98.0,
+    "min_samples_per_bucket": 20,
+    "max_age_bars": 0,
+    "one_cluster_per_block": true
+  },
+  "export_events": [
+    "ZONE_CREATED",
+    "AT_PRICE_CREATED",
+    "FIRST_TOUCH",
+    "ZONE_INVALIDATED"
+  ],
+  "forbidden_in_kernel": [
+    "enable_predictive_filter",
+    "min_quality_score_gate",
+    "reaction_target_ticks",
+    "reaction_stop_ticks",
+    "holdout",
+    "pnl",
+    "bigtrap2_intersection"
+  ],
+  "next": "P2 parity NT8 CSV vs Python on the same 6E 09-26 window. Then formal first-passage vs mirror on OFF_PRICE only."
+}

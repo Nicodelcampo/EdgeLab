@@ -1,0 +1,98 @@
+{
+  "schema": "edgelab.l2_pairing_next/1",
+  "source_inventory_scope": "Kaggle group My accessible datasets only, no claim about local PC",
+  "listed_datasets": 20,
+  "additional_ES_raw_L2_found": false,
+  "GC_source_files": [
+    "docs/README.md",
+    "docs/manifest.json",
+    "l1_quotes/20260531.parquet",
+    "l1_quotes/20260615.parquet",
+    "l2_depth/20260531.parquet",
+    "l2_depth/20260615.parquet",
+    "manifests/20260531.manifest.json",
+    "manifests/20260615.manifest.json",
+    "viewer_bundles/GC_L2_20260531.json",
+    "viewer_bundles/GC_L2_20260615.json"
+  ],
+  "GC_source": "nicolasbuttaro/edgelab-l2-gc-bookmap-audit-20260921",
+  "GC_dataset_version": 2,
+  "sessions": {
+    "20260531": {
+      "schema": "edgelab.l2_pairing_preflight/1",
+      "scope": "CUSTODY_TAPE_PREFLIGHT_NOT_BOOK_VALIDATION",
+      "instrument": "GC",
+      "session": "20260531",
+      "outcomes_computed": false,
+      "models_fitted": 0,
+      "book_replay_gate": "NOT_RUN",
+      "predictive_run_gate": "STOP_MANIFEST_AND_APPROVAL_REQUIRED",
+      "input_sha256": {
+        "ticks": "7976fbe9814eff0e234b74f36af09d42938bcdb154067ea736a46a571f688b1d",
+        "l1": "2a941209c88f053bf69b3a8373001172237420d3e95aa7fa511efd5ea569bdd1",
+        "l2": "31d12d6db6c3b77a507ea4feab297bf4ca5f44fdd85104f8d2739b56f41613aa",
+        "session_manifest": "9981624f224cf33a25ff0fd2c3e983ca6ffa0916315e4ec2fc54ebe16ebdbe1a"
+      },
+      "tape": {
+        "gate": "PASS",
+        "l1_trades": 13913,
+        "ticks": 13913,
+        "mismatch_rows": 0,
+        "timestamp_mismatches": 0,
+        "price_mismatches": 0,
+        "volume_mismatches": 0
+      },
+      "gate": "PASS",
+      "clock_scope": "EXPLICIT_OFFSET_EXACT_ORDERED_TAPE_ONLY_NOT_ABSOLUTE_CLOCK_CERTIFICATE",
+      "nearest_or_rounding_used": false,
+      "config_sha256": "8a3ff27247f8a8cf45ce44402716e08f4189388e4ed78c083e4ee1717746bc6f",
+      "runner_sha256": "99a0e3e3fe1934bad6834a16f0e5187521f7abb1e0a6776eab8276e28b6091d1"
+    },
+    "20260615": {
+      "schema": "edgelab.l2_pairing_preflight/1",
+      "scope": "CUSTODY_TAPE_PREFLIGHT_NOT_BOOK_VALIDATION",
+      "instrument": "GC",
+      "session": "20260615",
+      "outcomes_computed": false,
+      "models_fitted": 0,
+      "book_replay_gate": "NOT_RUN",
+      "predictive_run_gate": "STOP_MANIFEST_AND_APPROVAL_REQUIRED",
+      "input_sha256": {
+        "ticks": "7976fbe9814eff0e234b74f36af09d42938bcdb154067ea736a46a571f688b1d",
+        "l1": "5922f1ac0d6d34e2a89c34c21b2422529185169cc47d02181d9907d34306b5fe",
+        "l2": "8e37c9753ca8ab9c45c12b7b036bc14d136db9fad9d1cd7becfd4e9f5f8bc709",
+        "session_manifest": "713b735707774b44f328229660dc5fc524b43c569b03da6c11da21b57ee1f142"
+      },
+      "tape": {
+        "gate": "ABSTAIN_ORDERED_TAPE_IDENTITY",
+        "l1_trades": 92515,
+        "ticks": 92515,
+        "mismatch_rows": 5,
+        "timestamp_mismatches": 5,
+        "price_mismatches": 0,
+        "volume_mismatches": 0
+      },
+      "gate": "ABSTAIN_ORDERED_TAPE_IDENTITY",
+      "clock_scope": "EXPLICIT_OFFSET_EXACT_ORDERED_TAPE_ONLY_NOT_ABSOLUTE_CLOCK_CERTIFICATE",
+      "nearest_or_rounding_used": false,
+      "config_sha256": "4cef7b1c642e77567a10c91ae4797dd1695c6443e2233cbaa551035ea3903041",
+      "runner_sha256": "99a0e3e3fe1934bad6834a16f0e5187521f7abb1e0a6776eab8276e28b6091d1"
+    }
+  },
+  "tests_passed": 14,
+  "ES_actual_raw_run": "NOT_RUN_MISSING_BOOK_INPUT",
+  "ES_synthetic_fixture": "PASS_NOT_REAL_DATA",
+  "new_book_replays": 0,
+  "outcomes_computed": false,
+  "models_fitted": 0,
+  "previous_independent_audit_jun15_mismatches": 5,
+  "comparison_plan": [
+    {
+      "grain": "custody/tape QA per raw file",
+      "unit": "gate and mismatch counts",
+      "population": "2 existing GC source files; ES synthetic separate",
+      "disposition": "prose",
+      "reason": "Engineering guardrail, no economic comparison or new performance claim"
+    }
+  ]
+}

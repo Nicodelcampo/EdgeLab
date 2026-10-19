@@ -1,0 +1,1214 @@
+Electronic copy available at: http://ssrn.com/abstract=2225753
+Ultra High Frequency Statistical Arbitrage
+Across International Index Futures
+Hamad Alsayed and Frank McGroarty
+School of Management, University of Southampton, UK.
+February 20, 2013
+Abstract
+We show that exploitable lead-lag relations of the order of a few hundred milliseconds
+exist in the three pairings between the S&P 500, FTSE 100, and DAX futures
+contracts.
+These relations exhibit clear intra-daily patterns, particularly around
+the US open, the European close, and the announcement of macroeconomic data.
+Using this information, we forecast mid-quote changes in lagging contracts with
+a directional accuracy in excess of 85%.
+A simple statistical arbitrage strategy
+exploiting these relations yields economically signiﬁcant proﬁts which are robust
+to market impact costs and the bid-ask spread. However, returns are sensitive to
+the risk of slippage, and the most proﬁtable trading opportunities rarely exist for
+longer than 300 milliseconds. Hence, we highlight price slippage and infrastructure
+costs as the most signiﬁcant limits to arbitrage in this market setting. Overall, our
+results accord with the view that informational ineﬃciencies incentivize arbitrageurs
+to appropriate pricing anomalies.
+Keywords: Lead-Lag Relationships, Futures Markets, Hayashi-Yoshida Cross Correlation Estimator, Statistical Arbitrage.
+JEL classiﬁcation: F36, G14, G15.
+1
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+Electronic copy available at: http://ssrn.com/abstract=2225753
+2
+1. Introduction
+Employing a recent advance in the statistical measurement of lead/lag relationships
+(Hayashi and Yoshida (2005), Hoﬀman et al (2010)), this paper’s principal contribution is to uncover the existence of sub-second exploitable disequilibria which occur
+across international index futures.
+Our work is motivated by evidence of increasing international ﬁnancial integration
+in recent years (Ayuso and Blanco (2001), Kearney and Lucey (2004), Evans and
+Hnatkovska (2005)). If on the one hand, markets were perfectly integrated, eﬃcient,
+and frictionless, then returns on closely related securities would exhibit perfect simultaneity and contemporaneous correlation, so as to preclude the possibility of
+cross-market arbitrage (De Jong and Donders (1998)). On the other hand, there is
+wide evidence that frictions impede the ﬂow of information across markets (Lo and
+Mackinlay (1990)), and give rise to lead/lag patterns.1 Now, if the price adjustment
+process is not instantaneous, then we ask: Do lead/lag patterns across segmented
+markets induce cross-market predictability? Does information about future price
+adjustments admit the possibility of arbitrage?
+This is the ﬁrst paper to provide answers to these questions within the important
+but overlooked context of international stock index futures. Speciﬁcally, we focus
+on lead/lag relations in the three pairings between the S&P 500, FTSE 100, and
+DAX futures contracts. While previous works focus on the relation between futures
+contracts and their underlying stock indices, the vast majority highlight factors
+such as trading costs, price staleness, and illiquidity in the index constituents which
+render spot-futures arbitrage infeasible (see e.g.
+Brennan and Schwartz (1990)).
+In contrast, futures contracts are highly liquid instruments with low upfront capital
+1Examples include the S&P 500 futures vs spot in Kawaller et al. (1987), the Major Market Index
+futures vs spot in Stoll and Whaley (1990), and the FTSE 100 futures vs spot in Brooks et al.
+(2001).
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+3
+requirements and trading costs. Therefore, we suggest that pairs of futures contracts
+constitute an ideal setting under which to examine lead/lag relationships.
+We complement the extant literature in four ways. Firstly, we employ the HayashiYoshida (Hayashi and Yoshida (2005), hereafter HY) cross-correlation estimator to
+measure the speed of price adjustment. The HY estimator readily allows for irregular
+and non-synchronous quote arrival times without the need for coarse resampling.
+This feature allows us to examine microscopic lead/lag patterns, which is particularly
+useful as we ﬁnd that the majority of price adjustments take place at sub-second
+intervals. Secondly, we employ Best Bid and Oﬀer (BBO) quote data, time-stamped
+to the millisecond. BBO quotes form the top level of the Central Limit Order Book,
+thus constituting a continuous price series free of stale quotes. The use of ultra-high
+frequency data is crucially important, because the speed of price adjustment is likely
+to be high in electronically traded markets. Thirdly, we place emphasis on both the
+forecasting accuracy, and arbitrage returns, in assessing the evidence against crossmarket eﬃciency. Finally, we document the risks and costs which constitute the
+greatest limits to arbitrage in this market setting.
+Our results show evidence of highly signiﬁcant lead/lag relationships between the
+three pairs. On average, the S&P 500 leads the FTSE 100 and DAX contracts by
+98 and 349 milliseconds respectively, consistent with the notion that international
+price discovery originates in the US. The FTSE 100 leads the DAX contract by
+33 milliseconds on average. We ﬁnd some evidence of bi-directional causality in
+the FTSE-DAX pair, but very little between either transatlantic pair. Further, the
+FTSE-DAX pair is more strongly correlated than either transatlantic pair, in line
+with the notion of imperfect international integration (Jorion and Schwartz (1986)).
+The lead/lag relations across all pairs exhibit strong intraday seasonality: Correlations among all pairs peak around daily economic announcements at 13:30 GMT,
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+4
+and fall sharply when the FTSE 100 and DAX cash markets close at 16:30 GMT,
+rebounding in evening trade. The S&P 500 contract increases its lead over both
+FTSE 100 and DAX contracts at the announcement of data, at 14:30 GMT when
+the S&P 500 cash market opens, and at the European close. It is important to
+note that none of these results are the product of statistical artifacts arising from
+diﬀerences in liquidity or quote arrival frequency.
+Based on simple threshold triggers, mid-quote moves of leading contracts forecast
+subsequent moves of lagging contracts with a directional accuracy of over 85%. This
+accuracy relates directly to the sensitivity of the threshold: The more conservative
+the threshold, the ”cleaner” the trigger signal, and the more accurate the forecast.
+Finally, a simple trading exercise provides evidence against auto-eﬃciency across international markets. Leading mid-quote moves are used to generate buy/sell signals
+in lagging contracts, and the returns aggregated net of all costs. Arbitrage proﬁts
+are economically and statistically signiﬁcant - a strategy that trades only 5 contracts
+per trading signal generates aggregate proﬁts of around GBP 100,000 per month.
+However, returns are sensitive to the risk of price slippage: Around half the proﬁts
+disappear if 20% of trades execute at the next best price. Further, the windows of
+arbitrage opportunity are narrow, with the most proﬁtable trades rarely existing for
+more than 300 milliseconds. This suggests that technology costs are a signiﬁcant
+consideration for arbitrageurs in this setting.
+Overall, we conclude that information ﬂows across international markets are not
+instantaneous, but rather exhibit brief delays. Importantly, these delays last long
+enough, and induce pricing anomalies large enough, to compensate arbitrageurs
+for appropriating pricing disequilibria. Our results accord with the Grossman and
+Stiglitz (1976, 1980) suggestion that temporary disequilibria incentivize arbitrageurs
+to correct pricing anomalies.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+5
+2. Related Literature
+Introduced in February 1982 by the Kansas City Board of Trade, the Value Line
+contract was the world’s ﬁrst index futures contract, followed shortly by the S&P
+500 contract (Gulen and Mayhew (2000)). As futures and other derivative contracts
+become more pervasive, research exploring the link between these and their underlying markets, as well as across markets, becomes increasingly focal. Our work is
+related to two broad streams of literature which constitute a substantial body of
+work documenting inter-market pricing relationships.
+The ﬁrst stream explores price discovery and the temporal pricing relationship between futures contracts and the underlying cash index. The seminal research of
+Zeckhauser and Niederhoﬀer (1983) documents the possibility that futures prices
+can predict spot prices.2 The early work involving intraday data of Kawaller et al.
+(1987) provides evidence that US futures prices lead spot prices with a time lag of
+around 45 minutes. The authors attribute this lag to the inertia of stock trading
+relative to futures trading, which implies that the futures market contributes most
+to price discovery. Similarly, Herbst et al. (1987) and Stoll and Whaley (1990)
+document that futures prices lead spot prices by around 8 minutes, whereas Wang
+and Wang (2001) show that price discovery is bi-directional when volatility is high.
+The spot-futures relationship has also been explored for a number of diﬀerent countries. Wahab and Lashgari (1993), Abhyankar (1998), Brooks et al. (2001), and
+Brooks and Garrett (2002) analyze UK spot-futures data, Tse (1995) explores the
+Japanese spot-futures relationship, while the case of Greece is examined in Kenourgios (2004) and Andreou and Pierides (2008). These works largely conﬁrm the notion
+that futures prices lead spot prices, suggesting that price discovery takes place in
+the futures market. But what is the signiﬁcance of these pricing relationships?
+2The term spot refers to the underlying index cash market - e.g. the constituent stocks of an index.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+6
+This question is explored in the second stream of literature to which our work
+belongs. On the one hand, an important implication of a lead/lag relationship is
+the potential for cross-market return predictability and arbitrage.
+On the other
+hand, the authors in Brooks et al.
+(2001) point out that while futures markets
+are capable of responding to new information quickly, the cash index can only fully
+respond once every constituent stock price updates. An important question then
+arises: Is a persistent lead/lag relationship evidence of market ineﬃciency?
+While works such as Figlewski (1984, 1985), Brennan and Schwartz (1990), Thomas
+(2002), Richie et al. (2008), and Cummings and Frino (2011) document evidence
+of signiﬁcant disequilibria in the spot-futures relation, there are two commonalities
+in these works: First, the nature of the pricing relation examined therein is not a
+temporal one based on lead/lag eﬀects, but rather a mispricing approach based on
+a cost of carry model. Second, disequilibria in these works are frequently attributed
+to transaction costs, market (im)maturity, and liquidity eﬀects that give rise to
+disequilibria while precluding arbitrage.
+The literature exploring arbitrage based on lead/lag relationships is relatively sparse.
+Stoll and Whaley (1990) suggest that although futures generally lead spot prices,
+the eﬀect is not uni-directional, making spot-futures arbitrage diﬃcult. Brooks et
+al. (2001) compare several forecasting models and demonstrate that the FTSE 100
+futures contract can achieve over 65% accuracy when forecasting the FTSE 100
+index. However, when a trading strategy based on this is tested, proﬁts are not
+robust to trading costs.
+Our paper relates to these works by placing emphasis on the predictability of returns, and the proﬁtability of arbitrage. However, unlike these works, we pursue
+this theme in an international setting. Indeed, one major commonality linking these
+works is a focus on inter-market relationships within the same country. Now, recent
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+7
+advances in communications technology have contributed to the integration of similar but otherwise fragmented markets. One direct consequence of this integration is
+a trend towards the equalization of expected returns across global markets - a single
+”relevant” event is able to move global stock market indices jointly (Eiteman et al
+(1994), Medeiros et al. (2009)).
+There are several works which explore temporal relationships across international
+markets (Eun and Shim (1989), Hamao et al. (1990), Abhyankar et al. (1997),
+Antoniou et al (2003), Innocenti et al. (2011)). However, few focus explicitly on
+the link between lead/lag eﬀects and arbitrage, none employ high-frequency data,
+and none focus on futures contracts. So why is doing so important? Employing
+high-frequency data is particularly important to uncover temporal relations which
+are invisible to the discrete-price observer. Goetzmann et al. (2005) document a
+dramatic increase in global market correlations over the last two decades, which
+increases international market integration and naturally pushes evidence of lead/lag
+relationships deeper into the sub-minute and sub-second space. Examining the link
+between lead/lag eﬀects and arbitrage has important implications towards the theory
+of Eﬃcient Markets. Finally, using futures data mitigates many of the limitations of
+spot-futures arbitrage, such as transaction costs and illiquidity. Therefore, exploring lead/lag relationships across diﬀerent futures contracts provides an important
+platform on which to test for inter-market predictability and arbitrage.
+In what follows, we employ BBO quotes time-stamped to the millisecond for the S&P
+500, FTSE 100, and DAX futures. These contracts are arguably the most globally
+liquid ﬁnancial securities, and by using them, we mitigate to the greatest extent
+possible the transaction cost barrier, and the spurious lead/lag relation generated
+by liquidity diﬀerences across the contracts. Anticipating that lead/lag patterns
+occur at very ﬁne timescales, we employ the HY estimator which is statistically
+robust to non-synchronous trading and irregular quote-arrival times.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+8
+3. Data and Methodology
+Here we provide details of our data and data reﬁnement procedures, together with
+details of our implementation of the HY estimator. Also, we contrast the performance of HY against a common discretization procedure. Finally, we provide details
+of the forecasting and trading strategy we employ.
+3.1 - Futures Contracts Data
+Our data consist of the three most liquid futures contracts globally, namely the
+DAX, FTSE 100, and S&P 500 E-mini futures contracts.3 For each contract, we
+obtain BBO quotes containing price and volume information, time-stamped to the
+millisecond. Our data spans the period January 9, 2012 - February 28, 2012. Each
+contract is monitored for 12 hours per day, between 08:30 and 20:30 GMT. Because
+futures contracts operate on a quarterly expiration cycle, we focus this study on the
+the current ”active” contracts, namely those expiring in March 2012. In all, our
+data set consists of a number of BBO quotes in excess of 100 million.
+Our data is sourced from the CME, Eurex, and NYSE-Liﬀe exchanges. Table 1
+provides an overview of the institutional features of the data set.
+Table 1: Futures Data. This table describes some institutional features of the contracts
+within our data set. The fourth column shows the futures multiplier relative to the index.
+The ﬁfth column shows the minimum price increment. The last two columns show, as of
+January 2012, the average number of contracts traded, and the average daily turnover. Data
+are obtained from Eurex, NYSE-Liﬀe, and CME Group.
+3The E-mini is the electronically traded version of the S&P 500 contract. The traditional contract
+is traded primarily by open outcry. The E-mini is by far the most liquid futures contract globally.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+9
+We see from Table 1 that these contracts are highly liquid. Given that our aim is to
+ultimately establish the existence of arbitrage opportunities based on lead/lag relationships, our choice of data set is deliberately conservative - it is well documented
+that liquidity and the availability of arbitrage are inversely related.
+Inspired by Schultz and Shive (2010), we apply a number of crucial data ﬁltering
+processes. Speciﬁcally, we exclude data which qualiﬁes any of the following:4
+• Bid Price ≥Ask Price,
+• Bid Volume = 0 and/or Ask Volume = 0,
+• Ask Price > Bid Price by more than 25%,
+• Mid quote return ≥25% or ≤−25%.
+Since we use BBO quotes, we are in eﬀect continuously observing the current best
+quote within the central order book. New BBO quotes arrive when there is either
+a change in the current best price, or a change in the available liquidity at the
+current best price. In the ﬁrst scenario, If a new quote arrives that is better than
+the current best price, or an incoming trade consumes all the liquidity available at
+the best price, the BBO price and volume update. In the second scenario, if a new
+quote arrives at the current best price, or an incoming trade does not consume all
+the currently available liquidity, the BBO volume updates, but the price does not.
+In view of establishing lead/lag relationships, the diﬀerence between the above two
+scenarios is non-trivial. If we monitor changes in the mid-quote, the ﬁrst scenario
+will always yield a non-zero return, while the second scenario will always yield a zero
+return. Our aim is to establish whether mid-quote changes in one futures contract
+portend corresponding changes in another. This aim is best served by focussing
+purely on non-zero returns, and so we remove all zero-returns from our data. This
+process carries the beneﬁt of allowing us to deem all non-zero returns as informative
+4In all, this process removes around 0.2% of our data.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+10
+to the lead/lag relationship.5 A similar procedure is performed in Huth and Abergel
+(2012).
+3.2 - Trading Costs and the Representative Investor
+Costs pertaining to futures trading consist of the bid/ask spread, which is accounted
+for directly in the BBO quote data. Further, each exchange charges a fee for order
+submission and clearing. These are outlined below.
+Table 2: Exchange Costs. This table shows the costs for order submission and clearing
+levied by the Eurex, NYSE-Liﬀe, and CME Group. These relate to trading the DAX, FTSE
+100, and S&P 500 contracts, respectively.
+The costs in Table 2 apply on a per-order basis, regardless of the size of the order.
+Given that the notional amount of a single futures contract is 10, 25, or 50 times its
+underlying value (see Table 1), the costs in Table 2 are economically small. However,
+our approach warrants the submission of a vast number of market orders aimed at
+exploiting minute pricing disequilibria across these markets. The costs in Table 2
+are negligible for a long-term investor, but are a signiﬁcant consideration for our
+purposes.
+With that in mind, our representative investor is akin to a quantitative hedge fund
+utilizing a fully algorithmic strategy, with access to co-location services within the
+exchange buildings. We choose this type of investor for two reasons: Firstly, all
+three contracts are 100% electronically traded. Hendershott et al. (2011) provide
+evidence that some 70% of NYSE trades are executed by investors of this type.
+Secondly, our approach aims to exploit temporal pricing disequilibria which exist
+5Griﬃn and Oomen (2011) provide a thorough discussion of similar sub-sampling routines.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+11
+predominantly in the sub-second horizon. Clearly, such speeds lie beyond the scope
+of human traders.
+3.3 - The Hayashi-Yoshida Estimator
+In Hayashi and Yoshida (2005),6 the authors introduce a novel estimator of the
+covariance between two non-synchronous processes. Speciﬁcally, let (Ω, F, P) be a
+probability space, and let Xt and Yt be two correlated processes such that:
+(1)
+dXt = µXXtdt + σXXtdW X
+t
+dYt = µY Ytdt + σY YtdW Y
+t ,
+where W X
+t
+and W Y
+t
+are Brownian motions with respect to P. Assume that the
+correlation ⟨W X
+t , W Y
+t ⟩= ρ. Assume further that Xt and Yt are sampled at discrete
+observation times 0 = tX
+0 ≤tX
+1 ≤· · · ≤tX
+n = T X and 0 = tY
+0 ≤tY
+1 ≤· · · ≤tY
+m = T Y
+respectively. Importantly, these observation times are assumed independent of each
+other and of Xt and Yt - which in practical terms suggests two things. Firstly, the
+quote arrival frequency of one asset does not inﬂuence that of the other. Secondly,
+the quote arrival frequency of each asset does not depend on the value of that asset.
+Let us deﬁne the following terms:
+(2)
+IX
+i =
+ tX
+i , tX
+i+1
+
+IY
+j =
+ tY
+j , tY
+j+1
+
+.
+Here, IX
+i and IY
+j denote time intervals between the arrival of quotes in assets X and
+Y respectively, and this concept is illustrated in Figure 1.
+6For brevity, mathematical proofs in this section are omitted. However, we direct the interested
+reader to works in which these proofs are available.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+12
+Figure 1.
+Time Intervals. A time-line illustration of quote arrivals in X (top) and Y
+(bottom). Quotes are marked ”X”. Intervals between quotes are marked IX and IY .
+Figure 1 depicts a typical scenario encountered with high-frequency data. Quotes
+arrive irregularly for each asset, and asynchronously across assets. Robustly estimating the covariation between data which exhibit these phenomena is the subject
+of HY. Given (1) and (2), the HY estimator for the covariance CX,Y is:
+(3)
+CX,Y =
+X
+i,j
+∆X
+ IX
+i
+
+∆Y
+ IY
+j
+
+I{IX
+i ∩IY
+j̸ =∅},
+where ∆is the diﬀerence operator, and I is an indicator function such that:
+I =
+
+
+
+
+
+
+
+1,
+if IX
+i ∩IY
+j̸ = ∅
+0,
+otherwise.
+The covariance CX,Y in (3) yields the HY correlation coeﬃcient ρHY as follows:
+(4)
+ρHY = CX,Y
+σXσY
+=
+P
+i,j ∆X
+ IX
+i
+
+∆Y
+ IY
+j
+
+I{IX
+i ∩IY
+j̸ =∅}
+qP
+i [∆X (IX
+i )]
+2 P
+j
+
+∆Y
+ IY
+j
+2 .
+In practice, equations (3) and (4) amount to summing the product of all returns
+between assets X and Y once they fully or partially share a time overlap. Because
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+13
+of this property, the HY estimator allows for the inclusion of all data points, without
+the need for regularizing (re-sampling) the data.
+As it is currently stated, equation (4) measures the contemporaneous correlations
+between X and Y . Hoﬀman et al. (2010) extend the estimator to allow for leads
+and lags. Following from (2), we deﬁne:
+(5)
+(IY
+j )ℓ=
+ tY
+j + ℓ, tY
+j+1 + ℓ
+
+,
+where ℓ∈R is the lag length (measured in units of time). Following the same procedure in (2)-(4), we arrive at a formula for the lagged version of the HY estimator.
+(6)
+ρHY (ℓ) =
+P
+i,j ∆X
+ IX
+i
+
+∆Y
+ IY
+j
+
+I{IX
+i ∩(IY
+j )ℓ̸=∅}
+qP
+i [∆X (IX
+i )]
+2 P
+j
+
+∆Y
+ IY
+j
+2 .
+As it is now deﬁned, equation (6) yields the entire cross-correlation curve (hereafter
+HY curve) between X and Y . In practice, evaluating (6) amounts to shifting the
+time-stamps of Y by amount ℓand re-evaluating the HY correlation ρHY . Doing
+this for all ℓyields the HY curve.
+In practical applications, it is important to establish the lag length ˆℓthat maximizes
+the correlation ρHY (ˆℓ). Doing so allows conclusions to be drawn about the temporal
+relationship between X and Y . For example, ”X leads Y by ˆℓseconds”. The lag ˆℓ
+is deﬁned as a solution to the following equation:
+(7)
+|ρHY (ˆℓ)| = max
+ℓ∈G |ρHY (ℓ)|,
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+14
+over a time-grid G. In practice, this amounts to ﬁnding the peak of the HY curve.
+Equivalently, evaluating (6) for diﬀerent values of ℓuntil a maximum is obtained.
+Importantly, if it is found that ˆℓ̸ = 0, this would imply that the relationship between
+X and Y is not contemporaneous. Speciﬁcally, knowledge of one can be used to
+explicitly forecast future movements in the other. It is precisely this condition that
+we rely on to examine lead/lag relations across international futures contracts.
+Finally, Huth and Abergel (2012) deﬁne the notion of a lead/lag ratio (henceforth
+LLR) which we employ in our analysis. It s deﬁned as follows:
+(8)
+LLR =
+P
+u ρ2
+HY (−ℓu)
+P
+u ρ2
+HY (ℓu) ,
+where u is chosen such that ℓu ≥0.
+The quantity ρHY (ℓ) in (6) provides the correlation coeﬃcient when Y leads X by ℓ
+units of time, and similarly, the quantity ρHY (−ℓ) provides the same measure when
+Y lags X (i.e. X leads Y ) by ℓunits of time. With this in mind, the purpose of the
+LLR is simply to compare the evidence of these two phenomena. It is established in
+the literature that lead/lag relationships are often bi-directional (Wang and Wang
+(2001) among others). The LLR is informative in decoupling bi-directional relationships into relative strengths at diﬀerent lags. Put simply, it is a metric which is
+useful in assessing the strength and direction of the lead/lag relationship.
+3.4 - Robustness to Spurious Lead/Lag Relations
+This section evaluates the robustness of HY to diﬀerences in liquidity. Further, we
+contrast the performance of HY against a commonly employed method of measuring
+covariation.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+15
+It is well known that liquid7 assets tend to lead less liquid ones, due to their ability
+to impound information faster (Lo and Mackinlay (1990) and Brooks et al. (2001)).
+However, liquidity diﬀerences could also give rise to spurious conclusions toward
+lead/lag relationships. For example, data that are known to be contemporaneously
+correlated but contain diﬀerences in trading activity must not exhibit any lead/lag
+eﬀects (Voev and Lunde (2007)). Discovery of a non-zero lag in this case would by
+deﬁnition be spurious. It is therefore important that any employed estimator be
+robust to artiﬁcial liquidity eﬀects, particularly when dealing with high-frequency
+data.
+In this section, we examine the robustness of HY to spurious lead/lag relations by
+way of an exercise involving synthetic data. The beneﬁt of using synthetic data is
+simple - we know what parameters we input, hence we know what output to expect.
+Our exercise involves sampling from the stochastic processes X and Y in (1) along
+two independent Poisson time-grids with intensities λX and λY respectively.8 The
+data span 24 hours, and samples are observed to the nearest millisecond. Further,
+we impose that X leads Y by 400 milliseconds (0.4 seconds). At this lag length, we
+impose a correlation between X and Y of 90%.
+We measure lead/lags between -10 and 10 seconds, with 10-millisecond increments.
+Speciﬁcally, we choose a grid G from (7) such that:
+ℓ∈{−10, −9.99, −9.98, . . . , −0.01, 0, 0.01, . . . , 9.98, 9.99, 10}.
+Further, we repeat the exercise for diﬀerent liquidity combinations between assets
+X and Y . We achieve this by varying the ratio
+λY
+λX ∈{0.5, 1, 2, 5}. This step is
+aimed at examining how the estimated lead/lag relation is aﬀected by diﬀerences in
+7In this case, liquidity refers to trading/quoting activity.
+8Here, λX and λY can be thought of as proxies for illiquidity: The lower their value, the shorter
+the average interval between price updates.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+16
+Figure 2. HY Curve on Synthetic Data. This ﬁgure shows the HY-estimated correlation
+between X and Y at various lags ℓ∈[−10, 10]. A dotted vertical line denotes the ”true”
+lead/lag relationship with X leading Y by 0.4 seconds (ˆℓ= −0.4). The four curves represent
+repetitions of the HY exercise with various liquidity ratios:
+λY
+λX = 0.5 shown in red, λY
+λX = 1
+in green, λY
+λX = 2 in blue, and λY
+λX = 5 in purple.
+liquidity. For example, the ratio λY
+λX = 5 suggests that the average interval between
+price updates for asset Y is 5 times that for asset X. Figure 2 shows the results of
+the HY exercise.
+It is clear from Figure 2 that the HY estimator is robust to spurious temporal
+relations induced by liquidity diﬀerences between assets - it correctly recovers the
+true lead/lag relationship between X and Y under all combinations of
+λY
+λX . This
+property of HY is useful to the examination of temporal relationships using highfrequency data.
+It is informative to contrast the performance of HY against that of a commonly employed methodology, namely previous-tick interpolation, henceforth PT.9 For completeness, we present the results of the same exercise using the PT method.
+9for a thorough discussion, see Voev and Lunde (2007), Hoﬀman et al. (2010), and Griﬃn and
+Oomen (2011).
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+17
+The intuitive idea behind the PT method is to regularize irregularly-spaced and nonsynchronous prices onto a synchronous time-grid with ﬁxed and constant intervals.
+Where there is no price update between two or more consecutive points on the
+regularized grid, the previous price is interpolated forward. Formally, and using the
+deﬁnitions in (2), let:
+(9)
+Xt = X(IX
+i ) and, Y t
+= Y (IY
+j ),
+denote the PT-interpolated versions of X and Y in (1), then for a ﬁxed-interval grid
+of size M and interval length h, the PT correlation estimator is given by:
+(10)
+ρPT =
+PM
+i=1
+ Xih −X(i−1)h
+  Y ih −Y (i−1)h
+
+σXσY
+.
+The extension of ρPT to incorporate leads and lags ρPT(ℓ) is similar to that of HY
+in (6).
+We now repeat the estimation exercise using the PT method. We do this for various
+mesh sizes h ∈{0.1, 0.5, 1} seconds. The results are given in Figure 3.
+There are two interesting phenomena evident in Figure 3. First, the PT estimation procedure is adversely aﬀected by diﬀerences in liquidity. For example, in the
+bottom-left panel where price updates in X occur on average 5 times as frequently
+as those in Y , the PT approach suggests that X leads Y by between 3 and 3.4 seconds, which is clearly not true. Second, although a smaller mesh size h yields a more
+accurate estimate of the true lag ˆℓ, it also results in a more biased estimate of the
+true correlation. This is not surprising, and is a well-known artefact of interpolation
+based on regularized grids (Epps (1979)).
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+18
+Figure 3. PT Curve on Synthetic Data. This ﬁgure shows the PT-estimated correlation
+between X and Y at various lags ℓ∈[−10, 10]. A dotted vertical line denotes the ”true”
+lead/lag relationship with X leading Y by 0.4 seconds (ˆℓ= −0.4). The three curves in each
+panel represent repetitions of the PT exercise with various mesh sizes: h = 0.1 shown in red,
+h = 0.5 in green, and h = 1 in blue. The four panels represent diﬀerent liquidity combinations
+λY
+λX across X and Y . Lags which maximize the correlation are given by ”Lag”.
+Overall, the results of this section motivate the use of HY in dealing with highfrequency data.
+3.5 - The Trading Strategy
+Knowledge of the temporal relationship between a pair of contracts can be used to
+build statistical arbitrage strategies based on exploiting the temporal disequilibria.
+In this section, we show how we can apply our knowledge of the lead/lag relationship
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+19
+to forecast and exploit mid-quote changes in the lagging contract, based on midquote changes in the leading contract.
+Our forecasting and trading devices are motivated by Huth and Abergel (2012) and
+Kozhan and Tham (2012). Given contracts X and Y , observing both time-series
+simultaneously amounts to observing sets of contiguous quotes in X interspersed
+with sets of contiguous quotes in Y . Hence we deﬁne a cluster of mid-quote returns
+{CX
+i,n : i, n ∈N+} in contract X as a sequence of contiguous mid-quote returns in
+X uninterrupted by returns in Y . A similar deﬁnition of CY
+i,n holds for contract
+Y . Here, the subscript i refers to the cluster index (the number of clusters already
+observed), whereas the subscript n refers to the mid-quote return index within each
+cluster. This concept is illustrated graphically in Figure 4.
+Figure 4. Quote Clusters. A time-line illustration of contiguous sequences of mid-quote
+returns.
+Returns in asset X are marked X and returns in asset Y are marked O, while
+X-clusters and Y -clusters are marked with CX
+i,n and CY
+i,n respectively.
+Once we distinguish the leading contract from the lagging contract within the HY
+framework, we use this information to build a statistical arbitrage trading strategy.
+Without loss of generality, let us assume contract X leads contract Y , then:
+(11)
+N Y
+i =
+
+
+
+
+
+
+
+
+
+
+
+
+
++1,
+if max
+n
+ CX
+i,n
+
+≥K
+−1,
+if min
+n
+ CX
+i,n
+
+≤−K
+0,
+otherwise,
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+20
+where N Y
+i is the position taken in contract Y , and where +1 and −1 denote long and
+short positions, respectively. The quantity K > 0 is a pre-set threshold. Intuitively,
+equation (11) describes a simple trading strategy: Given that X leads Y , a signal to
+trade Y is generated whenever the price of X moves by an amount greater than K in
+the current X-cluster (i.e. before the price of Y moves).10 If Y moves in the interim,
+no trading signal is generated and the process restarts in the following X-cluster.
+The motivation for including a threshold in the trading strategy stems from the
+fact that exploiting microscopic price ”jumps” is fruitless, unless the magnitudes of
+these jumps exceed the costs associated with trading (Brooks et al. (2001)). It is
+important to note that the trading strategy (11) depends only on present and past
+price observations of the leading contract.
+When a signal to trade Y is generated in the current X-cluster, a position in Y is
+immediately opened and held for the entire duration of the following Y -cluster. The
+position is then closed at the start of the subsequent X-cluster. Formally, we have:
+(12)
+N Y
+i+1 =
+
+
+
+
+
+
+
+0,
+if {CX
+i+ϵ,n : n ≥1, ϵ ≥1}
+N Y
+i ,
+otherwise.
+Taken together, equations (11) and (12) fully describe the algorithm by which we
+exploit temporal disequilibria between leading contract X and lagging contract Y .
+The calculation of proﬁt P for each Y -cluster is as follows: We multiply the position
+taken in cluster i by the sum of the individual mid-quote returns in cluster i, and
+subtract trading costs:
+(13)
+Pi = N Y
+i
+X
+n
+CY
+i,n −ci,
+10Since all C denote mid-quote returns, it is easier to measure K in terms of ticks. Conversion
+between ticks and monetary value is done easily via Table 1
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+21
+where ci is the all-inclusive cost of trading. Calculating total proﬁts amounts to
+summing the individual Pi over all clusters in the data set:
+(14)
+Total Proﬁt =
+X
+i
+Pi.
+Alongside the trading strategy, we measure the directional accuracy by which midquote changes in contract X portend mid-quote changes in contract Y . Speciﬁcally,
+we deﬁne:
+(15)
+Fi =
+
+
+
+
+
+
+
+1,
+if sgn
+P
+n
+ CY
+i,n
+
+= sgn
+P
+n
+ CX
+i,n
+
+0,
+otherwise,
+where sgn(·) is the signum function. Equation (15) essentially measures whether the
+aggregate returns in the current X-cluster portend the sign of the aggregate returns
+in the subsequent Y -cluster. Arriving at a ﬁnal measure of directional forecasting
+accuracy is intuitive: we sum all Fi and divide by the number of clusters in the data
+set:
+(16)
+Directional Forecasting Accuracy =
+P
+i Fi
+sup(i) × 100%,
+where sup(·) denotes the supremum.
+An important question related to the forecasting accuracy is whether the accuracy
+is aﬀected by the choice of signal threshold K in (11). One might expect that a
+stronger trading signal (i.e. higher K) would intuitively yield a higher directional
+forecasting accuracy of X over Y . To help investigate this, equations (15) and (16)
+are evaluated over all clusters in which a trade has been generated.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+22
+4. Empirical Results
+Here, we apply the analysis of section 3 to the three contract pairs within our data
+set, namely the FTSE - DAX, S&P - FTSE, and S&P - DAX March 2012 pairs. For
+the remainder of this paper, we deﬁne the following conventions: First, the leading
+asset, as in the above list, is named ﬁrst. Second, graphs pertaining to each pair will
+be coloured blue, green, and red, respectively. Third, the numerator of the lead/lag
+ratio (8) refers to the ﬁrst-named contract; thus a highly asymmetrical left-heavy
+HY curve with LLR ≫1 shows strong evidence that the ﬁrst-named leads.
+We start by exploring the three lead/lag relationships, and proﬁle the intraday
+patterns of these relationships. Then, we forecast and trade lagging contracts based
+on signals generated by mid-quote changes in leading contracts. Finally, we discuss
+the limits to arbitrage across international futures contracts.
+4.1 - The Lead/Lag Relationship Between Futures Contracts
+There are 35 full trading days (hereafter ”days”) in our sample.
+For each day,
+we estimate the entire HY cross-correlation curve based on equation (6), then we
+average the curves for each pair over all days. We therefore ultimately obtain a single
+HY curve for each contract pair. This step helps quantify the relative strength and
+direction of the lead/lag relationships for each of our contract pairs.
+For each contract pair, we measure leads and lags of mid-quote returns on a horizon
+of −30 to 30 seconds, with 5-millisecond increments. We justify this horizon by
+the fact that cross-correlations across all pairs diminish substantially within a few
+seconds. We choose a grid G from (7) such that:
+ℓ∈{−30, −29.995, −29.990, . . . , −0.005, 0, 0.005, . . . , 29.990, 29.995, 30}.
+The results of this exercise are presented in Figure 5.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+23
+Figure 5. Lead/Lag Relationships. The HY curves plotted for each contract pair. Left
+panels show lag lengths ℓ∈[−30, 30] seconds.
+Right panels zoom in on lag lengths ℓ∈
+[−0.5, 0.5] seconds. In regions to the left of the vertical zero-line in each panel, the contract
+whose name appears ﬁrst in the title leads, and vice versa.
+Figure 5 displays evidence of strongly asymmetric lead/lag relationships, in which
+the S&P 500 contract leads both the FTSE 100 and DAX contracts. The relationship
+between the FTSE 100 and DAX contracts is less pronounced, though it is clear that
+the FTSE leads the DAX contract. These results are qualitatively consistent with
+other works documenting international price linkages (Innocenti et al. (2011) among
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+24
+others), and the notion that international price discovery occurs in the US. Further,
+by looking at the left-hand panels in Figure 5, what we ﬁnd particularly striking is
+the speed at which the HY cross-correlation curves diminish towards zero across all
+three pairs. In other words, the panels in Figure 5 display evidence of high ﬁnancial
+integration across the three contract pairs.
+This is conﬁrmed by examining the
+right-hand panels, which reveal that point estimates of the lead/lag relationships,
+or equivalently the peaks of the HY curves, are of the order of milliseconds. This
+observation is striking because it has important implications for works examining
+international pricing relationships: by using non-granular data, it is easy to achieve
+the illusory eﬀect of perfect contemporaneous correlation, as documented in Section
+3.4 of this paper.
+We quantify the strength and direction of the lead/lag relationships in terms of
+three parameters, namely the lag length ˆℓwhich maximizes the correlation between
+a given contract pair, the maximum correlation itself ˆρHY , and the lead/lag ratio
+LLR. These results are given in Table 3.
+Table 3. Lead/Lag Relationships. Three contract pairs along with summary statistics.
+The third and fourth columns show, respectively, the mean and median of the lag length ˆℓ, by
+which the leader (second column) leads. The ﬁfth and sixth column show, respectively, the
+maximum correlation ˆρHY and lead/lag ratios for each pair.
+Table 3 reveals intuitive insights into the nature of the lead/lag relationships under
+investigation. Lag lengths, maximum correlations, and lead/lag ratios all appear to
+be directly related to the pairwise geographical distances between the markets.
+Given that market information pertinent to any lead/lag relationship must traverse
+geographical distances, it is natural to wonder whether the lag lengths reported
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+25
+in Table 3 are not indicative of price discovery, but merely the result of delays in
+the physical transmission of data. The latter is unlikely. Built in 1999 by Global
+Crossing, the current transatlantic communication network (AC-1) spans 14,000
+km, and links the US and major European markets via ﬁbre-optic cables. One-way
+transmission between New York and London takes 32.4 milliseconds (see Johnson
+et al. (2012) and references therein). By extrapolating this number to the distances
+between the CME, NYSE-Liﬀe, and Eurex, it is unlikely that the lag lengths in Table
+3 are the result of physical delays. Further, Hasbrouck and Saar (2012) suggest that
+the entire event-analysis-action cycle for co-located algorithmic trading systems is
+less than 2 milliseconds.
+By examining the HY curves generated for each day in the sample, we reject at the
+90%-level the statistical hypothesis that the maximum correlation occurs at zero lag
+for the FTSE-DAX pair; and at the 99%-level for both transatlantic pairs. This
+result is not surprising, given the proximity of the NYSE-Liﬀe to the Eurex, relative
+to either transatlantic distance.
+4.2 - The Intraday Proﬁle of Lead/Lag Relationships
+It is a well-known stylized fact that ﬁnancial markets produce intraday patterns
+(e.g. U-shaped volatility). Having established an overall lead/lag structure across
+the three contract pairs, we turn our attention to the intraday proﬁle of these relationships.
+We split each day into 24 half-hourly intervals, spanning 08:30 - 20:30 GMT. For
+each interval, over each day, and for each contract pair, we measure the same three
+quantities as in Table 3, namely the Lead/Lag ratio, the maximum correlation ˆρHY ,
+and the lag length ˆℓwhich maximizes the correlation. We average these results
+over the number of days. Ultimately, we obtain three 24-point curves: one for each
+contract pair. The results of this exercise are shown in Figure 6.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+26
+Figure 6. Lead/Lag Intraday Proﬁle. Intraday patterns in the Lead/Lag Ratio (top),
+Maximum Correlation ˆρHY (middle), and Lag Length ˆℓ(bottom). Times on the horizontal
+axes refer to the previous half-hour interval (e.g. 10:00 refers to the 09:30-10:00 interval).
+Figure 6 reveals clear evidence of intraday seasonality exhibited for all three pairs.
+The daily events most interesting to us are the announcement of macroeconomic
+news at 13:30 GMT, the US cash market open at 14:30 GMT, and the close of both
+UK and German cash markets at 16:30 GMT. All three panels conﬁrm that for each
+pair, mid-quote returns in the ﬁrst-named contracts portend mid-quote returns in
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+27
+the second-named contracts. Although this notion was established in the previous
+section, Figure 6 shows that this eﬀect is consistent throughout the day.
+The Lead/Lag ratio generally decreases (towards unity) throughout the day, indicating a diminishing asymmetry in the HY curves. This implies that the pairwise
+causal link between the leading and lagging contracts deteriorates throughout the
+day (Huth and Abergel (2012)). The maximum correlation remains largely rangebound, and the lag length largely constant. Notable exceptions to the above are as
+follows: Around the announcement of macroeconomic data, the LLR and maximum
+correlation both increase, while in terms of lag length, the US increases its leads
+over both UK and German contracts. This indicates that both UK and German
+traders react more attentively to cues from the US market, which impounds information ﬁrst. The same eﬀect occurs at the US cash market open. Following the
+close of the UK and German cash markets, the US sharply increases its lead over
+each, but both the LLR and maximum correlation across all three pairs fall sharply.
+Taken together, these observations suggest that at the close of the UK and German
+markets, the FTSE and DAX contracts are less sensitive to global factors, and more
+so to local factors (Jorion and Schwartz (1986)).
+4.3 - Trading Results: Exploiting Temporal Disequilibria
+Here, we perform the statistical arbitrage exercise based on the methodology presented in section 3.5. We re-iterate that the trading strategy relies only on present
+and past mid-quote observations. Importantly, the trading strategy is simple in nature, and uses no ex-ante knowledge of the dynamic lead/lag relationship presented
+in section 4.2. This way, our entire data set is taken as out-of-sample for forecasting
+and trading purposes. Although we discuss later how one may enhance the trading
+strategy by incorporating the information conveyed via the HY output, our results
+rely chieﬂy on the simple strategy (11) - (12), in the interests of robustness.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+28
+Figure 7. Cumulative Proﬁts. Proﬁts gained by applying strategy (11)-(12) to the three
+contract pairs over the 35 days in our sample. The vertical axis is measured in Euros for the
+FTSE - DAX and S&P - DAX pairs, and Pounds Sterling for the S&P - FTSE pair.
+We begin by presenting the accumulated proﬁts gained by trading the FTSE - DAX,
+S&P - FTSE, and S&P - DAX pairs over the number of days in our sample. Throughout, we maintain the convention that the ﬁrst-named contract leads. Initially, we
+impose a signal threshold K = 5 ticks in equation (11). That is to say, a trading
+signal is generated in the lagging contract whenever we encounter a cluster of leading
+quotes, wherein the mid-quote moves by 5 or more ticks in any aggregate direction.
+The position is then held open until the end of the lagging cluster. Later, we vary
+the signal threshold to examine its eﬀect on the arbitrage proﬁts. Furthermore, we
+initially impose that the arbitrageur trades a single contract per signal; a step that
+ensures no market-impact costs, since we employ BBO quotes. Figure 7 shows the
+accumulated wealth gained by trading the three contract pairs, following the strategy (11) - (12). The curves denote proﬁts over the 35-day sample period, net of the
+bid-ask spread and all order submission and clearing costs.
+Although each proﬁt time-series trends consistently upwards, they exhibit vast differences in magnitude. The most proﬁtable pair is the FTSE - DAX, while the least
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+29
+Figure 8. Intraday Arbitrage Proﬁle. Intraday patterns of Directional Forecasting Accuracy (top), the total number of individual trades on a log10 scale (middle), and the 10th
+percentile duration length of proﬁtable disequilibria (bottom).
+proﬁtable is the S&P - FTSE. One reason for this may relate to the geographical
+proximity of London to Frankfurt: It is likely that the FTSE and DAX contracts
+respond to a larger set of overlapping idiosyncratic factors than either transatlantic
+pair, yielding a more consistent relationship.
+This suggestion is conﬁrmed by a
+greater magnitude of correlation, shown in Figure 5. Further, the low proﬁtability
+which characterizes the S&P - FTSE pair may be explained by Werner and Kleidon’s
+(1996) suggestion that the US-UK market is among the most heavily arbitraged.
+We now study the intraday proﬁle of arbitrage. Speciﬁcally, we aggregate over our
+entire sample, the directional forecasting accuracy, number of generated signals, and
+durations of proﬁtable disequilibria. The results are shown in Figure 8.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+30
+The top panel of Figure 8 shows a consistently high directional forecasting accuracy
+across all three contract pairs. Accuracy rates rise slightly following the US open,
+which accords with the idea that the UK and German markets follow the US more
+closely during this period. Further, accuracy rates fall following the UK and German
+close, which is also an intuitive result exhibiting the opposite eﬀect. Following Huth
+and Abergel (2012), we test the robustness of the directional forecasts against both
+a random forecast, and a forecast generated via an auto-correlation in the lagging
+contract. The auto-correlation forecast slightly outperforms the random forecast,
+but is not statistically signiﬁcantly better. The directional forecasts we present are
+signiﬁcant at the 99% level for all contract pairs over all intervals in our sample,
+with the exception of the S&P - DAX pair between 20:00 and 20:30.
+The middle panel of Figure 8 shows that the number of trades (or equivalently,
+trade signals) generated per interval increases sharply following the announcement
+of market data and again following the US open. This increase is then maintained
+for as long as all three cash markets remain open. The bottom panel plots the 10thpercentile reaction times, denoting interval durations between the point at which
+a trade signal is generated, and the point at which the lagging contract begins to
+move following the signal. This panel shows that reaction times decrease following
+the announcement of market data, and remain low for as long as all three cash
+markets are open, before gradually rising following the close of the UK and German
+markets. Taken together, these results suggest that market participants who act to
+appropriate temporal disequilibria concentrate their activity during speciﬁc periods.
+4.4 - Varying the Number of Contracts per Trade
+So far, we have assumed that the arbitrageur trades one single futures contract each
+time a trading signal is generated. In reality, statistical arbitrage systems of this
+kind are only proﬁtable if they can be scaled to yield economically signiﬁcant proﬁts.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+31
+Here, we repeat the trading exercise 20 times. Each time we repeat the exercise,
+the arbitrageur is assumed to trade a number R of contracts per trade signal, where
+R ∈{1, 2, . . . , 20}. Table 4 shows the results of this exercise.
+Table 4.
+Number of Contracts per Trade. This table shows the eﬀect on proﬁts of
+varying the number of contracts per trade from a single contract to 20. Proﬁts are converted
+to Euros for ease of comparison, and totalled in the ﬁnal column.
+Interestingly, as the arbitrageur trades a larger number of contracts, the strategy
+beneﬁts from economies of scale with regard to trading costs. To see this, note that
+the proﬁts from trading 10 contracts per signal exceed ten times the proﬁts gained by
+trading 1. This is because exchange-related costs are charged per market order, not
+per contract. Clearly, one cannot trade a large number of contracts simultaneously
+without incurring market impact costs. This is discussed in section 4.6.
+4.5 - Varying the Signal Threshold
+Up to now, we have assumed a pre-set signal threshold K. It is informative to study
+the eﬀects of varying this threshold on the proﬁtability of arbitrage.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+32
+Intuitively, a higher signal threshold yields better directional forecasts proﬁtability,
+at the expense of a lower trading frequency. Studying the eﬀects of varying the
+signal threshold is informative to both academics and practitioners. To academics,
+it establishes a link between the frequency of temporal price disequilibria and risk.
+To practitioners, it permits an investigation into optimal trading rules.
+We proceed by varying the signal threshold from K ∈{1, 2, . . . , 10} ticks. For each
+instance and for each contract pair, we measure the aggregate directional forecasting accuracy, total number of trades, average proﬁt per trade, and 10th percentile
+reaction times. The results are shown in Table 5.
+Table 5. Varying the Signal Threshold This table shows, for each contract pair, the eﬀect
+of varying the signal threshold K from 1 to 10 ticks. For each instance, the table shows the
+directional forecasting accuracy, total number of trades, proﬁt per trade, and 10th percentile
+reaction time.
+Table 5 reveals several insights into the eﬀects of varying the signal threshold on
+arbitrage returns. The eﬀects are consistent across all contract pairs. Firstly, increasing the signal threshold directly increases the directional forecasting accuracy.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+33
+This result is consistent with the notion that increasing the signal threshold results in a cleaner signal with which to trade. Similarly, while the total number of
+trades falls sharply, the proﬁt per trade increases. In particular, despite low signal thresholds yielding directionally accurate forecasts, trading based on low signal
+thresholds does not overcome costs. To practitioners, these results can be used to
+devise optimal trading strategies.
+The ﬁnal three rows of Table 5 are interesting. The 10th percentile reaction times
+decline sharply as the signal threshold increases. In other words, arbitrageurs who
+wait for stronger trade signals do so at the cost of facing drastically shorter durations of disequilibria. This is consistent with the view that competition among
+arbitrageurs acts to enforce pricing eﬃciency (Grossman and Stiglitz (1976, 1980)),
+thereby perpetuating the need to invest in technological infrastructure.
+It is informative to compare the reaction times stated in Table 5 to the time it
+takes data to physically traverse the relevant geographical distances. Recall from
+section 4.1 that one-way transmission between New York and London takes 32.4
+milliseconds via Global Crossing’s AC-1 ﬁbre-optic cable.
+By extrapolating this
+time to the distances between the CME, NYSE-Liﬀe, and Eurex, it is highly unlikely
+that any of the FTSE - DAX or S&P - DAX trades lie inside the transmission speed
+boundary, even for high signal thresholds. This is particularly striking for the FTSE
+- DAX pair, which beneﬁts from close geographical proximity, and which we have
+shown to be more proﬁtable than either transatlantic pair. It is therefore puzzling
+why the 10th percentile reaction time for this pair should be signiﬁcantly higher
+than either transatlantic pair. However, looking closely at the proﬁts per trade is
+informative: The FTSE - DAX pair generates a large number of trades, each of
+which is relatively less proﬁtable than either transatlantic pair. This suggests that
+the FTSE - DAX pair contains a relatively high idiosyncratic risk component which
+acts as a deterrent to arbitrage.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+34
+Looking at the S&P - FTSE pair, a signal threshold K ≥9 suggests that for a
+number of arbitrage opportunities, namely those at 37 milliseconds, the duration of
+disequilibria lies at or just within the data transmission speed barrier. However, it
+is noteworthy that in our entire sample, this phenomenon occurs for only one single
+trade. Overall, the S&P - FTSE result is consistent with Werner and Kleidon’s
+(1996) suggestion that the US-UK market is among the most heavily arbitraged.
+Finally, it is important to note that the computing processes behind generating a
+trading signal and managing a position require only the evaluation of one logical
+operation and one ﬂoating-point operation per observed mid-quote, as per (11) and
+(12). Modest desktop computing resources can perform these kinds of calculations
+within a small number of microseconds, akin to suggestions by Hasbrouck and Saar
+(2012). As for the millisecond environment in which we operate, it is unlikely that
+the time required for calculation will signiﬁcantly signiﬁcantly aﬀect the visible
+duration of temporal disequilibria.
+4.6 - On the Limits of Arbitrage
+Our data set consists of the three most liquid and widely traded futures contracts
+globally, with virtually no restrictions on trading or cross-border arbitrage.
+In markets such as this, professional arbitrageurs often compete over a limited supply of available arbitrage opportunities.
+This competition creates an imbalance
+stemming from the excess demand by arbitrageurs for proﬁtable trades. As a result,
+competition among arbitrageurs eﬀectively reduces the magnitude and duration of
+proﬁtable disequilibria. This in turn creates a natural selection mechanism by which
+arbitrageurs who possess the most powerful computing resources survive. Overall,
+this system poses two major limits to arbitrage, namely costs and risk.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+35
+Liquidity, price slippage, market impact, and competition for scarce opportunities
+from other traders are all sources of risk for which arbitrageurs demand compensation. This fact may explain why even seemingly riskless arbitrage opportunities
+sometimes go unexploited. It is informative to explore the eﬀects each of these risks
+have on arbitrageurs’ capacity to appropriate pricing disequilibria, by examining
+their eﬀects on proﬁtability.
+We parsimoniously capture the eﬀects of liquidity risk, price slippage, market impact,
+and competition from other arbitrageurs, following an approach by Kozhan and
+Tham (2012). Speciﬁcally, we impose that a certain proportion of the arbitrageur’s
+trades are not executed at the observed (best) price, but at the next best price
+instead, which is assumed to be available in inﬁnite supply. The next best price
+in the context of our work means a one-tick increment down the limit order book,
+equivalent to 50 pence and 50 Euro cents for the FTSE 100 and DAX contracts,
+respectively. The objective of this exercise is to see what eﬀect this restriction has
+on the proﬁtability of the individual arbitrageur. The results are shown in Figure 9.
+For each contract pair, Figure 9 reveals the sensitivity of an arbitrageur’s proﬁts
+to the risk of executing part of a trade at the next best price. This sensitivity is
+particularly high for the FTSE-DAX pair, which is an intuitive result, given the
+generally low per-trade proﬁtability of this pair as seen in Figure 8.
+Further, we interpret the results of this section within the context of Table 4, and
+ask: How is the probability of price slippage aﬀected by increasing the number of
+contracts per trade? In our data set, around 29% of FTSE 100 quotes on either the
+bid or ask side carry a size of 5 contracts or less, and around 46% carry 11 or more
+contracts. The corresponding ﬁgures for the DAX are 49% and 22% respectively.
+Therefore, the FTSE 100 futures contract carries a greater per-quote liquidity. Based
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+36
+Figure 9. Slippage Risk. The eﬀect of having a percentage of trades fulﬁlled at the next
+best price (horizontal) on the proportion of otherwise available proﬁt opportunities (vertical).
+on this, we suggest that the risk of price slippage is relatively less profound when
+the contract being traded is the FTSE 100.
+One additional risk inherent in this type of trading stems from the fact that the contracts under investigation are not perfect substitutes. Arbitrage in this context relies
+on exploiting a statistical relationship based on economic fundamentals. Invariably,
+arbitrageurs are vulnerable to noise traders, who may trade the individual contracts
+for reasons other than to exploit pricing disequilibria (De Long et al. (1990)), at
+highly unfavourable times for arbitrageurs.
+Besides risk, the costs associated with trading in this market setting act as a significant deterrent to arbitrage. Figure 8 shows the directional forecasting accuracy to
+be high. However, in order to proﬁt from a trade, an arbitrageur has to not only be
+directionally accurate, but also overcome the bid-ask spread. Given that the majority of trades individually extract very small amounts of proﬁt, the bid-ask spread
+is a major cost incurred by arbitrageurs. Furthermore, arbitrageurs face ﬁxed rents
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+37
+and other costs incurred through co-location subscriptions and access to live market
+feeds. Hedge funds implementing these kinds of strategies must also hire analysts to
+create and maintain computer code. To the extent that these extra costs collectively
+diminish the proﬁts reported in Table 4, they act as a deterrent to arbitrage. Due
+to the costs involved, we suggest that arbitrage operations in this setting can most
+readily be undertaken by larger hedge funds and proprietary trading desks whose
+co-located infrastructure is not dedicated solely to this pursuit, but forms part of
+their overall business activity.
+Overall, this section highlights that technological infrastructure costs and the risk of
+price slippage present signiﬁcant limits to arbitrage in the market for international
+futures contracts.
+5. Conclusion
+This paper complements previous work by examining pricing relationships in the
+important but overlooked market setting of international index futures. We document clear evidence of consistent sub-second lead/lag patterns across the S&P 500,
+FTSE 100, and DAX futures contracts (in order of leadership), suggesting that the
+diﬀusion of information across these markets is not instantaneous.
+Importantly, we show that these lead/lag patterns induce predictability in lagging
+assets, and give rise to proﬁtable disequilibria. Taken together, these observations
+provide evidence against auto-eﬃciency across international futures markets, and
+suggest that arbitrage is an important component to information ﬂow across markets.
+However, arbitrage proﬁts are sensitive to the risk of price slippage, and
+proﬁtable opportunities rarely exist for more than 300 milliseconds. Therefore, we
+highlight slippage risk and technological costs as the most signiﬁcant limits to arbitrage in this market setting.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+38
+The data we employ consists of the three most highly liquid futures contracts, with
+no capital controls and no restrictions to cross-border arbitrage. Based on this, we
+suggest that the results obtained in this paper are generalizable to other global markets, and we are keen to examine pricing relationships across index futures of emerging markets. Furthermore, we highlight the importance of utilizing high-frequency
+data, based on compelling evidence that most of the price adjustment mechanisms
+in these markets operate deep into the sub-second domain.
+Future work could focus on extending the lead/lag analytical framework into the
+multi-dimensional space. This would facilitate the analysis of global ﬂows of information and collectively transitive eﬀects across multiple geographical markets.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+39
+References
+Abhyankar, A. (1998). Linear and Nonlinear Granger Causality: Evidence From the UK
+Stock Index Futures Market. Journal of Futures Markets 18, pp. 519 -540.
+Abhyankar, A., L.S. Copeland, and W. Wong (1997). Uncovering Nonlinear Structure
+in Real-Time Stock-Market Indexes: The S&P 500, the DAX, the Nikkei 225, and the
+FTSE-100. Journal of Business & Economic Statistics 15(1), pp. 1-14.
+Andreou, P.C. and Y.A. Pierides (2008). Empirical Investigation of Stock Index Futures
+Market Eﬃciency: The Case of the Athens Derivatives Exchange. European Journal of
+Finance 14, pp. 211-23.
+Antoniou, A., G. Pescetto, and A. Violaris (2003). Modelling International Price Relations
+and Interdependencies between the Stock Index and Stock Index Futures Markets of Three
+EU Countries: A Multivariate Analysis. Journal of Business Finance & Accounting 30,
+pp. 645-667.
+Ayuso, J. and R. Blanco (2001). Has Financial Integration Increased during the 1990s?
+Journal of International Financial Markets, Institutions and Money 11, pp. 265-287.
+Brennan, M.J. and E.S. Schwartz (1990). Arbitrage in Stock Index Futures. Journal of
+Business 63, pp. 7-31.
+Brooks, C., and I. Garrett (2002). Can We Explain the Dynamics of the UK FTSE 100
+Stock and Stock Index Futures Markets? Applied Financial Economics 12, pp. 25-31.
+Brooks, C., A.G. Rew, and S. Ritson (2001). A trading strategy based on the lead-lag
+relationship between the spot index and futures contract for the FTSE 100. International
+Journal of Forecasting, 17, pp. 31-44.
+Cummings, J. and A. Frino (2011). Index Arbitrage and the Pricing Relationship Between
+Australian Stock Index Futures and Their Underlying Shares. Accounting and Finance
+51, pp. 661-683.
+De Jong, F. and T. Nijman (1998). Intraday lead-lag relationships between the Futures,
+Options, and Stock market. European Finance Review 1, pp. 337359.
+De Long, B. J., A. Shleifer, L. H. Summers, and R. Waldmann, (1990). Noise Trader Risk
+in Financial Markets, The Journal of Political Economy, 98, pp. 703-738.
+Eiteman, D., A. Stonehill, M.H. Moﬀett, and M. Moﬀet (1994). Multinational Business
+Finance. Addison Wesley. ISBN: 9780201845532.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+40
+Epps T. (1979). Co-movements in Stock Prices in the Very Short Run. Journal of the
+American Statistical Association 74, pp. 291298.
+Eun, C. and S. Shim (1989). International Transmission of Stock Market Movements.
+Journal of Financial and Quantitative Analysis 24(2), pp. 241-256.
+Evans, M.D. and V. Hnatkovska (2005). International capital ﬂows, returns and world
+ﬁnancial integration. NBER Working Paper 11701.
+Figlewski, S. (1984). Hedging Performance and Basic Risk in Stock Index Futures. Journal
+of Finance 39, pp. 657-670.
+Figlewski, S. (1985). Hedging with Stock Index Futures: Theory and Application in a
+New Market. Journal of Futures Markets 5, pp. 183-200.
+Goetzmann, W., L. Li, and K.G. Rouwenhorst (2005). Long-Term Global Market Correlations. Journal of Business 78(1), pp. 1-38.
+Griﬃn, J.E. and R.C.A. Oomen (2011). Covariance measurement in the presence of nonsynchronous trading and market microstructure noise. Journal of Econometrics 160(1),
+pp. 5868.
+Grossman, S. and J. Stiglitz (1976). Information and competitive price systems. American
+Economic Review 66, pp. 246-252.
+Grossman, S. and J. Stiglitz (1980).
+On the impossibility of informationally eﬃcient
+markets. American Economic Review 70, pp. 393-408.
+Gulen, H. and S. Mayhew (2000). Stock Index Futures Trading and Volatility in International Equity Markets. Journal of Futures Markets 20(7), pp. 661-685.
+Hamao, Y., R. Masulis, and V. Ng (1990). Correlations in Price Changes and Volatility
+Across International Stock Markets. Review of Financial Studies 3(2), pp. 281-307.
+Hasbrouck, J. and G. Saar (2012). Low-Latency Trading. Working Paper.
+Hayashi, T. and N. Yoshida (2005). On covariance estimation of non-synchronously observed diﬀusion processes. Bernoulli 11(2), pp. 359-379.
+Hendershott, T., C.M. Jones, and A.J. Menkveld (2011). Does algorithmic trading improve
+liquidity? Journal of Finance 66, pp. 133.
+Herbst, A.F., J.P. McCormack, and E.N. West (1987). Investigation of a LeadLag Relationship between Spot Stock Indices and Their Futures Contracts. Journal of Futures
+Markets 7, pp. 373-381.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+41
+Hoﬀmann, M., M. Rosenbaum, and N. Yoshida (2010). Estimation of the lead-lag parameter from non-synchronous data. Working Paper.
+Huth, N. and F. Abergel (2012). High Frequency Lead/lag Relationships: Empirical facts.
+Working Paper.
+Innocenti, A., P. Malpenga, L. Menconi, and A. Santoni (2011). Intraday Anomalies in
+the Relationship between U.S. Futures and European Stock Indexes. Journal of Index
+Investing 1(4), pp. 40-52.
+Johnson, N., G. Zhao, E. Hunsader, J. Meng, A. Ravindar, S. Carran, B. Tivnan (2012).
+Financial black swans driven by ultrafast machine ecology. Working Paper.
+Jorion, P. and E. Schwartz (1986). Integration vs. segmentation in the Canadian stock
+market. Journal of Finance 41, pp. 603-616.
+Kawaller, I.G., P.D. Koch, and T.W. Koch (1987). The temporal price relationship between S&P 500 futures and the S&P 500 index. Journal of Finance 42(5), pp. 13091329.
+Kenourgios, D.F. (2004). Price Discovery in the Athens Derivatives Exchange: Evidence
+for the FTSE/ASE-20 Futures Market. Economic and Business Review 6, pp. 229-243.
+Kearney, C. and B.M. Lucey (2004). International equity market integration: Theory,
+evidence and implications. International Review of Financial Analysis 13(5), pp. 571583.
+Kozhan, R. and W.W. Tham (2012). Execution Risk in High-Frequency Arbitrage. Management Science 58(11), pp. 2131-2149.
+Lo, A. and C. MacKinlay (1990). When are contrarian proﬁts due to stock market overreaction? Review of Financial Studies 3, pp. 175-205.
+Medeiros, O., G. de Oliveira, B. van Doornik (2009). Testing for Lead-Lag Eﬀects Between
+the American and the Brazilian Stock Markets. University of Brasilia Working Paper.
+Richie, N., R. Daigler, and K. Gleason (2008).
+The Limits to Stock Index Arbitrage:
+Examining S&P 500 Futures and SPDRs. Journal of Futures Markets 28(12) pp. 11821205.
+Schultz, P. and S. Shive (2010). Mispricing of Dual-Class Shares: Proﬁt Opportunities,
+Arbitrage, and Trading. Journal of Financial Economics 98, pp. 524-549.
+Stoll, H.R. and R.E. Whaley (1990). The dynamics of stock index and stock index futures
+returns. Journal of Financial and Quantitative Analysis 25, pp. 441468.
+Electronic copy available at: https://ssrn.com/abstract=2225753
+
+42
+Thomas, S. (2002). The Saga of the First Stock Index Futures Contract: Benchmarks,
+Models, and Learning. Journal of Money, Credit, and Banking. 34(3), pp. 767-808.
+Tse, Y.K. (1995). LeadLag Relationships between Spot Index and Futures Price of the
+Nikkei Stock Average. Journal of Forecasting 14, pp. 553-563.
+Voev, V. and A. Lunde (2007). Integrated Covariance Estimation Using High-Frequency
+Data in the Presence of Noise. Journal of Financial Econometrics 5(1), pp. 68104.
+Wahab, M., and M. Lashgari (1993). Price Dynamics and Error Correction in Stock Index
+and Stock Index Futures Markets: A Cointegration Approach. Journal of Futures Markets
+13, pp. 711-742.
+Wang, P., and P. Wang (2001). Equilibrium Adjustment, Basis Risk and Risk Transmission in Spot and Forward Foreign Exchange Markets. Applied Financial Economics 11,
+pp. 127-136.
+Werner, I. and A. Kleidon (1996). U.K. and U.S. trading of British cross-listed stocks:
+An intraday analysis of market integration. Review of Financial Studies 9, pp. 619-664.
+Zeckhauser, R. and V. Niederhoﬀer (1983).
+The performance of market index futures
+contracts, Financial Analysts Journal 39(1), pp. 59-65.
+Electronic copy available at: https://ssrn.com/abstract=2225753

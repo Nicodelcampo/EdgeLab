@@ -1,0 +1,37 @@
+{
+  "status": "PASS_TARGET_FREE_FEATURE_STORE_AUDITED_AND_CORRECTED",
+  "semantic_gaps_identified": [
+    {
+      "gap_id": "GAP-01-FABRICATED-FILL",
+      "issue": "executable_fill_ts = available_ns + 250_000_000 (synthetic fixed latency, not observed fill)",
+      "severity": "HIGH_MEASUREMENT_SEMANTICS_FAILURE",
+      "remediation": "Remove fabricated fill. Set executable_fill_ts = None (NO_EXECUTABLE_FILL_AVAILABLE in pure target-free store)."
+    },
+    {
+      "gap_id": "GAP-02-APPROXIMATE-TICK-SIZE",
+      "issue": "tick_size = (0.25 if 'ES' in inst or 'NQ' in inst else 0.0001) used to compute height_ticks",
+      "severity": "HIGH_MEASUREMENT_SEMANTICS_FAILURE",
+      "remediation": "Apply canonical INSTRUMENT_SPECS for all 11 CME instruments."
+    },
+    {
+      "gap_id": "GAP-03-INVALID-PSEUDO-CORRIDORS",
+      "issue": "Paired consecutive zones zone[i] and zone[i+1] with constant density_score=0.5 (N-1 pseudo-corridors per session)",
+      "severity": "CRITICAL_MEASUREMENT_SEMANTICS_FAILURE",
+      "remediation": "Withdraw corridor_events from validated store. Mark BLOCKED_PENDING_CANONICAL_CORRIDOR_ENGINE."
+    }
+  ],
+  "corrected_store_directory": "E:\\EdgeLab-edgefactory\\artifacts\\edge_factory_audit",
+  "total_causal_zones_corrected": 3328710,
+  "total_sessions_inventoried": 3439,
+  "corridor_events_status": "BLOCKED_PENDING_CANONICAL_CORRIDOR_ENGINE",
+  "corridor_invalidation_proof": "3,325,972 corridors derived strictly as consecutive zone[i]+zone[i+1] pairs with constant density 0.5. Withdrawn.",
+  "side_breakdown": {
+    "BULL": 663094,
+    "BEAR": 2665616
+  },
+  "termination_breakdown": {
+    "MAX_PAUSE": 2605913,
+    "REVERSAL": 722766,
+    "CENSORED_END_OF_INPUT": 31
+  }
+}

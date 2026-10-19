@@ -1,0 +1,1183 @@
+Exploring the dynamic impact of transaction taxes on market 
+quality in HFT and non-HFT environments: an agent-based 
+modeling approach
+Liming Wang
+Affiliation：School of Management & Engineering, Nanjing University. 
+Affiliation address: 22 Hankou Road, Gulou District, Jiangsu Province, China, 210093
+Email: lmwang@ujs.edu.cn
+Xuchu Sun 
+Affiliation：School of Management & Engineering, Nanjing University
+Affiliation address: 22 Hankou Road, Gulou District, Jiangsu Province, China, 210093
+Email: sunxuchu@nju.edu.cn
+Hongliang Zhu* (The corresponding author)
+Affiliation：School of Management & Engineering, Nanjing University
+Affiliation address: 22 Hankou Road, Gulou District, Jiangsu Province, China, 210093
+Email: hlzhu@nju.edu.cn
+Tangrong Li 
+Affiliation：School of Internal Audit, Nanjing Audit University
+Affiliation address: 86 Yushan West Road, Pukou District, Jiangsu Province 211800, 
+China
+Email: litangrong@nau.edu.cn
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+Exploring the impact of transaction taxes on market quality in HFT 
+and non-HFT environments: an agent-based modeling approach
+Abstract
+This paper investigates the relationship among transaction taxes, high-frequency 
+trading (HFT), and market quality. We employ the agent-based modeling (ABM) 
+approach and conduct simulations to dynamically assess the impact of transaction taxes 
+on market quality in markets with and without high-frequency trading activities. The 
+preliminary tests show that high-frequency trading has adverse effects on market 
+quality. Imposing a moderate transaction tax rate helps improve market quality in both 
+markets with and without HFT. However, when the tax rate further increases, the 
+market quality can be impaired. The adverse effect of high tax rate on market quality is 
+more pronounced in market with no HFT. The findings reveal that the influence of 
+transaction taxes on market quality varies with investor structure and transaction tax 
+rates, which helps explain the diversity in transaction tax policies across global stock 
+markets.
+JEL classification: G10 G14
+Keywords: Transaction tax; High-frequency trading; Market quality; Agent-based 
+modeling
+1. Introduction
+Transaction taxes has been a longstanding topic of discussion. Early studies 
+provide evidence of the functions of transaction taxes, including funding government 
+expenditures, curbing financial market excesses, and improving market fairness 
+(Keynes, 1936; Tobin, 1978). In recent years, the prevalence of high-frequency trading 
+(HFT) in global stock markets draws attention to transaction taxes again. As the highfrequency trading has aroused increasing concerns about heightened market volatility 
+and flash crashes (Boehmer et al., 2012; Kirilenko et al., 2017), the imposition of 
+transaction taxes to increase trading costs, seems to become an imperative to curb 
+excessively high-frequency trading and thereby improve market quality.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+However, considering the following two concerns, whether transaction taxes can 
+necessarily improve market quality remains in doubt and is worth re-exploring. First, 
+previous studies in support of the positive impact of transaction taxes on market quality 
+(e.g., volatility and liquidity) focus on the role of transaction taxes in restricting highfrequency trading activities. The underlying assumption of these studies is that highfrequency trading impairs market quality, but there is not a consensus of support behind 
+the assumption. For example, some studies document the significant role of highfrequency trading in liquidity provision (Pástor and Stambaugh, 2003; Acharya and 
+Pedersen, 2005; Chordia et al., 2008; Hendershott et al., 2011) and price discovery 
+(Boehmer and Kelley, 2009), while some scholars argue that there is insufficient 
+empirical evidence for the role of high-frequency trading in exacerbating market 
+volatility (Hendershott and Moulton, 2011; Hasbrouck and Saar, 2013). The 
+undefinable influence of high-frequency trading on market quality indicates that even 
+if transaction costs do curb high-frequency trading, it is not sufficient to suggest their 
+role in improving market quality. 
+Second, there has been no academic or practical consensus regarding the role of 
+transaction taxes. Despite the large number of supporters of transaction taxes, some 
+studies show direct evidence that transaction taxes may impair market quality by 
+eroding market liquidity (Veryzhenko et al., 2017; Leal and Napoletano, 2019). 
+Meanwhile, some scholars argue that transaction taxes can impact both high-frequency 
+and low-frequency traders and they can be imposed in markets where high-frequency 
+trading is less prevalent to alleviate noise trading (Pellizzari and Westerhoff, 2009; 
+Capelle-Blancard and Havrylchyk, 2016). However, some others find that transaction 
+taxes may only serve as a short-term policy signal rather than a long-term solution to 
+noise trading (Veryzhenko et al., 2017). The global practice of implementing 
+transaction taxes does not neither yield definitive indications of their role. In the United 
+Sates, where the high-frequency trading is widely adopted, the transaction tax was 
+abolished in 1981. By contrast, in United Kingdom and France, where HFT is also 
+prevalent, the transaction tax rate remains as high as 0.5% and 0.3%, respectively. In 
+the Chinese A-share market, where the adoption of high-frequency trading is limited, 
+the transaction tax rate of 0.1% is also imposed. The diversity of the transaction tax 
+implementations implies that the impact of transaction taxes on the market may vary 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+with investor structures, and the role of transaction taxes in the interplay between highfrequency trading and market quality requires further exploration.
+This paper employs the agent-based modeling (ABM) framework to investigate 
+the role of transaction taxes in affecting market quality by fully considering the impact 
+of high frequency trading. Unlike traditional, regression-based models, the ABM 
+approach is not limited to observed data and allows for modelling complex systems 
+with non-independent individuals and feedback loops in causal mechanisms. As 
+Veryzhenko et al. (2017) note, “… the poor quality of data plaguing work on the impact 
+of FTTs on market quality”. The limited availability of micro-individual behavior data 
+could hamper the research and the artificial stock market simulations have been 
+gradually given attention and utilized widely (Chiarella et al., 2009; Leal and 
+Napoletano, 2019).
+The analysis starts with constructing the trading and adaptive rules for lowfrequency and high-frequency traders to examine the impact of high-frequency trading 
+on market quality and explore the potential mechanisms. This helps address the first 
+concern mentioned above. We simulate and compare two scenarios, one with both types 
+of traders (high-frequency traders and low-frequency traders) and one with only lowfrequency traders, to investigate the impact of high-frequency trading on four aspects 
+of market quality, including volatility, liquidity, mispricing, and welfare. Based on 
+findings from the simulations, we further explore the role of transaction taxes in 
+improving the four aspects of market quality under the two different scenarios. 
+Additionally, we investigate how traders react differently to different tax levels and 
+examine the influence of their reaction on market quality, which can be related to the 
+trading practices in global stock markets.    
+This paper contributes to the existing literature in several aspects. Firstly, this 
+paper expands the research on transaction taxes, high-frequency trading, and market 
+quality by employing the ABM approach. Given the complexity of the research 
+question and model construction, few studies have clarified the relationship among 
+them and the logic behind it. Secondly, this paper differs from previous research that 
+employs the ABM approach to examine the impact of transaction taxes on market 
+quality in that we take into account the diversity in investor structures of global trading 
+markets. For example, a closely related study by Veryzhenko et al. (2017) focuses on 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+the cancel order tax in the French stock market, but their findings may not be applied 
+in other stock markets with different investor structures. By contrast, this paper takes 
+makes horizontal comparisons to highlight variations in the impact of transaction taxes 
+on market quality across different market contexts. Thirdly, previous theoretical and 
+empirical studies often imply a simple and monotonic relationship between transaction 
+taxes and market quality (e.g., transaction taxes can mitigate market volatility or 
+jeopardize market liquidity). However, this study reveals that the impact of transaction 
+taxes on market quality is not monotonic and may depend on the investor structure and 
+transaction tax rates. Specifically, we observe that raising the tax rate from 0 to 0.1% 
+helps enhance market quality, while a further increase in the rate will negatively affect 
+market quality, and the adverse effect is more pronounced in markets without highfrequency traders.
+The remainder of this paper is structured as follows. Section 2 introduces the 
+model settings. Section 3 describes the simulation process, presents main results and 
+provides corresponding analyses. Section 4 concludes this paper.
+2. Model
+In this model, we assume a market with two agent categories and one traded asset. 
+Specifically, we classify all agents into low-frequency traders (LFT) and highfrequency traders (HFT). Both categories of agents possess knowledge regarding 
+historical prices, fundamental information, and other noises.
+We divide the entire trading period into T consecutive trading sessions. For each 
+session, agents (LFT and HFT) engage in trading activities by submitting orders to the 
+market. Unexecuted orders are subsequently retained in the limit order book (LOB), 
+awaiting the commencement of the next trading session. According to the trading rules 
+of the order-driven market, the market price is decided by the order price of the last 
+executed transaction in a trading session. If no new transaction occurs, we approximate 
+the market price by using the mid-price, which is given by the average price of the best 
+bid and ask quotes on the limit order book.
+As noted above, this paper creatively divides agents into low-frequency and highfrequency traders to explore how their trading behavior can be affected by transaction 
+taxes and the corresponding impact on market quality under the agent-based modeling 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+framework. Next, we will introduce the model specifications of the three core objects: 
+low-frequency traders, high-frequency traders, and transaction taxes.
+2.1 Low-frequency traders
+We assume that 𝑁𝐿 agents in the market are low-frequency traders. Among them, 
+active participants that engage in continuous trading activities hold a certain proportion, 
+which is subjected to a uniform distribution within a specific interval (𝑙𝑚𝑖𝑛, 𝑙𝑚𝑎𝑥), 
+denoted as 𝐴𝑃𝑙~𝑈(𝑙𝑚𝑖𝑛,𝑙𝑚𝑎𝑥). The interval may be adjusted at the beginning of each 
+trading session based on the profitability of low-frequency traders in the previous 
+session. 
+Following Chiarella et al. (2009), we assume that each low-frequency trader i can 
+act as a fundamentalism investor, a chartism investor, or a noise trader. A typical LF 
+trader makes trade-offs among these three strategies based on its own judgment and 
+expectations. Accordingly, at any time t, the expected return of agent i is
+𝑟𝑖
+𝑡,𝑡+𝜏𝑖=
+1
+𝑤𝑖𝑡,𝑓+ 𝑤𝑖𝑡,𝑐+ 𝑤𝑖𝑡,𝑛[
+𝑤𝑖𝑡,𝑓
+𝜏𝑖ln(
+𝑝𝑡,𝑓
+𝑝𝑡) + 𝑤𝑖𝑡,𝑐𝑟𝑖
+𝑡+ 𝑤𝑖𝑡,𝑛𝜀𝑡],         
+(1)
+where 𝑤𝑖𝑡,𝑓, 𝑤𝑖𝑡,𝑐, and 𝑤𝑖𝑡,𝑛 represent the weights given to the fundamentalist, chartist, 
+and noise trading components, respectively. We use the out-of-bracket term in Eq. (1) 
+to normalize the impact of different strategies. Considering that all LF traders make 
+trade-offs among the three trading strategies independently, we model the weights (𝑤𝑖𝑡,𝑓, 
+𝑤𝑖𝑡,𝑐, and 𝑤𝑖𝑡,𝑛) as random variables independently chosen from a normal distribution. 
+Thus, we have 𝑤𝑖𝑡,𝑓~𝑁(0,𝜎𝑓), 𝑤𝑖𝑡,𝑐~𝑁(0,𝜎𝑐), and 𝑤𝑖𝑡,𝑛~𝑁(0,𝜎𝑛).
+The term within the square brackets in Eq. (1) describes the expected return on 
+trading off the three strategies. Specifically, 𝑝𝑡 and 𝑝𝑡,𝑓 denote the stock price and 
+fundamental value of the asset at time t, respectively. 𝑟𝑖
+𝑡 represents the return of the 
+chartist component and is calculated based on the observations of the spot returns over 
+the last 𝜏𝑖 sessions (see Chiarella et al., 2009):
+𝑟𝑖
+𝑡=
+1
+𝜏𝑖∑𝜏𝑖
+𝑗=1 𝑟𝑡―𝑗=
+1
+𝜏𝑖∑𝜏𝑖
+𝑗=1 𝑙𝑛𝑝𝑡―𝑗
+𝑝𝑡―𝑗―1.                
+(2)
+Then, 𝜀𝑡, with zero mean and variance 𝜎𝜀, represents the return of pure noise 
+traders.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+Note that the parameter 𝜏𝑖 implies the time horizon of agent i, which mainly 
+depends on its own preference and investment style. Specifically, traders relying on 
+fundamental investing tend to have longer time horizons than those relying on technical 
+analysis. Hence, the time horizon of agent i, a typical low-frequency trader, can be 
+given by:
+𝜏𝑖= [𝜏𝐿1 + 𝑤𝑖𝑡,𝑓
+1 + 𝑤𝑖𝑡,𝑐],                          
+(3)
+where 𝜏𝐿 is a reference horizon of low-frequency traders. As shown in Eq. (3), if a 
+low-frequency trader puts more weight on fundamental analysis, the investment 
+horizon will be longer. On the contrary, a greater weight on chartist rules implies a 
+shorter investment horizon. 
+At time 𝑡+ 𝜏𝑖, the expected asset price is:
+𝑝𝑖
+𝑡+𝜏𝑖= 𝑝𝑡exp (𝑟𝑖
+𝑡,𝑡+𝜏𝑖𝜏𝑖).                    
+(4)
+By substituting Eq. (1) and Eq. (3) into Eq. (4), we can get the expected price. 
+Then, we discuss the model specification of low-frequency traders’ order 
+submission and adaptation to the market. Following Shen et al. (2021), we define that 
+the price movement induced by low-frequency traders’ transactions is subjected to a 
+uniform distribution, denoted as 𝜅𝐿~𝑈(𝜅𝐿𝑚𝑖𝑛,𝜅𝐿𝑚𝑎𝑥). Then, the transaction price (buy 
+and sell) of low-frequency traders at time t can be given by:
+𝑝𝐿𝑏𝑢𝑦,𝑡= 𝑝𝑏𝑖𝑑
+𝑡―1(1 + 𝜅𝐿),                     
+(5)
+𝑝𝐿𝑠𝑒𝑙𝑙,𝑡= 𝑝𝑎𝑠𝑘
+𝑡―1(1 ― 𝜅𝐿),                     
+(6)
+where 𝑝𝑏𝑖𝑑
+𝑡―1 and 𝑝𝑎𝑠𝑘
+𝑡―1 are the best bid and ask prices in the previous trading session. 
+Eq. (5) and Eq. (6) show that the current bid and ask prices are affected by the 
+fluctuations resulted from LF traders’ order submissions vying for execution. Then, if 
+the current best bid price is lower than the expected price calculated from Eq. (4), the 
+agent will submit a buy order at 𝑝𝐿𝑏𝑢𝑦,𝑡. Similarly, if the best ask price is higher than its 
+expected price, the agent will submit a sell order at 𝑝𝐿𝑠𝑒𝑙𝑙,𝑡. Here, we define a valid 
+period of submitted orders (𝛾L) as the time span from submission to the market until 
+removal from the limit order book, which means that if the orders are not fully executed 
+within the valid period 𝛾L, the rest of them will be removed from the limit order book. 
+The size of the submitted orders is formed as:
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+𝑞𝐿𝑡= 𝑟𝑖
+𝑡,𝑡+𝜏𝑖𝜂𝐿,                          
+(7)
+where 𝜂𝐿 represents the fluctuated order size of low-frequency traders, which is 
+subject to a uniform distribution, i.e., 𝜂𝐿~𝑈(𝜂𝐿𝑚𝑖𝑛,  𝜂𝐿𝑚𝑎𝑥). Eq. (7) illustrates that the 
+agents may adjust their transaction sizes according to their own profits in the previous 
+trading session. 
+It is worth noting that the agents’ order submission strategies are adaptive, 
+reflecting in not only their willingness to participate in trading, but also the size of 
+submitted orders and their investment styles. Specifically, within the investment 
+horizon 𝜏𝐿: (1) if the agents’ profits are positive in the last session (𝑝𝑟𝑜𝑓𝑖𝑡𝐿𝑡―1 > 0), 
+their willingness of participation may be enhanced at time t (i.e., 𝐴𝑃𝐿𝑡~𝑈(𝐴𝑃𝐿𝑡―1, 𝑙𝑚𝑎𝑥)), 
+and they may increase their order sizes (i.e., 𝜂𝐿𝑡~𝑈(𝜂𝐿𝑡―1, 𝜂𝐿𝑚𝑎𝑥)); (2) if the agents’ 
+profits are negative in the last session (𝑝𝑟𝑜𝑓𝑖𝑡𝐿𝑡―1 < 0), their willingness of participation 
+at time t may be hampered to 𝐴𝑃𝐿𝑡~𝑈(𝑙𝑚𝑖𝑛,𝐴𝑃𝐿𝑡―1), and the order sizes may decrease to 
+𝜂𝐿𝑡~𝑈(𝜂𝐿𝑚𝑖𝑛, 𝜂𝐿𝑡―1). More importantly, they may adjust the weights assigned to the three 
+different trading strategies (𝑤𝑖𝑡,𝑓, 𝑤𝑖𝑡,𝑐, and 𝑤𝑖𝑡,𝑛).
+2.2 High-frequency traders
+Unlike low-frequency traders who switch among different strategies according to 
+their profits in the previous trading session, high-frequency traders only adopt trend 
+trading strategies in each session (Chiarella et al., 2009). We assume that 𝑁𝐻 agents 
+in the market are high-frequency traders who decide whether to participate in trading 
+based on a threshold Δ𝑥 (see e.g., Chiarella et al., 2009, Paddrik et al., 2012):
+|
+𝑝𝑡―1 ― 𝑝𝑡―2
+𝑝𝑡―2
+| > Δ𝑥,                        
+(8)
+where 𝑝𝑡―1 and 𝑝𝑡―2 are the prices of the stock in the previous two trading sessions. 
+Eq. (8) illustrates that the market participation of high-frequency traders depends on 
+asset returns during the last session. As high-frequency traders can profit from either 
+the buy or sell side, the threshold Δx is positive and subjected to a uniform distribution 
+Δ𝑥~𝑈(ℎ𝑚𝑖𝑛, ℎ𝑚𝑎𝑥). High-frequency traders will submit orders on either side with equal 
+probabilities (Farmer et al, 2004), and the order prices are near the mid-price, as shown 
+in Eq. (9) and Eq. (10):
+𝑝𝐻𝑏𝑢𝑦,𝑡= 𝑝𝑏𝑖𝑑
+𝑡―1(1 ― 𝜅𝐻),                      
+(9)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+𝑝𝐻𝑠𝑒𝑙𝑙,𝑡= 𝑝𝑎𝑠𝑘
+𝑡―1(1 + 𝜅𝐻),                     
+(10)
+where 𝜅𝐻 denotes the price movement induced by high-frequency trading and follows 
+a uniform distribution, i.,e., 𝜅𝐻~𝑈(𝜅𝐻𝑚𝑖𝑛,𝜅𝐻𝑚𝑎𝑥). It is notable that Eq. (9) and Eq. (10) 
+differ from Eq. (5) and Eq. (6). This is because high-frequency traders, aiming to profit 
+from frequent trading activities, are only willing to buy at a price lower than the best 
+bid price and sell at a price higher than the best ask price submitted to the market. 
+Consequently, they may frequently cancel their submitted orders, and accordingly, we 
+assume that their order is valid for a shorter period (𝛾𝐻) than that of low-frequency 
+traders (𝛾𝐻<𝛾L).
+Regarding the order size, given that high-frequency traders may submit orders on 
+either side with equal probabilities (see details in Farmer et al., 2004), we have
+𝑞𝐻𝑡=
+1
+2(𝑞𝑏𝑖𝑑
+𝑡
++ 𝑞𝑎𝑠𝑘
+𝑡
+)𝜑𝐻,                    
+(11)
+where 𝑞𝑏𝑖𝑑
+𝑡
+ and 𝑞𝑎𝑠𝑘
+𝑡
+ are best bid size and best ask size in the limit order book, 
+respectively. Considering that the high-frequency traders may not be willing to execute 
+all the submitted orders at the best bid and ask prices on the limit order book, we include 
+an order absorption rate 𝜑𝐻 in Eq. (11), which is subject to the uniform distribution 
+𝑈(𝜑𝐻𝑚𝑖𝑛,𝜑𝐻𝑚𝑎𝑥).1
+Turning to the adaptation of high-frequency traders, it can be argued that highfrequency traders adjust both the threshold to participate in the market (Δ𝑥) and the 
+order absorption rate (𝜑𝐻) according to their profits in the last trading session. 
+Specifically, within the investment horizon 𝜏𝐻: (1) if the agents’ profits are positive in 
+the last session (𝑝𝑟𝑜𝑓𝑖𝑡H𝑡―1 > 0), they may increase their action threshold at time t to 
+Δ𝑥𝑡~𝑈(Δ𝑥𝑡―1, ℎ𝑚𝑎𝑥), and adjust the distribution of absorption rate to 𝜑𝐻𝑡~𝑈(𝜑𝐻𝑡―1, 
+𝜑𝐻𝑚𝑎𝑥); (2) if the agents’ profits are negative during the last session (𝑝𝑟𝑜𝑓𝑖𝑡𝐻𝑡―1 < 0), 
+they may decrease the threshold at time t to Δ𝑥𝑡~𝑈(𝑙𝑚𝑖𝑛, Δ𝑥𝑡―1), and adjust their 
+distribution of absorption rate to 𝜑𝐻𝑡~𝑈(𝜑𝐻𝑚𝑖𝑛, 𝜑𝐻𝑡―1).
+1 We assume that the high-frequency traders keep low net inventory to respond quickly market 
+conditions, while there is no limit on the inventory of low-frequency traders (see also in Kirilenko 
+et al.,2017; Korajczyk and Murphy, 2019; Brogaard et al., 2018).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+2.3 Transaction Tax
+We incorporate the transaction tax (TT) into the model. The transaction tax is 
+decided by the value of executed orders and the transaction tax rate:
+𝑇𝑇𝑖𝑡= 𝑞𝑖𝑡𝑝𝑖𝑡𝜃,                          
+(12)
+where 𝑞𝑖𝑡 and 𝑝𝑖𝑡 are the size and transaction price of orders executed by agent i at time 
+t, respectively. 𝜃 is the transaction tax rate which remains unchanged in the short term 
+due to the stability of trading policies, regardless of the progression of trading sessions. 
+Then, the profit of agent i after session 𝜏𝑖 is:
+𝑝𝑟𝑜𝑓𝑖𝑡𝑖𝑡,𝑡+𝜏𝑖= 𝑟𝑖𝑡,𝑡+𝜏𝑖― ∑𝜏𝑖
+𝑡=1 𝑇𝑇𝑖𝑡.               
+(13)
+3. Simulation results and analysis
+In this section, we explore the implications from the model introduced in Section 
+2. We carry out Monte-Carlo iterations (MC=100), establishing 1000 trading sessions 
+within each simulated path and a minimum quoting increment of 0.01. The default 
+values for parameters of the model are listed in Table 1.
+Table 1
+Parameter settings
+Parameters
+Description
+Default
+T
+Number of trading sessions per simulation
+1000
+tick
+Minimum quoting increment
+0.01
+𝑁𝐿
+Number of LFTs
+3000
+𝑁𝐻
+Number of HFTs
+30
+𝑝0
+Initial stock price
+120
+𝑝0,𝑓
+Initial fundamental value of the stock
+125
+𝜎𝑓𝑣
+Standard deviation of fundamental value
+0.001
+𝜎𝑓
+Standard deviation of the weight on fundamentalism trading 
+0.3
+𝜎𝑐
+Standard deviation of the weight on chartism trading
+0.6
+𝜎𝑛
+Standard deviation of the weight on noise trading
+0.1
+𝜎𝜀
+Standard deviation of a noise trader’s expected return
+0.001
+𝜏𝐿
+The time horizon for LFTs to adjust their trading strategies
+30
+𝜏𝐻 
+The time horizon for HFTs to adjust their trading strategies
+5
+𝛾𝐿
+Order validity time of LFTs
+10
+𝛾𝐻
+Order validity time of HFTs
+1
+𝜃
+Transaction tax rate
+0
+[𝑙𝑚𝑖𝑛,𝑙𝑚𝑎𝑥]
+The range of LFTs’ market participation level
+[0.01,0.6]
+[ℎ𝑚𝑖𝑛,ℎ𝑚𝑎𝑥]
+The range of HFTs’ market participation threshold
+[0,0.0002]
+[𝜅𝐿𝑚𝑖𝑛,𝜅𝐿𝑚𝑎𝑥]
+The range of price movement induced by LFTs’ trading
+[-0.0002,0.001]
+[𝜅𝐻𝑚𝑖𝑛,𝜅𝐻𝑚𝑎𝑥]
+The range of price movement induced by HFTs’ trading
+[0,0.01]
+[𝜂𝐿𝑚𝑖𝑛,𝜂𝐿𝑚𝑎𝑥]
+The range of LFTs’ fluctuated order size
+[2000,10000]
+[𝜑𝐻𝑚𝑖𝑛,𝜑𝐻𝑚𝑎𝑥] 
+The range of HFTs’ order absorption rate
+[0.1,0.5]
+This table presents the descriptions and default values of main parameters in the model introduced in Section 2. LFT 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+and HFT represent low- and high-frequency traders, respectively.
+The default values of parameters for simulations are in line with existing works. 
+Specifically, when modeling low-frequency trading strategies (e.g., fundamentalism, 
+chartism) and high-frequency trading strategies (e.g., the trend trading strategy), we 
+follow the practices in a series of previous literature (De Long et al., 1990; Hommes et 
+al., 2005; Chiarella et al., 2009; Franke and Westerhoff, 2012; Bongaerts and Van 
+Achter, 2021). Regarding the number, weight, and behavior of the two types of traders, 
+we refer to the relevant empirical evidence reported by Kirilenko et al. (2017) and 
+Cipriani et al. (2022). With respect to time horizons, order validity time, and ranges of 
+the parameters, we follow literature that employs the agent-based modeling framework 
+to investigate stock market trading (Chiarella et al., 2009; Gaffeo and Molinari, 2017; 
+McGroarty et al., 2019; Leal and Napoletano, 2019). In terms of the transaction tax rate, 
+we set it to zero for both buy and sell sides in the baseline simulation.2
+Our analysis starts with providing stylized facts and testing the model validation 
+(see Section 3.1). Then, based on the validity of our model, we investigate the influence 
+of high-frequency trading on market quality in the stock market (see Section 3.2). 
+Finally, we focus on the impact of transaction taxes on the willingness of HFT and LFT 
+to trade and the impact on market quality.
+3.1 Model validation
+We adopt an indirect calibration approach to validate our agent-based model.3 
+First, we present the simulation results throughout trading sessions. Fig. 1(a) illustrates 
+the evolution of stock prices from the interaction and adaptation of high- and lowfrequency traders in the market, while Fig. 1(b) depicts corresponding stock returns for 
+each trading session. 
+2 Setting the transaction tax as 0 for baseline simulation accords with widespread trading 
+practices in global stock markets. From official websites of tax authorities and stock exchanges, we 
+can find that many developed stock markets do not impose transaction taxes on buyers or sellers. 
+For instance, United States, Japan, and Germany eliminated transaction taxes in 1981, 1999, and 
+1991, respectively. Canada, Switzerland, the Netherlands, Australia, etc., also do not levy 
+transaction taxes. 
+3 For the calibration approach for ABM validation, see details in Windrum et al. (2007), 
+Fabretti (2013), and Platt (2020).
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+   (a)                                    
+(b)
+Fig.1. Simulated stock prices and returns
+   (a)                                   
+(b)
+Fig.2.The leptokurtic and fat-tail features of simulated stock returns
+Then, we verify whether the features of simulated stock returns accord with the 
+stylized facts in real stock markets. We show the leptokurtic and fat-tail features of 
+stock returns in Fig. 2. Moreover, as reported in Fig. 3(a), the autocorrelation tests show 
+that the time sequence of simulated stock returns follows no autocorrelation. 
+Meanwhile, Fig. 3(b) shows that there is autocorrelation in absolute returns, indicating 
+the volatility clustering of the simulated stock prices. As the leptokurtic and fat-tail 
+features, and the volatility clustering are the most obvious characteristics of the real 
+stock market, Fig.1, 2, and 3 provide evidence for the rationale and validity of our 
+model. 
+  
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+(a)                                    
+(b)
+Fig.3. Autocorrelation of returns and absolute returns
+3.2 The impact of HFT on market quality
+Based on the validity of our model, we further examine the impact of highfrequency trading on market quality by simulation. Specifically, we set two scenarios: 
+a baseline scenario with both high- and low-frequency traders, and a contrasting 
+scenario with only low-frequency traders.4
+In prior research exploring stock market quality, volatility and liquidity are 
+commonly considered as two main factors (Krishnamurti et al., 2003; Chelley-Steeley, 
+2008; Hendershott and Moulton, 2011). However, recent studies suggest that 
+mispricing is an observational metric reflecting a different dimension of market quality 
+from volatility and liquidity. It can be caused by heterogeneous beliefs in the market 
+and the interactions of different types of investors (Chen et al., 2009; Doukas et al., 
+2010; Shen et al., 2021). In addition to the three aspects mentioned above, drawing 
+inspiration from Angel and McCabe (2013) and Cipriani et al. (2022), this paper also 
+identifies investor welfare as another aspect of market quality. The main rationale lies 
+in the fact that the welfare of each investor group can influence investors’ decisionmaking progress and trading behavior, thus affecting market quality. 
+Based on the above considerations, we consider four aspects of market quality in 
+this study, including volatility, liquidity, mispricing, and welfare. For volatility and 
+liquidity, we employ the widely-acknowledged metrics and specifically, volatility is 
+measured by the standard deviation of stock returns throughout the trading sessions 
+while liquidity is assessed by the bid-ask spread. Following Berger and Ofek (1995), 
+the mispricing measure is constructed by the absolute difference between actual stock 
+prices and fundamental values, divided by the fundamental value (see also in Sadka and 
+Scherbina, 2007; Doukas et al., 2010; Stambaugh and Yuan, 2017). For the 
+measurement of welfare, inspired by Angel and McCabe (2013) and Cipriani et al. 
+(2022), we use aggregate returns of low-frequency traders. 
+To examine the impact of high-frequency trading on market quality, we calculate 
+4 Here, we set the market with both high- and low- frequency traders as the baseline scenario, 
+because it is more prevalent that both types of traders participate in trading activities among global 
+markets, while the markets with only low-frequency traders are relatively rare.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+these measures that capture the four different aspects of market quality and compare 
+their values under the baseline scenario with both HFT and LFT and the scenario with 
+only LFT. The results are reported in Table 2.
+Table 2
+The impact of high-frequency trading on market quality
+(1)
+(2)
+(3)
+(4)
+Scenarios
+Volatility
+Liquidity
+Mispricing
+Welfare
+Baseline
+0.924E-03
+0.023
+0.326
+0.025
+Non-HFT
+0.552E-03
+0.027
+0.283
+0.048
+p-value
+0.000
+0.214
+0.325
+0.000
+This table compares the four measures for market quality under the two scenarios (baseline scenario and non-HFT 
+scenario). Take the volatility in Column (1) as an example, for each scenario, we calculate the standard deviation of 
+the stock return during each trading session of each simulation and then take the average of standard deviations from 
+100 simulations. The reported liquidity, mispricing and welfare values are calculated in the same way, where 
+liquidity is proxied by the bid-ask spread, mispricing is proxied by the absolute difference between actual the stock 
+prices and its fundamental value, divided by the fundamental value, and welfare is the aggregate returns of lowfrequency traders.5 Due to the non-independence of the two scenarios, we conduct a paired sample t-test under the 
+normal distribution assumption to determine the difference of market quality measures between the two scenarios. 
+The null hypothesis is that the participation of high-frequency traders does not affect the mean of the model output. 
+Table 2 shows that the presence of high-frequency trading (baseline scenario) may 
+result in a decline in market quality, especially from the perspective of volatility and 
+welfare. For example, in Column (1), the volatility measure (standard deviation) of 
+stock returns in the baseline scenario (0.924E-03) is significantly higher than that in the 
+non-HFT scenario (0.552E-03). In Column (4), the result shows that the involvement 
+of high-frequency trading significantly harms the welfare of low-frequency traders. In 
+Column (3), we find that the participation of high-frequency traders may enhance the 
+extent of mispricing, although the impact is statistically insignificant under the paired 
+sample t-test. However, in Column (2), although the difference is statistically 
+insignificant, the market liquidity is higher in the baseline scenario (0.023) than in the 
+non-HFT scenario (0.027), indicating that the presence of high-frequency trading helps 
+improve market quality from the perspective of liquidity.
+The statistical results from Table 2 help derive some preliminary conclusions 
+regarding market quality. However, it is evident that conclusions drawing from the 
+liquidity aspect diverge from those from the other three aspects. In order to enhance the 
+5 In Tables 3 and 4, these measures are computed in a similar manner, and we do not make redundant 
+explanations in order to save space.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+understanding about this divergence and the underlying mechanisms, we conduct 
+further explorations, as illustrated in Figure 4.
+ 
+ 
+(a)                                       
+(b)
+ 
+ (c)                                      
+(d)
+Fig.4. Further observations on market quality measures
+In the four subplots of Figure 4, we depict stock prices and the bid-ask spreads 
+throughout 1000 trading sessions, with the number of high-frequency traders varied 
+from 0 to 100 while the number of low-frequency traders is maintained at 3000. 
+Specifically, in Figure 4(a), we set the number of high-frequency traders to 0 to simulate 
+a stock market composed solely of low-frequency traders. In Figures 4(b), 4(c), and 
+4(d), the number of high-frequency traders is set as 10, 30, and 100 (LFT-to-HFT ratios 
+of 300:1, 100:1, and 30:1), respectively.6
+Figure 4 provides the following insights. Firstly, we take a look at market quality 
+from the perspective of volatility. It is evident in Figures 4(b), 4(c), and 4(d) that the 
+increased prevalence of high-frequency traders is associated with a more pronounced 
+trend in stock price volatility. Moreover, there are notable price jumps in these three 
+subplots with high-frequency traders, and the price jumps become more frequent and 
+6 Note that the LFT-to-HFT ratio of the baseline scenario mentioned throughout this paper is 100:1. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+display larger magnitudes with the increase in the number of high-frequency traders. 
+Next, we examine market quality from the perspective of liquidity. As depicted by Fig. 
+4, the frequency of extreme values of the bid-ask spread decreases with the increasing 
+participation of high-frequency traders. Simultaneously, when extreme values occur, 
+the absolute magnitudes tend to be larger. However, if we take a closer look at the 
+distribution of bid-ask spreads in the four plots (note the blue dashed lines), we can find 
+that generally, the bid-ask spread tends to be higher in the market exclusively 
+dominated by low-frequency traders. This finding helps to provide an explanation for 
+the results in Table 2 that both the market volatility and liquidity increase with the 
+participation of high-frequency traders. 
+The findings above effectively reconcile the divergent conclusions in previous 
+research regarding the impact of high-frequency trading on market quality. Most studies 
+contend that market makers who engage in high-frequency trading significantly 
+contribute to market liquidity (Bondarenko, 2001; Eldor et al., 2006; Kedia and Zhou, 
+2011). Conversely, some posit that voluntary market makers have no contribution to 
+market liquidity, or even, exacerbate market volatility, particularly in periods of 
+insufficient liquidity, leading to a further depletion of liquidity and increased market 
+turbulence (Clark-Joseph et al., 2017; Leal and Napoletano, 2019). Consistent with the 
+theory of market makers’ inventory risk, our findings suggest that market makers, 
+driven by concerns about inventory costs, tend to engage in more frequent trading 
+during periods of heightened liquidity. However, in situations of insufficient liquidity, 
+they are inclined to mitigate inventory risks, leading to a reduction in market-making 
+activities (Hendershott and Seasholes, 2011; Liu and Wang, 2016). Therefore, in 
+markets with greater involvement of high-frequency traders, stock prices exhibit higher 
+volatility, while the influence on liquidity diverges in the periods with and without price 
+jumps. 
+To ensure the accuracy and robustness of the above conclusions, we additionally 
+display the cumulative distribution of bid-ask spreads under different scenarios in 
+Figure 5.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+Fig.5. Cumulative distribution function of bid-ask spread under different scenarios
+Figure 5 shows the cumulative distribution of bid-ask spread under baseline 
+scenario (3000 low-frequency traders and 30 high-frequency traders) and the 
+contrasting scenario (3000 low-frequency traders only). One critical aspect of Figure 5 
+is whether there is an intersection between the two curves plotted based on different 
+scenarios. On one hand, according to prior literature, high-frequency trading may 
+contribute to the occurrence of price jumps (Leal and Napoletano, 2019), and 
+accordingly, there would be a higher probability that the bid-ask spread reaches extreme 
+high values (e.g., 0.7 or higher) when high-frequency traders participate in the market. 
+Hence, at high bid-ask spread values, we would expect that the curve of the baseline 
+scenario is lower than that of the scenario without HFT participation. On the other hand, 
+if the involvement of high-frequency traders helps improve market liquidity, as 
+suggested by Table 2, the bid-ask spread should be clustered in lower bid-ask spread 
+values under the baseline scenario. This indicates that at small bid-ask spread values, 
+the curve of cumulative probability drawn from the baseline scenario should be higher 
+than that of the scenario without HFT participation. Based on the above considerations, 
+an intersection between the two curves is expected. And luckily, the curves displayed 
+in Figure 5 are consistent with our expectations. We can observe from Figure 5 that 
+when the market is solely driven by low-frequency traders, the majority of bid-ask 
+spread values fall approximately between 0.05 and 0.1. In contrast, with the 
+participation of high-frequency traders, the majority of bid-ask spread values are below 
+0.03.
+To sum up, we find that the participation of high-frequency traders has a negative 
+impact on market quality in general, mainly reflected in exacerbated price volatility, 
+reduced welfare for low-frequency traders, and weakened pricing efficiency. While the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+market-making activities of high-frequency traders contribute to the improvement of 
+market liquidity to some extent, the positive effects are primarily observed during 
+periods of less volatility. When price jumps occur, high-frequency trading has a limited 
+positive impact on liquidity. 
+The findings in this subsection lay a foundation for our subsequent exploration. 
+Considering the presence of high-frequency trading in most stock markets around the 
+world, it is necessary to take into account the impact of transaction taxes on highfrequency trading and the corresponding impact on market quality when delving deeper 
+into the role of transaction taxes in stock markets.
+3.3 The impact of transaction tax on HFT and market quality
+As mentioned in Section 1 of this paper, there is a divergence in the establishment 
+of transaction taxes across global stock markets. Although transaction taxes are widely 
+considered as a tool to mitigate the impact of high-frequency trading on the market, 
+they were abolished in the U.S. where high-frequency trading is quite prevalent while 
+imposed in the Chinese market while high-frequency trading is highly regulated. These 
+global practices lead us to reconsider the role of transaction taxes in market quality 
+under different scenarios with different HFT participation.
+We conduct two sets of tests to examine the influence of transaction taxes on 
+market quality, which is measured from four aspects (volatility, liquidity, mispricing, 
+and welfare) as described in Section 3.2.. First, to investigate whether imposing 
+transaction taxes can alleviate the adverse effects of high-frequency trading on market 
+quality, we compare market quality measures under the baseline scenario (with both 
+HFT and LFT) with no taxes imposed to those under the scenario with a transaction tax 
+rate of 0.1% imposed. Second, the fact that transaction taxes are also imposed in some 
+stock markets with limited high-frequency trading implies that transaction taxes are 
+designed not only to mitigate the adverse effect of HFT on market quality. Accordingly, 
+we investigate how transaction taxes on traders would affect market quality in the 
+scenario with only low-frequency traders by comparing the quality measures under the 
+non-HFT scenario with no taxes imposed to those in the non-HFT scenario with a 
+transaction tax rate of 0.1% imposed. The results from paired sample t-tests are shown 
+in Table 3.
+Table 3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+The impact of transaction taxes on market quality (transaction tax rate = 0.1%)
+(1)
+(2)
+(3)
+(4)
+Scenarios
+Volatility
+Liquidity
+Mispricing
+Welfare
+Baseline
+0.924E-03
+0.023
+0.326
+0.025
+Baseline+TT
+0.723E-03
+0.027
+0.315
+0.028
+p-value
+0.072
+0.278
+0.628
+0.295
+Non-HFT
+0.552E-03
+0.027
+0.283
+0.048
+Non-HFT+TT
+0.492E-03
+0.027
+0.269
+0.049
+p-value
+0.305
+0.925
+0.442
+0.958
+This table reports the average of each market quality measure from 100 simulations under the baseline scenario (or 
+non-HFT scenario) with no transaction taxes and a transaction tax rate of 0.1% imposed (denoted by “+TT”). The 
+p-values from paired sample t-tests are also reported, the null hypothesis of which is that the imposition of transaction 
+taxes does not affect the market quality measures. Volatility is measured by the standard deviation of stock returns 
+across trading sessions. Liquidity is proxied by bid-ask spread. Mispricing measure is constructed by the absolute 
+difference between actual the stock prices and its fundamental value, divided by the fundamental value. Welfare is 
+calculated by the aggregate returns of low-frequency traders.  
+The results from Table 3 indicate that imposing transaction taxes can enhance 
+market quality to some extent, although the improvement is not substantial. Specifically, 
+when imposing transaction taxes on the baseline scenario with both HFT and LFT, the 
+volatility, measured by standard deviation of stock returns, decreases from 0.924E-03 
+to 0.723E-03. The p-value from the paired sample t-test is 0.072, indicating that the 
+decrease in volatility is statistically significant. The results show that imposing 
+transaction taxes in markets with active HFT participation can effectively alleviate 
+market volatility. Regarding the other three aspects of market quality, we find that when 
+imposing transaction taxes on the baseline scenario, the market liquidity (shown by 
+increased bid-ask spread) and the degree of mispricing decrease, and the welfare of 
+low-frequency traders increases. However, these changes are not statistically 
+significant. It is worth noting that the involvement of high-frequency trading diminishes 
+the welfare of low-frequency traders, as discussed in Section 3.2.. In that case, when 
+seeking to enhance the welfare through the imposition of transaction taxes, the results 
+are not promising. As Table 3 shows, when imposing transaction taxes on the baseline 
+scenario, the welfare slightly increases from 0.025 to 0.028, significantly lower than 
+the welfare in the non-HFT scenario (0.048).  
+Turning to the non-HFT scenario, when transaction taxes are imposed, the changes 
+in market quality measures are similar to those in the baseline scenario. Specifically, a 
+decrease, though not statistically significant, can be observed in volatility and 
+mispricing, and an increase in welfare is found, while the liquidity measure (bid-ask 
+spread) barely changes. The results show that, in stock markets where high-frequency 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+trading is less prevalent, imposing transaction taxes may yield some marginal positive 
+impacts on market quality, especially from the perspective of volatility and mispricing. 
+This might to some extent explain why in stock markets dominated by low-frequency 
+traders (e.g., the Chinese A-share market), regulators still impose transaction taxes. 
+In light of the conclusions drawn above, we would like to discuss two issues 
+further. First, we seek to understand how, and to what extent, the imposition of 
+transaction taxes influences the participation of the two types of traders. Hence, we 
+calculate the average number of active high-frequency traders (nHFT) and lowfrequency traders (nLFT) throughout 1000 trading sessions for each scenario. Second, 
+we explore the potential outcomes of increasing the transaction tax rate, for instance, to 
+0.3%, as imposed on Euronext Paris, or to 0.5%, as implemented on London Stock 
+Exchange. Accordingly, we report the number of active traders and market quality 
+measures for each scenario with various transaction tax rates (starting from 0, 
+increasing to 0.5% with a step size of 0.1%) imposed. Results are reported in Table 4.
+Table 4
+The impact of transaction taxes on investor participation and market quality 
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Scenarios
+nHFT
+nLFT
+Volatility
+Liduidity
+Mispricing
+Welfare
+Panel A: imposing transaction tax on the baseline scenario
+Baseline(0)
+28
+2687
+0.924E-03
+0.023
+0.326
+0.025
+Baseline+TT(0.1%)
+23
+2569
+0.723E-03
+0.027
+0.315
+0.028
+p-value
+0.128
+0.872
+0.072
+0.278
+0.628
+0.295
+Baseline+TT(0.2%)
+22
+2456
+0.695E-03
+0.029
+0.309
+0.028
+p-value
+0.089
+0.769
+0.047
+0.156
+0.459
+0.238
+Baseline+TT(0.3%)
+21
+2209
+0.663E-03
+0.029
+0.298
+0.029
+p-value
+0.077
+0.265
+0.031
+0.159
+0.387
+0.124
+Baseline+TT(0.4%)
+20
+2067
+0.638E-03
+0.029
+0.302
+0.029
+p-value
+0.050
+0.072
+0.026
+0.151
+0.430
+0.119
+Baseline+TT(0.5%)
+20
+1792
+0.607E-03
+0.029
+0.311
+0.030
+p-value
+0.027
+0.008
+0.015
+0.147
+0.625
+0.083
+Panel B: imposing transaction tax on the non-HFT scenario
+Non-HFT(0)
+/
+2750
+0.552E-03
+0.027
+0.283
+0.048
+Non-HFT+TT(0.1%)
+/
+2629
+0.492E-03
+0.027
+0.269
+0.049
+p-value
+/
+0.892
+0.305
+0.925
+0.442
+0.958
+Non-HFT+TT(0.2%)
+/
+2514
+0.487E-03
+0.030
+0.289
+0.048
+p-value
+/
+0.787
+0.289
+0.159
+0.872
+0.982
+Non-HFT+TT(0.3%)
+/
+2261
+0.481E-03
+0.030
+0.301
+0.046
+p-value
+/
+0.271
+0.288
+0.082
+0.459
+0.752
+Non-HFT+TT(0.4%)
+/
+2115
+0.485E-03
+0.031
+0.314
+0.045
+p-value
+/
+0.074
+0.288
+0.043
+0.281
+0.710
+Non-HFT+TT(0.5%)
+/
+1834
+0.484E-03
+0.034
+0.343
+0.044
+p-value
+/
+0.008
+0.288
+0.000
+0.032
+0.628
+This table reports the average of each market quality measure from 100 simulations under the baseline scenario (or 
+non-HFT scenario) with no transaction taxes, and the transaction tax rate of 0.1%, 0.2%, 0.3%, 0.4% and 0.5% 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+imposed (denoted by “+TT”). The p-values from paired sample t-tests are also reported, the null hypothesis of which 
+is that the imposition of transaction taxes at a specific rate does not affect the market quality measures. Volatility is 
+measured by the standard deviation of stock returns across trading sessions. Liquidity is proxied by bid-ask spread. 
+Mispricing measure is constructed by the absolute difference between actual the stock prices and its fundamental 
+value, divided by the fundamental value. Welfare is calculated by the aggregate returns of low-frequency traders.
+As shown in Columns (1) and (2) of Table 4, it is evident that the increase in 
+transaction tax rates can affect the market participation of both types of investors. In 
+the baseline scenario (see Panel A of Table 4), increasing the transaction tax rate from 
+0% to 0.1% results in a sharp decrease in the number of high-frequency traders (nHFT). 
+In contrast, the participation of high-frequency traders decreases mildly when the tax 
+rate increases from 0.1% to 0.5%. In both scenarios (Panels A and B of Table 4), the 
+number of low-frequency traders (nLFT) declines gradually as the transaction tax rate 
+increases from 0 to 0.5%. According to results from the paired sample t-tests, the 
+decrease in the number of low-frequency traders becomes statistically significant when 
+the transaction tax rate reaches 0.4% and above. An additional intriguing observation 
+is that, the number of low-frequency traders in the baseline scenario (2687, 2596, 2456, 
+2209, 2067, 1792) stays lower than the number of low-frequency traders in the nonHFT scenario (2750, 2629, 2514, 2261, 2115, 1834) under the same transaction tax rate.
+Regarding the market quality measures, as presented in Columns (3) to (6), we 
+observe distinct changes with the increase of transaction tax rates in both scenarios. In 
+Column (3), the results reveal that, for markets with high-frequency traders (Panel A), 
+an increase in transaction tax rate significantly reduces market volatility. When the 
+transaction tax rate reaches 0.5%, the standard deviation (0.607E-03) approaches the 
+level observed in the non-HFT scenario (0.552E-03). However, in markets without 
+high-frequency trading (Panel B), the market volatility moderately decreases with the 
+transaction tax rate, and the decrease is not statistically significant. Turing to the 
+liquidity measure in Column (4), an increase in transaction tax rate moderately 
+diminishes market liquidity in baseline scenarios. By contrast, the impact of transaction 
+tax on liquidity is more pronounced in non-HFT scenarios, especially when the 
+transaction tax rate rises to 0.3%. Regarding mispricing, no obvious trend can be 
+observed with the increase in transaction tax rate for baseline scenarios with both HFT 
+and LFT. However, in scenarios without HFT, we can find that the increase in 
+transaction tax rate amplifies mispricing, and the impact is significant when the 
+transaction tax rate rises from 0.4% to 0.5%. The differentiated impact of the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+transaction tax between different scenarios is also reflected in the welfare of lowfrequency traders, as shown in Column (6). In markets with high-frequency trading, as 
+presented in Panel A, an increase in transaction tax rate tends to enhance the welfare of 
+low-frequency traders. However, Panel B reveals that in markets without highfrequency trading, a further increase when the transaction rate has reaches 0.1% only 
+serves to diminish the welfare of low-frequency traders.
+Reviewing Table 3 and Table 4, we observe an intriguing phenomenon: when we 
+increase the transaction tax rate from 0 to 0.1%, there appears to be an overall positive 
+impact on market quality (Table 3). However, when we further increase the tax rate 
+from 0.1% to 0.5%, the influence of transaction tax on market quality is not necessarily 
+positive (Table 4). Particularly, in markets without HFT, the imposition of high 
+transaction taxes can be highly detrimental to market quality. For example. as shown in 
+Panel B of Table 4, in markets without HFT, the contribution of increasing tax rate to 
+alleviating volatility is minimal, while the negative impact on liquidity, mispricing, and 
+welfare can be substantial.
+In order to investigate the underlying mechanisms behind these statistical results 
+and check the validity of our findings, we provide further evidence on the impact of 
+transaction tax rates on market quality by comparing the price and bid-ask spread 
+fluctuations across trading sessions under scenarios with different tax rates (0.1% and 
+0.5%). 
+ 
+(a)                                    
+(b)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+ (c)                                    
+(d)
+Fig.6. Comparing the impact of different transaction tax rates on market quality
+Figures 6(a) and 6(b) depict stock prices and bid-ask spreads in the baseline 
+scenario (with 30 HFT and 3000 LFT) with a transaction tax rate of 0.1% and 0.5%, 
+respectively. They show that the imposition of higher transaction tax rate (0.5%) 
+appears to alleviate the volatility of stock prices, which can be observed from the 
+reduction of both magnitude and frequency of price jumps. Simultaneously, there does 
+not appear to be any major change in the overall market liquidity throughout the trading 
+sessions. 
+Figures 6(c) and 6(d) show stock prices and bid-ask spreads in the non-HFT 
+scenario (with 3000 LFT only) with a transaction tax rate of 0.1% and 0.5%, 
+respectively. Contrary to the conclusions drawn from the baseline scenario, we find that 
+when the transaction tax rate in the non-HFT scenario rises from 0.1% to 0.5%, there 
+is no obvious change in the price volatility, while the bid-ask spread notably increases, 
+which indicates a decline in liquidity. This simulation results share similarities with the 
+empirical conclusions drawn by Deng et al. (2018), suggesting that the impact of 
+transaction taxes is not constant but undergoes dynamic changes in response to 
+variations in investor structure and market conditions.
+The conclusions drawn from Figure 6 align with our findings in Table 4. It is 
+implied that for markets without high-frequency trading, the imposition of modest 
+transaction taxes can enhance market quality to some extent, but a substantial increase 
+in transaction tax rates may not be a favorable policy measure. In contrast, in markets 
+with high-frequency trading, adjustments in tax rates would hardly influence market 
+quality. This helps explain the phenomenon that in stock markets with limited highfrequency trading (e.g., the Chinese A-share market), low transaction tax rates are 
+implemented, while in markets with prevalent high-frequency trading, transaction taxes 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+can either be imposed (e.g., UK and France) or not (e.g., U.S.), and these markets can 
+coexist with their own sets of regulations. 
+Our findings partially corroborate the argument of previous research that in actual 
+markets, the signaling effect of transaction taxes on traders is more pronounced than 
+their tangible impact on the market (Hu, 1998; Capelle-Blancard and Havrylchyk, 2016; 
+Bratis et al., 2017). However, our conclusions also indicate that in markets with limited 
+high-frequency trading activities, excessively high transaction taxes may not just be a 
+policy signal but rather have substantial and lasting adverse effects on the market 
+quality.
+4. Conclusions
+This study employs the agent-based modeling approach to address the underexplored issue concerning the relationship among transaction taxes, high frequency 
+trading and market quality. The main simulation results are as follows. First, highfrequency trading does have adverse effects on market quality, mainly reflected in 
+exacerbating price volatility and diminishing the welfare of low-frequency traders, 
+while the impact on liquidity and mispricing is relatively small. Second, the influence 
+of transaction taxes on market quality varies with investor structures and transaction 
+tax rates. Specifically, when the transaction tax rate increases from 0 to 0.1%, the 
+quality of the market, either with or without high frequency trading, may improve 
+mildly. When the tax rate further increases from 0.1% to 0.5%, the impact of transaction 
+taxes on market quality becomes adverse and is more pronounced in markets without 
+high-frequency trading while less significant in markets with high-frequency trading. 
+Our study may help inform ongoing debate on transaction tax policies and offer 
+insightful perspectives on the design of tax systems in different countries.
+Funding
+This work is supported by the Humanities and Social Science Fund of the Ministry of Education of 
+China (No. 17YJA790101) and the China Postdoctoral Science Foundation (No. 2023M731617).
+References
+[1]
+Acharya, V. V., & Pedersen, L. H. (2005). Asset pricing with liquidity risk. Journal of Financial 
+Economics, 77(2), 375-410.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+[2]
+Anagnostidis, P., & Fontaine, P. (2020). Liquidity commonality and high frequency trading: Evidence from 
+the French stock market. International Review of Financial Analysis, 69, 101428.
+[3]
+Angel, J. J., & McCabe, D. (2013). Fairness in financial markets: The case of high frequency trading. Journal 
+of Business Ethics, 112, 585-595.
+[4]
+Berger, P. G., & Ofek, E. (1995). Diversification’s effect on firm value. Journal of Financial Economics, 37(1), 
+39-65.
+[5]
+Boehmer, E., & Kelley, E. K. (2009). Institutional investors and the informational efficiency of prices. The 
+Review of Financial Studies, 22(9), 3563-3594.
+[6]
+Boehmer, E., Fong, K., & Wu, J. (2012, March). International evidence on algorithmic trading. In AFA 2013 
+San Diego Meetings Paper.
+[7]
+Bondarenko, O. (2001). Competing market makers, liquidity provision, and bid–ask spreads. Journal of 
+Financial Markets, 4(3), 269-308.
+[8]
+Bongaerts, D., & Van Achter, M. (2021). Competition among liquidity providers with access to highfrequency trading technology. Journal of Financial Economics, 140(1), 220-249.
+[9]
+Bratis, T., Laopodis, N. T., & Kouretas, G. P. (2017). Assessing the impact of an EU financial transactions tax 
+on asset volatility: An event study. International Review of Financial Analysis, 53, 12-24.
+[10] Brogaard, J., Carrion, A., Moyaert, T., Riordan, R., Shkilko, A., & Sokolov, K. (2018). High frequency trading 
+and extreme price movements. Journal of Financial Economics, 128(2), 253-265.
+[11] Capelle-Blancard, G., & Havrylchyk, O. (2016). The impact of the French securities transaction tax on market 
+liquidity and volatility. International Review of Financial Analysis, 47, 166-178.
+[12] Chelley-Steeley, P. L. (2008). Market quality changes in the London Stock Market. Journal of Banking & 
+Finance, 32(10), 2248-2253.
+[13] Chen, C. R., Lung, P. P., & Wang, F. A. (2009). Stock market mispricing: money illusion or resale 
+option?. Journal of Financial and Quantitative Analysis, 44(5), 1125-1147.
+[14] Chiarella, C., Iori, G., & Perelló, J. (2009). The impact of heterogeneous trading rules on the limit order book 
+and order flows. Journal of Economic Dynamics and Control, 33(3), 525-537.
+[15] Chordia, T., Roll, R., & Subrahmanyam, A. (2008). Liquidity and market efficiency. Journal of Financial 
+Economics, 87(2), 249-268.
+[16] Cipriani, M., Guarino, A., & Uthemann, A. (2022). Financial transaction taxes and the informational efficiency 
+of financial markets: a structural estimation. Journal of Financial Economics, 146(3), 1044-1072.
+[17] Clark-Joseph, A. D., Ye, M., & Zi, C. (2017). Designated market makers still matter: Evidence from two 
+natural experiments. Journal of Financial Economics, 126(3), 652-667.
+[18] Colliard, J. E., & Hoffmann, P. (2017). Financial transaction taxes, market composition, and liquidity. The 
+Journal of Finance, 72(6), 2685-2716.
+[19] De Long, J. B., Shleifer, A., Summers, L. H., & Waldmann, R. J. (1990). Noise trader risk in financial 
+markets. Journal of Political Economy, 98(4), 703-738.
+[20] Deng, Y., Liu, X., & Wei, S. J. (2018). One fundamental and two taxes: When does a Tobin tax reduce financial 
+price volatility?. Journal of Financial Economics, 130(3), 663-692.
+[21] Doukas, J. A., Kim, C. F., & Pantzalis, C. (2010). Arbitrage risk and stock mispricing. Journal of Financial 
+and Quantitative Analysis, 45(4), 907-934.
+[22] Eldor, R., Hauser, S., Pilo, B., & Shurki, I. (2006). The contribution of market makers to liquidity and 
+efficiency of options trading in electronic markets. Journal of Banking & Finance, 30(7), 2025-2040.
+[23] Fabretti, A. (2013). On the problem of calibrating an agent based model for financial markets. Journal of 
+Economic Interaction and Coordination, 8, 277-293.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+[24] Farmer, D. J., Gillemot, L., Lillo, F., Mike, S., & Sen, A. (2004). What really causes large price 
+changes?. Quantitative Finance, 4(4), 383-397.
+[25] Franke, R., & Westerhoff, F. (2012). Structural stochastic volatility in asset pricing dynamics: Estimation and 
+model contest. Journal of Economic Dynamics and Control, 36(8), 1193-1211.
+[26] Gaffeo, E., & Molinari, M. (2017). Taxing financial transactions in fundamentally heterogeneous 
+markets. Economic Modelling, 64, 322-333.
+[27] Hagströmer, B., & Nordén, L. (2013). The diversity of high-frequency traders. Journal of Financial 
+Markets, 16(4), 741-770.
+[28] Hasbrouck, J., & Saar, G. (2013). Low-latency trading. Journal of Financial Markets, 16(4), 646-679.
+[29] Hendershott, T., & Moulton, P. C. (2011). Automation, speed, and stock market quality: The NYSE’s 
+hybrid. Journal of Financial Markets, 14(4), 568-604.
+[30] Hendershott, T., & Seasholes, M. S. (2007). Market maker inventories and stock prices. American Economic 
+Review, 97(2), 210-214.
+[31] Hendershott, T., Jones, C. M., & Menkveld, A. J. (2011). Does algorithmic trading improve liquidity?. The 
+Journal of Finance, 66(1), 1-33.
+[32] Hommes, C., Huang, H., & Wang, D. (2005). A robust rational route to randomness in a simple asset pricing 
+model. Journal of Economic Dynamics and Control, 29(6), 1043-1072.
+[33] Hu, S. Y. (1998). The effects of the stock transaction tax on the stock market–experiences from Asian 
+markets. Pacific-Basin Finance Journal, 6(3-4), 347-364.
+[34] Hvozdyk, L., & Rustanov, S. (2016). The effect of financial transaction tax on market liquidity and volatility: 
+An Italian perspective. International Review of Financial Analysis, 45, 62-78.
+[35] Kedia, S., & Zhou, X. (2011). Local market makers, liquidity and market quality. Journal of Financial 
+Markets, 14(4), 540-567.
+[36] Keynes, J. (1936). The General Theory of Employment, Interest, and Money. New York Harcourt Brace, New 
+York.
+[37] Kirilenko, A., Kyle, A. S., Samadi, M., & Tuzun, T. (2017). The flash crash: High‐frequency trading in an 
+electronic market. The Journal of Finance, 72(3), 967-998.
+[38] Korajczyk, R. A., & Murphy, D. (2019). High-frequency market making to large institutional trades. The 
+Review of Financial Studies, 32(3), 1034-1067.
+[39] Krishnamurti, C., Sequeira, J. M., & Fangjian, F. (2003). Stock exchange governance and market 
+quality. Journal of Banking & Finance, 27(9), 1859-1878.
+[40] Leal, S. J., & Napoletano, M. (2019). Market stability vs. market resilience: Regulatory policies experiments 
+in an agent-based model with low-and high-frequency trading. Journal of Economic Behavior & 
+Organization, 157, 15-41.
+[41] Liu, H., & Wang, Y. (2016). Market making with asymmetric information and inventory risk. Journal of 
+Economic Theory, 163, 73-109.
+[42] McGroarty, F., Booth, A., Gerding, E., & Chinthalapati, V. R. (2019). High frequency trading strategies, 
+market fragility and price spikes: an agent based model perspective. Annals of Operations Research, 282, 217244.
+[43] Paddrik, M., Hayes, R., Todd, A., Yang, S., Beling, P., & Scherer, W. (2012, March). An agent based model 
+of the E-Mini S&P 500 applied to Flash Crash analysis. In 2012 IEEE Conference on Computational 
+Intelligence for Financial Engineering & Economics (CIFEr) (pp. 1-8). IEEE.
+[44] Pástor, Ľ., & Stambaugh, R. F. (2003). Liquidity risk and expected stock returns. Journal of Political 
+Economy, 111(3), 642-685.
+[45] Pellizzari, P., & Westerhoff, F. (2009). Some effects of transaction taxes under different 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed
+
+microstructures. Journal of Economic Behavior & Organization, 72(3), 850-863.
+[46] Platt, D. (2020). A comparison of economic agent-based model calibration methods. Journal of Economic 
+Dynamics and Control, 113, 103859.
+[47] Pomeranets, A., & Weaver, D. G. (2018). Securities transaction taxes and market quality. Journal of Financial 
+and Quantitative Analysis, 53(1), 455-484.
+[48] Sadka, R., & Scherbina, A. (2007). Analyst disagreement, mispricing, and liquidity. The Journal of 
+Finance, 62(5), 2367-2403.
+[49] Shen, H., Zheng, S., Xiong, H., Tang, W., Dou, J., & Silverman, H. (2021). Stock market mispricing and firm 
+innovation based on path analysis. Economic Modelling, 95, 330-343.
+[50] Stambaugh, R. F., & Yuan, Y. (2017). Mispricing factors. The Review of Financial Studies, 30(4), 1270-1315.
+[51] Tobin, J. (1978). A proposal for international monetary reform. Eastern Economic Journal, 4(3/4), 153-159.
+[52] Veryzhenko, I., Harb, E., Louhichi, W., & Oriol, N. (2017). The impact of the French financial transaction tax 
+on HFT activities and market quality. Economic Modelling, 67, 307-315.
+[53] Windrum, P., Fagiolo, G., & Moneta, A. (2007). Empirical validation of agent-based models: Alternatives and 
+prospects. Journal of Artificial Societies and Social Simulation, 10(2), 8.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4830893
+Preprint not peer reviewed

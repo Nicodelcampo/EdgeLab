@@ -1,0 +1,840 @@
+A Critical Examination of Ensemble Q-Learning for
+Pairs Trading
+Arnav Rayaprolu
+April 2, 2026
+Abstract
+Rayaprolu (2025), “An Empirical Assessment of Pairs Trading Using Ensemble Q-Learning,” reports
+a six-month portfolio return of 105.2% and a Sharpe ratio of 2.08 on NIFTY 50 constituents. This
+review examines the paper’s design choices, stated methodology, and accompanying codebase as a
+single interconnected system. We identify a cascade of compounding flaws spanning every stage of the
+pipeline: lookahead bias in z-score normalisation that invalidates both training and evaluation signals;
+pair selection conducted on the evaluation window, introducing selection leakage; a spread construction
+that contradicts the paper’s own theoretical framing; a state space that violates the Markov property the
+paper invokes to justify Q-learning; a reward function with an economically meaningless PnL formula; a
+capital model disconnected from real position mechanics; benchmark comparisons that are categorically
+inappropriate for a market-neutral strategy; and a computational design requiring an estimated 33 to
+80 hours of wall-clock time per full run with zero parallelisation. These flaws compound rather than
+cancel: each one inflates the reported performance figures independently, and no single correction would
+salvage the results. The paper’s reported numbers are not evidence of a profitable strategy.
+1
+
+Contents
+1
+Introduction
+3
+2
+Data Pipeline and the Lookahead Problem
+3
+2.1
+Static Z-Score Normalisation
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+3
+2.2
+The Spread Construction Contradicts the Paper’s Theory . . . . . . . . . . . . . . . . . .
+4
+2.3
+Pair Selection on Evaluation Data
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3
+The Reinforcement Learning Formulation
+4
+3.1
+The Markov Property Is Not Satisfied
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+4
+3.2
+State Encoding: Aliasing and Information Loss . . . . . . . . . . . . . . . . . . . . . . . .
+5
+3.3
+The Reward Function Is Economically Meaningless . . . . . . . . . . . . . . . . . . . . . .
+5
+3.4
+Action Space Design and the Hold Redundancy . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4
+Training Protocol and Computational Intractability
+6
+4.1
+Episode Count and Convergence
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+6
+4.2
+Parallelisation Is Entirely Absent . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+4.3
+The Bayesian Optimisation Is Not Transfer-Safe
+. . . . . . . . . . . . . . . . . . . . . . .
+7
+5
+Portfolio Construction and Performance Evaluation
+7
+5.1
+Capital Mechanics Have No Basis in Real Positions . . . . . . . . . . . . . . . . . . . . . .
+7
+5.2
+CIPLA Concentration Is Unacknowledged . . . . . . . . . . . . . . . . . . . . . . . . . . .
+7
+5.3
+The Benchmark Comparison Is Categorically Wrong . . . . . . . . . . . . . . . . . . . . .
+8
+5.4
+Sharpe Ratio Inflation from Annualisation . . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+5.5
+The Ten Runs Do Not Validate the Strategy . . . . . . . . . . . . . . . . . . . . . . . . . .
+8
+6
+The Gap Between Claims and Evidence
+8
+6.1
+The Performance Comparison with Prior Literature Is Misleading . . . . . . . . . . . . . .
+8
+6.2
+The Paper Does Not Report Actual Trade Details
+. . . . . . . . . . . . . . . . . . . . . .
+9
+7
+Recommendations for a Credible Replication
+9
+8
+Conclusion
+9
+2
+
+1
+Introduction
+The application of reinforcement learning to statistical arbitrage is a legitimate and active research
+area. Pairs trading provides a natural setting: the
+environment is well-defined, the state can be compactly encoded, and the reward can in principle
+be tied directly to financial outcomes. Rayaprolu
+(2025) attempts to formalise this by combining ensemble Q-learning with Bayesian hyperparameter
+search on hourly NIFTY 50 data, reporting a portfolio return that dwarfs every major equity index
+benchmark over the same six-month window.
+The paper is not without effort. Building a custom
+OpenAI Gym environment, running Optuna-based
+Bayesian optimisation, maintaining an ensemble
+of Q-tables, and generating reproducible capital
+curves represents a non-trivial engineering undertaking. The research question is worth asking. But
+asking the right question and answering it correctly are different things, and in this case the gap
+between them is large.
+What follows is not a line-by-line bug report. It
+is an attempt to read the paper and its code as
+a unified research artifact and ask whether the
+design choices, taken together, could plausibly produce the reported results for the right reasons.
+The answer, at every stage, is no. The flaws are
+not scattered or incidental; they form a coherent
+chain in which each stage feeds inflated information forward to the next. We trace that chain from
+data procurement through pair selection, spread
+construction, state encoding, reward design, training protocol, and evaluation, treating the paper’s
+prose and the code simultaneously because the
+two frequently diverge in ways that compound the
+underlying problems.
+2
+Data Pipeline and the Lookahead
+Problem
+2.1
+Static Z-Score Normalisation
+The most consequential flaw in the entire framework, introduced at the very first processing step,
+is the static full-window z-score normalisation in
+z-scoring.py and z-scoring2.py:
+Listing 1: Static normalisation over the full data
+window
+1
+spread = y - x
+2
+mean = np.mean(spread)
+3
+std
+= np.std(spread)
+4
+z
+= (spread - mean) / std
+The mean and standard deviation are computed
+over the entire dataset – all 1,638 hourly observations for the training file and all 853 for the
+evaluation file – before any single observation is
+normalised. This means the z-score at time t = 1 is
+normalised using data from t = 2, 3, . . . , T. Every
+single value fed to the RL agent as its primary state
+signal encodes knowledge of the future distribution
+of the spread. This is textbook lookahead bias.
+Its consequences are not subtle. The normalised
+signal is guaranteed to be mean-zero and unitvariance across the window by construction. The
+agent therefore learns a policy calibrated to a signal
+that perfectly reflects the statistical properties of
+the entire data sample, including data it could
+never have access to at time of decision. No live
+deployment can replicate this signal because the
+future is unknown.
+The trained policy is, in a
+precise sense, fitted to a dataset that does not and
+cannot exist in practice.
+The same problem applies to the evaluation window. Although the evaluation data is temporally
+distinct from the training data (January 2025 onward), the evaluation z-scores in z-scoring2.py
+are computed by the same static method over the
+six-month evaluation period. An agent making a
+decision at January 1, 2025, cannot know the mean
+and standard deviation of the spread across the
+following six months. The reported out-of-sample
+performance is therefore not out-of-sample in any
+meaningful sense: both the training signal and
+the evaluation signal are constructed using future
+information.
+3
+
+2.2
+The Spread Construction Contradicts
+the Paper’s Theory
+The lookahead problem is worsened by a quiet divergence between the paper’s stated methodology
+and what the code actually does. The paper correctly introduces the cointegration-based spread
+following Engle and Granger (1987):
+Spreadt = log(PA(t)) −β log(PB(t))
+where β is estimated from OLS regression and the
+stationarity of the residual is what the ADF test
+evaluates. The paper is explicit that this is the
+theoretically grounded construction and that β
+captures the hedge ratio between the two assets.
+The code does neither. The actual spread is:
+1
+spread = y - x
+# y = df[a].values , x
+= df[b]. values
+Raw prices, not log prices. No β. No regression.
+This implicitly assumes β = 1 and an intercept
+of zero, which is only a reasonable approximation if both assets trade at similar price levels
+with similar volatility. For pairs like HDFCBANK
+and ICICIBANK, which have different absolute
+price levels, a one-unit long-short position is not
+a balanced hedge and the resulting spread is not
+the cointegration residual the paper claims to be
+analysing.
+Furthermore,
+the
+cointegration
+test
+in
+pair selection.py is applied to raw prices:
+1
+_, pval , _ = coint(s1 , s2)
+The Engle-Granger methodology the paper cites is
+designed for log prices, since log price series are the
+ones expected to follow unit-root processes with
+a potentially cointegrating combination. Testing
+raw prices inflates apparent cointegration strength,
+particularly for assets whose prices have drifted
+significantly over the sample. The pair selection is
+presented as rigorous application of Engle-Granger,
+but it applies neither the log transformation nor
+the estimated hedge ratio that the method requires.
+2.3
+Pair Selection on Evaluation Data
+The
+pair
+selection
+code
+loads
+nifty50 hourly prices2.csv,
+the
+January
+2025 to July 2025 file – the same period used for
+out-of-sample evaluation. The five pairs chosen
+for the portfolio are therefore the pairs that
+exhibited the strongest cointegration and highest
+z-score crossing frequency during the evaluation
+period itself.
+CIPLA-NTPC, which reports the
+highest individual return of 212.24%, was selected
+precisely because its spread was well-behaved over
+the evaluation window.
+This is selection leakage. No forward-looking investor could have known in January 2025 which
+pairs would exhibit the highest crossing frequency
+over the following six months. Selecting on those
+pairs and then reporting their returns over that
+same window produces numbers that say nothing about the strategy’s predictive ability. The
+reported performance is, in part, a description of
+which pairs happened to work well, not a prediction
+of which pairs would work well.
+The composite scoring framework has a further
+structural issue: the z-score crossing frequency,
+which contributes 50% of the score, is computed
+from the same lookahead-biased z-scores discussed
+above. A pair with high crossing frequency on
+lookahead-normalised z-scores will also have high
+crossing frequency on correctly normalised rolling
+z-scores if and only if the spread is genuinely meanreverting, but the two are not equivalent. The
+static normalisation inflates crossing counts for
+pairs whose spread happened to fluctuate around
+a level close to the full-window mean, which is a
+property visible only in hindsight.
+3
+The Reinforcement Learning Formulation
+3.1
+The Markov Property Is Not Satisfied
+The paper invokes the Markov Decision Process
+framework at length, citing the Markov property
+– that the next state depends only on the current
+state and action – as the theoretical justification
+for Q-learning.
+The theoretical convergence of
+4
+
+tabular Q-learning to the optimal value function
+requires this property to hold. Yet the paper simultaneously encodes the state as a rolling window
+of the three most recent z-score values. This is
+self-contradictory.
+If the Markov property held with respect to the
+instantaneous z-score, one observation would be
+sufficient state representation and no history would
+be needed. Including a window of length three is
+an explicit acknowledgment that the single z-score
+is not sufficient to predict the next state distribution. The process is, by the paper’s own design, at
+least weakly non-Markovian: the agent needs history to act effectively. Using three steps of history
+without any theoretical justification for why three
+is sufficient – rather than five, ten, or fifty – means
+the agent is likely operating on a partially observable MDP (POMDP) with an arbitrarily truncated
+information set. Q-learning does not converge to
+the optimal policy under partial observability.
+3.2
+State Encoding: Aliasing and Information Loss
+The state is encoded as:
+state =
+
+
+2
+X
+j=0
+bin(zt−2+j) · 15j
+
+· 3 + pos idx
+Each z-score value is mapped to one of 15 bins
+covering the range [−5, 5], giving a bin width of
+10
+15 ≈0.667 standard deviations. At the centre of
+the distribution, this means z-score values of 0.1
+and 0.6 are mapped to the same bin and are completely indistinguishable from the agent’s perspective. The mean-crossing signal the paper places at
+the heart of its pair selection methodology – the
+number of times the z-score crosses zero – is essentially invisible to the agent, since the zero-crossing
+occurs within a single bin spanning [−0.33, +0.33].
+At the tails, all values beyond ±5 standard deviations are collapsed into the extreme bins:
+1
+zidx = [min(Z_BINS - 1, max(0, int((z
++ 5) / 10 * Z_BINS))) for z in
+zvals]
+A z-score of 5.1 and one of 12.0 are identical states.
+The agent cannot distinguish between a large-butrecoverable deviation and an extreme divergence.
+This is the region where position sizing and exit
+urgency are most consequential, and it is entirely
+opaque to the agent.
+The total state space of 153 × 3 = 10,125 states
+sounds large but is actually a very coarse discretisation of a three-dimensional continuous space.
+The fact that the paper reports a Sharpe ratio
+of 3.12 for CIPLA-NTPC while the agent operates
+on this impoverished state representation should
+itself prompt scepticism: an agent that cannot distinguish a z-score of 0.1 from one of 0.6 is unlikely
+to be making sophisticated trading decisions.
+3.3
+The Reward Function Is Economically
+Meaningless
+The PnL at the heart of the reward function is
+computed as:
+Listing 2: PnL calculation in the step function
+1
+pnl = self.entry_amt * self.pos * (
+self.entry_z - z_cur) / 10
+This multiplies capital by position direction by the
+change in z-score, divided by 10. The z-score is
+a dimensionless, normalised number. Multiplying
+it by a capital amount does not yield a dollar
+profit or loss – it yields a number that has units
+of rupees-per-standard-deviation, which is not a
+financial quantity. The arbitrary division by 10
+is unexplained and does not restore dimensional
+consistency.
+In reality, the profit on a pairs trade depends on
+the actual price movements of each leg, the number
+of shares held in each leg, and the estimated hedge
+ratio.
+None of these appear in the calculation.
+The capital curve plotted in the paper and used to
+compute returns and Sharpe ratios does not reflect
+what a real investor would have earned. It reflects
+the accumulation of an internally defined quantity
+that has a superficial resemblance to capital but
+no connection to market prices.
+The paper’s reward function compounds this with
+several additional incentive problems. The entry
+5
+
+reward:
+rentry = 0.5 · |zt| + 0.05
+rewards the agent for entering when the absolute zscore is large, regardless of direction. An agent can
+receive an identical entry reward by entering a longshort or short-long position when the z-score is at
++2 or −2. The direction of the trade relative to
+the sign of the z-score – which determines whether
+the trade is mean-reverting or mean-diverging – is
+not part of the reward signal at entry. The agent
+is incentivised to trade when the spread is large
+in magnitude, not to trade in the direction that
+exploits mean reversion.
+The growth bonus rgrowth = 0.05 · (Ct −C0)/C0
+is applied unconditionally at every step, regardless of any action taken. Its effect is to create a
+persistent upward reward signal for any episode in
+which capital has previously been above the initial
+level. Combined with the inertia introduced by
+this bonus, the agent is implicitly penalised for
+exiting positions that are in profit, since exiting a
+profitable position does not increase Ct beyond its
+current level. This pushes against the very meanreversion exit behaviour the strategy is supposed
+to exploit.
+Transaction costs are charged twice per round trip:
+once on entry:
+1
+self.cap
+-= self.tc * amt
+and once on exit:
+1
+self.cap += pnl - self.tc * self.
+entry_amt
+Both charges are levied on the full entry capital.
+A round trip therefore incurs a cost of 2×0.09% =
+0.18% of capital, which is double the stated cost of
+a single trade. This is inconsistent with the paper’s
+description of a 0.09% cost per trade.
+3.4
+Action Space Design and the Hold Redundancy
+The action space contains six actions: hold, two
+long-short entry variants, two short-long entry variants, and exit.
+Actions 1, 2 (long-short) and
+actions 3, 4 (short-long) are described as entry
+and “alternative entry” respectively, but the code
+treats them identically:
+actions 1 and 2 both
+set self.pos = 1, and actions 3 and 4 both set
+self.pos = -1. There is no functional distinction
+between the two variants. This means the agent
+has an effective action space of four (hold, longshort entry, short-long entry, exit) but is searching
+over a Q-table of size 10,125 × 6. The redundant
+actions do not expand the agent’s capability; they
+expand the search space without adding information, slowing convergence and increasing the number of Q-table entries that need to be visited before
+estimates stabilise.
+4
+Training Protocol and Computational Intractability
+4.1
+Episode Count and Convergence
+The main agent (rl agent.py) trains for 50,000
+episodes per Q-table, with 3 Q-tables per run and
+10 independent runs per pair across 5 pairs. This
+gives 50,000 × 3 × 10 × 5 = 7,500,000 total training
+episodes. At an average of roughly 400 steps per
+episode – accounting for early termination when
+the 25% drawdown limit is hit, which occurs frequently in early random-exploration episodes – this
+amounts to approximately 3 × 109 environment
+steps.
+A pure-Python OpenAI Gym environment of this
+complexity – with multiple conditional branches,
+list appends,
+attribute lookups,
+and a listcomprehension-based state computation – typically
+executes at between 20,000 and 50,000 steps per
+second on a modern CPU core. At 30,000 steps
+per second:
+3 × 109
+30,000 ≈100,000 seconds ≈28 hours
+for the main training loop. The Bayesian optimisation (bayesian optimisation.py) adds 60×15×
+8,000×400 = 2.88×109 additional steps, contributing another 16 to 27 hours. The full pipeline from
+Bayesian search through final evaluation therefore
+requires an estimated 33 to 80 hours of wall-clock
+time on a single CPU core.
+6
+
+This is not a minor inconvenience. A strategy that
+requires over a day of compute per training run
+cannot be retrained in response to regime changes,
+cannot be cross-validated across multiple time windows within a reasonable timeframe, and cannot
+be iterated on during development. For a tabular
+Q-learning approach – one of the simplest RL algorithms, with a Q-table totalling just 60,750 scalar
+entries of 475 KB – this is a sign of a fundamental
+design mismatch between the method and the scale
+at which it is applied.
+4.2
+Parallelisation Is Entirely Absent
+The code contains no parallelisation. The 10 evaluation runs per pair, the 3 ensemble members per
+run, and the 60 Bayesian optimisation trials are
+all executed sequentially. Each of these loops is
+trivially parallelisable: ensemble members share no
+state, evaluation runs share no state, and Bayesian
+trials (after the initial warm-up) can be dispatched
+in parallel batches. On an 8-core machine, straightforward use of multiprocessing.Pool would reduce the main loop from 28 hours to roughly 3.5
+hours with no changes to the algorithm. The paper
+does not mention this as a limitation or as future
+work.
+4.3
+The Bayesian Optimisation Is Not
+Transfer-Safe
+The hyperparameter search is conducted exclusively on the BPCL-CIPLA pair and the resulting values – learning rate 0.015, discount factor
+0.99, ϵ decay 0.999, entry threshold 0.01 – are
+applied unchanged to all five pairs. The implicit
+assumption is that optimal hyperparameters for
+one pair generalise to all others. This is not justified. CIPLA-NTPC involves a pharmaceutical
+stock paired with a power utility; EICHERMOTM&M involves two automotive manufacturers;
+HDFCBANK-ICICIBANK involves two large-cap
+banks. These pairs have different spread volatilities, different mean-reversion speeds, and different
+liquidity profiles, all of which affect the optimal
+learning rate and discount factor. Using BPCLCIPLA as a proxy for all five pairs adds another
+source of miscalibration to an already flawed evaluation.
+The optimised entry threshold of 0.01 standard deviations is itself a failure of the search. A threshold
+of 0.01 is functionally zero: the absolute z-score of
+the spread exceeds 0.01 almost continuously, meaning the entry condition is effectively always active.
+The purpose of an entry threshold in pairs trading
+is to define a zone of significant divergence from
+the mean, typically ±1 or ±2 standard deviations.
+Optimising this threshold using a contaminated
+z-score signal over a single pair and arriving at 0.01
+suggests the search is not finding a meaningful signal – it is finding the configuration that maximises
+a noisy, lookahead-biased objective.
+5
+Portfolio Construction and Performance Evaluation
+5.1
+Capital Mechanics Have No Basis in
+Real Positions
+The environment deploys the full capital on each
+trade:
+1
+amt = self.cap
+2
+self.entry_amt = amt
+In a genuine pairs trade, capital is deployed across
+two legs simultaneously: a long position in one
+asset and a short position in the other. The capital
+required is the sum of both notional exposures,
+and the hedge ratio β determines the relative size
+of each leg. The code represents capital as a single
+scalar with no leg decomposition, no share counts,
+and no hedge ratio. There is no connection between the capital number in the simulation and
+the capital a real portfolio manager would need to
+allocate to execute the trade.
+5.2
+CIPLA Concentration Is Unacknowledged
+The portfolio consists of five pairs: BPCL-CIPLA,
+CIPLA-NTPC,
+ADANIENT-TATACONSUM,
+EICHERMOT-M&M,
+and
+HDFCBANKICICIBANK. CIPLA appears in two of the
+five pairs, meaning any position in the CIPLANTPC spread creates additional exposure to
+7
+
+CIPLA beyond what is already present in the
+BPCL-CIPLA spread. The paper treats all five
+pairs as independent allocations of equal capital
+and computes the portfolio return as the mean
+of five independent returns.
+This understates
+the effective concentration and overstates the
+diversification of the portfolio.
+5.3
+The Benchmark Comparison Is Categorically Wrong
+Table 1 of the paper compares the strategy’s sixmonth return against the NIFTY 50, S&P 500,
+FTSE 100, MSCI World Index, and Hang Seng
+Index, presenting up to 103.74 percentage points
+of “excess return” α. This comparison is not valid.
+Pairs trading is a market-neutral strategy: by construction, it takes simultaneous long and short
+positions in correlated assets, hedging out broad
+market exposure. Its returns are not earned by
+taking on equity beta and should not be compared
+against long-only equity indices. The appropriate
+benchmark for a market-neutral strategy is the
+risk-free rate (the 10-year government bond yield,
+approximately 6.79% annualised at the time, or
+roughly 3.4% over six months), or alternatively a
+hedge fund index with comparable leverage and
+sector profile. Comparing against equity indices inflates the apparent excess return by the full magnitude of the equity risk premium, which the strategy
+was never exposed to.
+5.4
+Sharpe Ratio Inflation from Annualisation
+The Sharpe ratio is computed as:
+1
+sharpe = (excess_returns .mean () /
+returns.std()) * np.sqrt(
+periods_per_year )
+with periods per year = 853.
+The evaluation
+window provides approximately 853/2 ≈426 return observations, since the evaluation covers six
+months.
+Annualising a Sharpe ratio computed
+from only 426 observations by multiplying by
+√
+853
+introduces a known upward bias when returns
+happen to be positive and have low estimated
+volatility over that window.
+A Sharpe ratio of
+3.12 for CIPLA-NTPC, reported to two decimal
+places from a single six-month sample with a flawed
+capital curve, has enormous sampling uncertainty
+that the paper does not acknowledge.
+5.5
+The Ten Runs Do Not Validate the
+Strategy
+The paper reports standard deviations across 10
+independent training-evaluation runs for each pair,
+presenting this as evidence of stability. But the
+variance captured by these 10 runs is entirely the
+variance of the training stochasticity – different random seeds, different Q-table initialisations – not
+the variance of the strategy’s performance across
+different market conditions. A strategy can have
+very low run-to-run variance (i.e., the RL training converges consistently) while having extremely
+high regime-to-regime variance (i.e., the trained
+policy performs very differently in bull markets,
+bear markets, or sideways markets). The paper
+conflates these two entirely different sources of uncertainty and uses the first to make implicit claims
+about the second.
+6
+The Gap Between Claims and Evidence
+6.1
+The Performance Comparison with
+Prior Literature Is Misleading
+The paper compares its 105.2% six-month portfolio return against Gatev et al. (2006)’s annualised
+excess return of 11%, Pizzutilo (2013)’s 11.84%
+annual gross return, and Yang and Malik (2024)’s
+31.53% annualised profit. The comparison is presented as evidence of superior performance. However, the earlier studies use correctly constructed
+backtests with proper out-of-sample separation,
+realistic spread constructions, and – in the case
+of Gatev et al. – multiple decades of data. The
+present paper’s 105.2% figure is derived from a single six-month evaluation window on a lookaheadbiased signal with selection-leaked pairs. These
+numbers are not commensurable. Presenting them
+side by side as if they measure the same thing
+misleads the reader about the magnitude of the
+improvement.
+8
+
+6.2
+The Paper Does Not Report Actual
+Trade Details
+The paper reports aggregate statistics – average return, Sharpe ratio, maximum drawdown, win rate
+– but does not provide granular trade-level data:
+what the actual entry and exit z-score thresholds
+were in practice, how many trades were executed
+per pair, what the average holding period was, or
+whether the agent consistently held the correct
+direction. Without this detail it is impossible to
+determine whether the agent has learned a coherent mean-reversion policy or whether the returns
+are driven by a small number of large lucky trades.
+The win rate is mentioned but not tabulated in
+the paper.
+7
+Recommendations for a Credible
+Replication
+A corrected version of this framework would need
+to address each of the above issues as an integrated
+whole, not as isolated patches. The most important
+changes, in order of impact:
+The z-score normalisation must use a rolling window whose length is treated as a hyperparameter.
+Mean and standard deviation should be computed
+only from data available at or before time t. The
+same rolling parameters estimated on the training
+period should be applied to normalise the evaluation data, not recomputed on the evaluation
+window. The spread should be constructed as the
+cointegration residual, log PA −ˆβ log PB, using the
+estimated hedge ratio from an OLS regression on
+the training period.
+Pair selection must use only training-period data.
+The cointegration test and crossing frequency metric should be applied to training-period spreads,
+and the five selected pairs should be fixed before
+the evaluation window is examined. The use of log
+prices in the cointegration test aligns the implementation with the Engle-Granger methodology
+the paper cites.
+The PnL calculation must be grounded in actual
+price movements. Profit on a pairs trade is:
+PnL = nA(P exit
+A
+−P entry
+A
+) −nB(P exit
+B
+−P entry
+B
+)
+where nA and nB are share counts satisfying the
+dollar-neutral condition nAPA = nBPB or the
+beta-neutral condition nAPA = ˆβ · nBPB. This
+calculation requires the raw price series to be available inside the environment, which they currently
+are not.
+The state representation should be extended and
+the encoding approach reconsidered. A window
+of 10 to 20 steps provides more context for the
+agent’s mean-reversion decisions.
+More importantly, switching to a continuous state representation with function approximation (even a linear
+approximator or a shallow neural network) eliminates the aliasing problem entirely and allows the
+agent to generalise across neighbouring z-score levels rather than treating each bin as an isolated
+state.
+Evaluation must cover multiple non-overlapping
+windows and report performance distributions
+across those windows, not a single-window point
+estimate. Walk-forward testing – reselecting pairs
+and retraining the agent at each rebalancing date
+using only historical data – is the minimum standard for a credible backtest.
+Benchmarking should use the risk-free rate and a
+suitable hedge fund or statistical arbitrage index.
+Reporting excess return over the NIFTY 50 is
+not appropriate for a market-neutral strategy and
+should be removed.
+8
+Conclusion
+This review has traced a chain of compounding
+methodological failures through the Rayaprolu
+(2025) framework. The chain begins with the first
+data processing step – static z-score normalisation
+– which embeds future information into every signal
+the agent ever sees. It continues through pair selection conducted on the evaluation window, which
+selects the pairs that happened to perform well
+rather than the pairs expected to perform well. It
+runs through a spread construction that contradicts
+9
+
+the paper’s theoretical framing by discarding the
+hedge ratio central to the Engle-Granger methodology.
+It passes through a state encoding that
+violates the Markov property the paper uses to justify Q-learning, aliases distinct market conditions
+to identical states, and ignores the zero-crossing
+signal the pair selection framework is built to find.
+It reaches the reward function, where the PnL calculation has no financial meaning and the incentive
+structure pushes the agent in the wrong direction.
+It continues through a capital model disconnected
+from real position mechanics and a portfolio construction that counts overlapping CIPLA exposure
+as independent diversification. And it concludes
+with an evaluation framework that compares a
+market-neutral strategy against long-only equity
+indices and presents run-to-run training variance
+as evidence of strategic robustness.
+None of these failures is accidental or isolated. Together they form a system in which the reported
+performance figures are an artefact of the design
+rather than a reflection of genuine predictive power.
+The 105.2% portfolio return and 2.08 Sharpe ratio cannot be taken as evidence that ensemble Qlearning works for pairs trading. They are evidence
+of what happens when lookahead bias, selection
+leakage, and an incoherent reward function are
+compounded through 7.5 million training episodes.
+The underlying research question – whether ensemble Q-learning can improve on rule-based pairs
+trading – remains worth pursuing. The path to an
+honest answer requires a clean pipeline in which no
+future information contaminates any earlier step.
+Building that pipeline correctly is substantially
+harder than building the pipeline in the current
+paper. The difficulty is not a reason to avoid it; it
+is the reason the results need to be taken seriously
+when the work is done properly.
+10
+
+Appendix: Summary of Identified Flaws
+Table 1: Catalogue of critical issues identified in Rayaprolu (2025)
+Component
+Issue
+Recommended Fix
+Z-score normalisation
+Static over full window; both train and
+eval contaminated with future data
+Rolling window; eval normalised with
+train-period parameters
+Spread construction
+Raw prices, β = 1 implicit; contradicts
+Engle-Granger framing
+Log prices;
+OLS-estimated
+ˆβ from
+training period
+Pair selection
+Conducted on evaluation-period data;
+selection leakage
+Train-period data only; pairs fixed before eval window is seen
+Cointegration test
+Applied to raw prices, not log prices
+Apply to log-transformed price series
+Composite score
+Crossing frequency is a consequence
+of cointegration; redundant doublecounting
+Use independent metrics or justify the
+combination
+Markov property
+Three-step history implies POMDP;
+convergence guarantee lost
+Longer history; or explicit recurrent/POMDP formulation
+State encoding
+Coarse binning aliases distinct z-scores;
+tails collapsed
+Continuous state with function approximation
+Action space
+Two identical entry pairs inflate Qtable size without adding capability
+Reduce to 4 effective actions
+PnL formula
+Z-score difference scaled by arbitrary
+constant; not a financial quantity
+Price-based
+PnL
+with
+hedge-ratiodetermined share counts
+Transaction costs
+Double-charged per round trip
+Single commission per trade
+Entry threshold
+Optimised to 0.01, effectively always
+active
+Search over [0.5, 2.5]σ range
+Growth bonus
+Applied unconditionally every step; penalises exits
+Tie explicitly to profitable closed trades
+Capital model
+Full capital as scalar; no leg decomposition
+Per-leg allocation with dollar-neutral
+or beta-neutral sizing
+CIPLA concentration
+Appears in two pairs; treated as independent
+Adjust for overlapping asset exposure
+Benchmark
+Long-only indices vs. market-neutral
+strategy
+Risk-free rate or stat-arb hedge fund
+index
+Sharpe annualisation
+Annualised from 6-month sample; inflated by short window
+Report
+non-annualised
+Sharpe
+or
+widen confidence interval
+Evaluation window
+Single 6-month window; variance is
+train stochasticity only
+Multiple
+non-overlapping
+windows;
+walk-forward testing
+Hyperparameter transfer
+BO on BPCL-CIPLA only; applied to
+all five pairs
+Pair-specific search or pooled multipair objective
+Computational design
+33–80 hours for full pipeline; zero parallelisation
+Parallelise ensemble/runs; use function
+approximation
+11
+
+References
+[1] Rayaprolu, A. (2025). An empirical assessment of pairs trading using ensemble Q-learning. International Research Journal of Modernization in Engineering Technology and Science, 7(7), 2152–2164.
+[2] Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading: Performance of a
+relative-value arbitrage rule. Review of Financial Studies, 19(3), 797–827.
+[3] Sutton, R. S., & Barto, A. G. (2018). Reinforcement Learning: An Introduction (2nd ed.). MIT
+Press.
+[4] Watkins, C. J. C. H., & Dayan, P. (1992). Q-learning. Machine Learning, 8(3–4), 279–292.
+[5] Anschel, O., Baram, N., & Shimkin, N. (2017). Averaged-DQN: Variance reduction and stabilization
+for deep reinforcement learning. Proceedings of the 34th International Conference on Machine
+Learning, 176–185.
+[6] Engle, R. F., & Granger, C. W. J. (1987). Co-integration and error correction: Representation,
+estimation, and testing. Econometrica, 55(2), 251–276.
+[7] Avellaneda, M., & Lee, J. H. (2010). Statistical arbitrage in the US equities market. Quantitative
+Finance, 10(7), 761–782.
+[8] Yang, H., & Malik, A. (2024). Reinforcement learning pair trading: A dynamic scaling approach.
+Journal of Risk and Financial Management, 17(12), Article 555.
+[9] Vidyamurthy, G. (2004). Pairs Trading: Quantitative Methods and Analysis. John Wiley & Sons.
+[10] Poterba, J. M., & Summers, L. H. (1988). Mean reversion in stock prices: Evidence and implications.
+Journal of Financial Economics, 22(1), 27–59.
+12

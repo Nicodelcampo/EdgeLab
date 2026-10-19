@@ -1,0 +1,106 @@
+{
+  "audit_id": "AUDIT_FOUNDATION_20260919",
+  "final_status": "EDGE_FACTORY_FOUNDATION_PARTIALLY_CORRECTED",
+  "timestamp_utc": "2026-09-19T13:06:47.664369+00:00",
+  "git_branch": "audit/edge-discovery-factory-foundation-20260919",
+  "invariants": {
+    "holdout_rows_decoded": 0,
+    "future_returns_computed": 0,
+    "targets_computed": 0,
+    "pnl_computed": 0,
+    "hypotheses_promoted": 0,
+    "brain_implemented": false
+  },
+  "claims_summary": {
+    "total_claims": 14,
+    "verified": 5,
+    "corrected_and_verified": 3,
+    "rejected_by_audit": 6
+  },
+  "claim_evidence_matrix": [
+    {
+      "claim": "55 contratos COMPLETE_VERIFIED",
+      "verdict": "VERIFIED",
+      "evidence": "147 bundles verified across 55 contracts with matching SHA-256 and zero holdout breach.",
+      "semantic_status": "EMPIRICALLY_VERIFIED"
+    },
+    {
+      "claim": "1 contrato BLOCKED_BY_CUSTODY",
+      "verdict": "CORRECTED_AND_VERIFIED",
+      "evidence": "NQ 09-26 is blocked by custody, but prior report claim of 'zero ticks in source' was refuted. File contains 6,235,464 ticks with matching SHA-256; block reason is CUSTODY_RECUT_REQUIRED_PENDING_REVALIDATION.",
+      "semantic_status": "RECONCILED_WITH_GROUND_TRUTH"
+    },
+    {
+      "claim": "147 bundles",
+      "verdict": "VERIFIED",
+      "evidence": "Exactly 147 bundle file sets exist and load cleanly via HTTP 200.",
+      "semantic_status": "EMPIRICALLY_VERIFIED"
+    },
+    {
+      "claim": "40.380.402 barras 25t",
+      "verdict": "VERIFIED",
+      "evidence": "Total candles verified across all 147 bundles: 40,380,402.",
+      "semantic_status": "EMPIRICALLY_VERIFIED"
+    },
+    {
+      "claim": "3.328.710 zonas causales",
+      "verdict": "CORRECTED_AND_VERIFIED",
+      "evidence": "3,328,710 zones exist with causal available_ns timing, but fabricated fill timestamps were removed from the store.",
+      "semantic_status": "CAUSAL_TIMING_VALID_FILLS_CORRECTED"
+    },
+    {
+      "claim": "3.325.972 corredores",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Invalidated. Constructed by pairing consecutive zone[i]+zone[i+1] with constant density 0.5. Withdrawn as BLOCKED_PENDING_CANONICAL_CORRIDOR_ENGINE.",
+      "semantic_status": "MEASUREMENT_SEMANTICS_FAILURE"
+    },
+    {
+      "claim": "100% de paridad JSON/JS",
+      "verdict": "VERIFIED",
+      "evidence": "All 147 bundles exhibit bitwise canonical SHA-256 equivalence between JSON and JS payload.",
+      "semantic_status": "EMPIRICALLY_VERIFIED"
+    },
+    {
+      "claim": "100% de disponibilidad causal",
+      "verdict": "CORRECTED_AND_VERIFIED",
+      "evidence": "available_ns >= origin_ts_ns across all zones without exploratory fallback; executable fills classified as NO_EXECUTABLE_FILL_AVAILABLE in target-free.",
+      "semantic_status": "VALIDATED_WITHOUT_SYNTHETIC_FILLS"
+    },
+    {
+      "claim": "0 anomal\u00edas cr\u00edticas",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Audit identified critical semantic gaps and severe prose-data contradictions (BULL/BEAR ratio, corridor median, approximate tick sizes).",
+      "semantic_status": "AUDIT_REJECTED"
+    },
+    {
+      "claim": "80 hip\u00f3tesis no redundantes",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Reclassified as SEEDED_HYPOTHESIS_TEMPLATE_LIBRARY (20 pre-fixed conceptual families x 4 asset groups). Not autonomously discovered.",
+      "semantic_status": "RECLASSIFIED_AS_TEMPLATE_LIBRARY"
+    },
+    {
+      "claim": "20 familias",
+      "verdict": "VERIFIED",
+      "evidence": "20 distinct microstructural families are formally specified in the template schema.",
+      "semantic_status": "STRUCTURALLY_VERIFIED"
+    },
+    {
+      "claim": "orquestador operativo",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Reclassified as ORCHESTRATOR_SCAFFOLD_ONLY. Traverses in-memory graph without process execution, external tool invocation, or resource monitoring.",
+      "semantic_status": "RECLASSIFIED_AS_SCAFFOLD_ONLY"
+    },
+    {
+      "claim": "14/14 tests como validaci\u00f3n de la fundaci\u00f3n",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Original 14 tests covered only basic schema and DAG traversal, omitting feature store, tick scales, fills, and corridor integrity.",
+      "semantic_status": "INSUFFICIENT_TEST_COVERAGE"
+    },
+    {
+      "claim": "OVERNIGHT_FOUNDATION_COMPLETE",
+      "verdict": "REJECTED_BY_AUDIT",
+      "evidence": "Replaced by EDGE_FACTORY_FOUNDATION_PARTIALLY_CORRECTED following identification of measurement semantic failures.",
+      "semantic_status": "AUDIT_CORRECTED"
+    }
+  ]
+}

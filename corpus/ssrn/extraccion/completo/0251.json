@@ -1,0 +1,69 @@
+{
+  "doc_id": 251,
+  "titulo": "Dynamic ETF Pairs Trading System: Evidence From Australia",
+  "resumen_operativo": "Evalúa la rentabilidad de estrategias dinámicas de pairs trading con ETFs australianos usando un enfoque de 3 pasos: correlación (>90%), cointegración y coeficiente de corrección de error. Con datos tick-by-tick (100ms) y recalibración diaria con ventana rodante de 252 días (2013-2015), los 5 mejores pares ETF generan retornos acumulados de 4.41% a 62.27% con Sharpe ratios de 1.00 a 15.12. El sistema se implementó en Java+KDB+ con señales de entrada/salida basadas en z-score, bid-ask spread, umbral de beneficio y stop-loss.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Three-Step Pairs Selection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología de selección secuencial: (1) correlación ≥90%, (2) test de cointegración, (3) coeficiente de corrección de error (ECM) como criterio adicional. Extiende el enfoque de 2 pasos de Miao (2014).",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Two-Step Correlation-Cointegration"}, {"tipo": "USA", "objeto": "Correlation"}, {"tipo": "USA", "objeto": "Cointegration"}],
+      "cita_textual": "The 3-step approach incorporates the correlation, cointegration and error correction coefficient as the pre-selection criteria"
+    },
+    {
+      "nombre": "Tick-by-Tick Backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Backtest con resolución de 100 milisegundos usando datos tick-by-tick históricos reales, implementado en Java y KDB+, capturando dinámicas intradía que los estudios con datos diarios ignoran.",
+      "relaciones": [{"tipo": "REQUIERE", "objeto": "High-Frequency Data"}, {"tipo": "USA", "objeto": "Real-Time Trading System"}],
+      "cita_textual": "back test the strategies using tick-by-tick historical quotes during the trading period"
+    },
+    {
+      "nombre": "Dynamic Rolling Window Recalibration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Recalibración diaria de parámetros de cointegración usando ventana rodante de 252 días, permitiendo que la estrategia se adapte a cambios en las relaciones entre pares a lo largo del tiempo.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Static Parameter Estimation"}],
+      "cita_textual": "we employ a daily re-calibration of the parameters using a 252-day rolling window"
+    },
+    {
+      "nombre": "Multi-Threshold Entry/Exit Rules",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Sistema de reglas que combina z-score del spread cointegrante, bid-ask spread, coste de transacción, potencial de beneficio, umbral de stop-loss y duración máxima para generar señales de entrada y salida.",
+      "relaciones": [{"tipo": "USA", "objeto": "Z-Score"}, {"tipo": "REQUIERE", "objeto": "Transaction Cost Model"}],
+      "cita_textual": "trade entry rules are based on the standardize spreads (z-score), the bid-ask spread, transaction cost and profit potential"
+    },
+    {
+      "nombre": "Maximum Drawdown in Pairs Trading",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de riesgo que cuantifica la máxima pérdida acumulada desde un pico hasta un valle durante el período de trading. El estudio reporta un drawdown máximo de -32.47%.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Tail Risk"}, {"tipo": "SE_OPONE_A", "objeto": "Sharpe Ratio"}],
+      "cita_textual": "The maximum draw down is -32.47% over the trading period"
+    },
+    {
+      "nombre": "Australian ETF Market",
+      "tipo": "dato",
+      "definicion_en_contexto": "Mercado de ETFs listados en ASX bajo ASX Listing Rules o AQUA rules, con 110 productos y capitalización de mercado superior a $17 mil millones (marzo 2015). Incluye ETFs físicos y sintéticos.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Pairs Trading"}],
+      "cita_textual": "as of 31 March 2015, there are 110 ETF products listed on the ASX with a market capitalization of over $17 billion"
+    },
+    {
+      "nombre": "Profit-Loss Ratio Analysis",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Desglose de trades ganadores vs perdedores para cada par. Por ejemplo, STW-VAS logra 100% de trades rentables, mientras ISO-SSO tiene 86% ganadores y 14% perdedores.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Strategy Consistency"}],
+      "cita_textual": "STW-VAS pairs... 100% profitable trades and no losing trades"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los 5 mejores pares ETF generaron retornos acumulados de 4.41% (IOZ-VAS), 10.08% (ISO-SSO), 19.70% (IOZ-STW), 46.60% (STW-SFY), y 62.27% (STW-VAS), con Sharpe ratios de 1.00, 2.21, 9.29, 11.17, y 15.12 respectivamente.",
+      "mercado": "ETFs listados en Australian Securities Exchange (ASX)",
+      "periodo": "Enero 2013 - Septiembre 2015",
+      "magnitud": "Retornos acumulados 4.41%-62.27%; Sharpe ratios 1.00-15.12; máximo drawdown -32.47%",
+      "condiciones": "Tick-by-tick (100ms); ventana formación 252 días; 5 pares simultáneos; costes de transacción y bid-ask incluidos; sistema Java+KDB+",
+      "robustez": "media",
+      "cita_textual": "The back testing of the top five ETF pairs: ISO-SSO, IOZ-VAS, IOZ-STW, STW-VAS and STW-SFY yield cumulative returns of 10.08%, 4.41%, 19.70%, 62.27%, 46.60% and Sharpe ratios of 2.21, 1.00, 9.29, 15.12, 11.17 respectively"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Backtest con resolución de 100ms; sistema diseñado para trading intradía de alta frecuencia con señales en tiempo real; directamente transferible a entornos de producción HFT."}
+}

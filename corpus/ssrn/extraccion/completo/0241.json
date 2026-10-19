@@ -1,0 +1,99 @@
+{
+  "doc_id": 241,
+  "titulo": "The Returns and Limits to Relative-Value ETF Arbitrage",
+  "resumen_operativo": "Estudia el arbitraje de valor relativo entre pares de ETFs casi idénticos en EE.UU. (2010-2016). Una estrategia simple de pairs trading genera retornos anormales netos de hasta 1.8% anual, con convergencia en el 71% de los gaps de precio. Los retornos están positivamente relacionados con el riesgo idiosincrático y negativamente con la liquidez del secundario, y aumentan en períodos de baja liquidez de fondeo (funding illiquidity).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Pairs Trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia market-neutral que compra el activo infravalorado y vende en corto el sobrevalorado de un par co-moviente, esperando convergencia de precios.",
+      "relaciones": [{"tipo": "USA", "objeto": "Cointegration"}, {"tipo": "APLICA_A", "objeto": "ETF"}],
+      "cita_textual": "a simple pairs trading strategy historically generated excess returns in the order of 1.2 to 1.8 percent per year, net of bid-ask spreads"
+    },
+    {
+      "nombre": "Limits to Arbitrage",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Fricciones que impiden que los arbitrajistas corrijan inmediatamente los precios incorrectos: costes de transacción, costes de mantenimiento, riesgo idiosincrático y restricciones de venta en corto.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Mispricing Persistence"}, {"tipo": "MITIGA", "objeto": "Market Efficiency"}],
+      "cita_textual": "arbitrage is limited to the extent that (i) both cognitive biases and constraints may impede information diffusion and (ii) transaction and holding costs make arbitrage costly"
+    },
+    {
+      "nombre": "Law of One Price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Principio económico que establece que activos con flujos de caja idénticos deberían negociarse al mismo precio. El paper lo aplica a ETFs que siguen el mismo benchmark.",
+      "relaciones": [{"tipo": "SE_OPONE_A", "objeto": "Mispricing"}],
+      "cita_textual": "if the market for ETF shares is truly efficient, then it should neither be possible to profitably arbitrage ETFs against their underlying basket, nor against each other"
+    },
+    {
+      "nombre": "ETF Creation/Redemption Mechanism",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo que permite a los Participantes Autorizados crear o redimir acciones de ETF intercambiando cestas de valores subyacentes, manteniendo teóricamente los precios alineados con el NAV.",
+      "relaciones": [{"tipo": "MITIGA", "objeto": "Mispricing"}],
+      "cita_textual": "the creation/redemption mechanism allows to exploit mispricing at minimum holding costs and by design aims to eliminate any observable price-NAV deviation in a short time"
+    },
+    {
+      "nombre": "NAV Staleness",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo de medición donde el NAV queda desfasado respecto al precio de mercado del ETF por diferencias horarias entre mercados, generando falsas señales de mispricing.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "False Mispricing Signals"}],
+      "cita_textual": "considering an ETF's price distance to similar funds, rather than using the distance to its NAV as a measure of mispricing, prevents the results being biased by NAV staleness"
+    },
+    {
+      "nombre": "Event-Time Return Analysis",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología que analiza los retornos de arbitraje alineando todas las posiciones en el día del gap de precio (día 0) y siguiendo la evolución temporal estandarizada.",
+      "relaciones": [{"tipo": "USA", "objeto": "Spread Convergence"}],
+      "cita_textual": "prices typically diverge following a sequence of days with abnormally low liquidity in both the relatively over- and underpriced fund"
+    },
+    {
+      "nombre": "Idiosyncratic Risk (as Holding Cost)",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo idiosincrático como el mayor coste que enfrentan los arbitrajistas: la imposibilidad de cobertura perfecta hace que la rentabilidad de las posiciones dependa del tiempo hasta convergencia.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Arbitrage Profit Variation"}, {"tipo": "SE_OPONE_A", "objeto": "Market Efficiency"}],
+      "cita_textual": "idiosyncratic risk, with the latter often being considered as 'the single largest cost faced by arbitrageurs'"
+    },
+    {
+      "nombre": "Funding Liquidity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Disponibilidad de capital para financiar posiciones de arbitraje. Medida a través del TED spread, LIBOR y Moody's spread. Su deterioro aumenta los retornos de arbitraje al reducir la competencia.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Limits to Arbitrage"}, {"tipo": "CAUSA", "objeto": "Arbitrage Profit Increase"}],
+      "cita_textual": "returns are higher in times of strong market-wide limits to arbitrage, most importantly when overall funding liquidity is low"
+    },
+    {
+      "nombre": "Secondary Market ETF Arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Arbitraje entre pares de ETFs realizado exclusivamente en el mercado secundario, sin recurrir al mecanismo de creación/redención. Es la alternativa cuando el arbitraje primario es escaso o costoso.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Primary Market Arbitrage"}, {"tipo": "APLICA_A", "objeto": "Pairs Trading"}],
+      "cita_textual": "little is known about the mechanics of arbitrage in the secondary market for ETF shares"
+    },
+    {
+      "nombre": "Abnormal Trading Activity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Incremento anómalo de actividad de negociación en ambas patas del par en el día de divergencia de precios, indicativo de un aumento del riesgo de liquidez percibido por el mercado.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Price Gap Formation"}, {"tipo": "MIDE", "objeto": "Liquidity Risk"}],
+      "cita_textual": "On the day of divergence, there is an abnormally high trading activity in both legs, which is indicative for an increase in liquidity risk"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Entre 2010 y 2016 se detectaron 4,983 gaps de precio en 4,118 pares de ETFs, con divergencia media del 1.23%. El 71% de los gaps convergieron.",
+      "mercado": "ETFs listados en NYSE Arca y Nasdaq (EE.UU.)",
+      "periodo": "2010-2016",
+      "magnitud": "4,983 gaps; media 1.23%; 71% convergencia",
+      "condiciones": "Pares de ETFs que siguen el mismo benchmark; precios intradía; neto de bid-ask spreads",
+      "robustez": "alta",
+      "cita_textual": "between 2010 and 2016, and across a total number of 4,118 selected pairs, there were 4,983 price gaps, with prices differing by 1.23 percent on average"
+    },
+    {
+      "afirmacion": "La estrategia de pairs trading generó retornos anormales de 1.2% a 1.8% anual netos de comisiones, spreads, short-selling fees y margen.",
+      "mercado": "ETFs listados en NYSE Arca y Nasdaq (EE.UU.)",
+      "periodo": "2010-2016",
+      "magnitud": "1.2% a 1.8% anual neto",
+      "condiciones": "Estrategia basada en gaps de precio; costes de transacción estándar incluidos",
+      "robustez": "alta",
+      "cita_textual": "a simple pairs trading strategy historically generated excess returns in the order of 1.2 to 1.8 percent per year, net of bid-ask spreads and common estimates for commissions, short-selling fees, and margin interest"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Usa datos intradía para detectar gaps pero la estrategia opera en horizonte de días/semanas; adaptable a mayor frecuencia con ajustes de costes de transacción."}
+}

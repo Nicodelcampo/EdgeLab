@@ -1,0 +1,148 @@
+{
+  "manifest_version": "hp007_camp002_session_selection_v1",
+  "phase": "VISUAL_LOGIC_DESIGN",
+  "revisit_hypothesis_measurement": "ON_HOLD_BY_OWNER",
+  "asset": {
+    "root": "NQ",
+    "contract": "NQ 06-26",
+    "certification_status": "CERTIFIED_MULTI_ASSET_V2",
+    "source_parquet": "E:\\EdgeLab\\data\\nt8\\NQ_parquet\\NQ_06-26_ticks.parquet",
+    "parquet_sha256": "3de249b9b8d8ada01c5b485aa893ccdf1315ae3f7bbebcaf72024de12e1b25f6",
+    "tick_size": 0.25,
+    "timezone": "America/Chicago"
+  },
+  "selection_universe": {
+    "description": "All CME regular trading sessions of NQ 06-26 during its active front-month window prior to holdout cutoff",
+    "date_range": "2026-03-17 to 2026-06-12",
+    "total_sessions_evaluated": 63,
+    "ticks_quantiles": {
+      "p10": 409911.0,
+      "p50": 517143.0,
+      "p90": 676125.2
+    },
+    "range_ticks_quantiles": {
+      "p10": 1255.0,
+      "p50": 1882.0,
+      "p90": 3563.0
+    }
+  },
+  "eligibility_rule": "Regular weekday (Mon-Fri) in CME calendar with >= 100,000 ticks, excluding post-roll illiquid tail (>= 2026-06-15)",
+  "metric_information_cutoff": "2026-06-30T22:00:00Z (SEALED HOLDOUT ENFORCED)",
+  "roll_transition_provenance": {
+    "outgoing_contract": "NQ 03-26",
+    "incoming_contract": "NQ 06-26",
+    "crossover_signal_trade_date": "2026-03-16",
+    "crossover_signal_volumes": {
+      "NQ_03-26_vol": 249343,
+      "NQ_06-26_vol": 280702,
+      "leader_ratio": 1.1257
+    },
+    "effective_roll_trade_date": "2026-03-17",
+    "state_reset_flag_enforced": true,
+    "roll_manifest_reference": "docs/research/contract_regimes/NQ_contract_regime_v2_20260915.json",
+    "roll_manifest_sha256": "d796c34696b5cd997097ca19532588147d337a5441a106f369931b67a149b5c3"
+  },
+  "selected_sessions": [
+    {
+      "session_id": "SESS_01",
+      "trade_date": "2026-03-17",
+      "selection_criterion": "EARLIEST_ACTIVE_PRE_HOLDOUT_SESSION",
+      "selection_rank": 1,
+      "metric_evaluated": "min(trade_date)",
+      "metrics": {
+        "trade_date": "2026-03-17",
+        "day_of_week": "Tuesday",
+        "ticks": 331822,
+        "volume": 354913,
+        "range_ticks": 1555,
+        "range_pts": 388.75,
+        "min_price_ticks": 98913,
+        "max_price_ticks": 100468,
+        "session_open_utc_ns": 1773698400000000000,
+        "session_close_utc_ns": 1773781200000000000
+      },
+      "visual_inspection_objective": "Evaluate cold-start zone formation, initial warmup, and early intensity accumulation."
+    },
+    {
+      "session_id": "SESS_02",
+      "trade_date": "2026-04-01",
+      "selection_criterion": "MEDIAN_ACTIVITY_SESSION",
+      "selection_rank": 1,
+      "metric_evaluated": "closest_to_p50_ticks (517143)",
+      "metrics": {
+        "trade_date": "2026-04-01",
+        "day_of_week": "Wednesday",
+        "ticks": 517143,
+        "volume": 563214,
+        "range_ticks": 1873,
+        "range_pts": 468.25,
+        "min_price_ticks": 95520,
+        "max_price_ticks": 97393,
+        "session_open_utc_ns": 1774994400000000000,
+        "session_close_utc_ns": 1775077200000000000
+      },
+      "visual_inspection_objective": "Inspect standard density intervals and typical absorption geometries under median volume."
+    },
+    {
+      "session_id": "SESS_03",
+      "trade_date": "2026-03-17",
+      "selection_criterion": "CONTRACT_ROLL_BOUNDARY_SESSION",
+      "selection_rank": 1,
+      "metric_evaluated": "state_reset_flag == True at opening tick",
+      "metrics": {
+        "trade_date": "2026-03-17",
+        "day_of_week": "Tuesday",
+        "ticks": 331822,
+        "volume": 354913,
+        "range_ticks": 1555,
+        "range_pts": 388.75,
+        "min_price_ticks": 98913,
+        "max_price_ticks": 100468,
+        "session_open_utc_ns": 1773698400000000000,
+        "session_close_utc_ns": 1773781200000000000
+      },
+      "visual_inspection_objective": "Verify hard purge of prior state and memory reset across the NQ 03-26 -> NQ 06-26 rollover boundary."
+    },
+    {
+      "session_id": "SESS_04",
+      "trade_date": "2026-04-08",
+      "selection_criterion": "HIGH_VOLATILITY_WIDE_RANGE_SESSION",
+      "selection_rank": 1,
+      "metric_evaluated": "closest_to_p90_range (3563 ticks)",
+      "metrics": {
+        "trade_date": "2026-04-08",
+        "day_of_week": "Wednesday",
+        "ticks": 572626,
+        "volume": 626765,
+        "range_ticks": 3608,
+        "range_pts": 902.0,
+        "min_price_ticks": 97420,
+        "max_price_ticks": 101028,
+        "session_open_utc_ns": 1775599200000000000,
+        "session_close_utc_ns": 1775682000000000000
+      },
+      "visual_inspection_objective": "Inspect wear attenuation (NO_WEAR vs FULL) and behavior under rapid price displacement and multiple touches."
+    },
+    {
+      "session_id": "SESS_05",
+      "trade_date": "2026-05-22",
+      "selection_criterion": "LOW_VOLATILITY_NARROW_RANGE_SESSION",
+      "selection_rank": 1,
+      "metric_evaluated": "closest_to_p10_range (1255 ticks)",
+      "metrics": {
+        "trade_date": "2026-05-22",
+        "day_of_week": "Friday",
+        "ticks": 451877,
+        "volume": 482943,
+        "range_ticks": 1252,
+        "range_pts": 313.0,
+        "min_price_ticks": 117744,
+        "max_price_ticks": 118996,
+        "session_open_utc_ns": 1779400800000000000,
+        "session_close_utc_ns": 1779483600000000000
+      },
+      "visual_inspection_objective": "Inspect narrow intervals (W < 5 ticks) and zone cannibalization under narrow price compression."
+    }
+  ],
+  "selection_script_sha256": "340bad0a2994a63fc5d124c469e418649c497bbcf0552a29729841b98e46f33e"
+}

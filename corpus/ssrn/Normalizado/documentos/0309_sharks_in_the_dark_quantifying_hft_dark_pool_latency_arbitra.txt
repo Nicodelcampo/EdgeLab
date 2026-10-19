@@ -1,0 +1,1896 @@
+Sharks in the Dark:
+Quantifying HFT Dark Pool Latency Arbitrage
+July 4, 2022
+Abstract
+We investigate stale reference pricing and liquidity provision in dark pools
+using proprietary, participant-level regulatory data. We show a substantial
+amount of stale trading occurs, imposing large adverse selection costs on passive dark pool participants. Consistent with these costs, HFTs almost never
+provide liquidity in the dark, instead frequently consuming liquidity, in particular in order to take advantage of stale reference prices. Finally, we examine
+market design interventions aimed at countering dark pool latency arbitrage
+and show that only mechanisms that protect passive dark liquidity are eﬀective
+in achieving this goal.
+Keywords: high-frequency trading, dark pools, latency arbitrage, stale quotes,
+reference prices
+1
+Introduction
+A deﬁning feature of modern ﬁnancial markets is the ﬁerce competition on speed,
+which determines liquidity providers’ proﬁtability (Baron, Brogaard, Hagstr¨omer,
+and Kirilenko, 2019) and investors’ trading costs.
+In such a world, fast traders
+impose adverse selection costs on slower ones by acting on information signals faster
+than their competitors (Foucault, Hombert, and Ro¸su, 2016). New information can
+1
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+be complex, i.e. its impact on prices may not be clear, resulting in competition in
+both the interpretation of, and reaction to, new information (Budish, Cramton, and
+Shim, 2015). However, when the consequence of the signal for prices is certain, a
+race occurs based on reaction times alone. These situations, variously labeled ‘toxic
+arbitrage’ (Foucault, Kozhan, and Tham, 2016) or ‘latency arbitrage’ (Bartlett and
+McCrary, 2019), are harmful to liquidity in ﬁnancial markets when they increase
+adverse selection for liquidity providers (Shkilko and Sokolov, 2020).
+Dark pools are uniquely susceptible to this latency arbitrage for two reasons:
+they rely on outside prices from a reference market in order to determine execution
+prices, and dark liquidity is often pegged to this reference price. Changes in reference
+prices creates an ‘old’ current price and a ‘new’ price once the update is propagated
+to the dark venue, a situation which does not exist on lit venues (Duong, Kalev, and
+Tian, 2022). While prices may vary between lit venues, some uncertainty remains
+whether a new ’best price’ in market A will be followed by convergence in market
+B or reversal in market A. By contrast, in situations where the dark pool reference
+price (and its pegged dark limit orders) are stale, fast traders aware of the new price
+can engage in near risk-free latency arbitrage and cause immediate adverse selection
+by trading at these (now stale) prices.
+In this study, we quantify the extent of stale trading in dark pools and the costs it
+imposes on investors. Furthermore, our unique regulatory data set contains complete
+order book information (user-level trade and quote entry) for multiple dark pools,
+which allows us to identify the market participants most often responsible for latency
+arbitrage, allowing us to make inferences about the liquidity provision strategies of
+diﬀerent groups of participants in dark pools. Lastly, we examine the eﬀectiveness
+of several existing market design solutions aimed at addressing the negative consequences of the speed race. This study contributes to the literature on the design
+of modern markets that operate at high frequency (with persistent race conditions)
+and sheds light on the merits of mechanisms to ‘slow down’ markets, such as ‘speed
+bumps’, batch auctions, and minimum resting times.
+Due to data availability, there has been limited research into stale trading in the
+dark. A study by the Canadian securities regulator IIROC (Anderson, Devani, and
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Zhang, 2016) ﬁnds that 4 percent of all dark pool trades in Canada occur at stale
+prices. The Tabb Group consultancy analyzed ten months of trading data for a large
+buy-side ﬁrm, ﬁnding that midpoint trades were priced at the far touch or worse
+(i.e. at or behind the best bid or ask) 11 percent of the time (Alexander, Giordano,
+and Brooks, 2015). In a related strand of literature, Ding, Hanna, and Hendershott
+(2014) ﬁnd frequent deviations between the US NBBO reference feed (the SIP) and
+the NBBO constructed from proprietary feeds, proxying for the diﬀering ’views’ of
+the market that slow and fast traders experience.
+Using a conservative identiﬁcation, we document that at least 4 percent of dark
+trading in our UK-based sample occurs at stale reference prices, in line with the
+results of Anderson, Devani, and Zhang (2016). We ﬁnd an average cost of about 2.4
+basis points for executions at stale prices in the dark and estimate the total annual
+cost to the passive side across all UK dark pools from this type of latency arbitrage
+to be GBP4.2 million for the year 2014. To provide a point of reference, Hasbrouck
+(2018) estimates the loss of slow to fast traders in lit markets at up to 2.2 basis
+points.
+Speed diﬀerentials between fast and slow participants in lit trading venues have
+been a hotly debated topic for some time.
+Some studies disagree whether these
+diﬀerences beneﬁt or harm market liquidity as there are two opposing eﬀects: On
+the one hand, speed allows fast liquidity providers to quickly update their stale
+quotes and thus reduces their adverse selection risk, which in turn lowers transaction
+costs for other market participants (Brogaard, Hagstr¨omer, Nord´en, and Riordan,
+2015). On the other hand, fast liquidity takers, called latency arbitrageurs or ’highfrequency bandits’ (Menkveld and Zoican, 2017), will try to beat liquidity providers
+in this race and execute against their stale quotes before they can update them
+(Aquilina, Budish, and O’Neill, 2022). A number of studies (Foucault, Kozhan, and
+Tham, 2016; Shkilko and Sokolov, 2020) have documented reduced liquidity and
+increased transactions costs as a consequence. Budish, Cramton, and Shim (2015)
+argue that arbitrage bandits in aggregate have the advantage because the (single)
+liquidity provider has to beat all bandits to avoid adverse selection. Menkveld and
+Zoican (2017) ﬁnd that the net beneﬁt to liquidity depends on the relative proportion
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+of bandits vs.
+uninformed liquidity traders present in the market at any point.
+Foucault, Kozhan, and Tham (2016) add the relative speed of bandits over liquidity
+providers as a crucial determinant of this adverse selection cost.
+How do these insights transfer to the dark? While recent studies have shown
+that dark pool activity may in fact encourage information production (Brogaard and
+Pan, 2022), the opacity of dark marketplaces prevents much being known about the
+identity of traders in dark pools. Our results provide some insights into who is active
+in dark pools and who provides and consumes liquidity. We show that it is almost
+exclusively high frequency trading ﬁrms that are on the beneﬁting side of dark pool
+executions at stale prices (between 96 and 99 percent of the time). Furthermore,
+stale trading does not happen at random; rather, in the vast majority of cases (83
+percent), it is driven by aggressive dark orders from HFTs. This is even more notable
+given another of our ﬁndings: HFTs as a group almost never provide marketable
+liquidity in the dark (although they do post non-marketable limit orders in some
+stocks). These data points, taken together, imply very strategic order submissions
+by HFTs that are mostly liquidity consuming, including those instances where they
+take advantage of stale reference prices. We are aware of one comparable empirical
+study by the Australian securities regulator (ASIC), which ﬁnds that HFTs were on
+the ‘winning side’ of trades in dark pools that referenced stale prices 85% of the time
+compared with 31–32% for other users, (ASIC, 2015, p. 54).
+Regulators have also paid close attention to the negative consequences of the
+speed race, in particular with regard to reduced liquidity or the public perception
+that ’markets are rigged’ (Bartlett and McCrary, 2019; Lewis, 2014). In the case of
+dark pools, regulators have ﬁned dark pools operators for systematic mispricings1
+and for misleading investors about the nature of the reference pricing.2 Spurred by
+the highly competitive equity market landscape, and with support from regulators,
+some venue operators have proactively implemented market design changes to address
+latency arbitrage and stale trading in the dark. The two most commonly discussed
+1Goldman Sachs’s U.S. dark pool Sigma-X brieﬂy used incorrect references prices (Hope, 2014).
+2Barclay’s was ﬁned by the SEC for claiming it was using faster direct feeds to price dark pool
+trades despite actually using slower ‘SIP’ feeds (SEC, 2016).
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+proposals are speed bumps and batch auctions.
+Speed bump mechanisms typically slow down incoming orders but may allow
+amendments to existing limit orders to pass through without delay, thereby providing
+liquidity providers with a head start over potential arbitrageurs. Currently, speed
+bumps are used by, among others, U.S. exchange and dark pool IEX (Hu, 2019), the
+Chicago Stock Exchange, the Alpha Exchange in Canada (Chen, Foley, Goldstein,
+and Ruf, 2016) and NYSE. In the case of IEX’s speed-bump, for instance, inbound
+orders are delayed by 350 microseconds (IEX, 2015) but the repricing of certain type
+of pegged dark limit orders is not. Consequently, as long as the reference price feed
+is not stale by more than 350 microseconds, reference price latency arbitrage can be
+prevented.3
+Batch auctions (Baldauf and Mollner, 2020; Budish, Cramton, and Shim, 2015)
+do away with the conventional design of continuous, sequential trading, which by
+its very design creates conditions for speed races, and replaces it with the principle
+of frequent auctions (often sub-second) that mitigate the speed advantages of faster
+traders, with slower traders granted suﬃcient time to observe the outcome of the last
+auction and submit their orders for the next, with no disadvantage to trade priority.
+No public exchange venue has implemented this mechanism to date, but at least one
+dark pool operator has: UK based Turquoise introduced a ‘random uncross’ feature,
+which it says is beneﬁcial for ‘latency sensitive ﬂow’ (LSEG, 2017).
+This design
+matches eligible resting orders in the dark pool at random points in time, preventing
+fast traders from exploiting their speed advantage.
+A third category of design changes focus on order characteristics. For example,
+Deutsche Bank’s Super X dark pool stops matching any orders that are stale by
+more than a second (Deutsche Bank, 2016). In addition, many dark pool operators
+disclose information on latency and how it is managed.4
+3This is acknowledged in competing exchange BATS’ submission to the SEC regarding IEX’s
+application to become an exchange: ‘this 350 microsecond delay provides IEX the ability to update
+the prices of resting orders that are pegged . . . before market participants with faster access to
+market data can access those now stale prices on IEX’ (Swanson, 2015, p. 1).
+4For example, Goldman Sach’s compares the timestamps in market data feeds ‘to the time that a
+quote is received by SIGMA X (based on GSEC’s internal clock). If this process identiﬁes a latency
+greater than a deﬁned threshold, SIGMA X will automatically suspend crossing functionality in the
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+In the ﬁnal part of this study, we investigate 3 market design interventions aimed
+at curbing latency arbitrage in general, and to the extent that the design changes
+are applied to dark venues, stale trading in particular. We ﬁnd that merely speeding
+up the reference price feed is not suﬃcient to fundamentally change the outcome of
+the speed race, but both batch auctions as well as random uncrossings are eﬀective
+tools in reducing adverse selection costs and negative eﬀects on market liquidity.
+Our results provide empirical support for the predictions of theoretical models of
+high frequency arms races (Foucault, Kozhan, and Tham, 2016) as well as those
+proposing design changes to counter speed races and latency arbitrage (Baldauf and
+Mollner, 2020).
+The remainder of the paper is organized as follows. Institutional details of dark
+pools and the data sources are discussed in Sections 2 and 3, respectively. Section
+4 examines the prevalence of dark pool trades at stale reference prices, the cost
+to investors, and what causes stale reference prices. The impact of stale reference
+prices on adverse selection and the nature of dark liquidity are covered in Section 5.
+Section 6 investigates several market design interventions aimed at combating adverse
+selection from stale reference prices and Section 7 concludes.
+2
+Institutional Details
+A dark pool is a trading venue which lacks both pre-trade transparency and
+a traditional limit-order-book structure.
+While in lit venues market participants
+can observe the orders submitted by other participants, in dark pools all orders are
+hidden. The main advantage of submitting an order to a dark pool is that the trader’s
+intention is not revealed to the entire market, helping to reduce their price impact.5
+Dark pools also oﬀer better prices than are available on the lit market (so called ’price
+improvement’), typically trading at prices between the best bid and oﬀer (BBO). The
+relevant security’ (GSEC, 2016, p. 3).
+5Absent dark pools, orders would typically be split into smaller pieces to achieve similar results,
+as documented by(Pham, Anderson, Duong, and Lajbcygier, 2020).
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+main disadvantage of dark pools is execution uncertainty;6 as it is impossible to know
+whether there is a willing counterparty, one cannot know beforehand whether a trade
+will actually take place. Indeed, (Zhu, 2014) argues that information events result
+in correlated liquidity demands, reducing dark pool execution probabilities at times
+of heightened information asymmetry.
+Orders sent to dark pools usually include a price limit – the maximum price at
+which a participant is willing to buy (or the minimum price at which a participant is
+willing to sell).7 However, within the boundaries of these price constraints, the dark
+pool operator is responsible for determining the price at which trades take place as
+a direct consequence of the absence of pre-trade transparency. To determine trade
+prices, dark pools rely on reference prices drawn from lit markets.8
+Dark pool operators typically have two options to determine which venues to use
+to calculate a reference price. The ﬁrst option is to rely on a single venue, usually
+the ‘primary’ market (which for the purposes of this analysis is the London Stock
+Exchange (LSE)). The second option is to consider multiple (lit) venues. In the
+ﬁrst case, dark pools use the Best Bid/Oﬀer (BBO) prices available on the LSE. In
+the second case, operators construct what is known as the European BBO (EBBO),
+which includes orders from all other venues.9
+Having chosen a source of reference prices (the BBO or the EBBO), dark pools
+then choose to match prices at either the quoted midpoint, the BBO, or both.10 Many
+jurisdictions have recently prohibited these non-price improving trades,11 including
+6This is because there may not be liquidity available at the desired time to trade, or the liquidity
+could be ‘one-sided’, i.e. (Zhu, 2014). For example, at the midpoint there may be a resting sell
+order rather than buy orders to facilitate sells. In this paper, we examine whether there is also
+‘price uncertainty’ for dark pool executions arising from latency in reference prices.
+7Similar to lit markets, dark pool participants may submit orders without a price using a ‘market
+order’ that executes at the prevailing BBO (or midpoint). In practice, these are rarely used.
+8For more evidence of the manipulation of lit-market quotes to alter reference prices, see Chau,
+Aspris, Foley, and Malloch (2021) and Frino, Ibikunle, Mollica, and Steﬀen (2018).
+9The EBBO diﬀers from the National Best Bid or Oﬀer used in the US as it often excludes
+smaller lit markets, such as Equiduct and Aquis.
+10The dark pools currently operated by BATS/Chi-X and Turquoise use only the midpoint price.
+Other dark MTFs, such as ITG Posit, UBS MTF and Goldman Sachs Sigma X, also use the best
+bid or ask price (depending on the direction of the trade).
+11See Foley and Putni¸nˇs (2016) for an examination of these regulations in Canada and Australia.
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Europe with the enactment of MiFID II.12
+Dark pools in the UK and Europe are, from a regulatory perspective, classiﬁed
+as either multilateral trading facilities (MTFs) or broker crossing networks (BCNs).
+MTFs fall within the scope of MiFID, require regulatory approval, and are in practice
+independent venues. This makes them subject to requirements of non-discriminatory
+access, with transparent rulebooks, and usually central clearing (CCPs). BCNs are
+not regulated under MiFID and are non-independent crossing networks under a broker’s direct control.
+They are thus allowed to discriminate by participant types,
+with rules disclosed in bilateral contracts.
+MiFID II prohibits BCN venues forcing operators to register as MTFs or Systematic Internalizers (SIs).13 In the US,
+the ‘Alternative Trading System’ (ATS) framework would apply to MTFs, but also
+BCNs.
+For our analysis, we separate dark pools into three categories.
+First, MTFs
+that are operated by lit exchanges, including Turquoise and BATS Europe,14 which
+are integrated with their respective lit exchanges infrastructure, and match trades
+exclusively at the midpoint. Data for these venues contain orders and trades with
+participant identiﬁers. Secondly, MTFs (such as Posit, SigmaX and UBS) that are
+operated by investment banks and other brokers, who match trades at the BBO as
+well as the midpoint. Available data for these contain less information (only trade
+level data, not order data). Third, BCNs (such as ‘Crossﬁnder’ and ‘SuperX’) for
+which speciﬁc venues cannot be determined15 are excluded from the sample used in
+this study.
+12MiFID II Article 4(1)(a) and (2). These bans exist despite evidence from Brogaard and Pan
+(2022) that dark trading increases information acquisition.
+13Neumeier, Gozluklu, Hoﬀmann, O’Neill, and Suntheim (2021) provide further details on the
+regulatory changes applicable to dark pools in Europe.
+14Turquoise is operated by an investment ﬁrm, Turquoise Global Holdings, but is is majority
+owned by London Stock Exchange Group (LSEG).
+15MiFID allows reporting of these as simply OTC (Over the Counter) trades.
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+3
+Data and Methodology
+3.1
+Data
+We rely on two data sources in this study. First, we use the FCA’s proprietary
+order book and transaction-level data, which are being collected for market monitoring and research purposes. The transaction data contain both lit and dark trades
+for the four UK trading venues LSE, BATS, Chi-X16 and Turquoise, timestamped at
+the millisecond to the clock of each exchange’s matching engine.
+These venues account for 99.6%17 of all FTSE 350 on-exchange lit traded volume
+in the UK, and all exchange-operated dark MTFs, providing us with a representative
+sample of lit and dark trading activity for UK-listed stocks.
+Each transaction record includes buyer or seller initiated ﬂags, price, quantity
+and information on the order type along with the identity of the market participants. The corresponding order book data contain all order messages (submissions,
+amendments, and cancellations) and allows us to compute reference prices at the
+millisecond granularity.
+Second, we complement the above exchange-based transactions with millisecond time-stamped dark pool trade data from Thomson Reuters Tick History, which
+includes the broker-operated dark MTFs by UBS, Sigma X (Goldman Sachs), ITG
+Posit and Instinet Blockmatch. We exclude Liquidnet as their reference prices are determined through bilateral negotiation rather than the MiFID reference price waiver,
+and Smartpool and Blink MTF as they have negligible volumes. The remaining sample covers 94%18 of dark MTF (exchange and broker operated) trading.19
+16BATS and Chi-X are part of the same legal entity, having merged in 2012, but they maintain
+separate order books.
+17Estimates were calculated for the period 1/1/14 to 30/06/15 for the FTSE 100 and FTSE 250
+Index using information from Fidessa (2017).
+18Liquidnet accounts for 5.42% of dark trading in the FTSE 100 and 8.65% in the FTSE 250.
+Estimates from Fidessa. Note that Fidessa does not include Goldman Sach’s MTF, Sigma X in its
+estimates (Rosenblatt, 2014).
+19As BCNs are unregulated venues under MiFID I, post-trade reporting does not require these
+venues to be named so they are reported as ‘OTC’ trades. These venues are excluded from the
+analysis due to the inability to separate OTC trades organized on a BCN from other OTC trades.
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Our analysis uses a randomly selected sample of 57 stocks from the FTSE 100
+and 57 from the FTSE 250. Together, these two indices make up the FTSE 350, and
+provide us with a diversiﬁed and representative sample of stocks with both relatively
+high and low levels of liquidity.20 The opening and closing auction periods in both
+samples are excluded, as they speciﬁcally prohibit dark trading. Although the full
+order book data spans 2014 and 2015, the analysis is restricted to ﬁve separate weeks,
+spaced approximately two-and-a-half months apart, for computational reasons.21
+3.2
+HFT and Participant Identiﬁcation
+The de-anonymized nature of the data allows for the identiﬁcation of participants
+at the ﬁrm level, but not at the trading desk or client level. We group participants
+into HFTs and non-HFTs, and further divide non-HFTs based on whether they
+use co-location at the primary exchange to investigate the role that the resulting
+diﬀerences in speed have on trading outcomes.22
+The vast majority of HFTs in
+the sample are co-located, and 99.84% of all dark trades by HFTs emanate from
+co-located servers. Many participants that are not HFTs are also co-located.
+We follow the approach of Aquilina and Ysusi (2016) for identifying HFT participants from FCA regulatory data, resulting in an almost identical list, diﬀering only
+because of the presence of additional participants in our more recent sample. The
+criterion used for deﬁning HFTs is that they are a subset of algorithmic trading participants that use proprietary capital to generate returns using computer algorithms
+and low-latency infrastructure.
+Objective measures of HFTs have been proposed by Hagstr¨omer and Nord´en
+(2013) and Kirilenko, Kyle, Samadi, and Tuzun (2017), such as high order-to-trade
+ratios and inventory mean reversion. These measures aim to proxy for characteris20(Cebiro˘glu and Horst, 2015) show that dark trading is more likely to exist in more than less
+liquid securities.
+21Speciﬁcally, these weeks are the continuous ﬁve-day trading weeks starting: 13th of January,
+31st of March, 16th of June, and 1st of September in 2014, and the 22nd of June in 2015.
+22Co-location refers to the placement of a market participant’s servers in close physical proximity
+to an exchange to reduce transmission latency. Information on who uses co-location is obtained
+from FCA supervisors.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+tics that latency sensitive participants may demonstrate, but do not guarantee these
+participants are truly latency sensitive, nor that others do not exhibit these characteristics.
+For example, an HFT engaged in predominantly liquidity consuming
+(aggressive) trading strategies, will have a lower order-to-trade ratio than an HFT
+engaged in liquidity providing (passive) market-making strategies.
+Therefore, the use of the FCA’s internal supervisory knowledge, and the knowledge of the platforms from which the original list was obtained, is recognized as the
+most accurate means of identiﬁcation. Many of these ﬁrms now identify publicly as
+HFTs and together established a lobby group, ‘The Modern Markets Initiative’, in
+2013. Baron, Brogaard, Hagstr¨omer, and Kirilenko (2019) list a subset of those that
+can be identiﬁed by name, as Sweden provides non-anonymized exchange trading.
+In our sample, 30 participants are classiﬁed as HFTs. The overlap with the publicly
+disclosed names from the Modern Markets Initiative is very high.
+4
+Extent and Nature of Stale Trading
+In this section, we discuss the prevalence of dark pool trades at stale reference
+prices in exchange operated dark pools, investigate possible causes and quantify their
+costs to market participants.
+4.1
+Extent of Stale Trades
+Our approach to identifying stale reference prices is similar to the methodologies
+of Anderson, Devani, and Zhang (2016) and ASIC (2015). First, we identify quotes
+on the primary market whose midpoint matches the price of the dark pool trade. We
+look for a matching quote up to one millisecond after the trade time and back as far
+as necessary to observe a match.23 If this process returns multiple matches, we use
+the most recent quote match from the EBBO to be conservative. For a trade to be
+considered stale, there has to be at least one quote update after the matching quote
+23This is because one millisecond reﬂects the upper bound of clock synchronization accuracy
+provided by the exchanges, and the minimum granularity of timestamps provided to us.
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+but before the time of the trade, the intervening non-match. It is the ending time
+stamp of the matching quote, i.e. the start of the intervening non-matching quote,
+that signiﬁes the existence of staleness. Latency, our measure of staleness, measures
+this time diﬀerence for trade i:
+Latencyi = (TradeTimei −EndofMatchTimei)
+(1)
+Should the matching quote still be active at the time of the trade (i.e. no intervening quote), Latency is zero. In addition, only trades that occur with a Latency
+of at least two milliseconds are classiﬁed as stale, recognizing that a one millisecond
+threshold would not allow for clock synchronicity and timestamp rounding eﬀects.24
+Our methodology eliminates the risk of mis-classifying stale trades, but is likely to
+signiﬁcantly understate the extent of stale reference prices if some market participants
+can react to a quote update in well under 2 milliseconds. If e.g. the shortest possible
+time for a market participant to receive a quote update from the LSE, process it
+and send an order to the dark pool is 350 microseconds, participants may be able
+to successfully race the quote update to the dark venue if prices are stale by more
+than this amount. Indeed, estimates (Standard and Poors Capital IQ, 2015) put
+the minimum transmission time for the dark venues in our sample at the time of
+our sample period at less than 500 microseconds. Section 5.2 uses an alternative
+approach that measures average costs to other market participants across all trades
+and is not limited to positively identifying stale trades.
+[Figure 1 about here.]
+Figure 1 supports the notion that our identiﬁcation is likely conservative.
+It
+displays the distribution of Latency, our measure of staleness, which required at least
+a 2 millisecond lag between reference quote and time of trade in order to classify a
+trade as stale. We ﬁnd that over 70 % of all trades thus classiﬁed as stale occur
+24Compared to Anderson, Devani, and Zhang (2016), we require latency to be at least two
+milliseconds rather than one’ and restrict our analysis to dark pools referencing only the primary
+exchange, making identifying matches more certain and diminishing clock synchronization issues
+inherent in timestamps from diﬀerent markets.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+at the millisecond timestamp exactly 2 milliseconds after the reference quote was
+superseded by an update. A lag of 3 millisecond occurs in only 10% of cases and
+larger lags are rarer still. This would indicate that we are likely missing a signiﬁcant
+amount of stale trades below the 2 millisecond lag due to our timestamp granularity.
+[Figure 2 about here.]
+The upper panel of Figure 2 reports the proportion of stale dark trades against
+the market capitalization (in logs) of individual securities averaged across the entire
+sample period; the lower panel reports this proportion against the average nominal
+share price (in logs). We can make two observations: First, the average proportion
+of stale dark trades varies signiﬁcantly by security, between 0% and 7.8%. Second,
+we observe a strong positive correlation of stale trading with market capitalization
+and a relatively weak correlation with nominal stock price.
+Given that, based on our analysis reported later on, almost all stale trading
+involves HFTs, this observation is potentially explained by the fact that HFTs have
+a known preference for highly liquid, high volume stocks which allows them to quickly
+unwind in the lit market any position they assume in a dark pool (Duong, Kalev,
+and Tian, 2022)
+Table 1 contains a number of sample characteristics of our trade-by-trade data.
+Overall, we identify 3.94% of all trades as stale over the sample period, almost identical to IIROC’s ﬁgure of 4% for Canada (Anderson, Devani, and Zhang, 2016). This
+value appears to be trending upwards over time, averaging 3.36% in 2014 and 4.05%
+in 2015. This upward trend in latency might seem at odds with the overall trend in
+the marketplace of lower exchange latency and increasing participant speed. However, as we will demonstrate in Figure 3 and Table 2, there is a positive relationship
+between message traﬃc and latency. Therefore, if exchange upgrades do not keep
+pace with message traﬃc, an increase in latency will be observed.
+[Table 1 about here.]
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+4.2
+Cause of Stale Trades
+Having established a signiﬁcant proportion of dark trades execute at stale reference prices, we next seek to identify the factors responsible for the occurrence of
+stale trades. Issues of message delays and latency have been shown to contribute
+to market fragility and as such have become a point of interest among regulators
+and academics in the wake of several major market malfunctions such as the 2010
+Flash Crash. For example, Menkveld and Yueshen (2018) demonstrate that delays in
+market data feeds during the 2010 Flash Crash may have contributed to the massive
+deterioration in liquidity at the heart of the episode via a rare breakdown in the crucial arbitrage relationship between the E-mini S&P 500 Futures and the SPY S&P
+500 ETF. The importance of processing latency in markets is also established by Kirilenko and Lamacie (2015) who ﬁnd that processing latency predicts the volatility of
+asset prices. Exchanges have also been increasingly forthcoming about this relationship. The Eurex exchange states that large bursts of incoming messages can delay
+the dissemination of quote updates by many milliseconds, for periods lasting over
+3 milliseconds (Eurex, 2016, p. 28). The CME has introduced ‘First in First Out’
+priority at the exchange gateway to ensure equitable outcomes amongst participants
+due to variances in processing time CME (2014).
+Motivated by these concerns among academics and exchange operators, we investigate whether message volume plays a role in the prevalence of stale dark trades.
+Because all sample stocks share the same infrastructure, it is not the message trafﬁc in a single stock that matters, but rather message traﬃc across all stocks. We
+estimate several speciﬁcations of the following form:
+PercStales,d,v = Messagesd + Controlss,d,v + ϵs,d,v
+(2)
+Table 2 shows those results. We ﬁnd that the general level of messages has a
+signiﬁcant impact on the proportion of stale trading. This points to large volumes of
+quotes slowing down the matching engine, consistent with the examination of ‘quote
+stuﬃng’ by Egginton, Van Ness, and Van Ness (2016). We also ﬁnd evidence that
+increased volatility within the FTSE 100 increases stale dark trades, consistent with
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+the notion that rapidly moving prices create more opportunities for predatory dark
+trading. Finally, wider quoted spreads are associated with fewer stale dark trades.
+This reﬂects the slim margins associated with latency arbitrage - a movement in the
+midpoint of a tick-constrained stock necessarily represents an arbitrage opportunity
+of at least half the spread. However, a quote update in a multi-tick spread may not
+move the midpoint suﬃciently to result in an arbitrage opportunity.
+[Table 2 about here.]
+The previous test uses daily totals and thus does not take advantage of the fact
+that potential delays in message transmission play out at the millisecond granularity.
+To establish a tighter temporal link between stale trading and message traﬃc, we
+run a probit regression at the individual transaction level as follows:
+StaleTradei,s,d,v =
++5
+X
+τ=−14
+TotMktMessagesd,s,t(i)+2∗τ + FEd + FEv + ϵi,s,d,v
+(3)
+StaleTradei,s,d,v is a dummy variable which takes a value of one for a dark trade
+which is stale, and zero otherwise, for trade i in stock s on date d and venue v.
+TotMktMessagesd,s,t(i)+2∗τ is total number of order messages within a speciﬁc 2millisecond window up to 28 milliseconds prior or 8 milliseconds after the time of the
+trade t(i). Two millisecond intervals are used to harmonize any timestamp diﬀerences
+between venues at the millisecond level. All messages pertaining to the stock the
+trade occurs in are removed in order to mitigate potential endogeneity. Venue and
+date ﬁxed eﬀects are also included and standard errors are clustered at the date level.
+For brevity we only report the Z-statistics of TotMktMessages in each interval in
+graphical form in Figure 3.
+[Figure 3 about here.]
+We ﬁnd statistically signiﬁcant positive eﬀects of total market messages up to 28
+milliseconds before stale trades on the likelihood of stale trades, but no signiﬁcance
+in the periods afterward. The strongest statistical signiﬁcance occurs in the periods
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+two milliseconds before, and in the same period as the stale trade. This provides
+evidence that stale trades may be caused, at least in part, by exchange or participant
+infrastructure not having suﬃcient capacity to process large inﬂuxes in messages
+without inducing latency.
+4.3
+The Cost of Stale Trades
+For every stale dark trade, where the trade price does not equal the true midpoint
+at the time of the trade, one party loses while another gains on the transaction. To
+measure the cost of stale reference prices to the disadvantaged party, the absolute
+value of the diﬀerence between the trade price and the LSE midpoint price at the
+time of trade i is multiplied by the volume of the dark trade:
+Costi = |(TradePricei −LSEMidTradeTimei)| ∗V olumei
+This reﬂects the cost relative to the counter factual of the reference price not being
+stale, assuming that the dark trade would have otherwise occurred.
+[Table 3 about here.]
+Table 3 presents the costs of stale reference prices for the exchange operated
+dark pools in the sample, ﬁnding a total measured cost of £44,793 for the 5-week
+sample period for our 114 stocks, which scales to approximately £1.4m for the entire
+FTSE350 for the year 2014. Assuming the prevalence of stale prices was similar
+in broker operated dark pools, the total yearly cost would be £4.2m across all dark
+venues for 2014. For comparison, consider the trading revenues of some of the largest
+HFTs operating in the UK. Knight Capital Group Europe’s trading revenue for 2014
+was $83.18m and Jump Trading’s gross revenue for 2014 was $97.1m.25
+This, however, relies on the assumption of a constant level of reference price
+latency across all of the exchanges in the calculations. This is unlikely to be the
+case across all dark pools as there is considerable variation even within the sample
+25International (2015) and Europe (2015) — two of the largest HFTs operating in the UK.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+used. In particular, some broker dark pools allow stale reference prices of up to a
+second in duration.26 Thus, this estimate represents a lower bound on the total cost
+of reference price latency. These costs include trades inside and outside the BBO.
+Only trades outside the BBO reﬂect ‘pure’ arbitrage opportunities - where the losing
+counterparty could almost certainly have obtained a better price on the lit market
+due to the resting liquidity. This is not the case with stale trades inside the BBO,
+for which it is assumed the dark trade would still have occurred had the reference
+price not been stale.
+If measured in basis points per trade, costs are also relatively modest at 2.36 bps.
+A similar to ﬁgure is Hasbrouck (2018)’s calculation of 1.83 bps lost to fast traders
+by slower traders in the broader lit market setting of high-frequency quote volatility.
+Aside from the direct transaction cost, there may indirect costs as well. First,
+if activities like latency arbitrage contribute to the perception of a deterioration in
+‘fairness’ in modern markets, this could cause investors to reduce their participation
+in such markets (Guiso, Sapienza, and Zingales, 2008). Second, the results are only
+based on UK stocks and UK venues. Latency arbitrage for stocks traded in UK-based
+dark venues and other European lit markets could be considerably higher, given the
+physical distance between the venues producing lit prices. Costs may also be more
+economically signiﬁcant if liquidity providers are dissuaded from providing liquidity
+in dark venues in response to the adverse selection costs of stale reference prices.
+This is empirically examined in Section 5.3.
+4.4
+Are Costs Borne Equally?
+A buyer (seller) to the trade beneﬁts from the reference price latency if the trade
+price is less (greater) than the prevailing mid price. For each of our three categories
+of participants (HFT, Colocated, Non-Colocated), we compute the proportion of
+stale dark trades in which they beneﬁt separately (based on number of trades). If all
+market participants were subject to similar amounts of latency and in the absence
+of strategic order submission in the dark, we would expect all market participants to
+26Deutsche Bank Europe’s Super X broker crossing network (Deutsche Bank, 2016).
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+beneﬁt and lose from staleness in the dark to a similar degree. Given the large diﬀerences in ‘proximity to the market, trader sophistication (retail vs. institutional, or
+subscriber/member vs. public customer), and technology access (Hasbrouck, 2018),
+it seems unlikely that this is the case.
+[Table 4 about here.]
+Table 4 reports how often each of our three trader categories a) participate in
+stale vs. non-stale dark trading (tab ’Any Side’); b) how often they beneﬁt from
+staleness and how often each group is on the c) aggressive side or d) passive side.
+The ﬁrst set of results provide evidence against the idea that stale trades randomly
+’happen’ to market participants. On the contrary, HFT participation in stale trades
+seems to increase substantially from their participation in non-stale trades from about
+a quarter to almost half. This implies that they are able to identify latency-aﬀected
+periods and act on them to their advantage, remaining unaﬀected by the latency
+associated with the reference price calculation. This could be because they are using
+a diﬀerent (faster) feed from the primary market than the dark pool utilizes.
+Can HFTs inﬂuence which side they are on? The second tab of Table 4 shows that
+HFTs beneﬁt in 96% of trades with stale prices inside the BBO (losing only 3.6% of
+the time due to negligible HFT-on-HFT trading) increasing to 99% for stale trades
+outside the BBO. These ﬁndings are consistent with Baron, Brogaard, Hagstr¨omer,
+and Kirilenko (2019) who ﬁnd that HFTs proﬁt in lit markets by using aggressive
+market orders at the expense of other participants.
+This result may also be explained by HFT willingness to subscribe to faster market data feeds in addition
+to faster processing and order submission capabilities. It is worth considering why
+non-HFTs would purchase colocation to become faster, without a realistic prospect
+of becoming faster than HFTs? Table 4 shows that HFTs are on the winning side
+of stale trades 99% of the time, versus 8% of the time (for outside BBO trades) for
+non-colocated non-HFTs, implying that they struggle to compete with HFTs despite
+using colocation. However, an improvement in speed is still rational if the marginal
+beneﬁt of the upgrade exceeds its marginal cost (Brogaard, Hagstr¨omer, Nord´en, and
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Riordan, 2015, p. 3413), there is still a net beneﬁt – colocated non-HFTs perform
+better than non-colocated ones (8% beneﬁt versus 1% in Table 4).
+Additional results in Table 4 round out this picture. For non-stale trades, HFTs
+and colocated non-HFTs are about equally likely to be on the aggressive side (44%
+vs. 45%). However, for stale trades, HFTs aggressively trade in 83% of the cases,
+while colocated non-HFTs only manage to do so in 13% of cases, suggesting that
+HFTs displace out other participant classes due to their superior speed (Aquilina,
+Budish, and O’Neill, 2022).
+Finally, the ﬁgures for the passive side show that most dark pool trades execute
+with non-HFT participants on the passive side. When HFTs do execute passively,
+they predominantly do so when the reference price is stale.
+Passive stale trade
+execution strategies are further discussed in Section 5.
+Our ﬁndings align well with those in Bartlett and McCrary (2019), which examine
+how HFTs exploit stale prices in a U.S. setting. They estimate the cost to nonexchange (which are analogous to dark MTFs in the UK) trades that reference these
+stale feeds as $3.2million USD, in a sample of Dow 30 stocks from August 2015 to
+June 2016. On $22.17bn traded, this amounts to 1.33 basis points, the same order
+of magnitude as this study’s estimate of 2.36 basis points. They also estimate that
+the gains to liquidity takers is $3.19m versus $0.24m for gains to liquidity providers,
+which means 93.1% of all proﬁts can be attributed to aggressive trading participants.
+These estimates only capture the subset of total latency arbitrage activity in dark
+pools, and in one country. Aquilina, Budish, and O’Neill (2022) estimate the total
+scale of latency arbitrage activity on a lit exchange, the London Stock Exchange, in
+2015. They extrapolate their estimates to global equities trading, estimating around
+$4.8bn total proﬁts in 2018 and that the latency arbitrage activity has a meaningful
+impact on liquidity, accounting for around a third of the eﬀective spread on UK
+equities markets.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+5
+Execution Quality and Dark Liquidity
+5.1
+Measures of Adverse Selection
+Traditionally, price impact represents the extent to which prices respond to buying or selling pressure; with lower price impact being desirable for liquidity demanders. In the context of stale reference prices, the mechanism is not a response to
+orders, but a response to stale prices. If the primary midpoint moves down by £1
+and a participant has a resting buy order in the dark pool that is still referencing
+the old price, a stale reference price arbitrageur may submit an aggressive sell order
+at the old price, resulting in a virtually instantaneous £1 positive price impact, milliseconds later. However, if one could observe data feeds with zero delay, this is not
+price impact, but a trade which has paid an eﬀective spread despite being executed
+at the midpoint. From the perspective of both market participants and academics
+(who observe market data with non-zero latency), this is price impact, while from
+the participant’s perspective it represents adverse selection. Although our data does
+not have the timestamp granularity to separate the two to the fullest extent possible,
+we treat such price movements as price impact. Price impact is calculated as,
+PriceImpactit = qit(mi,t+m −mi,t)/mi,t
+(4)
+where qit is the trade direction identiﬁer. Results are reported for the time period
+of 100 milliseconds, which is viewed as a time period which captures ‘instantaneous
+adverse selection’ eﬀects, which result from latency arbitrage activity. Recently there
+has been appreciation of the immediacy at which adverse selection can occur in microstructure research. For example, Chen, Foley, Goldstein, and Ruf (2016) examines
+adverse selection over a 20 millisecond horizon; Conrad and Wahal (2020) examines
+the decreasing time horizons of price impact, down to 100 milliseconds; and Menkveld
+(2018) examines within millisecond trading interactions.
+Section 6 examines interventions to reduce reference price latency arbitrage using
+price impact (adverse selection) calculated as the absolute value of the price change,
+(removing q), because the data consists of public trade reports which do not carry
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+initiator ﬂags. Such a measure of immediate adverse selection is well accepted by
+both academics and practitioners working at high frequency, with industry examples
+including ITG (Saraiya and Mittal, 2009) and IEX (Aisen, 2015), and academic
+research including, Boni, Brown, and Leach (2013) who examine volatility ahead of
+dark pool trades, and Nimalendran and Ray (2014) who use changes in the spread.
+5.2
+Price impact
+Stale reference prices will also increase price impact, which is taken as a measure
+of adverse selection costs. The approach in Malinova and Park (2016) of trade by
+trade regressions is used, utilizing similar controls. The following OLS regression
+models are used with standard errors clustered by both security and date:
+PriceImpactistd+m = α + β1Staleistd + β2considerationistd + β3momentumistd
++β4aggrHFTistd + β5aggrColoistd + β6passHFTistd + β7passColoistd
++β8takebookistd + β9V FTSEistd + β10spreadistd + β11FEsd + ϵistd
+(5)
+Where PriceImpactisdt+m measures the price impact for trade i at for stock
+s at time t on day d, for m = 100 milliseconds after the trade, in basis points.
+This is calculated as the diﬀerence between the trade price and the LSE mid-price27
+multiplied by the trade direction (+1 for buyer initiated trades and -1 for sells).
+staleistd refers to a dummy variable with the value of one if the dark trade is deemed
+to be stale. Various controls to proxy for information, liquidity shocks, participant
+and stock speciﬁc factors: considerationistd is the natural log of the value of the trade
+in British Pound Sterling; momentumi is the midpoint return in the second prior
+to the trade, multiplied by the trade direction; aggrHFTistd and aggrColoistd are
+dummy variables capturing whether the aggressive side of the trade is initiated by
+an HFT or a co-located participant, respectively; passHFTistd and passColoistd are
+dummy variables representing situations in which an HFT or a co-located participant,
+27Results are also run with the EBBO mid-price, remaining both qualitatively and quantitatively
+unchanged.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+respectively, is on the passive side of the trade;28 takebookistd is a dummy variable
+with a value of one for cases in which the aggressor counterparty of the dark trade
+also aggressively executes more than the available liquidity on the LSE within a
+2 millisecond period before and after the dark trade — this aims to capture price
+impact relating to liquidity shocks from participants accessing multiple markets at
+the same time. V FTSEi is the natural log of the value of the FTSE 100 volatility
+index in the 15 seconds prior to the trade29; and spreadistd is the quoted spread of
+the EBBO at the time of the trade in basis points. Stock and date ﬁxed eﬀects are
+also included.30
+[Figure 4 about here.]
+When an aggressor beneﬁts from a trade referencing a stale price, it is expected
+that the trade will have a positive eﬀect on price impact. If, however, the passive
+counterparty beneﬁts from the stale price, the price impact is expected to be negative.
+This is illustrated in Figure 4 with a buyer initiated dark trade at a stale reference
+price. As the stale midpoint price is much lower than the new midpoint price, the
+buyer (the aggressive side) beneﬁts. When calculating price impact relative to the
+midpoint at the time of the trade, it is immediate and positive.
+[Table 5 about here.]
+To isolate and test these opposing eﬀects on price impact, separate regressions
+are performed which include only stale trades where the beneﬁt side is aggressive,
+and stale trades where the beneﬁt side is passive. Table 5 reports the results of the
+estimated model on three diﬀerent samples for 100 millisecond price impact.31 The
+ﬁrst column reports estimates from the full sample of trades, both stale and nonstale. The second reports all non-stale trades, as well as stale trades in which the
+28The rationale here is that HFT or co-located participants may be expected to infer information
+from the dark trade and cause price impact on the lit market in proﬁting from it.
+29This index is similar to the VIX in the US. The closing price of 15 second intraday intervals is
+used.
+30Price impact is winsorized at 1% and 99% but the results are qualitatively unchanged from
+non-winsorization.
+31Results are qualitatively the same at 5 seconds and 1 minute
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+aggressive counterparty beneﬁts, while the third reports all non-stale trades together
+with those stale trades in which the passive counterparty beneﬁts. The ﬁrst column
+shows a highly statistically signiﬁcant and positive relationship between stale trades
+and price impact: aggressive beneﬁt stale trades are more numerous than passive,
+and therefore overall their eﬀect dominates. The model estimates positive overall
+price impacts for midpoint dark pool trades, of 2.4 basis points (the value of the
+constant in the ﬁrst column).
+Stale trades increase this by 0.88 basis points for
+aggressive beneﬁt stale trades (the coeﬃcient on the variable stale in the second
+column). This eﬀect is larger in size than the eﬀect on price impact if the aggressor
+to a dark pool trade also executes against the full LSE best bid or ask (0.50 basis
+points, the coeﬃcient on the variable takebook in the ﬁrst column). Therefore, stale
+price eﬀects seem to be larger than short term liquidity eﬀects.
+The variables in this model that control for participants involved in the trade,
+aggrHFT and aggrColo, the indicator variables for HFT and co-located participant presence as aggressive counterparties to the trade, demonstrate a statistically
+signiﬁcant positive relationship with price impact. There are two potential explanations for these ﬁndings. First, HFT and co-located participants can react faster
+to information than non co-located participants. Second, they react faster to stale
+reference prices than non co-located participants, where the aggrHFT variable acts
+as a proxy for stale trades that cannot be observed due to timestamp limitations.
+passHFT is strongly related with lower price impact. This may imply that HFT are
+adept at avoiding adverse selection, as Brogaard, Hagstr¨omer, Nord´en, and Riordan
+(2015) ﬁnd for participants that choose co-location. Spread is positively related to
+PriceImpact, as it magniﬁes the eﬀect of bid-ask bounce. We also observe that
+takebook is strongly correlated with higher price impact, as would be expected for
+trades that consume all BBO liquidity on the LSE at the same time as the dark
+trade. When the stale trades are split by whether the aggressive or passive counterparty beneﬁts from it, the stale indicator variable has a stronger positive relationship
+in the aggressive only column, than in the full sample (ﬁrst column), which pools
+aggressive and passive together. This implies that the opposing eﬀects are masked
+in the aggregate. It also demonstrates participants with resting limit orders (passive
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+participants) to stale trades face higher adverse selection costs, measured as positive
+price impact. Conversely, stale trades can also allow aggressive trade initiators to
+face adverse selection costs, through negative realized spreads.32 The passive beneﬁt
+sample in column three shows a negative relationship between price impact and stale
+trades, demonstrating that aggressive initiators of stale trades face adverse selection
+costs.
+5.3
+Dark Liquidity Provision Eﬀects
+Our results thus far indicate that HFTs seem able to avoid adverse selection in
+dark pools. To ascertain how they achieve this, we examine their liquidity provision
+in dark venues with full orderbook data. We ﬁnd that HFTs almost never provide
+resting marketable liquidity in dark pools. This is quite remarkable given that they
+are signiﬁcant providers of liquidity on lit venues (Menkveld, 2016).
+This study is amongst the ﬁrst to characterize liquidity provision in modern dark
+pools. In lit limit order book markets, measures of liquidity are widely accepted
+— these include quoted spreads, eﬀective spreads, and market depth. As the dark
+pools in our sample only execute trades at the midpoint of the primary market BBO
+only depth related measures of liquidity are relevant. Unlike lit limit order markets,
+dark pools appear to experience signiﬁcant periods of time where liquidity is ‘one
+sided’ (liquidity is only available at the bid or the ask, but not both) as well as
+‘no sided’ (liquidity unavailable in the dark). ‘No sided’ liquidity can occur when
+there are no dark orders in the order book, but more often occurs when dark orders
+exist, but only at non-marketable prices. That is, there are buy orders with limit
+prices below the prevailing midpoint or sell orders with limit prices higher than
+the prevailing midpoint. In such cases, standard market depth measures are not
+32Traditional market microstructure theoretical models such as Glosten and Milgrom (1985)
+model adverse selection as a cost that liquidity providers, or marketmakers, face. For midpoint dark
+pools, both counterparties are arguably providing liquidity, as they must forgo/pay half the spread
+to execute. Therefore, the initiator of a trade faces adverse selection costs despite the initiators to
+trades being viewed as liquidity demanders, rather than providers in traditional markets. It can be
+argued that the systematic component of adverse selection occurs from selective liquidity provision
+from the passive beneﬁt counterparty.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+particularly informative.
+A new measure of liquidity is proposed, deﬁned as the
+percentage of time there is a bid or ask order available at a marketable price. In
+practice, this means that the measure of liquidity indicates periods in which people
+could trade in a dark pool if they were aware of the order’s presence.
+Our measure of liquidity is calculated in two scenarios: dark orders with quantities
+greater than those available at the lit market bid or ask, and dark orders with
+quantities below those in the lit market. This deﬁnition of liquidity supply is generous
+in the context of midpoint dark pools since a participant with a marketable midpoint
+order may also be interpreted as a consumer of liquidity. Nonetheless, they are a
+provider of passive dark liquidity: by resting passively on the order book, they
+facilitate dark executions. Without resting liquidity, participants with aggressive
+orders merely ‘ping’ dark pools without executing, like ‘ships passing in the night.’33
+Figures 5 and 6 present cumulative frequency histograms of the dark liquidity metrics
+calculated for a given stock-day and venue with each chart illustrating a distribution
+of 8550 observations (114 stocks x 25 days x 3 dark pools) measuring the % of time
+for a given a stock-venue-day that a class of trader is providing resting liquidity. This
+ﬁgure shows that there are many stocks and/or dates, for which it is not possible for
+participants to access any dark liquidity. These charts are presented separately by
+marketable and non-marketable orders.
+[Figure 5 about here.]
+[Figure 6 about here.]
+The largest providers of marketable orders in midpoint dark pools appear to be colocated participants that are not HFTs. Figure 5 shows that Co-located participants
+(the unbroken line) are the largest suppliers of dark liquidity which is larger than
+the respective lit Bid or Ask (‘Above BBO Size’).
+This is followed by Non-Colocated participants, (the dashed line). But liquidity is still relatively infrequent,
+33This is a common analogy used in midpoint dark pools, crossing networks and dark aggregators.
+(Banks, 2014) To mitigate this eﬀect, BATS Europe’s dark pools both provide lower execution fees
+for orders which rest on the order book (Non-IOC orders). See BATS Europe (2017).
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+with only a few percent of stock-venue-dates ever having marketable orders larger
+than those at the BBO for 10% or more of the trading day. Co-located participants
+provide even more liquidity at sizes below the respective BBO size, but the NonColocated participant proportion remains mostly unchanged. HFTs provide very
+few marketable orders and for very small proportions of the day.
+Figure 6 presents the same analysis for non-marketable liquidity, orders in the
+dark pool which are not priced to execute at the current primary midpoint. These
+orders can be interpreted as ‘stop’ orders, wherein they only become executable at
+a given price.
+At sizes greater than that available at the BBO, the distribution
+looks similar to Figure 5, except that HFTs (the broken line) now provide a similar
+amount of liquidity as co-located participants. And in the below BBO size panel,
+HFTs provide signiﬁcantly more liquidity than others at sizes smaller than the BBO
+relatively frequently, mostly between 50-75% of the day. The diﬀerence in liquidity
+provided by HFT at marketable prices versus non-marketable prices is dramatic. This
+disparity could result from a strategy of persistently repricing resting orders to be
+non-marketable, in response to primary market movements. A potential rationale for
+this behavior is to take advantage of stale reference prices through passive executions,
+as described earlier in Section 5, while also minimizing their adverse selection risks.
+6
+Market Design Solutions — Event Studies
+There are a number of market design changes that could solve the problems characterized above: reference price latency which results in increased adverse selection
+for dark pool users and decreased dark liquidity from a reluctance to expose passive
+orders to adverse selection. A number of market design changes have been implemented in recent years, and these are examined to determine which interventions reduce adverse selection. The following diﬀerence in diﬀerences model is implemented
+for each event study:
+PriceImpactsdv = α + β1eventd + β2treatedsv + β3eventTreatedsdv
++β4Spreadsd + β5V IXd + β6considerationsdv + β7FEsd + ϵsdv
+(6)
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Where PriceImpactsdv measures the natural log of the consideration-weighted average adverse selection for stock s on date d, for exchange venue v. It is calculated as
+the absolute value of the diﬀerence between the NBBO midpoint 100 milliseconds
+before and after the trade, in basis points. We also estimate the same regression
+with PriceMovesdv as the dependent, calculated as the proportion of trades in stock
+s, date d, venue v for which a change in the midpoint occurs over the time period
+m before and after the trade. This is a useful measure of adverse selection, as a
+signiﬁcant proportion of dark trades occur with no price movement. Eventd is a
+dummy variable which takes the value of one on and after the event in question, and
+zero otherwise.34 Treatedsv is a dummy variable which takes the value of one for
+stocks traded on venues which are subject to the market design change, and zero
+otherwise. EventTreatedsdv is the interaction term for venues which are subject to
+the treatment, after the event occurs. Spreadsd is the stock’s time weighted average
+quoted spread. Considerationsdv is the natural log of the sum of trading consideration in British Pounds or US dollars. Stock and date ﬁxed eﬀects are also included.
+V IXd is the natural log of the mean value of the VIX volatility index, or the VFTSE
+(for UK event studies), measured at 15 seconds intervals throughout the day. All
+regressions use data from the Thompson Reuters Tick History service.
+6.1
+NASDAQ SIP Upgrade
+The ﬁrst event study concerns the infrastructure upgrade that occurred on October 24th, 2016 when NASDAQ, which manages one of the two largest Security
+Information Processors (SIPs) in the US, increased the speed at which it processes
+trades and quotes, reducing the processing time from 500 microseconds to around
+40. This event is used to examine the impact of speed upgrades to reference price
+feeds on adverse selection.
+A number of dark pools utilize the SIP to price dark trades, including those run
+by Barclays (SEC, 2016), and Citadel (SEC, 2017).
+The reduced latency of the
+34This takes the value of one of the dark venues in the UK event studies, or NASDAQ versus
+NYSE listed trades reported to FINRA.
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+NASDAQ SIP should decrease the extent of reference price latency for dark pools
+relying on the NASDAQ SIP feed.
+This SIP upgrade is used as a case study of one possible solution to reference
+price latency — speeding up reference price feeds. Ex ante, one would not expect
+this to diminish reference price latency arbitrage, and as such, would not expect a
+decrease in the adverse selection measure. This is because, while reference price feed
+latency is reduced, it should not be enough to allow dark pools to ‘win the speed
+race’ with HFT and other fast participants using direct exchange feeds and high
+speed infrastructure such as microwaves. As such, many participants are expected
+to be be faster than both the old and the new SIP.
+A diﬀerence in diﬀerences regression model is implemented for this event, with
+the untreated sample being dark pool trades reported to the NYSE SIP. As SIP usage
+is almost entirely a function of the stock’s primary listing (NASDAQ v NYSE), it is
+expected that NYSE listed stocks will be unaﬀected by this change, and represent
+the ‘untreated’ sample group.
+SIP quotes and trades are taken from TRTH (Thomson Reuters Tick History).
+Speciﬁcally, the population of dark trades comes from FINRA reported trades, which,
+as noted in Menkveld, Yueshen, and Zhu (2017) comprises the majority of dark
+trading. Only normal trades are included, speciﬁcally excluding trades identiﬁed as
+sweep, average, basket, burst, odd lots, next day and bunched trades. The 15 minutes
+after open and before close are also excluded. Adverse selection is calculated as the
+movement in the NBBO mid around the trade using the NBBO TAQ ﬁle, ignoring
+ﬂags with any slow quotes and any crossed markets. Despite allegations of slow SIP
+reporting of dark trades, the majority (more than 99%) of FINRA trades occur within
+the NBBO at the time of reporting, implying that these are insigniﬁcant. Regardless,
+a 100 millisecond window before and after the trade is allowed for, and no change in
+this ratio is either expected nor observed in response to a 450microsecond reduction
+in SIP processing times. The sample period is the 52 trading days before and after the
+event date, starting from the 2nd of September 2016, to 15th of December 2016. The
+sample of stocks is the S&P500, with a random selection of NYSE stocks removed
+in order to balance the panel, as there is a higher proportion of NYSE stocks in the
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+index. This leaves a total of 246 stocks.
+Unlike previous DID models, rather than examining the same sample of stocks
+across diﬀerent venues, a diﬀerent sample of stocks is examined across diﬀerent
+venues. This means that if NASDAQ stocks experience a period of volatility in the
+post-treatment period, (after October 24th) this may confound the results. As the
+2016 US presidential election occurs after the SIP upgrade, and the election impacted
+technology stocks more signiﬁcantly than industrial stocks, this is a potential confounding event. To address this, the dependent variables are expressed as a proportion of their averages across all non-dark venues. For example, for each stock the dependent variables are: AdverseSelectionDarkFinra/mean(AdverseSelectionlit) ∗100.
+This controls for idiosyncratic factors that are stock speciﬁc.
+[Table 6 about here.]
+Table 6 presents the results of this diﬀerence in diﬀerences regression for the
+two measures of adverse selection. The results show that the event variable has
+no statistically signiﬁcant association, perhaps implying that the denominator is
+eﬀectively controlling for information. As treated is associated with higher adverse
+selection, this implies that NASDAQ listed stocks are more volatile than NYSE
+ones, which is to be expected. As predicted, the event does not decrease adverse
+selection, treated ∗Event has no statistical signiﬁcance for price impact, though for
+the percentage of trades that do experience price movements, the eﬀect is positive,
+indicating more frequent stale trades. However, the coeﬃcient for this is only 1.6%,
+presenting an increase in dark trades experiencing adverse selection versus the lit
+of only 1.6%, this is not an economically signiﬁcant change. Such a result may be
+driven by an increased reliance on the upgraded SIP feed, in favour of expensive
+dedicated data feeds from the exchanges. Given direct data feeds are always likely to
+’win’ the race with a public feed, such a shift could result in more frequent adverse
+selection.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+6.2
+Turquoise Random Uncross - Event Study
+The second event study concerns the UK MTF ‘Turquoise’, which contains a
+dark order book and introduced an order type called ‘random uncross.’ This order type works by matching dark orders at random periods of between 5 and 45
+seconds throughout the day, depending on the stock’s underlying level of liquidity
+(Turquoise, 2016).
+As the uncrossing period is unknown, aggressive participants
+cannot race reference price update messages. This feature was intended to reduce
+or eliminate adverse selection arising from such races. We use the ‘relaunch’ of this
+facility in September 2013 as our event. Turquoise’s CEO stated that volumes in
+uncross were ‘up more than three times since the start of September 2013’, (Times,
+2013). Therefore, this event can be used to determine if adverse selection decreases
+in relation to other comparable dark venues, using the same sample of stocks in a
+diﬀerence in diﬀerences model. The untreated sample are dark trades on the BATS
+and Chi-X dark pools. The sample is the same 57 FTSE 100 and 57 FTSE 250
+stocks in our primary analysis. Data is taken from the 1st of June 2013 to the 31st
+of August 2013 for the pre-event window, and from the 1st of October 2013 to the
+30th of December 2013 for the post-event window. Table 6 sets out the results which
+show a statistically signiﬁcant reduction in adverse selection after the relaunch of
+the random uncross. This is roughly a 12% reduction in adverse selection in basis
+points, and a 4.1% reduction in the proportion of dark trades which experience adverse movements in prices after the trade. These results indicate that this market
+design intervention is eﬀective at reducing adverse selection driven by reference price
+latency.
+6.3
+Uncross and Batch Auctions: Trade Level Evidence
+The ﬁnal event study exploits the existence of trade-by-trade level data, allowing
+us to estimate the impact on the execution quality of individual trades. For this
+experiment, we examine BATS Europe’s introduction of a new order type on the
+19th of October 2015. This new order type consists of a separate orderbook that
+performs intra-day auctions with randomized uncross periods throughout the day.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+These auctions have price, time and size priority, but are only partially pre-trade
+transparent. There is an indicative uncrossing price and executable volume published
+in the call period prior to the uncross, but this is only published if the full minimum
+acceptable quantity of orders is fully met, (BATS Europe, 2017).
+Trades in this auction are ﬂagged in the data from TRTH, and so the random
+uncross feature can be examined to see whether it is eﬀective at reducing adverse
+selection in comparison to other dark orders. The unpredictability of the uncross
+prevents race conditions against lit market updates, one would expect lower adverse
+selection for both Turquoise uncross and BATS batch auctions.
+A three month period in 2017 (May to July inclusive) is used for this study, over
+a period where the Turquoise uncross ﬂag is revealed in Bloomberg trade data, as
+well as the BATS Periodic Batch auctions ﬂag in TRTH data. Turquoise trades from
+Bloomberg to TRTH are matched to obtain millisecond timestamps. Using trade
+identiﬁers, adverse selection is compared for batch trades against dark non-batch
+trades. The dummy variables batchsdv and uncrosssdv take the value of one for the
+consideration weighted mean of adverse selection for the stock, date, venue observation for batch and uncross trades respectively. This sample includes the FTSE 350
+stocks for dark trades in Chi-X and batch and dark trades in BATS, as well as dark
+trades and uncross trades in Turquoise.35 The results of this analysis are reported
+in Table 6. There are statistically signiﬁcant negative relationships between batchsdv
+and the adverse selection measures. The model estimates a signiﬁcant reduction for
+adverse selection when using Turquoise uncross of 1.135 basis points, and a 37.9%
+reduction in the proportion of midpoint changes 100 milliseconds before and after
+the trade for batch auction trades in comparison to dark trades on other UK dark
+venues.
+There is a similar reduction for BATS periodic batch auctions, but this
+is less signiﬁcant at 0.09 basis points and a 16.3% reduction in midpoint changes.
+These results are consistent with the prediction that the randomized uncross feature
+renders latency arbitrate strategies ineﬀective, reducing adverse selection.
+35The results are qualitatively unchanged when the sample includes just BATS and Turquoise
+dark and batch/uncross trades alone.
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+7
+Conclusion
+As the automation and speed of markets has increased, so too has the importance
+of latency in markets, and in particular, latency in reference prices.
+This study
+examines the prevalence of stale reference prices, their eﬀect on adverse selection and
+participant strategies with respect to stale dark trades for a representative sample of
+UK exchange operated midpoint dark pools. Trades are frequently observed at stale
+reference prices, resulting in asymmetric outcomes across participant types, where
+faster (HFT) participants impose adverse selection costs on slower participants. Stale
+reference prices are shown to play a signiﬁcant role in increasing adverse selection
+costs for passive dark orders by 2.4 basis points.
+Using a new measure of liquidity in dark pools, we characterize dark liquidity
+provision in the UK by diﬀerent participant classes, ﬁnding that HFTs virtually never
+provide resting (marketable) liquidity. Furthermore, We examine the eﬀectiveness of
+market design innovations to resolve the problem of adverse selection from reference
+price latency with the help of event studies and show that removing the ability
+for aggressive participants to race the market data feed by making the timing of
+dark executions unpredictable (through random uncross mechanisms) is eﬀective
+in reducing adverse selection. In contrast, we ﬁnd interventions that decrease the
+latency of reference price feeds to be ineﬀective at removing adverse selection.
+Our evidence has signiﬁcant policy implications. Reference price determination
+is important to the fairness of dark pool pricing. Regulators should focus on the
+adaptation of alternative market designs like random uncross features and batch
+auctions, rather than faster reference price feeds alone. Indeed, it may be the desire
+to avoid these HFT ’sharks’ in the dark pools which has led to the endogenous
+adoption of speed bumps and batch auctions by many exchange venues across the
+world.
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+References
+Aisen, Daniel, 2015, The Genesis of an Order Type, Blog.
+Alexander, Jeﬀ, Linda Giordano, and David Brooks, 2015, Dark Pool Execution
+Quality: A Quantitative View, .
+Anderson, Lisa, Baiju Devani, and Yifan Zhang, 2016, The Hidden Cost: Reference
+Price Latencies, Trading Review And Analysis Investment Industry Regulatory
+Organization of Canada.
+Aquilina, Matteo, Eric Budish, and Peter O’Neill, 2022, Quantifying the HighFrequency Trading “Arms Race”*, The Quarterly Journal of Economics 137, 493–
+564.
+Aquilina, Matteo, and Carla Ysusi, 2016, Are high-frequency traders anticipating the
+order ﬂow? Cross-venue evidence from the UK market., FCA Occasional Papers
+16.
+ASIC, 2015, Review of high-frequency trading and dark liquidity, Discussion Paper
+452 Australian Securities and Investments Commission.
+Baldauf, Markus, and Joshua Mollner, 2020, High-frequency trading and market
+performance, The Journal of Finance 75, 1495–1526.
+Banks, E., 2014, Dark Pools: Oﬀ-Exchange Liquidity in an Era of High Frequency,
+Program, and Algorithmic Trading (Springer).
+Baron, Matthew, Jonathan Brogaard, Bj¨orn Hagstr¨omer, and Andrei Kirilenko, 2019,
+Risk and return in high-frequency trading, Journal of Financial and Quantitative
+Analysis 54, 993–1024.
+Bartlett, Robert P., and Justin McCrary, 2019, How rigged are stock markets? Evidence from microsecond timestamps, Journal of Financial Markets.
+BATS Europe, 2017, BATS Europe Guidance Note: Periodic Auctions Book, .
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+BATS Europe, 2017, Trading Price List, Discussion paper BATS Europe.
+Boni, Leslie, David C. Brown, and J. Chris Leach, 2013, Dark pool exclusivity matters, Available at SSRN 2055808.
+Brogaard, Jonathan, Bj¨orn Hagstr¨omer, Lars Nord´en, and Ryan Riordan, 2015,
+Trading Fast and Slow: Colocation and Liquidity, Review of Financial Studies
+p. hhv045.
+Brogaard, Jonathan, and Jing Pan, 2022, Dark Pool Trading and Information Acquisition, The Review of Financial Studies 35, 2625–2666.
+Budish, Eric, Peter Cramton, and John Shim, 2015, The High-Frequency Trading
+Arms Race: Frequent Batch Auctions as a Market Design Response, The Quarterly
+Journal of Economics 130, 1547–1621.
+Cebiro˘glu, G¨okhan, and Ulrich Horst, 2015, Optimal order display in limit order
+markets with liquidity competition, Journal of Economic Dynamics and Control
+58, 81–100.
+Chau, Ching, Angelo Aspris, Sean Foley, and Hamish Malloch, 2021, Quote-Based
+manipulation of illiquid securities, Finance Research Letters 39 Publisher: Elsevier.
+Chen, Haoming, Sean Foley, Michael A. Goldstein, and Thomas Ruf, 2016, The
+Value of a Millisecond: Harnessing Information in Fast, Fragmented Markets,
+SSRN Scholarly Paper ID 2860359 Social Science Research Network Rochester,
+NY.
+CME, 2014, CME Group Customer Forum Q2 2014, .
+Conrad, Jennifer, and Sunil Wahal, 2020, The term structure of liquidity provision,
+Journal of Financial Economics 136, 239–259.
+Deutsche Bank, 2016, SuperX EMEA: Order type, matching logic and operational
+summary, Quick Guide.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Ding, Shengwei, John Hanna, and Terrence Hendershott, 2014, How Slow Is the
+NBBO? A Comparison with Direct Exchange Feeds, Financial Review 49, 313–
+332.
+Duong, Huu Nhan, Petko S. Kalev, and Xiao Jason Tian, 2022, Does the bid–ask
+spread aﬀect trading in exchange operated dark pools? Evidence from a natural
+experiment, Journal of Economic Dynamics and Control 139, 104436.
+Egginton, Jared F., Bonnie F. Van Ness, and Robert A. Van Ness, 2016, Quote
+stuﬃng, Financial Management 45, 583–608 Publisher: Wiley Online Library.
+Eurex, 2016, Insights into trading system dynamics: Eurex Exchange’s T7, .
+Europe, KCG, 2015, KCG Europe Limited 2015 Financial Statements, Financial
+Statements KCG Europe.
+Fidessa, 2017, Fidessa Fragmentation Index, .
+Foley, Sean, and T¯alis J. Putni¸nˇs, 2016, Should we be afraid of the dark? Dark
+trading and market quality, Journal of Financial Economics 122, 456–481.
+Foucault, Thierry, Johan Hombert, and Ioanid Ro¸su, 2016, News Trading and Speed,
+The Journal of Finance 71, 335–382.
+Foucault, Thierry, Roman Kozhan, and Wing Wah Tham, 2016, Toxic Arbitrage,
+The Review of Financial Studies 30, 1053–1094.
+Frino, Alex, Gbenga Ibikunle, Vito Mollica, and Tom Steﬀen, 2018, The impact
+of commodity benchmarks on derivatives markets: The case of the dated Brent
+assessment and Brent futures, Journal of Banking & Finance 95, 27–43.
+Glosten, Lawrence R., and Paul R. Milgrom, 1985, Bid, ask and transaction prices
+in a specialist market with heterogeneously informed traders, Journal of Financial
+Economics 14, 71–100.
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+GSEC, 2016, SIGMA X FAQ, Discussion Paper Version 8 Goldman Sachs Execution
+& Clearing, L.P. (“GSEC”).
+Guiso, Luigi, Paola Sapienza, and Luigi Zingales, 2008, Trusting In Stock Markets,
+The Journal of Finance 63, 2557–2600.
+Hagstr¨omer, Bj¨orn, and Lars Nord´en, 2013, The diversity of high-frequency traders,
+Journal of Financial Markets 16, 741–770.
+Hasbrouck, Joel, 2018, High-frequency quoting: Short-term volatility in bids and offers, Journal of Financial and Quantitative Analysis 53, 613–641 Publisher: Cambridge University Press.
+Hope, Bradley, 2014, Goldman Agrees to $800,000 Fine Over Dark Pool, Wall Street
+Journal.
+Hu, Edwin, 2019, Intentional access delays, market quality, and price discovery:
+Evidence from iex becoming an exchange, Discussion paper New York University
+School of Law.
+IEX, 2015, Investors Exchange Form 1 Submission, Filing to Register as Exchange
+3235-0017 Investors’ Exchange LLC.
+International, Jump Trading, 2015, Jump Trading International 2015 Financial
+Statements, Financial Statements Jump Trading International.
+Kirilenko, Andrei, Albert S. Kyle, Mehrdad Samadi, and Tugkan Tuzun, 2017, The
+ﬂash crash: High-frequency trading in an electronic market, The Journal of Finance 72, 967–998.
+Kirilenko, Andrei A., and Gui Lamacie, 2015, Latency and Asset Prices, SSRN
+Scholarly Paper ID 2546567 Social Science Research Network Rochester, NY.
+Lewis, Michael, 2014, Flash Boys: A Wall Street Revolt. (W. W. Norton and Company).
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+LSEG, 2017, Dark Midpoint Order book, .
+Malinova, Katya, and Andreas Park, 2016, “Modern” Market Makers, Working Paper.
+Menkveld, Albert J., 2016, The economics of high-frequency trading: Taking stock,
+Annual Review of Financial Economics 8, 1–24 Publisher: Annual Reviews.
+, 2018, High-frequency trading as viewed through an electron microscope,
+Financial Analysts Journal 74, 24–31 Publisher: Taylor & Francis.
+, and Bart Zhou Yueshen, 2018, The Flash Crash: A cautionary tale about
+highly fragmented markets, Management Science.
+, and Haoxiang Zhu, 2017, Shades of darkness: A pecking order of trading
+venues, Journal of Financial Economics 124, 503–534 Publisher: Elsevier.
+Menkveld, Albert J., and Marius A. Zoican, 2017, Need for Speed? Exchange Latency
+and Liquidity, The Review of Financial Studies 30, 1188–1228.
+Neumeier, Christian, Arie Gozluklu, Peter Hoﬀmann, Peter O’Neill, and Felix Suntheim, 2021, Occasional Paper No. 60: Banning Dark Pools: Venue Selection and
+Investor Trading Costs, .
+Nimalendran, Mahendrarajah, and Sugata Ray, 2014, Informational linkages between
+dark and lit trading venues, Journal of Financial Markets 17, 230–261.
+Pham, Manh Cuong, Heather Margot Anderson, Huu Nhan Duong, and Paul Lajbcygier, 2020, The eﬀects of trade size and market depth on immediate price impact
+in a limit order book market, Journal of Economic Dynamics and Control 120,
+103992.
+Rosenblatt, 2014, Monthly Dark Liquidity Tracker European Edition, Discussion
+Paper September 2014 Rosenblatt Securities Limited.
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Saraiya, Nigam, and Hitesh Mittal, 2009, Understanding and Avoiding Adverse Selection in Dark Pools, .
+SEC, 2016, ADMINISTRATIVE PROCEEDING File No. 3-17079, .
+, 2017, Citadel Securities LLC - Order Instituting Administrative Cease and
+Desist Proceedings, Administrative Proceeding File No. 3-17772.
+Shkilko, Andriy, and Konstantin Sokolov, 2020, Every cloud has a silver lining: Fast
+trading, microwave connectivity, and trading costs, The Journal of Finance 75,
+2899–2927 Publisher: Wiley Online Library.
+Standard and Poors Capital IQ, 2015, Real Time Solutions Global Network Map, .
+Swanson, Eric, 2015, Investors’ Exchange, LLC (“IEX”); Notice of Filing of Application, as Amended, for Registration as a National Securities Exchange under
+Section 6 of the Securities Exchange Act of 1934; Release No. 34-75925, SEC Filing
+10- 222. BATS.
+Times, Asset Servicing, 2013, Trading Platforms: Azure waters ahead, Asset Servicing Times.
+Turquoise, 2016, Turquoise Plato Uncross Factsheet, .
+Zhu, Haoxiang, 2014, Do dark pools harm price discovery?, Review of Financial
+Studies 27, 747–789.
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 1: Histogram of Stale Reference Price Age
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 2:
+Proportion of Stale Dark Trades by Stock (%) Observations are calculated
+as sample means per stock and presented against the natural log of the sample mean market
+capitalization in pound sterling and the natural log of the stock’s sample mean share price on the
+x-axis in Panel A and B respectively.
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+G
+0
+2
+4
+6
+8
+20
+22
+24
+Log of Market Cap (£)
+% of Stale Dark Trades
+0
+2
+4
+6
+8
+0
+1
+2
+3
+4
+Log of Share Price (£)
+% of Stale Dark Trades
+40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 3: Z-Statistics of Probit Regression of Stale Trades Against Market Messages
+This chart reports robust z-statistics of a probit regressions of dark trades in the sample. The
+dependent variable StaleTrade takes the value one stale dark trades, and zero otherwise. This is
+regressed against TotMktMessages, which is the change in the total number of messages in the 2
+millisecond period around the trade time (14 intervals prior to 4 intervals after), excluding messages
+in the stock in which the trade occurs. The 95% critical value is annotated in a dashed horizontal
+line. Robust z-statistics in parentheses. The pseudo Rˆ2 is 0.1012 and the number of observations
+is 1,041,340.
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 4: Stale Dark Trade Example (Aggressive Beneﬁt)
+This ﬁgure illustrates a lit market order book over time.
+The upper edge of the green shaded
+section represents the Best Bid over time, the lower edge of the red shaded section represents
+the Best Ask, and the unshaded section in the middle represents ‘the spread’, in which market
+participants are unwilling to place resting limit orders to buy or sell, or unable to place prices due
+to minimum spread requirements. The circle represents an example stale trade on a dark pool. On
+the lit market, trades would generally execute at best bid or best ask. Because midpoint dark pools
+reference the midpoint of the lit market, they should execute in the middle of the unshaded area.
+Because the trade is referencing the old midpoint, the transaction price falls into the newly green
+shaded area below the new best bid at the time of the trade.
+42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 5: Histograms of Marketable Orders in Midpoint Dark Pools
+43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Figure 6: Histograms of Non-Marketable Orders in Midpoint Dark Pools
+44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 1: Descriptive Statistics:
+This table presents descriptive statistics of the trade-by-trade data used in price impact regressions.
+The data originates from the matching engines four UK trading venues from ﬁve one week periods
+over January 2014 to June 2015. The venues include LSE, BATS, Chi-X and Turquoise. The total
+number of observations is 723,979 for each variable. StaleTrade is a dummy variable taking the
+value of 1 if a trade is deemed to be stale, we multiply by 100 to express as a percentage in this
+table. PriceImpactBps is the price impact of a trade, calculated using orderbook aggressor ﬂags
+as at the midpoint 100 milliseconds after the trade. Quantity is the trade quantity in 100s of
+shares and Consideration is the trade value in GBP. Staleness is the age in milliseconds of the
+stale quote being referenced. QuotedSpread is calculated from the EBBO at the time of the trade
+in basis points. V FTSE is the volatility index of the FTSE100 which is taken from options on
+FTSE100 stocks.
+Variable
+Mean
+Std. Dev
+p5
+p95
+Stale Trade (%)
+3.94
+19.50
+0.00
+0.00
+PriceImpactBps (100 ms)
+0.91
+2.69
+-1.59
+4.87
+Quantity (Shares 100s)
+1.49
+5.40
+0.04
+6.06
+Consideration (£1000s)
+6.90
+14.15
+0.43
+19.93
+Staleness (ms)
+5.98
+106
+1.00
+3.00
+Quoted Spread
+6.89
+8.07
+1.50
+18.20
+VFTSE
+12.39
+0.99
+11.08
+14.31
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 2: Regression of Stale Trades over Time
+This table reports coeﬃcient estimates for the percentage of stale trades across all venues for each
+stock date in the sample using the following speciﬁcations:
+(1) StaleTrades,d = Messagesd + FEs,v + ϵs,d
+(2) StaleTrades,d = Messagesd + V FTSEd + FEs,v + ϵs,d
+(3) StaleTrades,d = Messagesd + V FTSEd + Spreads,d + FEs,v + ϵs,d
+(4) StaleTrades,d = Messagesd + V FTSEd + Spreads,d + PriceV ols,d + FEs,v + ϵs,d
+(5) Percstales,d = Messagesd + V FTSEd + Spreads,d + PriceV ols,d + TimeTrend + FEs,v + ϵs,d
+where Percstales,d,v is the percentage of stale trades in stock s on day d and venue v. Stockday-venue tuples with less than 40 trades are dropped from the analysis to reduce noise from
+unrepresentative observations. Messagesd is the average number of messages across two millisecond
+time intervals on date d across the top 400 stocks on all venues. V FTSEd is the natural log of the
+average FTSE Volatility Index. Spreads,d is the time weighted quoted spread for stock s and day d
+in pence. Returns,d is the % change in a stock’s opening and closing price. Trendd is a time trend
+variable which increments one for each calendar date in the sample. FEs and FEv are stock and
+venue ﬁxed eﬀects, respectively. Standard errors are clustered at the stock level.
+(1)
+(2)
+(3)
+(4)
+(5)
+VARIABLES
+% Stale
+% Stale
+% Stale
+% Stale
+% Stale
+Messages
+0.004***
+0.002**
+0.002**
+0.002**
+0.002**
+(4.883)
+(2.171)
+(2.064)
+(2.055)
+(2.086)
+VFTSE
+0.032***
+0.030***
+0.030***
+0.030***
+(2.936)
+(2.818)
+(2.785)
+(2.772)
+Spread
+-0.583***
+-0.581***
+-0.581***
+(-4.831)
+(-4.752)
+(-4.856)
+Return
+0.000
+0.000
+(0.250)
+(0.270)
+Trend
+-0.000
+(-0.211)
+Venue Fixed Eﬀects
+Y
+Y
+Y
+Y
+Y
+Stock Fixed Eﬀects
+Y
+Y
+Y
+Y
+Y
+Constant
+0.011**
+-0.059**
+-0.048**
+-0.048**
+-0.049**
+(2.060)
+(-2.539)
+(-2.102)
+(-2.091)
+(-2.067)
+Observations
+4,144
+4,144
+4,144
+4,144
+4,144
+R-squared
+0.442
+0.443
+0.445
+0.445
+0.445
+Robust t-statistics in parentheses
+*** p<0.01, ** p<0.05, * p<0.1
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 3: Costs of Stale Reference Prices
+The following table presents estimates of the cost of dark pool latency arbitrage to users of dark
+pools in the UK. This is presented separately for two subsets of stale trades. Stale reference prices
+that are inside the Primary BBO, and those that are outside, which sum to the total column.
+Outside BBO costs represents real opportunity costs, whilst inside BBO trades represent assumed
+opportunity costs. The ﬁrst row expresses the average cost of a dark pool trade at a stale price in
+basis points (bps) = basis points. This is calculated as, for trade i, Costi/Considerationi ∗10000.
+The following assumptions are made: 253 trading days in the year when scaling the 25 days in the
+sample; constant proportionality of rates across stocks when scaling 114 stocks to the FTSE 350;
+constant proportionality when scaling the subset of dark venues to the full population. This subset
+is estimated in the same to be 32.41% of total dark trading using Rosenblatt’s Dark Liquidity report
+for 2014.
+Calculation
+Total
+Inside BBO
+Outside BBO
+Average bps per Trade
+2.36
+1.97
+4.31
+Total Measured Cost
+£44,793
+£30,915
+£13,878
+Scaled Per Year
+£453,000
+£313,000
+£140,000
+Scaled to FTSE 350
+£1.4m
+£928,000
+£417,000
+Scaled to all UK Dark Venues
+£4.2m
+£2.9m
+£1.3m
+47
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 4: Table: Participation in Dark Trades by Participant - % of All Dark Trades
+in Respective Category
+For the categories, ‘any side’, ‘aggressive side’, ‘passive side’, the proportion of trading by each
+participant is calculated for ‘stale’ and ‘not-stale’ such that they sum to 100%. For the category
+‘beneﬁt side’, for the subset of stale trades, the proportion of the time the participant class is on
+the ‘beneﬁt side’ is calculated, such that these do not add to 100%.
+Stale
+Not Stale
+Inside BBO
+Outside BBO
+Any Side
+Non-Colocated
+0.19
+0.18
+0.23
+Colocated
+0.36
+0.34
+0.54
+HFT
+0.45
+0.48
+0.23
+Beneﬁt Side
+Non-Colocated
+0.09
+0.01
+Colocated
+0.12
+0.08
+HFT
+0.96
+0.99
+Aggressive Side
+Non-Colocated
+0.05
+0.11
+Colocated
+0.13
+0.45
+HFT
+0.83
+0.44
+Passive Side
+Non-Colocated
+0.33
+0.34
+Colocated
+0.58
+0.63
+HFT
+0.09
+0.03
+48
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 5: Regression of Price Impact and Stale Trades
+This table reports coeﬃcient estimates of trade by trade regressions of the price impact of dark
+trades in the sample using the speciﬁcation in Formula 5. This model is estimated for three samples,
+the full sample of dark trades (non-stale and stale), only stale trades which beneﬁt the aggressor
+counterparty along with non-stale and only stale dark trades that beneﬁt the passive counterparty
+along with non-stale trades. PriceImpactistd+m is the price impact in basis points for trade i in
+stock s at time t on date d over the 100 millisecond period m. Staleistd takes the value of one if the
+dark trade is stale. aggrHFTistd and aggrColoistd take the value of one if the aggressive side of
+the trade is an HFT or a co-located participant, respectively. passHFTistd and passColoistd is the
+same for passive, respectively. takebookistd takes the value of of one if the aggressor counterparty
+consumes the LSE best bid or ask in the same direction.
+Price Impact (100 Millisecond)
+VARIABLES
+Full Sample
+Aggressive Beneﬁt
+Passive Beneﬁt
+Stale
+0.649***
+0.883***
+-1.095***
+(24.806)
+(30.042)
+(-15.603)
+AggressiveHFT
+1.511***
+1.492***
+1.499***
+(53.381)
+(53.101)
+(53.563)
+AggressiveColo
+0.466***
+0.466***
+0.462***
+(24.989)
+(24.993)
+(25.362)
+PassiveHFT
+-1.444***
+-1.264***
+-1.266***
+(-31.638)
+(-27.414)
+(-28.727)
+PassiveColo
+0.058***
+0.057***
+0.063***
+(4.132)
+(4.059)
+(4.460)
+Consideration
+-0.039***
+-0.039***
+-0.039***
+(-9.150)
+(-9.068)
+(-8.920)
+Spread
+0.016***
+0.016***
+0.015***
+(7.754)
+(7.766)
+(7.347)
+VFTSE
+-0.783***
+-0.775***
+-0.755**
+(-2.668)
+(-2.645)
+(-2.570)
+Takebook
+0.503***
+0.515***
+0.484***
+(5.631)
+(5.801)
+(5.361)
+Constant
+2.425***
+2.402***
+2.357***
+(3.288)
+(3.257)
+(3.189)
+Observations
+723,979
+720,570
+698,862
+R-squared
+0.135
+0.134
+0.126
+Robust t-statistics in parentheses, clustered by date and stock.
+*** p<0.01, ** p<0.05, * p<0.1
+49
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed
+
+Table 6: Event Studies — Impact on Adverse Selection
+This table reports coeﬃcient estimates for the two event studies in the ﬁrst four columns, and
+estimates from trade-level identiﬁers in the last two columns. The regression uses the speciﬁcation
+in Formula 6. The dependent variable, PriceImpactsdv is the trade value weighted price impact in
+basis points for stock s on date d for venue v over the time interval m which is the 100 millisecond
+period before to after the trade and PriceMovesdv is the % of dark trades for which there is a
+change in the midpoint over the 100 millisecond period before and after the trade, for stock s on
+date d for venue v over the time interval m. Eventd is a variable which takes the value of one on
+and after the event in question, and zero otherwise. Treatedsv is a dummy variable which takes the
+value of one for stocks traded on venues which are subject to the market design change, and zero
+otherwise. EventTreatedsdv is the interaction term for venues which are subject to the treatment,
+after the event occurs. uncrosssv takes the value of one for trades that are ﬂagged as Turquoise
+dark uncross trades for stock s date d and venue v. batchsv takes the value of one for trades that
+are ﬂagged as BATS periodic batch auction trades for stock s date d and venue v.
+NASDAQ SIP
+Uncross
+Turq. and BATS
+VARIABLES
+PriceImpact
+% PriceMove
+PriceImpact
+% PriceMove
+PriceImpact
+% PriceMove
+(a)
+(b)
+(a)
+(b)
+(a)
+(b)
+Event
+-0.743
+-5.507
+1.105
+0.103
+(-1.249)
+(-0.440)
+(1.628)
+(1.289)
+Treated
+0.113*
+3.337***
+-0.248***
+-0.091***
+(1.846)
+(2.668)
+(-14.471)
+(-31.660)
+Treated event
+0.012
+1.695***
+-0.126***
+-0.041***
+(1.044)
+(6.895)
+(-5.631)
+(-10.440)
+Uncross
+-1.135***
+-0.379***
+(-31.793)
+(-105.816)
+Batch
+-0.090**
+-0.163***
+(-2.078)
+(-16.269)
+Consideration
+-0.015***
+0.952***
+-0.053***
+-0.022***
+-0.048***
+-0.014***
+(-6.252)
+(-15.553)
+(-2.577)
+(5.118)
+(-6.989)
+(-13.702
+Spread
+-0.000***
+0.000
+0.000*
+-0.000**
+0.016***
+0.000
+(-3.473)
+(1.291)
+(1.820)
+(-2.224)
+(9.501)
+(1.022)
+VIX
+4.758
+46.288
+5.181*
+0.584*
+-1.564**
+-0.400***
+(1.160)
+(0.537)
+(1.754)
+(1.930)
+(-2.454)
+(-2.718)
+Constant
+-16.995
+-183.971
+-12.510
+-0.593
+4.827***
+1.444***
+(-0.942)
+(-0.485)
+(-1.529)
+(-0.712)
+(3.121)
+(4.038)
+Fixed Eﬀects
+Stock
+Stock
+Stock
+Stock
+Stock
+Stock
+Date
+Date
+Date
+Date
+Date
+Date
+Observations
+196,689
+196,689
+37,921
+39,684
+48,079
+54,496
+Adj. R-squared
+0.463
+0.644
+0.143
+0.246
+0.288
+0.324
+Robust t-statistics in parentheses
+Standard errors adjusted for clustering in stock and date
+*** p<0.01, ** p<0.05, * p<0.1
+50
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4157168
+Preprint not peer reviewed

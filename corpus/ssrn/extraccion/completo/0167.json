@@ -1,0 +1,58 @@
+{
+  "doc_id": 167,
+  "titulo": "High-frequency trading and price efficiency: a unified model",
+  "resumen_operativo": "Presenta un modelo teórico unificado sobre el impacto del trading de alta frecuencia (HFT) en la eficiencia de los precios, separando el efecto de tratamiento de información (cómo el HFT procesa los flujos) y el efecto de contenido de información (cómo reaccionan los traders informados). Muestra que el HFT actúa como 'market maker' (opera contra el flujo) cuando domina el ruido, y como 'backrunner' (opera a favor del flujo) cuando domina la información fundamental. Si bien el HFT mejora la eficiencia de precios si los traders informados no cambian su comportamiento, el efecto se vuelve negativo cuando los traders informados responden retirándose del mercado o introduciendo ruido (randomization) para engañar al HFT.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde el trader de alta frecuencia (HFTr) opera en contra de los shocks de demanda observados para beneficiarse de la reversión del precio, típica cuando la varianza del noise trading es alta frente al fundamental.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "price deviation"}
+      ],
+      "cita_textual": "HFTr trades against any demand shock it observes to benefit from this reversion, a strategy referred to as market making."
+    },
+    {
+      "nombre": "backrunning",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia en la que el HFTr opera en la misma dirección que los shocks de demanda para beneficiarse del movimiento del precio, utilizada cuando el trading se debe principalmente a información fundamental.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "fundamental trading"}
+      ],
+      "cita_textual": "HFTr trades with any demand shocks it observes to benefit from this movement, a strategy referred to as backrunning."
+    },
+    {
+      "nombre": "order randomization",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Acción del trader informado consistente en añadir un ruido aleatorio a sus órdenes óptimas para reducir la fracción de la demanda que contiene información, buscando reducir la utilidad esperada del HFT.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "HFTr utility"}
+      ],
+      "cita_textual": "ITr can decide to add a noise of εrt around its optimal demand Qit* to artificially decrease the share of its demand that carries information about Ft. This is randomization."
+    },
+    {
+      "nombre": "information treatment effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El efecto positivo del HFT sobre la eficiencia del precio que proviene de acelerar la incorporación de shocks en los precios, asumiendo que el comportamiento de los traders informados se mantiene constante.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "price efficiency"}
+      ],
+      "cita_textual": "the HFTr trading rule is correct on average, and consequently HFTr enhances the process of shock incorporation into prices. This is the information treatment effect."
+    },
+    {
+      "nombre": "information content effect",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El efecto negativo sobre la eficiencia del precio causado por la reducción del flujo de nueva información debido a que los traders informados reducen su participación o randomizan sus órdenes en respuesta al HFT.",
+      "relaciones": [
+        {"tipo": "EMPEORA_A", "objeto": "price efficiency"}
+      ],
+      "cita_textual": "Both exit and randomization imply that the share of fundamental trading over noise trading falls, decreasing price efficiency. This is the information content effect."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El documento proporciona un marco analítico y teórico sobre las interacciones entre traders de alta frecuencia y traders informados. Al no contener aplicaciones empíricas, backtesting sobre series de tiempo reales ni código ejecutable, su aplicabilidad directa para la construcción de estrategias intradía en el futuro ES es nula o marginal."
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "doc_id": 254,
+  "titulo": "Optimal Statistical Arbitrage for Generalized Ornstein-Uhlenbeck Process with Lévy Stable Distribution",
+  "resumen_operativo": "Extiende el marco de arbitraje estadístico óptimo de Bertram (2010) desde procesos OU Gaussianos a procesos OU generalizados impulsados por distribuciones Lévy estables, que capturan mejor las colas pesadas de los retornos financieros. Deriva expresiones para tiempos de primer paso, retorno esperado por trade y varianza bajo la nueva distribución. Confirma que los puntos óptimos de entrada y salida son simétricos alrededor de la media, consistente con hallazgos Gaussianos previos, y deriva el ratio de Sharpe óptimo para el caso Lévy estable.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Generalized Ornstein-Uhlenbeck Process",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Proceso estocástico de reversión a la media extendido con media variable en el tiempo µ(t) y conducido por un proceso Lévy estable Lt en lugar de movimiento Browniano: dXt = -α(Xt - µ(t))dt + dLt.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Gaussian OU Process"}, {"tipo": "USA", "objeto": "Lévy Stable Distribution"}],
+      "cita_textual": "asset price returns follow a Lévy stable distribution more closely"
+    },
+    {
+      "nombre": "Lévy Stable Distribution",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Familia de distribuciones con colas pesadas caracterizadas por parámetros de estabilidad (α_L) y asimetría (β_L), que modelan mejor los shocks extremos de mercado que las distribuciones Gaussianas.",
+      "relaciones": [{"tipo": "MEJORA_A", "objeto": "Normal Distribution"}, {"tipo": "CAUSA", "objeto": "Heavy Tails in Returns"}],
+      "cita_textual": "It is well known that asset price returns follow a Lévy stable distribution more closely"
+    },
+    {
+      "nombre": "First-Passage Time (Statistical Arbitrage)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo que tarda el spread en ir de un nivel de entrada 'a' a uno de salida 'm' (o viceversa). Bajo Lévy estable, E[T1] ∝ a^{α_L} donde α_L es el parámetro de estabilidad de la distribución.",
+      "relaciones": [{"tipo": "USA", "objeto": "Renewal Theory"}, {"tipo": "CALCULA", "objeto": "Expected Return per Trade"}],
+      "cita_textual": "The first-passage time T1 has a distribution related to the inverse of a Lévy stable distribution"
+    },
+    {
+      "nombre": "Symmetry of Optimal Entry/Exit",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Resultado clave: bajo distribuciones Lévy estables (con media cero), los niveles óptimos de entrada y salida son simétricos (m = -a), generalizando el hallazgo de Bertram (2010) para el caso Gaussiano.",
+      "relaciones": [{"tipo": "EQUIVALE_A", "objeto": "Bertram (2010) Symmetry Result"}, {"tipo": "CONTRADICE_A", "objeto": "Asymmetric Entry/Exit Strategies"}],
+      "cita_textual": "we confirm that optimal entry and exit points lie symmetrically around the mean, consistent with previous Gaussian-based findings"
+    },
+    {
+      "nombre": "Renewal Theory (Trade Cycles)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco teórico donde cada ciclo completo de trade (entrada→salida→entrada) se trata como una renovación, permitiendo aproximar el número esperado de trades por unidad de tiempo como 1/E[T] para horizontes largos.",
+      "relaciones": [{"tipo": "USA", "objeto": "Expected Trade Rate"}, {"tipo": "REQUIERE", "objeto": "First-Passage Time"}],
+      "cita_textual": "The renewal function M(t) denotes the expected number of renewals by time t. Trades would reflect renewals in our case"
+    },
+    {
+      "nombre": "Sharpe Ratio Optimization (Lévy Context)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Optimización numérica del Sharpe ratio S(a, m, c) = (µ(a,m,c) - rf)/σ(a,m,c) bajo el proceso OU generalizado, incorporando la tasa libre de riesgo rf y el parámetro de coste c.",
+      "relaciones": [{"tipo": "USA", "objeto": "Numerical Optimization"}, {"tipo": "APLICA_A", "objeto": "Generalized OU Process"}],
+      "cita_textual": "Numerical methods such as gradient descent or other optimization algorithms can be used to find the optimal values that maximize the expected return and the Sharpe ratio"
+    },
+    {
+      "nombre": "Stationary Process Transformation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica que transforma un proceso OU no estacionario con media variable µ(t) en uno estacionario Zt mediante desviaciones ortogonales: Zt = Yt + f(t) donde f(t) compensa la variación temporal de la media.",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Time-Varying Mean OU"}, {"tipo": "PRODUCE", "objeto": "Stationary Generalized OU"}],
+      "cita_textual": "we can use orthogonal deviations to construct a generalized OU process with stationary mean from one with a time varying mean"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {"nivel": "media", "nota": "Marco teórico aplicable a cualquier frecuencia; las distribuciones Lévy estables son más relevantes para datos de alta frecuencia donde las colas pesadas son más pronunciadas; requiere estimación de parámetros estables."}
+}

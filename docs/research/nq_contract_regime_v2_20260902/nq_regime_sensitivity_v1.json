@@ -1,0 +1,103 @@
+{
+  "schema": "nq_regime_sensitivity_v1",
+  "status": "DIAGNOSTIC_NOT_CERTIFIED",
+  "purpose": "medir si los rolls dependen de las dos piezas que faltaban: normalizacion de mantenimiento y calendario de feriados",
+  "inputs": {
+    "observations": "docs/research/nq_contract_regime_v2_20260902/nq_contract_session_observations_v2.json",
+    "volume_definition": "scan v2 `volume`, que YA excluye ticks de mantenimiento (verificado: v2.volume + v2.volume_in_maintenance == v1.vol_total, y v2.volume_in_maintenance == diagnostico.maintenance_volume)"
+  },
+  "holidays_tested": [
+    20250901,
+    20251127,
+    20251225,
+    20260101,
+    20260119,
+    20260216,
+    20260403,
+    20260525,
+    20260619
+  ],
+  "variant_weekdays_only": {
+    "calendar_days": 237,
+    "rolls": [
+      {
+        "trade_date": 20250917,
+        "contract": "NQ 12-25",
+        "leader_over_current": 3.396162
+      },
+      {
+        "trade_date": 20251216,
+        "contract": "NQ 03-26",
+        "leader_over_current": 1.260126
+      },
+      {
+        "trade_date": 20260317,
+        "contract": "NQ 06-26",
+        "leader_over_current": 1.125767
+      },
+      {
+        "trade_date": 20260616,
+        "contract": "NQ 09-26",
+        "leader_over_current": 2.28679
+      }
+    ],
+    "intervals": [
+      {
+        "contract": "NQ 09-25",
+        "start_trade_date": 20250804,
+        "end_trade_date_exclusive": 20250917
+      },
+      {
+        "contract": "NQ 12-25",
+        "start_trade_date": 20250917,
+        "end_trade_date_exclusive": 20251216
+      },
+      {
+        "contract": "NQ 03-26",
+        "start_trade_date": 20251216,
+        "end_trade_date_exclusive": 20260317
+      },
+      {
+        "contract": "NQ 06-26",
+        "start_trade_date": 20260317,
+        "end_trade_date_exclusive": 20260616
+      },
+      {
+        "contract": "NQ 09-26",
+        "start_trade_date": 20260616,
+        "end_trade_date_exclusive": null
+      }
+    ]
+  },
+  "variant_weekdays_minus_holidays": {
+    "calendar_days": 229,
+    "rolls": [
+      {
+        "trade_date": 20250917,
+        "contract": "NQ 12-25",
+        "leader_over_current": 3.396162
+      },
+      {
+        "trade_date": 20251216,
+        "contract": "NQ 03-26",
+        "leader_over_current": 1.260126
+      },
+      {
+        "trade_date": 20260317,
+        "contract": "NQ 06-26",
+        "leader_over_current": 1.125767
+      },
+      {
+        "trade_date": 20260616,
+        "contract": "NQ 09-26",
+        "leader_over_current": 2.28679
+      }
+    ]
+  },
+  "result": {
+    "roll_dates_identical": true,
+    "roll_contracts_identical": true,
+    "ratios_identical_to_6dp": true
+  },
+  "caveat": "NO certifica el manifiesto. complete_session=True se asume para AISLAR el efecto del calendario; certificarlo sigue requiriendo evidencia de completitud aprobada por Nico."
+}

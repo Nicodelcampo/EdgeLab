@@ -1,0 +1,119 @@
+{
+  "schema": "exact_session_resampling_synthetic_microbenchmark_v1",
+  "environment": {
+    "python": "3.13.14",
+    "numpy": "2.5.3",
+    "host": "local agent sandbox, not Kaggle"
+  },
+  "workload": {
+    "sessions": 57,
+    "whole_session_draws": 10000,
+    "cells": 48,
+    "seed": 17331,
+    "synthetic": true
+  },
+  "measurement": "three isolated subprocess pairs, reversed order on second pair; measured helper calls exclude imports/workload generation, include candidate multiplicity construction; cold is first call, not full-job provisioning; ru_maxrss includes process imports and data",
+  "pairs": [
+    {
+      "pair": 1,
+      "baseline": {
+        "mode": "baseline",
+        "seconds": [
+          0.5148676690005232,
+          0.50967618300092
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51486720
+      },
+      "candidate": {
+        "mode": "candidate",
+        "seconds": [
+          0.14630820200000016,
+          0.12841450199994142
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51556352
+      }
+    },
+    {
+      "pair": 2,
+      "candidate": {
+        "mode": "candidate",
+        "seconds": [
+          0.14169254300031753,
+          0.12847370599956776
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51494912
+      },
+      "baseline": {
+        "mode": "baseline",
+        "seconds": [
+          0.543155723999007,
+          0.5205116640008782
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51494912
+      }
+    },
+    {
+      "pair": 3,
+      "baseline": {
+        "mode": "baseline",
+        "seconds": [
+          0.5475323539994861,
+          0.5219783709999319
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51568640
+      },
+      "candidate": {
+        "mode": "candidate",
+        "seconds": [
+          0.14331362399934733,
+          0.12879166900165728
+        ],
+        "output_sha256": [
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608",
+          "e9131d0e75bafa2e3fc757d28e56d8a0e2bd29cf662956782eef6b9662a71608"
+        ],
+        "peak_rss_bytes": 51658752
+      }
+    }
+  ],
+  "speedup_ratios": {
+    "cold": [
+      3.5190622395901126,
+      3.833340220295078,
+      3.8205185154063206
+    ],
+    "warm": [
+      3.9689924039977393,
+      4.051503457078054,
+      4.052889251658158
+    ]
+  },
+  "median_speedup": {
+    "cold": 3.8205185154063206,
+    "warm": 4.051503457078054
+  },
+  "exact_synthetic_quantile_parity": true,
+  "real_MNQ_parity_verified": false,
+  "automatic_adoption_allowed": false,
+  "scope": "prototype helper microbenchmark, not end-to-end campaign speedup or authorization"
+}

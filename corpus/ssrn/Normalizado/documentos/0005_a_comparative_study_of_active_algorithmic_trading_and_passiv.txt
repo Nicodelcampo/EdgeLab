@@ -1,0 +1,237 @@
+A Comparative Study of Active Algorithmic Trading and 
+Passive Investing 
+Kris Kraack, College of Computing, Georgia Institute of Technology, Atlanta, GA, USA. 
+Abstract — This study compares an active algorithmic trading strategy, a machine learning model 
+comprising both quantitative and sentiment components, with a traditional passive buy-and-hold 
+investment strategy through simulated trading using historical stock data under real-world market 
+conditions. The findings demonstrate that the algorithmic strategy outperforms passive investment 
+consistently on a set of benchmark stocks in different markets. 
+Keywords —Algorithmic Trading, Active Trading, Trading Agents, Quantitative Finance, Trading 
+Strategies, Investment Strategies, Machine Learning, Passive Investing, Risk-adjusted Portfolio 
+Management. 
+1. Introduction 
+In algorithmic trading, machine learning techniques are leveraged to make active trading 
+decisions (Grudniewicz, & Ślepaczuk, 2023). Hedge funds, such as Renaissance Technologies' 
+Medallion Fund have demonstrated that algorithmic strategies can achieve sustained high returns 
+(Zuckerman, 2019). This study evaluates a machine learning-based algorithmic trading strategy, and 
+compares its performance to a passive buy-and-hold investment strategy on the following benchmarks: 
+the S&P 500 Index (SPY), Apple (AAPL), Coca-Cola (KO), and JPMorgan Chase & Co. (JPM). 
+Trading simulations using historical stock market data and real-world market conditions are conducted 
+to evaluate portfolio performance in terms of returns and volatility. The objective is to provide insight 
+into the potential for an active algorithmic trading strategy's potential to consistently outperform a buyand-hold strategy in terms of both returns and risk-adjusted performance. The results will contribute to 
+the conversation on the theoretical effectiveness of machine learning-based agents in stock trading. 
+Hypothesis. An algorithmic machine learning–based trading strategy, integrating quantitative 
+and sentiment analysis, can consistently outperform a passive buy-and-hold investing strategy across 
+benchmark stocks in different market sectors, while also achieving better risk-adjusted returns. 
+2. Model Architecture  
+The model designed for this study is a fusion model architecture that combines quantitative and 
+sentiment-based components. The quantitative component consists of several models that contribute 
+through a voting mechanism to generate trading signals. The sentiment-based component uses natural 
+language processing techniques, based on previous work (Kraack, 2024), as a conceptual foundation for 
+analyzing textual data to capture market sentiment. These components work synergistically to generate 
+trading decisions. Furthermore, the model adapts over time by learning from prior trades by storing and 
+retrieving key-trades in a knowledge base in memory.  
+3. Experiment Design 
+The trading simulation initializes two portfolios with a bankroll equivalent to the price of one 
+share of the chosen benchmark. The passive strategy immediately purchases the stock at market open 
+and holds it until the simulation concludes. The algorithmic strategy either buys, sells, or holds the stock 
+based on its predictions. The simulation exclusively trades one share per transaction, even if cumulative 
+returns would permit buying more or less. This is to maintain consistency and comparability while 
+
+avoiding potential compounding that could skew the returns. A broker commission of at least three 
+euros or 0.10% per trade is applied to mimic real-world transaction costs.  
+To facilitate comparison across different sectors, the following benchmarks are included: the 
+S&P 500 (Index), Apple (Information Technology), Coca-Cola (Consumer Staples), and JPMorgan 
+Chase & Co. (Financials). The training and prediction process follows a walk-forward validation 
+approach. Initially, the model is trained using ten years of historical stock market data, with greater 
+weight applied to more recent data. The model continuously predicts the next day’s trading action (buy, 
+sell, or hold) and is retrained daily while retaining the ten-year rolling window. This cycle repeats to 
+generate daily predictions throughout the chosen backtesting period.  
+5. Experiment Result 
+Table 1 provides a classification report showing the predictive accuracy of the model for each 
+benchmark stock. The model does not employ walk-forward validation, daily retraining, or a knowledge 
+base. Instead, the model was trained using consecutive historical stock data from 2012 to 2022, with 
+20% of the data reserved for validation. At first glance, the results demonstrate good prediction 
+capability, with an overall prediction rate of approximately 81%. However, the 19% error rate is 
+significant and could lead to substantial losses or missed opportunities. These results highlight the 
+importance of retraining and evaluating the model using walk-forward validation, as this approach more 
+accurately captures the temporal dependencies of sequential historical stock data. 
+Table 1 Model Performance on validation set for the benchmarks using 10 years of historical 
+stock data (2012-2022). 
+ 
+5.1. Portfolio Comparison 
+The performance of the algorithmic trading model is evaluated against the passive approach by 
+comparing the cumulative returns over time for each benchmark portfolio. Comparisons are made 
+annually from 2020 to 2024, as well as for the first half of 2025. Figures 1, 2, 3, and 4 show the 
+cumulative return comparisons for each benchmark portfolio with vertical green and red lines indicating 
+buy and sell transactions, respectively. For each benchmark comparison, the algorithmic strategy 
+consistently outperforms the passive investment. The passive strategy only performed better than the 
+algorithmic strategy for JPMorgan Chase & Co. (JPM) in the first quarter of 2024 and 2025. Otherwise, 
+the algorithmic approach provided better returns. Notably, periods of uncertainty with high volatility 
+often lead to successful trading opportunities for the algorithmic approach. 
+ 
+Benchmark 
+Signal Precision 
+Recall 
+F1-score 
+Support 
+Weighted 
+Avg. 
+ 
+S&P 500 (SPY) 
+Buy 
+0.85 
+0.84 
+0.84 
+328 
+ 
+Sell 
+0.77 
+0.79 
+0.78 
+225 
+ 
+0.81 
+  
+Apple (AAPL) 
+Buy 
+0.85 
+0.81 
+0.83 
+299 
+ 
+Sell 
+0.79 
+0.83 
+0.81 
+255 
+ 
+0.82 
+ 
+Coca-Cola (KO) 
+Buy 
+0.87 
+0.85 
+0.86 
+310 
+ 
+Sell 
+0.81 
+0.84 
+0.83 
+240 
+ 
+ 
+0.84 
+ 
+JPMorgan Chase & Co (JPM) 
+Buy 
+0.79 
+0.77 
+0.78 
+301 
+ 
+Sell 
+0.73 
+0.76 
+0.74 
+249 
+ 
+0.76 
+
+  
+Fig. 1. Cumulative portfolio return comparison of the algorithmic and passive strategies for S&P500. 
+ 
+  
+Fig. 2. Cumulative portfolio return comparison of the algorithmic and passive strategies for Apple. 
+ 
+
+  
+Fig. 3. Cumulative portfolio return comparison of the algorithmic and passive strategies for Coca-Cola. 
+ 
+  
+Fig. 4. Cumulative portfolio return comparison of the algorithmic and passive strategies for JPMorgan 
+Chase & Co. 
+ 
+ 
+
+5.2. Portfolio Statistics 
+Table II shows the average portfolio performance metrics from 2020 to 2025, including daily 
+returns, the multiplication factor, and the annualized Sharpe ratio. The results demonstrate that, for each 
+metric, the algorithmic strategy outperforms passive investing. 
+Table 2 Average portfolio metric comparison for the algorithmic and passive strategies for years 
+2020-2025. 
+ 
+Conclusion 
+The experiment concluded that the active algorithmic trading strategy consistently achieves 
+higher portfolio  returns than a passive investment approach across all benchmark stocks. It also 
+demonstrated higher Sharpe ratio values across all benchmarks, indicating better risk-adjusted returns. 
+Therefore, the hypothesis is confirmed. The model effectively captured market dynamics across 
+different sectors, demonstrating its robust predictive capability under realistic simulated trading 
+constraints. 
+The fixed position size of one share per trade was deliberately chosen to eliminate compounding 
+to ensure comparability of the strategies across benchmarks. The experiments conducted only simulated 
+one year at a time without reinvesting earnings. Incorporating compounding would potentially provide 
+further support for the hypothesis.  
+Future work involves deploying the model in real-world live market trading to further validate 
+its effectiveness beyond theoretical simulations using historical stock data. 
+ 
+ 
+ 
+ 
+ 
+ 
+Stock 
+Strategy 
+Daily Return 
+(avg.) 
+Annualized 
+Sharp 
+(avg.) 
+Multiplication 
+Factor (avg.) 
+ 
+S&P 500 (SPY) 
+Passive 
+0.241006 
+1.074879 
+1.14666 
+Algorithmic 1.330655 
+6.5404 
+1.743333 
+ 
+Apple (AAPL) 
+Passive 
+0.068823 
+0.870722 
+1.276667 
+Algorithmic 0.775414 
+6.211824 
+2.271667 
+ 
+Coca-Cola (KO) 
+Passive 
+0.023335 
+0.644519 
+1.076667 
+Algorithmic 0.180558 
+6.91403 
+1.746667 
+ 
+JPMorgan Chase & Co (JPM) 
+Passive 
+0.1424 
+0.925014 
+1.166667 
+Algorithmic 0.739547 
+6.102658 
+2.09 
+
+References 
+Grudniewicz, J., & Ślepaczuk, R. (2023). Application of machine learning in algorithmic investment 
+strategies on global stock markets. Research in International Business and Finance, 66, 102052. 
+https://doi.org/10.1016/j.ribaf.2023.102052  
+Kraack, K. (2024). A Multimodal Emotion Recognition System: integrating Facial Expressions, Body 
+Movement, Speech, and Spoken Language. Arxiv. https://doi.org/10.48550/arXiv.2412.17907  
+Zuckerman, G. (2019 The man who solved the market: How Jim Simons launched the quant revolution. 
+Penguin Press. 

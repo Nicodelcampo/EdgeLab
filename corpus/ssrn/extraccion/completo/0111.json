@@ -1,0 +1,106 @@
+{
+ "doc_id": 111,
+ "titulo": "Efficient or not? Price measures in market microstructure",
+ "resumen_operativo": "El paper evalúa sistemáticamente las propiedades cualitativas y cuantitativas de cinco medidas de precio comunes en microestructura de mercado (precio de transacción, midpoint, QW midpoint, CQW midpoint y micro-price) para aproximar el valor real de un activo. Utiliza datos de LOB (Limit Order Book) de las acciones del DAX40 y usa la predictibilidad de retornos como medida inversa de eficiencia. Concluye que medidas sofisticadas como el micro-price y el CQW midpoint incorporan la información pública en menos de 2 segundos, mientras que el midpoint y el precio de transacción tardan más de 30 segundos, generando sesgos (ej. sobreestimación de costos de transacción) si se usan como proxies.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "transaction price",
+   "tipo": "metrica",
+   "definicion_en_contexto": "El precio real al que se ejecuta una transacción entre un comprador y un vendedor.",
+   "relaciones": [
+    {
+     "tipo": "APROXIMA",
+     "objeto": "true value"
+    }
+   ],
+   "cita_textual": "the actual price at which a trade is executed between a buyer and a seller."
+  },
+  {
+   "nombre": "midpoint",
+   "tipo": "metrica",
+   "definicion_en_contexto": "El promedio entre el mejor precio de compra (bid) y venta (ask) disponible en el libro de órdenes.",
+   "relaciones": [
+    {
+     "tipo": "APROXIMA",
+     "objeto": "true value"
+    }
+   ],
+   "cita_textual": "the average of the best available bid and ask prices."
+  },
+  {
+   "nombre": "quantity-weighted (QW) midpoint",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Ajusta la ponderación de los mejores precios de bid y ask basándose en sus respectivos volúmenes (imbalance del order book).",
+   "relaciones": [
+    {
+     "tipo": "MEJORA",
+     "objeto": "midpoint"
+    }
+   ],
+   "cita_textual": "adjusts the weighting of the best bid and ask prices based on their respective volumes."
+  },
+  {
+   "nombre": "constrained quantity-weighted (CQW) midpoint",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Una versión conservadora del QW midpoint donde la corrección está limitada a la mitad del tick size, haciéndolo robusto bajo desbalances extremos.",
+   "relaciones": [
+    {
+     "tipo": "MEJORA",
+     "objeto": "quantity-weighted (QW) midpoint"
+    },
+    {
+     "tipo": "APROXIMA",
+     "objeto": "true value"
+    }
+   ],
+   "cita_textual": "adjusts the midpoint in a more conservative manner... the correction is capped at half the tick size, ensuring that the measure remains a reasonable approximation of the true value"
+  },
+  {
+   "nombre": "micro-price",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida de precio propuesta que incorpora los movimientos futuros esperados del precio como una función del spread bid-ask actual y el imbalance del order book, siendo un martingala por construcción.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "order book imbalance"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "bid-ask spread"
+    }
+   ],
+   "cita_textual": "incorporates expected future price movements and is... a function f of the current bid-ask spread and the order book imbalance."
+  },
+  {
+   "nombre": "return predictability",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Se utiliza como una medida inversa de eficiencia; una mayor predictibilidad de los retornos a muy corto plazo indica que la medida de precio es menos eficiente porque aún no ha incorporado la información pasada.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "price efficiency"
+    }
+   ],
+   "cita_textual": "we employ the predictability of future stock returns, calculated using the five different price measures, as our inverse measure of price efficiency."
+  }
+ ],
+ "hallazgos": [
+  {
+   "descripcion": "El precio de transaccion y el midpoint son ineficientes a alta frecuencia, tardando más de 30 segundos en asimilar información del mercado.",
+   "impacto": "Genera sesgos al evaluar la microestructura de mercado."
+  },
+  {
+   "descripcion": "El micro-price y el CQW midpoint logran asimilar información pública en 2 segundos o menos.",
+   "impacto": "Proveen estimadores precisos y de baja latencia del valor real de un activo."
+  },
+  {
+   "descripcion": "Usar el midpoint como estimador de valor real conlleva a una sobreestimación sistemática de los costos de transacción efectivos.",
+   "impacto": "Invalidación o distorsión de resultados y cálculos de costos operacionales de los agentes."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El análisis se centra en la eficiencia a nivel microsegundos/segundos y proporciona evidencia empírica robusta sobre qué medidas de precio utilizar (CQW midpoint o micro-price) para calcular valores reales. Esto es ideal y crítico para operar algoritmos intradía, modelar transacciones HFT, calcular liquidez y minimizar el sesgo en backtests intradía."
+ }
+}

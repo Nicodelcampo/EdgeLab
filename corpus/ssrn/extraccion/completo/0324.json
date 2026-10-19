@@ -1,0 +1,74 @@
+{
+  "doc_id": 324,
+  "titulo": "Synthetic Data Generation for Commodity Trading: Quantitative Framework for Urals Crude Oil Market Analysis",
+  "resumen_operativo": "Framework de generación de datos sintéticos para commodities (Urals, Brent, MOEX, NWEMURL) usando distribución normal multivariada que preserva media y estructura de covarianza de los datos reales. Validación con 4 tests estadísticos: KS (Urals p=0.467, Brent p=0.906, MOEX p=0.066), Jarque-Bera (todas >0.58), Mann-Whitney, y correlación. 15/16 tests pasan (93.75%). Tail risk: VaR sintético es conservador (error 5-34% en percentiles extremos). Correlaciones cross-market preservadas dentro de 7 bps. Propone aplicaciones: VaR/CVaR backtesting, stress testing, position sizing, y data augmentation para ML. Limitación principal: asume Gaussianidad, no captura volatility clustering ni dependencias no lineales. Slides/presentación más que paper.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "Value at Risk",
+      "tipo": "metrica",
+      "definicion_en_contexto": "VaR sintético validado contra VaR real: estimaciones conservadoras en colas extremas (error 34% en percentil 1, 5% en percentil 95). El sesgo conservador proporciona margen de seguridad para position sizing y regulatory capital.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "tail risk"}],
+      "cita_textual": "Synthetic VaR estimates are conservative, providing additional safety margin for position sizing, hedge ratios, and regulatory capital calculations."
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Generación de datos sintéticos vía Cholesky decomposition de la matriz de covarianza Σ = LLᵀ, muestreando de N(μ, Σ). n=234 observaciones semanales (4 años).",
+      "relaciones": [{"tipo": "APLICA_A", "objeto": "Value at Risk"}],
+      "cita_textual": "Xsynthetic ∼ N(μreal, Σreal) where μreal = mean of URALS, BRENT, MOEX, NWEMURL and Σreal = sample covariance matrix capturing correlations"
+    },
+    {
+      "nombre": "PCA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "No usado explícitamente, pero la descomposición de Cholesky para preservar estructura de covarianza es un enfoque relacionado con PCA para generación de datos sintéticos correlacionados.",
+      "relaciones": [],
+      "cita_textual": ""
+    },
+    {
+      "nombre": "tail risk",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Preservación de tail risk en datos sintéticos: VaR al 99% capturado con error de 34% (conservador). Los datos sintéticos tienden a sobreestimar VaR en colas extremas, lo cual es deseable para risk management.",
+      "relaciones": [{"tipo": "MIDE", "objeto": "Value at Risk"}],
+      "cita_textual": "Extreme tail (1st percentile): 34% error (conservative bias → good for risk mgmt)"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Mitigado mediante datos sintéticos que permiten data augmentation sin exponer estrategias propietarias. Los datos sintéticos eliminan data leakage y look-ahead bias en validación de modelos ML.",
+      "relaciones": [{"tipo": "MITIGA", "objeto": "look-ahead bias"}],
+      "cita_textual": "Train commodity price forecasting models. Eliminate data leakage and look-ahead bias. Benchmark against real data performance."
+    },
+    {
+      "nombre": "LSTM",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mencionado como aplicación de datos sintéticos: entrenar LSTM/RNN con datos augmentados para mejorar generalización de modelos de forecasting de commodities.",
+      "relaciones": [{"tipo": "USA", "objeto": "deep learning"}],
+      "cita_textual": "Increase dataset size for deep learning. LSTM/RNN training on augmented samples."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El generador de datos sintéticos basado en distribución normal multivariada logra 96% de similitud estadística con datos reales de commodities. 15 de 16 tests estadísticos pasan (93.75% pass rate). KS tests: Urals p=0.467, Brent p=0.906, MOEX p=0.066. Solo NWEMURL falla KS (p=0.049).",
+      "mercado": "Commodities (Urals crude, Brent crude, MOEX index, NWEMURL crack spread)",
+      "periodo": "4 años de datos semanales (234 observaciones)",
+      "magnitud": "KS p-values: URALS 0.467, BRENT 0.906, MOEX 0.066, NWEMURL 0.049; JB tests: todas p>0.58; Correlación cross-market preservada dentro de 7 bps (mean absolute error 4.3 bps)",
+      "condiciones": "234 observaciones semanales; supuesto de Gaussianidad (limitación); sin captura de volatility clustering ni dependencias no lineales",
+      "robustez": "baja",
+      "cita_textual": "96% statistical similarity between original and synthetic data"
+    },
+    {
+      "afirmacion": "El VaR sintético es conservador en colas extremas: error de 34% en percentil 1 (99% VaR), 5% en percentil 5 (95% VaR). Esto proporciona margen de seguridad adicional para position sizing y cálculos de capital regulatorio.",
+      "mercado": "Urals y Brent crude oil",
+      "periodo": "4 años semanales",
+      "magnitud": "1st percentile VaR error: URALS 34% (3.9e6 real vs 5.3e6 synthetic), BRENT 19% (29.3 vs 34.9); 95th percentile: 5% error; 99th: 3-6% error",
+      "condiciones": "Método basado en distribución normal multivariada; datos sintéticos no capturan eventos de cola no Gaussianos",
+      "robustez": "baja",
+      "cita_textual": "Extreme tail (1st percentile): 34% error (conservative bias ⇒ good for risk mgmt). Normal range (95% VaR): 5% error (excellent precision)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "Framework para commodities con datos semanales, no intradía. El concepto de generación de datos sintéticos para backtesting es transferible a datos intradía de ES futures, pero el supuesto de Gaussianidad es particularmente problemático para datos de alta frecuencia."
+  }
+}

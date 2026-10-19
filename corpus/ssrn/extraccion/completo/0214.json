@@ -1,0 +1,236 @@
+{
+  "doc_id": 214,
+  "titulo": "Machine Learning-Based Pairs Trading Strategy with Multivariate Pairs Formed with Multi-objective Optimization",
+  "resumen_operativo": "Este paper propone formar pares de trading mediante optimización multi-objetivo con NSGA II y NSGA III, maximizando beneficio y minimizando riesgo simultáneamente. Los pares bi-objetivo univariados (BOUV) rinden 9,73% anual con costos de transacción, superando al benchmark y al SPY durante el crash COVID de 2020. Una estrategia de forecasting del spread con XGBoost alcanza 23,8% anual prediciendo la dirección del spread, aunque los pares multivariados resultan sistemáticamente inferiores a los univariados tradicionales.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de arbitraje market-neutral que monitorea el spread entre dos o más activos que se mueven juntos: se abre posición cuando el spread se desvía de su equilibrio y se cierra cuando revierte a la media.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "spread"},
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Pairs trading is one of the most popular arbitrage investment strategies. By monitoring a pair of two assets that closely follow each other, the trader acts when the pair presents an imbalance, profiting when the stocks converge to their equilibrium."
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Propiedad estadística que garantiza que el spread de un par es estacionario, proporcionando una asociación econométricamente más fiable entre los activos que el método de distancia, aunque el paper muestra que la mayoría de pares pierden la cointegración en el período de test.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "spread"},
+        {"tipo": "EQUIVALE_A", "objeto": "mean reversion"},
+        {"tipo": "SE_OPONE_A", "objeto": "look-ahead bias"}
+      ],
+      "cita_textual": "If two price series are cointegrated, their spread, given by st = xt − βyt, is stationary, where β is the cointegration factor."
+    },
+    {
+      "nombre": "spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia normalizada entre los precios de los componentes de un par. Se monitorea su desviación respecto a la media histórica móvil de 3 meses para generar señales de entrada cuando cruza ±2 desviaciones estándar y de salida al revertir a la media.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"},
+        {"tipo": "MIDE", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "cointegration"}
+      ],
+      "cita_textual": "The pair's spread is monitored and, when it diverges by more than two times its standard deviation from the mean, the trade is opened. When the spread converges to its mean, the trade is closed."
+    },
+    {
+      "nombre": "multi-objective optimization",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Formulación de la formación de pares como un problema con objetivos contrapuestos: minimizar cointegración (riesgo) y maximizar volatilidad del spread y número de cruces por cero (beneficio). Resuelto con algoritmos genéticos elitistas NSGA II (2 objetivos) y NSGA III (4 objetivos).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "NSGA II"},
+        {"tipo": "USA", "objeto": "genetic algorithm"},
+        {"tipo": "MEJORA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "Pairs will be formed through a Multi-objective Optimization Problem (MOOP), and Genetic Algorithms (GA) will be used to form the best possible pairs."
+    },
+    {
+      "nombre": "NSGA II",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo genético elitista de referencia para optimización multi-objetivo con 2 funciones objetivo. En este paper se usa con población de 50 individuos, 80 generaciones, selección por torneo y crossover de dos puntos para formar pares bi-objetivo (BOUV, BOMV).",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "genetic algorithm"},
+        {"tipo": "APLICA_A", "objeto": "multi-objective optimization"},
+        {"tipo": "USA", "objeto": "pairs trading"},
+        {"tipo": "MEJORA_A", "objeto": "cointegration"}
+      ],
+      "cita_textual": "Since its introduction in Deb et al. (2002), NSGA II is the reference when it comes to multi-objective optimization."
+    },
+    {
+      "nombre": "genetic algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de búsqueda evolutiva que representa cada par como un cromosoma binario de tamaño 2N, donde cada gen indica la pertenencia de un activo a uno de los dos componentes del par. El elitismo garantiza que las mejores soluciones no se pierdan entre generaciones.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "multi-objective optimization"},
+        {"tipo": "USA", "objeto": "NSGA II"}
+      ],
+      "cita_textual": "Given the exponentially growing solution space induced by the combinatorial nature of multivariate pairs and the conflicting objectives that guide the formation of pairs, a GA will be employed in the Pair Formation phase."
+    },
+    {
+      "nombre": "XGBoost",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de gradient boosting usado para predecir el spread día-siguiente con features técnicas (SMA5/10/15, EMA9, RSI, MACD). Reentrenado cada 5 días con early stopping. Obtiene la mejor rentabilidad del paper (23,8% anual) al predecir correctamente la dirección del spread el ~59% de las veces.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "ARIMA"},
+        {"tipo": "PARTE_DE", "objeto": "gradient boosting"},
+        {"tipo": "USA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "XGBoost Chen & Guestrin (2016) provides a novel take on gradient boosting frameworks. It will be used by virtue of being highly flexible and capable of dealing with massive and complex data sets."
+    },
+    {
+      "nombre": "ARIMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico autorregresivo de media móvil integrada con configuración p=5, d=1, q=0 usado como baseline de forecasting. Reentrenado diariamente. Predice peor que XGBoost la dirección del spread (~31% de acierto), resultando en pérdidas drásticas del 34,25% anual.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "XGBoost"},
+        {"tipo": "USA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "The ARIMA model was selected due to its simplicity and proven robustness in a wide field of forecasting applications. Despite not being able to capture non-linear patterns in data, it will provide an interesting comparison to the other ML model selected."
+    },
+    {
+      "nombre": "half-life",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Tiempo estimado que tarda el spread de un par en revertir a su media. Minimizar el half-life es uno de los 4 objetivos en la formulación multi-objetivo (NSGA III), ya que half-lives cortas implican oportunidades de trading más frecuentes.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "mean reversion"},
+        {"tipo": "PARTE_DE", "objeto": "multi-objective optimization"}
+      ],
+      "cita_textual": "The half-life reflects how much time the pair takes to revert to its mean. By minimizing the half-life and maximizing the spread's volatility, the pair presents frequent and valuable trading opportunities."
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Máxima pérdida observada desde un pico hasta un valle del portfolio. Los pares BOUV presentan un MDD de 5,57% en 2020, inferior al del SPY, mientras que XGBoost logra un MDD promedio de solo 5,10% frente al 7,42% de BOUV.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "pairs trading"},
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Maximum Drawdown: maximum observed loss from a peak to a trough of a portfolio."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "dato",
+      "definicion_en_contexto": "Costos explícitos de 8 bps (comisiones de broker y fees de exchange), implícitos de 20 bps (slippage e impacto de mercado), y un fee diario de short rental del 1% anual. Estos costos se incorporan en el backtest para aproximar condiciones reales de trading.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "REQUIERE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "The costs associated with each market operation silently erase the potential profit and should not be ignored. Table 6 displays the fees considered, based on the estimations in Do & Faff (2011)."
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de validación out-of-sample que reentrena el modelo cada N días con datos pasados para generar la predicción del día siguiente. ARIMA se reajusta diariamente y XGBoost cada 5 días, usando una ventana deslizante de 3 años de formación y 1 año de test.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "USA", "objeto": "XGBoost"},
+        {"tipo": "USA", "objeto": "ARIMA"}
+      ],
+      "cita_textual": "Given the sequential dependence intrinsic to time series, a walk forward validation is used for both models. For each N days of the testing period, the model is fitted to past observations and the day-ahead prediction is computed."
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo introducido al normalizar el spread usando información futura para calcular media y desviación estándar. El paper usa una ventana móvil de 63 días (3 meses) con solo datos pasados, ya que conocer el rango futuro de la señal otorgaría una ventaja injusta y sesgaría positivamente los resultados.",
+      "relaciones": [
+        {"tipo": "CONTRADICE_A", "objeto": "walk-forward validation"},
+        {"tipo": "MITIGA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "Looking into future values results in Look Ahead Bias, and it is far from a trivial detail: µs and σs determine the entry/exit thresholds for the strategy... knowing the range of values of the future signal constitutes an unfair advantage."
+    },
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de inversión que explota ineficiencias de precio relativas entre activos con expectativa de reversión a la media, siendo market-neutral por construcción. El paper demuestra que con optimización multi-objetivo y forecasting se puede batir al mercado incluso en períodos de crash.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"},
+        {"tipo": "REQUIERE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "Pairs trading (PT) was introduced mid 80's and is one of the most popular arbitrage strategies. PT is characterized by being market neutral, as it attempts to avoid systematic risk and be profitable both in bullish and bearish markets."
+    },
+    {
+      "nombre": "gradient boosting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de ensemble learning basada en árboles de decisión que construye modelos secuencialmente corrigiendo errores residuales. El paper cita a Krauss et al. (2017) para justificar que los frameworks basados en árboles producen resultados superiores a redes neuronales en statistical arbitrage.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "XGBoost"},
+        {"tipo": "USA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Krauss et al. (2017) concludes that frameworks that rely on trees produce superior results compared to ANNs such as RNNs, while being faster to train."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Los pares bi-objetivo univariados (BOUV) formados con NSGA II rinden en promedio 9,73% anual entre 2018 y 2021, con un retorno total acumulado del 41,25% sobre el capital inicial y un MDD máximo de 11,23%.",
+      "mercado": "S&P 500 Real Estate sector",
+      "periodo": "2018-2021",
+      "magnitud": "ROI promedio anual 9,73%; ROI total 41,25%; MDD máximo 11,23%",
+      "condiciones": "Pares univariados cointegrados en formación, sectores homogéneos, costos de transacción explícitos (8 bps) + implícitos (20 bps) + short rental (1% anual), umbrales de entrada/salida fijos a ±2σ con media móvil 3 meses.",
+      "robustez": "alta",
+      "cita_textual": "The BOUV pairs outperformed the others by a considerable margin, revealing to be the superior technique and yielding 9, 73% yearly on average."
+    },
+    {
+      "afirmacion": "La estrategia de forecasting basada en XGBoost obtiene un retorno del 23,80% anual promedio en 2018-2019 (49,24% acumulado en 2 años), con un MDD de solo 5,10% promedio, superando tanto al mejor portfolio de pares BOUV como al índice SPY.",
+      "mercado": "S&P 500 Real Estate sector (pares BOUV)",
+      "periodo": "2018-2019",
+      "magnitud": "ROI anual 23,80%; ROI acumulado 2 años 49,24%; MDD promedio 5,10% (4,84% en 2018, 5,36% en 2019)",
+      "condiciones": "Pares BOUV previamente formados, forecasting diario del spread con XGBoost reentrenado cada 5 días, features técnicas (SMA, EMA, RSI, MACD), costos de transacción incluidos, estrategia trend-based con filtro de costos.",
+      "robustez": "media",
+      "cita_textual": "XGBoost obtains the best trading results, yielding 49, 24% of profit over the 2 years. Furthermore, it also outperforms the BOUV pairs. Additionally, the XGBoost portfolio has the lowest MDD."
+    },
+    {
+      "afirmacion": "Los pares multivariados (BOMV y MOMV) obtienen retornos negativos: -7,67% y -6,94% anual respectivamente, con MDDs máximos de 32,50% y 29,60%, demostrando que aumentar el número de activos por componente del par empeora sistemáticamente los resultados.",
+      "mercado": "S&P 500 Real Estate sector",
+      "periodo": "2018-2021",
+      "magnitud": "BOMV ROI anual -7,67%, MDD 32,50%; MOMV ROI anual -6,94%, MDD 29,60%",
+      "condiciones": "Pares multivariados de hasta 5 activos por componente, costos de transacción incluidos, mismo sector, algoritmo NSGA II y III.",
+      "robustez": "alta",
+      "cita_textual": "Not only the returns are much worse, but also the MDD are larger. This conclusion corroborates the finding of Goldkamp & Dehghanimohammadabadi (2019): univariate pairs present themselves as more profitable."
+    },
+    {
+      "afirmacion": "La gran mayoría de los pares no mantienen la relación de cointegración en el período de test: en 2020 solo 1 de 6 pares BOUV y 0 de 23 BOMV permanecen cointegrados. Cero pares multivariados están cointegrados en ningún año de test.",
+      "mercado": "S&P 500 Real Estate sector",
+      "periodo": "2018-2021 (test anual)",
+      "magnitud": "Solo entre 0% y 21% de pares cointegrados en test según año y tipo; 0/23 BOMV y 0/12 MOMV en 2020",
+      "condiciones": "Test de cointegración de Engle-Granger aplicado en la ventana de test después de formar los pares en el período de formación previo.",
+      "robustez": "media",
+      "cita_textual": "The vast majority of pairs, no matter the formation technique used, are not cointegrated, which raises the hypothesis that cointegration is not the best criterion to form pairs."
+    },
+    {
+      "afirmacion": "Entre el 58,33% y el 77,82% de los pares no convergen antes del cierre del año de trading. Los pares no convergentes, forzados a cerrar en el último día, generan picos negativos masivos que convierten años que iban positivos en pérdidas.",
+      "mercado": "S&P 500 Real Estate sector",
+      "periodo": "2018-2021",
+      "magnitud": "BOUV: 58,33% non-convergent promedio; MOUV: 77,82% non-convergent promedio; SOUV: 69,67% non-convergent promedio",
+      "condiciones": "Estrategia de umbrales fijos con cierre forzado al final de cada año de trading sin reinversión intra-anual.",
+      "robustez": "media",
+      "cita_textual": "The percentage of non-convergent pairs is significant across all types, with the smallest average percentage being 58, 33% for BOUV pairs (not surprisingly, the best performing overall), and the biggest 78, 82% for MOUV."
+    },
+    {
+      "afirmacion": "El portfolio BOUV supera al índice SPY en 2020 (año del crash COVID-19) con un ROI del 26,67% frente a un MDD de solo 5,57%, confirmando la propiedad market-neutral y la robustez del pairs trading ante crashes de mercado.",
+      "mercado": "S&P 500 Real Estate sector vs SPY",
+      "periodo": "2020",
+      "magnitud": "BOUV ROI 2020: 26,67%; BOUV MDD 2020: 5,57% (inferior al SPY)",
+      "condiciones": "Estrategia de pares bi-objetivo univariados con umbrales ±2σ, costos de transacción incluidos, en un año con crash severo de mercado en marzo 2020.",
+      "robustez": "alta",
+      "cita_textual": "The PT strategy outperforms the market, not only having a bigger ROI but also a lower MDD... Given that 2020 was characterized by the March crash, consequence of the COVID-19 pandemic, this result confirms the idea found in the literature that PT is robust to market crashes."
+    },
+    {
+      "afirmacion": "XGBoost predice correctamente la dirección del spread el 59,3% de las veces en promedio (59,9% en 2018, 58,7% en 2019), mientras que ARIMA solo acierta el 31,9% (31,1% en 2018, 32,7% en 2019), quedando por debajo del 50% que sería el azar.",
+      "mercado": "S&P 500 Real Estate sector (pares BOUV)",
+      "periodo": "2018-2019",
+      "magnitud": "XGBoost dirección correcta: 59,9% (2018), 58,7% (2019); ARIMA dirección correcta: 31,1% (2018), 32,7% (2019)",
+      "condiciones": "Modelos de forecasting day-ahead del spread, ARIMA(5,1,0) reentrenado diariamente, XGBoost (n=400, max_depth=8, η=0.05) reentrenado cada 5 días con walk-forward validation.",
+      "robustez": "media",
+      "cita_textual": "The low percentage of correctly guessed directions has an additional implication: as the forecasting strategy is based on the predicted trend, the consecutive bad predictions compound into a disastrous strategy, justifying the substandard performance of the ARIMA portfolio."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "El paper opera con señales diarias (day-ahead forecasting), medias móviles de 3 meses y rebalanceo diario, sin ninguna mención a frecuencias intradía, por lo que la estrategia no es directamente aplicable a trading intradiario sin adaptación significativa."
+  }
+}

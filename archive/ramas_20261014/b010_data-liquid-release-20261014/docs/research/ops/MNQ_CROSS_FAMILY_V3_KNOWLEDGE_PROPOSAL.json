@@ -1,0 +1,92 @@
+{
+  "schema": "crossfamily_v3_knowledge_proposal_v1",
+  "status": "PROPOSED_REVIEWED_AGGREGATES_NOT_CANONICAL",
+  "outcomes_inspected": true,
+  "job": {
+    "account": "nicolasbuttaro",
+    "source_commit": "3f3039c09a75eb12b5f887a3506cda36844a54a6",
+    "bundle_sha256": "0775440f6c061ecd7bb8f762b7877625361a2ae90dd417e0bfebf068a4abfa78",
+    "plan_sha256": "a00f0b5a244a55bbd5f891952d97db04cc6d6468651201fa0a4f00523eda1782",
+    "kernel_id": 138540378,
+    "version": 1
+  },
+  "receipt_sha256": "8ce5e384c4b8c2bb4d4eb797a6d52e88c0eb03a55f89c9dc634e63019187a53b",
+  "available_sessions": 10,
+  "training_sessions": 2,
+  "common_anchors": 70544,
+  "all144_zone_model_equal_session_means_worse_than_continuous": true,
+  "stage_comparisons": [
+    {
+      "comparison": "DENSITY_MINUS_CONTINUOUS",
+      "improved_equal_session_pair_means": 0,
+      "pairs": 18,
+      "delta_brier_x1000_min": 0.43328367485248065,
+      "delta_brier_x1000_max": 2.0032736198473446
+    },
+    {
+      "comparison": "GEOMETRY_MINUS_GEOMETRY_CC",
+      "improved_equal_session_pair_means": 2,
+      "pairs": 18,
+      "delta_brier_x1000_min": -0.5413741072109516,
+      "delta_brier_x1000_max": 3.1090921439436436
+    },
+    {
+      "comparison": "ARRIVAL_MINUS_ARRIVAL_CC",
+      "improved_equal_session_pair_means": 17,
+      "pairs": 18,
+      "delta_brier_x1000_min": -1.7325832699878763,
+      "delta_brier_x1000_max": 0.2590421508416165
+    },
+    {
+      "comparison": "INTERACTION_MINUS_INTERACTION_CC",
+      "improved_equal_session_pair_means": 4,
+      "pairs": 18,
+      "delta_brier_x1000_min": -0.17953259350868978,
+      "delta_brier_x1000_max": 1.0841130367235927
+    },
+    {
+      "comparison": "INTERACTION_MINUS_MIRROR_FULL",
+      "improved_equal_session_pair_means": 7,
+      "pairs": 18,
+      "delta_brier_x1000_min": -1.7556535305816445,
+      "delta_brier_x1000_max": 1.4712313232938117
+    }
+  ],
+  "dense_coincidence_example": {
+    "pair": "A1×B1",
+    "inside_both_anchors": 28211,
+    "common_anchors": 70544,
+    "inside_both_percent": 39.990644136992515,
+    "reference_A2_B2_inside_both_anchors": 12,
+    "interpretation": "more coincidence support is not more predictive value; exposure age<=600s, not native AVZ liveness"
+  },
+  "rarity_example": {
+    "cut": "BOTH absorption/exhaustion proxy state",
+    "anchors": 16,
+    "support_sessions": 8,
+    "reason": "too sparse and overlapping for edge claim; proxies not mechanism truth"
+  },
+  "operational_findings": {
+    "original_global_capture_cap": 400000,
+    "v3_max_selected_session_mutations_processed": 426387,
+    "v3_peak_pending_mutations": 2141,
+    "complete_host_seconds": 2151.417003641,
+    "complete_runner_seconds": 2139.216287517,
+    "runner_peak_rss_bytes": 1784889344,
+    "BT2A_seconds": 986.010033169982,
+    "fit_seconds": 4.972602824999967,
+    "no_speedup_ratio_claimed_vs_aborted_predecessors": true,
+    "V1_V2_guard_scope": "global accumulated across nine configs; profile_index was active producer when exceeded, not exclusive origin of all records"
+  },
+  "limitations": [
+    "Previously inspected development calendar, two training sessions, ten available evaluation sessions, no independent confirmation",
+    "Overlapping anchors/scenario cuts; no IID inference or winner promotion",
+    "Arrival improves matched-capacity control in17of18means, not net performance against simpler continuous baseline",
+    "Mirror same-trigger reflection, not independent zone-free causal creator",
+    "Near-NT8 exploratory parity accepted, not measured100percent",
+    "No true AVZ liveness/physical first touch/latent absorption mechanism truth"
+  ],
+  "canonical_brain_written": false,
+  "holdout_opened": false,
+  "pnl": false
+}

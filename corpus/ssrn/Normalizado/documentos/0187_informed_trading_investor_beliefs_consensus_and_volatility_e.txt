@@ -1,0 +1,3268 @@
+Title:
+Informed trading, investor beliefs consensus and volatility: Evidence from the Limit Order 
+Book dynamics during COVID-19 and short-selling ban
+Authors:
+Sandra Ferreruelaa,b , Daniel Martína,c
+a Department of Accounting and Finance, Universidad de Zaragoza, Facultad de Economía y 
+Empresa, Gran Vía 2, 50005 Zaragoza, Spain.
+b Research Institute on Employment, Digital Society and Sustainability (IEDIS), Universidad 
+de Zaragoza, Facultad de Economía y Empresa, Gran Vía 2, 50005 Zaragoza, Spain. email: 
+sandrafg@unizar.es 
+ORCID 0000-0001-8760-9350 
+c CESTE International Business School, Paseo Infantes de España 3, 50012 Zaragoza, Spain. 
+email: dmartin@ceste.com  
+ORCID 0000-0001-7555-150X 
+Corresponding author: 
+Sandra Ferreruela 
+Address: Departamento de Contabilidad y Finanzas, Facultad de Economía y Empresa, Gran 
+Vía 2, 50005 Zaragoza, Spain.
+Email address: sandrafg@unizar.es
+Acknowledgements:
+No acknowledgements 
+Declaration of Interest:
+The authors declare that they have no known competing financial interests or personal 
+relationships that could have appeared to influence the work reported in this paper.
+Funding: This work was supported by grant R+D+i PID2022-136818NB-I00 funded by 
+MCIN/AEI/10.13039/501100011033, by ERDF A way of making Europe, and by the 
+Government of Aragon (code S11_23R). The funding sources had no involvement in study 
+design; in the collection, analysis and interpretation of data; in the writing of the report; and 
+in the decision to submit the article for publication.
+Data Availability Statement: Restrictions apply to the availability of the third-party data. Data 
+were obtained from BME Market Data. 
+Author Contributions: Conceptualization, S.F. and D.M.; methodology, D.M.; software, 
+D.M.; validation, D.M.; formal analysis, D.M.; resources, S.F.; data curation, D.M.; writing—
+original draft preparation, D.M.; writing—review and editing, S.F.; supervision, S.F.; funding 
+acquisition, S.F. All authors have read and agreed to the published version of the manuscript. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+1
+Informed trading, investor beliefs consensus and volatility: Evidence from the Limit 
+Order Book dynamics during COVID-19 and short-selling ban
+Abstract
+This study investigates the interactive dynamics between informed trading, beliefs 
+distribution on the Limit Order Book, liquidity and volatility, and examines the changes in 
+these dynamics observed during the COVID-19 event, along with the short selling ban imposed 
+on some components of the IBEX-35. The primary findings include: (1) The level of noncontemporaneous informed trading shows a positive relationship with investor consensus 
+regarding the fundamental value; (2) Our findings indicate Granger causal relationships 
+between informed trading, order book consensus, and volatility, occurring with significant 
+differences across different asset capitalization levels; and (3) The beliefs distribution on the 
+Limit Order Book shows greater predictive power for volatility compared to informed trading. 
+These results provide meaningful insights into market microstructure and the complex interplay 
+between the probability of informed trading, the distribution of beliefs on the Limit Order Book, 
+and market volatility, highlighting how both informed trading and consensus on the Limit 
+Order Book directly condition and impact market volatility.
+Keywords: Informed trading, dispersion of beliefs, Limit Order Book, volatility, COVID19, Short-selling ban. 
+JEL classification: G14, G18, G12, G01.
+Introduction
+Informed trading is a relevant topic due to its significant impact on various aspects of 
+financial markets, such as market dynamics, price movements, information integration, and 
+market quality. It involves using material non-public information by traders to directly or 
+indirectly influence security prices [1]. The implications of informed trading are far-reaching, 
+affecting security price movements and information integration at the market level [2,3]. 
+Informed trading has been found to increase the speed of firm-specific information integration 
+while negatively impacting the speed of market-level information integration due to trading 
+costs associated with information asymmetry [3]. Additionally, the role of informed trading in 
+the informational environment and its implications for market quality and information 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+2
+asymmetry have been highlighted, underscoring its importance for market microstructure and 
+regulatory policies [4].
+Informed traders are thought to contribute to volatility through their trading activities, which 
+reflect the incorporation of new information into prices. Nevertheless, although the relationship 
+between informed trading and market volatility has been the subject of extensive research, the 
+literature to date has produced mixed results as to the direction of the relationship between the 
+two. Some studies suggest that high levels of informed trading, which lead to an imbalance 
+between informed and uninformed traders, often referred to as market toxicity, can increase 
+liquidity-induced volatility [5]. However, other research indicates that informed trading tends 
+to reduce volatility by accelerating the integration of firm-specific information into prices 
+[2,3,6] in heavily traded and highly capitalized stocks  [7]. Others, such as [8], have found that 
+the effect of informed trading on volatility is asymmetric, as for securities with less private 
+information, an increase in informed trading activity may lead to higher volatility of returns. 
+The relationship between informed trading and volatility is not consistent, which may be due 
+to the existence of interrelationships and feedback between the two variables and other factors, 
+such as the impact of information asymmetry or the role of liquidity. Unravelling these 
+interrelationships is particularly important, given that volatility in financial markets (whether 
+it is liquidity-driven or information-driven) is known to have significant adverse effects on 
+various aspects of market stability and investor behavior, as well as necessary to 
+comprehensively grasp market dynamics.  
+One of the most commonly used measures in the literature for quantifying informed trading 
+activity and information asymmetry is the Volume-Synchronized Probability of Informed 
+Trading (known as VPIN) [9], which is a dynamic measure of order flow imbalance, introduced 
+as a tool to predict extreme events, such as "flash crashes" in high-frequency trading [5]. 
+However, it has been extensively discussed in the literature as a measure of high-frequency 
+adverse selection and informed trading activity, being considered a barometer of information 
+asymmetry, as it quantifies the likelihood that trading volumes are driven by informed 
+participants. [10] measure the presence of extreme market toxicity using a threshold in the 
+cumulative distribution function (CDF) of VPIN (greater than 0.99 for stocks), and observe 
+that if the threshold is exceeded, exacerbated volatility can be observed. The mechanism by 
+which this happens could be twofold: On the one hand, market toxicity is associated with the 
+presence of adverse selection risk in high-frequency trading, which can lead to liquidity 
+problems and then increased volatility [11] due to the sudden disappearance of market liquidity 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+3
+[12]; on the other hand, research has demonstrated that a high VPIN is positively correlated 
+with investor sentiment which also has an impact on volatility [13]. Therefore, when there is 
+an extreme increase in toxicity, as measured by overcoming a specified threshold of the CDF 
+of VPIN, it can contribute to higher volatility due to the impact of investor sentiment and 
+market liquidity. This understanding is particularly relevant in high-frequency trading 
+environments where market toxicity is associated with adverse selection risk. Hence, we aim 
+to delve into the dual influence of informed trading: its potential to reduce liquidity, particularly 
+for liquidity providers, and its ability to enhance consensus in investor beliefs due to more 
+informed limit orders within the order book.
+In the context of asymmetric information, where one party has more or better information 
+than the other, the use of market or limit orders becomes highly significant. Traditional 
+financial theories often posit that traders with access to time-sensitive information (known as 
+informed traders) choose market orders to execute transactions based on their superior 
+knowledge quickly. This preference is attributed to their urgency to capitalize on the ephemeral 
+nature of their informational advantage. However, this conventional narrative has been nuanced 
+by a series of theoretical and empirical studies. Theoretical expositions by [14], [15], [16], and 
+[17] suggest that limit orders are not exclusively the domain of uninformed or liquiditymotivated traders. On the contrary, informed traders can also strategically employ limit orders, 
+particularly in market conditions with higher informational volatility [18]. Empirical 
+corroboration of this theoretical framework is provided by studies from [19] and [20], all of 
+which present evidence supporting the use of limit orders by informed traders. 
+This revelation suggests that the impact of information asymmetry on market prices would 
+extend beyond executed transactions to include order submissions. Indeed, previous literature 
+indicates that the Limit Order Book (LOB henceforth) is informative and even orders other 
+than the best bid and ask to contribute to price discovery [21]. According to this evidence, the 
+slope of the LOB [22,23], a measure that examines the relationship between the depth of the 
+LOB and its distance from the prevailing market price, provides a more comprehensive view 
+of market dynamics and information asymmetry, as it encompasses the entire LOB, reflecting 
+trading intentions and not just executed transactions [24–26]. Traditionally, the slope of the 
+LOB has been considered a measure of liquidity, though it also incorporates information about 
+the degree of market consensus regarding fundamental value. [27] note that a lower dispersion 
+of beliefs (higher consensus) could be associated with a higher proportion of informed limit 
+orders, implying that informed traders are active, integrating their private information into the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+4
+order book. Conversely, greater dispersion of orders in the LOB (indicating low consensus) 
+could indicate that the orders are more likely to be uninformed, leading to a less efficient market, 
+as informed orders tend to cluster around prices that reflect the underlying private information. 
+Uninformed market makers can perceive this dispersion in the LOB as an expectation of high 
+volatility by informed market makers, leading to a reluctance to post limit orders. This finding 
+supports the notion that the slope of the LOB can be seen as a reflection of the dispersion of 
+beliefs among market participants, influencing market dynamics. In this sense, this measure, 
+which allows the level of consensus to be quantified, will enable us to investigate further the 
+relationship between informed trading, consensus and volatility. This is particularly interesting 
+given that the interaction between informed trading and belief consensus can create feedback 
+loops that further exacerbate volatility. 
+Market liquidity also plays a crucial role in determining the level of volatility, as a sudden 
+disappearance of the former can lead to increased levels of the latter [12]. Notably, informed 
+trading is often perceived to consume liquidity [28]. That is, informed trading could potentially 
+decrease the depth of the LOB and widen the bid-ask spread while contributing to a more 
+informed and efficient price formation process and greater consensus between value and price, 
+possibly due to informed orders in the upper part of the book. This dual effect could have farreaching implications for market participants and would presumably be more pronounced in 
+the large-cap sector due to higher analyst coverage and a smaller pool of uninformed liquidity, 
+leading to a more unified investor consensus on their fundamental values. 
+The objective of this paper is threefold: First, it aims to analyze the impact of informed 
+trading on consensus within the LOB and its effects on external market liquidity (measured by 
+the relative spread) and internal liquidity (measured by depth). Second, the paper seeks to shed 
+light on the dynamics of market volatility by examining the relationship between informed 
+trading, belief consensus in the LOB, and market volatility itself. This investigation will 
+explore whether these relationships are bidirectional or unidirectional, utilizing Granger 
+causality tests to identify any potential causal links. Finally, aligning with this framework, the 
+third objective is to assess whether the slope of the LOB can complement or even surpass the 
+VPIN in certain aspects. This involves weighing the predictive power of belief consensus 
+against informed trading, considering both short-term variations (as represented by VPIN) and 
+periods of high activity by informed traders (reflected in the Cumulative Distribution Function 
+of VPIN). The insights gained from this analysis are essential for developing strategies aimed 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+5
+at enhancing market efficiency and stability by fostering the involvement and activities of 
+informed traders.
+Specifically, the hypotheses under study are as follows:
+(H1a) Informed trading improves the consensus of beliefs of investors in LOB.
+(H1b) Informed trading consumes external and internal liquidity.
+(H2a) Informed trading positively Granger causes consensus in the LOB in familiar stocks.
+(H2b) There is a bidirectional negative relationship between consensus and volatility. 
+(H2c) When informed trading is present, non-contemporaneous volatility tends to decrease. 
+(H3) The dispersion of beliefs in the LOB is a better predictor of market volatility than 
+informed trading.
+Finally, it is worth recalling that during the recent COVID-19 pandemic, financial markets 
+experienced unprecedented levels of volatility, and the IBEX 35 index was no exception [29–
+31]. The COVID-19 pandemic also introduced notable levels of uncertainty, information 
+asymmetry, and regulatory interventions in financial markets [31–35], posing significant 
+challenges for both market participants and regulators. This makes this period an opportune 
+time to study the complex dynamics related to market volatility.
+This study contributes to the market microstructure literature by investigating the interaction 
+between informed trading, LOB liquidity, consensus of beliefs, and volatility. It explores how 
+informed trading, traditionally associated with market orders, impacts liquidity and volatility 
+metrics, focusing on price consensus in the LOB, which also contains informed orders. In 
+addition, possible differences between assets with different capitalization levels are considered. 
+To our knowledge, this is the first study to incorporate LOB information to study informed 
+trading and its impact on other market variables.
+Additionally, the study employs a volume-clock perspective to work with intraday data. It 
+applies high-frequency, tick-by-tick data analysis using containers defined by each stock’s 
+volume clock, considering all LOB levels. This approach allows for a detailed representation 
+of market dynamics, especially during the COVID-19 pandemic period, observing potential 
+relationships between these variables and how they have been affected by this black swan event. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+6
+The remainder of the paper is organized as follows. Section 2 presents a review of the 
+relevant literature. Section 3 describes the data employed in the study, while Section 4 details 
+the methodology and presents the results; Section 5 concludes.
+Literature review
+It is necessary to examine the interaction between informational volatility and liquiditydriven volatility in financial markets, particularly due to the complexity of their relationship 
+across various stock categories. Informational volatility stems from changes in the perceived 
+value of assets due to new information. In contrast, liquidity-driven volatility arises when 
+liquidity availability or supply shifts cause price fluctuations. Informational volatility, often 
+triggered by new data or events, in turn influences internal liquidity, represented by the depth 
+of the LOB, and external liquidity, captured through measures such as the relative spread. [36] 
+emphasize that liquidity shortages, especially during periods of market stress, can amplify 
+volatility by limiting traders’ ability to adjust prices in response to new information smoothly. 
+This interaction between liquidity conditions and volatility is especially relevant when 
+examining informed trading, as both forms of volatility can co-occur, shaping overall market 
+behavior in complex ways [37]. The behavior of informed traders, who integrate private, nonpublic information into prices, is fundamental in shaping these market dynamics. By 
+influencing the speed and nature of price adjustments, informed traders can profoundly affect 
+the market’s stability and overall volatility [13]. The distinction between informational and 
+liquidity-driven volatility becomes particularly significant in market stress, where their 
+respective roles can compound or offset one another. 
+An additional layer of complexity is introduced when considering how these dynamics vary 
+across different capitalization categories. Large-cap stocks, with their deeper liquidity, 
+typically exhibit more stable pricing and are less sensitive to external shocks. By contrast, 
+small-cap stocks, characterized by lower liquidity, are more susceptible to sharper price swings 
+during periods of market turbulence. Studies [38,39] have shown that small-cap stocks tend to 
+experience greater volatility when liquidity is fragmented, further underscoring the differential 
+impact of informed trading across the market capitalization spectrum. This contrast highlights 
+the importance of liquidity in modulating the effects of informed trading on market stability, 
+as liquidity constraints can exacerbate volatility in less liquid stocks [40]. One widely used 
+metric to capture informed trading is the Volume-Synchronized Probability of Informed 
+Trading (VPIN). VPIN quantifies the likelihood that trading volumes are driven by informed 
+traders, offering a dynamic measure of order flow imbalance, which can serve as a leading 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+7
+indicator for extreme market events like flash crashes [5]. This measure is particularly relevant 
+in high-frequency trading (HFT) environments, where the presence of informed traders, 
+relative to uninformed participants, can lead to market toxicity—an imbalance that exacerbates 
+liquidity issues and, in turn, volatility [11]. VPIN provides crucial insights into how informed 
+trading can contribute to or mitigate sudden price movements by tracking the degree of order 
+flow imbalance.
+Alongside VPIN, another key variable to consider is the slope of the LOB, which reflects 
+the distribution of orders at various price levels. This measure serves as an indicator of 
+consensus among market participants and market liquidity. A steeper slope signals that orders 
+are more concentrated around certain price points, suggesting stronger consensus among 
+traders about the asset’s fundamental value. This increased consensus tends to stabilize market 
+prices, resulting in lower volatility. On the other hand, a flatter slope indicates more dispersed 
+orders, reflecting greater uncertainty among traders and, thus, higher volatility [41].
+From a microstructural perspective, the slope of the LOB can also be seen as a measure of 
+the market’s elasticity in response to price changes. A steeper slope, which also signals higher 
+liquidity, allows for smoother price adjustments as market participants converge on a shared 
+understanding of asset values. This liquidity-driven stability is particularly important in market 
+stress, where fragmented liquidity can lead to abrupt and exaggerated price movements.  
+Foucault [42] discusses how informed traders are more likely to utilize limit orders as an 
+effective means of liquidity provision, contrary to the common assumption that market orders 
+are preferred due to their immediacy [43].
+The relationship between liquidity, slope, and volatility becomes even more relevant when 
+considering high-frequency trading environments. In these markets, the interactions between 
+order flow imbalance (captured by VPIN) and the beliefs of market participants (represented 
+by the slope of the LOB) play a critical role in shaping market outcomes. The concentration of 
+informed traders’ orders within the LOB contributes to forming a consensus on fundamental 
+asset values, dampening volatility by aligning market prices with these values. Conversely, 
+when there is a broader dispersion of orders, reflected in a flatter slope of the LOB, the market 
+is more susceptible to price swings driven by uncertainty in trader beliefs.
+While contributing to price stability, liquidity is also consumed by informed traders as they 
+execute their strategies. Informed trading can deplete liquidity by reducing the depth of the 
+LOB and widening the bid-ask spread. This dual role is especially pronounced in large-cap 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+8
+stocks, where the presence of more analysts and less information asymmetry leads to greater 
+consensus on asset values [12]. Nevertheless, despite the liquidity-consuming nature of 
+informed trading, it simultaneously contributes to a more efficient price discovery process by 
+aligning prices more closely with their fundamental values. This interaction between liquidity 
+consumption and price discovery highlights informed traders’ nuanced role in stabilizing and 
+destabilizing markets depending on the context.
+Combining VPIN with the slope of the LOB provides a robust framework for assessing how 
+informed trading impacts market behavior. VPIN offers a way to predict periods of heightened 
+volatility by measuring the imbalance in the order flow. At the same time, the slope of the LOB 
+captures how beliefs about asset values are distributed among market participants. This dual 
+approach allows for a more comprehensive understanding of how informed traders influence 
+market stability, especially in high-frequency trading environments, where liquidity can rapidly 
+disappear, leading to extreme volatility events.
+The relationship between informed trading and market dynamics can be further elucidated 
+by examining how the slope of the LOB reflects pre-trade intentions. A steeper slope suggests 
+informed traders cluster their limit orders around prices that reflect their private information, 
+thereby aligning market prices more closely with fundamental values. This clustering enhances 
+market liquidity, leading to lower volatility. Conversely, a flatter slope indicates greater belief 
+dispersion, suggesting uncertainty among market participants, which often results in higher 
+volatility as traders react to divergent expectations [27,44].
+This comprehensive literature review highlights the intricate relationships between 
+informed trading, liquidity, and volatility, underscoring the importance of both VPIN and the 
+slope of the LOB as tools for understanding market dynamics. The insights gained from these 
+variables, especially in high-frequency trading environments, are critical for developing 
+strategies to manage liquidity risks and mitigate volatility during periods of market stress.
+Data and measures
+Our sample consists of 18 Spanish stocks belonging to the IBEX 35 index, categorized as 
+in [45], divided into three 6-stock portfolios representing different levels of capitalization and 
+activity (large, medium, and small). Six stocks were chosen for each category based on their 
+proximity to the median in terms of both capitalization and trading volume, as seen in Table 1. 
+The identified companies for the large-CAP category are Amadeus IT Group, S. A. (AMS), 
+Repsol YPF (REP), Telefónica (TEF), Banco Bilbao Vizcaya Argentaria (BBVA), Caixabank, 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+9
+S. A. (CABK), and Iberdrola (IBE). For the mid-CAP category, the selected companies are 
+Gamesa Corporación Tecnológica (SGRE), ACS, Actividades de Construcción y Servicios 
+(ACS), Red Eléctrica de España (REE), Banco de Sabadell (SAB), Mapfre, S. A. (MAP), and 
+International Consolidated Airlines Group, S. A. (IAG). The small-cap category includes 
+Acerinox (ACX), Gestevisión Telecinco (TL5), CIE Automotive (CIE), Viscofan (VIS), Indra 
+Sistemas (IDR), and Bankia, S. A. (BKIA).
+Table 1 Market capitalization and volume negotiated in 2019 (€M)
+Market Cap
+Volume
+Distance to Market
+Cap Median
+Distance to 
+Volume Median
+Panel A: Large-Cap
+AMS
+31396.3
+24731.1
+532.6
+3785.1
+REP
+21276.6
+28540.5
+10652.3
+24.3
+TEF
+32331.4
+39769.5
+402.5
+11253.3
+BBVA
+33226.1
+39001.9
+1297.2
+10485.7
+CABK
+16736.1
+12285.9
+15192.8
+16230.3
+IBR
+58403.8
+36493.2
+26474.9
+7977.0
+Panel B: Mid-Cap
+SGRE
+10649.7
+6329.6
+475.4
+485.5
+ACS
+11217.8
+7955.2
+1043.5
+1140.1
+REE
+9698.9
+9804.2
+475.4
+2989.1
+SAB
+5852.0
+7300.6
+4322.3
+485.5
+IAG
+3784.9
+5452.4
+3610.6
+1362.7
+MAP
+7267.7
+3061.0
+2906.6
+3754.1
+Panel C: Small-Cap
+ACX
+2717.6
+2411.0
+263.7
+854.7
+TL5
+1853.3
+1777.7
+600.6
+221.4
+CIE
+2719.3
+1327.9
+265.4
+228.4
+VIS
+2190.2
+1230.8
+263.7
+325.5
+IDR
+1798.3
+1334.9
+655.6
+221.4
+BKIA
+5839.8
+4091.0
+3385.9
+2534.7
+Table 1. This table presents the median values of 2019 for market capitalization and volume, along with 
+their distances to the category median, across three panels: large-cap (Panel A), mid-cap (Panel B), and 
+small-cap (Panel C).
+The time frame spans from 20th November of 2019 to 13th July of 2020, encompassing the 
+COVID-19 crisis, over a period that covers pre-pandemic (W0) from November 20th, 2019, to 
+January 20th, 2020; pandemic crash (W1) from January 21st, 2020, to March 17th, 2020; short 
+selling ban (W2) from March 18th, 2020, to May 18th, 2020; de-escalation (W3) from May 
+19th, 2020, to July 13th, 2020. 
+The high-frequency dataset includes trading volumes, order book data and high-frequency 
+data for each stock at a millisecond level, obtained directly from Bolsas y Mercados Españoles 
+(BME), the company that manages the Spanish stock exchanges. The trading activity occurs 
+through the Spanish Stock Exchange Interconnection System (SIBE), the technical trading 
+platform where the order book is located. Trading is continuous from 9:00 a.m. to 5:30 p.m., 
+with regular call auctions at the opening and closing. Auctions are excluded from the sample, 
+meaning only data from 9:00 a.m. to 5:30 p.m. are considered. This allows us to focus on the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+10
+trading activity of the most liquid Spanish stocks during the main trading hours. Following [9], 
+the event clock approach is applied. An analysis of each time bucket as a distinct event period 
+is conducted, and the final value from each bucket is identified to calculate all the relevant 
+measures. The metrics used to investigate the interaction between liquidity, informed trading 
+and volatility and test the hypotheses are presented below.
+Level of informed trading: VPIN.
+The level of informed trading is determined thanks to the VPIN measure of [9], which is 
+based on the imbalance between buy and sell orders and accentuates volume information over 
+pricing data1. The process followed to obtain this indicator is as follows. First, the bucket size 
+“V” is defined as one-fiftieth of the average 2019 (ex-auctions) daily volume. Then, trades are 
+processed individually (trade-by-trade) rather than being aggregated into fixed one-minute 
+intervals. For each trade, the volume and price change are recorded directly. Consecutive trades 
+are accumulated until a volume bucket is filled. The final order price in the bucket is used to 
+compute the bucket return. Depending on trading activity, a volume bucket may encompass 
+multiple trades or only a portion of one. In the original method, all shares transacted within a 
+minute are considered to have been executed at the final price of that minute. In our approach, 
+we consider each order and assign the final price to all shares within that order instead of the 
+final price of the minute. 
+VPIN is characterized as the aggregate of absolute variances between buy and sell volumes 
+in each volume bucket. The trade direction is determined through probabilistic volume 
+categorization using the bulk volume classification approach. Specifically, “Buy volume” is 
+derived by multiplying the trade volume by the cumulative distribution function (CDF) of the 
+standard normal distribution assessed at the standardized price change, Z (
+𝑃𝑖― 𝑃𝑖―1
+𝜎∆𝑃
+), where 𝜎∆𝑃 
+represents the estimated weighted standard deviation of price changes between trades. Sell 
+volume is determined as trading volume multiplied by 1-Z (
+𝑃𝑖― 𝑃𝑖―1
+𝜎∆𝑃
+). If there is no price change 
+from the start to the end of a sequence of trades, the volume in those trades is divided equally 
+1 VPIN is based on what is commonly referred to as the “event clock” or “volume clock”, contrasting with the 
+usual “calendar clock” based on fixed time intervals. “Event-clock” models are based on the occurrence of events, 
+such as individual trades or changes in trading volume and have been proposed to address the complexity of 
+computing correlations in intraday data due to random and asynchronous transactions. The benefits of using eventclock models for analyzing intraday data were highlighted by [60]. These models offer significant statistical 
+advantages, such as eliminating intrasession seasonal effects and restoring some degree of normality to the data 
+[61,62].
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+11
+between buy and sell volumes. If the price rises (falls), the volume is weighted more towards 
+buys (sells) than sells (buys). In each volume bucket τ, 𝑉𝐵(𝑆)
+τ
+signifies the cumulative buy (sell) 
+volume and is defined as follows:
+𝑉𝐵𝜏=
+𝑡(𝜏)
+𝑖=𝑡(𝜏―1)+1
+𝑉𝑖·𝑍(
+𝑃𝑖― 𝑃𝑖―1
+𝜎∆𝑃) 
+(1)
+𝑉𝑆𝜏=
+𝑡(𝜏)
+𝑖=𝑡(𝜏―1)+1
+𝑉𝑖·[1 ― 𝑍(
+𝑃𝑖― 𝑃𝑖―1
+𝜎∆𝑃)] = 𝑉― 𝑉𝐵𝜏
+(2)
+Where 𝑉𝑖 represents the volume of trade i, meaning the number of shares traded in a specific 
+transaction within the interval of a volume bucket and 𝑉 is the bucket size, defined as onefiftieth (1/50) of the average daily volume in 2019 (excluding auctions). This determines how 
+much volume must accumulate before a bucket is considered full, and VPIN can be calculated. 
+𝑡(𝜏) is the index of the last trade included in the 𝜏 volume bucket, which allows for determining 
+the range of trades that belong to bucket 𝜏. By processing each trade individually and assigning 
+the final price of each order to all shares within that order, we aim to capture the immediate 
+impact of each transaction on the order flow imbalance, leading to a more responsive and 
+precise estimation of VPIN. This approach differs from the original methodology, which 
+assigns the final price of the minute to all shares transacted within that minute.
+VPIN is defined as in Equation (3), where the bucket size n encompasses the aggregate 
+number of volume buckets. VPIN is estimated utilizing a moving window of l-length volume 
+buckets. For example, the initial VPIN calculation employs volume buckets within the interval 
+[1, 50]. Successive VPIN estimations are derived by incrementally shifting the moving window, 
+for instance, from the range [2, 51] in the 50-length case, and proceeding accordingly. 
+𝑉𝑃𝐼𝑁=
+(∑𝑛
+𝜏=1 |𝑉𝑆𝜏― 𝑉𝐵𝜏|)
+𝑛·𝑉
+(3)
+Then, the empirical CDF of VPIN is used to convert each VPIN reading into a cumulative 
+probability. The empirical CDF is calculated over the rolling window of 50 VPIN values, 
+providing a probabilistic interpretation of the current VPIN relative to its recent history. This 
+approach helps identify periods when the VPIN reaches extreme values, indicating potential 
+surges in informed trading activity.
+The variation of VPIN will be used to measure the incorporation of informed trading in the 
+very short run. A positive value of VPIN variation indicates an increase in the activity of 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+12
+informed traders, while a negative value suggests a decrease. A high CDF value may indicate 
+a period of high activity by informed traders, whereas a low value may suggest the opposite. 
+Liquidity and dispersion of beliefs measures.
+Relative quoted spread (RS) and depth of the LOB are used as indicators of liquidity. These 
+measures provide insights into different aspects of liquidity: We use RS (as shown in Equation 
+4) as a proxy for external liquidity, representing the difference between bid and ask prices, 
+which reflects the costs associated with market impact. In contrast, we refer to the internal 
+liquidity of the LOB through the depth of the LOB (outlined in Equation 5). 
+𝐷𝐸𝑃𝑇𝐻𝑖,𝜏 refers to the average accumulated shares in all positions different from zero for 
+both the best bid and the best ask positions. A greater depth means that any transaction will 
+have less impact on prices. Therefore, increased depth indicates higher liquidity in the LOB 
+and a greater ability to absorb the effects of large trades. In this study, RS, depth, and slope of 
+the LOB are not calculated in daily intervals but instead in intraday volume intervals (or 
+buckets), with the last value of each bucket being used for analysis. 
+The slope of the LOB reflects the dispersion of beliefs across the limit order book. A steeper 
+slope indicates a higher concentration of informed orders, as informed traders tend to place 
+orders closer to the fundamental prices they know or anticipate. Conversely, a flatter slope 
+suggests the predominance of uninformed orders, indicating greater dispersion of beliefs and 
+less accuracy in the underlying information driving prices. It is a key metric that can also be 
+used as a proxy for liquidity provision in the market, as it is not limited to the best prices (bidask) but rather encompasses both the spread and the depth of orders on the buy and sell sides 
+[46]. Its ability to capture both spread and depth makes it a more comprehensive indicator of 
+market liquidity, offering a holistic view that goes beyond top-of-book quotes by examining 
+the entire structure of the order book.
+Thus, the slope not only acts as a measure of consensus but also captures liquidity dynamics. 
+By integrating both spread and depth, the slope provides a more detailed representation of 
+liquidity provision in the market and can distinguish between situations where orders are 
+predominantly informed or uninformed. In contexts of higher informational asymmetry, a 
+𝑅𝑆𝑖,𝜏= 2𝑥(𝐵𝑒𝑠𝑡 𝑎𝑠𝑘 𝑝𝑟𝑖𝑐𝑒𝑖 ― 𝐵𝑒𝑠𝑡 𝑏𝑖𝑑 𝑝𝑟𝑖𝑐𝑒𝑖)𝑖(𝐵𝑒𝑠𝑡 𝑎𝑠𝑘 𝑝𝑟𝑖𝑐𝑒𝑖+ 𝐵𝑒𝑠𝑡 𝑏𝑖𝑑 𝑝𝑟𝑖𝑐𝑒𝑖)
+(4)
+𝐷𝐸𝑃𝑇𝐻𝑖,𝜏= (𝐴𝑣𝑔 𝑎𝑠𝑘 𝑜𝑟𝑑𝑒𝑟𝑠+ 𝐴𝑣𝑔 𝑏𝑖𝑑 𝑜𝑟𝑑𝑒𝑟𝑠)
+2
+ 
+(5)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+13
+steeper slope reflects the activity of informed traders who actively shape the order book 
+structure, contributing to the price discovery process [36]. This link between the slope and the 
+informational content of orders is further supported by studies such as [44], which 
+demonstrated that the state of the LOB effectively predicts short-term price changes, 
+underscoring the importance of the slope as an indicator of future price dynamics based on 
+order distribution.
+Additionally, the concept of order flow imbalance [47] reinforces this idea by noting that a 
+greater imbalance in order flow, whether on the buy or sell side, tends to result in a steeper 
+slope, indicating a higher concentration of informed trading activity. By acting on their 
+advantage, informed traders shape the LOB, which affects market liquidity and volatility.
+The slope of the demand side and the supply side in the visible order book is obtained 
+following [22] as in equations (6), (7) and (8). 
+Where 𝑆𝐸𝑆𝑖,𝜏(𝐷𝐸𝑆𝑖,𝜏) are the average slope estimates of the supply (demand) side for security 
+𝑖 during bucket 𝜏, and measure the average rate at which available volume changes relative to 
+price changes on the ask and bid sides. The parameter 𝑁𝐴 (𝑁𝐵) represents the total number of 
+ask (bid) price or tick level l, containing orders in the LOB. The price level index l=0 denotes 
+the bid-ask midpoint, calculated as 𝑝0 = 𝑝𝐴0 + 𝑝𝐵0
+2
+ , where 𝑝𝐴0 (𝑝𝐵0) is the best ask (bid) price. The 
+level l=1 corresponds to the best available quote with volume on each market side. The variable 
+𝑣𝑙 is defined as the natural logarithm of the accumulated total share volume at each price level 
+l. This logarithmic transformation normalizes the volume data, facilitating a more consistent 
+comparison across different price levels and securities. 𝑆𝐿𝑂𝑃𝐸𝑖,𝜏 is the last observed slope for 
+security 𝑖 at the end of each bucket 𝜏. This metric provides a summarized assessment of the 
+𝑆𝐸𝑆𝑖,𝜏= 1
+𝑁𝐴{
+𝑣𝐴1
+𝑝𝐴1
+𝑝𝐴0 ― 1
++
+𝑁𝐵
+𝑙=1
+𝑣𝐴𝑙+1
+𝑣𝐴𝑙― 1
+𝑝𝐴𝑙+1
+𝑝𝐴𝑙― 1}
+(6)
+𝐷𝐸𝑆𝑖,𝜏= 1
+𝑁𝐵{
+𝑣𝐵1
+|
+𝑝𝐵1
+𝑝𝐵0 ― 1|
++
+𝑁𝐵
+𝑙=1
+𝑣𝐵𝑙+1
+𝑣𝐵𝑙― 1
+|
+𝑝𝐵𝑙+1
+𝑝𝐵𝑙― 1|}
+(7)
+𝑆𝐿𝑂𝑃𝐸𝑖,𝜏= 1
+𝑁𝑖
+𝑁𝑖
+𝑠=1{
+𝑆𝐸𝑆𝑖,𝜏+ 𝐷𝐸𝑆𝑖,𝜏
+2
+}
+(8)
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+14
+LOB’s liquidity and depth during each specific period, besides serving as a measure of belief 
+consensus.
+Volatility measures
+The volatility of intraday returns is proxied through the absolute value of bucket returns. 
+Additionally, for robustness tests, we use the absolute value of the return residual from the 
+return regression as [48] (Equations 9 and 10) and conditional volatility EGARCH (Equation 
+11). Specifically, the absolute value of bucket returns serves as our primary volatility proxy, 
+while the absolute return residual and conditional volatility offer a robust alternative measure. 
+𝑅𝑖𝜏=
+𝑆
+𝑟=1
+𝑏𝑖,𝑟·𝑅𝑖,𝜏―𝑟+ 𝑢𝑖,𝜏
+    (9)
+|𝑢𝑖𝜏| = 𝜙𝑖+
+𝑞
+𝑘=1
+𝜌𝑖𝑘·|𝑢𝑖,𝜏―𝑟| + 𝑐𝑖·𝑏𝑢𝑐𝑘𝑒𝑡+
+2
+𝑗=1
+𝑖· ℎ𝑖+ 𝜁𝑖𝜏
+  (10)
+Where 𝑅𝑖τ is the return of stock i on bucket 𝜏 , 𝑢𝑖,τ is the residual in equation (9),   𝑅𝑖,τ―𝑟  and 
+|𝑢𝑖,τ―𝑘| are the relevant lags of 𝑅𝑖τ and 𝑢𝑖τ  to deal with autocorrelation2. Due to the use of event 
+clock, the bucket number is used as a proxy of volume to orthogonalize volatility;  ℎ𝑖  are the 
+dummies for hours 9 and 17 included to deal with U-shape in intraday volatility, q is the optimal 
+lag and ζ𝑖τ is the residual in equation (10).
+An additional analysis using conditional volatility through an EGARCH model has been 
+conducted to strengthen the robustness of our findings. This approach is well-suited for 
+capturing volatility’s persistence and complex dynamics, offering a more nuanced view of 
+return variability. Unlike traditional GARCH models, the EGARCH model directly models the 
+logarithm of conditional variance, allowing volatility to respond asymmetrically to past shocks, 
+effectively capturing volatility clustering. The EGARCH model’s flexibility enhances 
+volatility modelling by incorporating both its own lags and error term lags while accounting 
+for leverage effects—where negative news increases volatility more than positive news of the 
+same magnitude. This provides deeper insights into how past innovations and historical 
+volatility influence current volatility, complementing our initial estimates. The model’s 
+autoregressive and volatility components orders were selected based on information criteria 
+such as the Akaike Information Criterion (AIC) or Bayesian Information Criterion (BIC), with 
+2 The number of lags included varies for stock depending on the significance of the correlation with SC criteria.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+15
+parameter significance assessed to confirm the model’s ability to capture temporal volatility 
+dynamics. The robustness of the EGARCH model was verified by analyzing standardized 
+residuals, ensuring the absence of autocorrelation, and confirming that the model specification 
+captures the temporal dependence structure. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+16
+Table 2 Descriptive statistics
+VPIN
+CDFVPIN
+SLOPE
+RS
+DEPTH
+ABSRET
+ABSRES
+EGARCH
+BUCKET
+Panel A: Large-Cap
+Mean
+0.0543
+0.4702
+2159.815
+0.0006
+80.5003
+0.0026
+0.0017
+0.0035
+40.8953
+Median
+0.0528
+0.4591
+1928.982
+0.0004
+78.0000
+0.0019
+0.0013
+0.0032
+30.0000
+Maximum
+0.1286
+1.0000
+10786.02
+0.0259
+535.0000
+0.0720
+0.0615
+0.0156
+330.0000
+Minimum
+0.0213
+0.0001
+40.59731
+0.0001
+21.5000
+0.0000
+0.0000
+0.0010
+1.0000
+Std. Dev.
+0.0112
+0.2842
+1310.728
+0.0007
+36.1923
+0.0028
+0.0019
+0.0015
+38.5439
+Skewness
+0.6390
+0.1081
+1.369359
+8.1911
+2.0630
+3.7681
+6.2143
+1.5246
+2.2646
+Kurtosis
+3.8349
+1.8505
+6.116113
+171.5169
+14.9058
+39.8992
+101.8684
+7.2904
+10.9297
+Obs.
+52849
+52849
+52849
+52849
+52849
+52849
+52849
+52849
+52849
+Panel B: Mid-Cap
+Mean
+0.0932
+0.4750
+1323.431
+0.0011
+67.9232
+0.0023
+0.0015
+0.0030
+139.7934
+Median
+0.0930
+0.4608
+1108.818
+0.0007
+66.0000
+0.0016
+0.0011
+0.0027
+78.0000
+Maximum
+0.1686
+1.0000
+6013.598
+0.07749
+337.5000
+0.07190
+0.0633
+0.01854
+1237.0000
+Minimum
+0.0100
+0.0000
+22.0008
+0.0002
+22.0000
+0.0000
+0.0000
+0.0006
+1.0000
+Std. Dev.
+0.0186
+0.2759
+840.8662
+0.0012
+25.9599
+0.0026
+0.0018
+0.0012
+175.9626
+Skewness
+-0.0212
+0.1297
+1.04255
+8.2196
+1.7418
+4.1347
+6.4483
+2.1746
+2.5184
+Kurtosis
+3.1712
+1.9095
+3.9830
+265.3542
+12.2922
+46.3080
+99.8824
+12.1416
+10.4641
+Obs.
+91629
+91629
+91629
+91629
+91629
+91629
+91629
+91629
+91629
+Panel C: Small-Cap
+Mean
+0.1240
+0.5617
+1013.483
+0.0014
+58.4497
+0.0024
+0.0016
+0.0031
+75.3785
+Median
+0.1255
+0.5887
+762.5435
+0.0010
+60.0000
+0.0016
+0.0011
+0.0025
+46.0000
+Maximum
+0.2296
+1.0000
+5631.287
+0.0450
+147.5000
+0.1118
+0.0987
+0.0212
+671.0000
+Minimum
+0.0439
+0.0001
+16.38013
+0.0002
+21.50000
+0.0000
+0.0000
+0.0008
+1.0000
+Std. Dev.
+0.0268
+0.2881
+803.5303
+0.0015
+18.11895
+0.0029
+0.0021
+0.0016
+84.8009
+Skewness
+-0.0672
+-0.2412
+1.887295
+6.8470
+0.099288
+6.1478
+10.0628
+2.2868
+2.2056
+Kurtosis
+2.9358
+1.8638
+6.707771
+101.0826
+2.405170
+116.0595
+277.5993
+10.3241
+9.30213
+Obs.
+61226
+61226
+61226
+61226
+61226
+61226
+61226
+61226
+61226
+Table 2 presents the descriptive statistics of the selected variables, distinguishing between large-, mid- and small-cap portfolios. All statistics refer to the 20th of 
+November 2019 to 13th of July 2020 period.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+17
+The equation for an EGARCH (1, 1) model is expressed as follows, with ς𝑡 representing the 
+conditional volatility.
+𝑙𝑜𝑔(𝜎2𝑡) = 𝜔+ ∑𝑝
+𝑖=1 𝛼𝑖𝑔(𝑍𝑡―𝑖) + ∑𝑞
+𝑗=1 𝛽𝑗𝑙𝑜𝑔(𝜎2𝑡―𝑗);     𝜍𝑡= 𝑒𝑥𝑝(
+𝑙𝑜𝑔(𝜎2𝑡)
+2
+)
+  (11)
+Where log(𝜎2𝑡) is the natural logarithm of the conditional variance in period t. The function 
+𝑔(𝑍𝑡―𝑖), defined as 𝑔(𝑍𝑡―𝑖) = θ𝑍𝑡―𝑖+ γ(|𝑍𝑡―𝑖| ― 𝐸[|𝑍𝑡―𝑖|]), captures the effects of past shocks 
+(𝑍𝑡―𝑖) in volatility, where 𝜃 and 𝛾 allow the model to incorporate asymmetries and leverage 
+effects. Σ𝑡 is conditional volatility. Table 1 shows the descriptive statistics for the variables 
+under examination. 
+Methodology and results
+The non-contemporaneous interplay among informed trading, liquidity, dispersion of beliefs 
+and volatility
+We first address hypothesis (H1a) and hypothesis (H1b), investigating the impact of 
+informed trading over consensus and liquidity measures in a non-contemporaneous relationship. 
+As in [49] and [50], we control for trading activity using order count in each bucket as a proxy 
+for the number of transactions per day. A higher number of trades could indicate greater 
+liquidity and lower transaction costs due to increased competition among market participants. 
+We also control for volatility, a critical factor in assessing market liquidity, as more volatile 
+markets tend to have higher transaction costs due to the increased perceived risk. Controlling 
+for volatility is particularly relevant during periods of market stress, where informed traders 
+may withdraw liquidity, leading to increased volatility [51]. Additionally, we control for period 
+windows using dummy variables.
+Where the dynamics of market quality are concerned, the multifaceted interplay among 
+liquidity, toxicity, and volatility is encapsulated in our proposed model as in [50]:
+𝒀𝒊,𝝉= 𝜷𝒊,𝝉+ 𝜷𝒊,𝟏·𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝒊,𝝉―𝟏+ 𝜷𝒊,𝟐·𝑪𝑹𝑨𝑺𝑯𝒊,𝝉―𝟏+ 𝜷𝒊,𝟑·𝑺𝑺𝑩𝒊,𝝉―𝟏+
++ 𝜷𝒊,𝟒·𝑫𝑬𝑪𝑨𝑳𝒊,𝝉―𝟏+ 𝜷𝒊,𝟓·𝑩𝒖𝒄𝒌𝒆𝒕𝒊,𝝉―𝟏+ 𝜷𝒊,𝟔·𝑽𝒐𝒍𝒂𝒕𝒊𝒍𝒊𝒕𝒚𝒊,𝝉―𝟏+ 𝜺𝒊,𝝉
+(12)
+The slope of the LOB, market or external liquidity (RS) and internal liquidity of the LOB 
+(DEPTH) are taken as dependent variables (Yi,τ). CDFVPINi,τ―1  proxies for the level of 
+informed trading as measured by the cumulative distribution of VPIN. The dummy variables 
+CRASHi,τ―1,  SSBi,τ―1 ,  and DECALi,τ―1 reflect the COVID-19 crash window (W1), the 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+18
+regulatory imposition of a short-selling ban (W2) and de-escalation (W3). These dummies take 
+a value of 1 when the respective events occur (W1, W2, or W3), and zero otherwise. We 
+establish the PRE-CRASH period (W0) as dummy reference. Bucketi,τ―1 elucidates market 
+fragmentation through the lens of order count in each bucket, while Volatilityi,τ―1, is the 
+absolute value of return, and quantifies market volatility. Each coefficient βi,1, βi,2, βi,3, βi,4, 
+βi,5 and βi,6 is instrumental in gauging the impact of these market quality measures on liquidity 
+(or belief consensus) in the subsequent period τ. The error term εi,τ accommodates for 
+unobserved factors and stochastic variations affecting liquidity. We refer to each stock with 
+sub-index i. The variables are treated to solve inherent problems such as heteroscedasticity. 
+Table 3 shows the estimates of Eq. (12) for the stocks in each category. The analysis of 
+large-cap, mid-cap, and small-cap companies reveals important patterns in how the level of 
+informed trading differentially affects consensus in the LOB (SLOPE), external liquidity (RS), 
+and internal liquidity (DEPTH).
+The presence of informed trading in large-cap companies significantly influences the 
+consensus of beliefs in the order book, although the nature of this relationship is unclear. For 
+companies like TEF and CABK, there is a direct relationship between informed trading and 
+consensus, indicating that informed trading helps to align market participants’ beliefs about the 
+stock’s value. In contrast, for AMS and BBVA, the relationship is inverse, with a negative 
+impact of VPIN on the slope. Moreover, the relationship between informed trading and both 
+internal and external liquidity is interconnected with the relationship between VPIN and 
+SLOPE. External liquidity is measured by the cost of immediate transactions (RS), while 
+internal liquidity is represented by the total volume available in the order book. In cases where 
+informed trading positive impact on consensus, liquidity improves as informed trading 
+increases, leading to lower transaction costs and/or greater depth (TEF and CABK). However, 
+in situations where VPIN negatively impacts consensus or where the relationship is not 
+significant, an increase in informed trading tends to worsen liquidity, resulting in higher spread 
+and/or lower depth (AMS, REP, BBVA and IBE). This suggests that informed trading 
+consumes internal liquidity, likely because liquidity providers withdraw from the market to 
+avoid adverse selection risks. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+19
+Table 3 Non-contemporaneous relationship between consensus, liquidity, and informed trading
+SLOPE 10-3
+RS 103
+DEPTH 10-2
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏𝑨𝑩𝑺𝑹𝑬𝑻𝝉―𝟏
+ADJ R2
+TEF
+4.2003***
+0.1505***
+0.9247***
+0.1708***
+-0.0363
+0.0274**
+-0.6887***
+0.0964***
+-0.1379***
+-1.9266***
+0.4009***
+-0.3316***
+-1.3716***
+0.0777***
+-0.0312***
+-0.0028***
+0.0011***
+-0.0008***
+-70.9454***
+63.8149***
+-20.1954***
+0.1882
+0.1631
+0.2881
+AMS
+2.0000***
+0.2312***
+0.8563***
+-0.0913***
+0.0731***
+-0.0192***
+-0.3658***
+0.1280***
+-0.0225***
+-0.3482***
+0.2678***
+-0.2870***
+-0.3139***
+0.0682***
+-0.0249***
+-0.0006
+0.0000
+-0.0014***
+-39.2153***
+53.3817***
+-12.7516***
+0.0631
+0.1018
+0.4286
+REP
+2.2849***
+0.3004***
+1.4920***
+-0.0116
+0.0601**
+-0.2366***
+-0.3997***
+0.1669***
+0.0619***
+-0.4934***
+0.3886***
+-0.5618***
+0.056**
+0.0063***
+-0.3512***
+0.0011***
+-0.0005***
+-0.0021***
+-61.9656***
+58.22.38***
+-31.9931***
+0.1089
+0.1252
+0.4435
+CABK
+0.9377***
+0.7539***
+0.5023***
+0.2408***
+-0.2449***
+-0.0137
+0.9253***
+-0.1239***
+0.5240***
+0.7306***
+0.1249***
+0.2362***
+0.9430***
+-0.1829***
+0.3832***
+-0.0004*
+0.0002
+-0.0006***
+-54.6283***
+66.0697***
+-22.8156***
+0.0473
+0.0969
+0.1919
+BBVA
+4.4683***
+0.1537***
+0.8116***
+-0.1986***
+0.0226
+-0.0335**
+-0.6977***
+0.1800***
+-0.1295***
+-2.5016***
+0.6077***
+-0.0057
+-2.1474***
+0.2496***
+0.1763***
+-0.0043***
+0.0004
+-0.0005***
+-66.0435***
+43.2456***
+-19.3686***
+0.3132
+0.1962
+0.1354
+Panel A: Large-Cap
+IBE
+3.6842***
+0.1973***
+1.0748***
+0.0469
+0.03329**
+-0.1697***
+-1.2255***
+0.1853***
+0.1019***
+-1.0700***
+0.1706***
+-0.3381***
+-1.1505***
+0.1348***
+0.0863***
+-0.0030***
+0.0009***
+-0.0025***
+-76.6571***
+31.3659***
+-22.9651***
+0.2448
+0.1251
+0.4461
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+20
+Table 3 Non-contemporaneous relationship between consensus, liquidity, and informed trading (continued)
+SLOPE 10-3
+RS 103
+DEPTH 10-2
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏𝑨𝑩𝑺𝑹𝑬𝑻𝝉―𝟏
+ADJ R2
+SGRE 1.5951***
+0.3297***
+0.8444***
+-0.0671
+0.2976**
+-0.0707***
+-0.0698*
+0.0977*
+-0.0922***
+-0.6833***
+0.8379***
+-0.4062***
+-0.1632***
+0.0580
+-0.0279***
+-0.0004
+0.0002
+-0.0007***
+-20.5890***
+46.4703***
+-7.6884***
+0.1113
+0.1026
+0.4279
+IAG
+2.0251***
+0.4876***
+0.7032***
+0.0411**
+-0.5039***
+0.0049
+-0.5194***
+0.3778***
+-0.0871***
+-1.1401***
+1.2757***
+0.02472***
+-0.9040***
+0.8404***
+0.0514***
+0.0005***
+-0.0009***
+0.0002***
+-50.9572***
+147.4212***
+-251013***
+0.1567
+0.1809
+0.1055
+ACS
+2.0123***
+0.1906***
+0.8599***
+-0.0134
+0.0849***
+-0.0219***
+-0.4608***
+0.1761***
+0.0200***
+-0.9314***
+0.8027***
+-0.2533***
+-0.4290***
+0.0809***
+-0.0147***
+-0.0004***
+0.0017***
+-0.0015***
+-38.9866***
+46.3355***
+-11.6371***
+0.2807
+0.2294
+0.4223
+REE
+2.0681***
+0.3943***
+0.8037***
+0.2916***
+-0.1847***
+0.1017***
+-0.3414***
+0.1500***
+-0.0901***
+-0.9349***
+0.5547***
+-0.3985***
+-0.5290***
+0.6687***
+-0.4008***
+0.0005***
+-0.0011***
+0.0003***
+-64.4004***
+110.3763***
+-11.3929***
+0.2113
+0.1294
+0.5729
+SAB
+1.8632***
+0.5757***
+0.9351***
+0.39014***
+-0.4593***
+0.0041
+0.2708***
+0.1809***
+-0.3515***
+-0.6612***
+1.0247***
+-0.4453***
+-0.5740***
+0.2027***
+-0.1069***
+0.0003
+0.0010***
+-0.0007***
+-30.6121***
+104.4180***
+-14.14405***
+0.1139
+0.1696
+0.3527
+Panel B: Mid-Cap
+MAP 1.7382***
+0.4840***
+0.9372***
+-0.0148
+-0.0075
+-0.0564***
+-0.3182***
+0.2132***
+-0.1393***
+-0.8023***
+1.0405***
+-0.3813***
+-0.4290***
+0.0809***
+-0.0147***
+-0.0004***
+0.0017***
+-0.0015***
+-38.9866***
+46.3355***
+-11.6371***
+0.1936
+0.1645
+0.4049
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+21
+Table 3 Non-contemporaneous relationship between consensus, liquidity, and informed trading (continued)
+SLOPE 10-3
+RS 103
+DEPTH 10-2
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏𝑨𝑩𝑺𝑹𝑬𝑻𝝉―𝟏
+ADJ R2
+ACX
+1.9419***
+0.3215***
+0.6804***
+-0.1993***
+0.2635***
+-0.0634***
+-0.3872***
+0.2764***
+-0.0588***
+-0.9652***
+1.2173***
+-0.2811***
+-0.5870***
+0.2574***
+0.0049
+-0.0018**
+0.0029**
+-0.0008***
+-18.401***
+46.4388***
+-3.7454***
+0.1540
+0.1893
+0.4892
+TL5
+1.1576***
+0.6824***
+0.5993***
+-0.1262***
+0.2041**
+0.0188***
+0.02592
+0.5038***
+-0.1092***
+-0.5270***
+1.7655***
+-0.2270***
+-0.3107***
+0.4111***
+-0.0523***
+0.0016***
+-0.0039***
+-0.0007
+-16.0421***
+127.8844***
+-5.2840***
+0.1445
+0.1469
+0.3110
+BKIA
+2.0123***
+0.4241***
+0.6982***
+0.0837***
+-0.2192***
+-0.0364***
+-0.6034***
+0.3594***
+-0.0281***
+-1.0505***
+1.4453***
+-0.2728***
+-0.7270***
+0.5184***
+-0.1131***
+0.0004***
+-0.0003***
+-0.0001***
+-51.0776***
+208.2111***
+-7.2798***
+0.1243
+0.2337
+0.3703
+CIE
+0.6738***
+0.8974***
+0.8724***
+-0.0800***
+0.3683***
+-0.1024***
+0.0262*
+0.0853
+-0.1390***
+-0.1250***
+1.1068***
+-0.3918***
+0.0740***
+-0.1276**
+-0.1030***
+0.0010
+0.0101**
+-0.0021***
+-6.6369***
+50.5859***
+-2.0591***
+0.0784
+0.1407
+0.5728
+IDR
+0.8725***
+0.8497***
+0.8368***
+0.0138
+0.0943***
+-0.1245***
+-0.1860***
+0.3364***
+-0.0704***
+-0.3024***
+0.9694***
+-0.2778***
+-0.1247***
+0.1633***
+0.0410***
+0.0007***
+-0.0011***
+-0.0001
+-20.1431***
+125.8856***
+-15.7082***
+0.1246
+0.1628
+0.4867
+Panel C: Small-Cap
+VIS
+0.8120***
+0.8426***
+0.7324***
+0.0430***
+-0.0689
+-0.0767***
+-0.0961***
+0.2333***
+-0.0257***
+-0.3056***
+0.9566***
+-0.2433***
+-0.2488***
+0.2688***
+0.02260***
+-0.0001
+-0.0002
+-0.0006***
+-18.5335***
+121.1974***
+-10.1955***
+0.1463
+0.1549
+0.5414
+Table 3 presents the estimates of the non-contemporaneous relationship for the period from November 20th, 2019, to July 13th, 2020, represented by 𝑌𝑖,τ = β𝑖,τ + β𝑖,1·
+𝐶𝐷𝐹𝑉𝑃𝐼𝑁𝑖,𝜏―1 + 𝛽𝑖,2·𝐶𝑅𝐴𝑆𝐻𝑖,𝜏―1 + 𝛽𝑖,3·𝑆𝑆𝐵𝑖,𝜏―1 + 𝛽𝑖,4·𝐷𝐸𝐶𝐴𝐿𝑖,𝜏―1 + 𝛽𝑖,5·𝐵𝑢𝑐𝑘𝑒𝑡𝑖,𝜏―1 + 𝛽𝑖,6·𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑖,𝜏―1 + 𝜀𝑖,𝜏The coefficients are expressed in transformed units 
+(Slope x 10-3, RS x 103, depth of the LOB x 10-2). *, **, and *** represent statistical significance at the 10%, 5%, and 1% levels, respectively.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+22
+The analysis of mid-cap companies shows results similar to those of large-cap companies. 
+In three instances—specifically, IAG, REE, and SAB—increased informed trading is 
+associated with a higher consensus within the LOB. In these cases, the relationship between 
+informed trading and liquidity is positive; specifically, there are decreases in the relative 
+spreads (RS) and/or increases in depth as the CDF of VPIN rises. Conversely, for SGRE, ACS, 
+and MAP, liquidity deteriorates as the level of informed trading increases. In these companies, 
+the coefficient of the CDF of VPIN is not significant when considering SLOPE as the 
+dependent variable. 
+Small-cap companies exhibit some distinct patterns compared to previous cases, although 
+there is also notable variability in the relationship between informed trading and consensus. 
+Specifically, BKIA and VIS show a positive and significant relationship, while in the case of 
+ACX, TL5, and CIE the relationship is negative. Regarding the impact on liquidity, both ACX, 
+CIE, and IDR align with the trends seen in large and mid-cap companies. In these cases, a 
+negative or non-significant relationship between informed trading and consensus correlates 
+with a decline in both external and internal liquidity as the CDF of VPIN increases. Conversely, 
+for BKIA and VIS, despite the positive relationship between informed trading and consensus, 
+a higher CDF of VPIN results in decreased internal liquidity (depth). For TL5, a negative 
+relationship between consensus and VPIN is found, which is associated with an improvement 
+in depth. The findings for these three small-cap companies highlight the varying 
+interrelationships among the variables based on company size. Unlike large and mid-cap firms, 
+where despite not being able to draw clear conclusions about H1a and H1b, certain patterns 
+were observable—meaning that if H1b was accepted, H1a was rejected, and vice versa—, this 
+does not hold true for small-cap companies.
+In addition to individual regressions, the study has been completed by applying panel data 
+techniques for each asset class. For each category, the Panel EGLS (Cross-section weights) 
+technique was employed to handle heteroscedasticity and the unbalanced nature of the data. 
+Cross-section weights addressed heteroscedasticity and period clustering was applied to correct 
+for serial correlation. Individual regressions captured the specificities of each stock, while the 
+panel data model aggregated these results, providing a more robust and generalized view by 
+category. Before estimating the panel data model, the Hausman test confirmed the suitability 
+of the fixed effects model. The model controls for significant periods, including the COVID19 crash, the short-selling restriction, and the initial de-escalation, and incorporates volatility 
+measures as control variables. These adjustments account for unique market conditions and 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+23
+regulatory changes during the analysis period. Using a panel data model captures effects not 
+observable in individual regressions, providing greater precision in estimating the impact of 
+explanatory variables on liquidity measures. This approach offers a more comprehensive view 
+by stock category, surpassing the limitations of isolated stock analyses.
+The test was conducted using different proxies for volatility to improve the robustness of 
+the results: absolute returns (Table 4), residual absolute returns as in [48] (Table 5), and 
+conditional volatility from an EGARCH model (Table 6). The analysis for consensus 
+demonstrates that informed trading significantly enhances order book consensus across various 
+volatility proxies, particularly for large- and small-cap stocks. For mid-caps, the effect is 
+significant only when using the EGARCH proxy, which suggests that in mid-cap stocks, the 
+impact of informed trading on consensus is more pronounced under conditions of persistent 
+volatility captured by the EGARCH model. These findings support Hypothesis H1a, which 
+proposes that informed trading increases the consensus of beliefs within the Limit Order Book. 
+This aligns with [52], who highlight that in algorithmic trading environments, insider trading 
+can counteract the adverse effects of diminished information acquisition, thereby increasing 
+the informativeness of trades and supporting efficient price discovery. 
+Regarding external liquidity, the analysis shows that informed trading generally reduces the 
+bid-ask spread, thereby improving external liquidity—contradicting Hypothesis H1b, which 
+posits that informed trading consumes external liquidity. The observed negative coefficients, 
+especially with the EGARCH proxy, indicate that informed traders often wait for high-liquidity, 
+low-illiquidity intervals, thus reducing the spread. This aligns with Collin-Dufresne and Fos’s 
+(2015) argument that informed traders delay action until market conditions are favorable. 
+However, contrary to expectations, the relative spread increases. As noted by [53], highfrequency market makers (HFMMs) quote narrow spreads even under high volatility but 
+manage adverse selection by limiting depth at those quotes. This strategy reduces crosssubsidization from uninformed to informed traders, lowering effective spreads for uninformed 
+participants while raising costs for informed ones, ultimately contributing to an overall increase 
+in the relative spread.
+Concerning internal liquidity, the analysis reveals that informed trading consistently reduces 
+the depth of the LOB across all volatility proxies and stock categories, supporting H1b. This 
+reduction in the depth suggests that informed trading adversely impacts the willingness of 
+liquidity providers to place limit orders throughout the order book. These results align with 
+theoretical models like those of [1], which propose that the presence of informed traders can 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+24
+deter uninformed liquidity providers from participating, reducing overall book depth. The 
+effect is especially significant in mid and small caps, indicating higher sensitivity to informed 
+trading activity. 
+Overall, the analysis confirms that informed trading has a significant impact on both 
+consensus and liquidity in the market, with effects varying based on the volatility proxy used 
+and the stock category. These findings highlight the dual role of informed trading in improving 
+price discovery while adversely affecting internal liquidity, especially in small-cap stocks. The 
+analysis suggests that while informed trading enhances consensus and price efficiency, it also 
+leads to reduced depth in the order book, potentially increasing liquidity costs for certain 
+market participants. We hypothesize that informed trading typically causes an increase in 
+consensus within the LOB due to the incorporation of informed orders. While we expect that a 
+higher consensus will result in reduced volatility, a significant decrease in liquidity—triggered 
+by an increase in the CDF of VPIN to levels considered “market toxicity”—could lead to a 
+temporary rise in volatility.
+Moreover, these findings indicate that volatility dynamics significantly shape the 
+relationship between informed trading and consensus formation. Notably, the EGARCH 
+model’s ability to capture the persistent nature of volatility helps explain the enhanced impact 
+of informed trading on consensus in mid-caps, underscoring the importance of modelling 
+approaches in understanding market behavior. Additionally, employing EGARCH, which 
+captures conditional volatility, provides a nuanced understanding of volatility effects, making 
+the observed relationships more robust.
+The varying impact of informed trading across different stock capitalizations suggests that 
+company size influences how informed trading affects consensus and liquidity. Small-cap 
+stocks show higher sensitivity to informed trading, possibly due to lower liquidity and less 
+information coverage. This underscores the importance for liquidity providers and market 
+participants to consider market capitalization when assessing the risks associated with informed 
+trading. Moreover, the significant effects of control variables (i.e. the COVID-19 crash or 
+short-selling restriction periods) confirm that market events and regulatory interventions 
+substantially impact liquidity and consensus. This emphasizes the need to carefully evaluate 
+regulatory policies, as interventions may have unintended consequences on market dynamics.
+Future research could explore mechanisms to mitigate the adverse liquidity effects of 
+informed trading while maintaining its benefits for price efficiency. Potential areas include 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+25
+examining whether there are thresholds where the impact of informed trading changes 
+significantly and investigating strategies for liquidity providers to manage risks in the presence 
+of informed trading. Additionally, incorporating other variables such as trading volume or 
+market sentiment indicators could enrich the understanding of these dynamics.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+26
+Table 4 Non-Contemporaneous EGLS Panel relationship between consensus, liquidity and informed trading controlled by absolute 
+value of return
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏
+𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏
+𝑨𝑩𝑺𝑹𝑬𝑻𝝉―𝟏
+ADJ R2
+Panel A. Large-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+2.8261***
+0.05167***
+-0.5713***
+-0.7760***
+-0.5344***
+-0.0002
+-56.2778***
+0.2105
+RS
+0.2746***
+-0.0151
+0.1600***
+0.3352***
+0.0972***
+0.0004
+51.1313***
+0.1392
+DEPTH
+1.0304***
+-0.0690***
+-0.0105***
+-0.3044***
+-0.0347***
+-0.0013***
+-18.2688***
+0.3214
+Panel B. Mid-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering 
+SLOPE
+1.9591***
+-0.0026
+-0.3609***
+-0.9046***
+-0.6477***
+-0.0003***
+-44.1581***
+0.1986
+RS
+0.5328***
+-0.0685***
+0.2218***
+-0.8915***
+-0.3399***
+-0.0006***
+104.8256***
+0.1901
+DEPTH
+0.8886***
+-0.0591***
+-0.1431***
+-0.3041***
+-0.1146***
+-0.0000***
+-16.7415***
+0.2575
+Panel C. Small-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+1.2216***
+0.0274***
+-0.1736***
+-0.3895***
+-0.2174***
+-0.0003***
+-18.7799***
+0.2535
+RS
+0.6814***
+-0.0223
+0.3176***
+1.1847***
+0.2915***
+-0.0004***
+-126.6509***
+0.1806
+DEPTH
+0.7493***
+-0.0967***
+-0.0544***
+-0.2682***
+-0.0286***
+-0.0002***
+-7.0833***
+0.4608
+Table 4 presents the estimates of the non-contemporaneous relationship of the independent variables CDFVPIN, SSB, BUCKET, DECAL and ABSRET with respect to 
+consensus measured by the slope of the LOB, RS and depth of the LOB for the period from November 20th, 2019, to July 13th, 2020. The analysis applies a fixed effects 
+panel data model, which was chosen after conducting the Hausman test to determine its appropriateness. The model estimated is as follows: 𝑌𝑖,τ = β𝑖+ β1·
+𝐶𝐷𝐹𝑉𝑃𝐼𝑁𝑖,𝜏―1 + 𝛽2·𝐶𝑅𝐴𝑆𝐻𝑖,𝜏―1 + 𝛽3·𝑆𝑆𝐵𝑖,𝜏―1 + 𝛽4·𝐷𝐸𝐶𝐴𝐿𝑖,𝜏―1 + 𝛽5·𝐵𝑈𝐶𝐾𝐸𝑇𝑖,𝜏―1 + 𝛽6·𝐴𝐵𝑆𝑅𝐸𝑇𝑖,𝜏―1 + 𝜀𝑖,𝜏. The estimation is carried out using Panel EGLS with crosssection weights, along with White cross-section period clustering to address heteroscedasticity and serial correlation in unbalanced panel data. The model controls 
+for the COVID-19 crash period, the short-selling restriction period, and the initial de-escalation period, ensuring the robustness of the findings across significant 
+market conditions. The resulting coefficients are presented in transformed units, with statistical significance denoted by * and ** for the 95% and 99% confidence 
+levels, corresponding to significance thresholds of 5% and 1%, respectively. Adjusted statistics and t-statistic probabilities were corrected for period clustering to 
+ensure robustness against serial correlation and heteroscedasticity, given the discontinuous temporal observations across stocks.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+27
+Table 5 Non-Contemporaneous EGLS Panel relationship between consensus, liquidity and informed trading controlled by absolute 
+value of residual of returns 
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏
+𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏
+𝑨𝑩𝑺𝑹𝑬𝑺𝑰𝑫𝝉―𝟏
+ADJ R2
+Panel A. Large-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+2.8254***
+0.0495***
+-0.5845***
+-0.7951***
+-0.5512***
+-0.0002
+-76.6195***
+0.2081
+RS
+0.2699***
+-0.0118
+0.1666***
+0.3438***
+0.1075***
+0.0004***
+75.4925***
+0.1399
+DEPTH
+1.0301***
+-0.0700***
+-0.0150***
+-0.3106***
+-0.0401***
+-0.0013***
+-24.6607***
+0.3177
+Panel B. Mid-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering 
+SLOPE
+1.9488***
+-0.0042
+-0.3727***
+-0.9226***
+-0.6587***
+0.0003***
+-53.4417***
+0.1925
+RS
+0.5336***
+-0.0649***
+0.2374***
+0.9092***
+0.3556***
+-0.0006***
+149.3438***
+0.1884
+DEPTH
+0.8870***
+-0.0595***
+-0.1470***
+-0.3091***
+-0.1181***
+0.0001***
+-22.2364***
+0.2530
+Panel C. Small-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+1.2184***
+0.0244***
+-0.1767***
+-0.3936***
+-0.2205***
+-0.0003***
+-23.4534***
+0.2517
+RS
+0.6728***
+-0.0086
+0.3300***
+1.1903***
+0.3073***
+-0.0004***
+182.6828***
+0.1848
+DEPTH
+0.7496***
+-0.0973***
+-0.0554***
+-0.2688***
+-0.0298***
+-0.0002***
+-9.9812***
+0.4611
+Table 5 presents the estimates of the non-contemporaneous relationship of the independent variables CDFVPIN, SSB, BUCKET, DECAL and ABSRESID with respect to 
+consensus measured by the slope of the LOB, RS and depth of the LOB for the period from November 20th, 2019, to July 13th, 2020. The analysis applies a fixed effects 
+panel data model, which was chosen after conducting the Hausman test to determine its appropriateness. The model estimated is as follows: 𝑌𝑖,τ = β𝑖+ β1·
+𝐶𝐷𝐹𝑉𝑃𝐼𝑁𝑖,𝜏―1 + 𝛽2·𝐶𝑅𝐴𝑆𝐻𝑖,𝜏―1 + 𝛽3·𝑆𝑆𝐵𝑖,𝜏―1 + 𝛽4·𝐷𝐸𝐶𝐴𝐿𝑖,𝜏―1 + 𝛽5·𝐵𝑈𝐶𝐾𝐸𝑇𝑖,𝜏―1 + 𝛽6·𝐴𝐵𝑆𝑅𝐸𝑆𝐼𝐷𝑖,𝜏―1 + 𝜀𝑖,𝜏. The estimation is carried out using Panel EGLS with 
+cross-section weights, along with White cross-section period clustering to address heteroscedasticity and serial correlation in unbalanced panel data. The model 
+controls for the COVID-19 crash period, the short-selling restriction period, and the initial de-escalation period, ensuring the robustness of the findings across 
+significant market conditions. The resulting coefficients are presented in transformed units, with statistical significance denoted by * and ** for the 95% and 99% 
+confidence levels, corresponding to significance thresholds of 5% and 1%, respectively. Adjusted statistics and t-statistic probabilities were corrected for period 
+clustering to ensure robustness against serial correlation and heteroscedasticity, given the discontinuous temporal observations across stocks.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+28
+Table 6 Non-Contemporaneous EGLS Panel relationship between consensus, liquidity and informed trading controlled by EGARCH
+SLOPE
+C
+𝑪𝑫𝑭𝑽𝑷𝑰𝑵𝝉―𝟏
+𝑪𝑹𝑨𝑺𝑯𝝉―𝟏
+𝑺𝑺𝑩𝝉―𝟏
+𝑫𝑬𝑪𝑨𝑳𝝉―𝟏
+𝑩𝑼𝑪𝑲𝑬𝑻𝝉―𝟏
+𝑬𝑮𝑨𝑹𝑪𝑯𝝉―𝟏
+ADJ R2
+Panel A. Large-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+3.1701***
+0.1014***
+-0.3853***
+-0.3091***
+-0.3041***
+0.0010***
+-234.1346***
+0.2454
+RS
+0.03685***
+-0.0575***
+0.01752***
+-0.0340***
+-0.0800***
+-0.0008***
+183.3645***
+0.1954
+DEPTH
+1.1492***
+-0.0565***
+0.0619***
+-0.1337***
+0.0503***
+-0.0008***
+-81.9150***
+0.3835
+Panel B. Mid-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering 
+SLOPE
+2.2176***
+0.02378**
+-0.2480***
+-0.6944***
+-0.5540***
+0.0002***
+-159.6743***
+0.2233
+RS
+0.0651***
+-0.1057***
+0.0537***
+0.5586***
+0.2063***
+-0.0005***
+296.9709***
+0.2071
+DEPTH
+1.0213***
+-0.04256***
+-0.0767***
+-0.1730***
+-0.0545***
+-0.0000*
+-82.0410***
+0.3445
+Panel C. Small-Cap Panel EGLS (Cross-section weights) and White cross-section period clustering
+SLOPE
+1.3729***
+0.0697***
+-0.1305***
+-0.2869***
+-0.1802***
+0.0003***
+-85.7516***
+0.2661
+RS
+-0.024330
+-0.1666***
+0.1028***
+0.6926***
+0.0856***
+-0.0001
+423.7381***
+0.2024
+DEPTH
+0.8147***
+-0.0865***
+-0.03300***
+-0.2188***
+-0.0042**
+-0.0003***
+-35.8207***
+0.4916
+Table 6 presents the estimates of the non-contemporaneous relationship of the independent variables CDFVPIN, SSB, BUCKET, DECAL and EGARCH with respect to 
+consensus measured by the slope of the LOB, RS and depth of the LOB for the period from November 20th, 2019, to July 13th, 2020. The analysis applies a fixed effects 
+panel data model, which was chosen after conducting the Hausman test to determine its appropriateness. The model estimated is as follows: 𝑌𝑖,τ = β𝑖+ β1·
+𝐶𝐷𝐹𝑉𝑃𝐼𝑁𝑖,𝜏―1 + 𝛽2·𝐶𝑅𝐴𝑆𝐻𝑖,𝜏―1 + 𝛽3·𝑆𝑆𝐵𝑖,𝜏―1 + 𝛽4·𝐷𝐸𝐶𝐴𝐿𝑖,𝜏―1 + 𝛽5·𝐵𝑈𝐶𝐾𝐸𝑇𝑖,𝜏―1 + 𝛽6·𝐸𝐺𝐴𝑅𝐶𝐻𝑖,𝜏―1 + 𝜀𝑖,𝜏. The estimation is carried out using Panel EGLS with crosssection weights, along with White cross-section period clustering to address heteroscedasticity and serial correlation in unbalanced panel data. The model controls 
+for the COVID-19 crash period, the short-selling restriction period, and the initial de-escalation period, ensuring the robustness of the findings across significant 
+market conditions. The resulting coefficients are presented in transformed units, with statistical significance denoted by * and ** for the 95% and 99% confidence 
+levels, corresponding to significance thresholds of 5% and 1%, respectively. Adjusted statistics and t-statistic probabilities were corrected for period clustering to 
+ensure robustness against serial correlation and heteroscedasticity, given the discontinuous temporal observations across stocks.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+29
+Informed trading, consensus and volatility causality
+Informed trading manifests primarily through market orders (as measured by VPIN), and 
+specific limit orders that achieve greater consensus in certain price zones within the LOB. 
+There is a considerable amount of literature examining the relationship between volatility and 
+informativeness, both in the broader market and within the limit order book [9,54]. However, 
+these studies often overlook causal relationships, particularly when considering unexecuted 
+orders (intentions) within the LOB. We use a Vector Autoregressive model3 (VAR) to explore 
+the dynamics between volatility, consensus in the LOB and informed trading to address this 
+gap in the literature. Specifically, Granger-Causality tests are used to investigate the causal 
+relationships between volatility, consensus in the Limit Order Book, and informed trading. We 
+investigate whether a Granger causal relation exists between volatility and informed trading. 
+We extend this causality analyzing if informed trading influences consensus in the LOB 
+through the presence of informed limit orders, which in turn reduces volatility. This will imply 
+that informed trading Granger-causes consensus when informed limit orders exist in the LOB 
+but does not do so in their absence. We also use impulse-response functions to analyze how 
+current and future values of each variable respond to a one-unit increase in the current value of 
+one of the VAR errors.
+The selected variables include market volatility measured by the absolute value of bucket 
+returns (ABSRET), informed trading (CDFVPIN), and consensus in the LOB (slope of the 
+LOB), which measures the extent to which limit orders achieve consensus in specific price 
+zones. The VAR model is implemented in its reduced form, expressing each variable as a 
+function of its own lagged values, the lagged values of all other variables, and a serially 
+uncorrelated error term. We focus on the event-clock data, using same-period observations. 
+Each equation is estimated using ordinary least squares (OLS) regression, and the number of 
+lagged values to include is determined using criteria such as the Schwarz Criterion (SC). 
+Dummies for the COVID crash period (W1) and the short-selling restriction imposed (W2) are 
+incorporated as exogenous variables.
+The VAR model comprises three equations: the current volatility of portfolio returns as a 
+function of past values of portfolio return volatility, consensus in the LOB, and informed 
+trading; consensus in the LOB as a function of past values of consensus, volatility, and 
+3 VAR is a widely used tool in multivariate time series analysis [63,64].
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+30
+informed trading; and similarly for the informed trading equation. The optimal number of lags, 
+p, is selected based on the Schwarz Criterion (SC). The error terms in these regressions 
+represent the unexpected movements in the variables after accounting for their past values. 
+Thus, the reduced VAR model can be expressed with the following three equations:
+𝐴𝐵𝑆𝑅𝐸𝑇𝑖,𝑡
+= 𝛼1𝑖+
+𝑝
+𝑗=1
+𝛽11,𝑗𝐴𝐵𝑆𝑅𝐸𝑇𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽12,𝑗𝑆𝐿𝑂𝑃𝐸𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽13,𝑗CDFVPIN𝑖,𝑡―𝑗+ 𝛾1
+𝐶𝑅𝐴𝑆𝐻𝑖,𝑡+ 𝛾2𝑆𝑆𝐵𝑖,𝑡+ 𝜖1,𝑖,𝑡
+(13
+)
+𝑆𝐿𝑂𝑃𝐸𝑖,𝑡
+= 𝛼2𝑖+
+𝑝
+𝑗=1
+𝛽21,𝑗 𝐴𝐵𝑆𝑅𝐸𝑇𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽22,𝑗𝑆𝐿𝑂𝑃𝐸𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽23,𝑗CDFVPIN𝑖,𝑡―𝑗+ 𝛾3𝐶𝑅
++ 𝛾4𝑆𝑆𝐵𝑖,𝑡+ 𝜖2,𝑖,𝑡
+(14
+)
+CDFVPIN𝑖,𝑡
+= 𝛼3𝑖+
+𝑝
+𝑗=1
+𝛽31,𝑗𝐴𝐵𝑆𝑅𝐸𝑇𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽32,𝑗𝑆𝐿𝑂𝑃𝐸𝑖,𝑡―𝑗+
+𝑝
+𝑗=1
+𝛽33,𝑗CDFVPIN𝑖,𝑡―𝑗+ 𝛾5
+𝐶𝑅𝐴𝑆𝐻𝑖,𝑡+ 𝛾6𝑆𝑆𝐵𝑖,𝑡+ 𝜖3,𝑖,𝑡
+(15
+)
+𝐴𝐵𝑆𝑅𝐸𝑇i,t is the current absolute value of bucket returns for panel (category) stock 𝑖 in 
+bucket 𝑡. 𝑆𝐿𝑂𝑃𝐸 𝑖,𝑡 is current consensus of LOB for panel (category) stock 𝑖 in bucket 𝑡. 
+𝐶𝐷𝐹𝑉𝑃𝐼𝑁 𝑖,𝑡 is cumulative informed trading for panel (category) stock 𝑖 in bucket 𝑡. 
+ABSRET𝑖,𝑡―𝑗, 𝑆𝐿𝑂𝑃𝐸 𝑖,𝑡―𝑗, 𝐶𝐷𝐹𝑉𝑃𝐼𝑁 𝑖,𝑡―𝑗 are lagged values of the respective variables for 
+panel (category) stock 𝑖 (𝑗 ranges from 1 to 𝑝). 𝐶𝑅𝐴𝑆𝐻𝑖,𝑡 and 𝑆𝑆𝐵𝑖,𝑡 are dummy variables for 
+the COVID-19 crash and short selling ban. 𝛼𝑘𝑖 is the individual fixed effect for category stock 
+𝑖 in equation 𝑘 (𝑘= 1, 2, 3). 𝜖k,i,t are the error terms for each equation, assumed to be serially 
+uncorrelated.
+We conduct stability tests for the VAR model, including unit root tests for the characteristic 
+polynomial and autocorrelation of the optimal lag. The results indicate that the VAR model 
+satisfies the stability condition and that the variables are stationary. Given that different 
+variables are typically correlated in intraday market microstructure applications, the error terms 
+in the reduced form model are also likely to be correlated across equations.
+The results of the VAR model are presented in Table 7. They reveal significant interactions 
+between market volatility, consensus within the LOB, and informed trading across different 
+firm sizes—large-cap, mid-cap, and small-cap. These findings provide valuable insights into 
+the dynamic and complex relationships that shape market behavior, emphasizing the 
+differentiated mechanisms across various market capitalization levels. Given the highThis preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+31
+frequency nature of the data, we will conduct an analysis of the cumulative impact of these lags 
+through impulse-response function graphs and perform a Granger causality test to further 
+investigate these dynamics.
+The volatility equation demonstrates persistence for large-cap stocks, with past volatility 
+significantly influencing current levels. This persistence is consistent with established findings, 
+which indicate that volatility persistence is common in financial time series [22,23]. Moreover, 
+a higher level of consensus in the limit order book, reflecting a well-balanced order book, is 
+associated with reduced volatility, supporting the notion that a stable order book lowers market 
+uncertainty and enhances stability [22,27].  Higher levels of informed trading are also linked 
+to lower volatility, as informed traders facilitate the efficient incorporation of firm-specific 
+information into asset prices, thereby contributing to market stability [2,3]. This stabilizing 
+effect of informed trading is more evident in heavily traded stocks, as suggested by [7]. 
+Additionally, systemic shocks, such as the COVID-19 crash period (CRASH) and the shortselling ban (SSB), significantly increase volatility, underscoring the heightened uncertainty 
+during crises and regulatory interventions.
+The consensus equation for large cap indicates that past volatility negatively impacts the 
+current level of consensus, suggesting that increased volatility disrupts order book balance, 
+leading to trading frictions [27]. The relationship between market consensus and informed 
+trading reveals a complex and, according to the results in Table 7, asymmetric dynamic. We 
+observe that the coefficients where consensus impacts informed trading are statistically 
+significant only at the third lag, indicating a very mild effect. Specifically, a slightly lower 
+consensus may attract informed trading, as suggested by the negative coefficient. In contrast, 
+the reverse relationship—where informed trading positively influences consensus—is 
+statistically significant, but only at specific lags, such as the fifth and the 36th lag. These 
+distributed lags indicate that informed traders in large-cap stocks strategically place orders over 
+multiple periods rather than reacting instantaneously. 
+For mid-caps, the interaction between volatility, informed trading, and LOB consensus is 
+more dynamic. Similar to large-caps, volatility exhibits significant persistence, and LOB 
+consensus reduces volatility. As shown in Table 7, the coefficients related to LOB consensus 
+are consistently negative and significant, indicating that a balanced order book plays an 
+essential role in stabilizing mid-cap stocks, possibly due to their reduced analyst coverage 
+compared to large caps  [3]. Informed trading also plays a role in mitigating volatility for midcaps, as evidenced by the negative and significant coefficient in the volatility equation. 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+32
+Additionally, informed trading positively influences LOB consensus, as seen in the significant 
+positive coefficients in Table 7, suggesting that limit informed orders contribute to a more 
+balanced order book, ultimately enhancing market stability [14,19]. The dynamic interplay 
+between informed trading and consensus highlights the responsiveness of mid-cap markets to 
+informed activity. However, consensus negatively impacts informed trading in mid-caps, as 
+the negative coefficient indicates. Interestingly, past volatility significantly influences 
+informed trading levels in mid-caps, with positive and significant coefficients. This suggests 
+that heightened volatility and dispersed beliefs on LOB present opportunities for traders to 
+exploit information asymmetries, which are more prevalent in these less liquid stocks [55]. 
+Informed trading decreased significantly for mid-caps during the SSB, highlighting that traders 
+tend to become more cautious in less liquid environments during periods of heightened 
+uncertainty [29]. The exogenous impacts of systemic shocks, such as the COVID-19 crash and 
+the short-selling ban (SSB), have been observed to consistently increase volatility across largecap and mid-cap stocks. This underscores the significant influence of systemic shocks and 
+regulatory interventions on market behavior. 
+With regard to small-caps, heightened sensitivity to market conditions is evident. Volatility 
+remains persistent, with past volatility having a significant impact on current levels, consistent 
+with findings for larger capitalization stocks. The VAR results indicate that volatility 
+significantly influences informed trading in small caps, suggesting that increased market 
+uncertainty leads to greater informed trading activity rather than the other way around. The 
+effect of LOB consensus on volatility is also significant, though less pronounced than for midcap stocks. Informed trading also reduces volatility in small caps, as shown by the negative 
+coefficients in the volatility equation, reinforcing its stabilizing role [8].  However, the 
+relationship between informed trading and LOB consensus is not significant in small caps. This 
+indicates that informed trading does not have a meaningful impact on achieving a balanced 
+order book in less liquid stocks. The lack of significance in the coefficients suggests that the 
+stabilizing effect of informed trading on market consensus is weaker in small caps, possibly 
+due to their reduced depth and heightened volatility, which limit the effectiveness of informed 
+orders in stabilizing the order book. As for mid-caps, past volatility significantly influences 
+informed trading levels in small caps, with positive and significant coefficients. The relatively 
+low liquidity in small caps exacerbates these effects. The exogenous impacts of the COVID19 crash increased volatility and led to a decrease in informed trading, while the short-selling 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+33
+ban (SSB) significantly impacted both volatility and trading behavior, with varying effects on 
+consensus depending on market capitalization.
+The differences observed in the interactions between volatility, informed trading, and LOB 
+consensus across large-caps, mid-caps, and small-caps can be attributed to market structure, 
+liquidity, and information asymmetries. Large caps benefit from higher liquidity, greater order 
+book depth, and extensive analyst coverage, which contribute to a stable environment where 
+informed trading effectively stabilizes volatility. The presence of numerous market participants 
+also helps absorb shocks, reducing their impact on informed trading behavior.
+Mid-caps exhibit a different dynamic, where maintaining a well-balanced LOB plays a more 
+role in ensuring stability. Due to their lower liquidity and less extensive coverage compared to 
+large-caps, the role of LOB consensus is more prominent in mid-cap stocks. The 
+responsiveness of mid-caps to informed trading is evident, as informed traders contribute 
+directly to price stabilization and order book balance.
+For small-caps, heightened sensitivity to volatility is linked to lower liquidity and reduced 
+market depth, exacerbating information asymmetries. In these markets, increased volatility 
+appears to drive more informed trading, possibly due to greater opportunities for exploiting 
+informational advantages. This highlights the dual role of informed trading: while it serves as 
+a stabilizing force in more liquid markets, it exacerbates when volatility increases in less liquid 
+markets [2,6,8].
+In summary, the VAR model analysis highlights distinct dynamics across different market 
+capitalizations. Informed trading enhances LOB consensus in mid-cap stocks, contributing to 
+market stability. However, the stabilizing role of informed trading diminishes in small-cap 
+stocks, where increased volatility leads to heightened trading activity driven by information 
+asymmetries, and the impact on consensus is not significant. These findings align with the 
+existing literature, emphasizing the dual role of informed trading in both improving market 
+stability through efficient information integration and potentially increasing volatility in less 
+liquid markets [2,6,8].
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+34
+Table 7 Coefficients of the reduced VAR model for each category of stocks
+Large-Cap
+Mid-Cap
+Small-Cap
+ABSRET
+SLOPE·10⁻³
+CDFVPIN
+ABSRET
+SLOPE·10⁻³
+CDFVPIN
+ABSRET
+SLOPE·10⁻³
+CDFVPIN
+ABSRET (-1)
+0.1121***
+-18.1424***
+0.1487
+0.1459***
+-15.0874***
+0.1613*
+0.1556***
+-9.8900***
+0.3315***
+ABSRET (-2)
+0.0922***
+-4.8582**
+0.0421
+0.0854***
+-7.6673***
+0.0990
+0.1127***
+-4.4161***
+0.0060
+ABSRET (-3)
+0.0559***
+-4.4124**
+0.1165
+0.0605***
+-5.0110***
+-0.0607
+0.0438***
+-1.5587
+-0.0249
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+ABSRET (-49) / (-19)
+0.0111*
+-0.8897
+0.0314
+0.0047
+0.0140
+-0.0318
+0.0275***
+0.9063
+0.0336
+ABSRET (-50) / (-20)
+0.0121**
+-1.1914
+-0.0901
+0.0045
+1.1239
+-0.0423
+0.0278***
+1.1458
+0.0546
+ABSRET (-51) / (-21)
+0.0141***
+1.0382
+-0.1051
+0.0077
+2.2580*
+-0.0805
+0.0228***
+0.7000
+0.0236
+SLOPE·10⁻³ (-1)
+-0.0002***
+0.1314***
+0.0003
+-0.0003***
+0.1319***
+-0.0012***
+-0.0002***
+0.1252***
+-0.0008***
+SLOPE·10⁻³ (-2)
+-0.0001***
+0.0877***
+0.0004
+-0.0001***
+0.0891***
+0.0001
+-0.0001***
+0.0881***
+-0.0003
+SLOPE·10⁻³ (-3)
+-0.0000
+0.0682***
+-0.0004**
+-0.0000***
+0.0538***
+-0.0001
+-0.0000
+0.0662***
+-0.0003
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+SLOPE·10⁻³ (-49) / (-19)
+0.0000
+0.0117**
+-0.0002
+0.0000
+0.0117**
+-0.0002
+0.0000
+0.0265***
+0.0000
+SLOPE·10⁻³ (-50) / (-20)
+0.0000
+0.0193***
+0.0002
+0.0000
+0.0193***
+0.0002
+0.0000
+0.0229***
+0.0005
+SLOPE·10⁻³ (-51) / (-21)
+0.0000
+0.0151***
+-0.0002
+0.0000
+0.0151***
+-0.0002
+-0.0000
+0.0325***
+0.0001
+CDFVPIN (-1)
+-0.0008***
+0.1409
+0.9875***
+-0.0010***
+0.1315**
+1.0011***
+-0.0006***
+0.0792
+1.0259***
+CDFVPIN (-2)
+0.0004
+0.0533
+0.0065
+0.0007***
+-0.0623
+-0.0169***
+0.0007***
+-0.0539
+-0.0290***
+CDFVPIN (-3)
+0.0004
+-0.1216
+0.0003
+-0.0002
+0.1303
+0.0047
+-0.0004
+0.0155
+-0.0009
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+CDFVPIN (-5)
+...
+245.6696***
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+CDFVPIN (-36)
+...
+297.4849***
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+...
+CDFVPIN (-49) / (-19)
+-0.0004
+0.1950
+-0.0030
+-0.0004
+0.1950
+-0.0030
+0.0002
+-0.1433
+0.0135***
+CDFVPIN (-50) / (-20)
+0.0003
+-0.1789
+0.0053
+0.0003
+-0.1789
+0.0053
+-0.0002
+0.0694
+-0.0001
+CDFVPIN (-51) / (-21)
+0.0002
+-0.0690
+-0.0103
+0.0002
+-0.0690
+-0.0103
+0.0003
+0.0058
+-0.0182***
+CRASH
+0.0001**
+-0.0186*
+0.0002
+0.0001***
+0.0195***
+-0.0005
+0.0001***
+-0.0103
+-0.0025***
+SSB
+0.0002***
+-0.0233*
+0.0003
+0.0001***
+-0.0470***
+-0.0010*
+0.0002***
+-0.0483***
+-0.0001
+R-SQUARED
+0.1891
+0.4075
+0.9710
+0.1859
+0.2912
+0.9724
+0.1856
+0.3200
+0.9692
+ADJ. R-SQUARED
+0.1867
+0.4058
+0.9709
+0.1845
+0.2900
+0.9724
+0.1847
+0.3193
+0.9691
+Table 7: This table presents the estimates of the Vector Autoregressive (VAR) model applied to volatility, consensus and informed trading for large-, mid-, and smallcap stocks. Although the full model contains more lags, this table only includes the coefficients for the first and last lags from the optimal lag selection process. The 
+VAR model is structured according to the following equations:  
+ ABSRETi,t = α1i + ∑p
+j=1 β11,jABSRETi,t―j + ∑p
+j=1 β12,jSLOPEi,t―j + ∑p
+j=1 β13,jCDFVPINi,t―j + γ1𝐶𝑅𝐴𝑆𝐻i,t + γ2SSBi,t + 𝜖1,i,t; 
+ 𝑆𝐿𝑂𝑃𝐸i,t = α2i + ∑p
+j=1 β21,j 𝐴𝐵𝑆𝑅𝐸𝑇i,t―j + ∑p
+j=1 β22,j𝑆𝐿𝑂𝑃𝐸i,t―j + ∑p
+j=1 β23,jCDFVPINi,t―j + γ3𝐶𝑅𝐴𝑆𝐻i,t + γ4𝑆𝑆𝐵i,t + ϵ2,i,t; 
+ CDFVPINi,t = α3i + ∑p
+j=1 β31,j𝐴𝐵𝑆𝑅𝐸𝑇i,t―j + ∑p
+j=1 β32,j𝑆𝐿𝑂𝑃𝐸i,t―j + ∑p
+j=1 β33,jCDFVPINi,t―j + γ5𝐶𝑅𝐴𝑆𝐻i,t + γ6𝑆𝑆𝐵i,t + 𝜖3,i,t
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+35
+Granger causality and impulse response analysis.
+A Granger causality analysis is conducted to determine if the flow of information from 
+informed trading precedes and influences market consensus rather than vice versa, as suggested 
+by the preliminary results. This observed asymmetry underscores the importance of informed 
+limit orders as key determinants of market consensus behavior. The analysis will examine all 
+pairwise relationships among the three variables—volatility, consensus, and informed 
+trading—within the VAR framework, providing further insights into their dynamic interactions.
+The analysis of accumulated responses to innovations in informed trading and consensus 
+for the three categories of stocks – large-caps, mid-caps, and small-caps – reveals significant 
+differences in how volatility and consensus respond in each of these groups. These differences 
+can be explained by factors such as liquidity, market depth, and the ability of informed 
+investors to influence market equilibrium. Furthermore, the Granger Causality test results 
+support and complement these observations, providing evidence of specific causal 
+relationships among the variables across different capitalization segments.
+Table 8 Granger Causality/Block Exogeneity Wald Tests
+DEPENDENT VARIABLE
+REGRESSORS
+Large-Cap
+Informed Trading
+Consensus in LOB
+Volatility
+Informed Trading
+-
+0.1665
+0.1018
+Consensus in LOB
+0.0307
+-
+0.0000
+Volatility
+0.0624
+0.0000
+-
+Mid-Cap
+Informed Trading
+Consensus in LOB
+Volatility
+Informed Trading
+-
+0.0000
+0.0178
+Consensus in LOB
+0.0307
+-
+0.0000
+Volatility
+0.0000
+0.0000
+-
+Small-Cap
+Informed Trading
+Consensus in LOB
+Volatility
+Informed Trading
+-
+0.1963
+0.0000
+Consensus in LOB
+0.1055
+-
+0.0000
+Volatility
+0.0123
+0.0000
+-
+Table 8 presents the estimates (p-values) for the Granger causality tests. 
+According to the Granger causality tests (see results in Table 8), informed trading drives 
+changes in consensus in large-cap stocks. This finding reinforces the role of informed orders 
+in shaping market consensus by improving the balance and stability of the Limit Order Book, 
+particularly in volume-based settings. Figure 1(a) bottom demonstrates that an initial 
+innovation in informed trading leads to a statistically significant increase in consensus, with 
+the response stabilizing over time at an elevated level relative to its initial state. This lasting 
+impact highlights the capacity of informed trading to promote a well-structured and stable order 
+book. In contrast, Figure 1(b) shows that while a shock in consensus in large caps can reduce 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+36
+participation from informed investors, this effect is relatively weak. Greater consensus creates 
+a more reliable market environment, but it does not directly influence informed trading activity 
+in highly liquid markets. Instead, factors such as volume and market depth play a more critical 
+role in attracting informed investors. The accumulated response of informed trading to 
+innovations in consensus reveals an initial reaction that diminishes over time, with confidence 
+intervals confirming that these changes are not statistically significant.
+Informed trading unidirectionally causes volatility in large-cap stocks, while a bidirectional 
+relationship exists between consensus and volatility. As shown in Figure 1, panel (a) top, the 
+accumulated impulse response analysis indicates that volatility decreases immediately after an 
+innovation in informed trading for large caps. This short-term stabilization aligns with previous 
+literature , which associates informed trading with the efficient incorporation of information. 
+However, this effect diminishes in the long term, likely due to noise factors and heightened 
+activity in highly liquid markets [7] .
+Overall, informed trading plays a pivotal role not only in reducing market volatility but also 
+in enhancing market consensus by fostering an orderly accumulation of orders within the LOB. 
+These findings support the notion that informed traders improve market quality by stabilizing 
+the order book [3]. However, while informed trading significantly enhances consensus, its 
+long-term impact on reducing volatility is limited, likely due to the complexities of highly 
+liquid market dynamics.
+In mid-cap stocks, consensus and informed trading exhibit a bidirectional relationship, as 
+do consensus and volatility. Furthermore, informed trading and volatility also show a two-way 
+relationship. The bidirectional relationship between consensus and informed trading suggests 
+that, in less liquid markets, market participants adjust their expectations and behaviors based 
+on both new information and prevailing consensus, reinforcing market stability. The decline in 
+volatility in response to innovations in consensus and informed trading shows that both factors 
+play complementary roles in stabilizing the market, as reported in previous studies.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+37
+Figure 1 Impulse-response 
+Panel A. Large-Cap
+(a) Large-Cap accumulated response of volatility 
+and consensus of LOB to an informed trading 
+innovation
+(b) Large-Cap accumulated response of volatility 
+and informed trading to a consensus of LOB 
+innovation.
+Panel B. Mid-Cap
+(c) Mid-Cap accumulated response of volatility 
+and consensus of LOB to an informed trading 
+innovation
+(d) Mid-Cap accumulated response of volatility and 
+informed trading to a consensus of LOB innovation.
+-.0004
+-.0002
+.0000
+.0002
+.0004
+.0006
+.0008
+25
+50
+75
+100
+Accumulated Response of ABSRETUN to VPIN50_CDF Innov
+-300
+-200
+-100
+0
+100
+200
+300
+25
+50
+75
+100
+Accumulated Response of SLOPE to VPIN50_CDF Innovat
+Accumulated Response to Cholesky One S.D. (d.f. adjusted) I
+– 2 analytic asymptotic S.E.s
+-.003
+-.002
+-.001
+25
+50
+75
+100
+Accumulated Response of ABSRETUN to SLOPE Innovat
+-.05
+.00
+.05
+.10
+.15
+25
+50
+75
+100
+Accumulated Response of VPIN50_CDF to SLOPE Innova
+Accumulated Response to Cholesky One S.D. (d.f. adjusted)
+– 2 analytic asymptotic S.E.s
+-.0012
+-.0008
+-.0004
+25
+50
+75
+100
+Accumulated Response of ABSRET to VPIN50_CDF Innovatio
+100
+200
+300
+400
+500
+25
+50
+75
+100
+Accumulated Response of SLOPE to VPIN50_CDF Innovatio
+Accumulated Response to Cholesky One S.D. (d.f. adjusted) In
+– 2 analytic asymptotic S.E.s
+-.003
+-.002
+-.001
+25
+50
+75
+100
+Accumulated Response of ABSRET to SLOPE Innovation
+-.3
+-.2
+-.1
+.0
+25
+50
+75
+100
+Accumulated Response of VPIN50_CDF to SLOPE Innovatio
+Accumulated Response to Cholesky One S.D. (d.f. adjusted) In
+– 2 analytic asymptotic S.E.s
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+38
+Figure 1. Impulse-response (continued)
+Panel C. Small-Cap
+(e) Small-Cap accumulated response of volatility 
+and consensus of LOB to an informed trading 
+innovation
+(f) Small-Cap accumulated response of volatility and 
+informed trading to a consensus of LOB innovation.
+Figure 1. Impulse-response of VAR: Response to Cholesky One S.D. Innovations of Volatility and consensus 
+of LOB to Informed trading innovations up-left panel; Response to Cholesky One S.D. Innovations of 
+Volatility and informed trading to Informed consensus of the LOB up-left panel. (a, b) in large cap category, 
+(c, d) in mid cap category and (e, f) in small cap category.
+The accumulated response analysis indicates that consensus has a clear effect in reducing 
+volatility in mid-caps, where a stabilization trend is observed (Figure 1 (d)). Similarly, the 
+accumulated response of volatility to innovations in informed trading in mid-caps (Figure 1 (c) 
+top) reveals a significant decrease in volatility. This decline suggests that informed trading has 
+a stabilizing effect, similar to the observed behavior in large caps. However, this decrease is 
+more pronounced in mid-caps, likely due to the comparatively lower liquidity and market depth, 
+making these markets more responsive to changes in informed trading. Over time, the 
+stabilizing effect remains significant, indicating a lasting impact of informed trading on market 
+volatility compared to large caps.
+In terms of the response of volatility to innovations in consensus (Figure 1 (d) top), the 
+accumulated response analysis shows that volatility also decreases significantly following an 
+innovation in consensus. This supports the role of consensus in reducing uncertainty and 
+stabilizing prices, which is particularly important in mid-caps due to their lower analyst 
+.0000
+.0005
+.0010
+25
+50
+75
+100
+Accumulated Response of ABSRET to VPIN50_CDF Innovatio
+0
+100
+200
+300
+400
+500
+25
+50
+75
+100
+Accumulated Response of SLOPE to VPIN50_CDF Innovatio
+Accumulated Response to Cholesky One S.D. (d.f. adjusted) In
+– 2 analytic asymptotic S.E.s
+-.004
+-.003
+-.002
+-.001
+25
+50
+75
+100
+Accumulated Response of ABSRET to SLOPE Innovation
+-.20
+-.15
+-.10
+-.05
+.00
+.05
+25
+50
+75
+100
+Accumulated Response of VPIN50_CDF to SLOPE Innovatio
+Accumulated Response to Cholesky One S.D. (d.f. adjusted) In
+– 2 analytic asymptotic S.E.s
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+39
+coverage compared to large caps. The persistent negative response over time indicates that 
+consensus contributes to maintaining a stable market environment, reducing volatility in the 
+medium term.
+The accumulated response of consensus to innovations in informed trading (Figure 1 (c) 
+bottom) suggests an initial increase in consensus following an innovation in informed trading. 
+This positive response indicates that informed trading enhances consensus in the LOB, helping 
+to stabilize market dynamics. Over time, this response gradually stabilizes, with confidence 
+intervals suggesting statistical significance that diminishes over time. In contrast, the response 
+of informed trading to innovations in consensus (Figure 1 (d) bottom) shows an initial negative 
+effect, consistent with the estimated coefficient of the first lag of consensus explaining 
+informed trading in the VAR model. However, subsequent lags are not statistically significant, 
+indicating that the effect is not reinforced over time. Despite the lack of significance in later 
+periods, the accumulated response remains negative and does not revert to zero, suggesting that 
+the initial impact has a lasting influence on informed trading dynamics. This implies that while 
+consensus fluctuations may momentarily influence informed trading, the effect persists in an 
+accumulated manner rather than being strongly driven by ongoing innovations in consensus. 
+Confidence intervals indicate that statistical significance fades over time, reinforcing the idea 
+that consensus alone does not substantially drive informed trading activity in mid-caps.
+Overall, the bidirectional relationships between consensus, informed trading, and volatility 
+in mid-caps contribute to a stabilizing cycle. Innovations in informed trading initially influence 
+consensus, albeit with a diminishing effect over time, while consensus plays a stronger and 
+more persistent role in reducing volatility. This dynamic interaction suggests that while 
+informed trading can enhance market stability by fostering consensus, its impact is not 
+sustained over time. Conversely, consensus appears to have a more direct and lasting effect on 
+stabilizing volatility, reinforcing the importance of order book dynamics in maintaining market 
+stability for mid-cap stocks.
+In small-cap stocks, there is no evidence of causality between informed trading and 
+consensus. However, a bidirectional relationship exists between consensus and volatility, and 
+informed trading bidirectionally causes volatility. This dynamic suggests that in less liquid 
+markets, consensus formation has a limited impact on informed trading activity, likely due to 
+lower market depth and fewer opportunities for informed investors to significantly influence 
+consensus. Volatility significantly decreases following innovations in both consensus and 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+40
+informed trading, underscoring the vulnerability of these markets to fluctuations and the 
+importance of maintaining strong consensus to minimize volatility’s impact.
+The accumulated response analysis for volatility to innovations in informed trading in smallcaps (Figure 1 (e) top) shows that volatility initially decreases after an innovation in informed 
+trading. However, unlike large-caps and mid-caps, this reduction in volatility is less 
+pronounced and tends to stabilize at a higher level over time. This behavior reflects the 
+challenges of maintaining stability in less liquid markets. Confidence intervals suggest that the 
+effect, while present, may not be as robust or sustained as in more liquid segments. Similarly, 
+the response of volatility to innovations in consensus (Figure 1 (f) top) reveals that volatility 
+decreases after a consensus innovation, indicating that consensus plays a stabilizing role in 
+small caps. However, this effect is limited, reflecting the difficulties in achieving long-term 
+stability in smaller markets.
+For small caps, the bidirectional relationship between consensus and informed trading 
+appears weak and short-lived. The response of consensus to innovations in informed trading 
+(Figure 1 (e) bottom) shows a minimal initial positive effect that quickly fades, suggesting that 
+informed trading has limited influence in enhancing consensus in less liquid markets. Similarly, 
+the response of informed trading to innovations in consensus (Figure 1 (f) bottom) remains 
+weak, with the accumulated response indicating that increases in consensus do not significantly 
+alter informed trading behavior. This lack of sustained interaction reflects the constraints of 
+smaller markets, where limited market depth and low liquidity hinder the long-term impact of 
+these dynamics. Confidence intervals confirm that neither effect remains statistically 
+significant beyond the initial response period.
+In summary, for small caps, the accumulated response analyses indicate that both consensus 
+and informed trading contribute to reducing volatility, but their effects are weaker and less 
+sustained compared to larger market segments. The limited liquidity and depth of small caps 
+make achieving long-term stability more challenging, and the interactions between consensus 
+and informed trading are less pronounced. This highlights the unique dynamics of small-cap 
+markets, where the stability of market conditions is more constrained, and trading behavior has 
+a less predictable influence on consensus and volatility.
+Joint conditional probability results
+In the final part of this study, we aim to test Hypothesis H3 by examining whether the 
+dispersion of beliefs in the LOB serves as a better predictor of market volatility than informed 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+41
+trading. This is based on the observation that the dispersion of beliefs provides insights not 
+only into the actual transactions that have occurred but also reflects the intentions of traders as 
+shown in the LOB. In our analysis we employed Conditional Probability Tables (CPTs), as 
+shown in Table 9, due to their effectiveness in representing complex, non-linear associations 
+and offering clear probabilistic predictions. This approach allows for a detailed exploration of 
+the dynamics between informed trading, the level of consensus in the LOB and volatility, 
+focusing on the capitalization-based portfolios. We analyzed lagged VPIN variations between 
+buckets to evaluate short-term changes in informed trading, the CDF of VPIN to measure 
+accumulated informed trading and the slope of the LOB to assess market consensus.
+The VPIN variation between adjacent buckets reflects how the moving average of order 
+imbalance changes over time. This variation serves as a proxy for assessing whether informed 
+trading is being incorporated into market dynamics and its subsequent effect on volatility. 
+VPIN variation is particularly valuable for analyzing short-term changes in trading activity, as 
+it captures incremental shifts in imbalance that may indicate increased or decreased informed 
+trading over consecutive periods. On its part, the CDF of VPIN represents the cumulative 
+probability that VPIN will take a value less than or equal to a given threshold. The CDF of 
+VPIN is used to assess the accumulation of informed trading activity over time, providing a 
+longer-term perspective on market conditions. High CDF values suggest that informed trading 
+has accumulated to a level that may compromise market stability, leading to increased volatility 
+induced by a lack of liquidity, particularly under stressed market conditions. When the CDF 
+approaches 0.99 for stocks, it may indicate market toxicity—a phenomenon discussed by [5].
+The analysis of large-cap stocks (Panel a) indicates that when the slope of the LOB falls 
+within the lower range (40.6 - 705.17) at bucket τ–1, 50.72% of returns are in the low-volatility 
+range (between 0.0 to 0.01) at bucket τ. In contrast, within the highest slope range (4901.66 - 
+10926.13), 90.72% of returns are clustered in the low-volatility category, with only 0.11% in 
+higher volatility categories. This trend is even more pronounced for small-cap stocks, where, 
+in the highest slope ranges (2763.78 - 5631.29), 97.51% of returns are found within the lowest 
+volatility range. Mid-cap stocks exhibit a similar stabilizing effect: in lower slope ranges (22.0 
+- 405.32) 52.93% of returns fall within the 0.0 to 0.01 range, increasing to 87.58% in the highest 
+slope range (3157.23 - 6013.6). In small, mid, and large-caps, a consistent pattern emerges: a 
+low slope of the LOB corresponds to a lower concentration of returns in the low-volatility range, 
+while a high slope is associated with an increased concentration of low-volatility returns. The 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+42
+magnitude of this effect varies across stock categories, being more pronounced in small-caps 
+due to their lower liquidity and analytical coverage.
+When analyzing the impact of VPIN variation, no significant effect is observed in terms of 
+the concentration of low volatility returns. However, there are notable differences between 
+portfolios based on market capitalization. For large-cap stocks, a positive variation of VPIN 
+(0.0 - 0.04) results in 80.57% of the returns being concentrated in the low-volatility range, 
+while a negative change of a similar magnitude leads to a nearly identical value of 80.50%. For 
+mid-cap stocks the percentage of returns in the low-volatility range increases, ranging from 
+82.99% to 84.47%, with no significant relationship observed between the VPIN variation and 
+greater or lower percentages. In the case of small-cap stocks, a positive VPIN variation (0.0 - 
+0.04) results in a high concentration of low returns, reaching 93.86%, whereas a similar 
+negative variation throws a percentage of 92.79% of returns in the low-volatility range. 
+According to these results, we could say that volatility is generally lower in lower capitalization 
+stocks but the variation in VPIN has no influence on volatility. 
+The examination of the CDF of VPIN reveals that small caps consistently show a high 
+concentration of low returns across all CDF ranges, with a slight decrease in the higher ranges 
+(93.46% in low ranges vs. 91.03% in high ranges). For mid-caps, the concentration of low 
+returns increases from 79.26% in the lower CDF ranges to 83.89% in higher ranges. In large 
+caps, the concentration slightly decreases from 80.87% in lower CDF levels to 78.98% in 
+higher levels. These observations suggest that the CDF of VPIN is a less effective predictor 
+across categories, though extreme CDF values (close to 1) may still predict increased volatility 
+under high market stress conditions.
+Our findings demonstrate that the slope of the LOB is a more effective predictor of market 
+volatility than informed trading metrics, such as VPIN. This conclusion contrasts with previous 
+studies that highlighted the predictive power of informed trading in identifying volatility and 
+adverse market events. The results indicate that market consensus, reflected by the slope of the 
+LOB, more directly signals market stability. This could be because the slope effectively 
+captures the aggregate willingness of market participants to trade at different prices. A steep 
+slope indicates a concentration of orders around the current price, suggesting a strong 
+consensus on the asset’s value and, consequently, lower volatility. Additionally, a steep slope 
+implies greater market depth, which enhances liquidity and minimizes the impact of large 
+orders on price fluctuations. In conclusion, our results highlight the slope as the best predictor 
+of volatility across small, mid, and large-caps, with a pronounced effect in small-caps. These 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+43
+results are in line with research emphasizing the importance of the LOB in price formation and 
+volatility [17]. 
+Table 9 Conditional probability distributions of volatility based on the consensus of the 
+LOB and informed trading.
+(a). Large-cap. Slope of the LOB.
+(b). Large-cap. VPIN variation.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+44
+Table 9 Conditional probability distributions of volatility based on the consensus of the 
+LOB and informed trading. (Cont.)
+(c) Large-cap. CDF of VPIN.
+ (d) Mid-cap. Slope of the LOB.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+45
+Table 9 Conditional probability distributions of volatility based on the consensus of the 
+LOB and informed trading. (Cont.)
+ 
+(e)  Mid-cap. VPIN variation.
+(f)  Mid-cap. CDF of VPIN.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+46
+Table 9 Conditional probability distributions of volatility based on the consensus of the 
+LOB and informed trading. (Cont.)
+(g) Small-cap. Slope of the LOB.
+(h)  Small-cap. VPIN variation.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+47
+Table 9 Conditional probability distributions of volatility based on the consensus of the 
+LOB and informed trading. (Cont.)
+ 
+(i)  Small-cap. CDF of VPIN.
+Table 9. Conditional probability distributions of volatility based on the consensus of the LOB and informed 
+trading. Panels (a), (d), and (g) show volatility distributions at bucket τ given consensus of LOB at bucket 
+τ–1 for large-, mid- and small-caps. Panels (b), (e), and (h) display volatility distributions at τ based on the 
+variation in informed trading at bucket τ–1. Finally, panels (c), (f), and (i) present volatility distributions 
+at τ given informed trading probability at bucket τ–1.
+Our study also questions the previously assumed superiority of informed trading metrics in 
+predicting volatility. VPIN was not designed to predict volatility directly but rather to measure 
+market toxicity. Extreme values of the CDF of VPIN can anticipate volatility that arises from 
+by liquidity issues, related to the exit of uninformed traders from the order book. On the other 
+hand, while VPIN reflects information asymmetry and the potential for informed trading to 
+increase volatility, it can also rise in illiquid markets, where it may fail to distinguish between 
+volatility caused by informed trading and that caused by limited market depth. This limitation 
+undermines VPIN’s ability to fully explain the drivers of volatility compared to the LOB slope, 
+which better captures the stabilizing influences of market consensus and liquidity. 
+Our results demonstrate a strong and consistent correlation between the slope of the LOB 
+and volatility compared to VPIN, underscoring its potential as a reliable predictor across 
+different stock categories. By demonstrating the superiority of the LOB slope, we shift the 
+focus toward market structure and collective behavior metrics, rather than focusing solely on 
+information asymmetry.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+48
+Conclusions
+This comprehensive study set out to investigate the intricate relationships between informed 
+trading, consensus, market liquidity and volatility among selected constituents of the IBEX 35 
+index. To this end, 18 companies were analyzed, with these companies being categorized into 
+large-cap, mid-cap, and small-cap portfolios. The aim was to understand how these dynamics 
+vary across different market capitalizations under normal and extraordinary market conditions, 
+including the exceptional period of the COVID-19 pandemic, and the short-selling ban on 
+Spanish stocks. The findings of the study provide nuanced insights into the role of informed 
+trading and its impact on market quality, consensus within the Limit Order Book, liquidity and 
+volatility. Specifically, the study set out to test several hypotheses in order to unravel these 
+complex interactions.
+The results obtained lend support to Hypothesis H1a, which suggests that the presence of 
+informed traders leads to an increase in the alignment of beliefs within the LOB across all 
+market capitalizations. This finding suggests that informed traders contribute to a more 
+cohesive market consensus by incorporating their superior information into limit orders, 
+thereby enhancing the informativeness of the order book. This finding is consistent with the 
+observations reported by [56], who noted that insider trading can enhance trade informativeness 
+and support efficient price discovery. However, it is important to note that while informed 
+trading enhances consensus, the degree of this effect varies among large-cap, mid-cap, and 
+small-cap firms, potentially due to differences in liquidity and information asymmetry.
+Contrary to Hypothesis H1b, the present study found that informed trading generally 
+reduces the bid-ask spread, thereby improving external liquidity. This unexpected result 
+suggests that informed traders may provide liquidity by placing limit orders that narrow the 
+spread, possibly aiming to capitalize on their informational advantage in a more cost-effective 
+manner. This observation is consistent with the findings of [57], who proposed that informed 
+traders might delay trades until favorable conditions arise, thus reducing the illiquidity 
+component of the spread. Furthermore, [58] highlights how high-frequency market makers 
+(HFMMs) can quote narrower spreads even under high volatility by limiting the available depth, 
+effectively reducing cross-subsidization from uninformed to informed traders and leading to a 
+rise in the relative spread. However, with regard to internal liquidity, our findings indicate that 
+informed trading reduces order book depth, thereby supporting the notion that it consumes 
+internal liquidity. Informed traders appear to deter uninformed liquidity providers from 
+submitting limit orders at multiple price levels, leading to a thinner order book. This effect is 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+49
+more pronounced in mid-cap and small-cap firms, which may be more sensitive to shifts in 
+internal liquidity due to lower overall market depth. This behavior aligns with [1] theoretical 
+model, which suggests that informed trading can discourage uninformed participants, reducing 
+liquidity at various price levels.
+In large-cap companies, a unidirectional relationship was observed, wherein informed 
+trading positively influenced consensus within the limit order book (LOB), thereby supporting 
+Hypothesis H2a. The enhancement of consensus through the practice of informed trading 
+appears to temporarily reduce market volatility by improving price discovery mechanisms. 
+This finding corroborates previous research indicating that informed trading can mitigate 
+market uncertainty by accelerating the incorporation of information into prices [2,3]. However, 
+this effect is not significant in small-cap companies, where informed trading does not influence 
+(Granger) consensus, nor does consensus influence informed trading, confirming the absence 
+of a causal relationship.
+In the context of mid-cap companies, the relationship becomes more intricate. The present 
+study reveals that informed trading and consensus exert a reciprocal influence on each other, 
+suggesting a dynamic interplay wherein market participants adjust their beliefs based on both 
+new information and prevailing consensus. A lack of consensus attracts informed trading, 
+which in turn increases consensus, leading to a reinforcing cycle. This mutual reinforcement 
+contributes to market stability by reducing volatility over time. The findings underscore the 
+significance of both informed trading and consensus in enhancing market quality in mid-cap 
+stocks.
+Furthermore, the findings of this study demonstrate a bidirectional negative relationship 
+between consensus and volatility across all size categories, thereby providing support for 
+Hypothesis H2b. It is evident that higher consensus within the LOB is associated with reduced 
+volatility, while increased volatility can disrupt consensus among investors. This interplay 
+suggests that, in large-cap firms where liquidity is ample, consensus functions as a stabilizing 
+force in the market. However, in smaller-cap firms, this relationship is less pronounced due to 
+limited liquidity, making it more challenging to maintain consistent consensus.
+The findings of this study provide support for Hypothesis H2c, and in the context of mid 
+and small-cap companies, the results indicate that market volatility attracts informed trading. 
+This finding suggests that, in less liquid markets, high levels of volatility may exacerbate 
+informed trading, increasing trading activity as market participants react to uncertainty. The 
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+50
+limited depth and liquidity inherent in small-cap stocks render them more susceptible to price 
+impacts derived from informed trading.
+Additionally, the role that consensus within the LOB plays in mitigating volatility in smallcap firms is limited. The reduced market depth and lower participation of uninformed traders 
+may hinder the formation of a strong consensus, diminishing its stabilizing effect. This 
+underscores the challenges of achieving market stability in less liquid environments and 
+highlights the need for mechanisms to enhance liquidity and information dissemination in 
+small-cap markets.
+The present study provides substantial evidence in support of Hypothesis H3, which posits 
+that the dispersion of beliefs in the LOB, as measured by the slope, serves as a more effective 
+predictor of volatility than informed trading metrics such as VPIN. High slope values, 
+indicative of strong market consensus, are associated with a significant concentration of returns 
+in low-volatility ranges across all market capitalizations. This effect is most pronounced in 
+small-cap stocks, where liquidity constraints amplify the impact of consensus on stabilizing 
+prices. In contrast, while VPIN and its cumulative distribution function (CDF) can signal 
+potential volatility spikes under extreme market stress, their overall predictive power is limited 
+under normal trading conditions. This finding indicates that metrics which capture collective 
+market behavior and consensus, such as the LOB slope, provide more reliable indicators of 
+market stability than those focusing solely on information asymmetry. These findings are 
+consistent with studies emphasizing the importance of the LOB in price formation and volatility 
+[14,59]. By demonstrating the efficacy of the LOB slope as a predictive tool, we contribute to 
+the extant literature by highlighting the value of market structure metrics over traditional 
+informed trading measures, especially in markets with varying liquidity levels.
+ The findings of this study offer valuable insights for traders, investors, and regulators. It is 
+asserted that the LOB slope can function as a reliable predictor of volatility, thereby assisting 
+market participants in adjusting their strategies to manage risk more effectively. For instance, 
+monitoring changes in the LOB slope could enable traders to anticipate periods of heightened 
+volatility and adjust their positions accordingly. These findings may also be of relevance to 
+regulators. Enhancing transparency around LOB data and encouraging practices that promote 
+market consensus could help stabilize markets, particularly in less liquid segments like smallcap stocks. Furthermore, a comprehensive understanding of the multifaceted effects of 
+informed trading on liquidity and volatility can inform regulatory policies aimed at achieving 
+a balance between market efficiency and stability.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+51
+Whilst the present study provides significant insights, it is essential to acknowledge its 
+limitations. The analysis is confined to a subset of IBEX 35 constituents during an 
+extraordinary period characterized by the emergence of the COVID-19 pandemic and the 
+imposition of a short-selling ban in the Spanish market. It is therefore acknowledged that the 
+findings may not be easily generalized to more typical market environments. To enhance the 
+robustness of the conclusions drawn, it would be advisable for future research to extend the 
+analysis to different time frames, markets, or to include a broader range of securities. 
+Furthermore, the study’s utilization of high-frequency data and the employment of specific 
+metrics such as VPIN and the LOB slope indicates that alternative metrics or methodologies 
+could offer supplementary insights. The investigation of alternative indicators of informed 
+trading and consensus, or the employment of different modelling techniques, has the potential 
+to enhance our understanding of these complex dynamics.
+To summarize, the present study highlights the multifaceted role of informed trading in 
+financial markets. While it can enhance market quality through improved consensus and 
+efficient price discovery, it also poses challenges by affecting liquidity and volatility, especially 
+in less liquid markets. The LOB slope emerges as a valuable tool for predicting volatility, 
+offering practical benefits for market participants and informing regulatory considerations. By 
+emphasizing the interplay between informed trading, market consensus, and volatility across 
+different market capitalizations, we contribute to a more profound understanding of market 
+microstructure and lay the foundation for future exploration in this critical area of financial 
+research.
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+52
+References
+[1] A.S. Kyle, Continuous Auctions and Insider Trading, Econometrica 53 (1985) 1315–
+1335. https://doi.org/10.2307/1913210
+[2] D. Easley, M. O’Hara, P.S. Srinivas, Option Volume and Stock Prices: Evidence on 
+Where Informed Traders Trade, J. Finance 53 (1998) 431–465. 
+https://doi.org/10.1111/0022-1082.194060
+[3] Y. Hu, How does informed trading affect the information environment? Looking at the 
+Chinese stock market from the perspective of the speed of information integration, 
+Int. Finance 21 (2018) 316–332. https://doi.org/10.1111/infi.12134
+[4] A . Pan, A.K. Misra, Assessment of Asymmetric Information Cost in Indian Stock 
+Market: A Sectoral Approach, Glob. Bus. Rev. 23 (2020) 512–535. 
+https://doi.org/10.1177/0972150919865085
+[5] D. Easley, M. Lopez de Prado, M. O’Hara, The Volume Clock: Insights into the High 
+Frequency Paradigm, J. Portfolio Manag. 39 (2012). 
+https://doi.org/10.2139/ssrn.2034858
+[6] D. Avramov, T. Chordia, A. Goyal, Liquidity and Autocorrelations in Individual Stock 
+Returns, J. Finance 61 (2006) 2365–2394. https://doi.org/10.2139/ssrn.555968
+[7] N. Blasco, P. Corredor, The Information Environment, Informed Trading, and Volatility, 
+J. Behav. Finance 18 (2017) 202–218. 
+https://doi.org/10.1080/15427560.2017.1308943
+[8] A.Y. Huang, C.-L. Chang, Asymmetric Impact of Informed Trading Activity on Stock 
+Return Volatility, Theor. Econ. Lett. 4 (2014) 568–573. 
+https://doi.org/10.4236/tel.2014.47071
+[9] D. Easley, M. Lopez de Prado, M. O’Hara, The Exchange of Flow Toxicity, J. Trading 6 
+(2011). https://doi.org/10.2139/ssrn.1748633
+[10] D. Abad, M. Massot, R. Pascual, Evaluating VPIN as a trigger for single-stock circuit 
+breakers, J. Bank. Finance 86 (2018) 21–36. 
+https://doi.org/10.1016/j.jbankfin.2017.08.009
+[11] K. Rzayev, G. Ibikunle, A state-space modeling of the information content of trading 
+volume, J. Financ. Mark. 46 (2019). https://doi.org/10.1016/j.finmar.2019.100507
+[12] M.K. Brunnermeier, L.H. Pedersen, Market Liquidity and Funding Liquidity, en: Market 
+Liquidity, Cambridge University Press, 2012. 
+https://doi.org/10.1017/cbo9780511844393.014
+[13] Y. Gao, C. Zhao, B. Sun, W. Zhao, Effects of investor sentiment on stock volatility: new 
+evidences from multi-source data in China’s green stock markets, Financ. Innov. 8 
+(2022) 77.
+https://doi.org/10.1186/s40854-022-00381-2
+[14] D.J. Seppi, Liquidity Provision with Limit Orders and a Strategic Specialist, Rev. 
+Financ. Stud. 10 (1997) 103–150. https://doi.org/10.1093/rfs/10.1.103
+[15] L. Harris, Optimal Dynamic Order Submission Strategies in Some Stylized Trading 
+Problems, Financ. Mark. Inst. Instrum. 7 (1998) 1–76. https://doi.org/10.1111/14680416.00019
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+53
+[16] R. Kaniel, H. Liu, So what orders do informed traders use?, J. Bus. 79 (2006) 1867–
+1913. https://doi.org/10.1086/503651
+[17] R.L. Goettler, C.A. Parlour, U. Rajan, Informed Traders and Limit Order Markets, J. 
+Financ. Econ. 93 (2009) 67–87. https://doi.org/10.1016/j.jfineco.2008.08.002
+[18] R. Pascual, D. Veredas, D. Abad, L. Bauwens, R. Engle, T. Foucault, et al., Does the 
+Open Limit Order Book Matter in Explaining Informational Volatility?, SSRN, 2010. 
+https://doi.org/10.2139/ssrn.910506
+[19] R. Bloomfield, M. O’Hara, G. Saar, Hidden Liquidity: Some New Light on Dark 
+Trading, J. Finance 70 (2015) 2227–2274. https://doi.org/10.1111/jofi.12301
+[20] A. Anand, S. Chakravarty, T. Martell, Empirical evidence on the evolution of liquidity: 
+Choice of market versus limit orders by informed and uninformed traders, J. Financ. 
+Mark. 8 (2005) 288–308. https://doi.org/10.1016/j.finmar.2005.03.001
+[21] Y. Liu, H. Ouyang, The Information Content of Limit Order Book and Short-term Stock 
+Returns based on Information Technology, Int. J. U- e-Serv. Sci. Technol. 8 (2014) 
+103–116.
+https://doi.org/10.14257/ijunesst.2014.7.3.10
+[22] R. Næs, J.A. Skjeltorp, Order book characteristics and the volume-volatility relation: 
+Empirical evidence from a limit order market, J. Financ. Mark. 9 (2006) 408–432. 
+https://doi.org/10.1016/j.finmar.2006.04.001
+[23] A. Tripathi, V. Vipul, A. Dixit, Limit order books: a systematic review of literature, 
+Qual. Res. Financ. Mark. 12 (2020) 505–541. https://doi.org/10.1108/QRFM-072019-0080
+[24] R. Cont, A. de Larrard, Price Dynamics in a Markovian Limit Order Market, SIAM J. 
+Financ. Math. 4 (2013) 1–25. https://doi.org/10.1137/110856605
+[25] I. Roşu, A Dynamic Model of the Limit Order Book, Rev. Financ. Stud. (2009). 
+https://doi.org/10.1093/rfs/hhp011
+[26] A. Aidov, O. Lobanova, The Relation Between Intraday Limit Order Book Depth and 
+Spread, Int. J. Financ. Stud. 9 (2021) 60. https://doi.org/10.3390/ijfs9040060
+[27] W. Kang, H. Zhang, Limit Order Book and Commonality in Liquidity, Financ. Rev. 48 
+(2013) 97–122. https://doi.org/10.1111/j.1540-6288.2012.00348.x
+[28] F. Heflin, K.W. Shaw, R.H. Smith, Trade Size and the Adverse Selection Component of 
+the Spread: Which Trades Are “Big”?, SSRN, n.d. 
+https://doi.org/10.2139/ssrn.249310
+[29] D.C. Broadstock, K. Chan, L.T.W. Cheng, X. Wang, The Role of ESG Performance 
+During Times of Financial Crisis: Evidence From COVID-19 in China, Financ. Res. 
+Lett. (2021). https://doi.org/10.1016/j.frl.2020.101716
+[30] M. Ali, N. Alam, S.A.R. Rizvi, Coronavirus (COVID-19) — An Epidemic or Pandemic 
+for Financial Markets, J. Behav. Exp. Finance (2020). 
+https://doi.org/10.1016/j.jbef.2020.100341
+[31] S. Ramelli, A.F. Wagner, Feverish Stock Price Reactions to COVID-19, Rev. Corp. 
+Financ. Stud. (2020). https://doi.org/10.1093/rcfs/cfaa012
+[32] C.T. Albulescu, COVID-19 and the United States Financial Markets’ Volatility, Financ. 
+Res. Lett. (2021). https://doi.org/10.1016/j.frl.2020.101699
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+54
+[33] B.N. Ashraf, Economic Impact of Government Interventions During the COVID-19 
+Pandemic: International Evidence From Financial Markets, J. Behav. Exp. Finance 
+(2020).
+https://doi.org/10.1016/j.jbef.2020.100371
+[34] A.S. Baig, H.A. Butt, O. Haroon, S.A.R. Rizvi, Deaths, Panic, Lockdowns and US 
+Equity Markets: The Case of COVID-19 Pandemic, Financ. Res. Lett. (2021).
+https://doi.org/10.1016/j.frl.2020.101701
+[35] A. Zaremba, D.Y. Aharon, E. Demir, R. Kizys, D. Zawadka, COVID-19, Government 
+Policy Responses, and Stock Market Liquidity Around the World: A Note, Res. Int. 
+Bus. Finance (2021). https://doi.org/10.1016/j.ribaf.2020.101359
+[36] G. Nguyen, R.F. Engle, M.J. Fleming, É. Ghysels, Liquidity and Volatility in the U.S. 
+Treasury Market, J. Econom. 217 (2020) 207–229. 
+https://doi.org/10.1016/j.jeconom.2019.12.002
+[37] A. Hameed, W. Kang, S. Viswanathan, Stock Market Declines and Liquidity, J. Finance 
+65 (2010) 257–293. https://doi.org/10.1111/j.1540-6261.2009.01529.x
+[38] A.A. Salisu, R. Swaray, T. Oloko F., US stocks in the presence of oil price risk: Large 
+cap vs. small cap, Econ. Bus. Lett. 6 (2017) 116–124.
+[39] S.K. Jena, A.K. Tiwari, A. Dash, E.J. Aikins Abakah, Volatility Spillover Dynamics 
+between Large-, Mid-, and Small-Cap Stocks in the Time-Frequency Domain: 
+Implications for Portfolio Management, J. Risk Financ. Manag. 14 (2021). 
+https://doi.org/10.3390/jrfm14110531
+[40] K. Kulshrestha, S.N. Bhaduri, The Joint Dynamics of Liquidity and Volatility Across 
+Small- and Large-index Indian Funds, J. Emerg. Mark. Finance 18 (2019) S167–
+S182.
+https://doi.org/10.1177/0972652719846318
+[41] P.K. Jain, P. Jain, T.H. McInish, Does high-frequency trading increase systemic risk?, J. 
+Financ. Mark. 31 (2016) 1–24. https://doi.org/10.1016/j.finmar.2016.09.004
+[42] T. Foucault, O. Kadan, E. Kandel, Limit Order Book as a Market for Liquidity, Rev. 
+Financ. Stud. 18 (2005) 1171–1217. https://doi.org/10.1093/rfs/hhi029
+[43] T. Foucault, O. Kadan, E. Kandel, Liquidity Cycles and Make/Take Fees in Electronic 
+Markets, J. Finance 68 (2013) 299–341. https://doi.org/10.1111/j.15406261.2012.01801.x
+[44] T. Cenesizoglu, G. Dionne, X. Zhou, Effects of the Limit Order Book on Price 
+Dynamics, SSRN Electron. J. (2014). https://doi.org/10.2139/ssrn.2523643
+[45] D. Abad, J. Yagüe, From PIN to VPIN: An introduction to order flow toxicity, Span. 
+Rev. Financ. Econ. 10 (2012) 74–83. https://doi.org/10.1016/j.srfe.2012.10.002
+[46] A. Kempf, D. Mayston, Liquidity Commonality Beyond Best Prices, J. Financ. Res. 
+(2008). https://doi.org/10.1111/j.1475-6803.2008.00230.x
+[47] C. Maglaras, C.C. Moallemi, H. Zheng, Optimal execution in a limit order book and an 
+associated microstructure market impact model, Preprint, 2015.
+[48] C.I. Jones, G. Kaul, M.L. Lipson, Information, Trading, and Volatility, J. Financ. Econ. 
+(1994). https://doi.org/10.1016/0304-405x(94)90032-9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed
+
+55
+[49] T. Hendershott, P.C. Moulton, Automation, Speed, and Stock Market Quality: The 
+NYSE’s Hybrid, J. Financ. Mark. (2011). 
+https://doi.org/10.1016/j.finmar.2011.02.003
+[50] S. Yildiz, B. Van Ness, R. Van Ness, VPIN, liquidity, and return volatility in the U.S. 
+equity markets, Glob. Finance J. 45 (2020). https://doi.org/10.1016/j.gfj.2019.100479
+[51] J. Bjursell, G.H.K. Wang, H. Zheng, VPIN, Jump Dynamics and Inventory 
+Announcements in Energy Futures Markets, J. Futures Mark. 37 (2017) 542–577. 
+https://doi.org/10.1002/fut.21839
+[52] M. Chang, J. Gould, Y. Huang, S. Treepongkaruna, J.W. Yang, Insider trading and the 
+algorithmic trading environment, Int. Rev. Finance 22 (2022) 725–750. 
+https://doi.org/10.1111/irfi.12367
+[53] K. Xu, B. Adrangi, M. Baldauf, T. Chordia, D. Duffie, T. Foucault, et al., High 
+frequency market making during stressed periods, SSRN, 2019. 
+https://doi.org/10.2139/ssrn.3045506
+[54] F. Abergel, C. Huré, H. Pham, Algorithmic trading in a microstructural limit order book 
+model, Preprint, 2017. https://doi.org/10.48550/arXiv.1705.01446
+[55] W. Chao, H. Zou, Multiple-Event Catastrophe Bond Pricing Based on CIR-Copula-POT 
+Model, Discrete Dyn. Nat. Soc. 2018 (2018). https://doi.org/10.1155/2018/5068480
+[56] L. Menkhoff, C.L. Osler, M. Schmeling, Limit-Order Submission Strategies Under 
+Asymmetric Information, J. Bank. Finance 34 (2010) 2665–2677. 
+https://doi.org/10.1016/j.jbankfin.2010.05.007
+[57] P. Collin-Dufresne, V. Fos, Do Prices Reveal the Presence of Informed Trading?, J. 
+Finance 70 (2015) 1555–1582. https://doi.org/10.1111/jofi.12260
+[58] K. Xu, High frequency market making during stressed periods, Int. Rev. Econ. Finance 
+87 (2023) 379–397. https://doi.org/10.1016/j.iref.2023.05.001
+[59] C. Parlour, D. Seppi, Limit Order Markets. A survey, en: Handbook of Financial 
+Intermediation and Banking, Elsevier, 2008. https://doi.org/10.1016/B978044451558-2.50007-6
+[60] P.J. Kelly, Information Efficiency and Firm-Specific Return Variation, SSRN Electron. 
+J. (2005). https://doi.org/10.2139/ssrn.676636
+[61] P.K. Clark, A Subordinated Stochastic Process Model with Finite Variance for 
+Speculative Prices, Econometrica 41 (1973) 135–155. 
+https://doi.org/10.2307/1913889
+[62] X. Ling, Normality of stock returns with event time clocks, Account. Finance 57 (2017) 
+277–298. https://doi.org/10.1111/acfi.12150
+[63] C. Zhang, N.N.A. Sjarif, R. Ibrahim, Deep learning models for price forecasting of 
+financial time series: A review of recent advancements: 2020–2022, WIREs Data Min. 
+Knowl. Discov. 14 (2024) e1519. https://doi.org/10.1002/widm.1519
+[64] X. Ding, Z. Qiu, X. Chen, Sparse transition matrix estimation for high-dimensional and 
+locally stationary vector autoregressive models, Electron. J. Stat. 11 (2017) 3871–
+3902. https://doi.org/10.1214/17-EJS1325
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5276076
+Preprint not peer reviewed

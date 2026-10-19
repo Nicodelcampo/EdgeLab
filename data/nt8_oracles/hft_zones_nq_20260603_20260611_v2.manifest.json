@@ -1,0 +1,65 @@
+{
+  "manifest_version": "2.0",
+  "generated_at_utc": "2026-09-15T23:51:00Z",
+  "campaign_id": "HP007-CAMP-002",
+  "target_asset": "NQ",
+  "contract": "NQ JUN26 (NQ 06-26)",
+  "canonical_branch": "fix/hftzones-nq-parity-certification-v2-20260915",
+  "formal_status": "PROVISIONAL_NEAR_EXACT_BLOCKED_BY_ORACLE_SCHEMA",
+  "summary_verdict": {
+    "matched_exact_pairs": 4792,
+    "matched_field_diff_pairs": 0,
+    "fields_compared_total": 95840,
+    "fields_exact_percentage": 100.0,
+    "nt8_without_python_count": 3,
+    "python_without_nt8_count": 37,
+    "ambiguous_collisions_count": 0,
+    "duplicate_match_reuse_count": 0,
+    "gate_violations_count": 0,
+    "count_discrepancy_resolved": true,
+    "root_causes_proven": {
+      "nt8_three_unpaired_zones": "Omission of tick bursts in NQ_06-26_ticks.parquet on 2026-06-10 15:59:59 (1579 vs 8 ticks), 16:01:10 (1509 vs 14 ticks), and 2026-06-11 14:35:06 (3630 vs 13 ticks). NT8 received the bursts with identical millisecond timestamps, generating 0ms duration zones.",
+      "python_thirtyseven_extra_zones": "39-minute data recording dropout in NT8 on 2026-06-11 between 14:49:50 UTC and 15:28:50 UTC (0 flow records and 0 zones in NT8), while NQ_06-26_ticks.parquet maintained complete continuous coverage producing 37 valid zones.",
+      "sqlite_insert_or_ignore_myth_refuted": "The Python mirror generated 0 duplicate start_ms timestamps. The count difference was 100% caused by input capture boundaries (37 - 3 = 34), not SQLite collision suppression."
+    }
+  },
+  "governed_indicators": {
+    "source_csharp_v1": {
+      "path": "nt8/HFTZonesNQPureV4.cs",
+      "sha256": "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63",
+      "version": "4.1.0",
+      "calculate": "Calculate.OnBarClose",
+      "primary_series": "NQ JUN26 (25 Tick)",
+      "subseries": "NQ JUN26 (1 Tick, TickResolution=1)",
+      "schema": "hft_zones (v1, millisecond key with INSERT OR IGNORE)"
+    },
+    "source_csharp_v2_hardened": {
+      "path": "nt8/HFTZonesNQPureV4_V2.cs",
+      "sha256": "96bff987aec542d19a24e9d00deccb350ba7da12246f5a254b8efc2b92c4a0dc",
+      "version": "4.2.0-V2-Hardened",
+      "key_schema": "(instrument, contract, session_id, zone_seq)",
+      "collision_policy": "STRICT_FAIL (NO INSERT OR IGNORE)",
+      "temporal_precision": "Nanoseconds epoch (start_ts_ns, end_ts_ns, available_ts_ns)"
+    },
+    "python_mirror": {
+      "path": "edgelab/bridge/indicators/hftzones_nq.py",
+      "version": "1.0",
+      "structural_defaults": {
+        "tick_resolution": 1,
+        "max_pausa_ms": 100.0
+      }
+    }
+  },
+  "artifacts_v1_preserved": {
+    "sqlite_database": "data/nt8_oracles/hft_zones_nq_20260603_20260611.sqlite",
+    "csv_export": "data/nt8_oracles/hft_zones_nq_20260603_20260611.csv",
+    "parity_v1_json": "data/nt8_oracles/paridad_hftzones_nq_0626.json",
+    "parity_v2_json": "data/nt8_oracles/paridad_hftzones_nq_v2.json"
+  },
+  "holdout_compliance": {
+    "status": "PASS",
+    "holdout_start": "2026-07-01",
+    "max_data_date": "2026-06-11",
+    "holdout_contamination": false
+  }
+}

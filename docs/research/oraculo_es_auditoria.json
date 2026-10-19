@@ -1,0 +1,213 @@
+{
+  "schema_version": "auditar_oraculo_sqlite_v2_end_ts_e_inventario",
+  "estado": "NO_ES_ORACULO_TODAVIA",
+  "motivo_principal": "tres indicadores escriben la MISMA base con el MISMO esquema (HFTZonesESPureV2, HFTZonesNQPureV2, HFTZonesNQPureV3) y `hft_zones` no tiene ninguna columna que identifique al escritor. La atribucion de una fila a un indicador NO es verificable desde los datos.",
+  "que_haria_falta": [
+    "corrida controlada: SOLO HFTZonesESPureV2 sobre un grafico de ES, con DbPath a un archivo NUEVO y vacio",
+    "registrar los 29 parametros efectivos, version de NT8, plantilla de sesion, huso horario y modo de calculo",
+    "hashear el .cs y el archivo resultante ANTES de extraer"
+  ],
+  "outcomes_accessed": false,
+  "pnl_accessed": false,
+  "snapshot": {
+    "origen": "C:\\LoggerHFT\\data\\hft_logger.sqlite",
+    "copia": "E:\\EdgeLab\\runs\\hft_logger_snapshot.sqlite",
+    "bytes": 593838080,
+    "sha256": "0d03b30e543b9a064a2236b1ddc6ea20215b2a89d889a53c6b0f0c94389db339"
+  },
+  "fuentes_que_comparten_la_base": {
+    "HFTZonesESPureV2": {
+      "existe": true,
+      "sha256": "dc114e6d0b2507de001f1616a398421e474af9fee367c8598f0c0705b6501678",
+      "lineas": 829
+    },
+    "HFTZonesNQPureV2": {
+      "existe": true,
+      "sha256": "c1a8416f9b78b4a535e89ddf1dbc6a1188345494ed5f57732ebb1c2c7b624227",
+      "lineas": 812
+    },
+    "HFTZonesNQPureV3": {
+      "existe": true,
+      "sha256": "bc933e66d4da6d3f7fedf25e652a688531161890bb7d0c6bc1a42edf2994e414",
+      "lineas": 838
+    }
+  },
+  "auditoria": {
+    "contrato": "ES 06-26",
+    "columnas": [
+      "id",
+      "instrument",
+      "start_ts",
+      "end_ts",
+      "bucket",
+      "dir",
+      "price_upper",
+      "price_lower",
+      "price_mid",
+      "height_ticks",
+      "pasos",
+      "valid_steps",
+      "avg_ms",
+      "total_ms",
+      "vol_rate",
+      "total_vol",
+      "max_tick_vol",
+      "cvd_sweep",
+      "buy_vol",
+      "sell_vol",
+      "delta_slope",
+      "delta_first",
+      "delta_second",
+      "no_move_ticks",
+      "no_move_vol",
+      "max_level_ticks",
+      "tick_res",
+      "max_retro"
+    ],
+    "zonas_totales": 2742,
+    "ids": {
+      "min": 1,
+      "max": 48862,
+      "huecos": 22,
+      "mayor_hueco": 33405
+    },
+    "posibles_duplicados": {
+      "n_firmas_repetidas": 0,
+      "zonas_involucradas": 0,
+      "nota": "firma = (start_ts, price_upper, price_lower, dir)"
+    },
+    "retrocesos_de_start_ts": 3,
+    "nota_retrocesos": "demuestra ORDEN TEMPORAL NO MONOTONO por id. Es compatible con recargas historicas, reinicios del indicador o varios escritores concurrentes: no distingue cual, y decir 'indica reinicio o recarga' era afirmar de mas.",
+    "end_ts": {
+      "n_null": 0,
+      "dur_ms_min": 0,
+      "dur_ms_max": 300,
+      "dur_ms_mediana": 112.0,
+      "nota": "NULL se trata como +inf para el chequeo del cutoff. Las duraciones de 0-500 ms muestran que `hft_zones` registra el BARRIDO, no el ciclo de vida de la zona: en esta tabla no hay toques ni invalidacion."
+    },
+    "tick_res": {
+      "1": 2742
+    },
+    "firewall": {
+      "cutoff_ms": 1782856800000,
+      "zonas_pre": 2742,
+      "zonas_post": 0,
+      "zonas_vivas_al_corte": 0,
+      "nota": "`start_ts < cutoff` NO alcanza: una zona puede empezar antes y terminar despues. Las vivas al corte se CENSURAN -- exportar su end_ts o features de cierre haria cruzar informacion del holdout."
+    },
+    "sesiones": {
+      "n": 13,
+      "primera": 20260525,
+      "ultima": 20260610,
+      "zonas_por_sesion_mediana": 199.0,
+      "zonas_por_sesion_max": 366,
+      "detalle": {
+        "20260525": 36,
+        "20260526": 169,
+        "20260527": 189,
+        "20260528": 199,
+        "20260529": 297,
+        "20260601": 366,
+        "20260602": 183,
+        "20260603": 237,
+        "20260604": 167,
+        "20260605": 317,
+        "20260608": 247,
+        "20260609": 334,
+        "20260610": 1
+      }
+    }
+  },
+  "inventario_familia": {
+    "prefijo": "ES",
+    "por_contrato": {
+      "ES 06-26": {
+        "zonas": 2742,
+        "zonas_pre_firewall": 2742,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 13,
+        "trade_dates": [
+          20260525,
+          20260526,
+          20260527,
+          20260528,
+          20260529,
+          20260601,
+          20260602,
+          20260603,
+          20260604,
+          20260605,
+          20260608,
+          20260609,
+          20260610
+        ]
+      },
+      "ES 09-26": {
+        "zonas": 12999,
+        "zonas_pre_firewall": 12939,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 8,
+        "trade_dates": [
+          20260615,
+          20260616,
+          20260617,
+          20260618,
+          20260619,
+          20260622,
+          20260623,
+          20260630
+        ]
+      },
+      "ES SEP26": {
+        "zonas": 6110,
+        "zonas_pre_firewall": 5673,
+        "n_end_ts_null": 0,
+        "zonas_vivas_al_corte": 0,
+        "n_sesiones": 2,
+        "trade_dates": [
+          20260625,
+          20260626
+        ]
+      }
+    },
+    "union_sesiones": [
+      20260525,
+      20260526,
+      20260527,
+      20260528,
+      20260529,
+      20260601,
+      20260602,
+      20260603,
+      20260604,
+      20260605,
+      20260608,
+      20260609,
+      20260610,
+      20260615,
+      20260616,
+      20260617,
+      20260618,
+      20260619,
+      20260622,
+      20260623,
+      20260625,
+      20260626,
+      20260630
+    ],
+    "n_union": 23,
+    "posibles_alias": [],
+    "nota_alias": "dos etiquetas que comparten mas de la mitad de sus fechas pueden ser el MISMO contrato con distinto nombre de display; sumarlas sin unir seria doble conteo"
+  },
+  "procedencia": {
+    "head_commit": "5eaed08e8331cf02fd67fd25dbade8af765e735b",
+    "archivos_sucios": [],
+    "alcance_comprometida": [
+      "edgelab/",
+      "diag/"
+    ],
+    "medicion_comprometida": false
+  }
+}

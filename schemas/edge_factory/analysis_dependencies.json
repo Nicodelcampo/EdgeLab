@@ -1,0 +1,21 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AnalysisDependenciesSchema",
+  "description": "Schema for machine-readable dependency tracking and execution DAG in Edge Discovery Factory.",
+  "type": "object",
+  "required": [
+    "target_artifact",
+    "upstream_dependencies",
+    "required_gates",
+    "recompute_policy",
+    "estimated_duration_sec"
+  ],
+  "properties": {
+    "target_artifact": { "type": "string" },
+    "upstream_dependencies": { "type": "array", "items": { "type": "string" } },
+    "required_gates": { "type": "array", "items": { "type": "string" } },
+    "recompute_policy": { "type": "string", "enum": ["ALWAYS", "ON_SOURCE_CHANGE", "NEVER_IF_VERIFIED"] },
+    "estimated_duration_sec": { "type": "number" }
+  },
+  "additionalProperties": false
+}

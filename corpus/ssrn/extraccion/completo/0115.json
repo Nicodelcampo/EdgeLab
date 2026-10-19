@@ -1,0 +1,94 @@
+{
+  "doc_id": 115,
+  "titulo": "Implementation of Pairs Trading Strategies",
+  "resumen_operativo": "Tesis que implementa dos métodos sistemáticos de pairs trading (cointegración de Johansen y spread estocástico de Ornstein-Uhlenbeck con estimación Kalman). Ofrece el desarrollo riguroso de modelos que separan retornos de riesgo sistémico y extraen la serie residual para operar reversión a la media.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia que asume que mercados temporalmente fuera de equilibrio volverán al mismo, ejecutada tomando una posición larga en un activo y otra corta en su par.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "Pairs trading is performed by taking a long position (buying) one security and taking a short position (borrowing) another security."
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Característica de una serie de tiempo donde si su valor se desvía por encima de la media, la variación esperada hacia el próximo período será negativa (y viceversa).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "stationarity"}
+      ],
+      "cita_textual": "A time series is considered mean reverting if i. The time series is stationary, and ii. E(yt −yt−1|Yt−1) < 0 if yt−1 > E(yt)"
+    },
+    {
+      "nombre": "cointegration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Atributo de un sistema VAR de series no estacionarias para el cual existen combinaciones lineales que sí son estacionarias.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "This class of processes has the property that there may exists stationary linear combinations called cointegrated vectors."
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico en tiempo continuo que modela analíticamente la reversión a la media de una variable financiera y tiene solución estacionaria.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "the Ornstein-Uhlenbeck continuous time process. We will show that there exists a stationary solution to this SDE that could be used to model our spread."
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo recursivo que provee la proyección óptima lineal de una variable de estado no observable, utilizado para inferir el proceso Ornstein-Uhlenbeck.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "state-space representation"}
+      ],
+      "cita_textual": "The Kalman procedure calculates these forecasts recursively, generating ˆξ1|0, ˆξ2|1, . . . , ˆξT|T−1 in succession, thus improving the estimate with the added information."
+    },
+    {
+      "nombre": "state-space representation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelado de un sistema dinámico que separa el estado latente verdadero del ruido de observación.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Kalman filter"}
+      ],
+      "cita_textual": "A model of the observed variable y can be described in terms of the possibly unobserved ξt known as the state variable."
+    },
+    {
+      "nombre": "Arbitrage Pricing Theory",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo de factores de riesgo que el paper combina con pairs trading para explicar parte del retorno de las series, aislando la reversión a la media en los residuos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "The APT says that the expected return is linear in the factor weights:"
+    },
+    {
+      "nombre": "stationarity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propiedad de una serie en que su media y covarianza se mantienen finitas e independientes del tiempo.",
+      "relaciones": [],
+      "cita_textual": "The time series yt is (covariance) stationary if E(yt) and E(ytyt+h) exists and are ﬁnite and do not depend on t"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Ambos métodos (cointegración y spread estocástico) revelan múltiples pares accionarios intra-industria (ej. sector automotriz y bancario) que muestran reversión a la media estadísticamente significativa en ventanas históricas dinámicas.",
+      "mercado": "Dutch, German and French equities",
+      "periodo": "no especificado (ventanas adaptativas de 81 a 379 días)",
+      "magnitud": "Ganancias esperadas (R) por ciclo que van de 1% a 20%, con AR-parameters que sugieren alta velocidad de reversión.",
+      "condiciones": "In-sample/out-of-sample adaptativo continuo sin mención explícita de impacto de mercado o costos.",
+      "robustez": "media",
+      "cita_textual": "The methods are used to implement a search procedure that aims to reveal profitable pairs among all possible pairs available on the German, French and Dutch stock exchanges."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco matemático de Kalman y el filtro de variables de estado puede aplicarse directamente a datos intradía del ES para derivar de forma continua el fair-value vs activos correlacionados (NQs)."
+  }
+}

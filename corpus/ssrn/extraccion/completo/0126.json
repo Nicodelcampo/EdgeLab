@@ -1,0 +1,99 @@
+{
+  "doc_id": 126,
+  "titulo": "FinRL: A Deep Reinforcement Learning Library for Automated Stock Trading in Quantitative Finance",
+  "resumen_operativo": "Este paper presenta FinRL, una librería de Python orientada a simplificar el uso de algoritmos de Deep Reinforcement Learning (DRL) para el diseño de estrategias de trading. Aporta al trader cuantitativo un framework modular para simular entornos de mercado realistas (incluyendo costos de transacción y turbulencia), entrenar agentes y ejecutar validaciones tipo rolling window.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "deep reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque de aprendizaje automático que resuelve problemas dinámicos de decisión mediante la interacción con el entorno para maximizar la recompensa, usado aquí para derivar estrategias automatizadas.",
+      "relaciones": [],
+      "cita_textual": "DRL framework is powerful in solving dynamic decision making problems by learning through interaction with an unknown environment"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Fricciones del mercado aplicadas durante las transacciones, como comisiones fijas por operación o porcentajes por acción, fundamentales para simular un trading real.",
+      "relaciones": [],
+      "cita_textual": "Transaction costs incur when executing a trade. There are many types of transaction costs, such as broker commissions and SEC fee."
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencia de precio entre la mejor oferta de venta y compra, modelada dentro del simulador para reflejar restricciones de liquidez del mercado real.",
+      "relaciones": [],
+      "cita_textual": "Bid-ask spread is the difference between the prices quoted for an immediate selling action and an immediate buying action for stocks."
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de retorno ajustado por riesgo utilizada como función de recompensa durante el aprendizaje del agente o como método estándar de evaluación final.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "The Sharpe ratio for periods t = {1, ..., T}"
+    },
+    {
+      "nombre": "portfolio allocation",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de distribución de capital entre múltiples activos, ejemplificada evaluando las acciones que conforman el Dow Jones 30.",
+      "relaciones": [],
+      "cita_textual": "Fig. 5 and Table 2 show the performance and multiple stock trading and portfolio allocation over the Dow Jones 30 constitutes."
+    },
+    {
+      "nombre": "financial turbulence index",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Índice que mide la fluctuación extrema en los precios de los activos, utilizado en el entorno de trading para detener compras ante riesgo sistémico y reducir el drawdown.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "maximum drawdown"}
+      ],
+      "cita_textual": "FinRL employs the ﬁnancial turbulence index turbulencet that measures extreme asset price ﬂuctuation"
+    },
+    {
+      "nombre": "action space",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Conjunto de decisiones permitidas para el agente en el entorno de trading, típicamente vender, mantener o comprar una cantidad específica de acciones.",
+      "relaciones": [],
+      "cita_textual": "The action space describes the allowed actions that the agent interacts with the environment."
+    },
+    {
+      "nombre": "reward function",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de incentivo diseñado para el entrenamiento del agente, determinando el objetivo de optimización como el cambio en el valor de la cartera o retornos ajustados.",
+      "relaciones": [],
+      "cita_textual": "Reward function r(s, a, s′) is the incentive mechanism for an agent to learn a better action."
+    },
+    {
+      "nombre": "state space",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Espacio de variables u observaciones que el entorno entrega al agente, conteniendo por ejemplo saldos de cuenta, precios, volumen e indicadores técnicos.",
+      "relaciones": [],
+      "cita_textual": "The state space describes the observations that the agent receives from the environment."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El agente DRL con algoritmo PPO logra un mayor Sharpe Ratio en el trading de acciones individuales de gran capitalización frente al índice de mercado pasivo.",
+      "mercado": "US equities (S&P 500, QQQ, AAPL, AMZN, GOOGL, MSFT)",
+      "periodo": "2019/01/01-2020/09/23",
+      "magnitud": "Sharpe de 1.10 a 1.49 para PPO vs 0.74 para índice S&P 500",
+      "condiciones": "Entrenamiento usando rolling window, incorporación de costos de transacción e índice de turbulencia.",
+      "robustez": "media",
+      "cita_textual": "The Sharpe ratio of all the ETFs and stocks outperform the market, namely the S&P 500 index."
+    },
+    {
+      "afirmacion": "En asignación de cartera de múltiples acciones, los modelos DRL superan significativamente las métricas de rendimiento tanto de benchmarks pasivos como de mínima varianza.",
+      "mercado": "US equities (DJIA 30 constituents)",
+      "periodo": "2019/01/01-2020/09/23",
+      "magnitud": "Sharpe de 1.38 (TD3) y 1.28 (DDPG) vs 0.44 (Min-Var) y 0.48 (DJIA)",
+      "condiciones": "Entrenamiento usando rolling window, incorporación de costos de transacción.",
+      "robustez": "media",
+      "cita_textual": "The Sharpe ratios of TD3 and DDPG excceed the DJIA index, and the traditional min-variance portfolio allocation strategy."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El entorno simulado de FinRL puede extenderse fácilmente para ingerir granularidad nivel minuto/tick y entrenar agentes que operen order flow en el ES, aportando un pipeline estable de validación."
+  }
+}

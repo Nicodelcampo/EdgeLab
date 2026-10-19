@@ -1,0 +1,108 @@
+{
+ "doc_id": 199,
+ "titulo": "LLM-Driven Drift Models for Brownian Motion in Quantitative Finance",
+ "resumen_operativo": "El paper propone un framework riguroso para integrar Large Language Models (LLMs) con Ecuaciones Diferenciales Estocásticas (SDEs), haciendo que el drift y (opcionalmente) la volatilidad de un proceso de movimiento browniano sean funciones medibles de un embedding de contexto textual generado por un LLM. Aborda tanto aspectos teóricos (existencia, unicidad, medidas neutrales al riesgo) como de estimación estadística empírica. Se aplica empíricamente a futuros de índices y acciones con retornos muestreados en alta frecuencia (1-5 minutos), procesando noticias y comentarios sobre el limit order book. Los modelos SDE guiados por LLM superan a las alternativas paramétricas clásicas y a los baselines deep learning discretos en la precisión de predicción, calibración de tiempos de choque (hitting times) y estimación de la variación cuadrática segmentada por regímenes.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "LLM-driven drift SDE",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Una clase de ecuación diferencial estocástica en la cual el término de tendencia (drift) depende funcionalmente y de manera dinámica de representaciones densas (embeddings) del mercado que se extraen con un LLM.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "LLM embeddings"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "Brownian motion"
+    }
+   ],
+   "cita_textual": "We introduce a class of SDEs where the drift is a measurable functional of an LLM-derived embedding of contextual information (news, commentary, or order-book meta-data)."
+  },
+  {
+   "nombre": "LLM-conditioned volatility",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Extensión del modelo base SDE en el que no solo el drift, sino también el coeficiente de difusión (volatilidad) es condicionado por el embedding textual derivado del LLM.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "We then extend the basic model to an LLM-conditioned volatility specification in which the diffusion coefficient depends on the same embeddings."
+  },
+  {
+   "nombre": "LLM embeddings",
+   "tipo": "dato",
+   "definicion_en_contexto": "Representaciones vectoriales de dimensionalidad fija que resumen la semántica de la información del mercado (texto) obtenidas al pasar por un LLM preentrenado y que sirven como covariates para la SDE.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "Zt = LLM(Ct) ∈ Rd, where Zt is a fixed-dimensional embedding summarizing the semantic content of Ct."
+  },
+  {
+   "nombre": "Brownian motion",
+   "tipo": "concepto",
+   "definicion_en_contexto": "Proceso estocástico canónico de la matemática financiera utilizado para modelar el ruido de la trayectoria del precio del activo, reteniendo las garantías del cálculo estocástico.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "the noise remains modeled by Brownian motion, preserving the familiar toolkit of continuoustime stochastic calculus"
+  },
+  {
+   "nombre": "hitting-time calibration",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Métrica de validación en modelos continuos que analiza la capacidad del modelo para igualar la distribución empírica del tiempo necesario para que el precio de un activo alcance una barrera particular.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "Models whose drift and volatility interact correctly with LLM-induced regimes should better reproduce the empirical hitting-time CDF."
+  },
+  {
+   "nombre": "regime-wise quadratic variation",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Medida para evaluar el desempeño de volatilidad de los modelos condicionando la variación cuadrática a diferentes regímenes (estados altos o bajos) identificados semánticamente por los embeddings.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "LLM-conditioned volatility"
+    }
+   ],
+   "cita_textual": "This observation motivates our use of regime-wise quadratic variation as a diagnostic for how well different models capture volatility dynamics."
+  },
+  {
+   "nombre": "empirical risk minimization",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Procedimiento estadístico y de aprendizaje automatizado aplicado a una discretización Euler-Maruyama del proceso, utilizado para aprender y estimar los parámetros del modelo de drift con los features textuales.",
+   "relaciones": [
+    {
+     "tipo": "APLICA_A",
+     "objeto": "LLM-driven drift SDE"
+    }
+   ],
+   "cita_textual": "We propose an estimation procedure for the LLM-driven drift based on empirical risk minimization with a parametric class (e.g., a shallow neural network) operating on LLM embeddings."
+  }
+ ],
+ "hallazgos": [
+  {
+   "descripcion": "La adición de un drift guiado por LLM a un SDE preserva la unicidad de las soluciones fuertes y permite la valoración riesgo-neutral mediante la transformación de Girsanov."
+  },
+  {
+   "descripcion": "El condicionamiento a representaciones LLM no solo mejora la exactitud direccional en la proyección de retornos, sino que aproxima mucho mejor las dinámicas de variación cuadrática segmentadas por regímenes textuales y la función de densidad acumulada (CDF) de los tiempos de cruce que los GARCH y baselines DL clásicos."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "alta",
+  "nota": "El framework encaja perfectamente en el modelado microestructural para trading intradía de futuros (ES). El paper menciona explícitamente haber entrenado en retornos de futuros sobre mallas temporales muy finas (1 minuto / 5 minutos) y haber evaluado la información textual incluyendo el 'order-book commentary', permitiendo identificar regímenes microestructurales intradiarios para calibrar las predicciones."
+ }
+}

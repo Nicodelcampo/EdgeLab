@@ -1,0 +1,160 @@
+{
+  "doc_id": 95,
+  "titulo": "Does News Trading Crowd Out Value Trading? Evidence from a Structural Estimation",
+  "resumen_operativo": "Desarrolla un modelo tipo Kyle (1985) con dos tipos de informed traders coexistiendo: value traders (información lenta sobre niveles de valor) y news traders (HFTs que observan cambios de valor rápido pero con ruido). El modelo tiene solución cerrada y se estima estructuralmente sobre datos propietarios de EURO STOXX 50 Index Futures (2013-2023). Hallazgo principal: news trading más preciso desplaza (crowds out) value trading, pero mejora la liquidez del mercado porque los news traders generan menos profit por unidad de información que los value traders pacientes. La eficiencia de mercado es invariante a la composición del informed trading. Estimación: 32.6% del cambio de valor es aprendido vía news; profit diario de news traders = €670K, value traders = €1.7M; price impact sube de 0.55 bps (2017) a 1.22 bps (2022) por 1000 lots.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Costo de selección adversa que el dealer enfrenta al proveer liquidez a informed traders. El paper muestra que este costo depende de la composición del informed trading: news traders generan menos adverse selection que value traders porque operan en una sola ronda antes que el dealer aprenda la noticia.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "the zero-profit dealer charge a lower price impact, because his adverse-selection cost is reduced"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trading basado en información privada; el paper distingue dos tipos: value traders que conocen el nivel de valor fundamental al inicio del día, y news traders que observan cambios de valor (dvt) rápido pero con ruido (det). Ambos tipos coexisten y compiten en equilibrio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "a level-informed value trader and a change-informed news trader coexist in equilibrium"
+    },
+    {
+      "nombre": "Kyle model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de trading estratégico con información asimétrica donde un dealer fija precios lineales de cero-profit y los informed traders optimizan su demanda de liquidez. El paper extiende FHR16 para tener dos tipos de informed traders distintos en vez de uno que puede ser fast o slow.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kalman filter"},
+        {"tipo": "APLICA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "The model is a perturbation of FHR16 and is thus in the spirit of Kyle (1985)"
+    },
+    {
+      "nombre": "Kalman filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro de Kalman usado para computar la likelihood del state space model derivado de la dinámica de equilibrio, permitiendo estimación por máxima verosimilitud de los parámetros estructurales del modelo (σv, σ0, σe, σu).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kyle model"},
+        {"tipo": "APLICA_A", "objeto": "state space model"}
+      ],
+      "cita_textual": "The likelihood is computed using the Kalman filter"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Spread bid-ask emerge endógenamente en el modelo como compensación del dealer por adverse selection. El paper lo mide indirectamente como price impact λ (cuánto se mueve el precio por unidad de net order flow).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "MIDE", "objeto": "market liquidity"}
+      ],
+      "cita_textual": "the price impact coefficient (λ) charged by the dealer measures market illiquidity"
+    },
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Dealer que fija precios de cero-profit observando el flujo agregado de órdenes y las noticias (con un instante de retraso respecto al news trader). Su precio (midquote qt) converge linealmente al valor verdadero vt a lo largo del día.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "the dealer posts a linear price schedule for total liquidity demand that he commits to and makes him earn zero-profit"
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "News traders modelados como HFTs: máquinas extremadamente rápidas procesando flujos de información y actuando sobre ellos. En el paper, los trades de miembros del exchange por cuenta propia (principal) se interpretan como news trading.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "news trading"},
+        {"tipo": "CAUSA", "objeto": "adverse selection"}
+      ],
+      "cita_textual": "These traders should be thought of as machines that are extremely fast in processing information flows and acting on it"
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso por el cual la información privada se incorpora a los precios. El paper muestra que la eficiencia del price discovery (varianza del pricing error Σt) es invariante al nivel de ruido en las noticias: Σt = (1-t)Σ0 decae linealmente a cero al final de la sesión.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market efficiency"},
+        {"tipo": "APLICA_A", "objeto": "Kyle model"}
+      ],
+      "cita_textual": "market efficiency is invariant to the composition of informed trading"
+    },
+    {
+      "nombre": "market efficiency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Eficiencia informacional medida como la varianza del pricing error entre el true value vt y el dealer quote qt. El paper demuestra que esta varianza declina linealmente a cero independientemente de la precisión de las noticias.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "price discovery"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "informational inefficiency as the variance of the wedge between the dealer quote and the true value"
+    },
+    {
+      "nombre": "market liquidity",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Liquidez medida como price impact λ. Mejora cuando las noticias son más precisas porque la información se desplaza del value trader (que genera el doble de profit por unidad de información) al news trader (single-shot trader), reduciendo el adverse selection cost para el dealer.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "bid-ask spread"},
+        {"tipo": "CAUSA", "objeto": "informed trading"}
+      ],
+      "cita_textual": "market liquidity improves with more precise news"
+    },
+    {
+      "nombre": "state space model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación estado-espacio de la dinámica de equilibrio con variables observables (news trader net volume, precio) y estados latentes (vt, qt, dvt). Permite estimación por máxima verosimilitud vía Kalman filter.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Kalman filter"},
+        {"tipo": "PARTE_DE", "objeto": "Kyle model"}
+      ],
+      "cita_textual": "The equilibrium dynamics can be represented by a Gaussian state space model"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El news trading más preciso desplaza (crowds out) al value trading: cuando σ²e disminuye (noticias más precisas), la intensidad de trading del news trader aumenta (∂βN/∂σ²e < 0) y la del value trader disminuye (∂βV/∂σ²e > 0). Sin embargo, esto mejora la liquidez (∂λ/∂σ²e > 0).",
+      "mercado": "EURO STOXX 50 Index Futures",
+      "periodo": "2013-2023",
+      "magnitud": "Precisión de news: 35.3% (2013) → 46.8% (2018, pico) → 29.9% (2023) de la varianza del cambio de valor aprendida vía news. Price impact λ: 0.55 bps/1000 lots (2017, mínimo) → 1.22 bps/1000 lots (2022, máximo)",
+      "condiciones": "Estimación estructural por máxima verosimilitud año por año; interpretación de principal trades como news trading y agency trades como value+noise; intervalo de 1 minuto; trading hours 9:00-17:30 CET",
+      "robustez": "alta",
+      "cita_textual": "news became steadily more precise from revealing 35.3% of the value change in 2013 to revealing 46.8% of it in 2018. Then it declined to 29.9% at the end of the sample in 2023"
+    },
+    {
+      "afirmacion": "La eficiencia de mercado (velocidad de revelación de información en precios) es invariante a la composición del informed trading: el pricing error Σt = (1-t)Σ0 decae linealmente a cero al final de la sesión independientemente de la precisión de las noticias.",
+      "mercado": "EURO STOXX 50 Index Futures",
+      "periodo": "Modelo teórico (no depende del período empírico)",
+      "magnitud": "Σt = (1-t)Σ0; la derivada de Σt respecto a cualquier parámetro es cero",
+      "condiciones": "Resultado analítico del modelo en equilibrio lineal único; no depende de supuestos distribucionales específicos más allá de normalidad",
+      "robustez": "alta",
+      "cita_textual": "Market inefficiency declines linearly in time with the price becoming fully revealing of the fundamental value at the end of trading"
+    },
+    {
+      "afirmacion": "La mayoría de la información descubierta en un día de trading llega durante la sesión: SD de la información que llega intradía (σv) = 23.26 bps, mientras que la información privada al inicio (σ0) = 1.29 bps. Esto implica que >94% del value discovery ocurre intradía.",
+      "mercado": "EURO STOXX 50 Index Futures",
+      "periodo": "2013-2023",
+      "magnitud": "σv = 23.26 bps, σ0 = 1.29 bps, σe = 33.42 bps; Var(E(dvt|dzt)) = 0.326 × σ²v; ratio de varianza total aprendida vía news = 32.5%",
+      "condiciones": "Estimación ML anual con Kalman filter sobre datos propietarios de Deutsche Börse",
+      "robustez": "alta",
+      "cita_textual": "The standard deviation of this part is about 23.26 basis points (bps). The standard deviation of the information value traders have at the start of the day is 1.29 bps"
+    },
+    {
+      "afirmacion": "El profit bruto de los value traders (€1.7M/día) supera ampliamente al de los news traders (€670K/día), a pesar de que los value traders empiezan el día con poca información, porque aprenden los cambios de valor perfectamente y operan pacientemente en múltiples rondas.",
+      "mercado": "EURO STOXX 50 Index Futures",
+      "periodo": "2013-2023 (promedio)",
+      "magnitud": "Profit bruto diario: news traders €670K, value traders €1.7M; fees: 18% del gross profit para news, 4% para value; profit neto: news €550K/día ÷ 253 miembros = €2,174/día por miembro",
+      "condiciones": "Modelo estructural estimado; fees de €0.30 por contrato; 253 exchange members en Eurex",
+      "robustez": "alta",
+      "cita_textual": "The average gross profit for news traders is €670,000 per day, whereas it is €1,700,000 per day for value traders"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "El modelo se estima sobre futuros del EURO STOXX 50 con datos intradía a nivel de 1 minuto. Los resultados sobre adverse selection, composición del informed trading y price impact son directamente relevantes para el ecosistema de trading intradía de ES futures. La conclusión de que la eficiencia de mercado es invariante a la composición del informed trading tiene implicaciones para estrategias de execution."
+  }
+}

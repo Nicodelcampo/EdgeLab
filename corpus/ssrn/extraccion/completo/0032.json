@@ -1,0 +1,214 @@
+{
+  "doc_id": 32,
+  "titulo": "AI in Algorithmic Trading & Market Prediction",
+  "resumen_operativo": "Es un paper conceptual (sin datos ni backtests propios) que revisa la literatura sobre uso de IA en trading algorítmico y propone un diseño empírico riguroso (walk-forward, benchmarks clásicos vs ML/DL/RL, evaluación ajustada por riesgo y costos) para implementación futura. Su utilidad para un quant es como checklist metodológico y mapa de la literatura, no como fuente de resultados verificables.",
+  "calidad_paper": "baja",
+  "conceptos": [
+    {
+      "nombre": "efficient market hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Hipótesis que sostiene que los precios reflejan rápidamente la información disponible, limitando la posibilidad de superar sistemáticamente al mercado; se usa como base teórica que compite con los enfoques de IA.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "adaptive markets hypothesis"}
+      ],
+      "cita_textual": "The academic basis of market prediction studies is still the Efficient Market Hypothesis (EMH) that asserts that assets promptly reflect the information accessible and thus constrain the prospect of systematically outperforming the market"
+    },
+    {
+      "nombre": "adaptive markets hypothesis",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Propone que la eficiencia de mercado no es constante sino que varía con el tiempo a medida que traders, tecnologías y estrategias se adaptan, lo que abre espacio conceptual para que sistemas de IA exploten patrones temporales.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "efficient market hypothesis"},
+        {"tipo": "APLICA_A", "objeto": "algorithmic trading"}
+      ],
+      "cita_textual": "the concept of market efficiency is not constant, but rather varies with time as traders, technologies, and strategies adapt"
+    },
+    {
+      "nombre": "algorithmic trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Sistemas automatizados de ejecución de órdenes, arbitraje y market making que inicialmente fueron rule-based y luego incorporaron machine learning para sustituir o complementar reglas fijas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "machine learning"}
+      ],
+      "cita_textual": "The initial growth of algorithmic trading was in rule-based systems that automated order execution, arbitrage and market making"
+    },
+    {
+      "nombre": "long short-term memory network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura de deep learning aplicada a la predicción de precios; en el paper citado por Fischer y Krauss (2018) mostró mejor desempeño predictivo fuera de muestra sobre acciones del S&P 500 frente a benchmarks sin memoria.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "short-term price movements"},
+        {"tipo": "MEJORA_A", "objeto": "ARIMA"}
+      ],
+      "cita_textual": "Fischer and Krauss (2018) which use long short-term memory networks on S&P 500 constituents and out-ofsample tests demonstrate better predictive performance than a list of memory-free benchmarks"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "dato",
+      "definicion_en_contexto": "Fuente de datos de microestructura (order book imbalance, quote dynamics, transaction flow) usada por modelos de deep learning para modelar formación de precios y predecir cambios de precio de corto plazo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "convolutional neural network"}
+      ],
+      "cita_textual": "deep learning models that are trained on large-scale order book data can model the long-term patterns of price formation across stocks"
+    },
+    {
+      "nombre": "convolutional neural network",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo usado por Tsantekidis et al. (2017) sobre datos de limit order book para predecir cambios de precio de corto plazo.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "short-term price movements"},
+        {"tipo": "USA", "objeto": "limit order book"}
+      ],
+      "cita_textual": "Tsantekidis et al. (2017) show that limit order book data can be used by convolutional neural networks to predict short-term price changes"
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Área de investigación centrada en datos de alta frecuencia (order book imbalance, quote dynamics, transaction flow) donde el machine learning se emplea para predecir direccionalidad, liquidez y ejecución óptima en horizontes cortos.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "machine learning"}
+      ],
+      "cita_textual": "Market microstructure research is concerned with the high-frequency data like order book imbalance, quote dynamics, and transaction flow"
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque particularmente aplicable a trading porque este no es un problema de predicción de un solo paso sino un proceso de decisión repetido con acciones, recompensas y restricciones; usado para estimar políticas de asignación de portafolio.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "portfolio optimization"}
+      ],
+      "cita_textual": "trading is not a one-shot prediction problem, but a repeated decision making process that involves actions, rewards, constraints and feedback loops"
+    },
+    {
+      "nombre": "deep reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo introducido por Jiang, Xu y Liang (2017) para gestión de portafolios, que demuestra que métodos model-free pueden usarse para estimar políticas de asignación basadas en datos de mercado.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "reinforcement learning"},
+        {"tipo": "APLICA_A", "objeto": "portfolio optimization"}
+      ],
+      "cita_textual": "Jiang, Xu, and Liang (2017) introduce a model of deep reinforcement learning in managing a portfolio and demonstrate that model-free methods can be used to estimate allocation policies based on market data"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo discutido por López de Prado (2018) de que un modelo de machine learning financiero funcione bien in-sample pero no se sostenga por ajuste excesivo a datos históricos.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "Lopez de Prado (2018) discusses the danger of backtest overfitting in financial machine learning"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Metodología propuesta para reentrenar el modelo repetidamente sobre datos pasados y testearlo sobre observaciones nuevas, más representativa de las condiciones reales de trading que un split aleatorio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "look-ahead bias"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "A rolling or walk forward model is advisable to ensure that the model is retrained repeatedly on previous data and tested on new observations which would be more relevant to actual trading circumstances"
+    },
+    {
+      "nombre": "look-ahead bias",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgo que se busca evitar dividiendo los datos en train-validation-test en orden cronológico en vez de aleatorio.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "To prevent look-ahead bias, it is preferable that data is divided in train-validation-test format in a chronological order instead of it being randomly shuffled"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Factor que, junto con cambios de régimen y overfitting, hace que el éxito predictivo no se traduzca automáticamente en retornos anormales consistentes; el paper exige incorporarlo en la evaluación económica.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "erosion of abnormal returns"}
+      ],
+      "cita_textual": "forecasting success does not automatically translate into consistent abnormal returns once transaction costs, regime shifts, overfitting, and market impact are considered"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Una de las métricas de evaluación ajustada por riesgo propuestas junto con drawdown y retorno acumulado para juzgar el desempeño económico, no solo estadístico, de los modelos.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "cumulative returns, Sharpe ratios, drawdowns, and effects of the transaction costs should be displayed in trading-performance charts"
+    },
+    {
+      "nombre": "maximum drawdown",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica de riesgo incluida entre las evaluaciones propuestas para juzgar el desempeño económico de los modelos, junto con Sharpe ratio y hit ratio.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "precision, recall, F1-score, RMSE where appropriate, cumulative return, Sharpe ratio, maximum drawdown, hit ratio, and turnover-adjusted after-tax and slippage profitability should also be calculated"
+    },
+    {
+      "nombre": "regime switching",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Cambios estructurales en el mercado (volatilidad, participantes) que pueden hacer fallar un modelo que funcionaba en una muestra anterior; se exige testear robustez bajo distintos regímenes de mercado.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "A model that works in one sample might fail on a shift in volatility regime, when structural shifts or shifts in the number of participants in the market occur"
+    },
+    {
+      "nombre": "ARIMA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo estadístico clásico de pronóstico de series temporales usado como benchmark frente a los modelos de IA.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "long short-term memory network"}
+      ],
+      "cita_textual": "The benchmark group can consist of linear regression, directional prediction using logistic regression, time-series forecast using ARIMA and volatility behavior using GARCH-type models"
+    },
+    {
+      "nombre": "GARCH",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de volatilidad condicional propuesto como benchmark clásico de comportamiento de volatilidad frente a los modelos de IA.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "benchmark comparison"}
+      ],
+      "cita_textual": "volatility behavior using GARCH-type models"
+    },
+    {
+      "nombre": "random forest",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo basado en árboles propuesto como parte del grupo de IA a comparar contra los benchmarks clásicos, junto con XGBoost.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "ARIMA"}
+      ],
+      "cita_textual": "An AI team is to have at least one tree-based model like random forest or XGBoost, one deep learning- based architecture like LSTM"
+    },
+    {
+      "nombre": "natural language processing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnicas para transformar titulares de noticias, earnings calls y sentimiento de redes sociales en features numéricas correlacionadas con precio y volumen, incorporadas en pipelines de trading.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "sentiment score"}
+      ],
+      "cita_textual": "more recent attempts also incorporate natural language processing into trading pipelines by transforming news headlines, earnings calls, and social-media sentiment into numeric features"
+    },
+    {
+      "nombre": "hit ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Métrica propuesta para evaluar la calidad direccional de las señales de trading, junto con retorno acumulado, Sharpe ratio y drawdown.",
+      "relaciones": [],
+      "cita_textual": "cumulative return, Sharpe ratio, maximum drawdown, hit ratio, and turnover-adjusted after-tax and slippage profitability should also be calculated in the study"
+    },
+    {
+      "nombre": "out-of-sample validation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Condición exigida para que el veredicto final del proyecto no dependa solo de accuracy in-sample sino de un desempeño ajustado por riesgo consistente que pase pruebas fuera de muestra y regímenes de mercado cambiantes.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "the final verdict of this project will not be a high headline accuracy alone but a demonstration of consistent, risk-adjusted performance which passes out-of-sample and evolving market regimes"
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "nula",
+    "nota": "Es un paper puramente propositivo/de revisión sin datos, backtests ni resultados propios ('no original statistics, charts or performance tables are included in this draft'), por lo que no aporta evidencia empírica testeable para el ecosistema ES; solo sirve como checklist metodológico genérico (walk-forward, benchmarks, costos)."
+  }
+}

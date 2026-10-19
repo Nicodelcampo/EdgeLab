@@ -1,0 +1,8702 @@
+ 
+1 
+ 
+High Frequency Trading and Fama’s Theorem① 
+Xie Ping, Wu Liang 
+China Investment Corporation, Beijing, China 
+ 
+Abstract: This study explores the impact of high-frequency trading (HFT) on 
+market dynamics, drawing an analogy to the distortions in time and space in relativistic 
+theory. It extends the scope of HFT order learning, incorporating the shared learning of 
+high-frequency traders with fundamental investors (FI) and retail orders (RI). Analyzing 
+within the Kyle two-stage model framework, the study concludes that learning from retail 
+orders disrupts the price martingale process, while learning from fundamental investor 
+order flow does not. It highlights a decrease in market fundamental information and the 
+potential for market collapse termination. This research establishes a link between HFT 
+order learning and market stability, challenging Fama’s Theorem. It suggests that HFT 
+may introduce time and information unfairness, emphasizing the need for financial 
+theories to address technological impacts and regulatory focus on ensuring fairness in 
+time and information. 
+Keywords: high frequency trading, Fama’s theorem, order anticipation, time, market 
+crash 
+1. Introduction 
+This study is aimed to elucidate the profound changes in financial market 
+microstructure caused by HFT and their impact on financial theory. The rise of HFT has 
+sparked continuous controversy, primarily concerning unfair competition and market 
+instability. The IPO application filed by Virtu, a HFT company, in 2014, stating that they 
+only incurred losses on 1 out of 1238 trading days, stirred significant debate. This 
+anomaly contradicts the principles of the "Fama’s Theorem," forming the starting point 
+for our analysis of microeconomic changes in finance. In May 2014, Charlie Munger 
+criticized HFT as "legalized front-running" in an interview with CNBC. Simultaneously, 
+stock markets in Europe and the U.S. often experienced various flash crashes, with the 
+most notable being the 2010 "Flash Crash," where U.S. stocks plummeted 10% in a single 
+day. Despite regulatory responses, flash crash incidents have continued, albeit on a 
+smaller scale. These controversies persist, and concerns about HFT remain prevalent in 
+media reports. The root causes of frequent flash crashes still lack a standardized 
+theoretical analysis (Cespa and Vives, 2023). 
+Penetrating these controversies is no easy task. Michael Lewis's 2014 book, "Flash 
+Boys," contends that "until 2008, major telecommunications operators were not aware of 
+the significant changes occurring in the financial markets, more directly, they did not 
+recognize the value of '1 millisecond'" (Lewis, 2010). O'Hara (2015) notes that HFT has 
+brought revolutionary changes to the market. It not only accelerates trading but 
+fundamentally alters market trading and organizational structures. The ways in which 
+market liquidity supply and price discovery function have also undergone complete 
+transformation. 
+Information learning is a vital aspect of the market microstructure, and current 
+research indicates that HFT has significantly altered market information. Specifically, 
+ 
+① The contactor’s email:  wuliang@china-inv.cn 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+2 
+ 
+order substitution, where orders replace trades, is now considered the fundamental unit 
+of information learning. Beyond a company's fundamental value, additional knowledge 
+is seen as information, challenging its perceived value. Some argue that information from 
+HFT lacks value and raises costs for fundamental researchers, reducing market 
+informativeness (Stiglitz, 2014). There's a perspective suggesting that "slow trading 
+implies being at an informational disadvantage" (Haldane, 2011). However, the impact of 
+these expanded information learning forms on market prices remains unclear (O'Hara, 
+2015). 
+Concerns arise from frequent market flash crashes, with O'Hara suggesting that HFT 
+as market makers (MM) may exit when suspecting others with superior information, 
+potentially contributing to instability. Yet, underlying issues are not fully understood. 
+O'Hara proposes redefining information learning and liquidity in the HFT era, requiring 
+new microstructure models. 
+How to address these challenges? Einstein's theory of relativity offers valuable 
+insights. Just as time slows down and space warps as objects approach the speed of light, 
+could the trading speed in financial markets, approaching the speed of light, distort the 
+time in financial markets? Building on this intuition, this study explores the impact of 
+HFT information learning on market price formation, with a core conclusion that HFT 
+introduces time unfairness, potentially challenging Fama’s Theorem. In contrast to 
+O'Hara's (2015) viewpoint that time becomes a meaningless concept in the era of HFT, 
+this paper makes a breakthrough by suggesting the distortion of time in the highfrequency era. 
+In the realm of modern microeconomics shaping the fundamental definition of 
+financial markets, time is characterized as an "independently objective variable." It is 
+expected to be fair and non-informative for all market participants. Financial markets 
+commonly adhere to the bidding pricing principle of "time priority, price priority," 
+meaning that, under equal time conditions, precedence is given to the order with a 
+superior price, and under equivalent prices, the order submitted earlier takes precedence. 
+This implies, from a mathematical standpoint, the independence and lack of correlation 
+between order time and price. In essence, time is deemed fair for all investor-placed orders. 
+Furthermore, as prices serve as a representation of market information, they exhibit a lack 
+of correlation with time. 
+This conceptual foundation finds its underpinning in Fama’s Theorem. Grounded in 
+the Efficient Market Hypothesis, Fama’s Theorem posits that prices consistently "fully 
+reflect" available information, leading to market categorization into weak-form, semistrong-form, and strong-form efficient markets based on varying information sets. 
+Mathematically, these categories are quantified by the martingale properties of price 
+sequences pertaining to distinct information sets (Shiryaev, 1999). Fama’s Theorem, 
+encapsulating the notion that time and price changes are unrelated within a specified 
+information set, stands as a pivotal cornerstone in modern classical financial theory. It 
+plays a crucial normative role in governing the smooth operation and regulation of 
+contemporary financial markets. 
+This study examines the significant changes brought by HFT to the microstructure 
+of financial markets, specifically focusing on the new information learning mechanism. 
+Our hypothesis regarding the information advantage of HFT draws inspiration from Yang 
+& Zhu (2020), who introduced the concept of HFT learning from the order flow of 
+fundamental investors and executing preemptive trades. This paper expands their concept 
+to including learning from both fundamental investors and noise investors (retail traders). 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+3 
+ 
+Their approach is rooted in Madrigal's (1996) concept of non-fundamental speculators, a 
+category of traders profiting not from private fundamental information but from a 
+sophisticated understanding of the trading process or environment, estimating 
+fundamental information from publicly available data. Yang & Zhu (2020) apply 
+Madrigal's framework to the modern market, proposing that HFT can learn from the order 
+flow of fundamental investors, predict their future trading behavior, and implement 
+preemptive "front-running" trading strategies. 
+This study contends that the order flow information of RI also possesses a plausible 
+and realistic learnable nature. Theoretically, all order flows in the market are potential 
+subjects for HFT learning. Unlike traditional market participants, HFT's primary 
+advantage lies in information technology, primarily targeted at the computer servers 
+central to modern exchanges (O'Hara, 2015). Orders in the market are sent and aggregated 
+to these servers, sorted based on specific rules (such as time priority, price priority). HFT, 
+leveraging advantages like hosting on exchange servers and high-speed computing 
+capabilities, can better grasp this data in terms of volume, speed, and quality. Therefore, 
+regardless of the investor type generating the order flow, it falls within the potential 
+learning scope of HFT. Furthermore, the traditional focus on order anticipation strategies 
+has mainly centered on HFT predicting "large orders" from fundamental investors, such 
+as SEC (2010) and Yang & Zhu (2020). The underlying logic is that these "large orders" 
+exhibit a strong correlation with future price fluctuations, allowing profitable anticipation 
+through predictive strategies. However, retail orders also exhibit a correlation with future 
+price fluctuations. While traditional theory suggests noise characteristics in retail orders, 
+increasing empirical evidence indicates that RI exhibit diverse types and corresponding 
+behavioral characteristics, providing some predictability for future price fluctuations. 
+Lastly, the predictive characteristics of RI have become stronger, not weaker, in many 
+markets. For instance, in the United States, retail trading volume accounted for 20% of 
+the overall market in 2021, doubling from a decade ago (McCabe, 2021). Particularly 
+since the outbreak of the COVID-19 pandemic in 2020, a significant amount of savings 
+from U.S. residents flowed into the stock market. With commission-free brokerage, 
+simplified and gamified trading platforms, and significantly lowered account opening 
+thresholds (even as low as $1), a large influx of first-time investors, often referred to as 
+"Robinhood" investors, entered the market. These investors exhibit a strong tendency for 
+momentum trading and chasing hot trends, and empirical evidence suggests that they have 
+a more significant impact than ordinary RI (Eaton, Green, Roseman, and Wu, 2021). 
+Methodologically, this study employs the two-stage model proposed by Kyle (1985), 
+assuming the existence of two stages of centralized auctions. In each stage, fundamental 
+investors and retail traders submit orders to MM, who aggregate the orders and determine 
+prices to clear the market. Building on Yang & Zhu (2020), HFTs in the market learn with 
+a certain precision from the order flow of fundamental investors and retail traders in the 
+first stage and subsequently submit orders only in the second stage. 
+This study extends the approach in two ways: Firstly, HFT firms not only learn from 
+fundamental investors but also from retail traders. Regarding the learning from retail 
+traders, this study references Madrigal (1996) and sets the learning to encompass only 
+partial information about retail trader order behavior. However, unlike Yang & Zhu (2020), 
+where there are multiple HFT firms and fundamental investors, this study has only one of 
+each. This implies the omission of considerations for internal competition among HFT 
+firms and approximates the information intensity of fundamental investors' private 
+information with that of a single fundamental investor. This relaxation is deemed 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+4 
+ 
+appropriate. 
+Secondly, this study takes a more macroscopic analysis approach. In contrast to the 
+emphasis of Yang & Zhu (2020) on the specific strategic behaviors of participants, this 
+study focuses on the overall market impact, including the martingale conditions of Fama’s 
+Theorem, market information levels, and stability. 
+The main conclusions and contributions of this study are as follows: Firstly, the 
+learning capability of HFT orders leads to a decrease in the "fundamental information 
+content" of the market. It may even break Fama’s Theorem when learning from retail 
+traders, causing the breakdown of the martingale conditions and a malfunction in the price 
+process. This breakthrough and malfunction have not been previously addressed in the 
+literature. Secondly, the study provides a reasonable theoretical explanation for market 
+flash crashes. The learning ability of HFT orders endows time with information, exclusive 
+to HFT firms, resulting in information asymmetry. This contravenes the principles of time 
+fairness and information fairness in financial markets, leading to market instability. 
+Thirdly, the study suggests regulatory directions and priorities. The impact of HFT is 
+underestimated primarily because modern financial pricing theories have not considered 
+the influence of technological advancements. Looking ahead, with the rise of artificial 
+intelligence, this challenge is growing. This points to future regulatory priorities, 
+emphasizing the maintenance of time fairness and information fairness in the market. 
+The structure of this study is as follows: Part two introduces related literature, Part 
+three details the extended information learning model's setup and solution, Part four 
+examines the impacts received on the overall market level, and Part five presents 
+conclusions, insights, and limitations. 
+2. Related Literature 
+This study intersects with two primary facets of existing research. Firstly, it is closely 
+associated with the field of HFT order anticipation. The present work extends prevailing 
+assumptions in a methodologically robust manner, providing fresh insights from a distinct 
+analytical perspective. Secondly, it is particularly relevant to research on market quality 
+during the HFT era. This study underscores the crucial role of order anticipation in 
+influencing the overall market, contributing to the broader discourse on market dynamics 
+within the context of HFT. 
+2.1 Research on HFT order anticipation 
+HFT leverages its speed advantage to infer implicit information in the orders of other 
+investors. However, theoretical research on how HFT performs such inference in practice 
+involves various assumptions. Early discussions on prediction were relatively simple and 
+passive. For instance, Menkveld & Zoican (2017) and Budish et al. (2015) assumed that 
+HFT seizes "stale" orders resulting from the rush to incorporate new public information. 
+Baldauf & Mollner (2020) discussed how HFT captures identical orders across different 
+markets and exploits their delays for prediction and front-running. These predictive 
+behaviors are relatively "unintelligent," merely applying the speed advantage of HFT. 
+Recent research places more emphasis on sequence learning and prediction of order 
+flow by HFT, exhibiting greater intelligence and proactivity. However, the focus has 
+primarily been on learning from large orders of institutional investors. Notable studies in 
+this area include Brunnermeier & Pedersen (2005), Boulatov et al. (2016), Yang & Zhu 
+(2020), and Xu & Cheng (2023). The latter two are particularly relevant to this study, as 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+5 
+ 
+both exclusively consider learning from institutional large orders. The difference lies in 
+the incorporation of HFT inventory management constraints in the latter, allowing the 
+model to comprehensively consider both order prediction and market-making liquidity 
+provision behaviors. In contrast, this study, building on learning from institutional large 
+orders, introduces learning from retail traders and focuses its discussion on the overall 
+market impact, diverging from their emphasis on the strategic behaviors of market 
+participants. 
+Furthermore, theoretical research on learning from retail trader orders in the era of 
+HFT is relatively scarce. Madrigal (1996) introduced the assumption of learning from 
+noise traders in Kyle's two-stage model. However, the empirical basis is not robust, 
+relying on the assumption that some investors understand the trading process or 
+environment better, enabling them to infer fundamental information from public 
+information. The analysis is confined to the strategic behavior of participants, and the 
+conclusions generally suggest improved liquidity but potentially reduced market 
+informativeness. 
+In contrast, this study, with the inclusion of learning from retail traders, focuses its 
+analytical perspective on the overall market, considering aspects like martingale 
+conditions and the possibility of market collapse. These perspectives have been 
+overlooked in previous studies, resulting in significantly different conclusions in this 
+work. 
+In empirical research, there is a considerable body of work focusing on the empirical 
+analysis of order prediction for institutional investors. One notable study is by Hirschey 
+(2020), which utilizes Nasdaq market data to discover that HFT firms often submit 
+aggressive buy or sell orders ahead of other investors' intensive orders in the same 
+direction. This finding, after controlling for factors like HFT's faster response to public 
+information such as news, is attributed primarily to HFT firms' ability to identify patterns 
+in past trades and orders. They can predict and execute trades ahead of other investors' 
+subsequent order flow. Additionally, Korajczyk & Murphy (2019) and Van Kervel & 
+Menkveld (2019) validate similar results using data from the Canadian and Swedish stock 
+markets, respectively. These studies, along with Yang & Zhu (2020), exhibit mutual 
+citation, suggesting potential cross-inspiration among them. 
+There is relatively limited empirical research on predicting retail trader orders in 
+HFT. Hirschey (2021) conducted an event study using the regulatory policy changes for 
+HFT in Canada in 2012. The study found that HFT, overall, benefits RI, especially those 
+using limit orders. However, the analysis primarily focuses on the improvement in 
+market-wide liquidity after the participation of HFT, presenting a relatively broad 
+perspective. 
+In recent years, the substantial growth of individual investors, exemplified by 
+platforms like Robinhood, has attracted research attention. Eaton et al. (2022) 
+investigated how the heterogeneity in the maturity of RI influences their impact on 
+financial markets through broker platform outages. They found that Robinhood investors 
+tend to follow momentum, while the overall retail order flow is contrarian. The most 
+relevant evidence for the discussion of learning from retail trader orders, as explored in 
+this study, comes from Barber et al. (2022). They demonstrated that attention-induced 
+herding behavior among Robinhood investors is associated with significant price 
+fluctuations and subsequent reversals. The study also highlighted that savvy investors 
+might exploit this trading pattern for profit. This provides some inspiration for empirical 
+research on retail trader orders in the era of HFT, aligning with the themes discussed in 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+6 
+ 
+this paper. 
+2.2 Market Quality Research in the Era of HFT 
+The research on the impact of HFT on market quality is extensive, but the common 
+pattern is to consider the speed advantage of HFT as the starting point. The specific 
+application of this speed advantage or the adoption of certain strategies is crucial in 
+determining its impact on the market. Menkveld (2016) categorized related studies into 
+seven aspects, including research on the speed advantage of HFT in limit order markets, 
+the use of speed advantage to capture large orders, seizing "stale" orders after the release 
+of public information, connecting multiple markets, employing flash-cancel orders, 
+establishing beneficial intermediary chains, and meeting customer demands for fast 
+trading. This article takes a different approach, emphasizing that HFT is not only fast but 
+also "smart" due to its information technology advantage. As information technology 
+continues to advance, challenges arising from order prediction strategies become more 
+significant, emphasizing their crucial impact on market quality in the era of HFT. 
+The "flash crash" that occurred in the U.S. stock market in 2010 raised widespread 
+concerns about market stability, with HFT as major suspects (SEC, 2010). As research 
+progressed, opinions became more diverse. Brogaard et al. (2018) pointed out that HFT, 
+acting as MM, also face limitations in providing liquidity during extreme market volatility, 
+challenging the perception that they cause extreme market fluctuations. Madhavan (2013) 
+suggested that an excessively diversified and complex market structure could foster the 
+possibility of extreme price volatility. Bongaerts et al. (2016) introduced the concept of 
+HFT technology investment costs, concluding that when the input-output ratio of 
+technology is high, severe information asymmetry can occur, leading to market 
+interruptions in equilibrium. Cespa & Vives (2023) attributed the issue to market opacity 
+resulting from factors such as information friction caused by algorithmic trading and 
+market segmentation, leading to an upward-sloping market liquidity demand curve. This 
+curve implies that when participants' liquidity demand increases, market liquidity supply 
+becomes insufficient, creating market fragility. This article provides a more 
+comprehensive theoretical explanation for the current market instability, extending from 
+technological advantages to information advantages and market instability driven by 
+strategic behavior. It distinguishes the different impacts of HFT learning predictions on 
+institutional large orders and retail orders, suggesting that the latter is more likely to lead 
+to market collapse, particularly when time becomes unfair. 
+3. Model and Equilibrium 
+3.1 the setting of two-sage trading process 
+Assuming a 2-period market trading process with only one risky asset whose 
+clearing value at the end of the second period is 
+0
+0
+~
+(
+,
+)
+v
+N p 
+, priced at 
+0p the 
+beginning of the first period. Additionally, there are four types of traders in the market: 
+RI (noise traders), fundamental investors (similar to informed traders in the Kyle model), 
+HFT, and MM. The market trading process is illustrated in Figure 1. 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+7 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. 2-Stage Market Clearing Auction Process 
+ 
+1. FI 
+FI, at the beginning of the first period, possess information about the liquidation 
+value v of the risky asset at the end of the second period. It submits orders, denoted as 
+1x and 
+2x , at the beginning of the first and second periods, respectively. The profit of 
+FI arises from their informational advantage, derived from the private information about 
+the liquidation value , relative to the public information reflected in market prices. 
+2. RI  
+Noise traders submit orders, denoted as 
+1
+1
+w
+u
++
+ and 
+2
+2
+w
+u
++
+ , at the beginning of 
+the first and second periods, respectively. For 
+1
+i = 、 2 , we have 
+2
+(0,
+~
+)
+i
+w
+w
+N
+
+, 
+2
+(0,
+~
+)
+i
+u
+u
+N
+
+ , and it’s also defined that 
+1
+w , 
+2
+w , 
+1u and 
+2
+u are mutually 
+independent. 
+1
+w and 
+2
+w represent the noise trader orders learned by HFT in the first 
+and second periods, respectively. Furthermore, we assume that the total volume of retail 
+trading is constant, as specified by 
+2
+2
+2
+2
+(
+1)
+i
+i
+i
+i
+w
+u
+U
+u
+k
+
+
+
+
++
+=
+=
++
+. Therefore, for any period, 
+the total noise trader orders 
+i
+U can be divided into two parts: the learned part and the 
+unlearned part, with the proportions 
+1
+k
+k + and 
+1
+1
+k + , respectively. 
+3. HFT 
+HFT only participate in trading during the second period. At the beginning of the 
+second period, based on partial learning of the first-period orders 𝑥1 from the 
+fundamental traders and a portion of the first-period orders 𝑤1 from noise traders, HFT 
+submit orders 
+2
+d . The learning process for the orders 𝑥1 is not precise, and we define 
+the signal s such that: 
+1
+s
+x
+
+=
++ 
+（1） 
+1st Period 
+2nd Period 
+a. Fundamental Investors submit 
+2x
+order 
+ 
+2
+2
+w
+u
++
+b. RI submit order 
+ 
+2
+d
+c. HFT submit order 
+ 
+d. Market Maker observes the 
+2y
+aggregated orders 
+ and set the 
+2p
+clearing price 
+ 
+ 
+a. Fundamental Investors possess 
+the information of the liquidation 
+v
+value 
+ at the end and submit order 
+1x 
+b. RI submit order 
+1
+1
+w
+u
++
+ 
+c. HFT doesn’t submit order but 
+observes signal s and a part of RI’ 
+order 𝑤1 
+d. Market maker observes the 
+aggregated orders 
+1y
+and set the 
+clearing price 
+1p  
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+8 
+ 
+where 
+2
+~
+(0,
+)
+N
+
+
+
+ controls the precision of the learning process. A larger 
+
+
+implies less precision in the HFT' learning of the fundamental trader's orders. Conversely, 
+a smaller 
+
+ implies greater precision. In summary, the private information set obtained 
+by HFT at the beginning of the second period is 
+1
+{ ,
+}
+s w . 
+4. Market Maker 
+The market maker receives total orders 
+1y in the first period and sets the price 
+1p 
+to clear the market，which satisfying the following two equations:  
+1
+1
+1
+1
+y
+x
+w
+u
+=
++
++
+ 
+（2） 
+(
+)
+1
+1
+|
+p
+E v y
+=
+ 
+（3） 
+In the second period, the market maker receives total orders 
+2y in the first period 
+and sets the price 
+2p to clear the market， which satisfying the following two equations:  
+2
+2
+2
+2
+2
+y
+x
+d
+w
+u
+=
++
++
++
+ 
+（4） 
+(
+)
+2
+1
+2
+|
+,
+p
+E v y y
+=
+ 
+（5） 
+3.2 Solution 
+3.2.1 Maximization of Profit Conditions and its Linear Equilibrium Conjecture 
+There is a strategy set of 
+( )
+(
+)
+(
+)
+(
+)
+
+
+1
+2
+1
+1
+2
+1
+1
+1
+1
+2
+1
+2
+,
+,
+,
+,
+, ,
+,
+,
+(
+,
+)
+x
+v
+x
+v p x
+d
+w s p
+p
+y
+p
+y y
+
+
+
+
+
+ 
+describing a perfect Bayesian equilibrium of the trading game, satisfying the following 
+conditions:  
+For FI, at the 1st and. 
+ 2nd period, there exists the following conditions,  
+1
+2
+*
+1
+1
+1
+2
+[ (
+)
+(
+ar
+]
+gm
+|
+a
+)
+x
+x
+x
+E x v
+p
+x v
+p
+v
+
+−
++
+−
+
+ 
+2
+2
+2
+2
+1
+1
+[
+(
+) | ,
+argm
+]
+ax
+,
+x
+x
+E x v
+p
+v p x
+
+−
+
+ 
+For HFT, at the 2nd period, there exists the condition 
+2
+2
+2
+2
+1
+1
+[
+(
+) |
+, ,
+]
+argmax
+d
+E d v
+p
+w
+d
+s p
+
+−
+
+ 
+Following Yang et al. (2020), each participant trades based on their private 
+information advantage. We hypothesize the presence of the following linear equilibrium: 
+1. Fundamental investors, aware of the security's clearing value at the end of the 
+second period, actively include noise. Thus, their first-period order satisfies 
+(
+)
+1
+1
+0
+x
+v
+p
+z
+
+=
+−
++
+ ，with
+(
+)
+2
+~
+0,
+z
+z
+N
+
+ 
+（6） 
+At the 2nd period, FI leverages its private information about the asset's value v , where 
+the market's estimate is based on a linear approximation of overall trading volume 
+1
+[ |
+]
+E v y . The difference, 
+1
+1
+[ |
+]
+v
+a E v y
+−
+ , represents the private information advantage 
+of fundamental investors. Additionally, their awareness of their own first-period order 
+flow contributes to an information advantage, expressed as 
+1
+2
+1
+1
+[
+|
+]
+x
+a E x
+y
+−
+. Thus, the 
+2nd period order 
+2x satisfies,  
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+9 
+ 
+
+
+(
+)
+
+
+(
+)
+1
+2
+2
+1
+1
+1
+2
+1
+1
+|
+|
+x
+x
+v
+a E v y
+x
+a E x
+y
+
+
+=
+−
+−
+−
+ 
+（7a） 
+(
+)
+1
+1
+2
+2
+1
+1
+1
+x
+y
+x
+v
+p
+x
+y
+
+
+
+=
+−
+−
++
+ 
+（7） 
+2. For HFT, at the 2nd period, the private information comprises learned retail order 
+flow 
+1
+w , noisy signal from fundamental investor orders s . HFT issue secondperiod orders based on this information, following Kyle's pricing rule. 
+
+
+(
+)
+
+
+(
+)
+2
+1
+3
+1
+1
+4
+1
+|
+|
+w
+s
+w
+a E w
+y
+d
+s
+a E s y
+
+
+=
+−
++
+−
+ 
+（8a） 
+1
+2
+1
+1
+w
+s
+y
+w
+s
+y
+d
+
+
+
+=
++
+−
+ 
+（8） 
+3. For Market Maker, it sets clearing prices 
+1p , 
+1p at the 1st and 2nd periods 
+according to the following linear pricing rules, where: 
+1
+0
+1
+1
+p
+p
+y
+
+=
++
+ 
+（9） 
+ 
+2
+1
+2
+2
+p
+p
+y
+
+=
++
+ 
+（10） 
+3.3 Equilibrium 
+Equilibrium (6) to (10) describe the equilibrium with the ten parameters 
+z
+, 
+1
+, 
+2
+, 
+1x
+, 
+1y
+, 
+w
+, 
+s
+, 
+1y
+, 
+1
+ and 
+2
+defining the participants’ behavior. Similar to Yang 
+et al. (2020) , according to rational expectation, these parameters could be derived using 
+the recursive method of the Kyle model. Please refer to Appendix 2 for details.  
+There should be two distinct equilibriums based on whether 
+z
+equals 0. If 
+0
+z
+
+, it 
+means FI makes an active action to include a noise in its own orders to conceal the 
+intentions, denoting a mixed equilibrium. If 
+0
+z
+=
+, it is a pure-strategy equilibrium. The 
+bellowing exams the characteristics of these two equilibria, and the boundaries of 
+parameters between them.  
+3.3.1 Mixed Strategy Equilibrium 
+Equation B9 represents the expected profit of FI, 
+1,
+2,
+[
+| ]
+f
+f
+E
+v
+
+
++
+.Therefore, when 
+the coefficients before 
+2
+1x and 
+1x are both 0, the expected profit remains constant, 
+regardless of the value of 
+1x . Thus, 
+1x can take any value and it’s equivalent to FI 
+adding random noise to their own order. Hence, this is referred to as a mixed strategy 
+equilibrium. Proposition 1 defines this equilibrium. 
+Proposition 1: There exists a unique linear mixed strategy equilibrium satisfying 
+equations (6) to (10) if and only if the expression A >0:  
+(
+)
+1
+1
+0
+x
+v
+p
+z
+
+=
+−
++
+，
+(
+)
+2
+ ~
+0,
+z
+z
+N
+
+ 
+（6） 
+(
+)
+1
+1
+2
+2
+1
+1
+1
+x
+y
+x
+v
+p
+x
+y
+
+
+
+=
+−
+−
++
+ 
+（7） 
+1
+2
+1
+1
+w
+s
+y
+d
+w
+s
+y
+
+
+
+=
++
+−
+ 
+（8） 
+1
+0
+1
+1
+p
+p
+y
+
+=
++
+ 
+（9） 
+2
+1
+2
+2
+p
+p
+y
+
+=
++
+ 
+（10） 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+10 
+ 
+Where 
+2
+2
+2
+4
+3
+4
+u
+s
+u
+
+
+
+
+
+=
++
+ 
+2
+2
+2
+4
+3
+4
+w
+u
+
+
+
+
+
+
+= −
++
+ 
+1
+2
+2
+2
+2
+4
+3
+4
+u
+y
+u
+
+
+
+
+
+
+
+−
+=
++
+ 
+6
+4
+2
+4
+2
+2
+2
+2
+2
+4
+2
+4
+0
+1
+2
+4
+2
+2 2
+[3(
+1)
+9
+8(1
+)
+24
+16(1
+)
+16
+]
+3
+4
+16[(
+1)
+]
+3
+u
+u
+z
+u
+u
+z
+u
+z
+u
+u
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+−
+−
+−
+−
+−
+=
+=
++
++
+ 
+4
+2
+2
+2
+2
+2
+2
+1
+2
+2
+0
+4
+(
+1)
+3
+(
+4)
+4
+3
+(3
+4
+)
+u
+u
+z
+u
+z
+u
+k
+k
+
+
+
+
+
+
+
+
+
+
++
+−
++
+−
+−
+=
+
++
+ 
+2
+1
+2
+
+
+=
+ 
+1
+2
+s
+x
+
+
+=
+ 
+1
+1
+2
+y
+y
+
+
+=
+ 
+2
+z
+A
+B
+
+=
+ 
+3
+2
+10
+3
+2
+8
+2
+3
+2
+6
+4
+3
+2
+4
+6
+3
+2
+2
+8
+20
+44
+148
+3
+3
+1
+28
+3
+3
+3
+148
+1004
+160
+1760
+1024
+272
+1
+0
+(
+)
+(
+44
+(
+64
+9
+9
+9
+9
+3
+64
+32
+256
+9
+3
+3
+)
+(
+)
+)
+(
+)
+u
+u
+u
+u
+u
+A
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
++
++
++
+−
+−
+−
+−
+−
+=
++
++
++
+−
+−
++
+−
+−
+−
+−
+ 
+2
+8
+2
+6
+2
+2
+4
+4
+2
+2
+6
+2
+8
+1300
+1984
+39
+78
+9
+(212
+384
+172
+(
+208
+3
+3
+1184
+1216
+256
+(
+44
+)
+8
+64
+9
+(
+)
+)
+3
+)
+(
+3
+)
+u
+u
+u
+u
+k
+k
+k
+k
+k
+k
+B
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+=
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+Proof is provided in Appendix C. 
+Corollary 1: Boundary conditions for the existence of mixed strategy – When 
+0
+k 
+, there exists 
+*
+k , such that when 
+*
+k
+k
+
+, for any
+2
+2
+U
+
+
+
+, it holds that 
+2
+0
+z
+
+
+, 
+meaning fundamental investors consistently adopt a mixed strategy to conceal their 
+actions. 
+From Theorem 1, 
+2
+z
+A
+B
+
+=
+. And due to the expression B > 0, the sign of 
+2
+z
+ 
+depends on the expression A. Regarding expression A, further simplification yields: 
+3
+2
+2
+8
+6
+2
+3
+3
+2
+3
+2
+4
+4
+2
+6
+2
+8
+2
+20
+170
+(
+23
+28)
+9
+3
+3
+[
+(
+1) (
+1)
+(
+1)
+1180
+1940
+512
+3917
+2063
+(
+24
+144)
+(
+64)
+256
+9
+9
+3
+6
+6
+]
+(
+1)
+(
+1)
+9
+U
+U
+U
+U
+U
+k
+k
+k
+A
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+−
+−
+−
+=
++
++
++
++
++
+−
+−
+−
+−
+−
+−
++
++
++
++
+ 
+It can be seen that since k>0 and the three expressions 
+3
+2
+20
+170
+23
+28
+3
+3
+k
+k
+k
+−
+−
+−
+,
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+11 
+ 
+3
+2
+1180
+1940
+24
+144
+9
+9
+k
+k
+k
+−
+−
+−
+,
+3
+2
+512
+3917
+2063
+64
+3
+6
+6
+k
+k
+k
+−
+−
+−
+are all cubic expressions, 
+and the coefficients of all the 
+3
+k items are greater than 0, according to the Descartes’ rule 
+of signs, each of them has only one positive root that makes the respective expression 
+equal to 0. Therefore, there exists a value of 
+*
+k such that for any 
+2
+2
+U
+
+
+
+, when 
+*
+k
+k
+
+holds, 
+2
+0
+z
+
+
+is satisfied.  
+3.3.2 Pure Strategy Equilibrium 
+Equation B9 represents the expected profit of fundamental investors, and when the 
+coefficients of 
+2
+1x are less than 0, we can determine by maximizing it. In this case, 
+1x 
+is unique, indicating that fundamental investors will not submit orders randomly, hence 
+referred to as a pure strategy equilibrium. Proposition 2 defines this equilibrium. 
+Proposition 2: The existence of pure strategy equilibrium is ensured if and only if the 
+second-order conditions are met: 
+1
+2
+1
+2
+2
+1
+2
+(
+)
+0
+4
+s
+y
+
+
+
+
+
++
+−
+−
+
+. The following defines the 
+equilibrium:  
+ 
+(
+)
+1
+1
+0
+x
+v
+p
+
+=
+−
+ 
+（6a） 
+ 
+(
+)
+1
+1
+2
+2
+1
+1
+1
+x
+y
+x
+v
+p
+x
+y
+
+
+
+=
+−
+−
++
+ 
+（7） 
+ 
+1
+2
+1
+1
+w
+s
+y
+w
+s
+y
+d
+
+
+
+=
++
+−
+ 
+（8） 
+ 
+1
+0
+1
+1
+p
+p
+y
+
+=
++
+ 
+（9） 
+ 
+2
+1
+2
+2
+p
+p
+y
+
+=
++
+ 
+（10） 
+Where 
+1
+, 
+2
+, 
+1x
+, 
+1y
+, 
+w
+, 
+s
+, 
+1y
+, 
+1
+ and 
+2
+ satisfies:  
+2
+2
+1
+2
+
+
+=
+, 
+1
+2
+s
+x
+
+
+=
+, 
+1
+1
+2
+y
+y
+
+
+=
+ 
+2
+1
+0
+U
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+4
+3
+4(
+1)
+s
+U
+U
+k
+
+
+
+
+
+
+
+
+
+
+
+
+=
++
+
++
++
+
+, 
+1
+2
+1
+2
+2
+U
+4(
+1)
+3
+3
+y
+s
+k
+
+
+
+
+
+
+
++
+=
+−
+ 
+2
+2
+U
+(
+1)
+w
+s
+k
+
+
+
+
+
++
+= −
+, 
+1
+1
+1
+0
+1
+0
+1
+2
+2
+2
+2
+2
+0
+0
+w
+u
+U
+
+
+
+
+
+
+
+
+
+
+=
+=
++
++
++
+ 
+(
+)(
+)
+4
+4
+2
+4
+2
+2
+2
+4
+2
+2
+4
+4
+4
+2
+1
+0
+1
+0
+1
+0
+1
+0
+0
+4
+2
+2
+2
+4
+2
+2
+2
+4
+4
+2
+4
+4
+2
+2
+4
+4
+2
+1
+0
+1
+0
+1
+0
+1
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+1
+0
+4
+5
+8
+7
+2
+5
+5
+4
+7
+3
+4
+3
+4
+4
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
++
+
+
+
+
+
++
++
++
++
++
+
+
+
+=
++
+
++
++
++
+
+. 
+1
+is the root of the following polynomial： 
+2
+14
+12
+10
+8
+6
+4
+2
+1
+7
+1
+6
+1
+5
+1
+4
+1
+3
+1
+2
+1
+1
+1
+0
+(
+)
+f
+A
+A
+A
+A
+A
+A
+A
+A
+
+
+
+
+
+
+
+
+=
++
++
++
++
++
++
++
+ 
+Where  
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+12 
+ 
+(
+)
+(
+)(
+)
+(
+)
+(
+)
+(
+)
+2
+7
+4
+2
+2
+4
+2
+2
+7
+0 2
+5 1
+1
+4
+3
+3
+4 1
+U
+U
+U
+A
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+= 
++
++
++
++
++
++
++
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+6
+2
+8
+6
+2
+2
+4
+4
+3
+2
+6
+6
+0
+2
+8
+18
+93
+188 179
+8 4
+]
+4
+63
+4
+[
+19
+8 1
+4
+2
+U
+U
+U
+U
+U
+A
+k
+k
+k
+k
+k
+k k
+
+
+
+
+
+
+
+
+
+
+= 
+−
++
+−
++
+−
++
+−
+−
++
+−+ −+
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+8
+6
+2
+4
+4
+4
+5
+5
+0
+2
+6
+8
+243
+27 82
+47
+9 524
+974
+275
+1
+9
+24 126
+526
+480
+89
+16
+1
+255
+271 43
+U
+U
+U
+U
+U
+k
+k
+k
+A
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
++
++
++
+
+
+= −
+
+
++
++
++
++
++
++
++
+
+
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+8
+6
+2
+4
+4
+6
+4
+2
+6
+4
+0
+8
+324
+27
+92
+61
+27
+728
+23
+16
+5
+1
+24
+1368
+2190
+552 107
+27
+16
+972
+2772
+2190
+368
+49
+U
+U
+U
+U
+U
+k
+k
+k
+A
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
++
++
+−
++
+−
++
+
+
+
+
+=
+
++
+−
++
+−
++
+−
++
+
+
+
+
+
+
++
+−
++
+−
++
+−
++
+−
++
+
+
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+8
+6
+2
+4
+4
+8
+3
+2
+6
+3
+0
+8
+81
+27
+171 16
+27 228
+669
+32
+1
+24 2538
+675
+4
+243
+8
+81
+16 3564
+5103
+675
+621 16
+U
+U
+U
+U
+U
+k
+k
+k
+A
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
++
++
++
+−
++
+
+
+
+
+= −
+
++
++
++
+−
++
+
+
+
+
+
+
++
++
++
++
+−
++
+
+
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+6
+4
+2
+2
+4
+10
+2
+2
+2
+0
+6
+27
+27
+31 4
+18
+36
+125
+8
+4
+27
+4 324
+234
+375 16
+U
+U
+U
+U
+k
+k
+k
+A
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
++
+−
++
++
+−
++
+−
++
+
+
+= −
+
+
++
++
+−
++
+−
++
+
+
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+12
+4
+4
+2
+2
+4
+1
+0
+4
+9
+12
+27
+2
+4
+72
+111 4
+9
+U
+U
+U
+A
+k
+k
+k
+
+
+
+
+
+
+
+= −
+
++
+−
++
++
+−
++
+−
++
+ 
+14
+8
+0
+64
+U
+A
+
+
+=
+ 
+Proof is provided in Appendix D. 
+4. Market Dynamic Analysis 
+This section examines the impact of high-frequency trading on the market, including 
+characteristics of martingale processes, information rents, and market crashes. As 
+mentioned earlier, high-frequency trading holds significant advantages in information 
+technology, leading to new forms of market information learning. Understanding how this 
+transformation alters the market microstructure is a crucial issue in current research on 
+market dynamics (O’Hara, 2015). The Fama’s Theorem is a cornerstone of modern 
+financial theory, and the martingale process is a test assumption for market prices to 
+adhere to the law. Therefore, this section employs both mathematical derivation and 
+numerical simulation to examine of these aspects. Additionally, FIs earn rents based on 
+their privately held fundamental information. Higher rents incentivize FIs to engage in 
+fundamental research, contributing to more effective price discovery and resource 
+allocation (Stiglitz, 2014). Consequently, this section calculates the expected returns of 
+FIs to measure the level of rent. Finally, frequent occurrences of market crashes indicate 
+issues with market liquidity. To address this, the paper introduces a constraint on the 
+market maker's risk capital to ensure it is not less than zero, based on a risk-neutral market 
+maker. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+13 
+ 
+4.1 Martingale Process Test 
+In the Kyle model, the risk-neutral market maker's clearing price is set to satisfy two 
+conditions: on one hand, the price is the optimal estimate of the asset's value based on the 
+observed total orders, expressed as 
+( |
+)
+E v x
+u
++
+ ; On the other hand, the market maker 
+minimizes 
+the 
+risk 
+of 
+price 
+deviation 
+from 
+the 
+value, 
+expressed 
+as
+2
+[(
+( )) ]
+var( | )
+E v
+p y
+v y
+−
+=
+ . Starting from these two conditions, Kyle (1985) proved that 
+the market maker adopts a linear pricing rule. For the two-stage Kyle model applied in 
+this paper, it can be proven that under the linear pricing rule, a necessary condition for 
+the market to satisfy the martingale process is that the total order quantities 
+1y , 
+1
+y in 
+the two periods satisfy 
+2
+1
+(
+|
+)
+0
+E y
+y
+=
+. The proof is provided in Appendix E. 
+Corollary 2: When HFT only learns from FI' orders, the necessary conditions for a 
+martingale process are strictly satisfied. However, when there is learning from retail 
+orders, the necessary conditions cannot be met. 
+Proof:  
+1. When learning only occurs from FI, it means k=0 and substitutes into the model 
+results in: 
+1
+0
+1
+2
+1
+1
+2
+2
+2
+(
+)
+2
+2
+2
+2
+y
+s
+s
+v
+p
+y
+y
+x
+U
+
+
+
+
+
+
+−
+=
+−
++
++
++
++
+ 
+1
+1
+0
+1
+(
+)
+y
+v
+p
+z U
+
+=
+−
++ +
+ 
+(
+)
+2
+2
+2
+2
+1
+1
+1
+0
+1
+0
+2
+2
+1
+2
+c
+1
+2
+2
+2
+2
+ov
+)
+2
+(
+,
+y
+s
+s
+z
+z
+U
+y y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
+−
++
++
++
+
+
+
+
+
+
+=
+
+
+ 
+For the mixed strategy equilibrium, according to Proposition 1, we have 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+2
+2
+2
+2
+2
+2
+0
+0
+3
+4
+2
+2
+4
+4
+2
+3
+1
+2
+2
+4
+2
+2
+2
+0
+2
+2
+2
+4
+2
+2
+4
+3
+4
+3
+4
+2
+13
+40
+16
+13
+40
+16
+0
+3
+4
+3
+4
+13
+40
+cov(
+,
+6
+)
+1
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+mixed
+y y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+
++
+
+
+
+−
+
+
++
++
++
++
+
+
+
+
+=
+=
++
+
++
++
++
+ 
+Consequently 
+2
+1
+(
+|
+)
+0
+mixed
+E y
+y
+=
+ 
+For the pure strategy equilibrium, according to Proposition 2, we have 
+(
+)
+(
+)
+(
+)
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+2
+1
+1
+0
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+4
+4
+2
+4
+2
+2
+2
+4
+1
+0
+1
+0
+0
+4
+4
+2
+4
+2
+2
+2
+4
+4
+2
+1
+0
+1
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+2
+1
+2
+2
+2
+4
+3
+4
+4
+5
+8
+2
+5
+4
+4
+3
+4
+U
+U
+s
+s
+z
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
+
+
+
++
++
+=
+
+
++
++
+
+
+
+
+
++
++
+
+
+
+
+
++
++
++
+
+
+
++
+
++
++
+(
+)
+2
+0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+14 
+ 
+(
+)
+(
+)
+(
+)
+(
+)
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+2
+2
+2
+1
+1
+0
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+4
+4
+2
+4
+2
+2
+2
+4
+1
+0
+1
+0
+0
+4
+4
+2
+4
+2
+2
+2
+4
+4
+2
+1
+0
+1
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+2
+2
+2
+4
+3
+4
+4
+5
+8
+2
+5
+4
+4
+3
+4
+U
+U
+y
+z
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
+
+
+
++
++
++
+=
+
+
++
++
+
+
+
+
+
++
++
+
+
+
+
+
++
++
++
+
+
+
++
+
++
++
+(
+)
+2
+2
+0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+(
+)
+1
+1
+2
+2
+2
+2
+2
+1
+1
+0
+1
+0
+2
+2
+c
+0
+(
+1
+2
+2
+2
+v
+2
+2
+o
+,
+) p
+s
+ure
+U
+y
+s
+z
+z
+y y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
+−
++
++
++
+=
+
+
+
+
+
+=
+
+
+
+ 
+That is, 
+2
+1
+(
+|
+)
+0
+pure
+E y
+y
+=
+ strictly holds, and the price martingale process holds in 
+this scenario. 
+2. When learning only occurs from the RI, the orders of HFT in the second period 
+satisfy 
+2
+1
+1
+w
+y
+d
+w
+y
+
+
+=
+−
+, so we have  
+1
+2
+0
+1
+1
+2
+2
+2
+2
+1 (
+)
+(
+)
+2
+2
+2
+y
+r
+w
+y
+v
+p
+y
+w
+w
+u
+
+
+
+
+
+=
+−
+−
++
++
++
++
+ 
+1
+1
+0
+1
+1
+(
+)
+y
+v
+p
+z
+w
+u
+
+=
+−
++ +
++
+ 
+2
+2
+2
+2
+1
+1
+2
+1
+0
+1
+0
+2
+2
+cov(
+,
+)
+(
+)(
+)
+2
+2
+2
+y
+r
+w
+w
+z
+U
+y
+y
+
+
+
+
+
+
+
+
+
+=
++
+−
++
++
++
+ 
+For the mixed strategy equilibrium, according to Proposition 1, we have 
+(
+)
+(
+)
+(
+)
+(
+)
+(
+)
+2
+2
+2
+1
+2
+2
+c
+1
+3
+2
+3 1
+3 1
+3
+)
+1
+ov(
+,
+y
+U
+U
+r
+mixed
+y
+U
+y
+y
+k
+k
+k
+k
+k
+k
+
+
+
+
+
++
++
+−
+−
+=
++
++
+=
+−
++
+ 
+For the pure strategy equilibrium, according to Proposition 2, we have 
+(
+)(
+)(
+)
+(
+)(
+)
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+1
+0
+2
+0
+2
+1
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+1
+c
+3
+2 3
+3
+3
+ov
+2
+(
+3
+,
+)
+3
+r
+pu e
+U
+U
+U
+U
+U
+U
+r
+k
+y
+y
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−
+
++
+
++
++
+
+−
++
++
++
++
++
+=
+
+
+ 
+As seen from the expressions, as long as 
+0
+k 
+, and 
+2
+1
+cov(
+,
+)
+mixed
+n
+y
+y
+,
+2
+1
+cov(
+,
+)
+pure
+n
+y
+y
+is both not equal to zero, so in the scenario where HFT only learns from RI , we have 
+2
+1
+(
+|
+)
+0
+E y
+y
+
+. Therefore, the necessary condition for the market price martingale process 
+is not satisfied. 
+4.2 Information Rent 
+The primary function of financial markets is to facilitate the efficient allocation of 
+resources. Therefore, although the concept of information in the Efficient Market 
+Hypothesis (EMH) is not precisely defined, it is generally considered to be information 
+related to the fundamental aspects of the companies represented by securities (Stiglitz, 
+2014). However, the Kyle two-stage model implicitly assumes that the information level 
+of fundamental investors is predetermined. Therefore, the commonly used indicator 
+1var( | )
+v y , representing the market's information level in the Kyle model, is not suitable. 
+Madrigal (1996), Bond et al. (2010) introduced the concept of research costs, meaning 
+that, based on Kyle's two-stage model, fundamental investors pay research costs in 
+advance to obtain information about the fundamental value. Following a similar line of 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+15 
+ 
+thought, we consider the expected benefits of fundamental investors as the "information 
+rent" they obtain. The higher the level of rent, the greater the incentive they receive, 
+corresponding to a market formation that is more favorable for the efficient allocation of 
+resources. 
+Corollary 3: When there is learning by HFT from FI orders, FI experiences an 
+overall decrease in "information rent"; When there is learning from RI orders, 
+fundamental investors may benefit. 
+Proof: According to Propositions 1 and 2, the information rent (i.e., expected returns) 
+obtained by fundamental investors is as follows: 
+Under the mixed-strategy equilibrium, 
+ 
+2
+2
+0
+1
+2
+,1
+,2
+2
+(
+)
+(
+)
+4
+u
+y
+mixed
+mixed
+f
+f
+E
+
+
+
+
+
+
++
+−
++
+=
+ 
+ 
+2
+,1
+1
+1
+0
+(
+)
+(1
+)
+mixed
+f
+z
+E 
+
+
+
+=
+−
+−
+ 
+ 
+ 
+2
+2
+2
+2
+2
+2
+1
+0
+,2
+(1 2
+)
+(1
+)
+4
+(
+)
+4
+y
+U
+z
+mixed
+f
+E
+
+
+
+
+
+
+
+−
++
+−
++
+=
+ 
+ 
+Under the pure strategy equilibrium 
+1
+2
+2
+2
+0
+2
+2
+0
+1
+2
+1
+2
+,1
+,2
+2
+1
+2
+2
+2
+1
+2
+(1
+)
+(
+)
+2
+(
+)
+(
+)
+4
+4[
+]
+4
+s
+y
+pure
+pure
+U
+f
+f
+s
+y
+y
+E
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+
++
+−
++
+=
++
++
+−
+−
+ 
+ 
+1
+2
+2
+2
+0
+2
+0
+2
+,1
+1
+2
+2
+1
+2
+1
+2
+2
+2
+1
+2
+(1
+)
+2
+(
+)
+{1 [1 (
+)
+] }
+(
+)
+4
+4[
+]
+4
+s
+y
+pure
+f
+s
+y
+s
+y
+E
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+
+
+=
++
+−
+−
++
+−
++
+−
+−
+ 
+2
+2
+2
+1
+2
+2
+1
+0
+1
+2
+,2
+2
+[1 (
+)
+]
+(
+)
+(
+)
+4
+y
+s
+y
+u
+pure
+f
+E
+
+
+
+
+
+
+
+
+−
+−
++
++
+−
+=
+ 
+As there is no analytical solution to 
+1
+ in Proposition 2, numerical simulation 
+methods are employed. The bellowing lists the method, results and the analysis.  
+4.2.1 Simulation method 
+Parameter Settings: We set the two exogenous variables, 
+0
+ and 
+U
+  to 100 and 
+10. With 
+0p normalized to 1, it means the risky asset price return has an annual volatility 
+of 10%. The independent variables are derived from the learning ability of HFT, including: 
+a. 
+
+, the smaller it is, the stronger the predictive ability of HFT for orders from 
+fundamental investors; b. m , defined as 
+1
+k
+k + , representing the proportion of learning 
+of retail orders by HFT, with values ranging from 0 to 1. A larger m indicates stronger 
+learning ability for retail orders, and vice versa, closer to 0 implies weaker predictive 
+ability. 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+16 
+ 
+The key to the simulation is to differentiate whether fundamental investors adopt a 
+mixed-strategy equilibrium with the addition of noise or a pure-strategy equilibrium 
+without noise. This depends on comparing the expected profits of fundamental MM in 
+which equilibrium is higher. The simulation involves the following three steps:  
+a. Set the ranges of 
+
+ and m within the intervals of (0,6) and [0,1] ; 
+b. Simulate pure-strategy equilibrium. Assuming the existence of a pure-strategy 
+equilibrium, solve for 
+1
+ from Equation 11, take values falling within the range of 
+0
+(0,
+]
+U
+
+
+, substitute and check if it satisfies the second-order conditions for the existence 
+of pure-strategy equilibrium. If it exists, adopt pure-strategy equilibrium, substitute into 
+Proposition 2 to find the remaining 8 parameters, and calculate relevant market quality 
+indicators. 
+c. Simulate mixed-strategy equilibrium. Calculate whether A is greater than 0 
+according to equation (4-26). If true, it indicates the existence of mixed-strategy 
+equilibrium. Substitute into Proposition 1 to find a total of 10 parameters and calculate 
+relevant market quality indicators. 
+4.2.2 Simulation Result 
+a. For learning only from fundamental investors 
+In this scenario, the learning proportion m of retail orders is set to 0. Figure 2 
+illustrates the expected returns of the four market participants. Figures (2a), (2b), and (2c) 
+depict the expected returns of fundamental investors in the 1st, 2nd period, and the sum, 
+respectively. Compared to the standard scenario of the Kyle model without highfrequency trading learning (indicated by the orange dashed line in the figures), it can be 
+observed that the expected returns of fundamental investors decrease overall. This implies 
+a reduction in the information rent provided by the market, indicating a decline in the 
+market's ability to allocate resources efficiently. In other words, the first half of Corollary 
+3 holds true. 
+b. For learning only from RI: 
+In this scenario, the forecast by HFT for orders from fundamental investors is set to 
+0, implying 
+
+→+ according to Equation (1). Figure 3 illustrates the expected 
+returns of the four market participants. Figures (3a), (3b), and (3c) show the expected 
+returns of fundamental investors in the 1st, 2nd period, and the total, respectively. It can be 
+observed that, compared to the standard scenario of the Kyle model without highfrequency trading learning, the expected returns of fundamental investors decrease in the 
+first period and increase in the second period. Additionally, the combined expected returns 
+for both periods are higher than in the standard scenario. In other words, overall, the 
+expected returns of fundamental investors increase, indicating potential benefits for 
+fundamental investors. This corresponds to the second part of Corollary 3. 
+However, the increase in expected returns for fundamental investors does not 
+necessarily imply an improvement in the market's ability to allocate resources efficiently. 
+This is because the pricing by MM deviates, leading to additional gains for fundamental 
+investors due to market maker losses. These losses can result in market instability or even 
+collapse, as discussed later in the section on flash crashes. 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+17 
+ 
+4.2.3 Further Discussion 
+The discussion highlights the distinction in information learning effects when HFT 
+learn from RI orders versus fundamental investor orders. It is argued that once HFT can 
+learn and predict RI orders, they gain an information advantage over MM and engage in 
+arbitrage trading. This is entirely different from the situation where HFT learn from 
+fundamental investor orders, where the information advantage is relative to fundamental 
+investors, not MM. Arbitrage trading by HFT targeting MM introduces pricing deviations, 
+thereby breaking the price martingale condition. 
+According to the definition, the high-frequency trader's strategy in the second period 
+is described by 
+w
+, 
+s
+ and 
+1y. Since there is no learning from fundamental investor 
+orders, 
+s
+ is equal to 0. Numerical simulation shows that 
+0
+w
+
+ and  
+1
+0
+y
+
+
+. From 
+the market strategy perspective, this implies that HFT have an information advantage over 
+MM due to learning from RI orders. The information disparity leads to more accurate 
+price judgments relative to MM. Based on these precise value judgments, HFT engage in 
+extensive risk-free arbitrage trading. 
+Here is a detailed explanation: 
+a. When there is information Advantage for HFT Relative to MM 
+When learning from RI orders, HFT gain insights into the actual trading volume in 
+the market with informational content, denoted as 
+1
+1
+y
+w
+−
+, while uninformed MM only 
+know the linear pricing based on the total trading volume 
+1y . Since the proportion of 
+information trading in the former, denoted as 
+1
+1
+1
+x
+y
+w
+−
+, is significantly larger than that in 
+the latter (
+1
+1
+x
+y ), HFT have a relative information advantage over MM. 
+b. Information Disparity Reflected in More Accurate Valuation Judgments: 
+The information disparity manifests as more accurate valuation judgments by HFT 
+and MM. Generally, HFT tend to assess the security's value more closely to its actual 
+value compared to the pricing set by MM. Therefore, HFT engage in arbitrage operations. 
+ 
+From the above, it is evident that HFT and fundamental investors make price 
+judgments and trade based on 
+1
+1
+x
+u
++
+and 
+1
+1
+1
+x
+w
+u
++
++
+. We illustrate this with a singleperiod Kyle model. In this model, Kyle provides an equilibrium where informed traders 
+and MM are given by the following equations: 
+0
+( )
+(
+)
+x v
+v
+p
+
+=
+−
+ 
+1
+1
+0
+1
+1
+(
+)
+(
+)
+p x
+w
+u
+p
+x
+w
+u
+
++
++
+=
++
++
++
+ 
+Where 
+1
+1
+2
+2
+0
+w
+u
+
+
+
++
+=
+
+ 
+1
+1
+1
+1
+0
+0
+2
+2
+2
+2
+2
+0
+2
+w
+u
+w
+u
+
+
+
+
+
+
+
+
+
+=
+=
++
++
++
+ 
+In 
+this 
+simplified 
+model, 
+the 
+price 
+set 
+by 
+MM 
+equals 
+1
+1
+0
+0
+1
+1
+2
+2 (
+)
+2
+w
+u
+p
+p
+x
+w
+u
+
+
+
+=
++
++
++
++
+ and the perceived security price by HFT equals 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+18 
+ 
+1
+1
+0
+0
+1
+2
+2
+'
+(
+)
+2
+w
+u
+p
+p
+x
+u
+
+
+
+=
++
++
++
+， based on their information set 
+1
+{
+, }
+w p . Consequently, 
+we have 
+1
+1
+0
+1
+2
+2
+'
+2
+w
+u
+p
+p
+w
+
+
+
+−
+= −
++
+.  
+It’s obvious that the deviation between the prices set by MM and perceived by HFT 
+is negatively correlated with the learned RI orders 
+1
+w . Specifically, when 
+1
+0
+w 
+, HFT 
+learn about a large size of retail buy orders in the market. As a result, the actual retail buy 
+orders from fundamental investors might be lower than what MM perceive. Therefore, 
+the true price of the security should be lower than the price set by MM, meaning 
+'
+0
+p
+p
+−
+
+. In such a scenario, HFT should engage in selling for arbitrage opportunities. 
+Conversely, when 
+1
+0
+w 
+, HFT learn about retail sell orders, sized as much as 
+1
+w . 
+Consequently, the actual retail buy orders from fundamental investors might be higher 
+than what MM perceive. Therefore, the true price of the security should be higher than 
+the price set by MM, meaning 
+'
+0
+p
+p
+−
+
+. In such a scenario, HFT should engage in 
+buying for arbitrage opportunities. 
+c. The meaning of order size is that HFT maximize risk-free arbitrage using their 
+information advantage. 
+If HFT learn about retail buying in the first period (i.e., 
+1
+0
+w 
+), they would sell 
+orders in the second period with a size of 
+1
+1
+w
+y
+w
+y
+
+
+−
+ 
+, maximizing the expected profit of 
+,2
+2
+2
+1
+1
+[
+(
+) |
+,
+]
+h
+E d v
+p
+w p
+
+=
+−
+. Since 
+,2
+h
+
+ does not 
+involve any subjective judgment of the security's value, the trades conducted by HFT 
+are risk-free arbitrage transactions. Maximizing 
+,2
+h
+
+ corresponds to maximizing the 
+order size for risk-free arbitrage. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+19 
+ 
+ 
+ 
+Figure 2: Simulation Results of Market Participants' P&L (HFT Learning Only from FI) 
+Note: The horizontal axis (
+
+) represents the standard deviation of the error term  in HFT' 
+learning from fundamental investor orders, indicating higher precision with smaller values. The blue 
+solid line represents the scenario where HFT learn from fundamental investor orders, while the 
+orange dashed line represents the standard scenario without high-frequency trading. Additionally, the 
+curve shows a distinct turning point, with the left side indicating a mixed-strategy equilibrium (FI 
+introducing noise and adopting a camouflage strategy), and the right side indicating a pure-strategy 
+equilibrium (FI not introducing noise). 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+20 
+ 
+ 
+ 
+Figure 3: Simulation Results of Market Participants' P&L (HFT Learning Only from 
+RI Orders) 
+Note: m represents the proportion of HFT learning from RI orders (U); the y-axis is in reverse 
+order, meaning m gradually decreases from left to right, indicating a stepwise reduction in the 
+proportion of predicted RI orders. The blue solid line represents the scenario where HFT learn 
+from RI orders, while the orange dashed line represents the standard scenario without highfrequency trading. Additionally, the curve exhibits a clear turning point, with the left side 
+indicating a mixed-strategy equilibrium (FI introducing noise and adopting a camouflage 
+strategy), and the right side indicating a pure-strategy equilibrium (FI not introducing noise). 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+21 
+ 
+4.3 A model explanation for the market crash 
+Corollary 4: When HFT only learns from FI, a market collapse will not occur; 
+When the degree of HFT from RI increases, there is a possibility of market-making 
+cessation and market crash. 
+Proof: It’s quite obvious that assuming that the market maker is completely riskneutral is too idealistic, and MM are bound to face certain upper limits on losses. For 
+example, in reality, MM face capital constraints, and once the capital is lost, they face 
+the risk of bankruptcy. For simplicity, this paper further assumes, based on the 
+assumption of market maker risk-neutrality, that the market maker's losses have an 
+upper limit Ω, and when the losses exceed Ω, the market maker will stop quoting. 
+The importance of the martingale process lies in ensuring the normal operation of 
+the market. When the market's price martingale is established, the market maker's 
+expected profit and loss should be zero. The expected returns of FI and HFT all come 
+from the losses of RI. Therefore, in numerical simulations, the market maker's expected 
+loss is equal to the sum of the losses of RI and the expected returns of FI and HFT. 
+Figures (2f) and (3f) simulate the expected profit and loss of the market maker 
+when HFT only learn from FI and only learn from RI, respectively. The results show: 
+firstly, Figure (2f) shows that the simulated market maker's expected loss is strictly 
+equal to 0, so when HFT learn from FI, a market collapse will not occur; secondly, 
+Figure (3f) shows that the market maker may incur losses, and as the degree of HFT 
+learning from RI increases, the losses may increase exponentially. Therefore, there is a 
+possibility as shown in Figure (4), when m is less than m*, the market maker's losses 
+exceed Ω, and the rational behavior of the market maker is to exit the market. 
+ 
+Figure 4: Model Explanation of Flash Crash: Market Maker Exiting the Market 
+Note: m represents the proportion of HFT learning from RI orders (U), and 
+1
+k
+m
+k
+=
++
+. 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+22 
+ 
+5. Conclusions 
+This study establishes a stylized model to demonstrate that HFT may distort the 
+market, leading to the breakdown of Fama’s Theorem. Expanding the existing research 
+on HFT order prediction, the paper introduces novel insights by incorporating the joint 
+learning of HFT on both fundamental investor and RI orders within the Kyle two-stage 
+model framework. The examination focuses on key aspects, including the price 
+martingale process, market information rent, and the potential for market collapse. 
+Results indicate that learning from RI orders disrupts the price martingale process, 
+while learning from fundamental investor orders does not. The study underscores the 
+nuanced differences in information learning, emphasizing that HFT gain an advantage 
+over MM through retail order learning, leading to pricing deviations and potential 
+market collapse. This research provides a comprehensive perspective on the challenges 
+posed by HFT to market stability, contributing to a deeper understanding of frequent 
+flash crashes in contemporary financial markets. 
+One of the insights from this paper is that time becomes unfair in the era of HFT. 
+HFT possesses the ability to extract informative signals from market-related temporal 
+variables (i.e., order flows of other investors), rendering time informational. However, 
+due to the extension of HFT's information technology advantage to extremely short 
+time dimensions, surpassing human physiological limits, machines gain a significant 
+edge. This temporal informativeness is exclusive to HFT, resulting in unfairness. The 
+high technical barriers of entry in HFT sustain this unfairness, allowing for the 
+possibility of a "continuous free lunch." In efficient markets, occasional free lunches 
+are permissible, but sustained free lunches are excluded. Shleifer (2004) suggests that 
+due to low entry barriers and high competition, the "half-life" of proprietary competitive 
+advantages in financial markets should be relatively short. However, the advent of HFT 
+has altered this landscape: sustained time advantage equates to information advantage. 
+This article's second insight is that modern classical financial theory needs to pay 
+more attention to the highly impactful technological changes. From a methodological 
+perspective, the foundation of financial economics lies in general equilibrium, which is 
+also the core foundation of the entire economics. Market competition occurs among 
+"economic agents," achieving equilibrium through "effective" competition for 
+economic "rents" to achieve the efficient allocation of societal resources. This 
+equilibrium relies on core concepts in economics such as rational individuals, marginal 
+utility, and welfare. The assumption that individuals are the smallest and most basic 
+units in the economic world, and that all economic phenomena can be decomposed into 
+the decisions and behaviors of individuals, forms the foundational hypothesis. However, 
+this assumption differs significantly from the actual situation since the advent of the 
+industrial society, where technology has played the most crucial role. Nevertheless, 
+finance remains a relatively young discipline. The efficient market hypothesis emerged 
+in the 1970s when market mechanisms were still predominantly manual, and semiautomated technologies were gradually being applied. Taking a broader historical 
+perspective of 300 years of financial market history, there has never been continuous 
+competition between humans and machines in financial markets. It's no wonder that 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+23 
+ 
+figures like Walras, Markowitz, Sharpe, and Fama, whether in the past or later, did not 
+consider the influence of technology. 
+The third insight of this article highlights the need for current regulatory efforts to 
+place greater emphasis on technological impacts, particularly ensuring fairness in terms 
+of time and information. Ongoing technological advancements continue to exert a 
+widening influence. Despite the saturation of HFT in Western markets, the essence of 
+technological progress lies in its continual transcendence of limits (Stigler, 2004). 
+Recent breakthroughs in artificial intelligence (AI) position it as a potential core 
+technology, operating on the assumption that human intelligence can be simulated and, 
+once accuracy reaches a certain level, machines can replace human intelligence. The 
+alignment of AI's algorithmic advantage with the data advantage of HFT suggests the 
+potential for more disruptive trading patterns. Regulatory focus should preemptively 
+address these innovations, avoiding a repetition of the delayed response seen after the 
+2010 U.S. flash crash. Financial markets, designed to facilitate efficient resource 
+allocation, should prioritize time fairness and information fairness, as emphasized in 
+this article, in future regulatory measures. 
+Furthermore, the model's limitation lies in its adoption of a specialized setting with 
+concentrated auctions by MM, deviating significantly from the prevalent continuous 
+trading with limit order books in real-world exchanges. Considering that HFT often 
+execute trades on behalf of RI in the current U.S. stock market, where virtually all 
+participants engage in HFT, the model's applicability may be limited. Additionally, the 
+model's treatment of liquidity is at a preliminary stage. Future improvements should 
+aim at refining the model's design to better align with real-world conditions. 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+24 
+ 
+References 
+Baldauf M, Mollner J. High‐frequency trading and market performance[J]. The 
+Journal of Finance, 2020, 75(3): 1495-1526. 
+Bongaerts D, Van Achter M. High-frequency trading and market stability[J]. 
+SSRN Electronic Journal, 2016. 
+Cespa G, Vives X, 2017. High frequency trading and fragility[J]. ECB Working 
+Paper, 20. 
+Cespa G, Vives X. Market opacity and fragility[J]. Available at SSRN 4339568, 
+2023. 
+Kyle A S, 1985. Continuous auctions and insider trading[J]. Econometrica: Journal 
+of the Econometric Society: 1315-1335. 
+Haldane A G, 2012. The race to zero[J]. The global macro economy and finance: 
+245-270. 
+Huddart S, Hughes J S, Levine C B, 2001. Public disclosure and dissimulation of 
+insider trades[J]. Econometrica, 69(3): 665-681. 
+Kyle A S, 1985. Continuous auctions and insider trading[J]. Econometrica: Journal 
+of the Econometric Society: 1315-1335. 
+Lewis M, 2014. Flash Boys: A Wall Street Revolt. New York: W[J]. 
+Madrigal V, 1996. Non‐fundamental speculation[J]. The Journal of Finance, 
+51(2): 553-578. 
+Malinova K, Park A, Riordan R, 2013. Do retail traders suffer from high frequency 
+traders[J]. Available at SSRN, 2183806. 
+Menkveld A J. The economics of high-frequency trading: Taking stock[J]. Annual 
+Review of Financial Economics, 2016, 8: 1-24. 
+Menkveld A J, Zoican M A. Need for speed? Exchange latency and liquidity[J]. 
+The Review of Financial Studies, 2017, 30(4): 1188-1228. 
+O’Hara M, 2010. What is a quote? [J]. The Journal of Trading, 5(2): 10-16. 
+O’Hara M, 2015. High frequency market microstructure[J]. Journal of financial 
+economics, 116(2): 257-270. 
+Sağlam M, 2020. Order anticipation around predictable trades[J]. Financial 
+Management, 49(1): 33-67. 
+Shi, S. Z. (2004). Ten Lectures on Financial Economics. Shanghai People's 
+Publishing House. 
+Xu Z, Cheng X. The Effects of High-Frequency Anticipatory Trading: Small 
+Informed Trader vs. Round-Tripper[J]. 
+Yang L, Zhu H, 2020. Back-running: Seeking and hiding fundamental information 
+in order flows[J]. The Review of Financial Studies, 33(4): 1484-1533. 
+Zhang, S. P., Xiong, D. H., Zhang, Z., et al. (2003). The Dilemma of Modern 
+Classical Finance and the Rise of Behavioral Finance. Financial Research, (4), 44-56. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+25 
+ 
+Appendix A：Symbol Descriptions 
+1,
+(
+)
+f
+E 
+, 
+2,
+(
+)
+f
+E 
+ 
+The expected profit for FI in the 1st and 2nd periods 
+2,
+(
+)
+h
+E 
+ 
+The expected profit for HFT in the 2nd period 
+1,
+(
+)
+r
+E 
+, 
+2,
+(
+)
+r
+E 
+ 
+The expected profit for RI in the 1st and 2nd periods 
+2
+d 
+The quantity of orders from HFT the 2nd period 
+k 
+The share of orders from RI learned by HFT, satisfying 
+2
+2
+2
+2
+(
+1)
+i
+i
+i
+i
+w
+u
+U
+u
+k
+
+
+
+
++
+=
+=
++
+ , where a larger value 
+indicates that more of the RI's orders are learned 
+m 
+The learning proportion of RI’ orders by HFT, equal to 
+1
+k k + 
+0p 
+The mean value of the risk asset's liquidation value 
+1p 
+2p 
+Asset price at the end of the 1st and 2nd period 
+s 
+The signal learned by HFT from the orders of FIs 
+satisfies 
+1
+s
+x
+
+=
++
+ 
+1
+u 
+2
+u 
+The retail orders not learned by HFT in the 1st and 2nd 
+period 
+v 
+The market value of the risky asset, subject to the 
+distribution 
+0
+0
+(
+,
+)
+N p 
+ 
+1
+w 
+2
+w 
+The retail orders learned by HFT in the 1st and 2nd period 
+1x 
+2x 
+The FI orders in the 1st and 2nd period 
+1y 
+2y 
+The orders aggregated by MM in the 1st and 2nd period 
+z 
+The noise order added by FI actively in the 1st period 
+0
+ 
+The variance of the liquidation value of the risky asset. 
+1
+, 
+2
+ 
+The conditional variance of risk asset’s market prices in 
+periods 1 and 2, expressed as 
+1
+var( |
+)
+v y and 
+1
+2
+var( |
+,
+)
+v y y
+ 
+2
+mixed
+
+, 
+2
+pure
+
+ 
+The conditional variance of prices under mixed-strategy 
+and pure-strategy equilibrium in the 2nd period 
+1
+, 
+2
+ 
+The intensity of trading by FI in periods 1 and 2 based 
+on their private information advantage. 
+1x
+, 
+1y
+ 
+The coefficients of 
+1x , 
+1y in the order submission rule , 
+(
+)
+1
+1
+2
+2
+1
+1
+1
+x
+y
+x
+v
+p
+x
+y
+
+
+
+=
+−
+−
++
+of FI in the 2nd  period 
+w
+, 
+s
+,
+1y
+ 
+The coefficients of w , s and 
+1y in the order 
+submission rule 
+1
+2
+1
+1
+w
+s
+y
+w
+s
+y
+d
+
+
+
+=
++
+−
+ for HFT in 
+the 2nd period 
+
+ 
+The standard deviation of the error term  in the signal 
+s HFT learn from orders submitted by FI, with smaller 
+values suggesting more accurate learning. 
+_t
+
+
+ 
+The critical value of 
+
+. When 
+
+ is greater than 
+_t
+
+
+, the market equilibrium is a pure strategy 
+equilibrium; otherwise, it is a mixed strategy 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+26 
+ 
+equilibrium. 
+w
+ 
+The standard deviation of the quantity of retail orders 
+learned by HFT  
+u
+ 
+The standard deviation of the quantity of retail orders not 
+learned by HFT 
+U
+ 
+The standard deviation of the quantity of retail orders, 
+satisfying U
+w u
+=
++
+ and 
+2
+2
+2
+U
+w
+u
+
+
+
+=
++
+ 
+z
+ 
+The standard deviation of noise added by FI to their own 
+orders, indicating the extent of noise introduction. 
+1，
+2
+ 
+The coefficients in the linear pricing rule of the market 
+maker in the Kyle model, where 1 and 2 represent the 
+first and second stages of the two-stage model, 
+respectively. 
+Appendix B 
+Utilizing Kyle model's recursive approach, we derive decision-making behaviors 
+across the 1st and 2nd periods for FI, HFT and MM 
+B.1 FI at the 2nd period 
+At the 2nd period, FI’s profit is represented by 
+2
+1
+(
+)
+x v
+p
+−
+ with an information set 
+1
+1
+{ ,
+, }
+v p x . Therefore, the expected profit is  
+(
+)
+(
+)
+2
+2
+2
+1
+1
+2
+2
+2
+1
+2
+2
+2
+2
+1
+1
+| ,
+,
+{
+| ,
+,
+}
+E x
+v
+p
+v p x
+E
+x
+x
+v
+p
+d
+w
+u
+v p x
+
+
+−
+=
+−
++
+−
+−
++
++
+
+
+
+
+
+
+
+
+ 
+And FI chooses 
+2x to maximize the expected profit, leading to the following 1st 
+and 2nd order conditions: 
+1
+1
+1
+1
+2
+2
+2
+2
+2
+y
+s
+y
+x
+v
+p
+x
+
+
+
+−
+=
+−
++
+ 
+(B1) 
+2
+0
+
+ 
+(B2) 
+And the maximized expect profit is expressed as  
+(
+)
+1
+2
+1
+2
+1
+2
+2
+1
+1
+1
+1
+2
+1
+[
+(
+)]
+{
+| ,
+|
+,
+,
+,
+}
+4
+s
+y
+v
+p
+x
+y
+E
+v p
+v
+x
+E x
+v
+p
+p x
+
+
+
+−
+−
+−
+=
+−
+
+
+
+
+ 
+Comparing to Equation 7, we have: 
+2
+2
+1
+2
+
+
+=
+ 
+1
+2
+s
+x
+
+
+=
+和
+1
+1
+2
+y
+y
+
+
+=
+ 
+（B3） 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+27 
+ 
+B.2 HFT at the 2nd period 
+At the 2nd period, HFT’s profit is represented by 
+2
+2
+(
+)
+d v
+p
+−
+ with an information 
+set 
+1
+1
+{
+, ,p }
+w s
+. Combining Equation 3 and 5, the expected profit is expressed as
+2
+2,
+2
+2
+1
+1
+2
+2
+2
+1
+2
+2
+2
+2
+1
+1
+[
+(
+) |
+, ,
+]
+{
+[
+(
+)]|
+, ,
+}
+h
+E d v
+p
+w s p
+E
+d
+d v
+p
+x
+w
+u
+w s y
+
+
+
+=
+−
+=
+−
++
+−
+−
++
++
+ 
+And HFT choose 
+2
+d to maximize the expected profit, leading to the following the 
+1st and 2nd order conditions:  
+1
+1
+2
+2
+1
+1
+1
+2
+1
+2
+1
+1
+1
+2
+2
+(1
+) [
+|
+, ,
+]
+[
+|
+, ,
+]
+2
+y
+x
+E v
+p
+w s y
+y
+E x
+w s y
+d
+
+
+
+
+−
+−
+−
++
+=
+ 
+（B4） 
+2
+0
+
+ 
+（B5） 
+Applying the Projection Law, we have:  
+2
+2
+w
+s
+u
+
+
+
+
+
+= −
+ 
+（B6） 
+1
+1
+0
+2
+2
+2
+2
+0
+2
+2
+2
+2
+1
+0
+1
+1
+1
+1
+1
+4
+(
+) 1
+s
+z
+u
+z
+
+
+
+
+
+
+
+
+
+
+
+
+=
++
++
++
+−
++
+ 
+（B7） 
+1
+2
+1
+2
+2
+4
+3
+3
+y
+s
+u
+
+
+
+
+
+
+
+=
+−
+ 
+（B8） 
+And 
+(
+)
+2
+2
+6
+2
+4
+2
+2
+6
+2
+4
+2
+2
+4
+2
+2
+1
+0
+2
+2
+2
+2
+2
+2
+4
+4
+4
+2
+2
+4
+2
+6
+1
+0
+2
+4
+2
+2
+4
+2
+2
+2
+2
+2
+2
+2
+4
+1
+0
+1
+0
+1
+0
+1
+0
+2
+2
+2
+2
+0
+2
+2
+1
+,
+max
+(9
+9
+9
+9
+9
+18
+9
+9
+9
+9
+9
+18
+9
+)
+9
+[
+]
+3
+u
+z
+u
+w
+z
+u
+u
+w
+u
+z
+u
+w
+z
+u
+w
+w
+w
+z
+u
+u
+w
+u
+u
+w
+w
+u
+w
+z
+u
+h
+E
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
++
++
++
++
++
++
++
++
++
++
+
++
+
+=
++
++
+(
+)
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+4
+4
+3
+4
+z
+u
+z
+u
+
+
+
+
+
+
+
+
++
++
++
++
+
+ 
+B.3 FI at the 1st period 
+At the 1st period, FI’s profit is represented by 
+1,
+1
+1
+(
+)
+f
+x v
+p
+
+=
+−
+ with an 
+information set { }
+v . Therefore, FI chooses 
+1x to maximize the expected profit：  
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+28 
+ 
+1
+1
+1
+1,
+2,
+2
+1
+2
+2
+1
+2
+2
+2
+1
+1
+0
+1
+2
+2
+2
+2
+2
+2
+0
+1
+2
+2
+[
+| ]
+(
+)
+[
+]
+(1
+)(
+)
+4
+2
+(
+)
+(
+)(
+)
+4
+f
+f
+s
+y
+s
+y
+w
+u
+y
+E
+v
+x
+v
+p x
+v
+p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+=
++
+−
++
+−
+−
+−
++
+−
+−
+−
++
++
+−
++
+ 
+(B9) 
+As the expected profit is a quadratic function of 
+1x with a coefficient on the 
+quadratic term less than or equal to 0, there exist two types of equilibria. 
+B.4 Market Maker (MM) at both 1st and 2nd period 
+The decision of MM in periods 1 and 2 is made by observing the overall order 
+flow without distinguishing the types of market participants. It cannot identify the 
+origin of orders from specific types of traders but, based on the total order flow, it sets 
+prices to clear the market. 
+At the 1st period, MM observes 
+1
+{ }
+y
+ and sets 
+1
+1
+( |
+)
+p
+E v y
+=
+. According to 
+equation (9) and applying the Projection Law, resulting in: 
+1
+0
+1
+1
+2
+2
+2
+2
+1
+1
+0
+( ,
+)
+(
+)
+z
+w
+u
+Cov v y
+Var y
+
+
+
+
+
+
+
+=
+=
++
++
++
+ 
+(B10) 
+At the 2nd period, MM observes 
+1
+2
+{
+,
+}
+y y
+ and sets 
+2
+1
+2
+( |
+,
+)
+p
+E v y y
+=
+. According 
+to Equation 10 and applying the Projection Law, resulting in: 
+2
+1
+2
+2
+1
+( ,
+|
+)
+(
+|
+)
+Cov v y
+y
+Var y
+y
+=
+. 
+Expanding the expression gives:  
+(
+)
+2
+2
+1
+1
+0
+1
+0
+2
+1
+0
+2
+2
+2
+2
+2
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+2
+2
+2
+2
+1
+1
+0
+2
+2
+2
+2
+2
+1
+0
+1
+2
+2
+2
+1
+2
+2
+1
+1
+2
+2
+4
+1
+2
+2
+2
+s
+s
+z
+w
+w
+s
+z
+w
+u
+s
+s
+z
+s
+w
+w
+u
+s
+s
+z
+w
+w
+z
+w
+u
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
+
+
+
+
+
+
+
+
+
+
++
+−
+
+
++
++
++
+
+
+=
+
+
++
++
++
++
++
++
+−
+
+
+
+
+
+
+
+
++
++
++
+
+
+
+
+
+
+
+
++
++
++
+ 
+(B11) 
+Proof：From equations (1), (2), (4), (6), (7), and (8), we have， 
+1
+1
+1
+2
+0
+1
+1
+2
+2
+2
+2
+1
+(
+)(
+)
+(
+)
+2
+2
+2
+2
+2
+y
+s
+s
+w
+s
+z
+y
+v
+p
+y
+w
+w
+u
+
+
+
+
+
+
+
+
+=
++
+−
+−
++
++
++
++
++
++
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+29 
+ 
+So, we get:  
+(
+)
+2
+2
+2
+1
+2
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+1
+2
+2
+2
+2
+2
+1
+2
+2
+2
+2
+1
+2
+1
+0
+0
+1
+1
+2
+0
+1
+(
+|
+)
+[(
+)(
+)
+|
+1
+2
+2
+2
+1
+1
+2
+2
+2
+4
+]
+2
+2
+s
+s
+s
+z
+w
+w
+s
+s
+w
+s
+s
+w
+s
+w
+u
+z
+w
+u
+z
+w
+u
+z
+Var y
+y
+Var
+v
+p
+w
+y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
+
+
+
+
+
+
+
+
+
+
++
++
++
++
++
++
++
+
+=
++
+−
++
++
++
+
++
+=
+−
+
++
++
++
+
+
+ 
+ For 
+2
+1
+( ,
+|
+)
+Cov v y
+y , according to the linear pricing rule of the market maker in 
+the Kyle model and the market efficiency, we have 
+2
+1
+(
+|
+)
+0
+E y
+y
+=
+. As 
+2
+2
+1
+2
+2
+2
+1
+2
+2
+2
+1
+( |
+,
+)
+(
+|
+)
+(
+|
+)
+p
+E v y
+y
+E
+y
+y
+E y
+y
+
+
+
+
+=
+=
++
+=
++
+, we get:  
+2
+1
+1
+2
+2
+1
+1
+2
+( ,
+|
+)
+([
+( |
+)][
+(
+|
+)])
+[(
+)
+]
+Cov v y
+y
+E v
+E v y
+y
+E y
+y
+E v
+p y
+=
+−
+−
+=
+−
+ 
+Based 
+on 
+equations 
+(1), 
+(4), 
+(7), 
+and 
+(8), 
+we 
+have 
+1
+1
+1
+2
+1
+2
+2
+2
+2
+2
+2
+y
+s
+w
+s
+y
+x
+v
+p
+y
+w
+w
+u
+
+
+
+
+
+−
+=
++
+−
++
++
++
++
+. Therefore,  
+2
+1
+1
+1
+1
+2
+1
+1
+2
+2
+2
+(
+)
+[(
+)
+]
+[(
+)(
+)]
+2
+2
+2
+y
+s
+w
+s
+y
+x
+E v
+p
+E v
+p y
+E v
+p
+w
+w
+u
+
+
+
+
+
+−
+−
+=
++
+−
+−
++
++
++
++
+ 
+ 
+Expanding the equation then we get 
+2
+2
+1
+1
+0
+1
+0
+2
+1
+0
+2
+2
+2
+2
+2
+1
+0
+2
+1
+( ,
+|
+)
+1
+2
+2
+2
+1
+2
+2
+s
+s
+z
+w
+w
+s
+z
+w
+u
+Cov v y
+y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
+
+
+
+
+
+
+
+
+
+
++
+−
+
+
++
++
++
+
+
+=
+ 
+Hence, this is proven.  
+Appendix C: Proof of Proposition 1 
+The implication of FI adopting a mixed strategy is that its expected return in the 
+first period is independent of its order size, meaning that the coefficients before and in 
+equation B9 should be equal to 0, it means:  
+1
+2
+1
+2
+2
+1
+2
+(
+)
+0
+4
+s
+y
+
+
+
+
+
++
+−
+−
+=
+ and 
+1
+1
+2
+2
+2
+1
+0
+2
+s
+y
+
+
+
+
++
+−
+−
+=
+ 
+Consequently, we get,  
+1
+2
+
+
+
+=
+=
+和
+2
+2
+2
+4
+3
+4
+u
+s
+u
+
+
+
+
+
+=
++
+ 
+（C1） 
+Therefore, based on equation (B3) (consisting of 3 equation relations), (B6), (B7), 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+30 
+ 
+(B8), (B10), (B11), and the conditions for the mixed strategy - equation (C1) (consisting 
+of 2 equation relations), a total of 10 equation relations are solved to describe the 
+characteristics of the equilibrium with 10 parameters. The following steps are taken to 
+derive all the parameters.  
+Step 1. For equation B11, rearranging yields:  
+2
+2
+2
+2
+2
+2
+2
+2
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+2
+2
+2
+2
+2
+1
+0
+(
+)
+[
+(
+)(
+)
+4(
+)(
+)
+4
+(
+)]
+z
+w
+u
+s
+z
+w
+u
+z
+w
+u
+s
+w
+w
+w
+u
+w
+w
+s
+s
+z
+w
+w
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
+=
++
++
++
++
++
++
++
++
++
+−
++
++
+ 
+combining
+2
+2
+2
+4
+3
+4
+u
+s
+u
+
+
+
+
+
+=
++
+ 
+2
+2
+2
+4
+3
+4
+w
+u
+
+
+
+
+
+
+= −
++
+ and 
+2
+2
+w
+u
+k
+
+
+=
+ , we get:  
+6
+2
+2
+4
+2
+2
+2
+2
+0
+2
+4
+2
+4
+2
+6
+4
+2
+2
+4
+1
+0
+2
+8
+6
+2
+2
+6
+2
+4
+2
+2
+[9(
+1)
+9
+24(
+1)
+24
+16(
+1)
+16
+]
+{
+[52(
+1)
+(160
+160)
+(128
+64)
+]
+36(
+1)
+52(
+1)
+[96(
+1)
+64(
+1)]
+(160
+160)
+[64(
+u
+u
+z
+u
+u
+z
+u
+z
+u
+u
+u
+u
+u
+z
+u
+u
+z
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
++
++
++
++
++
+=
+
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
++
+2
+4
+4
+2
+2
+4
+2
+1)
+64 ]
+(128
+64)
+}
+u
+u
+z
+k
+k
+
+
+
+
+
++
++
++
+ 
+（C2） 
+Step 2. According to Equation B7 and 
+2
+2
+2
+4
+3
+4
+u
+s
+u
+
+
+
+
+
+=
++
+, we can obtain: 
+4
+2
+2
+2
+2
+2
+2
+2
+1
+2
+2
+0
+4
+(
+1)
+3
+(
+4)
+4
+3
+(3
+4
+)
+u
+u
+z
+u
+z
+u
+k
+k
+
+
+
+
+
+
+
+
+
+
++
+−
++
+−
+−
+=
+
++
+ 
+（C3） 
+Combing Equation B10, it yields:  
+6
+4
+2
+4
+2
+2
+2
+2
+0
+2
+4
+2
+4
+2
+4
+2
+2 2
+[3(
+1)
+9
+8(1
+)
+24
+16(1
+)
+16
+]
+3
+4
+16[(
+1)
+]
+3
+u
+u
+z
+u
+u
+z
+u
+z
+u
+u
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+−
+−
+−
+−
+−
+=
++
++
+ 
+（C4） 
+Step 3. Substitute Equation C3 and C4 into Equation C2 to solve for 
+z
+, resulting 
+in:  
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+31 
+ 
+(
+) (
+)
+2
+8
+8
+2
+8
+6
+2
+6
+2
+2
+6
+2
+4
+4
+4
+4
+2
+4
+4
+2
+6
+2
+6
+2
+2
+6
+8
+2
+8
+0
+2
+2
+2
+2
+2
+2
+2
+10
+10
+(351
+702
+351
+1548
+3456
+1908
+1872
+5952
+3900
+576
+4032
+3552
+768
+1216
+)
+3
+4
+3
+3
+4
+(9
+27
+2
+z
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+−
++
++
++
++
++
++
++
++
++
++
++
++
++
+
++
++
++
++
++
++
+(
+)
+2
+10
+3
+10
+8
+2
+8
+2
+2
+8
+2
+3
+8
+2
+6
+4
+6
+4
+2
+6
+4
+3
+6
+4
+4
+6
+4
+6
+2
+4
+6
+3
+4
+6
+2
+8
+2
+2
+8
+3
+2
+8
+0
+2
+2
+7
+9
+252
+444
+132
+60
+1296
+2448
+1004
+148
+576
+3072
+1760
+160
+768
+960
+64
+)
+3
+4
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+u
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+−
++
+−
+−
+−
++
+−
+−
+−
++
+−
+−
++
+
++
+(
+)
+2
+2
+2
+2
+2
+0
+3
+3
+4
+u
+u
+k
+k
+
+
+
+
++
+=
++
+ 
+Further simplifying, we get 
+2
+z
+A
+B
+
+=
+, where:  
+3
+2
+10
+3
+2
+8
+2
+3
+2
+6
+4
+3
+2
+4
+6
+3
+2
+2
+8
+20
+44
+148
+3
+3
+1
+28
+3
+3
+3
+148
+1004
+272
+144
+9
+9
+160
+1760
+1024
+(
+64
+9
+9
+3
+64
+320
+256
+9
+(
+)
+(
+)
+(
+)
+)
+)
+3
+(
+3
+u
+u
+u
+u
+u
+A
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
++
++
++
+−
+−
+−
+−
+−
+−
++
+−
++
++
++
+−
+=
+−
+−
+−
+ 
+（C5a） 
+2
+8
+2
+6
+2
+2
+4
+4
+2
+2
+6
+2
+8
+39
+78
+9
+(212
+384
+172
+1300
+1984
+(
+208
+3
+3
+1184
+1216
+256
+(
+44
+)
+8
+64
+9
+(
+)
+)
+3
+)
+(
+3
+)
+u
+u
+u
+u
+k
+k
+k
+k
+k
+k
+B
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+=
++
++
++
++
++
++
++
++
++
++
++
++
++
+ 
+（C5b） 
+In summary, the system of equations for the mixed-strategy equilibrium has been 
+successfully solved 
+Appendix D: Proof of Proposition 2 
+The implication of FI adopting a pure strategy is that, according to the 
+maximization condition of Equation B9, the following relationship is obtained:  
+1
+1
+1
+2
+2
+2
+1
+0
+2
+1
+2
+2
+1
+2
+1
+2
+(
+)
+(
+)
+2
+2
+s
+y
+s
+y
+x
+v
+p
+
+
+
+
+
+
+
+
+
++
+−
+−
+=
+−
++
+−
+−
+， 
+Combing Equation B6, it yields: 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+32 
+ 
+1
+1
+1
+2
+2
+2
+1
+2
+1
+2
+2
+1
+2
+1
+2
+(
+)
+2
+2
+s
+y
+s
+y
+
+
+
+
+
+
+
+
+
+
++
+−
+−
+=
++
+−
+−
+ 
+（D1a） 
+ 
+Additionally, the second-order conditions must be satisfied. 
+1
+2
+1
+2
+2
+1
+2
+(
+)
+0
+4
+s
+y
+
+
+
+
+
++
+−
+−
+
+ 
+（D1b） 
+Since we have the information 
+0
+z
+=
+, the objective is to solve for 
+1
+, 
+2
+, 
+1x
+, 
+1y
+, 
+w
+, 
+s
+, 
+1y
+, 
+1
+ and 
+2
+. This entails dealing with a set of equations derived 
+from (B3) (which comprises 3 equations) ,  (B6) , (B7) , (B8) , (B10) , (B11) , and 
+the conditions characterizing pure strategy equilibrium—namely, equations (D1a) 
+and (D1b)—augmented by a supplementary boundary constraint. 
+Organizing the seven equations, featuring the unknowns 
+1
+, 
+s
+, 
+1
+ and 
+2
+. 
+These equations originate from (B6), (B7), (B11), and (D1a). They constitute a 
+system that requires simultaneous solving. 
+Substituting 
+0
+z
+=
+ into equation (B11) and simplifying, we obtain: 
+(
+)
+(
+)
+(
+)
+(
+)
+2
+2
+2
+1
+0
+4
+2
+2
+2
+1
+0
+2
+2
+4
+0
+2
+2
+2
+2
+2
+2
+4 1
+1
+4
+1
+4
+4
+U
+U
+U
+U
+U
+s
+U
+U
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+
++
+
+
+
+
+
+
+
+
++
+
+
+
+
+
+
+
+
++
++ 
+
+
+
+
+
+
+
+
+
+
+
+
+
++
+
+
+
+
+
+
++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=
+
+
+
+
+ 
+（D2） 
+From Equation B7, we have 
+(
+)
+2
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+0
+2
+1
+0
+2
+0
+1
+0
+1
+2
+2
+2
+2
+1
+1
+0
+4
+3
+4
+4
+3
+4
+1
+U
+U
+u
+s
+U
+u
+u
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=
+
++
+
++
++
++
+
+
++
+
+=
+ 
+（D3） 
+Substituting Equation D3 into Equation D2，it yields,  
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+33 
+ 
+(
+)
+4
+4
+2
+4
+2
+2
+2
+4
+1
+0
+1
+0
+2
+2
+4
+4
+4
+2
+4
+2
+2
+2
+0
+1
+0
+1
+0
+1
+0
+4
+2
+2
+2
+4
+4
+2
+4
+4
+2
+2
+4
+4
+2
+1
+0
+1
+0
+1
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+1
+0
+2
+2
+1
+0
+2
+2
+2
+2
+1
+0
+1
+0
+4
+5
+8
+7
+2
+5
+5
+4
+7
+3
+4
+3
+4
+4
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+k
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
+
+
+
++
++
++
+
+
+
+
++
++
++
+
+
+
+=
+
+
++
++
++
+
+
+
+
+
++
+
+
+
+ （D4） 
+将式（B8） （B10）和（D3）代入式（D1a），有 
+Substituting Equations B8, B10, and D3 into equation D1a, we have: 
+(
+)
+(
+)(
+)
+(
+)
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+0
+1
+0
+1
+0
+1
+0
+4
+2
+2
+2
+2
+2
+2
+1
+0
+2
+2
+2
+2
+1
+0
+1
+0
+2
+2
+2
+2
+1
+0
+1
+0
+2
+2
+2
+2
+2
+2
+2
+2
+2
+1
+2
+0
+1
+0
+1
+0
+6
+3
+6
+4
+3
+12
+4
+9
+12
+12
+9
+4
+3
+4
+4
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+U
+k
+k
+k
+k
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
++
++
++
+
+
+
+
++
++
++
+
+
+
+
+
++
++
+
+
+
+
++
+
+
++
++
++
+=
+−
+
+ 
+（D5） 
+From equation (D5), it can be seen that because 
+2
+0
+
+, we have 
+2
+2
+1
+0
+U
+
+
+ 
+（D6） 
+Combining equations D4 and D5 gives a polynomial equation of 
+1
+,  which is 
+exactly Equation 11. Consequently, we can determine 
+s
+ from Equation D3, and   
+2
+ from Equation D4, and 
+1 from Equation B10. Therefore, all 9 parameters in the 
+pure strategy equilibrium are determined. 
+Appendix E: Martingale Process Conditions 
+For the two-stage Kyle model under the linear pricing rule of the market maker, 
+the necessary condition for the market to satisfy the martingale process of prices is 
+given by , as demonstrated below: 
+Under the assumption of the Fama law, price changes follow a random walk, and 
+the price is a martingale. Thus, 
+2
+1
+1
+(
+|
+)
+E p
+p
+p
+=
+ 
+（E1） 
+Substituting into the linear pricing rule of the market maker in the second period, 
+we get 
+Electronic copy available at: https://ssrn.com/abstract=4708532
+
+ 
+34 
+ 
+2
+1
+1
+1
+2
+2
+1
+1
+1
+2
+2
+1
+1
+2
+2
+1
+(
+|
+)
+(
+|
+)
+(
+|
+)
+(
+|
+)
+E p
+p
+p
+E p
+y
+p
+p
+p
+E
+y
+p
+p
+E
+y
+p
+
+
+
+−
+=
++
+−
+=
++
+−
+=
+ 
+（E1） 
+Substituting into the linear pricing rule of the market maker in the first period, we 
+obtain 
+2
+2
+1
+2
+2
+0
+1
+1
+2
+0
+1
+1
+2
+2
+0
+1
+1
+0
+1
+1
+0
+1
+1
+1
+2
+1
+2
+2
+1
+1
+1
+2
+1
+1
+2
+1
+2
+2
+1
+1
+1
+2
+2
+1
+(
+|
+)
+(
+|
+)
+cov(
+,
+)
+{ (
+)
+[
+(
+)]}
+var(
+)
+cov(
+,
+)
+{ (
+)
+[
+(
+)]}
+var(
+)
+cov(
+,
+)
+{ (
+)
+[
+(
+)]}
+var(
+)
+(
+|
+)
+E
+y
+p
+E y
+p
+y
+y
+p
+y
+E y
+p
+y
+E p
+y
+p
+y
+y
+y
+E y
+y
+E y
+y
+y
+y
+E y
+y
+E y
+y
+E y
+y
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=
++
++
+=
++
++
+−
++
++
+=
++
+−
+=
++
+−
+=
+ 
+（E3） 
+From Equation E1, we deduce 
+2
+1
+(
+|
+)
+0
+E y
+y
+=
+ 
+（E4） 
+Furthermore, since and are both equal to 0 in the Kyle model, Equation E1 implies 
+1
+2
+cov(
+,
+)
+0
+y y
+=
+ 
+（E5） 
+The interpretation is that in each period, the market maker, based on the observed 
+total order quantity for that period, guesses the size of informed trader orders, and then 
+sets the asset price for that period according to the optimal linear pricing rule. Thus, the 
+correlation between prices for any two periods implies that prices are not correlated, 
+and under the linear pricing rule, the total order quantities for any two periods are not 
+correlated. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=4708532

@@ -1,0 +1,3452 @@
+Price Formation in
+Markets with Trading Delays∗
+G´abor Pint´er†
+Semih ¨Usl¨u‡
+January 25, 2024
+Abstract
+We develop a parsimonious price formation model to study information aggregation and
+information acquisition in the presence of trading delays. If delays apply uniformly to
+uninformed and informed traders, the level of delays does not aﬀect information aggregation. Traders’ information acquisition incentives are, however, weaker in a market with
+longer delays. Therefore, the equilibrium fraction of informed traders is lower if delays
+are longer, establishing an inverse relationship between trading delays and price informativeness. We also show that risk premia and price dispersion tend to be non-monotonic
+functions of the level of delays when information acquisition is endogenous. We document
+novel empirical evidence from the UK corporate bond market, which largely corroborates
+the implications of our theory.
+JEL classiﬁcation: D49, D53, D82, D83, G11, G12, G14
+Keywords: Trading frictions, trading delays, price informativeness, information aggregation,
+information acquisition, liquidity
+∗An earlier version of this paper was circulated under the title “Informed Trading in Markets with Trading
+Delays.” We would like to thank, for helpful comments and suggestions, the Editor Bruno Biais, one anonymous associate editor, and two anonymous referees as well as Daniel Andrei, Simon Board, Will Cong, Adrien
+d’Avernas, Nicolae Gˆarleanu, Ben Lester, Wei Li, David McAdams, Tomasz Sadzik, Zhaogang Song, Aleh
+Tsyvinski, Laura Veldkamp, G¨uner Velio˘glu, Pierre-Olivier Weill, and the participants at the UCLA Theory
+Proseminar. The empirical analysis in the paper was completed when G´abor Pint´er was at the Bank of England.
+The views expressed in this paper are those of the authors, and not necessarily those of the Bank of International
+Settlements, the Bank of England, or their committees.
+†Monetary and Economic Department, the Bank of International Settlements, Centralbahnplatz 2, 4051
+Basel, Switzerland, e-mail: gabor.pinter@bis.org
+‡Corresponding author. Carey Business School, Johns Hopkins University, 100 International Drive, Baltimore, MD 21211, USA, e-mail: semihuslu@jhu.edu
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+1
+Introduction
+Execution quality is important to traders in ﬁnancial markets. A key dimension of execution
+quality is the speed at which their orders are executed. This speed varies widely across markets.
+Pagnotta and Philippon (2018) state that more than half of the US equity orders take ﬁve
+seconds to ten minutes to fully execute. On the other hand, the same number was identiﬁed to
+be 1-3 days in the corporate bond market (Duﬃe, Gˆarleanu, and Pedersen, 2007, Pagnotta and
+Philippon, 2018, and Kargar, Lester, Plante, and Weill, 2022) and ﬁve days in the municipal
+bond market (Hugonnier, Lester, and Weill, 2020).
+How do these trading delays, small or
+drastic, aﬀect price discovery? This is the main question we analyze in our paper.
+We develop a competitive asset trading model that nests Grossman and Stiglitz (1980) as a
+special case. By trading in a market without trading delays, traders in Grossman and Stiglitz
+(1980) fully beneﬁt from any private information they possess, while traders in our model trade
+in a market with trading delays, in which private information progressively becomes public.
+In two special cases, the trading environment of our model coincides with the Grossman and
+Stiglitz (1980) environment: if private information is inﬁnitely-lived (i.e., the noise of public
+information revelation goes to inﬁnity) or if trading delays disappear (i.e., if trading speed
+goes to inﬁnity). Hence, apart from these two special cases, trading delays and the lifespan
+of private information are expected to aﬀect all the equilibrium outcomes such as risk premia,
+price dispersion, and measures of price informativeness.
+To capture trading delays in a meaningful way, we set up a dynamic trading game. Two
+types of traders, informed and uninformed, gain one-time access to a competitive market at i.i.d.
+stochastic times. Importantly, we assume that trading delays apply uniformly to uninformed
+and informed traders. Conditional on market access, a trader trades to obtain her optimal
+position given all the information available to her at the time of her market access. Interestingly,
+while the market price becomes a better forecast of the asset value as time passes because private
+information progressively becomes public, we show that the measure of unique information the
+market price contains, which we term revelatory price eﬃciency, is stationary and coincides
+with what obtains in the equilibrium of Grossman and Stiglitz (1980) model. This leads to a
+conditional irrelevance result: By taking as given the fraction of informed traders, revelatory
+price eﬃciency (RPE) is independent of the level of trading delays.
+When traders are allowed to make ex ante investment in private information by anticipating
+the outcome of the dynamic trading game, however, the irrelevance breaks down. More specifically, traders’ information acquisition incentives are weaker if trading delays are longer (or if
+2
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+private information is shorter-lived). Therefore, the equilibrium fraction of informed traders is
+lower if trading delays are longer, establishing an inverse relationship between trading delays
+and RPE. This inverse relationship between trading delays and price informativeness is the
+ﬁrst implication of our theoretical model that we test in the empirical part of the paper.
+Second, our theory has novel implications for price dispersion, which refers to the second moment of transaction prices that arise during the trading session. In our baseline model without
+endogenous information acquisition, we show that price dispersion is non-monotonic in trading
+delays. The key determinant behind this result is how trading delays aﬀect the distribution
+of traders’ trading times. If trading delays are small, both type of traders, uninformed and
+informed, can trade very early on. Like in the original Grossman and Stiglitz (1980) model,
+the distribution of information that traders possess is close to bimodal. As trading delays get
+more severe, traders access the market later and in more dispersed times, which means the
+distribution of information that (uninformed) traders possess is more dispersed. This, in turn,
+leads to larger price dispersion. As trading delays get even more severe, however, the market access of this uninformed crowd of traders gets extremely delayed, making their valuations closer
+together due to a high level of information revelation by then. This reduces price dispersion.
+Overall, price dispersion turns out to be a hump-shaped function of trading delays.
+Using parametric examples, we also conﬁrm that this non-monotonicity is preserved when
+information acquisition is endogenous.
+More speciﬁcally, we ﬁnd that price dispersion and
+average risk premium tend to reach their maximum when trading delays are just severe enough
+to preclude all information acquisition in equilibrium. At this level of trading delays, delays
+are severe enough to keep all traders uninformed, but also moderate enough to allow these
+uninformed traders to trade before a meaningful revelation of public information. Thus, the
+transaction prices resulting from these uninformed trades exhibit a large risk premia. Similarly,
+prices exhibit high dispersion because of the high ﬂow of uninformed orders getting executed.
+Shorter trading delays would reduce the fraction of uninformed traders, and so, reduce the
+sensitivity of the market price to the ﬂuctuations in the public information process, thereby
+reducing price dispersion. Longer trading delays would delay the market access of this entirely
+uninformed crowd of traders, making their valuations closer together when they access the
+market, and in turn, reducing price dispersion.
+Third, we discuss how to view the stylized facts regarding price informativeness in the
+existing empirical literature through the lens of our model. To oﬀer theoretical insights into
+the growth of “big data” ﬁnancial technology over the last decade, we ask how RPE changes
+3
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+in response to traders’ easier access to better data technologies.
+We contrast two possible
+scenarios: a decline in the information acquisition cost vs. an increase in the rate of information
+depreciation due to the technology allowing traders to extract others’ information. Our model
+predicts that while RPE increases in the former scenario, it decreases in the latter. Since both
+eﬀects are, in principle, present for any asset albeit with diﬀerent strengths, our model implies
+that RPE will increase for some assets and decrease for others. Bai, Philippon, and Savov
+(2016) ﬁnd a secular decline in stock price informativeness for the universe of all ﬁrms, while
+they ﬁnd a secular increase for the S&P500 ﬁrms. Our model rationalizes their ﬁndings if the
+improvement in RPE from the decline in the information acquisition cost dominates (resp. is
+dominated by) the decline in RPE from the increase in the rate of information depreciation
+for the S&P500 ﬁrms (resp. the universe of all ﬁrms).1
+In the last part of the paper, we provide novel empirical evidence for some of the theoretical
+implications unique to our model. To this end, we use a transaction-level dataset which covers
+close to the universe of all secondary market trades in the UK corporate bond market. With its
+over-the-counter (OTC) structure, the corporate bond market is a textbook example of markets
+with trading delays.2 We proxy (the inverse of) a bond’s trading delay with its trade frequency
+measured in the data. We, then, utilize the cross-sectional variation in bonds’ trade frequency
+to test two empirical hypotheses generated by our theoretical model: (i) ceteris paribus, price
+eﬃciency is decreasing in trading delays and (ii) ceteris paribus, the dispersion of transaction
+prices is non-monotonic in trading delays. Overall, our results from empirical tests are consistent
+with the implications of the theoretical model. We interpret this as pointing to the importance
+of taking trading delays into account when analyzing the informational ineﬃciency and liquidity
+costs in asset trading.
+Next, we brieﬂy review the related literature and our paper’s contribution. Section 2 lays
+out the main model environment, while Section 3 deﬁnes and characterizes a noisy rational
+expectations equilibrium for this environment. Section 4 endogenizes the traders’ information
+acquisition decisions and the informativeness of the market price. Section 5 analyzes the extent
+to which our theoretical ﬁndings are consistent with the corporate bond trading patterns in
+practice. Section 6 concludes.
+1Bai, Philippon, and Savov (2016) ﬁnd that the decline in market eﬃciency for the universe of all ﬁrms is
+highest during the very last period (2010-2014) of their dataset, when the big data arguably plays the most
+prominent role.
+2Pint´er and ¨Usl¨u (2022) propose a structural estimation of a model of OTC asset markets by using the same
+dataset. Their estimation implies that the median client faces a trading delay of around three quarters of a
+trading day in the most liquid segment of the UK corporate bond market with 57 bonds.
+4
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+1.1
+Related literature
+The ﬁrst strand of literature to which our paper contributes is the voluminous literature on
+information acquisition with papers by Grossman and Stiglitz (1980), Verrecchia (1982), Admati
+and Pﬂeiderer (1986), Veldkamp (2006a), Veldkamp (2006b), Cespa (2008), Lee (2013), and
+Dugast and Foucault (2018), among others. See Veldkamp (2011) for a survey of this literature.
+These papers abstract away from trading frictions and trading delays and focus on the details
+of assets’ payoﬀand information structures. We keep the payoﬀand information structure
+simple while allowing for rich dynamics in the equilibrium price process, and model explicitly
+the trading delays that are characteristic of many real-world ﬁnancial markets, especially the
+illiquid ones like the markets for corporate and municipal bonds.
+The second strand of literature to which our paper contributes is the fast-growing literature
+on trading delays with papers by Duﬃe, Gˆarleanu, and Pedersen (2005), Weill (2007), Gˆarleanu
+(2009), Lagos and Rocheteau (2009), Afonso and Lagos (2015), Pagnotta and Philippon (2018),
+¨Usl¨u (2019), Hugonnier, Lester, and Weill (2020), and Farboodi, Jarosch, and Shimer (2023),
+among others. See Weill (2020) for a recent survey. These papers abstract away from private
+information and focus exclusively on trading frictions and delays. We borrow the details of
+trading delays from this literature. In particular, traders in our model gain access to a market
+with Walrasian pricing mechanism at idiosyncratic random times as in Gˆarleanu (2009) and
+Pagnotta and Philippon (2018). The same mechanism obtains in Lagos and Rocheteau (2009)
+as well, when dealers’ bargaining power is set to be zero. Models in this literature typically
+obtain that illiquidity premium and price dispersion are monotone increasing in trading delays.
+The novelty of our model is to introduce private information about common asset value to
+these papers’ trading environment with delays, and we show that illiquidity premium and price
+dispersion can be non-monotonic functions of the delay.
+The combination of trading delays and private information about common asset value is also
+present in a relatively limited set of papers by Wolinsky (1990), Blouin and Serrano (2001),
+Duﬃe, Malamud, and Manso (2014), Golosov, Lorenzoni, and Tsyvinski (2014), Dang and
+Morath (2015), Lauermann and Wolinsky (2016), Lauermann, Merzyn, and Vir´ag (2017), and
+Lester, Shourideh, Venkateswaran, and Zetlin-Jones (2023). With the exception of Duﬃe, Malamud, and Manso (2014) and Dang and Morath (2015), these papers do not study information
+acquisition. What distinguishes our model from Duﬃe, Malamud, and Manso (2014) and Dang
+and Morath (2015) is mainly the trading protocol (and implicitly the price setting mechanism).
+While prices that aggregate information are privately negotiated prices in bilateral meetings in
+5
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Duﬃe, Malamud, and Manso (2014) and Dang and Morath (2015), the Walrasian price in our
+model acts as a public signal as in the extant literature on information acquisition following
+Grossman and Stiglitz (1980).
+Traders’ desire to take advantage of short-lived private information in our model is in common with the recent literature that analyzes high-frequency trading. Examples include A¨ıtSahalia and Sa˘glam (2013), Budish, Cramton, and Shim (2015), Biais, Foucault, and Moinas
+(2015), Foucault, Hombert, and Ro¸su (2016), and Li (2018). While our paper’s main focus is
+on trading delays in illiquid markets, these papers model high-speed trading in liquid markets.
+Accordingly, they end up using very diﬀerent sets of modeling assumptions than our model’s
+assumptions. Information aggregation or revelation by market prices is also analyzed together
+with diﬀerent types of frictions, e.g., with technological trading costs by Subrahmanyam (1988),
+Dow and Rahi (2000), Vives (2017), and D´avila and Parlatore (2021), with sticky relationships
+by Babus and Kondor (2018) and Li and Song (2018), and with long intermediation chains by
+Glode and Opp (2016) and Glode, Opp, and Zhang (2019).
+Our empirical analysis in Section 5 relates to two main strands of the empirical literature.
+First, we draw on previous studies on the determinants of various trade cost measures in OTC
+markets including price dispersion.
+See Garbade and Silber (1976), Edwards, Harris, and
+Piwowar (2007), Jankowitsch, Nashikkar, and Subrahmanyam (2011), Di Maggio, Kermani,
+and Song (2017), O’Hara, Wang, and Zhou (2018), Li and Sch¨urhoﬀ(2019), ¨Usl¨u and Velio˘glu
+(2019), Dick-Nielsen, Poulsen, and Rehman (2021), and Pint´er and ¨Usl¨u (2022), among others.
+To our knowledge, we are the ﬁrst to show that price dispersion is non-monotonic in trading
+delays in the empirical literature as well as in the theoretical literature.
+Second, we draw
+on previous studies on the determinants of price eﬃciency. See Hotchkiss and Ronen (2002),
+Hendershott and Jones (2005), Hou and Moskowitz (2005), Bai, Philippon, and Savov (2016),
+Lee, Naranjo, and Velio˘glu (2018), and Indriawan, Pascual, and Shkilko (2022), among others.
+To our knowledge, we are the ﬁrst to analyze trading delays as a determinant of price eﬃciency
+in the cross section of corporate bonds.
+2
+The model economy
+We build a continuous-time model economy with an inﬁnite time horizon: t ∈[0, ∞). We ﬁx a
+ﬁltered probability space (Ω, F, {Ft} , Pr), on which is deﬁned a standard Brownian motion, B.
+The economy is populated by a unit-mass continuum of traders, who have constant-absoluterisk-aversion (CARA) preferences over horizon wealth W∞with a common risk aversion coeﬃ6
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+cient of γ > 0. Traders are inﬁnitely patient (i.e., their discount rate is zero) and are endowed
+with a technology that instantly produces cash at unit marginal cost in order to make side payments.3 We normalize the traders’ initial wealth to zero, W0 = 0, because their initial wealth
+will not aﬀect decision making, provided that they can produce cash at unit marginal cost.
+A fraction α ∈(0, 1) of the traders are informed and the remaining 1−α uninformed. There
+is one risky asset with payoﬀrealized at date t = ∞. The payoﬀof this asset, denoted by v,
+consists of two parts,
+v = θ + ε,
+where θ is observable to informed traders but ε is not observable to anyone. Random variable
+θ is characterized by a normal distribution with mean ˆθ0 and variance 1/Sθ. Random variable
+ε also follows a normal distribution with mean 0 and variance 1/Sε. These random variables,
+θ and ε, are independent.
+In addition to being informed or uninformed, traders are heterogeneous with respect to
+their initial endowment of the asset. Immediately prior to time t = 0, half of traders are each
+endowed with a1 shares of the risky asset, and the other half a2, where a1 and a2 are identically
+and normally distributed with mean 0 and variance 4/SA. All these random variables, θ, ε, a1,
+and a2, are pairwise independent.
+We denote with N j
+t (·) the cdf of traders’ asset positions at time t conditional on their
+information type j ∈J ≡{inf, uninf}. Thus, at t = 0:
+Z
+R
+a dN j
+0(a) = a1 + a2
+2
+for any j ∈J .
+At date 0, informed traders obtain a private signal which reveals the true value of θ. For
+t > 0, there is a “ﬂow” of public signals Zt, progressively reducing the informational edge of
+informed traders:
+dZt = θdt + σdBt,
+(1)
+3Postponing all payoﬀs and consumption to an inﬁnitely far horizon and assuming that traders are inﬁnitely
+patient are modeling tricks to obtain simple formulas by eliminating the pure time cost of trading delays. These
+are not essential for our analysis because we want to study the eﬀect of trading delays on price discovery in a
+model with common valuations. The fast-growing search literature, instead, studies the eﬀect of the time cost of
+delaying trade on welfare when traders have private valuations. Thus, assuming proper discounting is essential
+for those models because in the limit as the discount rate approaches zero, the competitive outcomes typically
+obtain in those models. See Duﬃe, Gˆarleanu, and Pedersen (2005), Weill (2020), and Pint´er and ¨Usl¨u (2022),
+among others.
+7
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+where B is a standard Brownian motion and Z0 = ˆθ0.
+The σ-algebra Ft is generated by
+B. Depending on the realization of θ, a1, and a2, informed and uninformed traders will have
+diﬀerent beliefs about the asset payoﬀ. We will discuss this when we deﬁne the equilibrium.
+In the spirit of Gˆarleanu (2009), traders have infrequent access to a continuous competitive
+market in which they can trade as price takers and without any friction. More speciﬁcally, we
+assume that trader i ∈[0, 1] gains a one-time access to the competitive market at date t = τ (i),
+where τ (i) is an exponentially distributed random variable with mean 1/λ. That is, trader i
+can rebalance her asset position only at the instant t = τ (i). We also assume the market access
+times, τ (i)s, are i.i.d. across traders. Conditional on market access at date t, a trader with
+endowment a and information type j buys q (a, j, t) units of the asset at the market-clearing
+price Pt. Naturally, if q (a, j, t) < 0, it means the trader sells −q (a, j, t) units.
+3
+Equilibrium
+In illiquid market models with homogeneous information sets, such as Gˆarleanu (2009), Lagos
+and Rocheteau (2009), and Pagnotta and Philippon (2018), the market price has only the role
+of clearing the market. Diﬀerently from these papers, in our model, traders have diﬀerent information sets about the common asset value, which gives the equilibrium price two simultaneous
+roles, clearing the market and revealing information, as in Grossman and Stiglitz (1980).
+3.1
+Deﬁnition
+Because the trading horizon is inﬁnite, all traders eventually end up trading with probability
+one. However, there is uncertainty as to when a trader will gain access to the market. A trader
+of type j with endowment a who gains access to the market at time t buys
+q(a, j, t) = arg max
+q
+E
+
+−e−γ{v(a+q)−Ptq} F j,a
+t
+
+(2)
+shares of the risky asset, where the expectation operator, E, is over the random variable v, and
+F j,a
+t
+⊃Ft denotes the information a type-(j, a) trader gathered up to time t.
+Because N j
+t (·) is a conditional cdf, it satisﬁes
+Z
+R
+dN j
+t (a) = 1
+(3)
+for all t ≥0 and j ∈J . By the law of large numbers, this cdf evolves according to the following
+8
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Kolmogorov forward equation:
+∂N j
+t (a)
+∂t
+= −λe−λtN j
+0 (a) + λ
+Z
+R
+I{a′+q(a′,j,t)≤a}e−λtdN j
+0 (a′)
+(4)
+for all t ≥0 and (j, a) ∈J ×R. The ﬁrst and second terms on the RHS of Equation (4) represent
+respectively the gross outﬂow from and gross inﬂow to the mass of j-type traders with an asset
+holding less than or equal to a. Note that these outﬂows and inﬂows can only come from the
+mass of traders who have not gained access to the market yet. The mass, e−λtN j
+0 (a), of j-type
+traders with an asset holding less than or equal to a who are yet to trade obtains by solving
+d
+dtft = −λft,
+f0 = N j
+0 (a) .
+These traders gain access to the market at the Poisson rate λ, which implies a rate of (gross)
+outﬂow λe−λtN j
+0 (a). The second term means any j-type trader can contribute to the (gross)
+inﬂow to the mass N j
+t (a), if she gains access to the market, which happens at rate λ, and if
+her post-trade asset holding is less than or equal to a.
+Finally, the market-clearing condition must ensure that the traders’ aggregated demand
+nets out to zero, at each date t ≥0:
+λ
+Z
+R
+q(a, inf, t) α e−λtdN inf
+0 (a) + λ
+Z
+R
+q(a, uninf, t) (1 −α) e−λtdN uninf
+0
+(a) = 0,
+(5)
+where α ∈(0, 1) is the fraction of informed traders.
+We have speciﬁed all requirements to deﬁne the equilibrium. We only have to bring those
+ingredients together. Formally, a rational expectations equilibrium (REE) is deﬁned as follows.
+Deﬁnition 1. A rational expectations equilibrium is a list composed of (i) a trade size function
+q(a, j, t), (ii) a market-clearing price Pt, (iii) a perceived price function ˜Pt({Zs}s∈[0,t] , θ, a1, a2),
+and (iv) a set of distributions for traders’ asset positions N j
+t (a) such that
+• Given (ii) and (iii), (i) solves (2);
+• Given (i), (iv) satisﬁes (3) and (4);
+• Given (i), (ii) clears the market through (5);
+• Expectations are correct: ˜Pt({Zs}s∈[0,t] , θ, a1, a2) = Pt.
+9
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+3.2
+Characterization
+Let µj,a
+t
+= E
+
+v | F j,a
+t
+
+and Sj
+t =
+ V
+
+v | F j,a1
+t
+−1 =
+ V
+
+v | F j,a2
+t
+−1, where V denotes the
+variance operator.4
+Assuming that v is conditionally normally distributed,5 (2) can be rewritten as
+q(a, j, t) = arg max
+q
+e
+−γ
+
+−Ptq+(a+q)µj,a
+t
+−γ
+2
+(a+q)2
+Sj
+t
+
+.
+Using the FOC and SOC of this unconstrained optimization problem, we obtain the following
+lemma.
+Lemma 1. Fix a market price Pt and a collection
+
+Fj,a
+t
+	
+(j,a)∈J ×{a1,a2} for the traders’ information sets. Assume that v is normally distributed conditional on each of the given information
+sets. Then, a type-j trader with endowment a ∈{a1, a2} who gains access to the market at time
+t chooses her optimal trade quantity as
+q (a, j, t) =
+ µj,a
+t
+−Pt
+
+Sj
+t
+γ
+−a,
+(6)
+where µj,a
+t
+≡E
+
+v | Fj,a
+t
+
+and Sj
+t ≡
+ V
+
+v | Fj,a1
+t
+−1 =
+ V
+
+v | Fj,a2
+t
+−1.
+Next, we endogenize the traders’ information sets and the market price to complete the
+characterization of the general equilibrium of the trading game. For uninformed traders, there
+are two sources of public information to gauge the value of the risky asset: The market price
+Pt and the public signal process Zt. First, we derive the mean and variance of θ conditional on
+observing the public signal process Zs up to time s = t. This mean and variance will be later
+used in determining the posterior mean and variance of the asset payoﬀv when an uninformed
+trader gains access to the market.
+An application of Kalman-Bucy ﬁlter to (1) implies that
+E [θ | Ft] = θ +
+z
+p
+Sθ + t/σ2
+(7)
+and
+(V [θ | Ft])−1 = Sθ + t/σ2,
+(8)
+4V
+h
+v | F j,a1
+t
+i
+= V
+h
+v | F j,a2
+t
+i
+follows because a1 and a2 are i.i.d. random variables. This will become clearer
+shortly when we endogenize the traders’ information sets and derive these posterior variances in closed form.
+5This assumption is veriﬁed ex post. The veriﬁcation follows because (i) all signals are Gaussian and (ii)
+the market price, which is the endogenous public signal in the model, is a linear function of Gaussian random
+variables as is typically assumed in the literature.
+10
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+where z is a random variable with the standard normal distribution.6 As time passes, observing
+the public signal process Zt for longer makes the conditional mean (7) closer to the informed
+traders’ signal θ, and so, the conditional precision (8) is an increasing function of time, t.
+The second source of public signal for uninformed traders is the market price, Pt. As is
+standard in the literature, we restrict our attention to linear pricing functions:
+˜Pt
+
+{Zs}s∈[0,t] , θ, a1, a2
+
+= β1 (t) ˆθt + β2 (t) θ + β3 (t) (a1 + a2) ,
+(9)
+where for k ∈{1, 2, 3}, βk : [0, ∞) →R is a function of time for which traders have perfect
+foresight and ˆθt ≡E [θ | Ft] is the posterior mean of the information learned by observing
+{Zs}s∈[0,t]. Naturally, β1 and β2 are positive-valued, while β3 is negative-valued. The only
+component of the price which is informative about the asset’s fundamental value v and not
+common knowledge among traders is θ. Thus, for an uninformed trader, price is a noisy signal
+about θ. However, an informed trader already knows θ, and so, observing the market-clearing
+price, Pt = ˜Pt
+
+{Zs}s∈[0,t] , θ, a1, a2
+
+, reveals a2 (resp. a1) to her if her endowment is a1 (resp.
+a2). Therefore, by replacing {Zs}s∈[0,t] with its suﬃcient statistic ˆθt inside the linear pricing
+function (9), the information sets of an informed trader and of an uninformed trader are
+Finf,a1
+t
+= Finf,a2
+t
+= {θ, a1, a2} ∪Ft
+and
+Funinf,a
+t
+= {a} ∪
+n
+˜Pt
+
+ˆθt, θ, a, a−
+
+= Pt
+o
+∪Ft,
+respectively.
+Then, for an informed trader, the relevant expectations and precisions are as
+follows:
+µinf,a1
+t
+= µinf,a2
+t
+= E [v | θ] = θ,
+Sinf
+t
+= (V [v | θ])−1 = Sε.
+For uninformed traders, we use (7), (8), and the Bayesian updating formula for normal variable
+to determine µuninf,a
+t
+and Suninf
+t
+. The signal from the price is Pt−β1(t)ˆθt−β3(t)a
+β2(t)
+∼N(θ,
+1
+Φ(t)2SA),
+where Φ (t) ≡
+β2(t)
+2β3(t). Then,
+1
+Suninf
+t
+=
+1
+Sθ + t/σ2 + Φ (t)2 SA
++ 1
+Sε
+6See Øksendal (2003, p. 104) for a similar derivation.
+11
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+and
+µuninf,a
+t
+=
+(Sθ + t/σ2) ˆθt + Φ (t)2 SA
+Pt−β1(t)ˆθt−β3(t)a
+β2(t)
+Sθ + t/σ2 + Φ (t)2 SA
+.
+Substituting these posterior means and precisions into (6), we obtain the individual demand of
+any trader given the market price Pt. Substituting these individual demands into (5),
+λ
+Z
+R
+
+
+
+µinf,a
+t
+−Pt
+
+Sinf
+t
+γ
+−a
+
+α e−λtdN inf
+0 (a)
++ λ
+Z
+R
+
+
+
+µuninf,a
+t
+−Pt
+
+Suninf
+t
+γ
+−a
+
+(1 −α) e−λtdN uninf
+0
+(a) = 0.
+After cancellations, rearranging, and letting µinf
+t
+= µinf,a1
+t
+= µinf,a2
+t
+,
+α
+ µinf
+t
+−Pt
+
+Sinf
+t
+γ
++ (1 −α)
+
+µuninf,a1
+t
++µuninf,a2
+t
+2
+−Pt
+
+Suninf
+t
+γ
+= a1 + a2
+2
+,
+(10)
+which implies that eﬀective market clearing is independent of the level of trading delays. Two
+features of our model gives rise to this result. First, the individual demand (6) is independent
+of λ thanks to the lack of re-trade considerations. Indeed, a trader’s optimal post-trade position
+is determined based only on the ﬁnal payoﬀderived from the asset position because she gains
+access to the market at exactly one point in time. Second, although only a subset of the traders
+have access to the market at any point in time, the composition of those who trade stays the
+same because trading delays apply uniformly to all traders: The sum of the masses of informed
+and uninformed traders who gain market access, αe−λt + (1 −α) e−λt = e−λt, becomes smaller
+and smaller over time but their composition stays the same and this gives rise to an eﬀective
+market-clearing condition independent of λ.
+The last step is to substitute the posterior means and precisions in (10). The resulting
+expression is linear in ˆθt, θ, a1, and a2. Each shows up in only one place and is additive.
+Everything else is just constant coeﬃcients. This conﬁrms the guess of a linear pricing rule.
+The functions, β1 (t), β2 (t), and β3 (t), can be solved for by matching coeﬃcients, which takes
+us to the following proposition.
+Proposition 1. Given a share of informed traders α, the unique linear price process that clears
+the market is
+˜Pt
+
+ˆθt, θ, a1, a2
+
+= (1 −β (t)) ˆθt + β (t)
+
+θ + a1 + a2
+2Φ
+
+,
+(11)
+12
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+where
+Φ = −αSε
+γ
+and
+β (t) = α (Sθ + t/σ2 + Sε) + Φ2SA
+Sθ + t/σ2 + αSε + Φ2SA
+.
+(12)
+We use the results of Proposition 1 to calculate forecasting price eﬃciency (FPE) and
+revelatory price eﬃciency (RPE) in the spirit of Bond, Edmans, and Goldstein (2012) and Bai,
+Philippon, and Savov (2016), where
+FPEt ≡(V [θ | Pt])−1
+and
+RPEt ≡
+
+V
+h
+θ | {Zs}s∈[0,t] , a, Pt
+i−1
+−
+
+V
+h
+θ | {Zs}s∈[0,t] , a
+i−1
+.
+FPE measures how well the market price reﬂects the forecastable part, θ, of the asset value
+v = θ + ε. However, uninformed traders do not rely only on the market price when making
+their own forecasts. They use any other public information they possess and the information
+contained in their asset endowment realization. Thus, there is a need for a measure that reﬂects
+the unique information from the market price that is not captured by other information sources.
+RPE is such a measure. While FPE is only a forecasting concept, RPE measures the precision
+gain from observing the market price.
+Corollary 2. The forecasting price eﬃciency (FPE) and the revelatory price eﬃciency (RPE)
+are, respectively,
+FPEt = Sθ +
+1
+(1−β(t))2
+Sθ+t/σ2 + 2 (β (t))2
+γ2
+α2S2εSA
+and
+RPE = α2S2
+εSA
+γ2
+,
+where β (t) is given by (12). Thus, given a share of informed traders, trading delays (1/λ) and
+how long-lived the private information is (σ) are irrelevant to RPE.
+13
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Corollary 2 shows that while FPE is a function of time, RPE is constant over time. That
+FPE is time varying is intuitive because the private information of the informed traders becomes progressively public as everyone observes the stochastic process Z and then the “representative” trader (i.e. the ﬁctitious trader who shows up in the market-clearing condition (10)
+and has the same marginal valuation as the trading price) has a more precise information about
+θ. That RPE is constant is a less obvious result. One way to understand this RPE result
+above is that for uninformed traders, price is observationally equivalent to a signal of the form
+θ + a−
+2Φ with the precision
+
+V
+h
+θ + a−
+2Φ | θ
+i−1
+= α2S2
+εSA
+γ2
+.
+Because the unique information from observing the price after eliminating its parts relating to
+ˆθt and a is independent of t, its precision that we show is equal to RPE is independent of t as
+well.
+Perhaps an even more surprising implication of Corollary 2 is that, given a share of informed
+traders, trading delays (1/λ) and how long-lived the private information is (σ) are irrelevant
+to the precision of the price signal. Similar to the case where the eﬀective market clearing
+(10) is independent of λ and σ that we explain above, this again arises because the frictions
+apply uniformly to all traders. Thus, at any date, a subset of traders that is representative
+of the entire pool of traders gain market access, which leaves RPE unaﬀected by the friction
+parameters σ and λ. It is important to note, however, this irrelevance result is a conditional
+irrelevance result because the fraction of informed traders is taken exogenously. In Section 4,
+we endogenize the fraction of informed traders by studying the traders’ endogenous information
+acquisition decision. We show that because trading delays lead to a possibility of not being able
+to beneﬁt from private information, traders have a reduced incentive to become informed when
+there are trading delays. This insight encapsulates the main diﬀerence between our model and
+Grossman and Stiglitz (1980).
+As a preview for the results in Section 4, consider the left panel of Figure 1 that depicts two
+sample paths for the equilibrium price under diﬀerent assumptions for the expected lifespan
+of the private information. Over time, the informational edge of informed traders reduces as
+uninformed traders observe Zs for longer. If the degree, σ, of noise in this public signal process
+is lower, the equilibrium price quickly approaches the informed traders’ signal, which, in turn,
+reduces the proﬁtability of informed trading. In the Figure, the blue path for the equilibrium
+price (σ = 0.5) approaches the informed traders’ signal, θ, a lot quicker than the red path
+14
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+(σ = 2) approaches. This means that given a level, 1/λ > 0, of trading delays, traders are more
+likely to acquire costly private signals if they anticipate a sample path like the red path rather
+than the blue one. Moreover, given σ, a trader is more likely to acquire costly private signals
+if trading delays are less severe because less severe trading delays mean, in expectation, an
+informed trader can trade when the diﬀerence between the equilibrium price and the informed
+trader’s signal is larger.
+0
+50
+100
+150
+200
+250
+300
+99.2
+99.4
+99.6
+99.8
+100
+100.2
+100.4
+100.6
+100.8
+101
+t
+equilibrium price
+θ
+σ = 2
+σ = 0.5
+0
+50
+100
+150
+200
+250
+300
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.2
+1.4
+1.6
+1.8
+2
+2.2
+2.4
+2.6
+t
+price eﬃciency
+RPE, σ = 2
+RPE, σ = 0.5
+FPE, σ = 2
+FPE, σ = 0.5
+Figure 1: Sample path of equilibrium price on the left panel, and the price eﬃciency
+measures on the right panel. Parameter choices: α = 0.3, γ = 2, Sθ = Sε = 1, and SA = 10.
+Realized values for random variables: θ = 100 and a1 = a2 = 0.
+3.3
+Equilibrium price dynamics
+Because diﬀerent traders who gain access to the market at diﬀerent points in time face diﬀerent
+market-clearing prices, they end up trading at diﬀerent prices. This leads to economic questions:
+How does the average transaction price compare to the informed traders’ signal, θ? How variable
+are the transaction prices across traders who trade at diﬀerent points in time? The following
+Proposition oﬀers answers to these questions.
+Proposition 3. Assume Sθ = 0. Let δ = αSε
+
+1 + αSASε
+γ2
+
+and let EC [P] and VC [P] denote,
+respectively, the average and the variance of the transaction prices conditional on θ, a1, and a2.
+15
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Then, the deviation of the average transaction price from the informed traders’ signal per unit
+of supply is
+EC [P] −θ
+(a1 + a2) /2 = −γ
+Sε
+
+1 + 1 −α
+α
+λσ2δeλσ2δΓ
+ 0, λσ2δ
+
+(13)
+and the variance of transaction prices is
+VC [P] = (1 −α)2 λσ2 n
+−1 + eλσ2δ  1 + λσ2δ
+
+Γ
+ 0, λσ2δ
+o
++ o (a1 + a2) ,
+(14)
+where Γ (0, y) ≡
+R ∞
+y x−1e−xdx is the upper incomplete gamma function.
+Let us refer to the deviation of the average transaction price from the informed traders’
+signal per unit of supply as average price discount, in short. Proposition 3 provides us with
+closed-form formulas for the average price discount and a ﬁrst-order approximation of the price
+variance. One can use these formulas to understand how various factors inﬂuence average price
+discount and price variance. For example, the following Corollary establishes results for trading
+delays.
+Corollary 4. Assume γ, Sε, SA, σ > 0.
+Average price discount is monotone decreasing in
+λ > 0 for all α ∈(0, 1). Price variance is increasing in λ ≃0 and decreasing in λ ≃∞for all
+α ∈[0, 1).
+Figure 2 illustrates the results in Corollary 4 for a particular set of parameters. When λ = 0,
+trading delays are inﬁnite and none of the traders can trade until t = ∞at which point the
+public signal process reveals the informed traders’ signal θ. This means that everyone trades at
+the same price, and so, price variance is zero. Also, when λ = 0, price discount is the smallest in
+terms of its absolute value, 2 (because γ/Sε = 2). As λ gets larger, trading delays decline and
+traders gain access to the market earlier than t = ∞. Because informed traders know θ, trading
+early does not change their willingness to pay. However, uninformed traders’ willingness to pay
+is smaller because they trade when the public signal is less informative about θ. As a result,
+average price discount increases in its absolute value as trading delays get smaller.
+The right panel of Figure 2 shows that price variance is hump-shaped in λ. As λ starts
+increasing from 0, traders start trading at random times earlier than t = ∞, and this increases
+price variance at ﬁrst. But once λ reaches some high value, further increase in λ starts depressing
+price variance because then traders starts trading at times very close to t = 0 and this makes
+their willingness to pay closer together because they trade before a meaningful precision has
+16
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+been obtained from the public signal process. Consistent with Corollary 4, this implies that
+the maximum level of price variance obtains for some intermediate value of λ.
+To our knowledge, the non-monotonic relationship between trading delays and price variance
+is a novel result in the literature. The existing models of equilibrium price variance utilizing
+random trading times ﬁnd that mitigating trading delays lead to a monotone decline in price
+variance. See, for example, Afonso and Lagos (2015), Hugonnier, Lester, and Weill (2015),
+¨Usl¨u and Velio˘glu (2019), and Wong and Zhang (2022).
+These models feature symmetric
+information, and the reason behind price variance is traders’ bilateral negotiation. As trading
+delays mitigate, traders’ outside options become closer to each other, in turn making transaction
+prices closer together. In our model, instead, trade is multilateral with price taking traders,
+but information is asymmetric. Because the dispersion level of information that traders possess
+at their respective time of trading is maximized at an intermediate level of trading delays, a
+non-monotonic relationship between trading delays and price variance arises.
+0
+50
+100
+150
+200
+250
+300
+−4
+−3.8
+−3.6
+−3.4
+−3.2
+−3
+−2.8
+−2.6
+−2.4
+−2.2
+−2
+λ
+average price discount
+0
+50
+100
+150
+200
+250
+300
+0
+2 · 10−2
+4 · 10−2
+6 · 10−2
+8 · 10−2
+0.1
+0.12
+λ
+price variance
+Figure 2: Average price discount as given by (13) and the price variance when a1 = a2 = 0
+as given by (14), plotted as functions of λ. Parameter choices: α = 0.3, γ = 2, σ = 0.05,
+Sθ = 0, Sε = 1, and SA = 10.
+Again, in this analysis, the exogeneity of α is key to obtain the patterns discussed above.
+However, as trading delays change, naturally traders’ incentive to acquire information changes,
+and so, the equilibrium α would change, potentially changing the patterns above. Indeed, in
+Section 4, we show that once α is endogenized, the pattern regarding average price discount
+changes altogether becoming non-monotone. The pattern regarding price variance stays qual17
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+itatively the same but the magnitude of the association, i.e., the slopes, changes at diﬀerent
+regions, becoming stronger on certain regions and weaker on others.
+3.3.1
+A discussion of the variance of the equilibrium transaction prices: price
+dispersion or price volatility?
+Because of our assumption that all traders have access to the market exactly once during the
+trading session, in their strict interpretation, price dispersion and price volatility are the same
+in our model.
+Thus, how the variance of the equilibrium transaction prices maps to price
+dispersion and price volatility will depend on how one maps our model’s trading session to
+trading in practice. Our leading mapping is as follows.
+We consider the asset payoﬀas the sum of a learnable (θ) and an unlearnable news (ε).
+The learnable news is apparent to informed investors at the beginning of the trading session
+(t = 0). The unlearnable news will be apparent the everyone at the end of the trading session
+(t = ∞). No news arrive at the market during the trading session. Thus, our model’s (inﬁnite)
+time horizon maps in practice to a (ﬁnite) trading session during which no news about the
+asset’s fundamentals arrive at the market. In the empirical literature, the variance (or standard
+deviation) of prices observed during a trading session without any news arrival is named price
+dispersion. See, Jankowitsch, Nashikkar, and Subrahmanyam (2011), Jankowitsch, Nagler, and
+Subrahmanyam (2014), and Pint´er and ¨Usl¨u (2022), among others.
+Diﬀerently from the search-based models of price dispersion, the “representative” trader
+has diﬀerent information at diﬀerent points during the trading session in our model. Thus, our
+model generates price dispersion even in the absence of bilateral negotiations. Then, a natural
+question is why the representative trader’s information state evolves in the absence of news.
+This question relates to how the diﬀusion process (1) for Zt is interpreted. In the spirit of
+Amador and Weill (2012), we interpret the process (1) as progressively revealing the news at
+t = 0 to broader sets of traders over time rather being additional arrival of “new” information.
+4
+Information acquisition
+So far, we have studied the equilibrium of the trading game by taking as given the fraction
+of informed traders. In this section, we study the traders’ endogenous information acquisition
+decisions. Assume that a trader becomes an informed trader if she pays a cost of C at time
+t = 0−before her initial endowment realizes. She becomes an uninformed trader otherwise.
+18
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Using Lemma 1, a trader decides to be informed if
+−eγCE
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t
+i
+≥−E
+h
+e−1
+2(µuninf,a
+t
+−˜Pt(ˆθt,θ,a,a−))
+2Suninf
+t
+i
+,
+(15)
+where the expectation is taken over the random variables θ, a1, a2, ˆθt, and t. The following
+Lemma derives an interpretable version of this optimality condition.
+Lemma 2. Emphasizing its dependence on α through Φ and β (t), let
+ω (α, t) =
+v
+u
+u
+t
+Sθ + t/σ2
+Sθ + t/σ2 + Sε +
+
+1 + Sθ+t/σ2
+Φ2SA
+
+(β (t))2 Sε
+(16)
+denote a measure of expected beneﬁt of accessing the market at time t as an uninformed trader
+when the fraction of informed traders is α. Then, a trader ﬁnds it weakly optimal to be informed
+if
+eγC ≤
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+,
+(17)
+and strictly optimal if the inequality is strict.
+This optimality condition (17) reveals how traders will make their information acquisition
+decisions. The LHS is the utility cost of acquiring information, while the RHS is its utility
+beneﬁt. Due to the exponential utility assumption, the latter (RHS) is the ratio of the expected (gross) utility of trading as an informed trader to the expected utility of trading as
+an uninformed trader.7 If the LHS of (17) is strictly larger than its RHS, no one will acquire
+information and the equilibrium fraction of informed traders will be zero, α = 0. If the LHS is
+strictly smaller, however, everyone will acquire information and, then, α = 1. As in Grossman
+and Stiglitz (1980), the only possibility to obtain an equilibrium with the co-existence of informed and uninformed traders is that the LHS and the RHS are equal to each other and every
+trader has a mixed strategy, that is, they choose to be informed with probability α ∈(0, 1)
+such that
+eγC =
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+.
+(18)
+7Proving Lemma 2 amounts to moving the expectation on the LHS of (15) to the RHS and multiplying both
+sides with −1, which yields the optimality condition (17).
+19
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+When σ = ∞or λ = ∞, we are at the Grossman and Stiglitz (1980) case and ω does not
+aﬀect the indiﬀerence condition (18). As a result, the RHS in this special case is obviously
+strictly decreasing in α, which guarantees a unique equilibrium α:
+eγC =
+s
+1 +
+γ2Sε
+γ2Sθ + α2S2
+εSA
+.
+(19)
+Intuitively, if information is not short-lived or if there are no trading delays, the utility beneﬁt
+of acquiring information is not aﬀected by the time of trading. If information is not shortlived, the economy, and hence, the resulting market price is stationary as the “representative”
+trader has the same information at any point in time. If there are no trading delays, everyone
+trades immediately at t = 0 at the same price before any information dispersion arises amongst
+uninformed traders. Thus, in both cases, the integrals in the numerator and the denominator
+of (18) are “degenerate” and so ωs cancel each other out, which leads to (19). However, in our
+model with short-lived information and trading delays, σ < ∞and λ < ∞, and so, traders
+face a non-degenerate distribution of trading times over an inﬁnite horizon, when making their
+information acquisition decisions at t = 0.
+Proposition 5. Suppose γ2 < SθSεSA
+Sθ+Sε . Then, there exists a unique equilibrium fraction α⋆∈
+[0, 1] of informed traders. It satisﬁes the following comparative statics:
+∂α⋆
+∂σ ≥0, ∂α⋆
+∂λ ≥0, and ∂α⋆
+∂C ≤0.
+These inequalities are strict for α⋆∈(0, 1).
+Proposition 5 states that, if traders’ risk aversion is not too high, there exists a unique
+equilibrium fraction of informed traders.8 As C increases, naturally, a lower fraction of traders
+become informed as in Grossman and Stiglitz (1980). The novel comparative statics implied by
+our model are with respect to how long-lived the informational advantage is (σ) and liquidity
+(λ). Intuitively, if the informational advantage is shorter-lived, a lower fraction traders choose
+to be informed because of their worry that their private information may become eﬀectively
+public before they are able to beneﬁt from it, because trading is not instantaneous in this illiquid
+market. Relatedly, keeping the expected lifespan of the information constant, if market liquidity
+improves, the Proposition implies that a larger fraction of traders will become informed.
+8This condition on risk aversion is a suﬃcient condition for unique α⋆because it guarantees that the net
+beneﬁt of becoming informed is monotone for all α ∈[0, 1].
+Numerical examples suggest that even if this
+condition is severely violated (e.g., for γ a hundred times larger than the stated upper bound), the net beneﬁt of
+becoming informed is monotone for a large spectrum of αs apart from very small α ≃0, which means that the
+Proposition holds for a larger spectrum of parameters than implied by the suﬃcient condition in its statement.
+20
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.1
+1.15
+1.2
+1.25
+1.3
+1.35
+1.4
+1.45
+α
+σ = 0.3
+λ = 20
+λ = 40
+λ = 60
+λ = ∞
+0
+0.2
+0.4
+0.6
+0.8
+1
+1.1
+1.15
+1.2
+1.25
+1.3
+1.35
+1.4
+1.45
+α
+λ = 60
+σ = 0.2
+σ = 0.3
+σ = 0.4
+σ = ∞
+Figure 3: Beneﬁt of becoming informed as measured by the RHS of Equation (18) for
+varying levels of λ on the left panel and for varying levels of σ on the right panel. Parameter
+choices: γ = 2, Sθ = Sϵ = 1, and SA = 10.
+Figure 3 oﬀers a graphical portrayal of Proposition 5. Given the eﬀective cost eγC of acquiring information, one can use the beneﬁt functions depicted in Figure 3 to determine the
+equilibrium fraction α⋆of informed traders for varying levels of λ and σ.
+For example, if
+eγC = 1.3 and λ = ∞, the left panel implies a large α⋆≈0.47, which coincides with the fraction of informed traders that would obtain in the Grossman and Stiglitz (1980) environment.
+If λ is reduced to 60 by keeping eγC = 1.3, now a smaller fraction of traders become informed,
+α⋆≈0.4 < 0.47. If λ is further reduced to 20 or below, none of the traders become informed,
+α⋆= 0. Similarly, by inspecting the right panel of Figure 3, one sees that the Grossman and
+Stiglitz (1980) result obtains when σ = ∞in this case, and the equilibrium fraction of informed
+traders decreases as σ decreases, consistent with Proposition 5.
+4.1
+Market eﬃciency
+Corollary 2 of Section 3.2 oﬀers intuitive comparative statics about the market eﬃciency (RPE).
+The market is informationally more eﬃcient if the fraction of informed traders (α) is higher,
+the variability of payoﬀafter purchasing information is lower (i.e., Sε is higher), uncertainty
+21
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+regarding the asset endowment of other traders is lower (i.e., SA is higher), and traders are less
+risk averse. We argued in Section 3.2 that it was striking that trading delays and the short-lived
+nature of the private information do not matter for the price informativeness. Now, the new
+results with endogenous information acquisition imply that the market eﬃciency is aﬀected by
+trading delays and the short-lived nature of the private information through the equilibrium
+level of informed trading, α⋆.
+Bai, Philippon, and Savov (2016) ﬁnd that RPE increased for Standard & Poor’s (S&P)
+500 ﬁrms between 1960 to 2014. They further analyze the factors behind this increase and ﬁnd
+that (i) it is not caused by changes in return predictability because the predictable component
+of returns is quite stable, and (ii) it is likely caused by information production. Through the
+lens of our model, the ﬁndings of Bai, Philippon, and Savov (2016) indicate that what is behind
+the increase in RPE is an increase in α⋆, and not an increase in Sε. Our model oﬀers theoretical
+insights into these ﬁndings because α⋆is endogenous in our model. An important determinant
+of α⋆in our model is λ as shown by Proposition 5. It can be argued that λ increased during
+1960-2014 because “[t]rading costs have fallen, and liquidity has increased by the orders of
+magnitude” (Bai, Philippon, and Savov, 2016, p. 625). Accordingly, our model implies that α⋆
+increased during the same period (keeping everything else constant).
+In addition to the time-series evidence highlighted above, Bai, Philippon, and Savov (2016)
+have indirect cross-sectional evidence for the positive relationship between λ and informational
+eﬃciency implied by our model. They show that FPE is higher for high-turnover ﬁrms compared to low-turnover ﬁrms. Because FPE is a measure that subsumes RPE, FPE tends to
+increase as α⋆increases as well. Thus, this can be considered an indirect evidence for higher λ
+being the reason behind higher RPE.9 In Section 5 of our paper, we, instead, provide direct
+cross-sectional evidence for this channel of our model by using transaction-level data from the
+UK corporate bond market. We use two proxies for RPE that are commonly employed in the
+market microstructure literature. We show that bonds with larger average number of daily
+transactions, which is the direct counterpart of λ in our model, exhibit higher informational
+eﬃciency implied by both proxies.10
+9Bai, Philippon, and Savov (2016) do not use turnover in their formal analysis of RPE. Instead, they conduct
+their formal analysis of turnover by looking at FPE, and make an indirect inference for RPE: “These results
+show that higher liquidity is associated with higher price informativeness. As liquidity has risen signiﬁcantly
+over time, this ﬁnding supports the view that rising liquidity has contributed to the observed rise in price
+informativeness and an increase in RPE” (p. 644).
+10The two proxies are the return autocorrelation measure of Hendershott and Jones (2005) and the price delay
+measure of Hou and Moskowitz (2005), which are both inversely related with RPE. See Section 5.2 for more
+information.
+22
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+While trading technologies and liquidity have improved substantially, which reduced trading
+delays during 1960-2014, these are not the only big changes happening in the ﬁnancial sector.
+Indeed, the last decade has witnessed a substantial growth of “big data” ﬁnancial technology.
+Thus, it is natural to ask how the market eﬃciency changes in response to traders’ easier
+access to useful information. We contrast two possible scenarios: a decline in the information
+acquisition cost, C, representing traders’ access to better datasets and more sophisticated data
+analysis technologies, or a decline in the noise of information revelation, σ, representing the
+shorter-lived nature of private information due to the technology allowing traders to extract
+others’ information, which is a common concern about big data ﬁnancial technologies as stated
+by Farboodi and Veldkamp (2020).
+Proposition 5 and Corollary 2 indicate that while market eﬃciency improves in response
+to a decline in the information acquisition cost, it worsens in response to private information
+becoming shorter-lived. Hence, the impact of the growth of ﬁnancial technology on market
+eﬃciency is ambiguous because both eﬀects are, in principle, present for any asset albeit with
+diﬀerent strengths. Bai, Philippon, and Savov (2016) present evidence consistent with this
+ambiguity: stock market eﬃciency exhibits a secular decline for the universe of all ﬁrms, while
+it exhibits a secular increase for the S&P500 ﬁrms. Our model rationalizes their ﬁndings if the
+improvement in market eﬃciency from the decline in C is dominated by (resp. dominates) the
+decline in market eﬃciency from the decline in σ for the universe of all ﬁrms (resp. the S&P500
+ﬁrms). Table C.2 of Bai, Philippon, and Savov (2016, p. 653) shows that the magnitude of the
+decline in market eﬃciency for the universe of all ﬁrms is highest for the 3-year horizon during
+the 2010-2014 period of their dataset, when the big data arguably plays the most prominent
+role in their dataset.
+4.2
+Equilibrium price dynamics with information acquisition
+In Section 3.3, we studied how the average price discount and the price variance depend on
+trading delays by taking as given the fraction of informed traders. However, the theoretical and
+empirical discussions above indicate that the level of trading delays is a ﬁrst-order determinant
+of equilibrium information acquisition incentives, and so, as trading delays vary, the equilibrium
+fraction of informed traders vary as well, at least in the medium or long run. Thus, an important
+question is whether the patterns in Figure 2 are qualitatively robust to endogenous information
+acquisition. To this end, we reproduce below the results of Figure 2 with equilibrium information
+acquisition, presented along with the ﬁxed exogenous α = 0.3 as earlier.
+23
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+0
+50
+100
+150
+200
+250
+300
+−8
+−7
+−6
+−5
+−4
+−3
+−2
+λ
+average price discount
+α = 0.3
+end. α
+0
+50
+100
+150
+200
+250
+300
+−0.5
+0
+0.5
+1
+1.5
+2
+2.5
+λ
+price variance
+α = 0.3
+end. α
+Figure 4: Average price discount as given by (13) and the price variance when a1 = a2 = 0
+as given by (14), plotted as functions of λ. Parameter choices: C = 0.054, γ = 2, σ = 0.05,
+Sθ = 0, Sε = 1, and SA = 10.
+For the same parametrization in Figure 2, Figure 4 reveals that the eﬀect of trading delay on
+price dynamics is very diﬀerent when trading delays are severe enough to prohibit all information
+acquisition (λ < 50, α⋆= 0) and when trading delays are moderate so that there are some
+informed traders (λ > 50, α⋆> 0, and α⋆is increasing in λ). Similar to Figure 2, when trading
+delays are very severe, a mitigation of delays increases average price discount in its absolute
+value but this time the eﬀect is even stronger. This is because, in Figure 4, the entire population
+of traders is uninformed. While only a fraction 0.7 of traders start trading early with worse
+precision in Figure 2, now the entire population (fraction one) of traders start trading with
+worse precision, and so, the price discount deepens very quickly. The worst discount is reached
+around λ = 50, when trading delays are severe enough to still prohibit information acquisition,
+but moderate enough to allow uninformed traders to trade early on average when their signal
+precision is weak. The right panel of Figure 4 also shows that the price variance reaches its
+maximum around the same level because this large population of uninformed traders gain access
+to the market at dispersed times.
+Once λ exceeds a certain threshold both the average price discount and the price variance
+change direction very quickly. As λ increases further from this threshold, the average price
+discount gets smaller and smaller because informed traders with higher information precision
+24
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+start trading. This also increases the informativeness of the equilibrium price process, which
+increases the precision of uninformed trading as well. Similarly, price variance exhibits a sharp
+decline because traders’ valuations become closer together thanks to the information that informed traders bring to the market.
+One can decompose the average price discount (13) as the negative of the sum of a payoﬀ
+risk premium (γ/Sε) and a liquidity risk premium, because the former is independent of λ and
+the latter depends on λ. Then, a broader message of the example in Figure 4 is that illiquidity
+premium and price dispersion can be non-monotonic functions of λ in a model with endogenous
+information acquisition. To our knowledge, this is a novel result and in sharp contrast with
+the existing illiquid market models with exogenous information, which predict that illiquidity
+premium11 and price dispersion12 are monotone increasing in trading delays. In Section 5, we
+provide novel empirical evidence for the non-monotonic relationship between trading delays and
+price dispersion by using transaction-level data from the UK corporate bond market. We leave
+the empirical analysis of illiquidity premium for future work because disentangling payoﬀrisk
+premium and illiquidity premium requires a structural approach, which goes beyond the scope
+of the reduced-form empirical analysis we provide in Section 5.13
+5
+Novel empirical evidence
+The theory developed in previous sections yields two testable predictions, summarized as follows.
+Prediction 1 (Informational eﬃciency). Informational eﬃciency is negatively related to trading
+delays, as implied by Proposition 5 and Corollary 2.
+Prediction 2 (Price dispersion). Price dispersion is non-monotonic in trading delays, i.e.,
+price dispersion is lowest for the very thinly and the very actively traded assets, as implied by
+Corollary 4.
+5.1
+Data and measurement
+To test these two predictions, we use a transaction-level data from the UK corporate bond
+market, sourced by the UK Financial Conduct Authority. The dataset contains information on
+11See, for example, Duﬃe, Gˆarleanu, and Pedersen (2005), Duﬃe, Gˆarleanu, and Pedersen (2007), and He
+and Milbradt (2014).
+12See, for example, Afonso and Lagos (2015), Hugonnier, Lester, and Weill (2015), and ¨Usl¨u and Velio˘glu
+(2019).
+13Among others, see d’Avernas (2017) and Chen, Cui, He, and Milbradt (2018) for such structural work.
+25
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+the identities of counterparties, the transaction time, the transaction price and quantity, the
+International Securities Identiﬁcation Number, and buyer-seller ﬂags.14 Our sample covers the
+period between August 2011 and December 2017. We include all available transactions (i.e.,
+including client-dealer as well as interdealer trades). We follow Czech and Pinter (2020) in
+matching our transaction-level data with information on time-to-maturity as well as bond ratings from Thomson Reuters Eikon, covering the three major rating agencies Moody’s, Standard
+& Poor’s (S&P), and Fitch.15 For each bond, we take the modal value of the rating during the
+lifetime of the given bond in our sample.
+To measure trading delays at the bond-day level, we use the trade-level data to compute
+the number of daily transactions in the given bond. For each bond, we compute the average
+number of daily transactions across the trading days in order to measure trading frequency (the
+inverse of trading delays) at the bond-level. Moreover, we compute measures of price dispersion
+in the spirit of Jankowitsch, Nashikkar, and Subrahmanyam (2011). Speciﬁcally, we compute
+for each transaction k in bond i the following measure:
+σk = (log (pk) −log (mi,t))2 ,
+(20)
+where pk is the transaction price corresponding to trade k, and mi,t is the average daily transaction price in bond i on day t. We then compute price dispersion, Σi, as the square root of the
+average values of σk in each bond i, expressed in basis points. We construct dispersion both at
+the bond- and the bond-day levels.
+In Table 1, we present summary statistics for the variables used in the regression analyses
+below. Panel A shows the results at the bond-level. Across the 2,776 bonds, average trading
+frequency amounts to about 4-5 daily number of transactions. The median and mean of price
+dispersion are around 16-17 bps and 19-20 bps, respectively, with weighted and unweighted
+measures yielding similar values. The mean of year-to-maturity (9.4 years) is above the median
+(5.6 years), which is due to some corporate bonds in the sample having very long (more than
+50 years) maturity. The median bond has a credit rating of BBB-.
+14All transaction prices are clean prices (so they do not include accrued interest). For further details on the Zen
+dataset, see the Transaction Reporting User Pack: https://www.fca.org.uk/publication/ﬁnalised-guidance/fg1503.pdf. Recent applications of the dataset can be found in Czech and Roberts-Sklar (2019), Czech, Huang, Lou,
+and Wang (2021), and Pint´er and ¨Usl¨u (2022) among others.
+15Our default option is to use ratings from Moody’s due to the ﬁrm’s vast market coverage, and to use S&P
+ratings if ratings from Moody’s are unavailable for a certain bond. Fitch ratings are used as a third option if
+necessary. Credit ratings in our dataset take 24 numerical values (1=AAA, 2=AA+, 3=AA, 4=AA-, 5=A+,
+6=A, 7=A-, 8=BBB+, 9=BBB, 10=BBB-, 11=BB+, 12=BB, 13=BB-, 14=B+, 15=B, 16=B-, 17=C, 18=C+,
+19=CC, 20=CC+, 21=CC-, 22=CCC, 23=CCC+, 24=DDD).
+26
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Panel B of Table 1 presents the results at the bond-day level. Trading frequencies continue to
+average around 4-5 daily number of observations (though they have a larger standard deviation
+compared to the bond-level, i.e. 7.9 vs 3.9 transactions). The mean (12 bps) and median (16
+bps) of price dispersion are smaller than at the bond-level, which is driven by the fact that
+bonds with low price dispersion tend to trade on more days than bonds with higher dispersion.
+Similarly, the median credit rating is 8 (corresponding to BBB+ rating) at the bond-day level,
+which is higher than the median (BBB-) at the bond-level. This is due to investment-grade
+bonds being traded on more trading days than high-yield bonds.
+Table 1: Summary Statistics
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+mean
+p25
+p50
+p75
+sd
+N
+Panel A: Bond Level
+Trading Frequency
+4.90
+3.28
+4.05
+5.30
+3.90
+2,776
+Price Dispersion (W)
+20.65
+6.88
+16.97
+29.04
+18.84
+2,776
+Price Dispersion (U)
+19.01
+7.13
+16.32
+27.14
+16.42
+2,776
+Maturity
+9.38
+2.82
+5.56
+12.61
+10.23
+2,776
+Credit Rating
+12.48
+6.00
+10.00
+23.00
+8.24
+2,776
+Panel B: Bond-Day Level
+Trading Frequency
+5.22
+2.00
+4.00
+6.00
+7.89
+625,925
+Price Dispersion (W)
+12.18
+0.00
+3.35
+16.18
+19.94
+625,925
+Price Dispersion (U)
+12.11
+0.00
+3.47
+16.46
+19.41
+625,925
+Maturity
+9.40
+3.45
+6.35
+12.22
+10.98
+625,925
+Credit Rating
+9.74
+6.00
+8.00
+11.00
+6.66
+625,925
+Notes: This table reports summary statistics at the bond-level and the day-bond level. Trading frequency is measured as the number
+of daily transactions in the given bond. Price dispersion is the square root of either the trade-size weighted (W) or unweighted
+(U) mean of squared price deviations (see formula (20)) in basis points. Maturity is measured by years-to-maturity. Credit ratings
+take 24 numerical values (1=AAA, 2=AA+, 3=AA, 4=AA-, 5=A+, 6=A, 7=A-, 8=BBB+, 9=BBB, 10=BBB-, 11=BB+, 12=BB,
+13=BB-, 14=B+, 15=B, 16=B-, 17=C, 18=C+, 19=CC, 20=CC+, 21=CC-, 22=CCC, 23=CCC+, 24=DDD).
+5.1.1
+Discussion: Trade frequency as a proxy for (the inverse of) trading delays
+As is widely recognized in the market microstructure literature, an asset can trade more frequently because either investors want to trade it more frequently (higher investor demand) or
+investors can trade it more frequently (shorter trading delays).16 Our theoretical model with
+one-shot trade per investor captures the former with the total mass of investors and the latter
+with the parameter λ. Because we normalize the mass of investors to one, the only free parameter to capture trade frequency is λ, which naturally coincides with the inverse of trading
+delays. Therefore, in what follows, we associate a bond’s trading frequency with the parameter
+16See Kargar, Lester, Plante, and Weill (2022) and Pint´er and ¨Usl¨u (2022) for more detailed discussions.
+27
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+λ when we test the model’s comparative-statics implications in the cross section of bonds.
+In light of the discussion above, our empirical approach appears to assume that bonds’ empirical trade frequencies are heterogeneous only because of heterogeneity in trading delays but
+bonds are homogeneous in terms of investor demand. We address such concerns regarding our
+empirical analyses as follows. Existing empirical literature argues that heterogeneous investor
+demand in the cross section of bonds can be explained, in part, by main bond characteristics
+such as credit rating, time to maturity, and bond age.17 In our regression analyses below, we
+include these main bond characteristics as controls so as to attenuate any confounding or unobserved bias from demand-side eﬀects, as well as using bond and time ﬁxed eﬀects whenever
+possible.
+5.2
+Testing Prediction 1
+To test the theoretical prediction regarding informational eﬃciency, we follow Indriawan, Pascual, and Shkilko (2022) in measuring price eﬃciency with two standard metrics: return autocorrelation as in Hendershott and Jones (2005), and price delay as in Hou and Moskowitz
+(2005). Both measures build on the notion that time-variation in expected returns is negligible
+at high frequency, so returns should be unpredictable over a short time horizon if markets are
+informationally eﬃcient. Deviations from return unpredictability could therefore be used as a
+proxy for informational ineﬃciency.
+To compute the ﬁrst measure, we estimate the following time-series regression separately
+for each bond i:
+ri,t = αi + βiri,t−1 + εi,t,
+(21)
+where αi is a constant and ri,t is the daily return of bond i on day t, with returns computed as
+the log diﬀerence of average daily transaction prices. We then take the absolute values of the
+estimated βi coeﬃcients, deﬁned as Bi ≡|βi|. Larger values of Bi suggests greater ineﬃciency
+in bond i.
+As a preliminary step for the construction of the second measure, we estimate the following
+time-series regression separately for each bond i:
+ri,t = ai +
+3
+X
+n=1
+2
+X
+k=0
+bi,k,nfn,t−k +
+2
+X
+k=0
+γi,krm,t−k + νi,t
+(22)
+17See Alexander, Edwards, and Ferri (2000) and Hotchkiss and Jostova (2017), among others.
+28
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+where ai is a constant, fn,t−k is the daily change in the ﬁrst three principal components of
+the UK yield curve, n ∈{1, 2, 3}, corresponding to the level, slope, and curvature of the yield
+curve.18
+The term rm,t−k is the daily log return on the FTSE stock index.
+The inclusion
+of both bond market and stock market returns is motivated by the previous literature (e.g.,
+Hotchkiss and Ronen (2002)) on the relevance of both markets in aﬀecting short horizon return
+dynamics. We then compute the R2 statistics from regression (22) as well as from a variant of
+regression (22) which does not include the lagged values of the regressors. We refer to these as
+unconstrained, R2
+u, and constrained, R2
+c, statistics. For bond i, the price delay is then deﬁned
+as Di ≡1 −R2
+c/R2
+u, which takes values between zero and one. A larger value suggests greater
+ineﬃciency in bond i.
+Given our two measures of price eﬃciency, we then run the following cross-sectional regression at the bond-level:
+Yi = c + δλi + controls + ui,
+(23)
+where Yi = {Bi, Di} is either our measure of absolute autocorrelations or our measure of price
+delay; c is a constant; and λi denotes trading frequency measured by the log of average daily
+number of transactions in bond i.19 As controls in (23), we include a bond rating dummy which
+takes value one if the bond has an investment grade (BBB- or higher) and zero otherwise. In
+addition, we sort bonds into four equal sized buckets in terms of years-to-maturity and include
+in the regression dummy variables corresponding to each bucket.20
+Results from regression (23) are presented in Table 2. Panel A shows the results for the
+regression without control variables. We ﬁnd strong supporting evidence for the ﬁrst prediction
+of the theoretical model: corporates bonds feature lower informational eﬃciency when they
+are traded less frequently. Speciﬁcally, columns 1-3 of the Table shows that a one log point
+increase in the average number of daily transactions in a bond decreases the absolute value of
+autocorrelation by about 0.15-0.19 points. The eﬀect is larger among less liquid bonds, i.e.,
+those bonds that are on average traded less frequently. Columns 4-6 of Table 2 show that a one
+log point increase in trading frequency decreases price delays by about 0.06-0.13 points, with
+the eﬀect being statistically and economically more signiﬁcant among less liquid bonds.
+18We use data on zero-coupon bond yields (with maturity of 1-25 years), as constructed by the Bank of
+England. The data can be downloaded from the Bank of England’s website.
+19We also experiment with alternative ways of measuring trading delays.
+Section B of the Appendix reestimates regression (23) after we replace the regressor with the natural logarithm of trading volume—deﬁned
+as the nominal value of transactions—at the bond-day level. As we can see, all the results are qualitatively the
+same as our baseline.
+20The four maturity buckets correspond to 0-3, 4-6, 6-11, and 11+ years to maturity.
+29
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Table 2: Informational Eﬃciency and Trading Delays
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Return Autocorrelation
+Price Delay
+All Bonds
+Less Liquid
+More Liquid
+All Bonds
+Less Liquid
+More Liquid
+Panel A: No Controls
+λ
+-0.175***
+-0.186***
+-0.149***
+-0.128***
+-0.080**
+-0.058*
+(0.02)
+(0.03)
+(0.03)
+(0.02)
+(0.03)
+(0.03)
+Constant
+0.516***
+0.538***
+0.465***
+0.630***
+0.602***
+0.471***
+(0.03)
+(0.05)
+(0.05)
+(0.03)
+(0.05)
+(0.06)
+N
+1080
+541
+539
+1419
+711
+708
+R2
+0.073
+0.059
+0.058
+0.024
+0.008
+0.003
+Panel B: With Controls
+λ
+-0.148***
+-0.152***
+-0.124***
+-0.125***
+-0.066**
+-0.076**
+(0.02)
+(0.03)
+(0.02)
+(0.02)
+(0.03)
+(0.03)
+Inv. Grade
+-0.006
+0.024
+-0.037**
+-0.146***
+-0.135***
+-0.132***
+(0.01)
+(0.02)
+(0.02)
+(0.01)
+(0.02)
+(0.02)
+Maturity=Q2
+-0.087***
+-0.054**
+-0.119***
+-0.058***
+-0.070***
+-0.051**
+(0.02)
+(0.03)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Maturity=Q3
+-0.105***
+-0.074***
+-0.142***
+-0.100***
+-0.120***
+-0.093***
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Maturity=Q4
+-0.156***
+-0.147***
+-0.169***
+-0.143***
+-0.165***
+-0.138***
+(0.01)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Constant
+0.563***
+0.542***
+0.556***
+0.802***
+0.759***
+0.668***
+(0.03)
+(0.05)
+(0.05)
+(0.03)
+(0.05)
+(0.06)
+N
+1080
+541
+539
+1419
+711
+708
+R2
+0.174
+0.126
+0.246
+0.176
+0.166
+0.144
+Notes: this table presents results from cross-sectional regressions whereby measures of price eﬃciency are regressed on trading
+frequency of corporate bonds.
+Panel A presents the results without controls, and Panel B presents the results with controls.
+Columns 1-3 show the results where the absolute value of return autocorrelation (computed by (21)) is used as the left-hand side
+variables. Columns 4-6 show the results where price delay (computed by (22)) is used as the regressand. Trading frequency (the
+regressor) is measured as the natural logarithm of the average daily number of transactions in bond i. For a bond to be included in
+the time-series regressions ((21) or (22)), it has to have at least 20 daily observations. Less (more) liquid bonds are deﬁned as those
+that have approximately less (more) than the median number of daily transactions. The sample covers the period from August
+2011 to December 2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer
+trades. T-statistics in parentheses are based on robust standard errors. Asterisks denote signiﬁcance levels (* p<0.1, ** p<0.05,
+*** p<0.01).
+Panel B of Table 2 presents the results when we control for credit rating as well as maturity.
+We ﬁnd that bonds with better rating and higher time-to-maturity tend to be more informationally eﬃcient. Importantly, while the inclusion of these controls somewhat diminishes
+the estimated eﬀect of trading frequency, the coeﬃcients continue to be statistically signiﬁcant, (with some increase in the statistical signiﬁcance of trading frequency in the price delay
+regressions).
+30
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+5.3
+Testing Prediction 2
+To test for the theoretical prediction regarding non-monotonic relationship between price dispersion and trading delays, we compute average price dispersion and trading delays at the
+day-bond level. Then, we estimate the following panel regression:
+Di,t = ιλi,t + κλ2
+i,t + controls + ui,t,
+(24)
+where λi,t denotes trading frequency measured by the log of number of transactions in bond
+i on day t21; the term controls includes a linear trend, bond- and day-level ﬁxed eﬀects,22
+and an additional variable “past frequency” which measures the fraction of days when the
+bond was traded at least once over the days during the previous three months.23 The panel
+speciﬁcation thereby allows us to control for time-invariant bond characteristics as well as for
+the average eﬀect of macroeconomic shocks that may confound the dispersion - trading delay
+relationship. Moreover, we compute average price dispersion in two ways: unweighted average
+and trade-size-weighted average price dispersion.
+Positive estimates of ι and negative estimates of κ would be consistent with a hump-shaped
+non-monotonic relation, predicted by our theoretical model. Table 3 presents the results from
+the panel regressions using about 0.63 million bond-day observations. We ﬁnd strong support
+for this second empirical prediction of our theoretical model. In all the regression speciﬁcations,
+the linear eﬀect of trading frequency is estimated to be positive, whereas the quadratic eﬀect is
+negative. The negative coeﬃcient estimate on the time trend in column 3 suggests that price
+dispersion tends to fall as the bond ages.24 Overall, our results indicate a robust relationship
+between trading frequency and dispersion, which is positive up to a certain level of trading
+frequency after which the relationship turns negative.
+The price dispersion literature recognizes that dispersion is (statistically) better estimated
+when there are many transactions versus few.25
+One concern is, then, whether the hump21Section B of the Appendix re-estimates regression (24) after we replace the regressor with the natural
+logarithm of trading volume—deﬁned as the nominal value of transactions—at the bond-day level. As we can
+see, all the results are qualitatively the same as our baseline.
+22Note that the combination of a linear trend and bond ﬁxed eﬀects controls for the linear eﬀect of deterministic
+factors such as the age of the bond or time to maturity.
+23It is important to note that bonds with zero or one trade in a day are unsuitable for generating reliable price
+dispersion estimates. Consequently, such instances are excluded from our bond-day observations, potentially
+raising concerns about statistical bias. We use the “past frequency” variable as a control so as to attenuate
+a statistical bias from dropping the zero and one transaction days. Speciﬁcally, a low value for a bond’s past
+frequency variable on a given day, which increases susceptibility to bias, is accounted for in our analysis, partially
+oﬀsetting the impact of this exclusion.
+24Once we include day ﬁxed eﬀects (columns 4-5), the linear trend is absorbed.
+25See Jankowitsch, Nashikkar, and Subrahmanyam (2011), among others.
+31
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Table 3: Price Dispersion and Trading Delays
+(1)
+(2)
+(3)
+(4)
+(5)
+Panel A: Weighted Dispersion
+λ
+16.550***
+15.568***
+15.488***
+15.854***
+14.642***
+(0.57)
+(0.42)
+(0.42)
+(0.42)
+(0.41)
+λ2
+-2.154***
+-2.123***
+-2.189***
+-2.255***
+-1.972***
+(0.18)
+(0.11)
+(0.11)
+(0.11)
+(0.12)
+Trend
+-0.006***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+6.601***
+(0.84)
+N
+625927
+625665
+625665
+625662
+594437
+R2
+0.102
+0.240
+0.252
+0.275
+0.276
+Panel B: Unweighted Dispersion
+λ
+17.044***
+15.836***
+15.756***
+16.139***
+14.888***
+(0.61)
+(0.43)
+(0.44)
+(0.43)
+(0.42)
+λ2
+-2.281***
+-2.204***
+-2.270***
+-2.339***
+-2.053***
+(0.19)
+(0.11)
+(0.12)
+(0.12)
+(0.12)
+Trend
+-0.006***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+7.070***
+(0.87)
+N
+625927
+625665
+625665
+625662
+594437
+R2
+0.107
+0.254
+0.267
+0.291
+0.291
+Bond FE
+No
+Yes
+Yes
+Yes
+Yes
+Day FE
+No
+No
+No
+Yes
+Yes
+Notes: this table presents results from panel regressions whereby measures of price dispersions are regressed on trading frequency
+of corporate bonds. The regressor is included in a linear and a quadratic way. The sample covers the period from August 2011 to
+December 2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer trades.
+T-statistics in parentheses are based on robust standard errors, where we also apply two-way clustering at the bond- and day-level.
+Asterisks denote signiﬁcance levels (* p<0.1, ** p<0.05, *** p<0.01).
+shaped trade frequency - price dispersion relationship is economically meaningful or an artifact
+of statistical bias. As a robustness check, Appendix Tables 6–7 estimate regression (24) on
+a subsample of the most and least frequently traded bonds and show that the hump-shaped
+relationship continues to hold in both samples.26 Therefore, we conclude that the hump-shaped
+relationship is present regardless of the level of statistical bias in price dispersion measurement.
+To provide a visual illustration of the non-monotonic relationship, we use the most conservative speciﬁcation (with bond and day ﬁxed eﬀects) to construct a scatter plot as follows. We
+purge our bond and day ﬁxed eﬀects from unweighted price dispersion and trading frequency,
+26The two subsamples are based on the top quintile and bottom quintile of bonds in terms of average number
+of daily transactions.
+32
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Figure 5: Illustrating the Hump-shaped Relationship between Price Dispersion and Trading
+Delays
+Notes: the scatter plot is constructed using the 625,662 residuals corresponding to column 4 of Panel B in Table 3. That is, to
+obtain the residuals, we estimate Σi,t = αi + µt + νi,t and λi,t = αi + µt + ui,t. The red line is a ﬁtted quadratic regression line.
+and use the obtained 625,662 residuals to draw a scatter plot as shown by Figure 5. The Figure
+shows a visibly non-monotonic relation: bond-day observations with intermediate trading delays tend to have higher dispersion compared to bond-day observations with very high or very
+low delays.27
+6
+Conclusion
+We present an asset market model that aims at bridging the gap between the information acquisition literature and the trading delays literature and provide empirical evidence for its novel
+implications. Our model establishes an inverse relationship between trading delays and price
+informativeness in equilibrium. Consistent with this implication of our model, we show that
+the prices of corporate bonds that are easier (resp. more diﬃcult) to trade are informationally
+more (resp. less) eﬃcient in the UK market. Our model also establishes that equilibrium price
+dispersion is non-monotonic in trading delays. We, again, empirically conﬁrm this relationship
+27Appendix Figure 6 shows that the hump-shaped relationship continues to hold in a subsample of the most
+and least frequently traded bonds.
+33
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+in the cross section of bonds traded in the UK corporate bond market.
+Another novel implication of our model is that equilibrium illiquidity premium is nonmonotonic in trading delays. Thus, one avenue for future research that our model leads to is
+to investigate the empirical relationship between illiquidity premium and trading delays. This
+would require a structural approach because of the necessity of decomposing risk premia into
+a payoﬀrisk premium and an illiquidity risk premium.
+Theoretical introspection leads to further avenues for future research. Because our model
+focuses on studying market-wide trading delays, it makes the assumption that uninformed
+and informed traders are subject to the same level of trading delays. One potential extension
+is to allow for heterogeneity in trading delays across traders. With endogenous information
+acquisition, this would allow one to study how diﬀerent traders sort into diﬀerent information
+types in equilibrium. Second, because trading delays are an important determinant of traders’
+information acquisition incentives and implicitly of their trading activity, it is natural to think
+that, at least in the long run, market makers would adjust their trade execution speed as a
+strategic response to traders’ optimal information acquisition and trading activity. In order to
+analyze this (long-run) relationship, one could study the market makers’ endogenous investment
+in execution speed.
+34
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+References
+Anat R. Admati and Paul Pﬂeiderer.
+A monopolistic market for information.
+Journal of
+Economic Theory, 39:400–438, 1986.
+Gara Afonso and Ricardo Lagos. Trade dynamics in the market for federal funds. Econometrica,
+83:263–313, 2015.
+Yacine A¨ıt-Sahalia and Mehmet Sa˘glam. High frequency traders: Taking advantage of speed.
+Working paper, 2013.
+Gordon J. Alexander, Amy K. Edwards, and Michael G. Ferri. The determinants of trading
+volume of high-yield corporate bonds. Journal of Financial Markets, 3:177–204, 2000.
+Manuel Amador and Pierre-Olivier Weill. Learning from private and public observations of
+others’ actions. Journal of Economic Theory, 147:910–940, 2012.
+Ana Babus and P´eter Kondor. Trading and information diﬀusion in over-the-counter markets.
+Econometrica, 86:1727–1769, 2018.
+Jennie Bai, Thomas Philippon, and Alexi Savov. Have ﬁnancial markets become more informative? Journal of Financial Economics, 122:625–654, 2016.
+Bruno Biais, Thierry Foucault, and Sophie Moinas.
+Equilibrium fast trading.
+Journal of
+Financial Economics, 116:292–313, 2015.
+Max R. Blouin and Roberto Serrano. A decentralized market with common values uncertainty:
+Non-steady states. Review of Economic Studies, 68:323–346, 2001.
+Philip Bond, Alex Edmans, and Itay Goldstein. The real eﬀects of ﬁnancial markets. Annual
+Review of Financial Economics, 4:339–360, 2012.
+Eric Budish, Peter Cramton, and John Shim. The high-frequency trading arms race: Frequent
+batch auctions as a market design response. Quarterly Journal of Economics, 130(4):1547–
+1621, 2015.
+Giovanni Cespa. Information sales and insider trading with long-lived information. Journal of
+Finance, 63:639–672, 2008.
+35
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Hui Chen, Rui Cui, Zhiguo He, and Konstantin Milbradt. Quantifying liquidity and default
+risks of corporate bonds over the business cycle. Review of Financial Studies, 31(3):852–897,
+2018.
+Robert Czech and Gabor Pinter. Informed trading and the dynamics of client-dealer connections
+in corporate bond markets. Bank of England working papers 895, Bank of England, November
+2020. URL https://ideas.repec.org/p/boe/boeewp/0895.html.
+Robert Czech and Matt Roberts-Sklar. Investor behaviour and reaching for yield: Evidence
+from the sterling corporate bond market. Financial Markets, Institutions & Instruments, 28
+(5):347–379, 2019. doi: https://doi.org/10.1111/fmii.12122. URL https://onlinelibrary.
+wiley.com/doi/abs/10.1111/fmii.12122.
+Robert Czech, Shiyang Huang, Dong Lou, and Tianyu Wang. Informed trading in government
+bond markets. Journal of Financial Economics, 142(3):1253–1274, 2021. URL https://
+EconPapers.repec.org/RePEc:eee:jfinec:v:142:y:2021:i:3:p:1253-1274.
+Tri Vi Dang and Florian Morath. The taxation of bilateral trade with endogenous information.
+Working paper, 2015.
+Adrien d’Avernas. Disentangling credit spreads and equity volatility. Working paper, 2017.
+Eduardo D´avila and Cecilia Parlatore. Trading costs and informational eﬃciency. Journal of
+Finance, 76(3):1471–1539, 2021.
+Marco Di Maggio, Amir Kermani, and Zhaogang Song.
+The value of trading relations in
+turbulent times. Journal of Financial Economics, 124(2):266–284, 2017.
+Jens Dick-Nielsen, Thomas K. Poulsen, and Obaidur Rehman. Dealer networks and the cost
+of immediacy. Working paper, 2021.
+James Dow and Rohit Rahi. Should speculators be taxed? Journal of Business, 73(1):89–107,
+2000.
+Darrell Duﬃe, Nicolae Gˆarleanu, and Lasse H. Pedersen. Over-the-counter markets. Econometrica, 73(6):1815–1847, 2005.
+Darrell Duﬃe, Nicolae Gˆarleanu, and Lasse H. Pedersen. Valuation in over-the-counter markets.
+Review of Financial Studies, 20(6):1865, 2007.
+36
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Darrell Duﬃe, Semyon Malamud, and Gustavo Manso. Information percolation in segmented
+markets. Journal of Economic Theory, 153:1–32, 2014.
+J´erˆome Dugast and Thierry Foucault. Data abundance and asset price informativeness. Journal
+of Financial Economics, 130(2):367–391, 2018.
+Amy K. Edwards, Lawrence E. Harris, and Michael S. Piwowar.
+Corporate bond market
+transaction costs and transparency. Journal of Finance, 63(2):1421–1451, 2007.
+Maryam Farboodi and Laura L. Veldkamp.
+Long run growth of ﬁnancial data technology.
+American Economic Review, 110(8):2485–2523, 2020.
+Maryam Farboodi, Gregor Jarosch, and Robert Shimer. The emergence of market structure.
+Review of Economic Studies, 90(1):261–292, 2023.
+Thierry Foucault, Johan Hombert, and Ioanid Ro¸su.
+News trading and speed. Journal of
+Finance, 71(1):335–382, 2016.
+Kenneth D. Garbade and William L. Silber.
+Price dispersion in the government securities
+market. Journal of Political Economy, 84(4):721–740, 1976.
+Nicolae Gˆarleanu. Portfolio choice and pricing in illiquid markets. Journal of Economic Theory,
+144(2):532–564, 2009.
+Vincent Glode and Christian C. Opp.
+Asymmetric information and intermediation chains.
+American Economic Review, 106:2699–2721, 2016.
+Vincent Glode, Christian C. Opp, and Xingtan Zhang. On the eﬃciency of long intermediation
+chains. Journal of Financial Intermediation, 38:11–18, 2019.
+Mikhail Golosov, Guido Lorenzoni, and Aleh Tsyvinski. Decentralized trading with private
+information. Econometrica, 82(3):1055–1091, 2014.
+Sanford J. Grossman and Joseph E. Stiglitz. On the impossibility of informationally eﬃcient
+markets. American Economic Review, 70:393–408, 1980.
+Zhiguo He and Konstantin Milbradt. Endogenous liquidity and defaultable bonds. Econometrica, 82(4):1443–1508, 2014.
+37
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Terrence Hendershott and Charles M. Jones. Island Goes Dark: Transparency, Fragmentation,
+and Regulation. Review of Financial Studies, 18(3):743–793, 2005. URL https://ideas.
+repec.org/a/oup/rfinst/v18y2005i3p743-793.html.
+Edith S. Hotchkiss and Gergana Jostova. Determinants of corporate bond trading: A comprehensive analysis. Quarterly Journal of Finance, 7(2):1750003, 2017.
+Edith S. Hotchkiss and Tavy Ronen.
+The Informational Eﬃciency of the Corporate Bond
+Market: An Intraday Analysis. Review of Financial Studies, 15(5):1325–1354, 2002. URL
+https://ideas.repec.org/a/oup/rfinst/v15y2002i5p1325-1354.html.
+Kewei Hou and Tobias J. Moskowitz. Market frictions, price delay, and the cross-section of
+expected returns. The Review of Financial Studies, 18(3):981–1020, 2005. ISSN 08939454,
+14657368. URL http://www.jstor.org/stable/3598084.
+Julien Hugonnier, Benjamin Lester, and Pierre-Olivier Weill. Heterogeneity in decentralized
+asset markets. 2015.
+Julien Hugonnier, Benjamin Lester, and Pierre-Olivier Weill. Frictional intermediation in overthe-counter markets. Review of Economic Studies, 87(3):1432–1469, 2020.
+Vivian Hutson, John S. Pym, and Michael J. Cloud. Applications of Functional Analysis and
+Operator Theory. Elsevier B.V., Amsterdam: the Netherlands, second edition, 2005.
+Ivan Indriawan, Roberto Pascual, and Andriy Shkilko. On the Eﬀects of Continuous Trading.
+working paper, ssrn, 2022.
+Rainer Jankowitsch, Amrut Nashikkar, and Marti G. Subrahmanyam. Price dispersion in otc
+markets: A new measure of liquidity. Journal of Banking and Finance, 35(2):343–357, 2011.
+URL https://EconPapers.repec.org/RePEc:eee:jbfina:v:35:y:2011:i:2:p:343-357.
+Rainer Jankowitsch, Florian Nagler, and Marti G. Subrahmanyam. The determinants of recovery rates in the us corporate bond market. Journal of Financial Economics, 114(1):155–177,
+2014.
+Mahyar Kargar, Benjamin Lester, Sebastien Plante, and Pierre-Olivier Weill. Sequential search
+for corporate bonds. Working paper, 2022.
+38
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Ricardo Lagos and Guillaume Rocheteau.
+Liquidity in asset markets with search frictions.
+Econometrica, 77(2):403–426, 2009.
+Stephan Lauermann and Asher Wolinsky. Search with adverse selection. Econometrica, 84:
+243–315, 2016.
+Stephan Lauermann, Wolfram Merzyn, and G´abor Vir´ag. Learning and price discovery in a
+search market. Review of Economic Studies, 85:1159–1192, 2017.
+Jongsub Lee, Andy Naranjo, and G¨uner Velio˘glu. When do cds spreads lead? rating events,
+private entities, and ﬁrm-speciﬁc information ﬂows. Journal of Financial Economics, 130(3):
+556–578, 2018.
+Samuel Lee. Active investment, liquidity externalities, and markets for information. Working
+paper, 2013.
+Benjamin Lester, Ali Shourideh, Venky Venkateswaran, and Ariel Zetlin-Jones. Market-making
+with search and information frictions. Journal of Economic Theory, 212:105714, 2023.
+Dan Li and Norman Sch¨urhoﬀ. Dealer networks. Journal of Finance, 74(1):91–144, 2019.
+Wei Li. High frequency trading with speed hierarchies. Working paper, 2018.
+Wei Li and Zhaogang Song. Dealers as information intermediaries in over-the-counter markets.
+Working paper, 2018.
+Maureen O’Hara, Yihui Wang, and Xing (Alex) Zhou.
+The execution quality of corporate
+bonds. Journal of Financial Economics, 130(2):308–326, 2018.
+Bernt Øksendal. Stochastic Diﬀerential Equations: An Introduction with Applications. SpringerVerlag Berlin Heidelberg, New York, Dordrecht, London, 6 edition, 2003.
+Emiliano S. Pagnotta and Thomas Philippon.
+Competing on speed.
+Econometrica, 86(3):
+1067–1115, 2018.
+G´abor Pint´er and Semih ¨Usl¨u. Comparing search and intermediation frictions across markets.
+Bank of England working papers 974, Bank of England, April 2022. URL https://ideas.
+repec.org/p/boe/boeewp/0974.html.
+39
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Avanidhar Subrahmanyam. Transaction taxes and ﬁnancial market equilibrium. Journal of
+Business, 71(1):81–118, 1988.
+Semih ¨Usl¨u. Pricing and liquidity in decentralized asset markets. Econometrica, 87(6):2079–
+2140, 2019.
+Semih ¨Usl¨u and G¨uner Velio˘glu. Liquidity in the cross section of otc assets. Working paper,
+2019.
+Laura L. Veldkamp. Media frenzies in markets for ﬁnancial information. American Economic
+Review, 96:577–601, 2006a.
+Laura L. Veldkamp. Information markets and comovements of asset prices. Review of Economic
+Studies, 73:823–845, 2006b.
+Laura L. Veldkamp. Information Choice in Macroeconomics and Finance. Princeton University
+Press, Princeton, NJ, 2011.
+Robert E. Verrecchia. Information acquisition in a noisy rational expectations economy. Econometrica, 50:1415–1430, 1982.
+Xavier Vives. Endogenous public information and welfare in market games. Review of Economic
+Studies, 84(2):935–963, 2017.
+Pierre-Olivier Weill. Leaning against the wind. Review of Economic Studies, 74(4):1329, 2007.
+Pierre-Olivier Weill. The search theory of over-the-counter markets. Annual Review of Economics, 12:747–773, 2020.
+Asher Wolinsky. Information revelation in a market with pairwise meetings. Econometrica,
+pages 1–23, 1990.
+Tsz-Nga Wong and Mengbo Zhang.
+Disintermediating the federal funds market.
+Working
+paper, 2022.
+40
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+A
+Proofs
+A.1
+Proof of Corollary 2
+Using (7), (8), (11), and the posterior variance formula for normally distributed random variables (Equation (2.4) of Veldkamp (2011, p. 12)),
+V [θ | Pt] = (1 −β (t))2
+Sθ + t/σ2 + 2
+SA
+β (t)
+Φ
+2
+,
+V
+h
+θ | {Zs}s∈[0,t] , a
+i
+=
+ Sθ + t/σ2−1 ,
+and
+V
+h
+θ | {Zs}s∈[0,t] , a, Pt
+i
+=
+ Sθ + t/σ2 + Φ2SA
+−1 .
+Then, using the deﬁnitions
+FPEt ≡(V [θ | Pt])−1
+and
+RPEt ≡
+
+V
+h
+θ | {Zs}s∈[0,t] , a, Pt
+i−1
+−
+
+V
+h
+θ | {Zs}s∈[0,t] , a
+i−1
+.
+and using the fact that Φ = −αSε
+γ , the formulas of the Corollary follow.
+A.2
+Proof of Proposition 3
+EC [P] ≡E
+h
+˜Pt
+
+ˆθt, θ, a1, a2
+
+| θ, a1, a2
+i
+= E
+h
+E
+h
+˜Pt
+
+ˆθt, θ, a1, a2
+
+| t, θ, a1, a2
+i
+| θ, a1, a2
+i
+= E
+
+E
+
+(1 −β (t)) ˆθt + β (t)
+
+θ + a1 + a2
+2Φ
+
+| t, θ, a1, a2
+
+| θ, a1, a2
+
+= E
+
+(1 −β (t)) E
+h
+ˆθt | t, θ
+i
++ β (t)
+
+θ + a1 + a2
+2Φ
+
+| θ, a1, a2
+
+= E
+
+(1 −β (t)) θ + β (t)
+
+θ + a1 + a2
+2Φ
+
+| θ, a1, a2
+
+= θ + a1 + a2
+2Φ
+E [β (t)] = θ + a1 + a2
+2Φ
+∞
+Z
+0
+α (t/σ2 + Sε) + Φ2SA
+t/σ2 + αSε + Φ2SA
+λe−λtdt
+= θ + a1 + a2
+2Φ
+∞
+Z
+0
+
+α + (1 −α) (αSε + Φ2SA)
+t/σ2 + αSε + Φ2SA
+
+λe−λtdt
+= θ + a1 + a2
+2Φ
+∞
+Z
+0
+
+α + (1 −α) δ
+x + δ
+
+λσ2e−λσ2xdx,
+41
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+which implies (13) because Φ = −αSε
+γ
+and
+∞
+Z
+0
+δ
+x + δλσ2e−λσ2xdx = λσ2δeλσ2δΓ
+ 0, λσ2δ
+
+.
+The ﬁrst line above follows from the law of iterated expectations, the second line from (11),
+the third and fourth lines from (7), the ﬁfth line because t is exponentially distributed with
+parameter λ, the sixth line by rearranging, and the last line using δ = αSε + Φ2SA and with
+the change of variable x = t/σ2.
+Following similar steps,
+VC [P] ≡E
+n
+˜Pt
+
+ˆθt, θ, a1, a2
+
+−EC [P]
+o2
+| θ, a1, a2
+
+= E
+
+E
+n
+˜Pt
+
+ˆθt, θ, a1, a2
+
+−EC [P]
+o2
+| t, θ, a1, a2
+
+| θ, a1, a2
+
+= E
+
+E
+
+(1 −β (t)) ˆθt + β (t)
+
+θ + a1 + a2
+2Φ
+
+−θ −a1 + a2
+2Φ
+(1 −α) λσ2δeλσ2δΓ
+ 0, λσ2δ
+2
+| t, θ, a1, a2
+#
+| θ, a1, a2
+#
+= E
+"
+E
+"(
+(1 −β (t))
+z
+p
+t/σ2
++a1 + a2
+2Φ
+h
+β (t) −(1 −α) λσ2δeλσ2δΓ
+ 0, λσ2δ
+i2
+| t, θ, a1, a2
+#
+| θ, a1, a2
+#
+= E
+
+E
+
+((1 −β (t)))2 σ2
+t + o (a1 + a2) | t, θ, a1, a2
+
+| θ, a1, a2
+
+= σ2E
+
+((1 −β (t)))2 1
+t
+
++ o (a1 + a2)
+= (1 −α)2 E
+"
+t/σ2
+t/σ2 + αSε + Φ2SA
+2
+1
+t/σ2
+#
++ o (a1 + a2)
+= (1 −α)2
+∞
+Z
+0
+"
+t/σ2
+t/σ2 + αSε + Φ2SA
+2
+1
+t/σ2
+#
+λe−λtdt + o (a1 + a2)
+= (1 −α)2
+∞
+Z
+0
+x
+(x + δ)2λσ2e−λσ2xdx + o (a1 + a2) ,
+which implies (14) because
+∞
+Z
+0
+x
+(x + δ)2λσ2e−λσ2xdx = λσ2 n
+−1 + eλσ2δ  1 + λσ2δ
+
+Γ
+ 0, λσ2δ
+o
+.
+42
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+A.3
+Proof of Corollary 4
+Deﬁne B = λσ2δ and A = BeBΓ (0, B). Then,
+∂A
+∂B (B) = eBΓ (0, B) + BeBΓ (0, B) + BeB ∂Γ
+∂B (0, B) = (1 + B) eBΓ (0, B) −1
+because ∂Γ
+∂B (0, B) = −
+1
+BeB . Then, an application of the chain rule implies
+∂A
+∂λ (λ) = σ2δ
+n 1 + λσ2δ
+
+eλσ2δΓ
+ 0, λσ2δ
+
+−1
+o
+,
+and, in turn,
+∂APD
+∂λ
+(λ) = −γ
+Sε
+1 −α
+α
+σ2δ
+n 1 + λσ2δ
+
+eλσ2δΓ
+ 0, λσ2δ
+
+−1
+o
+< 0,
+where APD =
+EC[P]−θ
+(a1+a2)/2 and the inequality follows because the term inside the curly bracket is
+positive for λ > 0.
+Rewrite (14):
+VC [P] = (1 −α)2 B
+δ
+
+−1 + eB (1 + B) Γ (0, B)
+	
++ o (a1 + a2) .
+Then,
+∂VC [P]
+∂B
+(B) = (1 −α)2 1
+δ
+
+−1 + eB (1 + B) Γ (0, B)
+	
++ (1 −α)2 B
+δ
+
+eB (1 + B) Γ (0, B) + eBΓ (0, B) + eB (1 + B) ∂Γ
+∂B (0, B)
+
++ o (a1 + a2)
+= (1 −α)2 1
+δ
+
+−1 + eB (1 + B) Γ (0, B)
+	
++ (1 −α)2 B
+δ
+
+eB (2 + B) Γ (0, B) −
+
+1 + 1
+B
+
++ o (a1 + a2)
+= (1 −α)2 1
+δ
+
+eB (1 + B) Γ (0, B) + (2 + B)
+
+−1 + BeBΓ (0, B)
+	
++ o (a1 + a2)
+= (1 −α)2 1
+δ
+
+−eBΓ (0, B) + (2 + B)
+
+−1 + (1 + B) eBΓ (0, B)
+	
++ o (a1 + a2)
+= (1 −α)2 1
+δ
+
+−2 + (1 + 2B) eBΓ (0, B) + B
+
+−1 + (1 + B) eBΓ (0, B)
+	
++ o (a1 + a2) .
+Then, one can verify that
+lim
+B→0
+∂VC [P]
+∂B
+(B) = ∞
+and that ∂VC[P]
+∂B
+(B) < 0 for B ≃∞with
+lim
+B→∞
+∂VC [P]
+∂B
+(B) = 0,
+which implies the Corollary because B = λσ2δ.
+43
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+A.4
+Proof of Lemma 2
+Using the fact that θ is normally distributed, one can show that
+E
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t | ˆθt, t,
+n
+˜Pt
+
+ˆθt, θ, a1, a2
+
+= Pt
+oi
+=
+s
+Sθ + t/σ2 + Φ2SA
+Sθ + t/σ2 + Sε + Φ2SA
+E
+h
+e−1
+2(µuninf,a
+t
+−˜Pt(ˆθt,θ,a,a−))
+2Suninf
+t
+| ˆθt, t,
+n
+˜Pt
+
+ˆθt, θ, a1, a2
+
+= Pt
+oi
+.28
+Then, applying the law of iterated expectations,
+E
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t | t
+i
+=
+s
+Sθ + t/σ2 + Φ2SA
+Sθ + t/σ2 + Sε + Φ2SA
+E
+h
+e−1
+2(µuninf,a
+t
+−˜Pt(ˆθt,θ,a,a−))
+2Suninf
+t
+| t
+i
+.
+Substituting into (15) and further applying the law of iterated expectations, (15) becomes
+eγCE
+h
+E
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t | t
+ii
+≤E
+"s
+Sθ + t/σ2 + Sε + Φ2SA
+Sθ + t/σ2 + Φ2SA
+E
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t | t
+i#
+,
+where the outer expectation is taken over t.
+Because the sum of normally distributed random variables is normally distributed as well,
+˜Pt
+
+ˆθt, θ, a1, a2
+
+is normally distributed conditional on t. Using the fact that ˜Pt
+
+ˆθt, θ, a1, a2
+
+is
+conditionally normally distributed and using the law of iterated expectations,
+E
+h
+e−1
+2(µinf
+t
+−˜Pt(ˆθt,θ,a1,a2))
+2Sinf
+t | t
+i
+=
+v
+u
+u
+t
+Sθ + t/σ2
+Sθ + t/σ2 + Sε +
+
+1 + Sθ+t/σ2
+Φ2SA
+
+(β (t))2 Sε
+.
+Since t is exponentially distributed with parameter λ, the inequality stated in the Lemma
+obtains.
+A.5
+Proof of Proposition 5
+Let
+H =
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+−eγC.
+28See Veldkamp (2011, p. 90) for a similar derivation.
+44
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+To prove that there exists a unique equilibrium α⋆, it suﬃces to show that H is a strictly
+decreasing function of α. To begin with, we calculate the ﬁrst derivative of H with respect to
+α, applying Lebesgue dominated convergence theorem29 whenever necessary:
+∂H
+∂α = −1
+2
+∞R
+0
+
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSA
+−1/2
+2αγ2S3
+εSA
+(γ2Sθ+γ2t/σ2+α2S2εSA)2ω (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
++
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAωα (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+−
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) λe−λtdt
+∞R
+0
+ωα (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+2
+≤−1
+2
+∞R
+0
+
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSA
+−1/2
+2αγ2S3
+εSA
+(γ2Sθ+γ2t/σ2+α2S2εSA)2ω (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
++
+q
+1 +
+γ2Sε
+γ2Sθ+α2S2εSA
+∞R
+0
+ωα (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+−
+∞R
+0
+ωα (α, t) λe−λtdt
+∞R
+0
+ω (α, t) λe−λtdt
+,
+where ωα (·, ·) refers to the ﬁrst derivative of ω (·, ·) with respect to its ﬁrst argument. Thus, to
+establish ∂H
+∂α < 0, it suﬃces to show that ωα (·, t) < 0 for all t ≥0.
+Using (16) and Proposition 1,
+ωα (α, t) = (ω (α, t))3 (β (t))2
+(Sθ + t/σ2) α3SεSA
+
+γ2  Sθ + t/σ2
+−α
+
+γ2  Sθ + t/σ2
++ α2S2
+εSA
+ d log β (t)
+dα
+
+and
+d log β (t)
+dα
+= γ2 (Sθ + t/σ2 + Sε) + 2αS2
+εSA
+αγ2 (Sθ + t/σ2 + Sε) + α2S2
+εSA
+−
+γ2Sε + 2αS2
+εSA
+γ2 (Sθ + t/σ2 + αSε) + α2S2
+εSA
+=
+γ2 (Sθ + t/σ2) (αγ2 (Sθ + t/σ2 + Sε) + (2 −α) α2S2
+εSA)
+α (αγ2 (Sθ + t/σ2 + Sε) + α2S2
+εSA) (γ2 (Sθ + t/σ2 + αSε) + α2S2
+εSA).
+29See, for a reference, Hutson, Pym, and Cloud (2005, p. 55).
+45
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+In turn, it suﬃces to show that
+ωα (α, t) = (ω (α, t))3 (β(t))2 γ2
+α2SA
+× γ4 (Sθ + t/σ2 + Sε) + γ2SεSA (αSε −(1 −α) (Sθ + t/σ2)) −(1 −α) α2S3
+εS2
+A
+(γ2 (Sθ + t/σ2 + Sε) + αS2
+εSA) (γ2 (Sθ + t/σ2 + αSε) + α2S2
+εSA)
+< 0.
+Because we want that this inequality is satisﬁed for all α ∈(0, 1), via continuity, a necessary
+condition emerges when α = 0:
+SεSA (Sθ + t/σ2)
+Sθ + t/σ2 + Sε
+> γ2,
+which is implied by the condition stated in the Proposition as the LHS is increasing in t,
+establishing the uniqueness of the equilibrium α⋆:
+α⋆=
+
+
+
+
+
+0
+if αs ≤0
+αs
+if αs ∈(0, 1)
+1
+if αs ≥1
+where αs solves H = 0.
+To obtain the comparative statics in the Proposition, we make use of the implicit function
+theorem:
+∂α
+∂σ = −
+∂H
+∂σ
+∂H
+∂α
+, ∂α
+∂λ = −
+∂H
+∂λ
+∂H
+∂α
+, and ∂α
+∂C = −
+∂H
+∂C
+∂H
+∂α
+.
+We have already established that ∂H
+∂α < 0. To complete the comparative statics, we calculate the
+remaining derivatives, applying Lebesgue dominated convergence theorem whenever necessary:
+∂H
+∂σ =
+∞R
+0
+
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSA
+−1/2
+γ2Sε
+(γ2Sθ+γ2t/σ2+α2S2εSA)2
+γ2t
+σ3 ω (α, t) e−λtdt
+∞R
+0
+ω (α, t) e−λtdt
++
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSA
+dω(α,t)
+dσ
+e−λtdt
+∞R
+0
+ω (α, t) e−λtdt
+∞R
+0
+ω (α, t) e−λtdt
+2
+−
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) e−λtdt
+∞R
+0
+dω(α,t)
+dσ
+e−λtdt
+∞R
+0
+ω (α, t) e−λtdt
+2
+> 0,
+46
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+where the inequality follows because dω(α,t)
+dσ
+< 0, which is immediately obvious from the following
+re-written version of ω (α, t):
+ω (α, t) =
+v
+u
+u
+t
+1
+1 +
+Sε
+Sθ+t/σ2 +
+
+γ2
+SεSA +
+α2Sε
+Sθ+t/σ2
+ 
+αS2εSA+γ2(Sθ+t/σ2+Sε)
+αS2εSA+γ2(Sθ+t/σ2+αSε)
+2,
+∂H
+∂λ =
+−
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) e−λttdt
+∞R
+0
+ω (α, t′) e−λt′dt′
+∞R
+0
+ω (α, t) e−λtdt
+2
++
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) e−λtdt
+∞R
+0
+ω (α, t′) e−λt′t′dt′
+∞R
+0
+ω (α, t) e−λtdt
+2
+=
+∞R
+0
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSAω (α, t) e−λt
+∞R
+0
+ω (α, t′) e−λt′ (t′ −t) dt′
+
+dt
+∞R
+0
+ω (α, t) e−λtdt
+2
+> 0
+because
+q
+1 +
+γ2Sε
+γ2Sθ+γ2t/σ2+α2S2εSA is decreasing in t, and
+∂H
+∂C = −γeγC < 0,
+which gives us the comparative statics stated in the Proposition.
+47
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+B
+Additional tables and ﬁgures
+Table 4: Informational Eﬃciency and Trade Volume
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+Return Autocorrelation
+Price Delay
+All Bonds
+Less Liquid
+More Liquid
+All Bonds
+Less Liquid
+More Liquid
+Panel A: No Controls
+λ
+-0.035***
+-0.046***
+-0.034***
+-0.048***
+-0.035***
+-0.073***
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+Constant
+0.757***
+0.948***
+0.724***
+1.154***
+1.025***
+1.471***
+(0.08)
+(0.16)
+(0.10)
+(0.09)
+(0.15)
+(0.12)
+N
+1080
+541
+539
+1419
+711
+708
+R2
+0.037
+0.035
+0.061
+0.040
+0.016
+0.125
+Panel B: With Controls
+λ
+-0.033***
+-0.046***
+-0.033***
+-0.032***
+-0.024**
+-0.059***
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+(0.01)
+Inv. Grade
+0.012
+0.041**
+-0.005
+-0.131***
+-0.124***
+-0.097***
+(0.01)
+(0.02)
+(0.02)
+(0.01)
+(0.02)
+(0.02)
+Maturity=Q2
+-0.111***
+-0.078***
+-0.138***
+-0.082***
+-0.082***
+-0.074***
+(0.02)
+(0.03)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Maturity=Q3
+-0.129***
+-0.104***
+-0.160***
+-0.122***
+-0.137***
+-0.104***
+(0.01)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Maturity=Q4
+-0.163***
+-0.165***
+-0.169***
+-0.146***
+-0.174***
+-0.124***
+(0.01)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+(0.02)
+Constant
+0.826***
+1.024***
+0.828***
+1.098***
+1.027***
+1.409***
+(0.08)
+(0.15)
+(0.09)
+(0.10)
+(0.15)
+(0.12)
+N
+1080
+541
+539
+1419
+711
+708
+R2
+0.156
+0.125
+0.258
+0.170
+0.167
+0.211
+Notes: this table presents results from cross-sectional regressions whereby measures of price eﬃciency are regressed on trade volume
+of corporate bonds. Panel A presents the results without controls, and Panel B presents the results with controls. Columns 1-3
+show the results where the absolute value of return autocorrelation (computed by (21)) is used as the left-hand-side variables.
+Columns 4-6 show the results where price delay (computed by (22)) is used as the regressand. Trade volume (the regressor) is
+measured as the natural logarithm of the daily sum of nominal value of transactions in bond i. For a bond to be included in the
+time-series regressions ((21) or (22)), it has to have at least 20 daily observations. Less (more) liquid bonds are deﬁned as those
+that have approximately less (more) than the median number of daily transactions. The sample covers the period from August
+2011 to December 2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer
+trades. T-statistics in parentheses are based on robust standard errors. Asterisks denote signiﬁcance levels (* p<0.1, ** p<0.05,
+*** p<0.01).
+48
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Table 5: Price Dispersion and Trade Volume
+(1)
+(2)
+(3)
+(4)
+(5)
+Panel A: Weighted Dispersion
+λ
+0.688***
+1.992***
+1.960***
+1.986***
+1.962***
+(0.10)
+(0.07)
+(0.07)
+(0.07)
+(0.07)
+λ2
+-0.000***
+-0.000***
+-0.000***
+-0.000***
+-0.000***
+(0.00)
+(0.00)
+(0.00)
+(0.00)
+(0.00)
+Trend
+-0.007***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+8.177***
+(0.89)
+N
+625927
+625665
+625665
+625662
+594437
+R2
+0.004
+0.192
+0.209
+0.231
+0.233
+Panel B: Unweighted Dispersion
+λ
+0.652***
+2.022***
+1.991***
+2.018***
+1.989***
+(0.10)
+(0.06)
+(0.06)
+(0.06)
+(0.06)
+λ2
+-0.000***
+-0.000***
+-0.000***
+-0.000***
+-0.000***
+(0.00)
+(0.00)
+(0.00)
+(0.00)
+(0.00)
+Trend
+-0.007***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+8.718***
+(0.92)
+N
+625927
+625665
+625665
+625662
+594437
+R2
+0.004
+0.206
+0.223
+0.246
+0.248
+Bond FE
+No
+Yes
+Yes
+Yes
+Yes
+Day FE
+No
+No
+No
+Yes
+Yes
+Notes: this table presents results from panel regressions whereby measures of price dispersions are regressed on trade volume of
+corporate bonds. Trade volume (the regressor) is measured as the natural logarithm of the daily sum of nominal value of transactions
+in bond i. The regressor is included in a linear and a quadratic way. The sample covers the period from August 2011 to December
+2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer trades. T-statistics
+in parentheses are based on robust standard errors, where we also apply two-way clustering at the bond- and day-level. Asterisks
+denote signiﬁcance levels (* p<0.1, ** p<0.05, *** p<0.01).
+49
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Table 6: Price Dispersion and Trading Delays: Illiquid Bonds
+(1)
+(2)
+(3)
+(4)
+(5)
+Panel A: Weighted Dispersion
+λ
+34.047***
+33.415***
+33.571***
+33.927***
+32.630***
+(4.21)
+(3.33)
+(3.32)
+(3.24)
+(3.32)
+λ2
+-9.295***
+-8.397***
+-8.471***
+-8.597***
+-8.115***
+(1.34)
+(1.08)
+(1.08)
+(1.08)
+(1.11)
+Trend
+-0.004***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+-0.476
+(3.27)
+N
+15901
+15763
+15763
+15749
+14568
+R2
+0.032
+0.342
+0.346
+0.351
+0.357
+Panel B: Unweighted Dispersion
+λ
+31.833***
+31.359***
+31.512***
+31.750***
+30.512***
+(4.01)
+(3.30)
+(3.29)
+(3.24)
+(3.31)
+λ2
+-8.652***
+-7.835***
+-7.908***
+-8.002***
+-7.558***
+(1.26)
+(1.08)
+(1.07)
+(1.08)
+(1.12)
+Trend
+-0.004***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+1.086
+(3.25)
+N
+15901
+15763
+15763
+15749
+14568
+R2
+0.030
+0.336
+0.340
+0.344
+0.351
+Bond FE
+No
+Yes
+Yes
+Yes
+Yes
+Day FE
+No
+No
+No
+Yes
+Yes
+Notes: this table presents results from panel regressions whereby measures of price dispersions are regressed on trading frequency
+of corporate bonds. The regressor is included in a linear and a quadratic way. The sample covers the period from August 2011 to
+December 2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer trades.
+T-statistics in parentheses are based on two-way clustering at the bond- and day-level in columns 2-4.
+50
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Table 7: Price Dispersion and Trading Delays: Liquid Bonds
+(1)
+(2)
+(3)
+(4)
+(5)
+Panel A: Weighted Dispersion
+λ
+16.547***
+15.444***
+15.194***
+15.371***
+14.009***
+(1.14)
+(0.81)
+(0.83)
+(0.81)
+(0.75)
+λ2
+-1.942***
+-1.722***
+-1.739***
+-1.786***
+-1.435***
+(0.29)
+(0.18)
+(0.18)
+(0.18)
+(0.19)
+Trend
+-0.004***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+9.930***
+(1.81)
+N
+175460
+175390
+175390
+175385
+168470
+R2
+0.088
+0.268
+0.272
+0.306
+0.307
+Panel B: Unweighted Dispersion
+λ
+17.464***
+15.981***
+15.737***
+15.935***
+14.512***
+(1.19)
+(0.84)
+(0.86)
+(0.84)
+(0.76)
+λ2
+-2.162***
+-1.860***
+-1.877***
+-1.929***
+-1.569***
+(0.30)
+(0.18)
+(0.18)
+(0.18)
+(0.19)
+Trend
+-0.004***
+-
+-
+(0.00)
+-
+-
+Past Freq.
+10.351***
+(1.83)
+N
+175460
+175390
+175390
+175385
+168470
+R2
+0.094
+0.285
+0.289
+0.326
+0.328
+Bond FE
+No
+Yes
+Yes
+Yes
+Yes
+Day FE
+No
+No
+No
+Yes
+Yes
+Notes: this table presents results from panel regressions whereby measures of price dispersions are regressed on trading frequency
+of corporate bonds. The regressor is included in a linear and a quadratic way. The sample covers the period from August 2011 to
+December 2017. The trade-level dataset covers about 3.8 million transactions, including both client-dealer and inter-dealer trades.
+T-statistics in parentheses are based on robust standard errors for column 1, whereas we apply two-way clustering at the bondand day-level in columns 2-4. Asterisks denote signiﬁcance levels (* p<0.1, ** p<0.05, *** p<0.01).
+51
+Electronic copy available at: https://ssrn.com/abstract=3956299
+
+Figure 6: Illustrating the Hump-shaped Relationship between Price Dispersion and Trading
+Delays
+(a) Most Illiquid Bonds (Bottom Quintile)
+(b) Most Liquid Bonds (Top Quintile)
+Notes: the scatter plot in Panel A and B is constructed using the 15,749 and 175,385 residuals corresponding to column 4 of Panel
+B in Table 6 and 7, respectively. That is, to obtain the residuals, we estimate Di,t = αi + µt + νi,t and λi,t = αi + µt + ui,t. The
+red line is a ﬁtted quadratic regression line.
+52
+Electronic copy available at: https://ssrn.com/abstract=3956299

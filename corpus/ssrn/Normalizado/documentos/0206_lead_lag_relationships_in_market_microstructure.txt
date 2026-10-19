@@ -1,0 +1,5702 @@
+Lead-Lag Relationships in Market Microstructure⋆
+Micha Bendera,1, Tino Cestonaroa,2, Julian Schmidta,3,∗
+aGoethe University Frankfurt, Theodor-W.-Adorno-Platz 4, 60323 Frankfurt, Germany
+Keywords:
+Lead-lag relationships, market microstructure, cross-asset trading,
+high-frequency, market eﬃciency
+JEL: G14, G17
+⋆We thank the participants at the London/Oxford/Warwick Financial Mathematics Workshop 2023, the
+Oxford Man-Institute Seminar 2023, the Man AHL Seminar, the eﬂJour Fixe July 2023, and the SWFA
+63rd Annual Meeting for helpful comments. We gratefully acknowledge research support from eﬂ– the Data
+Science Institute.
+∗Corresponding author
+1bender@wiwi.uni-frankfurt.de, +49 69 798-33857
+2cestonaro@wiwi.uni-frankfurt.de, +49 69 798-34678
+3julian.schmidt@wiwi.uni-frankfurt.de, +49 69 798-33872
+August 16, 2024
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Lead-Lag Relationships in Market Microstructure
+Anonymous authors
+Abstract
+We investigate high-frequency cross-asset lead-lag relationships using various market microstructure measures capturing price, liquidity, depth, imbalance, and volatility dimensions.
+Findings reveal that information from one asset’s trade prices and order book imbalance
+predicts another asset’s midpoint future behavior. We also discover lead-lag relationships
+between diﬀerent volatility measures. Most of the lead-lag relationships in our sample exist
+between fundamentally related instruments. Trading activity and liquidity strengthen the
+lead of equity instruments, but this does not hold true for other asset classes. Our study
+demonstrates that lead-lag relationships can be leveraged for short-term predictions based
+on the history of the leading instrument.
+Keywords:
+Lead-lag relationships, market microstructure, cross-asset trading,
+high-frequency, market eﬃciency
+JEL: G14, G17
+August 16, 2024
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+1. Introduction
+Lead-lag eﬀects in ﬁnancial markets describe situations where some ﬁnancial instruments
+are leading and provide information about the future price, liquidity, or volatility development of other instruments lagging behind. Such eﬀects can arise as a consequence of unequal
+information dissemination across ﬁnancial instruments and markets, potentially implying a
+violation of the semi-strong form of the market eﬃciency hypothesis.
+The emergence of high-frequency trading (HFT) has substantially increased the speed
+of information dissemination in ﬁnancial markets (O’Hara, 2015), shifting lead-lag eﬀects to
+shorter time frames. In liquid ﬁnancial markets such as European and US equity markets,
+the most dominant ﬁnancial instruments lead lagging instruments by seconds or milliseconds (Huth and Abergel, 2014; Dao et al., 2018). Although HFT increases the speed of
+information dissemination, it does not result in fully eﬃcient ﬁnancial markets or create a
+level playing ﬁeld for all traders (Goldstein et al., 2023). Lead-lag eﬀects that imply statistical arbitrage opportunities and return predictability within time frames exploitable only
+by a small subset of the fastest high-frequency traders still contradict market eﬃciency and
+pose risks to slower high-frequency and non-high-frequency traders. For instance, the fastest
+high-frequency traders can leverage lead-lag eﬀects to "snipe" stale quotes of other traders
+within a lagging instrument when the leading instrument indicates a price shift in the lagging instrument. Liquidity providers, who cannot adequately react to these lead-lag eﬀects,
+incorporate the risk of the fastest high-frequency traders picking oﬀtheir stale limit orders,
+resulting in higher bid-ask spreads and, consequently, higher transaction costs for investors.
+These diametrical consequences for market quality due to high-frequency traders sniping
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+quotes of slower traders go beyond a decrease in liquidity and are documented by several
+studies (Budish et al., 2015; Menkveld and Zoican, 2017; Aldrich and Friedman, 2022).
+In addition to the faster dissemination of information, the primary sources of information have also shifted in this high-frequency environment. Order book activities (i.e., order
+submissions, modiﬁcations, cancellations, etc.) rather than trades have become the central source of information (Brogaard et al., 2019).
+High-frequency traders focus less on
+fundamental information than large, informed institutional investors and trade on market
+microstructure patterns they can exploit across diﬀerent assets. Malceniece et al. (2019)
+show that these HFT strategies increase the co-movements in asset returns and liquidity
+due to high-frequency traders’ ability to monitor changes in the order book of one asset and
+rapidly react to these changes within the order books of other assets. As a result, lead-lag
+relationships in modern ﬁnancial markets have not only shifted to shorter time frames but
+are increasingly related to granular microstructure information and are ampliﬁed by HFT
+strategies. Given the large number of ﬁnancial instruments covered by high-frequency traders
+and the reduced relevance of fundamental information, these eﬀects may not be limited to
+fundamentally related assets, such as a derivative contract and its underlying. They can
+also exist among non-fundamentally related assets, as high-frequency traders rapidly disseminate market-wide information across all types of ﬁnancial instruments. This imposes
+additional risks on liquidity providers, as they need to be constantly aware of existing crossasset lead-lag eﬀects. Unknown or changing eﬀects that they do not incorporate into their
+quotes expose them to the risk of sophisticated high-frequency traders picking oﬀtheir stale
+limit orders. Despite the economic relevance of changing and potentially unknown lead-lag
+relationships, previous studies only focus on high-frequency lead-lag relationships between
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+assets’ midpoints, and only consider asset pairs that are fundamentally motivated, such as
+a derivative contract and its underlying (Alsayed and McGroarty, 2014; Huth and Abergel,
+2014; Dao et al., 2018).
+To shed more light on cross-asset lead-lag relationships in (ultra) high-frequency, we aim
+to systematically analyze these relationships between diﬀerent microstructure measures and
+ﬁnancial instruments at various frequencies. Speciﬁcally, we examine non-contemporaneous
+correlations across a wide range of ﬁnancial instruments, encompassing various asset classes
+and multiple market microstructure dimensions.
+Our asset universe consists of liquid stocks, equity index futures, bond futures, and
+exchange-traded products (ETPs) including equity exchange-traded funds (ETFs), exchangetraded commodities (ETCs), and exchange-traded notes (ETNs) traded on Xetra and Eurex.
+For each instrument, we calculate various microstructure measures that capture aspects of
+prices, liquidity, depth, imbalance, or volatility using high-frequency data on a nanosecond
+scale.
+Then, we systematically examine lead-lag relationships between all resulting time
+series to provide an extensive view on short-term dynamics in modern market microstructure.
+This data-driven approach allows us to explore all potential lead-lag relationships in our asset
+universe without any underlying assumptions such as the fundamental relationship between
+two instruments. Unlike the existing literature which primarily focuses on analyzing lead-lag
+relationships between the midpoints of two assets (e.g., Huth and Abergel, 2014; Dao et al.,
+2018; Buccheri et al., 2021), we extend our analysis to consider scenarios such as whether
+the bid-ask spread of the Euro Stoxx 50 future leads or lags the order book imbalance of
+the DAX future. Thereby, we explicitly examine frequencies of up to 10 microseconds (µs)
+that align with the reaction time of the fastest high-frequency traders in the market. To
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+estimate the non-contemporaneous correlation between two non-synchronous time series of
+microstructure measures, we rely on the correlation estimator established by Hayashi and
+Yoshida (2005) and its extension developed by Hoﬀmann et al. (2013).
+We ﬁnd that transaction prices and the order book imbalance (OBI) at the best quotes of
+one asset provide information about future midpoint returns of another asset. Moreover, the
+transaction price volatility of multiple assets tends to lead the midpoint volatility of other
+assets. Although these three measure pairs represent some of the strongest relationships in
+our sample, they have not been analyzed in previous studies on lead-lag relationships. This
+highlights a gap in the literature regarding cross-measure perspectives. We predominantly
+observe lead-lag relationships among ﬁnancial instruments that carry similar risk factors,
+as in the case of bond futures, or have common underlying components, like the DAX
+and Euro Stoxx 50 future. Therefore, our results indicate that fundamental relationships
+between assets still play a signiﬁcant role in determining lead-lag relationships in the shortterm, despite the prevalence of pattern-driven HFT. Regarding further drivers of lead-lag
+relationships, we ﬁnd that the most liquid and frequently traded instruments tend to lead
+other instruments in most of the examined microstructure measures.
+This ﬁnding is in
+line with the previous literature analyzing equity markets (Chordia et al., 2011; Huth and
+Abergel, 2014). While this pattern holds true for the majority of instruments in our sample,
+particularly equity-related instruments, it is not universally consistent across all asset classes.
+For instance, in the bond futures market, the less liquid Euro Bobl future tends to lead the
+more liquid Euro Bund future. Finally, we ﬁnd that numerous identiﬁed lead-lag relationships
+imply predictability of future returns (or volatilities) that can be exploited by the fastest
+traders in the market imposing a threat to slower traders. While the predictability of lagging
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+midpoints using the midpoints of leading assets is documented by Huth and Abergel (2014),
+we extend the literature by demonstrating that this predictability also exists between other
+measure combinations.
+We consider our contribution to be threefold. First, we provide evidence for several leadlag relationships that have not been documented by previous studies such as the relationship
+between midpoint and transaction price volatility. Additionally, we show that these eﬀects
+occur across various measures with midpoints and transaction prices having the strongest
+relationship across all assets. Assuming negligible transaction costs, these relationships suggest a partial contradiction to market eﬃciency, as many of them imply return predictability
+at frequencies that can be exploited by high-frequency traders at the cost of slower traders.
+Second, our data-driven approach reveals that, despite pattern-driven HFT, a fundamental
+relationship between two assets is still a strong determinant of the strength of the lead-lag
+relationship between them. Furthermore, we show that the determinants of lead-lag relationships in the equity market, that were identiﬁed by previous empirical studies (e.g., Huth
+and Abergel, 2014), are not directly transferable to other asset classes. Third, we propose
+a novel measure, referred to as lead-lag strength (LLS), to quantify and assess both the
+direction and magnitude of lead-lag relationships while controlling for the overall level of
+correlation. This measure addresses the shortcomings of previous alternative measures for
+non-synchronous correlation, such as the maximum correlation, the lead-lag time, or the
+lead-lag ratio (LLR) proposed by Huth and Abergel (2014), which are insuﬃcient criteria
+to assess the strength of a lead-lag relationship.
+The remainder of this paper is organized as follows. Section 2 discusses related literature
+on lead-lag eﬀects. Section 3 describes our data set and the microstructure measures for our
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+correlation analyses. Section 4 outlines the underlying methodology of the used correlation
+estimator and how it is applied in our data-driven approach. Afterwards, we present and
+discuss our ﬁndings in Section 5 and conclude with ﬁnal remarks in Section 6.
+2. Literature Review
+Several studies have documented signiﬁcant lead-lag relationships among diﬀerent assets and asset classes at various trading frequencies. The ﬁrst studies analyzing lead-lag
+relationships focus on interdependencies between the transaction prices of stocks and their
+corresponding index futures and ﬁnd that future prices lead the stock prices by up to 45
+minutes (Zeckhauser and Niederhoﬀer, 1983; Kawaller et al., 1987; Herbst et al., 1987). Subsequent research suggests that lead-lag eﬀects between futures and stocks are bidirectional,
+but the futures’ lead is more pronounced and stronger than the equities’ lead (Stoll and Whaley, 1990; Chiang and Fong, 2001; Hayashi and Koike, 2018). Hoﬀmann et al. (2013) show
+that lead-lag eﬀects also exist between equity and bond futures, i.e., across asset classes, with
+the DAX future leading the Bund future by nearly one second. Further studies analyzing
+lead-lag relationships across asset classes ﬁnd, for example, that stock prices lead the prices
+of high yield bonds, indicating that the stock market incorporates information faster than
+the bond market (Tolikas, 2018). Also, Pitkäjärvi et al. (2020) ﬁnd bidirectional lead-lag relationships between equities and bonds. Lead-lag relationships have even been documented
+in relatively new asset classes, such as cryptocurrencies. For example, Sifat et al. (2019)
+observe bidirectional relationships between hourly and daily transaction prices of Bitcoin
+and Ethereum.
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Overall, the majority of studies examining lead-lag relationships between prices provide
+evidence that more liquid and larger instruments take a leading role in disseminating pricing information to less liquid and smaller instruments, which lag behind (Zeckhauser and
+Niederhoﬀer, 1983; Lo and MacKinlay, 1990). Speciﬁcally, Chordia et al. (2011) show that
+systematic demand shocks are ﬁrst incorporated into the prices of more actively traded and
+larger stocks, resulting in cross-correlation patterns in stock returns of large and small ﬁrms.
+In addition, several studies demonstrate that security and market characteristics, such as
+volatility, security size, or market frictions, determine the direction of lead-lag relationships
+(Chordia et al., 2005; Kallberg and Pasquariello, 2008; Huth and Abergel, 2014).
+Apart from lead-lag eﬀects between asset prices, lead-lag eﬀects between the liquidity of
+diﬀerent assets have also been documented. For example, the liquidity of individual stocks,
+measured by the relative quoted spread or depth at the best quotes (breadth), is inﬂuenced
+by changes in the market-wide liquidity (Fabre and Frino, 2004).
+This relation, known
+as liquidity commonality, has also been observed in bond and foreign exchange markets
+(Marshall et al., 2013). In addition, liquidity lead-lag eﬀects are also observed across diﬀerent
+security types. Son et al. (2023) show that ETF bid-ask spreads are predictable by the
+lagged bid-ask spreads of their constituents and vice versa. Analyzing diﬀerences in price
+and liquidity discovery, Pelizzon et al. (2015) ﬁnd that although the futures market leads
+the cash market in price discovery, the cash market leads the futures market in liquidity
+discovery, as measured by the depth of the market.
+Another research stream concentrates on volatility lead-lag eﬀects between diﬀerent markets and securities. The empirical studies provide a mixed picture on the lead-lag relationships in terms of volatility. While multiple studies (e.g., Kawaller et al., 1990; Arshanapalli
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+and Doukas, 1994) do not ﬁnd any systematic patterns of lead-lag relationships in volatilities, Koutmos and Tucker (1996) provide evidence for an interdependence of volatilities in
+futures and spot markets. This is supported by Iihara et al. (1996) and Kavussanos et al.
+(2008) who ﬁnd that the futures market leads the spot market both in terms of returns and
+volatility.
+A limited number of research studies investigates lead-lag eﬀects between asset prices,
+liquidity, and volatility.
+Darrat et al. (2003), for example, investigate interdependencies
+between liquidity and volatility and ﬁnd that stocks’ trading volume leads stocks’ return
+volatility. Furthermore, Korajczyk and Sadka (2008) ﬁnd cross-serial correlations between
+returns and liquidity shocks, indicating that liquidity can be predicted by historical returns.
+Goyenko and Ukhov (2009) state that stock volatility causes short-term bond illiquidity and
+that stock illiquidity causes bond volatility. Hence, previous research also detects lead-lag
+eﬀects between diﬀerent microstructure dimensions.
+All the aforementioned studies analyze lead-lag eﬀects on a weekly, daily or intraday
+basis using ﬁxed sampling frequencies of more than one minute. However, with the rapid
+increase in the number of trades and the average trading speed due to HFT, cross-asset
+lead-lag eﬀects are more likely to occur in the sub-second region and to be more short-living
+(Alsayed and McGroarty, 2014). As a result, recent research regarding lead-lag relationships
+has started to focus on smaller time scales by examining non-sampled high-frequency market
+data, i.e., trades and quotes with high-precision timestamps. However, using high-frequency
+data to analyze lead-lag eﬀects is challenging since trades and order book changes do not
+occur at regular time intervals.
+The application of standard statistical correlation techniques via interpolation is biased, as correlation estimates decrease when the time series are
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+synchronously sampled at high frequencies. This phenomenon is known as the Epps eﬀect
+(Epps, 1979).
+Addressing this issue, several studies apply the estimator proposed by Hayashi and
+Yoshida (2005), the so-called HY-estimator, to assess high-frequency lead-lag relationships
+in ﬁnancial markets. Alsayed and McGroarty (2014), for example, explore high-frequency
+relationships between large equity future contracts and ﬁnd that the midpoints of the S&P
+500 future lead the midpoints of the FTSE 100 and DAX future. Huth and Abergel (2014)
+ﬁnd that the midpoints of the CAC 40 future lead the midpoints of its constituents. Moreover, the authors conﬁrm that the most liquid assets tend to be in a price-leading position.
+Dao et al. (2018) investigate ETF-index relationships and ﬁnd that the index leads its replicating ETF in terms of midpoints. Lastly, Poutré et al. (2022) ﬁnd cross-venue lead-lag
+relationships for DAX stocks between the midpoints on Chi-X and Xetra.
+While these studies overcome the downward correlation bias by applying the HY-estimator
+and detect various high-frequency lead-lag relationships, they fall short in the following aspects: (i) All studies focus on interdependencies of securities’ midpoints. However, as research in lower frequencies shows, lead-lag eﬀects are not only prominent among securities’
+prices, but also occur between assets’ liquidity and volatility. Hence, we want to close this research gap by investigating high-frequency lead-lag relationships among various microstructure measures for prices, liquidity, imbalance, depth, and volatility. (ii) Previous studies
+investigating high-frequency lead-lag eﬀects examine lead-lag relations that are fundamentally motivated and apply pre-deﬁned assumptions on relationships, such as the relationship
+between derivatives and their underlying stocks. By using a data-driven approach, we want
+to investigate high-frequency lead-lag relationships without any underlying assumptions in
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+order to reveal any short-term correlations in our sample regardless of their source, be it a
+fundamental relationship or pattern-based trading. (iii) Previous studies use order book data
+of only few instruments and asset classes (Alsayed and McGroarty, 2014; Buccheri et al.,
+2021) and analyze short time periods of observations (Hoﬀmann et al., 2013). We want to
+address these shortcomings by providing an extensive analysis for various security types and
+asset classes using a 6-month observation period.
+Summarizing, the goal of this research project is to develop a data-driven price, liquidity,
+and volatility interdependencies network which helps to detect multidimensional lead-lag
+relationships across various security types and asset classes without the limiting assumptions
+that exist in the current academic literature.
+3. Data and Institutional Background
+To provide an extensive overview of lead-lag eﬀects in modern ﬁnancial markets, our data
+set comprises multiple ﬁnancial instruments that represent diﬀerent asset classes. We rely
+on stocks, futures, and exchange-traded products (ETFs, ETCs, ETNs) that represent the
+following asset classes: equities, ﬁxed income, commodities, and cryptocurrencies. Given
+the tremendous amount of computational power required to process interdependencies in
+the order books over a six-month period at various frequencies, we have to restrict our asset
+universe to a few instruments per asset class. Therefore, we focus on the most frequently
+traded instruments within each asset class on Xetra and Eurex. In particular, our data
+set consists of 3 large-cap DAX 40 stocks, 7 future contracts (4 tracking equity indices, 3
+tracking bond indices), 4 ETFs that replicate equity indices, 2 ETCs reﬂecting the price of
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+gold and silver, respectively, and 3 ETNs that track the price of Bitcoin. In total, we cover
+19 securities.
+All covered securities are traded on the German securities exchanges Eurex and Xetra.
+In terms of trading volume, Eurex is the largest future exchange in Europe while Xetra
+is Europe’s third-largest stock exchange.1 A full list of all securities can be found in the
+Appendix (see Table A.2). Our analysis is based on limit order book data obtained from
+Deutsche Börse’s A7 Analytics Platform that covers all trades and limit order book updates
+time stamped with nanosecond resolution.2 Each limit order book snapshot contains the ten
+best price levels for both bid and ask. Our sample period spans six months, from January
+2021 to June 2021.
+Similar to previous studies applying the HY-estimator, we only consider time series observations where a trade occurs (Hoﬀmann et al., 2013; Huth and Abergel, 2014). Furthermore,
+we restrict our sample to continuous trading phases only. To minimize the impact of auctions
+on liquidity, we exclude the 15 minutes before and after each scheduled auction. While assets
+on Eurex are traded between 07:00 and 21:00 UTC in an open limit order book3, the trading
+hours on Xetra last from 08:00 to 16:30 UTC. There are three scheduled auctions on Xetra,
+which may start at diﬀerent times depending on the type of security. For the stocks in our
+sample, the morning auction is from 07:50 to 08:00 UTC, the midday auction lasts from 12:00
+to 12:02 UTC, and the closing auction from 16:30 to 16:35 UTC. For all exchange-traded
+products, the morning auction takes place from 07:50 to 08:04 UTC, the midday auction
+1Based on the monthly statistics of the Federation of European Securities Exchanges for 2021.
+2We would like to express our gratitude to Deutsche Börse AG for generously sharing the data used in
+this research project. Their contribution has been invaluable in enabling us to conduct our analysis and gain
+insights into the subject matter.
+3For most Eurex traded assets in our sample, the continuous trading phase starts already at 0:15 UTC.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+from 12:10 to 12:12 UTC, and the closing auction from 16:30 to 16:35 UTC.4 To analyze
+the same time period across all instruments in our study, we restrict each instrument-day
+according to the Xetra auction schedule to a morning session (08:19 to 11:45 UTC) and an
+afternoon session (12:27 to 16:15 UTC).
+The future contracts in our sample, such as the Euro Stoxx 50 future, mature in a
+quarterly cycle. For each contract and trading day, we select the most active contract in
+terms of number of trades at a given day. For most trading days, this is the contract with
+the lowest time to maturity.
+4. Methodology
+4.1. Estimating non-contemporaneous correlations between microstructure measures
+Trading activities in ﬁnancial markets like trades, order submissions, or deletions occur
+at irregular time intervals. As a result, microstructure measures that capture dimensions
+like prices or liquidity are also observed at irregular time intervals. This creates a challenge
+when attempting to measure (non-contemporaneous) correlation between two time series
+of microstructure measures, because standard statistical techniques to estimate correlation
+usually require time series of equally-spaced time intervals with the same length. Primarily,
+earlier studies overcome this problem by downsampling the two time series at a lower and
+common frequency. As a result, they can analyze lead-lag relationships by estimating regression models such as vector autoregressive models to then test for Granger causality (e.g.,
+Chordia and Swaminathan (2000), Chordia et al. (2011), and Rapach et al. (2013)). However, downsampling the time series to a lower frequency, such as daily, hourly, or minutely,
+4Due to the random end, the auction times may vary by up to 30 seconds.
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+results in losing information about the trading activities of high-frequency traders, who can
+react in less than a millisecond. On the other hand, upsampling two time series at a higher
+frequency using interpolation is not a suitable solution either, as this approach will bias
+correlation estimates towards zero, as mentioned before (Epps, 1979).
+In order to analyze high-frequency lead-lag relationships between two microstructure
+measures without any biases, we use the correlation estimator proposed by Hayashi and
+Yoshida (2005), that is able to deal with irregularly spaced time series of diﬀerent lengths.
+This so-called HY-estimator does not require any type of resampling and makes use of all
+observations of both time series. Speciﬁcally, the HY-estimator sums up all products of
+time-overlapping diﬀerences of two time series, Xt and Yt, and yields an unbiased estimate
+of the integrated covariance between Xt and Yt:
+ˆρ =
+P
+i,j ∆X(IX
+i )∆Y (IY
+j )1{IX
+i ∩IY
+j̸ =∅}
+qP
+i[∆X(IX
+i )]2 P
+j[∆Y (IY
+j )]2 ,
+(1)
+with IX
+i
+= (tX
+i−1, tX
+i ] and IY
+j = (tY
+j−1, tY
+j ] being all intervals between two observations in
+the process Xt and Yt, respectively. The indicator function 1{IX
+i ∩IY
+j̸ =∅} becomes 1 for all
+overlapping time intervals IX
+i
+and IY
+j , and 0 otherwise.
+While the HY-estimator is a powerful way to measure the correlation between two irregularly spaced sequences of diﬀerent lengths, it is limited to measure contemporaneous
+correlation. As a result, the estimator was extended by Hoﬀmann et al. (2013) to estimate
+non-contemporaneous correlation at a given lag ℓ. The idea of the extension is to shift the
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+observation times of Yt by a certain lag ℓ, resulting in the time series Yt+ℓand the shifted
+HY-estimator:
+ˆρ(ℓ) =
+P
+i,j ∆X(IX
+i )∆Y (IY
+j )1{IX
+i ∩(IY
+j )+ℓ̸=∅}
+qP
+i[∆X(IX
+i )]2 P
+j[∆Y (IY
+j )]2
+,
+(2)
+with IX
+i = (tX
+i−1, tX
+i ] and IY
+j = (tY
+j−1 + ℓ, tY
+j + ℓ]. Note that Yt+ℓcan be shifted positively
+(ℓ> 0) or negatively (ℓ< 0) to calculate correlation coeﬃcients at diﬀerent leads and lags.
+When positively shifting Yt+ℓ, i.e. ℓ> 0, ˆρ(ℓ) will indicate the magnitude of leadership for
+Yt over Xt at ℓ. The correlation coeﬃcient based on a negative shift will, in turn, estimate
+the strength of the leadership of Xt over Yt at ℓ. In practice, the HY-estimator is calculated
+for a discrete grid of leads and lags resulting in the so-called HY-curve that consists of the
+correlation coeﬃcients for each predeﬁned lead or lag ℓ.
+The ℓthat maximizes the HY-curve in absolute terms (here ℓ∗) is denoted as lead-lag
+time (or lead-lag value) and indicates whether Yt leads (i.e., ℓ∗> 0) or lags (i.e., ℓ∗< 0)
+Xt (Hoﬀmann et al., 2013). While the lead-lag time is a simple and intuitive measure to
+capture the lead-lag relationship between two temporal sequences, it does not reﬂect other
+values of the HY-curve than the maximum. Alternatively, Huth and Abergel (2014) propose
+the lead-lag ratio (LLR) which - in contrast to the lead-lag time - takes all values of the
+HY-curve into account by measuring its asymmetry:
+LLR =
+PL
+ℓ=l ˆρ2(+ℓ)
+PL
+ℓ=l ˆρ2(−ℓ)
+,
+(3)
+The LLR becomes larger than 1 if the area under the HY-curve of leads, i.e. ℓ> 0, is
+larger than the area under the curve of lags, i.e. ℓ< 0. Like the lead-lag time, the LLR
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+aims to identify the direction of a lead-lag relationship. A LLR larger (smaller) than 1
+implies that Yt leads (lags) Xt. However, it is not an adequate measure to make general
+statements about the lead-lag relationship between two assets, since it does not consider the
+absolute magnitude of the involved correlation coeﬃcients. As a result, the LLR may lead to
+erroneous conclusions about lead-lag-eﬀects when the maximum correlation is close to zero.5
+However, in our data-driven approach, we investigate ﬁnancial instrument combinations
+that may not be related at all, with correlations close to zero. Consequently, our analyses
+require a metric that captures both the direction and strength of a lead-lag relationship,
+while controlling for the overall level of correlation at all leads and lags. To address this,
+we deﬁne the following measure that combines the advantages of the lead-lag time and the
+LLR:
+LLS =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(
+∑L+
+ℓ=l+
+1
+ˆρ2(+ℓ)
+∑L−
+ℓ=l−
+1
+ˆρ2(−ℓ) −1) · 100
+nL
+LP
+ℓ=−L
+ˆρ2(ℓ)
+if (
+∑L+
+ℓ=l+
+1
+ˆρ2(+ℓ)
+∑L−
+ℓ=l−
+1
+ˆρ2(−ℓ) ≥1,
+(
+∑L−
+ℓ=l−
+1
+ˆρ2(−ℓ)
+∑L+
+ℓ=l+
+1
+ˆρ2(+ℓ) −1) · −100
+nL
+LP
+ℓ=−L
+ˆρ2(ℓ)
+otherwise ,
+(4)
+where nL is equal to the length of the discrete grid l of leads and lags. l+
+1 and l−
+1 are
+the ﬁrst leads and lags in the discrete grid, respectively. L+ and L−are the last and largest
+positive and negative time shifts in the discrete grid, respectively. The so-called lead-lag
+strength (LLS) comes with several desirable properties. First, the ratio of the sum of the
+squared correlation coeﬃcients for the leads and lags is scaled by the average of the squared
+5For instance, when all estimated correlations for l > 0 are equal to 0.001 and all estimated correlation
+coeﬃcients for l < 0 are equal to 0.0005, the resulting LLR is 4, indicating that Yt leads Xt, even though
+Yt and Xt are not correlated at all. Huth and Abergel (2014) also state that the LLR is not a suﬃcient
+measure for evaluating the strength of lead-lag relationships and suggest that, for a complete evaluation,
+other metrics like the maximum level of the HY-curve and the lead-lag time must also be considered.
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+correlation coeﬃcients. In other words, the LLS displays the asymmetry of the HY-curve
+while controlling for the level of correlation.
+As a result, it indicates the direction and
+strength of the lead-lag relationship between two time series. Second, and in contrast to
+the LLR, the LLS yields the same absolute value regardless of researcher’s arbitrary choice
+which time series is shifted. For example, if we estimate the LLS for two time series at and
+bt, then LLS = z if at is shifted and LLS = −z if bt is shifted.
+4.2. Data-driven approach
+We follow a data-driven approach that aims to provide an overarching picture of leadlag relationships in market microstructure. To meet this goal, we (i) deﬁne a broad asset
+universe, (ii) use canonical measures applied in market microstructure research that capture
+asset prices, liquidity, imbalance, depth, and volatility at a high-frequency scale, and (iii)
+analyze non-contemporaneous correlations at diﬀerent time horizons.
+Our data universe
+covers 19 securities that represent diﬀerent asset classes (equities, bonds, commodities, and
+cryptocurrencies) and security types (stocks, futures, and ETPs), and, hence, reﬂect the
+heterogeneity of securities in modern regulated markets.
+For each instrument in our sample, we calculate various microstructure measures based
+on its trade and limit order book data. In particular, we investigate two price measures:
+midpoint and transaction price, two liquidity measures: relative quoted spread and trading
+volume, three depth and imbalance measures: breadth at level 1, depth at level 10, and
+order book imbalance at level 1 (OBI), and two volatility measures: midpoint volatility
+and transaction price volatility. Table A.1 in the Appendix provides details about these
+measures.
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Finally, we also deﬁne the leads and lags applicable for the HY-estimator. We use three
+diﬀerent sets of horizons that cover a low frequency (LF) range from one to 60 seconds,
+a high-frequency (HF) range from one to 500 milliseconds, and an ultra high-frequency
+(UHF) range from 10µs to 500µs. All these horizons are used as leads and lags in the sense
+of the HY-estimator ˆρ(ℓ):
+lLF = {1s, 2s, 3s, 5s, 10s, 30s, 60s},
+lHF = {1ms, 10ms, 100ms, 250ms, 500ms},
+lUHF = {10µs, 50µs, 100µs, 250µs, 500µs}
+l ∈{−lLF, −lHF, −lUHF, 0, lUHF, lHF, lLF}
+(5)
+The diﬀerent horizons shall reﬂect varying reaction times of professional investors in
+modern ﬁnancial markets. The lower bound of 10µs is a conservative estimate of the reaction
+time of the fastest traders in the market.6 The upper bound of 60 seconds shall reﬂect the
+reaction time of a trader with a rather simple and low-cost infrastructure.
+To systematically evaluate lead-lag relationships in market microstructure, we estimate
+correlations on a daily basis for all instrument-measure combinations in our sample at all
+time horizons in l. Note that we do not only examine the lead-lag relationships between two
+ﬁnancial instruments (asset A and asset B) based on the same microstructure measure (e.g.,
+midpoint), but we also analyze lead-lag eﬀects between the two assets measured by diﬀerent
+microstructure measures. For example, we analyze the lead-lag relationship between the
+6According to Deutsche Boerse Group (2021), the fastest investors trading on Xetra or Eurex are able to
+react within less than 3µs.
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+quoted spread of asset A and the OBI of asset B. In addition, we focus only on correlations
+across diﬀerent assets and do not analyze lead-lag eﬀects between diﬀerent measures of
+the same asset. As a result, the 19 ﬁnancial instruments and 9 microstructure measures
+lead to 27,702 instrument-measure combinations in total.
+In addition, each instrumentmeasure combination is observed on each of the 124 trading days. For each trading day
+and instrument-measure combination, we calculate 35 HY-estimators (17 lags, 17 leads, 1
+contemporaneous case) and derive the ˆρ(ℓ∗) and LLS based on these estimators. In total,
+this yields 3,435,048 values for ˆρ(ℓ∗) and LLS, respectively.
+To ensure a suﬃcient number of observations to estimate daily HY-estimators in a given
+instrument-measure combination, we keep only trading days with more than 100 overlapping
+time intervals of Xt and Yt. In total, we keep 2,119,921 (approximately 61%) of all values of
+ˆρ(ℓ∗) and LLS. In addition, if a particular instrument-measure combination is observed on
+less than 21 trading days, we completely remove that combination from our sample. In total,
+the ﬁlter drops four out of 27,702 instrument-measure combinations from our sample. Notably, the ETC tracking the value of silver (VZLC) is among all four combinations, primarily
+due to its limited trading activity, making it one of the least actively traded instruments in
+our sample.
+Based on these ﬁltered panel results, we proceed in a top-down manner to systematically
+detect lead-lag relationships in our extensive data sample. First, we analyze the distribution
+of correlation coeﬃcients and LLS in each measure combination. Here, we aim to identify those measure combinations that exhibit lead-lag relationships between at least some
+of the assets and, thus, are worth to be analyzed in greater detail. Second, we select the
+three measure combinations that exhibit the strongest relationships and examine the dis19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+tribution of correlation coeﬃcients and LLS across all instrument pairs. Third, we choose
+the instrument pairs that exhibit the strongest correlations or lead-lag relationships in each
+of the three measure combinations and analyze these instrument pairs by examining their
+HY-curves to identify the lead-lag time of the respective instrument pairs. Fourth, we explore the variation of the LLS over time. Speciﬁcally, we utilize the daily HY-estimators
+per instrument-measure combination to examine whether the strength of lead-lag relationships correlates with diﬀerent liquidity and volatility levels. Fifth, our analysis focuses on
+identifying the determinants of lead-lag eﬀects. To achieve this, we utilize graphical analyses
+to reveal relationships between the LLS and diﬀerent indicators that display the ratio of
+liquidity or volatility between two instruments. Building on the insights gained from the
+graphical analyses, we construct multiple regression models which help us to identify statistically signiﬁcant determinants of lead-lag eﬀects. Finally, we analyze the predictive power
+of lead-lag relationships indicated by our constructed LLS.
+5. Results
+5.1. Lead-lag eﬀects between microstructure measures
+In our ﬁrst analysis, we systematically analyze each combination of microstructure measures. Following our top-down approach, our goal is to identify which combinations of microstructure measures exhibit cross-asset lead-lag eﬀects and are, therefore, worth analyzing
+in greater depth. Simultaneously, we aim to identify measure combinations that exhibit no
+relationships at all, allowing us to disregard them in the subsequent analyses. As described
+in Section 4.2, the basis of our empirical analyses are the daily values of ˆρ(ℓ∗) and LLS for
+each instrument-measure combination.
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+To investigate whether there are any correlations and lead-lag relationships between the
+diﬀerent microstructure measures, we calculate the cross-sectional averages of ˆρ(ℓ∗) and LLS
+for each of the instrument-measure combinations in our sample. Subsequently, we calculate
+the 95th percentile of these averages for each measure combination across all instrument
+combinations in our sample. This helps us to identify correlations and lead-lag relationships
+between the measures, even if they only exist among a minority of instrument pairs. More
+speciﬁcally, each percentile represents the values of ˆρ(ℓ∗) and LLS exceeded by only 5% of
+the 342 instrument pairs in our sample.7 The 95th percentiles of ˆρ(ℓ∗) and LLS are shown
+in Figure 1.
+The measures displayed on the vertical axis represent the shifted time series Yt+ℓin the
+HY-estimator while the horizontal axis shows the measures used as time series Xt. Figure
+1a highlights that the price measures exhibit the highest correlations among all groups. The
+midpoints of ﬁve percent of all instrument combinations have a maximum correlation coeﬃcient of 0.88 or higher. We also see correlations among volatility measures and between OBI
+and both price measures. For instance, ˆρ(ℓ∗) is equal to or larger than 0.21 for ﬁve percent of
+all instrument combinations when considering the midpoint volatility and transaction price
+volatility of two instruments, respectively.
+While Figure 1a shows that, in general, cross-asset correlations exist between the same
+and also across diﬀerent microstructure measures, this does not imply the existence of leadlag eﬀects between these measures. Thus, a metric such as the proposed LLS is required
+that takes the asymmetry of the HY-curve into account while controlling for the overall level
+7Our sample consists of 19 securities which leads to 19 · (19 −1) = 342 instrument combinations.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+midpoint
+trans. price
+quoted spread
+trading volume
+breadth
+depth-Lvl10
+imbalance-Lvl1
+vola mid
+vola trans. price
+midpoint
+trans. price
+quoted spread
+trading volume
+breadth
+depth-Lvl10
+imbalance-Lvl1
+vola mid
+vola trans. price
+.88
+.76
+.02
+.01
+.02
+.03
+.08
+.01
+.03
+.76
+.69
+.01
+.01
+.01
+.03
+.07
+.01
+.02
+.02
+.01
+.04
+.02
+.01
+.01
+.00
+.05
+.03
+.01
+.01
+.02
+.03
+.01
+.00
+.01
+.01
+.02
+.02
+.01
+.01
+.01
+.01
+.01
+.01
+.01
+.02
+.03
+.03
+.01
+.00
+.01
+.03
+.01
+.01
+.02
+.08
+.07
+.00
+.01
+.01
+.01
+.02
+.01
+.01
+.01
+.01
+.05
+.01
+.01
+.01
+.01
+.19
+.21
+.03
+.02
+.03
+.02
+.02
+.02
+.01
+.21
+.24
+Price
+Price
+Liquidity
+Liquidity
+Depth
+Depth
+Volatility
+Volatility
+Yt +
+Xt
+1.0
+0.5
+0.0
+0.5
+1.0
+(a) 95th percentile of ˆρi,j(ℓ⋆) for each measure combination and in the cross-section of instruments
+midpoint
+trans. price
+quoted spread
+trading volume
+breadth
+depth-Lvl10
+imbalance-Lvl1
+vola mid
+vola trans. price
+midpoint
+trans. price
+quoted spread
+trading volume
+breadth
+depth-Lvl10
+imbalance-Lvl1
+vola mid
+vola trans. price
+1.4
+0.4
+0.0
+0.0
+0.0
+0.0
+0.0
+0.1
+0.2
+2.3
+0.7
+0.0
+0.0
+0.0
+0.0
+0.0
+0.1
+0.2
+0.0
+0.0
+0.1
+0.0
+0.0
+0.0
+0.0
+0.3
+0.1
+0.1
+0.0
+0.1
+0.1
+0.0
+0.0
+0.0
+0.1
+0.1
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.1
+0.1
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.1
+0.1
+0.5
+0.5
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.1
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.0
+0.4
+0.1
+0.1
+0.1
+0.1
+0.1
+0.1
+0.0
+0.1
+1.1
+0.2
+Price
+Price
+Liquidity
+Liquidity
+Depth
+Depth
+Volatility
+Volatility
+Yt +
+Xt
+Yt + leads Xt
+Xt leads Yt +
+4
+2
+0
+2
+4
+LLS
+(b) 95th percentile of LLS for each measure combination and in the cross-section of instruments
+Figure 1: 95th percentiles of ˆρi,j(ℓ⋆) and LLS across all measures
+This ﬁgure shows the 95th percentile for the maximum correlation ˆρi,j(ℓ⋆) and the lead-lag strength (LLS) across all measures.
+The values in each cell of both ﬁgures indicate that 5% of all instrument combinations expressed in measure X and measure Y
+have a ˆρi,j(ℓ⋆) and LLS equal to or higher than the value in the respective cell.
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+of correlation. The percentiles of the LLS are shown in Figure 1b. As stated before, the
+LLS becomes larger (smaller) the stronger Yt+ℓleads (lags) Xt.
+According to Figure 1b, the strongest lead-lag relationships in our sample exist between
+transaction prices and midpoints.
+Here, the LLS is equal to or higher than 2.29 for at
+least 5% of all instrument combinations.
+This suggests that the transaction price of an
+asset leads the midpoint of another asset. A theoretical explanation for this ﬁnding provides
+the phenomenon of cross-impact which is closely related to the more known behavior of
+price impact. In general, price impact describes the eﬀect of a trade moving the midpoint
+of the same asset. For instance, a buy-initiated trade theoretically leads to a positive and
+permanent change in the midpoint of the same asset. In turn, cross-impact denotes the eﬀect
+of a trade in asset Y moving the midpoint of asset X. While the literature on price impact is
+exhaustive (Dufour and Engle, 2000; Cont et al., 2014; Brogaard et al., 2019), the literature
+on cross-impact is rather limited (Pasquariello and Vega, 2015; Benzaquen et al., 2017; Cont
+et al., 2023). Similar to our results, the few existing studies ﬁnd that trade information of
+one asset can provide information about future midpoints of another asset.
+Furthermore, Figure 1b shows that there are lead-lag-relationships between instrument
+combinations of the same price measures. Speciﬁcally, changes in the midpoint (transaction
+price) of asset Y provide information about future changes in the midpoint (transaction
+price) of asset X. This is consistent with other studies that apply the HY-estimator, such as
+Huth and Abergel (2014) or Dao et al. (2018).
+Furthermore, lead-lag relationships in our sample exist between OBI and the two price
+measures. The LLS of 0.55 between OBI and the midpoint implies that the OBI of asset Y
+leads the midpoint of asset X in at least 5% of all instrument combinations. In contrast, both
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+price measures do not provide information about future OBI changes for most instruments.
+This is indicated by the 95th percentiles with values close to zero displayed in the upper
+triangular part of the matrix. The informative value of OBI on future price dynamics is in
+line with the market microstructure literature, but mostly documented within a single asset
+(Chordia et al., 2002; Cao et al., 2009). In a recent study, Cont et al. (2023) show that these
+eﬀects also exist across diﬀerent assets similar to our results.
+Finally, we also see that the midpoint volatility lags itself and the transaction price
+volatility across assets. Thus, not only the transaction price leads the midpoint, but also the
+corresponding volatilities of these microstructure measures exhibit lead-lag eﬀects. While
+previous studies have already demonstrated the non-contemporaneous relationships between
+asset price volatilities (Koutmos and Tucker, 1996; Kavussanos et al., 2008), we contribute
+to the literature by providing the ﬁrst evidence using the HY-estimator and by demonstrating lead-lag relationships between transaction price volatility and midpoint volatility across
+assets. Furthermore, the results indicate lead-lag relationships between midpoint volatility
+and the relative quoted spread.
+Overall, the ﬁrst analysis in our top-down approach has revealed non-contemporaneous
+correlations between various microstructure measures. These ﬁndings are in line with the
+prevailing knowledge in the literature but have not been systematically examined across assets by using an estimator for non-synchronous data, such as the HY-estimator. To analyze
+the relationships in more detail, we decide to focus on the three strongest lead-lag relationships according to the LLS. However, we limit the selection to one measure combination
+per measure group to oﬀer a more comprehensive perspective on lead-lag eﬀects in market
+microstructure. This leads to the selection of the following measure combinations (1) X:
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+midpoint and Y: transaction price, (2) X: midpoint and Y: OBI, (3) X: midpoint volatility
+and Y: transaction price volatility.
+5.2. Lead-lag eﬀects between instrument combinations
+We proceed by analyzing each of the three measure combinations in detail. This means
+that for a given measure combination, e.g., our ﬁrst combination X: midpoint and Y: transaction price, we analyze the lead-lag relationship for each combination of instruments. In
+particular, we examine the LLS for each instrument combination on each trading day, and
+present the average HY-curve for a subsample of the instrument combinations to obtain
+information about the lead-lag time of those instrument pairs.
+Lead-lag relationships between midpoint (X) and transaction price (Y)
+The ﬁrst measure combination we analyze is between midpoints and transaction prices.
+Figure 2 shows the average values of ˆρ(ℓ∗) and LLS for each instrument pair across all
+trading days. In the ﬁgure, the vertical axis displays the Yt+ℓtime series utilized in the
+HY-estimator, which is the transaction price of the corresponding asset. The horizontal axis
+displays the Xt time series, which represents the midpoints of the instruments shown.
+Speciﬁcally, Figure 2a shows that the stocks Volkswagen (VOW3) and Daimler (DAI),
+both belonging to the automotive industry, exhibit signiﬁcantly higher correlations than the
+pairs Volkswagen and SAP or Daimler and SAP, with SAP being part of the IT sector.
+All three stocks are also correlated with the DAX and the Euro Stoxx 50 future (FDAX
+and FESX) and with the DAX and Euro Stoxx 50 ETFs (EXS1 and EXW1). This holds
+true regardless of whether the stocks, futures, and ETFs are measured using midpoints or
+transaction prices. Therefore, the midpoints and transaction prices tend to be especially
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+.20
+.63
+.30
+.58
+.57
+.29
+-.03
+-.03
+-.04
+.60
+.67
+.36
+.43
+.05
+.13
+.08
+.03
+.04
+.20
+.15
+.26
+.50
+.50
+.36
+.01
+.00
+-.01
+.49
+.53
+.35
+.39
+.09
+.13
+.07
+.06
+.07
+.62
+.16
+.24
+.48
+.48
+.24
+-.02
+-.02
+-.04
+.49
+.56
+.30
+.35
+.04
+.14
+.06
+.03
+.04
+.27
+.24
+.22
+.43
+.43
+.30
+-.01
+-.01
+-.02
+.41
+.38
+.25
+.30
+.04
+.09
+.05
+.04
+.04
+.47
+.42
+.40
+.41
+.79
+.49
+-.02
+-.02
+-.03
+.74
+.80
+.47
+.55
+.08
+.15
+.09
+.06
+.08
+.49
+.44
+.41
+.43
+.81
+.51
+-.02
+-.02
+-.03
+.76
+.82
+.48
+.56
+.08
+.15
+.09
+.06
+.08
+.30
+.37
+.24
+.36
+.60
+.60
+.00
+-.00
+-.01
+.60
+.58
+.44
+.52
+.08
+.14
+.07
+.04
+.07
+-.04
+.01
+-.03
+-.02
+-.02
+-.02
+.00
+.24
+.21
+-.04
+-.02
+-.01
+-.01
+.16
+.09
+-.00
+-.00
+.00
+-.02
+.01
+-.02
+-.01
+-.01
+-.01
+.01
+.20
+.15
+-.02
+-.01
+-.00
+-.00
+.10
+.06
+.00
+-.00
+.00
+-.00
+-.01
+-.01
+.00
+.00
+-.00
+.00
+.05
+.05
+-.02
+-.00
+.00
+.00
+.03
+.02
+.00
+.01
+.00
+.66
+.58
+.55
+.54
+.91
+.89
+.67
+-.04
+-.03
+-.06
+.91
+.62
+.75
+.11
+.21
+.13
+.13
+.14
+.70
+.58
+.58
+.47
+.94
+.93
+.60
+-.02
+-.02
+-.02
+.87
+.56
+.67
+.12
+.21
+.15
+.12
+.13
+.37
+.37
+.31
+.30
+.55
+.55
+.45
+-.00
+-.01
+-.02
+.57
+.56
+.84
+.16
+.17
+.15
+.14
+.14
+.38
+.37
+.32
+.31
+.57
+.56
+.46
+-.01
+-.00
+-.02
+.60
+.58
+.73
+.15
+.18
+.14
+.11
+.12
+.04
+.10
+.04
+.05
+.08
+.09
+.08
+.14
+.10
+.07
+.09
+.10
+.14
+.16
+.60
+.07
+.06
+.05
+.13
+.12
+.12
+.10
+.15
+.15
+.13
+.06
+.04
+.04
+.18
+.17
+.12
+.15
+.59
+.04
+.04
+.05
+.09
+.08
+.08
+.06
+.11
+.11
+.07
+-.00
+-.00
+-.00
+.13
+.15
+.16
+.15
+.07
+.07
+.82
+.81
+.03
+.06
+.03
+.04
+.07
+.07
+.05
+-.00
+-.00
+-.00
+.11
+.11
+.13
+.12
+.05
+.06
+.82
+.78
+.05
+.07
+.05
+.05
+.09
+.08
+.06
+.00
+-.00
+-.01
+.12
+.12
+.13
+.13
+.04
+.06
+.81
+.78
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+1.0
+0.5
+0.0
+0.5
+1.0
+(a) Average ˆρi,j(ℓ⋆) for each instrument combination for X: midpoint and Y: trans. price
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+0.4   
+3.4** -0.7** 1.5*  
+0.6   
+-0.3   
+-0.0   
+-0.0   
+-0.0   
+0.9   
+-0.9   
+-0.3   
+0.4   
+0.1   
+-0.1   
+0.0   
+0.0   
+0.0   
+1.1*  
+0.7   
+-0.1   3.0*** 2.3***
+0.4   
+0.0   
+-0.0   
+-0.0   
+0.9   
+-0.2   
+-0.2   
+0.5   
+0.0   
+-0.1   
+-0.0   
+0.1   
+0.1   
+4.1***
+0.3   
+-0.4   
+1.4   
+0.8   
+-0.1   
+-0.0   
+-0.0   
+-0.0   
+0.8   
+-0.5   
+-0.3   
+0.2   
+0.0   
+0.0   
+-0.1   
+0.0   
+-0.0   
+2.2*** 1.4*** 1.4***
+5.0*** 4.4*** 1.5***
+0.0   
+-0.0   
+-0.0   
+0.9   
+0.3   
+0.1   
+0.6** 
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+3.5*** 1.4*** 2.0*** -0.9*  
+5.7***
+0.1   
+-0.0   
+-0.0   
+-0.0   
+1.4   
+-1.5   
+-0.6   
+0.6   
+0.0   
+-0.0   
+0.0   
+0.1   
+0.0   
+3.8*** 1.6*** 2.3*** -0.7   7.1***
+0.3   
+0.0   
+-0.0   
+-0.0   
+1.6   
+-1.6   
+-0.5   
+0.7   
+0.0   
+-0.1   
+0.0   
+0.1   
+0.0   
+2.5** 2.4*** 1.6** 
+0.8*  
+6.4*** 5.3***
+0.0   
+-0.0   
+-0.0   
+1.4   
+-0.1   
+-0.0   
+1.2*  
+0.0   
+0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.6*** -1.3*** 0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.8***
+-0.3*  
+0.0   
+0.0   
+0.0   
+0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.1*  
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.1   
+-0.4   
+-0.1   
+-1.1   
+-0.2   
+-0.3   
+-0.4   
+-0.0   
+-0.0   
+-0.0   
+-0.5   
+-0.1   
+0.1   
+-0.0   
+-0.0   
+0.1   
+0.1   
+0.1   
+2.8   
+1.6   
+1.7   
+0.3   
+4.5*  
+4.3   
+1.4   
+0.0   
+-0.0   
+-0.0   
+1.5   
+0.4   
+1.3   
+0.1   
+0.0   
+0.1   
+0.1   
+0.1   
+0.5   
+0.5   
+0.3   
+0.0   
+1.0   
+0.8   
+0.4   
+0.0   
+-0.0   
+-0.0   
+0.3   
+-0.3   
+1.4   
+0.1   
+0.1   
+0.1   
+0.1   
+0.1   
+0.3   
+0.2   
+0.2   
+-0.2   
+0.4   
+0.2   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.1   
+-0.5   
+-0.3   
+0.0   
+-0.0   
+0.1   
+0.1   
+0.1   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.1   
+-0.1   
+0.1   
+0.0   
+-0.0   
+0.1   
+-0.8   
+-0.0   
+0.0   
+-0.0   
+0.1   
+0.1   
+-0.0   
+-0.0   
+0.2   
+0.2   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.1   
+-0.2   
+-0.0   
+0.6   
+0.1   
+0.1   
+0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+-0.1   
+-0.1   
+-0.0   
+-0.0   
+-0.2   
+0.2   
+0.6   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.1   
+-0.1   
+-0.1   
+0.0   
+0.0   
+-0.0   
+-0.1   
+-0.1   
+-0.0   
+-0.0   
+-0.0   
+0.1   
+0.1   
+0.5   
+-0.0   
+-0.1   
+-0.1   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.1   
+-0.1   
+-0.1   
+0.0   
+0.1   
+-0.7   
+-0.7   
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+Yt + leads Xt
+Xt leads Yt +
+4
+2
+0
+2
+4
+LLS
+(b) Average LLS for each instrument combination for X: midpoint and Y: trans. price
+Figure 2: Average ˆρi,j(ℓ⋆) and LLS across all instruments for X: midpoint and Y: trans. price
+This ﬁgure shows for each instrument combination the maximum correlation ˆρi,j(ℓ⋆) and the lead-lag strength (LLS) averaged
+over the observation period from Jan–June 2021 for the measure combination X: midpoint and Y: transaction price. One, two,
+and three stars indicate whether the LLS has the same sign on 90%, 95%, and 99% of all trading days, respectively.
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+correlated if the instruments are fundamentally related, in the sense that the underlying
+of both instruments is (partially) the same or at least exposed to similar risk factors. In
+general, we see that the level of correlation does not substantially change if we switch asset
+X and Y as indicated by the overall symmetry of the lower and upper triangular.
+In a second step, we analyze the daily LLS to determine all instrument pairs that exhibit
+a lead-lag relationship between the midpoint of asset X and the transaction price of asset
+Y. Each value in Figure 2b is equal to the average LLS of the respective instrument pair
+across all trading days. In addition, one, two, and three stars are added to indicate whether
+the LLS has the same sign as the average LLS on 90%, 95%, and 99% of all trading days,
+respectively.
+This helps to identify whether the direction of the lead-lag relationship is
+persistent over time. According to the LLS, one of the strongest leads of all instrument
+pairs is taken by the FESX’s transaction price that leads the FDAX’s midpoint. In general,
+the FESX is the strongest leader in our sample as its transaction price leads the midpoints
+of all stocks and equity futures in our sample. The lead of the FESX is observed across
+all trading days in our sample as indicated by the three stars assigned to each of the LLS
+values. Similar results can be observed for the FSMI which leads all stocks and futures in our
+sample. The FDAX and the Mini-DAX future (FDXM) provide a mixed picture. While their
+transaction prices consistently lead the midpoints of all three DAX stocks in our sample, the
+transaction price changes of these stocks also provide information about the future midpoints
+of the FDAX and FDXM. Both directions seem plausible. On the one hand, a change in the
+transaction price of the FDAX (FDXM) is a positive signal for a general market upswing
+that may spill over to all stocks. On the other hand, all three stocks have substantial weight
+in the DAX index, and a change in their transaction price must lead to a change in the
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+DAX midpoint, simply due to the law of one price. This is empirically supported by the
+observation that the transaction prices of SAP, the stock with the largest weight in the DAX
+index, exhibit the strongest and most persistent lead for the midpoints of both DAX futures.
+Regarding ETFs, the EXS1 is the most dominant ETF in our sample. Its transaction price
+leads the midpoints of the DAX stocks and DAX futures, but this relationship is not robust
+over time. Moreover, the S&P 500 ETF (SXR8) also shows indications for taking a leading
+role of the stocks and equity futures in our sample. The other two equity ETFs hardly take a
+leading role for other instruments. With respect to stocks, DAI and VOW3, who exhibit high
+correlations as outlined before, have a bidirectional lead-lag relationship. This indicates that
+the transaction prices of both instruments contain valuable information for future midpoints
+of the other instrument. Regarding the bond futures, we ﬁnd that the transaction prices
+of Euro Bobl future (FGBM) and Euro Schatz future (FGBS) lead the midpoints of the
+Euro Bund future (FGBL), but not vice versa. Furthermore, despite the strong correlations
+among the ETCs and ETNs, we only ﬁnd weak and non-consistent lead-lag relationships
+between the instruments of these groups. In general, our results provide strong evidence for
+the phenomenon of cross-impact at the high-frequency level. This phenomenon is especially
+prominent between the most frequently traded and fundamentally related instrument pairs
+in our sample.
+As a ﬁnal step of our analysis of lead-lag relationships between midpoints and transaction
+prices, we analyze the asymmetry of the HY-curve for selected instrument pairs. We select
+the instrument pairs in each group that have the largest value in terms of ˆρ(ℓ∗) and LLS but
+limit the number of pairs to six such that the ﬁgure does not become too cluttered. Figure
+3a shows the HY-curve for those six exemplary instrument pairs. Note that the HY-curves
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+60
+40
+20
+0
+20
+40
+60
+Lag in seconds
+0.0
+0.2
+0.4
+0.6
+0.8
+X: midpoint, Y: trans. price
+InstrX/InstrY
+21XB/BTCE
+DAI/EXS1
+DAI/FDXM
+FDAX/EXS1
+FDAX/FESX
+FGBL/FGBM
+(a) HY-curves for X: midpoint and Y: transaction price for selected instruments
+4
+2
+0
+2
+4
+Lag in seconds
+0.10
+0.15
+0.20
+0.25
+0.30
+0.35
+0.40
+0.45
+X: midpoint, Y: trans. price
+InstrX/InstrY
+FDAX/FESX
+0.10
+0.12
+0.14
+0.16
+0.18
+0.20
+InstrX/InstrY
+FGBL/FGBM
+(b) HY-curves for X: midpoint and Y: transaction price for selected instruments and lags
+Figure 3: HY-curves for X: midpoint and Y: transaction price
+Both ﬁgures show the HY-curve for exemplary instrument pairs from diﬀerent asset classes. The lower ﬁgure is a zoom at the
+high-frequency range of l. Each ˆρi,j(ℓ) was estimated on a daily basis and then averaged over the observation period from
+Jan–June 2021 for the measure combination X: midpoint and Y: transaction price.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+are estimated on a daily basis and then averaged over our sample period. From this ﬁgure,
+it is evident that all HY-curves except for the instrument pair consisting of two Bitcoin
+ETNs (21XB/BTCE) are skewed to the left. This implies that the area under the curve,
+where the transaction prices of instrument Y are shifted to the future, is larger, suggesting
+that the transaction prices of instrument Y lead the midpoints of instrument X. The higher
+this asymmetry of the curve, the stronger is the leading position of the corresponding asset.
+Regarding the lead-lag time, the ﬁgure suggests that the lag where the correlation coeﬃcient
+is maximized (ℓ⋆) is below one second for all instrument pairs. This emphasizes the rapid
+pace at which information is transmitted in today’s ﬁnancial markets.
+Furthermore, we
+observe that the rate at which correlations depreciate substantially diﬀers for each of the
+instrument pairs. For heavily traded assets such as the equity index futures (FDAX/FESX),
+ˆρ(ℓ) decreases faster with larger |ℓ| than for less frequently traded assets such as the ETNs
+(21XB/BTCE).
+In order to observe the eﬀects at the high-frequency level more closely, Figure 3b shows
+the HY-curves for FDAX/FESX and FGBL/FGBM with leads and lags of one second or
+smaller. To account for the diﬀerent correlation levels, the ﬁgure has two vertical axes. We
+observe a similar slope of the HY-curves of both pairs, and both HY-curves are maximized
+at 100µs. Based on the lead-lag time, this can be interpreted as the FESX (FGBM) leading
+the FDAX (FGBL) by 100µs.
+Lead-lag relationships between midpoint (X) and OBI (Y)
+The second measure combination to investigate is between midpoints and OBIs. Figure
+A.1 in the Appendix shows the values for ˆρ(ℓ∗) and LLS for all instrument combinations.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+In general, the absolute level of correlations in this measure combination is substantially
+smaller than between the previous measure combination of midpoint and transaction price.
+As before, correlations predominantly exist between assets that are fundamentally related,
+such as the VOW3 and DAI, or the FDAX and DAI, which is a constituent of the DAX index.
+Interestingly, the correlation between the OBIs of the individual stocks and the FDAX (or
+FDXM) midpoint is stronger than the correlation between FDAX OBI and stocks’ midpoints.
+This ﬁnding might be related to the fact that the OBI of an asset is in general a good predictor
+of its own future price changes (Cao et al., 2009), and a future price change in one of the
+stocks will mechanically change the prices of derivatives tracking the DAX value, such as the
+FDAX. In turn, a change in the supply and demand of the DAX future by means of OBI
+can be related to any constituent of the index, but not necessarily to the considered stock.
+However, this explanation does not hold true for the stocks and the ETFs. Here, the OBIs
+of the stocks are not correlated with the DAX ETF midpoints. This result indicates the
+existence of a potential diﬀerence in how liquidity is provided in the ETF market compared
+to the futures market.
+Regarding the lead-lag eﬀects between the instruments, we ﬁnd that the OBIs of stocks
+provide information about the future development of other stock and equity future midpoints.
+The lead of the stocks’ OBIs for other stocks’ midpoints is stronger when both stocks are
+from the same industry (e.g., DAI and VOW3). In addition, the OBIs of the stocks also
+lead the FDAX (and FDXM) midpoints stronger than the FESX midpoints which indicates
+that the weight of the stock might be relevant for the strength of the lead-lag eﬀect, since
+the stocks have a larger weight in the DAX than in the Euro Stoxx 50. Regarding futures,
+the FESX once again takes a dominant role. Its OBI leads all other equity futures and stock
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+midpoints persistently and most strongly in terms of the LLS. Concerning bond futures, the
+OBIs of the FGBS and FGBM lead the midpoints of the FGBL, but not vice versa. With
+respect to equity ETFs, we ﬁnd that the OBI of the EXS1 tends to lead the future midpoints
+of all DAX stocks and equity futures. Weak bidirectional lead-lag relationships also exist
+between the ETCs.
+Based on the measure combination midpoint and OBI, we analyze the asymmetry of
+the HY-curve for selected instrument pairs. Figure A.2a in the Appendix shows the HYcurve for six exemplary instrument pairs from diﬀerent asset classes. For the majority of
+our pairs, the correlations for both leads and lags approach zero after ﬁve to ten seconds,
+suggesting that OBI primarily provides information regarding short-term midpoint changes.
+In general, the HY-curves are highly asymmetric and demonstrate that OBIs and midpoints
+have a unidirectional lead-lag relationship in the sense that OBIs lead midpoints, but not vice
+versa. Furthermore, the HY-curves demonstrate the diﬀerence in the speed of information
+transmission across diﬀerent assets and asset classes. For instance, the correlations for ℓ> 0
+decrease more rapidly for FDAX/DAI than for VOW3/DAI or DAI/EXS1 indicating the
+higher speed of information transmission in the equity futures market. In particular, Figure
+A.2b shows that the OBI of DAI leads the FDAX and the VOW3 midpoints by one and two
+seconds, respectively.
+Lead-lag relationships between midpoint volatility (X) and transaction price volatility (Y)
+The third measure combination of interest considers the volatilities of midpoints and
+transaction prices. The maximum correlation ˆρ(ℓ∗) and the LLS for all instrument combinations are plotted in Figure A.3 in the Appendix. The largest correlation coeﬃcients in
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+our sample of these two volatility measures exist among the equity futures and the ETNs.
+Moreover, we predominantly ﬁnd ˆρ(ℓ∗) > 0.1 between equity-related instrument combinations that belong to the group of stocks, equity futures, and equity ETFs. With respect
+to lead-lag eﬀects, we see patterns that have already been observed for the other two measure combinations. The bidirectional lead-lag relationship between FDAX and FDXM is
+the strongest relationship according to the LLS. The FESX leads all other equity futures,
+but is also led by the FDAX and FDXM. Furthermore, both DAX futures’ transaction price
+volatility leads the midpoint volatility of the three stocks, but not vice versa. Surprisingly,
+the stocks do not exhibit lead-lag eﬀects in terms of the investigated volatility measures. All
+other lead-lag eﬀects between equity-related instruments are not persistent over time. In
+contrast to the other two measure combinations, the FGBL leads the FGBM in this measure
+combination , but not vice versa. Moreover, we do not ﬁnd a leading role of the equity ETFs’
+transaction price volatility for the stock midpoint volatility. We also ﬁnd that the BTCE
+takes a leading position in the ETC market. However, this relationship is not consistent over
+time.
+The HY-curves of six exemplary instrument pairs are shown in Figure A.4a in the Appendix. The ﬁgure demonstrates that information transmission in terms of volatility between
+the equity futures predominantly occurs in less than a second, while other instrument pairs
+also exhibit substantial correlation levels at leads of more than one second. Interestingly, the
+correlations do not even diminish after one minute between the two ETNs indicating that the
+speed of information transmission is much lower in these types of ﬁnancial instruments. The
+zoomed plot in Figure A.4b provides more detailed information about the speed of information transmission. The HY-curve shows that the lead-lag eﬀects between the FDXM and the
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+FDAX are only present for up to 5 seconds, after which the correlation drops towards zero.
+In turn, the correlation between both ETNs only drops from 0.461 to 0.446 at the lead of
+10 seconds. Regarding the lead-lag time, the maximum values for both curves are observed
+at one millisecond and 2 seconds. This means that the FDAX transaction price volatility
+leads the FDXM midpoint volatility by one millisecond, whereas the BTCE transaction price
+volatility leads the 21XB midpoint volatility by two seconds. Again, these results highlight
+the diﬀerent speeds of information processing in both markets.
+In sum, our results for all three measure combinations indicate that instrument pairs,
+where the underlying of both instruments is (partially) the same or exposed to similar risk
+factors, exhibit prominent lead-lag relationships.
+In contrast, our analysis does not reveal consistent lead-lag relationships among non-fundamentally related assets despite the
+widespread application of pattern-based algorithmic trading strategies across various ﬁnancial instruments and asset classes.
+In line with existing literature, our ﬁndings conﬁrm
+the presence of lead-lag relationships between stocks and equity future prices (Huth and
+Abergel, 2014), as well as between equity ETF prices (Dao et al., 2018). Furthermore, our
+study expands the understanding of lead-lag eﬀects in ﬁnancial markets by demonstrating
+their occurrence across a wide range of ﬁnancial instruments and microstructure measures.
+Speciﬁcally, we present evidence that the OBI of diﬀerent instruments provides valuable
+information for the short-term prediction of future midpoints of other instruments. Moreover, our ﬁndings suggest that information transmission, e.g., in terms of volatility, happens
+signiﬁcantly faster in heavily traded assets like equity futures, compared to less frequently
+traded instruments such as ETNs.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+5.3. Variation of lead-lag eﬀects over time
+As indicated by the previous ﬁgures, the daily estimates of the LLS exhibit some variation over time for each instrument-measure combination. To investigate whether there is
+a systematic component aﬀecting the strength of lead-lag relationships over time, we analyze the variation of the daily LLS with respect to other daily variables such as (1) trading
+volume, (2) intertrade duration, and (3) midpoint volatility. Speciﬁcally, we examine the
+distribution of the daily LLS values for the strongest measure-combination in terms of LLS
+that is midpoint (X), transaction price (Y). We focus solely on the strongest measure combination to ensure our analysis is not biased by temporal variations across diﬀerent measure
+combinations. Moreover, we only consider instrument pairs with an average LLS value equal
+to or higher than 1 to obtain suﬃcient variation in the LLS variable that we aim to explain.
+Because the LLS is measured between two instruments, we need to consider the distribution of factors like trading volume for both assets simultaneously. To address this issue, we
+proceed as follows: First, we calculate the daily (1) trading volume, (2) intertrade duration,
+and (3) midpoint volatility for each instrument in our sample. Next, we compute percentile
+ranks for each of these time series. Then, we add up both percentile ranks within each
+instrument pair to derive a combined percentile rank. For each instrument pair, we bin the
+daily combined percentile rank values into ﬁve buckets, with the ﬁrst bucket representing
+the lowest percentile ranks. For instance, when using trading volume, bucket 1 represents
+the 20% of trading days where the instrument pair has the lowest combined trading volume.
+Following this approach, we divide all daily values of LLS for the measure combination
+midpoint and transaction price into ﬁve bins according to the respective factor. The resulting
+distributions within each bin can be found in three box plots in Figure A.5 in the Appendix.
+35
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+In general, the distributions are rather stable over the diﬀerent groups of trading days. Note
+that we also used indicators other than the three presented in Figure A.5 to explain the
+variation over time, such as average turnover per trade, relative quoted spread, and the
+proportion of trade throughs for a given instrument. Since these factors also cannot explain
+the LLS variation, we do not report these results. Overall, we do not ﬁnd evidence that
+the LLS variation over time depends on the common level of trading activity, liquidity, or
+volatility of both instruments.
+While there seems to be no systematic component aﬀecting the strength of a lead-lag
+relationship for the same instrument pair over time, the results from Section 5.2 indicate
+that the strength systematically varies in the cross-section of instrument pairs. For instance,
+the ﬁndings show that, regardless of the measure combination considered, lead-lag eﬀects
+predominantly exist between two instruments that are fundamentally related. Moreover, the
+leading position is typically held by heavily traded assets, such as the FESX. In summary, our
+results suggest the presence of determining factors aﬀecting the strength of lead-lag eﬀects
+across instrument pairs. Therefore, in the subsequent section, we proceed by analyzing these
+determining drivers of lead-lag eﬀects across instrument pairs.
+5.4. Determinants of lead-lag eﬀects in market microstructure
+In the existing literature that examines lead-lag relationships on a daily frequency, several
+studies show that large-cap stocks tend to lead small-cap stocks with regard to transaction
+prices (Lo and MacKinlay, 1990; Chordia et al., 2011). In the literature that deals with
+high-frequency data, Huth and Abergel (2014) and Buccheri et al. (2021) ﬁnd that assets
+with high trading activity and liquidity, indicated by short intertrade durations and narrow
+36
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+bid-ask spreads, tend to be in a leading position when analyzing lead-lag eﬀects between
+midpoints. Despite the considerable explanatory power of several liquidity indicators, both
+studies emphasize that these indicators are insuﬃcient to fully account for the strength and
+direction of lead-lag relationships. Besides liquidity, Huth and Abergel (2014) show that also
+the relative diﬀerence in volatility between two assets can partially explain lead-lag behavior.
+The authors ﬁnd that less volatile instruments tend to lead instruments with higher volatility.
+However, the tendency of the more liquid and less volatile assets leading the less liquid and
+more volatile assets is only supported by empirical evidence based on a single microstructure
+measure (midpoints) and two types of ﬁnancial instruments (stocks and their corresponding
+index futures). We want to make use of our broad asset universe and investigate whether
+trading activity, liquidity, and volatility are signiﬁcant and universal drivers of lead-lag relationships in modern ﬁnancial markets. Therefore, we analyze whether this relationship
+holds true across all types of ﬁnancial instruments and microstructure measures in our sample. Following Huth and Abergel (2014), we use several indicators that capture diﬀerent
+aspects of trading activity, liquidity, and volatility. These indicators are explained in more
+detail in Table 1.
+Indicator
+Symbol
+Unit
+Description
+Average turnover per trade
+ATT
+k e
+Average trading volume per trade.
+Intertrade duration
+ITD
+sec
+The mean time elapsed between two successive trades.
+Midpoint volatility
+MV
+bps
+Daily volatility calc. based on 5-minute midpoint returns.
+Proportion of trade throughs
+PTT
+%
+Share of trades that involve orders at level 2 or deeper.
+Trading volume
+TV
+k e
+Average trading volume per day.
+Table 1: Indicators used to explain the variation in the LLS
+This table shows all indicators used in this study to explain lead-lag relationships in terms of the lead-lag strength (LLS). The
+indicators aim to reﬂect the level of trading activity, liquidity, as well as volatility.
+37
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+All indicators are calculated on a daily basis for each instrument in our sample. To
+obtain cross-sectional indicators, we average them across all trading days. Table A.3 in the
+Appendix shows the cross-sectional mean for each indicator and instrument in our sample.
+We examine the relationships between our indicators and the LLS by means of crosssectional scatter plots and panel regressions. For both analyses, we rely on the ratio between
+the indicators for all instrument pairs:
+IRX,Y = IX
+IY
+,
+(6)
+where IX and IY are the indicators for instrument X and instrument Y, respectively.
+We use the natural logarithm of the indicator ratio to account for the skewed nature of the
+indicators.
+We start by examining the relationship between the LLS and IRX,Y using selected scatter
+plots for each combination separately. Figure A.6 in the Appendix shows the relationship
+between trading volume (TV ) and the LLS when X is expressed in midpoints, and Y is
+expressed in transaction prices. Each dot in the scatter plot represents an instrument pair
+consisting of instrument X and Y. While the left color of the dot represents the associated
+ﬁnancial instrument type and asset class of instrument X, the right color is equal to the type
+and asset class of instrument Y. Even though the literature suggests a negative relationship
+between trading volume and the strength and direction of the lead-lag eﬀect in terms of
+LLS, no clear pattern is observable. The majority of instrument pairs has LLS values close
+to zero such that most of the dots distribute around the x-axis. However, it is noticeable
+that the majority of data points with LLS values diﬀerent from zero belongs to the group
+38
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+of stocks, equity futures, and equity ETFs. Hence, we decide to divide our data sample into
+two subsamples: one subsample covers equity-related instrument combinations, i.e., stocks,
+equity futures, and equity ETFs, while the second subsample includes non-equity-related
+instrument combinations covering bond futures, ETCs, and ETNs. In Figure 4, we plot
+the two groups individually using the trading volume (TV ) ratio, the intertrade duration
+(ITD) ratio, and the probability of trade through (PTT) ratio. Due to space constraints,
+only a representative subset, i.e., 3 out of 5 indicators, is presented here. Regarding the
+relationship of LLS and trading volume for equity-related instruments, we see that the
+scatter plot indicates a negative relationship when we observe each group of dots individually.
+For instance, if we focus on the equity future (X) - equity ETF (Y) relationship (black-red
+dots), there is a tendency that the higher the trading volume of Y, indicated by a lower
+trading volume ratio, the stronger the lead of Y. For the non-equity-related instrument
+pairs, we observe a positive relationship for bond futures, while the remaining combinations
+lack variation in the LLS.
+The positive relationship for bond futures is attributable to
+the fact that the FGBS is leading both other contracts despite having the smallest trading
+volume. This contrasting eﬀect is interesting since it suggests that indicators for lead-lag
+relationships may depend on the type of ﬁnancial instrument being analyzed. Regarding the
+other two indicators, we see that intertrade duration is positively associated with the leading
+position of an asset for equity-related instruments. Again, this is in line with the literature
+indicating that more actively traded instruments tend to be leaders of less frequently traded
+instruments. However, once again, this does not apply to the bond futures due to the lesstraded FGBS being the leader in this group. Furthermore, we see that the trade through
+ratio is also positively associated with the leading position of an asset. This conﬁrms the
+39
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+notion that the transaction price of more liquid assets in terms of order book resiliency tends
+to have a stronger leading role for the midpoints of other instruments. Interestingly, this
+holds true for both, equity-related instruments as well as bond futures.
+To provide a comprehensive view of the determinants of lead-lag eﬀects in the other two
+microstructure measures, we have also included the scatter plots for the LLS and the two
+other measure combinations midpoint (X) and OBI (Y) as well as midpoint volatility (X)
+and transaction price volatility (Y). These scatter plots can be found in Figure A.7 and
+A.8 in the Appendix. Overall, the plots lead to similar conclusions except that lead-lag
+relationships between equity futures and equity ETFs – and vice versa – are less strong, on
+average.
+Based on the insights of the scatter plots, we formulate multiple panel regressions to
+assess whether the correlation between the indicators and the lead-lag relationship in terms
+of the LLS is statistically signiﬁcant. We estimate the regressions for all instrument pairs
+and then individually for both subsamples, i.e., equity and non-equity-related instrument
+combinations. Naturally, most of the indicators are correlated with each other since they
+primarily measure various aspects of liquidity. Consequently, we only use one indicator in
+each regression model as independent variable to avoid multicollinearity. In addition, the
+scatter plots show that there are substantial diﬀerences in the LLS that can be attributed
+to the corresponding instrument type and asset class of X and Y. Thus, we include dummy
+variables in an alternative regression setup that represent the instrument type and asset class
+40
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+4
+2
+0
+2
+4
+log of trading volume ratio
+2
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(a) Equity related: TV -ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trading volume ratio
+2
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(b) Non-equity related: TV -ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+2
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(c) Equity related: ITD-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+2
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(d) Non-equity related: ITD-ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trade through ratio
+2
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(e) Equity related: PTT-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of trade through ratio
+2
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(f) Non-equity related: PTT-ratio vs. LLS
+Figure 4: Scatter plots of indicators vs. LLS for X: midpoint, Y: transaction price
+This ﬁgure shows three out of six indicators for trading activity and liquidity plotted against the cross-sectional lead-lag strength
+(LLS). The left color in the dot represents the asset class of instrument X measured by the midpoint and the right color in the
+dot is equal to the asset class of instrument Y measured by the transaction price.
+41
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+of X and Y. For each indicator and each of the three (sub)samples, we estimate the following
+two regressions:
+LLSm,i,t = β0 + β1IRi,t + ϵm,i,t,
+LLSm,i,t = β0 + β1IRi,t + B · Di + ϵm,i,t
+(7)
+where LLSm,i,t is the LLS for instrument combination i and measure combination m
+on day t. IRi,t is the natural logarithm of the indicator ratio for instrument combination i
+on day t, and Di is a vector of 8 dummy variables representing the security type and asset
+class of instrument X and Y.8 Note that we estimate the models using the daily LLS values
+resulting from all three measure combinations discussed in Section 5.2. The results of these
+regressions are shown in Table 2 for the entire sample and the two subsamples. For each
+indicator, we provide the corresponding regression coeﬃcient, its standard error, and the
+adjusted R2.
+Because the LLS becomes larger the stronger Y leads X, the coeﬃcients need to be
+interpreted in the following way: If the coeﬃcient of an indicator ratio has a negative sign,
+the lead of Y over X becomes stronger if IRY increases relative to IRX.
+The regression models provide evidence that the leading position of a ﬁnancial instrument
+Y over X becomes signiﬁcantly stronger when the average turnover per trade (ATT) or the
+daily trading volume (TV) of Y increases relative to X. In addition, we ﬁnd evidence that
+a stronger order book resiliency of Y in terms of a lower trade through (PTT) ratio is also
+signiﬁcantly associated with the strength of the leadership of Y. The dummy regressions
+8In the subsample of equity-related instruments, we have three categories: equity ETFs, equity futures,
+and stocks. This results in nine dummy variables, but we drop one dummy to avoid multicollinearity. The
+same calculations apply to the subsample of non-equity-related instruments, because it also consists of three
+categories: bond futures, ETCs, and ETNs.
+42
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Universe
+full
+full
+equity
+equity
+non-equity
+non-equity
+Dummies
+no
+asset class
+no
+asset class
+no
+asset class
+ATT-ratio
+−2.4***
+−6.3***
+−18.0***
+−25.3***
+−0.9***
+−4.5***
+std. error
+(0.1)
+(0.5)
+(0.9)
+(1.7)
+(0.3)
+(1.4)
+adj. R2
+0.1
+13.3
+0.8
+11.0
+0.0
+0.6
+ITD-ratio
+−0.4***
+1.7***
+−1.2***
+10.2***
+0.1
+−0.1
+std. error
+(0.1)
+(0.2)
+(0.3)
+(1.1)
+(0.1)
+(0.6)
+adj. R2
+0.0
+13.2
+0.0
+10.7
+−0.0
+0.5
+MV -ratio
+0.8***
+0.6***
+17.3***
+1.9
+0.3***
+2.0***
+std. error
+(0.1)
+(0.2)
+(0.9)
+(2.0)
+(0.1)
+(0.6)
+adj. R2
+0.0
+13.2
+0.4
+10.5
+0.0
+0.5
+PTT-ratio
+1.6***
+5.6***
+10.5***
+15.4***
+0.2***
+1.3***
+std. error
+(0.1)
+(0.3)
+(0.4)
+(0.7)
+(0.1)
+(0.4)
+adj. R2
+0.1
+13.6
+1.1
+11.8
+−0.0
+0.5
+TV -ratio
+−0.4***
+−3.3***
+−0.7**
+−15.1***
+−0.8*
+−1.4*
+std. error
+(0.1)
+(0.3)
+(0.3)
+(0.9)
+(0.4)
+(0.8)
+adj. R2
+0.0
+13.3
+0.0
+11.0
+0.0
+0.5
+N
+113,520
+113,520
+39,040
+39,040
+16,787
+16,787
+Note: ∗p < 0.1; ∗∗p < 0.05; ∗∗∗p < 0.01
+Table 2: Regressions explaining the LLS distribution in all three measure combinations
+This table shows the results of diﬀerent panel regressions explaining the variation of daily lead-lag strength (LLS) from three
+diﬀerent measure combinations namely midpoint - transaction price, midpoint - order book imbalance, and midpoint volatility
+- transaction price volatility. The model is estimated on the entire sample and on two subsamples that is the equity related and
+non-equity related subsample, respectively. For each indicator, we display the coeﬃcient, its standard error, and the adjusted
+R2, all expressed in percentage points. N is equal to the number of observations.
+for the equity subsample suggest that the lead of Y also becomes signiﬁcantly stronger
+when the trading frequency (ITD) of Y increases relative to X. Finally, the coeﬃcients of the
+volatility indicator (MV) provide some evidence that the less volatile instruments are leading
+more volatile instruments. The positive relationship of the ﬁrst regression, however, turns
+insigniﬁcant for the equity subsample when we include the dummies into the regression.
+As a robustness check, we have also estimated the regression models for each measure
+combination individually.
+The corresponding Tables A.4, A.5, and A.6 can be found in
+the Appendix. While the majority of signiﬁcant coeﬃcients does not change their signs in
+the individual regressions, there are a few coeﬃcients that indicate diﬀerent results, especially when considering the measure combination of midpoint volatility and transaction price
+43
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+volatility. This further substantiates the hypothesis that there are no universally applicable
+determinants of lead-lag relationships when examining various asset classes and microstructure measures.
+Overall, the regressions provide evidence for the theory of active, liquid, and less volatile
+assets leading less active, less liquid, and more volatile assets. However, we observe differences in the signiﬁcance and magnitude of the coeﬃcients across the diﬀerent regression
+setups suggesting that the determinants of lead-lag eﬀects may depend on the analyzed types
+of ﬁnancial instruments and microstructure measures.
+5.5. The predictive power of lead-lag strength
+Knowledge about lead-lag relationships in ﬁnancial markets can be leveraged to forecast
+the evolution of microstructure measures of lagging instruments, which may imply a violation
+of the eﬃcient market hypothesis. To analyze the predictive power of lead-lag relationships
+indicated by our constructed LLS, we build a simple prediction setup: For each of the
+three measure combinations discussed in section 5.2, we calculate the average of the daily
+LLS based on the ﬁrst ﬁve months in our sample (January to May 2021) and use the last
+month (June 2021) for an out-of-sample prediction analysis. For each instrument-measure
+combination where the average LLS is greater than zero, suggesting Yt leading Xt, we utilize
+the leading time series Yt to predict the direction of the next change in the lagging time
+series Xt. In particular, if we observe a change in the time series of the leading instrument
+(e.g., change in the transaction price of FESX), we predict that the time series of the
+lagging instrument (e.g., change in the midpoint of FDAX) will subsequently change in
+the same direction if ˆρ(ℓ∗) > 0. Otherwise, we predict the lagging time series to move in
+44
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+the opposite direction. Thereby, we constantly update the prediction for the change in the
+lagging instrument and only consider the most recent change in the leading instrument. We
+refer to this prediction model as LLS-based prediction approach.
+To measure the prediction accuracy of our LLS-based prediction approach, we calculate
+the prediction accuracy for each instrument-measure combination. The prediction accuracy
+is equal to the number of correct predictions when the leading instrument successfully indicated the direction of the next change of the lagging instrument divided by the total number
+of changes in the lagging instrument. As a benchmark, we consistently predict the more
+prevalent movement for the lagging instrument in the binary class distribution.
+0
+1
+2
+3
+4
+5
+6
+7
+LLS
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+Prediction Accuracy
+r=0.67, p=0.00
+X: midpoint vol. Y: trans. price vol.
+X: midpoint Y: obi
+X: midpoint Y: trans. price
+       LLS-Prediction  Benchmark
+count  674.000         674.000  
+mean     0.518           0.505  
+std         0.045           0.024  
+min        0.438           0.470  
+25%       0.497           0.493  
+50%       0.504           0.501  
+75%       0.517           0.511  
+90%       0.570           0.535  
+95%       0.636           0.545  
+max       0.816           0.601  
+Figure 5: Relationship between average prediction accuracy of LLS-based approach and the LLS
+This ﬁgure shows the prediction accuracies of the LLS-based prediction approach.
+The color of each dot represents the
+underlying measure combination. The summary statistics of the accuracies for the LLS-based approach and the benchmark
+are provided at the bottom right corner of the ﬁgure.
+In Figure 5, we show the prediction accuracies of the LLS-based prediction approach. The
+scatter plot demonstrates the relationship between the prediction accuracies and the LLS
+for the three measure combinations. The color indicates the respective measure combination.
+45
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+The summary statistics in the bottom right corner of Figure 5 display the distribution of
+the prediction accuracies for the LLS-based prediction approach and the benchmark.
+We observe that in instrument-measure combinations that do not have a lead-lag relationship, as indicated by a LLS value close to zero, the Yt time series generally lacks
+predictive power regarding the future of time series Xt. In contrast, for combinations where
+lead-lag relationships are prevalent according to the LLS, the LLS-based prediction approach signiﬁcantly outperforms the naïve benchmark. This is also reﬂected in the summary
+statistics. While the average accuracy of the LLS-based approach and the benchmark diﬀer
+only slightly (51.8% and 50.5%), there is a substantial diﬀerence in the upper percentiles.
+Overall, we ﬁnd a signiﬁcant positive relationship between the prediction accuracy of the
+LLS-based approach and the LLS itself, with a Pearson correlation coeﬃcient of 0.67 (pvalue = 0.00). This positive relationship implies that a larger LLS, i.e., a stronger lead-lag
+relationship according to our proposed measure, is associated with a larger prediction accuracy. The measure combination that has the strongest lead-lag relationships, midpoint (X)
+and transaction price (Y), also yields the highest prediction accuracies. For the other two
+measure combinations, the relationship between the prediction accuracy and the LLS is also
+positive but less steep.
+In an extension of the LLS-based prediction approach, we consider the lead-lag time
+(ℓ∗) to make use of all information from the estimated HY-curves. In particular, we restrict
+our prediction horizon for changes in the time series of the lagging instrument that are
+in the range between 50% and 150% of the lead-lag time. For example, the combination
+FDAX midpoint (X) and FESX transaction price (Y) has a lead-lag time of 100µs.
+In
+46
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+this instrument-measure combination, we only consider the predictions of our LLS-based
+approach where X changes 50 −150µs after a change in Y has occurred.
+Figure A.9 in the Appendix shows the resulting accuracies of this approach. We ﬁnd
+that the consideration of the lead-lag time substantially improves the prediction accuracy
+of the LLS-based approach.
+According to the descriptive statistics, the LLS-based approach predicts, on average, 53.3% of all changes correctly. For the upper 10th percentile of
+instrument-measure combinations, the accuracy increases by 4.1 percentage points compared
+to the LLS-based approach that does not take the lead-lag time into account.
+Combining the results, we ﬁnd that the higher the LLS of an instrument-measure combination, the higher the predictive power of the leading time series for the time series of the
+lagging instrument. Furthermore, taking into account the lead-lag time of the respective instrument pair leads to an additional improvement in the predictive power of the leading time
+series. We conclude that these results suggest a potential contradiction to market eﬃciency,
+as many of the lead-lag relationships imply the predictability of midpoint or volatility changes
+at frequencies that can be exploitable by high-frequency traders, potentially disadvantaging
+slower traders. The LLS proposed in this study is a suitable indicator for identifying these
+lead-lag relationships. As a result, the LLS can be leveraged to derive statistical arbitrage
+trading strategies in the high-frequency context.
+6. Conclusion
+In the high-frequency world of ﬁnancial markets, data can be transferred and analyzed in
+mere fractions of a second. The technological advances allow investors to scan markets continuously and take into account more than just price information. Hence, information-based
+47
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+trading depends also on order book activity other than trades and might be more related to
+patterns in the market microstructure rather than fundamental information. Using historical
+trade and order book data from a variety of instruments and asset classes traded on Xetra
+and Eurex, we analyze cross-asset lead-lag relationships between diﬀerent microstructure
+measures capturing dimensions like prices, liquidity, imbalance, depth, and volatility.
+Our results demonstrate that traders react to changes in various microstructure measures
+across diﬀerent instruments and asset classes within very short time intervals, ranging from
+a few microseconds up to a few seconds. Speciﬁcally, we ﬁnd evidence that changes in the
+transaction price and OBI of a ﬁnancial instrument contain information about the future
+midpoint development of another instrument. Furthermore, the transaction price volatility
+of various assets is informative about future changes in the midpoint volatility of other
+assets. We primarily observe these lead-lag relationships among ﬁnancial instruments that
+are fundamentally related, such as those sharing common underlying components (e.g., the
+DAX and Euro Stoxx 50 future) or those exposed to similar risk factors (e.g., long-term and
+medium-term bond futures). We conﬁrm the ﬁndings of previous literature regarding the
+determinants of the strength of lead-lag relationships, showing that instruments with higher
+liquidity and trading activity tend to lead other instruments in most of the microstructure
+measures examined. However, this ﬁnding primarily applies to equity-related instruments
+such as stocks, equity futures, and equity ETFs.
+In contrast, for bond futures, the less
+liquid assets tend to lead, indicating that the results from previous studies focusing on the
+determinants of lead-lag relationships in the equity market are not directly transferable to
+other asset classes. Finally, our results reveal numerous lead-lag relationships that imply
+signiﬁcant predictive power for future price and volatility changes. High-frequency traders
+48
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+can leverage this predictive power to gain an edge over slower traders. Consequently, slower
+traders providing liquidity should incorporate these risks by increasing bid-ask spreads or
+reducing liquidity provision. Our proposed measure for lead-lag eﬀects, the LLS, can be
+leveraged to identify these lead-lag relationships between two microstructure measures of two
+ﬁnancial instruments. Speciﬁcally, the LLS is signiﬁcantly associated with the predictive
+power of the leading time series concerning future changes in the lagging instrument.
+Overall, we provide new insights on non-contemporaneous cross-asset correlations in modern market microstructure. We ﬁnd evidence of high-frequency lead-lag eﬀects in price, imbalance, and volatility measures between fundamentally related instruments. In sum, our
+results suggest that short-term lead-lag eﬀects in the HFT environment still involve the exchange of fundamental information, but at a faster pace and derived by the most granular
+pieces of market microstructure information, such as a single order submission.
+Our ﬁndings can help market operators and regulators to anticipate and assess potential
+contagion eﬀects and threats to market eﬃciency and stability. Speciﬁcally, our results can
+be leveraged to introduce protective mechanisms that consider lead-lag relationships among
+multiple microstructure measures and across diﬀerent instruments. Similarly, professional
+investors can utilize the LLS to identify lead-lag relationships that imply the predictability
+of the lagging asset.
+Market makers can incorporate these results into their quotations,
+while the most sophisticated high-frequency traders can seek to exploit this predictability
+by developing proﬁtable strategies that encompass multiple instruments.
+49
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Declaration of generative AI and AI-assisted technologies in the writing process
+During the preparation of this work the authors used OpenAI’s GPT 4.0 in order to
+check grammar, spelling, and improve readability. After using this tool/service, the authors
+reviewed and edited the content as needed and take full responsibility for the content of the
+published article.
+50
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+References
+Aldrich, E. M. and Friedman, D. (2022). Order Protection Through Delayed Messaging.
+Management Science, 69(2):774–790.
+Alsayed, H. and McGroarty, F. (2014). Ultra-high-frequency algorithmic arbitrage across
+international index futures. Journal of Forecasting, 33(6):391–408.
+Arshanapalli, B. and Doukas, J. (1994). Common volatility in S&P 500 stock index and S&P
+500 index futures prices during October 1987. Journal of Futures Markets, 14(8):915–925.
+Benzaquen, M., Mastromatteo, I., Eisler, Z., and Bouchaud, J.-P. (2017). Dissecting crossimpact on stock markets: An empirical analysis. Journal of Statistical Mechanics: Theory
+and Experiment, 2017(2):023406.
+Brogaard, J., Hendershott, T., and Riordan, R. (2019). Price discovery without trading:
+Evidence from limit orders. The Journal of Finance, 74(4):1621–1658.
+Buccheri, G., Corsi, F., and Peluso, S. (2021). High-frequency lead-lag eﬀects and crossasset linkages: a multi-asset lagged adjustment model. Journal of Business & Economic
+Statistics, 39(3):605–621.
+Budish, E., Cramton, P., and Shim, J. (2015). The high-frequency trading arms race: Frequent batch auctions as a market design response. The Quarterly Journal of Economics,
+130(4):1547–1621.
+51
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Cao, C., Hansch, O., and Wang, X. (2009). The information content of an open limit-order
+book.
+Journal of Futures Markets: Futures, Options, and Other Derivative Products,
+29(1):16–41.
+Chiang, R. and Fong, W.-M. (2001).
+Relative informational eﬃciency of cash, futures,
+and options markets: The case of an emerging market. Journal of Banking & Finance,
+25(2):355–375.
+Chordia, T., Roll, R., and Subrahmanyam, A. (2002). Order imbalance, liquidity, and market
+returns. Journal of Financial Economics, 65(1):111–130.
+Chordia, T., Sarkar, A., and Subrahmanyam, A. (2005). An empirical analysis of stock and
+bond market liquidity. The Review of Financial Studies, 18(1):85–129.
+Chordia, T., Sarkar, A., and Subrahmanyam, A. (2011). Liquidity dynamics and crossautocorrelations. Journal of Financial and Quantitative Analysis, 46(3):709–736.
+Chordia, T. and Swaminathan, B. (2000). Trading volume and cross-autocorrelations in
+stock returns. Journal of Finance, 55(2):913–935.
+Cont, R., Cucuringu, M., and Zhang, C. (2023). Cross-impact of order ﬂow imbalance in
+equity markets. Quantitative Finance, 23(10):1373–1393.
+Cont, R., Kukanov, A., and Stoikov, S. (2014). The price impact of order book events.
+Journal of Financial Econometrics, 12(1):47–88.
+Dao, T. M., McGroarty, F., and Urquhart, A. (2018). Ultra-high-frequency lead–lag relationship and information arrival. Quantitative Finance, 18(5):725–735.
+52
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Darrat, A. F., Rahman, S., and Zhong, M. (2003). Intraday trading volume and return
+volatility of the DJIA stocks: A note. Journal of Banking & Finance, 27(10):2035–2043.
+Deutsche Boerse Group (2021). Insights into Trading System Dynamics - Deutsche Börses
+T7. Technical report, Deutsche Boerse Group, Eschborn, Germany.
+Dufour, A. and Engle, R. F. (2000). Time and the price impact of a trade. The Journal of
+Finance, 55(6):2467–2498.
+Epps, T. W. (1979). Comovements in stock prices in the very short run. Journal of the
+American Statistical Association, 74(366a):291–298.
+Fabre, J. and Frino, A. (2004). Commonality in liquidity: Evidence from the Australian
+Stock Exchange. Accounting & Finance, 44(3):357–368.
+Goldstein, M., Kwan, A., and Philip, R. (2023). High-frequency trading strategies. Management Science, 69(8):4413–4434.
+Goyenko, R. Y. and Ukhov, A. D. (2009). Stock and bond market liquidity: A long-run
+empirical analysis. Journal of Financial and Quantitative Analysis, 44(1):189–212.
+Hayashi, T. and Koike, Y. (2018). Wavelet-based methods for high-frequency lead-lag analysis. SIAM Journal on Financial Mathematics, 9(4):1208–1248.
+Hayashi, T. and Yoshida, N. (2005). On covariance estimation of non-synchronously observed
+diﬀusion processes. Bernoulli, 11(2):359–379.
+53
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Herbst, A. F., McCormack, J. P., and West, E. N. (1987). Investigation of a lead-lag relationship between spot stock indices and their futures contracts. Journal of Futures Markets,
+7(4):373–381.
+Hoﬀmann, M., Rosenbaum, M., and Yoshida, N. (2013). Estimation of the lead-lag parameter
+from non-synchronous data. Bernoulli, 19(2):426–461.
+Huth, N. and Abergel, F. (2014). High frequency lead-lag relationships - Empirical facts.
+Journal of Empirical Finance, 26:41–58.
+Iihara, Y., Kato, K., and Tokunaga, T. (1996). Intraday return dynamics between the cash
+and the futures markets in Japan. Journal of Futures Markets, 16(2):147–162.
+Kallberg, J. and Pasquariello, P. (2008). Time-series and cross-sectional excess comovement
+in stock indexes. Journal of Empirical Finance, 15(3):481–502.
+Kavussanos, M. G., Visvikis, I. D., and Alexakis, P. D. (2008). The lead-lag relationship
+between cash and stock index futures in a new market. European Financial Management,
+14(5):1007–1025.
+Kawaller, I. G., Koch, P. D., and Koch, T. W. (1987). The temporal price relationship
+between S&P 500 Futures and the S&P 500 index. Journal of Finance, 42(5):1309–1329.
+Kawaller, I. G., Koch, P. D., and Koch, T. W. (1990).
+Intraday relationships between
+volatility in S&P 500 futures prices and volatility in the S&P 500 index.
+Journal of
+Banking & Finance, 14(2-3):373–397.
+54
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Korajczyk, R. A. and Sadka, R. (2008). Pricing the commonality across alternative measures
+of liquidity. Journal of Financial Economics, 87(1):45–72.
+Koutmos, G. and Tucker, M. (1996). Temporal relationships and dynamic interactions between spot and futures stock markets. The Journal of Futures Markets, 16(1):55.
+Lo, A. W. and MacKinlay, A. C. (1990). When are contrarian proﬁts due to stock market
+overreaction? Review of Financial Studies, 3(2):175–205.
+Malceniece, L., Malcenieks, K., and Putnin, š, T. J. (2019).
+High frequency trading and
+comovement in ﬁnancial markets. Journal of Financial Economics, 134(2):381–399.
+Marshall, B., Nguyen, N. H., and Visaltanachoti, N. (2013).
+Liquidity commonality in
+commodities. Journal of Banking & Finance, 37(1):11–20.
+Menkveld, A. J. and Zoican, M. A. (2017). Need for speed? exchange latency and liquidity.
+The Review of Financial Studies, 30(4):1188–1228.
+O’Hara, M. (2015). High frequency market microstructure. Journal of Financial Economics,
+116(2):257–270.
+Pasquariello, P. and Vega, C. (2015). Strategic cross-trading in the us stock market. Review
+of Finance, 19(1):229–282.
+Pelizzon, L., Subrahmanyam, M. G., Tomio, D., and Uno, J. (2015). Limits to arbitrage in
+sovereign bonds: Price and liquidity discovery in high-frequency quotedriven markets. In
+The 2nd International Conference on Sovereign Bond Markets. European Central Bank.
+Frankfurt am Main, Germany.
+55
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Pitkäjärvi, A., Suominen, M., and Vaittinen, L. (2020). Cross-asset signals and time series
+momentum. Journal of Financial Economics, 136(1):63–85.
+Poutré, C., Dionne, G., et al. (2022). The proﬁtability of lead-lag arbitrage at high-frequency.
+Working Paper.
+Rapach, D. E., Strauss, J. K., and Zhou, G. (2013). International stock return predictability:
+What is the role of the United States? The Journal of Finance, 68(4):1633–1662.
+Sifat, I. M., Mohamad, A., and Shariﬀ, M. S. (2019). Lead-lag relationship between Bitcoin
+and Ethereum: Evidence from hourly and daily data. Research in International Business
+and Finance, 50(5):306–321.
+Son, D. P., Marshall, B. R., Nguyen, N. H., and Visaltanachoti, N. (2023). Liquidity spillover
+between ETFs and their constituents. International Review of Economics and Finance,
+88:723–747.
+Stoll, H. R. and Whaley, R. E. (1990). The Dynamics of stock index and stock index futures
+returns. Journal of Financial and Quantitative Analysis, 25(4):441–468.
+Tolikas, K. (2018). The lead-lag relation between the stock and the bond markets. European
+Journal of Finance, 24(10):849–866.
+Zeckhauser, R. and Niederhoﬀer, V. (1983). The performance of market index futures contracts. Financial Analysts Journal, 39(1):59–65.
+56
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Appendix A.
+Measure
+Category
+Unit
+Deﬁnition
+Calculation
+midpoint
+price
+e
+Sum of best quoted bid and ask
+price divided by two.
+LimitBid
+t
++ LimitAsk
+t
+2
+trans. price
+price
+e
+Transaction price; for identical
+time stamps, we aggregate all
+transactions and calculate the
+volume weighted average price.
+−
+rel. quoted spread
+liquidity
+bps
+Diﬀerence
+between
+the
+best
+quoted bid and ask level, normalized by the midpoint.
+LimitBid
+t
+−LimitAsk
+t
+Midpointt
+trading volume
+liquidity
+k e
+Trading volume of each transaction in euro.
+Trade Pricet × Trade Quantityt
+breadth
+depth
+k e
+Euro volume at the best bid and
+ask level.
+LimitBid
+t
+× QuantityBid
+t
++ LimitAsk
+t
+× QuantityAsk
+t
+depth −Lvl10
+depth
+k e
+Euro volume at the ten best bid
+and ask levels.
+LimitBid
+t
+× QuantityBid
+t
++ LimitAsk
+t
+× QuantityAsk
+t
+imbalance −Lvl1
+depth
+-
+Diﬀerence between the best bid
+and ask level Euro volumes, normalized by the sum of the best
+bid and ask level Euro volumes
+(Breadth).
+LimitBid
+t
+× QuantityBid
+t
+−LimitAsk
+t
+× QuantityAsk
+t
+Breadtht
+vola mid.
+volatility
+bps
+Standard deviation of a rolling
+window containing the last 20
+midpoint updates.
+v
+u
+u
+t 1
+19
+20
+X
+i=1
+(Midpointi −Midpoint)2
+vola trans. price
+volatility
+bps
+Standard deviation of a rolling
+window containing the last 20
+transaction prices.
+v
+u
+u
+t 1
+19
+20
+X
+i=1
+(Trans.Pricei −Trans.Price)2
+Table A.1: Market microstructure measures
+The table presents all analyzed price, liquidity, depth, and volatility measures.
+For each variable, descriptions and, where
+applicable, unit, category and calculation details are provided. Measures are calculated for each observation t and security i.
+57
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Identiﬁer
+Underlying
+ISIN
+Asset Class
+DAI
+Daimler
+DE0007100000
+Stocks
+SAP
+SAP
+DE0007164600
+Stocks
+VOW3
+Volkswagen
+DE0007664039
+Stocks
+FESX
+EuroStoxx50
+DE000C31Y1X2
+Equity future
+FESX
+EuroStoxx50
+DE000C360QK1
+Equity future
+FESX
+EuroStoxx50
+DE000C4FMQL5
+Equity future
+FDAX
+Dax
+DE000C5HZJF7
+Equity future
+FDAX
+Dax
+DE000C5SKRK9
+Equity future
+FDAX
+Dax
+DE000C52VHW7
+Equity future
+FDXM
+Mini-Dax
+DE000C5HZJH3
+Equity future
+FDXM
+Mini-Dax
+DE000C5SKRM5
+Equity future
+FDXM
+Mini-Dax
+DE000C52VJ09
+Equity future
+FSMI
+SMI
+DE000C5HZKM1
+Equity future
+FSMI
+SMI
+DE000C5SKSV4
+Equity future
+FSMI
+SMI
+DE000C52VKN0
+Equity future
+FGBL
+EuroBund
+DE000C5GTXB2
+Bond future
+FGBL
+EuroBund
+DE000C5RQDA9
+Bond future
+FGBL
+EuroBund
+DE000C52GUE9
+Bond future
+FGBM
+EuroBobl
+DE000C5GTXC0
+Bond future
+FGBM
+EuroBobl
+DE000C5RQDB7
+Bond future
+FGBM
+EuroBobl
+DE000C52GUF6
+Bond future
+FGBS
+EuroSchatz
+DE000C5GTXD8
+Bond future
+FGBS
+EuroSchatz
+DE000C5RQDC5
+Bond future
+FGBS
+EuroSchatz
+DE000C52GUG4
+Bond future
+EXW1
+EuroStoxx50
+DE0005933956
+Equity ETF
+EXS1
+DAX
+DE0005933931
+Equity ETF
+SXR8
+S&P 500
+IE00B5BMR087
+Equity ETF
+EUNL
+MSCI World
+IE00B4L5Y983
+Equity ETF
+4GLD
+Gold
+DE000A0S9GB0
+ETC
+VZLC
+Silver
+DE000A0N62F2
+ETC
+21XB
+Bitcoin
+CH0454664001
+Crypto ETN
+BTCE
+Bitcoin
+DE000A27Z304
+Crypto ETN
+VBTC
+Bitcoin
+DE000A28M8D0
+Crypto ETN
+Table A.2: Description of all ﬁnancial instruments in our sample
+This table shows the identiﬁer, underyling, ISIN, and asset class for all ﬁnancial instruments in our sample. In terms of future
+contracts, we use multiple instruments to represent the same asset in order to account for their maturity.
+58
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Average Intertrade Midpoint
+Rel.
+Trade
+Trading
+Identiﬁer Asset Class
+Turnover
+Duration
+Vola. Spread Trough
+Volume
+(ke)
+(s)
+(bps)
+(bps)
+(%)
+(ke)
+DAI
+Stocks
+7.38
+1.72
+13.78
+2.26
+2.63
+126021.93
+SAP
+Stocks
+9.17
+1.84
+10.29
+2.35
+2.38
+145015.49
+VOW3
+Stocks
+8.78
+1.69
+17.20
+2.88
+3.26
+166882.38
+FESX
+Equity future
+19.41
+0.38
+6.28
+2.56
+0.11 1428852.31
+FDAX
+Equity future
+16.36
+0.92
+6.34
+1.00
+1.55
+504934.54
+FDXM
+Equity future
+15.83
+0.98
+6.33
+0.92
+0.59
+464582.85
+FSMI
+Equity future
+13.32
+1.73
+5.31
+1.20
+0.40
+211853.34
+FGBL
+Bond future
+0.79
+0.24
+2.03
+0.59
+0.23
+92834.02
+FGBM
+Bond future
+1.62
+1.15
+0.80
+0.75
+0.02
+39115.70
+FGBS
+Bond future
+2.55
+3.91
+0.20
+0.45
+0.01
+18568.21
+EXW1
+Equity ETF
+42.87
+117.84
+6.22
+3.41
+1.75
+9259.67
+EXS1
+Equity ETF
+57.45
+69.66
+6.39
+2.99
+0.94
+24347.74
+SXR8
+Equity ETF
+19.37
+71.71
+5.68
+2.93
+5.09
+7290.62
+EUNL
+Equity ETF
+26.40
+43.81
+5.14
+3.03
+3.39
+16993.51
+4GLD
+ETC
+33.11
+61.81
+6.93
+4.56
+6.98
+14839.54
+VZLC
+ETC
+10.83
+172.62
+14.03
+15.08
+6.42
+1626.54
+21XB
+Crypto ETN
+4.87
+76.75
+34.90
+17.37
+5.64
+2029.35
+BTCE
+Crypto ETN
+15.73
+21.00
+35.51
+11.64
+4.84
+26649.67
+VBTC
+Crypto ETN
+8.12
+55.07
+36.09
+17.97
+4.39
+5585.70
+Table A.3: Liquidity and volatility indicators used for regression analyses
+This table shows the mean of the daily asset-level indicators over the observation period from Jan–June 2021. For derivatives
+with multiple actively traded contracts, we select the most frequently traded contract in terms of number of trades for each
+trading day. The indicators are used for our regression analyses to construct indicator ratios.
+59
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Universe
+full
+full
+equity
+equity
+non-equity
+non-equity
+Dummies
+no
+asset class
+no
+asset class
+no
+asset class
+ATT-ratio
+−6.5***
+−13.9***
+−53.5***
+−65.5***
+−0.2
+−2.4
+std. error
+(0.3)
+(1.0)
+(2.2)
+(3.7)
+(0.5)
+(2.4)
+adj. R2
+0.4
+22.9
+4.3
+17.9
+−0.0
+0.1
+ITD-ratio
+−2.0***
+−1.3**
+−6.1***
+4.8*
+−1.1***
+−8.0***
+std. error
+(0.2)
+(0.5)
+(0.7)
+(2.6)
+(0.2)
+(1.0)
+adj. R2
+0.2
+22.6
+0.6
+15.9
+0.1
+0.9
+MV -ratio
+2.6***
+3.3***
+54.4***
+15.3***
+1.3***
+8.2***
+std. error
+(0.2)
+(0.4)
+(2.2)
+(4.7)
+(0.1)
+(0.8)
+adj. R2
+0.1
+22.6
+2.2
+15.9
+0.1
+0.6
+PTT-ratio
+4.6***
+16.4***
+28.8***
+43.1***
+1.2***
+7.6***
+std. error
+(0.2)
+(0.6)
+(0.9)
+(1.5)
+(0.1)
+(0.7)
+adj. R2
+0.7
+24.6
+5.2
+22.1
+0.1
+0.9
+TV -ratio
+0.4
+−3.5***
+1.6**
+−25.4***
+2.7***
+5.8***
+std. error
+(0.2)
+(0.6)
+(0.8)
+(2.0)
+(0.7)
+(1.4)
+adj. R2
+0.0
+22.6
+0.0
+16.8
+0.2
+0.6
+N
+37,094
+37,094
+12,750
+12,750
+5,483
+5,483
+Note: ∗p < 0.1; ∗∗p < 0.05; ∗∗∗p < 0.01
+Table A.4: Regressions explaining the LLS distribution for X: midpoint and Y: transaction price
+This table shows the results of diﬀerent panel regressions explaining the variation of daily lead-lag strength (LLS) based
+on the measure combination X: midpoint and Y: transaction price.
+The model is estimated on the entire sample and on
+two subsamples that is the equity related and non-equity related subsample, respectively. For each indicator, we display the
+coeﬃcient, its standard error, and the adjusted R2, all expressed in percentage points. N is equal to the number of observations.
+Universe
+full
+full
+equity
+equity
+non-equity
+non-equity
+Dummies
+no
+asset class
+no
+asset class
+no
+asset class
+ATT-ratio
+0.0
+−2.1***
+0.4
+−10.5***
+−0.1
+−0.4
+std. error
+(0.1)
+(0.4)
+(0.9)
+(1.5)
+(0.1)
+(0.5)
+adj. R2
+−0.0
+15.3
+−0.0
+11.5
+−0.0
+7.4
+ITD-ratio
+−0.9***
+1.6***
+−2.3***
+13.4***
+−0.4***
+−2.2***
+std. error
+(0.1)
+(0.2)
+(0.4)
+(1.1)
+(0.1)
+(0.3)
+adj. R2
+0.2
+15.4
+0.4
+11.9
+0.2
+8.4
+MV -ratio
+−0.9***
+1.3***
+−15.0***
+11.6***
+0.2***
+1.6***
+std. error
+(0.1)
+(0.2)
+(1.0)
+(1.7)
+(0.0)
+(0.2)
+adj. R2
+0.0
+15.3
+0.8
+11.3
+0.0
+7.7
+PTT-ratio
+−0.1
+5.1***
+−0.2
+13.5***
+0.2***
+1.8***
+std. error
+(0.1)
+(0.3)
+(0.4)
+(0.9)
+(0.0)
+(0.2)
+adj. R2
+−0.0
+16.3
+−0.0
+14.1
+0.1
+8.2
+TV -ratio
+1.1***
+−1.8***
+3.2***
+−11.9***
+0.9***
+1.6***
+std. error
+(0.1)
+(0.2)
+(0.4)
+(0.9)
+(0.2)
+(0.3)
+adj. R2
+0.2
+15.4
+0.6
+12.1
+0.4
+8.1
+N
+37,872
+37,872
+13,110
+13,110
+5,550
+5,550
+Note: ∗p < 0.1; ∗∗p < 0.05; ∗∗∗p < 0.01
+Table A.5: Regressions explaining the LLS distribution for X: midpoint and Y: l1-imbalance
+This table shows the results of diﬀerent panel regressions explaining the variation of daily lead-lag strength (LLS) based on
+the measure combination X: midpoint and Y: order book imbalance. The model is estimated on the entire sample and on
+two subsamples that is the equity related and non-equity related subsample, respectively. For each indicator, we display the
+coeﬃcient, its standard error, and the adjusted R2, all expressed in percentage points. N is equal to the number of observations.
+60
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+.04
+.12
+.07
+.15
+.15
+.07
+-.00
+-.00
+-.00
+.00
+.01
+.01
+.01
+.00
+.00
+.00
+.00
+-.00
+.03
+.02
+.06
+.12
+.12
+.08
+.00
+.00
+.01
+.00
+.01
+.01
+.01
+.00
+.01
+.00
+.00
+-.01
+.10
+.02
+.05
+.11
+.11
+.05
+-.00
+-.01
+.00
+-.00
+.01
+.01
+.00
+-.00
+.00
+-.00
+.00
+.00
+.07
+.06
+.06
+.15
+.14
+.09
+-.00
+.00
+-.00
+.01
+.02
+.02
+.02
+.00
+.01
+.00
+.00
+.00
+.03
+.03
+.03
+.05
+.09
+.05
+-.00
+-.00
+-.00
+.01
+.01
+.01
+.01
+.00
+.01
+.00
+-.00
+-.00
+.01
+.01
+.01
+.01
+.01
+.01
+-.00
+-.00
+.00
+.01
+.01
+.00
+.00
+.00
+.00
+.00
+.00
+.00
+.02
+.03
+.02
+.03
+.05
+.05
+.00
+.00
+-.00
+.01
+.01
+.01
+.01
+.00
+.00
+.00
+-.00
+-.00
+-.01
+-.01
+-.01
+-.01
+-.02
+-.02
+-.01
+.01
+.00
+-.00
+-.00
+-.00
+-.00
+.01
+.00
+.00
+.00
+.00
+-.01
+-.01
+-.01
+-.01
+-.01
+-.01
+-.00
+.08
+.02
+-.00
+-.00
+-.00
+-.00
+.01
+.01
+.00
+-.00
+-.00
+-.01
+-.01
+-.01
+-.01
+-.00
+-.01
+-.01
+.05
+.05
+.00
+-.01
+-.00
+-.00
+-.00
+.00
+-.00
+-.01
+.00
+.01
+.02
+-.01
+.02
+.02
+.03
+.01
+.01
+.00
+.00
+.02
+.01
+.00
+-.00
+-.01
+-.01
+-.01
+-.02
+.04
+.04
+.03
+.04
+.08
+.08
+.06
+-.00
+-.00
+-.00
+.05
+.03
+.02
+-.01
+-.00
+-.01
+.00
+.01
+.04
+.03
+.02
+.03
+.05
+.06
+.04
+-.00
+-.00
+.01
+.02
+.04
+.05
+.02
+.01
+-.00
+.01
+-.00
+.01
+.02
+.02
+.03
+.05
+.05
+.04
+-.00
+.01
+.01
+.02
+.02
+.04
+.00
+.01
+-.01
+-.00
+-.01
+-.01
+.01
+-.01
+.00
+.00
+.00
+.00
+.02
+.01
+.00
+.00
+.00
+.01
+.00
+.03
+.00
+.00
+.01
+.05
+.03
+.01
+.03
+.04
+.04
+.03
+.03
+.01
+.02
+.07
+.01
+.00
+.02
+.05
+.01
+.02
+.00
+.02
+-.00
+.02
+.01
+.01
+.01
+.01
+.01
+.00
+.01
+.01
+.01
+.01
+.01
+-.00
+-.01
+.08
+.06
+.01
+.00
+-.00
+.00
+-.00
+.00
+.00
+.00
+-.00
+-.01
+-.00
+-.00
+-.01
+-.01
+.00
+.01
+.03
+.03
+.01
+.01
+-.01
+.01
+.01
+.01
+.01
+-.01
+-.01
+-.00
+-.00
+.00
+.02
+.02
+.00
+.00
+.08
+.10
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+1.0
+0.5
+0.0
+0.5
+1.0
+(a) Average ˆρi,j(ℓ⋆) for each instrument combination for X: midpoint and Y: l1 imbalance
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+0.3   
+1.5*** 0.6*** 2.3*** 2.2*** 0.5** 
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.2   
+0.1   
+0.4*** 1.5*** 1.5*** 0.6***
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+1.1** 
+0.2   
+0.3** 1.2*** 1.2***
+0.3   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.4*** 0.4*** 0.3***
+2.5*** 2.7*** 1.2***
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.2   
+0.1   
+0.1   
+0.5***
+0.6   
+0.4*  
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.2*  
+0.3   
+0.1   
+0.0   
+0.0   
+0.0
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.1*  
+0.5   
+0.6   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.5***
+0.1   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.1*  
+0.3*  
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+0.1   
+0.1   
+-0.1   
+0.1   
+-0.1   
+0.1   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.4   
+0.4   
+0.3   
+0.3   
+1.2   
+1.1   
+0.4   
+-0.0   
+-0.0   
+-0.0   
+0.1   
+0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.2   
+0.2   
+0.1   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.3   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+0.1   
+0.1   
+0.1   
+0.1   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.1   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.1   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.1   
+0.1   
+-0.0   
+-0.0   
+0.1   
+-0.0   
+-0.0   
+-0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.3   
+0.2   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.1   
+0.2   
+0.3   
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+Yt + leads Xt
+Xt leads Yt +
+4
+2
+0
+2
+4
+LLS
+(b) Average LLS for each instrument combination for X: midpoint and Y: l1 imbalance
+Figure A.1: Average ˆρi,j(ℓ⋆) and LLS across all instruments for X: midpoint and Y: l1 imbalance
+This ﬁgure shows for each instrument combination the maximum correlation ˆρi,j(ℓ⋆) and the lead-lag strength (LLS) averaged
+over the observation period from Jan–June 2021 for the measure combination X: midpoint and Y: l1-imbalance. One, two, and
+three stars indicate whether the LLS has the same sign on 90%, 95%, and 99% of all trading days, respectively.
+61
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+60
+40
+20
+0
+20
+40
+60
+Lag in seconds
+0.050
+0.025
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+X: midpoint, Y: imbalance-Lvl1
+InstrX/InstrY
+DAI/EXS1
+FDAX/DAI
+FDAX/EXS1
+FDAX/FESX
+FGBL/FGBM
+VOW3/DAI
+(a) HY-curves for X: midpoint, Y: l1-imbalance for selected instruments
+4
+2
+0
+2
+4
+Lag in seconds
+0.10
+0.05
+0.00
+0.05
+0.10
+0.15
+X: midpoint, Y: imbalance-Lvl1
+InstrX/InstrY
+FDAX/DAI
+0.050
+0.025
+0.000
+0.025
+0.050
+0.075
+0.100
+0.125
+0.150
+InstrX/InstrY
+VOW3/DAI
+(b) HY-curves for X: midpoint, Y: l1-imbalance for selected instruments and lags
+Figure A.2: HY-curves for X: midpoint and Y: l1-imbalance
+Both ﬁgures show the HY-curve for exemplary instrument pairs from diﬀerent asset classes. The lower ﬁgure is a zoom at the
+high-frequency range of l. Each ˆρi,j(ℓ) was estimated on a daily basis, then averaged over the observation period from Jan–June
+2021 for the measure combination X: midpoint and Y: l1 imbalance.
+62
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+.05
+.21
+.00
+.02
+.03
+.03
+.00
+.00
+.00
+.15
+.28
+.10
+.12
+.01
+.02
+-.00
+.01
+.01
+.02
+.02
+-.00
+.01
+.02
+.05
+.00
+-.00
+-.01
+.14
+.24
+.10
+.10
+-.02
+.01
+-.01
+-.02
+-.02
+.19
+.02
+.01
+.02
+.02
+.02
+.01
+.01
+-.00
+.08
+.20
+.05
+.09
+-.01
+.02
+-.01
+-.01
+.00
+.05
+.03
+.03
+.26
+.25
+.11
+-.00
+.00
+.00
+.04
+.03
+.02
+.02
+-.00
+.00
+-.01
+.01
+.01
+.23
+.13
+.16
+.31
+.76
+.26
+.00
+-.00
+.00
+.04
+.05
+.07
+.11
+.01
+-.00
+.01
+-.00
+.00
+.21
+.09
+.13
+.28
+.61
+.23
+.01
+-.00
+-.00
+-.01
+-.01
+.06
+.08
+.02
+.01
+.02
+-.00
+-.01
+.08
+.15
+.07
+.05
+.09
+.11
+.01
+.01
+.01
+.12
+.22
+.13
+.17
+.01
+.03
+.01
+-.00
+.02
+-.01
+-.00
+.01
+-.00
+.01
+.00
+.00
+.11
+.00
+-.00
+.01
+.00
+-.01
+.00
+-.00
+-.00
+-.00
+.01
+.01
+.01
+.00
+-.00
+-.00
+-.01
+-.00
+-.01
+.05
+-.01
+-.02
+.01
+.02
+-.00
+.01
+-.01
+.01
+.01
+-.01
+-.00
+-.02
+.00
+-.01
+-.01
+.01
+-.01
+-.00
+.01
+.00
+.01
+-.01
+-.00
+.01
+-.01
+-.00
+-.01
+-.01
+-.00
+-.01
+.00
+-.00
+-.01
+-.01
+-.00
+-.00
+-.01
+-.01
+.01
+.01
+.04
+.05
+-.02
+.02
+.01
+-.00
+.00
+-.00
+.00
+.00
+-.00
+-.01
+.01
+.01
+-.00
+.05
+-.01
+.03
+.03
+.10
+.02
+.01
+.02
+-.00
+-.00
+-.01
+.00
+.00
+.00
+.00
+-.01
+-.02
+-.01
+-.01
+-.01
+-.02
+.02
+.09
+.04
+-.00
+.02
+-.00
+-.01
+-.01
+-.00
+.00
+.00
+-.01
+-.00
+.00
+.01
+.01
+.01
+-.06
+.04
+.08
+.01
+.01
+.01
+-.00
+-.00
+.00
+-.01
+-.00
+.00
+-.01
+-.00
+-.01
+.00
+.00
+.00
+.01
+-.00
+.05
+.01
+-.01
+.02
+.01
+-.01
+.01
+-.00
+-.00
+-.00
+-.00
+-.01
+-.02
+-.00
+.02
+.03
+.03
+-.02
+-.05
+.04
+.02
+.00
+.01
+-.01
+-.00
+.00
+.00
+.00
+-.01
+-.00
+-.01
+.02
+.01
+.02
+-.00
+-.01
+.01
+-.03
+-.01
+.22
+.00
+.00
+-.01
+.00
+-.00
+.00
+.00
+-.00
+.00
+-.01
+-.05
+-.03
+-.00
+-.01
+.00
+-.00
+.55
+.46
+-.01
+.01
+-.00
+-.00
+.00
+-.00
+.01
+-.00
+.00
+-.01
+-.01
+.02
+-.02
+-.02
+-.01
+.03
+.37
+.02
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+1.0
+0.5
+0.0
+0.5
+1.0
+(a) Average ˆρi,j(ℓ⋆) for each instrument combination for X: midpoint volatility and Y: trans. price volatility
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+DAI
+SAP
+VOW3
+FESX
+FDAX
+FDXM
+FSMI
+FGBL
+FGBM
+FGBS
+EXW1
+EXS1
+SXR8
+EUNL
+4GLD
+VZLC
+21XB
+BTCE
+VBTC
+0.1   
+0.1   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.5   
+1.1   
+0.0   
+0.4   
+-0.0   
+0.1   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.4   
+0.4   
+0.1   
+0.2   
+0.1   
+-0.0   
+0.0   
+-0.1   
+0.1   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.3   
+0.0   
+0.2   
+0.1   
+0.0   
+-0.0   
+-0.1   
+-0.0   
+0.3   
+0.2   
+0.2   
+2.4*** 2.7***
+0.9*  
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+3.6***
+1.5   
+1.5*  
+1.7** 
+7.3*  
+3.0*** -0.0   
+-0.0   
+0.0   
+-0.1   
+0.1   
+0.2   
+0.4   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+2.9***
+1.0   
+1.3*  
+2.0*** 5.3** 
+2.8** 
+0.0   
+-0.0   
+0.0   
+-0.2   
+-0.2   
+0.1   
+0.3   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.2   
+0.7   
+0.2   
+0.1   
+0.1   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.9   
+1.6   
+0.2   
+0.6   
+-0.0   
+0.1   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+1.6** 
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.2   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.1   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.3   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.1   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.7   
+0.3   
+-0.0   
+0.0   
+-0.0   
+0.2   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+0.1   
+0.1   
+-0.1   
+0.1   
+-0.0   
+0.1   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.2   
+0.0   
+0.2   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.1   
+0.0   
+-0.0   
+-0.0   
+-0.4   
+-0.1   
+0.6   
+-0.1   
+0.0   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.2   
+0.2   
+0.1   
+-0.0   
+0.0   
+0.1   
+0.1   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.1   
+-0.2   
+-0.0   
+0.0   
+0.3   
+-0.1   
+-0.0   
+-0.1   
+-0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+-0.0   
+0.0   
+0.1   
+0.1   
+-0.1   
+-0.0   
+-0.3   
+-0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+0.0   
+0.0   
+-0.0   
+0.0   
+0.0   
+-0.0   
+-0.1   
+-0.1   
+0.0   
+-0.1   
+-0.2   
+2.2   
+2.5   
+-0.0   
+0.0   
+-0.0   
+-0.0   
+-0.0   
+-0.0   
+0.0   
+-0.0   
+0.0
+0.0   
+-0.1   
+0.0   
+-0.1   
+0.0   
+-0.0   
+0.1   
+-0.8   
+-0.0   
+Stocks
+Stocks
+Fut_Equity
+Fut_Equity
+Fut_Bond
+Fut_Bond
+ETF_Equity
+ETF_Equity
+ETC_Cmdty
+ETC_Cmdty
+ETN_Crypto
+ETN_Crypto
+Yt +
+Xt
+Yt + leads Xt
+Xt leads Yt +
+4
+2
+0
+2
+4
+LLS
+(b) Average LLS for each instrument combination for X: midpoint volatility and Y: trans. price volatility
+Figure A.3: Average ˆρi,j(ℓ⋆) and LLS across all instruments for X: midpoint volatility and Y: trans. price
+volatility
+This ﬁgure shows for each instrument combination the maximum correlation ˆρi,j(ℓ⋆) and the lead-lag strength (LLS) averaged
+over the observation period from Jan–June 2021 for the measure combination X: midpoint volatility and Y: transaction price
+volatility. One, two, and three stars indicate whether the LLS has the same sign on 90%, 95%, and 99% of all trading days,
+respectively.
+63
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+60
+40
+20
+0
+20
+40
+60
+Lag in seconds
+0.0
+0.2
+0.4
+0.6
+X: vola mid, Y: vola trans. price
+InstrX/InstrY
+21XB/BTCE
+EXS1/DAI
+EXS1/FSMI
+FDXM/FDAX
+FGBM/FGBL
+VZLC/4GLD
+(a) HY-curves for X: midpoint vola., Y: transaction price vola. for selected instruments
+4
+2
+0
+2
+4
+Lag in seconds
+0.40
+0.42
+0.44
+0.46
+0.48
+0.50
+X: vola mid, Y: vola trans. price
+InstrX/InstrY
+21XB/BTCE
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+InstrX/InstrY
+FDXM/FDAX
+(b) HY-curves for X: midpoint vola., Y: transaction price vola. for selected instruments and lags
+Figure A.4: HY-curves for X: midpoint volatility and Y: transaction price volatility
+Both ﬁgures show the HY-curve for exemplary instrument pairs from diﬀerent asset classes. The lower ﬁgure is a zoom at the
+high-frequency range of l. Each ˆρi,j(ℓ) was estimated on a daily basis, then averaged over the observation period from Jan–June
+2021 for the measure combination X: midpoint volatility and Y: trans. price volatility.
+64
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+1
+2
+3
+4
+5
+trading volume buckets
+4
+2
+0
+2
+4
+6
+8
+10
+LLS
+(a) Distribution of LLS with respect to trading volume
+1
+2
+3
+4
+5
+intertrade duration buckets
+4
+2
+0
+2
+4
+6
+8
+10
+LLS
+(b) Distribution of LLS with respect to intertrade duration
+1
+2
+3
+4
+5
+midpoint volatility buckets
+4
+2
+0
+2
+4
+6
+8
+10
+LLS
+(c) Distribution of LLS with respect to midpoint volatility
+Figure A.5: Distribution of LLS over time with respect to liqudity and volatility measures
+This ﬁgure shows boxplots of the lead-lag strength (LLS) for ﬁve buckets of trading days ranked according to three liquidity
+and volatility indicators, namely trading volume, intertrade duration, and midpoint volatility. Thereby, bucket 1 contains the
+20% trading days where the combined indicator of two instruments is the lowest and bucket 5 the 20% trading days where the
+indicator is the highest. Only instruments were considered that exhibit a LLS of equal to or larger than 1, on average.
+65
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+Universe
+full
+full
+equity
+equity
+non-equity
+non-equity
+Dummies
+no
+asset class
+no
+asset class
+no
+asset class
+ATT-ratio
+−1.1***
+−3.7***
+−4.2***
+−3.7
+−2.2***
+−10.7***
+std. error
+(0.3)
+(1.1)
+(1.4)
+(3.0)
+(0.8)
+(3.5)
+adj. R2
+0.0
+13.5
+0.0
+16.1
+0.0
+1.7
+ITD-ratio
+1.7***
+4.3***
+4.3***
+11.1***
+1.7***
+8.9***
+std. error
+(0.1)
+(0.5)
+(0.3)
+(1.8)
+(0.3)
+(1.2)
+adj. R2
+0.1
+13.6
+0.5
+16.3
+0.1
+1.9
+MV -ratio
+0.5***
+−2.4***
+13.9***
+−21.4***
+−0.2
+−2.6**
+std. error
+(0.1)
+(0.4)
+(1.4)
+(3.1)
+(0.3)
+(1.3)
+adj. R2
+0.0
+13.5
+0.2
+16.2
+−0.0
+1.4
+PTT-ratio
+0.3**
+−4.2***
+3.4***
+−9.4***
+−0.6***
+−5.0***
+std. error
+(0.1)
+(0.4)
+(0.6)
+(0.9)
+(0.2)
+(0.8)
+adj. R2
+0.0
+13.6
+0.1
+16.5
+−0.0
+1.5
+TV -ratio
+−2.5***
+−4.4***
+−6.5***
+−7.9***
+−5.8***
+−10.9***
+std. error
+(0.1)
+(0.6)
+(0.3)
+(1.6)
+(1.0)
+(1.9)
+adj. R2
+0.2
+13.6
+0.8
+16.2
+0.5
+2.3
+N
+38,554
+38,554
+13,180
+13,180
+5,754
+5,754
+Note: ∗p < 0.1; ∗∗p < 0.05; ∗∗∗p < 0.01
+Table A.6: Regressions explaining the LLS distribution for X: midpoint volatility and Y: transaction price
+volatility
+This table shows the results of diﬀerent panel regressions explaining the variation of daily lead-lag strength (LLS) based on the
+measure combination X: midpoint volatility and Y: transaction price volatility. The model is estimated on the entire sample and
+on two subsamples that is the equity related and non-equity related subsample, respectively. For each indicator, we display the
+coeﬃcient, its standard error, and the adjusted R2, all expressed in percentage points. N is equal to the number of observations.
+6
+4
+2
+0
+2
+4
+6
+log of trading volume ratio
+2
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Stocks
+Equity ETF
+Equity future
+Bond future
+ETC
+Figure A.6: Relationship between average of daily LLS and trading volume for X: midpoint, Y: transaction
+price for all instrument pairs
+This ﬁgure shows for all instrument pairs the TV -ratio plotted against the cross-sectional lead-lag strength (LLS). The left
+color in the dot represents the asset class of instrument X measured by the midpoint and the right color in the dot is equal to
+the asset class of instrument Y measured by the transaction price.
+66
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+4
+2
+0
+2
+4
+log of trading volume ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Equity ETF
+Equity future
+Stocks
+(a) Equity related: TV -ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trading volume ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Crypto ETN
+Bond future
+ETC
+(b) Non-equity related: TV -ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Equity ETF
+Equity future
+Stocks
+(c) Equity related: ITD-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Crypto ETN
+Bond future
+ETC
+(d) Non-equity related: ITD-ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trade through ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Equity ETF
+Equity future
+Stocks
+(e) Equity related: PTT-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of trade through ratio
+0.0
+0.5
+1.0
+1.5
+2.0
+2.5
+3.0
+LLS
+Crypto ETN
+Bond future
+ETC
+(f) Non-equity related: PTT-ratio vs. LLS
+Figure A.7: Scatter plots of indicators vs. LLS for X: midpoint, Y: l1-imbalance
+This ﬁgure shows three out of six indicators for trading activity and liquidity plotted against the cross-sectional lead-lag strength
+(LLS). The left color in the dot represents the asset class of instrument X measured by the midpoint and the right color in the
+dot is equal to the asset class of instrument Y measured by the order book imbalance.
+67
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+4
+2
+0
+2
+4
+log of trading volume ratio
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(a) Equity related: TV -ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trading volume ratio
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(b) Non-equity related: TV -ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(c) Equity related: ITD-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of intertrade duration ratio
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(d) Non-equity related: ITD-ratio vs. LLS
+4
+3
+2
+1
+0
+1
+2
+3
+4
+log of trade through ratio
+0
+2
+4
+6
+8
+LLS
+Equity ETF
+Equity future
+Stocks
+(e) Equity related: PTT-ratio vs. LLS
+6
+4
+2
+0
+2
+4
+6
+log of trade through ratio
+0
+2
+4
+6
+8
+LLS
+Crypto ETN
+Bond future
+ETC
+(f) Non-equity related: PTT-ratio vs. LLS
+Figure A.8: Scatter plots of indicators vs. LLS for X: midpoint volatility, Y: transaction price volatility
+This ﬁgure shows three out of six indicators for trading activity and liquidity plotted against the cross-sectional lead-lag strength
+(LLS). The left color in the dot represents the asset class of instrument X measured by the midpoint volatility and the right
+color in the dot is equal to the asset class of instrument Y measured by the transaction price volatility.
+68
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed
+
+0
+1
+2
+3
+4
+5
+6
+7
+LLS
+0.3
+0.4
+0.5
+0.6
+0.7
+0.8
+0.9
+1.0
+Prediction Accuracy
+r=0.61, p=0.00
+X: midpoint vol. Y: trans. price vol.
+X: midpoint Y: obi
+X: midpoint Y: trans. price
+       LLS-Prediction  Benchmark
+count  461.000         461.000  
+mean     0.533           0.505  
+std         0.084           0.023  
+min        0.366           0.470  
+25%       0.493           0.493  
+50%       0.508           0.501  
+75%       0.537           0.511  
+90%       0.611           0.535  
+95%       0.744           0.545  
+max       0.894           0.601  
+Figure A.9: Relationship between average prediction accuracy of LLS-based approach considering lead-lag
+time and the LLS
+This ﬁgure shows the prediction accuracies of the LLS-based prediction approach considering the lead-lag time. The color of
+each dot represents the underlying measure combination. The summary statistics of the accuracies for the LLS-based approach
+and the benchmark are provided at the bottom right corner of the ﬁgure.
+69
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=5043260
+Preprint not peer reviewed

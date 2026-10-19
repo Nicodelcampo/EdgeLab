@@ -1,0 +1,109 @@
+{
+ "doc_id": 166,
+ "titulo": "High-Frequency Trading and Price Discovery: The Role of Strategic Runs",
+ "resumen_operativo": "Analiza empíricamente el impacto en la formación de precios (price discovery) de los 'strategic runs' (ciclos de alta frecuencia de envíos y cancelaciones de órdenes al mismo precio y tamaño). Utilizando datos granulares del libro de órdenes de XETRA (10 acciones alemanas), mediante un modelo SVAR, el autor demuestra que las órdenes de los strategic runs tienen un impacto permanente en el precio y una contribución al price discovery significativamente menores que otras órdenes de la misma agresividad. Una vez que el run es detectable por el mercado, su contenido informativo cae. Sin embargo, si dentro del run hay un cambio en la agresividad de la orden, el impacto en precio aumenta, sugiriendo actualización de creencias. Concluye que gran parte del order flow de HFT diluye el price discovery al aportar ruido, salvo cuando altera su agresividad.",
+ "calidad_paper": "alta",
+ "conceptos": [
+  {
+   "nombre": "strategic runs",
+   "tipo": "estrategia",
+   "definicion_en_contexto": "Secuencia iterativa y veloz de envíos y cancelaciones de órdenes limitadas del mismo lado y cantidad, generada por algoritmos de trading de alta frecuencia (HFT) intentando interactuar o ganar prioridad frente a otros algoritmos.",
+   "relaciones": [
+    {
+     "tipo": "PARTE_DE",
+     "objeto": "High-Frequency Trading (HFT)"
+    },
+    {
+     "tipo": "MITIGA",
+     "objeto": "price discovery"
+    }
+   ],
+   "cita_textual": "According to the authors, a run starts with an order submission, followed by a cancellation of that order. Within a very short time interval, the algorithm resubmits the order on the same side and with the same order size."
+  },
+  {
+   "nombre": "permanent price impact",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Impacto duradero en el precio medio (midpoint) derivado de un evento en el libro de órdenes limitadas, estimado mediante funciones de respuesta al impulso (IRF) en un modelo SVAR a 20 eventos vista.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "price discovery"
+    },
+    {
+     "tipo": "USA",
+     "objeto": "Structural Vector Autoregression (SVAR)"
+    }
+   ],
+   "cita_textual": "The main purpose of IRFs is to describe how the variables react over time to a shock in one (or more) variable(s) in the system... to examine the reaction of rt with the impulses being one unit in one dummy per IRF."
+  },
+  {
+   "nombre": "variance decomposition",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Método de Hasbrouck (1991) para descomponer la varianza del precio eficiente y medir la proporción de innovación en el precio atribuible a cada tipo de evento del libro de órdenes.",
+   "relaciones": [
+    {
+     "tipo": "MIDE",
+     "objeto": "price discovery"
+    }
+   ],
+   "cita_textual": "In addition to the IRFs, we also calculate the information shares measure proposed by Hasbrouck (1991b) that is based on the decomposition of the variance of the efficient price."
+  },
+  {
+   "nombre": "aggressiveness",
+   "tipo": "metrica",
+   "definicion_en_contexto": "Nivel de agresividad de un evento del libro de órdenes, medido por su distancia en ticks al mejor precio de compra/venta (BBO).",
+   "relaciones": [
+    {
+     "tipo": "PREDICE",
+     "objeto": "permanent price impact"
+    }
+   ],
+   "cita_textual": "Firstly, we categorize limit order book events based on their aggressiveness, measured by the distance to the BBO in ticks."
+  },
+  {
+   "nombre": "Structural Vector Autoregression (SVAR)",
+   "tipo": "metodo",
+   "definicion_en_contexto": "Modelo econométrico utilizado para aislar el impacto de distintas actividades del libro de órdenes (market orders, limit orders, cancelaciones) controlando por el lado (compra/venta) y la agresividad.",
+   "relaciones": [
+    {
+     "tipo": "USA",
+     "objeto": "permanent price impact"
+    }
+   ],
+   "cita_textual": "Hasbrouck (1991a) introduced a structural vectorautoregression (SVAR) model to estimate the price impact and the contribution to price discovery of trades."
+  }
+ ],
+ "hallazgos": [
+  {
+   "afirmacion": "Los eventos del libro de órdenes que forman parte de un strategic run tienen un impacto permanente en precio significativamente menor que los eventos no pertenecientes a un run, manteniéndose robusto al controlar por tamaño de orden e imbalance del libro.",
+   "mercado": "XETRA (10 acciones alemanas más líquidas, ej. SAP, Siemens, Allianz)",
+   "periodo": "Enero a Marzo 2023",
+   "magnitud": "Impacto de market order: no SR (0.848 bps) vs SR 10+ (0.544 bps). Improving limit order: no SR (0.603 bps) vs SR 10+ (0.277 bps).",
+   "condiciones": "Estimado vía SVAR, controlando retardos y categorizado en 9 clases de agresividad.",
+   "robustez": "alta",
+   "cita_textual": "The results show that the permanent price impact of non-strategic run events is significantly larger than the impact of strategic run events for almost every event type."
+  },
+  {
+   "afirmacion": "Los dos primeros eventos de un strategic run contribuyen desproporcionadamente más al price discovery que los eventos subsecuentes del mismo run, lo que indica que una vez detectado, el mercado le asigna menor valor informativo.",
+   "mercado": "XETRA (10 acciones alemanas más líquidas)",
+   "periodo": "Enero a Marzo 2023",
+   "magnitud": "Eventos 1-2 contribuyen un 8.187% a la varianza, mientras que los eventos 3+ (detectables) contribuyen 7.228%, pese a ser la inmensa mayoría de los mensajes.",
+   "condiciones": "Descomposición de varianza del SVAR dividiendo eventos de runs largos (SR 10+) en iniciales (indetectables a priori) y subsecuentes.",
+   "robustez": "media",
+   "cita_textual": "According to the estimated SVAR, strategic run activity contributes 15.4% to overall price discovery. Interestingly, more than half of this discovery is impounded via the first two events of the strategic run."
+  },
+  {
+   "afirmacion": "Las re-sumisiones dentro de un strategic run que modifican su agresividad (particularmente aumentándola) tienen un mayor impacto permanente en el precio, sugiriendo que actualizan información valiosa sobre futuros movimientos del midpoint.",
+   "mercado": "XETRA (10 acciones alemanas más líquidas)",
+   "periodo": "Enero a Marzo 2023",
+   "magnitud": "Impacto de limit order al BBO que incrementa agresividad: 0.115 bps, frente a 0.068 bps si no cambia la agresividad (diferencia de +0.046 bps).",
+   "condiciones": "Subdivisión de los runs largos (SR 10+) según el cambio en agresividad (incremento, sin cambio, disminución).",
+   "robustez": "media",
+   "cita_textual": "The column (I - II) shows the difference between the price impact of limit orders increasing the aggressiveness of the run and those that do not affect the run's aggressiveness. For each event type this difference is positive and statistically significant."
+  }
+ ],
+ "aplicabilidad_es_intradia": {
+  "nivel": "media",
+  "nota": "Aunque enfocado en equities europeos, la dinámica de limit order books es universal. Para trading intradía en ES (futuros del S&P 500) usando datos Nivel 2, la detección en tiempo real de 'strategic runs' (ciclos alta frecuencia envíos/cancelaciones) puede usarse como filtro negativo: un alto volumen de mensajes de este tipo es ruido (spoofing/pinging) sin impacto permanente direccional, ayudando a limpiar las métricas de order book imbalance para señales de momentum o absorción."
+ }
+}

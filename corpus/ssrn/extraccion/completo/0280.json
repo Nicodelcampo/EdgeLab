@@ -1,0 +1,165 @@
+{
+  "titulo": "Profitability of Trading Strategies on High-Frequency data, with Trading Costs",
+  "resumen_operativo": "Evalua rentabilidad de estrategias contrarian y momentum en el mercado indio (1996-2002) usando datos intradia del order book de NSE con price impact real. Momentum es rentable en el corto plazo (retornos positivos para periodos de formacion de 25 dias), pero los beneficios caen al aumentar el periodo de formacion. Los profits sobreviven incluso tras incorporar costos de transaccion no proporcionales. Descomposicion de profits revela que provienen de factores firma-especificos, no de factores comunes de mercado.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Contrarian vs Momentum Strategies",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias opuestas: Contrarian compra perdedores y vende ganadores (mean-reversion); Momentum compra ganadores y vende perdedores (persistencia).",
+      "relaciones": [
+        {
+          "tipo": "SE_OPONE_A",
+          "objeto": "Efficient Market Hypothesis"
+        }
+      ],
+      "cita_textual": "momentum strategies are profitable in the Indian markets, at least in the short term"
+    },
+    {
+      "nombre": "Price Impact from Order Book",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Calculo del costo real de transaccion usando snapshots del limit order book del NSE para ordenes de INR 10,000, eliminando necesidad de modelos econometricos.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Transaction Cost Estimation"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Market by Price (MBP) Data"
+        }
+      ],
+      "cita_textual": "we calculate the actual buy/sell prices for a given size of trade"
+    },
+    {
+      "nombre": "F/S/H Framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de Formacion/Skip/Holding: acciones rankeadas por retornos medios en F, tras S dias se toman posiciones mantenidas por H dias.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Contrarian vs Momentum Strategies"
+        }
+      ],
+      "cita_textual": "Stocks are ranked into groups on the basis of their mean returns during a formation period F"
+    },
+    {
+      "nombre": "Lead-Lag Structure",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "En India, large stocks siguen a small stocks en la misma direccion (contrario a EE.UU. donde large stocks lideran).",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Cross-Serial Correlation Profit"
+        }
+      ],
+      "cita_textual": "Large stocks thus follow small stocks and in the same direction"
+    },
+    {
+      "nombre": "Lo-MacKinlay Decomposition",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Descomposicion de profits de momentum en: cross-covarianza (Ck), covarianza serial (Ok), y dispersion cross-sectional de retornos esperados.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Momentum Profit Sources"
+        }
+      ],
+      "cita_textual": "MIS profits can be decomposed: E[pi_t(k)] = -Ck - Ok + sigma^2(mu)"
+    },
+    {
+      "nombre": "Jegadeesh-Titman Factor Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo unifactorial que descompone retornos en respuesta a factor comun contemporaneo y rezagado mas componente idiosincratico.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Momentum Profit Sources"
+        }
+      ],
+      "cita_textual": "r_it = mu_i + b0,i*f_t + b1,i*f_{t-1} + e_it"
+    },
+    {
+      "nombre": "Zero-Cost Momentum Strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Compra winners y venta simultanea de losers con inversion neta cero; usado para analisis de causas de rentabilidad.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Contrarian vs Momentum Strategies"
+        }
+      ],
+      "cita_textual": "zero-cost momentum strategies, where winners are bought and losers are sold simultaneously"
+    },
+    {
+      "nombre": "Market Microstructure Biases",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Sesgos como bid-ask bounce que generan correlacion serial espuria en retornos; eliminados usando precios de order book reales.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Price Impact from Order Book"
+        }
+      ],
+      "cita_textual": "Our methodology eliminates market-microstructure biases, like the bid-ask bounce"
+    },
+    {
+      "nombre": "Size Effect in Returns",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los profits de momentum son mayores en quintiles de small caps, disminuyendo con el tamano de la empresa.",
+      "relaciones": [
+        {
+          "tipo": "CAUSA",
+          "objeto": "Momentum Profitability"
+        }
+      ],
+      "cita_textual": "momentum strategy is clearly profitable, for all the portfolios, but profits die down as size increases"
+    },
+    {
+      "nombre": "NSE Market by Price (MBP)",
+      "tipo": "dato",
+      "definicion_en_contexto": "Snapshots horarios del order book completo del National Stock Exchange de India usados para calcular precios reales de compra/venta.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Price Impact from Order Book"
+        }
+      ],
+      "cita_textual": "We use snapshots of the entire limit-order book of the NSE"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Momentum strategies son rentables en el mercado indio en el corto plazo; retornos caen al aumentar el periodo de formacion de 25 a 250 dias.",
+      "mercado": "Indian equity market (NSE, 200 stocks)",
+      "periodo": "Marzo 1996 a Octubre 2002",
+      "magnitud": "Zero-cost momentum: retorno 0.353 (F=25, H=250); cae a 0.031 (F=250, H=250)",
+      "condiciones": "Ordenes de INR 10,000; precios reales de compra/venta del order book",
+      "robustez": "alta",
+      "cita_textual": "momentum strategies are profitable in the short-run, but profits fall as the formation period increases"
+    },
+    {
+      "afirmacion": "Profits de momentum provienen principalmente de factores firma-especificos, no de factores comunes; expected profits bajan con el tamano (7.15 quintil menor a 4.78 mayor).",
+      "mercado": "NSE India",
+      "periodo": "1996-2002",
+      "magnitud": "E(pi): 7.15 (small) a 4.78 (large); delta*sigma^2_f positivo pero menor que Omega",
+      "condiciones": "Jegadeesh-Titman decomposition con NIFTY como factor comun",
+      "robustez": "alta",
+      "cita_textual": "almost all the momentum profits are due to firm-specific factors"
+    },
+    {
+      "afirmacion": "Large stocks siguen a small stocks en India (direccion opuesta a EE.UU. y China); correlaciones seriales son positivas.",
+      "mercado": "NSE India",
+      "periodo": "1996-2002",
+      "magnitud": "Corr(R1,t-1, R5_t) = 2.38% vs Corr(R5,t-1, R1_t) = 9.99%",
+      "condiciones": "Matrices de cross-correlacion asimetricas por quintiles de tamano",
+      "robustez": "media",
+      "cita_textual": "Large stocks thus follow small stocks and in the same direction"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Usa datos intradia del order book y precios reales de compra/venta; metodologia directamente aplicable a trading de alta frecuencia."
+  },
+  "doc_id": 280
+}

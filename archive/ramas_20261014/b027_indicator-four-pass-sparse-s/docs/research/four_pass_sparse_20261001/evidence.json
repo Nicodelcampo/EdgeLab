@@ -1,0 +1,81 @@
+{
+  "schema": "edgelab.fp4.delivery/1",
+  "base": "391314907dec889599493c4a38282171d94a2f25",
+  "branch": "indicator/four-pass-sparse-stop-first-20261001",
+  "module_sha256": {
+    "four_pass_sparse.js": "d914bccf44db53b11e4a8f13eec89a4bd4f573a7ff4a7ddb291c49dc8c691a64",
+    "test_four_pass_sparse.cjs": "bf97fa858b524a5b2ecaf3e01d7362e12421ac00e0ec4f6898de60959e1325fd",
+    "four_pass_sparse_cli.cjs": "e2c8787c37499b3455daf680ed14af4bbbda6878aadaff1408ff3919444f9bad",
+    "prepare_four_pass_sparse.py": "fd1a571a1c63a77dff3b7f01236b9eff9004fa7d8930d28426c2839e3a010873",
+    "four_pass_sparse_worker.js": "5d4588ecf7261125ab5eb123abefe45765424ad99d5996bdfc706737bfbe8305",
+    "four_pass_sparse_viewer.js": "dcd331956894ae69aa57739443ce6e0dffdc912d61ff8434099441c2b35ea25b",
+    "install_four_pass_sparse.py": "1157ec5d704cd4d63ac8fe393941cc683f2ca2d3d8a9a97793e4128013796770",
+    "test_four_pass_integration.cjs": "4a707f98fb9836dbb5a9f665731a721ca6d24ed0b8fee76b83cfd3dd08d2dc94",
+    "test_four_pass_install.py": "a1e1b5e1dd6b09249106b6796f8c0d2c970b85b6f4bb9182716d87d06364021c"
+  },
+  "tests": {
+    "core": 24,
+    "worker_overlay": 9,
+    "installer": 6,
+    "total": 39,
+    "suite_complete": false,
+    "real_browser_visual_QA": false
+  },
+  "outcomes_computed": false,
+  "holdout_opened": false,
+  "real_smoke": {
+    "manifest_sha256": "a53a38f7aa6f8d51058e7e699c6799672a568d6edd6dee6050780009388a01c4",
+    "scope": "first200000 actual ticks each, MNQ09-25 andRTY12-25; not fullsession census or calibrated frequency",
+    "results": [
+      {
+        "asset": "MNQ_09-25_RAW_REVIEW",
+        "source_sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+        "input_rows_serialized": 200000,
+        "rows_consumed": 22148,
+        "status": "STOPPED_FIRST_ZONE",
+        "impulses": 1609,
+        "completed4": 163,
+        "rejected4": 88,
+        "insufficient4": 74,
+        "zone_found": true,
+        "error": null,
+        "outcomes_computed": false,
+        "layer_sha256": "da2b2908a3822436f326f1b41d9d65df401eb4d1ac39036e91d6d82ca0a855dc"
+      },
+      {
+        "asset": "RTY_12-25_RAW_REVIEW",
+        "source_sha256": "3f5bd8173ee1371f12cb5db8032cee39fbbfa1ef148681506ec313c9e00b95d6",
+        "input_rows_serialized": 200000,
+        "rows_consumed": 40631,
+        "status": "STOPPED_FIRST_ZONE",
+        "impulses": 1336,
+        "completed4": 112,
+        "rejected4": 57,
+        "insufficient4": 54,
+        "zone_found": true,
+        "error": null,
+        "outcomes_computed": false,
+        "layer_sha256": "1ec7859cf3274a8304c9c471c78fda3b1e270ff856c4f66890077f13c5658cbe"
+      }
+    ],
+    "outcomes_computed": false,
+    "holdout_opened": false
+  },
+  "independent_raw_geometry": {
+    "checks": [
+      {
+        "asset": "MNQ_09-25_RAW_REVIEW",
+        "four_passes_match_raw": true,
+        "fourth_exit_is_publication_anchor": true,
+        "scope": "geometry fixed-band from firstentry previousprint throughfourth exit; not fullmetric or clock certification"
+      },
+      {
+        "asset": "RTY_12-25_RAW_REVIEW",
+        "four_passes_match_raw": true,
+        "fourth_exit_is_publication_anchor": true,
+        "scope": "geometry fixed-band from firstentry previousprint throughfourth exit; not fullmetric or clock certification"
+      }
+    ],
+    "outcomes_computed": false
+  }
+}

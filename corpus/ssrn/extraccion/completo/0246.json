@@ -1,0 +1,76 @@
+{
+  "doc_id": 246,
+  "titulo": "Limit Order Book Shape and Return Distribution",
+  "resumen_operativo": "Desarrolla un modelo de formación de precios de forma reducida donde la distribución de órdenes de mercado y la forma del LOB determinan conjuntamente la distribución de retornos. El imbalance del LOB (ratio de pendientes ask/bid) determina la media y skewness de retornos; la convexidad del LOB (ratio de pendientes entre niveles superiores e inferiores) determina varianza y kurtosis. Validación empírica con datos ultra-high-frequency de NYSE y análisis causal explotando el programa piloto Reg SHO como shock exógeno a la forma del LOB.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "LOB Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio entre las pendientes de las funciones de price impact de los lados ask y bid del LOB. Un imbalance positivo (mayor pendiente ask) genera presión compradora de limit orders y skewness positivo en retornos.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Return Skewness"}, {"tipo": "CAUSA", "objeto": "Return Mean"}],
+      "cita_textual": "return skewness increases with LOB imbalance, independent of MO imbalance and LOB convexity"
+    },
+    {
+      "nombre": "LOB Convexity",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Ratio de las pendientes en niveles superiores vs inferiores del LOB. Una mayor convexidad implica que órdenes grandes enfrentan impacto desproporcionadamente mayor, generando colas más gruesas en la distribución de retornos.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Return Kurtosis"}, {"tipo": "CAUSA", "objeto": "Tail Risk"}],
+      "cita_textual": "variance decreases and kurtosis increases with LOB convexity"
+    },
+    {
+      "nombre": "Piecewise Linear Price Impact Function",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Modelo del LOB donde los precios logarítmicos en cada lado se representan como funciones lineales por tramos de la profundidad acumulada, permitiendo capturar efectos no lineales de impacto de precio.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "Reduced-Form Price Formation Model"}],
+      "cita_textual": "ask and bid sides of the LOB can be described by piecewise linear price impact functions"
+    },
+    {
+      "nombre": "Market Order (MO) Imbalance",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Media de la distribución de órdenes de mercado, donde valores positivos indican mayor volumen comprador. Determina el primer momento de la distribución de retornos.",
+      "relaciones": [{"tipo": "CAUSA", "objeto": "Return Distribution Mean"}, {"tipo": "USA", "objeto": "Signed Trade Volume"}],
+      "cita_textual": "We refer to the mean of the market order distribution as market order (MO) imbalance"
+    },
+    {
+      "nombre": "Cornish-Fisher Expansion",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Método para aproximar cuantiles de una distribución a partir de sus primeros cuatro momentos centrales, usado para expresar cuantiles de retorno en función de los parámetros de forma del LOB.",
+      "relaciones": [{"tipo": "USA", "objeto": "Return Quantiles"}, {"tipo": "PARTE_DE", "objeto": "Reduced-Form Model"}],
+      "cita_textual": "This allows us to derive closed-form expressions for the first four central moments and to compute return quantiles via the Cornish-Fisher expansion"
+    },
+    {
+      "nombre": "Reg SHO Pilot Program",
+      "tipo": "dato",
+      "definicion_en_contexto": "Programa piloto de 2005 que suspendió la uptick rule para una muestra aleatoria de acciones (pilot stocks), usado como shock exógeno para establecer causalidad entre forma del LOB y distribución de retornos vía diferencias-en-diferencias.",
+      "relaciones": [{"tipo": "USA", "objeto": "Causal Identification"}, {"tipo": "CAUSA", "objeto": "LOB Shape Change"}],
+      "cita_textual": "we examine the exogenous shock to LOB shape caused by Regulation SHO"
+    },
+    {
+      "nombre": "Time-Weighted Average LOB Shape",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Promedio ponderado por tiempo de parámetros del LOB calculados a nivel de snapshot, usado para construir proxies diarios de forma del LOB y mitigar ruido intradía en momentos superiores.",
+      "relaciones": [{"tipo": "USA", "objeto": "Daily LOB Proxies"}],
+      "cita_textual": "we compute them at the snapshot level and then take their time-weighted averages to construct daily proxies"
+    },
+    {
+      "nombre": "Dual-Side Convexity Effects",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Convexidad del ask side afecta principalmente la cola derecha de la distribución de retornos, mientras la del bid side afecta la cola izquierda, permitiendo análisis asimétrico de riesgo de cola.",
+      "relaciones": [{"tipo": "PARTE_DE", "objeto": "LOB Convexity"}],
+      "cita_textual": "ask-side convexity primarily affects the right side of the return distribution, while bid-side convexity influences the left side"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "LOB imbalance es el segundo factor más importante económicamente (tras MO imbalance mean) en la determinación de skewness de retornos, y LOB convexity es el segundo factor más importante para varianza y kurtosis.",
+      "mercado": "NYSE (acciones de EE.UU.)",
+      "periodo": "Período con datos TAQ y TRTH; análisis Reg SHO c. 2005",
+      "magnitud": "Coeficientes precisos en tablas del paper; significativos al 1%; múltiples cuantiles afectados",
+      "condiciones": "Datos diarios agregados desde TAQ y TRTH; efectos fijos de firma; control por momentos de distribución de market orders",
+      "robustez": "alta",
+      "cita_textual": "LOB imbalance ranks as the second most economically significant factor among the MO and LOB variables considered. Similarly... LOB convexity emerges as the second most economically significant variable influencing return variance and kurtosis"
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Usa datos ultra-high-frequency de NYSE (TAQ + TRTH); las variables de forma del LOB pueden computarse intradía para señales de trading de alta frecuencia."}
+}

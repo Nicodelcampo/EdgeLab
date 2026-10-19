@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/composition_contract.json",
+  "title": "EdgeLab Composition Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "composition_id",
+    "name",
+    "components",
+    "composition_logic",
+    "required_roles",
+    "interaction_hypothesis",
+    "ablations",
+    "status",
+    "asserts_edge",
+    "created_at_utc"
+  ],
+  "properties": {
+    "composition_id": {
+      "type": "string",
+      "pattern": "^COMP-[A-Za-z0-9._:-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "components": {
+      "type": "array",
+      "minItems": 2,
+      "items": {
+        "type": "string"
+      }
+    },
+    "composition_logic": {
+      "type": "string",
+      "minLength": 1
+    },
+    "required_roles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "interaction_hypothesis": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ablations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "PROPOSED",
+        "VALIDATED",
+        "REJECTED"
+      ]
+    },
+    "asserts_edge": {
+      "type": "boolean"
+    },
+    "created_at_utc": {
+      "type": "string"
+    }
+  }
+}

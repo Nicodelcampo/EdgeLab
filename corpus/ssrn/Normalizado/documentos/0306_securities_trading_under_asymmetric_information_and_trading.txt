@@ -1,0 +1,1882 @@
+Securities Trading Under Asymmetric
+Information and Trading Constraints
+Kathy Yuan∗
+University of Michigan
+September 21, 2004
+∗Yuan is from University of Michigan. This paper is partially based on my dissertation
+at the Massachusetts Institute of Technology and earlier versions were circulated with the
+title “A Non-linear Rational Expectations Equilibrium Model for Single and Multi-Asset
+Securities Markets.” I thank my advisors Paul Krugman, Jeremy Stein, and Jiang Wang,
+as well as Dimitri Vayanos, Mark Aguiar, Kobi Braude, Maciej K. Dudek, Denis Gromb,
+Guido Lorenzoni, Stewart C. Meyers, Markus M. M¨obius, Whitney Newey, Emre Ozdenoren, Steve Ross, and Jay Yuan; and seminar participants at Arizona State University,
+Baruch College, Harvard, Massachusetts Institute of Technology, University of Chicago,
+University of Maryland, University of Michigan, and University of Utah for helpful comments. I thank Hung-Chi Chang and Aniket Gune for research assistance. Any errors are
+mine.
+
+Abstract
+This paper develops a non-linear rational expectations equilibrium
+(REE) solution for a class of economies under both asymmetric information and trading constraints. It then analyzes the properties of this
+equilibrium in a one-risky-asset economy with borrowing and shortsale
+constraints. The model suggests that 1) price informativeness varies
+with the price level; and 2) compared with an economy with borrowing
+constraints and information asymmetry, the asymmetry in large price
+movements is more pronounced in the presence of both constraints.
+A dynamic implication of this result is that crashes (large downward
+price movements) are formed much faster than bubbles (large upward
+price movements).
+Journal of Economic Literature Classiﬁcation Codes: D82, D84, G14.
+Keywords: Rational Expectations Equilibrium, nonlinear REE, Trading Constraints, Shortsale Constraints, Borrowing Constraints, Asymmetric Information.
+
+1
+Introduction
+Information asymmetry is often used to explain why investors trade assets
+in the market. This literature has studies extensively how information is
+transmitted and aggregated to equilibrium prices, as well as how prices affect beliefs and how uninformed investors extract information and interact
+with informed investors. In reality, to trade assets, investors also face various market imperfections, including trading constraints such as shortsale
+and margin constraints. However, to incorporate these empirically relevant
+features in the literature on information asymmetry is diﬃcult. The reason is that, on one hand, in an equilibrium uninformed investors extract
+information from prices, and their demand depends on the distribution of
+equilibrium prices; on the other hand, equilibrium prices must equal supply and demand in the market, and the distribution of equilibrium prices
+also depends on uninformed investors’ own demand.1 In general, the diﬃculty arises because the ﬁxed point condition is characterized by a non-linear
+system of equations. More speciﬁcally, since uninformed investors extract
+information from equilibrium prices, the equilibrium price function is needed
+to solve the uninformed investor inference and demand problem. However,
+it is diﬃcult to conjecture this function explicitly.2 Furthermore, if there are
+multiple equilibrium solutions, one particular conjecture on an explicit form
+of the equilibrium price function may not be suﬃcient. Without an explicit
+function, the rational expectations equilibrium (REE) is a challenging and
+complicated ﬁxed point problem that can be approached only by numerical
+methods. However, numerical methods are diﬃcult to apply in the case of
+multiple equilibria, since it is diﬃcult to numerically approximate multiple
+equilibrium prices.3
+1Admati (1985) refers these observations as the information and the substitution eﬀect
+of prices.
+2As an exception, Barlevy and Veronesi (2003) construct an elegant REE example with
+risk-neutral investors and an exponential distribution of noise demand, in which they conjecture the uninformed investor demand function directly. They then demonstrate that
+there exists an equilibrium price function for which the conjectured uninformed investor
+demand function is optimal. However, in general, it is diﬃcult to conjecture the uninformed investor demand function directly.
+3Two studies that use numerical methods to represent a non-linear equilibrium are
+Romer (1993) and Bernardo and Judd (2000). Romer (1993) provides a rational explanation of the October 1987 stock market crash using a model of investor uncertainty about
+the quality of other investors’ information and a model of information dispersion with
+2
+
+In this paper, we provide an alternative characterization of the ﬁxed point
+problem. More speciﬁcally, instead of conjecturing an explicit form of equilibrium price function, we conjecture an implicit one where the price is a
+function of the state variables and the uninformed investor demand. This
+characterization utilizes two facts: First, the informed investor demand does
+not depend on the distribution of equilibrium prices; second, the uninformed
+investor demand is included in their information set. This approach allows
+the uninformed investor inference and optimal demand problem and the resulting equilibrium condition to be expressed as non-linear solutions to a set
+of algebraic equations.
+This approach contributes to the literature in many respects. First, our
+implicit function approach to solve non-linear REEs can be applied to multiasset settings with any generalized distributions, quasiconcave preferences,
+and convex constraint sets. Second, at a minimum, our alternative implicit
+price function approach can be used to improve the numerical methods. That
+is, instead of numerically approximating the price function or the signal space
+to solve for the uninformed investor inference and optimization problem (as
+in Romer (1993) and Bernardo and Judd (2000)) we solve the equilibrium
+using a partial numerical approach.
+In this approach, only the algebraic
+equations that characterize the equilibrium condition need to be solved numerically, even in the presence of multiple equilibria since there is no need
+to numerically approximate the price function. Third, in some setups, especially those commonly used in the literature where investors have constant
+risk averse preferences, constraints are linearized, and uncertainties are assumed to be normally distributed (CARA-normal),4 our indirect approach
+conjectures a linear implicit price function (i.e., linear in state variables).
+This allows for explicit expressions of uninformed investor inference and optimization problems and simpliﬁes the equilibrium conditions to algebraic
+solutions of a system of equations. Analytical solutions for these equations
+small trading costs. (In a sense, this model is similar to our example in Section 3 where
+uninformed investors are uncertain about informed investor constraint status.) He solves
+the models numerically by considering grids of signal and price space. Bernardo and Judd
+(2000) propose a numerical technique in which they approximate the price with polynomials and replace the conditional expectations with a number of integration conditions to
+obtain moment conditions on the investor optimal demand function.
+4Examples include Grossman (1976), Grossman and Stiglitz (1980), Hellwig (1980),
+Verrecchia (1982), Admati (1985), Jiang (1993), Jiang (1994), and Brennan and Cao
+(1997).
+3
+
+exist but are often quite involved; thus, numerical examples (not solutions)
+are normally needed to illustrate intuitions.5 In this sense, our alternative
+approach is useful to analyze the eﬀects of various market imperfections in
+conjuncture with asymmetric information on asset prices, building on the
+current CARA-Normal literature.
+Lastly, our approach separates the information eﬀect from the substitution eﬀect. Therefore, it allows us to do
+comparative statics analyses by varying one eﬀect while controlling for the
+other.
+To illustrate the generality of this non-linear rational expectations equilibrium approach, we develop an example of a security market under asymmetric information and trading constraints. More speciﬁcally, we analyze
+the impact of two prevalent trading constraints in the ﬁnancial market: borrowing and shortsale constraints. Consistent with the margin requirements
+and shortsale constraints observed in the ﬁnancial market, we specify both
+constraints as restrictions on investors’ demand. Little work has been done
+on how information is revealed by equilibrium prices in the presence of shortsale constraints,6 and even less in the area of borrowing constraints.7 Not
+surprisingly, we ﬁnd that the intuitions derived from linear REE asymmetric
+information models do not carry over to a world with trading constraints.
+For example, in a linear REE, equilibrium prices reveal the same amount
+of information regardless of levels. However, with trading constraints, price
+informativeness varies with the price level.
+5This is also the case in Yuan (2004) where investors have mean-variance preferences
+and state variables are normally distributed.
+6Allen, Morris, and Postlewaite (1993) develop an example where, under asymmetric
+information, shortsale constraints generate ﬁnite bubbles. Diamond and Verrecchia (1987)
+study the impact of shortsale constraints on asset price adjustments in the dealer markets.
+Marin and Oliver (2000), motivated by institutional arrangements, introduce the concept
+of “implementability of degree λ” to deal with the multiplicity problem that comes with
+shortsale constraints.
+7Grossman and Villa (1992) study the portfolio decisions of risk-neutral agents with a
+ﬁxed amount of borrowing. Similar to our paper, Xiong (2000), Xiong and Kyle (2000),
+and Gromb and Vayanos (2001) study borrowing constraints that are endogeneous in
+wealth/asset prices. Xiong (2000) and Xiong and Kyle (2000) show borrowing-constrained
+arbitragers can have a price destablizing eﬀect and can induce correlations in asset prices.
+Gromb and Vayanos (2001) show that borrowing-constrained competitive arbitragers may
+take excess (or little) risk. However, these studies do not explore eﬀects in an asymmetric
+information setting. In a separate paper, we have applied the approach developed here to
+markets with borrowing constraints and asymmetric information to study the phenomenon
+of the asset market crisis and contagion (2004).
+4
+
+In a separate paper, we have applied this methodology to a modiﬁed
+CARA-normal setting where investors face borrowing constraints.8 The addition of shortsale constraints in this paper provides further interesting insights in the information transmission mechanism and price dynamics in the
+presence of asymmetric information. In the previous example, we ﬁnd that
+price movement is asymmetric: Large upward price movements are less likely
+than large downward price movements. The reason is that when asset prices
+are low, informed investors are borrowing constrained and prices are uninformative about the fundamental value of the assets. As a result, uninformed
+investors may decrease their demand for the risky asset and require a large
+information-disadvantaged premium to hold it when prices are low. Information asymmetry has a multiplier eﬀect on downward price movements and
+may further exacerbate informed investors’ borrowing constraints.
+One may conjecture that the asymmetric price movement arises from the
+asymmetric eﬀect of borrowing constraints, which only bind when prices are
+low. When investors face symmetric trading constraints, such as shortsales
+and borrowing constraints, which bind when prices are either too high or too
+low, price movements should be symmetric. Counter to this intuitive conjecture, we ﬁnd more pronounced asymmetric price movements when investors
+face both constraints. When informed investors are shortsale constrained
+due to high prices, prices again become uninformative. In this case, information asymmetry has a dampening eﬀect on the upward price movement
+because uninformed investors regard the informativeness of the price signal
+deteriorated and would decrease their demand for the asset due to adverse
+selection concerns. Hence, large upward price movements become even less
+likely. On the other hand, the multiplier eﬀect of borrowing constraints on
+the downward price movement is much higher, since the the degree of uncertainty about price informativeness is much higher. Our analysis, therefore,
+shows that asymmetric price movements are not caused by asymmetric eﬀects
+of borrowing constraints, but by the interaction of information asymmetry
+and trading constraints.
+One dynamic implication of this static result is
+that crashes (large downward price movements) are formed much faster than
+bubbles (large upward price movements).
+The paper is structured as follows. In Section 2, the concept of a nonlinear rational expectation equilibrium for an economy with asymmetric in8Unformed investors are assumed to have mean-variance preferences and uncertainties
+are assumed to be normally distributed. See Page 12 in Yuan (2004).
+5
+
+formation and trading constraints is deﬁned and the solution method is explained and proved. Section 3 develops a CARA-normal example of nonlinear REE under borrowing and shortsale constraints in a single-risky-asset
+economy. Section 4 concludes.
+2
+The Model
+2.1
+An Economy with Information Asymmetry
+The following model is a generalization of the Grossman and Stiglitz model
+(1980) in two aspects. First, it includes multiple assets. Second, it includes
+some trading-constrained investors. There are two dates, time 0 and time 1.
+At time 0, investors trade competitively in the market based on their private
+information. At time 1, payoﬀs from the assets are realized and consumption
+occurs.
+The model assumes an underlying probability space, (Ω, F, Q), on which
+all random variables are deﬁned. A state of nature is denoted by ω ∈Ω. It is
+also assumed that all random variables belong to a linear space, N, of joint
+normally distributed random variables on Ω.
+In our model, there are one risk-free and n risky assets. The risk-free asset
+pays R units, while the risky asset, j, pays evj units of the single consumption
+good. Taking the risk-free asset to be the numeraire, we let P be the price
+vector for the risky assets. Investor k divides his initial wealth, W0,k, between
+the risky and risk-free assets. We let Dk be the vector of risky assets’ holdings
+by agent k. Thus, investor k’s ﬁnal wealth is given by:9
+f
+W1,k = W0,kR + Dk
+′(ev −RP)
+where ev = (ev1, ...evn). In the model, each investor maximizes the expected
+utility of consumption based on his or her own information set. We assume
+the utility functions U(·) are strictly quasiconcave.10 For informed investors,
+the information set consists of the equilibrium price vector and the realization of a private information signal vector, es, which is correlated with ev.
+9Assume that the risk-free asset is the numeraire asset and R = 1. Vectors are denoted
+by boldface. We denote informed agents by i, uninformed agents by ui, generic agents by
+k, and assets by j.
+10This assumption is made to ensure the solution to the investor optimization problem
+is unique.
+6
+
+By contrast, the uninformed investor information set consists of only the
+equilibrium price vector.
+Another ingredient of the model is the existence of “noise” in the form of
+a random supply of risky assets, so that the no-trade theorem does not apply
+(Milgrom and Stokey 1982). Speciﬁcally, the net supply of assets is assumed
+to be the realization of a random vector, em.
+With the above general structure, the following assumptions are made:
+investors are competitive and form a continuum with measure 1.
+These
+investors are of two classes: informed and uninformed.11 Prior to trading,
+informed investors receive private information related to the payoﬀof risky
+assets. The signal es is a noisy signal of the asset ﬁnal payoﬀ, ev, given as
+follows:
+es = ev + eǫs,
+where eǫs represents the noise of the signal and is independent of ev. In addition, ev, em, and eǫs are independently distributed.
+2.2
+The Constraint
+A unique feature of our model is the introduction of a price-dependent constraint set on informed investor demand for risky assets. Empirically, investors face various price-dependent trading constraints. For example, borrowing constraints typically arise when the stock price is low relative to the
+fundamental. In this case, borrowing-constrained informed investors cannot
+justify a holding position on a beaten-down stock to outside lenders. Their
+borrowing capacity is tied to asset values. Hence, borrowing constraints can
+be modeled as a restriction on informed investor demand that depends on
+asset prices. Another commonly observed trading constraint on investor’s demand is the shortsale constraint. Both constraints capture what we observe
+in reality. Consequently, studying such constraints is essential for an in-depth
+understanding of the properties of asset prices and trading volumes.12
+11We denote the measure of informed investors as wi and the measure of uninformed
+investors as wui, where wi + wui = 1. We denote the measure of unconstrained informed
+investors as wuc
+i
+and the measure of constrained informed investors as wc
+i , where wc
+i +wuc
+i
+=
+wi.
+12Trading constraints are not limited to borrowing and shortsale constraints. For example, investors also may face portfolio constraints: A certain fraction of their investments
+may be restricted to speciﬁc asset classes (e.g., ﬁxed income securities).
+7
+
+We incorporate constraints into the model by assuming that only a fraction of informed investors (wc
+i) face constraints.
+Thus, informed investor
+constrained demand (Dc
+i) can be expressed in the following set.13
+Deﬁnition 1 The demand of constrained informed investors for asset n, Dc
+i,
+is constrained to a convex set An(P).
+The following is an example of An(P), where the upperbound of constrained informed investor demand is n(P) (which can be thought as the
+borrowing constraint) and the lowerbound is l(P) (which can be thought as
+the shortsale constraint): An(P) = {y ∈Rn : l(P) ≤y ≤n(P)}.
+2.3
+The Equilibrium Concept
+This section deﬁnes the equilibrium concept for the above-speciﬁed constrained economy. It is based on the rational expectations model developed
+by Grossman (1976) and Hellwig (1980). The following is a standard equilibrium deﬁnition.
+Deﬁnition 2 A constrained REE in a constrained economy is a price vector,
+P, and allocation function, D, such that:
+• P is (es, em) measurable.
+• For an unconstrained agent k, Dk ∈arg maxDk∈Rn E(U(f
+Wk)|Fk). Fk
+is agent k’s information set.
+• For a constrained agent i, Dc
+i ∈arg maxDi∈AE(U(f
+Wi)|Fi). Fi is agent
+i’s information set. A is the constrained demand set.
+• The market clearing condition is satisﬁed by: wuc
+i Di+wc
+iDc
+i +wuiDui =
+em, where Di is unconstrained informed investor demand, Dc
+i is constrained informed agent demand, and Dui is uninformed agent demand.
+13The model assumes that only a fraction of informed investors are constrained, for
+the sake of generality. Constraints on uninformed investors in this type of problem are
+normally immaterial since they do not aﬀect the inference problem of uninformed investors.
+8
+
+The standard solution method requires an explicit conjecture of the functional form of the equilibrium price P (es, em), a form that allows for a closedform solution to the uninformed investor inference problem. In a CARAnormal setting, a linear price function form is typically conjectured. However,
+within a constrained REE, since P (es, em) is non-linear, the explicit function
+form of P (es, em) is diﬃcult to conjecture. Moreover, it is diﬃcult to express
+the uninformed investor inference and the optimization problem in a closed
+form.
+Two studies that use numerical approaches to represent a non-linear REE
+are Romer (1993) and Bernardo and Judd (2000). Romer (1993) considers
+an N × N grid of signal space (there are two signals in his model) and N
+equally-spaced price values. He ﬁrst posits the initial values of investor demand at the points on these grids, then solves for their optimal holdings, and
+ﬁnally looks for convergence. He approximates integrals numerically when
+calculating expected utilities. Similarly, Bernardo and Judd (2000) present
+a model with general taste, return distribution, and information structures.
+Using a numerical technique, they approximate the price through polynomials and replace the conditional expectation with an inﬁnite number of
+integration conditions to obtain moment conditions on the investor optimal
+demand functions. In either paper, a numerical approximation to the explicit
+equilibrium price function has to be obtained.
+We propose an approach in the following section that uses a conjecture of
+the implicit equilibrium price function to solve for the uninformed investor
+belief and demand functions in an equilibrium. This indirect approach improves upon the existing numerical methods from several dimensions. First,
+it circumvents the need to numerically approximate the explicit equilibrium
+price functional form. The functional form of an implicit equilibrium price is
+known since the informed investor optimal demand is known for a given signal and a given price. Second, numerical approaches are necessary only when
+investors have general taste, return distribution, and information structures.
+In the case when investors have constant absolute risk aversion preferences,
+constraints are linearized, and state variables are normally distributed, uninformed investor demand can be characterized by an algebraic equation.
+2.4
+The Equilibrium Solution
+In all REE models, equilibrium prices have both a substitution and an information eﬀect (Admati 1985). Besides clearing the market, as in Walrasian
+9
+
+models, equilibrium prices also aﬀect agent (here, uninformed investors) information sets by revealing information about ev. In short, in a REE, uninformed investors infer ev from equilibrium prices, and their demand depends
+on the distribution of equilibrium prices. By contrast, informed investors
+infer ev from es they received as it strictly dominates price as an informative signal for ev. Hence, informed investor demand does not depend on the
+distribution of equilibrium prices.
+Since utility functions are quasi-concave and the constraint set is convex,
+there is a unique solution to the optimization problem of all agents in this
+model (Theorem M.K.4, Page 962, Mas-Colell, Whinston and Green (1995)).
+Then the following must be true in equilibrium by the market clearing condition:
+wuc
+i Di(es, P) + wc
+iDc
+i(es, P) = em −wuiDui(P).
+To illustrate the equilibrium solution, we now consider a ﬁctitious economy where asset supply is given by emfic = em−wuiDui(P). We now suppose
+that the equilibrium price in the ﬁctitious economy is given by Pfic. The
+market clearing condition in this economy is expressed as:
+wuc
+i Di(es, Pfic) + wc
+iDc
+i(es, Pfic) = emfic.
+(1)
+Clearly, Pfic = P is an equilibrium price vector in this ﬁctitious economy.
+Note that the equilibrium price, Pfic, for a ﬁctitious economy with an asset
+supply of emfic reveals the same information regarding ev as the equilibrium
+price P for an economy with an asset supply of em, since Dui(P) contains no
+information regarding ev. In other words, P and Pfic are equivalent suﬃcient
+statistics for ev in the Blackwell sense (Blackwell Theorem, page 373, DeGroot
+(1986)). This observation leads to the following Lemma.
+Lemma 1 (Separation Property) 14
+E[evn|Pfic]
+=
+E[evn|P]
+where E[evn|·] is the nth conditional moment of ev.
+Lemma 1 suggests that using the prices for a ﬁctitious economy with only
+informed agents to infer ev is equivalent to using the equilibrium prices for
+14All proofs and derivations are provided in the Appendix unless otherwise mentioned.
+10
+
+the economy with both informed and uninformed agents. In this sense, information and substitution eﬀects can be separated. Based on Lemma 1, we
+provide an alternative characterization of the constrained rational expectations equilibrium in the following theorem.
+Theorem 1 The rational expectations equilibrium price P is (es, em, Dui(P))
+measurable, where Dui(P) is the uninformed agent demand function.
+This characterization of the REE concept essentially proposes an implicit
+equilibrium price function P
+′ (es, em, Dui(P)). By using an alternative implicit
+price function approach, it is not necessary to numerically approximate the
+price function or the signal space to solve for the uninformed investor inference and optimization problem as in Romer (1993) and Bernardo and Judd
+(2000). Since informed investor demand does not depend on the distribution
+of equilibrium prices, the implicit price function form is known and can be
+used to express the uninformed investor inference and optimization problem.
+Note that this method can solve for multiple equilibrium prices. For a
+given price vector P, an uninformed investor demand, Dui can be solved.
+This demand implies that for multiple equilibrium prices there may exist
+the same uninformed investor demand, Dui. Multiplicity is solved when the
+market clears for both the optimal unformed investor demand, Dui, and the
+optimal informed investor demand (Di
+c and Di
+uc).
+3
+An Example: A One-Risky-Asset Economy
+with Borrowing and Shortsale Constraints
+3.1
+The Setup and the Equilibrium Solutions
+To illustrate the indirect approach to solve non-linear REEs, we develop an
+example with a CARA-normal setup and general trading constraints. We
+assume that, for agent k, the utility function exhibits constant absolute risk
+aversion, i.e., E0
+£
+−e−ew1,k/ρ¤
+, where E0 is the expectation operator, conditional on investor information at time 0. Again, to simplify notation, we
+assume that all investors have the same risk aversion parameter, ρ. Generalization of this concept to heterogenous risk aversion parameter is shown
+in Admati (1985). In addition, we assume there is only one risky asset and
+ev, em, and eǫs are mutually independent and jointly normally distributed with
+11
+
+means of 0, m, 0 and variances of Σv, Σm, Σs, respectively. We assume that
+the risk-free asset is the numeraire asset and R = 1.
+To be empirically relevant, we also put the following linear structure on
+the constraint set faced by some of the informed investors to capture both
+borrowing and shortsale constraints.
+Deﬁnition 3 The demand of constrained informed investors is constrained
+to a set A, characterized as follows:15
+A = {Dc
+i ∈R : 0 ≤Dc
+i ≤n(P)}
+and
+n( eP) =
+½ aP + b
+if P ≥−b/a
+0
+otherwise
+where a > 0 and a < wuc
+i ρ(τv + τs)/wc
+i.16
+In this trading-constrained economy, informed investor demand can be
+expressed in the following Result.
+Result 1 Informed investor demand is represented by:
+Di = wc
+i(1{sc}Dsc + 1{uc}Duc + 1{bc}Dbc + 1{c}Dc) + wuc
+i Duc,
+where,17
+Dsc
+=
+dsc
+s es −dsc
+p P,
+Dc = dc
+ses −dc
+pP,
+Duc
+=
+duc
+s es −duc
+p P,
+eDbc = dbc
+s es −dbc
+p P + dbc
+0 ,
+1{bc}
+=
+1
+n
+es > κbc
+1 P + κbc
+0 ; eP > −b/a
+o
+, 1{sc} = 1 {es < κsc
+1 P; P > −b/a} ,
+1{uc}
+=
+1
+©
+κsc
+1 P < es < κbc
+1 P + κbc
+0 ; P > −b/a
+ª
+, 1{c} = 1 {P ≤−b/a} .
+Now we can write the equilibrium price(s) as the implicit solution to an
+algebraic equation, illustrating our alternative characterization of the constrained rational expectations equilibrium.
+15The ﬁrst restriction on a is to ensure that it is a borrowing constraint. The second is to
+ensure that the demand curve of constrained and unconstrained informed investors combined remains downward-sloping with respect to P so that the result of possible multiple
+equilibria is not trivial.
+16We use τ to denote the precision of a random variable, that is, the inverse of the
+variance; later, we use 1 to denote indicator functions.
+17We use bc to denote borrowing constrained, sc to denote shortsale constrained, c to
+denote being both borrowing and shortsale unconstrained, and uc to denote unconstrained.
+12
+
+Result 2 The rational expectations equilibrium price function, P, for the
+borrowing-and-shortsale-constrained economy is given by the following implicit function:
+P
+=
+1{uc}
+¡
+puc
+s es −puc
+m em + puc
+DuiDui(P)
+¢
++ 1{bc}
+¡
+pbc
+s es −pbc
+m em + pbc
+DuiDui(P) + pbc
+0
+¢
++
+1{sc}
+¡
+psc
+s es −psc
+m em + psc
+DuiDui(P)
+¢
++ 1{c}
+¡
+pc
+ses −pc
+m em + pc
+DuiDui(P)
+¢
+,
+1{bc}
+=
+1
+©
+es > κbc
+1 P + κbc
+0 ; P > −b/a
+ª
+,
+1{c} = 1 {P ≤−b/a} ,
+1{uc}
+=
+1
+©
+κsc
+1 P < es < κbc
+1 P + κbc
+0 ; P > −b/a
+ª
+,
+1{sc} = 1 {es < κsc
+1 P; P > −b/a} .
+All constants are deﬁned in the appendix.
+Note that the implicit price function is linear in variables (es, em, Dui(P)).
+Since Dui(P) is in the uninformed investor information set, we demonstrate
+in the following result that the uninformed investor optimal demand is also
+the solution to an algebraic equation as we can express the uninformed agent
+belief and demand functions in an equilibrium. We thus represent uninformed
+investor optimal demand as follows:
+Result 3 When P ≤−b/a, the following equation expresses uninformed
+investor optimal demand:
+Dui =
+(τp −τs)τv
+τs + τpwui/wuc
+i
+P
+ρ +
+mτp
+wuc
+i τs + wuiτp
+.
+When P ≥−b/a, uninformed investor demand for the risky asset is the
+unique ﬁxed point of the following algebraic equation:
+etbc
+1 Dui+tbc
+2 D2
+ui ¡¡
+tbc
+1 + 2tbc
+2 Dui
+¢ ¡
+1 −Φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢¢
+−tbc
+4 φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢¢
++etuc
+1 Dui+tuc
+2 D2
+ui
+
+
+(tuc
+1 + 2tuc
+2 Dui)
+¡
+Φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢
+−Φ (tsc
+3 + tsc
+4 Dui)
+¢
++tbc
+4 φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢
+−tsc
+4 φ (tsc
+3 + tsc
+4 Dui)
+
+
++etsc
+1 Dui+tsc
+2 D2
+ui ((tsc
+1 + 2tsc
+2 Dui) Φ (tsc
+3 + tsc
+4 Dui) + tsc
+4 φ (tsc
+3 + tsc
+4 Dui)) = 0.
+All constants are deﬁned in the appendix.
+The solution to the above ﬁxed point problem is a unique real root of an
+algebraic equation. Since the closed-form analytical solution is quite involved,
+a numeric example is provided in the following section to clarify the intuition
+for the solution and to illustrate the properties of the equilibrium prices and
+information transmission mechanism in this example.
+13
+
+3.2
+The Equilibrium Properties
+To illustrate the intuition, we conduct a numerical analysis for an example
+chosen to reﬂect “reasonable” parameters, where the risky asset is interpreted as a stock. We assume that 15% of investors are informed to reﬂect
+the fact that institutional investors other than pension funds and insurance
+companies hold about 15% of total market capitalization. We further assume that, among informed investors, a majority (in this case, 14%) are
+trading-constrained. A close examination of equilibrium prices shows that
+the fraction of investors and their risk tolerances are not separately identiﬁed.
+For simplicity, we normalize investor risk tolerance to two. A key parameter
+of the model is the quality of the information signal received by informed
+investors. We assume that informed investors receive a high-quality signal:
+the signal-to-noise ratio is 30. We also specify the parameters that describe
+noise trading (σm and m) and the underlying fundamental asset (σv and v).
+These parameters are chosen to equate the expected return on the risky security to 6% and the standard deviation to 40%.18 A second key parameter
+is the borrowing constraint. Since informed investors are also shortsale constrained, a and b are chosen so that there are price regions where informed
+investors are either borrowing or shortsale constrained and to reﬂect the fact
+that most investors face a 30% margin constraint.
+Yuan (2004) has shown the equilibrium price has an asymmetric distribution when some informed investors face borrowing constraints. One may
+conjecture that the asymmetric price movements arises from the asymmetric
+eﬀect of borrowing constraints which only bind when prices are low. In Figure 1, we show that the price distribution is asymmetric even when informed
+investors face symmetric trading constraints (i.e., shortsale constraints bind
+when prices are extremely high and borrowing constraints bind when prices
+are extremely low.).
+Figure 2 shows that the asymmetric price movement is due to the interaction between information asymmetry and trading constraints. Prices are less
+informative when informed investors are constrained out of the market and
+unable to transmit their signals to prices. Hence, in the low price region where
+informed investors are possibly borrowing constrained, uninformed investors
+demand an information-disadvantaged premium and demand less, compared
+with that in the standard Grossman-Stiglitz setup when informed investors
+18The interest rate is normalized to 0 in the model. Thus, the assumed return of 6%
+represents a 6% premium over the risk-free interest rate.
+14
+
+are unconstrained. This is due to the deterioration of the informativeness of
+the public signal (i.e., price) and resulting adverse selection concerns. The information asymmetry between informed and uninformed investors multiplies
+the eﬀect of borrowing constraints and exacerbates downward price movements. In this case, upward price movements in the high price region are
+not aﬀected since borrowing constraints are not binding.
+However, when
+informed investors face both borrowing and shortsale constraints, Figure 2
+shows that uninformed investors demand less in both high and low price
+regions. This is because in both price regions informed investors are possibly constrained out of the market (either by shortsale or by borrowing
+constraints) and uninformed investors are facing less informative prices. In
+the high price region, information asymmetry plays a dampening eﬀect on
+upward price movements. The degree of asymmetry in the price distribution,
+hence, is much higher when both trading constraints are present.
+Figures 3 and 4 show that the equilibrium price is a nonlinear function
+of state variables (es, em) when informed investors are trading-constrained.
+Moreover, compared with the case when informed investors face only borrowing constraints, Figure 3 shows that when informed investors are subject
+to one more constraint – the shortsale constraint, prices are less responsive
+to signal shocks, while Figure 4 shows that prices are more susceptible to
+supply shocks, especially in the high price region. The ﬁrst ﬁnding indicates
+that less information is transmitted to prices both when prices are high and
+informed investors are possibly shortsale-constrained and when prices are low
+and informed investors are possibly borrowing-constrained. Hence, the level
+of price informativeness varies nonlinearly with prices. The second ﬁnding indicates that the ability of informed investors to arbitrage the price diﬀerences
+arisen from the noise trading is much limited when they are facing shortsale
+and borrowing constraints. The lower (higher) sensitivity to signal (supply)
+shocks indicate that the degree of uncertainty about price informativeness
+is much higher when informed investors face more trading constraints since
+informed investors could be constrained in diﬀerent ways: either by shortsale
+or borrowing constraints.
+4
+Concluding Remarks
+This study explores an alternative characterization of the rational expectations equilibrium in securities markets with both asymmetric information and
+15
+
+trading constraints. To demonstrate the generality of this alternative nonlinear REE characterization, we also develop an example based on a setup
+that is commonly used in the literature where investors have constant absolute risk averse utility functions and state variables are normally distributed,
+with one additional feature – informed investors are borrowing and shortsale
+constrained. Our analysis shows that price informativeness varies with the
+price level in a non-linear REE. Our example also has interesting empirical
+implications. For example, it predicts pronounced asymmetric price movements with symmetric trading constraints. Prices become less informative
+when informed investors are constrained, be it borrowing or shortsale constrained. Since less informative prices cause uninformed investors to demand
+an information-disadvantaged premium, this results in a multiplier eﬀect on
+the downward price movement but a dampening eﬀect on the upward price
+movement. One dynamic implication of this static result is that crashes (large
+downward price movements) are formed much faster than bubbles (large upward price movements), which we will explore further in a future research.
+16
+
+A
+Proof of Lemma 1
+We ﬁrst note since utility functions are quasi-concave and the constraint set is
+convex, the solution to the optimization problem of all agents in the model is
+unique (Theorem M.K.4, Page 962, Mas-Colell, Whinston and Green (1995)).
+Then for all pairs (p, dui) where p and dui are realizations of eP and eDui, the
+following is true:
+n
+{es, em} : eP (es, em) = p
+o
+=
+n
+{es, em} : eP (es, em) = p, eDui (p) = dui
+o
+=
+n
+{es, em} : ePfic ³
+es, em, eDui (p)
+´
+= p, eDui (p) = dui
+o
+,
+where the ﬁrst equality follows by deﬁnition and the second equality follows
+by construction. Since these conditional sets are equivalent, Pfic and P are,
+therefore, equivalent statistics for inferences on ev.
+B
+Proof of Result 1
+The constrained informed investor optimization problem is:
+max
+Dc
+i
+E0[U(ev, Dc
+i|es, P] + µDc
+i Dc
+i −λ(Dc
+i −aP −b).
+The unconstrained informed investors’ optimization problem is:
+max
+Duc
+i
+E0[U(ev, Duc
+i )|es, P].
+Solving the above optimization, we ﬁnd that the informed investor demand f c : R2 →R is:
+Di = wc
+i(1{sc}Dsc + 1{uc}Duc + 1{bc}Dbc + 1{c}Dc) + wuc
+i Duc,
+where
+Dsc
+=
+dsc
+s es −dsc
+p P, Dc = dc
+ses −dc
+pP, Duc = duc
+s es −duc
+p P, 1{c} = 1 {P ≤−b/a} ,
+Dbc
+=
+dbc
+s es −dbc
+p P + dbc
+0 , 1{bc} = 1
+©
+es > κbc
+1 P + κbc
+0 ; P > −b/a
+ª
+,
+1{uc}
+=
+1
+©
+κsc
+1 P < es < κbc
+1 P + κbc
+0 ; P > −b/a
+ª
+, 1{sc} = 1 {es < κsc
+1 P; P > −b/a} .
+17
+
+We denote our inference constants as follows:
+dsc
+s =
+wuc
+i ρτs,
+dsc
+p = wuc
+i ρ(τs + τv),
+duc
+s =
+(wuc
+i + wc
+i)ρτs,
+duc
+p = (wuc
+i + wc
+i)ρ(τs + τv),
+dbc
+s =
+wuc
+i ρτs,
+dbc
+p = wuc
+i ρ(τs + τv) −wc
+ia,
+dc
+s =
+wuc
+i ρτs,
+dc
+p = wuc
+i ρ(τs + τv),
+κsc
+1 =
+(τs + τv)/τs,
+dbc
+0 = wc
+ib, κsc
+0 = 0
+κbc
+1 =(τs + τv + a/ρ)/τs,
+κbc
+0 = b/(ρτs).
+C
+Proof of Result 2
+Case 1: When informed investors are not constrained, the market clearing
+condition can be expressed as:
+wc
+i(duc
+s es −duc
+p P) + wuc
+i Duc
+i
+= em −(1 −wi)Dui(P).
+Hence, we can solve for P from this market clearing condition:
+P
+=
+puc
+s es −puc
+m em + puc
+DuiDui,
+where
+puc
+s = τs/(τs + τv), puc
+m = 1/(wiρ(τs + τv)), puc
+Dui = puc
+m(1 −wi).
+Since the uninformed investor demand function is Dui(P), we can express
+the equilibrium price when informed investors are not constrained in the
+following form:
+P = puc
+s es −puc
+m em + puc
+DuiDui(P).
+(2)
+Case 2: When informed investors are borrowing constrained, the market
+clearing condition can be expressed as:
+wc
+i(dbc
+s es −dbc
+p P) + wuc
+i Duc
+i
+= em −(1 −wi)Dui(P).
+Hence, we can solve for P from this market clearing condition:
+P
+=
+pbc
+s es −pbc
+m em + pbc
+DuiDui + pbc
+0 ,
+18
+
+where
+pbc
+s = τs/(τs + τv −wc
+ia/(wuc
+i ρ)), pbc
+m = 1/(wuc
+i ρ(τs + τv) −wc
+ia),
+pbc
+Dui = pbc
+m(1 −wi), pbc
+0 = wc
+ibpbc
+m.
+We can express the equilibrium price when informed investors are borrowing
+constrained in the following form:
+P = pbc
+s es −pbc
+m em + pbc
+DuiDui(P) + pbc
+0 .
+(3)
+Case 3: When informed investors are shortsale constrained, the market clearing condition can be expressed as:
+wc
+i(dsc
+s es −dsc
+p P) + wuc
+i Duc
+i
+= em −(1 −wi)Dui(P).
+Hence, we can solve for P from this market clearing condition:
+P
+=
+psc
+s es −psc
+m em + psc
+DuiDui,
+where
+psc
+s = τs/(τs + τv), psc
+m = 1/(wuc
+i ρ(τs + τv)), psc
+Dui = psc
+m(1 −wi).
+We can express the equilibrium price when informed investors are shortsale
+constrained in the following form:
+P = psc
+s es −psc
+m em + psc
+DuiDui(P).
+(4)
+Case 4: When informed investors are both shortsale and borrowing constrained, i.e., P ≤−b/a, the market clearing condition can be expressed
+as:
+wc
+i(dc
+ses −dc
+pP) + wuc
+i Duc
+i
+= em −(1 −wi)Dui(P).
+Hence, we can solve for P from this market clearing condition:
+P
+=
+pc
+ses −pc
+m em + pc
+DuiDui,
+where
+pc
+s = τs/(τs + τv), pc
+m = 1/(wuc
+i ρ(τs + τv)), pc
+Dui = pc
+m(1 −wi).
+We can express the equilibrium price when informed investors are shortsale
+and borrowing constrained in the following form:
+P = pc
+ses −pc
+m em + pc
+DuiDui(P).
+(5)
+19
+
+D
+Proof of Result 3
+We ﬁrst deﬁne the following constants:
+κsc =κsc
+1 P, τss = 1/(1/τv + 1/τs),
+κbc = κbc
+1 P + κbc
+0 ,
+1
+τP uc =
+µ
+1
+ρ (wuc
+i + wc
+i) τs
+¶2 1
+τm
+,
+1
+τP bc =
+1
+τP sc =
+µ
+1
+ρwuc
+i τs
+¶2 1
+τm
+,
+θsc =
+τP sc
+τss + τpsc κsc/
+1
+p
+(τss + τpsc)
+,
+θbc =
+τP bc
+τss + τpbc κbc/
+1
+p
+(τss + τpbc),
+P
+sc =
+−psc
+mm + psc
+DuiDui,
+P
+uc = −puc
+mm + puc
+DuiDui,
+P
+bc =
+−pbc
+mm + pbc
+DuiDui + pbc
+0 ,
+ezsc =
+rτP sc + τss
+τP scτss
+es,
+ezuc =
+rτP uc + τss
+τP ucτss
+es,
+ezbc =
+rτP uc + τss
+τP ucτss
+es.
+We also use Φ(·)(φ(·)) to denote the cumulative (probability) distribution
+function of a standard normal variable, i.e., Φ(·) ≡NORMCDF(0, 1) and
+φ(·) ≡NORMPDF(0, 1). We then express the conditional probabilities of
+informed investors being shortsale constrained, borrowing constrained, and
+unconstrained in the following equations.
+Prsc
+=
+Z
+√τP sc τss
+√τP sc +τss ezsc≤(κsc
+1 P+κsc
+0 )
+−∞
+φ
+Ã √τP scτss
+√τP sc+τss ezsc −
+τP sc
+τP sc+τss
+P−P sc
+psc
+s
+1/√τP sc + τss
+!
+=
+Φ
+Ã
+(κsc
+1 P + κsc
+0 ) −
+τP sc
+τP sc+τss
+P−P sc
+psc
+s
+1/√τP sc + τss
+!
+,
+Prbc
+=
+1 −Φ
+
+(κbc
+1 P + κbc
+0 ) −
+τP bc
+τP bc+τss
+P−P bc
+pbc
+s
+1/√τP bc + τss
+
+,
+Pruc
+=
+Prbc −Prsc.
+In our model, uninformed investors with a CARA utility function extract information from observed prices based on whether informed investors are trading constrained. In a standard setup without trading constraints, a CARA
+utility function with normally distributed state variables implies mean-variance
+investors. However when informed investors may be trading constrained, the
+state variables have truncated normal distributions. We demonstrate that,
+20
+
+with truncated normal distributions, in addition to the mean-variance term,
+the investment optimization includes a correction term for the truncation.
+The correction term is a non-linear function of the means and variances of
+the returns, investor risk tolerance, and the truncation point.
+As speciﬁed in the text, uninformed investors divide their initial wealth,
+W0, between risky and risk-free assets. We let Dui represent the risky asset’s holdings by uninformed investors. Thus, the uninformed investor’s ﬁnal
+wealth is given by:
+f
+W1,ui = W0,uiR + Dui(ev −RP).
+The uninformed investor maximizes her expected utility of consumption
+based on her own information set. She learns about the primary state variables (es, em) from P. P reveals information about es diﬀerently depending
+on whether informed investors are constrained. Therefore, the uninformed
+investor must infer both es and the informed investor constraint status. The
+expected utility of uninformed investors, conditional on informed investors
+being shortsale constrained, can be expressed in the following form:
+E0[−e−w1/ρ|P, es ≤κsc
+1 P + κsc
+0 ]
+=
+E0[e−(W0R+Dui(ev−R eP))/ρ|P, es ≤κsc
+1 P + κsc
+0 )]
+=
+e−(W0R−DuiR eP j)/ρE0[−e−Duiev/ρ|P, es ≤κsc
+1 P + κsc
+0 )].
+We assume that assets are independently distributed. Using iterative expectation, we can rewrite the above equation as:
+e−(W0R−DuiR eP)/ρE0[−e−Duiev|P, es ≤κsc
+1 P + κsc
+0 ]
+=
+e−(W0R−DuiR eP)/ρE0[E0[−e−Duiev/ρ|es]|P, es ≤κsc
+1 P + κsc
+0 ].
+Since
+f(ey) ∼N(0, 1
+τ0
+),
+ex = ey+eǫx,
+f(eǫx) ∼N(0, 1
+τx
+),
+f(ey|x) ∼N(
+τx
+τ0 + τx
+x,
+1
+τ0 + τx
+),
+21
+
+then:
+E0[−e−Duiev/ρ|es]
+=
+Z ∞
+−∞
+−e−Duiev/ρf (ev|P, es) dev
+=
+Z ∞
+−∞
+−e−Duiev/ρ
+1
+q
+1
+τv+τs
+1
+√
+2πe
+−1
+2
+Ã
+ev−
+τs
+τv+τs es
+√
+1
+τv+τs
+!2
+dev
+=
+−e
+−(
+τs
+ρ(τv+τs) Duies−
+D2
+ui
+2ρ2(τv+τs) ),
+and
+E0[−e−Duiev/ρ|P, es ≤κsc
+1 P + κsc
+0 ]
+=
+E0[−e
+−(
+τs
+ρ(τv+τs)Duies−
+D2
+ui
+2ρ2(τv+τs) )|P, es ≤κsc
+1 P + κsc
+0 ]
+=
+−e
+−(−
+D2
+ui
+2ρ2(τv+τs))E0[e−
+τs
+ρ(τv+τs) Duies|P, es ≤κsc
+1 P + κsc
+0 ]
+=
+−e
+−(−
+D2
+ui
+2ρ2(τv+τs) )e
+−
+τs
+ρ(τv+τs) Dui
+³
+τP sc
+τss+τP sc
+P −P sc
+psc
+s
+−
+1
+2(τss+τP sc )
+τs
+ρ(τv+τs)Dui
+´
+Prsc
+Z
+√τP sc τss
+√
+τP sc +τss ezsc≤(κsc
+1 P+κsc
+0 )
+−∞
+φ
+
+
+√τP scτss
+√τP sc+τss ezsc −
+³
+τP sc
+τss+τP sc
+P−P sc
+psc
+s
+−
+1
+(τss+τP sc)
+τs
+ρ(τv+τs)Dui
+´
+1/√τss + τP sc
+
+
+=
+−e
+−(−
+D2
+ui
+2ρ2(τv+τs))e
+−
+τs
+ρ(τv+τs) Dui
+³
+τP sc
+τss+τP sc
+P −P sc
+psc
+s
+−
+1
+2(τss+τP sc )
+τs
+ρ(τv+τs) Dui
+´
+Φ
+µ
+(κsc
+1 P+κsc
+0 )−
+³
+τP sc
+τss+τP sc
+P −P sc
+psc
+s
+−
+1
+(τss+τP sc )
+τs
+ρ(τv+τs) Dui
+´
+1/√τP sc+τss
+¶
+Prsc
+Hence:
+E0[−e−w1/ρ|P, es ≤κsc
+1 P + κsc
+0 )]
+=
+−e
+−(−
+D2
+ui
+2ρ2(τv+τs))e
+−
+τs
+ρ(τv+τs) Dui
+µ
+τP sc
+τss+τP sc
+P +psc
+mm−psc
+Dui Dui
+psc
+s
+−
+1
+2(τss+τP sc )
+τs
+ρ(τv+τs) Dui
+¶
+e−(W0R−DuiR eP)/ρ
+Φ
+
+
+(κsc
+1 P+κsc
+0 )−
+µ
+τP sc
+τss+τP sc
+P +psc
+mm−psc
+Dui Dui
+psc
+s
+−
+1
+(τss+τP sc )
+τs
+ρ(τv+τs) Dui
+¶
+1/√τP sc+τss
+
+
+Prsc
+.
+22
+
+We use g to denote
+1
+(τv+τs), h to denote
+τs
+(τv+τs), gsc to denote
+1
+τss+τP sc , and
+hsc to denote
+τP sc
+τss+τP sc . The above equation can then be simpliﬁed as:
+E0[−e−w1/ρ|P, es ≤κsc
+1 P + κsc
+0 )]
+=
+−e
+D2
+ui
+2ρ2 ge−(W0R−DuiR eP)/ρe
+−h
+ρ Dui
+µ
+hsc P +psc
+mm−psc
+Dui Dui
+psc
+s
+−1
+2ρgschDui
+¶
+Φ
+µ(κsc
+1 P + κsc
+0 ) −hsc(P + psc
+mm −psc
+DuiDui)/psc
+s + hgscDui/ρ
+√gsc
+¶
+/Prsc.
+In comparison, in a standard setup where informed investors do not have
+trading constraints and state variables are normally distributed, the optimization problem implies mean-variance investors.
+The above expression
+diﬀers from the standard CARA-normal case by a nonlinear term. This term
+is a non-linear function of the means and variances of the returns, investor
+risk tolerance, and the truncation point.
+The expected utility of uninformed investors being borrowing constrained
+or unconstrained can be similarly expressed in the following equations:
+E0[−e−w1/ρ|P, es ≥κbc
+1 P + κbc
+0 )]
+=
+−e
+D2
+ui
+2ρ2 ge−(W0R−DuiR eP)/ρe
+−h
+ρ Dui
+Ã
+hbc P +pbc
+mm−pbc
+Dui Dui−pbc
+0
+pbc
+s
+−1
+2ρgbchDui
+!
+Ã
+1 −Φ
+Ã
+(κbc
+1 P + κbc
+0 ) −hbc(P + psc
+mm −psc
+DuiDui)/pbc
+s + hgbcDui/ρ
+p
+gbc
+!!
+/Prbc, and
+E0[−e−w1/ρ|P, κsc
+1 P + κsc
+0 < es < κbc
+1 P + κbc
+0 )]
+=
+−e
+D2
+ui
+2ρ2 ge−(W0R−DuiR eP)/ρe
+−h
+ρ Dui
+µ
+huc P +puc
+m m−puc
+Dui Dui
+puc
+s
+−1
+2ρ guchDui
+¶
+
+
+
+
+
+Φ
+µ
+(κbc
+1 P+κbc
+0 )−hbc(P+psc
+mm−psc
+DuiDui)/pbc
+s +hgbcDui/ρ
+√
+gbc
+¶
+−Φ
+³ (κsc
+1 P+κsc
+0 )−hsc(P+psc
+mm−psc
+DuiDui)/psc
+s +hgscDui/ρ
+√gsc
+´
+
+
+
+
+/Pruc.
+Since we assume the risk-free asset is the numeraire asset and R = 1, the
+ﬁrst order condition of the optimal demand problem for the risky asset can
+23
+
+be expressed in the following equation:
+etbc
+1 Dui+tbc
+2 D2
+ui ¡¡
+tbc
+1 + 2tbc
+2 Dui
+¢ ¡
+1 −Φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢¢
+−tbc
+4 φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢¢
++etuc
+1 Dui+tuc
+2 D2
+ui
+
+
+(tuc
+1 + 2tuc
+2 Dui)
+¡
+Φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢
+−Φ (tsc
+3 + tsc
+4 Dui)
+¢
++tbc
+4 φ
+¡
+tbc
+3 + tbc
+4 Dui
+¢
+−tsc
+4 φ (tsc
+3 + tsc
+4 Dui)
+
+
++etsc
+1 Dui+tsc
+2 D2
+ui ((tsc
+1 + 2tsc
+2 Dui) Φ (tsc
+3 + tsc
+4 Dui) + tsc
+4 φ (tsc
+3 + tsc
+4 Dui)) = 0,
+where
+tbc
+1 =
+µP
+ρ −h
+ρ
+hbc
+pbc
+s
+(P + pbc
+mm −pbc
+0 )
+¶
+,
+tbc
+2 =
+µ g
+2ρ2 + h
+ρ
+µhbc
+pbc
+s
+pbc
+Dui + gbch
+2ρ
+¶¶
+,
+tbc
+3 =(κbc
+1 P + κbc
+0 ) −hbc(P + pbc
+mm −pbc
+0 )/pbc
+s
+p
+gbc
+,
+tbc
+4 = hbcpbc
+Dui/pbc
+s + hgbc/ρ
+p
+gbc
+,
+tuc
+1 =
+µP
+ρ −h
+ρ
+huc
+puc
+s
+(P + puc
+mm)
+¶
+,
+tuc
+2 =
+µ g
+2ρ2 + h
+ρ
+µhuc
+puc
+s
+puc
+Dui + guch
+2ρ
+¶¶
+,
+tsc
+1 =
+µP
+ρ −h
+ρ
+hsc
+psc
+s
+(P + psc
+mm)
+¶
+,
+tsc
+2 =
+µ g
+2ρ2 + h
+ρ
+µhsc
+psc
+s
+pbc
+Dui + gsch
+2ρ
+¶¶
+,
+tsc
+3 =
+(κsc
+1 P + κsc
+0 ) −hsc(P + psc
+mm)/psc
+s
+√gsc
+,
+tsc
+4 = hscpsc
+Dui/psc
+s + hgsc/ρ
+√gsc
+.
+When P ≤−b/a, informed investors facing trading constraints are constrained out of the market. The uninformed investor’s inference and optimization problem is standard. The following equation expresses uninformed
+investor optimal demand:
+Dui =
+(τp −τs)τv
+τs + τpwui/wuc
+i
+P
+ρ +
+mτp
+wuc
+i τs + wuiτp
+,
+where
+1
+τp
+= 1
+τs
++
+µ
+ρ
+wuc
+i τs
+¶2 1
+τm
+.
+In this case, the equilibrium price is also standard.
+P =
+τs
+τs + τv
+es −
+ρ
+wuc
+i (τs + τv)( em −wui(
+(τp −τs)τv
+τs + τpwui/wuc
+i
+P
+ρ +
+mτp
+wuc
+i τs + wuiτp
+)).
+24
+
+References
+Admati, A. R. (1985): “A Noisy Rational Expectations Equilibrium for
+Multi-asset Securities Markets,” Econometrica, 53(3), 629–657.
+Allen, F., S. Morris, and A. Postlewaite (1993): “Finite Bubles
+with Short Sale Constraints and Asymmetric Information,” Journal of
+Economic Theory, 61, 206–229.
+Barlevy, G., and P. Veronesi (2003): “Rational Panics and Stock Market Crashes,” Journal of Economic Theory, 110(2), 234–263.
+Bernardo, A. E., and K. L. Judd (2000): “Asset Market Equilibrium
+with General Tastes, Returns, and Informational Asymmetries,” Journal
+of Financial Markets, 3, 17–43.
+Brennan, M. J., and H. H. Cao (1997): “International Portfolio Investment Flows,” Journal of Finance, 52(5), 1851–1880.
+DeGroot, M. H. (1986): Probability and Statistics. Addison-Wesley, Reading, MA.
+Diamond, D. W., and R. E. Verrecchia (1987): “Constraints on Shortselling and Asset Price Adjustment to Private Information,” Journal of
+Financial Economics, 18, 277–311.
+Gromb, D., and D. Vayanos (2001): “Equilibrium and Welfare in Markets
+with Financially Constrained Arbitrageurs,” Working paper, MIT.
+Grossman, S. J. (1976): “On the Eﬃciency of Competitive Stock Markets
+When Traders Have Diverse Information,” Journal of Finance, 31, 573–
+585.
+Grossman, S. J., and J. E. Stiglitz (1980): “On the Impossibility of Informationally Eﬃcient Markets,” American Economic Review, 70(3), 393–
+408.
+Grossman, S. J., and J.-L. Vila (1992): “Optimal Dynamic Trading
+with Leverage Constrains,” Journal of Financial and Quantitative Analysis, 27(2), 151–168.
+25
+
+Hellwig, M. F. (1980): “On the Aggregation of Information in Competitive
+Markets,” Journal of Economic Theory, 22, 477–498.
+Kyle, A., and X. Wei (2000): “Contagion as a Wealth Eﬀect of Financial
+Intermediaries,” Journal of Finance, 56, 1401–1440.
+Marin, J. M., and J. Olivier (2000): “A Note on Trading Constraints and
+Rational Expectations Equlibria,” Working paper, Universitat Pompeu
+Fabra.
+Mas-Colell, A., M. D. Whinston, and J. R. Green (1995): Microeconomic Theory. Oxford University Press, New York.
+Milgrom, P., and N. Stokey (1982): “Information, Trade and Common
+Knowledge,” Journal of Economic Theory, 26(3), 17–27.
+Romer, D. (1993):
+“Rational Asset-Price Movements without News,”
+American Economic Review, 83(5), 1112–1130.
+Verrecchia, R. E. (1982): “Information Acquisition in a Noisy Rational
+Expectations Economy,” Econometrica, 50, 1415–1430.
+Wang, J. (1993): “A Model of Intertemporal Asset Prices under Asymmetric Information,” Review of Economic Studies, 60(2), 249–282.
+(1994): “A Model of Competitive Stock Trading Volume,” Journal
+of Political Economy, 112(11), 127–168.
+Xiong, W. (2000): “Convergence Trading with Wealth Eﬀects,” Journal of
+Financial Economics, 62(2), 247–292.
+Yuan, K. (2004):
+“Asymmetric Pricemovements and Borrowing Constraints: A REE Model of Crises, Contagion, and Confusion,” Journal
+of Finance, forthcoming.
+26
+
+−10
+−5
+0
+5
+10
+15
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+0.14
+0.16
+0.18
+0.2
+Probability Distributions of Equilibrium Prices
+Equilibrium Prices
+Density
+(a=3.825, b=80,mbar=16,vbar=3,τm=0.05, τs=75,τv=2.5,ρ=2,wuc
+i =0.01,wc
+i =0.14)
+SC−BC
+BC
+G−S
+Figure 1: Kernel estimation of equilibrium price distributions. The
+solid line represents the kernel estimation of the equilibrium price distribution based on 1000 draws of (es, em) in an economy with shortsale, borrowing constraints and asymmetric information (SC-BC). The dash-dotted line
+represents the kernel estimation of the equilibrium price distribution for an
+economy with borrowing constraints and asymmetric information (BC). The
+dotted line represents the kernel estimation of the equilibrium price distribution for an economy with asymmetric information (G-S).
+27
+
+−20
+−15
+−10
+−5
+0
+5
+10
+15
+20
+25
+30
+−15
+−10
+−5
+0
+5
+10
+15
+a=3.825,b=80,mbar=16,vbar=3,τm=0.05,τs=75,τv=2.5,ρ=2,wuc
+i =0.01,wc
+i =0.14
+Equilibrium Price
+Uninformed Demand
+SC−BC
+BC
+G−S
+Figure 2: Uninformed investor optimal demand. The line with ⊳represents the uninformed investor optimal demand schedule when some informed
+investors face shortsale and borrowing constraints (SC-BC). The line with
+◦represents uninformed investor optimal demand when some informed investors face borrowing constraints (BC). The line with + represents uninformed investor optimal demand in a Grossman-Stiglitz setup where agents
+are unconstrained (G-S).
+28
+
+−40
+−20
+0
+20
+40
+60
+80
+−15
+−10
+−5
+0
+5
+10
+15
+Borrowing and Shortsales Constraints
+Equilibrium Price
+Signal Shock
+−40
+−20
+0
+20
+40
+60
+80
+−15
+−10
+−5
+0
+5
+10
+15
+Borrowing Constraints
+Equilibrium Price
+Signal Shock
+a=3.825,b=80,mbar=16,vbar=3,τm=0.05,τs=75,τv=2.5,ρ=2,wuc
+i =0.01,wc
+i =0.14: (m = 0, 10, 16, 22, 32)
+Figure 3: Price sensitivity to signal shocks. The lines in both graphs
+represent equilibrium price as a function of the signal shock when the supply
+shock is 0, 10, 16, 22, and 32, respectively.
+The lines in the left graph
+represent the case when some informed investors face both borrowing and
+shortsale constraints, while the lines in the right graph represent the case
+when some informed investors face only borrowing constraints
+29
+
+−40
+−20
+0
+20
+40
+−15
+−10
+−5
+0
+5
+10
+15
+Borrowing and Shortsales Constraints
+Equilibriium Price
+Supply Shock
+−40
+−20
+0
+20
+40
+−15
+−10
+−5
+0
+5
+10
+15
+Borrowing Constraints
+Equilibriium Price
+Supply Shock
+a=3.825,b=80,mbar=16,vbar=3,τm=0.05,τs=75,τv=2.5,ρ=2,wuc
+i =0.01,wc
+i =0.14: (s = −5.48, −2.23 , 0.97, 4.19, 7.42)
+Figure 4: Price sensitivity to supply shocks. The lines in both graphs
+represent equilibrium price as a function of the supply shock when the signal
+shock is -5.48, -2.23, 0.97, 4.19, and 7.42, respectively. The lines in the left
+graph represent the case when some informed investors face both borrowing
+and shortsale constraints, while the lines in the right graph represent the
+case when some informed investors face only borrowing constraints.
+30

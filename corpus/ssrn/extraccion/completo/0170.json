@@ -1,0 +1,118 @@
+{
+  "doc_id": 170,
+  "titulo": "High-Frequency Trading Meets Reinforcement Learning: Exploiting the iterative nature of trading algorithms",
+  "resumen_operativo": "El autor propone un framework para optimizar el market-making usando aproximación estocástica en lugar de control estocástico tradicional. Esto permite a las estrategias de alta frecuencia aprender en línea y adaptar sus cotizaciones empíricamente (trial-and-error), sin depender de modelar de antemano la dinámica de los precios del activo.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "market making",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia algorítmica donde se provee liquidez ubicando cotizaciones pasivas a ambos lados del libro de órdenes para ganar el diferencial de precios.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "the goal of a market maker is to provide liquidity by setting quotes at the bid and the ask sides of the order book. Each time one side of a bid/ask pair gets executed, the market-maker earns the price-difference"
+    },
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Lugar virtual donde las intenciones de compra y venta interactúan y se emparejan continuamente siguiendo reglas de prioridad de precio y tiempo.",
+      "relaciones": [],
+      "cita_textual": "In the equity market, the virtual place where offer meets demand during the continuous auction phase is called limit-order book."
+    },
+    {
+      "nombre": "stochastic approximation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica iterativa usada para construir un algoritmo de aprendizaje en línea que busca los valores óptimos mediante gradientes estocásticos.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "market making"
+        }
+      ],
+      "cita_textual": "proposing an on-line learning framework to analyze the market-making problem ... based on the theory of stochastic approximation"
+    },
+    {
+      "nombre": "reinforcement learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Enfoque donde el algoritmo explora e interactúa empíricamente con el mercado (ensayo y error) sin modelos explícitos previos.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "stochastic approximation"
+        }
+      ],
+      "cita_textual": "make the algorithm optimize its strategy on a trial-and-error basis (i.e. on-line learning) using a variation of the stochastic gradient-descent algorithm."
+    },
+    {
+      "nombre": "inventory risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El riesgo de mantener un saldo no neutral de activos, lo que expone al market maker a pérdidas por movimientos direccionales antes del cierre de sesión.",
+      "relaciones": [],
+      "cita_textual": "if the trading algorithm only executes its orders on one side ... then its inventory moves away from zero, bearing the risk to eventually having to execute those shares at the end of the trading session at a worst price."
+    },
+    {
+      "nombre": "Avellaneda-Stoikov model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo matemático de liquidez que vincula la distancia al precio mid con una intensidad de Poisson para el llenado de órdenes límite.",
+      "relaciones": [
+        {
+          "tipo": "APLICA_A",
+          "objeto": "market making"
+        }
+      ],
+      "cita_textual": "For the price/liquidity modeling, we consider a discrete-time variant of the AvellanedaStoikov model"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Diferencial de precios entre la oferta y demanda; un spread más ancho disminuye ejecuciones pero aumenta la ganancia por cada cruce exitoso.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "it is expected that a large spread means a lower probability of execution while a narrower spread will mean a lower gain for each executed trade."
+    },
+    {
+      "nombre": "tick size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La diferencia mínima admitida en la cuadrícula de precios del libro de órdenes limitadas.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "limit order book"
+        }
+      ],
+      "cita_textual": "In the order book, prices can only exists in a discrete grid in which the minimum difference between two prices is called the tick-size."
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de liquidación del inventario residual modelados usualmente como una combinación del pago de spreads y el impacto de mercado.",
+      "relaciones": [],
+      "cita_textual": "In practice, when liquidating a given quantity in the market, agents incur in liquidation costs."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "El deterioro en precio provocado al consumir liquidez en el libro, parametrizado frecuentemente como una función convexa de la cantidad.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "transaction costs"
+        }
+      ],
+      "cita_textual": "liquidation costs represent bid-ask spread costs and market impact costs."
+    }
+  ],
+  "hallazgos": [],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "La aproximación adaptativa online permite testear market making intradía en ES sin depender estrictamente del supuesto de dinámica del precio."
+  }
+}

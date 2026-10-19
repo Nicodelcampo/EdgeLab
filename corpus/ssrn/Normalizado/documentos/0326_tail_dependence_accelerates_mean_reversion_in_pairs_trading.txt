@@ -1,0 +1,1856 @@
+Equilibrium pairs trading under delayed cointegration
+Tingjin Yana, Hoi Ying Wongb
+aAcademy of Statistics and Interdisciplinary Sciences, Faculty of Economics and Management,
+East China Normal University, Shanghai, China
+bDepartment of Statistics, The Chinese University of Hong Kong, Hong Kong
+Abstract
+Cointegration analysis is an econometric tool used to identify equilibrium among assets and construct a pairs trading portfolio. The discrete-time vector error correction model (VECM) for identifying cointegration includes lag difference terms
+as explanatory variables, thus permitting delayed adjustment of the deviations from equilibrium. The continuous-time
+limit of the VECM becomes a stochastic delay differential equation. We investigate the dynamic open-loop equilibrium
+mean-variance pairs trading strategy under such a delayed cointegration model. The existence and uniqueness results
+for the equilibrium are offered. We prove in general that the equilibrium strategy can lead to statistical arbitrage under
+certain conditions that are related to the roots of the corresponding characteristic equation. We obtain an explicit solution
+for a case with distributed delay. Our empirical study demonstrates the superiority of our strategy over its Markovian
+counterpart when the model selection result prefers a high-order VECM.
+Keywords: Mean-variance portfolio; Pairs trading; Stochastic delay differential equation; Time inconsistency
+1. Introduction
+Stochastic control system with delay effect is a topic which has existed for long period but still receive intensive
+attentions from researchers in various areas such as engineering [39], ﬁnance [28, 27], epidemic modelling [6], among
+others. In these literature, the time delay can appear in the system state as well as in the control variable. This paper
+considers the stochastic control problem with delayed state from the perspective of cointegration and pairs trading.
+Cointegration, a concept for which Robert F. Engle and Clive W. J. Granger won a Nobel prize in 2003, is ﬁrst
+introduced to describe a speciﬁc class of multivariate non-stationary time series. When observed individually, these
+series may wander extensively; however, they share some detectable common trends and thus do not drift far from one
+another. In ﬁnance, cointegration techniques are used to identify the co-movement among assets and detect the meanreverting property of certain price spreads. Once these features are identiﬁed, practitioners can construct long-short
+positions when the spreads diverge and unwind the positions when the spreads converge. This simple static pairs trading
+strategy can generate abnormal proﬁts [16]. The current paper aims to develop a strategy that takes advantage of dynamic
+trading and risk management.
+[15] propose the vector error correction model (VECM), a speciﬁc vector autoregressive (VAR) model, and establish
+the theory to identify cointegrated time series. As shown by the ﬁrst column in Table 1, in the VECM, a price change can
+Discrete-time
+Continuous-time
+VAR(1)
+∆Y (t + 1) = ΠY (t) + Σε(t)
+dY (t) = ΠY (t)dt + ΣdW(t)
+VAR(p)
+∆Y (t + 1) = ΠY (t)
++
+p−1
+X
+i=0
+Γi∆Y (t −i) + Σε(t)
+dY (t) = [ΠY (t)
++
+Z 0
+−p
+Ψ(u)dY (t + u)
+
+dt + ΣdW(t)
+Table 1: A comparison between the discrete-time VECM and its continuous-time analogue.
+∗Corresponding author.
+Email addresses: tjyan@fem.ecnu.edu.cn (Tingjin Yan), hywong@cuhk.edu.hk (Hoi Ying Wong)
+Preprint submitted to ...
+May 23, 2022
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+be accounted for by the historical price deviations, which are essentially linear combinations of the prices. The lagged
+prices can also be incorporated as explanatory variables to allow for the delayed effect of price deviations correction
+(see Section 2.2 for detailed discussions), resulting in a non-Markovian model. The speciﬁcation of VECM starts with
+the lag order selection, and models with lagged terms can help to identify the cointegrated system more precisely [30].
+[18] observes that the delay effect is likely to happen in high frequency data and speciﬁes a VECM with a lag of 106 for
+investigating the market microstructure.
+Compared with the discrete-time formulation, a continuous-time formulation is sometimes preferred by those researchers and practitioners who are concerned with the tractability and interpretabily. Table 1 compares and contrasts
+the discrete-time VECM and its continuous analogue. [32] ﬁrst establishes the connection between the VAR(1)-type
+VECM and the Ornstein-Uhlenbeck (OU) process, a standard continuous-time Markovian cointegration model. Regarding non-Markvoian cases, the studies by [33, 29] demonstrate that stochastic delay differential equations (SDDE) can be
+understood in some cases as the diffusion limit of high-order autoregressive moving average (ARMA) time series (for
+more information on SDDEs, the readers may refer to [31]). They assume that the number of lagged terms will increase
+without limit as the time between observations converges to zero, which naturally leads to a path-dependent structure.
+Inspired by this idea, [4] extend Merton’s portfolio problem and consider a labor income process with a delayed dynamic
+since the income process is commonly modelled by the ARMA process. [38] study the diffusion limit of VECM and
+propose a delayed cointegration model using SDDE. As shown in Table 1, a Lebesue-Stieltjes integral appears in the drift
+term, which is a sliding average analogous to the weighted sum of lagged terms in the discrete-time case. In this way, the
+total weights of Y remains to be Π and thus we construct a delayed error correction term in the drift. [38] further solve
+for the dynamic mean-variance (MV) pairs trading problem based on the delayed cointegration model.
+However, the solution of [38] is time-inconsistent (or precommitted), as the non-smooth property of the variance
+operator prevents the use of dynamic programming. We must assume that the decision maker only optimizes the problem
+initially but does not reconsider the problem over time [40]. This obstacle is reﬂected in related work, such as [11], [35].
+Moreover, pairs trading is related with the statistical arbitrage, which concerns with the strategy performance for a
+sufﬁciently long time period, but the precommitted strategy for a cointegrated system is represented by the solutions to
+Riccati differential equations and is only stable over a ﬁnite trading horizon [11, 38]. Accordingly, we are motivated to
+investigate the time-consistent strategy.
+We adopt the game-theoretical formulation of the time-consistent equilibrium strategy as established by [3, 5]. In this
+approach, a sequential game is formulated by considering all the future incarnations of the decision maker as players, and
+the resulting strategy is derived as a Nash sub-game perfect equilibrium. Their approaches are applied to pairs trading
+in [12, 10] with Markovian models. However, [3, 5] only consider feedback control; they exclude the non-Markovian
+control, which is likely to be the candidate strategy in our problem. To incorporate the non-Markovian control, we use the
+open-loop equilibrium control framework in [21, 22, 37]. The open-loop method uses backward stochastic differential
+equations (BSDEs) to allow the uniqueness of the equilibrium to be addressed, a task that is extremely difﬁcult when
+using the Hamilton-Jacobi-Bellman (HJB) equations framework proposed by [3, 5]. The aforementioned approaches
+restrict the problem to a Markovian control system. The current paper extends it to the case of a non-Markovian system.
+As a related work, [34] investigates a linear-quadratic stochastic differential game in high frequency trading and employs
+the BSDE technique to obtain a Nash equilibrium which characterizes the trading behaviors of market participants.
+This paper makes four contributions to the literature: First, we solve for the time-consistent equilibrium pairs trading
+strategy using multiple assets whose log prices satisfy a stochastic system with distributed and discrete delay. This setup
+can be understood as a continuous-time approximation of the VECM for a cointegrated time series. We provide results
+proving the existence and uniqueness of the equilibrium determined using BSDEs. Note that the strategy in [38] ignores
+the time-inconsistency issue and is optimal solely at the initial time, whereas our equilibrium strategy treats this issue
+seriously and is derived through solving a Nash sub-game perfect equilibrium.
+Second, we investigate the relationship between delayed cointegration and statistical arbitrage proposed by [19].
+We associate the stochastic delay system with deterministic autonomous functional differential equations (AFDEs) and
+conduct an asymptotic analysis. [12] study the equilibrium pairs trading under the OU process and obtain conditions for
+statistical arbitrage. This paper considers a more general problem by incorporating the delayed terms (see Table 1). We
+rigorously prove that our equilibrium strategy leads to statistical arbitrage when the eigenvalues of the AFDEs satisfy
+certain conditions, thus embracing the result in [12] as a special case. Calculating these eigenvalues is an important and
+well-studied topic in the theory of AFDE. We discuss some speciﬁc cases wherein these eigenvalues can be expressed
+2
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+explicitly and note that, generally, the eigenvalues can be solved numerically.
+Third, we consider a speciﬁc case involving a general weighting function but only a distributed (not discrete) delay
+and obtain an explicit solution. The stochastic control problem with delay is an inﬁnite dimensional problem and explicit
+solutions are extremely rare; in fact, it is very difﬁcult to obtain any numerical solution. [1, 23, 8, 38] derive the semiclosed form solutions expressed using Riccati partial differential equations, which are difﬁcult to solve numerically.
+Recent advances exploit deep neutral network to develop numerical methods (see [20, 27]). We ﬁnd that, compared to
+the precommitted strategy in [38], the equilibrium strategy is much convenient to implement in practice.
+Fourth, we conduct an empirical study by considering an investment problem involving two commodity securities:
+WisdomTree WTI Crude Oil and WisdomTree Gasoline (UGAS). We contrast our strategy with its Markovian counterpart in [12]. As our strategy learns from a path-dependent structure, it can enable us to earn abnormal proﬁts even if
+the market crashes. The back-testing result is also supported by the information criteria in lag order selection, which
+suggests the use of high-order VAR models during the investment period.
+The rest of the paper is organized as follows. Section 2 presents the problem formulation. Section 3 offers results
+demonstrating the existence and uniqueness of the equilibrium pairs trading strategy. In Section 4, we prove rigorously that our strategy leads to statistical arbitrage under certain conditions. Section 6 provides an empirical study and
+compares our results with those in [12]. Section 7 concludes the paper.
+2. Problem formulation
+2.1. Notations
+Let m, n > 0 be two generic integers. For a vector a ∈Rn and a matrix A ∈Rm×n, |a| :=
+ a⊤a
+1/2 denotes
+the Euclidean norm while |A| := tr
+
+AA⊤1/2 denotes the Frobenius norm, where tr [·] represents the usual trace of a
+matrix.
+In a ﬁltered complete probability space (Ω, F, {Ft}t∈[0,T] , P),
+• Sm
+F ([t, T]; Rn, P): the space of all {Fs}s∈[t,T]-adapted Rn-valued stochastic processes X(·) = {X(s) : t ≤s ≤T}
+with E
+
+supt≤s≤T |X(s)|m
+< ∞.;
+• Hm
+F ([t, T]; Rn, P): the space of all {Fs}s∈[t,T]-adapted Rn-valued stochastic processes X(·) = {X(s) : t ≤s ≤T}
+with E
+R T
+t |X(s)|2 ds
+m/2
+< ∞.;
+We suppress the dependence of P when no confusion occurs.
+Let Cm(D, Rn) denotes the family of m-th order continuously differentiable functions f : D →Rn. We use ˙f to
+denote the ﬁrst order derivative if f has only one argument.
+2.2. Delayed cointegration model
+We ﬁrst provide a brief review of the cointegrated time series in discrete time. Let t ∈Z be the time variable. The
+n−dimensional time series {Y (t)}t∈Z is said to be cointegrated with k(0 < k < n) cointegrating relations if each
+component of the series taken individually is non-stationary but ﬁrst-order integrated (i.e., taking difference yields a
+stationary process) and there exists k linearly independent non-zero vectors ci, i = 1, 2, . . . , k such that c⊤
+i is stationary
+(see [30] for details). Each stationary process is called the cointegrating factor. In ﬁnancial market, the price of a certain
+asset, which is usually non-stationary, is likely to be cointegrated with the market indexes or the prices of other assets in
+a similar sector. Identiﬁcation of the cointegrating factor is the foundation of constructing a pairs trading strategy.
+The Granger representation theorem [15] offers a VECM representation of a cointegrated system. VECM belongs
+to a speciﬁc class of the VAR model and is crucial for the identiﬁcation of the cointegrating factor. Letting ∆˜Y (t) =
+˜Y (t) −˜Y (t −1) and p > 0 be an integer, the VECM is given by
+∆˜Y (t + 1) = Π ˜Y (t) +
+p−1
+X
+i=0
+Γi∆˜Y (t −i) + Σε(t),
+(1)
+3
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+where Σ ∈Rn×n is a non-singular matrix, Γi ∈Rn×n, {ε(i) : i ∈Z} is a sequence of independent n-dimensional
+standard Gaussian random vectors. Π ∈Rn×n is a singular matrix with rank k, and ΠY (t) is called the error correction
+term. Using matrix factorization, we write Π = αβ⊤, where α, β are n×k full-rank matrices. β⊤γ(t) is the k ×1 vector
+of the stationary cointegrating factors and is referred to as the equilibrium error which measures the price deviation. Here
+only the equilibrium error in the immediately previous period is considered. As noted by [15], the incorporation of the
+lagged difference terms allows (1) to permit any set of equilibrium error lags by rearranging the terms. Therefore, the
+speciﬁcation (1) of a high-order type allows for gradual adjustment (with delay effect) toward the equilibrium, which is
+likely to happen especially in the high-frequency environments [18].
+Consider the continuous-time setting (t ∈R). When Γi = 0, [32] ﬁrst proposes the continuous-time model for (1),
+which is a Markovian OU process. This model does not allow for the gradual adjustment toward the equilibrium. [38]
+investigate the weak limit of (1) and propose the following continuous-time analogue:
+d ˜Y (t)
+=
+
+Π ˜Y (t) +
+Z 0
+−p
+Ψ(u)d ˜Y (t + u)
+
+dt + ΣdW(t)
+=
+h
+(Π + Ψ(0)) ˜Y (t)−
+Z 0
+−p
+˙Ψ(u) ˜Y (t + u)du
+−Ψ(−p) ˜Y (t −p)
+i
+dt + ΣdW(t),
+t ∈(0, T],
+˜Y (u)
+=
+˜φ(u),
+u ∈[−p, 0],
+(2)
+where, with a slight abuse of the notations, p > 0 is a real number representing the memory length. Ψ ∈C1([−p, 0], Rn×n)
+is the weighting function. {W(t)}t∈[0,T] represents standard {Ft}t∈[0,T]-adapted n-dimensional Brownian motion. (2)
+generally belongs to the class of SDDEs but can describe the cointegration system with non-Markovian common trends
+and the delayed adjustment of price deviation in speciﬁc cases. In this model, the error correction term becomes a sliding
+average of the historical values of Y with total weight equal to Π. We refer the readers to [38] for related discussions.
+We assume an initial value of ˜φ ∈C0([−p, 0], Rn×n). The existence and uniqueness results for (2) are proved in [31]
+and is summarized in the following lemma.
+Lemma 1. For any m ≥2, (2) admits a unique strong solution ˜Y (t) ∈Sm
+F ([−p, T], Rn).
+2.3. The market
+Suppose that the ﬁnancial market consists of one risk-free asset with interest rate r ∈C0([0, T]; R+) and n risky
+assets. We focus on the continuous trading problem within a ﬁnite time horizon [0, T]. The log price vector of the
+risky assets is denoted by Y (t) := ln S(t) = (ln S1(t), ln S2(t), . . . , ln Sn(t)). We assume that Y (t) = ˜a(t) + ˜Y (t).
+˜a(t) ∈C1([−p, T], Rn) is a deterministic component in the log price for which the examples include a growth trend, a
+periodic function denoting seasonal effect, among others. ˜Y (t) is the cointegrated component and is assumed to be given
+by (2). Therefore, Y (t) satisﬁes
+dY (t)
+=
+h
+a(t) + HY (t) +
+Z 0
+−p
+K(u)Y (t + u)du
+−MY (t −p)
+i
+dt + ΣdW(t),
+t ∈(0, T],
+Y (u)
+=
+φ(u),
+u ∈[−p, 0],
+(3)
+where a(t) = ˙˜a(t) −H˜a(t) −
+R 0
+−p K(u)˜a(t + u)du + M˜a(t −p), H = Π + Ψ(0), M = Ψ(−p), K(u) = −˙Ψ(u), and
+φ(u) = ˜a(u) + ˜φ(u) for u ∈[−p, 0]. Accoding to Lemma 1, Y ∈Sm([−p, 0]; Rn) for any m ≥2. For the convenience
+of illustration, we use Yt := {Y (t + u); u ∈[−p, 0]} to denote a segment of Y .
+2.4. Time-consistent mean-variance strategy
+Suppose that there is an investor with an initial wealth of x0 in the aforementioned market. For t ∈[0, T], let
+π(t) = (π1(t), π2(t), . . . , πn(t))⊤be the portfolio strategy, where πi (i = 1, . . . , n) denotes the dollar amount invested
+in the risky asset i. If the investor adopts π, the corresponding wealth level is given by
+dX(t)
+=
+r(t)
+h
+X(t) −π(t)⊤1
+i
+dt + π(t)⊤diag [S(t)]−1 dS(t)
+4
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+=
+h
+r(t)X(t) + u(t)⊤θ(t, Yt)
+i
+dt + u(t)⊤dW(t),
+(4)
+where diag [S(t)] denotes a Rn×n diagonal matrix with all diagonal elements equal to the components of S(t) and
+θ(t, Yt)
+=
+Σ−1h
+b(t) + HY (t) +
+Z 0
+−p
+K(u)Y (t + u)du
+−MY (t −p)
+i
+,
+b(t)
+=
+a(t) + D
+h
+ΣΣ⊤i
+1 −r(t)1.
+(5)
+Here, we replace Σ⊤π(t) with u(t) for ease of illustration. D
+
+ΣΣ⊤
+denotes the diagonal elements of ΣΣ⊤, and 1 is an
+n × 1 vector with all elements being 1. The goal is to minimize
+J(t, x, Yt; u) = 1
+2 Vart [X(T)] −µEt [X(T)]
+=
+1
+2
+h
+Et
+
+X(T)2
+−(Et [X(T)])2i
+−µEt [X(T)]
+(6)
+over control u in an admissible set to be speciﬁed later, where Et [·] = E
+
+·
+Ft
+
+, X(t) = x.
+The non-smooth property of the variance operator in (6) is known to lead to the failure of the dynamic programming
+principle [40]. To tackle this issue, we consider the game-theoretical formulation and the time-consistent equilibrium
+control within the open-loop class (see [21, 22, 37]). We introduce the risk-neutral measure Q which is shown to be
+well-deﬁned in Lemma 4.
+Deﬁnition 1. An {Ft}t∈[0,T]-adapted Rn-valued process u = {u(t); t ∈[0, T]} is said to be admissible if u ∈H2
+F ([0, T]; Rn)
+and there exists a unique strong solution to (4), such that X ∈S2
+F([0, T]; Rn) and e−
+R t
+0 r(s)dsX(t) is a supermartingale
+under Q. We denote by A the set of all the admissible controls.
+The supermartingale property of the discounted wealth process ensures no-arbitrage in continuous-time self-ﬁnancing
+strategies.
+Deﬁnition 2. For a candidate control u∗∈A, any t ∈[0, T], and ε > 0, an open-loop control takes the form:
+ut,ε,η(s) = u∗(s) + η1s∈[t,t+ε],
+(7)
+where η ∈H2
+Ft (Ω; Rn). Let X∗be the state process corresponding to u∗. Then, the control u∗is called an equilibrium
+if
+lim
+ε↓0
+J(t, X∗(t), Yt; ut,ε,η) −J(t, X∗(t), Yt; u∗)
+ε
+≥0.
+(8)
+2.5. Equivalent condition to the equilibrium using BSDE
+The equilibrium control in Deﬁnition 2 has an equivalent condition which is expressed by a ﬂow of adjoint equations
+(i.e. a ﬂow of BSDEs). The idea is originated from [21]. Our problem differs because the risk premium θ is unbounded.
+For each t ∈[0, T], we deﬁne in the time interval [t, T] the adjoint process (p∗(·; t), k∗(·; t)) that satisﬁes the following
+BSDE, with a wealth process X∗under the candidate control u∗∈A:
+dp∗(s; t)
+=
+−rp∗(s; t)ds + k∗(s; t)⊤dW(s),
+p∗(T; t)
+=
+X∗(T) −Et [X∗(T)] −µ.
+(9)
+According to Theorem 5.1 in [13] and Deﬁnition 1, it is clear that the above BSDE admits a unique solution (p∗(·; t), k∗(·; t)) ∈
+S2
+F([t, T]; R)×H2
+F([t, T]; Rn). The following results can be proved by mimicking the proofs of Theorem 1 and Lemmas
+1 and 2 in [37]. Observing Lemma 1, we highlight that the condition θ ∈H2
+F([t, T]; Rn×n) is automatically satisﬁed.
+5
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+Lemma 2. Let (p∗(·; t), k∗(·; t)) be the unique solution to (9) under the candidate control u∗∈A and the corresponding
+X∗. Then, u∗is an equilibrium control if and only if, a. s., for a. e. t ∈[0, T],
+p∗(t; t)θ(t, Yt) + k∗(t; t) = 0.
+(10)
+3. Existence and uniqueness of the equilibrium
+Based on the previous discussion, the search for equilibrium is transferred into solving for the adjoint equations. We
+deﬁne the deterministic function ρ(t) = e
+R T
+t r(s)ds for t ∈[0, T] and consider the solution form for p∗(s; t) as follows:
+p∗(s; t)
+=
+ρ(s) {ρ(s)X∗(s) + Γ(s) −µ −Et [ρ(s)X∗(s) + Γ(s)]} ,
+(11)
+where (Γ, γ) is the solution to the following BSDE:
+dΓ(s) = −F(s)ds + γ(s)⊤dW(s),
+Γ(T) = 0.
+(12)
+Then we mimic the procedures in [21, 37]. Applying Itˆo’s formula to (11) and comparing the diffusion term with that of
+(9), we obtain a representation of k∗. Plugging k∗into the equivalent condition (10), we derive
+u∗(t) = ρ−1(t) [µθ(t, Yt) −γ(t)] .
+(13)
+Using the above expression of u∗, we compare the drift term of the dynamic of p∗with that of (11) and obtain
+F(s) = [µθ(s, Ys) −γ(s)]⊤θ(s, Ys).
+(14)
+Then, (12) becomes
+dΓ(s)
+=
+−
+h
+µ |θ(s, Ys)|2 −γ(s)⊤θ(s, Ys)
+i
+ds + γ(s)⊤dW(s),
+Γ(T)
+=
+0.
+(15)
+To proceed, the existence result of the solution to (12) has to be investigated. This BSDE is nonstandard because the
+generator is not uniformly Lipschitzian and the unbounded process θ prohibits the use of the classic theory of quadratic
+BSDE. One workable way is to assume a Novikov condition on θ and apply the method of changing measure (see
+[35, 37, 38]). In our case, changing measure is automatically permitted. We introduce two useful lemmas to illustrate
+this point.
+Firstly, we provide a representation of model (3) using deterministic delay differential equations, which are also
+called AFDEs. For t ∈[−p, T], let y0(t) be a Rn×n-valued function and y1(t) be a Rn-valued function.
+
+
+
+
+
+
+
+
+
+˙y0(t) = Hy0(t) +
+Z 0
+−p
+K(u)y0(t + u)du
+−My0(t −p),
+a.e. for t ∈[0, T],
+y0(0) = In,
+y0(u) = 0,
+for u ∈[−p, 0),
+(16)
+
+
+
+
+
+
+
+
+
+
+
+˙y1(t) = Hy1(t) +
+Z 0
+−p
+K(u)y1(t + u)du
+−My1(t −p),
+for t ∈[0, T]
+y1(u) = ˜φ(u),
+for u ∈[−p, 0].
+(17)
+The solution to (16) is deﬁned as a weak sense as a function y0 that is absolutely continuous in [0, T] and satisﬁes the
+differential equation in (16) almost everywhere t ∈[0, T]. y0 is called the fundamental matrix solution. It is clear that
+for t > p, y0(t) is continuously differentiable and the differential equation in (16) holds everywhere. The solution to
+6
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+(17) is deﬁned as a function y1 ∈C1([−p, T], Rn). We refer to [17] and [25] for the existence and uniqueness results of
+these two AFDEs.
+Lemma 3. Let y0 and y1 be the solutions to (16) and (17) respectively. Then the unique strong solution to (3) is given by
+Y (t) = ˜a(t) + y1(t) +
+Z t
+0
+y0(t −s)ΣdW(s).
+(18)
+Moreover, the risk premium process satisﬁes
+θ(t, Yt)
+=
+Σ−1h
+b(t) + ˙˜a(t) −a(t) + ˙y1(t) +
+Z t
+0
+˙y0(t −s)ΣdW(s)
+i
+.
+Proof. See Appendix A.1.
+For an {Ft}t∈[0,T]-adapted semimartingale Z = {Z(t) ∈Rn, t ∈[0, T]}, we denote the Dol´eans-Dade exponential
+by Et(Z · W) := exp
+
+−1
+2
+R t
+0 |Z(s)|2 ds +
+R t
+0 Z(s)⊤dW(s)
+
+. The following lemma proceeds from the result of Lemma
+4 in [38].
+Lemma 4. For any constant c > 0, (Et(cθ · W), Ft)t∈[0,T] is a martingale.
+Based on Lemma 4, the risk-neutral measure Q is well deﬁned according to dQ
+dP
+
+FT
+= ET (−θ · W). According to
+Girsanov’s theorem, for t ∈[0, T], the process W Q(t) := W(t) +
+R t
+0 θ(s, Ys)ds is a Brownian motion under measure
+Q. We denote the expectation operator under Q by EQ [·].
+Next, we introduce the ﬁniteness of the moment-generating function of the integrated squared risk premium process
+as a condition. Our condition is much weaker than those in [35, 37, 38] because it only assumes the existence of a
+neighborhood of 0 within which the moment-generating function is ﬁnite. We will verify later that this condition is
+always satisﬁed in our case.
+Condition 1. There exists a constant ε > 0 such that
+E
+
+exp
+
+ε
+Z T
+0
+|θ(t, Yt)|2 dt
+
+< ∞.
+Lemma 5. Suppose that Condition 1 is valid.
+BSDE (15) admits a unique solution (Γ, γ) ∈Sm([0, T]; R, P) ×
+Hm([0, T]; Rn, P) for any m ≥2.
+Proof. See Appendix A.2.
+Then, we can ﬁnd an equilibrium in the sense of Deﬁnition 2. According to Lemma 2, the only item remaining to be
+veriﬁed is the admissibility of the candidate control (13). We also demonstrate the uniqueness of the equilibrium using
+the BSDE technique.
+Theorem 1. Suppose that Condition 1 is valid. The equilibrium control for the problem (6) exists and is given by
+u∗(t) = ρ−1(t) [µθ(t, Yt) −γ(t)] ,
+for t ∈[0, T].
+(19)
+Moreover, if ε > 6 in Condition 1, the equilibrium is unique.
+Proof. See Appendix A.3.
+Theorem 2. Suppose that Condition 1 is valid. The efﬁcient frontier under the equilibrium control u∗is given by
+Var [X∗(T)] =
+(E [X∗(T)] −x0ρ(0))2 E
+hR T
+0 |θ(t, Yt)|2 dt
+i
+
+EQ
+hR T
+0 |θ(t, Yt)|2 dt
+i2
+.
+(20)
+7
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+Proof. See Appendix A.4.
+Lemma 6. Suppose
+ε <
+1
+4T
+R T
+0 |Σ−1 ˙y0(s)Σ|2 ds
+,
+(21)
+then
+E
+h
+eε
+R T
+0 |θ(t,Yt)|2dti
+< ∞.
+Proof. According to Jensen’s inequality, we obtain
+E
+
+exp
+
+ε
+Z T
+0
+|θ(t, Yt)|2 dt
+
+≤
+1
+T
+Z T
+0
+E
+h
+exp
+
+εT |θ(t, Yt)|2i
+dt
+≤
+sup
+t∈[0,T]
+E
+h
+exp
+
+εT |θ(t, Yt)|2i
+.
+From (5) and Lemma 3, we obtain
+E
+h
+exp
+
+εT |θ(t, Yt)|2i
+=
+E
+"
+exp
+ 
+εT
+Σ−1
+
+b(t) −a(t) + ˙˜a(t) + ˙y1(t) +
+Z t
+0
+˙y0(t −s)ΣdW(s)
+
+2!#
+≤
+CE
+h
+exp
+
+2εT |χ(t)|2i
+,
+(22)
+where C > 0 is a proper constant, and χ(t) :=
+R t
+0 Σ−1 ˙y0(t −s)ΣdW(s). Therefore,
+χ(t)
+∼
+N
+
+0,
+Z t
+0
+Σ−1 ˙y0(t −s)ΣΣ⊤˙y0(t −s)⊤Σ−1⊤ds
+
+:=
+N(0, ς(t)).
+For each t ∈[0, T], ς(t) is a semi-positive deﬁnite matrix. By spectral decomposition, we write ς(t) = P(t)⊤Λ(t)P(t)
+where P(t) is an orthogonal matrix and Λ(t) is a diagonal matrix with all elements equal to the eigenvalues of ς(t). Let
+ˆχ(t) = ς(t)−1
+2 χ(t). Then |χ(t)|2 = ˆχ(t)⊤ς(t)ˆχ(t)⊤= [P(t)ˆχ(t)]⊤Λ(t)P(t)ˆχ(t). Note that P(t)ˆχ(t) ∼N (0, In).
+Therefore, the right-hand side of inequality (22) becomes the multiplication of the moment-generating functions of the
+independent Chi-square random variables, and is ﬁnite when 2εTλmax(t) < 1
+2. Here λmax(t) denotes the maximum
+eigenvalue in Λ(t). As λmax(t) ≤supt∈[0,T] tr (ς(t)), (21) is a sufﬁcient condition for the ﬁniteness of (22).
+Remark 1. The condition in Lemma 6 is more relaxed than that in Lemma 4.8 in [38], which is subject to the exponentially asymptotic stability of y0.
+4. Statistical arbitrage
+From a practical perspective, cointegrated pairs trading is referred to as a statistical arbitrage strategy. In the previous
+discussion, we prove for the existence of the equilibrium strategy. Using Theorem 1 and Lemma 6, we conﬁrm the
+uniqueness of the equilibrium when the investment horizon is sufﬁciently small. In this section, we will focus on the
+long-term performance and validate that our equilibrium strategy satisﬁes the conditions for statistical arbitrage proposed
+by [19]. Hence, even if the condition for unique equilibrium is not valid, the strategy remains trustworthy.
+The next result follows from Theorem 2.23 in [25]. The relevant conditions are crucial factors in the asymptotic
+stability of the solution to the AFDE (17).
+Theorem 3 ([25]). Deﬁne the characteristic matrix ∆(λ) = λI −H −
+R 0
+−p eλuK(u)du + e−λpM and the spectrum
+σ(H, K, M) := {λ ∈C; det [∆(λ)] = 0} where C is the complex plane, and det [∆(λ)] is called the characteristic
+function. Suppose the following for all λ0 ∈σ(H, K, M):
+(i) Re λ0 ≤0;
+8
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+(ii) when Re λ0 = 0, the multiplicity of λ0 in det [∆(λ)], denoted by k0, satisﬁes either of the following:
+• k0 < n and rank [∆(λ0)] = n −k0;
+• k0 = n, ∆(λ0) = 0 and rank ˙∆(λ0) = n.
+Then there exists a constant ˜c > 0 independent of T such that |y1(t)| ≤˜c supu∈[−p,0]
+˜φ(u)
+ for any t ∈[−p, T].
+Unlike the Markovian case, the spectrum of the AFDE has a countably inﬁnite number of roots, which are referred
+to as eigenvalues. These eigenvalues are aligned along curves in the complex plane and given any vertical line in the
+complex plane, only a ﬁnite number of eigenvalues exist to the right of this line (see Lemma 1.4.1, [17]). We brieﬂy
+illustrate the calculation of these eigenvalues in the remarks below.
+Remark 2. Suppose that H = K = 0. In this case, the model (3) becomes a SDDE with a single discrete delay.
+The cointegrated factor can either be closed to the mean-reverting OU process or have cyclical ﬂuctuations without
+damping (see [26, 38]). Then, ∆(λ) = e−λp 
+λeλpI + M
+
+and one can verify that the sufﬁcient condition to support the
+assumption in Theorem 3 to hold is that all the eigenvalues of M lies within [0, 1
+pe]. As p ↓0, this sufﬁcient condition
+degenerates to the condition in the Markovian cointegration model [12].
+Remark 3. Suppose that K = 0, but H, M are nonzero. The spectrum σ(H, 0, M) can be investigated using the
+matrix Lambert W function [24, 9]. [24] provide an explicit expression for σ(H, 0, M) if H and M are simultaneously
+triangularizable; this includes the case wherein H and M commute.
+Remark 4. For the general case, efﬁcient methods can be adopted to approximate the eigenvalues numerically. As the
+AFDE is inﬁnite dimensional, these methods use the discretization of the solution operator [14] and the discretization of
+the inﬁnitesimal generator of the solution operator semigroup [7].
+We brieﬂy recall the four conditions proposed by [19] for statistical arbitrage strategy: (i) the strategy is a zero initial
+cost (x0 = 0) self-ﬁnancing trading strategy; (ii) within the limit of the inﬁnite investment time, the strategy has positive
+expected discounted proﬁts; (iii) the probability of a loss converges to 0; and (iv) a time-averaged variance converges to
+0 if the probability of a loss does not become 0 in ﬁnite time. For a dynamic self-ﬁnancing MV portfolio, the ﬁrst two
+conditions are initial requirements for the optimization problem. Hence, it sufﬁces to prove the remaining two conditions
+with the ﬁrst two conditions enforced. For illustrative purpose, we assume constant r and a although it can be relaxed to
+the time-dependent parameters with bounded ﬁrst-order derivatives straightforwardly.
+Proposition 1. Suppose that r and a are constants. In the case with x0 = 0 and e−rT E [X(T)] = η(T), suppose that
+there exists a constant ¯c > 0, such that
+lim
+T→∞
+η(T)
+T
+= ¯c.
+(23)
+If the conditions in Theorem 3 holds, then the wealth level X∗generated by the equilibrium in Theorem 1 satisﬁes
+lim
+T→∞P(e−rT X∗(T) < 0) = 0;
+lim
+T→∞
+1
+T Var
+
+e−rT X∗(T)
+
+= 0.
+(24)
+Therefore, u∗is a statistical arbitrage strategy.
+Proof. See Appendix A.5
+5. Analytical solution to a speciﬁc model
+This section presents the analytical equilibrium strategy in the context of a speciﬁc path-dependent model. We
+assume that M = Ψ(−p) = 0. Recall that in the drift of the dynamic Y , integration by parts reveals a sliding average
+term
+R 0
+−p Ψ(u)dY (t + u). Therefore, our setting implies that the effect of the lagged term does not disappear suddenly
+but descends gradually to 0 as the lag index increases. This setup is popular in statistical and econometric research (for
+9
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+example, the distributed lag model initiated by [2]) and in technical analysis for practical reasons (e.g., weighted moving
+average indicator). Moreover, we assume that K(·) is Lipschitz on [−p, 0].
+We then derive the solution to BSDE (15). Recall that under measure Q, (Γ, γ) satisﬁes
+dΓ(s) = −µ |θ(s, Ys)|2 ds + γ(s)⊤dW Q(s),
+Γ(T) = 0,
+(25)
+and the dynamic of Y becomes
+dY (t) = [a(t) −b(t)] dt + ΣdW Q(t).
+Consider the following solution form
+Γ(t)
+=
+Y (t)⊤E0(t)Y (t) + Y (t)⊤
+Z 0
+−p
+E1(t, u)Y (t + u)du
++
+Z 0
+−p
+Z 0
+−p
+Y (t + u)⊤E2(t, u, w)Y (t + w)dudw
++Y (t)⊤E3(t) +
+Z 0
+−p
+E4(t, u)Y (t + u)du + E5(t),
+(26)
+where E0, E1, E2, E3, E4, E5 are respectively Rn×n, Rn×n, Rn×n, Rn, Rn, R-valued functions and t ∈[0, T], u, w ∈
+[−p, 0]. E0 is symmetric. We apply Ito’s lemma to (26) and compare it with (25).We thus derive the following system of
+PDEs
+˙E0(t) = −1
+2E1(t, 0) −1
+2E1(t, 0)⊤−µH⊤
+ΣΣ⊤−1
+H,
+(27)
+ ∂
+∂t −∂
+∂u
+
+E1(t, u) = −E2(t, 0, u) −E2(t, u, 0)⊤−2µH⊤
+ΣΣ⊤−1
+K(u),
+(28)
+ ∂
+∂t −∂
+∂u −∂
+∂w
+
+E2(t, u, w) = −µK(u)⊤
+ΣΣ⊤−1
+K(w),
+(29)
+˙E3(t) = −E4(t, 0)⊤−2E0(t)⊤(a(t) −b(t)) −2µH⊤
+ΣΣ⊤−1
+b(t),
+(30)
+ ∂
+∂t −∂
+∂u
+
+E4(t, u) = −(a(t) −b(t))⊤E1(t, u) −2µb(t)⊤
+ΣΣ⊤−1
+K(u),
+(31)
+˙E5(t) = −(a(t) −b(t))⊤E3(t) −tr
+h
+ΣΣ⊤E0(t)
+i
+−µb(t)⊤
+ΣΣ⊤−1
+b(t),
+(32)
+with the following boundary conditions:
+E0(T) = E1(T, u) = E1(t, −p) = 0,
+E2(T, u, w) = E2(t, −p, w) = 0,
+E2(t, u, w) = E2(t, w, u)⊤,
+E3(T) = E4(T, u) = 0, E5(T) = 0.
+(33)
+Here, 0 denotes zero in R, Rn, Rn×n . The above system takes a similar form to those in [1, 23, 8, 27, 38]. In these
+literature, the existence result is proved using the ﬁxed point theorem. In our case, we derive an explicit solution. We
+summarize the result in the following proposition.
+Proposition 2. Suppose that M = 0 and K(·) is Lipschitz over [−p, 0]. For (t, u, w) ∈[0, T] × [−p, 0]2, there exists a
+10
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+sextuple that satisﬁes (27)-(33) almost everywhere and can be solved stepwise by the following integrations:
+E2(t, u, w)
+=
+µ
+Z T∧(t+u+p)∧(t+w+p)
+t
+K(u + t −s)⊤×
+
+ΣΣ⊤−1
+K(w + t −s)ds,
+(34)
+E1(t, u)
+=
+2
+Z T∧(t+u+p)
+t
+h
+E2(s, u + t −s, 0)⊤+µH⊤
+ΣΣ⊤−1
+K(u + t −s)
+
+ds,
+(35)
+E0(t)
+=
+Z T
+t
+1
+2E1(s, 0) + 1
+2E1(s, 0)⊤+µH⊤
+ΣΣ⊤−1
+H
+
+ds,
+(36)
+E4(t, u)
+=
+Z T∧(t+u+p)
+t
+h
+(a(s) −b(s))⊤E1(s, u + t −s) +2µb(s)⊤
+ΣΣ⊤−1
+K(u + t −s)
+
+ds,
+(37)
+E3(t)
+=
+Z T
+t
+h
+E4(s, 0)⊤+ 2E0(s)⊤(a(s) −b(s)) +2µH⊤
+ΣΣ⊤−1
+b(s)
+
+ds,
+(38)
+E5(t)
+=
+Z T
+t
+h
+(a(s) −b(s))⊤E3(s) + tr
+h
+ΣΣ⊤E0(s)
+i
++µb(s)⊤
+ΣΣ⊤−1
+b(s)
+
+ds.
+(39)
+Moreover, the above Eis (i = 0, 1, . . . , 5) are Lipschitz functions in each variables. The equilibrium strategy for the
+problem (6) is given by
+u∗(t)
+=
+ρ−1(t)
+nh
+µΣ−1H −2Σ⊤E0(t)
+i
+Y (t)
++
+Z 0
+−p
+h
+µΣ−1K(u) −Σ⊤E1(t, u)
+i
+Y (t + u)du
++µΣ−1b(t) −Σ⊤E3(t)
+o
+.
+(40)
+Proof. See Appendix A.6
+Remark 5. The sextuple solution in Proposition 2 is not necessarily continuously differentiable and it satisﬁes the PDE
+system (27)–(33) in a weak sense.
+Remark 6. When p goes to zero, both E1 and E2 tend to zero so that the equilibrium strategy degenerates to the
+Markovian strategy of [12] with K = M = 0.
+The equilibrium strategy (40) contains a sliding average of the historical log prices. Therefore, we conjecture that
+our strategy distinguishes itself from the Markovian counterpart especially when the market has a signiﬁcant uptrend or
+downtrend because the Markovian strategy does not include any past information. This feature is veriﬁed in the empirical
+study.
+6. Empirical study
+In this section, we consider the problem of investing in two commodity securities: WisdomTree WTI Crude Oil
+(CRUD) and WisdomTree Gasoline (UGAS). We download the daily closing prices from Yahoo Finance during the
+period from January 2, 2018 to December 31, 2020. We aim to contrast the non-Markovian equilibrium strategy, which
+we refer to as the VAR(p) strategy, with its Markovian counterpart in [12], which we refer to as the VAR(1) strategy. In
+this section, p denotes an integer following a slight perturbation of notation.
+Let the time unit be ∆t = 1/252. In the log price model, we choose Ψ(u) = −K(u + p∆t). This setup follows
+a ﬁnite distributed model with linearly declining weights (see [2]). Following the midpoint quadrature rule and (1), we
+estimate the following VECM:
+∆Y (t + 1)
+=
+[a + ΠY (t) + K · MA(t)] ∆t + Σ
+√
+∆tε(t),
+MA(t)
+=
+−
+p
+X
+i=1
+
+−i + i −1
+2
+∆t + p∆t
+
+∆Y (t −(i −1)).
+11
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+The above VECM becomes the Markovian model by removing the MA(·) term.
+According to [30], the number of lag differences in a VECM can be determined by specifying the lag of the VAR(p)
+model, using approaches such as a sequence of statistical tests and order selection criterion. Here, we estimate VAR
+models with varying orders in the set {1, 2, . . . , 20} and calculate the information criteria, including the Akaike’s information criterion (AIC), the Bayesian information criterion (BIC), the ﬁnal prediction error (FPE), and the Hannan-Quinn
+criterion (HQ), following [30]. Figure 2 demonstrates the orders chosen by these criteria along the time line. Except
+for the BIC, which punishes the free parameters more strongly than the others, these criteria select VAR models of a
+higher-order type after March, 2020.
+To compare the two strategies and avoid discussing of the proper information criteria, we simply set a constant p = 15
+(three trading weeks) and keep it constant over the testing period. The models are estimated using the rolling window
+method: for each month in 2020, we use the proceeding two-year dataset to estimate the parameters. T is set as “the
+number of trading days in the month” times ∆t. We then derive the VAR(p) and VAR(1) strategy using the estimates and
+Proposition 2. Therefore, the investment period is from January 2, 2020 to December 31, 2020. Figure 1 plots the daily
+closing prices of the two commodity securities of interest.
+Jan 2020
+Apr 2020
+Jul 2020
+Oct 2020
+Jan 2021
+Time(t)
+0
+5
+10
+15
+20
+25
+30
+Price(S)
+CRUD
+UGAS
+Figure 1: Daily closing prices of CRUD and UGAS in 2020.
+Time(t)
+Order of VAR model
+0
+5
+10
+15
+20
+25
+AIC
+BIC
+Jan 2020
+Apr 2020
+Jul 2020
+Oct 2020
+Jan 2021
+0
+5
+10
+15
+20
+25
+FPE
+HQ
+Figure 2: Order selection in 2020 according to different selection criteria.
+We set the initial wealth x0 as 1, the risk-free rate r as 0.02, and the risk aversion µ as 0.01. Figure 3 depicts the
+pairs trading strategies and the corresponding wealth levels. The VAR(p) strategy becomes more aggressive than the
+VAR(1) strategy when the market has a signiﬁcant uptrend or downtrend but is less distinguishable from the VAR(1)
+12
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+-6
+-4
+-2
+0
+2
+4
+6
+Strategy ( )
+VAR(p)-CRUD
+VAR(p)-UGAS
+VAR(1)-CRUD
+VAR(1)-UGAS
+Jan 2020
+Apr 2020
+Jul 2020
+Oct 2020
+Jan 2021
+Time(t)
+0
+0.5
+1
+1.5
+2
+Wealth (x)
+Var(p)
+Var(1)
+Figure 3: Equilibrium strategies for CRUD and UGAS and the wealth levels in 2020.
+strategy in a sideways market. This result is expected because the VAR(p) strategy, given by (40), contains a weighted
+average of the historical log prices while the VAR(1) strategy only depends on the current log prices. After learning
+from the non-Markovian structure between two assets, the VAR(p) strategy can generate abnormal returns by entering
+into a long-short position with relatively high leverage. Although the wealth path of VAR(p) is more volatile, the order
+selection in Figure 2 suggests a low-order model in January and March, indicating that one can choose a strategy more
+close to the Markovian one and obtain a more stable performance during these months. This result is not reported here.
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+0.06
+0.07
+Variance of monthly returns
+-0.06
+-0.04
+-0.02
+0
+0.02
+0.04
+0.06
+0.08
+Expected monthly returns
+Var(p)
+Var(1)
+Figure 4: Efﬁcient frontiers of the VAR(p) and VAR(1) strategies based on the investment from January 2020 to December 2020.
+To examine the performance of both two strategies under different levels of risk aversions, we consider µ in the
+interval [0.001, 0.02]. For each value of µ, we record the wealth paths of both two strategies and calculate the sample
+means and variances of the monthly returns. Figure 4 shows the realized efﬁcient frontiers of two strategies. Speciﬁcally,
+the VAR(p) strategy not only outperforms the VAR(1) strategy in terms of efﬁciency, and hence the objective function,
+but also always leads to the positive returns, even in the situation of a market crash.
+7. Conclusion
+In this paper, we investigate a time-consistent MV pairs trading strategy under the cointegration model with delay
+effect. We prove the existence and uniqueness results of this equilibrium strategy using the BSDE techniques. We
+further study the relationship between delayed cointegration and statistical arbitrage and show that our strategy can lead
+13
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+to statistical arbitrage in long-term investments under conditions related to the eigenvalues of the corresponding AFDE.
+We then derive the analytical solution for a SDDE containing only a distributed (rather than discrete) delay. The empirical
+study shows that if the data prefers a high-order VAR model in the order selection procedure, our non-Markovian strategy
+outperforms its Markovian counterpart.
+Acknowledgement: H.Y. Wong acknowledges the Research Matching Grant (RMG project code: 8601495) received
+from the Research Grants Council of Hong Kong. This work was partially supported by National Natural Science
+Foundation of China under grants 71971083, 71931004.
+References
+[1] Alekal, Y., Brunovsky, P., Chyung, D. H., & Lee, E. B. (1971). The quadratic problem for systems with time delays.
+IEEE Transactions on Automatic Control, 16(6), 673—687.
+[2] Almon, S. (1965). The distributed lag between capital appropriations and expenditures. Econometrica, 33(1), 178–
+196.
+[3] Basak, S., & Chabakauri, G. (2010). Dynamic mean-variance asset allocation. The Review of Financial Studies,
+23(8), 2970–3016.
+[4] Bifﬁs, E., Gozzi, F., & Prosdocimi, C. (2020). Optimal portfolio choice with path dependent labor income: the
+inﬁnite horizon case. SIAM Journal on Control and Optimization, 58(4), 1906–1938.
+[5] Bj¨ork, T., Khapko, M., & Murgoci, A. (2017). On time-inconsistent stochastic control in continuous time. Finance
+and Stochastics, 21, 331–360.
+[6] Boukanjime,
+B.,
+El-Fatini,
+M.,
+Laaribi,
+A.,
+Taki,
+R.,
+& Wang,
+K. (2021). A Markovian regimeswitching
+stochastic
+hybrid
+time-delayed
+epidemic
+model
+with
+vaccination.
+Automatica,
+133,
+https://doi.org/10.1016/j.automatica.2021.109881.
+[7] Breda, D., Maset, S., & Vermiglio, R. (2006). Pseudospectral differencing methods for characteristic roots of delay
+differential equations. SIAM Journal of Scientiﬁc Computing, 27(2), 482–495.
+[8] Carmona, R., Fouque, J. P., Mousavi, S. M., & Sun, L. H. (2018). Systemic risk and stochastic games with delay.
+Journal of Optimization Theory and Applications, 179(2), 366–399.
+[9] Cepeda-Gomez, R., & Michiels, W. (2015). Some special cases in the stability analysis of multi-dimensional timedelay systems using the matrix Lambert W function. Automatica, 53, 339–345.
+[10] Chen, K., Chiu, M.C. & Wong, H.Y. (2019). Time-consistent mean-variance pairs-trading with regime-switching
+cointegration. SIAM Journal on Financial Mathematics, 10(2), 632–665.
+[11] Chiu, M. C., & Wong, H. Y. (2011). Mean-variance portfolio selection of cointegrated assets. Journal of Economic
+Dynamics and Control, 35(8), 1369–1385.
+[12] Chiu, M. C., & Wong, H. Y. (2015). Dynamic cointegrated pairs trading: Mean-variance time-consistent strategies.
+Journal of Computational and Applied Mathematics, 290, 516–534.
+[13] El Karoui, N., Peng, S., & Quenez, M. C. (1997). Backward stochastic differential equations in ﬁnance. Mathematical Finance, 7(1), 1–71.
+[14] Engelborghs, K., Luzyanina, T., & Roose, D. (2002). Numerical bifurcation analysis of delay differential equations
+using DDE-BIFTOOL. ACM Transactions on Mathematical Software (TOMS), 28(1), 1–21.
+[15] Engle, R. F., & Granger, C. W. J. (1987). Co-integration and error correction: Representation, estimation, and
+testing. Econometrica, 55(2), 251–276.
+14
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+[16] Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading: Performance of a relative-value arbitrage
+rule. The Review of Financial Studies, 19(3), 797–827.
+[17] Hale, J. K., & Verduyn Lunel, S. M. (1993). Introduction to Functional Differential Equations. Springer-Verlag,
+New York.
+[18] Hasbrouck, J. (2021). Price discovery in high resolution. Journal of Financial Econometrics, 19(3), 395-430.
+[19] Hogan, S., Jarrow, R., Teo, M., & Warachka, M. (2004). Testing market efﬁciency using statistical arbitrage with
+applications to momentum and value strategies. Journal of Financial Economics, 73(3), 525–565.
+[20] Han, J., & Hu, R. (2021). Recurrent neural networks for stochastic control problems with delay. Mathematics of
+Control, Signals, and Systems, 33, 775–795.
+[21] Hu, Y., Jin, H., & Zhou, X. Y. (2012). Time-inconsistent stochastic linear–quadratic control. SIAM Journal on
+Control and Optimization, 50, 1548–1572.
+[22] Hu, Y., Jin, H., & Zhou, X. Y. (2017). Time-inconsistent stochastic linear-quadratic control: Characterization and
+uniqueness of equilibrium. SIAM Journal on Control and Optimization, 55, 1261–1279.
+[23] Huang, J., Li, X., & Shi, J. (2012). Forward-backward linear quadratic stochastic optimal control problem with
+delay. Systems and Control Letters, 61(5), 623–630.
+[24] Jarlebring, E., & Damm, T. (2007). The Lambert W function and the spectrum of some multidimensional time-delay
+systems. Automatica, 43(12), 2124–2128.
+[25] Kappel, F. (2007). Linear autonomous functional differential equations. In Delay Differential Equations and Applications (pp. 41–139). Springer, Dordrecht.
+[26] K¨uchler, U., & Platen, E. (2007). Time delay and noise explaining cyclical ﬂuctuations in prices of commodities.
+In Research Paper Series (Issue April). Quantitative Finance Research Centre, University of Technology, Sydney.
+[27] Lefebvre, W., & Miller, E. (2021). Linear-quadratic stochastic delayed control and deep learning resolution. Journal
+of Optimization Theory and Applications, 191, 134–168.
+[28] Li, N., Wang, G., & Wu, Z. (2020). Linear–quadratic optimal control for time-delay stochastic system with recursive
+utility under full and partial information. Automatica, 121, https://doi.org/10.1016/j.automatica.2020.109169.
+[29] Lorenz, R. (2006). Weak approximation of stochastic delay differential equations with bounded memory by discrete
+time series. Ph.D. dissertation, Humboldt University.
+[30] L¨utkepohl, H. (2005). New Introduction to Multiple Time Series Analysis. (1st ed.). Springer, Berlin, Heidelberg.
+[31] Mao, X. (2011). Stochastic Differential Equations and Applications. (2nd ed.). Woodhead Publishing, UK.
+[32] Phillips, P. C. B. (1991). Error correction and long-run equilibrium in continuous time. Econometrica, 59(4),
+967–980.
+[33] Reiß, M. (2002). Nonparametric estimation for stochastic delay differential equations, Ph.D. dissertation, Humboldt
+University, 2002.
+[34] Saito, T., & Takahashi, A. (2019). Stochastic differential game in high frequency market. Automatica, 104, 111–125.
+[35] Shen, Y. (2015). Mean-variance portfolio selection in a complete market with unbounded random coefﬁcients.
+Automatica, 55, 165–175.
+[36] Veraar, M. (2012). The stochastic Fubini theorem revisited. Stochastics, 84(4), 543–551.
+15
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+[37] Yan, T., & Wong, H. Y. (2019). Open-loop equilibrium strategy for mean-variance portfolio problem under stochastic volatility. Automatica, 107, 211–223.
+[38] Yan, T., Chiu, M. C., & Wong, H. Y. (2021). Pairs-trading under delayed cointegration. Quantitative Finance,
+forthcoming.
+[39] Zhang, L., Wang, B., Li, Y., & Tang, Y. (2021).
+Distributed stochastic model predictive control for cyber–physical systems with multiple state delays and probabilistic saturation constraints. Automatica, 129,
+https://doi.org/10.1016/j.automatica.2021.109574.
+[40] Zhou, X. Y., & Li, D. (2000). Continuous-time mean-variance portfolio selection: A stochastic LQ framework.
+Applied Mathematics and Optimization, 42(1), 19–33.
+A. Proofs
+A.1. Proof of Lemma 3
+Proof. The ﬁrst claim about the representation of process Y can be proved by mimicking the proofs of Lemma 3.7 in
+[38]. Compared with the model in [38], the dynamic of Y in our case contains an additional MY (t −p) term, but this
+does not increase the difﬁculty. For the second claim, recall that ˙˜a(t) = H˜a(t)+
+R 0
+−p K(u)˜a(t+u)du−M˜a(t−p)+a(t).
+Substituting (18) into the expression of θ in (5) and using (17), we derive
+θ(t, Yt)
+=
+Σ−1 
+b(t) + ˙˜a(t) −a(t) + ˙y1(t) + I(t)
+
+.
+(41)
+where, according to (16) and the stochastic Fubini theorem (see [36]),
+I(t)
+:=
+H
+Z t
+0
+y0(t −s)ΣdW(s) −M
+Z t−p
+0
+y0(t −p −s)ΣdW(s)
++
+Z 0
+−p
+K(u)
+Z t+u
+0
+y0(t + u −s)ΣdW(s)du
+=
+H
+Z t
+0
+y0(t −s)ΣdW(s) −M
+Z t
+0
+y0(t −p −s)ΣdW(s)
++
+Z 0
+−p
+K(u)
+Z t
+0
+y0(t + u −s)ΣdW(s)du
+=
+Z t
+0
+˙y0(t −s)ΣdW(s).
+A.2. Proof of Lemma 5
+Proof. Under measure Q, (15) becomes
+dΓ(s) = −µ |θ(s, Ys)|2 ds + γ(s)⊤dW Q(s), Γ(T) = 0.
+(42)
+which is a Lipschitz BSDE. According to Lemma 1, we apply Theorem 5.1 in [13] and determine that (42) admits a
+unique solution (Γ, γ) ∈Sm([0, T]; R, Q) × Hm([0, T]; Rn, Q) for any m ≥2. Consequently,
+Γ(t) = µEQ
+t
+Z T
+t
+|θ(s, Ys)|2 ds
+
+.
+(43)
+Let ˜k, ˜l > 1 be constant values such that 1/˜k + 1/˜l = 1. According to H¨older’s inequality, we obtain
+E
+"
+sup
+t∈[0,T ]
+|Γ(t)|m
+#
+=
+EQ
+"
+sup
+t∈[0,T ]
+|Γ(t)|m · E−1
+T (−θ · W)
+#
+16
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+≤
+ 
+EQ
+"
+sup
+t∈[0,T ]
+|Γ(t)|m˜k
+#!1/˜k 
+E
+h
+E−˜l
+T (−θ · W) · ET (−θ · W)
+i1/˜l
+≤
+ 
+EQ
+"
+sup
+t∈[0,T ]
+|Γ(t)|m˜k
+#!1/˜k 
+E
+h
+ET
+
+2(˜l −1)θ · W
+i1/(2˜l)
+×
+ 
+E
+"
+exp
+ 
+(˜l −1)(2˜l −1)
+Z T
+0
+|θ(s, Ys)|2 ds
+!#!1/(2˜l)
+.
+Lemma 4 yields E
+h
+ET
+
+2(˜l −1)θ · W
+i
+= 1. We choose ˜l > 1, such that (˜l −1)(2˜l −1) < ε; ε is deﬁned in Condition
+1. Therefore, E
+h
+supt∈[0,T] |Γ(t)|mi
+< ∞and Γ ∈Sm([0, T]; R, P). Similarly, we prove that γ ∈Hm([0, T]; Rn, P).
+The uniqueness of the result of (15) follows from the uniqueness of the solution to (42).
+A.3. Proof of Theorem 1
+Proof. We ﬁrst prove the existence result by showing that u∗is admissible. Lemma 1 and Lemma 5 clearly demonstrate
+that u∗∈H2([0, T], Rn). Let X∗be the wealth process under u∗. By plugging (19) into (4) and applying the variation
+of constants formula, we obtain
+X∗(t)
+=
+e
+R t
+0 r(s)dsx0 + ρ−1(t)
+Z t
+0
+[µθ(s, Ys) −γ(s)]⊤dW(s)
++ρ−1(t)
+Z t
+0
+θ(s, Ys)⊤[µθ(s, Ys) −γ(s)] ds.
+The strong uniqueness of X∗is clear. Let C > 0 be a constant that may vary from line to line. Therefore,
+E
+"
+sup
+t∈[0,T]
+|X∗(t)|2
+#
+≤
+C
+(
+1 + E
+"
+sup
+t∈[0,T]
+|θ(t, Yt)|4
+#
++ E
+"Z T
+0
+|γ(t)|2 dt
+2#
++E
+"
+sup
+t∈[0,T]
+
+Z t
+0
+[µθ(t, Yt) −γ(t)]⊤dW(t)
+
+2#)
+≤
+C
+(
+1 + E
+"
+sup
+t∈[0,T]
+|θ(t, Yt)|4
+#
++ E
+"Z T
+0
+|γ(t)|2 dt
+2#
++E
+"
+sup
+t∈[0,T]
+|θ(t, Yt)|2
+#
++ E
+Z T
+0
+|γ(t)|2 dt
+)
+<
+∞,
+(44)
+where we apply the facts |a + b|2 ≤2(|a|2 + |b|2), a⊤b ≤1
+2(|a|2 + |b|2) for a, b ∈Rn and the Burkholder-Davis-Gundy
+inequality. From the proof of Lemma 5, it is clear that u∗∈H2([0, T]; Rn, Q). By Ito’s lemma, for s > t,
+Et
+h
+e−
+R s
+0 r(l)dlX∗
+s
+i
+=
+e−
+R t
+0 r(l)dlX∗
+t + EQ
+t
+Z s
+t
+e−rlu∗(l)dW Q
+l
+
+=
+e−
+R t
+0 r(l)dlX∗
+t .
+Therefore, the discounted wealth process e−
+R t
+0 r(l)dlX∗
+t is a supermartingale under measure Q.
+Next, we prove that the equilibrium u∗is unique, following the examples of [22, 37]. Suppose that there is another
+equilibrium u ∈A that differs from u∗, and that the corresponding wealth process is X. Replacing X∗with X, for each
+t ∈[0, T], (9) yields a unique solution (p(·; t), k(·; t)) ∈S2([t, T], R) × H2([t, T], Rn). According to Lemma 2, for a.e.
+t ∈[0, T],
+p(t; t)θ(t, Yt) + k(t; t) = 0.
+(45)
+17
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+We then deﬁne
+¯p(s; t)
+=
+p(s; t) −ρ(s) {ρ(s)X(s) + Γ(s) −µ
+−Et [ρ(s)X(s) + Γ(s)]} ,
+¯k(s; t)
+=
+k(s; t) −ρ2(s)u(s) −ρ(s)γ(s).
+According to Deﬁnition 1 and Lemma 5, we can easily verify that (¯p(s; t), ¯k(s; t)) ∈S2([t, T], R) × H2([t, T], Rn).
+Substituting the above into (45) yields
+[¯p(s; s) −µρ(s)] θ(s, Ys) + ¯k(s; s) + ρ2(s)u(s) + ρ(s)γ(s) = 0.
+Next, we obtain u(t) = u∗(t) + ρ−2(t)D(t), where D(t) = −
+
+¯p(t; t)θ(t, Yt) + ¯k(t; t)
+
+. We aim to prove D ≡0 and
+then establish the uniqueness. We obtain
+d¯p(s; t)
+=
+−
+n
+r¯p(s; t) + θ(s, Ys)⊤D(s) −Et
+h
+θ(s, Ys)⊤D(s)
+io
+ds
++¯k(s; t)⊤dW(s),
+(46)
+and ¯p(T; t) = 0. As the interest rate r is deterministic, we take r ≡0 without loss of generality. Integrating and
+taking the conditional expectation on both sides of (46), we obtain Et [¯p(s; t)] = 0 for s > t. In particular, ¯p(t; t) = 0.
+Therefore, D(t) = −¯k(t, t). Following the proof of Proposition 3.3 in [22], we obtain k(s; t1) = k(s; t2) for a.e.
+s ≥max(t1, t2) without additional difﬁculty. Then, D(s) = −¯k(s; t) for a.e. s ≥t. We deﬁne ˜p(s; t) = ¯p(s; t) +
+R T
+s Et
+
+θ(u, Yu)⊤D(u)
+
+du. For any l1 ∈(1, 2), we obtain
+E
+
+sup
+s∈[t,T ]
+
+Z T
+s
+Et
+
+θ(u, Yu)⊤D(u)
+
+du
+
+l1
+
+≤
+E
+
+
+ Z T
+t
+|θ(u, Yu)| |D(u)| du
+!l1
+
+≤
+ 
+E
+"
+sup
+t∈[0,T ]
+|θ(t, Yt)|l1l2
+#!1/l2 
+E
+
+
+ Z T
+t
+|D(u)| du
+!2
+
+
+
+l1/2
+≤
+C
+ 
+E
+"
+sup
+t∈[0,T ]
+|θ(t, Yt)|l1l2
+#!1/l2 
+E
+" Z T
+t
+|D(u)|2 du
+!#!l1/2
+<
+∞,
+where C > 0 is a proper constant and l2 > 1 is a constant such that 1/l2 + 1/(2/l1) = 1. Therefore, ˜p(·; t) ∈
+Sl1([t, T]; R). Furthermore,
+d˜p(s; t)
+=
+−θ(s, Ys)⊤D(s)ds −D(s)⊤dW(s)
+=
+−D(s)⊤dW Q(s).
+(47)
+Let h1 > 2 be a constant value such that 1/l1 + 1/h1 = 1. Then,
+EQ
+"
+sup
+s∈[t,T]
+|˜p(s; t)|
+#
+=
+E
+"
+sup
+s∈[t,T]
+|˜p(s; t)| ET (−θ · W)
+#
+≤
+ 
+E
+"
+sup
+s∈[t,T]
+|˜p(s; t)|l1
+#!1/l1 
+E
+h
+Eh1
+T (−θ · W)
+i1/h1
+≤
+ 
+E
+"
+sup
+s∈[t,T]
+|˜p(s; t)|l1
+#!1/l1
+(E [ET (−2h1θ · W)])1/(2h1)
+×
+
+E
+
+exp
+
+h1(2h1 −1)
+Z T
+0
+|θ(t, Yt)|2 dt
+1/(2h1)
+.
+(48)
+We choose a value of h1 > 2 such that h1(2h1−1) < ε where ε > 6. According to Lemma 4, EQ h
+sups∈[t,T] |˜p(s; t)|
+i
+<
+18
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+∞. ˜p(·; t) is a Q-martingale. Note that ˜p(T; t) = 0. Therefore ˜p ≡0 and D ≡0. The equilibrium control u∗is
+unique.
+A.4. Proof of Theorem 2
+Proof. Let ˜X∗(t) = ρ(t)X∗(t). Replacing u with u∗in (4) and combining the equation with (15), we obtain
+d ˜X∗(t)
+=
+θ(t, Yt)⊤[µθ(t, Yt) −γ(t)] dt + [µθ(t, Yt) −γ(t)]⊤dW(t)
+=
+−dΓ(t) + µθ(t, Yt)⊤dW(t).
+Integrating from 0 to T yields
+X∗(T) = ˜X∗(T) = ρ(0)x0 + Γ(0) + µ
+Z T
+0
+θ(t, Yt)⊤dW(t).
+(49)
+Therefore, according to (43),
+
+
+
+
+
+
+
+
+
+E [X∗(T)] = ρ(0)x0 + µEQ
+Z T
+0
+|θ(t, Yt)|2 dt
+
+,
+Var [X∗(T)] = µ2E
+Z T
+0
+|θ(t, Yt)|2 dt
+
+.
+From the above two equations, we obtain (20).
+A.5. Proof of Proposition 1
+Proof. We ﬁrst prove that under the conditions of Theorem 3, the solution to (16) is asymptotically stable. For i =
+1, 2, . . . , n, let 1(i) ∈Rn be the vector with a i-th component equal to 1 and the other components equal to 0. Let δ > 0
+be a sufﬁciently small value. We choose the initial path in (17) ˜φ(i,δ)(u) = e
+u
+δ 1(i) for u ∈[−p, 0]. According to the
+variation of constants formula for AFDEs (see Theorem 1.11 in [25]), for t > 0, we obtain
+y(i,δ)
+1
+(t)
+=
+y0(t)1(i) +
+Z t
+0
+y0(t −s)
+Z 0
+−p
+K(u)˜φ(i,δ)(s + u)1{s+u≤0}du + M ˜φ(i,δ)(s −p)1{s−p<0}
+
+ds.
+We obtain supu∈[−p,0]
+˜φ(i,δ)(u)
+ = 1 for any δ > 0. For each i, by letting δ ↓0 and using the dominated convergence
+theorem, the above equation becomes
+lim
+δ↓0 y(i,δ)
+1
+(t) = y0(t)1(i).
+According to Theorem 3, there exists a constant ˆc > 0 independent of T such that
+y(i,δ)
+1
+(t)
+ ≤ˆc for t ∈[0, T]. Therefore,
+there exists a constant c0 > 0 independent of T such that |y0(t)| ≤√nc0 for t ∈[−p, T].
+Next we prove for the two conditions. Using (49), we obtain
+P
+ e−rT X∗(T) < 0
+
+=
+P
+
+Γ(0) + µ
+Z T
+0
+θ(t, Yt)⊤dW(t) < 0
+
+≤
+P
+−µ
+Z T
+0
+θ(t, Yt)⊤dW(t)
+ > Γ(0)
+
+≤
+E
+hR T
+0 |θ(t, Yt)|2 dt
+i
+
+EQ
+hR T
+0 |θ(t, Yt)|2 dt
+i2 :=
+I
+II2 .
+wherein we use Chebyshev’s inequality and the expression (43). In the following analysis, for j = 1, 2, . . ., cj > 0
+19
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+denotes a proper constant independent of T. According to (5) and Lemma 3,
+I
+=
+E
+"Z T
+0
+Σ−1
+
+b + ˙˜a(t) −a + ˙y1(t) +
+Z t
+0
+˙y0(t −s)ΣdW(s)
+
+2
+dt
+#
+≤
+c1
+
+E
+Z T
+0
+Σ−1 
+b + ˙˜a(t) −a + ˙y1(t)
+2 dt
+
++
+Z T
+0
+Z t
+0
+Σ−1 ˙y0(t −s)Σ
+2 dsdt
+
+.
+(50)
+Recall that ˙˜a(t) = H˜a(t) +
+R 0
+−p K(u)˜a(t + u)du −M˜a(t −p) + a. According to Theorem 1.11 in [25],
+˜a(t)
+=
+y0(t)˜a(0) +
+Z t
+0
+y0(t −s)
+Z 0
+−p
+K(u)˜a0(s + u)1{s+u≤0}du −M˜a0(s −p)1{s−p≤0}
+
+ds
++
+Z t
+0
+y0(t −s)ads,
+where ˜a0 := {˜a(u); u ∈[−p, 0]} is the initial path. According to previous discussion, we have ˜a(t) ≤c1(t + 1) for
+t ∈[0, T]. Then,
+˙˜a(t)
+ ≤c2(t + 1). According to (16) and (17), | ˙y0(t)| ≤c3 and | ˙y1(t)| ≤c4. Consequently,
+I = O(T 3).
+As W Q(t) = W(t) + θ(t, Yt), under measure Q, we obtain
+Y (t) = Y (0) + (a −b) dt + ΣW Q(t).
+Substituting the above into II, we derive
+II = EQ
+Z T
+0
+|III(t) + IV(t)|2 dt
+
+.
+where
+III(t)
+:=
+Σ−1
+
+b +
+
+H +
+Z 0
+−p
+K(u)du −M
+
+Y (0) + H(a −b)t
++
+Z 0
+−p
+K(u)(a −b)(t + u)du −M(a −b)(t −p)
+
+,
+IV(t)
+:=
+Σ−1
+
+HΣW Q(t) +
+Z 0
+−p
+K(u)ΣW Q(t + u)du
+−MΣW Q(t −p)
+
+.
+Note that EQ [IV(t)] = 0. We obtain
+II =
+Z T
+0
+EQ h
+|III(t)|2i
+dt +
+Z T
+0
+EQ h
+|IV(t)|2i
+dt,
+where
+R T
+0 EQ h
+|III(t)|2i
+dt is a third-degree polynomial of T. Hence,
+lim
+T→∞P(e−rT X∗(T) < 0) ≤lim
+T→∞
+I
+II2 ≤lim
+T→∞
+O(T 3)
+T 6
+= 0.
+The second claim is clear. According to Theorem 2 and (23), we obtain
+lim
+T→∞
+1
+T Var
+
+e−rT X∗(T)
+
+=
+lim
+T→∞
+η2(T)
+T
+I
+II2
+≤
+lim
+T→∞
+η2(T)O(T 3)
+T 7
+= 0.
+20
+Electronic copy available at: https://ssrn.com/abstract=4117238
+
+A.6. Proof of Proposition 2
+Proof. We ﬁrst prove that Eis are Lipschitz in each variables on [0, T] × [−p, 0]2; thus, the differentiability is valid. Due
+to space limitations, we only show the result for E2 in variable t; however, the results for the remaining variables can be
+proved similarly. Let CK = supu∈[−p,0] |K(u)| and LK be the Lipschitz constant for K(·). For t1, t2 ∈[0, T], we obtain
+|E2(t1, u, w) −E2(t2, u, w)|
+≤
+µ
+
+Z T∧(t1+u+p)∧(t1+w+p)
+t1
+K(u + t1 −s)⊤
+ΣΣ⊤−1
+K(w + t1 −s)ds
+−
+Z T∧(t2+u+p)∧(t2+w+p)
+t2
+K(u + t1 −s)⊤
+ΣΣ⊤−1
+K(w + t1 −s)ds
+
++µ
+Z T∧(t2+u+p)∧(t2+w+p)
+t2
+K(u + t1 −s)⊤
+ΣΣ⊤−1
+K(w + t1 −s) −K(u + t2 −s)⊤
+ΣΣ⊤−1
+×K(w + t2 −s)| ds
+≤
+2µ
+
+C2
+K
+
+
+ΣΣ⊤−1 + 2µTCKLK
+
+
+ΣΣ⊤−1
+
+|t1 −t2| .
+One can verify that (34) – (39) satisfy (27)–(33) almost everywhere on [0, T] × [−p, 0]2. Next, according to Ito’s lemma
+and (26), we have
+γ(t) = 2E0(t)Y (t) + E3(t).
+(51)
+According to Lemma 1, (Γ(t), γ(t)) given by (15) and (51) is in Sm([0, T]; R, Q) × Hm([0, T]; Rn, Q) for any m ≥2
+and is the unique solution to (15). Substituting (51) into (19), we obtain (40).
+21
+Electronic copy available at: https://ssrn.com/abstract=4117238

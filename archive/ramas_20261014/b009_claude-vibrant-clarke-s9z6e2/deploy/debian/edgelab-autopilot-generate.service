@@ -1,0 +1,13 @@
+[Unit]
+Description=EdgeLab autopilot: regenerar borradores de candidatas (NO los promueve)
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+Environment=HOME=/opt/edgelab
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py draft --out /var/lib/edgelab-autopilot/state/autopilot_drafts --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
+ReadWritePaths=/var/lib/edgelab-autopilot
+ProtectSystem=strict
+NoNewPrivileges=true

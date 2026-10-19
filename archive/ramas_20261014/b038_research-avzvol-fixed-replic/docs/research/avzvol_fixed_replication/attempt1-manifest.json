@@ -1,0 +1,129 @@
+{
+  "status": "FIXED_BEFORE_REPLICATION_LABELS",
+  "contracts": [
+    "MNQ_12-26",
+    "MNQ_09-25"
+  ],
+  "config": {
+    "percentile": 80,
+    "window_bars": 5,
+    "min_zones": 8,
+    "racimo_window": 1000,
+    "max_height_ticks": 20
+  },
+  "D": [
+    20,
+    40,
+    80
+  ],
+  "q": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "primary": {
+    "D": 40,
+    "q": 0.5,
+    "endpoint": "touch",
+    "mode": "first_D_qualifying",
+    "occupancy_lt": 0.25,
+    "temporal_bin_records": 6250
+  },
+  "sensitivity_bin_records": 25000,
+  "origins": [
+    "real_racimo",
+    "delayed_translated250",
+    "clock_price_width1",
+    "clock_price_width10",
+    "clock_price_width20"
+  ],
+  "clock_reference": "full bar256 then every250 full bars from session start; fixed widths1/10/20 and anchor price center; no racimo detection required for reference births",
+  "geometry_reference_caveat": "fixed width/center controls are not exact width/anchor-position matches to real births",
+  "wait_bars": 2000,
+  "horizon_bars": 2000,
+  "gap_seconds": 10,
+  "context": "fraction of last256 closed bars whose ranges intersect remaining corridor to edge",
+  "source_pins": [
+    {
+      "contract": "MNQ_12-26",
+      "file": "MNQ_12-26_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+      "version": 2,
+      "sha256": "7c0dfd811dcb059faf57926be08203031e9fff6bac1e8e234c7f158f6308f93e",
+      "bytes": 244126468,
+      "rows": 21440578,
+      "max_ns": 1790801999500000000,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    },
+    {
+      "contract": "MNQ_09-25",
+      "file": "MNQ_09-25_ticks_ext.parquet",
+      "dataset": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+      "version": 1,
+      "sha256": "c78ff5cebeca2130876409b27e00dbb9cab8c0007ab451e4ddb4319088a2be85",
+      "bytes": 296821013,
+      "rows": 34508845,
+      "max_ns": 1758489344084163900,
+      "preholdout": true,
+      "prior_structural_errors": 0,
+      "prior_evidence_byte_identical": true
+    }
+  ],
+  "event_dates": {
+    "MNQ_12-26": [
+      "2026-09-17",
+      "2026-09-18",
+      "2026-09-21",
+      "2026-09-22",
+      "2026-09-23",
+      "2026-09-24",
+      "2026-09-25",
+      "2026-09-28",
+      "2026-09-29",
+      "2026-09-30"
+    ],
+    "MNQ_09-25": [
+      "2025-08-04",
+      "2025-08-05",
+      "2025-08-06",
+      "2025-08-07",
+      "2025-08-08",
+      "2025-08-11",
+      "2025-08-12",
+      "2025-08-13",
+      "2025-08-14",
+      "2025-08-15",
+      "2025-08-18",
+      "2025-08-19",
+      "2025-08-20",
+      "2025-08-21",
+      "2025-08-22",
+      "2025-08-25",
+      "2025-08-26",
+      "2025-08-27",
+      "2025-08-28",
+      "2025-08-29",
+      "2025-09-02",
+      "2025-09-03",
+      "2025-09-04",
+      "2025-09-05",
+      "2025-09-08",
+      "2025-09-09",
+      "2025-09-10",
+      "2025-09-11",
+      "2025-09-12"
+    ]
+  },
+  "source_certified": false,
+  "holdout_opened": false,
+  "pnl_computed": false,
+  "other_contract_labels_not_used_to_retune": true,
+  "not_virgin_holdout": "prior broad bar-based research exists; fixed-parameter cross-contract diagnostic, not sealed test",
+  "rule_groups_per_contract": 45,
+  "source_selection_sha256": "764ec7cdd2cd432b3442fd22f96eb3d4543ba5e5d579780957a188bd1d6ba5ee",
+  "code_sha256": {
+    "run_replication.py": "71548395c4811ef019a5ab15d5d0610dc209faa33587b935afbe199cbdaeba6a"
+  }
+}

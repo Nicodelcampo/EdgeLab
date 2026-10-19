@@ -1,0 +1,1058 @@
+Electronic copy available at: http://ssrn.com/abstract=1505073
+Analytic solutions for optimal statistical
+arbitrage trading
+William K. Bertram a,∗
+aTribeca Investment Partners, Sydney NSW 2000, Australia
+Abstract
+In this paper we derive analytic formulae for statistical arbitrage trading where the
+security price follows an Ornstein-Uhlenbeck process. By framing the problem in
+terms of the ﬁrst-passage time of the process, we derive expressions for the mean
+and variance of the trade length and the return. We examine the problem of choosing
+an optimal strategy under two diﬀerent objective functions: the expected return; and
+the Sharpe ratio. An exact analytic solution is obtained for the case of maximising
+the expected return.
+Key words: Econophysics, Stochastic Processes, First Passage Time
+PACS: 89.65.Gh, 05.45.Tp, 05.40.Jc
+1
+Introduction
+Statistical arbitrage trading has previously been examined by various authors
+[1–6]. The goal of this type of trading is to develop highly automated trading strategies that take a probabilistic approach to trading. These strategies
+engage in high frequency trading using algorithms based on stochastic methods to identify price ineﬃciencies in the market. The use of such an approach
+has increased substantially in recent years as a greater understanding of the
+stochastic behavior of ﬁnancial markets has developed though empirical investigation and phenomenological modeling. This has largely been driven by
+an increase in interdisciplinary research by physicists and has allowed for the
+development of increasingly sophisticated models for price behavior.
+∗Corresponding author.
+Email address: william.bertram@yahoo.com.au (William K. Bertram).
+Preprint submitted to PhysicaA
+13 November 2009
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+Electronic copy available at: http://ssrn.com/abstract=1505073
+A common approach when performing this type of trading is to construct a
+stationary, mean reverting synthetic asset as a linear combination of securities.
+One example is the method of pairs trading which has been the focus of several
+recent studies [2,3,7]. This approach allows for the construction of a trading
+strategy where trades are entered when the process reaches an extreme value
+and exited when the process reverts to some equilibrium value.
+Most commonly used methods for investing do not address the signiﬁcance
+of the role of time, mainly due to the fact that modern portfolio theory [8,9]
+is based on single period models. However, when considering statistical based
+strategies that engage in high frequency trading, the time between trades, i.e.
+trading frequency, becomes an important quantity to consider. The importance
+of the role that time plays in ﬁnancial markets has been explored by many
+studies, for instance: data seasonality [10,11]; market activity time [12–14];
+and waiting times between orders and trades [15–18]. In the context of trading
+strategies it is crucial to consider not only the return per trade but also the
+time over which the returns take place. In such a setting it is imperative to
+consider transaction costs, because whether ineﬃciencies can be successfully
+traded depends on the cost of trading. Continuous time trading strategies were
+presented in [5] to provide a mathematical framework for the construction and
+analysis of statistical arbitrage methods. It was shown that in this framework
+that optimal strategies balance return per trade and transaction cost with the
+stochastic trading frequency.
+When implementing these type of strategies, speed of computation is vital, as
+calculations are often required to be performed in real time. A high frequency
+trading desk may perform thousands of transactions each day on hundreds of
+diﬀerent securities. In this situation, numerical methods, such as simulation or
+quadrature, may not be fast enough to update calculations within the required
+time constraints. In such an environment there is a need for analytic and
+approximate solutions.
+In this paper we present analytic formulae and solutions for calculating optimal statistical arbitrage strategies with transaction costs. We assume that
+the traded security is described by an Ornstein-Uhlenbeck process. The resulting analysis provides a mathematical model which can be used to explore the
+relationships between variables and oﬀer insight into the dynamics of trading strategies. We construct a continuous trading strategy for the OrnsteinUhlenbeck process and express the trade length and return of the strategy in
+terms of the ﬁrst-passage time of the process. Using known solutions for the
+ﬁrst-passage time, we derive analytic solutions for: the expected return; the
+variance of the return; and the expected trade length of the strategy. Optimal trading strategies can be found by constructing objective functions that
+are expressed in terms of the expected value and variance of the return. We
+derive an analytic solution for the strategy that maximises expected return.
+2
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+The solution is shown to satisfy a real valued integral equation. We present
+an approximate solution via a Taylor series expansion that is in close agreement with the exact solution. We prove that for optimal trading, the trading
+bands are symmetric about the mean of the traded security. We formulate
+expressions for the Sharpe ratio [9] of the strategy and show how it can be
+maximised. Results are illustrated using an example from an earlier work, in
+which, numerical methods were used to evaluate ﬁrst-passage time distributions. The model allows for the examination of the impact of transaction cost
+on trade length and return, in order to determine whether a strategy can be
+successful.
+The rest of the paper is as follows. In section 2 we deﬁne the continuous
+time trading strategy for the Ornstein-Uhlenbeck process. The trade length,
+expected return, and variance of the return are formulated in terms of the ﬁrstpassage time of the Ornstein-Uhlenbeck process. We use known expressions
+for the moments of the ﬁrst-passage time to derive analytic formulae for the
+mean and variance of the trade length and return. In section 3 we construct
+optimal trading strategies for the Ornstein-Uhlenbeck process by maximising
+the expected return and maximising the Sharpe ratio. An analytic solution
+to the problem is obtained in the case of maximising the expected return. In
+section 4 we present the results for the optimal strategies applied to real world
+data. Section 5 concludes and summarises the main results of the paper.
+2
+Continuous time trading
+A continuous trading strategy comprises a sequence of individual trades performed on a continuous time stochastic process. Consequently, many of the
+important quantities related to the trading strategy are functions of the frequency at which these trades take place. The trading frequency is speciﬁed by
+how many times the strategy trades per unit of time. This value is dependent
+on how long it takes in total to move from one trade entry point to the next,
+passing though the exit point along the way. We model the price of the traded
+security pt as,
+pt = eXt;
+Xt0 = x0,
+(1)
+where Xt satisﬁes the following stochastic diﬀerential equation,
+dXt = −αXtdt + ηdWt,
+(2)
+where α > 0, η > 0, and Wt is the Wiener process. A continuous time trading
+strategy is deﬁned by entering a trade when Xt = a, exiting the trade at
+3
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+Xt = m, and waiting until the process returns to Xt = a, to complete the
+trading cycle. Such a strategy can be thought of as periodic, since the actions
+are repeated between trade entry points. However, since Xt is a stochastic
+process, the time taken to complete the trade cycle will be a random variable
+T . We refer to T as the total trade length. Thus, the behavior of T will largely
+determine the properties of the strategy.
+We assume that a < m and decompose the total trade length into sub intervals,
+T = T1 + T2,
+where T1 is the time taken for the process to travel from a to m and T2 is
+the time taken from m back to a. Here the variables T1, T2 can be identiﬁed
+as ﬁrst-passage times for the process Xt. Furthermore, since Xt is a Markov
+process, the passage times T1, T2 are independent. Thus the mean and variance
+of T may be written as,
+E[T ] = E[T1] + E[T2],
+(3)
+V[T ] = V[T1] + V[T2].
+(4)
+Expressions for the return per unit time and variance of the return per unit
+time of the strategy, can be formulated in terms of the trading frequency. Let
+r(a, m, c) be the return per trade as a function of entry and exit levels and
+transaction cost. Then, the expected value and the variance of the return for
+the strategy are given by,
+µ(a, m, c) = r(a, m, c)E [1/T ] ,
+σ2(a, m, c) = r(a, m, c)2V [1/T ] ,
+where the variable 1/T represent the number of trades per unit time, or trade
+frequency. Since the value of T is independent for each trade cycle, the trade
+frequency is a renewal process and we can make use of the following results
+from renewal theory [19],
+E [1/T ] ∼1/E[T ],
+V [1/T ] ∼V[T ]/E[T ]3.
+The return for a single trade can be expressed as a function of the exit and
+entry values, minus the total transaction costs associated with the trade. Since
+the variable Xt represents the log-price, the function r(a, m, c) = (m −a −c)
+gives the continuously compound rate of return for a single trade accounting
+for transaction cost. It is clear that, for a strategy to be proﬁtable, the return
+4
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+gained by moving from a to m must ﬁrst exceed the transaction costs. By
+multiplying the return per trade by the above expressions for the frequency,
+we obtain,
+µ(a, m, c) = r(a, m, c)/E [T ] ,
+(5)
+σ2(a, m, c) = r(a, m, c)2V [T ] /E [T ]3 .
+(6)
+Note that, since the process Xt is stationary, the return per trade is deterministic. However the time frame over which the return is realised is stochastic.
+Depending on the properties of Xt and T , a trade may take a long time before
+reaching the exit level and experience a signiﬁcant deviation away from the
+exit level during that time. The expressions for the strategy return and variance may be calculated using well known identities for the ﬁrst-passage time
+of the Ornstein-Uhlenbeck process.
+The ﬁrst-passage time of the Ornstein Uhlenbeck process has been studied
+extensively in the literature. It is used in a wide variety of ﬁelds such as:
+biology [20]; disease modeling for HIV infection [21]; and ﬁnance in the context
+modeling default risk [22,23]. It is well known that no closed form solution for
+the ﬁrst-passage time density currently exist, except for the special case when
+the system is symmetric [24]. However, the moments of the ﬁrst-passage time
+have been investigated and calculated for various special cases [25–29]. Due
+to our formulation of the problem, we are able to use these known identities
+to evaluate both the expected trade length and the variance of the trade
+length. By applying the transformation Yt = Xt
+√
+2α/η via Itˆo’s lemma and
+performing the time dilation τ = αt we can transform the problem to the
+dimensionless system,
+dYτ = −Yτdτ +
+√
+2dWτ,
+with trade entry level ¯a = a
+√
+2α/η, exit level ¯m = m
+√
+2α/η, and transaction
+cost ¯c = c
+√
+2α/η. This transformation expresses the amplitude of the process
+in terms of the steady state standard deviation, θ = η/
+√
+2α. Note that the
+trade length rescales to T = αT . To simplify analysis we will work with the
+dimensionless system. For a process started at y = y0 with barrier at y = b
+we deﬁne the ﬁrst-passage time Tb,y0 = inf{t ≥0 : Yt > b|Y0 = y0}. The
+ﬁrst-passage time has been shown by [27,28] to have mean,
+E[Tb,y0] =
+
+
+
+
+
+φ1(b) −φ1(y0);
+y0 < b,
+φ1(−b) −φ1(−y0); y0 > b,
+(7)
+where
+5
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+φ1(z) = 1
+2
+∞
+X
+k=1
+Γ (k/2)
+³√
+2z
+´k /k!.
+Similarly the variance of the ﬁrst-passage time is due to [29] and is given by,
+V[T0,y0] =
+
+
+
+
+
+φ1(b)2 −φ2(b) + φ2(y0) −φ1(y0)2;
+y0 < b,
+φ1(−b)2 −φ2(−b) + φ2(−y0) −φ1(−y0)2; y0 > b,
+(8)
+where
+φ2(z) = 1
+2
+∞
+X
+k=1
+Γ (k/2) Ψ (k/2)
+³√
+2z
+´k /k!,
+and Ψ(x) = ψ(x) −ψ(1) and ψ(x) is the digamma function,
+ψ(z) =
+1
+Γ(z)
+d
+dzΓ(z).
+Since we are using an Ornstein-Uhlenbeck process that is symmetric about
+Yt = 0 we also have that Tb,0 = T−b,0 and T0,y0 = T0,−y0. Using these results
+with ¯a < ¯m the required ﬁrst-passage times are,
+T1 = T ¯m,¯a,
+T2 = T¯a, ¯m = T−¯a,−¯m.
+From Eq. (3) and (7) we can write the expected trade length as,
+E[T] = π
+³
+Erﬁ
+³
+¯m/
+√
+2
+´
+−Erﬁ
+³
+¯a/
+√
+2
+´´
+,
+where Erﬁ(x) = iErf(ix) is the imaginary error function. Likewise from Eq. (4)
+and (8) the variance is,
+V[T] = w1( ¯m) −w1(¯a) −w2(m) + w2(¯a),
+where
+w1(z) =
+Ã1
+2
+∞
+X
+k=1
+Γ (k/2)
+³√
+2z
+´k /k!
+!2
+−
+Ã1
+2
+∞
+X
+k=1
+(−1)kΓ (k/2)
+³√
+2z
+´k /k!
+!2
+w2(z) =
+∞
+X
+k=1
+Γ ((2k −1)/2) Ψ ((2k −1)/2)
+³√
+2x
+´(2k−1) /(2k −1)!.
+6
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.02
+−0.01
+0
+0.01
+0.02
+0
+0.5
+1
+a
+E[Trade Length]
+m
+E[T]
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.02
+−0.01
+0
+0.01
+0.02
+0
+0.2
+0.4
+a
+V[Trade Length]
+m
+V[T]
+Fig. 1. The expected value and the variance of the trade length as a function of
+trade entry and exit level. This example uses parameters α = 180.9670, η = 0.1538,
+c = 0.001.
+Hence, for the continuous trading strategy under the parametric system of
+Eqs. (1) and (2) we can obtain the closed form solution for the expected trade
+length as,
+E [T ] = π
+α
+³
+Erﬁ
+³
+m√α/η
+´
+−Erﬁ
+³
+a√α/η
+´´
+.
+(9)
+Similarly the closed form solution of the trade length variance is,
+V[T ] =
+³
+w1
+³
+m
+√
+2α
+η
+´
+−w1
+³
+a
+√
+2α
+η
+´
+−w2
+³
+m
+√
+2α
+η
+´
++ w2
+³
+a
+√
+2α
+η
+´´
+α2
+.
+(10)
+Figure 1 displays surface plots for the expected trade length and the variance
+of the trade length for diﬀerent entry and exit levels. This ﬁgure indicates the
+nonlinear behavior of the trade length as the trading levels become further
+apart. Using Eqs. (5) and (9) we can obtain the analytic form of the expected
+return for the strategy,
+µ(a, m, c) =
+α(m −a −c)
+π
+³
+Erﬁ
+³m√α
+η
+´
+−Erﬁ
+³ a√α
+η
+´´.
+(11)
+7
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.02
+−0.01
+0
+0.01
+0.02
+0
+0.2
+0.4
+a
+E[Return]
+m
+µ(a,m,c)
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.02
+−0.01
+0
+0.01
+0.02
+0
+2
+4
+x 10
+−3
+a
+V[Return]
+m
+σ2(a,m,c)
+Fig. 2. The expected return and the variance of the return as a function of trade
+entry and exit level in the positive half place. This example uses parameters
+α = 180.9670, η = 0.1538, c = 0.001.
+Likewise from Eqs. (6) and (10), the variance of the strategy return is,
+σ2(a, m, c) = α(m −a −c)2
+×
+³
+w1
+³
+m
+√
+2α
+η
+´
+−w1
+³
+a
+√
+2α
+η
+´
+−w2
+³
+m
+√
+2α
+η
+´
++ w2
+³
+a
+√
+2α
+η
+´´
+π3
+³
+Erﬁ
+³m√α
+η
+´
+−Erﬁ
+³a√α
+η
+´´3
+.
+(12)
+These analytic formulae, for the mean and variance, allow us to determine
+the properties of the strategy in terms of the trade entry and exit levels and
+transaction costs. Figure 2 displays a surface plot of the expected return and
+variance of the return as a function of entry and exit level with a ﬁxed transaction cost. Although the return per trade r(a, m, c) is linear, it is apparent
+that the non-linear behavior of the trading frequency has a strong inﬂuence on
+the proﬁtability of the trading strategy. It is also interesting that the variance
+of the return displays a bimodal shape which is symmetric around m = −a.
+The equations for the mean and variance of the return allow us to determine
+the trading bands that optimise the trading strategy.
+8
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+3
+Optimal strategies
+To calculate an optimal trading strategy, we seek to identify trade entry and
+exit levels that maximise some objective function for a given transaction cost.
+Suitable objective functions can be constructed as functions of the strategies
+expected return and variance. In this section we present two examples of optimal strategy choice: maximising the expected return; and maximising the
+Sharpe ratio.
+3.1
+Maximum expected return
+We wish to ﬁnd the values of a and m that maximise the expected return
+µ(a, m, c) given in Eq. (11). Diﬀerentiating Eq. (11) with respect to a and m
+and setting the derivatives equal to zero we obtain the following equations,
+s
+4π
+αη2e
+αa2
+η2 (m −a −c) −π
+α
+Ã
+Erﬁ
+Ãm√α
+η
+!
+−Erﬁ
+Ãa√α
+η
+!!
+= 0,
+s
+4π
+αη2e
+αm2
+η2 (m −a −c) −π
+α
+Ã
+Erﬁ
+Ãm√α
+η
+!
+−Erﬁ
+Ãa√α
+η
+!!
+= 0.
+It is clear that ∂µ
+∂a =
+∂µ
+∂m = 0 requires that a2 = m2. Since we have assumed
+that a < m, this implies that a < 0 and m = −a. Thus, the optimal entry
+and exit bands must be symmetric about zero. This is a somewhat signiﬁcant
+result since the paradigm approach for trading a mean reverting process is
+to use asymmetric bands, entering a trade when the process exhibits a two
+standard deviation event and exiting when it returns to zero [7]. Accordingly
+the maximum expected return is given by,
+µ∗(a, c) =
+α(2a + c)
+2πErﬁ(a√α/η),
+where the optimal value of a satisﬁes the following equation,
+e
+αa2
+η2 (2a + c) −η
+rπ
+αErﬁ
+³
+a√α/η
+´
+= 0.
+(13)
+It is relatively straight forward to ﬁnd the root of this equation numerically. As
+an alternative to the numerical approach, we can construct an approximate
+solution of the above equation via Taylor series. Taking a 3rd order Taylor
+series of Eq. (13) around a = 0 and simplifying, we obtain,
+9
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+c + αc
+η2 a2 + 4α
+3η2a3 = 0.
+This cubic equation can be solved and the appropriate negative real root
+chosen to yield the following approximation that is valid for small values of
+a√α/η,
+a = −c
+4 −
+c2α
+4
+³
+c3α3 + 24cα2η2 −4√3c4α5η2 + 36c2α4η4
+´1/3
+−
+³
+c3α3 + 24cα2η2 −4√3c4α5η2 + 36c2α4η4
+´1/3
+4α
+.
+(14)
+3.2
+Maximum Sharpe ratio
+In the previous example, maximising the expected return puts no constraints
+on the risk associated with the return. To account for risk, we consider maximising the Sharpe ratio. The Sharpe ratio was proposed by [9] in the context
+of single-period portfolio theory. By considering the variance as a measure
+of risk, the ratio acts as a measure for the relative return per unit of risk.
+The Sharpe ratio is deﬁned as the expected return in excess of the risk-free
+rate normalised by the standard deviation of the return. In the context of
+continuous time trading we deﬁne an analogous Sharpe ratio as,
+S = (µ −r∗)/σ,
+(15)
+where
+r∗= rf/E[T ],
+and rf is the risk-free rate of return. Thus, r∗corresponds to the risk-free rate
+over the same time period as the return produced by the trading strategy.
+This provides a measure of the strategy’s eﬃciency in generating returns in
+excess of a risk-free investment on an equivalent time scale. Using Eqs. (15),
+(11), and (12) we have,
+S(a, m, c, rf) = (m −a −c −rf)
+v
+u
+u
+t
+E[T ]
+(m −a −c)2V[T ].
+Inserting the corresponding values for the expected trade length and variance
+of trade length we obtain,
+10
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+−0.02
+−0.01
+0
+0.01
+0.02
+−0.02
+−0.01
+0
+0.01
+0.02
+0
+2
+4
+a
+Sharpe Ratio
+m
+S(a,m,c,r)
+Fig. 3. The Sharpe ratio as a function of trade entry and exit level in the positive
+half place. This example uses parameters α = 180.9670, η = 0.1538, c = 0.001,
+rf = 0.01.
+S(a, m, c, rf) = m −a −c −rf
+q
+(m −a −c)2
+×
+v
+u
+u
+u
+t
+απ
+³
+Erﬁ
+³ m√α
+η
+´
+−Erﬁ
+³a√α
+η
+´´
+³
+w1
+³
+m
+√
+2α
+η
+´
+−w1
+³
+a
+√
+2α
+η
+´
+−w2
+³
+m
+√
+2α
+η
+´
++ w2
+³
+a
+√
+2α
+η
+´´.
+Figure 3 displays a plot of Sharpe ratio as a function of trade entry and exit
+bands. By considering the expected value and the variance of T as functions
+of a and m, we can use the derivatives, ∂S
+∂a = ∂S
+∂m = 0, to obtain the following
+equations,
+−
+1
+m −a −c −rf
++
+∂
+∂aE[T ]
+2E[T ] +
+1
+m −a −c −
+∂
+∂aV[T ]
+2V[T ] = 0,
+−
+1
+m −a −c −rf
+−
+∂
+∂mE[T ]
+2E[T ] +
+1
+m −a −c +
+∂
+∂mV[T ]
+2V[T ] = 0.
+From the equations for the expected time Eq. (9) and variance Eq. (10) we
+have,
+∂
+∂aE[T ] = −∂
+∂mE[T ],
+∂
+∂aV[T ] = −∂
+∂mV[T ].
+Thus, it is clear that we must again have a < 0 and m = −a as a condition
+to optimise the strategy. By noting that w1(−z) = −w1(z) and w2(−z) =
+−w2(z), these results allow us to express the maximum Sharpe ratio in terms
+11
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+0
+0.001
+0.002
+0.003
+0.004
+0.005
+0.006
+0.007
+0.008
+0.009
+0.01
+−0.012
+−0.01
+−0.008
+−0.006
+−0.004
+−0.002
+0
+Optimal Trade Entry vs Trans. Costs
+a
+c
+0
+0.001
+0.002
+0.003
+0.004
+0.005
+0.006
+0.007
+0.008
+0.009
+0.01
+0.2
+0.3
+0.4
+0.5
+Max E[Return] vs Trans. Costs
+µ*(a,c)
+c
+Fig. 4. The optimal trading bands and corresponding maximum return of the strategy as a function of transaction cost. The solid line represents the numerical solution
+while the dashed line represents the analytic approximation.
+of one less variable,
+S∗(a, c, rf) =
+−(2a + c + rf)
+r
+απErﬁ
+³a√α
+η
+´
+r
+(2a + c)2
+³
+w1
+³
+a
+√
+2α
+η
+´
++ w2
+³
+a
+√
+2α
+η
+´´,
+(16)
+which can be maximised to ﬁnd a. Although these equations are less tractable
+than those obtained when maximising the expected return, there is still a great
+advantage in having an analytic form for the Sharpe ratio. To ﬁnd the maximum one need only apply a straightforward optimization routine to Eq. (16).
+4
+Results
+Here we present the results for the optimization discussed in the previous
+section. To illustrate the results we use the same example as that presented in
+Ref.[5] which constructs a stationary synthetic asset as a linear combination
+of the dual listed securities, ANZ.AX and ANZ.NZ. The parameters for the
+12
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+0
+0.005
+0.01
+0.015
+0.02
+0.025
+0.03
+0.035
+0.04
+0.045
+0.05
+−0.025
+−0.02
+−0.015
+−0.01
+−0.005
+Optimal Trade Entry vs Risk−free Rate
+a
+rf
+0
+0.005
+0.01
+0.015
+0.02
+0.025
+0.03
+0.035
+0.04
+0.045
+0.05
+2
+4
+6
+8
+10
+Max Sharpe Ratio vs Risk−free Rate
+S*(a,c,r)
+rf
+Fig. 5. The optimal trading bands and corresponding maximum return of the strategy as a function of the risk-free rate rf. This example uses c = 0.001.
+Ornstein-Uhlenbeck process are found to be α = 180.9670 and η = 0.1538.
+The expected return of the strategy is maximised via Eq. (13) in order to
+obtain the optimal value of a for a given transaction cost c. Figure 4 displays
+the solution to Eq. (13) along with the approximation formula for a. This
+ﬁgure shows that despite being a low order approximation, Eq. (14) is in good
+agreement with the exact solution for small values of a. When maximising the
+expected return these small values of a also correspond to small values of c,
+thus the approximation is valid for the case of small transaction costs. Further,
+the optimal return, µ∗obtained with the approximate solution provides a close
+match to that obtained with Eq. (13). Results for the optimal strategy with
+diﬀerent transaction costs are shown in Table 1.
+In the case of maximising the Sharpe ratio we hold the transaction cost at a
+constant level, c = 0.001, and examine the optimal choice of entry and exit
+point as a function of the risk-free rate rf. The optimal trading level a is
+obtained by maximised Eq. (16). Figure 5 displays the optimal entry value
+a, and the corresponding maximum Sharpe ratio as a function of rf. These
+ﬁgures illustrate how the eﬃciency of the strategy is aﬀected by the existence
+of a risk-free investment over an equivalent time scale. As the risk-free return
+increases, the strategy becomes less attractive on a return per unit risk basis.
+13
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+c
+a
+aapprox
+µ∗
+µapprox
+0.0010
+-0.0047152
+-0.0048750
+0.49236
+0.492250
+0.0020
+-0.0060232
+-0.0063549
+0.44219
+0.441760
+0.0030
+-0.0069778
+-0.0074910
+0.40214
+0.401160
+0.0040
+-0.0077651
+-0.0084682
+0.36797
+0.366200
+0.0050
+-0.0084523
+-0.0093531
+0.33790
+0.335130
+0.0060
+-0.0090721
+-0.0101780
+0.31095
+0.306960
+0.0150
+-0.0133720
+-0.0165920
+0.14860
+0.127780
+0.0175
+-0.0143940
+-0.0182670
+0.11961
+0.094441
+0.0200
+-0.0153880
+-0.0199340
+0.09536
+0.067177
+Table 1
+Results for maximising the expected return with α = 180.9670, η = 0.1538.
+rf
+a
+S∗
+µ
+σ2
+0.0010
+-0.0046075
+9.2824
+0.49231
+0.0021698
+0.0020
+-0.0058600
+8.1947
+0.48757
+0.0023423
+0.0030
+-0.0068033
+7.3497
+0.47782
+0.0024544
+0.0040
+-0.0076014
+6.6449
+0.46638
+0.0025421
+0.0050
+-0.0083134
+6.0371
+0.45405
+0.0026159
+0.0060
+-0.0089681
+5.5027
+0.44115
+0.0026800
+0.0150
+-0.0138010
+2.5102
+0.31271
+0.0029518
+0.0175
+-0.0150020
+2.0220
+0.27554
+0.0029215
+0.0200
+-0.0161780
+1.6249
+0.23890
+0.0028357
+Table 2
+Results for maximising the Sharpe ratio with α = 180.9670, η = 0.1538, c = 0.001.
+Table 2 presents the results of the optimization together with the expected
+return and the variance in each case.
+5
+Summary
+In this paper we have presented analytic formulae for statistical arbitrage
+trading. We derived closed form solutions for the mean and variance of the
+14
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+trade length and the strategy return. These results allow for the description
+and analysis of trading strategies, including the eﬀects of transaction costs.
+Analytic solutions for constructing optimal trading strategies were obtained
+by maximising the expected return. It was shown analytically that in the
+optimal case the trade entry and exit levels are symmetric about zero. A
+formula for maximising the Sharpe ratio was derived. This formula provides a
+way to construct an optimal strategy incorporating a measure of risk, namely
+the variance of the return. It was shown that the trade entry and exit levels
+are also symmetric when maximising the Sharpe ratio. We examined how the
+optimal choice varies with the risk-free rate of return.
+Analytic solutions such as those provided in this paper are of use when implementing statistical arbitrage strategies that engage in high frequency trading,
+due to the necessity to perform calculations in real time. We note that the
+results obtained in this paper rely on the assumption that the security is described by an Itˆo diﬀusion process, namely the Ornstein-Uhlenbeck process,
+which is Gaussian. It is well known that ﬁnancial data displays non- Gaussian
+behavior and therefore the model will not accurately represent real world behavior. However, this approach oﬀers a way to investigate and understand how
+the important system variables relate to each other. In particular, it indicates
+the importance that time plays in determining an optimal trading strategy.
+The method can also be applied to non-Gaussian processes, such as the generalised Ornstein-Uhlenbeck process which is driven by a Levy noise. However,
+analytic results may not be so forthcoming.
+Acknowledgements
+The author would like to thank Jim Clark for many helpful discussions during
+the development of the paper.
+References
+[1] C. Alexander and A. Dimitriu, Discussion Paper 2002-08, IMSA Centre
+Discussion Papers in Finance Series (2002).
+[2] R.J. Elliott, J. van der Hoek, and W.P. Malcolm, Quant. Finance 5, 271 (2005).
+[3] G. Vidyamurthy, Pairs Trading: Quantitative Methods and Analysis (Wiley
+Finance, 2004).
+[4] L. Kestner, Quantitative Trading Strategies (McGraw Hill, 2003).
+[5] W.K. Bertram, Physica A 388, 2865 (2009).
+15
+Electronic copy available at: https://ssrn.com/abstract=1505073
+
+[6] A. Trapletti, A. Geyer, and F. Leisch, J. Forecasting 21, 151 (2002).
+[7] E. Gatev, W.N. Goetzmann, and K.G. Rouwenhorst, Rev. Fin. Studies 19, 797
+(2006).
+[8] H.M. Markowitz, J. Finance 7, 77 (1952).
+[9] W. F. Sharpe, J. Portfolio Management 21, 49 (1994).
+[10] W.K. Bertram, Physica A 341, 533 (2004).
+[11] M.M. Dacorogna, R. Gencay, U.A. Muller, R.B. Olsen, and O.V. Pictet, An
+Introduction to High Frequency Finance (Academic Press, London, 2001).
+[12] P.K. Clark, Econometrica 41, 135 (1973).
+[13] C.C. Heyde, J. Appl. Probab. 36, 1234 (1999).
+[14] H. Gemen and T. Ane, Risk 9, 146 (1996).
+[15] E. Scalas, R. Gorenﬂo, and F. Mainardi, Physica A 284, 376 (2000).
+[16] E. Scalas, T. Kaizoji, M. Kirchler, J. Huber, and A. Tedeschi, Physica A 366,
+463 (2006).
+[17] E. Scalas, R. Gorenﬂo, H. Luckock, F. Mainardi, M. Mantelli, and M. Raberto,
+Quant. Finance 4, 695 (2004).
+[18] N. Sazuka, J. Inoue, and E. Scalas, Physica A 388, 2838 (2009).
+[19] D. R. Cox and H. D. Miller, The theory of stochastic processes (Chapman &
+Hall/CRC, 1977).
+[20] H.C. Tuckwell, Introduction to Theoretical Neurobiology (volume 2): Nonlinear
+and Stochastic Theories (Cambridge University Press, Cambridge, 1998).
+[21] Y. Madec and C. Japhet, Math. Biosciences 189, 131 (2004).
+[22] J. Masoliver and J. Perello, Phys. Rev. E. 80, 016108 (2009).
+[23] M. Jeanblanc and M. Rutkowski, Modelling default risk: An overview (Higher
+Education Press, Beijing, 2000), p. 171.
+[24] A. N. Borodin and P. Salminen, Handbook of Brownian Motion: Facts and
+Formulae (Birkhauser, 1996).
+[25] D.A. Darling and A.J.F. Siegert, Ann. Math. Statistics 24, 624 (1953).
+[26] G. Klein, Proc. R. Soc. A 211, 431 (1952).
+[27] M.U. Thomas, J. Appl. Probab. 12, 600 (1975).
+[28] S. Sato, J. Appl. Probab. 14, 850 (1977).
+[29] L.M. Ricciardi and S. Sato, J. Appl. Probab. 25, 43 (1988).
+16
+Electronic copy available at: https://ssrn.com/abstract=1505073

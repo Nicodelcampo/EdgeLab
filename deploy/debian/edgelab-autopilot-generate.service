@@ -1,13 +1,31 @@
 [Unit]
-Description=EdgeLab autopilot: regenerar borradores de candidatas (NO los promueve)
+Description=EdgeLab autopilot: biblioteca + borradores + (si está firmada la enmienda) propuestas y promoción automática
 After=network-online.target
+Wants=network-online.target
+OnFailure=edgelab-alerta@%n.service
 
 [Service]
 Type=oneshot
 User=edgelab
+Group=edgelab
 WorkingDirectory=/opt/edgelab/EdgeLab
 Environment=HOME=/opt/edgelab
+Environment=PATH=/opt/edgelab/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/edgelab/autopilot.env
+# 1) biblioteca: cerebro, papers, research propio, registros (con sha y commit de cada fuente) -> biblioteca.json + manifiesto
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py index --state /var/lib/edgelab-autopilot/state/autopilot_runs
 ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py draft --out /var/lib/edgelab-autopilot/state/autopilot_drafts --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
-ReadWritePaths=/var/lib/edgelab-autopilot
-ProtectSystem=strict
+# proponente (LLM) con todo el contexto del proyecto: sólo si la configuración tiene proponente=true; las propuestas son borradores
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py propose --state /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
+# promoción automática: no hace nada mientras auto_promocion=false (enmienda AUTONOMIA-A1 sin firmar)
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py auto-promote --candidates /var/lib/edgelab-autopilot/state/autopilot_runs/candidates.json --config /etc/edgelab/autopilot.json --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
+ExecStopPost=-/opt/edgelab/EdgeLab/deploy/debian/sync_state.sh
+TimeoutStartSec=1800
 NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+MemoryMax=1536M

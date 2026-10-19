@@ -1,0 +1,167 @@
+{
+  "doc_id": 293,
+  "titulo": "REITs and Market Microstructure: A Comprehensive Analysis of Market Quality",
+  "resumen_operativo": "Analiza diferencias de calidad de mercado (liquidez y volatilidad) entre REITs y acciones comunes, usando datos intradiarios del NYSE TAQ entre enero 2005 y junio 2011. Encuentra que pre-crisis los REITs tenían peor calidad de mercado, pero la crisis financiera de 2008 revirtió esta relación: post-crisis los REITs son más líquidos, menos volátiles y más baratos de transar. Los resultados son robustos a distintos algoritmos de matching, medidas de liquidez y métodos de estimación incluyendo GARCH.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Market Quality",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Calidad de mercado definida en términos de liquidez bursátil, volatilidad de precios e impacto de precio. Una mayor calidad implica menor spread, menor volatilidad y menor impacto de precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Quoted Spread"},
+        {"tipo": "USA", "objeto": "Effective Spread"},
+        {"tipo": "USA", "objeto": "Price Volatility"}
+      ],
+      "cita_textual": "We define market quality in terms of stock market liquidity, price volatility, and price impact."
+    },
+    {
+      "nombre": "Quoted Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el mejor precio de compra (bid) y venta (ask), ponderada por el tiempo transcurrido entre cotizaciones (time-lapse-weighted). Valores más altos indican menor liquidez.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Bid-Ask Spread"},
+        {"tipo": "MIDE", "objeto": "Tightness"}
+      ],
+      "cita_textual": "Quoted spread, often called bid-ask spread, is the most widely used measure of liquidity."
+    },
+    {
+      "nombre": "Effective Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Diferencia entre el precio al que un trader compra/vende y el valor fundamental reflejado por el midpoint. Cuantifica el costo real de ejecución incluyendo movimiento de precio e impacto de mercado.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Price Impact"},
+        {"tipo": "EQUIVALE_A", "objeto": "Execution Cost"}
+      ],
+      "cita_textual": "Effective spread can be considered an estimate of the trader's actual execution cost and the gross revenue earned by the liquidity provider."
+    },
+    {
+      "nombre": "Relative Spread",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Quoted spread escalado por el midpoint de la cotización. Refleja el costo porcentual de transar y permite comparar liquidez entre acciones de distinto precio.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "Percentage Spread"},
+        {"tipo": "MIDE", "objeto": "Trading Cost"}
+      ],
+      "cita_textual": "Relative spread, sometimes referred to as percentage spread, more accurately reflects the percentage cost of trading by scaling the size of the spread to the fundamental value of the stock."
+    },
+    {
+      "nombre": "Time-Lapse-Weighted Price Volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volatilidad de precios calculada ponderando por el tiempo entre movimientos de precio y el número de trades en cada intervalo de 5 minutos. Captura con mayor precisión la dinámica intradiaria.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Number of Trades"},
+        {"tipo": "PREDICE", "objeto": "Execution Quality"}
+      ],
+      "cita_textual": "Time-lapse-weighted price volatility presents a more accurate assessment of price volatility as it captures the movement in stock prices by taking into account the number of trades and the time lapse between subsequent price movements."
+    },
+    {
+      "nombre": "Flight to Quality",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Fenómeno por el cual inversores huyen de activos riesgosos hacia activos más seguros durante períodos de alta volatilidad. En el contexto de REITs, los inversores encontraron atractivos sus beneficios de diversificación de largo plazo tras la crisis de 2008.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Improved REIT Liquidity"},
+        {"tipo": "MITIGA", "objeto": "Information Asymmetry"}
+      ],
+      "cita_textual": "Investors fleeing risky investments, find the long-term diversification benefits of REITs more attractive during periods of high volatility and low interest rates."
+    },
+    {
+      "nombre": "GARCH Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo GARCH(1,1) usado para testear formalmente diferencias de volatilidad entre REITs y no-REITs, controlando por spread, profundidad, volumen, número de trades y efecto lunes. Seleccionado por tener menor AIC y SIC.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Volatility Clustering"},
+        {"tipo": "MEJORA_A", "objeto": "OLS Two-Stage Estimation"}
+      ],
+      "cita_textual": "The selection of a GARCH(1,1) model is based on the tradeoff between accuracy and efficiency in model constructions. GARCH(1,1) has the lowest AIC and SIC values."
+    },
+    {
+      "nombre": "Intraday U-Shape Pattern",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón intradiario en forma de U observado en spreads, volumen y volatilidad: valores más altos al inicio y final de la sesión, más bajos hacia la mitad del día (aproximadamente 1:30 p.m.). Consistente con McInish y Wood (1992).",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Quoted Spread"},
+        {"tipo": "APLICA_A", "objeto": "Trading Volume"}
+      ],
+      "cita_textual": "For most of our liquidity and volatility measures, we observe well-established U-shape patterns."
+    },
+    {
+      "nombre": "Market Capitalization Matching",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Emparejamiento de REITs con acciones no-REIT basado en capitalización de mercado del año anterior. Usado como método base, con pruebas de robustez usando book-to-market, volumen de trading y triple sort de Fama-French.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "CRSP Database"}
+      ],
+      "cita_textual": "The remaining REITs and non-REIT common stocks are matched based on the previous year-end market capitalization."
+    },
+    {
+      "nombre": "Price Impact",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Efecto que tiene una orden sobre el precio del activo. Medido mediante effective spread. REITs mostraron mayor price impact pre-crisis pero menor post-crisis respecto a no-REITs.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "Effective Spread"},
+        {"tipo": "SE_OPONE_A", "objeto": "Market Resiliency"}
+      ],
+      "cita_textual": "REITs experience a larger price impact than non-REITs during the pre-crisis period. However, this relationship reverses during the post-crisis period."
+    },
+    {
+      "nombre": "Stoll (2000) Regression Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo cross-sectional que relaciona relative spreads con características de trading: volumen, número de trades, valor de mercado, precio y volatilidad. Se añade dummy REIT para testear formalmente diferencias de liquidez pre y post-crisis.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Relative Spread"},
+        {"tipo": "APLICA_A", "objeto": "REIT Dummy Variable"}
+      ],
+      "cita_textual": "We follow the Stoll (2000) model to formally test the liquidity differences between REITs and non-REIT matching common stocks."
+    },
+    {
+      "nombre": "Information Asymmetry in REITs",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Los REITs tienen menor asimetría de información que acciones comunes debido a que los requisitos regulatorios de distribución de dividendos los obligan a levantar capital frecuentemente en mercados públicos, haciéndolos más transparentes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "Lower Adverse Selection"},
+        {"tipo": "MEJORA_A", "objeto": "Market Quality"}
+      ],
+      "cita_textual": "The regulatory distribution requirements force REITs to frequently raise capital in the public markets, which makes REITs more transparent (having lower information asymmetry) as compared to non-REIT stocks."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "REITs tenían 42% menos volumen de trading y 29% menos número de trades que no-REITs en el período pre-crisis (enero 2005 a julio 2008).",
+      "mercado": "REITs y acciones comunes NYSE",
+      "periodo": "Enero 2005 - Julio 2008 (pre-crisis)",
+      "magnitud": "42% menos volumen, 29% menos trades, 35% menos quotes",
+      "condiciones": "214 REITs emparejados con 1093 acciones no-REIT por capitalización de mercado, excluyendo mortgage REITs",
+      "robustez": "alta",
+      "cita_textual": "During the pre-crisis period, REITs have 42% less VOLUME and nearly 29% less NTRDS as compared to non-REIT stocks."
+    },
+    {
+      "afirmacion": "El volumen de trading de REITs en el período post-crisis es casi 3 veces el volumen del período pre-crisis; el número de trades aumentó casi 4 veces y el número de quotes más de 3.5 veces.",
+      "mercado": "REITs NYSE",
+      "periodo": "Agosto 2008 - Junio 2011 (post-crisis) vs Enero 2005 - Julio 2008 (pre-crisis)",
+      "magnitud": "~3x volumen, ~4x trades, ~3.5x quotes",
+      "condiciones": "Misma muestra de 214 REITs, datos intradiarios TAQ cada 5 minutos",
+      "robustez": "alta",
+      "cita_textual": "Trading volume for REITs during the post-crisis period is nearly 3 times the trading volume during the pre-crisis period. We also find that the NTRDS for REITs has increased by almost 4 times while NQUOTES has increased by more than 3.5 times."
+    },
+    {
+      "afirmacion": "REITs son casi 50% más líquidos que no-REITs durante el período post-crisis, mientras que pre-crisis los REITs tenían menor liquidez.",
+      "mercado": "REITs y acciones comunes NYSE",
+      "periodo": "Agosto 2008 - Junio 2011",
+      "magnitud": "~50% más líquidos (menores spreads)",
+      "condiciones": "Medido con QSPRD y RSPRD, controlado por capitalización de mercado",
+      "robustez": "alta",
+      "cita_textual": "REITS are almost 50% more liquid than non-REIT stocks during the post-crisis period."
+    },
+    {
+      "afirmacion": "REITs eran casi 2.5 veces más volátiles que no-REITs en cada intervalo de 5 minutos durante pre-crisis; en post-crisis los no-REITs se volvieron 23% más volátiles que los REITs.",
+      "mercado": "REITs y acciones comunes NYSE",
+      "periodo": "Enero 2005 - Junio 2011",
+      "magnitud": "2.5x volatilidad pre-crisis; REITs 23% menos volátiles post-crisis",
+      "condiciones": "Time-lapse-weighted price volatility en intervalos de 5 minutos",
+      "robustez": "alta",
+      "cita_textual": "REITs are nearly 2.5 times more volatile than non-REIT stocks for every five minutes of trading [pre-crisis]... making non-REIT stocks about 23% more volatile as compared to REITs [post-crisis]."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "Usa datos intradiarios TAQ cada 5 minutos; analiza patrones intradiarios en 77 intervalos con recomendaciones explícitas de timing óptimo de ejecución."}
+}

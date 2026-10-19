@@ -1,0 +1,99 @@
+{
+  "status": "INCREMENTAL_DIAGNOSTIC_NOT_VIRGIN_HOLDOUT",
+  "contract": "MNQ_12-26",
+  "training_dates": [
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24"
+  ],
+  "test_dates": [
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "training_signals": 187,
+  "test_signals": 100,
+  "fixed_ridge_lambda": 10,
+  "hyperparameter_tuning": false,
+  "source_certified": false,
+  "pnl_computed": false,
+  "multiplicity_corrected": false,
+  "context_only": {
+    "test_brier": 0.25931046130955643,
+    "test_log_loss": 0.7136077169765852,
+    "test_signals": 100,
+    "training_signals": 187
+  },
+  "plus_revisits_volume_speed_flow": {
+    "test_brier": 0.2644191850605237,
+    "test_log_loss": 0.72740829378377,
+    "test_signals": 100,
+    "training_signals": 187
+  },
+  "extended_minus_baseline_brier": 0.00510872375096729,
+  "test_session_bootstrap95": [
+    -0.004157889751311402,
+    0.017392374207476254
+  ],
+  "interpretation": "negative Brier gap is better prediction in this diagnostic, not causal interest, certified edge, costs or virgin validation",
+  "coefficients": {
+    "context_only": {
+      "feature_names": [
+        "intercept",
+        "log_age",
+        "log_remaining",
+        "log_span",
+        "hour_sin",
+        "hour_cos"
+      ],
+      "coefficients": [
+        0.3840639312700703,
+        0.0729905731011629,
+        -0.13202283413822158,
+        -0.0034448904761615064,
+        -0.14780559571371693,
+        -0.1344155958533517
+      ],
+      "training_only_imputation_and_scaling": true
+    },
+    "plus_revisits_volume_speed_flow": {
+      "feature_names": [
+        "intercept",
+        "log_age",
+        "log_remaining",
+        "log_span",
+        "hour_sin",
+        "hour_cos",
+        "log_visits",
+        "volume_inside_fraction",
+        "speed_ratio",
+        "return_imbalance_proxy_toward",
+        "proxy_coverage",
+        "return_efficiency",
+        "log_recency",
+        "speed_ratio_missing"
+      ],
+      "coefficients": [
+        0.38734424999684514,
+        0.0713546408092567,
+        -0.1305012948021104,
+        0.006072865712073132,
+        -0.19590399441706405,
+        -0.147207231039116,
+        -0.05772028908374465,
+        -0.041067484399211394,
+        0.006452769153889347,
+        -0.20228168645825634,
+        0.0,
+        0.02007564140294499,
+        0.01852164765813289,
+        -0.040647275329296684
+      ],
+      "training_only_imputation_and_scaling": true
+    }
+  }
+}

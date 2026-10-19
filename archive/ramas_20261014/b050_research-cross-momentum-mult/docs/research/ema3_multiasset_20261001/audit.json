@@ -1,0 +1,38 @@
+{
+  "status": "PASS",
+  "unique_base_events": 231,
+  "filled": 231,
+  "no_entry": 0,
+  "unknown_exit": 0,
+  "cells": 24,
+  "cell_status_counts": {
+    "NO_SUPPORT": 10,
+    "INCONCLUSIVE_SAMPLE": 14
+  },
+  "max_entry_lag_s": 14.252,
+  "max_exit_lag_s": 13.624,
+  "profiles_rows": 113601621,
+  "invalid_quote_rows": 152,
+  "catalog_reconciliation": true,
+  "checks": [
+    "source/manifest exact match before opening tables",
+    "ledger identities and filter subsets",
+    "entry/exit timing, no censored filled positions",
+    "quote net costs and mid alpha independently recomputed",
+    "all 24 cells, bootstrap bounds and sample gates reproduced",
+    "no position overlap within asset/family"
+  ],
+  "caveats": [
+    "same independent recalculation script does not recertify raw quote freshness or timezone",
+    "20k bootstrap at 0.05/48 tail approximately21draws, bounds approximate",
+    "bootstrap replication reuses frozen inference implementation; quote arithmetic independent"
+  ],
+  "output_sha256": {
+    "preflight.json": "88f24afe95b0f2076e7bbaeae407935dde6f6a7593df6d9a2ba0a4b4519b10cf",
+    "manifest.json": "4ebd53667c9819157ea708bb63a6833513ba98806f3d38985837f5dccaf02b1d",
+    "selftests.json": "96431f08333dc65c2bbe389090a372ccabc6f464141759abf3e8ad238bc5afdd",
+    "results.json": "e99d2346fd9f39af87e97d9431ffd4b9f454b9b7a261d700ff443f436259e78d",
+    "profiles.json": "b1a07e35be32d15b983a3df5e7bfdb824b7224601195fb4642ffc3c04cd5c587",
+    "execution_log.json": "5aa52cdcfb9a5cc56a3cb7c39ef6e13ed567ce94b9a723ff8c9be2672ed4754f"
+  }
+}

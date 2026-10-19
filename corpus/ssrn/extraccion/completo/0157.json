@@ -1,0 +1,125 @@
+{
+  "doc_id": 157,
+  "titulo": "High Frequency Trading with Speed Hierarchies",
+  "resumen_operativo": "Este paper desarrolla un modelo teórico que analiza la competencia entre traders de alta frecuencia (FTs) con velocidades heterogéneas que anticipan el flujo de órdenes. Aporta al quant el marco para entender cómo los HFTs generan phantom liquidity y un 'speed tax', aumentando los costos de transacción para estrategias direccionales e impactando negativamente la calidad del mercado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "order anticipation",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia donde los HFT anticipan órdenes inminentes de traders más lentos y operan adelantándose a ellas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order flow"}
+      ],
+      "cita_textual": "This paper does not attempt to model all types of HFTs, instead focusing on HFTs who use order anticipation strategies."
+    },
+    {
+      "nombre": "speed hierarchy",
+      "tipo": "concepto",
+      "definicion_en_contexto": "La estructura de las velocidades relativas entre los HFTs, que determina su poder de mercado agregado más que su velocidad absoluta.",
+      "relaciones": [],
+      "cita_textual": "FTs’ speed hierarchies crucially influence FTs’ strategies and their market powers."
+    },
+    {
+      "nombre": "speed tax",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Costo indirecto que los HFT imponen a los proveedores de liquidez, los cuales lo trasladan a los traders regulares mediante peores precios.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "transaction costs"}
+      ],
+      "cita_textual": "FTs effectively levy a speed tax on passive liquidity providers and passive liquidity providers shift the tax burden to normal-speed liquidity demanders"
+    },
+    {
+      "nombre": "phantom liquidity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Liquidez en el order book que los HFT retiran justo antes de que la orden de un trader regular sea ejecutada.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "slippage"}
+      ],
+      "cita_textual": "FTs’ trading results in 'phantom liquidity' that sometimes disappears right before a market order arrives."
+    },
+    {
+      "nombre": "price discovery",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Proceso de incorporación de información en los precios, que el paper afirma es acelerado en el corto plazo pero empeorado a largo plazo por los HFT.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "order anticipation"}
+      ],
+      "cita_textual": "Despite accelerating price discovery, FTs’ trading makes prices ultimately less informative."
+    },
+    {
+      "nombre": "batch auction",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Mecanismo de mercado de subastas periódicas que busca reducir el valor de la latencia mínima, aunque su efectividad baja si hay jerarquías de velocidad.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "latency"}
+      ],
+      "cita_textual": "prices are essentially determined in uniform batch auctions, as Budish et al. (2015) advocate, one cannot fully rely on the force of competition to limit the aggregate market power of FTs"
+    },
+    {
+      "nombre": "latency floor",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Regla que añade latencia aleatoria a cada orden en un exchange para mitigar las ventajas deterministas de velocidad.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "high-frequency trading"}
+      ],
+      "cita_textual": "latency floor rule, under which orders arriving within a short batching interval are executed in a random sequence"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Operaciones realizadas por traders que conocen el valor real del activo. Estos deben operar menos agresivamente debido a los costos de liquidez impuestos por los FTs.",
+      "relaciones": [],
+      "cita_textual": "Because the informed trader reduces her trading intensity in response to higher liquidity costs, the aggregate order-flow becomes less informative."
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategias de inversión con periodos de retención muy cortos que dependen fuertemente de latencias mínimas para adelantarse al order flow.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "latency"}
+      ],
+      "cita_textual": "In recent years we have witnessed the emergence of high frequency traders (HFTs). Empirical studies... find that HFTs typically hold inventories for very short periods"
+    },
+    {
+      "nombre": "latency",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El retraso temporal en la transmisión de señales y ejecución, sobre el cual los HFT invierten capital para obtener ventajas de milisegundos.",
+      "relaciones": [],
+      "cita_textual": "Anecdotally, HFTs are extremely sensitive to latencies and invest astonishing amounts of capital to be able to slightly increase their trading speed."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La heterogeneidad en las velocidades de los FTs aumenta su poder de mercado agregado y sus ganancias; una pequeña mejora en el ranking de velocidad aumenta exponencialmente la ganancia.",
+      "mercado": "Teórico",
+      "periodo": "no especificado",
+      "magnitud": "Las ganancias esperadas se pueden quintuplicar al subir un puesto en el ranking.",
+      "condiciones": "Modelo teórico secuencial de múltiples FTs frente a un liquidity provider lento.",
+      "robustez": "baja",
+      "cita_textual": "An FT could more than quintuple her expected trading profits by moving up one spot in the speed ranking."
+    },
+    {
+      "afirmacion": "La anticipación de órdenes por parte de los HFT perjudica a los demandantes de liquidez y resulta en precios finales menos informativos.",
+      "mercado": "Teórico",
+      "periodo": "no especificado",
+      "magnitud": "Disminución teórica de la informatividad del precio ex post.",
+      "condiciones": "Asume que los HFT capturan señales ruidosas del order flow antes de su ejecución y que los traders informados reaccionan reduciendo su tamaño de orden.",
+      "robustez": "baja",
+      "cita_textual": "Despite accelerating price discovery, FTs’ trading makes prices ultimately less informative as a result of FTs’ trading."
+    },
+    {
+      "afirmacion": "Aumentar el número de FTs no necesariamente diluye su poder de mercado; si los nuevos participantes son mucho más rápidos, el poder agregado de los FTs puede incluso aumentar.",
+      "mercado": "Teórico",
+      "periodo": "no especificado",
+      "magnitud": "El Herfindahl index (HHI) de los FTs puede caer mientras que su poder de mercado gamma aumenta.",
+      "condiciones": "Depende de la jerarquía de velocidad de los nuevos participantes frente a los incumbentes.",
+      "robustez": "baja",
+      "cita_textual": "If the entrant is faster than all incumbent FTs (t′ < t1), FTs’ market power γ may increase or decrease."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Útil como modelo mental para justificar simulaciones de slippage adverso asimétrico en backtests de alta frecuencia o de order flow intradía."
+  }
+}

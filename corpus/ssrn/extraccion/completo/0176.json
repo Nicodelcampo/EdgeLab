@@ -1,0 +1,139 @@
+{
+  "doc_id": 176,
+  "titulo": "Hydrodynamic Limit of Order Book Dynamics",
+  "resumen_operativo": "El paper demuestra un límite hidrodinámico para la dinámica del order book: cuando el tick size tiende a cero, los procesos que representan la forma del lado de compra y venta convergen a procesos deterministas descritos por ecuaciones diferenciales ordinarias (ODEs). La aproximación fluida se deriva del modelo de cadena de Markov en tiempo continuo (CTMC) de Cont et al. (2010) y produce un modelo de spread cero en el límite. Se validan empíricamente los resultados contra datos de NYSE Arca, mostrando efectividad de la aproximación en condiciones de baja volatilidad.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Limit Order Book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Mecanismo de trading electrónico donde se registran órdenes límite de compra y venta a distintos niveles de precio. El modelo describe la cantidad de órdenes en cada nivel de precio como un estado de CTMC.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "REQUIERE", "objeto": "order flow"}
+      ],
+      "cita_textual": "The state of the order book is described by an order quantity at each price."
+    },
+    {
+      "nombre": "Hydrodynamic Limit",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica de la física estadística que deriva comportamiento macroscópico determinista a partir de interacciones microscópicas. En este contexto, aproxima la distribución transitoria de la forma del order book cuando el tick size tiende a cero.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Limit Order Book"},
+        {"tipo": "USA", "objeto": "fluid approximation"}
+      ],
+      "cita_textual": "Relying on the theory of hydrodynamic limits (see, e.g., Kipnis and Landim (1999)) to derive analytical approximations of the shape."
+    },
+    {
+      "nombre": "Fluid Approximation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Aproximación determinista del comportamiento transitorio de la forma del order book basada en la interacción de flujos de órdenes. Surge como límite de ley de grandes números cuando el volumen de órdenes límite es grande comparado con órdenes individuales.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "hydrodynamic limit"},
+        {"tipo": "APLICA_A", "objeto": "order book shape"}
+      ],
+      "cita_textual": "We develop a fluid approximation for the transient behavior of the shape of a limit order book based on the interaction of order flows."
+    },
+    {
+      "nombre": "Tick Size",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Incremento mínimo de precio en el order book. El límite se toma cuando el tick size 1/n tiende a cero, régimen relevante para mercados como EE.UU. donde el tick es de un centavo.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Limit Order Book"},
+        {"tipo": "APLICA_A", "objeto": "price grid"}
+      ],
+      "cita_textual": "We show that as the tick size 1/n approaches zero, a sequence of pairs of measure-valued processes converges to a pair of deterministic measure-valued processes."
+    },
+    {
+      "nombre": "Order Book Shape",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Perfil de densidad de órdenes límite en función del nivel de precio, con componentes separados para el lado de compra (buy-side shape) y venta (sell-side shape). El límite hidrodinámico produce ODEs que describen estos perfiles.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Limit Order Book"},
+        {"tipo": "PREDICE", "objeto": "price impact"}
+      ],
+      "cita_textual": "The shape of an order book can be used to derive the so-called virtual price impact."
+    },
+    {
+      "nombre": "Optimal Trade Execution",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Problema de dividir una orden grande de mercado en operaciones más pequeñas para mejorar la calidad de ejecución. El modelo de forma del order book puede tomarse como input en estos problemas.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "order book shape"},
+        {"tipo": "REQUIERE", "objeto": "price impact"}
+      ],
+      "cita_textual": "It is desirable to have an endogenous description of the evolution of the shape of a limit order book on large time scales where an institutional size order is executed."
+    },
+    {
+      "nombre": "Price Impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Efecto que tienen las operaciones grandes sobre los precios, modelado a través de la forma del order book. La integración de la densidad límite permite derivar el price impact virtual como en Weber y Rosenow (2005).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "order book shape"},
+        {"tipo": "PARTE_DE", "objeto": "optimal trade execution"}
+      ],
+      "cita_textual": "One may integrate the limiting shape density and obtain the virtual price impact as in Weber and Rosenow (2005)."
+    },
+    {
+      "nombre": "Continuous-Time Markov Chain",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo microscópico de dinámica del order book donde los eventos (órdenes de mercado, límite y cancelaciones) ocurren con intensidades dadas. El estado es la cantidad de órdenes en cada nivel de precio.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "Limit Order Book"},
+        {"tipo": "USA", "objeto": "order flow intensity"}
+      ],
+      "cita_textual": "Order book dynamics are described by a continuous-time Markov chain (CTMC)."
+    },
+    {
+      "nombre": "Zero-Spread Model",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Resultado del límite hidrodinámico: los mejores precios de compra (best bid) y venta (best ask) convergen a la misma constante, produciendo un spread cero en el límite determinista.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "bid-ask spread"},
+        {"tipo": "PARTE_DE", "objeto": "fluid approximation"}
+      ],
+      "cita_textual": "The limiting best bid and best ask prices converge to the same constant, which leads to a zero-spread model (Proposition 3.1)."
+    },
+    {
+      "nombre": "Order Flow",
+      "tipo": "dato",
+      "definicion_en_contexto": "Secuencia de órdenes de mercado, límite y cancelaciones que alimentan el order book. Las intensidades de estos flujos determinan los coeficientes de las ODEs del límite hidrodinámico.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Limit Order Book"},
+        {"tipo": "USA", "objeto": "order book dynamics"}
+      ],
+      "cita_textual": "The density profile of the limiting processes through ordinary differential equations which can be solved explicitly."
+    },
+    {
+      "nombre": "Virtual Price Impact",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Price impact derivado de la forma del order book, definido en Weber y Rosenow (2005). El modelo permite calcularlo integrando la densidad límite de la forma del libro.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "price impact"},
+        {"tipo": "USA", "objeto": "order book shape"}
+      ],
+      "cita_textual": "The shape of an order book can be used to derive the so-called virtual price impact (Weber and Rosenow (2005))."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "La aproximación fluida basada en ODEs derivadas del límite hidrodinámico describe eficazmente la forma del order book para acciones líquidas en períodos de baja volatilidad en NYSE Arca.",
+      "mercado": "NYSE Arca (acciones de EE.UU.)",
+      "periodo": "Datos históricos de order book (no se especifica el rango exacto en la sección visible)",
+      "magnitud": "La aproximación es efectiva según evaluación empírica (no requiere test out-of-sample predictivo)",
+      "condiciones": "Acciones líquidas, períodos de baja volatilidad de precios, supuestos del modelo CTMC de Cont et al. (2010)",
+      "robustez": "media",
+      "cita_textual": "Our empirical analysis demonstrates that our theory can be used to effectively approximate the shape of an order book for stocks and time periods which satisfy our model assumptions (Section 4)."
+    },
+    {
+      "afirmacion": "Más del 95% de las órdenes límite en NASDAQ son canceladas sin ejecución, lo que justifica la importancia de modelar cancelaciones en el order book.",
+      "mercado": "NASDAQ",
+      "periodo": "Datos de Hautsch y Huang (2011)",
+      "magnitud": "Más del 95% de órdenes límite canceladas sin ejecución",
+      "condiciones": "Evidencia citada de estudios previos",
+      "robustez": "alta",
+      "cita_textual": "More than 95% of limit orders at NASDAQ are cancelled without execution, see Hautsch and Huang (2011)."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "El modelo opera en escalas de milisegundos (eventos del order book) y produce aproximaciones útiles a escalas intradía de segundos a horas para ejecución óptima."}
+}

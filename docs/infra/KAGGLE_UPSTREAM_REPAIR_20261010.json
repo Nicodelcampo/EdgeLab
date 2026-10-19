@@ -1,0 +1,39 @@
+{
+  "schema": "edgelab_upstream_repair_summary_v1",
+  "status": "BLOCKED_NEEDS_UPSTREAM",
+  "snapshot_date": "2026-10-10",
+  "dataset_version_ref": "nicolasbuttaro/edgelab-nt8-historical-missing-20261001/1",
+  "raw_files": [
+    "ES_12-25_ticks_ext.parquet",
+    "ES_03-26_ticks_ext.parquet"
+  ],
+  "diagnostic_window": {
+    "local_date": "2025-10-05",
+    "timezone": "America/Chicago",
+    "before_local_time": "17:00"
+  },
+  "matched_raw_events": 2,
+  "catalog_scan_counts_independently_match": true,
+  "regular_schedule_reference_url": "https://www.cmegroup.com/markets/equities/sp-500-and-nasdaq-100-futures.html",
+  "regular_hours_reference_loaded": true,
+  "full_historical_calendar_verified": false,
+  "upstream_originals_found": false,
+  "source_timezone_verified": false,
+  "source_provenance_verified": false,
+  "private_repair_packet_sha256": "6fb830acd4171373656e2ff7a149112ba7620f9d4444a33517084febfca59a02",
+  "holdout_payload_read": false,
+  "source_rewritten": false,
+  "research_allowed": false,
+  "required_inputs": [
+    "Original exports for both affected contracts and their adjacent normal sessions",
+    "Actual export/conversion code and timezone definition",
+    "Capture logs and original-file hashes with source_row mapping"
+  ],
+  "required_next_steps": [
+    "Reconcile exact event identity against original exports",
+    "Review complete prior-session/calendar and all eligible contracts",
+    "Publish new immutable corrected sources if justified; rebuild causal resolver and aggregates",
+    "Repeat quality, coverage and liquidity reviews before readiness"
+  ],
+  "private_details_published": false
+}

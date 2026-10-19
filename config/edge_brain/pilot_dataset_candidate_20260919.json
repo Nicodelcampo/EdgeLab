@@ -1,0 +1,55 @@
+{
+  "candidate_id": "KAGGLE-BTCUSDT-15M-20260919",
+  "status": "REMOTE_LISTED_PENDING_DOWNLOAD_PROOF",
+  "purpose": "Controlled architecture pilot only; not evidence of edge",
+  "source": {
+    "platform": "Kaggle",
+    "owner": "novandraanugrah",
+    "dataset_slug": "bitcoin-historical-datasets-2018-2024",
+    "url": "https://www.kaggle.com/datasets/novandraanugrah/bitcoin-historical-datasets-2018-2024",
+    "observed_version": 432,
+    "observed_total_size_mb": 59.73,
+    "license": "CC0-1.0"
+  },
+  "selected_file": {
+    "name": "btc_15m_data_2018_to_2025.csv",
+    "observed_size_mb": 44.86,
+    "sha256": null,
+    "download_verified": false
+  },
+  "observed_schema": [
+    "Open time",
+    "Open",
+    "High",
+    "Low",
+    "Close",
+    "Volume",
+    "Close time",
+    "Quote asset volume",
+    "Number of trades",
+    "Taker buy base asset volume"
+  ],
+  "timezone": "UTC",
+  "holdout": {
+    "boundary_ns": 1782856800000000000,
+    "boundary_utc": "2026-06-30T22:00:00Z",
+    "enforcement": "STRICT_LESS_THAN"
+  },
+  "pilot_window": {
+    "start_utc": "2018-01-01T00:00:00Z",
+    "end_utc_exclusive": "2025-01-01T00:00:00Z",
+    "rationale": "Closed historical interval safely before the holdout boundary"
+  },
+  "required_download_proof": [
+    "Kaggle version confirmation",
+    "exact file byte size",
+    "SHA-256",
+    "row count",
+    "minimum and maximum timestamp",
+    "duplicate timestamp count",
+    "missing-bar coverage report"
+  ],
+  "question": "What marginal information does an EMA regime gate add to an RSI momentum trigger?",
+  "promotion_ceiling": "LESSON_CANDIDATE",
+  "forbidden_claims": ["EDGE_VALIDATED", "CAUSALITY_PROVEN", "GENERAL_RULE_ACTIVE"]
+}

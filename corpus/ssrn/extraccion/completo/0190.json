@@ -1,0 +1,109 @@
+{
+  "doc_id": 190,
+  "titulo": "Trading Styles and Trading Volume",
+  "resumen_operativo": "El paper analiza cómo el style investing (inversión basada en características como tamaño, valor y momentum) afecta el trading volume en el corte transversal de acciones. Usando datos de carteras de mutual funds, se estima un modelo de propensión a vender en función de cambios en características de las acciones. Un cambio de una desviación estándar en momentum, value (sales-to-price) y size aumenta la propensión a vender en ~3% cada uno. La medida de propensión a vender explica una porción significativa de la variación cross-sectional en turnover: 20-30% para NYSE/AMEX y el doble para Nasdaq.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Style Investing",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Especialización de inversores en carteras basadas en características pre-definidas como value/growth, small/large-cap o momentum. Cuando las características cambian, los style investors deben rebalancear, generando volumen de trading.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "trading volume"},
+        {"tipo": "REQUIERE", "objeto": "rebalancing trades"}
+      ],
+      "cita_textual": "Many investors in equity markets follow trading styles based on stock characteristics like firm size or momentum. Because stocks' characteristics change over time, style investors must rebalance their portfolios to avoid style drift."
+    },
+    {
+      "nombre": "Trading Volume",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen de negociación medido como turnover anual. Cambios en características de las acciones generan necesidades de rebalanceo que explican una porción considerable del volumen en el corte transversal.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market activity"},
+        {"tipo": "PREDICE", "objeto": "style rebalancing"}
+      ],
+      "cita_textual": "Style investing is an important source of trading volume."
+    },
+    {
+      "nombre": "Propensity to Sell",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probabilidad estimada de que un mutual fund venda una acción en función del cambio absoluto en sus características. Se modela con un linear probability model usando datos de holdings de mutual funds.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "trading volume"},
+        {"tipo": "USA", "objeto": "linear probability model"}
+      ],
+      "cita_textual": "I estimate the relationship between the propensity to sell and changes in stock characteristics with a multivariate linear probability model."
+    },
+    {
+      "nombre": "Momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Característica de estilo basada en retornos pasados de 12 meses. Un cambio de una desviación estándar cross-sectional en momentum aumenta la propensión a vender en aproximadamente 3% anual.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "style investing"},
+        {"tipo": "CAUSA", "objeto": "trading volume"}
+      ],
+      "cita_textual": "A one cross-sectional standard deviation change in the momentum (12-month past returns), value (sales-to-price) and size (market capitalization) characteristic each lead to a marginal increase in the propensity to sell by about 3%."
+    },
+    {
+      "nombre": "Turnover",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volumen de negociación anual como porcentaje de shares outstanding. Promedio de ~87% para NYSE/AMEX y ~174% para Nasdaq. Una diferencia de una desviación estándar en propensión a vender se asocia con 20-30% de diferencia en turnover.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "trading volume"},
+        {"tipo": "USA", "objeto": "propensity to sell"}
+      ],
+      "cita_textual": "A one cross-sectional standard deviation difference in the propensity to sell measure is associated with a difference in annual turnover of around 20% to 30%."
+    },
+    {
+      "nombre": "Linear Probability Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo econométrico que estima P(sell=1 | |delta characteristics|) = alpha + beta'|delta c_it| usando datos de cartera de mutual funds para cuantificar cómo cambios en características afectan decisiones de venta.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "propensity to sell"},
+        {"tipo": "APLICA_A", "objeto": "mutual fund holdings"}
+      ],
+      "cita_textual": "I use a linear probability model P(s_jit = 1| |delta c_it|) = alpha_t + beta'|delta c_it|."
+    },
+    {
+      "nombre": "Instrumental Variables",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Técnica para abordar la endogeneidad de características basadas en precio: se instrumenta la propensión a vender con características no basadas en precio (book leverage, book ROA) para descartar causalidad inversa.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "endogeneity bias"},
+        {"tipo": "APLICA_A", "objeto": "propensity to sell"}
+      ],
+      "cita_textual": "The propensity-to-sell measure based on all stock characteristics is instrumented with a propensity-to-sell measure calculated using only stock characteristics that are not price-based."
+    },
+    {
+      "nombre": "Market Capitalization",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Característica de estilo (size) que afecta la propensión a vender. Cambios de una desviación estándar en size aumentan la probabilidad de venta en ~3% anual.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "style investing"},
+        {"tipo": "CAUSA", "objeto": "rebalancing trades"}
+      ],
+      "cita_textual": "A one cross-sectional standard deviation change in the momentum (12-month past returns), value (sales-to-price) and size (market capitalization) characteristic each lead to a marginal increase in the propensity to sell by about 3%."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Un cambio de una desviación estándar cross-sectional en momentum (12-month past returns), value (sales-to-price) y size (market cap) aumenta la propensión marginal a vender en aproximadamente 3% cada uno, medido anualmente.",
+      "mercado": "NYSE, AMEX y Nasdaq stocks (mutual fund holdings data)",
+      "periodo": "1985-2002 (con subperíodos 1985-1993 y 1994-2002)",
+      "magnitud": "~3% aumento marginal en propensión a vender por cada desviación estándar en momentum, value y size; cambios en pronósticos de crecimiento de largo plazo y retornos de 36 meses añaden ~2% adicional cada uno",
+      "condiciones": "Linear probability model multivariante con datos de carteras de mutual funds",
+      "robustez": "alta",
+      "cita_textual": "A one cross-sectional standard deviation change in the momentum (12-month past returns), value (sales-to-price) and size (market capitalization) characteristic each lead to a marginal increase in the propensity to sell by about 3%, measured over an annual period."
+    },
+    {
+      "afirmacion": "Una diferencia de una desviación estándar cross-sectional en la medida de propensión a vender se asocia con una diferencia en turnover anual de 20-30% para NYSE/AMEX y aproximadamente el doble (~40-60%) para Nasdaq.",
+      "mercado": "NYSE/AMEX (turnover promedio 87%) y Nasdaq (turnover promedio 174%)",
+      "periodo": "1985-2002",
+      "magnitud": "20-30% de diferencia en turnover anual para NYSE/AMEX por SD de propensión a vender; ~40-60% para Nasdaq (el doble). Turnover promedio: 87% NYSE/AMEX, 174% Nasdaq",
+      "condiciones": "Controlando por otros determinantes de volumen (volatilidad, market cap, precio); instrumentando con características no basadas en precio",
+      "robustez": "alta",
+      "cita_textual": "For NYSE and AMEX stocks I find that a one cross-sectional standard deviation difference in the propensity to sell measure is associated with a difference in annual turnover of around 20% to 30%. For Nasdaq stocks it is about twice that number."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "baja", "nota": "El estudio trabaja con frecuencia anual de turnover y cambios de características; el marco de style investing es relevante para entender fuentes de volumen pero no está calibrado para intradía."}
+}

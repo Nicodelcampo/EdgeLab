@@ -40,7 +40,7 @@ namespace NinjaTrader.Gui.NinjaScript
  public class EdgeLabTickHistoryWindow:NTWindow,IWorkspacePersistence
  {
   const string Build="EDGE_TICKHIST_V2_PROVENANCE";
-  static readonly DateTime HoldoutStart=new DateTime(2026,10,1);   // holdout vigente: sesion CME del 2026-10-01
+  static readonly DateTime HoldoutStart=new DateTime(2026,10,7);   // 2026-10-06: Nico declara exploracion (EdgeReplica MNQ + MGC 04:15), sin custodia de holdout //   // holdout vigente: sesion CME del 2026-10-01
   static readonly Regex ContractRx=new Regex(@"^[A-Za-z0-9]{1,8}\s+[0-9]{2}-[0-9]{2}$",RegexOptions.Compiled);
   const int TimeoutSeconds=600;
   string feed="";
@@ -94,7 +94,7 @@ namespace NinjaTrader.Gui.NinjaScript
    DateTime a,z;
    if(!DateTime.TryParseExact(from.Text.Trim(),"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out a)||!DateTime.TryParseExact(to.Text.Trim(),"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out z)||a>z)
    {Log("ERROR: fechas invalidas");return;}
-   if(z>=HoldoutStart){Log("ERROR: 'Hasta' toca el holdout (desde 2026-10-01).");return;}
+   if(z>=HoldoutStart){Log("ERROR: 'Hasta' posterior al limite (2026-10-06).");return;}
    string dir=root.Text.Trim();
    if(!probeOnly&&(dir.Length==0||!Path.IsPathRooted(dir))){Log("ERROR: la carpeta de salida tiene que ser una ruta absoluta");return;}
    if(!probeOnly&&dir.StartsWith("C:",StringComparison.OrdinalIgnoreCase)){Log("ERROR: no escribir en el disco C");return;}

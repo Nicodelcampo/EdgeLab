@@ -1,0 +1,358 @@
+{
+  "schema_version": "avolcluster_bt2a_nq_joint_measurement_design_v1.0.0-draft",
+  "status": "DRAFT_DESIGN_ONLY_PREAUTHORIZATION",
+  "created_date": "2026-08-28",
+  "purpose": "Register the complete staged design for causal measurement of AVolClusterPOI, BT2A, time-of-day heterogeneity and L2 moderation on NQ without authorizing outcomes.",
+  "authority": {
+    "design_document": "docs/research/AVOLCLUSTER_BT2A_NQ_JOINT_MEASUREMENT_DESIGN_V1_2026-08-28.md",
+    "avol_creation_spec": "specs/avolcluster_nq_zone_event_store_v1.json",
+    "avol_authority": "PYTHON_RESEARCH_KERNEL_V0_5",
+    "nt8_oracle_parity_claimed": false,
+    "primary_instrument": "NQ",
+    "holdout_session_min_inclusive": "20260701"
+  },
+  "epistemic_scope": {
+    "design_registered": true,
+    "execution_authorized": false,
+    "future_path_capability": false,
+    "outcome_execution_token": null,
+    "pnl_capability": false,
+    "holdout_capability": false,
+    "winner_selection_allowed": false,
+    "edge_declaration_allowed": false,
+    "promotion_allowed": false
+  },
+  "instrument_policy": {
+    "primary": "AVOL_NQ_PLUS_BT2A_NQ_PLUS_L2_NQ",
+    "same_instrument_required_for_primary_confluence": true,
+    "bt2a_nq_event_store_required": true,
+    "cross_market_gc_bt2a_to_nq_avol": {
+      "allowed_only_in_separate_spec": true,
+      "classification": "CROSS_MARKET_LEAD_LAG_NOT_SAME_MARKET_CONFLUENCE"
+    }
+  },
+  "avol": {
+    "primary_configuration": {
+      "config_id": "tick_120_W5_M20_C4_P950",
+      "tick_bar_size": 120,
+      "window_bars": 5,
+      "nominal_ticks_per_block": 600,
+      "median_multiplier": 2.0,
+      "max_gap_ticks": 1,
+      "min_cluster_ticks": 4,
+      "detection_percentile": 95.0,
+      "min_samples_per_bucket": 10,
+      "lookback_sessions": 20,
+      "one_cluster_per_block": true
+    },
+    "target_free_observed_summary": {
+      "contract_sessions": 234,
+      "off_price": 5876,
+      "at_price_excluded": 3728,
+      "contract_sessions_with_off_price": 233,
+      "coverage_percent": 99.6,
+      "width_ticks_mean": 14.8,
+      "width_ticks_p95": 26.0,
+      "fitness": 0.9987
+    },
+    "robustness_policy": "ONE_FACTOR_PERTURBATIONS_ONLY_IF_PRESENT_IN_FROZEN_TARGET_FREE_SWEEP",
+    "candidate_bar_sizes": [60, 120, 240],
+    "candidate_window_bars": [3, 5, 8],
+    "candidate_median_multipliers": [1.5, 2.0, 2.5],
+    "candidate_min_cluster_ticks": [3, 4, 5],
+    "candidate_percentiles": [90.0, 95.0, 97.5],
+    "robustness_can_select_winner": false
+  },
+  "bt2a": {
+    "same_instrument": "NQ",
+    "event_store_status": "REQUIRED_NOT_READY",
+    "arms": ["K_ABS", "K_BT2"],
+    "first_passage_barriers_ticks": [5, 9, 18, 30],
+    "first_passage_horizons_observations": [25, 50, 100, 250],
+    "family_size": 16,
+    "evaluate_full_family": true,
+    "gc_positive_cells_are_annotation_only": [[9, 25], [30, 100], [30, 250]],
+    "gc_cells_may_reduce_nq_family": false
+  },
+  "measurement_layers": [
+    {
+      "id": "L1_CREATION",
+      "target_free": true,
+      "fields": ["geometry", "score", "threshold", "width", "distance", "coverage", "stability", "multi_config_overlap"]
+    },
+    {
+      "id": "L2_LIFECYCLE",
+      "target_free": false,
+      "fields": ["first_touch", "age", "touch_edge", "penetration", "survival", "hazard", "expiration", "reentry"]
+    },
+    {
+      "id": "L3_NONDIRECTIONAL_EXPANSION",
+      "target_free": false,
+      "fields": ["absolute_range", "realized_volatility_change", "symmetric_barrier", "expansion_speed", "timeout"]
+    },
+    {
+      "id": "L4_DIRECTIONAL_PATH",
+      "target_free": false,
+      "fields": ["TP_FIRST", "SL_FIRST", "TIMEOUT", "d_hat", "MFE", "MAE", "continuation", "reversal"]
+    },
+    {
+      "id": "L5_JOINT_INTERACTION",
+      "target_free": false,
+      "fields": ["avol_effect", "bt2a_effect", "difference_in_differences", "sequence", "spatial_relation", "agreement"]
+    },
+    {
+      "id": "L6_CLOCK_L2_MODERATION",
+      "target_free": false,
+      "fields": ["phase_heterogeneity", "l2_strata", "three_way_interaction", "four_way_interaction"]
+    }
+  ],
+  "state_machine": [
+    "ZONE_CREATED",
+    "WAITING_FOR_TOUCH",
+    "FIRST_TOUCH",
+    "BT2A_CONFIRMATION_OR_NO_CONFIRMATION",
+    "EXPANSION_REJECTION_OR_TIMEOUT"
+  ],
+  "episode_policy": {
+    "overlapping_zones_require_frozen_collapse_rule": true,
+    "primary_anchor": "FIRST_ELIGIBLE_EVENT_WINS",
+    "reentries_secondary_only": true,
+    "second_touches_secondary_only": true
+  },
+  "temporal_windows_seconds_relative_to_first_touch": [
+    {"id": "T01", "start": -120, "end": -30, "left_closed": true, "right_closed": false},
+    {"id": "T02", "start": -30, "end": -5, "left_closed": true, "right_closed": false},
+    {"id": "T03", "start": -5, "end": 0, "left_closed": true, "right_closed": false},
+    {"id": "T04", "start": 0, "end": 5, "left_closed": true, "right_closed": false},
+    {"id": "T05", "start": 5, "end": 30, "left_closed": true, "right_closed": false},
+    {"id": "T06", "start": 30, "end": 120, "left_closed": true, "right_closed": true}
+  ],
+  "relation_catalog": [
+    {"id": "R01", "name": "AVOL_TOUCH_WITHOUT_NEAR_BT2A", "axis": "temporal"},
+    {"id": "R02", "name": "BT2A_WITHOUT_ELIGIBLE_AVOL", "axis": "temporal"},
+    {"id": "R03", "name": "NEITHER_MATCHED_CONTROL", "axis": "control"},
+    {"id": "R04", "name": "AVOL_CREATED_THEN_BT2A_THEN_TOUCH", "axis": "sequence"},
+    {"id": "R05", "name": "AVOL_CREATED_THEN_TOUCH_THEN_BT2A", "axis": "sequence"},
+    {"id": "R06", "name": "BT2A_THEN_AVOL_CREATED_THEN_TOUCH", "axis": "sequence"},
+    {"id": "R07", "name": "BT2A_PRE_TOUCH_120_TO_30_SECONDS", "axis": "temporal"},
+    {"id": "R08", "name": "BT2A_PRE_TOUCH_30_TO_5_SECONDS", "axis": "temporal"},
+    {"id": "R09", "name": "BT2A_PRE_TOUCH_5_TO_0_SECONDS", "axis": "temporal"},
+    {"id": "R10", "name": "BT2A_POST_TOUCH_0_TO_5_SECONDS", "axis": "temporal"},
+    {"id": "R11", "name": "BT2A_POST_TOUCH_5_TO_30_SECONDS", "axis": "temporal"},
+    {"id": "R12", "name": "BT2A_POST_TOUCH_30_TO_120_SECONDS", "axis": "temporal"},
+    {"id": "R13", "name": "BT2A_INSIDE_ZONE", "axis": "spatial"},
+    {"id": "R14", "name": "BT2A_ON_LOWER_EDGE", "axis": "spatial"},
+    {"id": "R15", "name": "BT2A_ON_UPPER_EDGE", "axis": "spatial"},
+    {"id": "R16", "name": "BT2A_NEAR_WITHIN_QUARTER_ZONE_WIDTH", "axis": "spatial"},
+    {"id": "R17", "name": "BT2A_DISTANCE_QUARTER_TO_ONE_ZONE_WIDTH", "axis": "spatial"},
+    {"id": "R18", "name": "BT2A_FARTHER_THAN_ONE_ZONE_WIDTH", "axis": "spatial"},
+    {"id": "R19", "name": "BT2A_DURING_PENETRATION", "axis": "spatial"},
+    {"id": "R20", "name": "BT2A_AFTER_FULL_TRAVERSAL", "axis": "spatial"},
+    {"id": "R21", "name": "PRICE_APPROACHING_ZONE", "axis": "trajectory_state"},
+    {"id": "R22", "name": "PRICE_RECEDING_FROM_ZONE", "axis": "trajectory_state"},
+    {"id": "R23", "name": "BT2A_DIRECTION_AGREES_WITH_ARRIVAL", "axis": "direction"},
+    {"id": "R24", "name": "BT2A_DIRECTION_OPPOSES_ARRIVAL", "axis": "direction"},
+    {"id": "R25", "name": "K_ABS_CONFLUENCE", "axis": "arm"},
+    {"id": "R26", "name": "K_BT2_CONFLUENCE", "axis": "arm"},
+    {"id": "R27", "name": "K_ABS_K_BT2_AGREEMENT", "axis": "arm"},
+    {"id": "R28", "name": "K_ABS_K_BT2_DISAGREEMENT", "axis": "arm"},
+    {"id": "R29", "name": "MULTICONFIG_ZONE_CONSENSUS", "axis": "configuration"},
+    {"id": "R30", "name": "SINGLE_CONFIG_ZONE", "axis": "configuration"}
+  ],
+  "primary_comparisons": [
+    "AVOL_PLUS_K_ABS",
+    "AVOL_PLUS_K_BT2",
+    "AVOL_WITHOUT_BT2A",
+    "K_ABS_WITHOUT_AVOL",
+    "K_BT2_WITHOUT_AVOL",
+    "AVOL_BT2A_AGREEMENT",
+    "AVOL_BT2A_DISAGREEMENT",
+    "AVOL_TOUCHED_VS_NOT_TOUCHED_WITHIN_HORIZON",
+    "MULTICONFIG_VS_SINGLE_CONFIG_AVOL",
+    "NEITHER_MATCHED_CONTROL"
+  ],
+  "estimands": [
+    "AVOL_EFFECT_VS_CONTROL",
+    "BT2A_EFFECT_VS_CONTROL",
+    "AVOL_BT2A_DIFFERENCE_IN_DIFFERENCES",
+    "FIRST_TOUCH_HAZARD_RATIO",
+    "FAVORABLE_ADVERSE_TIMEOUT_COMPETING_RISKS",
+    "PRE_POST_REALIZED_VOLATILITY_CHANGE",
+    "D_HAT_DIFFERENCE",
+    "MFE_MAE_DIFFERENCE",
+    "OUT_OF_SAMPLE_INCREMENTAL_INFORMATION"
+  ],
+  "null_models": [
+    "N_RAND_MATCHED_SESSION_PHASE_VOLATILITY_AVAILABILITY",
+    "MIRROR_GEOMETRY_NULL",
+    "TIME_SHUFFLE_WITHIN_COMPATIBLE_BLOCKS",
+    "MATCHED_GEOMETRY_WIDTH_DISTANCE_SCORE_PHASE",
+    "BT2A_TIME_SHUFFLE_PRESERVE_SESSION_PHASE_DENSITY",
+    "L2_TIME_SHUFFLE_PRESERVE_MARGINAL_DISTRIBUTION",
+    "PLACEBO_LEADS_BEFORE_ZONE_AVAILABILITY"
+  ],
+  "time_of_day": {
+    "timezone": "America/Chicago",
+    "dst_policy": "IANA_ZONEINFO",
+    "interval_policy": "LEFT_CLOSED_RIGHT_OPEN",
+    "macro_blackout": "FOMC_CPI_NFP_RELEASE_INCLUSIVE_TO_PLUS_5_MINUTES_EXCLUSIVE",
+    "coarse_primary": [
+      {"id": "NQ_ASIA_ETH", "start": "17:00:00", "end": "01:00:00", "wraps_midnight": true},
+      {"id": "NQ_EUROPE_PRE_US", "start": "01:00:00", "end": "07:30:00", "wraps_midnight": false},
+      {"id": "NQ_US_PREOPEN_OPEN", "start": "07:30:00", "end": "09:30:00", "wraps_midnight": false},
+      {"id": "NQ_US_CORE_PM", "start": "09:30:00", "end": "16:00:00", "wraps_midnight": false}
+    ],
+    "fine_descriptive": [
+      {"id": "ASIA_ETH", "start": "17:00:00", "end": "01:00:00"},
+      {"id": "EUROPE", "start": "01:00:00", "end": "07:30:00"},
+      {"id": "US_PREOPEN", "start": "07:30:00", "end": "08:30:00"},
+      {"id": "CASH_OPEN", "start": "08:30:00", "end": "09:30:00"},
+      {"id": "US_MORNING", "start": "09:30:00", "end": "11:30:00"},
+      {"id": "US_LUNCH", "start": "11:30:00", "end": "13:00:00"},
+      {"id": "US_AFTERNOON", "start": "13:00:00", "end": "15:00:00"},
+      {"id": "POST_CASH", "start": "15:00:00", "end": "16:00:00"}
+    ],
+    "fine_windows_confirmatory": false
+  },
+  "l2_context": {
+    "status": "NOT_READY",
+    "join": "ASOF_BACKWARD_ONLY",
+    "same_instrument_and_contract": true,
+    "maximum_staleness_must_be_frozen": true,
+    "forward_fill_across_unapproved_gaps": false,
+    "features": [
+      "spread",
+      "bid_ask_depth",
+      "order_flow_imbalance",
+      "microprice",
+      "aggressive_trades",
+      "cancellations_additions",
+      "queue_depletion",
+      "depth_slope_convexity",
+      "liquidity_near_zone",
+      "passive_absorption",
+      "message_rate",
+      "book_resilience"
+    ],
+    "candidate_states": [
+      "LIQUIDITY_THIN",
+      "LIQUIDITY_NORMAL",
+      "LIQUIDITY_THICK",
+      "OFI_SELL",
+      "OFI_NEUTRAL",
+      "OFI_BUY",
+      "SPREAD_NORMAL",
+      "SPREAD_WIDE",
+      "QUEUE_STABLE",
+      "QUEUE_DEPLETING",
+      "L2_CONFIRMS_BT2A",
+      "L2_CONTRADICTS_BT2A",
+      "L2_NEUTRAL"
+    ],
+    "first_role": "STRATIFIER_NOT_SIGNAL_FILTER",
+    "minimum_effective_sessions_per_stratum": 40,
+    "hmm_final_allowed": false,
+    "ctx3_allowed": false
+  },
+  "model_families": {
+    "survival_and_competing_risk": true,
+    "dose_response": true,
+    "nested_out_of_sample_models": [
+      "BASE",
+      "BASE_PLUS_AVOL",
+      "BASE_PLUS_BT2A",
+      "BASE_PLUS_AVOL_PLUS_BT2A",
+      "BASE_PLUS_AVOL_PLUS_BT2A_PLUS_L2"
+    ],
+    "out_of_sample_metrics": ["BRIER", "LOG_LOSS", "CALIBRATION", "TIME_TO_TOUCH_ERROR", "CONTRACT_STABILITY"],
+    "split_unit": "WHOLE_CME_SESSIONS_IN_TEMPORAL_ORDER",
+    "same_session_train_validation_split_forbidden": true
+  },
+  "interactions": [
+    "AVOL_X_BT2A",
+    "AVOL_X_BT2A_X_PHASE",
+    "AVOL_X_BT2A_X_L2",
+    "AVOL_X_BT2A_X_PHASE_X_L2"
+  ],
+  "hierarchical_gates": [
+    {"id": "GATE_A", "name": "AVOL_LIFECYCLE_AND_NONDIRECTIONAL_EXPANSION"},
+    {"id": "GATE_B", "name": "AVOL_BT2A_CONFLUENCE_WITHOUT_CLOCK_OR_L2"},
+    {"id": "GATE_C", "name": "COARSE_CLOCK_HETEROGENEITY"},
+    {"id": "GATE_D", "name": "L2_MODERATION_WITH_COVERAGE"},
+    {"id": "GATE_E", "name": "ONE_FACTOR_TARGET_FREE_CONFIGURATION_ROBUSTNESS"}
+  ],
+  "multiplicity_policy": {
+    "full_cartesian_product_forbidden": true,
+    "holm_within_each_preregistered_family": true,
+    "incomplete_family_policy": "ABSTAIN",
+    "winner_from_observed_maximum_forbidden": true
+  },
+  "inference": {
+    "cluster_unit": "CME_SESSION",
+    "primary_weighting": "EQUAL_SESSION_WEIGHT",
+    "events_assumed_iid": false,
+    "report_effect_size_and_interval": true,
+    "minimum_event_count_alone_is_not_power_proof": true,
+    "power_requires": ["MDE", "ICC", "EFFECTIVE_SESSIONS", "PHASE_DENSITY", "L2_STRATUM_COVERAGE"]
+  },
+  "future_outputs": [
+    "AVOL_ZONE_CREATION_STORE",
+    "AVOL_LIFECYCLE_FIRST_TOUCH_STORE",
+    "BT2A_NQ_EVENT_STORE",
+    "CAUSAL_L2_CONTEXT_STORE",
+    "HASH_BOUND_CAUSAL_JOIN",
+    "SESSION_CHECKPOINTS",
+    "FAMILY_RESULTS_AND_COVERAGE_MANIFEST",
+    "ABSTENTION_EXCLUSION_NULL_TABLES",
+    "CONTRACT_PHASE_CONFIGURATION_DESCRIPTIVES",
+    "JOINT_INTERACTION_RESULT_WITHOUT_WINNER"
+  ],
+  "authorization_roadmap": [
+    "AUDIT_AND_FREEZE_AVOL_CREATION_CONTRACT",
+    "BUILD_CREATION_CHECKPOINTS",
+    "FINALIZE_AND_VALIDATE_CREATION_STORE",
+    "DESIGN_AND_FREEZE_LIFECYCLE_EPISODE_COLLAPSE",
+    "EXECUTE_FIRST_TOUCH_STORE",
+    "BUILD_AND_AUDIT_BT2A_NQ_STORE",
+    "ACCREDIT_L2_CLOCK_AND_CONTEXT",
+    "FREEZE_CAUSAL_JOIN",
+    "FREEZE_OUTCOME_NULL_AND_INFERENCE_FAMILIES",
+    "EXECUTE_PRE_HOLDOUT_MEASUREMENT",
+    "SEPARATE_ECONOMIC_PROTOCOL_IF_AUTHORIZED"
+  ],
+  "decision_labels": [
+    "AVOL_NONDIRECTIONAL_EXPANSION_SIGNAL",
+    "AVOL_NO_NONDIRECTIONAL_EXPANSION_SIGNAL",
+    "AVOL_BT2A_INCREMENTAL_INTERACTION_SIGNAL",
+    "AVOL_BT2A_NO_INCREMENTAL_INTERACTION_SIGNAL",
+    "CLOCK_HETEROGENEITY_SIGNAL",
+    "L2_MODERATION_SIGNAL",
+    "ROBUST_ACROSS_TARGET_FREE_CONFIGURATIONS",
+    "INCONCLUSIVE_INSUFFICIENT_COVERAGE",
+    "ABSTAIN_IDENTITY_OR_CAUSALITY_FAILURE"
+  ],
+  "forbidden_claims": [
+    "GEOMETRIC_SIDE_IS_DIRECTION_FORECAST",
+    "GC_POSITIVE_CELL_IS_NQ_WINNER",
+    "EVENTS_ARE_IID",
+    "RAW_PATH_METRIC_IS_PNL",
+    "BEST_WINDOW_SELECTED_FROM_MAXIMUM",
+    "EDGE_DECLARED",
+    "PROMOTION_ELIGIBLE"
+  ],
+  "firewall": {
+    "AVOL_ZONE_STORE_REAL_BUILD": "NOT_RUN",
+    "AVOL_FIRST_TOUCH_IMPLEMENTED": false,
+    "BT2A_NQ_EVENT_STORE_READY": false,
+    "L2_CONTEXT_READY": false,
+    "CAUSAL_JOIN_BUILT": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "WINNER_SELECTED": false,
+    "EDGE_DECLARED": false,
+    "PROMOTION_ELIGIBLE": false
+  }
+}

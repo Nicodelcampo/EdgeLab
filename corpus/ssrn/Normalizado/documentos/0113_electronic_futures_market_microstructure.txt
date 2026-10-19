@@ -1,0 +1,231 @@
+Electronic Futures Market Microstructure
+Dale W.R. Rosenthal
+Department of Finance
+University of Illinois at Chicago
+601 S. Morgan St. (MC 168), 2421 University Hall
+Chicago, IL 60607
+voice: +1 312 996 7170
+email: daler@uic.edu
+Abstract
+Electronic market microstructure for equities has been well-explored
+and enabled the rise of automated equity trading. Futures markets,
+especially electronic futures markets, have remained relatively unstudied. In the US, open-outcry trading still predominates for some contracts. Even for contracts which trade electronically, getting ultra-high
+frequency futures data can be diﬃcult. As futures markets become
+increasingly electronic, they are undergoing changes similar to those
+which swept through equity markets. The ongoing transition of contracts to electronic trading oﬀers opportunities to assess the eﬀects of
+moving from open-outcry trading to more transparent market structures.
+I aim to use ultra-high frequency futures data to determine
+intraday diurnals of volume, spread, depth, volatility, kurtosis, risk
+aversion, and timing/size of negotiated trades and to compare these
+diurnals across dates and to one another. These analyses will (i) lead
+to characterizations of market quality, (ii) show how electronic trading
+aﬀects market quality, and (iii) help practitioners develop automated
+trading engines for these markets. Finally, since commodity market
+returns exhibit higher volatilities and kurtoses than equity returns, I
+may study how intraday correlations and higher co-moments change
+with a move to electronic trading. These would be useful for managing futures portfolios to control coherent measures of risk — perhaps
+via approximation methods. All of these analyses would help investors
+determine whether their futures orders were well-executed or not.
+1
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+1
+Objectives and Prior Art
+Objectives
+My goal is to perform the baseline analysis needed for academic researchers,
+regulators, and practitioners to understand the microstructure of electronic
+futures markets. In particular, my analysis should be suﬃcient to:
+• assess later changes in market quality;
+• determine optimal strategies for automated execution;
+• quantify intraday relations between various contracts; and,
+• understand and predict how markets change as they transition to electronic trading.
+If time permits, I may also study the data to better measure commodity
+portfolio risk.
+Prior Art
+The literature for non-futures market microstructure is too vast to list here
+but is summarized well by Madhavan (2000) and Biais, Glosten, and Spatt
+(2005).
+Recent work on futures market microstructure does not reﬂect the rise
+of electronic trading. Daigler (1997) uses intraday data to examine intraday
+volatility but only considers three (non-commodity) contracts. Wang and
+Yau (2000) use intraday data to examine the relationship between volumes,
+spreads, and volatilities; but, they ignore intraday diurnals. Wang, Wu, and
+Yang (2008) examine intraday correlations among energy futures; and, Chen
+and Daigler (2008) examine relationships between volume and volatility for
+index, livestock, and currency futures — but use only daily data. All of these
+analyses were done for (non-electronic) open-outcry trades; none studied
+electronic trades.
+Since automated trading removes much of the human element of trading,
+intraday patterns of loss aversion, as documented in Coval and Shumway
+(2005), may change or disappear.
+Similar comparisons can be found in studies of non-US markets which
+moved to electronic trading: Tse and Zabotina (2001) studied the LIFFE’s
+move and Aitken, Frino, Hill, and Jarnecic’s studied the LIFFE, Sydney
+Futures Exchange, and Hong Kong Futures Exchange. However, none of
+2
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+these studies explore contract- or complex-level idiosyncracies. For US futures markes, Chou and Chung (2006) examined changes in market quality
+due to a change to underlying/related markets: the move to decimal pricing
+of stocks and ETFs.
+Recent microstructure work by Johnson (2007) and Chacko, Jurek, and
+Staﬀord (2008) have focused on liquidity and inventory risks. In light of
+Artzner, Delbaen, Eber, and Heath’s (1997, 1999) development of coherency
+for risk measures, the kurtosis of commodity returns suggests the work of
+Johnson and Chacko, Jurek, and Staﬀord should be modiﬁed to use coherent risk measures (or approximations). A move to electronic trading may
+increase how much these extreme risks are transmitted across diﬀerent contracts.
+2
+Methods, Results, and Worth
+Data and Comparative Advantage
+These analyses require intraday trade and quote data from futures exchanges. Due to an agreement between the CME Trust and UIC’s International Center for Futures and Derivatives, I have access to these data.
+Further, I have already been contacted by the CME to help them educate
+market participants and CME employees about market microstructure and
+electronic trading.
+Therefore, much of the data and relationships needed to analyze these
+markets has already been secured. This alone indicates that funding dollars
+may have greater reach than normal.
+It is unclear whether I could get
+similar data from other futures exchanges (such as the NYMEX, ICE, or
+LME); however, many of the objectives of this proposal can be met without
+those data. Also, the prepayed portion of a grant could be used to purchase
+data from other exchanges if necessary.
+Methods
+The data would need to be explored with guidance from exchange oﬃcials
+to discover the meanings of various ﬁelds for a given contract or exchange.
+This would be needed to remove negotiated (e.g. block, VWAP) and nonstandard trades for each market.
+The cleaned data would most likely be analyzed by time bins1 (each
+1Kernel density estimators could also be used; however, these would be more diﬃcult
+to correct for pseudoreplication.
+3
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+constituting an ordinal variable). Market quality assessment could be done
+as in Hasbrouck (1993). Alternatively, one could examine intraday diurnals
+for interesting covariates, such as: volume, spread, inside depth, volatility,
+skewness, kurtosis, loss aversion, and percent/size of negotiated trades. The
+use of ordinal variables would allow for these diurnals to be characterized
+by functional forms.
+Sampled panel data could be used to estimate correlations and higher comoments. This analysis might proceed using estimators similar to the twoscale volatility estimators with Edgeworth-inﬂuenced corrections of Zhang,
+Mykland, and A¨ıt-Sahalia (2005).
+Less central to this project, but possible if time permits, would be to
+compare Edgeworth expansions based on Gaussian, logistic, and Laplace
+distributions to empirical distributions. If one of these expansions captures
+enough of the behavior of the empirical distributions, we could then construct approximations of coherent risk measures for these futures contracts.
+These approximations could also be used to examine the price of immediacy and if it incorporates skewness, kurtosis, and higher moments — in
+contrast to Chacko, Jurek, and Staﬀord’s (2008) model which lacks these
+higher-order terms.
+The empirical analyses will be conducted using R with random eﬀects
+and bootstrapped standard errors to correct for pseudoreplication.
+Results
+One byproduct of the data cleaning would be a reference for researchers
+similar to Hasbrouck (1992) or Hasbrouck and Soﬁanos (1993).
+The main product, however, would be a baseline measurement of the various intraday characteristics of US futures markets pre- and post-transition
+to electronic trading. These analyses will:
+• serve as a baseline for future microstructure studies;
+• guide policy-making regarding electronic market structures;
+• help practitioners build automated trading and market-making engines
+for these markets; and,
+• allow investors and hedgers to gauge whether or not their orders received “best execution”.
+Such analyses may also assist in determining the costs or beneﬁts of
+futures-market-only practices, such as trading along.
+4
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+3
+Timetable
+• 1–3 months — procure other data;
+• 2–4 months — determine unusual trade and quote conditions; document ﬁeld deﬁnitions;
+• 1 month — estimate sub-second resolution; use preceding documentation to clean data;
+• 1 month — gather/create data on percent of volume traded electronically;
+• 3–7 months — examine data; determine diurnals and correlations/comoments; see how these vary across contract and market characteristics; and,
+• 2–3 months — document ﬁndings.
+5
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+Dale W.R. Rosenthal
+2421 University Hall, 601 S. Morgan (MC 168)
+Chicago, IL 60607
++1 312 996 7170
+daler@uic.edu
+Academic Experience
+University of Illinois at Chicago. Chicago, IL
+July 2008–present
+Assistant Professor, Department of Finance
+• Developed market microstructure and electronic trading course; attracted participants from local hedge
+funds.
+• Developed commodity/related markets course; will be the only commodities ﬁnance course in Chicago.
+Education
+The University of Chicago. Chicago, IL
+Ph.D. in Statistics (specialization in ﬁnancial econometrics)
+August 2008
+Dissertation: Trade Classiﬁcation and Nearly-Gamma Random Variables
+Committee: Per Mykland (Advisor), Vanja Dukic, David Modest, Stephen Stigler
+Cornell University. Ithaca, NY
+B.S. in Electrical Engineering
+May 1995
+Fellowships and Awards
+• Inaugural Plotnick Fellowship. Physical Sciences Division, The University of Chicago
+2004–2008
+• Nominee, Physical Sciences Division annual teaching prize, The University of Chicago
+2007
+• Travel Award, Kent-Purdue Minisymposium on Mathematical Finance, Kent, OH
+Spring 2007
+• Admitted with full funding, Institute for Computational Economics, Argonne, IL
+Summer 2005
+Research Interests
+• Financial market microstructure, especially electronic trading and liquidity
+• Analysis of high-frequency multivariate ﬁnancial data
+• Commodity and related (weather, emissions, shipping) markets
+• Eﬀects of ﬁnance industry pay structures
+• Likelihood asymptotics for market phenomena
+Publications
+• “Data Delays, Index Deletions, Prepayments, and Defaults.” Submitted.
+• “Modeling Trade Direction.” Submitted.
+• “Randomly-Delayed Autoregressive Time Series.” Working paper.
+6
+Electronic copy available at: https://ssrn.com/abstract=1223738
+
+Dale W.R. Rosenthal (continued)
+7
+• “Fast Approximate Mean-Expected Shortfall Portfolio Optimization.” Working paper.
+• “A Theory of Fat Tails in Commodity Returns.” Working paper.
+Presentations
+• “Modeling Trade Direction” (Poster). Oxford-Man Institute, University of Oxford.
+September 2008
+• “Modeling Trade Direction.” University of Illinois at Chicago.
+February 2008
+• “Modeling Trade Direction.” Illinois Institute of Technology.
+January 2008
+• “Trade Signing and Nearly-Gamma Random Variables.” Stevanovich Center for Financial Mathematics Seminar Series, The University of Chicago.
+December 2007
+Industry Experience
+Self-employed. Chicago, IL
+June 2004–August 2004
+• Gathered data from multiple sources; computed daily metrics (spreads, volumes, betas, volatilities).
+• Calculated expected mean-reversion alphas; applied belief function to ﬁnd robust candidates.
+• Traded 6×6 name long-short equity portfolio to minimize time skew and market impact; hedged excess
+market risk with ETFs.
+• Made 23% return (despite 18% cash reserve); daily P&L volatility of 1.4%.
+Morgan Stanley. New York, NY
+March 2000–September 2003
+Proprietary Researcher/Trader, Equity Trading Lab
+• Researched and traded all sections of index rebalance trade; made ≈$40MM annually for ﬁrm.
+• Modeled market impact via three datasets: 1.5MM US ticks, 4MM European ticks, and 250k real trades.
+• Analyzed ECN transactions to measure hidden liquidity, execution speed, and depth.
+• Analyzed market maker transactions to measure speed, depth, and auto-execution probability.
+• Developed trading decomposition into noise and skill, allowing execution analysis with 75% less data.
+• Researched/automated trading of guaranteed benchmark (VWAP/close/part-day) and facilitation orders.
+• Guaranteed benchmark trading handled about $600MM in order ﬂow/day and made $10MM annually.
+Long-Term Capital Management. Greenwich, CT
+June 1995–February 2000
+Strategist, Equity Derivatives
+• Structured optimal equity baskets for index arb and synthetic hedging of CBs/warrants.
+• Assisted with trading Japanese warrant strategy.
+• Oversaw portfolio valuations and produced risk exposure and P&L reports.
+Goldman Sachs. New York, NY
+September 1993–August 1994
+Intern Programmer/Analyst, Listed Equities (Block Trading Desk)
+Memberships
+Econometric Society (2005–) • Institute of Mathematical Statistics (2005–) • American Statistical Association (2005–) • Society for Industrial and Applied Mathematics (2007–) • Society for Financial Studies
+(2007–) • American Finance Association (2007–) • Society for Financial Econometrics (2008–)
+Electronic copy available at: https://ssrn.com/abstract=1223738

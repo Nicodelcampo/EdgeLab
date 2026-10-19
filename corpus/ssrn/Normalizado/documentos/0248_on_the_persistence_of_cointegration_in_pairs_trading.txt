@@ -1,0 +1,874 @@
+Electronic copy available at: http://ssrn.com/abstract=1717295
+Pairs Trading in the Land Down Under
+Timofei Bogomolov
+School of Mathematics and Statistics,
+University of South Australia
+timofei.bogomolov@postgrads.unisa.edu.au
+November 30, 2010
+Abstract
+Pairs trading is a market neutral investment strategy that attracts
+attention of academics and practitioners.
+Despite that, very little
+testing on the real market data has been published. This research
+considers three the most cited methods of pairs trading, two of them
+had never been tested on the real market data. Clear trading rules
+have been deﬁned for all methods and their performance has been
+empirically assessed using the daily data covering 12 years history of
+the Australian stock exchange.
+All three methods demonstrate statistically signiﬁcant excess returns from 5% to 12% per year. However, after accounting for the
+transaction costs, two methods became unproﬁtable, and one earned
+minimal proﬁt. These results demonstrate limited practical value of
+these strategies on the Australian stock market in their current form,
+suggesting the need for substantial improvements.
+Keywords:
+pairs trading, spread process, cointegration, Australian stock exchange, ASX
+1
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Electronic copy available at: http://ssrn.com/abstract=1717295
+1
+Introduction
+Pairs trading is a popular trading strategy used by institutional and individual investors. The idea of a pairs trading strategy is fairly simple: ﬁnd two
+stocks that historically moved together, when they deviate from each other
+open positions towards the historical mean and close them when stocks converge together [8]. The general description and the history of pairs trading
+strategy can be found in many articles and books [8; 15; 14; 3; 16].
+The premise of the pairs trading strategy is to hold long and short positions
+simultaneously. This way the trading is market neutral, and any proﬁt or
+loss generated should be attributed to the relative price movements of the
+two assets, but not the market. So, the total position stays hedged against
+any market movements.
+Market neutrality makes pairs trading extremely attractive for institutional
+investors such as superannuation funds, insurance companies and risk averse
+hedge funds – that is the investors which are more interested in small but
+steady proﬁt at a low risk, rather than a high return but at a higher risk.
+On other side, pairs trading is a naturally leveraged strategy as money from
+the short sell of one asset could be used to buy long another one. So, less
+risk averse investors can earn substantial proﬁt by increasing the level of
+leverage. That makes the strategy equally interesting for retail investors and
+hedge funds focused on high return.
+Despite the great interest in pairs trading from practitioners and academics,
+very little research published rigorous tests of pairs trading strategies on the
+real market data. To the best of our knowledge, the only published works
+include tests on the US market [8; 5; 4], the Brazil market [13], and a sample
+of FTSE100 [2]. Similarly, some methods proposed in the academic literature
+have never been tested on the market data.
+The purpose of this research is to examine the three most cited pairs trading
+strategies and their performance using the Australian stock exchange (ASX)
+market data. The research follows the testing framework used by Gatev,
+Goetzmann and Rouwenhorst [8].
+2
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Electronic copy available at: http://ssrn.com/abstract=1717295
+2
+Methodology
+2.1
+Methods used
+Following the general deﬁnition of pairs trading, an investor, seeking to create
+a working strategy, should answer the following three questions:
+1. What does it mean to ‘move together’? In other words, which assets
+should form a long-short portfolio?
+2. How ‘far’ should those assets deviate before applying the strategy or
+when to open positions?
+3. What does it mean that the assets ‘converge together’ and what to do
+if it never happens, i.e. what is an exit strategy?
+Do, Faﬀand Hamza [6] reviewed diﬀerent approaches to pairs trading described in the academic literature, and separated them into three groups:
+1. the distance method used by Gatev et al. [8];
+2. the cointegration method described by Vidyamurthy [15];
+3. the stochastic spread method proposed by Elliott, van der Hoek and
+Malcolm [7].
+While all three methods received attention in academic literature, the distance method is the only one that has been tested on the diﬀerent data sets,
+probably due to its simplicity. The two other methods have never been tested
+on the real market data.
+Each of the above approaches oﬀers its own answers for the summarized earlier questions, however the details of the methods are not always clear. We
+try to follow the proposed strategies as close as possible to the original description and make reasonable assumption where necessary. All of the above
+mentioned methods have the same structure: pairs formation based on the
+analysis of the historical data; and rules about when to open and unwind
+positions based on the spread process behavior.
+We have to remark, that only the stochastic spread method
+[7] proposes
+a detailed ‘exit’ strategy – a complete set of rules for winning and losing
+cases. This is a very important development in the theory of pairs trading.
+The other methods only suggest to keep the losing positions of the diverging
+3
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+stocks until the end of the trading period. There are some attempts to improve the distance method by using stop-loss [12] or empirically estimated
+55 days holding period [9]. However none of these improvements have any
+theoretical support yet.
+For the testing we take 12 months of the historical data to create a list of
+pairs and estimate parameters of the spread processes for every pair. After
+that we select the best pairs and trade them during the chosen trading period using only the parameters calculated from the historical data. This true
+out-of-sample testing minimizes the risk of the data-snooping bias.
+For each of the three strategies we run tests for 5 and 20 pairs traded simultaneously with and without accounting for the transaction costs. The
+S&P/ASX 200 index is used as a benchmark to compare all strategies against.
+2.2
+Data set
+The same data set of ASX daily closing prices is used to test all three methods of pairs trading. The data are obtained from the Securities Industry
+Research Centre of Asia-Paciﬁc (SIRCA) and covers 3455 trading days starting from January 1, 1996 and ﬁnishing on November 22, 2010.
+The actual time interval used for trading is shorter – just 149 months from
+January 1, 1998 to May 31, 2010 – due to 12 months historical data used for
+strategy calibration and 5 months before and after trading interval discarded
+at averaging.
+The testing interval includes the period of the Global Financial Crisis (GFC).
+Pairs trading as a contrarian strategy greatly beneﬁted from uncertainty and
+high volatility of the stock market during GFC.
+Australian Securities & Investments Commission (ASIC) banned short selling from November 2008 until May 2009. We still test pairs trading over that
+period as usual. Institutional investors, who hold large diversiﬁed portfolios
+of the Australian stocks, can use pairs trading as a part of the tactical asset
+allocation strategy. They do not need short selling to fulﬁll rules of pairs
+trading, they can sell some shares from the existing portfolio and buy them
+back when the strategy signals to close position on the pair.
+The Australian stock market is relatively small. The data set includes almost
+3,500 shares traded on the ASX. However, only a few stocks can be considered
+4
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+as having suﬃcient liquidity for pairs trading. We use the two-step procedure
+to deﬁne stocks with suﬃcient liquidity:
+1. the stock should not have more than 5 non-trading days during the
+history period selected for calibration of the trading strategy,
+2. the stock should be in the top 50% of the stocks selected at step 1 by
+the average daily dollar-valued trading volume during that period.
+As result of the screening, the number of stocks available for pairs trading
+varies from 55 to 300.
+We choose a pure quantitative approach to all strategies with minimal number of constrains and do not employ any extra restrictions, for example,
+sectors or market capitalisation.
+On the ASX, the opening and closing prices are the results of auctions, which
+usually attract a large trading volume. In many instances, the volume of the
+opening and closing auctions exceeds 50% of the total daily trading volume.
+Using the closing and/or opening prices we can be sure that we could make
+a trade at the given price, thus avoiding bid-ask bounce bias.
+If a stock has a non-trading day during the trading period (price and/or volume equals to zero), we use the closing price of the previous day to create the
+spread. However, positions on the pairs having that stock cannot be opened
+or closed on that day, even if the spread process signals to do so.
+2.3
+Computation of returns
+Return on investment (ROI), or just return, is a ratio of money gained (or
+lost) relative to money invested. The calculation of returns in pairs trading
+is rather non-trivial. A short sale of one asset is a way to borrow money to
+buy long another asset. So, a dollar neutral pairs trading portfolio is a zero
+cost investment (at this stage we ignore commissions and possible margin
+requirements). Any proﬁt or loss made from zero investment would mean
+inﬁnite positive or negative return, which is not very useful for the purpose
+of comparing the performance of diﬀerent trading strategies.
+To avoid this problem we follow Gatev at al. [8] by trading $1 positions
+in each stock (which makes $2 total trading volume for the each pair) and
+5
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+calculate value-weighted daily market-to-market cash ﬂows from each pair
+which are considered as excess return:
+rP,t =
+P
+i∈P wi,t ci,t
+P
+i∈P wi,t
+(1)
+where:
+ci,t is a daily cash ﬂow from the two positions formed the pair i;
+wi,t is a weight of each pair. For each newly opened position on the pair
+initial weight equals to 1 and then evolve by the formula
+wi,t = wi,t−1(1 + ci,t−1) = (1 + ci,1) · · · (1 + ci,t−1)
+The daily cash ﬂow from the pair or a daily return of the pair is
+ci,t =
+2
+X
+j=1
+Ij,tvj,trj,t
+where:
+Ij,t is a dummy variable which is equal to 0 if the position on the stock j
+is not open, 1 – if a long position on stock j is open, -1 – if a short
+position on stock j is open;
+rj,t is a daily return on stock j;
+vj,t is a weight of stock j is used to calculate daily cash ﬂows
+vj,t = vj,t−1(1 + rj,t−1) = (1 + rj,1) · · · (1 + rj,t−1)
+The strategies’ daily returns are then compounded to obtain monthly returns.
+This method of the return calculation is widely used in the pairs trading
+literature to evaluate performance of the long-short portfolios. However it
+should be mentioned that pairs trading is a leveraged product and the above
+method uses 2:1 leverage, so one should be very careful comparing the results
+of the pairs trading strategy with non-leveraged strategies, for example, the
+naive buy-and-hold strategy.
+For the cointegration method, which is not dollar neutral, we scale the initial
+weights for both stocks in the pair to make the total market position of the
+pair equal to $2. That allows us to compare the results of this strategy with
+the dollar neutral ones – the distance and stochastic spread methods.
+6
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+We start trading at the ﬁrst working day of each month and trade for six
+months. So each month, except for the ﬁrst and the last 5 months which
+are excluded from ﬁnal report, we get six diﬀerent estimations of monthly
+returns which are averaged to get the ﬁnal estimation.
+To provide a unifying framework for comparing all trading strategies we consider only one measure of excess return – the return on committed capital,
+that is $5 and $20 investments in the portfolio pairs. This is a conservative
+estimation as we include a one dollar investment per each pair even if the
+pair has not opened any positions.
+2.4
+Transaction costs
+Stock trading involves some transaction costs. Despite the possible small
+size, transaction costs could have a serious impact on the performance of
+pairs trading strategies. This is especially true for short-term trading strategies which involve many trades. Bowen et al. [2] reported more than a 50%
+reduction in the excess returns of the high frequency pairs trading strategy
+after applying 15 basis point transaction fee. Do and Faﬀ[4] fully replicated
+the research by Gatev et al. [8] and reported that the strategy became unproﬁtable after accounting for transaction costs.
+For the retail traders the largest part of these costs are the brokerage fees
+which are paid by traders each time they buy or sell shares. On average,
+these fees vary from 5 to 15 basis points of the total amount traded.
+For our tests we choose transaction costs equal to 0.15% (15 basis points),
+which is an average brokerage fee on the Australian market for retail investors (CommSec 0.12–0.2%, Macquare Edge 0.1–0.2%, St.George directshares 0.11–0.3%). Because the brokerage fee applies to the full traded volume, we adjust cash ﬂows for all traded pairs using the following rules:
+• on the day of the opening positions we reduce the cash ﬂow from each
+stock in the pair by the size of transaction costs, that is, we reduce the
+total cash ﬂow from the pair by double size of transaction costs
+ci, t →ci, t −2 b
+• and on the day of the closing we reduce cash ﬂow from each pair as
+7
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+follows
+ci, t =
+2
+X
+j=1
+(Ij, tvj, trj, t −b vj, t(1 + rj, t))
+where:
+ci,t is a cash ﬂow from the pair i or excess return on the pair i;
+b = 0.0015 is a brokerage fee;
+Ij,t is a dummy variable which is equal to 0 if the position on the stock j
+is not open, 1 – if a long position on stock j is open, -1 – if a short
+position on stock j is open;
+rj, t is a daily return on the stock j;
+vj, t = vj, t−1(1 −rj, t−1) weight of the stock j.
+3
+Trading rules
+3.1
+Distance method
+We use the following strategy based on the distance method of pairs trading
+proposed by Gatev at al. [8]:
+1. Pairs formation: We take log-prices for all stocks selected for pairs
+trading over the 12 months history period and combine stocks in all
+possible pairs. The total number of possible pairs is quite large
+PN =
+N
+2
+
+=
+N!
+2!(N −2)!
+where N is the total number of stocks eligible for pairs trading.
+We do not shift individual stocks log-price processes at the start from
+$1 as in [8] because it could result in a bias if the two stocks are in
+the phase of divergence at the ﬁrst day of calibration period. To avoid
+that bias and to simplify further the calculations, we scale the spread
+process between two stocks by its mean.
+yi,j(t) = log Pi(t) −log Pj(t) −¯yi,j
+8
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+where Pi(t), Pj(t) are prices of stocks i and j on day t, ¯yi,j is the mean
+of the spread between the two stocks i and j.
+Then, all pairs are sorted in ascending order by the size of the standard deviation of the spread process yi,j(t), which is proportional to
+the squared distances between stocks used by Gatev at al. [8]. The
+pairs with the smallest standard deviations are used for pairs trading.
+Stocks which are picked for a pair are not removed from the pool, so
+the same company shares may be a part of several pairs.
+The method of stock picking without replacing resembles the statistical
+method known as one-level hierarchical clustering and could increase
+diversiﬁcation of an investment portfolio.
+However, we do not test
+this due to the limited number of companies in the Australian stock
+market. All companies from S&P/ASX 200 can create only 100 pairs
+of unique companies and clearly not many of them will be suitable for
+pairs trading.
+2. Rules to open positions: We arbitrarily choose a trigger level as two
+standard deviations of the spread process. If the diﬀerence between the
+log-prices (that is, the spread process) of the selected stocks hits the
+trigger level, then we open position on the pair.
+• If the spread hits the level 2σspread then trading signal ‘sell spread’
+is generated, we sell the ﬁrst stock (i) in the pair and buy the
+second one (j).
+• If the spread process hits the level −2σspread then trading signal
+‘buy spread’ is generated, we buy the ﬁrst stock (i) in the pair
+and sell the second one (j).
+Parameter σspread is determined over the 12 months calibration period
+and does not change until the end of the trading period.
+3. Rules to close positions: We close open positions when the spread
+process hits zero in the ﬁrst time after opening positions or at the end
+of the six months trading period – whatever happens ﬁrst.
+9
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+3.2
+Cointegration method
+The pairs trading strategy proposed by Vidyamurthy [15] is based on the
+theory of cointegration developed by Engle and Granger, and the common
+trends model by Stock and Watson. If two stocks are cointegrated than there
+exists their linear combination which is stationary. Vidyamurthy [15] suggests several approaches to the pairs selection and trading. We will adopt
+the purely quantitative approach in our testing as the most objective and
+straight forward method.
+1. Pairs formation: Similarly to the distance method, we take log-prices
+for all stocks selected for pairs trading over the 12 months history
+period and combine them in pairs. We run ordinary least squares (OLS)
+regression of the ﬁrst stock in the pair on the second one and build a
+spread process {yi,j}.
+yi,j(t) = log Pi(t) −γi,j log Pj(t) −αi,j
+where Pi(t), Pj(t) are prices of stocks i and j on day t, αi,j and γi,j are
+an intercept and a slope (cointegration coeﬃcient) of OLS regression
+of stock i on stock j.
+The spread process is tested for stationarity by the Dickey Fuller (DF)
+test. If the DF test statistic is greater than the critical value for 5%
+signiﬁcance, then the pair is rejected as non-cointegrated. After that all
+accepted pairs are sorted in ascending order by the value of the spread
+process standard deviation and the pairs with the smallest values are
+used for pairs trading.
+Stocks which are selected for a pair are not removed from the pool, so
+the same company may be a part of several pairs.
+2. Rules to open positions: We build the spread process build with parameters (αi,j, γi,j, σi,j) deﬁned during calibration period. If the spread
+hits a trigger level, then we open position on the pair – trade the spread
+process towards zero. To be consistent with the testing of the other
+methods we arbitrary choose a trigger level as two standard deviations
+of the spread process.
+10
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+The stocks in each pair are traded in proportion 1 : γi,j with the total
+value of the open position $2. This means that the method is not dollar
+neutral.
+3. Rules to close positions: We close positions when the spread process
+hits zero in the ﬁrst time after the opening or at the end of the six
+months trading period – whatever happens ﬁrst.
+3.3
+Stochastic spread method
+The general idea of the strategy proposed by Elliott et al. [7] is based on
+the assumption that if we detect a mean-reverting property of the spread between two stocks, we can expect that the spread process stays mean-reverting
+for some time in the future. This means one can exploit those properties to
+make a proﬁt.
+Elliott et al. [7] consider the spread process as a two equation model and use
+Kalman ﬁlter to estimate all parameters of the process.
+A hidden state equation
+xk+1 = A + B xk + C ϵk+1
+(2)
+and observation equation
+yk = xk + D ωk
+(3)
+where ϵt and ωk are iid and ∼N(0, 1).
+We use the following strategy of pairs trading based on mean-reverting property of the spread process:
+1. Pairs formation: We use log-prices of the stocks considered for pairs
+trading to build spread processes {yi,j}
+yi,j(t) = log Pi(t) −log Pj(t).
+Letting {yk} to be deﬁned by {yi,j}, we estimate all parameters (A, B, C, D)
+of the spread processes by the Kalman ﬁlter. We deﬁne the processes’
+means and standard deviations by
+µi,j =
+A
+1 −B ;
+σi,j =
+C
+√
+1 −B2.
+11
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+We then sort all spread processes in ascending order by the value of the
+process standard deviation σi,j. This is similar to the sum of squared
+deviations between stocks i and j used by Gatev et al. [8], however it
+is a standard deviation of the invisible ‘true’ spread process but not
+its observed noisy interpretation.
+Pairs, that form top 5–20 spread
+processes, are considered for pairs trading.
+2. Rules to open positions: We take a trigger level λ as two standard
+deviations σi,j of the spread process to be in line with other methods
+tested. There exists a detailed theoretical justiﬁcation of the level λ,
+which will be presented in [1].
+c+,−= µ ± λ σ, where λ = 2
+When the spread process yi,j(t) hits level c+,−open position on the
+spread process towards its mean.
+If the level c+ is hit, then ‘short the spread’ – sell stock i and buy
+stock j. If the level c−is hit, then ‘long the spread’ – buy stock i and
+sell stock j. All trades are ‘dollar neutral’, that is, equal dollar size
+positions are opened long and short.
+3. Rules to close positions: We unwind positions if the spread process
+hits its mean µ or ˆt times later, whichever happens ﬁrst. The value
+of ˆt is a most likely time to hit the mean using an approximation
+an Ornstein-Uhlenbeck (OU) process and depends on λ chosen before
+opening the positions.
+ˆt =
+1
+2(1 −B) log
+ 
+−1
+2 + λ2
+2 +
+r
+λ4
+4 −λ2
+2 + 9
+4
+!
+Then, we return to step 1 to recalibrate the model.
+We do not expect the mean-reverting property of the spread process to stay
+for long. That is why we do not trade the same pair for 6 months. Instead,
+we drop it after unwinding position on the pair and look for new pairs with
+the best parameters of mean-reversion at the time.
+12
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+4
+Empirical results
+Tables 1–3 summarize monthly excess returns trading statistics and Figures
+1–3 demonstrate historical performance of the diﬀerent strategies. All approaches show statistically signiﬁcant monthly excess returns on committed
+capital before transaction cost: 0.95% and 0.63% for the distance method,
+1.05% and 0.48% for the cointegration method and 0.38% and 0.45% for the
+stochastic spread method for the top 5 and top 20 pairs respectively. All
+methods have relatively low standard deviations ranging from 1.2% to 3.1%
+and an acceptable Sharpe ratios (a proportion of the average excess return
+to the standard deviation of the returns) from 0.20 to 0.54.
+The results for the stochastic spread method looks very modest but that is
+a return on committed capital, not on the actual employed capital. This
+strategy has an average holding time of less than 10 days and about 1 trade
+per two months. Therefore, most of the time the money committed to the
+trading are not being used. It is a very rear situation when all 5 or 20 pairs
+are open simultaneously, in contrast to the distance and cointegration methods where it is a very common scenario.
+In general, the results of all strategies outperform the S&P/ASX 200 market
+index which is used as the benchmark. For the same period of time the index
+earns 0.32% monthly return at a 3.85% standard deviation. Sharpe ratio is
+0.0831 if we assume the index return to be equal to the excess return.
+We could expect that top 20 pairs would have smaller standard deviation
+of returns comparing to top 5 pairs due to the greater diversiﬁcation of the
+portfolio. The reduced risk comes at the price of about a 30% reduction in
+the excess returns for the distance and cointegration methods. As a result,
+a Modigliani Risk-Adjusted Performance [11] is higher for the top 5 pairs
+portfolio.
+The reason for this could be the small number of liquid stocks on the Australian market available for pairs formation. There is a chance that by increasing the size of the portfolio we add pairs that have poorer ﬁt for pairs
+trading.
+Only the stochastic spread method demonstrates a diﬀerent result. It reduces the risk level of the larger size portfolio but increases the excess return
+at the same time. The method happens to be ‘immune’ to the problem of a
+smaller market.
+13
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+All strategies have very low negative correlation with the S&P/ASX 200 market index and the market betas are close to zero. That allows us to conclude
+that all considered methods of pairs trading are truly market neutral.
+It is necessary to mention that the data included the period of GFC from the
+beginning of 2008 until the middle of 2009. During this period the distance
+and cointegration methods beneﬁted from the high volatility of the market
+and earned up to three times greater return than in the previous period under the normal conditions. The annualized excess returns after transaction
+costs exceeded 25%.
+Transaction costs eﬀect badly all the strategies, but especially the strategy
+based on the method of stochastic spreads, as the most frequently trading
+strategy. Distance method lost about 15% of its performance and earned
+0.8% and 0.5% per month on the committed capital of the top 5 and top
+20 pairs portfolios. At the same time the cointegration and the stochastic
+spread methods became unproﬁtable (except for the top 5 pairs for cointegration method): 0.87% and 0.32% per month for the ﬁrst and 0.05% and
+0.14% for the last – last three results were not statistically signiﬁcant.
+5
+Conclusions
+The purpose of this research is double-folded: to deﬁne the methodology
+of practical application of the three methods of pairs trading described in
+the academic literature and to evaluate their performance on the Australian
+stock market.
+While all three approaches demonstrate true market neutrality and good performance on the market data before transaction costs – high excess returns
+with low standard deviations, the proﬁtability of these strategies in their
+existing forms on the Australian market is questionable. Transaction costs
+dramatically reduce returns. The lack of liquidity limits the number of stocks
+that can be considered for pairs trading, thus decreasing potential proﬁt.
+However, the general idea of pairs trading is sound. So, better criteria of
+pairs selection and rules of trading could be developed. The distance and
+cointegration methods could be improved in regards to closing rules and
+control of constantly diverging pairs. The stochastic spread method is based
+14
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+on the assumption of normality of the innovation process which is not the
+case from stocks log-prices [10]. Less restricted models could signiﬁcantly
+improve strategy’s performance.
+References
+[1] T. Bogomolov, Trading strategies used by hedge funds (in preparation),
+Ph.D. thesis, School of Mathematics and Statistics, University of South
+Australia.
+[2] D. Bowen, M. C. Hutchinson, and N. O’Sullivan, High Frequency Equity
+Pairs Trading: Transaction Costs, Speed of Execution and Patterns in
+Returns, Journal of Trading, Forthcoming (2010).
+[3] E. Chan, Quantitative Trading: How to Build Your Own Algorithmic
+Trading Business, Wiley, 2008.
+[4] B. Do, Are Pairs Trading Proﬁts Robust to Trading Costs?, 2009.
+[5] B. Do and R. Faﬀ, Does Naive Pairs Trading Still Work?, Tech. report,
+2009.
+[6] B. Do, R. Faﬀ, and K. Hamza, A New Approach to Modeling and Estimation for Pairs Trading, Monash University, Working Paper (2006).
+[7] R. J. Elliott, J. Van Der Hoek, and W. P. Malcolm, Pairs trading.,
+Quantitative Finance 5 (2005), no. 3, 271 – 276.
+[8] E. Gatev, W.N. Goetzmann, and K.G. Rouwenhorst, Pairs Trading:
+Performance of a Relative-Value Arbitrage Rule, Rev. Financ. Stud. 19
+(2006), no. 3, 797 – 827.
+[9] D. Herlemont, Pairs Trading, Convergence Trading, Cointegration,
+2004.
+[10] B. Mandelbrot, The Variation of Certain Speculative Prices, The Journal of Business 36 (1963), no. 4, 394 – 419.
+[11] F. Modigliani and L. Modigliani, Risk-adjusted performance, Journal of
+Portfolio Management 23 (1997), no. 2, 45 – 54.
+[12] P. Nath, High Frequency Pairs Trading with U.S. Treasury Securities:
+Risks and Rewards for Hedge Funds, SSRN eLibrary (2003).
+15
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+[13] M. S. Perlin, Evaluation of pairs-trading strategy at the Brazilian ﬁnancial market, Journal of Derivatives & Hedge Funds 15 (2009), no. 2,
+122.
+[14] A. Pole, Statistical Arbitrage: Algorithmic Trading Insights and Techniques, Wiley, October 2007.
+[15] G. Vidyamurthy, Pairs trading : Quantitative methods and analysis, J.
+Wiley, Canada, 2004.
+[16] M. Whistler, Trading Pairs: Capturing Proﬁts and Hedging Risk with
+Statistical Arbitrage Strategies, Wiley, 2004.
+16
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Before tr.cost
+After tr.cost
+5 pairs
+20 pairs
+5 pairs
+20 pairs
+Excess return distribution:
+Mean
+0.0095
+0.0063
+0.0080
+0.0050
+Standard error
+0.0015
+0.0011
+0.0015
+0.0011
+t-Statistics
+6.2775
+5.7124
+5.4852
+4.6817
+P-value
+0.0000
+0.0000
+0.0000
+0.0000
+Median
+0.0081
+0.0042
+0.0069
+0.0033
+Standard deviation
+0.0178
+0.0128
+0.0171
+0.0124
+Skewness
+1.8181
+1.2678
+1.6658
+1.1532
+Kurtosis
+9.0943
+5.9317
+8.4999
+5.6389
+Minimum
+-0.0241
+-0.0253
+-0.0263
+-0.0262
+Maximum
+0.0962
+0.0578
+0.0889
+0.0547
+Average proﬁt month
+0.0164
+0.0118
+0.0154
+0.0114
+Average loss month
+-0.0072
+-0.0055
+-0.0076
+-0.0056
+Negative observations
+29.2%
+32.1%
+32.1%
+38.0%
+Average number of trades per 6
+months trading period
+1.8
+1.6
+1.8
+1.6
+Average holding time, days
+41.8
+48.1
+41.8
+48.1
+Jensen’s alpha
+0.0099
+0.0066
+0.0084
+0.0052
+Market beta
+-0.1179
+-0.0938
+-0.1100
+-0.0864
+Correlation with benchmark
+-0.26
+-0.28
+-0.25
+-0.27
+Sharpe ratio
+0.54
+0.49
+0.47
+0.40
+M2 (Modigliani RAP)
+0.0207
+0.0188
+0.0181
+0.015417
+Table 1: Monthly excess returns of the distance pairs trading strategy with
+and without transaction costs (0.15% per one trade)
+17
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Figure 1: Historical performance of the distance method of pairs trading
+18
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Before tr.cost
+After tr.cost
+5 pairs
+20 pairs
+5 pairs
+20 pairs
+Excess return distribution
+Mean
+0.0105
+0.0048
+0.0087
+0.0032
+Standard error
+0.0027
+0.0018
+0.0026
+0.0017
+t-Statistics
+3.9387
+2.7059
+3.3087
+1.8371
+P-value
+0.0001
+0.0077
+0.0012
+0.0684
+Median
+0.0071
+0.0031
+0.0055
+0.0017
+Standard deviation
+0.0313
+0.0209
+0.0306
+0.0204
+Skewness
+1.2926
+1.2919
+1.2373
+1.2238
+Kurtosis
+7.0546
+6.6472
+7.0571
+6.4666
+Minimum
+-0.0722
+-0.0398
+-0.0757
+-0.0411
+Maximum
+0.1343
+0.0924
+0.1324
+0.0883
+Average proﬁt month
+0.0261
+0.0172
+0.0252
+0.0161
+Average loss month
+-0.0157
+-0.0115
+-0.0160
+-0.0123
+Negative observations
+37.2%
+43.1%
+40.1%
+45.3%
+Average number of trades per 6
+months trading period
+2.1
+1.9
+2.1
+1.9
+Average holding time, days
+43.6
+46.3
+43.6
+46.3
+Jensen’s alpha
+0.0110
+0.0052
+0.0091
+0.0035
+Market beta
+-0.1526
+-0.1122
+-0.1405
+-0.1023
+Correlation with benchmark
+-0.19
+-0.21
+-0.18
+-0.19
+Sharpe ratio
+0.34
+0.23
+0.28
+0.16
+M2 (Modigliani RAP)
+0.0130
+0.0089
+0.0109
+0.0061
+Table 2: Monthly excess returns of the cointegration pairs trading strategy
+with and without transaction costs (0.15% per one trade)
+19
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Figure 2: Historical performance of the cointegration method of pairs trading
+20
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Before tr.cost
+After tr.cost
+5 pairs
+20 pairs
+5 pairs
+20 pairs
+Excess return distribution
+Mean
+0.0038
+0.0045
+0.0005
+0.0017
+Standard error
+0.0016
+0.0011
+0.0017
+0.0010
+t-Statistics
+2.3184
+4.2606
+0.3106
+1.6461
+P-value
+0.0219
+0.0000
+0.7566
+0.1021
+Median
+0.0049
+0.0040
+0.0023
+0.0017
+Standard deviation
+0.0192
+0.0123
+0.0194
+0.0119
+Skewness
+-1.5227
+1.8372
+-1.9409
+1.4541
+Kurtosis
+10.3681
+13.4390
+11.6074
+12.2690
+Minimum
+-0.1013
+-0.0303
+-0.1096
+-0.0347
+Maximum
+0.0558
+0.0818
+0.0475
+0.0741
+Average proﬁt month
+0.0133
+0.0094
+0.0110
+0.0087
+Average loss month
+-0.0160
+-0.0071
+-0.0167
+-0.0071
+Negative observations
+28.5%
+29.9%
+0.3431
+0.4453
+Average number of trades per 6
+months trading period
+3.3
+2.8
+3.3
+2.8
+Average holding time, days
+8.6
+9.2
+8.6
+9.2
+Jensen’s alpha
+0.0039
+0.0047
+0.0006
+0.0018
+Market beta
+-0.0410
+-0.0627
+-0.0303
+-0.0518
+Correlation with benchmark
+-0.08
+-0.20
+-0.06
+-0.17
+Sharpe ratio
+0.20
+0.36
+0.03
+0.14
+M2 (Modigliani RAP)
+0.0076
+0.0140
+0.0010
+0.0054
+Table 3: Monthly excess returns of the stochastic spread process method of
+pairs trading with and without transaction costs (0.15% per one trade)
+21
+Electronic copy available at: https://ssrn.com/abstract=1717295
+
+Figure 3: Historical performance of the stochastic spread process method of
+pairs trading
+22
+Electronic copy available at: https://ssrn.com/abstract=1717295

@@ -1,0 +1,72 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HypothesisRegistrySchema",
+  "description": "Machine-readable schema for candidate trading hypotheses in Edge Discovery Factory.",
+  "type": "object",
+  "required": [
+    "hypothesis_id",
+    "title",
+    "mechanism",
+    "novelty",
+    "required_indicators",
+    "required_features",
+    "eligible_assets",
+    "unit_of_analysis",
+    "causal_entry_definition",
+    "suggested_controls",
+    "suggested_placebos",
+    "parameter_families",
+    "friction_requirements",
+    "multiplicity_family",
+    "validation_plan",
+    "falsification_plan",
+    "estimated_compute_cost",
+    "expected_information_gain",
+    "dependencies",
+    "research_stage",
+    "status"
+  ],
+  "properties": {
+    "hypothesis_id": { "type": "string", "pattern": "^HP-[A-Z0-9_-]+$" },
+    "title": { "type": "string", "minLength": 5 },
+    "mechanism": { "type": "string", "minLength": 10 },
+    "novelty": { "type": "string" },
+    "required_indicators": { "type": "array", "items": { "type": "string" } },
+    "required_features": { "type": "array", "items": { "type": "string" } },
+    "eligible_assets": { "type": "array", "items": { "type": "string" } },
+    "unit_of_analysis": { "type": "string" },
+    "causal_entry_definition": { "type": "string" },
+    "suggested_controls": { "type": "array", "items": { "type": "string" } },
+    "suggested_placebos": { "type": "array", "items": { "type": "string" } },
+    "parameter_families": { "type": "array", "items": { "type": "string" } },
+    "friction_requirements": {
+      "type": "object",
+      "properties": {
+        "min_roundturn_cost_ticks": { "type": "number" },
+        "slippage_model": { "type": "string" }
+      },
+      "required": ["min_roundturn_cost_ticks", "slippage_model"]
+    },
+    "multiplicity_family": { "type": "string" },
+    "validation_plan": { "type": "string" },
+    "falsification_plan": { "type": "string" },
+    "estimated_compute_cost": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "VERY_HIGH"] },
+    "expected_information_gain": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "TRANSFORMATIVE"] },
+    "dependencies": { "type": "array", "items": { "type": "string" } },
+    "research_stage": {
+      "type": "string",
+      "enum": [
+        "TARGET_FREE_CENSUS",
+        "PROPOSED_TARGET_FREE",
+        "BLOCKED_MISSING_FEATURES",
+        "READY_FOR_PREREGISTRATION",
+        "ABSTAIN_INSUFFICIENT_EVIDENCE"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PROPOSED_TARGET_FREE", "REGISTERED", "BLOCKED", "ARCHIVED"]
+    }
+  },
+  "additionalProperties": false
+}

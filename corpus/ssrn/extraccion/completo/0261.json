@@ -1,0 +1,119 @@
+{
+  "doc_id": 261,
+  "titulo": "Order Book Dynamics During the Liberation Day Tariff Shock: Evidence from 20 NASDAQ Stocks",
+  "resumen_operativo": "Estudio empírico con datos NASDAQ TotalView Level 3 (Market-by-Order, ~45M registros) sobre 20 acciones durante el shock arancelario del 'Liberation Day' (abril 2025). Documenta cinco hallazgos: (1) volumen de trading duplicó (+101%), (2) vida media de órdenes colapsó 73% (120ms → 32ms), (3) órdenes sub-milisegundo subieron 18% (26.2% → 31.0%), (4) ratio cancelación/trade cayó 27% (11.3 → 8.3), (5) efecto heterogéneo: small-caps (CMCSA +478%, CSCO +357%) mucho más afectadas que mega-caps (TSLA +21%). El volumen explica 83% de la variación en lifetime collapse (r = -0.91). Evidencia a resolución de nanosegundos de cómo un shock de política comercial transforma la microestructura del LOB.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "limit order book",
+      "tipo": "concepto",
+      "definicion_en_contexto": "LOB analizado con datos NASDAQ TotalView Level 3 Market-by-Order (XNAS.ITCH schema) que proporciona mensajes individuales a nivel de orden con timestamps de nanosegundos, permitiendo medir lifetimes, cancelaciones y composición de participantes con granularidad extrema.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"},
+        {"tipo": "USA", "objeto": "tick data"}
+      ],
+      "cita_textual": "The Level 3 data provides individual order-level messages with nanosecond timestamps, allowing measurement of order lifetimes, cancellation behavior, and participant composition at a granularity unavailable in standard trade-and-quote data."
+    },
+    {
+      "nombre": "high-frequency trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Actividad HFT inferida del aumento en órdenes sub-milisegundo (26.2% → 31.0%, +18%) durante la crisis. El colapso de lifetime (120ms → 32ms) indica desplazamiento de liquidity provision paciente a placement agresivo de corta duración.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity provision"},
+        {"tipo": "CAUSA", "objeto": "volatility clustering"}
+      ],
+      "cita_textual": "the share of ultra-fast orders (lifetime < 1ms) rose from 26% to 31%, suggesting increased high-frequency trading activity"
+    },
+    {
+      "nombre": "liquidity provision",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Provisión de liquidez paciente (median lifetime 120ms) que colapsa durante la crisis a 32ms. El paper interpreta esto como un 'régimen shift' donde los participantes reducen la duración de quotes bajo incertidumbre elevada y mayor presión de volumen.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "adverse selection"},
+        {"tipo": "PARTE_DE", "objeto": "market making"}
+      ],
+      "cita_textual": "a regime shift from patient liquidity provision to aggressive, short-lived order placement"
+    },
+    {
+      "nombre": "adverse selection",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo propuesto para explicar el colapso de lifetimes: cuando el order flow se duplica, las quotes en reposo enfrentan mayor riesgo de adverse selection, incentivando a los participantes a acortar exposición. Esto explica la correlación r = -0.91 entre volume surge y lifetime collapse.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity provision"},
+        {"tipo": "PARTE_DE", "objeto": "market microstructure"}
+      ],
+      "cita_textual": "When order flow doubles, resting quotes face higher adverse selection risk, incentivizing participants to shorten exposure."
+    },
+    {
+      "nombre": "realized volatility",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Volatilidad realizada trade-a-trade que aumentó 175% (0.81% → 2.23%) durante la crisis. El price range intra-hora subió 234% (1.4% → 4.8%).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "volatility clustering"},
+        {"tipo": "CAUSA", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "Realized volatility: 0.81% → 2.23% (+175%). Price range (intra-hour): 1.4% → 4.8% (+234%)."
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Microestructura del LOB durante crisis: el paper la analiza como transformación de régimen inducida por shock de política comercial. Contribuye a la literatura de Flash Crash (Kirilenko et al., 2017) y crisis de deuda soberana europea (Pelizzon et al., 2016).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "limit order book"},
+        {"tipo": "APLICA_A", "objeto": "tick data"}
+      ],
+      "cita_textual": "This paper provides nanosecond-resolution evidence on how a major trade policy shock — rather than a financial or health crisis — transforms the internal dynamics of the limit order book."
+    },
+    {
+      "nombre": "tick data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos tick-level del NASDAQ TotalView con esquema Market-by-Order, ~45 millones de registros a nivel de orden individual con timestamps de nanosegundos.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"}
+      ],
+      "cita_textual": "The total sample comprises approximately 45 million order-level records across 57 stock-days."
+    },
+    {
+      "nombre": "volatility clustering",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Agrupamiento de volatilidad observado durante la crisis: realized volatility 2.23% vs 0.81% normal, price range 4.8% vs 1.4%. Vinculado al colapso de lifetimes de órdenes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "liquidity provision"}
+      ],
+      "cita_textual": "Realized volatility: 0.81% → 2.23% (+175%). Price range (intra-hour): 1.4% → 4.8% (+234%)."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Durante el shock arancelario del Liberation Day (abril 2025), el volumen de trading de 20 acciones NASDAQ se duplicó (+101%), la vida media de órdenes colapsó 73% (de 120ms a 32ms), y la proporción de órdenes sub-milisegundo subió 18% (de 26.2% a 31.0%). El ratio cancelación/trade cayó 27% (de 11.3 a 8.3).",
+      "mercado": "NASDAQ (20 stocks: tecnología, consumo, healthcare, comunicación)",
+      "periodo": "Abril 1-7, 2025 (3 días: normal, crisis día 1, crisis día 2)",
+      "magnitud": "Volume: +101%; Median lifetime: 120ms → 32ms (-73%); Sub-ms orders: 26.2% → 31.0% (+18%); Cancel/Trade ratio: 11.3 → 8.3 (-27%); Price range: 1.4% → 4.8% (+234%); Realized vol: 0.81% → 2.23% (+175%)",
+      "condiciones": "NASDAQ TotalView Level 3 Market-by-Order data via Databento; 14:00-15:00 UTC; 20 stocks; ~45M order-level records; 57 stock-days",
+      "robustez": "media",
+      "cita_textual": "Trading volume more than doubled (+101%). Median order lifetime collapsed from 120ms to 32ms (−73%). The share of ultra-fast orders (lifetime < 1ms) rose from 26% to 31%."
+    },
+    {
+      "afirmacion": "Existe una correlación cross-sectional de r = -0.91 entre el aumento de volumen y el colapso de lifetime de órdenes: las acciones con mayores surges de volumen experimentaron mayores colapsos de lifetime. Esto es consistente con un mecanismo de equilibrio donde market makers reducen la duración de quotes bajo mayor presión de volumen y riesgo de adverse selection.",
+      "mercado": "NASDAQ 20 stocks",
+      "periodo": "Abril 2025",
+      "magnitud": "r = -0.91 entre volume surge y lifetime collapse; CMCSA +478%, CSCO +357%, MDLZ +260% (mayores surges); TSLA +21%, NFLX +56%, AMZN +73% (menores surges)",
+      "condiciones": "Correlación cross-sectional sobre 20 acciones; análisis de mecanismo no causal sino asociativo",
+      "robustez": "media",
+      "cita_textual": "The correlation between volume surge and order lifetime change is r = −0.91: stocks with larger volume surges experienced larger lifetime collapses."
+    },
+    {
+      "afirmacion": "El efecto es heterogéneo por capitalización de mercado: acciones más pequeñas experimentan surges de volumen proporcionalmente mucho mayores (CMCSA +478%, CSCO +357%) que las mega-caps (TSLA +21%, NFLX +56%). Esto es consistente con que libros de órdenes más delgados en condiciones normales amplifican el flujo de información durante la crisis.",
+      "mercado": "NASDAQ (CMCSA, CSCO, MDLZ, TSLA, NFLX, AMZN, etc.)",
+      "periodo": "Abril 2025",
+      "magnitud": "CMCSA +478%, CSCO +357%, MDLZ +260% vs TSLA +21%, NFLX +56%, AMZN +73%",
+      "condiciones": "Muestra de 20 acciones; one hour of continuous trading per day; files >4M records truncated to 30 min",
+      "robustez": "media",
+      "cita_textual": "Stocks with normally lower trading activity experienced proportionally larger surges, consistent with thinner normal-day order books amplifying crisis-driven information flow."
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "alta",
+    "nota": "Paper directamente relevante para trading intradía: usa datos tick-level con resolución de nanosegundos y documenta cómo shocks exógenos transforman la microestructura del LOB. Los hallazgos sobre colapso de lifetimes y aumento de HFT durante crisis son aplicables al monitoreo de riesgo de liquidez en ES futures durante eventos de alto impacto."
+  }
+}

@@ -1,0 +1,57 @@
+--- a/tools/rechazo_clusters_nq.py
++++ b/tools/rechazo_clusters_nq.py
+@@ -71,15 +71,18 @@ def una_sesion(path, t0, t1, tick_size, ticks_por_barra, p, vivos_solamente=True):
+     eng = hc.ClusterEngine(tick_size, hc.CAMPAIGN_FROZEN)
+-    por_barra = {}
+-    for z in zonas:
+-        por_barra.setdefault(z["idx_start"] // ticks_por_barra, []).append(z)
++    # Corrección causal: entrega en barra de fin del streak, nacimiento en inicio
++    por_barra_fin = {}
++    for z in zonas:
++        b_entrega = min(z["idx_end"] // ticks_por_barra, len(barras) - 1)
++        por_barra_fin.setdefault(b_entrega, []).append(z)
+ 
+     acumuladas = []
+     muestras = []
+     nacimientos = []          # barra de cada nacimiento de zona, para la intensidad
+     for i, barra in enumerate(barras):
+-        for z in por_barra.get(i, []):
+-            nacimientos.append(i)
++        for z in por_barra_fin.get(i, []):
++            b_nac = min(z["idx_start"] // ticks_por_barra, len(barras) - 1)
++            nacimientos.append(b_nac)
+             acumuladas.append(dict(lower=z["sw_lo_tk"] * tick_size,
+                                    upper=z["sw_hi_tk"] * tick_size,
+-                                   start_bar=i, total_vol=z["total_vol"],
++                                   start_bar=b_nac, total_vol=z["total_vol"],
+                                    cvd=z["cvd"]))
+             eng.on_zone_created(acumuladas, bar=i)
+         eng.on_bar(i)
+--- a/tools/decaimiento_clusters_nq.py
++++ b/tools/decaimiento_clusters_nq.py
+@@ -79,14 +79,16 @@ def una_sesion(path, t0, t1, tick_size, ticks_por_barra, p):
+-    # zonas indexadas por la barra en que nacen
+-    por_barra = {}
+-    for z in zonas:
+-        por_barra.setdefault(z["idx_start"] // ticks_por_barra, []).append(z)
++    # Corrección causal: entrega en barra de fin del streak, nacimiento en inicio
++    por_barra_fin = {}
++    for z in zonas:
++        b_entrega = min(z["idx_end"] // ticks_por_barra, len(barras) - 1)
++        por_barra_fin.setdefault(b_entrega, []).append(z)
+ 
+     acumuladas = []
+     consumido = {}          # id -> volumen operado adentro
+     muestras = []
+     descartes = dict(sin_control=0, fuera_de_rango=0, sin_horizonte=0)
+ 
+     for i, barra in enumerate(barras):
+-        for z in por_barra.get(i, []):
++        for z in por_barra_fin.get(i, []):
++            b_nac = min(z["idx_start"] // ticks_por_barra, len(barras) - 1)
+             acumuladas.append(dict(lower=z["sw_lo_tk"] * tick_size,
+                                    upper=z["sw_hi_tk"] * tick_size,
+-                                   start_bar=i, total_vol=z["total_vol"],
++                                   start_bar=b_nac, total_vol=z["total_vol"],
+                                    cvd=z["cvd"]))
+             eng.on_zone_created(acumuladas, bar=i)

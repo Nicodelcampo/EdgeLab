@@ -1,0 +1,132 @@
+{
+  "scope": "DENSE_FAMILY_EXPANSION_SAME_PILOT_TEN_DATES",
+  "source": {
+    "contract": "MNQ_12-26",
+    "file": "MNQ_12-26_ticks_ext.parquet",
+    "dataset": "nicolasbuttaro/edgelab-ticks-nt8-reexport-20261005",
+    "version": 2,
+    "sha256": "7c0dfd811dcb059faf57926be08203031e9fff6bac1e8e234c7f158f6308f93e",
+    "bytes": 244126468,
+    "rows": 21440578,
+    "max_ns": 1790801999500000000,
+    "preholdout": true,
+    "prior_structural_errors": 0,
+    "prior_evidence_byte_identical": true
+  },
+  "event_dates": [
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24",
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "event_universe_sha256": "764ec7cdd2cd432b3442fd22f96eb3d4543ba5e5d579780957a188bd1d6ba5ee",
+  "read_window_utc_ns": [
+    1785733200000000000,
+    1790802000000000000
+  ],
+  "footprint": "SEQUENCE_CAUSAL_TOTAL_MEMBERSHIP_NEW_DEVELOPMENT_VARIANT",
+  "families": [
+    [
+      80.0,
+      5,
+      4,
+      500,
+      30
+    ],
+    [
+      80.0,
+      5,
+      8,
+      1000,
+      20
+    ],
+    [
+      80.0,
+      5,
+      18,
+      2000,
+      20
+    ],
+    [
+      90.0,
+      5,
+      4,
+      500,
+      30
+    ],
+    [
+      90.0,
+      5,
+      18,
+      2000,
+      20
+    ],
+    [
+      80.0,
+      10,
+      4,
+      500,
+      30
+    ]
+  ],
+  "distances": [
+    10,
+    20,
+    40,
+    80
+  ],
+  "fractions": [
+    0.25,
+    0.5,
+    0.75
+  ],
+  "endpoints": [
+    "touch",
+    "center",
+    "cross"
+  ],
+  "modes": [
+    "first_departure",
+    "first_D_qualifying"
+  ],
+  "origins": [
+    "real",
+    "delayed_translated_250bars"
+  ],
+  "total_rule_groups": 864,
+  "formation_wait_bars": 2000,
+  "outcome_horizon_bars": 2000,
+  "gap_seconds": 10,
+  "mode1": "skip only excursions returning inside before reaching D; stop on first D-qualified sortie, even failed trigger",
+  "center": "floor((birth_low+birth_high)/2)",
+  "control": "same frozen width and relative anchor position translated at closed bar250 later in same selected session; not unconditional null",
+  "chronological_diagnostic_train": [
+    "2026-09-17",
+    "2026-09-18",
+    "2026-09-21",
+    "2026-09-22",
+    "2026-09-23",
+    "2026-09-24"
+  ],
+  "chronological_diagnostic_test": [
+    "2026-09-25",
+    "2026-09-28",
+    "2026-09-29",
+    "2026-09-30"
+  ],
+  "diagnostic_test_previously_inspected": true,
+  "holdout_opened": false,
+  "source_certified": false,
+  "pnl_computed": false,
+  "code_sha256": {
+    "expanded_passage.py": "181eb54ce0240bc9f95f7bf916e4696cf3162d68865d514010a99a9d1b400976",
+    "run_expansion.py": "fbb233c58bdd20b8ea8e23d1713a5902ff8174b8121d99603773658033fc4dbc",
+    "test_expanded.py": "c41746cb7a3600c9906a7b5c0b74a928499885b531313fa62c8cb82d454c4751"
+  }
+}

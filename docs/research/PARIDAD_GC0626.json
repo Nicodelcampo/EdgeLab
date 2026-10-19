@@ -1,0 +1,729 @@
+{
+  "timestamp": "2026-08-24T03:18:27.325728+00:00",
+  "indicator": "BigTrap2Absorption",
+  "cs_version": "1.1.1",
+  "tested_against": "bt2_absorption__AbsMagnitude__GC0626__TW25.csv",
+  "tested_hypothesis": "AbsMagnitude headline parity",
+  "headline_validated": false,
+  "hashes": {
+    "cs_repo_sha256": "18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641",
+    "cs_installed_sha256": "0af1f759aacea2913e2e2c8f46fe5579453fb37738359c44cdf499eaebae57a3",
+    "cs_installed_kernel_sha256": "18d163123662dc0edfd2f45ddbb007391ac4c39b8c7c58c1e9209d66a9178641",
+    "cs_kernel_lines": 892,
+    "generated_region_lines": 57,
+    "py_kernel_sha256": "0d162a6092c31228ec0f4f9539b4afc0cb5031737263db4369dea2ad03697ab2",
+    "export_csv_sha256": "93fbea11f53e299628c7a27822d38487940b41b1ed16c623ce9450c974e6f59e"
+  },
+  "identity_and_windows": {
+    "csv_timezone": "America/Argentina/Buenos_Aires",
+    "tape_timezone": "UTC",
+    "measured_offset_hours": 3,
+    "tape_first_ts_utc": "2026-03-23T03:00:03.3760000",
+    "tape_first_ts_art": "2026-03-23T00:00:03.3760000",
+    "first_matched_nt8_bar": 1878,
+    "first_matched_t_start_art": "2026-03-23T00:00:22.5800000",
+    "first_matched_t_start_utc": "2026-03-23T03:00:22.5800000",
+    "tape_slice_index": 12,
+    "parsed_nt8_score_events": 186322,
+    "parsed_python_score_events": 183663,
+    "duplicate_score_keys": 0,
+    "duplicate_zone_keys": 0,
+    "duplicate_fill_keys": 0,
+    "zone_fill_pair_count": 2233,
+    "zone_fill_signal_mismatches": 0,
+    "zone_fill_side_mismatches": 0,
+    "zone_fill_seq_violations": 0,
+    "causal_burn_in_buckets": 500,
+    "burnin_bar_limit": 2378
+  },
+  "headline_params": {
+    "ScoreMode": "AbsMagnitude",
+    "TapeWindowTicks": 25,
+    "AbsorptionPct": 90.0,
+    "AbsorptionLookback": 500,
+    "MinHistoryBuckets": 200,
+    "MinStackedRows": 2,
+    "MinTrapFrac": 0.2,
+    "RequireFlowSideMatch": true
+  },
+  "tested_params": {
+    "TapeWindowTicks": 25,
+    "ScoreMode": "AbsMagnitude",
+    "AbsorptionPct": 90.0,
+    "AbsorptionLookback": 500,
+    "MinHistoryBuckets": 200,
+    "RequireFlowSideMatch": true,
+    "ImbalanceMode": "Diagonal",
+    "TrapVolumeSource": "AggressiveSide",
+    "TicksPerRow": 1,
+    "ImbalanceRatio": 3.0,
+    "MinStackedRows": 2,
+    "MinTrapFrac": 0.2,
+    "MinDeltaFilter": 0.0,
+    "MinTrapVolume": 0.0,
+    "MinExportVolume": 1.0,
+    "UseWickFilter": true,
+    "WickZonePct": 30.0,
+    "InvalidationMode": "CloseThrough",
+    "MaxAgeBars": 2000,
+    "MaxTouches": 0,
+    "DrawZoneBand": true
+  },
+  "layers": {
+    "bucket_coverage": {
+      "parsed_nt8_total": 186322,
+      "parsed_python_total": 183663,
+      "excluded_before_anchor": 1877,
+      "excluded_after_export": 0,
+      "comparable_total": 19094,
+      "only_nt8_count": 165351,
+      "only_python_count": 164569,
+      "pct": 10.25,
+      "verdict": "PASSED_COVERAGE"
+    },
+    "signed_flow": {
+      "matched": 17891,
+      "total_compared": 19094,
+      "pct": 93.7,
+      "verdict": "FAIL (93.70%)"
+    },
+    "d_ticks": {
+      "matched": 17623,
+      "total_compared": 19094,
+      "pct": 92.3,
+      "verdict": "FAIL (92.30%)"
+    },
+    "a_score": {
+      "matched": 17480,
+      "total_compared": 19094,
+      "pct": 91.55,
+      "verdict": "FAIL (91.55%)"
+    },
+    "n_ticks": {
+      "matched": 19093,
+      "total_compared": 19094,
+      "pct": 99.99,
+      "verdict": "FAIL (99.99%)"
+    },
+    "residual": {
+      "matched": 19094,
+      "total_compared": 19094,
+      "pct": 100.0,
+      "verdict": "FAIL (100.00%)"
+    },
+    "causal_threshold_non_residual": {
+      "post_burn_in_total": 18589,
+      "a_pass_matched": 18394,
+      "n_hist_matched": 18589,
+      "a_thr_matched": 16998,
+      "a_pass_pct": 98.95,
+      "n_hist_pct": 100.0,
+      "a_thr_pct": 91.44,
+      "verdict": "FAIL"
+    },
+    "residual_session_cuts_d2": {
+      "total_cuts": 5,
+      "matched_residual_flag": 5,
+      "matched_a_pass_false": 5,
+      "matched_n_hist": 5,
+      "matched_a_thr": 5,
+      "verdict": "EXACT"
+    },
+    "zones": {
+      "matched_exact": 133,
+      "comparable_total": 139,
+      "excluded_before_anchor": 4,
+      "excluded_before_causal_burnin_nt8": 2,
+      "excluded_before_causal_burnin_py": 1,
+      "excluded_after_export": 0,
+      "only_nt8_count": 2088,
+      "only_python_count": 2055,
+      "pct": 95.68,
+      "verdict": "FAIL (95.68%)"
+    },
+    "fills": {
+      "matched_exact": 133,
+      "comparable_total": 139,
+      "excluded_before_anchor": 4,
+      "excluded_before_causal_burnin_nt8": 2,
+      "excluded_before_causal_burnin_py": 1,
+      "excluded_after_export": 0,
+      "only_nt8_count": 2088,
+      "only_python_count": 2055,
+      "pct": 95.68,
+      "discrepancies_count": 6,
+      "verdict": "FAIL (95.68%)"
+    }
+  },
+  "discrepancies_sample": {
+    "bucket_discrepancies_top20": [
+      {
+        "key": "(13911, '2026-03-27T20:59:57.2640000')",
+        "py_flow": "0",
+        "nt8_flow": "-1",
+        "py_dticks": "0",
+        "nt8_dticks": "0",
+        "py_score": "0",
+        "nt8_score": "1",
+        "py_nticks": "2",
+        "nt8_nticks": "1",
+        "py_residual": "True",
+        "nt8_residual": "True"
+      },
+      {
+        "key": "(19178, '2026-03-30T22:59:26.0960000')",
+        "py_flow": "-7",
+        "nt8_flow": "-9",
+        "py_dticks": "-22",
+        "nt8_dticks": "-23",
+        "py_score": "0.30434782608695654",
+        "nt8_score": "0.375",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19180, '2026-03-30T22:59:58.4080000')",
+        "py_flow": "-10",
+        "nt8_flow": "-10",
+        "py_dticks": "-29",
+        "nt8_dticks": "-31",
+        "py_score": "0.3333333333333333",
+        "nt8_score": "0.3125",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19182, '2026-03-30T23:00:08.5120000')",
+        "py_flow": "-12",
+        "nt8_flow": "-12",
+        "py_dticks": "-8",
+        "nt8_dticks": "-7",
+        "py_score": "1.3333333333333333",
+        "nt8_score": "1.5",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19185, '2026-03-30T23:01:15.1760000')",
+        "py_flow": "-2",
+        "nt8_flow": "-2",
+        "py_dticks": "-1",
+        "nt8_dticks": "-4",
+        "py_score": "1",
+        "nt8_score": "0.4",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19191, '2026-03-30T23:04:30.0120000')",
+        "py_flow": "-2",
+        "nt8_flow": "-2",
+        "py_dticks": "-17",
+        "nt8_dticks": "-18",
+        "py_score": "0.1111111111111111",
+        "nt8_score": "0.105263157894737",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19194, '2026-03-30T23:06:13.3320000')",
+        "py_flow": "-16",
+        "nt8_flow": "-14",
+        "py_dticks": "-4",
+        "nt8_dticks": "-2",
+        "py_score": "3.2",
+        "nt8_score": "4.66666666666667",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19195, '2026-03-30T23:06:17.0240000')",
+        "py_flow": "-9",
+        "nt8_flow": "-9",
+        "py_dticks": "14",
+        "nt8_dticks": "20",
+        "py_score": "0.6",
+        "nt8_score": "0.428571428571429",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19197, '2026-03-30T23:06:41.5920000')",
+        "py_flow": "11",
+        "nt8_flow": "9",
+        "py_dticks": "25",
+        "nt8_dticks": "24",
+        "py_score": "0.4230769230769231",
+        "nt8_score": "0.36",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19202, '2026-03-30T23:08:57.4040000')",
+        "py_flow": "-9",
+        "nt8_flow": "-9",
+        "py_dticks": "18",
+        "nt8_dticks": "14",
+        "py_score": "0.47368421052631576",
+        "nt8_score": "0.6",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19203, '2026-03-30T23:09:05.5760000')",
+        "py_flow": "-9",
+        "nt8_flow": "-9",
+        "py_dticks": "-25",
+        "nt8_dticks": "-27",
+        "py_score": "0.34615384615384615",
+        "nt8_score": "0.321428571428571",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19204, '2026-03-30T23:10:03.4320000')",
+        "py_flow": "-16",
+        "nt8_flow": "-14",
+        "py_dticks": "-17",
+        "nt8_dticks": "-8",
+        "py_score": "0.8888888888888888",
+        "nt8_score": "1.55555555555556",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19205, '2026-03-30T23:10:06.4160000')",
+        "py_flow": "19",
+        "nt8_flow": "17",
+        "py_dticks": "47",
+        "nt8_dticks": "46",
+        "py_score": "0.3958333333333333",
+        "nt8_score": "0.361702127659574",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19206, '2026-03-30T23:10:23.5040000')",
+        "py_flow": "-1",
+        "nt8_flow": "-1",
+        "py_dticks": "2",
+        "nt8_dticks": "1",
+        "py_score": "0.3333333333333333",
+        "nt8_score": "0.5",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19208, '2026-03-30T23:11:39.8680000')",
+        "py_flow": "9",
+        "nt8_flow": "7",
+        "py_dticks": "9",
+        "nt8_dticks": "-1",
+        "py_score": "0.9",
+        "nt8_score": "3.5",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19213, '2026-03-30T23:18:20.8880000')",
+        "py_flow": "26",
+        "nt8_flow": "25",
+        "py_dticks": "17",
+        "nt8_dticks": "16",
+        "py_score": "1.4444444444444444",
+        "nt8_score": "1.47058823529412",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19215, '2026-03-30T23:18:38.8680000')",
+        "py_flow": "19",
+        "nt8_flow": "19",
+        "py_dticks": "9",
+        "nt8_dticks": "12",
+        "py_score": "1.9",
+        "nt8_score": "1.46153846153846",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19218, '2026-03-30T23:19:44.4400000')",
+        "py_flow": "3",
+        "nt8_flow": "3",
+        "py_dticks": "-2",
+        "nt8_dticks": "-3",
+        "py_score": "1",
+        "nt8_score": "0.75",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19220, '2026-03-30T23:20:56.6400000')",
+        "py_flow": "3",
+        "nt8_flow": "5",
+        "py_dticks": "13",
+        "nt8_dticks": "13",
+        "py_score": "0.21428571428571427",
+        "nt8_score": "0.357142857142857",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      },
+      {
+        "key": "(19223, '2026-03-30T23:23:54.4880000')",
+        "py_flow": "-4",
+        "nt8_flow": "-4",
+        "py_dticks": "-7",
+        "nt8_dticks": "-11",
+        "py_score": "0.5",
+        "nt8_score": "0.333333333333333",
+        "py_nticks": "25",
+        "nt8_nticks": "25",
+        "py_residual": "False",
+        "nt8_residual": "False"
+      }
+    ],
+    "threshold_discrepancies_top20": [
+      {
+        "key": "(19195, '2026-03-30T23:06:17.0240000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19197, '2026-03-30T23:06:41.5920000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19202, '2026-03-30T23:08:57.4040000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19203, '2026-03-30T23:09:05.5760000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19204, '2026-03-30T23:10:03.4320000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19205, '2026-03-30T23:10:06.4160000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19208, '2026-03-30T23:11:39.8680000')",
+        "py_apass": "False",
+        "nt8_apass": "True",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19220, '2026-03-30T23:20:56.6400000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 3.0,
+        "nt8_athr": 3.0125
+      },
+      {
+        "key": "(19231, '2026-03-30T23:36:16.0960000')",
+        "py_apass": "True",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.8775000000000004,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19232, '2026-03-30T23:36:39.9440000')",
+        "py_apass": "True",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19234, '2026-03-30T23:37:42.4400000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19236, '2026-03-30T23:39:28.9360000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19237, '2026-03-30T23:39:49.3200000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19238, '2026-03-30T23:40:38.4600000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19240, '2026-03-30T23:43:30.7240000')",
+        "py_apass": "False",
+        "nt8_apass": "True",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19249, '2026-03-30T23:50:59.3200000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.9100000000000024,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19250, '2026-03-30T23:51:07.5640000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.8775000000000004,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19254, '2026-03-30T23:55:13.1400000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.8775000000000004,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19255, '2026-03-30T23:55:27.6840000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.8775000000000004,
+        "nt8_athr": 3.0
+      },
+      {
+        "key": "(19256, '2026-03-30T23:56:16.6280000')",
+        "py_apass": "False",
+        "nt8_apass": "False",
+        "py_nhist": "500",
+        "nt8_nhist": "500",
+        "py_athr": 2.8775000000000004,
+        "nt8_athr": 3.0
+      }
+    ],
+    "zone_discrepancies_top20": [
+      {
+        "zone_key": "(19194, '2026-03-30T23:06:17.0240000', 'trapped_sellers')",
+        "py_lo": 4525.35,
+        "nt8_lo": 4525.35,
+        "py_hi": 4525.55,
+        "nt8_hi": 4525.55,
+        "py_vol": 6.0,
+        "nt8_vol": 6.0,
+        "py_score": 3.2,
+        "nt8_score": 4.66666666666667,
+        "py_thr": 3.0,
+        "nt8_thr": 3.0
+      },
+      {
+        "zone_key": "(19682, '2026-03-31T01:24:56.1720000', 'trapped_buyers')",
+        "py_lo": 4612.65,
+        "nt8_lo": 4612.65,
+        "py_hi": 4612.950000000001,
+        "nt8_hi": 4612.95,
+        "py_vol": 10.0,
+        "nt8_vol": 10.0,
+        "py_score": 4.8,
+        "nt8_score": 4.4,
+        "py_thr": 2.380357142857144,
+        "nt8_thr": 2.51
+      },
+      {
+        "zone_key": "(19938, '2026-03-31T01:47:14.5360000', 'trapped_buyers')",
+        "py_lo": 4630.85,
+        "nt8_lo": 4630.85,
+        "py_hi": 4631.05,
+        "nt8_hi": 4631.05,
+        "py_vol": 6.0,
+        "nt8_vol": 6.0,
+        "py_score": 5.75,
+        "nt8_score": 5.25,
+        "py_thr": 3.2022222222222227,
+        "nt8_thr": 3.50833333333334
+      },
+      {
+        "zone_key": "(20261, '2026-03-31T03:14:49.8480000', 'trapped_sellers')",
+        "py_lo": 4598.95,
+        "nt8_lo": 4598.95,
+        "py_hi": 4599.150000000001,
+        "nt8_hi": 4599.15,
+        "py_vol": 7.0,
+        "nt8_vol": 7.0,
+        "py_score": 18.0,
+        "nt8_score": 8.0,
+        "py_thr": 3.258333333333335,
+        "nt8_thr": 2.5
+      },
+      {
+        "zone_key": "(20489, '2026-03-31T05:14:38.1120000', 'trapped_buyers')",
+        "py_lo": 4581.35,
+        "nt8_lo": 4581.35,
+        "py_hi": 4581.55,
+        "nt8_hi": 4581.55,
+        "py_vol": 10.0,
+        "nt8_vol": 10.0,
+        "py_score": 6.5,
+        "nt8_score": 4.33333333333333,
+        "py_thr": 3.4,
+        "nt8_thr": 2.75
+      },
+      {
+        "zone_key": "(22430, '2026-03-31T13:50:54.9960000', 'trapped_buyers')",
+        "py_lo": 4621.85,
+        "nt8_lo": 4621.85,
+        "py_hi": 4622.05,
+        "nt8_hi": 4622.05,
+        "py_vol": 7.0,
+        "nt8_vol": 7.0,
+        "py_score": 8.5,
+        "nt8_score": 7.5,
+        "py_thr": 4.230000000000007,
+        "nt8_thr": 4.5
+      }
+    ],
+    "fill_discrepancies_top20": [
+      {
+        "signal_key": "(19194, '2026-03-30T23:06:17.0240000', 'trapped_sellers')",
+        "py_fill_px": 4526.5,
+        "nt8_fill_px": 4526.6,
+        "py_fill_at": "2026-03-30T23:06:17.0240000",
+        "nt8_fill_at": "2026-03-30T23:06:17.0240000"
+      },
+      {
+        "signal_key": "(19682, '2026-03-31T01:24:56.1720000', 'trapped_buyers')",
+        "py_fill_px": 4611.8,
+        "nt8_fill_px": 4612.8,
+        "py_fill_at": "2026-03-31T01:24:56.1720000",
+        "nt8_fill_at": "2026-03-31T01:24:56.1720000"
+      },
+      {
+        "signal_key": "(19938, '2026-03-31T01:47:14.5360000', 'trapped_buyers')",
+        "py_fill_px": 4630.6,
+        "nt8_fill_px": 4630.7,
+        "py_fill_at": "2026-03-31T01:47:14.5360000",
+        "nt8_fill_at": "2026-03-31T01:47:14.6720000"
+      },
+      {
+        "signal_key": "(20261, '2026-03-31T03:14:49.8480000', 'trapped_sellers')",
+        "py_fill_px": 4599.8,
+        "nt8_fill_px": 4600.2,
+        "py_fill_at": "2026-03-31T03:14:49.8480000",
+        "nt8_fill_at": "2026-03-31T03:14:49.8520000"
+      },
+      {
+        "signal_key": "(20489, '2026-03-31T05:14:38.1120000', 'trapped_buyers')",
+        "py_fill_px": 4581.1,
+        "nt8_fill_px": 4581.6,
+        "py_fill_at": "2026-03-31T05:14:38.1120000",
+        "nt8_fill_at": "2026-03-31T05:14:41.0640000"
+      },
+      {
+        "signal_key": "(22430, '2026-03-31T13:50:54.9960000', 'trapped_buyers')",
+        "py_fill_px": 4621.400000000001,
+        "nt8_fill_px": 4621.5,
+        "py_fill_at": "2026-03-31T13:50:54.9960000",
+        "nt8_fill_at": "2026-03-31T13:50:54.9960000"
+      }
+    ]
+  },
+  "verdict": "FAIL_PUERTA_0"
+}

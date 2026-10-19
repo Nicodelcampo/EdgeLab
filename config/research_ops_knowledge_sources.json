@@ -1,0 +1,39 @@
+{
+  "schema": "research_ops_knowledge_sources_v1",
+  "edge_brain": {
+    "interfaces": ["edgelab.edge_brain.hippocampus_store.DurableHippocampus", "edgelab.edge_brain.retrieval.LedgerIndex", "edgelab.edge_brain.typed_registry"],
+    "role": "canonical memory of episodes, failures, negatives, invalidations and dependencies",
+    "read_adapter": "tools.research_ops.knowledge.recall_brain",
+    "ledger_path": null,
+    "expected_file_sha256": null,
+    "expected_external_tip": null,
+    "status": "IMPLEMENTED_SNAPSHOT_ADAPTER_REAL_LEDGER_NOT_BOUND"
+  },
+  "articles": {
+    "canonical_component": "SSRN Bibliographic Cortex and EdgeBrainMemory",
+    "existing_pull_request": "https://github.com/Nicodelcampo/EdgeLab/pull/67",
+    "producer_commit": "5c10da451b164c54133bdb9a4674de43d6fa2d22",
+    "interfaces": ["SSRNBibliographicCortex.context_pack", "EdgeBrainMemory.recall", "EdgeBrainMemory.consult", "EdgeBrainMemory.cite"],
+    "snapshot_adapter": "tools.research_ops.knowledge.recall_literature",
+    "corpus_path": null,
+    "context_pack_path": null,
+    "expected_context_pack_sha256": null,
+    "status": "CANONICAL_PACK_ADAPTER_IMPLEMENTED_FULL_CORPUS_INTEGRATION_PENDING",
+    "authority_ceiling": "LITERATURE_CLAIM_UNVERIFIED",
+    "claims_are_evidence": false,
+    "known_integration_debt": ["PR67 not merged into main", "canonical ledger digest discrepancy documented by PR67", "off-topic paper and missing titles documented by PR67", "canonical ranked retrieval may build a derived FTS index; do not call it as strictly read-only without prepared/sandboxed index"]
+  },
+  "research_when_needed": {
+    "planner": "tools.research_ops.research_cycle.plan_research",
+    "triggers": ["NO_PRIOR_EVIDENCE", "MISSING_METHOD", "CONFLICTING_EVIDENCE", "STALE_SOURCE", "NEW_MECHANISM", "DATA_DEFINITION", "EXECUTION_BLOCKER"],
+    "priority": ["verified EdgeBrain", "existing canonical literature", "repository and internal approved sources", "public external research with separately reviewed public question"],
+    "read_only_tool_candidates": ["GitHub get_file_contents", "Notion search_notion_search/notion_load_page", "web_search/web_load_page"],
+    "tool_runtime_attached": false,
+    "max_paid_api_spend": 0,
+    "status": "FINITE_PLANNER_IMPLEMENTED_NETWORK_DISPATCH_PENDING"
+  },
+  "market_execution_allowed": false,
+  "holdout_allowed": false,
+  "promotion_allowed": false,
+  "parallel_canonical_memory_created": false
+}

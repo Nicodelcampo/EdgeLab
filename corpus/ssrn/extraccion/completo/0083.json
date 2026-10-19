@@ -1,0 +1,168 @@
+{
+  "doc_id": 83,
+  "titulo": "Deep Learning Statistical Arbitrage",
+  "resumen_operativo": "Framework integral de statistical arbitrage con deep learning que descompone el problema en tres etapas: (1) construcción de portfolios de arbitraje como residuals de modelos de asset pricing con factores latentes condicionales (IPCA), (2) extracción de señales temporales con un convolutional transformer (combinación de CNN + attention), y (3) asignación óptima de trading vía red neuronal optimizando directamente el Sharpe ratio out-of-sample con restricciones. Sobre ~550 acciones líquidas de US (1998-2016), el modelo completo logra Sharpe >4.0 anual OOS, duplicando el mejor benchmark paramétrico (OU) y cuadruplicando estrategias convencionales. Hallazgo clave: el elemento diferenciador es la extracción de señales temporales con conv-transformer; la elección de factores de asset pricing importa poco. Los retornos son ortogonales a factores de riesgo convencionales (momentum, reversal).",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "statistical arbitrage",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia de trading cuantitativo que explota diferencias temporales de precio entre activos similares. El paper la descompone en tres elementos: (1) generación de portfolios de arbitraje, (2) extracción de señales, y (3) decisión de asignación. El portfolio de arbitraje se construye como residual respecto a un modelo de asset pricing.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "pairs trading"},
+        {"tipo": "USA", "objeto": "asset pricing"}
+      ],
+      "cita_textual": "Statistical arbitrage exploits temporal price differences between similar assets. We develop a comprehensive conceptual framework for statistical arbitrage and a novel data driven solution"
+    },
+    {
+      "nombre": "convolutional transformer",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Arquitectura híbrida que combina CNN para detectar patrones locales en la serie temporal de residuals y transformer (attention) para combinarlos en patrones globales. Es el componente más innovador y el principal diferenciador de performance: duplica el Sharpe vs un modelo deep sin transformer.",
+      "relaciones": [
+        {"tipo": "PREDICE", "objeto": "mean reversion"},
+        {"tipo": "MEJORA_A", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "the convolutional transformer doubles the performance relative to an identical deep learning model with a pre-specified frequency filter"
+    },
+    {
+      "nombre": "asset pricing",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelos de asset pricing (Fama-French 5, PCA, IPCA) usados para construir portfolios de arbitraje como residuals. La similitud entre activos se captura por exposición similar a factores de riesgo. Los residuals resultantes son débilmente correlacionados cross-sectionalmente y tienen patrones de mean reversion predecibles.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"},
+        {"tipo": "USA", "objeto": "PCA"}
+      ],
+      "cita_textual": "We use fundamental risk factors and conditional and unconditional statistical factors for our asset pricing models. Similarity between assets is captured by similar exposure to those factors"
+    },
+    {
+      "nombre": "PCA",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Principal Component Analysis para extraer factores latentes de una gran panel de retornos. IPCA (Instrumented PCA) extiende PCA permitiendo que las loadings sean funciones de características de firms. El paper encuentra que 5 factores IPCA producen Sharpe 4.2; más factores tienen efecto marginal.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "asset pricing"},
+        {"tipo": "USA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "Five conditional IPCA factors increase the out-of-sample Sharpe ratio to 4.2"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso de reversión a la media usado como baseline paramétrico para extracción de señales. El modelo de Yeo y Papanicolaou (2017) basado en OU es el mejor benchmark paramétrico, pero es superado por el convolutional transformer por un factor de ~2x en Sharpe.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"},
+        {"tipo": "PARTE_DE", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "one of the most successful parametric models, based on the mean-reverting Ornstein-Uhlenbeck process"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Reversión a la media de los residuals de asset pricing que el modelo explota. El convolutional transformer aprende patrones locales asimétricos de tendencia y reversión: reacciona rápido a caídas pero más cauteloso en subidas.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "statistical arbitrage"},
+        {"tipo": "PREDICE", "objeto": "short-term returns"}
+      ],
+      "cita_textual": "The building blocks of arbitrage trading are smooth trend and reversion patterns"
+    },
+    {
+      "nombre": "Sharpe ratio",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Objetivo de trading: maximizar Sharpe ratio out-of-sample sujeto a restricciones de short-selling, turnover y leverage. El modelo entrena directamente sobre este objetivo económico, no sobre un objetivo de predicción (MSE). Sharpe >4.0 anual OOS con el modelo completo.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "statistical arbitrage"},
+        {"tipo": "MIDE", "objeto": "risk-adjusted return"}
+      ],
+      "cita_textual": "our model can achieve an impressive annual Sharpe ratio larger than four"
+    },
+    {
+      "nombre": "deep learning",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Redes neuronales usadas en tres etapas: (1) autoencoder/IPCA para factores, (2) conv-transformer para señal temporal, (3) feedforward NN para política de asignación. Todo optimizado end-to-end sobre el objetivo de trading (Sharpe), no sobre MSE de predicción.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "convolutional transformer"},
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "we directly learn in a data-driven way what the optimal pattern extraction function is for our trading objective"
+    },
+    {
+      "nombre": "momentum",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Factor de riesgo convencional del cual los retornos de statistical arbitrage del paper son ortogonales. El modelo explota patrones de corto plazo (últimos 30 días) que son distintos de momentum y reversal estándar.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "mean reversion"}
+      ],
+      "cita_textual": "the profitability of our strategies is orthogonal to market movements and conventional risk factors including momentum and reversal factors"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Costos de transacción y holding costs incorporados en el análisis empírico. Las estrategias de arbitraje permanecen rentables después de costos realistas. La asignación óptima con restricciones de turnover se aprende endógenamente.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "statistical arbitrage"},
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "our arbitrage strategy is feasible and remains profitable in the presence of realistic transaction and holdings costs"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo mitigado mediante rolling-window estimation estricta (10 años de training, OOS evaluation progresiva), múltiples períodos de evaluación, y separación completa entre training y testing.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "walk-forward validation"}
+      ],
+      "cita_textual": "We estimate the out-of-sample residuals on a rolling window"
+    },
+    {
+      "nombre": "factor model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de factores usado para generar residuals. El paper prueba Fama-French 5, PCA local con 5 componentes, y IPCA condicional con 46 características de firms. Sorprendentemente, la elección del modelo de factores tiene efecto menor en performance: Sharpe >3.2 incluso con FF5 simple.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "asset pricing"},
+        {"tipo": "USA", "objeto": "statistical arbitrage"}
+      ],
+      "cita_textual": "the choice of asset pricing factors has only a minor effect on the overall performance"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El modelo completo de deep learning statistical arbitrage (IPCA + convolutional transformer + NN allocation optimizada a Sharpe) logra Sharpe ratio anual >4.0 out-of-sample sobre ~550 acciones líquidas de US, duplicando el mejor benchmark paramétrico y cuadruplicando estrategias convencionales.",
+      "mercado": "US equities (largest ~550 most liquid stocks)",
+      "periodo": "1998-2016",
+      "magnitud": "Sharpe >4.0 anual OOS (modelo completo); Sharpe ~3.2 con FF5/PCA como factores; Sharpe 4.2 con IPCA condicional; retorno medio anual ~20% con restricción de short-selling",
+      "condiciones": "Rolling window estimation; trading diario; costos de transacción y holding costs incluidos; estrategia ortogonal a factores de riesgo convencionales",
+      "robustez": "alta",
+      "cita_textual": "our model can achieve an impressive annual Sharpe ratio larger than four... This performance is four times better than one of the best parametric arbitrage models"
+    },
+    {
+      "afirmacion": "El convolutional transformer es el componente más diferenciador: duplica el Sharpe (~4.0 vs ~2.0) respecto a un modelo deep learning idéntico pero con filtro de frecuencia pre-especificado (Fourier) en vez del transformer aprendido. La elección del modelo de factores de asset pricing tiene un efecto sorprendentemente menor.",
+      "mercado": "US equities",
+      "periodo": "1998-2016",
+      "magnitud": "Conv-transformer: Sharpe ~4.0 vs Fourier filter: Sharpe ~2.0 (2x mejora); FF5/PCA: Sharpe ~3.2 vs IPCA: Sharpe 4.2 (diferencia ~1.0)",
+      "condiciones": "Comparación controlada manteniendo idénticos los otros dos componentes del framework; evaluación OOS rolling window",
+      "robustez": "alta",
+      "cita_textual": "The convolutional transformer doubles the performance relative to an identical deep learning model with a pre-specified frequency filter"
+    },
+    {
+      "afirmacion": "Las estrategias de statistical arbitrage generan retornos ortogonales a factores de riesgo convencionales (mercado, momentum, reversal). Los retornos no representan una prima de riesgo sistemática sino explotación de mispricing temporal de corto plazo. La señal de arbitraje es persistente en horizontes cortos (~1 semana) pero decae en horizontes más largos (~1 mes).",
+      "mercado": "US equities",
+      "periodo": "1998-2016",
+      "magnitud": "~50% del Sharpe persiste con holding period de 1 semana; la mayor parte del mispricing se corrige en ~1 mes; estrategia robusta a través de subperíodos",
+      "condiciones": "Regresiones de retornos de estrategia contra factores Fama-French + momentum + reversal; análisis de persistencia de señal variando el holding period",
+      "robustez": "alta",
+      "cita_textual": "the profitability of our strategies is orthogonal to market movements and conventional risk factors including momentum and reversal factors"
+    },
+    {
+      "afirmacion": "Los patrones de trading aprendidos son asimétricos: el modelo reacciona rápido a movimientos bajistas (últimos 10 días en ventana de 30 días) pero es más cauteloso en tendencias alcistas (primeros 20 días). Los building blocks son patrones suaves de tendencia y reversión.",
+      "mercado": "US equities",
+      "periodo": "1998-2016",
+      "magnitud": "Downturn patterns: focus en últimos 10 días; upturn patterns: focus en primeros 20 días de ventana de 30 días",
+      "condiciones": "Análisis de interpretabilidad de los attention patterns del transformer; visualización de filtros convolucionales aprendidos",
+      "robustez": "media",
+      "cita_textual": "the global dependency patterns which are the most active in downturn movements focus only on the most recent 10 days, while those for upward movements focus on the first 20 days in a 30-day window"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El paper opera con datos diarios, pero la arquitectura de tres etapas (residuals de factores + conv-transformer + asignación) es conceptualmente trasladable a datos intradía de ES futures. La clave sería reemplazar los factores de asset pricing diarios por factores de microstructure intradía y adaptar el transformer a frecuencias más altas."
+  }
+}

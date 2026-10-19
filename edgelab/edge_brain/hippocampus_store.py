@@ -55,10 +55,26 @@ _RECORD_TYPES = {
     "spec_confirmed",
     "partition_declared",
     "observation_recorded",
+    "literature_consulted",
+    "literature_claim_tested",
+    "literature_claim_adjudicated",
 }
 
 PARTITION_ROLES = frozenset({"EXPLORATION", "CONFIRMATION_RESERVED", "FUTURE"})
 OBSERVATION_KINDS = frozenset({"TARGET_FREE", "RESPONSE_PROFILE"})
+# Literatura consultada (puente brain <-> hipocampo bibliografico SSRN, 2026-10-09): techo de autoridad fijo.
+LITERATURE_AUTHORITY = "LITERATURE_CLAIM_UNVERIFIED"
+LITERATURE_ITEM_KINDS = frozenset({"PAPER", "PASSAGE", "FINDING"})
+# Cierre del ciclo (2026-10-09): un hallazgo SSRN contrastado empiricamente en EdgeLab.
+CLAIM_VERDICTS = frozenset({"REPRODUCED", "REFUTED", "INCONCLUSIVE", "NOT_TRANSFERABLE",
+                            "CONSISTENT_EXPLORATORY", "INCONSISTENT_EXPLORATORY"})
+# EXPLORAR != CONFIRMAR: un contraste exploratorio (observaciones DESCRIPTIVE sobre particiones EXPLORATION, corrida
+# Kaggle congelada) solo dice si el hallazgo "se ve" en nuestros datos; no reproduce ni refuta. Para eso: campana.
+EXPLORATORY_VERDICTS = frozenset({"CONSISTENT_EXPLORATORY", "INCONSISTENT_EXPLORATORY"})
+EMPIRICAL_VERDICTS = frozenset({"REPRODUCED", "REFUTED"})      # exigen trials de campana aprobada + corrida Kaggle
+CLAIM_PLATFORMS = frozenset({"KAGGLE", "DESK_REVIEW"})          # politica KAGGLE_ONLY para datos de mercado
+_CLAIM_ID_RE = re.compile(r"CLAIM-SSRN-FINDING-\d{4}")
+_SRC_ID_RE = re.compile(r"SRC-SSRN-\d{4}")
 
 
 class CampaignBudgetError(ValueError):
@@ -193,6 +209,9 @@ class DurableHippocampus:
         self.specs: dict[str, dict[str, Any]] = {}
         self.partitions: dict[str, dict[str, Any]] = {}
         self.observations: dict[str, dict[str, Any]] = {}
+        self.literature: dict[str, dict[str, Any]] = {}
+        self.claim_tests: dict[str, dict[str, Any]] = {}
+        self.claim_adjudications: dict[str, dict[str, Any]] = {}
         if self.ledger_path.exists() and self.ledger_path.stat().st_size > 0:
             self._prev_hash = self._replay_into(self.memory)
             self._offset = self._checked_size()
@@ -496,6 +515,176 @@ class DurableHippocampus:
 
     # -- read path ---------------------------------------------------------
 
+    # -- literatura consultada (hipocampo bibliografico) ----------------------
+
+    def _check_literature(self, row: dict[str, Any], memory: HippocampusMemory | None = None) -> None:
+        """Fail-closed: la literatura nunca entra como evidencia ni por encima de su techo de autoridad."""
+        memory = memory or self.memory
+        cid = str(row.get("consultation_id", ""))
+        if not cid or cid != cid.strip():
+            raise ValueError("consultation_id must be non-empty and without surrounding whitespace")
+        if row.get("episode_id") not in memory.episodes:
+            raise ValueError(f"episode {row.get('episode_id')!r} not registered")
+        if row.get("authority_status") != LITERATURE_AUTHORITY or row.get("claims_are_evidence") is not False:
+            raise ValueError("literature consultations must stay LITERATURE_CLAIM_UNVERIFIED with claims_are_evidence=False")
+        if not str(row.get("query", "")).strip() or not str(row.get("purpose", "")).strip():
+            raise ValueError("query and purpose are required")
+        items = row.get("items")
+        if not isinstance(items, list) or not items:
+            raise ValueError("a consultation must cite at least one literature item")
+        for it in items:
+            if it.get("kind") not in LITERATURE_ITEM_KINDS or not str(it.get("source_id", "")).startswith("SRC-SSRN-"):
+                raise ValueError(f"invalid literature item: {it!r}")
+            if not re.fullmatch(r"[0-9a-f]{64}", str(it.get("text_sha256", ""))):
+                raise ValueError("every literature item needs the sha256 of the text the brain saw")
+
+    def record_literature_consultation(self, row: dict[str, Any]) -> str:
+        """Persiste QUE literatura vio el brain, para que episodio y con que proposito.
+
+        Cada fuente citada queda como dependencia blanda (`consultation SUPPORTED_BY SRC-SSRN-xxxx`): si un paper se
+        invalida, la consulta y todo lo que la cite pasan a REQUIRES_REAUDIT por la cascada existente."""
+        row = dict(row)
+        if row.get("consultation_id") in self.literature:
+            raise ValueError(f"consultation {row['consultation_id']!r} already recorded")
+        self._check_literature(row)
+        digest, written = self._append("literature_consulted", row)
+        self.literature[str(written["consultation_id"])] = written
+        targets = {it["source_id"] for it in written["items"]}
+        targets |= {it["record_id"] for it in written["items"]
+                    if it["kind"] == "FINDING" and _CLAIM_ID_RE.fullmatch(str(it.get("record_id", "")))}
+        for target in sorted(targets):
+            self.record_dependency(written["consultation_id"], target, "SUPPORTED_BY")
+        return digest
+
+    def _replay_literature(self, memory: HippocampusMemory, payload: dict[str, Any]) -> None:
+        try:
+            self._check_literature(dict(payload), memory)
+        except ValueError as exc:
+            raise LedgerIntegrityError(f"ledger contains an invalid literature consultation: {exc}") from exc
+        self.literature[str(payload["consultation_id"])] = dict(payload)
+
+    # -- cierre del ciclo: hallazgos de la literatura contrastados en EdgeLab -----------------------
+
+    def _check_claim_test(self, row: dict[str, Any], memory: HippocampusMemory | None = None) -> None:
+        memory = memory or self.memory
+        tid = str(row.get("test_id", ""))
+        if not tid or tid != tid.strip():
+            raise ValueError("test_id must be non-empty and without surrounding whitespace")
+        if not _CLAIM_ID_RE.fullmatch(str(row.get("claim_id", ""))) or not _SRC_ID_RE.fullmatch(str(row.get("source_id", ""))):
+            raise ValueError("claim_id/source_id must be CLAIM-SSRN-FINDING-nnnn / SRC-SSRN-nnnn")
+        verdict, platform = row.get("verdict"), row.get("platform")
+        if verdict not in CLAIM_VERDICTS:
+            raise ValueError(f"verdict must be one of {sorted(CLAIM_VERDICTS)}")
+        if platform not in CLAIM_PLATFORMS:
+            raise ValueError(f"platform must be one of {sorted(CLAIM_PLATFORMS)}")
+        if row.get("status") != "PROPOSED":
+            raise ValueError("a claim test enters the ledger as PROPOSED; adjudication is a separate human record")
+        if row.get("holdout_touched") is not False:
+            raise ValueError("claim tests must declare holdout_touched=False")
+        ep = row.get("episode_id")
+        if ep not in memory.episodes or not memory.successes.get(ep):
+            raise ValueError(f"episode {ep!r} must be registered and completed (SuccessEvent) before citing it")
+        if row.get("consultation_id") and row["consultation_id"] not in self.literature:
+            raise ValueError(f"unknown consultation {row['consultation_id']!r}")
+        trials = list(row.get("trial_ids") or [])
+        if any(t not in self.trials for t in trials):
+            raise ValueError("every trial_id must be a recorded trial of an approved campaign")
+        obs_ids = list(row.get("observation_ids") or [])
+        if any(o not in self.observations for o in obs_ids):
+            raise ValueError("every observation_id must be a recorded observation")
+        if verdict in EXPLORATORY_VERDICTS:
+            if platform != "KAGGLE" or not obs_ids:
+                raise ValueError(f"{verdict} needs DESCRIPTIVE observations measured on KAGGLE")
+            for o in obs_ids:
+                if any(self.partitions[p]["role"] != "EXPLORATION" for p in self.observations[o]["partitions"]):
+                    raise ValueError(f"exploratory claim tests only use EXPLORATION partitions ({o!r})")
+        if verdict in EMPIRICAL_VERDICTS and (platform != "KAGGLE" or not trials):
+            raise ValueError(f"{verdict} needs trials of an approved campaign run on KAGGLE")
+        if verdict in EMPIRICAL_VERDICTS | EXPLORATORY_VERDICTS:
+            exe = row.get("execution") or {}
+            if not re.fullmatch(r"[0-9a-f]{40}", str(exe.get("code_commit", ""))):
+                raise ValueError("execution.code_commit must be the full 40-char frozen commit")
+            if not re.fullmatch(r"[0-9a-f]{64}", str(exe.get("output_sha256", ""))):
+                raise ValueError("execution.output_sha256 must be the external sha256 of the Kaggle output")
+            if not str(exe.get("kaggle_dataset", "")).strip() or not str(exe.get("kaggle_kernel", "")).strip():
+                raise ValueError("execution must name the private kaggle_dataset and kaggle_kernel")
+        elif not str(row.get("rationale", "")).strip():
+            raise ValueError(f"{verdict} needs a written rationale")
+
+    def record_claim_test(self, row: dict[str, Any]) -> str:
+        """Un agente propone el veredicto de contrastar un hallazgo SSRN. Nunca se auto-adjudica: queda PROPOSED.
+        El test depende (duro) de su episodio y trials: si se invalidan, el test queda STALE y el claim a re-auditar."""
+        row = dict(row)
+        row.setdefault("status", "PROPOSED")
+        if row.get("test_id") in self.claim_tests:
+            raise ValueError(f"duplicate test_id {row.get('test_id')!r}")
+        self._check_claim_test(row)
+        digest, written = self._append("literature_claim_tested", row)
+        self.claim_tests[str(written["test_id"])] = written
+        for dep in [written["episode_id"], *written.get("trial_ids", []),
+                    *[f"OBS:{o}" for o in written.get("observation_ids", [])]]:
+            self.record_dependency(written["test_id"], dep, "DEPENDS_ON")
+        return digest
+
+    def _check_claim_adjudication(self, row: dict[str, Any]) -> None:
+        test = self.claim_tests.get(str(row.get("test_id")))
+        if test is None:
+            raise ValueError(f"unknown claim test {row.get('test_id')!r}")
+        who = str(row.get("adjudicated_by", ""))
+        if not who.startswith("human:") or who == test.get("recorded_by") or who == row.get("recorded_by"):
+            raise ValueError("claim tests are adjudicated by a human ('human:<name>') other than the recorder")
+        if row.get("decision") not in {"ACCEPTED", "REJECTED"}:
+            raise ValueError("decision must be ACCEPTED or REJECTED")
+        if str(row.get("test_id")) in self.claim_adjudications:
+            raise ValueError("test already adjudicated; record a new test instead")
+
+    def adjudicate_claim_test(self, test_id: str, decision: str, adjudicated_by: str, recorded_by: str,
+                              notes: str = "") -> str:
+        """Un humano acepta o rechaza el veredicto propuesto. Un REFUTED aceptado propaga REQUIRES_REAUDIT a todo
+        lo que se apoyo en ese hallazgo (consultas e hipotesis que lo citaron)."""
+        row = dict(test_id=test_id, decision=decision, adjudicated_by=adjudicated_by, recorded_by=recorded_by,
+                   notes=notes)
+        self._check_claim_adjudication(row)
+        digest, written = self._append("literature_claim_adjudicated", row)
+        self.claim_adjudications[test_id] = written
+        test = self.claim_tests[test_id]
+        if decision == "ACCEPTED" and test["verdict"] == "REFUTED":
+            dependents = {d["source_id"] for d in self.dependencies if d["target_id"] == test["claim_id"]}
+            if dependents:
+                self.invalidate_with_cascade(test["claim_id"], "REQUIRES_REAUDIT")
+        return digest
+
+    def claim_status(self, claim_id: str) -> str:
+        """Estado de un hallazgo SSRN segun lo que EdgeLab contrasto. Sin tests: AUTHOR_REPORTED_RESULT."""
+        tests = [t for t in self.claim_tests.values() if t["claim_id"] == claim_id]
+        if not tests:
+            return "AUTHOR_REPORTED_RESULT"
+        accepted = [t for t in tests if self.claim_adjudications.get(t["test_id"], {}).get("decision") == "ACCEPTED"]
+        live = [t for t in accepted if t["test_id"] not in self.invalidations]
+        if live:
+            # un veredicto confirmatorio (campana) pesa mas que cualquier contraste exploratorio
+            confirm = [t for t in live if t["verdict"] not in EXPLORATORY_VERDICTS]
+            verdict = (confirm or live)[-1]["verdict"]
+            return "NOT_TRANSFERABLE_TO_EDGELAB" if verdict == "NOT_TRANSFERABLE" else f"{verdict}_IN_EDGELAB"
+        if accepted:
+            return "REQUIRES_REAUDIT"
+        pending = [t for t in tests if t["test_id"] not in self.claim_adjudications and t["test_id"] not in self.invalidations]
+        return "TESTED_PENDING_ADJUDICATION" if pending else "AUTHOR_REPORTED_RESULT"
+
+    def _replay_claim_test(self, memory: HippocampusMemory, payload: dict[str, Any]) -> None:
+        try:
+            self._check_claim_test(dict(payload), memory)
+        except ValueError as exc:
+            raise LedgerIntegrityError(f"ledger contains an invalid claim test: {exc}") from exc
+        self.claim_tests[str(payload["test_id"])] = dict(payload)
+
+    def _replay_claim_adjudication(self, payload: dict[str, Any]) -> None:
+        try:
+            self._check_claim_adjudication(dict(payload))
+        except ValueError as exc:
+            raise LedgerIntegrityError(f"ledger contains an invalid claim adjudication: {exc}") from exc
+        self.claim_adjudications[str(payload["test_id"])] = dict(payload)
+
     def _replay_into(self, memory: HippocampusMemory) -> str:
         """Replay the ledger into `memory`; returns the verified tip hash."""
         prev = GENESIS_HASH
@@ -552,6 +741,9 @@ class DurableHippocampus:
             "spec_confirmed": lambda: self._replay_spec(payload),
             "partition_declared": lambda: self.partitions.__setitem__(str(payload["partition_id"]), dict(payload)),
             "observation_recorded": lambda: self._replay_observation(payload),
+            "literature_consulted": lambda: self._replay_literature(memory, payload),
+            "literature_claim_tested": lambda: self._replay_claim_test(memory, payload),
+            "literature_claim_adjudicated": lambda: self._replay_claim_adjudication(payload),
         }
         builders[rtype]()
 
@@ -642,9 +834,10 @@ class DurableHippocampus:
         """
         probe = HippocampusMemory()
         saved = (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-                 self.partitions, self.observations)
+                 self.partitions, self.observations, self.literature, self.claim_tests, self.claim_adjudications)
         (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-         self.partitions, self.observations) = {}, [], {}, {}, {}, {}, {}
+         self.partitions, self.observations, self.literature, self.claim_tests,
+         self.claim_adjudications) = {}, [], {}, {}, {}, {}, {}, {}, {}, {}
         try:
             tip = self._replay_into(probe)
             if expected_tip_hash is not None and tip != expected_tip_hash:
@@ -653,4 +846,5 @@ class DurableHippocampus:
             return tip
         finally:
             (self.invalidations, self.dependencies, self.campaigns, self.trials, self.specs,
-             self.partitions, self.observations) = saved
+             self.partitions, self.observations, self.literature, self.claim_tests,
+             self.claim_adjudications) = saved

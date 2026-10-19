@@ -1,0 +1,255 @@
+{
+ "group": "ZB",
+ "assets": [
+  "ZB"
+ ],
+ "spec": "f3_flujo_absorcion",
+ "spec_hash": "63134cbf49887a09db8e3593a476b349ec4f15c4cf4f7e22a10771716e4b35da",
+ "backend": "cpu",
+ "sessions": 211,
+ "cells_total": 23424,
+ "build_s": 10.7,
+ "meta": {
+  "ZB": {
+   "dropped": {
+    "entry_delay": 2438,
+    "exit_delay": 7353,
+    "no_b1": 0
+   },
+   "sessions": 211,
+   "cells": 23424,
+   "segments": [
+    [
+     "ZB_09-25",
+     739481,
+     739487
+    ],
+    [
+     "ZB_12-25",
+     739488,
+     739578
+    ],
+    [
+     "ZB_03-26",
+     739579,
+     739672
+    ],
+    [
+     "ZB_06-26",
+     739673,
+     739763
+    ],
+    [
+     "ZB_09-26",
+     739764,
+     739797
+    ]
+   ]
+  }
+ },
+ "scan_s": 0.4,
+ "partition": {
+  "policy": "chronological_v1",
+  "D0_sessions": 105,
+  "D1_sessions": 53,
+  "D2": "SEALED",
+  "split_hash": "b9fafa8b9d18675a5668f32b82a96a59743b76c03a07495f31f3159e6a2cadba"
+ },
+ "n_cells_tested": 5471,
+ "real_max_abs_z": 3.642152254877574,
+ "null_max_q95": 3.8823540210723877,
+ "p_max": 0.1790910454477276,
+ "n_q_bh_below_0.05": 0,
+ "family_headlines": [
+  {
+   "family": "imb",
+   "cell": 12465,
+   "z": -3.642152254877574,
+   "slot_idx": 51,
+   "hold_idx": 0,
+   "cond": "imb_60:gt:0",
+   "neighbors": 5,
+   "same_sign": 3,
+   "plateau": false,
+   "slot": 1245,
+   "hold": 15,
+   "direction": "short",
+   "per_asset": {
+    "ZB": {
+     "trades": 106,
+     "mean_net_ticks_all_sessions": -0.7194716334342957
+    }
+   }
+  },
+  {
+   "family": "mom",
+   "cell": 10461,
+   "z": 3.414960427389898,
+   "slot_idx": 42,
+   "hold_idx": 3,
+   "cond": "mom_60:lt:0",
+   "neighbors": 5,
+   "same_sign": 5,
+   "plateau": true,
+   "slot": 1030,
+   "hold": 120,
+   "direction": "long",
+   "per_asset": {
+    "ZB": {
+     "trades": 97,
+     "mean_net_ticks_all_sessions": -0.10276302695274353
+    }
+   }
+  },
+  {
+   "family": "absorb",
+   "cell": 7589,
+   "z": -3.2839861595473407,
+   "slot_idx": 31,
+   "hold_idx": 0,
+   "cond": "absorb_60:zgt:1",
+   "neighbors": 3,
+   "same_sign": 2,
+   "plateau": false,
+   "slot": 745,
+   "hold": 15,
+   "direction": "short",
+   "per_asset": {
+    "ZB": {
+     "trades": 37,
+     "mean_net_ticks_all_sessions": 0.15329724550247192
+    }
+   }
+  },
+  {
+   "family": "pair:imb+mom",
+   "cell": 12497,
+   "z": -3.117096600642056,
+   "slot_idx": 51,
+   "hold_idx": 0,
+   "cond": "imb_60:gt:0&mom_60:gt:0",
+   "neighbors": 5,
+   "same_sign": 4,
+   "plateau": true,
+   "slot": 1245,
+   "hold": 15,
+   "direction": "short",
+   "per_asset": {
+    "ZB": {
+     "trades": 64,
+     "mean_net_ticks_all_sessions": -0.7065000534057617
+    }
+   }
+  },
+  {
+   "family": "none",
+   "cell": 18727,
+   "z": -2.6293215344114182,
+   "slot_idx": 76,
+   "hold_idx": 3,
+   "cond": "none",
+   "neighbors": 5,
+   "same_sign": 5,
+   "plateau": true,
+   "slot": 1900,
+   "hold": 120,
+   "direction": "short",
+   "per_asset": {
+    "ZB": {
+     "trades": 137,
+     "mean_net_ticks_all_sessions": -0.5089636445045471
+    }
+   }
+  },
+  {
+   "family": "effort",
+   "cell": 7520,
+   "z": -2.252510815371134,
+   "slot_idx": 30,
+   "hold_idx": 3,
+   "cond": "effort_30:zgt:1",
+   "neighbors": 1,
+   "same_sign": 1,
+   "plateau": false,
+   "slot": 730,
+   "hold": 120,
+   "direction": "short",
+   "per_asset": {
+    "ZB": {
+     "trades": 36,
+     "mean_net_ticks_all_sessions": 2.6060001850128174
+    }
+   }
+  }
+ ],
+ "replication": [
+  {
+   "cell": 12465,
+   "sign": -1.0,
+   "z_is": -3.642152254877574,
+   "z_oos": -0.5538502554053123,
+   "p_oos": 0.704364781760912,
+   "oos_trades": 24,
+   "p_holm": 1.0,
+   "slot": 1245,
+   "hold": 15,
+   "cond": "imb_60:gt:0"
+  },
+  {
+   "cell": 10461,
+   "sign": 1.0,
+   "z_is": 3.414960427389898,
+   "z_oos": 1.4092809738317875,
+   "p_oos": 0.08399580020998951,
+   "oos_trades": 24,
+   "p_holm": 0.41997900104994756,
+   "slot": 1030,
+   "hold": 120,
+   "cond": "mom_60:lt:0"
+  },
+  {
+   "cell": 7589,
+   "sign": -1.0,
+   "z_is": -3.2839861595473407,
+   "z_oos": -0.20786681666398782,
+   "p_oos": 0.5739713014349282,
+   "oos_trades": 11,
+   "p_holm": 1.0,
+   "slot": 745,
+   "hold": 15,
+   "cond": "absorb_60:zgt:1"
+  },
+  {
+   "cell": 4838,
+   "sign": -1.0,
+   "z_is": -3.229309203515499,
+   "z_oos": 0.5732356663344816,
+   "p_oos": 0.29893505324733766,
+   "oos_trades": 17,
+   "p_holm": 0.896805159742013,
+   "slot": 445,
+   "hold": 120,
+   "cond": "mom_30:gt:0"
+  },
+  {
+   "cell": 4168,
+   "sign": 1.0,
+   "z_is": 3.141421472331356,
+   "z_oos": 0.8793025564528157,
+   "p_oos": 0.19709014549272535,
+   "oos_trades": 15,
+   "p_holm": 0.7883605819709014,
+   "slot": 415,
+   "hold": 15,
+   "cond": "mom_30:lt:0"
+  }
+ ],
+ "kernel": {
+  "kernel_id": "discovery.max_null.sign_flip.v2",
+  "backend": "cpu",
+  "precision": "float32",
+  "deterministic": "seeded",
+  "seed": 20261014,
+  "n_sims": 20000
+ }
+}

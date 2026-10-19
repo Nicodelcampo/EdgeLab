@@ -1,0 +1,40 @@
+{
+  "audit_timestamp_utc": "2026-09-19T15:50:48.335703+00:00",
+  "holdout_boundary_ns": 1782856800000000000,
+  "total_anomalies": 4,
+  "anomalies": [
+    {
+      "anomaly_id": "ANOMALY_NQ_09_26_BLOCKED",
+      "instrument": "NQ",
+      "contract": "NQ 09-26",
+      "type": "BLOCKED_BY_CUSTODY",
+      "severity": "BLOCKING_FOR_NQ_COMPLETION",
+      "description": "NQ 09-26 tick file is blocked pending revalidation recut to prevent unmonotonic timestamps and holdout breach. NQ dataset CANNOT be marked complete until recut is certified.",
+      "action_taken": "Excluded from canonical verified status; marked BLOCKED_BY_CUSTODY."
+    },
+    {
+      "anomaly_id": "ANOMALY_MBT_MULTI_CONTRACT_PROVENANCE",
+      "instrument": "MBT",
+      "type": "CUSTODY_DIFFERENCE",
+      "severity": "INFO",
+      "description": "Local custody contains 6 primary active contracts (09-25, 11-25, 01-26, 03-26, 05-26, 07-26) while legacy remote Kaggle dataset contains 13 contracts. MBT 07-26 was recut locally to the active trading window.",
+      "action_taken": "Local 6 contracts certified pre-holdout; 0 holdout violations."
+    },
+    {
+      "anomaly_id": "ANOMALY_GC_CANONICAL_RECUT",
+      "instrument": "GC",
+      "type": "PROVENANCE_UPDATE",
+      "severity": "RESOLVED_BY_MIGRATION",
+      "description": "GC local parquet files (12-25, 02-26, 04-26, 06-26, 08-26) were recut on 2026-08-15 for monotonicity and canonical boundary alignment (7,699,219 rows vs 7,841,934 legacy remote rows).",
+      "action_taken": "Audited local recut uploaded and verified as canonical version on Kaggle."
+    },
+    {
+      "anomaly_id": "ANOMALY_VIEWER_CONTINUOUS_CLAIMS_REJECTED",
+      "instrument": "ALL",
+      "type": "SEMANTIC_POLICY_ENFORCEMENT",
+      "severity": "CRITICAL_GUARDRAIL",
+      "description": "Files named *_CONT in viewer bundles cannot be treated as continuous series without roll methodology, overlap audit, gap audit, and causality audit. Declared PARTIAL_CONTRACT_MONTH_SLICES only.",
+      "action_taken": "Viewer bundles PAUSED_NOT_UPLOADED; continuous claims formally rejected."
+    }
+  ]
+}

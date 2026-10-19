@@ -1,0 +1,115 @@
+{
+  "doc_id": 236,
+  "titulo": "Modeling Informed State in Fixed Income Market: Empirical Evidence from HFT Data",
+  "resumen_operativo": "Extiende el modelo PIN de Easley et al. al mercado de renta fija usando un modelo PIN-AACD (Asymmetric Autoregressive Conditional Duration) con probabilidades de noticias time-varying basadas en volumen. Estima PIN intradiario para Bund Futures alemanes (EUREX, octubre 2008). Encuentra que PIN sigue patrones intradiarios consistentes con llegada programada de noticias macroeconómicas, se correlaciona positivamente con market depth (Kyle's lambda) y negativamente con volatilidad realizada.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "Probability of Informed Trading (PIN)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Medida de información asimétrica que estima la fracción de trades originados por traders informados en un intervalo, inferida de datos de dirección de trade y duración entre trades mediante modelo estructural de mezcla de Poisson.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "information asymmetry"},
+        {"tipo": "REQUIERE", "objeto": "PIN-AACD Model"}
+      ],
+      "cita_textual": "PIN measures the fraction of trades in a time interval that arises from informed traders. Intuitively, PIN measures market makers' belief about the trades being informed."
+    },
+    {
+      "nombre": "PIN-AACD Model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión del modelo AACD de Bauwens y Giot que incorpora estados informativos (good news, bad news, no news) en las duraciones condicionales esperadas de trades buy/sell, permitiendo probabilidades de noticias variables en el tiempo vía modelo logístico sobre volumen.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "EKOP PIN model"},
+        {"tipo": "APLICA_A", "objeto": "fixed income markets"}
+      ],
+      "cita_textual": "The PIN-AACD framework allows for interactions between consecutive buy-sell orders, accounts for the duration between trades and the volume of trade and allows the Probabilities of Good News and Bad News to vary each interval."
+    },
+    {
+      "nombre": "Autoregressive Conditional Duration (ACD)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo de series temporales para duraciones entre eventos (trades) donde la duración esperada condicional depende de duraciones pasadas y direcciones de trade, usado como base para modelar intensidades de trading informado/no informado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "PIN-AACD Model"}
+      ],
+      "cita_textual": "The above equation is an extended logarithmic ACD(1,1) structure, where the constant term is replaced by intercepts that vary according to the previous trade direction."
+    },
+    {
+      "nombre": "Time-Varying Probability of News",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Extensión que permite que las probabilidades de good news, bad news y no news varíen en cada intervalo de trading en función del volumen agregado de compras y ventas mediante un modelo logístico.",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "PIN-AACD Model"},
+        {"tipo": "USA", "objeto": "trading volume as news proxy"}
+      ],
+      "cita_textual": "We extend the PIN-AACD framework by modelling time-varying probabilities of news rather than assuming it to be constant."
+    },
+    {
+      "nombre": "EKOP Framework",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo secuencial de trading de Easley, Kiefer, O'Hara y Paperman (1996) que asume un solo evento informativo por día con probabilidad α, clasificado como good news (δ) o bad news (1−δ), y estima PIN como αµ/(αµ+2ε).",
+      "relaciones": [
+        {"tipo": "MEJORA_A", "objeto": "PIN-AACD Model"}
+      ],
+      "cita_textual": "The EKOP model is estimated as follows: Assume that prior to the beginning of each trading day nature selects that an information event will occur (with probability α) or not (with probability 1−α)."
+    },
+    {
+      "nombre": "Kyle's Lambda",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Coeficiente de regresión de cambios de precio sobre volumen firmado logarítmico, usado como proxy de profundidad de mercado. Valores altos implican poca profundidad y se correlacionan positivamente con PIN (0.5927).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market depth"},
+        {"tipo": "EQUIVALE_A", "objeto": "price impact per unit volume"}
+      ],
+      "cita_textual": "Market depth is measured by Kyle's lambda defined as price movement per unit signed volume of trade."
+    },
+    {
+      "nombre": "German Bund Futures",
+      "tipo": "dato",
+      "definicion_en_contexto": "Contrato de futuros sobre bonos del gobierno alemán (FGBLZ8, vencimiento diciembre 2008, cupón 6%, nocional 100,000 EUR) negociado en EUREX, usado como activo de prueba para estimar PIN intradiario.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "PIN-AACD Model"}
+      ],
+      "cita_textual": "We apply the AACD model to intraday Transaction data of German Bund Futures (FGBLZ8 December 2008 expiry) traded on EUREX."
+    },
+    {
+      "nombre": "Lee-Ready Algorithm",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo estándar para inferir la dirección de trades (buy/sell iniciado) a partir de datos de transacciones comparando el precio de trade con el midpoint prevalente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "trade direction classification"}
+      ],
+      "cita_textual": "Signed volume inferred using the Lee and Ready (1991) algorithm."
+    },
+    {
+      "nombre": "Intraday PIN Pattern",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Patrón intradiario de PIN con picos alrededor de horarios programados de anuncios macroeconómicos (8:00, 10:00, 13:00), alta actividad en la mañana de Londres, baja durante el almuerzo, y repunte con apertura de Nueva York.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "PIN-AACD Model"},
+        {"tipo": "CAUSA", "objeto": "scheduled macroeconomic announcements"}
+      ],
+      "cita_textual": "There is a clear intraday pattern of PIN over the day, with the measure peaking around pre-scheduled macroeconomic news announcement times, such as 8:00 AM, 10:00 AM and 1:00 PM."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "PIN intradiario estimado con PIN-AACD para Bund Futures muestra correlación positiva con market depth (Kyle's lambda): 0.5927. La correlación con volatilidad realizada es negativa (−0.2083), inesperadamente. La correlación entre probabilidad de noticias y volumen de trading es positiva (0.2959).",
+      "mercado": "German Bund Futures (FGBLZ8) en EUREX",
+      "periodo": "6-10 octubre 2008",
+      "magnitud": "Corr(PIN, Market Depth) = 0.5927; Corr(PIN, Realised Volatility) = −0.2083; Corr(News, Volume) = 0.2959",
+      "condiciones": "PIN estimado en intervalos de 20 minutos con PIN-AACD time-varying; Kyle's lambda como regresión de Δp sobre volumen firmado",
+      "robustez": "baja",
+      "cita_textual": "Corr(PIN, Market Depth) = 0.5927; Corr(PIN, Realised Volatility) = −0.2083; Corr(News, Volume) = 0.2959."
+    },
+    {
+      "afirmacion": "Los patrones intradiarios de PIN estimados con PIN-AACD son consistentes con la llegada programada de información pública: picos alrededor de anuncios macro (8:00, 10:00, 13:00 GMT), valle en horario de almuerzo, y repunte con apertura de Nueva York.",
+      "mercado": "German Bund Futures (FGBLZ8) en EUREX",
+      "periodo": "6 octubre 2008 (día representativo)",
+      "magnitud": "PIN intradiario en rango 0.19-0.31; probabilidad de noticias en rango 0.35-0.59",
+      "condiciones": "20-minute intervals; PIN-AACD con time-varying probabilities; estimación MLE",
+      "robustez": "baja",
+      "cita_textual": "PIN-AACD seems to capture information-based trading of German Bund Futures data quite well."
+    }
+  ],
+  "aplicabilidad_es_intradia": {"nivel": "alta", "nota": "PIN estimado intradiariamente en intervalos de 20 minutos con datos tick-by-tick de alta frecuencia; diseñado para apoyar mesas de trading y ventas en tiempo real."}
+}

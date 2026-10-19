@@ -1,0 +1,1975 @@
+ 
+ 
+The Impact of HFT on the Speed of Adjustment to New 
+Information: Evidence from Interest Rate Derivatives 
+ 
+Alex Frino*, Michael Garcia, Zeyang Zhou 
+University of Wollongong, Wollongong, NSW, Australia 
+ 
+ 
+ 
+ 
+ 
+Abstract 
+This study examines the impact of algorithmic trading (AT) on the speed of adjustment and price 
+discovery during scheduled macroeconomic announcements for interest rate derivatives. In 
+February 2012, the Australian Securities Exchange (ASX) introduced co-location services for 
+futures traders. This change in market structure increases AT and, in this study, we examine price 
+efficiency for both exchange-traded futures and over-the-counter (OTC)-traded swaps in the pre- 
+and post-AT periods. Our results demonstrate that, in the presence of AT, the speed of adjustment 
+to new information has improved for both futures and swaps. In addition, we find that the price 
+discovery contribution of the futures market improves in the post-AT period, with this 
+improvement significant for announcement days. We conclude that AT stimulates market 
+adjustment to new information and enhances the price discovery of futures on days with scheduled 
+macroeconomic releases. 
+ 
+ 
+ 
+Alex Frino and Zeyang Zhou are at the University of Wollongong, Wollongong, New South Wales, Australia. Michael 
+Garcia is at Australian Securities Exchange (ASX), Sydney, New South Wales, Australia. We would like to thank 
+Bart Frijns and Feng Jiao as well as participants at the 2019 Derivative Markets Conference. Also, we owe thanks to 
+the seminar participants at Macquarie University (2017), University of Wollongong (2017) and Capital Markets CRC 
+(2018) for useful comments. Any errors or omissions are the responsibility of the authors alone. This research was 
+funded under Corporations regulation 7.5.88 through the use of excess funds from the SFEFF.  
+*Corresponding author: afrino@uow.edu.au 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+1. 
+INTRODUCTION 
+Improvements in technology have revolutionised the way in which investors can trade in financial 
+markets. Algorithmic trading (AT), defined as “the use of computer algorithms to automatically 
+make certain trading decisions, submit orders, and manage those orders after submissions”1, is an 
+example of these technological changes. The effect of AT on market quality is important and has 
+attracted interest from researchers, practitioners and policy makers. This paper examines the effect 
+of AT on two dimensions of market quality, namely, liquidity and price discovery, through which 
+information is incorporated into prices.  
+Algorithmic trading (AT) is thought to be responsible for more than half the trading volume in the 
+United States (US).2 Consequently, many exchanges now offer technological upgrades to reduce 
+latency and attract more order flow. One argument put forward by the empirical literature is that 
+the reduction in latency enables algorithmic traders to more rapidly adjust their prices when new 
+information arrives and therefore improves price efficiency (Chaboud, Chiquoine, Hjalmarsson, 
+& Vega, 2014; Scholtus, van Dijk, & Frijns 2014; Chordia, Green, & Kottimukkalur, 2018; 
+Brogaard, Hendershott, & Riordan, 2014; Frino, Mollica, Monaco, & Palumbo, 2017a). Another 
+argument proposed by the theoretical literature is that the latency reduction improves liquidity 
+through one of two channels, either adverse selection or inventory management. The adverse 
+selection channel states that fast market makers are able to avoid being adversely selected and can 
+thus maintain their liquidity supply (Hoffmann, 2014). The inventory management channel, as 
+addressed by Aït-Sahalia and Saglam (2013), shows that the speed advantage of fast market makers 
+causes a reduction in their cost of holding inventory; therefore, they can afford to increase their 
+liquidity supply. In summary, the reduction in latency may impose a positive effect on price 
+discovery and market liquidity. 
+Much of the literature has looked at the impact of AT on liquidity, by identifying technological 
+upgrades that alter the amount of AT activity and examining the consequences on market liquidity. 
+The seminal work of Hendershott, Jones and Menkveld (2011) employs the start of auto-quote 
+usage on the New York Stock Exchange (NYSE) as an exogenous instrument and presents a causal 
+link between increases in AT and improvements in liquidity. Subsequent studies employ upgrades 
+in trading facilities for smaller markets and draw similar conclusions (Riordan & Storkenmaier, 
+                                                 
+1 Hendershott, Jones, & Menkveld, 2011, p. 1.  
+2 “SEC runs eye over high-speed trading”, Financial Times, 29 July 2009: https://www.ft.com/content/d5fa0660-7b95-11de-9772-00144feabdc0  
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+2012; Brogaard et al., 2014; Frino, Mollica, & Webb, 2014; Brogaard, Hagströmer, Nordén, & 
+Riordan, 2015; Frino et al., 2017a).  
+Our paper is distinguished from previous studies in the following ways. Firstly, we extend the 
+work of Frino et al. (2014) to study how the introduction of co-location affects market liquidity 
+during macroeconomic releases. In February 2012, the Australian Securities Exchange (ASX) 
+allowed futures traders to co-locate their servers at the exchange’s data centre, thus providing a 
+natural experiment to test the impact of AT on liquidity. Frino et al. (2014) use this event to isolate 
+the effect of latency on overall market liquidity, finding liquidity improvements following the 
+technological upgrade. We extend their work by focusing on the time intervals in which liquidity 
+is most desired by the market, in other words, around information releases. 
+Secondly, previous research provides evidence on how AT affects liquidity and primarily tests 
+whether impact occurs following co-location. Very little evidence exists on a critical aspect of 
+market quality, that is, the speed of adjustment to new information. In this paper, we focus on the 
+speed of adjustment which measures the resiliency of liquidity in a market, rather than simply 
+measuring liquidity. 
+Thirdly, we extend previous research by identifying a futures market in which co-location was 
+introduced, as well as a related derivatives market where co-location was not introduced. Our study 
+then examines whether spillover effects occur between the two markets, whereas most previous 
+research only looks at what happens in a market in which co-location was introduced. We find that 
+the speed of adjustment to new information has improved for both futures and swap markets 
+following co-location. We conjecture that the reduced latency in futures has led to an improvement 
+in price efficiency for over-the-counter (OTC)-traded swaps through cross-market arbitrage. In 
+addition, we provide evidence on the impact of AT on the lead–lag relationship between the two 
+derivatives markets. Specifically, we show the price discovery contribution of the futures market 
+improves in the post-AT period, with this improvement significant for announcement days. 
+Fourthly, studies that explore the role of AT in forming prices generally focus on the response of 
+equities to firm-specific information releases (Frino et al, 2017a; Frino, Prodromou, Wang, 
+Westerholm, & Zheng, 2017b). We extend the previous literature by examining the response of 
+interest rate derivatives to macroeconomic information releases. Investors with better market-wide 
+information prefer to trade in futures, while investors with stock-specific information prefer to 
+trade in stocks (Frino, Walter, & West, 2000). Fleming and Remolona (1999) conjecture that 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+macroeconomic announcements do not normally confront market makers with the risk of trading 
+with more informed investors. Consequently, the liquidity provision around these announcements, 
+originating from market makers, is most likely to be driven by inventory control, rather than 
+information asymmetry. For this reason, we select days on which macroeconomic announcements 
+are made as our sample days and study the role of AT in price formation following these news 
+releases.  
+The outline of this paper is as follows. Section 2 provides institutional details, with an overview 
+of the study’s data and methodology then presented in Section 3. Section 4 presents descriptive 
+statistics on swaps and 90-day bank-accepted bills (90-day BABs) futures and reports the 
+regression results. The paper concludes with Section 5 which presents the final remarks. 
+2. 
+INSTITUTIONAL DETAILS 
+The Australian 90-day BABs futures contract, introduced in 1979, has become one of the most 
+liquid contracts in the world, trading a daily average of 114,805 contracts in 2017, six times higher 
+than the daily average turnover of the SPI Futures contract (Australian Financial Markets 
+Association [AFMA], 2017). The 90-day futures contract trades at the ASX Trade24 on a quarterly 
+expiration cycle (March, June, September and December) from 8:28 a.m. Australian Eastern 
+Standard Time (AEST) to 4:30 p.m. AEST. During the winter period, from the second Sunday in 
+March until the first Sunday in November, it trades from 5:08 p.m. AEST to 7:00 a.m. AEST. It 
+also trades from 8:28 a.m. AEST to 4:30 p.m. AEST, and from 5:08 p.m. AEST to 7:30 a.m. AEST 
+during the summer period, from the first Sunday in November until the second Sunday in March. 
+Australian interest rate swaps are mostly traded in the OTC market. Swap trading comprises 
+regular voice dealer trading and exchange-like trading platforms with central limit order books. In 
+Australia, the exchange-like trading platforms for swaps include the Australian Market Licence 
+(AML) regime, swap execution facilities (SEF) and multilateral trading facilities (MTF). 
+3. 
+DATA AND METHOD 
+The data for this study are sourced from the Thomson Reuters Tick History (TRTH) database 
+maintained by the Securities Industries Research Centre of Asia-Pacific (SIRCA). From this 
+database, we collect intraday bid and ask prices, bid and ask sizes, and traded price and volume 
+for the Australian 90-day BABs futures contracts traded on the ASX from 2 March 2010 to 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+19 February 2014.3 Over-the-counter (OTC) quote data for the Australian 1-year interest rate swap 
+contract are also collected from the TRTH database on an intraday basis for the period from 2 
+March 2010 to 19 February 2014. This database includes indicative quotes provided by approved 
+dealers and contributors.4 For both swaps and futures contracts, we calculate the mid-quote as the 
+average of the best bid and ask quotes which reduces the effect of bid–ask bounce (Hauptfleisch, 
+Putniņš, & Lucey, 2016). Data for interest rate swap and futures contracts are collected for the 
+daytime trading session from 8:28 a.m. AEST to 4:30 p.m. AEST.  
+This study investigates the impact of algorithmic trading (AT) on price volatility, market liquidity 
+and price discovery in Australian futures and swaps markets. Using the introduction of co-location 
+that occurred on 20 February 2012, we divide our sample period into two sub-periods. The period 
+from 2 March 2010 to 19 February 2012 is classified as the “pre-AT” trading period, and the period 
+from 21 February 2012 to 19 February 2014 is classified as the “post-AT” trading period.  
+Macroeconomic announcements are collected from the Australian Bureau of Statistics (ABS), with 
+the announcement data including the date, type and release time for these major announcements 
+in Australia. Following Frino and Hill (2001), we select the types of announcements that have a 
+significant impact on market volatility, with the six selected types being: Consumer Price Index 
+(CPI), gross domestic product (GDP), Producer Price Index, retail sales, building approvals, 
+Reserve Bank of Australia (RBA) interest rate and unemployment rate. In total, 176 
+macroeconomic information releases occurred between 2 March 2010 and 19 February 2014, with 
+88 occurring in the pre co-location period and 88 in the post co-location period.5  
+3.1. Message Traffic 
+The Australian futures market has experienced significant improvements in the speed of trading 
+and dramatic growth in AT, stimulated by the introduction of co-location facilities on 20 February 
+2012. As Australian futures data continue to be from an anonymous market so algorithmic traders 
+cannot be explicitly identified, the current analysis employs message traffic as a proxy for 
+measuring algorithmic trading (AT). This proxy is used to determine the change in AT after the 
+introduction of co-location in the Australian futures market. Consistent with Boehmer, Fong and 
+                                                 
+3 Although the 90-day BABs futures are traded on a quarterly expiration cycle (March, June, September and December), we implement this study 
+using the nearby futures contract and roll to the deferred contract at expiry date. In order to remove outliers in the futures data set, our study includes 
+days on which less than 10 contracts are transacted, and observations with bid–ask spreads that are smaller than the minimum tick. 
+4 Indicative quotes are expressed in yields in the OTC swap market; therefore, we convert the quotes to prices by deducting the yield from 100 
+(Australian Securities Exchange [ASX], 2017).  
+5 Announcements are released at 11:30 a.m. or 02:30 p.m. AEST; therefore, the announcements are not affected by the pre-market opening and 
+closing phases. 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+Wu (2014) and Hendershott et al. (2011), message traffic is defined as the sum of trades, new order 
+submissions, modifications and order cancellations in the order book for each 5-minute interval.  
+3.2. Volatility 
+The measure of volatility is calculated, following McInish and Wood (1992), as the standard 
+deviation of mid-point quotes during each 5-minute interval:  
+𝑉𝑜𝑙𝑎𝑡𝑖𝑙𝑖𝑡𝑦𝑡= √∑𝑛
+𝑖=1
+(𝑄𝑖−𝑄)
+2
+𝑡𝑖
+∑𝑛
+𝑖=1
+𝑡𝑖
+                                 (1) 
+where 𝑄𝑖 is the ith mid-point quote price; 𝑄 is the average quote price during interval t; 𝑡𝑖 is the 
+amount of time 𝑄𝑖 is alive during interval t; and n is the total number of quotes in interval t.  
+3.3. Bid–Ask Spreads 
+Consistent with McInish and Wood (1992), market liquidity is measured by the bid–ask spread for 
+each 5-minute interval, defined as:  
+𝐵𝐴𝑆𝑑,𝑡= 
+∑𝑛
+𝑖=1
+(𝐴𝑠𝑘𝑑,𝑡
+𝑖
+− 𝐵𝑖𝑑𝑑,𝑡
+𝑖)
+𝑛𝑑,𝑡
+                             (2) 
+where 𝐴𝑠𝑘𝑑,𝑡
+𝑖 is the ith ask price in interval t of day d; 𝐵𝑖𝑑𝑑,𝑡
+𝑖 is the ith bid price in interval t of day 
+d; and 𝑛𝑑,𝑡 is the total number of quotes in interval t of day d. 
+3.4. Market Depth 
+Another important measure of market liquidity is market depth (Lee, Mucklow, & Ready, 1993).6 
+This study calculates market depth for each 5-minute interval using available quote sizes at the 
+first level: 
+𝐷𝑒𝑝𝑡ℎ =
+∑𝑛
+𝑖
+[(𝐵𝑖𝑑 𝑆𝑖𝑧𝑒𝑑,𝑡
+𝑖
++ 𝐴𝑠𝑘 𝑆𝑖𝑧𝑒𝑑,𝑡
+𝑖)/2]
+𝑛𝑑,𝑡
+          (3) 
+where 𝐵𝑖𝑑 𝑆𝑖𝑧𝑒𝑑,𝑡
+𝑖 and 𝐴𝑠𝑘 𝑆𝑖𝑧𝑒𝑑,𝑡
+𝑖 are the ith bid and ask sizes in interval t of day d; and 𝑛𝑑,𝑡 is the 
+total number of quotes in interval t of day d. 
+                                                 
+6 Market depth is estimated only for the futures market as ask and bid sizes are not available for the OTC swap market.  
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+3.5. Intraday Analysis and Estimated Parameters 
+To investigate the effect of AT on market quality around macroeconomic announcements, we 
+evaluate intraday volatility and liquidity (bid–ask spread and depth) around the release time of the 
+announcements before and after co-location was introduced. Following Gajewski (1999) and Frino 
+et al. (2017a), we measure volatility and liquidity as the difference between the actual value and a 
+benchmark value. The benchmark value is estimated using observations from 50 to 20 minutes 
+prior to each information release. This benchmark is implemented to standardise the volatility and 
+liquidity measures for each macroeconomic announcement. Specifically, excess volatility and 
+liquidity are estimated as: 
+𝐸𝑥𝑐𝑒𝑠𝑠𝑑,𝑡 = 𝐴𝑐𝑡𝑢𝑎𝑙𝑑,𝑡− 𝐵𝑒𝑛𝑐ℎ𝑚𝑎𝑟𝑘𝑑                          (4) 
+where 𝐴𝑐𝑡𝑢𝑎𝑙𝑑,𝑡 is the actual value for volatility, bid–ask spread or depth in each 5-minute interval 
+t for announcement d; and 𝐵𝑒𝑛𝑐ℎ𝑚𝑎𝑟𝑘𝑑 is the average volatility, bid–ask spread or depth 
+calculated from interval -50 to -20 on announcement day d.  
+3.6. Price-Matched Samples 
+It may be possible that the level of unexpected information or the value of information on 
+announcement days during the pre-AT period is systematically different to that on announcement 
+days in the post-AT period. To ensure that the size of information is similar across the two subperiods, we match each announcement day in the pre-AT period to an announcement day in the 
+post-AT period with the closest return. To ensure a close match, any matched returns that differ 
+by more than four basis points (bps) are eliminated from the final sample. The purpose of this 
+procedure is to control for the magnitude of price movements associated with macroeconomic 
+announcement releases. We calculate returns using the last traded price 30 minutes prior to the 
+announcement and the last traded price 30 minutes after the announcement is released.  
+We also control for the size of information released across the samples of experimental 
+(announcement) days and control (non-announcement) days by matching each announcement day 
+to a non-announcement day with the closest return. Returns on non-announcement days are 
+calculated using the last traded price 30 minutes prior and post to the time when announcements 
+are usually released on announcement days. The final sample for the futures market consists of 63 
+announcements and matched control days for the pre-AT period, and 57 announcements and 
+matched control days for the post-AT period. Similarly, the final sample for the swap market 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+consists of 54 announcements and matched control days for the pre-AT period, and 
+54 announcements and matched control days for the post-AT period.  
+3.7. Information Share (IS) and Information Leadership Share (ILS) 
+Currently, a popular common factor model, Hasbrouck’s (1995) information share (IS), is widely 
+employed to study price discovery between different asset classes. Hasbrouck (1995) defines price 
+discovery as the variance of innovations to the common factor, with information share (IS) 
+measuring each market’s relative contribution to this variance. In this paper, our primary focus is 
+to study which market, either futures or swaps, is the first to impound new information about the 
+‘true’ underlying asset value, as well as studying how each market’s contribution to price discovery 
+changes following the introduction of co-location in one of the markets. Hasbrouck’s (1995) 
+information share (IS) is a good measure to identify the leader in impounding new information; 
+however, it is also influenced by the relative amount of noise in the price channels. As the levels 
+of noise in futures and swap markets differ significantly due to differences in market structures 
+and trading participants, we also employ an additional price discovery measure, namely, 
+information leadership share (Putniņš, 2013), to isolate the relative speed at which information is 
+impounded by a price series from its relative level of noise.  
+We consider two co-integrated price series, 𝑃𝑡= (𝑝1,𝑡, 𝑝2,𝑡)
+′, where 𝑝𝑖,𝑡 is the log price of the asset 
+traded in market i at time t; 𝑝1,𝑡 is the mid-quote of the ask rate and the bid rate of the swap at time 
+t, and 𝑝2,𝑡 is the mid-quote of the future contract at time t. We then define the error correction term 
+as 𝛽′𝑃𝑡= 𝑝1,𝑡−𝑝2,𝑡. Accordingly, the co-integrating vector is 𝛽= (1, −1)′. Our analysis is based 
+on the following vector-error-correction model (VECM)7:  
+∆𝑃𝑡= 𝛼 𝛽′𝑃𝑡−1 + ∑
+4
+𝑗=1
+(𝛿𝑗∆𝑃𝑡−𝑗) + 𝜀𝑡                    (5) 
+where 𝛼 is the error correction coefficient vector and 𝜀𝑡 is a zero-mean VECM error term. The first 
+term in Eq. (5) represents the long-term behaviour between the two co-integrated price series, 
+while the second term in Eq. (5) stands for the short-term dynamics.  
+The covariance matrix of 𝜀𝑡 is computed as: 
+                                                 
+7 We sample futures and swap prices at a frequency of 5-minute intervals with four lags for each trading day. A vector autoregressive process is 
+used to determine the appropriate number of lags for futures and swap markets.  
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+Ω= ( 𝜎1
+2
+𝜌𝜎1𝜎2
+𝜌𝜎1𝜎2
+𝜎2
+2 ). 
+ 
+ 
+ 
+ 
+ 
+ 
+(6) 
+where 𝜎1
+2 and 𝜎1 are the variance and standard deviation (SD) of 𝜀1,𝑡, respectively. Similarly, 𝜎2
+2 
+and 𝜎2 are the variance and standard deviation (SD) of 𝜀2,𝑡, respectively, while 𝜌 is the correlation 
+between 𝜀1,𝑡 and 𝜀2,𝑡.  
+In line with Baillie, Booth, Tse and Zabotina (2002), we define a vector 𝛼¬= (𝛾1, 𝛾2)′ that is 
+orthogonal to the error correction coefficient vector 𝛼. If Ω is diagonal, the information shares 
+(ISs) of the two markets are: 
+𝐼𝑆1 =
+(𝛾1𝜎1)2
+(𝛾1𝜎1)2 + (𝛾2𝜎2)2 ,   𝐼𝑆2 =
+(𝛾2𝜎2)2
+(𝛾1𝜎1)2 + (𝛾2𝜎2)2                                      (7) 
+However, if Ω is not diagonal, meaning that price innovations are significantly correlated across 
+the two markets, then Eq. (7) does not hold. In this case, Hasbrouck (1995) uses the Cholesky 
+factorisation, Ω= 𝑀𝑀′, where M is a lower triangular matrix with the following form: 
+𝑀= (𝑚11
+0
+𝑚12
+𝑚22) = ( 𝜎1
+0
+𝜌𝜎2
+𝜎2(1 −𝜌2)1/2) 
+ 
+ 
+            (8) 
+The information shares (ISs) of the two markets can then be estimated as: 
+𝐼𝑆1 =
+(𝛾1𝑚11 + 𝛾2𝑚12)2
+(𝛾1𝑚11 + 𝛾2𝑚12)2 + (𝛾2𝑚22)2 ,   𝐼𝑆2 =
+(𝛾2𝑚22)2
+(𝛾1𝑚11 + 𝛾2𝑚12)2 + (𝛾2𝑚22)2   (9) 
+As the Cholesky factorisation requires prices to be ordered, the information share (IS) results are 
+order dependent, and we obtain a range of shares rather than a point estimate. Hasbrouck (1995) 
+proposes the use of two possible orderings in the VECM to determine the upper and lower bounds 
+of information shares (ISs). Consistent with Baillie et al. (2002), we use the average of the upper 
+and lower bounds to determine the information share (IS) for each market. 
+Following Gonzalo and Granger (1995), the component shares (CSs) are obtained from 𝛼¬, the 
+normalised orthogonal to the vector of the error correction coefficients: 
+𝐶𝑆1 = 𝛾1 , 𝐶𝑆2 = 𝛾2                                                                                              (10) 
+Lastly, we calculate the information leadership shares, ILS1 and ILS2, following Putniņš (2013): 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+𝐼𝐿𝑆1 =
+|𝐼𝑆1
+𝐼𝑆2 𝐶𝑆2
+𝐶𝑆1|
+|𝐼𝑆1
+𝐼𝑆2 𝐶𝑆2
+𝐶𝑆1| + |𝐼𝑆2
+𝐼𝑆1 𝐶𝑆1
+𝐶𝑆2|
+,       𝐼𝐿𝑆2 =
+|𝐼𝑆2
+𝐼𝑆1 𝐶𝑆1
+𝐶𝑆2|
+|𝐼𝑆1
+𝐼𝑆2 𝐶𝑆2
+𝐶𝑆1| + |𝐼𝑆2
+𝐼𝑆1 𝐶𝑆1
+𝐶𝑆2|
+               (11) 
+The ILS1 and ILS2 each have a range of [0,1] (and they sum to one [1]), similar to information 
+share (IS) and component share (CS), with values above (below) 0.5 indicating that the price series 
+impounds new information faster (slower) than the other price series and therefore leads (does not 
+lead) the price discovery process. Putniņš (2013) shows that ILS is robust to differences in noise 
+levels, thus correctly attributing price discovery in a wider range of settings. In this paper, we adopt 
+information share (IS) and information leadership share (ILS) to measure price discovery between 
+futures and swaps: we then compare the two price discovery measures between the pre-AT and the 
+post-AT periods to determine the effect of AT in the price discovery process. 
+4. 
+RESULTS 
+4.1. Descriptive Statistics 
+Descriptive statistics are presented for futures and swap contracts. These are based upon data in 
+the four-year period from 2 March 2010 to 19 February 2014, coinciding with a 48-month event 
+window centred on the introduction of co-location facilities in the Australian futures market. Table 
+I reports the average number of quotes, volatility, level 1 quoted depth, quoted bid–ask spread and 
+messages for swap and futures contracts during the pre- and post-co-location periods. Statistics are 
+presented in Table I for all trading days (Panel A), for announcement days only (Panel B), for a 1hour window surrounding announcement releases (Panel C), and for non-announcement days 
+(Panel D). 
+Table I shows that message traffic increases for BABs futures contracts from an average of 
+2,338 intraday 1-minute messages to 3,785 following the introduction of co-location. This is 
+consistent with the previous literature that demonstrates an increase in AT activity after the 
+introduction of co-location in Australia (Frino et al., 2014). Overall, we observe a significant 
+reduction in average daily volatility following co-location for both swap and futures contracts. 
+Similarly, liquidity measures demonstrate an improvement, with a significant reduction in bid–ask 
+spread for both swaps and futures, and an increase in market depth for the futures market. These 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+results demonstrate that the introduction of co-location not only improves market quality in the 
+futures market, but also has a positive impact on liquidity and volatility in the swap market.8  
+<INSERT TABLE I> 
+4.2. Magnitude of Information Content across Sub-Periods  
+It might be possible that the value of information released in macroeconomic announcements is 
+systematically different before and after co-location which could bias the results. To test for this, 
+we compare the absolute mean returns for each sub-period around the time that macroeconomic 
+information is released. Specifically, we calculate the return using the mid-quoted price 30 minutes 
+before the macroeconomic announcement and 30 minutes after the announcement is released.9 In 
+Table II, we compare the magnitude of price changes on announcement days (experimental 
+sample) and non-announcement days (control sample) for interest rate futures (Panel A) and swaps 
+(Panel B) during the pre- and post-co-location periods. Although some differences are found 
+between the absolute average returns across the two periods, t-statistics testing indicates that the 
+mean differences of returns are not statistically significant for both swaps and futures. This implies 
+that the magnitude of the macroeconomic information releases across the two sub-periods cannot 
+explain any observed results.  
+<INSERT TABLE II> 
+4.3. Impact of Algorithmic Trading (AT) on Price Volatility 
+Table III reports the average mid-quoted price volatility for each 5-minute interval around the 
+release of macroeconomic information on both announcement days (experimental sample) and 
+non-announcement days (control sample) for the periods before and after co-location. Results 
+show that, before co-location, the difference in volatility between announcement and nonannouncement days for the futures market is statistically significant for up to five minutes prior to 
+the release of information and for 15 minutes following the information release. After co-location, 
+the difference in volatility across sub-periods is reduced to five minutes following the information 
+release. Results demonstrate that the introduction of co-location reduces the time required for 
+                                                 
+8 Given the implied relationship that exists between the interest rate swap and futures markets, the introduction of co-location in the futures market 
+is expected to also have an impact on the OTC swap market. 
+9 As reports are released at 11:30 a.m. AEST, returns are calculated using the mid-quoted price at 11:00 a.m. AEST and 12:00 p.m. AEST for both 
+swaps and futures. Table II does not include RBA announcements as this type of announcement occurs on days when other announcements are also 
+released at 2:30 p.m. To avoid overlapping announcements with different release times, Table III, Table IV and Table V do not include RBA 
+announcements in the analysis. 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+volatility to return to equilibrium in the futures market. Similarly, results for the swap market show 
+that, before co-location, the difference in volatility between announcement and non-announcement 
+days is statistically significant for up to 10 minutes prior to the release of information and for 50 
+minutes following the information release. After co-location, the difference in price volatility 
+across sub-periods is reduced to only 30 minutes following the information release. Results 
+demonstrate that the introduction of co-location not only reduces the time required for volatility to 
+return to equilibrium in the futures market, but also reduces the time required for adjustment in the 
+swap market.  
+<INSERT TABLE III> 
+4.4. Impact of Algorithmic Trading (AT) on Bid–Ask Spreads 
+Table IV reports the average bid–ask spreads for each 5-minute interval around the release of 
+macroeconomic information on both announcement days (experimental sample) and nonannouncement days (control sample) for the periods before and after co-location. Results show 
+that, before co-location, the difference in bid–ask spreads between announcement and nonannouncement days for the futures market is statistically significant for up to five minutes leading 
+to the release of information and for 50 minutes following the information release. After colocation, the difference in bid–ask spreads across sub-periods is reduced to 10 minutes following 
+the information release. Results demonstrate that the introduction of co-location reduces the time 
+required for bid–ask spreads to return to equilibrium in the futures market.  
+<INSERT TABLE IV> 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+4.5. Impact of Algorithmic Trading (AT) on Market Depth 
+Table V reports the average market depth for each 5-minute interval around the release of 
+macroeconomic information on both announcement days (experimental sample) and nonannouncement days (control sample) for the periods before and after co-location. Results show 
+that, before co-location, the difference in market depth between announcement and nonannouncement days for the futures market is statistically significant for up to five minutes prior to 
+the release of information and for 10 minutes following the information release. After co-location, 
+the difference in market depth across sub-periods is reduced to five minutes prior to the release of 
+information and to five minutes following the information release. Results demonstrate that the 
+introduction of co-location reduces the time required for market depth to return to equilibrium in 
+the futures market.  
+<INSERT TABLE V> 
+4.6. Impact of Algorithmic Trading (AT) on Price Discovery 
+Table VI reports the changes in information shares (ISs) and information leadership shares (ILSs) 
+under different AT environments. Panel A shows that the average information share (IS) of the 
+futures market increases significantly for the announcement sample following co-location, thus 
+indicating that the relative contribution to price discovery around macro news releases improves 
+significantly for the futures market in the post-colocation period. For the control sample, the 
+futures market’s information share (IS) did not change significantly across pre- and post-colocation 
+periods. Panel B reveals similar but more significant results for information leadership shares 
+(ILSs). As shown on Panel B, the ILS of the futures market increases for announcement days, 
+implying that less price discovery occurs in the swap market, while more price discovery is found 
+in the futures market on announcement days in the post-colocation period. The ILS is significant 
+at the 1% level for the announcement sample. Turning to the control sample, we also discover an 
+increase in the ILS of the futures market; however, the magnitude of the increase is much smaller 
+and is not significantly different from 0 (zero). In summary, we find that co-location improves the 
+price discovery process in the futures market, possibly due to the enhanced speed at which 
+macroeconomic information is incorporated.  
+<INSERT TABLE VI> 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+5. 
+CONCLUSION 
+The introduction of co-location services for futures traders in Australia creates a natural 
+experiment in which it is possible to test the impact of algorithmic trading (AT) on the speed of 
+adjustment to new information for the futures market, where co-location facilities are 
+implemented, and for a related swap market, where co-location is not introduced. We find that, 
+following the introduction of co-location, there is an improvement in the speed at which volatility, 
+bid–ask spread and market depth return to equilibrium for both interest rate futures and swaps. In 
+addition, we examine price discovery by comparing information shares (ISs) of the swap and 
+futures markets during information releases between pre- and post-colocation periods. We find 
+that AT improves the price discovery contribution of the futures market, with this improvement 
+significant for announcement days.  
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+REFERENCES 
+Aït-Sahalia, Y, & Saglam, M 2013. ‘High frequency traders: Taking advantage of speed’ 
+(No. w19531). National Bureau of Economic Research.  
+AFA (American Finance Association) 2013 San Diego Meetings Paper. Available at SSRN 
+http://papers.ssrn.com/sol3/Papers.cfm?abstract_id=2022034 
+Baillie, R. T., Booth, G. G., Tse, Y., & Zabotina, T. (2002). Price discovery and common factor 
+models. Journal of financial markets, vol. 5, no. 3, pp. 309-321.  
+Brogaard, J, Hagströmer, B, Nordén, L, & Riordan, R 2015. ‘Trading fast and slow: Colocation 
+and liquidity’. The Review of Financial Studies, vol. 28, no. 12, pp. 3407-43. 
+Brogaard, J, Hendershott, T, & Riordan, R 2014. ‘High-frequency trading and price discovery’. 
+The Review of Financial Studies, vol. 27, no. 8, pp. 2267-306. 
+Chaboud, AP, Chiquoine, B, Hjalmarsson, E & Vega, C 2014. ‘Rise of the machines: Algorithmic 
+trading in the foreign exchange market’. Journal of Finance, vol. 69, no. 5, pp. 2045-84. 
+Chordia, T., Green, T. C., & Kottimukkalur, B. (2018). Rent Seeking by Low-Latency Traders: 
+Evidence from Trading on Macroeconomic Announcements. The Review of Financial 
+Studies, vol. 31, no. 12, pp. 4650-4687.   
+Fleming, MJ, & Remolona, EM 1999. ‘Price formation and liquidity in the US Treasury market: 
+The response to public information’. Journal of Finance, vol. 54, no. 5, pp. 1901-15. 
+Frino, A, & Hill, A 2001. ‘Intraday futures market behaviour around major scheduled 
+macroeconomic announcements: Australian evidence’. Journal of Banking and Finance, 
+vol. 25, no. 7, pp. 1319-37. 
+Frino, A, Mollica, V, Monaco, E, & Palumbo, R 2017a. ‘The effect of algorithmic trading on 
+market liquidity: Evidence around earnings announcements on Borsa Italiana’. PacificBasin Finance Journal, vol. 45, pp. 82-90. 
+Frino, A, Mollica, V, & Webb, RI 2014. ‘The impact of co-location of securities exchanges’ and 
+traders’ computer servers on market liquidity’. Journal of Futures Markets, vol. 34, no. 1, 
+pp. 20-33. 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+Frino, A, Prodromou, T, Wang, GH, Westerholm, PJ, & Zheng, H 2017b. ‘An empirical analysis 
+of algorithmic trading around earnings announcements’. Pacific-Basin Finance Journal, 
+vol. 45, pp. 34-51. 
+Frino, A, Walter, T, & West, A 2000. ‘The lead–lag relationship between equities and stock index 
+futures markets around information releases’. Journal of Futures Markets, vol. 20, no. 5, 
+pp. 467-87. 
+Gajewski, JF 1999. ‘Earnings announcements, asymmetric information, trades and quotes’. 
+European Financial Management, vol. 5, no. 3, pp. 411-24. 
+Gonzalo, J., & Granger, C. (1995). Estimation of common long-memory components in 
+cointegrated systems. Journal of Business & Economic Statistics, vol. 13, no. 1, pp. 27-35.  
+Hasbrouck, J. (1995). One security, many markets: Determining the contributions to price 
+discovery. The journal of Finance, vol.50, no. 4, pp. 1175-1199.   
+Hauptfleisch, M, Putniņš, TIJ, & Lucey, B 2016. ‘Who sets the price of gold? London or New 
+York’ Journal of Futures Markets, vol. 36, no. 6, pp. 564-86. 
+Hendershott, T, Jones, CM, & Menkveld, AJ 2011. ‘Does algorithmic trading improve liquidity?’ 
+Journal of Finance, vol. 66, no. 1, pp. 1-33. 
+Hoffmann, P. 2014. ‘A dynamic limit order market with fast and slow traders’. Journal of 
+Financial Economics, vol. 113, no. 1, pp. 156-69. 
+Lee, CMC, Mucklow, B, & Ready, MJ 1993. ‘Spreads, depths, and the impact of earnings 
+information: An intraday analysis’. Review of Financial Studies, vol. 6, no. 2, pp. 345-74. 
+McInish, TH, & Wood, RA 1992. ‘An analysis of intraday patterns in bid/ask spreads for NYSE 
+stocks’. Journal of Finance, vol. 47, no. 2, pp. 753-64. 
+Putniņš, T. J. (2013). What do price discovery metrics really measure?. Journal of Empirical 
+Finance, vol. 23, pp. 68-83.  
+Riordan, R, & Storkenmaier, A 2012. ‘Latency, liquidity and price discovery’. Journal of 
+Financial Markets, vol. 15, no. 4, pp. 416-37. 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+Scholtus, M, van Dijk, D, & Frijns, B 2014. ‘Speed, algorithmic trading, and market quality around 
+macroeconomic news announcements’. Journal of Banking and Finance, vol. 38, no. 1, pp. 
+89-105. 
+ 
+  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE I 
+Descriptive Statistics of 1-Year Swaps and BABs Futures 
+  
+1-year Interest Rate Swaps  
+  
+90-day Bank Accepted Bills Futures 
+  
+# Quotes 
+Volatility 
+Quoted 
+Spread 
+(bps) 
+  
+Message 
+Volatility 
+Quoted 
+Spread 
+(bps) 
+Level 1 
+Depth 
+Panel A. All Days 
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre  
+289 
+0.016 
+4.48 
+  
+2338 
+0.012 
+1.02 
+1379 
+Post  
+287 
+0.009 
+2.91 
+  
+3785 
+0.009 
+1.01 
+2200 
+All 
+288 
+0.012 
+3.64 
+  
+3067 
+0.010 
+1.02 
+1793 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel B. Announcement Days 
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre  
+339 
+0.023 
+4.31 
+  
+2617 
+0.022 
+1.02 
+1373 
+Post  
+477 
+0.017 
+3.08 
+  
+4192 
+0.015 
+1.02 
+2037 
+All 
+410 
+0.020 
+3.71 
+  
+3402 
+0.019 
+1.02 
+1715 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel C. Announcements (News Release Window) 
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre  
+77 
+0.017 
+4.41 
+  
+666 
+0.013 
+1.06 
+1089 
+Post  
+120 
+0.012 
+3.00 
+  
+999 
+0.011 
+1.04 
+1734 
+All 
+90 
+0.013 
+3.66 
+  
+837 
+0.012 
+1.05 
+1421 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel D. Non-Announcement Days 
+    
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre  
+282 
+0.013 
+4.27 
+  
+2056 
+0.008 
+1.02 
+1398 
+Post  
+328 
+0.009 
+3.05 
+  
+3522 
+0.006 
+1.01 
+2403 
+All 
+305 
+0.011 
+3.74 
+  
+2752 
+0.007 
+1.02 
+1875 
+Note. Table I documents summary statistics of liquidity variables for interest rate swaps and futures during the 
+two-year “Pre Co-location” period from 2 March 2010 to 19 February 2012, the two-year “Post Co-location” 
+period from 21 February 2012 to 19 February 2014, and the four-year period (“All”) around co-location from 
+2 March 2010 to 19 February 2014. Table I reports volatility as the standard deviation (SD) of mid-quoted 
+prices, quoted spread as the difference between the best prevailing quotes, level 1 depth as the average of the 
+ask and bid sizes, and message as the number of records. Summary statistics of liquidity variables are presented 
+for all days in each sample in Panel A, announcement days only in Panel B, 30 minutes before and after 
+announcements in Panel C, and non-announcement days in Panel D.   
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE II 
+Comparison of Magnitude of Information Content Before and After Co-location 
+  
+Experimental Sample 
+  
+ Control Sample 
+  
+Mean (bps) 
+SD (bps) 
+Obs 
+  
+Mean (bps) 
+SD (bps) 
+Obs 
+Panel A. Futures 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre Co-location 
+1.29 
+1.32 
+63 
+  
+1.00 
+0.67 
+63 
+Post Co-location 
+1.02 
+0.88 
+57 
+  
+0.89 
+0.87 
+57 
+Mean Difference 
+-0.27 
+  
+  
+  
+-0.11 
+  
+  
+t-Value 
+-1.33 
+  
+  
+  
+-0.77 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel B. Swaps 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Pre Co-location 
+1.46 
+1.05 
+54 
+  
+1.49 
+0.74 
+54 
+Post Co-location 
+1.67 
+0.89 
+54 
+  
+1.48 
+0.73 
+54 
+Mean Difference 
+0.21 
+  
+  
+  
+-0.01 
+  
+  
+t-Value 
+1.09 
+  
+  
+  
+-0.02 
+  
+  
+Note. Table II reports the sample absolute mean returns in basis points (bps) on announcement days 
+(experimental sample) and non-announcement days (control sample) for the “Pre Co-location” 
+period from 2 March 2010 to 19 February 2012 and the “Post Co-location” period from 21 February 
+2012 to 19 February 2014. Returns are calculated using quoted prices 30 minutes prior to the 
+announcement and 30 minutes after the announcement is released. Part A presents the difference 
+in absolute mean returns for the 90-day Bank Accepted Bills (BABs) futures, while Part B reports 
+the difference in absolute mean returns for the 1-year interest rate swaps.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE III 
+Intraday Excess Volatility for BABs Futures and 1-Year Swaps 
+Before Co-location 
+  
+After Co-location 
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+  
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+Panel A. Futures 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-3 
+-0.0001 
+0.0003 
+0.000 
+-1.271 
+  
+-3 
+0.00019 
+-0.00020 
+0.000 
+1.383 
+-2 
+0.0005 
+0.0000 
+0.000 
+1.372 
+  
+-2 
+0.00014 
+-0.00024 
+0.000 
+1.217 
+-1 
+0.0012 
+0.0001 
+0.001 
+3.004*** 
+  
+-1 
+0.00081 
+0.00013 
+0.001 
+1.934 
+0 
+0.0027 
+0.0007 
+0.002 
+3.704*** 
+  
+0 
+0.00271 
+0.00075 
+0.002 
+4.076*** 
+1 
+0.0014 
+0.0001 
+0.001 
+3.384*** 
+  
+1 
+0.00096 
+0.00035 
+0.001 
+1.577 
+2 
+0.0012 
+0.0001 
+0.001 
+2.336** 
+  
+2 
+0.00057 
+0.00043 
+0.000 
+0.356 
+3 
+0.0005 
+0.0003 
+0.000 
+0.576 
+  
+3 
+0.00034 
+0.00037 
+0.000 
+-0.076 
+4 
+0.0003 
+0.0000 
+0.000 
+0.966 
+  
+4 
+0.00030 
+-0.00024 
+0.001 
+1.695 
+5 
+0.0004 
+-0.0002 
+0.001 
+1.689 
+  
+5 
+-0.00009 
+-0.00018 
+0.000 
+0.285 
+6 
+0.0005 
+-0.0001 
+0.001 
+1.826 
+  
+6 
+-0.00001 
+0.00002 
+0.000 
+-0.078 
+7 
+0.0003 
+-0.0002 
+0.001 
+1.878 
+  
+7 
+-0.00003 
+0.00001 
+0.000 
+-0.113 
+8 
+0.0005 
+-0.0003 
+0.001 
+1.930 
+  
+8 
+-0.00021 
+-0.00033 
+0.000 
+0.428 
+9 
+0.0004 
+-0.0002 
+0.001 
+1.746 
+  
+9 
+-0.00011 
+-0.00019 
+0.000 
+0.286 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel B. Swaps 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-3 
+-0.0004 
+0.0010 
+-0.001 
+-1.542 
+  
+-3 
+0.0003 
+-0.0009 
+0.001 
+2.276 
+-2 
+0.0006 
+-0.0008 
+0.001 
+2.123** 
+  
+-2 
+0.0002 
+-0.0004 
+0.001 
+1.175 
+-1 
+0.0016 
+-0.0001 
+0.002 
+2.222** 
+  
+-1 
+0.0008 
+0.0000 
+0.001 
+1.442 
+0 
+0.0031 
+-0.0001 
+0.003 
+4.166*** 
+  
+0 
+0.0047 
+0.0006 
+0.004 
+4.654*** 
+1 
+0.0023 
+0.0003 
+0.002 
+2.2** 
+  
+1 
+0.0017 
+0.0002 
+0.002 
+2.721*** 
+2 
+0.0013 
+-0.0003 
+0.002 
+2.278** 
+  
+2 
+0.0011 
+-0.0007 
+0.002 
+3.398*** 
+3 
+0.0020 
+-0.0009 
+0.003 
+3.06*** 
+  
+3 
+0.0014 
+-0.0006 
+0.002 
+3.422*** 
+4 
+0.0014 
+-0.0015 
+0.003 
+2.947*** 
+  
+4 
+0.0010 
+0.0003 
+0.001 
+1.017 
+5 
+0.0012 
+-0.0005 
+0.002 
+2.119** 
+  
+5 
+0.0008 
+-0.0005 
+0.001 
+2.325** 
+6 
+0.0015 
+-0.0007 
+0.002 
+2.226** 
+  
+6 
+0.0005 
+-0.0001 
+0.001 
+0.776 
+7 
+0.0003 
+-0.0014 
+0.002 
+1.763 
+  
+7 
+0.0003 
+-0.0007 
+0.001 
+1.856 
+8 
+0.0014 
+-0.0012 
+0.003 
+3.021*** 
+  
+8 
+0.0001 
+-0.0008 
+0.001 
+1.376 
+9 
+0.0001 
+-0.0023 
+0.002 
+3.357*** 
+  
+9 
+0.0003 
+-0.0007 
+0.001 
+1.731 
+Note. Table III reports the intraday average excess volatility for the “Pre Co-location” period from 2 March 2010 to 19 February 
+2012 and the “Post Co-location” period from 21 February 2012 to 19 February 2014. Volatility is measured as the standard 
+deviation (SD) of the mid-quoted prices for each 5-minute interval. Differences between announcement days (experimental sample) 
+and non-announcement days control sample), along with the t-statistics, are provided; ** p < 0.05, *** p < 0.01. 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE IV 
+Intraday Excess Bid–Ask Spreads for BABs Futures and 1-Year Swaps 
+Before Co-location 
+  
+After Co-location 
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+  
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+Panel A. Futures 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-3 
+0.008 
+0.005 
+0.004 
+0.158 
+  
+-3 
+0.033 
+-0.003 
+0.036 
+1.448 
+-2 
+0.035 
+-0.007 
+0.042 
+1.630 
+  
+-2 
+0.002 
+-0.012 
+0.014 
+0.923 
+-1 
+0.115 
+-0.016 
+0.131 
+2.839*** 
+  
+-1 
+0.096 
+0.004 
+0.092 
+1.775 
+0 
+0.113 
+0.007 
+0.106 
+2.237** 
+  
+0 
+0.104 
+0.005 
+0.099 
+1.436 
+1 
+0.023 
+-0.013 
+0.036 
+2.031** 
+  
+1 
+0.033 
+-0.007 
+0.040 
+2.331** 
+2 
+0.086 
+-0.016 
+0.102 
+1.369 
+  
+2 
+0.010 
+0.007 
+0.003 
+0.203 
+3 
+0.023 
+-0.024 
+0.047 
+2.259** 
+  
+3 
+0.007 
+0.007 
+0.000 
+-0.004 
+4 
+0.051 
+-0.021 
+0.072 
+2.199** 
+  
+4 
+0.031 
+-0.003 
+0.034 
+1.028 
+5 
+0.012 
+-0.030 
+0.041 
+2.588** 
+  
+5 
+0.010 
+-0.013 
+0.023 
+1.960 
+6 
+0.025 
+-0.019 
+0.044 
+2.192** 
+  
+6 
+-0.014 
+0.003 
+-0.017 
+-0.971 
+7 
+0.039 
+-0.021 
+0.060 
+1.979 
+  
+7 
+0.000 
+0.004 
+-0.004 
+-0.178 
+8 
+0.033 
+-0.034 
+0.067 
+2.667*** 
+  
+8 
+0.012 
+-0.008 
+0.020 
+0.900 
+9 
+0.019 
+-0.023 
+0.042 
+2.136** 
+  
+9 
+0.009 
+-0.010 
+0.019 
+0.833 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+Panel B. Swaps 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-3 
+-0.415 
+-0.009 
+-0.406 
+-1.251 
+  
+-3 
+0.149 
+-0.123 
+0.272 
+1.656 
+-2 
+-0.051 
+0.128 
+-0.179 
+-0.471 
+  
+-2 
+0.160 
+-0.076 
+0.236 
+1.448 
+-1 
+-0.153 
+0.424 
+-0.577 
+-1.570 
+  
+-1 
+0.072 
+-0.004 
+0.076 
+0.516 
+0 
+-0.106 
+0.020 
+-0.127 
+-0.369 
+  
+0 
+-0.219 
+-0.067 
+-0.152 
+-1.213 
+1 
+0.159 
+0.126 
+0.033 
+0.098 
+  
+1 
+-0.117 
+-0.053 
+-0.065 
+-0.493 
+2 
+0.325 
+-0.041 
+0.365 
+1.085 
+  
+2 
+-0.047 
+0.076 
+-0.124 
+-0.822 
+3 
+0.209 
+-0.332 
+0.541 
+1.491 
+  
+3 
+0.093 
+0.035 
+0.059 
+0.386 
+4 
+-0.008 
+0.089 
+-0.097 
+-0.259 
+  
+4 
+0.066 
+0.075 
+-0.009 
+-0.051 
+5 
+-0.022 
+0.090 
+-0.112 
+-0.303 
+  
+5 
+0.048 
+0.070 
+-0.021 
+-0.115 
+6 
+-0.118 
+0.211 
+-0.329 
+-0.891 
+  
+6 
+0.085 
+-0.038 
+0.123 
+0.676 
+7 
+-0.319 
+0.098 
+-0.417 
+-1.084 
+  
+7 
+0.099 
+0.099 
+0.001 
+0.004 
+8 
+0.005 
+0.104 
+-0.099 
+-0.260 
+  
+8 
+0.163 
+0.069 
+0.094 
+0.510 
+9 
+-0.011 
+-0.089 
+0.077 
+0.196 
+  
+9 
+0.140 
+0.129 
+0.011 
+0.054 
+Note. Table IV reports the intraday average excess quoted bid–ask spread for the “Pre Co-location” period from 2 March 2010 to 
+19 February 2012 and the “Post Co-location” period from 21 February 2012 to 19 February 2014. The bid–ask spread is calculated 
+for each 5-minute interval using the difference between the best prevailing quotes for the 90-day Bank Accepted Bills (BABs) 
+futures and 1-year interest rate swaps. Differences between announcement days (experimental sample) and non- announcement 
+days (control sample), along with the t-statistics, are provided; ** p < 0.05, *** p < 0.01. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE V 
+Intraday Excess Market Depth for BABs Futures Contracts 
+Before Co-location 
+  
+After Co-location 
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+  
+  
+Experimental 
+Sample 
+Control 
+Sample 
+Difference 
+t-Statistics 
+Panel A. Futures 
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+-3 
+-50.474 
+17.519 
+-67.993 
+-1.118 
+  
+-3 
+-2.486 
+-48.914 
+46.428 
+0.413 
+-2 
+-110.158 
+-51.831 
+-58.327 
+-0.799 
+  
+-2 
+-222.204 
+-89.914 
+-132.290 
+-1.353 
+-1 
+-461.571 
+-122.736 
+-338.835 
+-3.736*** 
+  
+-1 
+-504.815 
+-145.077 
+-359.738 
+-2.895*** 
+0 
+-457.324 
+-127.568 
+-329.756 
+-3.495*** 
+  
+0 
+-631.330 
+-195.177 
+-436.153 
+-3.529*** 
+1 
+-331.042 
+-101.794 
+-229.248 
+-2.471** 
+  
+1 
+-371.295 
+-198.736 
+-172.560 
+-1.335 
+2 
+-246.458 
+-96.677 
+-149.781 
+-1.774 
+  
+2 
+-406.883 
+-160.028 
+-246.856 
+-1.797 
+3 
+-167.458 
+-111.819 
+-55.639 
+-0.619 
+  
+3 
+-349.149 
+-172.821 
+-176.328 
+-1.308 
+4 
+-152.123 
+-102.806 
+-49.317 
+-0.568 
+  
+4 
+-380.346 
+-142.306 
+-238.039 
+-1.756 
+5 
+-138.649 
+-153.832 
+15.182 
+0.173 
+  
+5 
+-346.372 
+-167.068 
+-179.304 
+-1.319 
+6 
+-122.055 
+-147.424 
+25.369 
+0.273 
+  
+6 
+-207.944 
+-181.820 
+-26.123 
+-0.188 
+7 
+-36.196 
+-135.149 
+98.953 
+0.978 
+  
+7 
+-184.132 
+-169.801 
+-14.330 
+-0.098 
+8 
+-22.823 
+-88.227 
+65.405 
+0.601 
+  
+8 
+-168.591 
+-135.450 
+-33.141 
+-0.223 
+9 
+-10.939 
+-83.793 
+72.854 
+0.617 
+  
+9 
+-161.301 
+-214.811 
+53.511 
+0.349 
+Note. Table V reports the intraday average excess market depth for the “Pre Co-location” period from 2 March 2010 to 19 February 
+2012 and the “Post Co-location” period from 21 February 2012 to 19 February 2014. Market depth is measured for the 90-day BABs 
+futures using all available quotes at the best level during each 5-minute interval. Differences between announcement days 
+(experimental sample) and non-announcement days (control sample), along with the t-statistics, are provided; ** p < 0.05; 
+*** p < 0.01.  
+Electronic copy available at: https://ssrn.com/abstract=3326300
+
+ 
+TABLE VI 
+Comparison of Information Shares (ISs) and Information Leadership Shares (ILSs) Before and 
+After Co-location 
+  
+Experimental Sample 
+  
+Control Sample 
+  
+Futures 
+Swaps 
+ 
+  
+Futures 
+Swaps 
+ 
+Panel A. Information Shares 
+  
+ 
+  
+  
+  
+ 
+  
+  
+  
+ 
+  
+  
+  
+ 
+Pre Co-location 
+0.3763 
+ 0.6237 
+ 
+  
+0.5253 
+0.4747 
+ 
+Post Co-location 
+0.4729 
+ 0.5271 
+ 
+  
+0.5119 
+0.4881 
+ 
+Mean Difference 
+ 0.0966** 
+     -0.0966** 
+ 
+ 
+0.0134 
+ 0.0134 
+ 
+t-Value 
+  1.95 
+        -1.95 
+ 
+  
+-0.27 
+ 0.27 
+ 
+  
+  
+  
+ 
+  
+  
+  
+ 
+Panel B. Information Leadership Shares 
+  
+ 
+  
+  
+  
+ 
+  
+  
+  
+ 
+  
+  
+  
+ 
+Pre Co-location 
+0.2807 
+ 0.7193 
+ 
+  
+0.3275 
+0.6725 
+ 
+Post Co-location 
+0.4649 
+ 0.5351 
+ 
+  
+0.3858 
+0.6142 
+ 
+Mean Difference 
+      0.1843*** 
+      -0.1843*** 
+ 
+  
+0.0583 
+ -0.0583 
+ 
+t-Value 
+ 3.69 
+ -3.69 
+ 
+  
+1.21 
+ -1.21 
+ 
+Note. Table VI reports average information shares (ISs) and information leadership shares (ILSs) 
+on announcement days (experimental sample) and non-announcement days (control sample) for 
+the “Pre Co-location” period from 2 March 2010 to 19 February 2012 and the “Post Co-location” 
+period from 21 February 2012 to 19 February 2014. We use intraday 5-minute prices to calculate 
+information shares (ISs) (Panel A) and information leadership shares (ILSs) (Panel B) each trading 
+day for the 90-day Bank Accepted Bills (BABs) futures, and the 1-year interest rate swaps. The 
+reported information shares (ISs) are computed as the midpoint between the upper and lower 
+bounds of information shares (ISs). In all tests, ∗ signifies statistical significance at the 10% level, 
+** signifies statistical significance at the 5% level, and *** signifies statistical significance at the 
+1% level. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=3326300

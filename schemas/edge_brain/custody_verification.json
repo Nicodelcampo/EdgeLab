@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/custody_verification.json",
+  "title": "EdgeLab Custody Verification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "verification_id",
+    "dataset_ref",
+    "file_name",
+    "expected_sha256",
+    "actual_sha256",
+    "size_bytes",
+    "match",
+    "verified_at_utc"
+  ],
+  "properties": {
+    "verification_id": {
+      "type": "string",
+      "pattern": "^CUST-[A-Za-z0-9._:-]+$"
+    },
+    "dataset_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "file_name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_sha256": {
+      "type": "string"
+    },
+    "actual_sha256": {
+      "type": "string"
+    },
+    "size_bytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "match": {
+      "type": "boolean"
+    },
+    "verified_at_utc": {
+      "type": "string"
+    }
+  }
+}

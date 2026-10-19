@@ -1,0 +1,70 @@
+{
+  "schema": "bt2_absorption_gate1_exposure_amendment_v1",
+  "fecha": "2026-08-24",
+  "enmienda_a": "specs/bt2_absorption_gate1_v1.json",
+  "no_edita_el_original": true,
+  "motivo": "INC_OUTCOMES_UNTRACKED_20260824: outcomes preexistentes sobre parte del universo",
+  "incidente": "docs/incidents/INCIDENTE_OUTCOMES_UNTRACKED_2026-08-24.md",
+  "head_registro": "dc63c2feec1bb451ee39da6a5f43d175385c252d",
+  "exposicion_medida": {
+    "P1_133_OUTCOME_EXPOSURE": "YES",
+    "P1_133_sesiones_expuestas": [
+      "20260528",
+      "20260529",
+      "20260601",
+      "20260602",
+      "20260603",
+      "20260604",
+      "20260605",
+      "20260609",
+      "20260610",
+      "20260611",
+      "20260612"
+    ],
+    "P1_133_n_expuestas": 11,
+    "P1_133_n_limpias": 122,
+    "SEALED_19_OUTCOME_EXPOSURE": "YES",
+    "SEALED_19_sesiones_expuestas": [
+      "20260608"
+    ],
+    "SEALED_19_n_limpias": 18,
+    "TEMPORAL_HOLDOUT_EXPOSURE": "YES",
+    "CONTEXT_FILTER_SEARCH": "YES",
+    "CROSS_ASSET_OUTCOME_SEARCH": "YES",
+    "YM_FAMILY_EXPOSURE": "YES",
+    "vector": "tools/validate_oos_gold.py sobre GC 08-26.Last.txt, max_ticks=1500000, 2026-05-24..2026-06-12"
+  },
+  "efecto_sobre_puerta_1": {
+    "confirmatoria_pura": false,
+    "alcance_del_dano": "11 de 133 sesiones (8,3%)",
+    "regla": "El resultado de Puerta 1 debe reportarse con la exposicion delante. Se prohibe presentarlo como confirmatorio puro sobre las 11 sesiones listadas.",
+    "analisis_de_sensibilidad_obligatorio": "reportar el estimando con y sin las 11 sesiones expuestas; si el veredicto cambia entre ambos, el resultado es INCONCLUSIVE",
+    "no_se_reduce_el_universo": "Las 133 siguen siendo el universo congelado. NO se excluyen las 11: se declara y se hace sensibilidad.",
+    "reglas_de_decision": "sin cambios; las del preregistro original siguen vigentes"
+  },
+  "efecto_sobre_bloque_sellado": {
+    "estado": "SEALED_BLOCK_COMPROMISED",
+    "sesiones_comprometidas": [
+      "20260608"
+    ],
+    "regla": "No puede presentarse como validacion nueva sin declarar la exposicion. Las 18 restantes siguen limpias y utilizables declarando la exclusion de 20260608."
+  },
+  "efecto_sobre_contexto": {
+    "context_hypothesis_status_global": "YA NO ES NONE_PREREGISTERED para GC 12-26 ni YM 09-26",
+    "ejes_ya_explorados_con_outcomes": [
+      "time_of_day (franjas Asia/London/RTH)",
+      "VelocidadTape",
+      "Tendencia",
+      "Bracket TP/SL",
+      "tickframe"
+    ],
+    "regla": "Toda hipotesis de contexto sobre esos ejes en esos datasets es post-hoc/exploratoria, no preregistrada."
+  },
+  "campana_target_free_2026_08_24": {
+    "CAMPAIGN_OUTCOMES_OPENED": false,
+    "PREEXISTING_OUTCOME_EXPOSURE": "YES",
+    "validez": "intacta: no abre outcomes, no elige ganadores, mide solo estructura/poblacion/score/geometria/lifecycle/redundancia",
+    "prohibido_en_el_reporte": "afirmar OUTCOMES_NOT_OPENED de forma global",
+    "obligatorio_en_el_reporte": "reportar CAMPAIGN_OUTCOMES_OPENED=false junto a PREEXISTING_OUTCOME_EXPOSURE=YES"
+  }
+}

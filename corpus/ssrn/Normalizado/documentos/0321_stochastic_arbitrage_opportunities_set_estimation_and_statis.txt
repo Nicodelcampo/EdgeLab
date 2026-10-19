@@ -1,0 +1,848 @@
+Stochastic Arbitrage Opportunities: Set Estimation and
+Statistical Testing
+Stelios Arvanitis∗and Thierry Post†
+November 7, 2022
+Abstract
+A Stochastic Arbitrage Opportunity (SAO) is dened as a zero-cost investment portfolio that
+enhances every feasible benchmark portfolio for all admissible utility functions. The present
+study provides a formal theory of consistent estimation of the set of SAOs and an Empirical
+Likelihood Ratio test for testing whether a given arbitrage portfolio is a SAO or to test whether
+an empirical SAO is a population SAO out of sample.
+Key words: Portfolio analysis; Arbitrage portfolios; Asset pricing; Asymptotic statistics;
+Empirical Likelihood.
+1
+Introduction
+Arvanitis and Post (2022) propose a general framework for ordering arbitrage portfolios and nding
+generalized arbitrage opportunities based on Stochastic Dominance criteria. In their framework,
+a Stochastic Arbitrage Opportunity (SAO) is a zero-cost investment portfolio that enhances all
+benchmark portfolios that can be constructed from a set of base assets (instead of a single market
+index), for all admissible utility functions.
+For empirical estimation and statistical inference, they sketch a theory of consistent estimation of
+the set of SAOs and an Empirical Likelihood Ratio (ELR) test for testing whether a given arbitrage
+portfolio is a SAO or to test whether an empirical SAO is a population SAO out of sample. The
+present study provides a formalization of the theory and additional discussion about generalizations.
+∗Arvanitis is Associate Professor at the Department of Economics of Athens University of Economics and Business;
+Athens; Greece; email: stelios@aueb.gr.
+†Post is Professor of Finance at the Graduate School of Business of Nazarbayev University; Astana, Kazakhstan;
+e-mail: thierrypost@hotmail.com.
+1
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Section 2 summarizes the relevant theoretical economic concepts. Section 3 provides the statistical theory.
+2
+Stochastic Arbitrage Opportunities
+2.1
+Standard portfolios, arbitrage portfolios and combined portfolios
+The focus is on a single-period investment problem with N base assets with cashows at the investment horizon, x := (x1 · · · xN)T ∈RN, N < ∞.
+The joint probability distribution of the cashows is denoted by P; its support is included in
+X N, where X:= [a, b], −∞< a < b < ∞. The distribution is generally conditional on the business
+cycle and/or nancial market conditions. It is assumed below that expectations and probabilities
+are evaluated with respect to P, unless an alternative distribution is explicitly dened, notably an
+empirical counterpart of P.
+The prices of the base assets are taken as given, and are collected in the price vector p ∈RN.
+Cashows may be converted to gross returns r := diag−1 (p) x.
+Investment alternatives are evaluated based on the expected utility of the cash ows, using utility
+functions u : R →R. Instead of specifying a particular functional form, a uniformly bounded and
+convex set of functions, U, is dened using general functional properties. The functions are assumed
+to be continuously dierentiable, strictly increasing and strictly concave. To facilitate numerical
+analysis, it is assumed that u(b) = 0 and u′(a) = 1, which does not compromise generality because
+utility rankings are invariant to positive linear transformation.
+The set of all aforementioned utility functions can be represented using the bounded set of strictly
+positive mixtures of elementary Russell and Seo (1989) functions v2;φ(x) := −(φ −x)+, φ ∈X. A
+formal denition of this utility function class is U2 :=
+
+u(x) =
+R
+X v2;φ(x)dW(φ); W ∈W
+	
+, where
+W is the set of strictly increasing cumulative weighting functions W : X →[0, 1].
+The portfolio possibilities are described by two distinct portfolio sets: a set of benchmark portfolios, K ⊆RN , and a set of arbitrage portfolios, ∆⊆RN . These portfolios sets are described in
+more detail below. The asset positions κ ∈K and δ ∈∆translate into portfolio cashows xTκ and
+xTδ.
+The benchmark set K is assumed to be closed and bounded but it need not be convex. If the
+2
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+benchmark set is not convex, then we use conv(K(0)) for its convex hull; if it is convex, then we use
+K(0) for its set of extreme elements. If K takes a polyhedral shape, then the number of extreme
+elements is nite; in this case, the continuous sets K = conv(K(0)) can be replaced by K(0), for
+numerical purposes.
+Since the benchmarks are standard portfolios, the position vector κ ∈K must obey the budget
+restriction pTκ = c, for budget c > 0.
+Asset positions may be converted to portfolio weights
+λ := c−1 (p ⊙κ).
+The arbitrage portfolios δ ∈∆are combinations of short and long positions with a net investment
+of zero, or pTδ = 0. It is assumed that the arbitrage portfolio set is a bounded and convex polytope
+which is characterized by R linear restrictions: ∆:=
+
+δ ∈RN : Aδ ≤a
+	
+; here, A is a (R × N)
+matrix of left-hand-side coecients, and a is (R × 1). The arbitrage portfolio set is assumed to
+include the 'passive' solution 0N ∈∆that is the default choice if qualied arbitrage opportunities do
+not exist. Arbitrage portfolio positions may equivalently be expressed using weights in the combined
+portfolio, or γ := c−1 (p ⊙δ).
+The arbitrage portfolios can be added to a benchmark κ ∈K to form a combined portfolio
+λ = (κ + δ) that is a standard portfolio (pTλ = c). The set of all feasible combined portfolios is
+given by the vector subspace sum Λ0 := K + ∆.
+2.2
+Stochastic Arbitrage Opportunities
+Arvanitis and Post (2022) introduce two versions of the concepts of stochastic enhancement and
+SAO: a strict version for asset pricing theory and a weak version for numerical purposes.
+To allow for compact notation, the expected utility increment is denoted by D(u, κ, δ, P) :=
+E
+
+u(xT (κ + δ))
+
+−E
+
+u(xTκ)
+
+, for (u, κ, δ) ∈U × K × ∆.
+Denition 2.2.1 (Strict Stochastic Arbitrage Opportunities). An arbitrage portfolio δ ∈∆
+(strictly) stochastically enhances a given benchmark κ ∈K, or (κ + δ) ≻(U,P) κ, if D(u, κ, δ, P) > 0
+for all u ∈U. It is a (strict) stochastic arbitrage opportunity if such enhancement is achieved for
+all κ ∈K. The set of all feasible (strict) SAOs is given by
+∆SAO
+(U,K,P) := {δ ∈∆: D(u, κ, δ, P) > 0 ∀(u, κ) ∈U × K} .
+(1)
+3
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Denition 2.2.2 (Weak Stochastic Arbitrage Opportunities). An arbitrage portfolio δ ∈∆
+(weakly) stochastically enhances a given benchmark κ ∈K, or (κ + δ) ?(U,P) κ, if D(u, κ, δ, P) ≥0
+for all u ∈cl (U) . It is a (weak) stochastic arbitrage opportunity if such enhancement is achieved
+for all κ ∈K. The set of all feasible (weak) SAOs is given by
+∆WAO
+(U,K,P) := {δ ∈∆: D(u, κ, δ, P) ≥0 ∀(u, κ) ∈cl (U) × K} .
+(2)
+By Def. 2.4.1, (weak) SAOs are solutions to the following inequality system:
+D(u, κ, δ, P) ≥0 ∀(u, κ) ∈cl (U) × K;
+(3)
+δ ∈∆.
+This system is analytically challenging, for two reasons. First, closed-form solutions generally
+do not exist for the portfolio cashow distribution Pλ((−∞, x]) :=
+R
+{x:xTλ≤x} dP and the portfoliolevel expected utility E
+
+u(xTλ)
+
+=
+R
+u(x)dPλ, even for relatively simple distributions such as the
+multivariate log-normal distribution. Second, the system has a semi-innite structure: the rst set
+of model restrictions need to be evaluated for every (u, κ) ∈cl (U) × K, although the number of
+decision variables (M) is nite.
+These complications generally call for discretization of P, cl (U) and K, to allow for numerical
+analysis using nite mathematical programming problems. A number of general approaches are
+discussed below.
+Continuous distributions P can be discretized using, e.g., Monte-Carlo simulation methods or
+lattice models. These approaches are not needed in empirical applications with discrete estimators
+for P, such as the empirical distribution PT that is used in Section 3 or the implied probability
+distributions that are generated by GMM and EL.
+If the benchmark set K is continuous, then it may be replaced without loss by its set of extreme
+elements K(0), e.g., the vertices of a polytope. This replacement is allowed due to the convexity
+4
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+property of the stochastic enhancement relation with respect to the benchmark portfolio positions.
+Since expected utility is a linear function of u ∈cl (U), and cl (U) is a convex set, cl (U) may be
+replaced with the set of its extreme elements, or U(0) : cl (U) = conv
+ U(0)
+, without loss of generality.
+For many relevant specications of U, the extreme elements u ∈U(0) are low-dimensional functions,
+which reduces the numerical complexity of searching over cl (U).
+For Second-degree Stochastic Dominance (SSD), U(0)
+2
+consists of the one-parameter functions
+v2;φ(x) = −(φ −x)+, φ ∈[a, b], as discussed in Section 2.1. The unidimensional parameter space
+[a, b] can easily be discretized with an arbitrary level of precision. The enhancement constraints
+D(v2;φ, κ, δ, P) ≥0 are not smooth. However, they can be relaxed to an equivalent system of linear
+inequalities, for discrete distributions or evaluated using iterative Mixed-Integer Linear Programming algorithms.
+More generally, for n-th degree SD, U(0)
+n
+consists of the one-parameter functions vn;φ(x) =
+−(φ −x)n−1
++
+, and the enhancement constraints D(vn;φ, κ, δ, P) ≥0 can be relaxed to an equivalent
+system of convex polynomial inequalities or evaluated using Mixed-Integer Polynomial Programming.
+Combining these insights, the semi-innite system of inequalities (3) can be reduced to the
+following nite system:
+D(u, κ, δ, P) ≥0 ∀(u, κ) ∈U(0) × K(0);
+(4)
+δ ∈∆.
+Maximizing a concave objective function G(δ, P) subject to this system yields a nite convex
+optimization problem. The choice of the objective function naturally is application specic, just as
+the choice of U and K.
+3
+Empirical counterparts
+We discuss how the statistical theory of Post, Karabat and Arvanitis (2018) for optimization with
+SSD constraints can be generalized to SAO choice for a general benchmark set K and utility class
+5
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+U ⊆U2. We also discuss how statistical inference about membership of the SAO set can be performed
+using blockwise ELR tests, in the spirit of the tests for non-dominance, eciency and optimality by
+Davidson and Duclos (2014), Post and Poti (2017) and Post (2017).
+3.1
+Consistency properties
+It is assumed that the latent P is estimated by the empirical measure PT from a time series sample
+(xt)t=1,...,T . Since cashows may include trend components, they generally are not stationary random variables. To eliminate or mitigate this econometric problem, cash ows may be transformed
+to returns r := diag−1 (p) x, and positions may be transformed to weights λ := c−1 (p ⊙κ) and
+γ := c−1 (p ⊙δ), without altering the substance of the economic choice problem. In order to focus
+on the eect of sampling error on the stochastic enhancement constraints, it is furthermore assumed
+that the constraints in K and ∆are deterministic, as is true in our application.
+The following empirical weak SAO set is constructed:
+∆WAO
+(U,K,PT ) :=
+
+δ ∈∆: (κ + δ) ?(U,PT ) κ, ∀κ ∈K
+	
+.
+(5)
+This empirical set can be shown to possess a number of favorable consistency properties under
+three general assumptions:
+Assumption 3.1 (Stationarity and Mixing). (xt) is stationary and absolutely regular with mixing
+coecients (βk)k∈N that satisfy βk = O (k−r) for r > 1.
+Those regularity conditions are compatible with stationary versions of ARMA-GARCH or Stochastic Volatility models, or more generally, processes that satisfy a general class of stochastic recurrence
+equations, see for example Mikosch and Straumann (2006, Section 4).
+Assumption 3.2 (Lipschitz Continuity). The population goal G(·, P) is Lipschitz continuous in δ
+with Lipschitz coecient that is continuous at P w.r.t. weak convergence.
+Given the boundedness of the support of x0, Lipschitz continuity holds trivially in the common
+case that the problem is to maximize expected return subject to dominance constraints; in this
+6
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+case, u(x) = x; the Lipschitz coecient is then the expectation of the Euclidean norm of x0. A
+uniform integrability condition implied by the boundedness of the support, ensures the required
+continuity of the coecient. Similarly, the minimization of a Lower Partial Moment subject to
+dominance constraints, another common specication, can be reformulated as the maximization of
+an elementary Russell and Seo (1989) utility function. Due to the Lipchitz property of those ramp
+functions, the Lipschitz coecient is the same as in the previous case. Finally, the weighted average
+of individual Appraisal Ratios objective in Arvanitis and Post (2022), satises the assumption due
+to the CMT and the aforementioned uniform integrability; the Lipschitz coecient is in this case a
+continuous function of moments, as long as the variance involved is strictly positive.
+The nal assumption generalizes the Weak Independence assumption of Post, Karabat and
+Arvanitis (2018). It takes care of consistency problems that may arise for the empirical solutions
+due to the binding inequalities (equivalences), or D(u, κ, δ, F) = 0, for some non constant utility
+functions u ∈cl (U).
+Assumption 3.3 (Joint Enhancement). For any non-constant v ∈cl (U), there exists some δ (v)
+that solves (4), such that D(v, κ, δ (v) , F) > 0 for all κ ∈K.
+The assumption essentially ensures the existence of some neighborhood of every weak SAO δ1 ∈
+∆WAO
+(U,K,P) that contains strict SAOs δ2 ∈∆SAO
+(U,K,P), if strict SAOs exist. This condition (henceforth
+JE) allows for dierent δ for dierent utility functions v instead of a single δ for all such utilities.
+It mitigates the adverse eect of the binding inequalities on consistency; given any weak SAO
+δ for which D(v, κ, δ, P) = 0 for some (v, κ), consider the portfolio dened using the Lebesgue
+integral γ :=
+R
+U−U= δ (u) d ((1 −c) wv + cw (u)) , w ∈W, where W is the set of strictly monotone
+Borel measures dened on U, and wv the degenerate measure at v, c ∈(0, 1). JE implies that
+D(u, κ, γ, P) > 0 for all (u, κ) ∈U −U= × K, and by choosing c appropriately small, it can be
+chosen to lie as close to δ as desired.
+The following consistency result is obtained; the limit theory evolves as T →∞. The squiggly
+arrow ⇝denotes convergence in distribution. The analysis also uses Painleve-Kuratowski (PK) convergence
+PK
+⇝
+
+for sequences of compact subsets of ∆. With high probability (w.h.p.) refers to probability converging to one. δ∗(F) denotes the set of optimal weak SAOs, i.e., arg max∆WAO
+(U,K,P) (G(δ, P)).
+Given ϵ > 0, ∆(ϵ)(P) denotes the set of ϵ-optimal weak SAOs, i.e.
+7
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+n
+γ ∈∆WAO
+(U,K,P) : max∆WAO
+(U,K,P) G(δ, P) −G(γ, P) ≤ϵ
+o
+.
+Theorem 3.4 . Under Assumptions 3.1-3 the following results are obtained: (i) If ∆WAO
+(U,K,P) −∆=
+P̸ =
+∅, and JE occurs, then for any v ∈U −U=, and for any cT →0 such that mT cT →∞, we have
+that ∆WAO
+(U,K,PT ) ∩∆(cT )(P) PK
+⇝δ∗(P); (ii) If ∆WAO
+(U,K,P) −∆=
+P = ∅, then ∆WAO
+(U,K,PT )
+PK
+⇝∆=
+P .
+Proof of Theorem 3.4. First notice that any element of ∆=
+P belongs to ∆WAO
+(U,K,P). Section 2.4 shows
+that when non-trivial weak SAOs do not exist, then ∆WAO
+(U,K,P) = ∆=
+P . Hence, if δ /∈∆=
+P , then ∃u ∈
+U, κ ∈K for which D (u, κ, δ, P) < 0. Assumption 3.1 and the compactness of X, along with the
+FCLT of Rio (2017, Cor 4.1), imply that lim supT→∞P [D (u, κ, δ, PT ) ≥0] = 0, which establishes
+Theorem 3.4.(ii). Suppose next that non-trivial weak SAOs do not exist. Let cT = o (1) and such
+that mT cT →∞. The iidness of (xt) and the compactness of X, with Corollary 2.E of Salinetti and
+Wets (1977) imply that we need to consider only xed u ∈U in our derivations. For any δ ∈δ∗(P)
+that does not have any trivial equivalencies, we have that minK D (u, κ, δ, P) > 0 for all u ∈U −U=,
+thus lim infT→∞P [minK D (u, κ, δ, PT ) ≥0] = 1 for all u ∈U. Suppose then that δ has non-trivial
+equivalences. Then for any u ∈U −U= that does not correspond to some equivalence or to some u ∈
+U= , the previous analysis holds. If u ∈U −U= and u corresponds to some non-trivial equivalence,
+then for large enough T, consider the strong SAO γT :=
+R
+U−U= δ (u) d ((1 −c⋆
+T ) wv + c⋆
+T w (u)) for L
+the Lipschitz coecient of u. Here, c⋆
+T =
+cT
+Ldiam(∆) = O (cT ). Notice that since i) minK D (u, κ, ·, P)
+is concave, ii) by construction minK D (u, κ, δ, P) = 0, and iii) D
+
+u, κ,
+R
+U−U= δ(u)dw (u) , P
+
+> 0
+due to Joint Enhancement, we have that
+−mT min
+K D (u, κ, γT , P) ≤−mT c⋆
+T min
+K D
+
+u, κ,
+Z
+U−U= δ(u)dw (u) , P
+
+< 0,
+and thereby
+P [mT minK D (u, κ, γT , PT −P) ≥−mT minK D (u, κ, γT , P)]
+≥P
+h
+mT minK D (u, κ, γT , PT −P) ≥−mT c⋆
+T minK D
+
+u, κ,
+R
+U−U= δ(u)dw (u) , P
+i
+,
+and due to Assumption 3.1.1 the CMT and the Portmanteau Theorem, the lim inf of the latter probability is greater than or equal to P [minK G (u, κ, δ) ≥−∞] = 1. Hence, lim infT→∞P
+h
+γT ∈∆WAO
+(U,K,PT )
+i
+=
+1 and γT →δ. The previous then imply that in all cases δ lies in the lim inf of ∆WAO
+(U,K,PT ) w.h.p.
+8
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Now, due to the denitions of δ, γT , and the Lipschitz continuity of G1(δ, P), we obtain
+0 ≤G(δ, P) −G(γT , P)
+≤maxK Lc⋆
+T
+δ −
+R
+U−U= δ(u)dw (u)
+ ≤c⋆
+T Ldiam (∆) = cT ,
+(6)
+where the rst inequality follows from (6). This implies that γT ∈∆(cT )
+(U,K)(v, P). Obviously δ∗(P) ⊆
+∆(cT )(P). Any other element of ∆(cT )(P) that lies in the empirical weak SAO set with asymptotically
+positive probability will necessarily converge to some element of δ∗(P).
+The previous establish
+Theorem 3.4.(i), since there cannot exist accumulation points of sequences of elements of ∆(cT )(P)
+that lie outside δ∗(P).□
+The following result complements Theorem 3.4 by showing that the empirical optimal solutions
+also approximate the original as T →∞:
+Theorem 3.5 (Empirical Solution Properties). Under the premises of Theorem 3.4, the following
+results are obtained: i)
+sup
+δ∈∆WAO
+(U,K,PT )
+G(δ, PT ) ⇝
+sup
+δ∈∆0
+(U,K,P)
+G(δ, P),
+(7)
+where, ∆0
+(U,K,P) := δ∗(P) if ∆WAO
+(U,K,P) −∆=
+P̸ = ∅and Joint Enhancement (7) occurs, and ∆0
+(U,K,P) :=
+∆=
+F if ∆WAO
+(U,K,P)−∆=
+P = ∅; ii) If ∆WAO
+(U,K,P)−∆=
+P̸ = ∅and JE occurs, then every limit of any subsequence
+of elements of δ∗(PT ) lies in δ∗(P); iii) If ∆WAO
+(U,K,P) −∆=
+P = ∅, and , then δ∗(PT ) PK
+⇝∆=
+P .
+Proof of Theorem 3.5. Assumption 3.1 the compactness of X, along with the FCLT of Rio
+(2017, Cor 4.1), the concavity of G(δ, FT ) and Skorokhod representations applicable due to Theorem
+3.7.25 of Giné and Nickl (2016) imply the w.h.p. epi-convergence of the latter to G(δ, F), due to
+Corollary 2.E of Sallinetti and Wetts (1997). Then the results in i), ii), iii) follow via Theorem 3.4,
+employing Skorokhod representations applicable due to Theorem 3.7.25 of Giné and Nickl (2016),
+using Proposition 3.2, Ch. 5 of Molchanov (2006) and then reverting to the original probability
+space.
+Specically for iii), and since, EPT
+
+u(xT (κ + δ))
+
+−EPT
+
+u(xTκ)
+
+≤0 w.h.p., for any
+δ ∈∆, u ∈U, κ ∈K, and that due to Assumption 3.2 G(δ, PT ) is constant on ∆=
+P w.h.p., it
+follows that: any δ /∈∆=
+P will not lie in ∆WAO
+(U,K,PT ) and thereby in δ∗(PT ) w.h.p., any δ ∈∆=
+P lies in
+∆WAO
+(U,K,PT ) a.s. for all T, and due to the constancy of G it also lies in δ∗(PT ) w.h.p.□
+Among other things, these consistency results imply that the probability of two relevant types
+9
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+of decision errors vanishes asymptotically: (I) selecting an empirical SAO which is not a population
+SAO; (II) selecting a suboptimal SAO due to the false exclusion of better SAOs.
+For Type I error, the reasoning is as follows. An arbitrage portfolio which is not a weak SAO, or
+δ /∈∆WAO
+(U,K,P), features at least one strict inequality D(u, κ, δ, P) < 0, for some (u, κ) ∈U × K. Since
+strict inequalities are robust to sampling error, the probability that such an arbitrage portfolio is
+falsely included in the empirical SAO set, or δ ∈∆WAO
+(U,K,PT ), is asymptotically negligible.
+For analyzing Type II error, we face a non-vanishing probability of false exclusion of non-strict
+SAOs δ ∈
+
+∆WAO
+(U,K,P) −∆SAO
+(U,K,P)
+
+, which feature equivalence D(u, κ, δ, P) = 0, for some (u, κ) ∈
+U ×K. However, the neighborhood of these non-robust solutions includes strict SAOs δT ∈∆SAO
+(U,K,P)
+which feature asymptotically strict (scaled) empirical inequalities
+√
+TD(u, κ, δT , PT ) > 0 for all
+(u, κ) ∈U × K, and are therefore included in ∆WAO
+(U,K,PT ) with high probability.
+3.2
+Empirical Likelihood Ratio test
+In their empirical applications, Arvanitis and Post (2022) construct arbitrage portfolios that are
+SAOs in a given sample, and test whether they are SAOs out of sample. This approach evaluates a
+single, optimized arbitrage portfolio with portfolio weights that are xed and known out of sample,
+and thus avoids possible distortions of the test size that stem from evaluating multiple candidates
+or tting portfolio weights to the test sample.
+The natural choice for the null hypothesis seems H0 : δ ∈∆WAO
+(U,K,P), in this context. After all,
+our statistical theory predicts that the empirical optimal arbitrage portfolio converges to a true
+SAO, if pricing errors occur. This hypothesis allows for more powerful tests than the alternative
+H1 : δ /∈∆WAO
+(U,K,P) or H1 : δ /∈∆SAO
+(U,K,P), because estimation error generally is more likely to yield
+false non-dominance classications than false dominance relations, as the system of dominance
+inequalities is 'easier to break than to make'.
+The hypothesis structure is also consistent with the common practice for pairwise dominance
+analysis.
+Standard statistical tests such as Linton, Maasoumi and Whang (2005) focus on the
+null of dominance, because the asymptotic distribution is degenerate under the alternative of nondominance. We essentially generalize this null to multiple pairwise dominance relations that are
+based on multiple benchmark portfolios.
+Existing tests for pairwise dominance often rely on Kolmogorov-Smirnov or Cramer-von Mises
+10
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+test statistics and re-sampling methods that allow for consistent inference under very general sampling schemes. These statistics are relatively inecient for the data dimensions in our application.
+In addition, re-sampling becomes computationally expensive if large optimization problems need
+to be solved for every pseudo-sample or sub-sample. For these reasons, we adopt an alternative,
+computationally less demanding approach based on a blockwise ELR statistic, in the spirit of the
+tests for non-dominance, eciency and optimality by Davidson and Duclos (2014), Post and Poti
+(2017) and Post (2017).
+To account for temporal dependence of investment returns, the time series is subdivided into
+T ∗
+:=
+⌊T−B/L⌋+ 1
+potentially
+overlapping
+blocks
+of
+B
+consecutive
+observations,
+Bs := {x(s−1)L+1, · · · , x(s−1)L+B}, s = 1, · · · , T ∗, with L ≤B.
+It is assumed that L is independent of T, and B diverges with rate slower than
+√
+T. The optimal block size depends on the
+context and involves a trade-o between the strength of the dynamic eects and the number of
+independent blocks.
+Let GT be the set of probability distributions on the discrete set of blocks, and GT ∈GT the
+empirical measure, or GT (B) := (T ∗)−1 PT ∗
+s=1 I [Bs = B], for any block B. The ELR test is based
+on the smallest adjustments to the probability mass of GT that suce to qualify the evaluated
+arbitrage portfolio as a weak SAO, using the divergence from the adjusted distribution to the
+empirical measure of the blocks.
+The test statistic can be computed by solving the following
+Minimum Relative Entropy problem:
+min
+G∈GT KL (GT ∥G)
+(8)
+s.t. δ ∈∆WAO
+(U,K,G).
+The Kullback-Leibler information criterion KL (GT ∥G) := PT ∗
+s=1 GT (Bs) ln(GT (Bs)/G(Bs)) is a
+well-known information-theoretic measure of the dissimilarity between two distributions with the
+same support (see Cover and Thomas (2006)).
+Since any G ∈GT is discrete, only the probability mass levels at the blocks G(Bs), s = 1, · · · , T ∗,
+need to be determined, and the Minimum Relative Entropy problem reduces to a standard, nite
+11
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Convex Optimization problem, if also U(0) and K(0) are discrete:
+min
+G∈GT KL (GT ∥G)
+(9)
+s.t. D(uj, κi, δ, G) ≥0 ∀i, j,
+where D(u, κ, δ, g) := PT ∗
+s=1 G(s)
+
+1
+B
+PB
+j=1 u(xT
+(s−1)L+j (κ + δ)) −u(xT
+(s−1)L+jκ)
+
+.
+To perform inference about H0, we use the blockwise ELR test statistic ELRT = 2
+T
+T ∗B ·
+KL (GT ∥G (δ)), with G (δ) the solution of (8). The exact limit null distribution of ELR is known to
+be a chi-bar-squared distribution, under the maintained assumptions about the data and the blocking structure. This null distribution cannot be directly implemented, because the mixing weights
+of the chi-bar-squared depend on the latent P. However, we obtain an asymptotically conservative
+test using a majorizing distribution and statistical moment selection methods.
+The chi-bar-squared is majorized by χ2
+N(δ,P), a chi-squared with degrees of freedom equal to the
+number of binding inequalities, N(δ, P) := card {(i, j) : D(uj, κi, δ, P) = 0}. The number of degrees
+of freedom can be estimated in a consistent way using the number of empirical moment conditions
+that are approximately binding, or N(δ, GT , cT ) := card {(i, j) : |D(uj, κi, δ, GT )| ≤cT } , where
+cT > 0 is a tolerance parameter that converges to zero at an appropriate rate. In the application,
+we set cT = 10−8 and results are not materially aected by changing the tolerance by two orders of
+magnitude.
+Thus, asymptotically conservative p-values can be taken from χ2
+N(δ,GT ,cT ). This conservative
+approach guarantees that the estimated p-value is smaller than or equal to the nominal signicance
+level, so that the test size, or the probability of false rejection of a SAO is under control, in large
+samples.
+The following result derives the limit theory of the testing procedure dened by (9) and the
+rejection of H0 i ELRT ≥q
+
+1 −α, χ2
+N(δ,FT ,cT )
+
+, where q
+
+1 −α, χ2
+N(δ,PT ,cT )
+
+denotes the 1 −α
+quantile of the stochastic distribution χ2
+N(δ,PT ,cT ) for α ∈(0, 1).
+The result shows asymptotic
+conservatism and consistency; there CS denotes the contact set of the binding SD inequalities, i.e.
+{(i, j) : D(uj, κi, δ, P) = 0}.
+12
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Theorem 3.6 . Suppose that Assumption 3.1 holds, and, (a) there exists some ϵ > 0 such that,
+inf
+CS̸= ∅λmin (V) > ϵ,
+where λmin (V) denotes the minimum eigenvalue of
+V := E
+h ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+
+(i,j)∈CS
+ ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+T
+(i,j)∈CS
+i
+,
+(b) the slacks satisfy cT →0, while,
+√
+TcT →+∞almost surely, (c) the block size satises B →+∞
+and B = O (T ρ) for 0 < ρ < 1
+2 and L is independent of T.
+Then, the following results are obtained: (i)
+ELRT ⇝
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+infv∈RN(δ,P)
++
+(C −v)T V−1
+C (C −v) ,
+H0 ∧N(δ, F)̸ = 0
+0,
+H0 ∧N(δ, F) = 0
++∞,
+H1
+,
+(10)
+where C is a zero-mean Gaussian vector with covariance matrix
+VC := V + 2
+∞
+X
+t=1
+E
+h ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+
+(i,j)∈CS
+ ui
+ xT
+t (κj + δ)
+
+−ui
+ xT
+t κj
+T
+(i,j)∈CS
+i
+;
+(ii) Under H0 ∧N(δ, F)̸ = 0,
+lim sup
+T→∞
+P
+
+ELRT ≥q
+
+1 −α, χ2
+N(δ,PT ,cT )
+
+≤α,
+(11)
+while under H0 ∧N(δ, F) = 0,
+lim
+T→∞P
+
+ELRT ≥q
+
+1 −α, χ2
+N(δ,PT ,cT )
+
+= 0;
+(12)
+(iii) Under H1,
+lim
+T→∞P
+
+ELRT ≥q
+
+1 −α, χ2
+N(δ,PT ,cT )
+
+= 1.
+(13)
+13
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+Proof of Theorem 3.6. (10) follows as in the proof of Theorem 4.2.1 of Arvanitis, Post, Poti and
+Karabati (2021). Consider the case H0 ∧N(δ, F)̸ = 0 Uniformly w.r.t. the (i, j) /∈CS, it is found
+that, due to the denition of slacks and the Birkho's ULLN, EGT
+
+ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+
+>
+cT , eventually, almost surely. Using Skorokhod representations, we also have that, since
+√
+TcT diverges to innity almost surely, uniformly w.r.t. the i ∈CS,
+
+√
+TEGT
+
+ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+ ≤
+√
+TcT , eventually, almost surely. The previous imply that N(δ, PT , cT ) ⇝N(δ, P), jointly with
+ELRT , and thereby we obtain that
+ELRT ⇝infv∈RN(δ,P)
++
+(C −v)T V−1
+C (C −v)
+= infv∈RN(δ,F)
++
+
+
+CTV−1
+C C
+−infv∈Co (C −v)T V−1
+C (C −v)
+
+≤CTV−1
+C C,
+due to Proposition 3.4.1 of Silvapulle and Sen (2005), where Co denotes the polar cone of RN(δ,P)
++
+.
+Then the Portmanteau Theorem establishes (11). For the case H0 ∧N(δ, F) = 0, (10) implies
+that ELRT is eventually zero w.h.p., hence (12) follows. Finally, when the null hypothesis does
+not hold, then the implication of the previous is that ELRT diverges to +∞, while the quantile
+q
+
+1 −α, χ2
+N(δ,PT ,cT )
+
+is almost surely bounded, hence (13) follows.□
+The
+minimum
+eigenvalue
+condition
+holds
+whenever
+the
+random
+vector
+ ui
+ xT
+0 (κj + δ)
+
+−ui
+ xT
+0 κj
+
+CS consists of linearly independent random variables. The restriction
+of the asymptotic behavior of slacks so as to converge to zero at a slower rate than
+√
+T is usual in
+the econometric literature; see Andrews and Soares (2010) and references therein. The restriction
+on the block size divergence rate in comparison to T is also standard (see, for example, Thm.3 of
+Kitamura (1997)). The optimal choice of block size depends crucially on the ner details of the
+temporal-dependence structure of the underlying time series processes (see, for example, Section
+2 of Nordman, Bunzel and Lahiri (2013). The specication can be guided by theoretical as well
+as empirical characteristics of the underlying data and simulation analyses; e.g. the block size B
+can be chosen by some empirical variance minimization method such as the one in El Ghouch,
+Van Keilegom and McKeague (2011). The majorizing arguments in the construction of the critical
+values, as well as the restrictions on the limiting behavior of the slacks ensure that the test will be
+asymptotically conservative in both the degenerate and the non-degenerate cases. Also, the test
+14
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+remains consistent under the alternative hypothesis, due to the divergence to innity of the test
+statistic and the boundedness from above of the quantiles used as critical values.
+4
+Discussion
+The test strategy is aimed at validation of the theoretical prediction that the empirical optimal
+arbitrage portfolio is a true SAO in disequilibrium.
+The strategy controls the test size or the
+frequency of false rejection of a SAO, and it does not directly control the test power or the frequency
+of false acceptance of a SAO. One straightforward way to evaluate the test power is to analyze the
+rejection rates for arbitrage portfolios which are not expected to be SAOs, such as the vertices of the
+arbitrage portfolio set, which generally include concentrated positions that increase the risk level of
+the benchmarks and thus are not SAOs. In addition, the test power can be studied by examining
+the rejection rates of the ELR test in random psuedo-samples or subsamples for arbitrage portfolio
+that are not empirical SAOs.
+Extensions are possible to cases where P is a conditional distribution and/or estimated using
+alternative non-parametric methods or (semi-)parametric models. The estimation may be based
+on a well-specied (semi-)parametric model or a fully non-parametric method, depending on the
+data properties and available side information. (Quasi) Maximum Likelihood or Nadaraya-Watson
+type estimators could be employed respectively. Standard assumptions that involve smoothness of
+the associated likelihood function, or regularity properties of the unknown densities involved and
+the associated kernels, would suce to obtain consistency. Parametric Likelihood Ratio tests and
+Smoothed Empirical Likelihood can replace the BELR test in these cases.
+The derivation of a rened statistical theory for comparison between conservative ELR SAO
+testing and Kolmogorov-Smirnov or Cramer-von Mises procedures in the context of weak temporal
+dependence is also of interest.
+15
+Electronic copy available at: https://ssrn.com/abstract=4268835
+
+References
+[1] Andrews, D.W.K and G. Soares, 2010, Inference for parameters dened by moment inequalities
+using generalized moment selection, Econometrica 78(1), 119-157.
+[2] Arvanitis, S., Post, T., Potì, V. and Karabati, S., 2021, Nonparametric tests for optimal
+predictive ability, International Journal of Forecasting, 37(2), pp.881-898.
+[3] Arvanitis, S., Post, T., 2022, Ordering Arbitrage Portfolios and Finding Arbitrage Opportunities, mimeo.
+[4] Box, G. E. P., G. M. Jenkins, and G.C. Reinsel, 1994, Time Series Analysis: Forecasting and
+Control, Prentice Hall.
+[5] Brockwell, P. J. and R. A. Davis, 2002, Introduction to Time Series and Forecasting, Springer.
+[6] Cover, T. and J. Thomas, 2006, Elements of Information Theory, 2nd ed, Wiley.
+[7] Davidson, R. and J.-Y. Duclos, 2013, Testing for Restricted Stochastic Dominance, Econometric
+Reviews 32 (1), 84-125.
+[8] De Bondt, W. and R. Thaler, 1987, Further Evidence On Investor Overreaction and Stock
+Market Seasonality, Journal of Finance 42, 557-581.
+[9] El Ghouch, A., Van Keilegom, I., & McKeague, I. W., 2011, Empirical likelihood condence
+intervals for dependent duration data. Econometric Theory, 27(1), 178-198.
+[10] Giné, E. and R. Nickl, 2016, Mathematical foundations of innite-dimensional statistical models, Vol. 40, Cambridge University Press.
+[11] Kitamura, Y., 1997, Empirical likelihood methods with weakly dependent processes, Annals of
+Statistics 25, 2084-2102.
+[12] Linton O., E. Maasoumi and Y.-J. Whang, 2005, Consistent Testing for Stochastic Dominance
+under General Sampling Schemes, Review of Economic Studies 72, 735-765.
+[13] Mikosch, T., and Straumann, D., 2006, Stable limits of martingale transforms with application
+to the estimation of GARCH parameters, The Annals of Statistics, 34(1), 493-522.
+[14] Molchanov, I., 2006, Theory of random sets, Springer Science & Business Media.
+[15] Nordman, D. J., Bunzel, H., and Lahiri, S. N., 2013, A nonstandard empirical likelihood for
+time series, The Annals of Statistics 41, 3050-3073.
+[16] Post, Th., 2017, Empirical Tests for Stochastic Dominance Optimality, Review of Finance 21
+(2), 793810
+[17] Post, Th., S. Karabat, and S. Arvanitis, 2018, Portfolio optimization based on stochastic
+dominance and empirical likelihood, Journal of Econometrics 206 (1), 167-186.
+[18] Post, Th. and V. Poti, 2017, Portfolio Analysis Using Stochastic Dominance, Relative Entropy,
+and Empirical Likelihood, Management Science 63(1),153-165.
+[19] Post, Th. and Ph.Versijp, P., 2007, Multivariate Tests for Stochastic Dominance Eciency of
+a Given Portfolio, Journal of Financial and Quantitative Analysis 42(2), 489515.
+[20] Rio, E., 2017, Asymptotic theory of weakly dependent random processes (Vol. 80), Berlin:
+Springer.
+[21] Russell, W.R. and T.K. Seo, 1989, Representative sets for stochastic dominance rules, in:
+Studies in the economics of uncertainty: In honor of Josef Hadar, Springer-Verlag.
+[22] Salinetti, G., and R.J. Wets, 1977, On the relations between two types of convergence for
+convex functions, Journal of Mathematical Analysis and Applications, 60(1), 211-226.
+[23] Silvapulle, M. J. and P. K. Sen, 2005, Constrained statistical inference: Inequality, order and
+shape restrictions, John Wiley & Sons.
+16
+Electronic copy available at: https://ssrn.com/abstract=4268835

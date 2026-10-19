@@ -1,0 +1,219 @@
+{
+  "doc_id": 23,
+  "titulo": "A Repo Model of Fire Sales with VWAP and LOB Pricing Mechanisms",
+  "resumen_operativo": "Modelo teórico de equilibrio de Nash entre bancos que liquidan activos ilíquidos y piden préstamos repo colateralizados para cubrir shortfalls de caja. El aporte relevante para un trader-quant no es la parte de riesgo sistémico bancario sino la formalización matemática de dos mecanismos de pricing de liquidaciones grandes: VWAP (todos los vendedores obtienen el mismo precio promedio, como si ejecutaran a ritmo proporcional a su tamaño total) versus un esquema tipo Limit Order Book (LOB) donde vendedores con órdenes más chicas obtienen mejor precio porque terminan de ejecutar antes de que el libro se erosione más. Da condiciones analíticas de existencia/unicidad y muestra numéricamente que VWAP y LOB no tienen un ordenamiento consistente en términos de cuánto se liquida vs. cuánto se pide prestado.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "fire sale",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Liquidación forzada de activos ilíquidos por parte de bancos para cubrir un shortfall de caja, cuyo propio volumen deprime el precio obtenido (impacto de mercado endógeno).",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "market impact"},
+        {"tipo": "PARTE_DE", "objeto": "systemic risk"}
+      ],
+      "cita_textual": "We consider a network of banks that optimally choose a strategy of asset liquidations and borrowing in order to cover short term obligations."
+    },
+    {
+      "nombre": "price-mediated contagion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Forma de contagio financiero que se propaga a través del impacto de las liquidaciones sobre los precios de mercado, en contraste con el contagio por obligaciones interbancarias directas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "systemic risk"},
+        {"tipo": "USA", "objeto": "market impact"}
+      ],
+      "cita_textual": "This study focuses on a form of global contagion through asset prices, and investigates the existence and uniqueness of Nash equilibrium in a model of ﬁre sales and collateralized borrowing."
+    },
+    {
+      "nombre": "VWAP",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Esquema de pricing donde el precio promedio obtenido por cada vendedor es idéntico entre bancos, como límite de que todos colocan órdenes a una tasa proporcional a su liquidación total deseada, terminando de operar al mismo 'tiempo'.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "Limit Order Book Based Price"},
+        {"tipo": "USA", "objeto": "order book density function"},
+        {"tipo": "APLICA_A", "objeto": "closing auction"}
+      ],
+      "cita_textual": "The VWAP scheme determines prices if ﬁrms place orders at a rate proportional to their total desired liquidations; this, ultimately, results in the same average price for every bank."
+    },
+    {
+      "nombre": "Limit Order Book Based Price",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Esquema de pricing (denominado LOB en el paper) en el que todos los bancos colocan órdenes a la misma velocidad, por lo que quienes venden menos volumen terminan antes y obtienen mejor precio que quienes venden más y siguen erosionando el libro.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "VWAP"},
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "USA", "objeto": "order book density function"}
+      ],
+      "cita_textual": "The LOB setting distinguishes prices by assuming all ﬁrms place orders at the same speed; banks with smaller order volumes will receive a higher price than those with a larger order volume."
+    },
+    {
+      "nombre": "inverse demand function",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Función que mapea el volumen liquidado al precio promedio obtenido por cada banco; generaliza tanto el esquema VWAP como el LOB y sirve de insumo para las condiciones de existencia/unicidad del equilibrio.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "market impact"},
+        {"tipo": "USA", "objeto": "order book density function"}
+      ],
+      "cita_textual": "Let ¯fi : Rn + →[0, 1] denote the average price obtained by bank i = 1, ..., n given the set of system liquidations"
+    },
+    {
+      "nombre": "order book density function",
+      "tipo": "dato",
+      "definicion_en_contexto": "Función f que describe el precio marginal del próximo trade infinitesimal a medida que se consume el libro; es el insumo primitivo del que se derivan tanto la función VWAP como la LOB, y se asume estrictamente decreciente y dos veces diferenciable.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "limit order book"},
+        {"tipo": "REQUIERE", "objeto": "market impact"}
+      ],
+      "cita_textual": "Let this density be given by f : R+ →[0, 1]. Alternatively, this f can be viewed as a the price of the next inﬁnitely small trade."
+    },
+    {
+      "nombre": "haircut",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Descuento sobre el valor de mercado del activo aplicado por el mercado repo como colateral; a diferencia del precio de liquidación, es único para todo el sistema y depende solo del volumen total liquidado por todos los bancos, no de la venta individual.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "collateralized borrowing"},
+        {"tipo": "PARTE_DE", "objeto": "fire sale"}
+      ],
+      "cita_textual": "the function g encodes the haircut on the asset as a mapping of the total liquidations by all the banks"
+    },
+    {
+      "nombre": "collateralized borrowing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Financiamiento de corto plazo vía repo, colateralizado con el mismo activo ilíquido que se está liquidando; los bancos optimizan la combinación entre vender el activo y pedir prestado a la tasa repo r.",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "haircut"},
+        {"tipo": "PARTE_DE", "objeto": "systemic risk"}
+      ],
+      "cita_textual": "The borrowing is done in the form of collateralized repurchase agreements, the haircut level of which depends on the total liquidations of all the banks."
+    },
+    {
+      "nombre": "Nash equilibrium",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Marco de solución del modelo: cada banco elige su estrategia de liquidación/préstamo óptima dada la estrategia de los demás; el paper prueba existencia vía teorema de punto fijo de Brouwer/Kakutani y condiciones de unicidad vía Banach y Tarski.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "fire sale"},
+        {"tipo": "APLICA_A", "objeto": "market impact"}
+      ],
+      "cita_textual": "By nature of this setup, banks’ behavior is considered as a Nash equilibrium."
+    },
+    {
+      "nombre": "market impact",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Efecto por el cual el precio del activo ilíquido declina a medida que se venden más unidades, generado por dinámicas de oferta y demanda; en el modelo, tanto el precio de liquidación como el valor del colateral se ven afectados.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "fire sale"},
+        {"tipo": "PARTE_DE", "objeto": "price-mediated contagion"}
+      ],
+      "cita_textual": "due to the illiquidity, the price of the illiquid asset declines as assets are being sold; this is due to supply-demand dynamics so that the equilibrium is maintained"
+    },
+    {
+      "nombre": "systemic risk",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Riesgo de que la distress de varios bancos se propague por el sistema financiero afectando la viabilidad del sistema entero o de una parte significativa; el paper lo estudia vía contagio mediado por precios, no por obligaciones interbancarias directas.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "price-mediated contagion"}
+      ],
+      "cita_textual": "This is referred to as systemic risk – the risk that the distress of several banks can spread throughout the system to a degree that it may aﬀect the viability of the entire system or a signiﬁcant part of it."
+    },
+    {
+      "nombre": "closing auction",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Mecanismo real de algunos mercados (México, India, Arabia Saudita) que calcula el precio de cierre de forma análoga al esquema VWAP del paper.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "the VWAP example corresponds to how some exchanges calculate the closing price (e.g., in Mexico, India and Saudi Arabia"
+    },
+    {
+      "nombre": "fixed point theorem",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Herramienta matemática (Brouwer/Kakutani para existencia, Tarski para el lattice de precios bajo VWAP, Banach para unicidad) usada para demostrar existencia y unicidad del equilibrio de liquidación/precio.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "Nash equilibrium"}
+      ],
+      "cita_textual": "Thus a joint equilibrium (s∗∗, q∗∗, ¯q∗∗ 1 , ..., ¯q∗∗ n ) can be found via Kakutani’s ﬁxed point theorem."
+    },
+    {
+      "nombre": "monotonicity of clearing prices",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Propiedad que sí se cumple bajo VWAP (permite construir un lattice de soluciones y garantizar convergencia de la iteración de Picard) pero falla bajo LOB, como muestra un contraejemplo numérico explícito del paper.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Limit Order Book Based Price"},
+        {"tipo": "CONTRADICE_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "Importantly, Theorem 3.3 is not applied to the LOB structure. To demonstrate the lack of such a result for the LOB, we present here a counterexample to the monotonicity property"
+    },
+    {
+      "nombre": "repo rate sensitivity",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Relación por la que un aumento en la tasa repo r encarece el financiamiento y empuja a los bancos a liquidar más activo ilíquido y pedir menos prestado, reduciendo el precio terminal del activo; usada como palanca regulatoria para contener fire sales.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "fire sale"},
+        {"tipo": "MITIGA", "objeto": "systemic risk"}
+      ],
+      "cita_textual": "Intuitively, we expect that as the repo rate rises, and borrowing becomes more expensive the liquidation of the illiquid asset increase."
+    },
+    {
+      "nombre": "fundamentally solvent bank",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Banco que puede cubrir su shortfall en cualquier escenario porque su shortfall es menor o igual al valor de todos sus activos al precio obtenido si liquidara todo; condición necesaria para la unicidad del equilibrio (Teorema 3.6).",
+      "relaciones": [
+        {"tipo": "REQUIERE", "objeto": "Nash equilibrium"}
+      ],
+      "cita_textual": "we will say that bank i ∈{1, ..., n} is fundamentally solvent if it is able to cover its shortfall in any case, that is if hi ≤ai ¯fi(a)"
+    },
+    {
+      "nombre": "Picard iteration",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Algoritmo de cómputo numérico de los precios de equilibrio (q, ¯q) por iteración desde un punto inicial; converge garantizado bajo VWAP (por el lattice) y empíricamente también bajo LOB en todos los casos probados por los autores, aunque no está probado formalmente.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "monotonicity of clearing prices"},
+        {"tipo": "APLICA_A", "objeto": "Nash equilibrium"}
+      ],
+      "cita_textual": "these are computed via Picard iterations beginning from (q0, ¯q0) := 1n+1"
+    },
+    {
+      "nombre": "heterogeneous execution prices",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Bajo LOB, distintos participantes que liquidan volúmenes distintos obtienen precios promedio distintos entre sí; bajo VWAP todos obtienen el mismo precio promedio. Esta heterogeneidad es la novedad central del paper frente a la literatura previa de precio único.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "Limit Order Book Based Price"},
+        {"tipo": "SE_OPONE_A", "objeto": "VWAP"}
+      ],
+      "cita_textual": "This is a very interesting and novel example, as in this case, diﬀerent banks pay diﬀerent prices."
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En un sistema simétrico de n bancos idénticos, la liquidación total bajo VWAP es siempre mayor o igual que bajo LOB, y el endeudamiento total (uso del mercado repo) es mayor bajo VWAP que bajo LOB, con desigualdad estricta en cierto rango de shortfall.",
+      "mercado": "modelo teórico calibrado con parámetros sintéticos (no mercado real)",
+      "periodo": "no especificado (modelo estático)",
+      "magnitud": "sV WAP(q,¯q) ≥ sLOB(q,¯q) para toda elección de (q,¯q); desigualdad estricta en el intervalo h ∈ [r/(α(1+r)n)·(1−r/(2(1+r))), 2r/(α(1+r)(n+1))·(1/2+rn/((1+r)(n+1)))+a(1/2−2rn/((1+r)(n+1)))]",
+      "condiciones": "sistema de n bancos idénticos (simétrico), densidad lineal del libro f(s)=1−αs, haircut g(s)=1/2−αs, r∈(0,1/3)",
+      "robustez": "baja",
+      "cita_textual": "Notably, sV W AP(q, ¯q) ≥sLOB(q, ¯q) for any choice of (q, ¯q) by construction."
+    },
+    {
+      "afirmacion": "En un sistema heterogéneo de 2 bancos, se invierte el ordenamiento encontrado en el caso simétrico: la liquidación total es menor bajo VWAP que bajo LOB, pero el endeudamiento es mayor bajo VWAP que bajo LOB para ambos bancos, mostrando que no existe un ordenamiento consistente entre los dos mecanismos de pricing.",
+      "mercado": "modelo teórico, sistema n=2 bancos",
+      "periodo": "no especificado (modelo estático)",
+      "magnitud": "r=0.01, a=(1,2), h=(0.3,1.2), α=0.05: sVWAP=(0, 0.4853) con qVWAP=0.4757, ¯qVWAP=(0.9879,0.9879); sLOB=(0.0990,0.5080) con qLOB=0.4696, ¯qLOB=(0.9950,0.9828)",
+      "condiciones": "caso numérico específico de 2 bancos con parámetros elegidos ad hoc por los autores para exhibir el contraejemplo",
+      "robustez": "baja",
+      "cita_textual": "total liquidations are less for both banks (i.e., sV W AP < sLOB), but borrowing by both banks has the opposite order"
+    },
+    {
+      "afirmacion": "En el estudio de caso calibrado con datos bancarios europeos EBA 2011, al aumentar la tasa de interés repo, la liquidación total del sistema aumenta y el endeudamiento total disminuye para ambos esquemas de pricing (VWAP y LOB); el esquema LOB produce una respuesta no suave (discontinua) de las liquidaciones/endeudamiento en función de la tasa de interés, mientras que VWAP produce una respuesta más agregada/suave porque las estrategias de los bancos se superponen más.",
+      "mercado": "sistema bancario europeo (datos de stress test EBA 2011)",
+      "periodo": "datos calibrados a 2011, tasas de interés simuladas en rango 0 a 0.004 (10^-3)",
+      "magnitud": "total liquidations varía en el orden de 2.15 a 2.4 ×10^7; total borrowing varía en el orden de 0 a 2.5×10^6, según Figura 1, para r entre 0 y 4×10^-3",
+      "condiciones": "modelo estático calibrado sobre datos EBA reales pero con parámetros de haircut/densidad de libro elegidos heurísticamente (α=1/(300M), g(s)=7/10−αs); sin shock externo aplicado, solo para fines demostrativos",
+      "robustez": "baja",
+      "cita_textual": "total liquidations (Figure 1a) increase as the interest rate increases, whereas the total borrowing (Figure 1b) is exactly the reverse of the total liquidations and, as such, is decreasing as the interest rate increases"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper es teórico-matemático sobre riesgo sistémico bancario y mercados repo, sin backtest de estrategia ni datos de mercado intradía; lo único transferible al ecosistema ES es la formalización conceptual de por qué ejecutar a ritmo VWAP produce un precio uniforme mientras que consumir el libro a velocidad constante (tipo LOB) genera precios heterogéneos según tamaño de orden, relevante para entender slippage/impacto en liquidaciones grandes."
+  }
+}

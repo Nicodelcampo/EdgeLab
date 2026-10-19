@@ -1,0 +1,47 @@
+{
+  "$schema": "edgelab.context_analysis/0.1.0",
+  "status": "INFRASTRUCTURE_IMPLEMENTED_MODEL_NOT_TRAINED",
+  "model_id": "gate_gc_l1_hmm3_forward_v0",
+  "states": ["calm", "normal", "volatile"],
+  "forbidden_states": ["toxic"],
+  "outcomes_opened": false,
+  "join": {
+    "keys": ["instrument", "contract", "cme_session"],
+    "direction": "backward",
+    "event_time": "event_time",
+    "feature_time": "feature_available_at",
+    "max_feature_age": "PT1M",
+    "missing_policy": "fail_closed"
+  },
+  "times": [
+    "event_time",
+    "data_window_end",
+    "feature_available_at",
+    "write_time"
+  ],
+  "features_honestas_l1": [
+    "rv_ticks_15m",
+    "tick_rate_per_second",
+    "spread_ticks_mean",
+    "tape_imbalance",
+    "efficiency_ratio_10m"
+  ],
+  "forbidden_names_without_measurement": ["ofi", "vpin"],
+  "normalization": "train_only_pending_model_implementation",
+  "inference": "hmm_forward_filter_pending_model_implementation",
+  "analysis_policy": {
+    "primary": "Puerta 1 sin GATE",
+    "context_use": "interaccion_preregistrada_no_subgrupo_post_hoc",
+    "multiplicity": "Holm pendiente de congelar con estimandos y MDE",
+    "formal_use_requires": [
+      "trained_model_manifest",
+      "context_run_id",
+      "point_in_time_coverage",
+      "cell_power",
+      "preregistered_interactions"
+    ]
+  },
+  "north_star_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "justificacion_economica": "Separar heterogeneidad real de mercado puede revelar cuándo una señal conserva expectativa neta sin rescatarla mediante selección post hoc.",
+  "como_podria_refutarse": "El contexto no mejora información incremental, depende de look-ahead, deja celdas sin potencia o no sobrevive validación preregistrada y costos."
+}

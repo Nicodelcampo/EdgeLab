@@ -1,0 +1,82 @@
+{
+  "authorization": {
+    "active_token": "AUTHORIZE_BUILD_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "build_token_label": "AUTHORIZE_BUILD_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "execution_authorized": true,
+    "finalize_token_label": "AUTHORIZE_FINALIZE_BT2A_NQ_CREATION_EVENT_STORE_V1",
+    "freeze_token_label": "APPROVE_FREEZE_BT2A_NQ_CREATION_EVENT_STORE_INFORMAL_V1",
+    "frozen_commit": "19b69bddaeffbf74864242861614f09da75cbbb7",
+    "validate_token_label": "AUTHORIZE_VALIDATE_BT2A_NQ_CREATION_EVENT_STORE_V1"
+  },
+  "build": {
+    "checkpoint_partition": "contract",
+    "deduplicate_identity": [
+      "contract",
+      "cme_session_id",
+      "direction",
+      "event_time_ns",
+      "source_row"
+    ],
+    "future_path_decode_allowed": false,
+    "lifecycle_allowed": false,
+    "mode": "TRANSFORM_SELECTED_COORDINATES_ONLY",
+    "output_manifest": "bt2a_nq_creation_event_store_manifest.json",
+    "output_parquet": "bt2a_nq_creation_events.parquet",
+    "raw_tick_decode_allowed": false,
+    "sort_order": [
+      "contract",
+      "cme_session_id",
+      "event_time_ns",
+      "source_row",
+      "direction",
+      "event_key"
+    ]
+  },
+  "created_date": "2026-08-30",
+  "execution_platform": "KAGGLE_ONLY",
+  "firewall": {
+    "EDGE_DECLARED": false,
+    "EVENT_STORE_READY": false,
+    "FIRST_PASSAGE_ACCESSED": false,
+    "FIRST_TOUCH_ACCESSED": false,
+    "FUTURE_PRICE_PATH_ACCESSED": false,
+    "HOLDOUT_TOUCHED": false,
+    "LIFECYCLE_ACCESSED": false,
+    "MFE_MAE_ACCESSED": false,
+    "PNL_ACCESSED": false,
+    "PROMOTION_ELIGIBLE": false
+  },
+  "purpose": "Consolidate all-five creation coordinates for the fixed informal NQ config without mislabeling it as a formal stable selection.",
+  "schema_version": "bt2a_nq_creation_event_store_v1",
+  "source_selection": {
+    "confirmatory_eligible": false,
+    "coordinate_manifest_file": "coordinate_manifest.json",
+    "coordinate_manifest_file_sha256": "653897f784532e187e43ff3106dd3af0d9a187b427a4d3325964807db9d86b0e",
+    "gate1_classification": "EXPLORATORY_NON_CONFIRMATORY_NON_PROMOTABLE",
+    "promotion_eligible": false,
+    "provenance_amendment_file": "specs/bt2a_nq_informal_all5_provenance_amendment_v1.draft.json",
+    "provenance_amendment_sha256": "570170d19e4ca802fc7b118fda87e7d8c86a74259179ec24e321795c2e2c435b",
+    "provenance_mode": "INFORMAL_FIXED_CONFIG_ALL5",
+    "required_selection_status": "INFORMAL_EARLY_STOP_NQ_CONFIGURATION",
+    "result_file": "informal_all5_coordinate_result.json",
+    "result_file_sha256": "114c5f588181379d75db186021c195950608584457479e6a3bdecd46109d6913",
+    "selected_config_id": "bt2a_nq_7e84981882b0b380",
+    "selected_configuration_file": "bt2a_nq_selected_configuration_2026-08-29.json",
+    "selected_configuration_file_sha256": "b4f8ebc4d13d01b6a4d39250fc6c05fad37ad5d395cf535e8ec56e849c44b1bc"
+  },
+  "status": "FROZEN_PREFLIGHT_READY",
+  "universe": {
+    "contract_sessions": 234,
+    "contracts": [
+      "NQ 09-25",
+      "NQ 12-25",
+      "NQ 03-26",
+      "NQ 06-26",
+      "NQ 09-26"
+    ],
+    "holdout_session_min_inclusive": "20260701",
+    "instrument": "NQ",
+    "session_max": "20260630"
+  },
+  "artifact_dataset": "nicolasbuttaro/edgelab-nq-informal-all5-coordinates"
+}

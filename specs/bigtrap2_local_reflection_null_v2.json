@@ -1,0 +1,89 @@
+{
+  "schema_version": "bigtrap2_local_reflection_null_v2",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-12",
+  "supersedes": "specs/bigtrap2_local_reflection_null_v1.json",
+  "v2_note": "v2 corrige dos defectos de v1 encontrados en auditoria pre-corrida, con evidencia medida. (1) El endpoint binario satura: el 71.3% de las zonas nace a d <= 2 ticks del ancla (ensayo estructural sandbox 2026-08-12 sobre 6E_09-26_ticks.parquet, 2396 zonas del kernel byte-identico b235153c), regimen donde P(toque) ~ 0.98 bajo el nulo (aVolClusterPOI sec. 21); el primario pasa a ser la carrera de primer pasaje dentro del par, cuyo nulo P(real primero) = P(espejo primero) es exacto sin estimar sigma (esquiva la objecion B1). (2) El espejo con is_bull preservado y CloseThrough moria en la primera barra casi siempre (Monte Carlo sintetico, 20000 sims por config: muerto sin toque en barra 1 en 60.0% (d=2) y 96.8% (d=5); E[r] bajo el nulo +0.214 a +0.903) — una maquina de falsos positivos; ahora el espejo corre el lifecycle geometricamente reflejado y el nulo queda simetrico (E[r] +0.003 a +0.009, dentro de tolerancia Monte Carlo). El binario queda como secundario declarado. Se fija el MDE numerico, gates de resolucion y de empates, el diagnostico de espejos solapados, y el filtro de fecha de creacion por sesion (el archivo de smoke cruza el cutoff: medido 2026-06-08 a 2026-07-28, 20 de 37 sesiones en julio). Enmienda escrita antes de cualquier corrida: legitima porque v1 quedo PREREGISTERED_NOT_RUN y ningun endpoint fue computado jamas.",
+  "north_star_body_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "campaign": {
+    "instrument": "6E",
+    "bar_spec": "time:1",
+    "research_end_inclusive": "2026-06-30",
+    "holdout_start": "2026-07-01",
+    "session_count_required": 201,
+    "data_license_status": "PENDING_INTERNAL_ONLY"
+  },
+  "indicator": {
+    "name": "BigTrap2",
+    "params": {
+      "ticks_per_row": 1,
+      "imbalance_mode": "Diagonal",
+      "trap_volume_source": "AggressiveSide",
+      "imbalance_ratio": 3.0,
+      "use_wick_filter": true,
+      "wick_zone_pct": 30.0,
+      "min_delta_filter": 0.0,
+      "min_trap_volume": 30.0,
+      "min_export_volume": 1.0,
+      "invalidation_mode": "CloseThrough",
+      "max_age_bars": 2000,
+      "max_touches": 0
+    }
+  },
+  "population": {
+    "event_space": ["creation", "active", "first_touch", "nth_touch", "invalidation", "expiration", "administrative_censoring"],
+    "source": "all_created_zones",
+    "no_sep_min": true,
+    "creation_date_filter": "por fecha de sesion (America/Chicago) <= research_end_inclusive; NUNCA por rango del archivo (el archivo de smoke contiene sesiones de holdout)",
+    "eligible_reflection_requires": ["valid_creation_bar", "mirror_disjoint_from_source"],
+    "eligibility_evidence": "ensayo estructural 2026-08-12: cobertura 1.0 sobre 2396 zonas del archivo de smoke (d >= 1 por construccion del kernel: las filas de imbalance quedan estrictamente a un lado del cierre)"
+  },
+  "reflection": {
+    "anchor": "close_t[created_bar]",
+    "formula": {
+      "mirror_lo_tick": "2 * anchor - hi_tick",
+      "mirror_hi_tick": "2 * anchor - lo_tick"
+    },
+    "preserve_is_bull": true,
+    "lifecycle_reflected": true,
+    "lifecycle_reflection_note": "is_bull se preserva solo como etiqueta semantica del par; las REGLAS de lifecycle del espejo son la reflexion geometrica de las de la zona: la invalidacion del espejo es por cierre a traves del espejo en la direccion que se aleja del ancla (equivale a invertir is_bull SOLO para el lifecycle). Sin esto, con CloseThrough, el espejo bull ubicado bajo el precio muere en B+1 casi siempre y E[r] > 0 bajo el nulo por construccion (defecto P0 de v1, medido por Monte Carlo).",
+    "available_from_bar": "created_bar + 1",
+    "n_controls_per_source": 1,
+    "parameter_sweep_forbidden": true
+  },
+  "lifecycle": {
+    "precedence": ["expiration", "touch", "invalidation"],
+    "horizon_bars": "min(max_age_bars + 1, preholdout_bars_available)",
+    "same_horizon_for_real_and_mirror": true,
+    "session_boundary_truncation": false,
+    "mirror_invalidation_direction": "away_from_anchor_reflected"
+  },
+  "estimand": {
+    "primary": "first_passage_race_within_pair",
+    "definition": "r_i = 1{zona real toca primero} - 1{espejo toca primero}, dentro de H_i y antes de remocion o censura de cada brazo",
+    "tie_break": "toques en la misma barra se resuelven por timestamp de tick; si los timestamps empatan o no hay tick disponible, la pareja se clasifica empate_tecnico (r_i = 0). Evidencia Monte Carlo: empates a nivel barra ~2% de los pares resueltos (d=2), a nivel tick 0 en 40000 sims",
+    "double_censoring": "si ningun brazo toca dentro de H_i, la pareja es doble_censura (r_i = 0); las categorias de cero se publican por separado con sus denominadores",
+    "null_property": "bajo intercambiabilidad de ubicaciones dadas geometria y horizonte, P(real primero) = P(espejo primero) exactamente; el contraste primario no estima sigma",
+    "aggregation": "equal_session_weight",
+    "inference": "hac_bartlett",
+    "hac_lag": "ceil(sqrt(n_sessions))",
+    "alpha": 0.05,
+    "power_for_mde": 0.8,
+    "mde_delta": 0.05,
+    "mde_derivation": "MDE = (z.975 + z.80) * sigma_R / sqrt(201) ~ 2.80 * 0.24 / 14.18 ~ 0.047, fijado en 0.05; sigma_R ~ 0.24 de ~79 zonas por sesion con deff ~ 9 (rho intra-sesion 0.10, F2.6 sec. 8) y ~50% de pares resueltos; equivale a 5 pp de asimetria por zona en la carrera. La corrida formal reporta sigma_R y frac_resueltos observados SIN revisar el MDE",
+    "secondary_declared": ["binary_touch_before_removal_v1_descriptivo", "frac_resueltos", "frac_doble_censura", "frac_empate_tecnico"]
+  },
+  "gates": {
+    "reflection_coverage_min": 0.95,
+    "require_201_sessions": true,
+    "exact_geometry_invariants": true,
+    "clean_tree": true,
+    "outcomes_accessed": false,
+    "resolution_rate_min": 0.30,
+    "technical_ties_max": 0.01,
+    "resolution_note": "si frac_resueltos < 0.30 la campana emite ABSTAIN_RESOLUTION (un CI ancho se leeria como ausencia de efecto cuando seria ausencia de resolucion); si frac_empate_tecnico > 0.01, ABSTAIN_TIE_RULE y revisar granularidad de timestamps"
+  },
+  "diagnostics_required": ["mirror_overlap_with_other_zones_count", "distancia_ticks_distribution", "per_session_race_counts", "r_por_lado_por_sesion"],
+  "decision_labels": ["REFLECTION_POSITIVE", "COMPATIBLE_WITH_ZERO", "REFLECTION_NEGATIVE", "ABSTAIN_REFLECTION_COVERAGE", "ABSTAIN_PROVENANCE", "ABSTAIN_INFERENCE", "ABSTAIN_RESOLUTION", "ABSTAIN_TIE_RULE"],
+  "forbidden": ["tick:25", "holdout", "returns", "pnl", "trading_direction", "target_stop", "parameter_sweep", "post_result_protocol_change", "kernel_modification"]
+}

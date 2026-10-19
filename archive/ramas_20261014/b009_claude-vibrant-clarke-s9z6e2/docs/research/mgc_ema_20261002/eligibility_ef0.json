@@ -1,0 +1,69 @@
+{
+ "eligible": false,
+ "checks": [
+  {
+   "check": "timestamps_monotonic",
+   "status": "PASS",
+   "detail": "backwards=0"
+  },
+  {
+   "check": "no_duplicate_keys",
+   "status": "PASS",
+   "detail": "dups=0"
+  },
+  {
+   "check": "output_hash_present",
+   "status": "PASS",
+   "detail": ""
+  },
+  {
+   "check": "source_hashes_present",
+   "status": "PASS",
+   "detail": "4 files"
+  },
+  {
+   "check": "holdout_excluded",
+   "status": "PASS",
+   "detail": "max_date=20260331 holdout=20260401"
+  },
+  {
+   "check": "roll_policy_strict_monotonic",
+   "status": "PASS",
+   "detail": "previous_complete_session_volume_leader_monotonic_v1"
+  },
+  {
+   "check": "roll_causal_lag",
+   "status": "PASS",
+   "detail": "lag=1"
+  },
+  {
+   "check": "no_price_adjustment",
+   "status": "PASS",
+   "detail": "NONE_ACTUAL_TRADED_PRICES"
+  },
+  {
+   "check": "contract_coverage",
+   "status": "FAIL",
+   "detail": "missing=['MGC_10-25']"
+  },
+  {
+   "check": "session_count",
+   "status": "PASS",
+   "detail": "126 sessions (min 60)"
+  },
+  {
+   "check": "clock_certified",
+   "status": "UNKNOWN",
+   "detail": ""
+  },
+  {
+   "check": "costs_declared",
+   "status": "PASS",
+   "detail": ""
+  }
+ ],
+ "blocking": [
+  "contract_coverage",
+  "clock_certified"
+ ]
+}

@@ -1,0 +1,2394 @@
+Implied Convergence Risk in Statistical
+Arbitrage
+Michael T. Chng
+Qingfu Liu
+Chuanjie Wang
+Zhengjun Zhang∗
+June 14, 2025
+Abstract
+Arbitrage in ﬁnancial markets is not without risk. Many statistical arbitrage
+strategies depend on pricing error measures whose conditional volatility exposes capitalconstrained arbitrageurs to signiﬁcant convergence risk. We introduce a Modiﬁed
+Generalized Smooth-Transition (MGST) function, whose parameters resemble those
+of a GARCH-in-Mean process, to estimate pair-speciﬁc convergence risk. Unlike
+traditional approaches, the MGST strategy adapts dynamically to varying market
+conditions. In empirical tests against three benchmark arbitrage portfolios, the MGST
+strategy trades more aggressively yet delivers higher cumulative returns and Sharpe
+Ratios, even after accounting for transaction costs. Its superior performance is driven
+by substantial cross-sectional variation in the endogenously determined no-arbitrage
+band level and bandwidth. In contrast, benchmark strategies impose a zero band level
+and use a ﬁxed, ad hoc bandwidth across all pairs and time periods—an approach
+that fails to reﬂect the heterogeneity in convergence risk across trading pairs.
+Keywords: No-arbitrage band; Limits to arbitrage; Pricing error.
+∗Michael T. Chng is at the International Business School Suzhou (IBSS), Xi’an Jiaotong-Liverpool
+University; Email: Michael.Chng@xjtlu.edu.cn. Qingfu Liu is at the School of Economics, Fudan University,
+and Shanghai Institute for Mathematics and Interdisciplinary Sciences; Email: liuqf@fudan.edu.cn. Chuanjie
+Wang is at the School of Economics, Fudan University; Email: cjwang20@fudan.edu.cn. Zhengjun Zhang
+is a!liated with the School of Economics and Management, University of Chinese Academy of Sciences;
+the AMSS Center for Forecasting Science, Chinese Academy of Sciences; and the Department of Statistics,
+University of Wisconsin–Madison; Email: zjz@stat.wisc.edu. This work was supported by the National
+Key R&D Program of China (2021YFC3340703) and the National Natural Science Foundation of China
+(71991471 & 72121002).
+1
+
+1
+Introduction
+The no-arbitrage condition is a fundamental concept in ﬁnancial market research (Almeida
+et al., 2023). The limits-to-arbitrage literature highlights widespread empirical deviations
+from no-arbitrage pricing, shedding light on how constraints drive persistent cross-sectional
+and time-series variation in pricing errors. In our paper, the pricing error ωi,t refers to the
+misalignment in normalized prices between paired securities i at time t. Such pairings may
+arise from parity-pricing conditions with clear economic foundations (e.g., cross-listed stocks
+and the law of one price), or from cointegrated-pricing relations lacking an obvious or stable
+economic link (e.g., pairs-trading and capital structure arbitrage).
+Arbitrage constraints and trading frictions inﬂuence arbitrage via two channels. First,
+they impose (explicit or implicit) costs that set upper and/or lower bounds for arbitrage.
+Together, these determine the skewness and magnitude of the no-arbitrage band. Second,
+constraints such as short-sale restrictions or funding illiquidity can limit an arbitrageur’s
+ability to act on non-trivial pricing errors, particularly when convergence risk is present,
+as this risk may di!er between upper and lower bounds. Our parsimonious outline of the
+arbitrage mechanism applies to both parity-pricing and cointegrated-pricing (or statistical)
+arbitrage. While many constraints a!ecting ωi,t are well studied, the arbitrage mechanism
+itself remains unobservable to econometricians.
+Chen et al. (2021) introduce a method to infer the implied arbitrage mechanism by modeling
+the dynamics of ωi,t within its no-arbitrage band. When ωi,t moves outside this band,
+it becomes non-trivially proﬁtable, attracting arbitrage ﬂows that push it back toward
+equilibrium. They embed a generalized smooth-transition (GST) function in a Vector ErrorCorrection Model (VECM), allowing the error-correction process to transition between
+arbitrage and no-arbitrage states. The GST also quantiﬁes arbitrage intensity as the
+incremental correction during arbitrage states.
+2
+
+We address a key limitation in Chen et al. (2021): while their model includes a convergence
+risk term, it is omitted from the empirical analysis due to estimation complexity. Their
+model primarily applies to parity-pricing arbitrage, where ωi,t decays over time and εωi,t
+follows a time-dependent volatility pattern, as in the case of futures arbitrage with a known
+expiry. However, as Shleifer and Vishny (1997) explain, even parity-pricing arbitrage is
+not riskless. Interim losses may trigger margin calls and force early liquidation. Since
+arbitrageurs are often capital-constrained and use leverage, they are especially sensitive to
+convergence risk, which should therefore be incorporated into statistical arbitrage strategies.
+To incorporate convergence risk, we propose a modiﬁed GST (MGST) function. We allow
+ωi,t to follow a conditional volatility process and specify no-arbitrage bandwidths using a
+GARCH-in-Mean structure. This lets the band for cointegrated pricing errors be at least
+as wide as that for parity-pricing errors. A wider band implies a larger expected proﬁt
+per round-trip, compensating arbitrageurs for convergence risk. The MGST framework
+enables pair-level calibration of trading parameters and captures cross-sectional variation in
+convergence risk, which we empirically identify as a key driver of proﬁtability.
+Compared to Chen et al. (2021), our MGST-VECM spans a broader strategy space and has
+greater practical relevance. Parity-pricing opportunities are limited and heavily targeted
+by high-frequency traders. In contrast, statistical arbitrage o!ers more potential proﬁt,
+albeit with higher convergence risk. We also replace their GARCH process with a Doubleendogenous Threshold GARCH (DeTGARCH) speciﬁcation. Like EGARCH (Nelson, 1991)
+and GJR-GARCH (Glosten et al., 1993), DeTGARCH allows asymmetric volatility, but
+without assuming that negative pricing errors are inherently more volatile, since ωi,t is a
+di!erence in normalized prices and directionality is arbitrary.
+DeTGARCH o!ers three advantages over standard GARCH. First, separate thresholds for
+positive and negative ωi,t allow for arbitrage asymmetry, resulting in a skewed no-arbitrage
+3
+
+band. Second, convergence risk may di!er by direction because certain constraints can
+a!ect one security more than the other. Third, by estimating thresholds endogenously, we
+obtain pair-speciﬁc no-arbitrage bands that support tailored trading decisions. The MGST
+framework therefore captures variation in arbitrage bands across pairs i = 1, 2, . . . , N.
+This conceptual advance requires a more complex estimation procedure. The MGST-VECM
+embeds a DeTGARCH process within a GST function linked to the VECM error-correction
+term. While a standard approach would sequentially estimate each component, simultaneity
+issues arise: the endogenous thresholds ω+
+i , ω→
+i must align with transition functions F +, F →
+where arbitrage activity begins, which in turn requires εωi,t from the DeTGARCH. But εωi,t
+cannot be generated without ﬁrst estimating the GST.
+To resolve this, we implement a two-stage recursive maximum likelihood estimation (MLE),
+extending the method in Chen et al. (2021). In stage one, each model component is estimated
+independently. For DeTGARCH, we use the 90th and 10th percentiles of in-sample ωi,t as
+initial thresholds, allowing us to estimate εωi,t for GST and VECM initialization. These
+estimates are used as seeds in the recursive MLE, which iterates until F +, F →converge to
+zero within a set tolerance. The resulting thresholds ω+
+i , ω→
+i deﬁne the optimized no-arbitrage
+band for each pair. A ﬁnal estimation round then jointly ﬁts the full MGST-VECM model.
+Our empirical application involves two arbitrage strategies: one based on cross-listed A-H
+stocks in mainland China and Hong Kong, and the other on statistically matched pairs
+from the CSI300 index. Using the estimated MGST bands, we construct separate A-H and
+pairwise arbitrage portfolios. We ﬁnd that the MGST strategy consistently outperforms
+three benchmarks using ﬁxed no-arbitrage bands based on 90%, 95%, and 99% conﬁdence
+intervals as in Gatev et al. (2006), with transaction costs included following Leippold et al.
+(2022). The performance edge is especially strong for the pairwise sample, where MGST
+imposes narrower bands and trades more frequently, yielding the highest net returns. Its
+4
+
+Sharpe ratio exceeds all benchmarks, except the 90% interval in the A-H sample.
+We attribute the MGST portfolio’s superior performance to its ability to capture crosssectional variation in no-arbitrage bands NaBi,M. Benchmark strategies ﬁx the band level
+at zero and apply a constant conﬁdence interval ϑ across all pairs, making volatility εωi the
+only source of cross-sectional variation. However, when we infer the implied ϑi from NaBi,M,
+substantial residual variation remains, indicating that εωi alone does not fully explain
+NaBi,M. Furthermore, although the average band level is close to zero, noticeable variation
+across pairs suggests the presence of arbitrage asymmetry, which is ignored by benchmark
+approaches. Ultimately, the MGST strategy’s ability to tailor arbitrage mechanisms to
+individual pairs is what drives its superior returns.
+2
+The MGST-VECM
+2.1
+Related Literature
+To provide readers a better appreciation of the merits of the MGST-VECM, we review the
+existing literature on statistical arbitrage. The literature on statistical arbitrage consists
+of two main strands. The ﬁrst investigates sources of proﬁtability and associated risks.
+Gatev et al. (2006) examine pairs trading, which exploits relative mispricing between stocks,
+and ﬁnd signiﬁcant excess returns net of transaction costs over Fama-French factors. They
+attribute these proﬁts to compensation for a latent risk factor related to enforcing the Law
+of One Price. Jacobs and Weber (2015) conduct a cross-country study across 34 stock
+markets and document persistent abnormal returns. Chen et al. (2019) also report abnormal
+proﬁts and identify two sources: short-term reversal in one or both stocks, and short-term
+industry momentum, where a leader stock triggers entry and a follower stock prompts exit.
+The second strand focuses on how calibration methods a!ect performance. Krauss (2017)
+5
+
+review over 100 papers and classify calibration techniques into ﬁve categories: distance,
+cointegration, time-series, stochastic control, and others. The ﬁrst three relate to pair
+selection, using non-parametric distance metrics, cointegration tests for stationarity, or
+time-series models assuming mean reversion. Stochastic control methods optimize portfolio
+weights within each pair, while the ﬁnal category includes less common techniques. The
+study also considers how trading frictions impact proﬁtability. Rad et al. (2016) compare
+distance, cointegration, and copula-based methods for identifying pairs. All yield positive
+alphas, with cointegration performing best during volatile periods. Yan et al. (2022) explore
+delayed cointegration under path-dependent models. More recent work adopts qualitative
+similarity metrics, such as keyword-based stock matching in ﬁrm news to identify return
+predictability (Box, 2018), stochastic control for cointegrated portfolios (Tourin and Yan,
+2013), convergence trading under recurring arbitrage (Liu and Timmermann, 2013), and
+models with transaction costs and stop-loss constraints (Lei and Xu, 2015).
+Our MGST-VECM contributes to both strands of the statistical arbitrage literature. For
+studies on the risks and returns of pairs trading, we emphasize the role of pair-speciﬁc
+convergence risk and how cross-sectional variation in calibrated parameters drives our
+portfolio’s outperformance over benchmarks. For the technical calibration strand, MGST
+estimates enable us to calibrate both the band-level and bandwidth of no-arbitrage zones
+at the pair level. While many studies explore calibration methods, they typically do so at
+the strategy level. In contrast, our pricing error thresholds are endogenously determined,
+allowing pairwise calibration of the MGST arbitrage strategy.
+2.2
+Model Construction
+Following Chen et al. (2021) (see Supplementary Material for model details), we ﬁrst outline
+a bivariate VECM in Equation (1), where ra,t and rb,t are the returns for cointegrated assets
+6
+
+A and B, ωt→1 is the lagged mispricing (error-correction) term, and va,t, vb,t are i.i.d shocks to
+ra,t and rb,t respectively. The term ωt→1 is ﬁtted with modiﬁed generalized smooth transition
+(MGST) function F
+!
+ωi,t→1, εωi,t→1, !
+"
+→[0, 1].
+ra,t = ϖa
+0 +
+S
+#
+s=1
+$
+ϖa
+1sra,t→s + ϖb
+1srb,t→s) +
+$
+ϱa
+1 + ϱa
+2 · F
+!
+ωi,t→1, εωi,t→1, !
+"%
+ωt→1 + va,t
+rb,t = ϖb
+0 +
+S
+#
+s=1
+$
+ϖa
+2sra,t→s + ϖb
+2srb,t→s
+%
++
+$
+ϱb
+1 + ϱb
+2 · F
+!
+ωi,t→1, εωi,t→1, !
+"%
+ωt→1 + vb,t
+F
+!
+ωi,t, εωi,t, !
+"
+→[0, 1]
+(1)
+The lagged pricing error ωt→1 a!ects ra,t and rb,t through the error-correction coe"cients
+(ϱa
+1, ϱa
+2) and (ϱb
+1, ϱb
+2) respectively. The ϱ2 coe"cients allow ωt→1 to deliver a ‘second-gear’
+error-correction is controlled by F
+!
+ωi,t→1, εωi,t→1, !
+"
+.
+The latter captures the arbitrage
+mechanism that is inherent in the data; When ωt→1 ﬂuctuates within its no-arbitrage
+band, F
+!
+ωi,t→1, εωi,t→1, !
+"
+is trivial, and Equation (1) resembles a standard VECM. When
+ωt→1 ﬂuctuates outside its no-arbitrage band, F
+!
+ωi,t→1, εωi,t→1, !
+"
+increases, which shifts the
+error-correction mechanism into second-gear, due to the inﬂux of arbitrage order ﬂow. As
+arbitrage trading forces ωt→1 back within its no-arbitrage band, F
+!
+ωi,t→1, εωi,t→1, !
+"
+decreases,
+thereby shifting the error-correction mechanism back to ﬁrst-gear. The coe"cient vector !
+reveals the time-series dynamics in ωt→1 as it ﬂuctuates in (no-arbitrage) and out (arbitrage)
+of its no-arbitrage band. By capturing non-linearity and state-switching e!ects in the
+error-correction mechanism, the estimated transition function reveals the implied arbitrage
+mechanism from pricing data of paired securities A and B.
+Next, following Chen et al. (2021), we present the MGST function, and the functional form
+for F +
+t , F →
+t are presented in Equation (2), where ! denotes the MGST coe"cient vector.
+The key modiﬁcation relative to Chen et al. (2021) is that we replace the proposed GARCH
+process for εωi,t, with a Double-endogenous Threshold GARCH (DetGARCH) speciﬁcation.
+7
+
+F
+!
+ωi,t→1, εωi,t→1, !
+"
+= Max
+!
+F +
+t , 0
+"
++ Max
+!
+F →
+t , 0
+"
+F +
+t = ς1Dt
+!
+1 ↑e→ωi,t→1 ↑
+$
+φ1 + φ↑
+1εωi,t→1
+%"
+F →
+t = ς2 [1 ↑Dt]
+&
+1
+1 + eωi,t→1 ↑
+$
+φ2 + φ↑
+2εωi,t→1
+%'
+(2)
+where Dt takes the value 1 when ωi,t→1 > 0, and 0 when ωi,t→1 ↓0. Consider two cointegrated
+securities A and B that share a common stochastic trend. In Equation (3), their prices
+At, Bt exhibit a cointegrating relation over time, where ωi,t ↔(0, ε2
+ωi,t) is the normalized
+pricing error between A and B, for pairwise securities i = 1, 2, ..., N.
+At = ↼0 + ↼1Bt + ωi,t
+(3)
+Kourtellos et al. (2016) and Kourtellos et al. (2022) propose an estimation procedure and
+made inference from models with endogenous thresholds as well as endogenous regressors,
+under certain parametric assumptions. We generate ε2
+ωi,t from a DeTGARCH (1,1) in
+Equation (4), where et ↔N(0, 1).
+ωi,t = εωi,tet
+ε2
+ωi,t = a0 +
+$
+a1 + a2I+
+t + a3I→
+t
+%
+ω2
+i,t→1 + b1ε2
+ωi,t→1
+(4)
+where
+
+
+
+
+
+
+
+
+
+
+
+I+
+t = 1
+for ωi,t→1 > ω+
+i | F +
+t = 0; Otherwise = 0,
+I→
+t = 1
+for ωi,t→1 < ω→
+i | F →
+t = 0; Otherwise = 0.
+Denote ω+
+i , ω→
+i correspondingly as the threshold for positive and negative pricing error of pair
+i. These thresholds are endogenous; They are included in ! to be estimated from price data.
+This allows us to calibrate pair-speciﬁc no-arbitrage bands endogenously from historical
+data, such that the MGST arbitrage portfolio accommodates cross-sectional variation in
+8
+
+no-arbitrage bands of paired securities i. The indicator variables I+
+t , I→
+t correspond to the
+lagged pricing error ωi,t→1 rising above or falling below its corresponding threshold. As such,
+(ω+
+i , ω→
+i ) represent an implied no-arbitrage band that delivers conditional volatility e!ects
+that di!er depending on whether ωi,t→1 is above (a1 + a2), within (a1) or below (a1 + a3) its
+no-arbitrage band. The estimated thresholds (ω+
+i , ω→
+i ) are required to satisfy F + = 0 and
+F →= 0 respectively; The horizontal intersects of the transition function correspond to the
+pricing error crossing its upper or lower arbitrage bound.
+2.3
+Estimation Procedure
+For ease of notation, denote as coe"cient vectors ωε = {ω+
+i , ω→
+i } for the endogenous
+thresholds, ωϑ = {↼0, ↼1} for the parameters to normalize the pricing error between paired
+securities At, Bt, and ωT = {a0, a1, b1, a2, a3} for the DeTGARCH coe"cients.
+In Equation (5), we present the MGST-VECM in matrix form, and denote ωV as the
+coe"cient matrix for the VECM and MGST function parameters. To summarise, the
+MGST-VECM estimation procedure involves four sets of coe"cients {ωε, ωϑ, ωT, ωV }.
+,ra,t
+rb,t
+-
+=
+,ϖa
+0
+ϖb
+0
+-
++
+S
+#
+s=1
+
+
+
+
+ϖa
+1,s
+ϖb
+1,s
+ϖa
+2,s
+ϖb
+2,s
+
+
+
+
+,ra,t→s
+rb,t→s
+-
++
+
+
+
+
+ϱa
+1
+ϱa
+2
+ϱb
+1
+ϱb
+2
+
+
+
+
+,
+1
+F
+!
+ωi,t→1, εωi,t→1, !
+"
+-
+ωi,t→1+
+,va,t
+vb,t
+-
+Y t = ϖ0 +
+S
+#
+s=1
+!sY t→s + ”Zt→1 + Et
+ωV =
+
+
+
+
+ϖa
+0
+ϖa
+1
+ϖb
+1
+ϱa
+1
+ϱa
+2
+ς1
+φ1
+φ↑
+1
+ϖb
+0
+ϖa
+2
+ϖb
+2
+ϱb
+1
+ϱb
+2
+ς2
+φ2
+φ↑
+2
+
+
+
+
+(5)
+For the GST-VECM, Chen et al. (2021) impose the restriction φ↑
+1 = φ↑
+2 = ωε = ωT = 0, and
+estimate the remaining coe"cients in ωV . They focus the discussion on how {ς1, ς2; φ1, φ2}
+reveal the implied arbitrage mechanism from pricing data. To follow, the MGST-VECM
+9
+
+estimation poses a signiﬁcant challenge over the GST-VECM, and not simply in terms
+of more coe"cients to estimate; The MGST-VECM consists of a DeTGARCH embedded
+in the MGST function F[ωi,t→1, εωi,t→1, !], which is attached to the error-correction term
+of the VECM. A standard approach is to estimate each component of a nested model,
+sequentially from the inner layer out. But the challenge here stems from ωε; Not only are
+ω+
+i and ω→
+i to be determined endogenously, they need to satisfy the conditions F +
+t = 0 and
+F →
+t
+= 0. But these conditions depend on the parameters of the MGST function, which
+cannot be estimated without εωi,t→1 from the DeTGARCH. In contrast, the GST-VECM
+has a two-layer functional form that can be sequentially estimated starting with the GST
+function, and then proceed to the VECM.
+The use of multi-step MLE procedures to handle ﬁnancial data with non-Gaussian likelihoods
+has become widely accepted in the literature, addressing issues like heavy-tailed returns and
+model misspeciﬁcation (Fan et al., 2014). Thus, to address the simultaneity problem between
+DeTGARCH and F[ωi,t→1, εωi,t→1, !], we employ a two-step recursive Maximum Likelihood
+Estimation (MLE), following the work by Kim (2009) and Murphy and Topel (2002). A
+two-step estimation method is commonly used due to its computational simplicity (Jin
+and Lee, 2021). Guggenberger and Hahn (2005) show that a two-step empirical likelihood
+procedure can produce estimators with ﬁnite sample properties.
+Figure 1 illustrates our estimation procedure; We start with the Engle and Granger (1987)
+cointegration test on related prices At, Bt. The estimated ωϑ is used to generate in-sample
+normalized pricing errors ωi,t. We stipulate the 90th and 10th percentile as the initial
+threshold set ωε, and proceed to estimate the DeTGARCH coe"cient set ωT using quasiMLE or QMLE (Pan et al., 2008). This allows us to generate an initial conditional volatility
+time-series εωi,t, which we input to the MGST function to estimate the coe"cient set ωV
+using MLE (Rothman et al., 2001). This completes the ﬁrst estimation round to generate
+10
+
+an initial set of estimates for {ωϑ, ωε, ωT, ωV }.
+Using the initial parameters for F[ωi,t→1, εωi,t→1, !] and ωT, we update the thresholds by
+imposing the corresponding constraint ω+
+i |F +
+t = 0 and ω→
+i |F →
+t = 0. The updated ωε set is
+endogenously determined based on ωT and the transition function’s ς, φ coe"cients in ωV ,
+and is required to satisfy the conditions F +
+t = F →
+t = 0. Replacing the initial ωε with the
+updated thresholds, we repeat the estimation round. This recursive estimation continues
+until the procedure derives an optimal ωε which minimizes the magnitude of (F +
+t , F →
+t ),
+based on a pre-speciﬁed error-tolerance from zero. Below, we summarize the key steps of
+our estimation procedure.
+Step 1: Derive initial estimates for ωϑ, ωi,t, ωε
+For each paired ﬁrms (At, Bt), we
+perform the Engle and Granger (1987) test to conﬁrm their cointegration status. Only pairs
+that pass the cointegration test are shortlisted for potential trading. From the estimated
+ωϑ, we obtain a normalized pricing error series ωi,t. The initial ωε = (ω+
+i , ω→
+i ) is set as the
+90th and 10th percentile of ωi,t.
+Step 2: Estimate ωT
+Using the initial values for {ωϑ, ωt, ωε} from Step 1, we estimate ωT
+for the DeTGARCH. To allow the estimated coe"cients to detect a potentially asymmetric
+arbitrage mechanism from the data, we follow Pan et al. (2008) and apply Gaussian quasimaximum likelihood estimation (QMLE) instead of MLE estimation. The latter solves
+ωT to maximize the likelihood of observing the pricing errors under the assumption of an
+uniform local asymptotically normal distribution. Assuming et ↔N(0, 1), we obtain the
+conditional log-likelihood function:
+L
+$
+ωT, ωϑ%
+= ↑1
+2
+N
+#
+n=1
+
+
+
+ω2
+t
+ε2
+ωt
+$
+ωT, ωε% + ln
+!
+ε2
+ωt
+$
+ωT, ωε%"
+
+
+↑ln
+↗
+2↽
+(6)
+Therefore, the Gaussian QMLE can be deﬁned as:
+11
+
+˜
+ωT, ˜ωε
+
+= argmin L
+$
+ωT, ωε%
+(7)
+The estimation procedure searches for the QMLE ˜
+ωT that maximizes L(ωT, ωϑ). After
+deriving ˜
+ωT, the estimation procedure further maximizes L(ωT, ωϑ) to obtain ˜
+ωϑ. Using the
+estimated ( ˜
+ωT, ˜
+ωϑ), we generate ωi,t and ε2
+ωi,t from the DeTGARCH.
+Step 3: Estimate ωV
+This step corresponds to the estimation procedure in Chen
+et al. (2021). Their pricing error ωi,t is based on a parity condition e.g. carry-cost adjusted
+basis, which has a time-decay process that guarantees convergence at futures contract
+maturity. Since there is no convergence risk ε2
+ωi,t = 0, Steps 1 and 2 are not required
+for the GST-VECM estimation. Assuming the VECM residuals va,t, vb,t are identical and
+independently distributed (i.i.d), and follow a N(0, ”) distribution, we estimate ωV to
+maximize the log-likelihood function ⇀(ωV ), and derive the coe"cient set ˜
+ωV .
+⇀
+$
+ωV %
+= ↑N
+2 ln det(”) ↑1
+2
+N
+n=1
+$
+Y t ↑ϖ0 ↑S
+s=1 #sY t→s ↑”Zt→1
+%↑
+”→1 $
+Y t ↑ϖ0 ↑S
+s=1 !sY t→s ↑”Zt→1
+%
+(8)
+Chen et al. (2021) estimate ⇀using nonlinear least square (NLS). Following Zhao and
+Palomar (2017), we apply MLE on ωV ; NLS and other standard estimation methods assume
+a Gaussian distribution for the VECM. This is inconsistent with the heavy-tailed distribution
+that intraday returns exhibit. Furthermore, the MGST function allows pricing error to
+behave di!erently, not only between no-arbitrage and arbitrage states, but also between
+upper and lower bound violation. Compare to NLS, MLE has been shown to produce more
+robust estimates with desirable properties of consistency, e"ciency and asymptotic normality.
+Zhao and Palomar (2017) provide a comprehensive review, and MLE is a commonly used
+method to estimate complex statistical models.
+Step 4: Update ωε on endogenous thresholds
+The initial values for ωε is an ad-hoc
+12
+
+Figure 1: MGST-VECM Estimation Procedure
+The ﬁgure illustrates the MGST-VECM recursive estimation procedure, which has ﬁve key steps. From Steps 1↔3, we derive initial parameter estimates for
+the model. In Step 4, we iterate on the endogenous thresholds for F +, F →to approach zero. And in Step 5, we apply the updated thresholds back to Step 2,
+re-estimate the DeTGARCH, and generate conditional volatility to input into Step 3. The recursive estimation procedure continues until F +, F →are
+su!cient close to zero, based on a pre-speciﬁed error-tolerance.
+13
+
+speciﬁcation as the 90th and 10th percentile of the in-sample normalized pricing error from
+the cointegration test. This allows us to ‘kick-start’ the estimation procedure and derive
+DeTGARCH parameters to generate εωi,t. By completing Step 3, we obtain initial values for
+all coe"cient sets {ωϑ, ωε, ωT, ωV }. We substitute relevant estimates into the two conditions
+below to back-out the endogenous threshold set ˜ωε.
+˜ωω =
+
+
+
+
+
+
+
+ω+
+i
+s.t
+!
+1 ↑e→ωi,t→1 ↑
+$
+φ1 + φ↑
+1εωi,t→1
+%"
+= 0
+ω→
+i
+s.t
+!
+1
+1+eω,t,→1 ↑
+$
+φ2 + φ↑
+2εωi,t→1
+%"
+= 0
+(9)
+In the estimation procedure, we pre-specify an error-tolerance range of ± 0.001, within
+which the iterated thresholds ˜ωε = {ω+
+i , ω→
+i } are deemed to satisfy F +
+t
+= 0 and F →
+t
+= 0
+respectively. When this condition is met, we update the initial ωε with ˜ωε.
+Step 5: Recursive estimation
+After Step 4, we input the updated threshold values
+in ˜ωε back to Step 2, and re-estimate ωT for the DeTGARCH. The rest of the estimation
+procedure then follows from Figure 1. This allows us to obtain updated parameter sets
+{ωε, ωT, ωV }, which completes the estimation procedure.
+During the initial estimation round, it is not always possible to update successfully from ωε
+to ˜ωε in Step 4. For example, the estimated ωi,t and ε2
+ωi,t may not contain feasible solutions
+that can satisfy F +
+t = 0 and F →
+t = 0. To address this, we specify the estimation procedure
+to stop when one of the following scenarios occur:
+(1) The initial ωε is successfully updated to ˜ωε = {ω+
+i , ω→
+i }, based on the pre-specify errortolerance range which satisﬁes F +
+t = 0 and F →
+t = 0. When this happens, we apply ˜ωε in
+Step 2, and complete the estimation procedure in Step 3 to update {ωε, ωT, ωV }.
+(2) The initial ωε is unsuccessfully updated i.e. the iteration in Step 4 fails to satisfy either
+F +
+t = 0 or F →
+t = 0. Here, the last iterated values for ω+
+i , ω→
+i are used to repeat the estimation
+14
+
+from Step 2 to 4. This recursive procedure stops after obtaining ˜ωε = {ω+
+i , ω→
+i } that satisfy
+F +
+t = F →
+t = 0. If this is not acheived after 500 iterations, the pair is dropped from trading.
+3
+Model Estimation and Trading Application
+3.1
+A-H Trading and Pairs Trading
+We evaluate the MGST-VECM through two arbitrage strategies with di!ering levels of
+convergence risk: A-H arbitrage and statistical pairs trading.
+First, the A-H sample consists of 20 ﬁrms cross-listed on the Shanghai/Shenzhen Stock
+Exchange and Hong Kong Exchange, from 2021 to 2022. A-shares are traded in RMB and
+H-shares in HKD. While the two share classes have identical dividend and voting rights,
+pricing discrepancies persist due to market segmentation, trading frictions, and regulatory
+constraints. Although not a strict parity condition, A-H pricing is grounded in economic
+fundamentals and exhibits strong co-movement, suggesting limited convergence risk.
+We obtain one-minute trading data from Wind Database and convert H-share prices
+to RMB using the contemporaneous RMB/HKD exchange rate.
+To account for level
+di!erences between A and H prices, we normalize the price series before measuring mispricing.
+Speciﬁcally, we estimate the regression At = ↼0 + ↼1Ht + ωi,t using in-sample data and
+deﬁne the normalized pricing error ωi,t as the residual. We then normalize the price series
+by setting At = 1 and applying the estimated coe"cients to compute the implied value of
+Ht. This ensures the trading signals are based on relative mispricing, not raw price gaps.
+Cointegration tests are conducted for each ﬁrm to verify the long-run equilibrium condition.
+Firms that do not pass the test are excluded from out-of-sample trading. The ﬁnal A-H
+sample covers a range of industries and market capitalizations to ensure representativeness.
+Second, the pairs trading sample includes 20 unique stock pairs selected monthly from
+15
+
+CSI300 constituents based on a distance measure following Gatev et al. (2006). The measure
+is calculated as the cumulative absolute di!erence in normalized prices over the prior year.
+Pairs are re-ranked monthly using a rolling window from January to December 2021, and the
+top-ranked non-overlapping pairs that pass the cointegration test are retained for trading
+in the subsequent month. This monthly rebalancing avoids look-ahead bias and captures
+evolving statistical relationships.
+For each selected pair, we estimate the MGST-VECM using in-sample data, then apply the
+estimated parameters to generate trading signals out-of-sample. The strategy opens a trade
+when the normalized pricing error ωi,t breaches the estimated no-arbitrage band and closes
+it when ωi,t reverts to zero. Trades are liquidated at month-end if convergence does not
+occur, in line with a max holding period constraint. This setup allows for cross-sectional
+variation in trading thresholds, as the MGST model endogenously determines pair-speciﬁc
+no-arbitrage band levels and widths. We follow the same procedure for A-H trading, though
+rebalancing is not required due to the stable nature of cross-listed pairs.
+This empirical design enables a direct comparison between low-risk arbitrage (A-H) and
+high-risk arbitrage (pairs), highlighting the MGST-VECM’s ability to adapt to convergence
+risk. The model’s dynamic calibration of entry and exit thresholds accommodates both timevarying volatility and asymmetry in arbitrage mechanisms, which are especially important
+in the pairs-trading context. Details on A-H and pairs trading, including data sources,
+sample selection, normalization procedures and results, and cointegration test results, are
+provided in the Supplementary Material.
+3.2
+MGST-VECM Estimation Results
+For the A-H sample, 15 out of 20 ﬁrms pass the Engle and Granger cointegration test. Using
+the 2021 in-sample period, we estimate the MGST-VECM for each of these 15 ﬁrms, as
+16
+
+Table 1: MGST-VECM Estimates for LOP Sample (202101–202112)
+A-Share
+H-Share
+ω+
+ω→
+εa
+1
+εa
+2
+εb
+1
+εb
+2
+601588
+0588
+0.0564
+-0.0290
+-0.0021
+0.9363
+0.0002
+0.0035
+600874
+1065
+0.0216
+-0.0237
+-0.0005
+-0.6533
+0.0005
+0.4467
+002672
+0895
+0.0338
+-0.0591
+-0.0007
+-0.0025
+0.0004
+0.0056
+600860
+0187
+0.1788
+-0.1090
+0.0023
+-0.0127
+0.0056
+-0.0264
+601398
+1398
+0.0147
+-0.0255
+0.0196
+-5.7481
+-0.0088
+2.7817
+601288
+1288
+0.0206
+-0.0100
+-0.0077
+0.0023
+0.0056
+-0.0097
+601088
+1088
+0.0425
+-0.0497
+-0.0001
+-0.0034
+0.0004
+0.0005
+601857
+0857
+0.0824
+-0.0217
+-0.0010
+0.2579
+0.0027
+-0.9298
+601988
+3988
+0.0123
+-0.0112
+-0.8420
+4.5046
+0.2099
+-1.1209
+600036
+3968
+0.0209
+-0.0464
+0.0001
+-0.0400
+0.0005
+0.0443
+A-Share
+H-Share
+ϑ1
+ϖ1
+ϖ↑
+1
+ϑ2
+ϖ2
+ϖ↑
+2
+601588
+0588
+0.0007
+0.5116
+0.5093
+-1.8014
+0.5011
+0.2496
+600874
+1065
+-0.0600
+0.0068
+1.0616
+2.0239
+0.4902
+0.7012
+002672
+0895
+0.0012
+0.5028
+0.5133
+0.0187
+0.5034
+0.5150
+600860
+0187
+-0.0526
+2.0388
+5.1136
+0.4284
+-0.0392
+0.7625
+601398
+1398
+-0.0051
+0.8471
+-0.2100
+6.5601
+0.4994
+0.2518
+601288
+1288
+0.0186
+0.4848
+0.4916
+-0.0043
+0.4920
+0.5053
+601088
+1088
+-0.1245
+3.7258
+2.6660
+0.7735
+0.5198
+0.4963
+601857
+0857
+-0.0007
+2.2363
+16.6641
+0.0205
+0.5119
+0.5089
+601988
+3988
+-5.7145
+0.0316
+1.0472
+-1.1815
+0.6534
+0.3616
+600036
+3968
+-0.1099
+0.4880
+0.5054
+0.0108
+0.5053
+0.5004
+Notes: This table presents the parameter estimates for normalized LOP paired asset prices using the
+MGST-VECM estimation method. We independently repeated the estimation process ﬁve times and
+reported the results with the highest likelihood function value in this table.
+summarized in Figure 1, and apply the estimated parameters to the 2022 out-of-sample
+trading period. In contrast, the pairwise sample is constructed monthly by identifying,
+ranking, and testing ﬁrm pairs for cointegration, so the number of valid pairs varies over time.
+During the 12-month out-of-sample period, between 14 and 18 ﬁrm pairs are shortlisted
+each month for MGST-VECM estimation and trading.
+Estimation results for the A-H sample are shown in Table 1, and those for the pairwise
+sample in Table 2. The estimation procedure fails to converge for 5 of the 15 A-H ﬁrms,
+17
+
+so Table 1 reports results for the remaining 10 ﬁrms used in trading. For the pairwise
+sample, 14 pairs pass the cointegration test in January 2022, but 6 fail to converge during
+MGST-VECM estimation. Table 2 presents results for the 8 successfully estimated pairs.
+On average, 8 to 12 ﬁrm pairs are included in out-of-sample trading each month in 2022.
+The MGST-VECM estimation produces a set of parameters across three model components:
+a TGARCH speciﬁcation embedded within the MGST function, which in turn is nested in
+the error-correction term of a bivariate VECM. We focus on the parameters directly relevant
+for calibrating the arbitrage strategy, namely ωε and ωT. From the cointegration test, we
+obtain the estimate of ωϑ and the normalized pricing error ωt as the regression residual.
+These are used to set the initial threshold values ωε, enabling estimation of the TGARCH
+component in Step 2. The remaining steps follow the procedure outlined in Figure 1.
+The estimated ωε corresponds to a pair of endogenous thresholds from the TGARCH, which
+governs ﬂuctuation in the normalized pricing error over time. In the trading application,
+ωε represents the implied no-arbitrage band NaBi,M on the normalized price di!erence
+between A-H or pairwise ﬁrms i=1,.... We elaborate in the next section how ωε is used to
+calibrate the arbitrage strategy.
+3.3
+Out-of-Sample Performance
+We report and evaluate the out-of-sample trading performance of the MGST-VECM based
+portfolio strategy, against benchmark arbitrage portfolios.
+3.3.1
+Calibrating the Arbitrage Strategies
+The MGST estimation results for both the A-H and pairwise ﬁrm samples are used to
+calibrate the arbitrage strategy. For each pair i, the strategy assumes a mean-reverting
+normalized pricing error ωi,t. When ωi,t exceeds the upper or lower bound of the no-arbitrage
+18
+
+Table 2: MGST-VECM Estimates for Statistical Arbitrage Sample (202101–202112)
+Stock A
+Stock B
+ω+
+ω→
+εa
+1
+εa
+2
+εb
+1
+εb
+2
+000800
+688981
+0.0598
+-0.0295
+-0.0006
+0.0143
+0.0000
+-0.0005
+600000
+601229
+0.0552
+-0.0135
+0.0004
+0.0023
+0.0009
+-0.0097
+600015
+601998
+0.0174
+-0.0202
+0.0009
+-1.1225
+0.0023
+-1.0894
+600029
+601111
+0.0255
+-0.0202
+-0.0019
+0.0013
+0.0006
+0.0124
+600606
+601816
+0.0412
+-0.0774
+-0.0042
+2.5715
+0.0173
+-13.0815
+600926
+601021
+0.0520
+-0.0834
+-0.0002
+-0.0742
+0.0005
+-0.0521
+601006
+601988
+0.0219
+-0.0389
+0.0503
+-0.6603
+-0.1127
+1.4826
+601288
+601398
+0.0112
+-0.0139
+-0.0102
+0.3929
+0.0766
+-3.6372
+Stock A
+Stock B
+ϑ1
+ϖ1
+ϖ↑
+1
+ϑ2
+ϖ2
+ϖ↑
+2
+000800
+688981
+0.0000
+0.4979
+0.5047
+-0.0125
+0.5176
+0.4761
+600000
+601229
+0.0186
+0.4848
+0.4916
+-0.0043
+0.4920
+0.5053
+600015
+601998
+-0.0068
+0.4934
+0.5128
+0.2396
+0.4875
+0.4919
+600029
+601111
+0.0003
+0.4871
+0.5053
+0.0108
+0.5053
+0.5004
+600606
+601816
+-0.0026
+0.5521
+0.5692
+-0.1008
+0.5115
+0.2736
+600926
+601021
+-0.0127
+0.5085
+0.5033
+0.0054
+0.5035
+0.4962
+601006
+601988
+-0.2096
+0.4104
+-0.0750
+1.5076
+0.4514
+0.2244
+601288
+601398
+-0.0498
+0.4466
+0.5341
+-0.1160
+0.6623
+0.3800
+Notes: This table presents the parameter estimates for normalized LOP paired asset prices using the
+MGST-VECM estimation method. We independently repeated the estimation process ﬁve times and
+reported the results with the highest likelihood function value in this table.
+band, a trade is triggered: the higher-priced stock is shorted, and the lower-priced stock is
+bought. Once ωi,t reverts to zero, indicating price convergence, the position is closed.
+We present the benchmark pairs strategy from Gatev et al. (2006), outlined in Equations
+(10) to (11). The key di!erence lies in how the no-arbitrage band is calibrated.
+ωi,t =
+#
+(rA,t ↑rB,t) ↔
+$
+0, ε2
+ωi,t
+%
+Min ω2
+i,t =
+S
+#
+s=0
+(rA,t→s ↑rB,t→s)2
+(10)
+Gatev et al. (2006) follow a strategy-level approach, setting a uniform bandwidth NaBi,G
+for all pairs i = 1, 2, ..., N. Normalized prices are computed as cumulative total returns with
+19
+
+reinvested dividends. The pricing error ωi,t ↔(0, ε2
+ωi,t) is deﬁned as the return di!erence
+between the two stocks, where εωi is the in-sample volatility of ωi,t. All stock combinations
+are ranked by Euclidean distance ω2
+i,t, and the closest-moving pairs during the in-sample
+period are selected for out-of-sample trading.
+For each pair i = 1, 2, . . . , the benchmark no-arbitrage band is set as NaBi,G = ±2εωi,
+corresponding to a 95% conﬁdence interval around µωi = 0. During the out-of-sample period,
+if the pricing error ωi,t+s moves outside NaBi,G, a long-short position is initiated. The
+position is closed once the normalized price series converge, i.e., when ωi,t+s = 0. Any open
+position that fails to converge by month-end is forcibly closed, with proﬁt or loss calculated
+using the closing price on the last trading day. For robustness, we also implement the Gatev
+et al. (2006) strategy using alternative thresholds ϑ90 = 1.65 and ϑ99 = 2.58, corresponding
+to 90% and 99% conﬁdence intervals. Thus, the benchmark strategy NaBi,G spans three
+band widths: ϑ90, ϑ95, ϑ99.
+UBi,G = ϑεωi,
+LBi,G = ↑ϑεωi,
+NaBi,G = UBi,G ↑LBi,G = 2ϑεωi,
+ϑ = {ϑ90 = 1.645, ϑ95 ↘2, ϑ99 = 2.576}
+Open Signal: ωi,t+s > UBi,G or ωi,t+s < LBi,G
+Close Signal: ωi,t+s = 0
+(11)
+We measure the normalized pricing error as the residual from the Engle and Granger (1987)
+cointegration test regression. Equation (12) presents a similar calibration for the MGST
+strategy. Let NaBi,M denote the no-arbitrage bandwidth derived from MGST-estimated
+parameters (ω+
+i , ω→
+i ), which vary across pairs as the MGST estimation incorporates pairspeciﬁc convergence risk. In contrast, standard strategies such as Gatev et al. (2006) assume
+a zero-mean pricing error µωi = 0 and apply a ﬁxed conﬁdence interval ϑi = 2 for all i,
+20
+
+making εωi the only source of cross-sectional variation in NaBi,G. By comparison, NaBi,M
+relaxes both constraints. It allows µωi,m ≃= 0 and permits ϑi to vary across pairs, introducing
+additional dispersion in NaBi,M relative to NaBi,G.
+As shown in Equation (12), the dispersion in NaBi,G comes solely from εωi, while in NaBi,M
+it also reﬂects variation in ϑi and µωi,m. From a trading perspective, an optimal no-arbitrage
+bandwidth balances signal reliability and trading frequency. A wide band reduces trading
+opportunities and may miss proﬁts, while a narrow band increases trading activity, often
+chasing small gains that barely o!set transaction costs and increase exposure to convergence
+risk. The MGST-based NaBi,M allows bandwidths to adapt to each pair’s characteristics.
+Therefore, when comparing NaBi,M to NaBi,G, it is essential to evaluate performance net
+of transaction costs.
+ωi,t = Ai,t ↑↼0,i ↑↼1,i1Bi,t
+ω+
+i = µωi,m + ϑiεωi,m; ω→
+i = µωi,m ↑ϑiεωi,m,
+µωi,m = 1
+2
+$
+ω+
+i + ω→
+i
+%
+NaBi,M = ω+
+i ↑ω→
+i = 2ϑiεωi,m
+Open Signal: ω+
+i,t+s > ω+
+i or ω→
+i,t+s < ω→
+i
+Close Signal: ω+
+i,t+s ↓0 or ω→
+i,t+s ⇐0
+(12)
+Leippold et al. (2022) identify three components of transaction costs in the Chinese A-share
+market: commission, stamp duty, and slippage. Commission fees have declined over time,
+with retail investors currently paying around 0.02–0.03% per trade, and potentially less for
+institutional investors. Since 2008, a 0.1% stamp duty applies to sell transactions. Slippage
+arises from illiquidity; however, as ﬁrms in both the A-H and pairwise samples are highly
+liquid blue-chip stocks, we assume slippage is negligible. Based on these factors, we apply
+transaction costs of 0.03% for buys and 0.13% for sells, resulting in a total round-trip cost
+21
+
+Figure 2: Cumulative return of arbitrage portfolio over the trading period
+We plot the cumulative return for arbitrage strategies that are based on di"erent calibrations. The 3
+benchmark portfolios CR90, CR95, CR99 follow the Gatev et al. (2006) speciﬁcation over a range of noarbitrage bandwidths based on a ±1.65, 2 and 2.56 conﬁdence interval over the in-sample pricing error
+volatility ϱωi. Figures 4a and 4b correspond to the A-H and pairwise ﬁrm samples respectively.
+of 0.32% for both A-H and pairs trading.
+3.3.2
+Implementing the Arbitrage Strategies
+We form the arbitrage portfolio as follows: each pair i is treated as a tradable asset with
+RMB 100,000 in committed capital, totaling RMB 2 million for 2022. Each arbitrage
+position is a self-ﬁnancing long-short trade. The committed capital serves as a reserve in the
+22
+
+trading account to cover margin calls and track portfolio returns. Proﬁt and loss are marked
+to market, and the trading account balance is used to compute daily portfolio returns.
+Figure 2a and Figure 2b plot cumulative daily returns for the MGST strategy and three
+benchmark portfolios for the A-H and pairwise samples, respectively. The benchmarks
+represent increasing no-arbitrage bandwidths: ϑ99 is nested within ϑ95, which is nested
+within ϑ90. As expected, the benchmarks show strong co-movement, particularly between
+ϑ90 and ϑ95, due to their closer critical values. The jump from a 90% conﬁdence interval to
+95% increases the threshold from 1.65 to 1.96, while extending from 95% to 99% requires
+a much larger jump to 2.57, as the probability density is thinner in the tails and higher
+thresholds are needed to cover smaller probability masses.
+In the A-H sample, Figure 2a shows that although the MGST strategy achieves the highest
+cumulative return over the year, it underperforms ϑ90 and ϑ95 in the ﬁrst half.
+This
+underperformance is due to a sharp tech-sector sell-o! in Hong Kong in March 2022, which
+also a!ected H-shares. The Hang Seng Index hit a six-year low that month, and the
+Hang Seng Tech Index posted a 12% weekly loss. The downturn was triggered by the
+Russia-Ukraine conﬂict and increasing U.S. regulatory scrutiny of Chinese ﬁrms listed in
+the U.S.
+Because MGST uses narrower, ﬁrm-speciﬁc no-arbitrage bands, it opens positions earlier
+than the benchmarks. As the market continued to decline, MGST entered too soon and
+incurred losses, while the benchmark strategies reacted more slowly. The ϑ99 strategy, with
+the widest band, opened positions only in late March after most of the market decline
+had already occurred. As a result, it too started with a loss. Around two weeks later, the
+Hong Kong market began to recover, and all four strategies showed a reversal in cumulative
+return. However, the MGST portfolio’s early entry depressed its overall return level and
+increased volatility, especially in Q1. This helps explain why its Sharpe ratio is slightly
+23
+
+lower than that of ϑ90, despite delivering the highest average return for the year.
+In the pairwise sample, Figure 2b displays more stable co-movement across strategies, as no
+major crash occurred during the trading period. The MGST strategy’s performance edge
+becomes more evident over time. Unlike the ﬁxed A-H portfolio, the pairwise sample is
+updated monthly: ﬁrm pairs are re-identiﬁed, cointegration is re-tested, MGST parameters
+are re-estimated, and all positions are closed at month-end. This explains the recurring ﬂat
+segments in cumulative returns, that is, some months yield no trading signals. The e!ect is
+more pronounced for the ϑ99 benchmark, which has the widest band and thus trades less
+frequently.
+Because the pairwise strategy is updated monthly, we evaluate performance based on
+monthly returns, aggregated from the daily return series. Table 3 reports descriptive
+statistics for monthly returns and key performance indicators. The left and right columns
+present results for the A-H and pairwise samples, respectively, comparing MGST against its
+three benchmark strategies: ϑ90, ϑ95, ϑ99.
+The MGST strategy delivers the highest average monthly return: 0.19% for the A-H sample
+and 0.46% for the pairwise sample. As discussed in Figure 2a, the A-H portfolio also shows
+the highest volatility at 2.3%. Despite its strong mean return, its Sharpe Ratio (SR) of
+0.083 is lower than the ϑ90 benchmark’s 0.114. It also records the largest daily drawdown,
+with a maximum daily loss close to 1%. Excluding the ﬁrst quarter of 2022, which includes
+the Hang Seng Tech sell-o!, the MGST A-H portfolio’s Sharpe Ratio becomes the highest
+among all strategies.
+In contrast, the MGST pairwise portfolio not only achieves the highest mean return but
+also has lower volatility than all three benchmarks. Its Sharpe Ratio is 0.635, signiﬁcantly
+outperforming the benchmarks, which range from 0.298 to 0.377. The Min-Max range of
+monthly returns supports this ﬁnding. For the A-H sample, MGST returns range from
+24
+
+Table 3: Monthly trading performance of various arbitrage portfolios
+Portfolio
+AH sample
+Pairwise sample
+(1)
+(2)
+(3)
+(4)
+(5)
+(6)
+(7)
+(8)
+ς90
+ς95
+ς99
+MGST
+ς90
+ς95
+ς99
+MGST
+Mean
+0.12%
+0.04%
+-0.12%
+0.19%
+0.34%
+0.29%
+0.31%
+0.46%
+Median
+0.10%
+-0.13%
+-0.04%
+0.49%
+-0.23%
+0.01%
+0.22%
+0.15%
+Volatility
+0.010
+0.007
+0.006
+0.023
+0.012
+0.008
+0.008
+0.007
+Skewness
+-0.009
+0.523
+0.098
+-0.640
+0.738
+0.721
+0.264
+0.467
+Excess Kurtosis
+-0.880
+-0.914
+-0.630
+-0.532
+-1.154
+-0.906
+-0.471
+-1.344
+Min
+-1.60%
+-0.88%
+-1.12%
+-4.59%
+-0.84%
+-0.71%
+-1.07%
+-0.45%
+Max
+1.80%
+1.43%
+0.86%
+2.64%
+2.41%
+1.73%
+1.87%
+1.54%
+Daily Max. Draw.
+-0.52%
+-0.47%
+-0.40%
+-0.96%
+-0.34%
+-0.29%
+-0.20%
+-0.26%
+Sharpe Ratio
+0.114
+0.054
+-0.205
+0.083
+0.298
+0.360
+0.377
+0.635
+Total Trades (#)
+21
+14
+7
+54
+54
+38
+20
+107
+Round Trade (%)
+76.19% 78.57% 85.71% 88.89%
+72.22% 63.16% 60.00% 66.36%
+Ave. Holding Period
+45.82
+60.17
+73.37
+102.85
+10.17
+9.56
+10.60
+10.76
+Notes: We report trading results for the A-H and pairwise arbitrage portfolios, including the annualized
+mean, volatility, Sharpe ratio, and various trading statistics. Total trade refers to the total number of paired
+trades executed over the out-of-sample trading period. Round trade refers to the proportion of executed
+trades that are closed by price convergence. Daily max draw-down refers to the largest daily decline in the
+trading account balance, compared to the previous trading day. Lastly, ave. holding period refers to the
+average number of days that a position is being held.
+–4.59% to 2.64%, wider than all benchmarks. The benchmark Min-Max range narrows
+progressively from ϑ90 to ϑ99, consistent with earlier observations: wider bands delayed
+position openings during the Q1 market crash, shielding the benchmark portfolios from
+large losses. MGST’s narrower bands caused earlier entries into A-H trades, resulting in
+larger losses during the downturn.
+In terms of trading behavior, the MGST strategy is more active than all benchmarks in both
+samples. It executes 54 trades in the A-H sample, compared to 7–21 for the benchmarks,
+and 107 trades in the pairwise sample, compared to 20–54. Reported returns are net of
+transaction costs, so MGST remains proﬁtable despite higher trade frequency.
+The round-trip success rate, or the proportion of trades closed on convergence, is also
+25
+
+higher for MGST. It achieves 88.89% in the A-H sample and 66.36% in the pairwise sample,
+ranking highest and second-highest, respectively. The average holding period reﬂects the
+time a position remains open. For the A-H MGST portfolio, it averages 102.85 days,
+which is longer than any of its benchmarks. In the pairwise sample, all strategies show
+similar holding periods of around 10 days. Although the algorithm force-closes all trades
+at month-end, most positions naturally converge in about 10 days. Overall, the MGST
+strategy outperforms its benchmark counterparts across all no-arbitrage bandwidths.
+3.4
+Source of Arbitrage Proﬁtability
+In this section, we examine the likely source of proﬁtability for the MGST strategy relative
+to its benchmarks by evaluating the properties of NaBi,G and NaBi,M against out-of-sample
+pricing error volatility εωi,oos.
+3.4.1
+Explaining Return Di!erences via NaB Dispersion
+We assess whether greater cross-sectional dispersion in NaBi,M, compared to NaBi,G,
+contributes to the MGST strategy’s superior performance. In the A-H sample, a clear and
+stable economic link exists between A-H shares, implying low convergence risk. Accordingly,
+the average no-arbitrage bandwidth µNaBAH should be smaller than that of the pairwise
+sample. The latter lacks a strong economic basis, exposing it to greater convergence risk.
+Based on the MGST framework, we expect µNaBpair > µNaBAH.
+To explore the source of dispersion in NaBi,M relative to NaBi,G, we refer to Equation (11).
+Benchmark strategies {ϑ90, ϑ95, ϑ99} use ﬁxed ϑ across all pairs, so cross-sectional dispersion
+in NaBi,G depends only on εωi. In contrast, NaBi,M is based on MGST-estimated parameters
+(ω+, ω→), from which both ϑi and εωi cannot be simultaneously recovered. For comparison,
+we use two calibration approaches:
+26
+
+Figure 3: Cross-sectional dispersion in no-arbitrage bandwidth
+Following Gatev et al. (2006), we impose a 95% conﬁdence interval ς95 = 2 on the MGST estimated noarbitrage bandwidth, and back out the implied pricing error volatility ϱi,m. Denote SDi,m = |ϱωi,m ↑ϱi,oos|
+as the absolute di"erence between ϱi,m and out-of-sample pricing error volatility ϱωi,oos. Similarly, denote
+SDi = |ϱωi ↑ϱωi,oos| as the absolute di"erence between in-sample ϱi and out-of-sample pricing error
+volatility. On the right-side of Figure 5, we compare SDi,m against SDi for the AH sample in blue, and
+pairwise sample in red. An alternative approach is to impose ϱi on the MGST estimated no-arbitrage
+bandwidth, and back-out pair-speciﬁc implied conﬁdence intervals ςi,m. On the left side of Figure 5, we
+plot and compare ςi,m between the AH and pairwise sample.
+1. Fix ϑi = ϑ95 = 1.96 for all i, and back out implied εωi,m from NaBi,M.
+2. Use in-sample εωi to recover implied ϑi from NaBi,M.
+Both approaches are implemented for empirical analysis. In the ﬁrst, we evaluate εωi,m and
+compare its correlation with εωi,oos against in-sample εϑi. We expect the model-implied
+volatility to align more closely with out-of-sample performance. In the second approach,
+implied ϑi is derived and compared with benchmark levels {ϑ90, ϑ95, ϑ99}. Greater dispersion
+in εωi,oos justiﬁes allowing ϑi to vary across pairs. Whether we recover εωi,m or ϑi, both
+are consistent with the idea that convergence risk di!ers across stocks, especially in the
+pairwise sample. Benchmark strategies restrict εµωi = εϖi = 0, leaving εωi as the sole source
+of variation in NaBi,G, while MGST allows variation from all three sources.
+We begin by comparing the no-arbitrage bands of A-H and pairwise samples in Figure 3.
+27
+
+To ensure comparability, we use the January 2022 estimation window for both samples.
+The left panel plots the implied ϑi values. Blue dots represent A-H ﬁrms, and red dots
+represent pairwise stocks. Both groups show similar dispersion, but the mean ϑi is higher
+for the pairwise sample (¯ϑpair = 1.1) than for A-H ﬁrms (¯ϑAH = 0.75), reﬂecting the higher
+convergence risk priced by MGST. The right panel shows forecast error from in-sample and
+model-implied volatility. Let SDi = |εωi ↑εωi,oos| and SDi,m = |εωi,m ↑εωi,oos|. The A-H
+sample exhibits greater forecast error dispersion for both measures, though model-implied
+errors are less dispersed and have lower mean error than in-sample estimates. For the
+pairwise sample, both measures show narrower dispersion, and model-implied volatility
+still yields slightly lower forecast error on average. However, the mean forecast error from
+model-implied volatility is higher in the pairwise sample than in A-H, likely due to greater
+convergence risk. Conversely, based on in-sample volatility, the A-H sample has a higher
+average forecast error, which is somewhat surprising given its stronger economic linkage.
+3.4.2
+Explaining Return Di!erences via Model Implied ϑi
+In Figure 4, we present the implied conﬁdence interval ϑi for the pairwise sample over the
+trading period. Each month, we compute NaBi,M = ω+
+i ↑ω→
+i for updated pairwise stocks.
+Using εωi, we back out ϑi and plot its value as a blue dot. The number of valid pairwise
+stocks varies monthly, as shortlisted pairs must pass the cointegration test and converge in
+the MGST-VECM estimation. The ﬁgure shows evident cross-sectional dispersion in ϑi over
+time, i.e., lower in some months (e.g., March, July), higher in others (e.g., May, November).
+The blue dotted line tracks the monthly average ϑ.
+Two ﬁndings emerge: First, the dispersion in ϑi indicates that NaBi,M captures crosssectional variation beyond what in-sample εωi allows. The three benchmark thresholds
+{ϑ90, ϑ95, ϑ99} are ﬁxed at the strategy level, implying εϖi = 0 and suppressing dispersion
+in NaBi,G.
+Second, the average ϑi consistently lies below ϑ90 = 1.65, suggesting the
+28
+
+MGST strategy generally applies narrower bands than most benchmark strategies. Even
+above-average ϑi values often remain below ϑ90.
+At ﬁrst glance, this might imply MGST gains proﬁtability by trading more aggressively
+with narrower bands. While MGST indeed trades more frequently than all benchmarks
+in both A-H and pairwise samples, trading performance is evaluated after accounting for
+transaction costs and risk-adjusted returns. More importantly, narrower bandwidths are not
+the sole source of MGST proﬁtability. We also plot red dots representing µωi, the midpoint
+of NaBi,M for each pair. Most arbitrage strategies assume a symmetric band around µωi = 0,
+but the MGST function estimates separate bounds ω+
+i and ω→
+i , allowing for asymmetry.
+If pricing errors tend to skew positive, setting a symmetric no-arbitrage band around zero
+leads to suboptimal outcomes: (i) missed opportunities in neutral pairs, (ii) persistent
+convergence risk due to misaligned closing signals, and (iii) poor capture of fast-reverting
+rare negative pricing errors. Instead of widening the band, the MGST function centers
+NaBi,M near the expected error region, using narrower but better-targeted thresholds.
+This skewed structure reﬂects arbitrage asymmetry. If, for instance, stock A faces tighter
+short-sale constraints than stock B, then it’s easier to trade on ωi,t < 0 (long A / short
+B) than on ωi,t > 0. This results in |ω+
+i | > |ω→
+i |, skewing the no-arbitrage band positively.
+Conversely, if stock B faces more constraints, |ω+
+i | < |ω→
+i |, and the band skews negatively.
+Importantly, although NaBi,M = 2ϑiεωi,m, it does not incorporate information on µωi. Hence,
+we analyze it separately.
+Each red dot in Figure 4 represents an estimated µωi, with the right-hand axis showing its
+magnitude. The red dotted line tracks its monthly average, revealing µωi > 0 in 11 of 12
+months. Thus, NaBi,M bands are not only narrower but also shifted toward the positive
+region, aligning better with observed pricing errors. In contrast, benchmark NaBi,G bands,
+centered at zero, require wider widths to capture the same proﬁtable deviations.
+29
+
+Figure 4: Cross-sectional variation of the implied ϑi (MGST-VECM)
+For the pairwise sample, we plot the monthly implied ςi for each pair i over the trading period. Using
+the same in-sample ϱi as the Gatev et al. (2006) benchmark arbitrage strategy, we back out the monthly
+implied ςi from NaBi,M. Each blue dot refers to a given pairwise ﬁrms, so the ﬁgure highlights the monthly
+dispersion in implied ςi across pairwise ﬁrms. The red dash line indicates the mean ς each month. Since we
+identify, shortlist, and test ranked pairs for cointegration each month, the total number of valid pairs vary
+over months. To note, the Gatev et al. (2006) benchmark portfolio imposes a ﬁxed ς at the strategy level.
+The three ﬂat dashed lines correspond to {ς90 = 1.65, ς95 = 1.96, ς99 = 2.56}.
+Finally, although µωi > 0 dominates most of the trading period, this does not imply
+systematic skewness in pricing errors.
+Since A and B are randomly tagged and pair
+compositions evolve monthly, µωi can vary in direction. The key insight is that µωi shows
+meaningful cross-sectional dispersion: some pairs have positive skew, some negative, others
+near zero. This dispersion adds a distinct layer of variation in NaBi,M that benchmark
+bands, constrained by µωi = 0, cannot capture.
+3.4.3
+Explaining Return Di!erences via Model Implied Volatility
+In Figure 5, we apply the second approach to compare NaBi,M with its benchmarks. Instead
+of backing out implied ϑi as in Figure 4, we ﬁx ϑi = ϑ95 = 1.96 ⇒i, and infer model-implied
+pricing error volatility εωi,m from NaBi,M. We then evaluate εωi,m and in-sample volatility
+εωi against the out-of-sample pricing error volatility εωi,oos over 2022. In theory, if a trader
+could know εωi,oos ex-ante and calibrate pair-speciﬁc bands accordingly, the strategy would
+30
+
+Figure 5: Cross-sectional variation of the implied volatility (MGST-VECM)
+The ﬁgure plots the monthly deviation in i) MGST model-implied pricing error volatility ϱωi,m, and ii)
+in-sample pricing error volatility ϱωi, from the out-of-sample volatility ϱωi,oos. Denote SDi,m = ϱωi,m ↑ϱωi,oos,
+which is represented by blue dots; Denote SDi = ϱωi ↑ϱωi,oos, which is represented by red dots. To back out
+ϱωi,m from NaBi,M, we input ς95 = 1.96. The out-of-sample pricing error volatility is calculated similarly
+to ϱωi. The blue dotted line tracks the monthly cross-sectional average deviation in MGST model-implied
+ϱωi,m from out-of-sample pricing error volatility. The red dotted line tracks the monthly cross-sectional
+average deviation of in-sample pricing error volatility.
+yield large but unrealistic proﬁts. Thus, if εωi,m is more strongly aligned with εωi,oos than
+εωi is, this provides another edge for the MGST strategy over benchmarks.
+Let SDi = |εωi ↑εωi,oos| and SDi,m = |εωi,m ↑εωi,oos| denote the forecast errors from in-sample
+and MGST-implied volatilities, respectively. In Figure 5, we plot SDi (red dots) and SDi,m
+(blue dots) for all traded pairs each month. The length of each vertical strip indicates the
+degree of forecast error dispersion across pairs. The red and blue dotted lines track the
+monthly cross-sectional averages µSDi and µSDi,m, respectively.
+Throughout the trading period, MGST-implied volatility consistently yields lower forecast
+error. The average forecast error µSDi,m is below µSDi in every month. Moreover, in-sample
+volatility εωi systematically overstates εωi,oos, as the monthly µSDi remains positive and
+εωi,oos < εωi for all but 5 traded pairs.
+Near the time axis, we plot the dispersion of SDi,m from its mean µSDm as blue triangles,
+31
+
+denoted εSDm, and the corresponding dispersion for SDi as red triangles, εSDi. Dispersion is
+measured via mean absolute deviation, with values shown on the right axis. While the dotted
+lines capture average forecast error levels, the triangles highlight monthly cross-sectional
+variation. In 9 out of 12 months, εSDm < εSDi, indicating that MGST-implied volatilities
+not only better track future volatility, but also do so more consistently across pairs.
+In sum, Figure 5 demonstrates that MGST-implied pricing error volatility provides more
+accurate and stable forecasts of out-of-sample volatility than in-sample measures.
+4
+Conclusion
+We modify the GST-VECM in Chen et al. (2021) to incorporate convergence risk in statistical
+arbitrage. Unlike parity pricing, the cointegrating relationship between statistically paired
+securities is unstable over time and varies across pairs. This makes portfolio calibration,
+such as setting no-arbitrage bandwidths and entry or exit signals at the strategy level,
+suboptimal. The novelty of the MGST-VECM lies in its ability to embed convergence risk
+into pair-speciﬁc no-arbitrage bands. To estimate convergence risk, we specify the transition
+function to follow a GARCH-in-Mean structure, with the pricing error’s conditional volatility
+generated from a DeTGARCH speciﬁcation. The thresholds correspond to the values of the
+pricing error at which the transition function begins to increase. Speciﬁcally, the thresholds
+ω+
+i and ω→
+i represent the implied upper and lower bounds of the no-arbitrage band, and
+are endogenously estimated. As a result, they deﬁne pair-speciﬁc bands that vary across
+securities.
+We apply the MGST-VECM to two samples: cross-listed A-H Chinese ﬁrms and statistically
+paired CSI300 constituents. Using the estimated MGST no-arbitrage bands, we construct
+separate arbitrage portfolios for each sample. Our main ﬁnding is that the MGST-calibrated
+portfolios outperform three benchmark portfolios based on ﬁxed no-arbitrage bandwidths
+32
+
+ϑ90, ϑ95, ϑ99, particularly for the pairwise sample. On average, the MGST strategy adopts
+narrower bands and trades more frequently than the benchmarks. Despite this, it consistently
+delivers higher cumulative returns, net of transaction costs, for both samples. The Sharpe
+ratio is also higher than all benchmarks, except for the A-H portfolio under ϑ90.
+The MGST strategy’s outperformance is driven by cross-sectional variation in the noarbitrage bandwidth NaBi,M. In the benchmark strategies, the band level is ﬁxed at zero
+and the bandwidth is constant across pairs and over time. Consequently, variation in NaBi,G
+arises solely from the unconditional in-sample volatility εωi. In contrast, NaBi,M shows
+substantial variation in both the bandwidth and the band level across pairs. In summary, the
+ability of the MGST strategy to incorporate implied arbitrage mechanisms into pair-speciﬁc
+no-arbitrage bands explains its superior performance relative to the benchmarks.
+Although we use pairs trading to illustrate the MGST-VECM’s capacity to account for
+convergence risk, the model can be applied to a wider range of statistical arbitrage strategies
+involving large cross-sections of paired securities, such as capital structure arbitrage. The
+only requirement is that the prices are cointegrated and the normalized pricing error is
+stationary. This highlights the practical relevance of the MGST-VECM across a broad
+arbitrage strategy space.
+Data Availability Statement
+The data that support the ﬁndings of this study are available from the corresponding author,
+Z.Z., upon reasonable request.
+33
+
+References
+Almeida, C., J. Fan, G. Freire, and F. Tang (2023). Can a machine correct option pricing
+models? Journal of Business & Economic Statistics 41(3), 995–1009.
+Box, T. (2018). Qualitative similarity and stock price comovement. Journal of Banking &
+Finance 91, 49–69.
+Chen, H., S. Chen, Z. Chen, and F. Li (2019). Empirical investigation of an equity pairs
+trading strategy. Management Science 65(1), 370–389.
+Chen, S., M. T. Chng, and Q. Liu (2021). The implied arbitrage mechanism in ﬁnancial
+markets. Journal of Econometrics 222(1), 468–483.
+Engle, R. F. and C. W. Granger (1987). Co-integration and error correction: Representation,
+estimation, and testing. Econometrica: Journal of the Econometric Society, 251–276.
+Fan, J., L. Qi, and D. Xiu (2014). Quasi-maximum likelihood estimation of garch models
+with heavy-tailed likelihoods. Journal of Business & Economic Statistics 32(2), 178–191.
+Gatev, E., W. N. Goetzmann, and K. G. Rouwenhorst (2006). Pairs trading: Performance
+of a relative-value arbitrage rule. The Review of Financial Studies 19(3), 797–827.
+Glosten, L. R., R. Jagannathan, and D. E. Runkle (1993). On the relation between the
+expected value and the volatility of the nominal excess return on stocks. The Journal of
+Finance 48(5), 1779–1801.
+Guggenberger, P. and J. Hahn (2005). Finite sample properties of the two-step empirical
+likelihood estimator. Econometric Reviews 24(3), 247–263.
+Jacobs, H. and M. Weber (2015). On the determinants of pairs trading proﬁtability. Journal
+of Financial Markets 23, 75–97.
+Jin, F. and L.-F. Lee (2021). E"cient two-step generalized empirical likelihood estimation
+and tests with martingale di!erences. Econometric Theory 37(3), 573–612.
+Kim, C.-J. (2009). Markov-switching models with endogenous explanatory variables ii: A
+two-step mle procedure. Journal of Econometrics 148(1), 46–55.
+Kourtellos, A., T. Stengos, and Y. Sun (2022). Endogeneity in semiparametric threshold
+regression. Econometric Theory 38(3), 562–595.
+34
+
+Kourtellos, A., T. Stengos, and C. M. Tan (2016). Structural threshold regression. Econometric Theory 32(4), 827–860.
+Krauss, C. (2017). Statistical arbitrage pairs trading strategies: Review and outlook. Journal
+of Economic Surveys 31(2), 513–545.
+Lei, Y. and J. Xu (2015). Costly arbitrage through pairs trading. Journal of Economic
+Dynamics and Control 56, 1–19.
+Leippold, M., Q. Wang, and W. Zhou (2022). Machine learning in the chinese stock market.
+Journal of Financial Economics 145(2), 64–82.
+Liu, J. and A. Timmermann (2013). Optimal convergence trade strategies. The Review of
+Financial Studies 26(4), 1048–1086.
+Murphy, K. M. and R. H. Topel (2002). Estimation and inference in two-step econometric
+models. Journal of Business & Economic Statistics 20(1), 88–97.
+Nelson, D. B. (1991). Conditional heteroskedasticity in asset returns: A new approach.
+Econometrica: Journal of the Econometric Society, 347–370.
+Pan, J., H. Wang, and H. Tong (2008). Estimation and tests for power-transformed and
+threshold garch models. Journal of Econometrics 142(1), 352–378.
+Rad, H., R. K. Y. Low, and R. Fa! (2016). The proﬁtability of pairs trading strategies:
+Distance, cointegration and copula methods. Quantitative Finance 16(10), 1541–1558.
+Rothman, P., D. Van Dijk, and P. Hans (2001). Multivariate star analysis of money–output
+relationship. Macroeconomic Dynamics 5(4), 506–532.
+Shleifer, A. and R. W. Vishny (1997). The limits of arbitrage. The Journal of Finance 52(1),
+35–55.
+Tourin, A. and R. Yan (2013). Dynamic pairs trading using the stochastic control approach.
+Journal of Economic Dynamics and Control 37(10), 1972–1981.
+Yan, T., M. C. Chiu, and H. Y. Wong (2022). Pairs trading under delayed cointegration.
+Quantitative Finance 22(9), 1627–1648.
+Zhao, Z. and D. P. Palomar (2017). Robust maximum likelihood estimation of sparse vector
+error correction model. In 2017 IEEE Global Conference on Signal and Information
+Processing (GlobalSIP), pp. 913–917. IEEE.
+35
+
+Supplementary Material for Implied
+Convergence Risk in Statistical Arbitrage
+June 14, 2025
+A
+The GST-VECM in Chen et al. (2021)
+We outline a bivariate VECM in Equation (1), where ra,t and rb,t are the returns for
+cointegrated securities A and B, ωt→d is the lagged mispricing, or error-correction term,
+between the markets A and B where the optimal d is empirically determined, and va,t, vb,t
+are i.i.d shocks to ra,t and rb,t respectively. The term ωt→d is ﬁtted with generalized smooth
+transition (GST) function F[ωt→d, !] →[0, 1], where ! is a vector of GST parameters.
+ra,t = εa
+0 +
+S
+!
+s=1
+"
+εa
+1sra,t→s + εb
+1srb,t→s) + (ϑa
+1 + ϑa
+2 · F [ωt→d, !]) ωt→d + va,t
+rb,t = εb
+0 +
+S
+!
+s=1
+"
+εa
+2sra,t→s + εb
+2srb,t→s
+#
++
+"
+ϑb
+1 + ϑb
+2 · F [ωt→d, !]
+#
+ωt→d + vb,t
+F [ωt→d, !] →[0, 1]
+(1)
+The lagged pricing error ωt→d a!ects ra,t and rb,t through the error-correction coefﬁcients (ϑa
+1, ϑa
+2) and (ϑb
+1, ϑb
+2) respectively1.
+The ϑ2 coe"cients allow ωt→d to deliver a
+‘second-gear’ error-correction is controlled by F[ωt→d, !]. The latter captures the arbitrage mechanism that is inherent in the data; When ωt→d ﬂuctuates within its no-arbitrage
+1Empirically, returns can be a!ected by mispricing up to several lags. We test for longer lags in
+pricing error during the F[ωt→d, !] estimation.
+1
+
+band, F[ωt→d, !] is trivial, and Equation (1) resembles a standard VECM. When ωt→d ﬂuctuates outside its no-arbitrage band, F[ωt→d, !] increases, which shifts the error-correction
+mechanism into second-gear, due to the inﬂux of arbitrage order ﬂow. As arbitrage trading forces ωt→d back within its no-arbitrage band, F[ωt→d, !] decreases, thereby shifting
+the error-correction mechanism back to ﬁrst-gear. The coe"cient vector ! reveals the
+time-series dynamics in ωt→d as it ﬂuctuates in (no-arbitrage) and out (arbitrage) of its
+no-arbitrage band. By capturing non-linearity and state-switching e!ects in the errorcorrection mechanism, the estimated transition function reveals the implied arbitrage
+mechanism from pricing data of paired securities A and B.
+We outline the GST function F[ωt→d, !] in Equation (2), where the dummy variable Dt
+di!erentiates between F +
+t and F →
+t for positive and negative pricing error. To demonstrate
+how GST parameters relate to arbitrage mechanism, Chen et al. (2021) provide simulation
+plots of F[ωt→d, !] against ωt→d; The parameters [ϖ1, ϖ2] correspond to the convexity of
+F + and F →, which relate to arbitrage intensity for upper and lower bound violation. But
+[ϖ1, ϖ2] do not a!ect the horizontal intercepts for F + and F →on the pricing error axis;
+These are determined by the estimated [ϱ1, ϱ2], which control the the vertical positioning
+of F + and F →; Conceptually, the horizontal intercepts represent boundary pricing error
+values, beyond which F + and F →start to increase; They represent the upper and lower
+bounds of an implied no-arbitrage band that governs ﬂuctuation in ωt→d over time. This
+is why the error-correction coe"cients (ECC) for ra,t, rb,t have di!erent functional forms,
+depending on whether the pricing error approaches the no-arbitrage band from above
+ωt→d ↑0+ or below ωt→d ↑0→.
+F [ωt→d, !] = max
+$
+F +
+t , 0
+%
++ max
+$
+F →
+t , 0
+%
+F +
+t = ϖ1Dt
+$
+1 ↓e→ωt→d ↓
+"
+ϱ1 + ϱ↑
+1ςωt→d
+#%
+F →
+t = ϖ2 [1 ↓Dt]
+&
+1
+1 + eωt→d ↓
+"
+ϱ2 + ϱ↑
+2ςωt→d
+#'
+(2)
+2
+
+where
+Dt =
+
+
+
+
+
+
+
+
+
+
+
+1,
+for ωt→d > 0
+0,
+for ωt→d ↔0
+and
+ECCa =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ϑa
+1 + ϖ1 (1 ↓ϱ1) ϑa
+2,
+for ωt→d ↑↗
+ϑa
+1 ↓ϖ1ϱ1ϑa
+2,
+for ωt→d ↑0+
+ϑa
+1 + ϖ2
+"
+1
+2 ↓ϱ2
+#
+ϑa
+2,
+for ωt→d ↑0→
+ϑa
+1 + ϖ2 (1 ↓ϱ2) ϑa
+2,
+for ωt→d ↑↓↗
+The GST function is conceptually intuitive; during no-arbitrage state, F[ωt→d, !] is
+trivial; its ϖ, ϱ parameters do not a!ect ωt→d, such that error-correction is based on
+ECCa = ϑa
+1. During arbitrage state, F[ωt→d, !] distinguishes between upper versus lower
+bound violation. This allows for arbitrage asymmetry, where arbitrage constraints a!ect
+the upper and lower bound di!erently. To note, F[ωt→d, !] accommodates a symmetric
+arbitrage mechanism as a special case2.
+The original GST function contains convergence risk premium terms ϱ↑
+1ςωt→d and
+ϱ↑
+2ςωt→d for upper and lower bound violation, where ςωt→d is the conditional (GARCH)
+volatility of pricing error.
+An arbitrage round-trade requires price convergence; For
+parity-pricing arbitrage, ωt→d decays over time, such that convergence is guaranteed at
+a known future date i.e. ςωt→d = 0. But statistical arbitrage assumes a weaker cointegrated pricing condition, where ωt→d does not decay over time. This exposes a statistical
+arbitrager to convergence risk ςωt→d > 0.
+In the GST function, ϱ parameters correspond to the no-arbitrage bandwidth, and resemble a GARCH-Mean speciﬁcation. For
+parity-pricing arbitrage, both convergence risk premium terms drop out of the estimated
+bandwidth. But for cointegrated pricing, the convergence terms ensure that the esti2Take ECCa for example, where {ε1 = 1, ε2 = 2, ϑ1 = 1/2, ϑ2 = 3/4} is a set of estimated coe"cients
+that correspond to symmetric arbitrage. For both arbitrage states, equation 2 shows that ECCa =
+ϖa
+1 + 1
+2ϖa
+2; and for both no-arbitrage states ωt→d ↑0±, ECCa = ϖa
+1 ↓1
+2ϖa
+2.
+3
+
+mated no-arbitrage band which governs the pricing error, is at least as wide as that
+which governs parity-pricing error. This ensures that a completed round-trade can generate a su"ciently large expected payo! to compensate a statistical arbitrager for bearing
+convergence risk.
+But when they estimate the GST-VECM, Chen et al. (2021) impose the coe"cient
+restriction ϱ↑
+1 = ϱ↑
+2 = 0. They explain that this facilitates a more focused discussion on the
+conceptual interpretation of the remaining GST function parameters ! = {ϖ1, ϖ2; ϱ1, ϱ2}
+in revealing the implied arbitrage mechanism between related markets. As such, their
+empirical demonstration is on index arbitrage, where spot-futures price convergence is
+guaranteed. This suggests that the estimation procedure in Chen et al. (2021) is unable to
+cope with the MGST-VECM. The current paper’s estimation procedure is more demanding, but it can handle the MGST estimation. This also greatly enhances its practical
+relevance, which covers a much wider arbitrage strategy space.
+B
+The Illustration of Trading Application
+The purpose of this section is to demonstrate to readers the proposed estimation procedure, as well as the MGST-VECM trading application. We estimate the model in-sample,
+and apply the estimated parameters to implement arbitrage trading out-of-sample. We
+also validate the economic signiﬁcance of the MGST-VECM in terms of proﬁt performance against benchmark arbitrage strategies in the literature.
+We implement two arbitrage strategies with distinct levels of convergence risk; For
+parity pricing arbitrage, we examine the pricing of A-H ﬁrms cross-listed between Shanghai or Shenzhen, and Hong Kong exchanges. To note, A-H pricing is not as strict as
+carry-cost parity, put-call parity or covered interest parity. While convergence is not
+guaranteed, the risk is likely to be minimal; The shares are expected to obey law of one
+price, such that the normalized pricing error should exhibit strong mean-reversion. Hence
+4
+
+even without a ﬁxed maturity date, an A-H portfolio is unlikely to contain substantial
+convergence risk.
+The A-H arbitrage strategy serves as a contrast for pairs-trading, a well-established
+statistical arbitrage strategy based on cointegrated pricing. As there is no clear economic link between pairwise stocks, pairs traders are exposed to substantially greater
+convergence risk, compare to A-H pricing arbitragers. Analyzing both arbitrage strategies, allow us to draw out the ability of the MGST-VECM to address convergence risk in
+statistical arbitrage. The estimated GST function in Chen et al. (2021) does not consider
+convergence risk; It cannot be applied on pairs-trading, and to a lesser extend, even A-H
+trading.
+B.1
+A-H trading
+According to Li et al. (2014), overlapping trading hours and the close proximity between
+China and Hong Kong, foster A-H arbitrage trading. Seasholes and Liu (2011) outline
+various arbitrage-type strategies based on the A-H premium, which is tracked in realtime by the trading systems of major brokerage houses. Following Liu and Timmermann
+(2013), we examine A-H mispricing on Chinese stocks cross-traded on either the Shanghai
+Stock Exchange (SSE) or Shenzhen Stock Exchange (SZE) as A-shares in RMB, and on
+the Hong Kong Exchange (HKX) as H-shares in HKD. Given both share types entitle
+investors to the same dividend stream and voting rights, we ﬁnd strong co-movement in
+A-H pricing over time, as do Liu and Timmermann (2013) and Lei and Xu (2015).
+The three exchanges operate in the same time-zone, with overlapping trading hours.
+Both the SSE and SZE trade 4 hours each day, from 09:30 to 11:30, and from 13:00 to
+15:00. The HKX operates for 5.5 hours from 9:30 to 12:00, and from 13:00 to 16:00. Our
+A-H sample is based on trading hours of the Mainland exchanges. We analyze minuteby-minute data from January 2021 to December 2022, downloaded from Wind Financial,
+the largest ﬁnancial data vendor in China and whose data is widely used by published
+5
+
+academic papers3. To ensure the trading results are compatible, we use the real-time
+RMB/HKD exchange rate to convert the H-share prices from HKD to RMB, denote as
+Ht. Using (At, Ht), we compute return and normalized prices for the in-sample analysis.
+If the purpose is to demonstrate the model, applying the estimation on a single A-H
+ﬁrm would su"ce. But an important merit of the MGST function is that it allow for
+cross-sectional variation in the implied no-arbitrage bandwidth, especially in the pairstrading sample. If the arbitrage mechanism varies across ﬁrms, this suggests that an
+arbitrage strategy’s calibration e.g. Opening and closing signals, Stop-loss level, Max
+holding period etc, should be calibrated at the pairwise ﬁrm level, rather than a one-sizeﬁts-all calibration at the strategy level.
+Lei and Xu (2015) examine all A-H ﬁrms, which cover transportation, industrial,
+utilities, and ﬁnancial sectors. In contrast, Liu and Timmermann (2013) illustrate their
+theoretical results using seven pairs of A-H banking stocks, with sample periods ranging
+from 1.5 to 4 years. Based on the above, construct our A-H sample to cover 20 ﬁrms over
+two years from January 2021 to December 2022. By requiring 2 years of data, we avoid
+A-H ﬁrms with short trading history; For these ﬁrms, the pricing mechanism is likely be
+noisy, and there is insu"cient data for arbitragers to analyse and calibrate their trading
+algorithms.
+Following Wang et al. (2022) that select several stocks into a portfolio according to
+statistical criteria, to ensure our results apply across market capitalization and liquidity,
+we sort all A-H ﬁrms on market capitalization, and select the top and bottom 10 ﬁrms
+into the A-H sample. In the appendix, we report the selected ﬁrms, market capitalization
+and industry classiﬁcation, in Table A.1. For each of the i = 1, 2, ..., 20 shortlisted ﬁrms,
+we perform cointegration test on (At, Ht); A cointegrating link is a required pricing
+condition for the MGST-VECM. Only ﬁrms that pass the test are considered for trading
+3Although higher-frequency trading data could be obtained, as noted by Fan et al. (2016), the use of
+such data introduces several well-known issues, primarily the asynchronicity of returns and microstructure
+noise.
+6
+
+Table A.1 Co-integration Test for LOP Sample (Jan. 2021–Dec. 2021)
+A-Share H-Share
+Industry
+ω0
+ω1
+Adj.R2 Obs.
+ADF
+Mean S.D.
+601988.SH 3988.HK
+Finance
+0.789↑↑↑
+0.214↑↑↑
+0.500
+59,048 -3.995↑↑↑
+0.000 0.009
+601398.SH 1398.HK
+Finance
+0.499↑↑↑
+0.539↑↑↑
+0.868
+58,806 -4.431↑↑↑
+0.000 0.014
+601088.SH 1088.HK
+Mining
+0.070↑↑↑
+0.917↑↑↑
+0.909
+58,806 -4.008↑↑↑
+0.000 0.033
+600775.SH 0553.HK
+Manufacturing
+0.949↑↑↑
+0.023↑↑↑
+0.001
+58,806
+-0.528
+0.000 0.110
+601857.SH 0857.HK
+Mining
+0.273↑↑↑
+0.668↑↑↑
+0.869
+58,806 -2.987↑↑
+0.000 0.042
+600635.SH 1635.HK
+Energy
+0.903↑↑↑
+-0.005↑↑
+0.000
+58,806
+-2.520
+0.000 0.056
+600860.SH 0187.HK
+Manufacturing
+-0.603↑↑↑1.449↑↑↑
+0.905
+58,080 -3.652↑↑↑
+0.000 0.123
+601588.SH 0588.HK
+Real Estate
+1.054↑↑↑-0.026↑↑↑
+0.003
+58,806 -2.923↑↑
+0.000 0.043
+601288.SH 1288.HK
+Finance
+0.467↑↑↑
+0.547↑↑↑
+0.796
+58,806 -4.092↑↑↑
+0.000 0.012
+002490.SZ 0568.HK
+Manufacturing
+0.462↑↑↑
+0.350↑↑↑
+0.855
+58,806 -2.966↑↑
+0.000 0.086
+002594.SZ 1211.HK
+Manufacturing
+0.003↑↑
+1.088↑↑↑
+0.937
+59,048 -3.484↑↑↑
+0.000 0.055
+600036.SH 3968.HK
+Finance
+0.299↑↑↑
+0.711↑↑↑
+0.740
+59,048 -3.848↑↑↑
+0.000 0.025
+002672.SZ 0895.HK
+Manufacturing
+0.568↑↑↑
+0.304↑↑↑
+0.643
+58,806 -3.823↑↑↑
+0.000 0.037
+601038.SH 0038.HK
+Manufacturing
+-0.214↑↑↑1.246↑↑↑
+0.634
+58,806
+-2.524
+0.000 0.104
+601628.SH 2628.HK
+Finance
+0.191↑↑↑
+0.756↑↑↑
+0.646
+58,806 -2.607↑↑
+0.000 0.047
+601330.SH 1330.HK Public Management 0.142↑↑↑
+0.800↑↑↑
+0.768
+58,806 -3.682↑↑↑
+0.000 0.045
+601939.SH 0939.HK
+Finance
+0.142↑↑↑
+0.896↑↑↑
+0.735
+59,048
+-1.179
+0.000 0.032
+601318.SH 2318.HK
+Finance
+-0.007↑↑↑0.956↑↑↑
+0.970
+58,806
+-2.532↑
+0.000 0.034
+600874.SH 1065.HK
+Energy
+0.699↑↑↑
+0.280↑↑↑
+0.323
+58,806 -2.939↑↑
+0.000 0.039
+002703.SZ 1057.HK
+Manufacturing
+0.525↑↑↑
+0.302↑↑↑
+0.602
+59,048 -4.012↑↑↑
+0.000 0.044
+out-of-sample. We report the cointegration test statistics, and related estimates in Table
+A.1.
+At = φ0 + φ1 (Ht) + ωi,t
+(3)
+The A-H pricing mechanism is governed by several limits to arbitrage, including ownership restriction, short-sale constraint, and microstructural di!erences between the two
+stock exchanges. These can a!ect the magnitude of the average price gap between At
+and Ht. As such, it is important to implement trading based on a normalized pricing
+error, and not raw price gap. We derive the normalized pricing error as the residual
+ωi,t ↘(0, ςωi,t) from the regression in Equation (3). To plot normalized prices, we set
+At = 1, and use the estimated coe"cients (φ0, φ1) to generate the normalized price series
+for Ht.
+To note, while A-H pricing is governed by a strong fundamental link, it does not
+conform to parity-pricing. The latter has a maturity e!ect e.g. spot-futures price con7
+
+Figure A.1 A-H pricing mechanism over time
+We illustrate A-H pricing mechanism by plotting the raw (left) and normalized (right) price series for A
+and H shares of Beijing Jingcheng Mechanical and Electrical Holding Co., Ltd. (BJME) in Figure 2A,
+and Agricultural Bank of China (ABC) in Figure 2B. The graphs show the importance of trading with
+normalized prices; The raw A-H prices on the left to not intersect, and provides no open/close signals for
+the arbitrage strategy. In contrast, the pairwise graphs on the right reveal several interactions between
+the two normalized price series over time. The normalization is based on an in-sample estimation of
+At = ϱ0 + ϱ1Ht + ωt, where At, Ht are the raw prices of the A and H shares, and ωt is the normalized
+mispricing.
+To derive normalized prices, we set At = 1, and use estimates (ϱ0, ϱ1) to compute the
+corresponding normalized price for Ht.
+vergence, such that ςωi,t has a time-decay. This provides the arbitrager certainty on price
+convergence i.e that an open position can eventually be closed at a known maturity date
+e.g. futures contract expiry. The A-H pricing error volatility ςωi,t has an unknown time
+decay, which exposes the arbitrager to convergence risk. We conjecture that in A-H trading, the convergence risk is not as severe as pair-trading, and there is less cross-sectional
+variation in convergence risk for the A-H sample, compare to the pairwise sample.
+We illustrate the A-H pricing mechanism in Figure A.1 for Beijing Jingcheng Mechanical and Electrical Holding (BJME) in panel A, and Agricultural Bank of China (ABC)
+in panel B. In both panels, the left side plots the raw price series, while the right side
+plots the normalized price series. Consistent with the A-H pricing literature, A-shares
+8
+
+trade at a premium over H-shares for both ﬁrms. Figure A.1 shows the importance of
+trading using normalized prices; The A and H raw price series do not intersect; They do
+not provide any trading signal for the arbitrage strategy. In contrast, the graphs on the
+right show several intersections between the normalized A and H price series over time.
+B.2
+Pairs trading
+Pairs trading is well-established on Wall Street and is a proprietary strategy among hedge
+funds and investment banks. The concept is straightforward; Identify pairwise stocks
+whose historical prices move closely together over time, based on a statistical measure
+of closeness e.g. correlation, cointegration, Euclidean distance. When the normalized
+pricing error ωi,t exceeds a pre-speciﬁed threshold, short-sell the higher priced stock to
+buy the lower priced stock. The strategy assumes that the chosen statistical relation
+between identiﬁed pairwise stocks, is stable over time. Hence any observed ωi,t is deemed
+transitory, and represents an arbitrage opportunity.
+Unlike A-H pricing, which has a strong economic underlay, the fundamental link behind a statistical closeness between identiﬁed pairwise stocks, is unclear. It is likely for
+paired stocks to come from the same or related industries, but this is not a necessary
+requirement. Gatev et al. (2006) use a Euclidean distance measure to identify pairwise
+stocks. While they also consider restricted ﬁrm pairing within four broad S&P sectors:
+Utilities, Transportation, Financial, and Industrial, their baseline strategy applies unrestricted pairing. The statistical link between pairwise stocks is likely to be unstable,
+which exposes pairs traders to greater convergence risk over time, as well as greater variation across pairwise ﬁrms. The MGST-VECM quantiﬁes the convergence risk premium
+in pairwise assets, for the purpose of calibrating the arbitrage strategy, whether they are
+A-H or pairwise ﬁrms. We evaluate if the MGST-VECM detects and incorporates greater
+convergence risk in the pairwise sample, compare to the A-H sample.
+We implement a pairs strategy that is similar to Gatev et al. (2006); To avoid illiq9
+
+uidity and trading friction, we limit the identiﬁcation to pairwise combinations among
+constituent stocks of the China Stock Index 300 (CSI300)4. We download one-minute
+trading data for all CSI300 constituent stocks from Jan 2021 to Dec 2022 from WIND
+Financial. Following Gatev et al. (2006), we calculate normalized price as the cumulative
+total return with reinvested dividends, and measure closeness as the cumulative absolute
+di!erence in normalized prices, for all possible pairwise combination of CSI300 stocks.
+The Gatev et al. (2006) measure is similar to a Euclidean distance; A small value indicates a high degree of closeness between two normalized price series during the in-sample
+period.
+Using the Jan-Dec 2021 in-sample period, we sort all pairwise ﬁrm combination on
+the distance measure, and shortlist the top ranked 20 pairs as the pairwise ﬁrm sample.
+To note, the sample consists of non-overlapping pairs; If a stock is used in a higher ranked
+pair, and if it reappears in a lower ranked pair, we will skip to the next pair. Doing so
+ensures the 20 pairwise ﬁrms are unique, and the portfolio results are not driven by a
+small number of ﬁrms. Furthermore, unlike A-H pricing, the cointegrating link between
+pairwise ﬁrms is likely to be unstable during the trading period. To address this issue, we
+construct a monthly rebalanced portfolio. Consider the ﬁrst trading round at the start of
+January 2022. Using the 2021 in-sample, we identify 20 pairwise ﬁrms. For pairwise ﬁrms
+that test the cointegration test, we estimate their MGST-VECM parameters to implement
+pairs-trading for January 2022. At the end of January, we close all open positions, roll the
+estimation window to the end of Jan 2022, and repeat the entire procedure i.e. identify
+top 20 pairwise ﬁrms, test for cointegration, estimate MGST parameters for all passed
+pairs, and conduct pairs-trading for February 2022.
+This continues until the end of
+4Launched in April 8, 2005, the CSI300 Index is a market capitalization-weighted index that tracks
+the overall performance of 300 A-shares listed on the Shanghai and Shenzhen exchanges. The index
+inclusion criteria is based on market capitalization and liquidity, and constituent ﬁrms are adjusted
+around twice a year on average. These ﬁrms are widely recognized in the market (Dang et al., 2023; Li
+et al., 2023), and represent around 60% of the total value of the Shanghai and Shenzhen A-share market
+in 2023.
+10
+
+Figure A.2 Illustration of pairs-trading
+We provide an illustration of pairs-trading. We plot the raw (left) and normalized (right) price series for
+China Construction Bank (CCB) and Industrial and Commercial Bank of China (ICBC) in Figure 2A,
+and Guotai Junan Securities (GTJA) and China Shipbuilding Industry Corporation Limited (CSIC) in
+Figure 2B. A comparison between the left and right graphs, especially in Figure 2B, shows the importance
+of normalizing prices using the Engle and Granger cointegration test. Both normalized ﬁgures also that
+the pricing error has volatility, but near zero mean.
+December 20225. Both the cointegration test and model estimation are strictly based on
+rolling the 2021 estimation window into 2022 on a monthly basis. This ensures that our
+trading results do not contain a look-ahead bias.
+In Table A.2, we outline the listing code and company name of the initial shortlist of
+pairwise stocks. CSI300 constituent ﬁrms list on either SSE or SZE, and operate across
+all major sectors of China’s economy. Table A.1 shows that the majority of the pairwise
+ﬁrms are listed in Shanghai, and many of them are securities ﬁrms or banks. This is
+consistent with the empirical demonstration in Liu and Timmermann (2013), focusing on
+only banking stocks. Given these are frequently traded stocks, illiquidity and transaction
+5To note, it is more e"cient if we cross-reference to see if any of the existing pairs have been shortlisted
+for trading in the coming month, to avoid unnecessary trading in the same pair from one trading round
+to the next. But given this approach applies across all strategies, it should not a!ect the relative ranking.
+Furthermore, any unnecessary trading would only make the proﬁt results stronger.
+11
+
+Table A.2 Co-integration Test for Statistical Arbitrage (202101–202112)
+Stock A Industry A Stock B Industry B
+ω0
+ω1
+Adj.R2 Obs.
+ADF
+Mean S.D.
+600029 Transportation 601111 Transportation 0.270↑↑↑0.723↑↑↑0.933 58,080-4.437↑↑↑0.000 0.018
+600606
+Construction
+601816 Transportation 0.143↑↑↑0.830↑↑↑0.828 58,080-3.514↑↑↑0.000 0.036
+600030
+Finance
+601881
+Finance
+0.048↑↑↑0.977↑↑↑0.709 58,080 -2.648↑
+0.000 0.037
+003816
+Energy
+601800
+Construction 0.472↑↑↑0.538↑↑↑0.676 58,080 -3.151↑↑0.000 0.038
+600000
+Finance
+601229
+Finance
+-0.093↑↑↑1.082↑↑↑0.829 58,080 -2.923↑↑0.000 0.026
+000800 Manufacturing 688981 Manufacturing 0.689↑↑↑0.284↑↑↑0.128 58,080-4.301↑↑↑0.000 0.037
+600015
+Finance
+601998
+Finance
+0.192↑↑↑0.796↑↑↑0.877 58,080 -3.297↑↑0.000 0.014
+600061
+Finance
+600837
+Finance
+0.471↑↑↑0.495↑↑↑0.258 58,080 -2.411
+0.000 0.047
+600926
+Finance
+601021 Transportation 0.087↑↑↑0.927↑↑↑0.649 58,080-4.545↑↑↑0.000 0.054
+601186
+Construction
+601989 Manufacturing -0.064↑↑↑1.059↑↑↑0.672 58,080-4.301↑↑↑0.000 0.030
+002252 Manufacturing 601818
+Finance
+0.362↑↑↑0.636↑↑↑0.442 58,080 -2.575↑
+0.000 0.045
+600183 Manufacturing 603019 Manufacturing 0.143↑↑↑0.806↑↑↑0.608 58,080-3.985↑↑↑0.000 0.047
+601211
+Finance
+601668
+Construction 0.564↑↑↑0.413↑↑↑0.072 58,080 -1.982
+0.000 0.053
+601288
+Finance
+601398
+Finance
+0.330↑↑↑0.675↑↑↑0.889 58,080 -3.385↑↑0.000 0.010
+601006 Transportation 601988
+Finance
+-0.668↑↑↑1.664↑↑↑0.531 58,080 -3.265↑↑0.000 0.023
+001979
+Real Estate
+600048
+Real Estate
+0.322↑↑↑0.658↑↑↑0.734 58,080 -2.638↑
+0.000 0.047
+601166
+Finance
+601939
+Finance
+-0.305↑↑↑1.281↑↑↑0.744 58,080 -2.810↑
+0.000 0.052
+600050
+IT Services
+601169
+Finance
+0.008
+0.981↑↑↑0.331 58,080 -2.902↑↑0.000 0.029
+600900
+Energy
+601328
+Finance
+0.307↑↑↑0.716↑↑↑0.272 58,080 -2.019
+0.000 0.043
+600016
+Finance
+601319
+Finance
+0.060↑↑↑0.948↑↑↑0.799 58,080 -1.552
+0.000 0.045
+cost are less likely to impede upon arbitrage activity.
+To illustrate the pricing mechanism between pairwise ﬁrms, Figure A.2 plots the raw
+(left) and normalized (right) price series for two pairwise ﬁrms: Industrial and Commercial Bank of China (ICBC) and China Construction Bank (CCB) in panel A; Guotai
+Junan Securities (GTJA) and China Shipbuilding Industry Co (CSICL) in panel B.
+Three observations are noteworthy: i) Both pairs are highly ranked; One pair consists
+of 2 of the big 6 state-own banks in China, but the other pair is between a securities ﬁrm
+and a ship-building company. While the industry link in panel A is obvious, the pricing
+link between GTJA and CSICL is unclear, and possibly less stable over time.
+This
+conforms with our earlier comment that paired ﬁrms do not necessarily share a clear
+fundamental link. Hence, we expect greater variation in convergence risk, both over time
+and across pairwise ﬁrms, compare to the A-H sample; ii) In panel A, it is coincidental
+that ICBC and CCB trade at similar raw prices of around RMB 4.50, at the start of 2022.
+12
+
+Hence there is no substantial di!erence between the two stocks’ raw and normalized price
+gaps. But panel B shows the importance of trading with normalized prices; GTJA stocks
+trade at a raw price above RMB 15, while CSIC shares trade below RMB 5. There is no
+visible co-movement between the two stocks. But the normalized price plots clearly show
+that these two seemingly unrelated ﬁrms, move closely together over time; iii) Both pairs
+show potential proﬁtability, with the normalized price gap widening and narrowing over
+time, and possibly mean-reverting. There is also no clear leader-follower; During certain
+periods, one stock trades above the other, and vice versa during other periods.
+13
+
+References
+Chen, S., M. T. Chng, and Q. Liu (2021). The implied arbitrage mechanism in ﬁnancial
+markets. Journal of Econometrics 222(1), 468–483.
+Dang, T. V., W. Li, and Y. Wang (2023). Government stock purchase undermines price
+informativeness: Evidence from china’s “national team”.
+Journal of Financial and
+Quantitative Analysis, 1–35.
+Fan, J., A. Furger, and D. Xiu (2016). Incorporating global industrial classiﬁcation standard into portfolio allocation: A simple factor-based large covariance matrix estimator
+with high-frequency data. Journal of Business & Economic Statistics 34(4), 489–503.
+Gatev, E., W. N. Goetzmann, and K. G. Rouwenhorst (2006). Pairs trading: Performance
+of a relative-value arbitrage rule. The Review of Financial Studies 19(3), 797–827.
+Lei, Y. and J. Xu (2015). Costly arbitrage through pairs trading. Journal of Economic
+Dynamics and Control 56, 1–19.
+Li, M. L., C. M. Chui, and C. Q. Li (2014). Is pairs trading proﬁtable on china ah-share
+markets? Applied Economics Letters 21(16), 1116–1121.
+Li, Z., F. Wen, and Z. J. Huang (2023). Asymmetric response to earnings news across
+di!erent sentiment states: The role of cognitive dissonance.
+Journal of Corporate
+Finance 78, 102343.
+Liu, J. and A. Timmermann (2013). Optimal convergence trade strategies. The Review
+of Financial Studies 26(4), 1048–1086.
+Seasholes, M. S. and C. Liu (2011). Trading imbalances and the law of one price. Economics Letters 112(1), 132–134.
+Wang, C. D., Z. Chen, Y. Lian, and M. Chen (2022). Asset selection based on high
+frequency sharpe ratio. Journal of Econometrics 227(1), 168–188.
+14

@@ -1,0 +1,1285 @@
+Machine Learning-Based Pairs Trading Strategy with Multivariate
+Pairs Formed with Multi-objective Optimization
+Miguel Figueiraa (miguel.c.figueira@tecnico.ulisboa.pt),Nuno Hortaa,b
+(nuno.horta@tecnico.ulisboa.pt)
+a Instituto Superior T´ecnico, Torre Norte, Av. Rovisco Pais, 1, 1049-001 Lisboa,
+Portugal
+b Instituto de Telecomunica¸c˜oes, Torre Norte, Av. Rovisco Pais, 1, 1049-001 Lisboa,
+Portugal
+Corresponding Author:
+Miguel Figueira
+Instituto Superior T´ecnico, Torre Norte, Av. Rovisco Pais, 1, 1049-001 Lisboa,
+Portugal
+Tel: (351) 911905882
+Email: miguel.c.figueira@tecnico.ulisboa.pt
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Machine Learning-Based Pairs Trading Strategy with
+Multivariate Pairs Formed with Multi-objective
+Optimization
+Miguel Figueiraa,∗, Nuno Hortaa,b
+aInstituto Superior T´ecnico, Torre Norte, Av. Rovisco Pais, 1, 1049-001 Lisboa, Portugal
+b Instituto de Telecomunica¸c˜oes, Torre Norte, Av. Rovisco Pais, 1, 1049-001 Lisboa,
+Portugal
+Abstract
+Pairs trading is one of the most popular arbitrage investment strategies. By
+monitoring a pair of two assets that closely follow each other, the trader acts
+when the pair presents an imbalance, profiting when the stocks converge to their
+equilibrium. Despite the rising popularity of Machine Learning in financial applications, most pairs trading strategies are still based in exhaustive search
+methods and rigid trading heuristics. This work creates pairs by addressing
+conflicting objectives, maximizing profit and minimizing risk, and explores multivariate pairs, composed of more than 2 stocks. Two Elitist genetic algorithms,
+NSGA II and III, are used to create pairs, achieving returns of up to 9,7%
+p.a., and proving to be robust to market crashes. Furthermore, multivariate
+pairs are found to be inferior to the traditional two-stock pairs. Additionally, a
+forecasting-based trading strategy is developed, attempting to improve the standard trading technique. An ARIMA and XGBoost models are used to forecast
+the spread in a trend-based trading strategy. The forecasting strategy yields
+returns of 23% p.a. and beats the market during 2018 and 2019. The system is
+tested in the Real Estate sector of the S&P500, from 2018 to December 2021.
+Keywords:
+Pairs Trading, Statistical Arbitrage, Machine Learning, Genetic
+∗Corresponding author.
+Email addresses: miguel.c.figueira@tecnico.ulisboa.pt (Miguel Figueira ),
+nuno.horta@tecnico.ulisboa.pt (Nuno Horta)
+Preprint submitted to Expert Systems with Applications
+November 30, 2022
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Algorithms, Multi-objective Optimization
+1. Introduction
+Pairs trading (PT) was introduced mid 80’s and is one of the most popular
+arbitrage strategies. PT is characterized by being market neutral, as it attempts
+to avoid systematic risk and be profitable both in bullish and bearish markets.
+A further advantageous feature consists in focusing on the relative pricing of a
+security, bypassing the inconvenience of evaluating an asset.
+The strategy is based on the idea that two securities that are close substitutes
+to each other, whether because they belong to same sector or are affected by
+the same economic factors, shall have similar prices (Law of One Price). These
+two assets constitute a pair. If their prices do differ, that is due to the market
+inefficiency, and it is an opportunity to act as an arbitrageur and make profit,
+by shorting the overvalued asset and buying the undervalued one.
+However, it seldom happens that the market behaves as one would desire.
+It may be that a ”well behaved pair” suddenly goes rogue. In other words,
+following the opening of a trade, the pair further diverges.
+In fact, although PT performed well through the 80’s and 90’s, its profitability has been decreasing. Do & Faff (2010) states that the diminished returns are
+driven by worse arbitraging risks, namely the fundamental risk (associated to
+the market as a whole), or noise-trader risk (attributed to irrational choices by
+traders). Do & Faff (2010) concludes that a naive method of pairing securities
+will not be enough to generate consistent returns.
+The success of a PT strategy relies mostly on a good selection of pairs, but
+the traditional iterative approaches that compare each stock with all others
+consume immense computational power and do not guarantee that the relationships found are not coincidental. Additionally, PT, as most financial strategies,
+should conciliate two opposite goals: minimize risk and maximize profit.
+To address this dichotomy, in this work, pairs will be formed through a Multiobjective Optimization Problem (MOOP), and Genetic Algorithms (GA) will
+2
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+be used to form the best possible pairs. Furthermore, pairs composed of more
+than the standard two securities will be considered, as the multivariate kind
+of PT is still unexplored and could produce better results than its univariate
+equivalent.
+Selecting the right pairs is crucial but knowing when to trade them is just
+as important. To this end, the vast arsenal of Machine Learning (ML) will be
+employed to forecast the spread of each pair and generate trading signals. In
+the forecasting-based trading module, an ARIMA and XGBoost models will be
+used to anticipate trading opportunities.
+This work’s objectives can be synthesized as in fig. 1. Research Stage (RS)
+I will address the formation of pairs, and RS II the trading strategy.
+Figure 1: Research questions to be answered.
+The remainder of this manuscript is organized as follows: Section 2 provides
+a brief review of PT techniques found in the literature; Section 3 describes the
+pair formation methodology; Section 4 delineates a forecasting-based strategy;
+Section 5 details the experiment design, and the features that ensure some
+proximity with a real trading environment; Finally, Section 6 presents the results
+obtained and Section 7 summarizes the conclusions of this work.
+2. Background and Related Work
+A Pairs Trading strategy can be divided into its two logical steps: Pair
+Formation (PF) and Trading Stage (TS). In the PF, co-moving securities are
+grouped into pairs. Afterwards, in the TS, the spread of the selected pairs is
+kept under analysis and the pair is traded according to its spread’s behavior.
+3
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Following the comprehensive survey presented in Krauss (2015), Pairs Trading approaches can be classified as:
+• PF: Distance, Cointegration, Machine Learning.
+• TS: Thresholds, Machine Learning.
+2.1. Pair Formation
+A standard pairing technique consists of grouping securities belonging to
+the same industry sector, with the intent of ensuring that they are influenced
+by the same external factors. This procedure can be observed in Gatev et al.
+(2006); Do & Faff (2010). On the other hand, an extensively iterative approach
+is used in Brim (2020); Wang et al. (2021), pairing all combinations of securities
+without constraints concerning the sector.
+PF methodologies can be further categorized with respect to the number of
+assets that constitute each component of the pair. Fig. 2 illustrates the various
+approaches.
+Figure 2: Types of pairs regarding their cardinality.
+The majority of the academic works on PT explores the univariate method,
+with rare exceptions, namely Huang et al. (2015); Perlin (2007); Chen et al.
+(2017), which implement a quasi-multivariate strategy or Goldkamp & Dehghanimohammadabadi (2019), where a truly multivariate framework is tested. The
+reduced number of works that delve into the multivariate kind reveals an apparent absence of this alternative methodology.
+4
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Having formed the pairs, it is now time to select the best ones using Distance
+or Cointegration criteria.
+• Distance - the baseline method
+Gatev et al. Gatev et al. (2006) use the Euclidean distance to evaluate pairs.
+The ones that present the smallest Sum of Squared Distances (SSD) between
+the two stocks during a rolling window of 12 months are selected.
+An improvement to the SSD is suggested in Do & Faff (2010). The authors
+propose the use of the Number of Zero Crossings (NZC) by the pair’s spread as
+a measure of mean regression. An appealing pair should have a higher NZC.
+• Cointegration
+The cointegration approach tests the pair’s spread for stationarity, namely
+with the Engle-Granger test. If two price series are cointegrated, their spread,
+given by
+st = xt −βyt,
+(1)
+is stationary, where β is the cointegration factor. A trader can analyze a stationary spread to detect instants where it deviates from its habitual behavior,
+thus finding trading opportunities. According to Krauss (2015), the key benefit
+of this strategy is the econometrically trustier association of identified pairs,
+opposing the distance method, which may find spurious relationships.
+2.2. Trading Stage
+Following the formation of the pairs, the Trading Stage encompasses deciding
+when to open and close a trade, by analyzing the pair’s spread and making
+decisions according to its behavior. The typical procedure is to apply the same
+amount of capital to each component of the pair, i.e., the value obtained in the
+short is equal to the value spent on the long.
+• Threshold-based strategy - standard approach
+5
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+In the work of Gatev et. al. Gatev et al. (2006), the distance method of pairing
+securities is followed by an even simpler trading model. The pair’s spread is
+monitored and, when it diverges by more than two times its standard deviation
+from the mean, the trade is opened. When the spread converges to its mean,
+the trade is closed. Other notable works already mentioned that follow this
+technique are Goldkamp & Dehghanimohammadabadi (2019); Perlin (2007).
+2.3. ML-based strategies
+Table 1 encapsulates the ML techniques applied to a PT strategy. DQN
+refers to Deep Q-network, a Reinforcement Learning (RL) model.
+Work
+Methodology
+Conclusions
+Sarmento & Horta (2020)
+(PF) OPTICS applied
+to the PF problem.
+OPTICS achieved better returns
+than searching within a sector or
+iterating over all possible pairs.
+Goldkamp & Dehghanimohammadabadi (2019)
+(PF) NSGA II forms
+multivariate pairs.
+Multi-objective formulation outperforms
+single objective. Multivariate PT
+presents low correlation with the market.
+Brim (2020)
+(TS) DDQN vs DQN
+as trading agents.
+DDQN is more conservative and
+produces less volatile returns.
+Wang et al. (2021)
+(TS) RL with DQN.
+RL outperforms the standard method.
+Most profitable trades do not take very
+long to converge.
+Huang et al. (2015)
+(TS) GA to optimize
+entry points.
+Trading within a sector outperforms
+trading all types of stocks.
+Table 1: Summary of ML techniques in PT.
+2.4. Benchmark Results
+Table 2 compiles the returns obtained in several studies on the topic, that
+will be used to compare the ones attained is this work. The first three works use
+ML, while the last two employ standard techniques, as the Distance criterion
+and the Threshold-based strategy. Note that only Sarmento & Horta (2020)
+and Do & Faff (2010) consider transaction costs.
+6
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Work
+Methodology
+Data
+Results
+Brim (2020)
+RL with DDQN
+SP500
+2018
+131,3% ROI
+Sarmento & Horta (2020)
+OPTICS
+Commodity ETFs
+2015-2018
+12,5% p.a.
+Goldkamp & Dehghanimohammadabadi (2019)
+NSGA II
+SP500
+2012-2016
+1,72% monthly
+Gatev et al. (2006)
+Distance
+Threshold-based
+SP500
+1962-2002
+11% p.a.
+Do & Faff (2010)
+Distance with NZC
+SP500’s bank stocks
+1962-2002
+0,84% monthly
+Table 2: Benchmark Results.
+3. Proposed Pair Formation Framework
+The PF module is designed to assess whether multivariate pairs formed with
+MOO perform better than the traditional pairs.
+The motivation behind the multivariate technique relies on the idea that
+increasing the number of securities held reduces volatility, encapsulated in the
+financial mantra ”Don’t put all your eggs in one basket”.
+MOO will be applied to form pairs that simultaneously maximize profit and
+minimize risk.
+3.1. Case Studies
+Five different types of pairs, illustrated in fig. 3, will be formed to investigate
+the research goals above.
+Figure 3: Case studies for different number of stocks and objective functions.
+7
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Serving as benchmark, SOUV is the type of pair most commonly found in
+the literature, composed of two cointegrated stocks. This type of pair is studied
+in Gatev et al. (2006); Do & Faff (2010), among others.
+It is made a distinction between pairs formed by minimizing two goals and
+many objective functions to replicate and further examine the work in Goldkamp
+& Dehghanimohammadabadi (2019).
+The objective functions for each type of pair are:
+• SO: cointegration
+• BO: cointegration, spread’s volatility
+• MO: NZC, cointegration, spread’s volatility, half-life
+By minimizing the cointegration and maximizing the NZC, it is ensured
+that the pair exhibits a trustworthy relationship and strong mean-reversion,
+respectively. As such, the risk is minimized.
+The half-life reflects how much time the pair takes to revert to its mean.
+By minimizing the half-life and maximizing the spread’s volatility, the pair
+presents frequent and valuable trading opportunities, thus maximizing the profit
+potential.
+3.2. Proposed Framework
+Given the exponentially growing solution space induced by the combinatorial nature of multivariate pairs and the conflicting objectives that guide the
+formation of pairs, a GA will be employed in the Pair Formation phase. In fact,
+GAs are able to deal with a large solution space, and obtain a diverse solution
+set. In particular, an elitist GA will be applied, NSGA II and III. Rudolph
+Rudolph (1996) demonstrates that GAs converge to the global optimal solution
+of some functions in the presence of elitism.
+Some notable applications of NSGA II to portfolio management are found
+in Deb et al. (2011); Kaucic et al. (2019). Moreover, Awad et al. (2021) also
+uses NSGA III to select profitable stocks.
+8
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+To explore whether it is advantageous to form pairs as a MOOP, NSGA II
+will create pairs concerning 2 objectives, and NSGA III regarding 4 objectives.
+The adopted architecture of the PF module is delineated in fig. 4: a set
+of stocks belonging to the same sector is introduced in the pairing algorithms
+- the traditional iterative approach, NSGA II and NSGA III - that will form
+pairs. Next, the newly created pairs are traded in a threshold-based model, the
+most common approach to the TS, that will allow to compare the quality of
+the pairs in a simplistic trading environment. Finally, by analyzing the pairs’
+performance, the answers to RS I will be drawn.
+Figure 4: Pair Formation module architecture.
+3.3. Problem Formulation
+The multivariate PF stage can be defined as: given a set of N stocks all
+belonging to the same sector, select some to the first component of the pair, c1,
+9
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+and other to the second component, c2, such that the resulting pair presents
+considerable prospective profit.
+Consider M objectives that define the quality of a pair and two binary vectors
+of size N, c1 and c2. If c1
+i is equal to one, that means that stock i belongs to
+c1. The problem may be formulated as:
+min
+c1,c2
+f = [f1, f2, . . . , fM]
+subject to
+l ≤c1,2 · 1 ≤u
+(2)
+c1
+i + c2
+i ≤1,
+i = 1, . . . , N
+(3)
+coint(c1, c2) ≤0.05
+(4)
+and
+c1,2
+j
+∈{0, 1},
+j = 1, . . . , N
+(5)
+The various objective functions, f1 up to fM, intend to ensure that the pair
+simultaneously presents profit potential and low risk.
+Constraint (2) controls the cardinality of each component of the pair. The
+components must have at least l stocks, but no more than an upper bound u.
+This requirement is represented by the dot product of the component vectors,
+c1,2, by a vector of ones, 1. For a univariate pair, where each component is
+composed of 1 stock, both u, l would be set equal to 1. For a multivariate case,
+the upper limit would be greater than 1. The second constraint, (3), states that
+stock j cannot belong to both components at the same time. Furthermore, the
+par must be cointegrated, hence constraint (4). Finally, the component vectors
+will be composed of binary variables (5).
+• GA representation
+In a GA context, each individual will represent a potential pair. As each pair has
+2 components, the chromosome will have size 2N. The first N genes concern
+the first component and the latter N the second. As stated previously, each
+gene is a binary variable. In other words, the chromosome could be interpreted
+as a Boolean vector: if for a given position i the gene is active, it means that
+stock i was added to the pair.
+10
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Figure 5: Example chromosome for a universe of N stocks.
+Fig. 5 illustrates a chromosome used to form a pair from a universe of N
+stocks. The first component is highlighted in green, and second in orange.
+Concerning the phenotype, the performance of a individual for each of the
+M objective functions will influence its survival and fitness.
+3.4. NSGA II and NSGA III
+Since its introduction in Deb et al. (2002), NSGA II is the reference when
+it comes to multi-objective optimization Pil´at (2010). Its most relevant and
+innovative features are:
+• Elitist principle, i.e. the elites of a population are given the opportunity
+to be carried to the next generation.
+• Uses an explicit diversity-preserving mechanism.
+• Emphasizes the non-dominated solutions.
+The elitism approach leads to better and faster performance and ensures that
+no good solutions are “lost” along the algorithm’s run. The diversity-preserving
+mechanism guarantees a well spread set of solutions along the optimal Pareto
+curve.
+However, with the increase of the number of objective functions, the number of non-dominated solutions increases exponentially. This leads to several
+negative consequences:
+• New solutions have less representation in the population as the algorithm
+iterates.
+• Diversity preservation becomes increasingly more complex.
+11
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+NSGA III Deb & Jain (2013) is developed with these issues in mind. NSGA
+III is an evolution of the previous algorithm that is better suited to tackle
+many-objective optimization problems (M ≥3). The algorithm differs from
+its precursor on how to filter the population and on the diversity-preserving
+mechanism.
+NSGA II will be employed to form bi-objective pairs, and NSGA III will be
+applied to select pairs according to many-objective functions.
+• Parameters
+Table 3 presents the parameters selected.
+NSGA II and III
+Population
+50
+Termination criterion
+80 generations
+Selection, Sampling,
+Crossover, Mutation
+Tournament, Binary Random,
+Two Point, Bit Flip
+Reference directions (NSGA III)
+Riez s-Energy
+NSGA II objective functions:
+min. cointegration, max. volatility
+NSGA III objective functions:
+min. cointegration, max. volatility,
+max. NZC, min. half-life
+Table 3: NSGA II and NSGA III parameters.
+Both algorithms are applied using pymoo’s implementation Blank & Deb
+(2020a).
+It is evident that the ideal termination criterion would be defined by monitoring the objective space and terminating the algorithm when no improvement
+is observed for a certain number of generations Blank & Deb (2020b). However,
+this method would require a much larger amount of time to converge. Furthermore, in the experiments performed, the evolution of the objective space stalls
+above the 80th generation.
+12
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+NSGA III employs an energy-based method to generate reference directions,
+Riesz s-Energy, that is superior to the standard Das and Dennis’s method since
+it allows the user to set a specific number of reference points Blank et al. (2021).
+3.5. Threshold-based Trading Strategy
+The different types of pairs and their respective formation techniques will be
+evaluated experimentally, by applying a common trading strategy to all different
+pairs. The naive threshold-based strategy will be applied without much thought
+or optimization. The objective of the experiment shall be comparing the different types of pairs, not to beat the market. Table 4 displays the thresholds that
+dictate the strategy.
+Threshold
+Value
+Long
+µs −2σs
+Short
+µs + 2σs
+Close
+µs
+Table 4: Threshold strategy parameters.
+Quite simply, when the spread reaches one of the thresholds, a position is
+opened and when it reverts to the mean, the position is exited, hopefully with
+profit. The spread’s standard deviation, σs, and mean, µs, are calculated with
+past values, in particular with observations of the past 3 months. Most strategies
+normalize the spread as a zcore, simplifying the thresholds to -2, +2 and 0.
+4. Proposed Trading Framework
+The traditional threshold-based trading model relies solely on the blindly
+defined thresholds that establish the entry and exit points of the strategy. Furthermore, the standard strategy only trades the signal in the direction of convergence, towards the mean. Consequently, there is a considerable amount of
+13
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+time when the spread is not being traded (while it has not activated one of the
+thresholds), which implies that, if the signal could be traded in all directions,
+profits would increase.
+The forecasting-based strategy proposed uses the day-ahead forecast of the
+spread to anticipate trading opportunities.
+4.1. Trading Strategy
+The forecasted spread will be used to detect trends in the pair’s movement.
+While the predicted value for tomorrow is superior to today’s real observation,
+it is considered that there is an uptrend, and the strategy will long the spread.
+Likewise, while it is predicted that the spread will decrease, i.e., while the
+day-ahead value is smaller than the real current one, the spread presents a
+downtrend, and the strategy will short the spread.
+Fig.
+6 illustrates the strategy described, assuming that the forecast has
+perfect accuracy.
+Figure 6: Trend-based forecasting strategy.
+Formally, the strategy tracks the predicted change in the spread’s value, defined as ∆t+1 = ˆst+1 −st, and recommends a Long/Short position, ˆP, according
+to the following conditions, where TC are the transaction costs:
+ˆP =
+
+
+
+
+
+
+
+
+
+
+
+if ∆t+1 > TC, Long position,
+if ∆t+1 < −TC, Short position,
+otherwise, remain outside the market.
+(6)
+14
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+The strategy then monitors the recommended position for each day and
+acts when there is a change in the type of position, meaning that there was
+an inversion in the direction of the trend. Revisiting fig. 6, where the trader’s
+actions are displayed in the bottom part of the figure, when there is a transition
+from a Short to a Long position, the trader is called to act and change its
+position.
+In this case, it would go from shorting the spread to buying the
+spread.
+4.2. Proposed Framework
+The spread will be predicted with an ARIMA and XGBoost models. The
+spread forecasting will be implemented as a regression problem, since it must be
+ensured that the predicted ∆t+1 is bigger than the transaction costs associated
+with the operation.
+The ARIMA model was selected due to its simplicity and proven robustness
+in a wide field of forecasting applications Anaghi & Norouzi (2012); Sin et al.
+(2020). Despite not being able to capture non-linear patterns in data, it will
+provide an interesting comparison to the other ML model selected, questioning
+whether the additional complexity is noticeable and justifiable in stock market
+forecasting.
+XGBoost Chen & Guestrin (2016) provides a novel take on gradient boosting
+frameworks. It will be used by virtue of being highly flexible and capable of
+dealing with massive and complex data sets. Additionally, Krauss et al. (2017)
+concludes that frameworks that rely on trees produce superior results compared
+to ANNs such as RNNs, while being faster to train.
+The structural design of the proposed TS is presented in fig.7. Firstly, the
+forecasting models, ARIMA and XGBoost, are fitted to the spreads to forecast.
+Then the day-ahead prediction is generated. Next, the real and the predicted
+spreads are analyzed by the Forecasting-based strategy, that monitors potential
+inversions in the trend. Finally, the performance of the trading system developed
+will allow to assess if a ML-based approach contributes positively to the trading
+stage.
+15
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Figure 7: Forecasting TS module architecture.
+4.3. Models’ parameters
+• ARIMA
+Three parameters that reflect and explain the underlying structure of the data
+were defined: p, d, q. Parameter p corresponds to the number of lag observations
+considered, d to the order of integration of the data and, finally, q determines the
+size of the window employed in the calculation of the moving average. The parameters were chosen manually, based on the analysis of the signals to forecast.
+The best configuration is presented in table 5.
+Model
+Configuration
+ARIMA
+p = 5, d = 1, q = 0
+XGBoost
+n estimators = 400, max depth = 8
+η = 0.05, λ = 1
+γ = 0.005, patience = 5
+Table 5: ARIMA and XGBoost parameters.
+Regarding p, it could be pointed that the spreads should be stationary, thus
+p = 0, since that is the ideal condition for a PT strategy that the pairs formed
+should satisfy. However, test spreads are rarely stationary, as it will be exposed
+in section 6.1.
+• XGBoost
+16
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+To take advantage of XGBoost’s flexibility and adaptability, the model will
+be given the following features1 (besides the past day’s value): SMA5, 10, 15,
+EMA9, RSI, MACD.
+Some regularization techniques were applied to the model, namely: restricting the max depth of each tree; the learning rate, η; and the pruning parameter,
+γ. Additionally, λ reduces the model’s sensibility to an individual observation.
+Finally, an early stopping method was used. The best hyperparameters for this
+model were defined by applying a grid search and are displayed in table 5.
+5. Experiment Design
+This section discusses some relevant aspects regarding the implementation,
+as the data set, the back-testing setup and the trading rules that try to mimic
+a real trading environment.
+5.1. Data set - S&P 500 Real Estate sector
+This work will use S&P 500 financial information. Stocks belonging to the
+Real Estate sector will be studied, to ensure that a relationship between two
+stocks is not coincidental, but a consequence of the fact that they are influenced
+by the same economic factors.
+Regarding Research Stage I (RS I), a 3-year formation period will be used,
+based on the assumption that selecting pairs across a relatively long time period
+reveals long-lasting associations. Then, the formation methods are tested in the
+next year. The sliding window is displayed in fig. 8.
+The time frame selected for this work spans from 2018 to the end of 2021.
+The test years are highlighted in bold in fig. 8. The adopted period is considered
+relevant since it is recent - presenting the challenge of the volatile modern stock
+1The Moving (SMA) and Exponential (EMA) Averages, Relative Strength Index (RSI)
+and the Moving Average Convergence/Divergence (MACD) are popular technical analysis
+indicators.
+17
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Figure 8: Sliding window periods.
+market - and because it includes one major economical event - the crash of
+March 2020 consequence of the COVID-19 pandemic.
+Concerning RS II, the Forecasting-based TS applies a 4-year training period
+followed by a 1-year test period. This process is executed for both algorithms,
+ARIMA and XGBoost, meaning a (80% −20%) train/test split.
+Given the
+sequential dependence intrinsic to time series, a walk forward validation is used
+for both models. For each N days of the testing period, the model is fitted
+to past observations and the day-ahead prediction is computed. The ARIMA
+model is fitted every day, and the XGBoost each 5 days.
+5.2. Transaction Costs
+The costs associated with each market operation silently erase the potential
+profit and should not be ignored. Table 6 displays the fees considered, based on
+the estimations in Do & Faff (2011).
+5.3. Time series normalization and Look Ahead Bias
+A crucial but frequently overlooked step in the traditional trading strategy
+is the spread normalization. The test spread, s, is normalized according to:
+Z = s −µs
+σs
+,
+(7)
+18
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Explicit
+Implicit
+Short Rental
+Description
+Broker commissions,
+exchange fees.
+Slippage, market impact,
+delays.
+Daily fee applied
+to a short position.
+Rate
+8 bps
+20 bps
+1 % per annum
+Table 6: Transaction costs considered.
+and it is of utmost importance that both µs and σs are calculated using only
+past values.
+Looking into future values results in Look Ahead Bias, and it is far from a
+trivial detail: µs and σs determine the entry/exit thresholds for the strategy
+and, in a strategy where it is desirable to define the best occasions to enter and
+exit the market, knowing the range of values of the future signal constitutes an
+unfair advantage.
+Ultimately, the trading results are positively (yet incorrectly) influenced:
+the incorrectly normalized spread will offer better and more frequent trading
+opportunities.
+Normalizing the spread with d past values adds a new degree of complexity
+to the threshold trading strategy, as there is now the need to select the number
+of considered days. There is a tradeoff for the possible values of d: d too large
+will not be able to follow the ever-changing behavior of the spread; values too
+small will change the thresholds too often, overreacting to temporary changes
+in the spread.
+The best value for d, d = 63, or approximately three trading months, was
+obtained by iteratively testing different normalization periods.
+5.4. Trading Portfolios
+A portfolio is created for each one of the five types of pairs - in the PF
+module - and for each of the forecasting algorithms - in the Forecasting-based
+Trading Stage.
+19
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+An initial symbolic value of 1000$ is attributed to each portfolio. As the
+experiment progresses, the amount earned/lost during a trading year is propagated into the next year. If, for example, the first period yields a loss of 5%, in
+the second year the portfolio will only have 950$ to start with. At the end of
+each trading year, every position is closed.
+Every pair in a portfolio is equally weighted, and the value designated to
+each pair, p0, is simply the initial portfolio value for that year divided by the
+number of pairs. There is no reinvestment within the same trading year. The
+amount applied to each component of the pair is the same and, at instant t, is
+described by:
+p(t) = min(p0, p(t −1)).
+(8)
+6. Results
+This section presents and analyzes the results obtained. Firstly, the pair formation techniques are examined in 6.1, and then the forecasting-based strategy
+is evaluated in 6.5.
+6.1. Pair Formation Results
+The number of pairs clustered for each case study is presented in table 7.
+It comes as no surprise that both multivariate methods, BOMV and MOMV,
+select more pairs than their univariate equivalents, since that the combinatorial
+nature of multivariate pairs offers many more possible pairs.
+Each of the two components of BOMV and MOMV pairs is composed of up
+to 5 stocks. The algorithms, through their natural selection filter, ”opted for”
+having more stocks per component, 4 to 5, as it is possible to see in fig. 9.
+6.2. Trading Performance
+Table 8 summarizes the performance of the different PF methods.
+20
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Formation
+Period
+Cases
+SOUV
+BOUV
+BOMV
+MOUV
+MOMV
+’15-’17
+21
+4
+27
+7
+8
+’16-’18
+36
+4
+17
+7
+11
+’17-’19
+61
+6
+23
+10
+12
+’18-’20
+25
+2
+38
+9
+14
+Total
+143
+16
+105
+33
+45
+Table 7: Number of pairs selected for each formation method.
+Figure 9: Number of stocks per component for MOMV pairs.
+A quick glance to the cumulative ROI2 values reveals that the performance
+of most PF methods was rather disappointing. With the exception of BOUV
+and MOUV, all the portfolios resulted in losses. The BOUV pairs outperformed
+the others by a considerable margin, revealing to be the superior technique and
+yielding 9, 73% yearly on average.
+• Univariate vs. Multivariate pairs
+The research question ”Are multivariate pairs better?” can be answered
+2Return On Investment.
+21
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+quite convincingly: no, multivariate pairs are no better, or are actually inferior
+to univariate pairs. Not only the returns are much worse, but also the MDD3 are
+larger. This conclusion corroborates the finding of Goldkamp & Dehghanimohammadabadi (2019): univariate pairs present themselves as more profitable.
+• Forming pairs with MOO
+Concerning the second research question: ”Does MOO find better pairs?” -
+yes, both BOUV and MOUV portfolios outperform the baseline SO approach.
+However, optimizing more objective functions is not synonym to better results,
+as BOUV proves to be better than MOUV.
+6.3. Worst performing portfolios
+The worst performing portfolios are the SOUV, BOMV, MOMV. Two major
+factors negatively influence these pairs: the pairs alter their behavior from the
+formation to the trading period; non-convergent pairs.
+• Pairs change their behavior
+To test whether the pairs still exhibit the desired proximity relationship by being
+cointegrated, table 9 displays the number of pairs cointegrated in the testing
+period.
+The vast majority of pairs, no matter the formation technique used, are
+not cointegrated, which raises the hypothesis that cointegration is not the best
+criterion to form pairs Clegg & Krauss (2018). It is evident that pairs change
+their behavior in the testing period - the close relationship during the formation period does not persist in testing - proving to be a determining factor of
+unprofitability.
+But how does the change in behavior negatively affect the returns? If the
+pair diverges long enough after a position is opened, the spread’s mean, µs, will
+3Maximum Drawdown: maximum observed loss from a peak to a trough of a portfolio.
+22
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+increase (recall that the mean is calculated with the past 3 months). Consequently, if the spread touches its mean, the pair is believed to have converged,
+and the trade is closed. However, that is far from the truth. The pairs’ components are now more distant than ever, and the trade results in a loss, since it
+was bet that the components would meet again.
+Fig. 10 illustrates the change in the behavior of the pair EQR-DLR, where
+the closely related price series suddenly distance themselves in the testing period.
+Figure 10: Different behavior of EQR-DLR in the training and testing periods.
+This phenomenon is aggravated in multivariate pairs. Not a single BOMV
+or MOMV pair is cointegrated in the testing period. The bigger the number
+of stocks held, the higher the entropy, the more prejudicial are the differences
+in behavior from each individual stock that composes the pair. This explains
+the mediocre performance from the multivariate pairs, and further supports the
+conclusion that multivariate pairs are no better than univariate ones.
+• Non-convergent pairs
+An additional negative agent is the sizeable number of non-convergent pairs, i.e.
+pairs that, when the trading year ends, still present an open market position.
+The percentage of non-convergent pairs is significant across all types, with the
+23
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+smallest average percentage being 58, 33% for BOUV pairs (not surprisingly, the
+best performing overall), and the biggest 78, 82% for MOUV.
+But how prejudicial is the non-convergence? Fig. 11 displays the evolution of
+the BOUV portfolio in 2018, where the red dots signal the MDD. An otherwise
+positive year is quickly turned red due to the massive negative spike caused by
+the forced exit of non-convergent positions, in the last day of the trading year.
+This observation endorses the conjecture that non-convergent pairs are highly
+(negatively) influential in the outcome of the strategy.
+Figure 11: Influence of non-convergence in BOUV pairs in 2018.
+6.4. Best performing portfolio - BOUV
+The BOUV pairs are the most profitable, and outperform the benchmark
+SOUV pairs, allowing to conclude that bi-objective optimization finds better
+pairs than the traditional iterative method based on cointegration.
+Fig. 12 compares the BOUV portfolio with the SPY4 index in 2020. The
+PT strategy outperforms the market, not only having a bigger ROI but also a
+lower MDD, signaled by the black dots. Given that 2020 was characterized by
+the March crash, consequence of the COVID-19 pandemic, this result confirms
+the idea found in the literature that PT is robust to market crashes.
+4Benchmark that reflects the value of the S&P500 companies.
+24
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Figure 12: BOUV and SPY in 2020.
+6.5. Forecasting Strategy Results
+The forecasting-based module uses the BOUV pairs, since it is desirable to
+compare this alternative strategy with the best performing pairs of the traditional trading method.
+Table 10 summarizes the accuracy of the predictions of all pairs considered in
+2018, 2019. The metric ”percentage of spread’s directions correctly predicted”
+reflects the number of times the model accurately forecasted if the spread’s value
+would increase or decrease in the following day. The ”A” or ”X” in the model
+row stands for ARIMA or XGBoost.
+The ARIMA model performs better than the XGBoost at predicting the
+spread’s day-ahead value. The results are particularly curious given that the
+ARIMA model is much simpler in nature, and faster to train, suggesting that
+the extra complexity added by the XGBoost might be unnecessary. This conclusion is in accordance with Sarmento & Horta (2020), where an ARIMA model
+outperforms a LSTM.
+Fig. 13 displays the predictions of both models for the KIM-ESS pair in
+2018. While the ARIMA model follows the real spread more closely, it does so
+in an almost lagged fashion. The predicted curve follows the movement of the
+real spread with the lag of one day.
+On the other hand, the spread predicted by the XGBoost almost resembles
+a succession of step signals, since the XGBoost model is fitted each 5 days.
+25
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Figure 13: Predicted KIM-ESS pair in 2018.
+Consequently, during the five-day period when the model is not re-trained, the
+XGBoost algorithm does not present the ability to closely follow the original
+signal. While not being as close to the real spread as the ARIMA, it shows
+a somehow more ”independent” behavior, anticipating the spread’s direction
+of movement instead of lagging behind. Hence, the XGBoost performs better
+when predicting the spread’s direction.
+6.6. Forecasting Trading Performance
+Table 11 synthesizes the results of the Forecasting-based strategy in 2018 and
+2019. As a term of comparison, the best performing pairs, BOUV, are presented
+for the same period, employing the traditional threshold-based strategy.
+XGBoost obtains the best trading results, yielding 49, 24% of profit over the
+2 years. Furthermore, it also outperforms the BOUV pairs. Additionally, the
+XGBoost portfolio has the lowest MDD, meaning that the portfolio does not
+decrease drastically in value at any given time. In fact, the biggest downtrend
+is only 5,36%, observed in 2019. Fig. 14 depicts the evolution of the portfolios
+compared with the SPY index. The MDD of the XGBoost portfolio is marked
+with black dots. The contrast in profitability from 2018 to 2019 is explained
+by analyzing the return for each trade. In 2019, the unsuccessful trades are
+much more damaging: a major negative action invalidates the gains obtained
+26
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+in a series of small, profitable trades.
+Figure 14: Xgboost, ARIMA and BOUV portfolios compared with the SP500 in 2018-2019.
+The ARIMA portfolio results in drastic losses, explained by its bad performance in correctly predicting the future direction of the spread.
+To the
+ARIMA, the spread either goes up or down, offering no better prediction than a
+coin toss. This rather strong conclusion is supported by the metric ”% percentage of directions correctly predicted”, lower than 50%, as presented in table 10.
+The low percentage of correctly guessed directions has an additional implication: as the forecasting strategy is based on the predicted trend, the consecutive
+bad predictions compound into a disastrous strategy, justifying the substandard
+performance of the ARIMA portfolio.
+6.7. XGBoost - best overall portfolio
+The XGBoost portfolio nets the best results, not only for the ML models
+but also including the portfolios studied in the PF module.
+The performance of the XGBoost allows the conclusion that ML does improve a PT strategy.
+However, it must be noticed that 2018 and 2019 are
+precisely the worst years for the BOUV pairs in the threshold-based strategy.
+Furthermore, the experiment performed should encompass a larger period of
+time to further validate this conclusion.
+27
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+But how does the XGBoost portfolio fare against the benchmark results
+found in the literature? With an average return of 23,8%, the developed forecastingbased strategy outclasses Gatev et al. (2006); Do & Faff (2010), that use non-ML
+techniques. In regards to ML-based strategies, this work outperforms the likes
+of Sarmento & Horta (2020); Goldkamp & Dehghanimohammadabadi (2019).
+Nevertheless, the returns obtained fall short of the ones in Brim (2020), that
+achieves 33% yearly returns, with the caveat that it does not consider transaction costs.
+7. Conclusions
+This work explored how ML techniques could improve a PT strategy. In the
+pair formation phase, multivariate pairs were created with MOO, using both
+NSGA II and III. Multivariate pairs were found to be inferior to univariate.
+Bi-objective optimization proved to be the best technique, yielding returns of
+9,73% p.a. and beating the market during the Covid crash of 2020. Regarding the trading strategy, a novel trend-based approach obtained profits of 23%
+p.a., outperforming the returns of most of the works found in the literature.
+Additional contributions include finding that most pairs break their cointegration relationship in the trading period and emphasizing the negative influence
+of non-convergent pairs.
+Acknowledgments
+This work is funded by FCT/MCTES through national funds and, when
+applicable co-funded EU funds under the project UIDB/50008/2020.
+References
+Anaghi, M. F., & Norouzi, Y. (2012). A model for stock price forecasting based
+on arma systems. (pp. 265–268). doi:10.1109/ICTEA.2012.6462880.
+28
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Awad, M., Abouhawwash, M., & Agiza, H. N. (2021). On nsga-ii and nsga-iii
+in portfolio management, . doi:10.32604/iasc.2022.023510.
+Blank, J., & Deb, K. (2020a).
+pymoo:
+Multi-objective optimization in
+python, . URL: http://arxiv.org/abs/2002.04504http://dx.doi.org/
+10.1109/ACCESS.2020.2990567. doi:10.1109/ACCESS.2020.2990567.
+Blank, J., & Deb, K. (2020b). A running performance metric and termination
+criterion for evaluating evolutionary multi- and many-objective optimization algorithms, . doi:10.1109/CEC48606.2020.9185546.
+Blank, J., Deb, K., Dhebar, Y., Bandaru, S., & Seada, H. (2021). Generating
+well-spaced points on a unit simplex for evolutionary many-objective optimization. IEEE Transactions on Evolutionary Computation, 25, 48–60.
+doi:10.1109/TEVC.2020.2992387.
+Brim, A. (2020). Deep reinforcement learning pairs trading with a double deep
+q-network. (pp. 222–227). Institute of Electrical and Electronics Engineers
+Inc. doi:10.1109/CCWC47524.2020.9031159.
+Chen, H., Chen, S., Chen, Z., Li, F., & of Accounting, P. (2017). Empirical
+investigation of an equity pairs trading strategy, .
+Chen, T., & Guestrin, C. (2016). Xgboost: A scalable tree boosting system.
+Proceedings of the ACM SIGKDD International Conference on Knowledge
+Discovery and Data Mining, 13-17-August-2016, 785–794. URL: https:
+//arxiv.org/abs/1603.02754v3. doi:10.1145/2939672.2939785.
+Clegg, M., & Krauss, C. (2018). Pairs trading with partial cointegration. Quantitative Finance, 18, 121–138. doi:10.1080/14697688.2017.1370122.
+Deb, K., & Jain, H. (2013). An evolutionary many-objective optimization algorithm using reference-point based non-dominated sorting approach, part i:
+Solving problems with box constraints, . URL: http://www.egr.msu.edu/.
+29
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Deb, K., Pratap, A., Agarwal, S., & Meyarivan, T. (2002). A fast and elitist
+multiobjective genetic algorithm: Nsga-ii. IEEE Transactions on Evolutionary Computation, 6, 182–197. doi:10.1109/4235.996017.
+Deb, K., Steuer, R. E., & Aj, R. (2011). Bi-objective portfolio optimization
+using a customized hybrid nsga-ii procedure.
+Do, B., & Faff, R. (2010). Does simple pairs trading still work?
+Financial
+Analysts Journal, 66, 83–95. doi:10.2469/faj.v66.n4.1.
+Do, B., & Faff, R. (2011). Are pairs trading profits robust to trading costs?, .
+URL: http://ssrn.com/abstract=1707125.
+Gatev, E., Goetzmann, W. N., & Rouwenhorst, K. G. (2006). Pairs trading:
+Performance of a relative-value arbitrage rule. Review of Financial Studies,
+19, 797–827. doi:10.1093/rfs/hhj020.
+Goldkamp, J., & Dehghanimohammadabadi, M. (2019). Evolutionary multiobjective optimization for multivariate pairs trading. Expert Systems with
+Applications, 135, 113–128. doi:10.1016/j.eswa.2019.05.046.
+Huang, C. F., Hsu, C. J., Chen, C. C., Chang, B. R., & Li, C. A. (2015). An
+intelligent model for pairs trading using genetic algorithms. Computational
+Intelligence and Neuroscience, 2015. doi:10.1155/2015/939606.
+Kaucic, M., Moradi, M., & Mirzazadeh, M. (2019). Portfolio optimization by
+improved nsga-ii and spea 2 based on different risk measures. Financial
+Innovation, 5. doi:10.1186/s40854-019-0140-6.
+Krauss, C. (2015). Statistical arbitrage pairs trading strategies: Review and outlook. IWQW Discussion Papers, . URL: http://hdl.handle.net/10419/
+116783www.econstor.eu.
+Krauss, C., Do, X. A., & Huck, N. (2017). Deep neural networks, gradientboosted trees, random forests: Statistical arbitrage on the sp 500. European Journal of Operational Research, 259, 689–702. doi:10.1016/j.ejor.
+2016.10.031.
+30
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Perlin, M. S. (2007). M of a kind: A multivariate approach at pairs trading.
+ICMA/Reading University, .
+Pil´at, M. (2010). Evolutionary multiobjective optimization: A short survey of
+the state-of-the-art, .
+Rudolph, G. (1996). Convergence of evolutionary algorithms in general search
+spaces. Proceedings of the IEEE Conference on Evolutionary Computation,
+(pp. 50–54). doi:10.1109/ICEC.1996.542332.
+Sarmento, S. M., & Horta, N. (2020). Enhancing a pairs trading strategy with
+the application of machine learning, . URL: https://doi.org/10.1016/
+j.eswa.2020.113490. doi:10.1016/j.eswa.2020.113490.
+Sin, K. W., Sheng, H. H., Zhi, W. C., Ling, L. P., & Dass, C. (2020). Forecasting
+stock price using arma model, . 2020, 59.
+Wang, C., Sandas, P., & Beling, P. (2021). Improving pairs trading strategies
+via reinforcement learning. Institute of Electrical and Electronics Engineers
+Inc. doi:10.1109/ICAPAI49758.2021.9462067.
+31
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Test Period
+2018
+2019
+2020
+2021
+Average
+Total
+SOUV
+ROI
+2,38
+-5,52
+-3,95
+1,57
+-1,38
+-5,64
+MDD
+4,27
+8,07
+10,08
+3,30
+6,43
+15,59
+% non-convergent
+66,67
+63,89
+72,13
+76,00
+69,67
+69,93
+BOUV
+ROI
+-1,11
+-3,55
+26,67
+16,91
+9,73
+41,25
+MDD
+6,34
+8,50
+5,57
+6,76
+6,79
+11,23
+% non-convergent
+75,00
+75,00
+33,33
+50,00
+58,33
+56,25
+BOMV
+ROI
+2,71
+-2,48
+-14,31
+-16,61
+-7,67
+-28,43
+MDD
+3,14
+7,32
+16,13
+16,61
+10,78
+32,50
+% non-convergent
+85,19
+17,65
+95,65
+65,79
+66,07
+69,52
+MOUV
+ROI
+0,42
+-6,62
+8,29
+5,59
+2,01
+7,59
+MDD
+6,89
+7,69
+12,57
+3,19
+7,58
+17,95
+% non-convergent
+85,71
+100,00
+70,00
+55,56
+77,82
+75,76
+MOMV
+ROI
+4,21
+-7,49
+-13,11
+-11,37
+-6,94
+-25,76
+MDD
+1,18
+10,20
+14,24
+11,73
+9,34
+29,60
+% non-convergent
+50,00
+100,00
+75,00
+42,86
+66,69
+66,67
+Table 8: Trading Performance of the different types of pairs.
+32
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Testing Year
+SOUV
+BOUV
+BOMV
+MOUV
+MOMV
+2018
+1/21
+0/4
+0/27
+0/7
+0/8
+2019
+5/36
+1/4
+0/17
+1/7
+0/11
+2020
+13/61
+1/6
+0/23
+3/10
+0/12
+2021
+1/25
+0/2
+0/38
+0/9
+0/14
+Table 9: Number of pairs still cointegrated in the testing period.
+Test Year
+2018
+Pair
+DLR-AVB
+KIM-ESS
+DLR-UDR
+EQIX-AVB
+Average
+Model
+A
+X
+A
+X
+A
+X
+A
+X
+A
+X
+Test Score
+RMSE
+1,30
+1,78
+0,28
+0,45
+1,28
+1,65
+5,44
+5,88
+2,07
+2,44
+MSE
+1,68
+3,17
+0,08
+0,20
+1,64
+2,71
+29,66
+34,59
+8,26
+10,17
+MAE
+0,88
+1,22
+0,22
+0,30
+0,86
+1,07
+3,83
+4,11
+1,45
+1,68
+Direction %
+28,4
+59,60
+21,20
+53,60
+30,40
+60,00
+44,40
+66,40
+31,10
+59,9
+Test Year
+2019
+Pair
+FRT-EQR
+SBAC-EQR
+MAA-EQR
+ESS-DLR
+Average
+Model
+A
+X
+A
+X
+A
+X
+A
+X
+A
+X
+Test Score
+RMSE
+1,08
+1,64
+2,56
+3,58
+0,68
+0,82
+3,15
+5,55
+1,87
+2,90
+MSE
+1,17
+2,70
+6,56
+12,79
+0,46
+0,68
+9,95
+30,75
+4,53
+11,73
+MAE
+0,80
+1,14
+1,75
+2,34
+0,49
+0,59
+2,38
+3,42
+1,35
+1,87
+Direction %
+28,40
+54,8
+36,00
+59,2
+27,20
+56,4
+39,20
+64,4
+32,70
+58,7
+Table 10: Forecasting performance of ARIMA and XGBoost.
+33
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed
+
+Test Period
+2018
+2019
+Average
+Total
+ARIMA
+ROI
+-28,05
+-40,44
+-34,25
+-57,15
+MDD
+28,77
+40,73
+34,75
+57,36
+XGBoost
+ROI
+43,84
+3,75
+23,80
+49,24
+MDD
+4,84
+5,36
+5,10
+5,36
+BOUV
+ROI
+-1,11
+-3,55
+-2,33
+-4,62
+MDD
+6,34
+8,50
+7,42
+8,50
+Table 11: Forecasting-based strategy performance.
+34
+This preprint research paper has not been peer reviewed. Electronic copy available at: https://ssrn.com/abstract=4295303
+Preprint not peer reviewed

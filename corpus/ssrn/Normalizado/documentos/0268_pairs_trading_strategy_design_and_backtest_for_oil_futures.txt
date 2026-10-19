@@ -1,0 +1,813 @@
+Optimal Pairs Trading: A Mean–Variance Approach Incorporating a
+Stop-Loss Mechanism
+Ziyi Chen1,∗, Jia-wen Gu1
+Abstract— In this paper, we study the optimal pairs trading problem within a continuous-time mean–variance framework. The spread between two risky assets is modeled as
+an Ornstein–Uhlenbeck (OU) process. To mitigate potential
+losses arising from a non-converging spread, we incorporate
+a stop-loss mechanism. Owing to the time inconsistency of the
+mean–variance criterion, we derive an analytical equilibrium
+strategy by solving the extended HJB equation. Furthermore,
+we conduct numerical experiments to illustrate the equilibrium
+strategy and assess its performance.
+I. INTRODUCTION
+Pairs trading is a well-known arbitrage strategy that involves simultaneously taking long and short positions in
+two correlated assets. Traders select a pair of assets with
+a high historical correlation, and when the price difference
+(spread) between them deviates from the historical mean,
+they anticipate that the spread will revert. Specifically, the
+trader goes long on the asset that is undervalued and short
+on the overvalued asset. Once the spread reverts to its mean,
+both positions are closed for a profit. It can generate stable
+profits regardless of whether the market is in a bear or bull
+phase (See [1]).
+Aside from using statistical methods to design trading
+strategies (e.g., [2], [3], [4]), some researchers have focused
+on developing mathematical trading rules for pairs trading by
+utilizing stochastic control methods. Existing studies can be
+broadly categorized into two main types: those addressing
+continuous-time scenarios (e.g., [5], [6], [7]) and those
+focusing on discrete-time scenarios (e.g., [8], [9], [10]).
+Traditionally, pairs trading strategies rely on the assumption that the spread between the two assets will revert to its
+historical mean. However, unexpected shifts in asset correlations can cause the spread to fail to converge within the
+investment horizon, thereby exposing investors to significant
+risks. To mitigate these risks, a stop-loss mechanism is often
+introduced as a risk management tool (see [8]).
+In this paper, we study the optimal pairs trading strategy
+in continuous time under the mean-variance criterion, incorporating a stop-loss mechanism. Specifically, we assume that
+when the spread fails to revert to the long-term mean and
+deviates beyond the stop-loss threshold, forced liquidation
+halts further trading. Given the time inconsistency introduced
+by the mean-variance criterion, we adopt the equilibrium
+strategy approach proposed by [11], which provides a locally
+*Corresponding author: 12231268@mail.sustech.edu.cn
+1Southern University of Science and Technology, Shenzhen 518055,
+China
+optimal strategy at any given time, assuming the same strategy will be followed in the future. By solving the extended
+Hamilton-Jacobi-Bellman (HJB) equations, we derive an
+explicit equilibrium strategy and visualize it using numerical methods.
+We also conduct simulation experiments to
+demonstrate the effectiveness of the stop-loss mechanism,
+particularly in scenarios where the spread fails to converge.
+Our results highlight the protective role of the stop-loss
+mechanism in managing downside risks.
+The paper is organized as follows. Section II presents
+the model setup and the mean-variance problem. Section
+III introduces the methodology for deriving the equilibrium
+strategy. Section IV presents the simulation results. Finally,
+Section V concludes the paper. Technical proofs are provided
+in the appendix.
+II. MODEL SETUP AND PROBLEM FORMULATION
+Assume we have a opportunity to invest in two cointegrated stocks, whose price at time t denoted as S1
+t and
+S2
+t respectively. Let Xt = S1
+t −S2
+t be the spread of the two
+stocks. Following [8], to capture the mean-reversion property
+of spread, we assume Xt is governed by an OU process:
+dXt = k(θ −Xt)dt + σdBt,
+where k > 0 is the rate of reversion; θ is the long-term
+mean of the process; σ is the volatility and Bt is the standard
+Brownian motion.
+We consider a delta-neutral strategy, which involves holding a long position in one stock and a short position in
+another, with the number of shares in both positions being
+equal. Let ut denote the number of shares held in the spread
+at time t. That is, the number of shares held in S1 and S2 are
+ut and −ut, respectively. Therefore, a self-financed wealth
+process denoted by Wt can be characterized by the following
+stochastic differential equation:
+dWt = utd[S1
+t −S2
+t ]
+= kut(θ −Xt)dt + σutdBt,
+where we set the risk-free rate be zero for simplicity.
+We implement trading constraints that restrict our trading
+activity to instances when the spread is within a specified
+range. This limitation aims to mitigate potential losses arising
+from non-converging spread. Therefore, we introduce stoploss levels −∞< M < N < +∞. If the spread X falls
+outside (M, N) for the first time, we will cease trading and
+close the positions.
+Let T denote the investment horizon. Our objective is to
+
+maximize the following reward function, striking a balance
+between the mean and variance of the terminal wealth:
+max
+u∈Ut J(t, w, x; u) = max
+u∈Ut Et[W u
+T ∧τ] −γ
+2 V art[W u
+T ∧τ],
+where Et[·] and V art[·] denote E[·|Xt = x, Wt = w] and
+V ar[·|Xt = x, Wt = w], respectively; τ = inf{s ≥t : Xs /∈
+(M, N)} is a stopping time; γ > 0 is constant risk aversion
+parameter; and Ut is the set of admissible feedback strategies
+given by
+Ut =
+n
+ut = u(t, Wt, Xt) : Et
+h Z T ∧τ
+t
+u2(t, Wt, Xt)
+i
+< ∞
+o
+.
+As is well-known, it is a time in-consistent problem.
+Inspired by [11], we define the optimal strategy in the
+equilibrium sense to the MV problem, which is locally
+optimal at any time given the same strategy will be followed
+in the future.
+Definition
+1. Consider an admissible trading strategy
+ˆu(·, ·, ·) which can be viewed as a candidate equilibrium law.
+For any arbitrarily chosen initial point (t, x, w) ∈[0, T) ×
+(M, N) × R define perturbation strategy uh by
+uh =
+(
+η,
+for t ≤s < δh,
+ˆu,
+for δh ≤s ≤T ∧τ,
+(1)
+where η is an arbitrary constant and δh is a stopping time
+such that δh < min{t+h, T ∧τ}. ˆu is an equilibrium strategy
+if
+lim inf
+h→0
+J(t, x, w; ˆu) −J(t, x, w; uh)
+h
+≥0.
+Remark 1. By the continuity of sample path, Xs ∈(M, N)
+for any s satisfying t ≤s ≤δh.
+If such equilibrium strategy ˆu exists, then the associated
+equilibrium value function V is defined as V (t, x, w) =
+J(t, x, w; ˆu). Besides, we introduce the simple notation
+F(t, x, w) = Et[W ˆu
+T ∧τ].
+III. EQUILIBRIUM STRATEGY
+By similar arguments as [11], we can derive the extended
+HJB equations:
+
+
+
+sup
+u
+
+∂tV + AuV + γFAuF −γ
+2 AuF 2	
+= 0,
+∂tF + AˆuF = 0,
+(2)
+with terminal and boundary conditions:
+
+
+
+
+
+V (T, x, w) = F(T, x, w) = w,
+V (t, M, w) = F(t, M, w) = w,
+V (t, N, w) = F(t, N, w) = w,
+where
+Au =k(θ −x) ∂
+∂x + ku(θ −x) ∂
+∂w + 1
+2σ2 ∂2
+∂x2
++ 1
+2σ2u2 ∂2
+∂w2 + σ2u
+∂2
+∂x∂w.
+To solve the (2), the first step is to reduce the dimensionality of the equation. Taking account of the terminal and
+boundary conditions, it is natural to propose the following
+ansatz for V (t, x, w) and F(t, x, w):
+(
+V (t, x, w) = w + h(t, x),
+F(t, x, w) = w + g(t, x).
+(3)
+Substituting (3) into (2), we can obtain
+
+
+
+
+
+
+
+
+
+ht + k(θ −x)hx + 1
+2σ2hxx −γ
+2 σ2g2
+x
++ sup
+u
+n
+uk(θ −x) −γ
+2 u2σ2 −γσ2ugx
+o
+= 0,
+gt + k(θ −x)gx + k(θ −x)ˆu + 1
+2σ2gxx = 0,
+(4)
+with terminal and boundary conditions:
+(
+h(T, x) = h(t, M) = h(t, N) = 0,
+g(T, x) = g(t, M) = g(t, N) = 0.
+By first-order condition, we obtain from (4) that
+ˆu(t, x) = µ(x)
+γσ2 −gx.
+(5)
+Substituting the expression of ˆu into the second equation of
+(4) , we obtain
+(
+gt + 1
+2σ2gxx = −k2(θ−x)2
+γσ2
+,
+g(T, x) = g(t, M) = g(t, N) = 0.
+(6)
+By classical PDE theory (See [12]), we know that there exists
+an unique solution g ∈C1,2([0, T] × [M, N]). Substituting
+g into the first equation of (4) gives us
+(
+ht + k(θ −x)hx + 1
+2σ2hxx = −k2(θ−x)2
+γσ2
++ k(θ −x)gx,
+h(T, x) = h(t, M) = h(t, N) = 0.
+.
+(7)
+Since g ∈C1,2([0, T]×[M, N]), it follows that there exists a
+unique solution h ∈C1,2([0, T]×[M, N]) to (7). According
+to the discussions above, we have the following lemma.
+Lemma 1. The extended HJB equations(2) admit classical
+solutions F, V ∈C1,2,2([0, T] × [M, N] × R). Furthermore,
+ˆu given by (5) attains the supremum.
+Next we aim to derive the explicit representation of g, as
+it plays a crucial role in determining the equilibrium strategy
+(5). To this end, we first make the following transformation:
+x −M = y, t = T −2s
+σ2 , g(t, x) = w(s, y).
+It follows that w(s, y) satisfies the following equation:
+(
+ws = wyy + 2µ2(y+M)
+γσ4
+,
+w(0, y) = w(s, 0) = w(s, N −M) = 0.
+(8)
+Let l = N −M and φ(y) = 2µ2(y+M)
+γσ4
+for the sake of simple
+notation. Then φ(y) can be expanded into the following
+Fourier Series:
+φ(y) =
+∞
+X
+n=1
+bnsinnπy
+l
+.
+(9)
+
+where bn = 2
+l
+R l
+0 φ(y)sin nπy
+l dy. By tedious calculations, we
+obtain
+bn = ˜
+K1
+
+(−1)n+1 l3
+nπ + [(−1)n −1] 2l3
+n3π3
+
++ ˜
+K2
+
+(−1)n+1 l2
+nπ
+
++ ˜
+K3
+
+(−1)n+1 l
+nπ + l
+nπ
+
+,
+(10)
+where
+˜K1 = 4k2
+lγσ4 , ˜K2 = 8k2(M −θ)
+lγσ4
+, ˜K3 = 4k2(M −θ)2
+lγσ4
+.
+Similarly, the solution w(s, y) can be expand into the Fourier
+Series:
+w(s, y) =
+∞
+X
+n=1
+wn(s)sinnπy
+l
+.
+(11)
+Plugging (9) and (11) into the (8), we obtain that
+∞
+X
+n=1
+h
+w
+′
+n(s) + (nπ
+l )2wn(s) −bn
+i
+sin(nπy
+l
+) = 0.
+(12)
+It follows that
+w′
+n(s) + (nπ
+l )2wn(s) = bn.
+(13)
+Besides w(0, y) implies wn(0) = 0. Then the solution of
+(13) is
+wn(s) =
+Z s
+0
+bne−( nπ
+l )2(s−t)dt = bn( l
+nπ )2 h
+1 −e−( nπ
+l )2si
+.
+(14)
+Taking (14) into (11) and transforming w(s, y) back to
+g(t, x), we get
+g(t, x)
+=
+∞
+X
+n=1
+bn
+
+1 −exp
+
+−1
+2(
+nπσ
+N −M )2(T −t)
+
+sin nπ(x −M)
+N −M
+.
+(15)
+Remark 2. By Feynman-Kac formula, we can alternatively
+express g(t, x) using the stochastic expression, as opposed
+to employing Fourier series. That is
+g(t, x) = E
+"Z T ∧˜τ
+t
+k2(θ −σBs)2
+γσ2
+dt
+Bt = x
+σ
+#
+,
+(16)
+where ˜τ = inf{s ≥t : Bs /∈( M
+σ , N
+σ )}.
+Substituting (15) into (5), we can obtain the desired
+equilibrium strategy.
+Theorem 1. (Verification Theorem) A equilibrium control
+solution to MV problem is given by
+ˆu(t, x) = k(θ −x)
+γσ2
+−gx,
+(17)
+where
+gx
+=
+∞
+X
+n=1
+bn
+N −M
+nπ
+ (
+1 −exp
+"
+−1
+2
+
+nπσ
+N −M
+2
+(T −t)
+#)
+× cos nπ(x −M)
+N −M
+,
+and bn is given by (10).
+Although we obtain the explicit expression of the equilibrium strategy, its properties remain unclear, as it is expressed
+in the form of a Fourier series. Therefore, in next section,
+Consequently, in the next section, we employ numerical
+methods to analyze the behavior of the strategy. The following corollary demonstrates the optimal strategy in the case
+that where there is no stop-loss mechanism.
+Corollary 1. If there is no stop-loss mechanism, the equilibrium strategy ˆu is given by
+ˆu(t, x) = [k + 2k2(T −t)](θ −x)
+γσ2
+.
+According to Corollary 1, in the absence of a stoploss mechanism, the optimal number of shares exhibits
+negative correlation with the spread price. Specifically,
+when the spread surpasses the long-term mean, indicating
+an overvaluation of asset S1 and undervaluation of asset
+S2, the optimal strategy suggests a short position in asset
+S1 and a long position in S2. This observation aligns with
+conventional investment wisdom.
+IV. NUMERICAL SIMULATION
+In this section, we employ numerical simulations to investigate optimal pairs trading strategies (In what follows, we
+still refer to the equilibrium strategy as the optimal strategy.).
+Our analysis focuses on two key aspects of the problem.
+First, we explore the characteristics of the optimal strategy
+under different parameter settings. Second, we examine the
+performance of the equilibrium strategy using simulated
+spread data. We set the default parameters as follows: k =
+0.5, θ = 0, σ = 0.8, γ = 0.2, T = 1, M = −1.5, N = 1.5.
+A. Visualization of the Optimal Strategy
+Figure 1 shows the optimal number of shares with respect
+to the spread at time t = 0, 0.2, 0.4, 0.6. It can be observed
+that as time progresses towards maturity, the slope of the
+optimal control curve decreases, indicating that the strategy
+becomes more conservative. Specifically, at earlier times the
+optimal position responds more aggressively to deviations in
+the spread, whereas closer to maturity the magnitude of the
+position is reduced in order to mitigate the risk of insufficient
+time for mean reversion. Besides, the larger the deviation of
+the spread from its long-term mean, the larger the position
+prescribed by the strategy in order to bet on its convergence.
+This, in turn, underscores the necessity of incorporating stoploss constraints to guard against potential losses in cases
+where the spread fails to converge as expected.
+
+Fig. 1.
+Optimal number of shares without stop-loss across different time
+(k = 0.5, θ = 0, σ = 0.8, γ = 0.2, T = 1)
+Figure 2 shows the optimal number of shares with stoploss level (M, N) = (−1.5, 1.5). In contrast, when stoploss constraints are imposed, the optimal strategy exhibits
+a distinctly non-linear and truncated shape. For moderate
+deviations of the spread, the behavior is qualitatively similar
+to the case without stop-loss, with positions increasing in
+magnitude as the spread departs from long-term mean. Yet,
+once the spread approaches the stop-loss level, the optimal
+control is significantly reduced, preventing further enlargement of positions in highly risky regions. This truncation
+mechanism effectively guards against potential losses arising
+from prolonged non-convergence. Compared to the optimal
+strategy without a stop-loss mechanism, the optimal strategy
+with a stop-loss mechanism is more conservative.
+Fig. 2.
+Optimal number of shares with stop-loss across different time
+(k = 0.5, θ = 0, σ = 0.8, γ = 0.2, T = 1, M = −1.5, N = 1.5)
+B. Performance of the Optimal Strategy
+To illustrate the protective role of the stop-loss mechanism,
+we simulate 5000 spread paths with initial value X0 = 0, and
+TABLE I
+SIMULATION RESULTS
+stop-loss
+without stop-loss
+average terminal wealth
+0.45
+0.60
+maximum terminal wealth
+2.02
+2.20
+minimum terminal wealth
+-4.89
+-13.23
+average maximum drawdown amount
+1.65
+1.96
+then compare the wealth dynamics along these sample paths
+under the optimal strategy with and without the stop-loss
+mechanism. We set the initial wealth w0 = 0.
+Table I presents the performance of the optimal strategy
+with and without the stop-loss mechanism. It can be observed that the strategy without the stop-loss mechanism
+results in higher maximum and mean terminal wealth, as
+it is more aggressive. However, this comes at the cost of
+more significant losses when the spread fails to converge
+by the investment horizon. To illustrate how the stop-loss
+mechanism protects investors, we choose an extreme sample
+path with the greatest loss, shown in Figure 3. When the
+spread exceeds the trading region, the stop-loss mechanism
+is triggered, forcing a liquidation to avoid greater loss.
+Fig. 3.
+Wealth dynamics under the optimal strategy with and without stoploss when the spread is non-convergent (k = 0.5, θ = 0, σ = 0.8, γ =
+0.2, T = 1, M = −1.5, N = 1.5)
+
+V. CONCLUSION
+This paper investigates the optimal pairs trading problem
+with a stop-loss mechanism under the mean-variance criterion. By employing PDE methods, we derive the explicit
+optimal strategy in an equilibrium framework. In the absence
+of the stop-loss mechanism, the optimal strategy shows a
+linear negative relationship with the spread, leading to larger
+positions when the spread deviates more significantly from
+its long-term mean. However, the optimal strategy with the
+stop-loss mechanism becomes more conservative, requiring
+investors to reduce their position as the spread approaches the
+stop-loss threshold, ultimately forcing a liquidation. We conduct simulation experiments that demonstrate the protective
+role of the stop-loss mechanism in cases where the spread
+fails to converge.
+REFERENCES
+[1] E. Gatev, W. Goetzmann, and K. Rouwenhorst, “Pairs trading: Performance of a relative-value arbitrage rule,” The Review of Financial
+Studies, vol. 19, pp. 797–827, 2006.
+[2] G. Vidyamurthy, Pairs Trading: Quantitative Methods and Analysis.
+John Wiley & Sons, 2004, vol. 217.
+[3] Y. Lin, M. McCrae, and C. Gulati, “Loss protection in pairs trading
+through minimum profit bounds: A cointegration approach,” Advances
+in Decision Sciences, vol. 2006, 2006.
+[4] N. Huck and K. Afawubo, “Pairs trading and selection methods: is
+cointegration superior?” Applied Economics, vol. 47, pp. 599–613,
+2015.
+[5] S. Mudchanatongsuk, J. Primbs, and W. Wong, “Optimal pairs trading:
+A stochastic control approach,” in 2008 American control conference.
+IEEE, 2008, pp. 1035–1039.
+[6] D. Zhu, J. Gu, F. Yu, T. Siu, and W. Ching, “Optimal pairs trading
+with dynamic mean-variance objective,” Mathematical Methods of
+Operations Research, vol. 94, pp. 145–168, 2021.
+[7] F. Yu, W. Ching, C. Wu, and J. Gu, “Optimal pairs trading strategies: A
+stochastic mean–variance approach,” Journal of Optimization Theory
+and Applications, vol. 196, pp. 36–55, 2023.
+[8] Q. Song and Q. Zhang, “An optimal pairs-trading rule,” Automatica,
+vol. 49, pp. 3007–3014, 2013.
+[9] K. Suzuki, “Optimal switching strategy of a mean-reverting asset over
+multiple regimes,” Automatica, vol. 67, pp. 33–45, 2016.
+[10] K. Suzuki, “Infinite-horizon optimal switching regions for a pairtrading strategy with quadratic risk aversion considering simultaneous
+multiple switchings: A viscosity solution approach,” Mathematics of
+Operations Research, vol. 46, pp. 336–360, 2021.
+[11] T. Bj¨ork, M. Khapko, and A. Murgoci, “On time-inconsistent stochastic control in continuous time,” Finance and Stochastics, vol. 21, pp.
+331–360, 2017.
+[12] A. Friedman, Partial differential equations of parabolic type. Courier
+Dover Publications, 2008.
+VI. APPENDIX
+A. Proof of Theorem 1
+Proof. The proof is divided into two steps.
+Step 1. We show that F(t, x, w) = w+f(t, x) is conditional
+expectation of terminal wealth and V (t, x, w) = w + g(t, x)
+is the value function under strategy ˆu, i.e., F(t, x, w) =
+EtW ˆu
+T ∧τ, V (t, x, w) = J(t, x, w; ˆu).
+Assume at initial time t, Xt = x ∈(M, N). Since ∂tF +
+AˆuF = 0, we have F(t, x, w) = EtF(T ∧τ, XT ∧τ, WT ∧τ).
+According to the boundary condition of F, we get
+F(t, x, w) = EtW ˆu
+T ∧τ.
+Next we show V (t, x, w) is the value function corresponding
+to ˆu. Combining two equations of (2), we have
+(∂t + Aˆu)V −γ
+2 (∂t + Aˆu)F 2 = 0,
+(18)
+Applying the Ito formula to V (t, Xt, W ˆu
+t ), then integrating
+from t to T ∧τ and taking expectation give us
+EtV (T ∧τ, XT ∧τ, W ˆu
+T ∧τ)
+=V (t, x, w) + Et
+"Z T ∧τ
+t
+(∂t + Aˆu)V ds
+#
+.
+(19)
+Plugging (18) into (19), we get
+EtV (T ∧τ, XT ∧τ, V ˆu
+T ∧τ)
+= V (t, x, v) + γ
+2 Et
+"Z T ∧τ
+t
+(∂t + Aˆu)F 2ds
+#
+= V (t, x, v) + γ
+2 Et(W ˆu
+T ∧τ)2 −γ
+2 (EtW ˆu
+T ∧τ)2
+= V (t, x, v) + γ
+2 V artW ˆu
+T ∧τ.
+By the boundary conditions of V , we obtain the desired
+result:
+V (t, x, w) = Ex,v
+t
+W ˆu
+T ∧τ −γ
+2 V arx,w
+t
+W ˆu
+T ∧τ
+= J(t, w, x; ˆu).
+Step 2. We show that ˆu is an equilibrium strategy.
+Note that Xt = x ∈(M, N); therefore there exists a small
+enough ϵ > 0 such that x ∈(M + ϵ, N −ϵ). Let δh =
+inf{s > t : Xs /∈(M + ϵ, N −ϵ)} ∧(t + h). Clearly δh
+is stopping time and δh < min{T ∧τ, t + h}. We construct
+perturbation strategy uh as (1). It is straightforward to check
+that
+EtJ(δh, Xδh, W uh
+δh ; uh) −J(t, x, w; uh)
+=γ
+2
+n
+Et(EδhW uh
+T ∧τ)2 −[Et(EδhW uh
+T ∧τ)]2o
+(20)
+Since uh = η on [t, δh) and uh = ˆu on [δh, T ∧τ], we have
+J(δh, Xδh, W uh
+δh ; uh) = V (δh, Xδh, W η
+δh),
+EδhW uh
+T ∧τ = F(δh, Xδh, W η
+δh).
+(21)
+Thus we can derive
+EtV (δh, Xδh, W η
+δh) −J(t, x, w; uh)
+=γ
+2
+
+EtF 2(δh, Xδh, W η
+δh) −(EtF(δh, Xδh, W η
+δh))2	
+=γ
+2
+n
+EtF 2(δh, Xδh, W η
+δh) −F 2(t, x, w)
+−2F(t, x, w)Et
+Z δh
+t
+(∂s + Aη)Fds + o(h)
+o
+.
+(22)
+where the last equality holds by Itˆo formula. Recalling that
+ˆu realizes the supreme in extended HJB equation, thus we
+have
+∂tV + AηV + γFAηF −γ
+2 AηF 2 ≤0.
+
+Therefore, applying Itˆo formula to V gives us
+EtV (δh, Xδh, W η
+δh) −V (t, x, w)
+≤γ
+2 Et
+Z δh
+t
+[AηF 2 −2FAηF]ds
+=γ
+2 Et
+Z δh
+t
+[(∂s + Aη)F 2 −2FAηF −2F∂tF]ds
+Furthermore, it holds that
+Et
+Z δh
+t
+(∂t+Aη)F 2ds = EtF 2(δh, Xδh, W η
+δh)−F 2(t, x, w)
+and
+Et
+Z δh
+t
+(F∂sF + FAηF)ds
+=F(t, x, w)Et
+Z δh
+t
+(∂sF + AηF)(s, Xs, W η
+s )ds + I.
+where
+I = Et
+Z δh
+t
+[F(s, Xs, W η
+s ) −F(t, x, w)](∂sF + AηF)ds.
+By Holder inequality, we have
+|I|2 ≤
+n
+Et
+Z δh
+t
+[F(s, Xs, W η
+s ) −F(t, x, w)]2ds
+o
+×
+n
+Et
+Z δh
+t
+(∂sF + AηF)2ds
+o
+,
+which implies I = o(h). In summary,
+EtV (δh, Xδh, W η
+δh) −V (t, x, w)
+≤γ
+2
+n
+EtF 2(δh, Xδh, W η
+δh) −F 2(t, x, w)
+−2F(t, x, w)Et
+Z δh
+t
+(∂s + Aη)Fds
+o
++ o(h)
+(23)
+Combing (22) and (23), we get
+V (t, x, w) −J(t, x, w; uh) ≥o(h).
+Since V (t, x, w) = J(t, x, w; ˆu), it follows that
+lim inf
+h→0
+J(t, x, w; ˆu) −J(t, x, w; uh)
+h
+≥0.
+■
+B. Proof of Corollary 1
+Proof. By the stochastic expression of g(t, x) in (16), we
+can know that
+|g(t, x)| ≤Et
+"Z T
+t
+
+k2(θ −σBs)2
+γσ2
+ds
+#
+< ∞.
+By Dominated Convergence Theorem, we have
+lim
+M→−∞
+N→+∞
+g(t, x) = Et
+"Z T
+t
+lim
+M→−∞
+N→+∞
+k2(θ −σBs)2
+γσ2
+1{s<˜τ}ds
+#
+= Et
+"Z T
+t
+k2(θ −σBs)2
+γσ2
+ds
+#
+.
+By Fubini Theorem,
+g(t, x) =E
+"Z T
+t
+k2(θ −σBs)2
+γσ2
+ds|Bt = x
+σ
+#
+=
+Z T
+t
+E
+k2(σ(Bs −Bt) + x −θ)2
+γσ2
+
+ds
+=
+Z T
+t
+E
+k2(σ(Bs −Bt) + x −θ)2
+γσ2
+
+ds
+=
+Z T
+t
+k2(x −θ)2 + k2σ2(s −t)
+γσ2
+ds
+=k2(T −t)(x −θ)2
+γσ2
++ k2(T −t)2
+γ
+.
+(24)
+where we use the fact that Bs −Bt ∼N(0, s −t), which is
+independent of Ft. Substituting (24) into (17), we can obtain
+the desired solution.
+■

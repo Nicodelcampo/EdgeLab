@@ -1,0 +1,469 @@
+{
+ "schema_version": "paridad_hftzones_es_pure_v2_flat_v1",
+ "indicador": "HFTZonesESPureV2Flat",
+ "cs_sha256": "4e80c24d873cd9009850e55d3e3b4a7492a77608e47dc8a41f0294cb226824e5",
+ "contrato": "ES 03-26",
+ "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "nota_warmup": "NT8 descarta los 5 primeros ticks de la carga (CurrentBars[1] < 5). Nivel A aplica el mismo skip SOLO en la primera sesion; sin eso el primer bucket discrepa en n_ticks por exactamente 5.",
+ "nota_serie": "el .cs corre sobre AddDataSeries(Tick, 1): la maquina de estados no usa las velas de 25 Tick del chart, que son solo la serie de dibujo",
+ "parametros": {
+  "min_pasos": 10,
+  "max_rango_tick_por_vela": 1,
+  "fallos_tolerados": 1,
+  "filtro_direccion_estricto": true,
+  "min_sweep_ticks": 5,
+  "max_avg_ms": 15,
+  "max_total_ms": 300,
+  "max_pausa_ms": 50,
+  "min_volume_rate": 500,
+  "min_total_volume": 200,
+  "predator_avg_ms": 3,
+  "ultra_avg_ms": 10,
+  "mostrar_absorb": true,
+  "min_absorb_pasos": 8
+ },
+ "resumen": {
+  "n_sesiones": 8,
+  "nivel_a_exact": 5,
+  "nivel_b_exact": 0,
+  "zonas_nt8": 1436,
+  "zonas_exact": 1431,
+  "frac_zonas_exact": 0.996518
+ },
+ "procedencia": {
+  "head_commit": "6a6f8242db3ee3cbf81effe0f5223d974b5a2413",
+  "archivos_sucios": [
+   "diag/tasa_senales/paridad_hftzones_flat.py"
+  ],
+  "medicion_comprometida": true
+ },
+ "sesiones": [
+  {
+   "trade_date": 20260102,
+   "n_ticks_edgelab": 1059896,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 41478,
+    "n_buckets_emparejados": 41478,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 41477,
+    "n_distintos": 1,
+    "frac_iguales": 0.999976,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 1,
+     "buy": 1,
+     "sell": 0,
+     "n_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1767308400000,
+      "mio": {
+       "open": 6902.0,
+       "high": 6902.0,
+       "low": 6900.0,
+       "close": 6900.25,
+       "volume": 64.0,
+       "buy": 23.0,
+       "sell": 41.0,
+       "n_ticks": 53
+      },
+      "nt8": {
+       "open": 6902.0,
+       "high": 6902.0,
+       "low": 6900.0,
+       "close": 6900.25,
+       "volume": 170.0,
+       "buy": 129.0,
+       "sell": 41.0,
+       "n_ticks": 58
+      },
+      "campos": [
+       "volume",
+       "buy",
+       "n_ticks"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 215,
+    "n_python": 216,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 0,
+    "solo_python": 1,
+    "exact": 215,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260105,
+   "n_ticks_edgelab": 832582,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 42043,
+    "n_buckets_emparejados": 42043,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 42043,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 152,
+    "n_python": 151,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 151,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260106,
+   "n_ticks_edgelab": 778923,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 38340,
+    "n_buckets_emparejados": 38340,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 38340,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 161,
+    "n_python": 160,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 160,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260108,
+   "n_ticks_edgelab": 939371,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 42280,
+    "n_buckets_emparejados": 42280,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 42280,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 155,
+    "n_python": 157,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 0,
+    "solo_python": 2,
+    "exact": 155,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260130,
+   "n_ticks_edgelab": 1551486,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 60832,
+    "n_buckets_emparejados": 60832,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 60832,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 195,
+    "n_python": 195,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 0,
+    "solo_python": 0,
+    "exact": 194,
+    "con_diferencia": 1,
+    "campos_con_diferencia": {
+     "price_upper": 1,
+     "height_ticks": 1,
+     "pasos": 1,
+     "valid_steps": 1,
+     "avg_ms": 1,
+     "vol_rate": 1,
+     "total_vol": 1,
+     "cvd_sweep": 1,
+     "sell_vol": 1,
+     "no_move_ticks": 1
+    },
+    "ejemplos": [
+     {
+      "start_ts": 1769727600028,
+      "campos": [
+       "price_upper",
+       "height_ticks",
+       "pasos",
+       "valid_steps",
+       "avg_ms",
+       "vol_rate",
+       "total_vol",
+       "cvd_sweep",
+       "sell_vol",
+       "no_move_ticks"
+      ],
+      "nt8": {
+       "price_upper": 6992.5,
+       "height_ticks": 22.0,
+       "pasos": 92,
+       "valid_steps": 84,
+       "avg_ms": 1.7582417582417582,
+       "vol_rate": 1681.25,
+       "total_vol": 269.0,
+       "cvd_sweep": -239.0,
+       "sell_vol": 254.0,
+       "no_move_ticks": 53
+      },
+      "python": {
+       "price_upper": 6992.25,
+       "height_ticks": 21.0,
+       "pasos": 89,
+       "valid_steps": 81,
+       "avg_ms": 1.8181818181818181,
+       "vol_rate": 1662.5,
+       "total_vol": 266.0,
+       "cvd_sweep": -236.0,
+       "sell_vol": 251.0,
+       "no_move_ticks": 51
+      }
+     }
+    ]
+   }
+  },
+  {
+   "trade_date": 20260202,
+   "n_ticks_edgelab": 1106794,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 63125,
+    "n_buckets_emparejados": 63125,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 63124,
+    "n_distintos": 1,
+    "frac_iguales": 0.999984,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1769986800000,
+      "mio": {
+       "open": 6938.5,
+       "high": 6938.5,
+       "low": 6928.75,
+       "close": 6935.25,
+       "volume": 1040.0,
+       "buy": 716.0,
+       "sell": 324.0,
+       "n_ticks": 363
+      },
+      "nt8": {
+       "open": 6938.5,
+       "high": 6938.5,
+       "low": 6928.75,
+       "close": 6935.25,
+       "volume": 1040.0,
+       "buy": 190.0,
+       "sell": 850.0,
+       "n_ticks": 363
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 155,
+    "n_python": 155,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 1,
+    "solo_python": 1,
+    "exact": 154,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260209,
+   "n_ticks_edgelab": 880088,
+   "nivel_a": {
+    "estado": "EXACT",
+    "n_buckets_nt8": 53056,
+    "n_buckets_emparejados": 53056,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 53056,
+    "n_distintos": 0,
+    "frac_iguales": 1.0,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 0,
+     "sell": 0,
+     "n_ticks": 0
+    },
+    "ejemplos": []
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 98,
+    "n_python": 99,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 0,
+    "solo_python": 1,
+    "exact": 98,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  },
+  {
+   "trade_date": 20260309,
+   "n_ticks_edgelab": 1691839,
+   "nivel_a": {
+    "estado": "DIFF",
+    "n_buckets_nt8": 74133,
+    "n_buckets_emparejados": 74133,
+    "buckets_solo_nt8": 0,
+    "n_iguales": 74132,
+    "n_distintos": 1,
+    "frac_iguales": 0.999987,
+    "campos_con_diferencia": {
+     "open": 0,
+     "high": 0,
+     "low": 0,
+     "close": 0,
+     "volume": 0,
+     "buy": 1,
+     "sell": 1,
+     "n_ticks": 0
+    },
+    "ejemplos": [
+     {
+      "bar_ts": 1773007200000,
+      "mio": {
+       "open": 6685.5,
+       "high": 6686.5,
+       "low": 6680.25,
+       "close": 6680.75,
+       "volume": 1701.0,
+       "buy": 1415.0,
+       "sell": 286.0,
+       "n_ticks": 307
+      },
+      "nt8": {
+       "open": 6685.5,
+       "high": 6686.5,
+       "low": 6680.25,
+       "close": 6680.75,
+       "volume": 1701.0,
+       "buy": 191.0,
+       "sell": 1510.0,
+       "n_ticks": 307
+      },
+      "campos": [
+       "buy",
+       "sell"
+      ]
+     }
+    ]
+   },
+   "nivel_b": {
+    "estado": "DIFF",
+    "n_nt8": 305,
+    "n_python": 304,
+    "start_ts_con_colision": 0,
+    "solo_nt8": 1,
+    "solo_python": 0,
+    "exact": 304,
+    "con_diferencia": 0,
+    "campos_con_diferencia": {},
+    "ejemplos": []
+   }
+  }
+ ]
+}

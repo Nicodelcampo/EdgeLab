@@ -21,9 +21,22 @@ def main():
     pilot = Autopilot(Path(a.root), KaggleExecutor(cfg.get("owner", "nicolasbuttaro")), cfg, registry=reg, brain=brain)
     if a.status:
         print(json.dumps(pilot.status(), indent=1, default=str)); return
+    runner = None
+    if cfg.get("roles_ledger"):                                   # roles LLM (cronista) sólo si la configuración lo pide
+        from .roles import RoleRunner
+        runner = RoleRunner(Path(cfg["roles_ledger"]))
     while True:
+        if cfg.get("sala"):                                       # puente con Chaski: comandos antes del ciclo
+            from .sala import aplicar_comandos
+            aplicar_comandos(Path(a.root), pilot.pause_files()[1], cfg["sala"].get("autorizados", []), pilot.status)   # sólo el interruptor de la sala
         cands = [RunSpec.from_dict(d) for d in json.loads(Path(a.candidates).read_text())]
-        print(json.dumps(pilot.tick(cands), default=str), flush=True)
+        rep = pilot.tick(cands)
+        print(json.dumps(rep, default=str), flush=True)
+        if cfg.get("sala"):                                       # y el resumen después
+            from .sala import reportar
+            from .mejora import diagnosticar
+            rep["diagnostico"] = diagnosticar([rep], pilot.status())
+            reportar(Path(a.root), rep, pilot.status(), runner=runner if cfg["sala"].get("cronista") else None)
         if not a.loop: break
         time.sleep(a.loop)
 

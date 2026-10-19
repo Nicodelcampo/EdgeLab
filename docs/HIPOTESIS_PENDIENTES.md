@@ -1,0 +1,309 @@
+# Hipótesis pendientes
+
+Observaciones con forma testeable que todavía no tienen campaña. No son
+resultados: son cosas que alguien vio y que vale la pena medir cuando toque.
+
+---
+
+## HP-001 — Burst de zonas HFT al cierre, en **ES**
+
+**Fecha**: 2026-08-04 · **Origen**: observación visual de Nico ·
+**Estado**: registrada, sin medir · **Instrumento**: ES (no 6E)
+
+Nico observa que al cierre del mercado aparecen muchas zonas HFT en ES, y
+sospecha que de ahí puede salir un edge.
+
+**Pospuesta a propósito**: el foco actual es 6E. No se mide todavía.
+
+### Lo que sí se midió (y no aplica)
+
+Se corrió el kernel `HFTZones2` sobre **6E 09-26**, 4 sesiones
+(2026-06-15 → 06-18), 1.775 zonas, contadas por hora CT (cierre 16:00 CT):
+
+| hora CT | 7–10 | 13 | 14 | 15 | 17–23 |
+|---|---:|---:|---:|---:|---:|
+| zonas | 32,4 % | 16,2 % | 13,4 % | **2,5 %** | **6,0 %** |
+
+En 6E las zonas se concentran en las horas de máxima liquidez, no al cierre —
+lo contrario a la observación. **Pero esto no refuta HP-001**: otro instrumento
+y, en la observación original, otro indicador (`HFTZonesESPureV2`).
+
+### Cómo medirla cuando se retome
+
+1. Parquet canónico F2 de ES (no existe todavía; hoy solo hay 6E).
+2. Correr `HFTZones2` v2.3, contar `created_ms` por hora CT — mismo
+   procedimiento que arriba, que ya está probado.
+3. Comparar contra la distribución de volumen por hora: si las zonas siguen al
+   volumen, no hay nada específico del cierre.
+
+### Precondición que puede invalidarla antes de empezar
+
+En 6E la **mediana del intervalo entre ticks es 0 ms durante toda la sesión**
+⇒ `Q(0.50)=0` ⇒ `resolution_limited=1` por el gate P0 del propio indicador: los
+buckets de velocidad (PREDATOR/ULTRA/FAST) **no son confiables** porque se
+clasifican por `avg_ms` y el feed no tiene esa resolución.
+
+**Hay que verificar esto en ES antes de interpretar cualquier zona HFT.** Si ES
+también da `resolution_limited=1`, la clasificación por velocidad no significa
+nada y HP-001 habría que replantearla sobre volumen/rango en vez de timing.
+
+*(`HFTZonesESPureV2` no tiene este gate ni ningún otro control de resolución, y
+clasificaría todo como PREDATOR sin avisar. Ver la comparación de indicadores en
+el reporte del 2026-08-04.)*
+
+
+---
+
+## HP-002 — `VolTicksDef` — **NO agregar.** Es un mecanismo que ya está dos veces
+
+**Fecha:** 2026-08-06 · **Origen:** propuesta de Nico · **Estado:** evaluado, no adoptado
+
+Marca velas con volumen excepcionalmente alto (ratio vs media móvil, umbral por
+percentil). **Es la misma construcción que `VolTicksPOC2`**, que se describe a sí
+mismo como *«ratio vs baseline → detección por percentil empírico»*.
+
+### Y los existentes ya resolvieron sus dos defectos
+
+**1. La barra entra en su propio promedio.** `rollingVolumeSum += Volume[0]`
+(línea 215) y después `ratio = Volume[0] / avg` (223): una barra enorme **infla
+su propio denominador**. `VolTicksPOC2` declara lo contrario — *«baseline = media
+de `Volume[1..AvgPeriod]` EXCLUYENDO la barra actual»*.
+
+**2. La barra entra en su propio umbral.** `quantileGlobal.Add(ratio)` (226) se
+ejecuta **antes** de `GetActiveThreshold()` (229). `VolTicksPOC2`: *«Las ventanas
+se actualizan DESPUÉS de la comparación»*. `aVolCellPOI2`: *«La sesión actual
+nunca entra al perfil contra el que se compara (anti look-ahead)»*.
+
+Los dos sesgos van en la misma dirección: **subestiman lo excepcional**.
+
+### Y aunque se arreglaran
+
+Sin ciclo de vida (`ZONE_CREATED`/`TOUCHED`, `zone_id`, `touch_count`) y **sin
+EventLog**: no hay oráculo de paridad posible sin construirle el camino entero.
+Sería además la **tercera** variante de anomalía de volumen, y §3.3 pide
+mecánicamente distintas — *«no tres variantes de zonas de volumen, que inflan
+M_eff sin diversificar»*.
+
+### Lo que sí vale, y no es un indicador
+
+**El estimador P²**: cuantil por streaming con memoria **O(1)** —cinco
+marcadores, sin guardar la muestra— y reset por sesión. `VolTicksPOC2` usa una
+ventana de ratios: más memoria y más frágil con ventanas largas.
+
+> **El aporte real no es un indicador nuevo: es un mejor estimador para uno que
+> ya existe.** Candidato a mejora de `VolTicksPOC2`, o a filtro en la **capa de
+> estrategia**, donde no cuesta ningún oráculo.
+
+---
+
+## HP-003 — `aVolClusterPOI` v0.4 — **sí vale, con dos condiciones**
+
+**Fecha:** 2026-08-06 · **Origen:** propuesta de Nico · **Estado:** evaluado,
+pospuesto por F9
+
+A diferencia de HP-002, **éste no repite un mecanismo existente**: detecta por
+**masa de cluster** —niveles «hot» contiguos agrupados, comparados contra el
+perfil histórico del mismo bucket horario— y agrega **ráfaga** (tasa de
+formación) como señal de segundo orden. Su propio encabezado lo sitúa como
+complemento de `aVolCellPOI2`, no como reemplazo. Eso **sí** es mecánicamente
+distinto en el sentido de §3.3.
+
+### Está escrito CONTRA los contratos del proyecto, no de espaldas
+
+| exigencia | estado |
+|---|---|
+| `OnBarClose`, `non_repainting`, la barra creadora no toca su zona | declarado **e implementado** (`if (z.CreatedBar >= CurrentBar) continue`) |
+| ticks enteros, cero ULP | declarado, citando **AUDIT-002** y `tools/ulp_exposure.py` |
+| `footprint=reconstructed_1tick_subseries` | sí — mismo contrato que BigTrap2 |
+| cuantil empírico **sin interpolar** | sí |
+| perfil de sesiones **anteriores** completas | sí — la actual acumula aparte |
+| EventLog con `# meta`, `zone_id`, `touch_count`, `bar_index` | **sí, completo** |
+| una corrida por archivo | `write_mode=overwrite`, *«nunca append»* — ataca P6 de frente |
+| orden intrabar indemostrable | **`AMBIGUOUS`**: *«si target y stop ocurren en la misma barra, no inventa el orden»* |
+
+Ese último punto es la misma disciplina que se acaba de implementar en el
+extractor tick-based. **Llega con el contrato de eventos que a cuatro
+indicadores hubo que agregarles.**
+
+### La observación de Nico sobre la subserie es la parte más valiosa
+
+`AddDataSeries(BarsPeriodType.Tick, 1)` en `State.Configure`: el footprint se
+reconstruye **igual en cualquier chart**. El bloque son `WindowBars` barras
+**primarias**, así que **la resolución primaria es un parámetro libre** — cambia
+lo que abarca un bloque sin tocar la exactitud del footprint.
+
+Es exactamente la forma del barrido de resolución de §2-ter (`10, 15, 25, 50,
+100` + `time:1` como control). **Un eje de búsqueda que ya está construido.**
+
+### Condición 1 — emite OUTCOMES, y eso lo inhabilita para el censo
+
+`ZONE_OUTCOME` con `outcome`, `mfe_ticks`, `mae_ticks` —TARGET/STOP/TIMEOUT/
+AMBIGUOUS— es una **evaluación forward del precio después de la entrada**, y
+viaja en las columnas del CSV.
+
+> **Su EventLog NO puede consumirse tal cual por ningún censo outcome-free.**
+> Declarar `outcomes_accessed: false` leyendo ese archivo entero sería falso.
+
+Se resuelve de dos formas, y hay que elegir **antes**: un modo de export que
+emita sólo columnas target-free, o un lector probadamente ciego a esas columnas
+—probado, no prometido—.
+
+### Condición 2 — el `QualityScore` es una preselección escondida
+
+Los pesos `35/25/15/15/10` son fijos y arbitrarios. Como fórmula congelada es una
+elección de hipótesis tomada antes de medir. O los pesos entran a la grilla como
+parámetros, o el score se publica **descompuesto** y no se usa para filtrar.
+
+Su default ya ayuda: `EnablePredictiveFilter = false`.
+
+### Estado
+
+**F9 sigue pausada**, y el propio encabezado coincide: *«PROTOTIPO DE
+INVESTIGACIÓN. No tiene kernel Python ni paridad. No usar sus zonas para operar
+hasta pasar el pipeline estándar»*.
+
+Cuando F9 se reabra, **éste es el primer candidato** — es el único que llega con
+el contrato de eventos, la disciplina anti look-ahead y un eje de resolución ya
+construido.
+
+
+---
+
+## HP-004 — `aVolZonePOI` — **NO. Ya está superado, y una de sus fallas es descalificante**
+
+**Fecha:** 2026-08-06 · **Estado:** evaluado, descartado
+
+Es el **predecesor** de HP-003: `aVolClusterPOI` se declara *«reescritura desde
+cero de `aVolZonePOI.cs` rescatando sus dos ideas útiles»*. Su encabezado lista
+cinco cosas que le eliminó. **Verificadas una por una en el fuente, no aceptadas
+por palabra del sucesor:**
+
+| # | lo que el sucesor dice que eliminó | verificado en `aVolZonePOI.cs` |
+|---|---|---|
+| 1 | SQLite y «mitigación» por proceso externo | **sí** — `using System.Data.SQLite` (23); línea 136: cada 30 s en tiempo real llama `CheckAndRemoveMitigatedZones()` |
+| 2 | precios `double` como clave de diccionario | **sí** — `Dictionary<double, double>` en 33, 56, 95, 103 |
+| 3 | fallback a cola global mezclando horas | **sí** — `Queue<double> globalQueue` (35), usado en 283 |
+| 4 | bloques anclados al punto de carga del chart | **sí** — cero apariciones de `IsFirstBarOfSession` o `SessionIterator` |
+| 5 | percentil con interpolación lineal | **sí** — `sorted[lo] + (rank-lo)*(sorted[hi]-sorted[lo])` (452) |
+
+### La primera es descalificante por sí sola
+
+```csharp
+// línea 135-139
+// Check for mitigated zones in SQLite every 30 seconds (real-time only)
+if (State == State.Realtime && (DateTime.UtcNow - lastMitigationCheck).TotalSeconds >= 30)
+{
+    CheckAndRemoveMitigatedZones();
+    ...
+}
+```
+
+**El conjunto de zonas en una barra depende de lo que un proceso externo escribió
+en una base de datos, consultado por reloj de pared.** Eso no es un defecto de
+precisión: es **irreproducible por construcción**. No se puede repetir la corrida
+y obtener lo mismo, porque el estado no vive en el indicador.
+
+G0 exige lo contrario, literal: *«re-ejecutar la campaña con el mismo manifiesto
+produce los mismos digests»*. Ningún indicador que consulte un proceso externo
+por reloj puede satisfacer eso, con cualquier cantidad de trabajo de traducción.
+
+### Las otras cuatro, en el orden en que importan acá
+
+- **`Dictionary<double, double>`** es la familia de bugs ULP de **AUDIT-002**: dos
+  precios que deberían ser la misma celda pueden diferir en el último bit y
+  fabricar dos claves. El sucesor usa ticks enteros y declara «exposición ULP = 0
+  por construcción».
+- **El fallback global** mezcla horas cuando falta historia del bucket, y
+  reintroduce el sesgo de estacionalidad intradiaria que el perfil por bucket
+  existe para eliminar. El sucesor prefiere **no detectar**: *«sin historial del
+  bucket ⇒ no detecta»*. Fail-closed contra fail-open.
+- **Sin anclaje a sesión**, los bloques dependen de dónde arrancó el chart: dos
+  personas con la misma configuración ven zonas distintas.
+- **La interpolación** del percentil inventa un valor que no está en la muestra.
+  Los tres kernels del proyecto usan cuantil empírico **sin interpolar**.
+
+### Veredicto
+
+**No hay nada que rescatar que HP-003 no haya rescatado ya**, y lo hizo
+explicitando qué tiraba y por qué. Lo útil de este archivo es servir de **control
+negativo documentado**: cinco decisiones de diseño que el proyecto ya rechazó,
+con el fuente al lado para mostrar cómo se ven cuando están mal.
+
+---
+
+## HP-005 — reservado (rama SL/TP+BE)
+
+**Reservado, no usar en foundation.** HP-005 («Lógicas de salida SL/TP
+asimétricas + breakeven con gatillo denso, BT2A GC») vive completo en la rama
+`research/bt2a-gc-sltp-breakeven-design-v1-20260830`. Se reserva el número acá
+para que ninguna hipótesis nueva en `foundation` colisione con la numeración ya
+publicada en otra rama (lección P-56…P-59).
+
+---
+
+## HP-006 — Escaleras de liquidez (EQH/EQL) como imanes cerca de clusters HFT, en **NQ**
+
+**Fecha:** 2026-09-10 · **Origen:** observación visual de Nico ·
+**Estado:** promovida a pre-registro — `docs/research/H-NQ-LADDER-1_PREREGISTRO.md`
+(borrador v0, pendiente de corrección de Nico contra el chart) · **Instrumento:** NQ
+
+Nico observa picos consecutivos de highs/lows casi iguales («escaleras de
+liquidez») sobre o debajo de zonas de interés como clusters HFT, y que el
+precio suele ir a tomarlas con fuerza. Hipótesis, no medida: EQH/EQL como imán
+es folklore sin evidencia publicada.
+
+Puntos del diseño ya fijados en el pre-registro:
+
+- El objeto se define por reglas (pivotes + tolerancia + ventana), no por
+  capturas: la visión recupera reglas algebraicas, no las inventa
+  (Cohen/Balch/Veloso, ICAIF 2020). ML sólo si las reglas no reproducen el ojo.
+- Precondición: test de consistencia del etiquetador (re-etiquetar a ciegas,
+  κ ≥ 0,6) antes de entrenar o ajustar nada.
+- Controles ya declarados para la medición final: placebo emparejado por
+  distancia/horario, control de co-localización con clusters (74 % de contactos
+  dentro de cluster vivo, H2), escala de horizonte acorde al rango de barra
+  (lección VOID POR ESCALA), y orden causal corregido de las zonas
+  (look-ahead de runners, `f579ad4`).
+- Escalones 0–4 target-free; el escalón 5 (la hipótesis real) es outcomes y
+  requiere OK escrito de Nico y manifiesto propio.
+
+---
+
+## HP-007 — Corredores de Vacío y Campo de Resistencia Microestructural As-Of (Fast-Travel)
+
+**Fecha:** 2026-09-14 / 2026-09-15 · **Origen:** diseño e intuición de Nico del Campo en sesión sobre 6E Continuo 25t ·
+**Estado:** modelo matemático y prototipo visual activo en visor (`viewer/nt8_bridge/index.html`) con validación empírica de terceridad en `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md` · **Instrumentos:** 6E, NQ, ES, GC
+
+Nico observa que las zonas de absorción (1 a 3 ticks) generan un campo continuo de fricción microestructural. Los espacios intermedios desprovistos de zonas pasivas descansadas actúan como corredores de baja fricción donde el precio viaja con alta velocidad y mínimo retroceso (flujo laminar).
+
+Puntos del diseño y calibración empírica ya fijados:
+- **No binario:** Cada nivel de precio tiene una densidad continua $D(p, t)$ calculada por superposición espacial y temporal con kernel gaussiano ($\sigma = 1.2\,\text{tick}$).
+- **Terceridad de datos confirmada:** Contrastado sobre 5.703 eventos reales en `6E 06-26` (Pilar 1) y `6E 03-26` (Pilar 2) frente a control nulo placebo y Monte Carlo ($Z=3.79, p=0.0010$, Pilar 3).
+- **Refutación del decaimiento rápido:** El decaimiento monótono temprano ($T_{\text{half}} = 4\,\text{h}$) es contraproducente; las zonas maduras de 4 a 12 horas presentan la máxima eficacia de contención ($\text{MFE}/\text{MAE} = 1.53$, Hit 8t = 57.3%). La extinción debe gobernarse por consumo y travesía ($f_{\text{desgaste}}$), no por reloj lineal.
+- **Falsación de Velocidad Cuantitativa Confirmada (2026-09-15):** 11.874 eventos sobre 111.400 barras 25t. La velocidad de tránsito en corredores de vacío ($D \le 0.28$) es de **0.664 t/b (10.3 t/min)** frente a **0.491 t/b (3.4 t/min)** en congestión ($D \ge 0.70$), una aceleración de **1.35x en barras y 3.03x en tiempo real** ($t = 6.373, p = 2.14 \times 10^{-10}$, Monte Carlo $Z = 5.65, p = 0.0000$). Con $R:R = 3.33:1$, expectativa teórica positiva de **+0.099 R** por travesía.
+- **Validación Estructural Profunda Multidimensional (2026-09-15):**
+  1. *Asimetría Vectorial Direccional:* Comprar contra pared (`bull_congestion`) destruye expectativa (-0.409 R, acierto 13.65%). Entrar al alza con Suelo Protector salta a **+0.076 R**; vender en vacío con Techo Protector salta a **+0.156 R**.
+  2. *Dinámica Pared a Pared:* Corredores angostos (4-7t) rinden **42.54% de acierto y +0.160 R** de expectativa con R:R de 1.73:1; corredores medios (8-14t) rinden **+0.031 R** (R:R 3.66:1).
+  3. *Física de Colisión:* Al impactar una muralla densa ($D \ge 0.75$), se registra **52.27% de Rebote Limpio** (retroceso medio de 5.15 ticks) y 15.91% de absorción.
+  4. *Universalidad en Actividad:* Confirmado ratio de velocidad superior en subastas de actividad tanto en futuros CME (**1.41x**, $p < 10^{-5}$) como en Spot OTC Dukascopy (**1.23x**, $p = 0.0109$).
+- **Documentos canónicos:** `docs/research/HP-006_CORREDORES_DE_VACIO_Y_CAMPO_FRICCION_2026-09-14.md`, `docs/research/DIAGNOSTICO_DECAIMIENTO_TEMPORAL_6E.md`, `docs/research/INFORME_CORREDORES_VACIO_VELOCIDAD_2026-09-15.md` e `docs/research/INFORME_ANALISIS_PROFUNDO_CORREDORES_2026-09-15.md`.
+
+---
+
+## HP-008 — Clímax HFT Sobre-Extendido con Reversión a la Media y Vuelo Libre en Corredores de Vacío, en NQ
+
+**Fecha:** 2026-09-17 · **Origen:** observación e hipótesis de Nico del Campo · 
+**Estado:** evaluada, falsada en especificación incondicional, delimitada a régimen rotacional y vuelo libre · **Instrumento:** NQ (E-mini Nasdaq-100) 25t
+
+Nico observa que las zonas HFT tienden a preceder giros contrarios (HFT SELL precede giro alcista, HFT BUY giro bajista) y plantea evaluar la reversión cuando el precio está sobre-extendido respecto a la EMA y realiza un HFT de clímax con reversión inmediata hacia la media.
+
+Puntos clave y resultados empíricos validados (N=239,154 velas 25t, In-Sample junio 2026):
+1. **Falsación de la entrada ciega ($t_0$):** Retorno medio de -1.62 pt (MFE/MAE 0.50x). El flujo agresivo tiene inercia inicial adversa y el proceso sufre trampa de cancelación por bimodalidad simétrica ($\sigma = 20.95$ pt a H=50).
+2. **Falsación del re-test retrospectivo:** Esperar 6 barras para verificar integridad contenía sesgo de supervivencia; en tiempo real estricto el re-test plano rinde solo +0.23 pt.
+3. **Falsación del micro-scalping frente a fricciones CME:** Con SL 3-5 pt y TP 4-10 pt, las comisiones y slippage ($0.75 pt/trade) destruyen la expectativa (Profit Factor 0.75 a 0.88). La monetización exige un target amplio hacia la EMA 200.
+4. **Falsación de la estabilidad interdiaria incondicional:** Solo 4 de 10 días fueron ganadores. Dos días rotacionales cargan el 80% de las ganancias; días direccionales (Kaufman ER > 0.015) generan pérdidas consecutivas.
+5. **Superación del control placebo (+13.5 ticks de alpha neto):** Giros en sobre-extensión genérica sin HFT pierden dinero (-1.44 pt); con HFT clímax el retorno pasa a +1.92 pt (MFE/MAE 1.21x). El HFT aporta +3.37 pt (+13.5 ticks) de alpha puro.
+6. **Sinergia con Corredores de Vacío (HP-007):** Cuando la reversión hacia la EMA cuenta con un Corredor de Vacío despejado de zonas pasivas intermedias (Vuelo Libre), el retorno medio salta a **+7.30 pt (+29.2 ticks)** con Win Rate del **63.6%** y MFE/MAE de **1.45x** (frente a +1.38 pt en camino obstruido).
+7. **Fundamentación econométrica:** Test de Razón de Varianzas de Lo-MacKinlay confirma $VR = 0.9645$ (< 1, reversión) concentrado entre 20 y 50 barras 25t.
+- **Documento canónico:** `docs/research/INFORME_FALSACION_ABSORCION_HFT_EMA_2026-09-17.md` (ID `RESEARCH-HFT-EMA-FALSIFICATION-20260917`).
+- **Herramientas reproducibles:** `tools/research_hft_absorption_probe.py`, `tools/research_ema_reversion_nq.py`, `tools/falsification_battery.py`, `tools/deep_falsification_probe.py`.

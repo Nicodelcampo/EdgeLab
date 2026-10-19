@@ -1,0 +1,42 @@
+{
+  "schema": "avolclusterpoi_footprint_hypothesis_v1",
+  "status": "DIAGNOSTIC_NO_CODE_CHANGED",
+  "code_commit": "2f14636b89fbc8b9703049dd1f050bd87aa64481",
+  "nt8_csv_sha256": "81f32a97a65a6eee801eb6639f613349f31a2c02354862c128126af1adabf9da",
+  "n_matched_blocks": 3948,
+  "tick_timestamp_structure": {
+    "n_ticks": 27543603,
+    "ticks_sharing_ts_with_previous": 14070725,
+    "pct_sharing_ts": 0.510853,
+    "n_groups": 13590329,
+    "n_multi_tick_groups": 5198549,
+    "n_multi_groups_with_price_variation": 3024940
+  },
+  "variants": {
+    "A_python_actual": {
+      "blocks_identical": 2,
+      "sum_abs_diff": 276756.0,
+      "n_val_diff": 46730,
+      "n_only_py": 13316,
+      "n_only_nt8": 9479
+    },
+    "B_consolidado_precio_ultimo": {
+      "blocks_identical": 0,
+      "sum_abs_diff": 1715442.0,
+      "n_val_diff": 260590,
+      "n_only_py": 7554,
+      "n_only_nt8": 32507
+    },
+    "C_consolidado_precio_primero": {
+      "blocks_identical": 0,
+      "sum_abs_diff": 1754264.0,
+      "n_val_diff": 259979,
+      "n_only_py": 7404,
+      "n_only_nt8": 34219
+    }
+  },
+  "interpretation": "si B o C sube mucho blocks_identical y baja n_val_diff frente a A, la consolidacion de trades simultaneos explica el ruido y el fix queda identificado; si las tres son parecidas, la causa es otra",
+  "outcomes_accessed": false,
+  "holdout_accessed": false,
+  "code_modified": false
+}

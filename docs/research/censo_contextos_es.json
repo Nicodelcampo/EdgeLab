@@ -1,0 +1,4337 @@
+{
+ "schema_version": "censo_contextos_es_v1_target_free",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "proposito": "describir DONDE y COMO aparecen las zonas, para que la declaracion de contextos sea informada. Nada de lo que pasa DESPUES entra aca",
+ "estado_previo": "rango y ticks de los 5 min ANTERIORES, y rango del dia HASTA el instante de creacion. Ninguna ventana posterior",
+ "huso": "America/New_York con DST real via zoneinfo, no offset fijo: la etiqueta horaria mal resuelta es lo que bloqueo H-SWEEP-1",
+ "fases": {
+  "asia": [
+   18,
+   3
+  ],
+  "europa": [
+   3,
+   8
+  ],
+  "premarket": [
+   8,
+   9.5
+  ],
+  "rth_am": [
+   9.5,
+   12
+  ],
+  "rth_pm": [
+   12,
+   16
+  ],
+  "cierre": [
+   16,
+   18
+  ]
+ },
+ "universo": {
+  "n_zonas": 9486,
+  "n_sesiones": 62,
+  "sin_parquet": 0
+ },
+ "zonas_por_sesion": {
+  "n": 62,
+  "p25": 107.25,
+  "mediana": 158.0,
+  "p75": 192.5,
+  "media": 153.0
+ },
+ "agrupamiento": {
+  "fano_mediana": 7.78,
+  "fano_p25": 6.11,
+  "fano_p75": 11.27,
+  "bin_min": 5,
+  "lectura": "Poisson = 1; > 1 significa que llegan en rafagas"
+ },
+ "solapamiento": {
+  "ventana_min": 30,
+  "resumen": {
+   "n": 9486,
+   "p25": 1.0,
+   "mediana": 2.0,
+   "p75": 6.0,
+   "media": 5.06
+  },
+  "frac_con_al_menos_uno": 0.8106
+ },
+ "medias_declaradas": {
+  "sma": [
+   20,
+   50
+  ],
+  "ema": [
+   9,
+   21
+  ],
+  "base": "barras de 1 minuto cerradas ANTES de la creacion",
+  "vwap": "acumulado de sesion hasta la barra anterior"
+ },
+ "memoria_de_nivel": {
+  "nota": "nulo = misma cantidad de zonas colocadas en ticks reales al azar; preserva el tiempo que el precio paso en cada nivel",
+  "p_max_mediana_RETRACTADO": 0.005,
+  "frac_sesiones_p_max_menor_005_RETRACTADO": 0.7119,
+  "retractacion": "commit 59a9f28: el nulo del censo usaba np.round(mid), que colapsaba medios ticks sobre enteros en el observado pero no en el nulo. El 71% se retracta.",
+  "ver": "docs/research/memoria_nivel_nulo_correcto.json",
+  "resultado_vigente": {
+   "estado": "MEASURED_COMMITTED",
+   "p_mediana": 0.1796,
+   "frac_sesiones_p_menor_005": 0.3051,
+   "sesiones": 18,
+   "elegibles": 59,
+   "B": 400,
+   "run_id": "0e16a11b81dcb865",
+   "code_commit": "056618ff458ca26ab87f383160225ccfb53bf5f9",
+   "fuente": "docs/research/memoria_nivel_nulo_correcto.json"
+  },
+  "valor_intermedio_retractado": {
+   "estado": "RETRACTED_INVALID_ESTIMATOR_COUNT_OVER_B",
+   "p_mediana": 0.1775,
+   "motivo": "salio del nulo corregido pero con el estimador p = count/B, que publica p = 0,0 en 5 de 59 sesiones. Con (1+count)/(B+1) el valor es 0,1796. Se conserva porque circulo en docs entre 59a9f28 y el sellado de R1"
+  }
+ },
+ "persistencia_entre_sesiones": {
+  "tolerancia_ticks": 2,
+  "n_pares": 56,
+  "frac_hoy_cerca_de_ayer": 0.3371,
+  "nulo_desplazado": 0.2999,
+  "contraste": 0.0372
+ },
+ "por_fase": {
+  "europa": {
+   "n_zonas": 371,
+   "frac_zonas": 0.0391,
+   "ticks": 4090000,
+   "volumen": 5132615.0,
+   "frac_ticks": 0.0655,
+   "zonas_por_millon_ticks": 90.71,
+   "zonas_por_millon_contratos": 72.28,
+   "frac_alcistas": 0.5391,
+   "ancho": {
+    "n": 371,
+    "p25": 3.0,
+    "mediana": 5.0,
+    "p75": 9.0,
+    "media": 6.47
+   },
+   "pasos": {
+    "n": 371,
+    "p25": 102.0,
+    "mediana": 154.0,
+    "p75": 203.0,
+    "media": 162.69
+   },
+   "avg_ms": {
+    "n": 371,
+    "p25": 0.19,
+    "mediana": 0.41,
+    "p75": 0.71,
+    "media": 0.51
+   },
+   "total_vol": {
+    "n": 371,
+    "p25": 233.5,
+    "mediana": 289.0,
+    "p75": 393.0,
+    "media": 355.03
+   },
+   "solape": {
+    "n": 371,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 1.0,
+    "media": 0.71
+   },
+   "pos_en_rango": {
+    "n": 371,
+    "p25": 0.19,
+    "mediana": 0.5,
+    "p75": 0.78,
+    "media": 0.49
+   },
+   "frac_absorb": 0.4151,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 371,
+      "p25": 26.39,
+      "mediana": 60.23,
+      "p75": 105.89,
+      "media": 73.38
+     },
+     "frac_por_encima": 0.4771
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 371,
+      "p25": 10.07,
+      "mediana": 17.65,
+      "p75": 30.35,
+      "media": 22.11
+     },
+     "frac_por_encima": 0.5364
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 371,
+      "p25": 15.18,
+      "mediana": 28.16,
+      "p75": 45.51,
+      "media": 33.81
+     },
+     "frac_por_encima": 0.531
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 371,
+      "p25": 6.69,
+      "mediana": 12.86,
+      "p75": 19.91,
+      "media": 14.92
+     },
+     "frac_por_encima": 0.5229
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 371,
+      "p25": 9.14,
+      "mediana": 16.93,
+      "p75": 29.07,
+      "media": 21.06
+     },
+     "frac_por_encima": 0.531
+    }
+   }
+  },
+  "premarket": {
+   "n_zonas": 394,
+   "frac_zonas": 0.0415,
+   "ticks": 2735000,
+   "volumen": 3527592.0,
+   "frac_ticks": 0.0438,
+   "zonas_por_millon_ticks": 144.06,
+   "zonas_por_millon_contratos": 111.69,
+   "frac_alcistas": 0.5,
+   "ancho": {
+    "n": 394,
+    "p25": 3.0,
+    "mediana": 6.0,
+    "p75": 9.0,
+    "media": 7.01
+   },
+   "pasos": {
+    "n": 394,
+    "p25": 123.25,
+    "mediana": 173.0,
+    "p75": 225.75,
+    "media": 185.32
+   },
+   "avg_ms": {
+    "n": 394,
+    "p25": 0.18,
+    "mediana": 0.42,
+    "p75": 0.75,
+    "media": 0.51
+   },
+   "total_vol": {
+    "n": 394,
+    "p25": 238.0,
+    "mediana": 283.5,
+    "p75": 385.0,
+    "media": 337.45
+   },
+   "solape": {
+    "n": 394,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 2.47
+   },
+   "pos_en_rango": {
+    "n": 394,
+    "p25": 0.22,
+    "mediana": 0.51,
+    "p75": 0.81,
+    "media": 0.51
+   },
+   "frac_absorb": 0.368,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 394,
+      "p25": 26.6,
+      "mediana": 56.56,
+      "p75": 104.69,
+      "media": 67.99
+     },
+     "frac_por_encima": 0.5102
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 394,
+      "p25": 8.66,
+      "mediana": 18.17,
+      "p75": 32.84,
+      "media": 25.97
+     },
+     "frac_por_encima": 0.5228
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 394,
+      "p25": 12.67,
+      "mediana": 28.04,
+      "p75": 51.21,
+      "media": 36.74
+     },
+     "frac_por_encima": 0.5431
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 394,
+      "p25": 5.81,
+      "mediana": 12.07,
+      "p75": 23.22,
+      "media": 17.66
+     },
+     "frac_por_encima": 0.5305
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 394,
+      "p25": 7.49,
+      "mediana": 16.38,
+      "p75": 30.48,
+      "media": 23.69
+     },
+     "frac_por_encima": 0.5254
+    }
+   }
+  },
+  "rth_am": {
+   "n_zonas": 3367,
+   "frac_zonas": 0.3549,
+   "ticks": 26050000,
+   "volumen": 33130971.0,
+   "frac_ticks": 0.4169,
+   "zonas_por_millon_ticks": 129.25,
+   "zonas_por_millon_contratos": 101.63,
+   "frac_alcistas": 0.4823,
+   "ancho": {
+    "n": 3367,
+    "p25": 2.0,
+    "mediana": 4.0,
+    "p75": 5.0,
+    "media": 4.08
+   },
+   "pasos": {
+    "n": 3367,
+    "p25": 142.0,
+    "mediana": 177.0,
+    "p75": 232.0,
+    "media": 202.75
+   },
+   "avg_ms": {
+    "n": 3367,
+    "p25": 0.3,
+    "mediana": 0.62,
+    "p75": 1.04,
+    "media": 0.72
+   },
+   "total_vol": {
+    "n": 3367,
+    "p25": 226.5,
+    "mediana": 274.0,
+    "p75": 380.0,
+    "media": 347.56
+   },
+   "solape": {
+    "n": 3367,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.0,
+    "media": 2.29
+   },
+   "pos_en_rango": {
+    "n": 3367,
+    "p25": 0.17,
+    "mediana": 0.49,
+    "p75": 0.83,
+    "media": 0.49
+   },
+   "frac_absorb": 0.6831,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 3367,
+      "p25": 27.94,
+      "mediana": 67.61,
+      "p75": 126.1,
+      "media": 83.23
+     },
+     "frac_por_encima": 0.4993
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 3367,
+      "p25": 16.4,
+      "mediana": 32.15,
+      "p75": 54.55,
+      "media": 37.84
+     },
+     "frac_por_encima": 0.4877
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 3367,
+      "p25": 21.51,
+      "mediana": 45.98,
+      "p75": 78.28,
+      "media": 55.16
+     },
+     "frac_por_encima": 0.499
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 3367,
+      "p25": 11.26,
+      "mediana": 21.55,
+      "p75": 34.56,
+      "media": 24.58
+     },
+     "frac_por_encima": 0.4797
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 3367,
+      "p25": 15.16,
+      "mediana": 30.16,
+      "p75": 50.24,
+      "media": 34.78
+     },
+     "frac_por_encima": 0.4826
+    }
+   }
+  },
+  "rth_pm": {
+   "n_zonas": 4568,
+   "frac_zonas": 0.4816,
+   "ticks": 23689165,
+   "volumen": 32333192.0,
+   "frac_ticks": 0.3792,
+   "zonas_por_millon_ticks": 192.83,
+   "zonas_por_millon_contratos": 141.28,
+   "frac_alcistas": 0.4849,
+   "ancho": {
+    "n": 4568,
+    "p25": 2.0,
+    "mediana": 3.0,
+    "p75": 4.0,
+    "media": 3.22
+   },
+   "pasos": {
+    "n": 4568,
+    "p25": 130.0,
+    "mediana": 173.0,
+    "p75": 241.0,
+    "media": 209.17
+   },
+   "avg_ms": {
+    "n": 4568,
+    "p25": 0.29,
+    "mediana": 0.56,
+    "p75": 0.96,
+    "media": 0.68
+   },
+   "total_vol": {
+    "n": 4568,
+    "p25": 233.0,
+    "mediana": 294.0,
+    "p75": 435.0,
+    "media": 393.02
+   },
+   "solape": {
+    "n": 4568,
+    "p25": 1.0,
+    "mediana": 5.0,
+    "p75": 12.0,
+    "media": 7.54
+   },
+   "pos_en_rango": {
+    "n": 4568,
+    "p25": 0.24,
+    "mediana": 0.53,
+    "p75": 0.84,
+    "media": 0.53
+   },
+   "frac_absorb": 0.7918,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 4568,
+      "p25": 28.28,
+      "mediana": 73.69,
+      "p75": 127.64,
+      "media": 90.41
+     },
+     "frac_por_encima": 0.5357
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 4568,
+      "p25": 7.09,
+      "mediana": 16.58,
+      "p75": 30.16,
+      "media": 23.3
+     },
+     "frac_por_encima": 0.4991
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 4568,
+      "p25": 10.48,
+      "mediana": 24.96,
+      "p75": 46.77,
+      "media": 35.26
+     },
+     "frac_por_encima": 0.472
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 4568,
+      "p25": 4.78,
+      "mediana": 11.1,
+      "p75": 20.54,
+      "media": 15.4
+     },
+     "frac_por_encima": 0.5085
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 4568,
+      "p25": 6.19,
+      "mediana": 15.42,
+      "p75": 27.96,
+      "media": 21.51
+     },
+     "frac_por_encima": 0.4958
+    }
+   }
+  },
+  "cierre": {
+   "n_zonas": 480,
+   "frac_zonas": 0.0506,
+   "ticks": 1568576,
+   "volumen": 2620246.0,
+   "frac_ticks": 0.0251,
+   "zonas_por_millon_ticks": 306.01,
+   "zonas_por_millon_contratos": 183.19,
+   "frac_alcistas": 0.4417,
+   "ancho": {
+    "n": 480,
+    "p25": 2.0,
+    "mediana": 3.0,
+    "p75": 5.0,
+    "media": 3.9
+   },
+   "pasos": {
+    "n": 480,
+    "p25": 102.0,
+    "mediana": 134.5,
+    "p75": 181.5,
+    "media": 164.04
+   },
+   "avg_ms": {
+    "n": 480,
+    "p25": 0.18,
+    "mediana": 0.57,
+    "p75": 1.03,
+    "media": 0.73
+   },
+   "total_vol": {
+    "n": 480,
+    "p25": 233.0,
+    "mediana": 285.0,
+    "p75": 397.25,
+    "media": 379.14
+   },
+   "solape": {
+    "n": 480,
+    "p25": 3.0,
+    "mediana": 6.0,
+    "p75": 14.0,
+    "media": 9.23
+   },
+   "pos_en_rango": {
+    "n": 480,
+    "p25": 0.22,
+    "mediana": 0.51,
+    "p75": 0.79,
+    "media": 0.51
+   },
+   "frac_absorb": 0.7479,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 480,
+      "p25": 25.79,
+      "mediana": 56.97,
+      "p75": 102.84,
+      "media": 76.02
+     },
+     "frac_por_encima": 0.5625
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 480,
+      "p25": 6.8,
+      "mediana": 17.5,
+      "p75": 27.4,
+      "media": 18.74
+     },
+     "frac_por_encima": 0.4667
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 480,
+      "p25": 10.29,
+      "mediana": 22.33,
+      "p75": 38.69,
+      "media": 27.22
+     },
+     "frac_por_encima": 0.4583
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 480,
+      "p25": 4.17,
+      "mediana": 9.74,
+      "p75": 17.59,
+      "media": 12.85
+     },
+     "frac_por_encima": 0.4688
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 480,
+      "p25": 6.37,
+      "mediana": 15.34,
+      "p75": 24.6,
+      "media": 17.1
+     },
+     "frac_por_encima": 0.4604
+    }
+   }
+  },
+  "asia": {
+   "n_zonas": 306,
+   "frac_zonas": 0.0323,
+   "ticks": 4345000,
+   "volumen": 5229821.0,
+   "frac_ticks": 0.0695,
+   "zonas_por_millon_ticks": 70.43,
+   "zonas_por_millon_contratos": 58.51,
+   "frac_alcistas": 0.415,
+   "ancho": {
+    "n": 306,
+    "p25": 3.0,
+    "mediana": 6.0,
+    "p75": 10.0,
+    "media": 7.71
+   },
+   "pasos": {
+    "n": 306,
+    "p25": 86.25,
+    "mediana": 143.0,
+    "p75": 196.0,
+    "media": 149.33
+   },
+   "avg_ms": {
+    "n": 306,
+    "p25": 0.18,
+    "mediana": 0.38,
+    "p75": 0.7,
+    "media": 0.53
+   },
+   "total_vol": {
+    "n": 306,
+    "p25": 234.0,
+    "mediana": 280.5,
+    "p75": 381.0,
+    "media": 331.36
+   },
+   "solape": {
+    "n": 306,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 1.0,
+    "media": 0.5
+   },
+   "pos_en_rango": {
+    "n": 306,
+    "p25": 0.01,
+    "mediana": 0.25,
+    "p75": 0.8,
+    "media": 0.26
+   },
+   "frac_absorb": 0.3595,
+   "vs_medias": {
+    "vwap": {
+     "abs_ticks": {
+      "n": 290,
+      "p25": 23.34,
+      "mediana": 41.75,
+      "p75": 74.73,
+      "media": 52.58
+     },
+     "frac_por_encima": 0.3483
+    },
+    "sma20": {
+     "abs_ticks": {
+      "n": 268,
+      "p25": 8.74,
+      "mediana": 17.88,
+      "p75": 28.73,
+      "media": 20.41
+     },
+     "frac_por_encima": 0.3806
+    },
+    "sma50": {
+     "abs_ticks": {
+      "n": 245,
+      "p25": 11.84,
+      "mediana": 23.44,
+      "p75": 38.3,
+      "media": 28.18
+     },
+     "frac_por_encima": 0.4122
+    },
+    "ema9": {
+     "abs_ticks": {
+      "n": 290,
+      "p25": 7.19,
+      "mediana": 13.01,
+      "p75": 21.88,
+      "media": 15.32
+     },
+     "frac_por_encima": 0.3759
+    },
+    "ema21": {
+     "abs_ticks": {
+      "n": 290,
+      "p25": 9.17,
+      "mediana": 17.23,
+      "p75": 29.77,
+      "media": 20.62
+     },
+     "frac_por_encima": 0.3759
+    }
+   }
+  }
+ },
+ "por_dow": {
+  "0": 1488,
+  "1": 1966,
+  "2": 1952,
+  "3": 1905,
+  "4": 2080,
+  "6": 95
+ },
+ "procedencia": {
+  "head_commit": "3aa688716489539d609a40d9633c8d5e0e72d289",
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "archivos_sucios": [
+   "diag/tasa_senales/censo_contextos_es.py",
+   "docs/research/censo_contextos_probe.json"
+  ],
+  "medicion_comprometida": true
+ },
+ "sesiones": [
+  {
+   "trade_date": 20251222,
+   "n_zonas": 76,
+   "n_ticks": 653968,
+   "volumen": 932197.0,
+   "rango_ticks": 143,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 47693.0
+    },
+    "europa": {
+     "ticks": 35000,
+     "volumen": 42844.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 34367.0
+    },
+    "rth_am": {
+     "ticks": 300000,
+     "volumen": 395339.0
+    },
+    "rth_pm": {
+     "ticks": 240000,
+     "volumen": 385242.0
+    },
+    "cierre": {
+     "ticks": 13968,
+     "volumen": 26712.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 1,
+    "premarket": 1,
+    "rth_am": 13,
+    "rth_pm": 53,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 76,
+    "p25": 0.0,
+    "mediana": 10.5,
+    "p75": 15.5,
+    "media": 8.74
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 30,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 10,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 50.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.005,
+    "p_3omas": 0.01
+   },
+   "fano": 7.951
+  },
+  {
+   "trade_date": 20251223,
+   "n_zonas": 84,
+   "n_ticks": 564272,
+   "volumen": 821372.0,
+   "rango_ticks": 202,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 35509.0
+    },
+    "europa": {
+     "ticks": 30000,
+     "volumen": 37895.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 39938.0
+    },
+    "rth_am": {
+     "ticks": 260000,
+     "volumen": 345977.0
+    },
+    "rth_pm": {
+     "ticks": 195000,
+     "volumen": 323773.0
+    },
+    "cierre": {
+     "ticks": 19272,
+     "volumen": 38280.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 1,
+    "premarket": 5,
+    "rth_am": 16,
+    "rth_pm": 55,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 84,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 12.0,
+    "media": 6.43
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 46,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 62.0,
+    "nulo_3omas_mediana": 4.0,
+    "p_max": 0.005,
+    "p_3omas": 0.02
+   },
+   "fano": 9.303
+  },
+  {
+   "trade_date": 20251224,
+   "n_zonas": 58,
+   "n_ticks": 286843,
+   "volumen": 421689.0,
+   "rango_ticks": 142,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 25000,
+     "volumen": 29446.0
+    },
+    "europa": {
+     "ticks": 15000,
+     "volumen": 18734.0
+    },
+    "premarket": {
+     "ticks": 10000,
+     "volumen": 13288.0
+    },
+    "rth_am": {
+     "ticks": 155000,
+     "volumen": 219806.0
+    },
+    "rth_pm": {
+     "ticks": 81843,
+     "volumen": 140415.0
+    }
+   },
+   "zonas_por_fase": {
+    "rth_am": 19,
+    "rth_pm": 39
+   },
+   "solape": {
+    "n": 58,
+    "p25": 1.0,
+    "mediana": 6.0,
+    "p75": 18.0,
+    "media": 10.21
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 28,
+    "max_zonas_en_un_nivel": 12,
+    "niveles_con_3_o_mas": 6,
+    "nulo_max_mediana": 3.0,
+    "nulo_niveles_mediana": 45.0,
+    "nulo_3omas_mediana": 2.0,
+    "p_max": 0.0,
+    "p_3omas": 0.035
+   },
+   "fano": 5.92
+  },
+  {
+   "trade_date": 20251226,
+   "n_zonas": 52,
+   "n_ticks": 427169,
+   "volumen": 590839.0,
+   "rango_ticks": 100,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 25000,
+     "volumen": 29411.0
+    },
+    "europa": {
+     "ticks": 15000,
+     "volumen": 18883.0
+    },
+    "premarket": {
+     "ticks": 10000,
+     "volumen": 13090.0
+    },
+    "rth_am": {
+     "ticks": 195000,
+     "volumen": 248111.0
+    },
+    "rth_pm": {
+     "ticks": 170000,
+     "volumen": 258488.0
+    },
+    "cierre": {
+     "ticks": 12169,
+     "volumen": 22856.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 2,
+    "rth_am": 12,
+    "rth_pm": 35,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 52,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 7.0,
+    "media": 4.35
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 27,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 5,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 36.0,
+    "nulo_3omas_mediana": 4.0,
+    "p_max": 0.0,
+    "p_3omas": 0.24
+   },
+   "fano": 7.765
+  },
+  {
+   "trade_date": 20251229,
+   "n_zonas": 79,
+   "n_ticks": 602703,
+   "volumen": 835955.0,
+   "rango_ticks": 195,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 35000,
+     "volumen": 40958.0
+    },
+    "europa": {
+     "ticks": 40000,
+     "volumen": 48429.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 43420.0
+    },
+    "rth_am": {
+     "ticks": 265000,
+     "volumen": 353397.0
+    },
+    "rth_pm": {
+     "ticks": 220000,
+     "volumen": 324151.0
+    },
+    "cierre": {
+     "ticks": 12703,
+     "volumen": 25600.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 2,
+    "premarket": 7,
+    "rth_am": 21,
+    "rth_pm": 39,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 79,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 8.0,
+    "media": 4.41
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 52,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 6,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 56.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.05,
+    "p_3omas": 0.345
+   },
+   "fano": 6.866
+  },
+  {
+   "trade_date": 20251230,
+   "n_zonas": 70,
+   "n_ticks": 503744,
+   "volumen": 728539.0,
+   "rango_ticks": 83,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 36125.0
+    },
+    "europa": {
+     "ticks": 25000,
+     "volumen": 33485.0
+    },
+    "premarket": {
+     "ticks": 20000,
+     "volumen": 26559.0
+    },
+    "rth_am": {
+     "ticks": 230000,
+     "volumen": 317784.0
+    },
+    "rth_pm": {
+     "ticks": 185000,
+     "volumen": 289418.0
+    },
+    "cierre": {
+     "ticks": 13744,
+     "volumen": 25168.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 1,
+    "rth_am": 29,
+    "rth_pm": 34,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 70,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 11.0,
+    "media": 5.46
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 36,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 41.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.035,
+    "p_3omas": 0.44
+   },
+   "fano": 11.28
+  },
+  {
+   "trade_date": 20251231,
+   "n_zonas": 108,
+   "n_ticks": 614544,
+   "volumen": 910289.0,
+   "rango_ticks": 245,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 30000,
+     "volumen": 35692.0
+    },
+    "europa": {
+     "ticks": 20000,
+     "volumen": 24225.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 34655.0
+    },
+    "rth_am": {
+     "ticks": 210000,
+     "volumen": 277645.0
+    },
+    "rth_pm": {
+     "ticks": 300000,
+     "volumen": 479235.0
+    },
+    "cierre": {
+     "ticks": 29544,
+     "volumen": 58837.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "premarket": 4,
+    "rth_am": 12,
+    "rth_pm": 79,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 108,
+    "p25": 1.0,
+    "mediana": 4.0,
+    "p75": 7.0,
+    "media": 5.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 68,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 80.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.0,
+    "p_3omas": 0.085
+   },
+   "fano": 14.964
+  },
+  {
+   "trade_date": 20260102,
+   "n_zonas": 215,
+   "n_ticks": 1059896,
+   "volumen": 1507712.0,
+   "rango_ticks": 292,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 60798.0
+    },
+    "europa": {
+     "ticks": 45000,
+     "volumen": 61758.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 37486.0
+    },
+    "rth_am": {
+     "ticks": 525000,
+     "volumen": 720152.0
+    },
+    "rth_pm": {
+     "ticks": 400000,
+     "volumen": 590628.0
+    },
+    "cierre": {
+     "ticks": 19896,
+     "volumen": 36890.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 6,
+    "premarket": 3,
+    "rth_am": 93,
+    "rth_pm": 102,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 215,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 127,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 20,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 139.0,
+    "nulo_3omas_mediana": 17.0,
+    "p_max": 0.08,
+    "p_3omas": 0.265
+   },
+   "fano": 11.128
+  },
+  {
+   "trade_date": 20260105,
+   "n_zonas": 152,
+   "n_ticks": 832582,
+   "volumen": 1195974.0,
+   "rango_ticks": 256,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 73145.0
+    },
+    "europa": {
+     "ticks": 45000,
+     "volumen": 57097.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 42943.0
+    },
+    "rth_am": {
+     "ticks": 375000,
+     "volumen": 515491.0
+    },
+    "rth_pm": {
+     "ticks": 305000,
+     "volumen": 474323.0
+    },
+    "cierre": {
+     "ticks": 17582,
+     "volumen": 32975.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 1,
+    "premarket": 3,
+    "rth_am": 48,
+    "rth_pm": 91,
+    "cierre": 5
+   },
+   "solape": {
+    "n": 152,
+    "p25": 1.0,
+    "mediana": 5.0,
+    "p75": 16.0,
+    "media": 8.87
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 63,
+    "max_zonas_en_un_nivel": 12,
+    "niveles_con_3_o_mas": 17,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 91.0,
+    "nulo_3omas_mediana": 15.0,
+    "p_max": 0.0,
+    "p_3omas": 0.28
+   },
+   "fano": 25.247
+  },
+  {
+   "trade_date": 20260106,
+   "n_zonas": 161,
+   "n_ticks": 778923,
+   "volumen": 1133614.0,
+   "rango_ticks": 242,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 52125.0
+    },
+    "europa": {
+     "ticks": 50000,
+     "volumen": 65848.0
+    },
+    "premarket": {
+     "ticks": 20000,
+     "volumen": 27993.0
+    },
+    "rth_am": {
+     "ticks": 375000,
+     "volumen": 511289.0
+    },
+    "rth_pm": {
+     "ticks": 275000,
+     "volumen": 436648.0
+    },
+    "cierre": {
+     "ticks": 18923,
+     "volumen": 39711.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 6,
+    "europa": 6,
+    "premarket": 6,
+    "rth_am": 62,
+    "rth_pm": 73,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 161,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 14.0,
+    "media": 6.66
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 84,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 17,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 103.0,
+    "nulo_3omas_mediana": 13.0,
+    "p_max": 0.005,
+    "p_3omas": 0.1
+   },
+   "fano": 10.653
+  },
+  {
+   "trade_date": 20260107,
+   "n_zonas": 146,
+   "n_ticks": 842025,
+   "volumen": 1186510.0,
+   "rango_ticks": 195,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 48157.0
+    },
+    "europa": {
+     "ticks": 30000,
+     "volumen": 38390.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 41854.0
+    },
+    "rth_am": {
+     "ticks": 340000,
+     "volumen": 459168.0
+    },
+    "rth_pm": {
+     "ticks": 380000,
+     "volumen": 555639.0
+    },
+    "cierre": {
+     "ticks": 22025,
+     "volumen": 43302.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "europa": 2,
+    "premarket": 6,
+    "rth_am": 47,
+    "rth_pm": 81,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 146,
+    "p25": 0.25,
+    "mediana": 1.5,
+    "p75": 8.0,
+    "media": 5.53
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 81,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 15,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 88.0,
+    "nulo_3omas_mediana": 15.0,
+    "p_max": 0.005,
+    "p_3omas": 0.515
+   },
+   "fano": 8.602
+  },
+  {
+   "trade_date": 20260108,
+   "n_zonas": 155,
+   "n_ticks": 939371,
+   "volumen": 1255865.0,
+   "rango_ticks": 170,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 74144.0
+    },
+    "europa": {
+     "ticks": 45000,
+     "volumen": 59549.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 34772.0
+    },
+    "rth_am": {
+     "ticks": 460000,
+     "volumen": 580380.0
+    },
+    "rth_pm": {
+     "ticks": 330000,
+     "volumen": 469257.0
+    },
+    "cierre": {
+     "ticks": 19371,
+     "volumen": 37763.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 10,
+    "europa": 8,
+    "premarket": 4,
+    "rth_am": 55,
+    "rth_pm": 73,
+    "cierre": 5
+   },
+   "solape": {
+    "n": 155,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 6.0,
+    "media": 3.86
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 74,
+    "max_zonas_en_un_nivel": 11,
+    "niveles_con_3_o_mas": 18,
+    "nulo_max_mediana": 6.0,
+    "nulo_niveles_mediana": 75.5,
+    "nulo_3omas_mediana": 22.0,
+    "p_max": 0.0,
+    "p_3omas": 0.96
+   },
+   "fano": 5.277
+  },
+  {
+   "trade_date": 20260109,
+   "n_zonas": 168,
+   "n_ticks": 863183,
+   "volumen": 1273464.0,
+   "rango_ticks": 253,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 47026.0
+    },
+    "europa": {
+     "ticks": 30000,
+     "volumen": 37514.0
+    },
+    "premarket": {
+     "ticks": 50000,
+     "volumen": 69682.0
+    },
+    "rth_am": {
+     "ticks": 450000,
+     "volumen": 615211.0
+    },
+    "rth_pm": {
+     "ticks": 270000,
+     "volumen": 450854.0
+    },
+    "cierre": {
+     "ticks": 23183,
+     "volumen": 53177.0
+    }
+   },
+   "zonas_por_fase": {
+    "rth_am": 77,
+    "rth_pm": 73,
+    "cierre": 18
+   },
+   "solape": {
+    "n": 168,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 6.25,
+    "media": 5.06
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 95,
+    "max_zonas_en_un_nivel": 15,
+    "niveles_con_3_o_mas": 14,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 116.0,
+    "nulo_3omas_mediana": 10.0,
+    "p_max": 0.0,
+    "p_3omas": 0.12
+   },
+   "fano": 11.258
+  },
+  {
+   "trade_date": 20260112,
+   "n_zonas": 126,
+   "n_ticks": 702145,
+   "volumen": 1004969.0,
+   "rango_ticks": 301,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 90000,
+     "volumen": 112397.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 87103.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 36468.0
+    },
+    "rth_am": {
+     "ticks": 300000,
+     "volumen": 406655.0
+    },
+    "rth_pm": {
+     "ticks": 200000,
+     "volumen": 313248.0
+    },
+    "cierre": {
+     "ticks": 22145,
+     "volumen": 49098.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 5,
+    "premarket": 2,
+    "rth_am": 40,
+    "rth_pm": 64,
+    "cierre": 11
+   },
+   "solape": {
+    "n": 126,
+    "p25": 0.0,
+    "mediana": 3.0,
+    "p75": 11.75,
+    "media": 5.92
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 72,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 92.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.0,
+    "p_3omas": 0.005
+   },
+   "fano": 10.764
+  },
+  {
+   "trade_date": 20260113,
+   "n_zonas": 157,
+   "n_ticks": 958039,
+   "volumen": 1319003.0,
+   "rango_ticks": 238,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 52701.0
+    },
+    "europa": {
+     "ticks": 35000,
+     "volumen": 44129.0
+    },
+    "premarket": {
+     "ticks": 65000,
+     "volumen": 93680.0
+    },
+    "rth_am": {
+     "ticks": 410000,
+     "volumen": 546431.0
+    },
+    "rth_pm": {
+     "ticks": 385000,
+     "volumen": 547880.0
+    },
+    "cierre": {
+     "ticks": 18039,
+     "volumen": 34182.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 2,
+    "premarket": 11,
+    "rth_am": 65,
+    "rth_pm": 76,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 157,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 2.98
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 92,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 11,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 99.0,
+    "nulo_3omas_mediana": 13.0,
+    "p_max": 0.155,
+    "p_3omas": 0.86
+   },
+   "fano": 6.459
+  },
+  {
+   "trade_date": 20260114,
+   "n_zonas": 217,
+   "n_ticks": 1273322,
+   "volumen": 1673421.0,
+   "rango_ticks": 317,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 51728.0
+    },
+    "europa": {
+     "ticks": 60000,
+     "volumen": 74855.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 49818.0
+    },
+    "rth_am": {
+     "ticks": 565000,
+     "volumen": 723855.0
+    },
+    "rth_pm": {
+     "ticks": 530000,
+     "volumen": 716053.0
+    },
+    "cierre": {
+     "ticks": 33322,
+     "volumen": 57112.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 8,
+    "premarket": 5,
+    "rth_am": 85,
+    "rth_pm": 103,
+    "cierre": 16
+   },
+   "solape": {
+    "n": 217,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 5.0,
+    "media": 5.13
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 119,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 24,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 139.0,
+    "nulo_3omas_mediana": 18.0,
+    "p_max": 0.0,
+    "p_3omas": 0.04
+   },
+   "fano": 12.822
+  },
+  {
+   "trade_date": 20260115,
+   "n_zonas": 136,
+   "n_ticks": 916679,
+   "volumen": 1232547.0,
+   "rango_ticks": 271,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 72429.0
+    },
+    "europa": {
+     "ticks": 55000,
+     "volumen": 70054.0
+    },
+    "premarket": {
+     "ticks": 45000,
+     "volumen": 62881.0
+    },
+    "rth_am": {
+     "ticks": 370000,
+     "volumen": 481077.0
+    },
+    "rth_pm": {
+     "ticks": 370000,
+     "volumen": 516142.0
+    },
+    "cierre": {
+     "ticks": 16679,
+     "volumen": 29964.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 5,
+    "premarket": 7,
+    "rth_am": 49,
+    "rth_pm": 65,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 136,
+    "p25": 1.0,
+    "mediana": 2.5,
+    "p75": 5.0,
+    "media": 4.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 77,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 18,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 91.0,
+    "nulo_3omas_mediana": 10.0,
+    "p_max": 0.095,
+    "p_3omas": 0.0
+   },
+   "fano": 7.474
+  },
+  {
+   "trade_date": 20260116,
+   "n_zonas": 164,
+   "n_ticks": 867606,
+   "volumen": 1205830.0,
+   "rango_ticks": 186,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 48382.0
+    },
+    "europa": {
+     "ticks": 40000,
+     "volumen": 50597.0
+    },
+    "premarket": {
+     "ticks": 45000,
+     "volumen": 63735.0
+    },
+    "rth_am": {
+     "ticks": 410000,
+     "volumen": 559777.0
+    },
+    "rth_pm": {
+     "ticks": 310000,
+     "volumen": 442558.0
+    },
+    "cierre": {
+     "ticks": 22606,
+     "volumen": 40781.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 1,
+    "premarket": 7,
+    "rth_am": 78,
+    "rth_pm": 71,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 164,
+    "p25": 1.0,
+    "mediana": 4.0,
+    "p75": 9.0,
+    "media": 5.68
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 81,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 20,
+    "nulo_max_mediana": 6.0,
+    "nulo_niveles_mediana": 92.0,
+    "nulo_3omas_mediana": 18.0,
+    "p_max": 0.01,
+    "p_3omas": 0.33
+   },
+   "fano": 9.769
+  },
+  {
+   "trade_date": 20260119,
+   "n_zonas": 22,
+   "n_ticks": 240928,
+   "volumen": 306040.0,
+   "rango_ticks": 190,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 90000,
+     "volumen": 112012.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 83149.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 32752.0
+    },
+    "rth_am": {
+     "ticks": 55000,
+     "volumen": 70517.0
+    },
+    "rth_pm": {
+     "ticks": 5928,
+     "volumen": 7610.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 9,
+    "europa": 6,
+    "premarket": 2,
+    "rth_am": 5
+   },
+   "solape": {
+    "n": 22,
+    "p25": 0.0,
+    "mediana": 1.0,
+    "p75": 1.0,
+    "media": 0.91
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 20,
+    "max_zonas_en_un_nivel": 2,
+    "niveles_con_3_o_mas": 0,
+    "nulo_max_mediana": 2.0,
+    "nulo_niveles_mediana": 21.0,
+    "nulo_3omas_mediana": 0.0,
+    "p_max": 0.79,
+    "p_3omas": 1.0
+   },
+   "fano": 1.346
+  },
+  {
+   "trade_date": 20260120,
+   "n_zonas": 261,
+   "n_ticks": 1532363,
+   "volumen": 2004248.0,
+   "rango_ticks": 377,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 80000,
+     "volumen": 95083.0
+    },
+    "europa": {
+     "ticks": 125000,
+     "volumen": 155883.0
+    },
+    "premarket": {
+     "ticks": 80000,
+     "volumen": 100890.0
+    },
+    "rth_am": {
+     "ticks": 595000,
+     "volumen": 733711.0
+    },
+    "rth_pm": {
+     "ticks": 620000,
+     "volumen": 863094.0
+    },
+    "cierre": {
+     "ticks": 32363,
+     "volumen": 55587.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 10,
+    "premarket": 13,
+    "rth_am": 61,
+    "rth_pm": 158,
+    "cierre": 12
+   },
+   "solape": {
+    "n": 261,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 8.0,
+    "media": 6.06
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 159,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 24,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 169.0,
+    "nulo_3omas_mediana": 21.0,
+    "p_max": 0.005,
+    "p_3omas": 0.215
+   },
+   "fano": 13.823
+  },
+  {
+   "trade_date": 20260121,
+   "n_zonas": 340,
+   "n_ticks": 1644987,
+   "volumen": 2130967.0,
+   "rango_ticks": 523,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 75000,
+     "volumen": 96889.0
+    },
+    "europa": {
+     "ticks": 75000,
+     "volumen": 100795.0
+    },
+    "premarket": {
+     "ticks": 120000,
+     "volumen": 158437.0
+    },
+    "rth_am": {
+     "ticks": 530000,
+     "volumen": 670665.0
+    },
+    "rth_pm": {
+     "ticks": 820000,
+     "volumen": 1064258.0
+    },
+    "cierre": {
+     "ticks": 24987,
+     "volumen": 39923.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 9,
+    "europa": 8,
+    "premarket": 38,
+    "rth_am": 75,
+    "rth_pm": 206,
+    "cierre": 4
+   },
+   "solape": {
+    "n": 340,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 7.0,
+    "media": 5.75
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 212,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 23,
+    "nulo_max_mediana": 6.0,
+    "nulo_niveles_mediana": 221.0,
+    "nulo_3omas_mediana": 27.0,
+    "p_max": 0.005,
+    "p_3omas": 0.9
+   },
+   "fano": 12.735
+  },
+  {
+   "trade_date": 20260122,
+   "n_zonas": 159,
+   "n_ticks": 970777,
+   "volumen": 1275534.0,
+   "rango_ticks": 231,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 73061.0
+    },
+    "europa": {
+     "ticks": 75000,
+     "volumen": 95292.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 52420.0
+    },
+    "rth_am": {
+     "ticks": 415000,
+     "volumen": 515873.0
+    },
+    "rth_pm": {
+     "ticks": 355000,
+     "volumen": 495303.0
+    },
+    "cierre": {
+     "ticks": 25777,
+     "volumen": 43585.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 9,
+    "premarket": 5,
+    "rth_am": 40,
+    "rth_pm": 91,
+    "cierre": 12
+   },
+   "solape": {
+    "n": 159,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 28.5,
+    "media": 14.57
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 76,
+    "max_zonas_en_un_nivel": 13,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 100.0,
+    "nulo_3omas_mediana": 13.0,
+    "p_max": 0.0,
+    "p_3omas": 0.665
+   },
+   "fano": 18.375
+  },
+  {
+   "trade_date": 20260123,
+   "n_zonas": 105,
+   "n_ticks": 876252,
+   "volumen": 1171405.0,
+   "rango_ticks": 157,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 50000,
+     "volumen": 62481.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 85867.0
+    },
+    "premarket": {
+     "ticks": 35000,
+     "volumen": 44026.0
+    },
+    "rth_am": {
+     "ticks": 330000,
+     "volumen": 421031.0
+    },
+    "rth_pm": {
+     "ticks": 375000,
+     "volumen": 519254.0
+    },
+    "cierre": {
+     "ticks": 21252,
+     "volumen": 38746.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 6,
+    "premarket": 3,
+    "rth_am": 30,
+    "rth_pm": 56,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 105,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 9.0,
+    "media": 4.91
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 54,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 14,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 72.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0
+   },
+   "fano": 7.481
+  },
+  {
+   "trade_date": 20260126,
+   "n_zonas": 107,
+   "n_ticks": 720022,
+   "volumen": 1004674.0,
+   "rango_ticks": 466,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 75000,
+     "volumen": 91759.0
+    },
+    "europa": {
+     "ticks": 50000,
+     "volumen": 63951.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 32037.0
+    },
+    "rth_am": {
+     "ticks": 295000,
+     "volumen": 394075.0
+    },
+    "rth_pm": {
+     "ticks": 255000,
+     "volumen": 386537.0
+    },
+    "cierre": {
+     "ticks": 20022,
+     "volumen": 36315.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 8,
+    "europa": 3,
+    "premarket": 1,
+    "rth_am": 23,
+    "rth_pm": 67,
+    "cierre": 5
+   },
+   "solape": {
+    "n": 107,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 23.0,
+    "media": 11.1
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 56,
+    "max_zonas_en_un_nivel": 13,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 76.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.0,
+    "p_3omas": 0.35
+   },
+   "fano": 18.278
+  },
+  {
+   "trade_date": 20260127,
+   "n_zonas": 96,
+   "n_ticks": 650087,
+   "volumen": 924049.0,
+   "rango_ticks": 186,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 50000,
+     "volumen": 62531.0
+    },
+    "europa": {
+     "ticks": 40000,
+     "volumen": 51157.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 32371.0
+    },
+    "rth_am": {
+     "ticks": 275000,
+     "volumen": 371118.0
+    },
+    "rth_pm": {
+     "ticks": 240000,
+     "volumen": 369843.0
+    },
+    "cierre": {
+     "ticks": 20087,
+     "volumen": 37029.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 3,
+    "rth_am": 31,
+    "rth_pm": 51,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 96,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 14.0,
+    "media": 7.52
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 44,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 12,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 63.0,
+    "nulo_3omas_mediana": 8.0,
+    "p_max": 0.0,
+    "p_3omas": 0.02
+   },
+   "fano": 12.325
+  },
+  {
+   "trade_date": 20260128,
+   "n_zonas": 116,
+   "n_ticks": 878075,
+   "volumen": 1143996.0,
+   "rango_ticks": 263,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 65000,
+     "volumen": 79784.0
+    },
+    "europa": {
+     "ticks": 50000,
+     "volumen": 63341.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 38492.0
+    },
+    "rth_am": {
+     "ticks": 310000,
+     "volumen": 389485.0
+    },
+    "rth_pm": {
+     "ticks": 370000,
+     "volumen": 492069.0
+    },
+    "cierre": {
+     "ticks": 53075,
+     "volumen": 80825.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 6,
+    "europa": 6,
+    "premarket": 4,
+    "rth_am": 30,
+    "rth_pm": 60,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 116,
+    "p25": 0.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 3.1
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 82,
+    "max_zonas_en_un_nivel": 5,
+    "niveles_con_3_o_mas": 4,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 80.0,
+    "nulo_3omas_mediana": 8.0,
+    "p_max": 0.35,
+    "p_3omas": 0.98
+   },
+   "fano": 7.771
+  },
+  {
+   "trade_date": 20260129,
+   "n_zonas": 241,
+   "n_ticks": 1441795,
+   "volumen": 1883552.0,
+   "rango_ticks": 525,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 80000,
+     "volumen": 95780.0
+    },
+    "europa": {
+     "ticks": 55000,
+     "volumen": 68670.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 38644.0
+    },
+    "rth_am": {
+     "ticks": 755000,
+     "volumen": 967682.0
+    },
+    "rth_pm": {
+     "ticks": 485000,
+     "volumen": 651008.0
+    },
+    "cierre": {
+     "ticks": 36795,
+     "volumen": 61768.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 3,
+    "premarket": 3,
+    "rth_am": 122,
+    "rth_pm": 98,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 241,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.35
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 169,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 15,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 183.0,
+    "nulo_3omas_mediana": 10.0,
+    "p_max": 0.0,
+    "p_3omas": 0.045
+   },
+   "fano": 12.111
+  },
+  {
+   "trade_date": 20260130,
+   "n_zonas": 195,
+   "n_ticks": 1551486,
+   "volumen": 1948966.0,
+   "rango_ticks": 310,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 115000,
+     "volumen": 141125.0
+    },
+    "europa": {
+     "ticks": 85000,
+     "volumen": 105426.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 48278.0
+    },
+    "rth_am": {
+     "ticks": 540000,
+     "volumen": 648382.0
+    },
+    "rth_pm": {
+     "ticks": 740000,
+     "volumen": 954854.0
+    },
+    "cierre": {
+     "ticks": 31486,
+     "volumen": 50901.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 14,
+    "europa": 6,
+    "premarket": 4,
+    "rth_am": 49,
+    "rth_pm": 107,
+    "cierre": 15
+   },
+   "solape": {
+    "n": 195,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 9.0,
+    "media": 5.01
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 110,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 23,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 127.0,
+    "nulo_3omas_mediana": 15.0,
+    "p_max": 0.26,
+    "p_3omas": 0.01
+   },
+   "fano": 14.049
+  },
+  {
+   "trade_date": 20260202,
+   "n_zonas": 155,
+   "n_ticks": 1106794,
+   "volumen": 1432908.0,
+   "rango_ticks": 611,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 190000,
+     "volumen": 226211.0
+    },
+    "europa": {
+     "ticks": 85000,
+     "volumen": 108843.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 48802.0
+    },
+    "rth_am": {
+     "ticks": 440000,
+     "volumen": 548923.0
+    },
+    "rth_pm": {
+     "ticks": 325000,
+     "volumen": 454878.0
+    },
+    "cierre": {
+     "ticks": 26794,
+     "volumen": 45251.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 25,
+    "europa": 6,
+    "premarket": 6,
+    "rth_am": 53,
+    "rth_pm": 59,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 155,
+    "p25": 0.0,
+    "mediana": 1.0,
+    "p75": 3.0,
+    "media": 3.83
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 107,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 9,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 120.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.005,
+    "p_3omas": 0.185
+   },
+   "fano": 6.082
+  },
+  {
+   "trade_date": 20260203,
+   "n_zonas": 187,
+   "n_ticks": 1466497,
+   "volumen": 1875777.0,
+   "rango_ticks": 564,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 55000,
+     "volumen": 66558.0
+    },
+    "europa": {
+     "ticks": 50000,
+     "volumen": 61459.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 32072.0
+    },
+    "rth_am": {
+     "ticks": 585000,
+     "volumen": 722432.0
+    },
+    "rth_pm": {
+     "ticks": 715000,
+     "volumen": 933508.0
+    },
+    "cierre": {
+     "ticks": 36497,
+     "volumen": 59748.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "rth_am": 66,
+    "rth_pm": 104,
+    "cierre": 13
+   },
+   "solape": {
+    "n": 187,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.2
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 138,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 9,
+    "nulo_max_mediana": 3.0,
+    "nulo_niveles_mediana": 150.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.0,
+    "p_3omas": 0.06
+   },
+   "fano": 6.668
+  },
+  {
+   "trade_date": 20260204,
+   "n_zonas": 173,
+   "n_ticks": 1675522,
+   "volumen": 2071144.0,
+   "rango_ticks": 413,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 71208.0
+    },
+    "europa": {
+     "ticks": 70000,
+     "volumen": 89189.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 51793.0
+    },
+    "rth_am": {
+     "ticks": 720000,
+     "volumen": 869957.0
+    },
+    "rth_pm": {
+     "ticks": 740000,
+     "volumen": 919252.0
+    },
+    "cierre": {
+     "ticks": 45522,
+     "volumen": 69745.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 4,
+    "premarket": 2,
+    "rth_am": 50,
+    "rth_pm": 107,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 173,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 6.0,
+    "media": 3.93
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 126,
+    "max_zonas_en_un_nivel": 4,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 135.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.585,
+    "p_3omas": 0.2
+   },
+   "fano": 6.297
+  },
+  {
+   "trade_date": 20260205,
+   "n_zonas": 170,
+   "n_ticks": 1672485,
+   "volumen": 2035337.0,
+   "rango_ticks": 601,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 95000,
+     "volumen": 111468.0
+    },
+    "europa": {
+     "ticks": 110000,
+     "volumen": 136993.0
+    },
+    "premarket": {
+     "ticks": 85000,
+     "volumen": 102695.0
+    },
+    "rth_am": {
+     "ticks": 800000,
+     "volumen": 942206.0
+    },
+    "rth_pm": {
+     "ticks": 515000,
+     "volumen": 649347.0
+    },
+    "cierre": {
+     "ticks": 67485,
+     "volumen": 92628.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 9,
+    "premarket": 12,
+    "rth_am": 73,
+    "rth_pm": 62,
+    "cierre": 13
+   },
+   "solape": {
+    "n": 170,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 3.71
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 120,
+    "max_zonas_en_un_nivel": 3,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 134.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 1.0,
+    "p_3omas": 0.0
+   },
+   "fano": 5.175
+  },
+  {
+   "trade_date": 20260206,
+   "n_zonas": 193,
+   "n_ticks": 1314115,
+   "volumen": 1714928.0,
+   "rango_ticks": 856,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 130000,
+     "volumen": 150782.0
+    },
+    "europa": {
+     "ticks": 110000,
+     "volumen": 140474.0
+    },
+    "premarket": {
+     "ticks": 50000,
+     "volumen": 62568.0
+    },
+    "rth_am": {
+     "ticks": 615000,
+     "volumen": 754361.0
+    },
+    "rth_pm": {
+     "ticks": 375000,
+     "volumen": 545893.0
+    },
+    "cierre": {
+     "ticks": 34115,
+     "volumen": 60850.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 12,
+    "premarket": 7,
+    "rth_am": 82,
+    "rth_pm": 71,
+    "cierre": 14
+   },
+   "solape": {
+    "n": 193,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 5.0,
+    "media": 3.34
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 138,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 158.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.02,
+    "p_3omas": 0.0
+   },
+   "fano": 9.262
+  },
+  {
+   "trade_date": 20260209,
+   "n_zonas": 98,
+   "n_ticks": 880088,
+   "volumen": 1139112.0,
+   "rango_ticks": 318,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 80000,
+     "volumen": 93229.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 80108.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 51151.0
+    },
+    "rth_am": {
+     "ticks": 370000,
+     "volumen": 457524.0
+    },
+    "rth_pm": {
+     "ticks": 305000,
+     "volumen": 422410.0
+    },
+    "cierre": {
+     "ticks": 20088,
+     "volumen": 34690.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 5,
+    "premarket": 7,
+    "rth_am": 32,
+    "rth_pm": 37,
+    "cierre": 13
+   },
+   "solape": {
+    "n": 98,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 2.96
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 65,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 9,
+    "nulo_max_mediana": 3.0,
+    "nulo_niveles_mediana": 80.0,
+    "nulo_3omas_mediana": 2.5,
+    "p_max": 0.01,
+    "p_3omas": 0.0
+   },
+   "fano": 5.592
+  },
+  {
+   "trade_date": 20260210,
+   "n_zonas": 131,
+   "n_ticks": 877218,
+   "volumen": 1136412.0,
+   "rango_ticks": 198,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 55000,
+     "volumen": 63518.0
+    },
+    "europa": {
+     "ticks": 45000,
+     "volumen": 52865.0
+    },
+    "premarket": {
+     "ticks": 35000,
+     "volumen": 44236.0
+    },
+    "rth_am": {
+     "ticks": 370000,
+     "volumen": 455583.0
+    },
+    "rth_pm": {
+     "ticks": 350000,
+     "volumen": 482916.0
+    },
+    "cierre": {
+     "ticks": 22218,
+     "volumen": 37294.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 4,
+    "rth_am": 49,
+    "rth_pm": 69,
+    "cierre": 9
+   },
+   "solape": {
+    "n": 131,
+    "p25": 2.0,
+    "mediana": 4.0,
+    "p75": 16.0,
+    "media": 8.9
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 73,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 12,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 88.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.0,
+    "p_3omas": 0.135
+   },
+   "fano": 12.032
+  },
+  {
+   "trade_date": 20260211,
+   "n_zonas": 168,
+   "n_ticks": 1131831,
+   "volumen": 1450676.0,
+   "rango_ticks": 322,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 40000,
+     "volumen": 46870.0
+    },
+    "europa": {
+     "ticks": 50000,
+     "volumen": 62846.0
+    },
+    "premarket": {
+     "ticks": 65000,
+     "volumen": 84305.0
+    },
+    "rth_am": {
+     "ticks": 565000,
+     "volumen": 705251.0
+    },
+    "rth_pm": {
+     "ticks": 390000,
+     "volumen": 518587.0
+    },
+    "cierre": {
+     "ticks": 21831,
+     "volumen": 32817.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 1,
+    "europa": 5,
+    "premarket": 14,
+    "rth_am": 76,
+    "rth_pm": 66,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 168,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.25,
+    "media": 2.98
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 100,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 113.0,
+    "nulo_3omas_mediana": 13.0,
+    "p_max": 0.0,
+    "p_3omas": 0.505
+   },
+   "fano": 8.815
+  },
+  {
+   "trade_date": 20260212,
+   "n_zonas": 283,
+   "n_ticks": 1526703,
+   "volumen": 1991326.0,
+   "rango_ticks": 603,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 71530.0
+    },
+    "europa": {
+     "ticks": 35000,
+     "volumen": 41204.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 38358.0
+    },
+    "rth_am": {
+     "ticks": 670000,
+     "volumen": 879793.0
+    },
+    "rth_pm": {
+     "ticks": 690000,
+     "volumen": 894779.0
+    },
+    "cierre": {
+     "ticks": 41703,
+     "volumen": 65662.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 4,
+    "premarket": 1,
+    "rth_am": 128,
+    "rth_pm": 137,
+    "cierre": 9
+   },
+   "solape": {
+    "n": 283,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 6.0,
+    "media": 6.29
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 184,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 20,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 190.5,
+    "nulo_3omas_mediana": 21.0,
+    "p_max": 0.01,
+    "p_3omas": 0.655
+   },
+   "fano": 8.886
+  },
+  {
+   "trade_date": 20260213,
+   "n_zonas": 238,
+   "n_ticks": 1379004,
+   "volumen": 1722320.0,
+   "rango_ticks": 356,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 95000,
+     "volumen": 117202.0
+    },
+    "europa": {
+     "ticks": 90000,
+     "volumen": 114714.0
+    },
+    "premarket": {
+     "ticks": 95000,
+     "volumen": 121056.0
+    },
+    "rth_am": {
+     "ticks": 635000,
+     "volumen": 761924.0
+    },
+    "rth_pm": {
+     "ticks": 440000,
+     "volumen": 569388.0
+    },
+    "cierre": {
+     "ticks": 24004,
+     "volumen": 38036.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 16,
+    "europa": 9,
+    "premarket": 31,
+    "rth_am": 126,
+    "rth_pm": 46,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 238,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 6.75,
+    "media": 4.19
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 135,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 23,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 154.0,
+    "nulo_3omas_mediana": 19.0,
+    "p_max": 0.065,
+    "p_3omas": 0.115
+   },
+   "fano": 6.035
+  },
+  {
+   "trade_date": 20260216,
+   "n_zonas": 8,
+   "n_ticks": 151394,
+   "volumen": 183127.0,
+   "rango_ticks": 178,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 53667.0
+    },
+    "europa": {
+     "ticks": 30000,
+     "volumen": 37437.0
+    },
+    "premarket": {
+     "ticks": 10000,
+     "volumen": 12092.0
+    },
+    "rth_am": {
+     "ticks": 60000,
+     "volumen": 72256.0
+    },
+    "rth_pm": {
+     "ticks": 6394,
+     "volumen": 7675.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 2,
+    "premarket": 1,
+    "rth_am": 5
+   },
+   "solape": {
+    "n": 8,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 1.0,
+    "media": 0.5
+   },
+   "fano": 1.712
+  },
+  {
+   "trade_date": 20260217,
+   "n_zonas": 177,
+   "n_ticks": 1293261,
+   "volumen": 1594399.0,
+   "rango_ticks": 371,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 80000,
+     "volumen": 97034.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 80430.0
+    },
+    "premarket": {
+     "ticks": 60000,
+     "volumen": 73219.0
+    },
+    "rth_am": {
+     "ticks": 595000,
+     "volumen": 717905.0
+    },
+    "rth_pm": {
+     "ticks": 465000,
+     "volumen": 584858.0
+    },
+    "cierre": {
+     "ticks": 28261,
+     "volumen": 40953.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 6,
+    "europa": 3,
+    "premarket": 9,
+    "rth_am": 85,
+    "rth_pm": 67,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 177,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.0,
+    "media": 2.84
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 129,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 10,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 134.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.005,
+    "p_3omas": 0.145
+   },
+   "fano": 7.148
+  },
+  {
+   "trade_date": 20260218,
+   "n_zonas": 161,
+   "n_ticks": 983510,
+   "volumen": 1281604.0,
+   "rango_ticks": 308,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 50000,
+     "volumen": 58374.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 84454.0
+    },
+    "premarket": {
+     "ticks": 35000,
+     "volumen": 45819.0
+    },
+    "rth_am": {
+     "ticks": 390000,
+     "volumen": 501382.0
+    },
+    "rth_pm": {
+     "ticks": 425000,
+     "volumen": 561876.0
+    },
+    "cierre": {
+     "ticks": 18510,
+     "volumen": 29699.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 12,
+    "premarket": 2,
+    "rth_am": 57,
+    "rth_pm": 83,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 161,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 9.0,
+    "media": 4.91
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 92,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 15,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 115.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.005,
+    "p_3omas": 0.01
+   },
+   "fano": 11.684
+  },
+  {
+   "trade_date": 20260219,
+   "n_zonas": 133,
+   "n_ticks": 976821,
+   "volumen": 1233670.0,
+   "rango_ticks": 259,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 45000,
+     "volumen": 53236.0
+    },
+    "europa": {
+     "ticks": 70000,
+     "volumen": 91087.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 52056.0
+    },
+    "rth_am": {
+     "ticks": 425000,
+     "volumen": 519367.0
+    },
+    "rth_pm": {
+     "ticks": 370000,
+     "volumen": 473875.0
+    },
+    "cierre": {
+     "ticks": 26821,
+     "volumen": 44049.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 15,
+    "premarket": 5,
+    "rth_am": 53,
+    "rth_pm": 45,
+    "cierre": 15
+   },
+   "solape": {
+    "n": 133,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 8.0,
+    "media": 5.88
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 71,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 16,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 91.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.0,
+    "p_3omas": 0.01
+   },
+   "fano": 7.754
+  },
+  {
+   "trade_date": 20260220,
+   "n_zonas": 218,
+   "n_ticks": 1356906,
+   "volumen": 1735026.0,
+   "rango_ticks": 337,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 50000,
+     "volumen": 58931.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 81709.0
+    },
+    "premarket": {
+     "ticks": 55000,
+     "volumen": 69499.0
+    },
+    "rth_am": {
+     "ticks": 595000,
+     "volumen": 744042.0
+    },
+    "rth_pm": {
+     "ticks": 565000,
+     "volumen": 734158.0
+    },
+    "cierre": {
+     "ticks": 26906,
+     "volumen": 46687.0
+    }
+   },
+   "zonas_por_fase": {
+    "europa": 1,
+    "premarket": 6,
+    "rth_am": 77,
+    "rth_pm": 125,
+    "cierre": 9
+   },
+   "solape": {
+    "n": 218,
+    "p25": 2.0,
+    "mediana": 4.0,
+    "p75": 5.0,
+    "media": 3.9
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 132,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 21,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 146.0,
+    "nulo_3omas_mediana": 15.0,
+    "p_max": 0.065,
+    "p_3omas": 0.025
+   },
+   "fano": 6.92
+  },
+  {
+   "trade_date": 20260223,
+   "n_zonas": 148,
+   "n_ticks": 1090427,
+   "volumen": 1408521.0,
+   "rango_ticks": 390,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 85000,
+     "volumen": 101766.0
+    },
+    "europa": {
+     "ticks": 60000,
+     "volumen": 74700.0
+    },
+    "premarket": {
+     "ticks": 30000,
+     "volumen": 41063.0
+    },
+    "rth_am": {
+     "ticks": 505000,
+     "volumen": 637950.0
+    },
+    "rth_pm": {
+     "ticks": 385000,
+     "volumen": 508408.0
+    },
+    "cierre": {
+     "ticks": 25427,
+     "volumen": 44634.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 10,
+    "premarket": 5,
+    "rth_am": 63,
+    "rth_pm": 58,
+    "cierre": 10
+   },
+   "solape": {
+    "n": 148,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 3.58
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 97,
+    "max_zonas_en_un_nivel": 10,
+    "niveles_con_3_o_mas": 14,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 114.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.0,
+    "p_3omas": 0.0
+   },
+   "fano": 11.523
+  },
+  {
+   "trade_date": 20260224,
+   "n_zonas": 136,
+   "n_ticks": 947874,
+   "volumen": 1276043.0,
+   "rango_ticks": 337,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 71863.0
+    },
+    "europa": {
+     "ticks": 60000,
+     "volumen": 72708.0
+    },
+    "premarket": {
+     "ticks": 40000,
+     "volumen": 51032.0
+    },
+    "rth_am": {
+     "ticks": 445000,
+     "volumen": 585523.0
+    },
+    "rth_pm": {
+     "ticks": 325000,
+     "volumen": 464799.0
+    },
+    "cierre": {
+     "ticks": 17874,
+     "volumen": 30118.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "europa": 4,
+    "premarket": 4,
+    "rth_am": 65,
+    "rth_pm": 57,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 136,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 3.0,
+    "media": 2.91
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 95,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 7,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 101.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.005,
+    "p_3omas": 0.515
+   },
+   "fano": 5.928
+  },
+  {
+   "trade_date": 20260225,
+   "n_zonas": 131,
+   "n_ticks": 718873,
+   "volumen": 997890.0,
+   "rango_ticks": 366,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 55000,
+     "volumen": 65283.0
+    },
+    "europa": {
+     "ticks": 40000,
+     "volumen": 50357.0
+    },
+    "premarket": {
+     "ticks": 35000,
+     "volumen": 47296.0
+    },
+    "rth_am": {
+     "ticks": 310000,
+     "volumen": 413866.0
+    },
+    "rth_pm": {
+     "ticks": 240000,
+     "volumen": 359877.0
+    },
+    "cierre": {
+     "ticks": 38873,
+     "volumen": 61211.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 4,
+    "europa": 4,
+    "premarket": 9,
+    "rth_am": 32,
+    "rth_pm": 76,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 131,
+    "p25": 2.0,
+    "mediana": 4.0,
+    "p75": 9.5,
+    "media": 6.46
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 76,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 92.0,
+    "nulo_3omas_mediana": 8.0,
+    "p_max": 0.025,
+    "p_3omas": 0.045
+   },
+   "fano": 11.896
+  },
+  {
+   "trade_date": 20260226,
+   "n_zonas": 191,
+   "n_ticks": 1121154,
+   "volumen": 1488449.0,
+   "rango_ticks": 400,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 60000,
+     "volumen": 71840.0
+    },
+    "europa": {
+     "ticks": 35000,
+     "volumen": 44146.0
+    },
+    "premarket": {
+     "ticks": 25000,
+     "volumen": 33309.0
+    },
+    "rth_am": {
+     "ticks": 570000,
+     "volumen": 745011.0
+    },
+    "rth_pm": {
+     "ticks": 405000,
+     "volumen": 551045.0
+    },
+    "cierre": {
+     "ticks": 26154,
+     "volumen": 43098.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 1,
+    "premarket": 5,
+    "rth_am": 89,
+    "rth_pm": 91,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 191,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 4.26
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 135,
+    "max_zonas_en_un_nivel": 13,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 140.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.0,
+    "p_3omas": 0.8
+   },
+   "fano": 8.889
+  },
+  {
+   "trade_date": 20260227,
+   "n_zonas": 197,
+   "n_ticks": 1165205,
+   "volumen": 1572689.0,
+   "rango_ticks": 296,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 65000,
+     "volumen": 77686.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 81788.0
+    },
+    "premarket": {
+     "ticks": 70000,
+     "volumen": 89097.0
+    },
+    "rth_am": {
+     "ticks": 435000,
+     "volumen": 548533.0
+    },
+    "rth_pm": {
+     "ticks": 485000,
+     "volumen": 700637.0
+    },
+    "cierre": {
+     "ticks": 45205,
+     "volumen": 74948.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "europa": 11,
+    "premarket": 10,
+    "rth_am": 45,
+    "rth_pm": 113,
+    "cierre": 15
+   },
+   "solape": {
+    "n": 197,
+    "p25": 1.0,
+    "mediana": 4.0,
+    "p75": 16.0,
+    "media": 9.21
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 107,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 17,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 119.0,
+    "nulo_3omas_mediana": 18.0,
+    "p_max": 0.0,
+    "p_3omas": 0.765
+   },
+   "fano": 23.796
+  },
+  {
+   "trade_date": 20260302,
+   "n_zonas": 224,
+   "n_ticks": 1368262,
+   "volumen": 1772995.0,
+   "rango_ticks": 571,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 180000,
+     "volumen": 224641.0
+    },
+    "europa": {
+     "ticks": 130000,
+     "volumen": 165495.0
+    },
+    "premarket": {
+     "ticks": 60000,
+     "volumen": 78286.0
+    },
+    "rth_am": {
+     "ticks": 520000,
+     "volumen": 663723.0
+    },
+    "rth_pm": {
+     "ticks": 445000,
+     "volumen": 591179.0
+    },
+    "cierre": {
+     "ticks": 33262,
+     "volumen": 49671.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 24,
+    "europa": 19,
+    "premarket": 8,
+    "rth_am": 72,
+    "rth_pm": 98,
+    "cierre": 3
+   },
+   "solape": {
+    "n": 224,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.25,
+    "media": 5.21
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 144,
+    "max_zonas_en_un_nivel": 9,
+    "niveles_con_3_o_mas": 15,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 170.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.0,
+    "p_3omas": 0.035
+   },
+   "fano": 9.004
+  },
+  {
+   "trade_date": 20260303,
+   "n_zonas": 266,
+   "n_ticks": 1762982,
+   "volumen": 2184811.0,
+   "rango_ticks": 669,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 120000,
+     "volumen": 143908.0
+    },
+    "europa": {
+     "ticks": 215000,
+     "volumen": 265057.0
+    },
+    "premarket": {
+     "ticks": 90000,
+     "volumen": 109577.0
+    },
+    "rth_am": {
+     "ticks": 710000,
+     "volumen": 863455.0
+    },
+    "rth_pm": {
+     "ticks": 600000,
+     "volumen": 762465.0
+    },
+    "cierre": {
+     "ticks": 27982,
+     "volumen": 40349.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 15,
+    "europa": 36,
+    "premarket": 11,
+    "rth_am": 106,
+    "rth_pm": 90,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 266,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 3.47
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 189,
+    "max_zonas_en_un_nivel": 5,
+    "niveles_con_3_o_mas": 12,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 203.0,
+    "nulo_3omas_mediana": 10.0,
+    "p_max": 0.285,
+    "p_3omas": 0.33
+   },
+   "fano": 4.282
+  },
+  {
+   "trade_date": 20260304,
+   "n_zonas": 160,
+   "n_ticks": 1146117,
+   "volumen": 1492458.0,
+   "rango_ticks": 482,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 145000,
+     "volumen": 162513.0
+    },
+    "europa": {
+     "ticks": 145000,
+     "volumen": 171901.0
+    },
+    "premarket": {
+     "ticks": 75000,
+     "volumen": 94145.0
+    },
+    "rth_am": {
+     "ticks": 435000,
+     "volumen": 558892.0
+    },
+    "rth_pm": {
+     "ticks": 315000,
+     "volumen": 452890.0
+    },
+    "cierre": {
+     "ticks": 31117,
+     "volumen": 52117.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "europa": 9,
+    "premarket": 20,
+    "rth_am": 57,
+    "rth_pm": 64,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 160,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 7.0,
+    "media": 4.36
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 109,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 8,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 123.0,
+    "nulo_3omas_mediana": 6.0,
+    "p_max": 0.04,
+    "p_3omas": 0.31
+   },
+   "fano": 7.788
+  },
+  {
+   "trade_date": 20260305,
+   "n_zonas": 181,
+   "n_ticks": 1462393,
+   "volumen": 1823025.0,
+   "rango_ticks": 495,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 110000,
+     "volumen": 131447.0
+    },
+    "europa": {
+     "ticks": 105000,
+     "volumen": 129547.0
+    },
+    "premarket": {
+     "ticks": 60000,
+     "volumen": 73645.0
+    },
+    "rth_am": {
+     "ticks": 495000,
+     "volumen": 602349.0
+    },
+    "rth_pm": {
+     "ticks": 665000,
+     "volumen": 842896.0
+    },
+    "cierre": {
+     "ticks": 27393,
+     "volumen": 43141.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 15,
+    "premarket": 8,
+    "rth_am": 50,
+    "rth_pm": 95,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 181,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 2.62
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 131,
+    "max_zonas_en_un_nivel": 4,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 142.0,
+    "nulo_3omas_mediana": 5.0,
+    "p_max": 0.595,
+    "p_3omas": 0.0
+   },
+   "fano": 4.629
+  },
+  {
+   "trade_date": 20260306,
+   "n_zonas": 186,
+   "n_ticks": 1440977,
+   "volumen": 1819079.0,
+   "rango_ticks": 553,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 65000,
+     "volumen": 74984.0
+    },
+    "europa": {
+     "ticks": 120000,
+     "volumen": 148457.0
+    },
+    "premarket": {
+     "ticks": 135000,
+     "volumen": 166053.0
+    },
+    "rth_am": {
+     "ticks": 550000,
+     "volumen": 680749.0
+    },
+    "rth_pm": {
+     "ticks": 525000,
+     "volumen": 676109.0
+    },
+    "cierre": {
+     "ticks": 45977,
+     "volumen": 72727.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 3,
+    "europa": 9,
+    "premarket": 21,
+    "rth_am": 55,
+    "rth_pm": 85,
+    "cierre": 13
+   },
+   "solape": {
+    "n": 186,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 4.0,
+    "media": 3.12
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 123,
+    "max_zonas_en_un_nivel": 5,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 136.0,
+    "nulo_3omas_mediana": 10.0,
+    "p_max": 0.39,
+    "p_3omas": 0.16
+   },
+   "fano": 6.198
+  },
+  {
+   "trade_date": 20260309,
+   "n_zonas": 305,
+   "n_ticks": 1691839,
+   "volumen": 2156384.0,
+   "rango_ticks": 936,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 240000,
+     "volumen": 299860.0
+    },
+    "europa": {
+     "ticks": 175000,
+     "volumen": 220926.0
+    },
+    "premarket": {
+     "ticks": 70000,
+     "volumen": 85680.0
+    },
+    "rth_am": {
+     "ticks": 510000,
+     "volumen": 631317.0
+    },
+    "rth_pm": {
+     "ticks": 640000,
+     "volumen": 836006.0
+    },
+    "cierre": {
+     "ticks": 56839,
+     "volumen": 82595.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 29,
+    "europa": 17,
+    "premarket": 6,
+    "rth_am": 102,
+    "rth_pm": 140,
+    "cierre": 11
+   },
+   "solape": {
+    "n": 305,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 5.0,
+    "media": 4.34
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 230,
+    "max_zonas_en_un_nivel": 5,
+    "niveles_con_3_o_mas": 13,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 242.0,
+    "nulo_3omas_mediana": 9.0,
+    "p_max": 0.155,
+    "p_3omas": 0.13
+   },
+   "fano": 7.094
+  },
+  {
+   "trade_date": 20260310,
+   "n_zonas": 228,
+   "n_ticks": 1455980,
+   "volumen": 1811047.0,
+   "rango_ticks": 358,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 110000,
+     "volumen": 124222.0
+    },
+    "europa": {
+     "ticks": 140000,
+     "volumen": 166154.0
+    },
+    "premarket": {
+     "ticks": 65000,
+     "volumen": 79729.0
+    },
+    "rth_am": {
+     "ticks": 440000,
+     "volumen": 552136.0
+    },
+    "rth_pm": {
+     "ticks": 670000,
+     "volumen": 843380.0
+    },
+    "cierre": {
+     "ticks": 30980,
+     "volumen": 45426.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 10,
+    "premarket": 11,
+    "rth_am": 61,
+    "rth_pm": 137,
+    "cierre": 7
+   },
+   "solape": {
+    "n": 228,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.63
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 144,
+    "max_zonas_en_un_nivel": 7,
+    "niveles_con_3_o_mas": 16,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 158.0,
+    "nulo_3omas_mediana": 14.0,
+    "p_max": 0.015,
+    "p_3omas": 0.295
+   },
+   "fano": 7.437
+  },
+  {
+   "trade_date": 20260311,
+   "n_zonas": 152,
+   "n_ticks": 1184219,
+   "volumen": 1508802.0,
+   "rango_ticks": 291,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 65000,
+     "volumen": 79825.0
+    },
+    "europa": {
+     "ticks": 100000,
+     "volumen": 126054.0
+    },
+    "premarket": {
+     "ticks": 65000,
+     "volumen": 82043.0
+    },
+    "rth_am": {
+     "ticks": 500000,
+     "volumen": 617034.0
+    },
+    "rth_pm": {
+     "ticks": 430000,
+     "volumen": 562101.0
+    },
+    "cierre": {
+     "ticks": 24219,
+     "volumen": 41745.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 7,
+    "premarket": 7,
+    "rth_am": 66,
+    "rth_pm": 59,
+    "cierre": 6
+   },
+   "solape": {
+    "n": 152,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 5.0,
+    "media": 4.5
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 103,
+    "max_zonas_en_un_nivel": 14,
+    "niveles_con_3_o_mas": 9,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 109.0,
+    "nulo_3omas_mediana": 8.5,
+    "p_max": 0.0,
+    "p_3omas": 0.5
+   },
+   "fano": 5.624
+  },
+  {
+   "trade_date": 20260312,
+   "n_zonas": 246,
+   "n_ticks": 1404444,
+   "volumen": 1828485.0,
+   "rango_ticks": 391,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 120000,
+     "volumen": 149498.0
+    },
+    "europa": {
+     "ticks": 85000,
+     "volumen": 108271.0
+    },
+    "premarket": {
+     "ticks": 60000,
+     "volumen": 77342.0
+    },
+    "rth_am": {
+     "ticks": 560000,
+     "volumen": 726289.0
+    },
+    "rth_pm": {
+     "ticks": 545000,
+     "volumen": 711584.0
+    },
+    "cierre": {
+     "ticks": 34444,
+     "volumen": 55501.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 13,
+    "europa": 3,
+    "premarket": 6,
+    "rth_am": 102,
+    "rth_pm": 105,
+    "cierre": 17
+   },
+   "solape": {
+    "n": 246,
+    "p25": 1.0,
+    "mediana": 3.0,
+    "p75": 5.0,
+    "media": 4.08
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 142,
+    "max_zonas_en_un_nivel": 6,
+    "niveles_con_3_o_mas": 23,
+    "nulo_max_mediana": 5.0,
+    "nulo_niveles_mediana": 155.5,
+    "nulo_3omas_mediana": 22.0,
+    "p_max": 0.31,
+    "p_3omas": 0.395
+   },
+   "fano": 6.577
+  },
+  {
+   "trade_date": 20260313,
+   "n_zonas": 188,
+   "n_ticks": 1288959,
+   "volumen": 1741441.0,
+   "rango_ticks": 450,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 75000,
+     "volumen": 90712.0
+    },
+    "europa": {
+     "ticks": 115000,
+     "volumen": 149741.0
+    },
+    "premarket": {
+     "ticks": 65000,
+     "volumen": 82774.0
+    },
+    "rth_am": {
+     "ticks": 525000,
+     "volumen": 713263.0
+    },
+    "rth_pm": {
+     "ticks": 480000,
+     "volumen": 660924.0
+    },
+    "cierre": {
+     "ticks": 28959,
+     "volumen": 44027.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 2,
+    "europa": 14,
+    "premarket": 4,
+    "rth_am": 79,
+    "rth_pm": 81,
+    "cierre": 8
+   },
+   "solape": {
+    "n": 188,
+    "p25": 1.0,
+    "mediana": 2.0,
+    "p75": 7.0,
+    "media": 5.11
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 129,
+    "max_zonas_en_un_nivel": 8,
+    "niveles_con_3_o_mas": 11,
+    "nulo_max_mediana": 4.0,
+    "nulo_niveles_mediana": 144.0,
+    "nulo_3omas_mediana": 7.0,
+    "p_max": 0.0,
+    "p_3omas": 0.105
+   },
+   "fano": 8.069
+  },
+  {
+   "trade_date": 20260316,
+   "n_zonas": 60,
+   "n_ticks": 670694,
+   "volumen": 798836.0,
+   "rango_ticks": 503,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 80000,
+     "volumen": 94541.0
+    },
+    "europa": {
+     "ticks": 65000,
+     "volumen": 75606.0
+    },
+    "premarket": {
+     "ticks": 35000,
+     "volumen": 42180.0
+    },
+    "rth_am": {
+     "ticks": 235000,
+     "volumen": 274000.0
+    },
+    "rth_pm": {
+     "ticks": 240000,
+     "volumen": 291447.0
+    },
+    "cierre": {
+     "ticks": 15694,
+     "volumen": 21062.0
+    }
+   },
+   "zonas_por_fase": {
+    "asia": 7,
+    "europa": 6,
+    "premarket": 3,
+    "rth_am": 21,
+    "rth_pm": 21,
+    "cierre": 2
+   },
+   "solape": {
+    "n": 60,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 2.0,
+    "media": 1.27
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 46,
+    "max_zonas_en_un_nivel": 4,
+    "niveles_con_3_o_mas": 2,
+    "nulo_max_mediana": 3.0,
+    "nulo_niveles_mediana": 52.0,
+    "nulo_3omas_mediana": 1.0,
+    "p_max": 0.115,
+    "p_3omas": 0.255
+   },
+   "fano": 2.04
+  },
+  {
+   "trade_date": 20260317,
+   "n_zonas": 9,
+   "n_ticks": 196270,
+   "volumen": 239069.0,
+   "rango_ticks": 369,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 25000,
+     "volumen": 28208.0
+    },
+    "europa": {
+     "ticks": 25000,
+     "volumen": 29094.0
+    },
+    "premarket": {
+     "ticks": 15000,
+     "volumen": 18437.0
+    },
+    "rth_am": {
+     "ticks": 65000,
+     "volumen": 78640.0
+    },
+    "rth_pm": {
+     "ticks": 60000,
+     "volumen": 75050.0
+    },
+    "cierre": {
+     "ticks": 6270,
+     "volumen": 9640.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 1,
+    "rth_am": 2,
+    "rth_pm": 6
+   },
+   "solape": {
+    "n": 9,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 3.0,
+    "media": 1.33
+   },
+   "fano": 4.299
+  },
+  {
+   "trade_date": 20260318,
+   "n_zonas": 15,
+   "n_ticks": 172634,
+   "volumen": 205542.0,
+   "rango_ticks": 633,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 15000,
+     "volumen": 16946.0
+    },
+    "europa": {
+     "ticks": 15000,
+     "volumen": 17153.0
+    },
+    "premarket": {
+     "ticks": 20000,
+     "volumen": 23376.0
+    },
+    "rth_am": {
+     "ticks": 45000,
+     "volumen": 52575.0
+    },
+    "rth_pm": {
+     "ticks": 70000,
+     "volumen": 86141.0
+    },
+    "cierre": {
+     "ticks": 7634,
+     "volumen": 9351.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 1,
+    "rth_pm": 12,
+    "cierre": 2
+   },
+   "solape": {
+    "n": 15,
+    "p25": 3.0,
+    "mediana": 5.0,
+    "p75": 6.0,
+    "media": 4.0
+   },
+   "memoria_nivel": {
+    "niveles_distintos": 11,
+    "max_zonas_en_un_nivel": 4,
+    "niveles_con_3_o_mas": 1,
+    "nulo_max_mediana": 1.0,
+    "nulo_niveles_mediana": 15.0,
+    "nulo_3omas_mediana": 0.0,
+    "p_max": 0.0,
+    "p_3omas": 0.005
+   },
+   "fano": 3.343
+  },
+  {
+   "trade_date": 20260319,
+   "n_zonas": 4,
+   "n_ticks": 202503,
+   "volumen": 227885.0,
+   "rango_ticks": 331,
+   "actividad_por_fase": {
+    "asia": {
+     "ticks": 20000,
+     "volumen": 21889.0
+    },
+    "europa": {
+     "ticks": 25000,
+     "volumen": 26728.0
+    },
+    "premarket": {
+     "ticks": 15000,
+     "volumen": 17831.0
+    },
+    "rth_am": {
+     "ticks": 65000,
+     "volumen": 72676.0
+    },
+    "rth_pm": {
+     "ticks": 75000,
+     "volumen": 85072.0
+    },
+    "cierre": {
+     "ticks": 2503,
+     "volumen": 3689.0
+    }
+   },
+   "zonas_por_fase": {
+    "premarket": 1,
+    "rth_am": 1,
+    "rth_pm": 2
+   },
+   "solape": {
+    "n": 4,
+    "p25": 0.0,
+    "mediana": 0.0,
+    "p75": 0.0,
+    "media": 0.0
+   },
+   "fano": 0.985
+  }
+ ],
+ "n_sesiones_detalle": 62
+}

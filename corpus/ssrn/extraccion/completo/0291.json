@@ -1,0 +1,174 @@
+{
+  "titulo": "Regime-Aware Statistical Arbitrage: Rolling Cointegration with Dynamic Volatility Targeting in the S&P 100",
+  "resumen_operativo": "Presenta ARCANA, un framework de arbitraje estadistico regime-aware sobre el S&P 100 (2013-2025). Usa cointegracion rolling de 3 anos sobre log-precios restringida a pares del mismo sector GICS, con Hidden Markov Model de 3 estados (Bull/Neutral/Crisis) para escalar posiciones y volatility targeting dinamico. Resultado neto: Sharpe 2.534, retorno anualizado 17.35%, volatilidad 6.85%, max DD -5.33%, beta ~0.009. Rentable en los 13 anos calendario, incluyendo COVID-19 y crisis de tasas 2022. Sharpe OOS (2021-2025) de 2.998 supera al in-sample de 2.722.",
+  "calidad_paper": "alta",
+  "conceptos": [
+    {
+      "nombre": "Rolling Cointegration (Log-Price)",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Cointegracion Engle-Granger sobre log-precios con ventana rolling de 3 anos; evita spurious regression de residuals acumulados y actualiza pares anualmente.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Factor Model Residuals"
+        },
+        {
+          "tipo": "APLICA_A",
+          "objeto": "Pairs Trading"
+        }
+      ],
+      "cita_textual": "Performing cointegration on log prices rather than on cumulated factor model residuals avoids the spurious regression bias"
+    },
+    {
+      "nombre": "Hidden Markov Model (HMM) Regime Detection",
+      "tipo": "metodo",
+      "definicion_en_contexto": "HMM Gaussiano de 3 estados (Bull/Neutral/Crisis) estimado sobre retornos de SPY y volatilidad realizada de 20 dias; escala posiciones 100%/70%/0%.",
+      "relaciones": [
+        {
+          "tipo": "USA",
+          "objeto": "Regime-Aware Position Sizing"
+        }
+      ],
+      "cita_textual": "a three-state Gaussian Hidden Markov Model estimated on SPY returns and realised volatility"
+    },
+    {
+      "nombre": "Dynamic Volatility Targeting",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Escala posiciones diariamente para targeting de 10% volatilidad anual basado en volatilidad realizada de 60 dias del portafolio, con cap en 3.0x.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Volatility Risk"
+        },
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Risk Management"
+        }
+      ],
+      "cita_textual": "a dynamic volatility targeting overlay scales the overall position size daily based on the 60-day realised portfolio volatility"
+    },
+    {
+      "nombre": "Quality Score (R2/Half-Life)",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Score de seleccion de pares: ratio entre R-cuadrado del fit OU y la half-life estimada; selecciona top 10 pares anuales.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Pair Quality"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Ornstein-Uhlenbeck Filtering"
+        }
+      ],
+      "cita_textual": "the ten pairs with the highest quality score, defined as the ratio of R-squared to half-life"
+    },
+    {
+      "nombre": "Sector-Constrained Pair Universe",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Restriccion de pares al mismo sector GICS (8 sectores); reduce universo de ~4,950 a 675 pares con justificacion economica explicita.",
+      "relaciones": [
+        {
+          "tipo": "MEJORA_A",
+          "objeto": "Unrestricted Pair Selection"
+        }
+      ],
+      "cita_textual": "the economic rationale for a long-run pricing relationship is explicit before any statistical testing takes place"
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck Half-Life Filter",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Filtro de pares por half-life entre 5 y 80 dias y R2 del AR(1) >0.05; asegura reversion significativa pero no instantanea.",
+      "relaciones": [
+        {
+          "tipo": "REQUIERE",
+          "objeto": "Pair Selection"
+        },
+        {
+          "tipo": "USA",
+          "objeto": "Ornstein-Uhlenbeck Process"
+        }
+      ],
+      "cita_textual": "Pairs are retained only if this half-life falls within the range of 5 to 80 calendar days"
+    },
+    {
+      "nombre": "Rolling Z-Score Entry/Exit",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Z-score rolling de 60 dias: entrada long spread si Z_t > 2.0, cierre si |Z_t| < 0.5; stop-loss si |Z| > 4.0.",
+      "relaciones": [
+        {
+          "tipo": "PARTE_DE",
+          "objeto": "Pairs Trading"
+        }
+      ],
+      "cita_textual": "A long position in the spread is opened when Z_t exceeds 2.0 and closed when Z_t falls below 0.5 in absolute value"
+    },
+    {
+      "nombre": "Newey-West Robust t-test",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Test estadistico con correccion HAC (5 lags) para evaluar significancia del retorno controlando correlacion serial; t=9.454, p<0.001.",
+      "relaciones": [
+        {
+          "tipo": "MIDE",
+          "objeto": "Statistical Significance"
+        }
+      ],
+      "cita_textual": "The Newey-West corrected t-statistic of 9.454 confirms statistical significance at the 1 percent level"
+    },
+    {
+      "nombre": "Walk-Forward Backtesting",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Diseno estrictamente out-of-sample: pares, hedge ratios y parametros OU se reestiman anualmente con datos solo hasta el 31-dic del ano anterior.",
+      "relaciones": [
+        {
+          "tipo": "MITIGA",
+          "objeto": "Data Snooping"
+        }
+      ],
+      "cita_textual": "The walk-forward design ensures that no future information contaminates the pair selection or signal generation"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "Net Sharpe 2.534, retorno anualizado 17.35%, volatilidad 6.85%, max DD -5.33%, beta 0.009 (2013-2025, neto de costos 5-15bps/side).",
+      "mercado": "S&P 100 constituents",
+      "periodo": "Enero 2013 a Diciembre 2025",
+      "magnitud": "Sharpe 2.534, return 17.35%/yr, vol 6.85%, max DD -5.33%, cumulative +821.5%",
+      "condiciones": "Neto de transaction costs (2.58% anual drag) y risk controls (0.03% drag)",
+      "robustez": "alta",
+      "cita_textual": "the net strategy delivers 17.35 percent annualised return at 6.85 percent volatility, producing a Sharpe ratio of 2.534"
+    },
+    {
+      "afirmacion": "Retornos positivos en los 13 anos calendario; minimo 1.3% en 2022 (Crisis), maximo 35.7% en 2013 (Bull).",
+      "mercado": "S&P 100",
+      "periodo": "2013-2025 (anual)",
+      "magnitud": "Min: +1.3% (2022 Crisis); Max: +35.7% (2013 Bull)",
+      "condiciones": "HMM regime gating evito entradas durante COVID y crisis de tasas",
+      "robustez": "alta",
+      "cita_textual": "The strategy generates positive returns in all 13 calendar years without exception"
+    },
+    {
+      "afirmacion": "Sharpe OOS (2021-2025) = 2.998 supera al in-sample (2013-2020) = 2.722; alpha decay 29.1% dentro del umbral de robustez (<30%).",
+      "mercado": "S&P 100",
+      "periodo": "IS: 2013-2020; OOS: 2021-2025",
+      "magnitud": "OOS Sharpe 2.998 vs IS 2.722; alpha decay 29.1%",
+      "condiciones": "Newey-West t-stats: IS=7.124, OOS=6.371, ambos p<0.001",
+      "robustez": "alta",
+      "cita_textual": "The out-of-sample Sharpe ratio of 2.998 exceeds the in-sample estimate of 2.722"
+    },
+    {
+      "afirmacion": "Durbin-Watson = 2.012 confirma ausencia de autocorrelacion en retornos diarios; Ljung-Box Q-test no rechaza H0 de no autocorrelacion en lags 5, 10, 20.",
+      "mercado": "S&P 100",
+      "periodo": "2013-2025 (2,663 trading days)",
+      "magnitud": "DW=2.012; Q(20)=23.656, p=0.258",
+      "condiciones": "Tests aplicados a serie de retornos diarios netos",
+      "robustez": "alta",
+      "cita_textual": "a Durbin-Watson statistic of 2.012 confirms that the Sharpe ratio is not inflated by return autocorrelation"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "Usa datos diarios; el framework de HMM regime detection y rolling cointegration es adaptable a frecuencias intradia con ajustes de parametros."
+  },
+  "doc_id": 291
+}

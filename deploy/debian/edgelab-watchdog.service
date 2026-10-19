@@ -1,0 +1,13 @@
+[Unit]
+Description=EdgeLab: vigilante externo del autopilot (latido, unidades fallidas, envíos inciertos)
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+EnvironmentFile=-/etc/edgelab/autopilot.env
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_watchdog.py --state /var/lib/edgelab-autopilot/state/autopilot_runs --max-latido 3600
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/edgelab-autopilot

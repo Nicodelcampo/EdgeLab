@@ -1,0 +1,163 @@
+{
+  "scope": "TWO_PRIVATE_GC_EXAMPLES_MECHANISTIC_FEASIBILITY_ONLY",
+  "config": {
+    "trade_window_us": 2000000,
+    "refill_window_us": 5000000,
+    "refill_min_ratio": 0.7,
+    "bootstrap_us": 60000000
+  },
+  "plan_sha256": "e46d0008edea119fee433901ddb0acf326f0fe01b85040e25ac3363df060d0ce",
+  "code_sha256": "58cff7065bb48cece561553ed3971f299bba36182a200237909122c9626376ea",
+  "book_module_sha256": "a65e377ecc7e6b59b92c0c0c6bedd8b1c1aee7c41c142addb0dfeb01b588c891",
+  "dataset_version": 2,
+  "source": "nicolasbuttaro/edgelab-l2-gc-bookmap-audit-20260921",
+  "absolute_clock_certified": false,
+  "new_returns_or_pnl": false,
+  "sessions": {
+    "20260531": {
+      "input_qa": {
+        "l1_quotes": {
+          "rows": 295968,
+          "sha256": "2a941209c88f053bf69b3a8373001172237420d3e95aa7fa511efd5ea569bdd1",
+          "clock_inversions": 0,
+          "source_row_duplicates": 0,
+          "source_row_order_errors": 0,
+          "null_cells": 0,
+          "off_grid_rows": 0
+        },
+        "l2_depth": {
+          "rows": 718410,
+          "sha256": "31d12d6db6c3b77a507ea4feab297bf4ca5f44fdd85104f8d2739b56f41613aa",
+          "clock_inversions": 0,
+          "source_row_duplicates": 0,
+          "source_row_order_errors": 0,
+          "null_cells": 0,
+          "off_grid_rows": 0
+        },
+        "arrow_row_counts": {
+          "l1_quotes": 295968,
+          "l2_depth": 718410
+        }
+      },
+      "counts": {
+        "timestamp_groups": 133139,
+        "unordered_groups": 1,
+        "valid_bootstrapped_groups": 131707,
+        "crossed_or_incomplete_groups": 33,
+        "trade_prints": 13913,
+        "right_censored_pending": 0,
+        "net_size_decreases": 100072,
+        "drops_with_compatible_prints": 4433,
+        "replaced_by_next_drop": 1136,
+        "censored_disappearance_or_reset": 1915,
+        "recoveries": 1282,
+        "expired_before_recovery": 100
+      },
+      "summary": {
+        "recoveries": 1282,
+        "median_recovery_ms": 132.0,
+        "zero_timestamp_latency": 0,
+        "independent_jsonl_lines": 1282,
+        "price_outcomes_computed": false
+      },
+      "independent_cycle_balance": {
+        "compatible_drops": 4433,
+        "reconciled_ending_states": 4433
+      }
+    },
+    "20260615": {
+      "input_qa": {
+        "l1_quotes": {
+          "rows": 1345722,
+          "sha256": "5922f1ac0d6d34e2a89c34c21b2422529185169cc47d02181d9907d34306b5fe",
+          "clock_inversions": 0,
+          "source_row_duplicates": 0,
+          "source_row_order_errors": 0,
+          "null_cells": 0,
+          "off_grid_rows": 0
+        },
+        "l2_depth": {
+          "rows": 3921238,
+          "sha256": "8e37c9753ca8ab9c45c12b7b036bc14d136db9fad9d1cd7becfd4e9f5f8bc709",
+          "clock_inversions": 0,
+          "source_row_duplicates": 0,
+          "source_row_order_errors": 0,
+          "null_cells": 0,
+          "off_grid_rows": 0
+        },
+        "arrow_row_counts": {
+          "l1_quotes": 1345722,
+          "l2_depth": 3921238
+        }
+      },
+      "counts": {
+        "timestamp_groups": 678433,
+        "trade_prints": 92515,
+        "valid_bootstrapped_groups": 678113,
+        "right_censored_pending": 2,
+        "net_size_decreases": 762994,
+        "drops_with_compatible_prints": 34587,
+        "replaced_by_next_drop": 8789,
+        "censored_disappearance_or_reset": 12692,
+        "recoveries": 12818,
+        "expired_before_recovery": 286
+      },
+      "summary": {
+        "recoveries": 12818,
+        "median_recovery_ms": 100.0,
+        "zero_timestamp_latency": 0,
+        "independent_jsonl_lines": 12818,
+        "price_outcomes_computed": false
+      },
+      "independent_cycle_balance": {
+        "compatible_drops": 34587,
+        "reconciled_ending_states": 34587
+      }
+    }
+  },
+  "runtime": {
+    "numpy": "2.5.3",
+    "pandas": "3.0.6",
+    "pyarrow": "25.0.0"
+  },
+  "qa_root_cause": {
+    "20260531": {
+      "first_last_trade_row": 207,
+      "excluded_bad_book_groups": 34,
+      "max_bad_group_source_row": 203,
+      "all_before_first_trade": true,
+      "interpretation": "initial snapshot unordered; subsequent incomplete/crossed initialization; not observed trading-state evidence; whole invalid groups excluded, bootstrap restarted",
+      "calendar_inference": false
+    }
+  },
+  "profile_note": "Generic profiler does not support Parquet in this environment: it attempted CSV. Deterministic first 10000-row CSV profiles are diagnostics only; full arrays and independent Arrow metadata checked for every source.",
+  "comparison_plan": [
+    {
+      "comparison": "Mechanical stage counts",
+      "grain": "observed fixed-price quantity decrease; pooled two disjoint example files",
+      "disposition": "chart",
+      "reason": "Shows how price/trade coincidence and visible recovery narrow raw quantity declines; no predictive claim"
+    },
+    {
+      "comparison": "Frequency per sample",
+      "disposition": "table",
+      "reason": "One short and one full example; no trend or transport inference"
+    },
+    {
+      "comparison": "Temporal conversion trend",
+      "disposition": "omit",
+      "reason": "Not a repeated-time campaign or representative time series: only two available examples with unequal durations"
+    },
+    {
+      "comparison": "Recovery-time medians",
+      "disposition": "prose",
+      "reason": "Keep per-file medians, do not pool quantiles"
+    }
+  ],
+  "totals": {
+    "net_size_decreases": 863066,
+    "drops_with_compatible_prints": 39020,
+    "recoveries": 14100
+  },
+  "independent_total_recoveries": 14100
+}

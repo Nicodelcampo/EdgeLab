@@ -1,0 +1,259 @@
+{
+ "schema_version": "r3_inferencia_cruce_es_v1",
+ "run_id": "4c649fa78716df22",
+ "run_scope": "full",
+ "publishable": true,
+ "max_sesiones_arg": 0,
+ "protocolo": "docs/research/R3_INFERENCIA_CLUSTERIZADA_PROTOCOLO.md",
+ "outcomes_accessed": false,
+ "pnl_accessed": false,
+ "holdout_included": false,
+ "estimando": "diferencia pareada de ticks_por_ancho, zona menos SU casi-zona, restringida al soporte comun (zonas con control por ancho exacto y <=30 min)",
+ "soporte": "R2 midio que el control existe para el 81,7%% de las zonas, sesgado a las angostas (ancho mediano 3,28 contra 7,76). El estimando NO se extiende a zonas anchas ni a Asia/Europa",
+ "conteos": {
+  "n_universe_discovered": 62,
+  "n_selected": 62,
+  "n_available": 62,
+  "n_zonas": 9235,
+  "n_pares_base": 7058,
+  "n_sesiones_con_pares": 62
+ },
+ "missing_items": [],
+ "parametros_congelados": {
+  "B": 10000,
+  "seed": 20260821,
+  "alpha_ci": 0.05,
+  "alpha_tost": 0.1,
+  "margen_relativo": 0.05,
+  "mediana_control": 158.208,
+  "margen_absoluto": 7.9104,
+  "metrica_primaria": "ticks_por_ancho",
+  "unidad_remuestreo": "sesion completa",
+  "ponderacion": "zona-ponderada dentro de la replica"
+ },
+ "resultado": {
+  "primario": {
+   "metrica": "ticks_por_ancho",
+   "n_pares": 7058,
+   "n_sesiones": 62,
+   "punto": 0.5833,
+   "ci95": [
+    0.0,
+    6.25
+   ],
+   "ci90": [
+    0.0,
+    5.5
+   ],
+   "cruza_cero": true,
+   "punto_sesion_ponderada": 1.65,
+   "mismo_signo_que_ponderada": true,
+   "B": 10000,
+   "seed": 20260821
+  },
+  "equivalencia": {
+   "margen": 7.9104,
+   "ci90": [
+    0.0,
+    5.5
+   ],
+   "equivalencia": true,
+   "nota": "equivalencia declarada solo si el IC 90% queda ENTERAMENTE dentro de +-margen. El margen NO es economico: la metrica cuenta operaciones por unidad de ancho, no dinero"
+  },
+  "secundarias": {
+   "ticks": {
+    "n_pares": 7058,
+    "n_sesiones": 62,
+    "punto": 1.0,
+    "ci95": [
+     0.0,
+     14.0
+    ],
+    "ci90": [
+     0.0,
+     11.0
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 3.5,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "ms": {
+    "n_pares": 7058,
+    "n_sesiones": 62,
+    "punto": 0.0,
+    "ci95": [
+     0.0,
+     106.0
+    ],
+    "ci90": [
+     0.0,
+     88.0
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "volumen": {
+    "n_pares": 7058,
+    "n_sesiones": 62,
+    "punto": 4.5,
+    "ci95": [
+     0.0,
+     22.0
+    ],
+    "ci90": [
+     0.0,
+     18.5
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 1.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "vol_por_ancho": {
+    "n_pares": 7058,
+    "n_sesiones": 62,
+    "punto": 2.0,
+    "ci95": [
+     0.0,
+     11.0
+    ],
+    "ci90": [
+     0.0,
+     9.5833
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.5,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   }
+  },
+  "sensibilidades": {
+   "S1_inverso": {
+    "n_pares": 7083,
+    "n_sesiones": 62,
+    "punto": 0.0,
+    "ci95": [
+     0.0,
+     4.55
+    ],
+    "ci90": [
+     0.0,
+     3.3333
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "S1_permutado": {
+    "n_pares": 7063,
+    "n_sesiones": 62,
+    "punto": 0.0,
+    "ci95": [
+     0.0,
+     5.1667
+    ],
+    "ci90": [
+     0.0,
+     4.3334
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "S2_solo_anterior": {
+    "n_pares": 2778,
+    "n_sesiones": 62,
+    "punto": 0.0,
+    "ci95": [
+     -4.0,
+     0.0
+    ],
+    "ci90": [
+     -3.0,
+     0.0
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": -0.125,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "S3_con_reemplazo": {
+    "n_pares": 7524,
+    "n_sesiones": 62,
+    "punto": 0.0,
+    "ci95": [
+     0.0,
+     3.5346
+    ],
+    "ci90": [
+     0.0,
+     2.6667
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   },
+   "S4_sep_5min": {
+    "n_pares": 6043,
+    "n_sesiones": 61,
+    "punto": 0.0,
+    "ci95": [
+     0.0,
+     3.5
+    ],
+    "ci90": [
+     0.0,
+     2.6667
+    ],
+    "cruza_cero": true,
+    "punto_sesion_ponderada": 0.0,
+    "mismo_signo_que_ponderada": true,
+    "B": 10000,
+    "seed": 20260821
+   }
+  }
+ },
+ "procedencia": {
+  "head_commit": "4bf883882e796df80ee63bed2f1a5161f4119287",
+  "arbol_limpio": false,
+  "archivos_sucios": [
+   "docs/CONTRATO_ANALIZADOR_PRED-004.md",
+   "docs/ESPEC_TEST_EXPLORE-001.md",
+   "docs/ESTADO_2026-08-07_TRASPASO.md",
+   "docs/ESTADO_2026-08-09_EMPEZAR_ACA.md",
+   "docs/HIPOTESIS_PENDIENTES.md",
+   "docs/PREFLIGHT_PRED-004_NT8_2026-08-04.md",
+   "docs/REPORTE_NOCHE_2026-07-27.md",
+   "docs/SCRATCHPAD_PROVENANCE_AUDIT_2026-08-07.md",
+   "docs/holdout_access_log.md",
+   "docs/incidents/INC-004_procedencia_de_las_lineas_de_suite/acta.md",
+   "docs/parity_coverage/AACloseOpenDiffs.md",
+   "docs/parity_coverage/BigTrap2.md",
+   "docs/parity_coverage/HFTZones2.md",
+   "docs/parity_coverage/VolTicksPOC2.md",
+   "docs/predictions/E-R1_v0.3_DEFECTO_001_precio_de_entrada.md",
+   "docs/predictions/E-R1_v0.3_DRAFT_2026-08-09.md",
+   "docs/predictions/E-R1_v0.3_SELLO_2026-08-09.md",
+   "docs/research/ENTREGA_CURVA_DISENO_2026-08-07.md",
+   "docs/research/PRED-005_RESULTADO_2026-08-08.md",
+   "nt8/README.md"
+  ],
+  "snapshot": "E:\\EdgeLab\\runs\\oraculo_espurev2flat_ES_snapshot.sqlite",
+  "parquet": "E:\\EdgeLab\\data\\nt8\\ES_parquet\\ES_03-26_ticks.parquet",
+  "comando": "diag/tasa_senales/r3_inferencia_cruce_es.py --snapshot E:/EdgeLab/runs/oraculo_espurev2flat_ES_snapshot.sqlite --parquet E:/EdgeLab/data/nt8/ES_parquet/ES_03-26_ticks.parquet"
+ }
+}

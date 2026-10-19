@@ -1,0 +1,1908 @@
+ Electronic copy available at: http://ssrn.com/abstract=2662258 
+ 
+Dynamic ETF Pairs Trading System 
+Evidence From Australia 
+ 
+N. Robert Enemuwe 
+Banking & Finance, University of New South Wales 
+ 
+Abstract 
+This study evaluates the profitability of dynamic pairs trading strategies using a proposed  
+3-step pairs selection approach. We extend the pairs trading methodology employed by Miao 
+(2014) to the broad-based exchange traded funds (ETFs) listed on the Australian Securities 
+Exchange (ASX). The 3-step approach incorporates the correlation, cointegration and error 
+correction coefficient as the pre-selection criteria during the formation period. In the subsequent 
+trading period, we employ a daily re-calibration of the parameters using a 252-day rolling 
+window from January 1, 2013 to September 30, 2015. We developed a real-time trading system 
+using the Java programming language and KDB+ database, and back test the strategies using 
+tick-by-tick historical quotes during the trading period. The back testing of the top five ETF 
+pairs: ISO-SSO, IOZ-VAS, IOZ-STW, STW-VAS and STW-SFY yield cumulative returns of 
+10.08%, 4.41%, 19.70%, 62.27%, 46.60% and Sharpe ratios of 2.21, 1.00, 9.29, 15.12, 11.17 
+respectively. The maximum draw down is -32.47% over the trading period.  
+ 
+JEL classification: C58; G17. 
+Keywords: statistical arbitrage; pairs trading; cointegration; market neutral strategy. 
+ 
+ 
+ 
+ 
+ 
+ 
+Corresponding Author 
+N. Robert Enemuwe, Banking & Finance, University of New South Wales, Sydney, Australia 
+Email: robert.enemuwe@student.unsw.edu.au 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ Electronic copy available at: http://ssrn.com/abstract=2662258 
+ 
+1. Introduction 
+The concept of pairs trading is rather simple; one identifies a pair of securities that exhibit 
+historical co-movement in prices. Subsequently, if significant deviation from the historical 
+relationship is observed, a trading position is opened. The position is opened by simultaneously 
+selling the over-valued security and buying the under-valued security. The position is closed-out 
+when the prices eventually converge. The strategy builds upon the notion that the relative prices 
+in a market are in equilibrium, and that deviations from this equilibrium eventually will be 
+corrected. Applying a pairs trading strategy is therefore an attempt to profit from temporary 
+deviations from this equilibrium (Gundersen, 2014). 
+Pairs trading was pioneered by the Wall Street quant Nunzio Tartaglia of Morgan Stanley in 
+the early 1980s. He assembled a team of physicists, mathematicians and computer scientists to 
+uncover arbitrage opportunities in the equities markets. Tartaglia’s group of academics used 
+sophisticated statistical methods to develop high-tech trading programs to execute pairs trading 
+strategies. Pairs trading has since become an increasingly popular market-neutral investment 
+strategy used by individual and institutional traders as well as hedge funds (Gatev et al., 2006). 
+Gatev et al. (2006) is perhaps the most cited paper on pairs trading, laying the foundation for 
+much of the subsequent research. They investigated the profitability of pairs trading using the 
+distance method for US stocks between 1999 and 2002. The strategy generated an average excess 
+return of 10.4% per annum. But they noted that lower transaction costs and large inflows of 
+investment capital into arbitrage strategies by hedge funds may have decreased the rate of return 
+on pairs trading. 
+Perlin (2009) replicated the pairs trading strategies developed by Gatev et al. (2006) and his 
+strategy generated significant returns for daily trading frequency on the Brazilian stock exchange. 
+Do and Faff (2010, 2012) also replicated Gatev et al. (2006) pairs trading strategies using US 
+equities, but found that the returns from the strategy has declined possibly due to changes in the 
+underlying relationship between the pairs. 
+Bogomolov (2010) compared the profitability of the distance method, the cointegration 
+method and the stochastic spread approach on stocks listed on the Australia Securities Exchange 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ Electronic copy available at: http://ssrn.com/abstract=2662258 
+ 
+(ASX). His strategy produced significant monthly excess returns before transaction cost, but 
+highlights the impact of transaction cost on the overall returns from the strategy. 
+Despite the reduction in trading returns experienced in earlier years, the introduction of 
+sophisticated trading technologies and networks in recent years, and the rapid reduction in 
+transaction costs have lead to sustained profitability of pairs trading strategies. For example, 
+Galenko et al. (2012) evaluated pairs trading strategy using the cointegration approach with 4 
+ETFs that track world stock market indexes. The strategy outperforms a naïve buy-and-hold 
+strategy and produced positive returns during the subprime mortgage crisis. 
+Broussard and Vaihekoski (2012) also implemented Gatev et al. (2006) pairs trading strategy 
+using data from the Finnish stock market between 1987 and 2008. They found the strategy to be 
+profitable even after allowing for a one-day delay in the trade initiation after the signal. On 
+average the strategy generated annualized return of approximately 12.5%. 
+Sipila (2013) also investigated the profitability of pairs trading strategy using over 66,000 
+possible pairs of ETFs worldwide from 2004 to 2012. The strategy generated cumulative returns 
+of 105.43% and an annual excess return of 27.29% with volatility of 10.57%. Furthermore, his 
+results confirmed market neutrality with no significant correlation with the MSCI World index. 
+Caldeira and Moura (2013) investigated the performance of pairs trading on stocks listed on 
+the Sao Paulo stock exchange (Ibovespa) using the cointegration approach. The pairs were traded 
+out of sample for a period of four years yielding a cumulative net return of 189.29%, with an 
+annual mean of 16.38%. Furthermore, the strategy showed relatively low levels of volatility and 
+no significant correlation with the market index confirming the market neutrality of pairs trading 
+strategy. 
+Marshall et al. (2013) investigated the profitability of pairs trading strategy using the SPDR 
+Trust (ticker SPY) and iShares (ticker IVV) within a high frequency environment. They found 
+that the price deviations between the ETFs returned back to parity following mispricing with a 
+median durations of approximately 1–2 minutes. The result provides evidence that arbitrageurs 
+act to profit from the mispricing and their actions lead to short-lived mispricing. The average 
+profit was 0.33% and 0.32% for the SPY (IVV) and IVV (SPY) pairs respectively. 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Miao (2014) applied a two-stage correlation and cointegration approach to pairs in the U.S. 
+equity markets from 2012 to 2013.  The strategy yield cumulative returns of up to 56.58% well 
+exceeding the S&P 500 index performance by 34.35% over the 12-month trading period. 
+Furthermore, the pairs trading system performed well during the two months in which the S&P 
+500 index had negative returns highlighting the market-neutrality of the strategies.  
+Algorithmic trading and high frequency trading (HFT), which encompass pairs trading has 
+seen significant growth in the United States and Europe. This is also evident in Australia where 
+HFT strategies are dominated by a small group of trading entities, with the 20 largest highfrequency trading entities accounting for approximately 27% of total equity market turnover in 
+2013 (See ASIC Report 3311). 
+Given the sustained profitability of pairs trading strategies in recent years, the objective of 
+this study is to investigate the profitability of pairs trading in Australia after accounting for realtime transaction cost, market liquidity and risk management controls within a high frequency 
+environment. We focus on exchange traded funds (ETF) listed on the ASX, given the significant 
+growth and size of assets invested in ETFs since the introduction in 1999. 
+This study builds upon the pairs trading methodology proposed by Miao (2014), which 
+employs a two-step correlation and cointegration approach. The first step, which is referred to as 
+the pre-selection step, is used to identify potential pairs with correlation coefficients greater than 
+or equal to 90%. The second step is used to determine if the pre-selected pairs are cointegrated.  
+Miao (2014) ranked the pairs based on the cointegration test statistics. The smaller the 
+cointegration test statistics was, the higher the rank the stock pair was assigned to. The final 
+selection of pairs from the top rank is used for the out-of-sample trading. He used a 3-month insample training period for parameter estimation followed by a 1-month trading window. He 
+subsequently applied a dynamic forward rolling window of 1 month using high frequency data 
+from 2012 to 2013.  
+                                                 
+1 Refer to the website at http://asic.gov.au/regulatory-resources/find-a-document/reports/rep-331-dark-liquidityand-high-frequency-trading/ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+We extend Maio (2014) 2-step approach to include an addition pre-selection criterion. Our  
+3-step approach incorporates the correlation, cointegration and error correction coefficient as the 
+pre-selection criteria during the formation period. Next during the subsequent trading period, we 
+employ a daily re-calibration of the parameters using a 252-day rolling window.  
+We estimate the standardize spreads (z-score) from the cointegrating equation and generate 
+trading signals using the z-score, the bid-ask spread, transaction cost, profit potential, profit 
+threshold, trade duration and stop-loss threshold as indicators for trade entry and exit. 
+We developed a real-time trading system using the Java programming language and KDB+ 
+database and back test the strategies using tick-by-tick quotes from January 1, 2013 to September 
+30, 2015 using high frequency (100 milliseconds) trading interval. 
+And finally we report the results of the trading strategies for each ETF pairs using the 
+cumulative returns, Sharpe ratio and the maximum draw down as performance criteria. 
+Therefore the study is structured as follows; Section 2 provides the institutional details of the 
+ETF market in Australia and Section 3 provides description of the data. Section 4 presents the 
+concepts of stationarity, correlation and cointegration. Section 5 presents the pairs selection 
+methodology and Section 6 presents the pairs trading rules and methodology. Section 7 provides 
+description of the real-time trading system and Section 8 provides the performance evaluation 
+criteria for these strategies. Section 9 presents the result of the trading strategies and finally 
+Section 10 concludes and provides suggestions for future research.  
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+2. ETF Institutional Details 
+2.1. 
+ETF Structure 
+An exchange-traded fund (ETF) is a pooled investment fund with shares that are traded on 
+stock exchanges at prices determined by market demand and supply.  
+In the United States, the Standard and Poor's Depository Receipt (SPDR) Trust was the first 
+commercial ETF listed on the American Stock Exchange (AMEX) in 1993. ETFs accounts for 
+more than $1.2 trillion in assets under management and are growing at a pace greatly exceeding 
+that of traditional mutual funds (Arnerich et al., 2012).  
+ETFs were almost non-existent in Australia until 1999 and from this point on ETFs have seen 
+consistent record inflows year after year. According to the Australian Securities Exchange, as of 
+31 March 2015, there are 110 ETF products listed on the ASX with a market capitalization of 
+over $17 billion. Most of the transactions are done by self-managed superannuation funds, 
+attracted to the low-cost and transparent structure of exchange-traded funds and the easy access 
+they provide for investments diversification (Neiron, 2014).  
+Exchange traded funds are created by fund managers who are referred to as the ETF 
+“Sponsor”. The Sponsor outlines the investment and operational plans for the ETF in a 
+registration statement filed with the regulatory authority.  ETF shares are created in large blocks 
+of shares known as “creation/redemption units.”  
+Large institutional investors called “Authorized Participants” (APs) purchase creation units 
+with a “portfolio deposit” equal in value to the aggregate net asset value of the ETF shares in the 
+creation unit. The portfolio deposit generally consists of a basket of securities that mirrors the 
+composition of the ETF’s portfolio. The authorized participants then offer the ETF shares for 
+sale on the secondary market (Arnerich et al., 2012). 
+There are several different types of ETFs offered for sales by ETF sponsors in Australia. 
+These include Index Based ETFs, Rules Based ETFs, Active ETFs, Leveraged ETFs, Inverse 
+ETFs, Sector ETFs, Commodity ETFs, Currency ETFs and Country Specific ETFs. 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+ETFs generally take the form of either physical or synthetic ETFs. Physical ETFs own actual 
+shares of the underlying securities that comprise the ETF mandate. Whereas synthetic ETFs own 
+derivatives rather than physical assets, such as forwards, futures, options, and swaps, which 
+simulate the return of the index (Arnerich et al., 2012).  
+Advantages of ETFs compared to traditional open-end mutual funds include; intraday trading 
+and immediate liquidity, ability to short sell ETF shares in order to benefit from potential 
+decreases in the prices, tax efficiency, transparency and low transaction fees (Arnerich et al., 
+2012). 
+2.2. 
+How ETFs are traded in Australia 
+In Australia, ETFs are quoted under the ASX Listing Rules or the AQUA rules. ASX created 
+the AQUA market to specifically manage the admission of ETF securities, managed fund 
+products and structured products on the ASX market, and to provide access to clearing and 
+settlement services.  In addition, ETF securities are also traded through the exchange market 
+operated by Chi-X (ASIC, 2012). 
+According to ASX AQUA rules, ETF issuers are required to publicly disclose the fund’s 
+NAV on a daily basis (typically in the morning before trading commences).  The ETF issuers are 
+also under an obligation to disclose to the market any information that would suggest a false 
+market exists in the AQUA products. Nearly all ETF issuers produce an intraday net asset value 
+for their fund and the index it tracks, which is updated every 15 seconds during trading hours 
+(ASIC, 2012). 
+2.3. 
+ASX and CHI-X Market Structure 
+The Australian Securities Exchange is Australia’s largest securities exchange market. With a 
+total market capitalization of approx. $1.5 trillion, ASX is one of the world’s largest financial 
+securities exchanges, offering a full suite of services, including listings, trading, clearing and 
+settlement, across a range of asset classes including cash equities, futures and derivatives. 
+Normal trading takes place from 10:00 am to 4:00 pm, Sydney time whereby brokers enter 
+orders into the ASX trading system. The system automatically matches all trades in price/time 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+priority on a continuous basis. The ASX conducts an opening and closing auction process, but 
+the vast majority of trades take place during normal trading hours (ASX, 2015). 
+Chi-X Australia, an alternative-trading venue for ASX listed securities was introduced in 
+2011. On May 3, 2013, Chi-X expanded trading to encompass the entire universe of ASX listed 
+securities. No opening or closing auction occurs on Chi-X, with order entry only possible from 
+10:00am (Aitken et al., 2013). 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+3. Data Summary 
+To investigate the profitability of the pairs trading in the Australian ETF market, we obtained 
+historical data from Australian Equities database, which is provided by the Securities Industry 
+Research Centre of Asia-Pacific (SIRCA).   
+The data for our study is categorized into two groups: the first dataset is used to estimate the 
+correlation coefficients, cointegration test and the error correction model (ECM).  The second 
+dataset is used to back test our pairs trading strategies during the trading period.  
+To create our first dataset, we obtained 1-minute interval historical quotes data for the 11 
+broad-based ETFs listed on the ASX for the period between January 1, 2012 and September 30, 
+2015. The quotes data include the open, high, low, close, date and timestamp in milliseconds. 
+Quotes prior to 10:00am and after 4:00pm are removed from our dataset. We further eliminated 
+all anomalous data possibly caused by human and system errors, such as quotes with negative 
+spreads. The resulting dataset consists of approximately 3.03 million records.  
+To create our second dataset for back testing, we obtained tick-by-tick historical quotes data 
+for the 11 ETFs for the period between January 1, 2013 and September 30, 2015. The quotes data 
+include the bid price, ask price, bid size, ask size, date and timestamp in milliseconds. Quotes 
+prior to 10:00am and after 4:00pm are removed from our dataset. We also eliminated all 
+anomalous data possibly caused by human and system errors, such as quotes with negative 
+spreads.  The resulting dataset consists of approximately 14.87 million records.  
+The transaction costs pricing scheme used in our trading strategies are obtained from 
+Interactive Brokers (IB)2. IB offers a fixed rate-pricing scheme for the Australian market, which 
+is set at 0.08% of trade value with a minimum transaction cost of $6.00 per trade. The average 
+daily short selling cost is approximately 0.025% for each of the ETFs. 
+ 
+                                                 
+2 Visit www.interactivebrokers.com for details 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+4. Methodology 
+This section introduces the concepts of stationarity, correlation, cointegration and the error 
+correction model and outlines the details of how these concepts are used in selecting the pairs of 
+ETFs for our trading strategy. 
+4.1. 
+Stationarity 
+The concept of stationarity is important for pairs trading using the cointegration method. A 
+stationary time series is defined as a stochastic process in which the mean and variance of the 
+process do not change over time. A stationary time series 𝑦𝑡 is characterized by the following 
+properties for all time t and t-s. 
+ 
+𝐸(𝑦𝑡) = 𝐸(𝑦𝑡−𝑠) = 𝜇 
+(1) 
+ 
+𝐸[(𝑦𝑡− 𝜇)2] = 𝐸[(𝑦𝑡−𝑠− 𝜇)2] =  𝜎2 
+(2) 
+ 
+𝐸[(𝑦𝑡− 𝜇)(𝑦𝑡−𝑠− 𝜇)] = 𝐸[(𝑦𝑡−𝑠− 𝜇)(𝑦𝑡−𝑠−1 − 𝜇)] = 𝜆 
+(3) 
+ 
+where  𝜇, 𝜎2 𝑎𝑛𝑑 𝜆 are all constants. The equations imply that a stationary series has a constant 
+mean, variance and auto correlation (Enders 2010).  
+Property (2) is regarded as the most important property for pairs trading. If there is a spread 
+between two assets, property (2) ensures the reversion to mean of the spreads. Property (3) is 
+perhaps of lesser importance for pairs trading, although a changing variance may affect profit 
+potential through the magnitude of the oscillations about the mean (Hoel, 2013). 
+Most non-stationary time series can be transformed into a stationary series using 
+differencing, so that the values represent changes and not levels. A time series that becomes 
+stationary after d number of differencing is referred to as integrated of order d, i.e. I(d). 
+One popular test for determining whether a time series is stationary is the Augmented 
+Dickey-Fuller test (ADF-test). The ADF-test uses regression analysis to test for a unit root, i.e. 
+non-stationarity in an assumed underlying data generating process.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Consider the following p order Autoregressive process AR(p) in equation (4): 
+ 
+yt = α0 + α1yt−1 + α1yt−2 + ⋯+ αpyt−p + ∅t + ∈t 
+  (4) 
+Equation (4) can be rewritten as:  
+ 
+Δyt = α0 + λyt−1 +  ∑
+βiyt−i+1
+p
+i=2
+ + ∅t +  ∈t 
+ (5) 
+where 
+λ = −(1 −∑
+αi
+p
+i=1
+ )  and  β = −∑
+αj
+p
+j=i
+ 
+ 
+ 
+Equation (5) is employed in the Augmented Dickey-Fuller test (ADF-test), where α0 and ∅ are 
+the constant and trend terms respectively. The constant and trend term can be set equal to zero 
+depending on the assumptions behind the data generating process. We therefore test the 
+following hypothesis: 
+ 
+H0: λ = 0, which implies the series is non-stationary 
+(6) 
+ 
+H1: λ < 0, which implies the series is stationary  
+(7) 
+According to Ng and Perron (1995), an important practical issue for the implementation of 
+the ADF test is the speciﬁcation of the lag length p. If p is too small then the remaining serial 
+correlation in the errors will bias the test. If p is too large then the power of the test will suffer. 
+They suggest the following data dependent lag length selection procedure that results in stable 
+size of the test and minimal power loss. The steps are described below:  
+First, set an upper bound pmax for p. Next, estimate the ADF test regression with p = pmax. If 
+the absolute value of the t-statistic for testing the signiﬁcance of the last lagged price deviation 
+is greater than 1.6 then set p = pmax and perform the unit root test. Otherwise, reduce the lag 
+length by one and repeat the process. A useful rule of thumb for determining pmax, suggested by 
+Schwert (1989) is given by equation (3) where T is the sample size. 
+ 
+P max = [12. ( T
+100) 
+1/4
+ ] 
+(8) 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+4.2. 
+Correlation 
+Correlation is a statistical term that describes the strength of a relationship between two 
+variables.  The correlation coefficient 𝜌 between asset X and asset Y is calculated as follows: 
+ 
+𝜌= 
+∑
+(𝑋𝑖
+𝑇
+𝑖=1
+ – 𝑋 ̅) −(𝑌𝑖− 𝑌̅ )
+ ∑
+(𝑋𝑖− 𝑋̅)2
+𝑇
+𝑖=1
+ ∑
+(𝑌𝑖−𝑌̅ )2
+𝑇
+𝑖=1
+ 
+(9) 
+where 𝑋 ̅and 𝑌 ̅ are the mean prices of asset X and Y respectively. The mean is calculated as: 
+ 
+𝑋̅ = 1
+𝑇 ∑
+𝑋𝑖
+𝑖=𝑇
+𝑖=1
+ 
+(10) 
+ 
+𝑌̅ = 1
+𝑇 ∑
+𝑌𝑖
+𝑖=𝑇
+𝑖=1
+ 
+(11) 
+where T is the number of periods and the value of 𝜌 ranges between -1 and 1.  
+4.3. 
+Cointegration 
+Economic theory often suggests that certain variables are linked by a long-run equilibrium 
+relationship. Although the variables under consideration may drift away from equilibrium for a 
+while, market forces may be expected to restore equilibrium. 
+Engle and Granger (1991) defines the concept of cointegration as follows: If two time-series 
+𝑥𝑡 and 𝑦𝑡 are integrated of order one I(1), then if there is a linear combination of the two series 
+that is stationary, then the two series are said to be cointegrated.  This implies that the two nonstationary series share a common stochastic trend. 
+To estimate the parameters of the cointegration equation, we consider a simple time series 
+regression equation: 
+ 
+𝑦𝑡= 𝛼𝑥𝑡+ 𝑢𝑡 
+(12) 
+where 𝑥𝑡 is an I(1) variable given by  
+ 
+𝑥𝑡= 𝑥𝑡−1 + ∈𝑡 
+(13) 
+Since 𝑥𝑡 is I(1), it follows that 𝑦𝑡 is I(1). But for 𝑥𝑡 and 𝑦𝑡 to be cointegrated, their linear 
+combination 𝑢𝑡= 𝑦𝑡−𝛼𝑥𝑡 must be stationary under the following assumptions: 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Assumption 1 
+𝑢𝑡 is an iid3 process with zero mean and variance 𝜎𝑢
+2 
+  
+Assumption 2 
+∈𝑡 is stationary and independently distributed of 𝑢𝑡 
+ 
+ 
+Assumption 1 ensures that there exists a stationary cointegrating relationship between 𝑦𝑡 and 𝑥𝑡 
+and assumption 2 implies that 𝑥𝑡 is exogenous. 
+One of the most popular tests for cointegration is the 2-step Engle-Granger (1987) test.  There 
+are two main issues attributed to the 2-step Engle-Granger procedure. Firstly, the cointegration 
+results are sensitive to the ordering of variables; therefore the residuals may have different sets of 
+statistical properties. Secondly, if the bivariate series is not cointegrated, the end result may turn 
+out to be a set of spurious regressions.  
+Therefore this study employs the alternative test for cointegration using the Johansen’s (1991) 
+cointegration technique. The Johansen technique for cointegration can be described within the 
+context of an error correction model as follows: 
+In a bivariate model, where 𝑥𝑡 and 𝑦𝑡 are both non-stationary variables in their levels, and 
+suppose there exist an 𝛼1 such that 𝑦𝑡− 𝛼1𝑥𝑡− 𝛼0 is a stationary process, this implies that the 
+two variables are cointegrated or have a stationary long-run equilibrium relationship even though 
+individually they are stochastic. 
+Consider a vector autoregressive model (VAR) with p lags, which can be represented with the 
+following equation: 
+ 
+𝑦𝑡= 𝑎0 + 𝛿1𝑦𝑡−1 + 𝛿2𝑦𝑡−2 + ⋯+ 𝛿𝑝𝑦𝑡−𝑝+ 𝜀𝑡 
+(14) 
+ 
+𝑥𝑡= 𝑐0 +  𝛾1𝑥𝑡−1 + 𝛾2𝑥𝑡−2 + ⋯+ 𝛾𝑝𝑥𝑡−𝑝+ 𝜈𝑡 
+(15) 
+ 
+ 
+ 
+ 
+                                                 
+3 iid: Independent and identically distributed 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+where 
+ 
+𝑎0 and 𝑐0 are the constants (intercepts) term 
+𝛿𝑖 (i=1..p) and 𝛾𝑖 (i=1..p) are the coefficients of the AR term 
+𝜀𝑡 and 𝜈𝑡 are the error terms  
+and the error term satisfies the following conditions: 
+ 
+E(𝜀𝑡) = 0 and  E(𝑣𝑡) = 0, error term has zero mean 
+E(𝜀𝑡𝜀𝑡
+′) = Ω and  E(𝑣𝑡𝑣𝑡
+′) = Ω are the covariance matrix     
+E(𝜀𝑡𝜀𝑡−1
+′
+) = 0, and E(𝑣𝑡𝑣𝑡−1
+′
+) = 0  implies no serial correlation 
+Given that the variables are cointegrated, equation (14) and (15) can be written as an Error 
+Correction model (ECM) as shown below: 
+∆𝑦𝑡= 𝛽𝑦0 + 𝜆𝑦(𝑦𝑡− 𝛼0 −𝛼1𝑥𝑡) +  ∑
+𝛽𝑦1𝑖∆𝑦𝑡−𝑖
+𝑖=𝑝−1
+𝑖=1
++ ∑
+𝛽𝑦2𝑖∆𝑥𝑡−𝑖
+𝑖=𝑝−1
+𝑖=1
++ 𝜐𝑡 
+(16) 
+∆𝑥𝑡= 𝛽𝑥0 + 𝜆𝑥(𝑦𝑡− 𝛼0 −𝛼1𝑥𝑡) +  ∑
+𝛽𝑥1𝑖∆𝑦𝑡−𝑖
+𝑖=𝑝−1
+𝑖=1
++ ∑
+𝛽𝑥2𝑖∆𝑥𝑡−𝑖
+𝑖=𝑝−1
+𝑖=1
++ 𝑤𝑡 
+(17) 
+where 
+𝜆𝑦 and 𝜆𝑥 are the adjustment coefficients or error correction terms 
+𝛼1 is the long-run cointegrating coefficient 
+𝛽𝑦1𝑖, 𝛽𝑦2𝑖, 𝛽𝑥1𝑖 𝑎𝑛𝑑 𝛽𝑥2𝑖 (i=1...p-1) measures the short-run dynamics 
+The cointegration vector have reduced rank r, where r < 2 and r is the number of cointegrating 
+relationships. The identification of the cointegrating vector uses the maximum likelihood 
+estimation method developed by Johansen (1991). 
+Johansen (1991) proposed two likelihood ratio tests for the identification of the cointegrating 
+relationship, these are the trace test and the maximum eigenvalue test, shown in (18) and (19): 
+ 
+𝐽𝑡𝑟𝑎𝑐𝑒= −𝑇 ∑ln(1 + 𝜌𝑖
+𝑛
+𝑖=𝑟+1
+) 
+(18) 
+ 
+𝐽𝑀𝑎𝑥= −𝑇 ln (1 − 𝜌𝑟+1) 
+(19) 
+where T is the sample size and 𝜌𝑖 is the ith largest canonical correlation. The trace test evaluates 
+the null hypothesis of r cointegrating vectors against the alternative hypothesis of n cointegrating 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+vectors. The maximum eigenvalue test evaluates the null hypothesis of r cointegrating vectors 
+against the alternative hypothesis of r+1 cointegrating vectors.  In other words, the test begins 
+from r=0 where there is no cointegration amongst the variables and accepts the first null 
+hypothesis that is not rejected.  
+The number of lags for the VAR is selected using the Schwarz's Bayesian information 
+criterion (SBIC). Johansen and Juselus (1990) provide critical values for the test statistics, which 
+are obtained from simulation studies. 
+The spread for the pairs trading strategy is defined as the residuals from the cointegration 
+equation: 
+ 
+𝑠𝑝𝑟𝑒𝑎𝑑𝑡= 𝑦𝑡− 𝛼0 −𝛼1𝑥𝑡 
+(20) 
+where 𝛼1 is the cointegrating coefficient and 𝛼0 is a constant/intercept term.   
+We subsequently define the standardize spread (z-score) as follows: 
+ 
+𝑧𝑡= 𝑠𝑝𝑟𝑒𝑎𝑑𝑡− 𝜇
+𝜎
+ 
+(21) 
+where 
+ 
+𝜇= 1
+𝑇∑𝑠𝑝𝑟𝑒𝑎𝑑𝑡
+𝑡=𝑇
+𝑡=1
+ 
+(22) 
+ 
+ 
+𝜎= [
+1
+𝑇−1 ∑(𝑠𝑝𝑟𝑒𝑎𝑑𝑡− 𝜇)2 
+𝑡=𝑇
+𝑡=1
+]
+1 2
+⁄ 
+(23) 
+and T is the sample size.  
+4.4. 
+Error Correction Model 
+The fact that the ETF pairs are cointegrated implies that there is a common stochastic trend 
+binding together the ETF pairs. Therefore the spreads can be considered short-term movements 
+away from the long-run relationship. 
+In order to explore the intraday short-term dynamics between the ETF pairs, we estimate the 
+ECM in equation (16) and (17).  We are particularly interested in the adjustment coefficients or 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+the error correction coefficients (𝜆𝑦 and 𝜆𝑥) from the ECM equation. The adjustment coefficients 
+provide us with the rate of correction of the spreads back to the long run equilibrium.  
+The coefficient 𝜆𝑦 and 𝜆𝑥 represents the amount of correction of the prior period (t – 1) 
+disequilibrium that happens in period t. For example, if 𝜆𝑦 is – 0.10, then 10% of the 
+disequilibrium in the prior period would tend (all else equal) be reversed in period t.  A higher 
+adjustment coefficient implies a faster rate of mean-reversion.  
+Since the success of pairs trading depends on the rate of mean-reversion, we therefore 
+incorporate the error correction coefficient as part of our ETF pairs selection procedure. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+5. Pairs Formation Period 
+5.1. 
+3–Step Selection Process 
+We employ a 3-step pairs selection process during the formation period.  In Step 1, we 
+estimate the correlation coefficients for the pairs of ETFs and select the pairs with correlation 
+greater than or equal to 90%.  
+In Step 2, we test for cointegration between the remaining pairs using the Johansen (1991) 
+technique. We further eliminate the pairs that fail both the Johansen Trace Test and Maximum 
+Eigen value test for cointegration. 
+In Step 3, we estimate the ECM in order to obtain the error correction coefficients for the 
+pairs. The remaining pairs are ranked in ascending order of the error correction coefficient and 
+we select the top highly ranked pairs for the subsequent trading period. 
+In this study, our pairs formation period commences from January 1, 2012 to December 31, 
+2012. We start by forming pairs of ETFs from the 11 broad-based ETFs listed on the ASX. We 
+select the 9 ETFs with an inception date prior to January 1, 2012. The selected ETFs are listed in 
+Table 1 with brief product details.   
+Table 1: ETF Details 
+ETF Name 
+ASX Code 
+Benchmark 
+MER (%) 
+Inception  
+iShares MSCI Australia 200 ETF 
+IOZ 
+MSCI Australia 200 
+0.19 
+Dec-10 
+iShares S&P/ASX 20 ETF 
+ILC 
+S&P/ASX 20 
+0.24 
+Dec-10 
+iShares S&P/ASX Small Ordinaries ETF 
+ISO 
+S&P/ASX Small 
+O di
+i
+0.55 
+Dec-10 
+SPDR 200 Fund 
+STW 
+S&P/ASX 200 
+0.28 
+Aug-01 
+SPDR 50 Fund 
+SFY 
+S&P/ASX 50 
+0.28 
+Aug-01 
+SPDR S&P/ASX Small Ordinaries Fund 
+SSO 
+S&P/ASX Small 
+0.50 
+Apr-11 
+Vanguard Australian Shares Index 
+VAS 
+S&P/ASX 300 
+0.15 
+May-09 
+Vanguard MSCI Australian Large 
+VLC 
+MSCI Large Cap Index 
+0.20 
+May-11 
+Vanguard MSCI Australian Small 
+VSO 
+MSCI Small Cap Index 
+0.30 
+May-11 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+ 
+Given the importance of stationarity assumption in our models, we proceed to test whether the 
+ETFs are stationary using the Augmented Dickey Fuller (ADF) test. 
+5.2. 
+Stationarity Test 
+We test the selected ETFs for stationarity using the Augmented Dickey Fuller (ADF) test.  
+We perform the ADF test using the 1-minute interval historical data between January 1, 2012 
+and December 31, 2012. This is the 252-day in-sample formation period for the pairs selection 
+process. 
+Based on Ng and Perron (1995) lag selection procedure, we estimate the maximum number 
+of lags using equation (8), where N = 246,026.  We test for unit root using a lag of 85 periods. 
+The results of the ADF test are listed in Table 2. The results show that the ETF prices are nonstationary in levels but stationary in first differences at the 1% level of significance.  
+Table 2: Augmented Dickey Fuller Test  
+ETF  
+Lags 
+                  Price Series 
+               First Difference 
+ 
+ 
+T-Statistics 
+1% Crit. Value 
+T-Stats 
+1% Crit. Value 
+IOZ 
+85 
+-1.7729 
+-3.1277 
+-59.4671*** 
+-3.1277 
+ILC 
+85 
+-1.7950 
+-3.1277 
+-55.9804*** 
+-3.1277 
+ISO 
+85 
+-2.4141 
+-3.1277 
+-55.1522*** 
+-3.1277 
+STW 
+85 
+-2.2968 
+-3.1277 
+-52.6688*** 
+-3.1277 
+SFY 
+85 
+-2.1639 
+-3.1277 
+-54.0048*** 
+-3.1277 
+SSO 
+85 
+-2.4395 
+-3.1277 
+-53.8054*** 
+-3.1277 
+VAS 
+85 
+-2.2281 
+-3.1277 
+-53.4629*** 
+-3.1277 
+VLC 
+85 
+-1.7787 
+-3.1277 
+-54.1774*** 
+-3.1277 
+VSO 
+85 
+-2.5678 
+-3.1277 
+-53.6127*** 
+-3.1277 
+*** Indicates the rejection of the null hypothesis of unit root at the 1% level of significance. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+We therefore proceed to form the list of potential pairs of ETFs. The number of potential 
+pairs is given by the following equation: 
+ 
+ 𝑃= 
+𝑁!
+2! (𝑁−2)! 
+(24) 
+where N is the number of the remaining ETFs. Given that N = 9, the number of potential pairs for 
+our selection process is 36. We now proceed to estimate the correlation coefficients between the 
+pairs. 
+5.3. 
+Step 1: Correlation 
+The first step in our 3-step pairs selection process is to select from the list of 36 available 
+pairs, the pairs with correlation coefficient greater than or equal to 90%. The process results in a 
+list of 16 ETF pairs, which are presented in Table 3. 
+Table 3: Correlation Coefficients 
+ETF Pairs 
+Correlation 
+ETF Pairs 
+Correlation 
+ILC-VLC 
+0.9973866 
+SFY-VAS 
+0.9885885 
+IOZ-VAS 
+0.9967398 
+VAS-VLC 
+0.9884803 
+ILC-SFY 
+0.9938031 
+ILC-VAS 
+0.9882902 
+SFY-VLC 
+0.9923301 
+IOZ-STW 
+0.9876779 
+STW-VAS 
+0.9904406 
+STW-SFY 
+0.9843019 
+IOZ-ILC 
+0.9898337 
+ISO-SSO 
+0.9832574 
+IOZ-VLC 
+0.9888663 
+STW-VLC 
+0.9820718 
+IOZ-SFY 
+0.9886190 
+STW-ILC 
+0.9807842 
+ 
+There are stability issues with pairs trading strategies based on correlation. Correlation 
+coefficients do not necessarily imply mean-reversion between the prices of the two ETFs. This is 
+because the correlation approach is sensitive to minor deviations (Lin et al., 2006), especially in 
+high frequency trading. As in Maio (2014), in order to overcome these issues, a cointegration 
+approach is used as the second-stage of the selection process. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+5.4. 
+Step 2: Cointegration 
+In step 2 we apply the cointegration test to the pairs selection process. Following Maio 
+(2014), we test the 16 selected ETF pairs for cointegration, but we differ from Maio (2014) by 
+using the Johansen cointegration technique. We estimate the Trace test statistics and the 
+Maximum Eigenvalue test statistic for each selected pairs. The estimated test statistics for each 
+pair are compared to the Johansen critical values at the 1% level of significance.  The results of 
+the cointegration test are presented in Table 4. 
+Table 4: Johansen Cointegration Test  
+ETF Pairs 
+Ranking 
+Trace Test 
+Rank = 0 
+Trace Test  
+Rank = 1 
+Max Eigen Value 
+Rank = 0 
+Max Eigen Value 
+Rank = 1 
+ILC-VLC 
+1 
+579.1743*** 
+3.5858--- 
+575.5885*** 
+3.5858--- 
+ISO-SSO 
+2 
+552.4473*** 
+2.8794--- 
+549.5679*** 
+2.8794--- 
+ILC-SFY 
+3 
+481.4052*** 
+3.6833--- 
+477.7218*** 
+3.6833--- 
+IOZ-VAS 
+4 
+376.1177*** 
+3.7454--- 
+372.3723*** 
+3.7454--- 
+SFY-VLC 
+5 
+342.5929*** 
+3.6762--- 
+338.9167*** 
+3.6762--- 
+STW-VAS 
+6 
+323.1521*** 
+3.8743--- 
+319.2778*** 
+3.8743--- 
+IOZ-ILC 
+7 
+307.7347*** 
+3.7341--- 
+304.0006*** 
+3.7341--- 
+IOZ-STW 
+8 
+268.3911*** 
+3.9326--- 
+264.4586*** 
+3.9326--- 
+ILC-VAS 
+9 
+265.6154*** 
+3.7819--- 
+261.8336*** 
+3.7819--- 
+VAS-VLC 
+10 
+262.6676*** 
+3.8013--- 
+258.8663*** 
+3.8013--- 
+IOZ-SFY 
+11 
+259.3849*** 
+3.9973--- 
+255.3875*** 
+3.9973--- 
+SFY-VAS 
+12 
+258.3328*** 
+4.0355--- 
+254.2973*** 
+4.0355--- 
+IOZ-VLC 
+13 
+256.4861*** 
+3.7044--- 
+252.7817*** 
+3.7044--- 
+STW-SFY 
+14 
+180.9548*** 
+4.0420--- 
+176.9129*** 
+4.0420--- 
+STW-VLC 
+15 
+150.6952*** 
+3.7218--- 
+146.9734*** 
+3.7218--- 
+STW-ILC 
+16 
+144.7155*** 
+3.6770--- 
+141.0385*** 
+3.6770--- 
+--- Indicates we fail to reject the null hypothesis of one cointegration at the 1% level of significance 
+*** Indicates the rejection of the null hypothesis of zero cointegration at the 1% level of significance 
+The maximum number of lags for the VAR are selected based on the SBIC 
+ 
+ 
+We test the null hypothesis of no cointegration at the 1% level of significance and reject the 
+null hypothesis if the test statistics is greater than the critical value.  Furthermore we also test the 
+null hypothesis of one cointegrating equation at the 1% level of significance and reject the null 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+hypothesis if the test statistics is greater than the critical value. The result of the cointegration 
+test implies that all 16 ETF pairs are cointegrated.  
+5.5. 
+Step 3: Error Correction Model 
+In step 3, we estimate the error correction model for each of the 16 remaining ETF pairs and 
+select the pairs with statistically significant error correction coefficients at the 1% level of 
+significance. We rank the pairs in ascending order of the error correction coefficient and select 
+the top five highly ranked ETF pairs from the list of 16 ETF pairs. The results from the ECM are 
+presented in Table 5. 
+Table 5: Error Correction Model 
+ETF Pairs 
+          Long-Run Equation 
+         Short-Run Equation 
+ 
+Constant  
+Beta 
+Error Correction Coeff. 
+Ranking 
+ISO_SSO 
+0.1661356 
+-0.3550208*** 
+-0.0042001*** 
+1 
+IOZ_VAS 
+0.1357624 
+-0.3413781*** 
+-0.0040130*** 
+2 
+IOZ_STW 
+-0.079756 
+-0.4585560*** 
+-0.0029489*** 
+3 
+STW_VAS 
+0.3295752 
+-0.7422068*** 
+-0.0002301*** 
+4 
+STW_SFY 
+3.041014 
+-1.0039670*** 
+-0.0000405*** 
+5 
+*** Indicates 1% level of significance 
+ 
+Therefore the remaining 5 ETF pairs have a correlation coefficient greater than 90% and 
+satisfy both the Johansen Trace test and Maximum Eigenvalue test at the 1% level of 
+significance. The cointegrating coefficients and the error correction coefficients are statistically 
+significant at the 1% level of significance.  
+We now proceed to the trading period, where we specify the rules and conditions for trade 
+signal generation.  
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+6. Pairs Trading Period 
+6.1. 
+Daily Rolling Window 
+In order to implement our trading strategies, we re-estimate the cointegrating vectors on a 
+daily basis using a rolling window of historical data. Figure 1 depicts the rolling window used in 
+estimating the daily cointegrating vectors. We define a 252-day rolling window using a 1-minute 
+interval data for the parameter estimation. The cointegrating vectors are re-estimated daily at 
+7:00am prior to the opening of the trading session from January 1, 2013 to September 30, 2015 
+Figure 1: Daily 252-Day Rolling Window 
+ 
+6.2. 
+Trading Rules 
+One of the most important aspects of the pairs trading strategy is the specification of the 
+trading rules. In this study, the primary criteria for position entries are the z-score, the quoted bidask spread, transaction cost and the profit potential. Similarly, the criteria for position exits are the  
+z-score, the quoted bid-ask spread, transaction cost, profit threshold, trade duration and the stoploss threshold. 
+The flow chart for the pairs trading strategy is shown in Figure 2. Detail description of the 
+strategy is presented below:  
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Figure 2: Flow Chart For Pairs Trading Strategy 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+1. We estimate the z-score using the most recent cointegrating vectors estimated for that 
+particular day at 7am.  
+2. We calculate the real-time quoted bid-ask spread in order to account for market liquidity. The 
+bid-ask spread is used in estimating the potential profit in step (5). 
+3. We calculate the order size using the cointegrating coefficient. The number of shares of asset 
+A is N, where N is the default order size specified by the trader.  The number of shares of 
+asset B is 𝛽∗𝑁 where 𝛽 is the cointegrating coefficient. 
+4. We calculate the transaction cost and short selling cost based on Interactive Brokers fees 
+schedule and the trade order size estimated in step 3 above.   
+5. As in Gundersen (2014), we protect the strategy from entering a trade that may result in an 
+immediate loss due to excessive transaction cost and bid-ask spread. We therefore calculate 
+the potential profit using equation (26). 
+6. If the potential profit is greater than zero and the z-score is greater than or equal to the upperthreshold (UTH) specified by the trader, the system will sell N number of shares of asset A 
+and buys Beta * N number of shares of asset B. This position is referred to as a BUY-SELL 
+position. 
+7. Likewise If the potential profit is greater than zero and the z-score is less than or equal to the 
+lower-threshold (LTH), the system will buy N number of shares of asset A and sells Beta * N 
+number of shares of asset B. This position is referred to as a SELL-BUY position. 
+8. For an existing BUY-SELL position, if the z-score is greater than or equal to zero and the 
+calculated profit is greater than or equal to the profit threshold, the system will enter a SELLBUY trade to closeout the position.  
+9. Likewise for an existing SELL-BUY position, if the z-score is less than or equal to zero and 
+the calculated profit is greater than or equal to the profit threshold, the system will enter a 
+BUY-SELL trade to closeout the position. 
+10. As in Caldeira and Moura (2013) and Maio (2014), a stop-loss is used to close out the position 
+whenever the loss from the strategy is greater than a specified loss threshold, otherwise the 
+system will continue to monitor the active position. 
+11. The system calculates the duration since trade entry and checks whether the duration is greater 
+than the max duration threshold set by the trader. If the duration is greater than or equal to the 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+max duration threshold, the system will enter reverse orders to closeout the open positions, 
+otherwise the system will continue to monitor the active position. 
+6.3. 
+Pairs Trading Implementation 
+6.3.1. 
+Time Varying Cointegrating Coefficients 
+Figure 3 shows the time varying cointegrating coefficients for the selected ETF pairs between 
+January 1, 2013 and September 30, 2015. The charts highlight the importance of the daily  
+re-calibration of the coefficients and reflect the dynamic changes in the long-run relationship 
+between the ETF pairs.  
+Figure 3: Time Varying Cointegrating Coefficients 
+Panel 1: ISO-SSO 
+Panel 2: IOZ-VAS 
+ 
+ 
+ 
+Panel 3: IOZ-STW 
+Panel 4: STW-VAS 
+ 
+ 
+ 
+ 
+Panel 5: STW-SFY 
+11-2012
+06-2013
+01-2014
+07-2014
+02-2015
+08-2015
+03-2016
+-0.355
+-0.35
+-0.345
+-0.34
+-0.335
+-0.33
+-0.325
+-0.32
+-0.315
+Date
+Cointegrating Coefficient
+ISO-SSO Time Varying Cointegrating Coefficients
+11-2012
+06-2013
+01-2014
+07-2014
+02-2015
+08-2015
+03-2016
+-0.38
+-0.37
+-0.36
+-0.35
+-0.34
+-0.33
+Date
+Cointegrating Coefficient
+IOZ-VAS Time Varying Cointegrating Coefficients
+11-2012
+06-2013
+01-2014
+07-2014
+02-2015
+08-2015
+03-2016
+-0.54
+-0.52
+-0.5
+-0.48
+-0.46
+-0.44
+-0.42
+Date
+Cointegrating Coefficient
+IOZ-STW Time Varying Cointegrating Coefficients
+11-2012
+06-2013
+01-2014
+07-2014
+02-2015
+08-2015
+03-2016
+-0.8
+-0.78
+-0.76
+-0.74
+-0.72
+-0.7
+-0.68
+Date
+Cointegrating Coefficient
+STW-VAS Time Varying Cointegrating Coefficients
+11-2012
+06-2013
+01-2014
+07-2014
+02-2015
+08-2015
+03-2016
+-1.1
+-1.05
+-1
+-0.95
+-0.9
+-0.85
+-0.8
+-0.75
+-0.7
+Date
+Cointegrating Coefficient
+STW-SFY Time Varying Cointegrating Coefficients
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+6.3.2. 
+Cointegrated Price & Spread Series  
+Figures 4-8 depict the evolution of the ETF prices and the spread between January 1, 2013 
+and September 30, 2015. The charts confirm that the ETF pairs do indeed move together with 
+temporary price deviations. We also present the summary statistics for the spread in Table 6.  
+The spread series for ISO-SSO ranges from a minimum of -0.4786 to a maximum of 0.2943 and 
+the mean of the spread is -0.0523 with a standard deviation of 0.073.  
+Figure 4:  ISO-SSO Cointegrating Price & Spread Series 
+ 
+The spread series for IOZ-VAS ranges from a minimum of -2.8846 to a maximum of 4.4884 
+and the mean of the spread is -0.7324 with a standard deviation of 0.619.  
+Figure 5: IOZ-VAS Cointegrating Price & Spread Series 
+ 
+Similarly, the spread series for IOZ-STW has a mean of -0.4994 and a standard deviation of 
+1.0943. The series ranges from a minimum of -3.6453 to a maximum of 5.441. 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+3
+3.5
+4
+4.5
+5
+Date
+Price
+ISO-SSO Cointegrated Price Series
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+Date
+Spread
+ISO-SSO Spread Series
+ISO
+SSO
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+20
+22
+24
+26
+28
+30
+Date
+Price
+IOZ-VAS Cointegrated Price Series
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+-4
+-2
+0
+2
+4
+6
+Date
+Spread
+IOZ-VAS Spread Series
+IOZ
+VAS
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Figure 6: IOZ-STW Cointegrating Price & Spread Series 
+ 
+The spread series for STW-VAS ranges from a minimum of -4.0247 to a maximum of 4.148. 
+The mean of the spread is -0.4045 with a standard deviation of 1.7926.  
+Figure 7: STW-VAS Cointegrating Price & Spread Series 
+ 
+And finally, the spread series for STW-SFY ranges from a minimum of -6.9865 to a 
+maximum of 7.2103. The mean of the spread is 0.9720 with a standard deviation of 3.4249.  
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+20
+22
+24
+26
+28
+30
+Date
+Price
+IOZ-STW Cointegrated Price Series
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+-4
+-2
+0
+2
+4
+6
+Date
+Spread
+IOZ-STW Spread Series
+IOZ
+STW
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+40
+45
+50
+55
+60
+Date
+Price
+STW-VAS Cointegrated Price Series
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+-5
+0
+5
+Date
+Spread
+STW-VAS Spread Series
+STW
+VAS
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Figure 8: STW-SFY Cointegrating Price & Spread Series 
+ 
+Table 6: Spread Summary Statistics 
+ Min 
+Max 
+Mean 
+Std. Dev 
+Skewness 
+Kurtosis 
+ISO-SSO 
+-0.4786 
+0.2943 
+-0.0523 
+0.073 
+1.5564 
+5.1126 
+IOZ-VAS 
+-2.8846 
+4.4884 
+-0.7324 
+0.619 
+-0.1071 
+3.404 
+IOZ-STW 
+-3.6453 
+5.441 
+-0.4994 
+1.0943 
+-0.1799 
+3.3056 
+STW-VAS 
+-4.0247 
+4.148 
+-0.4045 
+1.7926 
+0.7748 
+2.8381 
+STW-SFY 
+-6.9865 
+7.2103 
+0.9720 
+3.4249 
+-0.5318 
+1.6668 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+40
+45
+50
+55
+60
+65
+Date
+Price
+STW-SFY Cointegrated Price Series
+ 
+ 
+11-2012 06-2013 01-2014 07-2014 02-2015 08-2015 03-2016
+-10
+-5
+0
+5
+10
+Date
+Spread
+STW-SFY Spread Series
+STW
+SFY
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+7. Real Time Trading System 
+7.1. 
+Trading System Design 
+The trading system was developed using the Java programing language. The system features 
+both back testing and live-paper trading capability. The trading system uses Kdb+ in memory 
+database4 for storage of real time quotes and historical data.  Kdb+ is a high-performance 
+database with built-in query and programming language that supports real-time analysis of 
+billions of records and fast access to terabytes of historical data.   
+A diagram of the various components of the trading system is shown in Figure 9.  
+Figure 9: Trading System Components 
+ 
+                                                 
+4 Refer to www.kx.com for details 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+ The PairsTrading component implements the pairs trading rules outlined in Section 7.2 (1). 
+The MeanReversion component implements the mean-reversal rules outlined in Section 7.2 
+(8-9) and the StopLoss component implements the real-time risk management rules outlined 
+in Section 7.2 (10). The MaxDuration component implements the maximum duration rules 
+outlined in Section 7.2 (11).  
+ The TickerPlant provides the strategies with both real-time and historical data feed via the 
+Realtime DataFeed and the HistoricalReplay DataFeed components respectively.  
+ The OrderExecutor component is responsible for interfacing with external trading platform 
+such as IB Gateway for order execution.  
+ The BackTesting Console provides an order management console for back testing strategies 
+and the IB TradeStation provides real-time order management functionality.   
+ The Java Database Connectivity API (JDBC) provides database connectivity to the Oracle 
+database, which stores the ETF descriptive statistics and summary information.  
+7.2. 
+Trading System in Action 
+Screenshots of the trading system are shown below. Figure 10 shows the BackTesting 
+Console and Figure 11 shows the Output Console for the pairs trading strategies  
+Figure 10: Back Testing Management Console 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Figure 11: Pairs Trading Console 
+  
+The trading system is launched from a command prompt by executing a separate process5 for 
+each ETF pairs using the configuration settings listed below:  
+ For back testing, the trading period commences from January 1, 2013 to September 30, 2015 
+ Trading frequency is 100 milliseconds 
+ Trading dates excludes Australian public and bank holidays 
+ Trading commences at 10:00am and closes at 4:00pm 
+ Daily mark to market (MTM) is executed at 4:00pm 
+ Transaction cost is 0.08% of trade value or a minimum of $6.00 per trade  
+ The average daily interest rate paid on short selling positions is approximately 0.07% 
+ Total transaction cost is approximately 0.15%. 
+ Trade size is 1000 shares 
+ Stop loss threshold is -10% 
+ Maximum trade duration is 50 days 
+ 
+ 
+                                                 
+5 In computing, a process is an instance of a computer program that is being executed. It contains the program 
+code and its current activity. Depending on the operating system (OS), a process may be made up of multiple threads 
+of execution that execute instructions concurrently. 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+8. Performance Evaluation  
+8.1. 
+Performance Criteria (Individual Trades) 
+The following is a list of criteria used in evaluating the performance of each trade generated 
+by the pairs trading strategies: 
+8.1.1. 
+Transaction Cost 
+Trading of ETFs incur transaction costs and these transaction cost may impact the 
+performance of the trading strategies. This is especially true for high frequency trading 
+strategies, which involve many trades. Bowen et al. (2014) show more than 50% reduction in 
+excess returns of his high frequency pairs trading strategy after a 0.15% transaction fee. 
+Similarly Do and Faff (2012) reported that their pairs trading strategy became unprofitable after 
+accounting for transaction costs. 
+Therefore to account for transaction cost, we incorporate real-time trading cost using the 
+commission schedule provided by Interactive Brokers. The total transaction cost includes IB 
+brokerage fees, exchange fees, regulatory fees and short selling fees. The real-time transaction 
+costs are calculated based on the order size and the prevailing ETF quotes. 
+8.1.2. 
+Quoted Spread 
+The simplest measure of implicit transaction cost is the quoted spread, which is defined as 
+the difference between the bid and ask prices. The quoted spread measures the cost of 
+completing a round trip (buy and sell) if trades are executed at the quoted prices. The quoted 
+spread for the pairs trading is defined as: 
+ 
+𝑄𝑢𝑜𝑡𝑒𝑑 𝑆𝑝𝑟𝑒𝑎𝑑 (𝑄𝑆𝑡) = 𝐵𝑖𝑑𝑡
+𝐴− 𝐴𝑠𝑘𝑡
+𝐴
+2
++ 𝐵𝑖𝑑𝑡
+𝐵− 𝐴𝑠𝑘𝑡
+𝐵
+2
+ 
+(25) 
+where 𝐵𝑖𝑑𝑡
+𝐴 and 𝐴𝑠𝑘𝑡
+𝐴 are the posted bid and ask quotes for ETF A,  𝐵𝑖𝑑𝑡
+𝐵 and 𝐴𝑠𝑘𝑡
+𝐵 are the 
+posted bid and ask quotes for ETF B at time t. 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+8.1.3. 
+Potential Profit 
+Following Gundersen (2014), we calculate the potential profit prior to position entry using 
+the following equation: 
+ 
+ 𝑃𝑜𝑡𝑒𝑛𝑡𝑖𝑎𝑙 𝑃𝑟𝑜𝑓𝑖𝑡 (𝑃𝑇𝑡) = Abs[ 𝑃𝑡
+𝐴  + β ∗𝑃𝑡
+𝐵 ] - 𝑄𝑆𝑡 – 4 * 𝐶𝑡 
+(26) 
+Where 𝑄𝑆𝑡 is the quoted bid-ask spread, β is cointegrating coefficient, 𝑃𝑡
+𝐴 is the mid-quote for 
+ETF A,  𝑃𝑡
+𝐵 is the mid-quote for ETF B and 𝐶𝑡 is the total transaction cost at time t.  
+8.1.4. 
+Profit & Loss (P&L) 
+The trading profit & loss is calculated as the continuous compounding return (RD), which is 
+defined as follows: 
+ 
+𝑅𝐷𝑡= Ι ∗[ ln (
+𝑃𝑡
+𝐴
+𝑃𝑡−1
+𝐴) − β ∗ln (
+𝑃𝑡
+𝐵
+𝑃𝑡−1
+𝐵) ]  +  2 ∗ln (
+1−𝐶𝑡
+1+𝐶𝑡−1)   
+(27) 
+where β is the cointegrating coefficient and Ι is an indicator variable, which is equal to +1 for a 
+BUY-SELL trade and equal to -1 for a SELL-BUY trade.  𝑃𝑡−1
+𝐴 and 𝑃𝑡−1
+𝐵 are the trade entry prices 
+at time t-1, 𝑃𝑡
+𝐴 and 𝑃𝑡
+𝐵 are the trade exit prices at time t, 𝐶𝑡−1 is the real-time transaction cost 
+associated with the trade entry at time t-1 and 𝐶𝑡 is the transaction cost associated with the trade 
+exit at time t.  
+8.1.5. 
+Maximum Draw Down  
+The maximum drawdown is regarded as a measure of downside risk, and is calculated as the 
+largest percentage drop in returns over a specified trading period. 
+ 
+ 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+8.2. 
+Performance Criteria (Overall Strategy) 
+We estimate the following measures to evaluate the overall performance of the trading 
+strategies. 
+8.2.1. 
+Average & Annualized Daily Returns  
+The average daily returns and annualized returns are calculated as: 
+ 
+Average Daily Returns (𝜇) = 
+1
+𝑇 ∑
+(𝑅𝐷𝑡
+𝑡=𝑇
+𝑡=1
+) 
+(28) 
+ 
+Annualized Returns (𝑨𝝁)  = Average Daily Returns * 252 
+(29) 
+where 𝑅𝐷𝑡 is the continuous compounding returns at time t , T is the trading period and the 
+number of trading days in a year is 252. 
+8.2.2. 
+Cumulative Returns  
+The cumulative returns over the trading period T is calculated as: 
+ 
+Cumulative Returns = ∑
+(𝑅𝐷𝑡
+𝑡=𝑇
+𝑡=1
+) 
+(30) 
+8.2.3. 
+Standard Deviation 
+The standard deviation of returns and the annualized standard deviation are calculated as: 
+ 
+StdDev (𝜎) = 𝑆𝑄𝑅𝑇[
+1
+𝑇−1 ∑
+(𝑅𝐷𝑡− 𝜇)2
+𝑡=𝑇
+𝑡=1
+] 
+(31) 
+ 
+Annualized StdDev (𝐴𝜎) = StdDev ∗ SQRT (252) 
+(32) 
+8.2.4. 
+Sharpe Ratio 
+The Sharpe ratio is a risk-adjusted measure of returns, which is used to determine the return 
+per unit of risk.  The Sharpe ratio is calculated as follows: 
+ 
+Sharpe ratio (SR) = 
+𝐴𝜇− 𝑟𝑓
+𝐴𝜎 
+ 
+(33) 
+where 𝐴𝜇 is the annualized returns, 𝐴𝜎 is the annualized standard deviation of returns, and 𝑟𝑓 is 
+the annualized risk free rate. 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+9. Strategy Results 
+9.1. 
+Back Testing Result 
+The pairs trading strategies was back tested between January 1, 2013 and September 30, 
+2015 using a trading frequency of 100 milliseconds. The results of the strategies are presented in 
+Table 7. 
+Table 7: Back Testing Result  
+ETF Pairs 
+ISO-SSO 
+IOZ-VAS 
+IOZ-STW 
+STW-VAS 
+STW-SFY 
+Total Trades 
+12 
+9 
+21 
+30 
+23 
+Profitable Trades 
+11 
+8 
+18 
+30 
+21 
+Losing Trades 
+1 
+1 
+3 
+0 
+2 
+Average Duration 
+(Days) 
+30 
+42 
+27 
+13 
+23 
+Average Daily  
+Return (%) 
+0.0022% 
+0.0013% 
+0.0025% 
+0.0055% 
+0.0054% 
+Cumulative  
+Return (%) 
+10.08% 
+4.41% 
+19.70% 
+62.27% 
+46.60% 
+Average Daily 
+Quoted Spread 
+0.09 
+0.15 
+0.08 
+0.20 
+-0.08 
+Standard Dev.  
+of Returns 
+0.02 
+0.01 
+0.02 
+0.03 
+0.03 
+Sharpe Ratio 
+2.21 
+1.00 
+9.29 
+15.12 
+11.17 
+Max 
+Draw Downs (%) 
+-11.76% 
+-32.47% 
+-29.65% 
+-4.83% 
+-11.68% 
+The risk free rate used in calculating the Sharpe ratio is 1.99%. This is the average yield to maturity of the Australian 
+2 Year Treasury Bond. 
+ 
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+For the ISO-SSO pairs, the strategy generated 12 trades with a maximum draw down of  
+-11.76% and a Sharpe ratio of 2.21. The average duration is 30 days. Figure 12 shows the 
+cumulative returns and the profit-loss ratio chart for ISO-SSO pairs trading strategy.  The chart 
+shows that the strategy yield a cumulative return of 10.08% over the trading period with 92% 
+profitable trades compared to 8% losing trades.  
+Figure 12: ISO-SSO Cumulative Returns & Profit-Loss Ratio 
+ 
+The IOZ-VAS pairs generated 9 trades with a maximum draw down of -32.47% and a Sharpe 
+ratio of 1. The average duration is 42 days. Figure 13 show that the strategy yield a cumulative 
+returns of 4.41% over the trading period, with 89% profitable trades and 11% losing trades. 
+Figure 13: IOZ-VAS Cumulative Returns & Profit-Loss Ratio 
+ 
+ 
+1
+2
+3
+4
+5
+6
+7
+8
+9 10 11 12
+0
+0.02
+0.04
+0.06
+0.08
+0.1
+0.12
+0.14
+Trades
+Returns
+Cumulative Returns
+Profits 92%
+Losses 8%
+Profit-Loss Ratio
+1
+2
+3
+4
+5
+6
+7
+8
+9
+0
+0.01
+0.02
+0.03
+0.04
+0.05
+Trades
+Returns
+Cumulative Returns
+Profits 89%
+Losses 11%
+Profit-Loss Ratio
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+The IOZ-STW pairs generated 21 trades with a maximum draw down of -29.65% and a 
+Sharpe ratio of 9.29. The average duration is 27 days. Figure 14 show that the strategy yield a 
+cumulative returns of 19.70% over the trading period with 86% profitable trades and 14% losing 
+trades. 
+Figure 14: IOZ-STW Cumulative Returns & Profit-Loss Ratio 
+ 
+The STW-VAS pairs generated 30 trades with a maximum draw down of -4.86% and a 
+Sharpe ratio of 15.12. The average duration is 13 days. Figure 15 show that the strategy yield a 
+cumulative returns of 62.27% over the trading period with 100% profitable trades and no losing 
+trades. 
+Figure 15: STW-VAS Cumulative Returns & Profit-Loss Ratio 
+ 
+ 
+0
+5
+10
+15
+20
+25
+0
+0.05
+0.1
+0.15
+0.2
+0.25
+Trades
+Returns
+Cumulative Returns
+Profits 86%
+Losses 14%
+Profit-Loss Ratio
+0
+10
+20
+30
+40
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+0.6
+0.7
+Trades
+Returns
+Cumulative Returns
+Profits 100%
+Losses < 1%
+Profit-Loss Ratio
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+And finally The STW-SFY pairs generated 23 trades with a maximum draw down of  
+-11.68% and a Sharpe ratio of 11.17. The average duration is 23 days. Figure 16 show that the 
+strategy yield a cumulative returns of 46.60% over the trading period with 91% profitable trades 
+and 9% losing trades. 
+Figure 16: STW-SFY Cumulative Returns & Profit-Loss Ratio 
+ 
+ 
+  
+ 
+ 
+ 
+0
+5
+10
+15
+20
+25
+0
+0.1
+0.2
+0.3
+0.4
+0.5
+Trades
+Returns
+Cumulative Returns
+Profits 91%
+Losses 9%
+Profit-Loss Ratio
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+10. Conclusion 
+10.1. 
+Findings 
+This study evaluates the profitability of dynamic pairs trading strategies using a proposed  
+3-step pairs selection approach. We extend the pairs trading methodology employed by Miao 
+(2014) to the broad-based exchange traded funds (ETFs) listed on the Australian Securities 
+Exchange (ASX).  
+The 3-step approach incorporates the correlation, cointegration and error correction 
+coefficient as the pre-selection criteria during the formation period. In the subsequent trading 
+period, we employ a daily re-calibration of the parameters using a 252-day rolling window from 
+January 1, 2013 to September 30, 2015.  
+The trade entry rules are based on the standardize spreads (z-score) from the cointegrating 
+equation, the bid-ask spread, transaction cost and profit potential. Similarly the trade exit rules are 
+based on the z-score, bid-ask spread, transaction cost, profit threshold, stop-loss threshold and the 
+maximum duration threshold. 
+We developed a real-time trading system using the Java programming language and KDB+ 
+database and back test the strategies using tick-by-tick historical quotes during the trading 
+period.  
+The back testing of the top five ETF pairs: ISO-SSO, IOZ-VAS, IOZ-STW, STW-VAS and 
+STW-SFY yield cumulative returns of 10.08%, 4.41%, 19.70%, 62.27%, 46.60% and Sharpe 
+ratios of 2.21, 1.00, 9.29, 15.12, 11.17 respectively. The maximum draw down is -32.47% over 
+the trading period.  
+The results of the pairs trading strategies highlight the potential for profitable statistical 
+arbitrage trading opportunities within the Australian ETF market. 
+10.2. Limitations of results 
+The results of this study are limited to the assumptions used in the design and 
+implementation of the pairs trading strategies. The assumptions include the choice of the 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+formation period for the estimation of cointegration parameters, the trading period, the choice of 
+stop loss and maximum duration threshold, and the upper and lower z-score threshold used for 
+signal generation. Different assumptions could lead to different results and hence different 
+conclusions. 
+Furthermore, the study did not incorporate the effect of dividends in our parameter estimation 
+and trading strategies. When a stock/ETF pays dividend, this typically leads to a decrease of the 
+stock price (Stander, 2011) and the dividend payment may affect the performance of the trading 
+strategies. 
+10.3. Suggestions for future research 
+Further research into ETFs in the Australian market is crucial given the limited number of 
+research on ETFs in Australia. A natural extension of this study is to examine the profitability of 
+pairs trading strategies using international ETFs listed on the ASX within a high frequency 
+trading environment. The research can also be extended to include commodity ETFs, currency 
+ETFs and Fixed Income ETFs listed on the ASX. 
+. 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+11. References 
+Aitken, M., Chen, H., and Foley, S. (2013). How beneficial has competition been for the 
+Australian equity marketplace? Finance Discipline, Faculty of Business. Australian School 
+of Business, University of NSW, Australia.   
+Arnerich, T., Dunbar, S., and Perkins, J. (2012). Examining exchange traded funds: Arnerich 
+Massena, Inc. 
+ASIC. (2012). Report 282: Regulation of exchange traded funds ASIC regulatory documents: 
+Australian Securities and Investments Commission (ASIC). 
+ASX. (2015). Market Information. Australia Securities Exchange (ASX). Available from 
+http://www.asx.com.au 
+Bogomolov, T. (2010). Pairs trading in the land down under. Finance and Corporate Governance 
+Conference Paper.  
+Bowen, D., Hutchinson, M.C, and O’Sullivan, N. (2014). Pairs trading in the uk equity market. 
+European Journal of Finance, Forthcoming.  
+Broussard, J. and Vaihekoski, M. (2012). Profitability of pairs trading strategy in an illiquid 
+market with multiple share classes. Journal of International Financial Markets, 
+Institutions and Money, Vol.22, pp. 1188-1201.  
+Caldeira, J. F., & Moura, G. V. (2013). Selection of a Portfolio of Pairs Based on Cointegration: A 
+Statistical Arbitrage Strategy (Working Paper). Federal University of Rio Grande do Sul.  
+Do, B., & Faff, R. (2010). Does Simple Pairs Trading Still Work? Financial Analyst Journal 66, no. 
+4, 83-95.  
+Do, B. and Faff, R. (2012). Are pairs trading profits robust to trading costs. The Journal of 
+Financial Research, Vol. XXXV, No. 2, pp. 261-287.  
+Enders, W. (2010). Applied Econometric Time Series. 3rd. New Jersey: John Wiley & Sons, 2010. 
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Engle, R. F. and Granger, C. W. J. (1987). Co-integration and error correction: Representation, 
+estimation, and testing. Econometrica, Vol. 55, Number 2, pp. 251-276.  
+Engle, R. F. and Granger, C. W. J. (1991). Introduction to Long-Run Economic Relation- ships: 
+Readings in Cointegration. Oxford University Press, New York, 1st edition.  
+Galenko, A., Popova, E. and Popova, I. (2012) Trading in the presence of cointegration. The 
+Journal of Alternative Investments 15(1): 85–97 
+Gatev, E., Goetzmann, W. N., and Rouwenhorst, K. G. (2006). Pairs trading: Performance of a 
+relative-value arbitrage rule. The Review of Financial Studies, 19(3), 797–827.  
+Gundersen, R. J. (2014). Statistical Arbitrage: High Frequency Pairs Trading, Norwegian School 
+of Economics Bergen, Spring, 2014 
+Hoel, C. H. (2013). Statistical Arbitrage Pairs:  Can Cointegration Capture Market Neutral Profits, 
+Master’s Thesis.  Norwegian School of Economics Bergen. 
+Johansen, S. (1991). Estimation and hypothesis testing of Cointegration Vectors in Gaussian 
+Vector Autoregressive models. Econometrica(59), 1551–1580.  
+Johansen and Juselius, K., (1990), “Maximum Likelihood Estimation and Inference on 
+Cointegration– with Applications to the Demand for Money,” Oxford Bulletin of 
+Economics and Statistics, Vol. 52, No. 2, pp. 169–210. 
+Lin, Y., McCrae, M., and Gulati, C. (2006). Loss protection in pairs trading through minimum 
+bounds: A cointegration approach. Journal of Applied Mathematics and Decision 
+Sciences, Volume 2006 pp. 1-14. 
+Marshall, B.R., Nguyen, N.H., and Visaltanachoti, N. (2013), ETF arbitrage. Intraday evidence, 
+Journal of Banking & Finance, 37, issue 9, p. 3486-3498, 
+http://EconPapers.repec.org/RePEc:eee:jbfina:v:37:y:2013:i:9:p:3486-3498.  
+Miao, G. J. (2014). High frequency and dynamic pairs trading based on statistical arbitrage using 
+a two-stage correlation and cointegration approach. International Journal of Economics 
+and Finance; Vol. 6, No. 3.  
+Electronic copy available at: https://ssrn.com/abstract=2662258
+
+ 
+Neiron, A. (2014). Australia's ETF market: A year in review. Available from 
+http://www.morningstar.com.au/etfs/article/market-review/6339 
+Ng, S., and Perron, P. (1995). Unit root test in ARMA models with data-dependent methods for 
+the selection of the truncation lag. Journal of the American Statistical Association(90),  
+268–281.  
+Perlin, M. S. (2009). Evaluation of Pairs-trading strategy at the Brazilian financial market. 
+Journal of Derivatives & Hedge Funds, 15(2), 122–136.  
+Schwert, G. W. (1989). Tests for unit roots: A Monte Carlo Investigation. Journal of Business & 
+Economic Statistics, American Statistical Association, 7(2), 147-159.  
+Sipila, M. (2013). Algorithmic Pairs Trading: Empirical Investigation of Exchange Traded Funds.  
+Aalto University School of Business, Master's Thesis. 
+Stander, Y. (2011). Multivariate Copulas in Financial Market Risk with Particular Focus on 
+Trading Strategies and Asset Allocation, PhD thesis, University of Johannesburg.  
+ 
+ 
+Electronic copy available at: https://ssrn.com/abstract=2662258

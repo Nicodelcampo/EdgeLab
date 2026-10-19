@@ -1,0 +1,5718 @@
+Order Book Dynamics -
+Two-Dimensional Exit Problems on
+a Cryptocurrency Exchange
+J.M. de Jong
+Master of Science Thesis
+
+Erasmus University Rotterdam
+Erasmus School of Economics
+Master Thesis - Quantitative Finance Programme
+Order Book Dynamics -
+Two-Dimensional Exit Problems on
+a Cryptocurrency Exchange
+Student
+ir. J.M. de Jong
+Student I.D.
+450700jj
+Supervisor
+drs. S.H.L.C.G. Vermeulen
+Second assessor
+dr. R-J. Lange
+Date ﬁnal version
+January 21, 2020
+The content of this thesis is the sole responsibility of the author and does not reﬂect the view of the
+supervisor, second assessor, Erasmus School of Economics or Erasmus University.
+
+I would like to express my gratitude to my thesis supervisor, drs. Sebastiaan Vermeulen, and coordinator, dr. Rutger-Jan Lange, for their helpful comments, feedback and patience. I would also like to
+thank prof. dr. ir. Johan Grasman for our discussion on asymptotic solutions of exit problems, and
+the people at Blocktraders for pointing me in the right direction for automated data collection. Last
+but not least, I would like to thank my parents for their unconditional support during the writing of
+this thesis.
+
+Abstract
+This thesis reports on the applicability of drift-diﬀusion and diﬀusion-only models to estimate future
+price directions from Level-1 limit order book data. We ﬁt and evaluate the probability models on a
+data set of 78M order book updates (1 month) of the Bitcoin −U.S. Dollar market on BitMEX, a
+large cryptocurrency exchange.
+We show that diﬀusion-only models outperform drift-diﬀusion models, which is likely a result of the
+limited Level-1 description of the order book. Both types of models oﬀer signiﬁcant improvements
+over baseline models that do not incorporate order book information. On selected evaluation points
+leading up to price changes, the best-performing model obtains an RMS direction prediction error of
+9.18 −30.52%. A model-based price direction classiﬁer obtains an average classiﬁcation precision on
+the same points in the range of 93.83 −99.64%.
+We ﬁnally demonstrate eﬀectiveness of the classiﬁer in a simple trading strategy, resulting in an average
+return of 0.062% per trade and win rate of 69.12% over 38K trades. A realistic implementation of the
+strategy will require further analysis in price move sizes and/or limit order execution.
+Keywords: Drift-diﬀusion, cryptocurrency, exit problems, high-frequency trading, limit order books,
+market microstructure, option valuation.
+Master of Science Thesis
+J.M. de Jong
+
+ii
+J.M. de Jong
+Master of Science Thesis
+
+Table of Contents
+1
+Introduction
+1
+2
+Literature Review
+5
+3
+Data
+9
+3-1
+Data collection and description . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+3-2
+Data synthesis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+3-3
+Initial analysis . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+12
+4
+Methodology
+13
+4-1
+Mathematical framework
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+13
+4-2
+Order ﬂow process . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+16
+4-3
+Filtering . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+19
+4-4
+Performance Evaluation . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+20
+5
+Models
+21
+5-1
+Model 1 - Independent diﬀusions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+22
+5-2
+Model 2 - Correlated diﬀusions . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+22
+5-3
+Model 3 - Independent drift-diﬀusions
+. . . . . . . . . . . . . . . . . . . . . . . . . . . .
+24
+5-4
+Model 4 - Correlated drift-diﬀusions
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+26
+6
+Results
+29
+6-1
+Data selection . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+30
+6-2
+Average parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+31
+6-3
+Prediction Performance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+32
+6-3-1
+Time Averaged Parameters . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+32
+6-3-2
+Rolling Parameters
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+34
+6-4
+Classiﬁer Performance . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+34
+6-4-1
+Up-Down-Classiﬁers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+34
+6-4-2
+Up-Down-No Prediction-Classiﬁer
+. . . . . . . . . . . . . . . . . . . . . . . . . .
+36
+6-5
+Trading Strategy . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+38
+Master of Science Thesis
+J.M. de Jong
+
+iv
+Table of Contents
+7
+Conclusion and Discussion
+41
+A Mathematical derivations
+45
+A-1 RMSE Conﬁdence Interval
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+45
+A-2 Complete solution of Model 4 . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+46
+A-3 Equivalence of Classiﬁer Threshold . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+48
+B Tables
+49
+C Trading Strategy
+57
+References
+59
+Glossary
+63
+List of Acronyms . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+63
+List of Symbols
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+64
+J.M. de Jong
+Master of Science Thesis
+
+List of Figures
+4-1
+Six-point state transition template and associated transition rates
+. . . . . . . . . . . . .
+14
+4-2
+Large-scale sample evolutions of At and Bt and the price process . . . . . . . . . . . . . .
+18
+4-3
+Small-scale sample evolutions of At and Bt and the price process
+. . . . . . . . . . . . .
+18
+4-4
+Large-scale sample evolutions of corrected At and Bt and correlation ρt . . . . . . . . . .
+19
+5-1
+Probabilities of Model 2 for diﬀerent values of ρ . . . . . . . . . . . . . . . . . . . . . . .
+23
+5-2
+Rotation of the coordinate frame and associated drift vector⃗v . . . . . . . . . . . . . . .
+25
+5-3
+Probabilities of Model 4 for negative ρ and three choices of β
+. . . . . . . . . . . . . . .
+27
+5-4
+Probabilities of Model 3 for three choices of β . . . . . . . . . . . . . . . . . . . . . . . .
+27
+5-5
+Probabilities of Model 4 for positive ρ and three choices of β . . . . . . . . . . . . . . . .
+27
+6-1
+Midprice evolution over the selected data set . . . . . . . . . . . . . . . . . . . . . . . . .
+30
+6-2
+Average drifts and standard deviations for a range of α . . . . . . . . . . . . . . . . . . .
+31
+6-3
+Average correlation for a range of α
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+31
+6-4
+Prediction performances for time averaged parameters . . . . . . . . . . . . . . . . . . . .
+33
+6-5
+Probability diﬀerences between time-averaged Models 1 & 2 and Models 3 & 4 . . . . . .
+35
+6-6
+Empirical CDFs of correctly and wrongly predicted points as functions of R and φ . . . . .
+36
+6-7
+Graphical representation of area S
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+37
+6-8
+Cumulative returns of the strategy for diﬀerent transaction cost scenarios
+. . . . . . . . .
+39
+6-9
+Upward price probability plotted within the bid-ask spread
+. . . . . . . . . . . . . . . . .
+40
+Master of Science Thesis
+J.M. de Jong
+
+vi
+List of Figures
+J.M. de Jong
+Master of Science Thesis
+
+List of Tables
+3-1
+Summarizing statistics of the full data set . . . . . . . . . . . . . . . . . . . . . . . . . .
+9
+3-2
+A sample of ﬁve quotes . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+10
+3-3
+Timestamp gap types and their respective durations . . . . . . . . . . . . . . . . . . . . .
+11
+3-4
+Percentages and average lifetimes of observations with a given bid-ask spread . . . . . . .
+12
+3-5
+Time-weighted average volume of the ﬁrst three order book levels
+. . . . . . . . . . . . .
+12
+4-1
+Evolution of cumulative order ﬂow processes At, Bt with minimal spread . . . . . . . . . .
+17
+4-2
+Evolution of cumulative order ﬂow processes At, Bt with changing spread . . . . . . . . .
+17
+5-1
+Overview of model parameters
+. . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+21
+6-1
+Summarizing statistics of the synthesized data set . . . . . . . . . . . . . . . . . . . . . .
+30
+6-2
+Summarizing statistics of all points with a ﬁxed time t until a price change
+. . . . . . . .
+33
+6-3
+Classiﬁer thresholds R∗, φmin and φmax . . . . . . . . . . . . . . . . . . . . . . . . . . .
+37
+6-4
+Summarizing statistics of the executed trades
+. . . . . . . . . . . . . . . . . . . . . . . .
+38
+6-5
+Return statistics of the executed trades under transaction costs . . . . . . . . . . . . . . .
+39
+B-1 Model performance of Models 1 - 4 with time-averaged parameters . . . . . . . . . . . . .
+50
+B-2 Model performance of Models 1 & 2 with rolling-window parameters . . . . . . . . . . . .
+51
+B-3 Model performance of Models 3 & 4 with rolling-window parameters . . . . . . . . . . . .
+52
+B-4 Classiﬁer precision of the Up-Down Classiﬁers . . . . . . . . . . . . . . . . . . . . . . . .
+53
+B-5 Precision of the Up-Down-No Prediction classiﬁer . . . . . . . . . . . . . . . . . . . . . .
+54
+B-6 Recall of the Up-Down-No Prediction classiﬁer . . . . . . . . . . . . . . . . . . . . . . . .
+54
+B-7
+F1-score of the Up-Down-No Prediction classiﬁer
+. . . . . . . . . . . . . . . . . . . . . .
+55
+Master of Science Thesis
+J.M. de Jong
+
+viii
+List of Tables
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 1
+Introduction
+At the heart of modern trading exchanges is an electronic matching system to track and execute
+orders given by market participants. This system continuously updates a list of open orders, which
+express buying or selling interest, with their associated price level and order volume. This double
+list is generally called the Limit Order Book (LOB), and the process of executing these orders the
+Continuous Double Auction (CDA). As the market participants send their instructions, liquidity is
+either created by accumulation of open interest (limit order), or removed through a trade (market
+order) or a cancellation of a limit order.
+This interplay of existing and arriving orders results in the price discovery of the asset trading on the
+exchange. The arrivals of orders and cancellations can therefore be viewed as the microscopic process
+driving the macroscopic price development and is hence of major interest to a multitude of parties.
+Market participants wish to inform themselves of the behaviour of other participants and the potential
+impact of a large-volume trade. Market regulators want to monitor trading behaviour and evaluate
+the performance of the order matching system. Scientiﬁc and quantitative researchers may use the
+LOB to develop new dynamical models or to back-test trading strategies.
+Arguing that the main order ﬂow is directed at the best bid and ask prices, Cont and De Larrard
+(2013) proposed a reduced-form model, which takes into account only the volume at these two levels.
+Inspired by Cont, Stoikov, and Talreja (2010), Avellaneda, Reed, and Stoikov (2011) deﬁne a similarly
+reduced, but symmetrical model which includes the negative correlation of the best bid and ask queue
+sizes, and derive the price increase probability.
+Master of Science Thesis
+J.M. de Jong
+
+2
+Introduction
+It is known from Biais, Hillion, and Spatt (1995) that limit order arrivals show clustering behaviour.
+It is therefore a serious limitation of both the Cont-Stoikov-Talreja (CST) model and the AvellanedaReed-Stoikov (ARS) model that the arrival rates are modeled as constants.
+In this thesis, we investigate whether the analytical predictions of the price process, provided by the
+aforementioned CST and ARS models, can be improved by allowing the Poisson process intensities to
+vary between arrival events. Additionally, we introduce and compare two new models for predictions of
+the price increase probability, based on convection-diﬀusion results of López and Sinusía (2004). These
+correspond to heavy-traﬃc approximations of more general imbalanced (drifting) arrival processes with
+and without correlation.
+The application of these reduced-form models on cryptocurrency markets is motivated by ﬁndings of
+Schnaubelt, Rende, and Krauss (2019), who investigated the Bitcoin (XBT) −United States Dollar
+(USD) market. At the time of writing, Bitcoin is the world’s largest cryptocurrency by market capacity.
+The authors point out that average order book volume has a global maximum at the best bid and
+ask levels, indicating a high information content at the ﬁrst LOB level. Secondly, real-time LOB data
+is readily available for such markets for free, facilitating the ready application of our models. The
+LOB under investigation in this thesis is a three-month-long data set of the XBT −USD market on
+BitMEX, the largest cryptocurrency exchange by reported trading volume (CoinMarketCap, 2019).
+In a rolling window approach, we estimate the order ﬂow parameters on the bid and ask sides of
+the LOB using exponentially ﬁltered cumulative order ﬂow processes.
+We assume that the ﬁtted
+parameters at a speciﬁc point in time remain constant until the next price move. This way, the available
+analytical results for computing transition probabilities still apply. We investigate the eﬀectiveness of
+the rolling window method by varying the weighting parameter of both the exponential and rolling
+window ﬁlters.
+For the chosen set of evaluation points, all order ﬂow models show signiﬁcant improvement over baseline
+models that do not take the order ﬂow into account. This indicates that the incorporation of Level-1
+order volume information can provide a superior estimate of future price direction. The inclusion of
+drift eﬀects does not provide better direction estimates, which is likely a result of the limited Level-1
+data set. Inclusion of correlation, and parameter estimation from short rolling windows do not improve
+prediction performance either.
+When the models are used as binary threshold classiﬁers, we observe that the time-averaged models
+generate (nearly) identical classiﬁcations. Classiﬁer precision on the evaluation points ranges between
+87.69 −99.00%. If we exclude certain order volume combinations for prediction, classiﬁer precision of
+the best-performing model can be increased to 93.83 −99.64%, at the cost of reduced recall.
+Finally, we show the eﬀectiveness of the classiﬁer for generating trading signals. Over the course of 1
+J.M. de Jong
+Master of Science Thesis
+
+3
+month, a simulated trading system generated approximately 40000 trades, trading only a ﬁxed size of
+±1 XBT. In the absence of transaction costs, we obtain an average return of 5.547 USD per market
+entry and exit. If we include transaction costs for market orders, the paid commission unfortunately
+more than oﬀsets the obtained proﬁts. When we assume the exit trades can be carried out using limit
+orders, a trader can earn commission rebates and still make proﬁts (1.061 USD per entry and exit).
+However, limit orders face execution risk depending on their placement.
+Future research may be directed at the execution risk of limit orders, or prediction probability of larger
+price moves by including deeper order book levels. Data fusion with traded volume information may
+prove beneﬁcial in estimating the order ﬂow parameters.
+The obtained probability function can also ﬁnd application in the pricing of two-asset cash-or-nothing
+options that are knocked in according to a barrier on the ﬁrst asset price, and knocked out according
+to another barrier on the second.
+Master of Science Thesis
+J.M. de Jong
+
+4
+Introduction
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 2
+Literature Review
+Limit Order Book (LOB) research has been inﬂuenced by many ﬁelds of study, and there is no general
+agreement on the best approach (Gould et al., 2013). Overall, there are two signiﬁcantly diﬀerent
+main modeling paradigms, which both rest on strong assumptions on trader behaviour.
+From classical economic literature and psychology, traders are assumed to act strategically, participating in the market according to personal utility functions and optimization procedures. Assumptions
+on the rationality of traders have however been contested by Gode and Sunder (1993), who show in
+a Continuous Double Auction (CDA) simulation experiment that even highly uninformed traders can
+perform well and generate a high market eﬃciency. This indicates that aggregated high-level properties
+of markets can be reproduced with only a minimal set of assumptions on trader behaviour.
+From physics models, order ﬂows are treated as stochastic counting processes, drawing many analogies
+with processes encountered in statistical mechanics such as particle motion and heat diﬀusion. These
+so-called zero-intelligence models further seek to describe the order ﬂows in terms of transition rate
+parameters and order size distribution. The advantage of these models is that they are based on directly
+observable signals and often lead to quantiﬁable predictions without resorting to computationally
+expensive simulation methods (Gould et al., 2013). Especially for traders, preference may be given to
+zero-intelligence models to obtain predictions in real-time.
+Early research in LOB dynamics focused on empirical analyses of data, reporting on qualitative properties of the observed order ﬂow. Biais et al. (1995) cite properties such as serial cross-correlation
+of arrival intensities, undercutting behaviour and clustering in time on the Paris Bourse. Another
+Master of Science Thesis
+J.M. de Jong
+
+6
+Literature Review
+empirical study on the Paris Bourse by Bouchaud, Mézard, and Potters (2002) reports that prices of
+arriving limit orders follow a power-law distribution around the current price.
+In an attempt to reproduce key features of the LOB in an analytically tractable model, Smith, Farmer,
+Gillemot, and Krishnamurthy (2003) propose a parsimonious zero-intelligence model based on only
+ﬁve measurable scalar parameters. Limit orders, market orders and cancellations all arrive as Poisson
+processes with constant rates on a price grid with ﬁxed tick size. They comment on the apparent longterm balance of market orders and limit orders, and draw an analogy with evaporation-deposition
+processes.
+Cont et al. (2010) move the problem of LOB modeling into the domain of Markov chains −stochastic
+models of event sequences and transition probabilities that only depend on the current state of the
+system. Rate parameters that describe independent Poissonian order ﬂows are obtained directly from
+LOB data and are modeled according to the power-law described in Bouchaud et al. (2002). Applying
+results from queuing theory, they show that several conditional probabilities of special interest to
+traders, such as the predicted probability of an upward price move, the probability of executing an
+order before the mid-price moves and the probability of ‘making’ the spread can be computed using
+Laplace transform methods.
+They also show that the mid-price process converges to a Brownian
+motion with volatility depending on the tick size and mean queue size. The prediction of price moves
+from order book queues is closely related to the study of exit problems, which also arise in the ﬁelds
+of barrier option pricing and population dynamics (Grasman & Van Herwaarden, 1999).
+In Cont and De Larrard (2013), the model is reduced to the evolution of the volume at the best bid and
+best ask queues. The authors explain that the motivation is twofold: better availability of data, and
+the fact that the main order ﬂow is often directed at the best bid and ask prices. In this reduced form,
+they obtain conditional price increase probabilities that can be computed directly, both in a balanced
+order book, where the arrival intensities of the market orders and cancellations are equal to the arrival
+intensity of limit orders, and in an unbalanced order book. However, as Zhang, Christensen, Li, and
+Godsill (2016) point out, this last result has been derived incorrectly, owing to a non-convergent term
+in Van Leeuwaarden and Raschel (2013). Using characteristic functions, they present a new integral
+for the probability of a mid-price increase in an imbalance case.
+The Cont-Stoikov-Talreja (CST) model has inspired many more studies into LOB modeling. Andoh
+(2017) applies the model on the order book of AstraZeneca PLC and shows that the Laplace transform methods agree with simulation results obtained from parameters ﬁtted to the data set. Abergel
+and Jedidi (2013) further investigate stability of the order book with constant arrival intensities, and
+prove, under certain assumptions, that it is ergodic. Avellaneda et al. (2011) consider a symmetrical order book model but add extra transition probabilities corresponding to correlation in the bid
+J.M. de Jong
+Master of Science Thesis
+
+7
+and ask volumes. Furthermore, they shift the domain of the probability function to match with the
+empirical probabilities. For this, they introduce an implied volume parameter, which accounts for
+hidden liquidity. The so-called hidden liquidity represents the existence of (partially) hidden orders or
+patient traders who choose to only reveal their preferences once the queue almost depletes. The suggestion of a potential liquidity supply outside the observable order book data has also been suggested
+by Biais et al. (1995). Drawing on results from diﬀusion theory, the stochastic Partial Diﬀerential
+Equation (PDE) of the Avellaneda-Reed-Stoikov (ARS) model has an explicit solution which allows
+for quick computation of the transition probabilities.
+The stochastic PDE of the ARS model can be extended to a stationary version of the two-asset BlackScholes equation (In ’t Hout & Valkov, 2015). In this more general form, bid and ask queue sizes
+also exhibit constant drift. The solution to this equation, with suitable boundary conditions, has been
+approximated by López and Sinusía (2005) in the context of convection-diﬀusion problems. Although
+the authors derive full asymptotic expansions, an intermediate integral result can still be computed
+quickly.
+Another extension is a generalization by Huang and Kercheval (2012), allowing limit orders to arrive in multiple sizes, but keeping market orders and cancellations at unit size.
+Their result is a
+computationally costly integral, which is not very suitable for high-frequency prediction.
+The empirically observed clustering of order arrivals is problematic for the CST and ARS models, which
+assume constant arrival rates. Chávez-Casillas, Elliott, Rémillard, and Swishchuk (2017) introduce a
+time-changed arrival process, but this does not inﬂuence the associated (and incorrectly derived) price
+increase probability from Cont and De Larrard (2013). Swishchuk and Vadori (2017) generalize the
+CST model to arbitrary interarrival time distributions and add extra state parameters to account for
+serial correlation (so-called semi-Markovian modelling). The resulting calculation of a price increase
+probability requires computation of a double improper integral.
+Gorshenin et al. (2013) propose a multiplicative model employing doubly stochastic Poisson arrival
+processes (Cox processes), so that the intensities of the Poisson processes themselves become stochastic
+as well. This multiplicative property, which can be likened to the time changed process of ChávezCasillas et al. (2017), gives rise to an analysis of the imbalance process −the instantaneous ratio
+between buying and selling pressure. We further investigate this process in the so-called Order Flow
+Imbalance (OFI) process in Chertok, Korolev, and Korchagin (2016). As price changes are a relatively
+rare occasion in the microscopic time intervals of an order book, the authors argue that the OFI
+process can provide more information for high-frequency traders and show that it closely tracks price
+changes over short time intervals.
+The explanatory power of the OFI process and similarly deﬁned Trade Flow Imbalance (TFI) process
+Master of Science Thesis
+J.M. de Jong
+
+8
+Literature Review
+on mid-price changes is shown on the Bitcoin (XBT) to United States Dollar (USD) market of the
+BitMEX cryptocurrency exchange by Silantyev (2019). Both processes exhibit a positive linear relation
+with respect to the contemporaneous price change. Predictive power however, is not investigated.
+Investigation of the predictive power of order ﬂows on the BitMEX exchange is therefore warranted.
+The application of the reduced-form LOB models on the cryptocurrency market is motivated by
+ﬁndings of Schnaubelt et al. (2019), who point out that order book volume in cryptocurrency markets
+has a global maximum at the best bid and ask levels. This indicates a relatively high information
+content in the ﬁrst level of the order book. The XBT −USD market is also characterized by a relatively
+large tick size (0.50 USD) and a bid-ask spread that is often minimal, which further motivate the use
+of the reduced-form models.
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 3
+Data
+3-1
+Data collection and description
+The BitMEX platform allows subscribing to real-time trading data through a Websocket Application
+Programming Interface (API). Full Level 2 order book data, which describes limit order volume at all
+price levels, is available for free without the need for authentication. The messaging protocol is not
+rate-limited and ensures that, once subscribed to a data channel, no messages are lost. Messages are
+time stamped according to server time.
+Over the course of 81 days, a dedicated data logger registered over 245M order book updates concerning
+the ﬁrst three levels of the book. During this period, downtime totaled 67 minutes, of which 42 can
+be attributed to intermediate data export. Unscheduled downtime therefore amounts to 0.0216% of
+the total time span. These statistics are summarized in Table 3-1.
+Parameter
+Value
+First timestamp
+2019/07/23 22:08:00.875
+Last timestamp
+2019/10/13 05:37:54.965
+Messages (3 Levels)
+245599262
+Total downtime
+1:07:07.394 (0.0573%)
+Unscheduled downtime
+25:14.478 (0.0216%)
+Table 3-1: Summarizing statistics of the full data set
+Master of Science Thesis
+J.M. de Jong
+
+10
+Data
+k
+Timestamp
+pA
+1
+uA
+1
+pA
+2
+uA
+2
+pA
+3
+uA
+3
+1
+07:54:15.177
+9869.0
+157
+9869.5
+8457
+9870.0
+79722
+2
+07:54:15.202
+9869.0
+157
+9869.5
+8457
+9870.0
+79722
+3
+07:54:15.207
+9869.5
+8457
+9870.0
+79722
+9870.5
+65153
+4
+07:54:15.214
+9869.5
+8457
+9870.0
+79722
+9870.5
+65153
+5
+07:54:15.215
+9869.5
+8457
+9870.0
+79722
+9870.5
+65153
+k
+Timestamp
+pB
+1
+uB
+1
+pB
+2
+uB
+2
+pB
+3
+uB
+3
+1
+07:54:15.177
+9868.5
+1902672
+9868.0
+520621
+9867.5
+8515
+2
+07:54:15.202
+9868.5
+1912672
+9868.0
+520621
+9867.5
+8515
+3
+07:54:15.207
+9869.0
+29843
+9868.5
+1912672
+9868.0
+510621
+4
+07:54:15.214
+9869.0
+49581
+9868.5
+1912672
+9868.0
+510621
+5
+07:54:15.215
+9869.0
+69581
+9868.5
+1912672
+9868.0
+490621
+Table 3-2: A sample of ﬁve quotes
+In Table 3-2, a sample of raw order book data for the ﬁrst three levels of the book is shown. Each row
+represents an order book event k and shows the associated update of the book. The relevant updates
+are in bold face for clarity. We ignore the potential existence of hidden orders. At 7:54:15.202, a limit
+buy order with a volume of 10000 USD arrives at the best bid price pB
+1 , adding to the existing volume
+uB
+1 . At 7:54:15.207, a limit buy order with a volume of 30000 USD arrives at a price of 9869.0 USD. As
+there are still open limit sell orders at that price, the order partially executes in a trade and empties
+the existing ask queue of 157 USD. The remaining volume of the buy order ﬁlls a newly formed bid
+queue at pB
+1 = 9869.0 USD. The ﬁnal two updates represent more limit buy orders arriving at the new
+bid queue. Also note the table shift occurring between rows 2 and 3, and the time stamps. These four
+events took place in an time interval shorter than 40 ms.
+3-2
+Data synthesis
+In addition to the scheduled downtime, the message timestamps still contain several gaps. These gaps,
+576 in total, can be attributed to rollover of the data collection loop as the logging script starts writing
+to a new ﬁle every 600000 messages, or whenever the server connection has been lost. Most of the gaps
+(492) are smaller than 100 ms, but this does not guarantee absolute continuity of the data set. From
+Table 3-1, it can be deduced that the average interarrival time for messages is 28 ms, hence multiple
+messages could have arrived during rollovers.
+For the methods described in Chapter 4, such as ﬁltering, continuity of the data set is extremely important. Fragmented data implies losing the start of a data set until a ﬁlter has converged. Fragmentation
+impacts may however be mitigated. As the methods only concern Level 1 data, only messages inﬂuencing the ﬁrst level of the order book are relevant. Furthermore, variation of moving average ﬁlters
+J.M. de Jong
+Master of Science Thesis
+
+3-2 Data synthesis
+11
+depends on the (relatively) large ﬁlter windows with respect to data jumps. For example, impact of a
+100 ms gap on a 1-minute averaged ﬁlter can be considered negligible. We present several criteria to
+allow data synthesis, from a practical perspective:
+1. If the ask and bid prices at Level 1 and their respective volumes remain equal between data
+gaps, we consider the data to be continuous.
+2A. If the gap size is less than 28 ms, we consider the data to be continuous for practical purposes.
+2B. If the ask and bid prices at Level 1 remain equal, and their respective volumes have not changed
+more than 10%, we consider the data to be continuous for practical purposes.
+3. If a ﬁlter has a window size more than 10 times the gap size, we can still apply the ﬁlter to
+estimate order ﬂow parameters.
+The number of timestamp gaps fulﬁlling criterion 1 is 203. For criterion 2A this equals 403, and
+for criterion 2B this is 521. The total number of ‘resolved’ gaps under criteria 2A and 2B is 540.
+The results and associated total gap durations are summarized in Table 3-3. Note that criteria 2A
+and 2B are not mutually exclusive, and criterion 1 is a subset of criterion 2B. The durations of the
+unresolved gaps additionally show the impact of this categorization. Over 93% of the gaps make up
+only approximately 1% of the total downtime.
+Category
+Number
+Percentage
+Duration
+Percentage
+1
+203
+35.24%
+8.885
+0.221%
+2A
+403
+69.97%
+2.685
+0.067%
+2B
+521
+90.45%
+48.470
+1.204%
+2A + 2B
+540
+93.75%
+48.556
+1.206%
+Export
+1
+0.17%
+41:51.025
+62.35%
+Rest
+35
+6.08%
+24:27.813
+36.45%
+Total
+576
+100.00%
+1:07:07.394
+100.00%
+Table 3-3: Timestamp gap types and their respective durations
+Master of Science Thesis
+J.M. de Jong
+
+12
+Data
+3-3
+Initial analysis
+Before applying the models of Chapter 5, we need to verify that the state of the order book can be
+represented accurately by a reduced-form model. It is credible that deeper order book levels may be
+discarded for studying the price process if the information content of the ﬁrst order book level is high.
+We investigate the two following statements:
+1. The bid-ask spread is almost always equal to the minimum possible spread, or quickly closes to
+the minimum spread again.
+2. The volume of the best bid and ask levels is large compared to deeper levels of the book.
+The initial analysis reveals that the bid-ask spread is equal to the minimum possible spread for 99.64%
+of the time (Table 3-4). On average, a minimal spread lasts for approximately 9 seconds. The lifetime
+of spreads larger than one tick is much smaller, averaging between 20 and 45 ms. We consider the ﬁrst
+statement to be satisﬁed, so we may continue with the application of ﬁxed-spread models.
+Spread (USD)
+0.5
+1.0
+1.5
+2.0
+2.5
+Occurrence (%)
+99.64
+0.11
+0.06
+0.04
+0.03
+Average lifetime (ms)
+9108
+22.2
+26.3
+28.2
+29.6
+Spread (USD)
+3.0
+3.5
+4.0
+4.5
+≥5.0
+Occurrence (%)
+0.02
+0.01
+0.01
+0.01
+0.08
+Average lifetime (ms)
+31.1
+33.1
+33.1
+33.8
+42.5
+Table 3-4: Percentages and average lifetimes of observations with a given bid-ask spread
+For the second statement, we calculate the time-weighted average volumes at the ﬁrst three levels of
+the book (Table 3-5). We observe that the average volume at the ﬁrst level is approximately 7 to 9
+times larger than that of the two subsequent levels. This is considered strong evidence that the general
+state of the order book can be described by the ﬁrst level alone. We consider the second statement to
+be true, and decide that the use of ﬁxed-spread, Level 1-models is warranted.
+Level
+1
+2
+3
+Bid (USD)
+935814
+134565
+104729
+Ask (USD)
+977567
+133707
+106915
+Table 3-5: Time-weighted average volume of the ﬁrst three order book levels
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 4
+Methodology
+In this chapter, we ﬁrst place the Limit Order Book (LOB) dynamics in a mathematical framework,
+in which we identify the relevant parameters for describing the order arrivals (Section 4-1). From the
+bid and ask queue data, we deﬁne cumulative order ﬂow processes in Section 4-2. The methods used
+to obtain model parameters from the order ﬂow processes are described in Section 4-3. Finally, the
+performance evaluation methods are treated in Section 4-4.
+4-1
+Mathematical framework
+As motivated by the literature research and the initial data analysis, we study the evolution of the
+LOB through the volume at its best bid and ask levels. We follow the notation of Avellaneda et al.
+(2011) to describe the volume at the bid (ask) price at time t by the stochastic process Xt (Yt). The
+combined process (Xt, Yt) forms a continuous-time Markov chain, which eﬀectively moves through the
+ﬁrst quadrant with a step size h −the minimum order size −on hN × hN.
+Although the microstructural order-by-order step directions are technically orthogonal to the axes, the
+authors extend the four-point transition template to six points by including diagonal transitions. These
+diagonal transitions incorporate correlation between order arrivals, but can in reality only occur after
+two consecutive orders. The authors argue that such distinctions are not essential on a macroscopic
+level, when ﬁtting the parameters to real-world data.
+The moments of the process (Xt, Yt) can be described in terms of the transition rates to the six
+neighbouring states. For the transition rates, we deﬁne the parameters λX (λY ) for the arrival rate of
+Master of Science Thesis
+J.M. de Jong
+
+14
+Methodology
+Xt - h
+Xt
+Xt + h
+Bid queue size
+Yt - h
+Yt
+Yt + h
+Ask queue size
+Y
+X
+mY
+mX
+1
+2
+Figure 4-1: Six-point state transition template and associated transition rates
+limit orders at the bid (ask) queue, mX (mY ) for the arrival rate of market orders or cancellations at
+the bid (ask) queue, and η1,2 for simultaneous order arrivals and/or cancellations as indicated by the
+diagonal directions of Figure 4-1. The process moments can then be calculated as
+E[Xt+∆t −Xt|Xt, Yt] = h(λX −mX + η1 −η2)∆t + o(∆t)
+E[Yt+∆t −Yt|Xt, Yt] = h(λY −mY −η1 + η2)∆t + o(∆t)
+E[(Xt+∆t −Xt)2|Xt, Yt] = h2(λX + mX + η1 + η2)∆t + o(∆t)
+E[(Yt+∆t −Yt)2|Xt, Yt] = h2(λY + mY + η1 + η2)∆t + o(∆t)
+E[(Xt+∆t −Xt)(Yt+∆t −Yt)|Xt, Yt] = h2(η1 + η2)∆t + o(∆t).
+(4-1)
+From the process moments, we can deﬁne the drifts µX and µY , variances σ2
+X and σ2
+Y and correlation
+ρ of the process (Xt, Yt) as
+µX = h(λX −mX + η1 −η2)
+µY = h(λY −mY −η1 + η2)
+σ2
+X = h2(λX + mX + η1 + η2) −µ2
+X
+σ2
+Y = h2(λY + mY + η1 + η2) −µ2
+Y
+ρ =
+1
+σXσY
+ h2(η1 + η2) −µXµY
+
+.
+(4-2)
+The model from Cont et al. (2010) is a restriction of this model to drift-free (balanced) and correlation
+free (independent) order ﬂows, i.e. µX = µY = ρ = 0. The model of Avellaneda et al. (2011) is
+J.M. de Jong
+Master of Science Thesis
+
+4-1 Mathematical framework
+15
+restricted only to drift-free ﬂow, and is approximated in the heavy traﬃc limit. The heavy traﬃc limit
+is valid when the state transition rates are high and the queue sizes are large compared to the average
+traded volumes. For the BitMEX exchange, this approximation is considered valid, as average queue
+sizes are large with respect to queue size changes1, which are in turn large compared to the minimum
+order size (1 USD) and the amount of order messages arriving per second is high (>30).
+Under heavy traﬃc, the process (Xt, Yt) can be modeled by a stochastic partial diﬀerential equation
+as the drift-diﬀusion
+dXt = µXdt + σXdW (1)
+t
+dYt = µY dt + σY dW (2)
+t
+E[dW (1)dW (2)] = ρdt.
+(4-3)
+where W (1)
+t
+and W (2)
+t
+are independent Wiener processes.
+The probability value of a price change upward, u(x, y), from a process state of Xt = x and Yt = y,
+can be interpreted as an asset valuation problem associated to this drift-diﬀusion. The asset attains
+‘value’ 1 if the ask queue depletes (y = 0) and attains value 0 if the bid queue depletes (x = 0). Under
+the model assumption that the price changes up (down) as soon as the ask (bid) queue depletes,
+simultaneous depletion of both queues is not allowed.
+From asset pricing theory, the probability function u(x, y) satisﬁes the stationary two-asset BlackScholes equation
+σ2
+X
+∂2u
+∂x2 + 2σXσY ρ ∂2u
+∂x∂y + σ2
+Y
+∂2u
+∂y2 + 2µX
+∂u
+∂y + 2µY
+∂u
+∂y = 0,
+(4-4)
+for positive queue sizes (x, y) ∈R2
++ −(0, 0) under the boundary conditions of
+u(x, 0) = 1,
+u(0, y) = 0.
+(4-5)
+The boundary conditions represent the certainty of a price change once a respective queue has depleted.
+The equation is closely related to physical phenomena, such as heat dissipation, concentration of
+chemicals, or exit problems in population dynamics. The point value of the solution at (x, y) can be
+interpreted as the fraction of inﬁnitely many particles in a drift-diﬀusion departing from this point
+that reach the x-axis rather than the y-axis, or, when ρ = 0, as the temperature of a stationary heat
+distribution in the quarter plane when the axes have respective temperatures 1 and 0.
+It should be noted, that under an appropriate change of variables (and related domain), the mixed
+derivative associated with correlation ρ can be transformed out.
+1Average message-by-message variation of the ﬁrst level of the order book is approximately 104 USD,
+whereas average volume was shown to equal approximately 106 USD (Table 3-5).
+Master of Science Thesis
+J.M. de Jong
+
+16
+Methodology
+4-2
+Order ﬂow process
+The solution of Equation 4-4 under the boundary conditions of 4-5 depends on the value of the value of
+its ﬁve coeﬃcients which have been deﬁned in Section 4-2. Technically, the equation can be deﬁned in
+four parameters by dividing out the ﬁrst coeﬃcient σX. This, however, leaves us with the determination
+of ratios such as ρσY /σX and µY /σX from the order ﬂow, which is not as straightforward as a direct
+modeling of the processes in terms of drifts, variances and correlation.
+Directly calculating the parameters from bid and ask queues Xt and Yt over multiple price changes
+is likely to give distorted results. For example, a small market buy order may deplete the ask queue
+and result in a large jump of the process when the ask queue of the next higher level already has a
+large volume. The impact on parameters µY and σY is bigger than the activity on the ask side of the
+market would suggest.
+Drawing from the Order Flow Imbalance (OFI) process of Korolev, Chertok, Korchagin, and Zeifman
+(2015), we extend the motion of processes Xt and Yt to inﬁnite space by accumulating the order
+arrivals on both sides of the market. This mitigates the so-called jump eﬀect described above. We
+deﬁne cumulative order ﬂow processes At and Bt from the order book data as
+At =
+X
+k
+
+uA
+1 (k) −uA
+1 (k −1)
+
+1AC + uA
+1 (k)1A−−uA
+1 (k −1)1A+,
+Bt =
+X
+k
+
+uB
+1 (k) −uB
+1 (k −1)
+
+1BC + uB
+1 (k)1B+ −uA
+1 (k −1)1B+,
+(4-6)
+where uA,B
+1
+(k) are respective volumes at the best ask and bid at order book event k, t takes the value
+of the timestamp of the most recent order book event and
+1AC =
+
+
+
+
+
+1
+if pA
+k = pA
+k−1
+0
+if pA
+k̸ = pA
+k−1
+,
+1A−=
+
+
+
+
+
+1
+if pA
+k < pA
+k−1
+0
+if pA
+k ≥pA
+k−1
+,
+1A+ =
+
+
+
+
+
+1
+if pA
+k > pA
+k−1
+0
+if pA
+k ≤pA
+k−1
+,
+(4-7)
+where pA,B
+k
+are the respective ask and bid prices at event k, and 1BC, 1B+, 1B−are deﬁned similarly.
+The ﬁrst terms of At and Bt increase and decrease under the regular order ﬂow when the bid or ask
+prices does not change. The latter two terms correspond to positive ﬂow if a price change results in a
+newly formed queue, or a negative ﬂow if a queue was depleted, each with their associated volume.
+Example calculations of At and Bt for the data sample of Chapter 3, when the spread remains minimal,
+are presented in Table 4-1. The ask queue depletes (negative ﬂow), but there is no further activity on
+the ask side of the market. On the bid side, we count and accumulate four positive order ﬂows.
+J.M. de Jong
+Master of Science Thesis
+
+4-2 Order ﬂow process
+17
+k
+Timestamp
+pA
+1
+uA
+1
+At
+pB
+1
+uB
+1
+Bt
+1
+07:54:15.177
+9869.0
+157
+0
+9868.5
+1902672
+0
+2
+07:54:15.202
+9869.0
+157
+0
+9868.5
+1912672
+10000
+3
+07:54:15.207
+9869.5
+8457
+-157
+9869.0
+29843
+39843
+4
+07:54:15.214
+9869.5
+8457
+-157
+9869.0
+49581
+59581
+5
+07:54:15.215
+9869.5
+8457
+-157
+9869.0
+69581
+79581
+Table 4-1: Evolution of cumulative order ﬂow processes At, Bt when the spread remains minimal
+k
+Timestamp
+pA
+1
+uA
+1
+At
+pB
+1
+uB
+1
+Bt
+1
+22:19:22.873
+10112.0
+39745
+0
+10111.5
+130781
+0
+2
+22:19:22.884
+10116.5
+65727
+-39745
+10111.5
+130781
+0
+3
+22:19:22.909
+10116.5
+65727
+-39745
+10113.5
+20123
+20123
+4
+22:19:22.916
+10116.5
+65727
+-39745
+10115.5
+12567
+32690
+5
+22:19:22.919
+10116.5
+65727
+-39745
+10115.5
+22567
+42690
+6
+22:19:22.922
+10116.5
+65727
+-39745
+10116.0
+10000
+52690
+Table 4-2: Evolution of cumulative order ﬂow processes At, Bt when the spread changes
+When the observed spread becomes larger than the minimal spread, 0.50 USD, the probability models
+no longer apply.
+However, we know the spread quickly returns to 0.50 USD and do not want to
+lose ﬂow information until this happens. The deﬁnition of At and Bt can be maintained, we do not
+compute the price probability. Table 4-2 shows an example of the cumulative order ﬂow in a situation
+of diverging and converging spread. It can be seen that the cumulative ask ﬂow has not incorporated
+order volume information of price levels pA
+1 of 10112.5 to 10116.0 USD, and likely some order volume
+information on 10116.5, but the qualitative nature of the ﬂow processes is maintained.
+From a one-level order book description, loss of ﬂow information during large trades that deplete
+multiple price levels is virtually guaranteed. The non-monitored order book queues likely had a nonzero queue size and we underestimate the exact trade size as a result. The calculated ﬂow will show a
+positive drift, and not the mean-reversing behaviour which we expect in a generally balanced market.
+We present a practical solution, exponential ﬁltering, in Section 4-3.
+A large-scale (four-hour) sample motion of order ﬂow processes At and Bt is displayed in Figure 42. We observe that regardless of an upward or downward market trend, the cumulative order ﬂows
+drift up and there is strong positive correlation. This is likely the aforementioned eﬀect of ‘missing’
+negative ﬂow information of large trades. On a smaller time scale (two minutes), it becomes clear that
+there is some negatively oriented ﬂow. In Figure 4-3, we observe negatively oriented ﬂow and negative
+correlation of At and Bt. During a phase of negative order ﬂow on the ask side (y-axis) and positive
+order ﬂow on the bid side (x-axis), the price increases. At a reversal point, the bid ﬂow stagnates and
+the ask ﬂow becomes positively oriented. As a result, the price starts falling.
+Master of Science Thesis
+J.M. de Jong
+
+18
+Methodology
+0
+2
+4
+6
+8
+10
+Bt (USD)
+108
+-1
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+At (USD)
+108
+02:00
+02:30
+03:00
+03:30
+04:00
+04:30
+05:00
+05:30
+06:00
+06:30
+Aug 03, 2019   
+10650
+10700
+10750
+10800
+10850
+10900
+USD
+Figure 4-2: Large-scale sample evolutions of At and Bt (left) and the price process (right). The
+missing of negative ﬂow information during large trades leads to generally positive order ﬂow drift
+and positive correlation, independent of the market direction.
+0
+0.5
+1
+1.5
+2
+Bt (USD)
+107
+-12
+-10
+-8
+-6
+-4
+-2
+0
+2
+4
+At (USD)
+106
+02:19:00
+02:19:30
+02:20:00
+02:20:30
+02:21:00
+02:21:30
+Aug 03, 2019   
+10660
+10670
+10680
+10690
+10700
+10710
+10720
+10730
+10740
+10750
+USD
+Figure 4-3: Small-scale sample evolutions of At and Bt (left) and the price process (right).
+On smaller time scales, negative order ﬂow and its direct implications on price direction can be
+observed. The price increases during a phase of negative ask order ﬂow. At a price reversal point,
+the bid ﬂow stagnates and the ask ﬂow becomes positively oriented.
+J.M. de Jong
+Master of Science Thesis
+
+4-3 Filtering
+19
+4-3
+Filtering
+In an attempt to remove the positive drift, we propose a simple ﬁlter. From every point of the process
+(Bt, At) the Exponential Moving Average (EMA), calculated with weighting factor α, is subtracted.
+This corresponds to the investigation of a local (relative) evolution of the process, and exhibits the
+desired mean-reversing behaviour. Furthermore, the impact of large price jumps is slowly ‘forgotten’.
+The ﬁlter for calculating the exponentially weighted average is given by
+st(xt; α) = αxt + (1 −α)st−1,
+where the ﬁlter is initialized using s−1 = 0. We select exponential weighting parameters from α =
+{1, 2, 5}·10NE where NE ∈{−2, −3, −4}. Consequently, we calculate model parameters µX, µY , σX, σY
+and ρ using simple moving windows, where we select window sizes from WS = {1, 2, 5}·10NW messages
+where NW ∈{3, 4, 5, 6}.
+In Figure 4-4, the large-scale sample motion of the previous section has been ﬁltered using α = 10−3.
+We see that the corrected process is drawn much more towards (0, 0) and does not drift away. The
+order ﬂow now also exhibits the negative correlation on the larger time scale. We ﬁt the correlation
+using a moving window of WS = 2 · 104 messages and show that it remains negative after a brief ﬁlter
+convergence phase. The average ﬁtted correlation of the exponentially corrected order ﬂow process of
+the sample equals ¯ρ = −0.664 (dotted line).
+-1
+0
+1
+2
+3
+4
+5
+6
+7
+Bt - st(Bt) (USD)
+106
+-6
+-4
+-2
+0
+2
+4
+6
+At - st(At) (USD)
+106
+02:00
+02:30
+03:00
+03:30
+04:00
+04:30
+05:00
+05:30
+06:00
+06:30
+Aug 03, 2019   
+-1
+-0.8
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+0.8
+1
+t
+Figure 4-4: Large-scale sample evolutions of exponentially corrected At and Bt for α = 10−3
+(left) and ﬁtted sample correlation ρt for WS = 2 · 104 (right)
+Master of Science Thesis
+J.M. de Jong
+
+20
+Methodology
+4-4
+Performance Evaluation
+To calculate the prediction performance of the models, we determine a range of evaluation points.
+Determination of evaluation points is non-trivial, as we do not know in advance when the price will
+change.
+A simple selection would be prediction in regular time or message intervals.
+Such naive
+selection may however result in multiple predictions for the same price change, or none at all, making
+it hard to compare model performance per price change. Here, we make an ex-post selection of price
+changes and investigate the evolution of the prediction up until a price change.
+Given that the models are only valid when the spread is minimal, we collect all points with minimal
+spread and calculate the time t until the price changes. We select evaluation points up until price
+changes that took at least 5000 ms to change. For all times t = {1, 2, 5} · 10NT ms with NT ∈{1, 2, 3}
+up until the next price change, we evaluate the probability model. The selection may introduce a
+slight directional bias in price direction, but the bias is equal among prediction points2.
+For all evaluation points, we calculate the model probabilities using the time-averaged and rolling
+window parameters µX, µY , σX, σY , ρ. We then compare the probabilities with the ‘observed probability’ −100% in case the next price move is positive, and 0% for a negative move. We calculate
+performance according to the Root Mean Squared Error (RMSE) statistic. We compare RMSE with
+three baseline models that are independent of the order ﬂow: ‘Always Up/Always Down’ predictors
+and the ‘Previous Direction’ predictor. The latter predicts up if the previous price direction was up,
+and predicts down if the previous price direction was down.
+We evaluate performance diﬀerences assuming that the error distribution can be approximated by an
+unbiased normal distribution. Technically, the error distribution has ﬁnite support, and results by
+Marchand (1996) on truncated and non-central chi-squared distributions may be more appropriate.
+These results however rely on recursive computation over the degrees of freedom and no convergence
+proofs are given for large n. Use of a regular, non-truncated normal distribution likely overestimates
+the conﬁdence bounds. This decreases the power of the test, but avoids false rejection of the null
+hypothesis. For n = 74746 observations, we consider relative RMSE diﬀerences of larger than 0.51%
+signiﬁcant on a 95% conﬁdence level (see Appendix A-1).
+2This directional bias is later observed in Table 6-2, but is small.
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 5
+Models
+Now that we have determined the model parameters, we can introduce Models 1 −4.
+Model 1 (Section 5-1) is the heavy-traﬃc version of Cont and De Larrard (2013), with drift-free and
+independent diﬀusions. It is extended to account for unequal diﬀusion parameters.
+Model 2 (Section 5-2) is the model of Avellaneda et al. (2011) for correlated diﬀusions, without hidden
+liquidity parameter, also extended for unequal diﬀusion parameters.
+Model 3 (Section 5-3) is a special case of the solution of López and Sinusía (2005) for independent
+drift-diﬀusions in a quarter plane.
+Model 4 (Section 5-4) is the solution of López and Sinusía (2005) for independent drift-diﬀusions in a
+sector or correlated drift-diﬀusions in a quarter plane.
+All models and their respective parameters are summarized in Table 5-11.
+Parameter
+Model 1
+Model 2
+Model 3
+Model 4
+σX
+> 0
+> 0
+> 0
+> 0
+σY
+> 0
+> 0
+> 0
+> 0
+ρ
+0
+−1 ≤ρ ≤1
+0
+−1 < ρ < 1
+µX
+0
+0
+any1
+any1
+µY
+0
+0
+any1
+any1
+Table 5-1: Overview of model parameters
+1It is understood that the case µX = µY = 0 reduces Models 3 and 4 to 1 and 2, respectively.
+Master of Science Thesis
+J.M. de Jong
+
+22
+Models
+5-1
+Model 1 - Independent diﬀusions
+For the ﬁrst model, we consider the heavy-traﬃc approximation of Cont et al. (2010). It is the restriction of the general form of Equation 4-4 to drift-free (balanced) and correlation free (independent)
+order ﬂows. The reduced equation reads
+σ2
+X
+∂2u
+∂x2 + σ2
+Y
+∂2u
+∂y2 = 0,
+under the boundary conditions of 4-5. Its solution is given by
+u(x, y) = 2
+π arctan
+ σY
+σX
+x
+y
+
+.
+(5-1)
+One quickly recognizes that the isolines of the solution are straight lines departing from the origin,
+i.e. with a constant angle φ = arctan(y/x) with respect to the x-axis −also see the center image of
+Figure 5-1.
+5-2
+Model 2 - Correlated diﬀusions
+For the second model, we consider the model of Avellaneda et al. (2011) without hidden liquidity
+parameter. It is the restriction of the general form of Equation 4-4 to drift-free (balanced) order ﬂows.
+The reduced equation reads
+σ2
+X
+∂2u
+∂x2 + 2σXσY ρ ∂2u
+∂x∂y + σ2
+Y
+∂2u
+∂y2 = 0,
+under the boundary conditions of 4-5. Its solution is given by
+u(x, y) = 1
+2 −1
+2
+arctan
+q
+1+ρ
+1−ρ
+y−
+σY
+σX x
+y+
+σY
+σX x
+
+arctan
+q
+1+ρ
+1−ρ
+
+.
+(5-2)
+The isolines of the solution are solutions of y −σY
+σX x = c
+
+y + σY
+σX x
+
+, which again represent straight
+lines of constant angle φ.
+It is interesting to study the special cases of ρ. If ρ = 0, the expression simpliﬁes to the solution
+of Model 1, i.e. Equation 5-1. The other two special cases, ρ = ±1, perfect positive or negative
+correlation, imply perfect cooperation between all market participants. This is highly unrealistic but
+leads to mathematically interesting limiting functions.
+J.M. de Jong
+Master of Science Thesis
+
+5-2 Model 2 - Correlated diﬀusions
+23
+For ρ →1, the case of perfect correlation, the solution approaches
+u(x, y) = 1
+2 + 1
+2 sgn
+ σY
+σX
+x −y
+
+,
+(5-3)
+where sgn(.) is the sign function. The diﬀusion now moves along parallel lines with a positive slope,
+and can never cross the separation line y = σY
+σX x. The starting position therefore uniquely determines
+whether the next price change can be upward or downward −except when y = σY
+σX x and both queues
+would only deplete simultaneously.
+For the limit of ρ →−1, the case of perfect inverse correlation, the solution approaches
+u(x, y) =
+σY
+σX x
+y + σY
+σX x,
+which can be interpreted as a (weighted) fraction of bid queue volume over the total volume. The
+diﬀusion now moves along parallel lines with a negative slope. The solution does not approach a
+sign-like surface, as both transitions are still possible for any starting position.
+The inﬂuence of correlation can be observed in Figure 5-1, where the center image represents Model
+1. For positive correlation, the level lines converge, ultimately collapsing into the sign function of
+Equation 5-3. For negative correlation, the level lines diverge, but the eﬀect on the probability surface
+is less pronounced.
+Figure 5-1: Probabilities of Model 2 for ρ = −0.95 (L), ρ = 0 (M) and ρ = 0.95 (R). The
+inﬂuence of negative correlation the shape of the probability function is not as pronounced as the
+inﬂuence of positive correlation.
+Master of Science Thesis
+J.M. de Jong
+
+24
+Models
+5-3
+Model 3 - Independent drift-diﬀusions
+For the third model, we consider the results of López and Sinusía (2005) for convection-diﬀusion (driftdiﬀusion) problems in a general sector. There are more direct results available on drift-diﬀusions in
+the quarter plane (López & Sinusía, 2004), but in view of Model 4, we only present the more general
+solution.
+Model 3 is the restriction of the general form of Equation 4-4 to independent order ﬂows. By setting
+ρ = 0 and applying the coordinate transformation of
+ξ =
+1
+√
+2
+ x
+σX
++ y
+σY
+
+,
+η =
+1
+√
+2
+ y
+σY
+−x
+σX
+
+,
+we can transform Equation 4-4 to a special case of Problem (P) of López and Sinusía (2005). The
+equation now reads
+∂2¯u
+∂ξ2 + ∂2¯u
+∂η2 +
+√
+2
+µX
+σX
++ µY
+σY
+ ∂¯u
+∂ξ +
+√
+2
+µX
+σX
+−µY
+σY
+ ∂¯u
+∂η = 0,
+(5-4)
+or, in the notation of López and Sinusía (2005),
+∆¯u −⃗v ·⃗∇¯u = 0,
+where⃗v = −
+√
+2 (µX/σX + µY /σY , µX/σX −µY /σY ). The interpretation of the negative sign is that
+order ﬂow drift has the opposite eﬀect on the solution as convection −an order ﬂow drift towards
+an exit boundary (axis) has the same eﬀect as heat convection coming from the boundary into the
+domain, and vice versa. In (P), the boundary conditions of 4-5 have furthermore been switched to
+represent the probability of a downward price change, ¯u(ξ, η). By deﬁnition, the probability of an
+upward price change is given by u(ξ, η) = 1 −¯u(ξ, η).
+Through the coordinate change, the boundary conditions have also been transformed linearly. We may
+now recognize that the boundaries (ξ, η)y=0 and (ξ, η)x=0 are straight sector lines that depart from
+the positive ξ−axis with equal angles θ = arctan(1) = π/4. Without loss of generality, we rotate the
+coordinate frame and boundary conditions with angle θ so that the sector starts again at ‘3 o’clock’,
+and ends at ‘12 o’clock’ (see Figure 5-2). The vector⃗v with associated angle β with respect to the
+positive ξ-axis should now be deﬁned as having angle β2 = β + θ with respect to the ξ−axis.
+J.M. de Jong
+Master of Science Thesis
+
+5-3 Model 3 - Independent drift-diﬀusions
+25
+The solution ¯u(ξ, η) is given by
+¯uα,β2(ξ, η) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 −Iα,0(r, φ)
+if β2 = 0
+1(β2,α](φ) + 1
+2δφ,β2 −Iα,β2(r, φ)
+if 0 < β2 < α
+−Iα,α(r, φ)
+if β2 = α
+ewr cos(β2−φ)(Σ1 + ∆1) −Iα,β2(r, φ)
+if α < β2 < α + π
+ewr cos(β2−φ)(Σ2 + ∆2) + 1 −Iα,β2−2π(r, φ)
+if α + π ≤β2
+(5-5)
+where polar coordinates φ = arctan(η/ξ) + θ and r =
+p
+ξ2 + η2 are deﬁned as usual, α is the sector
+angle (π/2), 1(β2,α](φ) is the indicator function of φ ∈(β2, α], δa,b is the Kronecker delta function,
+and w = ∥⃗v∥/2. The solution ¯u(ξ, η) of López and Sinusía (2005) has an additional condition on the
+behaviour of ¯u as the radius r approaches inﬁnity to guarantee uniqueness of the solution, the details
+of which are outside the scope of this thesis.
+The constituents Σ1,2, ∆1,2 and Iα,β2(r, φ) of the solution can be consulted in Appendix A-2. The
+term Iα,β2(r, φ) is an improper integral, which can be calculated either directly or in a precomputed
+Look-Up Table (LUT). A LUT stores the probabilities for a predeﬁned grid of evaluation points,
+which saves time during real-time execution of trading algorithms. In this case, the integral can still
+be approximated in real-time2, so precomputation is not needed.
+(vx,vy)
+2
+Figure 5-2: Rotation of the coordinate frame and associated drift vector⃗v to the ﬁrst quadrant
+2A preliminary vectorized LUT computation of ¯u(ξ, η) at 1M grid points, to an absolute accuracy of 1E-6,
+took 28s (28µs/point) in MATLAB on a Core i7 920 processor.
+Master of Science Thesis
+J.M. de Jong
+
+26
+Models
+5-4
+Model 4 - Correlated drift-diﬀusions
+For the general form of Equation 4-4, we consider the discriminant of the equation:
+D = σXσY (ρ2 −1) ≤0.
+We can identify two cases. If D = 0, ρ = ±1 and the stochastic motions of the bid and ask queues
+are perfectly correlated. The equation is said to be parabolic. If D < 0, the stochastic motions are
+not perfectly correlated and the equation is said to be elliptic. As perfect cooperation in limit order
+placement does not occur (and in other applications, perfect correlation of motion or asset prices is
+rare), we will dismiss the two symmetric parabolic cases of ρ = ±1 and focus on the general elliptic
+solution3.
+Similar to the case of Model 3, we can apply the coordinate transformation4:
+ξ =
+1
+√
+2
+1
+√1 + ρ
+ x
+σX
++ y
+σY
+
+η =
+1
+√
+2
+1
+√1 −ρ
+ y
+σY
+−x
+σX
+
+,
+which simpliﬁes the general form of Equation 4-4 to
+∂2¯u
+∂ξ2 + ∂2¯u
+∂η2 + 2
+s
+1
+2(ρ + 1)
+µX
+σX
++ µY
+σY
+ ∂¯u
+∂ξ + 2
+s
+1
+2(1 −ρ)
+µX
+σX
+−µY
+σY
+ ∂¯u
+∂η = 0.
+(5-6)
+Here, like Model 3, we consider switched boundary conditions and the solution as the probability of
+a downward price change. The boundaries have again been transformed linearly, and we may now
+recognize that (ξ, η)y=0 and (ξ, η)x=0 are sector lines that depart from the positive ξ−axis with equal
+angles θ = arctan(
+q
+1+ρ
+1−ρ), whereas these angles were previously ±π/4. Without loss of generality, we
+rotate the coordinate frame and boundary conditions with angle θ so that the sector starts at ‘3 o’clock’.
+We can now use the solution of Model 3, with sector angle α = 2θ, to compute the probabilities of
+Model 4.
+Some example probability plots that illustrate the inﬂuence of β and ρ −with parameters σX, σY and
+w equal to 1 −have been included in Figures 5-3 to 5-5.
+3For the parabolic cases, it can be shown that both the mixed derivative and one of the leading coeﬃcients
+of the stationary Black-Scholes equation can be transformed out.
+4Note that the coordinates ξ and η are being redeﬁned.
+J.M. de Jong
+Master of Science Thesis
+
+5-4 Model 4 - Correlated drift-diﬀusions
+27
+Figure 5-3: Probabilities of Model 4 for ρ = −0.95, β = 0 (L), β = π/4 (M) and β = π/2 (R).
+The drift vector ‘drags’ the probability surface out from the axes. We observe a slow transition,
+similar to the perfect negative correlation case of Model 2. Note that the order ﬂow opposes the
+drift vector.
+Figure 5-4: Probabilities of Model 3 for β = 0 (L), β = π/4 (M) and β = π/2 (R). The dragging
+eﬀect of the drift vector is more pronounced than in the negative correlation case.
+Figure 5-5: Probabilities of Model 4 for ρ = 0.95, β = 0 (L), β = π/4 (M) and β = π/2 (R).
+We observe a more aggressive transition, similar to convergence to the sign function for Model 2.
+Master of Science Thesis
+J.M. de Jong
+
+28
+Models
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 6
+Results
+In this chapter, we present the modeling results. First, we discuss the data subset (Section 6-1), which
+has been selected according to the criteria set out in Chapter 3. Secondly, we discuss the inﬂuence of
+exponential ﬁlter parameter α on the derivation of the model parameters (Section 6-2). Consequently,
+we evaluate the accuracy of each model in terms of Root Mean Squared Error (RMSE), both for time
+averaged parameters (Section 6-3-1) and windowed parameters (Section 6-3-2).
+We use the models as up-down-classiﬁers in Section 6-4-1, where we discover that use of a classiﬁcation
+threshold of 50% results in identical classiﬁcations for Models 1 and 2. We further investigate classiﬁcation precision errors in Section 6-4-2, which results an ‘Up-Down-No Prediction’ classiﬁer with an
+increased precision at the cost of reduced recall.
+Finally, we apply a classiﬁer to a simple trading strategy (Section 6-5). In the absence of transaction
+costs, the average return is 5.547 USD (approx. 0.06%) per market entry and exit, assuming a ﬁxed
+trading size of 1 XBT. When we include transaction costs, the cost of using market orders becomes
+prohibitive for generating proﬁts.
+If the strategy can be executed partially through limit orders,
+commission rebates still result in a net proﬁt.
+Master of Science Thesis
+J.M. de Jong
+
+30
+Results
+6-1
+Data selection
+The smallest moving window ﬁlter has a window of 1000 messages. From an average messaging rate
+of 28 messages per second and the guidelines set out in Chapter 3, we determine that the maximum
+allowable gap size equals 1000/(10 × 28) = 3.57s. As a result, the longest available data set for use
+is a subset that stretches from September 9th to October 13th, which contains nearly 100M messages
+(see Table 6-1 for details). It is the result of 234 individually logged data sets, of which the downtime
+during rollovers totaled 39.483 s (0.0013%).
+The midprice evolution over the selected data set is shown in Figure 6-1. The ﬁrst registered midprice
+is 10321.25 USD, and the last registered midprice is 8324.75 USD. Especially noteworthy is a 1500 USD
+(approximately 15%) price crash in a mere 60 minutes on September 24th. Some potential reasons
+for the sudden decline include a launch of a new trading platform1 and an unexpected (calculated)
+decrease in network hashrate2 −a computational measure related to transaction speed and safety of
+the blockchain.
+Parameter
+Value
+First timestamp
+2019/09/09 04:12:32.118
+Last timestamp
+2019/10/13 05:37:54.965
+Messages (Levels 1-3)
+98749159
+Level 1 Messages
+78481962
+Individual data sets
+234
+Total downtime (s)
+39.483 (0.0013%)
+Table 6-1: Summarizing statistics of the synthesized data set
+Sep 09
+Sep 16
+Sep 23
+Sep 30
+Oct 07
+Oct 14
+Date
+2019   
+7500
+8000
+8500
+9000
+9500
+10000
+10500
+11000
+Price (USD)
+Figure 6-1: Midprice evolution over the selected data set
+1https://beincrypto.com/bitcoin-price-drops-below-9000-one-day-after-bakkt-futures-launch/
+2https://blockonomi.com/bitcoin-hash-rate-drop-never-took-place/
+J.M. de Jong
+Master of Science Thesis
+
+6-2 Average parameters
+31
+6-2
+Average parameters
+Using the procedures of Section 4-2 and Section 4-3, we calculate and ﬁlter the order ﬂow for a range
+of exponential weighting parameters α. For small α, the ﬁltering eﬀect is small and the order ﬂow drift
+does not disappear. This results in an overestimated correlation and relatively large values for µX, µY
+(Figures 6-2 and 6-3). Selections of α for model performance analysis are indicated in the ﬁgures with
+vertical lines. As a side note, the correlation of an unﬁltered ﬂow, with α = 0, equals ρ = 0.9998.
+For large α, the average drift and variance approach zero and the calculated correlation vanishes. This
+can be interpreted as a general loss of information. For decreasing α, the diﬀerence between drift
+and drift-diﬀusion models can be expected to become smaller, as the relative inﬂuence of the drift
+coeﬃcients in Equation 4-4 scales3 as µ/σ2 ∼α0.4.
+10-5
+10-4
+10-3
+10-2
+10-1
+100
+102
+104
+106
+108
+1010
+USD
+X
+Y
+X
+Y
+Figure 6-2: Average drifts µX,Y and standard deviations σX,Y for a range of α
+10-5
+10-4
+10-3
+10-2
+10-1
+100
+-0.6
+-0.4
+-0.2
+0
+0.2
+0.4
+0.6
+Figure 6-3: Average correlation ρ for a range of α
+3The graph slopes of Figure 6-2 correspond to µX,Y ∼α−1.0 and σX,Y ∼α−0.7, hence µ/σ2 ∼α0.4.
+Master of Science Thesis
+J.M. de Jong
+
+32
+Results
+6-3
+Prediction Performance
+6-3-1
+Time Averaged Parameters
+The selection of evaluation points according to Section 4-4 results in 12 sets of 74746 points. For
+reference, the total points with other time horizons t until a price change are included as well in Table
+6-2. The selection has resulted in a slight bias in price direction (51.561% down) and reduction in
+total prediction points. The directional bias may be a result of slower price changes being associated
+with market doubts. The bias is not deemed problematic, as it is equal among prediction points. The
+reduction of prediction points is a natural result of the price behaviour. For example, price changes
+where the price remained equal for at least 10 ms are a superset of intervals where the price remained
+equal for at least 1000 ms. This may present an extra challenge −we often observe quicker successive
+price changes during trending, which are likely easier predicted than the selected slower price changes.
+We summarize the model performances in Table B-1 of Appendix B. The ‘Always Up / Always Down’
+predictors are the worst performers, with RMSE’s around 70%. In an unbiased selection, both predictors would have RMSE’s of 1/
+√
+2 ≈70.71%. The ‘Always Down’ predictor performs better than the
+‘Always Up’ predictor, which should mainly be attributed to the selection bias4.
+The ‘Previous Direction’ predictor outperforms the ‘Always Up / Always Down’ models, with an
+RMSE of 53.80%. The success of the predictor can be explained by strong price trending −a price
+change upward is likely to be followed by another price increase, and vice versa.
+Overall, Models 1 and 2 outperform the baseline models with RMSE’s in the range of 9.83 −30.56%.
+This indicates that the incorporation of Level 1 order volume information can provide a superior
+estimate of price direction over models that do not incorporate order book information. The model
+accuracies increase for evaluation points closest to the midprice change: the imbalance of volumes at
+the bid and ask levels provides increasingly better information. For large t, the imbalance may not
+have become as pronounced and/or has more time to reverse, in both cases leading to larger prediction
+errors.
+Model 2 beneﬁts only slightly from exponential ﬁltering. If we consider the parameter inﬂuence, we
+see in Figure 6-2 that the average ratio σX
+σY , an important parameter of both models, does not vary
+substantially with α. The only diﬀerence is the addition of parameter ρ, which worsens the RMSE
+by 0.59% at maximum (all diﬀerences signiﬁcant for t ≤2000 ms). From Figure 5-1 we observe that
+the inﬂuence of a negative ρ ‘tilts’ the model probability surface to less extreme values of u(x, y). As
+both models are mostly on the correct side of the market direction, the more ‘uncertain’ Model 2
+accumulates a larger error than Model 1.
+4Overall, only 50.09% of the midprice changes are downward.
+J.M. de Jong
+Master of Science Thesis
+
+6-3 Prediction Performance
+33
+Time t (ms)
+5000
+2000
+1000
+500
+200
+100
+Number of points
+74746
+112196
+143003
+174760
+207020
+225450
+Fraction up (%)
+48.44
+49.07
+49.49
+49.83
+49.94
+50.01
+Time t (ms)
+50
+20
+10
+5
+2
+1
+Number of points
+239087
+250694
+255470
+258145
+259680
+260000
+Fraction up (%)
+49.97
+49.96
+49.97
+49.97
+49.98
+49.98
+Table 6-2: Summarizing statistics of all points with a ﬁxed time t until a price change
+Models 3 and 4 outperform the baseline predictions as well, but do not outperform Models 1 and 2.
+The average drift parameters are to blame −the positively oriented drift ﬂow has an averaging eﬀect
+on the model probabilities, leading to larger prediction errors (similar to the eﬀect of negative ρ).
+Similar to the diﬀerences between Models 1 and 2, the inclusion of correlation does not improve the
+predictions.
+If we decrease the exponential ﬁlter parameter, the RMSE’s decrease from 18.17 −40.21% to 10.11 −
+30.56%. This can be understood as the aforementioned convergence to the diﬀusion-only models, when
+relative inﬂuence of the drift parameters µX, µY becomes small in comparision to σ2
+X, σ2
+Y .
+The model performances for α = 0.05 are displayed in Figure 6-4, where we can clearly observe the
+order-ﬂow independence of the baseline models, and the increases in performance of Models 1 −4 as
+the price change approaches.
+100
+101
+102
+103
+t (ms)
+0
+20
+40
+60
+80
+100
+RMSE (%)
+Always Up
+Always Down
+Previous
+Model 1
+Model 2
+Model 3
+Model 4
+Figure 6-4: Prediction performances for time averaged parameters for α = 0.05. Order ﬂow
+models with time-averaged parameters outperform simple baseline predictors, and diﬀusion models
+outperform drift-diﬀusion models.
+Master of Science Thesis
+J.M. de Jong
+
+34
+Results
+6-3-2
+Rolling Parameters
+For all evaluation points, we calculate the model probabilities from the windowed parameters µX, µY ,
+σX, σY , ρ using rolling windows of sizes WS = {1, 2, 5}·10{3,4,5,6}. We evaluate performance using the
+same evaluation points and signiﬁcance thresholds of the averaged-parameter models of the previous
+section.
+The results are included in Tables B-2 and B-3 of Appendix B. We see that Models 1 and 2 do not
+beneﬁt from a rolling window approach −we observe strictly increasing prediction performances for
+the three sets of evaluation points (t = 100, 10, 1 ms) as window sizes are increased to a maximum of
+5M messages. It does however prove that the use of past order ﬂow provides good parameters, as the
+‘full window’ parameters, i.e. the averaged parameters of the previous section, technically incorporate
+future information.
+Performance diﬀerences within models per horizon t are already statistically
+indistinguishable for WS ≥106 messages.
+We observe similar performance convergence towards the full-window versions for Models 3 and 4,
+which indicates that rolling windows do not improve the predictions when drift parameters are included.
+Summarizing, we see that a local analysis of the order ﬂow through windowed parameter estimation
+does not improve prediction performance. Possible explanations are that the windowed parameter
+estimates are too noisy and lead to aggressive prediction behaviour. Alternatively, the prediction may
+suﬀer from estimation delays. For example, assuming there exist ‘true’ instantaneous parameters,
+estimation using past windows is inevitably lagged.
+6-4
+Classiﬁer Performance
+6-4-1
+Up-Down-Classiﬁers
+We investigate the performance of all models for time-averaged parameters as binary price direction
+classiﬁers (Table B-4). By applying a decision boundary of 50%, the models classify the next midprice
+direction as ‘up’ (u(x, y) ≥50%) or ‘down’ (u(x, y) < 50%). We calculate the fraction of correctly
+predicted price moves as the classiﬁer precision.
+Similar to the RMSE results, we can observe that the ‘Always Down’ classiﬁer performs slightly better
+than the ‘Always Up’ classiﬁer (51.56% versus 48.44%). The ‘Previous Direction’ classiﬁer sets a high
+baseline standard, with a classiﬁcation precision of 71.06%.
+The classiﬁers of Model 1 and 2 behave very similarly, with increasing precision for evaluation points
+close to a price change, and little to no eﬀect of ﬁlter parameter α. At t = 5000 ms, the models predict
+J.M. de Jong
+Master of Science Thesis
+
+6-4 Classiﬁer Performance
+35
+the price change direction with an accuracy of 87.69%−87.73%, which increases up to 99.00% at t = 1
+ms. This indicates that in 1% of price changes, volume imbalance was not a good predictor −but as
+demonstrated in Section 6-4-2, volume size can further improve classiﬁer precision.
+Models 3 and 4 show similar convergence leading up to the price change. Even for for α = 0.05, the
+accuracy of the models is high, indicating that although the drift direction is estimated wrongly, the
+market direction is often predicted correctly.
+Precision diﬀerences between Models 1 and 2, and between Models 3 and 4 appear negligible. In
+fact, for Models 1 and 2, it can be proven mathematically that u1(x, y) ≥0.5 ⇔u2(x, y) ≥0.5 (see
+Appendix A-3), and the classiﬁers are thus equivalent. For Models 3 and 4, the averaged parameters
+deﬁne a drift angle β2 = π/4, a symmetrical case. In this case, we see that the decision boundary of
+both models follows the line y = x (center panels of Figures 5-3 and 5-4). Equivalence of the decision
+boundary is however not true for general β, as we can observe in the left and right panels of Figures
+5-3 and 5-4.
+Model diﬀerences, and the equality at the line y = x of the decision boundaries are graphed in Figure
+6-5.
+Figure 6-5: Probability diﬀerences between time-averaged Models 1 & 2 (L) and Models 3 &
+4 (R) in the case of parameter symmetry. For Models 1 & 2, the 50% decision boundaries are
+mathematically equivalent. For Models 3 & 4, the surface symmetry suggests that a similar proof
+may be obtained. Axis limits are extended to better illustrate the addition of drift.
+Master of Science Thesis
+J.M. de Jong
+
+36
+Results
+0
+1
+2
+3
+4
+R (scaled volume)
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF(R)
+0
+0.5
+1
+1.5
+ (rad)
+0
+0.2
+0.4
+0.6
+0.8
+1
+CDF( )
+Correct Predictions
+Wrong Predictions
+Figure 6-6: Empirical CDFs of correctly and wrongly predicted points for Model 1 as functions
+of R (L) and φ (R) for all sets of evaluation points
+6-4-2
+Up-Down-No Prediction-Classiﬁer
+We investigate if precision of a classiﬁer, based on Model 1, can be improved by introducing a ‘no
+prediction’ class. For this, we determine the locations of the wrongly predicted points for all sets of
+evaluation points.
+In Figure 6-6, the empirical Cumulative Density Functions (CDFs) of correctly and wrongly predicted
+points per time horizon t are plotted. Standard deviations σX = σY = 106 were used as a scaling
+parameter. We observe that the wrong predictions occur more frequently for a small radius value, i.e.
+when both the bid and ask volumes are small, and also when polar angle φ is close to π/4, i.e. when
+bid and ask volumes are similar in size. For evaluation points far from the price change, CDF(φ) is
+still very similar to that of correctly predicted points, but closer to the price change, it approaches a
+uniform distribution over φ.
+Use of a threshold R∗below which, and a range [φmin, φmax] within which no predictions are made,
+has the potential to improve the precision of the classiﬁer. A high threshold for R∗, and wide range
+for φ however reduce the recall of the classiﬁer, as it will make less predictions.
+We deﬁne the classiﬁer by
+C(x, y) =
+
+
+
+
+
+
+
+
+
+
+
+1
+if u1(x, y) ≥0.5 and x, y̸ ∈S
+0
+if u1(x, y) < 0.5 and x, y̸ ∈S
+No prediction
+if x, y ∈S
+(6-1)
+J.M. de Jong
+Master of Science Thesis
+
+6-4 Classiﬁer Performance
+37
+where the area S is represented graphically in Figure 6-7.
+We evaluate the precision, recall and F1-score of the classiﬁer by simultaneously excluding the lowest
+percentiles of r and the middle percentiles of φ. We calculate the percentiles according to the full data
+set. Threshold values are displayed in Table 6-3 where, most notably, the ﬁrst middle percentile of φ
+is situated above π/4 ≈0.785.
+Figure 6-7: Graphical representation of area S
+Percentile
+1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+R∗
+0.0957
+0.1809
+0.2662
+0.3487
+0.4248
+0.4930
+0.5519
+0.6035
+0.6489
+0.6895
+φmin
+0.8047
+0.7850
+0.7654
+0.7459
+0.7264
+0.7070
+0.6879
+0.6687
+0.6496
+0.6306
+φmax
+0.8437
+0.8631
+0.8823
+0.9016
+0.9207
+0.9395
+0.9581
+0.9765
+0.9948
+1.0128
+Percentile
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+R∗
+0.7264
+0.7602
+0.7917
+0.8211
+0.8486
+0.8750
+0.9003
+0.9245
+0.9477
+0.9699
+φmin
+0.6119
+0.5932
+0.5745
+0.5558
+0.5373
+0.5189
+0.5008
+0.4828
+0.4652
+0.4479
+φmax
+1.0305
+1.0480
+1.0654
+1.0823
+1.0991
+1.1156
+1.1319
+1.1477
+1.1633
+1.1785
+Table 6-3: Classiﬁer thresholds R∗, φmin and φmax as a function of excluded lower and middle
+percentiles, respectively.
+The classiﬁer statistics are summarized in Table B-5 in Appendix B. We may observe that the classiﬁer
+precision increases for larger areas S, from 87.72-99.00% (no exclusion) to 93.59-99.64%. At the same
+time, the recall decreases from 87.72-99.00% to 72.10-90.54%. Note that without exclusion, recall
+and precision are equivalent. The F1-score, a common scoring rule to judge classiﬁer performance,
+indicates that no exclusion results in the best scoring classiﬁer. However, a trader may prefer a classiﬁer
+with lower recall and higher precision to identify suitable trading signals. To reﬂect this preference,
+alternative measures such as F0.5 can be employed.
+In the next section, we demonstrate the eﬀectiveness of the classiﬁer in a trading strategy.
+Master of Science Thesis
+J.M. de Jong
+
+38
+Results
+6-5
+Trading Strategy
+We propose a simple additive trading strategy using predictions of the ‘Up-Down-No Prediction’
+classiﬁer to enter and exit the market. We use the most selective version of the classiﬁer (largest
+region S, 20th percentile). We initiate a long (short) position of +1 XBT (−1 XBT) at 5000 ms after
+a price change if the spread is minimal and the predicted direction is up (down). This delay gives the
+bid and ask volumes a chance to stabilize and reﬂect market beliefs. We close a long (short) position
+once the best bid (ask) price moves down (up).
+The procedure is summarized in Algorithm 1 in Appendix C. Here, tL represents the last time the bid
+or ask price changed, ti the current time, P the current market position (1 is long, −1 is short), and
+all other symbols are deﬁned as before. From September 9th to October 13th, the algorithm opens
+and closes 19188 positions. Average position duration is a little over 2 minutes. These statistics are
+summarized in Table 6-4.
+Parameter
+Value
+First market entry
+2019-09-09 04:12:38.651
+Last market exit
+2019-10-13 05:36:58.994
+Number of trades
+38376
+Average position duration
+2:17.683
+Table 6-4: Summarizing statistics of the executed trades
+If we ignore transaction costs, the average return per trade is 5.547 USD, with a standard deviation of
+8.141 USD (Table 6-5). This should be compared with the (average) trade value: 1 Bitcoin was worth
+approximately 9000 USD, hence the return per trade is 0.062%. Because the trade is canceled as soon
+as the price moves in the opposite direction, but is allowed to run while a correctly predicted trend
+continues, the return distribution is heavily skewed to the right. The distribution is also leptokurtic: it
+produces more outliers than the normal distribution. Both correctly followed long trends and wrongly
+estimated large price changes in the opposite direction may have caused this result.
+In reality, transaction costs however not negligible. The BitMEX platform charges a commission of
+0.075% per market order (MO), and pays a rebate of 0.025% per limit order (LO). This structure is
+referred to as maker-taker, and is designed to reward market making.
+If we would execute both the opening and closing of the trading position as market orders, the paid
+commission more than oﬀsets the net proﬁt, resulting in a net loss. On average, every trade loses 7.911
+USD (0.088%). If we can carry out the position close using a limit order, the average return is still
+positive: 1.061 USD (0.012%). Execution of limit orders is however not guaranteed, as the price might
+move away before the order is ﬁlled. Placement of limit orders to optimize the trading strategy, or an
+investigation into market making strategies on the exchange, are interesting points of future research.
+J.M. de Jong
+Master of Science Thesis
+
+6-5 Trading Strategy
+39
+Parameter
+No transaction cost
+1x MO, 1x LO
+2x MO
+Net Proﬁt (USD)
+106436.50
+20357.95
+-151792.24
+Commission Paid (USD)
+0.000
+86078.56
+258228.74
+Average return (USD)
+5.547
+1.061
+-7.911
+Standard deviation (USD)
+8.141
+8.141
+8.221
+Skewness
+1.653
+1.638
+1.561
+Kurtosis
+7.726
+7.663
+7.356
+Percent proﬁtable (%)
+69.12
+42.80
+14.74
+Table 6-5: Return statistics of the executed trades under transaction costs
+The cumulative returns of the strategy over time, under the three transaction cost scenarios, are
+graphed in Figure 6-8. The proﬁtability of the no cost and limit order scenarios is clearly visible.
+Additionally, we observe a temporary increase in return for these strategies shortly after September
+24. This may be attributed to a period of higher volatility and activity after a large price drop, in
+which the price moves are larger and/or more frequent than before.
+Sep 09
+Sep 16
+Sep 23
+Sep 30
+Oct 07
+Oct 14
+2019   
+-2
+-1.5
+-1
+-0.5
+0
+0.5
+1
+1.5
+Cumulative Return (USD)
+105
+No Cost
+2x MO
+1x MO, 1x LO
+Figure 6-8: Cumulative returns of the strategy for diﬀerent transaction cost scenarios
+An evolution of u1(x, y), plotted within the bid-ask spread, is displayed in Figure 6-9, illustrating the
+predictive value of the Level-1 volumes. At 7 of the 8 price reversal points, we observe that the limit
+order volume balance (and associated probability prediction) switches several hundreds of messages
+before the price direction changes.
+Master of Science Thesis
+J.M. de Jong
+
+40
+Results
+Figure 6-9: Upward price probability u1(x, y) plotted within the bid-ask spread
+J.M. de Jong
+Master of Science Thesis
+
+Chapter 7
+Conclusion and Discussion
+For the chosen set of evaluation points, all order ﬂow models show signiﬁcant improvement in price
+direction prediction over baseline models that do not take order ﬂow into account.
+Whereas the
+best performing baseline model (‘Previous Direction’) obtains an RMSE of 53.80%, the best order
+ﬂow model generates RMSEs in the range of 9.18 −30.52%, depending on the time until a given price
+change. This indicates that the incorporation of Level 1 order volume information can provide superior
+estimates of price direction on the BitMEX exchange.
+The extension of time-averaged diﬀusion-only Models 1 and 2 to include drift leads to a deterioration
+of the RMSE, which may be attributed to positive bias in the order ﬂow data. The ﬁltered order
+ﬂow namely still exhibits a positive bias, which has an averaging eﬀect on the probability surface.
+This averaged positive drift is a result of the choice to incorporate only Level 1 information. From
+the one-level order book description, loss of ﬂow information during large trades that deplete multiple
+price levels is virtually guaranteed. The associated non-monitored order book queues likely had a
+non-zero queue size and we underestimate the exact trade size. Possible solutions include tracking of
+multiple order book levels, or data fusion using reported trades.
+Realistically, order ﬂows are in equilibrium over long time scales, and only temporarily exhibit drift.
+On average, µX and µY should therefore equal 0. For bid and ask queue volumes that have stabilized
+after a price change, we can also ﬁx µX and µY as equal and negative. This is motivated by the
+observation that bid and ask queue dynamics exhibit multiple phases: they often ﬁll rapidly after
+a price change, by agents trying to gain time priority, then stabilize, and eventually always deplete
+Master of Science Thesis
+J.M. de Jong
+
+42
+Conclusion and Discussion
+when information comes in. A ﬁxed negative drift hence forces the price to change eventually. This
+approach does appear to improve the performances of Models 3 and 4 over the diﬀusion-only models,
+and may be investigated in conjunction with the data ﬁltering extensions suggested above.
+Another possible improvement with respect to the data is the execution of a second, identical data
+collection loop, which rolls over at instances diﬀerent from the ﬁrst loop. This way, the majority of
+timestamp gaps can be avoided.
+The ﬁltered order ﬂow process clearly exhibits negative correlation. However, inclusion of negative
+correlation in the models (i.e. Models 2 and 4) however leads to probability predictions that are more
+conservative, which increases the RMSE.
+An attempt to make the models more dynamic, by estimating the order ﬂow parameters through
+rolling windows, does not improve model performance either. Such a local analysis of the ﬂow likely
+suﬀers from noisy estimates or estimation delays.
+When the models are used as binary threshold classiﬁers, we observe that the time-averaged models
+generate (nearly) identical classiﬁcations. This is a result of the symmetry of the averaged parameters
+and selection of the decision boundary. Classiﬁer precision on the evaluation points ranges between
+87.69−99.00%. If we exclude certain order volume combinations from prediction, classiﬁer precision of
+the best-performing model can be increased to 93.83−99.64%, at the cost of reduced recall. Alternative
+classiﬁer thresholds may be employed, such as limits on the predicted probability instead of volume.
+Finally, we showed the eﬀectiveness of the classiﬁer for generating trading signals. Over the course of
+1 month, a trading algorithm executed 38376 trades. In the absence of transaction costs, an average
+return of 5.547 USD (approximately 0.062%) per market entry and exit was obtained, trading only
+ﬁxed sizes of ±1 XBT. If transaction costs for market orders are included, the paid commission is
+shown to more than oﬀset the obtained proﬁts. When we assume the trade exits can be carried out
+using limit orders, a trader can earn commission rebates and still make proﬁts (1.061 USD, 0.012%,
+per entry and exit). Execution of limit orders is however not guaranteed, as the price might move
+away before the order is ﬁlled.
+Future research may be directed at the execution risk of limit orders, or prediction probability of
+larger price moves by including deeper order book levels. Accurate prediction of larger price moves
+may compensate the transaction costs associated with market orders.
+Mathematically, there is still some work related to the limiting probability functions of Models 3 and 4
+in the extreme case that correlations are perfectly positive or negative. Also, more results are desired
+on the convergence of the (non-central) truncated chi-squared distribution to improve on conﬁdence
+bounds of RMS errors for predictions of a binary variable.
+J.M. de Jong
+Master of Science Thesis
+
+43
+The obtained probability functions can also ﬁnd application in the pricing of rainbow options, which
+are options that are exposed to multiple (correlated) sources of uncertainty. Speciﬁcally, two-asset
+cash-or-nothing options without expiry date, which are knocked in according to a barrier on the ﬁrst
+asset price, and knocked out according to another barrier on the second, appear to be directly priceable
+by the probability models collected in this thesis. To the best knowledge of the author, these options
+have not been priced analytically before.
+Analytical extension of the exit problem to include a third asset or dimension (such as time) is possible
+through results of López, Sinusía, and Temme (2007). This way, option expiry may be introduced via
+‘exit through a maturity date boundary’. In the case of assets, this requires further mathematical
+transformations to remove correlation-associated cross-terms and will likely result in a 3D sector
+problem domain.
+Master of Science Thesis
+J.M. de Jong
+
+44
+Conclusion and Discussion
+J.M. de Jong
+Master of Science Thesis
+
+Appendix A
+Mathematical derivations
+A-1
+RMSE Conﬁdence Interval
+Let xi be the true direction of the price change (1 is up, 0 is down) and ˆxi the probability estimate of
+an upward price change. Technically, the support of the error distribution is ﬁnite, so approximations
+by truncated normal and chi-squared distributions may be appropriate. Using the results of Marchand
+(1996), moments of the truncated chi-squared distribution can be computed recursively over the degrees
+of freedom, but there are no convergence results available for large sample sizes. We therefore choose to
+continue with a regular normal distribution, which may produce slightly too large conﬁdence bounds.
+Let
+ˆxi −xi ∼N(0, σ2).
+Then, for large sample size n,
+nRMSE2
+σ2
+= n 1
+n
+P
+i (ˆxi −xi)2
+σ2
+∼χ2
+n ∼
+√
+2nN(0, 1) + n.
+Hence,
+P
+√
+2nΦ−1(α
+2 ) + n ≤nRMSE2
+σ2
+≤
+√
+2nΦ−1(1 −α
+2 ) + n
+
+= 1 −α
+⇔P
+r
+n
+√
+2n · 1.96 + nRMSE ≤σ ≤
+r
+n
+−
+√
+2n · 1.96 + nRMSE
+
+= 1 −α.
+For σ = 1, α = 0.05 and n = 74746, conﬁdence limits are [0.9950, 1.0051].
+Master of Science Thesis
+J.M. de Jong
+
+46
+Mathematical derivations
+A-2
+Complete solution of Model 4
+The solution of Model 4 of the probability of a downward price change is given by the solution of
+López and Sinusía (2005) as
+¯uα,β2(ξ, η) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+1 −Iα,0(r, φ)
+if β2 = 0
+1(β2,α](φ) + 1
+2δφ,β2 −Iα,β2(r, φ)
+if 0 < β2 < α
+−Iα,α(r, φ)
+if β2 = α
+ewr cos(β2−φ)(Σ1 + ∆1) −Iα,β2(r, φ)
+if α < β2 < α + π
+ewr cos(β2−φ)(Σ2 + ∆2) + 1 −Iα,β2−2π(r, φ)
+if α + π ≤β2
+where we have deﬁned functions and parameters as in Section 5-4, and we use the following abbreviations:
+Σ1 =
+[
+β2+φ
+2α ]
+X
+k=1
+e−wr cos(β2+φ−2kα) −
+[
+β2−φ
+2α ]
+X
+k=1
+e−wr cos(β2−φ−2kα),
+Σ2 =
+[
+2π+φ−β2
+2α
+]
+X
+k=1
+e−wr cos(β2−φ+2kα) −
+[
+2π−φ−β2
+2α
+]
+X
+k=0
+e−wr cos(β2+φ+2kα),
+∆1 = 1
+2e−wr 
+δ β2−φ
+2α
+,[
+β2−φ
+2α ] −δ β2+φ
+2α
+,[
+β2+φ
+2α ]
+
+,
+∆2 = 1
+2e−wr 
+δ 2π−β2−φ
+2α
+,[
+2π−β2−φ
+2α
+] −δ 2π−β2+φ
+2α
+,[
+2π−β2+φ
+2α
+]
+
+.
+The integral term Iα,β2(r, φ) can further be split out using
+Iα,β2 =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ewr cos(β2−φ) ¯I(wr, φ, α, 0) + E(φ)
+if β2 = 0
+ewr cos(β2−φ) ¯I(wr, φ, α, β2) −1
+2 sgn(β2 −φ)E(β2 −φ)
+if 0 < β2 < α
+ewr cos(β2−φ) ¯I(wr, φ, α, α) −E(α −φ)
+if β2 = α
+ewr cos(β2−φ)  ¯I(wr, φ, α, β2) + R(wr, φ, α, β2)
+
+if α < β2 < α + π
+ewr cos(β2−φ)  ¯I(wr, φ, α, β2 −2π) + R(wr, φ, α, β2)
+
+if α + π ≤β2
+J.M. de Jong
+Master of Science Thesis
+
+A-2 Complete solution of Model 4
+47
+where E(x) = erfc
+p
+wr(1 −cos x) has been used for readability and
+R = −1
+2e−wr cos(A(n)) sgn(A(n)) · E(A(n))
+is a remainder term that can be shown to vanish for large r and ﬁnite w. Here A(n) has been used to
+write the argument of the constituents of R, where
+A(n) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+β2 −φ −2nα,
+n =
+h
+β2
+2α
+i
+if α < β2 < α + π, Frac( β2
+2α) ≤1
+2
+β2 + φ −2nα,
+n =
+h
+β2
+2α
+i
++ 1
+if α < β2 < α + π, Frac( β2
+2α) > 1
+2
+β2 −2π + φ
+if α + π ≤β2, α > 2π −β2
+β2 −2π + φ + 2nα
+n =
+h
+2π−β2
+2α
+i
+if α + π ≤β2, Frac( 2π−β2
+2α
+) ≤1
+2
+β2 −2π −φ + 2nα
+n =
+h
+2π−β2
+2α
+i
++ 1
+if α + π ≤β2, Frac( 2π−β2
+2α
+) > 1
+2
+α −φ
+if α + π ≤β2, α = 2π −β2.
+Finally, we can deﬁne the integral ¯I(x, φ, α, β2) as
+¯I(x, φ, α, β2) =
+Z ∞
+−∞
+e−x cosh tf(t, φ, α, β2)dt
+where
+f(t, φ, α, β2) = g(t, φ, α, β2) + sgn(β2) sgn
+1
+2 −Frac
+|β2|
+2α
+
+× (h(t, Λ(φ, α, β2)) −(δβ2,0 + δβ2,α + δβ2,2π−α)h(t, −Λ(φ, α, β2))) ,
+g(t, φ, α, β2) =
+sin(πφ/α)
+2α(cosh(π/α(t −iβ2)) −cos(πφ/α)),
+h(t, Λ(φ, α, β2)) =
+1
+4πi sinh( 1
+2(t −iΛ(φ, α, β2))),
+Λ(φ, α, β2) =
+
+
+
+
+
+β2 −sgn(β2)
+
+φ + 2α
+j
+|β2|
+2α
+k
+if Frac
+
+|β2|
+2α
+
+≤1
+2
+β2 + sgn(β2)
+
+φ −2α
+j
+|β2|
+2α
+k
++ 1
+
+if Frac
+
+|β2|
+2α
+
+> 1
+2.
+Master of Science Thesis
+J.M. de Jong
+
+48
+Mathematical derivations
+A-3
+Equivalence of Classiﬁer Threshold
+Below is a mathematical proof that the probability prediction of Model 1 is larger than or equal to
+0.5 if and only if the probability prediction of Model 2 is larger than or equal to 0.5.
+u2(x, y) ≥1
+2
+⇔1
+2 −1
+2
+arctan
+q
+1+ρ
+1−ρ
+y−
+σY
+σX x
+y+
+σY
+σX x
+
+arctan
+q
+1+ρ
+1−ρ
+
+≥1
+2
+⇔y −σY
+σX
+x ≤0
+⇔y ≤σY
+σX
+x
+⇔σY
+σX
+x
+y ≥1
+⇔2
+π arctan
+ σY
+σX
+x
+y
+
+≥1
+2
+⇔u1(x, y) ≥1
+2
+■
+J.M. de Jong
+Master of Science Thesis
+
+Appendix B
+Tables
+This appendix contains several tables reporting on the performance of the various models and classiﬁers. The following tables are included:
+B-1
+Model performance of Models 1 - 4 with time-averaged parameters . . . . . . . . . . . . . . . . . . . . . . 50
+B-2
+Model performance of Models 1 and 2 with rolling-window parameters . . . . . . . . . . . . . . . . . . 51
+B-3
+Model performance of Models 3 and 4 with rolling-window parameters . . . . . . . . . . . . . . . . . . 52
+B-4
+Classiﬁer precision of the Up-Down Classiﬁers . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .53
+B-5
+Precision of the Up-Down-No Prediction-Classiﬁer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+B-6
+Recall of the Up-Down-No Prediction-Classiﬁer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 54
+B-7
+F1-score of the Up-Down-No Prediction-Classiﬁer . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . 55
+Master of Science Thesis
+J.M. de Jong
+
+50
+Tables
+Model
+Time to next midprice change (ms)
+Baseline Model
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+Always Up
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+71.80
+Always Down
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+69.60
+Previous
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+53.80
+Exit Model
+α
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+5e-2
+30.52
+19.99
+14.07
+11.64
+10.66
+10.29
+10.04
+9.88
+9.86
+9.84
+9.84
+9.84
+2e-2
+30.52
+19.99
+14.06
+11.64
+10.66
+10.29
+10.04
+9.88
+9.85
+9.83
+9.84
+9.84
+1e-2
+30.52
+19.99
+14.06
+11.63
+10.66
+10.29
+10.04
+9.87
+9.85
+9.83
+9.84
+9.84
+5e-3
+30.52
+19.99
+14.06
+11.63
+10.66
+10.29
+10.04
+9.87
+9.85
+9.83
+9.83
+9.83
+Model 1
+2e-3
+30.52
+19.99
+14.06
+11.63
+10.66
+10.29
+10.04
+9.87
+9.85
+9.83
+9.83
+9.83
+1e-3
+30.52
+19.99
+14.06
+11.63
+10.66
+10.28
+10.04
+9.87
+9.85
+9.83
+9.83
+9.83
+5e-4
+30.52
+19.99
+14.06
+11.63
+10.66
+10.28
+10.03
+9.87
+9.85
+9.83
+9.83
+9.83
+2e-4
+30.52
+19.99
+14.06
+11.63
+10.66
+10.28
+10.03
+9.87
+9.85
+9.83
+9.83
+9.83
+1e-4
+30.52
+19.99
+14.06
+11.63
+10.66
+10.28
+10.03
+9.87
+9.85
+9.83
+9.83
+9.83
+5e-2
+30.53
+20.13
+14.28
+11.85
+10.85
+10.47
+10.21
+10.03
+10.01
+9.99
+9.99
+9.99
+2e-2
+30.53
+20.19
+14.37
+11.93
+10.93
+10.54
+10.28
+10.10
+10.07
+10.05
+10.05
+10.05
+1e-2
+30.54
+20.24
+14.45
+12.01
+11.00
+10.61
+10.34
+10.16
+10.13
+10.11
+10.11
+10.11
+5e-3
+30.54
+20.30
+14.53
+12.09
+11.08
+10.68
+10.40
+10.22
+10.19
+10.17
+10.17
+10.17
+Model 2
+2e-3
+30.55
+20.36
+14.62
+12.17
+11.15
+10.75
+10.47
+10.28
+10.25
+10.23
+10.23
+10.23
+1e-3
+30.56
+20.38
+14.65
+12.20
+11.18
+10.78
+10.50
+10.30
+10.27
+10.25
+10.25
+10.25
+5e-4
+30.55
+20.38
+14.64
+12.19
+11.18
+10.77
+10.49
+10.30
+10.27
+10.25
+10.25
+10.25
+2e-4
+30.55
+20.32
+14.56
+12.11
+11.10
+10.70
+10.43
+10.24
+10.21
+10.19
+10.19
+10.19
+1e-4
+30.53
+20.22
+14.42
+11.98
+10.97
+10.58
+10.31
+10.13
+10.11
+10.08
+10.09
+10.09
+5e-2
+40.21
+31.25
+25.36
+22.05
+20.34
+19.55
+18.92
+18.36
+18.26
+18.19
+18.18
+18.18
+2e-2
+36.96
+27.62
+21.80
+18.75
+17.26
+16.58
+16.06
+15.62
+15.54
+15.49
+15.49
+15.49
+1e-2
+34.94
+25.36
+19.58
+16.72
+15.36
+14.76
+14.31
+13.95
+13.89
+13.85
+13.85
+13.84
+5e-3
+33.20
+23.38
+17.62
+14.93
+13.70
+13.18
+12.80
+12.50
+12.45
+12.42
+12.42
+12.42
+Model 3
+2e-3
+31.71
+21.64
+15.87
+13.33
+12.23
+11.77
+11.45
+11.22
+11.18
+11.15
+11.15
+11.15
+1e-3
+31.17
+20.98
+15.19
+12.70
+11.64
+11.22
+10.92
+10.72
+10.68
+10.66
+10.66
+10.66
+5e-4
+30.90
+20.63
+14.82
+12.36
+11.33
+10.92
+10.64
+10.45
+10.42
+10.39
+10.39
+10.39
+2e-4
+30.73
+20.40
+14.56
+12.12
+11.11
+10.71
+10.44
+10.25
+10.22
+10.20
+10.20
+10.20
+1e-4
+30.65
+20.29
+14.44
+12.00
+11.00
+10.60
+10.34
+10.16
+10.13
+10.11
+10.11
+10.11
+5e-2
+40.15
+31.21
+25.34
+22.03
+20.33
+19.53
+18.91
+18.35
+18.24
+18.18
+18.17
+18.17
+2e-2
+36.82
+27.54
+21.76
+18.72
+17.23
+16.55
+16.04
+15.60
+15.52
+15.47
+15.46
+15.46
+1e-2
+34.73
+25.25
+19.54
+16.69
+15.34
+14.74
+14.30
+13.93
+13.87
+13.83
+13.82
+13.82
+5e-3
+32.95
+23.28
+17.63
+14.96
+13.73
+13.21
+12.82
+12.52
+12.47
+12.44
+12.43
+12.43
+Model 4
+2e-3
+31.51
+21.68
+16.06
+13.52
+12.40
+11.94
+11.61
+11.36
+11.32
+11.29
+11.29
+11.29
+1e-3
+31.04
+21.13
+15.51
+13.02
+11.94
+11.50
+11.18
+10.95
+10.92
+10.89
+10.89
+10.89
+5e-4
+30.83
+20.87
+15.23
+12.75
+11.70
+11.27
+10.96
+10.74
+10.71
+10.68
+10.68
+10.68
+2e-4
+30.71
+20.65
+14.97
+12.51
+11.47
+11.05
+10.76
+10.55
+10.52
+10.49
+10.49
+10.49
+1e-4
+30.65
+20.48
+14.75
+12.30
+11.27
+10.86
+10.58
+10.38
+10.35
+10.33
+10.33
+10.33
+Table B-1: Model performance (RMSE) of the baseline models and Models 1 - 4 with timeaveraged parameters for a range of exponential ﬁlter parameters α
+J.M. de Jong
+Master of Science Thesis
+
+51
+Time to next midprice change (ms)
+α
+5e-2
+5e-3
+5e-4
+Exit Model
+NW
+100
+10
+1
+100
+10
+1
+100
+10
+1
+1e3
+16.30
+15.45
+15.41
+17.86
+16.87
+16.82
+16.66
+15.75
+15.70
+2e3
+14.60
+13.88
+13.85
+16.22
+15.35
+15.31
+15.61
+14.76
+14.72
+5e3
+12.32
+11.76
+11.74
+13.21
+12.58
+12.55
+13.55
+12.89
+12.85
+1e4
+11.25
+10.77
+10.75
+11.56
+11.04
+11.02
+12.00
+11.43
+11.41
+2e4
+10.77
+10.33
+10.30
+10.79
+10.34
+10.32
+10.98
+10.52
+10.50
+5e4
+10.54
+10.10
+10.08
+10.46
+10.03
+10.02
+10.52
+10.09
+10.07
+Model 1
+1e5
+10.46
+10.02
+10.00
+10.39
+9.96
+9.94
+10.41
+9.98
+9.96
+2e5
+10.41
+9.97
+9.95
+10.35
+9.91
+9.90
+10.35
+9.91
+9.90
+5e5
+10.37
+9.93
+9.91
+10.32
+9.88
+9.86
+10.32
+9.88
+9.86
+1e6
+10.35
+9.90
+9.89
+10.31
+9.87
+9.86
+10.30
+9.87
+9.85
+2e6
+10.33
+9.89
+9.87
+10.31
+9.87
+9.85
+10.31
+9.87
+9.86
+5e6
+10.30
+9.87
+9.85
+10.30
+9.86
+9.85
+10.30
+9.87
+9.85
+Full
+10.29
+9.86
+9.84
+10.29
+9.85
+9.83
+10.28
+9.85
+9.83
+1e3
+16.48
+15.61
+15.57
+18.04
+17.03
+16.97
+16.84
+15.89
+15.85
+2e3
+14.78
+14.04
+14.01
+16.46
+15.57
+15.52
+15.93
+15.03
+14.99
+5e3
+12.51
+11.93
+11.90
+13.57
+12.89
+12.86
+14.02
+13.30
+13.26
+1e4
+11.44
+10.93
+10.91
+11.96
+11.39
+11.36
+12.54
+11.91
+11.88
+2e4
+10.96
+10.49
+10.46
+11.21
+10.70
+10.67
+11.56
+11.02
+10.99
+5e4
+10.72
+10.25
+10.23
+10.88
+10.39
+10.37
+11.10
+10.59
+10.57
+Model 2
+1e5
+10.64
+10.18
+10.16
+10.80
+10.31
+10.29
+10.99
+10.48
+10.45
+2e5
+10.59
+10.12
+10.10
+10.76
+10.27
+10.25
+10.92
+10.40
+10.38
+5e5
+10.55
+10.08
+10.06
+10.73
+10.23
+10.21
+10.87
+10.35
+10.33
+1e6
+10.52
+10.06
+10.04
+10.71
+10.22
+10.20
+10.84
+10.34
+10.31
+2e6
+10.51
+10.04
+10.02
+10.71
+10.22
+10.19
+10.83
+10.33
+10.30
+5e6
+10.48
+10.02
+10.00
+10.69
+10.20
+10.18
+10.80
+10.30
+10.28
+Full
+10.47
+10.01
+9.99
+10.68
+10.19
+10.17
+10.77
+10.27
+10.25
+Table B-2: Model performance (RMSE) of Models 1 & 2 with rolling-window parameters for
+three values of exponential ﬁlter parameter α
+Master of Science Thesis
+J.M. de Jong
+
+52
+Tables
+Time to next midprice change (ms)
+α
+5e-2
+5e-3
+5e-4
+Exit Model
+NW
+100
+10
+1
+100
+10
+1
+100
+10
+1
+1e3
+48.36
+45.24
+45.05
+50.83
+47.70
+47.52
+55.31
+52.43
+52.26
+2e3
+41.64
+38.95
+38.78
+40.69
+38.11
+37.95
+42.66
+40.14
+39.97
+5e3
+31.72
+29.64
+29.51
+27.72
+25.95
+25.84
+27.17
+25.49
+25.38
+1e4
+25.61
+23.96
+23.87
+20.14
+18.92
+18.85
+18.67
+17.61
+17.54
+2e4
+22.20
+20.79
+20.71
+16.03
+15.13
+15.08
+13.93
+13.21
+13.17
+5e4
+20.84
+19.50
+19.42
+14.27
+13.49
+13.45
+11.93
+11.36
+11.33
+Model 3
+1e5
+20.48
+19.16
+19.08
+13.88
+13.12
+13.07
+11.49
+10.94
+10.92
+2e5
+20.22
+18.89
+18.81
+13.66
+12.90
+12.86
+11.29
+10.75
+10.73
+5e5
+20.04
+18.70
+18.62
+13.52
+12.75
+12.71
+11.15
+10.61
+10.59
+1e6
+19.96
+18.63
+18.55
+13.46
+12.70
+12.66
+11.10
+10.57
+10.55
+2e6
+19.90
+18.57
+18.49
+13.43
+12.67
+12.63
+11.09
+10.56
+10.54
+5e6
+19.83
+18.51
+18.44
+13.38
+12.63
+12.59
+11.06
+10.53
+10.51
+Full
+19.55
+18.26
+18.18
+13.18
+12.45
+12.42
+10.92
+10.42
+10.39
+1e3
+48.31
+45.18
+45.00
+50.77
+47.65
+47.46
+55.31
+52.43
+52.26
+2e3
+41.59
+38.91
+38.74
+40.60
+38.03
+37.87
+42.65
+40.13
+39.96
+5e3
+31.70
+29.62
+29.49
+27.65
+25.88
+25.77
+27.15
+25.47
+25.36
+1e4
+25.60
+23.96
+23.86
+20.11
+18.89
+18.82
+18.69
+17.62
+17.54
+2e4
+22.20
+20.79
+20.70
+16.04
+15.14
+15.08
+14.07
+13.33
+13.29
+5e4
+20.83
+19.49
+19.41
+14.28
+13.50
+13.45
+12.20
+11.59
+11.55
+Model 4
+1e5
+20.47
+19.15
+19.07
+13.89
+13.12
+13.08
+11.80
+11.21
+11.18
+2e5
+20.21
+18.88
+18.80
+13.67
+12.90
+12.86
+11.62
+11.03
+11.01
+5e5
+20.02
+18.69
+18.61
+13.53
+12.75
+12.71
+11.49
+10.91
+10.88
+1e6
+19.95
+18.61
+18.54
+13.47
+12.70
+12.66
+11.45
+10.87
+10.84
+2e6
+19.89
+18.56
+18.48
+13.44
+12.67
+12.63
+11.43
+10.85
+10.83
+5e6
+19.82
+18.50
+18.42
+13.40
+12.63
+12.59
+11.39
+10.82
+10.79
+Full
+19.53
+18.24
+18.17
+13.21
+12.47
+12.43
+11.27
+10.71
+10.68
+Table B-3: Model performance (RMSE) of Models 3 & 4 with rolling-window parameters for
+three values of exponential ﬁlter parameter α
+J.M. de Jong
+Master of Science Thesis
+
+53
+Model
+Time to next midprice change (ms)
+Baseline Model
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+Always Up
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+48.44
+Always Down
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+51.56
+Previous
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+71.06
+Exit Model
+α
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+5e-2
+87.69
+94.98
+97.97
+98.69
+98.90
+98.95
+98.98
+99.00
+99.00
+99.00
+99.00
+99.00
+2e-2
+87.69
+94.98
+97.97
+98.69
+98.90
+98.95
+98.98
+99.00
+99.00
+99.00
+99.00
+99.00
+1e-2
+87.69
+94.97
+97.97
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-3
+87.70
+94.98
+97.97
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+Model 1
+2e-3
+87.72
+94.98
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1e-3
+87.72
+94.98
+97.98
+98.70
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-4
+87.72
+94.98
+97.98
+98.70
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+2e-4
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1e-4
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-2
+87.69
+94.98
+97.97
+98.69
+98.90
+98.95
+98.98
+99.00
+99.00
+99.00
+99.00
+99.00
+2e-2
+87.69
+94.98
+97.97
+98.69
+98.90
+98.95
+98.98
+99.00
+99.00
+99.00
+99.00
+99.00
+1e-2
+87.69
+94.97
+97.97
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-3
+87.70
+94.98
+97.97
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+Model 2
+2e-3
+87.72
+94.98
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1e-3
+87.72
+94.98
+97.98
+98.70
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-4
+87.72
+94.98
+97.98
+98.70
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+2e-4
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1e-4
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+5e-2
+78.07
+86.54
+91.37
+93.79
+94.89
+95.35
+95.67
+95.93
+95.98
+96.01
+96.01
+96.01
+2e-2
+81.39
+89.85
+94.07
+95.94
+96.67
+97.01
+97.20
+97.34
+97.36
+97.37
+97.37
+97.37
+1e-2
+83.41
+91.62
+95.50
+97.00
+97.56
+97.79
+97.94
+98.03
+98.03
+98.04
+98.04
+98.04
+5e-3
+85.12
+93.13
+96.62
+97.81
+98.22
+98.36
+98.46
+98.50
+98.50
+98.51
+98.51
+98.50
+Model 3
+2e-3
+86.46
+94.21
+97.46
+98.38
+98.63
+98.72
+98.79
+98.80
+98.80
+98.80
+98.80
+98.80
+1e-3
+87.03
+94.61
+97.70
+98.51
+98.75
+98.83
+98.88
+98.89
+98.89
+98.89
+98.89
+98.89
+5e-4
+87.31
+94.81
+97.84
+98.59
+98.82
+98.88
+98.92
+98.94
+98.94
+98.94
+98.93
+98.94
+2e-4
+87.47
+94.90
+97.89
+98.64
+98.87
+98.92
+98.96
+98.97
+98.97
+98.97
+98.97
+98.97
+1e-4
+87.57
+94.93
+97.92
+98.66
+98.87
+98.93
+98.97
+98.98
+98.98
+98.98
+98.98
+98.98
+5e-2
+78.08
+86.55
+91.39
+93.79
+94.89
+95.35
+95.68
+95.93
+95.99
+96.01
+96.01
+96.02
+2e-2
+81.44
+89.89
+94.10
+95.96
+96.69
+97.02
+97.21
+97.36
+97.37
+97.38
+97.38
+97.38
+1e-2
+83.48
+91.69
+95.55
+97.06
+97.60
+97.82
+97.97
+98.05
+98.06
+98.06
+98.06
+98.06
+5e-3
+85.20
+93.21
+96.70
+97.87
+98.27
+98.42
+98.51
+98.54
+98.55
+98.55
+98.55
+98.55
+Model 4
+2e-3
+86.64
+94.35
+97.51
+98.40
+98.66
+98.74
+98.80
+98.82
+98.82
+98.82
+98.82
+98.82
+1e-3
+87.21
+94.72
+97.79
+98.55
+98.79
+98.86
+98.90
+98.91
+98.91
+98.91
+98.91
+98.91
+5e-4
+87.44
+94.88
+97.87
+98.63
+98.86
+98.91
+98.95
+98.97
+98.96
+98.96
+98.96
+98.96
+2e-4
+87.56
+94.93
+97.92
+98.66
+98.87
+98.94
+98.97
+98.99
+98.99
+98.99
+98.98
+98.98
+1e-4
+87.62
+94.94
+97.93
+98.67
+98.88
+98.94
+98.98
+98.99
+98.99
+98.99
+98.99
+98.99
+Table B-4: Classiﬁer precision (%) of the Up-Down Classiﬁers
+Master of Science Thesis
+J.M. de Jong
+
+54
+Tables
+Time to next midprice change (ms)
+Percentile
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+0
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1
+87.72
+95.00
+97.97
+98.69
+98.89
+98.96
+98.99
+99.00
+99.00
+99.00
+99.00
+99.00
+2
+88.01
+95.19
+98.06
+98.74
+98.93
+98.99
+99.02
+99.03
+99.02
+99.02
+99.02
+99.02
+3
+88.32
+95.38
+98.15
+98.79
+98.97
+99.02
+99.05
+99.06
+99.06
+99.06
+99.05
+99.05
+4
+88.61
+95.55
+98.24
+98.85
+99.02
+99.07
+99.10
+99.11
+99.11
+99.10
+99.10
+99.10
+5
+88.95
+95.77
+98.37
+98.93
+99.08
+99.13
+99.15
+99.15
+99.15
+99.16
+99.16
+99.16
+6
+89.26
+95.95
+98.47
+98.99
+99.13
+99.18
+99.20
+99.20
+99.20
+99.20
+99.20
+99.20
+7
+89.63
+96.17
+98.56
+99.05
+99.18
+99.22
+99.24
+99.25
+99.25
+99.25
+99.25
+99.25
+8
+89.97
+96.39
+98.67
+99.11
+99.23
+99.27
+99.28
+99.29
+99.29
+99.30
+99.30
+99.30
+9
+90.30
+96.60
+98.77
+99.17
+99.29
+99.31
+99.32
+99.33
+99.33
+99.33
+99.33
+99.33
+10
+90.73
+96.81
+98.85
+99.22
+99.33
+99.35
+99.36
+99.37
+99.37
+99.37
+99.38
+99.38
+11
+91.05
+97.00
+98.93
+99.26
+99.35
+99.39
+99.39
+99.40
+99.40
+99.40
+99.40
+99.40
+12
+91.37
+97.19
+99.02
+99.31
+99.41
+99.42
+99.43
+99.44
+99.44
+99.44
+99.44
+99.44
+13
+91.66
+97.39
+99.08
+99.36
+99.44
+99.46
+99.46
+99.47
+99.47
+99.47
+99.47
+99.47
+14
+91.95
+97.54
+99.14
+99.39
+99.47
+99.48
+99.49
+99.49
+99.49
+99.49
+99.50
+99.50
+15
+92.25
+97.70
+99.19
+99.42
+99.50
+99.51
+99.52
+99.53
+99.53
+99.53
+99.53
+99.53
+16
+92.52
+97.82
+99.25
+99.47
+99.53
+99.54
+99.55
+99.56
+99.55
+99.56
+99.56
+99.55
+17
+92.81
+97.96
+99.31
+99.50
+99.56
+99.57
+99.57
+99.58
+99.58
+99.58
+99.58
+99.58
+18
+93.10
+98.09
+99.34
+99.52
+99.59
+99.59
+99.60
+99.61
+99.60
+99.61
+99.60
+99.60
+19
+93.34
+98.20
+99.37
+99.54
+99.61
+99.62
+99.63
+99.63
+99.63
+99.63
+99.63
+99.63
+20
+93.59
+98.31
+99.40
+99.55
+99.62
+99.63
+99.63
+99.63
+99.63
+99.63
+99.63
+99.63
+Table B-5: Precision (%) of the Up-Down-No Prediction classiﬁer for excluded lower percentiles
+of R∗and middle percentiles of φ
+Time to next midprice change (ms)
+Percentile
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+0
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1
+87.72
+95.00
+97.97
+98.69
+98.89
+98.96
+98.99
+99.00
+99.00
+99.00
+99.00
+99.00
+2
+87.27
+94.78
+97.85
+98.61
+98.82
+98.89
+98.93
+98.95
+98.95
+98.95
+98.95
+98.95
+3
+86.74
+94.53
+97.73
+98.52
+98.76
+98.82
+98.87
+98.88
+98.88
+98.89
+98.88
+98.88
+4
+86.24
+94.27
+97.59
+98.45
+98.69
+98.74
+98.80
+98.81
+98.81
+98.82
+98.81
+98.81
+5
+85.68
+93.97
+97.40
+98.30
+98.57
+98.63
+98.68
+98.69
+98.69
+98.69
+98.68
+98.68
+6
+85.07
+93.61
+97.15
+98.09
+98.41
+98.47
+98.52
+98.52
+98.51
+98.52
+98.51
+98.51
+7
+84.35
+93.13
+96.75
+97.81
+98.14
+98.20
+98.26
+98.27
+98.27
+98.27
+98.26
+98.26
+8
+83.57
+92.56
+96.25
+97.40
+97.76
+97.84
+97.92
+97.93
+97.95
+97.94
+97.94
+97.94
+9
+82.74
+91.92
+95.67
+96.89
+97.28
+97.40
+97.47
+97.48
+97.49
+97.48
+97.48
+97.48
+10
+81.88
+91.20
+95.05
+96.35
+96.76
+96.88
+96.94
+96.95
+96.95
+96.95
+96.95
+96.95
+11
+80.91
+90.43
+94.34
+95.72
+96.18
+96.36
+96.42
+96.45
+96.45
+96.46
+96.45
+96.45
+12
+79.98
+89.61
+93.60
+95.03
+95.54
+95.72
+95.81
+95.86
+95.87
+95.87
+95.87
+95.87
+13
+79.01
+88.76
+92.83
+94.40
+94.91
+95.13
+95.21
+95.24
+95.27
+95.27
+95.26
+95.27
+14
+78.05
+87.89
+92.06
+93.74
+94.28
+94.49
+94.58
+94.62
+94.65
+94.67
+94.66
+94.66
+15
+77.09
+86.98
+91.25
+93.05
+93.58
+93.82
+93.93
+93.99
+94.02
+94.02
+94.02
+94.02
+16
+76.05
+86.10
+90.48
+92.29
+92.87
+93.13
+93.27
+93.35
+93.37
+93.39
+93.39
+93.38
+17
+75.10
+85.23
+89.65
+91.55
+92.18
+92.46
+92.62
+92.69
+92.72
+92.74
+92.73
+92.73
+18
+74.14
+84.35
+88.81
+90.74
+91.44
+91.74
+91.89
+92.00
+92.02
+92.02
+92.01
+92.02
+19
+73.18
+83.43
+87.97
+89.94
+90.68
+90.97
+91.15
+91.25
+91.26
+91.26
+91.26
+91.27
+20
+72.10
+82.50
+87.12
+89.14
+89.95
+90.22
+90.40
+90.50
+90.52
+90.54
+90.54
+90.54
+Table B-6: Recall (%) of the Up-Down-No Prediction classiﬁer for excluded lower percentiles of
+R∗and middle percentiles of φ
+J.M. de Jong
+Master of Science Thesis
+
+55
+Time to next midprice change (ms)
+Percentile
+5000
+2000
+1000
+500
+200
+100
+50
+20
+10
+5
+2
+1
+0
+87.72
+94.99
+97.98
+98.69
+98.89
+98.95
+98.99
+99.01
+99.00
+99.00
+99.00
+99.00
+1
+87.72
+95.00
+97.97
+98.69
+98.89
+98.96
+98.99
+99.00
+99.00
+99.00
+99.00
+99.00
+2
+87.64
+94.98
+97.96
+98.67
+98.87
+98.94
+98.98
+98.99
+98.99
+98.99
+98.99
+98.98
+3
+87.53
+94.96
+97.94
+98.65
+98.86
+98.92
+98.96
+98.97
+98.97
+98.97
+98.97
+98.97
+4
+87.41
+94.90
+97.92
+98.65
+98.85
+98.90
+98.95
+98.96
+98.96
+98.96
+98.96
+98.96
+5
+87.28
+94.86
+97.89
+98.61
+98.83
+98.88
+98.92
+98.92
+98.92
+98.92
+98.92
+98.92
+6
+87.12
+94.76
+97.80
+98.54
+98.77
+98.82
+98.86
+98.86
+98.85
+98.86
+98.85
+98.85
+7
+86.91
+94.63
+97.65
+98.43
+98.66
+98.71
+98.75
+98.76
+98.76
+98.76
+98.75
+98.75
+8
+86.65
+94.44
+97.44
+98.25
+98.49
+98.55
+98.60
+98.61
+98.62
+98.61
+98.61
+98.61
+9
+86.35
+94.20
+97.20
+98.02
+98.28
+98.34
+98.39
+98.40
+98.40
+98.40
+98.40
+98.40
+10
+86.08
+93.92
+96.91
+97.77
+98.03
+98.10
+98.13
+98.15
+98.15
+98.15
+98.15
+98.15
+11
+85.68
+93.60
+96.58
+97.46
+97.74
+97.85
+97.88
+97.90
+97.90
+97.91
+97.91
+97.91
+12
+85.30
+93.25
+96.23
+97.12
+97.44
+97.54
+97.58
+97.62
+97.62
+97.62
+97.62
+97.62
+13
+84.87
+92.87
+95.85
+96.82
+97.12
+97.24
+97.29
+97.31
+97.32
+97.33
+97.32
+97.32
+14
+84.43
+92.46
+95.47
+96.48
+96.81
+96.92
+96.97
+97.00
+97.01
+97.02
+97.02
+97.02
+15
+83.99
+92.03
+95.06
+96.13
+96.45
+96.58
+96.64
+96.68
+96.69
+96.70
+96.70
+96.69
+16
+83.48
+91.59
+94.66
+95.75
+96.09
+96.23
+96.31
+96.35
+96.36
+96.37
+96.37
+96.37
+17
+83.02
+91.16
+94.23
+95.36
+95.73
+95.88
+95.97
+96.01
+96.03
+96.04
+96.03
+96.03
+18
+82.54
+90.70
+93.78
+94.93
+95.34
+95.50
+95.59
+95.65
+95.66
+95.66
+95.66
+95.66
+19
+82.04
+90.21
+93.32
+94.49
+94.93
+95.10
+95.20
+95.25
+95.26
+95.26
+95.26
+95.26
+20
+81.45
+89.71
+92.86
+94.06
+94.54
+94.69
+94.79
+94.85
+94.86
+94.87
+94.87
+94.87
+Table B-7: F1-score (%) of the Up-Down-No Prediction classiﬁer for excluded lower percentiles
+of R∗and middle percentiles of φ
+Master of Science Thesis
+J.M. de Jong
+
+56
+Tables
+J.M. de Jong
+Master of Science Thesis
+
+Appendix C
+Trading Strategy
+Algorithm 1 Simple market order strategy
+1: Initialization:
+2: P ←0
+3: tL ←t0
+4: Loop:
+5: time_checker:
+6: if pA
+i̸ = pA
+i−1 or pA
+i̸ = pA
+i−1 then
+7:
+tL ←ti.
+8: trade_opener:
+9: if P = 0 and pA
+i −pB
+i = 0.5 and ti −tL ≥5000 and (x, y) ∈S then
+10:
+P ←2 · (C(x, y) −0.5).
+11: trade_closer:
+12: if P = 1 then
+13:
+if pA
+i > pA
+i−1 then
+14:
+P ←0.
+15: if P = −1 then
+16:
+if pB
+i < pB
+i−1 then
+17:
+P ←0.
+18: return P
+Master of Science Thesis
+J.M. de Jong
+
+58
+Trading Strategy
+J.M. de Jong
+Master of Science Thesis
+
+References
+Abergel, F., & Jedidi, A.
+(2013).
+A Mathematical Approach to Order Book Modeling.
+International Journal of Theoretical and Applied Finance, 16(05), 1–40.
+doi:
+10.1142/S0219024913500258
+Andoh, D. I. (2017). Limit Order Book Modelling: A Stochastic Approach (Master’s thesis,
+University of Tartu, Estland). doi: 10062/57098
+Avellaneda, M., Reed, J., & Stoikov, S. (2011). Forecasting Prices from Level-I Quotes in
+the Presence of Hidden Liquidity. Algorithmic Finance, 1(1), 35–43. doi: 10.3233/AF2011-004
+Biais, B., Hillion, P., & Spatt, C. (1995). An Empirical Analysis of the Limit Order Book
+and the Order Flow in the Paris Bourse. The Journal of Finance, 50(5), 1655–1689.
+doi: 10.2307/2329330
+Bouchaud, J.-P., Mézard, M., & Potters, M. e. a. (2002). Statistical Properties of Stock
+Order Books: Empirical Results and Models. Quantitative Finance, 2(4), 251–256. doi:
+10.1088/1469-7688/2/4/301
+Chávez-Casillas, J. A., Elliott, R. J., Rémillard, B., & Swishchuk, A. V. (2017). A Level-1
+Limit Order Book with Time Dependent Arrival Rates. Methodology and Computing in
+Applied Probability, 1–21. doi: 10.1007/s11009-019-09715-7
+Chertok, A., Korolev, V. Y., & Korchagin, A. Y. (2016). Modeling High-Frequency NonHomogeneous Order Flows by Compound Cox Processes.
+Journal of Mathematical
+Master of Science Thesis
+J.M. de Jong
+
+60
+References
+Sciences, 214(1), 44–68. doi: 10.2139/ssrn.2378975
+CoinMarketCap. (2019). Cryptocurrency Exchange Rankings. Retrieved 2019-10-15, from
+coinmarketcap.com/rankings/exchanges/reported/
+Cont, R., & De Larrard, A. (2013). Price Dynamics in a Markovian Limit Order Market.
+SIAM Journal on Financial Mathematics, 4(1), 1–25. doi: 10.2139/ssrn.1735338
+Cont, R., Stoikov, S., & Talreja, R. (2010). A Stochastic Model for Order Book Dynamics.
+Operations Research, 58(3), 549–563. doi: 10.2139/ssrn.1273160
+Gode, D. K., & Sunder, S. (1993). Allocative Eﬃciency of Markets with Zero-Intelligence
+Traders: Market as a Partial Substitute for Individual Rationality. Journal of Political
+Economy, 101(1), 119–137. doi: 10.1086/261868
+Gorshenin, A. K., Korolev, V. Y., Zeifman, A. I., Shorgin, S. Y., Chertok, A. V., Evstafyev,
+A. I., & Korchagin, A. Y. (2013). Modelling Stock Order Flows with Non-Homogeneous
+Intensities from High-frequency Data. In AIP Conference Proceedings (Vol. 1558, pp.
+2394–2397). doi: 10.1063/1.4826023
+Gould, M. D., Porter, M. A., Williams, S., McDonald, M., Fenn, D. J., & Howison,
+S. D.
+(2013).
+Limit Order Books.
+Quantitative Finance, 13(11), 1709–1742.
+doi:
+10.2139/ssrn.1970185
+Grasman, J., & Van Herwaarden, O. A. (1999). Asymptotic Methods for the Fokker-Planck
+Equation and the Exit Problem in Applications. Springer Science & Business Media.
+doi: 10.1007/978-3-662-03857-4
+Huang, H., & Kercheval, A. N. (2012). A Generalized Birth–Death Stochastic Model for
+High-Frequency Order Book Dynamics. Quantitative Finance, 12(4), 547–557. doi:
+10.1080/14697688.2012.664926
+In ’t Hout, K., & Valkov, R. (2015). Numerical Solution of a Two-asset Option Valuation
+PDE by ADI Finite Diﬀerence Discretization.
+In AIP Conference Proceedings (Vol.
+1648, p. 020007). doi: 10.1063/1.4912311
+Korolev, V. Y., Chertok, A., Korchagin, A. Y., & Zeifman, A. I.
+(2015).
+Modeling High-Frequency Order Flow Imbalance by Functional Limit Theorems for TwoSided Risk Processes.
+Applied Mathematics and Computation, 253, 224–241.
+doi:
+10.1016/j.amc.2014.12.085
+López, J. L., & Sinusía, E. P. (2004). Asymptotic Expansions for Two Singularly Perturbed
+J.M. de Jong
+Master of Science Thesis
+
+References
+61
+Convection–Diﬀusion Problems with Discontinuous Data: The Quarter Plane and the
+Inﬁnite Strip. Studies in Applied Mathematics, 113(1), 57–89. doi: 10.1111/j.14679590.2004.01508.x
+López, J. L., & Sinusía, E. P. (2005). Asymptotic Approximations for a Singularly Perturbed
+Convection–Diﬀusion Problem with Discontinuous Data in a Sector. Journal of Computational and Applied Mathematics, 181(1), 1–23. doi: 10.1016/j.cam.2004.11.014
+López, J. L., Sinusía, E. P., & Temme, N. M.
+(2007).
+Asymptotic Behaviour of ThreeDimensional Singularly Perturbed Convection–Diﬀusion Problems with Discontinuous
+Data.
+Journal of Mathematical Analysis and Applications, 328(2), 931–945.
+doi:
+10.1016/j.jmaa.2006.05.079
+Marchand, É. (1996). Computing the Moments of a Truncated Noncentral Chi-Square Distribution.
+Journal of Statistical Computation and Simulation, 54(4), 387–391.
+doi:
+10.1080/00949659608811746
+Schnaubelt, M., Rende, J., & Krauss, C.
+(2019).
+Testing Stylized Facts of Bitcoin
+Limit Order Books.
+Journal of Risk and Financial Management, 12(1), 25.
+doi:
+10.3390/jrfm12010025
+Silantyev, E. (2019). Order Flow Analysis of Cryptocurrency Markets. Digital Finance. doi:
+10.1007/s42521-019-00007-w
+Smith, E., Farmer, J. D., Gillemot, L. S., & Krishnamurthy, S. e. a.
+(2003).
+Statistical
+Theory of the Continuous Double Auction. Quantitative Finance, 3(6), 481–514. doi:
+10.1088/1469-7688/3/6/307
+Swishchuk, A., & Vadori, N. (2017). A Semi-Markovian Modeling of Limit Order Markets.
+SIAM Journal on Financial Mathematics, 8(1), 240–273. doi: 10.1137/15M1015406
+Van Leeuwaarden, J. S., & Raschel, K. (2013). Random Walks Reaching Against all Odds
+the other Side of the Quarter Plane. Journal of Applied Probability, 50(1), 85–102. doi:
+10.1239/jap/1363784426
+Zhang, G., Christensen, H., Li, G., & Godsill, S. (2016). A Correction Note for Price Dynamics
+in a Markovian Limit Order Market. SIAM Journal on Financial Mathematics, 7(1),
+152–158. doi: 10.1137/16M1057437
+Master of Science Thesis
+J.M. de Jong
+
+62
+References
+J.M. de Jong
+Master of Science Thesis
+
+Glossary
+List of Acronyms
+API
+Application Programming Interface
+ARS
+Avellaneda-Reed-Stoikov
+CDA
+Continuous Double Auction
+CDF
+Cumulative Density Function
+CST
+Cont-Stoikov-Talreja
+EMA
+Exponential Moving Average
+LO
+Limit Order
+LOB
+Limit Order Book
+LUT
+Look-Up Table
+MO
+Market Order
+OFI
+Order Flow Imbalance
+PDE
+Partial Diﬀerential Equation
+RMSE
+Root Mean Squared Error
+TFI
+Trade Flow Imbalance
+USD
+United States Dollar
+XBT
+Bitcoin
+Master of Science Thesis
+J.M. de Jong
+
+64
+Glossary
+List of Symbols
+Trading Algorithm
+P
+Market position
+tL
+Time since last price change
+Convection-Diﬀusion Model
+α
+Sector angle
+¯u(ξ, η)
+Probability of a downward price move given bid queue size ξ and ask queue size η
+β
+Drift vector angle
+β2
+Rotated drift vector angle
+∆1,2
+Combined Kronecker delta function (constituent of ¯uα,β2(ξ, η))
+δa,b
+Kronecker delta function
+η
+Ask queue size (scaled)
+µX
+Bid queue drift parameter
+µY
+Ask queue drift parameter
+φ
+Polar coordinate (x, y coordinate frame)
+ρ
+Bid and ask queue correlation
+σX
+Bid queue standard deviation
+σY
+Ask queue standard deviation
+Σ1,2
+Combined sum function (constituent of ¯uα,β2(ξ, η))
+θ
+Half sector angle
+ξ
+Bid queue size (scaled)
+D
+PDE discriminant
+u(x, y)
+Probability of an upward price move given bid queue size x and ask queue size y
+v
+2D drift vector
+w
+Length of drift vector v
+W (i)
+t
+Wiener process
+x
+Bid queue size
+y
+Ask queue size
+Order Flow Process
+1.+
+Indicator function of increased bid/ask price
+1.−
+Indicator function of decreased bid/ask price
+1.C
+Indicator function of unchanged bid/ask price
+At
+Cumulative ask order ﬂow
+Bt
+Cumulative bid order ﬂow
+J.M. de Jong
+Master of Science Thesis
+
+65
+Order Book Data
+NT
+Base 10 exponent of t
+pA
+i
+Price of ask level i
+pB
+i
+Price of bid level i
+t
+Time until the price changes (ms)
+uA
+i
+Volume of ask level i
+uB
+i
+Volume of bid level i
+Filter Parameters
+α
+Exponential weighting parameter
+NE
+Base 10 exponent of α
+NW
+Base 10 exponent of WS
+st(xt; α)
+Exponentially weighted value of xt
+WS
+Window size of moving window ﬁlter
+Markov Queue Model
+ηi
+Arrival rate of diagonal (combined) orders at the bid and ask queue
+λX
+Arrival rate of limit orders at the bid queue
+λY
+Arrival rate of limit orders at the ask queue
+h
+Minimum order size
+mY
+Arrival rate of market orders or cancellations at the ask queue
+mX
+Arrival rate of market orders or cancellations at the bid queue
+Xt
+Bid queue volume at time t
+Yt
+Ask queue volume at time t
+Master of Science Thesis
+J.M. de Jong

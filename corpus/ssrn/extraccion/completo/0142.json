@@ -1,0 +1,131 @@
+{
+  "doc_id": 142,
+  "titulo": "Good (bad) news and the probability of informed trading: Evidence from illegal insider trading",
+  "resumen_operativo": "Desarrolla una solución cerrada que conecta la probabilidad de informed trading (PIN) con el parámetro delta (probabilidad de que la información privada sea buena o mala noticia), un factor frecuentemente ignorado en la literatura. Usando datos de insider trading ilegal en China (2011-2018, 91 casos judiciales, 2,787 observaciones diarias de PIN), demuestra que PIN es altamente sensible a la certeza de la información privada positiva: un delta de 0 produce PIN medio de 0.21, mientras que delta de 0.00001 lo eleva a 0.27 (+28.75%). Concluye que PIN no debe usarse como proxy de insider trading y que se necesita un modelo nuevo basado en mecanismos distintos al order imbalance.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "PIN",
+      "tipo": "metrica",
+      "definicion_en_contexto": "Probability of Informed Trading, métrica del modelo EKOP (Easley, Kiefer, O'Hara, Paperman 1996) que mide cómo la información privada afecta los precios a través del desbalance de órdenes. El paper demuestra que la estimación de PIN es sensible al parámetro delta (probabilidad de que la info sea buena/mala).",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "informed trading"},
+        {"tipo": "USA", "objeto": "order flow imbalance"},
+        {"tipo": "PARTE_DE", "objeto": "EKOP model"}
+      ],
+      "cita_textual": "The Probability of informed trading (PIN) is frequently employed in financial market research to measure how private information affects asset prices"
+    },
+    {
+      "nombre": "informed trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trading basado en información privada que genera desbalance de órdenes. El paper distingue informed trading de insider trading: el primero es un concepto más amplio, el segundo es impulsado por una señal de precio clara y específica. PIN no debería usarse para medir insider trading.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "insider trading"},
+        {"tipo": "USA", "objeto": "PIN"}
+      ],
+      "cita_textual": "the confusion between the terms 'informed trading' and 'insider trading.' The simplification of these concepts leads to PIN's misuse"
+    },
+    {
+      "nombre": "insider trading",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Trading realizado por insiders con información privada sobre la empresa. El paper usa datos de insider trading ilegal en China para estimar PIN, aprovechando que la prohibición de short-selling implica que solo información positiva es explotable (alpha=1, delta=0).",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "informed trading"},
+        {"tipo": "REQUIERE", "objeto": "PIN"}
+      ],
+      "cita_textual": "due to the long lasting short-selling ban in China, only positive insider information is exploitable for profit and hence the following insider action is to buy the target firm's stock"
+    },
+    {
+      "nombre": "EKOP model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Modelo clásico de Easley, Kiefer, O'Hara y Paperman (1996) que extrae PIN de órdenes desbalanceadas asumiendo tres escenarios: sin noticias, malas noticias (alpha*delta), y buenas noticias (alpha*(1-delta)).",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "PIN"},
+        {"tipo": "USA", "objeto": "order flow imbalance"}
+      ],
+      "cita_textual": "The EKOP model extracts information from imbalanced order placed by buyers and sellers where one side have private information"
+    },
+    {
+      "nombre": "order flow imbalance",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Desbalance entre órdenes de compra y venta que, en el modelo EKOP, es el mecanismo mediante el cual la información privada se incorpora a los precios. El paper argumenta que los modelos de insider trading no deberían basarse en esta teoría.",
+      "relaciones": [
+        {"tipo": "PARTE_DE", "objeto": "EKOP model"},
+        {"tipo": "PREDICE", "objeto": "PIN"}
+      ],
+      "cita_textual": "A new model for capturing insider trading is needed, but it should not be based on the order imbalance theory"
+    },
+    {
+      "nombre": "bid-ask spread",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Usado como proxy de microstructure para controlar si la relación entre delta y PIN está mediada por condiciones de mercado. El paper encuentra que la distribución de delta y PIN no está clusterizada por nivel de spread, sugiriendo independencia de los canales existentes.",
+      "relaciones": [
+        {"tipo": "MIDE", "objeto": "market microstructure"},
+        {"tipo": "APLICA_A", "objeto": "PIN"}
+      ],
+      "cita_textual": "the distribution of delta and PIN is not clustered in high/low MV or BA samples, suggesting our findings are not a result from coincide with the existing theories"
+    },
+    {
+      "nombre": "Monte Carlo simulation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Usado para generar 24 conjuntos de 2,787 órdenes simuladas de compra y venta manteniendo alpha, epsilon y mu fijos en sus medias muestrales, para verificar la sensibilidad de PIN a delta.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "PIN"}
+      ],
+      "cita_textual": "We re-estimate the observations' PIN by generating 24 sets of buy and sell orders using Monte-Carlo simulation"
+    },
+    {
+      "nombre": "information asymmetry",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Asimetría de información entre traders informados y no informados, canal subyacente que afecta la distribución de PIN; el paper usa market value of equity como proxy.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "PIN"},
+        {"tipo": "APLICA_A", "objeto": "informed trading"}
+      ],
+      "cita_textual": "The distribution of PIN is affected by two underlying channels: information asymmetry and microstructure"
+    },
+    {
+      "nombre": "market microstructure",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Estructura de mercado que afecta PIN a través del bid-ask spread; el paper muestra que la relación delta-PIN es independiente de los canales de microstructure existentes.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "PIN"},
+        {"tipo": "USA", "objeto": "bid-ask spread"}
+      ],
+      "cita_textual": "PIN is sensitive to the market's microstructure, such as short selling and bid-ask spread"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "El parámetro delta (probabilidad de que información privada sea buena/mala) tiene una relación de derivada parcial con PIN previamente ignorada en la literatura, que afecta significativamente la estimación incluso con cambios infinitesimales.",
+      "mercado": "China stock market (Shenzhen Stock Exchange)",
+      "periodo": "2011-2018",
+      "magnitud": "Derivada parcial ∂PIN/∂delta resuelta analíticamente (Equation 3). PIN medio con delta=0: 0.21; delta=0.00001: 0.27 (+28.75%); delta=0.5: 0.36",
+      "condiciones": "2,787 observaciones diarias de PIN estimadas con método Bayesiano de Griffin et al. (2021) sobre 91 casos judiciales de insider trading ilegal; solo compras (short-selling prohibido en China)",
+      "robustez": "media",
+      "cita_textual": "when the private information is a sure good thing, the estimated PIN has a mean value merely at 0.21. If the private information is almost for sure, the mean value of estimation rises 28.75%, to 0.27"
+    },
+    {
+      "afirmacion": "El poder determinativo de delta sobre PIN es independiente del market value of equity (proxy de information asymmetry) y del bid-ask spread (proxy de microstructure), sugiriendo un nuevo canal no capturado por las teorías existentes.",
+      "mercado": "China stock market (SZSE)",
+      "periodo": "2011-2018",
+      "magnitud": "Distribución no clusterizada en submuestras high/low MV y high/low BA; diferencia visual reportada en Figure 4 (sin test estadístico formal reportado)",
+      "condiciones": "Estimaciones diarias en ventana de 30 días alrededor del primer insider trade; figuras sin valores numéricos precisos",
+      "robustez": "baja",
+      "cita_textual": "the distribution of delta and PIN is not clustered in high/low MV or BA samples, suggesting our findings are not a result from coincide with the existing theories"
+    },
+    {
+      "afirmacion": "La delta media estimada es 0.525, considerablemente mayor al 0.25 reportado en Griffin et al. (2021), lo cual contradice la intuición de que insiders operan porque la información es buena.",
+      "mercado": "China stock market",
+      "periodo": "2011-2018",
+      "magnitud": "delta media = 0.525 vs 0.25 en Griffin et al. (2021)",
+      "condiciones": "91 casos judiciales; método de estimación Bayesiano de Griffin et al. (2021); sin OOS",
+      "robustez": "baja",
+      "cita_textual": "The interested parameter, the model-implied probability that the private information is a bad news, has a mean value at 0.525. This value is considerably higher than the reported value of 0.25 in Griffin et al (2021)"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "baja",
+    "nota": "El paper opera con estimaciones diarias de PIN sobre datos de frecuencia 10-minutos en el mercado chino. La contribución es metodológica (sensibilidad de PIN a delta) más que una herramienta de trading intradía. Podría inspirar refinamientos en modelos de detección de informed trading en datos de alta frecuencia de ES."
+  }
+}

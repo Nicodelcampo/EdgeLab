@@ -1,0 +1,168 @@
+{
+  "schema_version": "bigtrap2_distance_matched_null_prereg_v3",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-12",
+  "supersedes": "specs/bigtrap2_distance_matched_null_v2.json",
+  "base_commit": "ef83794d9b6c074cbeeee6ce8f4715c9f907f060",
+  "v3_note": "v3 corrige la DEFINICION del denominador de balance que v2/F2.2 introdujo mal (cuarta auditoria independiente, 2026-08-12, sobre el propio fix de F2.2). No cambia poblacion, matching, estimand primario ni forbidden respecto de v1/v2. Ninguna corrida formal se ejecuto todavia bajo ninguna version. La ambiguedad corregida es del pre-registro, no de la implementacion: v2 decia 'fuentes del universo union pool completo de candidatos' sin definir el alcance del pooling ni que cuenta como pool.",
+  "north_star_hash_scope": "bytes_before_SHA256_BODY_ABOVE_marker",
+  "north_star_body_sha256_expected": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "indicator": "BigTrap2",
+  "kernel_declared_version": "2.2",
+  "nt8_semantic_parity": "PENDING",
+  "p0_1_status": "WARN",
+  "instrument": "6E",
+  "bar_spec": "time:1",
+  "chart_timezone": "America/Argentina/Buenos_Aires",
+  "session_timezone": "America/Chicago",
+  "research_max_date": "2026-06-30",
+  "expected_session_count": 201,
+  "holdout_opened": false,
+  "outcomes_accessed": false,
+  "parameters": {
+    "ticks_per_row": 1,
+    "imbalance_mode": "Diagonal",
+    "trap_volume_source": "AggressiveSide",
+    "imbalance_ratio": 3.0,
+    "use_wick_filter": true,
+    "wick_zone_pct": 30.0,
+    "min_delta_filter": 0.0,
+    "min_trap_volume": 30.0,
+    "min_export_volume": 1.0,
+    "invalidation_mode": "CloseThrough",
+    "max_age_bars": 2000,
+    "max_touches": 0
+  },
+  "population": {
+    "unit": "all_created_zones",
+    "sep_min_applied": false,
+    "availability": "created_bar_plus_1",
+    "condition_on_future": false
+  },
+  "matching": {
+    "same_instrument": true,
+    "same_contract": true,
+    "different_source_session": true,
+    "same_minute_of_session": true,
+    "exclude_bigtrap_creation_bar": true,
+    "preserve_relative_geometry_exactly": true,
+    "covariates": [
+      "log1p_sigma60_ticks",
+      "log1p_bar_volume"
+    ],
+    "distance": "robust_standardized_euclidean",
+    "scale": "candidate_pool_MAD_zero_contributes_zero",
+    "k_controls": 8,
+    "min_controls": 5,
+    "tie_break": [
+      "score",
+      "session_date",
+      "bar_index"
+    ]
+  },
+  "stratum": {
+    "definition": "(archivo_de_contrato, minuto_de_sesion)",
+    "rationale": "es exactamente la celda dentro de la cual el matcher puede elegir: construir_pool_candidatos exige mismo minuto de sesion, otra sesion, no creadora y >= H_i barras futuras. Nada fuera de esa celda es alcanzable por ningun matcher, asi que nada de eso puede entrar en la vara con la que se mide el desbalance."
+  },
+  "matching_gates": {
+    "min_zone_coverage": 0.95,
+    "max_abs_smd_sigma60": 0.1,
+    "max_abs_smd_bar_volume": 0.1,
+    "required_source_sessions": 201,
+    "geometry_mismatch_tolerance_ticks": 0,
+    "minute_mismatch_tolerance": 0,
+    "threshold_interpretability": "el umbral convencional 0.10 (Stuart 2010, Austin 2009) esta definido sobre la SD DENTRO del estrato de comparacion. Solo es interpretable como tal si sd_ref es pooled within-stratum. Con un sd_ref que incluya varianza entre estratos, el numerador sigue siendo intra-estrato pero el denominador no, y todos los SMD quedan deflactados en la direccion de pasar el gate: el numero deja de significar lo que la literatura dice que significa."
+  },
+  "balance_aggregation": {
+    "added_by": "F2 + F2.1 + F2.2 (2026-08-11), corregido por F2.3 (2026-08-12)",
+    "code_schema_version": "F1.1_nulo_condicional_distancia_v4",
+    "sd_ref": {
+      "definition": "desvio POOLED WITHIN-STRATUM sobre (fuentes_del_universo UNION pool_real_de_candidatos) dentro de cada estrato (archivo x minuto_de_sesion), agregado como sqrt(SS_within / (N - G)) sobre todos los estratos de todos los archivos, ANTES de que ningun matcher seleccione nada",
+      "estimator": "pooled_within_group_anova_mse",
+      "invariant_under": ["k_controls", "caliper", "matcher_choice"],
+      "persisted_with_own_hash": true,
+      "v2_definition_rejected": "v2 pooleaba GLOBALMENTE entre archivos y entre minutos, y definia el pool como 'toda barra causal-valida que no sea creadora de ninguna zona'. Las dos cosas estaban mal: (a) el denominador incluia Var_between mientras el numerador es intra-estrato, deflactando todos los SMD; (b) el pool asi definido no es el pool que el matcher ve -- no aplica el filtro de mismo minuto de sesion, ni el de otra sesion, ni el de >= H_i barras futuras -- y por lo tanto inyecta la estacionalidad intradiaria completa",
+      "pool_definition": "union deduplicada de los pools reales devueltos por construir_pool_candidatos() para las zonas del estrato -- la MISMA funcion que usa el matcher, para que la muestra pre-matching no pueda derivar de lo que el matcher realmente ve",
+      "sources_definition": "TODA zona del universo con covariables finitas, sin filtrar por el resultado del matching: una zona que abstuvo por pool<min_controls sigue perteneciendo a la poblacion cuyo balance se esta midiendo"
+    },
+    "smd_variants": {
+      "pre": "media(fuentes_del_universo) - media(pool_real_de_candidatos), estandarizado por sd_ref -- desbalance ANTES de matchear, incluyendo la parte que es composicion de estratos",
+      "pre_within_estrato": "promedio ponderado por n_fuentes_del_estrato de (media_fuentes_estrato - media_pool_estrato), estandarizado por sd_ref -- la parte del desbalance pre-matching que NO es composicion de estratos y que por lo tanto ningun matcher puede comprar reordenando minutos",
+      "post_global_pooled": "media(fuentes, peso 1 cada una) - media_ponderada(controles individuales pooleados, peso 1/k_efectivo cada uno), estandarizado por sd_ref",
+      "post_matched_sets": "media(fuentes) - media(promedio_de_sus_propios_controles por zona), estandarizado por sd_ref",
+      "post_peso_sesion": "igual que matched_sets, pero cada zona pesa 1/n_zonas_de_su_sesion -- la MISMA medida en la que el estimand primario (mean_s(R_s)) pesa cada sesion"
+    },
+    "diagnostics_required": [
+      "sd_ref_por_archivo",
+      "sd_global_* (definicion v2, reportada solo para dejar medido cuanto deflactaba)",
+      "sd_ratio_global_sobre_within",
+      "smd_*_pre_within_estrato"
+    ],
+    "interpretation_rule": "si |smd_pre_within_estrato| ~= |smd_post_*|, el matching no compro nada y el problema es falta de solapamiento DENTRO del estrato -- no se ajusta el matcher: se decide explicitamente entre A) recorte a soporte comun, B) pesos de solapamiento / entropy balancing, C) controles de casi-evento",
+    "per_file_smd": "diagnostico (no gate por si solo): media_archivo(fuentes) - media_archivo(controles), estandarizado por el MISMO sd_ref global within-stratum -- nunca la varianza propia del archivo",
+    "aggregation_rule": "prohibido promediar SMD ya reducido por archivo entre archivos (+0.5 y -0.5 promedian 0.0 y pasarian el gate sin que ningun archivo este balanceado) -- se poolean valores CRUDOS globalmente y se reporta ademas el maximo |SMD| por-archivo",
+    "max_abs_por_archivo_shape": {
+      "valor": "maximo |SMD| entre los archivos con SMD finito, o null si ninguno lo tiene",
+      "completo": "false si algun archivo planificado quedo excluido del maximo (ausente, ABSTAIN, SIN_ZONAS, o SMD no finito)",
+      "archivos_excluidos": "lista de esos archivos, nunca un maximo filtrado presentado como escalar suelto"
+    },
+    "fail_closed": "archivo planificado ausente del dict de cobertura, con cobertura None (ABSTAIN), con estado SIN_ZONAS, o con SMD por-archivo no finito (None/NaN/Inf), hace fallar el gate de esa covariable con motivo explicito -- nunca se filtra antes de max_abs_por_archivo",
+    "gate_requires_all_of": [
+      "cero archivos invalidos/ausentes/ABSTAIN/SIN_ZONAS",
+      "|smd_post_global_pooled| <= max_abs_smd",
+      "|smd_post_matched_sets| <= max_abs_smd",
+      "|smd_post_peso_sesion| <= max_abs_smd",
+      "max_abs_por_archivo.completo == true y max_abs_por_archivo.valor <= max_abs_smd"
+    ],
+    "sin_zonas_gate_treatment_pending_decision": "un archivo con n_total_zonas==0 se marca con estado SIN_ZONAS (distinto de ABSTAIN) y HOY cuenta como invalido para el gate -- si un contrato sin ningun evento BigTrap2 deberia tratarse como neutral en vez de bloqueante es una decision de Nico/auditor todavia pendiente, no tomada unilateralmente por la implementacion. Ver PENDIENTE.md"
+  },
+  "provenance_gate": {
+    "added_by": "F2.2 (2026-08-11), convertido en fail-fast por F2.3 (2026-08-12)",
+    "abort_if": "dirty_start OR dirty_end OR head_start != head_end",
+    "fail_fast": "dirty_start aborta ANTES de computar o imprimir cualquier diagnostico, igual que el hash de NORTH_STAR.md. dirty_end y head_start!=head_end solo pueden detectarse al final por construccion.",
+    "label": "ABSTAIN_PROVENANCE",
+    "exit_code_nonzero": true
+  },
+  "primary": {
+    "estimand": "equal_weight_mean_over_sessions_of_real_touch_before_removal_minus_mean_matched_control_touch",
+    "horizon_per_zone": "min_2000_and_real_future_bars_available",
+    "inference": "HAC_Bartlett",
+    "lag": "ceil_sqrt_n_sessions",
+    "alpha_two_sided": 0.05,
+    "power_for_mde": 0.8,
+    "multiple_testing_adjustment": "none_one_primary",
+    "abstain_inference_if": "var_lr_hac_no_positiva"
+  },
+  "secondary_descriptive": {
+    "touch_horizons_bars": [1, 2, 5, 10, 20, 60, 120],
+    "competing_events": [
+      "close_through",
+      "close_through_gap",
+      "max_age",
+      "administrative_censor"
+    ],
+    "empirical_pit": true,
+    "restricted_mean_touch_horizon": 120,
+    "historical_gap_reference": 0.470721,
+    "max_age_unreachable_warning": "horizonte_zona() devuelve min(2000, disponibles) y zone_lifecycle recorta b1 con horizon_cap, asi que ages > max_age_bars nunca es cierto: removed_reason='max_age' es hoy inalcanzable y todo se reporta como censored=True. El endpoint primario no queda sesgado (con el `continue` el toque de la barra de expiracion tampoco contaria), pero los riesgos competidores declarados como secundarios estan invalidados hasta que esto se resuelva. Ver PENDIENTE.md"
+  },
+  "decision_labels": {
+    "RESIDUAL_POSITIVE": "ci95_lower_gt_0",
+    "COMPATIBLE_WITH_ZERO": "ci95_contains_0",
+    "RESIDUAL_NEGATIVE": "ci95_upper_lt_0",
+    "ABSTAIN_MATCHING": "any_matching_or_balance_gate_fails",
+    "ABSTAIN_INFERENCE": "var_lr_hac_no_positiva",
+    "ABSTAIN_PROVENANCE": "dirty_or_head_changed_or_hash_missing"
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "returns",
+    "pnl",
+    "direction",
+    "target_stop",
+    "quality_score",
+    "parameter_sweep",
+    "post_result_gate_relaxation"
+  ]
+}

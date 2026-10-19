@@ -1,0 +1,999 @@
+Path Signature Features vs. Raw Inputs for Intraday
+Quantitative Trading Model with Deep Learning
+Prince Poudel
+princepoudel293@gmail.com
+ORCID: 0009-0009-8098-4700
+August 26, 2025
+Abstract
+Financial markets are inherently dynamic and exhibit complex temporal patterns
+that standard feature engineering often fails to capture. This paper investigates the
+effectiveness of path signature transforms in representing high-frequency financial
+market data for directional trading predictions. Using 5-minute interval NASDAQ
+data spanning five years, six standard technical indicators are transformed into path
+signatures of varying truncation orders and fed into a feedforward neural network
+to predict short, neutral, and long trading signals. Performance is benchmarked
+against a baseline model using raw features, assessing both predictive accuracy
+and real-world trading outcomes. Results show that low-order signatures (orders
+2–3) efficiently encode temporal and sequential dependencies, improving directional
+prediction accuracy and model robustness, while higher-order signatures introduce
+noise that can degrade generalization. Further analysis using visualization techniques confirms that signature features capture the evolving geometry of price and
+volume more effectively than traditional features.
+These findings highlight path
+signatures as a compact, expressive, and practically valuable representation, offering a powerful tool for high-frequency financial modeling and algorithmic trading
+strategies.
+Keywords: Rough Path Theory, Deep Learning, Intraday Trading, Feature Engineering
+JEL Codes: C45, C63, G11, G17
+1
+Introduction
+Imagine trying to predict the stock price just using traditional methods, which rely on
+simple features such as yesterday’s closing value Pt−1. Financial markets generate complex, high-dimensional time series data more than just change in value ∆Pt = Pt −Pt−1
+as it contains critical patterns that are missed like how value changed, heavy tails
+P(X > x) ∼Cx−α, clusters {Ptk}n
+k=1, or how sudden drops ∇Pt ≪0 affect future trends
+Cont [2001]. Traditional models face these limitations as they treat the markets as discrete, static observations {Pt}T
+t=1, which fails to capture the continuous, path-dependent
+and highly non-linear nature of time series P : [0, T] →R.
+1
+
+A key obstacle in modeling financial time series data is transforming irregular, noisy
+and often non-Euclidean market paths P : [0, T] →Rd. Classical approaches often assume
+time series data to be stationary, i.e., Pt ∼Pt+τ where τ is lag; however, most financial
+data are non-stationary and noisy, mostly relying on handcrafted features ϕ(Pt), which
+may fail to capture higher-order interactions.
+Recent developments in rough path theory and signature transforms S(P) address this
+limitation through a mathematical tool that converts raw price movements into structured
+financial fingerprints, which preserve the full story of market patterns such as volatility
+clustering and directional changes [Lyons, 2014]. However, using this rich, leveraged, and
+structured representation for traditional deep learning models y = fθ(x) = σ(Wx + b)
+creates challenges. These models are designed for flat, Euclidean data Rn, so they are
+not well-suited for irregular, noisy, and often non-Euclidean data [Bronstein et al., 2017].
+Signature transforms map a multivariate time series P : [0, T] →Rd into a structured
+feature space S(P) ∈Rn where higher-order interactions and time-order dependencies
+are preserved. This transformation captures complex temporal patterns that handcrafted
+features often miss, such as cumulative path effects and interaction terms across price
+and volume dimensions [Lyons, 2014, Kidger et al., 2020b].
+Although signature methods have previously been explored for time series forecasting
+[Arribas et al., 2022], their application in real-time trading, particularly for generating
+directional signals in noisy intraday environments, remains largely underexplored. This
+study presents a comparative framework: using an identical deep learning architecture,
+we train two models, one on traditional engineered features, the other on signaturetransformed inputs. The goal is to assess whether the signature-based model can generate
+more reliable long/short signals, leading to stronger risk-adjusted returns and reduced
+drawdowns, especially in periods of heightened market volatility.
+1.1
+Path Theory and the Signature Transform
+Let X : [a, b] →Rd be a continuous path of bounded variation. The algebraic structure
+underlying the signature is the tensor algebra
+T((Rd)) :=
+∞
+Y
+n=0
+(Rd)⊗n,
+(Rd)⊗0 := R.
+(1)
+The signature of X over the interval [a, b] is the sequence
+S(X)a,b :=
+ 1, S(1)(X)a,b, S(2)(X)a,b, . . .
+
+∈T((Rd)),
+(2)
+where the n-th level is defined by the iterated integral
+S(n)(X)a,b :=
+Z
+a<t1<···<tn<b
+dXt1 ⊗· · · ⊗dXtn.
+(3)
+The signature satisfies several fundamental properties. Chen’s identity states that for
+any partition point c ∈(a, b),
+S(X)a,b = S(X)a,c ⊗S(X)c,b,
+(4)
+which endows signatures with a multiplicative (group-like) structure.
+2
+
+Reparametrization invariance asserts that if ϕ : [a, b] →[a, b] is a continuous, increasing bijection, then
+S(X ◦ϕ)a,b = S(X)a,b.
+(5)
+Furthermore, the universality theorem states that linear functionals on signatures approximate arbitrary continuous functionals on paths, while the uniqueness result (Lyons’
+extension theorem) shows that, up to tree-like equivalence, a path is completely determined by its signature Chevyrev and Kormilitzin [2016].
+This algebraic and analytic framework was later generalized to rough paths by Lyons
+[Lyons, 2014], allowing the definition and stability of signatures for irregular signals of
+unbounded variation. In this sense, the signature serves as a canonical, lossless representation of a path’s geometry.
+2
+Literature Review
+2.1
+Traditional Trading Strategies
+Classical financial models are often based on factor and momentum strategies to capture
+long-term or short-term alpha. The Fama-French three-factor model Fama and French
+[1992] extends the Capital Asset Pricing Model (CAPM) by modeling excess returns Rt
+as a function of market, size, and value factors:
+Rt −Rf = α + β1(RM −Rf) + β2 · SMB + β3 · HML + ϵt
+(6)
+where RM is market return, SMB is small-minus-big (size premium), HML is highminus-low (value premium) and ϵt is residual noise. This model assumes linear dependence, constant betas, and normally distributed residuals. However, during regime shifts
+or crisis periods, empirical evidence shows that factor loadings βi become time-varying
+and volatility increases abruptly, violating the independently and identically distributed
+(i.i.d.) noise assumption Cont [2001].
+To adjust for such dynamics, some extensions use rolling regressions or state-dependent
+switching models, but still lack memory of how prices evolved over time, a limitation tied
+to their scalar, point-based view of returns. A complementary class of models is timeseries momentum (TSMOM), which generates trading signals based on the sign of lagged
+price differences:
+Signalt = sign(Pt −Pt−k) =
+
+
+
+
+
++1
+if uptrend (buy)
+−1
+if downtrend (sell)
+0
+if no trend (hold)
+(7)
+For longer horizons, the signal is often smoothed using moving averages or multiperiod lookbacks:
+¯rt = 1
+k
+k
+X
+i=1
+(Pt−i+1 −Pt−1) =⇒Signalt = sign(¯rt)
+(8)
+Although TSMOM strategies Moskowitz et al. [2012] have been profitable across asset
+classes, they are path-agnostic: two price paths that end at the same value but fluctuate
+differently will yield identical signals. This ignores volatility clusters, mean-reversion,
+and shock responses, which are central to market behavior.
+3
+
+2.2
+Machine Learning in Trading
+Traditional deep learning models, such as feed-forward neural networks, learn mappings
+from vectorized input features to outputs via compositions of affine transforms and nonlinearities. Given a sequence of inputs x = (xt−k, . . . , xt), the LSTM computes a hidden
+state ht via recursive nonlinear transformations:
+ht = LSTM(xt, ht−1)
+(9)
+Unrolling this recursion for k steps:
+ht = LSTMt ◦LSTMt−1 ◦· · · ◦LSTMt−k+1(xt−k, ht−k−1)
+(10)
+The predicted next value ˆPt+1 is obtained by passing ht through a feed-forward mapping f:
+ˆPt+1 = f(ht) = σ(Wht + b)
+(11)
+where W ∈R1×m, b ∈R and σ is an output activation (e.g., linear or sigmoid).
+While effective for Euclidean-structured data, these models are limited when applied to
+financial time series that exhibit complex, non-Euclidean, and path-dependent structures.
+Similarly, transformer-based models have gained traction in high-frequency financial applications Lim et al. [2021], offering attention-based mechanisms to capture temporal
+dependencies. However, they also assume discrete sampling and Euclidean vector spaces,
+overlooking the path-dependent and algebraic structure of market trajectories.
+2.3
+Signature Transforms in Finance
+Traditional statistical and deep learning models often rely on vectorized input representations or windowed features, which can obscure the rich temporal structure of financial time
+series [Cont, 2001]. In contrast, signature transforms provide a pathwise, coordinate-free
+method to encode sequential data, preserving the order and interaction of events along
+the trajectory. Rooted in rough path theory [Lyons, 2014], the signature transform offers
+a mathematically principled approach to representing data streams and has emerged as
+a promising tool in quantitative finance.
+Given a continuous, multidimensional path X : [0, T] →Rd, the signature transform
+S(X) is defined as the sequence of iterated integrals over the path:
+S(X) =
+
+1,
+Z T
+0
+dXt,
+Z T
+0
+Z t1
+0
+dXt2 ⊗dXt1, . . .
+
+(12)
+Each term in the signature captures higher-order interactions between increments of
+the path. For example, the second-order term:
+Z T
+0
+Z t1
+0
+dXt2 ⊗dXt1
+(13)
+encodes the area enclosed, a quantity invisible to traditional time series models. This
+structure allows the signature to serve as a feature map into a truncated tensor algebra
+T((Rd)), enabling machine learning models to work with paths rather than pointwise
+statistics. However, most applications use signature features as static input vectors for
+shallow models or kernel methods Chevyrev and Kormilitzin [2016], limiting their dynamic modeling capacity.
+4
+
+2.4
+Deep Learning in Financial Time Series Modeling
+Deep learning models have become increasingly popular in financial time series analysis
+due to their ability to learn complex, nonlinear patterns from high-dimensional data
+Goodfellow et al. [2016]. Recurrent neural networks (RNNs), particularly Long ShortTerm Memory (LSTM) networks, are widely used to capture temporal dependencies by
+maintaining a hidden state ht updated recursively:
+ht = LSTM(xt, ht−1)
+(14)
+where xt is the input vector at time t. By unrolling over k steps, the hidden state
+aggregates information from past inputs, allowing prediction of future values or classification tasks:
+ˆyt = fθ(ht) = σ(Wht + b)
+(15)
+with W, b as learnable parameters and σ an activation function. Transformer architectures further improve temporal modeling by using attention mechanisms Vaswani et al.
+[2017], Lim et al. [2021], but both approaches typically operate on vectorized, discretetime inputs and assume Euclidean structure, limiting their ability to model continuous,
+path-dependent market behavior.
+To overcome this, recent studies have explored combining signature transforms with
+machine learning. Signature features provide a compact yet expressive representation of
+a path’s evolution through iterated integrals, preserving order, interaction, and structure
+[Lyons, 2014]. Empirical work supports this approach: [Kalsi et al., 2020] showed that
+signature-based models outperformed traditional methods in high-frequency execution
+strategies, capturing volatility bursts and price impact. [Kidger et al., 2020b] extended
+this into streaming setups using Neural Controlled Differential Equations, although those
+models remain more complex and less practical for direct trading signal generation.
+Instead, our approach focuses on combining truncated signature features with a standard deep feedforward network:
+ˆyt = fθ(S(m)(Pt)) = σ(WS(m)(Pt) + b)
+(16)
+where S(m)(Pt) ∈Rn is the m-th order signature of the input path segment Pt, and
+the output ˆyt ∈{0, 1, 2} denotes short, neutral, or long signal classes.
+This setup is simple, trainable, and scalable, while still benefiting from the structurepreserving power of signature transforms. Unlike prior work that focused on forecasting,
+we directly generate actionable directional signals for trading and compare performance
+against models trained on raw engineered features.
+3
+Methodology
+3.1
+Research Design
+This study follows a quantitative and analytical research design, assuming that financial market behavior can be objectively measured and modeled. The research adopts a
+deductive approach, starting with the hypothesis that signature transforms can capture
+meaningful market path structures useful for trading [Lyons, 2014]. Historical OHLCV
+5
+
+data is used to construct sliding path windows, which are transformed into fixed-length
+vectors using truncated signature transforms (order 2, 3 and 4).
+These vectors are processed using a Deep Learning (DL) model to classify path regimes
+such as uptrend, downtrend and consolidation Bronstein et al. [2021].
+Based on the
+regime, the strategy decides whether to enter a long-only trade. The performance of the
+model is evaluated through backtesting using metrics such as Sharpe ratio and maximum
+drawdown Lo [2002], Glasserman [2004].The study uses Python with the following key libraries: pandas, numpy, signatory, PyTorch, scikit-learn, matplotlib, and seaborn
+for data processing, modeling, and evaluation.
+3.2
+Data
+This research uses 5-minute OHLCV data (Open, High, Low, Close, Volume) for the
+NASDAQ-100. The datasets cover the period from August 11, 2019 to August 9, 2024.
+The data, taken from Kaggle Elkhirani [2024], includes about 375,000 time-stamped
+records from regular US trading hours (09:30 AM to 04:00 PM EST). Also, for backtesting
+and performance evaluation out of sample, data from April 8, 2025 to July 3, 2025 are
+used. Each row represents a 5-minute candlestick with price and volume information.
+The dataset was cleaned and prepared in Python by converting timestamps to the
+correct datetime format, sorting them in order, and removing missing values, duplicates,
+and data outside of market hours. This clean, time-ordered dataset is then used to create
+rolling windows, apply signature transforms, and train geometric deep learning models to
+spot market patterns and generate trading signals. Because the data are high-frequency
+and span several years, it allows for thorough testing in different market conditions.
+3.3
+Feature Extraction Using Signature Transform
+The core mathematical tool used in this study for feature extraction is the signature transform, a pathwise encoding from rough path theory that captures the ordered structure
+of multidimensional time series.
+Let
+X : [a, b] →Rd
+(17)
+be a continuous path representing the multivariate OHLCV data, where d = 6 corresponds to the features. These features are defined as follows:
+1. Moving Average Deviation
+MA_Deviationt = Closet −1
+k
+k−1
+X
+i=0
+Closet−i,
+(18)
+where k is the moving average window size (typically 20).
+2. Normalized Time of Day
+Time_Indext =
+mt −mmin
+mmax −mmin
+,
+(19)
+where mt is the minute of the day (e.g., 13:45 →0.6538), and mmin, mmax are the
+first and last minutes of the trading session.
+6
+
+3. Price Range
+PriceRngt = Hight −Lowt.
+(20)
+4. Volume Change
+V olumeChngt = V olumet −V olumet−1
+V olumet−1
+.
+(21)
+5. Log Close Price
+LCloset = log(Closet).
+(22)
+6. Volatility Clustering (Absolute Deviation from Rolling Mean)
+V olatilityClusteringt = LReturnt −1
+k
+k−1
+X
+i=0
+LReturnt−i.
+(23)
+Each feature is computed over a rolling window of k = 36 steps unless specified
+otherwise. The final input for each path segment is a matrix
+X ∈RT×6,
+(24)
+where T is the sequence length (e.g., 36 time steps in a 3-hour window of 5-minute bars).
+The signature of X over [a, b] is defined as the infinite sequence of iterated integrals:
+S(X)a,b =
+ 1, S(1)(X)a,b, S(2)(X)a,b, . . .
+
+∈T(Rd),
+(25)
+where the n-th level signature term is
+S(n)(X)a,b =
+Z
+a<t1<···<tn<b
+dXt1 ⊗· · · ⊗dXtn ∈Rd⊗n,
+(26)
+and
+T(Rd) =
+∞
+M
+n=0
+Rd⊗n,
+R⊗0 = R.
+(27)
+For computational tractability, the signature is truncated at order k, yielding a finitedimensional feature vector:
+Sigk(X)a,b =
+ 1, S(1)(X)a,b, . . . , S(k)(X)a,b
+
+.
+(28)
+The total dimension of the truncated signature for order k and dimension d is
+dim Sigk(Rd) =
+k
+X
+n=0
+dn = dk+1 −1
+d −1 .
+(29)
+In this research, rolling windows of length 36 five-minute bars (3 hours) are used, with
+d = 6. The signature is truncated at orders k = 2, 3, and 4, resulting in the following
+feature dimensions per window, including the scalar 1:
+dim Sig2(R6) = 1 + 6 + 36 = 43,
+(30)
+dim Sig3(R6) = 1 + 6 + 36 + 216 = 259,
+(31)
+dim Sig4(R6) = 1 + 6 + 36 + 216 + 1296 = 1555.
+(32)
+7
+
+Before computing the signature, each path segment X is normalized by subtracting
+the initial point and scaling to unit norm:
+f
+Xt =
+Xt −Xa
+∥Xb −Xa∥2 + ϵ,
+(33)
+where ϵ > 0 is a small constant to avoid division by zero. This normalization ensures
+translation and scale invariance, which is important for stable feature representation.
+The signature transform, introduced by Lyons [1998], encodes a multidimensional path
+in iterated integrals that represent its geometric features. It has been widely applied in
+financial modeling to capture complex temporal dependencies [Chevyrev and Kormilitzin,
+2016]. In this study, we truncate the signature on order 2 as recommended in [Király
+et al., 2019] for efficient feature extraction.
+3.4
+Model Architecture: Signature-Driven Feedforward Neural
+Network
+This study proposes a classification framework that combines the signature transform
+from rough path theory with a feedforward neural network to generate directional trading
+signals. The model takes as input multivariate time series windows and learns to classify
+future price movement into three categories: Short, Neutral, or Long.
+For order 2 which is d = 6 and k = 2, we obtain m = 1 + 6 + 36 = 43 signature
+features per path segment. These signature features serve as fixed-length representations
+that encode the sequential structure of the input window. They are passed to a neural
+network classifier:
+ˆyt = fθ
+ Sigk(Xt)
+
+.
+(34)
+where fθ is a two-layer feedforward neural network with ReLU activation, layer normalization, and softmax output over three classes:
+fθ(z) = softmax (W2 · LayerNorm(ReLU(W1z + b1)) + b2) .
+(35)
+The model is trained using cross-entropy loss:
+L(θ) = −
+X
+t
+3
+X
+c=1
+yt,c log(ˆyt,c),
+(36)
+where yt,c ∈{0, 1} is the one-hot encoded true label and ˆyt,c is the predicted probability
+for class c at time t.
+8
+
+Figure 1: Signature-Based Model Process Pipeline
+This architecture (Figure 1) allows the model to learn trading signals from pathdependent signature features while maintaining the flexibility and scalability of neural
+networks.
+Unlike kernel or recurrent methods, the signature-based encoder captures
+the shape and order of the path in a compact, algebraically structured representation,
+enabling better generalization across volatile market regimes.
+9
+
+3.5
+Trading Strategy Design
+The trading signals are generated by a neural network model trained on signature features
+that outputs a discrete classification
+f(Xt) ∈{1, 0, 2},
+(37)
+corresponding to short, neutral, and long signals respectively. A trade is initiated only
+when f(Xt)̸ = 0, i.e., the model signals either a long or short position. To avoid overtrading, a cooldown period of one bar (5 minutes) is enforced after each trade exit.
+Position sizing is based on 0.5% of the last closed equity, ensuring consistent exposure
+while accounting for compounding performance. The strategy uses a reward-to-risk ratio
+of 1 : 1.4, with stop-loss and take-profit levels defined as:
+PSL = P0 −R,
+PTP = P0 + 1.4 R,
+(38)
+where P0 is the entry price, and R is the risk per trade (equal to 0.5% of capital in dollar
+terms). A position is only entered if the current cash allows full execution based on this
+calculated risk.
+The equity curve Et evolves according to:
+Et+1 = Et × (1 + Net Return),
+(39)
+with initial equity normalized to 1.
+Risk-adjusted performance is measured using the Sharpe Ratio [Sharpe, 1966]:
+s =
+¯RP −Rf
+σP
+,
+(40)
+where ¯RP is the average portfolio return, Rf denotes the risk-free rate, and σP is the
+standard deviation of portfolio returns.
+The maximum drawdown, representing the worst-case peak-to-trough loss, is calculated as [Chekhlov et al., 2005]:
+Max Drawdown = min
+t
+Et −maxs≤t Es
+maxs≤t Es
+,
+(41)
+where Et is the equity value at time t, and maxs≤t Es is the peak equity before time t.
+To ensure stability and avoid overtrading during unstable market periods, a cooldown
+period of one bar (5 minutes) is enforced after each exit.
+A commission of 0.01% is
+charged on both entry and exit for every trade to reflect realistic transaction costs. This
+design guarantees that new signature path segments reflect updated market behavior.
+The strategy remains fully data-driven, deriving all signals purely from model output and
+fixed risk management rules, without reliance on human-crafted indicators or subjective
+filters [López de Prado, 2018].
+10
+
+4
+Results
+4.1
+Descriptive Analysis of Raw Input Data
+Table 1: Descriptive Analysis of Training Data
+Statistic
+Open
+High
+Low
+Close
+Volume
+Count
+99,009
+99,009
+99,009
+99,009
+99,009
+Mean
+14,440.95
+14,449.65
+14,432.06
+14,440.99
+3,591.73
+Std. Dev.
+2,819.37
+2,820.31
+2,818.24
+2,819.33
+4,155.33
+Min
+8,112.25
+8,151.75
+8,112.25
+8,132.75
+1.00
+25%
+12,723.25
+12,733.25
+12,714.75
+12,723.50
+621.00
+Median
+14,533.00
+14,541.50
+14,524.50
+14,533.25
+1,826.00
+75%
+16,453.25
+16,459.75
+16,446.00
+16,453.25
+5,220.00
+Max
+20,917.25
+20,917.50
+20,897.00
+20,913.25
+44,085.00
+The dataset contains 99,009 intraday observations of OHLC prices and volume. Prices
+average around 14,440, but show high variability, with a standard deviation of 2,819 and
+values ranging from 8,112 to 20,917. Volume is heavily skewed; while the median trade
+size is 1,826, occasional spikes exceed 44,000, creating an imbalanced distribution. These
+characteristics indicate significant noise and irregularity in the raw data, suggesting a
+need for smoothing or scaling prior to modeling. Path signature transforms offer a way
+to convert these volatile patterns into structured, machine-readable representations.
+Figure 2: 5-minute Close Price of Training Data (2020–2024)
+Figure 2 tracks the closing prices of the asset over four years, revealing key market
+phases: volatile swings during the 2020–2021 pandemic era, a potential peak in 2022, and
+stabilization or new trends emerging in 2024. Such multiyear dynamics underscore why
+intraday models must account for both short-term noise and longer-term structural shifts
+a challenge path signatures help address by encoding hierarchical price movements.
+11
+
+Figure 3: 5-minute Close Price of Backtesting Data (2025-04-08 to 2025-07-03)
+Figure 3 presents the closing prices of the asset over a two-month period. The plot
+reveals market phases: an period of pronounced volatility between 2025-04-08 to 202507-03, a potential price peak around mid-2025, and a subsequent phase characterized
+by stabilization or the emergence of new price trends. These dynamics highlight the
+varying market regimes captured in the dataset and provide context for evaluating the
+performance of the signature-driven trading strategy.
+4.2
+Model Evaluation:
+Raw Features and Signature Features
+Across Different Truncation Orders
+Table 2: Class-wise Performance Metrics for Signature Orders and Raw Features
+Feature / Signature Order
+Val Accuracy
+Class
+Precision
+Recall
+F1-score
+Order 2
+0.8689
+Short
+0.14
+0.02
+0.04
+Neutral
+0.92
+0.99
+0.95
+Long
+0.19
+0.04
+0.06
+Order 3
+0.8328
+Short
+0.08
+0.06
+0.07
+Neutral
+0.92
+0.95
+0.93
+Long
+0.12
+0.07
+0.09
+Order 4
+0.8333
+Short
+0.07
+0.06
+0.06
+Neutral
+0.92
+0.93
+0.92
+Long
+0.10
+0.10
+0.10
+Raw Features
+0.8643
+Short
+0.15
+0.08
+0.10
+Neutral
+0.92
+0.98
+0.95
+Long
+0.23
+0.05
+0.08
+Table 2 presents the performance metrics of models trained using different signature
+orders (2, 3, 4) and raw features for classifying market directional signals into Short,
+12
+
+Neutral, and Long categories. Validation accuracy across all models ranged from 0.8328
+(Order 3 signature) to 0.8689 (Order 2 signature), indicating reasonably stable overall
+performance. For class-specific metrics, the Neutral class dominated due to class imbalance, with precision, recall, and F1-scores consistently above 0.90 across all models.
+Short and Long classes were more challenging, reflected in lower precision (0.07–0.23),
+recall (0.02–0.10), and F1-scores (0.04–0.10).
+Notably, Order 2 signatures achieved the highest validation accuracy (0.8689), while
+raw features performed similarly (0.8643), suggesting that higher-order signatures (Orders
+3 and 4) did not provide additional predictive benefit in this dataset. These results are
+consistent with previous studies indicating that signature truncation depth requires careful tuning, as higher orders can overfit or introduce noise without improving directional
+prediction [Morrill et al., 2020, Tóth et al., 2023].
+Table 3: Macro and Weighted Average Performance Metrics for Signature Orders and
+Raw Features
+Feature / Signature Order
+Metric Type
+Precision
+Recall
+F1-score
+Order 2
+Macro Avg
+0.42
+0.35
+0.35
+Weighted Avg
+0.85
+0.91
+0.87
+Order 3
+Macro Avg
+0.37
+0.36
+0.36
+Weighted Avg
+0.85
+0.87
+0.86
+Order 4
+Macro Avg
+0.36
+0.36
+0.36
+Weighted Avg
+0.85
+0.86
+0.85
+Raw Features
+Macro Avg
+0.43
+0.37
+0.38
+Weighted Avg
+0.86
+0.90
+0.88
+Table 3 presents the macro and weighted average performance metrics for models
+using different signature orders (2, 3, 4) and raw features. The macro averages treat
+all classes equally, highlighting the lower performance in minority classes (short and
+long), with precision, recall, and F1 scores ranging from 0.36 to 0.43. This reflects the
+challenge of correctly predicting rare directional signals, as the models are biased toward
+the dominant Neutral class.
+Weighted averages account for class imbalance, showing
+strong performance for the Neutral class, with precision, recall, and F1-scores between
+0.85 and 0.88, which contributes to the overall high weighted scores.
+These results indicate that Order 2 signatures and raw features slightly outperform
+higher-order signatures (Orders 3 and 4) in terms of balanced predictive capability. Increasing signature truncation depth does not necessarily improve performance and may
+introduce noise or overfitting, particularly when the majority class dominates the dataset.
+This underscores the importance of careful hyperparameter tuning for signature-based
+models, including selecting an optimal truncation level and considering the trade-off between model complexity and generalization ability. These findings align with previous
+studies that suggest signature features are effective for capturing sequential patterns in
+financial time series, but higher-order truncation must be applied judiciously [Morrill
+et al., 2020, Tóth et al., 2023].
+13
+
+4.3
+Confusion Matrix
+(a) Order 2
+(b) Order 3
+(c) Order 4
+(d) Raw Features
+Figure 4: Confusion matrices for different feature types: (a) Order 2, (b) Order 3, (c)
+Order 4, and (d) Raw Features.
+Figures 4a to 4c and 4d illustrate the confusion matrices for the signature-based and
+raw feature models, respectively. Across the signature feature models (Orders 2–4), the
+Neutral class achieves consistently high correct predictions (up to 17,873), with relatively
+fewer misclassifications for the Long class compared to the raw input model. The raw
+input model (Figure 4d) achieves slightly higher accuracy for the neutral class (17,687
+correct predictions) but exhibits more errors in the Short and Long classes.
+Overall, although the raw input model has marginally better total correct classifications, the signature-based models demonstrate more balanced misclassification patterns,
+suggesting better generalization to out-of-sample data.
+These findings are consistent
+with prior studies indicating that path signature features, rooted in rough path theory,
+provide a mathematically principled representation of sequential data, effectively capturing the underlying structure of financial time series [Kidger et al., 2020b, Lyons, 2014].
+The results support the use of signature features in intraday models, particularly when
+robustness and interpretability of input representations are prioritized.
+14
+
+4.4
+ROC Curves
+(a) Order 2
+(b) Order 3
+(c) Order 4
+(d) Raw Features
+Figure 5: ROC curves for different feature types: (a) Order 2, (b) Order 3, (c) Order 4,
+and (d) Raw Features.
+The Receiver Operating Characteristic (ROC) curves and their corresponding Area Under
+the Curve (AUC) metrics (Figures 5a–5d) provide insight into the discriminative capability of different feature orders. Figure 5a (Order 2 features) demonstrates moderate
+performance, with Class 2 (Long signatures) achieving the highest AUC (0.68), followed
+by Class 1 (0.67) and Class 0 (0.64), suggesting that second-order features slightly better distinguish longer-duration signatures. Figure 5b (Order 3 features) shows a decline
+in AUC across all classes (Class 2: 0.67; Class 1: 0.64; Class 0: 0.58), indicating that
+increased feature complexity may introduce noise without improving class separability.
+This trend aligns with the confusion matrix results, where higher-order features traded
+accuracy in the dominant Neutral class for marginal gains in Long/Short detection. Figure 5c (Order 4 features) exhibits similar stagnation, with AUCs of 0.65 (Class 2), 0.65
+(Class 1), and 0.59 (Class 0), reinforcing that feature orders beyond 3 offer diminishing
+returns.
+Notably, Figure 5d (Raw features) outperforms all engineered signature features, with
+AUCs of 0.81 (Class 2), 0.78 (Class 1), and 0.72 (Class 0). This indicates that raw features retain discriminative information that may be lost during higher-order signature
+transformations, particularly for Class 2 (Long signatures), where the AUC gap is most
+pronounced (0.81 vs. ≤0.68 in other configurations). The consistently higher AUC for
+Class 2 across all feature orders suggests that duration-based signature traits are inherently more separable, regardless of feature engineering. These findings are consistent with
+prior studies demonstrating that path signature features, grounded in rough path theory,
+provide a principled representation of sequential financial data, while careful truncation
+15
+
+and hyperparameter tuning remain critical for optimal classification performance [Kidger
+et al., 2020b, Morrill et al., 2020, Tóth et al., 2023].
+4.5
+t-SNE Visualization of Feature Spaces
+(a) Order 2
+(b) Order 3
+(c) Order 4
+(d) Raw Features
+Figure 6: t-SNE visualizations of the feature spaces for different feature orders and raw
+inputs: (a) Order 2, (b) Order 3, (c) Order 4, and (d) Raw Features.
+The t-SNE visualizations (Figure 6) reveal distinct clustering patterns across different
+feature representations. For second-order features (Figure 6a), data points exhibit moderate separation with broad dispersion along both axes (x-axis: -60 to 20; y-axis: -30
+to 50), suggesting partial class discriminability but with considerable overlap in central
+regions. Third-order features (Figure 6b) show tighter clustering with reduced variance
+(y-axis: -30 to 40) and increased density near the origin, indicating potential information loss during higher-order feature transformation. This compression becomes more
+pronounced in fourth-order features (Figure 6c), where extreme x-axis values (up to 60)
+indicate outlier signatures that may correspond to challenging classification cases. In
+contrast, raw features (Figure 6d) demonstrate optimal cluster separation with balanced
+distribution (x: -40 to 40; y: -30 to 20) and minimal overlap, visually confirming their
+superior classification performance.
+These t-SNE patterns align closely with the quantitative metrics presented in the
+confusion matrices and ROC/AUC analyses. The progressive compression of the feature
+space in higher-order transformations corresponds to declining AUC scores, while the
+well-separated clusters in raw features explain their robust classification accuracy. This
+visualization underscores how engineered signature features may inadvertently collapse
+discriminative dimensions that are naturally preserved in raw data representations, reinforcing the importance of carefully selecting feature order for intraday financial modeling
+[Kidger et al., 2020b, Morrill et al., 2020].
+16
+
+4.6
+Backtesting model and performance evaluation
+(a) Equity curve for Order 2 signature features
+(b) Equity curve for Order 3 signature features
+(c) Equity curve for Order 4 signature features
+(d) Equity curve for Raw features
+Figure 7: Backtest equity curves across signature feature orders and raw features. The
+plots illustrate cumulative PnL progression, showing the strongest performance for Order
+2 signatures and weaker results for higher-order transformations.
+Table 4: Backtest performance comparison across signature orders and raw features
+Metric
+Order 2
+Order 3
+Order 4
+Raw Features
+Short Trades (Count)
+63
+71
+81
+59
+Short Trades PnL (%)
+0.33
+-10.46
+-13.45
+-9.21
+Short Trades Win Rate (%)
+44.4
+35.2
+34.6
+37.3
+Long Trades (Count)
+53
+58
+42
+54
+Long Trades PnL (%)
+20.30
+22.30
+9.48
+11.69
+Long Trades Win Rate (%)
+62.3
+65.5
+54.8
+57.4
+Final Equity
+1.2214
+1.1183
+0.9549
+1.0192
+Total Return (%)
+22.14
+11.83
+-4.51
+1.92
+Overall Win Rate (%)
+52.6
+48.8
+41.5
+46.9
+Sharpe Ratio (Annualized)
+2.82
+1.52
+-0.59
+0.46
+Max Drawdown (%)
+-7.75
+-6.00
+-10.81
+-8.71
+The backtest results (Table 4) highlight substantial differences in performance across
+signature feature orders and raw representations. The second-order signature features
+provided the strongest results, with a final equity of 1.2214 (22.14% return), an annualized Sharpe ratio of 2.82, and a relatively modest maximum drawdown of -7.75%. This
+17
+
+outperformance was primarily driven by long trades, which achieved a win rate of 62.3%
+and cumulative profit of 20.30%. In contrast, higher-order features showed progressively
+weaker outcomes: the third-order model achieved only 11.83% total return with reduced
+risk-adjusted performance (Sharpe ratio 1.52), while the fourth-order model underperformed significantly, producing a negative total return (-4.51%) and a negative Sharpe
+ratio (-0.59). Raw features performed slightly better than the fourth-order transformation, with a positive but modest return of 1.92% and a Sharpe ratio of 0.46, though their
+maximum drawdown (-8.71%) was larger than the second-order case.
+Taken together, these results suggest that feature order plays a critical role in strategy
+effectiveness. Lower-order signatures, particularly second-order, appear to preserve essential discriminative structure that enhances predictive power, while higher-order transformations introduce noise that diminishes performance [Kidger et al., 2020b, Lyons,
+2014].The finding that raw features outperform higher-order signatures but fall short
+of second-order signatures reinforces the importance of balancing complexity and interpretability in feature engineering for financial time series modeling.
+4.7
+Findings and Discussion
+The analysis of signature-based feature transformations provides several compelling insights into their practical use in intraday financial modeling and algorithmic trading.
+Looking at Table 4 and Figures 7, 6, and 5, a clear pattern emerges: simply achieving
+higher predictive accuracy or increasing feature complexity does not automatically translate into superior trading outcomes. In fact, while higher-order signature features (Orders
+3 and 4) sometimes improve standard classification metrics such as class-level discriminability, they also introduce substantial noise in the context of market microstructure.
+This noise manifests as declining Sharpe ratios, larger drawdowns, and occasionally negative total returns [Kidger et al., 2020b, Lyons, 2014, Morrill et al., 2020]. For example, our fourth-order signature model produced a total return of -4.51% and a negative
+Sharpe ratio of -0.59, despite achieving moderate classification accuracy. These results
+suggest that pushing feature complexity too far can lead to overfitting and amplify noninformative fluctuations, especially in high-frequency trading environments where microstructure noise is pervasive.
+In contrast, second-order signature features consistently delivered the strongest and
+most reliable trading performance across all evaluated metrics. The second-order model
+reached a final equity of 1.2214, corresponding to a 22.14% total return, with an annualized Sharpe ratio of 2.82 and a relatively modest maximum drawdown of -7.75%. This
+robust performance was primarily driven by long trades, which showed higher win rates
+and cumulative profits (62.3% win rate with 20.30% PnL). These observations indicate
+that lower-order signatures effectively capture the critical temporal and path-dependent
+structures present in intraday price movements, preserving essential market information
+while avoiding the noise amplification seen in higher-order transformations. Essentially,
+this demonstrates that careful selection of truncation depth is crucial: it ensures that
+models retain meaningful patterns without being distracted by random, high-frequency
+fluctuations.
+Raw features, though sometimes producing higher classification accuracy or slightly
+better macro-average F1-scores, consistently underperformed in actual trading scenarios. Specifically, raw features yielded only a 1.92% total return with a Sharpe ratio of
+0.46 and a maximum drawdown of -8.71%. This stark contrast reinforces an important
+18
+
+point: standard predictive metrics alone are insufficient for evaluating trading strategies,
+because they fail to capture the temporal dependencies and path-dependent behaviors
+that drive profitable intraday trading [Kidger et al., 2020a, Lyons, 2014]. Supporting
+this, the t-SNE visualizations in Figure 6 reveal that higher-order signature features tend
+to compress the feature space, diminishing the separability of actionable trading signals.
+In comparison, raw features maintain cluster separation but lack the richer structural
+information encoded by signature transforms, limiting their practical utility.
+Further evidence comes from the Receiver Operating Characteristic (ROC) and Area
+Under the Curve (AUC) analyses. While higher-order signatures occasionally show minor improvements in class separability for certain categories, these gains do not translate into better trading performance. This decoupling highlights a critical insight for
+high-frequency or intraday market applications: preserving temporal dynamics and pathdependent structures is far more important than marginal gains in predictive metrics
+[Lyons, 2014, Morrill et al., 2020].
+Overall, these findings strongly suggest that signature-based feature transformations
+offer a tangible advantage in algorithmic trading, particularly when applied with an optimal truncation depth. Second-order signatures strike the right balance, capturing meaningful market dynamics while avoiding overengineering or the noise inherent in higherorder features.
+This confirms that the signature method is not only a powerful tool
+for extracting features from complex multivariate time series but also provides practical
+benefits for designing trading systems. These results align with prior research, which emphasizes the robustness of signature methods for sequential data while cautioning against
+excessive complexity that can degrade out-of-sample performance [Kidger et al., 2020b,
+Lyons, 2014, Morrill et al., 2020, Tóth et al., 2023].
+5
+Conclusion
+This study shows that path signature features offer a clear advantage in intraday trading
+over traditional raw features. Second-order signatures consistently preserved essential
+temporal and path-dependent patterns, achieving better risk-adjusted returns and directional consistency without amplifying noise. Higher-order signatures (Order 3 and 4),
+while sometimes improving classification metrics, often introduced excessive noise, reducing Sharpe ratios and increasing drawdowns [Kidger et al., 2020b, Lyons, 2014, Morrill
+et al., 2020]. The results highlight that high predictive accuracy alone does not guarantee
+profitable trading. Signature transforms capture richer sequential information, enabling
+models to exploit intraday structures more effectively than raw features [Lyons, 2014,
+Morrill et al., 2020, Tóth et al., 2023].
+Overall, signature-based features provide a robust and interpretable framework for
+modeling financial time series, balancing complexity and performance. Future research
+could explore combining them with attention-based architectures or adaptive learning to
+better capture evolving market dynamics.
+References
+I. P. Arribas, J. P. Bonet, and I. Pérez-Soria. Signature-based portfolio optimization: A
+network approach. Physica A: Statistical Mechanics and its Applications, 603:127799,
+19
+
+2022.
+doi: 10.21203/rs.3.rs-4344528/v1.
+URL https://doi.org/10.21203/rs.3.
+rs-4344528/v1.
+M. M. Bronstein, J. Bruna, Y. LeCun, A. Szlam, and P. Vandergheynst.
+Geometric
+deep learning: Going beyond euclidean data. IEEE Signal Processing Magazine, 34(4):
+18–42, 2017. doi: 10.1109/MSP.2017.2693418.
+M. M. Bronstein, J. Bruna, T. Cohen, and P. Velickovic. Geometric deep learning: Grids,
+groups, graphs, geodesics, and gauges. arXiv preprint arXiv:2104.13478, 2021. URL
+https://arxiv.org/abs/2104.13478.
+A. Chekhlov, S. Uryasev, and M. Zabarankin. Drawdown measure in portfolio optimization. International Journal of Theoretical and Applied Finance, 8(1):13–58, 2005. doi:
+10.1142/S0219024905002767.
+I. Chevyrev and A. Kormilitzin. A primer on the signature method in machine learning.
+arXiv preprint arXiv:1603.03788, 2016. URL https://arxiv.org/abs/1603.03788.
+R. Cont. Empirical properties of asset returns: stylized facts and statistical issues. Quantitative Finance, 1(2):223–236, 2001. doi: 10.1080/713665670.
+S.
+Elkhirani.
+5-year
+data
+for
+s&p
+500
+and
+nasdaq-100
+[csv
+file].
+https://www.kaggle.com/datasets/salaheddineelkhirani/
+5-year-data-for-s-and-p-500-and-nasdaq-100, 2024.
+E. F. Fama and K. R. French. The cross-section of expected stock returns. The Journal
+of Finance, 47(2):427–465, 1992. doi: 10.1111/j.1540-6261.1992.tb04398.x.
+P. Glasserman. Monte Carlo Methods in Financial Engineering. Springer, 2004.
+I. Goodfellow, Y. Bengio, and A. Courville. Deep Learning. MIT Press, 2016. URL
+http://www.deeplearningbook.org/.
+Haibo He and Edward A. Garcia. Learning from imbalanced data. IEEE Transactions on
+Knowledge and Data Engineering, 21(9):1263–1284, 2009. doi: 10.1109/TKDE.2008.
+239.
+J. Kalsi, T. Lyons, and I. Pérez Arribas.
+Optimal execution with rough path signatures. SIAM Journal on Financial Mathematics, 11(2):470–493, 2020. doi: 10.1137/
+19M1259778.
+P. Kidger, J. Morrill, J. Foster, and T. Lyons. Neural controlled differential equations for
+irregular time series. In Advances in Neural Information Processing Systems (NeurIPS),
+volume 33, pages 6696–6707, 2020a.
+URL https://papers.nips.cc/paper/2020/
+hash/4a5876b450b45371f6cfe5047ac8cd45-Abstract.html.
+P. Kidger, J. Morrill, J. Foster, and T. Lyons. Signatory: Differentiable signatures and
+logsignatures in pytorch.
+arXiv preprint arXiv:2001.00706, 2020b.
+URL https://
+arxiv.org/abs/2001.00706.
+F. J. Király, H. Oberhauser, and T. Lyons. Kernels for sequentially ordered data. Journal
+of Machine Learning Research, 20(54):1–45, 2019. URL http://jmlr.org/papers/
+v20/18-557.html.
+20
+
+B. Lim, S. Ö. Arık, N. Loeff, and T. Pfister. Temporal fusion transformers for interpretable multi-horizon time series forecasting. International Journal of Forecasting, 37
+(4):1748–1764, 2021. doi: 10.1016/j.ijforecast.2021.03.012.
+A. W. Lo. The statistics of sharpe ratios. Financial Analysts Journal, 58(4):36–52, 2002.
+doi: 10.2469/faj.v58.n4.2453.
+T. Lyons. Rough paths, signatures and the modelling of functions on streams. Proceedings
+of the International Congress of Mathematicians (ICM), 2014. URL https://arxiv.
+org/abs/1405.4537.
+T. Lyons, M. Caruana, and T. Lévy.
+Differential equations driven by rough paths.
+Springer, 2007. doi: 10.1007/978-3-540-71250-3.
+T. Lyons, H. Ni, and H. Oberhauser. A feature set for streams and an application to
+high-frequency financial tick data. In Proceedings of the 2014 International Conference
+on Machine Learning (ICML), 2014. doi: 10.1145/2640087.264415.
+T. J. Lyons.
+Differential equations driven by rough signals.
+Revista Matemática
+Iberoamericana, 14(2):215–310, 1998. URL http://eudml.org/doc/39555.
+Marcos López de Prado. Advances in Financial Machine Learning. John Wiley & Sons,
+Hoboken, NJ, 2018. ISBN 978-1-119-48208-6. URL https://www.wiley.com/en-us/
+Advances%2Bin%2BFinancial%2BMachine%2BLearning-p-9781119482086.
+J. Morrill, A. Fermanian, P. Kidger, and T. Lyons. A generalised signature method for
+multivariate time series feature extraction.
+arXiv preprint arXiv:2006.00873, 2020.
+URL https://arxiv.org/abs/2006.00873.
+T. J. Moskowitz, Y. H. Ooi, and L. H. Pedersen. Time series momentum. Journal of
+Financial Economics, 104(2):228–250, 2012. doi: 10.1016/j.jfineco.2011.11.003.
+W. F. Sharpe. Mutual fund performance. The Journal of Business, 39(1):119–138, 1966.
+doi: 10.1086/294846.
+C. Tóth, H. Oberhauser, and Z. Szabó. Random fourier signature features. arXiv preprint
+arXiv:2311.12214, 2023. URL https://arxiv.org/abs/2311.12214.
+A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and
+I. Polosukhin. Attention is all you need. In Advances in Neural Information Processing
+Systems (NeurIPS), 2017. URL https://arxiv.org/abs/1706.03762.
+21

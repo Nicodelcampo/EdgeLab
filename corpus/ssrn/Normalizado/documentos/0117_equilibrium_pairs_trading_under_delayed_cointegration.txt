@@ -1,0 +1,1444 @@
+ Electronic copy available at: http://ssrn.com/abstract=2831836 
+On the Market-Neutrality of Optimal Pairs-Trading Strategies
+Bahman Angoshtari ∗
+August 29, 2016
+Abstract
+We consider the problem of optimal investment in a market with two cointegrated stocks and
+an agent with CRRA utility. We extend the ﬁndings of Liu and Timmermann [The Review of
+Financial Studies, 26(4):1048-1086, 2013] by paying special attention to when/if the associated
+stochastic control problem is well-posed and providing a veriﬁcation result. Our new ﬁndings
+lead to a sharp well-posedness condition which is, surprisingly, also the necessary and suﬃcient
+condition for the optimal investment to be market-neutral (i.e. having oﬀsetting long/short positions in the stocks). Hence, we provide a theoretical justiﬁcation for market-neutral pairs-trading
+which, despite having a strong practical relevance, has been lacking a theoretical ground.
+Keywords: optimal investment, pairs-trading, cointegration, market-neutrality, well-posedness,
+stochastic control.
+1
+Introduction
+This article is a contribution to portfolio management using assets whose price processes are cointegrated. Such processes have the property that linear combinations of them is stationary. Intuitively
+speaking, two cointegrated processes never get too far apart and have a long-run equilibrium with
+respect to each other. Many economic and ﬁnancial data series are known to exhibit these properties. Examples include interest rates ([EG87] and [HAG92]), foreign exchange rates ([BB89]), equities
+([CH88]), equity indices ([TT89]), future and spot prices ([BK95]), and commodities ([MT88]).
+In portfolio management, there are speciﬁc strategies for trading assets which have co-movement
+in their prices. Such strategies are referred to as “pairs trading”, “spread trading”, or “convergence
+trading”. These strategies involve identifying two or more assets whose prices are driven by common
+economic forces, and then trading on any temporary deviation of the prices from their long-run
+equilibrium. We refer the reader to [Ehr06] and [LL15] for a detailed exposition on pairs-trading as
+well as on historical insights.
+There are two major themes in the convergence trading literature: 1) Empirical studies on profitability of convergence trading; and 2) Theoretical studies on optimal convergence trading.
+The ﬁrst extensive empirical study on convergence trading was provided by [GGR99, GGR06]
+where they documented economically signiﬁcant proﬁts from implementing a very simple pairs-trading
+rule in the US equity market over an extended period of time. Other empirical studies in this direction
+include [PW07], [EGJ09], [KL07], [DF10], [AL10], [KL07] and [GPP12]. The trading strategies in
+these empirical studies were all pre-assumed rather than being the outcome of some sort of portfolio
+optimization. Theoretical studies on convergence-trading in continuous-time optimal portfolio choice
+settings include [Xio01], [LL04], [JY07], [MPW08], [CW11], [CW15], [LT13], and [TY13]. Assuming
+that the spread is an Ornstein-Uhlenbeck (O-U) process and that the investors have logarithmic utility,
+[Xio01] formulated a general equilibrium model and solved it numerically. The results showed that
+pairs-trading can have destabilizing eﬀects on the market. [LL04] modeled the spread by a Brownian
+bridge process and provided analytical solution for the associated Merton problem with logarithmic
+utility. [JY07] and [MPW08] considered an O-U spread and solved the optimal expected terminal
+utility problem for power utilities in closed form. The former study, provided analytical evidence for
+∗Department of Mathematics, University of Michigan. Email: bango@umich.edu. This article is part of the author’s
+D.Phil. thesis at University of Oxford. The author would like to thank Anders Rahbek, Ronnie Sircar, Hoi Ying Wong,
+Thaleia Zariphopoulou, and Xunyu Zhou for their comments and suggestions. Support from the Oxford-Man Institute
+of Quantitative Finance is acknowledged.
+1
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+ Electronic copy available at: http://ssrn.com/abstract=2831836 
+the potential destabilizing behavior of the convergence traders, consistent with the numerical solution
+of [Xio01] general equilibrium model.
+Finally, [CW11], [CW15], [LT13], and [TY13] modeled the
+original cointegrated prices by a continuous-time error correction model. [CW11, CW15] solved the
+mean-variance portfolio selection problem, while [LT13] and [TY13] solved the Merton investment
+problem with power and exponential utilities, respectively.
+All of the empirical and theoretical studies above, apart from [CW11], [CW15], [LT13], and [TY13],
+implicitly or explicitly assumed the investor’s strategy to be “market-neutral”. When trading equities,
+market-neutrality is interpreted as oﬀsetting long/short position, such that the (monetary) investments
+in the assets oﬀset each other at all times. See chapter 2 of [Ehr06] for further discussion on diﬀerent
+forms of market neutrality and its signiﬁcance in the practice of convergence-trading.
+Despite its widespread use and strong practical relevance, the market-neutrality of the optimal
+convergence-trading strategy is yet to be justiﬁed. Indeed, a rigorous normative study that yields
+market-neutral policies as optimal has been lacking. To the best of our knowledge, the only study that
+investigated this assumption is [LT13] which, however, provides a negative result. Indeed, assuming a
+market setting in which assets follow a continuous time error correction model and an agent maximizing
+her power utility of terminal wealth, it is therein shown that the optimal strategies are not marketneutral. Therefore, there is, from a theoretical point of view, an unanswered fundamental question.
+How can one justify this investment practice in a theoretical portfolio choice framework? In other
+words, can one identify a market model and a preference criterion for the investor which support
+pairs-trading? The answer to this question will be the main focus of this paper. In other words, the
+main motivation is to provide a theoretical ground for market-neutral pairs-trading, without a priori
+restricting the portfolio strategies.
+In this paper, we re-consider the investment model assumed in [LT13]. Our contribution to the
+existing literature is threefold. Firstly, we show that the problem might be ill-posed, in the sense that
+the maximum expected utility becomes inﬁnite in a ﬁnite time horizon for speciﬁc values of the risk
+aversion parameter (see Theorem 4.4). This ﬁnding is consistent with existing literature of optimal
+investment. In particular, [KO96] and [KK04] has observed this phenomenon and coined the terms
+“nirvana strategies” and “I-unstable” for investment strategies that yield inﬁnite expected utility in
+ﬁnite investment horizon.
+Secondly, we provide the so-called “veriﬁcation result” for the stochastic control problem (see
+Theorem 4.7). This is a necessary step since the problem does not satisfy the Lipschitz or polynomial
+growth conditions needed for the classical veriﬁcation result, e.g. Theorem 3.8.1 on page 135 of [FS06].
+Thirdly, we identify the necessary and suﬃcient condition on market parameters for well-posedness
+of the investment problem for all values of the investor’s risk aversion (see Condition 5.1). Interestingly,
+the same condition turns out to be the necessary and suﬃcient condition for market-neutrality of the
+optimal trading strategy (see Theorem 5.3).
+Our ﬁndings provide economic viability for the practice of market-neutral pairs-trading by the
+following argument.
+Note that our investment model (as well as the one in [LT13]) is a “partial
+equilibrium” model. In other words, it is a priori assumed that the assets are traded in a market in its
+equilibrium state. Investors who achieve inﬁnite expected utility in a ﬁnite investment horizon, cannot
+exist in a partial equilibrium model, since they would have pushed the marked out of equilibrium by
+aggressively investing in the assets. Thus, any combination of model parameters that lead to existence
+of such agents must be excluded in a partial equilibrium model. Our ﬁndings show that imposing
+such restriction is equivalent to assuming that the optimal investment strategy is market-neutral.
+The remainder of this paper is organized as follows. In Section 2, we describe the ﬁnancial model.
+In Section 3, we introduce market-neutral investment strategies and discuss their signiﬁcance. In
+Section 4, we formulate and solve the optimal investment problem for CRRA investors. In particular,
+we pay special attention to when/if the stochastic control problem is well-posed, and provide the
+veriﬁcation result. In Section 5, we provide our main result by introducing Condition 5.1 and showing
+that it is the necessary and suﬃcient condition for well-posedness of the optimal investment problem
+as well as market-neutrality of the optimal strategy. Section 6 concludes the paper.
+2
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+2
+Market setting
+The market consists of a riskless asset with zero interest rate,1 and two stocks whose price processes,
+S = (S1
+t , S2
+t )t≥0 satisfy the “continuous-time error correction model”, i.e.
+dS1
+t
+S1
+t
+= α1Ztdt + σ1dW 1
+t ,
+(2.1)
+and
+dS2
+t
+S2
+t
+= α2Ztdt + σ2ρdW 1
+t + σ2
+p
+1 −ρ2 dW 2
+t ,
+(2.2)
+where the “log-spread” (Zt)t≥0 is deﬁned as
+Zt := log S1
+t −c log S2
+t + 1
+2
+ σ2
+1 −cσ2
+2
+
+t.
+(2.3)
+Here, (Wt)t≥0 = (W 1
+t , W 2
+t )⊤
+t≥0 is a two dimensional standard Brownian motion in a ﬁltered probability
+space (Ω, F, (Ft)t≥0, P), where (Ft)t≥0 is the augmented ﬁltration generated by (Wt). All the coeﬃcients are constant, and further assumption on coeﬃcients will be given below. For future reference,
+we also note that (2.1) and (2.2) have the matrix form
+dSt = diag(St) (αZtdt + ΣdWt) ,
+(2.4)
+where
+Σ :=
+ σ1
+0
+σ2ρ
+σ2
+p
+1 −ρ2
+
+,
+and
+α :=
+α1
+α2
+
+.
+(2.5)
+The following assumptions on the constant coeﬃcients are standing throughout.
+Assumption 2.1. (i) σ1, σ2 > 0 and |ρ| < 1; (ii) α1 < cα2; and (iii) Z0 := is a Gaussian random
+variable with mean zero and variance
+σ2
+1 + c2σ2
+2 −2cρσ1σ2
+2(cα2 −α1)
+,
+and it is independent of (Wt)t≥0.
+Assumption 2.1.(i) is the usual non-degeneracy assumption on diﬀusion-type market models. The
+rule of Assumption 2.1.(ii)–(iii) is to enforce (Zt)t≥0 to be a stationary Ornstein-Uhlenbeck process,
+as shown by the following lemma.
+Lemma 2.2. The log-spread (Zt)t≥0 satisﬁes
+dZt = −κZtdt + σZdW Z
+t ,
+(2.6)
+where
+κ := cα2 −α1 > 0,
+σ2
+Z := σ2
+1 + c2σ2
+2 −2cρσ1σ2,
+(2.7)
+and
+W Z
+t := 1
+σZ
+n
+(σ1 −cσ2ρ) W 1
+t −cσ2
+p
+1 −ρ2W 2
+t
+o
+.
+(2.8)
+In particular, (Zt)t≥0 is an Ornstein-Uhlenbeck process given by
+Zt = e−κt
+
+Z0 + σZ
+Z t
+0
+eκsdW Z
+s
+
+,
+(2.9)
+which is a stationary Gaussian process with E (Zt) = 0 and
+E (ZtZs) = σ2
+Z
+2κ e−κ|t−s|,
+t, s ≥0.
+(2.10)
+1Assuming zero short rate is not restrictive. If the short-rate is non-zero or even time-varying (but deterministic),
+one can recover the zero short-rate assumption by using the discounted prices.
+3
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+Proof. Applying Itˆo’s lemma to ﬁnd the dynamics of (Zt) from (2.1) and (2.2) yields (2.6)-(2.8). (2.9)
+is the well-known strong solution of the linear stochastic diﬀerential equation (2.6), c.f. example 6.8 on
+p. 358 of [KS91]. The rest of the proof readily follows from (2.9). In particular, we need Assumption
+2.1.(ii)–(iii) to obtain E (Zt) = 0 and (2.10) which, in turn, yield stationarity of (Zt).
+Remark 2.3. The proof of Lemma 2.2 reveals that the term (σ2
+1 −cσ2
+2)t/2 in (2.3) is speciﬁcally
+chosen so that E Zt = 0, which serves three purposes. Firstly, it simpliﬁes the algebra in the proof of
+several results below. Secondly, from an economic point of view, this assumption means that the longrun equilibrium level of (Zt) is 0. From (2.1) and (2.2), it then follows that the long-run equity risk
+premiums are zero and the only reason for investing in the stocks is to exploit short-term deviations
+from equilibrium when Zt̸ = 0. Thus, choosing E Zt = 0 facilitates the analysis of pairs-trading by
+isolating the eﬀect of cointegration. Finally, estimation methods that are used to calibrate (2.1)–(2.3)
+(e.g. Engle-Granger two-step method and Johansen’s approach) alway impose E Zt = 0.
+Recall that two stochastic processes are cointegrated if a linear combination of them is stationary.
+Hence, Lemma 2.2 implies that the stock log-prices are cointegrated. As it was mentioned in the
+introduction, more can be said about the connection of the market model considered herein and the
+theory of cointegration. Indeed, as shown in [KR01], [KR04] and [DP04], the price dynamics given by
+(2.1) and (2.2) is the diﬀusion limit of a so-called error correction model. These models are discretetime representations of systems of cointegrated processes. Refer to [Ham94], [Joh95], and [Jus06] for
+a more detailed exposition on cointegration.
+We consider an agent who invests in the market over a ﬁxed trading horizon [0, T] and with an
+initial endowment x > 0. An admissible strategy π⊤= (π1
+t , π2
+t )t∈[0,T ] is deﬁned as an (Ft)-adapted
+process satisfying
+Z T
+0
+ |π⊤
+t αZt| + π⊤
+t ΣΣ⊤πt
+
+dt < +∞,
+P-almost surely.
+(2.11)
+Here, πi
+t is the portfolio weight of the i-th stock, i.e. the proportion of agent’s wealth invested in the
+i-th stock at t. Thus, (1 −π1
+t −π2
+t )t∈[0,T ] is the proportion of wealth invested in the bank account.
+Short-selling of the stocks and the bank account is allowed, and is represented by negative portfolio
+weights. The set of admissible strategies is denoted by A.
+For any admissible strategy π⊤= (π1, π2) ∈A, the agent’s wealth Xπ = (Xπ
+t )t∈[0,T ] is given by
+the budget constraint
+Xπ
+t = x +
+Z t
+0
+Xπ
+uZuπ⊤
+u αdu +
+Z t
+0
+Xπ
+uπ⊤
+u ΣdWu.
+(2.12)
+In particular, Xπ
+t > 0 P-almost surely for all t ∈[0, T], since it is the stochastic exponential of a
+continuous process.
+3
+Market-neutral investment
+As mentioned earlier, the main motivation of this paper is to provide a theoretical ground for the socalled “market-neutral” trading strategies. In this section, we introduce these strategies and discuss
+their signiﬁcance.
+Let FZ
+t , t ≥0, be the augmentation of σ(Zu : 0 ≤u ≤t) = σ(W Z
+u : 0 ≤u ≤t). Note that
+FZ
+t ⊂Ft, t ≥0, that is, we gain less information from knowing the log-spread (Zu)0≤u≤t than from
+knowing the stock prices (Su)0≤u≤t.
+The subﬁltration (FZ
+t ) has an important role in practice. Since (Zt) is stationary, it is possible
+to calibrate a model for (Zt) using historical data.
+On the other hand, the stock prices S1
+t and
+S2
+t are generally not stationary. Thus, calibrated models for S1
+t and S2
+t are less reliable than their
+counterparts for Zt. It is then natural that practitioners focus on trading strategies and portfolios that
+are (FZ
+t )-adapted. Such strategies are called “market-neutral”, since their dynamics only depends on a
+stationary signal (Zt) which, by design, is “immune” to non-stationarity of the market (e.g. bull/bear
+states of the market).
+Deﬁnition 3.1. An admissible strategy π⊤= (π1, π2) ∈A is market-neutral (M-N) if both π and Xπ
+are (FZ
+t )-adapted.
+4
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+The majority of the existing literature deﬁne M-N strategies in a diﬀerent way. In particular,
+such strategies are deﬁned as dollar-neutral, share-neutral or beta-neutral, depending on how the
+cointegration relationships among the prices are deﬁned.
+For example, when the mean reverting
+signal is the logarithm of the price diﬀerences, i.e. when c = 1 as in [LT13], market-neutrality is
+interpreted as dollar-neutrality, which requires oﬀsetting long/short positions in the stocks such that
+the (monetary) investments in the two stocks is zero at all times. This assumption is most common
+when trading equities. When the mean reverting signal is the price diﬀerence, market neutrality is
+interpreted as share-neutrality, in which case the number of shares (or contracts) in diﬀerent assets
+oﬀset each other.
+This assumption is relevant to futures markets, or when the assets are almost
+identical. See chapter 2 of [Ehr06] for further discussion on diﬀerent types of market-neutrality and
+their signiﬁcance in the practice of convergence-trading.
+We consider the following alternative deﬁnition of M-N portfolios, which is consistent with the
+existing literature.
+Deﬁnition 3.2. An admissible strategy π = (π1, π2) ∈A is M-N if π is (FZ
+t )-adapted and
+π2
+t = −c π1
+t ;
+P .a.s. ∀t ≥0,
+(3.1)
+with c as in (2.3).
+Our next result shows that the two deﬁnitions are equivalent.
+Lemma 3.3. Let π = (π1, π2) be an (FZ
+t )-adapted admissible strategy. Then, Xπ is (FZ
+t )-adapted if
+and only if (3.1) holds.
+Proof. From (2.12), we have
+dXπ
+t
+Xπ
+t
+= π1
+t
+dS1
+t
+S1
+t
++ π2
+t
+dS2
+t
+S2
+t
+= π1
+t
+dS1
+t
+S1
+t
+−cdS2
+t
+S2
+t
+
++ (π2
+t + cπ1
+t )dS2
+t
+S2
+t
+= π1
+t dZt + (π2
+t + cπ1
+t )dS2
+t
+S2
+t
+.
+Clearly, (Xπ
+t ) is (FZ
+t )-adapted if and only if the second term on the right side vanishes, which is
+equivalent to (3.1).
+As mentioned earlier, it is a common industry practice to consider M-N investment in pairstrading scenario. It is then possible to only consider (and calibrate) the dynamics of the log-spread,
+and ignore the individual asset prices altogether. This reduces the dimensionality of the problem
+and, more importantly, facilitates the process of model estimation and calibration, as the spread is a
+stationary process while the original price processes are not.
+On the other hand, the approach taken by academics is not uniform.
+Early studies such as
+[GGR06], [LL04], [JY07], and [MPW08] followed the industry practice by assuming, a priori, that
+the investment strategies are M-N. On the other hand, more recent studies such as [CW11], [CW15],
+[LT13] and [TY13] do not impose such restriction and ﬁnd that the optimal strategy is, in general,
+not M-N. Therefore, there is, from a theoretical point of view, an unanswered fundamental question.
+How can one justify investment practice of pairs-trading in a theoretical portfolio choice framework?
+In other words, can one identify a market model and a preference criterion for the investor which
+support M-N pairs-trading? Answering these question will be the main goal of this paper.
+4
+Optimal investment problem
+In this section, we consider the Merton investment problem in the market setting of Section 2, which
+is one of the problems considered in [LT13]. Our contribution to the existing literature is as follows.
+(i) We show that the problem might be ill-posed, in the sense that the maximum expected utility
+becomes inﬁnite in a ﬁnite time horizon for speciﬁc values of the risk aversion parameter (i.e.
+γ ∈(0, γ0) below).
+(ii) We provide the veriﬁcation step for our stochastic control problem (see Theorem 4.7).
+All of these results are missing from [LT13]. As will be explained in the next section, item (i) is crucial
+in achieving our main goal of justifying the M-N pairs-trading practice.
+5
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+Remark 4.1. Achieving inﬁnite expected utility has been observed in the context of trading a stock
+with mean-reverting return. Examples of such studies include [KO96] and [KK04] who, respectively,
+coined the terms “ nirvana strategies” and “ I-unstable” for investment strategies that yield inﬁnite
+expected utility in ﬁnite investment horizon.
+We assume that the investor faces the following problem
+sup
+π∈A
+E (Xπ
+T )1−γ −1
+1 −γ
+,
+(4.1)
+for a constant 0 < γ < 1.
+Remark 4.2. We only consider CRRA utility with “ relative risk aversion” γ in the interval (0, 1), i.e.
+when the agent is more risk seeking than a log-utility investor. As we will see below, the logarithmic
+case as well as power utilities with γ > 1 are well-posed and, thus, these cases has already been
+accounted for in [LT13].
+Our main insight of this section is identifying the exact well-posedness conditions for (4.1). In
+particular, we introduce the “critical relative risk aversion”,
+γ0 := 1 −
+
+κ
+∥(1, −c)Σ∥∥Σ−1α∥
+2
+.
+(4.2)
+Not that 0 ≤γ0 < 1 since, by the Cauchy-Schwarz inequality,
+κ = (−1, c)α ≤∥(−1, c)Σ∥∥Σ−1α∥.
+We show the following dichotomy.
+(a) If 0 < γ < γ0, then, the Merton problem is ill-posed. In particular, the agent’s maximal expected
+utility of wealth increases rapidly with the investment horizon T and approaches inﬁnity at a
+ﬁnite critical horizon TN(γ) > 0, which is explicitly given by (4.6). See Theorem 4.4 below and,
+in particular, (4.12).
+(b) If γ ≥γ0, then the Merton problem is well-posed, in the sense that the value function is ﬁnite,
+for any choice of time horizon T > 0.
+Remark 4.3. Note that since γ0 < 1, the logarithmic case as well as power utilities with γ > 1 are
+always well-posed. The ill-posed case may only happen for power utilities with 0 < γ < 1, i.e. when
+the agent is more risk seeking than a log-utility investor.
+For the rest of this section, we solve the investment problem (4.1) and show that the aforementioned
+dichotomy (a)-(b) holds. The value function corresponding to the stochastic control problem (4.1) is
+given by,
+v(x, z, t) = sup
+π∈A
+E x,z,t (Xπ
+T )1−γ −1
+1 −γ
+;
+x > 0, z ∈R, t ∈[0, T].
+(4.3)
+Here, E x,z,t indicates that we condition the expectation on Xt = x and Zt = z. Theorem 4.4 solves the
+related Hamilton-Jacobi-Bellman (HJB) equation and Theorem 4.7 provides the so-called veriﬁcation
+result, i.e. that the solution of the HJB equation is indeed the value function.
+The HJB equation corresponding to the value function (4.3) is
+
+
+
+sup
+π∈R2{Lπv(x, z, t)} = 0,
+v(x, z, T) = x1−γ−1
+1−γ
+,
+(4.4)
+for (x, z, t) ∈R+ × R × [0, T). Here, the diﬀerential operator Lπ is given by
+Lπf := ft −κzfz + 1
+2σ2
+Zfzz + xzα⊤πfx + 1
+2x2π⊤ΣΣ⊤πfxx + x(1, −c)ΣΣ⊤πfxz,
+(4.5)
+in which π ∈R2 and f is assumed to be twice diﬀerentiable with respect to x and z and diﬀerentiable
+with respect to t.
+6
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+Theorem 4.4 provides the solution to the HJB equation. To state the result, we need the following
+deﬁnitions. The “critical time horizon” TN(γ) ∈(0, +∞] is given by
+TN(γ) =
+
+
+
++∞;
+γ ≥γ0,
+γ
+σZ∥Σ−1α∥√γ0−γ
+
+π
+2 + arctan
+
+κγ
+σZ∥Σ−1α∥√γ0−γ
+
+;
+0 < γ < γ0.
+(4.6)
+We also introduce the “discriminant”
+D = σ2
+Z∥Σ−1α∥2
+γ2
+(γ −γ0),
+(4.7)
+and the functions
+g(t) = κ
+2γ t −1
+2
+
+
+
+
+
+
+
+log
+
+cosh
+ t
+p
+|D|
+
++
+κ
+γ√
+|D| sinh
+ t
+p
+|D|
+
+;
+if γ̸ = γ0,
+log
+
+1 + κ
+γ t
+
+;
+if γ = γ0,
+(4.8)
+and
+h(t) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+(1 −γ)∥Σ−1α∥2
+κγ + γ2√
+D coth
+
+t
+√
+D
+;
+if γ0 < γ < 1,
+κ
+γσ2
+Z
+
+1 −
+γ
+γ + κt
+
+;
+if γ = γ0,
+−
+√−D
+σ2
+Z
+tan
+
+arctan
+
+κ
+γ√−D
+
+−
+√
+−Dt
+
++
+κ
+γσ2
+Z ;
+if 0 < γ < γ0.
+(4.9)
+Theorem 4.4. For T < TN(γ), the solution of the HJB equation (4.4) is given by
+v(x, z, t) =
+x1−γ 
+eg(T −t)+ 1
+2 h(T −t)z2γ
+−1
+1 −γ
+;
+(x, z, t) ∈R+ × R × [0, T].
+(4.10)
+Furthermore, for (z, t) ∈R × [0, T], the maximizer π in (4.4) is given by
+π⋆(z, t) =
+h 1
+γ (ΣΣ⊤)−1α + h(T −t)
+
+1
+−c
+ i
+z.
+(4.11)
+Finally, for 0 < γ < γ0, one has
+lim
+T →TN(γ)−v(x, z, 0) = +∞;
+∀(x, z) ∈R+ × R.
+(4.12)
+Proof. Assuming vxx(x, z, t) ≤0 (which will be veriﬁed later) yields that the optimizer in the pointwise optimization problem supπ∈R2{Lπv(x, z, t)} is
+π⋆(x, z, t) := −z vx(x, z, t)
+x vxx(x, z, t)(ΣΣ⊤)−1α −vxz(x, z, t)
+x vxx(x, z, t)
+
+1
+−c
+
+.
+(4.13)
+By substituting π⋆into (4.4), one obtains the fully non-linear Cauchy problem
+(
+vt −κzvz + 1
+2σ2
+Zvzz −1
+2∥Σ−1α∥2z2 v2
+x
+vxx −1
+2σ2
+Z
+v2
+xz
+vxx + κz vxvxz
+vxx
+= 0,
+v(x, z, T) = x1−γ−1
+1−γ
+,
+(4.14)
+for (x, z, t) ∈R+ × R × [0, T). Substituting the ansatz
+v(x, z, t) = ϕ(z, t)γx1−γ −1
+1 −γ
+(4.15)
+7
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+into (4.14) yields that the unknown function ϕ satisﬁes
+(
+ϕt −1
+γ κzϕz + 1
+2σ2
+Zϕzz + 1−γ
+2γ2 z2∥Σ−1α∥2ϕ = 0;
+(t, z) ∈[0, T) × R,
+ϕ(z, T) = 1;
+z ∈R.
+(4.16)
+This PDE is solved in Appendix A. In particular, by taking a = (1/γ)Σ−1α, b⊤= (1, −c)Σ, and
+ξ = 1 −γ, one may re-write (4.16) as (A.1). The corresponding escape criterion discriminant deﬁned
+by (A.3) is
+D = κ2
+γ2 −1 −γ
+γ2
+σ2
+Z∥Σ−1α∥2 = σ2
+Z∥Σ−1α∥2
+γ2
+(γ −γ0),
+which coincide with (4.7). In particular, D ≥0 if and only if γ ≥γ0. Therefore, Tesc, g, and h of
+Appendix A become TN of (4.6), g of (4.8), and h of (4.9), respectively. Lemma A.2 then yields that
+ϕ(z, t) = exp
+
+g(T −t) + 1
+2h(T −t)z2
+;
+(z, t) ∈R × [0, T],
+and substituting into (4.15) yields the solution (4.10). It can be easily checked that vxx ≤0, and
+(4.13) yields the candidate optimal control of (4.11). Finally, by Lemma A.2, it follows that, for all
+z > 0, limT →TN(γ)−ϕ(z, 0) = +∞which, in turn, yield (4.12).
+We end this section by providing the so-called veriﬁcation step. In other words, we show that
+(4.10), i.e. the solution of the HJB equation, is the value function given by (4.3).
+Remark 4.5. Classical veriﬁcation results, e.g. Theorem 3.8.1 on page 135 of [FS06], require either
+Lipschitz conditions on the coeﬃcients of state equations or polynomial growth of the candidate value
+function. Neither of these conditions holds in our setting. In particular, the Lipschitz conditions
+fail because of the term Xπ
+uZu in the drift of (2.12) and that (Xπ
+t ) and (Zt) are both unbounded.
+Furthermore, as the following lemma shows, h in (4.10) is strictly positive and the candidate value
+function v has exponential growth in z.
+Lemma 4.6. The function h given by (4.9) is strictly positive and strictly increasing on
+
+0, TN(γ)
+
+.
+Proof. From the proof of Theorem 4.4, the function h satisfy the Riccati equation A.2, where a =
+(1/γ)Σ−1α, b⊤= (1, −c)Σ, and ξ = 1 −γ. Since, ξ = 1 −γ > 0, Lemma A.1.(i) yields that h is
+strictly increasing and positive.
+Since requirements of the classical veriﬁcation results are not satisﬁed, we provide a veriﬁcation
+theorem tailored to our control problem.
+Theorem 4.7. For T < TN(γ), the function v given by (4.10) coincides with the value function
+(4.3). Furthermore, with slight abuse of notation, the optimal investment strategy is given by π∗=
+ π∗(Zt, t)
+
+t∈[0,T ], with the function π∗(·, ·) given by (4.11).
+Proof. See Appendix B
+Remark 4.8. Herein, we take the stochastic control approach to solve the optimal investment problem.
+Alternatively, one may use the duality approach which, since the market model is complete, boils
+down to the so-called “ martingale method” of [KLS87] and [CH89]. However, since the investor’s
+opportunity set is stochastic, one has to check extra conditions regarding the ﬁniteness of the value
+function and the moments of the state price density, see [CH91] and [DRB99]. These extra steps makes
+the arguments of the martingale method as complex as the one for the stochastic control approach.
+5
+Well-posedness condition and optimality of M-N pairs-trading
+Our ﬁndings in the previous section reveal two unsatisfactory characteristic of the investment model
+of Section 2. Firstly, the investment model cannot represent the equilibrium price of a traded asset
+if γ0 > 0.2 Indeed, CRRA investors with γ ∈(0, γ0) achieve inﬁnite expected utility in the ﬁnite
+2Note that the optimal investment problem in Section 4 is a “partial equilibrium” model, which implies that (S1
+t , S2
+t )
+corresponds to assets that are traded in a market in its “equilibrium” state.
+8
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+investment horizon TN(γ) given by (4.6). If γ0 > 0, then TN(γ) →0 as γ →0. Thus, one can always
+ﬁnd CRRA investors that achieve inﬁnite expected utility, regardless of how short the investment
+horizon is. As pointed out by [KO96] and [KK04], such investors cannot exist in a partial equilibrium
+model, since they would have pushed the market out of equilibrium by aggressively investing in the
+assets.
+Secondly, as one can easily check, the optimal investment strategy
+ π∗(Zt, t)
+
+t≥0 does not satisfy
+(3.1) and, thus, is not M-N. This, contradicts the industry practice as explained in Section 3.
+To exclude these unsatisfactory characteristic of the investment model, we should restrict the
+market parameters such that γ0 = 0 and that the optimal strategy satisfy (3.1). Surprisingly, these
+two seemingly diﬀerent requirements lead to the same condition, which we introduce next.
+Condition 5.1 (well-posedness). The following equivalent relationships hold between the market parameters:
+(i) α1/α2 = (σ2
+1 −cσ1σ2ρ)/(σ1σ2ρ −cσ2
+2).
+(ii) There exists ξ ∈R such that α = ΣΣ⊤(1, −c)⊤ξ.
+(iii) α = ΣΣ⊤(1, −c)⊤(−κ/σ2
+Z).
+Remark 5.2. the relationships (i) ⇔(ii) and (iii) ⇒(ii) are trivial. To see (ii) ⇒(iii), left-multiply
+(ii) by (1, −c) to obtain
+−κ = (1, −c)α = (1, −c)ΣΣ⊤(1, −c)⊤ξ = σ2
+Zξ,
+which yields ξ = (−κ/σ2
+Z).
+The following theorem is the main result of this paper. It characterizes the central role of Condition
+5.1 as the condition needed for well-posedness of the optimal investment model as well as marketneutrality of the optimal strategy.
+Theorem 5.3. Condition 5.1 is equivalent to either of the following statements.
+(i) For all γ ∈(0, 1), the optimal investment problem (4.1) is well-posed, i.e. the maximal expected
+utility is ﬁnite for all investment horizon T > 0.
+(ii) The optimal strategy
+ π∗(Zt, t)
+
+t∈[0,t] is M-N, where π∗is given by (4.11).
+Proof. The equivalence with (ii) is straightforward, since
+ π∗(Zt, t)
+
+t∈[0,t] satisﬁes (3.1) if and only if
+5.1.(ii) holds. To show the equivalence with (i), note that by Theorem 4.7, the optimal investment
+problem is well posed for all γ ∈(0, 1) if and only if γ0 = 0. From (4.2), it follows that γ0 = 0 if and
+only if
+(1, −c)Σλ = ∥(1, −c)Σ∥∥λ∥.
+This equation is equivalent to the linear dependence of Σ⊤(1, −c)⊤and λ which is, in turn, equivalent
+to Condition 5.1.(ii).
+Theorem 5.3 provides economic viability for the assumption that the optimal pairs-trading strategy
+is M-N. Indeed, real investors neither attain inﬁnite expected utility nor take inﬁnite positions. The
+implications of the possibility of attaining inﬁnite expected utility are therefore that the parameter
+combinations producing such a scenario do not occur in the real world. This means that either
+(i) γ0 > 0 and there is no investor with γ < γ0; or,
+(ii) Condition 5.1 holds (i.e. γ0 = 0).
+Since investor’s with γ < γ0 are risk-averse agent’s, there is no strong reason to exclude them. It then
+follows that Condition 5.1 must hold, which, in turn, implies that the optimal investment strategy is
+M-N.
+We end the paper by a brief discussion on the optimal strategies under Condition 5.1. By Theorem
+5.3, the Merton problem is always well-posed, and imposing Condition 5.1.(iii) on (4.11) yields the
+following result.
+9
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+Proposition 5.4. Under Condition 5.1, the optimal strategies is given by:
+π⋆
+t =
+−κ
+σ2
+Z
+ 1 + 1/√γ coth
+
+κ
+√γ (T −t)
+
+1 + √γ coth
+
+κ
+√γ (T −t)
+ Zt
+
+1
+−c
+
+;
+t ∈[0, T],
+(5.1)
+for all (γ, T) ∈(0, 1) × (0, +∞).
+The form of the optimal strategy (5.1) is quite intuitive. Note that (Zt) quantify the relative
+mispricing between S1 and S2. In particular, assuming c > 0, if Zt > 0 (resp. Zt < 0), then S1 (resp.
+S2) is over priced relative to the other stock. Since
+−κ
+σ2
+Z
+ 1 + 1/√γ coth
+
+κ
+√γ (T −t)
+
+1 + √γ coth
+
+κ
+√γ (T −t)
+
+< 0,
+the optimal strategy always shorts the over-priced stock and longs the under-priced one. Furthermore,
+the factor −κ/σ2
+z tells us that the long-short positions should be bigger if the mean-reversion rate κ
+is bigger, and they should be smaller if the variance rate of the residual, σ2
+z, is larger.
+6
+Conclusion
+We considered the problem of optimal investment in a market with two cointegrated risky assets,
+with the motivation of ﬁnding a theoretical ground for market-neutrality of the so-called pairs-trading
+strategies. For this, we formulated the classical Merton problem of expected utility of terminal wealth
+and investigated whether this model supports, in terms of optimal choice, market-neutral pairs-trading
+strategies.
+We focused on the class of CRRA utilities, a model that has been studied by [LT13]. We found that
+such models might have abnormal properties, that is for some values of the risk aversion parameter,
+the investor attains inﬁnite expected utility in ﬁnite investment horizon. Since such investors cannot
+exist in a partial equilibrium model, we identiﬁed an extra condition on the market coeﬃcients, i.e.
+Condition 5.1, which eliminates the possibility of attaining inﬁnite expected utility. Finally, we showed
+that Condition 5.1 is equivalent to assuming that the optimal strategy is market-neutral and, hence,
+achieved our main goal of providing theoretical justiﬁcation for the investment practice of marketneutral pairs-trading.
+A
+Auxiliary PDE
+This section provides the explicit solutions for the auxiliary Cauchy problem
+(
+ϕt + z(a · b)ϕz + 1
+2∥b∥2ϕzz + ξ
+2z2∥a∥2ϕ = 0;
+(z, t) ∈R × [0, T),
+ϕ(z, T) = 1;
+z ∈R,
+(A.1)
+and the related Riccati diﬀerential equation
+(
+h′(t) = 2(a · b)h(t) + ∥b∥2h2(t) + ξ∥a∥2;
+t ∈[0, T),
+t ∈(0, T]
+h(0) = 0.
+(A.2)
+It is assumed throughout that a, b ∈R2, a · b < 0, ξ ∈R\{0}, and T > 0.
+Following the terminology of [Sas82], we deﬁne the “escape criterion discriminant”
+D := (a · b)2 −ξ∥a∥2∥b∥2,
+(A.3)
+and the “escape time” Tesc ∈(0, +∞] by
+Tesc :=
+
+
+
++∞;
+D ≥0,
+1
+√−D
+
+π
+2 + arctan
+
+−a·b
+√−D
+
+;
+D < 0,
+(A.4)
+10
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+For t < Tesc, we also introduce the auxiliary functions
+g(t) = κ
+2γ t −1
+2
+
+
+
+
+
+
+
+log
+
+cosh
+ t
+p
+|D|
+
++
+κ
+γ√
+|D| sinh
+ t
+p
+|D|
+
+;
+if γ̸ = γ0,
+log
+
+1 + κ
+γ t
+
+;
+if γ = γ0,
+(A.5)
+and
+h(t) =
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ξ∥a∥2
+−a · b +
+√
+D coth
+
+t
+√
+D
+;
+if D > 0,
+a · b
+∥b∥2
+
+
+1
+1 −(a · b)t
+−1
+
+;
+if D = 0,
+−
+√−D
+∥b∥2 tan
+
+arctan
+
+−a·b
+√−D
+
+−
+√
+−Dt
+
+−
+a·b
+∥b∥2 ;
+if D < 0.
+(A.6)
+The following Lemmas provide the solutions of (A.1) and (A.2) as well as some of their properties.
+Note that the solutions are deﬁned up to Tesc. In particular, for D < 0, the solutions “blow up” at
+the ﬁnite escape time Tesc. The proof of the lemmas are by direct substitution and omitted.
+Lemma A.1. For T < Tesc, the solution of the Riccati equation (A.2) is given by h(t). Furthermore:
+(i) If ξ > 0 (resp. ξ < 0), then h is positive and strictly increasing (resp. negative and strictly
+decreasing).
+(ii) If D ≥0 (resp. D < 0), then lim
+t→+∞h(t) =
+ξ∥a∥2
+√
+D −a · b
+(resp.
+lim
+t→T −
+esc
+h(t) = +∞).
+Lemma A.2. For T < Tesc, the solution of the Cauchy problem (A.1) is given by
+ϕ(z, t) = exp
+
+g(T −t) + 1
+2h(T −t)z2
+;
+(z, t) ∈R × [0, T].
+(A.7)
+In particular, if D < 0, then limT →T −
+esc ϕ(z, 0) = +∞, for all z > 0.
+B
+Proof of Theorem 4.7
+It is suﬃcient to show the following statements.
+(i) For any admissible strategy π = (π1
+t , π2
+t ) ∈A, one has
+v(x, z, t) ≥E x,z,t (Xπ
+T )1−γ −1
+1 −γ
+;
+(x, z, t) ∈R+ × R × [0, T].
+(B.1)
+(ii) π∗∈A and
+v(x, z, t) = E x,z,t (X∗
+T )1−γ −1
+1 −γ
+;
+(x, z, t) ∈R+ × R × [0, T],
+(B.2)
+where we deﬁned X∗= Xπ∗.
+Proof of (i): For n > 0, deﬁne the stopping time
+τn := T ∧inf
+n
+t ≥0 : max{
+Z t
+0
+π2
+udu, |Xπ
+t |, |Zt|} > n
+o
+.
+(B.3)
+Note that τn →T a.s. as n →+∞. Applying Itˆo’s rule yields
+v(Xπ
+τn, Zτn, τn) = v(t, x, z) +
+Z τn
+t
+Lπuv(Xπ
+u, Zu, u)du
++
+Z τn
+t
+vz(Xπ
+u, Zu, u)σZdW Z
+u +
+Z τn
+t
+vx(Xπ
+u, Zu, u)Xπ
+uπ⊤
+u ΣdWu.
+(B.4)
+11
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+The ﬁrst integral on the right side is non-positive because v solves the HJB equation (4.4). Furthermore, by the deﬁnition of τn, the integrands of the second and third integrals are uniformly bounded,
+thus,
+E x,z,t
+Z τn
+t
+vz(Xπ
+u, Zu, u)σZdW Z
+u = E x,z,t
+Z τn
+t
+vx(Xπ
+u, Zu, u)Xπ
+uπ⊤
+u ΣdWu = 0.
+Therefore, taking the conditional expectation on both sides of (B.4) yields
+E x,z,tv(Xπ
+τn, Zτn, τn) ≤v(x, z, t);
+n ≥1, (x, z) ∈R+ × R × [0, T].
+(B.5)
+Finally, γ ∈(0, 1) yields that v is uniformly bounded from bellow, speciﬁcally, vz(Xπ
+t , Zt, t) ≥
+1
+γ−1.
+Thus, (B.1) is obtained by taking the limit of (B.5) as n →+∞and applying Fatou’s lemma.
+Proof of (ii): To show that π∗∈A, it suﬃces to check the integrability condition (2.11) for
+ π∗(Zt, t)
+
+0≤t≤T . From (4.11), it follows that
+|π∗⊤
+t
+αZt| + π∗⊤
+t
+ΣΣ⊤π∗
+t = Z2
+t
+ 1
+γ α⊤(ΣΣ⊤)−1α −κh(T −t)
+
++ 1
+γ2 α⊤(ΣΣ⊤)−1α + σ2
+Zh2(T −t) −2κ
+γ h(T −t)
+
+.
+Since T < TN(γ), Lemma 4.6 yields that |h(T −t)| is uniformly bounded for t ∈[0, T]. Furthermore,
+by (2.10), E
+R T
+0 Z2
+udu = σ2
+ZT
+2κ < +∞. Thus,
+E
+Z T
+0
+|π∗⊤
+t
+αZt| + π∗⊤
+t
+ΣΣ⊤π∗
+t dt < +∞,
+and π∗satisﬁes (2.11).
+To prove (B.2), we repeat the proof of (i) for π = π∗to obtain
+E x,z,tv(X∗
+τn, Zτn, τn) = v(x, z, t);
+n ≥1, (x, z) ∈R+ × R × [0, T].
+(B.6)
+If there exists a constant p > 1 such that
+sup
+0≤t≤T
+E
+v(X∗
+t , Zt, t)
+p < +∞,
+(B.7)
+then the sequence {v(X∗
+τn, Zτn, τn)}+∞
+n=1 is uniformly integrable and (B.2) is obtained by letting n →
++∞in (B.6).
+It only remain to show (B.7). For the rest of the proof, let p > 1 be an arbitrary constant (say,
+p = 2). Since T < TN(γ), the functions g and h are uniformly bounded on [0, T]. Thus, there exists
+constants K1, K2 > 0, such that, for all t ∈[0, T],
+v(X∗
+t , Zt, t)
+p < (X∗
+t )p(1−γ)
+(1 −γ)p
+
+eg(T −t)+ 1
+2 h(T −t)Z2
+t
+pγ
+< K1 exp
+
+K2
+Z t
+0
+Zudu
+
+E
+ Z .
+0
+Zu
+h 1
+γ α⊤Σ−1⊤+ (h(T −u) + pγ)(1, −c)Σ
+i
+dWu
+
+t.
+Here, E (Y )t := exp(
+R t
+0 dYt −0.5
+R t
+0 d[Yt]) denotes the Dol´eans-Dade exponential of process (Yt). By
+Lemma 2.2,
+R t
+0 Zudu has the Gaussian distribution with mean 0 and
+E
+ Z t
+0
+Zudu
+2 ≤E
+ Z T
+0
+Z2
+udu
+
+= σ2
+ZT
+2κ .
+Therefore,
+sup
+0≤t≤T
+E exp
+
+K2
+Z t
+0
+Zudu
+
+= sup
+0≤t≤T
+exp
+1
+2K2
+2E
+ Z t
+0
+Zudu
+2
+≤exp
+K2
+2σ2
+ZT
+4κ
+
+< +∞.
+(B.8)
+Furthermore by Corollary 11 on page 85 of [Kry80],
+sup
+0≤t≤T
+E E
+ Z .
+0
+Zu
+h 1
+γ α⊤Σ−1⊤+ (h(T −u) + pγ)(1, −c)Σ
+i
+dWu
+
+t
+≤E
+sup
+0≤t≤T
+E
+ Z .
+0
+Zu
+h 1
+γ α⊤Σ−1⊤+ (h(T −u) + pγ)(1, −c)Σ
+i
+dWu
+
+t < +∞.
+(B.9)
+12
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+Finally, we obtain (B.7) as follows,
+sup
+0≤t≤T
+E
+v(X∗
+t , Zt, t)
+p ≤sup
+0≤t≤T
+E exp
+
+K2
+Z t
+0
+Zudu
+
+× sup
+0≤t≤T
+E E
+ Z .
+0
+Zu
+h 1
+γ α⊤Σ−1⊤+ (h(T −u) + pγ)(1, −c)Σ
+i
+dWu
+
+t < +∞.
+References
+[AL10]
+M. Avellaneda and J.H. Lee. Statistical arbitrage in the US equities market. Quantitative
+Finance, 10(7):761–778, 2010.
+[BB89]
+R.T. Baillie and T. Bollerslev. Common stochastic trends in a system of exchange rates.
+The Journal of Finance, 44(1):167–181, 1989.
+[BK95]
+R.J. Brenner and K.F. Kroner.
+Arbitrage, cointegration, and testing the unbiasedness
+hypothesis in ﬁnancial markets. Journal of Financial and Quantitative Analysis, 30(1):23–
+42, 1995.
+[CH88]
+M. Cerchi and A. Havenner. Cointegration and stock prices: the random walk on wall
+street revisited. Journal of Economic Dynamics and Control, 12:333–346, 1988.
+[CH89]
+J. C. Cox and C.-F. Huang. Optimal consumption and portfolio policies when asset prices
+follow a diﬀusion process. Journal of economic theory, 49(1):33–83, 1989.
+[CH91]
+J. C. Cox and C.-F. Huang. A variational problem arising in ﬁnancial economics. Journal
+of Mathematical Economics, 20(5):465–487, 1991.
+[CW11]
+M.C. Chiu and H.Y. Wong. Mean-variance portfolio selection of cointegrated assets. Journal
+of Economic Dynamics and Control, 35:1369–1385, 2011.
+[CW15]
+M.C. Chiu and H.Y. Wong.
+Dynamic cointegrated pairs trading: mean–variance timeconsistent strategies. Journal of Computational and Applied Mathematics, 290:516–534,
+2015.
+[DF10]
+B. Do and R. Faﬀ. Does simple pairs trading still work?
+Financial Analysts Journal,
+66(4):83–95, 2010.
+[DP04]
+J-C. Duan and S.R. Pliska. Option valuation with co-integrated asset prices. Journal of
+Economic Dynamics and Control, 28:727–754, 2004.
+[DRB99]
+P. H. Dybvig, L.C.G. Rogers, and K. Back. Portfolio turnpikes. Review of Financial Studies,
+12(1):165–195, 1999.
+[EG87]
+R. Engle and C. Granger. Co-integration and error correction, representation, estimation
+and testing. Econometrica, 55:251–276, 1987.
+[EGJ09]
+J. P. Engelberg, P. Gao, and R. Jagannathan.
+An anatomy of pairs trading: the role
+of idiosyncratic news, common information and liquidity.
+working paper, University of
+North Carolina at Chapel Hill, University of Notre Dame, and Northwestern University
+(February), 2009.
+[Ehr06]
+D.S. Ehrman. The handbook of pairs trading. John Wiley and Sons, 2006.
+[FS06]
+W. H. Fleming and H. M. Soner.
+Controlled Markov processes and viscosity solutions,
+volume 25. springer New York, 2006.
+[GGR99]
+E. W. Gatev, W. Goetzmann, and K. Rouwenhorst. Performance of a relative value arbitrage rule. working paper, Yale School of Management, 1999.
+[GGR06]
+E. W. Gatev, W. Goetzmann, and K. Rouwenhorst. Performance of a relative–value arbitrage rule. Review of Financial Studies, 19(3):797–827, 2006.
+[GPP12]
+A. Galenko, E. Popova, and I. Popova. Trading in the presence of cointegration. The
+Journal of Alternative Investments, 15(1):85–97, 2012.
+13
+Electronic copy available at: https://ssrn.com/abstract=2831836
+
+[HAG92]
+A. Hall, H. Anderson, and C. Granger. A cointegration analysis of treasury bill yields.
+Review of Economics and Statistics, 74:116–126, 1992.
+[Ham94]
+J.D. Hamilton. Time Series Analysis. Princeton University Press, 1994.
+[Joh95]
+S. Johansen. Likelihood-based inference in cointegrated vector autoregressive models. Advanced Texts in Econometrics. Oxford University Press, 1995.
+[Jus06]
+K. Juselius. The cointegrated VAR model: methodology and applications. Advanced Texts
+in Econometrics. Oxford University Press, 2006.
+[JY07]
+J. W. Jurek and H. Yang. Dynamic portfolio selection in arbitrage. working paper, 2007.
+[KK04]
+R. Korn and H. Kraft. On the stability of continuous-time portfolio problems with stochastic
+opportunity set. Mathematical Finance, 14(3):403–414, 2004.
+[KL07]
+A. Khandani and A. Lo.
+What happened to the quants in August 2007?
+Journal of
+Investment Management, 5(4):5–54, 2007.
+[KLS87]
+I. Karatzas, J. P. Lehoczky, and S. E. Shreve. Optimal portfolio and consumption decisions for a small investor on a ﬁnite horizon. SIAM journal on control and optimization,
+25(6):1557–1586, 1987.
+[KO96]
+S.K. Kim and E. Omberg. Dynamic nonmyopic portfolio behavior. The Review of Financial
+Studies, 9(1):141–161, 1996.
+[KR01]
+M. Kessler and A. Rahbek. Asymptotic likelihood based inference for co–integrated homogenous gaussian diﬀusions. Scandinavian Journal of Statistics, 28(3):455–470, 2001.
+[KR04]
+M. Kessler and A. Rahbek. Identiﬁcation and inference for multivariate cointegrated and
+ergodic gaussian diﬀusions. Statistical Inference for Stochastic Processes, 7:137–151, 2004.
+[Kry80]
+N. V. Krylov. Controlled Diﬀusion Processes. Applications of mathematics. Springer, 1980.
+[KS91]
+I. Karatzas and S.E. Shreve. Brownian motion and stochastic calculus. Springer-Verlag,
+1991.
+[LL04]
+J. Liu and F. A. Longstaﬀ. Losing money on arbitrage: optimal dynamic portfolio choice
+in markets with arbitrage opportunities. The Review of Financial Studies, 17(3):611–641,
+2004.
+[LL15]
+T. Leung and X. Li. Optimal Mean Reversion Trading: Mathematical Analysis and Practical Applications. Modern Trends in Financial Engineering. World Scientiﬁc Publishing
+Company, 2015.
+[LT13]
+J. Liu and A. Timmermann. Optimal convergence trade strategies. Review of Financial
+Studies, 26(4):1048–1086, 2013.
+[MPW08] S. Mudchanatongsuk, J.A. Primbs, and W. Wong. Optimal pairs trading: a stochastic
+control approach. In Proceedings of the American Control Conference, pages 1035–1039,
+Seattle, Washington, 2008.
+[MT88]
+R. MacDonald and M. Taylor. Metals prices, eﬃciency and cointegration: some evidence
+from the london metal exchange. Bulletin of Economic Research, 40:235–239, 1988.
+[PW07]
+G. Papadakis and P. Wysocki. Pairs trading and accounting information. working paper,
+Boston University School of Management and MIT Sloan School of Management, 2007.
+[Sas82]
+T Sasagawa.
+On the ﬁnite escape phenomena for matrix riccati equations.
+Automatic
+Control, IEEE Transactions on, 27(4):977–979, 1982.
+[TT89]
+M.P. Taylor and I. Tonks. The internationalisation of stock markets and the abolition of
+u.k. exchange control. The Review of Economics and Statistics, 71(2):332–336, 1989.
+[TY13]
+A. Tourin and R. Yan. Dynamic pairs trading using the stochastic control approach. Journal
+of Economic Dynamics and Control, 37(10):1972–1981, 2013.
+[Xio01]
+W. Xiong. Convergence trading with wealth eﬀects: An ampliﬁcation mechanism in ﬁnancial markets. Journal of Financial Economics, 62:247–292, 2001.
+14
+Electronic copy available at: https://ssrn.com/abstract=2831836

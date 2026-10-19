@@ -1,0 +1,1629 @@
+{
+  "schema": "edgelab_exposed_control_comparability_v1",
+  "plan": {
+    "scope": "EXPOSED_COVARIATES_AND_CANDIDATE_HISTORY_ONLY_NO_OUTCOMES",
+    "columns_read": [
+      "contract",
+      "cell",
+      "kind",
+      "session",
+      "clock",
+      "trend",
+      "t0",
+      "occ",
+      "h",
+      "amp",
+      "trend_h",
+      "mom100_h",
+      "vol_occ",
+      "vol_100",
+      "dur_occ",
+      "dur_100"
+    ],
+    "outcome_columns_prohibited": [
+      "te",
+      "dir",
+      "o2",
+      "o3a",
+      "o3b",
+      "mx_h",
+      "o4",
+      "o5"
+    ],
+    "exact_strata": [
+      "contract",
+      "session",
+      "cell",
+      "clock",
+      "trend"
+    ],
+    "features": [
+      "occ",
+      "h",
+      "amp",
+      "trend_h",
+      "mom100_h",
+      "vol_occ",
+      "vol_100",
+      "dur_occ",
+      "dur_100"
+    ],
+    "nonfinite_policy": "retain accounting, joint complete-covariate support subset only; no imputation",
+    "weights": "all cells retained; common cells in six contracts for diagnostic panel; equal contracts/cells, supported sessions then supported clock/trend strata, equal rows per kind in stratum",
+    "smd_definition": "weighted mean real minus pseudo divided by sqrt((weighted population variance real + pseudo)/2); zero variance and equal means gives zero, unequal means undefined",
+    "candidate_history": "t0 minus500 for trend, minus499 for occupancy/activity; minus100 for momentum, minus99 for activity; complete timestamp map labels only, no price reconstruction or exclusion by this flag",
+    "collision": "pseudo shares exact contract/session/cell/t0 with observed real export anchor; separately any-cell overlap; not detector-negative classification or full contamination prevalence",
+    "effect_guided_filtering": false,
+    "calipers_chosen": false,
+    "scientific_acceptance_thresholds_chosen": false,
+    "blind_confirmation": false,
+    "subgroup_review": "weighted SMD separately per contract; no numerical acceptance threshold selected"
+  },
+  "all_export_and_map_pins_before_covariate_payload": true,
+  "source_export_reference_sha256": "1611277b3dc6f6393e0c6f280201359f488b8352e80a23bf9c77149e8152192e",
+  "candidate_map_evidence_sha256": "2f8ccd6fba94e510d48a686caacfc725c8f5c124cc5a3fa63b53da9c2db281bc",
+  "totals": {
+    "rows": 544531,
+    "common_cells": 30,
+    "common_cell_names": [
+      "4_250_20",
+      "4_250_30",
+      "4_250_45",
+      "4_500_20",
+      "4_500_30",
+      "4_500_45",
+      "4_1000_20",
+      "4_1000_30",
+      "4_1000_45",
+      "5_250_20",
+      "5_250_30",
+      "5_250_45",
+      "5_500_20",
+      "5_500_30",
+      "5_500_45",
+      "5_1000_20",
+      "5_1000_30",
+      "5_1000_45",
+      "6_250_30",
+      "6_250_45",
+      "6_500_20",
+      "6_500_30",
+      "6_500_45",
+      "6_1000_20",
+      "6_1000_30",
+      "6_1000_45",
+      "8_500_30",
+      "8_500_45",
+      "8_1000_30",
+      "8_1000_45"
+    ],
+    "all_exact_strata": 191057,
+    "shared_exact_strata": 44434,
+    "real_only_strata": 15353,
+    "pseudo_only_strata": 131270,
+    "panel_rows": 265570,
+    "same_cell_real_anchor_overlap_pseudo_rows": 412,
+    "any_cell_real_anchor_overlap_pseudo_rows": 1407
+  },
+  "profile": [
+    {
+      "contract": "MNQ_09-25",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 39
+    },
+    {
+      "contract": "MNQ_12-25",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 30
+    },
+    {
+      "contract": "MNQ_03-26",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 13
+    },
+    {
+      "contract": "MNQ_06-26",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 16
+    },
+    {
+      "contract": "MNQ_09-26",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 26
+    },
+    {
+      "contract": "MNQ_12-26",
+      "nonfinite_by_feature": {
+        "occ": 0,
+        "h": 0,
+        "amp": 0,
+        "trend_h": 0,
+        "mom100_h": 0,
+        "vol_occ": 0,
+        "vol_100": 0,
+        "dur_occ": 0,
+        "dur_100": 0
+      },
+      "joint_nonfinite_rows": 0,
+      "duplicate_full_covariate_rows_retained": 39
+    }
+  ],
+  "support_accounting": [
+    {
+      "contract": "MNQ_09-25",
+      "kind": "real",
+      "rows": 9816,
+      "complete_covariates": 9816,
+      "exact_shared_stratum_rows_all_cells": 7994,
+      "panel_rows_common_cells": 7988
+    },
+    {
+      "contract": "MNQ_09-25",
+      "kind": "pseudo",
+      "rows": 46822,
+      "complete_covariates": 46822,
+      "exact_shared_stratum_rows_all_cells": 18468,
+      "panel_rows_common_cells": 18461
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "real",
+      "rows": 19143,
+      "complete_covariates": 19143,
+      "exact_shared_stratum_rows_all_cells": 14816,
+      "panel_rows_common_cells": 14813
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "pseudo",
+      "rows": 87955,
+      "complete_covariates": 87955,
+      "exact_shared_stratum_rows_all_cells": 31417,
+      "panel_rows_common_cells": 31414
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "real",
+      "rows": 17039,
+      "complete_covariates": 17039,
+      "exact_shared_stratum_rows_all_cells": 13117,
+      "panel_rows_common_cells": 13116
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "pseudo",
+      "rows": 77127,
+      "complete_covariates": 77127,
+      "exact_shared_stratum_rows_all_cells": 29076,
+      "panel_rows_common_cells": 29075
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "real",
+      "rows": 18524,
+      "complete_covariates": 18524,
+      "exact_shared_stratum_rows_all_cells": 14481,
+      "panel_rows_common_cells": 14481
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "pseudo",
+      "rows": 85061,
+      "complete_covariates": 85061,
+      "exact_shared_stratum_rows_all_cells": 31924,
+      "panel_rows_common_cells": 31924
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "real",
+      "rows": 26139,
+      "complete_covariates": 26139,
+      "exact_shared_stratum_rows_all_cells": 22774,
+      "panel_rows_common_cells": 22763
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "pseudo",
+      "rows": 122290,
+      "complete_covariates": 122290,
+      "exact_shared_stratum_rows_all_cells": 63354,
+      "panel_rows_common_cells": 63344
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "real",
+      "rows": 6094,
+      "complete_covariates": 6094,
+      "exact_shared_stratum_rows_all_cells": 5336,
+      "panel_rows_common_cells": 5315
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "pseudo",
+      "rows": 28521,
+      "complete_covariates": 28521,
+      "exact_shared_stratum_rows_all_cells": 12904,
+      "panel_rows_common_cells": 12876
+    }
+  ],
+  "candidate_history_accounting": [
+    {
+      "contract": "MNQ_09-25",
+      "kind": "real",
+      "rows": 9816,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 20,
+      "candidate_history_101_bars_not_within_anchor_session": 20,
+      "candidate_history_500_bars_not_within_anchor_session": 79,
+      "candidate_history_501_bars_not_within_anchor_session": 79
+    },
+    {
+      "contract": "MNQ_09-25",
+      "kind": "pseudo",
+      "rows": 46822,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 77,
+      "candidate_history_101_bars_not_within_anchor_session": 78,
+      "candidate_history_500_bars_not_within_anchor_session": 317,
+      "candidate_history_501_bars_not_within_anchor_session": 317
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "real",
+      "rows": 19143,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 18,
+      "candidate_history_101_bars_not_within_anchor_session": 20,
+      "candidate_history_500_bars_not_within_anchor_session": 115,
+      "candidate_history_501_bars_not_within_anchor_session": 115
+    },
+    {
+      "contract": "MNQ_12-25",
+      "kind": "pseudo",
+      "rows": 87955,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 66,
+      "candidate_history_101_bars_not_within_anchor_session": 66,
+      "candidate_history_500_bars_not_within_anchor_session": 367,
+      "candidate_history_501_bars_not_within_anchor_session": 367
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "real",
+      "rows": 17039,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 11,
+      "candidate_history_101_bars_not_within_anchor_session": 14,
+      "candidate_history_500_bars_not_within_anchor_session": 52,
+      "candidate_history_501_bars_not_within_anchor_session": 52
+    },
+    {
+      "contract": "MNQ_03-26",
+      "kind": "pseudo",
+      "rows": 77127,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 47,
+      "candidate_history_101_bars_not_within_anchor_session": 47,
+      "candidate_history_500_bars_not_within_anchor_session": 193,
+      "candidate_history_501_bars_not_within_anchor_session": 193
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "real",
+      "rows": 18524,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 12,
+      "candidate_history_101_bars_not_within_anchor_session": 12,
+      "candidate_history_500_bars_not_within_anchor_session": 78,
+      "candidate_history_501_bars_not_within_anchor_session": 78
+    },
+    {
+      "contract": "MNQ_06-26",
+      "kind": "pseudo",
+      "rows": 85061,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 26,
+      "candidate_history_101_bars_not_within_anchor_session": 26,
+      "candidate_history_500_bars_not_within_anchor_session": 193,
+      "candidate_history_501_bars_not_within_anchor_session": 193
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "real",
+      "rows": 26139,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 7,
+      "candidate_history_101_bars_not_within_anchor_session": 7,
+      "candidate_history_500_bars_not_within_anchor_session": 67,
+      "candidate_history_501_bars_not_within_anchor_session": 67
+    },
+    {
+      "contract": "MNQ_09-26",
+      "kind": "pseudo",
+      "rows": 122290,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 37,
+      "candidate_history_101_bars_not_within_anchor_session": 37,
+      "candidate_history_500_bars_not_within_anchor_session": 222,
+      "candidate_history_501_bars_not_within_anchor_session": 222
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "real",
+      "rows": 6094,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 10,
+      "candidate_history_101_bars_not_within_anchor_session": 10,
+      "candidate_history_500_bars_not_within_anchor_session": 12,
+      "candidate_history_501_bars_not_within_anchor_session": 12
+    },
+    {
+      "contract": "MNQ_12-26",
+      "kind": "pseudo",
+      "rows": 28521,
+      "insufficient_index_for_501_bar_history": 0,
+      "candidate_history_100_bars_not_within_anchor_session": 11,
+      "candidate_history_101_bars_not_within_anchor_session": 11,
+      "candidate_history_500_bars_not_within_anchor_session": 53,
+      "candidate_history_501_bars_not_within_anchor_session": 53
+    }
+  ],
+  "anchor_overlap": [
+    {
+      "contract": "MNQ_09-25",
+      "pseudo_rows": 46822,
+      "same_cell_real_anchor_overlap_rows": 53,
+      "any_cell_real_anchor_overlap_rows": 159,
+      "distinct_pseudo_same_cell_anchor_count": 51
+    },
+    {
+      "contract": "MNQ_12-25",
+      "pseudo_rows": 87955,
+      "same_cell_real_anchor_overlap_rows": 76,
+      "any_cell_real_anchor_overlap_rows": 271,
+      "distinct_pseudo_same_cell_anchor_count": 76
+    },
+    {
+      "contract": "MNQ_03-26",
+      "pseudo_rows": 77127,
+      "same_cell_real_anchor_overlap_rows": 63,
+      "any_cell_real_anchor_overlap_rows": 208,
+      "distinct_pseudo_same_cell_anchor_count": 63
+    },
+    {
+      "contract": "MNQ_06-26",
+      "pseudo_rows": 85061,
+      "same_cell_real_anchor_overlap_rows": 59,
+      "any_cell_real_anchor_overlap_rows": 217,
+      "distinct_pseudo_same_cell_anchor_count": 59
+    },
+    {
+      "contract": "MNQ_09-26",
+      "pseudo_rows": 122290,
+      "same_cell_real_anchor_overlap_rows": 117,
+      "any_cell_real_anchor_overlap_rows": 447,
+      "distinct_pseudo_same_cell_anchor_count": 117
+    },
+    {
+      "contract": "MNQ_12-26",
+      "pseudo_rows": 28521,
+      "same_cell_real_anchor_overlap_rows": 44,
+      "any_cell_real_anchor_overlap_rows": 105,
+      "distinct_pseudo_same_cell_anchor_count": 43
+    }
+  ],
+  "balance": [
+    {
+      "feature": "occ",
+      "weighted": {
+        "real": {
+          "mean": 0.42151373965838534,
+          "variance": 0.032200562653105,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 0.41319277747106975,
+          "variance": 0.029593381408354456,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.047338619480683734,
+      "same_panel_unweighted_smd": 0.04981262903214339
+    },
+    {
+      "feature": "h",
+      "weighted": {
+        "real": {
+          "mean": 27.680532932703553,
+          "variance": 88.01012410872896,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 27.788400400210442,
+          "variance": 89.99019455137014,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": -0.011433918453255391,
+      "same_panel_unweighted_smd": -0.08482595840961248
+    },
+    {
+      "feature": "amp",
+      "weighted": {
+        "real": {
+          "mean": 66.20582477438994,
+          "variance": 541.6128454423316,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 67.57122561174867,
+          "variance": 573.349783381331,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": -0.05782891009245493,
+      "same_panel_unweighted_smd": -0.041324433150353876
+    },
+    {
+      "feature": "trend_h",
+      "weighted": {
+        "real": {
+          "mean": 0.3139277106354724,
+          "variance": 6.138767040587371,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 0.2688878836171609,
+          "variance": 5.349163683764779,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.018792770395914322,
+      "same_panel_unweighted_smd": 0.04076753371193553
+    },
+    {
+      "feature": "mom100_h",
+      "weighted": {
+        "real": {
+          "mean": 0.027263897101139183,
+          "variance": 1.3382067082908313,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 0.029782692444177847,
+          "variance": 1.2755638242043497,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": -0.002203302619487314,
+      "same_panel_unweighted_smd": 0.012367098714851829
+    },
+    {
+      "feature": "vol_occ",
+      "weighted": {
+        "real": {
+          "mean": 9.610266170480692,
+          "variance": 0.0041133104690894255,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 9.606178689673792,
+          "variance": 0.003963230526525042,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.06432177541196513,
+      "same_panel_unweighted_smd": 0.20641269690221653
+    },
+    {
+      "feature": "vol_100",
+      "weighted": {
+        "real": {
+          "mean": 8.003568423876425,
+          "variance": 0.005349045927140043,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 7.994958284560492,
+          "variance": 0.004899818299950992,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.12027830701148047,
+      "same_panel_unweighted_smd": 0.24795947552734923
+    },
+    {
+      "feature": "dur_occ",
+      "weighted": {
+        "real": {
+          "mean": 26.777502222093432,
+          "variance": 1.0319699575706722,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 26.773757519626137,
+          "variance": 1.0268866196520305,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.0036907894252682523,
+      "same_panel_unweighted_smd": 0.22231765391094846
+    },
+    {
+      "feature": "dur_100",
+      "weighted": {
+        "real": {
+          "mean": 25.238631179059517,
+          "variance": 1.1436647570799545,
+          "rows": 78476
+        },
+        "pseudo": {
+          "mean": 25.23746178127047,
+          "variance": 1.1306795520407575,
+          "rows": 187094
+        }
+      },
+      "weighted_smd": 0.0010966023191288856,
+      "same_panel_unweighted_smd": 0.18755833059921767
+    }
+  ],
+  "balance_by_contract": [
+    {
+      "contract": "MNQ_09-25",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.44536504278488437,
+              "variance": 0.03334926373038528,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 0.4331647846996312,
+              "variance": 0.0325048251457882,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.06723457174890965,
+          "same_panel_unweighted_smd": 0.03182829818354611
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.428091243962903,
+              "variance": 84.09864540187294,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 27.695927481616796,
+              "variance": 86.99396917938205,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": -0.02895800921789115,
+          "same_panel_unweighted_smd": -0.09003702794900661
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 58.312884701978604,
+              "variance": 291.7021143369123,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 59.733076966713256,
+              "variance": 320.4605090708528,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": -0.08117620347320469,
+          "same_panel_unweighted_smd": 0.015570016942729232
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.23858127444442384,
+              "variance": 5.913928137024072,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 0.22960195626282265,
+              "variance": 4.428808699171697,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.003948577092160552,
+          "same_panel_unweighted_smd": 0.052925549780335715
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": 0.11295916928549184,
+              "variance": 1.0454357627811,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 0.07046405718656351,
+              "variance": 0.9598104258456894,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.04243948716368037,
+          "same_panel_unweighted_smd": 0.008635708302637844
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.60650097026519,
+              "variance": 0.0024566233748671068,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 9.604600467572684,
+              "variance": 0.00246447791903388,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.03831354477375734,
+          "same_panel_unweighted_smd": 0.1927568706191054
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 8.006288035298587,
+              "variance": 0.0044350574429364185,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 7.999945077466292,
+              "variance": 0.004286086332000149,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.09605502711858199,
+          "same_panel_unweighted_smd": 0.24678003451588784
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 27.28287633779413,
+              "variance": 1.2626219711172193,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 27.2688139238092,
+              "variance": 1.281284932807019,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.012468788831350575,
+          "same_panel_unweighted_smd": 0.2231456398726092
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 25.70702454357576,
+              "variance": 1.3819624906035364,
+              "rows": 7988
+            },
+            "pseudo": {
+              "mean": 25.682380444546343,
+              "variance": 1.4376512028047768,
+              "rows": 18461
+            }
+          },
+          "weighted_smd": 0.020755497017867587,
+          "same_panel_unweighted_smd": 0.16135554558244022
+        }
+      ]
+    },
+    {
+      "contract": "MNQ_12-25",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.41974720617568934,
+              "variance": 0.03110946114944787,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 0.41992678653211135,
+              "variance": 0.026761309663444834,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": -0.0010557089259864586,
+          "same_panel_unweighted_smd": 0.018413212408407764
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.552946047793025,
+              "variance": 88.19547120084975,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 27.740575656076153,
+              "variance": 90.52142101923135,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": -0.01984876856205936,
+          "same_panel_unweighted_smd": -0.08887330049764636
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 63.14209219514835,
+              "variance": 485.9114886041581,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 64.14575462438971,
+              "variance": 476.72853910461913,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": -0.045747851948907764,
+          "same_panel_unweighted_smd": -0.06652798361090592
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.5230536371230798,
+              "variance": 4.703301616548869,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 0.5063000641232328,
+              "variance": 4.316982040262573,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.007888825375396492,
+          "same_panel_unweighted_smd": 0.07745103353175385
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": 0.07371575247703377,
+              "variance": 1.1439091619747823,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 0.07210900202229496,
+              "variance": 1.0544064080100424,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.0015325632647293051,
+          "same_panel_unweighted_smd": 0.019728076031528277
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.614510448686204,
+              "variance": 0.002898326719211581,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 9.609277201023252,
+              "variance": 0.0025537281724276775,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.1002319492093257,
+          "same_panel_unweighted_smd": 0.23358085506419443
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 8.006636087832874,
+              "variance": 0.003926081239682522,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 7.996577586577038,
+              "variance": 0.0032017187192436504,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.1684885997081628,
+          "same_panel_unweighted_smd": 0.3072324393381612
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 26.99060046328806,
+              "variance": 0.8313962038349408,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 26.973313964546456,
+              "variance": 0.8302897815871684,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.01896476904547824,
+          "same_panel_unweighted_smd": 0.22745444181138755
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 25.444138058495515,
+              "variance": 0.8959714777479804,
+              "rows": 14813
+            },
+            "pseudo": {
+              "mean": 25.4370696050809,
+              "variance": 0.9335972373969407,
+              "rows": 31414
+            }
+          },
+          "weighted_smd": 0.007390350485820304,
+          "same_panel_unweighted_smd": 0.18785661850918045
+        }
+      ]
+    },
+    {
+      "contract": "MNQ_03-26",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.44307351423440533,
+              "variance": 0.034753828566567536,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 0.4324995040900478,
+              "variance": 0.033470783136373965,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.057251145981164084,
+          "same_panel_unweighted_smd": 0.07996217562723117
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.75776201899069,
+              "variance": 89.43989849804869,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 27.77700701369997,
+              "variance": 90.1679547664232,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": -0.0020308139259459664,
+          "same_panel_unweighted_smd": -0.09464037084497348
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 63.70362203148032,
+              "variance": 624.927144345506,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 66.69695554794654,
+              "variance": 671.0384255587256,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": -0.11759080798592939,
+          "same_panel_unweighted_smd": -0.05410034715026952
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.27987122920577756,
+              "variance": 5.3869657392177555,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 0.2214212801193737,
+              "variance": 4.7759830136586165,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.025929208933738592,
+          "same_panel_unweighted_smd": 0.06428078101755715
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": -0.017840804135208884,
+              "variance": 0.9837679772434583,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 0.019243259207896622,
+              "variance": 1.157684538475281,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": -0.03583835669439568,
+          "same_panel_unweighted_smd": 0.0006851198577401412
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.586226292392483,
+              "variance": 0.0020295048561031646,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 9.583492995680944,
+              "variance": 0.0020351593403805093,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.060630261402832605,
+          "same_panel_unweighted_smd": 0.2422310882485151
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 7.974435806087231,
+              "variance": 0.002629236127999024,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 7.969613685182521,
+              "variance": 0.002493033025921598,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.09528442016382216,
+          "same_panel_unweighted_smd": 0.25903417584179034
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 26.82153870509162,
+              "variance": 1.1708452142187917,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 26.814677091981448,
+              "variance": 1.132032784729874,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.0063944877445704035,
+          "same_panel_unweighted_smd": 0.22093230458993313
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 25.325014103434107,
+              "variance": 1.4360641294340826,
+              "rows": 13116
+            },
+            "pseudo": {
+              "mean": 25.300580820083972,
+              "variance": 1.3739202741823693,
+              "rows": 29075
+            }
+          },
+          "weighted_smd": 0.02061317425438797,
+          "same_panel_unweighted_smd": 0.20313564737163278
+        }
+      ]
+    },
+    {
+      "contract": "MNQ_06-26",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.3976931277670322,
+              "variance": 0.0324338444209099,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 0.3851238589808118,
+              "variance": 0.028276733810696578,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.07214277218216061,
+          "same_panel_unweighted_smd": 0.04628957582092467
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.55410922705872,
+              "variance": 88.98692384592816,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 27.51748951368465,
+              "variance": 88.8129415389889,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.0038838658841133596,
+          "same_panel_unweighted_smd": -0.08249466108321277
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 74.20543690762364,
+              "variance": 627.1124435579688,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 74.71007846959148,
+              "variance": 660.1662624791587,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": -0.019891233753634427,
+          "same_panel_unweighted_smd": -0.027386506628802498
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.4723740240199795,
+              "variance": 7.874318970535369,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 0.4087189316362981,
+              "variance": 7.062272414601466,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.023292837690927132,
+          "same_panel_unweighted_smd": 0.030173628742443653
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": 0.048187356810508425,
+              "variance": 2.2484905979751635,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": -0.018619668122167497,
+              "variance": 1.8354976678148074,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.04675142868685738,
+          "same_panel_unweighted_smd": 0.03678907498088373
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.584052429809775,
+              "variance": 0.0009578284396037505,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 9.580582995028376,
+              "variance": 0.0010079532820078153,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.11066392754033429,
+          "same_panel_unweighted_smd": 0.20664918656075432
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 7.979884352645771,
+              "variance": 0.002809624404171617,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 7.969594963647488,
+              "variance": 0.002351432003550673,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": 0.20255141494685097,
+          "same_panel_unweighted_smd": 0.2529209083926157
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 26.523839921934247,
+              "variance": 0.8388781996646122,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 26.53086798199859,
+              "variance": 0.8172501794946267,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": -0.0077233099233602375,
+          "same_panel_unweighted_smd": 0.19289272006986022
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 24.970372107965453,
+              "variance": 0.9143818726823202,
+              "rows": 14481
+            },
+            "pseudo": {
+              "mean": 24.994164892856954,
+              "variance": 0.8265702923550791,
+              "rows": 31924
+            }
+          },
+          "weighted_smd": -0.025501566375204312,
+          "same_panel_unweighted_smd": 0.16628174825984654
+        }
+      ]
+    },
+    {
+      "contract": "MNQ_09-26",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.3960146071879451,
+              "variance": 0.028925725060805915,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 0.3830716866243006,
+              "variance": 0.024665742115130427,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": 0.07906776450668836,
+          "same_panel_unweighted_smd": 0.04326390209934087
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.927191567332674,
+              "variance": 90.11026922305749,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 27.95886495262266,
+              "variance": 91.00469423900691,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.003328375490658818,
+          "same_panel_unweighted_smd": -0.07694530281988235
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 71.15007596791229,
+              "variance": 614.4562684652371,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 73.45219781074887,
+              "variance": 669.0220832818829,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.09087596370113092,
+          "same_panel_unweighted_smd": -0.009233711113707315
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.1822787648828783,
+              "variance": 8.035022110764459,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 0.19024724361755097,
+              "variance": 6.668909323369456,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.002938824700402795,
+          "same_panel_unweighted_smd": 0.006148015472714385
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": -0.04815131767070852,
+              "variance": 1.3662068719467602,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 0.04996507929500744,
+              "variance": 1.4905466195945563,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.08209566139401056,
+          "same_panel_unweighted_smd": 0.0015209472753178186
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.586949787802464,
+              "variance": 0.005389592657981992,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 9.584269796345184,
+              "variance": 0.005358917353384099,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": 0.03655731364919706,
+          "same_panel_unweighted_smd": 0.2346587938728379
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 7.9767133515173985,
+              "variance": 0.006184665777637283,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 7.971190112938609,
+              "variance": 0.005937482001763722,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": 0.07094454601622531,
+          "same_panel_unweighted_smd": 0.26140149351787767
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 26.309709931863672,
+              "variance": 0.6766340685515524,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 26.329975544043613,
+              "variance": 0.7073295298914306,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.024361969298643996,
+          "same_panel_unweighted_smd": 0.1892206579422864
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 24.772034587873982,
+              "variance": 0.7843683683491541,
+              "rows": 22763
+            },
+            "pseudo": {
+              "mean": 24.816877299983712,
+              "variance": 0.7861447757616122,
+              "rows": 63344
+            }
+          },
+          "weighted_smd": -0.05060414379611177,
+          "same_panel_unweighted_smd": 0.1536991372413634
+        }
+      ]
+    },
+    {
+      "contract": "MNQ_12-26",
+      "balance": [
+        {
+          "feature": "occ",
+          "weighted": {
+            "real": {
+              "mean": 0.42718893980035555,
+              "variance": 0.0303445886050922,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 0.4253700438995151,
+              "variance": 0.02922048681849949,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.01053966953429547,
+          "same_panel_unweighted_smd": 0.030222997728571507
+        },
+        {
+          "feature": "h",
+          "weighted": {
+            "real": {
+              "mean": 27.863097491083302,
+              "variance": 87.03341367807025,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 28.040537783562208,
+              "variance": 92.26319417695686,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": -0.018740501387752302,
+          "same_panel_unweighted_smd": -0.09454370919594578
+        },
+        {
+          "feature": "amp",
+          "weighted": {
+            "real": {
+              "mean": 66.72083684219633,
+              "variance": 438.9169828969882,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 66.6892902511018,
+              "variance": 482.42124286967476,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.0014697988027226206,
+          "same_panel_unweighted_smd": -0.0568314504657554
+        },
+        {
+          "feature": "trend_h",
+          "weighted": {
+            "real": {
+              "mean": 0.1874073341366951,
+              "variance": 4.810051002118036,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 0.05703782594368763,
+              "variance": 4.711248086350572,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.05975068949261921,
+          "same_panel_unweighted_smd": 0.04366997354464677
+        },
+        {
+          "feature": "mom100_h",
+          "weighted": {
+            "real": {
+              "mean": -0.005286774160281564,
+              "variance": 1.2227091972226285,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": -0.01446557492452799,
+              "variance": 1.147171689500448,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.008432137538155757,
+          "same_panel_unweighted_smd": -0.012148989921007108
+        },
+        {
+          "feature": "vol_occ",
+          "weighted": {
+            "real": {
+              "mean": 9.68335709392806,
+              "variance": 0.0037647834065756567,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 9.674848682392302,
+              "variance": 0.003981707731170274,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.13671336450618216,
+          "same_panel_unweighted_smd": 0.30245137557798385
+        },
+        {
+          "feature": "vol_100",
+          "weighted": {
+            "real": {
+              "mean": 8.07745290987669,
+              "variance": 0.004503046889733902,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 8.062828281551003,
+              "variance": 0.004644758235614801,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.21624266414057347,
+          "same_panel_unweighted_smd": 0.33336881795352846
+        },
+        {
+          "feature": "dur_occ",
+          "weighted": {
+            "real": {
+              "mean": 26.73644797258883,
+              "variance": 0.8238313782587281,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 26.72489661137754,
+              "variance": 0.8482293222726973,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.01263345513946725,
+          "same_panel_unweighted_smd": 0.22693160846836613
+        },
+        {
+          "feature": "dur_100",
+          "weighted": {
+            "real": {
+              "mean": 25.21320367301231,
+              "variance": 0.8898309064267916,
+              "rows": 5315
+            },
+            "pseudo": {
+              "mean": 25.193697625070968,
+              "variance": 0.9464136332467029,
+              "rows": 12876
+            }
+          },
+          "weighted_smd": 0.02035724607852697,
+          "same_panel_unweighted_smd": 0.18044838058746362
+        }
+      ]
+    }
+  ],
+  "independent_moments_and_support_counts_checked": true,
+  "anchor_overlap_independently_checked": true,
+  "comparison_plan": [
+    {
+      "grain": "nine covariates, same supported panel",
+      "population": "joint finite covariates and exact shared strata, six contracts/common cells",
+      "unit": "standardized mean difference",
+      "disposition": "chart",
+      "reason": "largest absolute residual differences in pre-anchor covariates; full nine-feature CSV retains remainder"
+    },
+    {
+      "grain": "same-cell anchor overlap",
+      "population": "all legacy pseudo rows",
+      "unit": "row count",
+      "disposition": "prose",
+      "reason": "direct witness of nonexclusive positive anchors, not true zone-free prevalence or causal state"
+    },
+    {
+      "grain": "candidate prehistory session labels",
+      "population": "all rows by kind",
+      "unit": "row count",
+      "disposition": "table",
+      "reason": "structural witness only; not source certification or an outcome filter"
+    }
+  ],
+  "outcome_payload_columns_read": false,
+  "new_market_outcomes_computed": false,
+  "raw_price_payload_read": false,
+  "economic_outcomes_computed": false,
+  "holdout_payload_read": false,
+  "zone_free_census_verified": false,
+  "source_quality_certified": false,
+  "asof_feature_windows_certified": false,
+  "formal_inference_executed": false,
+  "matching_policy_approved": false,
+  "research_release_authorized": false,
+  "historical_outputs_modified": false,
+  "delivery_counts_and_rates": {
+    "real": {
+      "rows": 96755,
+      "shared_exact_stratum_rows_all_cells": 78518,
+      "shared_percent": 81.15136168673453,
+      "unsupported_rows": 18237,
+      "panel_rows_common_cells": 78476
+    },
+    "pseudo": {
+      "rows": 447776,
+      "shared_exact_stratum_rows_all_cells": 187143,
+      "shared_percent": 41.79388801543629,
+      "unsupported_rows": 260633,
+      "panel_rows_common_cells": 187094
+    }
+  },
+  "review_recipe_sha256": "81f87b87cb6df31a2503b5d048b5fc59ac370795832abe8c29a77afc77ff7cd7"
+}

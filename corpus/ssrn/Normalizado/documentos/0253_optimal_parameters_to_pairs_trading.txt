@@ -1,0 +1,3039 @@
+Optimal Pairs Trading with Transaction Costs in
+Finite Horizon
+Chen Ziyi∗
+Gu Jia-Wen†
+Pun Chi Seng‡
+Abstract
+We study optimal pairs trading with transaction costs over a finite time horizon.
+The investor trades a pair of co-integrated stocks whose price difference follows a
+mean-reverting process. A delta-neutral strategy is adopted, involving a long position in one stock and a short position in the other, with an equal number of shares
+in each. Trading incurs transaction costs, modeled as being linear in the number
+of shares transacted. The objective is to maximize the expected utility of terminal
+wealth net of liquidation costs. For comparison, we first derive the explicit optimal strategy and value function in the frictionless benchmark. In the presence of
+transaction costs, we show that the frictional value function is a continuous viscosity
+solution to a Hamilton–Jacobi–Bellman (HJB) variational inequality, and the associated free boundaries can be expressed as functions of time and the spread. We adopt
+an asymptotic approach to expand the value function and derive explicit asymptotic
+expressions for the free boundaries, and thereby construct a nearly optimal strategy.
+To justify the asymptotic expansion, we apply homogenization techniques together
+with the theory of viscosity solutions. Finally, we conduct numerical simulations to
+demonstrate the importance of incorporating the transaction costs in pairs trading.
+Key words: pairs trading, transaction costs, viscosity solutions, asymptotic expansion, free
+boundaries, homogenization, HJB inequality
+1
+Introduction
+Pairs trading is a market-neutral strategy that exploits the mean-reverting behavior of
+the spread between two highly correlated stocks to generate arbitrage opportunities. The
+∗Department of Mathematics, Southern University of Science and Technology, Shenzhen, China.
+Email: 12231268@mail.sustech.edu.cn.
+†Department of Mathematics, Southern University of Science and Technology, Shenzhen, China.
+Email: gujw@sustech.edu.cn.
+‡School of Physical and Mathematical Sciences, Nanyang Technological University, Singapore. Email:
+cspun@ntu.edu.sg.
+1
+
+strategy involves taking a long position in the underpriced stock and a simultaneous short
+position in the overpriced one, with both positions closed when the spread reverts to its
+historical mean (see Vidyamurthy [47] and Ehrman [12]). It embodies the fundamental
+principle of ”buy low and sell high”. Since its introduction by Nunzio Tartaglia’s team
+on Wall Street in the mid-1980s, the strategy has attracted considerable attention from
+both the academic and industry communities.
+The essence of pairs trading lies in two key aspects: the identification of suitable stock
+pairs and the formulation of effective trading strategies. Two commonly used methods
+for pair identification are the distance method and the cointegration method. The distance method selects stock pairs based on the historical similarity of their normalized
+price series (e.g., Gatev et al. [16], Krauss [24], Huck [17]). In contrast, the cointegration
+method relies on statistical tests to detect a long-term equilibrium relationship between
+two non-stationary price series (e.g., Huck [18], Lin et al. [28], Cartea et al. [5]). Once a
+pair is identified, the next step is to design a trading strategy that determines when to
+enter and exit positions. Most studies adopt a mean-reversion approach: positions are
+opened when the spread deviates significantly from its historical or theoretical mean, and
+closed when it reverts. Thresholds for entry and exit are often determined empirically,
+based on quantiles, standard deviations, or z-scores of the spread.
+Apart from simple trading strategies, some researchers focus on the sophisticated
+mathematical pairs trading rules. They formulate the pairs trading problem as a stochastic optimal problem and leverage a range of mathematical tools—such as dynamic programming, the BSDE approach, and viscosity solution methods— to derive the optimal
+trading strategies. Broadly speaking, this literature can be categorized into two strands:
+(i) Continuous rebalancing models. Inspired by the classical continuous-time portfolio selection problem (e.g., Merton [32], Zhou and Li [52]), some studies examine optimal
+investment problems involving cointegrated assets in continuous time, with the objective
+of determining the optimal portfolio weights or the allocation of wealth across stock pairs,
+under a utility-maximization or mean-variance framework. Mudchanatongsuk et al. [34]
+consider a utility maximization problem under the constraint that the dollar amounts of
+long and short positions are equal. Tourin and Yan [45], Liu and Timmermann [29], and
+Xu and Yang [19] relax this constraint by allowing for arbitrary investment amounts in
+each stock. In addition, Liu and Timmermann [29] and Xu and Yang [19] further extend
+the model. Liu and Timmermann incorporate ’stopped’ cointegrated price processes and
+stochastic investment horizons modeled by a Poisson process, while Xu and Yang [19]
+investigate the impact of short-selling fees on pairs trading. Chiu and Wong [6, 7], Zhu
+et al. [53] and Yu et al. [50] study the problem within a mean-variance framework. To
+address the issue of time inconsistency, Zhu et al. [53] and Chiu and Wong [7] derive
+an equilibrium strategy, whereas Yu et al. [50] and Chiu and Wong [6] adopt a precommitment approach. A notable limitation is that, due to mathematical complexities,
+2
+
+the aforementioned studies neglect transaction costs, and the resulting optimal strategies
+require continuous rebalancing, leading to high-frequency trading behavior. As a result,
+these strategies become practically infeasible when transaction costs are sufficiently large.
+(ii) Optimal switching models. This line of research incorporates transaction costs
+and models trading as a sequence of discrete decisions, focusing on the optimal timing
+of opening and closing positions. Zhang and Zhang [51] and Leung et al. [27] study the
+optimal buying and selling problem under exponential Ornstein-Uhlenbeck (OU) price
+dynamics with slippage costs.
+As an extension, Song and Zhang [41] and Leung and
+Li [26] consider the optimal timing to trade an OU price spread subject to a stop-loss
+constraint. Tie et al. [44] and Liu et al. [30] relax the mean-reversion assumption and
+instead model asset prices as geometric Brownian motions. Ngo and Pham [36], as well as
+Suzuki [42, 43], investigate the optimal switching problem among three regimes (buy, sell,
+and flat) under infinite horizon setting. Further, Lei and Xu [25] study the three-regime
+switching problem in a finite-horizon setting.
+Compared with continuous rebalancing
+models, the optimal switching models incorporate the transaction costs but require the
+number of traded shares in each transaction to be fixed, which limits flexibility in practical applications.
+Taking into account the advantages and limitations of the two modeling approaches in
+the existing literature, we study a finite-horizon pairs trading problem with transaction
+costs in continuous time and allow the number of shares of paired stocks to vary. We
+assume that the investor’s wealth is generated from trading a pair of cointegrated assets,
+and that the spread follows an OU process. Similar to Mudchanatongsuk et al. [34], we
+consider a delta-neutral strategy that requires taking a long position in one stock and a
+short position in the other, with an equal number of shares in both positions. At each
+transaction, the cost is proportional to the number of shares traded. Our goal is to maximize the utility of terminal wealth minus the liquidation cost. Such a modeling framework
+poses significant challenges for mathematical analysis: (i) Unlike in frictionless cases, the
+position in the paired stocks becomes a state variable in the presence of transaction costs,
+as it can no longer be adjusted freely and frequently. Instead, the control variables are
+modeled as two non-decreasing processes representing the cumulative number of shares
+bought and sold, respectively. (ii) A finite time horizon introduces an additional time
+dimension to the value function, and the incorporation of transaction costs further renders the value function non-smooth. Both of these factors result in a so-called singular
+control problem of high dimensionality. Some advanced techniques have been developed
+to address this problem. For example, Shreve and Soner [39] adopt viscosity solution
+methods to analyze optimal investment and consumption with transaction costs in the
+infinite horizon setting. Building on this, Dai and Yi [9] study the same problem in a
+finite-horizon framework and leverage PDE methods to transform the control problem
+into a parabolic double obstacle problem. Their optimal strategies are to maintain the
+3
+
+position within the no-trade region, and trading occurs only when the position hits the
+boundaries of this region. However, the explicit characterization of these boundaries is
+impossible, and one must resort to numerical methods (See Tourin and Zariphopoulou
+[46], Dai and Zhong [10]). Due to the high nonlinearity of the HJB inequality governing
+the value function, solving it numerically requires significant computational effort and can
+be too slow for real-time trading applications.
+To obtain tractable results, some researchers adopt asymptotic methods and treat
+transaction costs as small perturbations of a frictionless benchmark. Janeˇcek and Shreve
+[20] employ this approach to study the optimal investment and consumption problem,
+while Whalley and Wilmott [48] focus on an optimal hedging model. Both works derive
+explicit asymptotic approximations of the free boundaries by expanding the value function in powers of the transaction costs. Further, building on homogenization and viscosity
+solution technique, Soner and Touzi [40], as well as Possama¨ı et al. [38], provide rigorous asymptotic expansions for models involving single or multiple assets with transaction
+costs. This approach can also be adapted to various extensions of other models (see Altarovici et al. [1], Moreau et al. [33], Melnyk et al. [31], Kallsen [21], among others).
+In this paper, we show that the value function is a continuous viscosity solution to an
+HJB variational inequality. The HJB variational inequality indicates the state space can
+be split into three regions: buying region, selling region and no-trade region. We establish
+that the buying boundary (which separates the buying region from the no-trading region)
+and the selling boundary (which separates the selling region from the no-trading region)
+can both be characterized as functions of time and the spread. In order to derive asymptotically explicit expressions for the free boundaries, we further postulate, via heuristic
+arguments, that the value function admits an expansion in powers of a suitably scaled
+transaction-cost parameter. By retaining the leading-order term and neglecting higherorder corrections, we obtain the first-order and second-order corrector equations. Solving
+these equations yields explicit asymptotic approximations for the free boundaries. Based
+on these boundaries, we reformulate the singular control problem as a Skorokhod problem, the solution of which yields a nearly optimal trading strategy. Finally, to rigorously
+justify our derivation, we apply homogenization techniques and the theory of viscosity
+solutions to verify the validity of the asymptotic expansion. We also conduct numerical
+experiments to intuitively illustrate the properties of the nearly optimal strategy in the
+presence of transaction costs and explore its performance under different market conditions. The result indicates that the impact of transaction costs on the profitability of
+pairs trading cannot be ignored.
+In summary, this paper makes contributions from both financial and methodological
+perspectives. From the financial perspective, (i) we incorporate transaction costs into the
+pairs trading problem under a finite horizon setting and relax the restrictive assumption
+of fixed trading shares, thereby making the model more practical and consistent with
+4
+
+Table 1: Comparison of Key Literature
+Position Size
+Transaction Costs
+Investment Horizon
+This paper
+R
+Both
+Finite
+Suzuki [42, 43]
+-1,0,1
+With
+Infinite
+Song and Zhang [41]
+0,1
+With
+Infinite
+Lei and Xu [25]
+-1,0,1
+With
+Finite
+Mudchanatongsuk et al.[34]
+R
+Without
+Finite
+real-world investment practices. In particular, our framework allows for the trading of
+fractional shares, which is commonly supported by modern brokerage platforms and enables investors to adjust their positions with finer granularity. In this way, we overcome
+the drawbacks of continuous rebalancing models which neglect transaction costs (see, e.g.
+Mudchanatongsuk et al. [34], Zhu et al. [53], Yu et al. [50]) and optimal switching models
+which impose fixed transaction shares (see Suzuki [42, 43], Ngo and Pham[36], Zhang and
+Song [51], Tie et al. [44]) in the existing literature. Table 1 provides a comparison of
+this paper with several key papers on pairs trading. (ii) By employing asymptotic expansion method, we derive explicit expressions for the buying and selling boundaries, which
+yield an intuitive and interpretable nearly optimal strategy. Moreover, this strategy is
+straightforward to implement in real trading activities and avoids the heavy computational burden associated with numerically solving the HJB equation.
+From the methodological perspective, (iii) we rigorously establish that the frictional
+value function is a continuous viscosity solution to a HJB variational inequality. This
+continuity property—which lays a solid foundation for the subsequent proofs (e.g., the
+viscosity solution property) —has not, to the best of our knowledge, been rigorously established in prior studies employing asymptotic expansion methods under a finite horizon
+(e.g., Whalley et al. [48], Moreau et al.[33], Bichuch [3]). Furthermore, we demonstrate
+that, theoretically, there exist two free boundaries that can be expressed as functions of
+time and the spread. (iv) To the best of our knowledge, this study is the first to introduce
+an asymptotic expansion approach to the analysis of pairs trading with transaction costs.
+Furthermore, we extend the viscosity and homogenization techniques pioneered by Soner
+and Touzi [40], who addressed the infinite-horizon problem, to the finite-horizon setting
+and provide a rigorous justification for the corresponding asymptotic expansion.
+The remainder of this paper is organized as follows. In Section 2, we introduce the
+model and formulate the corresponding utility maximization problem. For comparison,
+we also provide the explicit expression of the optimal strategy and value function in the
+absence of transaction costs. Section 3 presents a full characterization of the frictional
+value function, from which we derive the associated HJB equation. In addition, we establish the existence of the free boundaries which depend on time and the spread. Section
+4 provides the asymptotic analysis of the frictional value function. In Section 5, we rigorously justify the validity of the asymptotic expansion and obtain the nearly optimal
+5
+
+strategy. Section 6 reports numerical experiments and presents extensive simulation results. Finally, Section 7 concludes the paper. Some technical proofs are deferred to the
+Appendix.
+2
+Problem Formulation
+Assume the investor’s total wealth consists of two components: a risky asset account and
+a cash account. Let Rt denote the dollar value of the risky asset account and Ct the dollar
+value of the cash account at time t. Then the total wealth is given by Wt = Rt + Ct.
+For simplicity, assume the risk-free interest rate of the cash account is zero. The risky
+asset account contains a pair of co-integrated stocks. Let S1
+t and S2
+t denote their price
+processes, and define the spread by Xt = S1
+t −S2
+t . Following Song and Zhang [41], to
+capture the mean-reversion property, we assume Xt follows an OU process which satisfies:
+dXt = k(θ −Xt)dt + σdBt,
+(1)
+where k > 0 is the mean-reversion rate, θ is the long-term mean and σ > 0 is the volatility. Let Lt, Mt be two non-decreasing processes representing the cumulative amounts of
+purchase and sale of stock S1 up to time t. Then Yt = Lt −Mt + Y0−is the number of
+shares held in S1 at time t. Consider a delta-neutral trading strategy where the net delta
+of two stock positions is zero. It means that the number of shares of stock S1 bought (or
+sold) at time t is equal to the number of shares of stock S2 sold (or bought). Then there
+are Yt shares of S1 and −Yt shares of S2 at time t respectively. The transaction costs are
+incurred when buying and selling. Following Suzuki [42, 43], we model the transaction
+costs as being proportional to the number of shares traded. Therefore, the dynamics of
+the risky asset account and the cash account can be described as
+
+
+
+dRt = (S1
+t −S2
+t )dYt + Ytd(S1
+t −S2
+t ) = XtdYt + YtdXt,
+dCt = −(S1
+t −S2
+t )dYt −KdLt −KdMt = −XtdYt −KdLt −KdMt,
+(2)
+where K > 0 is a constant representing the transaction cost when buying or selling one
+unit of spread. Combining (1) and (2), we obtain that the wealth process satisfies the
+following equation:
+dWt = kYt(θ −Xt)dt + σYtdBt −KdMt −KdLt.
+6
+
+Let T be the investment horizon. The goal of the investor is to maximize the expected
+utility of terminal liquidated wealth by choosing (L, M):
+V (t, w, x, y) =
+max
+(L,M)∈Ut(w,x,y) J(t, w, x, y; L, M)
+=
+max
+(L,M)∈Ut(w,x,y) EtU(WT −K|YT|),
+(3)
+where Et[·] denotes the conditional expectation E[·|Xt−= x, Yt−= y, Wt−= w], −K|YT|
+accounts for the liquidated costs and Ut(w, x, y) is the admissible control set defined as 1
+Ut(w, x, y) =
+n
+(Ls, Ms)t≤s≤T
+ (Ls, Ms)t≤s≤T are non-decreasing, non-negative,
+c`adl`ag processes such that |Ys| ≤C(1 + sup
+t≤r≤s
+|Xr|), ∀s ∈[t, T]
+o
+.
+Remark 2.1. The condition |Ys| ≤C(1 + sup
+t≤r≤s
+|Xr|) for any s ∈[t, T] is required for
+technical reasons in the subsequent proofs, such as in the rigorous proof of the verification
+theorem in the frictionless case.
+Since the terminal liquidated wealth value may be negative, we focus on the constant
+absolute risk aversion (CARA) utility function, namely, U(z) = −exp(−γz), where the
+constant absolute risk aversion parameter γ > 0.
+2.1
+Frictionless Case
+For comparison, we first consider the case without transaction costs, i.e., K = 0. Then the
+control becomes the number of units, and the corresponding stochastic control problem
+becomes
+ˆV (t, w, x) =
+max
+Y ∈ˆUt(w,x) EtU(WT),
+(4)
+where
+ˆUt(w, x) =
+n
+(Y )t≤s≤T
+ |Ys| ≤C(1 + sup
+t≤r≤s
+|Xr|), ∀s ∈[t, T]
+o
+.
+(5)
+Using the standard dynamic programming principle, we can derive that ˆV satisfies the
+following HJB equation:
+
+
+
+
+
+ˆvt + k(θ −x)ˆvx + 1
+2σ2ˆvxx + sup
+y {ky(θ −x)vw + σ2yvxw + 1
+2σ2y2vww} = 0,
+ˆv(T, w, x) = −exp(−γw).
+(6)
+To solve this equation, we perform a dimension reduction and make an ansatz that
+ˆv(t, w, x) = exp(−γw)ˆu(t, x) with the terminal condition ˆu(T, x) = −1.
+Substituting
+1In this paper, C represents a generic constant, which may differ at different places.
+7
+
+it into (6) and simplifying, we obtain
+ˆut + k(θ −x)ˆux + 1
+2σ2ˆuxx + sup
+y {1
+2γ2σ2y2ˆu −γσ2yˆux −γk(θ −x)yˆu} = 0.
+(7)
+By the first order condition, we get
+y∗= γσ2ˆux + γk(θ −x)ˆu
+γ2σ2ˆu
+,
+(8)
+where we assume that ˆu < 0 which will be verified later. Substituting (8) into (7), we
+have
+ˆut + 1
+2σ2ˆuxx + σ2ˆu2
+x
+2ˆu −k2(θ −x)2ˆu
+2σ2
+= 0.
+(9)
+Solving this PDE, we can obtain the optimal strategy.
+Theorem 2.2 (Verification Theorem). In the case without transaction costs, the optimal
+strategy is given by
+y∗(x) = [k2(T −t) + k](θ −x)
+γσ2
+.
+(10)
+The corresponding optimal value function is
+ˆV (t, w, x) = −exp
+
+−γw −T −t
+2σ2 k2(θ −x)2 −k2(T −t)2
+4
+
+.
+(11)
+Proof. The proof is given in Appendix 8.2.
+Remark 2.3. Theorem 2.2 rigorously establishes that the strategy specified in (10) attains
+optimality within the admissible control set (5). We also believe that this strategy preserves
+its optimality in an extended class of admissible controls.
+The optimal strategy (10) can be divided into two parts: The first part, k(θ−x)
+γσ2 , only depends on the current spread, reflecting the myopic demand. The second part, k2(T−t)(θ−x)
+γσ2
+takes the maturity into account, reflecting the intertemporal demand. The optimal strategy is negatively correlated with the current spread. Specifically, when the spread is below
+(above) its long-term mean θ, it indicates that S1 is undervalued and S2 is overvalued.
+In this case, the optimal strategy prescribes taking a long (short) position in S1 and a
+short (long) position in S2. Moreover, the larger the deviation of the spread from its
+mean, the greater the magnitude of the corresponding positions. As the time to maturity
+approaches, the investor tends to reduce exposure to risky assets. Additionally, a higher
+risk aversion coefficient γ and increased spread volatility σ further suppress the optimal
+holdings in risky assets. The expression of the optimal value function (11) indicates that a
+larger deviation of spread from long-term mean at the initial time and a longer investment
+horizon both contribute to an increase in the trade’s utility.
+8
+
+3
+Frictional Case
+In this section, we consider the case with transaction costs, i.e., K > 0. We first study
+some useful properties of the optimal value function V (t, w, x, y), which play an important
+role in deriving the HJB equation.
+3.1
+Properties of Optimal Value Function
+Lemma 3.1. We have
+−exp[−γ(w −K|y|)] ≤V (t, w, x, y) ≤ˆV (t, w, x).
+Proof. We first prove the first inequality. Without loss of generality, assume y > 0. By
+the definition of the optimal value function, we have
+V (t, w, x, y) ≥J(t, w, x, y; M, L)
+for any (L, M) ∈Ut(w, x, y). Consider the admissible strategy (ˆL, ˆ
+M) satisfying ˆLs =
+0, s ≥t and ˆ
+Ms = y, s ≥t. It implies that at the initial time we sell y units of spread
+and remain inactive thereafter, and the terminal liquidated wealth under this strategy is
+w −K|y|. Then the first inequality holds.
+Next, we prove the second inequality. Observe that for any (L, M) ∈Ut(w, x, y), the
+corresponding process Yt = Lt −Mt + y is an admissible strategy in the frictionless case.
+Therefore,
+J(t, w, x, y; L, M) ≤EtU(WT) ≤ˆV (t, w, x).
+Taking supremum over all (L, M) ∈Ut(w, x, y), we get the second inequality.
+Lemma 3.2. Fixing t, x, V (t, ·, x, ·) is a joint concave function.
+Moreover, the first
+derivatives Vy and Vw exist almost everywhere and the subdifferential set defined by
+∂w,yV (t, w, x, y) = {(g1, g2) ∈R2 : V (t, w+∆w, x, y +∆y) ≤V (t, w, x, y)+g1∆w+g2∆y}
+(12)
+is nonempty and bounded for any (w, y).
+Proof. For any w1, w2 ∈R, let w3 = αw1 + (1 −α)w2 where α ∈(0, 1). Similarly, let y3 =
+αy1+(1−α)y2 for any y1, y2 ∈R. Let (L1, M 1) ∈At(w1, x, y1) and (L2, M 2) ∈Ut(w2, x, y2)
+be any two given strategies. Suppose (W i, Y i)t≤s≤T, i = 1, 2 are the processes under the
+strategy (Li, M i) with W i
+t−= wi and Y i
+t−= yi. Construct a new strategy (L3, M 3) as
+L3
+s = αL1
+s + (1 −α)L2
+s, M 3
+s = αM 1
+s + (1 −α)M 2
+s ,
+s ≥t.
+and let (W 3, Y 3)t≤s≤T be the processes under (L3, M 3) with W 3
+t−= w3 and Y 3
+t−= y3. By
+9
+
+linearity, we have
+W 3
+s = αW 1
+s + (1 −α)W 2
+s , Y 3
+s = αY 1
+s + (1 −α)Y 2
+s , t ≤s ≤T.
+It follows that
+W 3
+T −K|Y 3
+T | ≥α(W 1
+T −K|Y 1
+T |) + (1 −α)(W 2
+T −K|Y 2
+T |)
+since w−K|y| is a joint concave function. Note that the utility function U(z) is increasing
+and concave, so we have
+EtU(W 3
+T −K|Y 3
+T |) ≥Et[U(α(W 1
+T −K|Y1|) + (1 −α)(W 2
+T −K|Y2|)]
+≥αEtU(W 1
+T −K|Y1|) + (1 −α)EtU(W 2
+T −K|Y 2
+T |),
+(13)
+here and throughout this paper, Et[·] denotes the conditional expectation E[·|Xt =
+x, Wt = w]. Since (L1, M 1) ∈Ut(w1, x, y1) and (L2, M 2) ∈Ut(w2, x, y2), we can derive
+that
+|Y 3
+s | ≤α|Y 1
+s | + (1 −α)|Y 2
+s | ≤C(1 + sup
+t≤r≤s
+|Xs|),
+which implies (L3, M 3) ∈Ut(w3, x, y3). Therefore, by the definition of the value function,
+we have
+V (t, w3, x, y3) ≥EtU(W 3
+T −K|Y 3
+T |)
+≥αEtU(W 1
+T −K|Y1|) + (1 −α)EU(W 2
+T −K|Y 2
+T |)
+(14)
+Finally, taking supremum over (L1, M 1) and (L2, M 2), we can obtain
+V (t, αw1 + (1 −α)w2, x, αy1 + (1 −α)y2) ≥αV (t, w1, x, y1) + (1 −α)V (t, w2, x, y2),
+which implies the joint concavity of V with respect to (w, y).
+By Lemma 3.1, {(w, y) : |V (t, w, x, y)| < +∞} = R × R. Then according to Theorem 6.9 in Evans [13] and Theorem 3.17 in Beck [2], we derive that Vw, Vy exist almost
+everywhere and the subgradient set (12) is nonempty and bounded for any (w, y).
+Lemma 3.3. We have
+V (t, w, x, y) ≥V (t, w −K|l|, x, y + l).
+(15)
+Proof. Without loss of generality, assume l > 0. We first show that for any (L, M) ∈
+Ut(w −Kl, x, y + l), there exists a strategy (ˆL, ˆ
+Ms) ∈Ut(t, w, x, y) such that the processes
+(Ws, Ys)t≤s≤T under strategy (L, M) coincide with ( ˆWs, ˆYs)t≤s≤T under (ˆL, ˆ
+M).
+10
+
+Indeed, for (L, M) ∈Ut(t, w −Kl, x, y + l), (Ys, Ws) satisfy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dWs = kYs(θ −Xs)ds + σYsdWs −KdMs −KdLs,
+dYs = dLs −dMs,
+Wt = w −Kl,
+Yt = y + l.
+(16)
+Construct (ˆL, ˆ
+M) ∈Ut(w, x, y) by ˆLs = Ls + l, ˆ
+Ms = Ms, s ≥t. Such a strategy means
+that at the initial time, we buy l units of spread. Under (ˆL, ˆ
+M), ( ˆWs, ˆYs)t≤s≤T satisfy
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+d ˆWs = k ˆYs(θ −Xs)ds + σ ˆYsdWs −Kd ˆ
+Ms −KdˆLs,
+dˆYs = dˆLs −d ˆ
+Ms,
+ˆWt = w,
+ˆYt = y.
+(17)
+Substituting ˆLs = Ls + l, ˆ
+Ms = Ms into (17), we obtain
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+d ˆWs = k ˆYs(θ −Xs)ds + σ ˆYsdWs −KdMs −KdLs,
+dˆYs = dLs −dMs,
+ˆWt = w −Kl,
+ˆYt = y + l.
+(18)
+Therefore, ˆWs = Ws, ˆYs = Ys for t ≤s ≤T. It implies that
+n
+EtU(WT−K|YT|)
+(L, M) ∈Ut(w−Kl, x, y)
+o
+⊂
+n
+EtU(WT−K|YT|)
+(L, M) ∈Ut(w, x, y)
+o
+.
+Then V (t, w, x, y) ≥V (t, w −Kl, x, y + l).
+The lemma indicates that given (t, x), if (w1, y1) can be reached from (w2, y2) through
+a transaction at initial time, then the utility of the latter will be no less than that of the
+former.
+Proposition 3.4. V (t, w, x, y) is a continuous function.
+Proof. The proof is given in Appendix 8.3.
+11
+
+3.2
+HJB Variational Inequality
+Proposition 3.5. The optimal value function V (t, w, x, y) is a continuous viscosity solution to the following HJB variational inequality:
+min
+n
+−vt −Lv
+|
+{z
+}
+No−trade
+,
+Kvw −vy
+|
+{z
+}
+Buy
+,
+Kvw + vy
+|
+{z
+}
+Sell
+o
+= 0,
+(19)
+with terminal condition v(T, w, x, y) = −exp(−γw + γK|y|), where the operator L is
+defined as
+Lv = ky(θ −x)vw + k(θ −x)vx + 1
+2σ2vxx + 1
+2σ2y2vww + σ2yvxw.
+Proof. The proof is given in Appendix 8.4. For the reader’s convenience, we also review
+the general (not necessarily continuous) definition of viscosity solutions in Appendix 8.1,
+which will be repeatedly used later.
+We provide an intuitive interpretation of this HJB variational inequality. Note that
+(19) is equivalent to
+max
+n
+vt + Lv
+| {z }
+No−trade
+,
+−Kvw + vy
+|
+{z
+}
+Buy
+,
+−Kvw −vy
+|
+{z
+}
+Sell
+o
+= 0.
+At time t ∈[0, T) with (Wt, Xt, Yt) = (w, x, y), the trader has three options: to buy the
+spread (buying stock S1 and selling S2), to sell the spread (selling stock S1 and buying S2)
+or to refrain from trading. Assume she intends to buy ∆y(∆y > 0) units of spread. First,
+she alters her current position. Secondly, she needs to pay the transaction cost K∆y from
+her cash account, resulting in an equivalent reduction in her total wealth. Therefore, the
+change in the value function V is given by ∆V = Vy∆y −VwK∆y. Similarly, when she
+chooses to sell ∆y units of the spread, the change of V is given by ∆V = −Vy∆y−VwK∆y.
+If the trader intends to remain inactive, then by Itˆo’s formula, ∆V = E
+R t+∆t
+t
+dV ≈
+(vt + Lv)∆t. Among all possible actions, the investor chooses the one that yields the
+highest utility improvement. This is precisely what the HJB equation characterizes.
+The HJB equation also suggests that the state space can be divided into three distinct
+regions: the no-trade region (NT ∗), the buying region (BR∗) and the selling region
+(SR∗). These regions are defined as follows:
+
+
+
+
+
+
+
+
+
+NT ∗= {(t, w, x, y) | −vt −Lv = 0},
+BR∗= {(t, w, x, y) | Kvw −vy = 0},
+SR∗= {(t, w, x, y) | Kvw + vy = 0}.
+(20)
+The buying (selling) boundary is defined as the boundary separating the buying (selling)
+12
+
+region from the no-trade region. They are the free boundaries that need to be determined.
+3.3
+Properties of Free Boundaries
+In this section, we show that both boundaries can be expressed as functions of (t, x),
+which can help us better understand the structure of the optimal strategy.
+We make the ansatz that v(t, w, x, y) = exp(−γw)u(t, x, y) where u < 0. Substituting
+this into the HJB equation (19) yields
+min
+n
+−ut −L1u
+|
+{z
+}
+No−trade
+,
+−γKu −uy
+|
+{z
+}
+Buy
+,
+−γKu + uy
+|
+{z
+}
+Sell
+o
+= 0,
+(21)
+where the operator L1 is given by
+L1u = k(θ −x)ux −γσ2yux + 1
+2σ2uxx + 1
+2γ2σ2y2u −γky(θ −x)u.
+It can also be verified that u is a continuous viscosity solution of (21). Correspondingly,
+the regions defined in (20) can be rewritten as
+
+
+
+
+
+
+
+
+
+NT ∗= {(t, x, y) | −ut −L1u = 0},
+BR∗= {(t, x, y) | −γKu −uy = 0},
+SR∗= {(t, x, y) | −γKu + uy = 0}.
+(22)
+Proposition 3.6. There exist two functions π∗
+b(t, x) and π∗
+s(t, x) with π∗
+b(t, x) ≤π∗
+s(t, x)
+such that
+
+
+
+
+
+
+
+
+
+NT ∗= {(t, x, y) | π∗
+b(t, x) ≤y ≤π∗
+s(t, x)},
+BR∗= {(t, x, y) | y < π∗
+b(t, x)},
+SR∗= {(t, x, y) | y > π∗
+s(t, x)}.
+Proof. The proof is given in Appendix 8.5.
+From Proposition 3.6, we know that the investor remains inactive for some time, rather
+than engaging in continuous infinitesimal rebalancing.
+This highlights a fundamental
+distinction from the frictionless case.
+Although the existence of the free boundaries is established, their explicit forms are
+not available. Since the HJB equation (19) with gradient constraints is highly nonlinear
+and complex, a closed-form value function is not expected. Moreover, it is not possible
+to reformulate the gradient constraints as function constraints via transformations of the
+value function, which would otherwise allow the problem to be recast as a double obstacle
+problem. This limitation prevents us from applying the techniques developed by Friedman
+and Spruck [15] and Dai and Yi [9]. Therefore, to obtain tractable results, we turn to
+13
+
+an asymptotic analysis approach, which enables us to derive an explicit nearly optimal
+strategy.
+4
+Asymptotic Analysis
+In this section, we adopt asymptotic expansion methods to derive a nearly optimal strategy. The key idea is to treat transaction costs as small perturbations to the frictionless
+counterpart. We first analyze the effect of transaction costs on the frictional value function, and then perform an asymptotic expansion of the value function in powers of the
+appropriately scaled transaction-cost parameter, retaining terms up to the leading order.
+Finally, by matching terms of different orders and applying the principle of smooth fit,
+we obtain explicit expressions for the asymptotic free boundaries and asymptotic value
+function.
+4.1
+Heuristic Derivation for Asymptotic Expansion
+When the transaction cost K is sufficiently small, the frictional value function is expected
+to differ only slightly from its frictionless counterpart. This observation suggests performing an asymptotic expansion. However, the key subtlety lies in identifying a suitable
+scaling of the transaction-cost parameter, since the deviation of the frictional value function from its frictionless counterpart typically occurs at a fractional order in K, rather
+than at order K itself. To determine the appropriate scaling, we provide a heuristic argument following Janeˇcek and Shreve [20] and Muhle-Karbe et al. [35].
+When transaction frictions are present, frequent trading is prohibitively expensive,
+since transaction costs significantly erode arbitrage profits. Hence, it is neither rational
+nor economically optimal for the investor to maintain the number of units prescribed by
+(10). Instead, the investor should maintain Yt within an interval [−∆y/2 + y∗, y∗+ ∆y/2]
+where y∗is the optimal position in the absence of costs. Trading should occur only when
+Yt reaches the boundaries of this interval. Such behavior leads to two types of losses
+relative to the frictionless optimal expected utility: one arises from the deviation from
+y∗(the displacement loss), and the other arises from the transaction costs (the cost
+loss). The former increases with the width of no-trade region , while the latter decreases.
+We need to make a trade-off and choose the width of the no-trade region that minimizes
+the total loss.
+According to the properties of reflected Brownian motion and its associated local time,
+the amount of trading required to maintain the position within the no-trade region is inversely proportional to the width ∆y of that region (for a detailed explanation, see Janeˇcek
+and Shreve [20]). Besides, by Lemma 3.1, the frictionless value function dominates its
+counterpart with transaction costs, which implies—via the first-order condition—that the
+14
+
+displacement loss is of order (∆y)2. Taking both the displacement loss and cost loss into
+account, the total utility loss is proportional to
+K
+∆y + (∆y)2.
+To minimize it, the width of no-trade region ∆y should be of order K
+1
+3 and the corresponding utility loss is of order K
+2
+3.
+4.2
+Asymptotic Analysis of the Optimal Value Function
+As discussed above, the width of the optimal no-trade region scales as O(K
+1
+3), and the
+corresponding utility loss is O(K
+2
+3). This suggests that the frictional value function admits
+an expansion in powers of K
+2
+3. For notational convenience, we set ϵ = K
+1
+3.
+To highlight the dependence of u on ϵ, we denote it by uϵ in the subsequent analysis.
+We introduce the fast variable
+ξ = y −π(t, x)
+ϵ
+,
+where
+π(t, x) = [k2(T −t) + k](θ −x)
+γσ2
+(23)
+is the frictionless optimal control (the target position in the absence of transaction costs).
+The fast variable ξ is the normalized deviation of the spread position from its frictionless
+target. Since the map y 7→ξ is bijective on R, we can rewrite uϵ(t, x, y) as uϵ(t, x, ξ). We
+postulate the following expansion of uϵ in powers of ϵ:
+uϵ(t, x, ξ) = ˆu(t, x) −ϵ2f(t, x) −ϵ4g(t, x, ξ) + o(ϵ2),
+(24)
+where ˆu(t, x) is the solution to (9) in the frictionless case, given explicitly by
+ˆu(t, x) = −exp
+
+−T −t
+2σ2 k2(θ −x)2 −k2(T −t)2
+4
+
+.
+(25)
+Remark 4.1. Since ˆu is a local optimum with respect to ϵ in the asymptotic expansion,
+the coefficient of the ϵ term must vanish due to the first-order condition. In addition, the
+impact of a single trade on the frictional value function is of higher order than O(ϵ3),
+which implies that the term ϵ2f(t, x) is independent of the fast variable ξ. Notice that the
+expansion is formally truncated at order ϵ2, yet we retain the forth-order term ϵ4g(t, x, ξ).
+This is because g depends on ξ, and its second derivatives are of order ϵ2, which affects
+the asymptotic analysis of uϵ, as uϵ satisfies a second-order HJB equation.
+Remark 4.2. The expansion of the frictional value function can be written as
+vϵ(t, w, x, ξ) = ˆv(t, w, x) −ϵ2 exp(−γw)f(t, x) −ϵ4 exp(−γw)g(t, x, ξ) + o(ϵ2).
+(26)
+15
+
+According to Lemma 3.1, we expect that f > 0 and g > 0, indicating the presence of
+frictions leads to a reduction in the frictional value function relative to its frictionless
+counterpart. This intuition will be rigorously verified in the subsequent analysis.
+We first differentiate the expansion (24) and retain terms up to order ϵ2, which gives
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+uϵ
+t = ˆut −ϵ2ft −ϵ4gt + ϵ3πtgξ + O(ϵ3) = ˆut −ϵ2ft + O(ϵ3),
+uϵ
+x = ˆux −ϵ2fx + ϵ3πxgξ −ϵ4gx + O(ϵ3) = ˆux −ϵ2fx + O(ϵ3),
+uϵ
+xx = ˆuxx −ϵ2fxx −ϵ2π2
+xgξξ + O(ϵ3),
+uϵ
+y = −ϵ3gξ + O(ϵ4).
+(27)
+Next we substitute (27) into (21) and analyze each term of the variational inequality in
+detail. The equation in the no-trade region is given by
+−uϵ
+t −L1uϵ
+= −ˆut −k(θ −x)ˆux −1
+2σ2ˆuxx −1
+2γ2σ2y2ˆu + γky(θ −x)ˆu + γσ2yˆux
+|
+{z
+}
+I
++ ϵ2
+
+ft + k(θ −x)fx + 1
+2σ2fxx + 1
+2γ2σ2y2f −γky(θ −x)f −γσ2yfx + 1
+2σ2π2
+xgξξ
+
+|
+{z
+}
+II
++ O(ϵ3).
+(28)
+Note that ˆu solves PDE (7) when y = π(t, x), which means that
+ˆut + k(θ −x)ˆux + 1
+2σ2ˆuxx + 1
+2γ2σ2π2ˆu −γkπ(θ −x)ˆu −γσ2πˆux = 0.
+Therefore, substituting y = ϵξ + π into I, we have
+I = −ϵ2ξ21
+2γ2σ2ˆu
+
+−ϵξ
+h
+γ2σ2πˆu −γk(θ −x)ˆu −γσ2ˆux
+i
+= ϵ2ξ2
+−1
+2γ2σ2ˆu
+
+.
+(29)
+The second equality holds since the explicit expressions of π in (23) and ˆu in (25). Using
+y = ϵξ + π again, we obtain that
+II = Af + 1
+2σ2π2
+xgξξ + O(ϵ),
+(30)
+where
+Af := ft + k(θ −x)fx + 1
+2σ2fxx + 1
+2γ2σ2π2f −γkπ(θ −x)f −γσ2πfx.
+(31)
+16
+
+For simple notation, we let a(t, x) = Af(t, x). Therefore, the equation in the no-trade
+region becomes
+−uϵ
+t −L1uϵ = ϵ2
+−1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a
+
++ O(ϵ3).
+(32)
+It remains to compute the equations in the buying and selling region. For the selling
+region, we have
+−γϵ3uϵ + uϵ
+y = ϵ3(−γˆu −gξ) + O(ϵ4).
+(33)
+For buying region, we can get
+−γϵ3uϵ −uϵ
+y = ϵ3(−γˆu + gξ) + O(ϵ4).
+(34)
+Combining (32), (33) and (34), we can obtain the asymptotic HJB variational inequality
+by neglecting higher-order terms:
+min
+n
+ϵ2
+−1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a
+
+, ϵ3(−γˆu + gξ), ϵ3(−γˆu −gξ)
+o
+= 0.
+(35)
+Since ϵ > 0, it is easy to check that (35) is equivalent to
+min
+n
+−1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a, −γˆu + gξ, −γˆu −gξ
+o
+= 0.
+(36)
+Note that (36) involves two unknown functions g, f and two free boundaries to be determined. To solve the equation, we first treat (t, x) as parameters and solve it as a function
+of ξ alone. This leads to the so-called first corrector equation.
+Definition 4.3 (First corrector equation). For any fixed (t, x) ∈[0, T) × R, the first
+corrector equation for the unknown pair (a(t, x), g(t, x, ·)) ∈R × C2(R) is
+min
+n
+−1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a(t, x)
+|
+{z
+}
+No-trade
+, −γˆu + gξ
+|
+{z
+}
+Buy
+, −γˆu −gξ
+|
+{z
+}
+Sell
+o
+= 0,
+∀ξ ∈R,
+(37)
+with normalization g(t, x, 0) = 0.
+We impose the constraint g(t, x, 0) = 0 because no deviation from the frictionless
+optimal position (i.e., ξ = 0) should not incur utility loss. We first solve the first corrector
+equation (37). According to the principle of buying low and selling high in pairs trading,
+we assume that there exist two functions, ξs(t, x) and ξb(t, x), satisfying ξb < ξs, which
+represent the selling and buying boundaries, respectively. Besides, note that the equation
+in no-trade region involves ξ2 term. Therefore, by symmetry, we conjecture that g takes
+17
+
+the following form:
+g(t, x, ξ) =
+
+
+
+
+
+
+
+
+
+a4(t, x)ξ4 + a2(t, x)ξ2,
+ξb ≤ξ ≤ξs,
+g(t, x, ξs) −γˆu(ξ −ξs),
+ξ > ξs,
+g(t, x, ξb) + γˆu(ξ −ξb),
+ξ < ξb,
+(38)
+where a2, a4 are functions to be determined. Substituting (38) into (37), in the no-trade
+region, we have
+h
+6σ2π2
+xa4(t, x) + 1
+2γ2σ2ˆu
+i
+ξ2 + σ2π2
+xa2(t, x) + a(t, x) = 0, ∀ξb ≤ξ ≤ξs.
+(39)
+It implies that
+
+
+
+6σ2π2
+xa4(t, x) + 1
+2γ2σ2ˆu = 0,
+σ2π2
+xa2(t, x) + a(t, x) = 0.
+(40)
+By the principle of smooth fit, we require g to be continuously twice differentiable across
+the free boundaries, which gives us
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4a4(t, x)ξ3
+s + 2a2(t, x)ξs = −γˆu,
+4a4(t, x)ξ3
+b + 2a2(t, x)ξb = γˆu,
+12a4(t, x)ξ2
+s + 2a2(t, x) = 0,
+12a4(t, x)ξ2
+b + 2a2(t, x) = 0.
+(41)
+By combining (40) and (41), we derive that
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ξs(t, x) =
+3π2
+x
+2γ
+ 1
+3 = −ξb(t, x),
+a4(t, x) = γ2ˆu
+12π2
+x
+,
+a2(t, x) = −γ2ˆu
+2
+ 3
+2πx
+ 2
+3,
+a(t, x) = γ2σ2ˆu
+2
+3π2
+x
+2
+ 2
+3.
+(42)
+Next, we verify that the function g constructed above is indeed a solution of (37).
+Proposition 4.4. For any fixed (t, x) ∈[0, T) × R, function g given by (38) and (42) is
+the solution to the variational inequality (37). Moreover, g is a non-negative and even
+function, and it is strictly increasing in |ξ|.
+According to Proposition 4.4, the function g is strictly increasing in |ξ|. This indicates
+that a larger deviation from the frictionless optimal target leads to a greater utility loss.
+We now proceed to derive f using the explicit expression of a in (42). Recalling (31), we
+18
+
+need to solve the following PDE
+
+
+
+−ft + k2(T −t)(θ −x)fx −1
+2σ2fxx −c(t, x)f + a(t, x) = 0,
+f(T, x) = 0,
+(43)
+where
+c(t, x) =
+1
+2σ2[k4(T −t)2 −k2](θ −x)2.
+This is the so-called second corrector equation. The terminal condition is imposed
+since the ϵ2 term in the expansion of uϵ(T, x, y) with respect to ϵ vanishes. Although (43)
+does not admit a closed-form solution, a probabilistic representation of the solution can
+be derived as follows (Karatzas and Shreve [23]):
+f(t, x) = −Et
+Z T
+t
+exp
+ Z s
+t
+c(r, ˜Xr)dr
+
+a(s, ˜Xs)ds,
+(44)
+provided that the conditional expectation is finite. Here, ˜Xt is the unique strong solution
+of the SDE:
+d ˜
+Xt = −k2(T −t)(θ −˜Xt)dt + σdBt.
+(45)
+Next, we investigate conditions under which f is finite.
+Proposition 4.5. Assume T ≤max{1/k2, c0}, where c0 > 0 is the unique constant
+satisfying
+c0 =
+π
+2
+q
+k4c2
+0 + k2 + 2√2σ2k2c0 + k2c0
+.
+Then |f(t, x)| < ∞for any (t, x) ∈[0, T) × R and the probabilistic representation (44)
+holds. Moreover, f(t, x) given by (44) is a continuous viscosity solution to (43).
+According to (44), f is always positive since a < 0. Hence, it quantifies the magnitude
+of utility loss induced by transaction costs, relative to the frictionless benchmark. To
+further investigate this loss, we exploit the marginal pricing measure (see Karatzas and
+Kou [22], Davis [11]), under which the probabilistic representation (44) can be rewritten
+as
+f(t, x) = −ˆvw(t, w, x)EQ
+t
+Z T
+t
+exp
+ R s
+t c(r, ˜Xr)dr
+
+a(s, ˜Xs)
+ˆvw(s, W ∗
+s , Xs)
+ds,
+(46)
+where ˆv is the frictionless value function, W ∗
+t denotes the optimal frictionless wealth
+process, Q is the investor’s marginal pricing measure, whose density process is given by
+ˆVw(s, W ∗
+s , Xs)/ˆVw(t, w, x), t ≤s ≤T.
+Remark 4.6. The marginal pricing measure Q coincides with the equivalent martingale
+19
+
+measure, whose density process satisfies
+Zs = exp
+
+−
+Z s
+t
+k(θ −Xs)
+σ
+dBs −
+Z s
+t
+k2(θ −Xs)2
+2σ2
+ds
+
+, t ≤s ≤T.
+Assume that the asymptotic expansion of the frictional value function (26) holds (to
+be verified later), combining (26) and (46) and applying a Taylor expansion give us
+vϵ(t, w, x, y) = ˆv(t, w −CEL(t, x), x) + o(ϵ2),
+where
+CEL(t, x) =
+ϵ2
+γˆu(t, x)EQ
+t
+Z T
+t
+−
+exp
+ R s
+t c(r, ˜Xr)dr
+
+a(s, ˜Xs)
+Zs
+ds
+= −ϵ2f(t, x)
+γˆu(t, x)
+represents the certainty equivalent wealth loss resulting from small transaction costs.
+It is defined such that the investor is indifferent between (i) the expected utility of the
+initial state (t, w, x, y) when trading with costs, and (ii) the utility obtained from a reduced
+initial wealth w−CEL(t, x) in the frictionless market. In other words, CEL(t, x) represents
+the amount of initial endowment an investor would be willing to forgo in order to engage in
+pairs trading without incurring transaction costs. Note that it solely depends on the initial
+spread value and the investment horizon, and it increases with respect to the investment
+horizon.
+5
+Convergence Results and Nearly Optimal Strategy
+5.1
+Rigorous Asymptotic Expansion
+In this section, we verify the validity of the asymptotic expansion (24) by showing that
+¯U ϵ(t, x, y) := ˆu −uϵ
+ϵ2
+converges locally uniformly to the function f defined in (44) under some regularity assumptions.
+We begin by introducing the upper and lower semi-limits
+¯U ∗(t, x, y) =
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+¯U ϵ(t′, x′, y′), ¯U∗(t, x, y) =
+lim inf
+(ϵ,t′,x′,y′)→(0,t,x,y)
+¯U ϵ(t′, x′, y′). (47)
+Our strategy is as follows: We first prove that ¯U ∗(resp.
+¯U∗) is a viscosity subsolution
+(resp.
+supersolution) of the PDE (43).
+Then, by establishing a suitable comparison
+principle, we conclude that ¯U ∗= ¯U∗= f, which implies that ¯U ϵ converges locally to f.
+20
+
+To facilitate the proof, we introduce the auxiliary function
+U ϵ(t, x, y) = ˆu(t, x) −uϵ(t, x, y)
+ϵ2
+−ϵ2g
+
+t, x, y −π(t, x)
+ϵ
+
+,
+and define its semi-limits analogously as
+U ∗(t, x, y) =
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+U ϵ(t′, x′, y′), U∗(t, x, y) =
+lim inf
+(ϵ,t′,x′,y′)→(0,t,x,y) U ϵ(t′, x′, y′). (48)
+For clarity, we occasionally use the notation ˆU ϵ(t, x, ξ) := U ϵ(t, x, ϵξ + π(t, x)).
+The
+following lemma shows that the semi-limits of U ϵ coincide with those of ¯U ϵ.
+Lemma 5.1. We have
+U∗= ¯U∗,
+U ∗= ¯U ∗.
+Proof. By definition, we have
+U∗(t, x, y) ≤
+lim inf
+(ϵ,t′,x′,y′)→(0,t,x,y)
+¯U ϵ(t′, x′, y′) +
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+ϵ2g
+
+t′, x′, y′ −π(t′, x′)
+ϵ
+
+U∗(t, x, y) ≥
+lim inf
+(ϵ,t′,x′,y′)→(0,t,x,y)
+¯U ϵ(t′, x′, y′) −
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+ϵ2g
+
+t′, x′, y′ −π(t′, x′)
+ϵ
+
+(49)
+Note that |g(t, x, ξ)| ≤C(1 −γu|ξ|). Therefore,
+0 ≤
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+ϵ2g
+
+t′, x′, y′ −π(t′, x′)
+ϵ
+
+≤
+lim sup
+(ϵ,t′,x′,y′)→(0,t,x,y)
+Cϵ2 + Cϵ|ˆu(t′, x′)||y′ −π(t′, x′)| = 0
+(50)
+The last equality holds since |ˆu(t, x)||y −π(t, x)| is locally bounded. Hence U∗= ¯U∗.
+Similarly, we can show that U ∗= ¯U ∗.
+Lemma 5.1 indicates that we can only focus on the properties of U ϵ. Next we show
+that U ∗and U∗are independent of y.
+Lemma 5.2. U∗and U ∗are functions of (t, x) and
+
+
+
+
+
+U∗(t0, x0) =
+lim inf
+(ϵ,t,x)→(0+,t0,x0) U ϵ(t, x, π(t, x)) =
+lim inf
+(ϵ,t,x)→(0+,t0,x0)
+ˆU ϵ(t, x, 0),
+U ∗(t0, x0) =
+lim sup
+(ϵ,t,x)→(0+,t0,x0)
+U ϵ(t, x, π(t, x)) =
+lim sup
+(ϵ,t,x)→(0+,t0,x0)
+ˆU ϵ(t, x, 0).
+(51)
+Proof. Note that uϵ is the viscosity supersolution of the HJB equation (21) and uϵ
+y exists
+almost everywhere. Then,
+−γϵ3uϵ −uϵ
+y ≥0, −γϵ3uϵ + uϵ
+y ≥0.
+21
+
+It implies |U ϵ
+y| ≤−γϵ3uϵ + ϵ|gξ| ≤−γϵ3uϵ −γϵˆu. Therefore, as ϵ →0, the semi-limits of
+U ϵ do not depend on y. Due to the independence of y, we can let y = π(t, x), which gives
+(51).
+Proposition 5.3. Suppose U ∗is finite, then U ∗is the viscosity subsolution of (43).
+Proof. Step 1: Let ϕ ∈C1,2 and (t0, x0) ∈[0, T) × R such that
+0 = (U ∗−ϕ)(t0, x0) > (U ∗−ϕ)(t, x), ∀(t, x) ∈[0, T) × R, (t, x)̸ = (t0, x0).
+(52)
+We need to show
+−Aϕ(t0, x0) −a(t0, x0) ≤0.
+By Lemma 5.2, there exists a sequence (tϵ, xϵ, yϵ) = (tϵ, xϵ, π(tϵ, xϵ)) →(t0, x0, π(t0, x0))
+such that U ϵ(tϵ, xϵ, yϵ) →U ∗(t0, x0).
+Step 2: We construct a test function. Set
+ψϵ,δ := ˆu(t, x) −ϵ2ϕ(t, x) −ϵ2l∗
+ϵ −ϵ2C(|t −tϵ|2 + |x −xϵ|4) −ϵ4(1 + δ)g(t, x, ξ),
+where δ ∈(0, 1), l∗
+ϵ = U ϵ(tϵ, xϵ, yϵ) −ϕ(tϵ, xϵ) →0 and C is an undetermined constant.
+Since U ∗is locally bounded, then there exist r0, ϵ0 such that
+b∗:= sup{U ϵ(t, x, y) : (t, x, y) ∈Br0(t0, x0, y0)2, ϵ ∈(0, ϵ0]} < ∞.
+Define Iϵ,δ(t, x, y) = uϵ −ψϵ,δ, then
+Iϵ,δ(t, x, y)
+ϵ2
+= −U ϵ + lϵ
+∗+ ϕ(t, x) + C(|t −tϵ|2 + |x −xϵ|4) + δϵ2g
+≥−b∗+ lϵ
+∗+ ϕ(t, x) + C(|t −tϵ|2 + |x −xϵ|4).
+(53)
+Choose C such that the right-hand side of (53) is positive for all sufficiently small ϵ and for
+any (t, x, y) ∈Br0(t0, x0, y0)\B r0
+2 (t0, x0, y0). Note that Iϵ,δ(tϵ, xϵ, yϵ) = 0. We deduce that
+Iϵ,δ has a local minimizer denoted by (˜tϵ, ˜xϵ, ˜yϵ) in Br0(t0, x0, y0) and Iϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) ≤0. It
+is worth noting that ˜yϵ may not equal π(˜tϵ, ˜xϵ).
+Step 3: Note that the sequence (˜tϵ, ˜xϵ, ˜yϵ)ϵ is bounded. We next show that ˜ξϵ = ˜yϵ−π(˜tϵ,˜xϵ)
+ϵ
+is also bounded.
+Since uϵ is the viscosity supersolution of (21), we have
+−γϵ3ψϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) −ψϵ,δ
+y (˜tϵ, ˜xϵ, ˜yϵ) ≥0, −γϵ3ψϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) + ψϵ,δ
+y (˜tϵ, ˜xϵ, ˜yϵ) ≥0,
+2To be rigorous, we choose r0 sufficiently small to ensure Br0(t0, x0, y0) ⊂[0, T) × R × R if t0̸ = 0.
+When t0 = 0, Br0(t0, x0, y0) should be interpreted as Br0(t0, x0, y0) ∩([0, T) × R × R).
+22
+
+which means
+
+
+
+−ϵ3(1 + δ)gξ(˜tϵ, ˜xϵ, ˜ξϵ) −γϵ3ˆu(˜tϵ, ˜xϵ) + o(ϵ3) ≥0,
+−ϵ3(1 + δ)gξ(˜tϵ, ˜xϵ, ˜ξϵ) + γϵ3ˆu(˜tϵ, ˜xϵ) + o(ϵ3) ≤0.
+(54)
+If ˜ξϵ < ξb < 0, then gξ(˜tϵ, ˜xϵ, ˜ξϵ) = γˆu(˜tϵ, ˜xϵ). It implies that
+−ϵ3(1 + δ)gξ(˜tϵ, ˜xϵ, ˜ξϵ) + γϵ3ˆu(˜tϵ, ˜xϵ) + o(ϵ3) = −ϵ3δγˆu(˜tϵ, ˜xϵ) + o(ϵ3).
+(55)
+Letting ϵ be sufficiently small, we see that (55) remains positive, which contradicts the
+second inequality in (54). Therefore, the case ˜ξϵ < ξb cannot occur. Similarly, we can show
+that ˜ξϵ > ξs is also impossible. In summary, ξb ≤˜ξϵ ≤ξs. According to the expressions
+of ξb and ξs in (42), we conclude that ˜ξϵ is bounded.
+Step 4: Since (˜tϵ, ˜xϵ, ˜ξϵ) is uniformly bounded in ϵ, there exists a subsequence denoted
+by (˜tϵn, ˜xϵn, ˜ξϵn) such that (˜tϵn, ˜xϵn, ˜ξϵn) →(ˆt, ˆx, ˆξ) and ξb(ˆt, ˆx) ≤ˆξ ≤ξs(ˆt, ˆx). We show
+that (ˆt, ˆx) = (t0, x0). Note that
+0 ≥lim inf
+n→∞
+ˆIϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn)
+ϵ2
+n
+= −lim sup
+n→∞
+ˆU ϵn(˜tϵn, ˜xϵn, ˜ξϵn) + ϕ(ˆt, ˆx) + C(|ˆt −t0|2 + |ˆx −x0|4)
+≥−U ∗(ˆt, ˆx) + ϕ(ˆt, ˆx) + C(|ˆt −t0|2 + |ˆx −x0|4) ≥0.
+(56)
+Due to the strict minimum property of (t0, x0) in (52), we deduce that ˆt = t0, ˆx = x0.
+Step 5: Using the fact that uϵ is the viscosity supersolution of (21) again, we have
+−ˆψϵn,δ
+t
+(˜tϵn, ˜xϵn, ˜ξϵn) −L1 ˆψϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn) ≥0.
+It follows that
+0 ≤lim
+n→∞
+−ˆψϵn,δ
+t
+(˜tϵn, ˜xϵn, ˜ξϵn) −L1 ˆψϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn)
+ϵ2
+n
+= −1
+2γσ2uˆξ2 + 1
+2σ2(1 + δ)π2
+xgξξ(t0, x0, ˆξ) + Aϕ(t0, x0)
+= 1
+2δσ2π2
+xgξξ(t0, x0, ˆξ) + Aϕ(t0, x0) −a(t0, x0).
+(57)
+The last equality holds since −1
+2γ2σ2uˆξ2+1
+2σ2π2
+xgξξ(t0, x0, ˆξ)+a(t0, x0) = 0 when ξb(t0, x0) ≤
+ˆξ ≤ξs(t0, x0). Letting δ →0+, we conclude −Aϕ(t0, x0)+a(t0, x0) ≤0 since ˆξ is bounded
+in δ.
+Proposition 5.4. U∗is the viscosity supersolution of (43).
+Proof. Step 1: Let ϕ ∈C1,2 and (t0, x0) ∈[0, T) × R such that
+0 = (U∗−ϕ)(t0, x0) < (U∗−ϕ)(t, x), ∀(t, x) ∈[0, T) × R, (t, x)̸ = (t0, x0).
+(58)
+23
+
+We need to show
+−Aϕ(t0, x0) −a(t0, x0) ≥0.
+By Lemma 5.2, there exists a sequence (tϵ, xϵ, yϵ) = (tϵ, xϵ, π(tϵ, xϵ)) →(t0, x0, π(t0, x0))
+such that U ϵ(tϵ, xϵ, yϵ) →U∗(t0, x0).
+Step 2: We construct a test function. Set
+ψϵ,δ := ˆu(t, x) −ϵ2ϕ(t, x) + ϵ2lϵ∗+ ϵ2C(|t −tϵ|2 + |x −xϵ|4) −ϵ4(1 −δ)g(t, x, ξ).
+where δ ∈(0, 1), lϵ∗= U ϵ(tϵ, xϵ, yϵ) −ϕ(tϵ, xϵ) →0 and C is an undetermined constant.
+By definition, U∗is bounded below. It follows that there exist r0, ϵ0 such that
+b∗:= inf{U ϵ(t, x, y) : (t, x, y) ∈Br0(t0, x0, y0), ϵ ∈(0, ϵ0]} > −∞.
+Define Iϵ,δ(t, x, y) = uϵ −ψϵ,δ, then
+Iϵ,δ(t, x, y)
+ϵ2
+= −U ϵ + lϵ∗+ ϕ(t, x) −C(|t −tϵ|2 + |x −xϵ|4) −δϵ2g
+≤−b∗+ lϵ∗+ ϕ(t, x) −C(|t −tϵ|2 + |x −xϵ|4).
+(59)
+Choose C such that ϵ−2Iϵ,δ(t, x, y) < 0 for all sufficiently small ϵ and for any (t, x, y) ∈
+Br0(t0, x0, y0) \ B r0
+2 (t0, x0, y0). Note that Iϵ,δ(tϵ, xϵ, yϵ) = 0. We deduce that Iϵ,δ has a
+local minimizer denoted by (˜tϵ, ˜xϵ, ˜yϵ) in Br0(t0, x0, y0) and Iϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) ≥0.
+Step 3: By the viscosity subsolution property of uϵ, we have
+min{−ψϵ,δ
+t
+−L1ψϵ,δ, −γϵ3ψϵ,δ + ψϵ,δ
+y , −γϵ3ψϵ,δ −ψϵ,δ
+y }
+
+(˜tϵ,˜xϵ,˜yϵ) ≤0.
+We show that for sufficiently small ϵ > 0,
+−γϵ3ψϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) −ψϵ,δ
+y (˜tϵ, ˜xϵ, ˜yϵ) > 0,
+−γϵ3ψϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) + ψϵ,δ
+y (˜tϵ, ˜xϵ, ˜yϵ) > 0.
+Indeed,
+
+
+
+−γϵ3ψϵ,δ −ψϵ,δ
+y
+= ϵ3(−γˆu + (1 −δ)gξ) + o(ϵ3) > 0,
+−γϵ3ψϵ,δ + ψϵ,δ
+y
+= ϵ3(−γˆu −(1 −δ)gξ) + o(ϵ3) > 0,
+(60)
+for sufficiently small ϵ > 0 since |gξ| ≤−γˆu and δ < 1. Therefore, we deduce that
+−ψϵ,δ
+t (˜tϵ, ˜xϵ, ˜yϵ) −L1ψϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) ≤0.
+24
+
+Step 4: Let ˜ξϵ = ˜yϵ−π(˜tϵ,˜xϵ)
+ϵ
+. We show that ˜ξϵ is bounded. Note that
+0 ≥−ψϵ,δ
+t
+−L1ψϵ,δ
+= ϵ2
+−1
+2γσ2ˆu(˜tϵ, ˜xϵ)(˜ξϵ)2 + 1
+2(1 −δ)σ2π2
+x(˜tϵ, ˜xϵ)gξξ(˜tϵ, ˜xϵ, ˜ξϵ) + Aϕ(˜tϵ, ˜xϵ)
++ AR(˜tϵ, ˜xϵ)
+
++ o(ϵ2),
+(61)
+where R(t, x) = lϵ∗+ ϵ2C(|t −tϵ|2 + |x −xϵ|4). Since (˜tϵ, ˜xϵ) ∈Br0(t0, x0), π2
+x(˜tϵ, ˜xϵ),
+Aϕ(˜tϵ, ˜xϵ) and AR(˜tϵ, ˜xϵ) are bounded. Combining with the boundedness of ˆu and gξξ,
+we conclude that ˜ξϵ is bounded. Since (˜tϵ, ˜xϵ, ˜ξϵ) is uniformly bounded in ϵ, there exists a
+subsequence denoted by (˜tϵn, ˜xϵn, ˜ξϵn) →(ˆt, ˆx, ˆξ). We want to show that (ˆt, ˆx) = (t0, x0).
+Note that
+0 ≤lim sup
+n→∞
+ˆIϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn)
+ϵ2
+n
+= −lim inf
+n→∞
+ˆU ϵn(˜tϵn, ˜xϵn, ˜ξϵn) + ϕ(ˆt, ˆx) −C(|ˆt −t0|2 + |ˆx −x0|4)
+≤−U∗(ˆt, ˆx) + ϕ(ˆt, ˆx) −C(|ˆt −t0|2 + |ˆx −x0|4) ≤0.
+(62)
+Due to the strict minimum property of (t0, x0) in (58), we deduce that ˆt = t0, ˆx = x0.
+It follows that
+0 ≥lim
+n→∞
+−ˆψϵn,δ
+t
+(˜tϵn, ˜xϵn, ˜ξϵn) −L1 ˆψϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn)
+ϵ2
+n
+= −1
+2γσ2ˆuˆξ2 + 1
+2σ2(1 −δ)π2
+xgξξ(t0, x0, ˆξ) + Aϕ(t0, x0)
+≥1
+2δσ2π2
+xgξξ(t0, x0, ˆξ) + Aϕ(t0, x0) −a(t0, x0).
+(63)
+The last equality holds since −1
+2γ2σ2ˆuˆξ2 + 1
+2σ2π2
+xgξξ(t0, x0, ˆξ) + a(t0, x0) ≥0. Letting
+δ →0+, we have
+−Aϕ(t0, x0) + a(t0, x0) ≥0.
+Theorem 5.5 (Comparison Theorem). Let U ∗(resp. U∗) be an upper semi-continuous
+viscosity subsolution (resp. lower semi-continuous viscosity supersolution) with polynomial
+growth of order p to the following PDE
+−ft + k2(T −t)(θ −x)fx −1
+2σ2fxx −c(t, x)f + a(t, x) = 0.
+(64)
+Suppose T ≤C(k, p, γ, σ) where C(k, p, γ, σ) is a constant depending on k, p, γ, σ.
+If
+U ∗(T, ·) ≤U∗(T, ·), then U ∗≤U∗on [0, T] × R.
+Proof. Step 1: Without loss of generality, set θ = 0. Let T ≤
+1
+k2, then c(t, x) ≤0 for any
+25
+
+(t, x) ∈[0, T]×R. Since U ∗(resp. U∗) is a u.s.c viscosity subsolution (resp. l.s.c. viscosity
+supersolution) to (64), ˜U ∗= e−δtU ∗(resp. ˜U∗= e−δtU ∗) is a u.s.c viscosity subsolution
+(resp. l.s.c. viscosity supersolution) to
+−ft + k2(T −t)(θ −x)fx −1
+2σ2fxx + (δ −c(t, x))f + eδta(t, x) = 0,
+where δ > 0 is arbitrarily small satisfying δ −c(t, x) > 0 for any (t, x) ∈[0, T] × R.
+Therefore, without loss of generality, we can assume −c(t, x) > 0.
+Step 2: Consider the function ϕ(t, x) = e−λt(1 + |x|2p). Then we have the following
+estimate:
+−ϕt + k2(T −t)(θ −x)ϕx −1
+2σ2ϕxx −c(t, x)ϕ + a(t, x)
+≥e−λt(λ + C(p))(1 + |x|2p) −T
+4
+3C(γ, σ, k)
+≥e−λT(λ + C(p)) −T
+4
+3C(γ, σ, k)
+(65)
+where C(p) > 0 is a constant depending on p and C(γ, σ, k) > 0 is a constant depending
+on γ, σ, k. When T is sufficiently small, i.e., T ≤C(k, p, γ, σ), there exists λ > 0 such that
+−Aϕ−a(t, x) > 0. Therefore, ϕ is a viscosity supersolution of (64). Further, U δ
+∗= U∗+δϕ
+is also a supersolution for any δ > 0.
+Step 3: Assume the inequality U ∗≤U∗fails to hold. Then there exists (t0, x0) such that
+U ∗(t0, x0) −U∗(t0, x0) > 0. Further, for δ > 0 small enough, we then have U ∗(t0, x0) −
+U δ
+∗(t0, x0) > 0. According to the growth condition and terminal condition, we deduce
+M := sup
+[0,T]×R
+U ∗−U δ
+∗=
+sup
+[0,T)×O
+U ∗−U δ
+∗≥U ∗(t0, x0) −U δ
+∗(t0, x0) > 0,
+(66)
+where O is some bounded closed set in R. For ε > 0, set
+ψ(t, s, x, y) = U ∗(t, x) −U δ
+∗(s, y) −1
+2ε(|t −s|2 + |x −y|2).
+For sufficiently small ε,
+M ≤Mε :=
+sup
+[0,T]2×R2 ψε =
+sup
+[0,T]2× ˜
+O2ε
+ψε = ψε(tε, xε, sε, yε),
+where ˜Oε is a bounded closed set. It is easy to check that (tε, xε, sε, yε) is a bounded
+sequence. Hence it converges to (¯t, ¯x, ¯s, ¯y) up to a subsequence. Note that
+M ≤Mε = U ∗(tε, xε) −U δ
+∗(sε, yε) −1
+2ε(|tε −sε|2 + |xε −yε|2)
+≤U ∗(tε, xε) −U δ
+∗(sε, yε).
+(67)
+Since (tε, xε, sε, yε) is a bounded, U ∗(tε, xε) −U δ
+∗(sε, yε) is bounded and further
+1
+2ε(|tε −
+sε|2 + |xε −yε|2) is also bounded. Therefore, as ε decreases to 0, ¯t = ¯s and ¯x = ¯y. Taking
+26
+
+the limits as ε →0 in (67), we obtain
+M ≤lim
+ε→0 Mϵ ≤lim
+ε→0[U ∗(tε, xε) −U δ
+∗(sε, yε)] ≤U ∗(¯t, ¯x) −U δ
+∗(¯t, ¯x) ≤M,
+which implies (¯t, ¯x) ∈[0, T) × O, Mε →M and
+1
+2ε(|tε −sε|2 + |xε −yε|2) →0.
+Step 4: By the above arguments, we know that (tε, sε, xε, yε) →(¯t, ¯t, ¯x, ¯x). Besides,
+(tε, xε) is a local maximum of U ∗(t, x) −
+1
+2ε(|t −sε|2 + |x −yε|2) and (sε, yε) is a local
+minimum of U δ
+∗(s, y) + 1
+2ε(|tε −s|2 + |xε −y|2). By Crandall-Ishii’s Lemma (Theorem 8.3
+in Crandall et al. [8]), there exist m < n such that
+1
+ε(tε −sε), 1
+ε(xε −yε), m
+
+∈¯P2,+U ∗(tε, xε),
+1
+ε(tε −sε), 1
+ε(xε −yε), n
+
+∈¯P2,−U δ
+∗(sε, yε),
+(68)
+where ¯P2,+ (resp. ¯P2,−) denotes the closure of second superjets (resp. subjets). For the
+detailed introduction of superjets and subjets, we refer readers to Crandall et al. [8].
+According to the viscosity solution properties expressed in terms of superjets and subjets,
+we have
+−1
+ε(tε −sε) + k2(T −tε)(θ −xε)1
+ε(xε −yε) −1
+2σ2m −c(tε, xε)U ∗(tϵ, xϵ) + a(tε, xε) ≤0,
+−1
+ε(tε −sε) + k2(T −sε)(θ −yε)1
+ε(xε −yε) −1
+2σ2n −c(sε, yε)U δ
+∗(sϵ, yϵ) + a(sε, yε) ≥0.
+(69)
+Therefore,
+−c(tε, xε)U ∗(tε, xε) + c(sε, yε)U δ
+∗(sε, yε)
+≤−a(tε, xε) + a(sε, yε) + C
+2ε(|tε −sε|2 + |xε −yε|2).
+(70)
+Letting ε →0+ gives us
+−c(¯t, ¯x)M ≤0.
+Since −c > 0, we derive that M ≤0, which is a contradiction.
+Finally, according to Comparison Theorem 5.5, we just need to check that the terminal
+condition of U ∗and U∗.
+Proposition 5.6. The following equality holds:
+U ∗(T, x) = U∗(T, x) = 0.
+Proof. Step 1: By definition, we have U ∗(T, x) ≥U∗(T, x) ≥0. Therefore, it suffices to
+show that U ∗(T, x) ≤0. Arguing by contradiction, assume U ∗(T, x0) = η > 0. There exists a sequence (tϵ, xϵ, yϵ) = (tϵ, xϵ, π(tϵ, xϵ)) →(T, x0, π(T, x0)) such that U ϵ(tϵ, xϵ, yϵ) →
+U ∗(T, x0). Without loss of generality, assume η
+2 < U ϵ(tϵ, xϵ, yϵ) < 2η.
+27
+
+Step 2: We show that tϵ̸ = T for any ϵ > 0. If not, assume that there exists a subsequence
+denoted by tϵn such that tϵn ≡T. According to Lemma 3.1, we have
+lim
+n→∞
+ˆu(T, xϵn) −uϵn(T, xϵn)
+ϵ2
+n
+≤lim
+n→∞
+−1 + exp(γϵ3
+n|yϵn|)
+ϵ2
+n
+= 0,
+which is a contradiction.
+Step 3: Set
+ψϵ,δ := ˆu(t, x) −ϵ2η
+4
+T −t
+T −tϵ −ϵ2η
+4 −ϵ2C(|t −tϵ|2 + |x −xϵ|4) −ϵ4(1 + δ)g(t, x, ξ),
+where C is an undetermined constant. Define Iϵ,δ(t, x, y) = uϵ −ψϵ,δ, then
+Iϵ,δ(t, x, y)
+ϵ2
+= −U ϵ + η
+4
+T −t
+T −tϵ + C(|t −tϵ|2 + |x −xϵ|4) + η
+4 + δϵ2g
+≥−b∗+ η
+4
+T −t
+T −tϵ + C(|t −tϵ|2 + |x −xϵ|4) + η
+4,
+(71)
+where b∗:= sup{U ϵ(t, x, y) : (t, x, y) ∈Br0 = (T −r0, T] × Br0(x0, y0), ϵ ∈(0, ϵ0]}. Choose
+C such that ϵ−2Iϵ,δ(t, x, y) > 0 for all sufficiently small ϵ and for any (t, x, y) ∈Br0 \ B r0
+2 .
+Note that ϵ−2Iη,δ(tϵ, xϵ, yϵ) = −U ϵ(tϵ, xϵ, yϵ)+ η
+2 ≤0. We deduce that Iϵ,δ has a local minimizer denoted by (˜tϵ, ˜xϵ, ˜yϵ) in Br0. Besides, ϵ−2Iϵ,δ(˜tϵ, ˜xϵ, ˜yϵ) ≤0 implies U ϵ(˜tϵ, ˜xϵ, ˜yϵ) ≥η
+4.
+By the same argument, we deduce that ˜tϵ̸ = T.
+Step 4: Similar to the proof in Proposition 5.3, we know (˜tϵ, ˜xϵ, ˜ξϵ) is uniformly bounded.
+There exists a convergent subsequence denoted by (˜tϵn, ˜xϵn, ˜ξϵn). Since ϵ−2
+n ˆIϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn) ≤
+0, we have ˜tϵn →T. By the viscosity supersolution property of uϵ, we have
+0 ≤−ˆψϵn,δ
+t
+(˜tϵn, ˜xϵn, ˜ξϵn)) −L1 ˆψϵn,δ(˜tϵn, ˜xϵn, ˜ξϵn)
+≤ϵ2
+n
+h
+1
+T −tϵn
+
+−η
+4 + R1(ϵn, ˜tϵn, ˜xϵn, ˜ξϵn)(T −˜tϵn)
+
++ R2(˜tϵn, ˜xϵn, ˜ξϵn)
+i
++ o(ϵ2
+n),
+(72)
+where R1(ϵn, ˜tϵn, ˜xϵn, ˜ξϵn) and R2(˜tϵn, ˜xϵn, ˜ξϵn) are uniformly bounded. When n is sufficiently large, we get a contradiction.
+Combining the above discussion, we can obtain the desired convergence result as follows.
+Proposition 5.7. Suppose that the assumptions of Comparison Theorem 5.5 hold. Then
+¯U ϵ converges locally uniformly to f given by (44). That is, uϵ(t, x, ξ) has the following
+expansion:
+uϵ(t, x, ξ) = ˆu(t, x) −ϵ2f(t, x) −ϵ4g(t, x, ξ) + o(ϵ2).
+28
+
+Moreover, let π∗
+b(t, x) and π∗
+s(t, x) denote the true buying and selling boundaries, then
+
+
+
+
+
+
+
+π∗
+s(t, x) = K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
++ O(K
+2
+3),
+π∗
+b(t, x) = −K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
++ O(K
+2
+3).
+(73)
+Proof. Step 1: According to Proposition 4.5, we know that f is the viscosity solution of
+(64). Besides, under the given assumptions, it is straightforward to check that f exhibits
+at most polynomial growth. Therefore, by the Comparison Theorem 5.5, it follows that
+U ∗≤f ≤U∗. The reverse inequality holds immediately, which implies U ∗= U∗= f ,
+and thus the local uniform convergence follows.
+Step 2: Since uϵ is a continuous viscosity solution to (21), we know that
+−γϵ3uϵ(t, x, π∗
+b(t, x)) −uϵ
+y(t, x, π∗
+b(t, x)) = 0.
+(74)
+Substituting the asymptotic expansion of uϵ into (74) gives
+ϵ3(−γu + gξ(t, x, ˜ξ)) + O(ϵ4) = 0,
+(75)
+where
+˜ξ = π∗
+b(t, x) −π(t, x)
+ϵ
+.
+Simplifying (75) yields
+gξ(t, x, ˜ξ) = γu + O(ϵ).
+(76)
+According to the explicit expression of g in (38), (76) holds for any (t, x) only when
+˜ξ = ξb + O(ϵ).
+That is,
+π∗
+b(t, x) = −K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
++ O(K
+2
+3).
+Similarly, we can show that
+π∗
+s(t, x) = K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
++ O(K
+2
+3).
+29
+
+5.2
+Nearly Optimal Strategy
+Based on the discussion above, we can obtain a detailed characterization of the three
+regions.
+Corollary 5.8. The asymptotically optimal no-trade, buying and selling regions are given
+by3
+
+
+
+
+
+
+
+
+
+
+
+NT =
+n
+(t, x, y) : πb(t, x) ≤y ≤πs(t, x)
+o
+,
+BR =
+n
+(t, x, y) : y < πb(t, x)
+o
+,
+SR =
+n
+(t, x, y) : y > πs(t, x)
+o
+,
+(77)
+where πb and πs are the buying and selling boundaries, respectively, defined as
+
+
+
+
+
+
+
+πs(t, x) = K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
+,
+πb(t, x) = −K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3 + [k2(T −t) + k](θ −x)
+γσ2
+.
+The free boundaries are independent of wealth and depend only on the time to maturity and the spread. For a fixed time t, the buying and selling boundaries are negatively
+correlated with the spread x. That is, as x increases, both πb and πs shift downward.
+Economically, a higher spread means that the first asset becomes relatively more overvalued, so the investor optimally targets a lower spread position; consequently, the entire
+no-trade region moves downward. Given the spread x, the width of no-trade region is
+given by
+πs(t, x) −πb(t, x) = 2K
+1
+3
+3[k2(T −t) + k]2
+2γ2σ4
+ 1
+3.
+We can observe that it has the following characteristics: (i) The no-trade region shrinks
+over time, reflecting the investor’s rational adjustment in the presence of transaction costs.
+As time approaches the investment horizon T, the investor no longer has sufficient time
+to wait for the spread to revert to its long-term mean, so she adjusts the position more
+aggressively toward the frictionless optimal allocation. (ii) Higher transaction costs widen
+the no-trade region, as frequent trading significantly erodes profits. A stronger arbitrage
+signal is required to justify trading, so the investor acts only when the spread deviation
+is sufficiently large. (iii) Higher volatility of spread and risk aversion shrinks the no-trade
+region. Increased spread volatility amplifies the fluctuations of the spread, while stronger
+risk aversion reduces tolerance for deviations of the position from the frictionless optimal
+allocation, both leading to a narrower no-trade region. (iv) The width of no-trade region
+is of order O(K
+1
+3), which is consistent with the heuristic derivation above.
+According to (77), we can construct the nearly optimal strategy as follows.
+3To distinguish the asymptotic regions from the true regions, we use the same notation but without
+∗.
+30
+
+Proposition 5.9. Assume (0, x, y) ∈NT . There exist two unique non-decreasing, leftcontinuous and right-limit processes (L∗, M ∗) solving the so-called Skorokhod problem:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+dXt = k(θ −Xt)dt + σdWt,
+X0−= x,
+dYt = dL∗
+t −dM ∗
+t ,
+Y0−= y,
+R T
+0 1{(t,Xt,Yt)/∈∂BR}dL∗
+t = 0,
+R T
+0 1{(t,Xt,Yt)/∈∂SR}dM ∗
+t = 0.
+(78)
+(L∗, M ∗) is the nearly optimal strategy. Moreover, under (L∗, M ∗), Yt is given by
+Yt = y −max
+(h
+(y −πs(0, x))+ ∧inf
+0≤r≤t(y −πb(r, Xr))
+i
+,
+sup
+0≤l≤t
+h
+(y −πs(l, Xl)) ∧inf
+l≤r≤t(y −πb(r, Xr))
+i)
+.
+(79)
+Proof. There exists a unique strong solution Xt that solves the first SDE in (78). For
+a.e.
+ω, πb(t, Xt) and πs(t, Xt) are continuous functions with respect to t.
+Besides,
+inf
+0≤t≤T[πs(t, Xt) −πb(t, Xt)] > 0. By applying Theorem 2.6 and Corollary 2.4 in Burdzy et
+al. [4], there exist two unique non-decreasing, non-negative, and RCLL processes (L∗, M ∗)
+solving (78) and Yt is given by (79) under such processes. Finally, it is straightforward to
+verify that (L∗, M ∗) is an admissible strategy.
+Remark 5.10. If (0, x, y) /∈NT , the optimal strategy (˜L∗, ˜
+M ∗) is given by
+˜L∗
+t = cb + L∗
+t,
+˜
+M ∗= cs + M ∗
+t ,
+(80)
+where (L∗, M ∗) is the solution to (78) with the initial state (0, x, y + cb −cs) and cs, cb are
+non-negative constants defined as
+(cb, cs) =
+
+
+
+
+0, y −πs(0, x)
+
+,
+(0, x, y) ∈SR\∂SR,
+
+πb(0, x) −y, 0
+
+,
+(0, x, y) ∈BR\∂BR.
+Specially, (80) indicates when (0, x, y) ∈BR\∂BR (or SR\∂SR), the investor should
+execute a minimum lump-sum buy (or sell) order to adjust her position to the boundary
+∂BR (∂SR) at the initial time and subsequently follow the strategy described in Proposition 5.9.
+Roughly speaking, L∗aims to push Yt upward so that Yt ≥πb(t, Xt), while M ∗pulls Yt
+downward to ensure Yt ≤πs(t, Xt). Under the joint effect of (L∗, M ∗), Yt is constrained to
+stay within the no-trade region. These two non-decreasing processes satisfy the minimality
+condition, meaning they increase only when Yt reaches the selling or buying boundary.
+31
+
+This constitutes a local time type trading strategy, since the boundaries are driven by
+the diffusion process Xt which exhibits frequent fluctuations. Therefore, except for the
+possible jump at the initial time, (L, M) evolve thereafter, and their increments arise only
+from the singular (non-absolutely continuous) part.
+We provide a more intuitive and accessible explanation of the strategy described in
+Proposition 5.9: (i) The investor should keep inactive as long as her position stays within
+the no-trade region. (ii) If the initial position lies outside NT , an immediate transaction
+should be made to bring it back to the boundary ∂NT . This situation occurs only at the
+initial time. (iii) After the possible initial adjustment, all subsequent transactions occur
+only when the position lies on the boundary ∂NT , and the position is kept within NT
+until the terminal time.
+6
+Simulation Results
+In this section, we conduct simulations to provide an intuitive illustration of the nearly optimal strategy (hereafter referred to as the optimal strategy for simplicity) and investigate
+the impact of transaction costs on utility numerically.
+6.1
+Buying and Selling Boundaries
+Figure 1: The trading and no-trade regions at t = 0 with parameters k = 0.5, θ = 0, σ =
+0.8, γ = 0.2, K = 0.01, T = 1,
+32
+
+We plot the selling region, buying region and no-trade region at the initial time in
+Figure 1. The black dashed line represents the selling boundary, while the black solid line
+corresponds to the buying boundary. Both boundaries are negatively correlated with the
+spread, which reflects the buy-low-sell-high principle of pairs trading. Point A represents
+an investor whose initial position lies in the selling region, indicating that the price of S1
+is overvalued relative to S2. The investor should immediately execute a trade — selling S1
+and buying S2 — to reduce her position and move to Point A’ which is located precisely
+on the sell boundary. Similarly, when the initial position is located in the buying region,
+as represented by Point B, the investor should buy S1 and sell S2 to adjust her position
+toward Point B’. At Point C, which lies within the no-trade region, the investor refrains
+from trading.
+Figure 2 displays the evolution of trading boundaries over time. As the investment
+Figure 2: Trading boundaries at different times with parameters k = 0.5, θ = 0, σ =
+0.8, γ = 0.2, K = 0.01, T = 1.
+horizon approaches, the trading boundaries become flatter. Consequently, only substantial
+deviations in the spread from its long-term mean prompt position adjustments, indicating
+that the investor’s strategy becomes increasingly conservative as maturity nears.
+Figure 3 illustrates the trading boundaries under different levels of transaction costs.
+It can be observed that the no-trade region under lower transaction costs is strictly contained within that under higher transaction costs. As transaction costs decrease, the two
+boundaries converge to the Merton line, which represents the frictionless optimal strategy.
+33
+
+Figure 3: Trading boundaries under different levels of transaction costs with parameters
+k = 0.5, θ = 0, σ = 0.8, γ = 0.2, t = 0, T = 1.
+6.2
+Performance of Optimal Strategy
+Next, we evaluate the performance of the optimal strategy. We employ the Monte Carlo
+method to simulate 2 million sample paths of the process {Xt}0≤t≤T and compute the
+corresponding wealth dynamics under the optimal strategy. The investment horizon is
+set to T = 3, with a time step of ∆t = 1/250, and the initial state is given by (w0, x0, y0) =
+(0, 0, π(0, 0)). The simulation results are summarized in Table 2. The reported terminal
+wealth is net of liquidation costs. The certainty equivalent wealth (CEW) represents the
+amount of deterministic wealth that yields the same utility as the random terminal wealth
+obtained by following the optimal strategy from the initial state. It is defined implicitly
+by the equation
+E[U(W ∗
+T −K|Y ∗
+T |)] = U(CEW).
+As expected, all performance metrics decline with increasing transaction costs, and the
+relationship is non-linear. In extreme cases, such as when K = 0.1, the average utility
+approaches the theoretical lower bound of the value function, indicating an almost notrading strategy.
+Furthermore, to compare the optimal number of units with and without transaction
+costs, we plot their respective dynamics during the first year for a single sample path
+in Fig. 4. In the absence of transaction costs, the optimal number of units changes as
+frequently and sharply as the spread itself, indicating high-frequency trading. In contrast,
+34
+
+Table 2: Simulation results under different transaction costs with other parameters k =
+0.5, θ = 0, σ = 0.8, γ = 0.2, T = 3
+K
+0
+0.001
+0.01
+0.1
+average terminal wealth
+8.200
+7.995
+7.060
+2.273
+average utility
+-0.551
+-0.563
+-0.621
+-1.023
+certainty equivalent wealth
+5.956
+5.738
+4.770
+-0.225
+% of paths ending with positive wealth
+93.10
+92.81
+92.87
+77.95
+when transaction costs are present, the trading strategy becomes significantly smoother,
+with trades occurring only at the boundaries of the no-trading region.
+6.3
+Optimal Strategy vs. Cost Naive Strategy
+To demonstrate the importance of incorporating transaction costs in pairs trading, we
+consider a cost-naive strategy that continues to follow the frictionless optimal strategy
+even in the presence of transaction costs. Table 3 reports the performance of the cost-naive
+strategy based on the same sample data as Table 2. The trading volume for each sample
+is computed as P
+i
+|Yi+1 −Yi|. For the reader’s convenience, the results of the optimal
+strategy are also included for comparison. We can observe that when adopting the costnaive strategy in the presence of transaction costs, the investor tends to trade frequently
+and aggressively, which incurs excessive trading expenses. This issue becomes particularly
+problematic when transaction costs are high, as it can lead to severely degraded outcomes.
+Table 3: The performance comparison with other parameters k = 0.5, θ = 0, σ = 0.8, γ =
+0.2, T = 3
+K=0.001
+K=0.01
+K=0.1
+Optimal
+Cost Naive
+Optimal
+Cost Naive
+Optimal
+Cost Naive
+average terminal wealth
+7.995
+7.781
+7.060
+4.014
+2.273
+-33.664
+average utility
+-0.563
+-0.575
+-0.621
+-0.840
+-1.023
+-37.565
+certainty equivalent wealth
+5.738
+5.534
+4.770
+1.742
+-0.224
+-36.261
+% of paths ending with positive wealth
+92.87
+92.57
+91.46
+85.02
+77.95
+0
+average trading volume
+170.455
+414.075
+98.795
+414.075
+50.280
+414.705
+transaction costs
+0.170
+0.414
+0.98
+4.141
+5.02
+41.470
+7
+Conclusion
+This paper studies optimal pairs trading with transaction costs under utility maximization framework. The spread between a pair of co-integrated assets is modeled as a meanreverting process, and the investor follows a delta-neutral strategy by simultaneously
+taking long and short positions in the two assets while maximizing expected utility of
+35
+
+Figure 4: Dynamics of optimal number of units
+36
+
+terminal wealth net of liquidation costs.
+For comparison, we first investigate the frictionless counterpart and derive the optimal strategy in closed form that indicates trading every time. However, the presence of
+transaction costs gives rise to a no-trading region characterized by free boundaries. We
+prove that the value function is a continuous viscosity solution and then formulate the
+corresponding HJB variational inequality. The structure of the HJB equation naturally
+partitions the state space into three regions: the buying region, the selling region, and
+the no-trade region. We further show that there exist buying and selling boundaries separating these regions, which can be expressed as functions of time and the spread.
+To obtain analytical insights and tractable approximations, we perform an asymptotic expansion of the frictional value function in powers of the appropriately scaled
+transaction-cost parameter.
+By matching terms across different orders, we derive explicit approximations for the free boundaries and the resulting nearly optimal strategy.
+The no-trading region contains the Merton line (frictionless optimal strategy) and shrinks
+over time. The nearly optimal strategy maintains the position in no-trade region and
+trading only occurs when the position reaches the free boundaries. To rigorously justify
+the asymptotic results, we extend homogenization and viscosity-solution techniques and
+verify the formal expansion.
+Finally, numerical experiments are conducted to illustrate the structure of the optimal
+strategy and to quantify the impact of transaction costs on trading behavior and utility.
+The results demonstrate that ignoring transaction costs can lead to excessive trading and
+significant utility loss, highlighting the importance of incorporating fictions in the design
+of pairs trading strategies.
+References
+[1] A. Altarovici, J. Muhle-Karbe, and H.M. Soner. Asymptotics for fixed transaction
+costs. Finance and Stochastics, 19:363–414, 2015.
+[2] A. Beck. First-order methods in optimization. SIAM, 2017.
+[3] M. Bichuch. Asymptotic analysis for optimal investment in finite time with transaction costs. SIAM Journal on Financial Mathematics, 3:433–458, 2012.
+[4] K. Burdzy, W. Kang, and K. Ramanan. The skorokhod problem in a time-dependent
+interval. Stochastic processes and their applications, 119:428–452, 2009.
+[5] ´A. Cartea, L. Gan, and S. Jaimungal. Trading co-integrated assets with price impact.
+Mathematical Finance, 29:542–567, 2019.
+37
+
+[6] M.C. Chiu and H.Y. Wong. Mean–variance portfolio selection of cointegrated assets.
+Journal of Economic Dynamics and Control, 35(8):1369–1385, 2011.
+[7] M.C. Chiu and H.Y. Wong. Dynamic cointegrated pairs trading: Mean–variance
+time-consistent strategies.
+Journal of Computational and Applied Mathematics,
+290:516–534, 2015.
+[8] M.G. Crandall, H. Ishii, and P. Lions. User’s guide to viscosity solutions of second
+order partial differential equations. Bulletin of the American mathematical society,
+27:1–67, 1992.
+[9] M. Dai and F. Yi.
+Finite-horizon optimal investment with transaction costs: A
+parabolic double obstacle problem. Journal of Differential Equations, 246:1445–1469,
+2009.
+[10] M. Dai and Y. Zhong. Penalty methods for continuous-time portfolio selection with
+proportional transaction costs.
+The Journal of Computational Finance, 13:1–31,
+2010.
+[11] M.H. Davis.
+Option pricing in incomplete.
+Mathematics of derivative securities,
+15:216, 1997.
+[12] D.S. Ehrman. The handbook of pairs trading: strategies using equities, options, and
+futures. John Wiley & Sons, 2006.
+[13] L. Evans. Measure theory and fine properties of functions. Routledge, 2018.
+[14] W.H. Fleming and H.M. Soner. Controlled Markov processes and viscosity solutions.
+Springer, 2006.
+[15] A. Friedman and J. Spruck. Variational and free boundary problems, volume 53.
+Springer Science & Business Media, 2012.
+[16] E. Gatev, W.N. Goetzmann, and K.G. Rouwenhorst. Pairs trading: Performance of
+a relative-value arbitrage rule. The Review of Financial Studies, 19:797–827, 2006.
+[17] N. Huck. The high sensitivity of pairs trading returns. Applied Economics Letters,
+20:1301–1304, 2013.
+[18] N. Huck and K. Afawubo. Pairs trading and selection methods: is cointegration
+superior? Applied Economics, 47:599–613, 2015.
+[19] Xu J. and Yang P. Pairs trading with costly short-selling. Journal of Economic
+Dynamics and Control, 168:104941, 2024.
+38
+
+[20] K. Janeˇcek and S.E. Shreve. Asymptotic analysis for optimal investment and consumption with transaction costs. Finance and Stochastics, 8:181–206, 2004.
+[21] J. Kallsen and J. Muhle-Karbe. The general structure of optimal investment and
+consumption with small transaction costs. Mathematical Finance, 27:659–703, 2017.
+[22] I. Karatzas and S.G. Kou. On the pricing of contingent claims under constraints.
+The annals of applied probability, pages 321–369, 1996.
+[23] I. Karatzas and S. Shreve. Brownian motion and stochastic calculus, volume 113.
+Springer Science & Business Media, 2012.
+[24] C. Krauss. Statistical arbitrage pairs trading strategies: Review and outlook. Journal
+of Economic Surveys, 31:513–545, 2017.
+[25] Y. Lei and J. Xu. Costly arbitrage through pairs trading. Journal of Economic
+Dynamics and Control, 56:1–19, 2015.
+[26] T. Leung and X. Li. Optimal mean reversion trading with transaction costs and
+stop-loss exit. International Journal of Theoretical and Applied Finance, 18:1550020,
+2015.
+[27] T. Leung, X. Li, and Z. Wang. Optimal multiple trading times under the exponential
+ou model with transaction costs. Stochastic Models, 31:554–587, 2015.
+[28] Y.X. Lin, M. McCrae, and C. Gulati.
+Loss protection in pairs trading through
+minimum profit bounds: A cointegration approach. Advances in Decision Sciences,
+2006, 2006.
+[29] J. Liu and A. Timmermann. Optimal convergence trade strategies. The Review of
+Financial Studies, 26:1048–1086, 2013.
+[30] R. Liu, Z. Wu, and Q. Zhang. Pairs-trading under geometric brownian motions: An
+optimal strategy with cutting losses. Automatica, 115:108912, 2020.
+[31] Y. Melnyk and F.T. Seifried. Small-cost asymptotics for long-term growth rates in
+incomplete markets. Mathematical Finance, 28:668–711, 2018.
+[32] R.C. Merton. Optimum consumption and portfolio rules in a continuous-time model.
+In Stochastic optimization models in finance, pages 621–661. Elsevier, 1975.
+[33] L. Moreau, J. Muhle-Karbe, and H.M. Soner.
+Trading with small price impact.
+Mathematical Finance, 27:350–400, 2017.
+39
+
+[34] S. Mudchanatongsuk, J.A. Primbs, and W. Wong. Optimal pairs trading: A stochastic control approach. In 2008 American control conference, pages 1035–1039. IEEE,
+2008.
+[35] J. Muhle-Karbe, M. Reppen, and H. M. Soner. A primer on portfolio choice with
+small transaction costs. Annual Review of Financial Economics, 9:301–331, 2017.
+[36] M.M. Ngo and H. Pham. Optimal switching for the pairs trading rule: A viscosity
+solutions approach. Journal of Mathematical Analysis and Applications, 441:403–425,
+2016.
+[37] H. Pham. Continuous-time stochastic control and optimization with financial applications, volume 61. Springer Science & Business Media, 2009.
+[38] D. Possama¨ı, H.M. Soner, and N. Touzi. Homogenization and asymptotics for small
+transaction costs: the multidimensional case. Communications in Partial Differential
+Equations, 40:2005–2046, 2015.
+[39] S.E. Shreve and H.M. Soner. Optimal investment and consumption with transaction
+costs. The Annals of Applied Probability, pages 609–692, 1994.
+[40] H.M. Soner and N. Touzi. Homogenization and asymptotics for small transaction
+costs. Siam journal on control and optimization, 51:2893–2921, 2013.
+[41] Q. Song and Q. Zhang. An optimal pairs-trading rule. Automatica, 49:3007–3014,
+2013.
+[42] K. Suzuki.
+Optimal switching strategy of a mean-reverting asset over multiple
+regimes. Automatica, 67:33–45, 2016.
+[43] K. Suzuki. Infinite-horizon optimal switching regions for a pair-trading strategy with
+quadratic risk aversion considering simultaneous multiple switchings: A viscosity
+solution approach. Mathematics of Operations Research, 46:336–360, 2021.
+[44] J. Tie, H. Zhang, and Q. Zhang. An optimal strategy for pairs trading under geometric brownian motions. Journal of Optimization Theory and Applications, 179:654–
+675, 2018.
+[45] A. Tourin and R. Yan. Dynamic pairs trading using the stochastic control approach.
+Journal of Economic Dynamics and Control, 37:1972–1981, 2013.
+[46] A. Tourin and T. Zariphopoulou. Numerical schemes for investment models with
+singular transactions. Computational Economics, 7:287–307, 1994.
+40
+
+[47] G. Vidyamurthy. Pairs Trading: Quantitative Methods and Analysis, volume 217.
+John Wiley & Sons, 2004.
+[48] A. E. Whalley and P. Wilmott. An asymptotic analysis of an optimal hedging model
+for option pricing with transaction costs. Mathematical finance, 7:307–324, 1997.
+[49] J. Yong and X.Y. Zhou. Stochastic controls: Hamiltonian systems and HJB equations,
+volume 43. Springer Science & Business Media, 1999.
+[50] F.H. Yu, W.K. Ching, C. Wu, and J.W. Gu. Optimal pairs trading strategies: A
+stochastic mean–variance approach. Journal of Optimization Theory and Applications, 196:36–55, 2023.
+[51] H. Zhang and Q. Zhang. Trading a mean-reverting asset: Buy low and sell high.
+Automatica, 44:1511–1518, 2008.
+[52] X.Y. Zhou and D. Li. Continuous-time mean-variance portfolio selection: A stochastic lq framework. Applied Mathematics & Optimization, 42(1):19–33, 2000.
+[53] D.M. Zhu, J.W. Gu, F.H. Yu, T.K. Siu, and W.K. Ching. Optimal pairs trading with
+dynamic mean-variance objective. Mathematical Methods of Operations Research,
+94:145–168, 2021.
+8
+Appendix
+8.1
+Review of definition of viscosity solutions
+We briefly review the basic concepts of viscosity solutions and refer the reader to Crandall
+et al. [8], Fleming and Soner [14], and Pham [37] for a detailed introduction.
+Consider the following nonlinear second-order partial differential equations:
+F(t, x, v(t, x), vt(t, x), vx(t, x), vxx(t, x)) = 0, (t, x) ∈[0, T) × RN,
+(81)
+where F is a continuous function of [0, T) × RN × R × RN × SN 4 taking values in R.
+Assume F satisfies the following conditions:
+(1) For any (t, x, r, p, q) ∈[0, T) × R × R × R × RN and any M, ˆ
+M ∈SN,
+M ≤ˆ
+M =⇒F(t, x, r, p, q, M) ≥F(t, x, r, p, q, ˆ
+M).
+(2) For any (t, x, r, q, M) ∈[0, T) × R × R × RN × SN and any p, ˆp ∈R,
+p ≤ˆp =⇒F(t, x, r, p, q, M) ≥F(t, x, r, ˆp, q, M).
+4We denote by SN the space of (N × N) symmetric matrices.
+41
+
+Definition 8.1. Let v : [0, T) × RN →R be locally bounded.
+(1) v is a (discontinuous) viscosity subsolution of (81) on [0, T) × RN if
+F(¯t, ¯x, v∗(¯t, ¯x), φt(¯t, ¯x), φx(¯t, ¯x), φxx(¯t, ¯x)) ≤0,
+for any (¯t, ¯x) ∈[0, T) × RN and any φ ∈C2([0, T] × RN) such that (¯t, ¯x) is a strict (or
+local) maximum point of v∗−φ, where v∗(t, x) = lim sup
+(t′,x′)→(t,x)
+v(t′, x′).
+(2) v is a (discontinuous) viscosity supersolution of (81) on [0, T) × RN if
+F(¯t, ¯x, v∗(¯t, ¯x), φt(¯t, ¯x), φx(¯t, ¯x), φxx(¯t, ¯x)) ≥0,
+for any (¯t, ¯x) ∈[0, T) × RN and any φ ∈C2([0, T] × RN) such that (¯t, ¯x) is a strict (or
+local) minimum point of v∗−φ, where v∗(t, x) =
+lim inf
+(t′,x′)→(t,x) v(t′, x′).
+(3) v is a (discontinuous) viscosity solution of (81) on [0, T)×RN if it is both a subsolution
+and supersolution.
+8.2
+Proof of Theorem 2.2
+Proof. The proof is divided into three parts.
+Step 1: We first solve that PDE (9).
+To transform it to a linear PDE, we let u(t, x) = −exp(h(t, x)). Then h(t, x) satisfies the
+following equation:
+
+
+
+ht + σ2
+2 hxx = k2(θ −x)2
+2σ2
+,
+h(T, x) = 0.
+(82)
+Make an ansatz that h(t, x) = a2(t)k2(θ−x)2+a0(t). Substituting it into 82 and matching
+coefficients of each power of k(θ −x), we get a system of ODEs:
+
+
+
+a′
+2(t) =
+1
+2σ2,
+a2(T) = 0,
+a′
+0(t) + σ2k2a2(t) = 0,
+a0(T) = 0.
+(83)
+Solving (83), we obtain that
+a2(t) = −T −t
+2σ2 ,
+a0(t) = −k2(T −t)2
+4
+.
+Therefore, ˆu(t, x) = −exp(a2(t)k2(θ−x)2+a0(t)) is the solution to PDE (9) and ˆv(t, w, x) =
+−exp(−γw)ˆu(t, x) is the solution to PDE (6). Substituting the expression of u into (8),
+we get (10).
+Step 2: We verify that (10) is the optimal strategy and (11) is the corresponding optimal
+value function.
+42
+
+It is straightforward to check that (10) is an admissible strategy. For any (t, w, x) ∈
+[0, T) × R × R and any Y ∈Ut(w, x), by applying Itˆo’s formula, we obtain,
+dˆv(s, Ws, Xs) = ˆLˆv(s, Ws, Xs)ds + [σYsˆvw(s, Ws, Xs) + σˆvx(s, Ws, Xs)]dBs
+= ˆLˆv(s, Ws, Xs)ds + Msˆv(s, Ws, Xs)dBs,
+(84)
+where
+
+
+
+ˆLˆv = ˆvt + k(θ −x)ˆvx + 1
+2σ2ˆvxx + ky(θ −x)ˆvw + σ2yˆvxw + 1
+2σ2y2ˆvww,
+Ms = −γσYs + T−s
+σ k2(θ −Xs).
+To eliminate the diffusion term in (84), we introduce the exponential local martingale
+Zs(M) = exp
+ Z s
+t
+MrdBr −1
+2
+Z s
+t
+M2
+rdr
+
+.
+Applying Itˆo’s formula to Z−1
+s ˆv(s, Ws, Xs) gives us
+dZ−1
+s (M)ˆv(s, Ws, Xs) = Z−1
+s (M)Aˆv(s, Ws, Xs)ds.
+Since ˆv satisfies (6), we have Aˆv ≤0. Therefore,
+Z−1
+T (M)ˆv(T, WT, XT) ≤ˆv(t, w, x).
+Taking conditional expectation yields
+EtU(WT) ≤ˆv(t, w, x)EtZT(M).
+We claim that Zs is a martingale, and thus EtZT(M) = 1, which implies
+EtU(WT) ≤ˆv(t, w, x).
+Taking supremum over Y ∈Ut(w, x) , we have ˆV (t, w, x) ≤ˆv(t, w, x). On the other hand,
+when Y (·) takes form of (10), the above equalities hold, and hence
+ˆV (t, w, x) = ˆv(t, w, x).
+Therefore, (10) is the optimal strategy and (11) is the corresponding optimal value function.
+Step 3: It remains to show that Zs(M) is a martingale.
+Since Y ∈Ut(w, x), we have M2
+s ≤C(1 + sup
+t≤r≤s
+|Xr|2). Note that Xs admits the following
+43
+
+explicit expression:
+Xs = (1 −e−k(s−t))θ + xe−k(s−t) + σ
+Z s
+t
+e−k(s−t−r)dBr.
+It then follows that
+M2
+s ≤C(1 + sup
+t≤s≤T
+|Bs −Bt|2), ∀s ∈[t, T].
+Therefore, for any s ∈[t, T],
+Et exp
+1
+2
+Z s+δ
+s
+M2
+rdr
+
+≤Et exp
+δ
+2C(1 + sup
+t≤s≤T
+|Bs −Bt|2)
+
+.
+(85)
+According to property of Brownian motion, there exists δ > 0 such that the right-hand
+side of (85) is finite.
+By Corollary 5.16, Chapter 3 in Karatzas and Shreve [23], the
+Novikov condition for Z(M) is satisfied. This implies that Z(M) is a martingale and
+EtZT(M) = 1.
+8.3
+Proof of Proposition 3.4
+Step1: We show that there exists locally bounded function h1(w, y) ≥0 such that
+|V (t, w, x, y + ∆y) −V (t, w, x, y)| ≤h1(w, y)|∆y|,
+for 0 < |∆y| < 1.
+By Lemma 3.1, when (t′, w′, x′, y′) ∈[0, T] × (−1 + w, w + 1) × R × (−1 + y, y + 1), we
+have
+exp(−γw + γ) ≤|V (t, w, x, y)| ≤exp(−γw + γK|y| + γ + γK).
+Let h1(t, w, x, y) = exp(−γw + γK|y| + γ + γK) which is a locally bounded function.
+Since V is concave on y, for 0 < |∆y| < 1, we have
+
+
+
+
+
+
+
+V (t, w, x, y + ∆y) −V (t, w, x, y)
+∆y
+≤V (t, w, x, y) −V (t, w, x, y −1),
+V (t, w, x, y + ∆y) −V (t, w, x, y)
+∆y
+≥V (t, w, x, y + 1) −V (t, w, x, y).
+44
+
+Therefore,
+
+V (t, w, x, y + ∆y) −V (t, w, x, y)
+∆y
+
+≤
+V (t, w, x, y) −V (t, w, x, y −1)
+ +
+V (t, w, x, y + 1) −V (t, w, x, y)
+
+≤4 exp(−γw + γK|y| + γ + γK).
+Letting h1(w, y) = 4 exp(−γw + γK|y| + γ + γK), we get the desired result. Similarly, we
+can prove that there exists locally bounded function h2(w, y) ≥0 such that
+|V (t, w + ∆w, x, y) −V (t, w, x, y)| ≤h2(w, y)|∆w|.
+Step2:We show that there exists locally bounded function h3(t, w, x, w) ≥0 such that
+|V (t + ∆t, w, x, y) −V (t, w, x, y)| ≤h3(t, w, x, y)|∆t|5.
+(86)
+To facilitate the proof, we redefine the admissible control sets as follows:
+Ut(w, x, y) = {(L, M) ∈Ut(w, x, y)|J(t, w, x, y; L, M) ≥−exp(−γw + γK|y|) −1}. (87)
+Due to Lemma 3.1, we also have
+V (t, w, x, y) =
+sup
+(L,M)∈¯Ut(w,x,y)
+J(t, w, x, y; L, M).
+By Lemma 3.1 again, we obtain
+0 ≤V (t, w, x, y)−U(w−K|y|) ≤eγK|y| ˆV (t, w, x)−U(w−K|y|) = e−γ(w−K|y|)(ˆu(t, x)+1),
+where
+u(t, x) = −exp
+
+−T −t
+2σ2 k2(θ −x)2 −k2(T −t)2
+4
+
+.
+Note that
+u(t, x) + 1 ≤T −t
+2σ2 k2(θ −x)2 + k2(T −t)2
+4
+.
+We have
+0 ≤V (t, w, x, y) −U(w −K|y|) ≤Ce−γ(w−K|y|)(1 + (θ −x)2)(T −t).
+5Without loss of generality, we only consider the case where t ∈(0, T). The case where t = 0 or t = T
+can be proved similarly.
+45
+
+Therefore, for any admissible control (L, M),
+0 ≤V (T −∆t, WT−∆t, XT−∆t, YT−∆t) −U(WT−∆t −K|YT−∆t|)
+≤C∆t exp(−γWT−∆t + γK|YT−∆t|)(1 + (θ −XT−∆t)2)
+(88)
+where we assume ∆t > 0 hereafter. Taking the conditional expectation Et[ · ] on both
+sides yields
+0 ≤EtV (T −∆t, WT−∆t, XT−∆t, YT−∆t) −EtU(WT−∆t −K|YT−∆t|)
+≤C∆tEt
+h
+exp(−γWT−∆t + γK|YT−∆t|)(1 + (θ −X(T−∆t))2)
+i
+≤C∆t
+
+Et[exp(−2γWT−∆t + 2γK|YT−∆|)]
+ 1
+2
+Et[1 + (θ −X(T−∆t))4]
+ 1
+2
+≤C∆t[exp(−2γw + 2γK|y|) + 1]
+1
+2
+
+Et[1 + (θ −X(T−∆t))4]
+ 1
+2.
+where the final inequality holds by (87). Besides, since
+XT−∆t|Xt = x ∼N
+
+θ + (x −θ)e−k(T−∆t−t), σ21 −e−2k(T−∆t−t)
+2k
+
+,
+we know
+Et[1 + (θ −X(T−∆t))4] ≤C(1 + x4).
+It follows that there exists a locally bounded function h3(t, w, x, y) such that
+
+
+
+EtU(WT−∆t −K|YT−∆t|) ≤EtV (T −∆t, WT−∆t, XT−∆t, YT−∆t),
+EtV (T −∆t, WT−∆t, XT−∆t, YT−∆t) ≤EtU(WT−∆t −K|YT−∆t|) + h3(t, w, x, y)∆t.
+Taking the supremum over all admissible controls and applying the dynamic programming
+principle, we obtain
+0 ≤V (t, w, x, y) −V (t + ∆t, w, x, y) ≤h3(t, w, x, y)∆t,
+where we use the fact that
+sup
+(L,M)∈¯Ut
+EtU(WT−∆t −K|YT−∆t|) = V (t + ∆t, w, x, y).
+Similarly, by taking conditional expectation Et−∆t[ · ] on both sides of (88) and using a
+similar argument, we can prove
+0 ≤V (t −∆t, w, x, y) −V (t, w, x, y) ≤h3(t, w, x, y)∆t.
+Therefore, we get the desired result.
+46
+
+Step3: Fixing (t, w, y), we show that V (t, w, ·, y) is a continuous function.
+Given the initial state (t, w, x, y), we consider the no-trading strategy, and define
+τ = inf{s > t : Xs = x + ∆x}, τw = inf{s > t : |Ws| > M},
+where M > |w|. It is straightforward to verify that P(τw > 0) = 1. By the dynamic
+programming principle, we have
+V (t, w, x, y) ≥Et[V (τ ∧T ∧τw, Wτ∧T∧τw, Xτ∧T∧τw, Yτ∧T∧τw)]
+= Et[V (τ, Wτ, x + ∆x, y)1{τ<T∧τw} + V (T ∧τw, WT∧τw, XT∧τw, y)1{T∧τw<τ}]
+≥Et
+h
+1{τ<T∧τw}
+
+V (t, w, x + ∆x, y) −h3(t, Wτ, x + ∆x, y)(τ −t))
+−h2(w, y)|Wτ −w|
+
++ V (T ∧τw, WT∧τw, XT∧τw, y)1{T∧τw<τ}
+i
+,
+where we use the results of Step1 and Step2. Therefore,
+V (t, w, x, y) −V (t, w, x + ∆x, y) ≥
+h
+P(τ < T ∧τw) −1
+i
+V (t, w, x + ∆x, y) + Rτ,
+(89)
+where Rτ is the remainder term. Due local boundedness of h2, h3 and V , we can deduce
+Rτ →0 and P(τ < T ∧τw) →1 as ∆x →0 by the Dominated Convergence Theorem.
+Therefore,
+V (t, w, x, y) −V (t, w, x + ∆x, y) ≥o(1),
+where lim
+∆x→0 o(1) = 0. Similarly, given the initial state value (t, w, x + ∆x, y), we have
+V (t, w, x + ∆x, y) −V (t, w, x, y) ≥o(1).
+Therefore,
+|V (t, w, x + ∆x, y) −V (t, w, x, y)| →0.
+Step4: We show that V (·, ·, ·, ·) is continuous.
+|V (t + ∆t, w + ∆, x + ∆x, y + ∆y) −V (t, w, x, y)|
+≤|V (t, w, x + ∆x, y) −V (t, w, x, y)|
++ |V (t, w + ∆w, x + ∆x, y + ∆y) −V (t, w + ∆w, x + ∆x, y + ∆y)|
++ |V (t, w + ∆w, x + ∆x, y + ∆y) −V (t, w, x + ∆x, y + ∆y)|
++ |V (t, w, x + ∆x, y + ∆y) −V (t, w, x + ∆x, y)|
+≤|V (t, w, x + ∆x, y) −V (t, w, x, y)| + h3(t, w + ∆w, x + ∆x, y + ∆y)|∆t|
++ h2(w, y + ∆y)|∆w| + h1(w, y)∆y.
+Letting (∆t, ∆w, ∆x, ∆y) →(0, 0, 0, 0), we get the desired result.
+47
+
+8.4
+Proof of Proposition 3.5
+Proof. (i) We first prove that V is a viscosity super-solution. That is, for any smooth
+function ϕ(t, w, x, y) such that V (t, w, x, y) −ϕ(t, w, x, y) attains the local minimum at
+(t0, w0, x0, y0) ∈[0, T) × R × R × R, the following inequality holds:
+min{−ϕt −Lϕ, Kϕw −ϕy, Kϕw + ϕy}
+
+(t0,w0,x0,y0) ≥0.
+Without loss of generality, we assume that V (t0, w0, x0, y0) = ϕ(t0, w0, x0, y0) and V ≥ϕ
+in [0, T] × R × R × R. According to inequality (15), we have
+ϕ(t0, w0, x0, y0) ≥ϕ(t0, w0 −K|l|, x0, y0 + l).
+Taking the left-hand side to the right-hand side, dividing by l, and sending l ↓0+(l ↑0−),
+we get
+
+
+
+Kϕw(t0, w0, x0, y0) −ϕy(t0, w0, x0, y0) ≥0,
+Kϕw(t0, w0, x0, y0) + ϕy(t0, w0, x0, y0) ≥0.
+Finally, consider no trading strategy L = M = 0. Then by the dynamic programming
+principle, we have
+V (t0, w0, x0, y0) ≥
+sup
+(L,M)∈At0(w0,x0,y0)
+Et0V (t0 + h, Wt0+h, Xt0+h, Yt0+h)
+≥Et0V (t0 + h, Wt0+h, Xt0+h, Yt0+h)
+
+(L,M)=(0,0).
+This inequality also holds for ϕ,
+ϕ(t0, w0, x0, y0) ≥Et0ϕ(t0 + h, Wt0+h, Xt0+h, Yt0+h)
+
+(L,M)=(0,0).
+Applying Ito’s formula to ϕ and letting h →0+, we can obtain
+−ϕt(t0, w0, x0, y0) −Lϕ(t0, w0, x0, y0) ≥0.
+Therefore, V is a viscosity supersolution of the HJB variational inequality.
+(ii) Next, we prove that V is a viscosity subsolution. That is, for any smooth function
+ϕ(t, w, x, y) such that V (t, w, x, y)−ϕ(t, w, x, y) attains the local maximum at (t0, w0, x0, y0) ∈
+[0, T) × R × R × R, the following inequality holds:
+min{−ϕt −Lϕ, Kϕw −ϕy, Kϕw + ϕy}
+
+(t0,w0,x0,y0) ≤0.
+48
+
+Without loss of generality, we assume that V (t0, w0, x0, y0) = ϕ(t0, w0, x0, y0) and V ≤ϕ
+in [0, T] × R × R × R. We argue by contradiction and suppose that
+
+
+
+Kϕw(t0, w0, x0, y0) −ϕy(t0, w0, x0, y0) > 0,
+Kϕw(t0, w0, x0, y0) + ϕy(t0, w0, x0, y0) > 0,
+and there exists β > 0 such that
+−ϕt(t0, w0, x0, y0) −Lϕ(t0, w0, x0, y0) > β.
+Since ϕ is smooth, there exist a neighborhood of (t0, w0, x0, y0) denoted by U such that
+Kϕw(U) −ϕy(U) > 0, Kϕw(U) + ϕy(U) > 0, −ϕt(U) −Lϕ(U) > β.
+(90)
+Let (L∗, M ∗) ∈At(w, x, y) be the optimal strategy and (W ∗
+s , Y ∗
+s )t≤s≤T are the processes
+under such strategy. Define τ = inf{t > t0 : (t, W ∗
+t , Xt, Y ∗
+t ) /∈U} ∧T. We claim that
+P(τ > t0) > 0 (which will be proved later). Note that
+ϕ(t0, w0, x0, y0) = V (t0, w0, x0, y0) = Et0V (τ, W ∗
+τ , Xτ, Y ∗
+τ ) ≤Et0ϕ(τ, W ∗
+τ , Xτ, Y ∗
+τ ).
+Applying Ito’s formula to ϕ, we have
+0 ≥E
+Z τ
+t0
+(−ϕt −Lϕ)dt + E
+Z τ
+t0
+(Kϕw −ϕy)dL∗
+t + E
+Z τ
+t0
+(Kϕw + ϕy)dM ∗
+t
+≥β(Eτ −t0),
+(91)
+where the last inequality holds due to (90). Note that Eτ −t0 = E(τ −t0)1{τ>t0} > 0.
+Then we get a contradiction. Finally, we prove that P(τ > t0) > 0. Indeed, according to
+Lemma 3.2, the subdifferential set ∂wV and ∂yV is nonempty. By the definition of ϕ, we
+can derive that
+(ϕw(t0, w0, x0, y0), ϕy(t0, w0, x0, y0)) ∈∂w,yV (t0, w0, x0, y0)
+according to Lemma 2.7 and Proposition 2.6 (iv) in Yong and Zhou [49]. Therefore, for
+any l > 0,
+V (t0, w0 −Kl, x0, y0 +l)−V (t0, w0, x0, y0) ≤−Klϕw(t0, w0, x0, y0)+lϕy(t0, w0, x0, y0) < 0.
+Similarly, it can be proved that V (t0, w0 + Kl, x0, y0 + l) < V (t0, w0, x0, y0) for any l <
+0. Both imply that at t0 neither buying nor selling is optimal. It follows that L∗
+t0 =
+M ∗
+t0 = 0. Since (L∗, M ∗) is right-continuous, for a.s. ω, there exists h(ω) > 0 such that
+(s, W ∗
+s , Xs, Y ∗
+s ) ∈U for t0 < s < t0 + h. Therefore, P(τ > t0) > 0.
+49
+
+8.5
+Proof of Proposition 3.6
+Proof. Consider the transformation m(t, x, y) = −log(−u(t, x, y)). Since u(t, x, ·) is a
+concave function and −log(·) is strictly decreasing and convex, it is straightforward to
+verify that m(t, x, ·) is a concave function. Consequently, my exists almost everywhere
+and is non-increasing. Besides, since u is a continuous viscosity solution of (21), we have
+−γKu −uy ≥0, −γKu + uy ≥0,
+which is equivalent to −γK ≤my ≤γK.
+On the other hand, if (t, x, ys) ∈SR∗and (t, x, yb) ∈BR∗, we have
+
+
+
+−γKu(t, x, yb) −uy(t, x, yb) = 0,
+−γKu(t, x, ys) + uy(t, x, ys) = 0.
+according to (22). It follows that my(t, x, yb) = γK and my(t, x, ys) = −γK. Thus,
+
+
+
+BR∗= {(t, x, y)|my(t, x, y) = γK},
+SR∗= {(t, x, y)|my(t, x, y) = −γK}.
+(92)
+Set
+
+
+
+π∗
+s(t, x) = inf{y : my(t, x, y) = −γK},
+π∗
+b(t, x) = sup{y : my(t, x, y) = γK}.
+According to the monotonicity of my(t, x, ·), we derive that
+
+
+
+my(t, x, y) = γK,
+y ≤π∗
+b(t, x),
+my(t, x, y) = −γK,
+y ≥π∗
+s(t, x).
+(93)
+Note that SR∗∩BR∗= ∅, which implies that π∗
+b(t, x) ≤π∗
+s(t, x). Therefore, combining
+(92) and (93), we have
+
+
+
+
+
+
+
+
+
+NT ∗= {(t, x, y) | π∗
+b(t, x) ≤y ≤π∗
+s(t, x)},
+BR∗= {(t, x, y) | y < π∗
+b(t, x)},
+SR∗= {(t, x, y) | y > π∗
+s(t, x)}.
+8.6
+Proof of Proposition 4.4
+Proof. We first verify g is a solution in each of the three regions separately.
+50
+
+• No-trade region (ξb ≤ξ ≤ξs):
+According to (39) and (40), we know that −1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a(t, x) = 0
+when ξb < ξ < ξs. It remains to verify that −γˆu + gξ > 0 and −γˆu −gξ > 0.
+Indeed, note that gξξ = 12a4(t, x)ξ2 + 2a2(t, x) when ξb < ξ < ξs. From (42), we
+derive that gξξ > 0 when ξb < ξ < ξs, which implies gξ is strictly increasing. Then,
+γˆu = gξ(ξb) < gξ < gξ(ξs) = −γˆu.
+• Buying region (ξ < ξb):
+Obviously, gξ = γˆu when ξ < ξb. It follows that −γˆu + gξ = 0 and −γˆu −gξ =
+−2γu > 0 since ˆu < 0. It remains to show that −1
+2γ2σ2ˆuξ2 + 1
+2σ2π2
+xgξξ + a(t, x) > 0.
+Since gξξ = 0 when ξ < ξb, it is equivalent to showing that −1
+2γ2σ2ˆuξ2 + a(t, x) > 0.
+Note that −1
+2γ2σ2ˆuξ2+a(t, x) = −6σ2π2
+xa4ξ2−σ2
+2 π2
+xa2 also holds for ξ ∈R according
+to (39). Since a4 < 0, a2 > 0 and the third and fourth equations in (41), we have
+−6σ2π2
+xa4ξ2 −σ2π2
+xa2 > 0 when ξ < ξb. Therefore, −1
+2γ2σ2ˆuξ2 + a(t, x) > 0.
+• Selling region (ξ > ξs):
+The argument is similar to the case of buying region. We omit it.
+Next, we verify the monotonicity of g. Since g is an even function with respect to ξ, it
+suffices to consider the case ξ > 0. For 0 ≤ξ ≤ξs, we have gξ = ξ(4a4ξ2 + a2) > 0, since
+4a4(t, x)ξ2 + a2(t, x) ≥4a4ξ2
+s + a2 = −γˆu
+ξs > 0 where we use the fact that a4 < 0, a2 > 0.
+For ξ > ξs, gξ = −γˆu > 0. Therefore, g is strictly increasing when ξ ≥0.
+8.7
+Proof of Proposition 4.5
+Proof. The proof is divided into two parts.
+Step 1: We first show that the probabilistic representation is finite.
+Without loss of generality, we let θ = 0. It is easy to check that |a(t, x)| ≤C for any
+(t, x) ∈[0, T) × R.
+(i) If T ≤1/k, then c(t, x) ≤0. Therefore,
+|f(t, x)| ≤CT, ∀(t, x) ∈[0, T) × R.
+(94)
+(ii) If T > 1
+k, then
+|f(t, x)| ≤CEt
+Z T
+t
+exp
+ Z s
+t
+1
+2σ2[k4T 2 + k2] ˜X2
+r dr
+
+ds
+≤CTEt exp
+ Z T
+t
+1
+2σ2[k4T 2 + k2] ˜X2
+r dr
+
+.
+(95)
+51
+
+Let ˜f(t, x) = Et exp
+ R T
+t
+1
+2σ2[k4T 2 + k2] ˜X2
+r dr
+
+. By the Feynman-Kac formula, it satisfies
+the following PDE:
+
+
+
+˜ft + k2(T −t)x ˜fx + 1
+2σ2 ˜fxx + px2u = 0,
+˜f(T, x) = 1,
+(96)
+where we use the notation p =
+1
+2σ2(k4T 2 + k2). We assume ˜f takes the form of :
+˜f(t, x) = exp(A(t)x2 + B(t)),
+(97)
+where A(t) and B(t) are undermined functions. Substituting the expression (97) into (96)
+gives us
+
+
+
+A′(t) + 2k2(T −t)A(t) + 2σ2A2(t) + p = 0,
+A(T) = 0,
+B′(t) + σ2A(t) = 0,
+B(T) = 0.
+(98)
+In the following, we analyze the existence of A(t). Once the existence of A(t) is established,
+the existence of B(t) immediately follows. Let y(t) = A(T −t). Then y(t) satisfies
+
+
+
+y′ = h(t, y),
+(t, y) ∈R+ × R,
+y(0) = 0.
+(99)
+where h(t, y) = 2k2(T −t)y +2σ2y2 +p. Since h is smooth for (t, y) ∈R+ ×R, the solution
+y(t) can be extended to the right from t = 0 up to the maximal existence interval [0, ˜T),
+by virtue of the extension theorem. As long as T ≤˜T, A(t) is well-defined on[0, T] and
+consequently |f| < ∞.
+Note that h(t, y) ≥p + 2k2(T −t)y and the solution to ˜y′ = p + 2k2(T −t)˜y with
+˜y(0) = 0 is
+˜y(t) = pe−k2t2+2k2Tt
+Z t
+0
+ek2s2−2k2Tsds.
+By the comparison theorem, we have y(t) ≥˜y(t) > 0 for t > 0. It means that we can
+restrict our attention to (t, y) ∈R+ × R+.
+Consider the ODE ˆy′ = (2σ2 + η1)y2 + p + η2 with ˆy(0) = 0, where η1 > 0, η2 > 0 and
+η1η2 ≥k2T. It is easy to check that (2σ2+η1)y2+p+η2 ≥h(t, y) for any (t, y) ∈R+×R+.
+By comparison theorem again, ˆy(t) ≥y(t). A direct calculation gives us
+ˆy(t) =
+r p + η2
+2σ2 + η1
+tan(
+p
+(2σ2 + η1)(p + η2)t).
+Since the maximal existence interval of ˆy is
+h
+0,
+π
+2
+p
+(2σ2 + η1)(p + η2)
+
+,
+52
+
+we derive that
+˜T ≥
+π
+2
+p
+(2σ2 + η1)(p + η2)
+for any η1, η2 > 0 with η1η2 ≥k2T. It implies that
+˜T ≥
+sup
+η1>0, η2>0
+η1η2≥k2T
+π
+2
+p
+(2σ2 + η1)(p + η2)
+=
+π
+2
+q
+2σ2p + 2
+√
+2σ2k2T + k2T
+.
+Thus, a condition about T to ensure T < ˜T is that
+T <
+π
+2
+q
+2σ2p + 2
+√
+2σ2k2T + k2T
+.
+It is equivalent to T < c0, where c0 is the unique positive constant satisfying
+c0 =
+π
+2
+q
+k4c2
+0 + k2 + 2√2σ2k2c0 + k2c0
+.
+(iii) In summary, when T < max(1/k, c0), |f| < ∞.
+Step 2: By the continuous dependence of the solution to SDE on the initial value and
+the dominated convergence theorem, we know that f is continuous. Next we verify it is
+the viscosity subsolution. Assume ϕ ∈C1,2 and let f −ϕ attain a strict maximum at
+(t0, x0) ∈[0, T)×R. Without loss of generality, we let f(t0, x0)−ϕ(t0, x0) = 0. Therefore,
+for t > t0,
+0 ≤E{f(t0, x0) −ϕ(t0, x0) −e
+R t
+t0 c(r,Xr)drf(t, Xt) + e
+R t
+t0 c(r,Xr)drϕ(t, Xt)}
+t −t0
+≤
+1
+t −t0
+E
+h Z t
+t0
+−e
+R s
+t0 c(r,Xr)dra(s, Xs)ds −ϕ(t0, x0) + e
+R t
+t0 c(r,Xr)drϕ(t, Xt)
+i
+(100)
+Applying Itˆo’s formula to ϕ and letting t ↓t0+, we get
+−ϕt + k2(T −t)(θ −x)ϕx −1
+2σ2ϕxx −c(t, x)ϕ + a(t, x)
+
+(t,x)=(t0,x0) ≤0.
+Hence f is a viscosity subsolution. Similarly, we can prove f is also a viscosity supersolution.
+53

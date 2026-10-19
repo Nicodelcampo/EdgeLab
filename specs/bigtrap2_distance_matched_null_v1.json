@@ -1,0 +1,108 @@
+{
+  "schema_version": "bigtrap2_distance_matched_null_prereg_v1",
+  "status": "PREREGISTERED_NOT_RUN",
+  "date": "2026-08-11",
+  "base_commit": "ef83794d9b6c074cbeeee6ce8f4715c9f907f060",
+  "north_star_hash_scope": "bytes_before_SHA256_BODY_ABOVE_marker",
+  "north_star_body_sha256_expected": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "indicator": "BigTrap2",
+  "kernel_declared_version": "2.2",
+  "nt8_semantic_parity": "PENDING",
+  "p0_1_status": "WARN",
+  "instrument": "6E",
+  "bar_spec": "time:1",
+  "chart_timezone": "America/Argentina/Buenos_Aires",
+  "session_timezone": "America/Chicago",
+  "research_max_date": "2026-06-30",
+  "expected_session_count": 201,
+  "holdout_opened": false,
+  "outcomes_accessed": false,
+  "parameters": {
+    "ticks_per_row": 1,
+    "imbalance_mode": "Diagonal",
+    "trap_volume_source": "AggressiveSide",
+    "imbalance_ratio": 3.0,
+    "use_wick_filter": true,
+    "wick_zone_pct": 30.0,
+    "min_delta_filter": 0.0,
+    "min_trap_volume": 30.0,
+    "min_export_volume": 1.0,
+    "invalidation_mode": "CloseThrough",
+    "max_age_bars": 2000,
+    "max_touches": 0
+  },
+  "population": {
+    "unit": "all_created_zones",
+    "sep_min_applied": false,
+    "availability": "created_bar_plus_1",
+    "condition_on_future": false
+  },
+  "matching": {
+    "same_instrument": true,
+    "same_contract": true,
+    "different_source_session": true,
+    "same_minute_of_session": true,
+    "exclude_bigtrap_creation_bar": true,
+    "preserve_relative_geometry_exactly": true,
+    "covariates": [
+      "log1p_sigma60_ticks",
+      "log1p_bar_volume"
+    ],
+    "distance": "robust_standardized_euclidean",
+    "scale": "candidate_pool_MAD_zero_contributes_zero",
+    "k_controls": 8,
+    "min_controls": 5,
+    "tie_break": [
+      "score",
+      "session_date",
+      "bar_index"
+    ]
+  },
+  "matching_gates": {
+    "min_zone_coverage": 0.95,
+    "max_abs_smd_sigma60": 0.1,
+    "max_abs_smd_bar_volume": 0.1,
+    "required_source_sessions": 201,
+    "geometry_mismatch_tolerance_ticks": 0,
+    "minute_mismatch_tolerance": 0
+  },
+  "primary": {
+    "estimand": "equal_weight_mean_over_sessions_of_real_touch_before_removal_minus_mean_matched_control_touch",
+    "horizon_per_zone": "min_2000_and_real_future_bars_available",
+    "inference": "HAC_Bartlett",
+    "lag": "ceil_sqrt_n_sessions",
+    "alpha_two_sided": 0.05,
+    "power_for_mde": 0.8,
+    "multiple_testing_adjustment": "none_one_primary"
+  },
+  "secondary_descriptive": {
+    "touch_horizons_bars": [1, 2, 5, 10, 20, 60, 120],
+    "competing_events": [
+      "close_through",
+      "close_through_gap",
+      "max_age",
+      "administrative_censor"
+    ],
+    "empirical_pit": true,
+    "restricted_mean_touch_horizon": 120,
+    "historical_gap_reference": 0.470721
+  },
+  "decision_labels": {
+    "RESIDUAL_POSITIVE": "ci95_lower_gt_0",
+    "COMPATIBLE_WITH_ZERO": "ci95_contains_0",
+    "RESIDUAL_NEGATIVE": "ci95_upper_lt_0",
+    "ABSTAIN_MATCHING": "any_matching_gate_fails",
+    "ABSTAIN_PROVENANCE": "dirty_or_head_changed_or_hash_missing"
+  },
+  "forbidden": [
+    "tick:25",
+    "holdout",
+    "returns",
+    "pnl",
+    "direction",
+    "target_stop",
+    "quality_score",
+    "parameter_sweep",
+    "post_result_gate_relaxation"
+  ]
+}

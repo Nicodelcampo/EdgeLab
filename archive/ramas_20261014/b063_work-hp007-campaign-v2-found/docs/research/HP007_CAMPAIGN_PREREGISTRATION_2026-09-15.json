@@ -1,0 +1,36 @@
+{
+  "schema_version": "hp007_campaign_manifest_v1",
+  "campaign_id": "HP007-CAMP-001",
+  "fecha_preregistro": "2026-09-15T17:50:00Z",
+  "rama": "work/hp007-causal-campaign-v1-20260915",
+  "base_commit": "20f2de397db7427893630bc626c4d4966b1122cf",
+  "autor": "Nico del Campo / EdgeLab Causal Research",
+  "metrica_primaria_unica": "delta_net_R = mean_session(net_R_corridor - net_R_control_matched)",
+  "regla_de_rechazo_critica": "Si control_mean_net_R >= corridor_mean_net_R -> FAIL_NO_INCREMENTAL_EDGE_OVER_MATCHED_CONTROL",
+  "activos_aptos_certificados": [
+    "6E 03-26",
+    "6E 06-26"
+  ],
+  "cross_asset_continuo_status": "ABSTAIN (Certificaci\u00f3n previous_complete_session_volume_leader_monotonic_v1 pendiente)",
+  "firewall_holdout": {
+    "fecha_corte": "2026-07-01T00:00:00Z",
+    "estado": "SEALED_UNTOUCHED",
+    "guard_module": "edgelab.research.holdout_guard"
+  },
+  "headline_specification": {
+    "definition": {
+      "forward_density_max": 0.28,
+      "backstop_density_min": 0.7,
+      "min_width_ticks": 4,
+      "max_width_ticks": 7
+    },
+    "target_ticks": 10,
+    "stop_ticks": 3,
+    "horizon_ns": 3600000000000,
+    "cooldown_ns": 60000000000,
+    "friction_scenario": "base",
+    "friction_ticks_round_turn": 2.768,
+    "n_eff_declared": 29
+  },
+  "manifest_sha256": "4fd3ed50711b72ec545050dc7b23cdee0e847259db21e931482492a01285bfec"
+}

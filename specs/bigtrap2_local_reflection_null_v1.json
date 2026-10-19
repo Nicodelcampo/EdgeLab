@@ -1,0 +1,71 @@
+{
+  "schema_version": "bigtrap2_local_reflection_null_v1",
+  "status": "PREREGISTERED_NOT_RUN",
+  "north_star_body_sha256": "d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1",
+  "campaign": {
+    "instrument": "6E",
+    "bar_spec": "time:1",
+    "research_end_inclusive": "2026-06-30",
+    "holdout_start": "2026-07-01",
+    "session_count_required": 201,
+    "data_license_status": "PENDING_INTERNAL_ONLY"
+  },
+  "indicator": {
+    "name": "BigTrap2",
+    "params": {
+      "ticks_per_row": 1,
+      "imbalance_mode": "Diagonal",
+      "trap_volume_source": "AggressiveSide",
+      "imbalance_ratio": 3.0,
+      "use_wick_filter": true,
+      "wick_zone_pct": 30.0,
+      "min_delta_filter": 0.0,
+      "min_trap_volume": 30.0,
+      "min_export_volume": 1.0,
+      "invalidation_mode": "CloseThrough",
+      "max_age_bars": 2000,
+      "max_touches": 0
+    }
+  },
+  "population": {
+    "event_space": ["creation", "active", "first_touch", "nth_touch", "invalidation", "expiration", "administrative_censoring"],
+    "source": "all_created_zones",
+    "no_sep_min": true,
+    "eligible_reflection_requires": ["valid_creation_bar", "mirror_disjoint_from_source"]
+  },
+  "reflection": {
+    "anchor": "close_t[created_bar]",
+    "formula": {
+      "mirror_lo_tick": "2 * anchor - hi_tick",
+      "mirror_hi_tick": "2 * anchor - lo_tick"
+    },
+    "preserve_is_bull": true,
+    "available_from_bar": "created_bar + 1",
+    "n_controls_per_source": 1,
+    "parameter_sweep_forbidden": true
+  },
+  "lifecycle": {
+    "precedence": ["expiration", "touch", "invalidation"],
+    "horizon_bars": "min(max_age_bars + 1, preholdout_bars_available)",
+    "same_horizon_for_real_and_mirror": true,
+    "session_boundary_truncation": false
+  },
+  "estimand": {
+    "zone_residual": "y_real - y_mirror",
+    "aggregation": "equal_session_weight",
+    "inference": "hac_bartlett",
+    "hac_lag": "ceil(sqrt(n_sessions))",
+    "alpha": 0.05,
+    "power_for_mde": 0.8
+  },
+  "gates": {
+    "reflection_coverage_min": 0.95,
+    "require_201_sessions": true,
+    "exact_geometry_invariants": true,
+    "clean_tree": true,
+    "outcomes_accessed": false
+  },
+  "decision_labels": ["REFLECTION_POSITIVE", "COMPATIBLE_WITH_ZERO", "REFLECTION_NEGATIVE", "ABSTAIN_REFLECTION_COVERAGE", "ABSTAIN_PROVENANCE", "ABSTAIN_INFERENCE"],
+  "forbidden": ["tick:25", "holdout", "returns", "pnl", "trading_direction", "target_stop", "parameter_sweep", "post_result_protocol_change", "kernel_modification"]
+}
+

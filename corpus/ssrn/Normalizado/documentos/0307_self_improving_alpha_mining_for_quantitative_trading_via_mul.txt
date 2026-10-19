@@ -1,0 +1,408 @@
+Cross-Attention Latent Fusion: Integrating DeepSeek-R1 and
+Mamba for Downside-Aware Quantitative Trading
+Sélim JOMAA, Eve JOUNI
+selim.jomaa@aivancity.education, eve.jouni@aivancity.education
+Abstract
+The intersection of Deep Reinforcement Learning (DRL) and Large Language Models
+(LLMs) represents a promising frontier in quantitative finance. However, current hybrid
+models frequently compress LLM outputs into scalar sentiment scores, discarding the
+high-dimensional reasoning traces necessary for complex market analysis. In this paper, we
+propose a novel Cross-Attention Latent Fusion architecture that directly integrates the
+internal hidden states (1536-D) of a reasoning LLM (DeepSeek-R1-Distill-Qwen-1.5B) with
+a Selective State Space Model (Mamba) encoding 30-day temporal price momentum. The
+price momentum acts as a query to dynamically attend to contextual news embeddings.
+Furthermore, we adapt Group Relative Policy Optimization (GRPO) for continuous
+action spaces, combined with a Downside-Aware Policy Optimization (DAPO) reward
+function, eliminating the need for a memory-intensive Critic network. Evaluated across 50
+distinct equities from the FNSPID dataset, our latent fusion methodology demonstrates
+improved risk-adjusted returns and maximum drawdown mitigation compared to unimodal
+baselines, remaining feasible on consumer-grade hardware through targeted engineering
+optimizations.
+1
+Introduction
+Trading inherently relies on constantly fluctuating data driven by continuous market changes.
+Interpreting the intersection of mathematical financial data and the continuous flow of market
+news is highly challenging due to the massive volume and variable quality of the information.
+Misinterpreting this data can lead to poor decision-making, which in turn can result in
+significant financial losses. Therefore, it is crucial to find an optimal and coherent way to
+combine quantitative market data with qualitative news.
+Developing a trading model based solely on Reinforcement Learning (RL) provides strong
+mathematical decision-making but lacks an understanding of the broader real-world context
+[6]. Traditional RL algorithms such as Proximal Policy Optimization (PPO), Advantage
+Actor-Critic (A2C), and Deep Deterministic Policy Gradient (DDPG) excel at processing
+historical price data but possess a fundamental limitation: they do not account for real-world
+information. Financial markets are highly sensitive to external events—a single news article
+can cause the market to flip overnight. Relying solely on numerical data means the agent must
+wait for a real-world event to eventually impact price numbers before reacting, introducing a
+critical lag. Conversely, relying purely on LLMs offers a powerful semantic processor capable
+of analyzing financial news, but it is not optimized for iterative, quantitative trading decisions.
+1
+
+Current LLM applications in finance remain quite basic. They are primarily used for
+standard sentiment analysis, where the model’s only job is to categorize a news article as
+either "positive" or "negative." This approach results in a massive loss of valuable information.
+By reducing a complex financial article to a simple label, the broader context is completely
+lost. The FinRL-DeepSeek baseline, while empirically useful, exemplifies this limitation: it
+relies on Action Modulation (scaling continuous actions via sentiment scores) and Reward
+Adjustment (penalizing risk via CVaR-PPO), but the agent remains fundamentally blind to
+the underlying economic rationale driving the LLM’s assessment.
+This paper proposes a hybrid architecture that merges numerical analysis from time-series
+data with semantic analysis derived from the latent states of the LLM. Instead of simple
+sentiment scoring, our approach extracts the hidden states from the LLM’s reasoning tokens
+(such as <think>) to capture the full depth of the model’s contextual understanding. By
+integrating historical prices with this deep semantic understanding, and fusing them via a
+Cross-Attention mechanism, the model effectively guides the trading agent’s decisions.
+To address current limitations in multimodal financial AI, we make the following core
+contributions:
+1. Latent-State Fusion: We extract the hidden states from the LLM’s reasoning tokens rather than generating text, preserving the full depth of the model’s contextual
+understanding.
+2. Asymmetric Cross-Attention: We design a fusion mechanism where historical price
+embeddings serve as queries to attend to the LLM’s semantic key-value pairs.
+3. Continuous GRPO: We adapt the Critic-free Group Relative Policy Optimization
+(GRPO) algorithm—traditionally used for discrete tokens—to optimize a continuous
+trading action space, drastically reducing VRAM overhead.
+4. Downside-Aware Reward (DAPO): We introduce a reward function integrating
+Conditional Value-at-Risk (CVaR) to explicitly penalize extreme tail-losses during
+training.
+2
+Related Work and Data Infrastructure
+2.1
+The FinRL-DeepSeek Baseline
+The FinRL-DeepSeek project serves as the foundational baseline for integrating LLM-derived
+signals into RL environments. It utilizes Action Modulation and Reward Adjustment via
+CVaR-PPO. While empirically useful, the agent remains fundamentally blind to the underlying
+economic rationale. By compressing complex financial reasoning into simplistic floating-point
+sentiment scores, the framework discards contextual depth—the very semantic richness that
+makes LLMs valuable for market analysis.
+2.2
+Reinforcement Learning in Finance
+Traditional Reinforcement Learning algorithms, such as PPO [4], are widely used for developing
+automated trading agents. PPO requires storing two complete neural networks in memory
+2
+
+during training: the Actor network and the Critic network.
+When integrating massive
+architectures like LLMs into an RL framework, maintaining both networks consumes an
+excessive amount of Video RAM (VRAM), making training computationally unfeasible on
+consumer-grade hardware. Recent advances like DeepSeekMath [3] introduced GRPO to solve
+this by evaluating actions relative to a sampled group, bypassing the Critic entirely.
+2.3
+FNSPID Dataset and Real-Time Agentic Scraping
+Training multimodal systems requires vast, temporally aligned corpora to prevent look-ahead
+bias. We utilize the Financial News and Stock Price Integration Dataset (FNSPID) [7]. The
+dataset comprises millions of time-aligned financial news records spanning from 1999 to 2023,
+capturing decades of market sentiment, economic shifts, and company-specific events.
+Our preprocessing pipeline was carefully designed to resolve data fusion challenges and
+create a clean, training-ready environment:
+• Targeting High-Density Stocks: The code filters the dataset to keep only the top
+50 most mentioned stocks, guaranteeing that the RL agent trains on companies with
+consistent media coverage.
+• Temporal Alignment: News is published at all hours, but stock prices are recorded
+once a day at market close; exact timestamps are normalized to the standard daily
+format (YYYY-MM-DD).
+• Handling Non-Trading Days: News published on weekends and holidays is matched
+to market prices using a merge on ‘Date’ and ‘Stock_symbol’, followed by a sequence
+alignment to ensure no look-ahead bias.
+This rigorous preprocessing guarantees that every step in the RL environment contains a
+perfectly aligned pair: a semantic news signal for the LLM and a valid closing price. The final
+dataset used for training contains over 29,000 aligned rows after processing 100,000 raw news
+records.
+For live deployment, the architecture additionally supports multi-agent scraping frameworks
+(e.g., LangGraph, CrewAI) to orchestrate real-time ingestion of X feeds and SEC EDGAR
+filings, parsed into standardized markdown blocks.
+3
+Methodology: Cross-Attention Latent Fusion
+Our proposed architecture bridges the semantic-numerical gap by treating the LLM not as
+a text generator, but as a high-dimensional cognitive feature extractor. The full pipeline
+comprises three interacting components: a temporal price encoder, an LLM latent extractor,
+and a cross-attention fusion bridge.
+3.1
+The RL Environment (Gymnasium)
+The foundation of the training process is a custom Gymnasium environment (DeepSeekTradingEnv)
+designed specifically to handle multimodal inputs. The observation space is a composite dictionary containing two elements: a temporal series matrix of historical log-returns (30-day
+3
+
+window) and a semantic vector extracted from the LLM (1536 dimensions). The action space
+is defined as a continuous variable ranging from −1.0 to 1.0, where a positive value indicates a
+buy signal (the percentage of available cash to invest) and a negative value represents a sell
+signal (the percentage of currently held assets to liquidate).
+Each observation step provides three distinct signals to the agent:
+• Time Index: Controls the environment’s timeline, moving the agent forward day by
+day.
+• Temporal Signal: Feeds the current price and the past 30 days of history into the
+Mamba encoder as normalized log-returns.
+• Semantic Signal: News headlines are passed to DeepSeek to extract hidden mathematical reasoning states, injecting textual understanding directly into the RL agent.
+The environment natively simulates 10 bps transaction costs and 5 bps slippage per trade,
+preventing the exploitation of micro-volatility and ensuring that the learned policies generalize
+to real-market conditions.
+3.2
+Temporal Price Encoding (Mamba)
+To process non-stationary numerical data efficiently, our theoretical architecture utilizes the
+S6 Selective State Space Model (Mamba) [1]. Traditional Transformers suffer from quadratic
+complexity; Mamba achieves linear scaling while capturing long-range dependencies. Let
+xt ∈R be the daily log-return. The raw inputs are lifted into a hidden dimension dmodel = 64
+and processed via a 1D convolution. The input-dependent SSM parameters ∆, B, and C are
+computed to discretize the state transition matrix A:
+ht = exp(∆t ⊗A)ht−1 + (∆t ⊗Bt)xt
+(1)
+yt = Ctht
+(2)
+The final temporal feature vector p ∈R128 is extracted from the last hidden state of a
+30-day lookback window. To bypass complex CUDA-specific C++ compilation constraints
+on consumer hardware, we implemented the S6 recurrence loop natively in PyTorch, which
+remains highly efficient for a sequence length of T = 30.
+3.3
+LLM Latent Extraction
+We utilize deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B [2]. Given a stock ticker and a
+news headline, the LLM processes a structured prompt: "The following news concerns stock
+[ticker]: ’[headline]’. Analyze the potential short-term impact on the price." Rather than
+prompting the LLM to generate plain text (which is slow and difficult to integrate into mathematical equations), our method extracts the model’s internal mathematical representation.
+We activate output_hidden_states=True during inference.
+Instead of autoregressive
+generation, we execute a single forward pass and apply an attention-masked mean pooling
+over the sequence length to yield a dense semantic representation l ∈R1536:
+l =
+PN
+i=1 hi · mi
+PN
+i=1 mi
+(3)
+4
+
+To bypass the inference bottleneck during RL training, these 1536-D vectors are precomputed.
+For days with multiple overlapping articles, embeddings are mean-pooled into a unified daily
+semantic state and mapped to an O(1) dictionary lookup.
+3.4
+Cross-Attention Fusion Bridge
+The primary innovation of our architecture is the Cross-Attention Fusion module. Rather
+than simply concatenating the two vectors—which could overwhelm the agent when a sudden
+price drop conflicts with positive news—we employ a Multi-Head Cross-Attention layer [5].
+The price momentum p acts as the Query (Q), asking the news context: "Given the current
+market trend, what does this news mean?" The LLM latent vector l serves as the Key (K)
+and Value (V ):
+Q = Wqp,
+K = Wkl,
+V = Wvl
+(4)
+Fusion(Q, K, V ) = LayerNorm
+ 
+Q + Dropout
+ 
+softmax
+ 
+QKT
+pdfusion
+!
+V
+!!
+(5)
+The implementation uses MultiheadAttention with dfusion = 256 and nheads = 8. The resulting fused vector passes through a Shared Projection Layer, ensuring dimensional consistency
+across all ablation configurations before reaching the policy head. This interaction allows the
+agent to temper the numerical signal with semantic reasoning—for instance, recognizing a
+price drop as a mere technical correction rather than a fundamental crisis signaled by negative
+news.
+4
+Reinforcement Learning Formulation
+4.1
+Continuous Group Relative Policy Optimization (GRPO)
+Training an LLM-RL framework with standard PPO requires a massive Critic network. We
+adopt GRPO, entirely eliminating the Critic. For a given state s, the policy samples a group
+of G = 4 continuous actions. The environment simulates the outcome for each independently,
+collecting a set of corresponding rewards. The advantage ˆAi is computed relatively within the
+group:
+ˆAi = ri −µgroup
+σgroup + ϵ
+(6)
+The policy loss integrates the relative advantage with an entropy bonus H[π] to prevent entropy
+collapse:
+L = −1
+G
+G
+X
+i=1
+h
+log πθ(ai|s) · ˆAi
+i
+−αH[πθ]
+(7)
+To accurately track the gradient through the continuous action space, sampled actions are
+squeezed via tanh(x), and log-probabilities are mathematically corrected for the change of
+variables. The environment state is manually snapshotted and restored via scalar injection
+during group sampling, significantly reducing simulation overhead compared to standard
+Python deepcopy operations. A state-dependent standard deviation head allows the policy to
+dynamically adjust its exploration uncertainty based on current market conditions.
+5
+
+4.2
+Downside-Aware Policy Optimization (DAPO) Reward
+Trading agents trained purely to maximize raw cumulative returns often develop highly volatile
+strategies that eventually lead to catastrophic portfolio crashes. We designed a custom reward
+function based on Downside-Aware Policy Optimization (DAPO). Over a rolling window of
+the agent’s historical returns, the reward is defined as the Sharpe ratio heavily penalized by
+the 5% Conditional Value-at-Risk (CVaR0.05):
+R = µr
+σr
++ 2.0 × CVaR0.05(r)
+(8)
+A minimum of 10 historical returns is required before DAPO activates; prior to this threshold,
+the raw daily return is used as a warm-up reward. Because CVaR is intrinsically negative
+(representing tail losses), the +2.0 × CVaR term actively penalizes the agent for exposing the
+portfolio to severe drawdowns, forcing the Cross-Attention layer to learn the specific semantic
+embeddings that precede market crashes.
+5
+Experiments and Results
+5.1
+Experimental Protocol
+The simulation was designed to test the agent under highly stressful market conditions. The
+architecture was trained using a single RTX 5070 Ti. To ensure hardware stability on the
+Blackwell architecture, standard Math SDP was explicitly enforced. A 5-day sanity check
+simulation was first conducted to validate the end-to-end data flow.
+The RL agent was initialized with a starting capital of $100,000. Training utilized a Cosine
+Annealing learning rate schedule starting at 1e −5, optimized via Adam. The model was
+trained and evaluated iteratively across 50 distinct equities, ensuring robustness across diverse
+market sectors. The backtest evaluation was performed on a held-out test split consisting of
+the last 252 unique trading days per ticker, capturing extreme volatility events where daily
+news had an immediate and drastic impact on stock prices.
+5.2
+Evaluation Metrics
+To objectively evaluate the performance of the agent against baselines, we utilized five standard
+quantitative metrics:
+• Sharpe Ratio: Measures excess return per unit of total volatility.
+• Maximum Drawdown (Max DD): The largest peak-to-trough drop in portfolio value,
+measuring worst-case scenario risk.
+• Sortino Ratio: Similar to Sharpe, but only penalizes downside volatility.
+• Calmar Ratio: The annualized return divided by the absolute Maximum Drawdown.
+A ratio > 1.0 indicates that returns justify the worst historical loss.
+• Omega Ratio: A probability-weighted ratio of gains versus losses. A value > 1.0
+confirms the strategy generates more upside mass than downside mass.
+6
+
+5.3
+Ablation Study
+To validate the architectural components, we conducted an inference-only ablation study
+holding the base model weights constant via strict=False loading. This approach isolates
+the impact of each modality without introducing training confounding variables. We compared
+the Full Cross-Attention model against a Naive Concatenation baseline, a Price-Only baseline,
+and a Text-Only baseline.
+Table 1: Ablation Study on Test Split (252 Trading Days). The proposed Cross-Attention
+model is the only configuration to achieve positive, downside-protected returns.
+Configuration
+Return (%)
+Sharpe
+Max DD (%)
+Sortino
+Calmar
+Omega
+Full (Cross-Attn)
++4.52
+0.7734
+-1.64
+1.2397
+2.2271
+1.1408
+Full (Concat)
+-7.98
+-5.4522
+-8.68
+-8.1523
+-0.7849
+0.4005
+Price-Only
+-7.41
+-5.2907
+-8.13
+-7.9885
+-0.7753
+0.4113
+Text-Only
+-4.68
+-5.0577
+-5.26
+-7.8621
+-0.7460
+0.4312
+As shown in Table 1, our proposed Cross-Attention Latent Fusion architecture improves
+performance under the tested setting. It is the only configuration to achieve a positive return
+(+4.52%) and a positive Sharpe ratio (0.77).
+Notably, the naive concatenation baseline
+yielded the worst return (-7.98%), highlighting that financial modalities suffer from destructive
+interference unless dynamically aligned via cross-attention. Furthermore, the Calmar ratio of
+2.22 in the full model demonstrates the efficacy of the DAPO penalty in mitigating maximum
+drawdown (-1.64%) compared to unimodal baselines.
+5.4
+Training Dynamics and Portfolio Visualization
+The training process tracked via Weights & Biases demonstrated stable convergence. Figure 1
+demonstrates our continuous GRPO adaptation. The policy loss shows a lot of divergence
+due to the lack of steps but will later on converge, avoiding the entropy collapse common in
+continuous RL. Simultaneously, the DAPO reward transitions from early exploratory negative
+territory to positive stabilization in the later steps.
+(a) GRPO Policy Loss
+(b) DAPO Reward Convergence
+Figure 1: Training dynamics recorded over 50 ticker iterations. The Cosine Annealing schedule
+ensures smooth convergence of both policy loss and the downside-aware reward.
+Figure 2 visualizes the out-of-sample portfolio trajectories across various equities. The agent
+7
+
+consistently navigates diverse market regimes, mitigating deep drawdowns while capitalizing
+on upward momentum, directly reflecting the efficacy of the CVaR penalty in the reward
+formulation.
+Figure 2: Portfolio value trajectories across different market regimes and equities.
+6
+Discussion, Limitations, and Future Work
+6.1
+Computational Limitations
+The primary limitation of this study stems from hardware constraints inherent to consumergrade GPUs.
+While the theoretical framework is designed to use Mamba for advanced,
+linear-time temporal encoding, compiling Mamba requires highly specific CUDA environments.
+As a result, we relied on an S6 recurrence loop natively implemented in PyTorch. For a 30-day
+window, this sequential loop is computationally negligible, but scaling to ultra-long sequences
+(T > 1000) would necessitate optimized CUDA kernels. Furthermore, we utilized a distilled
+version of DeepSeek (1.5B parameters). While effective for proof-of-concept, a smaller model
+inevitably possesses less semantic depth than frontier models (32B+ parameters).
+6.2
+Future Work
+Future research will focus on lifting these hardware restrictions to deploy the architecture at
+its full theoretical capacity:
+• Multi-Asset Portfolio Management via GNNs: The next major evolution is
+scaling the environment by integrating Graph Neural Networks (GNNs) into the spatial
+processing block to map complex correlations, dependencies, and ripple effects between
+different companies and market sectors.
+• Real-Time Agentic Deployment: The architecture supports live deployment via
+multi-agent scraping frameworks (LangGraph, CrewAI) for real-time ingestion of X
+8
+
+(formerly Twitter) feeds and SEC EDGAR filings, enabling the system to operate as a
+fully autonomous trading agent.
+• End-to-End Retraining Ablations: Future systematic ablation studies will involve
+end-to-end retraining of isolated baselines for stricter statistical validation.
+7
+Conclusion
+This paper demonstrates that relying solely on numerical price data or purely on textual
+analysis is insufficient to navigate the complexities of modern financial markets. We introduced
+a hybrid architecture that successfully merges quantitative market trends with qualitative
+real-world context. By extracting semantic reasoning directly from the latent hidden states
+of DeepSeek-R1-Distill-Qwen-1.5B and fusing them with numerical price signals via a CrossAttention mechanism, the agent achieves a much deeper understanding of market dynamics.
+The adaptation of Group Relative Policy Optimization (GRPO) to a continuous action
+space enabled highly memory-efficient training by eliminating the Critic network, overcoming
+hardware constraints typically associated with running large models in RL. The DAPO reward
+function successfully enforced downside protection by penalizing tail losses through CVaR,
+producing a policy that balances growth with risk management rather than chasing raw returns.
+Ultimately, this multimodal approach suggests that blending mathematical precision with
+LLM-processed news signals offers a highly promising and scalable pathway for developing the
+next generation of automated, context-aware trading agents.
+References
+[1] Gu, A., & Dao, T. (2023). Mamba: Linear-time sequence modeling with selective state
+spaces. arXiv preprint arXiv:2312.00752.
+[2] DeepSeek-AI. (2024). DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via
+Reinforcement Learning. arXiv preprint.
+[3] Shao, Z., Wang, P., Zhu, Q., et al. (2024). DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models. arXiv preprint arXiv:2402.03300.
+[4] Schulman, J., Wolski, F., Dhariwal, P., Radford, A., & Klimov, O. (2017). Proximal policy
+optimization algorithms. arXiv preprint arXiv:1707.06347.
+[5] Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., ... &
+Polosukhin, I. (2017). Attention is all you need. Advances in neural information processing
+systems, 30.
+[6] Liu, X. Y., Yang, H., Chen, Q., Zhang, R., Yang, L., Xiao, B., & Wang, C. D. (2020).
+FinRL: A deep reinforcement learning library for automated stock trading in quantitative
+finance. Deep RL Workshop, NeurIPS 2020.
+[7] Zihan1004. (2024). Financial News and Stock Price Integration Dataset (FNSPID). HuggingFace Datasets.
+9

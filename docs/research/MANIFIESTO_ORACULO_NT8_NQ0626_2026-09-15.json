@@ -1,0 +1,37 @@
+{
+  "schema_version": "oraculo_nt8_hftclusterzones_manifest_v1",
+  "created_at_utc": "2026-09-15T14:55:00Z",
+  "instrument": "NQ 06-26",
+  "fechas_solicitadas": {
+    "desde": "2026-06-03",
+    "hasta": "2026-06-11",
+    "inclusive": true
+  },
+  "chart": {
+    "tipo": "Tick",
+    "resolucion_ticks": 25
+  },
+  "indicador": {
+    "nombre": "HFTClusterZonesNQ",
+    "version": "2.0.0",
+    "cs_path": "C:\\Users\\Usuario\\Documents\\NinjaTrader 8\\bin\\Custom\\Indicators\\HFTClusterZonesNQ.cs",
+    "cs_sha256": "b9437f3f4b4045d45f3b01f91a19f347ec6de7615e46b2ddaf24943472ebef07"
+  },
+  "parametros_obligatorios": {
+    "SoloLogEnVivo": false,
+    "EnableDbLogging": true,
+    "DbPath": "C:\\LoggerHFT\\data\\oraculo_clusters_NQ0626_20260915.sqlite",
+    "EnableEventCsv": true,
+    "EventLogPath": "C:\\LoggerHFT\\data\\oraculo_clusters_NQ0626_20260915.csv"
+  },
+  "semantica_motor": {
+    "historical_realtime_semantics": "DIVERGENT",
+    "historical_double_count": true,
+    "nota": "El motor v2.0 actual consume volumen por tick y por barra durante Historical, mientras que en Realtime omite el consumo por barra cuando BarsArray.Length > 1."
+  },
+  "tablas_esperadas": [
+    "hft_zones",
+    "hft_clusters"
+  ],
+  "flujo_eventos_esperado": "C:\\LoggerHFT\\data\\oraculo_clusters_NQ0626_20260915.csv"
+}

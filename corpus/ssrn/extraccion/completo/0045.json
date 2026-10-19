@@ -1,0 +1,192 @@
+{
+  "doc_id": 45,
+  "titulo": "Algorithmic Trading of Co-integrated Assets",
+  "resumen_operativo": "Deriva en forma cerrada la estrategia óptima de inversión dinámica para un agente con utilidad exponencial que opera n activos co-integrados, modelando el componente común de la deriva (short-term alpha) como un proceso mean-reverting. Calibra el modelo VAR(1) con datos intradía ITCH de Nasdaq (GOOGL, FB, AMZN) y muestra vía simulación que la posición óptima es afín en el factor de co-integración. Es una extensión teórica de pairs trading a m activos, útil como marco de sizing dinámico basado en un spread/factor mean-reverting, pero la validación empírica es puramente simulada, in-sample para la calibración y sin costos de transacción.",
+  "calidad_paper": "media",
+  "conceptos": [
+    {
+      "nombre": "cointegration",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Factor común (short-term alpha) en la deriva de los retornos de varios activos, definido como combinación lineal de log-precios, que es un proceso mean-reverting y captura la dependencia estructural entre los activos.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "mean reversion"},
+        {"tipo": "USA", "objeto": "vector-autoregressive model"},
+        {"tipo": "PARTE_DE", "objeto": "pairs trading"}
+      ],
+      "cita_textual": "We assume that the drift in the returns of asset prices consists of an idiosyncratic component and a common component given by a co-integration factor."
+    },
+    {
+      "nombre": "short-term alpha",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Nombre que dan al factor de co-integración αt: componente común de la deriva de los retornos, un proceso Ornstein-Uhlenbeck mean-reverting que representa desviaciones de corto plazo del retorno esperado y es la fuente principal de ganancias de la estrategia.",
+      "relaciones": [
+        {"tipo": "EQUIVALE_A", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"},
+        {"tipo": "PREDICE", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "This behavior in the drift component is also referred to as short-term alpha because it represents short-term deviations from the assets' expected return"
+    },
+    {
+      "nombre": "pairs trading",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Estrategia clásica que explota la predictibilidad conjunta de dos (o más) activos operando una combinación lineal de sus precios, apostando a que las desviaciones del spread respecto de su nivel histórico revierten.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "Ornstein-Uhlenbeck process"}
+      ],
+      "cita_textual": "Pairs trading algorithms proﬁt from betting on the empirical fact that spread deviations tend to return to their historical or predictable level."
+    },
+    {
+      "nombre": "Ornstein-Uhlenbeck process",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Proceso estocástico mean-reverting usado para modelar la dinámica del factor de co-integración αt, con tasa de reversión κ y nivel de reversión θ derivados de los parámetros estructurales del modelo.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "short-term alpha"}
+      ],
+      "cita_textual": "we can write the short-term alpha component as the mean-reverting process\ndαt = κ (θ −αt) dt + a′σ dW t"
+    },
+    {
+      "nombre": "vector-autoregressive model",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Representación alternativa VAR(1) de los log-precios de los activos co-integrados, usada para calibrar empíricamente el modelo por regresión multivariada sobre datos de mercado.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "APLICA_A", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "In this representation, we see that the log-prices are an order 1 vector-autoregressive model (VAR(1))."
+    },
+    {
+      "nombre": "optimal investment strategy",
+      "tipo": "estrategia",
+      "definicion_en_contexto": "Solución en forma cerrada (afín en el factor de co-integración) al problema de control estocástico de un agente con utilidad exponencial que maximiza la utilidad esperada de la riqueza terminal operando dinámicamente activos co-integrados.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "cointegration"},
+        {"tipo": "USA", "objeto": "short-term alpha"},
+        {"tipo": "MEJORA_A", "objeto": "Merton portfolio"}
+      ],
+      "cita_textual": "The optimal solution is constructed explicitly in closed-form and is shown to be aﬃne in the co-integration factor."
+    },
+    {
+      "nombre": "Merton portfolio",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Solución clásica del problema de Merton (utilidad exponencial, activos GBM) que sirve de referencia: la estrategia óptima del paper se descompone en un término tipo Merton más una corrección proporcional al factor de co-integración.",
+      "relaciones": [
+        {"tipo": "SE_OPONE_A", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "the optimal investment in the classical Merton problem (using discounted wealth) is 1 γΩ−1(ν −r)"
+    },
+    {
+      "nombre": "dynamic programming equation",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Ecuación (HJB) derivada del principio de programación dinámica que debe satisfacer la función de valor del agente, cuya solución vía ansatz cuadrático en α produce la estrategia óptima en forma cerrada.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "Applying the dynamic programming principle leads to the dynamic programming equation (DPE) which the value function should satisfy"
+    },
+    {
+      "nombre": "exponential utility",
+      "tipo": "concepto",
+      "definicion_en_contexto": "Función de utilidad u(x) = −e^(−γx) usada por el agente para evaluar su riqueza terminal, con γ como coeficiente de aversión al riesgo, base del criterio de optimización de la estrategia.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "has exponential utility u(x) = −e−γx"
+    },
+    {
+      "nombre": "measure change",
+      "tipo": "metodo",
+      "definicion_en_contexto": "Cambio de medida de probabilidad (vía Girsanov) que convierte los activos en martingalas, usado para obtener una representación probabilística de la función h y resolver la PDE mediante Feynman-Kac.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "dynamic programming equation"}
+      ],
+      "cita_textual": "Let us choose λt such that the drift of the traded assets Y t are martingales."
+    },
+    {
+      "nombre": "tick data",
+      "tipo": "dato",
+      "definicion_en_contexto": "Datos ITCH de Nasdaq muestreados a midprices cada minuto durante un día de trading, usados para estimar el modelo VAR(1) que calibra el factor de co-integración.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "vector-autoregressive model"}
+      ],
+      "cita_textual": "we employ midprices sampled every minute of the day on Nov 3, 2014 (the ﬁrst trading day of November 2014) to estimate a VAR(1) model on the log-prices"
+    },
+    {
+      "nombre": "mean reversion",
+      "tipo": "fenomeno",
+      "definicion_en_contexto": "Regularidad empírica clave del factor de co-integración α: sus desviaciones respecto del nivel de largo plazo son transitorias y constituyen la principal fuente de ganancias de la estrategia.",
+      "relaciones": [
+        {"tipo": "CAUSA", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "deviations from its long-term or predictable level quickly subside"
+    },
+    {
+      "nombre": "transaction costs",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Costos de transacción que el paper explícitamente ignora en sus simulaciones, asumiendo ejecuciones al midprice, lo cual limita la validez práctica de los resultados de P&L reportados.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "all transactions are at the midprice, and there are no transaction costs"
+    },
+    {
+      "nombre": "backtest overfitting",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Riesgo metodológico presente porque la evaluación de desempeño es puramente in-sample: la calibración usa un solo día de datos y la performance no se valida fuera de muestra con datos reales.",
+      "relaciones": [],
+      "cita_textual": "Extensions to our work could look at i) how the strategy performs out-of-sample using realisations of the stock prices (instead of simulations)"
+    },
+    {
+      "nombre": "walk-forward validation",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Ausente en el paper: los autores reconocen explícitamente como extensión futura la necesidad de testear la estrategia fuera de muestra con datos reales en vez de solo simulaciones.",
+      "relaciones": [
+        {"tipo": "MITIGA", "objeto": "backtest overfitting"}
+      ],
+      "cita_textual": "how the strategy performs out-of-sample using realisations of the stock prices (instead of simulations)"
+    },
+    {
+      "nombre": "model uncertainty",
+      "tipo": "riesgo_metodologico",
+      "definicion_en_contexto": "Posibilidad de que el modelo de co-integración esté mal especificado; los autores mencionan como extensión el caso de un inversor con aversión a la ambigüedad que reconoce esta posibilidad.",
+      "relaciones": [
+        {"tipo": "APLICA_A", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "recognises that the co-integration model might be misspeciﬁed and proceeds as in the work of Cartea et al. (2016)"
+    },
+    {
+      "nombre": "position sizing",
+      "tipo": "concepto",
+      "definicion_en_contexto": "El tamaño de la posición óptima en cada activo resulta afín en el factor de co-integración α, respondiendo dinámicamente a su nivel respecto de la media de reversión.",
+      "relaciones": [
+        {"tipo": "USA", "objeto": "short-term alpha"},
+        {"tipo": "PARTE_DE", "objeto": "optimal investment strategy"}
+      ],
+      "cita_textual": "the optimal strategy depends on the co-integration factor in at most a linear fashion, but the size of the investment will vary with time"
+    }
+  ],
+  "hallazgos": [
+    {
+      "afirmacion": "En una simulación de Monte Carlo de la estrategia óptima calibrada con datos intradía de GOOGL, FB y AMZN, el P&L medio de fin de día resultó positivo con una dispersión moderada relativa a la media.",
+      "mercado": "US equities (GOOGL, FB, AMZN, Nasdaq)",
+      "periodo": "calibración con datos de 1 día (Nov 3, 2014); simulación intradía de 10.000 corridas",
+      "magnitud": "media del P&L = 91.99; desvío estándar del P&L = 20.27 (unidades monetarias del ejercicio de simulación)",
+      "condiciones": "Simulación pura (no datos reales out-of-sample), sin costos de transacción, ejecución al midprice, posiciones liquidadas al final del día, calibración con un único día de datos ITCH a 1 minuto",
+      "robustez": "baja",
+      "cita_textual": "The mean of the P&L is 91.99 and its standard deviation is 20.27."
+    },
+    {
+      "afirmacion": "En la trayectoria simulada individual mostrada, las posiciones óptimas del agente se mantienen acotadas entre una posición larga y corta moderadas, y la ganancia final es de aproximadamente 80 dólares.",
+      "mercado": "US equities (GOOGL, FB, AMZN, Nasdaq)",
+      "periodo": "una trayectoria simulada de un día de trading",
+      "magnitud": "posiciones entre 4 (long) y 6 (short) unidades; profit final ≈ $80",
+      "condiciones": "Ejemplo ilustrativo de una sola corrida simulada, sin costos de transacción, sin validación OOS",
+      "robustez": "baja",
+      "cita_textual": "we observe that the agent's positions are always between 4 (long shares) and 6 (short shares) and the proﬁt at the end of the trading horizon is $80 approximately"
+    }
+  ],
+  "aplicabilidad_es_intradia": {
+    "nivel": "media",
+    "nota": "El marco de sizing dinámico basado en un factor mean-reverting (short-term alpha/spread) podría adaptarse a un spread intradía de ES contra un instrumento correlacionado (ej. NQ o ETFs sectoriales), pero requiere agregar costos, slippage y validación OOS antes de ser testeable en el ecosistema real."
+  }
+}

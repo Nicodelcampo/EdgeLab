@@ -1,30 +1,30 @@
 # Inventario de reglas — Lucid
 
-Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
+Páginas leídas: 59 · bloqueadas: 0 · oraciones con reglas: 307
 
 ## Cobertura por categoría
 
 | Categoría | Impacto | Oraciones |
 |---|---|---|
-| objetivo_beneficio | sim | 20 |
-| drawdown_maximo | sim | 46 |
+| objetivo_beneficio | sim | 16 |
+| drawdown_maximo | sim | 44 |
 | drawdown_bloqueo | sim | 4 |
-| perdida_diaria | sim | 59 |
-| consistencia | sim | 64 |
+| perdida_diaria | sim | 56 |
+| consistencia | sim | 62 |
 | dias_minimos | sim | **0 — sin evidencia, buscar a mano** |
 | dias_ganadores | sim | **0 — sin evidencia, buscar a mano** |
 | plazo_maximo | sim | 2 |
 | inactividad | sim | 3 |
-| retiro_colchon | sim | 31 |
+| retiro_colchon | sim | 28 |
 | retiro_frecuencia | sim | 18 |
 | retiro_minimo | sim | 4 |
-| retiro_maximo | sim | 18 |
-| retiro_split | sim | 14 |
-| retiro_cantidad | sim | 9 |
-| cuenta_live | sim | 65 |
+| retiro_maximo | sim | 13 |
+| retiro_split | sim | 9 |
+| retiro_cantidad | sim | 8 |
+| cuenta_live | sim | 50 |
 | cierre_cuenta | sim | 6 |
-| contratos_maximos | sim | 20 |
-| escalado | sim | 23 |
+| contratos_maximos | sim | 19 |
+| escalado | sim | 21 |
 | riesgo_por_trade | filtro | **0 — sin evidencia, buscar a mano** |
 | relacion_riesgo_beneficio | filtro | **0 — sin evidencia, buscar a mano** |
 | ganancia_extraordinaria | filtro | **0 — sin evidencia, buscar a mano** |
@@ -32,14 +32,14 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 | noticias | filtro | 4 |
 | horario_y_overnight | filtro | 3 |
 | instrumentos | filtro | 2 |
-| estrategias_prohibidas | filtro | 28 |
-| cobertura_y_copy | filtro | 9 |
+| estrategias_prohibidas | filtro | 26 |
+| cobertura_y_copy | filtro | 8 |
 | bots_y_automatizacion | filtro | 12 |
 | martingala_y_promediar | filtro | 1 |
 | cuentas_maximas | filtro | 7 |
 | discrecional_firma | filtro | **0 — sin evidencia, buscar a mano** |
 | kyc_y_jurisdiccion | filtro | 4 |
-| cuota | costo | 12 |
+| cuota | costo | 11 |
 | activacion_y_reset | costo | 5 |
 | comisiones_y_datos | costo | 5 |
 
@@ -51,7 +51,7 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [12890029-lucidpro-evaluation-account](https://support.lucidtrading.com/en/articles/12890029-lucidpro-evaluation-account)</sub>
 - Account Size Profit Target Max Loss Limit Daily Loss Limit Max Size $25,000 $1,250 $1,000 None 2 mini or 20 micros $50,000 $3,000 $2,000 $1,200 4 mini or 40 micros $100,000 $6000 $3,000 $1,800 6 mini or 60 micros $150,000 $9,000 $4,500 $2,700 10 mini or 100 micros LucidPro Evaluation Account Benefits One-time fee, no monthly rebilling, take as long as you need to pass Pass the evaluation in one trading day Real time activation, upgrade to funded account within 5-30 minutes of hitting profit target No activation fees to upgrade to funded account Did this answer your question?  
   <sub>$25,000, $1,250, $1,000, 2 mini, 20 micros, $50,000 · [12890029-lucidpro-evaluation-account](https://support.lucidtrading.com/en/articles/12890029-lucidpro-evaluation-account)</sub>
-- A Written by AJ August 31, 2026 Table of contents LucidFlex Evaluation Account Overview The LucidFlex evaluation is a simulated account with a profit target that must be hit before traders are eligible to upgrade to a LucidFlex funded account .  
+- A Written by AJ Updated over 3 weeks ago Table of contents LucidFlex Evaluation Account Overview The LucidFlex evaluation is a simulated account with a profit target that must be hit before traders are eligible to upgrade to a LucidFlex funded account .  
   <sub> · [12945790-lucidflex-evaluation-account](https://support.lucidtrading.com/en/articles/12945790-lucidflex-evaluation-account)</sub>
 - Account Size Profit Target Max Loss Limit Consistency % Max Size $25,000 $1,250 $1,000 50% 2 mini or 20 micros $50,000 $3,000 $2,000 50% 4 mini or 40 micros $100,000 $6,000 $3,000 50% 6 mini or 60 micros $150,000 $9,000 $4,500 50% 10 mini or 100 micros LucidFlex Evaluation Account Benefits One-time fee, no monthly rebilling, take as long as you need to pass Real-time activation, upgrade to funded account within 5-30 minutes of hitting profit target No activation fees to upgrade to funded account Optional DLL available at checkout The LucidFlex evaluation 50% consistency has cushion built in, so you can pass in two days Did this answer your question?  
   <sub>$25,000, $1,250, $1,000, 50%, 2 mini, 20 micros · [12945790-lucidflex-evaluation-account](https://support.lucidtrading.com/en/articles/12945790-lucidflex-evaluation-account)</sub>
@@ -69,22 +69,14 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [13424897-lucidblack-payout-objectives](https://support.lucidtrading.com/en/articles/13424897-lucidblack-payout-objectives)</sub>
 - Use the following formula to determine if you are adhering to the Consistency Percentage: Largest Single Day Profit / Account Profit = Consistency Percentage Example You trade a 50k LucidBlack evaluation account and your Largest Single Day Profit was $750 when you reached the $3,000 profit target.  
   <sub>$750, $3,000 · [13424900-lucidblack-consistency-percentage](https://support.lucidtrading.com/en/articles/13424900-lucidblack-consistency-percentage)</sub>
-- A Written by AJ Updated over a week ago Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
-  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
+- A Written by AJ August 26, 2026 Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
+  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
 - All Collections LucidDaily LucidDaily Evaluation LucidDaily Evaluation A Written by AJ July 31, 2026 Table of contents LucidDaily Evaluation Account Overview The LucidDaily evaluation is a simulated account with a profit target that must be hit before traders are eligible to upgrade to a LucidDaily funded account .  
   <sub> · [15996664-luciddaily-evaluation](https://support.lucidtrading.com/en/articles/15996664-luciddaily-evaluation)</sub>
 - Use the following formula to determine if you are adhering to the Consistency Percentage: Largest Single Day Profit / Account Profit = Consistency Percentage Example You trade your $50k LucidDaily evaluation account and your Largest Single Day Profit was $750 when you reached the $3,000 profit target.  
   <sub>$50k, $750, $3,000 · [15998336-luciddaily-consistency](https://support.lucidtrading.com/en/articles/15998336-luciddaily-consistency)</sub>
 - Account Size Profit Target 50% Consistency Cushion 25k Daily $1,250 $625 $650.00 50k Daily $3,000 $1,500 $1,560.00 100k Daily $6,000 $3,000 $3,120.00 150k Daily $9,000 $4,500 $4,680.00 Important: This is merely an example table based on hitting exactly 50% of your profit target.  
   <sub>50%, $1,250, $625, $650.00, $3,000, $1,500 · [15998336-luciddaily-consistency](https://support.lucidtrading.com/en/articles/15998336-luciddaily-consistency)</sub>
-- To earn the Live Bonus, a trader must meet 2 objectives: Generate Live Profits above the starting balance, equal to the Profit target outlined below.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure) +1</sub>
-- We strongly encourage legitimate trading activity, and exploitation of this bonus system, via "contract flipping" or similar, may lead to further review. ​ The Live Bonus Profit Target calculation is not negatively impacted by taking payouts.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Pre-Live (Step 2): The profit target must be reached Standard Live Scaling Plan applies to prepare the trader for their live account There is no consistency rule in this stage Once passed, the trader transitions directly into a live account.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- Complete 20 trading days The profit target calculation is not negatively impacted by taking payouts A trading day is defined as 1+ trade taken, generating +$1/-$1 P&L net of fees at the end of the trading session.  
-  <sub>$1, $1 · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## drawdown_maximo (sim)
 
@@ -135,25 +127,25 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - At the end of each trading session, the system calculates the account’s highest closing balance The MLL increases as your balance grows, up to a defined point Once your account exceeds the Initial Trail Balance, the MLL locks and no longer moves Account Size MLL Amount Initial Trail Balance Locked MLL Balance $25,000 $1,000 $26,100 $25,100 $50,000 $2,000 $52,100 $50,100 $100,000 $3,000 $103,100 $100,100 As with the other account types: The MLL rises with your closing balance until it reaches the trail Once the account exceeds the trail, the MLL locks at the initial balance plus $100 If your account balance reached the MLL, your account will be breached.  
   <sub>$25,000, $1,000, $26,100, $25,100, $50,000, $2,000 · [13424906-lucidblack-drawdown](https://support.lucidtrading.com/en/articles/13424906-lucidblack-drawdown)</sub>
 - Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a one-time Live Bonus up to $4,500.  
-  <sub>$4,500 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$4,500 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Locking the Live MLL Lucid Live accounts use an End-of-Day Drawdown (EOD Drawdown) system to calculate the Max Loss Limit (MLL).  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - The MLL increases as the account balance grows, up to a defined point.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Once a trader generates live profits equal to their starting live drawdown, the Max Loss Limit locks at $100 and no longer moves.  
-  <sub>$100 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub>$100 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - If a trader requests a live payout before generating profits over the live drawdown, the Max Loss Limit locks to $100.  
-  <sub>$100 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub>$100 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
-- A Written by AJ Updated over a week ago Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
-  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
+- A Written by AJ August 26, 2026 Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
+  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
 - The cooldown begins only after the final live account is blown If you have multiple live accounts, the cooldown will not start until all live accounts are closed Important: If you still have active LucidMaxx evaluations, you may continue trading and even move back to live The cooldown will only begin once your last active live account is closed Fullporting Near Live Max Loss Limit Traders who engage in reckless trading behavior, such as full porting positions near the live account Max Loss Limit, may face additional consequences.  
-  <sub> · [14315468-legacy-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-legacy-lucidmaxx-cooldown)</sub>
+  <sub> · [14315468-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-lucidmaxx-cooldown)</sub>
 - If trading activity causes drawdown to exceed the defined Max Loss Limit, this may result in: Extended cooldown periods Permanent restriction from the program These decisions are made at the discretion of the Lucid risk team.  
-  <sub> · [14315468-legacy-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-legacy-lucidmaxx-cooldown)</sub>
+  <sub> · [14315468-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-lucidmaxx-cooldown)</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
   <sub>$25,000, $1,000, 2 mini, 20 micros, $50,000, $2,000 · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - The buffer is equal to: Initial Max Loss Limit + $100 Account Size Buffer Balance $25,000 $26,100 $50,000 $52,100 $100,000 $103,100 $150,000 $154,600 Important: If you take a trade before your payout is processed that drops your balance into the buffer, your request may be denied.  
@@ -176,10 +168,6 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [16085900-luciddaily-daily-loss-limit](https://support.lucidtrading.com/en/articles/16085900-luciddaily-daily-loss-limit)</sub>
 - Reaching the MLL at that point will result in a hard breach.  
   <sub> · [16085900-luciddaily-daily-loss-limit](https://support.lucidtrading.com/en/articles/16085900-luciddaily-daily-loss-limit)</sub>
-- Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a repeatable monthly Live Bonus up to $4,500.  
-  <sub>$4,500 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Account Size Starting Balance Bonus Target Trading Days Live Bonus MLL (Static) $25,000 $1,000 +$2,000 20 $1,000 $100 $50,000 $2,000 +$4,000 20 $2,000 $100 $100,000 $3,000 +$6,000 20 $3,000 $100 $150,000 $4,500 +$9,000 20 $4,500 $100 The Live Bonus is paid out rather than added to account balance.  
-  <sub>$25,000, $1,000, $2,000, $1,000, $100, $50,000 · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## drawdown_bloqueo (sim)
 
@@ -190,7 +178,7 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - At the end of each trading session, the system calculates the account’s highest closing balance The MLL increases as your balance grows, up to a defined point Once your account exceeds the Initial Trail Balance, the MLL locks and no longer moves Account Size MLL Amount Initial Trail Balance Locked MLL Balance $25,000 $1,000 $26,100 $25,100 $50,000 $2,000 $52,100 $50,100 $100,000 $3,000 $103,100 $100,100 As with the other account types: The MLL rises with your closing balance until it reaches the trail Once the account exceeds the trail, the MLL locks at the initial balance plus $100 If your account balance reached the MLL, your account will be breached.  
   <sub>$25,000, $1,000, $26,100, $25,100, $50,000, $2,000 · [13424906-lucidblack-drawdown](https://support.lucidtrading.com/en/articles/13424906-lucidblack-drawdown)</sub>
 - Once a trader generates live profits equal to their starting live drawdown, the Max Loss Limit locks at $100 and no longer moves.  
-  <sub>$100 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub>$100 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 
 ## perdida_diaria (sim)
 
@@ -247,13 +235,13 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Account Size Max Loss Limit Consistency % Scaling Plan Max Size $25,000 $1,000 40% Yes 2 mini or 20 micros $50,000 $2,000 40% Yes 4 mini or 40 micros $100,000 $3,000 40% Yes 6 mini or 60 micros LucidBlack Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade There is no DLL on LucidBlack funded accounts There are no trading days requirements on LucidBlack Reach a payout in as little as 3 days in a LucidBlack funded account Traders may earn bonus payouts in LucidBlack funded accounts Did this answer your question?  
   <sub>$25,000, $1,000, 40%, 2 mini, 20 micros, $50,000 · [13424896-lucidblack-funded-account](https://support.lucidtrading.com/en/articles/13424896-lucidblack-funded-account)</sub>
 - Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a one-time Live Bonus up to $4,500.  
-  <sub>$4,500 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$4,500 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
-- All Collections LucidMaxx Legacy LucidMaxx Overview Legacy LucidMaxx Overview LucidMaxx is an invite-only live futures prop account with instant capital, daily uncapped payouts, and no daily loss limit.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
+- All Collections LucidMaxx LucidMaxx Overview LucidMaxx Overview LucidMaxx is an invite-only live futures prop account with instant capital, daily uncapped payouts, and no daily loss limit.  
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
   <sub>$25,000, $1,000, 2 mini, 20 micros, $50,000, $2,000 · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - LucidDaily Drawdown | Lucid Trading Help Center Copyright (c) 2023, Intercom, Inc.  
@@ -306,12 +294,6 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [16226068-lucidpro-customization](https://support.lucidtrading.com/en/articles/16226068-lucidpro-customization)</sub>
 - Option 1: Daily Loss Limit ON Daily Loss Limit enabled for evaluation and funded Cheapest version of LucidPro Option 2: Daily Loss Limit OFF No Daily Loss Limit Higher pricing version of LucidPro Choosing the Right Configuration Your customization should reflect your priorities: Choose Daily Loss Limit ON if you prefer a lower purchase price Choose Daily Loss Limit OFF if you want more flexibility and don't mind paying a premium for it Once selected, these settings cannot be changed for an active account.  
   <sub> · [16226068-lucidpro-customization](https://support.lucidtrading.com/en/articles/16226068-lucidpro-customization)</sub>
-- Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a repeatable monthly Live Bonus up to $4,500.  
-  <sub>$4,500 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End of Day (EOD) drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- All Collections LucidMaxx New LucidMaxx Program New LucidMaxx Program LucidMaxx is an invite-only futures prop account with a direct path to Live funding, daily uncapped payouts, and no daily loss limit.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## consistencia (sim)
 
@@ -412,15 +394,15 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Plug the values into the above formula. $750 / $3,000 = 25% Congratulations, you have maintained consistency under the LucidBlack evaluation 60% requirement.  
   <sub>$750, $3,000, 25%, 60% · [13424900-lucidblack-consistency-percentage](https://support.lucidtrading.com/en/articles/13424900-lucidblack-consistency-percentage)</sub>
 - Consistency Rules at Live There are no consistency requirements for live accounts.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Once promoted from sim-funded to live, consistency rules no longer apply regardless of your account type (LucidPro, LucidFlex, LucidDirect).  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Achieving LucidMaxx Status LucidMaxx status is reserved for traders who demonstrate exceptional consistency and profitability.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview) +1</sub>
-- All Collections LucidMaxx Legacy LucidMaxx Eval Rules Legacy LucidMaxx Eval Rules LucidMaxx evaluation rules: $25K-$150K accounts, 40% consistency, a 5 trading day minimum, then a direct transition into a live funded account.  
-  <sub>$25K, $150K, 40% · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
-- A Written by AJ Updated over a week ago Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
-  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
+- All Collections LucidMaxx LucidMaxx Eval Rules LucidMaxx Eval Rules LucidMaxx evaluation rules: $25K-$150K accounts, 40% consistency, a 5 trading day minimum, then a direct transition into a live funded account.  
+  <sub>$25K, $150K, 40% · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
+- A Written by AJ August 26, 2026 Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
+  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
 - All Collections LucidDaily LucidDaily Funded Account LucidDaily Funded Account A Written by AJ August 7, 2026 Table of contents LucidDaily Funded Account Overview LucidDaily funded accounts offer daily payout requests, no consistency rule, and a 90/10 profit split.  
   <sub> · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
@@ -435,7 +417,7 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub>$50k, $750, $3,000 · [15998336-luciddaily-consistency](https://support.lucidtrading.com/en/articles/15998336-luciddaily-consistency)</sub>
 - Plug the values into the above formula. $750 / $3,000 = 25% Congratulations, you have maintained consistency under the LucidDaily evaluation 50% requirement.  
   <sub>$750, $3,000, 25%, 50% · [15998336-luciddaily-consistency](https://support.lucidtrading.com/en/articles/15998336-luciddaily-consistency)</sub>
-- … 4 más en inventario.json
+- … 2 más en inventario.json
 
 ## plazo_maximo (sim)
 
@@ -511,12 +493,6 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
 - Sim Profits Above the Buffer Sim profits above the buffer may be paid out to the trader once their KYC with the broker partner has been completed and the sub accounts have been approved.  
   <sub> · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
-- To earn the Live Bonus, a trader must meet 2 objectives: Generate Live Profits above the starting balance, equal to the Profit target outlined below.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure) +1</sub>
-- LucidMaxx traders: May purchase the LucidMaxx evaluation Receive access to daily, uncapped payouts Live balance is static for Maxxers, not EOD Once a Maxxer reaches Live, their account starts with a balance above $0, which is withdrawable from day 1 Please refer to the LucidMaxx documentation for full details.  
-  <sub>$0, · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- The Live account starts with a balance, as per the table below, which is withdrawable from day 1.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## retiro_frecuencia (sim)
 
@@ -549,9 +525,9 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Bonus Payout Maximums The Bonus Payout is earned after the full Bonus Profit Goal is reached When earned, the Bonus Payout is added to the standard payout Example: 50k LucidBlack account Trader meets standard Profit Goal: may request up to $1,500 Trader meet Bonus Profit Goal: may request additional $1,500 Trader may request up to $3,000 for that payout cycle Please see the table below: Account Size Bonus Payout Maximum $25,000 $750 $50,000 $1,500 $100,000 $2,000 Payout Timing and Processing There is no fixed payout window, you may request a payout any day after meeting all eligibility criteria.  
   <sub>$1,500, $1,500, $3,000, $25,000, $750, $50,000 · [13424897-lucidblack-payout-objectives](https://support.lucidtrading.com/en/articles/13424897-lucidblack-payout-objectives)</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - Traders may request payouts daily.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
   <sub>$25,000, $1,000, 2 mini, 20 micros, $50,000, $2,000 · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - Account Size Maximum Daily Profit $25,000 $6,000 $50,000 $8,000 $100,000 $10,000 $150,000 $12,000 Payout Minimums and Maximums The minimum payout request per account is $500 Payout maximum is the amount of sim profits built above the buffer Payout Timing and Processing There is no fixed payout window, you may request a payout any day after meeting all eligibility criteria.  
@@ -580,32 +556,22 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub>$500, 50% · [12945796-lucidflex-payouts](https://support.lucidtrading.com/en/articles/12945796-lucidflex-payouts)</sub>
 - Account Size Bonus Profit Goal $25,000 $2,500 $50,000 $5,000 $100,000 $7,000 Standard Payout Minimums and Maximums Minimum payout request: $500 Maximum payout amounts depend on account size: Account Size Standard Payout Maximum $25,000 $750 $50,000 $1,500 $100,000 $2,000 There is no buffer balance that must be maintained in LucidBlack funded accounts.  
   <sub>$25,000, $2,500, $50,000, $5,000, $100,000, $7,000 · [13424897-lucidblack-payout-objectives](https://support.lucidtrading.com/en/articles/13424897-lucidblack-payout-objectives)</sub>
-- D Written by Doug Updated over a week ago Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their plan After being paid out a significant amount of capital lifetime If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+- D Written by Doug Updated this week Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their plan After being paid out a significant amount of capital lifetime If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - LucidMaxx traders: May purchase the LucidMaxx evaluation Receive access to daily, uncapped payouts and instant live capital Please refer to the LucidMaxx documentation for full details.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +1</sub>
-- All Collections LucidMaxx Legacy LucidMaxx Overview Legacy LucidMaxx Overview LucidMaxx is an invite-only live futures prop account with instant capital, daily uncapped payouts, and no daily loss limit.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
+- All Collections LucidMaxx LucidMaxx Overview LucidMaxx Overview LucidMaxx is an invite-only live futures prop account with instant capital, daily uncapped payouts, and no daily loss limit.  
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - LucidMaxx is built to offer instant live capital with daily, uncapped payout potential.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - Maximum Daily Profit LucidDaily differs from our other plans in that it doesn't follow a strict payout cap per request structure.  
   <sub> · [15997266-luciddaily-payouts](https://support.lucidtrading.com/en/articles/15997266-luciddaily-payouts)</sub>
 - The amount is capped at a fixed amount of $15,000.  
   <sub>$15,000 · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
 - Any profits in excess of the capped amount may not be withdrawn.  
   <sub> · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
-- Written by Joel Updated this week Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their Flex, Pro, or Direct plan After being paid out a significant amount of capital lifetime If they earn the Maximum Daily Profit for their LucidDaily account size If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- This maximum payout level applies to Flex, Pro, and Direct plans.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- LucidMaxx traders: May purchase the LucidMaxx evaluation Receive access to daily, uncapped payouts Live balance is static for Maxxers, not EOD Once a Maxxer reaches Live, their account starts with a balance above $0, which is withdrawable from day 1 Please refer to the LucidMaxx documentation for full details.  
-  <sub>$0, · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- All Collections LucidMaxx New LucidMaxx Program New LucidMaxx Program LucidMaxx is an invite-only futures prop account with a direct path to Live funding, daily uncapped payouts, and no daily loss limit.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- LucidMaxx is built to offer a direct path to live capital with daily, uncapped payout potential.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## retiro_split (sim)
 
@@ -618,25 +584,15 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Profit Split Structure All LucidBlack funded account payouts are split 90% to the trader and 10% to Lucid Trading.  
   <sub>90%, 10% · [13424897-lucidblack-payout-objectives](https://support.lucidtrading.com/en/articles/13424897-lucidblack-payout-objectives)</sub>
 - The Live Bonus is subject to a 90/10 profit split.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +1</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - What is the profit split on LucidMaxx?  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - You keep 90% from the first payout.  
-  <sub>90% · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>90% · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - All Collections LucidDaily LucidDaily Funded Account LucidDaily Funded Account A Written by AJ August 7, 2026 Table of contents LucidDaily Funded Account Overview LucidDaily funded accounts offer daily payout requests, no consistency rule, and a 90/10 profit split.  
   <sub> · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - Profit Split Structure All LucidDaily funded account payouts are split 90% to the trader and 10% to Lucid Trading.  
   <sub>90%, 10% · [15997266-luciddaily-payouts](https://support.lucidtrading.com/en/articles/15997266-luciddaily-payouts)</sub>
-- This cashout option is equal to 50% of a traders live starting balance and is subject to a 90/10 profit split.  
-  <sub>50% · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- The Live Bonus and starting balance are subject to a 90/10 profit split.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- This cashout is subject to a 90/10 profit split.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- What is the profit split on LucidMaxx live accounts?  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- You keep 90% from the first payout onward.  
-  <sub>90% · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## retiro_cantidad (sim)
 
@@ -653,11 +609,9 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Payout Minimums and Maximums Minimum payout request: $500 Maximum payout amounts depend on account size and payout cycle: Account Size Payouts 1-3 Payouts 4-5 $25,000 $1,000 $1,000 $50,000 $2,000 $2,500 $100,000 $2,500 $3,000 $150,000 $3,000 $3,500 Each payout cycle resets these thresholds.  
   <sub>$500, 3 Payouts, $25,000, $1,000, $1,000, $50,000 · [12890164-luciddirect-payout-objectives](https://support.lucidtrading.com/en/articles/12890164-luciddirect-payout-objectives)</sub>
 - The risk team evaluates traders based on their overall track record, not a fixed number of payouts or days.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview) +1</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - You keep 90% from the first payout.  
-  <sub>90% · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
-- You keep 90% from the first payout onward.  
-  <sub>90% · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
+  <sub>90% · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 
 ## cuenta_live (sim)
 
@@ -699,32 +653,32 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [13425070-luciddirect-live-legacy](https://support.lucidtrading.com/en/articles/13425070-luciddirect-live-legacy)</sub>
 - There is a move to live cap for each LucidDirect account, which varies by account size.  
   <sub> · [13425070-luciddirect-live-legacy](https://support.lucidtrading.com/en/articles/13425070-luciddirect-live-legacy)</sub>
-- All Collections Live Trading Legacy Live Structure Legacy Live Structure LucidLive: Lucid's live account program.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+- All Collections Live Trading New Live Structure New Live Structure LucidLive: Lucid's live account program.  
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a one-time Live Bonus up to $4,500.  
-  <sub>$4,500 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
-- D Written by Doug Updated over a week ago Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their plan After being paid out a significant amount of capital lifetime If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$4,500 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
+- D Written by Doug Updated this week Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their plan After being paid out a significant amount of capital lifetime If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Consistency Rules at Live There are no consistency requirements for live accounts.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Locking the Live MLL Lucid Live accounts use an End-of-Day Drawdown (EOD Drawdown) system to calculate the Max Loss Limit (MLL).  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Live Bonus The first time a trader is moved live under the new program, they may be eligible to earn a one-time bonus - provided they've never held a Legacy Live account.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - Cooldown Traders who have been moved live may return to purchase a new evaluation after blowing a live account..  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +1</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Standard cooldown period: 2 weeks Traders who repeatedly blow live accounts due to reckless or "yolo" behavior may be subject to longer cooldowns at the discretion of the risk team LucidMaxx Status Select traders may eventually earn LucidMaxx status.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - LucidMaxx traders: May purchase the LucidMaxx evaluation Receive access to daily, uncapped payouts and instant live capital Please refer to the LucidMaxx documentation for full details.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +1</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - LucidLive Account FAQ Do all funded prop accounts move live at once?  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Can I hedge my live accounts?  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Hedging live accounts is strictly prohibited by both Lucid and the CME.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Day-One Capital Allocation: A portion of the move-to-live cap is deposited into the live account on Day 1 The remaining capital is held in Escrow, which can be earned back by meeting performance benchmarks Account Size Max Deposited Day 1 ( Per Account) $25,000 $2,000 $50,000 $3,000 $100,000 $4,000 $150,000 $5,000 Example: A trader moves five $50,000 LucidPro accounts live with $25,000 in simulated profit per account.  
   <sub>$25,000, $2,000, $50,000, $3,000, $100,000, $4,000 · [13432107-lucidpro-live-legacy](https://support.lucidtrading.com/en/articles/13432107-lucidpro-live-legacy)</sub>
 - Max allowed per account = $20,000 → excess $5,000 is forfeited Total live capital: $100,000 ($20,000 × 5) Day 1 capital = $15,000 ($3,000 × 5) Remaining $85,000 is held in Escrow and may be unlocked Live Escrow Escrow is the portion of your move-to-live capital not deposited on Day 1.  
@@ -734,54 +688,33 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - When a trader progresses from LucidPro to a live account: The simulated profits from your LucidPro account are used to calculate your starting LucidLive balance.  
   <sub> · [13432107-lucidpro-live-legacy](https://support.lucidtrading.com/en/articles/13432107-lucidpro-live-legacy)</sub>
 - LucidMaxx is built to offer instant live capital with daily, uncapped payout potential.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - LucidMaxx accounts trade live capital from the moment the evaluation is passed.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - Can I purchase/trade LucidMaxx accounts whilst I have an active Live account?  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview) +1</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 - You may trade and reset your existing LucidMaxx accounts alongside your Live account, however, you may not purchase new LucidMaxx accounts whilst you hold an active Live account.  
-  <sub> · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview) +1</sub>
-- All Collections LucidMaxx Legacy LucidMaxx Eval Rules Legacy LucidMaxx Eval Rules LucidMaxx evaluation rules: $25K-$150K accounts, 40% consistency, a 5 trading day minimum, then a direct transition into a live funded account.  
-  <sub>$25K, $150K, 40% · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
-- A Written by AJ Updated over a week ago Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
-  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
+  <sub> · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
+- All Collections LucidMaxx LucidMaxx Eval Rules LucidMaxx Eval Rules LucidMaxx evaluation rules: $25K-$150K accounts, 40% consistency, a 5 trading day minimum, then a direct transition into a live funded account.  
+  <sub>$25K, $150K, 40% · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
+- A Written by AJ August 26, 2026 Table of contents LucidMaxx Evaluation Account Size Profit Target Max Loss Limit Consistency Trading Days $25,000 $1,250 $1,000 40% 5 $50,000 $3,000 $2,000 40% 5 $100,000 $6,000 $3,000 40% 5 $150,000 $9,000 $4,500 40% 5 To pass the evaluation: The profit target must be reached The 40% consistency rule must be maintained The minimum trading day requirement must be satisfied Once passed, the trader transitions directly into a live account.  
+  <sub>$25,000, $1,250, $1,000, 40%, $50,000, $3,000 · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
 - The live account drawdown is the same as the standard Lucid live structure.  
-  <sub> · [14315460-legacy-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-legacy-lucidmaxx-eval-rules)</sub>
+  <sub> · [14315460-lucidmaxx-eval-rules](https://support.lucidtrading.com/en/articles/14315460-lucidmaxx-eval-rules)</sub>
 - Cool Down There is a 2-week cooldown period after a trader blows their LucidMaxx live account.  
-  <sub> · [14315468-legacy-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-legacy-lucidmaxx-cooldown)</sub>
+  <sub> · [14315468-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-lucidmaxx-cooldown)</sub>
 - The cooldown begins only after the final live account is blown If you have multiple live accounts, the cooldown will not start until all live accounts are closed Important: If you still have active LucidMaxx evaluations, you may continue trading and even move back to live The cooldown will only begin once your last active live account is closed Fullporting Near Live Max Loss Limit Traders who engage in reckless trading behavior, such as full porting positions near the live account Max Loss Limit, may face additional consequences.  
-  <sub> · [14315468-legacy-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-legacy-lucidmaxx-cooldown)</sub>
-- All Collections Live Trading Live Scaling Plan Live Scaling Plan Live Trading Scaling Plan Written by Joel Updated over a week ago Table of contents The scaling plan for Live accounts controls how much of your max size is available to trade based on the profits in your account.  
-  <sub> · [15245873-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-live-scaling-plan)</sub>
+  <sub> · [14315468-lucidmaxx-cooldown](https://support.lucidtrading.com/en/articles/14315468-lucidmaxx-cooldown)</sub>
+- All Collections Live Trading New Live Scaling Plan New Live Scaling Plan Live Trading Scaling Plan Written by Joel May 26, 2026 Table of contents The scaling plan for Live accounts controls how much of your max size is available to trade based on the profits in your account.  
+  <sub> · [15245873-new-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-new-live-scaling-plan)</sub>
 - All Collections LucidDaily LucidDaily Live LucidDaily Live A Written by AJ July 27, 2026 Table of contents Being Evaluated for Live from LucidDaily Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: If they earn the Maximum Daily Profit for their account size After being paid out a significant amount of capital lifetime If they have exceptional performance in sim funded If they have previously been moved live All live transitions occur at the discretion of the Lucid risk team.  
   <sub> · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
 - Whether you have one 25k account or five 150k accounts, the maximum sim profit paid out on the move to live is $15,000.  
   <sub>$15,000 · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
 - Transition to Live When a futures trader is moved to live from LucidDaily: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
   <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
-- All Collections Live Trading New Live Structure New Live Structure LucidLive: Lucid's live account program.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Earn a live account after Payout 5, receive daily payouts, EOD drawdown, no daily loss limit, plus a repeatable monthly Live Bonus up to $4,500.  
-  <sub>$4,500 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Written by Joel Updated this week Table of contents Being Evaluated for Live Lucid's risk team continuously monitors trader performance to determine when a trader is ready to transition to live futures trading. ​ Traders enter the live review pool when one or more of the following conditions are met: After receiving the final payout (Payout 5) on their Flex, Pro, or Direct plan After being paid out a significant amount of capital lifetime If they earn the Maximum Daily Profit for their LucidDaily account size If they have exceptional performance in sim funded If they have previously been moved live Payout 5 represents the maximum payout level, not a guaranteed minimum for live eligibility.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Cashout A cashout option has been introduced for traders who do not yet feel comfortable trading live capital.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- If no choice to cashout is made within 24 hours of receiving the move to live email, your accounts will automatically move to Live.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure) +1</sub>
-- Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End of Day (EOD) drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- LucidMaxx is built to offer a direct path to live capital with daily, uncapped payout potential.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- Pre-Live (Step 2): The profit target must be reached Standard Live Scaling Plan applies to prepare the trader for their live account There is no consistency rule in this stage Once passed, the trader transitions directly into a live account.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- LucidMaxx Live The Live account has a static drawdown.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- The Live account starts with a balance, as per the table below, which is withdrawable from day 1.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
-- … 5 más en inventario.json
 
 ## cierre_cuenta (sim)
 
@@ -833,13 +766,11 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Please see the table below for details: Simulated Profits $25,000 ​ Contract Limits $50,000 ​ Contract Limits $100,000 ​ Contract Limits $0 - $999 1 mini or 10 micros 2 minis or 20 micros 3 minis or 30 micros $1,000 - $1,999 2 minis or 20 micros 3 minis or 30 micros 4 minis or 40 micros $2,000 - $2,999 - 4 minis or 40 micros 5 minis or 50 micros $3,000+ - - 6 minis or 60 micros Circumventing the Scaling Plan Some trader may be inclined to try and get around the scaling plan.  
   <sub>$25,000, $50,000, $100,000, $0, $999, 1 mini · [13424903-lucidblack-scaling-plan](https://support.lucidtrading.com/en/articles/13424903-lucidblack-scaling-plan)</sub>
 - Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
+  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
   <sub>$25,000, $1,000, 2 mini, 20 micros, $50,000, $2,000 · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - Transition to Live When a futures trader is moved to live from LucidDaily: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End-of-day drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
   <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
-- Transition to Live When a futures trader is moved to live: Traders receive one live account per eligible funded account Each funded account must have received at least one payout to qualify All live accounts begin with: $0 starting balance Daily payouts End of Day (EOD) drawdown No daily loss limit Funded Account Size Starting Live Drawdown Max Live Contract Limit* $25,000 $1,000 2 minis or 20 micros $50,000 $2,000 4 minis or 40 micros $100,000 $3,000 6 minis or 60 micros $150,000 $4,500 10 minis or 100 micros *Certain extremely volatile contracts have reduced position sizing to ensure traders do not exceed the live drawdown.  
-  <sub>$0, $25,000, $1,000, 2 minis, 20 micros, $50,000 · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
 
 ## escalado (sim)
 
@@ -881,14 +812,10 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
   <sub> · [13424903-lucidblack-scaling-plan](https://support.lucidtrading.com/en/articles/13424903-lucidblack-scaling-plan)</sub>
 - Please see the table below for details: Simulated Profits $25,000 ​ Contract Limits $50,000 ​ Contract Limits $100,000 ​ Contract Limits $0 - $999 1 mini or 10 micros 2 minis or 20 micros 3 minis or 30 micros $1,000 - $1,999 2 minis or 20 micros 3 minis or 30 micros 4 minis or 40 micros $2,000 - $2,999 - 4 minis or 40 micros 5 minis or 50 micros $3,000+ - - 6 minis or 60 micros Circumventing the Scaling Plan Some trader may be inclined to try and get around the scaling plan.  
   <sub>$25,000, $50,000, $100,000, $0, $999, 1 mini · [13424903-lucidblack-scaling-plan](https://support.lucidtrading.com/en/articles/13424903-lucidblack-scaling-plan)</sub>
-- Live Scaling Plan | Lucid Trading Help Center Copyright (c) 2023, Intercom, Inc.  
-  <sub> · [15245873-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-live-scaling-plan)</sub>
-- All Collections Live Trading Live Scaling Plan Live Scaling Plan Live Trading Scaling Plan Written by Joel Updated over a week ago Table of contents The scaling plan for Live accounts controls how much of your max size is available to trade based on the profits in your account.  
-  <sub> · [15245873-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-live-scaling-plan)</sub>
-- Please see the Live Scaling Plan for further information per account size.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- Pre-Live (Step 2): The profit target must be reached Standard Live Scaling Plan applies to prepare the trader for their live account There is no consistency rule in this stage Once passed, the trader transitions directly into a live account.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
+- New Live Scaling Plan | Lucid Trading Help Center Copyright (c) 2023, Intercom, Inc.  
+  <sub> · [15245873-new-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-new-live-scaling-plan)</sub>
+- All Collections Live Trading New Live Scaling Plan New Live Scaling Plan Live Trading Scaling Plan Written by Joel May 26, 2026 Table of contents The scaling plan for Live accounts controls how much of your max size is available to trade based on the profits in your account.  
+  <sub> · [15245873-new-live-scaling-plan](https://support.lucidtrading.com/en/articles/15245873-new-live-scaling-plan)</sub>
 
 ## tiempo_minimo_tenencia (filtro)
 
@@ -985,17 +912,13 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - A Written by AJ August 26, 2026 Table of contents General Requirements To be eligible for a payout from a LucidBlack account: You must not violate any Trading Rules, Terms & Conditions, or the LucidBlack Account Agreement.  
   <sub> · [13424897-lucidblack-payout-objectives](https://support.lucidtrading.com/en/articles/13424897-lucidblack-payout-objectives)</sub>
 - Hedging live accounts is strictly prohibited by both Lucid and the CME.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Violations will result in a permanent ban.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - See futures account sizes and details below: Account Size Max Loss Limit Daily Payouts Drawdown Max Size $25,000 $1,000 Yes Intraday 2 mini or 20 micros $50,000 $2,000 Yes Intraday 4 mini or 40 micros $100,000 $3,000 Yes Intraday 6 mini or 60 micros $150,000 $4,500 Yes Intraday 10 mini or 100 micros LucidDaily Funded Account Benefits Objectives on our dashboard update in real-time within 5-30 minutes of your last closed trade Traders may request payouts daily when eligible There is no Consistency Percentage on LucidDaily funded accounts News Trading Not Permitted Trading U.S high impact red folder news in a LucidDaily funded account is not permitted and is a hard breach.  
   <sub>$25,000, $1,000, 2 mini, 20 micros, $50,000, $2,000 · [15997244-luciddaily-funded-account](https://support.lucidtrading.com/en/articles/15997244-luciddaily-funded-account)</sub>
 - All Collections LucidDaily LucidDaily Payouts LucidDaily Payouts A Written by AJ July 27, 2026 Table of contents General Requirements To be eligible for a payout from a LucidDaily account: You must not violate any Trading Rules , Terms & Conditions, or the LucidDaily Account Agreement.  
   <sub> · [15997266-luciddaily-payouts](https://support.lucidtrading.com/en/articles/15997266-luciddaily-payouts)</sub>
-- We strongly encourage legitimate trading activity, and exploitation of this bonus system, via "contract flipping" or similar, may lead to further review. ​ The Live Bonus Profit Target calculation is not negatively impacted by taking payouts.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
-- We strongly encourage legitimate trading activity, and exploitation of this bonus system, via "contract flipping" or similar, may lead to further review.  
-  <sub> · [17327076-new-lucidmaxx-program](https://support.lucidtrading.com/en/articles/17327076-new-lucidmaxx-program)</sub>
 
 ## cobertura_y_copy (filtro)
 
@@ -1012,11 +935,9 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Hedging: Misrepresents a trader’s actual risk and skill Undermines the evaluation process Threatens the long-term sustainability of the firm Allowing hedging would make it impossible to identify and reward legitimate trading performance.  
   <sub> · [11404734-prohibited-hedging](https://support.lucidtrading.com/en/articles/11404734-prohibited-hedging)</sub>
 - Can I hedge my live accounts?  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 - Hedging live accounts is strictly prohibited by both Lucid and the CME.  
-  <sub> · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure) +2</sub>
-- This includes any copytrader issues that may arise.  
-  <sub> · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
+  <sub> · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure) +1</sub>
 
 ## bots_y_automatizacion (filtro)
 
@@ -1065,7 +986,7 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Prohibited Forms of Hedging Lucid Trading strictly prohibits all forms of hedging, including but not limited to: Hedging across multiple accounts held by the same user Hedging between different users' accounts Hedging between different firms or funded platforms Any other form of hedging designed to bypass risk management rules What Happens If I Hedge?  
   <sub> · [11404734-prohibited-hedging](https://support.lucidtrading.com/en/articles/11404734-prohibited-hedging)</sub>
 - LucidMaxx Benefits LucidMaxx traders receive the following advantages: Daily payouts No payout caps Up to 5 accounts No DLL (No Daily Loss Limit) End-of-day drawdown Instant live capital Live Payout Structure LucidMaxx live accounts allow: Uncapped daily payouts No payout windows Daily payout requests There are no profit minimums once live.  
-  <sub>5 accounts · [13891785-legacy-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-legacy-lucidmaxx-overview)</sub>
+  <sub>5 accounts · [13891785-lucidmaxx-overview](https://support.lucidtrading.com/en/articles/13891785-lucidmaxx-overview)</sub>
 
 ## kyc_y_jurisdiccion (filtro)
 
@@ -1097,13 +1018,11 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 - Account Size Profit Target Max Loss Limit Consistency % Max Size $25,000 $1,250 $1,000 60% 2 mini or 20 micros $50,000 $3,000 $2,000 60% 4 mini or 40 micros $100,000 $6000 $3,000 60% 6 mini or 60 micros LucidBlack Evaluation Account Benefits One-time fee, no monthly rebilling, take as long as you need to pass Real-time activation, upgrade to funded account within 5-30 minutes of hitting profit target No activation fees to upgrade to funded account There is no DLL on LucidBlack evaluation accounts The LucidBlack evaluation 60% consistency allows for an easier two day pass Did this answer your question?  
   <sub>$25,000, $1,250, $1,000, 60%, 2 mini, 20 micros · [13424894-lucidblack-evaluation-account](https://support.lucidtrading.com/en/articles/13424894-lucidblack-evaluation-account)</sub>
 - If a funded account is not moved live because it has 0 payouts, the evaluation cost of that account will be refunded, as long as the account has equal to or greater than 50% of the total drawdown remaining.  
-  <sub>0 payouts, 50% · [13425130-legacy-live-structure](https://support.lucidtrading.com/en/articles/13425130-legacy-live-structure)</sub>
-- All Collections LucidMaxx Legacy LucidMaxx Eval Pricing Legacy LucidMaxx Eval Pricing LucidMaxx evaluation pricing by account size, what the one-time fee includes, and how LucidMaxx compares to Lucid's other evaluation programs.  
-  <sub> · [14316866-legacy-lucidmaxx-eval-pricing](https://support.lucidtrading.com/en/articles/14316866-legacy-lucidmaxx-eval-pricing)</sub>
+  <sub>0 payouts, 50% · [13425130-new-live-structure](https://support.lucidtrading.com/en/articles/13425130-new-live-structure)</sub>
+- All Collections LucidMaxx LucidMaxx Eval Pricing LucidMaxx Eval Pricing LucidMaxx evaluation pricing by account size, what the one-time fee includes, and how LucidMaxx compares to Lucid's other evaluation programs.  
+  <sub> · [14316866-lucidmaxx-eval-pricing](https://support.lucidtrading.com/en/articles/14316866-lucidmaxx-eval-pricing)</sub>
 - If a funded account is not moved live because it has 0 payouts, the evaluation cost of that account will be refunded.  
   <sub>0 payouts · [16010520-luciddaily-live](https://support.lucidtrading.com/en/articles/16010520-luciddaily-live)</sub>
-- All simulated prop accounts are closed when a trader is moved live. ​ If a funded account is not moved live due to being ineligible, the evaluation cost of that account will be refunded, as long as the account has equal to or greater than 50% of the total drawdown remaining. ​ If you are not comfortable with evaluations being closed, do not keep evaluations in reserve.  
-  <sub>50% · [16558826-new-live-structure](https://support.lucidtrading.com/en/articles/16558826-new-live-structure)</sub>
 
 ## activacion_y_reset (costo)
 
@@ -1122,7 +1041,7 @@ Páginas leídas: 61 · bloqueadas: 0 · oraciones con reglas: 338
 
 - All Collections General Info Lucid Trading Supported Platforms Lucid Trading Supported Platforms Lucid Trading platforms include NinjaTrader, TradingView, Tradovate, Tradesea, Sierra Chart, and more.  
   <sub> · [11404614-lucid-trading-supported-platforms](https://support.lucidtrading.com/en/articles/11404614-lucid-trading-supported-platforms)</sub>
-- CQG supported platforms: NinjaTrader Tradovate TradingView Rithmic supported platforms: Quantower (Lucid Partner) Tradesea MotiveWave Sierra Chart Jigsaw Bookmap ATAS R|Trader Pro (official Rithmic platform) MultiCharts ( https://www.multicharts.com ) Ready to trade your platform of choice?  
+- CQG supported platforms: NinjaTrader Tradovate TradingView Rithmic supported platforms: MotiveWave (Lucid Partner) Quantower (Lucid Partner) Tradesea Sierra Chart Jigsaw Bookmap ATAS R|Trader Pro (official Rithmic platform) MultiCharts ( https://www.multicharts.com ) Ready to trade your platform of choice?  
   <sub> · [11404614-lucid-trading-supported-platforms](https://support.lucidtrading.com/en/articles/11404614-lucid-trading-supported-platforms)</sub>
 - Approved Products and Commissions | Lucid Trading Help Center Copyright (c) 2023, Intercom, Inc.  
   <sub> · [11508978-approved-products-and-commissions](https://support.lucidtrading.com/en/articles/11508978-approved-products-and-commissions)</sub>

@@ -1,0 +1,45 @@
+{
+ "que": "equivalencia entre corrida secuencial y paralela de la curva",
+ "por_que": "la corrida de 201 sesiones uso workers=4 confiando en esto",
+ "veredicto": "EXACTA",
+ "a": {
+  "archivo": "equivalencia_workers__w1_70s.json",
+  "sha256": "014f0c412d953d59efd9ec90f4a0d2322445d18ca29e19f05caa1a990627d3bf",
+  "workers": 1,
+  "sesiones": 70
+ },
+ "b": {
+  "archivo": "equivalencia_workers__w2_70s.json",
+  "sha256": "08ac319146d8c2dcaa2538a21d34f7ef8107a3cfc285b6705f4f2000db9d1a2c",
+  "workers": 2,
+  "sesiones": 70
+ },
+ "campos_comparados": [
+  "por_umbral",
+  "por_kind",
+  "alejamiento_en_primera_reentrada",
+  "zonas",
+  "kinds",
+  "clase_kernel",
+  "zonas_sin_tramo_de_ticks",
+  "zonas_sin_campos",
+  "zonas_sin_created_bar",
+  "zonas_sin_clase_declarada",
+  "zonas_abstenidas_por_ambiguedad_intrabar",
+  "estado"
+ ],
+ "campos_excluidos": {
+  "segundos": "tiempo de pared -- no determinista por definicion",
+  "workers": "es justamente lo que varia entre las dos corridas",
+  "clave_de_corrida": "incluye el plan y el numero de workers",
+  "code_commit": "puede diferir si las corridas no fueron del mismo HEAD",
+  "output_sha256": "hash del payload entero, que incluye los excluidos"
+ },
+ "unidades_comparadas": 6,
+ "diferencias": [],
+ "outcomes_accessed": false,
+ "rss_pico_mb": {
+  "a": 1925.0,
+  "b": 2734.0
+ }
+}

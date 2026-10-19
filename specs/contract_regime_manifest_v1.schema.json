@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contract_regime_manifest_v1.schema.json",
+  "title": "EdgeLab causal futures contract regime",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "policy_id", "timezone", "session_template",
+    "volume_definition", "signal_lag_sessions", "strict_crossover",
+    "monotonic_expiry", "tie_rule", "price_adjustment", "state_boundary",
+    "source_identity", "calendar_trade_dates", "contracts",
+    "daily_assignments", "intervals", "diagnostics", "manifest_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "contract_regime_manifest_v1"},
+    "policy_id": {"const": "previous_complete_session_volume_leader_monotonic_v1"},
+    "timezone": {"const": "America/Chicago"},
+    "session_template": {"const": "CME_GLOBEX_17:00_TO_16:00_CT"},
+    "volume_definition": {"const": "sum_trade_quantity_by_cme_trade_date"},
+    "signal_lag_sessions": {"const": 1},
+    "strict_crossover": {"const": true},
+    "monotonic_expiry": {"const": true},
+    "tie_rule": {"const": "KEEP_CURRENT_ELSE_EARLIEST_EXPIRY"},
+    "price_adjustment": {"const": "NONE_ACTUAL_TRADED_PRICES"},
+    "state_boundary": {"const": "RESET_AT_CONTRACT_ROLL"},
+    "source_identity": {"type": "object", "minProperties": 1},
+    "calendar_trade_dates": {
+      "type": "array", "minItems": 2, "uniqueItems": true,
+      "items": {"type": "integer", "minimum": 19000101, "maximum": 29991231}
+    },
+    "contracts": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["root", "contract", "expiry_ordinal", "first_trade_date", "last_trade_date"],
+        "properties": {
+          "root": {"type": "string", "minLength": 1},
+          "contract": {"type": "string", "minLength": 1},
+          "expiry_ordinal": {"type": "integer", "minimum": 190001, "maximum": 299912},
+          "first_trade_date": {"type": "integer", "minimum": 19000101, "maximum": 29991231},
+          "last_trade_date": {"type": "integer", "minimum": 19000101, "maximum": 29991231}
+        }
+      }
+    },
+    "daily_assignments": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": [
+          "root", "trade_date", "signal_trade_date", "active_contract",
+          "eligible", "decision", "leader_contract", "current_volume",
+          "leader_volume", "leader_over_current", "regime_id"
+        ],
+        "properties": {
+          "root": {"type": "string", "minLength": 1},
+          "trade_date": {"type": "integer"},
+          "signal_trade_date": {"type": ["integer", "null"]},
+          "active_contract": {"type": ["string", "null"]},
+          "eligible": {"type": "boolean"},
+          "decision": {"enum": [
+            "NO_PRIOR_SESSION", "NO_CONTRACT_COVERAGE", "SOURCE_INCOMPLETE",
+            "CURRENT_CONTRACT_NOT_COVERED", "INITIALIZE_FROM_PRIOR_VOLUME",
+            "ROLL_FORWARD", "HOLD"
+          ]},
+          "leader_contract": {"type": ["string", "null"]},
+          "current_volume": {"type": ["number", "null"], "minimum": 0},
+          "leader_volume": {"type": ["number", "null"], "minimum": 0},
+          "leader_over_current": {"type": ["number", "null"], "minimum": 0},
+          "regime_id": {
+            "anyOf": [
+              {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              {"type": "null"}
+            ]
+          }
+        }
+      }
+    },
+    "intervals": {
+      "type": "array",
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": [
+          "root", "contract", "start_trade_date", "end_trade_date_exclusive",
+          "roll_in_signal_trade_date", "left_censored", "right_censored", "regime_id"
+        ],
+        "properties": {
+          "root": {"type": "string"},
+          "contract": {"type": "string"},
+          "start_trade_date": {"type": "integer"},
+          "end_trade_date_exclusive": {"type": ["integer", "null"]},
+          "roll_in_signal_trade_date": {"type": ["integer", "null"]},
+          "left_censored": {"type": "boolean"},
+          "right_censored": {"type": "boolean"},
+          "regime_id": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+        }
+      }
+    },
+    "diagnostics": {"type": "array", "items": {"type": "object"}},
+    "manifest_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+  }
+}

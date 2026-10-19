@@ -1,0 +1,18 @@
+{
+  "schema_version": "zamr1_z1_engineering_pilot_report_v1",
+  "status": "ENGINEERING_PASS_PROVISIONAL_NOT_FORMAL_Z1",
+  "branch": "research/zamr1-zone-atlas",
+  "license_decision": "NO_UPLOAD",
+  "formal_builder_executed": false,
+  "execution_method": "offline_equivalence_runner_with_minimal_parquet_reader",
+  "inputs": [
+    {"filename":"6E_06-26_ticks.parquet","sha256":"fd2e358d2b9b5ffa7a48057b6b90e94211c56db252ca884b161b9606e7fab83d","hash_match":true,"rows_loaded_including_warmup":1657991,"max_loaded_timestamp_ns":1781211598848000000},
+    {"filename":"6E_09-26_ticks.parquet","sha256":"654e006e483f62727dd2d52680e41b0c4c03531a3763471a1ba3532497883a06","hash_match":true,"rows_loaded_including_warmup":1076285,"max_loaded_timestamp_ns":1782853198296000000}
+  ],
+  "plan": {"selected_sessions":22,"first_session":"2026-06-01","last_session":"2026-06-30","frames":[5,10,25,50,100,200],"expected_selected_ticks":1651076,"loaded_rows_including_warmup":2734276},
+  "results": {"sessions_observed":22,"events":48314,"zones":8718,"source_frame_units":12,"footprint_units_passed":12,"footprint_mismatches":0,"duplicate_event_keys":0,"duplicate_zone_keys":0,"quote_classification_fraction":1.0,"max_output_timestamp_ns":1782851668968000000,"firewall_cutoff_exclusive_ns":1782856800000000000,"outcomes_accessed":false,"pnl_accessed":false,"holdout_included":false,"forbidden_columns_found":[]},
+  "resources": {"input_load_seconds_sum":10.841,"kernel_unit_seconds_sum":125.746,"peak_rss_kb":601768,"temporary_csv_bytes":23698720},
+  "first_run_output_hashes": {"events_long.csv":"faa6dbe152b94f18640a1103a4ded470c93eeaed991dff42382d48be737d1263","zones_long.csv":"3641d39144841a7c87751080da48416edc681726a85016799a37a35af34b6049","engineering_report.json":"0c8e42911b435bb90718c1d783d12b28a83a2785e5e775793ebec20ae132ed03"},
+  "gates": {"INPUT_HASHES":"PASS","SESSION_COUNT":"PASS","ROLL_SELECTION":"PASS_PROVISIONAL","HOLDOUT_FIREWALL":"PASS","TARGET_FREE":"PASS","P1A_FOOTPRINT_ACCOUNTING":"PASS_12_OF_12","P01":"PASS_AT_AGGREGATE_LEVEL","RESOURCE_ENGINEERING":"PASS_PROVISIONAL","BYTE_DETERMINISM":"NOT_ADJUDICATED","FORMAL_PARQUET_BUNDLE":"NOT_PRODUCED","ORACLE_PARITY":"NOT_ESTABLISHED","Z2_AUTHORIZATION":"BLOCKED"},
+  "limitations": ["not the formal repository builder execution","formal Parquet bundle not generated","full byte determinism not adjudicated","NT8 parity not established"]
+}

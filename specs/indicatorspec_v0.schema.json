@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/specs/indicatorspec_v0.schema.json",
+  "title": "IndicatorSpec v0",
+  "description": "Declarative, non-Turing-complete description of a candidate indicator. This is NOT Python. It is evaluated by an EdgeLab interpreter over a fixed opcode set. A spec that does not validate is rejected before any data is read. Rejection is not a scientific result and must never be recorded as a negative outcome.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "spec_version",
+    "spec_id",
+    "family_id",
+    "name",
+    "inputs",
+    "warmup_bars",
+    "expr",
+    "outputs",
+    "availability",
+    "abstention",
+    "numeric",
+    "provenance"
+  ],
+  "properties": {
+    "spec_version": { "const": "0" },
+    "spec_id": {
+      "type": "string",
+      "description": "sha256 of the canonical AST serialization plus bound parameter values. Assigned by the compiler, never by the proposer. A proposer-supplied spec_id is a hard validation error.",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "family_id": {
+      "type": "string",
+      "description": "sha256 of the canonical AST with all numeric parameters replaced by holes. Every point of a parameter grid shares one family_id. Multiple-testing budget is charged per family, not per spec.",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "name": { "type": "string", "maxLength": 120 },
+    "rationale": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "Free text from the proposer. Never parsed, never used by any gate, never used for ranking. Present only for human audit."
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["stream", "fields"],
+      "properties": {
+        "stream": {
+          "type": "string",
+          "enum": ["tick", "tick_bars", "time_bars", "volume_bars"],
+          "description": "Exactly one stream. Cross-stream specs are out of scope for v0 because multi-stream alignment is the known source of the tick-bar attribution defect."
+        },
+        "period_value": { "type": "integer", "minimum": 1 },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": ["open", "high", "low", "close", "volume", "tick_count", "bar_index", "session_id"]
+          }
+        }
+      }
+    },
+    "warmup_bars": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Mandatory and explicit. Adopted directly from the one defensible requirement found in Freqtrade: a spec that does not declare its startup requirement cannot be validated. Absence is a rejection, never a default."
+    },
+    "expr": { "$ref": "#/$defs/node" },
+    "outputs": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind"],
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "type": "string", "enum": ["scalar_series", "boolean_series", "event_series"] }
+        }
+      }
+    },
+    "availability": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["emit_at", "anchor_policy"],
+      "properties": {
+        "emit_at": {
+          "const": "bar_close",
+          "description": "v0 admits only emission at bar close. Intrabar emission requires a latency model that EdgeLab has not built and must not be faked."
+        },
+        "anchor_policy": {
+          "type": "string",
+          "enum": ["first_touch_after_creation_bar"],
+          "description": "Matches the EXPLORE event_anchor_policy already in force. Creation-time anchoring is forbidden at the schema level because it was the cause of a prior counting error."
+        },
+        "session_boundary": {
+          "type": "string",
+          "enum": ["reset", "carry"],
+          "default": "reset"
+        }
+      }
+    },
+    "abstention": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on_insufficient_warmup", "on_numeric_failure", "on_missing_field"],
+      "description": "Every failure mode must map to an explicit abstention, never to a silent value. This exists because the NautilusTrader indicator trait panics on type mismatch, which would abort an entire diagnostic run instead of abstaining.",
+      "properties": {
+        "on_insufficient_warmup": { "const": "abstain" },
+        "on_numeric_failure": { "const": "abstain" },
+        "on_missing_field": { "const": "abstain" }
+      }
+    },
+    "numeric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["dtype", "comparison"],
+      "properties": {
+        "dtype": { "const": "float64" },
+        "comparison": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "atol", "rtol"],
+          "description": "Explicit tolerance. Freqtrade compares indicator values with exact float inequality, which produces both false alarms and false silence. EdgeLab requires a declared tolerance and records it in the manifest.",
+          "properties": {
+            "mode": { "const": "absolute_and_relative" },
+            "atol": { "type": "number", "minimum": 0 },
+            "rtol": { "type": "number", "minimum": 0 }
+          }
+        },
+        "reduction_order": {
+          "const": "deterministic_left_to_right",
+          "description": "No parallel or unordered reductions. Floating point addition is not associative, so an unordered reduction would make bit-identical replay impossible."
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proposed_by", "proposed_at", "proposer_saw_outcomes"],
+      "properties": {
+        "proposed_by": { "type": "string", "description": "Model identifier and version, or human handle." },
+        "proposed_at": { "type": "string", "format": "date-time" },
+        "proposer_saw_outcomes": {
+          "const": false,
+          "description": "Structural firewall. TradingAgents injects only resolved entries, with realized returns, back into the prompt. EdgeLab forbids that path at the schema level: a spec whose proposer had access to outcomes is inadmissible and cannot be repaired after the fact."
+        },
+        "parent_spec_id": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "Lineage only. Populating this from an evaluated result is an outcome leak and is checked by gate G12."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "node": {
+      "description": "Fixed opcode set. There is no import, no attribute access, no call to host functions, no indexing by absolute position, no aggregate over the full series, and no access to any clock. Capability restriction is achieved by the absence of the opcode, not by blocking a general-purpose language. Enumerating forbidden constructs inside a real language is the failure mode documented for RestrictedPython, which its own authors state is not a sandbox.",
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "field"],
+          "properties": {
+            "op": { "const": "field" },
+            "field": { "type": "string" },
+            "lag": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "description": "Non-negative only. A negative lag is unrepresentable, so direct future access (attack A1) cannot be expressed at all rather than being detected later."
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "value"],
+          "properties": {
+            "op": { "const": "const" },
+            "value": { "type": "number" },
+            "param_name": { "type": ["string", "null"], "description": "When set, this constant is a grid parameter and becomes a hole in the family_id computation." }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "args"],
+          "properties": {
+            "op": {
+              "type": "string",
+              "enum": ["add", "sub", "mul", "div_safe", "neg", "abs", "min", "max", "gt", "lt", "ge", "le", "and", "or", "not", "if_else"]
+            },
+            "args": { "type": "array", "minItems": 1, "maxItems": 3, "items": { "$ref": "#/$defs/node" } }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "window", "args"],
+          "properties": {
+            "op": {
+              "type": "string",
+              "enum": ["roll_sum", "roll_mean", "roll_std", "roll_min", "roll_max", "roll_rank"],
+              "description": "Every window opcode is causal and backward-looking by construction. There is no centered or bidirectional variant, so attack A3 is unrepresentable."
+            },
+            "window": { "type": "integer", "minimum": 1 },
+            "args": { "type": "array", "minItems": 1, "maxItems": 1, "items": { "$ref": "#/$defs/node" } }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["op", "window", "args"],
+          "properties": {
+            "op": {
+              "const": "zscore_causal",
+              "description": "Normalization is available only in expanding or rolling causal form. A whole-sample normalization opcode does not exist, which removes attack A2 from the language."
+            },
+            "window": { "type": "integer", "minimum": 2 },
+            "args": { "type": "array", "minItems": 1, "maxItems": 1, "items": { "$ref": "#/$defs/node" } }
+          }
+        }
+      ]
+    }
+  }
+}

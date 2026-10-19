@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://edgelab.local/schemas/edge_brain/indicator_definition.json",
+  "title": "EdgeLab Indicator Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "indicator_id",
+    "name",
+    "role",
+    "formula_description",
+    "parameters",
+    "units",
+    "timing",
+    "normalization",
+    "ablations",
+    "failure_modes",
+    "status",
+    "asserts_edge",
+    "created_at_utc"
+  ],
+  "properties": {
+    "indicator_id": {
+      "type": "string",
+      "pattern": "^IND-[A-Za-z0-9._:-]+$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "role": {
+      "enum": [
+        "FILTER",
+        "TRIGGER",
+        "REGIME_GATE",
+        "BASELINE",
+        "NORMALIZER",
+        "MEASUREMENT_CONCEPT"
+      ]
+    },
+    "formula_description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "parameters": {
+      "type": "object"
+    },
+    "units": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timing": {
+      "type": "string",
+      "minLength": 1
+    },
+    "normalization": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ablations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "status": {
+      "enum": [
+        "DRAFT",
+        "PROPOSED",
+        "ACTIVE",
+        "DEPRECATED"
+      ]
+    },
+    "asserts_edge": {
+      "type": "boolean"
+    },
+    "created_at_utc": {
+      "type": "string"
+    },
+    "concept_id": {
+      "type": "string"
+    }
+  }
+}
