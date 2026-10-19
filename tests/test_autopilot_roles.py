@@ -23,7 +23,7 @@ def test_ok_is_logged_and_cached(tmp_path):
     r, cli, _ = runner(tmp_path, [OK_CRON])
     assert r.call("cronista", {"ciclo": 1})["status"] == "OK"
     assert r.call("cronista", {"ciclo": 1})["status"] == "CACHED"          # misma entrada: no se paga dos veces
-    assert len(cli.calls) == 1 and cli.calls[0][0] == "haiku"
+    assert len(cli.calls) == 1 and cli.calls[0][0] == "claude-haiku-5-5"
     u = r.usage()
     assert any(x["status"] == "OK" and x["ti"] == 110 for x in u)
 
@@ -48,7 +48,7 @@ def test_daily_cap(tmp_path, monkeypatch):
     r, cli, _ = runner(tmp_path, [good])
     assert r.call("proponente", {"brain": "a"})["status"] == "OK"
     assert r.call("proponente", {"brain": "b"})["status"] == "SKIPPED_CAP"
-    assert len(cli.calls) == 1 and cli.calls[0][0] == "opus"
+    assert len(cli.calls) == 1 and cli.calls[0][0] == "claude-opus-5-5"
 
 @pytest.mark.parametrize("payload", [
     {"holdout": {"sharpe": 2}}, {"private_metrics": 1}, {"nota": "token KGAT_abc123"}, {"x": ["ghp_xxxxxxxx"]},
