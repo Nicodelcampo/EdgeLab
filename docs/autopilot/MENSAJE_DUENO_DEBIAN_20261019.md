@@ -1,6 +1,6 @@
 # Mensaje para el dueño del Debian — 2026-10-19
 
-Estado: VIGENTE — para enviar; resume los cambios del agente desde el mensaje del 13-oct.
+Estado: BORRADOR — se envía recién cuando el PR #123 esté mergeado en foundation con CI en verde y el SHA del merge reemplace `<SHA_DEL_MERGE>`.
 
 ---
 
@@ -18,27 +18,28 @@ Hola. Te paso las novedades del agente de EdgeLab para el Debian y lo que necesi
   - el código queda fijado a un commit revisado.
 
 **Cambios en la instalación (solo si ya instalaste)**
-1. Reinstalar con un commit fijo: `sudo CODE_REF=<sha que te paso> bash deploy/debian/install.sh`. Si ya existe `/etc/edgelab/candidates.json`, el instalador lo migra a `/var/lib/...`.
+1. Reinstalar desde la rama viva `foundation/f0b-compatibility-probe`, fijado al commit revisado: `sudo CODE_REF=<SHA_DEL_MERGE> bash deploy/debian/install.sh`. Si ya existe `/etc/edgelab/candidates.json`, el instalador lo migra a `/var/lib/...`.
 2. La deploy key de GitHub también tiene que estar en el clon de código. Ver `deploy/debian/LEEME.md`, paso 4.
 3. Activar el vigilante: `sudo systemctl enable --now edgelab-watchdog.timer`.
 4. Opcional, para recibir avisos en el celular: agregar `EDGELAB_ALERT_URL=https://ntfy.sh/<tu-tópico>` en `/etc/edgelab/autopilot.env`.
 
 **Plan de Claude y uso de créditos (para que evalúes)**
 - Los modelos se usan con la suscripción, a través de `claude setup-token`. Nunca con una API key.
-- **Importante:** el agente comparte los límites con todo lo que hagas vos con esa misma cuenta. Si usás Claude a diario, conviene una cuenta aparte para el agente, o al menos mirar el consumo la primera semana.
+- **Lo más importante: la cuenta.** El agente consume del MISMO cupo que todo lo que hagas vos con esa suscripción. Si usás Claude a diario, el agente y tu uso propio compiten por el mismo cupo de Opus: en días de uso intenso tuyo, el agente se queda sin Opus (espera), y viceversa. Conviene una cuenta aparte para el agente. La decisión de plan y cuenta es tuya.
 - Todo arranca apagado. Se enciende por etapas desde `/etc/edgelab/autopilot.json`:
 
-| Etapa | Qué se enciende | Llamadas por día (estimado realista / techo) |
+| Etapa | Qué se enciende | Llamadas por día (estimación, no medición / techo de configuración) |
 |---|---|---|
 | 0–1 | ciclo numérico, sin modelos | 0 |
 | 2 | auditor (Sonnet) + cronista (Haiku, solo en ciclos con novedades) | ~2–10 Sonnet y ~10–40 Haiku / techo 20 y 100 |
 | 3 | + proponente (Opus) | +1–2 Opus / techo 6 |
 | 4 | + promoción automática (2 revisores) + abogado | +2–8 Opus y +1–5 Sonnet / techo 16 Opus y 10 Sonnet |
 
-- **Tokens:** cada llamada de Opus o Sonnet lleva unos 3–6 mil tokens de entrada y menos de mil de salida. Las de Haiku son chicas.
+- **Todas las cifras de esta sección son ESTIMACIONES mías, no mediciones.** Antes de elegir plan, mirá la primera semana el consumo real: `llm_calls.sqlite` registra cada llamada (rol, modelo, tokens) y el informe de uso lo resume por rol y por día.
+- **Tokens (estimado):** cada llamada de Opus o Sonnet lleva unos 3–6 mil tokens de entrada y menos de mil de salida. Las de Haiku son chicas.
   - En la etapa 4, el uso realista es del orden de **50–150 mil tokens por día**, casi todo en Opus y Sonnet.
   - Son estimaciones mías, no mediciones. El consumo real queda registrado en `llm_calls.sqlite` y el informe de uso lo muestra por rol.
-- **Mi recomendación:**
+- **Mi recomendación (a confirmar con el consumo medido):**
   - Para las etapas 0 a 3 alcanza un plan Pro, siempre que no lo compartas con un uso intenso tuyo.
   - Para la etapa 4, o si la cuenta es compartida, conviene un **Max**, por el cupo de Opus.
   - Si llega al límite, el agente no se rompe: espera al reset y lo numérico sigue andando.
