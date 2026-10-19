@@ -6,7 +6,8 @@ Nico la firme, `config["auto_promocion"]` debe quedar en False. Lo que cambia es
 Orden fijo, y cualquier paso que falle corta:
   1. mecánico, sin LLM: hay estudio listo (template); límite de pruebas; novedad contra retiradas; mismo RunSpec no
      repetido; tope de promociones por ciclo;
-  2. revisor (Opus, sesión aparte, métricas públicas): debe decir PROMOTE, si no se rechaza;
+  2. doble revisión: revisor (Opus) y, sólo si dijo PROMOTE, revisor2 (Sonnet, otra consigna, sin ver la razón del
+     primero). Hacen falta los DOS PROMOTE; si no, se rechaza;
   3. pre-registro escrito y committeado por el agente ANTES de lanzar, en el clon de código, y PUBLICADO en la rama
      `autopilot/prereg/<run_id>` (si `publicar=True`): un pre-registro que sólo existe en la máquina no es trazable, así que
      si el push falla la candidata se rechaza;
@@ -90,6 +91,10 @@ def promover_auto(candidatas, *, draft_fn, to_runspec, runner, repo: Path, candi
         rev = runner.call("revisor", entrada)
         if rev.get("status") not in ("OK", "CACHED") or rev["output"]["decision"] != "PROMOTE":
             _log(log_path, dict(row, decision="RECHAZADA_REVISOR", revisor=rev.get("output") or rev.get("status"))); out.append((c.cid, "RECHAZADA_REVISOR")); continue
+        rev2 = runner.call("revisor2", entrada)                            # misma entrada, sin la razón del primero
+        row["revisor2"] = rev2.get("output") or rev2.get("status")
+        if rev2.get("status") not in ("OK", "CACHED") or rev2["output"]["decision"] != "PROMOTE":
+            _log(log_path, dict(row, decision="RECHAZADA_REVISOR2", revisor=rev["output"])); out.append((c.cid, "RECHAZADA_REVISOR2")); continue
         p = repo / rs["prereg"]                                            # 3) pre-registro committeado ANTES de lanzar
         p.parent.mkdir(parents=True, exist_ok=True); p.write_text(texto, encoding="utf-8")
         _git(repo, "add", "--", rs["prereg"])

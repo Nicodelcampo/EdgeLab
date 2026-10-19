@@ -37,8 +37,19 @@ def main():
     q = sp.add_parser("auto-promote", help="promoción sin humano (enmienda AUTONOMIA-A1); exige auto_promocion=true en --config")
     q.add_argument("--candidates", required=True); q.add_argument("--config", required=True); q.add_argument("--runtime"); q.add_argument("--ledger"); q.add_argument("--max", type=int, default=1)
     x = sp.add_parser("index"); x.add_argument("--state", required=True)
+    z = sp.add_parser("audit", help="auditoría post-corrida: mecánica siempre; auditor y abogado (LLM) si auditor=true en la config")
+    z.add_argument("--state", required=True); z.add_argument("--config", required=True); z.add_argument("--ledger", required=True); z.add_argument("--max", type=int, default=5)
     y = sp.add_parser("propose"); y.add_argument("--state", required=True); y.add_argument("--config", required=True); y.add_argument("--ledger"); y.add_argument("--tema", default="")
     a = ap.parse_args(); lits = load_json("config/autopilot/literature_leads.json")
+    if a.cmd == "audit":
+        from edgelab.autopilot import auditoria
+        from edgelab.autopilot.roles import RoleRunner, configurar_modelos
+        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos")); st = Path(a.state)
+        runner = RoleRunner(Path(cfg["roles_ledger"])) if cfg.get("auditor") and cfg.get("roles_ledger") else None
+        ant = _antecedentes(st) if runner else None
+        out = auditoria.auditar(RunLedger(Path(a.ledger)), ROOT, st / "auditorias.jsonl", runner=runner,
+                                antecedentes_fn=(lambda sp_: ant(type("C", (), {"title": sp_.family, "why": sp_.notes})())) if ant else None, max_por_ciclo=a.max)
+        print(json.dumps(out, ensure_ascii=False)); return
     if a.cmd in ("index", "propose"):
         from edgelab.autopilot import conocimiento as K
         st = Path(a.state); idx = K.indexar(ROOT, st); K.guardar(idx, st / "biblioteca.json")
@@ -47,8 +58,9 @@ def main():
         if a.cmd == "index": return
         import hashlib, time
         from edgelab.autopilot import contexto
-        from edgelab.autopilot.roles import RoleRunner, UnsafeInput, sanitize
-        cfg = json.loads(Path(a.config).read_text()); log = st / "propuestas.jsonl"
+        from edgelab.autopilot.roles import RoleRunner, UnsafeInput, sanitize, configurar_modelos
+        from edgelab.autopilot.auditoria import estados
+        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos")); log = st / "propuestas.jsonl"
         if not (cfg.get("proponente") and cfg.get("roles_ledger")): print("proponente apagado (config: proponente=false o sin roles_ledger)"); return
         hist = [json.loads(l) for l in log.read_text().splitlines() if l.strip()] if log.exists() else []
         lente = contexto.elegir_lente(hist); outcomes = RunLedger(Path(a.ledger)).outcomes() if a.ledger else []
@@ -57,7 +69,8 @@ def main():
             try: sanitize(f); return True
             except UnsafeInput: return False
         fichas = [f for f in ctx["fichas"] if ok(f)]
-        paquete = contexto.armar_paquete(tablero=K.tablero(idx, cfg, outcomes), vacios=ctx["vacios"], fichas=fichas,
+        tab = K.tablero(idx, cfg, outcomes); tab["auditorias"] = estados(st / "auditorias.jsonl")
+        paquete = contexto.armar_paquete(tablero=tab, vacios=ctx["vacios"], fichas=fichas,
                                          retiradas=cfg.get("familias_retiradas", []), lente=lente)
         existentes = list(cfg.get("familias_retiradas", [])) + [h["borrador"]["familia"] for h in hist if h.get("borrador")]
         r = contexto.proponer(RoleRunner(Path(cfg["roles_ledger"])), paquete, existentes)
@@ -85,7 +98,8 @@ def main():
         cfg = json.loads(Path(a.config).read_text())
         if not cfg.get("auto_promocion"): print("auto_promocion=false: no se promueve nada (falta firmar la enmienda AUTONOMIA-A1)"); return
         from edgelab.autopilot.promocion import promover_auto
-        from edgelab.autopilot.roles import RoleRunner
+        from edgelab.autopilot.roles import RoleRunner, configurar_modelos
+        configurar_modelos(cfg.get("modelos"))
         led = RunLedger(Path(a.ledger)) if a.ledger else None
         cs = generate(led.outcomes() if led else [], runtime=Path(a.runtime) if a.runtime else None)
         out = promover_auto(cs, draft_fn=lambda c: draft_prereg(c, lits), to_runspec=to_runspec, runner=RoleRunner(Path(cfg["roles_ledger"])), repo=ROOT,

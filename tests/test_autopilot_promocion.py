@@ -33,8 +33,9 @@ def draft(c):
 class Rev:
     def __init__(self, decision): self.decision, self.calls = decision, 0
     def call(self, role, payload):
-        assert role == "revisor" and "borrador" in payload; self.calls += 1
-        return {"status": "OK", "output": {"decision": self.decision, "razon": "x", "regla_nueva": ""}}
+        assert role in ("revisor", "revisor2") and "borrador" in payload; self.calls += 1
+        d = self.decision2 if role == "revisor2" and hasattr(self, "decision2") else self.decision
+        return {"status": "OK", "output": {"decision": d, "razon": "x", "regla_nueva": ""}}
 
 
 def run(tmp_path, cands, decision="PROMOTE", **kw):
@@ -106,3 +107,16 @@ def test_publica_prereg_en_rama_y_sin_remoto_rechaza(tmp_path):
     ramas = subprocess.run(["git", "branch", "--list"], cwd=bare, capture_output=True, text=True).stdout
     row = json.loads(log2.read_text().splitlines()[-1])
     assert "autopilot/prereg/slot-8" in ramas and row["prereg_rama"] == "autopilot/prereg/slot-8" and row["antecedentes"] == ["docs/x.md#L1"]
+
+
+def test_doble_revision_segundo_kill_rechaza(tmp_path):
+    r = repo(tmp_path); cp = tmp_path / "candidates.json"; log = tmp_path / "promociones.jsonl"
+    rev = Rev("PROMOTE"); rev.decision2 = "KILL"
+    out = promover_auto([cand("SLOT-9")], draft_fn=draft, to_runspec=to_rs, runner=rev, repo=r, candidates_path=cp, log_path=log)
+    assert out == [("SLOT-9", "RECHAZADA_REVISOR2")] and not cp.exists() and rev.calls == 2
+    assert json.loads(log.read_text().splitlines()[-1])["revisor2"]["decision"] == "KILL"
+
+
+def test_revisor2_no_se_llama_si_el_primero_mata(tmp_path):
+    out, _, _, _, rev = run(tmp_path, [cand("SLOT-9")], decision="KILL")
+    assert out == [("SLOT-9", "RECHAZADA_REVISOR")] and rev.calls == 1

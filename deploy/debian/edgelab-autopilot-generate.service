@@ -14,6 +14,8 @@ Environment=PATH=/opt/edgelab/.local/bin:/usr/local/bin:/usr/bin:/bin
 EnvironmentFile=-/etc/edgelab/autopilot.env
 # 1) biblioteca: cerebro, papers, research propio, registros (con sha y commit de cada fuente) -> biblioteca.json + manifiesto
 ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py index --state /var/lib/edgelab-autopilot/state/autopilot_runs
+# auditoría post-corrida (mecánica siempre; auditor y abogado del diablo si auditor=true)
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py audit --state /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
 ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py draft --out /var/lib/edgelab-autopilot/state/autopilot_drafts --runtime /var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
 # proponente (LLM) con todo el contexto del proyecto: sólo si la configuración tiene proponente=true; las propuestas son borradores
 ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py propose --state /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --ledger /var/lib/edgelab-autopilot/state/autopilot_runs/runs.sqlite
