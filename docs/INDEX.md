@@ -16,7 +16,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
-| `docs/autopilot` | 10 |
+| `docs/autopilot` | 11 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/data_catalog` | 11 |

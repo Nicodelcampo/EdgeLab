@@ -31,12 +31,16 @@ def main():
             aplicar_comandos(Path(a.root), pilot.pause_files()[1], cfg["sala"].get("autorizados", []), pilot.status)   # sólo el interruptor de la sala
         cands = [RunSpec.from_dict(d) for d in json.loads(Path(a.candidates).read_text())]
         rep = pilot.tick(cands)
+        from .pedidos import desde_ciclo
+        if (pd := desde_ciclo(Path(a.root), rep)): rep["pedidos"] = [p["id"] for p in pd]   # lo que sólo una persona puede resolver
         print(json.dumps(rep, default=str), flush=True)
         if cfg.get("sala"):                                       # y el resumen después
             from .sala import reportar
             from .mejora import diagnosticar
             rep["diagnostico"] = diagnosticar([rep], pilot.status())
-            reportar(Path(a.root), rep, pilot.status(), runner=runner if cfg["sala"].get("cronista") else None)
+            hubo = bool(rep.get("launched") or rep.get("closed") or rep.get("pedidos") or rep.get("blocked") or rep.get("event") not in (None, "tick", "tick_no_capacity", "tick_account_cap", "paused", "locked_by_other_controller"))
+            if hubo:                                              # ciclos sin novedades no gastan llamadas ni llenan la sala
+                reportar(Path(a.root), rep, pilot.status(), runner=runner if cfg["sala"].get("cronista") else None)
         if not a.loop: break
         time.sleep(a.loop)
 

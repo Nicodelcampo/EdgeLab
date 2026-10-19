@@ -56,7 +56,8 @@ otra familia de modelo y para auditoría estructurada, Haiku para tareas mecáni
 4. **Promoción** (`auto-promote`, si `auto_promocion: true` y la enmienda AUTONOMIA-A1 está firmada): mecánico → revisor → revisor2 → pre-registro committeado y **publicado** en `autopilot/prereg/<run_id>` → guardas → `candidates.json` → `promociones.jsonl`.
 5. **Lanzamiento y cierre** (`tick`, cada 10 min): registro global de pruebas antes de lanzar, alfa apostado, Holm propio, Brain.
 6. **Auditoría** (`audit`, diario): mecánica siempre; auditor y abogado si `auditor: true` → `auditorias.jsonl`. Un hallazgo EN_DUDA o BLOQUEADO lo ve el proponente en el tablero y queda para revisión humana.
-7. **Sala y alertas**: cronista o plantilla → `sala_outbox.jsonl`; watchdog → `alertas.jsonl`.
+7. **Pedidos a humano** (`pedidos.py`): lo que sólo una persona puede dar (datos, exportación NT8, credencial, decisión) se pide con id en `pedidos_humano.jsonl` y en la sala; se cierra con `resuelto <id>`; el vigilante avisa si pasan 72 h. Los bloqueos del ciclo por datos faltantes se convierten solos en pedidos.
+8. **Sala y alertas**: cronista o plantilla → `sala_outbox.jsonl`; watchdog → `alertas.jsonl`.
 Todo lo anterior se sube a la rama `autopilot/state` (`sync_state.sh`); `runs.sqlite` se respalda a diario.
 
 ## 5. Qué NO puede hacer ningún agente

@@ -2,7 +2,7 @@
 
 - `sala_outbox.jsonl`: un renglón por ciclo con `hechos` (números sacados del ledger, nunca del LLM) y `texto` para la sala.
   El texto lo redacta el rol cronista si hay `RoleRunner`; si no, una plantilla fija. Los números viajan siempre aparte.
-- `sala_inbox.jsonl`: comandos que el agente de Chaski deja, de personas autorizadas: `pausa`, `reanudar`, `estado`, `aprobar <id>`.
+- `sala_inbox.jsonl`: comandos que el agente de Chaski deja, de personas autorizadas: `pausa`, `reanudar`, `estado`, `aprobar <id>`, `pedidos`, `resuelto <id> [nota]`.
   `pausa`/`reanudar` actúan sólo sobre el interruptor de la sala (PAUSE_SALA): nunca levantan una pausa de consola.
   El campo `autor` no está firmado: el inbox se rechaza entero si otros usuarios o el grupo pueden escribirlo (debe ser 0600/0644 del usuario de Chaski).
   `aprobar` sólo se registra: no cambia el modo ni promueve candidatas (eso sigue siendo commit + promote de un humano).
@@ -11,7 +11,7 @@ from __future__ import annotations
 import json, time
 from pathlib import Path
 
-COMANDOS = {"pausa", "reanudar", "estado", "aprobar"}
+COMANDOS = {"pausa", "reanudar", "estado", "aprobar", "resuelto", "pedidos"}
 
 
 def _append(path: Path, row: dict):
@@ -26,7 +26,7 @@ def hechos(tick: dict, status: dict) -> dict:
                 cerradas=tick.get("closed", []), bloqueadas=[b[0] for b in tick.get("blocked", [])],
                 modo=status.get("mode"), pausado=status.get("paused"), alfa=round(float(status.get("alpha_wealth") or 0), 6),
                 corriendo=[r.get("run_id") for r in status.get("running", [])], envio_incierto=status.get("send_uncertain", []),
-                diagnostico=tick.get("diagnostico", []))
+                diagnostico=tick.get("diagnostico", []), pedidos_abiertos=status.get("pedidos_abiertos", []))
 
 
 def plantilla(h: dict) -> str:
@@ -37,6 +37,7 @@ def plantilla(h: dict) -> str:
     if h["corriendo"]: partes.append("Corriendo: " + ", ".join(h["corriendo"]) + ".")
     if h["envio_incierto"]: partes.append("ATENCIÓN, envío incierto (conciliar a mano): " + ", ".join(map(str, h["envio_incierto"])) + ".")
     if h["bloqueadas"]: partes.append(f"Bloqueadas por guardas: {len(h['bloqueadas'])}.")
+    if h.get("pedidos_abiertos"): partes.append("Pedidos a humano abiertos: " + ", ".join(h["pedidos_abiertos"]) + " (responder: resuelto <id>).")
     for d in h.get("diagnostico", []):
         if not d["automatica"]: partes.append(f"REQUIERE HUMANO: {d['sintoma']} -> {d['accion']}.")
     return " ".join(partes)
@@ -74,6 +75,14 @@ def aplicar_comandos(root: Path, kill_switch: Path, autorizados, status_fn, now=
         if cmd == "pausa": Path(kill_switch).parent.mkdir(parents=True, exist_ok=True); Path(kill_switch).touch()
         elif cmd == "reanudar": Path(kill_switch).unlink(missing_ok=True)
         elif cmd == "estado": _append(root / "sala_outbox.jsonl", dict(ts=now or time.time(), estado=status_fn(), fuente="estado"))
+        elif cmd == "resuelto":
+            from .pedidos import cerrar
+            pid, _, nota = arg.strip().partition(" ")
+            ok = cerrar(root, pid, autor, nota, ahora=now)
+            _append(root / "sala_outbox.jsonl", dict(ts=now or time.time(), fuente="pedido", texto=f"{pid}: {'cerrado' if ok else 'id desconocido'} por {autor}"))
+        elif cmd == "pedidos":
+            from .pedidos import abiertos
+            _append(root / "sala_outbox.jsonl", dict(ts=now or time.time(), fuente="pedido", texto="Pedidos abiertos: " + ("; ".join(f"{p['id']} {p['que']}" for p in abiertos(root)) or "ninguno")))
         elif cmd == "aprobar": _append(root / "sala_aprobaciones.jsonl", dict(ts=now or time.time(), autor=autor, id=arg.strip(), efecto="ninguno: sólo registro"))
         hechos_cmd.append((cmd, autor))
     off_path.write_text(str(len(lines)))

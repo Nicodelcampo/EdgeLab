@@ -29,6 +29,12 @@ def revisar(state: Path, max_latido: int, ahora: float, systemctl=True) -> list:
     for nombre in ("PAUSE", "PAUSE_SALA"):
         for p in (state / nombre, state.parent.parent / nombre):
             if p.exists() and ahora - p.stat().st_mtime > 24 * 3600: out.append(("pausa_larga", f"{p} existe hace más de 24 h"))
+    try:
+        import sys; sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+        from edgelab.autopilot.pedidos import abiertos
+        viejos = [p["id"] for p in abiertos(state) if ahora - float(p.get("ts", ahora)) > 72 * 3600]
+        if viejos: out.append(("pedidos_sin_respuesta", f"pedidos a humano abiertos hace más de 72 h: {', '.join(viejos)}"))
+    except Exception: pass
     if systemctl:
         for u in UNIDADES:
             r = subprocess.run(["systemctl", "is-failed", "--quiet", u], capture_output=True)

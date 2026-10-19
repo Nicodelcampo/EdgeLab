@@ -108,5 +108,5 @@ class Autopilot:
         led = self.ledger.db.execute("SELECT status, COUNT(*) FROM runs GROUP BY status").fetchall()
         last = [json.loads(l) for l in self.log.read_text().splitlines()[-5:]] if self.log.exists() else []
         hb = json.loads((self.root / "heartbeat.json").read_text()) if (self.root / "heartbeat.json").exists() else None
-        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), pausas=[str(p) for p in self.pause_files() if p.exists()], alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
+        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), pausas=[str(p) for p in self.pause_files() if p.exists()], pedidos_abiertos=[p['id'] for p in __import__('edgelab.autopilot.pedidos', fromlist=['x']).abiertos(self.root)], alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
                     heartbeat_age_s=None if not hb else round(time.time() - hb["ts"]), last_events=[{k: v for k, v in e.items() if k in ("event", "launched", "closed", "blocked")} for e in last])
