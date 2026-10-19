@@ -35,7 +35,7 @@ Hola. Te paso las novedades del agente de EdgeLab para el Debian y lo que necesi
 | 3 | + proponente (Opus) | +1–2 Opus / techo 6 |
 | 4 | + promoción automática (2 revisores) + abogado | +2–8 Opus y +1–5 Sonnet / techo 16 Opus y 10 Sonnet |
 
-- **Todas las cifras de esta sección son ESTIMACIONES mías, no mediciones.** Antes de elegir plan, mirá la primera semana el consumo real: `llm_calls.sqlite` registra cada llamada (rol, modelo, tokens) y el informe de uso lo resume por rol y por día.
+- **Todas las cifras de esta sección son ESTIMACIONES mías, no mediciones.** Antes de elegir plan, mirá la primera semana el consumo real: `llm_calls.sqlite` registra cada llamada (rol, modelo, tokens) y el informe de uso lo resume por rol y por día: `sudo -u edgelab /opt/edgelab/venv/bin/python tools/autopilot_generate.py usage --config /etc/edgelab/autopilot.json --days 7`.
 - **Tokens (estimado):** cada llamada de Opus o Sonnet lleva unos 3–6 mil tokens de entrada y menos de mil de salida. Las de Haiku son chicas.
   - En la etapa 4, el uso realista es del orden de **50–150 mil tokens por día**, casi todo en Opus y Sonnet.
   - Son estimaciones mías, no mediciones. El consumo real queda registrado en `llm_calls.sqlite` y el informe de uso lo muestra por rol.

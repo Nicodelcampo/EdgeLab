@@ -37,10 +37,26 @@ def main():
     q = sp.add_parser("auto-promote", help="promoción sin humano (enmienda AUTONOMIA-A1); exige auto_promocion=true en --config")
     q.add_argument("--candidates", required=True); q.add_argument("--config", required=True); q.add_argument("--runtime"); q.add_argument("--ledger"); q.add_argument("--max", type=int, default=1)
     x = sp.add_parser("index"); x.add_argument("--state", required=True)
+    u = sp.add_parser("usage", help="consumo de los roles LLM por día, rol y modelo (desde llm_calls.sqlite)")
+    u.add_argument("--config", required=True); u.add_argument("--days", type=int, default=7)
     z = sp.add_parser("audit", help="auditoría post-corrida: mecánica siempre; auditor y abogado (LLM) si auditor=true en la config")
     z.add_argument("--state", required=True); z.add_argument("--config", required=True); z.add_argument("--ledger", required=True); z.add_argument("--max", type=int, default=5)
     y = sp.add_parser("propose"); y.add_argument("--state", required=True); y.add_argument("--config", required=True); y.add_argument("--ledger"); y.add_argument("--tema", default="")
     a = ap.parse_args(); lits = load_json("config/autopilot/literature_leads.json")
+    if a.cmd == "usage":
+        import time
+        from edgelab.autopilot.roles import RoleRunner
+        cfg = json.loads(Path(a.config).read_text())
+        if not cfg.get("roles_ledger") or not Path(cfg["roles_ledger"]).exists(): print("sin llm_calls.sqlite: los roles no corrieron todavía"); return
+        rr = RoleRunner(Path(cfg["roles_ledger"])); tot = {}
+        print("día        rol            modelo              estado            llamadas  tokens_in  tokens_out")
+        for k in range(a.days - 1, -1, -1):
+            day = time.strftime("%Y-%m-%d", time.gmtime(time.time() - k * 86400))
+            for r in rr.usage(day):
+                print(f"{day} {r['role']:<14} {r['model']:<19} {r['status']:<17} {r['n']:>8} {int(r['ti'] or 0):>10} {int(r['tout'] or 0):>11}")
+                if r["status"] == "OK": t = tot.setdefault(r["model"], [0, 0, 0]); t[0] += r["n"]; t[1] += int(r["ti"] or 0); t[2] += int(r["tout"] or 0)
+        for m, (n, ti, to) in tot.items(): print(f"TOTAL {a.days} días · {m}: {n} llamadas, {ti} tokens de entrada, {to} de salida")
+        return
     if a.cmd == "audit":
         from edgelab.autopilot import auditoria
         from edgelab.autopilot.roles import RoleRunner, configurar_modelos
