@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-16  
+**Fecha:** 2026-10-19  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-16  
+**Corte:** 2026-10-19  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,14 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-16 (leer primero)
+## Estado al 2026-10-19 (leer primero)
+
+- **Agente autónomo (rama `claude/vibrant-clarke-s9z6e2`, PR #64, con `main` integrado):** arquitectura multiagente consolidada en `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md` (código orquesta; roles LLM con modelos fijados: proponente/revisor/abogado Opus, revisor2/auditor Sonnet, resúmenes Haiku; encendido por etapas, todo apagado por defecto). Nuevo: biblioteca trazable del proyecto (`edgelab/autopilot/conocimiento.py`: Brain, 400+ papers, research, registros, con sha y commit), doble revisión de la promoción, auditor post-corrida y abogado del diablo (`auditoria.py`), pre-registros publicados en `autopilot/prereg/<run_id>`, dos interruptores de pausa, vigilante externo, respaldo de `runs.sqlite`. Revisión y resolución: `docs/autopilot/REVISION_ESTRUCTURA_DEBIAN_20261019.md`, `docs/autopilot/RESOLUCION_REVISION_DEBIAN_20261019.md`. Criterios del dueño en las prioridades del agente: macro antes que micro, edges por régimen detectable, cartera diversificada.
+- **Funnel:** runner por etapas de #70 unificado con la custodia EF0 (guarda de holdout, registro global de pruebas, vistos, kernel, E4).
+- **EdgeReplica sobre USATECH (Dukascopy, M1, 2023→2026-09):** +4,08 pts/op netos de spread en total, pero 2023 negativo y mejora monótona hacia el período de selección; post-publicación −5,27 (IC cruza 0); correlación diaria 0,96 con MNQ. No se promueve: `docs/research/edgereplica_usatech/RESULTADO.md`.
+- **Edges promovidos: 0** (sin cambios).
+
+## Estado al 2026-10-16
 
 - **PR #121 (`feat/agente-sv1-consolidacion` → `foundation/f0b-compatibility-probe`):** autopilot (#64) y Research Ops (#117/#118) consolidados; módulo `autopilot` registrado en `docs/MODULES.md`. Arquitectura: `docs/autopilot/ARQUITECTURA.md`. Promoción automática implementada (`edgelab/autopilot/promocion.py`) pero **apagada** (`auto_promocion: false`) hasta que Nico commitee la enmienda en NORTH_STAR: `docs/incidents/AMENDMENT_AUTONOMIA-A1_2026-10-16_PROPUESTA.md`. Nico la firmó y aprobó en el chat el 2026-10-16: `docs/DECISIONES_20261016.md`.
 - **Informe externo k32 (RRE, reversión en barras 100T de ES) auditado:** refuta la familia en micro-zonas de 16 ticks (−1,3 a −1,6 ticks/op netos en 153 sesiones); su "replicación virgen abr–sep" no es tal según el registro de la familia. Auditoría: `docs/research/AUDITORIA_K32_REPLICACION_RRE_20261016.md`; informe íntegro: `docs/research/INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md`; registro: `docs/research/CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md`. Lecciones integradas al agente: replay causal de fills pasivos, "virgen se verifica", gate post-hoc = prueba nueva (`edgelab/autopilot/contexto.py`, `config/autopilot/herramientas.json`); familia agregada a `familias_retiradas` en `deploy/debian/autopilot.example.json`.

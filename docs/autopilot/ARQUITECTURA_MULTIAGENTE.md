@@ -1,5 +1,7 @@
 # Arquitectura multiagente del autopilot (consolidada y aplicable) — 2026-10-19
 
+Estado: VIGENTE — referencia de la arquitectura multiagente; roles LLM apagados por defecto (encendido por etapas, §6).
+
 Documento de referencia de qué agentes hay, qué modelo usa cada uno, qué ve, qué decide y cómo se enciende.
 Reemplaza la propuesta suelta del chat. Código: `edgelab/autopilot/` · despliegue: `deploy/debian/`.
 

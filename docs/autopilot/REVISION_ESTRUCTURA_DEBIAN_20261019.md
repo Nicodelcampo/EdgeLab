@@ -1,5 +1,7 @@
 # Revisión de la estructura del agente autónomo (Debian), 2026-10-19
 
+Estado: VIGENTE — revisión de lectura del código de main (2026-10-19); resuelta en RESOLUCION_REVISION_DEBIAN_20261019.md.
+
 Revisé el código de `origin/main`: `edgelab/autopilot/*`, `tools/autopilot_generate.py` y `deploy/debian/*`.
 Es una revisión de lectura: no corrí nada en SV1.
 

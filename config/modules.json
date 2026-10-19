@@ -576,7 +576,12 @@
         "stats"
       ],
       "doc": "docs/research/INVENTARIO_LINEA_MAIN_20261014.md",
-      "tests": []
+      "tests": [
+        "tests/test_funnel.py",
+        "tests/test_funnel_isolation.py",
+        "tests/test_funnel_multiplicity.py",
+        "tests/test_funnel_stage_integration.py"
+      ]
     },
     {
       "id": "research-data-gate",
@@ -647,7 +652,7 @@
       "name": "Agente autonomo (autopilot)",
       "layer": 7,
       "status": "experimental",
-      "function": "Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas.",
+      "function": "Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. Biblioteca trazable del proyecto, doble revisión, auditor post-corrida y abogado del diablo.",
       "paths": [
         "edgelab/autopilot",
         "tools/autopilot_generate.py"
@@ -667,13 +672,85 @@
         "kaggle-custody",
         "research"
       ],
-      "doc": "docs/autopilot/ARQUITECTURA.md",
+      "doc": "docs/autopilot/ARQUITECTURA_MULTIAGENTE.md",
       "tests": [
         "tests/test_autopilot.py",
         "tests/test_autopilot_promocion.py",
         "tests/test_autopilot_contexto_mejora.py",
         "tests/test_autopilot_roles.py",
-        "tests/test_autopilot_sala.py"
+        "tests/test_autopilot_sala.py",
+        "tests/test_autopilot_conocimiento.py",
+        "tests/test_autopilot_auditoria.py"
+      ]
+    },
+    {
+      "id": "data-catalog",
+      "name": "Catálogo de datos (escaneo y construcción)",
+      "layer": 2,
+      "status": "experimental",
+      "function": "Escanea los datasets de Kaggle/locales y construye el catálogo y el resolver de sesiones aprobadas.",
+      "paths": [
+        "edgelab/catalog"
+      ],
+      "inputs": [
+        "listados de Kaggle",
+        "archivos locales"
+      ],
+      "outputs": [
+        "docs/data_catalog/RESOLVER.json",
+        "DATASETS.md"
+      ],
+      "depends_on": [
+        "data-custody"
+      ],
+      "doc": "docs/data_catalog/README.md",
+      "tests": []
+    },
+    {
+      "id": "equivalence",
+      "name": "Equivalencia CFD/spot contra futuros",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Mide la equivalencia entre proxies (Dukascopy) y futuros CME para usarlos como complemento de potencia.",
+      "paths": [
+        "edgelab/equivalence"
+      ],
+      "inputs": [
+        "ticks/M1 de proxy y futuro"
+      ],
+      "outputs": [
+        "informes de equivalencia"
+      ],
+      "depends_on": [
+        "data-custody"
+      ],
+      "doc": "edgelab/equivalence/README.md",
+      "tests": [
+        "tests/test_equivalence.py"
+      ]
+    },
+    {
+      "id": "discovery",
+      "name": "Descubrimiento por familias (escaneo con nulo de máximo)",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Barrido de familias de features con nulo de máximo por sesión (CPU/GPU), réplica cronológica D0/D1 y D2 sellado.",
+      "paths": [
+        "edgelab/discovery"
+      ],
+      "inputs": [
+        "arrays por sesión"
+      ],
+      "outputs": [
+        "resultados de escaneo"
+      ],
+      "depends_on": [
+        "stats",
+        "funnel"
+      ],
+      "doc": "edgelab/discovery/README.md",
+      "tests": [
+        "tests/test_discovery.py"
       ]
     }
   ],

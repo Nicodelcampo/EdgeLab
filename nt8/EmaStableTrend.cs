@@ -1,4 +1,5 @@
 // EmaStableTrend.cs v3.3 (defaults 'largas y permisivas', Preset 0 = manual; sin validar en historia al momento de escribirlo, ver docs/research/ema_trend/) — zonas de tendencia "tipo trendline" a partir de una EMA (NinjaTrader 8).
+// meta indicator=EmaStableTrend,version=3.3
 //
 // IDEA: una trendline por picos/toques es dificil de detectar; una EMA es mas permisiva y permite programar las interacciones.
 // ZONA = periodo en el que, medido sobre ventanas moviles (todo en cocientes o en unidades de ATR, sin ticks fijos):

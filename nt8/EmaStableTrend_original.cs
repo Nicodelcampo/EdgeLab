@@ -1,4 +1,5 @@
 // EmaStableTrend.cs — periodos con EMA direccional y distancia precio-EMA ESTABLE (NinjaTrader 8).
+// meta indicator=EmaStableTrend,version=1.0-original (version previa conservada como referencia)
 //
 // QUE DETECTA
 //   Ventanas de W barras en las que, a la vez:

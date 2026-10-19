@@ -1,5 +1,7 @@
 # Resolución de la revisión del agente en Debian, 2026-10-19
 
+Estado: VIGENTE — implementado y probado con tests; falta prueba punta a punta en SV1.
+
 Responde a `REVISION_ESTRUCTURA_DEBIAN_20261019.md`. Antes de corregir, integré `main` en esta rama: ahí está la versión
 más nueva del agente (roles, sala, promoción). En los conflictos del agente y del despliegue tomé la versión de `main`.
 En los del funnel conservé la de esta rama, que tiene EF0 con custodia, multiplicidad y huella del kernel.

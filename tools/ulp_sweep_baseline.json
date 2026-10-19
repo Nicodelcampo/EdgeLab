@@ -609,6 +609,38 @@
     "aVolZonePOI2.cs :: for (int i = lo; i < zones.Count; i++)": {
       "veredicto": "NO_ES_PRECIO",
       "evidencia": "no compara dos precios contra un umbral: es una asignacion, un flag, un contador de barras, una busqueda binaria sobre indices de barra, una llamada, aritmetica de P&L del simulador de NT8 o liberacion de recursos de dibujo; triaje manual del 2026-10-14, sin medicion porque no hay comparacion de doubles."
+    },
+    "EmaStableTrend.cs :: for (int k = lo; k <= hi; k++) { if (h[k] > mx) mx = h[k]; }": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "EmaStableTrend.cs :: for (int k = lo; k <= hi; k++) { if (h[k] == h[i]) cnt++; }": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "EmaStableTrend.cs :: for (int k = lo; k <= hi; k++) { if (g[k] > mx) mx = g[k]; if (g[k] < mn) mn = g[k]; }": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "EmaStableTrend.cs :: for (int k = lo; k <= hi; k++) { if (g[k] == g[i]) { cmx++; cmn++; } }": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "EmaStableTrend.cs :: if (dir < 0) return Close[0] > l + BreakAtr * atr || (l - Close[0]) > MaxDistAtr * atr; // baja: rompe por arriba o el precio se aleja demasiado por debajo": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "EmaStableTrend.cs :: return Close[0] < -l - BreakAtr * atr || (Close[0] + l) > MaxDistAtr * atr; // suba: rompe por abajo o se aleja demasiado por arriba": {
+      "veredicto": "FUERA_DE_ALCANCE",
+      "evidencia": "indicador visual EmaStableTrend (v3.3, 2026-10-13): no tiene contrato de paridad ni puerto bit a bit a Python; edgelab/research/ema_zones.py es una reimplementacion independiente validada estadisticamente (EMAZ-1..10), no por paridad. Los operandos son series derivadas de la EMA y de la recta ajustada (Close-EMA, altura de la recta, multiplos de ATR): fraccionarios, no precios de grilla. Si algun dia se exige paridad, estos empates (==) y umbrales deben pasarse a enteros antes."
+    },
+    "aVolClusterPOI_violet_v05.cs :: bool offPrice = direction != 0;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "direction es un entero (-1/0/+1) asignado por la logica de violeta; la comparacion != 0 es sobre ese entero, no sobre un precio de grilla ni un double."
+    },
+    "aVolClusterPOI_violet_v05.cs :: bool passes = offPrice && quality >= MinQualityScore;": {
+      "veredicto": "NO_ES_PRECIO",
+      "evidencia": "direction es un entero (-1/0/+1) asignado por la logica de violeta; la comparacion != 0 es sobre ese entero, no sobre un precio de grilla ni un double."
     }
   }
 }
