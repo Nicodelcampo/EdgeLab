@@ -9,6 +9,12 @@ abre datos. Cada rol es una llamada `claude -p` sin herramientas ni MCP, con sal
 tope diario, caché por hash de entrada, gobernador de rate limit y registro en `llm_calls.sqlite` (rol, modelo exacto,
 hash de entrada y salida, tokens). Ninguna salida de un rol es evidencia.
 
+## 1b. Criterios del dueño que todo rol pondera (2026-10-19)
+- **Macro antes que micro:** horizontes y movimientos grandes; la fricción se come los efectos chicos (ver `friccion.py`, ratio ≥ 3).
+- **Régimen:** una estrategia puede no ser rentable siempre pero sí ahora; vale si el régimen se detecta en tiempo real con regla pre-registrada y estabilidad medida fuera de muestra.
+- **Cartera:** muchas estrategias rentables y poco correlacionadas diversifican más que una sola; la baja correlación con lo vivo pesa tanto como el rendimiento.
+Están en `contexto.PRIORIDADES` (las ve el proponente en cada ciclo) y en la consigna del revisor.
+
 ## 2. Capas
 ```
             ┌────────────────────── CAPA DETERMINISTA (sin LLM) ───────────────────────┐
