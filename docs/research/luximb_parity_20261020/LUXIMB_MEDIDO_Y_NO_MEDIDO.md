@@ -7,9 +7,10 @@
 
 - 2026-10-20 M4 penetracion 25/38,2/50/61,8/75 % hasta A vs X: SIN EFECTO a favor (signo opuesto, -4 a -6 pp, no significativo). `RESULTADOS_M4_PENETRACION_LUXIMB_NQ_20261020.md`.
 - 2026-10-20 Exploratorio sin desenlaces, modo 'inicio cargado' con piso 60 (150 en NQ 09-26). `EXPLORATORIO_IMPULSOS_INICIO_LUXIMB_NQ_20261020.md`.
+- 2026-10-20 M5 vuelta al inicio cargado: SIN EFECTO (H1 +2,2 pp IC [-3,9,+8,3], MDE 8,6; fade +3,4 pts IC [-3,1,+9,5], inestable por contrato). `RESULTADOS_M5_INICIO_CARGADO_LUXIMB_NQ_20261020.md`.
 
 ## NO MEDIDO
-- M5 vuelta al inicio cargado (propuesta, pendiente OK).
+- M5 en ES/YM (unico camino para mas potencia en descubrimiento).
 - Continuacion tras penetracion (signo observado en M4; necesita preregistro propio).
 - Velas 25t contra NT8 (sin paridad).
 - Vida 200 con desenlaces; otras geometrias de salida (p. ej. objetivo A, horizonte fijo).
