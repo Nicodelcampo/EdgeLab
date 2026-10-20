@@ -17,10 +17,10 @@ REP_START = int(pd.Timestamp("2026-04-01", tz="America/Chicago").value // 10**9)
 TOPE_MIN, GAP_S, NB = 240, 1800, 10000
 
 
-def carrera(ev, t25, h25, l25, c25, cl_m1, slips):
+def carrera(ev, t25, h25, l25, c25, cl_m1, slips, tg_frac=0.5):
     s = 1 if ev["dir"] == "up" else -1
     A, X = ev["p0"], ev["p1"]; R = abs(X - A); E = cl_m1[ev["ic"]]
-    tg, ex = X - 0.5 * R * s, X + 0.25 * R * s
+    tg, ex = X - tg_frac * R * s, X + 0.25 * R * s
     a = int(np.searchsorted(t25, ev["tc"], "left")); b = a
     while b < len(t25) and t25[b] <= ev["tc"] + TOPE_MIN * 60 and (b == a or t25[b] - t25[b - 1] <= GAP_S):
         b += 1

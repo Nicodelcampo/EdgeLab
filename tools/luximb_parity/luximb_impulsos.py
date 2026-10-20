@@ -149,6 +149,8 @@ def main():
     ap.add_argument("--p-zonas", type=float, default=None, help="percentil de zonas (por defecto --p)")
     ap.add_argument("--hist", type=int, default=2000)
     ap.add_argument("--ctrl-max-zonas", type=int, default=2)
+    ap.add_argument("--ctrl-modo", default="zonas", choices=("zonas", "amplitud"),
+                    help="zonas: control con <= ctrl-max-zonas (M2); amplitud: misma amplitud, cualquier reparto (M5)")
     ap.add_argument("--modo", default="reparto", choices=("reparto", "inicio"),
                     help="inicio (Nico 2026-10-20): >= --min-ini zonas en el --frac-ini inicial del rango y <= --max-resto en el resto")
     ap.add_argument("--frac-ini", type=float, default=0.25)
@@ -223,7 +225,7 @@ def main():
             vl = k25(iext, ext, up) - k25(ia, pa, not up) + 1
             ids_k = crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext)
             nz = len(ids_k)
-            if nz <= a.ctrl_max_zonas and "ctrl" not in g:   # control M2: misma amplitud causal, <= 2 zonas
+            if (a.ctrl_modo == "amplitud" or nz <= a.ctrl_max_zonas) and "ctrl" not in g:   # control M2: misma amplitud causal, <= 2 zonas
                 g["ctrl"] = dict(i0=ia, p0=pa, i1=int(iext), p1=float(ext), t0=int(t[ia]), t1=int(t[iext]), dir=g["dir"], rango=round(rg, 2),
                                  velas=int(vl), zonas=nz, ic=int(kb), tc=int(t[kb]) + 60)
             if rg / max(vl, 1) < u[1]: continue
