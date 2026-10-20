@@ -1,7 +1,8 @@
 """Promoción automática de candidatas, sin humano en el camino (decisión de Nico, 2026-10-16).
 
-Vale bajo la enmienda AUTONOMIA-A1 (docs/incidents/AMENDMENT_AUTONOMIA-A1_2026-10-16_PROPUESTA.md). Hasta que
-Nico la firme, `config["auto_promocion"]` debe quedar en False. Lo que cambia es quién aprueba, no cuánto se exige.
+Vale bajo la enmienda AUTONOMIA-A1 (firmada) y la decisión de Nico del 2026-10-20 (docs/DECISIONES_20261020.md): las
+corridas las aprueba el agente, no un humano. `config["auto_promocion"]` es sólo el interruptor técnico de encendido.
+Lo que cambia es quién aprueba, no cuánto se exige.
 
 Orden fijo, y cualquier paso que falle corta:
   1. mecánico, sin LLM: hay estudio listo (template); límite de pruebas; novedad contra retiradas; mismo RunSpec no

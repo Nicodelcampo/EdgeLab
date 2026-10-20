@@ -33,7 +33,7 @@ Definidos en `config/autopilot/mandate.json` (valores propuestos; ver §7) e imp
 5. **Drawdown compatible** con el límite del challenge (drawdown máximo ≤ objetivo de ganancia).
 6. **Probabilidad de pase y ROI** (simulación por remuestreo de días con las reglas de la cuenta elegida; cuenta de referencia en `mandate.json`): ≥ 15 % para una estrategia sola y ≥ 50 % para el portafolio.
 
-Además de lo anterior rige todo lo de siempre: pre-registro, multiplicidad (contador global y alpha-investing), réplica en datos no usados, holdout cerrado, sin P&L ni promoción sin autorización.
+Además de lo anterior rige todo lo de siempre: pre-registro, multiplicidad (contador global y alpha-investing), réplica en datos no usados, holdout cerrado. Las corridas (incluido P&L) las autoriza el agente autónomo con pre-registro publicado, doble revisión, guardas y auditoría (decisión de Nico 2026-10-20); operar con dinero real sigue requiriendo decisión humana.
 
 ## 4. Niveles (tier) que todo resultado debe llevar
 - **A — candidata a challenge**: válida estadísticamente **y** cumple todos los criterios de utilidad.
