@@ -7,6 +7,8 @@ Definiciones (version 1, a revisar en el visor con Nico):
 - Amplitud = rango del tramo en puntos (precios de A y B en M1, sin cambios). Rapidez = cantidad de velas de 25 TICKS
   entre la vela 25t que hace el extremo A (primera, dentro del minuto de A) y la que hace el extremo B (primera,
   dentro del minuto de B), ambas incluidas. Las zonas y su conteo siguen en M1.
+  Criterio de rapidez (v3, eleccion de Nico 2026-10-20): `vel` = rango / velas 25t (puntos por vela de 25 ticks);
+  rapido = vel >= percentil `--p` causal.
 - Zona atravesada por un impulso up: zona creada (vela de cierre ic) dentro de la vida `--vida` (1000 velas) al
   cruzarla, con fondo >= precio de inicio y techo <= precio final, y que dentro del tramo, DESPUES de crearse,
   el precio estuvo en o debajo del fondo y luego en o encima del techo (la cruzo entera). Simetrico para down.
@@ -130,24 +132,26 @@ def main():
     legs.sort(key=lambda g: (g["ic"], g["i0"]))
     # umbrales causales: impulsos confirmados en velas ANTERIORES a esta confirmacion
     ics = np.array([g["ic"] for g in legs])
-    R = np.array([g["rango"] for g in legs]); V = np.array([g["velas"] for g in legs]); N = np.array([g["zonas"] for g in legs])
+    for g in legs:
+        g["vel"] = round(g["rango"] / max(g["velas"], 1), 4)
+    R = np.array([g["rango"] for g in legs]); V = np.array([g["vel"] for g in legs]); N = np.array([g["zonas"] for g in legs])
     for k, g in enumerate(legs):
         e = int(np.searchsorted(ics, g["ic"], side="left")); b0 = max(0, e - a.hist)
         if e - b0 < a.min_hist:
             g["marcado"] = False; g["umbral"] = None; continue
-        u = (float(np.percentile(R[b0:e], a.p)), float(np.percentile(V[b0:e], 100 - a.p)), max(float(np.percentile(N[b0:e], a.p)), 1.0))
+        u = (float(np.percentile(R[b0:e], a.p)), float(np.percentile(V[b0:e], a.p)), max(float(np.percentile(N[b0:e], a.p)), 1.0))
         g["umbral"] = u
-        g["marcado"] = bool(g["rango"] >= u[0] and g["velas"] <= u[1] and g["zonas"] >= u[2])
+        g["marcado"] = bool(g["rango"] >= u[0] and g["vel"] >= u[1] and g["zonas"] >= u[2])
     marc = [g for g in legs if g["marcado"]]
     us = np.array([g["umbral"] for g in legs if g["umbral"]])
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
-             rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], velas_max_rango=[float(us[:, 1].min()), float(us[:, 1].max())],
+             rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v2-causal", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p),
+    res = dict(spec="LUXIMB-IMPULSOS-v3-causal", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p),
                tramos=len(legs), umbrales=u, marcados=len(marc),
-               resumen=dict(rango_mediana=float(np.median(R)), velas_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
+               resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
-               impulsos=marc, todos=[{k: g[k] for k in ("i0", "i1", "ic", "t0", "t1", "tc", "p0", "p1", "dir", "rango", "velas", "velas_m1", "zonas", "marcado")} for g in legs])
+               impulsos=marc, todos=[{k: g[k] for k in ("i0", "i1", "ic", "t0", "t1", "tc", "p0", "p1", "dir", "rango", "velas", "velas_m1", "vel", "zonas", "marcado")} for g in legs])
     json.dump(res, open(a.out, "w", encoding="utf-8"), separators=(",", ":"))
     print(json.dumps({k: v for k, v in res.items() if k not in ("impulsos", "todos")}, indent=1))
 
