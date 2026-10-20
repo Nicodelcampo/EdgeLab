@@ -3006,7 +3006,8 @@
     var detVar = new URLSearchParams(window.location.search).get("det");   // ?det=<variante> → peaks_det/<activo>__<variante>.json
     if (detVar && !/^[A-Za-z0-9_\-]{1,40}$/.test(detVar)) detVar = null;
     fetch("bundles/peaks_det/" + aid + (detVar ? "__" + detVar : "") + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function (d) { peaksDet.data = d; var el = document.getElementById("lbl-det-status");
+      .then(function (d) { peaksDet.data = d; if (detVar) { peaksDet.on = true; var cD = document.getElementById("chk-det"); if (cD) cD.checked = true; }   // ?det=<variante> la muestra
+        var el = document.getElementById("lbl-det-status");
         if (el) { var pp = d.parametros;
           el.textContent = (pp && pp.cobertura != null) ? "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"
                                                         : d.zonas.length + " zonas cargadas" + (d.variante ? " (" + d.variante + ")" : "") + "."; }
