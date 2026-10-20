@@ -149,6 +149,12 @@ def main():
     ap.add_argument("--p-zonas", type=float, default=None, help="percentil de zonas (por defecto --p)")
     ap.add_argument("--hist", type=int, default=2000)
     ap.add_argument("--ctrl-max-zonas", type=int, default=2)
+    ap.add_argument("--modo", default="reparto", choices=("reparto", "inicio"),
+                    help="inicio (Nico 2026-10-20): >= --min-ini zonas en el --frac-ini inicial del rango y <= --max-resto en el resto")
+    ap.add_argument("--frac-ini", type=float, default=0.25)
+    ap.add_argument("--min-ini", type=int, default=4)
+    ap.add_argument("--max-resto", type=int, default=1)
+    ap.add_argument("--share-ini", type=float, default=None, help="si se da: exige n_ini/n_total >= share en vez de --max-resto")
     ap.add_argument("--min-hist", type=int, default=500)
     a = ap.parse_args()
     B = json.load(open(a.bundle, encoding="utf-8"))
@@ -220,10 +226,16 @@ def main():
                 g["ctrl"] = dict(i0=ia, p0=pa, i1=int(iext), p1=float(ext), t0=int(t[ia]), t1=int(t[iext]), dir=g["dir"], rango=round(rg, 2),
                                  velas=int(vl), zonas=nz, ic=int(kb), tc=int(t[kb]) + 60)
             if rg / max(vl, 1) < u[1]: continue
-            if nz < u[2]: continue
             pos = np.array([abs((ztop[z_] + zbot[z_]) / 2 - pa) / rg for z_ in ids_k])     # 0 = A, 1 = extremo
-            cnt = np.bincount(np.minimum((pos * a.tercios).astype(int), a.tercios - 1), minlength=a.tercios)
-            if cnt.min() == 0 or cnt.max() > a.max_frac * nz: continue
+            if a.modo == "inicio":
+                n_ini = int((pos < a.frac_ini).sum())
+                if n_ini < a.min_ini: continue
+                if (a.share_ini is None and nz - n_ini > a.max_resto) or (a.share_ini is not None and n_ini < a.share_ini * nz): continue
+                cnt = np.array([n_ini, nz - n_ini])
+            else:
+                if nz < u[2]: continue
+                cnt = np.bincount(np.minimum((pos * a.tercios).astype(int), a.tercios - 1), minlength=a.tercios)
+                if cnt.min() == 0 or cnt.max() > a.max_frac * nz: continue
             g.update(marcado=True, umbral=u, final=dict(i1=g["i1"], p1=g["p1"], rango=g["rango"], velas=g["velas"], vel=g["vel"], zonas=g["zonas"], ic=g["ic"], tc=g["tc"]),
                      i1=int(iext), t1=int(t[iext]), p1=float(ext), rango=round(rg, 2), velas=int(vl), vel=round(rg / max(vl, 1), 4), zonas=nz,
                      velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60, reparto=[int(x) for x in cnt],
@@ -235,7 +247,8 @@ def main():
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
+    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, modo=a.modo,
+                                                                                                      frac_ini=a.frac_ini, min_ini=a.min_ini, max_resto=a.max_resto, share_ini=a.share_ini, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
