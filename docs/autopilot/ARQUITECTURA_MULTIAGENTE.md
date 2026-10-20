@@ -53,7 +53,7 @@ otra familia de modelo y para auditoría estructurada, Haiku para tareas mecáni
 1. **Biblioteca** (`index`, diario): Brain, papers SSRN, research, registros, resultados → `biblioteca.json` + `biblioteca_manifiesto.json` (sha256 y commit por fuente).
 2. **Propuesta** (`propose`, si `proponente: true`): paquete armado por código → proponente → filtro de novedad → `propuestas.jsonl`.
 3. **Candidatas** (`draft`): evidencia + literatura + resultados vivos → borradores de pre-registro.
-4. **Promoción** (`auto-promote`, si `auto_promocion: true` y la enmienda AUTONOMIA-A1 está firmada): mecánico → revisor → revisor2 → pre-registro committeado y **publicado** en `autopilot/prereg/<run_id>` → guardas → `candidates.json` → `promociones.jsonl`.
+4. **Promoción** (`auto-promote`, si `auto_promocion: true`; desde el 2026-10-20 la aprobación de corridas es del agente, no de Nico): mecánico → revisor → revisor2 → pre-registro committeado y **publicado** en `autopilot/prereg/<run_id>` → guardas → `candidates.json` → `promociones.jsonl`.
 5. **Lanzamiento y cierre** (`tick`, cada 10 min): registro global de pruebas antes de lanzar, alfa apostado, Holm propio, Brain.
 6. **Auditoría** (`audit`, diario): mecánica siempre; auditor y abogado si `auditor: true` → `auditorias.jsonl`. Un hallazgo EN_DUDA o BLOQUEADO lo ve el proponente en el tablero y queda para revisión humana.
 7. **Pedidos a humano** (`pedidos.py`): lo que sólo una persona puede dar (datos, exportación NT8, credencial, decisión) se pide con id en `pedidos_humano.jsonl` y en la sala; se cierra con `resuelto <id>`; el vigilante avisa si pasan 72 h. Los bloqueos del ciclo por datos faltantes se convierten solos en pedidos.
@@ -62,7 +62,7 @@ Todo lo anterior se sube a la rama `autopilot/state` (`sync_state.sh`); `runs.sq
 
 ## 5. Qué NO puede hacer ningún agente
 Cambiar guardas, FDR, holdout, mandato o protegidos (STOP si cambian) · lanzar sin pre-registro committeado y publicado ·
-leer el holdout · subir el alfa · promover a edge (todo hallazgo es exploratorio hasta réplica pre-registrada) ·
+leer el holdout fuera del protocolo de apertura (`holdout_apertura.py`: hallazgo auditado, regla congelada, una por familia) · subir el alfa · promover a edge (todo hallazgo es exploratorio hasta réplica pre-registrada) ·
 levantar una pausa de consola · escribir código del motor (eso es una sesión aparte con PR, tests y revisión humana).
 
 ## 6. Encendido por etapas (configuración)
@@ -72,7 +72,7 @@ levantar una pausa de consola · escribir código del motor (eso es una sesión 
 | 1 | `mode: execute`, `max_per_day: 1`, candidatas promovidas a mano | 0 | prueba punta a punta en SV1 OK |
 | 2 | + `roles_ledger`, `sala.cronista: true`, `auditor: true` | ~30 (Haiku/Sonnet) | auditorías coherentes con revisión humana de 5 corridas |
 | 3 | + `proponente: true` | +6 Opus | propuestas no repetidas y con fuentes citadas |
-| 4 | + `auto_promocion: true` (enmienda firmada), `max_por_ciclo: 1` | +≤20 (revisores) | tasa de PROMOTE doble < 30 %; ninguna BLOQUEADA en 2 semanas |
+| 4 | + `auto_promocion: true` (sin OK humano por corrida: decisión 2026-10-20), `max_por_ciclo: 1` | +≤20 (revisores) | tasa de PROMOTE doble < 30 %; ninguna BLOQUEADA en 2 semanas |
 
 ## 7. Métricas para ajustar la estructura
 - hallazgos replicados por 100 llamadas de Opus, por lente (`propuestas.jsonl` × `auditorias.jsonl` × ledger);

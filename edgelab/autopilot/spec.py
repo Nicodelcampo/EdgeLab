@@ -5,7 +5,7 @@ import hashlib
 import json
 from dataclasses import asdict, dataclass, field
 
-KINDS = ("scan", "study", "replication", "benchmark")
+KINDS = ("scan", "study", "replication", "benchmark", "holdout")   # holdout: apertura aprobada por el agente (holdout_apertura.py)
 
 
 @dataclass

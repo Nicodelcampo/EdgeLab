@@ -85,7 +85,7 @@ Holdout **intacto**. Detector `HFTZonesESPureV2Flat` **no modificado**.
   3.628/3.638 EXACT (99,73%), abril+mayo 171/171 EXACT. Causa raíz del silencio de
   TRAPs: `sesionNoConfiable` nunca reseteaba porque el bloque de frontera quedaba
   detrás del `return` del camino de tiempo (fix `f77a3be`).
-- F4 constitucional (información condicional) NO ejecutada — bloqueada por el STOP de abajo.
+- F4 constitucional (información condicional) NO ejecutada (al 2026-08-21 la bloqueaba el STOP humano; desde el 2026-10-20 la autorización la da el agente, ver abajo).
 - Holdout intacto en análisis. Frente de datos/legal, al 2026-08-15 (P-07, P-18, P-25):
   - El leak del corte UTC está **medido y cerrado en código**: la sesión CME del 1-jul
     abre 17:00 CT del 30-jun, así que un corte en `2026-07-01T00:00Z` dejaba pasar
@@ -140,6 +140,12 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   thresholds, bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
   geometría, integridad, visor). Una sola apertura por candidato, por protocolo.
+- **La apertura la aprueba el agente autónomo** (decisión de Nico 2026-10-20), no
+  Nico, con el protocolo en código (`edgelab/autopilot/holdout_apertura.py`):
+  sólo para confirmar un hallazgo con auditoría CONFORME, regla congelada (misma
+  configuración que el candidato), sólo datos del holdout, una apertura por
+  familia, registrada en `holdout_aperturas.jsonl` antes de lanzar. El resultado
+  confirma o refuta; nunca se usa para elegir, ajustar ni reintentar.
 
 ## Reglas permanentes
 
@@ -238,19 +244,28 @@ versión/hash del `.cs` y ventana/params → correr gates → **causa raíz de t
 WARN/FAIL** → promover particiones → regenerar visor → registrar cobertura →
 retomar la tarea anterior.
 
-## STOP antes de correr búsqueda sobre retornos
+## Autorización de corridas: la da el agente autónomo (decisión de Nico, 2026-10-20)
 
-Antes de ejecutar CUALQUIER búsqueda sobre P&L/retornos: presentar a Nico el
-**manifiesto de campaña + número efectivo de hipótesis + riesgos + datos
-faltantes**, y esperar aprobación. No correr la búsqueda sin ese OK. Target-free
+Las corridas —incluidas las búsquedas sobre P&L/retornos— **ya no esperan el OK
+de Nico**: las aprueba el agente autónomo (`edgelab/autopilot`). Lo que cambia es
+quién aprueba, no cuánto se exige. Toda corrida sigue necesitando, antes de
+lanzarse: **manifiesto/pre-registro committeado y publicado** (con número
+efectivo de hipótesis, riesgos y datos faltantes), chequeos mecánicos, **doble
+revisión** (revisor + revisor2), guardas (holdout, configuración en el
+pre-registro, protegidos), conteo en el registro global de pruebas y presupuesto
+de alfa; después, auditoría post-corrida. Todo queda trazado en
+`promociones.jsonl`, `auditorias.jsonl` y la rama `autopilot/state`. Target-free
 publica el landscape completo (todas las celdas, semillas y nulos) — nunca
-selecciona por P&L máximo aislado.
+selecciona por P&L máximo aislado. La apertura del holdout también la aprueba
+el agente, por el protocolo de la sección del firewall. Siguen siendo **sólo
+humanos**: cambiar gates/FDR/mandato/archivos protegidos (incluido el protocolo
+de apertura) y operar con dinero real. Decisión: `docs/DECISIONES_20261020.md`.
 
 ## Punteros
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
 - `docs/infra/LIQUID_RELEASE_20261014.md` + `docs/infra/MANANA_PENDIENTES_20261014.md` — **datos canónicos** (release `liquid_tick_v1`, 14 activos, un Parquet por activo, Kaggle privado `nicolasbuttaro/edgelab-liquid-ticks-20261014`, CANDIDATE_NOT_RESEARCH_APPROVED; lector seguro `edgelab/data/liquid_release/release_reader.py`; rama `data/liquid-release-20261014`). Exports faltantes: `docs/infra/MISSING_EXPORTS_20261014.md`.
-- `docs/research/AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` — racimos de aVolZonePOI2 replican en ES (compresión 7/7, continuación a favor de tendencia 6/6); manifiesto de P&L **propuesto, bajo STOP**: `docs/research/AVZP2_PNL_MANIFIESTO_PROPUESTO_20261014.md`.
+- `docs/research/AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` — racimos de aVolZonePOI2 replican en ES (compresión 7/7, continuación a favor de tendencia 6/6); manifiesto de P&L **propuesto** (desde 2026-10-20 lo aprueba el agente autónomo, no Nico): `docs/research/AVZP2_PNL_MANIFIESTO_PROPUESTO_20261014.md`.
 - `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` — **punto de entrada operativo vigente**; `docs/PRODUCT.md`, `docs/MODULES.md`, `docs/DOCUMENTATION_PROTOCOL.md`, `docs/INDEX.md`.
 - `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md` — histórico (2026-08-21), superado por el de arriba.
 - `docs/research/HANDOFF_AVZP2_RACIMOS_20261008.md` — familia aVolZonePOI2 (zonas, OB, racimos): indicador, paridad, estudios, pipeline Kaggle, NO MEDIDO y siguiente paso.

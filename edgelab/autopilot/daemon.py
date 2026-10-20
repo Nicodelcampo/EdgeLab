@@ -85,10 +85,16 @@ class Autopilot:
         for score, spec, why in ranked:                                              # 3) la mejor que pase todas las guardas
             if (spec.kind == "benchmark" and bm_full) or (spec.kind != "benchmark" and hyp_full): continue      # los topes diarios son por tipo: hipótesis y benchmarks
             errs = guard.all_checks(spec, set(self.cfg.get("allow_internet", [])), self.repo, Path(prot) if prot else None)
+            if spec.kind == "holdout":                                                # apertura del holdout: protocolo verificado acá (decisión 2026-10-20)
+                from .holdout_apertura import requisitos
+                errs += requisitos(spec, self.ledger, self.root)
             if self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
             if self.cfg.get("mode", "propose") != "execute":
                 rep["proposed"] = (spec.run_id, why); break
+            if spec.kind == "holdout":                                                # se registra ANTES de lanzar: la apertura cuenta aunque el envío falle
+                from .holdout_apertura import registrar
+                registrar(spec, self.root, guard._git("log", "-1", "--format=%H", "--", spec.prereg, cwd=self.repo) or None, ahora=now)
             if spec.kind != "benchmark":
                 if self.registry: self.registry.ensure(f"autopilot/{spec.run_id}", spec.family, spec.n_trials, spec.notes or "autopilot")   # se cuenta ANTES de lanzar
                 self.fdr.bid(spec.run_id, spec.n_trials)

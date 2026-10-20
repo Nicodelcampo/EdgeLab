@@ -4,7 +4,7 @@
   python tools/autopilot_generate.py promote --candidates /etc/edgelab/candidates.json CID [CID ...]   # SOLO con el borrador committeado: pasa los guards y agrega el RunSpec
   python tools/autopilot_generate.py index --state DIR                 # biblioteca: cerebro, papers, research, registros (con sha y commit)
   python tools/autopilot_generate.py propose --state DIR --config CFG   # proponente con TODO el contexto del proyecto; queda en propuestas.jsonl
-Por defecto la promoción la hace un humano. Con la enmienda AUTONOMIA-A1 firmada y auto_promocion=true, `auto-promote` la hace el agente (mecánico + revisor + pre-registro committeado + guardas)."""
+Las corridas las aprueba el agente (decisión de Nico 2026-10-20): con auto_promocion=true, `auto-promote` promueve (mecánico + revisor + pre-registro committeado + guardas)."""
 import argparse, json, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
@@ -34,7 +34,7 @@ def main():
     ap = argparse.ArgumentParser(); sp = ap.add_subparsers(dest="cmd", required=True)
     d = sp.add_parser("draft"); d.add_argument("--runtime"); d.add_argument("--ledger"); d.add_argument("--out", help="directorio de salida (por defecto docs/research/autopilot del repo)")
     p = sp.add_parser("promote"); p.add_argument("--candidates", required=True); p.add_argument("cids", nargs="+")
-    q = sp.add_parser("auto-promote", help="promoción sin humano (enmienda AUTONOMIA-A1); exige auto_promocion=true en --config")
+    q = sp.add_parser("auto-promote", help="promoción por el agente (decisión 2026-10-20); exige auto_promocion=true en --config")
     q.add_argument("--candidates", required=True); q.add_argument("--config", required=True); q.add_argument("--runtime"); q.add_argument("--ledger"); q.add_argument("--max", type=int, default=1)
     x = sp.add_parser("index"); x.add_argument("--state", required=True)
     u = sp.add_parser("usage", help="consumo de los roles LLM por día, rol y modelo (desde llm_calls.sqlite)")
@@ -112,7 +112,7 @@ def main():
         print(f"{len(cs)} candidatas, {len(props)} con estudio listo → {D}")
     elif a.cmd == "auto-promote":
         cfg = json.loads(Path(a.config).read_text())
-        if not cfg.get("auto_promocion"): print("auto_promocion=false: no se promueve nada (falta firmar la enmienda AUTONOMIA-A1)"); return
+        if not cfg.get("auto_promocion"): print("auto_promocion=false: interruptor apagado en la configuración; no se promueve nada"); return
         from edgelab.autopilot.promocion import promover_auto
         from edgelab.autopilot.roles import RoleRunner, configurar_modelos
         configurar_modelos(cfg.get("modelos"))

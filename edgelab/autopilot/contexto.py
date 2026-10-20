@@ -5,7 +5,7 @@ Cada llamada al proponente recibe, armado por código y no por el LLM:
   2. tablero: qué se midió, qué murió y por qué, alfa restante;
   3. vacíos abiertos y fichas de literatura (del bibliotecario: Brain + SSRN);
   4. una LENTE que rota, para forzar diversidad;
-  5. lo prohibido (familias retiradas, holdout, P&L sin STOP).
+  5. lo prohibido (familias retiradas, holdout, P&L sin pre-registro publicado y doble revisión).
 Después, un filtro de novedad descarta propuestas que repiten algo existente o retirado.
 Lo que sale es un BORRADOR: no entra a candidates.json sin pre-registro committeado y promote humano.
 """
@@ -51,7 +51,7 @@ def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list,
     p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
-             reglas=["no abrir holdout", "no P&L sin manifiesto y STOP", "a lo sumo 3 parámetros libres", "sin código"]))
+             reglas=["no abrir holdout", "no P&L sin pre-registro publicado y doble revisión (la aprobación es del agente, no de un humano)", "a lo sumo 3 parámetros libres", "sin código"]))
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"]):
         (p["fichas"] or p["vacios"]).pop()
     return p
