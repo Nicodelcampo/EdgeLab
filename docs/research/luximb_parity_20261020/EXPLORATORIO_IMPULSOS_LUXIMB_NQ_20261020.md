@@ -52,3 +52,25 @@ Como podria refutarse: M1 sin diferencia contra M2 (con MDE suficiente), o P&L n
 
 Aporte al referente: describe la muestra sin tocar resultados y deja escrito el contraste que separa "efecto de zonas"
 de "efecto de impulso grande", que es lo que decide si hay algo que medir con P&L.
+
+## Variante pedida por Nico: vida de zonas 200 velas (en vez de 500)
+Mismo detector y cortes; solo cambia `--vida 200`. Salida: `impulsos_vida200.json`; descriptor `tools/luximb_parity/describir_impulsos.py`.
+| medida | vida 500 | vida 200 |
+|---|---|---|
+| marcados | 151 | **51** |
+| dias distintos / max por dia | 52 / 11 | 33 / 5 |
+| marcas a < 30 min de la anterior | 40 | 5 |
+| sube / baja | 78 / 73 | 34 / 17 |
+| apertura cash 9:30-11 NY | 61 (40 %) | 13 (25 %) |
+| umbral de zonas (causal) | 5-7 | 4-5 |
+| zonas atravesadas p50 | 10 | 6 |
+| pts por vela 25t p50 | 0,61 | 1,14 |
+| velas 25t p50 | 156 | 84 |
+| amplitud p50 | 96,5 | 97 |
+| edad de zonas al marcar p50 (min) | 255 | 100 |
+Coinciden 43 impulsos; 108 solo con 500, 8 solo con 200.
+
+Lectura: con vida 200 la muestra cae a un tercio y queda casi sin agrupamiento (5 marcas encadenadas contra 40). Los que
+sobreviven son mas rapidos (casi el doble de pts por vela 25t) con la misma amplitud, y pesan menos en la apertura cash.
+Gran parte de los 151 con vida 500 se apoya en zonas de 2-7 h de antiguedad, frecuentes en dias de mucho recorrido.
+Con 51 eventos en 33 dias no hay potencia para P&L en un solo contrato; la vida 200 solo es usable ampliando contratos.
