@@ -148,6 +148,7 @@ def main():
     ap.add_argument("--p-vel", type=float, default=0.0, help="percentil de pts/vela 25t (Nico 2026-10-20: priorizar amplitud; con reparto en tercios hace falta 0 para >=150)")
     ap.add_argument("--p-zonas", type=float, default=None, help="percentil de zonas (por defecto --p)")
     ap.add_argument("--hist", type=int, default=2000)
+    ap.add_argument("--ctrl-max-zonas", type=int, default=2)
     ap.add_argument("--min-hist", type=int, default=500)
     a = ap.parse_args()
     B = json.load(open(a.bundle, encoding="utf-8"))
@@ -213,9 +214,12 @@ def main():
             rg = abs(ext - pa)
             if rg < u[0]: continue
             vl = k25(iext, ext, up) - k25(ia, pa, not up) + 1
-            if rg / max(vl, 1) < u[1]: continue
             ids_k = crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext)
             nz = len(ids_k)
+            if nz <= a.ctrl_max_zonas and "ctrl" not in g:   # control M2: misma amplitud causal, <= 2 zonas
+                g["ctrl"] = dict(i0=ia, p0=pa, i1=int(iext), p1=float(ext), t0=int(t[ia]), t1=int(t[iext]), dir=g["dir"], rango=round(rg, 2),
+                                 velas=int(vl), zonas=nz, ic=int(kb), tc=int(t[kb]) + 60)
+            if rg / max(vl, 1) < u[1]: continue
             if nz < u[2]: continue
             pos = np.array([abs((ztop[z_] + zbot[z_]) / 2 - pa) / rg for z_ in ids_k])     # 0 = A, 1 = extremo
             cnt = np.bincount(np.minimum((pos * a.tercios).astype(int), a.tercios - 1), minlength=a.tercios)
@@ -226,6 +230,7 @@ def main():
                      zona_ids=[Z[z_]["id"] for z_ in ids_k])
             break
     marc = [g for g in legs if g["marcado"]]
+    ctrl = [g["ctrl"] for g in legs if not g["marcado"] and "ctrl" in g]
     us = np.array([g["umbral"] for g in legs if g["umbral"]])
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
@@ -234,7 +239,7 @@ def main():
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
-               impulsos=marc, todos=[{k: g[k] for k in ("i0", "i1", "ic", "t0", "t1", "tc", "p0", "p1", "dir", "rango", "velas", "velas_m1", "vel", "zonas", "marcado")} for g in legs])
+               impulsos=marc, control=ctrl, n_control=len(ctrl), todos=[{k: g[k] for k in ("i0", "i1", "ic", "t0", "t1", "tc", "p0", "p1", "dir", "rango", "velas", "velas_m1", "vel", "zonas", "marcado")} for g in legs])
     json.dump(res, open(a.out, "w", encoding="utf-8"), separators=(",", ":"))
     print(json.dumps({k: v for k, v in res.items() if k not in ("impulsos", "todos")}, indent=1))
 
