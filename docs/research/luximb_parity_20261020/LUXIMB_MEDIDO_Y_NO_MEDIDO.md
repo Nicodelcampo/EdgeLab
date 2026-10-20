@@ -9,9 +9,10 @@
 - 2026-10-20 Exploratorio sin desenlaces, modo 'inicio cargado' con piso 60 (150 en NQ 09-26). `EXPLORATORIO_IMPULSOS_INICIO_LUXIMB_NQ_20261020.md`.
 - 2026-10-20 M5 vuelta al inicio cargado: SIN EFECTO (H1 +2,2 pp IC [-3,9,+8,3], MDE 8,6; fade +3,4 pts IC [-3,1,+9,5], inestable por contrato). `RESULTADOS_M5_INICIO_CARGADO_LUXIMB_NQ_20261020.md`.
 - 2026-10-20 Exploratorio sin desenlaces de escalonadas 150t sobre area cargada (182 en NQ 09-26). `EXPLORATORIO_ESCALONADAS150_LUXIMB_NQ_20261020.md`.
+- 2026-10-20 M6 escalonadas 150t: SIN EFECTO a favor de ruptura; signo opuesto H1 -3,6 pp IC [-7,1,-0,2] (no preregistrado), menos recorrido a 60 min; P&L neto negativo en T y C. `RESULTADOS_M6_ESCALONADAS_LUXIMB_NQ_20261020.md`.
 
 ## NO MEDIDO
-- M6 ruptura de escalonadas sobre area cargada (propuesta, pendiente OK).
+- Pista M6: area cargada -> menos recorrido / mas rechazo (preregistro propio; candidata ES descubrimiento).
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
 - Continuacion tras penetracion (signo observado en M4; necesita preregistro propio).
 - Velas 25t contra NT8 (sin paridad).
