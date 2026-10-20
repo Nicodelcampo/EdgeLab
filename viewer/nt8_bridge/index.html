@@ -3025,7 +3025,8 @@
     var u = luxImp.data.umbrales;
     luxImp.data.impulsos.forEach(function (z) {
       if (z.t1 < vr.from || z.t0 > vr.to) return;
-      var x0 = X(z.i0, z.t0), x1 = X(z.i1, z.t1), y0 = Y(z.p0), y1 = Y(z.p1);
+      var m1 = state.activeBarKey === "time_1m";             // en 25t: B termina al final de su minuto
+      var x0 = m1 ? X(z.i0, z.t0) : X(null, z.t0), x1 = m1 ? X(z.i1, z.t1) : X(null, z.t1 + 59), y0 = Y(z.p0), y1 = Y(z.p1);
       if (![x0, x1, y0, y1].every(isFinite)) return;
       var up = z.dir === "up", col = up ? "16,185,129" : "236,72,153";
       ctx.fillStyle = "rgba(" + col + ",0.12)"; ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 2;
@@ -3553,7 +3554,10 @@
     // causal sigue visible como flechas (bloque 1b, sin look-ahead). Antes de unificar,
     // esto era un `return` que dejaba las flechas como código muerto.
     var runBarKey = state.run && state.run.bar_key;
-    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
+    // LUX-IMB lleva vida en tiempo (t0/t1/available_ts reales), así que se puede dibujar sobre otra serie (p.ej. 25t)
+    var luxTimeRun = !!(state.run && state.run.indicator === "ImbalanceDetectorLuxAlgoMTF" && state.run.zones && state.run.zones.length &&
+                        state.run.zones.every(function (z) { return z.source === "luxalgo" && z.t1; }));
+    var boxesSuppressed = !luxTimeRun && !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
     if (boxesSuppressed) {
       window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "ABSTAIN_BAR_KEY_MISMATCH", boxes: "SUPPRESSED", arrows: "CAUSAL_SIGNAL_ONLY", runBarKey: runBarKey, activeBarKey: activeKey};
       ctx.save();
@@ -3819,7 +3823,10 @@
       // --- MODO 1: EXTENSIÓN FIJA POR BARRAS ---
       // Si la extensión fija en barras está habilitada (por defecto 500 barras)
       var i1 = (extBars > 0) ? (i0 + extBars) : (z.end_bar_idx !== undefined ? z.end_bar_idx : i0 + 20);
-      if (candles && nCandles > 0) {
+      // LUX-IMB en una serie que no es M1 (p.ej. 25t): la vida es en minutos (t1), no en velas de la serie activa
+      var luxT1 = (z.source === "luxalgo" && z.t1 && activeKey !== "time_1m");
+      if (luxT1) { var lo1 = 0, hi1 = nCandles; while (lo1 < hi1) { var m1 = (lo1 + hi1) >> 1; if (candles[m1].time < z.t1) lo1 = m1 + 1; else hi1 = m1; } i1 = lo1; }
+      if (luxT1 && i1 < nCandles) { t1_eff = candles[i1].time; } else if (candles && nCandles > 0) {
         if (i1 < nCandles) {
           t1_eff = candles[i1].time;
         } else {
@@ -6045,8 +6052,10 @@
         labLoad(aid);
         peaksDetLoad(aid);
         luxImpLoad(aid);
-        var tGo = parseInt(new URLSearchParams(window.location.search).get("t"), 10);   // &t=<epoch s>: centra el gráfico ahí
-        if (isFinite(tGo)) setTimeout(function () { try { chart.timeScale().setVisibleRange({ from: tGo - 90 * 60, to: tGo + 90 * 60 }); } catch (e) {} }, 300);
+        var qGo = new URLSearchParams(window.location.search), tGo = parseInt(qGo.get("t"), 10), tfGo = qGo.get("tf");
+        if (tfGo && data.bar_series && data.bar_series[tfGo] && state.activeBarKey !== tfGo) { try { switchTimeframe(tfGo); } catch (e) {} }
+        var wGo = state.activeBarKey === "time_1m" ? 90 * 60 : 8 * 60;                // &t=<epoch s>: centra el gráfico ahí
+        if (isFinite(tGo)) setTimeout(function () { try { chart.timeScale().setVisibleRange({ from: tGo - wGo, to: tGo + wGo }); } catch (e) {} }, 300);
         axfLoadDelta(aid);
         gexLoad(aid);
       })

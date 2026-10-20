@@ -59,6 +59,15 @@ def main():
                       "height_ticks": round((tp - bt) / P.TICK, 2)})
     candles = [{"time": int(t_open[k]), "open": o[k], "high": h[k], "low": l[k], "close": c[k], "volume": float(b.volume[k])}
                for k in range(len(b))]
+    # velas de 25 ticks (25 operaciones; el conteo reinicia tras un hueco > 30 min, como el corte de sesion de NT8)
+    ts = tk.ts_utc_ns.to_numpy(); px = tk.price_ticks.to_numpy().astype(float) * P.TICK; vv = tk.volume.to_numpy().astype(float)
+    brk = np.r_[True, np.diff(ts) > 1_800 * 10**9]
+    seg = np.cumsum(brk) - 1
+    pos = np.arange(len(ts)) - np.flatnonzero(brk)[seg]
+    gid = np.cumsum(np.r_[True, (seg[1:] != seg[:-1]) | (pos[1:] // 25 != pos[:-1] // 25)]) - 1
+    st = np.flatnonzero(np.r_[True, gid[1:] != gid[:-1]]); en = np.r_[st[1:], len(ts)]
+    c25 = [{"time": int(ts[a_] // 10**9), "open": px[a_], "high": float(px[a_:b_].max()), "low": float(px[a_:b_].min()),
+            "close": px[b_ - 1], "volume": float(vv[a_:b_].sum())} for a_, b_ in zip(st, en)]
     aid = f"NQ_{contract.split(' ')[1]}_M1_LUXIMB"
     meta = dict(id=aid, name=f"{contract} · M1 · LUX-IMB (OG+VI) · {d0}-{d1}", instrument="NQ", contract=contract,
                 tick_size=P.TICK, precision=2, chart_tz="UTC", n_candles=len(candles), n_zones=len(zones), rolls=[],
@@ -66,7 +75,8 @@ def main():
                 fuente_ticks=ticks, ventana_trade_date=[d0, d1], sin_back_adjust=True,
                 velas="marca = apertura; tick en HH:MM:00.000 abre vela nueva", extend_min=EXTEND_MIN)
     bundle = {"meta": meta,
-              "bar_series": {"time_1m": {"kind": "time_1m", "name": "1 Minuto (desde ticks)", "param": 1, "candles": candles}},
+              "bar_series": {"time_1m": {"kind": "time_1m", "name": "1 Minuto (desde ticks)", "param": 1, "candles": candles},
+                             "tick_25": {"kind": "tick_25", "name": "25 Tick (desde ticks)", "param": 25, "candles": c25}},
               "runs": [{"id": "lux_imb_og_vi", "name": "Imbalance MTF [LuxAlgo] (OG + VI · Python, paridad NT8 1507/1507)",
                         "indicator": "ImbalanceDetectorLuxAlgoMTF", "bar_key": "time_1m", "zones": zones, "has_oracle": False,
                         "parity": {"status": "PARITY_PASS", "gate": "PARITY_PASS",
