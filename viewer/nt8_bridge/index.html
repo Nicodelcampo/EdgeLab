@@ -3013,6 +3013,29 @@
         requestDraw(); })
       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
   }
+  // Impulsos amplios + rápidos que atravesaron zonas LUX-IMB vivas (tools/luximb_parity/luximb_impulsos.py). Sólo dibuja.
+  var luxImp = { data: null };
+  function luxImpLoad(aid) {
+    luxImp.data = null;
+    fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) { luxImp.data = d; requestDraw(); }).catch(function () {});
+  }
+  function drawLuxImp(ctx, vr, X, Y) {
+    if (!luxImp.data) return;
+    var u = luxImp.data.umbrales;
+    luxImp.data.impulsos.forEach(function (z) {
+      if (z.t1 < vr.from || z.t0 > vr.to) return;
+      var x0 = X(z.i0, z.t0), x1 = X(z.i1, z.t1), y0 = Y(z.p0), y1 = Y(z.p1);
+      if (![x0, x1, y0, y1].every(isFinite)) return;
+      var up = z.dir === "up", col = up ? "16,185,129" : "236,72,153";
+      ctx.fillStyle = "rgba(" + col + ",0.12)"; ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 2;
+      var xa = Math.min(x0, x1), w = Math.max(6, Math.abs(x1 - x0)), ya = Math.min(y0, y1), hh = Math.abs(y1 - y0);
+      ctx.fillRect(xa - 3, ya, w + 6, hh); ctx.strokeRect(xa - 3, ya, w + 6, hh);
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
+      ctx.fillText("★ " + z.zonas + " zonas · " + z.rango + " pts · " + z.velas + " velas", xa, up ? ya - 5 : ya + hh + 13);
+    });
+  }
   function drawPeakPath(ctx, z, X, Y, col, lw, marks) {
     var pk = z.picos || []; if (!pk.length) return false;
     ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.beginPath();
@@ -4432,7 +4455,7 @@
     labSave(); rev.k++; revShow();
   }
   function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on) || !series) return;
+    if ((!lab.data && !peaksDet.on && !luxImp.data) || !series) return;
     if (!lab.data) lab.data = labEmpty();
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
@@ -4444,6 +4467,7 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    drawLuxImp(ctx, vr, XI, Y);
     (lab.data.judgments || []).forEach(function (j) {
       if (j.t1 < vr.from || j.t0 > vr.to) return;
       var x0 = XI(j.i0, j.t0), x1 = XI(j.i1, j.t1), y0 = Y(j.p1), y1 = Y(j.p0);
@@ -6020,6 +6044,9 @@
         if (evx.on) evxCompute();
         labLoad(aid);
         peaksDetLoad(aid);
+        luxImpLoad(aid);
+        var tGo = parseInt(new URLSearchParams(window.location.search).get("t"), 10);   // &t=<epoch s>: centra el gráfico ahí
+        if (isFinite(tGo)) setTimeout(function () { try { chart.timeScale().setVisibleRange({ from: tGo - 90 * 60, to: tGo + 90 * 60 }); } catch (e) {} }, 300);
         axfLoadDelta(aid);
         gexLoad(aid);
       })
