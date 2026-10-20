@@ -3039,7 +3039,7 @@
       ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(xB, y1); ctx.stroke();
       ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, ya - 6); ctx.lineTo(x1, ya + hh + 6); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
-      ctx.fillText("★ " + z.zonas + " zonas · " + z.rango + " pts · " + z.velas + " velas 25t · " + (z.vel != null ? z.vel.toFixed(2) : "?") + " pts/vela (confirmado acá)", x1 - 4, up ? ya - 5 : ya + hh + 13);
+      ctx.fillText("★ " + z.zonas + " zonas · " + z.rango + " pts · " + z.velas + " velas 25t · " + (z.vel != null ? z.vel.toFixed(2) : "?") + " pts/vela" + (z.reparto ? " · reparto " + z.reparto.join("/") : "") + " (confirmado acá)", x1 - 4, up ? ya - 5 : ya + hh + 13);
     });
   }
   function drawPeakPath(ctx, z, X, Y, col, lw, marks) {

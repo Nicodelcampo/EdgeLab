@@ -13,6 +13,9 @@ Definiciones (version 1, a revisar en el visor con Nico):
   (desde la vela en que el detector lo activa), en la que el tramo A -> extremo actual ya cumple amplitud, zonas y
   rapidez. No se espera el retroceso. La caja se dibuja de A hasta el cierre de esa vela, con el extremo que se
   conocia en ese momento. Los umbrales salen de impulsos ya cerrados (jconf) antes de esa vela.
+- Distribucion (v5, pedido de Nico 2026-10-20): las zonas atravesadas no pueden concentrarse en un lado del rango.
+  Se divide A -> extremo en `--tercios` franjas iguales segun el punto medio de cada zona; ninguna franja vacia y
+  ninguna con mas de `--max-frac` de las zonas. Vida por defecto 500 velas.
 - Zona atravesada por un impulso up: zona creada (vela de cierre ic) dentro de la vida `--vida` (1000 velas) al
   cruzarla, con fondo >= precio de inicio y techo <= precio final, y que dentro del tramo, DESPUES de crearse,
   el precio estuvo en o debajo del fondo y luego en o encima del techo (la cruzo entera). Simetrico para down.
@@ -134,13 +137,15 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("bundle"); ap.add_argument("out")
     ap.add_argument("--rev", type=float, default=30.0)
-    ap.add_argument("--vida", type=int, default=1000)
+    ap.add_argument("--vida", type=int, default=500)
+    ap.add_argument("--tercios", type=int, default=3)
+    ap.add_argument("--max-frac", type=float, default=0.6)
     ap.add_argument("--p", type=float, default=80.0)
     ap.add_argument("--det", default="espejo", choices=("espejo", "zigzag"))
     ap.add_argument("--atr-k", type=float, default=3.0)
     ap.add_argument("--max-bars", type=int, default=20)
     ap.add_argument("--p-rango", type=float, default=None, help="percentil de amplitud (por defecto --p)")
-    ap.add_argument("--p-vel", type=float, default=25.0, help="percentil de pts/vela 25t (Nico 2026-10-20: priorizar amplitud; >=150 marcados)")
+    ap.add_argument("--p-vel", type=float, default=0.0, help="percentil de pts/vela 25t (Nico 2026-10-20: priorizar amplitud; con reparto en tercios hace falta 0 para >=150)")
     ap.add_argument("--p-zonas", type=float, default=None, help="percentil de zonas (por defecto --p)")
     ap.add_argument("--hist", type=int, default=2000)
     ap.add_argument("--min-hist", type=int, default=500)
@@ -209,18 +214,22 @@ def main():
             if rg < u[0]: continue
             vl = k25(iext, ext, up) - k25(ia, pa, not up) + 1
             if rg / max(vl, 1) < u[1]: continue
-            nz = len(crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext))
+            ids_k = crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext)
+            nz = len(ids_k)
             if nz < u[2]: continue
+            pos = np.array([abs((ztop[z_] + zbot[z_]) / 2 - pa) / rg for z_ in ids_k])     # 0 = A, 1 = extremo
+            cnt = np.bincount(np.minimum((pos * a.tercios).astype(int), a.tercios - 1), minlength=a.tercios)
+            if cnt.min() == 0 or cnt.max() > a.max_frac * nz: continue
             g.update(marcado=True, umbral=u, final=dict(i1=g["i1"], p1=g["p1"], rango=g["rango"], velas=g["velas"], vel=g["vel"], zonas=g["zonas"], ic=g["ic"], tc=g["tc"]),
                      i1=int(iext), t1=int(t[iext]), p1=float(ext), rango=round(rg, 2), velas=int(vl), vel=round(rg / max(vl, 1), 4), zonas=nz,
-                     velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60)
+                     velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60, reparto=[int(x) for x in cnt])
             break
     marc = [g for g in legs if g["marcado"]]
     us = np.array([g["umbral"] for g in legs if g["umbral"]])
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v4-causal-en-curso", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
+    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
