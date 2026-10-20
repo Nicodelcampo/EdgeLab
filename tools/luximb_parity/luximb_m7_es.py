@@ -80,9 +80,11 @@ def eventos_contrato(contrato, d0, d1):
             if k.startswith("pnl_"): r[k] = r[k] + COMM_NQ - COMM_ES          # costos ES propios
         j = int(np.searchsorted(t25, t25[i25] + 3600, "left"))
         rec = float(h25[i25:j].max() - l25[i25:j].min()) if j > i25 else np.nan
+        jp = int(np.searchsorted(t25, t25[i25] - 3600, "left"))          # M7b: volatilidad de los 60 min previos (causal)
+        vol_pre = float(h25[jp:i25].max() - l25[jp:i25].min()) if i25 > jp else np.nan
         ny = pd.Timestamp(td, unit="s", tz="UTC").tz_convert("America/New_York")
         rows.append(dict(contrato=contrato, kind=z["kind"], det_t=td, dia=str(ny.date()), cash=bool(9.5 <= ny.hour + ny.minute / 60 < 11),
-                         zonas=n, esT=n >= 3, area=hi - lo, recorrido_pts=rec, **r))
+                         zonas=n, esT=n >= 3, area=hi - lo, recorrido_pts=rec, vol_pre=vol_pre, **r))
     print(contrato, "M1", len(tcl), "zonas", len(Z), "velas350", len(st), "escalonadas", len(rows), flush=True)
     return rows
 
