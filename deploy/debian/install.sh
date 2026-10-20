@@ -11,7 +11,7 @@ id edgelab >/dev/null 2>&1 || useradd --system --create-home --home-dir $H --she
 install -d -o edgelab -g edgelab $S /etc/edgelab
 # 1) código (solo fast-forward)
 [ -d $H/EdgeLab ] || sudo -u edgelab git clone "$REPO_URL" $H/EdgeLab
-(cd $H/EdgeLab && sudo -u edgelab git fetch -q origin && sudo -u edgelab git checkout -q --detach "$CODE_REF" && git rev-parse HEAD)
+(cd $H/EdgeLab && sudo -u edgelab git fetch -q origin && sudo -u edgelab git checkout -q --detach "$CODE_REF" && sudo -u edgelab git rev-parse HEAD)
 # 2) estado (otro clon, rama autopilot/state; único escritor)
 if [ ! -d $S/state ]; then
   sudo -u edgelab git clone "$REPO_URL" $S/state
