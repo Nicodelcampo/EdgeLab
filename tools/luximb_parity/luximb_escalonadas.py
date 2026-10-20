@@ -39,6 +39,7 @@ def main():
         if getattr(a, k) is not None: f[k] = getattr(a, k)
     c = B["bar_series"]["tick_25"]["candles"]
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}
+    st = np.arange(len(cd["t"])); n25 = len(st)
     if a.ticks != 25:
         m = a.ticks // 25
         seg = np.cumsum(np.r_[True, np.diff(cd["t"]) > 1800]) - 1
@@ -58,7 +59,8 @@ def main():
         viva = (zav <= td) & (zt1 > td)
         sel = viva & (zbot <= hi) & (ztop >= lo)
         n = int(sel.sum()); dens = n / max((hi - lo) / 10.0, 1e-9)
-        z.update(area_lo=lo, area_hi=hi, zonas_area=n, dens_10pts=round(dens, 3),
+        z.update(area_lo=lo, area_hi=hi, zonas_area=n, dens_10pts=round(dens, 3), det_cierre=float(cd["c"][di]),
+                 i25_post=int(st[di + 1]) if di + 1 < len(st) else n25,
                  zona_ids=[Zs[k]["id"] for k in np.flatnonzero(sel)])
         z["marcada"] = n >= a.min_zonas and dens >= a.min_dens
         out.append(z)
