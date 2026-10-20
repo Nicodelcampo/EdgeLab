@@ -13,7 +13,7 @@
 - 2026-10-20 M7 ES (pista de M6): recorrido 60 min -14 % con area cargada (H2 -3,3 pts IC [-4,9,-1,6], Holm 0,0008) PROVISIONAL; ruptura/rechazo y P&L sin efecto. `RESULTADOS_M7_ES_AREA_CARGADA_20261020.md`.
 
 ## NO MEDIDO
-- M7-H2 controlando por volatilidad previa (bloquea promover H2).
+- M7-H2 controlando por volatilidad previa (bloquea promover H2) — manifiesto M7b propuesto, pendiente OK.
 - Replicacion ES abr-sep de H2 (una vez, despues del control).
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
 - Continuacion tras penetracion (signo observado en M4; necesita preregistro propio).
