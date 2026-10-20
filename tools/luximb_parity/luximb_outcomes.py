@@ -86,20 +86,20 @@ def main():
                                  cash=bool(9.5 <= ny.hour + ny.minute / 60 < 11), frac_op=fop, zonas=ev["zonas"], rango=ev["rango"], **r))
         del B, T
     df = pd.DataFrame(rows)
-    df["tg"] = (df.res == "Tg").astype(float); df["ex"] = (df.res == "Ex").astype(float); df["T"] = df.grupo == "T"
+    df["tg"] = (df.res == "Tg").astype(float); df["ex"] = (df.res == "Ex").astype(float); df["esT"] = df.grupo == "T"
     rng = np.random.default_rng(20261020)
-    Tdf = df[df.T]
+    Tdf = df[df.esT]
     H = {}
-    H["H1_PTg_T_menos_C"] = boot(df, "tg", "T", rng)
+    H["H1_PTg_T_menos_C"] = boot(df, "tg", "esT", rng)
     H["H2_pnl_fade_T_1tick"] = boot(Tdf, "pnl_fade_1", None, rng)
     H["H3_pnl_cont_T_1tick"] = boot(Tdf, "pnl_cont_1", None, rng)
-    H["H4a_PTg_T_menos_C_sube"] = boot(df[df.dir == "up"], "tg", "T", rng)
-    H["H4b_PTg_T_menos_C_baja"] = boot(df[df.dir == "down"], "tg", "T", rng)
-    H["H5a_PTg_T_menos_C_cash"] = boot(df[df.cash], "tg", "T", rng)
-    H["H5b_PTg_T_menos_C_resto"] = boot(df[~df.cash], "tg", "T", rng)
-    H["H6a_PTg_Topuestas<0.5_menos_C"] = boot(df[(~df.T) | (df.frac_op < 0.5)], "tg", "T", rng)
-    H["H6b_PTg_Topuestas>=0.5_menos_C"] = boot(df[(~df.T) | (df.frac_op >= 0.5)], "tg", "T", rng)
-    H["H7_pnl_fade_T_menos_C_1tick"] = boot(df, "pnl_fade_1", "T", rng)
+    H["H4a_PTg_T_menos_C_sube"] = boot(df[df.dir == "up"], "tg", "esT", rng)
+    H["H4b_PTg_T_menos_C_baja"] = boot(df[df.dir == "down"], "tg", "esT", rng)
+    H["H5a_PTg_T_menos_C_cash"] = boot(df[df.cash], "tg", "esT", rng)
+    H["H5b_PTg_T_menos_C_resto"] = boot(df[~df.cash], "tg", "esT", rng)
+    H["H6a_PTg_Topuestas<0.5_menos_C"] = boot(df[(~df.esT) | (df.frac_op < 0.5)], "tg", "esT", rng)
+    H["H6b_PTg_Topuestas>=0.5_menos_C"] = boot(df[(~df.esT) | (df.frac_op >= 0.5)], "tg", "esT", rng)
+    H["H7_pnl_fade_T_menos_C_1tick"] = boot(df, "pnl_fade_1", "esT", rng)
     # Holm sobre la familia preregistrada de 7 (H4-H6: se toma el menor p de cada par, ya penalizado x2)
     fam = {"H1": H["H1_PTg_T_menos_C"]["p"], "H2": H["H2_pnl_fade_T_1tick"]["p"], "H3": H["H3_pnl_cont_T_1tick"]["p"],
            "H4": min(1, 2 * min(H["H4a_PTg_T_menos_C_sube"]["p"], H["H4b_PTg_T_menos_C_baja"]["p"])),
