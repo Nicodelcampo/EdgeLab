@@ -155,6 +155,8 @@ def main():
                     help="inicio (Nico 2026-10-20): >= --min-ini zonas en el --frac-ini inicial del rango y <= --max-resto en el resto")
     ap.add_argument("--frac-ini", type=float, default=0.25)
     ap.add_argument("--rango-min-abs", type=float, default=0.0, help="piso fijo de amplitud en puntos (ademas del percentil causal)")
+    ap.add_argument("--rango-min-rel", type=float, default=0.0,
+                    help="piso relativo: X veces la mediana causal de amplitud (NQ: 60 pts ~ 1,3 x mediana 46)")
     ap.add_argument("--min-ini", type=int, default=4)
     ap.add_argument("--max-resto", type=int, default=1)
     ap.add_argument("--share-ini", type=float, default=None, help="si se da: exige n_ini/n_total >= share en vez de --max-resto")
@@ -191,14 +193,14 @@ def main():
     for ia, pa, ib, pb, up, jc, ja in pares:
         ids = crossed(ia, ib, up, h, l, zi, ztop, zbot, a.vida)      # solo usa velas <= B <= jconf
         legs.append(dict(i0=ia, i1=ib, ic=int(jc), t0=int(t[ia]), t1=int(t[ib]), tc=int(t[jc]) + 60, p0=float(pa), p1=float(pb),
-                         dir="up" if up else "down", rango=round(abs(pb - pa), 2),
+                         dir="up" if up else "down", rango=round(abs(pb - pa), 8),
                          velas=k25(ib, pb, up) - k25(ia, pa, not up) + 1, velas_m1=ib - ia, zonas=len(ids),
                          zona_ids=[Z[k]["id"] for k in ids], ja=int(ja)))
     legs.sort(key=lambda g: (g["ic"], g["i0"]))
     # umbrales causales: impulsos confirmados en velas ANTERIORES a esta confirmacion
     ics = np.array([g["ic"] for g in legs])
     for g in legs:
-        g["vel"] = round(g["rango"] / max(g["velas"], 1), 4)
+        g["vel"] = round(g["rango"] / max(g["velas"], 1), 10)
     R = np.array([g["rango"] for g in legs]); V = np.array([g["vel"] for g in legs]); N = np.array([g["zonas"] for g in legs])
     pr, pv, pz = (x if x is not None else a.p for x in (a.p_rango, a.p_vel, a.p_zonas))
     ucache = {}
@@ -207,7 +209,8 @@ def main():
         e = int(np.searchsorted(ics, kbar, side="left")); b0 = max(0, e - a.hist)
         if e - b0 < a.min_hist: return None
         if (b0, e) not in ucache:
-            ucache[(b0, e)] = (float(np.percentile(R[b0:e], pr)), float(np.percentile(V[b0:e], pv)), max(float(np.percentile(N[b0:e], pz)), 1.0))
+            ucache[(b0, e)] = (float(np.percentile(R[b0:e], pr)), float(np.percentile(V[b0:e], pv)), max(float(np.percentile(N[b0:e], pz)), 1.0),
+                               float(np.median(R[b0:e])))
         return ucache[(b0, e)]
 
     for g in legs:
@@ -221,12 +224,12 @@ def main():
             u = umbral(kb)
             if u is None: continue
             rg = abs(ext - pa)
-            if rg < max(u[0], a.rango_min_abs): continue
+            if rg < max(u[0], a.rango_min_abs, a.rango_min_rel * u[3]): continue
             vl = k25(iext, ext, up) - k25(ia, pa, not up) + 1
             ids_k = crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext)
             nz = len(ids_k)
             if (a.ctrl_modo == "amplitud" or nz <= a.ctrl_max_zonas) and "ctrl" not in g:   # control M2: misma amplitud causal, <= 2 zonas
-                g["ctrl"] = dict(i0=ia, p0=pa, i1=int(iext), p1=float(ext), t0=int(t[ia]), t1=int(t[iext]), dir=g["dir"], rango=round(rg, 2),
+                g["ctrl"] = dict(i0=ia, p0=pa, i1=int(iext), p1=float(ext), t0=int(t[ia]), t1=int(t[iext]), dir=g["dir"], rango=round(rg, 8),
                                  velas=int(vl), zonas=nz, ic=int(kb), tc=int(t[kb]) + 60)
             if rg / max(vl, 1) < u[1]: continue
             pos = np.array([abs((ztop[z_] + zbot[z_]) / 2 - pa) / rg for z_ in ids_k])     # 0 = A, 1 = extremo
@@ -240,7 +243,7 @@ def main():
                 cnt = np.bincount(np.minimum((pos * a.tercios).astype(int), a.tercios - 1), minlength=a.tercios)
                 if cnt.min() == 0 or cnt.max() > a.max_frac * nz: continue
             g.update(marcado=True, umbral=u, final=dict(i1=g["i1"], p1=g["p1"], rango=g["rango"], velas=g["velas"], vel=g["vel"], zonas=g["zonas"], ic=g["ic"], tc=g["tc"]),
-                     i1=int(iext), t1=int(t[iext]), p1=float(ext), rango=round(rg, 2), velas=int(vl), vel=round(rg / max(vl, 1), 4), zonas=nz,
+                     i1=int(iext), t1=int(t[iext]), p1=float(ext), rango=round(rg, 8), velas=int(vl), vel=round(rg / max(vl, 1), 10), zonas=nz,
                      velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60, reparto=[int(x) for x in cnt],
                      zona_ids=[Z[z_]["id"] for z_ in ids_k])
             break
@@ -250,7 +253,7 @@ def main():
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, modo=a.modo, rango_min_abs=a.rango_min_abs,
+    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, modo=a.modo, rango_min_abs=a.rango_min_abs, rango_min_rel=a.rango_min_rel,
                                                                                                       frac_ini=a.frac_ini, min_ini=a.min_ini, max_resto=a.max_resto, share_ini=a.share_ini, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
