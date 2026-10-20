@@ -222,7 +222,8 @@ def main():
             if cnt.min() == 0 or cnt.max() > a.max_frac * nz: continue
             g.update(marcado=True, umbral=u, final=dict(i1=g["i1"], p1=g["p1"], rango=g["rango"], velas=g["velas"], vel=g["vel"], zonas=g["zonas"], ic=g["ic"], tc=g["tc"]),
                      i1=int(iext), t1=int(t[iext]), p1=float(ext), rango=round(rg, 2), velas=int(vl), vel=round(rg / max(vl, 1), 4), zonas=nz,
-                     velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60, reparto=[int(x) for x in cnt])
+                     velas_m1=int(iext - ia), ic=int(kb), tc=int(t[kb]) + 60, reparto=[int(x) for x in cnt],
+                     zona_ids=[Z[z_]["id"] for z_ in ids_k])
             break
     marc = [g for g in legs if g["marcado"]]
     us = np.array([g["umbral"] for g in legs if g["umbral"]])
