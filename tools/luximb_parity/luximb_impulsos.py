@@ -152,6 +152,7 @@ def main():
     ap.add_argument("--modo", default="reparto", choices=("reparto", "inicio"),
                     help="inicio (Nico 2026-10-20): >= --min-ini zonas en el --frac-ini inicial del rango y <= --max-resto en el resto")
     ap.add_argument("--frac-ini", type=float, default=0.25)
+    ap.add_argument("--rango-min-abs", type=float, default=0.0, help="piso fijo de amplitud en puntos (ademas del percentil causal)")
     ap.add_argument("--min-ini", type=int, default=4)
     ap.add_argument("--max-resto", type=int, default=1)
     ap.add_argument("--share-ini", type=float, default=None, help="si se da: exige n_ini/n_total >= share en vez de --max-resto")
@@ -218,7 +219,7 @@ def main():
             u = umbral(kb)
             if u is None: continue
             rg = abs(ext - pa)
-            if rg < u[0]: continue
+            if rg < max(u[0], a.rango_min_abs): continue
             vl = k25(iext, ext, up) - k25(ia, pa, not up) + 1
             ids_k = crossed(ia, kb, up, h, l, zi, ztop, zbot, a.vida, p1=ext)
             nz = len(ids_k)
@@ -247,7 +248,7 @@ def main():
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, modo=a.modo,
+    res = dict(spec="LUXIMB-IMPULSOS-v5-reparto", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, tercios=a.tercios, max_frac=a.max_frac, modo=a.modo, rango_min_abs=a.rango_min_abs,
                                                                                                       frac_ini=a.frac_ini, min_ini=a.min_ini, max_resto=a.max_resto, share_ini=a.share_ini, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
