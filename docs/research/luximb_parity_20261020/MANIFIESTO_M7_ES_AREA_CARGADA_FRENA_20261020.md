@@ -49,3 +49,9 @@ Una muerte aplica a escalonadas IPC sobre area cargada en ES; si muere en ES, la
 
 ## Datos faltantes
 Ninguno para correr. Falta (no bloqueante): oraculo NT8 de LUX-IMB en ES para paridad.
+
+## OK y calibracion (antes de mirar desenlaces)
+- OK de Nico 2026-10-20 ("si, medi M7"). Estado: PRE-REGISTRADO.
+- Calibracion target-free (solo tiempos): velas NQ 150t (6x25t) en descubrimiento duran mediana 9 s, media 25,1 s.
+  ES descubrimiento (operaciones de release v4): K=300 -> mediana 7 s / media 23 s; K=200 -> 4 / 15,2. **K = 350** (multiplo
+  de 25, 14 velas de 25t), el mas cercano a ambas. Se congela antes de correr desenlaces.
