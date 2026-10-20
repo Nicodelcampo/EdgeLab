@@ -94,6 +94,9 @@ def main():
     ap.add_argument("--det", default="espejo", choices=("espejo", "zigzag"))
     ap.add_argument("--atr-k", type=float, default=3.0)
     ap.add_argument("--max-bars", type=int, default=20)
+    ap.add_argument("--p-rango", type=float, default=None, help="percentil de amplitud (por defecto --p)")
+    ap.add_argument("--p-vel", type=float, default=25.0, help="percentil de pts/vela 25t (Nico 2026-10-20: priorizar amplitud; >=150 marcados)")
+    ap.add_argument("--p-zonas", type=float, default=None, help="percentil de zonas (por defecto --p)")
     ap.add_argument("--hist", type=int, default=2000)
     ap.add_argument("--min-hist", type=int, default=500)
     a = ap.parse_args()
@@ -135,11 +138,12 @@ def main():
     for g in legs:
         g["vel"] = round(g["rango"] / max(g["velas"], 1), 4)
     R = np.array([g["rango"] for g in legs]); V = np.array([g["vel"] for g in legs]); N = np.array([g["zonas"] for g in legs])
+    pr, pv, pz = (x if x is not None else a.p for x in (a.p_rango, a.p_vel, a.p_zonas))
     for k, g in enumerate(legs):
         e = int(np.searchsorted(ics, g["ic"], side="left")); b0 = max(0, e - a.hist)
         if e - b0 < a.min_hist:
             g["marcado"] = False; g["umbral"] = None; continue
-        u = (float(np.percentile(R[b0:e], a.p)), float(np.percentile(V[b0:e], a.p)), max(float(np.percentile(N[b0:e], a.p)), 1.0))
+        u = (float(np.percentile(R[b0:e], pr)), float(np.percentile(V[b0:e], pv)), max(float(np.percentile(N[b0:e], pz)), 1.0))
         g["umbral"] = u
         g["marcado"] = bool(g["rango"] >= u[0] and g["vel"] >= u[1] and g["zonas"] >= u[2])
     marc = [g for g in legs if g["marcado"]]
@@ -147,7 +151,7 @@ def main():
     u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
              rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], vel_min_rango_pts_por_vela25t=[float(us[:, 1].min()), float(us[:, 1].max())],
              zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
-    res = dict(spec="LUXIMB-IMPULSOS-v3-causal", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p),
+    res = dict(spec="LUXIMB-IMPULSOS-v3-causal", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p, p_rango=pr, p_vel=pv, p_zonas=pz),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), vel_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
