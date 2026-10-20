@@ -3,7 +3,8 @@
 Target-free: geometria de velas y zonas, sin desenlaces ni retornos.
 - Velas: ticks del release v4, convencion validada en la paridad del 2026-10-20 (un tick en HH:MM:00.000 abre la
   vela nueva). En el visor la vela se marca con su hora de APERTURA (NT8 la marca con el cierre).
-- Zonas: `parity_luximb.detect` (paridad 1507/1507 contra NT8). Viven Extend=500 minutos desde el cierre de la
+- Zonas: `parity_luximb.detect` (paridad 1507/1507 contra NT8). La caja nace al CIERRE de la vela que la crea
+  (cuando existe en tiempo real; NT8 la dibuja hacia atras). Viven Extend=500 minutos desde el cierre de la
   vela que las crea, no se borran por mitigacion (igual que el indicador).
 - Rechaza cualquier tick >= 2026-10-01 (holdout).
 
@@ -54,7 +55,7 @@ def main():
     zones = []
     for n, (i, ty, d, tp, bt) in enumerate(det):
         zones.append({"id": f"LUX_{ty}_{n}", "source": "luxalgo", "kind": f"{ty} {'BULL' if d == 'bull' else 'BEAR'}",
-                      "top": float(tp), "bottom": float(bt), "t0": int(t_open[i - 1]), "t1": int(t_close[i] + EXTEND_MIN * 60),
+                      "top": float(tp), "bottom": float(bt), "t0": int(t_close[i]), "t1": int(t_close[i] + EXTEND_MIN * 60),
                       "available_ts": int(t_close[i]), "state": "ACTIVE", "color": COLORS[d], "label": ty,
                       "height_ticks": round((tp - bt) / P.TICK, 2)})
     candles = [{"time": int(t_open[k]), "open": o[k], "high": h[k], "low": l[k], "close": c[k], "volume": float(b.volume[k])}

@@ -4,14 +4,18 @@ Definiciones (version 1, a revisar en el visor con Nico):
 - Impulso = detector ESPEJO-IND (`edgelab/bridge/indicators/espejo_impulsos.py::detect`, sin cambios), modo velas
   de tiempo: movimiento neto >= `--atr-k`·ATR(14) cerrado en la vela anterior, dentro de `--max-bars` velas,
   eficiencia >= 0,3; el tramo va de A (origen) a B (extremo). `--det zigzag` usa un zigzag de `--rev` puntos.
-- Amplitud = rango del tramo en puntos. Rapidez = cantidad de velas del tramo.
+- Amplitud = rango del tramo en puntos (precios de A y B en M1, sin cambios). Rapidez = cantidad de velas de 25 TICKS
+  entre la vela 25t que hace el extremo A (primera, dentro del minuto de A) y la que hace el extremo B (primera,
+  dentro del minuto de B), ambas incluidas. Las zonas y su conteo siguen en M1.
 - Zona atravesada por un impulso up: zona creada (vela de cierre ic) dentro de la vida `--vida` (1000 velas) al
   cruzarla, con fondo >= precio de inicio y techo <= precio final, y que dentro del tramo, DESPUES de crearse,
   el precio estuvo en o debajo del fondo y luego en o encima del techo (la cruzo entera). Simetrico para down.
   La edad se mide en la vela donde se completa el cruce: (j - ic) <= vida. Las zonas que crea el propio impulso
   y no vuelve a cruzar no cuentan.
-- Marcado: amplitud >= percentil `--p` de todos los tramos, velas <= percentil (100-p) de los tramos, y
-  zonas atravesadas >= percentil `--p` de los tramos. Los umbrales se publican en el JSON.
+- Tiempo real (v2): el impulso se conoce recien en la vela de confirmacion `jconf` (retroceso >= 30 % desde B o
+  tope de velas); en el visor aparece ahi. El marcado usa umbrales CAUSALES: percentiles calculados solo con los
+  impulsos confirmados ANTES (ventana movil de `--hist` impulsos; sin marcado hasta tener `--min-hist`).
+  amplitud >= pct `--p`, velas <= pct (100-p), zonas >= max(pct `--p`, 1).
 
 Uso: python tools/luximb_parity/luximb_impulsos.py <bundle.json> <out.json> [--rev 30] [--vida 1000] [--p 80]
 """
@@ -88,6 +92,8 @@ def main():
     ap.add_argument("--det", default="espejo", choices=("espejo", "zigzag"))
     ap.add_argument("--atr-k", type=float, default=3.0)
     ap.add_argument("--max-bars", type=int, default=20)
+    ap.add_argument("--hist", type=int, default=2000)
+    ap.add_argument("--min-hist", type=int, default=500)
     a = ap.parse_args()
     B = json.load(open(a.bundle, encoding="utf-8"))
     cd = B["bar_series"]["time_1m"]["candles"]
@@ -103,26 +109,45 @@ def main():
         p = EI.params_of(dict(max_bars=a.max_bars, atr_k=a.atr_k))
         thr = a.atr_k * EI.atr_prev(H, L, C, p["atr_n"])
         imps = EI.detect(t.astype(float), H, L, C, v_, thr, p)
-        pares = [(im["i0"], im["a"] * tk, im["iext"], im["ext"] * tk, im["d"] == 1) for im in imps]
+        pares = [(im["i0"], im["a"] * tk, im["iext"], im["ext"] * tk, im["d"] == 1, im["jconf"]) for im in imps]
     else:
-        piv = zigzag(h, l, a.rev)
-        pares = [(ia, pa, ib, pb, ka == "L") for (ia, pa, ka), (ib, pb, kb) in zip(piv[:-1], piv[1:])]
+        raise SystemExit("zigzag: el pivote se confirma tarde y no se registra jconf; no es causal en esta version")
+    T25 = B["bar_series"]["tick_25"]["candles"]
+    t25 = np.array([c_["time"] for c_ in T25]); h25 = np.array([c_["high"] for c_ in T25]); l25 = np.array([c_["low"] for c_ in T25])
+
+    def k25(i_m1, precio, es_max):
+        a_, b_ = np.searchsorted(t25, t[i_m1], "left"), np.searchsorted(t25, t[i_m1] + 60, "left")
+        hit = np.flatnonzero((h25[a_:b_] >= precio) if es_max else (l25[a_:b_] <= precio))
+        return int(a_ + hit[0]) if len(hit) else int(a_)
+
     legs = []
-    for ia, pa, ib, pb, up in pares:
-        ids = crossed(ia, ib, up, h, l, zi, ztop, zbot, a.vida)
-        legs.append(dict(i0=ia, i1=ib, t0=int(t[ia]), t1=int(t[ib]), p0=float(pa), p1=float(pb), dir="up" if up else "down",
-                         rango=round(abs(pb - pa), 2), velas=ib - ia, zonas=len(ids), zona_ids=[Z[k]["id"] for k in ids]))
+    for ia, pa, ib, pb, up, jc in pares:
+        ids = crossed(ia, ib, up, h, l, zi, ztop, zbot, a.vida)      # solo usa velas <= B <= jconf
+        legs.append(dict(i0=ia, i1=ib, ic=int(jc), t0=int(t[ia]), t1=int(t[ib]), tc=int(t[jc]) + 60, p0=float(pa), p1=float(pb),
+                         dir="up" if up else "down", rango=round(abs(pb - pa), 2),
+                         velas=k25(ib, pb, up) - k25(ia, pa, not up) + 1, velas_m1=ib - ia, zonas=len(ids),
+                         zona_ids=[Z[k]["id"] for k in ids]))
+    legs.sort(key=lambda g: (g["ic"], g["i0"]))
+    # umbrales causales: impulsos confirmados en velas ANTERIORES a esta confirmacion
+    ics = np.array([g["ic"] for g in legs])
     R = np.array([g["rango"] for g in legs]); V = np.array([g["velas"] for g in legs]); N = np.array([g["zonas"] for g in legs])
-    u = dict(rango_min=float(np.percentile(R, a.p)), velas_max=float(np.percentile(V, 100 - a.p)), zonas_min=float(np.percentile(N, a.p)))
-    u["zonas_min"] = max(u["zonas_min"], 1.0)
-    for g in legs:
-        g["marcado"] = bool(g["rango"] >= u["rango_min"] and g["velas"] <= u["velas_max"] and g["zonas"] >= u["zonas_min"])
+    for k, g in enumerate(legs):
+        e = int(np.searchsorted(ics, g["ic"], side="left")); b0 = max(0, e - a.hist)
+        if e - b0 < a.min_hist:
+            g["marcado"] = False; g["umbral"] = None; continue
+        u = (float(np.percentile(R[b0:e], a.p)), float(np.percentile(V[b0:e], 100 - a.p)), max(float(np.percentile(N[b0:e], a.p)), 1.0))
+        g["umbral"] = u
+        g["marcado"] = bool(g["rango"] >= u[0] and g["velas"] <= u[1] and g["zonas"] >= u[2])
     marc = [g for g in legs if g["marcado"]]
-    res = dict(spec="LUXIMB-IMPULSOS-v1", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p),
+    us = np.array([g["umbral"] for g in legs if g["umbral"]])
+    u = dict(causal=True, hist=a.hist, min_hist=a.min_hist, sin_marcado_hasta=next((g["tc"] for g in legs if g["umbral"]), None),
+             rango_min_rango=[float(us[:, 0].min()), float(us[:, 0].max())], velas_max_rango=[float(us[:, 1].min()), float(us[:, 1].max())],
+             zonas_min_rango=[float(us[:, 2].min()), float(us[:, 2].max())])
+    res = dict(spec="LUXIMB-IMPULSOS-v2-causal", bundle=B["meta"]["id"], params=dict(det=a.det, atr_k=a.atr_k, max_bars=a.max_bars, rev_pts=a.rev, vida_velas=a.vida, percentil=a.p),
                tramos=len(legs), umbrales=u, marcados=len(marc),
                resumen=dict(rango_mediana=float(np.median(R)), velas_mediana=float(np.median(V)), zonas_mediana=float(np.median(N)),
                             zonas_p90=float(np.percentile(N, 90)), zonas_max=int(N.max())),
-               impulsos=marc, todos=[{k: g[k] for k in ("i0", "i1", "t0", "t1", "p0", "p1", "dir", "rango", "velas", "zonas", "marcado")} for g in legs])
+               impulsos=marc, todos=[{k: g[k] for k in ("i0", "i1", "ic", "t0", "t1", "tc", "p0", "p1", "dir", "rango", "velas", "velas_m1", "zonas", "marcado")} for g in legs])
     json.dump(res, open(a.out, "w", encoding="utf-8"), separators=(",", ":"))
     print(json.dumps({k: v for k, v in res.items() if k not in ("impulsos", "todos")}, indent=1))
 

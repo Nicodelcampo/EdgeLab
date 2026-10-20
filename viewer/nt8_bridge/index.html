@@ -3024,17 +3024,22 @@
     if (!luxImp.data) return;
     var u = luxImp.data.umbrales;
     luxImp.data.impulsos.forEach(function (z) {
-      if (z.t1 < vr.from || z.t0 > vr.to) return;
-      var m1 = state.activeBarKey === "time_1m";             // en 25t: B termina al final de su minuto
-      var x0 = m1 ? X(z.i0, z.t0) : X(null, z.t0), x1 = m1 ? X(z.i1, z.t1) : X(null, z.t1 + 59), y0 = Y(z.p0), y1 = Y(z.p1);
-      if (![x0, x1, y0, y1].every(isFinite)) return;
+      // Tiempo real: el impulso existe recién al CIERRE de la vela de confirmación (z.tc). La caja va de A hasta ahí
+      // y la etiqueta se pone en ese punto; antes de tc no hay nada dibujado que no se hubiera visto en vivo.
+      var tc = z.tc || (z.t1 + 60);
+      if (tc < vr.from || z.t0 > vr.to) return;
+      var m1 = state.activeBarKey === "time_1m";
+      var x0 = m1 ? X(z.i0, z.t0) : X(null, z.t0), xB = m1 ? X(z.i1, z.t1) : X(null, z.t1 + 59), y0 = Y(z.p0), y1 = Y(z.p1);
+      var x1 = m1 && z.ic != null ? X(z.ic + 1, tc) : X(null, tc);
+      if (![x0, x1, xB, y0, y1].every(isFinite)) return;
       var up = z.dir === "up", col = up ? "16,185,129" : "236,72,153";
       ctx.fillStyle = "rgba(" + col + ",0.12)"; ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 2;
       var xa = Math.min(x0, x1), w = Math.max(6, Math.abs(x1 - x0)), ya = Math.min(y0, y1), hh = Math.abs(y1 - y0);
       ctx.fillRect(xa - 3, ya, w + 6, hh); ctx.strokeRect(xa - 3, ya, w + 6, hh);
-      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(xB, y1); ctx.stroke();
+      ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, ya - 6); ctx.lineTo(x1, ya + hh + 6); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
-      ctx.fillText("★ " + z.zonas + " zonas · " + z.rango + " pts · " + z.velas + " velas", xa, up ? ya - 5 : ya + hh + 13);
+      ctx.fillText("★ " + z.zonas + " zonas · " + z.rango + " pts · " + z.velas + " velas (confirmado acá)", x1 - 4, up ? ya - 5 : ya + hh + 13);
     });
   }
   function drawPeakPath(ctx, z, X, Y, col, lw, marks) {
@@ -3984,7 +3989,8 @@
     var runBarKey = state.run && state.run.bar_key;
     var isCrossTimeframe = runBarKey && activeKey && activeKey !== runBarKey;
     var bs = state.data && state.data.bar_series && state.data.bar_series[activeKey];
-    if (isCrossTimeframe && state.run.zones && state.run.zones.length && bs && bs.candles && bs.candles.length) {
+    var luxRunNoArrows = !!(state.run && state.run.indicator === "ImbalanceDetectorLuxAlgoMTF");   // LUX-IMB: sin flechas (pedido de Nico)
+    if (isCrossTimeframe && !luxRunNoArrows && state.run.zones && state.run.zones.length && bs && bs.candles && bs.candles.length) {
       ctx.save();
       var arrowSize = 8;
 
