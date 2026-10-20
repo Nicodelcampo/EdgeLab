@@ -17,11 +17,15 @@ def _git(*a, cwd=REPO):
 
 
 def check_holdout(spec: RunSpec) -> list:
+    """Corridas normales: nada del holdout. `kind="holdout"` (apertura aprobada por el agente, decisión 2026-10-20):
+    sólo holdout, sin mezclar con desarrollo; sus requisitos de protocolo los verifica holdout_apertura.requisitos en el ciclo."""
     bad = []
     for n in spec.needs:
         parts = n.split(":")
         if len(parts) != 3: bad.append(f"need mal formado: {n}"); continue
-        if parts[2] >= HOLDOUT_FIRST_TRADE_DATE or parts[1] >= HOLDOUT_FIRST_TRADE_DATE:
+        if spec.kind == "holdout":
+            if parts[1] < HOLDOUT_FIRST_TRADE_DATE: bad.append(f"apertura del holdout mezcla desarrollo: {n} empieza antes de {HOLDOUT_FIRST_TRADE_DATE}")
+        elif parts[2] >= HOLDOUT_FIRST_TRADE_DATE or parts[1] >= HOLDOUT_FIRST_TRADE_DATE:
             bad.append(f"holdout: {n} llega a {HOLDOUT_FIRST_TRADE_DATE} o después")
     return bad
 

@@ -62,7 +62,7 @@ Todo lo anterior se sube a la rama `autopilot/state` (`sync_state.sh`); `runs.sq
 
 ## 5. Qué NO puede hacer ningún agente
 Cambiar guardas, FDR, holdout, mandato o protegidos (STOP si cambian) · lanzar sin pre-registro committeado y publicado ·
-leer el holdout · subir el alfa · promover a edge (todo hallazgo es exploratorio hasta réplica pre-registrada) ·
+leer el holdout fuera del protocolo de apertura (`holdout_apertura.py`: hallazgo auditado, regla congelada, una por familia) · subir el alfa · promover a edge (todo hallazgo es exploratorio hasta réplica pre-registrada) ·
 levantar una pausa de consola · escribir código del motor (eso es una sesión aparte con PR, tests y revisión humana).
 
 ## 6. Encendido por etapas (configuración)

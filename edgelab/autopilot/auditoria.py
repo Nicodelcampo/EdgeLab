@@ -35,7 +35,7 @@ def chequeos(spec: RunSpec, decision: dict, launched_at: float | None, repo: Pat
         if primero is None: e.append(f"{que} sin commit: {rel}"); continue
         if launched_at and primero > launched_at: e.append(f"{que} committeado DESPUÉS del lanzamiento: {rel}")
         if launched_at and ultimo and ultimo > launched_at and que == "pre-registro": e.append(f"pre-registro modificado después del lanzamiento: {rel}")
-    e += guard.check_holdout(spec)
+    e += guard.check_holdout(spec)                                       # para kind=holdout sólo exige que no mezcle desarrollo
     e += [f"configuración: {x}" for x in guard.check_env_in_prereg(spec, repo)]
     n_ev, n_pl = decision.get("n_evaluable"), decision.get("n_planned")
     if isinstance(n_ev, int) and isinstance(n_pl, int) and n_ev > n_pl: e.append(f"pruebas evaluables ({n_ev}) > planeadas ({n_pl}): hubo pruebas no pre-registradas")

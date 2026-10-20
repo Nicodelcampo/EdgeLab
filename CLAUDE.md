@@ -140,6 +140,12 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   thresholds, bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
   geometría, integridad, visor). Una sola apertura por candidato, por protocolo.
+- **La apertura la aprueba el agente autónomo** (decisión de Nico 2026-10-20), no
+  Nico, con el protocolo en código (`edgelab/autopilot/holdout_apertura.py`):
+  sólo para confirmar un hallazgo con auditoría CONFORME, regla congelada (misma
+  configuración que el candidato), sólo datos del holdout, una apertura por
+  familia, registrada en `holdout_aperturas.jsonl` antes de lanzar. El resultado
+  confirma o refuta; nunca se usa para elegir, ajustar ni reintentar.
 
 ## Reglas permanentes
 
@@ -250,9 +256,10 @@ pre-registro, protegidos), conteo en el registro global de pruebas y presupuesto
 de alfa; después, auditoría post-corrida. Todo queda trazado en
 `promociones.jsonl`, `auditorias.jsonl` y la rama `autopilot/state`. Target-free
 publica el landscape completo (todas las celdas, semillas y nulos) — nunca
-selecciona por P&L máximo aislado. Siguen siendo **sólo humanos**: abrir el
-holdout fuera de protocolo, cambiar gates/FDR/mandato/archivos protegidos, y
-operar con dinero real. Decisión: `docs/DECISIONES_20261020.md`.
+selecciona por P&L máximo aislado. La apertura del holdout también la aprueba
+el agente, por el protocolo de la sección del firewall. Siguen siendo **sólo
+humanos**: cambiar gates/FDR/mandato/archivos protegidos (incluido el protocolo
+de apertura) y operar con dinero real. Decisión: `docs/DECISIONES_20261020.md`.
 
 ## Punteros
 

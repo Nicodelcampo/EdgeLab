@@ -12,7 +12,16 @@ Estado: VIGENTE — decisión de Nico, registrada a su pedido.
 - guardas: holdout, configuración textual en el pre-registro, archivos protegidos; registro global de pruebas antes de lanzar; alpha-investing;
 - auditoría post-corrida (mecánica + auditor + abogado del diablo) y trazabilidad completa (`promociones.jsonl`, `auditorias.jsonl`, rama `autopilot/state`).
 
-**Sigue siendo sólo humano:** abrir el holdout fuera de su protocolo; cambiar gates, FDR, mandato o archivos protegidos; operar con dinero real.
+**Sigue siendo sólo humano:** cambiar gates, FDR, mandato o archivos protegidos (incluido el protocolo de apertura del holdout); operar con dinero real.
+
+## D2. La apertura del holdout también la aprueba el agente
+Pedido de Nico: «que el agente también apruebe abrir el holdout». Protocolo en código (`edgelab/autopilot/holdout_apertura.py`, corridas `kind="holdout"`):
+1. confirma un candidato: corrida ANALYZED con hallazgo (hit) y auditoría post-corrida CONFORME;
+2. regla congelada: misma configuración (`env`) que el candidato, sólo cambia el período;
+3. sólo datos del holdout (desde 2026-10-01), sin mezclar con desarrollo (`guard.check_holdout`);
+4. una sola apertura por familia; se registra en `holdout_aperturas.jsonl` (append-only, sube a `autopilot/state`) ANTES de lanzar, con pre-registro y commit;
+5. además pasa todo lo de cualquier corrida: pre-registro publicado, doble revisión, guardas, registro de pruebas, alfa y auditoría.
+El resultado del holdout confirma o refuta; nunca se usa para elegir, ajustar ni reintentar. Cambios: `edgelab/autopilot/{guard,spec,daemon,holdout_apertura}.py` (manifiesto de protegidos refrescado a pedido de Nico), `CLAUDE.md`, `MANDATO.md`, `AGENTS.md`, test `tests/test_autopilot_holdout_apertura.py`.
 
 **Cambios en el repo:** `CLAUDE.md` (sección de autorización), `AGENTS.md`, `MANDATO.md` (manifiesto de protegidos refrescado por pedido de Nico), `edgelab/autopilot/{contexto,promocion}.py`, `tools/autopilot_generate.py`, `deploy/debian/autopilot.example.json` (`auto_promocion: true` como valor de ejemplo), `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md`.
 Los documentos históricos que mencionan el STOP (handoffs, PENDIENTE, comentarios en scripts viejos) quedan como registro de su época y no se reescriben.

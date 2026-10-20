@@ -34,7 +34,7 @@ Paridad exacta, infraestructura, una zona o un backtest aislado no son un edge.
 - Calendario CME: **resuelto 2026-09-02 (`4f365bf`)**. Fuente oficial capturada y hasheada vía el endpoint JSON de cmegroup.com (el WAF sólo bloquea curl/fetch directo). 322 sesiones 2025-08-01..2026-06-18. Pendiente: Juneteenth 2026-06-19 sin adjudicar.
 - NQ 09-26: 363.601 ticks en 16:00–17:00 CT sobre 9 días. Dos hipótesis descartadas; plantilla NT8 distinta es dominante pero `root_cause_status=UNRESOLVED`.
 - Paridad aVolClusterPOI NQ 06-26: FAIL, con 19 `GEOMETRY_DIFF`, 57 `MISSING_IN_NT8` y 48 `MISSING_IN_PYTHON`; primero alinear el borde de ~3 ticks.
-- EF0 sigue bloqueado. Outcomes y P&L los autoriza el agente autónomo (decisión de Nico 2026-10-20, `docs/DECISIONES_20261020.md`) con pre-registro publicado, doble revisión y guardas; el holdout sigue cerrado.
+- EF0 sigue bloqueado. Outcomes y P&L los autoriza el agente autónomo (decisión de Nico 2026-10-20, `docs/DECISIONES_20261020.md`) con pre-registro publicado, doble revisión y guardas; la apertura del holdout también la aprueba el agente, por protocolo (`edgelab/autopilot/holdout_apertura.py`).
 - `audit/notion-ai-sltp-p2b-provenance-20260830`: `FROZEN_READ_ONLY / DO_NOT_MERGE / DO_NOT_DELETE`.
 - `CAMPAIGN_OUTCOMES_OPENED=false` nunca se usa como afirmación global: `PREEXISTING_OUTCOME_EXPOSURE=YES`.
 
