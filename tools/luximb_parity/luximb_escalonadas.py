@@ -28,6 +28,7 @@ def main():
     ap.add_argument("bundle"); ap.add_argument("out")
     ap.add_argument("--min-zonas", type=int, default=0)
     ap.add_argument("--min-dens", type=float, default=0.0, help="zonas por cada 10 puntos de rango")
+    ap.add_argument("--serie", default="tick_25", choices=("tick_25", "time_1m"), help="serie base de los picos")
     ap.add_argument("--ticks", type=int, default=25, help="serie de picos: 25 o multiplo de 25 (p. ej. 150 = 6 velas 25t, sin cruzar huecos > 30 min)")
     for k in ("nmin", "max_step", "min_pull", "conf"):
         ap.add_argument("--" + k.replace("_", "-"), type=int, default=None, help=f"sobrescribe {k} de FAMILIA_NQ")
@@ -37,7 +38,7 @@ def main():
     f = dict(E.FAMILIA_NQ)
     for k in ("nmin", "max_step", "min_pull", "conf"):
         if getattr(a, k) is not None: f[k] = getattr(a, k)
-    c = B["bar_series"]["tick_25"]["candles"]
+    c = B["bar_series"][a.serie]["candles"]
     cd = {k: np.array([x[v] for x in c], float) for k, v in (("t", "time"), ("h", "high"), ("l", "low"), ("c", "close"))}
     st = np.arange(len(cd["t"])); n25 = len(st)
     if a.ticks != 25:
@@ -60,7 +61,7 @@ def main():
         sel = viva & (zbot <= hi) & (ztop >= lo)
         n = int(sel.sum()); dens = n / max((hi - lo) / 10.0, 1e-9)
         z.update(area_lo=lo, area_hi=hi, zonas_area=n, dens_10pts=round(dens, 3), det_cierre=float(cd["c"][di]),
-                 i25_post=int(st[di + 1]) if di + 1 < len(st) else n25,
+                 i25_post=(int(st[di + 1]) if di + 1 < len(st) else n25) if a.serie == "tick_25" else None,
                  zona_ids=[Zs[k]["id"] for k in np.flatnonzero(sel)])
         z["marcada"] = n >= a.min_zonas and dens >= a.min_dens
         out.append(z)
