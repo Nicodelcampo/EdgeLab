@@ -18,3 +18,13 @@ Descarga 2026-10-21 03:47 UTC. Archivos por dia calendario de NT8 (03:00 UTC a 0
   Downloader) y, si no aparece, documentarlo como faltante en el registro de apertura.
 - Pendiente: conversor de `.Last.utc.txt` al formato de entrada del script congelado (ts_utc_ns, price_ticks, volume,
   contract, trade_date de sesion CME), sin tocar la regla. Nadie mira desenlaces hasta la apertura.
+
+## Reintento y construccion (2026-10-21)
+- Reintento de 7-8 oct: no aparecen (Nico). Se sigue con el hueco documentado.
+- Conversion: `tools/luximb_parity/convertir_tick_history.py` -> `NQ_12-26_ticks.parquet` (6.857.659 ticks, 14 sesiones CME,
+  20261007 parcial, 20261021 en curso). Velas: `build_luximb_nq_m1_bundle.py` con `HOLDOUT_SELLADO=1` (solo carpeta sellada;
+  rechaza ticks anteriores a la sesion del 1-oct). 16.375 velas M1, 507 zonas.
+- **Conteo target-free** de marcas del candidato (sin desenlaces): 1.124 impulsos, **14 marcados**; los umbrales causales
+  necesitan 500 impulsos previos (como en cada periodo medido), asi que no hay marcas hasta ~2026-10-12.
+- Ritmo esperado ~2 marcas por sesion -> 150 operaciones hacia ~ene-2027. Con el criterio actual (evaluar el 2026-12-31 si
+  no se llega a 150 => NO_CONCLUYENTE), la apertura de diciembre seria inconcluyente por diseno.

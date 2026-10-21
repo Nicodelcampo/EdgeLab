@@ -13,6 +13,7 @@ Uso: python tools/luximb_parity/build_luximb_nq_m1_bundle.py <ticks_parquet> <co
 from __future__ import annotations
 
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -45,8 +46,11 @@ def main():
         if len(tb):
             parts.append(tb[["ts_utc_ns", "price_ticks", "volume"]])
     tk = pd.concat(parts).sort_values("ts_utc_ns", kind="stable")
-    if int(tk.ts_utc_ns.max()) // 1_000_000 >= HOLDOUT_MS:
-        raise SystemExit("ticks del holdout en la ventana pedida")
+    sellado = os.environ.get("HOLDOUT_SELLADO") == "1" and "HOLDOUT_SELLADO" in str(out_dir).upper()   # 21/10: modo sellado explicito
+    if sellado and int(tk.ts_utc_ns.min()) // 1_000_000 < HOLDOUT_MS - 7 * 3600 * 1000:
+        raise SystemExit("modo sellado: hay ticks anteriores a la sesion del 2026-10-01 (no se mezclan)")
+    if int(tk.ts_utc_ns.max()) // 1_000_000 >= HOLDOUT_MS and not sellado:
+        raise SystemExit("ticks del holdout en la ventana pedida (usar HOLDOUT_SELLADO=1 y carpeta HOLDOUT_SELLADO)")
     b = P.bars_from_ticks(tk.ts_utc_ns.to_numpy(), tk.price_ticks.to_numpy().astype(float) * TK,
                           tk.volume.to_numpy().astype(float), boundary_to_previous=False)
     t_close = b.t.to_numpy() // 1000                  # segundos, cierre (convencion NT8)
