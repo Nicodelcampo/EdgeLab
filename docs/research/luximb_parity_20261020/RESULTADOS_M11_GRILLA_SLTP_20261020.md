@@ -28,3 +28,6 @@ NQ -> ES en descubrimiento. El +0,8 R/operacion del visor era sobre todo entrada
 
 Aporte al referente: convierte la impresion visual en un numero con entrada realista y costos, y muestra que la eleccion
 de SL/TP no estabiliza nada (ranking IS no predice OOS).
+
+## CORRECCION (2026-10-20)
+La lectura de este documento se corrigio: el alcance de la muerte es solo "ninguna variante elegida en IS transporta a ES". La regla del visor en version realista sigue positiva en NQ (+4,95 pts/op en 499, 4/5 periodos) y queda como candidato a holdout. Ver `CORRECCION_LECTURA_M11_20261020.md`.
