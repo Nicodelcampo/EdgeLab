@@ -14,6 +14,7 @@
 - 2026-10-20 M7b control por vol previa: H2b +0,23 pts IC [-0,93,+1,45] (MDE 1,71) -> el freno de M7 era volatilidad de regimen (T aparece con vol_pre mediana 13,5 vs 22,3); H2 no se promueve; replicacion ES intacta. `RESULTADOS_M7B_CONTROL_VOLATILIDAD_ES_20261020.md`.
 - 2026-10-20 M8 franjas adelante/atras (desbalance, 4 vidas) + GBM vs contexto, NQ (5.421) y ES externo (6.469): SIN EFECTO (MDE ~6 pp; ML no mejora). `RESULTADOS_M8_FRANJAS_DESBALANCE_20261020.md`.
 - 2026-10-20 M9 distancia/tiempo + zonas tomadas/restantes: NQ H_m d25 rapido +6,6 pp (Holm 0,045) NO confirma en ES (-0,7 pp); H_k nulo; celdas lentas vacias. `RESULTADOS_M9_DISTANCIA_TIEMPO_ZONAS_20261020.md`.
+- 2026-10-20 M11 grilla SL/TP/BE del fade del visor (40 celdas, IS/OOS/ES, entrada realista + costos): ninguna sobrevive; corr IS-OOS -0,04; OOS positivo por periodo; entrada en X explicaba ~5-9 pts. `RESULTADOS_M11_GRILLA_SLTP_20261020.md`.
 
 ## NO MEDIDO
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
