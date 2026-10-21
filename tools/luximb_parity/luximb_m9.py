@@ -107,7 +107,7 @@ def main():
     for inst in ("NQ", "ES"):
         x = df[df.inst == inst]
         cv, cr = np.quantile(x.vol_pre, [1 / 3, 2 / 3]), np.quantile(x.R, [1 / 3, 2 / 3])
-        df.loc[x.index, "estr"] = np.digitize(x.vol_pre, cv).astype(str) + np.digitize(x.R, cr).astype(str)
+        df.loc[x.index, "estr"] = [f"{u}{v}" for u, v in zip(np.digitize(x.vol_pre, cv), np.digitize(x.R, cr))]
     nq = df[df.inst == "NQ"]; cortes = {}; fam = {}
     for d_ in DS:
         for rap in (True, False):
