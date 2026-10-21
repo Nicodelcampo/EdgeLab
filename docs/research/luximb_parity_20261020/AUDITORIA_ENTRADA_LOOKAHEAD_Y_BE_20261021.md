@@ -29,3 +29,16 @@ precio y que no haya look ahead".
   parametros no se sostiene). La comparacion honesta para el holdout es la regla original (TP 1,0 / SL 0,20) salvo decision.
 - Visor con BE (sin costos, sin tope) en 09-26: TP 21 / SL 99 / BE 30, +76 R, +799 pts — coincide con la version realista
   (TP 21 / SL 100 / BE 29) salvo 1 operacion cerrada por tiempo.
+
+## Variante pedida: SL +50 % y TP +10 % sobre TP 1,25 / SL 0,15 -> TP 1,375 / SL 0,225 (visor por defecto desde 21/10)
+| periodo | n | con BE 2,5 R | sin BE |
+|---|---|---|---|
+| 09-25 | 20 | -11,6 | -13,2 |
+| 12-25 | 99 | +1,5 | +1,0 |
+| 03-26 | 100 | +5,9 | +4,6 |
+| 06-26 | 130 | +8,3 | +10,4 |
+| 09-26 (diseno) | 150 | +8,6 | +10,9 |
+| total 499 | | +5,73 | +6,58 |
+| solo descubrimiento (219) | | +2,29 | +1,37 |
+Comparado con la regla original (TP 1,0 / SL 0,20: descubrimiento +3,73, total +4,95): la variante mejora los periodos
+2026 (cerca del de diseno) y empeora el descubrimiento 2025 — firma tipica de ajuste al periodo mirado.
