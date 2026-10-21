@@ -3026,12 +3026,14 @@
   function luxSim(z, cd, key) {
     z._sim = z._sim || {};
     if (z._sim[key]) return z._sim[key];
+    var qsim = new URLSearchParams(window.location.search), tpk = parseFloat(qsim.get("tpk")), slk = parseFloat(qsim.get("slk"));
+    if (!(tpk > 0)) tpk = 1.25; if (!(slk > 0)) slk = 0.15;          // Nico 20/10: TP +25 % (1,25 x hasta A), SL -25 % (0,75 x 1/5)
     var s = z.dir === "up" ? 1 : -1, tc = z.tc || (z.t1 + 60), tp = z.p0;
     // Entrada en la confirmacion: cierre de la vela M1 de marca (abre en tc - 60), no el extremo X
     var m1 = state.data && state.data.bar_series && state.data.bar_series.time_1m && state.data.bar_series.time_1m.candles, E = z.p1;
     if (m1) { var j = labIdxOfTime(m1, tc - 60); if (m1[j] && m1[j].time === tc - 60) E = m1[j].close; }
     var d = s * (E - tp); if (d <= 0) return (z._sim[key] = { s: s, E: E, tp: tp, sl: E, d: 0, res: "sin", te: tc, ie: labIdxOfTime(cd, tc), i0: labIdxOfTime(cd, tc), t0: tc });
-    var sl = E + s * d / 5;
+    tp = E - s * tpk * d; var sl = E + s * slk * d;
     var i = labIdxOfTime(cd, tc), res = "abierta", te = null, ie = null;
     for (var k = i; k < cd.length && k < i + 20000; k++) {
       var hitSL = s > 0 ? cd[k].high >= sl : cd[k].low <= sl, hitTP = s > 0 ? cd[k].low <= tp : cd[k].high >= tp;
@@ -3043,10 +3045,13 @@
   }
   function luxSimDash(cd, key) {
     if (luxImp._dashKey === key) return; luxImp._dashKey = key;
+    var kq0 = new URLSearchParams(window.location.search); luxImp._tpk = parseFloat(kq0.get("tpk")) > 0 ? parseFloat(kq0.get("tpk")) : 1.25;
+    luxImp._slk = parseFloat(kq0.get("slk")) > 0 ? parseFloat(kq0.get("slk")) : 0.15;
     var n = 0, w = 0, l = 0, o = 0, R = 0, pts = 0;
     luxImp.data.impulsos.forEach(function (z) {
       var r = luxSim(z, cd, key); if (r.res === "sin") return; n++;
-      if (r.res === "TP") { w++; R += 5; pts += r.d; } else if (r.res === "SL") { l++; R -= 1; pts -= r.d / 5; } else o++;
+      var kq = new URLSearchParams(window.location.search), tk = parseFloat(kq.get("tpk")) > 0 ? parseFloat(kq.get("tpk")) : 1.25, sk = parseFloat(kq.get("slk")) > 0 ? parseFloat(kq.get("slk")) : 0.15;
+      if (r.res === "TP") { w++; R += tk / sk; pts += tk * r.d; } else if (r.res === "SL") { l++; R -= 1; pts -= sk * r.d; } else o++;
     });
     var fx = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fx ? 10000 : 1, uN = fx ? " pips" : " pts";
     var el = document.getElementById("luximb-sim-dash");
@@ -3054,10 +3059,10 @@
       el.style.cssText = "position:fixed;right:70px;top:48px;z-index:60;background:rgba(255,255,255,0.95);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.5 'Segoe UI',sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:210px";
       document.body.appendChild(el); }
     var c = w + l;
-    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: cierre de la vela de confirmación · TP: inicio (A) · SL: 1/5 del TP" +
+    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: cierre de la vela de confirmación · TP: " + (luxImp._tpk || 1.25) + "× hasta A · SL: " + (luxImp._slk || 0.15) + "×" +
       "<br>Operaciones: <b>" + n + "</b> · TP " + w + " · SL " + l + " · abiertas " + o +
-      "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio 16,7%)" +
-      "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
+      "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio " + (100 * luxImp._slk / (luxImp._tpk + luxImp._slk)).toFixed(1) + "%)" +
+      "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R.toFixed(1) + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
       "<br>Por operación: " + (c ? ((R / c >= 0 ? "+" : "") + (R / c).toFixed(3) + " R") : "–");
   }
   function drawLuxImp(ctx, vr, X, Y) {
