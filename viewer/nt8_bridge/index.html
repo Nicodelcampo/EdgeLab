@@ -3017,7 +3017,10 @@
   // Impulsos amplios + rápidos que atravesaron zonas LUX-IMB vivas (tools/luximb_parity/luximb_impulsos.py). Sólo dibuja.
   var luxImp = { data: null };
   function luxImpLoad(aid) {
-    luxImp.data = null;
+    luxImp.data = null; luxImp._dashKey = null;
+    if (new URLSearchParams(window.location.search).get("solo") === "det") {           // modo solo-detecciones: sin impulsos ni tablero
+      var dsh = document.getElementById("luximb-sim-dash"); if (dsh) dsh.remove(); return;
+    }
     fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) { luxImp.data = d; requestDraw(); }).catch(function () {});
   }
