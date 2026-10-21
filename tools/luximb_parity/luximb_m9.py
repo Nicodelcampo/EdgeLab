@@ -86,6 +86,9 @@ def contraste(d, grupo_col, rng):
         return acc / tot if tot else np.nan
     days = d.dia.unique(); ix = {k: np.flatnonzero(d.dia.values == k) for k in days}
     full = fn(d); bs = np.array([fn(d.iloc[np.concatenate([ix[k] for k in rng.choice(days, len(days))])]) for _ in range(NB)])
+    if not np.isfinite(full) or np.isnan(bs).mean() > 0.5:              # sin estimacion posible -> p = 1 (no evidencia)
+        return dict(est=None, ic95=[None, None], p_bilateral=1.0, se=float("nan"), n1=int((d[grupo_col] == 1).sum()), n0=int((d[grupo_col] == 0).sum()),
+                    pnl_g1=None, pnl_g0=None, nota="sin estimacion (celda degenerada)")
     return dict(est=round(float(full), 4), ic95=[round(float(np.nanpercentile(bs, 2.5)), 4), round(float(np.nanpercentile(bs, 97.5)), 4)],
                 p_bilateral=float(min(1, 2 * min(np.nanmean(bs <= 0), np.nanmean(bs >= 0)))), se=float(np.nanstd(bs)),
                 n1=int((d[grupo_col] == 1).sum()), n0=int((d[grupo_col] == 0).sum()),
