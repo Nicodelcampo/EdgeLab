@@ -14,6 +14,8 @@ from luximb_m11 import sim  # noqa: E402
 from luximb_outcomes import GAP_S, TOPE_MIN  # noqa: E402
 
 TICK, COMM = 0.25, 0.225
+import os
+TPK = float(os.environ.get("TPK", 1.0)); SLK = float(os.environ.get("SLK", 0.2)); BEK = float(os.environ.get("BEK", 0))   # BE en R (0 = sin)
 
 
 def main():
@@ -40,7 +42,7 @@ def main():
             if D <= 0: continue
             b = i
             while b < len(t) and t[b] <= ev["tc"] + TOPE_MIN * 60 and (b == i or t[b] - t[b - 1] <= GAP_S): b += 1
-            ex, why = sim(s, E, A, E + s * 0.2 * D, None, h[i:b], l[i:b], c[i:b], TICK)
+            ex, why = sim(s, E, E - s * TPK * D, E + s * SLK * D, (E - s * BEK * SLK * D) if BEK > 0 else None, h[i:b], l[i:b], c[i:b], TICK)
             r["n"] += 1; r[why] = r.get(why, 0) + 1; r["pts"] += -s * (ex - E) - COMM
         cc = v["TP"] + v["SL"]
         v.update(acierto=round(100 * v["TP"] / cc, 1) if cc else None, R_por_op=round(v["R"] / cc, 3) if cc else None, pts=round(v["pts"], 1))

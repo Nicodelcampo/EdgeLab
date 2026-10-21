@@ -74,6 +74,8 @@ def detect_act(t, H, L, C, V, thr_arr, p):
     d = 0; i0 = 0; a = 0.0; ext = 0.0; iext = 0; thr_t = 0.0; jact = 0
     for j in range(W, n):
         if t[j] - t[j - 1] > p["gap_reset_s"]:
+            if active:                                   # AUDITORIA 21/10: antes se descartaba en silencio un impulso en curso al
+                out.append(dict(d=d, a=float(a), ext=float(ext), i0=i0, iext=iext, jconf=j - 1, why=3, jact=jact))   # llegar un hueco (look-ahead por supervivencia)
             active = False
         if not active:
             w0 = max(j - W, floorI)
@@ -102,6 +104,8 @@ def detect_act(t, H, L, C, V, thr_arr, p):
         if tot >= thr_t:
             out.append(dict(d=d, a=float(a), ext=float(ext), i0=i0, iext=iext, jconf=j, why=why, jact=jact))
         floorI = iext; active = False
+    if active:                                           # fin de datos con un impulso en curso
+        out.append(dict(d=d, a=float(a), ext=float(ext), i0=i0, iext=iext, jconf=n - 1, why=4, jact=jact))
     return out
 
 
@@ -177,7 +181,7 @@ def main():
         thr = a.atr_k * EI.atr_prev(H, L, C, p["atr_n"])
         imps = detect_act(t.astype(float), H, L, C, v_, thr, p)
         ref = EI.detect(t.astype(float), H, L, C, v_, thr, p)
-        assert [(x["i0"], x["iext"], x["jconf"], x["d"]) for x in imps] == [(x["i0"], x["iext"], x["jconf"], x["d"]) for x in ref], "copia del detector difiere"
+        assert [(x["i0"], x["iext"], x["jconf"], x["d"]) for x in imps if x["why"] in (1, 2)] == [(x["i0"], x["iext"], x["jconf"], x["d"]) for x in ref], "copia del detector difiere"
         pares = [(im["i0"], im["a"] * tk, im["iext"], im["ext"] * tk, im["d"] == 1, im["jconf"], im["jact"]) for im in imps]
     else:
         raise SystemExit("zigzag: el pivote se confirma tarde y no se registra jconf; no es causal en esta version")
