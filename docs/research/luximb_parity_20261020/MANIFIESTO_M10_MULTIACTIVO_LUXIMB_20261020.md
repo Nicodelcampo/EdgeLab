@@ -50,3 +50,16 @@ cerrada en su definicion actual.
 2. Activos con pocas operaciones (6B): velas 25t lentas, menos eventos (MDE grande; se publica).
 3. MBT mensual: muchos rolls cortos; MYM solo desde oct-2025.
 4. Tres hipotesis ya miradas en NQ: esto es transporte, no descubrimiento; un positivo aca seguiria necesitando holdout.
+
+## Enmienda M10b (escrita despues de ver M10, ANTES de correr el control) — 2026-10-20
+M10 dio H3 combinado **-4,7 pp** (p 1,5e-7), signo **opuesto** a NQ en 6/6 activos: con mas zonas adelante que atras, la
+vuelta del 50 % es MENOS probable. Por la regla escrita H3 **no transporta** (signo != NQ). Antes de cualquier lectura
+causal, control de confusion obvio: las zonas adelante pueden ser solo un indicador de que el precio **ya opero** en esa
+franja recientemente (impulso que vuelve a un rango previo), sin rol propio de las zonas.
+- Covariable causal: **cobertura** de cada franja por el rango [min low, max high] de las 500 velas M1 previas al origen A
+  (fraccion de la franja adelante y de la franja atras ya visitada; 0..1).
+- **H3b**: mismo contraste H3 (vida 200, cortes de M10) con estratos de vol_pre x R x franja horaria **x terciles de cobertura
+  adelante x terciles de cobertura atras**. Combinado por inverso de la varianza en los 6 activos; bilateral.
+- Lectura: si H3b ~ 0, el efecto es "precio ya visitado", no de zonas. Si persiste, pasa a candidato direccional nuevo
+  (signo negativo) para replicacion abr-jun 2026 en estos activos (pendiente de decision; no se usa aca).
+- Se reporta tambien NQ y ES con la misma covariable (descriptivo).

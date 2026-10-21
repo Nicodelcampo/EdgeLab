@@ -45,6 +45,13 @@ def main():
             row = dict(inst=inst, contrato=I["bundle"], dia=str(ny.date()), hora=ny.hour + ny.minute / 60, cash=bool(9.5 <= ny.hour + ny.minute / 60 < 11),
                        dir=s, R=R, velas25=ev["velas"], velas_m1=ev["velas_m1"], vol_pre=vol_pre, atr14=float(tr[max(0, kb - 14):kb].mean()) if kb > 0 else np.nan,
                        y1_tg=int(r["res"] == "Tg"), res=r["res"], recorrido=rec, y2=rec / vol_pre if vol_pre and vol_pre > 0 else np.nan)
+            i0 = ev["i0"]; w0 = max(0, i0 - 500)                  # M10b: cobertura de franjas por las 500 velas previas a A
+            if i0 > w0:
+                lo5, hi5 = l[w0:i0].min(), h[w0:i0].max()
+                fa = sorted((X, X + s * R)); fb = sorted((A - s * R, A))
+                row["cob_ad"] = max(0.0, min(hi5, fa[1]) - max(lo5, fa[0])) / R; row["cob_at"] = max(0.0, min(hi5, fb[1]) - max(lo5, fb[0])) / R
+            else:
+                row["cob_ad"] = row["cob_at"] = np.nan
             pos = s * (zmid - X) / R                              # >0 adelante de X; <-1 atras de A; [-1,0] interior
             for v in VIDAS:
                 viva = (zi <= kb) & (kb - zi <= v)
