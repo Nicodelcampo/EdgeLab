@@ -22,3 +22,6 @@ Lectura:
 - abr-jun 2026 (06-26) no se uso para disenar y da +6,2: consistente, pero la replicacion de esta familia ya estaba
   declarada comprometida y esta mirada la consume. **La unica prueba limpia que queda es el holdout (>= 2026-10-01)**,
   una vez, con la regla exacta congelada aca (requiere datos de oct en adelante, hoy no descargados).
+
+## Correccion del visor (2026-10-20)
+El visor entraba en X (extremo), no en la confirmacion (error senalado por Nico). Ahora entra al **cierre de la vela M1 de confirmacion**; TP en A; SL = 1/5 de la distancia entrada-A. Con eso el tablero de NQ 09-26 da 150 op, TP 36 / SL 114, +66 R, +911,7 pts sin costos: coincide en TP/SL con la columna "realista" (que ademas descuenta 1 tick y comision y aplica tope de 240 min). La columna "visor" de la tabla de arriba corresponde a la entrada vieja en X.

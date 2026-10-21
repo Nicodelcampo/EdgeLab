@@ -3026,7 +3026,12 @@
   function luxSim(z, cd, key) {
     z._sim = z._sim || {};
     if (z._sim[key]) return z._sim[key];
-    var s = z.dir === "up" ? 1 : -1, E = z.p1, tp = z.p0, d = Math.abs(E - tp), sl = E + s * d / 5, tc = z.tc || (z.t1 + 60);
+    var s = z.dir === "up" ? 1 : -1, tc = z.tc || (z.t1 + 60), tp = z.p0;
+    // Entrada en la confirmacion: cierre de la vela M1 de marca (abre en tc - 60), no el extremo X
+    var m1 = state.data && state.data.bar_series && state.data.bar_series.time_1m && state.data.bar_series.time_1m.candles, E = z.p1;
+    if (m1) { var j = labIdxOfTime(m1, tc - 60); if (m1[j] && m1[j].time === tc - 60) E = m1[j].close; }
+    var d = s * (E - tp); if (d <= 0) return (z._sim[key] = { s: s, E: E, tp: tp, sl: E, d: 0, res: "sin", te: tc, ie: labIdxOfTime(cd, tc), i0: labIdxOfTime(cd, tc), t0: tc });
+    var sl = E + s * d / 5;
     var i = labIdxOfTime(cd, tc), res = "abierta", te = null, ie = null;
     for (var k = i; k < cd.length && k < i + 20000; k++) {
       var hitSL = s > 0 ? cd[k].high >= sl : cd[k].low <= sl, hitTP = s > 0 ? cd[k].low <= tp : cd[k].high >= tp;
@@ -3040,7 +3045,7 @@
     if (luxImp._dashKey === key) return; luxImp._dashKey = key;
     var n = 0, w = 0, l = 0, o = 0, R = 0, pts = 0;
     luxImp.data.impulsos.forEach(function (z) {
-      var r = luxSim(z, cd, key); n++;
+      var r = luxSim(z, cd, key); if (r.res === "sin") return; n++;
       if (r.res === "TP") { w++; R += 5; pts += r.d; } else if (r.res === "SL") { l++; R -= 1; pts -= r.d / 5; } else o++;
     });
     var fx = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fx ? 10000 : 1, uN = fx ? " pips" : " pts";
@@ -3049,7 +3054,7 @@
       el.style.cssText = "position:fixed;right:70px;top:48px;z-index:60;background:rgba(255,255,255,0.95);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.5 'Segoe UI',sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:210px";
       document.body.appendChild(el); }
     var c = w + l;
-    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: fin de la caja en X · TP: inicio (A) · SL: 1/5 del TP" +
+    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: cierre de la vela de confirmación · TP: inicio (A) · SL: 1/5 del TP" +
       "<br>Operaciones: <b>" + n + "</b> · TP " + w + " · SL " + l + " · abiertas " + o +
       "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio 16,7%)" +
       "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
@@ -3077,8 +3082,9 @@
       ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, ya - 6); ctx.lineTo(x1, ya + hh + 6); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
       if (cdS && cdS.length) {                                      // rectangulos SL/TP de baja opacidad
-        var r = luxSim(z, cdS, keyS), xs = X(r.i0, cdS[r.i0] ? cdS[r.i0].time : r.t0), xe = X(r.ie, r.te), yE = Y(r.E), yT = Y(r.tp), yS = Y(r.sl);
-        if ([xs, xe, yE, yT, yS].every(isFinite)) {
+        var r = luxSim(z, cdS, keyS); if (r.res === "sin") r = null;
+        if (r) var xs = X(r.i0, cdS[r.i0] ? cdS[r.i0].time : r.t0), xe = X(r.ie, r.te), yE = Y(r.E), yT = Y(r.tp), yS = Y(r.sl);
+        if (r && [xs, xe, yE, yT, yS].every(isFinite)) {
           var ww = Math.max(4, xe - xs);
           ctx.fillStyle = "rgba(34,197,94,0.13)"; ctx.fillRect(xs, Math.min(yE, yT), ww, Math.abs(yT - yE));
           ctx.fillStyle = "rgba(239,68,68,0.16)"; ctx.fillRect(xs, Math.min(yE, yS), ww, Math.abs(yS - yE));
