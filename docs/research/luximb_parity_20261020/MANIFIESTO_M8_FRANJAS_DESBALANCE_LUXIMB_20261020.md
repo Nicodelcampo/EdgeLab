@@ -66,3 +66,11 @@ Ninguno. ES necesita construir impulsos M1 y zonas por contrato (numpy, como M7)
 Impulsos que cumplen la amplitud (sin mirar desenlaces), piso 1,3 x mediana: NQ 09-25 = 774, 12-25 = 2.238, 03-26 = 2.214,
 06-26 (2 semanas) ~ 300 -> **~5.500 en NQ** (vs 150-330 de las definiciones con zonas agrupadas). Con piso 1,0: ~7.700.
 Quintiles de D_v -> ~1.100 eventos por quintil: MDE de A1 del orden de 5-6 pp. ES externo: escala similar (a contar).
+
+## OK y enmienda pre-desenlace (2026-10-20)
+- OK de Nico ("si, medi M8"). PRE-REGISTRADO.
+- Empates (visto solo en D, target-free, NQ): con vida 100 el 55 % de los impulsos tiene D = 0 (p80 = 0). Los grupos extremos
+  de A1 se definen: **adelante** = D >= max(p80, >0); **atras** = D <= min(p20, <0); cortes p20/p80 de NQ aplicados tambien a ES.
+- Franjas por punto medio de la zona: adelante (X, X+R], interior [A, X], atras [A-R, A). Vida = velas M1 desde la creacion.
+- Y1 = "Tg" (vuelta del 50 % antes de +25 %); "tiempo" cuenta como no-Tg.
+- ES externo: impulsos con la misma regla (umbrales causales propios de ES).

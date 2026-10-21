@@ -69,8 +69,8 @@ def main():
     st = np.flatnonzero(np.r_[True, gid[1:] != gid[:-1]]); en = np.r_[st[1:], len(ts)]
     c25 = [{"time": int(ts[a_] // 10**9), "open": px[a_], "high": float(px[a_:b_].max()), "low": float(px[a_:b_].min()),
             "close": px[b_ - 1], "volume": float(vv[a_:b_].sum())} for a_, b_ in zip(st, en)]
-    aid = f"NQ_{contract.split(' ')[1]}_M1_LUXIMB"
-    meta = dict(id=aid, name=f"{contract} · M1 · LUX-IMB (OG+VI) · {d0}-{d1}", instrument="NQ", contract=contract,
+    aid = f"{contract.split(' ')[0]}_{contract.split(' ')[1]}_M1_LUXIMB"
+    meta = dict(id=aid, name=f"{contract} · M1 · LUX-IMB (OG+VI) · {d0}-{d1}", instrument=contract.split(" ")[0], contract=contract,
                 tick_size=P.TICK, precision=2, chart_tz="UTC", n_candles=len(candles), n_zones=len(zones), rolls=[],
                 kind="M1_LUX_IMB", outcome_firewall="ENFORCED", holdout_boundary_ms=HOLDOUT_MS,
                 fuente_ticks=ticks, ventana_trade_date=[d0, d1], sin_back_adjust=True,
@@ -90,7 +90,7 @@ def main():
         txt = mf.read_text(encoding="utf-8")
         cat = json.loads(txt[txt.index("["):txt.rindex("]") + 1])
     cat = [e for e in cat if e.get("id") != aid]
-    cat.insert(0, dict(id=aid, name=meta["name"], group="NQ (LUX-IMB M1)", instrument="NQ", contract=contract, tick_size=P.TICK,
+    cat.insert(0, dict(id=aid, name=meta["name"], group=f"{contract.split(' ')[0]} (LUX-IMB M1)", instrument=contract.split(" ")[0], contract=contract, tick_size=P.TICK,
                        precision=2, candles=len(candles), zones=len(zones), rolls=0, parity_status="PARITY_PASS", kind="M1_LUX_IMB"))
     mf.write_text("window.ASSET_CATALOG = " + json.dumps(cat, indent=2, ensure_ascii=False) + ";\n", encoding="utf-8")
     print(json.dumps({"bundle": aid, "velas": len(candles), "zonas": len(zones),
