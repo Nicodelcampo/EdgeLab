@@ -49,3 +49,9 @@ Decision de Nico: "correlo igual, exploratoriamente" con 14 operaciones (sesione
 Consecuencias declaradas: (1) la apertura limpia de esta familia sobre estas sesiones queda **consumida**; (2) el resultado
 no confirma ni refuta (n << 150) y no se usa para ajustar la regla; (3) una confirmacion futura solo puede usar sesiones
 **posteriores a 2026-10-21** con la regla congelada intacta. Script: `luximb_holdout_regla_visor.py` (sha256 3c44bc32...).
+
+### Resultado de la mirada exploratoria
+n = 14 en 6 sesiones: **14 SL, 0 TP**; media **-20,15 pts/op** (IC 95 % por dia [-25,4, -15,5]); veredicto formal NO_CONCLUYENTE (n < 150).
+Contexto: con el acierto historico (~20 %), 0/14 tiene probabilidad ~4 % (0,8^14); con dependencia entre operaciones del
+mismo dia (6 dias) es menos raro. Es la primera evidencia fuera de todo lo mirado y va en contra del candidato.
+Archivo: `HOLDOUT_EXPLORATORIO_NQ1226_20261021.json`.
