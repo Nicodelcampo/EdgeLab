@@ -43,3 +43,9 @@ fechas desactivada solo en memoria.
    con auditoria CONFORME y env identico; registrar en `holdout_aperturas.jsonl` ANTES de correr. Este candidato nacio fuera
    del autopilot: hay que darlo de alta ahi (corrida + auditoria) sin cambiar la regla, o que Nico apruebe la apertura manual
    con el mismo registro append-only.
+
+## MIRADA EXPLORATORIA DEL HOLDOUT (registrada ANTES de correr) — 2026-10-21
+Decision de Nico: "correlo igual, exploratoriamente" con 14 operaciones (sesiones 2026-10-01..2026-10-20, hueco 7-8 oct).
+Consecuencias declaradas: (1) la apertura limpia de esta familia sobre estas sesiones queda **consumida**; (2) el resultado
+no confirma ni refuta (n << 150) y no se usa para ajustar la regla; (3) una confirmacion futura solo puede usar sesiones
+**posteriores a 2026-10-21** con la regla congelada intacta. Script: `luximb_holdout_regla_visor.py` (sha256 3c44bc32...).
