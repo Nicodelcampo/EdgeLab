@@ -48,3 +48,6 @@ Ningun contraste sobrevive Holm en NQ con MDE <= 8 pp, o el sobreviviente no rep
 
 ## Datos faltantes
 Ninguno.
+
+## OK (2026-10-20)
+OK de Nico ("si, medi M9"). PRE-REGISTRADO. Codigo `tools/luximb_parity/luximb_m9.py` commiteado antes de correr. Zonas tomadas = interiores vivas en la marca atravesadas enteras por la vuelta; las creadas durante la vuelta no cuentan (conservador).
