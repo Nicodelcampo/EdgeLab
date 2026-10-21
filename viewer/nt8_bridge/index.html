@@ -3021,9 +3021,45 @@
     fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
       .then(function (d) { luxImp.data = d; requestDraw(); }).catch(function () {});
   }
+  // Simulacion visual de entrada (exploracion, sin costos): entra al final de la caja (cierre de la marca) en X,
+  // TP en A (inicio de la zona), SL a 1/5 de la distancia al TP del otro lado. Si una vela toca ambos: SL.
+  function luxSim(z, cd, key) {
+    z._sim = z._sim || {};
+    if (z._sim[key]) return z._sim[key];
+    var s = z.dir === "up" ? 1 : -1, E = z.p1, tp = z.p0, d = Math.abs(E - tp), sl = E + s * d / 5, tc = z.tc || (z.t1 + 60);
+    var i = labIdxOfTime(cd, tc), res = "abierta", te = null, ie = null;
+    for (var k = i; k < cd.length && k < i + 20000; k++) {
+      var hitSL = s > 0 ? cd[k].high >= sl : cd[k].low <= sl, hitTP = s > 0 ? cd[k].low <= tp : cd[k].high >= tp;
+      if (hitSL) { res = "SL"; te = cd[k].time; ie = k; break; }
+      if (hitTP) { res = "TP"; te = cd[k].time; ie = k; break; }
+    }
+    if (te === null && cd.length) { ie = Math.min(cd.length - 1, i + 300); te = cd[ie].time; }
+    return (z._sim[key] = { s: s, E: E, tp: tp, sl: sl, d: d, res: res, te: te, ie: ie, i0: i, t0: tc });
+  }
+  function luxSimDash(cd, key) {
+    if (luxImp._dashKey === key) return; luxImp._dashKey = key;
+    var n = 0, w = 0, l = 0, o = 0, R = 0, pts = 0;
+    luxImp.data.impulsos.forEach(function (z) {
+      var r = luxSim(z, cd, key); n++;
+      if (r.res === "TP") { w++; R += 5; pts += r.d; } else if (r.res === "SL") { l++; R -= 1; pts -= r.d / 5; } else o++;
+    });
+    var fx = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fx ? 10000 : 1, uN = fx ? " pips" : " pts";
+    var el = document.getElementById("luximb-sim-dash");
+    if (!el) { el = document.createElement("div"); el.id = "luximb-sim-dash";
+      el.style.cssText = "position:fixed;right:70px;top:48px;z-index:60;background:rgba(255,255,255,0.95);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.5 'Segoe UI',sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:210px";
+      document.body.appendChild(el); }
+    var c = w + l;
+    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: fin de la caja en X · TP: inicio (A) · SL: 1/5 del TP" +
+      "<br>Operaciones: <b>" + n + "</b> · TP " + w + " · SL " + l + " · abiertas " + o +
+      "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio 16,7%)" +
+      "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
+      "<br>Por operación: " + (c ? ((R / c >= 0 ? "+" : "") + (R / c).toFixed(3) + " R") : "–");
+  }
   function drawLuxImp(ctx, vr, X, Y) {
     if (!luxImp.data) return;
     var u = luxImp.data.umbrales;
+    var cdS = activeCandlesArr(), keyS = state.activeBarKey + "|" + (cdS ? cdS.length : 0);
+    if (cdS && cdS.length) luxSimDash(cdS, keyS);
     luxImp.data.impulsos.forEach(function (z) {
       // Tiempo real: el impulso existe recién al CIERRE de la vela de confirmación (z.tc). La caja va de A hasta ahí
       // y la etiqueta se pone en ese punto; antes de tc no hay nada dibujado que no se hubiera visto en vivo.
@@ -3040,6 +3076,16 @@
       ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(xB, y1); ctx.stroke();
       ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, ya - 6); ctx.lineTo(x1, ya + hh + 6); ctx.stroke(); ctx.setLineDash([]);
       ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
+      if (cdS && cdS.length) {                                      // rectangulos SL/TP de baja opacidad
+        var r = luxSim(z, cdS, keyS), xs = X(r.i0, cdS[r.i0] ? cdS[r.i0].time : r.t0), xe = X(r.ie, r.te), yE = Y(r.E), yT = Y(r.tp), yS = Y(r.sl);
+        if ([xs, xe, yE, yT, yS].every(isFinite)) {
+          var ww = Math.max(4, xe - xs);
+          ctx.fillStyle = "rgba(34,197,94,0.13)"; ctx.fillRect(xs, Math.min(yE, yT), ww, Math.abs(yT - yE));
+          ctx.fillStyle = "rgba(239,68,68,0.16)"; ctx.fillRect(xs, Math.min(yE, yS), ww, Math.abs(yS - yE));
+          ctx.fillStyle = r.res === "TP" ? "rgba(22,163,74,1)" : (r.res === "SL" ? "rgba(220,38,38,1)" : "rgba(100,116,139,1)");
+          ctx.font = "bold 10px 'Segoe UI', sans-serif"; ctx.fillText(r.res, xe + 3, yE + 4);
+        }
+      }
       var fxU = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fxU ? 10000 : 1, uN = fxU ? " pips" : " pts";   // FX: pips
       ctx.fillText("★ " + z.zonas + " zonas · " + (z.rango * uM).toFixed(fxU ? 1 : 2) + uN + " · " + z.velas + " velas 25t · " + (z.vel != null ? (z.vel * uM).toFixed(2) : "?") + uN + "/vela" + (z.reparto ? ((luxImp.data.params && luxImp.data.params.modo === "inicio") ? " · 25% inicial " + z.reparto[0] + " / resto " + z.reparto[1] : " · reparto " + z.reparto.join("/")) : "") + " (confirmado acá)", x1 - 4, up ? ya - 5 : ya + hh + 13);
     });
