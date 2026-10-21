@@ -11,3 +11,9 @@ SL otro lado, salida a 6 h o 16:55 ET; R0 = TP 0,5R sin filtro; R1 = TP 1,5R + V
   REFUTA si media <= 0; si no, NO_CONCLUYENTE.
 - Secundarias (descriptivas): las 4 celdas destacadas en descubrimiento: 01:00 R0, 23:00 R1, 02:30 R1, 22:30 R1.
 Nada se ajusta despues; si confirma, la siguiente prueba es el holdout GC jul-sep, una vez.
+
+## Resultado (2026-10-21) — `RESULTADOS_GC_NOCTURNO.json`, `tools/orb0100/gc_nocturno.py`
+- **H1 racimo nocturno: -0,028 R/op** (948 operaciones, 64 sesiones), IC 95 % [-0,110, +0,057] -> **REFUTA** (media <= 0).
+- Destacadas en descubrimiento, ahora: 01:00 R0 -0,12; 23:00 R1 -0,02; 02:30 R1 -0,13; 22:30 R1 -0,10 (todas negativas).
+- Por mes: abr -0,10, may -0,04, jun +0,06. Por celda: 9 de 18 negativas, las positivas sin patron (00:00 R1, 02:00 R1 ~+0,21).
+Lectura: la pista de GC nocturno era ruido del barrido (lo esperable con 704 celdas). Cerrada. Holdout GC jul-sep intacto.
