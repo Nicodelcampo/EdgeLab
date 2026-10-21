@@ -19,7 +19,7 @@
 - 2026-10-20 Tablero por periodo + CORRECCION de M11: la regla del visor realista da +4,95 pts/op en NQ (499, IC [+0,55,+9,2], 4/5 periodos positivos); ES ~0. CANDIDATO A HOLDOUT (no edge). `DASHBOARD_VISOR_POR_PERIODO_NQ_20261020.md`, `CORRECCION_LECTURA_M11_20261020.md`.
 
 ## NO MEDIDO
-- Holdout (>= 2026-10-01) de la regla del visor realista en NQ: una vez, regla congelada; faltan datos de oct en adelante.
+- Holdout (>= 2026-10-01) de la regla del visor original en NQ: **CONGELADA** 2026-10-21 (`CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); faltan datos de oct en adelante y alta en el protocolo del autopilot.
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
 - Continuacion tras penetracion (signo observado en M4; necesita preregistro propio).
 - Velas 25t contra NT8 (sin paridad).
