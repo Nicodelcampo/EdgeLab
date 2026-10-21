@@ -73,6 +73,9 @@ def eventos(inst, bpath, ipath):
 def contraste(d, grupo_col, rng):
     """P(A) grupo 1 - grupo 0, ponderado por estratos (vol_pre x R terciles); bootstrap por dia."""
     d = d[d[grupo_col].isin([0, 1])]
+    if d.empty or d[grupo_col].nunique() < 2:                            # celda vacia o sin uno de los grupos
+        return dict(est=None, ic95=[None, None], p_bilateral=1.0, se=float("nan"), n1=int((d[grupo_col] == 1).sum()), n0=int((d[grupo_col] == 0).sum()),
+                    pnl_g1=None, pnl_g0=None, nota="celda sin datos suficientes")
 
     def fn(x):
         tot = acc = 0.0
@@ -99,10 +102,13 @@ def grupos(d, cortes):
 
 def main():
     out = sys.argv[1]; rows = []
-    for trip in sys.argv[2:]:
-        inst, bp, ip = trip.split(":", 2); rows += eventos(inst, bp, ip); print(inst, ip, len(rows), flush=True)
-    df = pd.DataFrame(rows); df = df[df.vol_pre.notna()].reset_index(drop=True)
-    df.to_csv(out.replace(".json", "_eventos.csv"), index=False)
+    if sys.argv[2] == "--csv":                                            # reanalizar eventos ya extraidos
+        df = pd.read_csv(sys.argv[3])
+    else:
+        for trip in sys.argv[2:]:
+            inst, bp, ip = trip.split(":", 2); rows += eventos(inst, bp, ip); print(inst, ip, len(rows), flush=True)
+        df = pd.DataFrame(rows); df = df[df.vol_pre.notna()].reset_index(drop=True)
+        df.to_csv(out.replace(".json", "_eventos.csv"), index=False)
     rng = np.random.default_rng(20261027); res = {"NQ": {}, "ES_confirmacion": {}}
     for inst in ("NQ", "ES"):
         x = df[df.inst == inst]
@@ -112,6 +118,8 @@ def main():
     for d_ in DS:
         for rap in (True, False):
             celda = f"d{d_}_{'rapido' if rap else 'lento'}"; c = nq[(nq.d == d_) & (nq.rapido == rap)]
+            if len(c) == 0:
+                res["NQ"][celda] = dict(n=0); continue
             ct = (float(c.k_tomadas[c.k_tomadas > 0].median()) if (c.k_tomadas > 0).any() else 1.0,
                   float(np.quantile(c.m_restantes, 1 / 3)), float(np.quantile(c.m_restantes, 2 / 3)))
             if ct[2] <= ct[1]: ct = (ct[0], ct[1], ct[1] + 1)
@@ -128,9 +136,9 @@ def main():
             celda, h = n.rsplit("_H_", 1); d_ = float(celda.split("_")[0][1:]); rap = celda.endswith("rapido")
             c = grupos(es[(es.d == d_) & (es.rapido == rap)], cortes[celda]); r = contraste(c, "g" + h, rng)
             signo_nq = np.sign(res["NQ"][celda]["H_" + h]["est"])
-            r["confirma"] = bool((r["ic95"][0] > 0) if signo_nq > 0 else (r["ic95"][1] < 0)); res["ES_confirmacion"][n] = r
+            r["confirma"] = bool(r["est"] is not None) and bool((r["ic95"][0] > 0) if signo_nq > 0 else (r["ic95"][1] < 0)); res["ES_confirmacion"][n] = r
     out_d = dict(manifiesto="MANIFIESTO_M9_DISTANCIA_TIEMPO_ZONAS_TOMADAS_20261020.md", n_eventos=dict(df.inst.value_counts()), resultados=res, p_holm_NQ=holm,
-                 MDE80_pp={f"{c}_{h}": round(280 * res['NQ'][c][h]['se'], 1) for c in res["NQ"] for h in ("H_k", "H_m")})
+                 MDE80_pp={f"{c}_{h}": round(280 * res['NQ'][c][h]['se'], 1) for c in res["NQ"] if res["NQ"][c].get("n") for h in ("H_k", "H_m")})
     json.dump(out_d, open(out, "w", encoding="utf-8"), indent=1, ensure_ascii=False, default=str)
     print(json.dumps(out_d, indent=1, ensure_ascii=False, default=str))
 
