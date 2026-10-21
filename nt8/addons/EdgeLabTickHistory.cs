@@ -6,6 +6,10 @@
 // pero con la hora en UTC DECLARADA (el export nativo de NT8 usa la zona de la UI y hubo que verificarla aparte), mas
 // <root>\<CONTRATO>\manifest.jsonl con una linea por dia (ticks, primer/ultimo tick UTC, zona de NT8, sha256).
 //
+// 2026-10-21: API publica verificada por reflexion contra NinjaTrader.Core.dll 8.1.8.4 (BarsRequest(Instrument,DateTime,DateTime), Request(Action<BarsRequest,ErrorCode,string>), TradingHours.Get, MergePolicy.DoNotMerge; sin
+// reflexion). Agregado MODO HOLDOUT SELLADO (casilla): permite fechas >= 2026-10-01 (HOLDOUT-A3) SOLO hacia una carpeta cuyo
+// nombre contenga HOLDOUT_SELLADO, deja un SELLADO.txt y no mezcla dias de desarrollo. Uso: datos para la apertura unica
+// del candidato docs/research/luximb_parity_20261020/CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md. Nada se mira antes.
 // Reglas: solo fechas ANTERIORES al holdout (2026-07-01, fail-closed). Escritura atomica (.partial -> rename). Un dia
 // sin datos se registra como NO_DATA, nunca como archivo vacio. "Probar" pide un dia por semana y no escribe ticks.
 #region Using declarations
@@ -39,12 +43,13 @@ namespace NinjaTrader.Gui.NinjaScript
 
  public class EdgeLabTickHistoryWindow:NTWindow,IWorkspacePersistence
  {
-  const string Build="EDGE_TICKHIST_V2_PROVENANCE";
+  const string Build="EDGE_TICKHIST_V3_HOLDOUT_SELLADO";
+  static readonly DateTime HoldoutA3=new DateTime(2026,10,1);   // primer dia del holdout vigente (HOLDOUT-A3)
   static readonly DateTime HoldoutStart=new DateTime(2026,10,7);   // 2026-10-06: Nico declara exploracion (EdgeReplica MNQ + MGC 04:15), sin custodia de holdout //   // holdout vigente: sesion CME del 2026-10-01
   static readonly Regex ContractRx=new Regex(@"^[A-Za-z0-9]{1,8}\s+[0-9]{2}-[0-9]{2}$",RegexOptions.Compiled);
   const int TimeoutSeconds=600;
   string feed="";
-  TextBox contracts,from,to,root,log;Button probe,download,stop;volatile bool running,cancel;
+  TextBox contracts,from,to,root,log;Button probe,download,stop;CheckBox sealedBox;volatile bool running,cancel;
   public WorkspaceOptions WorkspaceOptions{get;set;}
   public void Restore(System.Xml.Linq.XDocument d,System.Xml.Linq.XElement e){}
   public void Save(System.Xml.Linq.XDocument d,System.Xml.Linq.XElement e){}
@@ -64,6 +69,8 @@ namespace NinjaTrader.Gui.NinjaScript
    from=Field(f,m,"Desde, inclusive (yyyy-MM-dd):","");
    to=Field(f,m,"Hasta, inclusive (yyyy-MM-dd):","2026-09-26");
    root=Field(f,m,"Carpeta de salida (no usar el disco C):",@"E:\DatosNT8\tick_history");
+   sealedBox=new CheckBox{Content="Modo HOLDOUT SELLADO (fechas >= 2026-10-01; la carpeta debe contener HOLDOUT_SELLADO)",Foreground=FindResource("FontLabelBrush") as Brush,Margin=new Thickness(m,m,m,0)};
+   f.Children.Add(sealedBox);
    Grid.SetRow(f,0);g.Children.Add(f);
    StackPanel b=new StackPanel{Orientation=Orientation.Horizontal,Margin=new Thickness(m)};
    probe=new Button{Content="_Probar (1 dia por semana, sin escribir)",Padding=new Thickness(m,2,m,2),Margin=new Thickness(0,0,m,0)};
@@ -94,10 +101,19 @@ namespace NinjaTrader.Gui.NinjaScript
    DateTime a,z;
    if(!DateTime.TryParseExact(from.Text.Trim(),"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out a)||!DateTime.TryParseExact(to.Text.Trim(),"yyyy-MM-dd",CultureInfo.InvariantCulture,DateTimeStyles.None,out z)||a>z)
    {Log("ERROR: fechas invalidas");return;}
-   if(z>=HoldoutStart){Log("ERROR: 'Hasta' posterior al limite (2026-10-06).");return;}
    string dir=root.Text.Trim();
+   bool sellado=sealedBox.IsChecked==true;
+   if(sellado)
+   {
+    if(a<HoldoutA3){Log("ERROR: en modo sellado 'Desde' tiene que ser 2026-10-01 o posterior (no se mezclan dias de desarrollo).");return;}
+    if(z>=DateTime.Now.Date){Log("ERROR: 'Hasta' tiene que ser anterior a hoy.");return;}
+    if(probeOnly){Log("ERROR: en modo sellado no se usa 'Probar'.");return;}
+    if(dir.IndexOf("HOLDOUT_SELLADO",StringComparison.OrdinalIgnoreCase)<0){Log("ERROR: en modo sellado la carpeta debe contener HOLDOUT_SELLADO.");return;}
+   }
+   else if(z>=HoldoutStart){Log("ERROR: 'Hasta' posterior al limite (2026-10-06). Para el holdout usar el modo sellado.");return;}
    if(!probeOnly&&(dir.Length==0||!Path.IsPathRooted(dir))){Log("ERROR: la carpeta de salida tiene que ser una ruta absoluta");return;}
    if(!probeOnly&&dir.StartsWith("C:",StringComparison.OrdinalIgnoreCase)){Log("ERROR: no escribir en el disco C");return;}
+   if(sellado){try{Directory.CreateDirectory(dir);File.AppendAllText(Path.Combine(dir,"SELLADO.txt"),DateTime.UtcNow.ToString("o",CultureInfo.InvariantCulture)+" "+Build+" "+string.Join(";",list)+" "+a.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture)+".."+z.ToString("yyyy-MM-dd",CultureInfo.InvariantCulture)+" - datos de HOLDOUT: no mirar; solo la apertura registrada"+Environment.NewLine);}catch(Exception ex){Log("ERROR: no se pudo escribir SELLADO.txt: "+ex.Message);return;}Log("MODO HOLDOUT SELLADO: "+dir);}
    cancel=false;Running(true);
    Thread t=new Thread(()=>Run(list,a.Date,z.Date,dir,probeOnly));t.IsBackground=true;t.Start();
   }
