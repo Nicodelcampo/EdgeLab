@@ -4399,6 +4399,12 @@
   // Dibujo de picos y revisión (movido debajo de drawZones, 2026-09-26): el test causal de `zoneAvailableSec` audita
   // el tramo zoneAvailableSec→drawZones y estas funciones usan z.t0 de sus propias figuras, no de zonas.
   // posición visual SL/TP/BE desde el punto de detección (exploración; velas, sin costos; SL gana si la vela toca ambos)
+  // &sl=mitad: SL en el punto medio entre la deteccion (punto azul, entrada) y el primer pico; si no, &sl=<ticks> fijo
+  function slTicksFor(z, tkz) {
+    var v = new URLSearchParams(window.location.search).get("sl");
+    if (v === "mitad") { var sd = z.kind === "H" ? -1 : 1, d = -sd * (z.picos[0][2] - z.det_precio) / 2 / tkz; return d > 0 ? d : NaN; }
+    return parseFloat(v);
+  }
   function posCompute(z, cd, slT, tpR, beR, tkz) {
     var key = slT + "|" + tpR + "|" + beR;
     if (z._pos !== undefined && z._posKey === key) return z._pos;
@@ -4418,14 +4424,14 @@
   // tablero de estadísticas de las posiciones visuales (todas las zonas del activo, no sólo las visibles)
   var posDash = { key: null };
   function posDashboard(cd) {
-    var q = new URLSearchParams(window.location.search), slT = parseFloat(q.get("sl")), tpR = parseFloat(q.get("tp")), beR = parseFloat(q.get("be"));
+    var q = new URLSearchParams(window.location.search), slQ = q.get("sl"), slT = slQ === "mitad" ? 1 : parseFloat(slQ), tpR = parseFloat(q.get("tp")), beR = parseFloat(q.get("be"));
     if (!(isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) || !peaksDet.data) return;
-    var key = (peaksDet.data.variante || "") + "|" + slT + "|" + tpR + "|" + beR + "|" + cd.length;
+    var key = (peaksDet.data.variante || "") + "|" + slQ + "|" + tpR + "|" + beR + "|" + cd.length;
     if (posDash.key === key) return; posDash.key = key;
     var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
     var Zs = peaksDet.data.zonas.filter(function (z) { return z.det_i != null; }).slice().sort(function (a, b) { return a.det_i - b.det_i; });
     var st = { TP: 0, SL: 0, BE: 0, fin: 0 }, R = [], byK = { H: [], L: [] }, eq = 0, pk = 0, dd = 0, gp = 0, gl = 0;
-    Zs.forEach(function (z) { var p = posCompute(z, cd, slT, tpR, beR, tkz); st[p.why]++; R.push(p.r); byK[z.kind].push(p.r);
+    Zs.forEach(function (z) { var sz = slTicksFor(z, tkz); if (!(sz > 0)) return; var p = posCompute(z, cd, sz, tpR, beR, tkz); st[p.why]++; R.push(p.r); byK[z.kind].push(p.r);
       eq += p.r; pk = Math.max(pk, eq); dd = Math.max(dd, pk - eq); if (p.r > 0) gp += p.r; else gl -= p.r; });
     var n = R.length, sum = R.reduce(function (a, b) { return a + b; }, 0), win = R.filter(function (x) { return x > 0; }).length;
     function f(x, d) { return (x >= 0 ? "+" : "") + x.toFixed(d == null ? 3 : d); }
@@ -4434,7 +4440,7 @@
     if (!el) { el = document.createElement("div"); el.id = "pos-dash";
       el.style.cssText = "position:fixed;right:12px;bottom:40px;z-index:50;background:rgba(255,255,255,0.96);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.45 sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px";
       document.body.appendChild(el); }
-    el.innerHTML = "<b>Trades simulados (visual)</b><br>SL " + slT + " ticks · TP " + tpR + "R" + (isFinite(beR) && beR > 0 ? " · BE a " + beR + "R" : "") +
+    el.innerHTML = "<b>Trades simulados (visual)</b><br>SL " + (slQ === "mitad" ? "en la mitad entre la detección y el 1.er pico" : slT + " ticks") + " · TP " + tpR + "R" + (isFinite(beR) && beR > 0 ? " · BE a " + beR + "R" : "") +
       "<br>Operaciones: <b>" + n + "</b> · ganadoras " + (n ? Math.round(100 * win / n) : 0) + " %" +
       "<br>TP " + st.TP + " · SL " + st.SL + " · BE " + st.BE + " · fin " + st.fin +
       "<br>R total: <b>" + f(sum, 1) + "</b> · por operación: <b>" + f(n ? sum / n : 0) + "</b>" +
@@ -4490,9 +4496,10 @@
         });
         // ?sl=<ticks>&tp=<R>: posición visual desde el punto de detección (exploración, sin costos; orden intravela
         // ambiguo: si una vela toca SL y TP, se marca SL)
-        var qsp = new URLSearchParams(window.location.search), slT = parseFloat(qsp.get("sl")), tpR = parseFloat(qsp.get("tp"));
+        var qsp = new URLSearchParams(window.location.search), tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25,
+            slT = slTicksFor(z, tkz), tpR = parseFloat(qsp.get("tp"));
         if (isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) {
-          var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, sd = z.kind === "H" ? -1 : 1;
+          var sd = z.kind === "H" ? -1 : 1;
           var en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
           var beR = parseFloat(qsp.get("be")), beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;   // &be=<R>: stop a la entrada al llegar a beR
           posCompute(z, cd, slT, tpR, beR, tkz);
