@@ -76,8 +76,9 @@ def main():
         # H3: variables M8 (vida 200)
         fcsv = DESC / f"feat_{a}.csv"
         if not fcsv.exists():
-            subprocess.run([sys.executable, "-X", "utf8", str(HERE / "luximb_m8_features.py"), str(fcsv)] +
-                           [f"{a}:{BUN / (i + '.json')}:{DESC / ('impA_' + i + '.json')}" for i in ids], check=True)
+            subprocess.run([sys.executable, "-X", "utf8", str(HERE / "luximb_m8_features.py"), fcsv.relative_to(REPO).as_posix()] +
+                           [f"{a}:{(BUN / (i + '.json')).relative_to(REPO).as_posix()}:{(DESC / ('impA_' + i + '.json')).relative_to(REPO).as_posix()}" for i in ids],
+                           check=True, cwd=REPO)
         f = pd.read_csv(fcsv); f = f[f.vol_pre.notna()].copy()
         lo, hi = np.quantile(f.D_200, [.2, .8])
         f["g"] = np.where(f.D_200 >= max(hi, 1e-9), 1, np.where(f.D_200 <= min(lo, -1e-9), 0, -1))
