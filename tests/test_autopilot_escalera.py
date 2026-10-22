@@ -56,7 +56,7 @@ def test_ciclo_confirma_con_lordpp_aunque_el_alfa_viejo_este_agotado(repo, tmp_p
     d = json.loads(ap.ledger.db.execute("SELECT result FROM runs WHERE run_id='r1'").fetchone()[0])
     assert d["regla"] == "escalera_v1" and [c["test"] for c in d["confirmadas"]] == ["G/c0/rep/x"] and len(d["nominadas"]) == 3
     assert ap.fdr.wealth == pytest.approx(0.0025)                                              # fdr.py y su estado, intactos
-    ev = [json.loads(l) for l in (root / "ev.jsonl").read_text().splitlines()]
+    ev = [json.loads(l) for l in (root / "ev.jsonl").read_text(encoding="utf-8").splitlines()]
     assert sum(r["status"] == "WEAK_LEAD" for r in ev) == 3                                    # las nominadas abren pistas
     assert ap.status()["decision"] == "escalera_v1"
 
@@ -86,3 +86,21 @@ def test_apertura_del_holdout_exige_veredicto_de_la_escalera(tmp_path):
     led2.add(mk("cand"), "h"); led2.finish("cand", "ANALYZED", {"hit": True, "escalera": {"estado": "LISTA_PARA_HOLDOUT"}})
     (t2 / "auditorias.jsonl").write_text(json.dumps({"run_id": "cand", "estado": "CONFORME"}) + "\n")
     assert H.requisitos(s, led2, t2, exigir_escalera=True) == []
+
+
+def test_activacion_en_dos_pasos_prueba_sobre_copia_y_aplica_con_respaldo(tmp_path, monkeypatch):
+    import importlib.util
+    spec_ = importlib.util.spec_from_file_location("activar", __import__("pathlib").Path(__file__).resolve().parents[1] / "tools/autopilot_activar_escalera.py")
+    act = importlib.util.module_from_spec(spec_); spec_.loader.exec_module(act)
+    root = tmp_path / "estado"; root.mkdir(); (root / "alpha.json").write_text(json.dumps(dict(wealth=0.0025, history=[], open={})))
+    cand = tmp_path / "candidates.json"; cand.write_text("[]")
+    cfg_p = tmp_path / "autopilot.json"; cfg_p.write_text(json.dumps(dict(mode="execute", result_files={})), encoding="utf-8")
+    import edgelab.autopilot.executor as exm
+    monkeypatch.setattr(exm, "KaggleExecutor", lambda owner: FakeExecutor({}))
+    r = act.prueba(cfg_p, root, cand)
+    assert r["status"]["decision"] == "escalera_v1" and r["status"]["mode"] == "propose"
+    assert sorted(p.name for p in root.iterdir()) == ["alpha.json"]                     # el estado real no se tocó
+    assert json.loads(cfg_p.read_text(encoding="utf-8")) == dict(mode="execute", result_files={})
+    a = act.aplicar(cfg_p); c = json.loads(cfg_p.read_text(encoding="utf-8"))
+    assert a["aplicado"] and c["decision"] == "escalera_v1" and c["mode"] == "execute" and (tmp_path / "autopilot.json.antes_escalera").exists()
+    assert act.aplicar(cfg_p) == dict(ya_estaba=True)
