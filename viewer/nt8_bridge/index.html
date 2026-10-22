@@ -7141,6 +7141,7 @@
     var params = new URLSearchParams(window.location.search);
     var qAsset = params.get("asset");
     var qTf = params.get("tf");
+    if (params.get("corr") === "0") { state.showCorredoresDemo = false; activeProps.corridors_enabled = false; }   // &corr=0: sin corredores HFT
     var opts = qTf ? { targetTf: qTf } : {};
     if (params.get("espejo") === "1" || (qAsset && qAsset.indexOf("ESPEJO") !== -1)) {
       espejo.on = true;
