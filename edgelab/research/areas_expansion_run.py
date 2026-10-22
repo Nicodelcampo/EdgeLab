@@ -152,6 +152,7 @@ def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, c
     log(f"celdas {cr['celdas']}, evaluables {cr['evaluables']}, nominadas {len(cr['nominadas'])} ({time.time() - t0:.0f}s)")
     res.update(celdas=cr["celdas"], evaluables=cr["evaluables"], nominadas=len(cr["nominadas"]), pi0=cr["pi0"], v_rel_cortes=cortes, comercio_cortes=com_c,
                operaciones=int(len(O)), con_llenado=int(np.isfinite(pnl).sum()), perillas=[(p.nombre, p.niveles, p.modo) for p in P])
+    res["nulo"] = GM.resumen_nulo(st, P, q=q, referencia=friccion)       # MDE por zona de la grilla (manifiesto: «si no pasa ninguna»)
     mes = pd.to_datetime(D.t_k.to_numpy(), unit="s", utc=True).strftime("%Y%m").to_numpy()[di]          # mes calendario (por disparo)
     ctx = dict(D=D, O=O, net=net, perillas=P, indices=idx, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist_obj=np.abs(O[:, 6] - O[:, 4]))
     if modo == "REP":                                                   # réplica: sólo las celdas congeladas, sin tamiz

@@ -42,6 +42,7 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 | El reporte E0 recorría 3 de 4 valores de W. | Recorrer siempre con `len(...)` de la tupla de valores, nunca con un número escrito a mano. |
 | Minutos repetidos entre bloques se descartaban en silencio. | Fallar ruidosamente ante datos inconsistentes. |
 | El manifiesto exigía ≥ 20 sesiones por celda y el código no lo aplicaba. | Cada condición del manifiesto tiene su línea de código y su test. |
+| El manifiesto pedía «MDE por zona de la grilla si no pasa ninguna» y el kernel no lo calculaba; hubo que relanzar sólo para eso. | Toda grilla publica `grilla_masiva.resumen_nulo` (MDE del tamiz y de confirmación por nivel de perilla, colas de t) nomine o no. |
 | Se lanzó una corrida con código que después tuvo correcciones. | Esa corrida **no se mira**; se documenta como descartada y se relanza. Mirarla y después corregir sería ajustar con los datos. |
 | El perfil de volumen por disparo en Python hacía lento el kernel con ticks reales. | Perfilar antes de lanzar; los bucles por evento, en numba y en lote; nada por operación en Python que pueda hacerse por evento. |
 | `fcntl`, `/dev/null` y CRLF rompían herramientas en Windows. | Las herramientas compartidas con el Debian se prueban en las dos plataformas (la suite corre en Windows con `tests/conftest.py`). |

@@ -46,6 +46,15 @@ Dos kernels de Kaggle, uno por fuente, en modo `DESC`:
 3. **Holdout (desde 2026-10-01) al final**, sólo para lo que pase la réplica y con seguimiento secuencial (`edgelab/funnel/secuencial.py`).
 Celdas, VR_CORTES y COM_CORTES se congelan desde el DESC; el nivel de cada réplica lo asigna LORD++ (`escalera_v1`). (c) queda para una familia futura.
 
+## Resultado DESC v1.3 (2026-10-22) — decisión fija
+| fuente | operaciones | ambiguas M1 resueltas con ticks | celdas | evaluables | nominadas | π0 |
+|---|---:|---:|---:|---:|---:|---:|
+| NQ 2025-08-05 → 2026-03-31 | 7.652.794 | 1.871.443 | 995.328 | 351.888 | **0** | 1,0 |
+| USATECH 2025-08-05 → 2026-03-31 | 6.181.816 | 1.436.467 | 995.328 | 315.654 | **0** | 1,0 |
+
+Ninguna celda pasa el tamiz en ninguna de las dos fuentes, así que no hay E2 ni réplica. **Falta el MDE por zona de la grilla** que este manifiesto exigía «si no pasa ninguna»: la condición estaba escrita y el código no la implementaba (el mismo error de la tabla de la guía). Sin MDE el nulo no distingue ausencia de efecto de falta de potencia, así que la familia queda `SIN EFECTO DETECTADO, POTENCIA PENDIENTE`, no muerta.
+**Relanzamiento v1.3b, sólo para el MDE:** mismo código de decisión, mismos datos y cortes; agrega `nulo` (`grilla_masiva.resumen_nulo`). No es una prueba nueva (no hay selección nueva: las nominadas ya quedaron en 0) y no suma al contador. Si v1.3b no reproduce exactamente operaciones, evaluables y nominadas de v1.3, es un fallo de determinismo y se investiga antes de interpretar nada.
+
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
 - **Huecos de NQ:** ES y NQ terminan el 25-sep. Afecta sólo a la réplica (b).

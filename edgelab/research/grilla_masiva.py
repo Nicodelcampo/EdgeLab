@@ -110,3 +110,38 @@ def meseta(st, celda, perillas, ejes_ordinales, min_n=30):
     v = [st["media"][x] for x in vecinos(celda, perillas, ejes_ordinales) if st["n"][x] >= min_n]
     ok = bool(v and np.mean(np.array(v) > 0) >= 2 / 3 and np.median(v) >= 0.5 * st["media"][celda])
     return dict(meseta=ok, vecinos=len(v), fraccion_positivos=float(np.mean(np.array(v) > 0)) if v else None)
+
+
+def resumen_nulo(st, perillas, q=0.10, referencia=None, potencia=0.8):
+    """Lo que publica toda grilla, nomine o no (regla «todo nulo publica su MDE»). Por celda evaluable, con el error estándar
+    por operación: MDE del tamiz (nivel q/m, lo que haría falta para ser nominada entre m celdas) y MDE de confirmación (5 %).
+    Agregado por nivel de cada perilla (mínimo y mediana), cuántas celdas detectarían `referencia` (p. ej. 1x la fricción),
+    y la distribución de t en los dos canales (cola positiva y negativa: un efecto bidireccional no se pierde en el promedio)."""
+    from edgelab.funnel.escalera import ALFA_CONFIRMACION
+    ev = st["evaluable"]; m = int(st["n"].size)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        se = np.abs(st["media"] / st["t"])
+    zp = _N.inv_cdf(potencia); z_tamiz = _N.inv_cdf(1 - q / m); z_conf = _N.inv_cdf(1 - ALFA_CONFIRMACION)
+    mde_t, mde_c = (z_tamiz + zp) * se, (z_conf + zp) * se
+    out = dict(celdas=m, evaluables=int(ev.sum()), z_tamiz=round(z_tamiz, 3), z_confirmacion=round(z_conf, 3), potencia=potencia)
+    if not ev.any(): return out
+    tv = st["t"][ev]
+    out["t"] = dict(max=float(tv.max()), min=float(tv.min()), **{f"q{int(k * 1000):03d}": float(np.quantile(tv, k)) for k in (0.001, 0.01, 0.5, 0.99, 0.999)},
+                    sobre_z_tamiz=int((tv > z_tamiz).sum()), bajo_menos_z_tamiz=int((tv < -z_tamiz).sum()))
+    out["mde_tamiz"] = dict(min=float(np.nanmin(mde_t[ev])), mediana=float(np.nanmedian(mde_t[ev])))
+    out["mde_confirmacion"] = dict(min=float(np.nanmin(mde_c[ev])), mediana=float(np.nanmedian(mde_c[ev])))
+    if referencia is not None:
+        out["referencia"] = float(referencia)
+        out["detectarian_referencia"] = dict(tamiz=int((mde_t[ev] <= referencia).sum()), confirmacion=int((mde_c[ev] <= referencia).sum()))
+    por = {}
+    for ax, p in enumerate(perillas):
+        filas = []
+        for v in range(st["n"].shape[ax]):
+            sl = [slice(None)] * st["n"].ndim; sl[ax] = v; e = ev[tuple(sl)]
+            if not e.any(): filas.append(dict(nivel=v, evaluables=0)); continue
+            mt = mde_t[tuple(sl)][e]
+            filas.append(dict(nivel=v, evaluables=int(e.sum()), mde_tamiz_min=float(np.nanmin(mt)), mde_tamiz_mediana=float(np.nanmedian(mt)),
+                              t_max=float(st["t"][tuple(sl)][e].max()), t_min=float(st["t"][tuple(sl)][e].min())))
+        por[p.nombre] = filas
+    out["por_perilla"] = por
+    return out

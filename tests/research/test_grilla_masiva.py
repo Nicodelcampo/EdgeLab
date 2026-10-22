@@ -26,3 +26,19 @@ def test_criba_ruido_no_nomina_y_efecto_si():
     efecto = ruido + np.where(a == 3, 0.5, 0)                    # sólo el grupo 3 tiene edge
     nom = GM.criba(GM.estadisticas(*GM.tensor(P, [a, b], efecto)))["nominadas"]
     assert nom and all(c[0] == 3 for c in nom)
+
+
+def test_resumen_nulo_publica_mde_y_dos_colas():
+    rng = np.random.default_rng(3)
+    P = [GM.Perilla("a", 4, "grupo"), GM.Perilla("b", 3, "grupo")]
+    n = 20000; idx = [rng.integers(0, 4, n), rng.integers(0, 3, n)]; x = rng.normal(0, 2.0, n)
+    S, Q, C = GM.tensor(P, idx, x); st = GM.estadisticas(S, Q, C)
+    r = GM.resumen_nulo(st, P, q=0.10, referencia=0.5)
+    assert r["evaluables"] == 12 and r["celdas"] == 12
+    se = 2.0 / np.sqrt(n / 12)                                                   # ~ error estándar de cada celda
+    assert abs(r["mde_confirmacion"]["mediana"] - (1.645 + 0.8416) * se) < 0.25 * (1.645 + 0.8416) * se
+    assert r["mde_tamiz"]["mediana"] > r["mde_confirmacion"]["mediana"]          # el tamiz exige más que una sola prueba
+    tv = st["t"][st["evaluable"]]                                                # las dos colas, contadas igual que a mano
+    assert r["t"]["sobre_z_tamiz"] == int((tv > r["z_tamiz"] - 5e-4).sum()) == int((tv > r["z_tamiz"]).sum())
+    assert r["t"]["bajo_menos_z_tamiz"] == int((tv < -r["z_tamiz"]).sum())
+    assert [f["nivel"] for f in r["por_perilla"]["a"]] == [0, 1, 2, 3] and "detectarian_referencia" in r
