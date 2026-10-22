@@ -1,16 +1,35 @@
-# Force LF line endings for specs and markdown docs to ensure SHA-256 hash stability across Windows and Linux
-* text=auto
+# Finales de linea (2026-10-22). Regla: CODIGO Y DOCUMENTOS en LF en todas las maquinas (Windows y el Debian del autopilot),
+# para que los hashes de archivos (manifiesto de protegidos, pins sha256) den lo mismo en las dos. EVIDENCIA byte a byte
+# (fuentes NT8, oraculos, archivos historicos, manifiestos de datos, corpus) sin conversion: sus hashes de custodia son sobre bytes.
+# Antes: `* text=auto` sin eol dejaba 2.259 archivos en CRLF en la copia de trabajo de Windows y el chequeo de protegidos fallaba.
+* text=auto eol=lf
 
-specs/docs/*.md text eol=lf
-docs/**/*.md text eol=lf
-*.md text eol=lf
-artifacts/hippocampus/*.jsonl -text
-# Corpus SSRN in-repo: byte-exact (los hashes de custodia son sobre bytes)
-corpus/ssrn/** -text
+*.sh text eol=lf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
 
-# archivos con pin SHA-256 byte a byte: sin conversion de fin de linea (el pin falla en Windows con autocrlf)
+# --- evidencia byte a byte (sin conversion) ---
+*.cs -text
+*.bak -text
+*.log -text
 *.py.txt -text
+archive/** -text
+diag/** -text
+oracles/** -text
+runs/** -text
+corpus/ssrn/** -text
+artifacts/hippocampus/*.jsonl -text
+AMejorasIndicadoresVectorbt/** -text
+uso.txt -text
+docs/predictions/** -text
+docs/transferencias/** -text
+docs/datos_manifiesto*.json -text
+docs/oraculos_manifiesto.json -text
 docs/infra/*.json -text
+docs/infra/*.csv -text
+docs/research/avzvol_*/** -text
 config/research/*.json -text
 specs/research/*.json -text
-docs/research/avzvol_*/** -text
+validation/*.csv -text
+tools/ulp_sweep_baseline.json -text

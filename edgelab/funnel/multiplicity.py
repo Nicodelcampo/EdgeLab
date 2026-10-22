@@ -48,7 +48,7 @@ class TrialRegistry:
     def __init__(self,path):self.path=Path(path)
     def _rows(self):
         if not self.path.exists():return []
-        return [json.loads(x) for x in self.path.read_text().splitlines() if x.strip()]
+        return [json.loads(x) for x in self.path.read_text(encoding='utf-8').splitlines() if x.strip()]
     @staticmethod
     def _digest(body):return hashlib.sha256(json.dumps(body,sort_keys=True,separators=(',',':')).encode()).hexdigest()
     def head(self):
@@ -62,7 +62,7 @@ class TrialRegistry:
             lock=lambda f:None
         if n_trials<1:raise ValueError('n_trials must be positive')
         self.path.parent.mkdir(parents=True,exist_ok=True)
-        with self.path.open('a+') as f:
+        with self.path.open('a+',encoding='utf-8',newline='\n') as f:   # mismos bytes en Windows y en el Debian
             lock(f);f.seek(0)
             rows=[json.loads(x) for x in f.read().splitlines() if x.strip()]
             for r in rows:
