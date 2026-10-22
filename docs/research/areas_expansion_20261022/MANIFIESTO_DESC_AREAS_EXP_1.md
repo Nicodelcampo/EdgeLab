@@ -14,7 +14,14 @@ Dos kernels de Kaggle, uno por fuente, en modo `DESC`:
 | Futuro NQ | release `liquid_tick_v1`, ticks reales con volumen | 2025-08-05 → 2026-03-31 (descubrimiento HOLDOUT-A3) |
 | Índice USATECH | Dukascopy, ticks; volumen cotizado | mismo período |
 
+## Corrida descartada (v1.2) — NO SE MIRA
+- El kernel `edgelab-areas-desc-usatech` (versión 1) se lanzó con el código v1.2.
+- La revisión posterior encontró errores que afectan desenlaces: entrada a mercado sólo al cierre, v_rel faltante en el tercio «bajo» y condiciones del manifiesto sin aplicar.
+- **Sus resultados no se descargan ni se miran.** Las pruebas siguen contadas (`areas_exp_1/desc_*`).
+- Se relanza con v1.3.
+
 ## Número de pruebas (contador global, antes de correr)
+- **v1.3: 995.328 celdas por fuente.** Se registran como `areas_exp_1_v13/desc_nq` y `areas_exp_1_v13/desc_usatech`, sumadas a las de v1.2. Contar de más es conservador.
 - 746.496 celdas por fuente, **1.492.992 en total**.
 - Las celdas están anidadas: los umbrales «≥» y «≤» comparten operaciones. El número efectivo se estima sobre las sobrevivientes, y el recorte de Harvey-Liu se cobra con ese N_eff.
 - Se registran en `TRIAL_REGISTRY_GLOBAL.jsonl` como `areas_exp_1/desc_nq` y `areas_exp_1/desc_usatech`.

@@ -1,7 +1,8 @@
 """Conductor de AREAS-EXP-1 (corre dentro del kernel de Kaggle; autocontenido junto con areas_expansion y escalera).
 
 modo "E0": sólo eventos y variables (target-free) -> conteos, distribuciones y cortes de v_rel. No simula nada.
-modo "DESC": además simula todas las ejecuciones y arma el tensor de 139.968 celdas -> tamiz FDR -> E2 sobre sobrevivientes.
+modo "DESC": además simula todas las ejecuciones y arma el tensor de celdas -> tamiz FDR -> E2 sobre sobrevivientes.
+modo "REP": réplica pre-registrada: sólo las celdas congeladas (`celdas`), con los cortes congelados del descubrimiento.
 Entrada: un iterador de bloques de ticks (DataFrame con ts_ns, px, vol, sesion, segmento) ordenados en el tiempo.
 """
 from __future__ import annotations
@@ -26,7 +27,9 @@ def m1_y_perfil(bloques):
         ms.append(pd.DataFrame(dict(o=g.p.first(), h=g.p.max(), l=g.p.min(), c=g.p.last(), v=g.v.sum(), ses=g.ses.last(), seg=g.seg.last())))
         vps.append(df.groupby(["t", "p"], sort=True).v.sum().reset_index())
         tps.append(df.p.to_numpy(float)); tts.append(mc)                    # ticks en orden (para resolver ambigüedad SL/TP en M1)
-    M = pd.concat(ms); M = M[~M.index.duplicated(keep="last")].sort_index()
+    M = pd.concat(ms).sort_index()
+    dup = int(M.index.duplicated().sum())
+    if dup: raise ValueError(f"{dup} minutos repetidos entre bloques: los bloques deben ser días de trading completos (no se descarta en silencio)")
     VP = pd.concat(vps).groupby(["t", "p"], sort=True).v.sum().reset_index()
     t = M.index.to_numpy(np.int64); mi = np.searchsorted(t, VP.t.to_numpy())
     start = np.searchsorted(mi, np.arange(len(t) + 1))
@@ -50,13 +53,17 @@ def disparos_y_variables(t, M, vp_px, vp_vol, vp_start, G):
             for ev in lista:
                 for d in AX.disparos(ev, h[a:b], l[a:b], c[a:b], t[a:b], fin=int(Z["zfin"][ev[3]].max())):
                     dg = dict(d, m=d["m"] + a, k=d["k"] + a)
-                    pv, vc, pvp = AX.perfil_volumen(dg, vp_start, vp_px, vp_vol)
-                    base = prev.get(ses[dg["k"]], np.nan) * max(dg["k"] - dg["m"], 1)
                     filas.append(dict(dg, ni=ni, wi=wi, N=len(ev[3]), seg=sg, ses=ses[dg["k"]], t_k=int(t[dg["k"]]),
-                                      com=AX.visitas_en(V, Z, ev[3], d["k"]), A_H=dg["A"] / dg["H"], p_vol=pv, p_vol_precio=pvp,
-                                      v_rel=(vc / base) if base and np.isfinite(base) and base > 0 else np.nan,
-                                      hora=int((t[dg["k"]] // 3600) % 24)))
-    return pd.DataFrame(filas)
+                                      com=AX.visitas_en(V, Z, ev[3], d["k"]), A_H=dg["A"] / dg["H"], hora=int((t[dg["k"]] // 3600) % 24)))
+    D = pd.DataFrame(filas)
+    if not len(D): return D
+    borde = np.where(D.lado.to_numpy() == 1, D.hi.to_numpy(), D.lo.to_numpy())
+    pv, vc, pvp = AX.perfiles_volumen(D.m.to_numpy(np.int64), D.k.to_numpy(np.int64), D.lado.to_numpy(np.int64), borde.astype(float),
+                                      D.A.to_numpy(float), vp_start.astype(np.int64), vp_px, vp_vol)                 # en lote, compilado
+    base = D.ses.map(prev).to_numpy(float) * np.maximum(D.k.to_numpy() - D.m.to_numpy(), 1)
+    D["p_vol"], D["p_vol_precio"] = pv, pvp
+    D["v_rel"] = np.where(np.isfinite(base) & (base > 0), vc / np.where(base > 0, base, 1), np.nan)
+    return D
 
 
 def e0(D):
@@ -69,42 +76,52 @@ def e0(D):
     return dict(disparos=int(len(D)), eventos=int(D.drop_duplicates(["ni", "wi", "m"]).shape[0]), sesiones=int(D.ses.nunique()),
                 eventos_por_dia=round(D.drop_duplicates(["ni", "wi", "m"]).shape[0] / max(D.ses.nunique(), 1), 2),
                 por_N_W_x={f"N>={AX.NS[n]}/W={AX.WS[w]}/x={AX.XS[x]}": int(((D.ni == n) & (D.wi == w) & (D.xi == x)).sum())
-                           for n in range(3) for w in range(3) for x in range(3)},
+                           for n in range(len(AX.NS)) for w in range(len(AX.WS)) for x in range(len(AX.XS))},
                 A_H=q(D.A_H), comercio=q(D.com), p_vol=q(D.p_vol.dropna()), v_rel=q(vr), v_rel_cortes=cortes,
                 lado_arriba=float((D.lado == 1).mean()) if len(D) else None, comercio_cortes=com_c)
 
 
 def _vecino_stop(celda):
-    e = celda[2]; st = (e // 2) % 3
+    e = celda[2]; st = (e // 2) % 3                                    # EJEC = dir/obj × entrada × stop × BE: stop = (e // 2) % 3
     return [tuple(celda[:2]) + (e + 2 * d,) + tuple(celda[3:]) for d in (-1, 1) if 0 <= st + d < 3]
 
 
-def e2(nominadas, ctx, *, extra_adverso, max_replica=3):
-    """Sobre las nominadas: IC por sesiones, meseta (x, A/H, comercio y stop), económico. Elige hasta `max_replica` por cota
-    inferior del IC (no por P&L máximo)."""
+MIN_OPS, MIN_SESIONES, RATIO_MOV_FRICCION = 30, 20, 3.0
+
+
+def evaluar_celda(cel, ctx, *, extra_adverso, friccion, bootstrap=2000):
+    """Inferencia cara de UNA celda: IC por sesiones, meseta, económico y relevancia (distancia al objetivo / fricción)."""
     from edgelab.funnel.escalera import economia, resumen_sesiones
     from edgelab.research import grilla_masiva as GM
-    P, idx, net, st = ctx["perillas"], ctx["indices"], ctx["net"], ctx["st"]; out = []
-    for cel in nominadas:
-        m = GM.mascara(P, idx, cel) & np.isfinite(net)
-        if m.sum() < 30: continue
-        rs = resumen_sesiones(net[m], ctx["ses"][m], n_boot=2000)
-        ms = GM.meseta(st, cel, P, AX.EJES_ORDINALES)
-        vs = [st["media"][v] for v in _vecino_stop(cel) if st["n"][v] >= 30]
-        mes_ok = ms["meseta"] and (not vs or np.mean(np.array(vs) > 0) >= 0.5)
-        eco = economia(net[m], net[m] - extra_adverso, ctx["ses"][m], periodos=ctx["mes"][m])
-        out.append(dict(celda=list(cel), ejecucion=list(AX.EJEC[cel[2]]), n=int(m.sum()), media_neta=float(net[m].mean()),
-                        sesiones=rs["n_sesiones"], ic90=rs["ic"], p_sesiones=rs["p_unilateral"], meseta=bool(mes_ok), vecinos=ms["vecinos"],
-                        economico=eco["duros"], pasa=bool(mes_ok and eco["pasa"] and rs["ic"][0] > 0)))
+    P, idx, net, st = ctx["perillas"], ctx["indices"], ctx["net"], ctx["st"]
+    m = GM.mascara(P, idx, cel) & np.isfinite(net)
+    if m.sum() < MIN_OPS: return None
+    rs = resumen_sesiones(net[m], ctx["ses"][m], n_boot=bootstrap)
+    ms = GM.meseta(st, cel, P, AX.EJES_ORDINALES)
+    vs = [st["media"][v] for v in _vecino_stop(cel) if st["n"][v] >= MIN_OPS]
+    mes_ok = ms["meseta"] and (not vs or np.mean(np.array(vs) > 0) >= 0.5)
+    eco = economia(net[m], net[m] - extra_adverso, ctx["ses"][m], periodos=ctx["mes"][m])
+    dist = float(np.median(ctx["dist_obj"][m])); rel = dist / friccion if friccion > 0 else np.inf
+    ok = bool(mes_ok and eco["pasa"] and rs["ic"][0] > 0 and rs["n_sesiones"] >= MIN_SESIONES and rel >= RATIO_MOV_FRICCION)
+    return dict(celda=list(cel), ejecucion=list(AX.EJEC[cel[2]]), n=int(m.sum()), media_neta=float(net[m].mean()), sesiones=rs["n_sesiones"],
+                ic90=rs["ic"], p_sesiones=rs["p_unilateral"], meseta=bool(mes_ok), vecinos=ms["vecinos"], economico=eco["duros"],
+                dist_objetivo_mediana=dist, ratio_mov_friccion=round(rel, 2), pasa=ok)
+
+
+def e2(nominadas, ctx, *, extra_adverso, friccion, max_replica=3):
+    """Sobre las nominadas: evaluar_celda. Pasa con IC>0, meseta, económico, >= 20 sesiones y objetivo >= 3x fricción.
+    Elige hasta `max_replica` por cota inferior del IC (no por P&L máximo)."""
+    out = [r for r in (evaluar_celda(c, ctx, extra_adverso=extra_adverso, friccion=friccion) for c in nominadas) if r]
     pasan = sorted([x for x in out if x["pasa"]], key=lambda x: -x["ic90"][0])
     return out, pasan[:max_replica]
 
 
-def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, com_cortes=None, q=0.10, log=print):
+def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, com_cortes=None, celdas=None, q=0.10, log=print):
     t0 = time.time(); t, M, vpp, vpv, vps, tpx, tstart = m1_y_perfil(bloques); log(f"M1 {len(t)} velas, perfil {len(vpp)} filas ({time.time() - t0:.0f}s)")
     D = disparos_y_variables(t, M, vpp, vpv, vps, G); log(f"disparos {len(D)} ({time.time() - t0:.0f}s)")
     res = dict(modo=modo, E0=e0(D))
     if modo == "E0": return res, D
+    if modo == "REP" and not (vr_cortes and com_cortes and celdas): raise ValueError("REP exige celdas y cortes CONGELADOS del descubrimiento")
     cortes = vr_cortes or res["E0"]["v_rel_cortes"]; com_c = com_cortes or res["E0"]["comercio_cortes"]
     D = D.reset_index(drop=True); ops = []
     o, h, l, c = (M[k].to_numpy(float) for k in "ohlc"); ses = M.ses.to_numpy().astype(np.int64)
@@ -117,15 +134,20 @@ def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, c
                           O[:, 7].astype(np.int64), o, h, l, c, ses, float(tick), tpx, tstart)
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(O)} simuladas, {int(np.isfinite(pnl).sum())} con llenado ({time.time() - t0:.0f}s)")
-    ab, cb, pb, vb = AX.bins_variables(D.A_H.to_numpy()[di], D.com.to_numpy()[di], D.p_vol.to_numpy()[di], D.v_rel.fillna(-1).to_numpy()[di], cortes, com_c)
+    ab, cb, pb, vb = AX.bins_variables(D.A_H.to_numpy()[di], D.com.to_numpy()[di], D.p_vol.to_numpy()[di], D.v_rel.to_numpy()[di], cortes, com_c)
     from edgelab.research import grilla_masiva as GM
     P = AX.perillas(); idx = [D.ni.to_numpy()[di] * len(AX.WS) + D.wi.to_numpy()[di], D.xi.to_numpy()[di], O[:, 1].astype(int), ab, cb, pb, vb]
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C); cr = GM.criba(st, q=q)
     log(f"celdas {cr['celdas']}, evaluables {cr['evaluables']}, nominadas {len(cr['nominadas'])} ({time.time() - t0:.0f}s)")
     res.update(celdas=cr["celdas"], evaluables=cr["evaluables"], nominadas=len(cr["nominadas"]), pi0=cr["pi0"], v_rel_cortes=cortes, comercio_cortes=com_c,
                operaciones=int(len(O)), con_llenado=int(np.isfinite(pnl).sum()), perillas=[(p.nombre, p.niveles, p.modo) for p in P])
-    ctx = dict(D=D, O=O, net=net, perillas=P, indices=idx, st=st, ses=D.ses.to_numpy()[di], mes=D.t_k.to_numpy()[di] // (86400 * 30))
-    res["E2"], res["a_replica"] = e2(cr["nominadas"], ctx, extra_adverso=extra_adverso)
+    mes = pd.to_datetime(D.t_k.to_numpy(), unit="s", utc=True).strftime("%Y%m").to_numpy()[di]          # mes calendario (por disparo)
+    ctx = dict(D=D, O=O, net=net, perillas=P, indices=idx, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist_obj=np.abs(O[:, 6] - O[:, 4]))
+    if modo == "REP":                                                   # réplica: sólo las celdas congeladas, sin tamiz
+        res["replica"] = [dict(evaluar_celda(tuple(c), ctx, extra_adverso=extra_adverso, friccion=friccion) or dict(celda=list(c), n=0, nota="< 30 operaciones"))
+                          for c in (celdas or [])]
+        log(f"REP: {len(res['replica'])} celdas evaluadas ({time.time() - t0:.0f}s)"); return res, ctx
+    res["E2"], res["a_replica"] = e2(cr["nominadas"], ctx, extra_adverso=extra_adverso, friccion=friccion)
     res["nominadas_top"] = [dict(celda=list(c), ejecucion=list(AX.EJEC[c[2]]), n=int(st["n"][c]), media_neta=float(st["media"][c]), t=float(st["t"][c]))
                             for c in cr["nominadas"][:300]]
     log(f"E2: {len(res['E2'])} evaluadas, {sum(x['pasa'] for x in res['E2'])} pasan, {len(res['a_replica'])} a réplica ({time.time() - t0:.0f}s)")

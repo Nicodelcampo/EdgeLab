@@ -27,7 +27,9 @@ COM_CORTES = (0.0, 1.0, 3.0)            # comercio <= ... (más "cualquiera")
 PV_CORTES = (1 / 3, 2 / 3)              # p_vol < 1/3, 1/3-2/3, > 2/3
 # ejecución: (dirección, objetivo) x entrada x stop x BE
 DIR_OBJ = (("HACIA", "T1"), ("HACIA", "T2"), ("HACIA", "T3"), ("REBOTE", "1R"), ("REBOTE", "2R"), ("REBOTE", "E"))
-ENTRADAS = ("E1", "E2", "E3")
+# Momento de la entrada a mercado: NO es una regla universal (decisión de Nico, 2026-10-22: «depende del análisis»); acá se
+# prueban las dos como perilla. E1C = al cierre de la vela de decisión; E1A = primer tick de la vela siguiente.
+ENTRADAS = ("E1C", "E1A", "E2", "E3")
 STOPS = ("S1", "S2", "S3")
 BES = (0, 1)
 EJEC = [(d, o, e, s, b) for (d, o) in DIR_OBJ for e in ENTRADAS for s in STOPS for b in BES]       # 108
@@ -198,16 +200,30 @@ def disparos(ev, h, l, c, t_close, fin=None, xs=XS):
 
 
 def perfil_volumen(d, vp_min_start, vp_px, vp_vol):
-    """Tramo de máximo volumen entre el borde cercano y el extremo, con las operaciones de m+1..k. Devuelve (p_vol, vol_conc, precio)."""
-    a, b = vp_min_start[d["m"] + 1], vp_min_start[d["k"] + 1]
-    px, vol = vp_px[a:b], vp_vol[a:b]
-    borde = d["hi"] if d["lado"] == 1 else d["lo"]
-    pos = (px - borde) * d["lado"] / max(d["A"], 1e-9)
-    sel = (pos >= 0) & (pos <= 1)
-    if not sel.any(): return np.nan, 0.0, np.nan
-    hb = np.bincount(np.minimum((pos[sel] * 10).astype(int), 9), weights=vol[sel], minlength=10)
-    i = int(np.argmax(hb)); pv = (i + 0.5) / 10
-    return pv, float(hb[max(i - 1, 0):i + 2].sum()), borde + d["lado"] * pv * d["A"]
+    """Tramo de máximo volumen entre el borde cercano y el extremo, con las operaciones de m+1..k. Devuelve (p_vol, vol_conc, precio).
+    (Versión de a uno; el conductor usa `perfiles_volumen`, compilada y en lote, con el mismo resultado.)"""
+    r = perfiles_volumen(np.array([d["m"]]), np.array([d["k"]]), np.array([d["lado"]]), np.array([d["hi"] if d["lado"] == 1 else d["lo"]]),
+                         np.array([d["A"]]), vp_min_start, vp_px, vp_vol)
+    return r[0][0], r[1][0], r[2][0]
+
+
+@njit(cache=False)
+def perfiles_volumen(m, k, lado, borde, A, vp_min_start, vp_px, vp_vol):
+    """En lote: para cada disparo, perfil de 10 tramos entre el borde cercano (0) y el extremo (1) con el volumen negociado
+    de las barras m+1..k. Devuelve p_vol (centro del tramo de máximo volumen), volumen de ese tramo ±1 y su precio."""
+    T = len(m); pv = np.full(T, np.nan); vc = np.zeros(T); pp = np.full(T, np.nan); hb = np.zeros(10)
+    for t in range(T):
+        hb[:] = 0.0; tot = 0.0
+        for i in range(vp_min_start[m[t] + 1], vp_min_start[k[t] + 1]):
+            pos = (vp_px[i] - borde[t]) * lado[t] / max(A[t], 1e-9)
+            if pos < 0 or pos > 1: continue
+            b = min(int(pos * 10), 9); hb[b] += vp_vol[i]; tot += vp_vol[i]
+        if tot <= 0: continue
+        j = 0
+        for q in range(1, 10):
+            if hb[q] > hb[j]: j = q
+        pv[t] = (j + 0.5) / 10; vc[t] = hb[max(j - 1, 0):j + 2].sum(); pp[t] = borde[t] + lado[t] * pv[t] * A[t]
+    return pv, vc, pp
 
 
 # ----------------------------------------------------------------------------------------------- simulación (desenlaces)
@@ -230,6 +246,8 @@ def _primero_en_ticks(tpx, a, b, d, st, tp, tick):
 def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
     """Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
     limite=1: orden límite en `nivel`, se llena si el precio la atraviesa por 1 tick dentro de 120 barras.
+    limite=2: mercado en el PRIMER TICK de la vela siguiente (misma sesión). El momento de llenado es una decisión de cada
+    análisis: el simulador no impone ninguno; quien lo llama lo declara por operación.
     AMBIGÜEDAD M1 (pedido de Nico): si una vela toca stop y objetivo, o en la vela del llenado de una límite, se resuelve con
     el ORDEN DE LOS TICKS de esa vela (`tpx`, con `tstart[j]..tstart[j+1]` los ticks del minuto j). Sin ticks para esa vela:
     se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (240) o fin de sesión al cierre.
@@ -238,8 +256,18 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
     T = len(start); pnl = np.full(T, np.nan); amb = np.zeros(T, np.int8); n = len(c)
     for t in range(T):
         k = start[t]; d = s[t]; st = stop0[t]; obj = tp[t]
-        if limite[t] == 0:
-            e = c[k]; f = k; ia = tstart[k + 1] if k + 1 <= n else 0
+        if limite[t] == 0:                                                 # E1C: llenado al cierre de la vela de decisión
+            e = c[k]; f = k
+        elif limite[t] == 2:                                               # E1A: llenado en el primer tick de la vela siguiente
+            f = k + 1
+            if f >= n or sesion[f] != sesion[k]: continue
+            e = o[f]
+            if tstart[f + 1] > tstart[f]:
+                cod, px = _primero_en_ticks(tpx, tstart[f] + 1, tstart[f + 1], d, st, obj, tick)
+                if cod == 1: pnl[t] = (px - e) * d; amb[t] = 1; continue
+                if cod == 2: pnl[t] = (obj - e) * d; amb[t] = 1; continue
+            elif (d == 1 and l[f] <= st) or (d == -1 and h[f] >= st):
+                pnl[t] = (st - e) * d; amb[t] = 2; continue
         else:
             e = nivel[t]; f = -1; ia = 0
             for j in range(k + 1, min(n, k + 1 + 120)):
@@ -285,7 +313,8 @@ def niveles(d, ejec, pv_precio, tick, c):
     """Precios de entrada/stop/objetivo de una ejecución sobre un disparo. None si la combinación no aplica."""
     di, ob, en, sl, be = ejec; lado = d["lado"]; borde, lejos = (d["hi"], d["lo"]) if lado == 1 else (d["lo"], d["hi"])
     s = -lado if di == "HACIA" else lado                                       # HACIA: hacia el área
-    if en == "E1": lim, e = 0, float(c[d["k"]])
+    if en == "E1C": lim, e = 0, float(c[d["k"]])
+    elif en == "E1A": lim, e = 2, float(c[d["k"]])                         # niveles planeados al cierre; el llenado real es el tick siguiente
     elif en == "E2":
         if not np.isfinite(pv_precio): return None
         lim, e = 1, float(pv_precio)
@@ -315,7 +344,8 @@ def bins_variables(A_H, com, pv, vr, vr_cortes, com_cortes=COM_CORTES):
     c1, c2, c3 = com_cortes
     cb = np.where(com <= c1, 0, np.where(com <= c2, 1, np.where(com <= c3, 2, 3)))
     pb = np.where(~np.isfinite(pv), -1, np.digitize(pv, PV_CORTES))
-    vb = np.digitize(vr, vr_cortes)                                      # 0 bajo, 1 medio, 2 alto
+    vr = np.asarray(vr, float)
+    vb = np.where(np.isfinite(vr), np.digitize(vr, vr_cortes), -1)       # 0 bajo, 1 medio, 2 alto; sin dato = fuera (v1.2 lo mandaba a «bajo»)
     return ab, cb, pb, vb
 
 

@@ -141,6 +141,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - **Costos sólo de `edgelab/costos.py`** (`config/costos/costos_canonicos.json`): spread
   medido + comisión máxima de las firmas que admiten algoritmos + slippage del escenario
   G3. Un instrumento sin componente medido falla; no se usa una tabla local nueva.
+- **Grilla masiva (miles o millones de variantes):** seguir `docs/research/GUIA_GRILLA_MASIVA.md` (orden obligatorio y
+  tabla de errores que no se repiten). El momento de llenado de una entrada es una decisión declarada de cada análisis,
+  nunca una convención fija del motor. Una corrida lanzada con código que después se corrigió no se mira: se documenta
+  como descartada y se relanza.
 - **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
   tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
   económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:

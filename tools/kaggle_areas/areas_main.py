@@ -69,13 +69,14 @@ def main():
     t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     vr = [float(x) for x in os.environ["VR_CORTES"].split(",")] if os.environ.get("VR_CORTES") else None
     cc = [float(x) for x in os.environ["COM_CORTES"].split(",")] if os.environ.get("COM_CORTES") else None
+    celdas = json.loads(os.environ["CELDAS"]) if os.environ.get("CELDAS") else None          # REP: celdas congeladas
     cfg = dict(NQ=dict(b=bloques_nq, G=1.0, tick=0.25), USATECH=dict(b=bloques_usatech, G=1.0, tick=0.01))[FUENTE]
-    res, ctx = R.correr(cfg["b"](), modo=MODO, G=cfg["G"], tick=cfg["tick"], friccion=FRICCION, extra_adverso=EXTRA_ADVERSO, vr_cortes=vr, com_cortes=cc, log=log)
+    res, ctx = R.correr(cfg["b"](), modo=MODO, G=cfg["G"], tick=cfg["tick"], friccion=FRICCION, extra_adverso=EXTRA_ADVERSO, vr_cortes=vr, com_cortes=cc, celdas=celdas, log=log)
     res.update(fuente=FUENTE, desde=DESDE, hasta=HASTA, friccion_pts=FRICCION, codigo=CODIGO_SHA)
     json.dump(res, open(f"AREAS_{FUENTE}_{MODO}.json", "w"), indent=1, default=float)
     D = ctx if MODO == "E0" else ctx["D"]
     D.drop(columns=[], errors="ignore").to_parquet(f"AREAS_{FUENTE}_disparos.parquet")       # target-free: disparos y variables
-    log(json.dumps({k: v for k, v in res.items() if k in ("E0", "celdas", "evaluables", "nominadas", "ambiguedad_M1", "a_replica")}, default=float)[:4000])
+    log(json.dumps({k: v for k, v in res.items() if k in ("E0", "celdas", "evaluables", "nominadas", "ambiguedad_M1", "a_replica", "replica")}, default=float)[:4000])
 
 
 main()

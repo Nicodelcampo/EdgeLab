@@ -1,6 +1,6 @@
 # AREAS-EXP-1 — Áreas de zonas OG/VI, expansión y regreso: especificación exacta (v1)
 
-Estado: PROPUESTA v1.1 (diseño; nada corrido sobre desenlaces). Pedido de Nico, 2026-10-22.
+Estado: VIGENTE v1.3 (revisión del 2026-10-22; ningún desenlace mirado). Pedido de Nico, 2026-10-22.
 
 > **Cambios v1.1, todos decididos sin mirar desenlaces** (por conteos E0, controles sintéticos y pedidos de Nico):
 > 1. **Área = banda de altura ≤ W con ≥ N zonas vivas.** W es perilla: 5, 15, 40 y 100 puntos. La v1 unía zonas pegadas y daba 0,35 áreas por día.
@@ -9,6 +9,16 @@ Estado: PROPUESTA v1.1 (diseño; nada corrido sobre desenlaces). Pedido de Nico,
 > 4. **Ambigüedad M1:** si una vela toca el stop y el objetivo, o en la vela del llenado de una límite, decide el ORDEN REAL DE LOS TICKS. Un stop saltado se llena en el tick real. Se informa cuántos casos se resolvieron así.
 > 5. **Grilla:** 12 (N×W) × 3 x × 108 ejecuciones × 4 A/H × 4 comercio × 4 p_vol × 3 v_rel = **746.496 celdas por fuente**.
 > 6. **Núcleo genérico reutilizable** (`edgelab/research/grilla_masiva.py`): tensor con perillas ordinales, criba FDR, máscara de celda y meseta. El kernel se empaqueta con `tools/kaggle_areas/construir_kernel.py`.
+> **Cambios v1.2 y v1.3, también sin mirar desenlaces:**
+> - **Comercio:** cortes por cuartiles del E0 de cada fuente.
+> - **Momento de entrada a mercado como perilla:** `E1C` (cierre de la vela de decisión) y `E1A` (primer tick siguiente). Decisión de Nico: depende del análisis, no es una regla universal. Con esto quedan 144 ejecuciones y **995.328 celdas por fuente**.
+> - **v_rel sin dato:** queda fuera de las celdas; antes caía en el tercio «bajo».
+> - **Condiciones del manifiesto que faltaban en el código:** ≥ 20 sesiones por celda y objetivo mediano ≥ 3× la fricción.
+> - **Meses calendario** para la concentración.
+> - **Modo `REP`:** celdas y cortes congelados.
+> - **Fallar ante minutos repetidos** en vez de descartarlos.
+> - **Perfil de volumen compilado y en lote.**
+>
 > 7. **Controles sin mercado:**
 >    - con ruido puro, 0 nominadas sobre 746.496 celdas;
 >    - con una reversión plantada, gana HACIA el área, como corresponde;

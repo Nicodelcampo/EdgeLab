@@ -76,7 +76,7 @@ def test_tensor_acumulado_igual_a_fuerza_bruta():
 def test_niveles_hacia_y_rebote():
     d = dict(m=0, k=5, lado=1, lo=100.0, hi=102.0, H=2.0, E=110.0, A=8.0, D=3.0)
     c = np.full(10, 105.0)
-    lim, s, e, st, tp, be = AX.niveles(d, ("HACIA", "T2", "E1", "S2", 0), np.nan, 0.25, c)
+    lim, s, e, st, tp, be = AX.niveles(d, ("HACIA", "T2", "E1C", "S2", 0), np.nan, 0.25, c)
     assert (lim, s, e, tp, st) == (0, -1, 105.0, 101.0, 109.0)                    # venta hacia el área, TP al 50 %, stop a 1x
     assert AX.niveles(d, ("HACIA", "T1", "E3", "S1", 0), np.nan, 0.25, c) is None  # E3 no aplica a HACIA
     lim, s, e, st, tp, be = AX.niveles(d, ("REBOTE", "2R", "E3", "S1", 1), np.nan, 0.25, c)
@@ -139,3 +139,19 @@ def test_empates_de_ancho_casi_exactos_se_ordenan_igual_que_el_oraculo():
     Z = _Z(zs, n, t)
     a = AX.eventos(Z, t, 0.0, ns=(3,), ws=(4.87,)); b = _eventos_oraculo(Z, t, 0.0, (3,), (4.87,))
     assert [(e[0], e[1], e[2], sorted(e[3].tolist())) for e in a[(3, 4.87)]] == b[(3, 4.87)]
+
+
+def test_momento_de_entrada_es_un_parametro_declarado():
+    """E1C llena al cierre de la vela de decisión; E1A en el primer tick de la siguiente (con hueco, al precio del hueco).
+    Ninguno es el «correcto» por defecto: cada análisis lo declara (Nico, 2026-10-22)."""
+    n = 12; ses = np.zeros(n, np.int64); c = np.full(n, 100.0); o = c.copy(); h = c + 1; l = c - 1
+    o[3] = 102; h[3] = 103; l[3] = 101.5; c[3] = 102; h[6] = 110                     # la vela siguiente abre con hueco a 102
+    assert _sim(2, 1, 0, 0, 90, 108, 0, o, h, l, c, ses) == 8                        # E1C: compra a 100, TP 108
+    assert _sim(2, 1, 2, 0, 90, 108, 0, o, h, l, c, ses) == 6                        # E1A: compra a 102 (open siguiente)
+    ses2 = ses.copy(); ses2[3:] = 1
+    assert np.isnan(_sim(2, 1, 2, 0, 90, 108, 0, o, h, l, c, ses2))                  # E1A no cruza de sesión
+
+
+def test_v_rel_sin_dato_no_cae_en_ningun_tercio():
+    ab, cb, pb, vb = AX.bins_variables(np.array([2.0, 2.0]), np.array([1.0, 1.0]), np.array([0.5, 0.5]), np.array([np.nan, 0.01]), [0.04, 0.13], (1, 2, 3))
+    assert vb.tolist() == [-1, 0]

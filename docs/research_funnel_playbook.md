@@ -477,6 +477,12 @@ Réplica, holdout y paper llegan por semana. Un p-valor mirado muchas veces no v
   **potencia** para ver el efecto recortado por selección (Harvey-Liu sobre N_eff, t agrupado por sesión) con el n que dará el
   holdout. Si no alcanza, se espera o se sigue como paper.
 
+### ATJ-23 — Grillas masivas: E0 antes de congelar, oráculo para lo compilado, nada por defecto escondido
+
+Toda corrida de miles o millones de variantes sigue `docs/research/GUIA_GRILLA_MASIVA.md`: spec exacta → tests de resultado
+conocido → oráculo de lo compilado → controles ruido/plantado → E0 (cortes desde cuantiles) → registro → DESC → REP → holdout.
+El momento de llenado de una orden es una decisión declarada de cada análisis, no una convención del motor.
+
 ### Ruta ejecutable para estudios de evento y reglas con su propio simulador
 
 El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:
