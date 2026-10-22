@@ -63,6 +63,7 @@ def e0(D):
     """Resumen target-free: conteos por N y x, distribuciones y cortes de v_rel (terciles de descubrimiento)."""
     vr = D.v_rel[np.isfinite(D.v_rel)]
     cortes = [float(np.quantile(vr, 1 / 3)), float(np.quantile(vr, 2 / 3))] if len(vr) else [np.nan, np.nan]
+    com_c = [float(np.quantile(D.com, q_)) for q_ in (0.25, 0.5, 0.75)]
     q = lambda s: {p: round(float(np.nanquantile(s, p)), 4) for p in (0.1, 0.25, 0.5, 0.75, 0.9)} if len(s) else {}
     if not len(D): return dict(disparos=0)
     return dict(disparos=int(len(D)), eventos=int(D.drop_duplicates(["ni", "wi", "m"]).shape[0]), sesiones=int(D.ses.nunique()),
@@ -70,7 +71,7 @@ def e0(D):
                 por_N_W_x={f"N>={AX.NS[n]}/W={AX.WS[w]}/x={AX.XS[x]}": int(((D.ni == n) & (D.wi == w) & (D.xi == x)).sum())
                            for n in range(3) for w in range(3) for x in range(3)},
                 A_H=q(D.A_H), comercio=q(D.com), p_vol=q(D.p_vol.dropna()), v_rel=q(vr), v_rel_cortes=cortes,
-                lado_arriba=float((D.lado == 1).mean()) if len(D) else None)
+                lado_arriba=float((D.lado == 1).mean()) if len(D) else None, comercio_cortes=com_c)
 
 
 def _vecino_stop(celda):
@@ -99,12 +100,12 @@ def e2(nominadas, ctx, *, extra_adverso, max_replica=3):
     return out, pasan[:max_replica]
 
 
-def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, q=0.10, log=print):
+def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, com_cortes=None, q=0.10, log=print):
     t0 = time.time(); t, M, vpp, vpv, vps, tpx, tstart = m1_y_perfil(bloques); log(f"M1 {len(t)} velas, perfil {len(vpp)} filas ({time.time() - t0:.0f}s)")
     D = disparos_y_variables(t, M, vpp, vpv, vps, G); log(f"disparos {len(D)} ({time.time() - t0:.0f}s)")
     res = dict(modo=modo, E0=e0(D))
     if modo == "E0": return res, D
-    cortes = vr_cortes or res["E0"]["v_rel_cortes"]
+    cortes = vr_cortes or res["E0"]["v_rel_cortes"]; com_c = com_cortes or res["E0"]["comercio_cortes"]
     D = D.reset_index(drop=True); ops = []
     o, h, l, c = (M[k].to_numpy(float) for k in "ohlc"); ses = M.ses.to_numpy().astype(np.int64)
     for i, r in enumerate(D.to_dict("records")):
@@ -116,12 +117,12 @@ def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, q
                           O[:, 7].astype(np.int64), o, h, l, c, ses, float(tick), tpx, tstart)
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(O)} simuladas, {int(np.isfinite(pnl).sum())} con llenado ({time.time() - t0:.0f}s)")
-    ab, cb, pb, vb = AX.bins_variables(D.A_H.to_numpy()[di], D.com.to_numpy()[di], D.p_vol.to_numpy()[di], D.v_rel.fillna(-1).to_numpy()[di], cortes)
+    ab, cb, pb, vb = AX.bins_variables(D.A_H.to_numpy()[di], D.com.to_numpy()[di], D.p_vol.to_numpy()[di], D.v_rel.fillna(-1).to_numpy()[di], cortes, com_c)
     from edgelab.research import grilla_masiva as GM
     P = AX.perillas(); idx = [D.ni.to_numpy()[di] * len(AX.WS) + D.wi.to_numpy()[di], D.xi.to_numpy()[di], O[:, 1].astype(int), ab, cb, pb, vb]
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C); cr = GM.criba(st, q=q)
     log(f"celdas {cr['celdas']}, evaluables {cr['evaluables']}, nominadas {len(cr['nominadas'])} ({time.time() - t0:.0f}s)")
-    res.update(celdas=cr["celdas"], evaluables=cr["evaluables"], nominadas=len(cr["nominadas"]), pi0=cr["pi0"], v_rel_cortes=cortes,
+    res.update(celdas=cr["celdas"], evaluables=cr["evaluables"], nominadas=len(cr["nominadas"]), pi0=cr["pi0"], v_rel_cortes=cortes, comercio_cortes=com_c,
                operaciones=int(len(O)), con_llenado=int(np.isfinite(pnl).sum()), perillas=[(p.nombre, p.niveles, p.modo) for p in P])
     ctx = dict(D=D, O=O, net=net, perillas=P, indices=idx, st=st, ses=D.ses.to_numpy()[di], mes=D.t_k.to_numpy()[di] // (86400 * 30))
     res["E2"], res["a_replica"] = e2(cr["nominadas"], ctx, extra_adverso=extra_adverso)

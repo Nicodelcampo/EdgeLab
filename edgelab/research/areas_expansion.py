@@ -308,9 +308,12 @@ def niveles(d, ejec, pv_precio, tick, c):
 
 
 # ----------------------------------------------------------------------------------------------- tensor de celdas
-def bins_variables(A_H, com, pv, vr, vr_cortes):
+def bins_variables(A_H, com, pv, vr, vr_cortes, com_cortes=COM_CORTES):
+    """com_cortes: 3 cortes crecientes para «comercio <= ...» (E0 v1.1: cuartiles de cada fuente; con datos reales la mediana
+    ronda 10 visitas por zona y los cortes fijos 0/1/3 dejaban casi todo en «cualquiera»)."""
     ab = np.digitize(A_H, A_CORTES) - 1                                  # 0: [1,2) 1: [2,4) 2: [4,8) 3: >=8  (-1: < 1)
-    cb = np.where(com <= 0, 0, np.where(com <= 1, 1, np.where(com <= 3, 2, 3)))
+    c1, c2, c3 = com_cortes
+    cb = np.where(com <= c1, 0, np.where(com <= c2, 1, np.where(com <= c3, 2, 3)))
     pb = np.where(~np.isfinite(pv), -1, np.digitize(pv, PV_CORTES))
     vb = np.digitize(vr, vr_cortes)                                      # 0 bajo, 1 medio, 2 alto
     return ab, cb, pb, vb
