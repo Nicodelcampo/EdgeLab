@@ -138,6 +138,16 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   cierre de la confirmación, costos, todos los períodos, agregado y consistencia) y
   recién después los mecanismos. Una simulación visual sin costos o con entrada en el
   extremo no es evidencia.
+- **Costos sólo de `edgelab/costos.py`** (`config/costos/costos_canonicos.json`): spread
+  medido + comisión máxima de las firmas que admiten algoritmos + slippage del escenario
+  G3. Un instrumento sin componente medido falla; no se usa una tabla local nueva.
+- **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
+  tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
+  económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:
+  REFUTADA (la cota optimista no llega a lo útil), SIN_POTENCIA (viva, con las
+  operaciones que faltan) y confirmada. Un nulo sin potencia NO mata. Holdout, réplica y
+  paper se siguen con `edgelab/funnel/secuencial.py` (válido mirando cada semana).
+  Ver `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`.
 
 ## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
 

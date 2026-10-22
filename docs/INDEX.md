@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 699 |
+| `docs/research` | 700 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -109,11 +109,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (6)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/research/eurusd_escalonadas_20261021/RESULTADO_EURUSD_ESCALONADAS_ESCALAS_20261021.md: falta `Estado:` en el encabezado
-- docs/research/luximb_parity_20261020/AUDITORIA_ENTRADA_LOOKAHEAD_Y_BE_20261021.md: falta `Estado:` en el encabezado
-- docs/research/luximb_parity_20261020/HOLDOUT_DATOS_INTEGRIDAD_NQ1226_20261021.md: falta `Estado:` en el encabezado
-- docs/research/orb0100_20261021/PREREGISTRO_GC_NOCTURNO_20261021.md: falta `Estado:` en el encabezado
-- docs/research/orb0100_20261021/REPLICACION_NQ_ABR_SEP_PREREGISTRO_20261021.md: falta `Estado:` en el encabezado
-- docs/research/orb0100_20261021/RESULTADOS_ORB_HORARIOS_Y_FRANJAS_20261021.md: falta `Estado:` en el encabezado
+Ninguno.

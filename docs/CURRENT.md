@@ -15,6 +15,13 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 - **Sprint 2026-10-20..22 (LUX-IMB OG/VI, ORB 01:00 de Instagram, horarios ORB, picos EURUSD): 20 campañas, 1.535 pruebas**, ahora en el contador global (`tools/registrar_campanias_20261020.py`). Índice, veredictos y auditoría del embudo: `docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`.
 - **Único candidato vivo:** regla LUX-IMB del visor en NQ (entrada al cierre de la confirmación, TP en el inicio de la zona, SL 1/5), congelada para holdout (`docs/research/luximb_parity_20261020/CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); mirada exploratoria del holdout (n = 14) en contra: 14 SL / 0 TP. ORB0100 NQ 01:00 (TP 1,5R + VWAP) positivo en 3 tramos, replicación NO_CONCLUYENTE. Todo lo demás: sin efecto.
 - **Embudo:** correcto en lo estadístico pero no cubría estudios de eventos y no estaba señalizado; ritual nuevo en `CLAUDE.md` (registro global + etapa EF + medir primero la regla exacta).
+- **Auditoría a fondo del embudo (22-oct):** `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`.
+  - **El autopilot ya no podía descubrir:** riqueza de alfa en 0,0025, Holm a ~0,001; en la simulación confirma el 2 % de los edges reales moderados.
+  - **Diseño nuevo:** tamiz FDR + réplica LORD++ + económico + potencia del holdout (`edgelab/funnel/escalera.py`, `secuencial.py`). Confirma el 36 % de esos edges, con FDR < 1 %.
+  - **Integración en el Debian:** interruptor `decision: escalera_v1` (apagado; ningún protegido cambió).
+  - **Costos canónicos únicos:** `edgelab/costos.py`, de `config/costos/costos_canonicos.json`.
+  - **Arreglos del kernel del runner:** stop con hueco; timeout valorado a mercado; costo obligatorio, antes 0,5 ticks fijos.
+  - **Candidatos con costos reales:** LUX-IMB +4,05 pts/op y ORB +6,3 en réplica. Los dos quedan **SIN_POTENCIA** (vivos, ~950 y ~1.050 operaciones para decidir); el holdout de LUX-IMB queda SIN_DECIDIR.
 - **Edges promovidos: 0** (sin cambios).
 
 ## Estado al 2026-10-19

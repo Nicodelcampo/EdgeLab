@@ -449,6 +449,48 @@ definición, que es la forma más cara de equivocarse: parece evidencia.
 
 ---
 
+### ATJ-19 — Probar mucho con FDR, confirmar poco en datos no mirados (2026-10-22)
+
+La protección contra el sobreajuste es la **réplica en muestra no mirada**, no un error familiar sobre el descubrimiento. Exigirlo
+ahí destruye la potencia: en la simulación con verdad conocida, Holm al nivel del alpha-investing confirmó el 2,4 % de los edges
+reales moderados, contra el 35,6 % del diseño de dos niveles, con FDR < 1 % en los dos casos.
+
+- `EF2` (tamiz): FDR BH-Storey q = 0,10 dentro de la campaña → **nominadas**. Nominar no afirma nada.
+- `EF5`/réplica: hasta 3 pruebas por campaña al nivel LORD++ (FDR en línea del proyecto) → **confirmadas**.
+- Implementación: `edgelab/funnel/escalera.py` (`tamiz_fdr`, `LordPP`). En el autopilot, con `decision: escalera_v1`.
+
+### ATJ-20 — Tres salidas: refutada, sin potencia, confirmada
+
+Una candidata sólo muere con evidencia: la **cota optimista** de su IC (o el e-valor de futilidad) no llega al efecto útil. Si el
+IC es ancho, el estado es `SIN_POTENCIA`: queda viva y el informe dice cuántas operaciones faltan (`escalera.ops_necesarias`).
+Es el corolario operativo de ATJ-18 y de Harris (2016): descartar estrategias buenas por falta de muestra también es un error.
+
+### ATJ-21 — Mirar seguido sin inflar el error: e-procesos
+
+Réplica, holdout y paper llegan por semana. Un p-valor mirado muchas veces no vale; un e-proceso sí (Ville):
+`edgelab/funnel/secuencial.MonitorCandidato`, con cotas por operación declaradas **antes** de mirar, edge y futilidad a la vez.
+
+### ATJ-22 — Costos de una sola fuente; efecto esperado recortado antes de gastar el holdout
+
+- Fricción: sólo `edgelab/costos.py`. Un instrumento sin componente medido falla; no se presta de otro.
+- Antes de la única apertura del holdout: económico con costos canónicos (neto base, sin top-5, ningún período > 80 %, adverso) y
+  **potencia** para ver el efecto recortado por selección (Harvey-Liu sobre N_eff, t agrupado por sesión) con el n que dará el
+  holdout. Si no alcanza, se espera o se sigue como paper.
+
+### Ruta ejecutable para estudios de evento y reglas con su propio simulador
+
+El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:
+
+1. manifiesto + `TrialRegistry.ensure(campaign_id, family_id, n_trials)` **antes** de mirar desenlaces;
+2. P&L neto por operación con `edgelab.costos` (escenario base y adverso), con sesión y período;
+3. `escalera.resumen_sesiones` por prueba → `tamiz_fdr` sobre los p de la campaña;
+4. réplica no mirada de las nominadas → `escalera.evaluar(...)` con `economia` y `n_esperado_holdout`;
+5. publicar `escalera.para_autopilot(...)` + el veredicto bajo `escalera` (lo leen `analyze` y `holdout_apertura`).
+
+Ejemplo completo: `tools/escalera_candidatos_20261022.py`.
+
+---
+
 ## 4. Matriz rápida: qué puede matar una opción
 
 | Hallazgo | ¿Excluye? | Etapa |
@@ -463,6 +505,9 @@ definición, que es la forma más cara de equivocarse: parece evidencia.
 | Feature usa futuro o disponibilidad desconocida | sí o clase separada | `EF1` |
 | Pocas sesiones por celda | bloquea hipótesis detallada, no borra la familia | `EF1/EF3` |
 | Efecto exploratorio inestable | no confirma; normalmente no avanza | `EF2/EF3` |
+| No pasa el tamiz FDR pero el IC no excluye lo útil | **no**: `SIN_POTENCIA`, en reserva | `EF2` |
+| Cota optimista del IC < efecto útil | sí (`REFUTADA`, con su alcance) | `EF2/EF5` |
+| Réplica no concluyente | **no**: se sigue con el monitor secuencial | `EF5` |
 | Holdout FAIL | cierra la hipótesis congelada | `EF5/G4` |
 
 ---
@@ -532,5 +577,8 @@ Antes de proponer otra campaña combinatoria:
 - [ ] ¿Cada tasa declara población, numerador y denominador?
 - [ ] ¿Cada afirmación distingue medido, inferido, provisional y retractado?
 - [ ] ¿Se midió la escala del objeto contra la del estimador antes de publicar un nulo?
+- [ ] ¿Los costos salen de `edgelab/costos.py`?
+- [ ] ¿La decisión usa la escalera (tamiz FDR → réplica LORD++ → económico → potencia del holdout)?
+- [ ] ¿Un nulo sin potencia quedó como `SIN_POTENCIA` con las operaciones que faltan, y no como muerte?
 
 **Aporte al referente:** estas prácticas reducen exportaciones inútiles, joins ambiguos, recomputaciones, controles post hoc y auditorías de contradicciones. El tiempo ahorrado se desplaza de infraestructura repetida a preguntas que sí pueden acercarse a un edge válido y aplicable.

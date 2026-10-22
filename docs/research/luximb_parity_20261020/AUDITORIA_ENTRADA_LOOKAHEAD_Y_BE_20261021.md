@@ -1,5 +1,7 @@
 # Auditoria de entrada / look-ahead + variante con break even (regla del visor, NQ) — 2026-10-21
 
+Estado: VIGENTE
+
 Pedido de Nico: "probá agregarle break even a los 2,5 R y además revisá bien que la entrada sea exactamente donde está el
 precio y que no haya look ahead".
 

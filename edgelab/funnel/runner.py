@@ -28,11 +28,17 @@ DIRECTION_MULTIPLIERS = {"normal": 1, "inverse": -1, "reverse": -1}
 class FunnelRunner:
     def __init__(self, *, trade_dates, signal_idx, signal_dir, high, low,
                  bid_open, ask_open, configs, out_dir, backend="cpu", frozen_split=None,
-                 holdout_first_date=None, allow_unguarded=False, campaign_id=None, trial_registry=None, seen_ledger=None):
+                 holdout_first_date=None, allow_unguarded=False, campaign_id=None, trial_registry=None, seen_ledger=None,
+                 fees_ticks=None, cost_source=None):
         if backend != "cpu":
             raise RuntimeError("Stage-local runner is CPU-only pending end-to-end GPU validation; no silent fallback")
         if frozen_split is None and holdout_first_date is None and not allow_unguarded:
             raise ValueError("holdout_first_date or frozen_split is required (guard fails closed); pass allow_unguarded=True only in synthetic tests")
+        # Costo de ida y vuelta EXPLÍCITO por instrumento (auditoría 2026-10-22): v1 usaba 0,5 ticks fijos del kernel para
+        # todo activo, cuando la fricción medida es 3,5-8 ticks (autopilot/friccion.py). Sin costo declarado no se corre.
+        if isinstance(fees_ticks, (bool, np.bool_)) or not isinstance(fees_ticks, (int, float, np.integer, np.floating)) or not np.isfinite(fees_ticks) or fees_ticks < 0:
+            raise ValueError("fees_ticks (costo RT en ticks del instrumento) es obligatorio; no se transporta de otro activo ni se asume 0,5")
+        self.fees, self.cost_source = float(fees_ticks), cost_source
         self.td = np.asarray(trade_dates)
         self.si, self.sd = np.asarray(signal_idx), np.asarray(signal_dir)
         # No global price extrema/hash/dtype conversion: D2 values are not inspected.
@@ -123,7 +129,7 @@ class FunnelRunner:
             bar = slice(w.bar_start, w.bar_stop)
             return bounded_batches(w.local_signals(self.si), self.sd[w.signal_positions],
                                    self.h[bar], self.l[bar], self.bo[bar], self.ao[bar],
-                                   sl[keep], tp[keep], mult[keep], max_hold_bars=max_hold_bars,
+                                   sl[keep], tp[keep], mult[keep], max_hold_bars=max_hold_bars, fees=self.fees,
                                    backend="cpu", max_matrix_bytes=max_matrix_bytes)
 
         stats = {part: [(0, None) for _ in self.cfg] for part in windows}
@@ -184,7 +190,8 @@ class FunnelRunner:
                    "holdout_opened": self._holdout_opened(), "holdout_guard": self._guard(), "upstream_data_access": "NOT_AUDITED_BY_RUNNER",
                    "kernels": {p: kernel_manifest(d["backend"]) for p, d in devices.items()},
                    "trial_registry": {"path": str(self.reg.path), "head": self.reg.head(), "total_trials": self.reg.total()} if self.reg else None,
-                   "runner_d2_outcomes_read": False, "promotion_allowed": False}
+                   "runner_d2_outcomes_read": False, "promotion_allowed": False,
+                   "costs": {"fees_ticks_rt": self.fees, "source": self.cost_source}}
         identifier = "FUNNEL-" + hashlib.sha256(json.dumps(payload, sort_keys=True, allow_nan=False).encode()).hexdigest()[:16]
         ledger.append("trial_recorded", identifier, payload)
         (self.out / "summary.json").write_text(json.dumps(payload, indent=2, allow_nan=False))
@@ -214,7 +221,7 @@ class FunnelRunner:
             for part, w in wins.items():
                 bar = slice(w.bar_start, w.bar_stop); ls = w.local_signals(self.si); dr = self.sd[w.signal_positions].astype(np.int8)
                 its[part] = tuple(bounded_batches(ls, d_, self.h[bar], self.l[bar], self.bo[bar], self.ao[bar], sl, tp, mult,
-                                                  max_hold_bars=max_hold_bars, backend="cpu", max_matrix_bytes=max_matrix_bytes)
+                                                  max_hold_bars=max_hold_bars, fees=self.fees, backend="cpu", max_matrix_bytes=max_matrix_bytes)
                                   for d_ in (dr, (-dr).astype(np.int8)))
             for (a0, b0, mp0, d0), (_, _, mm0, _), (a1, b1, mp1, d1), (_, _, mm1, _) in zip(its["D0"][0], its["D0"][1], its["D1"][0], its["D1"][1]):
                 devs["D0"], devs["D1"] = d0, d1
@@ -244,7 +251,8 @@ class FunnelRunner:
                    "verdict": "CANDIDATE_REQUIRES_FUTURE_CONFIRMATION" if rejected else "NOT_REJECTED_NO_DIRECTIONAL_EVIDENCE",
                    "split_hash": self.split.split_hash, "d2_prices_passed": False, "holdout_guard": self._guard(),
                    "holdout_opened": self._holdout_opened(), "promotion_allowed": False, "asserts_edge": False,
-                   "kernels": {p: kernel_manifest(d.backend) for p, d in devs.items()}}
+                   "kernels": {p: kernel_manifest(d.backend) for p, d in devs.items()},
+                   "costs": {"fees_ticks_rt": self.fees, "source": self.cost_source}}
         self.out.mkdir(parents=True, exist_ok=True)
         rid = "FUNNEL-E4-" + hashlib.sha256(json.dumps(payload, sort_keys=True, default=str).encode()).hexdigest()[:16]
         self._ledger().append("multiplicity_recorded", rid, payload)

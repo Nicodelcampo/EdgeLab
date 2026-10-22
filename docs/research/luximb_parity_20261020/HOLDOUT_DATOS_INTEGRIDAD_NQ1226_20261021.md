@@ -1,5 +1,7 @@
 # Datos del holdout NQ 12-26 (2026-10-01 .. 2026-10-20) — chequeo de integridad (sin mirar precios ni desenlaces)
 
+Estado: VIGENTE
+
 Fuente: EdgeLab Tick History `EDGE_TICKHIST_V3_HOLDOUT_SELLADO` (NT 8.1.8.4), conexion "Simulation (Provider31)", zona de NT8
 Argentina Standard Time, salida en UTC. Carpeta sellada `E:\DatosNT8\tick_history_HOLDOUT_SELLADO\NQ_12-26\` (+ `SELLADO.txt`).
 Descarga 2026-10-21 03:47 UTC. Archivos por dia calendario de NT8 (03:00 UTC a 02:59 UTC), no por sesion CME.

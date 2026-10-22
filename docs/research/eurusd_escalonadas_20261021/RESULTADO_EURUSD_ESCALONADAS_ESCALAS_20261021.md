@@ -1,5 +1,7 @@
 # Resultado EURUSD-ESCALONADAS-ESCALAS, descubrimiento ago-2025 -> ene-2026
 
+Estado: VIGENTE
+
 Manifiesto `MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md` (antes de correr) · runner `tools/eurusd_escalonadas_grid.py`
 · salida `eurusd_grid_descubrimiento.json`. 129 sesiones FX, replay tick a tick con bid/ask, comision 3,5 ticks (0,35 pip), control
 con la misma mecanica, max-T sobre 648 (t critico 3,98).

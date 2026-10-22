@@ -7,17 +7,22 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def oracle(sig, dirs, high, low, bid, ask, sls, tps, mult, hold, fees):
+    """v2: stop con hueco al open peor (G0.4); salida por tiempo al open siguiente al horizonte."""
     out=np.full((len(sig),len(sls)),np.nan,np.float64)
     for k,s in enumerate(sig):
         entry=int(s)+1
         if entry>=len(high): continue
         for q,(sl,tp,m) in enumerate(zip(sls,tps,mult)):
             d=int(dirs[k])*int(m);e=int(ask[entry] if d==1 else bid[entry])
-            stop=e-d*int(sl);target=e+d*int(tp);v=-fees
-            for j in range(entry,min(len(high),entry+hold+1)):
+            stop=e-d*int(sl);target=e+d*int(tp);end=min(len(high),entry+hold+1)
+            z=end if end<len(high) else len(high)-1
+            v=(int(bid[z])-e if d==1 else e-int(ask[z]))-fees
+            for j in range(entry,end):
                 stop_hit=int(low[j])<=stop if d==1 else int(high[j])>=stop
                 target_hit=int(high[j])>=target+1 if d==1 else int(low[j])<=target-1
-                if stop_hit: v=-int(sl)-fees;break
+                if stop_hit:
+                    fill=(min(stop,int(bid[j])) if d==1 else max(stop,int(ask[j]))) if j>entry else stop
+                    v=d*(fill-e)-fees;break
                 if target_hit: v=int(tp)-fees;break
             out[k,q]=v
     return out
@@ -32,6 +37,8 @@ def cases():
         n=503;mid=10000+np.cumsum(rng.integers(-4,5,n));width=rng.integers(1,20,n)
         sig=np.r_[np.arange(0,n,7),n-1];dirs=rng.choice([-1,1],len(sig))
         yield 'random_hold_'+str(hold),(sig,dirs,mid+width,mid-width,mid-1,mid+1,[3,7,19,31],[5,13,23,47],[1,-1,1,-1],hold,.37)
+    yield 'gap_through_stop',([0],[1],[100,101,100],[100,100,80],[99,99,85],[101,101,87],[10],[30],[1],5,.5)
+    yield 'timeout_marked_to_market',([0],[1],[100,103,104,104],[100,100,101,101],[99,99,100,104],[101,101,102,106],[10],[50],[1],1,.5)
     yield 'empty_signals',([],[],[100],[100],[99],[101],[10],[10],[1],2,.5)
 
 

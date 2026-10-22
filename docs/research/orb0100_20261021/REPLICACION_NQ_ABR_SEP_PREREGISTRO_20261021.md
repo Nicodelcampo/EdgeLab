@@ -1,5 +1,7 @@
 # Replicacion ORB0100 en NQ abr-sep 2026 — preregistro (escrito ANTES de correr)
 
+Estado: VIGENTE
+
 OK de Nico 2026-10-21 ("si, corre la replicacion en NQ"). Una sola corrida para la familia ORB0100 (HOLDOUT-A3).
 Regla congelada (= celda de partida, `tools/orb0100/orb0100_v2.py`, funciones `senales`/`operar`): rango 01:00-01:15 ET,
 primera vela de 5 min que cierra fuera, a favor del VWAP de sesion, entrada a mercado al cierre +1 tick, SL otro lado del

@@ -25,13 +25,20 @@ def aperturas(root: Path) -> list:
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()] if p.exists() else []
 
 
-def requisitos(spec: RunSpec, ledger, root: Path) -> list:
+def requisitos(spec: RunSpec, ledger, root: Path, exigir_escalera: bool = False) -> list:
+    """exigir_escalera (regla escalera_v1): además, el resultado del candidato debe traer el veredicto de la escalera del embudo
+    (`escalera`, de edgelab/funnel/escalera.evaluar) en LISTA_PARA_HOLDOUT: réplica confirmada + económico con costos canónicos +
+    potencia suficiente para el efecto recortado con el n que dará el holdout. Fail-closed: sin veredicto, no se abre."""
     e = []
     cand = (spec.origin or {}).get("candidato")
     if not cand: return ["apertura sin candidato: origin.candidato debe nombrar la corrida que se confirma"]
     row = ledger.db.execute("SELECT status, result, spec FROM runs WHERE run_id=?", (cand,)).fetchone()
     if not row or row[0] != "ANALYZED": return [f"el candidato {cand} no es una corrida ANALYZED"]
     if not json.loads(row[1] or "{}").get("hit"): e.append(f"el candidato {cand} no es un hallazgo (hit=false)")
+    if exigir_escalera:
+        v = (json.loads(row[1] or "{}").get("escalera") or {}).get("estado")
+        if v != "LISTA_PARA_HOLDOUT":
+            e.append(f"el candidato {cand} no trae veredicto de la escalera en LISTA_PARA_HOLDOUT (tiene {v!r}): falta económico o potencia; no se gasta la única apertura")
     from .auditoria import estados
     if estados(Path(root) / "auditorias.jsonl").get(cand) != "CONFORME": e.append(f"el candidato {cand} no tiene auditoría CONFORME")
     if any(a.get("family") == spec.family for a in aperturas(root)): e.append(f"la familia {spec.family} ya usó su única apertura del holdout")

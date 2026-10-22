@@ -43,6 +43,10 @@ incidente del 2026-08-10). Contenido: barrido de 450 combinaciones de escalonada
 registro, sin correccion por multiplicidad de familia y sin auditar por esta sesion**: se conserva como
 `EXPLORATORIO_NO_AUDITADO` (procedencia externa) y se registran sus 450 pruebas en el contador global. No se promueve nada.
 
+**Actualización 2026-10-22 (`USER_REPORTED`):** Nico aclara que son pruebas suyas hechas con Antigravity el 2026-10-21, «sin
+mucha importancia». Procedencia resuelta; el estado `EXPLORATORIO_NO_AUDITADO` y las 450 pruebas en el contador se mantienen.
+Sigue en pie la regla: un escritor por directorio (otra herramienta en el mismo árbol, otra worktree).
+
 ## 2. ¿El embudo funciona?
 El embudo existe en tres piezas: el playbook EF0-EF5 (`docs/research_funnel_playbook.md`), el runner `edgelab/funnel/`
 (+ `tools/discovery_scan.py` con nulo de maximo por sesion y D0/D1/D2) y el **contador global de pruebas**

@@ -1,5 +1,7 @@
 # Resultados — ORB-HORARIOS (704 celdas) y ORB0100 NQ + franjas OG/VI
 
+Estado: VIGENTE
+
 ## ORB-HORARIOS (manifiesto `MANIFIESTO_ORB_HORARIOS_20261021.md`; `tools/orb0100/orb_horarios.py`; `RESULTADOS_ORB_HORARIOS.json`)
 Veredicto: **NINGUNA CELDA PASA EL CRIBADO** (umbral BH 10 % = 0; 0 cribadas, 0 confirmadas).
 - 704 celdas (44 ventanas x 2 reglas x 8 activos): 129 con R > 0, 62 positivas en 2025 y 2026, **8 con p < 0,05 cuando se
