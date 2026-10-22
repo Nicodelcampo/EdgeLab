@@ -22,6 +22,8 @@
 
 - 2026-10-22 FUTURO vs INDICE (NQ 09-26 vs USATECH Dukascopy, 1-jul..14-sep, target-free): 12 % de los OG y 17 % de los VI del futuro nacen tambien en el indice (mismo minuto y precio tras la base; por azar ~0). Comportamiento del precio del futuro, coincidentes vs no (registro `luximb_20261022/coincidentes_fut_vs_cfd`, 6 pruebas, Holm): ninguna diferencia significativa. La mayor, VI reaccion a 30 min: +5,2 vs +1,1 pts (dif +4,0, IC [-0,6, +8,7], p Holm 0,42); OG relleno 91 % vs 97 % (p Holm 0,27). MDE ~6 pts en VI y ~10 pp en relleno OG: sin potencia para efectos chicos. `COMPORTAMIENTO_COINCIDENTES_NQ_USATECH.json`, `ZONAS_NQ_VS_USATECH_tol*.json`.
 
+- 2026-10-22 PRUEBA PRE-REGISTRADA VI coincidentes futuro/indice, reaccion a 30 min (ago-2025..mar-2026, 5.414 VI, 1.261 coincidentes, 155 dias; 1 prueba): coeficiente controlado por tamano/hora/direccion -0,20 pts, IC90 [-1,79, +1,29], p 0,60 -> **REFUTA** (la cota optimista no llega a la friccion de 1,55 pts; MDE 2,3 pts). La pista de jul-sep 2026 (+4,0) era seleccion: mejor de 6 pruebas. Diferencia cruda +0,11 pts; por contrato -0,83 / +0,02 / +1,04. Alcance: solo VI, reaccion a 30 min, NQ vs USATECH. `PREREGISTRO_VI_COINCIDENTES_REACCION_20261022.md`, `RESULTADO_VI_COINCIDENTES_REACCION_20261022.json`.
+
 ## NO MEDIDO
 - Holdout (>= 2026-10-01) de la regla del visor original en NQ: **CONGELADA** 2026-10-21 (`CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); faltan datos de oct en adelante y alta en el protocolo del autopilot.
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
