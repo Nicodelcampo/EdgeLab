@@ -1,6 +1,6 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-19  
+**Fecha:** 2026-10-22  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
 **Corte:** 2026-10-19  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
@@ -10,7 +10,14 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-19 (leer primero)
+## Estado al 2026-10-22 (leer primero)
+
+- **Sprint 2026-10-20..22 (LUX-IMB OG/VI, ORB 01:00 de Instagram, horarios ORB, picos EURUSD): 20 campañas, 1.535 pruebas**, ahora en el contador global (`tools/registrar_campanias_20261020.py`). Índice, veredictos y auditoría del embudo: `docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`.
+- **Único candidato vivo:** regla LUX-IMB del visor en NQ (entrada al cierre de la confirmación, TP en el inicio de la zona, SL 1/5), congelada para holdout (`docs/research/luximb_parity_20261020/CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); mirada exploratoria del holdout (n = 14) en contra: 14 SL / 0 TP. ORB0100 NQ 01:00 (TP 1,5R + VWAP) positivo en 3 tramos, replicación NO_CONCLUYENTE. Todo lo demás: sin efecto.
+- **Embudo:** correcto en lo estadístico pero no cubría estudios de eventos y no estaba señalizado; ritual nuevo en `CLAUDE.md` (registro global + etapa EF + medir primero la regla exacta).
+- **Edges promovidos: 0** (sin cambios).
+
+## Estado al 2026-10-19
 
 - **Agente autónomo (rama `claude/vibrant-clarke-s9z6e2`, PR #64, con `main` integrado):** arquitectura multiagente consolidada en `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md` (código orquesta; roles LLM con modelos fijados: proponente/revisor/abogado Opus, revisor2/auditor Sonnet, resúmenes Haiku; encendido por etapas, todo apagado por defecto). Nuevo: biblioteca trazable del proyecto (`edgelab/autopilot/conocimiento.py`: Brain, 400+ papers, research, registros, con sha y commit), doble revisión de la promoción, auditor post-corrida y abogado del diablo (`auditoria.py`), pre-registros publicados en `autopilot/prereg/<run_id>`, dos interruptores de pausa, vigilante externo, respaldo de `runs.sqlite`. Revisión y resolución: `docs/autopilot/REVISION_ESTRUCTURA_DEBIAN_20261019.md`, `docs/autopilot/RESOLUCION_REVISION_DEBIAN_20261019.md`. Criterios del dueño en las prioridades del agente: macro antes que micro, edges por régimen detectable, cartera diversificada.
 - **Funnel:** runner por etapas de #70 unificado con la custodia EF0 (guarda de holdout, registro global de pruebas, vistos, kernel, E4).

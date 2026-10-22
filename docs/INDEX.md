@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 654 |
+| `docs/research` | 699 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,13 +38,13 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| AUDITORIA | 13 | `AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md` | 2026-10-20 | VIGENTE (auditoria + indice). Fecha: 2026-10-22. Pedido de Nico: "ordenar el rep |
 | REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
 | HANDOFF | 16 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |
 | DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
 | CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
-| AUDITORIA | 12 | `AUDITORIA_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (un solo auditor: gonzasib-claude; sin acceso al kernel ni a los JSO |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
 | REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
@@ -109,6 +109,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (0)
+## Documentos nuevos sin `Estado:` (6)
 
-Ninguno.
+- docs/research/eurusd_escalonadas_20261021/RESULTADO_EURUSD_ESCALONADAS_ESCALAS_20261021.md: falta `Estado:` en el encabezado
+- docs/research/luximb_parity_20261020/AUDITORIA_ENTRADA_LOOKAHEAD_Y_BE_20261021.md: falta `Estado:` en el encabezado
+- docs/research/luximb_parity_20261020/HOLDOUT_DATOS_INTEGRIDAD_NQ1226_20261021.md: falta `Estado:` en el encabezado
+- docs/research/orb0100_20261021/PREREGISTRO_GC_NOCTURNO_20261021.md: falta `Estado:` en el encabezado
+- docs/research/orb0100_20261021/REPLICACION_NQ_ABR_SEP_PREREGISTRO_20261021.md: falta `Estado:` en el encabezado
+- docs/research/orb0100_20261021/RESULTADOS_ORB_HORARIOS_Y_FRANJAS_20261021.md: falta `Estado:` en el encabezado

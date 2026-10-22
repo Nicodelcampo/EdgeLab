@@ -128,6 +128,16 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   event-space del que fue extraída (ver regla de población abajo).
 - **Registro MEDIDO/NO MEDIDO actualizado en el mismo commit** que cualquier
   resultado nuevo — no en un commit aparte, no "después".
+- **Toda campaña con desenlaces se registra en el contador global antes de correr**
+  (`docs/research/TRIAL_REGISTRY_GLOBAL.jsonl` vía `TrialRegistry.ensure`, ver
+  `tools/registro_global.py`) y su manifiesto **declara la etapa EF** del embudo
+  (`docs/research_funnel_playbook.md`: EF2 exploratorio … EF5 confirmación). El
+  2026-10-22 se encontraron 1.535 pruebas de 20 campañas fuera del contador
+  (`docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`).
+- **Idea vista en el visor → primero se mide la regla exacta** (entrada realista al
+  cierre de la confirmación, costos, todos los períodos, agregado y consistencia) y
+  recién después los mecanismos. Una simulación visual sin costos o con entrada en el
+  extremo no es evidencia.
 
 ## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
 
