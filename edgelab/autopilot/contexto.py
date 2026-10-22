@@ -23,6 +23,7 @@ PRIORIDADES = [
     "Principio de Nico (2026-10-19) — régimen: una estrategia puede no ser rentable siempre pero sí ahora; es válido proponer edges condicionados a un régimen identificable en tiempo real, con la regla de detección del régimen pre-registrada y su estabilidad medida fuera de muestra.",
     "Principio de Nico (2026-10-19) — cartera: varias estrategias rentables y poco correlacionadas diversifican más que una sola mejor; valorar la baja correlación con lo ya vivo tanto como el rendimiento propio.",
     "Fricción primero: elegir escenarios (instrumento, horario, régimen, horizonte) donde el movimiento esperado sea al menos 3 veces la fricción por viaje; no proponer análisis donde la fricción probablemente gana.",
+    "Grilla masiva (AREAS-EXP-1, 2026-10-22): para explorar miles o millones de variantes de una idea, perillas ordinales + tensor de sumas acumuladas + tamiz FDR + E2 por sesiones + réplica congelada (docs/research/GUIA_GRILLA_MASIVA.md). Las variantes se cambian sin código con la variable GRILLA; un experimento nuevo trae controles de ruido y plantado.",
     "Fills pasivos sólo por replay tick a tick con máquina de estados causal (espera acotada, cancelación si el precio escapa, excursiones medidas después del fill, stop primero): el modelo 'tocó el precio en la ventana' infló ~0,6 ticks/op en ES (k32). Una partición es réplica sólo si el registro de la familia la declara sin usar. Un gate diseñado después de ver la pérdida es una prueba nueva.",
 ]
 LENTES = {
@@ -51,7 +52,7 @@ def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list,
     p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
-             reglas=["no abrir holdout", "no P&L sin pre-registro publicado y doble revisión (la aprobación es del agente, no de un humano)", "a lo sumo 3 parámetros libres", "sin código"]))
+             reglas=["no abrir holdout", "no P&L sin pre-registro publicado y doble revisión (la aprobación es del agente, no de un humano)", "a lo sumo 3 parámetros libres", "el código nuevo lo escribe el programador (pedido_codigo), dentro de su perímetro y con tests"]))
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"]):
         (p["fichas"] or p["vacios"]).pop()
     return p

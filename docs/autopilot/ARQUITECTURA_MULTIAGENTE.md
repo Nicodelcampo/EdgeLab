@@ -6,8 +6,8 @@ Documento de referencia de qué agentes hay, qué modelo usa cada uno, qué ve, 
 Reemplaza la propuesta suelta del chat. Código: `edgelab/autopilot/` · despliegue: `deploy/debian/`.
 
 ## 1. Principio
-**El código orquesta; los modelos responden.** Ningún LLM lanza corridas, toca el alfa, cambia guardas, escribe código ni
-abre datos. Cada rol es una llamada `claude -p` sin herramientas ni MCP, con salida JSON validada contra un esquema,
+**El código orquesta; los modelos responden.** Ningún LLM lanza corridas, toca el alfa, cambia guardas ni
+abre datos. La única excepción con herramientas es el **programador** (§1c). Los demás roles son una llamada `claude -p` sin herramientas ni MCP, con salida JSON validada contra un esquema,
 tope diario, caché por hash de entrada, gobernador de rate limit y registro en `llm_calls.sqlite` (rol, modelo exacto,
 hash de entrada y salida, tokens). Ninguna salida de un rol es evidencia.
 
@@ -16,6 +16,16 @@ hash de entrada y salida, tokens). Ninguna salida de un rol es evidencia.
 - **Régimen:** una estrategia puede no ser rentable siempre pero sí ahora; vale si el régimen se detecta en tiempo real con regla pre-registrada y estabilidad medida fuera de muestra.
 - **Cartera:** muchas estrategias rentables y poco correlacionadas diversifican más que una sola; la baja correlación con lo vivo pesa tanto como el rendimiento.
 Están en `contexto.PRIORIDADES` (las ve el proponente en cada ciclo) y en la consigna del revisor.
+
+## 1c. Programador: el agente escribe código (decisión de Nico, 2026-10-22)
+«El agente del debian sí puede escribir código; si no puede ahora, debería poder.» El rol vive en `edgelab/autopilot/programador.py`, corre en su propio timer (`edgelab-autopilot-programador`) y se apaga con `programador.activo: false`.
+- **Entrada:** pedidos en `pedidos_codigo.jsonl`. Los escribe el proponente (`pedido_codigo` cuando la familia necesita una primitiva o un experimento que no existe), la mejora de módulos o una persona (`tools/autopilot_generate.py pedir-codigo`).
+- **Cómo trabaja:** Claude Code headless en una worktree descartable, con herramientas de archivo y en Bash sólo pytest y git de lectura; sin MCP ni settings.
+- **Qué se aplica solo lo decide la ruta de cada archivo, no el modelo:**
+  - perímetro (`edgelab/research/agente/`, `tools/agente/`, `tests/agente/`, `docs/research/agente/`, `config/autopilot/grillas/`) → con la suite verde y los controles de la guía de grilla masiva (ruido, plantado, oráculo si usa numba) se commitea en el checkout y se sube a `autopilot/codigo/<id>`;
+  - motor compartido → rama `autopilot/propuesta/<id>` + `mejoras.jsonl`, la mergea una persona;
+  - reglas (guardas, FDR, holdout, costos, mandato, protegidos, `edgelab/autopilot/`, `deploy/`) → se rechaza entero.
+- **Salvaguardas:** si el checkout vivo cambia durante la programación → `INCIDENTE` y no se usa nada. Toda corrida que use ese código queda atada al commit (la guarda exige script committeado) y pasa por pre-registro, revisores y guardas como cualquier otra. Registro en `programacion.jsonl` (lo sube `sync_state.sh`).
 
 ## 2. Capas
 ```
@@ -63,7 +73,7 @@ Todo lo anterior se sube a la rama `autopilot/state` (`sync_state.sh`); `runs.sq
 ## 5. Qué NO puede hacer ningún agente
 Cambiar guardas, FDR, holdout, mandato o protegidos (STOP si cambian) · lanzar sin pre-registro committeado y publicado ·
 leer el holdout fuera del protocolo de apertura (`holdout_apertura.py`: hallazgo auditado, regla congelada, una por familia) · subir el alfa · promover a edge (todo hallazgo es exploratorio hasta réplica pre-registrada) ·
-levantar una pausa de consola · escribir código del motor (eso es una sesión aparte con PR, tests y revisión humana).
+levantar una pausa de consola · aplicar cambios al motor compartido o a las reglas (el programador escribe código en su perímetro; lo demás queda como rama propuesta para revisión humana, §1c).
 
 ## 6. Encendido por etapas (configuración)
 | Etapa | `/etc/edgelab/autopilot.json` | Llamadas LLM/día (techo) | Pasar a la siguiente si |

@@ -1,0 +1,116 @@
+{
+ "schema": "plantilla_grilla_v1",
+ "experimento": "AREAS-EXP-1 (áreas de zonas LUX-IMB: cantidad, ancho, alejamiento, acercamiento, comercio, volumen × entradas/SL/TP/BE)",
+ "spec": "docs/research/areas_expansion_20261022/SPEC_AREAS_EXPANSION_V1.md",
+ "kernel": "tools/kaggle_areas/kernel_areas.py",
+ "reconstruir_kernel": "python tools/kaggle_areas/construir_kernel.py tools/kaggle_areas/kernel_areas.py (test: tests/research/test_kernel_areas_al_dia.py)",
+ "salidas": {
+  "resultado": "AREAS_<FUENTE>_<MODO>.json",
+  "autopilot": "STUDY_RESULTS.json (results_flat: /disc y /rep/)",
+  "disparos": "parquet de disparos"
+ },
+ "grilla_por_defecto": {
+  "NS": [
+   3,
+   5,
+   8
+  ],
+  "WS": [
+   5.0,
+   15.0,
+   40.0,
+   100.0
+  ],
+  "XS": [
+   0.75,
+   0.5,
+   0.25
+  ],
+  "A_CORTES": [
+   1,
+   2,
+   4,
+   8
+  ]
+ },
+ "como_variar": [
+  "Cambiar valores de NS/WS/XS/A_CORTES con env GRILLA (JSON). n_trials = celdas = |NS|·|WS|·|XS|·144·|A_CORTES|·4·4·3 (lo devuelve areas_expansion.n_celdas()).",
+  "VR_CORTES y COM_CORTES salen SIEMPRE de un E0 de la misma fuente y período (cuantiles), nunca a ojo.",
+  "Una grilla nueva = un registro nuevo en el contador global y un pre-registro nuevo con el bloque JSON exacto de GRILLA.",
+  "REP exige CELDAS, VR_CORTES y COM_CORTES congelados desde el DESC y un período nunca mirado."
+ ],
+ "runspecs": [
+  {
+   "run_id": "<id>-e0-nq",
+   "kind": "scan",
+   "family": "GRILLA_AREAS",
+   "group": "NQ",
+   "script": "tools/kaggle_areas/kernel_areas.py",
+   "prereg": "docs/research/agente/<id>/PREREGISTRO.md",
+   "n_trials": 1,
+   "needs": [
+    "NQ:2025-08-05:2026-03-31"
+   ],
+   "env": {
+    "FUENTE": "NQ",
+    "MODO": "E0",
+    "DESDE": "20250805",
+    "HASTA": "20260331"
+   },
+   "est_seconds": 7200,
+   "decision_rule": "target_free",
+   "notes": "E0 target-free: conteos y cuantiles para fijar VR_CORTES/COM_CORTES"
+  },
+  {
+   "run_id": "<id>-desc-nq",
+   "kind": "scan",
+   "family": "GRILLA_AREAS",
+   "group": "NQ",
+   "script": "tools/kaggle_areas/kernel_areas.py",
+   "prereg": "docs/research/agente/<id>/PREREGISTRO.md",
+   "n_trials": 995328,
+   "n_tests_holm": 3,
+   "needs": [
+    "NQ:2025-08-05:2026-03-31"
+   ],
+   "env": {
+    "FUENTE": "NQ",
+    "MODO": "DESC",
+    "DESDE": "20250805",
+    "HASTA": "20260331",
+    "VR_CORTES": "<del E0>",
+    "COM_CORTES": "<del E0>",
+    "GRILLA": "<JSON del pre-registro>"
+   },
+   "est_seconds": 10800,
+   "decision_rule": "escalera_v1"
+  },
+  {
+   "run_id": "<id>-rep-usatech",
+   "kind": "replication",
+   "family": "GRILLA_AREAS",
+   "group": "USATECH",
+   "script": "tools/kaggle_areas/kernel_areas.py",
+   "prereg": "docs/research/agente/<id>/PREREGISTRO_REP.md",
+   "n_trials": 3,
+   "needs": [
+    "USATECH:2023-01-01:2025-07-31"
+   ],
+   "extra_datasets": [
+    "nicolasbuttaro/edgelab-dukascopy-nq-usatech"
+   ],
+   "env": {
+    "FUENTE": "USATECH",
+    "MODO": "REP",
+    "DESDE": "20230101",
+    "HASTA": "20250731",
+    "CELDAS": "<JSON congelado del DESC>",
+    "VR_CORTES": "<del DESC>",
+    "COM_CORTES": "<del DESC>"
+   },
+   "est_seconds": 10800,
+   "decision_rule": "escalera_v1",
+   "notes": "USATECH es CFD: informativo, no operable"
+  }
+ ]
+}

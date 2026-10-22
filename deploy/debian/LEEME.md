@@ -36,6 +36,12 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - Registro de pruebas: el autopilot escribe su propio `trial_registry.jsonl` en el clon de estado; para sumarlo al contador global, copiarlo a `docs/research/autopilot_runs/` del repo de código y correr `python tools/registro_global.py` (idempotente).
 - Qué mira el humano: `REPORT.md` de borradores (rama `autopilot/state`), `autopilot.log.jsonl`, la riqueza de alfa y los hallazgos exploratorios.
 
+## Grilla masiva y programador (2026-10-22)
+- **Usar la modalidad:** plantilla `config/autopilot/grillas/AREAS_EXP_1.json` (RunSpecs E0/DESC/REP, kernel committeado `tools/kaggle_areas/kernel_areas.py`, salida `STUDY_RESULTS.json` con `/disc` y `/rep/` que lee `escalera_v1`). Orden y errores a no repetir: `docs/research/GUIA_GRILLA_MASIVA.md`.
+- **Generar variantes sin código:** env `GRILLA` (JSON con NS/WS/XS/A_CORTES). `n_trials` = celdas de la grilla; el pre-registro lleva el bloque JSON exacto (la guarda lo compara).
+- **Experimentos nuevos o mejoras:** los escribe el programador. Para encenderlo, `"programador": {"activo": true, ...}` en `/etc/edgelab/autopilot.json` y `systemctl enable --now edgelab-autopilot-programador.timer`. Pedido manual: `python tools/autopilot_generate.py pedir-codigo --state <estado> "qué hacer" --por-que "..."`.
+- **Revisión humana:** `programacion.jsonl` (rama `autopilot/state`) lista cada pedido con su estado. Las ramas `autopilot/codigo/*` se mergean a la rama de trabajo; las `autopilot/propuesta/*` se revisan como PR. Sin deploy key el commit queda local y `update.sh` lo protege.
+
 ## Límites que conviene tener presentes
 - El autopilot no opera ni promueve: solo lanza y analiza estudios pre-registrados. Un hallazgo es exploratorio hasta que se replica en datos no usados.
 - Con la regla vieja (sin `decision: escalera_v1`), si la riqueza de alfa se agota deja de lanzar campañas nuevas. Con `escalera_v1` eso no pasa: el tamiz FDR nomina y LORD++ confirma en réplica (`confirmaciones_lordpp.json`, que `sync_state.sh` sube).

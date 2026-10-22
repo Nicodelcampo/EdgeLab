@@ -42,7 +42,18 @@ def main():
     z = sp.add_parser("audit", help="auditoría post-corrida: mecánica siempre; auditor y abogado (LLM) si auditor=true en la config")
     z.add_argument("--state", required=True); z.add_argument("--config", required=True); z.add_argument("--ledger", required=True); z.add_argument("--max", type=int, default=5)
     y = sp.add_parser("propose"); y.add_argument("--state", required=True); y.add_argument("--config", required=True); y.add_argument("--ledger"); y.add_argument("--tema", default="")
+    w = sp.add_parser("programar", help="rol programador (edgelab/autopilot/programador.py): pedidos de código -> worktree -> tests -> aplica en el perímetro o propone")
+    w.add_argument("--state", required=True); w.add_argument("--config", required=True)
+    pc = sp.add_parser("pedir-codigo", help="encola un pedido de código para el programador"); pc.add_argument("--state", required=True)
+    pc.add_argument("que"); pc.add_argument("--por-que", default=""); pc.add_argument("--aceptacion", default="")
     a = ap.parse_args(); lits = load_json("config/autopilot/literature_leads.json")
+    if a.cmd in ("programar", "pedir-codigo"):
+        from edgelab.autopilot import programador
+        if a.cmd == "pedir-codigo": print(json.dumps(programador.pedir(Path(a.state), a.que, a.por_que, a.aceptacion), ensure_ascii=False)); return
+        cfg = json.loads(Path(a.config).read_text())
+        if not (cfg.get("programador") or {}).get("activo"): print("programador apagado (config: programador.activo=false)"); return
+        for r in programador.ciclo(Path(a.state), ROOT, cfg): print(json.dumps({k: r.get(k) for k in ("pedido", "estado", "zona", "rama", "commit")}, ensure_ascii=False))
+        return
     if a.cmd == "usage":
         import time
         from edgelab.autopilot.roles import RoleRunner
@@ -95,6 +106,10 @@ def main():
                    paquete_sha256=hashlib.sha256(json.dumps(paquete, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
                    fuentes=[s_ for s_ in ctx["fuentes"] if f"{s_[0]}#L{s_[2]}" in usadas], **r)
         with log.open("a", encoding="utf-8") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        if (b := row.get("borrador") or {}).get("pedido_codigo") and row.get("status") == "BORRADOR_NO_AUTORIZADO":
+            from edgelab.autopilot import programador            # la familia necesita código que no existe: lo escribe el programador
+            programador.pedir(st, b["pedido_codigo"], f"familia {b.get('familia', '')}: {b.get('mecanismo', '')}"[:1500],
+                              "tests verdes + controles de la guía; el pre-registro de la familia cita el commit", origen="proponente")
         print(json.dumps({k: row[k] for k in ("lente", "status")}, ensure_ascii=False)); return
     if a.cmd == "draft":
         global D

@@ -9,6 +9,7 @@ git fetch -q origin
 if [ -z "$(git branch -r --contains HEAD)" ] && [ "${FORCE:-0}" != 1 ]; then
   echo "HEAD tiene commits que no están en ningún remoto (pre-registros de la promoción automática)." >&2
   echo "Subilos antes:  git push origin HEAD:refs/heads/autopilot/prereg   (o repetí con FORCE=1 si sabés lo que perdés)" >&2
+  echo "Si el programador aplicó código (programacion.jsonl: APLICADO), su rama autopilot/codigo/* ya está en el remoto: mergeala a la rama de trabajo antes de cambiar de versión." >&2
   exit 1
 fi
 git checkout -q --detach "$1" && git rev-parse HEAD

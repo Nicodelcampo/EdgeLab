@@ -1,0 +1,28 @@
+[Unit]
+Description=EdgeLab autopilot: rol programador (pedidos de código -> worktree -> tests -> aplica en el perímetro o propone)
+After=network-online.target
+Wants=network-online.target
+OnFailure=edgelab-alerta@%n.service
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+Environment=HOME=/opt/edgelab
+Environment=PATH=/opt/edgelab/.local/bin:/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=-/etc/edgelab/autopilot.env
+# No hace nada mientras programador.activo=false en la configuración. Nunca corre a la vez que el controlador (update.sh tampoco).
+ExecCondition=/bin/sh -c '! systemctl is-active --quiet edgelab-autopilot.service'
+ExecStart=/opt/edgelab/venv/bin/python tools/autopilot_generate.py programar --state /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json
+ExecStopPost=-/opt/edgelab/EdgeLab/deploy/debian/sync_state.sh
+TimeoutStartSec=7200
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/edgelab-autopilot /opt/edgelab
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+CapabilityBoundingSet=
+# la suite completa con numba necesita más memoria que el servicio de generación
+MemoryMax=4G

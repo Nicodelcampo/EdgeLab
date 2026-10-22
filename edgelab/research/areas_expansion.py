@@ -35,6 +35,23 @@ BES = (0, 1)
 EJEC = [(d, o, e, s, b) for (d, o) in DIR_OBJ for e in ENTRADAS for s in STOPS for b in BES]       # 108
 
 
+def configurar(grilla: dict | None):
+    """Cambia los valores de las perillas de evento (sin tocar código): {"NS": [...], "WS": [...], "XS": [...], "A_CORTES": [...]}.
+    Lo usa el agente para generar variantes; la grilla usada queda en el resultado y debe estar en el pre-registro."""
+    g = globals()
+    for k, v in (grilla or {}).items():
+        if k not in ("NS", "WS", "XS", "A_CORTES"): raise ValueError(f"perilla desconocida: {k}")
+        v = tuple(sorted(float(x) if k != "NS" else int(x) for x in v))
+        if not v: raise ValueError(f"{k} vacía")
+        g[k] = v if k != "XS" else tuple(sorted(v, reverse=True))
+    return dict(NS=NS, WS=WS, XS=tuple(sorted(XS, reverse=True)), A_CORTES=A_CORTES)
+
+
+def n_celdas() -> int:
+    """Celdas de la grilla vigente (lo que se registra en el contador global antes de correr)."""
+    return len(NS) * len(WS) * len(XS) * len(EJEC) * len(A_CORTES) * 4 * 4 * 3
+
+
 # ----------------------------------------------------------------------------------------------- detector (copia de parity_luximb.detect)
 def detect(o, h, l, c, show_og=True, show_vi=True):
     """Réplica de OnBarUpdate del ImbalanceDetectorLuxAlgoMTF (M1, OnBarClose). Paridad NT8 exacta medida en NQ."""

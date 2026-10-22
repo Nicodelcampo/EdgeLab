@@ -69,3 +69,14 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 2. Escribir el conductor con modos `E0`, `DESC` y `REP`. Copiar de `areas_expansion_run.py`.
 3. Escribir el principal del kernel (lectura de datos) y empaquetarlo con `tools/kaggle_grilla/construir_kernel.py`.
 4. Seguir el orden de §1.
+
+## 5. Para el agente del Debian
+
+| quiere | cómo | qué pasa |
+|---|---|---|
+| **usarla** | RunSpec de `config/autopilot/grillas/AREAS_EXP_1.json` (kernel committeado `tools/kaggle_areas/kernel_areas.py`) | pre-registro → revisores → guardas → Kaggle → `STUDY_RESULTS.json` → `escalera_v1` |
+| **variantes de la misma idea** | env `GRILLA` = JSON con NS/WS/XS/A_CORTES; cortes desde un E0 propio | `n_trials` = `areas_expansion.n_celdas()`; el bloque JSON va idéntico en el pre-registro |
+| **un experimento nuevo** (otro objeto, otras variables) | pedido al programador; el código va en `edgelab/research/agente/` y `tools/agente/` y reutiliza el núcleo | se aplica solo con la suite verde y `test_control_ruido`, `test_control_plantado` y, si usa numba, `test_oraculo` |
+| **mejorar el núcleo** (`grilla_masiva`, simulador, escalera) | pedido al programador | queda como rama `autopilot/propuesta/<id>` para revisión humana: lo usan todas las corridas |
+
+Lo que no cambia con el código nuevo: las corridas cuentan en el contador global, el holdout sólo se abre por protocolo, una corrida con código corregido después no se mira, y la réplica usa celdas y cortes congelados.

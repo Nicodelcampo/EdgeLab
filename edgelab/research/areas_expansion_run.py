@@ -38,6 +38,17 @@ def m1_y_perfil(bloques):
     return t, M, VP.p.to_numpy(float), VP.v.to_numpy(float), start, tpx, tstart
 
 
+def para_autopilot(res, fuente):
+    """Formato `results_flat` que lee el ciclo autónomo (analyze.records / confirmacion escalera_v1). Descubrimiento: las celdas
+    evaluadas en E2 (p por sesiones), nombradas `GRILLA/<fuente>/<celda>/disc`. Réplica: `.../rep/...`, que es lo único que
+    puede contar como acierto. `n_planned` del RunSpec = celdas de la grilla (todas cuentan, aunque no se evalúen)."""
+    nombre = lambda c: "_".join(str(x) for x in c)
+    flat = [dict(test=f"GRILLA/{fuente}/{nombre(r['celda'])}/disc", p=r["p_sesiones"], evaluable=True, diff=r["media_neta"]) for r in res.get("E2", [])]
+    flat += [dict(test=f"GRILLA/{fuente}/{nombre(r['celda'])}/rep/1", p=r.get("p_sesiones"), evaluable="p_sesiones" in r, diff=r.get("media_neta"))
+             for r in res.get("replica", [])]
+    return dict(results_flat=flat, schema="grilla_masiva_v1")
+
+
 def disparos_y_variables(t, M, vp_px, vp_vol, vp_start, G):
     """Por segmento (contrato): zonas, áreas, disparos y variables. Devuelve DataFrame de disparos (target-free)."""
     o, h, l, c = (M[k].to_numpy(float) for k in "ohlc"); seg = M.seg.to_numpy(); ses = M.ses.to_numpy()

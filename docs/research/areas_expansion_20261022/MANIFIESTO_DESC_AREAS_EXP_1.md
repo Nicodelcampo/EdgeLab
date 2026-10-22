@@ -1,6 +1,6 @@
 # Manifiesto — AREAS-EXP-1, corrida de descubrimiento con desenlaces (DESC)
 
-Estado: VIGENTE — OK de Nico el 2026-10-22 («ya te doy el OK»). La réplica queda por decidir; no afecta al descubrimiento.
+Estado: VIGENTE — OK de Nico el 2026-10-22 («ya te doy el OK»). Réplica decidida antes de mirar el DESC (sección Réplica).
 
 - **Spec:** `SPEC_AREAS_EXPANSION_V1.md` (v1.1). **Código:** commit `3b077192`. El kernel autocontenido lleva sus SHA embebidos.
 - **Referente:** `docs/NORTH_STAR.md` (cuerpo `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`).
@@ -35,10 +35,16 @@ Dos kernels de Kaggle, uno por fuente, en modo `DESC`:
 - **A réplica:** hasta 3 celdas por fuente, por cota inferior del IC (no por P&L máximo).
 - **Si no pasa ninguna:** se informa el MDE por zona de la grilla. La familia no se declara muerta si es un nulo sin potencia.
 
-## Réplica (a decidir por Nico ANTES de correr DESC)
+## Réplica (decidida antes de mirar el DESC)
 - **(a) USATECH 2023-01 → 2025-07.** Nunca mirado y con mucha potencia. Sirve sólo para la fuente índice.
 - **(b) NQ abr–sep 2026.** Es la única apertura de la familia. Esos meses ya se vieron en el visor para otras preguntas LUX-IMB, así que la réplica no es limpia para esta familia.
 - **(c) ES u otro índice como réplica entre activos.**
+
+**Decisión (2026-10-22, delegada por Nico: «decidilo vos»; tomada antes de ver ningún resultado del DESC v1.3).** Criterio: priorizar datos nunca mirados y no gastar aperturas únicas sin necesidad.
+1. **Celdas de USATECH → (a) USATECH 2023-01 → 2025-07.** Nunca mirado; réplica limpia, informativa (CFD, no operable).
+2. **Celdas de NQ → (b) NQ abr–sep 2026, una sola vez.** Se publica con la advertencia de exposición visual previa (otras preguntas LUX-IMB). Se suma un chequeo informativo de esas mismas celdas en USATECH 2023–2025; ese chequeo no confirma por sí solo.
+3. **Holdout (desde 2026-10-01) al final**, sólo para lo que pase la réplica y con seguimiento secuencial (`edgelab/funnel/secuencial.py`).
+Celdas, VR_CORTES y COM_CORTES se congelan desde el DESC; el nivel de cada réplica lo asigna LORD++ (`escalera_v1`). (c) queda para una familia futura.
 
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
