@@ -15,6 +15,7 @@ Then:   EDGELAB_SSRN_CORPUS_ROOT=corpus/ssrn python tools/ssrn_brain_cli.py sear
 """
 from __future__ import annotations
 
+import contextlib
 import argparse
 import hashlib
 import json
@@ -59,7 +60,7 @@ def make_passages(text: str) -> list[str]:
 def table_digest(db: Path, table: str, cols: str) -> tuple[int, str]:
     h = hashlib.sha256()
     n = 0
-    with sqlite3.connect(f"file:{db}?mode=ro", uri=True) as con:
+    with contextlib.closing(sqlite3.connect(f"file:{db}?mode=ro", uri=True)) as con:   # `with connect()` no cierra la conexión
         for row in con.execute(f"SELECT {cols} FROM {table} ORDER BY id"):
             h.update(json.dumps(row, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
             n += 1

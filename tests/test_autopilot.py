@@ -127,7 +127,7 @@ def test_generator_scores_learns_and_drafts_match_env(repo, tmp_path):
     lits = load_json("config/autopilot/literature_leads.json"); c = next(x for x in cs if x.cid == "IDM-1"); assert len(c.pro) == 2 and len(c.contra) == 1     # procedencia a favor y en contra
     base = c.score; boosted = next(x for x in generate([("IDM", "MULTI", True)] * 4) if x.cid == "IDM-1").score; assert boosted > base                          # aprende de aciertos de su familia
     # el borrador contiene la configuración textual: el guard acepta el RunSpec una vez committeado
-    rs = to_runspec(c); (repo / "docs/research/autopilot/drafts").mkdir(parents=True); (repo / rs["prereg"]).write_text(draft_prereg(c, lits)); (repo / "tools/study_slot_effect.py").write_text("x=1\n")
+    rs = to_runspec(c); (repo / "docs/research/autopilot/drafts").mkdir(parents=True); (repo / rs["prereg"]).write_text(draft_prereg(c, lits), encoding="utf-8"); (repo / "tools/study_slot_effect.py").write_text("x=1\n")
     _git(repo, "add", "-A"); _git(repo, "commit", "-qm", "d"); assert guard.all_checks(RunSpec.from_dict(rs), allow_internet={rs["script"]}, repo=repo) == []
     bad = dict(rs, env={"STUDY_CFG": '{"otra": "config"}'}); assert any("estructuralmente" in e for e in guard.all_checks(RunSpec.from_dict(bad), allow_internet={rs["script"]}, repo=repo))
     assert research_gaps(c)["public_query_reviewed"] is False

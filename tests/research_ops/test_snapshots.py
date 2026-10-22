@@ -136,7 +136,7 @@ class SnapshotTests(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):main(['--state',str(queue),'restore-queue',str(self.output),str(self.root/'restored'),'--expected-sha256',r['snapshot_sha256'],'--expected-tip',r['event_tip']])
         self.assertFalse(queue.parent.exists())
     def test_source_invalid_before_export(self):
-        with sqlite3.connect(self.store.path) as db:db.execute('UPDATE policy SET attempts=1')
+        with contextlib.closing(sqlite3.connect(self.store.path)) as db, db:db.execute('UPDATE policy SET attempts=1')   # cerrar, no sólo commit
         with self.assertRaises(ValueError):self.export()
     def test_snapshot_file_permissions(self):
         self.export();self.assertEqual(self.output.stat().st_mode&0o777,0o600)

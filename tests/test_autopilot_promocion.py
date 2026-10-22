@@ -48,7 +48,7 @@ def run(tmp_path, cands, decision="PROMOTE", **kw):
 def test_promote_commits_prereg_before_and_adds_candidate(tmp_path):
     out, r, cp, rows, _ = run(tmp_path, [cand("SLOT-9")])
     assert out == [("SLOT-9", "PROMOVIDA")]
-    assert json.loads(cp.read_text())[0]["run_id"] == "slot-9"
+    assert json.loads(cp.read_text(encoding="utf-8"))[0]["run_id"] == "slot-9"
     msg = subprocess.run(["git", "log", "-1", "--format=%s"], cwd=r, capture_output=True, text=True).stdout
     assert "SLOT-9" in msg and rows[-1]["prereg_commit"]
 
@@ -105,7 +105,7 @@ def test_publica_prereg_en_rama_y_sin_remoto_rechaza(tmp_path):
                         publicar=True, lock_path=t2 / ".lock", antecedentes_fn=lambda c: [{"ref": "docs/x.md#L1", "pasaje": "ya medido"}])
     assert out == [("SLOT-8", "PROMOVIDA")]
     ramas = subprocess.run(["git", "branch", "--list"], cwd=bare, capture_output=True, text=True).stdout
-    row = json.loads(log2.read_text().splitlines()[-1])
+    row = json.loads(log2.read_text(encoding="utf-8").splitlines()[-1])
     assert "autopilot/prereg/slot-8" in ramas and row["prereg_rama"] == "autopilot/prereg/slot-8" and row["antecedentes"] == ["docs/x.md#L1"]
 
 
@@ -114,7 +114,7 @@ def test_doble_revision_segundo_kill_rechaza(tmp_path):
     rev = Rev("PROMOTE"); rev.decision2 = "KILL"
     out = promover_auto([cand("SLOT-9")], draft_fn=draft, to_runspec=to_rs, runner=rev, repo=r, candidates_path=cp, log_path=log)
     assert out == [("SLOT-9", "RECHAZADA_REVISOR2")] and not cp.exists() and rev.calls == 2
-    assert json.loads(log.read_text().splitlines()[-1])["revisor2"]["decision"] == "KILL"
+    assert json.loads(log.read_text(encoding="utf-8").splitlines()[-1])["revisor2"]["decision"] == "KILL"
 
 
 def test_revisor2_no_se_llama_si_el_primero_mata(tmp_path):

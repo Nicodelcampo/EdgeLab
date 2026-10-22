@@ -62,9 +62,9 @@ def indexar(repo: Path, estado: Path | None = None, fuentes=FUENTES, con_commit:
     for tipo, patron, base, vivo in cands:
         for f in sorted(glob.glob(str(base / patron), recursive=True)):
             fp = Path(f)
-            if not fp.is_file() or fp.resolve() in vistos or "/archive/" in f: continue
+            if not fp.is_file() or fp.resolve() in vistos or "/archive/" in fp.as_posix(): continue          # as_posix: en Windows glob devuelve "\\"
             vistos.add(fp.resolve()); raw = fp.read_bytes(); trunc = len(raw) > MAX_BYTES
-            rel = str(fp.relative_to(base))
+            rel = fp.relative_to(base).as_posix()                                                   # misma clave en Windows y en el Debian
             docs.append(dict(id=("estado:" if vivo else "") + rel, tipo=tipo, patron=patron, sha256=_sha(raw), bytes=len(raw), truncado=trunc,
                              commit=None if (vivo or not con_commit) else _commit(repo, rel),
                              texto=raw[:MAX_BYTES].decode("utf-8", errors="replace")))

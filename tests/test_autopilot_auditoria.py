@@ -66,9 +66,9 @@ def test_sospecha_de_fuga_bloquea(tmp_path):
 def test_prereg_cambiado_despues_del_lanzamiento(tmp_path):
     r = _repo(tmp_path); led = _ledger(tmp_path, [(_spec("e"), DEC_OK)])
     led.db.execute("UPDATE runs SET launched_at=? WHERE run_id='e'", (time.time() - 3600,)); led.db.commit()
-    time.sleep(1.1); (r / "docs/pre.md").write_text((r / "docs/pre.md").read_text() + "cambio\n")
+    time.sleep(1.1); (r / "docs/pre.md").write_text((r / "docs/pre.md").read_text(encoding="utf-8") + "cambio\n")
     subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "y"], cwd=r, check=True)
     row = None
     auditoria.auditar(led, r, tmp_path / "aud.jsonl")
-    row = json.loads((tmp_path / "aud.jsonl").read_text().splitlines()[-1])
+    row = json.loads((tmp_path / "aud.jsonl").read_text(encoding="utf-8").splitlines()[-1])
     assert row["estado"] == "BLOQUEADA" and any("después del lanzamiento" in m for m in row["mecanicos"])

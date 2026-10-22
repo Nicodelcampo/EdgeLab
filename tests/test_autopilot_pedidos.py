@@ -7,7 +7,7 @@ def test_pedido_no_se_duplica_y_se_cierra_desde_la_sala(tmp_path):
     a = pedidos.pedir(tmp_path, "datos", "ticks MNQ 12-26 desde 2026-09-28", "la captura L2 está cortada", bloquea="AVZVOL-3")
     b = pedidos.pedir(tmp_path, "datos", "ticks MNQ 12-26 desde 2026-09-28", "otra vez")
     assert a["id"] == b["id"] and len(pedidos.abiertos(tmp_path)) == 1
-    assert "PEDIDO" in (tmp_path / "sala_outbox.jsonl").read_text() and (tmp_path / "sala_outbox.jsonl").read_text().count("PEDIDO") == 1
+    assert "PEDIDO" in (tmp_path / "sala_outbox.jsonl").read_text(encoding="utf-8") and (tmp_path / "sala_outbox.jsonl").read_text(encoding="utf-8").count("PEDIDO") == 1
     ib = tmp_path / "sala_inbox.jsonl"; ib.write_text(json.dumps({"autor": "nico", "texto": f"resuelto {a['id']} subido a Kaggle"}) + "\n"); os.chmod(ib, 0o644)
     aplicar_comandos(tmp_path, tmp_path / "PAUSE_SALA", ["nico"], lambda: {})
     assert pedidos.abiertos(tmp_path) == [] and pedidos.estado(tmp_path)[a["id"]]["resuelto_por"] == "nico"
