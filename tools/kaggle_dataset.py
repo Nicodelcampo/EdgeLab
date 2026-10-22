@@ -6,14 +6,15 @@ import argparse,json,os,subprocess,sys,time
 from pathlib import Path
 
 def _curl(args:list[str])->str:
-    r=subprocess.run(["curl","-sS","--fail-with-body"]+args,capture_output=True,text=True)
+    sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)));from kaggle_auth import curl_auth          # misma credencial que el resto de las herramientas
+    url=next((x for x in args if str(x).startswith("https://")),"");r=subprocess.run(["curl","-sS","--fail-with-body"]+curl_auth(url)+args,capture_output=True,text=True)
     if r.returncode:raise SystemExit(f"curl falló ({r.returncode}): {r.stdout[:300]} {r.stderr[:300]}")
     return r.stdout
 
 def upload_blob(path:Path,rel:str)->str:
     sz=path.stat().st_size;r=json.loads(_curl(["-X","POST","https://www.kaggle.com/api/v1/blobs/upload","-H","Content-Type: application/json","-d",
         json.dumps({"type":"dataset","name":rel,"contentLength":sz,"lastModifiedEpochSeconds":int(path.stat().st_mtime)})]))
-    _curl(["-o","/dev/null","-X","PUT",r["createUrl"],"-H","Content-Type: application/octet-stream","--data-binary",f"@{path}"]);return r["token"]
+    _curl(["-o",os.devnull,"-X","PUT",r["createUrl"],"-H","Content-Type: application/octet-stream","--data-binary",f"@{path}"]);return r["token"]
 
 def main():
     ap=argparse.ArgumentParser();sp=ap.add_subparsers(dest="cmd",required=True);v=sp.add_parser("version");v.add_argument("--slug",required=True);v.add_argument("--dir",required=True);v.add_argument("--notes",default="");c=sp.add_parser("create");c.add_argument("--slug",required=True);c.add_argument("--dir",required=True);c.add_argument("--title",default="");c.add_argument("--description",default="")

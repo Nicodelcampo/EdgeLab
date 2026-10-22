@@ -59,20 +59,18 @@ Fuente: el índice de sesiones del release `nicolasbuttaro/edgelab-liquid-ticks-
 - **Hay huecos internos:** sesiones sin contrato elegible o indeterminadas porque falta un export, en especial MYM (15), 6E (12) y ES (9).
 - **El detalle por sesión y contrato** está en `docs/infra/MISSING_EXPORTS_20261014.md`. Se completa con el AddOn `EdgeLabTickHistory`, y es trabajo de Nico en NT8.
 
-**Hallazgo de la misma revisión: el autopilot resuelve contra datasets REEMPLAZADOS.**
-- Los 10 datasets a los que apunta `docs/data_catalog/RESOLVER.json` están marcados en Kaggle como `REEMPLAZADO 2026-10-14`:
-  - edgelab-nt8-historical-missing-20261001;
-  - ticks-nt8-canonical;
-  - ticks-nt8-reexport-20261005;
-  - ticks-gc / zb / mbt / 6e-preholdout;
-  - mgc-nt8-raw-parquet;
-  - ticks-es-nq-2026q3-ext;
-  - ticks-nq-preholdout, que además está en **CUARENTENA**.
-- Ese resolver es el que usan `docs/data_catalog/edgelab_data.py` (protegido) y `tools/kaggle_launch.py --need`, es decir, las corridas del Debian.
-- El propio dataset `edgelab-data-catalog` lo describe como «resolver histórico, BLOQUEADO para research».
-- Pasar el autopilot al release líquido exige dos cosas, y las dos son decisiones de Nico:
-  1. aprobar el release para research: hoy está `CANDIDATE_NOT_RESEARCH_APPROVED` y falta aprobar su política de liquidez;
-  2. tocar un archivo protegido.
-- No se cambió nada de esto en esta enmienda.
+**Hallazgo de la misma revisión, resuelto el mismo día: el autopilot resolvía contra datasets REEMPLAZADOS.**
+- Los 10 datasets a los que apuntaba `docs/data_catalog/RESOLVER.json` estaban marcados en Kaggle como `REEMPLAZADO 2026-10-14`, y uno, `ticks-nq-preholdout`, como CUARENTENA.
+- Ese resolver es el que usan `edgelab_data.py` y `tools/kaggle_launch.py --need`, es decir, las corridas del Debian.
+
+**Corrección:** en la primera versión de esta acta escribí que el release faltaba aprobarlo. Era falso: está aprobado para research desde el 2026-10-14 (`docs/infra/RELEASE_APPROVAL_20261014.md`, atado al manifiesto `db9c42cd…`).
+
+**Resolución (decisión de Nico, 2026-10-22: «sí, hacelo»):**
+- `tools/resolver_desde_release.py` genera el resolver v2 desde el índice del release.
+- `edgelab_data.py`, que es protegido, **no cambió**: lee el mismo formato.
+- Verificado de punta a punta con el archivo real de 6B, cuyo SHA es igual al del manifiesto: 291 sesiones y 8.999.265 filas. La fecha de sesión coincide con `trade_date` en todas las filas.
+- Un lanzamiento en seco ahora monta sólo `edgelab-data-catalog` y `edgelab-liquid-ticks-20261014`.
+- Publicada la versión 18 de `edgelab-data-catalog` en Kaggle con el resolver nuevo; `edgelab_data.py` quedó idéntico.
+- **En el Debian:** actualizar el clon de código (`deploy/debian/update.sh <sha>`), porque `kaggle_launch` calcula los archivos con el resolver del repo.
 
 **Aporte al referente:** una sola frontera de holdout, en código y en documentos, elimina la clase de error por la que el autopilot y los documentos decían cosas distintas sobre qué datos podía usar. La cobertura medida dice exactamente qué sesiones faltan antes del holdout.

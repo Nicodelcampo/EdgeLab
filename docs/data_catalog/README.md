@@ -36,7 +36,7 @@ Archivos de este catálogo (todos generados por `tools/data_catalog_build.py`; *
 - Los archivos `*-preholdout` están cortados en `2026-06-30T22:00Z` y suelen ser «rebanadas parciales» de cada contrato (no cubren toda su vida).
 
 ## Custodia
-- **Holdout (HOLDOUT-A4, único para todos los activos y L2): sesiones de trading desde 2026-10-01 (`edgelab/holdout.py`). No leer.** Todo lo anterior es desarrollo. Ojo: este RESOLVER apunta a datasets marcados REEMPLAZADO en Kaggle desde el 2026-10-14 (ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`).
+- **Holdout (HOLDOUT-A4, único para todos los activos y L2): sesiones de trading desde 2026-10-01 (`edgelab/holdout.py`). No leer.** Todo lo anterior es desarrollo. Desde el 2026-10-22 el RESOLVER sale del release canónico `edgelab-liquid-ticks-20261014` (ver `RESOLVER_STATUS.md`).
 - Los ticks de NinjaTrader/CME se mantienen **privados**. `ABSTAIN_LICENSE` se levantó el 2026-10-05 sólo para compartir con gonzaloescobar (ver `docs/decisions/DECISION_20261005_RESEARCH_V2_LICENCIA.md`). `mnq-parquet` verificado privado el 2026-10-05; `mnq-tick-data` no existe en la cuenta.
 
 ## Regenerar el catálogo
