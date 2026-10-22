@@ -13,13 +13,18 @@ import concurrent.futures
 import zstandard as zstd
 import pyarrow as pa
 import pyarrow.parquet as pq
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
 REPO_ROOT = Path(r"E:\EdgeLab-edgefactory")
 BUNDLES_DIR = Path(r"E:\EdgeLab-multiasset\viewer\nt8_bridge\bundles")
 MNQ_DIR = Path(r"E:\EdgeLab\data\nt8_research_v2\mnq_parquet")
 
-HOLDOUT_BOUNDARY_NS = 1782856800000000000
-HOLDOUT_BOUNDARY_UTC = "2026-06-30T22:00:00Z"
+CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 
 def get_file_sha256(path: Path) -> str:
     h = hashlib.sha256()
@@ -390,7 +395,7 @@ def audit_mnq_parquets() -> dict:
         ts_col = pf.read(columns=["ts_utc_ns"]).column("ts_utc_ns").to_numpy()
         min_ts = int(ts_col.min())
         max_ts = int(ts_col.max())
-        post_holdout_count = int((ts_col >= HOLDOUT_BOUNDARY_NS).sum())
+        post_holdout_count = int((ts_col >= CORTE_FISICO_NS).sum())
 
         results.append({
             "file_name": f.name,
@@ -425,8 +430,8 @@ def generate_report(inventory_audit: dict, bundle_audit: dict, mnq_audit: dict):
     # Compile artifacts/migration/BUNDLE_COMPRESSION_AUDIT.json
     out_json = {
         "audit_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "holdout_boundary_ns": HOLDOUT_BOUNDARY_NS,
-        "holdout_boundary_utc": HOLDOUT_BOUNDARY_UTC,
+        "holdout_boundary_ns": CORTE_FISICO_NS,
+        "holdout_boundary_utc": CORTE_FISICO_UTC,
         "inventory": inventory_audit,
         "bundle_compression_audit": bundle_audit,
         "mnq_parquet_audit": mnq_audit,
@@ -482,7 +487,7 @@ def generate_report(inventory_audit: dict, bundle_audit: dict, mnq_audit: dict):
 **Autor:** Auditoría de Sistemas y Custodia Criptográfica EdgeLab  
 **Rama:** `audit/edge-discovery-factory-foundation-20260919`  
 **Entregable JSON:** [`artifacts/migration/BUNDLE_COMPRESSION_AUDIT.json`](file:///E:/EdgeLab-edgefactory/artifacts/migration/BUNDLE_COMPRESSION_AUDIT.json)  
-**Holdout Boundary:** `1782856800000000000` (`2026-06-30T22:00:00Z`) — **0 filas holdout expuestas**  
+**Corte fisico del dataset (frontera vieja; no es el holdout vigente, HOLDOUT-A4):** `1782856800000000000` (`2026-06-30T22:00:00Z`) — **0 filas holdout expuestas**  
 
 ---
 

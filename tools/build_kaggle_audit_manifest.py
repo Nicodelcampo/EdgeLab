@@ -16,8 +16,13 @@ import hashlib
 import json
 import subprocess
 from pathlib import Path
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
-HOLDOUT_NS = 1782856800000000000
+HOLDOUT_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
 CUTOFF_DATE = 20260630
 
 

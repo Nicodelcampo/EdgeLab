@@ -182,10 +182,11 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
 
 ## G4 — Confirmación OOS (holdout sellado)
 
-- Holdout: **2026-07-01 → 2026-12-31**. **Una sola apertura por candidato**,
-  después de aprobar G3, con protocolo firmado antes de abrir.
-  (Movido indebidamente a 2026-08-01 el 2026-08-01; revertido en INC-006. La
-  frontera es un sello, no un cursor — regla 95.)
+- Holdout: **desde la sesión CME del 2026-10-01** (apertura 2026-09-30 22:00 UTC), a futuro, para todos los
+  instrumentos y tipos de dato — enmienda **HOLDOUT-A4** firmada por Nico el 2026-10-22
+  (`docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`); fuente única en código `edgelab/holdout.py`.
+  **Una sola apertura por candidato**, después de aprobar G3, con protocolo firmado antes de abrir.
+  (La frontera es un sello, no un cursor — regla 95, INC-006: sólo la mueve una enmienda firmada.)
 - Duros, pre-declarados: **PASS** = expectancy neta base > 0 en el holdout con
   n ≥ 30 trades y ≥ **50%** de la expectancy de desarrollo. **FAIL** = neta ≤ 0.
   **WARN** = neta > 0 pero < 50% de desarrollo o n < 30 (revisión de Nico).
@@ -198,9 +199,8 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
   end_utc, *, purpose, caller, log_path=None)`. Toda función de carga de datos
   para research económico de estrategias debe llamarlo ANTES de tocar
   cualquier rango. `purpose` es obligatorio, sin default, uno de:
-  - `"development"` — si el rango toca `HOLDOUT_START` (2026-07-01, única
-    fuente de verdad en `holdout_guard.HOLDOUT_START_ISO`, citada de este
-    documento y de `NORTH_STAR.md`) levanta `HoldoutViolation` (excepción
+  - `"development"` — si el rango toca `HOLDOUT_START` (apertura de la sesión del 2026-10-01; fuente única
+    `edgelab/holdout.py`, que `holdout_guard.HOLDOUT_START_ISO` reproduce) levanta `HoldoutViolation` (excepción
     dura) y registra el intento denegado en el log. Si el rango es enteramente
     anterior al holdout, permite sin loguear (no es un acceso al holdout).
   - `"target_free_validation"` — único uso permitido (paridad, determinismo,
@@ -220,11 +220,9 @@ adverso < 0; DD neto de desarrollo > USD 2.500 por contrato; expectancy neta
   filas, ninguna se pierde), casos límite (borde exacto de `HOLDOUT_START`,
   rango sin cota superior).
 - **Alcance declarado**: el guard hace cumplir el límite INFERIOR
-  (`>= HOLDOUT_START`); no acota por el límite superior del rango cerrado
-  (2026-12-31) — ver la nota de alcance en el docstring del módulo.
-- Nota vigente: la partición de paridad de Gaps2 (6E 09-26, ventana
-  2026-07-13→16) es un uso **target-free permitido** (paridad geométrica); sus
-  datos NO pueden usarse para elegir dirección, thresholds ni candidatos.
+  (`>= HOLDOUT_START`); el holdout es a futuro y no tiene cota superior — ver la nota de alcance en el docstring del módulo.
+- Nota histórica: la partición de paridad de Gaps2 (6E 09-26, ventana 2026-07-13→16) fue un uso target-free
+  cuando esa ventana era holdout; desde HOLDOUT-A4 es desarrollo.
 
 ## G5 — Aplicabilidad
 

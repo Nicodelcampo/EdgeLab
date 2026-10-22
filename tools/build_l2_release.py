@@ -99,8 +99,8 @@ def main():
         "research_allowed_reason": "L2 sin auditoria de payload ni aprobacion externa propias (equivalente a la release v4 de ticks). Uso solo para preparacion tecnica hasta entonces.",
         "privacy": {"is_private": True, "raw_l2_outside_pc": "decision de Nico 2026-10-15: se permite subir el L2 de ES a Kaggle privado"},
         "partition_policy": {
-            "l2_development_window": f"2026-07-01..{DEV_END[:4]}-{DEV_END[4:6]}-{DEV_END[6:]} (enmienda firmada 2026-09-24)",
-            "l2_holdout": "2026-11-01..2026-12-31, sellado; NO incluido (no existe aun)",
+            "l2_development_window": f"2026-07-01..{DEV_END[:4]}-{DEV_END[4:6]}-{DEV_END[6:]} (desarrollo hasta la apertura del holdout, HOLDOUT-A4)",
+            "l2_holdout": "desde la sesion del 2026-10-01 (HOLDOUT-A4), sellado; NO incluido",
             "ticks_holdout_note": "el holdout de ticks sigue desde 2026-10-01: un resultado de ticks en jul-oct no puede combinarse con un modelo L2 entrenado ahi",
         },
         "schema_l2": "NT8_MBP10_REPLAY_V1 (ts_us reloj ART leido como UTC; price_tick enteros; side 0=ASK 1=BID; operation 0 alta/1 cambio/2 baja)",

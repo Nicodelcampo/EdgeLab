@@ -75,38 +75,27 @@ detalle en `edge_validation_contract.md`):
 
 ## Firewall del holdout
 
-Holdout sellado: **2026-07-01 → 2026-12-31**. Una sola apertura por candidato,
-conforme a protocolo pre-declarado.
+Holdout sellado: **desde la sesión CME del 2026-10-01** (apertura 2026-09-30 17:00 CT =
+22:00 UTC), a futuro, **para todos los instrumentos y todo tipo de dato** (ticks, barras,
+L2). Una sola apertura por candidato, conforme a protocolo pre-declarado. Fuente única en
+código: `edgelab/holdout.py` (enmienda **HOLDOUT-A4**, firmada por Nico el 2026-10-22,
+`docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`); reemplaza las fronteras parciales
+de las enmiendas anteriores (A1–A3 y la de L2), que quedan como historia.
 
-> **La frontera es un sello, no un cursor (regla 95).** El 2026-08-01 un commit
-> etiquetado `chore` la movió a 2026-08-01 declarando que julio "fue absorbido
-> a la muestra pre-holdout". Eso no es una repartición: es des-sellar un mes ya
-> protegido, y además venció solo cuando el reloj cruzó la fecha. Revertido en
-> INC-006. La frontera efectiva hoy se calcula como `min(sello, declarada)`, de
-> modo que atrasarla es imposible por construcción, no por convención.
-- **Prohibido** usarlo para elegir dirección, entradas/salidas, thresholds,
+- Todo lo anterior a esa apertura es **desarrollo**. Para ES y NQ rige además la partición
+  de A3: descubrimiento hasta 2026-03-31 y réplica abr–sep una vez por familia. Para el resto,
+  una familia que quiera réplica la pre-registra antes de mirar.
+- **Prohibido** usar el holdout para elegir dirección, entradas/salidas, thresholds,
   bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
   geometría, integridad, visor).
 
-> **Enmienda L2 (firmada por Nico el 2026-09-24,
-> `docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md`).** Solo para
-> investigación con datos L2 (MBP-10) en GC, 6E, NQ, ES, MES, MNQ y ZB:
-> L2 del **2026-07-01 al 2026-10-31 = desarrollo**; L2 del **2026-11-01 al
-> 2026-12-31 = holdout L2 sellado**, con una apertura por candidato. Es una frontera nueva,
-> fijada antes de que existan esos datos; no mueve la frontera de ticks y
-> barras, que sigue en 2026-07-01 → 2026-12-31. Julio a octubre deja de ser
-> ciego para toda hipótesis que use L2 en esos instrumentos.
-
-> **Enmiendas HOLDOUT-A1 / A2 / A3 (firmadas por Nico el 2026-09-26/27,
-> `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`).** Sólo para **ticks de ES y NQ**:
-> **descubrimiento** 2025-07-18 → 2026-03-31; **replicación** 2026-04-01 → 2026-09-30, una
-> sola apertura por familia, sólo sobre celdas sobrevivientes y sin elegir nada en ella;
-> **holdout** desde la sesión CME del 2026-10-01 (apertura 2026-09-30 17:00 CT), a futuro.
-> Motivo: potencia (la fuente no tiene historia anterior). Se implementa con las fronteras
-> propias de las herramientas de research (`tools/tbz_e2.py`); **el sello general de
-> `edgelab/research/holdout_guard.py` no se mueve** y sigue protegiendo al resto de los
-> instrumentos y a todo código que lo use. Para los demás instrumentos rige 2026-07-01.
+> **La frontera es un sello, no un cursor (regla 95).** El 2026-08-01 un commit
+> etiquetado `chore` movió la frontera declarando que un mes "fue absorbido a la muestra
+> pre-holdout": es des-sellar material protegido, y además venció solo cuando el reloj
+> cruzó la fecha. Revertido en INC-006. La frontera efectiva se calcula como
+> `min(sello, declarada)`, así que atrasarla es imposible por construcción. El único
+> movimiento del sello es una enmienda firmada por Nico (HOLDOUT-A4), nunca un cambio de código.
 
 ## Rituales permanentes
 
@@ -129,4 +118,4 @@ Ver también: `edge_validation_contract.md` (gates G0–G5), `kernel_contract.md
 
 <!-- SHA256-BODY-ABOVE -->
 
-**sha256 (cuerpo hasta el marcador):** `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
+**sha256 (cuerpo hasta el marcador):** `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`

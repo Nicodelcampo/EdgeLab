@@ -33,6 +33,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 4 | `external-models` | Modelos externos | experimental | Features de modelos preentrenados (Kronos y sucesores) con causalidad y almacen point-in-time. | data-custody | `docs/external_model_contract.md` | `tests/external` |
 | 4 | `funnel` | Funnel exploratorio CPU (linea main) | experimental | Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL). Desde 2026-10-22: escalera de decision (tamiz FDR, replica LORD++, economico, potencia del holdout) y monitor secuencial con e-procesos; kernel v2. | stats | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | `tests/test_funnel.py`, `tests/test_funnel_isolation.py`, `tests/test_funnel_multiplicity.py`, `tests/test_funnel_stage_integration.py`, `tests/test_funnel_escalera.py` |
 | 4 | `gex` | GEX (exposicion gamma) | experimental | Reconstruccion diaria de niveles de gamma para condicionar regimenes. | data-custody | `docs/research/GEX_FUENTES_Y_GATES_2026-08-13.md` | **sin tests** |
+| 4 | `holdout` | Frontera unica del holdout | experimental | Fuente unica de la frontera del holdout (sesion CME del 2026-10-01, todos los activos y L2; HOLDOUT-A4) y del corte fisico de los datasets viejos. | - | `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` | `tests/test_holdout_unico.py` |
 | 4 | `research` | Embudo de investigacion | core | Campanas de medicion pre-registradas: nulos, geometria de zonas, embudos por familia, costos, potencia. Produce actas; no promueve edges por si mismo. | data-custody, bridge-kernels, stats, context | `docs/research_funnel_playbook.md` | `tests/research` |
 | 4 | `stats` | Estadistica de validacion | core | Bootstrap estacionario, estimand por cluster/sesion, efecto minimo detectable y primitivos de auditoria estadistica (DSR, MCPT, PBO). | - | `docs/edge_validation_contract.md` | `tests/stats` |
 | 5 | `execution-engine` | Motor de ejecucion tick | core | Motor compartido de fills a nivel tick (entrada al tick siguiente, ask/bid, TP con trade-through, costos). Se escribe una vez; las estrategias solo emiten senales. | config-core | `CONTRATO_LLM.md` | `tests/foundation` |
@@ -109,6 +110,7 @@ graph LR
 - **external-models** — entra: series; sale: features PIT.
 - **funnel** — entra: tablas de eventos; sale: screens exploratorios.
 - **gex** — entra: cadenas de opciones; sale: niveles GEX diarios.
+- **holdout** — entra: docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md; sale: constantes de frontera.
 - **research** — entra: release de ticks, manifiestos de campana; sale: actas MEDIDO/NO MEDIDO, landscapes target-free.
 - **stats** — entra: series de resultados; sale: IC, p-valores, MDE.
 - **execution-engine** — entra: senales (idx, dirs), ticks con bid/ask; sale: ledger de trades.

@@ -13,6 +13,11 @@ import json
 import subprocess
 import sys
 from pathlib import Path
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 REPO = Path(__file__).resolve().parents[1]
 
@@ -69,7 +74,7 @@ def main():
 
 > **Target-free.** Sin P&L, sin entrada ni salida ni costo: sólo la geometría del recorrido posterior a un contacto.
 > Reproducción: `.venv\\Scripts\\python tools\\rechazo_clusters_nq.py --sesiones 65 --desde "2026-03-23 22:00" --out data/nt8_oracles/rechazo_clusters_nq_65s.json`
-> **Alcance: {len(sesiones)} sesiones de `NQ 06-26` (2026-03-23 en adelante, pre-holdout).** Holdout 2026-07-01 → 2026-12-31 intacto.
+> **Alcance: {len(sesiones)} sesiones de `NQ 06-26` (2026-03-23 en adelante, pre-holdout).** Holdout 2026-10-01 en adelante intacto.
 
 ---
 
@@ -147,7 +152,7 @@ Cierra la medición de potencia para H2 sobre 65 sesiones pre-holdout, con MDE d
 
 > Escrito para que **Claude** continúe directamente con el plan de investigación.
 > Rama: `foundation/f0b-compatibility-probe`.
-> Holdout 2026-07-01 → 2026-12-31: **intacto**.
+> Holdout 2026-10-01 en adelante: **intacto**.
 
 ---
 

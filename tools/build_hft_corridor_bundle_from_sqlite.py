@@ -8,7 +8,12 @@ causal timestamps before writing any derived artifact.
 from __future__ import annotations
 import argparse, hashlib, json, sqlite3
 from pathlib import Path
-HOLDOUT_START_NS=1_782_856_800_000_000_000
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
+HOLDOUT_START_NS=HOLDOUT_APERTURA_UTC_NS
 REQUIRED_ZONE_COLUMNS={"instrument","contract","session_id","zone_seq","start_ts_ns","end_ts_ns","available_ts_ns","direction","price_lower","price_upper","height_ticks","termination_reason","vol","volume_rate","buy_vol","sell_vol","cvd_sweep","no_move_vol","max_level_ticks","parameter_manifest_sha256","indicator_source_sha256"}
 def sha256_file(path):
  h=hashlib.sha256()

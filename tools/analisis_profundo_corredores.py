@@ -32,6 +32,11 @@ import time
 from pathlib import Path
 import numpy as np
 from scipy import stats
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 try:
     sys.stdout.reconfigure(encoding='utf-8')
@@ -514,7 +519,7 @@ def main():
             "fecha": "2026-09-15",
             "rama": "foundation/f0b-compatibility-probe",
             "protocolo": "Terceridad de Datos y Validación Profunda HP-007",
-            "holdout_preservado": "2026-07-01 -> 2026-12-31"
+            "holdout_preservado": "2026-10-01 en adelante"
         },
         "asimetria_vectorial": res_asimetria,
         "pared_a_pared": res_pared,
@@ -532,7 +537,7 @@ def main():
     rep.append("**Rama:** `foundation/f0b-compatibility-probe`  ")
     rep.append("**Metodología:** Análisis Multidimensional de Microestructura (Vectorial, Pared a Pared, Colisión y Cross-Asset)  ")
     rep.append("**Dataset Primario:** 6E CME Globex (111,400 barras 25t) + EURUSD Spot Dukascopy (48,712 barras 25t) + ES CME (24,529 barras 15m)  ")
-    rep.append("**Holdout:** Estrictamente sellado e intacto (`2026-07-01 -> 2026-12-31`).\n")
+    rep.append("**Holdout:** Estrictamente sellado e intacto (`2026-10-01 en adelante`).\n")
     rep.append("---\n")
     rep.append("## 1. Resumen Ejecutivo de la Validación Profunda\n")
     rep.append("La batería de pruebas avanzadas confirma que el concepto de **Corredores de Vacío y Campo de Resistencia Microestructural** posee fundamentos físicos y estadísticos incuestionables:\n")

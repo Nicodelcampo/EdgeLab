@@ -19,9 +19,14 @@ Enforces mandatory semantics:
 import json
 from pathlib import Path
 from datetime import datetime, timezone
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
-HOLDOUT_BOUNDARY_NS = 1782856800000000000
-HOLDOUT_BOUNDARY_UTC = "2026-06-30T22:00:00Z"
+CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 
 def main():
     root = Path("E:/EdgeLab-edgefactory")
@@ -106,7 +111,7 @@ def main():
             "code_commit": "b65da6996af6d7ab6360139843fb7df2a3c40dbe",
             "schema_version": "1.0.0",
             "causal_fields": ["origin_ts", "signal_available_ts", "confirmed_ts"],
-            "holdout_boundary_ns": HOLDOUT_BOUNDARY_NS
+            "holdout_boundary_ns": CORTE_FISICO_NS
         },
         "total_zones": parity_data.get("summary", {}).get("total_parquet_zones", 3328710),
         "total_slices": parity_data.get("summary", {}).get("total_slices_audited", 147),
@@ -150,8 +155,8 @@ def main():
         "manifest_version": "1.0.0",
         "created_at_utc": datetime.now(timezone.utc).isoformat(),
         "holdout_boundary": {
-            "boundary_ns": HOLDOUT_BOUNDARY_NS,
-            "boundary_utc": HOLDOUT_BOUNDARY_UTC,
+            "boundary_ns": CORTE_FISICO_NS,
+            "boundary_utc": CORTE_FISICO_UTC,
             "enforcement": "STRICT_LESS_THAN",
             "global_violations": sum(x["holdout_violations"] for x in canonical_raw_ticks)
         },
@@ -227,7 +232,7 @@ def main():
     with open(anom_file, "w", encoding="utf-8") as f:
         json.dump({
             "audit_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-            "holdout_boundary_ns": HOLDOUT_BOUNDARY_NS,
+            "holdout_boundary_ns": CORTE_FISICO_NS,
             "total_anomalies": len(anomalies),
             "anomalies": anomalies
         }, f, indent=2)

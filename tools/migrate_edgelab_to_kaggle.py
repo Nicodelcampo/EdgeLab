@@ -15,14 +15,19 @@ REPO_ROOT = Path(r"E:\EdgeLab-edgefactory")
 sys.path.insert(0, str(REPO_ROOT))
 
 from edgelab.edge_factory.instrument_spec import INSTRUMENT_SPECS, get_instrument_spec
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
 STAGING_ROOT = Path(r"E:\kaggle_staging")
 VERIFY_ROOT = Path(r"E:\kaggle_verify")
 STAGING_ROOT.mkdir(parents=True, exist_ok=True)
 VERIFY_ROOT.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_HOLDOUT_NS = 1782856800000000000
-DEFAULT_HOLDOUT_UTC = "2026-06-30T22:00:00Z"
+DEFAULT_CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+DEFAULT_CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 PRODUCER_COMMIT = "49eadf0"
 
 STATE_FILE = REPO_ROOT / "artifacts" / "audit" / "kaggle_migration_state.json"
@@ -161,7 +166,7 @@ Private audited evidence repository containing:
 - Machine-readable audited hypothesis backlog
 - Edge Discovery Factory foundation specifications and test results
 
-**Holdout Boundary:** `1782856800000000000` (2026-06-30T22:00:00Z)
+**Corte fisico del dataset (frontera vieja; no es el holdout vigente, HOLDOUT-A4):** `1782856800000000000` (2026-06-30T22:00:00Z)
 **Holdout Rows Decoded:** 0
 **Outcomes / Future PnL:** Strictly Zero
 """
@@ -216,13 +221,13 @@ def stage_dataset_2_target_free_audited() -> tuple[str, Path, list[dict]]:
                 if len(tbl) > 0:
                     min_ts = int(tbl.column("origin_ts").to_numpy().min())
                     max_ts = int(tbl.column("signal_available_ts").to_numpy().max())
-                    assert max_ts < DEFAULT_HOLDOUT_NS, f"HOLDOUT VIOLATION in {p_src}: {max_ts} >= {DEFAULT_HOLDOUT_NS}"
+                    assert max_ts < DEFAULT_CORTE_FISICO_NS, f"HOLDOUT VIOLATION in {p_src}: {max_ts} >= {DEFAULT_CORTE_FISICO_NS}"
             elif sub == "session_inventory":
                 tbl = pf.read(columns=["start_utc_ns", "end_utc_ns"])
                 if len(tbl) > 0:
                     min_ts = int(tbl.column("start_utc_ns").to_numpy().min())
                     max_ts = int(tbl.column("end_utc_ns").to_numpy().max())
-                    assert max_ts < DEFAULT_HOLDOUT_NS, f"HOLDOUT VIOLATION in {p_src}: {max_ts} >= {DEFAULT_HOLDOUT_NS}"
+                    assert max_ts < DEFAULT_CORTE_FISICO_NS, f"HOLDOUT VIOLATION in {p_src}: {max_ts} >= {DEFAULT_CORTE_FISICO_NS}"
 
             files_manifest.append({
                 "dataset_ref": f"nicolasbuttaro/{slug}",
@@ -365,7 +370,7 @@ def stage_dataset_4_ticks(sym: str) -> tuple[str, Path, list[dict]]:
         ts = tbl.column("ts_utc_ns").to_numpy()
         min_ts = int(ts.min())
         max_ts = int(ts.max())
-        post_holdout = int((ts >= DEFAULT_HOLDOUT_NS).sum())
+        post_holdout = int((ts >= DEFAULT_CORTE_FISICO_NS).sum())
         assert post_holdout == 0, f"HOLDOUT VIOLATION in {p_src.name}: {post_holdout} rows"
 
         parts = p_src.stem.split("_")
@@ -392,7 +397,7 @@ def stage_dataset_4_ticks(sym: str) -> tuple[str, Path, list[dict]]:
             "holdout_rows": 0,
             "custody_status": "CANONICAL_VERIFIED",
             "causal_status": "CAUSAL_VERIFIED",
-            "known_limitations": "Pre-holdout boundary strictly enforced at 1782856800000000000 (2026-06-30T22:00:00Z).",
+            "known_limitations": "Corte fisico del dataset (frontera vieja, no es el holdout vigente) strictly enforced at 1782856800000000000 (2026-06-30T22:00:00Z).",
             "supersedes": None,
             "superseded_by": None
         })
@@ -694,15 +699,15 @@ def upload_and_verify_dataset(api: KaggleApi, slug: str, stage_dir: Path, files_
                 cols = pf.schema.names
                 if "ts_utc_ns" in cols:
                     ts_arr = pf.read(columns=["ts_utc_ns"]).column("ts_utc_ns").to_numpy()
-                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_HOLDOUT_NS:
+                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_CORTE_FISICO_NS:
                         holdout_violations += 1
                 if "signal_available_ts" in cols:
                     ts_arr = pf.read(columns=["signal_available_ts"]).column("signal_available_ts").to_numpy()
-                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_HOLDOUT_NS:
+                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_CORTE_FISICO_NS:
                         holdout_violations += 1
                 if "end_utc_ns" in cols:
                     ts_arr = pf.read(columns=["end_utc_ns"]).column("end_utc_ns").to_numpy()
-                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_HOLDOUT_NS:
+                    if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_CORTE_FISICO_NS:
                         holdout_violations += 1
             except Exception as ex:
                 print(f"Parquet check error on {dl_file.name}: {ex}")
@@ -758,8 +763,8 @@ def generate_deliverables(state: dict):
     manifest_records = state.get("all_manifest_records", [])
 
     canonical_manifest = {
-        "holdout_boundary_ns": DEFAULT_HOLDOUT_NS,
-        "holdout_boundary_utc": DEFAULT_HOLDOUT_UTC,
+        "holdout_boundary_ns": DEFAULT_CORTE_FISICO_NS,
+        "holdout_boundary_utc": DEFAULT_CORTE_FISICO_UTC,
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "producer_commit": PRODUCER_COMMIT,
         "total_files": len(manifest_records),
@@ -777,8 +782,8 @@ def generate_deliverables(state: dict):
     # 2. EDGELAB_KAGGLE_MIGRATION_ANOMALIES.json
     anomalies = {
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "canonical_boundary_ns": DEFAULT_HOLDOUT_NS,
-        "canonical_boundary_utc": DEFAULT_HOLDOUT_UTC,
+        "canonical_boundary_ns": DEFAULT_CORTE_FISICO_NS,
+        "canonical_boundary_utc": DEFAULT_CORTE_FISICO_UTC,
         "blocked_artifacts": [
             {
                 "artifact": "NQ 09-26",
@@ -845,7 +850,7 @@ En cumplimiento de las instrucciones de sesión y los mandatos de aislamiento es
 - **Dependencia Local Reducida:** Se habilita la desvinculación operativa de `E:\\EdgeLab-multiasset` y `E:\\EdgeLab-edgefactory`, permitiendo el consumo read-only estructurado por parte de Notion AI a través del Worker `edgelab-kaggle-access`.
 - **Privacidad Absoluta:** 100% de los datasets creados fueron configurados con `"isPrivate": True`. Ningún secreto, token o variable `.env` fue expuesto.
 - **Firewall de Holdout Inviolado:**
-  - Boundary canónico: `holdout_boundary_ns = 1782856800000000000` (`2026-06-30T22:00:00Z`).
+  - Corte fisico (frontera vieja) canónico: `holdout_boundary_ns = 1782856800000000000` (`2026-06-30T22:00:00Z`).
   - Total de filas holdout decodificadas / migradas: **0**.
   - Total de outcomes, targets, PnL o métricas MFE/MAE calculadas: **0**.
 - **Integridad Criptográfica:** Todos los archivos fueron verificados bit a bit mediante SHA-256 contra la copia descargada remotamente desde Kaggle.

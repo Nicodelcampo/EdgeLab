@@ -151,7 +151,7 @@ def test_close_at_session_end_false_no_cierra_por_sesion():
 # --------------------------- firewall del holdout -------------------------- #
 def test_guard_rechaza_datos_del_holdout_en_development(tmp_path):
     import datetime as dt
-    t0 = int(dt.datetime(2026, 8, 1, tzinfo=dt.timezone.utc).timestamp() * 1000)
+    t0 = int(dt.datetime(2026, 10, 5, tzinfo=dt.timezone.utc).timestamp() * 1000)
     steps = _steps(n=5, t0=t0)
     with pytest.raises(HoldoutViolation):
         simulate([], steps, scenario="base", tick_size=TICK, tick_value=TV,

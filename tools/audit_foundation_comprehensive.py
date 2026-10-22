@@ -14,6 +14,11 @@ REPO = Path(r"E:\EdgeLab-edgefactory")
 sys.path.insert(0, str(REPO))
 
 from edgelab.edge_factory.instrument_spec import INSTRUMENT_SPECS, get_instrument_spec, price_to_ticks
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
 BUNDLES_DIR = Path(r"E:\EdgeLab-multiasset\viewer\nt8_bridge\bundles")
 AUDIT_OUT_DIR = REPO / "artifacts" / "audit"
@@ -21,7 +26,7 @@ CORRECTED_STORE_DIR = REPO / "artifacts" / "edge_factory_audit"
 AUDIT_OUT_DIR.mkdir(parents=True, exist_ok=True)
 CORRECTED_STORE_DIR.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_HOLDOUT_NS = 1782856800000000000
+DEFAULT_CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
 
 def sha256_file(path):
     h = hashlib.sha256()
@@ -201,7 +206,7 @@ def run_fase_1_expansion_audit():
                 monotonicity_violations.append({"asset_id": aid, "prev_time": prev_t, "curr_time": t})
             prev_t = t
             t_ns = t * 1_000_000_000
-            if t_ns >= DEFAULT_HOLDOUT_NS:
+            if t_ns >= DEFAULT_CORTE_FISICO_NS:
                 holdout_violations.append({"asset_id": aid, "timestamp_ns": t_ns})
 
         # Verify session formula: bars_25t == ceil(ticks / 25)

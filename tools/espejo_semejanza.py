@@ -21,7 +21,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO)); sys.path.insert(0, str(REPO / "tools"))
 
-HOLDOUT_NS = 1_775_001_600_000_000_000     # 2026-04-01T00:00Z
+FIN_DESCUBRIMIENTO_NS = 1_775_001_600_000_000_000   # fin del descubrimiento de esta familia cerrada (NO es el holdout: edgelab/holdout.py, HOLDOUT-A4)     # 2026-04-01T00:00Z
 MAXBARS, MINW, EFF, RETR = 20, 68, 0.6, 0.3
 XS = (0.4, 0.5, 0.75)
 HZ = 200
@@ -124,7 +124,7 @@ def collect_grid(parquet, instrument, contract, grid, max_sessions=None):
     from tbzx_espejo import detect
 
     ts_all = pq.read_table(parquet, columns=["ts_utc_ns"])["ts_utc_ns"].to_numpy()
-    ts_all = ts_all[ts_all < HOLDOUT_NS]
+    ts_all = ts_all[ts_all < FIN_DESCUBRIMIENTO_NS]
     tds = trade_date_ymd(ts_all); ok = ~is_maintenance_break(ts_all)
     out = {g: [] for g in grid}
     for n, td in enumerate(sorted(np.unique(tds[ok]))):
@@ -195,7 +195,7 @@ def collect(parquet, instrument, contract, max_sessions=None):
     from tbzx_espejo import detect
 
     ts_all = pq.read_table(parquet, columns=["ts_utc_ns"])["ts_utc_ns"].to_numpy()
-    ts_all = ts_all[ts_all < HOLDOUT_NS]
+    ts_all = ts_all[ts_all < FIN_DESCUBRIMIENTO_NS]
     tds = trade_date_ymd(ts_all); ok = ~is_maintenance_break(ts_all)
     rows = []
     for n, td in enumerate(sorted(np.unique(tds[ok]))):

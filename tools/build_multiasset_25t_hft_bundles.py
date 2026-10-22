@@ -7,7 +7,12 @@ REPO=Path(__file__).resolve().parents[1];sys.path.insert(0,str(REPO))
 from edgelab.bridge.bars import build_tick_bars
 from edgelab.bridge.ticks import load_canonical_parquet
 from edgelab.bridge.indicators import hftzones_universal as hft
-DEFAULT_HOLDOUT_NS=1782856800000000000
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
+DEFAULT_HOLDOUT_NS=HOLDOUT_APERTURA_UTC_NS
 def sha256_file(path:Path)->str:
  h=hashlib.sha256()
  with path.open("rb") as f:

@@ -235,23 +235,23 @@ def test_deprosar_falla_cerrado_si_no_tokeniza():
 def _manifiesto_falso():
     return dict(dias=[
         dict(archivo="x.parquet", fecha="2026-06-30", tipo_de_dia="COMPLETO", n_ticks=1),
-        dict(archivo="x.parquet", fecha="2026-07-01", tipo_de_dia="COMPLETO", n_ticks=1),
-        dict(archivo="x.parquet", fecha="2026-07-15", tipo_de_dia="COMPLETO", n_ticks=1),
+        dict(archivo="x.parquet", fecha="2026-10-01", tipo_de_dia="COMPLETO", n_ticks=1),
+        dict(archivo="x.parquet", fecha="2026-10-15", tipo_de_dia="COMPLETO", n_ticks=1),
         dict(archivo="x.parquet", fecha="2026-06-19", tipo_de_dia="APERTURA_SEMANAL", n_ticks=1),
     ])
 
 
 def test_por_defecto_el_holdout_no_sale_nunca():
     dias, info = U.cargar_dias_de_estudio(_manifiesto_falso())
-    assert all(d["fecha"] < "2026-07-01" for d in dias)
+    assert all(d["fecha"] < "2026-10-01" for d in dias)
     assert info["descartados_holdout"] == 2
-    assert info["fechas_holdout"] == ["2026-07-01", "2026-07-15"]
+    assert info["fechas_holdout"] == ["2026-10-01", "2026-10-15"]
 
 
 def test_el_primer_dia_del_holdout_esta_ADENTRO_del_sello():
-    """Borde: 2026-07-01 pertenece al holdout, no es el ultimo dia libre."""
+    """Borde: 2026-10-01 pertenece al holdout, no es el ultimo dia libre (HOLDOUT-A4)."""
     dias, _ = U.cargar_dias_de_estudio(_manifiesto_falso())
-    assert "2026-07-01" not in {d["fecha"] for d in dias}
+    assert "2026-10-01" not in {d["fecha"] for d in dias}
 
 
 def test_incluir_holdout_sin_purpose_levanta():
@@ -281,7 +281,7 @@ def test_los_atlas_reales_no_devuelven_holdout():
         pytest.skip("sin censo generado en este entorno")
     dias, info = U.cargar_dias_de_estudio(p, tipos_de_dia=["COMPLETO", "CIERRE_SEMANAL"])
     assert dias, "el manifiesto real quedo vacio tras filtrar: revisar"
-    assert all(d["fecha"] < "2026-07-01" for d in dias)
-    assert info["descartados_holdout"] >= 1, (
-        "el manifiesto real deberia contener dias de holdout que la puerta "
-        "descarta; si no los tiene, este test dejo de probar lo que dice")
+    assert all(d["fecha"] < "2026-10-01" for d in dias)
+    # HOLDOUT-A4: el censo real termina antes del 1-oct, asi que ya no trae dias de holdout que descartar; el camino de
+    # descarte lo prueban los manifiestos sinteticos de arriba. Si algun dia el censo trae octubre, la puerta debe sacarlos.
+    assert info["descartados_holdout"] == sum(1 for f in info.get("fechas_holdout", []) if f >= "2026-10-01")

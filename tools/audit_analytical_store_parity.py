@@ -5,12 +5,17 @@ import time
 from pathlib import Path
 from datetime import datetime, timezone
 import pyarrow.parquet as pq
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
 REPO_ROOT = Path(r"E:\EdgeLab-edgefactory")
 BUNDLES_DIR = Path(r"E:\EdgeLab-multiasset\viewer\nt8_bridge\bundles")
 AUDIT_STORE_DIR = REPO_ROOT / "artifacts" / "edge_factory_audit"
-DEFAULT_HOLDOUT_NS = 1782856800000000000
-DEFAULT_HOLDOUT_UTC = "2026-06-30T22:00:00Z"
+DEFAULT_CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+DEFAULT_CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 
 manifest_p = BUNDLES_DIR / "manifest.json"
 with open(manifest_p, "r", encoding="utf-8") as f:
@@ -70,7 +75,7 @@ for item in catalog:
             indicator_version = str(tbl_sample.column("indicator_version")[0].as_py())
             tick_size_pq = float(tbl_sample.column("tick_size")[0].as_py())
             causal_status = str(tbl_sample.column("causal_status")[0].as_py())
-            assert max_signal_ts < DEFAULT_HOLDOUT_NS, f"HOLDOUT VIOLATION in {pq_zone_path}: {max_signal_ts}"
+            assert max_signal_ts < DEFAULT_CORTE_FISICO_NS, f"HOLDOUT VIOLATION in {pq_zone_path}: {max_signal_ts}"
 
         if pq_zones_count == b_zones:
             zone_count_matches += 1
@@ -145,8 +150,8 @@ else:
 
 out_json = {
     "audit_timestamp_utc": datetime.now(timezone.utc).isoformat(),
-    "holdout_boundary_ns": DEFAULT_HOLDOUT_NS,
-    "holdout_boundary_utc": DEFAULT_HOLDOUT_UTC,
+    "holdout_boundary_ns": DEFAULT_CORTE_FISICO_NS,
+    "holdout_boundary_utc": DEFAULT_CORTE_FISICO_UTC,
     "store_dataset_ref": "nicolasbuttaro/edgelab-edge-factory-target-free-audited",
     "store_status": store_status,
     "status_notes": status_notes,

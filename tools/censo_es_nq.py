@@ -85,10 +85,15 @@ sys.path.insert(0, REPO)
 
 from edgelab.bridge import universe as U  # noqa: E402
 from tools.censo_integridad import hash_rodante, W_DUP  # noqa: E402
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 CT = ZoneInfo("America/Chicago")
 NS = 1_000_000_000
-HOLDOUT_DESDE = "2026-07-01"
+HOLDOUT_DESDE = HOLDOUT_PRIMERA_SESION
 
 # Roll trimestral CME de índices: el jueves 8 días antes del 3er viernes.
 # Se listan los que caen en el rango de estos archivos. NO se usan para excluir

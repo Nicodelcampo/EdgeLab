@@ -37,7 +37,7 @@ import os
 
 from edgelab.research.holdout_guard import (HOLDOUT_START_ISO, check_holdout)
 
-HOLDOUT_DESDE = HOLDOUT_START_ISO[:10]      # "2026-07-01"
+HOLDOUT_DESDE = HOLDOUT_START_ISO[:10]      # "2026-09-30": la sesion CME del 2026-10-01 abre ese dia a las 17:00 CT (HOLDOUT-A4)
 
 
 class UniversoError(RuntimeError):

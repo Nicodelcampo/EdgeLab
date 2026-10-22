@@ -55,7 +55,7 @@ T0 = time.time()
 NORTH_STAR_HASH = "ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8"
 EXPECTED_MANIFEST_SHA256 = "06d7fb2ac7fb5bb7fd63bc57ecc2cd7ef9c3fb3ef59cabceac2b7d72d32bbd84"
 HOLDOUT_TRADE_DATE = 20261001
-HOLDOUT_UTC_NS = 1790812800000000000
+HOLDOUT_UTC_NS = 1790805600000000000   # 2026-09-30 22:00 UTC = apertura de la sesion del 1-oct (antes 00:00 UTC del 1-oct: dejaba pasar 2 h de holdout); copia de edgelab/holdout.py
 TICK_ES = 0.25
 
 

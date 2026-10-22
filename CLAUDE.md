@@ -2,7 +2,7 @@
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
-> marcador `SHA256-BODY-ABOVE`: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
+> marcador `SHA256-BODY-ABOVE`: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
 > ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
 > de entrada operativo vigente: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`;
@@ -151,10 +151,11 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 
 ## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
 
-> Enmiendas `HOLDOUT-A1`/`A2`/`A3` (26–27/09), firmadas por Nico. Para **ES y NQ**: **descubrimiento** jul-2025 → 31-mar-2026;
-> **replicación** 1-abr → 30-sep-2026, una vez por familia y sólo sobre celdas sobrevivientes, sin elegir nada ahí;
-> **holdout** a futuro desde la sesión del 1-oct. Los demás instrumentos siguen hasta el 30-jun (su jul–sep no está
-> descargado). Ver `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`.
+> **Enmienda `HOLDOUT-A4` (firmada por Nico el 2026-10-22): una sola frontera para todos los instrumentos y todo tipo de
+> dato (ticks, barras, L2)** — la sesión CME del 2026-10-01 (apertura 2026-09-30 22:00 UTC), a futuro. Fuente única en
+> código: `edgelab/holdout.py` (nunca un literal propio; `tests/test_holdout_unico.py` lo verifica). Todo lo anterior es
+> desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
+> por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.

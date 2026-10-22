@@ -22,6 +22,11 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   - **Costos canónicos únicos:** `edgelab/costos.py`, de `config/costos/costos_canonicos.json`.
   - **Arreglos del kernel del runner:** stop con hueco; timeout valorado a mercado; costo obligatorio, antes 0,5 ticks fijos.
   - **Candidatos con costos reales:** LUX-IMB +4,05 pts/op y ORB +6,3 en réplica. Los dos quedan **SIN_POTENCIA** (vivos, ~950 y ~1.050 operaciones para decidir); el holdout de LUX-IMB queda SIN_DECIDIR.
+- **Holdout único (HOLDOUT-A4, Nico 22-oct):** la sesión CME del 2026-10-01 para todos los activos y L2; fuente única `edgelab/holdout.py`, verificada por `tests/test_holdout_unico.py`. Acta y cobertura: `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
+  - **Cobertura en Kaggle:** 9 de 14 activos terminan antes del 30-sep (ES, NQ, 6E, 6B y 6J el 25-sep; MES, MYM y RTY el 28-sep), y hay huecos internos (MYM 15, 6E 12, ES 9).
+  - **Para decidir:** el autopilot resuelve contra datasets marcados REEMPLAZADO o CUARENTENA en Kaggle.
+- **Repo consistente en Windows y en el Debian:** finales de línea (`.gitattributes`), caché de numba aislado en la suite, `fcntl` emulado con bloqueo real en Windows, conexiones SQLite cerradas, claves de ruta POSIX en la biblioteca del autopilot.
+- **Activación de `escalera_v1`:** `tools/autopilot_activar_escalera.py`, en dos pasos: primero un ciclo de prueba sobre una copia del estado, después `--aplicar`. Pasos en `deploy/debian/LEEME.md` §8.
 - **Edges promovidos: 0** (sin cambios).
 
 ## Estado al 2026-10-19
@@ -117,7 +122,7 @@ CORRIDOR_DEFINITION                     = density_field.py (reference) + density
 DENSITY_PORT_PARITY                     = 28_golden_scenarios + 12_real_bundle_cases, max_abs_diff=0
 CORRIDOR_DIRECTION_CHARACTERIZATION     = CHARACTERIZATION_UNCERTIFIED
 H_CLUSTER_NQ                            = OUT_OF_PROJECT (archived)
-HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (HOLDOUT-A3: forward desde la sesion del 2026-10-01; abr-sep = replicacion, una vez por familia)
+HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (HOLDOUT-A4: una sola frontera, sesion del 2026-10-01, todos los activos y L2; ES/NQ abr-sep = replicacion, una vez por familia)
 HOLDOUT_BOUNDARY_NS                     = 1782856800000000000
 CI_PR48_BEFORE                          = 19_failed_1_error (causas mecanicas)
 CI_LOCAL_AFTER_MERGE                    = 1567_passed_1_failed (CURRENT.md, resuelto en este commit)

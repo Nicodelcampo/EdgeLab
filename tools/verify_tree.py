@@ -603,7 +603,7 @@ def _fixture(root: str, variant: str = "sano"):
         "precheck": False,
         "base": base,
         "out_base": out,
-        "cut": {"session_open_utc_ns": 1782856800000000000},
+        "cut": {"session_open_utc_ns": 1782856800000000000},  # corte fisico de research-v2 (no es el holdout; HOLDOUT-A4)
         "files": [{
             "file": "6B_09-26_ticks.parquet",
             "asset": "6B",
@@ -759,7 +759,7 @@ def selftest() -> int:
         _limpiar(root)
 
     # logica pura de la prueba fisica de holdout (no necesita pyarrow)
-    frontera = 1782856800000000000
+    frontera = 1782856800000000000   # corte fisico de research-v2 (frontera vieja); el holdout vigente esta en edgelab/holdout.py
     if evaluate_max_ts({"a": (1, frontera - 1), "b": (1, frontera - 1000)}, frontera):
         print("FALLA S20 max_ts por debajo de la frontera no debe violar")
         fallas += 1

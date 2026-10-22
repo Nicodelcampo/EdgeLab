@@ -18,7 +18,7 @@ def write_ticks(path, timestamps):
 
 
 def test_canonical_holdout_boundary_is_2200_utc():
-    assert builder.HOLDOUT_START_NS == 1_782_856_800_000_000_000
+    assert builder.HOLDOUT_START_NS == 1_790_805_600_000_000_000   # 2026-09-30 22:00 UTC = apertura de la sesion del 1-oct (HOLDOUT-A4)
 
 
 def test_preholdout_parquet_passes(tmp_path):
