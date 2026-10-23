@@ -93,6 +93,23 @@ aunque en el pasado no hayan funcionado»). Se revisó el filtro y se encontraro
 - Las pistas tienen medias de +15 a +55 pts/op con 30–100 operaciones: es la forma típica de la maldición del ganador (lo mejor de cientos de miles de celdas chicas). Se concentran en pocas regiones (NQ: N ≥ 8, W = 40, HACIA T3, E1C/E1A, S2): son pocas ideas, no 40.
 - **Réplica congelada** (`v14/REP_CONGELADO_v14.json`, antes de correr): 40 celdas por fuente (pistas de los dos canales, sin repetir), cortes v_rel y comercio del DESC, período **2026-04-01 → 2026-09-30** en la misma fuente. Confirma una celda: p por sesiones bajo su nivel LORD++ (orden: el del archivo), media neta > 0 y económico. Registro: `areas_exp_1_v14/rep_nq` y `/rep_usatech`, 40 cada uno.
 
+## Resultado de la réplica v1.4 (2026-04-01 → 2026-09-30) — 0 confirmadas por la regla fijada
+- 72 de 80 pistas tuvieron operaciones en la réplica. Media neta de las pistas: descubrimiento **+28,8** pts/op → réplica **+1,6**.
+  Es la caída esperada por la maldición del ganador. 31/72 positivas; 7/72 con p < 0,05 (por azar se esperan ≈ 3,6).
+- **Por la regla pre-registrada (LORD++ en el orden del archivo) no confirma ninguna.** Error de diseño, visto recién ahora y NO
+  corregido sobre este resultado: aplicar LORD++ de a una a 80 réplicas SIMULTÁNEAS gasta casi todo el nivel en las primeras
+  (nivel 0,011 en la 1.ª, 0,0001 en la 15.ª, ≈ 0 en las de USATECH, que iban al final). Para un lote simultáneo corresponde un
+  procedimiento por lote (BH dentro del lote con el nivel de un solo paso LORD++, o LORD por lotes). Queda en la tabla de errores.
+- **Lo que se ve, sólo como información (no confirma):** 5 celdas de USATECH replican fuerte (p 0,0005–0,0015, +20 a +28 pts/op,
+  30–49 sesiones) y son **una sola idea** («U1»): ≥ 3 zonas en 40 pts, el precio se alejó ≥ 8× la altura del área, volvió el 75 %
+  del camino (x = 0,25), entrada HACIA el área en el tick siguiente (E1A), stop más allá del extremo (S3), objetivo borde cercano
+  o lejano, volumen fuera del tramo medio (p_vol nivel 3), comercio alto. Con BH a q = 0,10 sobre las 80, nominaría esas 5 y una de NQ.
+  Advertencias: USATECH es un CFD (no operable tal cual, costos de NQ como referencia); jul–sep 2026 ya se había mirado para otras
+  preguntas LUX-IMB; la idea se eligió después de ver la réplica.
+- **Siguiente paso propuesto (requiere OK):** U1 como hipótesis NUEVA, congelada tal cual (5 celdas = 1 familia, una prueba), en
+  datos que no participaron: NQ 2026-04 → 09 (el futuro operable, misma regla) y forward desde el 2026-10-01 con e-proceso.
+  USATECH 2023–2025 como informativo.
+
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
 - **Huecos de NQ:** ES y NQ terminan el 25-sep. Afecta sólo a la réplica (b).
