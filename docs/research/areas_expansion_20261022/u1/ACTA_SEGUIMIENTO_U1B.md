@@ -48,3 +48,21 @@ Familia: AREAS-EXP-1. Candidato: **U1-B** (`SPEC_U1_INDAGA.md` §Resultado). Una
 ```json
 {"piso": -220.575, "techo": 77.925, "mu_util": 3.65, "alfa": 0.003608, "alfa_futilidad": 0.10}
 ```
+
+### Adenda 2 — resultado: LIMITE_VIOLADO en la Fase A; U1-B no se sostiene (2026-10-23)
+- **Seguimiento** (`u1/SEGUIMIENTO_U1B.jsonl`, `u1/faseA_operaciones.csv`): se detuvo en la operación 42 de la Fase A con
+  **LIMITE_VIOLADO**. Esa operación perdió −241,05 contra un piso declarado de −220,58. Al detenerse: n = 41, media −2,09,
+  e_edge 0,82 (umbral 277) y e_futilidad 0,94 (umbral 10). Por la regla, las cotas no se mueven ni se recorta el valor.
+- **Fase A completa, descriptiva** (`u1/faseA_resumen.json`): 91 operaciones en 46 sesiones, media **−0,18** pts/op, IC90
+  [−10,1, +8,5], p = 0,53. Mediana +13,95, peor −241,05. Lo que en la exploración daba +7,3 no aparece en los seis meses
+  siguientes; es la caída esperada por la selección.
+- **Fase B (holdout): calculada localmente (85 disparos) pero NO inspeccionada.** El seguimiento se detuvo antes de llegar a ella.
+  Los archivos derivados se borraron sin leerse y no forman parte de ninguna decisión. La apertura del holdout de U1-B queda
+  sin uso efectivo: si Nico quiere, se puede considerar no consumida.
+- **Veredicto: U1-B queda REFUTADA en NQ** (la media no supera 0 en datos nuevos).
+  - **Lo que muere:** exactamente esta celda, en NQ, con esta ejecución.
+  - **Lo que no muere:** la familia AREAS-EXP-1, ni lo aprendido por las marginales de USATECH (el alejamiento ordena el
+    retorno, el VWAP, el volumen en la ida), que en NQ no se pudo medir con potencia.
+- **Error de método:** las cotas salieron de 69 operaciones de una estrategia con cola izquierda pesada y sin pérdida máxima
+  estructural. 1,5 × el peor caso visto no alcanzó. Regla nueva (guía): un seguimiento secuencial exige que la regla tenga
+  pérdida máxima por operación por construcción (stop con tope), o cotas estructurales; nunca cotas sacadas del peor caso observado.

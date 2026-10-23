@@ -34,8 +34,10 @@ def mirar(series):
     ops = pd.concat([(pd.read_csv(s) if str(s).endswith(".csv") else pd.read_parquet(s)).assign(fuente=Path(s).name) for s in series]).query("celda == 0").sort_values("t", kind="stable")
     m = MonitorCandidato(piso=prm["piso"], techo=prm["techo"], mu_util=prm["mu_util"], alfa=prm["alfa"], alfa_futilidad=prm["alfa_futilidad"])
     est = None
-    for x in ops.neto.to_numpy():
-        est = m.agregar(float(x))
+    for i, x in enumerate(ops.neto.to_numpy()):
+        try: est = m.agregar(float(x))
+        except ValueError as e:                                       # fuera de las cotas: se detiene y se REGISTRA (no se recorta)
+            est = dict(m.estado(), estado="LIMITE_VIOLADO", operacion=i + 1, valor=float(x), detalle=str(e)); break
         if est["estado"] != "SIN_DECIDIR": break                     # decisión tomada: se detiene (el e-proceso lo permite)
     est = est or m.estado()
     fila = dict(ts=time.time(), series=[str(Path(s).name) for s in series], sesiones=int(ops.ses.nunique()), hasta_ses=int(ops.ses.max()) if len(ops) else None,
