@@ -6,7 +6,8 @@ Holm a ~0,001: el sistema ya no puede confirmar edges aunque existan (simulació
 `docs/research/auditoria_embudo_20261022/SIMULACION_POTENCIA.json`). Reemplazo, con el mismo cuidado contra falsos positivos:
   - pruebas de DESCUBRIMIENTO (sin '/rep/'): tamiz FDR (BH-Storey, q = 0,10) sobre las planeadas -> NOMINADAS. No son acierto: abren
     pistas nuevas (WEAK_LEAD) que el generador puede llevar a réplica. Las no evaluables cuentan como p = 1 (no se omiten).
-  - pruebas de RÉPLICA ('/rep/'): cada una con el nivel LORD++ que le toca en la secuencia global de confirmaciones del proyecto
+  - pruebas de RÉPLICA ('/rep/'): las de una corrida forman UN lote que ocupa un paso de LORD++ en la secuencia global
+    (Simes del lote al nivel alfa_t; si rechaza, BH adentro al mismo nivel: `escalera.probar_lote`, corregido 2026-10-23)
     (FDR en línea, 0,05). Acierto = al menos una réplica confirmada. Igual que hoy, pasar sólo el descubrimiento no es acierto.
 Idempotente por run_id: la decisión se guarda antes de que el ciclo escriba el libro; reintentar devuelve la misma decisión y no
 gasta otra posición de la secuencia. Un solo escritor por directorio de estado (el lock del ciclo); escritura atómica.
@@ -17,7 +18,7 @@ import json
 import os
 from pathlib import Path
 
-from edgelab.funnel.escalera import LordPP, Q_TAMIZ, tamiz_fdr
+from edgelab.funnel.escalera import LordPP, Q_TAMIZ, probar_lote, tamiz_fdr
 
 from .analyze import records, valid_p
 
@@ -47,10 +48,9 @@ class Confirmacion:
         if disc:
             t = tamiz_fdr([r["p"] for r in disc] + [1.0] * (n_disc - len(disc)), self.q, "storey")
             nominadas = [disc[i]["test"] for i in t["nominadas"] if i < len(disc)]
-        L = LordPP.from_dict(self.state["lord"]); conf = []
-        for r in rep:                                          # orden determinista (nombre) para que el nivel no dependa del p
-            x = L.probar(float(r["p"]), f"{run_id}:{r['test']}")
-            if x["rechazo"]: conf.append(dict(test=r["test"], p=r["p"], nivel=x["nivel"]))
+        L = LordPP.from_dict(self.state["lord"])
+        lote = probar_lote(L, [(r["test"], r["p"]) for r in rep], f"{run_id}: {len(rep)} réplicas")   # una corrida = un paso LORD++ (Simes + BH)
+        conf = lote["confirmadas"]
         d = dict(regla="escalera_v1", hit=bool(conf), rejections=len(conf), confirmadas=conf, nominadas=nominadas, n_evaluable=len(rec),
                  invalid_p_tests=invalid, n_planned=n_planned, q_tamiz=self.q, lord_t=L.t, family_alpha=None,
                  escalera=result.get("escalera"),          # veredicto de la escalera del embudo si el estudio lo produjo (lo exige la apertura del holdout)

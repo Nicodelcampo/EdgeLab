@@ -123,21 +123,50 @@ def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000):
                 ratio_mov_friccion=round(rel, 2), pasa=ok)
 
 
+MIN_OPS_MARGINAL = 10
+
+
+def _evaluar_mascara(m, cx, *, bootstrap=500):
+    from edgelab.funnel.escalera import resumen_sesiones
+    net = cx["net"]; m = m & np.isfinite(net); n = int(m.sum())
+    if n < MIN_OPS_MARGINAL: return dict(n=n)
+    rs = resumen_sesiones(net[m], cx["ses"][m], n_boot=bootstrap)
+    return dict(n=n, media_neta=float(net[m].mean()), sesiones=rs["n_sesiones"], ic90=rs["ic"], p_sesiones=rs["p_unilateral"],
+                chica=bool(n < MIN_OPS or rs["n_sesiones"] < MIN_SESIONES))
+
+
 def marginales(exp, cx, *, friccion, extra_adverso):
     """Indagación (pedido de Nico, 2026-10-23: «no pasar a un P&L sin más: indagar»): desde la celda BASE, mover UNA perilla
-    por vez por todos sus niveles. Muestra qué variable mueve el retorno y cuál filtra, en vez de un único ganador."""
+    por vez por todos sus niveles. Muestra qué variable mueve el retorno y cuál filtra, en vez de un único ganador.
+    `MARGINALES_POOL` (opcional): perillas sobre las que se agrega (unión de niveles) para ganar potencia cuando la pregunta es
+    otra variable; se publica con y sin agregación. Desde MIN_OPS_MARGINAL operaciones se informa con `chica` = True si no
+    llega a MIN_OPS / MIN_SESIONES (el dato no se esconde, se marca)."""
     base = getattr(exp, "BASE", None)
     if not base: return {}
-    P = cx["perillas"]; nombres = [p.nombre for p in P]
+    P, idx = cx["perillas"], cx["indices"]; nombres = [p.nombre for p in P]
     b = tuple(base.get(n, P[i].tamano_celdas() - 1) for i, n in enumerate(nombres))
-    out = {}
+    pool = [nombres.index(n) for n in getattr(exp, "MARGINALES_POOL", ()) if n in nombres]
+
+    def masc(celda, agregar=()):
+        if not agregar: return GM.mascara(P, idx, celda)
+        m = np.zeros(len(cx["net"]), bool)
+        import itertools
+        for combo in itertools.product(*[range(P[a].tamano_celdas()) for a in agregar]):
+            c = list(celda)
+            for a, v in zip(agregar, combo): c[a] = v
+            m |= GM.mascara(P, idx, tuple(c))
+        return m
+
+    out = dict(base=list(b), por_perilla={}, agregado_sobre=[nombres[a] for a in pool])
     for ax, p in enumerate(P):
         filas = []
         for lv in range(p.tamano_celdas()):
-            c = list(b); c[ax] = lv; r = evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, bootstrap=500)
-            filas.append(dict(nivel=lv, **(r or dict(n=int((GM.mascara(P, cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum())))))
-        out[p.nombre] = filas
-    return dict(base=list(b), por_perilla=out)
+            c = list(b); c[ax] = lv
+            fila = dict(nivel=lv, **_evaluar_mascara(masc(tuple(c)), cx))
+            if pool and ax not in pool: fila["agregado"] = _evaluar_mascara(masc(tuple(c), [a for a in pool if a != ax]), cx)
+            filas.append(fila)
+        out["por_perilla"][p.nombre] = filas
+    return out
 
 
 def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):

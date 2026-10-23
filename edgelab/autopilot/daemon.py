@@ -67,7 +67,7 @@ class Autopilot:
                 if spec.kind == "benchmark":                                        # infraestructura: sin hipótesis, sin alfa, sin traer resultado
                     self.ledger.finish(spec.run_id, "BENCHMARK_DONE", dict(hit=False, benchmark=True)); rep["closed"].append((spec.run_id, "BENCHMARK")); continue
                 try:
-                    res = self.ex.fetch(r["handle"], self.cfg["result_files"][spec.family])
+                    res = self.ex.fetch(r["handle"], self.cfg.get("result_files", {}).get(spec.family, self.cfg.get("result_file_default", "STUDY_RESULTS.json")))   # familias nuevas del agente: archivo estándar de los kernels genéricos
                 except Exception as e:                                                 # error de configuración o de red: no tumba el ciclo, queda registrado y se reintenta
                     self.ledger.event(spec.run_id, "fetch_failed", repr(e)[:200]); rep["blocked"].append((spec.run_id, [f"no se pudo traer el resultado: {e!r}"[:200]])); continue
                 if self.escalera and self.fdr.open_bid(spec.run_id) is None:          # escalera_v1: tamiz FDR + LORD++ en réplica; idempotente por run_id

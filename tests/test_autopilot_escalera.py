@@ -104,3 +104,16 @@ def test_activacion_en_dos_pasos_prueba_sobre_copia_y_aplica_con_respaldo(tmp_pa
     a = act.aplicar(cfg_p); c = json.loads(cfg_p.read_text(encoding="utf-8"))
     assert a["aplicado"] and c["decision"] == "escalera_v1" and c["mode"] == "execute" and (tmp_path / "autopilot.json.antes_escalera").exists()
     assert act.aplicar(cfg_p) == dict(ya_estaba=True)
+
+
+def test_familia_nueva_del_agente_usa_el_archivo_estandar(repo, tmp_path):
+    """Una familia que inventó el agente no está en result_files de /etc: antes quedaba en fetch_failed para siempre."""
+    class Ex(FakeExecutor):
+        def fetch(self, handle, filename):
+            self.pedidos = getattr(self, "pedidos", []) + [filename]; return super().fetch(handle, filename)
+    root = tmp_path / "root"; root.mkdir()
+    ex = Ex({"r1": _res([0.001])})
+    cfg = dict(mode="execute", max_concurrent=1, max_per_day=5, result_files={"OTRA": "X.json"}, decision="escalera_v1")
+    ap = Autopilot(root, ex, cfg, repo=repo, registry=Reg())
+    ap.tick([spec()]); t2 = ap.tick([spec()])
+    assert t2["closed"] == [("r1", True)] and ex.pedidos == ["STUDY_RESULTS.json"]

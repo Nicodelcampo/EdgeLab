@@ -127,3 +127,20 @@ def test_economia_regimen_reciente_no_mata_lo_actual_pero_si_lo_viejo():
     assert eco["regimen_reciente"] and eco["duros"]["ningun_periodo_80pct"]
     viejo = E.economia(x[::-1], x[::-1] - 0.1, periodos=per)                     # mismo P&L pero ganado al principio
     assert not viejo["regimen_reciente"] and not viejo["duros"]["ningun_periodo_80pct"]
+
+
+def test_probar_lote_un_paso_y_no_depende_del_orden():
+    a, b = E.LordPP(), E.LordPP()
+    assert E.probar_lote(a, [("x", 0.004)])["rechazo"] == b.probar(0.004)["rechazo"] and a.t == b.t == 1   # una prueba = probar
+    ps = [("c%02d" % i, 0.5) for i in range(79)] + [("z_ultima", 1e-5)]                         # la buena al final del orden
+    L = E.LordPP(); r = E.probar_lote(L, ps)
+    assert L.t == 1 and [c["test"] for c in r["confirmadas"]] == ["z_ultima"]
+    L2 = E.LordPP(); r2 = E.probar_lote(L2, list(reversed(ps)))
+    assert [c["test"] for c in r2["confirmadas"]] == ["z_ultima"]
+
+
+def test_probar_lote_bajo_ruido_casi_nunca_confirma():
+    rng = np.random.default_rng(0); L = E.LordPP(); hits = 0
+    for j in range(300):
+        hits += bool(E.probar_lote(L, [(str(i), float(p)) for i, p in enumerate(rng.uniform(size=40))])["confirmadas"])
+    assert hits <= 0.05 * 300 + 5

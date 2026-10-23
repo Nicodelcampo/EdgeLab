@@ -105,6 +105,23 @@ class LordPP:
         return LordPP(d["alfa"], d["w0"], d["t"], list(d["rechazos"]), list(d.get("historia", [])), d.get("gamma", "finita"))
 
 
+
+def probar_lote(L: "LordPP", pruebas: list, etiqueta: str = "") -> dict:
+    """Un LOTE de réplicas simultáneas (las de una misma corrida) ocupa UN paso de LORD++ (Benjamini y Bogomolov 2014: primero
+    se selecciona la familia, después se decide adentro). p de la familia = Simes (min_k p_(k)·m/k); si la familia rechaza al
+    nivel alfa_t de LORD++, BH dentro del lote a ese mismo nivel. Con una sola prueba es idéntico a `L.probar`.
+    Error que corrige (2026-10-23): pasar 80 réplicas de una corrida de a una por LORD++ gastaba el nivel en las primeras
+    (0,011 la 1.ª, ~0 desde la 20.ª) y la decisión dependía del orden alfabético. pruebas: [(nombre, p)]."""
+    if not pruebas: return dict(nivel=L.nivel(), p_simes=None, rechazo=False, confirmadas=[])
+    ps = np.array([float(p) for _, p in pruebas]); m = len(ps); o = np.argsort(ps, kind="stable")
+    p_simes = float(min(1.0, np.min(ps[o] * m / np.arange(1, m + 1))))
+    r = L.probar(p_simes, etiqueta or f"lote de {m}")
+    conf = []
+    if r["rechazo"]:
+        ok = np.flatnonzero(ps[o] <= r["nivel"] * np.arange(1, m + 1) / m)
+        conf = [dict(test=pruebas[i][0], p=float(ps[i]), nivel=r["nivel"]) for i in o[:ok.max() + 1]] if len(ok) else []
+    return dict(nivel=r["nivel"], p_simes=p_simes, rechazo=r["rechazo"], confirmadas=conf, m=m, t=r["t"])
+
 # ----------------------------------------------------------------------------- 3. inferencia por operación, agrupada por sesión
 def resumen_sesiones(netos, sesiones, n_boot: int = 4000, seed: int = 20261022, confianza: float = 0.90) -> dict:
     """Media neta por operación con IC bootstrap remuestreando SESIONES enteras (miles de operaciones en pocas sesiones no son

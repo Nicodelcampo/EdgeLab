@@ -154,11 +154,34 @@ def rules(ev: dict, lits: dict) -> list:
     return out
 
 
+CAMPANAS_GRILLA = "config/autopilot/grillas/campanas"
+CAMPO_CAMPANA = ("cid", "titulo", "experimento", "kernel", "fuente", "modo", "desde", "hasta", "needs", "n_trials", "family", "spec",
+                 "justificacion_economica", "como_podria_refutarse")
+
+
+def campanas_grilla(carpeta: str | Path = CAMPANAS_GRILLA) -> list:
+    """Campañas de grilla como DATOS (2026-10-23): el programador del agente (o una persona) deja un JSON por campaña en
+    `config/autopilot/grillas/campanas/` y acá se vuelve candidata con RunSpec (kernel genérico, decisión escalera_v1). Antes un
+    experimento nuevo quedaba aplicado pero nada lo lanzaba: las candidatas salían sólo de reglas escritas a mano en `rules`.
+    Una campaña con `activa: false` no compite. Le falta un campo obligatorio -> se reporta y no se genera."""
+    out = []
+    for f in sorted((REPO / carpeta).glob("*.json")) if (REPO / carpeta).exists() else []:
+        d = json.loads(f.read_text(encoding="utf-8"))
+        if not d.get("activa", True): continue
+        falta = [k for k in CAMPO_CAMPANA if k not in d]
+        if falta: raise ValueError(f"campaña {f.name}: faltan {falta}")
+        out.append(Candidate(d["cid"], d["titulo"], "R12_GRILLA_CAMPANA", d.get("gap_kind", "NEW_MECHANISM"), d.get("evidencia", []), template="grilla", cfg=d,
+                             n_trials=int(d["n_trials"]), power=float(d.get("potencia", 0.5)), est_seconds=int(d.get("est_seconds", 7200)), group=d["fuente"],
+                             family=d["family"], utility_class=d.get("utility_class", "bridgeable"),
+                             why=f"Campaña de grilla {f.name}: {d['justificacion_economica']} Refutación: {d['como_podria_refutarse']}"))
+    return out
+
+
 def generate(outcomes: list, seed_evidence: str = "config/autopilot/evidence_seed.json", leads: str = "config/autopilot/literature_leads.json", seen_ids: set = frozenset(), runtime: Path | None = None) -> list:
     from .evidence import apply_runtime
     ev, lits = load_json(seed_evidence), load_json(leads)
     if runtime: ev = apply_runtime(ev, runtime)
-    cands = [score(c, outcomes, lits) for c in rules(ev, lits) if c.cid not in seen_ids]
+    cands = [score(c, outcomes, lits) for c in rules(ev, lits) + campanas_grilla() if c.cid not in seen_ids]
     return sorted(cands, key=lambda c: -c.score)
 
 
@@ -243,14 +266,28 @@ Configuración exacta (se pasa al kernel tal cual y se verifica que figure aquí
 Pruebas planeadas: {c.n_trials} (se cuentan en el registro global antes de lanzar). Potencia supuesta: {c.power} (supuesto declarado, no medida).
 La muestra no reutiliza la que originó la pista (ver `unused_samples` de la evidencia).
 
-{mode_block}## Nulo y decisión
-Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c.n_trials} pruebas planeadas al nivel familiar que apostó el alpha-investing del autopilot (≤ 0,05). Un estadístico no finito es «no evaluable» y no entra al ranking.
-**Falsación:** si ninguna prueba pasa Holm, la pista se degrada a NULL y no se vuelve a proponer sin datos nuevos.
-**Si pasa:** es un hallazgo exploratorio; promover requiere réplica pre-registrada en datos no usados. No hay P&L, holdout ni promoción en este estudio.
+{mode_block}{_decision_bloque(c)}
 
 ## Puntuación de valor esperado de información
 {json.dumps(c.score_parts, ensure_ascii=False)} → {c.score:.4f}
 """
+
+
+def _decision_bloque(c: Candidate) -> str:
+    if c.template == "grilla":
+        extra = "".join(f"\n{k} congelado (bloque exacto que recibe el kernel):\n```\n{json.dumps(c.cfg[k.lower()])}\n```\n"
+                        for k in ("CORTES", "CELDAS") if c.cfg.get(k.lower()))
+        return f"""## Grilla y decisión
+Experimento `{c.cfg['experimento']}` (spec `{c.cfg['spec']}`), kernel `{c.cfg['kernel']}`, fuente {c.cfg['fuente']}, modo {c.cfg['modo']}, {c.cfg['desde']} → {c.cfg['hasta']}.
+Justificación económica: {c.cfg['justificacion_economica']}
+Cómo podría refutarse: {c.cfg['como_podria_refutarse']}
+Celdas registradas: {c.n_trials} (todas cuentan). DESC: tamiz FDR q = 0,10 + Romano-Wolf por sesiones en canales total/reciente, pistas
+y marginales; nada de DESC es acierto. REP: celdas y cortes congelados, un lote = un paso de LORD++ (Simes + BH). Una variante buena se
+indaga antes de su P&L básico (ATJ-26).{extra}"""
+    return f"""## Nulo y decisión
+Nulo de signo aleatorio / permutación por bloques según el modo; Holm sobre {c.n_trials} pruebas planeadas al nivel familiar que apostó el alpha-investing del autopilot (≤ 0,05). Un estadístico no finito es «no evaluable» y no entra al ranking.
+**Falsación:** si ninguna prueba pasa Holm, la pista se degrada a NULL y no se vuelve a proponer sin datos nuevos.
+**Si pasa:** es un hallazgo exploratorio; promover requiere réplica pre-registrada en datos no usados. No hay P&L, holdout ni promoción en este estudio."""
 
 
 TEMPLATES = {"vio1": dict(script="tools/vio1_zones.py", env="VIO_CFG", extra=["nicolasbuttaro/edgelab-code-zones"]),
@@ -259,6 +296,13 @@ TEMPLATES = {"vio1": dict(script="tools/vio1_zones.py", env="VIO_CFG", extra=["n
 
 def to_runspec(c: Candidate) -> dict | None:
     if not c.template: return None
+    if c.template == "grilla":
+        g = c.cfg; env = dict(EXPERIMENTO=g["experimento"], FUENTE=g["fuente"], MODO=g["modo"], DESDE=str(g["desde"]), HASTA=str(g["hasta"]))
+        for k in ("cortes", "celdas"):
+            if g.get(k): env[k.upper()] = json.dumps(g[k])
+        return dict(run_id=c.cid.lower(), kind="replication" if g["modo"] == "REP" else "scan", family=g["family"], group=g["fuente"], script=g["kernel"],
+                    prereg=f"docs/research/autopilot/drafts/{c.cid}.md", n_trials=c.n_trials, needs=list(g["needs"]), extra_datasets=list(g.get("extra_datasets", [])),
+                    internet=False, env=env, est_seconds=c.est_seconds, decision_rule="escalera_v1", notes=c.title)
     tm = TEMPLATES.get(c.template, dict(script="tools/study_slot_effect.py", env="STUDY_CFG", extra=None))
     names = (c.cfg.get("sources") or sorted({x[k] for x in c.cfg.get("scans", []) for k in ("disc", "rep")} | {n for r in c.cfg.get("rules", []) for k in ("discovery", "oos", "descriptive") for n in r.get(k, [])})) + c.cfg.get("reference_sources", [])
     needs = [f"{s}:2025-07-01:2026-09-30" for s in names if s not in c.cfg.get("spot_ranges", {})] if "inst" not in c.cfg else [f"{c.cfg['inst']}:{c.cfg.get('desde', '2025-07-01')}:{c.cfg.get('hasta', '2026-09-30')}"]

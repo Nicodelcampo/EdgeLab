@@ -66,7 +66,10 @@ def test_control_ruido(monkeypatch):
 
 
 def test_control_plantado(monkeypatch):
+    monkeypatch.setattr(U, "MARGINALES_POOL", ("x",), raising=False)
     res = _correr(True, monkeypatch)
+    vr = res["indagacion"]["por_perilla"]["vol_vuelta/ida"]
+    assert all(f["agregado"]["n"] >= f["n"] for f in vr)                    # agregar sobre x sólo suma operaciones
     tot = res["canales"]["total"]
     assert tot["n_rechazadas_rw"] > 0 or tot["nominadas_fdr"] > 0
     assert res["indagacion"]["por_perilla"]["ejecución"]                     # marginales armadas alrededor de BASE
