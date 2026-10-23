@@ -166,13 +166,14 @@ def _eventos_nb(zi, zlo, zhi, zfin, t_close, ns, ws, G, vida_s):
             np.array(ev_off, np.int64), np.array(miembros, np.int64))
 
 
-def eventos(Z, t_close, G, ns=NS, ws=None):
+def eventos(Z, t_close, G, ns=None, ws=None):
     """Marca de áreas (spec v1.1): un ÁREA es una banda de precio de altura <= W con >= N zonas vivas enteras («X cantidad de
     zonas» en «X área»). En cada barra donde nace una zona se buscan las bandas que incluyen alguna zona nueva; se toma la de
     más zonas (desempate: la más angosta) y, sin superponerse, las siguientes. Se marca la PRIMERA vez que llega a N y se
     descarta si se superpone (o queda a <= G) con un área de la misma (N, W) marcada en los 500 min anteriores («dos pegadas
     cuentan una sola»). Devuelve {(N, W): [(m, lo, hi, miembros)]}. Núcleo compilado en `_eventos_nb`."""
-    ws = tuple(ws or WS); out = {(n_, w_): [] for n_ in ns for w_ in ws}
+    ns = tuple(ns or NS); ws = tuple(ws or WS)              # defaults leídos al llamar: `configurar` los cambia
+    out = {(n_, w_): [] for n_ in ns for w_ in ws}
     if len(Z["zi"]) == 0: return out
     m, lo, hi, en, ew, off, mem = _eventos_nb(Z["zi"].astype(np.int64), Z["zlo"].astype(float), Z["zhi"].astype(float),
                                               Z["zfin"].astype(np.int64), np.asarray(t_close, float), np.array(ns, np.int64),
@@ -182,13 +183,13 @@ def eventos(Z, t_close, G, ns=NS, ws=None):
     return out
 
 
-def disparos(ev, h, l, c, t_close, fin=None, xs=XS):
+def disparos(ev, h, l, c, t_close, fin=None, xs=None):
     """Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
     Un ciclo: el precio cierra fuera del área (lado), se aleja >= 1·H del borde cercano sin volver a cerrar adentro (si vuelve
     antes, el ciclo se reinicia sin descartar el área) y después regresa; el disparo de cada x es el primer cierre con
     D <= x·A. El ciclo termina cuando vuelve a cerrar dentro del área (o cruza); el siguiente arranca en la barra siguiente,
     del lado que sea. El área vive hasta que vence su última zona (`fin`, índice exclusivo). Sólo usa barras hasta cada disparo."""
-    m, lo, hi, _ = ev; H = hi - lo
+    m, lo, hi, _ = ev; H = hi - lo; xs = XS if xs is None else xs   # XS leído al llamar (configurar)
     if H <= 0: return []
     fin = min(len(c), fin if fin is not None else np.searchsorted(t_close, t_close[m] + TOPE_DISPARO_MIN * 60, side="right"))
     out, j0, ciclo = [], m + 1, 0

@@ -83,7 +83,8 @@ def estadisticas(S, Q, C, min_n=30):
     with np.errstate(invalid="ignore", divide="ignore"):
         mu = S / C; var = (Q - C * mu ** 2) / (C - 1); t = mu / np.sqrt(var / C)
     ev = (C >= min_n) & np.isfinite(t)
-    p = np.ones(C.shape); p[ev] = 1 - np.vectorize(_N.cdf)(t[ev])
+    p = np.ones(C.shape)
+    if ev.any(): p[ev] = 1 - np.vectorize(_N.cdf, otypes=[float])(t[ev])     # sin evaluables: todo p = 1 (no revienta)
     return dict(media=mu, t=t, p=p, n=C, evaluable=ev)
 
 
@@ -156,7 +157,8 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=200, alfa=0.10, seed
     max_j (media*_j - media_j) / sd_j. Controla la tasa de al menos un falso positivo (FWER) en `alfa`."""
     ev = st["evaluable"].ravel(); n_ev = int(ev.sum()); m0 = st["media"].ravel()[ev].astype(np.float32)
     out = dict(B=B, alfa=alfa, evaluables=n_ev, seed=seed)
-    if not n_ev: return dict(out, t=np.full(st["n"].shape, np.nan), umbral=np.inf, rechazadas=[])
+    if not n_ev: return dict(out, t=np.full(st["n"].shape, np.nan), umbral=np.inf, umbrales=[], rechazadas=[], t_max=float("nan"),
+                             p_rw_del_maximo=float("nan"), nula_max_q={})
     us, inv = np.unique(np.asarray(sesiones), return_inverse=True); rng = np.random.default_rng(seed)
     M = np.empty((B, n_ev), np.float32)
     for b in range(B):

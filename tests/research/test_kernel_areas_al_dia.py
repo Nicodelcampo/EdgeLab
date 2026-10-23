@@ -26,3 +26,26 @@ def test_grilla_configurable_y_conteo():
     finally:
         AX.configurar({k: list(v) for k, v in base.items()})
     assert AX.n_celdas() == n0 == 995328
+
+
+def test_configurar_llega_a_eventos_y_disparos():
+    """Bug 2026-10-23: `eventos(ns=NS)` y `disparos(xs=XS)` fijaban el default al definirse; GRILLA no los cambiaba."""
+    import numpy as np
+    from edgelab.research import areas_expansion as AX
+    base = AX.configurar(None)
+    try:
+        AX.configurar({"NS": [2, 4], "XS": [0.6]})
+        Z = dict(zi=np.array([], np.int64), zlo=np.array([]), zhi=np.array([]), zfin=np.array([], np.int64))
+        assert set(AX.eventos(Z, np.arange(5.0), 1.0)) == {(n, w) for n in (2, 4) for w in AX.WS}
+        c = np.r_[np.full(5, 10.0), np.linspace(12, 30, 20), np.linspace(30, 10.5, 30)]
+        out = AX.disparos((0, 9.0, 10.0, None), c + 0.1, c - 0.1, c, np.arange(len(c)) * 60.0)
+        assert out and {d["xi"] for d in out} == {0}
+    finally:
+        AX.configurar({k: list(v) for k, v in base.items()})
+
+
+def test_kernel_u1_indaga_al_dia(tmp_path):
+    sys.path.insert(0, str(ROOT / "tools" / "kaggle_grilla"))
+    from construir_kernel_experimento import construir_experimento
+    out = tmp_path / "k.py"; construir_experimento("edgelab/research/u1_indaga.py", str(out))
+    assert out.read_bytes() == (ROOT / "tools/kaggle_grilla/kernel_u1_indaga.py").read_bytes(), "reconstruir kernel_u1_indaga.py"
