@@ -61,3 +61,16 @@ def test_alineacion_detecta_un_desfasaje_plantado():
     assert r["pico_lag_s"] == 3 and "revisar" in r["lectura"]
     r0 = X.alineacion_segundos(iter(us), iter([pd.DataFrame(dict(ts_ns=ts, px=p + 100))]))
     assert r0["pico_lag_s"] == 0
+
+
+def test_tope_nunca_afloja_y_none_es_el_original(ctx):
+    assert X.aplicar_tope(100.0, 1, 40.0, 110.0, None, 0.25) == 40.0
+    assert X.aplicar_tope(100.0, 1, 40.0, 110.0, ("pts", 30.0), 0.25) == 70.0               # largo: stop sube a entrada − 30
+    assert X.aplicar_tope(100.0, -1, 160.0, 90.0, ("mult", 2.0), 0.25) == 120.0             # corto: 2 × distancia al objetivo (10)
+    assert X.aplicar_tope(100.0, 1, 95.0, 110.0, ("pts", 30.0), 0.25) == 95.0               # ya estaba más cerca: no cambia
+    a, b = X.operar(ctx, ctx), X.operar(ctx, ctx, tope=None)
+    assert np.allclose(a.bruto.to_numpy(), b.bruto.to_numpy(), equal_nan=True)
+    c = X.operar(ctx, ctx, tope=("pts", 5.0))
+    ok = c.motivo.eq("")
+    assert (np.abs(c[ok].entrada_plan - c[ok].stop) <= 5.0 + 1e-9).all()
+    assert np.nanmin(c.bruto) >= -5.0 - 60                                      # pérdida acotada salvo hueco

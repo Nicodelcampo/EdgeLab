@@ -26,7 +26,21 @@ def senales(ctx_us) -> pd.DataFrame:
     return D[(D.ni == CELDA_U1["ni"]) & (D.xi == CELDA_U1["xi"]) & (D.A_H >= CELDA_U1["ah_min"])].reset_index(drop=True)
 
 
-def operar(ctx_us, ctx_nq, S=None, retraso: int = 0) -> pd.DataFrame:
+TOPES = [None, ("pts", 50.0), ("pts", 75.0), ("pts", 100.0), ("pts", 150.0), ("mult", 2.0), ("mult", 3.0), ("mult", 4.0)]
+
+
+def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> float:
+    """Tope de pérdida por construcción: el stop no puede quedar más lejos que `tope` de la entrada (en puntos, o en múltiplos
+    de la distancia al objetivo). Sin tope (None) = stop original de U1 (más allá del extremo). Redondeo siempre hacia la entrada
+    (el tope nunca se afloja por redondeo)."""
+    if tope is None: return st
+    kind, v = tope; d_max = v if kind == "pts" else v * abs(tp - e)
+    if abs(e - st) <= d_max: return st
+    st2 = e - s * d_max
+    return np.ceil(st2 / tick) * tick if s == 1 else np.floor(st2 / tick) * tick
+
+
+def operar(ctx_us, ctx_nq, S=None, retraso: int = 0, tope=None) -> pd.DataFrame:
     """Una fila por (señal, ejecución): base, niveles en NQ, P&L bruto en puntos de NQ (NaN = sin llenado) y motivo si no se opera.
     `retraso` (minutos): la misma orden entra `retraso` velas de NQ más tarde, con los mismos niveles; si en el medio el precio ya
     tocó el objetivo o el stop, no se opera (prueba de latencia: un edge real se degrada suave, no desaparece con 1 minuto)."""
@@ -48,7 +62,7 @@ def operar(ctx_us, ctx_nq, S=None, retraso: int = 0) -> pd.DataFrame:
                 hi, lo = ctx_nq["h"][j + 1:jj + 1].max(), ctx_nq["l"][j + 1:jj + 1].min()
                 if (s == 1 and (hi >= tp or lo <= st)) or (s == -1 and (lo <= tp or hi >= st)):
                     filas.append(dict(fila, motivo="resolvió antes de entrar")); continue
-            e = float(ctx_nq["c"][jj])
+            e = float(ctx_nq["c"][jj]); st = aplicar_tope(e, s, st, tp, tope, tick)
             if (e - tp) * -s < tick or (e - st) * s < tick: filas.append(dict(fila, motivo="niveles no válidos en NQ")); continue
             filas.append(dict(fila, j_nq=jj, entrada_plan=e, tp=tp, stop=st, motivo=""))
     F = pd.DataFrame(filas)
@@ -117,3 +131,31 @@ def alineacion_segundos(bloques_us, bloques_nq, max_dias: int = 30, lags=range(-
     pico = max(corr, key=lambda k: corr[k] if np.isfinite(corr[k]) else -9)
     return dict(segundos_comunes=int(len(idx)), corr=corr, pico_lag_s=pico,
                 lectura="pico en 0 o negativo (NQ lidera): sin look-ahead" if pico <= 0 else "pico positivo: el CFD adelanta a NQ, revisar relojes")
+
+
+def operar_propio(ctx_us, S=None, tope=None) -> pd.DataFrame:
+    """Las mismas señales operadas en el propio USATECH (para períodos sin NQ), con el mismo tope que en NQ."""
+    S = senales(ctx_us) if S is None else S; filas = []
+    for r in S.to_dict("records"):
+        for en, ob, sl in EJECUCIONES:
+            nv = U.niveles(r, (en, ob, sl, 0), ctx_us)
+            if nv is None: continue
+            k, lim, s, e, st, tp, be = nv
+            filas.append(dict(k_us=k, ejecucion=f"{en}/{ob}/{sl}", lim=lim, s=s, e=e, st=aplicar_tope(e, s, st, tp, tope, ctx_us["tick"]), tp=tp,
+                              ses=int(ctx_us["ses"][k]), t=ctx_us["t"][k]))
+    F = pd.DataFrame(filas)
+    if not len(F): return F
+    pnl, _ = AX.simular(F.k_us.to_numpy(np.int64), F.s.to_numpy(np.int64), F.lim.to_numpy(np.int64), F.e.to_numpy(float), F.st.to_numpy(float),
+                        F.tp.to_numpy(float), np.zeros(len(F), np.int64), ctx_us["o"], ctx_us["h"], ctx_us["l"], ctx_us["c"], ctx_us["ses"],
+                        ctx_us["tick"], ctx_us["tpx"], ctx_us["tstart"])
+    F["bruto"] = pnl
+    return F
+
+
+def densidad_dia(b) -> dict:
+    """Target-free, por día de trading: ticks, minutos con datos, velas M1 con hueco (OG/VI de LUX-IMB), rango del día."""
+    t = (b.ts_ns.to_numpy() // 60_000_000_000)
+    df = pd.DataFrame(dict(t=t, p=b.px.to_numpy())); g = df.groupby("t").p
+    o, h, l, c = g.first().to_numpy(), g.max().to_numpy(), g.min().to_numpy(), g.last().to_numpy()
+    z = AX.detect(o, h, l, c)
+    return dict(ses=int(b.sesion.iloc[0]), ticks=int(len(b)), minutos=int(len(o)), zonas=int(len(z)), rango=float(h.max() - l.min()) if len(h) else 0.0)
