@@ -42,6 +42,15 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - **Experimentos nuevos o mejoras:** los escribe el programador. Para encenderlo, `"programador": {"activo": true, ...}` en `/etc/edgelab/autopilot.json` y `systemctl enable --now edgelab-autopilot-programador.timer`. Pedido manual: `python tools/autopilot_generate.py pedir-codigo --state <estado> "qué hacer" --por-que "..."`.
 - **Revisión humana:** `programacion.jsonl` (rama `autopilot/state`) lista cada pedido con su estado. Las ramas `autopilot/codigo/*` se mergean a la rama de trabajo; las `autopilot/propuesta/*` se revisan como PR. Sin deploy key el commit queda local y `update.sh` lo protege.
 
+## Embudo automático (2026-10-23)
+- **Encender:** `"embudo": {"activo": true, ...}` y `"dukascopy": {...}` en `/etc/edgelab/autopilot.json` (ver `autopilot.example.json`).
+  Después `systemctl enable --now edgelab-datos-dukascopy.timer`.
+- **Carpeta sellada** (`/var/lib/edgelab-datos/holdout_sellado`): ahí van los datos desde la sesión del 2026-10-01. Nunca se suben a
+  Kaggle, y sólo los lee una etapa de holdout con acta.
+- **NQ sellado:** si hay ticks de NQ posteriores al 2026-10-01 (exportados de NT8), se copian ahí como `NQ_ticks.parquet`.
+- **Lanzar una campaña:** el agente (o una persona) deja el JSON en `config/autopilot/grillas/campanas/` con `"embudo": true`.
+- **Seguir una campaña:** `autopilot_runs/embudo/<cid>/MEDIDO.md` en la rama `autopilot/state`.
+
 ## Límites que conviene tener presentes
 - El autopilot no opera ni promueve: solo lanza y analiza estudios pre-registrados. Un hallazgo es exploratorio hasta que se replica en datos no usados.
 - Con la regla vieja (sin `decision: escalera_v1`), si la riqueza de alfa se agota deja de lanzar campañas nuevas. Con `escalera_v1` eso no pasa: el tamiz FDR nomina y LORD++ confirma en réplica (`confirmaciones_lordpp.json`, que `sync_state.sh` sube).

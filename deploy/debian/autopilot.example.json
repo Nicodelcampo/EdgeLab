@@ -78,5 +78,23 @@
     "timeout_s": 3600,
     "push": true,
     "aplicar": true
+  },
+  "embudo": {
+    "activo": false,
+    "campanas": "config/autopilot/grillas/campanas",
+    "sellado": {
+      "DK:USATECHIDXUSD": "/var/lib/edgelab-datos/holdout_sellado",
+      "NQ": "/var/lib/edgelab-datos/holdout_sellado/NQ_ticks.parquet"
+    }
+  },
+  "dukascopy": {
+    "simbolos": [
+      "USATECHIDXUSD",
+      "USA500IDXUSD",
+      "USA30IDXUSD",
+      "XAUUSD"
+    ],
+    "salida_sellada": "/var/lib/edgelab-datos/holdout_sellado",
+    "desde": "2026-09-30"
   }
 }

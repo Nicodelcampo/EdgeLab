@@ -31,6 +31,13 @@ def main():
             aplicar_comandos(Path(a.root), pilot.pause_files()[1], cfg["sala"].get("autorizados", []), pilot.status)   # sólo el interruptor de la sala
         cands = [RunSpec.from_dict(d) for d in json.loads(Path(a.candidates).read_text())]
         rep = pilot.tick(cands)
+        if (ce := cfg.get("embudo") or {}).get("activo"):            # embudo de grilla: un paso por campaña activa (edgelab/research/embudo.py)
+            from edgelab.funnel.libro_lord import LibroLord
+            from edgelab.research import embudo as EMB, embudo_runners as ER
+            raiz = Path(a.root) / "embudo"; lec, tk = ER.lectores_sellados(ce.get("sellado"), raiz)
+            emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk)),
+                             registro=reg, libro=LibroLord(Path(a.root) / "libro_lord.json"))
+            rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb)
         from .pedidos import desde_ciclo
         if (pd := desde_ciclo(Path(a.root), rep)): rep["pedidos"] = [p["id"] for p in pd]   # lo que sólo una persona puede resolver
         print(json.dumps(rep, default=str), flush=True)

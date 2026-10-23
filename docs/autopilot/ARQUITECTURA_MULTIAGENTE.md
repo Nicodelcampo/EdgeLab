@@ -35,6 +35,16 @@ Están en `contexto.PRIORIDADES` (las ve el proponente en cada ciclo) y en la co
 - **Réplica:** las de una corrida forman un lote, que ocupa un paso de LORD++ (`escalera.probar_lote`).
 - **Variante buena:** se indaga antes del P&L básico (ATJ-26).
 
+## 1e. Embudo automático de grilla (2026-10-23)
+Una campaña con `"embudo": true` en `config/autopilot/grillas/campanas/` avanza sola, un paso por ciclo, desde el preflight hasta
+la decisión del holdout (`edgelab/research/embudo.py`; detalle en la guía de grilla masiva §8). Se enciende con `embudo.activo` en
+`/etc/edgelab/autopilot.json`.
+
+Los datos nuevos los baja `edgelab-datos-dukascopy.timer` a la carpeta sellada. El estado, el `MEDIDO.md` y las actas de cada
+campaña, junto con el libro de LORD++, suben a `autopilot/state`.
+
+**Queda humano:** cambiar las reglas del embudo y habilitar dinero real.
+
 ## 2. Capas
 ```
             ┌────────────────────── CAPA DETERMINISTA (sin LLM) ───────────────────────┐

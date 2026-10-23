@@ -1,0 +1,143 @@
+"""Runners del embudo (2026-10-23): dónde corre cada etapa.
+
+KaggleRunner  etapas pesadas sobre datos de desarrollo: arma el kernel del experimento (embudo_main + módulos con SHA), resuelve
+              datasets (futuros del release por `needs`; spot de Dukascopy por dataset del catálogo) y la fricción canónica del
+              instrumento de ejecución (edgelab.costos: si el spread no está medido, NO se lanza), lanza con tools/kaggle_launch.py,
+              consulta y trae RESULTADO.json.
+LocalRunner   etapas del holdout sobre los datos sellados de la máquina (nunca suben a Kaggle): corre en el momento.
+"""
+from __future__ import annotations
+
+import importlib
+import json
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
+                "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py"]
+
+
+def friccion(instrumento: str) -> tuple:
+    """(fricción base, extra adverso) en puntos del instrumento de EJECUCIÓN. Un spot no se ejecuta: usa la de su futuro."""
+    from edgelab import costos as C
+    from edgelab.research.fuentes_ticks import DUKASCOPY
+    inst = instrumento
+    if inst.startswith("DK:"):
+        inst = next((k for k, v in DUKASCOPY.items() if v == inst[3:] and not k.startswith("M")), None)
+        if inst is None: raise ValueError(f"{instrumento}: sin futuro de referencia para el costo")
+    b = C.friccion_rt_puntos(inst, "base"); a = C.friccion_rt_puntos(inst, "adverso")       # CostoNoMedido -> no se lanza
+    return b, a - b
+
+
+def datasets(nombre: str, desde: int, hasta: int) -> tuple:
+    """(needs, extra_datasets) para kaggle_launch."""
+    if nombre.startswith("DK:"):
+        resolver = json.loads((ROOT / "docs/data_catalog/RESOLVER.json").read_text(encoding="utf-8"))
+        from edgelab.research.fuentes_ticks import DUKASCOPY
+        fut = next(k for k, v in DUKASCOPY.items() if v == nombre[3:])
+        return [], ["nicolasbuttaro/" + resolver["spot_datasets"][fut]]
+    f = lambda d: f"{str(d)[:4]}-{str(d)[4:6]}-{str(d)[6:]}"
+    return [f"{nombre}:{f(desde)}:{f(hasta)}"], []
+
+
+def modulo_a_ruta(mod: str) -> str:
+    return mod.replace(".", "/") + ".py"
+
+
+def dependencias(ruta: str, vistos=None) -> list:
+    """Módulos del repo que importa `ruta` (recursivo): el kernel los embebe todos. Antes sólo se embebía el experimento y uno
+    que importara otro módulo del repo fallaba recién en Kaggle."""
+    import ast
+    vistos = vistos if vistos is not None else []
+    if ruta in vistos or not (ROOT / ruta).exists(): return vistos
+    vistos.append(ruta)
+    for n in ast.walk(ast.parse((ROOT / ruta).read_text(encoding="utf-8-sig"))):
+        mods = [n.module] if isinstance(n, ast.ImportFrom) and n.module else [a.name for a in n.names] if isinstance(n, ast.Import) else []
+        if isinstance(n, ast.ImportFrom) and n.module:
+            mods += [f"{n.module}.{a.name}" for a in n.names]                      # from edgelab.research import u1_indaga
+        for m in mods:
+            if m.split(".")[0] in ("edgelab", "tests"):
+                r = modulo_a_ruta(m)
+                if (ROOT / r).exists(): dependencias(r, vistos)
+    return vistos
+
+
+class KaggleRunner:
+    def __init__(self, owner="nicolasbuttaro", python=sys.executable, carpeta=None):
+        self.owner, self.python = owner, python
+        self.carpeta = Path(carpeta or tempfile.mkdtemp(prefix="embudo_kernels_"))
+
+    def _construir(self, spec) -> Path:
+        sys.path.insert(0, str(ROOT / "tools" / "kaggle_grilla"))
+        from construir_kernel import construir
+        out = self.carpeta / f"kernel_{spec['cid'].lower()}.py"
+        construir("tools/kaggle_grilla/embudo_main.py", str(out), list(dict.fromkeys(BASE_MODULOS + dependencias(modulo_a_ruta(spec["experimento"])))))
+        return out
+
+    def argumentos(self, spec, etapa, params, periodo) -> list:
+        ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
+        needs, extra = datasets(spec["sensor"], *periodo)
+        if ejec != spec["sensor"]:
+            n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
+        slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}"[:100]
+        env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
+                   FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+        a = ["--slug", slug, "--script", str(self._construir(spec))]
+        for n in needs: a += ["--need", n]
+        for d in dict.fromkeys(extra): a += ["--extra-dataset", d]
+        for k, v in env.items(): a += ["--env", f"{k}={v}"]
+        return a
+
+    def lanzar(self, spec, etapa, params, periodo) -> str:
+        a = self.argumentos(spec, etapa, params, periodo)
+        r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True, timeout=1800)
+        if r.returncode != 0 or '"url"' not in r.stdout: raise RuntimeError(f"no se lanzó: {(r.stdout + r.stderr)[-500:]}")
+        return a[1]
+
+    def estado(self, handle) -> str:
+        r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=300)
+        for s in ("complete", "running", "queued", "error", "cancel"):
+            if f'"{s}' in r.stdout.lower(): return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
+        return "running"
+
+    def traer(self, handle) -> dict:
+        out = self.carpeta / f"{handle.split('/')[-1]}_RESULTADO.json"
+        subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", handle, "--file", "RESULTADO.json", "--out", str(out)],
+                       cwd=ROOT, capture_output=True, text=True, timeout=900)
+        return json.loads(out.read_text(encoding="utf-8"))
+
+
+class LocalRunner:
+    """Etapas del holdout en la máquina, con datos sellados: `lectores` = {nombre: f(desde, hasta, spec) -> bloques}."""
+    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True):
+        self.lectores, self.ticks, self.acta_requerida, self.res = lectores, ticks, acta_requerida, {}
+
+    def lanzar(self, spec, etapa, params, periodo) -> str:
+        from edgelab.research import etapas as ET, grilla_generica as GG
+        exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
+        ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
+        cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
+        fr, ex = friccion(ejec)
+        h = f"local-{spec['cid']}-{etapa}-{len(self.res)}"
+        self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        return h
+
+    def estado(self, h): return "complete" if h in self.res else "error"
+    def traer(self, h): return self.res[h]
+
+
+def lectores_sellados(cfg_sellado: dict, raiz_embudo: Path) -> tuple:
+    """De la configuración del Debian ({"DK:USATECHIDXUSD": carpeta, "NQ": parquet sellado}) a lectores del LocalRunner. El de NQ
+    exige el acta de holdout de la campaña (la escribe la etapa ACTA antes de mirar)."""
+    from edgelab.research import fuentes_ticks as F
+    lec, ticks = {}, {}
+    for nombre, ruta in (cfg_sellado or {}).items():
+        if nombre.startswith("DK:"):
+            sym = nombre[3:]; lec[nombre] = (lambda d0, d1, spec, s=sym, r=ruta: F.bloques_spot_sellado(s, d0, d1, r)); ticks[nombre] = F.REDONDEO_SPOT[sym]
+        else:
+            lec[nombre] = (lambda d0, d1, spec, r=ruta: F.bloques_nq_sellado(d0, d1, r, str(Path(raiz_embudo) / spec["cid"] / "ACTA_HOLDOUT.json")))
+            ticks[nombre] = F.TICK_FUTURO[nombre]
+    return lec, ticks

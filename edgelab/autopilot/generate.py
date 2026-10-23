@@ -167,7 +167,7 @@ def campanas_grilla(carpeta: str | Path = CAMPANAS_GRILLA) -> list:
     out = []
     for f in sorted((REPO / carpeta).glob("*.json")) if (REPO / carpeta).exists() else []:
         d = json.loads(f.read_text(encoding="utf-8"))
-        if not d.get("activa", True): continue
+        if not d.get("activa", True) or d.get("embudo"): continue           # las campañas de embudo las conduce edgelab/research/embudo.py
         from edgelab.research.preflight import verificar_campana
         if (err := verificar_campana(d, REPO)): raise ValueError(f"campaña {f.name}: {err}")
         out.append(Candidate(d["cid"], d["titulo"], "R12_GRILLA_CAMPANA", d.get("gap_kind", "NEW_MECHANISM"), d.get("evidencia", []), template="grilla", cfg=d,

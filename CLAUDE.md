@@ -153,6 +153,8 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   propios causales. Una variante buena se **indaga antes del P&L básico** (ATJ-26), nunca pasa directo.
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
   (ATJ-27). Los errores de la revisión del 2026-10-23 quedaron como chequeos automáticos, no como recordatorios.
+- **Embudo automático (2026-10-23):** una campaña de grilla = módulo del experimento + JSON con `"embudo": true`;
+  `edgelab/research/embudo.py` la lleva sola hasta la decisión del holdout (guía §8). No se arma a mano.
 - **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
   tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
   económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:

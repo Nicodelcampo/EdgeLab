@@ -1,0 +1,16 @@
+[Unit]
+Description=EdgeLab: descarga diaria de ticks de Dukascopy (forward / holdout sellado) para el embudo
+After=network-online.target
+Wants=network-online.target
+OnFailure=edgelab-alerta@%n.service
+
+[Service]
+Type=oneshot
+User=edgelab
+Group=edgelab
+WorkingDirectory=/opt/edgelab/EdgeLab
+ExecStart=/opt/edgelab/venv/bin/python tools/dukascopy_diario.py --config /etc/edgelab/autopilot.json
+TimeoutStartSec=7200
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/var/lib/edgelab-datos

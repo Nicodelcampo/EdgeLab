@@ -74,3 +74,18 @@ def test_tope_nunca_afloja_y_none_es_el_original(ctx):
     ok = c.motivo.eq("")
     assert (np.abs(c[ok].entrada_plan - c[ok].stop) <= 5.0 + 1e-9).all()
     assert np.nanmin(c.bruto) >= -5.0 - 60                                      # pérdida acotada salvo hueco
+
+
+def test_conductor_generico_reproduce_u1_cruzado(ctx):
+    """Oráculo: la ejecución cruzada genérica (grilla_generica.simular_ops con cx_ej) = u1_cruzado.operar (validado a mano)."""
+    import types
+    nq = dict(ctx); off = 37.0
+    for k in ("o", "h", "l", "c", "tpx"): nq[k] = ctx[k] + off
+    S = X.senales(ctx).reset_index(drop=True)
+    exp = types.SimpleNamespace(EJECUCIONES=[("E1A", "T1", "S3", 0), ("E1A", "T3", "S3", 0)], niveles=U.niveles)
+    for kw in (dict(), dict(retraso=2), dict(tope=("mult", 3.0))):
+        di, ei, pnl, _, _ = GG.simular_ops(exp, S, ctx, cx_ej=nq, **kw)
+        ref = X.operar(ctx, nq, S, **kw)
+        for e, (en, ob, sl, _b) in enumerate(exp.EJECUCIONES):
+            a = np.sort(pnl[(ei == e) & np.isfinite(pnl)]); b = np.sort(ref[(ref.ejecucion == f"{en}/{ob}/{sl}")].bruto.dropna().to_numpy())
+            assert np.allclose(a, b), (kw, e, len(a), len(b))

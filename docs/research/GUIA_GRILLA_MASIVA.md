@@ -134,3 +134,49 @@ propio alrededor de ella, con la celda como `BASE` del módulo:
 - **acuerdo entre fuentes.**
 
 La regla de selección para la confirmación se escribe antes de mirar, y la confirmación usa datos que la indagación no tocó.
+
+## 8. El embudo automático (2026-10-23): sólo se escribe la lógica y la campaña
+
+Pedido de Nico: «que siga siempre un embudo, en cualquier activo y con cualquier lógica, sin errores, sin armarlo cada vez, y
+autónomo en el Debian».
+
+**Lo único que se escribe:**
+1. **El módulo del experimento,** con la interfaz de §6.
+2. **La campaña,** como JSON en `config/autopilot/grillas/campanas/` con `"embudo": true`. Ejemplo: `U1_CRUZADO.json`.
+
+```json
+{"cid": "...", "familia": "...", "experimento": "edgelab.research.agente.mi_exp", "sensor": "DK:USATECHIDXUSD", "ejecucion": "NQ",
+ "desc": [20250805, 20260930], "oos": [20230101, 20250731], "embudo": true,
+ "justificacion_economica": "...", "como_podria_refutarse": "...",
+ "seleccion": {"max_candidatas": 3}, "holdout": {"desde": 20261001, "n_fijo": 150}}
+```
+
+- **`sensor`** es dónde se calcula la señal y **`ejecucion`** dónde se opera.
+- **Valores posibles:** cualquier futuro del release (`NQ`, `ES`, `GC`, …) o spot de Dukascopy (`DK:<SÍMBOLO>`).
+- **Activos sin costo medido:** si el instrumento de ejecución no tiene costo medido en `edgelab/costos.py` (hoy 6B, 6J y ZB), la
+  campaña no se lanza.
+
+**Todo lo demás lo hace `edgelab/research/embudo.py`, un paso por ciclo del agente:**
+PREFLIGHT → DESC → INDAGA → INTEGRIDAD (alineación, placebo, latencia) → OOS (un paso del libro de LORD++ de la familia; no
+mata) → TOPES (regla declarada) → ACTA (regla congelada antes de mirar) → CONTEO (cuenta operaciones del holdout sin ver P&L) →
+HOLDOUT (primeras N, un paso de LORD++) → CONFIRMADA / REFUTADA / SIN_POTENCIA.
+
+En cada etapa, el embudo también:
+- registra las pruebas en el contador global antes de lanzar;
+- escribe su línea en `MEDIDO.md` y su estado.
+
+| pieza | dónde |
+|---|---|
+| Kaggle: arma el kernel con todas las dependencias, resuelve datasets y fricción del activo, lanza y trae | `edgelab/research/embudo_runners.KaggleRunner` + `tools/kaggle_grilla/embudo_main.py` |
+| Holdout con datos sellados de la máquina | `embudo_runners.LocalRunner` + `fuentes_ticks.bloques_spot_sellado` / `bloques_nq_sellado` |
+| Datos nuevos de Dukascopy, sin JForex | `tools/dukascopy_descarga.py`, timer `edgelab-datos-dukascopy` |
+| Señal en un activo, ejecución en otro | `grilla_generica.simular_ops(cx_ej=...)` (oráculo: igual a U1-CRUZADO validado) |
+| Controles estándar | `edgelab/research/controles.py` |
+| Libro de LORD++ por familia | `edgelab/funnel/libro_lord.py` |
+| Densidad del feed y régimen por mes | etapa E0 (`etapas.densidad`) |
+
+**Qué queda humano a propósito:**
+- **Cambiar las reglas del embudo:** un sistema que afloja sus propios filtros fabrica falsos positivos.
+- **Habilitar dinero real:** el embudo termina en CONFIRMADA; operar con dinero real es un interruptor de Nico.
+- **Datos de futuros forward en el Debian:** necesitan un feed (Rithmic o Databento). Mientras tanto, si el P&L en el futuro y en el
+  spot se verificó equivalente (como en U1-CRUZADO), el forward se decide sobre Dukascopy.

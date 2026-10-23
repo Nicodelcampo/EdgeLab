@@ -93,19 +93,62 @@ def contexto_m1(bloques, tick):
                 tick=float(tick))
 
 
-def simular_ops(exp, D, ctx):
-    """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo)."""
+def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> float:
+    """Tope de pérdida por construcción: el stop no queda más lejos que `tope` de la entrada (("pts", x) o ("mult", k) × la
+    distancia al objetivo). None = stop original. Redondeo siempre hacia la entrada (nunca se afloja)."""
+    if tope is None: return st
+    kind, v = tope; d_max = v if kind == "pts" else v * abs(tp - e)
+    if abs(e - st) <= d_max: return st
+    st2 = e - s * d_max
+    return np.ceil(st2 / tick) * tick if s == 1 else np.floor(st2 / tick) * tick
+
+
+def _trasladar(O, ctx, cx_ej, retraso):
+    """Señal calculada en `ctx` (sensor), orden ejecutada en `cx_ej`: el inicio pasa a la vela del mismo minuto en la ejecución
+    (+ `retraso` velas) y los precios se trasladan con la base (cierre ejecución − cierre sensor en ese minuto), redondeados al
+    tick de la ejecución, el stop siempre hacia afuera. Si en el retraso el precio ya tocó objetivo o stop, no se opera."""
+    t_ej, tk = cx_ej["t"], cx_ej["tick"]; n = len(O); ok = np.zeros(n, bool); O2 = O.copy()
+    for r in range(n):
+        k = int(O[r, 2]); j = int(np.searchsorted(t_ej, ctx["t"][k]))
+        if j >= len(t_ej) or t_ej[j] != ctx["t"][k]: continue
+        jj = j + retraso
+        if jj >= len(t_ej) - 1 or cx_ej["ses"][jj] != cx_ej["ses"][j]: continue
+        base = cx_ej["c"][j] - ctx["c"][k]; s = int(O[r, 4]); e, st, tp = O[r, 5] + base, O[r, 6] + base, O[r, 7] + base
+        tp = np.round(tp / tk) * tk; e = np.round(e / tk) * tk
+        st = np.floor(st / tk) * tk if s == 1 else np.ceil(st / tk) * tk
+        if retraso:
+            hi, lo = cx_ej["h"][j + 1:jj + 1].max(), cx_ej["l"][j + 1:jj + 1].min()
+            if (s == 1 and (hi >= tp or lo <= st)) or (s == -1 and (lo <= tp or hi >= st)): continue
+            if O[r, 3] != 1: e = cx_ej["c"][jj]                       # a mercado: la entrada es la del momento real
+        if (e - tp) * -s < tk or (e - st) * s < tk: continue
+        O2[r, 2], O2[r, 5], O2[r, 6], O2[r, 7] = jj, e, st, tp; ok[r] = True
+    return O2, ok
+
+
+def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False):
+    """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo).
+    `cx_ej`: contexto M1 de OTRO instrumento donde se ejecuta (señal en un activo, operación en otro; mismo minuto, base
+    trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
     filas = D.to_dict("records"); ops = []
     for i, r in enumerate(filas):
         for ei, ej in enumerate(exp.EJECUCIONES):
             nv = exp.niveles(r, ej, ctx)
             if nv is not None: ops.append((i, ei) + tuple(nv))
-    if not ops: return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3
+    if not ops: return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ())
     O = np.array(ops, float)
-    st0, lim, s, e, sl, tp, be = (O[:, j] for j in range(2, 9))
-    pnl, amb = AX.simular(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
-                          ctx["o"], ctx["h"], ctx["l"], ctx["c"], ctx["ses"], ctx["tick"], ctx["tpx"], ctx["tstart"])
-    return O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(tp - e)
+    if tope is not None:
+        for r in range(len(O)): O[r, 6] = aplicar_tope(O[r, 5], int(O[r, 4]), O[r, 6], O[r, 7], tope, ctx["tick"])
+    sim = ctx; ok = np.ones(len(O), bool)
+    if cx_ej is not None or retraso:
+        O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
+    pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8)
+    if ok.any():
+        st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
+        p_, a_ = AX.simular(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
+                            sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
+        pnl[ok], amb[ok] = p_, a_
+    out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
+    return out + (O,) if devolver_O else out
 
 
 def ejecuciones_equivalentes(di, ei, pnl, ejecuciones) -> list:
@@ -215,7 +258,7 @@ def resumen_e0(D, variables, cortes):
     return out
 
 
-def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print):
+def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None):
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
     if "ses" not in D: D["ses"] = ctx["ses"][D.k.to_numpy()]
@@ -223,7 +266,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res = dict(experimento=exp.NOMBRE, modo=modo, E0=resumen_e0(D, exp.VARIABLES, cortes))
     if modo == "E0" or not len(D): return res, D
     if modo == "REP" and not celdas: raise ValueError("REP exige celdas y cortes CONGELADOS del descubrimiento")
-    di, ei, pnl, amb, dist = simular_ops(exp, D, ctx)
+    di, ei, pnl, amb, dist, O = simular_ops(exp, D, ctx, cx_ej=cx_ej, retraso=retraso, tope=tope, devolver_O=True)
     res["ejecuciones_equivalentes"] = ejecuciones_equivalentes(di, ei, pnl, exp.EJECUCIONES)
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
@@ -231,7 +274,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     P = perillas(exp, cortes); idx = [b[di] for b in discretizar(D, exp.VARIABLES, cortes)] + [ei]
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
-    cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())),
+    cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
               k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]])
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
