@@ -16,3 +16,9 @@ def test_friccion_de_los_kernels_es_la_canonica():
 def test_ventana_que_toca_el_holdout_falla():
     with pytest.raises(ValueError):
         next(F.bloques_nq(20260901, 20261001, entrada="/no/existe"))
+
+
+def test_lector_sellado_exige_acta_y_no_mezcla_desarrollo(tmp_path):
+    with pytest.raises(ValueError): next(F.bloques_nq_sellado(20261001, 20261020, "x.parquet", None))
+    acta = tmp_path / "acta.md"; acta.write_text("x")
+    with pytest.raises(ValueError): next(F.bloques_nq_sellado(20260930, 20261020, "x.parquet", str(acta)))

@@ -89,3 +89,13 @@ def test_rep_informa_el_n_real_de_celdas_chicas():
     rep, cx = GG.correr(U, ctx, modo="REP", friccion=1.0, extra_adverso=0.5, cortes=cortes, celdas=[list(celda)], log=lambda s: None)
     esperado = int((GM.mascara(cx["perillas"], cx["indices"], celda) & np.isfinite(cx["net"])).sum())
     assert rep["replica"][0]["n"] == esperado
+
+
+def test_operaciones_de_reproduce_el_resumen_de_la_replica():
+    ctx = GG.contexto_m1(_bloques(dias=20, planta=True, seed=5), tick=0.25)
+    cortes = GG.cortes_e0(U.disparos(ctx), U.VARIABLES)
+    celda = [0, 1, 0, 2, 2, 2, 3, 3, 3, 0]
+    rep, cx = GG.correr(U, ctx, modo="REP", friccion=1.0, extra_adverso=0.5, cortes=cortes, celdas=[celda], log=lambda s: None)
+    ops = GG.operaciones_de(cx, [celda])
+    assert len(ops) == rep["replica"][0]["n"] and (ops.t.diff().dropna() >= 0).all()
+    if "media_neta" in rep["replica"][0]: assert ops.neto.mean() == pytest.approx(rep["replica"][0]["media_neta"])

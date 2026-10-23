@@ -24,6 +24,7 @@ def main():
     json.dump(res, open(f"{nombre}.json", "w"), indent=1, default=float)
     json.dump(dict(res, **GG.para_autopilot(res, fuente)), open("STUDY_RESULTS.json", "w"), indent=1, default=float)
     (cx if modo == "E0" else exp.disparos(ctx)).to_parquet(f"{nombre}_disparos.parquet")          # target-free: disparos y variables
+    if modo == "REP": GG.operaciones_de(cx, celdas).to_parquet(f"{nombre}_operaciones.parquet")       # serie por operación (seguimiento secuencial)
     log("listo")
 
 

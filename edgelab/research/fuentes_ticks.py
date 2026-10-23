@@ -71,3 +71,20 @@ def _usatech_df(t, td, desde, hasta):
 # fuente -> (lector, tick, fricción por operación en puntos, adverso extra). NQ: edgelab.costos base/adverso. USATECH: CFD,
 # referencia con los costos de NQ (no operable tal cual).
 FUENTES = {"NQ": (bloques_nq, 0.25, 1.5455, 0.5), "USATECH": (bloques_usatech, 0.01, 1.5455, 0.5)}   # tests/research/test_fuentes_ticks.py: = edgelab.costos
+
+
+def bloques_nq_sellado(desde, hasta, ruta, acta):
+    """Ticks del HOLDOUT (sesiones >= 2026-10-01) desde la carpeta sellada local. Sólo para una apertura registrada: exige la
+    ruta de un acta de apertura committeada ANTES de correr y no entrega nada anterior a la frontera (no mezcla desarrollo).
+    No está en FUENTES a propósito: nunca se usa por accidente."""
+    from pathlib import Path
+    import pyarrow.parquet as pq
+    if not acta or not Path(acta).exists(): raise ValueError("apertura del holdout sin acta registrada")
+    if desde < HOLDOUT_PRIMERA_SESION_INT: raise ValueError("una apertura del holdout no mezcla sesiones de desarrollo")
+    t = pq.read_table(ruta, columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "contract"]).to_pandas()
+    t = t[(t.trade_date >= desde) & (t.trade_date <= hasta) & (t.ts_utc_ns >= HOLDOUT_APERTURA_UTC_NS)]
+    contratos = {c: i for i, c in enumerate(sorted(t.contract.unique()))}
+    for td, g in t.groupby("trade_date", sort=True):
+        g = g.sort_values("ts_utc_ns", kind="stable")
+        yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * 0.25, vol=g.volume.to_numpy(float),
+                                sesion=np.full(len(g), int(td), np.int64), segmento=g.contract.map(contratos).to_numpy(np.int64)))
