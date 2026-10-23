@@ -97,7 +97,7 @@ class Embudo:
         if e == "OOS": return dict(base, celdas=st["candidatas"]), spec["oos"], "kaggle"
         h = _cfg(spec, "holdout"); hasta = int(time.strftime("%Y%m%d", time.gmtime(self.ahora() - 86400)))
         regla = st["regla"]
-        return dict(base, celdas=[regla["celda"]], tope=regla["tope"]), [h["desde"], hasta], "local"
+        return dict(base, celdas=[regla["celda"]], tope=regla["tope"], acta=st.get("acta")), [h["desde"], hasta], ("sellado" if "sellado" in self.runners else "local")
 
     def _registrar(self, spec, e, params):
         if self.registro is None: return

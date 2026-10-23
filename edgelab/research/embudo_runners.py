@@ -66,8 +66,10 @@ def dependencias(ruta: str, vistos=None) -> list:
 
 
 class KaggleRunner:
-    def __init__(self, owner="nicolasbuttaro", python=sys.executable, carpeta=None):
-        self.owner, self.python = owner, python
+    def __init__(self, owner="nicolasbuttaro", python=sys.executable, carpeta=None, dataset_sellado=None):
+        """`dataset_sellado`: si se da, este runner corre las etapas del HOLDOUT en Kaggle leyendo SÓLO ese dataset privado
+        (datos desde la sesión del 2026-10-01; nunca se adjunta a etapas de desarrollo)."""
+        self.owner, self.python, self.dataset_sellado = owner, python, dataset_sellado
         self.carpeta = Path(carpeta or tempfile.mkdtemp(prefix="embudo_kernels_"))
 
     def _construir(self, spec) -> Path:
@@ -79,12 +81,18 @@ class KaggleRunner:
 
     def argumentos(self, spec, etapa, params, periodo) -> list:
         ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
-        needs, extra = datasets(spec["sensor"], *periodo)
-        if ejec != spec["sensor"]:
-            n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
+        if self.dataset_sellado:                                         # holdout: sólo el dataset sellado, nada del release
+            needs, extra = [], [self.dataset_sellado]
+        else:
+            needs, extra = datasets(spec["sensor"], *periodo)
+            if ejec != spec["sensor"]:
+                n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
         slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}"[:100]
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+        if self.dataset_sellado:
+            if not params.get("acta"): raise ValueError("etapa de holdout sin acta registrada")
+            env["SELLADO"] = "1"
         a = ["--slug", slug, "--script", str(self._construir(spec))]
         for n in needs: a += ["--need", n]
         for d in dict.fromkeys(extra): a += ["--extra-dataset", d]
