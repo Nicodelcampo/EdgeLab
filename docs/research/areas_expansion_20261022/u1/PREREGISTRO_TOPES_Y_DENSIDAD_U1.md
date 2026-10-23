@@ -30,3 +30,28 @@ Kernel `tools/kaggle_grilla/kernel_u1_cruzado.py`, modos `TOPES` y `DENSIDAD`. T
   3. **Desempate:** el tope más amplio (menos ajuste), y T1 antes que T3.
   4. **Resultado:** UNA regla congelada (ejecución y tope) para el holdout. Si ninguna es elegible, no hay holdout: se informa.
 - **Lo que no se hace:** elegir con 2023–2025, ni cambiar la grilla de topes al ver resultados.
+
+## Resultado B — tope de stop (2026-10-23), archivos en `u1/topes/`
+Medias netas en NQ, por período (P1 / P2), en pts por operación:
+
+| tope | T1 | T3 | peor operación T3 | peor día T3 | elegible (T1 / T3) |
+|---|---|---|---:|---:|---|
+| sin tope | 16,8 / 21,1 | 21,5 / 28,4 | −218 | −264 | (referencia) |
+| 50 pts | 5,5 / 2,4 | 11,1 / 0,6 | −54 | −153 | no / no |
+| 75 pts | 1,3 / 9,7 | 4,6 / 8,8 | −79 | −228 | no / no |
+| 100 pts | 0,5 / 17,0 | 4,5 / 20,1 | −102 | −257 | no / no |
+| 150 pts | 3,8 / 19,9 | 8,5 / 24,3 | −152 | −220 | no / no |
+| 2× distancia al objetivo | 0,7 / 19,2 | 16,9 / 19,5 | −192 | −141 | no / sí |
+| 3× distancia al objetivo | 17,1 / 17,5 | **21,3 / 27,3** | −218 | −188 | sí / **sí (elegida)** |
+| 4× distancia al objetivo | 16,9 / 21,6 | 22,0 / 28,9 | −218 | −232 | sí / sí |
+
+- **Por la regla, la elegida es `E1A/T3` con tope de 3× la distancia al objetivo:** mayor retorno sobre drawdown (8,17).
+- **Pero no cumple el propósito del tope.** La peor operación sigue en −218 pts, porque el tope es relativo y en expansiones
+  grandes la distancia al objetivo también lo es.
+- **Todo tope fijo en puntos (50 a 150) borra el resultado en P1.** El edge depende del stop amplio: gana seguido y pierde poco y
+  grande. No hay un tope en puntos que conserve el edge y acote la pérdida.
+- **Consecuencias:**
+  - no hay pérdida máxima estructural en puntos, así que el holdout no puede usar seguimiento secuencial: sólo prueba única a N fijo;
+  - el riesgo por operación se controla con el TAMAÑO (MNQ: la peor operación de −218 pts son ≈ 436 USD por contrato) y con un
+    límite diario de la cuenta, no con el stop.
+- **Fuera de muestra 2023–2025 con topes (informativo, no elige):** todos ≈ 0 o negativos en el segundo tramo. Igual que sin tope.
