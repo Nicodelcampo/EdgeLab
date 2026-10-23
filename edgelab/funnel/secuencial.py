@@ -73,6 +73,16 @@ class MonitorCandidato:
         self.edge = EProceso(self.mu0, self.piso, self.techo, "mayor")
         self.fut = EProceso(self.mu_util, self.piso, self.techo, "menor")
 
+    @classmethod
+    def desde_regla(cls, *, perdida_max_pts: float, ganancia_max_pts: float, friccion_pts: float, margen_hueco_pts: float, mu_util: float,
+                    alfa: float = 0.05, alfa_futilidad: float = 0.10) -> "MonitorCandidato":
+        """Cotas ESTRUCTURALES (error 10 de la revisión del 2026-10-23: las cotas de U1-B salieron del peor caso de 69 operaciones
+        y una pérdida nueva las superó). La regla debe tener pérdida máxima por construcción (tope de stop); el margen de hueco
+        se declara antes de mirar y una operación que lo supere detiene con LIMITE_VIOLADO, nunca se recorta."""
+        if perdida_max_pts <= 0 or ganancia_max_pts <= 0: raise ValueError("pérdida y ganancia máximas por construcción, positivas")
+        return cls(piso=-(perdida_max_pts + margen_hueco_pts + friccion_pts), techo=ganancia_max_pts - friccion_pts + margen_hueco_pts,
+                   mu_util=mu_util, alfa=alfa, alfa_futilidad=alfa_futilidad)
+
     def agregar(self, xs) -> dict:
         for x in ([xs] if isinstance(xs, (int, float)) else xs):
             self.edge.agregar(float(x)); self.fut.agregar(float(x)); self.n += 1; self.suma += float(x)

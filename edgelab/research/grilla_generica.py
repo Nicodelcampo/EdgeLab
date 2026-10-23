@@ -129,9 +129,13 @@ def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000):
     eco = economia(net[m], net[m] - extra_adverso, cx["ses"][m], periodos=cx["mes"][m])
     rel = float(np.median(cx["dist"][m])) / friccion if friccion > 0 else np.inf
     ok = bool(ms["meseta"] and eco["pasa"] and rs["ic"][0] > 0 and rs["n_sesiones"] >= MIN_SESIONES and rel >= RATIO_MOV_FRICCION)
+    from edgelab.funnel.escalera import _N, recorte_t
+    t_ses = _N.inv_cdf(1 - min(max(rs["p_unilateral"], 1e-12), 1 - 1e-12))
+    rc = recorte_t(t_ses, float(cx.get("n_pruebas", 1)))                # error 11: lo mejor de muchas celdas siempre baja fuera de muestra
     return dict(celda=list(cel), n=int(m.sum()), media_neta=float(net[m].mean()), sesiones=rs["n_sesiones"], ic90=rs["ic"],
                 p_sesiones=rs["p_unilateral"], meseta=bool(ms["meseta"]), economico=eco["duros"], regimen_reciente=eco.get("regimen_reciente"),
-                ratio_mov_friccion=round(rel, 2), pasa=ok)
+                ratio_mov_friccion=round(rel, 2), pasa=ok, n_pruebas=float(cx.get("n_pruebas", 1)), conservado=rc["conservado"],
+                media_esperada_fuera=float(net[m].mean()) * rc["conservado"])
 
 
 MIN_OPS_MARGINAL = 10
@@ -229,6 +233,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())),
               k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]])
+    cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
     if modo == "REP":

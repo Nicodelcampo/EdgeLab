@@ -52,6 +52,8 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 | Un experimento aplicado por el programador no tenía cómo convertirse en corrida. | Campañas como datos en `config/autopilot/grillas/campanas/*.json` → `generate.campanas_grilla`. |
 | Marginales con muestras chicas (U1 en NQ: n = 66 en la base) salían vacías. | Se informa desde 10 operaciones con la marca `chica`; `MARGINALES_POOL` agrega perillas para ganar potencia. |
 | U1-B: las cotas del e-proceso salieron del peor caso de 69 operaciones (×1,5) de una regla con stop más allá del extremo; en datos nuevos una pérdida las superó y el seguimiento se detuvo (LIMITE_VIOLADO). | Seguimiento secuencial sólo con pérdida máxima por operación estructural: la regla tiene un tope de stop, o las cotas salen de la geometría de la regla, nunca del peor caso visto. |
+| El generador sintético reiniciaba el precio a 20.000 cada día: el «ruido» tenía reversión plantada sin querer y los controles de ruido no eran de ruido (lo encontró el preflight). | `sintetico.bloques` continúa el precio entre días; `test_ruido_sintetico_es_martingala` lo verifica. |
+| Resultados de una regla elegida entre miles de celdas leídos sin recorte (U1-B: +7,3 en la selección, −0,18 después). | Toda pista y réplica publica `media_esperada_fuera` (recorte de Harvey-Liu con el número de celdas miradas). |
 | Se lanzó una corrida con código que después tuvo correcciones. | Esa corrida **no se mira**; se documenta como descartada y se relanza. Mirarla y después corregir sería ajustar con los datos. |
 | El perfil de volumen por disparo en Python hacía lento el kernel con ticks reales. | Perfilar antes de lanzar; los bucles por evento, en numba y en lote; nada por operación en Python que pueda hacerse por evento. |
 | `fcntl`, `/dev/null` y CRLF rompían herramientas en Windows. | Las herramientas compartidas con el Debian se prueban en las dos plataformas (la suite corre en Windows con `tests/conftest.py`). |
@@ -117,6 +119,10 @@ def niveles(fila, ej, ctx): ...                 # (start, limite 0/1/2, s, entra
 4. El simulador y los lectores de datos (`fuentes_ticks.py`) no se copian. Una fuente nueva es una función más en `FUENTES`.
 5. Un **indicador propio** entra como `NATIVO_AGENTE` en `config/autopilot/grillas/indicadores_agente.json`, que está en el perímetro del agente y sólo admite ese estado, con `modulo` y `test_causal`. Sirve para research si pasa `causal()`. No se opera en vivo
    hasta tener su versión NT8 con paridad.
+
+## 6b. Preflight (antes de lanzar cualquier cosa)
+`python -m edgelab.research.preflight <módulo>` y, para campañas, `preflight.verificar_campana`. Para resultados ya bajados,
+`preflight.codigo_vigente(resultado)` dice si el código cambió desde la corrida.
 
 ## 7. Variante buena → indagar antes del P&L básico (ATJ-26)
 

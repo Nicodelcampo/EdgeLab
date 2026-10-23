@@ -56,6 +56,21 @@ def controles_faltantes(wt: Path, paths) -> list:
     return falta
 
 
+def preflight_experimentos(wt: Path, paths, python: str, timeout: int) -> list:
+    """`edgelab.research.preflight` sobre cada experimento de grilla nuevo o cambiado: interfaz, indicadores, causalidad, cortes,
+    potencia del control, ruido sin rechazos, perillas muertas. Corre en la worktree (el código del agente, no el vivo)."""
+    out = []
+    for p in paths:
+        p = p.replace("\\", "/")
+        if not (p.startswith("edgelab/research/agente/") and p.endswith(".py")) or not (wt / p).exists(): continue
+        if "def disparos(" not in (wt / p).read_text(encoding="utf-8", errors="replace"): continue
+        mod = p[:-3].replace("/", ".")
+        r = subprocess.run([python, "-m", "edgelab.research.preflight", mod], cwd=wt, capture_output=True, text=True, encoding="utf-8",
+                           errors="replace", timeout=timeout, env=dict(os.environ, NUMBA_CACHE_DIR=str(wt / ".numba_cache")))
+        if r.returncode != 0: out.append(f"{mod}: {(r.stdout + r.stderr)[-600:]}")
+    return out
+
+
 def _git(*a, cwd, check=True):
     r = subprocess.run(["git", *a], cwd=cwd, capture_output=True, text=True, encoding="utf-8", errors="replace")
     if check and r.returncode: raise RuntimeError(f"git {' '.join(a[:2])}: {r.stderr.strip()[-300:]}")
@@ -88,6 +103,7 @@ SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Escribís c
            "Para que se lance, escribí su campaña en config/autopilot/grillas/campanas/<id>.json (campos en el LEEME de esa carpeta; "
            "n_trials = grilla_generica.n_celdas por canal y fuente). "
            "Antes de un P&L básico de una variante buena, indagala con marginales (ATJ-26). "
+           "Antes de terminar corré `python -m edgelab.research.preflight <tu módulo>`: si falla, el cambio no se aplica (ATJ-27). "
            "Si hace falta mejorar el motor compartido, hacelo igual: quedará como propuesta para revisión humana. Nunca toques guardas, "
            "FDR, holdout, costos, mandato ni edgelab/autopilot/: ese cambio se descarta entero. No leas datos del holdout. Corré los tests "
            "antes de terminar. Respondé con un resumen corto de qué hiciste y qué falta.")
@@ -152,6 +168,7 @@ def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, mode
         if (falta := controles_faltantes(wt, paths)): return _fin(root, row, "FALLA_CONTROLES", detalle=falta)
         rc, out = correr_tests(wt, python, list(tests), timeout_s); row["tests"] = out[-800:]
         if rc != 0: return _fin(root, row, "FALLA_TESTS")
+        if (pf := preflight_experimentos(wt, paths, python, timeout_s)): return _fin(root, row, "FALLA_PREFLIGHT", detalle=pf)
         _git("add", "-A", "--", *paths, cwd=wt)
         _git("-c", "user.name=edgelab-autopilot", "-c", "user.email=autopilot@localhost", "commit", "-q", "-m",
              f"agente({pid}): {pedido.get('que', '')[:60]}\n\nPedido {pedido['id']} · zona {z} · tests verdes.\n{pedido.get('por_que', '')[:400]}", cwd=wt)

@@ -506,6 +506,21 @@ propio sobre el conductor genérico, con la variante como `BASE`. Se publican la
 de lo que la explica y el acuerdo entre fuentes. La regla que elige qué se confirma se fija antes de mirar, y la confirmación
 usa datos que la indagación no usó. Guía: `GUIA_GRILLA_MASIVA.md` §7. Ejemplo: `SPEC_U1_INDAGA.md`.
 
+### ATJ-27 — Preflight obligatorio antes de lanzar (2026-10-23)
+
+Todo experimento de grilla pasa `python -m edgelab.research.preflight <módulo>` antes de lanzarse. Lo corren solos el programador
+del agente y `generate.campanas_grilla`. Chequea:
+- interfaz e indicadores usables;
+- variables bien formadas;
+- que el objeto aparezca y sea causal;
+- cortes no degenerados;
+- que el control de ruido tenga potencia y dé 0 rechazos;
+- que no haya perillas muertas;
+- que las cuentas de celdas coincidan.
+
+Cada campaña tiene sus condiciones con test, no toca el holdout, y si hay seguimiento declara la pérdida máxima estructural.
+El mapa error → chequeo está en `docs/research/areas_expansion_20261022/u1/REVISION_ERRORES_Y_PLAN_U1_CRUZADO.md` §4.
+
 ### Ruta ejecutable para estudios de evento y reglas con su propio simulador
 
 El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:

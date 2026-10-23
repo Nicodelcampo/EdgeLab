@@ -106,4 +106,4 @@ def test_experimento_de_grilla_exige_causalidad_e_indicadores(repo, tmp_path):
     assert row["estado"] == "FALLA_CONTROLES" and any("test_causal" in d for d in row["detalle"]) and any("INDICADORES" in d for d in row["detalle"])
     row, _ = _run(repo, tmp_path, {"edgelab/research/agente/exp.py": 'INDICADORES = ["LUX-IMB"]\n' + exp,
                                    "tests/agente/test_exp.py": TEST + "\ndef test_causal():\n    assert True\n"})
-    assert row["estado"] == "APLICADO", row
+    assert row["estado"] == "FALLA_PREFLIGHT", row                          # disparos roto: el preflight lo frena antes de aplicar

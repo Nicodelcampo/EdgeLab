@@ -88,3 +88,25 @@ Hay iteraciones que **no gastan el holdout** y lo pueden ahorrar. Se hacen antes
    - ticks de USATECH de octubre en adelante (pedido de descarga) y NQ sellado.
 
 **Lo que no se hace:** ninguna variante nueva se elige con los datos de 2023–2025 y se prueba en esos mismos datos.
+
+## 4. Corrección y mitigación automática (2026-10-23, pedido de Nico: «corregí todos los errores y que queden mitigados automáticamente»)
+
+| errores | corrección | mitigación automática (dónde) |
+|---|---|---|
+| 1, 2, 13, 16 | definiciones y cortes corregidos | preflight: el objeto aparece, cortes por cuantiles ≥ 10 % por nivel, faltantes fuera de nivel, control con potencia |
+| 3 | llenado declarado por operación | interfaz `niveles` (el experimento declara el llenado) |
+| 4 | `ejecuciones_equivalentes` | preflight: perillas muertas frenan el lanzamiento |
+| 5, 6 | REP cruzado planeado; MDE en toda grilla | campaña: cada condición con su test (`verificar_campana`); `resumen_nulo` en toda corrida |
+| 7, 8 | Romano-Wolf por sesiones; canal reciente; regla del 80 % consciente del régimen | en el conductor genérico, para todo experimento |
+| 9 | `escalera.probar_lote` | en el núcleo y en `confirmacion.decidir` del ciclo autónomo |
+| 10 | — | `MonitorCandidato.desde_regla` (cotas estructurales); campaña con seguimiento sin pérdida máxima = error de preflight |
+| 11 | — | `media_esperada_fuera` en toda pista y réplica (recorte de Harvey-Liu con las celdas miradas) |
+| 12, 14, 15, 17 | corregidos con test | tests de regresión; preflight corre el DESC completo sobre sintéticos |
+| 18, 19, 20 | `STUDY_RESULTS.json` por defecto; campañas como datos; registro del agente | tests del ciclo autónomo |
+| 21, 23 | — | `test_todo_python_trackeado_parsea`; `preflight.codigo_vigente(resultado)` |
+| 22 | — | la suite se corre capturando su propio código de salida (no el de `tail`) |
+| 24, 25 | corregidas en su momento | regla «fuente antes que recuerdo» (CLAUDE.md) |
+| **26 (nuevo)** | el generador sintético reiniciaba el precio cada día (el «ruido» tenía reversión plantada) | `test_ruido_sintetico_es_martingala`; lo encontró el preflight |
+
+**Dónde corre:** el programador corre el preflight dinámico antes de aplicar un experimento (`FALLA_PREFLIGHT`). `generate.campanas_grilla`
+corre `verificar_campana` sobre cada JSON. Una persona corre `python -m edgelab.research.preflight <módulo>`.

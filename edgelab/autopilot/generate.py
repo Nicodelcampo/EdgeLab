@@ -168,8 +168,8 @@ def campanas_grilla(carpeta: str | Path = CAMPANAS_GRILLA) -> list:
     for f in sorted((REPO / carpeta).glob("*.json")) if (REPO / carpeta).exists() else []:
         d = json.loads(f.read_text(encoding="utf-8"))
         if not d.get("activa", True): continue
-        falta = [k for k in CAMPO_CAMPANA if k not in d]
-        if falta: raise ValueError(f"campaña {f.name}: faltan {falta}")
+        from edgelab.research.preflight import verificar_campana
+        if (err := verificar_campana(d, REPO)): raise ValueError(f"campaña {f.name}: {err}")
         out.append(Candidate(d["cid"], d["titulo"], "R12_GRILLA_CAMPANA", d.get("gap_kind", "NEW_MECHANISM"), d.get("evidencia", []), template="grilla", cfg=d,
                              n_trials=int(d["n_trials"]), power=float(d.get("potencia", 0.5)), est_seconds=int(d.get("est_seconds", 7200)), group=d["fuente"],
                              family=d["family"], utility_class=d.get("utility_class", "bridgeable"),

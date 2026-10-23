@@ -38,4 +38,4 @@ def test_holdout_en_campana_lo_frena_la_guarda(tmp_path, monkeypatch):
     d = tmp_path / "config/autopilot/grillas/campanas"; d.mkdir(parents=True)
     (d / "x.json").write_text(json.dumps(dict(CAMP, needs=["NQ:2026-09-01:2026-10-15"])))
     monkeypatch.setattr(GEN, "REPO", tmp_path)
-    assert guard.check_holdout(RunSpec.from_dict(GEN.to_runspec(GEN.campanas_grilla()[0])))
+    with pytest.raises(ValueError, match="holdout"): GEN.campanas_grilla()                   # el preflight de la campaña lo frena antes que la guarda

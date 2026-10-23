@@ -7,19 +7,8 @@ from edgelab.research import grilla_generica as GG, u1_indaga as U
 
 
 def _bloques(dias=40, seed=1, planta=True):
-    rng = np.random.default_rng(seed); t0 = 1_760_000_000 * 10**9
-    for d in range(dias):
-        n = 23 * 60 * 6; ts = t0 + d * 86400 * 10**9 + np.sort(rng.integers(0, 23 * 3600 * 10**9, n))
-        paso = rng.choice([-0.25, 0.0, 0.25], n, p=[.33, .34, .33])
-        saltos = rng.random(n) < 0.005; paso[saltos] += rng.choice([-1, 1], saltos.sum()) * rng.integers(60, 160, saltos.sum()) * 0.25
-        p = 20000 + np.cumsum(paso)
-        if planta:                                                     # reversión hacia el nivel previo al salto (efecto plantado)
-            ancla = pd.Series(np.where(saltos, np.r_[p[0], p[:-1]], np.nan)).ffill().fillna(p[0]).to_numpy()
-            p = p + np.cumsum(0.006 * (ancla - p)) * 0
-            q = np.empty(n); q[0] = p[0]
-            for i in range(1, n): q[i] = q[i - 1] + paso[i] + 0.03 * (ancla[i] - q[i - 1])
-            p = q
-        yield pd.DataFrame(dict(ts_ns=ts, px=np.round(p * 4) / 4, vol=rng.integers(1, 6, n).astype(float), sesion=np.full(n, d), segmento=np.zeros(n, int)))
+    from edgelab.research.sintetico import bloques
+    return bloques(dias=dias, seed=seed, planta=planta)
 
 
 @pytest.fixture(scope="module")

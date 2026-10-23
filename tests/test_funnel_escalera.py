@@ -144,3 +144,10 @@ def test_probar_lote_bajo_ruido_casi_nunca_confirma():
     for j in range(300):
         hits += bool(E.probar_lote(L, [(str(i), float(p)) for i, p in enumerate(rng.uniform(size=40))])["confirmadas"])
     assert hits <= 0.05 * 300 + 5
+
+
+def test_monitor_desde_regla_usa_cotas_estructurales():
+    from edgelab.funnel.secuencial import MonitorCandidato
+    m = MonitorCandidato.desde_regla(perdida_max_pts=100, ganancia_max_pts=40, friccion_pts=1.5, margen_hueco_pts=10, mu_util=3, alfa=0.01)
+    assert m.edge.piso == -111.5 and m.edge.techo == 48.5
+    with pytest.raises(ValueError): MonitorCandidato.desde_regla(perdida_max_pts=0, ganancia_max_pts=40, friccion_pts=1.5, margen_hueco_pts=10, mu_util=3)
