@@ -18,6 +18,7 @@ Spec: `SPEC_AREAS_EXPANSION_V1.md` (v1.3). Manifiesto y resultados: `MANIFIESTO_
 | U1-CRUZADO: señal U1 en USATECH, operación en NQ (`u1/MANIFIESTO_U1_CRUZADO.md`) | 2025-08 → 2026-03 y 2026-04 → 09 | NQ neto T1 +16,8 / +21,1; T3 +21,5 / +28,4 pts/op, IC90 > 0 en los dos períodos; ≈ igual que en USATECH | ninguna: desarrollo (mismos meses de la selección); falta forward |
 | U1-CRUZADO integridad (alineación, placebo, latencia) | desarrollo 2025-08 → 2026-09 | pasa: pico 0 s, placebo ≈ 0 o negativo, latencia 5 min sin degradar | ninguna |
 | U1 fuera de muestra (paso 3 LORD++) | USATECH 2023-01 → 2025-07 | T1 +0,06 [−9,0, +8,3]; T3 −4,55; por año −2 / −10 / +7; sin rechazo | no se confirma en 2023–2024; no la mata (régimen) |
+| U1-CRUZADO holdout exploratorio (acta previa) | NQ 2026-10-01 → 21 (señal USATECH) | 8 ops, T3 +29,4 pts/op (7/8); NO_CONCLUYENTE | ninguna; consume la apertura 01–22 oct |
 | Reacción de VI coincidentes NQ↔USATECH (pre-registro 2026-10-22) | NQ 2026 | REFUTA: coef −0,20, IC90 [−1,79, +1,29] < fricción 1,545 | esa regla de reacción en VI coincidentes, NQ, ese período |
 
 ## No medido
