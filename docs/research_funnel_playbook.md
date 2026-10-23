@@ -483,6 +483,22 @@ Toda corrida de miles o millones de variantes sigue `docs/research/GUIA_GRILLA_M
 conocido → oráculo de lo compilado → controles ruido/plantado → E0 (cortes desde cuantiles) → registro → DESC → REP → holdout.
 El momento de llenado de una orden es una decisión declarada de cada análisis, no una convención del motor.
 
+### ATJ-24 — Edges actuales: el pasado no mata, lo reciente no se elige a posteriori (Nico, 2026-10-22)
+
+«Queremos edges actuales, aunque en el pasado no hayan funcionado.» En la práctica:
+- toda grilla mide dos canales declarados antes de mirar: `total` y `reciente` (últimos meses del período, número fijado en el manifiesto);
+- `escalera.economia` no mata la concentración de la ganancia en los períodos más recientes (marca `regimen_reciente`); sí la de un período viejo;
+- la réplica usa primero lo más reciente sin usar; los datos más viejos son informativos (fallar ahí no mata);
+- la confirmación de «funciona ahora» es forward (holdout con e-procesos, paper), y en vivo se vigila el decaimiento;
+- el riesgo opuesto también existe: buscar la ventana donde algo «funciona» después de ver el P&L es data snooping. La ventana se declara antes.
+
+### ATJ-25 — Un filtro que mata todo se audita en las dos direcciones
+
+Cero nominadas entre un millón no es por sí solo un artefacto (con ruido puro es lo que debe pasar), pero obliga a revisar el filtro:
+comparar el t máximo con el máximo esperado por azar, publicar MDE y cuántas celdas detectarían 1× la fricción, y medir el umbral con
+la correlación real entre celdas (`grilla_masiva.romano_wolf`, remuestreo por sesiones). Las mejores celdas distintas entre sí salen
+como **pistas** a réplica (`grilla_masiva.pistas`): no se descartan sin mirarlas ni se promueven sin replicar.
+
 ### Ruta ejecutable para estudios de evento y reglas con su propio simulador
 
 El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:

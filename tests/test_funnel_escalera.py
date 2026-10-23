@@ -118,3 +118,12 @@ def test_salida_compatible_con_el_autopilot():
     recs = analyze.records(out)
     assert [r["test"] for r in recs] == ["NQ/regla/disc", "NQ/regla/rep/1"]
     assert analyze.decide(out, 0.05, 2)["hit"] is True
+
+
+def test_economia_regimen_reciente_no_mata_lo_actual_pero_si_lo_viejo():
+    x = np.r_[np.full(60, -0.05), np.full(20, 2.0)]                              # gana sólo al final
+    per = ["202508"] * 20 + ["202509"] * 20 + ["202510"] * 20 + ["202511"] * 20
+    eco = E.economia(x, x - 0.1, periodos=per)
+    assert eco["regimen_reciente"] and eco["duros"]["ningun_periodo_80pct"]
+    viejo = E.economia(x[::-1], x[::-1] - 0.1, periodos=per)                     # mismo P&L pero ganado al principio
+    assert not viejo["regimen_reciente"] and not viejo["duros"]["ningun_periodo_80pct"]

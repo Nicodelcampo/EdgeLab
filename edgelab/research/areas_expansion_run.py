@@ -43,9 +43,11 @@ def para_autopilot(res, fuente):
     evaluadas en E2 (p por sesiones), nombradas `GRILLA/<fuente>/<celda>/disc`. Réplica: `.../rep/...`, que es lo único que
     puede contar como acierto. `n_planned` del RunSpec = celdas de la grilla (todas cuentan, aunque no se evalúen)."""
     nombre = lambda c: "_".join(str(x) for x in c)
+    pist = [(k, r) for k, c in (res.get("canales") or {}).items() for r in c.get("pistas", [])]
     flat = [dict(test=f"GRILLA/{fuente}/{nombre(r['celda'])}/disc", p=r["p_sesiones"], evaluable=True, diff=r["media_neta"]) for r in res.get("E2", [])]
     flat += [dict(test=f"GRILLA/{fuente}/{nombre(r['celda'])}/rep/1", p=r.get("p_sesiones"), evaluable="p_sesiones" in r, diff=r.get("media_neta"))
              for r in res.get("replica", [])]
+    flat += [dict(test=f"GRILLA/{fuente}/{nombre(r['celda'])}/pista_{k}", p=r["p_sesiones"], evaluable=False, diff=r["media_neta"]) for k, r in pist]   # informativas: no cuentan
     return dict(results_flat=flat, schema="grilla_masiva_v1")
 
 
@@ -127,6 +129,35 @@ def e2(nominadas, ctx, *, extra_adverso, friccion, max_replica=3):
     return out, pasan[:max_replica]
 
 
+MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 200, 0.10, 20
+
+
+def canales(ctx, S, Q, C, *, extra_adverso, friccion, q=0.10, log=print):
+    """Dos canales declarados antes de mirar (principio de Nico, 2026-10-22: queremos edges ACTUALES, aunque antes no hayan
+    funcionado): `total` (todo el período) y `reciente` (los últimos MESES_RECIENTES meses calendario). En cada uno: tamiz FDR,
+    Romano-Wolf con remuestreo por sesiones (umbral de máximo t medido con la correlación real entre celdas) y K_PISTAS pistas
+    distintas entre sí para réplica, evaluadas con la inferencia cara. Las pistas no son hallazgos: la réplica decide."""
+    from edgelab.research import grilla_masiva as GM
+    P, idx, net, mes = ctx["perillas"], ctx["indices"], ctx["net"], ctx["mes"]
+    meses = sorted(set(mes.tolist())); rec = np.isin(mes, meses[-MESES_RECIENTES:])
+    out = {}
+    for nombre, msk in (("total", None), ("reciente", rec)):
+        v = net if msk is None else np.where(msk, net, np.nan)
+        st = ctx["st"] if msk is None else GM.estadisticas(*GM.tensor(P, idx, v))
+        cr = GM.criba(st, q=q)
+        rw = GM.romano_wolf(P, idx, v, ctx["ses"], st, B=B_RW, alfa=ALFA_RW, seed=7)
+        cx = dict(ctx, net=v, st=st)
+        ev = [r for r in (evaluar_celda(c, cx, extra_adverso=extra_adverso, friccion=friccion) for c in GM.pistas(st, rw["t"], k=3 * K_PISTAS)) if r]
+        for r in ev: r["t_rw"] = float(rw["t"][tuple(r["celda"])])
+        rel = sorted([r for r in ev if r["sesiones"] >= MIN_SESIONES and r["ratio_mov_friccion"] >= RATIO_MOV_FRICCION], key=lambda r: -r["ic90"][0])
+        out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=len(cr["nominadas"]), evaluables=cr["evaluables"],
+                           romano_wolf={k: rw[k] for k in ("B", "alfa", "umbral", "umbrales", "t_max", "p_rw_del_maximo", "nula_max_q")},
+                           rechazadas_rw=[list(c) for c in rw["rechazadas"][:300]], n_rechazadas_rw=len(rw["rechazadas"]),
+                           pistas=rel[:K_PISTAS], pistas_descartadas_por_relevancia=len(ev) - len(rel))
+        log(f"canal {nombre}: FDR {len(cr['nominadas'])}, RW umbral {rw['umbral']:.2f} t_max {rw['t_max']:.2f} rechazadas {len(rw['rechazadas'])}, pistas {len(out[nombre]['pistas'])}")
+    return out
+
+
 def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, com_cortes=None, celdas=None, q=0.10, log=print):
     t0 = time.time(); t, M, vpp, vpv, vps, tpx, tstart = m1_y_perfil(bloques); log(f"M1 {len(t)} velas, perfil {len(vpp)} filas ({time.time() - t0:.0f}s)")
     D = disparos_y_variables(t, M, vpp, vpv, vps, G); log(f"disparos {len(D)} ({time.time() - t0:.0f}s)")
@@ -159,6 +190,7 @@ def correr(bloques, *, modo, G, tick, friccion, extra_adverso, vr_cortes=None, c
         res["replica"] = [dict(evaluar_celda(tuple(c), ctx, extra_adverso=extra_adverso, friccion=friccion) or dict(celda=list(c), n=0, nota="< 30 operaciones"))
                           for c in (celdas or [])]
         log(f"REP: {len(res['replica'])} celdas evaluadas ({time.time() - t0:.0f}s)"); return res, ctx
+    res["canales"] = canales(ctx, S, Q, C, extra_adverso=extra_adverso, friccion=friccion, q=q, log=log)
     res["E2"], res["a_replica"] = e2(cr["nominadas"], ctx, extra_adverso=extra_adverso, friccion=friccion)
     res["nominadas_top"] = [dict(celda=list(c), ejecucion=list(AX.EJEC[c[2]]), n=int(st["n"][c]), media_neta=float(st["media"][c]), t=float(st["t"][c]))
                             for c in cr["nominadas"][:300]]

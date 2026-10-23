@@ -173,7 +173,11 @@ def dsr(sr_por_op: float, n_ops: int, n_pruebas: float, skew: float = 0.0, kurt:
 # ----------------------------------------------------------------------------- 5. realismo económico
 def economia(netos_base, netos_adverso=None, sesiones=None, periodos=None) -> dict:
     """G1/G3 sobre P&L NETO por operación (costos canónicos ya aplicados). Duros: neto base > 0; sin las 5 mejores > 0; ningún
-    período > 80 % del total; adverso > -0,5 x base. Blando: margen < 1 tick (la decisión depende del modelo de costos)."""
+    período VIEJO > 80 % del total; adverso > -0,5 x base. Blando: margen < 1 tick (la decisión depende del modelo de costos).
+    Régimen (principio de Nico, 2026-10-22: «queremos edges actuales, aunque en el pasado no hayan funcionado»): si la ganancia
+    se concentra en los períodos MÁS RECIENTES (el último cuarto, al menos uno; `periodos` deben ordenar cronológicamente) no
+    se mata: se marca `regimen_reciente` y la confirmación tiene que salir de datos posteriores (réplica reciente o forward).
+    Concentrada en un período viejo sigue siendo dura: un edge que sólo funcionó antes no es actual."""
     x = np.asarray(netos_base, float); tot = float(x.sum()); r = dict(neto_base_por_op=float(x.mean()), neto_total=tot)
     r["sin_top5_por_op"] = float(np.sort(x)[:-5].mean()) if len(x) > 5 else float("nan")
     duros = dict(neto_base_positivo=bool(x.mean() > 0), sin_top5_positivo=bool(len(x) > 5 and np.sort(x)[:-5].sum() > 0))
@@ -181,7 +185,10 @@ def economia(netos_base, netos_adverso=None, sesiones=None, periodos=None) -> di
         per = {}
         for k, v in zip(periodos, x): per[k] = per.get(k, 0.0) + float(v)
         r["por_periodo"] = per; r["periodos_positivos"] = f"{sum(v > 0 for v in per.values())}/{len(per)}"
-        duros["ningun_periodo_80pct"] = bool(tot > 0 and max(per.values()) <= 0.8 * tot)
+        orden = sorted(per); recientes = set(orden[-max(1, round(len(orden) / 4)):]); top = max(per, key=per.get)
+        concentrado = bool(tot > 0 and per[top] > 0.8 * tot)
+        r["regimen_reciente"] = bool(concentrado and top in recientes)
+        duros["ningun_periodo_80pct"] = bool(tot > 0 and (not concentrado or r["regimen_reciente"]))
     if netos_adverso is not None:
         a = float(np.mean(netos_adverso)); r["neto_adverso_por_op"] = a
         duros["sin_colapso_adverso"] = bool(a > -0.5 * x.mean()) if x.mean() > 0 else False

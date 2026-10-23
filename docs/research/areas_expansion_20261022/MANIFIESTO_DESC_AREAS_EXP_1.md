@@ -55,6 +55,31 @@ Celdas, VR_CORTES y COM_CORTES se congelan desde el DESC; el nivel de cada répl
 Ninguna celda pasa el tamiz en ninguna de las dos fuentes, así que no hay E2 ni réplica. **Falta el MDE por zona de la grilla** que este manifiesto exigía «si no pasa ninguna»: la condición estaba escrita y el código no la implementaba (el mismo error de la tabla de la guía). Sin MDE el nulo no distingue ausencia de efecto de falta de potencia, así que la familia queda `SIN EFECTO DETECTADO, POTENCIA PENDIENTE`, no muerta.
 **Relanzamiento v1.3b, sólo para el MDE:** mismo código de decisión, mismos datos y cortes; agrega `nulo` (`grilla_masiva.resumen_nulo`). No es una prueba nueva (no hay selección nueva: las nominadas ya quedaron en 0) y no suma al contador. Si v1.3b no reproduce exactamente operaciones, evaluables y nominadas de v1.3, es un fallo de determinismo y se investiga antes de interpretar nada.
 
+## v1.3b (MDE, 2026-10-22)
+Determinista: reproduce v1.3 exacto en las dos fuentes. t máximo NQ 4,59 · USATECH 4,29 (umbral del tamiz 5,20); el máximo esperado
+de 351.888 normales independientes es ≈ 4,55, o sea lo observado es lo que daría el azar. No es falta de potencia: 32.994 (NQ) y
+25.173 (USATECH) celdas habrían detectado +1 fricción neta (1,545 pts/op) en el tamiz. MDE de confirmación mínimo 0,05 / 0,06 pts, mediano 3,5 / 3,6 pts.
+
+## Enmienda v1.4 (2026-10-22, OK de Nico en el chat: «las dos») — registrada ANTES de correr
+Motivo: Nico señala que matar el 100 % puede ser artefacto del filtro, y aclara el principio de régimen («queremos edges actuales,
+aunque en el pasado no hayan funcionado»). Se revisó el filtro y se encontraron tres sesgos reales, en las dos direcciones:
+1. **Demasiado estricto:** el tamiz BH trata como independientes celdas anidadas que comparten operaciones, y cuenta en m las 643.000
+   celdas que no se pudieron probar. → se agrega **Romano-Wolf step-down** (`grilla_masiva.romano_wolf`, 200 remuestreos de
+   sesiones enteras, α = 0,10 FWER, sólo celdas evaluables): el umbral de máximo t se MIDE con la correlación real.
+2. **Demasiado permisivo:** la t por operación ignora la dependencia dentro de la sesión. → la t de Romano-Wolf es la del remuestreo por sesiones.
+3. **Contra el régimen:** un único promedio de 8 meses diluye un edge reciente, y la regla dura «ningún período > 80 %» mataba lo
+   concentrado al final. → canal **`reciente`** (últimos 3 meses calendario del período, declarado ahora) con su propio tamiz y
+   Romano-Wolf; y `escalera.economia` ya no mata la concentración en los períodos más recientes (la marca `regimen_reciente`);
+   concentración en un período viejo sigue matando.
+- **Pistas:** las 20 mejores celdas distintas entre sí por canal (difieren en ≥ 2 perillas; ≥ 20 sesiones; objetivo ≥ 3× fricción),
+  ordenadas por cota inferior del IC. **No son hallazgos:** van a réplica; lo que sea azar muere ahí.
+- **Pruebas:** se registran 995.328 más por fuente y canal (`areas_exp_1_v14/total_*` y `/reciente_*`). Contar el procedimiento nuevo
+  sobre las mismas celdas como pruebas nuevas es conservador.
+- **Réplica (reemplaza la decisión anterior por el principio de régimen):** lo más reciente sin usar primero. Celdas de NQ y de USATECH
+  → **2026-04-01 → 2026-09-30** en su fuente (advertencia: jul–sep ya se miró para otras preguntas LUX-IMB, no estas celdas). Después,
+  **holdout forward** con seguimiento secuencial: es la única prueba limpia de «funciona ahora». USATECH 2023–2025 pasa a ser
+  **informativo** («¿funcionaba antes?»): fallar ahí no mata una celda que funciona ahora. El nivel de cada réplica lo asigna LORD++.
+
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
 - **Huecos de NQ:** ES y NQ terminan el 25-sep. Afecta sólo a la réplica (b).

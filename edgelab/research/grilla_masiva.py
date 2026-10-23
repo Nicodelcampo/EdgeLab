@@ -36,15 +36,17 @@ class Perilla:
         return {"grupo": self.niveles, "ge": self.niveles, "le": self.niveles, "eq_any": self.niveles + 1, "extremos": 3}[self.modo]
 
 
-def tensor(perillas, indices, valores):
-    """Suma, suma de cuadrados y conteo por celda (forma = tamano_celdas de cada perilla). Índices < 0 o NaN quedan fuera."""
+def tensor(perillas, indices, valores, pesos=None):
+    """Suma, suma de cuadrados y conteo por celda (forma = tamano_celdas de cada perilla). Índices < 0 o NaN quedan fuera.
+    `pesos` (opcional, por operación) pondera las tres sumas: lo usa el remuestreo por sesiones de `romano_wolf`."""
     v = np.asarray(valores, float); ok = np.isfinite(v)
     for p, ix in zip(perillas, indices):
         ok &= (np.asarray(ix) >= 0) & (np.asarray(ix) < p.niveles)
     shp = tuple(p.niveles for p in perillas)
     flat = np.ravel_multi_index(tuple(np.asarray(ix)[ok] for ix in indices), shp)
-    out = []
+    out = []; pw = None if pesos is None else np.asarray(pesos, float)[ok]
     for w in (v[ok], v[ok] ** 2, None):
+        if pw is not None: w = pw if w is None else w * pw
         X = np.bincount(flat, weights=w, minlength=int(np.prod(shp))).astype(float).reshape(shp)
         for ax, p in enumerate(perillas):
             X = acumular(X, ax, p.modo)
@@ -145,3 +147,46 @@ def resumen_nulo(st, perillas, q=0.10, referencia=None, potencia=0.8):
         por[p.nombre] = filas
     out["por_perilla"] = por
     return out
+
+
+def romano_wolf(perillas, indices, valores, sesiones, st, B=200, alfa=0.10, seed=0, pasos=5):
+    """Umbral de máximo t MEDIDO en los datos (Romano y Wolf 2005, step-down), con remuestreo de SESIONES enteras.
+    Respeta la correlación real entre celdas anidadas (que el tamiz FDR trata como independientes) y la dependencia dentro de
+    la sesión (que la t por operación ignora). Sólo celdas evaluables cuentan. t_j = media_j / sd_bootstrap_j; nula:
+    max_j (media*_j - media_j) / sd_j. Controla la tasa de al menos un falso positivo (FWER) en `alfa`."""
+    ev = st["evaluable"].ravel(); n_ev = int(ev.sum()); m0 = st["media"].ravel()[ev].astype(np.float32)
+    out = dict(B=B, alfa=alfa, evaluables=n_ev, seed=seed)
+    if not n_ev: return dict(out, t=np.full(st["n"].shape, np.nan), umbral=np.inf, rechazadas=[])
+    us, inv = np.unique(np.asarray(sesiones), return_inverse=True); rng = np.random.default_rng(seed)
+    M = np.empty((B, n_ev), np.float32)
+    for b in range(B):
+        w = rng.multinomial(len(us), np.full(len(us), 1 / len(us)))[inv]
+        S, _, C = tensor(perillas, indices, valores, pesos=w)
+        with np.errstate(invalid="ignore", divide="ignore"): M[b] = (S.ravel() / C.ravel())[ev]
+    sd = np.nanstd(M, 0); sd[~(sd > 0)] = np.nan
+    t = m0 / sd; M -= m0; M /= sd                                  # M pasa a ser la desviación estandarizada (en el lugar: memoria)
+    activos = np.isfinite(t); rech = np.zeros(n_ev, bool); umbrales = []
+    for _ in range(pasos):
+        mx = np.nanmax(np.where(activos, M, -np.inf), axis=1); c = float(np.quantile(mx, 1 - alfa)); umbrales.append(c)
+        nuevo = activos & (t > c)
+        if not nuevo.any(): break
+        rech |= nuevo; activos &= ~nuevo
+    mx0 = np.nanmax(np.where(np.isfinite(t), M, -np.inf), axis=1)
+    T = np.full(st["n"].size, np.nan); T[np.flatnonzero(ev)] = t; T = T.reshape(st["n"].shape)
+    cel = [tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in np.flatnonzero(ev)[rech]]
+    tmax = float(np.nanmax(t))
+    return dict(out, t=T, umbral=umbrales[0], umbrales=umbrales, rechazadas=cel, t_max=tmax,
+                p_rw_del_maximo=float(np.mean(mx0 >= tmax)), nula_max_q=dict(q50=float(np.quantile(mx0, .5)), q90=float(np.quantile(mx0, .9)), q95=float(np.quantile(mx0, .95))))
+
+
+def pistas(st, t, k=60, min_dif=2, min_n=30):
+    """Las k mejores celdas por t (la de romano_wolf: agrupada por sesión) con media > 0, DISTINTAS entre sí: cada una difiere
+    de todas las elegidas en >= `min_dif` perillas (si no, serían la misma estrategia con otro nombre). Son pistas para réplica,
+    no hallazgos: lo que es azar muere en la réplica."""
+    tt = np.asarray(t).ravel(); ok = np.isfinite(tt) & (st["media"].ravel() > 0) & (st["n"].ravel() >= min_n)
+    elegidas = []
+    for f in np.flatnonzero(ok)[np.argsort(-tt[ok])]:
+        c = np.array(np.unravel_index(f, st["n"].shape))
+        if all(int((c != e).sum()) >= min_dif for e in elegidas): elegidas.append(c)
+        if len(elegidas) >= k: break
+    return [tuple(int(v) for v in c) for c in elegidas]

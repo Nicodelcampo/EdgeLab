@@ -145,6 +145,9 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   tabla de errores que no se repiten). El momento de llenado de una entrada es una decisión declarada de cada análisis,
   nunca una convención fija del motor. Una corrida lanzada con código que después se corrigió no se mira: se documenta
   como descartada y se relanza.
+- **Edges actuales (Nico, 2026-10-22):** queremos lo que funciona ahora aunque antes no haya funcionado. El pasado no
+  mata; la ventana «reciente» se declara antes de mirar; la confirmación es en lo más reciente sin usar y forward
+  (ATJ-24). Un filtro que mata todo se audita en las dos direcciones (Romano-Wolf + pistas a réplica, ATJ-25).
 - **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
   tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
   económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:

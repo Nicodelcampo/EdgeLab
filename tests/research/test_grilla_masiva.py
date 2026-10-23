@@ -42,3 +42,40 @@ def test_resumen_nulo_publica_mde_y_dos_colas():
     assert r["t"]["sobre_z_tamiz"] == int((tv > r["z_tamiz"] - 5e-4).sum()) == int((tv > r["z_tamiz"]).sum())
     assert r["t"]["bajo_menos_z_tamiz"] == int((tv < -r["z_tamiz"]).sum())
     assert [f["nivel"] for f in r["por_perilla"]["a"]] == [0, 1, 2, 3] and "detectarian_referencia" in r
+
+
+def _grilla_sesiones(seed, efecto=0.0, n_ses=60, por_ses=120):
+    rng = np.random.default_rng(seed); n = n_ses * por_ses
+    ses = np.repeat(np.arange(n_ses), por_ses)
+    P = [GM.Perilla("a", 4, "ge"), GM.Perilla("b", 5, "grupo"), GM.Perilla("c", 3, "le")]
+    idx = [rng.integers(0, 4, n), rng.integers(0, 5, n), rng.integers(0, 3, n)]
+    x = rng.normal(0, 1, n) + rng.normal(0, 0.5, n_ses)[ses]                   # dependencia dentro de la sesión
+    x[(idx[0] == 3) & (idx[1] == 2)] += efecto
+    S, Q, C = GM.tensor(P, idx, x); return P, idx, x, ses, GM.estadisticas(S, Q, C)
+
+
+def test_romano_wolf_controla_fwer_con_ruido_y_encuentra_plantado():
+    falsos = sum(bool(GM.romano_wolf(*_grilla_sesiones(s)[:4], _grilla_sesiones(s)[4], B=150, alfa=0.10, seed=s)["rechazadas"]) for s in range(30))
+    assert falsos <= 7                                                           # ~10 % de 30, con margen binomial
+    P, idx, x, ses, st = _grilla_sesiones(99, efecto=0.8)
+    rw = GM.romano_wolf(P, idx, x, ses, st, B=150, alfa=0.10, seed=1)
+    assert (3, 2, 0) in rw["rechazadas"] or any(c[0] == 3 and c[1] == 2 for c in rw["rechazadas"])
+    assert all(c[1] == 2 for c in rw["rechazadas"])                              # sólo celdas que contienen lo plantado ("ge" acumula a)
+
+
+def test_tensor_con_pesos_equivale_a_repetir_operaciones():
+    P, idx, x, ses, _ = _grilla_sesiones(4)
+    w = (np.arange(len(x)) % 3).astype(float)
+    S1, Q1, C1 = GM.tensor(P, idx, x, pesos=w)
+    rep = np.repeat(np.arange(len(x)), w.astype(int))
+    S2, Q2, C2 = GM.tensor(P, [i[rep] for i in idx], x[rep])
+    assert np.allclose(S1, S2) and np.allclose(Q1, Q2) and np.allclose(C1, C2)
+
+
+def test_pistas_distintas_entre_si():
+    P, idx, x, ses, st = _grilla_sesiones(7, efecto=0.3)
+    rw = GM.romano_wolf(P, idx, x, ses, st, B=60, seed=2)
+    ps = GM.pistas(st, rw["t"], k=10, min_dif=2)
+    assert 0 < len(ps) <= 10
+    for i, a in enumerate(ps):
+        for b in ps[i + 1:]: assert sum(u != v for u, v in zip(a, b)) >= 2
