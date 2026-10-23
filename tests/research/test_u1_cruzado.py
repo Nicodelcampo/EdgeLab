@@ -35,3 +35,29 @@ def test_minuto_sin_nq_no_se_opera(ctx):
     nq = dict(ctx); nq["t"] = ctx["t"] + 30                                      # ningún minuto coincide
     F = X.operar(ctx, nq)
     assert F.motivo.eq("sin vela NQ en ese minuto").all() and F.bruto.isna().all()
+
+
+def test_retraso_cero_es_identico_y_retraso_no_mira_el_futuro(ctx):
+    a, b = X.operar(ctx, ctx), X.operar(ctx, ctx, retraso=0)
+    assert np.allclose(a.bruto.to_numpy(), b.bruto.to_numpy(), equal_nan=True)
+    c = X.operar(ctx, ctx, retraso=2)
+    ok = c.motivo.eq("")
+    assert (c[ok].j_nq.to_numpy() >= 2).all() and set(c.motivo) <= {"", "resolvió antes de entrar", "niveles no válidos en NQ", "retraso fuera de la sesión", "sin vela NQ en ese minuto"}
+
+
+def test_placebo_con_ruido_no_gana():
+    nz = GG.contexto_m1(_bloques(dias=60, planta=False, seed=9), tick=0.25)
+    P = X.placebo(nz, nz, seed=1)
+    assert len(P) > 10 and np.nanmean(P.bruto) < 2.0                           # sin contenido: ~0 bruto (la fricción lo deja negativo)
+
+
+def test_alineacion_detecta_un_desfasaje_plantado():
+    import pandas as pd
+    rng = np.random.default_rng(0); n = 20000; ts = (1_790_000_000 + np.arange(n)) * 10**9
+    p = 20000 + np.cumsum(rng.normal(0, 1, n))
+    us = [pd.DataFrame(dict(ts_ns=ts, px=p))]
+    nq = [pd.DataFrame(dict(ts_ns=ts + 3 * 10**9, px=p + 100))]               # NQ 3 s detrás del CFD
+    r = X.alineacion_segundos(iter(us), iter(nq))
+    assert r["pico_lag_s"] == 3 and "revisar" in r["lectura"]
+    r0 = X.alineacion_segundos(iter(us), iter([pd.DataFrame(dict(ts_ns=ts, px=p + 100))]))
+    assert r0["pico_lag_s"] == 0

@@ -19,9 +19,19 @@ def resumen(x, ses, mes):
                 por_mes={str(k): dict(n=int(v["count"]), media=float(v["mean"])) for k, v in por_mes.iterrows()})
 
 
+def riesgo(g):
+    """Riesgo de la serie en orden: drawdown máximo en puntos, peor día, peor racha de pérdidas y cola (percentil 1)."""
+    x = g.sort_values("t").neto.dropna()
+    if not len(x): return {}
+    eq = x.cumsum(); racha = (x < 0).astype(int).groupby((x >= 0).cumsum()).sum().max()
+    return dict(drawdown_max=float((eq - eq.cummax()).min()), peor_dia=float(g.groupby("ses").neto.sum().min()), peor_racha=int(racha),
+                p01=float(x.quantile(0.01)), total=float(x.sum()))
+
+
 def main():
     from edgelab.research import areas_expansion as AX, fuentes_ticks as F, grilla_generica as GG, u1_cruzado as X, u1_indaga as U
     desde, hasta = int(os.environ["DESDE"]), int(os.environ["HASTA"]); ent = os.environ.get("ENTRADA", "/kaggle/input")
+    modo = os.environ.get("MODO", "DESARROLLO")                  # DESARROLLO | INTEGRIDAD | OOS_US
     t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     us = GG.contexto_m1(F.bloques_usatech(desde, hasta, ent), F.FUENTES["USATECH"][1]); log(f"USATECH {len(us['c'])} velas")
     S = X.senales(us); log(f"señales U1: {len(S)}")
@@ -34,8 +44,33 @@ def main():
         pnl, _ = AX.simular(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, st, tp, be.astype(np.int64),
                             us["o"], us["h"], us["l"], us["c"], us["ses"], us["tick"], us["tpx"], us["tstart"])
         propio.append(pd.DataFrame(dict(k_us=S.k.to_numpy()[idx], ejecucion=f"{en}/{ob}/{sl}", bruto_usatech=pnl)))
+    fr = F.FUENTES["NQ"][2]
+    if modo == "OOS_US":                                                      # USATECH 2023-2025: sólo el CFD (no hay NQ en Kaggle antes de 2025-08)
+        P = pd.concat(propio) if propio else pd.DataFrame(columns=["k_us", "ejecucion", "bruto_usatech"])
+        P["neto"] = P.bruto_usatech - fr; P["ses"] = us["ses"][P.k_us.to_numpy(int)]; P["t"] = us["t"][P.k_us.to_numpy(int)]
+        P["mes"] = pd.to_datetime(P.t, unit="s", utc=True).dt.strftime("%Y%m")
+        res = dict(experimento="U1-OOS-USATECH", modo=modo, desde=desde, hasta=hasta, friccion_pts=fr, codigo=CODIGO_SHA, modulos=MODULOS_SHA, senales=int(len(S)),
+                   por_ejecucion={ej: dict(us_neto=resumen(g.neto.to_numpy(float), g.ses.to_numpy(), g.mes.to_numpy()), riesgo=riesgo(g))
+                                  for ej, g in P.sort_values("t").groupby("ejecucion")})
+        nombre = f"U1_OOS_US_{desde}_{hasta}"; json.dump(res, open(f"{nombre}.json", "w"), indent=1, default=float); P.to_csv(f"{nombre}_operaciones.csv", index=False)
+        log(json.dumps({k: (v["us_neto"].get("n"), round(v["us_neto"].get("media", float("nan")), 2)) for k, v in res["por_ejecucion"].items()})); return
     del us["tpx"]                                                             # memoria: los ticks del CFD ya no hacen falta
     nq = GG.contexto_m1(F.bloques_nq(desde, hasta, ent), F.FUENTES["NQ"][1]); log(f"NQ {len(nq['c'])} velas")
+    if modo == "INTEGRIDAD":                                                  # controles sobre los meses de desarrollo (sin P&L nuevo de la regla)
+        res = dict(experimento="U1-CRUZADO-INTEGRIDAD", desde=desde, hasta=hasta, codigo=CODIGO_SHA, modulos=MODULOS_SHA,
+                   alineacion=X.alineacion_segundos(F.bloques_usatech(desde, hasta, ent), F.bloques_nq(desde, hasta, ent)))
+        log(f"alineación: pico {res['alineacion'].get('pico_lag_s')} s")
+        res["latencia"] = {}
+        for ret in (0, 1, 2, 5):
+            o = X.operar(us, nq, S, retraso=ret); o["neto"] = o.bruto - fr; o["mes"] = pd.to_datetime(o.t, unit="s", utc=True).dt.strftime("%Y%m")
+            res["latencia"][ret] = {ej: resumen(g.neto.to_numpy(float), g.ses.to_numpy(), g.mes.to_numpy()) for ej, g in o.groupby("ejecucion")}
+        res["placebo"] = {}
+        for sd in range(5):
+            Pl = X.placebo(us, nq, S, seed=sd); Pl["neto"] = Pl.bruto - fr
+            res["placebo"][sd] = {ej: dict(n=int(g.neto.notna().sum()), media=float(g.neto.mean())) for ej, g in Pl.groupby("ejecucion")}
+        nombre = f"U1_INTEGRIDAD_{desde}_{hasta}"; json.dump(res, open(f"{nombre}.json", "w"), indent=1, default=float)
+        log(json.dumps(dict(latencia={k: {e: round(v.get("media", float("nan")), 2) for e, v in d.items()} for k, d in res["latencia"].items()},
+                            placebo={k: {e: round(v["media"], 2) for e, v in d.items()} for k, d in res["placebo"].items()}))); return
     ops = X.operar(us, nq, S)
     if propio: ops = ops.merge(pd.concat(propio), on=["k_us", "ejecucion"], how="left")
     fr = F.FUENTES["NQ"][2]; ops["neto"] = ops.bruto - fr
