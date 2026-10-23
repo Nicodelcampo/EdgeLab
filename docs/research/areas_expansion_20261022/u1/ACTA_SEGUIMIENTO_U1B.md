@@ -39,3 +39,12 @@ Familia: AREAS-EXP-1. Candidato: **U1-B** (`SPEC_U1_INDAGA.md` §Resultado). Una
 - **Lo que no se hace:** no se cambia la regla, ni las cotas, ni α al ver resultados. No se prueba otra celda con estos datos.
 
 ## Adendas (append-only)
+
+### Adenda 1 — cotas desde la Fase 0 (2026-10-23, antes de la Fase A)
+- **Fase 0** (kernel `edgelab-u1b-fase0-nq`, `u1/fase0_operaciones.csv`): 69 operaciones, media +7,26, IC90 [1,19, 12,84]. Reproduce exacto la selección.
+- **Extremos de la Fase 0:** peor −147,05 y mejor +51,95 pts.
+- **Cotas:** 1,5 × cada uno. La cola izquierda es pesada (stop más allá del extremo), así que el e-proceso crece despacio. Es el costo honesto del stop amplio.
+
+```json
+{"piso": -220.575, "techo": 77.925, "mu_util": 3.65, "alfa": 0.003608, "alfa_futilidad": 0.10}
+```
