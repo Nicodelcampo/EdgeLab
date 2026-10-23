@@ -108,6 +108,17 @@ def simular_ops(exp, D, ctx):
     return O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(tp - e)
 
 
+def ejecuciones_equivalentes(di, ei, pnl, ejecuciones) -> list:
+    """Grupos de ejecuciones con EXACTAMENTE el mismo P&L en todos los disparos (perillas muertas: p. ej. un BE que nunca se arma
+    porque el objetivo queda antes de 1R). Duplican celdas y pruebas contadas sin agregar información: se publican para
+    rediseñar la grilla. Error real de U1-INDAGA (2026-10-23): BE 0/1 idénticos en las 96 ejecuciones."""
+    n_d = int(di.max()) + 1 if len(di) else 0; firmas = {}
+    for e in range(len(ejecuciones)):
+        m = ei == e; v = np.full(n_d, np.nan); v[di[m]] = pnl[m]
+        firmas.setdefault(np.round(np.nan_to_num(v, nan=1e18), 9).tobytes(), []).append(e)
+    return [[list(ejecuciones[e]) for e in g] for g in firmas.values() if len(g) > 1]
+
+
 def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000):
     from edgelab.funnel.escalera import economia, resumen_sesiones
     P, idx, net, st = cx["perillas"], cx["indices"], cx["net"], cx["st"]
@@ -209,6 +220,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if modo == "E0" or not len(D): return res, D
     if modo == "REP" and not celdas: raise ValueError("REP exige celdas y cortes CONGELADOS del descubrimiento")
     di, ei, pnl, amb, dist = simular_ops(exp, D, ctx)
+    res["ejecuciones_equivalentes"] = ejecuciones_equivalentes(di, ei, pnl, exp.EJECUCIONES)
+    if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
     P = perillas(exp, cortes); idx = [b[di] for b in discretizar(D, exp.VARIABLES, cortes)] + [ei]
@@ -218,8 +231,9 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
     if modo == "REP":
-        res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso) or dict(celda=list(c), n=0, nota=f"< {MIN_OPS} operaciones")
-                          for c in celdas]
+        res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso)
+                          or dict(celda=list(c), **_evaluar_mascara(GM.mascara(P, idx, tuple(c)), cx), nota=f"< {MIN_OPS} operaciones: no evaluable")
+                          for c in celdas]                         # el n real, no 0 (error de reporte del 2026-10-23)
         return res, cx
     res["canales"] = canales(exp, cx, friccion=friccion, extra_adverso=extra_adverso, q=q, log=log)
     res["indagacion"] = marginales(exp, cx, friccion=friccion, extra_adverso=extra_adverso)

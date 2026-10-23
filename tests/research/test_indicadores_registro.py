@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_registro_apunta_a_modulos_y_documentos_que_existen():
     for r in I.registro().values():
         assert (ROOT / r["modulo"].split(" ")[0]).exists(), r["id"]
+        if r["estado"] == "NATIVO_AGENTE": assert (ROOT / r["test_causal"].split("::")[0]).exists(), r["id"]
         assert r["estado"] in ("PASS", "PASS_CON_CAVEAT", "PARCIAL", "VERIFICAR", "PENDIENTE", "NATIVO_AGENTE")
         if r["estado"].startswith("PASS"):
             assert r["doc"] and all((ROOT / d.strip()).exists() for d in r["doc"].split(";")), r["id"]
@@ -54,3 +55,14 @@ def test_causal_detecta_look_ahead():
         k = np.flatnonzero(np.isfinite(m) & (c > m)); return pd.DataFrame(dict(k=k, x=(c - m)[k]))
     assert I.causal(ok, _ctx()) == []
     assert I.causal(mira, _ctx())
+
+
+def test_registro_del_agente_solo_admite_nativo(tmp_path):
+    import json
+    ra = tmp_path / "ag.json"
+    ra.write_text(json.dumps(dict(indicadores=[dict(id="MIO", modulo="edgelab/research/agente/mio.py", estado="NATIVO_AGENTE", test_causal="tests/agente/test_mio.py::test_causal")])))
+    assert "MIO" in I.registro(ruta_agente=ra) and I.exigir(["MIO"], ruta_agente=ra)                # usable, con nota
+    for malo in (dict(id="X", modulo="m", estado="PASS", test_causal="t"), dict(id="LUX-IMB", modulo="m", estado="NATIVO_AGENTE", test_causal="t"),
+                 dict(id="Y", modulo="m", estado="NATIVO_AGENTE")):
+        ra.write_text(json.dumps(dict(indicadores=[malo])))
+        with pytest.raises(I.IndicadorNoUsable): I.registro(ruta_agente=ra)

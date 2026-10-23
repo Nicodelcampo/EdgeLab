@@ -110,6 +110,17 @@ aunque en el pasado no hayan funcionado»). Se revisó el filtro y se encontraro
   datos que no participaron: NQ 2026-04 → 09 (el futuro operable, misma regla) y forward desde el 2026-10-01 con e-proceso.
   USATECH 2023–2025 como informativo.
 
+## U1-INDAGA → U1-B y cómo confirmarla (2026-10-23, requiere OK de Nico)
+- **Resultado:** la indagación y la regla de selección están en `SPEC_U1_INDAGA.md` §Resultado. Queda una sola candidata, **U1-B**.
+- **Potencia:** en NQ abril → septiembre 2026 su efecto mínimo detectable (≈ 13 pts/op) está por encima de lo observado (+7,3).
+- **Opción recomendada — seguimiento secuencial de U1-B sola** (`edgelab/funnel/secuencial.py`, e-proceso), empezando por NQ
+  2026-04-01 y siguiendo hacia adelante desde el 2026-10-01:
+  - es válido mirando en cualquier momento, así que no se gasta la muestra en una prueba única sin potencia;
+  - confirma cuando e ≥ 1/α, con el α del paso de LORD++ que le toque (un lote de 1);
+  - refuta si la media acumulada queda ≤ 0 con potencia suficiente para +7 pts/op.
+- **Alternativa:** prueba única en abril → septiembre. Lo más probable es que dé SIN_POTENCIA.
+- **USATECH 2023–2025:** sólo como información de régimen; no confirma ni mata.
+
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
 - **Huecos de NQ:** ES y NQ terminan el 25-sep. Afecta sólo a la réplica (b).

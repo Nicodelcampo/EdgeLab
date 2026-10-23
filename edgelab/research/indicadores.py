@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 RUTA = Path(__file__).resolve().parents[2] / "config" / "autopilot" / "indicadores.json"
+RUTA_AGENTE = RUTA.parent / "grillas" / "indicadores_agente.json"    # perímetro del programador: SÓLO estado NATIVO_AGENTE
 USABLES = ("PASS", "PASS_CON_CAVEAT", "NATIVO_AGENTE")
 
 
@@ -21,13 +22,24 @@ class IndicadorNoUsable(ValueError):
     pass
 
 
-def registro(ruta: Path = RUTA) -> dict:
-    return {r["id"]: r for r in json.loads(Path(ruta).read_text(encoding="utf-8"))["indicadores"]}
+def registro(ruta: Path = RUTA, ruta_agente: Path | None = None) -> dict:
+    """Registro canónico + indicadores propios del agente. El archivo del agente vive en su perímetro (se aplica solo con tests),
+    por eso sólo puede declarar NATIVO_AGENTE y nunca pisar un id canónico: una paridad PASS la da un oráculo NT8, no el agente."""
+    reg = {r["id"]: r for r in json.loads(Path(ruta).read_text(encoding="utf-8"))["indicadores"]}
+    ra = Path(ruta_agente) if ruta_agente is not None else (RUTA_AGENTE if Path(ruta) == RUTA else None)
+    if ra is not None and ra.exists():
+        for r in json.loads(ra.read_text(encoding="utf-8")).get("indicadores", []):
+            if r.get("estado") != "NATIVO_AGENTE": raise IndicadorNoUsable(f"{ra.name}: {r.get('id')} declara {r.get('estado')}; el agente sólo registra NATIVO_AGENTE")
+            if r["id"] in reg: raise IndicadorNoUsable(f"{ra.name}: {r['id']} ya existe en el registro canónico")
+            for k in ("modulo", "test_causal"):
+                if not r.get(k): raise IndicadorNoUsable(f"{ra.name}: {r['id']} sin {k}")
+            reg[r["id"]] = dict(r, evidencia=r.get("evidencia", f"causalidad: {r['test_causal']}"), doc=r.get("doc", ""))
+    return reg
 
 
-def exigir(ids, ruta: Path = RUTA) -> list:
+def exigir(ids, ruta: Path = RUTA, ruta_agente: Path | None = None) -> list:
     """Devuelve las notas/caveats a citar; falla si algún indicador no está en un estado usable."""
-    reg = registro(ruta); notas = []
+    reg = registro(ruta, ruta_agente); notas = []
     for i in ids:
         r = reg.get(i)
         if r is None: raise IndicadorNoUsable(f"{i}: no está en el registro de indicadores ({ruta.name})")

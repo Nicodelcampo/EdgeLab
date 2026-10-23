@@ -45,6 +45,12 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 | El manifiesto pedía «MDE por zona de la grilla si no pasa ninguna» y el kernel no lo calculaba; hubo que relanzar sólo para eso. | Toda grilla publica `grilla_masiva.resumen_nulo` (MDE del tamiz y de confirmación por nivel de perilla, colas de t) nomine o no. |
 | El tamiz BH trataba como independientes celdas anidadas, contaba celdas no probables, usaba t por operación y un solo promedio del período: 0 de 1 millón y nadie sabía si era nulo o filtro. | Además del tamiz: `romano_wolf` (umbral medido con remuestreo por sesiones), canal `reciente` declarado y `pistas` distintas a réplica (ATJ-24, ATJ-25). |
 | Se aplicó LORD++ de a una a 80 réplicas simultáneas: gastó el nivel en las primeras y las últimas (las mejores) quedaron con nivel ≈ 0. | Un lote de réplicas simultáneas usa un procedimiento por lote (BH dentro del lote con el nivel de un paso LORD++, o LORD por lotes), declarado en el manifiesto. |
+| U1-INDAGA: el BE (mover el stop a la entrada al recorrer 1R) nunca se armaba porque el objetivo quedaba antes de 1R. 48 de 96 ejecuciones eran copias. | `grilla_generica.ejecuciones_equivalentes` publica los grupos idénticos en cada corrida. Una perilla muerta se rediseña, no se vuelve a correr igual. |
+| La regla de selección de U1 pedía la media de cada candidata de USATECH en NQ, y el kernel de NQ sólo publicaba sus propias pistas. | Si la regla cruza fuentes, el manifiesto planea el paso: REP de las candidatas sobre la exploración de la otra fuente, con los cortes de esa fuente. |
+| El ciclo autónomo pasaba cada `/rep/` de una corrida de a una por LORD++, en orden alfabético. | `escalera.probar_lote`: una corrida es un paso de LORD++ (Simes del lote; si rechaza, BH adentro). |
+| Una familia nueva del agente no estaba en `result_files` del Debian: la corrida se lanzaba y nunca se cerraba. | Por defecto se lee `STUDY_RESULTS.json`, que es lo que escribe todo kernel genérico. |
+| Un experimento aplicado por el programador no tenía cómo convertirse en corrida. | Campañas como datos en `config/autopilot/grillas/campanas/*.json` → `generate.campanas_grilla`. |
+| Marginales con muestras chicas (U1 en NQ: n = 66 en la base) salían vacías. | Se informa desde 10 operaciones con la marca `chica`; `MARGINALES_POOL` agrega perillas para ganar potencia. |
 | Se lanzó una corrida con código que después tuvo correcciones. | Esa corrida **no se mira**; se documenta como descartada y se relanza. Mirarla y después corregir sería ajustar con los datos. |
 | El perfil de volumen por disparo en Python hacía lento el kernel con ticks reales. | Perfilar antes de lanzar; los bucles por evento, en numba y en lote; nada por operación en Python que pueda hacerse por evento. |
 | `fcntl`, `/dev/null` y CRLF rompían herramientas en Windows. | Las herramientas compartidas con el Debian se prueban en las dos plataformas (la suite corre en Windows con `tests/conftest.py`). |
@@ -108,7 +114,7 @@ def niveles(fila, ej, ctx): ...                 # (start, limite 0/1/2, s, entra
    `config/autopilot/grillas/PLANTILLA_GENERICA.json`.
 3. Registro: `grilla_generica.n_celdas(exp)` por fuente y canal, en el contador global, antes de correr.
 4. El simulador y los lectores de datos (`fuentes_ticks.py`) no se copian. Una fuente nueva es una función más en `FUENTES`.
-5. Un **indicador propio** entra al registro como `NATIVO_AGENTE`. Sirve para research si pasa `causal()`. No se opera en vivo
+5. Un **indicador propio** entra como `NATIVO_AGENTE` en `config/autopilot/grillas/indicadores_agente.json`, que está en el perímetro del agente y sólo admite ese estado, con `modulo` y `test_causal`. Sirve para research si pasa `causal()`. No se opera en vivo
    hasta tener su versión NT8 con paridad.
 
 ## 7. Variante buena → indagar antes del P&L básico (ATJ-26)

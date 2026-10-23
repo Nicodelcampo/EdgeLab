@@ -27,6 +27,14 @@ Están en `contexto.PRIORIDADES` (las ve el proponente en cada ciclo) y en la co
   - reglas (guardas, FDR, holdout, costos, mandato, protegidos, `edgelab/autopilot/`, `deploy/`) → se rechaza entero.
 - **Salvaguardas:** si el checkout vivo cambia durante la programación → `INCIDENTE` y no se usa nada. Toda corrida que use ese código queda atada al commit (la guarda exige script committeado) y pasa por pre-registro, revisores y guardas como cualquier otra. Registro en `programacion.jsonl` (lo sube `sync_state.sh`).
 
+## 1d. Barridos propios del agente (2026-10-23)
+- **Experimento:** un módulo con la interfaz de `edgelab/research/grilla_generica.py`, escrito por el programador en su perímetro.
+- **Indicadores:** sólo los PASS de `config/autopilot/indicadores.json`, o propios `NATIVO_AGENTE` (causales) en `config/autopilot/grillas/indicadores_agente.json`.
+- **Lanzamiento:** se escribe la campaña como datos en `config/autopilot/grillas/campanas/<id>.json`. `generate.campanas_grilla` la convierte en candidata, con su RunSpec y un pre-registro que pasa las guardas.
+- **Resultado:** `STUDY_RESULTS.json`. Es el archivo por defecto aunque la familia no figure en `result_files`.
+- **Réplica:** las de una corrida forman un lote, que ocupa un paso de LORD++ (`escalera.probar_lote`).
+- **Variante buena:** se indaga antes del P&L básico (ATJ-26).
+
 ## 2. Capas
 ```
             ┌────────────────────── CAPA DETERMINISTA (sin LLM) ───────────────────────┐

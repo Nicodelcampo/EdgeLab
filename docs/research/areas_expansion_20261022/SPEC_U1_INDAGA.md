@@ -75,3 +75,52 @@ Tras un alejamiento grande, la vuelta hacia una concentración de desequilibrios
 ## Pruebas
 - **Celdas:** 2.985.984 por fuente y canal.
 - **Registro:** `u1_indaga/{total,reciente}_{usatech,nq}`, 4 entradas.
+
+## Resultado (2026-10-23)
+
+### Muestras
+| fuente | disparos | sesiones | operaciones | Romano-Wolf total | Romano-Wolf reciente |
+|---|---:|---:|---:|---|---|
+| USATECH 2025-08 → 2026-09 | 2.406 | 211 | 170.394 | umbral 4,26 · t máx 10,3 · 96 rechazadas | umbral 3,46 · t máx 7,2 · 10 rechazadas |
+| NQ 2025-08 → 2026-03 | 989 | 90 | 77.972 | umbral 3,81 · t máx 5,4 · 6 rechazadas | 0 |
+
+### Lo que se aprendió de U1, por las marginales de USATECH (base U1: +17,7 pts/op, IC90 [10,6, 25,0], n = 143)
+- **El tamaño del alejamiento ordena el retorno de forma monótona** (A/H ≥ 4 / ≥ 8 / ≥ 16): +3,3 → +17,7 → +36,5. Es la variable más clara.
+- **Profundidad del regreso:** el óptimo está en el medio (x = 0,25: +17,7; 0,33: +8,3; 0,15: +9,7).
+- **VWAP de la sesión:**
+  - entre el área y la mitad del recorrido: **+27,7**;
+  - pasando el área: +9,2;
+  - detrás del precio: +9,7.
+
+  Es el mecanismo de reversión a valor justo del corpus 0238.
+- **Volumen.** Mucho volumen en la ida (`vol_ida_rel` alto) da +25,4 contra +11,5 del tercio bajo. El cociente vuelta/ida no ordena nada.
+  - **Franja de máximo volumen de la vuelta:** junto al extremo +26,3, en el medio +11,0.
+  - **Franja de la ida:** en el medio es lo peor (+5,1).
+- **Esperas antes de entrar:**
+  - entrar ya (E1A) o con un retroceso chico (RET05/RET10) es lo mejor, +20 a +23;
+  - esperar a volver al volumen de la vuelta es lo peor;
+  - esperar a que se haga volumen no mejora.
+- **Stop:** más allá del extremo (S3) domina claramente al stop de 1× la distancia.
+
+### Errores encontrados (corregidos o anotados)
+- BE muerto (48 de 96 ejecuciones duplicadas). Se agregó `ejecuciones_equivalentes`.
+- La regla de selección pedía datos que el kernel no publicaba. Se resolvió con REP sobre la exploración de NQ.
+- Marginales con n chico en NQ.
+- La réplica reportaba n = 0 en celdas chicas.
+
+### Regla de selección (aplicada tal cual estaba escrita)
+- **Elegibles en USATECH:** 20 de las 40 pistas, con ≥ 20 sesiones, objetivo ≥ 3× fricción y meseta (`u1/ELEGIBLES_USATECH.json`). En NQ (`u1/U1-INDAGA_NQ_ACUERDO_REP.json`), 6 de ellas tienen media > 0 con ≥ 30 operaciones.
+- **Sólo una tiene la cota inferior positiva en las dos fuentes:** **U1-B** = U1 con regreso al 85 % (x = 0,15), A/H ≥ 8, resto libre, entrada E1A, objetivo borde cercano (T1), stop S3.
+
+  | fuente | media neta | IC90 | operaciones |
+  |---|---:|---|---:|
+  | USATECH | +15,0 pts/op | [8,8, 20,6] | 37 |
+  | NQ | +7,3 pts/op | [1,2, 12,8] | 69 (44 sesiones) |
+
+- Las otras dos que completa la regla tienen cota negativa (−4,0 y −5,7). Las variantes filtradas por VWAP o volumen no llegan a 30 operaciones en NQ o dan ≤ 0.
+
+### Potencia de la confirmación (calculada antes de pedirla)
+- **NQ abril → septiembre 2026:** se esperan ≈ 52 operaciones de U1-B (error estándar ≈ 4,1 pts/op).
+  - **Efecto mínimo detectable:** ≈ 12,8 pts/op al nivel del primer paso de LORD++ (0,0109), y 14,7 con el lote de 4.
+  - **Comparación:** el efecto observado (+7,3) está por debajo, y lo esperable es que se achique.
+- **Correr la confirmación sola en abril–septiembre daría casi seguro SIN_POTENCIA**, y gastaría la muestra. Opciones: ver el manifiesto.

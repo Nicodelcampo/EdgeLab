@@ -74,3 +74,18 @@ def test_control_plantado(monkeypatch):
     assert tot["n_rechazadas_rw"] > 0 or tot["nominadas_fdr"] > 0
     assert res["indagacion"]["por_perilla"]["ejecución"]                     # marginales armadas alrededor de BASE
     assert GG.n_celdas(U) == res["celdas"]
+
+
+def test_detecta_ejecuciones_equivalentes():
+    di = np.array([0, 0, 0, 1, 1, 1]); ei = np.array([0, 1, 2, 0, 1, 2]); pnl = np.array([1.0, 1.0, 2.0, -1.0, -1.0, 3.0])
+    assert GG.ejecuciones_equivalentes(di, ei, pnl, [("a",), ("b",), ("c",)]) == [[["a"], ["b"]]]
+
+
+def test_rep_informa_el_n_real_de_celdas_chicas():
+    from edgelab.research import grilla_masiva as GM
+    ctx = GG.contexto_m1(_bloques(dias=20, planta=True, seed=5), tick=0.25)
+    cortes = GG.cortes_e0(U.disparos(ctx), U.VARIABLES)
+    celda = (0, 1, 1, 0, 0, 0, 0, 0, 0, 0)                                      # muy filtrada: pocas operaciones
+    rep, cx = GG.correr(U, ctx, modo="REP", friccion=1.0, extra_adverso=0.5, cortes=cortes, celdas=[list(celda)], log=lambda s: None)
+    esperado = int((GM.mascara(cx["perillas"], cx["indices"], celda) & np.isfinite(cx["net"])).sum())
+    assert rep["replica"][0]["n"] == esperado
