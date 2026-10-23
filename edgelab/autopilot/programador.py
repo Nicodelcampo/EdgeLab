@@ -48,8 +48,11 @@ def controles_faltantes(wt: Path, paths) -> list:
         stem = Path(p).stem; t = wt / "tests/agente" / f"test_{stem}.py"
         if not t.exists(): falta.append(f"{p}: falta tests/agente/test_{stem}.py"); continue
         txt, src = t.read_text(encoding="utf-8", errors="replace"), (wt / p).read_text(encoding="utf-8", errors="replace")
-        for f in ("test_control_ruido", "test_control_plantado") + (("test_oraculo",) if re.search(r"\bnumba\b|@njit|@jit", src) else ()):
+        exp = "def disparos(" in src                                 # experimento de grilla genérica (grilla_generica.py)
+        req = ("test_control_ruido", "test_control_plantado") + (("test_oraculo",) if re.search(r"\bnumba\b|@njit|@jit", src) else ()) + (("test_causal",) if exp else ())
+        for f in req:
             if not re.search(rf"def {f}\w*\(", txt): falta.append(f"{p}: falta {f} en tests/agente/test_{stem}.py")
+        if exp and not re.search(r"^INDICADORES\s*=", src, re.M): falta.append(f"{p}: un experimento declara INDICADORES (config/autopilot/indicadores.json)")
     return falta
 
 
@@ -78,6 +81,11 @@ SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Escribís c
            "docs/research/agente/. Cada módulo de experimento trae tests/agente/test_<modulo>.py con test_control_ruido (ruido puro sin "
            "hallazgos), test_control_plantado (efecto plantado encontrado) y, si usa numba, test_oraculo (Python simple con empates). "
            "Reutilizá edgelab/research/grilla_masiva.py, edgelab/funnel/escalera.py, edgelab/costos.py y edgelab/holdout.py; no los copies. "
+           "Un barrido nuevo es un módulo con la interfaz de edgelab/research/grilla_generica.py (NOMBRE, disparos, VARIABLES, "
+           "EJECUCIONES, niveles, EJES_ORDINALES, BASE, INDICADORES); el ejemplo es edgelab/research/u1_indaga.py. Sólo usa indicadores "
+           "PASS de config/autopilot/indicadores.json o indicadores propios NATIVO_AGENTE con test_causal (edgelab/research/indicadores.causal). "
+           "El kernel se arma con tools/kaggle_grilla/construir_kernel_experimento.py y va a tools/agente/kernel_<nombre>.py. "
+           "Antes de un P&L básico de una variante buena, indagala con marginales (ATJ-26). "
            "Si hace falta mejorar el motor compartido, hacelo igual: quedará como propuesta para revisión humana. Nunca toques guardas, "
            "FDR, holdout, costos, mandato ni edgelab/autopilot/: ese cambio se descarta entero. No leas datos del holdout. Corré los tests "
            "antes de terminar. Respondé con un resumen corto de qué hiciste y qué falta.")

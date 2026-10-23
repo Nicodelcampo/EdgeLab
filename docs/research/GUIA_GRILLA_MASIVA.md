@@ -83,3 +83,41 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 | **mejorar el núcleo** (`grilla_masiva`, simulador, escalera) | pedido al programador | queda como rama `autopilot/propuesta/<id>` para revisión humana: lo usan todas las corridas |
 
 Lo que no cambia con el código nuevo: las corridas cuentan en el contador global, el holdout sólo se abre por protocolo, una corrida con código corregido después no se mira, y la réplica usa celdas y cortes congelados.
+
+## 6. Escribir un experimento nuevo (el camino del agente)
+
+El conductor es genérico (`edgelab/research/grilla_generica.py`). Un experimento es un módulo chico; el ejemplo completo es
+`edgelab/research/u1_indaga.py` (con sus tests en `tests/research/test_u1_indaga.py`).
+
+```python
+NOMBRE = "MI-EXP"
+INDICADORES = ["LUX-IMB"]                      # sólo PASS de config/autopilot/indicadores.json (o NATIVO_AGENTE con test_causal)
+VARIABLES = [Variable("A/H", "A_H", "ge", cortes=(4, 8, 16), piso=True),        # cortes con significado
+             Variable("vol_rel", "vol_rel", "extremos", cuantiles=3)]           # o por cuantiles del E0 de la misma fuente
+EJECUCIONES = [(entrada, objetivo, stop, be) for ...]                            # lo que el experimento necesite
+EJES_ORDINALES = (0,)                           # para la meseta
+BASE = {"A/H": 1, "ejecución": 0}               # celda de referencia de las marginales (indagación)
+def disparos(ctx): ...                          # DataFrame con k (vela de decisión) + variables con SÓLO el pasado de k
+def niveles(fila, ej, ctx): ...                 # (start, limite 0/1/2, s, entrada, stop, objetivo, be) o None
+```
+
+1. Los tests van en `tests/agente/test_<módulo>.py`: `test_control_ruido`, `test_control_plantado` y `test_causal`
+   (`edgelab/research/indicadores.causal`). Si el módulo usa numba, también `test_oraculo`.
+2. El kernel se arma con `python tools/kaggle_grilla/construir_kernel_experimento.py <módulo> tools/agente/kernel_<x>.py`.
+   El experimento se elige con `EXPERIMENTO=<ruta.del.módulo>`, y además `FUENTE`, `MODO`, `DESDE` y `HASTA`. La plantilla está en
+   `config/autopilot/grillas/PLANTILLA_GENERICA.json`.
+3. Registro: `grilla_generica.n_celdas(exp)` por fuente y canal, en el contador global, antes de correr.
+4. El simulador y los lectores de datos (`fuentes_ticks.py`) no se copian. Una fuente nueva es una función más en `FUENTES`.
+5. Un **indicador propio** entra al registro como `NATIVO_AGENTE`. Sirve para research si pasa `causal()`. No se opera en vivo
+   hasta tener su versión NT8 con paridad.
+
+## 7. Variante buena → indagar antes del P&L básico (ATJ-26)
+
+Una celda que sobrevive (o una pista que replica) no pasa directo a un P&L de confirmación. Antes se indaga con un experimento
+propio alrededor de ella, con la celda como `BASE` del módulo:
+- **marginales:** se mueve una perilla por vez, para ver qué variable ordena el retorno y cuál filtra;
+- **dónde está y cuánto vale lo que la explica:** volumen, velocidad, valor justo, régimen;
+- **esperas antes de entrar:** retroceso, volver al volumen, esperar a que se haga volumen;
+- **acuerdo entre fuentes.**
+
+La regla de selección para la confirmación se escribe antes de mirar, y la confirmación usa datos que la indagación no tocó.

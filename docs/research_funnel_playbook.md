@@ -499,6 +499,13 @@ comparar el t máximo con el máximo esperado por azar, publicar MDE y cuántas 
 la correlación real entre celdas (`grilla_masiva.romano_wolf`, remuestreo por sesiones). Las mejores celdas distintas entre sí salen
 como **pistas** a réplica (`grilla_masiva.pistas`): no se descartan sin mirarlas ni se promueven sin replicar.
 
+### ATJ-26 — Una variante buena se indaga antes del P&L básico (Nico, 2026-10-23)
+
+«Al encontrar variantes buenas, no se debería pasar a un P&L sin más: se debería indagar.» La indagación es un experimento
+propio sobre el conductor genérico, con la variante como `BASE`. Se publican las marginales (una perilla por vez), la anatomía
+de lo que la explica y el acuerdo entre fuentes. La regla que elige qué se confirma se fija antes de mirar, y la confirmación
+usa datos que la indagación no usó. Guía: `GUIA_GRILLA_MASIVA.md` §7. Ejemplo: `SPEC_U1_INDAGA.md`.
+
 ### Ruta ejecutable para estudios de evento y reglas con su propio simulador
 
 El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:

@@ -98,3 +98,12 @@ def test_ciclo_respeta_interruptor_y_cupo(repo, tmp_path):
     out = P.ciclo(root, repo, {"programador": {"activo": True, "max_por_dia": 1, "push": False, "python": sys.executable}}, cli=cli)
     assert [r["pedido"] for r in out] == ["p1"]
     assert P.ciclo(root, repo, {"programador": {"activo": True, "max_por_dia": 1, "push": False}}, cli=cli) == []   # cupo del día usado
+
+
+def test_experimento_de_grilla_exige_causalidad_e_indicadores(repo, tmp_path):
+    exp = "def disparos(ctx):\n    return None\n"
+    row, _ = _run(repo, tmp_path, {"edgelab/research/agente/exp.py": exp, "tests/agente/test_exp.py": TEST})
+    assert row["estado"] == "FALLA_CONTROLES" and any("test_causal" in d for d in row["detalle"]) and any("INDICADORES" in d for d in row["detalle"])
+    row, _ = _run(repo, tmp_path, {"edgelab/research/agente/exp.py": 'INDICADORES = ["LUX-IMB"]\n' + exp,
+                                   "tests/agente/test_exp.py": TEST + "\ndef test_causal():\n    assert True\n"})
+    assert row["estado"] == "APLICADO", row
