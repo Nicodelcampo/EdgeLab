@@ -49,3 +49,12 @@ def test_kernel_u1_indaga_al_dia(tmp_path):
     from construir_kernel_experimento import construir_experimento
     out = tmp_path / "k.py"; construir_experimento("edgelab/research/u1_indaga.py", str(out))
     assert out.read_bytes() == (ROOT / "tools/kaggle_grilla/kernel_u1_indaga.py").read_bytes(), "reconstruir kernel_u1_indaga.py"
+
+
+def test_kernel_u1_cruzado_al_dia(tmp_path):
+    sys.path.insert(0, str(ROOT / "tools" / "kaggle_grilla"))
+    from construir_kernel import construir
+    from construir_kernel_experimento import BASE
+    out = tmp_path / "k.py"
+    construir("tools/kaggle_grilla/u1_cruzado_main.py", str(out), BASE + ["edgelab/research/u1_indaga.py", "edgelab/research/u1_cruzado.py"])
+    assert out.read_bytes() == (ROOT / "tools/kaggle_grilla/kernel_u1_cruzado.py").read_bytes(), "reconstruir kernel_u1_cruzado.py"
