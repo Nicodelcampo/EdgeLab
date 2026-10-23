@@ -32,3 +32,25 @@ esas áreas tiene contenido, tiene que pagar también en el futuro, que es lo op
 - **Confirmar exige forward** (USATECH y NQ desde el 2026-10-01), con una regla de pérdida máxima por operación. Hoy el stop más
   allá del extremo no tiene tope; ver la regla nueva de la guía.
 - **Pruebas:** 2 ejecuciones × 2 períodos = 4, registradas como `u1_cruzado/{p1,p2}`.
+
+## Resultado (2026-10-23) — desarrollo, no confirmación
+| período | ejecución | operaciones NQ | media neta NQ | IC90 (sesiones) | p | acierto | mismas señales en USATECH |
+|---|---|---:|---:|---|---:|---:|---:|
+| 2025-08 → 2026-03 | T1 (borde cercano) | 49 | **+16,8** | [6,3, 26,4] | 0,001 | 82 % | +17,8 |
+| 2025-08 → 2026-03 | T3 (borde lejano) | 52 | **+21,5** | [10,4, 32,7] | 0,002 | 77 % | +20,9 |
+| 2026-04 → 2026-09 | T1 | 90 | **+21,1** | [11,9, 30,2] | < 0,001 | 82 % | +17,5 |
+| 2026-04 → 2026-09 | T3 | 92 | **+28,4** | [15,7, 40,9] | < 0,001 | 79 % | +23,7 |
+
+- **El traslado funciona:** las señales de USATECH operadas en NQ dan lo mismo o más que en el propio CFD. La base NQ − USATECH
+  (mediana 100 a 133 pts) se absorbe al trasladar los niveles. 10 de 13 meses son positivos.
+- **El sensor importa:** U1 calculada con las zonas del propio NQ daba +0,4 en 2025-08 → 2026-03 (`SPEC_U1_INDAGA.md`); con las
+  zonas del CFD, operando el mismo NQ, da +16,8. La señal está en las zonas del CFD (feed de cotizaciones de 24 h, otros huecos M1),
+  no en las del futuro.
+- **Cola izquierda:** la peor operación pierde −157 (P1) y −218 (P2) pts; se gana el 77–82 % de las veces.
+- **Por qué no confirma:**
+  - U1 se eligió en USATECH en estos mismos meses: descubrimiento en agosto–marzo, réplica y selección en abril–septiembre.
+  - La familia probó millones de celdas.
+  - El resultado en NQ está atado a esa selección. Muestra que la idea se traslada al instrumento operable, pero es evidencia de
+    desarrollo.
+- **Confirmación pendiente:** forward desde el 2026-10-01 en USATECH y NQ. Es apertura del holdout de este candidato y requiere
+  decisión de Nico, el pedido de los ticks de USATECH de octubre (Dukascopy) y una regla de pérdida máxima por operación.
