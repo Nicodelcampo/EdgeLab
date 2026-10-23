@@ -317,7 +317,11 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
                 else:
                     amb[t] = 2; x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d
                 break
-            if ts_: x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d; break
+            if ts_:                                                                 # stop: al precio REAL del primer tick que lo cruza
+                if tstart[j + 1] > tstart[j]:                                       # (error 27, 2026-10-23: dentro de la vela se llenaba
+                    cod, px = _primero_en_ticks(tpx, tstart[j], tstart[j + 1], d, st, obj, tick)   # en el stop exacto aunque el precio
+                    if cod == 1: x = (px - e) * d; amb[t] = max(amb[t], 3); break   # lo saltara: optimista con stops cortos)
+                x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d; break
             if tt_: x = (obj - e) * d; break
             if be[t] == 1 and not armado and (h[j] - e if d == 1 else e - l[j]) >= R:
                 armado = True; st = max(st, e) if d == 1 else min(st, e)

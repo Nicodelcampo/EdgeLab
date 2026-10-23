@@ -155,3 +155,24 @@ def test_momento_de_entrada_es_un_parametro_declarado():
 def test_v_rel_sin_dato_no_cae_en_ningun_tercio():
     ab, cb, pb, vb = AX.bins_variables(np.array([2.0, 2.0]), np.array([1.0, 1.0]), np.array([0.5, 0.5]), np.array([np.nan, 0.01]), [0.04, 0.13], (1, 2, 3))
     assert vb.tolist() == [-1, 0]
+
+
+def test_simulador_igual_a_referencia_tick_a_tick_con_saltos():
+    """Error 27: un stop cruzado DENTRO de la vela por un salto se llenaba en el stop exacto. Oráculo: simulación tick a tick."""
+    from edgelab.research import grilla_generica as GG, sintetico
+    ctx = GG.contexto_m1(sintetico.bloques(dias=20, planta=False, seed=11), tick=0.25)
+    o, h, l, c, ses, tpx, tst = (ctx[x] for x in ("o", "h", "l", "c", "ses", "tpx", "tstart")); n = len(c)
+    rng = np.random.default_rng(1); k = rng.integers(100, n - 300, 800); s = rng.choice([-1, 1], len(k)); e = c[k]
+    for stop, tgt in ((5.0, 25.0), (25.0, 5.0), (10.0, 10.0)):
+        p, _ = AX.simular(k.astype(np.int64), s.astype(np.int64), np.zeros(len(k), np.int64), e, e - s * stop, e + s * tgt,
+                          np.zeros(len(k), np.int64), o, h, l, c, ses, 0.25, tpx, tst)
+        def ref(kk, d, ee):
+            st, tp = ee - d * stop, ee + d * tgt
+            for j in range(kk + 1, min(n, kk + 241)):
+                if ses[j] != ses[kk]: return (c[j - 1] - ee) * d
+                for x in tpx[tst[j]:tst[j + 1]]:
+                    if (d == 1 and x <= st) or (d == -1 and x >= st): return (x - ee) * d
+                    if (d == 1 and x >= tp + 0.25) or (d == -1 and x <= tp - 0.25): return (tp - ee) * d
+            return (c[min(n - 1, kk + 240)] - ee) * d
+        r = np.array([ref(int(a), int(b), float(x)) for a, b, x in zip(k, s, e)])
+        assert np.allclose(p, r), (stop, tgt, int((~np.isclose(p, r)).sum()))
