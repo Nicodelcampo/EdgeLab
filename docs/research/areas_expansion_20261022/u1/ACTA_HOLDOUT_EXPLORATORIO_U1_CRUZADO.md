@@ -28,3 +28,13 @@ señales.
 2. **La apertura limpia de U1-CRUZADO sobre las sesiones 2026-10-01 → 2026-10-22 queda consumida.** Una confirmación futura sólo
    puede usar sesiones posteriores al 2026-10-22, con esta misma regla intacta.
 3. El resultado no se usa para ajustar la regla (tope, objetivo, celda).
+
+## Resultado (2026-10-23) — `RESULTADO_HOLDOUT_EXPLORATORIO_U1_CRUZADO.json`
+- **Señales:** 11 de U1 en el CFD; 8 se operaron en NQ por ejecución. Las otras cayeron en el hueco del 7–8 de octubre o el 22, que
+  no tiene NQ. Las 8 están en 4 sesiones.
+- **Regla congelada (T3, tope 3×):** n = 8, media neta **+29,4** pts/op, 7 de 8 ganadoras, peor −94,3. IC90 por sesión [−1,2, +72,0], p = 0,15.
+- **Informativo (T1, tope 3×):** n = 8, media **+38,6**, 8 de 8 ganadoras.
+- **Veredicto: NO_CONCLUYENTE** (n = 8 << 95), como se declaró antes de mirar. Es la primera evidencia fuera de todo lo usado y va
+  **a favor** de la regla, pero son 8 operaciones en 4 sesiones.
+- **Próximo paso:** la confirmación sólo puede usar sesiones posteriores al 2026-10-22, con esta regla intacta y N fijo. Lo hace el
+  embudo: conteo sin P&L hasta N y una sola mirada.
