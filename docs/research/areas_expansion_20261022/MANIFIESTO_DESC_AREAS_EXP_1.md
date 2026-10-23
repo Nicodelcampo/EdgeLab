@@ -80,6 +80,19 @@ aunque en el pasado no hayan funcionado»). Se revisó el filtro y se encontraro
   **holdout forward** con seguimiento secuencial: es la única prueba limpia de «funciona ahora». USATECH 2023–2025 pasa a ser
   **informativo** («¿funcionaba antes?»): fallar ahí no mata una celda que funciona ahora. El nivel de cada réplica lo asigna LORD++.
 
+## Resultado v1.4 (2026-10-22)
+| fuente · canal | evaluables | FDR | umbral RW (90 %) | t máx | p RW del máximo | rechazadas RW |
+|---|---:|---:|---:|---:|---:|---:|
+| NQ · total (2025-08 → 2026-03) | 351.888 | 0 | 5,46 | 4,65 | 0,44 | 0 |
+| NQ · reciente (2026-01 → 03) | 244.254 | 0 | 5,43 | 4,44 | 0,50 | 0 |
+| USATECH · total | 315.654 | 0 | 5,48 | 4,05 | 0,89 | 0 |
+| USATECH · reciente | 182.118 | **4** | 5,60 | **5,45** | **0,12** | 0 |
+
+- El umbral medido con la correlación real (5,4–5,6) es **más alto** que el teórico (5,2), no más bajo: las celdas chicas (30–50 operaciones) dan t con colas gruesas al agrupar por sesión. El filtro no era demasiado estricto por la correlación.
+- Lo más cerca de pasar es el canal reciente de USATECH (FDR nomina 4; RW p = 0,12).
+- Las pistas tienen medias de +15 a +55 pts/op con 30–100 operaciones: es la forma típica de la maldición del ganador (lo mejor de cientos de miles de celdas chicas). Se concentran en pocas regiones (NQ: N ≥ 8, W = 40, HACIA T3, E1C/E1A, S2): son pocas ideas, no 40.
+- **Réplica congelada** (`v14/REP_CONGELADO_v14.json`, antes de correr): 40 celdas por fuente (pistas de los dos canales, sin repetir), cortes v_rel y comercio del DESC, período **2026-04-01 → 2026-09-30** en la misma fuente. Confirma una celda: p por sesiones bajo su nivel LORD++ (orden: el del archivo), media neta > 0 y económico. Registro: `areas_exp_1_v14/rep_nq` y `/rep_usatech`, 40 cada uno.
+
 ## Riesgos y datos faltantes
 - **USATECH es un CFD:** no tiene costo canónico (se usa el de NQ como referencia) y su volumen es cotizado, no negociado. **Nada de USATECH es operable tal cual.**
 - **Huecos de NQ:** ES y NQ terminan el 25-sep. Afecta sólo a la réplica (b).
