@@ -49,8 +49,7 @@ def fase_b(hasta, salida):
     cortes = json.loads((DIR / "ELEGIBLES_USATECH.json").read_text())["cortes_nq"]
     ctx = GG.contexto_m1(F.bloques_nq_sellado(20261001, hasta, SELLADO, str(ACTA)), 0.25)
     res, cx = GG.correr(U, ctx, modo="REP", friccion=F.FUENTES["NQ"][2], extra_adverso=F.FUENTES["NQ"][3], cortes=cortes, celdas=[CELDA], log=print)
-    GG.operaciones_de(cx, [CELDA]).to_csv(salida, index=False, lineterminator="
-")
+    GG.operaciones_de(cx, [CELDA]).to_csv(salida, index=False, lineterminator="\n")
     json.dump(dict(res, fuente="NQ_HOLDOUT", desde=20261001, hasta=hasta), open(Path(salida).with_suffix(".json"), "w"), indent=1, default=float)
     print("serie ->", salida)
 
