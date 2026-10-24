@@ -36,7 +36,7 @@ def main():
             from edgelab.research import embudo as EMB, embudo_runners as ER
             raiz = Path(a.root) / "embudo"; lec, tk = ER.lectores_sellados(ce.get("sellado"), raiz)
             emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk, carpeta=raiz / "_local")),
-                             registro=reg, libro=LibroLord(Path(a.root) / "libro_lord.json"))
+                             registro=reg, libro=LibroLord())                          # libro único (decisión 2026-10-24)
             rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb)
         from .pedidos import desde_ciclo
         if (pd := desde_ciclo(Path(a.root), rep)): rep["pedidos"] = [p["id"] for p in pd]   # lo que sólo una persona puede resolver

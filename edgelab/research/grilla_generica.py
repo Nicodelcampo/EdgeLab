@@ -29,7 +29,7 @@ from edgelab.research import areas_expansion as AX
 from edgelab.research import grilla_masiva as GM
 
 MIN_OPS, MIN_SESIONES, RATIO_MOV_FRICCION = 30, 20, 3.0
-MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 200, 0.10, 20
+MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 1000, 0.10, 20     # B_RW 200 -> 1000 (decisión 2026-10-24)
 
 
 @dataclass(frozen=True)
@@ -237,7 +237,12 @@ def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
         cr = GM.criba(st, q=q); rw = GM.romano_wolf(P, idx, v, cx["ses"], st, B=B_RW, alfa=ALFA_RW, seed=7)
         c2 = dict(cx, net=v, st=st)
         ev = [r for r in (evaluar(c, c2, friccion=friccion, extra_adverso=extra_adverso) for c in GM.pistas(st, rw["t"], k=3 * K_PISTAS)) if r]
-        for r in ev: r["t_rw"] = float(rw["t"][tuple(r["celda"])])
+        for r in ev:
+            r["t_rw"] = float(rw["t"][tuple(r["celda"])])
+            # decisión 2026-10-24: la nominación FDR (q 0,10, sobre TODAS las celdas del canal) es compuerta dura de DESC; se marca
+            # por pista con el conjunto completo (la lista `nominadas` tiene tope) y con lo necesario para cobrar el linaje
+            r.update(canal=nombre, q_fdr=float(cr["q_valores"][tuple(r["celda"])]), nominada_fdr=bool(cr["q_valores"][tuple(r["celda"])] <= q),
+                     pi0_fdr=float(cr["pi0"]), m_fdr=int(cr["celdas"]))
         rel = sorted([r for r in ev if r["sesiones"] >= MIN_SESIONES and r["ratio_mov_friccion"] >= RATIO_MOV_FRICCION], key=lambda r: -r["ic90"][0])
         out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=len(cr["nominadas"]), evaluables=cr["evaluables"],
                            nominadas=[list(c) for c in cr["nominadas"][:300]],

@@ -7,15 +7,19 @@ se escribe por campaña es el módulo del experimento (la lógica) y la campaña
 Etapas (una por ciclo de `avanzar`; idempotente; estado en <raiz>/<cid>/estado.json; bitácora MEDIDO.md):
   PREFLIGHT  local      preflight estático + dinámico del experimento                       falla -> BLOQUEADA
   DESC       kaggle     registro 2·n_celdas; tamiz + Romano-Wolf + pistas + nulo             sin elegibles -> SIN_CANDIDATAS
+                        (2026-10-24: sólo pistas NOMINADAS por el FDR q 0,10 del canal, también con el linaje cobrado; RW es diagnóstico)
   INDAGA     kaggle     marginales alrededor de cada candidata (información, no compuerta)
   INTEGRIDAD kaggle     alineación (si señal ≠ ejecución), placebo, latencia                  ninguna pasa -> INTEGRIDAD_FALLA
-  OOS        kaggle     réplica en período no usado; un paso de LORD++ de la familia (libro)  (no mata: principio de edges actuales)
+  OOS        kaggle     réplica en período no usado; un paso de LORD++ de la familia (libro)  todas refutadas -> REFUTADA_OOS
+                        (2026-10-24: mata sólo con potencia declarada, en contra significativo y en el MISMO régimen declarado ex ante;
+                        sin potencia = NO_CONCLUYENTE; en contra en otro régimen = EN_CONTRA_OTRO_REGIMEN, sigue viva)
   TOPES      kaggle     tope de stop por regla declarada (sólo datos ya usados)              ninguna elegible -> SIN_REGLA_OPERABLE
-  ACTA       local      acta de holdout con la regla congelada, N fijo y α del libro (antes de mirar)
+  ACTA       local      acta de holdout con la regla congelada, N fijo y α RESERVADO en el libro (antes de mirar)
   CONTEO     local      sesiones del holdout: sólo cuenta operaciones (sin P&L) hasta llegar a N
   HOLDOUT    local      primeras N operaciones: un paso de LORD++ -> CONFIRMADA / REFUTADA / SIN_POTENCIA
 Las reglas de cada compuerta vienen de la campaña (`seleccion`, `integridad`, `topes`, `holdout`) con valores por defecto
 documentados acá; quedan escritas en el estado ANTES de la etapa que las usa.
+Las cuatro decisiones de validación del 2026-10-24 (aprobadas por Nico): docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md.
 """
 from __future__ import annotations
 
@@ -28,11 +32,17 @@ import numpy as np
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
 ORDEN = ["PREFLIGHT", "DESC", "INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
-FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
+FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
+Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
+DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
 DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_friccion=3.0, exigir_meseta=True, min_dif=2),
                 integridad=dict(placebo_max_frac=0.25, latencia_1_positiva=False),
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
-                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400))
+                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400),
+                # decisión 2 (2026-10-24, con el matiz de Nico: «algunas estrategias funcionan por régimen»): `actual_desde` = primer día
+                # (YYYYMMDD, anterior al holdout) del régimen vigente y `definicion` = cómo se lo define, ambos ANTES del OOS. Sin
+                # declaración el OOS cuenta como del régimen actual (no hay excepción a posteriori).
+                regimen=dict(definicion=None, actual_desde=None, fraccion_efecto=0.5, potencia_min=0.8))
 CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_economica", "como_podria_refutarse")
 # Lo que define la campaña: si cambia después del PREFLIGHT ya no es la misma campaña (se crea otra, con su registro).
 INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n_celdas_por_canal")
@@ -59,11 +69,30 @@ def _por_lat(lat, r):
     return lat.get(r) if r in lat else lat.get(str(r), [])
 
 
+def _problemas_regimen(r) -> list:
+    if r.get("actual_desde") is None: return []
+    e = []
+    if not r.get("definicion"): e.append("regimen.actual_desde sin regimen.definicion (el régimen se define por escrito antes del OOS)")
+    if int(r["actual_desde"]) >= HOLDOUT_PRIMERA_SESION_INT: e.append("regimen.actual_desde cae en el holdout: el régimen se define con desarrollo")
+    return e
+
+
+def nominada(p: dict, n_heredado: int = 0) -> tuple:
+    """Decisión 1 + 4: la pista pasa DESC sólo si el FDR del canal la nomina (q <= 0,10) y sigue nominada con las pruebas del linaje
+    en el mismo tamiz. Una pista sin la marca (DESC anterior al 2026-10-24) cuenta como no nominada."""
+    from edgelab.research.linaje import q_con_linaje
+    if not p.get("nominada_fdr") or p.get("q_fdr") is None: return False, None
+    ql = q_con_linaje(p["q_fdr"], p.get("pi0_fdr", 1.0), int(p["m_fdr"]), int(n_heredado))
+    return bool(p["q_fdr"] <= Q_FDR_DESC and ql <= Q_FDR_DESC), ql
+
+
 class Embudo:
-    def __init__(self, raiz: Path, runners: dict, registro=None, libro=None, ahora=time.time, log=print, ventanas=None):
+    def __init__(self, raiz: Path, runners: dict, registro=None, libro=None, ahora=time.time, log=print, ventanas=None, linajes=None,
+                 registro_pruebas=None):
         """runners: {"kaggle": ..., "local": ...} con lanzar(spec, etapa, params, periodo) -> handle, estado(handle), traer(handle)."""
         self.raiz, self.runners, self.registro, self.libro, self.ahora, self.log = Path(raiz), runners, registro, libro, ahora, log
         self.ventanas = ventanas                                                   # libro de ventanas del holdout (None = el del repo)
+        self.linajes, self.registro_pruebas = linajes, registro_pruebas            # LINAJES.jsonl y TRIAL_REGISTRY (None = los del repo)
 
     # --- estado -------------------------------------------------------------------------------------------------------
     def _dir(self, spec): d = self.raiz / spec["cid"]; d.mkdir(parents=True, exist_ok=True); return d
@@ -109,6 +138,9 @@ class Embudo:
         if (cambios := self._cambios(spec, st)):
             return self._cerrar(spec, st, "BLOQUEADA", f"la campaña cambió después del PREFLIGHT ({cambios}): es otra campaña, con cid y registro propios")
         e = st["etapa"]
+        if e != "PREFLIGHT" and not st.get("decisiones_20261024"):
+            st = self._revalidar_20261024(spec, st)
+            if st["etapa"] == "FIN": return st
         if e == "PREFLIGHT": return self._preflight(spec, st)
         if e == "ACTA": return self._acta(spec, st)
         if e == "OOS" and not spec.get("oos"): return self._siguiente(spec, st, "TOPES", nota="sin período OOS declarado")
@@ -168,9 +200,47 @@ class Embudo:
         if not r["ok"]: return self._cerrar(spec, st, "BLOQUEADA", f"preflight: {r['errores'][:3]}")
         if (malos := problemas_campana(spec)):
             self._medido(spec, f"- PREFLIGHT de la campaña: {malos}"); return self._cerrar(spec, st, "BLOQUEADA", f"campaña: {malos[:3]}")
-        st["reglas"] = {k: _cfg(spec, k) for k in DEFECTOS}                           # quedan escritas antes de usarse
+        reglas = {k: _cfg(spec, k) for k in DEFECTOS}
+        if (malos := _problemas_regimen(reglas["regimen"]) + self._problemas_linaje(spec)):
+            return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
+        st["reglas"] = dict(reglas, linaje=self._multiplicidad(spec))                  # quedan escritas antes de usarse
         st["spec"] = spec                                                              # la campaña que se congela
+        st["decisiones_20261024"] = dict(ts=self.ahora(), desde="PREFLIGHT")
+        self._medido(spec, f"- Linaje: hereda {st['reglas']['linaje']['n_heredado']} pruebas de {st['reglas']['linaje'].get('padres')}; "
+                           f"régimen actual desde {reglas['regimen']['actual_desde'] or 'sin declarar (el OOS cuenta como régimen actual)'}")
         return self._siguiente(spec, st, "DESC")
+
+    # --- decisiones del 2026-10-24 ----------------------------------------------------------------------------------------
+    def _problemas_linaje(self, spec):
+        from edgelab.research import linaje as LN
+        return LN.problemas(spec["familia"], Path(self.linajes) if self.linajes else LN.LIBRO, Path(self.ventanas) if self.ventanas else None,
+                            Path(self.registro_pruebas) if self.registro_pruebas else LN.REGISTRO)
+
+    def _multiplicidad(self, spec):
+        from edgelab.research import linaje as LN
+        return LN.multiplicidad(spec["familia"], Path(self.linajes) if self.linajes else LN.LIBRO,
+                                Path(self.registro_pruebas) if self.registro_pruebas else LN.REGISTRO)
+
+    def _revalidar_20261024(self, spec, st):
+        """Campañas que pasaron DESC antes del 2026-10-24: se les aplican las decisiones nuevas antes de seguir (sólo endurecen).
+        Congela régimen y linaje si faltan, y vuelve a filtrar las candidatas por la nominación FDR con el linaje cobrado."""
+        reglas = st.setdefault("reglas", {})
+        reglas.setdefault("regimen", _cfg(spec, "regimen"))
+        if (malos := _problemas_regimen(reglas["regimen"]) + self._problemas_linaje(spec)):
+            return self._cerrar(spec, st, "BLOQUEADA", "decisiones 2026-10-24: " + "; ".join(malos))
+        reglas.setdefault("linaje", self._multiplicidad(spec))
+        st["decisiones_20261024"] = dict(ts=self.ahora(), desde=st["etapa"])
+        if st["etapa"] in ("INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA") and st.get("candidatas"):
+            pistas = (st.get("desc") or {}).get("pistas", [])
+            nh = reglas["linaje"]["n_heredado"]
+            vivas = [c for c in st["candidatas"] if any(p["celda"] == c and nominada(p, nh)[0] for p in pistas)]
+            if st.get("regla") and st["regla"]["celda"] not in vivas: vivas = []        # en ACTA la regla ya está elegida
+            if not vivas:
+                return self._cerrar(spec, st, "SIN_CANDIDATAS", f"decisión 2026-10-24 (FDR q {Q_FDR_DESC} gate duro en DESC, con linaje de {nh} "
+                                                                 f"pruebas): ninguna de las {len(st['candidatas'])} candidatas está nominada ({DECISIONES_20261024})")
+            st["candidatas"] = vivas
+        self._medido(spec, f"- Decisiones 2026-10-24 aplicadas en {st['etapa']} (después de DESC: sólo endurecen); linaje {reglas['linaje']['n_heredado']}")
+        self._guardar(spec, st); return st
 
     def _fin_desc(self, spec, st, res):
         n_reg = spec.get("n_celdas_por_canal")
@@ -178,8 +248,11 @@ class Embudo:
             return self._cerrar(spec, st, "BLOQUEADA", f"el contador global registró {n_reg} celdas por canal y se corrieron {res['celdas']}: "
                                                        "la multiplicidad quedó mal contada (corregir y relanzar como campaña nueva)")
         sel = _reglas(spec, st, "seleccion"); st["cortes"] = res["E0"]["cortes"]; cand, vistos = [], []
+        nh = ((st.get("reglas") or {}).get("linaje") or {}).get("n_heredado", 0); no_nom = 0
         pistas = sorted([p for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])], key=lambda p: -p["ic90"][0])
         for p in pistas:
+            ok_fdr, p["q_linaje"] = nominada(p, nh)
+            if not ok_fdr: no_nom += 1; continue                                     # decisión 1 + 4 (2026-10-24): gate duro
             if p["sesiones"] < sel["min_sesiones"] or p["ratio_mov_friccion"] < sel["ratio_mov_friccion"] or p["ic90"][0] <= 0: continue
             if sel["exigir_meseta"] and not p["meseta"]: continue
             if any(sum(a != b for a, b in zip(p["celda"], v)) < sel["min_dif"] for v in vistos): continue
@@ -187,8 +260,9 @@ class Embudo:
             if len(cand) >= sel["max_candidatas"]: break
         tot = (res.get("canales") or {}).get("total", {})
         self._medido(spec, f"- DESC {spec['desc']}: evaluables {tot.get('evaluables')}, FDR {tot.get('nominadas_fdr')}, RW umbral "
-                           f"{(tot.get('romano_wolf') or {}).get('umbral')}, candidatas {len(cand)}")
-        if not cand: return self._cerrar(spec, st, "SIN_CANDIDATAS", f"ninguna pista cumple la selección; nulo publicado ({tot.get('nulo', {}).get('t', {})})")
+                           f"{(tot.get('romano_wolf') or {}).get('umbral')} (diagnóstico), pistas sin nominación FDR/linaje {no_nom}, candidatas {len(cand)}")
+        if not cand: return self._cerrar(spec, st, "SIN_CANDIDATAS", f"ninguna pista nominada por FDR q {Q_FDR_DESC} (linaje {nh}) cumple la selección; "
+                                                                      f"nulo publicado ({tot.get('nulo', {}).get('t', {})})")
         st["candidatas"] = cand; st["desc"] = dict(pistas=[p for p in pistas if p["celda"] in cand])
         return self._siguiente(spec, st, "INDAGA", candidatas=cand)
 
@@ -214,12 +288,39 @@ class Embudo:
         st["candidatas"] = quedan; return self._siguiente(spec, st, "OOS")
 
     def _fin_oos(self, spec, st, res):
+        """Decisión 2 (2026-10-24, con el matiz de régimen de Nico): por candidata,
+          REFUTADA_OOS           potencia >= potencia_min para fraccion_efecto x media de DESC, IC90 entero < 0 y OOS en el régimen actual;
+          EN_CONTRA_OTRO_REGIMEN igual, pero el OOS cae entero antes de `regimen.actual_desde` (declarado antes): no mata;
+          NO_CONCLUYENTE         sin potencia declarada (o no evaluable): no mata, no suma;
+          A_FAVOR / SIN_RECHAZO  según el paso de LORD++ de la familia.
+        La confirmación de una candidata viva sigue saliendo del holdout (régimen actual), nunca del OOS."""
+        from edgelab.funnel.escalera import ALFA_CONFIRMACION, potencia
         pr = [(f"c{i}", r.get("p_sesiones", 1.0) if r.get("p_sesiones") is not None else 1.0) for i, r in enumerate(res["replica"])]
         dec = self.libro.probar(spec["familia"], f"{spec['cid']}/oos", pr) if self.libro else None
-        st["oos"] = dict(replica=res["replica"], lord=dec)
+        reg = _reglas(spec, st, "regimen"); a_oos, b_oos = int(spec["oos"][0]), int(spec["oos"][1])
+        mismo = reg.get("actual_desde") is None or b_oos >= int(reg["actual_desde"])
+        conf = {c["test"] for c in (dec or {}).get("confirmadas", [])}
+        pistas = (st.get("desc") or {}).get("pistas", []); veredictos, vivas = [], []
+        for i, (c, r) in enumerate(zip(st["candidatas"], res["replica"])):
+            md = next((p["media_neta"] for p in pistas if p["celda"] == c), None); ic = r.get("ic90")
+            if not ic or r.get("media_neta") is None or md is None or md <= 0:
+                v = dict(celda=c, veredicto="NO_CONCLUYENTE", motivo="no evaluable en el OOS"); veredictos.append(v); vivas.append(c); continue
+            se = (ic[1] - ic[0]) / (2 * 1.6448536); ef = reg["fraccion_efecto"] * md; pot = potencia(ef, se, ALFA_CONFIRMACION)
+            en_contra = ic[1] < 0
+            if not pot == pot: ver = "NO_CONCLUYENTE"                                  # se no finito: sin potencia medible
+            elif en_contra and pot >= reg["potencia_min"]: ver = "REFUTADA_OOS" if mismo else "EN_CONTRA_OTRO_REGIMEN"
+            elif pot < reg["potencia_min"]: ver = "NO_CONCLUYENTE"
+            else: ver = "A_FAVOR" if f"c{i}" in conf else "SIN_RECHAZO"
+            veredictos.append(dict(celda=c, veredicto=ver, media=r["media_neta"], ic90=ic, efecto_para_potencia=ef, potencia=pot, mismo_regimen=mismo))
+            if ver != "REFUTADA_OOS": vivas.append(c)
+        st["oos"] = dict(replica=res["replica"], lord=dec, regimen=reg, mismo_regimen=mismo, veredictos=veredictos)
         if dec and (aviso := sin_resolucion(dec["nivel"], N_BOOT_REPLICA)): st["oos"]["sin_resolucion"] = aviso; self._medido(spec, f"- OOS: {aviso}")
-        self._medido(spec, f"- OOS {spec['oos']}: medias {[round(r.get('media_neta', float('nan')), 2) for r in res['replica']]}; LORD++ "
-                           f"{'confirma ' + str([c['test'] for c in dec['confirmadas']]) if dec and dec['rechazo'] else 'sin rechazo'} (no mata: edges actuales)")
+        self._medido(spec, f"- OOS {spec['oos']} ({'régimen actual' if mismo else 'otro régimen: antes de ' + str(reg['actual_desde'])}): "
+                           f"medias {[round(r.get('media_neta', float('nan')), 2) for r in res['replica']]}; "
+                           f"veredictos {[v['veredicto'] for v in veredictos]}; potencias {[round(v.get('potencia', float('nan')), 2) for v in veredictos]}; LORD++ "
+                           f"{'confirma ' + str([c['test'] for c in dec['confirmadas']]) if dec and dec['rechazo'] else 'sin rechazo'}")
+        if not vivas: return self._cerrar(spec, st, "REFUTADA_OOS", f"todas las candidatas refutadas en un OOS con potencia y del régimen actual ({DECISIONES_20261024})")
+        st["candidatas"] = vivas
         return self._siguiente(spec, st, "TOPES")
 
     def _fin_topes(self, spec, st, res):
@@ -248,16 +349,33 @@ class Embudo:
         libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
         if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
-        alfa = self.libro.nivel(spec["familia"]) if self.libro else 0.05
+        # decisión 3 (2026-10-24): el acta RESERVA su paso de LORD++ (consume α ahora, con el nivel fijo) antes de mirar
+        reserva = self.libro.reservar(spec["familia"], f"{spec['cid']}/holdout", f"acta {spec['cid']}") if self.libro else None
+        alfa = reserva["nivel"] if reserva else 0.05
         acta = dict(cid=spec["cid"], familia=spec["familia"], experimento=spec["experimento"], sensor=spec["sensor"], ejecucion=spec.get("ejecucion"),
                     regla=st["regla"], cortes=st["cortes"], holdout_desde=h["desde"], n_fijo=h["n_fijo"], alfa=alfa, registrada=self.ahora(),
-                    decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: un paso de LORD++ de la familia (α={alfa:.5f}); "
+                    reserva_lord=reserva, multiplicidad=self._acta_multiplicidad(spec, st, h["n_fijo"]),
+                    regimen=(st.get("reglas") or {}).get("regimen"), oos=[v["veredicto"] for v in (st.get("oos") or {}).get("veredictos", [])],
+                    decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: el paso RESERVADO de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
+
+    def _acta_multiplicidad(self, spec, st, n_fijo):
+        """Decisión 4: multiplicidad total (familia + linaje) y lo que se espera ver de la regla fuera de muestra con ese cobro
+        (recorte de Harvey-Liu) y la potencia del holdout a N fijo. Se anota, no decide: la decisión es el paso de LORD++."""
+        from edgelab.funnel.escalera import _N, potencia, recorte_t
+        lin = ((st.get("reglas") or {}).get("linaje")) or self._multiplicidad(spec)
+        total = int(lin.get("total", lin.get("propias", 0) + lin.get("n_heredado", 0)))
+        p = next((x for x in (st.get("desc") or {}).get("pistas", []) if x["celda"] == st["regla"]["celda"]), None)
+        if not p: return dict(linaje=lin, total=total)
+        t = _N.inv_cdf(1 - min(max(p["p_sesiones"], 1e-12), 1 - 1e-12)); rc = recorte_t(t, max(total, 1))
+        se = (p["ic90"][1] - p["ic90"][0]) / (2 * 1.6448536); esp = rc["conservado"] * p["media_neta"]
+        se_h = se * (p["n"] / max(n_fijo, 1)) ** 0.5
+        return dict(linaje=lin, total=total, recorte=rc, efecto_esperado=esp, potencia_holdout=potencia(esp, se_h) if esp > 0 else 0.0)
 
     def _fin_conteo(self, spec, st, res):
         n = int(res["conteo"][0]); st["ultimo_conteo"] = self.ahora(); st["n_holdout"] = n
@@ -271,7 +389,11 @@ class Embudo:
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]
         x = np.asarray(ops["neto"], float)[orden]; ses = np.asarray(ops["ses"])[orden]
         rs = resumen_sesiones(x, ses, n_boot=5000)
-        dec = self.libro.probar(spec["familia"], f"{spec['cid']}/holdout", [("regla", rs["p_unilateral"])]) if self.libro else dict(rechazo=rs["p_unilateral"] <= st["acta"]["alfa"])
+        if self.libro and st["acta"].get("reserva_lord"):                             # decisión 3: al nivel reservado por el acta
+            dec = self.libro.resolver(spec["familia"], f"{spec['cid']}/holdout", [("regla", rs["p_unilateral"])])
+        elif self.libro:                                                               # actas anteriores al 2026-10-24
+            dec = self.libro.probar(spec["familia"], f"{spec['cid']}/holdout", [("regla", rs["p_unilateral"])])
+        else: dec = dict(rechazo=rs["p_unilateral"] <= st["acta"]["alfa"])
         st["holdout"] = dict(n=len(x), media=float(x.mean()), ic90=rs["ic"], p=rs["p_unilateral"], lord=dec)
         if (aviso := sin_resolucion(dec.get("nivel", st["acta"]["alfa"]), N_BOOT_HOLDOUT)): st["holdout"]["sin_resolucion"] = aviso; self._medido(spec, f"- HOLDOUT: {aviso}")
         if dec["rechazo"] and x.mean() > 0: return self._cerrar(spec, st, "CONFIRMADA", f"holdout {len(x)} ops, media {x.mean():.2f}, p {rs['p_unilateral']:.4f}")

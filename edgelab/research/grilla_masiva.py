@@ -94,7 +94,8 @@ def criba(st, q=0.10, metodo="storey", tope=1000):
     tz = tamiz_fdr(st["p"].ravel(), q, metodo); nom = np.array(tz["nominadas"], int)
     nom = nom[np.argsort(-st["t"].ravel()[nom])][:tope] if len(nom) else nom
     return dict(nominadas=[tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in nom], pi0=tz["pi0"], q=q,
-                evaluables=int(st["evaluable"].sum()), celdas=int(st["n"].size), recortadas_por_tope=max(0, len(tz["nominadas"]) - tope))
+                evaluables=int(st["evaluable"].sum()), celdas=int(st["n"].size), recortadas_por_tope=max(0, len(tz["nominadas"]) - tope),
+                q_valores=np.asarray(tz["q_valores"]).reshape(st["n"].shape))   # completo (sin tope): para marcar la nominación de cada pista
 
 
 def vecinos(celda, perillas, ejes_ordinales):
@@ -150,7 +151,7 @@ def resumen_nulo(st, perillas, q=0.10, referencia=None, potencia=0.8):
     return out
 
 
-def romano_wolf(perillas, indices, valores, sesiones, st, B=200, alfa=0.10, seed=0, pasos=5):
+def romano_wolf(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, seed=0, pasos=5):
     """Umbral de máximo t MEDIDO en los datos (Romano y Wolf 2005, step-down), con remuestreo de SESIONES enteras.
     Respeta la correlación real entre celdas anidadas (que el tamiz FDR trata como independientes) y la dependencia dentro de
     la sesión (que la t por operación ignora). Sólo celdas evaluables cuentan. t_j = media_j / sd_bootstrap_j; nula:
@@ -178,7 +179,8 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=200, alfa=0.10, seed
     cel = [tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in np.flatnonzero(ev)[rech]]
     tmax = float(np.nanmax(t))
     return dict(out, t=T, umbral=umbrales[0], umbrales=umbrales, rechazadas=cel, t_max=tmax,
-                p_rw_del_maximo=float(np.mean(mx0 >= tmax)), nula_max_q=dict(q50=float(np.quantile(mx0, .5)), q90=float(np.quantile(mx0, .9)), q95=float(np.quantile(mx0, .95))))
+                p_rw_del_maximo=float((1 + np.sum(mx0 >= tmax)) / (B + 1)),   # (k+1)/(B+1): nunca 0 (decisión 2026-10-24)
+                nula_max_q=dict(q50=float(np.quantile(mx0, .5)), q90=float(np.quantile(mx0, .9)), q95=float(np.quantile(mx0, .95))))
 
 
 def pistas(st, t, k=60, min_dif=2, min_n=30):

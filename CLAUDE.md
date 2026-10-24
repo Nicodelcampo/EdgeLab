@@ -157,6 +157,11 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   `edgelab/research/embudo.py` la lleva sola hasta la decisión del holdout (guía §8). No se arma a mano.
 - **Mejor candidato al 2026-10-23: U1-CRUZADO** (señal en el CFD USATECH, operación en NQ). Registro completo del
   descubrimiento y del proceso en `docs/research/DESCUBRIMIENTO_U1_CRUZADO_REGISTRO.md`. No confirmado: falta holdout a N fijo.
+- **Decisiones de validación del 2026-10-24 (aprobadas por Nico):** DESC exige nominación FDR q 0,10 (Romano-Wolf es
+  diagnóstico); el OOS mata sólo con potencia, en contra significativo y en el régimen actual declarado antes (si no:
+  `NO_CONCLUYENTE` o `EN_CONTRA_OTRO_REGIMEN`); cada acta reserva su α en el libro único de LORD++ (`docs/research/LIBRO_LORD.json`,
+  con lock); toda familia declara su linaje en `docs/research/LINAJES.jsonl` y hereda su multiplicidad. Ver
+  `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md`.
 - **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
   tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
   económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:

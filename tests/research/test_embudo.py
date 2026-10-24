@@ -23,7 +23,7 @@ class RunnerLocal:
     def lanzar(self, spec, etapa, params, periodo):
         seed = 22 if periodo[0] >= 20261001 else 21
         if seed not in self._cache:
-            ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=True, seed=seed), tick=0.25); ej = dict(ctx)
+            ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=True, seed=seed, prob_salto=0.02, fuerza=0.05), tick=0.25); ej = dict(ctx)
             for k in ("o", "h", "l", "c", "tpx"): ej[k] = ctx[k] + 25.0
             self._cache[seed] = (ctx, ej)
         ctx, ej = self._cache[seed]
@@ -42,9 +42,11 @@ SPEC = dict(cid="TEST-U1", familia="TEST", experimento="edgelab.research.u1_inda
 def test_embudo_de_punta_a_punta(tmp_path, monkeypatch):
     monkeypatch.setattr(GG, "B_RW", 30)
     monkeypatch.setattr(U, "INDICADORES", ["LUX-IMB"], raising=False)       # el runner corre la spec de verdad (U1-INDAGA completo)
-    reg, libro, run = Reg(), LibroLord(tmp_path / "lord.json"), RunnerLocal()
+    reg, libro, run = Reg(), LibroLord(tmp_path / "lord.json", permitir_otra_ruta=True), RunnerLocal()
+    from edgelab.research import linaje as LN
+    LN.declarar("TEST", [], 0, "familia raíz de prueba", libro=tmp_path / "linajes.jsonl")
     em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=reg, libro=libro, ahora=lambda: 1_792_900_000, log=lambda s: None,
-                   ventanas=tmp_path / "ventanas.jsonl")
+                   ventanas=tmp_path / "ventanas.jsonl", linajes=tmp_path / "linajes.jsonl", registro_pruebas=tmp_path / "registro.jsonl")
     for _ in range(40):
         st = em.avanzar(SPEC)
         if st["etapa"] == "FIN": break
