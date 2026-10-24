@@ -26,3 +26,11 @@ def test_libro_del_repo_tiene_las_dos_miradas_exploratorias():
     fams = {r["familia"]: r for r in HV.leer() if r["tipo"] == "consumida"}
     assert fams["AREAS_EXP_1_CRUZADO"]["hasta"] == 20261022 and "EXPANSION_ZONAS" in fams["LUXIMB_FADE_VISOR"]["relacionadas"]
     assert HV.ultima_consumida("EXPANSION_ZONAS") == 20261022
+
+
+def test_reuso_autorizado_solo_con_e_proceso(tmp_path):
+    p = _libro(tmp_path)
+    with p.open("a") as f: f.write(json.dumps({"tipo": "reuso_autorizado", "familia": "A", "desde": 20261001}) + "\n")
+    assert HV.problemas("A", 20261001, "c1", p, estadistico="e_proceso") == []
+    assert any("e_proceso" in e for e in HV.problemas("A", 20261001, "c1", p))
+    assert HV.problemas("B", 20261001, "c1", p, estadistico="e_proceso")           # la derivada no hereda el reuso
