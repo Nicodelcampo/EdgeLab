@@ -61,3 +61,38 @@ incluye el fix 27 de `edgelab/research/areas_expansion.py::simular`; reconstruid
 - No se cambia la regla, los tramos, la fricción ni la ejecución al ver resultados.
 - No se usa nada desde el 2026-10-01 (frontera `edgelab/holdout.py`; los tramos terminan el 2025-07-31 y el 2026-09-30).
 - El resultado no elige topes ni variantes: es una verificación.
+
+## Resultado A (2026-10-24) — `integridad_oos/U1_OOS_US_FIX27_*`, evaluación `integridad_oos/oos_eval_fix27.json`
+Kaggle `edgelab-u1x-oos-fix27-a` / `-b`, código `4e23f908…` en los dos. Evaluación: `tools/u1_oos_fix27_eval.py`.
+
+| ejecución | ops | sesiones | media neta | IC90 | p | MDE | acierto | peor | drawdown máx | peor día |
+|---|---:|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| T1 | 156 | 90 | −0,16 | [−9,2, +8,1] | 0,53 | 13,2 | 78 % | −318,8 | −745,7 | −549,4 |
+| T3 | 157 | 90 | −4,84 | [−16,0, +5,9] | 0,77 | 16,6 | 74 % | −395,9 | −1.503,5 | −505,9 |
+
+- **LORD++ paso 3** (α₃ = 0,00189, el mismo de la descartada): Simes 0,77, **sin rechazo**. Coincide con la descartada (tampoco rechazó).
+- **Por año:** T1 2023 −2,0 (24) · 2024 −10,3 (50) · 2025 ene–jul +6,6 (82). T3 2023 +1,5 · 2024 −5,1 · 2025 −6,6.
+- **Efecto del fix 27 en este tramo:** las mismas 313 operaciones; 42 cambian, todas a peor (media −0,26 pts/op, peor −19,0).
+  El fix sólo puede empeorar el llenado del stop, y así fue. No cambia ninguna conclusión.
+- **Lectura (fijada):** media ≤ 0 en las dos ejecuciones → **U1 no funcionaba en 2023–2025.** No la mata (edges actuales),
+  baja la prioridad. El MDE de 13–17 pts/op dice que este OOS no podía detectar un efecto menor que eso: tampoco descarta un
+  efecto chico. La única prueba que separa régimen de selección sigue siendo el forward desde el 2026-10-23.
+
+## Resultado B (2026-10-24) — `topes/U1_DENSIDAD_ANALISIS.json`, script `tools/u1_densidad_analisis.py`
+| | señales/sesión contra |
+|---|---|
+| rango del día (Spearman) | **+0,91** |
+| ticks por día | +0,44 |
+| minutos con datos | +0,03 |
+| zonas (velas M1 con hueco) por día | −0,78 |
+| parcial rango \| ticks | **+0,89** |
+| parcial ticks \| rango | **−0,02** |
+
+- **Lectura fijada: MERCADO.** Las señales siguen al rango del día; los ticks no agregan nada una vez controlado el rango.
+- El feed sí cambió (ticks por día: ≈ 300 k en 2023, ≈ 175 k en 2024-T1, ≈ 390 k en 2026-T3), pero las señales no lo siguieron.
+  Los minutos por día son constantes (1.328–1.335). 2025-T3 (4 señales) es un trimestre de rango bajo (248), no un hueco.
+- **Días con hueco:** 3 (2023-04-07, 2025-01-09, 2025-11-28): feriados y cierres anticipados de EE. UU., no fallas del feed.
+- **Consecuencia:** el salto de ≈ 5 a ≈ 20 señales por mes es volatilidad. La paridad de feed deja de ser bloqueante **por
+  densidad**; sigue pendiente la paridad de las zonas en sí (que un feed en vivo reproduzca las zonas del CFD de Dukascopy).
+- Ojo: la frecuencia de U1 depende del rango. En un régimen de volatilidad baja habrá pocas señales, y el forward tardará más
+  en juntar las ≈ 95–150 operaciones.

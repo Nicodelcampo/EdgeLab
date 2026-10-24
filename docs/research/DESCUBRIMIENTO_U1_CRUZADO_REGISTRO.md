@@ -62,8 +62,9 @@ encontrarlo, que fue producto de probar muchísimas variantes y filtrar, y no de
   lo distingue.
 - **Feed:** la señal depende de las zonas del CFD de Dukascopy. Operar en vivo exige un feed que reproduzca esas zonas (paridad de
   feeds pendiente).
-- **Densidad del feed:** ≈ 5 señales por mes antes de 2025 contra ≈ 20 después. Falta medir si es mercado (volatilidad) o feed
-  (ticks por día). Corrida `edgelab-u1x-densidad`, todavía en curso al escribir este registro.
+- **Densidad del feed (medida el 2026-10-24):** el salto de ≈ 5 a ≈ 20 señales por mes sigue al rango del día, no a los ticks
+  (`u1/PREREGISTRO_OOS_FIX27_Y_DENSIDAD_U1.md`). Es mercado. Falta la paridad de zonas con un feed en vivo.
+- **OOS con fix 27 (2026-10-24):** T1 −0,16, T3 −4,84 en 2023-01 → 2025-07. Igual que antes: no funcionaba en ese período.
 - **Cola:** pérdidas de hasta −393 pts por operación.
 
 ## 5. Dónde está todo
