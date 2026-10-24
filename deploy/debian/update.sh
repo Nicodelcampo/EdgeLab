@@ -12,4 +12,18 @@ if [ -z "$(git branch -r --contains HEAD)" ] && [ "${FORCE:-0}" != 1 ]; then
   echo "Si el programador aplicó código (programacion.jsonl: APLICADO), su rama autopilot/codigo/* ya está en el remoto: mergeala a la rama de trabajo antes de cambiar de versión." >&2
   exit 1
 fi
+# kaggle_launch.py escribe manifiestos en docs/data_catalog/launches (archivos versionados): se guardan en el estado y se
+# restauran, si no `git checkout` se niega a cambiar de versión (auditoría 2026-10-24)
+S=/var/lib/edgelab-autopilot/state/autopilot_runs/launches
+install -d -o edgelab -g edgelab "$S" 2>/dev/null || mkdir -p "$S"
+cp -u docs/data_catalog/launches/*.json "$S"/ 2>/dev/null || true; chown -R edgelab:edgelab "$S" 2>/dev/null || true
+git checkout -q -- docs/data_catalog/launches 2>/dev/null || true
+# El libro de LORD++ es uno solo y vive en el clon de código (docs/research/LIBRO_LORD.json, decisión 2026-10-24); el ciclo lo
+# escribe acá. Se guarda antes del checkout y se restaura después: si no, git se niega a cambiar de versión o, peor, vuelve a
+# la copia del release y el embudo re-gasta pasos de α ya consumidos. sync_state.sh lo publica en autopilot/state.
+LL=docs/research/LIBRO_LORD.json; LS=/var/lib/edgelab-autopilot/state/autopilot_runs/libro_lord.json
+if [ -f "$LL" ] && [ -n "$(git status --porcelain -- "$LL")" ]; then cp "$LL" "$LS"; git checkout -q -- "$LL" 2>/dev/null || rm -f "$LL"; fi
 git checkout -q --detach "$1" && git rev-parse HEAD
+if [ -f "$LS" ] && ! cmp -s "$LS" "$LL"; then
+  cp "$LS" "$LL"; echo "update.sh: se conservó el libro de LORD++ del Debian (el del release era distinto; revisar que el estado de autopilot/state llegue a la rama de trabajo)" >&2
+fi
