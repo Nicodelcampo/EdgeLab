@@ -2642,10 +2642,10 @@ Nico autorizó retomar y correr. Acta `docs/research/RESULTADO_IB_VWAP_PMH_PML_N
 ## P-96 — decisiones de la auditoría de Kaggle y del embudo (2026-10-24, abierta)
 
 Informe: `docs/research/auditoria_kaggle_20261024/AUDITORIA_CORRIDAS_KAGGLE_Y_EMBUDO_20261024.md` §5. Deciden Nico; nada aplicado.
-- **P1** ~~DESC sin FDR ni Romano-Wolf no pasa a INDAGA/OOS.~~ Decidido por Nico: compuerta dura de FDR q 0,10 en DESC (la implementa el hilo de las cuatro decisiones). Con esa compuerta EXPZ-NQ y EXPZ-CFD (0 nominadas) no deberían seguir.
+- **P1** ~~DESC sin FDR ni Romano-Wolf no pasa a INDAGA/OOS.~~ Decidido por Nico: compuerta dura de FDR q 0,10 en DESC (la implementa el hilo de las cuatro decisiones). Con esa compuerta EXPZ-NQ y EXPZ-CFD (0 nominadas) no deberían seguir. **Pausadas el 2026-10-24 con OK de Nico** (`activa: false` y `pausa` en sus JSON de campaña).
 - **P2** La réplica de A3 (ES/NQ abr–sep) se consume por linaje, con un libro de ventanas de réplica (AREAS-EXP-1 la usó tres veces).
 - **P3** Contar INDAGA e INTEGRIDAD en el registro de pruebas.
-- **P4** Re-versionar `edgelab-dukascopy-nq-usatech` cortado en 2026-09-30 22:00 UTC (hoy tiene 120 velas M1 del holdout). Exige OK de subida.
+- **P4** Re-versionar `edgelab-dukascopy-nq-usatech` cortado en 2026-09-30 22:00 UTC (hoy tiene 120 velas M1 del holdout). **OK de Nico 2026-10-24.** Son los seis `edgelab-dukascopy-*`, no uno. Recorte listo y verificado con `tools/recortar_spot_holdout.py`; falta la subida, ver `docs/research/auditoria_kaggle_20261024/RECORTE_SPOT_HOLDOUT_20261024.md`.
 - **P5** Un único libro de LORD++ por familia, versionado y sembrado con los pasos de las actas.
 - **P6** MES y MNQ dentro de la partición A3.
 - **P7** Romano-Wolf con +1 y B ≥ 500 cerca del umbral.
