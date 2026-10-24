@@ -11,7 +11,10 @@ nueva y sólo puede SUBIR el número (más conservador); bajarlo después de ver
 
 Dónde muerde (embudo.py):
   - DESC: el q-valor de cada pista se recalcula como si las pruebas heredadas estuvieran en el mismo tamiz (BH con m + N_her,
-    π0 = 1): q_linaje = q_BH · (m + N_her) / m. La pista sigue sólo si q_linaje <= 0,10.
+    π0 = 1): q_linaje = q_BH · (m + N_her) / m. Desde el 2026-10-24 (falsos negativos) es INFORMACIÓN por defecto
+    (`linaje_como: "informacion"`): la confirmación se hace en datos nuevos y la controla LORD++, a su propio nivel. Sólo con
+    `linaje_como: "compuerta"` (la campaña reusa para confirmar los mismos datos con los que se seleccionó) la pista sigue sólo si
+    q_linaje <= 0,10. Las campañas congeladas antes de esa fecha conservan la compuerta (no se afloja con resultados vistos).
   - ACTA: anota la multiplicidad total y el efecto esperado fuera de muestra con el recorte de Harvey-Liu sobre ese total.
 Los padres que el libro de ventanas del holdout ya vincula (`relacionadas`) son obligatorios en la declaración.
 """
@@ -59,13 +62,31 @@ def bruto(familia: str, libro: Path = LIBRO, registro: Path = REGISTRO, _propias
     return tot
 
 
+def _matriz(ruta):
+    """Matriz de P&L (observaciones x pruebas) declarada en el linaje: .npy o .csv, relativa al repo."""
+    import numpy as np
+    p = Path(ruta); p = p if p.is_absolute() else REPO / p
+    if not p.exists(): return None
+    return np.load(p) if p.suffix == ".npy" else np.loadtxt(p, delimiter=",", ndmin=2)
+
+
 def multiplicidad(familia: str, libro: Path = LIBRO, registro: Path = REGISTRO) -> dict:
+    """Multiplicidad heredada. Número efectivo (2026-10-24, falsos negativos): con `matriz_pnl` declarada que cubra TODAS las
+    pruebas heredadas, Li-Ji sobre la correlación de sus P&L (`escalera.n_efectivo_o_bruto`); si no, el bruto con `aviso`.
+    Un entero declarado con `justificacion_descuento` se respeta como antes."""
+    from edgelab.funnel.escalera import n_efectivo_o_bruto
     d = declaracion(familia, libro); prop = pruebas_propias(registro)
     b = bruto(familia, libro, registro)
-    if d is None: return dict(familia=familia, declarada=False, propias=prop.get(familia, 0), bruto_heredado=b, n_heredado=b)
-    n = b if d["n_efectivo_heredado"] == "bruto" else int(d["n_efectivo_heredado"])
+    if d is None:
+        return dict(familia=familia, declarada=False, propias=prop.get(familia, 0), bruto_heredado=b, n_heredado=b, metodo_n="bruto",
+                    aviso="linaje sin declarar: se cobra el bruto")
+    if d["n_efectivo_heredado"] == "bruto":
+        ne = n_efectivo_o_bruto(b, _matriz(d["matriz_pnl"]) if d.get("matriz_pnl") else None)
+        n, metodo, aviso = int(round(ne["n"])), ne["metodo"], ne["aviso"]
+    else:
+        n, metodo, aviso = int(d["n_efectivo_heredado"]), "declarado", None
     return dict(familia=familia, declarada=True, padres=d["padres"], propias=prop.get(familia, 0), bruto_heredado=b, n_heredado=n,
-                total=prop.get(familia, 0) + n, justificacion=d.get("justificacion", ""))
+                total=prop.get(familia, 0) + n, justificacion=d.get("justificacion", ""), metodo_n=metodo, aviso=aviso)
 
 
 def problemas(familia: str, libro: Path = LIBRO, ventanas: Path | None = None, registro: Path = REGISTRO) -> list:
