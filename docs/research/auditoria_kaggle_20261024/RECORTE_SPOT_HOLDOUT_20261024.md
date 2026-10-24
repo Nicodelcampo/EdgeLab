@@ -43,10 +43,28 @@ El último tick que queda es de las 20:14:59 UTC. Entre las 20:15 y las 22:00 ha
 registraba (el cierre diario del CFD).
 
 ## Lo que falta
-1. **Subir las seis versiones nuevas.** Esta sesión no pudo: el control de permisos bloqueó la subida a Kaggle. Se puede
-   correr en la máquina de Nico o en el Debian, una vez por dataset:
-   `python tools/recortar_spot_holdout.py --slug nicolasbuttaro/<dataset> --trabajo <carpeta> --subir`
-   Necesita unos 3 GB libres por dataset y baja la versión 1 sola.
+1. ~~Subir las seis versiones nuevas.~~ **Hecho el 2026-10-24** desde la sesión en la nube (`tools/recortar_spot_holdout.py --subir`).
+   Cada versión nueva parte de la **última** versión publicada del dataset: ES estaba en v2 y XAU en v3, y el primer intento
+   comparó contra la v1 y falló por tamaño (por eso la herramienta tiene ahora `--version`). Los recibos completos, con sha256
+   de entrada y de salida, están en `recorte_spot/recorte_<dataset>.json`.
+
+| dataset | versión de origen | archivo | filas antes → después | quitadas | sha256 de la salida |
+|---|---:|---|---|---:|---|
+| `edgelab-dukascopy-6e-eurusd` | v1 | EURUSD_m1.parquet | 1.689.120 → 1.689.000 | 120 | `52986e72…9d513dc4` |
+| `edgelab-dukascopy-6e-eurusd` | v1 | EURUSD_ticks.parquet | 85.803.967 → 85.802.544 | 1.423 | `59bad4c5…34abd622` |
+| `edgelab-dukascopy-6j-usdjpy` | v1 | USDJPY_m1.parquet | 1.689.120 → 1.689.000 | 120 | `fba83fd6…588c9510` |
+| `edgelab-dukascopy-6j-usdjpy` | v1 | USDJPY_ticks.parquet | 137.907.862 → 137.903.464 | 4.398 | `f9b2d5b8…22d36cdd` |
+| `edgelab-dukascopy-es-usa500` | v2 | USA500IDXUSD_m1.parquet | 3.900.960 → 3.900.840 | 120 | `90e2e418…ede4c4dd` |
+| `edgelab-dukascopy-es-usa500` | v2 | USA500IDXUSD_ticks.parquet | 147.279.620 → 147.277.198 | 2.422 | `6948f864…23ab67eb` |
+| `edgelab-dukascopy-nq-usatech` | v1 | USATECHIDXUSD_m1.parquet | 1.681.920 → 1.681.800 | 120 | `81819615…8fb8bed0` |
+| `edgelab-dukascopy-nq-usatech` | v1 | USATECHIDXUSD_ticks.parquet | 261.588.257 → 261.569.036 | 19.221 | `7037b34d…dd332011` |
+| `edgelab-dukascopy-xauusd-ticks-m1` | v3 | XAUUSD_m1.parquet | 1.905.120 → 1.905.000 | 120 | `4c907627…e42f5a77` |
+| `edgelab-dukascopy-xauusd-ticks-m1` | v3 | XAUUSD_ticks.parquet | 258.524.416 → 258.520.378 | 4.038 | `8a27e0de…f7fde83d` |
+| `edgelab-dukascopy-ym-usa30` | v1 | USA30IDXUSD_m1.parquet | 1.681.920 → 1.681.800 | 120 | `6b263557…3d5ae369` |
+| `edgelab-dukascopy-ym-usa30` | v1 | USA30IDXUSD_ticks.parquet | 124.282.962 → 124.278.565 | 4.397 | `9d6775d4…4e2543a4` |
+
+   El sha256 de USATECH no coincide con el de la prueba de arriba, aunque las filas son las mismas (261.569.036). La diferencia
+   está en los bytes del parquet (metadatos del escritor), no en el contenido: los conteos y el último tick coinciden.
 2. **La versión 1 sigue en el historial de Kaggle.** Una versión nueva no la borra. Si se quiere que esas dos horas no estén
    en Kaggle de ningún modo, hay que borrar la versión vieja o el dataset entero y volver a crearlo. Las dos cosas son
    irreversibles y rompen los kernels que la fijan, así que las decide Nico aparte.
