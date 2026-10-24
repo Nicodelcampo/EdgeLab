@@ -14,7 +14,7 @@ def _curl(args:list[str])->str:
 def upload_blob(path:Path,rel:str)->str:
     sz=path.stat().st_size;r=json.loads(_curl(["-X","POST","https://www.kaggle.com/api/v1/blobs/upload","-H","Content-Type: application/json","-d",
         json.dumps({"type":"dataset","name":rel,"contentLength":sz,"lastModifiedEpochSeconds":int(path.stat().st_mtime)})]))
-    _curl(["-o",os.devnull,"-X","PUT",r["createUrl"],"-H","Content-Type: application/octet-stream","--data-binary",f"@{path}"]);return r["token"]
+    _curl(["-o",os.devnull,"-X","PUT",r["createUrl"],"-H","Content-Type: application/octet-stream","-T",str(path)]);return r["token"]      # -T transmite desde el disco: --data-binary cargaba el archivo entero en memoria y fallaba con los ticks (3 GB)
 
 def holdout_en(files:list[Path])->list[str]:
     """Parquets con filas desde la apertura del holdout (columna de tiempo en ns). Auditoría 2026-10-24: seis datasets SPOT se

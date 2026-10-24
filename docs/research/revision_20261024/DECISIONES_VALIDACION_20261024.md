@@ -74,3 +74,18 @@ No se tocó ningún archivo del manifiesto de protegidos (`config/autopilot/prot
 
 Aporte al referente: cierra las cuatro vías por las que el embudo podía promover algo sin evidencia (sin nominación, con α
 compartido, con p = 0, con el contador en cero) y evita matar un edge actual por un OOS sin potencia o de otro régimen declarado.
+
+## D5 (2026-10-24, tarde). Reuso de las sesiones del holdout miradas en exploración
+Decisión de Nico: «aunque se haya usado luego el holdout fue en otra computadora y un análisis bastante simple, así que si
+reutilizamos esos datos no nos arriesgamos tanto y el valor de la información que obtenemos es mayor al riesgo».
+- **Alcance:** sólo U1-CRUZADO (`AREAS_EXP_1_CRUZADO`) y la regla del visor de LUX-IMB (`LUXIMB_FADE_VISOR`). Son las dos familias
+  cuya regla se congeló ANTES de la mirada y no cambió después. Las familias derivadas (EXPANSION_ZONAS y otras) **no** heredan
+  el reuso.
+- **Condición:** el estadístico tiene que ser válido ante miradas, un e-proceso (`edgelab/funnel/secuencial.py`) que arranca en la
+  frontera (2026-10-01). La mirada previa no lo invalida y se puede seguir sumando sesiones. Se reporta siempre también el
+  resultado sin las sesiones miradas.
+- **Riesgo declarado:**
+  - U1: la mirada fue favorable (8 operaciones). Seguir mirando porque dio bien es una selección leve; el e-proceso la tolera.
+  - LUX: la mirada fue desfavorable (14 de 14 en SL), así que incluirla es conservador.
+- **En código:** `edgelab/research/holdout_ventanas.py` (`reuso_autorizado`; el embudo lo acepta sólo con `estadistico="e_proceso"`).
+  Libro: `docs/research/HOLDOUT_VENTANAS.jsonl` (filas `reuso_autorizado`).

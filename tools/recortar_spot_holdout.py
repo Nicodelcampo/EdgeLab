@@ -83,7 +83,9 @@ def bajar(slug: str, dest: Path, version: int | None):
     files = json.loads(subprocess.check_output(["curl", "-sS", "--fail-with-body"] + curl_auth(lst) + [lst]))["datasetFiles"]
     for f in files:
         u = f"https://www.kaggle.com/api/v1/datasets/download/{owner}/{name}/{f['name']}" + (f"?datasetVersionNumber={version}" if version else "")
-        subprocess.run(["curl", "-sSL", "--fail", "-o", str(dest / f["name"])] + curl_auth(u) + [u], check=True)
+        for intento in range(5):                                         # descargas de GB se cortan: se retoma (-C -) hasta el tamaño listado
+            subprocess.run(["curl", "-sSL", "--fail", "-C", "-", "-o", str(dest / f["name"])] + curl_auth(u) + [u])
+            if (dest / f["name"]).exists() and (dest / f["name"]).stat().st_size == f["totalBytes"]: break
         if (dest / f["name"]).stat().st_size != f["totalBytes"]: raise SystemExit(f"{f['name']}: tamaño distinto al listado")
 
 

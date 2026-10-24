@@ -19,14 +19,28 @@ def leer(libro: Path = LIBRO) -> list:
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()] if p.exists() else []
 
 
+def reuso_autorizado(familia: str, libro: Path = LIBRO) -> dict | None:
+    """Decisión de Nico (2026-10-24): una familia cuya regla se congeló ANTES de la mirada exploratoria y no cambió después puede
+    reusar esas sesiones, sólo con un estadístico válido ante miradas (e-proceso de edgelab/funnel/secuencial.py) que arranca en
+    la frontera. Se reporta siempre también el resultado sin las sesiones miradas."""
+    rs = [r for r in leer(libro) if r.get("tipo") == "reuso_autorizado" and r["familia"] == familia]
+    return rs[-1] if rs else None
+
+
 def ultima_consumida(familia: str, libro: Path = LIBRO) -> int | None:
     hs = [int(r["hasta"]) for r in leer(libro) if r.get("tipo") == "consumida" and (r["familia"] == familia or familia in r.get("relacionadas", []))]
     return max(hs) if hs else None
 
 
-def problemas(familia: str, desde: int, cid: str, libro: Path = LIBRO) -> list:
+def problemas(familia: str, desde: int, cid: str, libro: Path = LIBRO, estadistico: str | None = None) -> list:
     e = []
     u = ultima_consumida(familia, libro)
+    ra = reuso_autorizado(familia, libro)
+    if u is not None and int(desde) <= u and ra and estadistico == "e_proceso" and int(desde) >= int(ra["desde"]):
+        u = None                                                                 # reuso autorizado: válido sólo con e-proceso
+    elif u is not None and int(desde) <= u and ra:
+        e.append(f"la familia {familia} tiene reuso autorizado de sus sesiones miradas sólo con estadistico='e_proceso' (válido ante miradas)")
+        u = None
     if u is not None and int(desde) <= u:
         e.append(f"holdout.desde={desde} reusa sesiones ya consumidas por la familia {familia} (o una de la que deriva) hasta {u}; debe empezar después")
     otras = [r["cid"] for r in leer(libro) if r.get("tipo") == "apertura" and r["familia"] == familia and r["cid"] != cid]
