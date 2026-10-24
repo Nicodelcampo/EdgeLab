@@ -2,7 +2,7 @@ import datetime as dt, importlib.util, io, urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location("dk_t", ROOT / "tools/dukascopy_descarga.py"); DK = importlib.util.module_from_spec(spec); spec.loader.exec_module(DK)
+spec = importlib.util.spec_from_file_location("dk_limite", ROOT / "tools/dukascopy_descarga.py"); DK = importlib.util.module_from_spec(spec); spec.loader.exec_module(DK)
 
 
 class R:
