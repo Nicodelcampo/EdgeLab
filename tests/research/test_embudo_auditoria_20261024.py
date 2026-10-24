@@ -26,8 +26,11 @@ class Runner:
 
 
 def _embudo(tmp_path, run, registro="reg"):
+    from edgelab.research import linaje as LN
+    if LN.declaracion(SPEC["familia"], tmp_path / "lin.jsonl") is None: LN.declarar(SPEC["familia"], [], 0, "raíz de prueba", libro=tmp_path / "lin.jsonl")
     return EM.Embudo(tmp_path / "e", dict(kaggle=run, local=run), registro=Reg() if registro == "reg" else registro, libro=None,
-                     ahora=lambda: 1_792_900_000, log=lambda s: None, ventanas=tmp_path / "v.jsonl")
+                     ahora=lambda: 1_792_900_000, log=lambda s: None, ventanas=tmp_path / "v.jsonl",
+                     linajes=tmp_path / "lin.jsonl", registro_pruebas=tmp_path / "reg.jsonl")
 
 
 
