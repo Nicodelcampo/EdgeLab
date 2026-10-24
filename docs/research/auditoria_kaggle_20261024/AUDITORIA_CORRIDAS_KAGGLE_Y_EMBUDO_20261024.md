@@ -68,7 +68,7 @@ Notas:
   Los minutos con datos son constantes, unos 1.320 por día. **Lectura fijada: mercado.**
 - **Alcance:** el rango está en puntos, sin normalizar por nivel de precio, que no estaba pre-registrado. Con n = 15 hay poca
   resolución. No reemplaza la paridad de zonas contra el feed en vivo, que sigue siendo condición para operar U1.
-- **Archivos:** `areas_expansion_20261022/u1/topes/U1_DENSIDAD_LECTURA_20261024.json` y el CSV. Agregado en
+- **Archivos:** el CSV y `areas_expansion_20261022/u1/topes/U1_DENSIDAD_ANALISIS.json`, del hilo del OOS con fix 27 (PR #131), que llegó a la misma lectura; la copia propia de la auditoría se retiró al integrar. Agregado en
   `AREAS_EXP_1_MEDIDO_Y_NO_MEDIDO.md`.
 
 ## 4. El embudo para el Debian: defectos encontrados y arreglos (sin cambiar reglas)
