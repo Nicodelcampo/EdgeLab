@@ -146,10 +146,19 @@ autónomo en el Debian».
 
 ```json
 {"cid": "...", "familia": "...", "experimento": "edgelab.research.agente.mi_exp", "sensor": "DK:USATECHIDXUSD", "ejecucion": "NQ",
- "desc": [20250805, 20260930], "oos": [20230101, 20250731], "embudo": true,
+ "desc": [20250805, 20260331], "oos": [20260401, 20260925], "embudo": true, "conductor": "debian",
  "justificacion_economica": "...", "como_podria_refutarse": "...",
- "seleccion": {"max_candidatas": 3}, "holdout": {"desde": 20261001, "n_fijo": 150}}
+ "seleccion": {"max_candidatas": 3}, "holdout": {"desde": 20261023, "n_fijo": 150}}
 ```
+
+- **`conductor`** (obligatorio desde la auditoría del 2026-10-24): `"debian"` la conduce el ciclo del Debian; `"local"`, sólo
+  `tools/embudo_correr.py --conductor local`. Sin conductor no la conduce nadie: dos conductores relanzan el mismo slug de Kaggle
+  y llevan estados, libros de LORD++ y de ventanas distintos.
+- **Períodos:** con ES o NQ como señal o ejecución, `desc` termina el 2026-03-31 y abr–sep es la réplica (HOLDOUT-A3/A4): el
+  PREFLIGHT de la campaña lo rechaza si no. `holdout.desde` no puede reusar sesiones consumidas (`docs/research/HOLDOUT_VENTANAS.jsonl`).
+- **Reglas congeladas:** desde PREFLIGHT las compuertas leen la copia de `seleccion`, `integridad`, `topes` y `holdout` guardada en
+  el estado; cambiar el JSON después no cambia la regla (sólo `holdout.desde` puede moverse hacia adelante). Cambiar familia,
+  experimento, señal, ejecución o períodos bloquea la campaña: se abre otra con otro `cid`.
 
 - **`sensor`** es dónde se calcula la señal y **`ejecucion`** dónde se opera.
 - **Valores posibles:** cualquier futuro del release (`NQ`, `ES`, `GC`, …) o spot de Dukascopy (`DK:<SÍMBOLO>`).

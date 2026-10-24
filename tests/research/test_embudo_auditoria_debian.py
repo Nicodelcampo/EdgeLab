@@ -164,7 +164,11 @@ def test_campanas_del_repo_pasan_el_chequeo_de_campana():
     from pathlib import Path
     for f in sorted((Path(__file__).resolve().parents[2] / "config/autopilot/grillas/campanas").glob("*.json")):
         d = json.loads(f.read_text(encoding="utf-8"))
-        if d.get("embudo"): assert EM.problemas_campana(d) == [], f.name
+        if not d.get("embudo"): continue
+        err = EM.problemas_campana(d)
+        if not d.get("activa", True):                       # U1_CRUZADO (apagada) reproduce la corrida a mano: su desc usó la réplica
+            err = [e for e in err if "HOLDOUT-A3" not in e]   # de NQ y el PREFLIGHT la frena si alguien la enciende (auditoría 2026-10-24)
+        assert err == [], f.name
 
 
 def test_resultado_con_codigo_cambiado_queda_avisado(tmp_path):

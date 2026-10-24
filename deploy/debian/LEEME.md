@@ -48,7 +48,14 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - **Carpeta sellada** (`/var/lib/edgelab-datos/holdout_sellado`): ahí van los datos desde la sesión del 2026-10-01. Nunca se suben a
   Kaggle, y sólo los lee una etapa de holdout con acta.
 - **NQ sellado:** si hay ticks de NQ posteriores al 2026-10-01 (exportados de NT8), se copian ahí como `NQ_ticks.parquet`.
-- **Lanzar una campaña:** el agente (o una persona) deja el JSON en `config/autopilot/grillas/campanas/` con `"embudo": true`.
+- **Lanzar una campaña:** el agente (o una persona) deja el JSON en `config/autopilot/grillas/campanas/` con `"embudo": true` y
+  `"conductor": "debian"`. El ciclo sólo conduce las campañas con ese conductor (`embudo.conductor` en `/etc/edgelab/autopilot.json`);
+  las de `"conductor": "local"` (hoy EXPZ-NQ y EXPZ-CFD) se siguen corriendo con `tools/embudo_correr.py` y el Debian las informa
+  como omitidas. Nunca dos conductores sobre una campaña: relanzarían el mismo slug de Kaggle con estados y libros distintos.
+- **Libros del embudo en el estado** (todos los sube `sync_state.sh` a `autopilot/state`): `embudo/<cid>/estado.json`,
+  `libro_lord.json` (LORD++ por familia), `HOLDOUT_VENTANAS.jsonl` (ventanas consumidas y aperturas: cada ciclo le agrega las filas
+  nuevas del libro del repo), `trial_registry.jsonl` y `launches/*.json` (versiones de datasets de cada kernel). Al cerrar una etapa
+  con desenlaces, pasar al repo de código las filas nuevas del registro y del libro de ventanas (`tools/registro_global.py`).
 - **Seguir una campaña:** `autopilot_runs/embudo/<cid>/MEDIDO.md` en la rama `autopilot/state`.
 
 ## Límites que conviene tener presentes

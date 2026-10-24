@@ -1,6 +1,6 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-24  
+**Fecha:** 2026-10-23  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
 **Corte:** 2026-10-24  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
@@ -21,6 +21,10 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   - U1 y EXPZ confirman desde el **2026-10-23**.
 - **Embudo EXPZ:** DESC terminó (EXPZ-NQ con 0 nominadas por FDR; igual pasan 3 candidatas, punto que va a Nico) y las dos campañas están en INDAGA.
 - **Descargador de Dukascopy:** arreglado. La causa era el límite de tasa del datafeed (429/503).
+- **Auditoría de Kaggle y del embudo (24-oct):** `docs/research/auditoria_kaggle_20261024/AUDITORIA_CORRIDAS_KAGGLE_Y_EMBUDO_20261024.md`.
+  - 33 corridas del 22 al 24-oct: todas completas, privadas, con código committeado y sin holdout. Faltaban 53 pruebas en el contador (ya registradas).
+  - La densidad del feed de U1 es **mercado**, no feed: el CSV por día estaba en Kaggle.
+  - Embudo listo para el Debian: 9 defectos corregidos y un solo conductor por campaña (`"conductor"`). Ocho decisiones van a Nico (P-96).
 - **Edges promovidos: 0.**
 
 ## Estado al 2026-10-22

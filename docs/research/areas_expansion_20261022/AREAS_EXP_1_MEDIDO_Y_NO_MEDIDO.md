@@ -38,3 +38,8 @@ Una grilla nueva (otras perillas o valores) es una prueba nueva: registro en el 
 - **Multiplicidad efectiva:** U1 sale de un linaje de unos 19,4 M pruebas; el registro como familia nueva (≈20) la subestima.
 - **Sesiones consumidas:** 10-01 a 10-22. La confirmación arranca el **2026-10-23** (`HOLDOUT_VENTANAS.jsonl`).
 - **Densidad del feed:** completada el 2026-10-24 con los datos por día (ya estaban en Kaggle): es MERCADO. **No medido:** que un feed en vivo reproduzca las zonas del CFD de Dukascopy (paridad de zonas entre feeds).
+
+## Agregado de la auditoría del 2026-10-24 (`docs/research/auditoria_kaggle_20261024/AUDITORIA_CORRIDAS_KAGGLE_Y_EMBUDO_20261024.md`)
+- **Densidad del feed:** la cerró el hilo del OOS con fix 27 (`u1/topes/U1_DENSIDAD_ANALISIS.json`, línea de arriba); la auditoría llegó a la misma lectura, MERCADO, con el mismo CSV.
+- **Pruebas que faltaban en el contador global, registradas retroactivamente:** `u1_indaga/acuerdo_nq` (20), `u1b/fase_a_nq` (1), `u1_cruzado/integridad` (4) y `u1_cruzado/topes_oos_us` (28).
+- **Réplica de NQ abr–sep usada tres veces en el linaje AREAS-EXP-1:** réplica v1.4 (80 pistas), U1-B Fase A y U1-CRUZADO P2. La fila de U1-B dice «no usada antes»: lo era para la celda, no para la familia (HOLDOUT-A3, regla 2). Va como propuesta a Nico en la auditoría.

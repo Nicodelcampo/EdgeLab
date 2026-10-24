@@ -41,3 +41,18 @@ def registrar_apertura(familia: str, cid: str, desde: int, n_fijo: int, libro: P
     Path(libro).parent.mkdir(parents=True, exist_ok=True)
     with Path(libro).open("a", encoding="utf-8", newline="\n") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
     return row
+
+
+def sincronizar(origen: Path = LIBRO, destino: Path | None = None) -> int:
+    """Agrega a `destino` las filas de `origen` que le faltan (unión append-only; no borra ni reordena). En el Debian el embudo
+    escribe sus aperturas en el clon de ESTADO (que sync_state.sh sube a `autopilot/state`), no en el clon de código fijado: antes
+    las escribía en `docs/` del clon de código, donde no se publicaban y bloqueaban `update.sh`. Este paso trae al libro del
+    estado las ventanas consumidas que se registran en el repo. Devuelve cuántas filas agregó."""
+    if destino is None or Path(destino).resolve() == Path(origen).resolve(): return 0
+    tiene = {json.dumps(r, sort_keys=True) for r in leer(destino)}
+    nuevas = [r for r in leer(origen) if json.dumps(r, sort_keys=True) not in tiene]
+    if nuevas:
+        Path(destino).parent.mkdir(parents=True, exist_ok=True)
+        with Path(destino).open("a", encoding="utf-8", newline="\n") as f:
+            for r in nuevas: f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    return len(nuevas)

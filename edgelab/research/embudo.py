@@ -36,6 +36,8 @@ DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_fric
 CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_economica", "como_podria_refutarse")
 # Lo que define la campaña: si cambia después del PREFLIGHT ya no es la misma campaña (se crea otra, con su registro).
 INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n_celdas_por_canal")
+CONDUCTORES = ("debian", "local")                          # quién conduce cada campaña: uno solo (auditoría 2026-10-24)
+A3_FIN_DESCUBRIMIENTO, A3_INSTRUMENTOS = 20260331, ("ES", "NQ")   # HOLDOUT-A3/A4: ES y NQ descubren hasta acá; abr–sep es réplica
 MAX_HORAS_KAGGLE = 14                                       # Kaggle corta a las 12 h: pasado esto, la etapa se da por caída
 N_BOOT_REPLICA, N_BOOT_HOLDOUT = 2000, 5000                 # bootstrap de `grilla_generica.evaluar` y de `_fin_holdout`
 
@@ -146,7 +148,6 @@ class Embudo:
         """Pruebas con desenlace al contador global ANTES de lanzar. DESC: todas las celdas en los dos canales (total y reciente);
         antes, una campaña sin `n_celdas_por_canal` registraba 2 pruebas para una grilla de millones. TOPES: las variantes con
         tope que se corren de verdad (antes 6 fijas aunque la campaña declarara otra lista)."""
-        if self.registro is None: return
         n = None
         if e == "DESC":
             n = spec.get("n_celdas_por_canal")
@@ -157,6 +158,7 @@ class Embudo:
             from edgelab.research.etapas import TOPES_ESTANDAR
             n = len(params.get("celdas", [])) * sum(t is not None for t in (params.get("topes") or TOPES_ESTANDAR))
         elif e == "HOLDOUT": n = 1
+        if n and self.registro is None: raise RuntimeError(f"etapa {e} con desenlaces sin registro de pruebas: no se lanza")   # auditoría 2026-10-24
         if n: self.registro.ensure(f"embudo/{spec['cid']}/{e.lower()}", spec["familia"], int(n), f"embudo {spec['cid']} etapa {e}")
 
     # --- compuertas -----------------------------------------------------------------------------------------------------
@@ -268,6 +270,8 @@ class Embudo:
     def _fin_holdout(self, spec, st, res):
         from edgelab.funnel.escalera import resumen_sesiones
         ops = res["operaciones"]; N = st["acta"]["n_fijo"]
+        if len(ops.get("t") or []) < N:                                              # CONTEO dijo que había N: no decide con menos
+            return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]
         x = np.asarray(ops["neto"], float)[orden]; ses = np.asarray(ops["ses"])[orden]
         rs = resumen_sesiones(x, ses, n_boot=5000)
@@ -293,6 +297,9 @@ def problemas_campana(spec: dict) -> list:
         if len(per) != 2 or int(per[0]) > int(per[1]): e.append(f"{k} {per}: período mal formado")
         elif int(per[1]) >= HOLDOUT_PRIMERA_SESION_INT: e.append(f"{k} {per} toca el holdout (desde {HOLDOUT_PRIMERA_SESION_INT})")
     if int(_cfg(spec, "holdout")["desde"]) < HOLDOUT_PRIMERA_SESION_INT: e.append(f"holdout.desde antes de la frontera {HOLDOUT_PRIMERA_SESION_INT}")
+    inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
+    if (a3 := sorted(inst & set(A3_INSTRUMENTOS))) and spec.get("desc") and int(spec["desc"][1]) > A3_FIN_DESCUBRIMIENTO:
+        e.append(f"desc {spec['desc']} usa la réplica abr–sep de {a3} (HOLDOUT-A3: descubrimiento hasta {A3_FIN_DESCUBRIMIENTO})")
     try: n = GG.n_celdas(importlib.import_module(spec["experimento"]))
     except Exception as ex: return e + [f"no se pudo contar las celdas del experimento: {ex!r}"[:200]]
     if not spec.get("n_celdas_por_canal"): e.append(f"falta n_celdas_por_canal (el experimento corre {n} celdas por canal)")
@@ -307,12 +314,16 @@ def sin_resolucion(nivel: float, n_boot: int):
     return f"sin resolución: nivel LORD++ {nivel:.2e} < p mínimo del bootstrap {piso:.2e} (n_boot {n_boot}); un rechazo era imposible" if nivel < piso else None
 
 
-def avanzar_todas(carpeta_campanas: Path, embudo: Embudo) -> list:
-    """Lo que corre el ciclo autónomo: un paso de cada campaña activa (`activa` != false)."""
+def avanzar_todas(carpeta_campanas: Path, embudo: Embudo, conductor: str | None = None) -> list:
+    """Lo que corre el ciclo autónomo: un paso de cada campaña activa (`activa` != false). Con `conductor`, sólo las campañas que
+    lo declaran: dos conductores sobre una campaña lanzan el mismo slug de Kaggle dos veces, con estados, libros de LORD++ y de
+    ventanas distintos (auditoría 2026-10-24). Una campaña sin conductor declarado se informa como omitida."""
     out = []
     for f in sorted(Path(carpeta_campanas).glob("*.json")):
         spec = json.loads(f.read_text(encoding="utf-8"))
-        if spec.get("activa", True) and spec.get("embudo", False):
-            try: out.append(dict(cid=spec["cid"], **{k: v for k, v in embudo.avanzar(spec).items() if k in ("etapa", "fase", "motivo")}))
-            except Exception as e: out.append(dict(cid=spec.get("cid"), error=repr(e)[:300]))
+        if not (spec.get("activa", True) and spec.get("embudo", False)): continue
+        if conductor is not None and spec.get("conductor") != conductor:
+            out.append(dict(cid=spec.get("cid"), omitida=f"conductor {spec.get('conductor')!r}, no {conductor!r}")); continue
+        try: out.append(dict(cid=spec["cid"], **{k: v for k, v in embudo.avanzar(spec).items() if k in ("etapa", "fase", "motivo")}))
+        except Exception as e: out.append(dict(cid=spec.get("cid"), error=repr(e)[:300]))
     return out

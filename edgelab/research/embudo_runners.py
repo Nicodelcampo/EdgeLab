@@ -16,6 +16,7 @@ import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py"]
 
@@ -87,7 +88,7 @@ class KaggleRunner:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
                 n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
-        slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}"[:100]
+        slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
         if self.dataset_sellado:
@@ -101,12 +102,13 @@ class KaggleRunner:
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
         a = self.argumentos(spec, etapa, params, periodo)
-        r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True, timeout=1800)
+        r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
+                           timeout=TIMEOUT_LANZAR_S)
         if r.returncode != 0 or '"url"' not in r.stdout: raise RuntimeError(f"no se lanzó: {(r.stdout + r.stderr)[-500:]}")
         return a[1]
 
     def estado(self, handle) -> str:
-        r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=300)
+        r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=120)
         for s in ("complete", "running", "queued", "error", "cancel"):
             if f'"{s}' in r.stdout.lower(): return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
         return "running"
@@ -114,7 +116,7 @@ class KaggleRunner:
     def traer(self, handle) -> dict:
         out = self.carpeta / f"{handle.split('/')[-1]}_RESULTADO.json"
         subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", handle, "--file", "RESULTADO.json", "--out", str(out)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=900)
+                       cwd=ROOT, capture_output=True, text=True, timeout=300)
         return json.loads(out.read_text(encoding="utf-8"))
 
 
