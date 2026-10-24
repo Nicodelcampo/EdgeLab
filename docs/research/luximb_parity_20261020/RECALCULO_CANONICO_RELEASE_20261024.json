@@ -1,0 +1,301 @@
+{
+ "regla": "LUX-IMB fade, TP 1,0·D / SL 0,2·D, entrada cierre -1 tick, tope 240 min (congelada, luximb_holdout_regla_visor.py sha256 3c44bc32...)",
+ "estado_datos": "PROVISIONAL (release CANDIDATE_NOT_RESEARCH_APPROVED)",
+ "datos": {
+  "dataset": "nicolasbuttaro/edgelab-liquid-ticks-20261014",
+  "release_id": "liquid_release_20261014_v4",
+  "archivo": "data/NQ_ticks.parquet",
+  "sha256": "cccc7c807ead85389aa48a2eaff728106f5c9cd1a9e67f74f69c7f272ea78a89",
+  "sesiones_manifiesto": 291,
+  "rango": [
+   20250805,
+   20260925
+  ]
+ },
+ "costos": {
+  "instrumento": "NQ",
+  "tick_size": 0.25,
+  "tick_value_usd": 5.0,
+  "comision_rt_ticks": {
+   "min": 0.7,
+   "max": 1.152
+  },
+  "fuentes": {
+   "comision": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §1, §2 y §7 (relectura de paginas oficiales 2026-10-14)",
+   "spread": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §3 (atlas-microestructura-14activos-v4, horario regular 08:30-15:00 CT, media)",
+   "slippage": "asuncion declarada de Nico: 1 tick por lado (LEDGER_COSTOS_CAP3_2026-08-18.md); escenarios del contrato G3 (docs/edge_validation_contract.md)",
+   "friccion_base": "REFERENCIA_COSTOS §4: spread medido + comision maxima de la tabla + 2 ticks RT"
+  },
+  "schema": "edgelab_costos_canonicos_v1",
+  "spread_ticks": 3.03,
+  "friccion_rt_ticks": {
+   "ideal": 0.0,
+   "base": 6.1819999999999995,
+   "adverso": 8.181999999999999,
+   "severo": 10.181999999999999
+  },
+  "friccion_rt_ticks_min_comision": 5.7299999999999995
+ },
+ "friccion_base_pts": 1.5454999999999999,
+ "friccion_adversa_pts": 2.0454999999999997,
+ "por_periodo": {
+  "09-25": {
+   "ventana_trade_date": [
+    20250805,
+    20250916
+   ],
+   "n": 20,
+   "pts_contab_campania": -127.8,
+   "neto_canonico_pts": -144.8,
+   "neto_canonico_pts_por_op": -7.238,
+   "tp": 2,
+   "sl": 18,
+   "tiempo": 0,
+   "publicado_1020": {
+    "n": 20,
+    "pts": -127.8
+   }
+  },
+  "12-25": {
+   "ventana_trade_date": [
+    20250917,
+    20251215
+   ],
+   "n": 99,
+   "pts_contab_campania": 370.0,
+   "neto_canonico_pts": 284.0,
+   "neto_canonico_pts_por_op": 2.869,
+   "tp": 19,
+   "sl": 79,
+   "tiempo": 1,
+   "publicado_1020": {
+    "n": 99,
+    "pts": 370.0
+   }
+  },
+  "03-26": {
+   "ventana_trade_date": [
+    20251216,
+    20260316
+   ],
+   "n": 100,
+   "pts_contab_campania": 573.9,
+   "neto_canonico_pts": 486.4,
+   "neto_canonico_pts_por_op": 4.864,
+   "tp": 22,
+   "sl": 77,
+   "tiempo": 1,
+   "publicado_1020": {
+    "n": 100,
+    "pts": 573.9
+   }
+  },
+  "06-26": {
+   "ventana_trade_date": [
+    20260317,
+    20260612
+   ],
+   "n": 130,
+   "pts_contab_campania": 808.8,
+   "neto_canonico_pts": 695.9,
+   "neto_canonico_pts_por_op": 5.353,
+   "tp": 25,
+   "sl": 102,
+   "tiempo": 3,
+   "publicado_1020": {
+    "n": 130,
+    "pts": 808.8
+   }
+  },
+  "09-26": {
+   "ventana_trade_date": [
+    20260616,
+    20260915
+   ],
+   "n": 150,
+   "pts_contab_campania": 846.1,
+   "neto_canonico_pts": 714.1,
+   "neto_canonico_pts_por_op": 4.76,
+   "tp": 36,
+   "sl": 114,
+   "tiempo": 0,
+   "publicado_1020": {
+    "n": 150,
+    "pts": 846.1
+   }
+  },
+  "12-26": {
+   "ventana_trade_date": [
+    20260918,
+    20260925
+   ],
+   "n": 1,
+   "pts_contab_campania": -12.1,
+   "neto_canonico_pts": -12.9,
+   "neto_canonico_pts_por_op": -12.895,
+   "tp": 0,
+   "sl": 1,
+   "tiempo": 0,
+   "publicado_1020": {
+    "n": 1,
+    "pts": -12.1
+   }
+  }
+ },
+ "n_ops": 500,
+ "n_sesiones": 212,
+ "media_pts_contab_campania": 4.918099999999926,
+ "media_pts_neto_canonico": 4.045599999999925,
+ "media_pts_neto_adverso": 3.545599999999924,
+ "pts_neto_canonico_sesiones": {
+  "n_ops": 500,
+  "n_sesiones": 212,
+  "ops_por_sesion": 2.358490566037736,
+  "media": 4.045599999999925,
+  "se": 2.1856930431487314,
+  "ic": [
+   0.36200634265440684,
+   7.561665660630393
+  ],
+  "confianza": 0.9,
+  "p_unilateral": 0.028742814296425893,
+  "sd_por_op": 49.13575348288315,
+  "sd_aporte_sesion": 76.4556224806121,
+  "ic_orientativo": false,
+  "metodo": "bootstrap por sesiones (iid de sesiones)"
+ },
+ "n_pruebas_familia": 47,
+ "n_pruebas_programa_luximb": 106,
+ "veredicto_familia": {
+  "estado": "SIN_POTENCIA",
+  "motivos": [
+   "no pasa el tamiz FDR de su campaña, pero el IC [0.01343, 0.375] no excluye lo útil",
+   "MDE actual 0.2723 por operación"
+  ],
+  "siguiente_paso": "queda viva en reserva; con ~944 operaciones se distinguiría el efecto observado del cero",
+  "numeros": {
+   "descubrimiento": {
+    "n_ops": 500,
+    "n_sesiones": 212,
+    "ops_por_sesion": 2.358490566037736,
+    "media": 0.19824058636469077,
+    "se": 0.10949767480225303,
+    "ic": [
+     0.013425413088217885,
+     0.37495630396536545
+    ],
+    "confianza": 0.9,
+    "p_unilateral": 0.03549112721819545,
+    "sd_por_op": 2.444626940089345,
+    "sd_aporte_sesion": 3.842858591197735,
+    "ic_orientativo": false,
+    "metodo": "bootstrap por sesiones (iid de sesiones)"
+   },
+   "recorte": {
+    "t": 1.8104547582649835,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado_fuera_de_muestra": 0.0,
+   "dsr": 0.32852211919106394,
+   "n_pruebas_familia": 47,
+   "mde_descubrimiento": 0.27226321568167666,
+   "economico": {
+    "neto_base_por_op": 0.19824058636469077,
+    "neto_total": 99.12029318234539,
+    "sin_top5_por_op": 0.15007069700718143,
+    "por_periodo": {
+     "09-25": -9.778316396769092,
+     "12-25": 9.49657974164659,
+     "03-26": 26.463556787906686,
+     "06-26": 20.36366127322729,
+     "09-26": 53.68649281081656,
+     "12-26": -1.1116810344826331
+    },
+    "periodos_positivos": "4/6",
+    "regimen_reciente": false,
+    "neto_adverso_por_op": 0.16617398596713362,
+    "duros": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "pasa": true
+   }
+  },
+  "asserts_edge": false,
+  "otorga_estado_G": false
+ },
+ "veredicto_programa": {
+  "estado": "SIN_POTENCIA",
+  "motivos": [
+   "no pasa el tamiz FDR de su campaña, pero el IC [0.01343, 0.375] no excluye lo útil",
+   "MDE actual 0.2723 por operación"
+  ],
+  "siguiente_paso": "queda viva en reserva; con ~944 operaciones se distinguiría el efecto observado del cero",
+  "numeros": {
+   "descubrimiento": {
+    "n_ops": 500,
+    "n_sesiones": 212,
+    "ops_por_sesion": 2.358490566037736,
+    "media": 0.19824058636469077,
+    "se": 0.10949767480225303,
+    "ic": [
+     0.013425413088217885,
+     0.37495630396536545
+    ],
+    "confianza": 0.9,
+    "p_unilateral": 0.03549112721819545,
+    "sd_por_op": 2.444626940089345,
+    "sd_aporte_sesion": 3.842858591197735,
+    "ic_orientativo": false,
+    "metodo": "bootstrap por sesiones (iid de sesiones)"
+   },
+   "recorte": {
+    "t": 1.8104547582649835,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado_fuera_de_muestra": 0.0,
+   "dsr": 0.2288798676063004,
+   "n_pruebas_familia": 106,
+   "mde_descubrimiento": 0.27226321568167666,
+   "economico": {
+    "neto_base_por_op": 0.19824058636469077,
+    "neto_total": 99.12029318234539,
+    "sin_top5_por_op": 0.15007069700718143,
+    "por_periodo": {
+     "09-25": -9.778316396769092,
+     "12-25": 9.49657974164659,
+     "03-26": 26.463556787906686,
+     "06-26": 20.36366127322729,
+     "09-26": 53.68649281081656,
+     "12-26": -1.1116810344826331
+    },
+    "periodos_positivos": "4/6",
+    "regimen_reciente": false,
+    "neto_adverso_por_op": 0.16617398596713362,
+    "duros": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "pasa": true
+   }
+  },
+  "asserts_edge": false,
+  "otorga_estado_G": false
+ },
+ "comparacion_escalera_1022": {
+  "n_ops": 500,
+  "media_pts_canonica": 4.045599999999925,
+  "estado": "SIN_POTENCIA",
+  "datos": "bundles locales (viewer/nt8_bridge/bundles), no versionados"
+ }
+}
