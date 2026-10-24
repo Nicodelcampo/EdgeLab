@@ -36,6 +36,8 @@ LENTES = {
     "abogado_del_diablo": "Formulá la hipótesis que, si es cierta, explicaría el éxito más fuerte SIN que sea un edge. Que sea refutable.",
     "costo_y_ejecucion": "Diseñá la medición que decide si el mejor efecto vivo puede pagar costos reales (spread, comisión, slippage).",
     "ingenieria_inversa": "Tomá un resultado ya medido (ganadoras vs. perdedoras, o eventos que el detector descartó) y preguntá qué estado previo lo habría anticipado. Lo que encuentres es una HIPÓTESIS nueva: debe probarse en una muestra que no participó del hallazgo, nunca en la misma.",
+    "hueco_gramatica": "Tomá UNA de las cartas_gramatica (coordenadas lejos de lo ya medido, elegidas sin mirar resultados) y convertila en familia: mecanismo económico, espacio de eventos enumerado, régimen declarado ex ante y perillas del barrido. Si ninguna tiene un mecanismo plausible, decilo y proponé la variante más cercana que sí lo tenga.",
+    "regimen_declarado": "Tomá una lectura viva o una carta y proponé su versión condicionada a un régimen detectable en tiempo real (edgelab/research/agente/regimen.py como perilla, o regimen.definicion/actual_desde en la campaña), escrito ANTES de mirar el OOS: qué régimen, por qué el mecanismo depende de él y qué resultado lo refuta.",
     "meta_etiquetado": "Sobre una señal primaria viva, proponé un filtro secundario (meta-labeling) entrenado sólo con predicciones fuera de pliegue, con su partición de evaluación declarada antes y su conteo de pruebas.",
 }
 
@@ -49,14 +51,17 @@ def elegir_lente(historial: list) -> str:
     return sorted(LENTES, key=lambda k: (uso[k], -hits[k], k))[0]
 
 
-def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000) -> dict:
-    """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos; prioridades y lente nunca se recortan."""
+def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000, cartas=None) -> dict:
+    """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos, después cartas de la gramática
+    (edgelab/research/agente/gramatica.py: coordenadas lejos de lo medido, sin resultados); prioridades y lente nunca se recortan."""
     p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
+             cartas_gramatica=[dict(id=c["id"], coordenadas=c["coordenadas"], cercana_medida=c.get("cercana_medida"), paridad=c.get("paridad"))
+                               for c in (cartas or [])],
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
              reglas=["no abrir holdout", "no P&L sin pre-registro publicado y doble revisión (la aprobación es del agente, no de un humano)", "a lo sumo 3 parámetros libres por hipótesis puntual; un barrido masivo declara todas sus perillas y registra todas sus celdas", "el código nuevo lo escribe el programador (pedido_codigo), dentro de su perímetro y con tests"]))
-    while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"]):
-        (p["fichas"] or p["vacios"]).pop()
+    while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"] or p["cartas_gramatica"]):
+        (p["fichas"] or p["vacios"] or p["cartas_gramatica"]).pop()
     return p
 
 

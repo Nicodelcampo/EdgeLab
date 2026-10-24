@@ -189,3 +189,12 @@ En cada etapa, el embudo también:
 - **Habilitar dinero real:** el embudo termina en CONFIRMADA; operar con dinero real es un interruptor de Nico.
 - **Datos de futuros forward en el Debian:** necesitan un feed (Rithmic o Databento). Mientras tanto, si el P&L en el futuro y en el
   spot se verificó equivalente (como en U1-CRUZADO), el forward se decide sobre Dukascopy.
+
+## 9. Creatividad y escala (2026-10-24)
+Cómo elegir familias nuevas y correr más variantes por hora sin aflojar nada: `docs/research/agente/PLAYBOOK_CREATIVIDAD_Y_ESCALA_20261024.md`
+(skill `.claude/skills/edgelab-barridos-creativos/`).
+- **Gramática de hipótesis** (`edgelab/research/agente/gramatica.py`): 8 ejes, cobertura de lo medido, cartas sin mirar P&L.
+- **Régimen como perilla** (`edgelab/research/agente/regimen.py`): 7 variables causales; se cuentan solas en `n_celdas`.
+- **`niveles_lote`** opcional en un experimento: el preflight exige que sea idéntico a `niveles`.
+- **Romano-Wolf** sin tensor denso por réplica (pares sesión × celda + producto matricial; oráculo en
+  `tests/research/test_grilla_eficiencia.py`); benchmark `tools/bench_grilla.py`.

@@ -37,7 +37,7 @@ def main():
             raiz = Path(a.root) / "embudo"; lec, tk = ER.lectores_sellados(ce.get("sellado"), raiz)
             ventanas = Path(a.root) / "HOLDOUT_VENTANAS.jsonl"; HV.sincronizar(HV.LIBRO, ventanas)   # libro en el estado, no en el clon de código
             emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk, carpeta=raiz / "_local")),
-                             registro=reg, libro=LibroLord(Path(a.root) / "libro_lord.json"), ventanas=ventanas)
+                             registro=reg, libro=LibroLord(), ventanas=ventanas)                 # libro único (decisión 2026-10-24)
             rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb, conductor=ce.get("conductor", "debian"))
         from .pedidos import desde_ciclo
         if (pd := desde_ciclo(Path(a.root), rep)): rep["pedidos"] = [p["id"] for p in pd]   # lo que sólo una persona puede resolver

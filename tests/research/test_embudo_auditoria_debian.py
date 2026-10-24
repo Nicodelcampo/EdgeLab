@@ -29,8 +29,11 @@ def spec(**k):
 
 
 def embudo(tmp_path, runner, **k):
+    from edgelab.research import linaje as LN
+    if LN.declaracion("F", tmp_path / "lin.jsonl") is None: LN.declarar("F", [], 0, "raíz de prueba", libro=tmp_path / "lin.jsonl")
     return EM.Embudo(tmp_path / "e", dict(kaggle=runner, local=runner), registro=k.pop("registro", Reg()), libro=None,
-                     ahora=k.pop("ahora", lambda: 1_792_900_000), log=lambda s: None, ventanas=tmp_path / "v.jsonl")
+                     ahora=k.pop("ahora", lambda: 1_792_900_000), log=lambda s: None, ventanas=tmp_path / "v.jsonl",
+                     linajes=tmp_path / "lin.jsonl", registro_pruebas=tmp_path / "reg.jsonl")
 
 
 # --- 1. una celda sin operaciones corría la lista de las demás ------------------------------------------------------------

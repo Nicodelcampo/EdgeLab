@@ -13,6 +13,8 @@ ls -1t "$B"/runs-*.sqlite 2>/dev/null | tail -n +15 | xargs -r rm -f
 # no se publica; se copian al estado para que la custodia de cada corrida quede en `autopilot/state` (auditoría 2026-10-24)
 L=/opt/edgelab/EdgeLab/docs/data_catalog/launches
 if [ -d "$L" ]; then mkdir -p autopilot_runs/launches; cp -u "$L"/*.json autopilot_runs/launches/ 2>/dev/null || true; fi
+# el libro de LORD++ canónico también vive en el clon de código (decisión 2026-10-24): su copia va al estado
+LL=/opt/edgelab/EdgeLab/docs/research/LIBRO_LORD.json; [ -f "$LL" ] && cp "$LL" autopilot_runs/libro_lord.json
 [ -n "$(git status --porcelain)" ] || exit 0
 # lista blanca: solo los archivos de estado conocidos (no logs arbitrarios ni la base SQLite, que se respalda aparte)
 for f in alpha.json evidence_runtime.jsonl trial_registry.jsonl autopilot.log.jsonl heartbeat.json promociones.jsonl sala_outbox.jsonl sala_aprobaciones.jsonl mejoras.jsonl candidates.json propuestas.jsonl alertas.jsonl biblioteca_manifiesto.json edge_brain_ledger.jsonl auditorias.jsonl pedidos_humano.jsonl holdout_aperturas.jsonl confirmaciones_lordpp.json programacion.jsonl pedidos_codigo.jsonl libro_lord.json HOLDOUT_VENTANAS.jsonl; do [ -f autopilot_runs/$f ] && git add autopilot_runs/$f; done

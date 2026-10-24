@@ -54,3 +54,14 @@ def test_carpeta_completa_sin_subir(tmp_path):
     assert {r["archivo"]: r["filas_quitadas"] for r in reg["archivos"]} == {"X_m1.parquet": 1, "X_ticks.parquet": 2}
     assert json.loads((out / "calidad.json").read_text())["dias"]["2026-09-30"]["ticks"] == 2
     assert "HOLDOUT-A4" in (out / "README.md").read_text() and (out / "RECORTE_HOLDOUT.json").exists()
+
+
+def test_la_subida_rechaza_parquets_con_holdout(tmp_path):
+    sp = importlib.util.spec_from_file_location("kd", Path(__file__).resolve().parents[1] / "tools/kaggle_dataset.py")
+    K = importlib.util.module_from_spec(sp); sp.loader.exec_module(K)
+    _escribir(tmp_path / "con.parquet", [F - MIN, F])
+    _escribir(tmp_path / "sin.parquet", [F - 2 * MIN, F - MIN])
+    (tmp_path / "x.json").write_text("{}")
+    assert K.holdout_en(sorted(tmp_path.iterdir())) == ["con.parquet:time_utc_ns"]
+    R.recortar_parquet(tmp_path / "con.parquet", tmp_path / "rec.parquet")
+    assert K.holdout_en([tmp_path / "rec.parquet"]) == []

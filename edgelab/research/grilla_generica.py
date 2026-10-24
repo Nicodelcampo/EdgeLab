@@ -9,6 +9,9 @@ indicadores propios) sin reescribir el conductor. Un EXPERIMENTO es un módulo c
   niveles(fila, ej, ctx)      -> None | (start, limite, s, entrada, stop, objetivo, be)   (limite: 0 cierre, 1 límite, 2 tick siguiente)
   EJES_ORDINALES              índices de perilla para la meseta (la ejecución es siempre la última perilla)
   BASE (opcional)             {nombre_perilla: nivel}: celda de referencia para las marginales de la indagación
+  niveles_lote(D, ej, ctx)    (opcional, eficiencia) lo mismo que `niveles` para TODOS los disparos a la vez: arreglo (len(D), 7)
+                              con NaN en la columna 0 donde `niveles` daría None. Si existe, se usa; el preflight exige
+                              que coincida exactamente con `niveles` (oráculo) antes de lanzar.
 ctx (lo arma `contexto_m1`): o,h,l,c,v por vela M1, t (cierre, s), ses, seg, tpx/tstart (ticks por vela), vp_start/vp_px/vp_vol
 (perfil de volumen por minuto y precio), tick.
 
@@ -29,7 +32,7 @@ from edgelab.research import areas_expansion as AX
 from edgelab.research import grilla_masiva as GM
 
 MIN_OPS, MIN_SESIONES, RATIO_MOV_FRICCION = 30, 20, 3.0
-MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 200, 0.10, 20
+MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 1000, 0.10, 20     # B_RW 200 -> 1000 (decisión 2026-10-24)
 
 
 @dataclass(frozen=True)
@@ -103,7 +106,18 @@ def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> f
     return np.ceil(st2 / tick) * tick if s == 1 else np.floor(st2 / tick) * tick
 
 
-def _trasladar(O, ctx, cx_ej, retraso):
+def aplicar_tope_lote(e, s, st, tp, tope, tick):
+    """`aplicar_tope` para arreglos (misma regla y mismo redondeo; oráculo: test_aplicar_tope_lote_igual_al_escalar)."""
+    st = np.asarray(st, float)
+    if tope is None: return st.copy()
+    e, s, tp = np.asarray(e, float), np.asarray(s, float), np.asarray(tp, float)
+    kind, v = tope; d_max = np.full(len(e), float(v)) if kind == "pts" else v * np.abs(tp - e)
+    st2 = e - s * d_max
+    st2 = np.where(s == 1, np.ceil(st2 / tick) * tick, np.floor(st2 / tick) * tick)
+    return np.where(np.abs(e - st) <= d_max, st, st2)
+
+
+def _trasladar_bucle(O, ctx, cx_ej, retraso):
     """Señal calculada en `ctx` (sensor), orden ejecutada en `cx_ej`: el inicio pasa a la vela del mismo minuto en la ejecución
     (+ `retraso` velas) y los precios se trasladan con la base (cierre ejecución − cierre sensor en ese minuto), redondeados al
     tick de la ejecución, el stop siempre hacia afuera. Si en el retraso el precio ya tocó objetivo o stop, no se opera."""
@@ -125,19 +139,58 @@ def _trasladar(O, ctx, cx_ej, retraso):
     return O2, ok
 
 
-def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False):
-    """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo).
-    `cx_ej`: contexto M1 de OTRO instrumento donde se ejecuta (señal en un activo, operación en otro; mismo minuto, base
-    trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
+def _trasladar(O, ctx, cx_ej, retraso):
+    """Versión vectorizada de `_trasladar_bucle` (la regla está documentada ahí; oráculo: test_trasladar_igual_al_bucle)."""
+    t_ej, tk, n_ej = cx_ej["t"], cx_ej["tick"], len(cx_ej["t"]); O2 = O.copy()
+    k = O[:, 2].astype(np.int64); tk_s = ctx["t"][k]; j = np.searchsorted(t_ej, tk_s); jc = np.minimum(j, n_ej - 1)
+    ok = (j < n_ej) & (t_ej[jc] == tk_s)
+    jj = j + retraso; jjc = np.clip(jj, 0, n_ej - 1)
+    ok &= (jj < n_ej - 1) & (cx_ej["ses"][jjc] == cx_ej["ses"][jc])
+    base = cx_ej["c"][jc] - ctx["c"][k]; s = O[:, 4].astype(np.int64)
+    e, st, tp = O[:, 5] + base, O[:, 6] + base, O[:, 7] + base
+    tp = np.round(tp / tk) * tk; e = np.round(e / tk) * tk
+    st = np.where(s == 1, np.floor(st / tk) * tk, np.ceil(st / tk) * tk)
+    if retraso:
+        hi = np.full(len(O), -np.inf); lo = np.full(len(O), np.inf)
+        for q in range(1, retraso + 1):
+            jq = np.clip(j + q, 0, n_ej - 1); hi = np.maximum(hi, cx_ej["h"][jq]); lo = np.minimum(lo, cx_ej["l"][jq])
+        toco = np.where(s == 1, (hi >= tp) | (lo <= st), (lo <= tp) | (hi >= st))
+        ok &= ~toco
+        e = np.where(O[:, 3] != 1, cx_ej["c"][jjc], e)                 # a mercado: la entrada es la del momento real
+    ok &= ~(((e - tp) * -s < tk) | ((e - st) * s < tk))
+    O2[ok, 2], O2[ok, 5], O2[ok, 6], O2[ok, 7] = jj[ok], e[ok], st[ok], tp[ok]
+    return O2, ok
+
+
+def _ops_lote(exp, D, ctx):
+    """Filas (i, ei, start, limite, s, entrada, stop, objetivo, be) en el MISMO orden que el bucle por disparo y ejecución."""
+    partes = []
+    for ei, ej in enumerate(exp.EJECUCIONES):
+        X = np.asarray(exp.niveles_lote(D, ej, ctx), float)
+        if X.shape != (len(D), 7): raise ValueError(f"niveles_lote debe devolver ({len(D)}, 7); devolvió {X.shape}")
+        i = np.flatnonzero(np.isfinite(X[:, 0]))
+        partes.append(np.column_stack([i, np.full(len(i), ei), X[i]]))
+    O = np.concatenate(partes) if partes else np.zeros((0, 9))
+    return O[np.lexsort((O[:, 1], O[:, 0]))] if len(O) else O
+
+
+def ops_por_fila(exp, D, ctx):
+    """El camino de referencia (una llamada a `niveles` por disparo y ejecución). Lo usa el oráculo de `niveles_lote`."""
     filas = D.to_dict("records"); ops = []
     for i, r in enumerate(filas):
         for ei, ej in enumerate(exp.EJECUCIONES):
             nv = exp.niveles(r, ej, ctx)
             if nv is not None: ops.append((i, ei) + tuple(nv))
-    if not ops: return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ())
-    O = np.array(ops, float)
-    if tope is not None:
-        for r in range(len(O)): O[r, 6] = aplicar_tope(O[r, 5], int(O[r, 4]), O[r, 6], O[r, 7], tope, ctx["tick"])
+    return np.array(ops, float) if ops else np.zeros((0, 9))
+
+
+def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False):
+    """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo).
+    `cx_ej`: contexto M1 de OTRO instrumento donde se ejecuta (señal en un activo, operación en otro; mismo minuto, base
+    trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
+    O = _ops_lote(exp, D, ctx) if hasattr(exp, "niveles_lote") else ops_por_fila(exp, D, ctx)
+    if not len(O): return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ())
+    if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
@@ -237,7 +290,12 @@ def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
         cr = GM.criba(st, q=q); rw = GM.romano_wolf(P, idx, v, cx["ses"], st, B=B_RW, alfa=ALFA_RW, seed=7)
         c2 = dict(cx, net=v, st=st)
         ev = [r for r in (evaluar(c, c2, friccion=friccion, extra_adverso=extra_adverso) for c in GM.pistas(st, rw["t"], k=3 * K_PISTAS)) if r]
-        for r in ev: r["t_rw"] = float(rw["t"][tuple(r["celda"])])
+        for r in ev:
+            r["t_rw"] = float(rw["t"][tuple(r["celda"])])
+            # decisión 2026-10-24: la nominación FDR (q 0,10, sobre TODAS las celdas del canal) es compuerta dura de DESC; se marca
+            # por pista con el conjunto completo (la lista `nominadas` tiene tope) y con lo necesario para cobrar el linaje
+            r.update(canal=nombre, q_fdr=float(cr["q_valores"][tuple(r["celda"])]), nominada_fdr=bool(cr["q_valores"][tuple(r["celda"])] <= q),
+                     pi0_fdr=float(cr["pi0"]), m_fdr=int(cr["celdas"]))
         rel = sorted([r for r in ev if r["sesiones"] >= MIN_SESIONES and r["ratio_mov_friccion"] >= RATIO_MOV_FRICCION], key=lambda r: -r["ic90"][0])
         out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=len(cr["nominadas"]), evaluables=cr["evaluables"],
                            nominadas=[list(c) for c in cr["nominadas"][:300]],
