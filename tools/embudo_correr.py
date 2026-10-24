@@ -2,7 +2,7 @@
 """Corre el embudo automático sobre una o más campañas hasta que terminan o quedan esperando datos del holdout (mismo código que
 usa el ciclo del Debian; útil para correrlo desde una máquina de trabajo).
 
-  python tools/embudo_correr.py config/autopilot/grillas/campanas/EXPZ-NQ.json [...] --raiz <estado> --libro <libro_lord.json>
+  python tools/embudo_correr.py config/autopilot/grillas/campanas/EXPZ-NQ.json [...] --raiz <estado>
          [--sellado '{"DK:USATECHIDXUSD": "...", "NQ": "..."}'] [--intervalo 300]
 """
 import argparse
@@ -18,13 +18,13 @@ from edgelab.research import embudo as EMB, embudo_runners as ER  # noqa: E402
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("campanas", nargs="+"); ap.add_argument("--raiz", required=True); ap.add_argument("--libro", required=True)
+    ap = argparse.ArgumentParser(); ap.add_argument("campanas", nargs="+"); ap.add_argument("--raiz", required=True);
     ap.add_argument("--sellado", default="{}"); ap.add_argument("--intervalo", type=int, default=300); ap.add_argument("--max-errores", type=int, default=5)
     ap.add_argument("--registro", default=str(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"))
     a = ap.parse_args()
     lec, tk = ER.lectores_sellados(json.loads(a.sellado), Path(a.raiz))
     emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
-                     registro=TrialRegistry(Path(a.registro)), libro=LibroLord(Path(a.libro)))
+                     registro=TrialRegistry(Path(a.registro)), libro=LibroLord())   # libro único: RUTA_CANONICA (decisión 2026-10-24)
     specs = [json.loads(Path(c).read_text(encoding="utf-8")) for c in a.campanas]; vivas = {s["cid"] for s in specs}; errores = {}
     while vivas:
         for s in specs:

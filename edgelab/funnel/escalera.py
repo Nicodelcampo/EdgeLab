@@ -23,6 +23,7 @@ Nada de este módulo otorga estados G (contrato G0-G5): produce el nivel del emb
 """
 from __future__ import annotations
 
+import bisect
 import math
 from dataclasses import dataclass, field
 from statistics import NormalDist
@@ -97,6 +98,23 @@ class LordPP:
         if ok: self.rechazos.append(self.t)
         r = dict(t=self.t, etiqueta=etiqueta, p=p, nivel=a, rechazo=ok); self.historia.append(r); return r
 
+    def reservar(self, etiqueta: str = "") -> dict:
+        """Consume el paso t AHORA con su nivel fijo, sin p todavía (decisión del 2026-10-24: el acta reserva su α antes de mirar).
+        Mientras está pendiente cuenta como no rechazo para los pasos que siguen: sólo puede dejarles menos nivel, nunca más
+        (LORD++ asincrónico, Zrnic, Ramdas y Jordan 2021), así que el FDR sigue controlado."""
+        a = self.nivel(); self.t += 1
+        r = dict(t=self.t, etiqueta=etiqueta, p=None, nivel=a, rechazo=None, reservada=True); self.historia.append(r); return r
+
+    def resolver(self, t: int, p: float) -> dict:
+        """Decide el paso reservado t al nivel que se fijó al reservarlo."""
+        if not 0 <= p <= 1: raise ValueError("p fuera de [0,1]")
+        h = next((x for x in self.historia if x["t"] == t), None)
+        if h is None or not h.get("reservada"): raise ValueError(f"el paso {t} no es una reserva")
+        if h["rechazo"] is not None: return h                                          # ya resuelta: idempotente
+        h.update(p=p, rechazo=bool(p <= h["nivel"]))
+        if h["rechazo"]: bisect.insort(self.rechazos, t)
+        return h
+
     def to_dict(self) -> dict:
         return dict(alfa=self.alfa, w0=self.w0, t=self.t, rechazos=list(self.rechazos), historia=list(self.historia), gamma=self.gamma, metodo="LORD++")
 
@@ -106,6 +124,19 @@ class LordPP:
 
 
 
+def decidir_lote(nivel: float, pruebas: list) -> dict:
+    """La decisión de un lote a un nivel YA asignado (Simes para la familia, BH adentro). La usa `probar_lote` y el libro cuando
+    resuelve un paso reservado por un acta (el nivel quedó fijo al escribirla). pruebas: [(nombre, p)]."""
+    if not pruebas: return dict(nivel=nivel, p_simes=None, rechazo=False, confirmadas=[], m=0)
+    ps = np.array([float(p) for _, p in pruebas]); m = len(ps); o = np.argsort(ps, kind="stable")
+    if np.any((ps < 0) | (ps > 1)): raise ValueError("p fuera de [0,1]")
+    p_simes = float(min(1.0, np.min(ps[o] * m / np.arange(1, m + 1)))); rech = bool(p_simes <= nivel); conf = []
+    if rech:
+        ok = np.flatnonzero(ps[o] <= nivel * np.arange(1, m + 1) / m)
+        conf = [dict(test=pruebas[i][0], p=float(ps[i]), nivel=nivel) for i in o[:ok.max() + 1]] if len(ok) else []
+    return dict(nivel=nivel, p_simes=p_simes, rechazo=rech, confirmadas=conf, m=m)
+
+
 def probar_lote(L: "LordPP", pruebas: list, etiqueta: str = "") -> dict:
     """Un LOTE de réplicas simultáneas (las de una misma corrida) ocupa UN paso de LORD++ (Benjamini y Bogomolov 2014: primero
     se selecciona la familia, después se decide adentro). p de la familia = Simes (min_k p_(k)·m/k); si la familia rechaza al
@@ -113,14 +144,9 @@ def probar_lote(L: "LordPP", pruebas: list, etiqueta: str = "") -> dict:
     Error que corrige (2026-10-23): pasar 80 réplicas de una corrida de a una por LORD++ gastaba el nivel en las primeras
     (0,011 la 1.ª, ~0 desde la 20.ª) y la decisión dependía del orden alfabético. pruebas: [(nombre, p)]."""
     if not pruebas: return dict(nivel=L.nivel(), p_simes=None, rechazo=False, confirmadas=[])
-    ps = np.array([float(p) for _, p in pruebas]); m = len(ps); o = np.argsort(ps, kind="stable")
-    p_simes = float(min(1.0, np.min(ps[o] * m / np.arange(1, m + 1))))
-    r = L.probar(p_simes, etiqueta or f"lote de {m}")
-    conf = []
-    if r["rechazo"]:
-        ok = np.flatnonzero(ps[o] <= r["nivel"] * np.arange(1, m + 1) / m)
-        conf = [dict(test=pruebas[i][0], p=float(ps[i]), nivel=r["nivel"]) for i in o[:ok.max() + 1]] if len(ok) else []
-    return dict(nivel=r["nivel"], p_simes=p_simes, rechazo=r["rechazo"], confirmadas=conf, m=m, t=r["t"])
+    d = decidir_lote(L.nivel(), pruebas)
+    r = L.probar(d["p_simes"], etiqueta or f"lote de {d['m']}")
+    return dict(d, t=r["t"])
 
 # ----------------------------------------------------------------------------- 3. inferencia por operación, agrupada por sesión
 def resumen_sesiones(netos, sesiones, n_boot: int = 4000, seed: int = 20261022, confianza: float = 0.90) -> dict:
@@ -253,6 +279,10 @@ def evaluar(*, descubrimiento: dict, nominada: bool, n_pruebas_familia: float, e
                          f"pre-registrar la regla exacta y replicar en muestra no mirada; para ver el efecto recortado ({esperado:.4g}) hacen falta "
                          f"~{ops_necesarias(esperado, d['se'], d['n_ops']) or 'inf'} operaciones con la dispersión actual", num)
     r = replica; num["replica"] = r; a = alfa_replica if alfa_replica is not None else ALFA_CONFIRMACION; num["alfa_replica"] = a
+    if not nominada:                                    # decisión del 2026-10-24: sin nominación FDR no hay confirmación posible
+        return Veredicto("SIN_POTENCIA", ["no pasó el tamiz FDR (q 0,10) de su campaña: la réplica no puede confirmarla (gate duro, "
+                                          "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md)"],
+                         "queda viva en reserva; para confirmarla hace falta una campaña nueva, pre-registrada, que la nomine", num)
     if r["p_unilateral"] <= a and r["media"] > 0:
         est, mot = "CONFIRMADA_REPLICA", [f"réplica p = {r['p_unilateral']:.4g} <= nivel LORD++ {a:.4g}"]
     elif r["ic"][1] < umbral:
