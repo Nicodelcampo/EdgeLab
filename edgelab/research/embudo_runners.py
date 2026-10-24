@@ -121,9 +121,15 @@ class KaggleRunner:
 
 
 class LocalRunner:
-    """Etapas del holdout en la máquina, con datos sellados: `lectores` = {nombre: f(desde, hasta, spec) -> bloques}."""
-    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True):
+    """Etapas del holdout en la máquina, con datos sellados: `lectores` = {nombre: f(desde, hasta, spec) -> bloques}.
+    `carpeta`: donde se guarda cada resultado. El ciclo del Debian arma un runner NUEVO en cada vuelta; sin carpeta el
+    resultado vivía sólo en memoria, la vuelta siguiente veía el handle como desconocido («error») y a la tercera el embudo
+    cerraba la campaña como BLOQUEADA: CONTEO y HOLDOUT no podían terminar nunca desde el ciclo."""
+    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True, carpeta=None):
         self.lectores, self.ticks, self.acta_requerida, self.res = lectores, ticks, acta_requerida, {}
+        self.carpeta = Path(carpeta) if carpeta else None
+
+    def _archivo(self, h): return self.carpeta / f"{h}.json"
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
         from edgelab.research import etapas as ET, grilla_generica as GG
@@ -131,12 +137,20 @@ class LocalRunner:
         ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
         cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
         fr, ex = friccion(ejec)
-        h = f"local-{spec['cid']}-{etapa}-{len(self.res)}"
+        h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{len(self.res)}"
+        if self.carpeta:
+            self.carpeta.mkdir(parents=True, exist_ok=True); k = 0
+            while self._archivo(h).exists(): k += 1; h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{k}"
         self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        if self.carpeta:
+            tmp = self._archivo(h).with_suffix(".tmp"); tmp.write_text(json.dumps(self.res[h], default=float), encoding="utf-8"); tmp.replace(self._archivo(h))
         return h
 
-    def estado(self, h): return "complete" if h in self.res else "error"
-    def traer(self, h): return self.res[h]
+    def estado(self, h): return "complete" if h in self.res or (self.carpeta and self._archivo(h).exists()) else "error"
+
+    def traer(self, h):
+        if h not in self.res and self.carpeta: self.res[h] = json.loads(self._archivo(h).read_text(encoding="utf-8"))
+        return self.res[h]
 
 
 def lectores_sellados(cfg_sellado: dict, raiz_embudo: Path) -> tuple:

@@ -84,6 +84,11 @@ Notas:
 | 8 | Campañas que usan la réplica para descubrir | La plantilla de la guía (§8) traía `desc` hasta el 2026-09-30 con ejecución en NQ (viola A3) y `holdout.desde` 20261001. | El PREFLIGHT de la campaña rechaza `desc` u `oos` que toquen el holdout, `desc` posterior al 2026-03-31 con ES o NQ, y `holdout.desde` anterior a la frontera. Plantilla corregida. | `test_campana_a3_y_holdout` |
 | 9 | Detalles del Debian | El slug de HOLDOUT_CONTEO llevaba «_», que Kaggle rechaza. El push tenía un timeout de 1.800 s y el servicio corta el ciclo a los 900. Los manifiestos de lanzamiento se escribían en archivos versionados del clon de código y bloqueaban `update.sh`. HOLDOUT podía decidir con menos de N operaciones. | Slug sin «_». Timeouts de 480, 120 y 300 s. `sync_state.sh` copia los manifiestos al estado y `update.sh` los guarda y restaura. HOLDOUT con menos de N queda BLOQUEADA. | `test_slug_sin_guion_bajo` |
 
+**Integración con el PR #130** (hilo «Dejar el embudo listo para el Debian», misma fecha): los defectos 1, 2, 4 y 5 los corrigió
+también ese PR, con su propio código (`etapas.por_celda`, `_reglas`, `_fallo`, `INMUTABLES`). Esta rama mergea #130 y usa su
+versión de esos cuatro. De acá quedan el 3 (registro obligatorio), el 6 (conductor), el 7 (libro de ventanas en el estado), el 8
+(chequeo A3 dentro de `problemas_campana` de #130), el 9 y el corte de HOLDOUT con menos de N.
+
 No toqué gates, FDR, mandato ni archivos protegidos (`config/autopilot/protected.json`). Los arreglos 3, 5 y 8 hacen cumplir
 reglas que ya están escritas (el contador antes de correr, las reglas escritas antes de usarse y la partición A3); no agregan
 ninguna regla nueva.
@@ -94,7 +99,8 @@ B = 200 son unos 0,8 GB por millón de celdas evaluables, así que un kernel de 
 Más que eso hay que partirlo por perilla de grupo.
 
 ## 5. Propuestas (las decide Nico; no apliqué ninguna)
-- **P1. DESC sin señal no pasa.** Hoy una pista con IC90 inferior > 0 pasa aunque el tamiz FDR y Romano-Wolf den cero. Entre
+- **P1. DESC sin señal no pasa.** *Actualización: Nico ya aprobó la compuerta dura de FDR (q 0,10) en DESC; la implementa el hilo
+  «Aplicar las cuatro decisiones de validación». Lo que sigue queda como contexto.* Hoy una pista con IC90 inferior > 0 pasa aunque el tamiz FDR y Romano-Wolf den cero. Entre
   233.280 celdas, la mejor por IC90 es, por construcción, el máximo del azar. Propongo exigir al menos uno de los dos: nominación
   FDR o rechazo de Romano-Wolf en algún canal. Hasta que lo decidas, **recomiendo pausar EXPZ-NQ y EXPZ-CFD** (`activa: false`):
   la siguiente etapa que gasta algo es OOS en NQ de abril a septiembre, y después viene el ACTA con la única apertura de la

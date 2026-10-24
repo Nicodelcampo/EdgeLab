@@ -1,6 +1,6 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-24  
+**Fecha:** 2026-10-23  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
 **Corte:** 2026-10-24  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.

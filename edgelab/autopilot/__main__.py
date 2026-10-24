@@ -36,7 +36,7 @@ def main():
             from edgelab.research import embudo as EMB, embudo_runners as ER, holdout_ventanas as HV
             raiz = Path(a.root) / "embudo"; lec, tk = ER.lectores_sellados(ce.get("sellado"), raiz)
             ventanas = Path(a.root) / "HOLDOUT_VENTANAS.jsonl"; HV.sincronizar(HV.LIBRO, ventanas)   # libro en el estado, no en el clon de código
-            emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk)),
+            emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk, carpeta=raiz / "_local")),
                              registro=reg, libro=LibroLord(Path(a.root) / "libro_lord.json"), ventanas=ventanas)
             rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb, conductor=ce.get("conductor", "debian"))
         from .pedidos import desde_ciclo
