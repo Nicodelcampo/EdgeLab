@@ -1,6 +1,6 @@
 # Mensaje para el dueño del Debian — 2026-10-19
 
-Estado: VIGENTE — listo para enviar; el código está en foundation (merge del PR #123, commit 20a3b5eb, CI en verde).
+Estado: VIGENTE — listo para enviar; el código está en foundation (merges de los PR #123 y #126, commit 3faf0bb2, CI en verde).
 
 ---
 
@@ -19,7 +19,7 @@ Hola. Te paso las novedades del agente de EdgeLab para el Debian y lo que necesi
   - el código queda fijado a un commit revisado.
 
 **Cambios en la instalación (solo si ya instalaste)**
-1. Reinstalar desde la rama viva `foundation/f0b-compatibility-probe`, fijado al commit revisado: `sudo CODE_REF=20a3b5ebf89af881672ab7055fdb94f91b6d72e9 bash deploy/debian/install.sh`. Si ya existe `/etc/edgelab/candidates.json`, el instalador lo migra a `/var/lib/...`.
+1. Reinstalar desde la rama viva `foundation/f0b-compatibility-probe`, fijado al commit revisado: `sudo CODE_REF=3faf0bb2bbe7b3b1dc99e5e402db0f4f8ff702f7 bash deploy/debian/install.sh`. Si ya existe `/etc/edgelab/candidates.json`, el instalador lo migra a `/var/lib/...`.
 2. La deploy key de GitHub también tiene que estar en el clon de código. Ver `deploy/debian/LEEME.md`, paso 4.
 3. Activar el vigilante: `sudo systemctl enable --now edgelab-watchdog.timer`.
 4. Opcional, para recibir avisos en el celular: agregar `EDGELAB_ALERT_URL=https://ntfy.sh/<tu-tópico>` en `/etc/edgelab/autopilot.env`.

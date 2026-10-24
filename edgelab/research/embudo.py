@@ -25,12 +25,14 @@ from pathlib import Path
 
 import numpy as np
 
+from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
+
 ORDEN = ["PREFLIGHT", "DESC", "INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
 FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_friccion=3.0, exigir_meseta=True, min_dif=2),
                 integridad=dict(placebo_max_frac=0.25, latencia_1_positiva=False),
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
-                holdout=dict(desde=20261001, n_fijo=150, conteo_cada_s=86400))
+                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400))
 CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_economica", "como_podria_refutarse")
 
 
@@ -39,9 +41,10 @@ def _cfg(spec, k):
 
 
 class Embudo:
-    def __init__(self, raiz: Path, runners: dict, registro=None, libro=None, ahora=time.time, log=print):
+    def __init__(self, raiz: Path, runners: dict, registro=None, libro=None, ahora=time.time, log=print, ventanas=None):
         """runners: {"kaggle": ..., "local": ...} con lanzar(spec, etapa, params, periodo) -> handle, estado(handle), traer(handle)."""
         self.raiz, self.runners, self.registro, self.libro, self.ahora, self.log = Path(raiz), runners, registro, libro, ahora, log
+        self.ventanas = ventanas                                                   # libro de ventanas del holdout (None = el del repo)
 
     # --- estado -------------------------------------------------------------------------------------------------------
     def _dir(self, spec): d = self.raiz / spec["cid"]; d.mkdir(parents=True, exist_ok=True); return d
@@ -173,13 +176,19 @@ class Embudo:
         st["regla"] = mejor; return self._siguiente(spec, st, "ACTA")
 
     def _acta(self, spec, st):
-        h = _cfg(spec, "holdout"); alfa = self.libro.nivel(spec["familia"]) if self.libro else 0.05
+        h = _cfg(spec, "holdout")
+        from edgelab.research import holdout_ventanas as HV                      # ventanas consumidas y una apertura por familia
+        libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
+        if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v)):
+            return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
+        alfa = self.libro.nivel(spec["familia"]) if self.libro else 0.05
         acta = dict(cid=spec["cid"], familia=spec["familia"], experimento=spec["experimento"], sensor=spec["sensor"], ejecucion=spec.get("ejecucion"),
                     regla=st["regla"], cortes=st["cortes"], holdout_desde=h["desde"], n_fijo=h["n_fijo"], alfa=alfa, registrada=self.ahora(),
                     decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: un paso de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
+        HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
 
