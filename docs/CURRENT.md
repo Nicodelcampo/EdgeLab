@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-22  
+**Fecha:** 2026-10-24  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-19  
+**Corte:** 2026-10-24  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,20 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-22 (leer primero)
+## Estado al 2026-10-24 (leer primero)
+
+- **Revisión de los avances del 20 al 23-oct:** `docs/research/revision_20261024/REVISION_20261024.md`.
+  - **U1-CRUZADO** es una hipótesis débil: linaje de unos 19,4 M pruebas, regla elegida por P&L entre 14 topes, OOS sobre USATECH 2023-25 negativo y holdout exploratorio n=8 NO_CONCLUYENTE. El fix 27 casi no lo cambia.
+  - El **candidato de LUX-IMB** es dentro de muestra, con costos no canónicos, y su mirada al holdout va en contra.
+- **Holdout:**
+  - Las ventanas consumidas quedan en `docs/research/HOLDOUT_VENTANAS.jsonl`: LUXIMB 10-01→10-21 y U1/AREAS 10-01→10-22, las dos alcanzan a EXPANSION_ZONAS.
+  - El embudo bloquea el ACTA si `holdout.desde` reusa sesiones consumidas o si la familia ya tiene su apertura.
+  - U1 y EXPZ confirman desde el **2026-10-23**.
+- **Embudo EXPZ:** DESC terminó (EXPZ-NQ con 0 nominadas por FDR; igual pasan 3 candidatas, punto que va a Nico) y las dos campañas están en INDAGA.
+- **Descargador de Dukascopy:** arreglado. La causa era el límite de tasa del datafeed (429/503).
+- **Edges promovidos: 0.**
+
+## Estado al 2026-10-22
 
 - **Sprint 2026-10-20..22 (LUX-IMB OG/VI, ORB 01:00 de Instagram, horarios ORB, picos EURUSD): 20 campañas, 1.535 pruebas**, ahora en el contador global (`tools/registrar_campanias_20261020.py`). Índice, veredictos y auditoría del embudo: `docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`.
 - **Único candidato vivo:** regla LUX-IMB del visor en NQ (entrada al cierre de la confirmación, TP en el inicio de la zona, SL 1/5), congelada para holdout (`docs/research/luximb_parity_20261020/CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); mirada exploratoria del holdout (n = 14) en contra: 14 SL / 0 TP. ORB0100 NQ 01:00 (TP 1,5R + VWAP) positivo en 3 tramos, replicación NO_CONCLUYENTE. Todo lo demás: sin efecto.

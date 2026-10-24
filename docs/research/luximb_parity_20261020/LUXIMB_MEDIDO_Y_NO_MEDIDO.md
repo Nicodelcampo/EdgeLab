@@ -32,3 +32,9 @@
 - Vida 200 con desenlaces; otras geometrias de salida (p. ej. objetivo A, horizonte fijo).
 - Otros instrumentos (ES, YM); zonas LUX-IMB individuales como soporte/resistencia.
 - Replicacion abr-sep: comprometida para esta familia (diseno mirando NQ 09-26).
+
+## Agregado de la revisión del 2026-10-24 (`docs/research/revision_20261024/REVISION_20261024.md`)
+- **Candidato de la regla del visor:** el +4,95 pts/op es **dentro de muestra**. La regla salió de ajustes exploratorios (TP, SL, BE y entrada) y de la relectura de M11. Solo genera la hipótesis.
+- **Costos:** `tools/luximb_parity/luximb_holdout_regla_visor.py` cobra 0,225 pts más 1 tick, no la fricción canónica de NQ (1,5455 pts). **No medido:** el candidato con costos canónicos.
+- **Multiplicidad:** se registró después de los resultados (`d98876a2`). La familia suma unas 46 pruebas en LUXIMB_FADE_VISOR y unas 105 en total.
+- **Holdout:** la mirada exploratoria (n=14, 14 SL y 0 TP) se hizo fuera del protocolo de aperturas. Quedó registrada retroactivamente como ventana consumida del 10-01 al 10-21 en `docs/research/HOLDOUT_VENTANAS.jsonl`. Una confirmación arranca el 2026-10-22 o después; las familias derivadas (EXPANSION_ZONAS) arrancan el 2026-10-23.

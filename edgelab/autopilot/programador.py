@@ -23,6 +23,9 @@ PERIMETRO = ("edgelab/research/agente/", "tools/agente/", "tests/agente/", "docs
 REGLAS = NUNCA + ("edgelab/autopilot/", "edgelab/holdout.py", "edgelab/costos.py", "config/costos/", "config/autopilot/protected.json",
                   "config/autopilot/mandate.json", "edgelab/research/holdout_guard.py", "edgelab/funnel/multiplicity.py", "deploy/",
                   "tests/conftest.py", ".gitattributes", ".gitignore", "CLAUDE.md", "docs/incidents/", "docs/data_catalog/")
+# Campañas: definen familia, holdout.desde, n_fijo y activa (reglas por la puerta de datos). Nunca se aplican solas: PROPUESTA
+# (revisión 2026-10-24: renombrar una familia reiniciaría LORD++; mover holdout.desde reabriría ventanas consumidas).
+SOLO_PROPUESTA = ("config/autopilot/grillas/campanas/",)
 ORDEN = {"PERIMETRO": 0, "PROPUESTA": 1, "SOLO_HUMANO": 2}
 LOG = "programacion.jsonl"
 PEDIDOS = "pedidos_codigo.jsonl"
@@ -31,6 +34,7 @@ PEDIDOS = "pedidos_codigo.jsonl"
 def zona(path: str, protegidos=()) -> str:
     p = path.replace("\\", "/").removeprefix("./")
     if p in protegidos or any(p == r or (r.endswith("/") and p.startswith(r)) for r in REGLAS): return "SOLO_HUMANO"
+    if any(p.startswith(r) for r in SOLO_PROPUESTA): return "PROPUESTA"
     if any(p.startswith(r) for r in PERIMETRO): return "PERIMETRO"
     return "PROPUESTA"
 

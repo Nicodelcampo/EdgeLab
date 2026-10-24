@@ -29,3 +29,10 @@ Spec: `SPEC_AREAS_EXPANSION_V1.md` (v1.3). Manifiesto y resultados: `MANIFIESTO_
 
 ## Cómo podría reabrirse sin data snooping
 Una grilla nueva (otras perillas o valores) es una prueba nueva: registro en el contador, pre-registro con el bloque `GRILLA` exacto y datos que esta corrida no usó para elegir.
+
+## Agregado de la revisión del 2026-10-24 (`docs/research/revision_20261024/REVISION_20261024.md`)
+- **Error 27 (stop dentro de la vela), re-medido en el desarrollo de U1-CRUZADO:** las diferencias van de 0,01 a 0,07 pts/op en todas las celdas. Las conclusiones del desarrollo no cambian. **No re-medido:** el OOS sobre USATECH de 2023 a 2025 con el fix.
+- **Holdout exploratorio de U1-CRUZADO:** la lectura correcta es **NO_CONCLUYENTE**, sin «a favor». Son n=8 en 4 sesiones y el IC90 de T3 es [−1,2, +72].
+- **Multiplicidad efectiva:** U1 sale de un linaje de unos 19,4 M pruebas; el registro como familia nueva (≈20) la subestima.
+- **Sesiones consumidas:** 10-01 a 10-22. La confirmación arranca el **2026-10-23** (`HOLDOUT_VENTANAS.jsonl`).
+- **Densidad del feed:** el resultado está incompleto (solo señales por trimestre). Falta comparar contra ticks y rango por día, así que la pregunta mercado o feed queda abierta.

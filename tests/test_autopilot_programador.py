@@ -107,3 +107,9 @@ def test_experimento_de_grilla_exige_causalidad_e_indicadores(repo, tmp_path):
     row, _ = _run(repo, tmp_path, {"edgelab/research/agente/exp.py": 'INDICADORES = ["LUX-IMB"]\n' + exp,
                                    "tests/agente/test_exp.py": TEST + "\ndef test_causal():\n    assert True\n"})
     assert row["estado"] == "FALLA_PREFLIGHT", row                          # disparos roto: el preflight lo frena antes de aplicar
+
+
+def test_campanas_nunca_se_aplican_solas():
+    from edgelab.autopilot.programador import zona
+    assert zona("config/autopilot/grillas/campanas/EXPZ-NQ.json") == "PROPUESTA"
+    assert zona("config/autopilot/grillas/otra_grilla.json") == "PERIMETRO"
