@@ -43,3 +43,10 @@ Una grilla nueva (otras perillas o valores) es una prueba nueva: registro en el 
 - **Densidad del feed:** la cerró el hilo del OOS con fix 27 (`u1/topes/U1_DENSIDAD_ANALISIS.json`, línea de arriba); la auditoría llegó a la misma lectura, MERCADO, con el mismo CSV.
 - **Pruebas que faltaban en el contador global, registradas retroactivamente:** `u1_indaga/acuerdo_nq` (20), `u1b/fase_a_nq` (1), `u1_cruzado/integridad` (4) y `u1_cruzado/topes_oos_us` (28).
 - **Réplica de NQ abr–sep usada tres veces en el linaje AREAS-EXP-1:** réplica v1.4 (80 pistas), U1-B Fase A y U1-CRUZADO P2. La fila de U1-B dice «no usada antes»: lo era para la celda, no para la familia (HOLDOUT-A3, regla 2). Va como propuesta a Nico en la auditoría.
+
+## Agregado de las correcciones de falsos negativos del 2026-10-24 (`docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md`)
+- **Re-lectura de artefactos, sin medición nueva:** con la regla nueva de pistas a réplica (top-20 por cota inferior del IC, un
+  paso de LORD++ por lote), sobre el DESC y la réplica v1.4 de USATECH, el lote rechaza al primer paso de la familia (p de
+  Simes 0,009995 contra un nivel de 0,010937). Confirma 2 de las 5 celdas de U1 y ninguna otra. Al nivel del segundo paso no
+  rechaza, y el lote de NQ no rechaza (Simes 0,070).
+- **No medido:** los p de esa réplica con la resolución nueva (B ≥ 10·m/nivel o p analítico). Los del artefacto tienen B = 2000.
