@@ -75,7 +75,8 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         return dict(por_base=out, indagacion=out[0]["indagacion"], base=out[0]["base"])
     if etapa in ("REP", "HOLDOUT_CONTEO"):
         tope = tuple(p["tope"]) if p.get("tope") else None
-        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tope)
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tope,
+                            resolucion=p.get("resolucion"))              # {nivel, m}: B del bootstrap que resuelve el umbral (2026-10-24)
         if etapa == "HOLDOUT_CONTEO":                                     # sin P&L: sólo cuántas operaciones hay
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
