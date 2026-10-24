@@ -149,6 +149,23 @@ def pedir(root: Path, que: str, por_que: str, aceptacion: str = "", origen: str 
     return row
 
 
+def existentes(repo: Path, consulta: str, k: int = 12) -> str:
+    """Lo que ya hay en el repo para este pedido (tools/existente.py buscar): va en el prompt para que no se reconstruya
+    (pedido de Nico, 2026-10-24). Las copias igual las frena tests/test_existente.py, que corre antes de aplicar."""
+    try:
+        import importlib.util
+        sp = importlib.util.spec_from_file_location("existente", Path(repo) / "tools" / "existente.py")
+        E = importlib.util.module_from_spec(sp); sp.loader.exec_module(E)
+        res = E.buscar(consulta, k=k, root=Path(repo))
+    except Exception as e:                                                  # sin buscador el pedido sigue, pero se dice
+        return f"(no se pudo buscar lo existente: {type(e).__name__})\n"
+    filas = "\n".join(f"- {r['ref']} {r['nombre']}: {r['doc']}" for r in res)
+    return ("REUTILIZAR ANTES DE CONSTRUIR. Esto ya existe en el repo y puede hacer parte del pedido; también mirá docs/MODULES.md y "
+            "docs/HERRAMIENTAS.md, y buscá más con `python tools/existente.py buscar \"...\"`. Si algo sirve, importalo o reemplazá su "
+            "lector; si construís algo nuevo, el resumen final dice qué encontraste y por qué no sirve. Una función copiada hace "
+            f"fallar tests/test_existente.py.\n{filas}\n")
+
+
 def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, model: str = "claude-opus-5-5", python: str = sys.executable,
               tests=("tests",), timeout_s: int = 3600, protegidos=(), push: bool = True, aplicar: bool = True, ahora=None) -> dict:
     """Un pedido -> worktree -> código -> zona -> controles -> tests -> commit -> aplicar o proponer. Siempre deja una fila en programacion.jsonl."""
@@ -159,7 +176,8 @@ def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, mode
     wt.parent.mkdir(parents=True, exist_ok=True); _git("worktree", "add", "-q", "--detach", str(wt), base, cwd=repo)
     try:
         prompt = (f"Pedido {pedido['id']}: {pedido.get('que', '')}\nPor qué: {pedido.get('por_que', '')}\n"
-                  f"Aceptación: {pedido.get('aceptacion') or 'tests verdes y controles de la guía'}\nPython del entorno: {python}")
+                  f"Aceptación: {pedido.get('aceptacion') or 'tests verdes y controles de la guía'}\nPython del entorno: {python}\n"
+                  + existentes(repo, f"{pedido.get('que', '')} {pedido.get('por_que', '')}"))
         resp = cli(prompt, cwd=str(wt), model=model, python=python, timeout=timeout_s)
         row["resumen"] = str((resp or {}).get("result", ""))[-1500:]
         if _git("status", "--porcelain", cwd=repo) != antes:      # escribió fuera de la worktree: no se usa nada y se avisa

@@ -151,6 +151,12 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - **Barridos propios y variante buena (Nico, 2026-10-23):** el agente diseña barridos con el conductor genérico
   (`edgelab/research/grilla_generica.py`, guía §6) sobre indicadores PASS (`config/autopilot/indicadores.json`) o
   propios causales. Una variante buena se **indaga antes del P&L básico** (ATJ-26), nunca pasa directo.
+- **Reutilizar antes de construir (Nico, 2026-10-24):** casi todo ya existe en el repo. Antes de escribir un script, módulo
+  o función: `python tools/existente.py buscar "qué querés hacer"`, más `docs/MODULES.md` y `docs/HERRAMIENTAS.md`
+  (catálogo de `tools/`). Si algo sirve, se importa o se le reemplaza el lector (como `barrido_horario_etapa_c_parquet.py`
+  hace con `one`); si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py`
+  falla con una función copiada (línea base `config/clones_baseline.json`) o con un script nuevo fuera del catálogo; el
+  programador del Debian recibe la búsqueda en su prompt.
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
   (ATJ-27). Los errores de la revisión del 2026-10-23 quedaron como chequeos automáticos, no como recordatorios.
 - **Embudo automático (2026-10-23):** una campaña de grilla = módulo del experimento + JSON con `"embudo": true`;
