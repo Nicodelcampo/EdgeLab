@@ -37,17 +37,32 @@ def decodificar(crudo: bytes, hora_utc_ms: int, punto: float) -> pd.DataFrame:
                              bid_vol=a["bv"].astype(float), ask_vol=a["av"].astype(float)))
 
 
-def bajar_hora(sim, t: dt.datetime, reintentos=4) -> bytes:
+UA = "Mozilla/5.0 (X11; Linux x86_64)"   # con un User-Agent propio el datafeed resetea más conexiones (medido 2026-10-24)
+PAUSA_S = 0.6                           # ritmo mínimo entre pedidos: el datafeed limita la tasa (429 "Too Many Requests", 503)
+_ultimo = [0.0]
+
+
+def _esperar_turno(dormir=time.sleep, reloj=time.monotonic):
+    falta = PAUSA_S - (reloj() - _ultimo[0])
+    if falta > 0: dormir(falta)
+    _ultimo[0] = reloj()
+
+
+def bajar_hora(sim, t: dt.datetime, reintentos=8, abrir=urllib.request.urlopen, dormir=time.sleep) -> bytes:
+    """404 = hora sin datos. 429/503/5xx o conexión cortada = límite de tasa: espera creciente con tope (5 s, 10, 20 … 120 s;
+    ~7 min en total) en vez de rendirse a los ~15 s como antes (causa de la falla en la primera hora, 2026-10-23)."""
     url = URL.format(s=sim, y=t.year, m=t.month - 1, d=t.day, h=t.hour)
     for i in range(reintentos):
+        _esperar_turno(dormir)
         try:
-            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "edgelab"}), timeout=60) as r: return r.read()
+            with abrir(urllib.request.Request(url, headers={"User-Agent": UA}), timeout=60) as r: return r.read()
         except urllib.error.HTTPError as e:
             if e.code == 404: return b""                                   # hora sin datos (mercado cerrado)
-            time.sleep(2 ** i)
+            espera = float(e.headers.get("Retry-After") or 0) if getattr(e, "headers", None) else 0
+            dormir(max(espera, min(120, 5 * 2 ** i)))
         except Exception:
-            time.sleep(2 ** i)
-    raise RuntimeError(f"no se pudo bajar {url}")
+            dormir(min(120, 5 * 2 ** i))
+    raise RuntimeError(f"no se pudo bajar {url} tras {reintentos} intentos (límite de tasa del datafeed)")
 
 
 def bajar_dia(sim, dia: dt.date, salida: Path, bajar=bajar_hora) -> Path | None:

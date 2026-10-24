@@ -41,7 +41,8 @@ SPEC = dict(cid="TEST-U1", familia="TEST", experimento="tests.research.exp_u1_si
 def test_embudo_de_punta_a_punta(tmp_path, monkeypatch):
     monkeypatch.setattr(GG, "B_RW", 30)
     reg, libro, run = Reg(), LibroLord(tmp_path / "lord.json"), RunnerLocal()
-    em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=reg, libro=libro, ahora=lambda: 1_792_900_000, log=lambda s: None)
+    em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=reg, libro=libro, ahora=lambda: 1_792_900_000, log=lambda s: None,
+                   ventanas=tmp_path / "ventanas.jsonl")
     for _ in range(40):
         st = em.avanzar(SPEC)
         if st["etapa"] == "FIN": break
