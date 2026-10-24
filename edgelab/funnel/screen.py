@@ -4,6 +4,8 @@ from numba import njit,prange
 from .device import detect_device
 @njit(parallel=True,cache=True)
 def _cpu(sig,dirs,h,l,bid_open,ask_open,sls,tps,mults,max_hold,fees):
+    # v2 (2026-10-22): stop con hueco se llena al open peor (contrato G0.4) y la salida por tiempo
+    # se valora al open siguiente al horizonte, no como 0 (v1 anotaba -fees a todo timeout).
     ns=len(sig);nc=len(sls);out=np.full((ns,nc),np.nan)
     for q in prange(nc):
         sl=sls[q];tp=tps[q]
@@ -13,15 +15,19 @@ def _cpu(sig,dirs,h,l,bid_open,ask_open,sls,tps,mults,max_hold,fees):
             d=dirs[k]*mults[q];e=ask_open[i] if d==1 else bid_open[i];stop=e-d*sl;targ=e+d*tp;end=min(len(h),i+max_hold+1);x=np.nan
             for j in range(i,end):
                 if d==1:
-                    if l[j]<=stop:x=-sl-fees;break
+                    if l[j]<=stop:
+                        x=(min(stop,bid_open[j])-e if j>i else -sl)-fees;break
                     if h[j]>=targ+1:x=tp-fees;break
                 else:
-                    if h[j]>=stop:x=-sl-fees;break
+                    if h[j]>=stop:
+                        x=(e-max(stop,ask_open[j]) if j>i else -sl)-fees;break
                     if l[j]<=targ-1:x=tp-fees;break
-            if np.isnan(x):x=-fees
+            if np.isnan(x):
+                z=end if end<len(h) else len(h)-1
+                x=(bid_open[z]-e if d==1 else e-ask_open[z])-fees
             out[k,q]=x
     return out
-_GPU_SRC=r'''extern "C" __global__ void screen(const long long* sig,const signed char* d,const int* h,const int* l,const int* bo,const int* ao,const int* sl,const int* tp,const signed char* mul,int ns,int nc,int n,int hold,float fee,float* out){int z=blockDim.x*blockIdx.x+threadIdx.x;if(z>=ns*nc)return;int k=z/nc,q=z-k*nc,i=(int)sig[k]+1;if(i>=n){out[z]=__int_as_float(0x7fc00000);return;}int di=d[k]*mul[q],e=di==1?ao[i]:bo[i],st=e-di*sl[q],tg=e+di*tp[q],end=min(n,i+hold+1);float v=-fee;for(int j=i;j<end;j++){if(di==1&&l[j]<=st){v=-sl[q]-fee;break;}if(di==1&&h[j]>=tg+1){v=tp[q]-fee;break;}if(di==-1&&h[j]>=st){v=-sl[q]-fee;break;}if(di==-1&&l[j]<=tg-1){v=tp[q]-fee;break;}}out[z]=v;}'''
+_GPU_SRC=r'''extern "C" __global__ void screen(const long long* sig,const signed char* d,const int* h,const int* l,const int* bo,const int* ao,const int* sl,const int* tp,const signed char* mul,int ns,int nc,int n,int hold,float fee,float* out){int z=blockDim.x*blockIdx.x+threadIdx.x;if(z>=ns*nc)return;int k=z/nc,q=z-k*nc,i=(int)sig[k]+1;if(i>=n){out[z]=__int_as_float(0x7fc00000);return;}int di=d[k]*mul[q],e=di==1?ao[i]:bo[i],st=e-di*sl[q],tg=e+di*tp[q],end=min(n,i+hold+1);int zx=end<n?end:n-1;float v=(float)(di==1?bo[zx]-e:e-ao[zx])-fee;for(int j=i;j<end;j++){if(di==1&&l[j]<=st){v=(float)(j>i?min(st,bo[j])-e:-sl[q])-fee;break;}if(di==1&&h[j]>=tg+1){v=tp[q]-fee;break;}if(di==-1&&h[j]>=st){v=(float)(j>i?e-max(st,ao[j]):-sl[q])-fee;break;}if(di==-1&&l[j]<=tg-1){v=tp[q]-fee;break;}}out[z]=v;}'''
 def _integer_vector(name, values, dtype):
     a = np.asarray(values)
     if a.ndim != 1 or a.dtype.kind not in "iuf":
@@ -133,4 +139,4 @@ def kernel_manifest(backend):
         src=_GPU_SRC;prec="float32"
     else:
         src=inspect.getsource(_cpu.py_func);prec="float64"
-    return {"kernel_id":"edgelab_funnel_screen","kernel_version":"v1","backend":backend,"precision":prec,"deterministic":True,"seeded":False,"source_sha256":hashlib.sha256(src.encode()).hexdigest()}
+    return {"kernel_id":"edgelab_funnel_screen","kernel_version":"v2_gap_stop_mtm_timeout","backend":backend,"precision":prec,"deterministic":True,"seeded":False,"source_sha256":hashlib.sha256(src.encode()).hexdigest()}

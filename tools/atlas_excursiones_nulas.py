@@ -57,6 +57,11 @@ import time
 from datetime import datetime, timedelta, timezone
 
 import numpy as np
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, REPO)
@@ -85,7 +90,7 @@ CFG = dict(
     # holdout (2026-07-06 .. 07-21) entre sus 163. El atlas mide MFE/MAE sobre
     # horizontes futuros: eso es RETORNO, no es target-free, y la regla sellada
     # dice que ningun placebo pisa el holdout. Ahora es un candado de codigo.
-    holdout_desde="2026-07-01",
+    holdout_desde=HOLDOUT_PRIMERA_SESION,
     # ── ALCANCE POR TIPO DE DIA (decision 2026-07-27) ───────────────────────
     # Entra lunes-a-viernes. Se EXCLUYE el domingo (APERTURA_SEMANAL): son 7 h
     # de sesion contra 23, con 7.544 ticks de mediana contra 62.857-77.775 --

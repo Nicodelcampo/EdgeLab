@@ -24,7 +24,7 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO)); sys.path.insert(0, str(REPO / "tools"))
 import espejo_semejanza as ES  # noqa: E402
 
-HOLDOUT_NS = 1_775_001_600_000_000_000                       # 2026-04-01: ni confirmación ni holdout
+FIN_DESCUBRIMIENTO_NS = 1_775_001_600_000_000_000   # fin del descubrimiento de esta familia cerrada (NO es el holdout: edgelab/holdout.py, HOLDOUT-A4)                       # 2026-04-01: ni confirmación ni holdout
 ES_LO_NS = int(pd.Timestamp("2025-07-01", tz="UTC").value)
 EFF, RETR = 0.6, 0.3
 GRID = {5: [(mb, k) for mb in (12, 24, 48) for k in (3, 4, 6)],
@@ -179,7 +179,7 @@ def es_bars(parquets, minutes, batch=4_000_000, modo="rth"):
     for i, p in enumerate(parquets):
         parts = []
         for rb in pq.ParquetFile(p).iter_batches(batch_size=batch, columns=["ts_utc_ns", "price_ticks", "volume"]):
-            ts = rb.column(0).to_numpy(); k = (ts >= ES_LO_NS) & (ts < HOLDOUT_NS)
+            ts = rb.column(0).to_numpy(); k = (ts >= ES_LO_NS) & (ts < FIN_DESCUBRIMIENTO_NS)
             if not k.any():
                 continue
             part = _rth_partial(ts[k], rb.column(1).to_numpy()[k], rb.column(2).to_numpy()[k].astype(np.int64), minutes, modo)

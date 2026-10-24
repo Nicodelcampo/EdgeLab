@@ -19,7 +19,7 @@ Que NO hace
 Reglas duras
 ------------
 1. El corte es por TRADE DATE de CME, no por UTC: se conserva la fila si
-   `ts_utc_ns < session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0]`, es decir
+   `ts_utc_ns < session_bounds_utc_ns(CORTE_V1_PRIMERA_SESION_EXCLUIDA)[0]`, es decir
    17:00 CT del dia anterior. El corte UTC ingenuo se calcula igual, pero solo
    para REPORTAR cuantas filas de holdout habria dejado pasar.
 2. Identidad encadenada: el sha256 de cada origen debe coincidir con el que
@@ -626,11 +626,11 @@ def run(
             "(los parquets de origen son inmutables)"
         )
 
-    cut_ns, _ = sessions.session_bounds_utc_ns(bundle.HOLDOUT_FIRST_TRADE_DATE)
+    cut_ns, _ = sessions.session_bounds_utc_ns(bundle.CORTE_V1_PRIMERA_SESION_EXCLUIDA)
     naive_cut_ns = bundle.NAIVE_UTC_CUT_NS
     cut = {
         "rule": "se conserva ts_utc_ns < apertura de sesion CME del primer trade date de holdout",
-        "holdout_first_trade_date": bundle.HOLDOUT_FIRST_TRADE_DATE,
+        "holdout_first_trade_date": bundle.CORTE_V1_PRIMERA_SESION_EXCLUIDA,
         "research_max_trade_date": bundle.RESEARCH_MAX_TRADE_DATE,
         "session_open_utc_ns": int(cut_ns),
         "session_open_utc_iso": datetime.fromtimestamp(
@@ -933,7 +933,7 @@ def selftest() -> int:
             fail += 1
             print(f"  FALLA {label} {detail}")
 
-    open_ns, _ = sessions.session_bounds_utc_ns(bundle.HOLDOUT_FIRST_TRADE_DATE)
+    open_ns, _ = sessions.session_bounds_utc_ns(bundle.CORTE_V1_PRIMERA_SESION_EXCLUIDA)
     naive = bundle.NAIVE_UTC_CUT_NS
     day = 86_400 * 1_000_000_000
     hour = 3_600 * 1_000_000_000

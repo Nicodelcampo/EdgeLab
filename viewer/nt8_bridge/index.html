@@ -3006,12 +3006,107 @@
     var detVar = new URLSearchParams(window.location.search).get("det");   // ?det=<variante> → peaks_det/<activo>__<variante>.json
     if (detVar && !/^[A-Za-z0-9_\-]{1,40}$/.test(detVar)) detVar = null;
     fetch("bundles/peaks_det/" + aid + (detVar ? "__" + detVar : "") + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
-      .then(function (d) { peaksDet.data = d; var el = document.getElementById("lbl-det-status");
+      .then(function (d) { peaksDet.data = d; if (detVar) { peaksDet.on = true; var cD = document.getElementById("chk-det"); if (cD) cD.checked = true; }   // ?det=<variante> la muestra
+        var el = document.getElementById("lbl-det-status");
         if (el) { var pp = d.parametros;
           el.textContent = (pp && pp.cobertura != null) ? "Modelo v0: " + d.zonas.length + " zonas (" + d.zonas_por_dia + "/día) · en lo que marcaste: cobertura " + Math.round(pp.cobertura * 100) + "% · precisión " + Math.round(pp.precision * 100) + "% (con el supuesto de ventana revisada)"
                                                         : d.zonas.length + " zonas cargadas" + (d.variante ? " (" + d.variante + ")" : "") + "."; }
         requestDraw(); })
       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
+  }
+  // Impulsos amplios + rápidos que atravesaron zonas LUX-IMB vivas (tools/luximb_parity/luximb_impulsos.py). Sólo dibuja.
+  var luxImp = { data: null };
+  function luxImpLoad(aid) {
+    luxImp.data = null; luxImp._dashKey = null;
+    if (new URLSearchParams(window.location.search).get("solo") === "det") {           // modo solo-detecciones: sin impulsos ni tablero
+      var dsh = document.getElementById("luximb-sim-dash"); if (dsh) dsh.remove(); return;
+    }
+    fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
+      .then(function (d) { luxImp.data = d; requestDraw(); }).catch(function () {});
+  }
+  // Simulacion visual de entrada (exploracion, sin costos): entra al final de la caja (cierre de la marca) en X,
+  // TP en A (inicio de la zona), SL a 1/5 de la distancia al TP del otro lado. Si una vela toca ambos: SL.
+  function luxSim(z, cd, key) {
+    z._sim = z._sim || {};
+    if (z._sim[key]) return z._sim[key];
+    var qsim = new URLSearchParams(window.location.search), tpk = parseFloat(qsim.get("tpk")), slk = parseFloat(qsim.get("slk"));
+    if (!(tpk > 0)) tpk = 1.375; if (!(slk > 0)) slk = 0.225;          // Nico 20/10: TP +25 % (1,25 x hasta A), SL -25 % (0,75 x 1/5)
+    var s = z.dir === "up" ? 1 : -1, tc = z.tc || (z.t1 + 60), tp = z.p0;
+    // Entrada en la confirmacion: cierre de la vela M1 de marca (abre en tc - 60), no el extremo X
+    var m1 = state.data && state.data.bar_series && state.data.bar_series.time_1m && state.data.bar_series.time_1m.candles, E = z.p1;
+    if (m1) { var j = labIdxOfTime(m1, tc - 60); if (m1[j] && m1[j].time === tc - 60) E = m1[j].close; }
+    var d = s * (E - tp); if (d <= 0) return (z._sim[key] = { s: s, E: E, tp: tp, sl: E, d: 0, res: "sin", te: tc, ie: labIdxOfTime(cd, tc), i0: labIdxOfTime(cd, tc), t0: tc });
+    tp = E - s * tpk * d; var sl = E + s * slk * d;
+    var beR = parseFloat(qsim.get("be")); if (!(beR >= 0)) beR = 2.5;  // break even: al recorrer beR x riesgo a favor, stop a la entrada (0 = sin BE)
+    var beLvl = beR > 0 ? E - s * beR * slk * d : null, stop = sl, beOn = false;
+    // Causal: empieza en la primera vela con hora >= cierre de la confirmacion; el BE se activa al cierre de la vela que lo toca
+    var i = labIdxOfTime(cd, tc), res = "abierta", te = null, ie = null;
+    for (var k = i; k < cd.length && k < i + 20000; k++) {
+      var hitSL = s > 0 ? cd[k].high >= stop : cd[k].low <= stop, hitTP = s > 0 ? cd[k].low <= tp : cd[k].high >= tp;
+      if (hitSL) { res = beOn ? "BE" : "SL"; te = cd[k].time; ie = k; break; }
+      if (hitTP) { res = "TP"; te = cd[k].time; ie = k; break; }
+      if (beLvl !== null && !beOn && (s > 0 ? cd[k].low <= beLvl : cd[k].high >= beLvl)) { stop = E; beOn = true; }
+    }
+    if (te === null && cd.length) { ie = Math.min(cd.length - 1, i + 300); te = cd[ie].time; }
+    return (z._sim[key] = { s: s, E: E, tp: tp, sl: sl, d: d, res: res, te: te, ie: ie, i0: i, t0: tc });
+  }
+  function luxSimDash(cd, key) {
+    if (luxImp._dashKey === key) return; luxImp._dashKey = key;
+    var kq0 = new URLSearchParams(window.location.search); luxImp._tpk = parseFloat(kq0.get("tpk")) > 0 ? parseFloat(kq0.get("tpk")) : 1.375;
+    luxImp._slk = parseFloat(kq0.get("slk")) > 0 ? parseFloat(kq0.get("slk")) : 0.225;
+    var n = 0, w = 0, l = 0, o = 0, R = 0, pts = 0, nbe = 0;
+    luxImp.data.impulsos.forEach(function (z) {
+      var r = luxSim(z, cd, key); if (r.res === "sin") return; n++;
+      var kq = new URLSearchParams(window.location.search), tk = parseFloat(kq.get("tpk")) > 0 ? parseFloat(kq.get("tpk")) : 1.375, sk = parseFloat(kq.get("slk")) > 0 ? parseFloat(kq.get("slk")) : 0.225;
+      if (r.res === "TP") { w++; R += tk / sk; pts += tk * r.d; } else if (r.res === "SL") { l++; R -= 1; pts -= sk * r.d; } else if (r.res === "BE") nbe++; else o++;
+    });
+    var fx = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fx ? 10000 : 1, uN = fx ? " pips" : " pts";
+    var el = document.getElementById("luximb-sim-dash");
+    if (!el) { el = document.createElement("div"); el.id = "luximb-sim-dash";
+      el.style.cssText = "position:fixed;right:70px;top:48px;z-index:60;background:rgba(255,255,255,0.95);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.5 'Segoe UI',sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);min-width:210px";
+      document.body.appendChild(el); }
+    var c = w + l + nbe; var beQ = parseFloat(new URLSearchParams(window.location.search).get("be")); if (!(beQ >= 0)) beQ = 2.5;
+    el.innerHTML = "<b>Simulación visual (sin costos)</b><br>Entrada: cierre de la vela de confirmación · TP: " + (luxImp._tpk || 1.375) + "× hasta A · SL: " + (luxImp._slk || 0.225) + "× · BE: " + (beQ > 0 ? beQ + " R" : "no") +
+      "<br>Operaciones: <b>" + n + "</b> · TP " + w + " · SL " + l + " · BE " + nbe + " · abiertas " + o +
+      "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio " + (100 * luxImp._slk / (luxImp._tpk + luxImp._slk)).toFixed(1) + "%)" +
+      "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R.toFixed(1) + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
+      "<br>Por operación: " + (c ? ((R / c >= 0 ? "+" : "") + (R / c).toFixed(3) + " R") : "–");
+  }
+  function drawLuxImp(ctx, vr, X, Y) {
+    if (!luxImp.data) return;
+    var u = luxImp.data.umbrales;
+    var cdS = activeCandlesArr(), keyS = state.activeBarKey + "|" + (cdS ? cdS.length : 0);
+    if (cdS && cdS.length) luxSimDash(cdS, keyS);
+    luxImp.data.impulsos.forEach(function (z) {
+      // Tiempo real: el impulso existe recién al CIERRE de la vela de confirmación (z.tc). La caja va de A hasta ahí
+      // y la etiqueta se pone en ese punto; antes de tc no hay nada dibujado que no se hubiera visto en vivo.
+      var tc = z.tc || (z.t1 + 60);
+      if (tc < vr.from || z.t0 > vr.to) return;
+      var m1 = state.activeBarKey === "time_1m";
+      var x0 = m1 ? X(z.i0, z.t0) : X(null, z.t0), xB = m1 ? X(z.i1, z.t1) : X(null, z.t1 + 59), y0 = Y(z.p0), y1 = Y(z.p1);
+      var x1 = m1 && z.ic != null ? X(z.ic + 1, tc) : X(null, tc);
+      if (![x0, x1, xB, y0, y1].every(isFinite)) return;
+      var up = z.dir === "up", col = up ? "16,185,129" : "236,72,153";
+      ctx.fillStyle = "rgba(" + col + ",0.12)"; ctx.strokeStyle = "rgba(" + col + ",0.95)"; ctx.lineWidth = 2;
+      var xa = Math.min(x0, x1), w = Math.max(6, Math.abs(x1 - x0)), ya = Math.min(y0, y1), hh = Math.abs(y1 - y0);
+      ctx.fillRect(xa - 3, ya, w + 6, hh); ctx.strokeRect(xa - 3, ya, w + 6, hh);
+      ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(xB, y1); ctx.stroke();
+      ctx.setLineDash([4, 3]); ctx.beginPath(); ctx.moveTo(x1, ya - 6); ctx.lineTo(x1, ya + hh + 6); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = "rgba(" + col + ",1)"; ctx.font = "bold 11px 'Segoe UI', sans-serif";
+      if (cdS && cdS.length) {                                      // rectangulos SL/TP de baja opacidad
+        var r = luxSim(z, cdS, keyS); if (r.res === "sin") r = null;
+        if (r) var xs = X(r.i0, cdS[r.i0] ? cdS[r.i0].time : r.t0), xe = X(r.ie, r.te), yE = Y(r.E), yT = Y(r.tp), yS = Y(r.sl);
+        if (r && [xs, xe, yE, yT, yS].every(isFinite)) {
+          var ww = Math.max(4, xe - xs);
+          ctx.fillStyle = "rgba(34,197,94,0.13)"; ctx.fillRect(xs, Math.min(yE, yT), ww, Math.abs(yT - yE));
+          ctx.fillStyle = "rgba(239,68,68,0.16)"; ctx.fillRect(xs, Math.min(yE, yS), ww, Math.abs(yS - yE));
+          ctx.fillStyle = r.res === "TP" ? "rgba(22,163,74,1)" : (r.res === "SL" ? "rgba(220,38,38,1)" : "rgba(100,116,139,1)");
+          ctx.font = "bold 10px 'Segoe UI', sans-serif"; ctx.fillText(r.res, xe + 3, yE + 4);
+        }
+      }
+      var fxU = ((state.data && state.data.meta && state.data.meta.tick_size) || 1) < 0.001, uM = fxU ? 10000 : 1, uN = fxU ? " pips" : " pts";   // FX: pips
+      ctx.fillText("★ " + z.zonas + " zonas · " + (z.rango * uM).toFixed(fxU ? 1 : 2) + uN + " · " + z.velas + " velas 25t · " + (z.vel != null ? (z.vel * uM).toFixed(2) : "?") + uN + "/vela" + (z.reparto ? ((luxImp.data.params && luxImp.data.params.modo === "inicio") ? " · 25% inicial " + z.reparto[0] + " / resto " + z.reparto[1] : " · reparto " + z.reparto.join("/")) : "") + " (confirmado acá)", x1 - 4, up ? ya - 5 : ya + hh + 13);
+    });
   }
   function drawPeakPath(ctx, z, X, Y, col, lw, marks) {
     var pk = z.picos || []; if (!pk.length) return false;
@@ -3530,7 +3625,10 @@
     // causal sigue visible como flechas (bloque 1b, sin look-ahead). Antes de unificar,
     // esto era un `return` que dejaba las flechas como código muerto.
     var runBarKey = state.run && state.run.bar_key;
-    var boxesSuppressed = !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
+    // LUX-IMB lleva vida en tiempo (t0/t1/available_ts reales), así que se puede dibujar sobre otra serie (p.ej. 25t)
+    var luxTimeRun = !!(state.run && state.run.indicator === "ImbalanceDetectorLuxAlgoMTF" && state.run.zones && state.run.zones.length &&
+                        state.run.zones.every(function (z) { return z.source === "luxalgo" && z.t1; }));
+    var boxesSuppressed = !luxTimeRun && !!(runBarKey && runBarKey !== activeKey && state.run.zones && state.run.zones.length > 0);
     if (boxesSuppressed) {
       window.__EDGELAB_ZONE_RENDER_STATUS__ = {status: "ABSTAIN_BAR_KEY_MISMATCH", boxes: "SUPPRESSED", arrows: "CAUSAL_SIGNAL_ONLY", runBarKey: runBarKey, activeBarKey: activeKey};
       ctx.save();
@@ -3796,7 +3894,10 @@
       // --- MODO 1: EXTENSIÓN FIJA POR BARRAS ---
       // Si la extensión fija en barras está habilitada (por defecto 500 barras)
       var i1 = (extBars > 0) ? (i0 + extBars) : (z.end_bar_idx !== undefined ? z.end_bar_idx : i0 + 20);
-      if (candles && nCandles > 0) {
+      // LUX-IMB en una serie que no es M1 (p.ej. 25t): la vida es en minutos (t1), no en velas de la serie activa
+      var luxT1 = (z.source === "luxalgo" && z.t1 && activeKey !== "time_1m");
+      if (luxT1) { var lo1 = 0, hi1 = nCandles; while (lo1 < hi1) { var m1 = (lo1 + hi1) >> 1; if (candles[m1].time < z.t1) lo1 = m1 + 1; else hi1 = m1; } i1 = lo1; }
+      if (luxT1 && i1 < nCandles) { t1_eff = candles[i1].time; } else if (candles && nCandles > 0) {
         if (i1 < nCandles) {
           t1_eff = candles[i1].time;
         } else {
@@ -3954,7 +4055,8 @@
     var runBarKey = state.run && state.run.bar_key;
     var isCrossTimeframe = runBarKey && activeKey && activeKey !== runBarKey;
     var bs = state.data && state.data.bar_series && state.data.bar_series[activeKey];
-    if (isCrossTimeframe && state.run.zones && state.run.zones.length && bs && bs.candles && bs.candles.length) {
+    var luxRunNoArrows = !!(state.run && state.run.indicator === "ImbalanceDetectorLuxAlgoMTF");   // LUX-IMB: sin flechas (pedido de Nico)
+    if (isCrossTimeframe && !luxRunNoArrows && state.run.zones && state.run.zones.length && bs && bs.candles && bs.candles.length) {
       ctx.save();
       var arrowSize = 8;
 
@@ -4297,18 +4399,28 @@
   // Dibujo de picos y revisión (movido debajo de drawZones, 2026-09-26): el test causal de `zoneAvailableSec` audita
   // el tramo zoneAvailableSec→drawZones y estas funciones usan z.t0 de sus propias figuras, no de zonas.
   // posición visual SL/TP/BE desde el punto de detección (exploración; velas, sin costos; SL gana si la vela toca ambos)
+  // &sl=mitad: SL en el punto medio entre la deteccion (punto azul, entrada) y el primer pico; si no, &sl=<ticks> fijo
+  function slTicksFor(z, tkz) {
+    var v = new URLSearchParams(window.location.search).get("sl");
+    if (v === "mitad") { var sd = z.kind === "H" ? -1 : 1, d = -sd * (z.picos[0][2] - z.det_precio) / 2 / tkz; return d > 0 ? d : NaN; }
+    if (v === "pri2") { var sd3 = z.kind === "H" ? -1 : 1, d3 = -sd3 * 2 * (z.picos[0][2] - z.det_precio) / tkz; return d3 > 0 ? d3 : NaN; }   // 2x (deteccion -> primer pico)
+    if (v === "ult2") { var sd2 = z.kind === "H" ? -1 : 1, d2 = -sd2 * 2 * (z.det_nivel - z.det_precio) / tkz; return d2 > 0 ? d2 : NaN; }   // 2x (deteccion -> ultimo pico)
+    return parseFloat(v);
+  }
   function posCompute(z, cd, slT, tpR, beR, tkz) {
     var key = slT + "|" + tpR + "|" + beR;
     if (z._pos !== undefined && z._posKey === key) return z._pos;
     var sd = z.kind === "H" ? -1 : 1, en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
     var beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;
     var ex = null, why = "fin", stp = slP, beOn = false;
-    for (var kk = z.det_i + 1; kk < Math.min(cd.length, z.det_i + 1500); kk++) {
+    // capas calculadas en otra escala (p. ej. 150t) traen i25_post: primera vela 25t posterior a la deteccion
+    var i0 = (z.i25_post != null && state.activeBarKey === "tick_25") ? z.i25_post - 1 : z.det_i;
+    for (var kk = i0 + 1; kk < Math.min(cd.length, i0 + 1500); kk++) {
       var bb = cd[kk], hitS = sd === -1 ? bb.high >= stp : bb.low <= stp, hitT = sd === -1 ? bb.low <= tpP : bb.high >= tpP;
       if (hitS) { ex = kk; why = beOn ? "BE" : "SL"; break; } if (hitT) { ex = kk; why = "TP"; break; }
       if (beP !== null && !beOn && (sd === -1 ? bb.low <= beP : bb.high >= beP)) { beOn = true; stp = en; }
     }
-    ex = ex === null ? Math.min(cd.length - 1, z.det_i + 1500) : ex;
+    ex = ex === null ? Math.min(cd.length - 1, i0 + 1500) : ex;
     var r = why === "TP" ? tpR : why === "SL" ? -1 : why === "BE" ? 0 : ((cd[ex].close - en) * sd) / (slT * tkz);
     z._pos = { ex: ex, why: why, r: r }; z._posKey = key;
     return z._pos;
@@ -4316,14 +4428,14 @@
   // tablero de estadísticas de las posiciones visuales (todas las zonas del activo, no sólo las visibles)
   var posDash = { key: null };
   function posDashboard(cd) {
-    var q = new URLSearchParams(window.location.search), slT = parseFloat(q.get("sl")), tpR = parseFloat(q.get("tp")), beR = parseFloat(q.get("be"));
+    var q = new URLSearchParams(window.location.search), slQ = q.get("sl"), slT = (slQ === "mitad" || slQ === "ult2" || slQ === "pri2") ? 1 : parseFloat(slQ), tpR = parseFloat(q.get("tp")), beR = parseFloat(q.get("be"));
     if (!(isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) || !peaksDet.data) return;
-    var key = (peaksDet.data.variante || "") + "|" + slT + "|" + tpR + "|" + beR + "|" + cd.length;
+    var key = (peaksDet.data.variante || "") + "|" + slQ + "|" + tpR + "|" + beR + "|" + cd.length;
     if (posDash.key === key) return; posDash.key = key;
     var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25;
     var Zs = peaksDet.data.zonas.filter(function (z) { return z.det_i != null; }).slice().sort(function (a, b) { return a.det_i - b.det_i; });
     var st = { TP: 0, SL: 0, BE: 0, fin: 0 }, R = [], byK = { H: [], L: [] }, eq = 0, pk = 0, dd = 0, gp = 0, gl = 0;
-    Zs.forEach(function (z) { var p = posCompute(z, cd, slT, tpR, beR, tkz); st[p.why]++; R.push(p.r); byK[z.kind].push(p.r);
+    Zs.forEach(function (z) { var sz = slTicksFor(z, tkz); if (!(sz > 0)) return; var p = posCompute(z, cd, sz, tpR, beR, tkz); st[p.why]++; R.push(p.r); byK[z.kind].push(p.r);
       eq += p.r; pk = Math.max(pk, eq); dd = Math.max(dd, pk - eq); if (p.r > 0) gp += p.r; else gl -= p.r; });
     var n = R.length, sum = R.reduce(function (a, b) { return a + b; }, 0), win = R.filter(function (x) { return x > 0; }).length;
     function f(x, d) { return (x >= 0 ? "+" : "") + x.toFixed(d == null ? 3 : d); }
@@ -4332,7 +4444,7 @@
     if (!el) { el = document.createElement("div"); el.id = "pos-dash";
       el.style.cssText = "position:fixed;right:12px;bottom:40px;z-index:50;background:rgba(255,255,255,0.96);border:1px solid #cbd5e1;border-radius:6px;padding:8px 10px;font:11px/1.45 sans-serif;color:#0f172a;box-shadow:0 2px 8px rgba(0,0,0,.15);max-width:260px";
       document.body.appendChild(el); }
-    el.innerHTML = "<b>Trades simulados (visual)</b><br>SL " + slT + " ticks · TP " + tpR + "R" + (isFinite(beR) && beR > 0 ? " · BE a " + beR + "R" : "") +
+    el.innerHTML = "<b>Trades simulados (visual)</b><br>SL " + (slQ === "mitad" ? "en la mitad entre la detección y el 1.er pico" : slQ === "ult2" ? "2× la distancia detección → último pico" : slQ === "pri2" ? "2× la distancia detección → primer pico" : slT + " ticks") + " · TP " + tpR + "R" + (isFinite(beR) && beR > 0 ? " · BE a " + beR + "R" : "") +
       "<br>Operaciones: <b>" + n + "</b> · ganadoras " + (n ? Math.round(100 * win / n) : 0) + " %" +
       "<br>TP " + st.TP + " · SL " + st.SL + " · BE " + st.BE + " · fin " + st.fin +
       "<br>R total: <b>" + f(sum, 1) + "</b> · por operación: <b>" + f(n ? sum / n : 0) + "</b>" +
@@ -4388,9 +4500,10 @@
         });
         // ?sl=<ticks>&tp=<R>: posición visual desde el punto de detección (exploración, sin costos; orden intravela
         // ambiguo: si una vela toca SL y TP, se marca SL)
-        var qsp = new URLSearchParams(window.location.search), slT = parseFloat(qsp.get("sl")), tpR = parseFloat(qsp.get("tp"));
+        var qsp = new URLSearchParams(window.location.search), tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25,
+            slT = slTicksFor(z, tkz), tpR = parseFloat(qsp.get("tp"));
         if (isFinite(slT) && isFinite(tpR) && slT > 0 && tpR > 0) {
-          var tkz = (state.data && state.data.meta && state.data.meta.tick_size) || 0.25, sd = z.kind === "H" ? -1 : 1;
+          var sd = z.kind === "H" ? -1 : 1;
           var en = z.det_precio, slP = en - sd * slT * tkz, tpP = en + sd * slT * tpR * tkz;
           var beR = parseFloat(qsp.get("be")), beP = isFinite(beR) && beR > 0 ? en + sd * slT * beR * tkz : null;   // &be=<R>: stop a la entrada al llegar a beR
           posCompute(z, cd, slT, tpR, beR, tkz);
@@ -4432,7 +4545,7 @@
     labSave(); rev.k++; revShow();
   }
   function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on) || !series) return;
+    if ((!lab.data && !peaksDet.on && !luxImp.data) || !series) return;
     if (!lab.data) lab.data = labEmpty();
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
@@ -4444,6 +4557,7 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    drawLuxImp(ctx, vr, XI, Y);
     (lab.data.judgments || []).forEach(function (j) {
       if (j.t1 < vr.from || j.t0 > vr.to) return;
       var x0 = XI(j.i0, j.t0), x1 = XI(j.i1, j.t1), y0 = Y(j.p1), y1 = Y(j.p0);
@@ -6020,6 +6134,11 @@
         if (evx.on) evxCompute();
         labLoad(aid);
         peaksDetLoad(aid);
+        luxImpLoad(aid);
+        var qGo = new URLSearchParams(window.location.search), tGo = parseInt(qGo.get("t"), 10), tfGo = qGo.get("tf");
+        if (tfGo && data.bar_series && data.bar_series[tfGo] && state.activeBarKey !== tfGo) { try { switchTimeframe(tfGo); } catch (e) {} }
+        var wGo = state.activeBarKey === "time_1m" ? 90 * 60 : 8 * 60;                // &t=<epoch s>: centra el gráfico ahí
+        if (isFinite(tGo)) setTimeout(function () { try { chart.timeScale().setVisibleRange({ from: tGo - wGo, to: tGo + wGo }); } catch (e) {} }, 300);
         axfLoadDelta(aid);
         gexLoad(aid);
       })
@@ -7022,6 +7141,7 @@
     var params = new URLSearchParams(window.location.search);
     var qAsset = params.get("asset");
     var qTf = params.get("tf");
+    if (params.get("corr") === "0") { state.showCorredoresDemo = false; activeProps.corridors_enabled = false; }   // &corr=0: sin corredores HFT
     var opts = qTf ? { targetTf: qTf } : {};
     if (params.get("espejo") === "1" || (qAsset && qAsset.indexOf("ESPEJO") !== -1)) {
       espejo.on = true;

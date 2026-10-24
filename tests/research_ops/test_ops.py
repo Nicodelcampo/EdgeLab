@@ -15,7 +15,7 @@ class OpsTests(unittest.TestCase):
     def plan(self,name='job',**kw):return Plan(name,'synthetic test',SCRIPT_SHA256,**kw)
     def submit(self,name='job',**kw):self.store.submit(self.plan(name,**kw))
     def mutate(self,sql):
-        with sqlite3.connect(self.store.path) as db:db.execute(sql)
+        with contextlib.closing(sqlite3.connect(self.store.path)) as db, db:db.execute(sql)   # `with connect()` sólo hace commit; closing la cierra
     def test_initialization_idempotent(self):
         tip=self.store.verify()['tip'];self.store.initialize();self.assertEqual(self.store.verify()['tip'],tip)
     def test_policy_frozen(self):

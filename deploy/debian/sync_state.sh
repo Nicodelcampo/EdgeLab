@@ -11,6 +11,7 @@ B=/var/lib/edgelab-autopilot/backups; mkdir -p "$B"
 ls -1t "$B"/runs-*.sqlite 2>/dev/null | tail -n +15 | xargs -r rm -f
 [ -n "$(git status --porcelain)" ] || exit 0
 # lista blanca: solo los archivos de estado conocidos (no logs arbitrarios ni la base SQLite, que se respalda aparte)
-for f in alpha.json evidence_runtime.jsonl trial_registry.jsonl autopilot.log.jsonl heartbeat.json promociones.jsonl sala_outbox.jsonl sala_aprobaciones.jsonl mejoras.jsonl candidates.json propuestas.jsonl alertas.jsonl biblioteca_manifiesto.json edge_brain_ledger.jsonl auditorias.jsonl pedidos_humano.jsonl holdout_aperturas.jsonl; do [ -f autopilot_runs/$f ] && git add autopilot_runs/$f; done
+for f in alpha.json evidence_runtime.jsonl trial_registry.jsonl autopilot.log.jsonl heartbeat.json promociones.jsonl sala_outbox.jsonl sala_aprobaciones.jsonl mejoras.jsonl candidates.json propuestas.jsonl alertas.jsonl biblioteca_manifiesto.json edge_brain_ledger.jsonl auditorias.jsonl pedidos_humano.jsonl holdout_aperturas.jsonl confirmaciones_lordpp.json programacion.jsonl pedidos_codigo.jsonl libro_lord.json; do [ -f autopilot_runs/$f ] && git add autopilot_runs/$f; done
+for f in autopilot_runs/embudo/*/estado.json autopilot_runs/embudo/*/MEDIDO.md autopilot_runs/embudo/*/ACTA_HOLDOUT.json; do [ -f "$f" ] && git add "$f"; done
 git -c user.name=edgelab-autopilot -c user.email=autopilot@localhost commit -qm "autopilot: estado $(date -u +%FT%TZ)" || exit 0
 git push -q origin HEAD:autopilot/state || echo "sync_state: no se pudo hacer push (¿deploy key?); el estado queda local" >&2

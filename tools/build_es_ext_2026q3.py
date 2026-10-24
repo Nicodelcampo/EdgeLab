@@ -36,7 +36,7 @@ from build_mym_canonical import file_sha256, parse_line_batch  # noqa: E402
 SRC = Path(r"E:\DatosNT8\tick_history")
 OUT = Path(r"E:\EdgeLab\data\nt8_ext_2026q3\ES_parquet")
 CAT = REPO / "docs" / "research" / "contract_regimes" / "ES_ext_2026q3_sessions_catalog.json"
-START_NS = 1_782_856_800 * 1_000_000_000      # 2026-06-30 17:00 CT = apertura de la sesión CME del 1-jul (frontera vieja)
+START_NS = 1_782_856_800 * 1_000_000_000      # 2026-06-30 17:00 CT = apertura de la sesión CME del 1-jul (frontera vieja = corte fisico de research-v2; el holdout vigente arranca 2026-09-30 22:00 UTC)
 END_NS = 1_790_805_600 * 1_000_000_000        # 2026-09-30 17:00 CT = apertura de la sesión del 1-oct (holdout nuevo)
 TICK = 0.25
 CATS = ["buy", "sell", "unclassified"]

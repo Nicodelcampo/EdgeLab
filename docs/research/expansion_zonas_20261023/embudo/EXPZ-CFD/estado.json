@@ -1,0 +1,70 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1792794359.587105,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "familia": "EXPANSION_ZONAS",
+  "experimento": "edgelab.research.expansion_zonas",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "embudo": true,
+  "activa": true,
+  "n_celdas_por_canal": 233280,
+  "spec": "docs/research/expansion_zonas_20261023/SPEC.md",
+  "justificacion_economica": "Una expansión que nace de una concentración de desequilibrios marca urgencia; el regreso al origen o la continuación dependen de si esas órdenes quedaron pendientes (SPEC.md).",
+  "como_podria_refutarse": "Ninguna celda pasa integridad y OOS, o el holdout a N fijo da media <= 0.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150
+  },
+  "cid": "EXPZ-CFD",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "oos": [
+   20260401,
+   20260930
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400
+  }
+ },
+ "handle": "nicolasbuttaro/embudo-expz-cfd-desc-20250805",
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1792794672.2918472
+}

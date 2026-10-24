@@ -1,0 +1,76 @@
+"""Embudo de punta a punta con un runner local sobre sintéticos: avanza solo por todas las etapas hasta una decisión final,
+registra pruebas, consume el libro de LORD++, escribe acta antes del holdout y CONTEO nunca expone P&L."""
+import json
+from pathlib import Path
+
+import numpy as np
+import pytest
+
+from edgelab.funnel.libro_lord import LibroLord
+from edgelab.research import embudo as EM, etapas as ET, grilla_generica as GG, sintetico, u1_indaga as U
+
+
+class Reg:
+    def __init__(self): self.filas = []
+    def ensure(self, cid, fam, n, nota=""): self.filas.append((cid, fam, n)); return True
+
+
+class RunnerLocal:
+    """Corre las etapas en el momento sobre sintéticos: desarrollo = semilla 21, holdout = semilla 22 (datos distintos)."""
+    _cache = {}
+    def __init__(self): self.h = {}; self.vistos = []
+    def lanzar(self, spec, etapa, params, periodo):
+        seed = 22 if periodo[0] >= 20261001 else 21
+        if seed not in self._cache:
+            ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=True, seed=seed), tick=0.25); ej = dict(ctx)
+            for k in ("o", "h", "l", "c", "tpx"): ej[k] = ctx[k] + 25.0
+            self._cache[seed] = (ctx, ej)
+        ctx, ej = self._cache[seed]
+        r = ET.ejecutar(etapa, U, ctx, friccion=1.0, extra_adverso=0.5, cx_ej=ej, params=params, log=lambda s: None)
+        hid = f"h{len(self.h)}"; self.h[hid] = json.loads(json.dumps(r, default=float)); self.vistos.append(etapa); return hid
+    def estado(self, h): return "complete"
+    def traer(self, h): return self.h[h]
+
+
+SPEC = dict(cid="TEST-U1", familia="TEST", experimento="tests.research.exp_u1_sin_be", sensor="DK:X", ejecucion="Y", desc=[20250801, 20250930],
+            justificacion_economica="j", como_podria_refutarse="r", embudo=True, preflight_dinamico=False,
+            seleccion=dict(exigir_meseta=False, min_sesiones=5, ratio_mov_friccion=0.0, max_candidatas=2),
+            holdout=dict(desde=20261001, n_fijo=10, conteo_cada_s=0))
+
+
+def test_embudo_de_punta_a_punta(tmp_path, monkeypatch):
+    monkeypatch.setattr(GG, "B_RW", 30)
+    reg, libro, run = Reg(), LibroLord(tmp_path / "lord.json"), RunnerLocal()
+    em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=reg, libro=libro, ahora=lambda: 1_792_900_000, log=lambda s: None)
+    for _ in range(40):
+        st = em.avanzar(SPEC)
+        if st["etapa"] == "FIN": break
+    assert st["etapa"] == "FIN" and st["fase"] in ("CONFIRMADA", "REFUTADA", "SIN_POTENCIA"), (st["fase"], st.get("motivo"), run.vistos)
+    assert run.vistos[:4] == ["DESC", "INDAGA", "INTEGRIDAD", "TOPES"] and run.vistos[-1] == "REP"            # recorrió todo el embudo
+    d = tmp_path / "estado" / "TEST-U1"
+    assert (d / "MEDIDO.md").exists() and any(c.startswith("embudo/TEST-U1/desc") for c, _, _ in reg.filas)
+    if True:
+        acta = json.loads((d / "ACTA_HOLDOUT.json").read_text(encoding="utf-8"))
+        assert acta["registrada"] and "HOLDOUT_CONTEO" in run.vistos and run.vistos.index("HOLDOUT_CONTEO") < len(run.vistos) - 1
+        assert "TEST" in libro.estado["familias"]
+    assert em.avanzar(SPEC)["etapa"] == "FIN"                                        # terminada: no hace nada más
+
+
+def test_campanas_de_embudo_del_repo_son_validas():
+    import importlib
+    from edgelab.research.preflight import estatico
+    for f in sorted((Path(__file__).resolve().parents[2] / "config/autopilot/grillas/campanas").glob("*.json")):
+        d = json.loads(f.read_text(encoding="utf-8"))
+        if not d.get("embudo"): continue
+        assert all(k in d for k in EM.CAMPOS), f.name
+        assert estatico(importlib.import_module(d["experimento"])) == [], f.name
+
+
+def test_descarga_diaria_lee_la_config(tmp_path, monkeypatch):
+    import datetime as dt, importlib.util
+    sp = importlib.util.spec_from_file_location("dd", Path(__file__).resolve().parents[2] / "tools/dukascopy_diario.py"); D = importlib.util.module_from_spec(sp); sp.loader.exec_module(D)
+    vistos = []
+    monkeypatch.setattr(D.DK, "bajar_dia", lambda s, d, p: vistos.append((s, d)) or None)
+    (tmp_path / "c.json").write_text(json.dumps(dict(dukascopy=dict(simbolos=["USATECHIDXUSD"], salida_sellada=str(tmp_path), desde="2026-10-01"))))
+    D.main(str(tmp_path / "c.json"), hoy=dt.date(2026, 10, 6))
+    assert [d.isoformat() for _, d in vistos] == ["2026-10-01", "2026-10-02", "2026-10-04", "2026-10-05"]       # sin el sábado 3

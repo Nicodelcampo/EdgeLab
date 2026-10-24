@@ -449,6 +449,92 @@ definición, que es la forma más cara de equivocarse: parece evidencia.
 
 ---
 
+### ATJ-19 — Probar mucho con FDR, confirmar poco en datos no mirados (2026-10-22)
+
+La protección contra el sobreajuste es la **réplica en muestra no mirada**, no un error familiar sobre el descubrimiento. Exigirlo
+ahí destruye la potencia: en la simulación con verdad conocida, Holm al nivel del alpha-investing confirmó el 2,4 % de los edges
+reales moderados, contra el 35,6 % del diseño de dos niveles, con FDR < 1 % en los dos casos.
+
+- `EF2` (tamiz): FDR BH-Storey q = 0,10 dentro de la campaña → **nominadas**. Nominar no afirma nada.
+- `EF5`/réplica: hasta 3 pruebas por campaña al nivel LORD++ (FDR en línea del proyecto) → **confirmadas**.
+- Implementación: `edgelab/funnel/escalera.py` (`tamiz_fdr`, `LordPP`). En el autopilot, con `decision: escalera_v1`.
+
+### ATJ-20 — Tres salidas: refutada, sin potencia, confirmada
+
+Una candidata sólo muere con evidencia: la **cota optimista** de su IC (o el e-valor de futilidad) no llega al efecto útil. Si el
+IC es ancho, el estado es `SIN_POTENCIA`: queda viva y el informe dice cuántas operaciones faltan (`escalera.ops_necesarias`).
+Es el corolario operativo de ATJ-18 y de Harris (2016): descartar estrategias buenas por falta de muestra también es un error.
+
+### ATJ-21 — Mirar seguido sin inflar el error: e-procesos
+
+Réplica, holdout y paper llegan por semana. Un p-valor mirado muchas veces no vale; un e-proceso sí (Ville):
+`edgelab/funnel/secuencial.MonitorCandidato`, con cotas por operación declaradas **antes** de mirar, edge y futilidad a la vez.
+
+### ATJ-22 — Costos de una sola fuente; efecto esperado recortado antes de gastar el holdout
+
+- Fricción: sólo `edgelab/costos.py`. Un instrumento sin componente medido falla; no se presta de otro.
+- Antes de la única apertura del holdout: económico con costos canónicos (neto base, sin top-5, ningún período > 80 %, adverso) y
+  **potencia** para ver el efecto recortado por selección (Harvey-Liu sobre N_eff, t agrupado por sesión) con el n que dará el
+  holdout. Si no alcanza, se espera o se sigue como paper.
+
+### ATJ-23 — Grillas masivas: E0 antes de congelar, oráculo para lo compilado, nada por defecto escondido
+
+Toda corrida de miles o millones de variantes sigue `docs/research/GUIA_GRILLA_MASIVA.md`: spec exacta → tests de resultado
+conocido → oráculo de lo compilado → controles ruido/plantado → E0 (cortes desde cuantiles) → registro → DESC → REP → holdout.
+El momento de llenado de una orden es una decisión declarada de cada análisis, no una convención del motor.
+
+### ATJ-24 — Edges actuales: el pasado no mata, lo reciente no se elige a posteriori (Nico, 2026-10-22)
+
+«Queremos edges actuales, aunque en el pasado no hayan funcionado.» En la práctica:
+- toda grilla mide dos canales declarados antes de mirar: `total` y `reciente` (últimos meses del período, número fijado en el manifiesto);
+- `escalera.economia` no mata la concentración de la ganancia en los períodos más recientes (marca `regimen_reciente`); sí la de un período viejo;
+- la réplica usa primero lo más reciente sin usar; los datos más viejos son informativos (fallar ahí no mata);
+- la confirmación de «funciona ahora» es forward (holdout con e-procesos, paper), y en vivo se vigila el decaimiento;
+- el riesgo opuesto también existe: buscar la ventana donde algo «funciona» después de ver el P&L es data snooping. La ventana se declara antes.
+
+### ATJ-25 — Un filtro que mata todo se audita en las dos direcciones
+
+Cero nominadas entre un millón no es por sí solo un artefacto (con ruido puro es lo que debe pasar), pero obliga a revisar el filtro:
+comparar el t máximo con el máximo esperado por azar, publicar MDE y cuántas celdas detectarían 1× la fricción, y medir el umbral con
+la correlación real entre celdas (`grilla_masiva.romano_wolf`, remuestreo por sesiones). Las mejores celdas distintas entre sí salen
+como **pistas** a réplica (`grilla_masiva.pistas`): no se descartan sin mirarlas ni se promueven sin replicar.
+
+### ATJ-26 — Una variante buena se indaga antes del P&L básico (Nico, 2026-10-23)
+
+«Al encontrar variantes buenas, no se debería pasar a un P&L sin más: se debería indagar.» La indagación es un experimento
+propio sobre el conductor genérico, con la variante como `BASE`. Se publican las marginales (una perilla por vez), la anatomía
+de lo que la explica y el acuerdo entre fuentes. La regla que elige qué se confirma se fija antes de mirar, y la confirmación
+usa datos que la indagación no usó. Guía: `GUIA_GRILLA_MASIVA.md` §7. Ejemplo: `SPEC_U1_INDAGA.md`.
+
+### ATJ-27 — Preflight obligatorio antes de lanzar (2026-10-23)
+
+Todo experimento de grilla pasa `python -m edgelab.research.preflight <módulo>` antes de lanzarse. Lo corren solos el programador
+del agente y `generate.campanas_grilla`. Chequea:
+- interfaz e indicadores usables;
+- variables bien formadas;
+- que el objeto aparezca y sea causal;
+- cortes no degenerados;
+- que el control de ruido tenga potencia y dé 0 rechazos;
+- que no haya perillas muertas;
+- que las cuentas de celdas coincidan.
+
+Cada campaña tiene sus condiciones con test, no toca el holdout, y si hay seguimiento declara la pérdida máxima estructural.
+El mapa error → chequeo está en `docs/research/areas_expansion_20261022/u1/REVISION_ERRORES_Y_PLAN_U1_CRUZADO.md` §4.
+
+### Ruta ejecutable para estudios de evento y reglas con su propio simulador
+
+El runner (`edgelab/funnel/runner.py`) cubre matrices señal × (SL, TP). Para todo lo demás:
+
+1. manifiesto + `TrialRegistry.ensure(campaign_id, family_id, n_trials)` **antes** de mirar desenlaces;
+2. P&L neto por operación con `edgelab.costos` (escenario base y adverso), con sesión y período;
+3. `escalera.resumen_sesiones` por prueba → `tamiz_fdr` sobre los p de la campaña;
+4. réplica no mirada de las nominadas → `escalera.evaluar(...)` con `economia` y `n_esperado_holdout`;
+5. publicar `escalera.para_autopilot(...)` + el veredicto bajo `escalera` (lo leen `analyze` y `holdout_apertura`).
+
+Ejemplo completo: `tools/escalera_candidatos_20261022.py`.
+
+---
+
 ## 4. Matriz rápida: qué puede matar una opción
 
 | Hallazgo | ¿Excluye? | Etapa |
@@ -463,6 +549,9 @@ definición, que es la forma más cara de equivocarse: parece evidencia.
 | Feature usa futuro o disponibilidad desconocida | sí o clase separada | `EF1` |
 | Pocas sesiones por celda | bloquea hipótesis detallada, no borra la familia | `EF1/EF3` |
 | Efecto exploratorio inestable | no confirma; normalmente no avanza | `EF2/EF3` |
+| No pasa el tamiz FDR pero el IC no excluye lo útil | **no**: `SIN_POTENCIA`, en reserva | `EF2` |
+| Cota optimista del IC < efecto útil | sí (`REFUTADA`, con su alcance) | `EF2/EF5` |
+| Réplica no concluyente | **no**: se sigue con el monitor secuencial | `EF5` |
 | Holdout FAIL | cierra la hipótesis congelada | `EF5/G4` |
 
 ---
@@ -532,5 +621,8 @@ Antes de proponer otra campaña combinatoria:
 - [ ] ¿Cada tasa declara población, numerador y denominador?
 - [ ] ¿Cada afirmación distingue medido, inferido, provisional y retractado?
 - [ ] ¿Se midió la escala del objeto contra la del estimador antes de publicar un nulo?
+- [ ] ¿Los costos salen de `edgelab/costos.py`?
+- [ ] ¿La decisión usa la escalera (tamiz FDR → réplica LORD++ → económico → potencia del holdout)?
+- [ ] ¿Un nulo sin potencia quedó como `SIN_POTENCIA` con las operaciones que faltan, y no como muerte?
 
 **Aporte al referente:** estas prácticas reducen exportaciones inútiles, joins ambiguos, recomputaciones, controles post hoc y auditorías de contradicciones. El tiempo ahorrado se desplaza de infraestructura repetida a preguntas que sí pueden acercarse a un edge válido y aplicable.

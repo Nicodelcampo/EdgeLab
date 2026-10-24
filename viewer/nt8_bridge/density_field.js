@@ -24,7 +24,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  const HOLDOUT_NS = 1782856800000000000;
+  const HOLDOUT_NS = 1790805600000000000;   // 2026-09-30 22:00 UTC = apertura de la sesion del 1-oct (HOLDOUT-A4; copia de edgelab/holdout.py)
   const VERSION = "1.0.0";
 
   // ------------------------------------------------------------------ utilidades numéricas

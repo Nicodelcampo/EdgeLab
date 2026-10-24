@@ -3,7 +3,12 @@ import sys,os,json,subprocess,datetime as dt,numpy as np,pandas as pd
 sys.path.insert(0,'/tmp/claude-0/ghostlocal');sys.path.insert(0,'/home/user/EdgeLab')
 import pyarrow.parquet as pq,pyarrow.compute as pc
 from opp_tables2 import build_table,SLOTS,HOLDS
-HOLD=1782856800000000000;MIN=60_000_000_000;NH=len(HOLDS);NC=3;MINN=40;NSIM=20000;SEED=20261006
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
+HOLD=HOLDOUT_APERTURA_UTC_NS;MIN=60_000_000_000;NH=len(HOLDS);NC=3;MINN=40;NSIM=20000;SEED=20261006
 def tdate(t_ns):
     ix=pd.to_datetime(np.asarray(t_ns)-1,unit='ns',utc=True).tz_convert('America/Chicago')+pd.Timedelta(hours=7)
     return np.array([d.toordinal() for d in ix.date])

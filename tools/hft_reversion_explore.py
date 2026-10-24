@@ -33,7 +33,7 @@ from numba import njit
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-HOLDOUT_NS = 1_775_001_600_000_000_000          # 2026-04-01T00:00Z: confirmación y holdout quedan fuera
+FIN_DESCUBRIMIENTO_NS = 1_775_001_600_000_000_000   # fin del descubrimiento de esta familia cerrada (NO es el holdout: edgelab/holdout.py, HOLDOUT-A4)          # 2026-04-01T00:00Z: confirmación y holdout quedan fuera
 D_GRID = (8, 20, 40)                            # alejamiento previo, ticks
 R_GRID = (16, 40, 80, 160)                      # tamaño de la reversión, ticks
 B_BREAK = 2                                     # ruptura: borde lejano + B ticks
@@ -189,7 +189,7 @@ def load_zones(parquet, instrument, contract, max_sessions=None):
 
     tab = pq.read_table(parquet, columns=["ts_utc_ns"])
     ts_all = tab["ts_utc_ns"].to_numpy()
-    ts_all = ts_all[ts_all < HOLDOUT_NS]
+    ts_all = ts_all[ts_all < FIN_DESCUBRIMIENTO_NS]
     tds = trade_date_ymd(ts_all)
     ok = ~is_maintenance_break(ts_all)
     thr = hft.profile(hft.SCALED, instrument)
@@ -247,7 +247,7 @@ def main(argv=None):
         celdas.append(fila)
     out = Path(a.out); out.mkdir(parents=True, exist_ok=True)
     rep = dict(instrumento=a.instrument, contrato=a.contract, sesiones=n_ses, zonas=n_zonas,
-               corte_holdout_ns=HOLDOUT_NS, perfil="SCALED_FUNNEL_V1", B=B_BREAK, celdas=celdas)
+               corte_holdout_ns=FIN_DESCUBRIMIENTO_NS, perfil="SCALED_FUNNEL_V1", B=B_BREAK, celdas=celdas)
     (out / "reporte.json").write_text(json.dumps(rep, indent=1, ensure_ascii=False), encoding="utf-8")
     L = [f"# HFT-REV-EXP — {a.contract} ({n_ses} sesiones, {n_zonas} zonas)", "",
          "| D | R | tocadas | reversión real | nivel | caminata | real − nivel [IC 95 %] | real − polaridad [IC 95 %] | pen. mediana (t) | pen. media (%W) |",

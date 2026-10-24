@@ -17,7 +17,7 @@ def test_report_template_keeps_numbers_from_ledger(tmp_path):
     row = reportar(tmp_path, TICK, STATUS)
     assert row["fuente"] == "plantilla" and "IDM-3" in row["texto"] and "0.0475" in row["texto"]
     assert row["hechos"]["cerradas"] == [["SLOT-1", False]] or row["hechos"]["cerradas"] == [("SLOT-1", False)]
-    assert json.loads((tmp_path / "sala_outbox.jsonl").read_text().splitlines()[0])["hechos"]["alfa"] == 0.0475
+    assert json.loads((tmp_path / "sala_outbox.jsonl").read_text(encoding="utf-8").splitlines()[0])["hechos"]["alfa"] == 0.0475
 
 def test_report_uses_cronista_but_numbers_travel_apart(tmp_path):
     r = Runner()
@@ -37,7 +37,7 @@ def test_commands_authorized_only_and_offset(tmp_path):
     out = aplicar_comandos(tmp_path, ks, ["gonzasib", "nicobutta897"], lambda: STATUS)
     assert ks.exists()                                                    # pausa aplicada; el intruso no reanudó
     assert ("no_autorizado", "intruso") in out and ("desconocido", "borrar") in out
-    ap = json.loads((tmp_path / "sala_aprobaciones.jsonl").read_text())
+    ap = json.loads((tmp_path / "sala_aprobaciones.jsonl").read_text(encoding="utf-8"))
     assert ap["id"] == "idm-3" and ap["efecto"].startswith("ninguno")
     assert aplicar_comandos(tmp_path, ks, ["gonzasib"], lambda: STATUS) == []      # ya leídos
     with inbox.open("a") as f: f.write(json.dumps({"autor": "gonzasib", "texto": "reanudar"}) + "\n")

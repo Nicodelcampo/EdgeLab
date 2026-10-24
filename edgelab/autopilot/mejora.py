@@ -7,7 +7,7 @@ Lo que el sistema puede hacer SOLO vs. lo que sólo puede PROPONER está fijado 
 |---|---|---|
 | eficiencia | configuración de corrida si optimizer.compare da salida idéntica y >= 1,2x | cambios de código del motor |
 | infraestructura | reintento de operaciones idempotentes (traer resultados, consultar estado) | todo lo demás |
-| módulos | nada | todo |
+| módulos | código nuevo dentro del perímetro del programador, con tests verdes y controles (programador.py) | cambios al motor compartido (rama autopilot/propuesta/*) |
 | global (gates, FDR, holdout, mandato, protegidos) | nunca | nunca por el sistema: sólo humano |
 
 Un sistema que pudiera aflojar sus propias reglas para "mejorar" su tasa de hallazgos estaría fabricando falsos positivos.

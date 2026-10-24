@@ -7,7 +7,12 @@ recibe uno prestado de otro (regla del repo: no transportar costos entre instrum
 """
 from __future__ import annotations
 
-FRICCION_RT_TICKS = {"ES": 3.55, "MES": 4.62, "6E": 4.16, "NQ": 6.18, "GC": 6.05, "MNQ": 7.91}
+from edgelab import costos as _costos
+
+# Fuente única desde 2026-10-22: config/costos/costos_canonicos.json (edgelab/costos.py). Mismos valores que la tabla literal
+# anterior (ES 3,55 · MES 4,62 · 6E 4,16 · NQ 6,18 · GC 6,05 · MNQ 7,91; verificado en tests/test_costos_canonicos.py), así que
+# el ciclo autónomo no cambia de comportamiento; agregar un instrumento a la tabla canónica lo habilita acá.
+FRICCION_RT_TICKS = {k: round(_costos.friccion_rt_ticks(k), 2) for k in ("ES", "MES", "6E", "NQ", "GC", "MNQ")}
 RATIO_MIN = 3.0        # el movimiento bruto esperado en el horizonte debe ser >= 3 veces la fricción RT
 
 

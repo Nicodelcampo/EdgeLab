@@ -1,0 +1,63 @@
+{
+ "schema": "plantilla_grilla_v1",
+ "experimento": "<ruta.del.modulo> (interfaz edgelab/research/grilla_generica.py)",
+ "kernel": "tools/agente/kernel_<nombre>.py (python tools/kaggle_grilla/construir_kernel_experimento.py <modulo.py> <salida>)",
+ "salidas": {
+  "resultado": "<NOMBRE>_<FUENTE>_<MODO>.json",
+  "autopilot": "STUDY_RESULTS.json (pistas informativas; /rep/ cuenta)",
+  "disparos": "parquet target-free"
+ },
+ "como_variar": [
+  "Perillas y ejecuciones en el módulo; cortes por cuantiles salen del E0 de la misma fuente.",
+  "n_trials = grilla_generica.n_celdas(exp) por canal (total y reciente) y fuente.",
+  "Variante buena: experimento de indagación con BASE = la celda, antes del P&L básico (ATJ-26).",
+  "REP: CELDAS y CORTES congelados (JSON) del DESC; período no usado."
+ ],
+ "runspecs": [
+  {
+   "run_id": "<id>-desc-nq",
+   "kind": "scan",
+   "family": "GRILLA_<NOMBRE>",
+   "group": "NQ",
+   "script": "tools/agente/kernel_<nombre>.py",
+   "prereg": "docs/research/agente/<id>/PREREGISTRO.md",
+   "n_trials": "<2 x n_celdas>",
+   "needs": [
+    "NQ:<desde>:<hasta>"
+   ],
+   "env": {
+    "EXPERIMENTO": "edgelab.research.agente.<modulo>",
+    "FUENTE": "NQ",
+    "MODO": "DESC",
+    "DESDE": "<YYYYMMDD>",
+    "HASTA": "<YYYYMMDD>"
+   },
+   "est_seconds": 7200,
+   "decision_rule": "escalera_v1"
+  },
+  {
+   "run_id": "<id>-rep-nq",
+   "kind": "replication",
+   "family": "GRILLA_<NOMBRE>",
+   "group": "NQ",
+   "script": "tools/agente/kernel_<nombre>.py",
+   "prereg": "docs/research/agente/<id>/PREREGISTRO_REP.md",
+   "n_trials": "<celdas congeladas>",
+   "needs": [
+    "NQ:<desde>:<hasta>"
+   ],
+   "env": {
+    "EXPERIMENTO": "edgelab.research.agente.<modulo>",
+    "FUENTE": "NQ",
+    "MODO": "REP",
+    "DESDE": "<YYYYMMDD>",
+    "HASTA": "<YYYYMMDD>",
+    "CELDAS": "<JSON>",
+    "CORTES": "<JSON>"
+   },
+   "est_seconds": 3600,
+   "decision_rule": "escalera_v1",
+   "notes": "lote de réplicas simultáneas: BH dentro del lote al nivel de un paso LORD++ (no LORD++ de a una)"
+  }
+ ]
+}

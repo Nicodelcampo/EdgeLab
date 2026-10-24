@@ -34,7 +34,7 @@ No instalar dependencias ni ejecutar todos los scripts para «ver si funciona».
 - Specs/manifests aprobados gobiernan su objeto; el contrato de ejecución gobierna fills y señales.
 - El registro gobierna navegación y ubicación, no veredictos económicos.
 - Una política de holdout debe provenir de la enmienda aprobada y del manifiesto de campaña; no seleccionar una fecha por mayoría de documentos.
-- Los docs de agosto/septiembre en otras ramas son fuentes históricas hasta reconciliar su vigencia. En particular hay diferencias entre el umbral antiguo de julio y HOLDOUT-A3 de octubre. Esta organización no abre ni amplía permisos.
+- Los docs de agosto/septiembre en otras ramas son fuentes históricas hasta reconciliar su vigencia. Desde HOLDOUT-A4 (2026-10-22) hay una sola frontera de holdout para todo, la sesión del 2026-10-01 (`edgelab/holdout.py`); las fechas viejas que aparezcan en docs históricos ya no rigen. Esta organización no abre ni amplía permisos.
 
 ## 4. Environments
 

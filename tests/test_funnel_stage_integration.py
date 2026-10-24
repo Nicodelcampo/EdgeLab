@@ -34,7 +34,7 @@ def configs(direction="normal",count=1):
 
 def run_case(tmp_path,name,raw=None,cs=None,hold=2):
     raw=raw or inputs();split=make_splits(raw["trade_dates"])
-    runner=FunnelRunner(**raw,configs=cs or configs(),out_dir=tmp_path/name,backend="cpu",frozen_split=split)
+    runner=FunnelRunner(fees_ticks=.5,**raw,configs=cs or configs(),out_dir=tmp_path/name,backend="cpu",frozen_split=split)
     return runner,runner.run_e1_e3(min_trades=1,max_hold_bars=hold)
 
 
@@ -99,12 +99,12 @@ def test_direction_aliases_are_exactly_inverted(tmp_path,direction):
 @pytest.mark.parametrize("backend",["auto","gpu"])
 def test_runner_gpu_route_is_closed_without_silent_fallback(tmp_path,backend):
     with pytest.raises(RuntimeError,match="CPU-only"):
-        FunnelRunner(**inputs(),configs=configs(),out_dir=tmp_path/"blocked",backend=backend)
+        FunnelRunner(fees_ticks=.5,**inputs(),configs=configs(),out_dir=tmp_path/"blocked",backend=backend)
     assert not (tmp_path/"blocked").exists()
 
 
 def test_split_hash_is_not_permission_to_open_d2(tmp_path):
-    runner=FunnelRunner(**inputs(),configs=configs(),out_dir=tmp_path/"no",allow_unguarded=True)  # synthetic: no frozen split
+    runner=FunnelRunner(fees_ticks=.5,**inputs(),configs=configs(),out_dir=tmp_path/"no",allow_unguarded=True)  # synthetic: no frozen split
     with pytest.raises(PermissionError):runner.d2_mask(unlock_token=runner.split.split_hash)
 
 
@@ -180,7 +180,7 @@ def test_cli_frozen_split_and_real_synthetic_arrays(tmp_path):
     for key,name in names.items():np.save(arrays/f"{name}.npy",raw[key],allow_pickle=False)
     split=tmp_path/"split.json";split.write_text(json.dumps(to_dict(make_splits(raw["trade_dates"]))))
     registry=tmp_path/"registry.json";registry.write_text(json.dumps(configs()))
-    command=[sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(registry),"--split",str(split),"--out",str(tmp_path/"cli"),"--max-hold-bars","2"]
+    command=[sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(registry),"--split",str(split),"--out",str(tmp_path/"cli"),"--max-hold-bars","2","--fees-ticks","0.5"]
     proc=subprocess.run(command,capture_output=True,text=True)
     assert proc.returncode==0,proc.stderr
     result=json.loads(proc.stdout)
@@ -201,7 +201,7 @@ def test_cli_changed_days_fail_before_price_file_open(tmp_path):
     raw=inputs();arrays=tmp_path/"metadata-only";arrays.mkdir()
     np.save(arrays/"trade_date.npy",raw["trade_dates"][:-8],allow_pickle=False)
     split=tmp_path/"split.json";split.write_text(json.dumps(to_dict(make_splits(raw["trade_dates"]))))
-    proc=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(tmp_path/"not-opened.json"),"--split",str(split),"--out",str(tmp_path/"out")],capture_output=True,text=True)
+    proc=subprocess.run([sys.executable,str(ROOT/"tools/run_funnel_arrays.py"),"--arrays",str(arrays),"--registry",str(tmp_path/"not-opened.json"),"--split",str(split),"--out",str(tmp_path/"out"),"--fees-ticks","0.5"],capture_output=True,text=True)
     assert proc.returncode!=0 and "coverage differs" in proc.stderr
     assert "FileNotFoundError" not in proc.stderr
     assert not (tmp_path/"out").exists()

@@ -17,6 +17,14 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 5. **Candidatas:** `/var/lib/edgelab-autopilot/state/autopilot_runs/candidates.json` empieza vacío (el instalador migra uno viejo de `/etc/edgelab`). Copiá ahí las promovidas (`python tools/autopilot_generate.py promote ...`) después de revisar el borrador y de que el pre-registro esté committeado en la rama de código.
 6. **Protegidos:** `python tools/autopilot_protect.py check` debe dar OK; cada cambio legítimo a gates/guardas exige que un humano refresque el manifiesto y lo committee.
 7. **Doctor y primer ciclo (modo propose):** `sudo -u edgelab /opt/edgelab/venv/bin/python tools/autopilot_doctor.py --config /etc/edgelab/autopilot.json` → debe decir LISTO; luego `sudo systemctl start edgelab-autopilot.service` y revisar `--status`. Recién después, en `/etc/edgelab/autopilot.json` poner `"mode": "execute"` y `sudo systemctl enable --now edgelab-autopilot.timer edgelab-autopilot-generate.timer edgelab-propfirm-refresh.timer edgelab-watchdog.timer`.
+8. **Regla de decisión `escalera_v1` (2026-10-22, decisión de Nico).** Reemplaza Holm + alpha-investing, cuya riqueza quedó en
+   0,0025 y ya no deja descubrir nada (`docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`). En dos pasos:
+   - Actualizar el código (`update.sh <sha>`), parar el timer y probar sobre una COPIA del estado (no toca nada real):
+     `sudo -u edgelab /opt/edgelab/venv/bin/python tools/autopilot_activar_escalera.py --config /etc/edgelab/autopilot.json --root /var/lib/edgelab-autopilot/state/autopilot_runs --candidates /var/lib/edgelab-autopilot/state/autopilot_runs/candidates.json`
+     → revisar que `status.decision` sea `escalera_v1` y que las corridas cerradas tengan `regla: escalera_v1`.
+   - Si se ve bien: el mismo comando con `--aplicar` (agrega `decision` y `escalera` a la configuración, con respaldo
+     `autopilot.json.antes_escalera`) y volver a encender el timer. Para volver atrás, restaurar el respaldo.
+   La plantilla `autopilot.example.json` ya trae la clave. `fdr.py` y `alpha.json` no cambian; no hace falta refrescar protegidos.
 
 ## Operación
 - Estado: `sudo -u edgelab /opt/edgelab/venv/bin/python -m edgelab.autopilot --root /var/lib/edgelab-autopilot/state/autopilot_runs --config /etc/edgelab/autopilot.json --candidates /var/lib/edgelab-autopilot/state/autopilot_runs/candidates.json --status`
@@ -28,8 +36,23 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - Registro de pruebas: el autopilot escribe su propio `trial_registry.jsonl` en el clon de estado; para sumarlo al contador global, copiarlo a `docs/research/autopilot_runs/` del repo de código y correr `python tools/registro_global.py` (idempotente).
 - Qué mira el humano: `REPORT.md` de borradores (rama `autopilot/state`), `autopilot.log.jsonl`, la riqueza de alfa y los hallazgos exploratorios.
 
+## Grilla masiva y programador (2026-10-22)
+- **Usar la modalidad:** plantilla `config/autopilot/grillas/AREAS_EXP_1.json` (RunSpecs E0/DESC/REP, kernel committeado `tools/kaggle_areas/kernel_areas.py`, salida `STUDY_RESULTS.json` con `/disc` y `/rep/` que lee `escalera_v1`). Orden y errores a no repetir: `docs/research/GUIA_GRILLA_MASIVA.md`.
+- **Generar variantes sin código:** env `GRILLA` (JSON con NS/WS/XS/A_CORTES). `n_trials` = celdas de la grilla; el pre-registro lleva el bloque JSON exacto (la guarda lo compara).
+- **Experimentos nuevos o mejoras:** los escribe el programador. Para encenderlo, `"programador": {"activo": true, ...}` en `/etc/edgelab/autopilot.json` y `systemctl enable --now edgelab-autopilot-programador.timer`. Pedido manual: `python tools/autopilot_generate.py pedir-codigo --state <estado> "qué hacer" --por-que "..."`.
+- **Revisión humana:** `programacion.jsonl` (rama `autopilot/state`) lista cada pedido con su estado. Las ramas `autopilot/codigo/*` se mergean a la rama de trabajo; las `autopilot/propuesta/*` se revisan como PR. Sin deploy key el commit queda local y `update.sh` lo protege.
+
+## Embudo automático (2026-10-23)
+- **Encender:** `"embudo": {"activo": true, ...}` y `"dukascopy": {...}` en `/etc/edgelab/autopilot.json` (ver `autopilot.example.json`).
+  Después `systemctl enable --now edgelab-datos-dukascopy.timer`.
+- **Carpeta sellada** (`/var/lib/edgelab-datos/holdout_sellado`): ahí van los datos desde la sesión del 2026-10-01. Nunca se suben a
+  Kaggle, y sólo los lee una etapa de holdout con acta.
+- **NQ sellado:** si hay ticks de NQ posteriores al 2026-10-01 (exportados de NT8), se copian ahí como `NQ_ticks.parquet`.
+- **Lanzar una campaña:** el agente (o una persona) deja el JSON en `config/autopilot/grillas/campanas/` con `"embudo": true`.
+- **Seguir una campaña:** `autopilot_runs/embudo/<cid>/MEDIDO.md` en la rama `autopilot/state`.
+
 ## Límites que conviene tener presentes
 - El autopilot no opera ni promueve: solo lanza y analiza estudios pre-registrados. Un hallazgo es exploratorio hasta que se replica en datos no usados.
-- Si la riqueza de alfa se agota, deja de lanzar campañas nuevas hasta que haya réplicas que la recarguen.
+- Con la regla vieja (sin `decision: escalera_v1`), si la riqueza de alfa se agota deja de lanzar campañas nuevas. Con `escalera_v1` eso no pasa: el tamiz FDR nomina y LORD++ confirma en réplica (`confirmaciones_lordpp.json`, que `sync_state.sh` sube).
 - `max_per_day` y `max_concurrent` acotan el uso de cómputo de Kaggle (cuota de GPU/CPU de tu cuenta).
 - Las claves nunca van al repo ni a la configuración: solo `.netrc` (0600) y la deploy key.

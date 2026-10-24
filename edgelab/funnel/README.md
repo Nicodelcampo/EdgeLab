@@ -1,5 +1,10 @@
 # Funnel exploratorio: runner CPU con outcomes por etapa
 
+> **2026-10-22:** para estudios de evento y reglas con su propio simulador, la ruta es `escalera.py` (tamiz FDR → réplica LORD++ →
+> económico → potencia del holdout) + `secuencial.py` (e-procesos); costos sólo de `edgelab/costos.py`. Kernel `v2`: stop con hueco
+> al open peor y salida por tiempo valorada al open siguiente (v1 anotaba 0). El runner exige `fees_ticks` explícito
+> (`--instrumento` en la CLI toma el canónico). Ver `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`.
+
 ## Responsabilidad y estado
 
 El runner hace E1/E2 y un diagnóstico E3 sobre D0/D1. **No confirma edges ni autoriza promoción.** La integración operativa es CPU-only; `auto`/`gpu` en el runner fallan antes de ejecutar, sin fallback silencioso. El kernel CUDA queda disponible para verificación sintética de bajo nivel, no como route end-to-end acreditada.
@@ -12,7 +17,8 @@ python tools/run_funnel_arrays.py \
   --registry /ruta/a/registro-preregistrado.json \
   --split /ruta/al/split-original-congelado.json \
   --out /ruta/a/directorio-nuevo \
-  --backend cpu
+  --backend cpu \
+  --instrumento NQ            # o --fees-ticks X --cost-source ...
 ```
 
 No ejecutar este ejemplo sobre datos reales sin manifiesto/aprobación. `--split` exige las fechas y hash originales; cobertura ampliada/truncada falla, no se resplitea automáticamente. Un hash valida identidad de metadata, **no** es un permiso para abrir D2.

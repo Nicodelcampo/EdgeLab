@@ -2,7 +2,7 @@
 
 > Este archivo se carga en cada sesión de Claude Code. El documento canónico
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
-> marcador `SHA256-BODY-ABOVE`: `05df5c7c3ec4cf3a1f14f62bb8e2ade4b61dd29203b610a308964ac46995f421`
+> marcador `SHA256-BODY-ABOVE`: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
 > ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
 > de entrada operativo vigente: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`;
@@ -128,13 +128,50 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   event-space del que fue extraída (ver regla de población abajo).
 - **Registro MEDIDO/NO MEDIDO actualizado en el mismo commit** que cualquier
   resultado nuevo — no en un commit aparte, no "después".
+- **Toda campaña con desenlaces se registra en el contador global antes de correr**
+  (`docs/research/TRIAL_REGISTRY_GLOBAL.jsonl` vía `TrialRegistry.ensure`, ver
+  `tools/registro_global.py`) y su manifiesto **declara la etapa EF** del embudo
+  (`docs/research_funnel_playbook.md`: EF2 exploratorio … EF5 confirmación). El
+  2026-10-22 se encontraron 1.535 pruebas de 20 campañas fuera del contador
+  (`docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`).
+- **Idea vista en el visor → primero se mide la regla exacta** (entrada realista al
+  cierre de la confirmación, costos, todos los períodos, agregado y consistencia) y
+  recién después los mecanismos. Una simulación visual sin costos o con entrada en el
+  extremo no es evidencia.
+- **Costos sólo de `edgelab/costos.py`** (`config/costos/costos_canonicos.json`): spread
+  medido + comisión máxima de las firmas que admiten algoritmos + slippage del escenario
+  G3. Un instrumento sin componente medido falla; no se usa una tabla local nueva.
+- **Grilla masiva (miles o millones de variantes):** seguir `docs/research/GUIA_GRILLA_MASIVA.md` (orden obligatorio y
+  tabla de errores que no se repiten). El momento de llenado de una entrada es una decisión declarada de cada análisis,
+  nunca una convención fija del motor. Una corrida lanzada con código que después se corrigió no se mira: se documenta
+  como descartada y se relanza.
+- **Edges actuales (Nico, 2026-10-22):** queremos lo que funciona ahora aunque antes no haya funcionado. El pasado no
+  mata; la ventana «reciente» se declara antes de mirar; la confirmación es en lo más reciente sin usar y forward
+  (ATJ-24). Un filtro que mata todo se audita en las dos direcciones (Romano-Wolf + pistas a réplica, ATJ-25).
+- **Barridos propios y variante buena (Nico, 2026-10-23):** el agente diseña barridos con el conductor genérico
+  (`edgelab/research/grilla_generica.py`, guía §6) sobre indicadores PASS (`config/autopilot/indicadores.json`) o
+  propios causales. Una variante buena se **indaga antes del P&L básico** (ATJ-26), nunca pasa directo.
+- **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
+  (ATJ-27). Los errores de la revisión del 2026-10-23 quedaron como chequeos automáticos, no como recordatorios.
+- **Embudo automático (2026-10-23):** una campaña de grilla = módulo del experimento + JSON con `"embudo": true`;
+  `edgelab/research/embudo.py` la lleva sola hasta la decisión del holdout (guía §8). No se arma a mano.
+- **Mejor candidato al 2026-10-23: U1-CRUZADO** (señal en el CFD USATECH, operación en NQ). Registro completo del
+  descubrimiento y del proceso en `docs/research/DESCUBRIMIENTO_U1_CRUZADO_REGISTRO.md`. No confirmado: falta holdout a N fijo.
+- **Decisión de una campaña con la escalera del embudo** (`edgelab/funnel/escalera.py`):
+  tamiz FDR (q 0,10) para nominar, réplica no mirada con nivel LORD++ para confirmar,
+  económico con costos canónicos y potencia del holdout antes de abrirlo. Tres salidas:
+  REFUTADA (la cota optimista no llega a lo útil), SIN_POTENCIA (viva, con las
+  operaciones que faltan) y confirmada. Un nulo sin potencia NO mata. Holdout, réplica y
+  paper se siguen con `edgelab/funnel/secuencial.py` (válido mirando cada semana).
+  Ver `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`.
 
 ## Firewall del holdout (desde la sesión CME del 1-oct-2026, a futuro)
 
-> Enmiendas `HOLDOUT-A1`/`A2`/`A3` (26–27/09), firmadas por Nico. Para **ES y NQ**: **descubrimiento** jul-2025 → 31-mar-2026;
-> **replicación** 1-abr → 30-sep-2026, una vez por familia y sólo sobre celdas sobrevivientes, sin elegir nada ahí;
-> **holdout** a futuro desde la sesión del 1-oct. Los demás instrumentos siguen hasta el 30-jun (su jul–sep no está
-> descargado). Ver `docs/incidents/AMENDMENT_HOLDOUT-A3_2026-09-27.md`.
+> **Enmienda `HOLDOUT-A4` (firmada por Nico el 2026-10-22): una sola frontera para todos los instrumentos y todo tipo de
+> dato (ticks, barras, L2)** — la sesión CME del 2026-10-01 (apertura 2026-09-30 22:00 UTC), a futuro. Fuente única en
+> código: `edgelab/holdout.py` (nunca un literal propio; `tests/test_holdout_unico.py` lo verifica). Todo lo anterior es
+> desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
+> por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.

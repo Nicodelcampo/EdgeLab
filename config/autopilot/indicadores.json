@@ -1,0 +1,183 @@
+{
+ "schema": "indicadores_v1",
+ "actualizado": "2026-10-23",
+ "regla": "Un barrido sólo usa indicadores PASS (o PASS_CON_CAVEAT, citando el caveat) en el instrumento y resolución de su evidencia; otro instrumento o bar_spec pide su propio oráculo. Un indicador propio del agente entra como NATIVO_AGENTE: vale para research si pasa la prueba de causalidad (edgelab/research/indicadores.py), y no se opera en vivo hasta tener su versión NT8 con paridad.",
+ "estados": [
+  "PASS",
+  "PASS_CON_CAVEAT",
+  "PARCIAL",
+  "VERIFICAR",
+  "PENDIENTE",
+  "NATIVO_AGENTE"
+ ],
+ "indicadores": [
+  {
+   "id": "LUX-IMB",
+   "modulo": "tools/luximb_parity/parity_luximb.py (detect; copia en edgelab/research/areas_expansion.py)",
+   "estado": "PASS",
+   "evidencia": "NQ 12-26 M1: lógica 1507/1507, velas 99,98 %, punta a punta 1373/1373",
+   "doc": "docs/research/luximb_parity_20261020/PARIDAD_LUXIMB_NQ1226_20261020.md",
+   "nota": "OG y VI; FVG apagado"
+  },
+  {
+   "id": "aVolClusterPOI",
+   "modulo": "edgelab/bridge/indicators/avolclusterpoi.py",
+   "estado": "PASS",
+   "evidencia": "MNQ 12-26: 50t 934/934 y 200t 338/338 (creación al ms, geometría 0 ticks)",
+   "doc": "docs/parity/PARIDAD_AVOLCLUSTER_MNQ1226_50T_20261005.md; docs/parity/PARIDAD_AVOLCLUSTER_MNQ1226_200T_20261006.md",
+   "nota": "v0.5"
+  },
+  {
+   "id": "aVolZonePOI2",
+   "modulo": "edgelab/bridge/indicators/avolzonepoi2.py",
+   "estado": "PASS",
+   "evidencia": "MNQ 12-26: 200t y 25t exacto (bloques 100 %)",
+   "doc": "docs/parity/PARIDAD_AVOLZONEPOI2_MNQ1226_200T_20261007.md; docs/parity/PARIDAD_AVOLZONEPOI2_MNQ1226_25T_20261008.md",
+   "nota": ""
+  },
+  {
+   "id": "VolTicksDef",
+   "modulo": "edgelab/bridge/indicators/volticksdef.py",
+   "estado": "PASS",
+   "evidencia": "MNQ 12-26 150t: barras 100 %, volumen exacto",
+   "doc": "docs/parity/PARIDAD_VOLTICKSDEF_MNQ1226_150T_20261006.md",
+   "nota": "log1"
+  },
+  {
+   "id": "HFTZonesNQ",
+   "modulo": "edgelab/bridge/indicators/hftzones_nq.py",
+   "estado": "PASS",
+   "evidencia": "HP-007 V2 PASS_CERTIFIED 5438/5438, 38 campos",
+   "doc": "docs/parity_coverage/HFTZonesNQ.md",
+   "nota": ""
+  },
+  {
+   "id": "HFTZones2",
+   "modulo": "edgelab/bridge/indicators/hftzones2.py",
+   "estado": "PASS",
+   "evidencia": "1599/1599, 0 diffs (ramas declaradas en el documento)",
+   "doc": "docs/parity_coverage/HFTZones2.md",
+   "nota": "ver ramas cubiertas"
+  },
+  {
+   "id": "VolTicksPOC2",
+   "modulo": "edgelab/bridge/indicators/voltickspoc2.py",
+   "estado": "PASS",
+   "evidencia": "23/23, 0 diffs (muestra chica)",
+   "doc": "docs/parity_coverage/VolTicksPOC2.md",
+   "nota": "muestra chica: ampliar antes de un barrido grande"
+  },
+  {
+   "id": "BigTrap2",
+   "modulo": "edgelab/bridge/indicators/bigtrap2.py",
+   "estado": "PASS_CON_CAVEAT",
+   "evidencia": "junio 3.628/3.638 EXACT (99,73 %), abril+mayo 171/171; filtro de mecha 0,0241 % de exposición residual",
+   "doc": "docs/parity_coverage/BigTrap2.md",
+   "nota": "familia imán cerrada; el indicador sigue usable"
+  },
+  {
+   "id": "BigTrap2Absorption",
+   "modulo": "edgelab/bridge/indicators/bigtrap2absorption.py",
+   "estado": "PARCIAL",
+   "evidencia": "cobertura comparable 97,45 %",
+   "doc": "docs/parity_coverage/BigTrap2Absorption.md",
+   "nota": ""
+  },
+  {
+   "id": "Gaps2",
+   "modulo": "edgelab/bridge/indicators/gaps2.py",
+   "estado": "VERIFICAR",
+   "evidencia": "paridad por rama: sólo las ramas con oráculo PASS",
+   "doc": "docs/parity_coverage/Gaps2.md",
+   "nota": "usar sólo ramas cubiertas"
+  },
+  {
+   "id": "AACloseOpenDiffs",
+   "modulo": "edgelab/bridge/indicators/aacloseopendiffs.py",
+   "estado": "VERIFICAR",
+   "evidencia": "primer oráculo FAIL con causa raíz de grilla (1 ULP); estado posterior sin verificar",
+   "doc": "docs/parity_coverage/AACloseOpenDiffs.md",
+   "nota": ""
+  },
+  {
+   "id": "aVolCellPOI2",
+   "modulo": "edgelab/bridge/indicators/avolcellpoi2.py",
+   "estado": "PENDIENTE",
+   "evidencia": "primer oráculo FAIL por calendario de sesiones",
+   "doc": "docs/parity_coverage/aVolCellPOI2.md",
+   "nota": ""
+  },
+  {
+   "id": "ESPEJO-IND",
+   "modulo": "edgelab/bridge/indicators/espejo_impulsos.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "liqheat",
+   "modulo": "edgelab/bridge/indicators/liqheat.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "liqpool",
+   "modulo": "edgelab/bridge/indicators/liqpool.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "cleanimpulse",
+   "modulo": "edgelab/bridge/indicators/cleanimpulse.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "avolzonesimple",
+   "modulo": "edgelab/bridge/indicators/avolzonesimple.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "avolzonepoi",
+   "modulo": "edgelab/bridge/indicators/avolzonepoi.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "avolclusterpoi_fast",
+   "modulo": "edgelab/bridge/indicators/avolclusterpoi_fast.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "avolclusterpoi_full",
+   "modulo": "edgelab/bridge/indicators/avolclusterpoi_full.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  },
+  {
+   "id": "hftzones_universal",
+   "modulo": "edgelab/bridge/indicators/hftzones_universal.py",
+   "estado": "VERIFICAR",
+   "evidencia": "sin documento de paridad encontrado el 2026-10-23",
+   "doc": "",
+   "nota": ""
+  }
+ ]
+}

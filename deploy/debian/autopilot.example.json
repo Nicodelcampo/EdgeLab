@@ -15,6 +15,11 @@
     "payout": 0.05,
     "spend_fraction": 0.5
   },
+  "decision": "escalera_v1",
+  "escalera": {
+    "alfa": 0.05,
+    "q": 0.1
+  },
   "result_files": {
     "IDM": "STUDY_RESULTS.json",
     "SLOT_REVERSAL": "STUDY_RESULTS.json",
@@ -22,7 +27,8 @@
     "IDM_JUMP": "STUDY_RESULTS.json",
     "SLOT_SCAN": "STUDY_RESULTS.json",
     "PNL_EVAL": "STUDY_RESULTS.json",
-    "VIO_ZONES": "STUDY_RESULTS.json"
+    "VIO_ZONES": "STUDY_RESULTS.json",
+    "GRILLA_AREAS": "STUDY_RESULTS.json"
   },
   "evidence_runtime": "/var/lib/edgelab-autopilot/state/autopilot_runs/evidence_runtime.jsonl",
   "roles_ledger": "/var/lib/edgelab-autopilot/state/autopilot_runs/llm_calls.sqlite",
@@ -60,5 +66,35 @@
     "lector": "claude-haiku-5-5",
     "bibliotecario": "claude-haiku-5-5",
     "cronista": "claude-haiku-5-5"
+  },
+  "programador": {
+    "activo": false,
+    "max_por_dia": 1,
+    "modelo": "claude-opus-5-5",
+    "python": "/opt/edgelab/venv/bin/python",
+    "tests": [
+      "tests"
+    ],
+    "timeout_s": 3600,
+    "push": true,
+    "aplicar": true
+  },
+  "embudo": {
+    "activo": false,
+    "campanas": "config/autopilot/grillas/campanas",
+    "sellado": {
+      "DK:USATECHIDXUSD": "/var/lib/edgelab-datos/holdout_sellado",
+      "NQ": "/var/lib/edgelab-datos/holdout_sellado/NQ_ticks.parquet"
+    }
+  },
+  "dukascopy": {
+    "simbolos": [
+      "USATECHIDXUSD",
+      "USA500IDXUSD",
+      "USA30IDXUSD",
+      "XAUUSD"
+    ],
+    "salida_sellada": "/var/lib/edgelab-datos/holdout_sellado",
+    "desde": "2026-09-30"
   }
 }

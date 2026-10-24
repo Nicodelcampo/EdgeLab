@@ -63,7 +63,7 @@ def _cfg():
 
 def _runner(tmp,planted,seed,**kw):
     td,sig,d,h,l,bo,ao=_market(planted,seed=seed)
-    return FunnelRunner(trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=kw.pop('configs',_cfg()),out_dir=tmp,backend='cpu',holdout_first_date=20270101,**kw)
+    return FunnelRunner(fees_ticks=.5,trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=kw.pop('configs',_cfg()),out_dir=tmp,backend='cpu',holdout_first_date=20270101,**kw)
 
 def test_e4_detects_planted_direction_and_not_noise(tmp_path):
     reg=tmp_path/'reg.jsonl'
@@ -102,10 +102,10 @@ def test_batched_null_matches_bruteforce(tmp_path):
 def test_runner_fails_closed_without_holdout_guard(tmp_path):
     td,sig,d,h,l,bo,ao=_market(False)
     with pytest.raises(ValueError):
-        FunnelRunner(trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu')
+        FunnelRunner(fees_ticks=.5,trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu')
     with pytest.raises(PermissionError):
-        FunnelRunner(trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu',holdout_first_date=20260110)
-    r=FunnelRunner(trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu',allow_unguarded=True)
+        FunnelRunner(fees_ticks=.5,trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu',holdout_first_date=20260110)
+    r=FunnelRunner(fees_ticks=.5,trade_dates=td,signal_idx=sig,signal_dir=d,high=h,low=l,bid_open=bo,ask_open=ao,configs=_cfg(),out_dir=tmp_path,backend='cpu',allow_unguarded=True)
     assert r.run_e1_e3(min_trades=5,max_hold_bars=40)['holdout_opened']=='UNVERIFIED'
 
 def test_trials_counted_before_work_and_seen_marked(tmp_path):
@@ -147,7 +147,7 @@ def test_arrays_entrypoint_end_to_end(tmp_path):
     td,sig,d,h,l,bo,ao=_market(True);a=tmp_path/'arr';a.mkdir()
     for n,v in dict(trade_date=td,signal_bar_idx=sig,signal_dir=d,high_ticks=h,low_ticks=l,bid_open_ticks=bo,ask_open_ticks=ao).items():np.save(a/f'{n}.npy',v)
     reg=tmp_path/'reg.json';reg.write_text(json.dumps({'family_id':'F','candidates':[{k:v for k,v in c.items() if k!='family_id'} for c in _cfg()]}))
-    root=Path(__file__).resolve().parents[1];base=[sys.executable,str(root/'tools/run_funnel_arrays.py'),'--arrays',str(a),'--registry',str(reg),'--out',str(tmp_path/'o'),'--backend','cpu']
+    root=Path(__file__).resolve().parents[1];base=[sys.executable,str(root/'tools/run_funnel_arrays.py'),'--arrays',str(a),'--registry',str(reg),'--out',str(tmp_path/'o'),'--backend','cpu','--fees-ticks','0.5']
     bad=subprocess.run(base,capture_output=True,text=True,cwd=root);assert bad.returncode!=0   # frozen split is mandatory
     from edgelab.funnel.splits import make_splits,to_dict
     sp=tmp_path/'split.json';sp.write_text(json.dumps(to_dict(make_splits(td))))

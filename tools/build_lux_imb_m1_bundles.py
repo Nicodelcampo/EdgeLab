@@ -35,8 +35,13 @@ if str(REPO) not in sys.path:
 
 from edgelab.bridge.ticks import load_canonical_parquet  # noqa: E402
 from edgelab.research import lux_imb_series as S  # noqa: E402
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
-HOLDOUT_NS = 1782856800000000000
+HOLDOUT_NS = HOLDOUT_APERTURA_UTC_NS
 COLORS = {1: "#2157f3", -1: "#ff1100"}
 PRECISION = {"6E": 5, "6B": 4, "6J": 7, "ES": 2, "MES": 2, "NQ": 2, "MNQ": 2, "YM": 0, "GC": 1, "ZB": 5, "MBT": 0}
 

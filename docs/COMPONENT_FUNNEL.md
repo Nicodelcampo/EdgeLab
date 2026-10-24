@@ -12,6 +12,12 @@ Datos/custodia aprueba fuentes y particiones; el productor de features prepara s
 - `FunnelRunner`: orquestación CPU, salidas y diagnóstico; D2 cerrado incluso con el hash público del split.
 - `load_frozen_split` / `validate_split`: identidad, orden, no solapamiento y cobertura exacta; no autorización.
 - `tools/run_funnel_arrays.py`: entrada soportada con `--split` explícito y output nuevo.
+- `escalera` (2026-10-22): decisión para estudios de evento y reglas con P&L por operación — `tamiz_fdr` (BH/Storey/BY), `LordPP`
+  (FDR en línea de confirmaciones), `resumen_sesiones` (IC por sesiones), `mde`/`ops_necesarias`/`potencia`, `recorte_t`
+  (Harvey-Liu), `n_efectivo` (Li-Ji), `economia` (G1/G3), `evaluar` (REFUTADA / SIN_POTENCIA / NOMINADA / CONFIRMADA_REPLICA /
+  LISTA_PARA_HOLDOUT) y `para_autopilot` (formato `results_flat` de `edgelab.autopilot.analyze`).
+- `secuencial`: `EProceso`, `MonitorCandidato` (edge + futilidad, válido mirando en cualquier momento), `combinar_e`.
+- Costos: el runner exige `fees_ticks` explícito; la fuente única es `edgelab/costos.py`.
 
 ## Compatibilidad
 

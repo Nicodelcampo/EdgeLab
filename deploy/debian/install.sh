@@ -37,6 +37,7 @@ install -d -o edgelab -g edgelab $S/backups
 [ -f /etc/edgelab/autopilot.env ] || install -o edgelab -g edgelab -m 0600 /dev/null /etc/edgelab/autopilot.env
 # 5) systemd
 for u in edgelab-autopilot.service edgelab-autopilot.timer edgelab-autopilot-generate.service edgelab-autopilot-generate.timer \
+         edgelab-autopilot-programador.service edgelab-autopilot-programador.timer edgelab-datos-dukascopy.service edgelab-datos-dukascopy.timer \
          edgelab-propfirm-refresh.service edgelab-propfirm-refresh.timer edgelab-watchdog.service edgelab-watchdog.timer edgelab-alerta@.service; do
   cp $H/EdgeLab/deploy/debian/$u /etc/systemd/system/
 done

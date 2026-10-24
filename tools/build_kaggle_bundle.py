@@ -17,7 +17,7 @@ Doctrina de esta version:
   nombrando la regla que lo excluyo.
 * IDENTIDAD ANTES DE PUBLICAR. sha256 y tamanio por archivo, filas y rango
   temporal reales leidos del footer, y sha256 canonico del indice completo.
-* SELLO DEL HOLDOUT POR TRADE DATE (P-17). Un archivo cuyo `ts_max` cae en o
+* CORTE POR TRADE DATE DEL RELEASE V1 (P-17; era el sello del holdout antes de HOLDOUT-A4, hoy es el corte fisico del artefacto). Un archivo cuyo `ts_max` cae en o
   despues de la apertura de la sesion 2026-07-01 (= 2026-06-30T22:00:00Z) no es
   elegible: requiere re-corte fisico. El corte UTC ingenuo se calcula solo para
   MEDIR el leak que produciria (2 h de ticks del trade date del holdout).
@@ -68,7 +68,7 @@ FILENAME_RE = re.compile(
 )
 
 # --- Sello del holdout (Contrato Kaggle v2 + enmienda v2.1) -----------------
-HOLDOUT_FIRST_TRADE_DATE = 20260701
+CORTE_V1_PRIMERA_SESION_EXCLUIDA = 20260701   # corte FISICO del release v1 / research-v2 (frontera vieja); NO es el holdout: ver edgelab/holdout.py (HOLDOUT-A4)
 RESEARCH_MAX_TRADE_DATE = 20260630
 NAIVE_UTC_CUT_NS = (
     int(datetime(2026, 7, 1, tzinfo=timezone.utc).timestamp()) * NS_PER_SEC
@@ -475,9 +475,9 @@ def build_index(
     )
 
     # --- Sello del holdout --------------------------------------------------
-    holdout_open_ns = int(sessions.session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0])
+    holdout_open_ns = int(sessions.session_bounds_utc_ns(CORTE_V1_PRIMERA_SESION_EXCLUIDA)[0])
     seal = {
-        "first_holdout_trade_date": HOLDOUT_FIRST_TRADE_DATE,
+        "first_holdout_trade_date": CORTE_V1_PRIMERA_SESION_EXCLUIDA,
         "research_max_trade_date": RESEARCH_MAX_TRADE_DATE,
         "holdout_open_ns": holdout_open_ns,
         "holdout_open_utc": datetime.fromtimestamp(
@@ -945,15 +945,15 @@ def selftest() -> int:
     sessions, identity = mods.sessions, mods.identity
 
     # T1 - aritmetica del sello
-    open_ns = int(sessions.session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)[0])
+    open_ns = int(sessions.session_bounds_utc_ns(CORTE_V1_PRIMERA_SESION_EXCLUIDA)[0])
     iso = datetime.fromtimestamp(open_ns / NS_PER_SEC, tz=timezone.utc).isoformat()
-    check("T1 apertura del holdout = 2026-06-30T22:00:00+00:00", iso == "2026-06-30T22:00:00+00:00", iso)
+    check("T1 apertura de la sesion de corte del v1 = 2026-06-30T22:00:00+00:00", iso == "2026-06-30T22:00:00+00:00", iso)
     gap = (NAIVE_UTC_CUT_NS - open_ns) // NS_PER_SEC
     check("T1b el corte UTC ingenuo deja pasar 7200 s", gap == 7200, f"gap={gap}")
     td = sessions.trade_date_ymd(np.asarray([open_ns - 1, open_ns], dtype=np.int64))
     check(
         "T1c trade date cambia exactamente en ese ns",
-        [int(td[0]), int(td[1])] == [RESEARCH_MAX_TRADE_DATE, HOLDOUT_FIRST_TRADE_DATE],
+        [int(td[0]), int(td[1])] == [RESEARCH_MAX_TRADE_DATE, CORTE_V1_PRIMERA_SESION_EXCLUIDA],
         f"{int(td[0])}->{int(td[1])}",
     )
 

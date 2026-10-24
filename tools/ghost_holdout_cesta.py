@@ -1,4 +1,4 @@
-"""Enmienda 5: cesta 1 MES + 1 RTY + 1 YM, holdout (sesiones >= 2026-07-01). Una sola apertura."""
+"""Enmienda 5 (antes de HOLDOUT-A4; hoy jul-sep es desarrollo): cesta 1 MES + 1 RTY + 1 YM, holdout (sesiones >= 2026-07-01). Una sola apertura."""
 import sys,os,json,datetime as dt,numpy as np,pandas as pd
 sys.path.insert(0,'/tmp/claude-0/ghostlocal');sys.path.insert(0,'/home/user/EdgeLab')
 import pyarrow.parquet as pq,pyarrow.compute as pc

@@ -1,6 +1,6 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-19  
+**Fecha:** 2026-10-22  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
 **Corte:** 2026-10-19  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
@@ -10,7 +10,26 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-19 (leer primero)
+## Estado al 2026-10-22 (leer primero)
+
+- **Sprint 2026-10-20..22 (LUX-IMB OG/VI, ORB 01:00 de Instagram, horarios ORB, picos EURUSD): 20 campañas, 1.535 pruebas**, ahora en el contador global (`tools/registrar_campanias_20261020.py`). Índice, veredictos y auditoría del embudo: `docs/research/AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md`.
+- **Único candidato vivo:** regla LUX-IMB del visor en NQ (entrada al cierre de la confirmación, TP en el inicio de la zona, SL 1/5), congelada para holdout (`docs/research/luximb_parity_20261020/CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); mirada exploratoria del holdout (n = 14) en contra: 14 SL / 0 TP. ORB0100 NQ 01:00 (TP 1,5R + VWAP) positivo en 3 tramos, replicación NO_CONCLUYENTE. Todo lo demás: sin efecto.
+- **Embudo:** correcto en lo estadístico pero no cubría estudios de eventos y no estaba señalizado; ritual nuevo en `CLAUDE.md` (registro global + etapa EF + medir primero la regla exacta).
+- **Auditoría a fondo del embudo (22-oct):** `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md`.
+  - **El autopilot ya no podía descubrir:** riqueza de alfa en 0,0025, Holm a ~0,001; en la simulación confirma el 2 % de los edges reales moderados.
+  - **Diseño nuevo:** tamiz FDR + réplica LORD++ + económico + potencia del holdout (`edgelab/funnel/escalera.py`, `secuencial.py`). Confirma el 36 % de esos edges, con FDR < 1 %.
+  - **Integración en el Debian:** interruptor `decision: escalera_v1` (apagado; ningún protegido cambió).
+  - **Costos canónicos únicos:** `edgelab/costos.py`, de `config/costos/costos_canonicos.json`.
+  - **Arreglos del kernel del runner:** stop con hueco; timeout valorado a mercado; costo obligatorio, antes 0,5 ticks fijos.
+  - **Candidatos con costos reales:** LUX-IMB +4,05 pts/op y ORB +6,3 en réplica. Los dos quedan **SIN_POTENCIA** (vivos, ~950 y ~1.050 operaciones para decidir); el holdout de LUX-IMB queda SIN_DECIDIR.
+- **Holdout único (HOLDOUT-A4, Nico 22-oct):** la sesión CME del 2026-10-01 para todos los activos y L2; fuente única `edgelab/holdout.py`, verificada por `tests/test_holdout_unico.py`. Acta y cobertura: `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
+  - **Cobertura en Kaggle:** 9 de 14 activos terminan antes del 30-sep (ES, NQ, 6E, 6B y 6J el 25-sep; MES, MYM y RTY el 28-sep), y hay huecos internos (MYM 15, 6E 12, ES 9).
+  - **Resuelto:** el autopilot resolvía contra datasets marcados REEMPLAZADO o CUARENTENA. Ahora el resolver v2 sale del release canónico: catálogo v18 en Kaggle y `tools/resolver_desde_release.py`. En el Debian falta actualizar el clon de código.
+- **Repo consistente en Windows y en el Debian:** finales de línea (`.gitattributes`), caché de numba aislado en la suite, `fcntl` emulado con bloqueo real en Windows, conexiones SQLite cerradas, claves de ruta POSIX en la biblioteca del autopilot.
+- **Activación de `escalera_v1`:** `tools/autopilot_activar_escalera.py`, en dos pasos: primero un ciclo de prueba sobre una copia del estado, después `--aplicar`. Pasos en `deploy/debian/LEEME.md` §8.
+- **Edges promovidos: 0** (sin cambios).
+
+## Estado al 2026-10-19
 
 - **Agente autónomo (rama `claude/vibrant-clarke-s9z6e2`, PR #64, con `main` integrado):** arquitectura multiagente consolidada en `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md` (código orquesta; roles LLM con modelos fijados: proponente/revisor/abogado Opus, revisor2/auditor Sonnet, resúmenes Haiku; encendido por etapas, todo apagado por defecto). Nuevo: biblioteca trazable del proyecto (`edgelab/autopilot/conocimiento.py`: Brain, 400+ papers, research, registros, con sha y commit), doble revisión de la promoción, auditor post-corrida y abogado del diablo (`auditoria.py`), pre-registros publicados en `autopilot/prereg/<run_id>`, dos interruptores de pausa, vigilante externo, respaldo de `runs.sqlite`. Revisión y resolución: `docs/autopilot/REVISION_ESTRUCTURA_DEBIAN_20261019.md`, `docs/autopilot/RESOLUCION_REVISION_DEBIAN_20261019.md`. Criterios del dueño en las prioridades del agente: macro antes que micro, edges por régimen detectable, cartera diversificada.
 - **Funnel:** runner por etapas de #70 unificado con la custodia EF0 (guarda de holdout, registro global de pruebas, vistos, kernel, E4).
@@ -103,7 +122,7 @@ CORRIDOR_DEFINITION                     = density_field.py (reference) + density
 DENSITY_PORT_PARITY                     = 28_golden_scenarios + 12_real_bundle_cases, max_abs_diff=0
 CORRIDOR_DIRECTION_CHARACTERIZATION     = CHARACTERIZATION_UNCERTIFIED
 H_CLUSTER_NQ                            = OUT_OF_PROJECT (archived)
-HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (HOLDOUT-A3: forward desde la sesion del 2026-10-01; abr-sep = replicacion, una vez por familia)
+HOLDOUT_INTEGRITY                       = SEALED_UNTOUCHED (HOLDOUT-A4: una sola frontera, sesion del 2026-10-01, todos los activos y L2; ES/NQ abr-sep = replicacion, una vez por familia)
 HOLDOUT_BOUNDARY_NS                     = 1782856800000000000
 CI_PR48_BEFORE                          = 19_failed_1_error (causas mecanicas)
 CI_LOCAL_AFTER_MERGE                    = 1567_passed_1_failed (CURRENT.md, resuelto en este commit)

@@ -1,6 +1,6 @@
 """Firewall del holdout (FASE 3b): guard único + log append-only.
 
-edge_validation_contract.md §G4: prohibido usar el holdout (>= 2026-07-01)
+edge_validation_contract.md §G4: prohibido usar el holdout (>= apertura de la sesión del 2026-10-01, HOLDOUT-A4)
 para research económico; permitido SOLO para validaciones target-free, con
 log de acceso.
 """
@@ -25,7 +25,7 @@ def _read_lines(log_path):
 
 def test_development_pre_holdout_ok_no_log(tmp_path):
     lp = str(tmp_path / "log.md")
-    # todo el rango es anterior a HOLDOUT_START (2026-07-01)
+    # todo el rango es anterior a HOLDOUT_START (2026-09-30T22:00Z, HOLDOUT-A4)
     check_holdout("2026-06-01T00:00:00", "2026-06-30T23:59:59",
                   purpose="development", caller="test", log_path=lp)
     # sin excepción, y sin log (development seguro no se audita)
@@ -35,7 +35,7 @@ def test_development_pre_holdout_ok_no_log(tmp_path):
 def test_development_touching_holdout_raises_and_logs(tmp_path):
     lp = str(tmp_path / "log.md")
     with pytest.raises(HoldoutViolation):
-        check_holdout("2026-06-25T00:00:00", "2026-07-05T00:00:00",
+        check_holdout("2026-09-25T00:00:00", "2026-10-05T00:00:00",
                       purpose="development", caller="test-breach", log_path=lp)
     lines = _read_lines(lp)
     assert any("DENIED_holdout_breach" in ln and "test-breach" in ln for ln in lines)
@@ -44,14 +44,14 @@ def test_development_touching_holdout_raises_and_logs(tmp_path):
 def test_development_entirely_inside_holdout_raises(tmp_path):
     lp = str(tmp_path / "log.md")
     with pytest.raises(HoldoutViolation):
-        check_holdout("2026-08-01T00:00:00", "2026-08-02T00:00:00",
+        check_holdout("2026-10-05T00:00:00", "2026-10-06T00:00:00",
                       purpose="development", caller="t", log_path=lp)
 
 
 def test_target_free_always_allowed_and_logged(tmp_path):
     lp = str(tmp_path / "log.md")
     # incluso con una ventana DENTRO del holdout, target_free se permite
-    check_holdout("2026-07-13T22:00:00", "2026-07-16T21:00:00",
+    check_holdout("2026-10-13T22:00:00", "2026-10-16T21:00:00",
                   purpose="target_free_validation", caller="gaps2-parity", log_path=lp)
     lines = _read_lines(lp)
     assert any("ALLOWED" in ln and "gaps2-parity" in ln for ln in lines)
@@ -118,9 +118,11 @@ def test_default_log_path_points_to_docs():
 
 def test_el_sello_original_es_el_literal_historico():
     """Ancla dura. Si alguien edita el sello, esto falla y es lo correcto:
-    mover el sello es una decisión de Nico, no un refactor."""
+    mover el sello es una decisión de Nico, no un refactor. La única vez que se
+    movió fue por enmienda firmada (HOLDOUT-A4, 2026-10-22)."""
+    from edgelab import holdout as H
     from edgelab.research.holdout_guard import _SELLO_ORIGINAL_ISO
-    assert _SELLO_ORIGINAL_ISO == "2026-07-01T00:00:00"
+    assert _SELLO_ORIGINAL_ISO == "2026-09-30T22:00:00" == H.HOLDOUT_APERTURA_UTC_ISO
 
 
 def test_la_frontera_no_se_puede_atrasar_ni_editando_la_declarada():
@@ -128,8 +130,8 @@ def test_la_frontera_no_se_puede_atrasar_ni_editando_la_declarada():
     des-sella nada. Es la reproducción exacta del edit de INC-006."""
     from edgelab.research.holdout_guard import _resolver_frontera
     # el edit que causó INC-006, ahora inocuo
-    assert _resolver_frontera("2026-08-01T00:00:00") == "2026-07-01T00:00:00"
-    assert _resolver_frontera("2026-12-31T00:00:00") == "2026-07-01T00:00:00"
+    assert _resolver_frontera("2026-11-01T00:00:00") == "2026-09-30T22:00:00"
+    assert _resolver_frontera("2026-12-31T00:00:00") == "2026-09-30T22:00:00"
     # adelantarla SÍ se permite: sella MÁS material, nunca menos
     assert _resolver_frontera("2026-06-01T00:00:00") == "2026-06-01T00:00:00"
 

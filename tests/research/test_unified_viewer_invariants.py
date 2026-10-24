@@ -83,7 +83,10 @@ def test_la_abstencion_por_bar_key_suprime_cajas_pero_no_mata_las_flechas():
 def test_el_ayudante_estricto_no_cae_a_t0_salvo_luxalgo():
     """`zoneAvailableSec` es el inicio causal ESTRICTO (gate del repo). Migrado de
     test_viewer_causal_zone_start.py sin debilitarlo."""
-    helper = HTML[HTML.index("function zoneAvailableSec"):HTML.index("function drawZones")]
+    # Sólo el cuerpo del ayudante (hasta la función siguiente): antes se tomaba todo hasta drawZones, ~80 funciones de
+    # otras capas (impulsos LUX-IMB, TBZ, espejo...) cuyos objetos no son zonas y tienen su propio t0 causal.
+    a = HTML.index("function zoneAvailableSec")
+    helper = HTML[a:HTML.index("function ", a + len("function zoneAvailableSec"))]
     assert 'z.source === "luxalgo"' in helper
     assert "return null;" in helper
     limpio = helper.replace('z.source === "luxalgo" && Number.isFinite(Number(z.t0))) return Number(z.t0);', "")

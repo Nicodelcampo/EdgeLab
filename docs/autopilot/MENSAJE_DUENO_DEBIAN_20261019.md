@@ -45,7 +45,7 @@ Hola. Te paso las novedades del agente de EdgeLab para el Debian y lo que necesi
   - Las etapas 0 a 4 entran holgadas en el cupo estimado; no hace falta subir de plan.
   - Si llega al límite, el agente no se rompe: espera al reset y lo numérico sigue andando.
   - También se pueden cambiar modelos sin tocar código, con la clave `modelos` en la configuración. Por ejemplo, poner Sonnet como proponente para ahorrar cupo de Opus.
-- **Kaggle:** el cómputo pesado sigue en Kaggle, con tope de 2 corridas por día (`max_per_day`) y el tope de la cuenta.
+- **Kaggle:** el cómputo pesado sigue en Kaggle. La CPU de Kaggle no tiene límite; lo único acotado es la GPU, con 30 h por semana. El tope de 2 corridas por día (`max_per_day`) es una decisión de la configuración, no de Kaggle: se puede subir sin riesgo para las corridas de CPU. Si una corrida pide GPU, conviene mirar cuántas de esas 30 h consume.
 
 **Lo que falta y solo se hace en la máquina**
 - Una prueba de punta a punta con una corrida barata.

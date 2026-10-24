@@ -1,6 +1,6 @@
 // EdgeLab hardened derivative of jalv92/NT8ReplayDownloader (MIT).
 // Upstream commit d4a9c7aa2048846ab6e6aa45b8f23530c5d60af3.
-// Exact-contract, fail-closed acquisition. Verified assumptions: NT 8.1.8.3. Reflection API surface re-verified 2026-10-15 against NinjaTrader.Core.dll 8.1.8.3 (Connection.HistoricalDataClient -> HdsClient, Connection.ClientConnection, Connection.Connections, HdsClient.RequestMarketReplay(Instrument,DateTime,Action<ErrorCode,string,object>,IProgress,object), IProgress members, Instrument.GetInstrument(string,bool): signatures identical to 8.1.8.2). The .nrd header layout (44x80 bytes, depth slots 10/11) was verified on 8.1.8.2 and is NOT re-verified for 8.1.8.3; every downloaded file is still validated by Check() and quarantined if invalid (fail-closed). Previous verified version: 8.1.8.2.
+// Exact-contract, fail-closed acquisition. Verified assumptions: NT 8.1.8.4. Reflection API surface re-verified 2026-10-21 against NinjaTrader.Core.dll 8.1.8.4 (Connection.HistoricalDataClient -> NinjaTrader.Server.HdsClient, Connection.ClientConnection, Connection.Connections, HdsClient.RequestMarketReplay(Instrument,DateTime,Action<ErrorCode,string,object>,IProgress,object), NinjaTrader.Core.IProgress members {Aborted event, IsAborted, Message, PerformStep(), SetUp(long,bool), TearDown()}, Instrument.GetInstrument(string,bool), NinjaTrader.Data.MarketReplay.DumpMarketDepth(Instrument,DateTime,DateTime,string) static): signatures identical to 8.1.8.3. The .nrd header layout (44x80 bytes, depth slots 10/11) was verified on 8.1.8.2 and is NOT re-verified for 8.1.8.4; every downloaded file is still validated by Check() and quarantined if invalid (fail-closed). Previous verified version: 8.1.8.3.
 #region Using declarations
 using System;
 using System.Collections.Generic;
@@ -47,7 +47,7 @@ namespace NinjaTrader.Gui.NinjaScript
  internal sealed class RequestResult{public RequestState State;public ErrorCode Code;public string Message;}
  public class EdgeLabReplayDownloaderWindow:NTWindow,IWorkspacePersistence
  {
-  const string Build="EDGE_NT8RD_HARDENED_V5_ATOMICCSV",Upstream="d4a9c7aa2048846ab6e6aa45b8f23530c5d60af3",Verified="8.1.8.3",NoData="no market replay data";
+  const string Build="EDGE_NT8RD_HARDENED_V5_ATOMICCSV",Upstream="d4a9c7aa2048846ab6e6aa45b8f23530c5d60af3",Verified="8.1.8.4",NoData="no market replay data";
   const int HeaderBytes=44*80,TimeoutMinutes=10;
   static readonly Regex ContractRx=new Regex(@"^[A-Za-z0-9]{1,8}\s+[0-9]{2}-[0-9]{2}$",RegexOptions.Compiled);
   TextBox contracts,from,to,delay,csvdir,pyexe,repo,pqroot,log;Button go,stop;volatile bool running,cancel;EdgeProgress active;

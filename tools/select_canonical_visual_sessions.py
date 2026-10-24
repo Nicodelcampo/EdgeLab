@@ -1,7 +1,7 @@
 """Target-free reproducible session selection script for HP007-CAMP-002.
 
 Selects 5 representative sessions of the contractually certified asset NQ 06-26
-under strict pre-holdout constraints (< 2026-07-01).
+under strict pre-holdout constraints (< 2026-10-01).
 
 Criteria:
 - SESS_01: Earliest active pre-holdout session of the contract (2026-03-17).
@@ -21,6 +21,11 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 CHICAGO = ZoneInfo("America/Chicago")
 NQ_PARQUET = Path("E:/EdgeLab/data/nt8/NQ_parquet/NQ_06-26_ticks.parquet")
@@ -191,7 +196,7 @@ def run_selection() -> dict:
             "range_ticks_quantiles": {f"p{int(k*100)}": round(v, 2) for k, v in q_range.items()}
         },
         "eligibility_rule": "Regular weekday (Mon-Fri) in CME calendar with >= 100,000 ticks, excluding post-roll illiquid tail (>= 2026-06-15)",
-        "metric_information_cutoff": "2026-06-30T22:00:00Z (SEALED HOLDOUT ENFORCED)",
+        "metric_information_cutoff": "2026-09-30T22:00:00Z (SEALED HOLDOUT ENFORCED)",
         "roll_transition_provenance": {
             "outgoing_contract": "NQ 03-26",
             "incoming_contract": "NQ 06-26",

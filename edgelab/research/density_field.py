@@ -22,11 +22,12 @@ import math
 from typing import Any
 
 import numpy as np
+from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402  frontera única (HOLDOUT-A4)
 
-# Firewall del holdout (2026-07-01 -> 2026-12-31 CT). Ninguna zona disponible en o despues de este
+# Firewall del holdout (2026-10-01 en adelante CT). Ninguna zona disponible en o despues de este
 # instante puede entrar a un campo, ni se puede evaluar el campo en ese instante. Antes vivia solo
 # en `corridor_engine.js`; el campo canonico tiene que llevarlo consigo, en Python y en JS.
-HOLDOUT_NS = 1_782_856_800_000_000_000
+HOLDOUT_NS = HOLDOUT_APERTURA_UTC_NS
 
 
 def to_nanoseconds(t: Any) -> int:

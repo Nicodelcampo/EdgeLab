@@ -1,0 +1,41 @@
+{
+ "schema": "edgelab_costos_canonicos_v1",
+ "creado": "2026-10-22",
+ "estado": "CANONICO_REFERENCIA (pedido de Nico 2026-10-22: costos unificados y accesibles). verified=false en las tarifas de las firmas hasta revision humana.",
+ "fuentes": {
+  "comision": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §1, §2 y §7 (relectura de paginas oficiales 2026-10-14)",
+  "spread": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §3 (atlas-microestructura-14activos-v4, horario regular 08:30-15:00 CT, media)",
+  "slippage": "asuncion declarada de Nico: 1 tick por lado (LEDGER_COSTOS_CAP3_2026-08-18.md); escenarios del contrato G3 (docs/edge_validation_contract.md)",
+  "friccion_base": "REFERENCIA_COSTOS §4: spread medido + comision maxima de la tabla + 2 ticks RT"
+ },
+ "reglas": [
+  "Un instrumento sin un componente medido NO recibe el de otro: la funcion falla (regla: no transportar costos entre instrumentos).",
+  "La comision canonica para decidir es la MAXIMA entre las firmas que admiten algoritmos (techo conservador); se reporta tambien la minima.",
+  "Apex y TakeProfitTrader prohiben algoritmos: su tarifa se conserva como dato pero no entra al rango de decision.",
+  "Escenarios por pata (contrato G3): ideal 0 (solo diagnostico), base 1, adverso 2, severo 3 ticks de slippage por pata.",
+  "El spread se paga una vez por viaje redondo al cruzar con orden de mercado; si el simulador ya llena contra bid/ask, se pide la friccion sin spread (incluye_spread=False)."
+ ],
+ "firmas_que_admiten_algoritmos": ["Topstep", "Lucid", "MFFU", "Tradeify"],
+ "instrumentos": {
+  "ES":  {"tick_size": 0.25,     "tick_value_usd": 12.5,  "spread_ticks": 1.09, "comision_rt_usd": {"Topstep": 3.78, "Lucid": 3.50, "MFFU": 4.68, "Tradeify": 5.76, "TPT": 4.50}},
+  "NQ":  {"tick_size": 0.25,     "tick_value_usd": 5.0,   "spread_ticks": 3.03, "comision_rt_usd": {"Topstep": 3.78, "Lucid": 3.50, "MFFU": 4.68, "Tradeify": 5.76, "TPT": 4.50}},
+  "YM":  {"tick_size": 1.0,      "tick_value_usd": 5.0,   "spread_ticks": 1.90, "comision_rt_usd": {"Topstep": 3.78, "Lucid": 3.50, "MFFU": 5.76, "TPT": 4.50}},
+  "RTY": {"tick_size": 0.1,      "tick_value_usd": 5.0,   "spread_ticks": 1.50, "comision_rt_usd": {"Topstep": 3.78, "Lucid": 3.50, "MFFU": 4.68, "TPT": 4.50}},
+  "MES": {"tick_size": 0.25,     "tick_value_usd": 1.25,  "spread_ticks": 1.10, "comision_rt_usd": {"Topstep": 1.22, "Lucid": 1.00, "MFFU": 1.90, "Tradeify": 1.82, "TPT": 1.50}},
+  "MNQ": {"tick_size": 0.25,     "tick_value_usd": 0.5,   "spread_ticks": 2.11, "comision_rt_usd": {"Topstep": 1.22, "Lucid": 1.00, "MFFU": 1.90, "Tradeify": 1.82, "TPT": 1.50}},
+  "MYM": {"tick_size": 1.0,      "tick_value_usd": 0.5,   "spread_ticks": 1.69, "comision_rt_usd": {"Topstep": 1.22, "Lucid": 1.00, "MFFU": 1.90, "TPT": 1.50}},
+  "GC":  {"tick_size": 0.1,      "tick_value_usd": 10.0,  "spread_ticks": 3.43, "comision_rt_usd": {"Topstep": 4.32, "Lucid": 4.60, "MFFU": 5.12, "Tradeify": 6.20, "TPT": 4.50}},
+  "MGC": {"tick_size": 0.1,      "tick_value_usd": 1.0,   "spread_ticks": 2.72, "comision_rt_usd": {"Topstep": 1.92, "Lucid": 1.60, "MFFU": 2.20, "TPT": 1.50}},
+  "6E":  {"tick_size": 0.00005,  "tick_value_usd": 6.25,  "spread_ticks": 1.34, "comision_rt_usd": {"Topstep": 4.22, "Lucid": 4.80, "MFFU": 5.12, "TPT": 4.50}},
+  "6B":  {"tick_size": 0.0001,   "tick_value_usd": 6.25,  "spread_ticks": null, "comision_rt_usd": {"Topstep": 4.22, "Lucid": 4.80, "MFFU": 5.12}},
+  "6J":  {"tick_size": 0.0000005,"tick_value_usd": 6.25,  "spread_ticks": null, "comision_rt_usd": {"Topstep": 4.22, "Lucid": 4.80, "MFFU": 5.12}},
+  "MBT": {"tick_size": 5.0,      "tick_value_usd": 0.5,   "spread_ticks": 2.69, "comision_rt_usd": {"Topstep": 2.82, "MFFU": 3.50}},
+  "ZB":  {"tick_size": 0.03125,  "tick_value_usd": 31.25, "spread_ticks": null, "comision_rt_usd": {"Topstep": 2.76}}
+ },
+ "escenarios_slippage_ticks_por_pata": {"ideal": 0, "base": 1, "adverso": 2, "severo": 3},
+ "pendiente_de_Nico": [
+  "Cuenta real y su tarifa efectiva (hasta entonces: techo = maxima de las firmas que admiten algoritmos).",
+  "Spread medido de 6B, 6J y ZB (sin medicion: la friccion falla cerrada).",
+  "Slippage real medido (hoy es la asuncion declarada de 1 tick por lado)."
+ ]
+}

@@ -5,16 +5,10 @@ Toda función de carga de datos para research económico de estrategias (P&L,
 retornos, selección de candidatos) debe llamar a `check_holdout(...)` ANTES de
 tocar cualquier rango de fechas.
 
-Única fuente de verdad de la fecha de corte: `HOLDOUT_START_ISO` abajo,
-citada textualmente de `docs/NORTH_STAR.md` ("Holdout sellado: 2026-07-01 →
-2026-12-31") y `docs/edge_validation_contract.md` §G4.
-
-AVISO (2026-08-01): existe una SEGUNDA definición de la fecha en código,
-`tools/censo_es_nq.py:91` (`HOLDOUT_DESDE = "2026-07-01"`, hardcodeada). Hoy
-coincide con el sello, así que no hay conflicto activo, pero la afirmación
-anterior de este docstring ("ningún otro archivo define esta fecha") era
-falsa. Unificarla es trabajo pendiente y se decide con Nico; mientras tanto
-queda declarada acá para que nadie la vuelva a dar por inexistente.
+Fuente de verdad de la fecha: `edgelab/holdout.py` (enmienda HOLDOUT-A4, firmada por Nico el 2026-10-22): holdout
+ÚNICO para todos los instrumentos y tipos de dato (ticks, barras, L2) desde la sesión CME del 2026-10-01, que abre
+2026-09-30 22:00 UTC. `HOLDOUT_START_ISO` de abajo es ese instante. La segunda definición que este docstring
+denunciaba (`tools/censo_es_nq.py`) y la frontera L2 aparte (2026-11-01) se eliminaron: todo importa de `edgelab.holdout`.
 
 ## LA FRONTERA ES UN SELLO, NO UN CURSOR (regla 95)
 
@@ -33,7 +27,7 @@ frontera situada en el FUTURO deja cero material sellado — el holdout existe
 en el papel y está vacío en los hechos. Eso es exactamente lo que pasó el
 2026-07-31, y por eso el test lo evalúa contra la fecha del sistema.
 
-Nota de alcance: el contrato declara un rango cerrado (2026-07-01→2026-12-31),
+Nota de alcance: el contrato declaraba un rango cerrado hasta 2026-12-31,
 pero esta implementación (siguiendo la instrucción literal de la fase 3b)
 solo hace cumplir el LÍMITE INFERIOR (`>= HOLDOUT_START`); no acota por el
 límite superior. Con los datos actuales (hasta 2026-07-21) esto no tiene
@@ -51,12 +45,17 @@ from datetime import datetime, timezone
 # "absorber" meses a la muestra de desarrollo, ni por conveniencia de un
 # estudio. Si alguna vez hubiera que abrir holdout, se hace por el protocolo
 # de apertura (una por candidato, registrada en el log), no moviendo esto.
-_SELLO_ORIGINAL_ISO = "2026-07-01T00:00:00"
+#
+# Única excepción, firmada: HOLDOUT-A4 (Nico, 2026-10-22) movió el sello de 2026-07-01 a la apertura de la sesión
+# del 2026-10-01 para TODOS los instrumentos (A1-A3 ya lo habían hecho para ES y NQ con fronteras propias de las
+# herramientas). Fue una decisión explícita de cambio de semántica de validación, no un `chore`
+# (`docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`). Jul-sep 2026 deja de ser fuera de muestra para todo.
+_SELLO_ORIGINAL_ISO = "2026-09-30T22:00:00"
 
 # Frontera declarada por el contrato vigente. Un editor futuro puede tocar
 # ESTA línea; no puede con eso des-sellar nada, porque abajo se toma el
 # mínimo contra el sello.
-_FRONTERA_DECLARADA_ISO = "2026-07-01T00:00:00"
+_FRONTERA_DECLARADA_ISO = "2026-09-30T22:00:00"
 
 HOLDOUT_END_ISO = "2026-12-31T23:59:59.999999"   # declarado, no forzado (ver nota arriba)
 
@@ -112,10 +111,9 @@ def _resolver_frontera(declarada_iso=None, sello_iso=None):
 
 HOLDOUT_START_ISO = _resolver_frontera()
 
-# Enmienda L2 firmada por Nico (2026-09-24, docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md): SOLO para
-# investigacion con datos L2 (MBP-10) el holdout empieza el 2026-11-01; jul-oct 2026 es desarrollo. Ticks y barras
-# siguen usando HOLDOUT_START_ISO. Es una frontera nueva y fija: no se resuelve contra ninguna declarada.
-L2_HOLDOUT_START_ISO = "2026-11-01T00:00:00"
+# HOLDOUT-A4 (2026-10-22): la frontera L2 aparte (2026-11-01, enmienda del 2026-09-24) queda reemplazada por la única.
+# Se conserva el nombre para no romper a quien lo importa; vale lo mismo que HOLDOUT_START_ISO.
+L2_HOLDOUT_START_ISO = HOLDOUT_START_ISO
 
 
 def verificar_sello(ahora=None, *, frontera_iso=None):

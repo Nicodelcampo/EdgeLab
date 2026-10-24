@@ -6,9 +6,14 @@ import hashlib
 from pathlib import Path
 from datetime import datetime, timezone
 import pyarrow.parquet as pq
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
-DEFAULT_HOLDOUT_NS = 1782856800000000000
-DEFAULT_HOLDOUT_UTC = "2026-06-30T22:00:00Z"
+DEFAULT_CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+DEFAULT_CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 
 TICK_BASE = Path(r"E:\EdgeLab\data\nt8_research_v2")
 BLOCKED_FILE = Path(r"E:\EdgeLab-edgefactory\docs\research\HFT_EXPANSION_FINAL_BLOCKED_CONTRACTS.json")
@@ -99,7 +104,7 @@ for inst, p_dir in inst_dirs.items():
         ts_arr = pf.read(columns=["ts_utc_ns"]).column("ts_utc_ns").to_numpy()
         min_ts = int(ts_arr.min())
         max_ts = int(ts_arr.max())
-        holdout_violations = int((ts_arr >= DEFAULT_HOLDOUT_NS).sum())
+        holdout_violations = int((ts_arr >= DEFAULT_CORTE_FISICO_NS).sum())
 
         parts = pf_path.stem.split("_")
         contract = f"{inst} {parts[1]}" if len(parts) > 1 else inst
@@ -170,8 +175,8 @@ out_file = Path(r"E:\EdgeLab-edgefactory\artifacts\audit\CANONICAL_TICKS_LOCAL_I
 with open(out_file, "w", encoding="utf-8") as f:
     json.dump({
         "timestamp_utc": datetime.now(timezone.utc).isoformat(),
-        "holdout_boundary_ns": DEFAULT_HOLDOUT_NS,
-        "holdout_boundary_utc": DEFAULT_HOLDOUT_UTC,
+        "holdout_boundary_ns": DEFAULT_CORTE_FISICO_NS,
+        "holdout_boundary_utc": DEFAULT_CORTE_FISICO_UTC,
         "summary": summary_counts,
         "total_files": len(inventory_results),
         "inventory": inventory_results

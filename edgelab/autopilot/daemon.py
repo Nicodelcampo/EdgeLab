@@ -20,6 +20,10 @@ class Autopilot:
         self.root, self.ex, self.cfg, self.repo, self.registry, self.brain = Path(root), executor, cfg, repo, registry, brain
         self.ledger = RunLedger(self.root / "runs.sqlite"); self.fdr = AlphaInvesting(self.root / "alpha.json", **cfg.get("alpha", {}))
         self.log = self.root / "autopilot.log.jsonl"
+        self.escalera = cfg.get("decision") == "escalera_v1"                     # regla de decisión nueva (confirmacion.py); sin la clave, Holm + alpha-investing
+        if self.escalera:
+            from .confirmacion import Confirmacion
+            self.conf = Confirmacion(self.root, **cfg.get("escalera", {}))
 
     def _note(self, **k):
         k["ts"] = time.time(); self.log.parent.mkdir(parents=True, exist_ok=True)
@@ -63,10 +67,18 @@ class Autopilot:
                 if spec.kind == "benchmark":                                        # infraestructura: sin hipótesis, sin alfa, sin traer resultado
                     self.ledger.finish(spec.run_id, "BENCHMARK_DONE", dict(hit=False, benchmark=True)); rep["closed"].append((spec.run_id, "BENCHMARK")); continue
                 try:
-                    res = self.ex.fetch(r["handle"], self.cfg["result_files"][spec.family])
+                    res = self.ex.fetch(r["handle"], self.cfg.get("result_files", {}).get(spec.family, self.cfg.get("result_file_default", "STUDY_RESULTS.json")))   # familias nuevas del agente: archivo estándar de los kernels genéricos
                 except Exception as e:                                                 # error de configuración o de red: no tumba el ciclo, queda registrado y se reintenta
                     self.ledger.event(spec.run_id, "fetch_failed", repr(e)[:200]); rep["blocked"].append((spec.run_id, [f"no se pudo traer el resultado: {e!r}"[:200]])); continue
-                bid = self.fdr.open_bid(spec.run_id)
+                if self.escalera and self.fdr.open_bid(spec.run_id) is None:          # escalera_v1: tamiz FDR + LORD++ en réplica; idempotente por run_id
+                    d = self.conf.decidir(spec.run_id, res, spec.n_tests_holm or spec.n_trials)
+                    self.ledger.finish(spec.run_id, "ANALYZED", d); rep["closed"].append((spec.run_id, d["hit"]))
+                    if self.cfg.get("evidence_runtime"):
+                        from .confirmacion import registrar_nominadas
+                        ev = Path(self.cfg["evidence_runtime"]); evidence.record_outcome(ev, spec, d, evidence.current_states(ev), result=None); registrar_nominadas(ev, spec, d)
+                    if self.brain: self.brain(spec, d)
+                    continue
+                bid = self.fdr.open_bid(spec.run_id)                                  # corridas lanzadas con alpha-investing se liquidan con su regla
                 if bid is None: rep["blocked"].append((spec.run_id, ["sin apuesta de alfa abierta: no se liquida"])); continue
                 d = analyze.decide(res, bid["alpha"], spec.n_tests_holm or spec.n_trials)
                 self.ledger.finish(spec.run_id, "ANALYZED", d); self.fdr.settle(spec.run_id, d["rejections"]); rep["closed"].append((spec.run_id, d["hit"]))     # primero el libro, luego la riqueza: si cae entre ambos, _reconcile liquida al reiniciar
@@ -87,8 +99,8 @@ class Autopilot:
             errs = guard.all_checks(spec, set(self.cfg.get("allow_internet", [])), self.repo, Path(prot) if prot else None)
             if spec.kind == "holdout":                                                # apertura del holdout: protocolo verificado acá (decisión 2026-10-20)
                 from .holdout_apertura import requisitos
-                errs += requisitos(spec, self.ledger, self.root)
-            if self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
+                errs += requisitos(spec, self.ledger, self.root, exigir_escalera=self.escalera)
+            if not self.escalera and self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
             if self.cfg.get("mode", "propose") != "execute":
                 rep["proposed"] = (spec.run_id, why); break
@@ -97,13 +109,13 @@ class Autopilot:
                 registrar(spec, self.root, guard._git("log", "-1", "--format=%H", "--", spec.prereg, cwd=self.repo) or None, ahora=now)
             if spec.kind != "benchmark":
                 if self.registry: self.registry.ensure(f"autopilot/{spec.run_id}", spec.family, spec.n_trials, spec.notes or "autopilot")   # se cuenta ANTES de lanzar
-                self.fdr.bid(spec.run_id, spec.n_trials)
+                if not self.escalera: self.fdr.bid(spec.run_id, spec.n_trials)
             self.ledger.add_intent(spec)                                              # escribe-antes-de-enviar: una caída durante el envío deja SEND_UNCERTAIN y nunca se reenvía sola
             try:
                 handle = self.ex.launch(spec)
             except LaunchRejected as e:                                               # rechazo explícito: no hay corrida; se devuelve la apuesta y puede reintentarse
                 self.ledger.cancel_intent(spec.run_id)
-                if spec.kind != "benchmark": self.fdr.release(spec.run_id, "lanzamiento rechazado")
+                if spec.kind != "benchmark" and not self.escalera: self.fdr.release(spec.run_id, "lanzamiento rechazado")
                 rep["blocked"].append((spec.run_id, [str(e)[:200]])); continue
             except Exception as e:                                                    # tiempo agotado o error ambiguo: puede haber corrida remota → SEND_UNCERTAIN, apuesta abierta, sin reenvío; requiere conciliar a mano
                 rep["blocked"].append((spec.run_id, [f"envío incierto (se reconcilia a mano con el handle exacto, no se reenvía): {str(e)[:150]}"])); break
@@ -114,5 +126,6 @@ class Autopilot:
         led = self.ledger.db.execute("SELECT status, COUNT(*) FROM runs GROUP BY status").fetchall()
         last = [json.loads(l) for l in self.log.read_text().splitlines()[-5:]] if self.log.exists() else []
         hb = json.loads((self.root / "heartbeat.json").read_text()) if (self.root / "heartbeat.json").exists() else None
-        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), pausas=[str(p) for p in self.pause_files() if p.exists()], pedidos_abiertos=[p['id'] for p in __import__('edgelab.autopilot.pedidos', fromlist=['x']).abiertos(self.root)], alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
+        return dict(mode=self.cfg.get("mode", "propose"), paused=self._paused(), pausas=[str(p) for p in self.pause_files() if p.exists()], pedidos_abiertos=[p['id'] for p in __import__('edgelab.autopilot.pedidos', fromlist=['x']).abiertos(self.root)], alpha_wealth=self.fdr.wealth, open_bids=list(self.fdr.state["open"]),
+                    decision=("escalera_v1" if self.escalera else "holm_alpha_investing"), lord_nivel_siguiente=(self.conf.nivel_siguiente() if self.escalera else None), runs=dict(led), running=self.ledger.running(), send_uncertain=self.ledger.uncertain(),
                     heartbeat_age_s=None if not hb else round(time.time() - hb["ts"]), last_events=[{k: v for k, v in e.items() if k in ("event", "launched", "closed", "blocked")} for e in last])

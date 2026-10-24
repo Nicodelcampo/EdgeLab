@@ -561,10 +561,12 @@
       "name": "Funnel exploratorio CPU (linea main)",
       "layer": 4,
       "status": "experimental",
-      "function": "Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL).",
+      "function": "Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL). Desde 2026-10-22: escalera de decision (tamiz FDR, replica LORD++, economico, potencia del holdout) y monitor secuencial con e-procesos; kernel v2.",
       "paths": [
         "edgelab/funnel",
-        "tools/run_funnel_arrays.py"
+        "tools/run_funnel_arrays.py",
+        "tools/escalera_candidatos_20261022.py",
+        "tools/embudo_simulacion_potencia.py"
       ],
       "inputs": [
         "tablas de eventos"
@@ -580,7 +582,8 @@
         "tests/test_funnel.py",
         "tests/test_funnel_isolation.py",
         "tests/test_funnel_multiplicity.py",
-        "tests/test_funnel_stage_integration.py"
+        "tests/test_funnel_stage_integration.py",
+        "tests/test_funnel_escalera.py"
       ]
     },
     {
@@ -655,7 +658,8 @@
       "function": "Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. Biblioteca trazable del proyecto, doble revisión, auditor post-corrida y abogado del diablo.",
       "paths": [
         "edgelab/autopilot",
-        "tools/autopilot_generate.py"
+        "tools/autopilot_generate.py",
+        "tools/autopilot_activar_escalera.py"
       ],
       "inputs": [
         "candidatas",
@@ -682,7 +686,8 @@
         "tests/test_autopilot_conocimiento.py",
         "tests/test_autopilot_auditoria.py",
         "tests/test_autopilot_pedidos.py",
-        "tests/test_autopilot_holdout_apertura.py"
+        "tests/test_autopilot_holdout_apertura.py",
+        "tests/test_autopilot_escalera.py"
       ]
     },
     {
@@ -753,6 +758,49 @@
       "doc": "edgelab/discovery/README.md",
       "tests": [
         "tests/test_discovery.py"
+      ]
+    },
+    {
+      "id": "costos",
+      "name": "Costos de ejecucion canonicos",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos).",
+      "paths": [
+        "edgelab/costos.py",
+        "config/costos"
+      ],
+      "inputs": [
+        "REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md"
+      ],
+      "outputs": [
+        "friccion por viaje en ticks/puntos/USD"
+      ],
+      "depends_on": [],
+      "doc": "docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md",
+      "tests": [
+        "tests/test_costos_canonicos.py"
+      ]
+    },
+    {
+      "id": "holdout",
+      "name": "Frontera unica del holdout",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Fuente unica de la frontera del holdout (sesion CME del 2026-10-01, todos los activos y L2; HOLDOUT-A4) y del corte fisico de los datasets viejos.",
+      "paths": [
+        "edgelab/holdout.py"
+      ],
+      "inputs": [
+        "docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md"
+      ],
+      "outputs": [
+        "constantes de frontera"
+      ],
+      "depends_on": [],
+      "doc": "docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md",
+      "tests": [
+        "tests/test_holdout_unico.py"
       ]
     }
   ],

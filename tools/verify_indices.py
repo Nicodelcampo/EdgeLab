@@ -49,7 +49,7 @@ REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 EXPECTED_BUNDLE_TOOL = "tools/build_kaggle_bundle.py@v2"
 EXPECTED_RECUT_TOOL = "tools/recut_holdout.py@v1"
-HOLDOUT_FIRST_TRADE_DATE = 20260701
+CORTE_V1_PRIMERA_SESION_EXCLUIDA = 20260701   # corte FISICO del release v1 / research-v2 (frontera vieja); NO es el holdout: ver edgelab/holdout.py (HOLDOUT-A4)
 RESEARCH_MAX_TRADE_DATE = 20260630
 EXPECTED_COLUMNS = 13
 METADATA_FILES = 4
@@ -313,7 +313,7 @@ def check_arithmetic(rep: Report, recut: dict, bundle: dict | None) -> None:
 # --------------------------------------------------------------------------- #
 def check_cut(rep: Report, recut: dict, mods: SimpleNamespace) -> None:
     cut = recut.get("cut") or {}
-    open_ns, _close = mods.sessions.session_bounds_utc_ns(HOLDOUT_FIRST_TRADE_DATE)
+    open_ns, _close = mods.sessions.session_bounds_utc_ns(CORTE_V1_PRIMERA_SESION_EXCLUIDA)
     rep.add(
         "cut.rederivado_tzdata",
         int(open_ns) == EXPECTED_SESSION_OPEN_NS,
@@ -336,7 +336,7 @@ def check_cut(rep: Report, recut: dict, mods: SimpleNamespace) -> None:
     )
     rep.add(
         "cut.trade_dates",
-        _num(cut, "holdout_first_trade_date") == HOLDOUT_FIRST_TRADE_DATE
+        _num(cut, "holdout_first_trade_date") == CORTE_V1_PRIMERA_SESION_EXCLUIDA
         and _num(cut, "research_max_trade_date") == RESEARCH_MAX_TRADE_DATE,
         f"{cut.get('holdout_first_trade_date')!r}/{cut.get('research_max_trade_date')!r}",
     )
@@ -685,7 +685,7 @@ def _fake_recut(bundle: dict, *, root: pathlib.Path, variant: str = "lf") -> dic
             },
             "code_identity": _code_identity_fixture(root, variant),
             "cut": {
-                "holdout_first_trade_date": HOLDOUT_FIRST_TRADE_DATE,
+                "holdout_first_trade_date": CORTE_V1_PRIMERA_SESION_EXCLUIDA,
                 "research_max_trade_date": RESEARCH_MAX_TRADE_DATE,
                 "session_open_utc_ns": EXPECTED_SESSION_OPEN_NS,
                 "naive_utc_cut_ns": EXPECTED_NAIVE_CUT_NS,
@@ -824,7 +824,7 @@ def selftest() -> int:
 
         # --- S9: trade_date de holdout conservado
         r9 = json.loads(json.dumps(recut))
-        r9["files"][0]["trade_date_max_keep"] = HOLDOUT_FIRST_TRADE_DATE
+        r9["files"][0]["trade_date_max_keep"] = CORTE_V1_PRIMERA_SESION_EXCLUIDA
         escribir(bundle, _seal(r9, "recut_index_sha256"))
         v, rep, _ = run(bp, rp, root)
         chk("S9 trade_date_max_keep en holdout -> FAIL_CUT", v == "FAIL_CUT")

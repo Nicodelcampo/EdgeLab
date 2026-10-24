@@ -27,7 +27,7 @@ from numba import njit
 
 DISC_START, DISC_END = 20250718, 20260331
 HOLDOUT_TRADE_DATE = 20261001
-HOLDOUT_UTC_NS = 1790812800000000000
+HOLDOUT_UTC_NS = 1790805600000000000   # 2026-09-30 22:00 UTC = apertura de la sesion del 1-oct (antes 00:00 UTC del 1-oct: dejaba pasar 2 h de holdout); copia de edgelab/holdout.py
 CHI = ZoneInfo("America/Chicago")
 DECISION_STEP_S = int(os.environ.get("PILOT_STEP", "60"))
 RTH_MIN = (510, 930)                      # 08:30 - 15:30 CT en minutos

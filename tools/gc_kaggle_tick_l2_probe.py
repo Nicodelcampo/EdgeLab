@@ -6,6 +6,11 @@ import numpy as np
 import pyarrow.parquet as pq
 from gc_l2_fixed_price_probe import audit_input, load_book_module
 from l2_asof_features import AsOfFeatures
+try:                                                   # frontera única del holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT = 1_790_805_600_000_000_000, "2026-09-30T22:00:00", "2026-10-01", 20261001
 
 TICK_SHA = "7976fbe9814eff0e234b74f36af09d42938bcdb154067ea736a46a571f688b1d"
 OFFSET_US = 10_800_000_000
@@ -124,7 +129,7 @@ def main():
     ticks = pq.read_table(p).to_pandas()
     if not ticks.contract.eq("GC 08-26").all() or not ticks.tick_type.eq("trade").all():
         raise ValueError("CONTRACT_OR_TRADE_FAIL")
-    if ticks.ts_utc_ns.max() >= 1782856800000000000:
+    if ticks.ts_utc_ns.max() >= HOLDOUT_APERTURA_UTC_NS:
         raise ValueError("HOLDOUT_FAIL")
     raw = Path(args.raw)
     dfs, qa = audit_input(raw, args.file, json.loads((raw/"docs/manifest.json").read_text()))

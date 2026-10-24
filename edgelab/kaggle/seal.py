@@ -3,7 +3,7 @@
 Reglas del contrato que este modulo hace ejecutables:
 
   * research_session_date <= 2026-06-30
-  * cualquier sesion con trade date >= 2026-07-01 queda excluida de eventos,
+  * cualquier sesion con trade date >= 2026-10-01 queda excluida de eventos,
     ventanas, targets y folds
   * el holdout debe estar FISICAMENTE ausente del dataset exploratorio
   * una sesion no puede entrar parcialmente por empezar el dia UTC anterior
@@ -22,9 +22,10 @@ from datetime import datetime, timezone
 import numpy as np
 
 from .sessions_cme import NS_PER_SEC, trade_date_ymd
+from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_APERTURA_UTC_ISO, HOLDOUT_PRIMERA_SESION, HOLDOUT_PRIMERA_SESION_INT  # noqa: E402  frontera única (HOLDOUT-A4)
 
 RESEARCH_MAX_YMD = 20260630
-HOLDOUT_START_YMD = 20260701
+HOLDOUT_START_YMD = HOLDOUT_PRIMERA_SESION_INT
 HOLDOUT_END_YMD = 20261231
 OPEN_HOLDOUT_TOKEN = "M8_HOLDOUT_OPENED_ONCE"
 
@@ -56,7 +57,7 @@ class SealReport:
     holdout_opened: bool = False
     rule: str = (
         "trade_date(Chicago, apertura 17:00 CT) <= 2026-06-30; "
-        "holdout 2026-07-01..2026-12-31"
+        "holdout 2026-10-01..2026-12-31"
     )
 
     @property

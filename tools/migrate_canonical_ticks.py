@@ -10,6 +10,11 @@ from pathlib import Path
 from datetime import datetime, timezone
 import pyarrow.parquet as pq
 from kaggle.api.kaggle_api_extended import KaggleApi
+try:                                                   # corte FÍSICO de los datasets viejos; NO es el holdout (HOLDOUT-A4): edgelab/holdout.py
+    import sys as _sys_h; from pathlib import Path as _P_h; _sys_h.path.insert(0, str(_P_h(__file__).resolve().parents[1]))
+    from edgelab.holdout import CORTE_FISICO_RESEARCH_V2_UTC_NS  # noqa: E402
+except ImportError:                                    # kernel de Kaggle sin el paquete: copia verificada por tests/test_holdout_unico.py
+    CORTE_FISICO_RESEARCH_V2_UTC_NS = 1_782_856_800_000_000_000
 
 REPO_ROOT = Path(r"E:\EdgeLab-edgefactory")
 TICK_BASE = Path(r"E:\EdgeLab\data\nt8_research_v2")
@@ -18,8 +23,8 @@ VERIFY_ROOT = Path(r"E:\kaggle_verify")
 STAGING_ROOT.mkdir(parents=True, exist_ok=True)
 VERIFY_ROOT.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_HOLDOUT_NS = 1782856800000000000
-DEFAULT_HOLDOUT_UTC = "2026-06-30T22:00:00Z"
+DEFAULT_CORTE_FISICO_NS = CORTE_FISICO_RESEARCH_V2_UTC_NS
+DEFAULT_CORTE_FISICO_UTC = "2026-06-30T22:00:00Z"
 PRODUCER_COMMIT = "b65da69"
 
 BLOCKED_FILE = REPO_ROOT / "docs" / "research" / "HFT_EXPANSION_FINAL_BLOCKED_CONTRACTS.json"
@@ -96,8 +101,8 @@ def stage_ticks(sym: str) -> tuple[str, Path, list[dict]]:
         ts = tbl.column("ts_utc_ns").to_numpy()
         min_ts = int(ts.min())
         max_ts = int(ts.max())
-        post_holdout = int((ts >= DEFAULT_HOLDOUT_NS).sum())
-        assert post_holdout == 0, f"HOLDOUT VIOLATION in {f.name}: {post_holdout} rows >= {DEFAULT_HOLDOUT_NS}"
+        post_holdout = int((ts >= DEFAULT_CORTE_FISICO_NS).sum())
+        assert post_holdout == 0, f"HOLDOUT VIOLATION in {f.name}: {post_holdout} rows >= {DEFAULT_CORTE_FISICO_NS}"
 
         files_manifest.append({
             "dataset_ref": f"nicolasbuttaro/{slug}",
@@ -120,7 +125,7 @@ def stage_ticks(sym: str) -> tuple[str, Path, list[dict]]:
             "holdout_rows": 0,
             "custody_status": "CANONICAL_VERIFIED",
             "causal_status": "CAUSAL_VERIFIED",
-            "known_limitations": "Pre-holdout boundary strictly enforced at 1782856800000000000 (2026-06-30T22:00:00Z).",
+            "known_limitations": "Corte fisico del dataset (frontera vieja, no es el holdout vigente) strictly enforced at 1782856800000000000 (2026-06-30T22:00:00Z).",
             "supersedes": None,
             "superseded_by": None
         })
@@ -274,7 +279,7 @@ def upload_and_verify(api: KaggleApi, slug: str, stage_dir: Path, files_manifest
                     with pq.ParquetFile(dl_file) as pf:
                         if "ts_utc_ns" in pf.schema.names:
                             ts_arr = pf.read(columns=["ts_utc_ns"]).column("ts_utc_ns").to_numpy()
-                            if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_HOLDOUT_NS:
+                            if len(ts_arr) > 0 and ts_arr.max() >= DEFAULT_CORTE_FISICO_NS:
                                 holdout_violations += 1
                 except Exception as e:
                     print(f"Error checking holdout on {dl_file}: {e}")
