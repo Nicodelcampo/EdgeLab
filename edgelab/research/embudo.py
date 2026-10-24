@@ -15,7 +15,11 @@ Etapas (una por ciclo de `avanzar`; idempotente; estado en <raiz>/<cid>/estado.j
   CONTEO     local      sesiones del holdout: sólo cuenta operaciones (sin P&L) hasta llegar a N
   HOLDOUT    local      primeras N operaciones: un paso de LORD++ -> CONFIRMADA / REFUTADA / SIN_POTENCIA
 Las reglas de cada compuerta vienen de la campaña (`seleccion`, `integridad`, `topes`, `holdout`) con valores por defecto
-documentados acá; quedan escritas en el estado ANTES de la etapa que las usa.
+documentados acá; quedan escritas en el estado ANTES de la etapa que las usa, y desde ese momento las compuertas leen la copia
+congelada del estado, no el JSON vivo (auditoría 2026-10-24: antes un cambio en la campaña después de DESC cambiaba la regla en
+silencio). Única excepción: `holdout.desde` puede moverse hacia adelante (protege más), nunca hacia atrás. Si cambia la
+identidad de la campaña (familia, experimento, señal, ejecución, períodos) la campaña queda BLOQUEADA: se abre otra con otro cid.
+Sin registro de pruebas no se lanza ninguna etapa con desenlaces (antes se saltaba el registro en silencio).
 """
 from __future__ import annotations
 
@@ -34,10 +38,36 @@ DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_fric
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
                 holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400))
 CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_economica", "como_podria_refutarse")
+IDENTIDAD = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos")
+CONDUCTORES = ("debian", "local")                                                  # quién conduce cada campaña (un solo conductor)
 
 
-def _cfg(spec, k):
-    return {**DEFECTOS[k], **(spec.get(k) or {})}
+A3_FIN_DESCUBRIMIENTO = 20260331                                                    # HOLDOUT-A3/A4: ES y NQ descubren hasta acá
+A3_INSTRUMENTOS = ("ES", "NQ")
+
+
+def verificar_campana(spec: dict) -> list:
+    """Chequeos de la campaña que el PREFLIGHT corre antes de DESC (auditoría 2026-10-24). Hacen cumplir reglas ya firmadas;
+    no agregan ninguna: (1) DESC y OOS no tocan el holdout (frontera única de edgelab/holdout.py); (2) para ES y NQ —señal o
+    ejecución— el descubrimiento termina el 2026-03-31 (HOLDOUT-A3, ratificada por A4: abr–sep es la réplica, una vez por
+    familia); (3) `holdout.desde` no es anterior a la frontera."""
+    err = []
+    for k in ("desc", "oos"):
+        v = spec.get(k)
+        if v and (int(v[0]) >= HOLDOUT_PRIMERA_SESION_INT or int(v[1]) >= HOLDOUT_PRIMERA_SESION_INT): err.append(f"{k} {v} toca el holdout")
+    inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
+    if (a3 := sorted(inst & set(A3_INSTRUMENTOS))) and int(spec["desc"][1]) > A3_FIN_DESCUBRIMIENTO:
+        err.append(f"desc {spec['desc']} usa la réplica abr–sep de {a3} (HOLDOUT-A3: descubrimiento hasta {A3_FIN_DESCUBRIMIENTO})")
+    if int({**DEFECTOS["holdout"], **(spec.get("holdout") or {})}["desde"]) < HOLDOUT_PRIMERA_SESION_INT: err.append("holdout.desde anterior a la frontera")
+    return err
+
+
+def _cfg(spec, k, st=None):
+    vivo = {**DEFECTOS[k], **(spec.get(k) or {})}
+    congelado = ((st or {}).get("reglas") or {}).get(k)
+    if congelado is None: return vivo
+    if k == "holdout": return {**congelado, "desde": max(int(congelado["desde"]), int(vivo["desde"]))}
+    return congelado
 
 
 class Embudo:
@@ -74,43 +104,52 @@ class Embudo:
         if falta: raise ValueError(f"campaña sin {falta}")
         st = self.estado(spec)
         if st["etapa"] == "FIN": return st
+        if st.get("reglas") and (cambio := [k for k in IDENTIDAD if spec.get(k) != (st.get("spec") or {}).get(k)]):
+            return self._cerrar(spec, st, "BLOQUEADA", f"la campaña cambió {cambio} después de arrancar: abrir otra con otro cid")
         e = st["etapa"]
         if e == "PREFLIGHT": return self._preflight(spec, st)
         if e == "ACTA": return self._acta(spec, st)
         if e == "OOS" and not spec.get("oos"): return self._siguiente(spec, st, "TOPES", nota="sin período OOS declarado")
         params, periodo, runner = self._params(spec, st, e)
-        if e == "CONTEO" and st.get("ultimo_conteo") and self.ahora() - st["ultimo_conteo"] < _cfg(spec, "holdout")["conteo_cada_s"]: return st
+        if e == "CONTEO" and st.get("ultimo_conteo") and self.ahora() - st["ultimo_conteo"] < _cfg(spec, "holdout", st)["conteo_cada_s"]: return st
         if st["fase"] == "PENDIENTE":
             self._registrar(spec, e, params)
             st["handle"] = self.runners[runner].lanzar(spec, "HOLDOUT_CONTEO" if e == "CONTEO" else ("REP" if e in ("OOS", "HOLDOUT") else e), params, periodo)
             st.update(fase="CORRIENDO", params=params, periodo=periodo, lanzada=self.ahora()); self._guardar(spec, st); return st
         est = self.runners[runner].estado(st["handle"])
         if est in ("running", "queued"): return st
-        if est != "complete":
+        res = None
+        if est == "complete":
+            try: res = self.runners[runner].traer(st["handle"])
+            except Exception as x: est = f"complete sin resultado legible: {type(x).__name__}: {x}"[:200]   # antes reintentaba para siempre
+        if res is None:
             st["fallas"] = st.get("fallas", 0) + 1; st["fase"] = "PENDIENTE"
             if st["fallas"] >= 3: return self._cerrar(spec, st, "BLOQUEADA", f"la etapa {e} falló 3 veces ({est})")
             self._guardar(spec, st); return st
-        return getattr(self, f"_fin_{e.lower()}")(spec, st, self.runners[runner].traer(st["handle"]))
+        return getattr(self, f"_fin_{e.lower()}")(spec, st, res)
 
     def _params(self, spec, st, e):
         base = dict(cortes=st.get("cortes"))
         if e == "DESC": return dict(cortes=None), spec["desc"], "kaggle"
         if e == "INDAGA": return dict(base, bases=st["candidatas"]), spec["desc"], "kaggle"
-        if e in ("INTEGRIDAD", "TOPES"): return dict(base, celdas=st["candidatas"], topes=_cfg(spec, "topes")["lista"] or None), spec["desc"], "kaggle"
+        if e in ("INTEGRIDAD", "TOPES"): return dict(base, celdas=st["candidatas"], topes=_cfg(spec, "topes", st)["lista"] or None), spec["desc"], "kaggle"
         if e == "OOS": return dict(base, celdas=st["candidatas"]), spec["oos"], "kaggle"
-        h = _cfg(spec, "holdout"); hasta = int(time.strftime("%Y%m%d", time.gmtime(self.ahora() - 86400)))
+        h = _cfg(spec, "holdout", st); hasta = int(time.strftime("%Y%m%d", time.gmtime(self.ahora() - 86400)))
         regla = st["regla"]
         return dict(base, celdas=[regla["celda"]], tope=regla["tope"], acta=st.get("acta")), [h["desde"], hasta], ("sellado" if "sellado" in self.runners else "local")
 
     def _registrar(self, spec, e, params):
-        if self.registro is None: return
-        n = {"DESC": spec.get("n_celdas_por_canal", 1) * 2, "OOS": len(params.get("celdas", [])), "TOPES": len(params.get("celdas", [])) * 6, "HOLDOUT": 1}.get(e)
+        from edgelab.research.etapas import TOPES_ESTANDAR
+        topes = [t for t in (params.get("topes") or TOPES_ESTANDAR) if t is not None]          # los que corren de verdad (antes: 6 fijo)
+        n = {"DESC": spec.get("n_celdas_por_canal", 1) * 2, "OOS": len(params.get("celdas", [])), "TOPES": len(params.get("celdas", [])) * len(topes), "HOLDOUT": 1}.get(e)
+        if n and self.registro is None: raise RuntimeError(f"etapa {e} con desenlaces sin registro de pruebas: no se lanza")
         if n: self.registro.ensure(f"embudo/{spec['cid']}/{e.lower()}", spec["familia"], int(n), f"embudo {spec['cid']} etapa {e}")
 
     # --- compuertas -----------------------------------------------------------------------------------------------------
     def _preflight(self, spec, st):
         from edgelab.research.preflight import verificar_experimento
         r = verificar_experimento(spec["experimento"], dinamico_tambien=spec.get("preflight_dinamico", True))
+        if (ec := verificar_campana(spec)): r = dict(r, ok=False, errores=ec + list(r["errores"]))
         self._medido(spec, f"## {spec['cid']} — {spec['experimento']} · señal {spec['sensor']} · ejecución {spec.get('ejecucion') or spec['sensor']}\n"
                            f"- Justificación: {spec['justificacion_economica']}\n- Refutación: {spec['como_podria_refutarse']}\n- PREFLIGHT: {'ok' if r['ok'] else r['errores']}")
         if not r["ok"]: return self._cerrar(spec, st, "BLOQUEADA", f"preflight: {r['errores'][:3]}")
@@ -118,7 +157,7 @@ class Embudo:
         return self._siguiente(spec, st, "DESC")
 
     def _fin_desc(self, spec, st, res):
-        sel = _cfg(spec, "seleccion"); st["cortes"] = res["E0"]["cortes"]; cand, vistos = [], []
+        sel = _cfg(spec, "seleccion", st); st["cortes"] = res["E0"]["cortes"]; cand, vistos = [], []
         pistas = sorted([p for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])], key=lambda p: -p["ic90"][0])
         for p in pistas:
             if p["sesiones"] < sel["min_sesiones"] or p["ratio_mov_friccion"] < sel["ratio_mov_friccion"] or p["ic90"][0] <= 0: continue
@@ -138,7 +177,7 @@ class Embudo:
         return self._siguiente(spec, st, "INTEGRIDAD")
 
     def _fin_integridad(self, spec, st, res):
-        cfg = _cfg(spec, "integridad"); al = res.get("alineacion")
+        cfg = _cfg(spec, "integridad", st); al = res.get("alineacion")
         if al and al.get("pico_lag_s") is not None and al["pico_lag_s"] > 0:
             return self._cerrar(spec, st, "INTEGRIDAD_FALLA", f"alineación: la señal adelanta a la ejecución ({al['pico_lag_s']} s)")
         quedan = []
@@ -160,7 +199,7 @@ class Embudo:
         return self._siguiente(spec, st, "TOPES")
 
     def _fin_topes(self, spec, st, res):
-        cfg = _cfg(spec, "topes"); mejor = None
+        cfg = _cfg(spec, "topes", st); mejor = None
         for i, c in enumerate(st["candidatas"]):
             sin = res["por_tope"]["sin tope"][i]["por_mitad"]
             for nombre, filas in res["por_tope"].items():
@@ -176,7 +215,7 @@ class Embudo:
         st["regla"] = mejor; return self._siguiente(spec, st, "ACTA")
 
     def _acta(self, spec, st):
-        h = _cfg(spec, "holdout")
+        h = _cfg(spec, "holdout", st)
         from edgelab.research import holdout_ventanas as HV                      # ventanas consumidas y una apertura por familia
         libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
         if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v)):
@@ -201,6 +240,8 @@ class Embudo:
     def _fin_holdout(self, spec, st, res):
         from edgelab.funnel.escalera import resumen_sesiones
         ops = res["operaciones"]; N = st["acta"]["n_fijo"]
+        if len(ops.get("t") or []) < N:                                              # CONTEO dijo que había N: no decide con menos
+            return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]
         x = np.asarray(ops["neto"], float)[orden]; ses = np.asarray(ops["ses"])[orden]
         rs = resumen_sesiones(x, ses, n_boot=5000)
@@ -211,12 +252,17 @@ class Embudo:
         return self._cerrar(spec, st, "SIN_POTENCIA", f"holdout {len(x)} ops, media {x.mean():.2f} > 0 sin alcanzar α (p {rs['p_unilateral']:.4f})")
 
 
-def avanzar_todas(carpeta_campanas: Path, embudo: Embudo) -> list:
-    """Lo que corre el ciclo autónomo: un paso de cada campaña activa (`activa` != false)."""
+def avanzar_todas(carpeta_campanas: Path, embudo: Embudo, conductor: str | None = None) -> list:
+    """Lo que corre el ciclo autónomo: un paso de cada campaña activa (`activa` != false). Con `conductor`, sólo las campañas que
+    lo declaran (`"conductor": "debian"`): dos conductores sobre una campaña lanzan el mismo slug de Kaggle dos veces, con estados,
+    libros de LORD++ y de ventanas distintos (auditoría 2026-10-24). Una campaña sin conductor declarado no la conduce nadie
+    automáticamente: se informa como omitida."""
     out = []
     for f in sorted(Path(carpeta_campanas).glob("*.json")):
         spec = json.loads(f.read_text(encoding="utf-8"))
-        if spec.get("activa", True) and spec.get("embudo", False):
-            try: out.append(dict(cid=spec["cid"], **{k: v for k, v in embudo.avanzar(spec).items() if k in ("etapa", "fase", "motivo")}))
-            except Exception as e: out.append(dict(cid=spec.get("cid"), error=repr(e)[:300]))
+        if not (spec.get("activa", True) and spec.get("embudo", False)): continue
+        if conductor is not None and spec.get("conductor") != conductor:
+            out.append(dict(cid=spec.get("cid"), omitida=f"conductor {spec.get('conductor')!r}, no {conductor!r}")); continue
+        try: out.append(dict(cid=spec["cid"], **{k: v for k, v in embudo.avanzar(spec).items() if k in ("etapa", "fase", "motivo")}))
+        except Exception as e: out.append(dict(cid=spec.get("cid"), error=repr(e)[:300]))
     return out
