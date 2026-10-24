@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 718 |
+| `docs/research` | 719 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,7 +38,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| AUDITORIA | 13 | `AUDITORIA_EMBUDO_Y_SPRINT_20261020_22.md` | 2026-10-20 | VIGENTE (auditoria + indice). Fecha: 2026-10-22. Pedido de Nico: "ordenar el rep |
+| AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
 | REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
 | HANDOFF | 16 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |

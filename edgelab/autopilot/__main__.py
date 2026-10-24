@@ -35,7 +35,7 @@ def main():
             from edgelab.funnel.libro_lord import LibroLord
             from edgelab.research import embudo as EMB, embudo_runners as ER
             raiz = Path(a.root) / "embudo"; lec, tk = ER.lectores_sellados(ce.get("sellado"), raiz)
-            emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk)),
+            emb = EMB.Embudo(raiz, dict(kaggle=ER.KaggleRunner(cfg.get("owner", "nicolasbuttaro")), local=ER.LocalRunner(lec, tk, carpeta=raiz / "_local")),
                              registro=reg, libro=LibroLord(Path(a.root) / "libro_lord.json"))
             rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb)
         from .pedidos import desde_ciclo

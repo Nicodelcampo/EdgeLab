@@ -32,6 +32,14 @@ def _resumen(x, ses):
                 peor=float(x[ok].min()), drawdown_max=float((eq - np.maximum.accumulate(eq)).min()), total=float(x[ok].sum()))
 
 
+def por_celda(ops, n_celdas, f) -> list:
+    """Una entrada por celda congelada, en el orden de `celdas` (índice i = celda i), aunque alguna no tenga operaciones.
+    Antes era `[f(g) for _, g in ops.groupby("celda")]`: una celda sin operaciones (p. ej. con latencia o con ejecución en
+    otro activo) desaparecía de la lista y las siguientes quedaban corridas un lugar; la compuerta leía la de otra celda."""
+    grupos = dict(tuple(ops.groupby("celda"))) if len(ops) else {}
+    return [f(grupos[i]) if i in grupos else dict(n=0) for i in range(n_celdas)]
+
+
 def densidad(ctx, D) -> dict:
     """Por mes: velas, ticks, rango medio diario y disparos. Si los disparos siguen a los ticks y no al rango, es el feed."""
     mes = pd.to_datetime(ctx["t"], unit="s", utc=True).strftime("%Y%m").to_numpy()
@@ -71,15 +79,15 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         if etapa == "HOLDOUT_CONTEO":                                     # sin P&L: sólo cuántas operaciones hay
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
-        res["riesgo"] = [_resumen(g.neto, g.ses) for _, g in ops.groupby("celda")] if len(ops) else []
+        res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))
         res["operaciones"] = ops.to_dict("list"); return res
     if etapa == "TOPES":
         out = {}
         for tp_ in [None if t is None else tuple(t) for t in (p.get("topes") or TOPES_ESTANDAR)]:
             res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tp_)
-            ops = GG.operaciones_de(cx, celdas); mes = pd.to_datetime(ops.t, unit="s", utc=True).dt.strftime("%Y%m") if len(ops) else []
-            out["sin tope" if tp_ is None else f"{tp_[0]}:{tp_[1]:g}"] = [dict(_resumen(g.neto, g.ses), por_mitad=[_resumen(h.neto, h.ses) for h in (g.iloc[:len(g) // 2], g.iloc[len(g) // 2:])])
-                                                                         for _, g in ops.groupby("celda")] if len(ops) else []
+            ops = GG.operaciones_de(cx, celdas)
+            out["sin tope" if tp_ is None else f"{tp_[0]}:{tp_[1]:g}"] = por_celda(
+                ops, len(celdas), lambda g: dict(_resumen(g.neto, g.ses), por_mitad=[_resumen(h.neto, h.ses) for h in (g.iloc[:len(g) // 2], g.iloc[len(g) // 2:])]))
         return dict(por_tope=out)
     if etapa == "INTEGRIDAD":
         out = dict(latencia={}, placebo={})
@@ -87,11 +95,12 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         for ret in (0, 1, 2, 5):
             res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, retraso=ret)
             ops = GG.operaciones_de(cx, celdas)
-            out["latencia"][ret] = [_resumen(g.neto, g.ses) for _, g in ops.groupby("celda")] if len(ops) else []
+            out["latencia"][ret] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))
             if ret == 0:
                 sim = cx_ej if cx_ej is not None else ctx
                 for i, c in enumerate(celdas):
                     m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
-                    out["placebo"][i] = [float(np.nanmean(CT.placebo(cx["O"], m, sim, seed=sd) - friccion)) for sd in range(5)]
+                    pl = [CT.placebo(cx["O"], m, sim, seed=sd) for sd in range(5)]
+                    out["placebo"][i] = [float(np.nanmean(x) - friccion) if np.isfinite(x).any() else float("nan") for x in pl]
         return out
     raise ValueError(f"etapa desconocida: {etapa}")
