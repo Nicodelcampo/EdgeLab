@@ -14,6 +14,7 @@ Qué ataca cada chequeo (número = error de la revisión):
   control de ruido con potencia (celdas evaluables > 0) 16
   ruido puro: 0 rechazadas por Romano-Wolf ............ 7
   ejecuciones equivalentes (perillas muertas) ......... 4
+  niveles_lote (si existe) idéntico a niveles ......... camino rápido sin oráculo
   sin excepciones con celdas vacías ................... 15
   n_celdas coherente con lo que se corre ............. 14
   campaña: campos, holdout, condiciones con test ...... 5, 6, 23 (condición escrita sin su línea de código)
@@ -71,6 +72,10 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
                 if frac.min() < 0.10: err.append(f"variable {v.nombre}: un nivel con {frac.min():.0%} de los disparos (cortes degenerados)")
             falt = float((b < 0).mean())
             if falt > 0.5: avisos.append(f"variable {v.nombre}: {falt:.0%} fuera de nivel (faltante o bajo el piso)")
+        if hasattr(exp, "niveles_lote"):                              # camino rápido opcional: debe ser idéntico a niveles (oráculo)
+            O1, O2 = GG.ops_por_fila(exp, D, ctx), GG._ops_lote(exp, D, ctx)
+            if O1.shape != O2.shape or not np.array_equal(O1, O2, equal_nan=True):
+                err.append(f"niveles_lote no coincide con niveles ({len(O2)} vs {len(O1)} operaciones): corregir antes de usarlo")
         res, _ = GG.correr(exp, ctx, modo="DESC", friccion=1.0, extra_adverso=0.5, cortes=cortes, log=lambda s: None)
         tot = res["canales"]["total"]
         if tot["evaluables"] == 0: err.append("control de ruido sin celdas evaluables: no tiene con qué fallar (más días o perillas más anchas)")

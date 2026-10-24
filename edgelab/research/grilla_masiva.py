@@ -21,9 +21,24 @@ from __future__ import annotations
 from dataclasses import dataclass
 from statistics import NormalDist
 
+import math
+import os
+
 import numpy as np
 
+try:
+    from numba import njit, prange
+except ImportError:                                    # sin numba: misma lógica en Python (lenta, sólo para tests mínimos)
+    def njit(*a, **k):
+        return (lambda f: f) if not (a and callable(a[0])) else a[0]
+    prange = range
+
 _N = NormalDist()
+_MODOS = {"grupo": 0, "ge": 1, "le": 2, "eq_any": 3, "extremos": 4}
+# Memoria máxima para guardar la matriz bootstrap estandarizada (B x celdas evaluables, float32) entre los pasos del step-down.
+# Si no entra, se recalcula por bloques en cada paso (mismo resultado, más tiempo, memoria acotada).
+RW_MEMORIA_BYTES = int(float(os.environ.get("EDGELAB_RW_MEMORIA_GB", "2")) * 2**30)
+RW_BLOQUE_BYTES = int(float(os.environ.get("EDGELAB_RW_BLOQUE_MB", "1024")) * 2**20)
 
 
 @dataclass(frozen=True)
@@ -84,7 +99,7 @@ def estadisticas(S, Q, C, min_n=30):
         mu = S / C; var = (Q - C * mu ** 2) / (C - 1); t = mu / np.sqrt(var / C)
     ev = (C >= min_n) & np.isfinite(t)
     p = np.ones(C.shape)
-    if ev.any(): p[ev] = 1 - np.vectorize(_N.cdf, otypes=[float])(t[ev])     # sin evaluables: todo p = 1 (no revienta)
+    if ev.any(): p[ev] = _cola_superior(t[ev])                              # sin evaluables: todo p = 1 (no revienta)
     return dict(media=mu, t=t, p=p, n=C, evaluable=ev)
 
 
@@ -161,20 +176,19 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, see
     if not n_ev: return dict(out, t=np.full(st["n"].shape, np.nan), umbral=np.inf, umbrales=[], rechazadas=[], t_max=float("nan"),
                              p_rw_del_maximo=float("nan"), nula_max_q={})
     us, inv = np.unique(np.asarray(sesiones), return_inverse=True); rng = np.random.default_rng(seed)
-    M = np.empty((B, n_ev), np.float32)
-    for b in range(B):
-        w = rng.multinomial(len(us), np.full(len(us), 1 / len(us)))[inv]
-        S, _, C = tensor(perillas, indices, valores, pesos=w)
-        with np.errstate(invalid="ignore", divide="ignore"): M[b] = (S.ravel() / C.ravel())[ev]
-    sd = np.nanstd(M, 0); sd[~(sd > 0)] = np.nan
-    t = m0 / sd; M -= m0; M /= sd                                  # M pasa a ser la desviación estandarizada (en el lugar: memoria)
+    W = np.stack([rng.multinomial(len(us), np.full(len(us), 1 / len(us))) for _ in range(B)]).astype(np.float64)   # mismo orden de sorteo
+    bs = _Bootstrap(perillas, indices, valores, inv, len(us), ev, W)
+    sd = np.empty(n_ev, np.float32)
+    for a, b, Mb in bs.bloques(): sd[a:b] = np.nanstd(Mb, 0)
+    sd[~(sd > 0)] = np.nan; t = m0 / sd
+    bs.estandarizar(m0, sd)                                        # desde acá cada bloque es la desviación estandarizada
     activos = np.isfinite(t); rech = np.zeros(n_ev, bool); umbrales = []
     for _ in range(pasos):
-        mx = np.nanmax(np.where(activos, M, -np.inf), axis=1); c = float(np.quantile(mx, 1 - alfa)); umbrales.append(c)
+        mx = bs.maximo(activos); c = float(np.quantile(mx, 1 - alfa)); umbrales.append(c)
         nuevo = activos & (t > c)
         if not nuevo.any(): break
         rech |= nuevo; activos &= ~nuevo
-    mx0 = np.nanmax(np.where(np.isfinite(t), M, -np.inf), axis=1)
+    mx0 = bs.maximo(np.isfinite(t))
     T = np.full(st["n"].size, np.nan); T[np.flatnonzero(ev)] = t; T = T.reshape(st["n"].shape)
     cel = [tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in np.flatnonzero(ev)[rech]]
     tmax = float(np.nanmax(t))
@@ -182,6 +196,146 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, see
                 p_rw_del_maximo=float((1 + np.sum(mx0 >= tmax)) / (B + 1)),   # (k+1)/(B+1): nunca 0 (decisión 2026-10-24)
                 nula_max_q=dict(q50=float(np.quantile(mx0, .5)), q90=float(np.quantile(mx0, .9)), q95=float(np.quantile(mx0, .95))))
 
+
+
+# ------------------------------------------------------------------ bootstrap por sesiones sin recorrer el tensor denso B veces
+# Antes: B llamadas a `tensor` (bincount + acumulación de TODAS las celdas, vacías incluidas) => O(B x celdas x perillas).
+# Ahora: (1) se agregan las operaciones por (sesión, celda cruda); (2) cada par se expande una sola vez a las celdas EVALUABLES
+# que lo contienen (misma regla que `mascara`), dando E_S y E_C de forma sesiones x evaluables; (3) cada réplica bootstrap es
+# un producto matricial: medias* = (W @ E_S) / (W @ E_C). Mismo sorteo, mismas celdas, mismo resultado (oráculo:
+# `_medias_bootstrap_denso`, test `test_romano_wolf_igual_al_denso`). Por bloques de columnas: memoria acotada.
+
+@njit(cache=False, parallel=True)
+def _expandir(ses_ini, lv, sv, cv, fmin, fmax, niveles, modos, strides, evmap, lo, hi, flo, fhi, ES, EC):
+    """Pares ordenados por sesión (`ses_ini`: inicio de cada sesión): en paralelo por sesión, cada hilo escribe sólo su fila.
+    Un par cuyo rango de celdas [fmin, fmax] no toca el bloque [flo, fhi] se salta sin expandir."""
+    A = lv.shape[1]
+    mx = 2
+    for a in range(A): mx = max(mx, niveles[a] + 1)
+    for s in prange(len(ses_ini) - 1):
+        buf = np.empty((A, mx), np.int64); lens = np.empty(A, np.int64); pos = np.zeros(A, np.int64)
+        _expandir_sesion(s, ses_ini[s], ses_ini[s + 1], lv, sv, cv, fmin, fmax, niveles, modos, strides, evmap, lo, hi, flo, fhi,
+                         ES, EC, buf, lens, pos)
+
+
+@njit(cache=False)
+def _expandir_sesion(s, p0, p1, lv, sv, cv, fmin, fmax, niveles, modos, strides, evmap, lo, hi, flo, fhi, ES, EC, buf, lens, pos):
+    A = lv.shape[1]
+    for p in range(p0, p1):
+        if fmax[p] < flo or fmin[p] > fhi: continue
+        for a in range(A):
+            l = lv[p, a]; n = niveles[a]; m = modos[a]; k = 0
+            if m == 0:
+                buf[a, 0] = l; k = 1
+            elif m == 1:                                            # ge: la celda c toma niveles >= c  ->  c <= l
+                for c in range(l + 1): buf[a, k] = c; k += 1
+            elif m == 2:                                            # le: niveles <= c  ->  c >= l
+                for c in range(l, n): buf[a, k] = c; k += 1
+            elif m == 3:                                            # eq_any: su nivel y «cualquiera»
+                buf[a, 0] = l; buf[a, 1] = n; k = 2
+            else:                                                   # extremos: 0 = primero, 1 = último, 2 = cualquiera
+                if l == 0: buf[a, k] = 0; k += 1
+                if l == n - 1: buf[a, k] = 1; k += 1
+                buf[a, k] = 2; k += 1
+            lens[a] = k; pos[a] = 0
+        while True:
+            f = 0
+            for a in range(A): f += buf[a, pos[a]] * strides[a]
+            e = evmap[f]
+            if e >= lo and e < hi:
+                ES[s, e - lo] += sv[p]; EC[s, e - lo] += cv[p]
+            a = A - 1
+            while a >= 0:
+                pos[a] += 1
+                if pos[a] < lens[a]: break
+                pos[a] = 0; a -= 1
+            if a < 0: break
+
+
+def _rango_celdas(lv, niveles, modos):
+    """Celda mínima y máxima (por eje) que contiene a cada nivel crudo, según el modo (misma regla que `mascara`)."""
+    n = niveles[None, :]; m = modos[None, :]
+    cmin = np.select([m == 0, m == 1, m == 2, m == 3], [lv, 0, lv, lv], np.where(lv == 0, 0, np.where(lv == n - 1, 1, 2)))
+    cmax = np.select([m == 0, m == 1, m == 2, m == 3], [lv, lv, n - 1, n], 2)
+    return cmin.astype(np.int64), cmax.astype(np.int64)
+
+
+class _Bootstrap:
+    """Medias bootstrap de las celdas evaluables por bloques de columnas (ver arriba)."""
+
+    def __init__(self, perillas, indices, valores, ses_inv, n_ses, ev, W, bloque_bytes=None, memoria_bytes=None):
+        v = np.asarray(valores, float); ok = np.isfinite(v)
+        for p, ix in zip(perillas, indices): ok &= (np.asarray(ix) >= 0) & (np.asarray(ix) < p.niveles)
+        shp_raw = tuple(p.niveles for p in perillas); shp = tuple(p.tamano_celdas() for p in perillas)
+        flat = np.ravel_multi_index(tuple(np.asarray(ix)[ok] for ix in indices), shp_raw)
+        clave = np.asarray(ses_inv)[ok].astype(np.int64) * int(np.prod(shp_raw)) + flat
+        u, j = np.unique(clave, return_inverse=True)                 # pares (sesión, celda cruda)
+        self.sv = np.bincount(j, weights=v[ok], minlength=len(u)); self.cv = np.bincount(j, minlength=len(u)).astype(float)
+        ses_p = (u // int(np.prod(shp_raw))).astype(np.int64)             # u ordenado => pares ordenados por sesión
+        self.ses_ini = np.searchsorted(ses_p, np.arange(int(n_ses) + 1)).astype(np.int64)
+        self.lv = np.stack(np.unravel_index(u % int(np.prod(shp_raw)), shp_raw), 1).astype(np.int64) if len(u) else np.zeros((0, len(shp)), np.int64)
+        self.niveles = np.array([p.niveles for p in perillas], np.int64); self.modos = np.array([_MODOS[p.modo] for p in perillas], np.int64)
+        self.strides = (np.array([int(np.prod(shp[a + 1:])) for a in range(len(shp))], np.int64))
+        cmin, cmax = _rango_celdas(self.lv, self.niveles, self.modos)
+        self.fmin, self.fmax = cmin @ self.strides, cmax @ self.strides     # rango de celdas planas que puede tocar cada par
+        self.evflat = np.flatnonzero(ev)
+        self.n_ev = int(ev.sum()); self.evmap = np.full(ev.size, -1, np.int32 if self.n_ev < 2**31 else np.int64); self.evmap[self.evflat] = np.arange(self.n_ev)
+        self.W, self.n_ses = W, int(n_ses); B = W.shape[0]
+        bb = bloque_bytes or RW_BLOQUE_BYTES; mem = memoria_bytes or RW_MEMORIA_BYTES
+        self.ancho = max(1, min(self.n_ev, bb // (16 * max(self.n_ses, 1) + 8 * B)))
+        self.guardar = B * self.n_ev * 4 <= mem; self._cache = {}; self._std = None
+
+    def _medias(self, a, b):
+        ES = np.zeros((self.n_ses, b - a)); EC = np.zeros((self.n_ses, b - a))
+        _expandir(self.ses_ini, self.lv, self.sv, self.cv, self.fmin, self.fmax, self.niveles, self.modos, self.strides, self.evmap, a, b,
+                  int(self.evflat[a]), int(self.evflat[b - 1]), ES, EC)
+        with np.errstate(invalid="ignore", divide="ignore"): return ((self.W @ ES) / (self.W @ EC)).astype(np.float32)
+
+    def bloque(self, a, b):
+        if (a, b) in self._cache: return self._cache[(a, b)]
+        M = self._medias(a, b)
+        if self._std is not None: m0, sd = self._std; M -= m0[a:b]; M /= sd[a:b]
+        if self.guardar: self._cache[(a, b)] = M
+        return M
+
+    def bloques(self):
+        for a in range(0, self.n_ev, self.ancho):
+            b = min(self.n_ev, a + self.ancho); yield a, b, self.bloque(a, b)
+
+    def estandarizar(self, m0, sd):
+        self._std = (m0, sd)
+        for (a, b), M in self._cache.items(): M -= m0[a:b]; M /= sd[a:b]
+
+    def maximo(self, activos):
+        """max_j sobre las celdas activas de cada réplica (NaN se ignora; sin activas: -inf), sin copiar la matriz entera."""
+        out = np.full(self.W.shape[0], -np.inf, np.float32)
+        for a, b, M in self.bloques():
+            act = activos[a:b]
+            if not act.any(): continue
+            with np.errstate(invalid="ignore"): out = np.fmax(out, np.nanmax(np.where(act, M, -np.inf), axis=1))
+        return out
+
+
+def _medias_bootstrap_denso(perillas, indices, valores, ses_inv, ev, W):
+    """Oráculo (la implementación anterior): un tensor completo por réplica."""
+    M = np.empty((W.shape[0], int(ev.sum())), np.float32)
+    for b in range(W.shape[0]):
+        S, _, C = tensor(perillas, indices, valores, pesos=W[b][ses_inv])
+        with np.errstate(invalid="ignore", divide="ignore"): M[b] = (S.ravel() / C.ravel())[ev]
+    return M
+
+
+@njit(cache=False)
+def _cola_superior_nb(t):
+    out = np.empty(len(t))
+    for i in range(len(t)): out[i] = 1.0 - 0.5 * (1.0 + math.erf(t[i] / math.sqrt(2.0)))     # = 1 - NormalDist().cdf(t) (fórmula de 3.13)
+    return out
+
+
+def _cola_superior(t):
+    """1 - Phi(t) vectorizado (antes: np.vectorize de NormalDist.cdf, una llamada Python por celda). Difiere a lo sumo en 1 ulp
+    (libm vs CPython; NormalDist mismo cambia de fórmula entre versiones de Python): ningún corte del tamiz depende de eso."""
+    return _cola_superior_nb(np.ascontiguousarray(t, dtype=np.float64))
 
 def pistas(st, t, k=60, min_dif=2, min_n=30):
     """Las k mejores celdas por t (la de romano_wolf: agrupada por sesión) con media > 0, DISTINTAS entre sí: cada una difiere
