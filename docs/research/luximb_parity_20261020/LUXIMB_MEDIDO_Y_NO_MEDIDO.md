@@ -34,6 +34,7 @@
 - Vida 200 con desenlaces; otras geometrias de salida (p. ej. objetivo A, horizonte fijo).
 - Otros instrumentos (ES, YM); zonas LUX-IMB individuales como soporte/resistencia.
 - Replicacion abr-sep: comprometida para esta familia (diseno mirando NQ 09-26).
+- 2026-10-24 Grilla masiva LUXIMB-GRILLA (907.200 celdas por canal, la regla del visor es una celda): **preparada, no lanzada** (ni E0 ni DESC). Spec `docs/research/luximb_grilla_20261024/SPEC.md`; campañas `LUXG-NQ` / `LUXG-CFD` apagadas.
 
 ## Agregado de la revisión del 2026-10-24 (`docs/research/revision_20261024/REVISION_20261024.md`)
 - **Candidato de la regla del visor:** el +4,95 pts/op es **dentro de muestra**. La regla salió de ajustes exploratorios (TP, SL, BE y entrada) y de la relectura de M11. Solo genera la hipótesis.

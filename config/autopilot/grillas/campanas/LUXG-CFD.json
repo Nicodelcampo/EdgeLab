@@ -1,0 +1,36 @@
+{
+ "cid": "LUXG-CFD",
+ "familia": "LUXIMB_GRILLA_CFD",
+ "experimento": "edgelab.research.luximb_grilla",
+ "sensor": "DK:USATECHIDXUSD",
+ "ejecucion": "NQ",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "debian",
+ "activa": false,
+ "n_celdas_por_canal": 907200,
+ "spec": "docs/research/luximb_grilla_20261024/SPEC.md",
+ "justificacion_economica": "Un impulso amplio y rápido que atraviesa enteras zonas de desequilibrio (OG/VI) recién nacidas consume liquidez en un solo sentido; si quien lo empujó fue flujo urgente y no información, el precio vuelve hacia el origen (FADE); si fue información, sigue (CONT). La grilla mide los dos lados con costos canónicos (SPEC.md §2).",
+ "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 (con el linaje cobrado) o, si alguna pasa, media neta <= 0 en el holdout a N fijo; la celda del visor refuta su propia regla si queda sin nominar con potencia (MDE publicado) en DESC.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261023,
+  "n_fijo": 150,
+  "nota": "La idea de usar el CFD como señal viene de U1-CRUZADO (AREAS_EXP_1_CRUZADO consumió 2026-10-01..10-22): empieza el 23. Una sola apertura por familia."
+ },
+ "periodos_consumidos": {
+  "desc": "Comprometido para la familia: la regla del visor se diseñó mirando NQ ago-2025..sep-2026 (los 6 períodos del tablero) y M1-M11 midieron en el descubrimiento de NQ (ago-2025..mar-2026). La celda del visor en DESC es ancla/control, no descubrimiento.",
+  "oos": "COMPROMETIDO (LUXIMB_MEDIDO_Y_NO_MEDIDO.md: «réplica abr-sep comprometida, diseño mirando NQ 09-26»; el tablero del visor también miró 06-26). Se corre porque puede refutar, pero pasarlo NO cuenta como réplica limpia: la confirmación queda a cargo del holdout a N fijo.",
+  "holdout": "2026-10-01..10-21 consumido por LUXIMB_FADE_VISOR (14 op.). Desde 2026-10-22, sin mirar.",
+  "sensor": "La señal en USATECH con ejecución en NQ se eligió después de U1-CRUZADO: la familia hereda el linaje de AREAS_EXP_1_CRUZADO (~19,4 M pruebas) y el de LUXIMB_GRILLA (LINAJES.jsonl)."
+ }
+}
