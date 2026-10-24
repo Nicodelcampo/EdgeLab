@@ -215,12 +215,15 @@ def ejecuciones_equivalentes(di, ei, pnl, ejecuciones) -> list:
     return [[list(ejecuciones[e]) for e in g] for g in firmas.values() if len(g) > 1]
 
 
-def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000):
-    from edgelab.funnel.escalera import economia, resumen_sesiones
+def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000, resolucion=None):
+    """`resolucion` = {nivel, m} (2026-10-24): el p tiene que poder resolver nivel/m (umbral más exigente del lote en LORD++):
+    sube B o usa el p analítico por sesión (`escalera.resumen_resuelto`). Sin resolución, B = `bootstrap` como antes."""
+    from edgelab.funnel.escalera import economia, resumen_resuelto
     P, idx, net, st = cx["perillas"], cx["indices"], cx["net"], cx["st"]
     m = GM.mascara(P, idx, cel) & np.isfinite(net)
     if m.sum() < MIN_OPS: return None
-    rs = resumen_sesiones(net[m], cx["ses"][m], n_boot=bootstrap)
+    rz = resolucion or {}
+    rs = resumen_resuelto(net[m], cx["ses"][m], nivel=rz.get("nivel"), m=int(rz.get("m", 1)), n_boot=bootstrap)
     ms = GM.meseta(st, cel, P, cx["ejes"])
     eco = economia(net[m], net[m] - extra_adverso, cx["ses"][m], periodos=cx["mes"][m])
     rel = float(np.median(cx["dist"][m])) / friccion if friccion > 0 else np.inf
@@ -230,8 +233,9 @@ def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000):
     rc = recorte_t(t_ses, float(cx.get("n_pruebas", 1)))                # error 11: lo mejor de muchas celdas siempre baja fuera de muestra
     return dict(celda=list(cel), n=int(m.sum()), media_neta=float(net[m].mean()), sesiones=rs["n_sesiones"], ic90=rs["ic"],
                 p_sesiones=rs["p_unilateral"], meseta=bool(ms["meseta"]), economico=eco["duros"], regimen_reciente=eco.get("regimen_reciente"),
-                ratio_mov_friccion=round(rel, 2), pasa=ok, n_pruebas=float(cx.get("n_pruebas", 1)), conservado=rc["conservado"],
-                media_esperada_fuera=float(net[m].mean()) * rc["conservado"])
+                ratio_mov_friccion=round(rel, 2), pasa=ok, n_pruebas=float(cx.get("n_pruebas", 1)), n_pruebas_metodo=cx.get("n_pruebas_metodo", "bruto"),
+                conservado=rc["conservado"], media_esperada_fuera=float(net[m].mean()) * rc["conservado"],
+                n_boot=rs["n_boot"], piso_p=rs["piso_p"], metodo_p=rs["metodo_p"])
 
 
 MIN_OPS_MARGINAL = 10
@@ -281,7 +285,10 @@ def marginales(exp, cx, *, friccion, extra_adverso):
 
 
 def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
-    """Canal `total` y canal `reciente` (últimos MESES_RECIENTES meses, declarados antes): tamiz, Romano-Wolf y pistas."""
+    """Canal `total` y canal `reciente` (últimos MESES_RECIENTES meses, declarados antes): tamiz, Romano-Wolf y pistas.
+    Se evalúan (2026-10-24, falsos negativos) las top 3·K_PISTAS distintas por t de Romano-Wolf Y TODAS las celdas nominadas por
+    el FDR (antes sólo las 60 primeras por t de RW: una nominada fuera de ese corte nunca se evaluaba). `k_evaluadas` declara
+    cuántas de cada origen. Las nominadas relevantes van todas a `pistas` (marcadas); las no nominadas, las K_PISTAS mejores."""
     P, idx, net, mes = cx["perillas"], cx["indices"], cx["net"], cx["mes"]
     meses = sorted(set(mes.tolist())); rec = np.isin(mes, meses[-MESES_RECIENTES:]); out = {}
     for nombre, msk in (("total", None), ("reciente", rec)):
@@ -289,20 +296,27 @@ def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
         st = cx["st"] if msk is None else GM.estadisticas(*GM.tensor(P, idx, v))
         cr = GM.criba(st, q=q); rw = GM.romano_wolf(P, idx, v, cx["ses"], st, B=B_RW, alfa=ALFA_RW, seed=7)
         c2 = dict(cx, net=v, st=st)
-        ev = [r for r in (evaluar(c, c2, friccion=friccion, extra_adverso=extra_adverso) for c in GM.pistas(st, rw["t"], k=3 * K_PISTAS)) if r]
+        por_rw = GM.pistas(st, rw["t"], k=3 * K_PISTAS)
+        nom_todas = [tuple(int(x) for x in np.unravel_index(f_, st["n"].shape)) for f_ in np.flatnonzero(cr["q_valores"].ravel() <= q)]
+        a_evaluar = list(dict.fromkeys(por_rw + nom_todas))                      # sin repetir, primero el orden por RW
+        ev = [r for r in (evaluar(c, c2, friccion=friccion, extra_adverso=extra_adverso) for c in a_evaluar) if r]
         for r in ev:
             r["t_rw"] = float(rw["t"][tuple(r["celda"])])
-            # decisión 2026-10-24: la nominación FDR (q 0,10, sobre TODAS las celdas del canal) es compuerta dura de DESC; se marca
-            # por pista con el conjunto completo (la lista `nominadas` tiene tope) y con lo necesario para cobrar el linaje
+            # decisión 2026-10-24: la nominación FDR (q 0,10) es compuerta dura de DESC; se marca por pista con el conjunto completo
+            # (la lista `nominadas` tiene tope). m_fdr = celdas EVALUABLES (filtrado independiente); `celdas_canal` = todas.
             r.update(canal=nombre, q_fdr=float(cr["q_valores"][tuple(r["celda"])]), nominada_fdr=bool(cr["q_valores"][tuple(r["celda"])] <= q),
-                     pi0_fdr=float(cr["pi0"]), m_fdr=int(cr["celdas"]))
+                     pi0_fdr=float(cr["pi0"]), m_fdr=int(cr["m"]), m_fdr_sobre=cr["m_sobre"], celdas_canal=int(cr["celdas"]))
         rel = sorted([r for r in ev if r["sesiones"] >= MIN_SESIONES and r["ratio_mov_friccion"] >= RATIO_MOV_FRICCION], key=lambda r: -r["ic90"][0])
-        out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=len(cr["nominadas"]), evaluables=cr["evaluables"],
-                           nominadas=[list(c) for c in cr["nominadas"][:300]],
+        nom_rel = [r for r in rel if r["nominada_fdr"]]
+        pistas_canal = nom_rel + [r for r in rel if not r["nominada_fdr"]][:K_PISTAS]
+        out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=int(cr["n_nominadas"]), evaluables=cr["evaluables"],
+                           m_fdr=int(cr["m"]), celdas=int(cr["celdas"]), nominadas=[list(c) for c in cr["nominadas"][:300]],
+                           k_evaluadas=dict(por_romano_wolf=len(por_rw), nominadas_fdr=len(nom_todas), total=len(a_evaluar), evaluables_30ops=len(ev)),
                            romano_wolf={k: rw[k] for k in ("B", "alfa", "umbral", "umbrales", "t_max", "p_rw_del_maximo", "nula_max_q")},
-                           rechazadas_rw=[list(c) for c in rw["rechazadas"][:300]], n_rechazadas_rw=len(rw["rechazadas"]), pistas=rel[:K_PISTAS],
+                           rechazadas_rw=[list(c) for c in rw["rechazadas"][:300]], n_rechazadas_rw=len(rw["rechazadas"]), pistas=pistas_canal,
                            nulo=GM.resumen_nulo(st, P, q=q, referencia=friccion))
-        log(f"canal {nombre}: FDR {len(cr['nominadas'])}, RW umbral {rw['umbral']:.2f} t_max {rw['t_max']:.2f} rechazadas {len(rw['rechazadas'])}, pistas {len(rel[:K_PISTAS])}")
+        log(f"canal {nombre}: FDR {cr['n_nominadas']} (m {cr['m']} evaluables de {cr['celdas']}), RW umbral {rw['umbral']:.2f} t_max {rw['t_max']:.2f} "
+            f"rechazadas {len(rw['rechazadas'])}, evaluadas {len(a_evaluar)}, pistas {len(pistas_canal)} ({len(nom_rel)} nominadas)")
     return out
 
 
@@ -316,7 +330,8 @@ def resumen_e0(D, variables, cortes):
     return out
 
 
-def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None):
+def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None,
+           resolucion=None):
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
     if "ses" not in D: D["ses"] = ctx["ses"][D.k.to_numpy()]
@@ -335,10 +350,17 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
               k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]])
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
+    cx["n_pruebas_metodo"] = "bruto"
+    if modo == "REP" and len(celdas) >= 2:                                                  # 2026-10-24: Li-Ji con la matriz sesión x celda
+        from edgelab.funnel.escalera import n_efectivo_o_bruto
+        ne = n_efectivo_o_bruto(len(celdas), matriz_sesiones(cx, celdas)); cx["n_pruebas"], cx["n_pruebas_metodo"] = ne["n"], ne["metodo"]
+    elif modo != "REP":
+        res["aviso_n_pruebas"] = "n_pruebas bruto (celdas evaluables): sin matriz de P&L de todas las celdas, Li-Ji no aplicable"
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
     if modo == "REP":
-        res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso)
+        res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
+        res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, resolucion=resolucion)
                           or dict(celda=list(c), **_evaluar_mascara(GM.mascara(P, idx, tuple(c)), cx), nota=f"< {MIN_OPS} operaciones: no evaluable")
                           for c in celdas]                         # el n real, no 0 (error de reporte del 2026-10-23)
         return res, cx
@@ -346,6 +368,15 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res["indagacion"] = marginales(exp, cx, friccion=friccion, extra_adverso=extra_adverso)
     log(f"listo ({time.time() - t0:.0f}s)")
     return res, cx
+
+
+def matriz_sesiones(cx, celdas):
+    """P&L neto sumado por sesión (filas) y celda (columnas), 0 donde la celda no operó: la matriz para Li-Ji."""
+    us, inv = np.unique(cx["ses"], return_inverse=True); M = np.zeros((len(us), len(celdas)))
+    for j, c in enumerate(celdas):
+        m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
+        M[:, j] = np.bincount(inv[m], weights=cx["net"][m], minlength=len(us))
+    return M
 
 
 def operaciones_de(cx, celdas):

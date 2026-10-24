@@ -103,14 +103,27 @@ def estadisticas(S, Q, C, min_n=30):
     return dict(media=mu, t=t, p=p, n=C, evaluable=ev)
 
 
-def criba(st, q=0.10, metodo="storey", tope=1000):
-    """Tamiz FDR sobre TODAS las celdas (las no evaluables cuentan con p = 1). Devuelve las nominadas, ordenadas por t."""
+def criba(st, q=0.10, metodo="storey", tope=1000, m_sobre="evaluables"):
+    """Tamiz FDR. Devuelve las nominadas, ordenadas por t, y los q-valores de TODAS las celdas (las no evaluables con q = 1).
+    m = celdas EVALUABLES (2026-10-24, falsos negativos; filtrado independiente, Bourgon, Gentleman y Huber 2010): el filtro
+    «n >= min_n» depende sólo del conteo de operaciones, no del signo ni del tamaño del P&L, así que bajo la nula no cambia la
+    distribución de los p que pasan y puede salir del tamiz. Antes las no evaluables entraban con p = 1: inflaban m (y π0 de
+    Storey) sin poder rechazar nunca; en AREAS-EXP-1 v1.4 eran 2/3 de las celdas (995.328 contra 315.654 evaluables).
+    `m_sobre="celdas"` reproduce la regla anterior. Se publican las dos cuentas (`m`, `evaluables`, `celdas`)."""
     from edgelab.funnel.escalera import tamiz_fdr
-    tz = tamiz_fdr(st["p"].ravel(), q, metodo); nom = np.array(tz["nominadas"], int)
-    nom = nom[np.argsort(-st["t"].ravel()[nom])][:tope] if len(nom) else nom
-    return dict(nominadas=[tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in nom], pi0=tz["pi0"], q=q,
-                evaluables=int(st["evaluable"].sum()), celdas=int(st["n"].size), recortadas_por_tope=max(0, len(tz["nominadas"]) - tope),
-                q_valores=np.asarray(tz["q_valores"]).reshape(st["n"].shape))   # completo (sin tope): para marcar la nominación de cada pista
+    ev = st["evaluable"].ravel(); pf = st["p"].ravel()
+    if m_sobre == "celdas": idx = np.arange(pf.size)
+    elif m_sobre == "evaluables": idx = np.flatnonzero(ev)
+    else: raise ValueError("m_sobre: evaluables | celdas")
+    qv = np.ones(pf.size)
+    if len(idx):
+        tz = tamiz_fdr(pf[idx], q, metodo); qv[idx] = np.asarray(tz["q_valores"]); pi0 = tz["pi0"]
+    else: pi0 = 1.0
+    nom = np.flatnonzero(qv <= q); n_nom = len(nom)
+    nom = nom[np.argsort(-st["t"].ravel()[nom])][:tope] if n_nom else nom
+    return dict(nominadas=[tuple(int(v) for v in np.unravel_index(f, st["n"].shape)) for f in nom], pi0=pi0, q=q, m=int(len(idx)), m_sobre=m_sobre,
+                evaluables=int(ev.sum()), celdas=int(st["n"].size), n_nominadas=int(n_nom), recortadas_por_tope=max(0, n_nom - tope),
+                q_valores=qv.reshape(st["n"].shape))   # completo (sin tope): para marcar la nominación de cada pista
 
 
 def vecinos(celda, perillas, ejes_ordinales):
@@ -137,12 +150,12 @@ def resumen_nulo(st, perillas, q=0.10, referencia=None, potencia=0.8):
     Agregado por nivel de cada perilla (mínimo y mediana), cuántas celdas detectarían `referencia` (p. ej. 1x la fricción),
     y la distribución de t en los dos canales (cola positiva y negativa: un efecto bidireccional no se pierde en el promedio)."""
     from edgelab.funnel.escalera import ALFA_CONFIRMACION
-    ev = st["evaluable"]; m = int(st["n"].size)
+    ev = st["evaluable"]; m = max(int(ev.sum()), 1)                  # m del tamiz = evaluables (filtrado independiente, ver `criba`)
     with np.errstate(invalid="ignore", divide="ignore"):
         se = np.abs(st["media"] / st["t"])
     zp = _N.inv_cdf(potencia); z_tamiz = _N.inv_cdf(1 - q / m); z_conf = _N.inv_cdf(1 - ALFA_CONFIRMACION)
     mde_t, mde_c = (z_tamiz + zp) * se, (z_conf + zp) * se
-    out = dict(celdas=m, evaluables=int(ev.sum()), z_tamiz=round(z_tamiz, 3), z_confirmacion=round(z_conf, 3), potencia=potencia)
+    out = dict(celdas=int(st["n"].size), evaluables=int(ev.sum()), m_tamiz=m, z_tamiz=round(z_tamiz, 3), z_confirmacion=round(z_conf, 3), potencia=potencia)
     if not ev.any(): return out
     tv = st["t"][ev]
     out["t"] = dict(max=float(tv.max()), min=float(tv.min()), **{f"q{int(k * 1000):03d}": float(np.quantile(tv, k)) for k in (0.001, 0.01, 0.5, 0.99, 0.999)},

@@ -72,6 +72,15 @@ No se tocó ningún archivo del manifiesto de protegidos (`config/autopilot/prot
 - **Ancestros sin declaración** (`AREAS_EXP_1_NQ`, `AREAS_EXP_1_USATECH`, `LUXIMB_FADE_VISOR`): cuentan sólo sus pruebas propias.
   Si derivan de algo anterior, hay que declararlo.
 
+## Enmienda del mismo día: falsos negativos (`FALSOS_NEGATIVOS_EMBUDO_20261024.md`)
+A pedido de Nico («que el embudo no descarte candidatas reales, manteniendo el control del error»):
+- **D1:** el m del FDR pasa a ser el de las celdas **evaluables** (filtrado independiente); se publican las dos cuentas. Cero
+  nominadas ya no cierra la campaña: van las top-k pistas a réplica en lote, con un paso de LORD++ (etapa `PISTAS`).
+- **D4:** el linaje es **información** por defecto (`linaje_como: "informacion"`); sigue como compuerta sólo con
+  `"compuerta"` o en estados congelados antes de la enmienda.
+- La meseta ordena y no mata; el bootstrap resuelve el umbral nivel/m (o usa el p analítico por sesión); se evalúan todas las
+  nominadas por FDR; el número efectivo usa Li-Ji cuando hay matriz de P&L.
+
 Aporte al referente: cierra las cuatro vías por las que el embudo podía promover algo sin evidencia (sin nominación, con α
 compartido, con p = 0, con el contador en cero) y evita matar un edge actual por un OOS sin potencia o de otro régimen declarado.
 

@@ -145,9 +145,14 @@ def _res(pistas):
 
 
 def test_desc_sin_nominacion_fdr_no_pasa(tmp_path):
+    """El caso EXPZ-NQ: 0 nominadas, antes pasaban 3. Ninguna llega a candidata en DESC; desde el 2026-10-24 (falsos negativos)
+    van a PISTAS (réplica en lote con LORD++) en vez de cerrar, y con la etapa apagada se cierra como antes."""
     em = _em(tmp_path)
     st = em._fin_desc(SPEC, _st(em), _res([_pista([0, 1], nom=False, q=0.4), _pista([2, 3], nom=False, q=0.3)]))
-    assert st["etapa"] == "FIN" and st["fase"] == "SIN_CANDIDATAS"                    # el caso EXPZ-NQ: 0 nominadas, antes pasaban 3
+    assert st["etapa"] == "PISTAS" and "candidatas" not in st and st["pistas_replica"]["celdas"]
+    spec = dict(SPEC, cid="T2"); st0 = _st(em, spec=spec); st0["reglas"]["pistas_replica"] = dict(activa=False)
+    st = em._fin_desc(spec, st0, _res([_pista([0, 1], nom=False, q=0.4)]))
+    assert st["etapa"] == "FIN" and st["fase"] == "SIN_CANDIDATAS"
 
 
 def test_desc_nominada_pasa(tmp_path):
@@ -160,7 +165,7 @@ def test_desc_linaje_le_quita_la_nominacion(tmp_path):
     reg = tmp_path / "reg.jsonl"; reg.write_text(json.dumps(dict(family_id="PADRE", n_trials=10_000_000)) + "\n", encoding="utf-8")
     em = _em(tmp_path, linaje_n="bruto")
     st = em._fin_desc(SPEC, _st(em), _res([_pista([0, 1], q=0.01, m=1000)]))
-    assert st["fase"] == "SIN_CANDIDATAS"
+    assert st["etapa"] != "INDAGA" and "candidatas" not in st                          # estado congelado sin `como`: compuerta
 
 
 def test_evaluar_sin_nominacion_no_confirma_aunque_replique():
