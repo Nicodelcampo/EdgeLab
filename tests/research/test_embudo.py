@@ -1,5 +1,6 @@
 """Embudo de punta a punta con un runner local sobre sintéticos: avanza solo por todas las etapas hasta una decisión final,
 registra pruebas, consume el libro de LORD++, escribe acta antes del holdout y CONTEO nunca expone P&L."""
+import importlib
 import json
 from pathlib import Path
 
@@ -26,20 +27,21 @@ class RunnerLocal:
             for k in ("o", "h", "l", "c", "tpx"): ej[k] = ctx[k] + 25.0
             self._cache[seed] = (ctx, ej)
         ctx, ej = self._cache[seed]
-        r = ET.ejecutar(etapa, U, ctx, friccion=1.0, extra_adverso=0.5, cx_ej=ej, params=params, log=lambda s: None)
+        r = ET.ejecutar(etapa, importlib.import_module(spec["experimento"]), ctx, friccion=1.0, extra_adverso=0.5, cx_ej=ej, params=params, log=lambda s: None)
         hid = f"h{len(self.h)}"; self.h[hid] = json.loads(json.dumps(r, default=float)); self.vistos.append(etapa); return hid
     def estado(self, h): return "complete"
     def traer(self, h): return self.h[h]
 
 
-SPEC = dict(cid="TEST-U1", familia="TEST", experimento="tests.research.exp_u1_sin_be", sensor="DK:X", ejecucion="Y", desc=[20250801, 20250930],
+SPEC = dict(cid="TEST-U1", familia="TEST", experimento="edgelab.research.u1_indaga", sensor="DK:X", ejecucion="Y", desc=[20250801, 20250930],
             justificacion_economica="j", como_podria_refutarse="r", embudo=True, preflight_dinamico=False,
             seleccion=dict(exigir_meseta=False, min_sesiones=5, ratio_mov_friccion=0.0, max_candidatas=2),
-            holdout=dict(desde=20261001, n_fijo=10, conteo_cada_s=0))
+            holdout=dict(desde=20261001, n_fijo=10, conteo_cada_s=0), n_celdas_por_canal=GG.n_celdas(U))
 
 
 def test_embudo_de_punta_a_punta(tmp_path, monkeypatch):
     monkeypatch.setattr(GG, "B_RW", 30)
+    monkeypatch.setattr(U, "INDICADORES", ["LUX-IMB"], raising=False)       # el runner corre la spec de verdad (U1-INDAGA completo)
     reg, libro, run = Reg(), LibroLord(tmp_path / "lord.json"), RunnerLocal()
     em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=reg, libro=libro, ahora=lambda: 1_792_900_000, log=lambda s: None,
                    ventanas=tmp_path / "ventanas.jsonl")
