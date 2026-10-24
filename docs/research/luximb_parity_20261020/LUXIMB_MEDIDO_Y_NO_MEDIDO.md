@@ -24,6 +24,8 @@
 
 - 2026-10-22 PRUEBA PRE-REGISTRADA VI coincidentes futuro/indice, reaccion a 30 min (ago-2025..mar-2026, 5.414 VI, 1.261 coincidentes, 155 dias; 1 prueba): coeficiente controlado por tamano/hora/direccion -0,20 pts, IC90 [-1,79, +1,29], p 0,60 -> **REFUTA** (la cota optimista no llega a la friccion de 1,55 pts; MDE 2,3 pts). La pista de jul-sep 2026 (+4,0) era seleccion: mejor de 6 pruebas. Diferencia cruda +0,11 pts; por contrato -0,83 / +0,02 / +1,04. Alcance: solo VI, reaccion a 30 min, NQ vs USATECH. `PREREGISTRO_VI_COINCIDENTES_REACCION_20261022.md`, `RESULTADO_VI_COINCIDENTES_REACCION_20261022.json`.
 
+- 2026-10-24 RECÁLCULO del candidato sobre el **release de Kaggle** (`edgelab-liquid-ticks-20261014`, NQ sha256 `cccc7c80…`) con **costos canónicos** (`edgelab/costos.py`, base 1,5455 / adverso 2,0455 pts), 1 prueba registrada: reproduce exacto los 6 períodos (500 op., 212 sesiones). Neto **+4,05 pts/op** (IC90 [+0,36, +7,56]), adverso +3,55; en R +0,198 [+0,013, +0,375], 47 pruebas en la familia, DSR 0,33 -> **SIN_POTENCIA** (igual que el 22/10, ahora sin depender de bundles locales). PROVISIONAL (release candidato). `RESULTADOS_RECALCULO_CANONICO_RELEASE_20261024.md`, `RECALCULO_CANONICO_RELEASE_20261024.json`.
+
 ## NO MEDIDO
 - Holdout (>= 2026-10-01) de la regla del visor original en NQ: **CONGELADA** 2026-10-21 (`CANDIDATO_HOLDOUT_REGLA_VISOR_NQ_20261021.md`); faltan datos de oct en adelante y alta en el protocolo del autopilot.
 - M5 en ES/YM (unico camino para mas potencia en descubrimiento).
@@ -35,6 +37,6 @@
 
 ## Agregado de la revisión del 2026-10-24 (`docs/research/revision_20261024/REVISION_20261024.md`)
 - **Candidato de la regla del visor:** el +4,95 pts/op es **dentro de muestra**. La regla salió de ajustes exploratorios (TP, SL, BE y entrada) y de la relectura de M11. Solo genera la hipótesis.
-- **Costos:** `tools/luximb_parity/luximb_holdout_regla_visor.py` cobra 0,225 pts más 1 tick, no la fricción canónica de NQ (1,5455 pts). **No medido:** el candidato con costos canónicos.
+- **Costos:** `tools/luximb_parity/luximb_holdout_regla_visor.py` cobra 0,225 pts más 1 tick, no la fricción canónica de NQ (1,5455 pts). ~~No medido: el candidato con costos canónicos.~~ Medido el 2026-10-24 (ver abajo).
 - **Multiplicidad:** se registró después de los resultados (`d98876a2`). La familia suma unas 46 pruebas en LUXIMB_FADE_VISOR y unas 105 en total.
 - **Holdout:** la mirada exploratoria (n=14, 14 SL y 0 TP) se hizo fuera del protocolo de aperturas. Quedó registrada retroactivamente como ventana consumida del 10-01 al 10-21 en `docs/research/HOLDOUT_VENTANAS.jsonl`. Una confirmación arranca el 2026-10-22 o después; las familias derivadas (EXPANSION_ZONAS) arrancan el 2026-10-23.
