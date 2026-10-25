@@ -66,11 +66,7 @@ def main():
     script_path=inject_manifest(a.script,manifest,dict(x.split('=',1) for x in a.env))
     cmd=[sys.executable,str(ROOT/"tools/kaggle_kernel.py"),"push","--slug",a.slug,"--title",a.title or a.slug.split("/")[1],"--script",script_path]+(["--gpu"] if a.gpu else [])+(["--internet"] if a.internet else [])
     for d in datasets:cmd+=["--dataset",d]
-    env=dict(os.environ)                                                            # cuenta de Kaggle = la dueña del slug, si está declarada en config/kaggle_cuentas.json
-    try:cuentas=[k for k in json.loads((ROOT/"config/kaggle_cuentas.json").read_text(encoding="utf-8")) if not k.startswith("_")]
-    except (OSError,ValueError):cuentas=[]
-    if a.slug.split("/")[0] in cuentas:env.update(EDGELAB_KAGGLE_OWNER=a.slug.split("/")[0],EDGELAB_KAGGLE_DATASET_OWNERS=",".join(cuentas))
-    out=subprocess.run(cmd,capture_output=True,text=True,env=env).stdout;print(out)
+    out=subprocess.run(cmd,capture_output=True,text=True).stdout;print(out)
     if '"hasError":false' in out or '"error":""' in out:                                     # registro común de lanzamientos de la cuenta (tope diario de prudencia)
         try:
             sys.path.insert(0,str(ROOT));from edgelab.autopilot import account;account.record(a.slug)

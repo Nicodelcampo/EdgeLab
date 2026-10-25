@@ -105,8 +105,12 @@ class KaggleRunner:
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
         a = self.argumentos(spec, etapa, params, periodo)
+        env = dict(os.environ)                                         # cuenta de Kaggle de la campaña (config/kaggle_cuentas.json); el lanzador
+        cuenta = a[1].split("/")[0]                                    # protegido no se toca: la cuenta viaja por el entorno hasta kaggle_kernel
+        cuentas = [k for k in json.loads((ROOT / "config/kaggle_cuentas.json").read_text(encoding="utf-8")) if not k.startswith("_")]
+        if cuenta in cuentas: env.update(EDGELAB_KAGGLE_OWNER=cuenta, EDGELAB_KAGGLE_DATASET_OWNERS=",".join(cuentas))
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
-                           timeout=TIMEOUT_LANZAR_S)
+                           timeout=TIMEOUT_LANZAR_S, env=env)
         if r.returncode != 0 or '"url"' not in r.stdout: raise RuntimeError(f"no se lanzó: {(r.stdout + r.stderr)[-500:]}")
         return a[1]
 
