@@ -66,6 +66,9 @@ encontrarlo, que fue producto de probar muchísimas variantes y filtrar, y no de
   (`u1/PREREGISTRO_OOS_FIX27_Y_DENSIDAD_U1.md`). Es mercado. Falta la paridad de zonas con un feed en vivo.
 - **OOS con fix 27 (2026-10-24):** T1 −0,16, T3 −4,84 en 2023-01 → 2025-07. Igual que antes: no funcionaba en ese período.
 - **Cola:** pérdidas de hasta −393 pts por operación.
+- **Noticias (medido el 2026-10-25, sólo tiempos):** ninguna entrada de desarrollo y 1 de 182 de réplica caen en ±1 min de una
+  noticia USD tier1; con la tenencia máxima, hasta 4 de 49–52 (8 %) y 3 de 90–92 (3 %) podrían estar posicionadas durante un
+  dato. El cruce exacto falta: el CSV no trae la hora de salida (`docs/research/noticias_20261025/IMPACTO_FILTRO_NOTICIAS.md`).
 
 ## 5. Dónde está todo
 | qué | ruta |
