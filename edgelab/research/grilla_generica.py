@@ -241,13 +241,16 @@ def evaluar(cel, cx, *, friccion, extra_adverso, bootstrap=2000, resolucion=None
 MIN_OPS_MARGINAL = 10
 
 
-def _evaluar_mascara(m, cx, *, bootstrap=500):
-    from edgelab.funnel.escalera import resumen_sesiones
+def _evaluar_mascara(m, cx, *, bootstrap=500, resolucion=None):
+    """`resolucion` = {nivel, m}: en una réplica en lote (PISTAS/OOS) la celda chica también entra a LORD++, así que su p tiene que
+    poder resolver nivel/m como las demás (2026-10-25: con B=500 una pista de < 30 operaciones no podía confirmarse nunca)."""
+    from edgelab.funnel.escalera import resumen_resuelto
     net = cx["net"]; m = m & np.isfinite(net); n = int(m.sum())
     if n < MIN_OPS_MARGINAL: return dict(n=n)
-    rs = resumen_sesiones(net[m], cx["ses"][m], n_boot=bootstrap)
+    rz = resolucion or {}
+    rs = resumen_resuelto(net[m], cx["ses"][m], nivel=rz.get("nivel"), m=int(rz.get("m", 1)), n_boot=bootstrap)
     return dict(n=n, media_neta=float(net[m].mean()), sesiones=rs["n_sesiones"], ic90=rs["ic"], p_sesiones=rs["p_unilateral"],
-                chica=bool(n < MIN_OPS or rs["n_sesiones"] < MIN_SESIONES))
+                chica=bool(n < MIN_OPS or rs["n_sesiones"] < MIN_SESIONES), n_boot=rs["n_boot"], piso_p=rs["piso_p"], metodo_p=rs["metodo_p"])
 
 
 def marginales(exp, cx, *, friccion, extra_adverso):
@@ -361,7 +364,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
         res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, resolucion=resolucion)
-                          or dict(celda=list(c), **_evaluar_mascara(GM.mascara(P, idx, tuple(c)), cx), nota=f"< {MIN_OPS} operaciones: no evaluable")
+                          or dict(celda=list(c), **_evaluar_mascara(GM.mascara(P, idx, tuple(c)), cx, resolucion=resolucion), nota=f"< {MIN_OPS} operaciones: no evaluable")
                           for c in celdas]                         # el n real, no 0 (error de reporte del 2026-10-23)
         return res, cx
     res["canales"] = canales(exp, cx, friccion=friccion, extra_adverso=extra_adverso, q=q, log=log)

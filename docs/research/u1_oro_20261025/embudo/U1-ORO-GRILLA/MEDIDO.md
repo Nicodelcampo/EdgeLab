@@ -4,3 +4,4 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 19409059 pruebas de ['U1_ORO', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- NOTA 2026-10-25: `grilla_generica._evaluar_mascara` cambió después de lanzar este DESC (celdas chicas de una réplica en lote con la resolución del lote). En DESC no cambia la medición: las marginales se siguen calculando sin nivel, con B=500 y la misma semilla (mismo p); sólo se agregan las claves n_boot/piso_p/metodo_p.

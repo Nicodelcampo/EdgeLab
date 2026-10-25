@@ -252,3 +252,16 @@ def test_canales_evalua_todas_las_nominadas(monkeypatch):
     assert len(nom) >= 8 and sorted(p["celda"][0] for p in nom)[:8] == list(range(8))  # antes: sólo las 3 primeras por t de RW
     assert out["m_fdr"] == out["evaluables"] == 12 and out["celdas"] == 12
     assert sum(p["nominada_fdr"] and p["celda"][0] >= 8 for p in out["pistas"]) <= 1   # FDR: a lo sumo una falsa entre ~9
+
+
+def test_celda_chica_de_la_replica_tambien_resuelve_el_umbral():
+    """2026-10-25 (EXPZ-CFD): una pista con < 30 operaciones entraba al lote de LORD++ con un p de B=500 (piso 0,002) contra un
+    umbral nivel/m de 1,8e-4: no podía confirmarse nunca. Ahora usa la misma resolución que las demás filas del lote."""
+    import numpy as np
+    from edgelab.research import grilla_generica as GG
+    rng = np.random.default_rng(0); n = 26
+    cx = dict(net=rng.normal(5, 1, n), ses=np.arange(n))
+    r = GG._evaluar_mascara(np.ones(n, bool), cx, resolucion=dict(nivel=0.0036, m=20))
+    assert r["chica"] and r["piso_p"] <= 0.0036 / 20 / 10 and r["p_sesiones"] <= 0.0036 / 20
+    viejo = GG._evaluar_mascara(np.ones(n, bool), cx)
+    assert viejo["n_boot"] == 500                                     # sin lote (marginales): igual que antes
