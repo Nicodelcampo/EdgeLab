@@ -1,6 +1,6 @@
 # Resultado — U1-CRUZADO congelada trasladada al oro (señal XAU, operación GC)
 
-Estado: VIGENTE. Etapa EF3. Pre-registro: `PREREGISTRO_U1_ORO.md` (commit `92a3d5e2`). Salida: `U1_ORO.json`, `U1_ORO_operaciones.csv`.
+Estado: VIGENTE. Etapa EF3. Pre-registro: `PREREGISTRO_U1_ORO.md` (commit `1f7cffeb`). Salida: `U1_ORO.json`, `U1_ORO_operaciones.csv`.
 Kernel `nicolasbuttaro/u1-oro-transferencia` v1. Escala: rango M1 mediano de USATECH en el descubrimiento de U1 = **6,25 pts**; el factor
 del oro fue 0,06–0,43 según el trimestre (W de 2,5 a 17,3 USD). 440 señales en XAU 2023-04 → 2026-09.
 
