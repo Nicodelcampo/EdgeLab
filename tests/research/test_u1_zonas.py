@@ -45,3 +45,12 @@ def test_causal(ctx, monkeypatch):
     Zs = _almacen_lux(ctx)
     f = lambda c: X.disparos(dict(c, zonas={"AVZP2": Zs}))
     assert I.causal(f, ctx, columnas=["k", "lado", "ni", "xi", "A_H", "esc"]) == []
+
+
+def test_fuente_avcl_usa_su_almacen_y_restaura_la_fuente(ctx):
+    from edgelab.research import u1_zonas_avcl as A
+    Zs = _almacen_lux(ctx)
+    a = A.disparos(dict(ctx, zonas={"AVCL": Zs}), r_ref=_ref(ctx)).drop(columns="ind")
+    b = X.disparos(dict(ctx, zonas={"AVZP2": Zs}), r_ref=_ref(ctx)).drop(columns="ind")
+    pd.testing.assert_frame_equal(a.reset_index(drop=True), b.reset_index(drop=True), check_dtype=False)
+    assert X.FUENTES_ZONAS == ("AVZP2",)

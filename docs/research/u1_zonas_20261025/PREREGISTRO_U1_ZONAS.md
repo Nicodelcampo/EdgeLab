@@ -36,3 +36,10 @@ que U1 con LUX-IMB en el mismo instrumento, la fuente de zonas no agrega.
 
 ## 7. Multiplicidad y linaje
 El embudo registra las pruebas de DESC antes de lanzar. Linaje ← `U1_ORO_GRILLA`, `AREAS_EXP_1_CRUZADO` (en este commit).
+
+## 8. Segunda fuente: aVolClusterPOI (agregado 2026-10-25, antes de correr)
+Campañas `U1-ZONAS-AVCL-ES` y `U1-ZONAS-AVCL-NQ` (familias propias), módulo `edgelab/research/u1_zonas_avcl.py` (misma gramática, fuente
+`ZONAS_AVCL_<INST>`). Almacén `nicolasbuttaro/almacen-zonas-avcl` (barras de 50 ticks, footprint NT8 de subserie), dataset
+`edgelab-zonas-u1` v2. Censo target-free: ES 6.620 zonas en 293 sesiones (≈ 23 por sesión, alto mediano 2 ticks), NQ 3.732 en 286
+(≈ 13 por sesión, 13 ticks): ~8 veces más ralo que aVolZonePOI2, así que se esperan menos racimos. Mismos datos, ventanas, costos,
+filtro (incluida la regla `min_ops_oos` = 30) y linaje que §3–§7.
