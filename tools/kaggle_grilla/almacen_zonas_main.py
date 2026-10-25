@@ -3,7 +3,8 @@
 # que la crea) y su banda de precio, para que la gramática de U1 (edgelab/research/u1_zonas.py) la use como fuente de zonas.
 # Indicadores: aVolZonePOI2 (edgelab/bridge/indicators/avolzonepoi2.py, PASS en MNQ 25t). Reutiliza fuentes_ticks.bloques_futuro,
 # edgelab/bridge/bars (barras de N ticks, footprint total NT8, sesiones) y oro_0530.trimestres. Sin desenlaces ni retornos.
-# Entorno: INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra, 25). Salida: ZONAS_AVZP2_<INST>.parquet y ALMACEN_ZONAS.json.
+# Entorno: INDICADOR (AVZP2 | AVCL), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
+# Salida: ZONAS_<IND>_<INST>.parquet y ALMACEN_ZONAS_<IND>.json.
 import json
 import os
 import time
@@ -35,25 +36,45 @@ def zonas_avzp2(bloques, tick, spec):
     return Z
 
 
+def zonas_avcl(bloques, tick, spec):
+    """aVolClusterPOI (PASS en MNQ 50t y 200t; footprint NT8 de subserie de 1 tick)."""
+    from edgelab.bridge import bars as B
+    from edgelab.bridge.indicators.avolclusterpoi import run
+    from edgelab.bridge.ticks import TickSeries
+    bl = list(bloques)
+    if not bl: return pd.DataFrame()
+    ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
+    vol = np.concatenate([b.vol.to_numpy() for b in bl]); del bl
+    tk = TickSeries(ts_ns=ts, price_ticks=np.round(px / tick).astype(np.int64), volume=vol.astype(np.int64), bid_ticks=None, ask_ticks=None,
+                    sequence=np.arange(len(ts), dtype=np.int64), tick_size=tick)
+    bars = B.build_tick_bars(tk, spec); fps = B.build_footprints(tk, bars, nt8_subseries=True)
+    r = run(tk, bars, fps); del tk
+    return pd.DataFrame([dict(t_ns=int(z["created_ms"]) * 10**6, lo=float(z["bottom"]), hi=float(z["top"])) for z in r["zones"]])
+
+
+INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVCL": (zonas_avcl, 50)}
+
+
 def main():
     from edgelab.research import fuentes_ticks as F, oro_0530 as O
-    ent = os.environ.get("ENTRADA", "/kaggle/input"); spec = int(os.environ.get("SPEC", "25"))
+    ent = os.environ.get("ENTRADA", "/kaggle/input"); ind = os.environ.get("INDICADOR", "AVZP2"); fn, spec = INDICADORES[ind]
+    spec = int(os.environ.get("SPEC", spec))
     t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
-    res = dict(experimento="ALMACEN-ZONAS", indicador="aVolZonePOI2", spec=spec, params=PARAMS, codigo=CODIGO_SHA, modulos=MODULOS_SHA, instrumentos={})
+    res = dict(experimento="ALMACEN-ZONAS", indicador=ind, spec=spec, params=PARAMS, codigo=CODIGO_SHA, modulos=MODULOS_SHA, instrumentos={})
     for inst in os.environ.get("INSTS", "ES,NQ").split(","):
         tick = F.TICK_FUTURO[inst]; partes = []
         for lo, hi in O.trimestres(D0, D1):
             lo_c = int((pd.Timestamp(str(lo)) - pd.Timedelta(days=CALENTAR)).strftime("%Y%m%d"))
-            try: Z = zonas_avzp2(F.bloques_futuro(inst, max(lo_c, D0), hi, ent), tick, spec)
+            try: Z = fn(F.bloques_futuro(inst, max(lo_c, D0), hi, ent), tick, spec)
             except (ValueError, IndexError) as e: log(f"{inst} {lo}-{hi}: sin datos ({e})"); continue
             if len(Z):
                 td = F._td(Z.t_ns.to_numpy()); Z = Z[(td >= lo) & (td <= hi)]; partes.append(Z)
             log(f"{inst} {lo}-{hi}: {len(Z)} zonas")
         Z = pd.concat(partes, ignore_index=True).sort_values("t_ns") if partes else pd.DataFrame()
-        Z.to_parquet(f"ZONAS_AVZP2_{inst}.parquet", index=False)
+        Z.to_parquet(f"ZONAS_{ind}_{inst}.parquet", index=False)
         res["instrumentos"][inst] = dict(zonas=int(len(Z)), sesiones=int(len(np.unique(F._td(Z.t_ns.to_numpy())))) if len(Z) else 0,
                                          alto_mediano_ticks=float(((Z.hi - Z.lo) / tick).median()) if len(Z) else None)
-    json.dump(res, open("ALMACEN_ZONAS.json", "w"), indent=1, default=float)
+    json.dump(res, open(f"ALMACEN_ZONAS_{ind}.json", "w"), indent=1, default=float)
     log(json.dumps(res["instrumentos"]))
 
 
