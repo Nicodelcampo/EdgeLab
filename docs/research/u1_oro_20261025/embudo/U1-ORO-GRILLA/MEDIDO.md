@@ -10,3 +10,6 @@
 - DESC [20250805, 20260331]: evaluables 25440 (m del FDR 25440 de 4478976 celdas), FDR 125, RW umbral 4.564028263092041 (diagnóstico), linaje 19409059 como informacion, pistas sin nominación 0, candidatas 3
 - AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
 - INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 0, 0, 2, 2, 2, 3, 2, 3, 0, 40]: regla 2.032575757575766, placebo 0.05, latencia 1 vela 2.2356451612903223 -> pasa
+- INTEGRIDAD [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16]: regla 6.582804878048808, placebo 0.71, latencia 1 vela 6.975555555555571 -> pasa
+- INTEGRIDAD [1, 2, 0, 2, 2, 2, 3, 3, 3, 0, 23]: regla 1.6405958549222586, placebo -0.57, latencia 1 vela 1.9071019108279987 -> pasa
