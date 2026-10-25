@@ -14,3 +14,15 @@ Campañas: `config/autopilot/grillas/campanas/EXPZ-NQ.json`, `EXPZ-CFD.json`; bi
 ## NO MEDIDO
 - EXPZ en el oro (XAU → GC): no se corre; ninguna de las dos campañas sobrevivió.
 - Alcance de la muerte de EXPZ-NQ: la familia EXPANSION_ZONAS con señal en NQ, sus 233.280 celdas y las ejecuciones declaradas; EXPZ-CFD murió con su propio DESC y réplica.
+
+## Auditoría del filtro (2026-10-25, pedido de Nico: «es raro que descarte todo siendo tantas variantes»)
+- **El tamiz cobra multiplicidad, no está roto.** La mejor celda de EXPZ-NQ dio +26 pts/op con p 0,0015 (n 63): con 9.960 celdas
+  evaluables el FDR pide p ≈ 1e-5. Por eso existe la réplica de pistas.
+- **Réplica:** 16 de 17 pistas evaluables de EXPZ-NQ dieron media positiva (+1 a +14) en abr–sep, ninguna significativa sola. No es
+  señal amplia: las pistas comparten operaciones (1.363 operaciones = 438 decisiones distintas). Promediando por decisión, la réplica
+  da **+1,39 pts/op, IC90 [−4,27, +7,07], p 0,34** (118 sesiones); EXPZ-CFD +0,21, p 0,46. Descriptivo, posterior al resultado.
+- **El embudo sí deja pasar un candidato real:** re-chequeo de U1 sobre los mismos arreglos (`FALSOS_NEGATIVOS_EMBUDO_20261024.md`):
+  el lote de USATECH rechaza en el primer paso y confirma 2 de 5 celdas.
+- **Lo que sí se corrigió hoy:** una pista con < 30 operaciones entraba al lote con un p de B=500 que no podía resolver el umbral.
+- **Diseño, no filtro:** el 96 % de las 233.280 celdas no llega a 30 operaciones (33.480 operaciones en total). Una grilla tan fina
+  gasta multiplicidad registrada en celdas que no se pueden evaluar; en las campañas nuevas conviene menos perillas por evento.
