@@ -762,24 +762,30 @@
     },
     {
       "id": "costos",
-      "name": "Costos de ejecucion canonicos",
+      "name": "Costos de ejecucion canonicos y ventanas de noticias",
       "layer": 4,
       "status": "experimental",
-      "function": "Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos).",
+      "function": "Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos). Calendario USD de alto impacto (minuto exacto en UTC, una fuente por fila) y filtro de operaciones que cruzan una ventana de noticia (regla de props y friccion; por defecto +-1 min, LucidDaily).",
       "paths": [
         "edgelab/costos.py",
-        "config/costos"
+        "config/costos",
+        "edgelab/noticias.py",
+        "config/noticias",
+        "tools/noticias_calendario.py"
       ],
       "inputs": [
-        "REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md"
+        "REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md",
+        "config/noticias/crudo (BLS, BEA, Census, Fed, ISM, ForexFactory)"
       ],
       "outputs": [
-        "friccion por viaje en ticks/puntos/USD"
+        "friccion por viaje en ticks/puntos/USD",
+        "ventanas de noticia bloqueadas y mascara por operacion o por minuto"
       ],
       "depends_on": [],
       "doc": "docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md",
       "tests": [
-        "tests/test_costos_canonicos.py"
+        "tests/test_costos_canonicos.py",
+        "tests/test_noticias.py"
       ]
     },
     {

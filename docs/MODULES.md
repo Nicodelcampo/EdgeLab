@@ -27,7 +27,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 2 | `research-data-gate` | Compuerta de datos de research (linea main) | core | Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Traído de main el 2026-10-14. | data-custody | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
 | 3 | `bridge-kernels` | Barras, footprint e indicadores (paridad con NT8) | core | Construye barras y footprint canonicos, kernels de indicadores en Python y verifica paridad contra los oraculos de NT8. | data-custody, sessions | `docs/nt8_indicator_parity_contract.md` | `tests/bridge` |
 | 4 | `context` | Contexto causal | experimental | Constructores de contexto target-free (HMM, compuerta L2) para condicionar mediciones. | bridge-kernels, data-custody | `docs/research/PROTOCOLO_CONTEXTOS_L2_NQ_20260928.md` | `tests/research` |
-| 4 | `costos` | Costos de ejecucion canonicos | experimental | Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos). | - | `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md` | `tests/test_costos_canonicos.py` |
+| 4 | `costos` | Costos de ejecucion canonicos y ventanas de noticias | experimental | Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos). Calendario USD de alto impacto (minuto exacto en UTC, una fuente por fila) y filtro de operaciones que cruzan una ventana de noticia (regla de props y friccion; por defecto +-1 min, LucidDaily). | - | `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md` | `tests/test_costos_canonicos.py`, `tests/test_noticias.py` |
 | 4 | `discovery` | Descubrimiento por familias (escaneo con nulo de máximo) | experimental | Barrido de familias de features con nulo de máximo por sesión (CPU/GPU), réplica cronológica D0/D1 y D2 sellado. | stats, funnel | `edgelab/discovery/README.md` | `tests/test_discovery.py` |
 | 4 | `equivalence` | Equivalencia CFD/spot contra futuros | experimental | Mide la equivalencia entre proxies (Dukascopy) y futuros CME para usarlos como complemento de potencia. | data-custody | `edgelab/equivalence/README.md` | `tests/test_equivalence.py` |
 | 4 | `external-models` | Modelos externos | experimental | Features de modelos preentrenados (Kronos y sucesores) con causalidad y almacen point-in-time. | data-custody | `docs/external_model_contract.md` | `tests/external` |
@@ -104,7 +104,7 @@ graph LR
 - **research-data-gate** — entra: pines SHA-256, manifiestos de campana; sale: admision de lectura.
 - **bridge-kernels** — entra: ticks, oraculos NT8; sale: barras, zonas, reportes de paridad.
 - **context** — entra: barras, L2; sale: etiquetas de contexto.
-- **costos** — entra: REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md; sale: friccion por viaje en ticks/puntos/USD.
+- **costos** — entra: REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md, config/noticias/crudo (BLS, BEA, Census, Fed, ISM, ForexFactory); sale: friccion por viaje en ticks/puntos/USD, ventanas de noticia bloqueadas y mascara por operacion o por minuto.
 - **discovery** — entra: arrays por sesión; sale: resultados de escaneo.
 - **equivalence** — entra: ticks/M1 de proxy y futuro; sale: informes de equivalencia.
 - **external-models** — entra: series; sale: features PIT.
