@@ -15,9 +15,20 @@ import pandas as pd
 from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, HOLDOUT_PRIMERA_SESION_INT
 
 
-def _td(ns):
+def _td_lento(ns):
+    """Referencia (oráculo de `_td`): conversión tick por tick."""
     t = pd.DatetimeIndex(pd.to_datetime(ns, unit="ns", utc=True)).tz_convert("America/Chicago") + pd.Timedelta(hours=7)
     return np.asarray(t.strftime("%Y%m%d"), dtype=np.int64)
+
+
+def _td(ns):
+    """Trade date CME (YYYYMMDD) por instante: fecha de Chicago + 7 h. Se convierte una vez por HORA única (el corrimiento de
+    Chicago cambia sólo en horas enteras) y se expande: mismo resultado que `_td_lento`, sin strftime por tick (era el 80 % del
+    tiempo de carga de los kernels de Dukascopy, medido 2026-10-25)."""
+    ns = np.asarray(ns, dtype=np.int64)
+    if not len(ns): return np.zeros(0, np.int64)
+    uh, inv = np.unique(ns // 3_600_000_000_000, return_inverse=True)
+    return _td_lento(uh * 3_600_000_000_000)[inv]
 
 
 def _check(desde, hasta):
@@ -58,14 +69,22 @@ def bloques_usatech(desde, hasta, entrada="/kaggle/input"):
     if resto is not None and len(resto): yield from _usatech_df(resto, _td(resto.time_utc_ns.to_numpy()), desde, hasta)
 
 
+def _por_dia(ts, px, vol, td):
+    """Un bloque por trade date, en orden. `td` no decrece (los ticks vienen en orden de tiempo), así que cada día es un tramo
+    contiguo: se corta por los bordes en vez de una máscara sobre todo el arreglo por día. Si no viniera ordenado, se ordena estable
+    por `td` (mismo resultado que la máscara)."""
+    if len(td) > 1 and (np.diff(td) < 0).any():
+        o = np.argsort(td, kind="stable"); ts, px, vol, td = ts[o], px[o], vol[o], td[o]
+    cortes = np.flatnonzero(np.diff(td)) + 1; ini = np.r_[0, cortes]; fin = np.r_[cortes, len(td)]
+    for a, b in zip(ini, fin):
+        yield pd.DataFrame(dict(ts_ns=ts[a:b], px=px[a:b], vol=vol[a:b], sesion=np.full(b - a, td[a], np.int64), segmento=np.zeros(b - a, np.int64)))
+
+
 def _usatech_df(t, td, desde, hasta):
     keep = (td >= desde) & (td <= hasta); t, td = t[keep], td[keep]
     if not len(t): return
     mid = np.round(((t.bid.to_numpy() + t.ask.to_numpy()) / 2) / 0.01) * 0.01
-    for d in np.unique(td):
-        m = td == d
-        yield pd.DataFrame(dict(ts_ns=t.time_utc_ns.to_numpy()[m], px=mid[m], vol=(t.bid_vol.to_numpy() + t.ask_vol.to_numpy())[m].astype(float),
-                                sesion=np.full(m.sum(), d, np.int64), segmento=np.zeros(m.sum(), np.int64)))
+    yield from _por_dia(t.time_utc_ns.to_numpy(), mid, (t.bid_vol.to_numpy() + t.ask_vol.to_numpy()).astype(float), td)
 
 
 # --- genéricos (2026-10-23): cualquier futuro del release y cualquier spot de Dukascopy ------------------------------------
@@ -116,10 +135,8 @@ def _spot_df(t, td, desde, hasta, red):
     keep = (td >= desde) & (td <= hasta); t, td = t[keep], td[keep]
     if not len(t): return
     mid = np.round(((t.bid.to_numpy() + t.ask.to_numpy()) / 2) / red) * red
-    for d in np.unique(td):
-        m = td == d
-        yield pd.DataFrame(dict(ts_ns=t.time_utc_ns.to_numpy()[m], px=mid[m], vol=(t.bid_vol.to_numpy() + t.ask_vol.to_numpy())[m].astype(float),
-                                sesion=np.full(m.sum(), d, np.int64), segmento=np.zeros(m.sum(), np.int64)))
+    ts, vol = t.time_utc_ns.to_numpy(), (t.bid_vol.to_numpy() + t.ask_vol.to_numpy()).astype(float)
+    yield from _por_dia(ts, mid, vol, td)
 
 
 def resolver(nombre: str):
