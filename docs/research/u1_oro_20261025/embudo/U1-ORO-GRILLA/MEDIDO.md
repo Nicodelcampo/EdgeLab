@@ -14,3 +14,4 @@
 - INTEGRIDAD [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16]: regla 6.582804878048808, placebo 0.71, latencia 1 vela 6.975555555555571 -> pasa
 - INTEGRIDAD [1, 2, 0, 2, 2, 2, 3, 3, 3, 0, 23]: regla 1.6405958549222586, placebo -0.57, latencia 1 vela 1.9071019108279987 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-1.98, 1.6, -0.19]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'SIN_RECHAZO']; potencias [0.79, 0.32, 0.83]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16], 'tope': ['pts', 50.0], 'puntaje': 6.56359435797671, 'peor': -19.504999999999637}
