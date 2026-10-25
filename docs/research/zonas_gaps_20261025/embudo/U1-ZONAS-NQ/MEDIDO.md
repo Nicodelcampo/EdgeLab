@@ -6,3 +6,4 @@
 - Linaje: hereda 4654307 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
 - Evaluables: 184031 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250801, 20260331]: evaluables 135243 (m del FDR 135243 de 4478976 celdas), FDR 529, RW umbral 5.049191474914551 (diagnóstico), linaje 4654307 como informacion, pistas sin nominación 0, candidatas 3
+- REINICIO 2026-10-25: las candidatas [[0, 0, 0, 2, 2, 0, 2, 3, 1, 0, 0, 29], [0, 0, 0, 2, 2, 0, 3, 3, 1, 0, 0, 33], [0, 0, 1, 1, 0, 1, 3, 1, 3, 0, 0, 22]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.

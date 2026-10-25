@@ -45,7 +45,7 @@ FALSOS_NEGATIVOS_20261024 = "docs/research/revision_20261024/FALSOS_NEGATIVOS_EM
 LINAJE_COMO = ("informacion", "compuerta")                # cómo pesa el linaje en DESC (falsos negativos, 2026-10-24)
 A3_REPLICA = (20260401, 20260930)                          # HOLDOUT-A3: ventana de réplica de ES/NQ (una vez por familia)
 # `exigir_meseta` (nombre histórico): desde el 2026-10-24 la meseta ORDENA las candidatas (primero las que la tienen), no las mata.
-DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_friccion=3.0, exigir_meseta=True, min_dif=2),
+DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_friccion=3.0, exigir_meseta=True, min_dif=2, min_ops_oos=30),
                 # pistas a réplica (ATJ-25): k declarado por campaña; `ventana` = período reciente no usado. Sin declarar: el OOS si
                 # es posterior al DESC, o la réplica de HOLDOUT-A3 para ES/NQ; si no hay ninguna, la etapa no corre.
                 pistas_replica=dict(activa=True, k=20, ventana=None),
@@ -121,6 +121,13 @@ def oos_comprometido(spec: dict) -> bool:
     """La campaña declara que su OOS ya se miró (`periodos_consumidos.oos` empieza con «COMPROMETIDO»; LUXG: la regla del visor se
     diseñó mirando abr–sep). Ese período puede refutar en la etapa OOS, pero nunca confirmar pistas (2026-10-25, revisión externa)."""
     return str(((spec.get("periodos_consumidos") or {}).get("oos")) or "").strip().upper().startswith("COMPROMETIDO")
+
+
+def _meses(periodo) -> int:
+    """Meses calendario que toca un período [YYYYMMDD, YYYYMMDD]."""
+    if not periodo: return 0
+    a, b = int(periodo[0]), int(periodo[1])
+    return (b // 10000 - a // 10000) * 12 + (b // 100 % 100 - a // 100 % 100) + 1
 
 
 def _solapa(a, b) -> bool:
@@ -329,12 +336,18 @@ class Embudo:
         sel = _reglas(spec, st, "seleccion"); st["cortes"] = res["E0"]["cortes"]; cand, vistos = [], []
         nh = ((st.get("reglas") or {}).get("linaje") or {}).get("n_heredado", 0); no_nom = 0; como = _como_linaje(st)
         pistas = [p for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])]
+        # 2026-10-25: una candidata tiene que poder confirmarse. Las 3 de U1-ES-GRILLA tenían 30-37 operaciones en 26 meses y dieron
+        # 6, 1 y 0 en el OOS de 6 meses (NO_CONCLUYENTE sin potencia, y un holdout de 150 operaciones imposible). La frecuencia es un
+        # dato target-free: se exige que la del DESC prometa >= min_ops_oos operaciones en la ventana OOS. Sólo endurece la selección.
+        meses_can = {id(p): max(1, len(c.get("meses") or []) or _meses(spec.get("desc"))) for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])}
+        m_oos = _meses(spec.get("oos")) if spec.get("oos") else 0
         # 2026-10-24 (falsos negativos): la meseta ORDENA (primero las que la tienen), no mata; 4 de las 5 celdas de U1 no la tenían
         orden = (lambda p: (not p.get("meseta", False), -p["ic90"][0])) if sel["exigir_meseta"] else (lambda p: -p["ic90"][0])
         for p in sorted(pistas, key=orden):
             ok_fdr, p["q_linaje"] = nominada(p, nh, como)
             if not ok_fdr: no_nom += 1; continue                                     # decisión 1 (2026-10-24): gate duro
             if p["sesiones"] < sel["min_sesiones"] or p["ratio_mov_friccion"] < sel["ratio_mov_friccion"] or p["ic90"][0] <= 0: continue
+            if m_oos and sel.get("min_ops_oos") and p["n"] / meses_can[id(p)] * m_oos < sel["min_ops_oos"]: continue
             if any(sum(a != b for a, b in zip(p["celda"], v)) < sel["min_dif"] for v in vistos): continue
             vistos.append(p["celda"]); cand.append(p["celda"])
             if len(cand) >= sel["max_candidatas"]: break

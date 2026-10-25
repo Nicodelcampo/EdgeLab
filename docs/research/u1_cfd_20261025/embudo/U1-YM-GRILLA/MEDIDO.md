@@ -10,3 +10,4 @@
 - INTEGRIDAD [1, 1, 1, 2, 2, 2, 2, 3, 1, 1, 4]: regla 64.98259459459378, placebo -23.45, latencia 1 vela 66.71171428571313 -> pasa
 - INTEGRIDAD [1, 1, 0, 1, 2, 2, 2, 3, 3, 1, 22]: regla 57.79629850746175, placebo 0.26, latencia 1 vela 55.785049180327576 -> pasa
 - INTEGRIDAD [1, 1, 0, 1, 2, 2, 2, 2, 3, 1, 4]: regla 55.19830303030354, placebo -5.53, latencia 1 vela 56.79412903225819 -> pasa
+- REINICIO 2026-10-25: las candidatas [[1, 1, 1, 2, 2, 2, 2, 3, 1, 1, 4], [1, 1, 0, 1, 2, 2, 2, 3, 3, 1, 22], [1, 1, 0, 1, 2, 2, 2, 2, 3, 1, 4]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.

@@ -18,3 +18,4 @@
 - INTEGRIDAD [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]: regla 10.353718918918991, placebo -2.80, latencia 1 vela 7.133442857142772 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [nan, nan, nan]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [nan, nan, nan]; LORD++ sin rechazo
 - TOPES: elegida {'celda': [1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16], 'tope': ['mult', 2.0], 'puntaje': 20.090466407109975, 'peor': -26.42970000000037}
+- REINICIO 2026-10-25: las candidatas [[1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16], [1, 1, 0, 2, 2, 0, 3, 3, 3, 2, 16], [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.
