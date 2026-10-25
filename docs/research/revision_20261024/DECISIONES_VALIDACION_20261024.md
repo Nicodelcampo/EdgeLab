@@ -106,3 +106,13 @@ se bloquea. Sólo así `holdout_ventanas.problemas` acepta el reuso autorizado. 
 (nivel = paso reservado de LORD++), informa el mismo monitor sin las sesiones ya miradas, y una pérdida fuera de cota detiene con
 `LIMITE_VIOLADO` → BLOQUEADA. Una regla sin tope de pérdida (U1 tal cual) no puede usarlo: sigue a N fijo, ciego hasta N.
 Tests: `tests/research/test_embudo_e_proceso.py`.
+
+### D6 — el linaje hereda celdas evaluables, no celdas registradas (2026-10-25)
+Pedido de Nico: «arreglá lo que sea el verdadero problema». La auditoría de EXPZ mostró que el filtro no estaba roto: lo que inflaba
+la multiplicidad eran las celdas que nunca podían rechazar. En las grillas finas el 96-98 % de las celdas no llega a 30 operaciones
+(U1-INDAGA en USATECH: 34.738 evaluables de 2.985.984 por canal). El FDR ya usaba m = evaluables; el linaje, en cambio, heredaba todo lo
+registrado. Ahora `docs/research/EVALUABLES.jsonl` (append-only) dice cuántas fueron evaluables y `linaje.pruebas_propias` usa ese número.
+Es filtrado independiente: el tamaño de muestra de una celda no depende del signo de su resultado. El registro previo
+(`TRIAL_REGISTRY_GLOBAL.jsonl`) no se toca y sigue siendo la cota; una campaña sin dato de evaluables se sigue cobrando entera.
+El embudo anota las evaluables al terminar cada DESC. Datos históricos completados con respaldo en los resultados guardados (U1-INDAGA,
+AREAS v14, EXPZ). Efecto: AREAS_EXP_1_CRUZADO hereda 4,6 M en vez de 19,4 M; el resto son campañas viejas sin el dato (v13 y anteriores).

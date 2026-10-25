@@ -62,6 +62,7 @@ INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n
 CONDUCTORES = ("debian", "local")                          # quién conduce cada campaña: uno solo (auditoría 2026-10-24)
 A3_FIN_DESCUBRIMIENTO, A3_INSTRUMENTOS = 20260331, ("ES", "NQ")   # HOLDOUT-A3/A4: ES y NQ descubren hasta acá; abr–sep es réplica
 MAX_HORAS_KAGGLE = 14                                       # Kaggle corta a las 12 h: pasado esto, la etapa se da por caída
+GG_MIN_OPS = 30                                              # = grilla_generica.MIN_OPS (test)
 N_BOOT_REPLICA, N_BOOT_HOLDOUT = 2000, 5000                 # bootstrap de `grilla_generica.evaluar` y de `_fin_holdout`
 # D5 (2026-10-24): holdout.estadistico = "e_proceso" exige cotas ESTRUCTURALES declaradas en la campaña antes de mirar (puntos de
 # la ejecución): pérdida y ganancia máximas por construcción, margen de hueco y efecto útil. Una regla sin tope de pérdida (U1 sin
@@ -270,6 +271,18 @@ class Embudo:
         return LN.problemas(spec["familia"], Path(self.linajes) if self.linajes else LN.LIBRO, Path(self.ventanas) if self.ventanas else None,
                             Path(self.registro_pruebas) if self.registro_pruebas else LN.REGISTRO)
 
+    def _evaluables(self, spec, res):
+        """Decisión 2026-10-25: cuántas de las 2·n_celdas registradas fueron evaluables (>= MIN_OPS operaciones) en los dos canales.
+        Sólo eso hereda multiplicidad por linaje; el registro previo queda como cota (`linaje.registrar_evaluables`)."""
+        from edgelab.research import linaje as LN
+        can = res.get("canales") or {}; n_ev = sum(int((can.get(c) or {}).get("evaluables") or 0) for c in ("total", "reciente"))
+        n_reg = 2 * int(spec.get("n_celdas_por_canal") or 0)
+        if not self.registro or not n_reg or not can: return None
+        libro = Path(self.registro_pruebas).with_name("EVALUABLES.jsonl") if self.registro_pruebas else LN.EVALUABLES
+        row = LN.registrar_evaluables(f"embudo/{spec['cid']}/desc", spec["familia"], n_reg, min(n_ev, n_reg), f"DESC {spec['cid']} (canales total+reciente)", libro)
+        self._medido(spec, f"- Evaluables: {row['n_evaluables']} de {n_reg} celdas registradas heredan multiplicidad (el resto no llegó a {GG_MIN_OPS} operaciones)")
+        return row
+
     def _multiplicidad(self, spec):
         from edgelab.research import linaje as LN
         return LN.multiplicidad(spec["familia"], Path(self.linajes) if self.linajes else LN.LIBRO,
@@ -314,6 +327,7 @@ class Embudo:
             vistos.append(p["celda"]); cand.append(p["celda"])
             if len(cand) >= sel["max_candidatas"]: break
         tot = (res.get("canales") or {}).get("total", {})
+        self._evaluables(spec, res)
         self._medido(spec, f"- DESC {spec['desc']}: evaluables {tot.get('evaluables')} (m del FDR {tot.get('m_fdr', tot.get('evaluables'))} de "
                            f"{tot.get('celdas', '?')} celdas), FDR {tot.get('nominadas_fdr')}, RW umbral {(tot.get('romano_wolf') or {}).get('umbral')} "
                            f"(diagnóstico), linaje {nh} como {como}, pistas sin nominación {no_nom}, candidatas {len(cand)}")

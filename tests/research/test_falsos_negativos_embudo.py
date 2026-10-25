@@ -265,3 +265,17 @@ def test_celda_chica_de_la_replica_tambien_resuelve_el_umbral():
     assert r["chica"] and r["piso_p"] <= 0.0036 / 20 / 10 and r["p_sesiones"] <= 0.0036 / 20
     viejo = GG._evaluar_mascara(np.ones(n, bool), cx)
     assert viejo["n_boot"] == 500                                     # sin lote (marginales): igual que antes
+
+
+def test_linaje_hereda_las_celdas_evaluables_no_las_registradas(tmp_path):
+    """2026-10-25: el 96-98 % de las celdas de las grillas finas no llega a 30 operaciones; registradas antes de correr (cota), sólo
+    las evaluables heredan multiplicidad. Sin dato de evaluables se sigue cobrando lo registrado."""
+    import json
+    from edgelab.research import linaje as LN
+    reg = tmp_path / "reg.jsonl"; ev = tmp_path / "EVALUABLES.jsonl"
+    reg.write_text("".join(json.dumps(r) + "\n" for r in (dict(campaign_id="a/desc", family_id="P", n_trials=1000), dict(campaign_id="b/desc", family_id="P", n_trials=50))))
+    assert LN.pruebas_propias(reg, ev)["P"] == 1050
+    LN.registrar_evaluables("a/desc", "P", 1000, 30, "test", ev)
+    assert LN.pruebas_propias(reg, ev)["P"] == 80
+    import pytest
+    with pytest.raises(ValueError): LN.registrar_evaluables("a/desc", "P", 10, 30, "test", ev)

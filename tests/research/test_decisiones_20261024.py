@@ -114,7 +114,10 @@ def test_q_con_linaje():
 def test_linajes_del_repo_coherentes():
     for f in ("AREAS_EXP_1_CRUZADO", "EXPANSION_ZONAS"):
         assert LN.problemas(f) == [], f
-    assert LN.multiplicidad("AREAS_EXP_1_CRUZADO")["n_heredado"] >= 19_000_000
+    reg = LN.pruebas_propias(evaluables=None)                                    # lo registrado antes de correr: la cota
+    assert reg["AREAS_EXP_1_USATECH"] + reg["AREAS_EXP_1_NQ"] >= 19_000_000
+    n = LN.multiplicidad("AREAS_EXP_1_CRUZADO")["n_heredado"]                  # 2026-10-25: hereda sólo las celdas evaluables
+    assert 1_000_000 <= n < 19_000_000
 
 
 # ----------------------------------------------------------------------------------------------- 1. FDR en DESC

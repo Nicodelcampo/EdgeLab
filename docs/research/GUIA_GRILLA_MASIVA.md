@@ -198,3 +198,11 @@ Cómo elegir familias nuevas y correr más variantes por hora sin aflojar nada: 
 - **`niveles_lote`** opcional en un experimento: el preflight exige que sea idéntico a `niveles`.
 - **Romano-Wolf** sin tensor denso por réplica (pares sesión × celda + producto matricial; oráculo en
   `tests/research/test_grilla_eficiencia.py`); benchmark `tools/bench_grilla.py`.
+
+
+## Diseño: celdas evaluables (2026-10-25)
+Una celda con menos de `MIN_OPS` (30) operaciones no puede rechazar nunca: no es una prueba, es una perilla vacía. En EXPZ el 96 % de las
+233.280 celdas no llegó a 30 (33.480 operaciones en total) y en U1-INDAGA el 98 %. Antes de lanzar una grilla, estimar con el E0
+(target-free) cuántas operaciones tendrá cada celda y preferir menos perillas por evento a más celdas vacías. El linaje hereda sólo las
+evaluables (`docs/research/EVALUABLES.jsonl`, D6), pero una grilla con la mayoría de las celdas vacías igual pierde potencia: la señal
+real queda repartida en celdas chicas que no llegan al tamiz.

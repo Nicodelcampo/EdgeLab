@@ -34,9 +34,29 @@ def _jsonl(p: Path) -> list:
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()] if p.exists() else []
 
 
-def pruebas_propias(registro: Path = REGISTRO) -> dict:
+EVALUABLES = REPO / "docs/research/EVALUABLES.jsonl"
+
+
+def registrar_evaluables(campaign_id: str, familia: str, n_registradas: int, n_evaluables: int, fuente: str, libro: Path = EVALUABLES) -> dict:
+    """Después de correr: cuántas de las celdas registradas antes de lanzar tenían datos para poder rechazar (>= MIN_OPS operaciones).
+    Una celda que no llega nunca es una prueba con desenlace: no hereda multiplicidad (filtrado independiente: el tamaño de muestra
+    no depende del signo del resultado). Append-only; el registro previo (TRIAL_REGISTRY_GLOBAL) no se toca: sigue siendo la cota."""
+    if not 0 <= int(n_evaluables) <= int(n_registradas): raise ValueError("0 <= evaluables <= registradas")
+    row = dict(campaign_id=campaign_id, family_id=familia, n_registradas=int(n_registradas), n_evaluables=int(n_evaluables), fuente=fuente,
+               registrada=time.strftime("%Y-%m-%d"))
+    libro = Path(libro); libro.parent.mkdir(parents=True, exist_ok=True)
+    with libro.open("a", encoding="utf-8", newline="\n") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    return row
+
+
+def pruebas_propias(registro: Path = REGISTRO, evaluables: Path | None = EVALUABLES) -> dict:
+    """Pruebas por familia: las registradas antes de correr, salvo que `EVALUABLES.jsonl` diga cuántas fueron evaluables (decisión
+    2026-10-25: el 96-98 % de las celdas de las grillas finas no llega a 30 operaciones y sólo inflaba el linaje heredado)."""
+    ev = {r["campaign_id"]: int(r["n_evaluables"]) for r in (_jsonl(evaluables) if evaluables else [])}
     out = {}
-    for r in _jsonl(registro): out[r["family_id"]] = out.get(r["family_id"], 0) + int(r["n_trials"])
+    for r in _jsonl(registro):
+        n = int(r["n_trials"]); n = min(n, ev[r.get("campaign_id")]) if r.get("campaign_id") in ev else n
+        out[r["family_id"]] = out.get(r["family_id"], 0) + n
     return out
 
 
