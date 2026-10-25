@@ -411,9 +411,10 @@ def elegir_pistas_replica(pistas: list, k: int = K_PISTAS_REPLICA, *, min_dif: i
                           ratio_mov_friccion: float = 0.0) -> list:
     """Las top-k pistas de una campaña que no nominó nada por FDR, para congelarlas y replicarlas en lote. Orden: cota inferior del
     IC90 por sesiones (desc), desempate por t de Romano-Wolf; NUNCA por P&L máximo. Distintas entre sí (difieren en >= `min_dif`
-    perillas, también entre canales). Los filtros de relevancia son los de la selección pre-registrada. Una pista con cota
-    inferior <= 0 puede entrar (el orden ya la castiga): la réplica decide, no el filtro."""
-    ok = [p for p in pistas if p.get("ic90") and (p.get("media_neta") or 0) > 0 and (p.get("sesiones") or 0) >= min_sesiones
+    perillas, también entre canales). Los filtros de relevancia son los de la selección pre-registrada. Sólo entran pistas con cota
+    inferior del IC90 > 0 (2026-10-25): con Simes cada pista de más divide el nivel del lote, y una que ya cruza cero en el
+    descubrimiento casi no puede confirmar; dejarla entrar le quita potencia a las buenas (EXPZ: 17 pistas con cota negativa)."""
+    ok = [p for p in pistas if p.get("ic90") and float(p["ic90"][0]) > 0 and (p.get("media_neta") or 0) > 0 and (p.get("sesiones") or 0) >= min_sesiones
           and (p.get("ratio_mov_friccion") if p.get("ratio_mov_friccion") is not None else float("inf")) >= ratio_mov_friccion]
     ok = sorted(ok, key=lambda p: (-float(p["ic90"][0]), -float(p.get("t_rw") or 0.0)))
     out = []

@@ -359,3 +359,12 @@ class TestAccionesAmpliadas(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_archivar_reemplaza_un_pedido_ya_procesado_con_el_mismo_nombre(tmp_path):
+    """El bucle --watch se cortaba en Windows cuando processed/ ya tenía un pedido con el mismo nombre."""
+    import tools.kaggle_drive_bridge as M
+    (tmp_path / "processed").mkdir(); viejo = tmp_path / "processed" / "x.json"; viejo.write_text("viejo")
+    nuevo = tmp_path / "x.json"; nuevo.write_text("nuevo")
+    M._archivar(nuevo, viejo)
+    assert viejo.read_text() == "nuevo" and not nuevo.exists()

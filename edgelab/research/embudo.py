@@ -117,14 +117,26 @@ def _como_linaje(st) -> str:
     return (((st.get("reglas") or {}).get("linaje")) or {}).get("como", "compuerta")
 
 
+def oos_comprometido(spec: dict) -> bool:
+    """La campaña declara que su OOS ya se miró (`periodos_consumidos.oos` empieza con «COMPROMETIDO»; LUXG: la regla del visor se
+    diseñó mirando abr–sep). Ese período puede refutar en la etapa OOS, pero nunca confirmar pistas (2026-10-25, revisión externa)."""
+    return str(((spec.get("periodos_consumidos") or {}).get("oos")) or "").strip().upper().startswith("COMPROMETIDO")
+
+
+def _solapa(a, b) -> bool:
+    return bool(a and b and int(a[0]) <= int(b[1]) and int(b[0]) <= int(a[1]))
+
+
 def ventana_pistas(spec: dict, cfg: dict | None = None):
     """Ventana de la réplica de pistas: la declarada; si no, el OOS de la campaña cuando es posterior al DESC (reciente y no usado:
-    entonces el OOS no se reusa para las pistas replicadas); si no, la réplica de HOLDOUT-A3 para ES/NQ. None = no hay dónde."""
+    entonces el OOS no se reusa para las pistas replicadas); si no, la réplica de HOLDOUT-A3 para ES/NQ. None = no hay dónde.
+    Ninguna ventana que solape un OOS declarado comprometido sirve para confirmar (`oos_comprometido`)."""
     cfg = cfg if cfg is not None else _cfg(spec, "pistas_replica")
+    malo = spec.get("oos") if oos_comprometido(spec) else None
     if cfg.get("ventana"): return [int(cfg["ventana"][0]), int(cfg["ventana"][1])]
-    if spec.get("oos") and spec.get("desc") and int(spec["oos"][0]) > int(spec["desc"][1]): return [int(spec["oos"][0]), int(spec["oos"][1])]
+    if spec.get("oos") and spec.get("desc") and int(spec["oos"][0]) > int(spec["desc"][1]) and not malo: return [int(spec["oos"][0]), int(spec["oos"][1])]
     inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
-    if inst & set(A3_INSTRUMENTOS) and spec.get("desc") and int(spec["desc"][1]) <= A3_FIN_DESCUBRIMIENTO: return list(A3_REPLICA)
+    if inst & set(A3_INSTRUMENTOS) and spec.get("desc") and int(spec["desc"][1]) <= A3_FIN_DESCUBRIMIENTO and not _solapa(A3_REPLICA, malo): return list(A3_REPLICA)
     return None
 
 
@@ -622,6 +634,7 @@ def _problemas_pistas(spec: dict) -> list:
     if a > b: e.append(f"pistas_replica.ventana {v}: mal formada")
     if b >= HOLDOUT_PRIMERA_SESION_INT: e.append(f"pistas_replica.ventana {v} toca el holdout (desde {HOLDOUT_PRIMERA_SESION_INT})")
     if spec.get("desc") and a <= int(spec["desc"][1]): e.append(f"pistas_replica.ventana {v} no es posterior al DESC {spec['desc']} (tiene que ser no usada)")
+    if oos_comprometido(spec) and _solapa(v, spec.get("oos")): e.append(f"pistas_replica.ventana {v} solapa el OOS {spec['oos']} declarado comprometido: no confirma")
     inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
     if inst & set(A3_INSTRUMENTOS) and (a < A3_REPLICA[0] or b > A3_REPLICA[1]):
         e.append(f"pistas_replica.ventana {v} fuera de la réplica HOLDOUT-A3 {list(A3_REPLICA)} para {sorted(inst & set(A3_INSTRUMENTOS))}")

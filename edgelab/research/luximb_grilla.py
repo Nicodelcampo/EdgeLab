@@ -298,7 +298,10 @@ def _niveles_arr(k, d, pa, ck, tick, ej):
         s = -d; tp = base - d * ftp * Db; st = base + d * fsl * Db
     else:
         s = d; tp = base + d * ftp * Db; st = base - d * fsl * Db
-    ok = (D0 > 0) & (Db > 0) & ((tp - ent) * s > 0) & ((ent - st) * s > 0)       # como el visor: un stop a < 1 tick también se opera
+    # Objetivo y stop a >= 1 tick de la entrada (2026-10-25, revisión externa: a menos de un tick cualquier movimiento los dispara y
+    # el par no es operable). La celda del visor conserva su regla literal (un stop a < 1 tick también se opera) por paridad.
+    piso = 0.0 if tuple(ej) == VISOR_EJ else tick - 1e-9
+    ok = (D0 > 0) & (Db > 0) & ((tp - ent) * s > piso) & ((ent - st) * s > piso)
     X = np.column_stack([k, np.full(n, lim), s, ent, st, tp, np.full(n, float(be))])
     X[~ok] = np.nan
     return X
