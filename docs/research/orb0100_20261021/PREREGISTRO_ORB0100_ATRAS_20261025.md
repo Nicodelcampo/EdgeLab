@@ -45,3 +45,16 @@ Media neta ≤ 0 con potencia en 2023–2025; o positiva sólo por un año.
 - El CFD no es el futuro (nocturno de Dukascopy con spread más ancho; el costo canónico es el del futuro).
 - sha256: `tools/kaggle_grilla/orb0100_atras_main.py` `fc80c2ccc66bce88a7ebc0cff8076044709cb485ddb88e840faa90735e20ac26` ·
   `tools/orb0100/orb0100_v2.py` `657a891a72298bebbe5bf9cf35876467ef29c9ae3febe31eb8e1501e3a0d3f63`.
+
+## Resultado (2026-10-25, kernel `nicolasbuttaro/orb0100-atras`, código `2624a5d9…`; JSON `ORB0100_ATRAS.json`)
+| n (sesiones) | media neta pts/op | IC90 | p | MDE | media adversa | bruto pts/op | R bruto | acierto |
+|---:|---:|---|---:|---:|---:|---:|---:|---:|
+| 447 | **−1,01** | [−3,25; +1,22] | 0,77 | 3,36 | −1,51 | +0,54 | +0,11 | 44,5 % |
+
+Por año: 2023 −0,49 (n 178) · 2024 +0,67 (176) · 2025 hasta ago −5,16 (93). Largos −1,25, cortos −0,67.
+Paso de LORD++ resuelto (`ORB0100::ORB0100-ATRAS`, nivel 0,010937, p de Simes 0,77): no rechaza.
+**Veredicto pre-registrado: EN CONTRA** (media ≤ 0 con MDE 3,36 ≤ 5). La celda congelada no tuvo ventaja neta en USATECH
+2023-01 → 2025-08. Lectura con alcance: el R bruto es +0,11 (positivo), pero en esos años el NQ cotizaba más bajo y el rango de
+01:00–01:15 era más chico en puntos, así que la fricción canónica (1,5455 pts, fija en puntos) pesa más por operación. Mata la celda en
+este período e instrumento; no mata el horario ni la regla escalada por volatilidad (NO MEDIDO). Junto con la escalera del 2026-10-22
+(SIN_POTENCIA y concentración en 5 operaciones), ORB0100 queda **sin candidato**: no se abre su holdout.

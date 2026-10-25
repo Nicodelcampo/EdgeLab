@@ -35,7 +35,7 @@ familia **no** usó sí son datos nuevos para ella, y eso es lo que hace valioso
 | **EdgeReplica USATECH** (`edgereplica_usatech/RESULTADO.md`) | sobrevive (+4,08 pts, IC [+2,94; +5,27]), creciente hacia el presente; post-publicación negativo con n 14 | R | baja (revisado) | las mismas reglas ya abrieron su holdout en MNQ (`ghost_edgeexperiment_re_20261003`): −4,4 ticks, `EDGE_NO_CONFIRMADO` |
 | **Escalonadas MNQ / EURUSD 500t** (`RESULTADO_MNQ_ESCALONADAS_ESCALAS_20260930.md`, `eurusd_escalonadas_20261021/`) | 0/648 max-T; 500t positivas (+0,15 R; mejor +0,45 R, n 39) «sin potencia» | F, N | 5.º | sólo la escala grande; Dukascopy da años |
 | **Discovery f1–f5** (`discovery_20261004/RESULTADO_FAMILIAS.md`) | GC `p_max` 0,0074 (f1), Holm sobre 15 → 0,112; D0 ≈ 110 sesiones | F, N, V | 6.º | XAU/USATECH multi-año; ojo: la celda 04:30 no replicó en D1 (señal ya débil) |
-| **ORB0100** (`orb0100_20261021/`) | IS −1,35, OOS +2,27, ES −0,44; n 62–178 | N | 7.º | barata; potencia con USATECH |
+| **ORB0100** (`orb0100_20261021/`) | IS −1,35, OOS +2,27, ES −0,44; n 62–178 | N | **hecho 2026-10-25: EN CONTRA** | celda congelada sobre USATECH 2023-01 → 2025-08: −1,01 pts/op, IC90 [−3,25; +1,22], MDE 3,36 |
 | **R3 dirección 15–60 min** (`R3_DIRECCION_15_60M_RESULTADOS_20261014.md`) | H 30–60 «sin potencia» (MDE 5–8 pp contra 2–3 pp) | N, F | 8.º | idem |
 | **OU-1 GC 04:30** (`ou_20261012/RESULTADO_OU1.md`) | reversión en spot 2022-25 p 0,019, Holm 0,115 | F | 9.º | vecina de la 04:15 (ya analizada por Nico): baja prioridad |
 | **IVC** (`IVC_RESULTADOS_20260926.md`) | 38 FDR, 0 «prometedoras» (exigía IC inferior > costo en descubrimiento) | C | 10.º | revisar el criterio, no la inferencia |
