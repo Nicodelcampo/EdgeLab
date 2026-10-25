@@ -15,8 +15,11 @@ def validate_push(slug,datasets,owner=None):
     Privado y sin competencias ni otros kernels ya está fijo en el cuerpo del push. Devuelve el dueño validado."""
     owner=owner or os.environ.get("EDGELAB_KAGGLE_OWNER","nicolasbuttaro")
     if not REF.fullmatch(slug or "") or slug.split("/")[0]!=owner:raise SystemExit(f"NO SE LANZA: el kernel {slug!r} no es de la cuenta {owner!r}")
-    bad=[d for d in datasets if not REF.fullmatch(d) or d.split("/")[0]!=owner]
-    if bad:raise SystemExit(f"NO SE LANZA: datasets fuera de la cuenta {owner!r}: {bad}")
+    # Datasets: de la cuenta dueña o de las cuentas que los comparten (EDGELAB_KAGGLE_DATASET_OWNERS, separadas por coma; p. ej.
+    # SV1 lanza con la cuenta de Gonza y monta los datasets privados que Nico le compartió). Nunca de otra cuenta.
+    dueños={owner}|{x.strip() for x in os.environ.get("EDGELAB_KAGGLE_DATASET_OWNERS","").split(",") if x.strip()}
+    bad=[d for d in datasets if not REF.fullmatch(d) or d.split("/")[0] not in dueños]
+    if bad:raise SystemExit(f"NO SE LANZA: datasets fuera de las cuentas {sorted(dueños)!r}: {bad}")
     return owner
 def curl(args,body=None):
     from kaggle_auth import curl_auth

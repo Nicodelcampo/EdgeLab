@@ -23,3 +23,9 @@ def test_owner_from_env(monkeypatch):
     monkeypatch.setenv("EDGELAB_KAGGLE_OWNER", "gonzaloescobar")
     with pytest.raises(SystemExit):
         validate_push("nicolasbuttaro/edgelab-x", [])
+
+def test_datasets_compartidos_por_cuentas_declaradas(monkeypatch):
+    monkeypatch.setenv("EDGELAB_KAGGLE_DATASET_OWNERS", "nicolasbuttaro")
+    assert validate_push("gonzaloescobar/edgelab-x", ["nicolasbuttaro/edgelab-data-catalog"], "gonzaloescobar") == "gonzaloescobar"
+    with pytest.raises(SystemExit):
+        validate_push("gonzaloescobar/edgelab-x", ["otro/dataset-ajeno"], "gonzaloescobar")
