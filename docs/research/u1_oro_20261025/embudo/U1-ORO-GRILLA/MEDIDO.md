@@ -8,3 +8,5 @@
 - AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py']); revisar si el cambio toca la medición
 - Evaluables: 27590 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250805, 20260331]: evaluables 25440 (m del FDR 25440 de 4478976 celdas), FDR 125, RW umbral 4.564028263092041 (diagnóstico), linaje 19409059 como informacion, pistas sin nominación 0, candidatas 3
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 3 candidatas guardadas
