@@ -24,7 +24,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   `u1-oro-transferencia` (U1 congelada, señal XAU → operación GC, 4 pruebas). Pre-registros en `docs/research/oro_0530_20261024/` y
   `docs/research/u1_oro_20261025/`.
 - **Noticias (pedido de Nico):** las operaciones no pueden estar abiertas durante noticias USD de alto impacto; calendario y filtro
-  en construcción (`config/noticias/`, `edgelab/noticias.py`).
+  en construcción (calendario USD tier 1 y filtro por intervalo de la operación; rama `claude/noticias-calendario`).
 - **Kaggle:** las seis versiones de Dukascopy recortadas en la frontera del holdout están subidas (la v1 sigue en el historial;
   borrarla lo decide Nico).
 - **Grilla LUX-IMB (907.200 celdas por canal):** integrada y apagada; falta el E0 con el chequeo de conteo del visor.
