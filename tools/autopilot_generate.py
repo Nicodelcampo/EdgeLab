@@ -104,9 +104,9 @@ def main():
         existentes = list(cfg.get("familias_retiradas", [])) + [h["borrador"]["familia"] for h in hist if h.get("borrador")]
         r = contexto.proponer(RoleRunner(Path(cfg["roles_ledger"])), paquete, existentes)
         usadas = {f["ref"] for f in paquete["fichas"]}
-        row = dict(ts=time.time(), lente=lente, biblioteca=idx["huella"], repo_head=idx["repo_head"],
+        row = dict(ts=time.time(), biblioteca=idx["huella"], repo_head=idx["repo_head"],
                    paquete_sha256=hashlib.sha256(json.dumps(paquete, sort_keys=True, ensure_ascii=False).encode()).hexdigest(),
-                   fuentes=[s_ for s_ in ctx["fuentes"] if f"{s_[0]}#L{s_[2]}" in usadas], **r)
+                   fuentes=[s_ for s_ in ctx["fuentes"] if f"{s_[0]}#L{s_[2]}" in usadas], **r)  # r ya trae la lente usada
         with log.open("a", encoding="utf-8") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
         if (b := row.get("borrador") or {}).get("pedido_codigo") and row.get("status") == "BORRADOR_NO_AUTORIZADO":
             from edgelab.autopilot import programador            # la familia necesita código que no existe: lo escribe el programador
