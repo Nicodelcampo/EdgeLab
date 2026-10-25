@@ -21,7 +21,7 @@ from edgelab.research.u1_indaga import niveles  # noqa: F401
 NOMBRE = "U1-ORO-GRILLA"
 INDICADORES = ["LUX-IMB"]
 ESCALAS = (0.5, 1.0, 2.0)
-R_USATECH = None                   # se fija con el valor medido (kernel U1-ORO, `rango_m1_usatech`) antes de registrar la campaña
+R_USATECH = 6.25                   # rango M1 mediano de USATECH en 2025-08-05..2026-03-31, medido por el kernel U1-ORO (U1_ORO.json, rango_m1_usatech)
 VARIABLES = list(U.VARIABLES) + [Variable("escala", "esc", "grupo", categoria=len(ESCALAS))]
 EJES_ORDINALES = tuple(U.EJES_ORDINALES) + (len(U.VARIABLES),)
 EJECUCIONES = [e for e in U.EJECUCIONES if e[3] == 0]                    # sin el BE muerto (como tests/research/exp_u1_sin_be.py)
