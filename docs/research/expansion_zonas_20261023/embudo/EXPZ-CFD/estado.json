@@ -1,6 +1,4 @@
 {
- "etapa": "INDAGA",
- "fase": "CORRIENDO",
  "historial": [
   {
    "ts": 1792794359.587105,
@@ -46,6 +44,27 @@
      23
     ]
    ]
+  },
+  {
+   "ts": 1792887264.0616736,
+   "etapa": "INDAGA",
+   "reabierta": "re-decidir DESC con las reglas del 2026-10-24 (D1: FDR gate duro; 0 nominadas -> PISTAS); el resultado de INDAGA no se miró"
+  },
+  {
+   "ts": 1792887264.8069274,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 20
+  },
+  {
+   "ts": 1792888030.905316,
+   "etapa": "PISTAS",
+   "descartada": "nicolasbuttaro/embudo-expz-cfd-rep-20260401: réplica de pistas elegidas con un DESC calculado con módulos que cambiaron después (fix falsos negativos); no se mira, se relanza el DESC (GUIA_GRILLA_MASIVA)"
+  },
+  {
+   "ts": 1792888131.9853618,
+   "etapa": "PREFLIGHT",
+   "fin": true
   }
  ],
  "spec": {
@@ -56,7 +75,9 @@
    20260331
   ],
   "embudo": true,
-  "activa": true,
+  "conductor": "local",
+  "activa": false,
+  "pausa": "2026-10-24, OK de Nico (P-96 P1): DESC con 0 nominadas por FDR q 0,10 y 0 por Romano-Wolf; con la compuerta dura de FDR no pasa a INDAGA. No consume réplica ni holdout. Ver docs/research/auditoria_kaggle_20261024/.",
   "n_celdas_por_canal": 233280,
   "spec": "docs/research/expansion_zonas_20261023/SPEC.md",
   "justificacion_economica": "Una expansión que nace de una concentración de desequilibrios marca urgencia; el regreso al origen o la continuación dependen de si esas órdenes quedaron pendientes (SPEC.md).",
@@ -66,7 +87,9 @@
   },
   "holdout": {
    "desde": 20261023,
-   "n_fijo": 150
+   "n_fijo": 150,
+   "nota": "desde 2026-10-23: las sesiones 10-01..10-22 quedaron consumidas por las miradas exploratorias de U1-CRUZADO y LUXIMB (docs/research/HOLDOUT_VENTANAS.jsonl; revisión 2026-10-24)",
+   "apertura_familia": "EXPANSION_ZONAS tiene UNA apertura: la usa la primera campaña (EXPZ-NQ o EXPZ-CFD) que llegue al ACTA; la otra queda BLOQUEADA (holdout_ventanas). Declarado antes de ver resultados de DESC."
   },
   "cid": "EXPZ-CFD",
   "sensor": "DK:USATECHIDXUSD",
@@ -76,6 +99,19 @@
    20260930
   ]
  },
+ "descartadas": [
+  {
+   "etapa": "DESC+PISTAS",
+   "handles": [
+    "nicolasbuttaro/embudo-expz-cfd-desc-20250805",
+    "nicolasbuttaro/embudo-expz-cfd-rep-20260401"
+   ]
+  }
+ ],
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "handle": null,
+ "fallas": 0,
  "reglas": {
   "seleccion": {
    "max_candidatas": 3,
@@ -83,6 +119,14 @@
    "ratio_mov_friccion": 3.0,
    "exigir_meseta": true,
    "min_dif": 2
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
   },
   "integridad": {
    "placebo_max_frac": 0.25,
@@ -95,230 +139,36 @@
   "holdout": {
    "desde": 20261023,
    "n_fijo": 150,
-   "conteo_cada_s": 86400
+   "conteo_cada_s": 86400,
+   "nota": "desde 2026-10-23: las sesiones 10-01..10-22 quedaron consumidas por las miradas exploratorias de U1-CRUZADO y LUXIMB (docs/research/HOLDOUT_VENTANAS.jsonl; revisión 2026-10-24)",
+   "apertura_familia": "EXPANSION_ZONAS tiene UNA apertura: la usa la primera campaña (EXPZ-NQ o EXPZ-CFD) que llegue al ACTA; la otra queda BLOQUEADA (holdout_ventanas). Declarado antes de ver resultados de DESC."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "EXPANSION_ZONAS",
+   "declarada": true,
+   "padres": [
+    "LUXIMB_FADE_VISOR",
+    "LUXIMB_IMPULSOS",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 933160,
+   "bruto_heredado": 19409143,
+   "n_heredado": 19409143,
+   "total": 20342303,
+   "justificacion": "SPEC.md (Antecedente: regla del visor de LUX-IMB-IMPULSOS) y HOLDOUT_VENTANAS (diseñada después de las miradas de LUXIMB y U1-CRUZADO). Declarado después de su DESC: sólo puede endurecer.",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
   }
  },
- "handle": "nicolasbuttaro/embudo-expz-cfd-indaga-20250805",
- "params": {
-  "cortes": {
-   "velocidad": [
-    1.5637037037036121,
-    3.0003703703704456
-   ],
-   "posicion": [
-    0.403341026486052,
-    0.6288916562892277
-   ],
-   "tamano": [
-    0.0050310742823161305,
-    0.010648804156458894
-   ],
-   "vol_rel": [
-    0.3118360285487664,
-    0.8111127091302608
-   ]
-  },
-  "bases": [
-   [
-    1,
-    0,
-    2,
-    2,
-    3,
-    2,
-    2,
-    2,
-    23
-   ],
-   [
-    1,
-    0,
-    2,
-    2,
-    3,
-    1,
-    2,
-    2,
-    29
-   ],
-   [
-    1,
-    0,
-    1,
-    2,
-    0,
-    2,
-    1,
-    2,
-    23
-   ]
-  ]
- },
- "periodo": [
-  20250805,
-  20260331
- ],
- "lanzada": 1792803726.7061596,
- "cortes": {
-  "velocidad": [
-   1.5637037037036121,
-   3.0003703703704456
-  ],
-  "posicion": [
-   0.403341026486052,
-   0.6288916562892277
-  ],
-  "tamano": [
-   0.0050310742823161305,
-   0.010648804156458894
-  ],
-  "vol_rel": [
-   0.3118360285487664,
-   0.8111127091302608
-  ]
- },
- "candidatas": [
-  [
-   1,
-   0,
-   2,
-   2,
-   3,
-   2,
-   2,
-   2,
-   23
-  ],
-  [
-   1,
-   0,
-   2,
-   2,
-   3,
-   1,
-   2,
-   2,
-   29
-  ],
-  [
-   1,
-   0,
-   1,
-   2,
-   0,
-   2,
-   1,
-   2,
-   23
-  ]
- ],
- "desc": {
-  "pistas": [
-   {
-    "celda": [
-     1,
-     0,
-     2,
-     2,
-     3,
-     2,
-     2,
-     2,
-     23
-    ],
-    "n": 84,
-    "media_neta": 21.689619047619047,
-    "sesiones": 44,
-    "ic90": [
-     4.333627705627701,
-     41.684437629937634
-    ],
-    "p_sesiones": 0.03498250874562719,
-    "meseta": true,
-    "economico": {
-     "neto_base_positivo": true,
-     "sin_top5_positivo": true,
-     "ningun_periodo_80pct": true,
-     "sin_colapso_adverso": true
-    },
-    "regimen_reciente": false,
-    "ratio_mov_friccion": 72.47,
-    "pasa": true,
-    "n_pruebas": 8400.0,
-    "conservado": 0.0,
-    "media_esperada_fuera": 0.0,
-    "t_rw": 1.8935092687606812
-   },
-   {
-    "celda": [
-     1,
-     0,
-     2,
-     2,
-     3,
-     1,
-     2,
-     2,
-     29
-    ],
-    "n": 56,
-    "media_neta": 20.80271428571428,
-    "sesiones": 48,
-    "ic90": [
-     0.6662446393762153,
-     40.836744816586915
-    ],
-    "p_sesiones": 0.04447776111944028,
-    "meseta": true,
-    "economico": {
-     "neto_base_positivo": true,
-     "sin_top5_positivo": true,
-     "ningun_periodo_80pct": true,
-     "sin_colapso_adverso": true
-    },
-    "regimen_reciente": false,
-    "ratio_mov_friccion": 54.84,
-    "pasa": true,
-    "n_pruebas": 8400.0,
-    "conservado": 0.0,
-    "media_esperada_fuera": 0.0,
-    "t_rw": 1.7483214139938354
-   },
-   {
-    "celda": [
-     1,
-     0,
-     1,
-     2,
-     0,
-     2,
-     1,
-     2,
-     23
-    ],
-    "n": 71,
-    "media_neta": 9.718584507042259,
-    "sesiones": 58,
-    "ic90": [
-     0.22753472222222115,
-     21.087799910873436
-    ],
-    "p_sesiones": 0.07146426786606697,
-    "meseta": true,
-    "economico": {
-     "neto_base_positivo": true,
-     "sin_top5_positivo": false,
-     "ningun_periodo_80pct": true,
-     "sin_colapso_adverso": true
-    },
-    "regimen_reciente": false,
-    "ratio_mov_friccion": 30.09,
-    "pasa": false,
-    "n_pruebas": 8400.0,
-    "conservado": 0.0,
-    "media_esperada_fuera": 0.0,
-    "t_rw": 1.5969984531402588
-   }
-  ]
+ "decisiones_20261024": {
+  "ts": 1792888131.9851522,
+  "desde": "PREFLIGHT"
  }
 }
