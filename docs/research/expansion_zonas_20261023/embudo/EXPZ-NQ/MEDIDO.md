@@ -20,3 +20,5 @@
 - CORRECCIÓN 2026-10-25: linaje como compuerta (el PREFLIGHT del relanzamiento lo había dejado como información; con 0 nominadas el DESC no cambia)
 - **BLOQUEADA** — la campaña cambió después del PREFLIGHT (['linaje_como']): es otra campaña, con cid y registro propios
 - REVERTIDA 2026-10-25: la corrección «linaje como compuerta» cambiaba un campo inmutable de la campaña y la guarda la bloqueó (correcto). Se vuelve al estado previo. El modo del linaje sólo actúa en la nominación del DESC, que dio 0 nominadas por FDR en cualquiera de los dos modos; la réplica de pistas se decide con LORD++. No hay efecto sobre el camino de la campaña.
+- PISTAS réplica [20260401, 20260925]: LORD++ t=1 nivel 0.010937333410740489 p Simes 0.5899272707387762; confirmadas 0 de 20 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 20 confirmadas por el paso de LORD++ del lote (nivel 0.010937333410740489, p Simes 0.5899272707387762)
