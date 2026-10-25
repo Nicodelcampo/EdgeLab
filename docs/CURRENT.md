@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-23  
+**Fecha:** 2026-10-25  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-24  
+**Corte:** 2026-10-25  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,27 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-24 (leer primero)
+## Estado al 2026-10-25 (leer primero)
+
+- **Validación (decisiones de Nico del 24-oct, aplicadas):** D1–D4 en `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md`;
+  arreglos de falsos negativos del embudo (etapa PISTAS, linaje como información para campañas nuevas, m del FDR = evaluables,
+  resolución del bootstrap): `FALSOS_NEGATIVOS_EMBUDO_20261024.md`. **D5:** reuso de las sesiones 10-01..10-22 para U1-CRUZADO y
+  LUXIMB_FADE_VISOR sólo con e-proceso y cotas estructurales (U1 sin tope no califica: sigue a N fijo).
+- **Reutilizar antes de construir:** `tools/existente.py` (buscar / catálogo `docs/HERRAMIENTAS.md` / detector de copias);
+  `tests/test_existente.py` ya cazó una copia en la grilla LUX.
+- **EXPZ-NQ/CFD:** el DESC se había corrido con módulos que cambiaron después: se descartó sin mirar y se relanzó desde PREFLIGHT
+  con el código vigente, conservando el linaje como compuerta.
+- **Oro (pedido de Nico):** en Kaggle `oro-0530-utc-exploratorio` (05:30 UTC = reapertura de Shanghai, EF2, 64 pruebas) y
+  `u1-oro-transferencia` (U1 congelada, señal XAU → operación GC, 4 pruebas). Pre-registros en `docs/research/oro_0530_20261024/` y
+  `docs/research/u1_oro_20261025/`.
+- **Noticias (pedido de Nico):** las operaciones no pueden estar abiertas durante noticias USD de alto impacto; calendario y filtro
+  en construcción (`config/noticias/`, `edgelab/noticias.py`).
+- **Kaggle:** las seis versiones de Dukascopy recortadas en la frontera del holdout están subidas (la v1 sigue en el historial;
+  borrarla lo decide Nico).
+- **Grilla LUX-IMB (907.200 celdas por canal):** integrada y apagada; falta el E0 con el chequeo de conteo del visor.
+- **Edges promovidos: 0.**
+
+## Estado al 2026-10-24
 
 - **Revisión de los avances del 20 al 23-oct:** `docs/research/revision_20261024/REVISION_20261024.md`.
   - **U1-CRUZADO** es una hipótesis débil: linaje de unos 19,4 M pruebas, regla elegida por P&L entre 14 topes, OOS sobre USATECH 2023-25 negativo y holdout exploratorio n=8 NO_CONCLUYENTE. El fix 27 casi no lo cambia.
