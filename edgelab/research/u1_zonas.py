@@ -61,11 +61,15 @@ def cargar(indicador: str, instrumento: str, entrada: str | None = None) -> pd.D
 
 
 def disparos(ctx, r_ref: float | None = None) -> pd.DataFrame:
-    inst = ctx.get("instrumento") or os.environ["SENSOR"]
+    """Zonas: `ctx["zonas"][indicador]` si viene en el contexto; si no, el almacén del instrumento `SENSOR` (lo pone el kernel del
+    embudo; sin almacén falla, nunca cae a otra fuente). Sin `SENSOR` ni zonas en el contexto (preflight y tests con datos
+    sintéticos) las zonas son las de LUX-IMB del propio contexto: así el preflight prueba la gramática, que es lo que se reutiliza."""
     out = []
     for i, ind in enumerate(FUENTES_ZONAS):
-        Zs = ctx["zonas"][ind] if "zonas" in ctx else cargar(ind, inst)
-        previo = U.AX; U.AX = _AXConZonas(Zs)
+        if "zonas" in ctx: Zs = ctx["zonas"][ind]
+        elif os.environ.get("SENSOR"): Zs = cargar(ind, os.environ["SENSOR"])
+        else: Zs = None
+        previo = U.AX; U.AX = _AXConZonas(Zs) if Zs is not None else AX
         try: D = UO.disparos(ctx, r_ref)
         finally: U.AX = previo
         if len(D): out.append(D.assign(ind=i))
