@@ -60,3 +60,27 @@ def test_falta_una_vela_no_se_rellena():
     ctx2 = {k: (v[~quita] if k != "tstart" else np.r_[v[:-1][~quita], v[-1]]) for k, v in ctx.items() if k != "tick"}
     D = X.tabla(X.minutos_utc(ctx2))
     assert np.isnan(D.deriva_15.iloc[0]) and np.isfinite(D.deriva_15.iloc[1])
+
+
+def _ctx_ruptura(salto):
+    """Ticks sintéticos: rango [2000,1, 2000,9] hasta 05:30; desde 05:31 sube `salto` puntos por minuto (tendencia, no un hueco: un
+    hueco llena al precio real después del salto y no gana nada, como debe)."""
+    from edgelab.research import grilla_generica as GG
+    d0 = pd.Timestamp("2025-03-04").value // 10**9; filas = []
+    for m in range(4 * 60, 7 * 60):
+        base = 2000.5 if m < X.ANCLA + 1 else 2000.5 + salto * (m - X.ANCLA)
+        for s in (5, 25, 45):
+            w = 0.4 if m <= X.ANCLA else 0.1                                    # oscilación chica después de cruzar
+            px = base + (w if s == 25 else -w if s == 45 else 0.0)
+            filas.append((int((d0 + 60 * m + s) * 1e9), px))
+    b = pd.DataFrame(filas, columns=["ts_ns", "px"]).assign(vol=1.0, sesion=20250304, segmento=0)
+    return GG.contexto_m1([b], tick=0.1)
+
+
+def test_ruptura_niveles_del_rango_previo_y_cobra_la_expansion():
+    R = X.ruptura(_ctx_ruptura(+0.5))
+    assert len(R) == len(X.RUPTURA_HOLDS) * len(X.RUPTURA_STOPS) and R.entro.all() and (R.lado == 1).all()
+    assert (R.bruto > 5).all() and np.allclose(R.rango, 0.8)                 # entra arriba del máximo previo y cobra la tendencia
+    R0 = X.ruptura(_ctx_ruptura(0.0))
+    assert not R0.entro.any()                                                 # sin salir del rango no hay operación
+    Rb = X.ruptura(_ctx_ruptura(-0.5)); assert (Rb.lado == -1).all() and (Rb.bruto > 5).all()   # simétrico: el lado lo elige el mercado

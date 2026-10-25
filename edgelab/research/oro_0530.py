@@ -23,6 +23,14 @@ CELDAS = [(f, h) for f in ("deriva", "arranque", "previo", "rango") for h in HOL
 DIRECCIONALES = ("deriva", "arranque", "previo")
 
 
+def trimestres(d0: int, d1: int):
+    """(desde, hasta) por trimestre calendario dentro de [d0, d1] (YYYYMMDD): los kernels leen de a un trimestre para acotar memoria."""
+    for a in range(d0 // 10000, d1 // 10000 + 1):
+        for q0, q1 in ((101, 331), (401, 630), (701, 930), (1001, 1231)):
+            lo, hi = max(a * 10000 + q0, d0), min(a * 10000 + q1, d1)
+            if lo <= hi: yield lo, hi
+
+
 def minutos_utc(ctx) -> pd.DataFrame:
     """Una fila por vela: día UTC, minuto del día UTC de la APERTURA de la vela, o/h/l/c, volumen, ticks."""
     t0 = ctx["t"].astype(np.int64) - 60                                         # `t` es el cierre (s)
@@ -82,3 +90,37 @@ def evaluar(D: pd.DataFrame, friccion: float, friccion_adversa: float, n_boot: i
             r.update(lado=int(lado), neto_base=float(lado * a["media"] - friccion), neto_adverso=float(lado * a["media"] - friccion_adversa))
         out.append(r)
     return out
+
+
+# ------------------------------------------------------------------------------------------- ruptura direccionalmente neutra
+# Pre-registro: docs/research/oro_0530_20261024/PREREGISTRO_RUPTURA_0530.md. Lo nominado del exploratorio es la EXPANSIÓN (16/16), no la
+# dirección (0/48): un bracket la cobra sin elegir el lado. Simulador: edgelab/research/bracket.py (el de VTD-BRACKET), tick a tick.
+RUPTURA_HOLDS = (15, 30, 60)
+RUPTURA_STOPS = ("opuesto", "medio")              # stop en el otro lado del rango previo, o en su mitad
+VENTANA_ENTRADA = 15                              # minutos desde las 05:30 para que se llene una de las dos órdenes
+
+
+def ruptura(ctx) -> pd.DataFrame:
+    """Una fila por (sesión, hold, stop). Rango previo = máximo y mínimo de las velas 05:00–05:29 (conocido al cierre de 05:29); a las
+    05:30 se colocan compra stop en máximo + 1 tick y venta stop en mínimo − 1 tick; la primera que se llena cancela la otra (OCO).
+    Sin objetivo; salida por tiempo (hold desde la vela del llenado) o por stop. `bruto` en precio (NaN si no se llena)."""
+    from edgelab.research.bracket import sim
+    M = minutos_utc(ctx); t0 = M.index.to_numpy(); tick = float(ctx.get("tick", 0.01)); tpx = ctx["tpx"]; ts = ctx["tstart"]
+    if len(tpx) == 0: return pd.DataFrame()
+    tick_bar = np.repeat(np.arange(len(ts) - 1), np.diff(ts)); bar_last = np.maximum(ts[1:] - 1, 0)
+    filas = []
+    for dia, g in M.groupby("dia"):
+        pre = g[(g.mdd >= ANCLA - 30) & (g.mdd < ANCLA)]; a = g[g.mdd == ANCLA]
+        if len(pre) < 25 or not len(a): continue                                  # rango previo con al menos 25 de 30 velas
+        hi, lo = float(pre.h.max()), float(pre.l.min()); R = hi - lo
+        if R <= 2 * tick: continue
+        b0 = int(a.index[0]); i0 = int(ts[b0])
+        ses = int(ctx["ses"][b0]); ult = int(np.flatnonzero(ctx["ses"] == ses).max())
+        fecha = int(pd.to_datetime(dia * 86400, unit="s").strftime("%Y%m%d"))
+        if pd.to_datetime(dia * 86400, unit="s").dayofweek >= 5: continue
+        for stop in RUPTURA_STOPS:
+            sl = R + 2 * tick if stop == "opuesto" else R / 2
+            for h in RUPTURA_HOLDS:
+                en, d, pnl, mot = sim(tpx, tick_bar, bar_last, int(ts[ult + 1] - 1), i0, b0, hi + tick, lo - tick, sl, 1e12, 0.0, VENTANA_ENTRADA, h)
+                filas.append(dict(fecha=fecha, stop=stop, hold=h, rango=R, entro=bool(en), lado=int(d), motivo=int(mot), bruto=float(pnl) if en else np.nan))
+    return pd.DataFrame(filas)

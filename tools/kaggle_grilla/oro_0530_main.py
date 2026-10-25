@@ -13,13 +13,6 @@ FUENTES = {"XAU": ("DK:XAUUSD", 20230101, 20260930), "GC": ("GC", 20250701, 2026
 RECIENTE = 20260401                                                           # ventana «reciente» declarada antes de mirar
 
 
-def trimestres(d0, d1):
-    for a in range(d0 // 10000, d1 // 10000 + 1):
-        for q0, q1 in ((101, 331), (401, 630), (701, 930), (1001, 1231)):
-            lo, hi = max(a * 10000 + q0, d0), min(a * 10000 + q1, d1)
-            if lo <= hi: yield lo, hi
-
-
 def main():
     from edgelab.funnel import escalera as ES
     from edgelab.research import fuentes_ticks as F, grilla_generica as GG, oro_0530 as X
@@ -29,7 +22,7 @@ def main():
     pruebas = []
     for inst, (fuente, d0, d1) in FUENTES.items():
         lector, tick = F.resolver(fuente); livianas, tablas = [], []
-        for lo, hi in trimestres(d0, d1):
+        for lo, hi in X.trimestres(d0, d1):
             try: ctx = GG.contexto_m1(lector(lo, hi, ent), tick)
             except (ValueError, IndexError): log(f"{inst} {lo}-{hi}: sin datos"); continue
             M = X.minutos_utc(ctx); del ctx
