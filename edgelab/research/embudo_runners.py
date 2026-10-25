@@ -112,8 +112,10 @@ class KaggleRunner:
 
     def estado(self, handle) -> str:
         r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=120)
+        out = r.stdout.lower()
         for s in ("complete", "running", "queued", "error", "cancel"):
-            if f'"{s}' in r.stdout.lower(): return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
+            if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
+        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
         return "running"
 
     def traer(self, handle) -> dict:
