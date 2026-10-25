@@ -30,9 +30,9 @@ familia **no** usó sí son datos nuevos para ella, y eso es lo que hace valioso
 | familia (doc) | qué murió y cómo | defectos | relanzar | por qué |
 |---|---|---|---|---|
 | **C-TICKS F4 cierre de gap** (`CAMPANA_TICKS_MULTI_RESULTADOS_20260923.md`) | MCPT p 0,001 (ES), 0,001 (NQ), 0,019 (YM); «sin potencia: 25–56 trades en 4 meses»; 6E F4 v3 +18,9 t IC [6; 32] tumbada por MCPT p 0,074 | N, M, C, F | **1.º** | la señal de timing ya estaba; faltaba muestra. Con 3,7 años de USATECH/USA500/USA30 la potencia sube ×10 |
-| **GC espejo P1/P2** (`RESULTADO_GC_P1_P2_20260929.md`) | +0,080 W, IC [+0,035; +0,123], t 2,93 < 3,09 de max-T sobre 30 celdas | F, N | 2.º | celda con IC > 0 que sólo cayó por FWER; XAU 2023–2026 es dato nuevo para esta familia |
-| **AVZP2 racimo, salida a favor de tendencia** (`AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md`) | no murió: replicó 6/6 y 7/7 en ES; el manifiesto de P&L quedó **propuesto y nunca corrido** | — | 3.º | no es relanzar: es correr lo que faltaba |
-| **EdgeReplica USATECH** (`edgereplica_usatech/RESULTADO.md`) | sobrevive (+4,08 pts, IC [+2,94; +5,27]), creciente hacia el presente; post-publicación negativo con n 14 | R | 4.º | encaja con «edges actuales»: canal reciente + cruce a NQ + forward |
+| **GC espejo P1/P2** (`RESULTADO_GC_P1_P2_20260929.md`) | +0,080 W, IC [+0,035; +0,123], t 2,93 < 3,09 de max-T sobre 30 celdas | F, N | baja (revisado) | además de max-T murió por economía: la degradación tick a tick (−0,034 W) deja el neto en ≈ −0,01 W; la ventaja es relativa al control, no absoluta |
+| **AVZP2 racimo, salida a favor de tendencia** (`AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md`) | no murió: replicó 6/6 y 7/7 en ES; el manifiesto de P&L quedó **propuesto y nunca corrido** | — | baja (revisado) | su propio prior es negativo: MFE mediana 3 ticks contra fricción canónica de ES 0,8877 pts = 3,55 ticks |
+| **EdgeReplica USATECH** (`edgereplica_usatech/RESULTADO.md`) | sobrevive (+4,08 pts, IC [+2,94; +5,27]), creciente hacia el presente; post-publicación negativo con n 14 | R | baja (revisado) | las mismas reglas ya abrieron su holdout en MNQ (`ghost_edgeexperiment_re_20261003`): −4,4 ticks, `EDGE_NO_CONFIRMADO` |
 | **Escalonadas MNQ / EURUSD 500t** (`RESULTADO_MNQ_ESCALONADAS_ESCALAS_20260930.md`, `eurusd_escalonadas_20261021/`) | 0/648 max-T; 500t positivas (+0,15 R; mejor +0,45 R, n 39) «sin potencia» | F, N | 5.º | sólo la escala grande; Dukascopy da años |
 | **Discovery f1–f5** (`discovery_20261004/RESULTADO_FAMILIAS.md`) | GC `p_max` 0,0074 (f1), Holm sobre 15 → 0,112; D0 ≈ 110 sesiones | F, N, V | 6.º | XAU/USATECH multi-año; ojo: la celda 04:30 no replicó en D1 (señal ya débil) |
 | **ORB0100** (`orb0100_20261021/`) | IS −1,35, OOS +2,27, ES −0,44; n 62–178 | N | 7.º | barata; potencia con USATECH |
@@ -48,9 +48,9 @@ familia **no** usó sí son datos nuevos para ella, y eso es lo que hace valioso
 
 1. Lo que ya está andando: U1-ORO-GRILLA por el embudo (INTEGRIDAD); U1-CRUZADO espera datos forward (8 de ≈ 95–150 operaciones).
 2. **GAP-RTH** (F4 relanzada): pre-registro `docs/research/gap_rth_20261025/PREREGISTRO_GAP_RTH.md`.
-3. GC espejo P1/P2 en XAU → GC.
-4. Manifiesto de P&L de AVZP2 racimo (ES).
-5. EdgeReplica USATECH → NQ con canal reciente.
-6. El resto según la tabla, de a uno, cada uno con su pre-registro y su registro global antes de correr.
+3. Escalonadas 500t en años de Dukascopy; discovery f1–f5 multi-año; ORB0100 y R3 en USATECH (los de defecto N/F).
+4. El resto según la tabla, de a uno, cada uno con su pre-registro y su registro global antes de correr.
+Revisado al leer cada acta a fondo (2026-10-25): GC espejo, AVZP2 P&L y EdgeReplica bajan; los tres tienen una muerte que no es de
+inferencia (economía, prior propio negativo, holdout ya abierto).
 
 Cada resultado se agrega a esta tabla (columna «relanzar» → resultado) en el mismo commit que el resultado.
