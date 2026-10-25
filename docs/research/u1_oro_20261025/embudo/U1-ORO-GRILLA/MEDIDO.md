@@ -5,3 +5,6 @@
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 19409059 pruebas de ['U1_ORO', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
 - NOTA 2026-10-25: `grilla_generica._evaluar_mascara` cambió después de lanzar este DESC (celdas chicas de una réplica en lote con la resolución del lote). En DESC no cambia la medición: las marginales se siguen calculando sin nivel, con B=500 y la misma semilla (mismo p); sólo se agregan las claves n_boot/piso_p/metodo_p.
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py']); revisar si el cambio toca la medición
+- Evaluables: 27590 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 25440 (m del FDR 25440 de 4478976 celdas), FDR 125, RW umbral 4.564028263092041 (diagnóstico), linaje 19409059 como informacion, pistas sin nominación 0, candidatas 3
