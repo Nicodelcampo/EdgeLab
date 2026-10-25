@@ -1,0 +1,108 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1792957438.3898573,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "U1-YM-GRILLA",
+  "familia": "U1_YM_GRILLA",
+  "experimento": "edgelab.research.u1_cfd",
+  "sensor": "DK:USA30IDXUSD",
+  "ejecucion": "DK:USA30IDXUSD",
+  "desc": [
+   20240102,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 es la familia más rentable medida (USATECH→NQ +17 a +28 pts/op de desarrollo; oro: 125 nominadas por FDR con INTEGRIDAD). Si el regreso a racimos de huecos LUX-IMB de un feed CFD de 24 h es microestructura general, debería aparecer en USA30IDXUSD con la escala ajustada a su volatilidad; 27 meses de descubrimiento dan potencia al tamiz.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote; nominadas que no pasan INTEGRIDAD; o media neta <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "ejecución en YM (cruzado) a confirmar antes de abrir: en DESC/OOS se opera sobre el CFD con los costos de YM (proxy declarado)"
+  },
+  "spec": "docs/research/u1_cfd_20261025/PREREGISTRO_U1_CFD.md",
+  "n_celdas_por_canal": 4478976
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "nota": "ejecución en YM (cruzado) a confirmar antes de abrir: en DESC/OOS se opera sobre el CFD con los costos de YM (proxy declarado)"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_YM_GRILLA",
+   "declarada": true,
+   "padres": [
+    "U1_ORO_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4654306,
+   "n_heredado": 4654306,
+   "total": 4654306,
+   "justificacion": "misma grilla que U1-ORO-GRILLA (u1_cfd reexporta u1_oro) sobre otro CFD con 27 meses; declarado antes de su DESC (PREREGISTRO_U1_CFD.md §5)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1792957438.389691,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-u1-ym-grilla-desc-20240102",
+ "fallas": 0,
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20240102,
+  20260331
+ ],
+ "lanzada": 1792957744.5644593
+}

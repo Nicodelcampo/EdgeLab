@@ -34,6 +34,7 @@
 - Vida 200 con desenlaces; otras geometrias de salida (p. ej. objetivo A, horizonte fijo).
 - Otros instrumentos (ES, YM); zonas LUX-IMB individuales como soporte/resistencia.
 - Replicacion abr-sep: comprometida para esta familia (diseno mirando NQ 09-26).
+- 2026-10-24 Grilla masiva LUXIMB-GRILLA (907.200 celdas por canal, la regla del visor es una celda): **preparada, no lanzada** (ni E0 ni DESC). Spec `docs/research/luximb_grilla_20261024/SPEC.md`; campañas `LUXG-NQ` / `LUXG-CFD` apagadas.
 
 ## Agregado de la revisión del 2026-10-24 (`docs/research/revision_20261024/REVISION_20261024.md`)
 - **Candidato de la regla del visor:** el +4,95 pts/op es **dentro de muestra**. La regla salió de ajustes exploratorios (TP, SL, BE y entrada) y de la relectura de M11. Solo genera la hipótesis.
@@ -41,3 +42,4 @@
 - **Multiplicidad:** se registró después de los resultados (`d98876a2`). La familia suma unas 46 pruebas en LUXIMB_FADE_VISOR y unas 105 en total.
 - **Holdout:** la mirada exploratoria (n=14, 14 SL y 0 TP) se hizo fuera del protocolo de aperturas. Quedó registrada retroactivamente como ventana consumida del 10-01 al 10-21 en `docs/research/HOLDOUT_VENTANAS.jsonl`. Una confirmación arranca el 2026-10-22 o después; las familias derivadas (EXPANSION_ZONAS) arrancan el 2026-10-23.
 - 2026-10-24 NULO GEOMÉTRICO (ruina del jugador) sobre los conteos del recálculo canónico: tasa de TP 104/495 = 0,210 contra p0 = 1/6 → z 2,59, p 0,007 (información). Contra el umbral económico (≈ 0,179 con D medio ≈ 108 pts) da z ≈ 1,8, igual que el P&L: el límite es el margen, no el método. Se calculó antes de registrarla (1 prueba, registrada después). `docs/research/potencia_20261024/POTENCIA_CON_LOS_MISMOS_DATOS.md`.
+- 2026-10-25 Ventanas de noticia (target-free, sólo tiempos): 208 de 42.743 decisiones de M8/M10 (0,49 %) caen en ±1 min de una noticia USD tier1; 552 (1,29 %) con ±5. No medido: operaciones de la regla del visor (no hay CSV con entrada y salida). `docs/research/noticias_20261025/IMPACTO_FILTRO_NOTICIAS.md`.

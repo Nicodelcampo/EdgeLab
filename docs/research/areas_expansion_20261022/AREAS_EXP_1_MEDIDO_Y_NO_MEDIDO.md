@@ -44,3 +44,23 @@ Una grilla nueva (otras perillas o valores) es una prueba nueva: registro en el 
 - **Densidad del feed:** la cerró el hilo del OOS con fix 27 (`u1/topes/U1_DENSIDAD_ANALISIS.json`, línea de arriba); la auditoría llegó a la misma lectura, MERCADO, con el mismo CSV.
 - **Pruebas que faltaban en el contador global, registradas retroactivamente:** `u1_indaga/acuerdo_nq` (20), `u1b/fase_a_nq` (1), `u1_cruzado/integridad` (4) y `u1_cruzado/topes_oos_us` (28).
 - **Réplica de NQ abr–sep usada tres veces en el linaje AREAS-EXP-1:** réplica v1.4 (80 pistas), U1-B Fase A y U1-CRUZADO P2. La fila de U1-B dice «no usada antes»: lo era para la celda, no para la familia (HOLDOUT-A3, regla 2). Va como propuesta a Nico en la auditoría.
+
+## Agregado de las correcciones de falsos negativos del 2026-10-24 (`docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md`)
+- **Re-lectura de artefactos, sin medición nueva:** con la regla nueva de pistas a réplica (top-20 por cota inferior del IC, un
+  paso de LORD++ por lote), sobre el DESC y la réplica v1.4 de USATECH, el lote rechaza al primer paso de la familia (p de
+  Simes 0,009995 contra un nivel de 0,010937). Confirma 2 de las 5 celdas de U1 y ninguna otra. Al nivel del segundo paso no
+  rechaza, y el lote de NQ no rechaza (Simes 0,070).
+- **No medido:** los p de esa réplica con la resolución nueva (B ≥ 10·m/nivel o p analítico). Los del artefacto tienen B = 2000.
+
+### NO MEDIDO — agregados el 2026-10-25 (revisión externa de Gemini, verificada contra el repo)
+- **Riesgo por operación en dólares (sizing inverso a la distancia del stop).** La cola de U1 está medida (peor −218 pts en P2,
+  −393 en el OOS 2023-25) y ningún tope fijo en puntos conservó el resultado en las dos mitades (TOPES). Falta medir la regla con
+  **contratos de MNQ = ⌊riesgo máx. USD / (valor del punto × |entrada − stop|)⌋**, absteniéndose cuando ni 1 MNQ entra en el riesgo
+  máximo de la cuenta. No cambia la señal ni el stop: cambia la unidad del resultado (R por operación y USD con techo de cuenta).
+  Se pre-registra antes de mirar y usa los costos canónicos de MNQ (`edgelab/costos.py`), no los de NQ.
+- **Feed en vivo.** La señal está en las zonas M1 del CFD de Dukascopy (con las zonas del propio NQ da +0,4). Para paper o vivo
+  hace falta recibir en vivo las velas M1 de `USATECHIDXUSD` (o certificar otro feed que reproduzca las mismas zonas OG/VI) y
+  trasladar con la base `NQ(t) − USATECH(t)`. Ya figuraba como «paridad de zonas entre feeds: no medida»; es **bloqueante** para operar.
+- **Holdout con colas anchas.** Sin tope estructural de pérdida, U1 no puede usar el e-proceso (la cota no es estructural: U1-B paró
+  por `LIMITE_VIOLADO`); su confirmación sigue a N fijo, ciega hasta N. Con un tope por construcción (o el sizing de arriba, que acota
+  la pérdida en USD) podría usarlo.

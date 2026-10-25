@@ -6,8 +6,12 @@ se escribe por campaña es el módulo del experimento (la lógica) y la campaña
 
 Etapas (una por ciclo de `avanzar`; idempotente; estado en <raiz>/<cid>/estado.json; bitácora MEDIDO.md):
   PREFLIGHT  local      preflight estático + dinámico del experimento                       falla -> BLOQUEADA
-  DESC       kaggle     registro 2·n_celdas; tamiz + Romano-Wolf + pistas + nulo             sin elegibles -> SIN_CANDIDATAS
-                        (2026-10-24: sólo pistas NOMINADAS por el FDR q 0,10 del canal, también con el linaje cobrado; RW es diagnóstico)
+  DESC       kaggle     registro 2·n_celdas; tamiz + Romano-Wolf + pistas + nulo             0 nominadas -> PISTAS (o SIN_CANDIDATAS
+                        (2026-10-24: sólo pistas NOMINADAS por el FDR q 0,10 del canal; RW es     si no hay ventana para replicarlas)
+                        diagnóstico; el linaje es información salvo `linaje_como: "compuerta"`; la meseta ordena, no mata)
+  PISTAS     kaggle     pistas a réplica (ATJ-25): top-k congeladas, réplica en la ventana       0 confirmadas -> SIN_CANDIDATAS
+                        reciente no usada, UN paso de LORD++ por lote (Simes + BH); las confirmadas
+                        quedan nominadas y siguen a INDAGA (docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md)
   INDAGA     kaggle     marginales alrededor de cada candidata (información, no compuerta)
   INTEGRIDAD kaggle     alineación (si señal ≠ ejecución), placebo, latencia                  ninguna pasa -> INTEGRIDAD_FALLA
   OOS        kaggle     réplica en período no usado; un paso de LORD++ de la familia (libro)  todas refutadas -> REFUTADA_OOS
@@ -20,6 +24,8 @@ Etapas (una por ciclo de `avanzar`; idempotente; estado en <raiz>/<cid>/estado.j
 Las reglas de cada compuerta vienen de la campaña (`seleccion`, `integridad`, `topes`, `holdout`) con valores por defecto
 documentados acá; quedan escritas en el estado ANTES de la etapa que las usa.
 Las cuatro decisiones de validación del 2026-10-24 (aprobadas por Nico): docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md.
+Correcciones de falsos negativos del mismo día (pedido de Nico: que el embudo no descarte candidatas reales sin perder el control
+del error): docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md.
 """
 from __future__ import annotations
 
@@ -31,11 +37,18 @@ import numpy as np
 
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
-ORDEN = ["PREFLIGHT", "DESC", "INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
+ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
 FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
 DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
+FALSOS_NEGATIVOS_20261024 = "docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md"
+LINAJE_COMO = ("informacion", "compuerta")                # cómo pesa el linaje en DESC (falsos negativos, 2026-10-24)
+A3_REPLICA = (20260401, 20260930)                          # HOLDOUT-A3: ventana de réplica de ES/NQ (una vez por familia)
+# `exigir_meseta` (nombre histórico): desde el 2026-10-24 la meseta ORDENA las candidatas (primero las que la tienen), no las mata.
 DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_friccion=3.0, exigir_meseta=True, min_dif=2),
+                # pistas a réplica (ATJ-25): k declarado por campaña; `ventana` = período reciente no usado. Sin declarar: el OOS si
+                # es posterior al DESC, o la réplica de HOLDOUT-A3 para ES/NQ; si no hay ninguna, la etapa no corre.
+                pistas_replica=dict(activa=True, k=20, ventana=None),
                 integridad=dict(placebo_max_frac=0.25, latencia_1_positiva=False),
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
                 holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400),
@@ -45,11 +58,16 @@ DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_fric
                 regimen=dict(definicion=None, actual_desde=None, fraccion_efecto=0.5, potencia_min=0.8))
 CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_economica", "como_podria_refutarse")
 # Lo que define la campaña: si cambia después del PREFLIGHT ya no es la misma campaña (se crea otra, con su registro).
-INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n_celdas_por_canal")
+INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n_celdas_por_canal", "pistas_replica", "linaje_como")
 CONDUCTORES = ("debian", "local")                          # quién conduce cada campaña: uno solo (auditoría 2026-10-24)
 A3_FIN_DESCUBRIMIENTO, A3_INSTRUMENTOS = 20260331, ("ES", "NQ")   # HOLDOUT-A3/A4: ES y NQ descubren hasta acá; abr–sep es réplica
 MAX_HORAS_KAGGLE = 14                                       # Kaggle corta a las 12 h: pasado esto, la etapa se da por caída
+GG_MIN_OPS = 30                                              # = grilla_generica.MIN_OPS (test)
 N_BOOT_REPLICA, N_BOOT_HOLDOUT = 2000, 5000                 # bootstrap de `grilla_generica.evaluar` y de `_fin_holdout`
+# D5 (2026-10-24): holdout.estadistico = "e_proceso" exige cotas ESTRUCTURALES declaradas en la campaña antes de mirar (puntos de
+# la ejecución): pérdida y ganancia máximas por construcción, margen de hueco y efecto útil. Una regla sin tope de pérdida (U1 sin
+# tope) no puede usarlo: una cola más ancha que la declarada detiene con LIMITE_VIOLADO (U1-B, 2026-10-23) y queda N fijo.
+COTAS_E_PROCESO = ("perdida_max_pts", "ganancia_max_pts", "margen_hueco_pts", "mu_util")
 
 
 def _cfg(spec, k):
@@ -79,13 +97,47 @@ def _problemas_regimen(r) -> list:
     return e
 
 
-def nominada(p: dict, n_heredado: int = 0) -> tuple:
-    """Decisión 1 + 4: la pista pasa DESC sólo si el FDR del canal la nomina (q <= 0,10) y sigue nominada con las pruebas del linaje
-    en el mismo tamiz. Una pista sin la marca (DESC anterior al 2026-10-24) cuenta como no nominada."""
+def nominada(p: dict, n_heredado: int = 0, como: str = "compuerta") -> tuple:
+    """Decisión 1 + 4: la pista pasa DESC sólo si el FDR del canal la nomina (q <= 0,10). El linaje (q con las pruebas heredadas en
+    el mismo tamiz) es compuerta sólo con `como="compuerta"`; con "informacion" (por defecto en campañas nuevas desde el
+    2026-10-24) se calcula y se publica pero no decide: la confirmación es en datos nuevos y la controla LORD++. Una pista que
+    entró por «pistas a réplica» y el paso de LORD++ del lote la confirmó (`nominada_replica`) cuenta como nominada. Una pista
+    sin marca (DESC anterior al 2026-10-24) cuenta como no nominada."""
     from edgelab.research.linaje import q_con_linaje
+    if como not in LINAJE_COMO: raise ValueError(f"linaje_como: {LINAJE_COMO}")
+    if p.get("nominada_replica"): return True, None
     if not p.get("nominada_fdr") or p.get("q_fdr") is None: return False, None
     ql = q_con_linaje(p["q_fdr"], p.get("pi0_fdr", 1.0), int(p["m_fdr"]), int(n_heredado))
-    return bool(p["q_fdr"] <= Q_FDR_DESC and ql <= Q_FDR_DESC), ql
+    return bool(p["q_fdr"] <= Q_FDR_DESC and (como == "informacion" or ql <= Q_FDR_DESC)), ql
+
+
+def _como_linaje(st) -> str:
+    """Lo congelado en el PREFLIGHT. Un estado congelado antes del 2026-10-24 (sin `como`) conserva la compuerta: aflojarla con
+    resultados ya vistos sería relajar un gate después de mirar."""
+    return (((st.get("reglas") or {}).get("linaje")) or {}).get("como", "compuerta")
+
+
+def oos_comprometido(spec: dict) -> bool:
+    """La campaña declara que su OOS ya se miró (`periodos_consumidos.oos` empieza con «COMPROMETIDO»; LUXG: la regla del visor se
+    diseñó mirando abr–sep). Ese período puede refutar en la etapa OOS, pero nunca confirmar pistas (2026-10-25, revisión externa)."""
+    return str(((spec.get("periodos_consumidos") or {}).get("oos")) or "").strip().upper().startswith("COMPROMETIDO")
+
+
+def _solapa(a, b) -> bool:
+    return bool(a and b and int(a[0]) <= int(b[1]) and int(b[0]) <= int(a[1]))
+
+
+def ventana_pistas(spec: dict, cfg: dict | None = None):
+    """Ventana de la réplica de pistas: la declarada; si no, el OOS de la campaña cuando es posterior al DESC (reciente y no usado:
+    entonces el OOS no se reusa para las pistas replicadas); si no, la réplica de HOLDOUT-A3 para ES/NQ. None = no hay dónde.
+    Ninguna ventana que solape un OOS declarado comprometido sirve para confirmar (`oos_comprometido`)."""
+    cfg = cfg if cfg is not None else _cfg(spec, "pistas_replica")
+    malo = spec.get("oos") if oos_comprometido(spec) else None
+    if cfg.get("ventana"): return [int(cfg["ventana"][0]), int(cfg["ventana"][1])]
+    if spec.get("oos") and spec.get("desc") and int(spec["oos"][0]) > int(spec["desc"][1]) and not malo: return [int(spec["oos"][0]), int(spec["oos"][1])]
+    inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
+    if inst & set(A3_INSTRUMENTOS) and spec.get("desc") and int(spec["desc"][1]) <= A3_FIN_DESCUBRIMIENTO and not _solapa(A3_REPLICA, malo): return list(A3_REPLICA)
+    return None
 
 
 class Embudo:
@@ -146,11 +198,13 @@ class Embudo:
         if e == "PREFLIGHT": return self._preflight(spec, st)
         if e == "ACTA": return self._acta(spec, st)
         if e == "OOS" and not spec.get("oos"): return self._siguiente(spec, st, "TOPES", nota="sin período OOS declarado")
+        if e == "OOS" and st.get("oos_cubierto_por_pistas"):                       # la réplica de pistas ya usó ese período
+            return self._siguiente(spec, st, "TOPES", nota="el OOS es la ventana donde se replicaron las pistas: no se reusa")
         params, periodo, runner = self._params(spec, st, e)
         if e == "CONTEO" and st.get("ultimo_conteo") and self.ahora() - st["ultimo_conteo"] < _reglas(spec, st, "holdout")["conteo_cada_s"]: return st
         if st["fase"] == "PENDIENTE":
             self._registrar(spec, e, params)
-            st["handle"] = self.runners[runner].lanzar(spec, "HOLDOUT_CONTEO" if e == "CONTEO" else ("REP" if e in ("OOS", "HOLDOUT") else e), params, periodo)
+            st["handle"] = self.runners[runner].lanzar(spec, "HOLDOUT_CONTEO" if e == "CONTEO" else ("REP" if e in ("OOS", "HOLDOUT", "PISTAS") else e), params, periodo)
             st.update(fase="CORRIENDO", params=params, periodo=periodo, lanzada=self.ahora()); self._guardar(spec, st); return st
         est = self.runners[runner].estado(st["handle"])
         if est in ("running", "queued"):
@@ -171,10 +225,17 @@ class Embudo:
         if e == "DESC": return dict(cortes=None), spec["desc"], "kaggle"
         if e == "INDAGA": return dict(base, bases=st["candidatas"]), spec["desc"], "kaggle"
         if e in ("INTEGRIDAD", "TOPES"): return dict(base, celdas=st["candidatas"], topes=_reglas(spec, st, "topes")["lista"] or None), spec["desc"], "kaggle"
-        if e == "OOS": return dict(base, celdas=st["candidatas"]), spec["oos"], "kaggle"
+        if e == "OOS": return dict(base, celdas=st["candidatas"], resolucion=self._resolucion(spec, len(st["candidatas"]))), spec["oos"], "kaggle"
+        if e == "PISTAS":
+            pr = st["pistas_replica"]
+            return dict(base, celdas=pr["celdas"], resolucion=self._resolucion(spec, len(pr["celdas"]))), pr["ventana"], "kaggle"
         h = _reglas(spec, st, "holdout"); hasta = int(time.strftime("%Y%m%d", time.gmtime(self.ahora() - 86400)))
         regla = st["regla"]
         return dict(base, celdas=[regla["celda"]], tope=regla["tope"], acta=st.get("acta")), [h["desde"], hasta], ("sellado" if "sellado" in self.runners else "local")
+
+    def _resolucion(self, spec, m):
+        """Nivel de LORD++ que va a tener el lote y su tamaño: el kernel ajusta B (o usa el p analítico) para poder resolver nivel/m."""
+        return dict(nivel=float(self.libro.nivel(spec["familia"])), m=int(m)) if self.libro else None
 
     def _registrar(self, spec, e, params):
         """Pruebas con desenlace al contador global ANTES de lanzar. DESC: todas las celdas en los dos canales (total y reciente);
@@ -185,7 +246,7 @@ class Embudo:
             n = spec.get("n_celdas_por_canal")
             if not n: raise ValueError("DESC sin n_celdas_por_canal: el contador global no puede quedar corto (lo fija el PREFLIGHT)")
             n = int(n) * 2
-        elif e == "OOS": n = len(params.get("celdas", []))
+        elif e in ("OOS", "PISTAS"): n = len(params.get("celdas", []))           # PISTAS: las k congeladas, antes de correr
         elif e == "TOPES":
             from edgelab.research.etapas import TOPES_ESTANDAR
             n = len(params.get("celdas", [])) * sum(t is not None for t in (params.get("topes") or TOPES_ESTANDAR))
@@ -205,9 +266,13 @@ class Embudo:
         reglas = {k: _cfg(spec, k) for k in DEFECTOS}
         if (malos := _problemas_regimen(reglas["regimen"]) + self._problemas_linaje(spec)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
-        st["reglas"] = dict(reglas, linaje=self._multiplicidad(spec))                  # quedan escritas antes de usarse
+        reglas["pistas_replica"] = dict(reglas["pistas_replica"], ventana=ventana_pistas(spec, reglas["pistas_replica"]))
+        st["reglas"] = dict(reglas, linaje=dict(self._multiplicidad(spec), como=spec.get("linaje_como", "informacion")))   # antes de usarse
         st["spec"] = spec                                                              # la campaña que se congela
         st["decisiones_20261024"] = dict(ts=self.ahora(), desde="PREFLIGHT")
+        lin = st["reglas"]["linaje"]
+        self._medido(spec, f"- Linaje ({lin['como']}; {lin.get('metodo_n', 'bruto')}{'; ' + lin['aviso'] if lin.get('aviso') else ''}); pistas a réplica "
+                           f"k {reglas['pistas_replica']['k']} en {reglas['pistas_replica']['ventana']}")
         self._medido(spec, f"- Linaje: hereda {st['reglas']['linaje']['n_heredado']} pruebas de {st['reglas']['linaje'].get('padres')}; "
                            f"régimen actual desde {reglas['regimen']['actual_desde'] or 'sin declarar (el OOS cuenta como régimen actual)'}")
         return self._siguiente(spec, st, "DESC")
@@ -217,6 +282,18 @@ class Embudo:
         from edgelab.research import linaje as LN
         return LN.problemas(spec["familia"], Path(self.linajes) if self.linajes else LN.LIBRO, Path(self.ventanas) if self.ventanas else None,
                             Path(self.registro_pruebas) if self.registro_pruebas else LN.REGISTRO)
+
+    def _evaluables(self, spec, res):
+        """Decisión 2026-10-25: cuántas de las 2·n_celdas registradas fueron evaluables (>= MIN_OPS operaciones) en los dos canales.
+        Sólo eso hereda multiplicidad por linaje; el registro previo queda como cota (`linaje.registrar_evaluables`)."""
+        from edgelab.research import linaje as LN
+        can = res.get("canales") or {}; n_ev = sum(int((can.get(c) or {}).get("evaluables") or 0) for c in ("total", "reciente"))
+        n_reg = 2 * int(spec.get("n_celdas_por_canal") or 0)
+        if not self.registro or not n_reg or not can: return None
+        libro = Path(self.registro_pruebas).with_name("EVALUABLES.jsonl") if self.registro_pruebas else LN.EVALUABLES
+        row = LN.registrar_evaluables(f"embudo/{spec['cid']}/desc", spec["familia"], n_reg, min(n_ev, n_reg), f"DESC {spec['cid']} (canales total+reciente)", libro)
+        self._medido(spec, f"- Evaluables: {row['n_evaluables']} de {n_reg} celdas registradas heredan multiplicidad (el resto no llegó a {GG_MIN_OPS} operaciones)")
+        return row
 
     def _multiplicidad(self, spec):
         from edgelab.research import linaje as LN
@@ -235,7 +312,7 @@ class Embudo:
         if st["etapa"] in ("INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA") and st.get("candidatas"):
             pistas = (st.get("desc") or {}).get("pistas", [])
             nh = reglas["linaje"]["n_heredado"]
-            vivas = [c for c in st["candidatas"] if any(p["celda"] == c and nominada(p, nh)[0] for p in pistas)]
+            vivas = [c for c in st["candidatas"] if any(p["celda"] == c and nominada(p, nh, _como_linaje(st))[0] for p in pistas)]
             if st.get("regla") and st["regla"]["celda"] not in vivas: vivas = []        # en ACTA la regla ya está elegida
             if not vivas:
                 return self._cerrar(spec, st, "SIN_CANDIDATAS", f"decisión 2026-10-24 (FDR q {Q_FDR_DESC} gate duro en DESC, con linaje de {nh} "
@@ -250,22 +327,73 @@ class Embudo:
             return self._cerrar(spec, st, "BLOQUEADA", f"el contador global registró {n_reg} celdas por canal y se corrieron {res['celdas']}: "
                                                        "la multiplicidad quedó mal contada (corregir y relanzar como campaña nueva)")
         sel = _reglas(spec, st, "seleccion"); st["cortes"] = res["E0"]["cortes"]; cand, vistos = [], []
-        nh = ((st.get("reglas") or {}).get("linaje") or {}).get("n_heredado", 0); no_nom = 0
-        pistas = sorted([p for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])], key=lambda p: -p["ic90"][0])
-        for p in pistas:
-            ok_fdr, p["q_linaje"] = nominada(p, nh)
-            if not ok_fdr: no_nom += 1; continue                                     # decisión 1 + 4 (2026-10-24): gate duro
+        nh = ((st.get("reglas") or {}).get("linaje") or {}).get("n_heredado", 0); no_nom = 0; como = _como_linaje(st)
+        pistas = [p for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])]
+        # 2026-10-24 (falsos negativos): la meseta ORDENA (primero las que la tienen), no mata; 4 de las 5 celdas de U1 no la tenían
+        orden = (lambda p: (not p.get("meseta", False), -p["ic90"][0])) if sel["exigir_meseta"] else (lambda p: -p["ic90"][0])
+        for p in sorted(pistas, key=orden):
+            ok_fdr, p["q_linaje"] = nominada(p, nh, como)
+            if not ok_fdr: no_nom += 1; continue                                     # decisión 1 (2026-10-24): gate duro
             if p["sesiones"] < sel["min_sesiones"] or p["ratio_mov_friccion"] < sel["ratio_mov_friccion"] or p["ic90"][0] <= 0: continue
-            if sel["exigir_meseta"] and not p["meseta"]: continue
             if any(sum(a != b for a, b in zip(p["celda"], v)) < sel["min_dif"] for v in vistos): continue
             vistos.append(p["celda"]); cand.append(p["celda"])
             if len(cand) >= sel["max_candidatas"]: break
         tot = (res.get("canales") or {}).get("total", {})
-        self._medido(spec, f"- DESC {spec['desc']}: evaluables {tot.get('evaluables')}, FDR {tot.get('nominadas_fdr')}, RW umbral "
-                           f"{(tot.get('romano_wolf') or {}).get('umbral')} (diagnóstico), pistas sin nominación FDR/linaje {no_nom}, candidatas {len(cand)}")
-        if not cand: return self._cerrar(spec, st, "SIN_CANDIDATAS", f"ninguna pista nominada por FDR q {Q_FDR_DESC} (linaje {nh}) cumple la selección; "
-                                                                      f"nulo publicado ({tot.get('nulo', {}).get('t', {})})")
+        self._evaluables(spec, res)
+        self._medido(spec, f"- DESC {spec['desc']}: evaluables {tot.get('evaluables')} (m del FDR {tot.get('m_fdr', tot.get('evaluables'))} de "
+                           f"{tot.get('celdas', '?')} celdas), FDR {tot.get('nominadas_fdr')}, RW umbral {(tot.get('romano_wolf') or {}).get('umbral')} "
+                           f"(diagnóstico), linaje {nh} como {como}, pistas sin nominación {no_nom}, candidatas {len(cand)}")
+        if not cand: return self._a_pistas(spec, st, pistas, tot)
         st["candidatas"] = cand; st["desc"] = dict(pistas=[p for p in pistas if p["celda"] in cand])
+        return self._siguiente(spec, st, "INDAGA", candidatas=cand)
+
+    def _a_pistas(self, spec, st, pistas, tot):
+        """ATJ-25 restaurada (2026-10-24): cero nominadas no cierra la familia. Las top-k pistas (por cota inferior del IC, nunca por
+        P&L máximo) se congelan acá —antes de registrarlas y de lanzar— y se replican en lote en la ventana reciente no usada."""
+        from edgelab.funnel.escalera import elegir_pistas_replica
+        cfg = _reglas(spec, st, "pistas_replica"); sel = _reglas(spec, st, "seleccion")
+        ventana = cfg.get("ventana") or ventana_pistas(spec, cfg)
+        cierre = f"ninguna pista nominada por FDR q {Q_FDR_DESC} cumple la selección; nulo publicado ({tot.get('nulo', {}).get('t', {})})"
+        if not cfg.get("activa", True) or not ventana or int(cfg.get("k") or 0) <= 0:
+            return self._cerrar(spec, st, "SIN_CANDIDATAS", cierre + "; pistas a réplica: " + ("apagada" if not cfg.get("activa", True) or not cfg.get("k") else "sin ventana reciente no usada declarada"))
+        elegidas = elegir_pistas_replica(pistas, int(cfg["k"]), min_dif=sel["min_dif"], min_sesiones=sel["min_sesiones"],
+                                         ratio_mov_friccion=sel["ratio_mov_friccion"])
+        if not elegidas: return self._cerrar(spec, st, "SIN_CANDIDATAS", cierre + "; pistas a réplica: ninguna pista relevante con media > 0")
+        st["pistas_replica"] = dict(k=int(cfg["k"]), ventana=list(ventana), orden="cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+                                    congeladas=self.ahora(), celdas=[p["celda"] for p in elegidas])
+        st["desc"] = dict(pistas=elegidas)
+        self._medido(spec, f"- PISTAS a réplica (ATJ-25): {len(elegidas)} congeladas de {len(pistas)} (k {cfg['k']}), ventana {ventana}, "
+                           f"un paso de LORD++ por lote; celdas {st['pistas_replica']['celdas']}")
+        return self._siguiente(spec, st, "PISTAS", pistas=len(elegidas))
+
+    def _fin_pistas(self, spec, st, res):
+        """Un paso de LORD++ de la familia para el lote entero (`probar_lote`: Simes para la familia, BH adentro, al nivel del paso).
+        Las confirmadas con media > 0 quedan nominadas (`nominada_replica`) y siguen a INDAGA; el resto queda registrado."""
+        from edgelab.funnel.escalera import decidir_pistas
+        pr_ = st["pistas_replica"]; filas = res.get("replica") or []
+        if len(filas) != len(pr_["celdas"]): return self._fallo(spec, st, f"réplica de pistas con {len(filas)} filas para {len(pr_['celdas'])} celdas")
+        nombres = [f"p{i}" for i in range(len(filas))]
+        pruebas = [(n, r.get("p_sesiones") if r.get("p_sesiones") is not None else 1.0) for n, r in zip(nombres, filas)]
+        dec = self.libro.probar(spec["familia"], f"{spec['cid']}/pistas", pruebas, f"pistas a réplica {spec['cid']} (lote de {len(pruebas)})") if self.libro else None
+        ok = decidir_pistas(dec, filas, nombres)
+        for i, (p, r) in enumerate(zip(st["desc"]["pistas"], filas)):
+            p["replica_pistas"] = dict(n=r.get("n"), media=r.get("media_neta"), ic90=r.get("ic90"), p=r.get("p_sesiones"), metodo_p=r.get("metodo_p"),
+                                       nivel=(dec or {}).get("nivel"), t_lord=(dec or {}).get("t"), confirmada=i in ok)
+            if i in ok: p["nominada_replica"] = True
+        pr_.update(lord=dec, confirmadas=[pr_["celdas"][i] for i in ok])
+        if (aviso := _aviso_resolucion(dec, filas, len(filas))): pr_["sin_resolucion"] = aviso; self._medido(spec, f"- PISTAS: {aviso}")
+        self._medido(spec, f"- PISTAS réplica {pr_['ventana']}: LORD++ t={(dec or {}).get('t')} nivel {(dec or {}).get('nivel')} p Simes "
+                           f"{(dec or {}).get('p_simes')}; confirmadas {len(ok)} de {len(filas)} {pr_['confirmadas']}")
+        if not ok:
+            return self._cerrar(spec, st, "SIN_CANDIDATAS", f"pistas a réplica: 0 de {len(filas)} confirmadas por el paso de LORD++ del lote "
+                                                            f"(nivel {(dec or {}).get('nivel')}, p Simes {(dec or {}).get('p_simes')})"
+                                                            + ("" if self.libro else " — sin libro de LORD++ no hay confirmación"))
+        sel = _reglas(spec, st, "seleccion")
+        orden = sorted(ok, key=lambda i: (filas[i].get("p_sesiones") or 1.0, -(filas[i].get("ic90") or [0])[0]))
+        cand = [pr_["celdas"][i] for i in orden[:sel["max_candidatas"]]]
+        if len(orden) > sel["max_candidatas"]: pr_["confirmadas_fuera_de_cupo"] = [pr_["celdas"][i] for i in orden[sel["max_candidatas"]:]]
+        st["oos_cubierto_por_pistas"] = bool(spec.get("oos") and [int(x) for x in spec["oos"]] == [int(x) for x in pr_["ventana"]])
+        st["candidatas"] = cand
         return self._siguiente(spec, st, "INDAGA", candidatas=cand)
 
     def _fin_indaga(self, spec, st, res):
@@ -316,7 +444,7 @@ class Embudo:
             veredictos.append(dict(celda=c, veredicto=ver, media=r["media_neta"], ic90=ic, efecto_para_potencia=ef, potencia=pot, mismo_regimen=mismo))
             if ver != "REFUTADA_OOS": vivas.append(c)
         st["oos"] = dict(replica=res["replica"], lord=dec, regimen=reg, mismo_regimen=mismo, veredictos=veredictos)
-        if dec and (aviso := sin_resolucion(dec["nivel"], N_BOOT_REPLICA)): st["oos"]["sin_resolucion"] = aviso; self._medido(spec, f"- OOS: {aviso}")
+        if (aviso := _aviso_resolucion(dec, res["replica"], len(res["replica"]))): st["oos"]["sin_resolucion"] = aviso; self._medido(spec, f"- OOS: {aviso}")
         self._medido(spec, f"- OOS {spec['oos']} ({'régimen actual' if mismo else 'otro régimen: antes de ' + str(reg['actual_desde'])}): "
                            f"medias {[round(r.get('media_neta', float('nan')), 2) for r in res['replica']]}; "
                            f"veredictos {[v['veredicto'] for v in veredictos]}; potencias {[round(v.get('potencia', float('nan')), 2) for v in veredictos]}; LORD++ "
@@ -349,7 +477,12 @@ class Embudo:
         h = _reglas(spec, st, "holdout")
         from edgelab.research import holdout_ventanas as HV                      # ventanas consumidas y una apertura por familia
         libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
-        if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v)):
+        est = h.get("estadistico", "n_fijo")                                       # D5 (2026-10-24): e_proceso permite el reuso autorizado
+        if est not in ("n_fijo", "e_proceso"): return self._cerrar(spec, st, "BLOQUEADA", f"holdout.estadistico {est!r}: n_fijo | e_proceso")
+        cotas = {k: h.get(k) for k in COTAS_E_PROCESO}
+        if est == "e_proceso" and (faltan := [k for k, v in cotas.items() if not isinstance(v, (int, float)) or v <= 0]):
+            return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso sin cotas estructurales declaradas antes de mirar: {faltan}")
+        if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v, estadistico=est)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
         # decisión 3 (2026-10-24): el acta RESERVA su paso de LORD++ (consume α ahora, con el nivel fijo) antes de mirar
         reserva = self.libro.reservar(spec["familia"], f"{spec['cid']}/holdout", f"acta {spec['cid']}") if self.libro else None
@@ -360,6 +493,12 @@ class Embudo:
                     regimen=(st.get("reglas") or {}).get("regimen"), oos=[v["veredicto"] for v in (st.get("oos") or {}).get("veredictos", [])],
                     decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: el paso RESERVADO de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
+        if est == "e_proceso":
+            acta.update(estadistico=est, cotas=cotas, vistas_hasta=HV.ultima_consumida(spec["familia"], libro_v),
+                        decision=f"e-proceso (Ville) sobre las operaciones netas desde {h['desde']}, en cada conteo, hasta {h['n_fijo']}: "
+                                 f"CONFIRMADA si e ≥ 1/α (α={alfa:.5f}, el paso RESERVADO de LORD++) y media > 0; REFUTADA si la futilidad "
+                                 f"(E[x] < {cotas['mu_util']}) llega a e ≥ 10; SIN_POTENCIA si llega a N sin decidir. Se informa también "
+                                 "sin las sesiones ya miradas (D5).")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
@@ -373,33 +512,67 @@ class Embudo:
         lin = ((st.get("reglas") or {}).get("linaje")) or self._multiplicidad(spec)
         total = int(lin.get("total", lin.get("propias", 0) + lin.get("n_heredado", 0)))
         p = next((x for x in (st.get("desc") or {}).get("pistas", []) if x["celda"] == st["regla"]["celda"]), None)
-        if not p: return dict(linaje=lin, total=total)
+        info = dict(linaje=lin, total=total, linaje_como=lin.get("como", "compuerta"), metodo_n=lin.get("metodo_n", "bruto"), aviso_n=lin.get("aviso"),
+                    nota="información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos")
+        if not p: return info
         t = _N.inv_cdf(1 - min(max(p["p_sesiones"], 1e-12), 1 - 1e-12)); rc = recorte_t(t, max(total, 1))
         se = (p["ic90"][1] - p["ic90"][0]) / (2 * 1.6448536); esp = rc["conservado"] * p["media_neta"]
         se_h = se * (p["n"] / max(n_fijo, 1)) ** 0.5
-        return dict(linaje=lin, total=total, recorte=rc, efecto_esperado=esp, potencia_holdout=potencia(esp, se_h) if esp > 0 else 0.0)
+        return dict(info, via="pista_replicada" if p.get("nominada_replica") else "nominada_fdr", q_linaje=p.get("q_linaje"),
+                    recorte=rc, efecto_esperado=esp, potencia_holdout=potencia(esp, se_h) if esp > 0 else 0.0)
 
     def _fin_conteo(self, spec, st, res):
         n = int(res["conteo"][0]); st["ultimo_conteo"] = self.ahora(); st["n_holdout"] = n
+        if st["acta"].get("estadistico") == "e_proceso" and n > st.get("n_holdout_decidido", 0):
+            return self._siguiente(spec, st, "HOLDOUT", n=n)                          # e-proceso: se mira en cada conteo con datos nuevos
         if n < st["acta"]["n_fijo"]:
             st["fase"] = "PENDIENTE"; self._guardar(spec, st); return st                  # espera más sesiones (sin mirar P&L)
         return self._siguiente(spec, st, "HOLDOUT", n=n)
 
+    def _fin_holdout_e(self, spec, st, ops, N):
+        """D5: e-proceso (Ville) sobre las netas en orden temporal, válido mirando en cada conteo. Decide con TODO lo que hay desde
+        `holdout.desde` (incluidas las sesiones ya miradas, reuso autorizado) y además informa el mismo monitor sin esas sesiones."""
+        from edgelab.funnel.secuencial import MonitorCandidato
+        from edgelab.research.embudo_runners import friccion
+        a = st["acta"]; c = a["cotas"]; nivel = (a.get("reserva_lord") or {}).get("nivel", a["alfa"])
+        fr = friccion(spec.get("ejecucion") or spec["sensor"])[0]
+        orden = np.argsort(np.asarray(ops.get("t") or []), kind="stable")[:N]
+        x = np.asarray(ops.get("neto") or [], float)[orden]; ses = np.asarray(ops.get("ses") or [], np.int64)[orden]
+        def monitor(xx):
+            m = MonitorCandidato.desde_regla(perdida_max_pts=c["perdida_max_pts"], ganancia_max_pts=c["ganancia_max_pts"], friccion_pts=fr,
+                                             margen_hueco_pts=c["margen_hueco_pts"], mu_util=c["mu_util"], alfa=nivel)
+            try: return m.agregar([float(v) for v in xx]) if len(xx) else m.estado()
+            except ValueError as e: return dict(estado="LIMITE_VIOLADO", n=len(xx), error=str(e))
+        todo = monitor(x); vh = a.get("vistas_hasta")
+        sin = monitor(x[ses > int(vh)]) if vh else None
+        st["holdout"] = dict(estadistico="e_proceso", n=int(len(x)), media=float(x.mean()) if len(x) else None, nivel=nivel, e_proceso=todo,
+                             sin_sesiones_vistas=sin, vistas_hasta=vh)
+        st["n_holdout_decidido"] = int(len(x))
+        self._medido(spec, f"- HOLDOUT (e-proceso): n {len(x)}, {todo['estado']}" + (f"; sin las sesiones vistas: {sin['estado']} (n {sin['n']})" if sin else ""))
+        if todo["estado"] == "LIMITE_VIOLADO": return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso: {todo['error']} (la cota declarada no era estructural)")
+        if todo["estado"] == "EDGE_CONFIRMADO" and x.mean() > 0:
+            return self._cerrar(spec, st, "CONFIRMADA", f"e-proceso {todo['e_edge']:.1f} ≥ {todo['umbral_edge']:.1f} con {len(x)} ops; sin las vistas: {sin['estado'] if sin else 'n/a'}")
+        if todo["estado"] == "REFUTADO_FUTILIDAD": return self._cerrar(spec, st, "REFUTADA", f"futilidad con {len(x)} ops (E[x] < {c['mu_util']})")
+        if len(x) >= N: return self._cerrar(spec, st, "SIN_POTENCIA", f"{len(x)} ops sin decidir (e {todo['e_edge']:.2f})")
+        st["ultimo_conteo"] = self.ahora(); return self._siguiente(spec, st, "CONTEO", n=int(len(x)))     # sigue mirando: es válido
+
     def _fin_holdout(self, spec, st, res):
-        from edgelab.funnel.escalera import resumen_sesiones
+        from edgelab.funnel.escalera import resumen_resuelto
         ops = res["operaciones"]; N = st["acta"]["n_fijo"]
-        if len(ops.get("t") or []) < N:                                              # CONTEO dijo que había N: no decide con menos
+        if st["acta"].get("estadistico") == "e_proceso": return self._fin_holdout_e(spec, st, ops, N)
+        if len(ops.get("t") or []) < N:                                             # CONTEO dijo que había N: no decide con menos
             return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]
         x = np.asarray(ops["neto"], float)[orden]; ses = np.asarray(ops["ses"])[orden]
-        rs = resumen_sesiones(x, ses, n_boot=5000)
+        nivel = (st["acta"].get("reserva_lord") or {}).get("nivel", st["acta"]["alfa"])
+        rs = resumen_resuelto(x, ses, nivel=nivel, m=1, n_boot=N_BOOT_HOLDOUT)                 # 2026-10-24: el p resuelve el nivel reservado
         if self.libro and st["acta"].get("reserva_lord"):                             # decisión 3: al nivel reservado por el acta
             dec = self.libro.resolver(spec["familia"], f"{spec['cid']}/holdout", [("regla", rs["p_unilateral"])])
         elif self.libro:                                                               # actas anteriores al 2026-10-24
             dec = self.libro.probar(spec["familia"], f"{spec['cid']}/holdout", [("regla", rs["p_unilateral"])])
         else: dec = dict(rechazo=rs["p_unilateral"] <= st["acta"]["alfa"])
-        st["holdout"] = dict(n=len(x), media=float(x.mean()), ic90=rs["ic"], p=rs["p_unilateral"], lord=dec)
-        if (aviso := sin_resolucion(dec.get("nivel", st["acta"]["alfa"]), N_BOOT_HOLDOUT)): st["holdout"]["sin_resolucion"] = aviso; self._medido(spec, f"- HOLDOUT: {aviso}")
+        st["holdout"] = dict(n=len(x), media=float(x.mean()), ic90=rs["ic"], p=rs["p_unilateral"], lord=dec, n_boot=rs["n_boot"], metodo_p=rs["metodo_p"])
+        if (aviso := sin_resolucion(dec.get("nivel", st["acta"]["alfa"]), rs["n_boot"], 1, rs["metodo_p"])): st["holdout"]["sin_resolucion"] = aviso; self._medido(spec, f"- HOLDOUT: {aviso}")
         if dec["rechazo"] and x.mean() > 0: return self._cerrar(spec, st, "CONFIRMADA", f"holdout {len(x)} ops, media {x.mean():.2f}, p {rs['p_unilateral']:.4f}")
         if x.mean() <= 0: return self._cerrar(spec, st, "REFUTADA", f"holdout {len(x)} ops, media {x.mean():.2f}")
         return self._cerrar(spec, st, "SIN_POTENCIA", f"holdout {len(x)} ops, media {x.mean():.2f} > 0 sin alcanzar α (p {rs['p_unilateral']:.4f})")
@@ -422,6 +595,8 @@ def problemas_campana(spec: dict) -> list:
     inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
     if (a3 := sorted(inst & set(A3_INSTRUMENTOS))) and spec.get("desc") and int(spec["desc"][1]) > A3_FIN_DESCUBRIMIENTO:
         e.append(f"desc {spec['desc']} usa la réplica abr–sep de {a3} (HOLDOUT-A3: descubrimiento hasta {A3_FIN_DESCUBRIMIENTO})")
+    if spec.get("linaje_como", "informacion") not in LINAJE_COMO: e.append(f"linaje_como {spec.get('linaje_como')!r}: debe ser uno de {LINAJE_COMO}")
+    e += _problemas_pistas(spec)
     try: n = GG.n_celdas(importlib.import_module(spec["experimento"]))
     except Exception as ex: return e + [f"no se pudo contar las celdas del experimento: {ex!r}"[:200]]
     if not spec.get("n_celdas_por_canal"): e.append(f"falta n_celdas_por_canal (el experimento corre {n} celdas por canal)")
@@ -429,11 +604,44 @@ def problemas_campana(spec: dict) -> list:
     return e
 
 
-def sin_resolucion(nivel: float, n_boot: int):
-    """El p del bootstrap no baja de 1/(n_boot+1): si el nivel de LORD++ queda por debajo, rechazar es imposible por construcción
-    y un «sin rechazo» no dice nada del dato. Se avisa (no cambia la decisión: el nivel y n_boot son reglas de validación)."""
-    piso = 1 / (n_boot + 1)
-    return f"sin resolución: nivel LORD++ {nivel:.2e} < p mínimo del bootstrap {piso:.2e} (n_boot {n_boot}); un rechazo era imposible" if nivel < piso else None
+def sin_resolucion(nivel: float, n_boot: int, m: int = 1, metodo_p: str | None = None):
+    """El p del bootstrap no baja de 1/(n_boot+1): si el umbral más exigente del lote (nivel/m: Simes y BH sobre m pruebas) queda
+    por debajo, rechazar es imposible por construcción y un «sin rechazo» no dice nada del dato. Desde el 2026-10-24 el kernel
+    sube B o usa el p analítico (`escalera.resumen_resuelto`), así que este aviso sólo aparece con resultados viejos o si el nivel
+    bajó entre el lanzamiento y la decisión. Con p analítico no hay piso."""
+    if metodo_p and "analítico" in metodo_p: return None
+    piso = 1 / (n_boot + 1); umbral = nivel / max(int(m), 1)
+    return (f"sin resolución: umbral LORD++ {umbral:.2e} (nivel {nivel:.2e} / {m}) < p mínimo del bootstrap {piso:.2e} (n_boot {n_boot}); "
+            "un rechazo era imposible") if umbral < piso else None
+
+
+def _aviso_resolucion(dec, filas, m):
+    """Aviso de resolución de un lote: el B más chico entre las filas con p bootstrap (las viejas, sin `n_boot`, valen N_BOOT_REPLICA)."""
+    if not dec: return None
+    boot = [r for r in filas if r.get("p_sesiones") is not None and "analítico" not in (r.get("metodo_p") or "")]
+    if not boot: return None
+    return sin_resolucion(dec["nivel"], min(int(r.get("n_boot") or N_BOOT_REPLICA) for r in boot), m)
+
+
+def _problemas_pistas(spec: dict) -> list:
+    """La ventana de pistas a réplica: bien formada, antes del holdout, después del DESC (no usada), dentro de la réplica A3 para
+    ES/NQ, y si toca el OOS tiene que ser exactamente el OOS (entonces el OOS no se reusa para esas pistas)."""
+    cfg = _cfg(spec, "pistas_replica"); e = []
+    if not isinstance(cfg.get("k", 0), int) or cfg.get("k", 0) < 0: e.append("pistas_replica.k debe ser un entero >= 0")
+    v = ventana_pistas(spec, cfg)
+    if not v or not cfg.get("activa", True): return e
+    a, b = v
+    if a > b: e.append(f"pistas_replica.ventana {v}: mal formada")
+    if b >= HOLDOUT_PRIMERA_SESION_INT: e.append(f"pistas_replica.ventana {v} toca el holdout (desde {HOLDOUT_PRIMERA_SESION_INT})")
+    if spec.get("desc") and a <= int(spec["desc"][1]): e.append(f"pistas_replica.ventana {v} no es posterior al DESC {spec['desc']} (tiene que ser no usada)")
+    if oos_comprometido(spec) and _solapa(v, spec.get("oos")): e.append(f"pistas_replica.ventana {v} solapa el OOS {spec['oos']} declarado comprometido: no confirma")
+    inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
+    if inst & set(A3_INSTRUMENTOS) and (a < A3_REPLICA[0] or b > A3_REPLICA[1]):
+        e.append(f"pistas_replica.ventana {v} fuera de la réplica HOLDOUT-A3 {list(A3_REPLICA)} para {sorted(inst & set(A3_INSTRUMENTOS))}")
+    if spec.get("oos"):
+        o = [int(x) for x in spec["oos"]]
+        if not (b < o[0] or a > o[1]) and o != [a, b]: e.append(f"pistas_replica.ventana {v} se superpone con el OOS {o} sin ser el OOS")
+    return e
 
 
 def avanzar_todas(carpeta_campanas: Path, embudo: Embudo, conductor: str | None = None) -> list:

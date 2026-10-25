@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 105 |
+| `docs` | 107 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 729 |
+| `docs/research` | 750 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,6 +38,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| RELANZAMIENTO | 1 | `RELANZAMIENTO_ANALISIS_VIEJOS_20261025.md` | 2026-10-25 | VIGENTE |
 | AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
 | REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ESPEJO | 2 | `ESPEJO_JUICIOS_TRIADAS_100T_20260928.md` | 2026-09-28 | - |
 | DECISION | 4 | `DECISION_PROVEEDOR_CANONICO_NT8_20260928.md` | 2026-09-28 | - |
 | DISENO | 3 | `DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md` | 2026-09-27 | DISEÑO. Nada medido con esto. Pedido enfático de Nico: iterar sobre todas las ma |
-| TBZX | 1 | `TBZX_R3_ACTA_CIERRE_20260926.md` | 2026-09-26 | TBZX_R3_CERRADA con el alcance de abajo. Abr–jun (confirmación) y holdout intact |
 
 ## Superados (7)
 

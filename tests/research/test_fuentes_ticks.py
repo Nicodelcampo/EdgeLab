@@ -40,3 +40,25 @@ def test_lector_generico_equivale_al_de_nq(tmp_path):
     a = pd.concat(F.bloques_nq(20251001, 20251031, str(tmp_path))); b = pd.concat(F.bloques_futuro("NQ", 20251001, 20251031, str(tmp_path)))
     pd.testing.assert_frame_equal(a.reset_index(drop=True), b.reset_index(drop=True))
     lector, tick = F.resolver("NQ"); assert tick == 0.25 and len(pd.concat(lector(20251001, 20251031, str(tmp_path)))) == 1000
+
+
+def test_td_rapido_igual_al_lento_con_cambios_de_horario():
+    import numpy as np, pandas as pd
+    from edgelab.research import fuentes_ticks as F
+    rng = np.random.default_rng(3)
+    ini = pd.Timestamp("2025-03-01", tz="UTC").value; fin = pd.Timestamp("2025-11-30", tz="UTC").value    # cruza los dos cambios de horario
+    ns = np.sort(rng.integers(ini, fin, 400_000))
+    ns = np.r_[ns, pd.Timestamp("2025-03-09 07:59:59.999", tz="UTC").value, pd.Timestamp("2025-03-09 08:00:00", tz="UTC").value,
+               pd.Timestamp("2025-11-02 06:59:59.999", tz="UTC").value, pd.Timestamp("2025-11-02 07:00:00", tz="UTC").value]
+    assert np.array_equal(F._td(ns), F._td_lento(ns))
+
+
+def test_por_dia_igual_a_la_mascara_por_dia():
+    import numpy as np, pandas as pd
+    from edgelab.research import fuentes_ticks as F
+    rng = np.random.default_rng(5); n = 50_000
+    td = np.sort(rng.integers(20250101, 20250120, n)); ts = np.arange(n); px = rng.normal(size=n); vol = rng.random(n)
+    nuevo = list(F._por_dia(ts, px, vol, td))
+    viejo = [pd.DataFrame(dict(ts_ns=ts[td == d], px=px[td == d], vol=vol[td == d], sesion=np.full((td == d).sum(), d, np.int64),
+                               segmento=np.zeros((td == d).sum(), np.int64))) for d in np.unique(td)]
+    assert len(nuevo) == len(viejo) and all(a.equals(b) for a, b in zip(nuevo, viejo))

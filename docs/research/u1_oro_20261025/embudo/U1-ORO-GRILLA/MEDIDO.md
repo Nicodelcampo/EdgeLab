@@ -1,0 +1,18 @@
+## U1-ORO-GRILLA — edgelab.research.u1_oro · señal DK:XAUUSD · ejecución GC
+- Justificación: U1 fue la familia más rentable en USATECH→NQ (+17 a +28 pts/op de desarrollo): el regreso a áreas donde se concentraron huecos de cotización LUX-IMB. Si es microestructura de un feed CFD de 24 h, debería aparecer en el oro (XAU) operado en GC, con la escala del área ajustada a la volatilidad del oro.
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni confirmada en pistas a réplica; o media neta en GC <= 0 en el holdout a N fijo. La transferencia congelada (U1_ORO) ya dio INCONCLUSO: esta grilla no la usa como ancla favorable.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 19409059 pruebas de ['U1_ORO', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- NOTA 2026-10-25: `grilla_generica._evaluar_mascara` cambió después de lanzar este DESC (celdas chicas de una réplica en lote con la resolución del lote). En DESC no cambia la medición: las marginales se siguen calculando sin nivel, con B=500 y la misma semilla (mismo p); sólo se agregan las claves n_boot/piso_p/metodo_p.
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py']); revisar si el cambio toca la medición
+- Evaluables: 27590 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 25440 (m del FDR 25440 de 4478976 celdas), FDR 125, RW umbral 4.564028263092041 (diagnóstico), linaje 19409059 como informacion, pistas sin nominación 0, candidatas 3
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 0, 0, 2, 2, 2, 3, 2, 3, 0, 40]: regla 2.032575757575766, placebo 0.05, latencia 1 vela 2.2356451612903223 -> pasa
+- INTEGRIDAD [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16]: regla 6.582804878048808, placebo 0.71, latencia 1 vela 6.975555555555571 -> pasa
+- INTEGRIDAD [1, 2, 0, 2, 2, 2, 3, 3, 3, 0, 23]: regla 1.6405958549222586, placebo -0.57, latencia 1 vela 1.9071019108279987 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-1.98, 1.6, -0.19]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'SIN_RECHAZO']; potencias [0.79, 0.32, 0.83]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16], 'tope': ['pts', 50.0], 'puntaje': 6.56359435797671, 'peor': -19.504999999999637}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 1, 0, 1, 2, 1, 3, 2, 3, 0, 16] tope ['pts', 50.0]

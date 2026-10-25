@@ -31,6 +31,9 @@ contradice esas reglas, mandan ellas. Nunca cambiar gates, FDR, mandato, archivo
 4. Objetivo mediano ≥ 3 × fricción canónica (`edgelab/costos.py`; NQ 4,6 pts, ES 2,7 pts por viaje).
 
 ## 4. Implementar (perímetro del agente)
+0. **Antes de escribir nada:** `python tools/existente.py buscar "<qué hace cada pieza>"` (lectores, disparos, simulador,
+   nulos, resumen por sesión ya existen: `fuentes_ticks`, `grilla_generica`, `areas_expansion.simular`, `funnel/escalera`).
+   Se reutiliza lo que sirva; una función copiada hace fallar `tests/test_existente.py`.
 1. Módulo `edgelab/research/agente/<x>.py` con la interfaz de la guía §6 (`NOMBRE`, `INDICADORES`, `VARIABLES`, `EJECUCIONES`,
    `EJES_ORDINALES`, `BASE`, `disparos`, `niveles`). Bucles por evento en numba en lote.
 2. Opcional y recomendado con muchos disparos: `niveles_lote(D, ej, ctx)` → arreglo `(len(D), 7)` con NaN en la columna 0 donde

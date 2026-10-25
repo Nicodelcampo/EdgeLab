@@ -98,10 +98,13 @@ def anatomia(m, k, lado, lo, hi, E, A, h, l, c, v, ses, vp_start, vp_px, vp_vol,
 def disparos(ctx):
     o, h, l, c, v, t, ses, seg = (ctx[x] for x in ("o", "h", "l", "c", "v", "t", "ses", "seg"))
     filas = []
+    esc = ctx.get("escala_seg")                      # opcional {segmento: factor} (traslado de U1 a otro instrumento, u1_oro)
     for sg in pd.unique(seg):
         idx = np.flatnonzero(seg == sg); a, b = idx[0], idx[-1] + 1
+        f = 1.0 if esc is None else float(esc[sg])
+        if not np.isfinite(f) or f <= 0: continue        # segmento sin escala causal (el primero): no dispara
         Z = AX.zonas(t[a:b], o[a:b], h[a:b], l[a:b], c[a:b])
-        EV = AX.eventos(Z, t[a:b], G_U1, ns=NS_U1, ws=(W_U1,))
+        EV = AX.eventos(Z, t[a:b], G_U1 * f, ns=NS_U1, ws=(W_U1 * f,))
         for (n_, _w), lista in EV.items():
             for ev in lista:
                 for d in AX.disparos(ev, h[a:b], l[a:b], c[a:b], t[a:b], fin=int(Z["zfin"][ev[3]].max()), xs=XS_U1):

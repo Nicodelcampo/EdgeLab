@@ -114,7 +114,10 @@ def test_q_con_linaje():
 def test_linajes_del_repo_coherentes():
     for f in ("AREAS_EXP_1_CRUZADO", "EXPANSION_ZONAS"):
         assert LN.problemas(f) == [], f
-    assert LN.multiplicidad("AREAS_EXP_1_CRUZADO")["n_heredado"] >= 19_000_000
+    reg = LN.pruebas_propias(evaluables=None)                                    # lo registrado antes de correr: la cota
+    assert reg["AREAS_EXP_1_USATECH"] + reg["AREAS_EXP_1_NQ"] >= 19_000_000
+    n = LN.multiplicidad("AREAS_EXP_1_CRUZADO")["n_heredado"]                  # 2026-10-25: hereda sólo las celdas evaluables
+    assert 1_000_000 <= n < 19_000_000
 
 
 # ----------------------------------------------------------------------------------------------- 1. FDR en DESC
@@ -145,9 +148,14 @@ def _res(pistas):
 
 
 def test_desc_sin_nominacion_fdr_no_pasa(tmp_path):
+    """El caso EXPZ-NQ: 0 nominadas, antes pasaban 3. Ninguna llega a candidata en DESC; desde el 2026-10-24 (falsos negativos)
+    van a PISTAS (réplica en lote con LORD++) en vez de cerrar, y con la etapa apagada se cierra como antes."""
     em = _em(tmp_path)
     st = em._fin_desc(SPEC, _st(em), _res([_pista([0, 1], nom=False, q=0.4), _pista([2, 3], nom=False, q=0.3)]))
-    assert st["etapa"] == "FIN" and st["fase"] == "SIN_CANDIDATAS"                    # el caso EXPZ-NQ: 0 nominadas, antes pasaban 3
+    assert st["etapa"] == "PISTAS" and "candidatas" not in st and st["pistas_replica"]["celdas"]
+    spec = dict(SPEC, cid="T2"); st0 = _st(em, spec=spec); st0["reglas"]["pistas_replica"] = dict(activa=False)
+    st = em._fin_desc(spec, st0, _res([_pista([0, 1], nom=False, q=0.4)]))
+    assert st["etapa"] == "FIN" and st["fase"] == "SIN_CANDIDATAS"
 
 
 def test_desc_nominada_pasa(tmp_path):
@@ -160,7 +168,7 @@ def test_desc_linaje_le_quita_la_nominacion(tmp_path):
     reg = tmp_path / "reg.jsonl"; reg.write_text(json.dumps(dict(family_id="PADRE", n_trials=10_000_000)) + "\n", encoding="utf-8")
     em = _em(tmp_path, linaje_n="bruto")
     st = em._fin_desc(SPEC, _st(em), _res([_pista([0, 1], q=0.01, m=1000)]))
-    assert st["fase"] == "SIN_CANDIDATAS"
+    assert st["etapa"] != "INDAGA" and "candidatas" not in st                          # estado congelado sin `como`: compuerta
 
 
 def test_evaluar_sin_nominacion_no_confirma_aunque_replique():
@@ -207,9 +215,9 @@ def test_regimen_no_puede_definirse_con_el_holdout():
 # ----------------------------------------------------------------------------------------------- campañas en curso
 @pytest.mark.parametrize("cid", ["EXPZ-NQ", "EXPZ-CFD"])
 def test_expz_en_curso_queda_sin_candidatas(tmp_path, cid):
-    """Consecuencia declarada de la decisión 1: las dos EXPZ pasaron DESC con 0 nominadas por FDR; al aplicar la regla se cierran."""
-    src = REPO / f"docs/research/expansion_zonas_20261023/embudo/{cid}/estado.json"
-    if not src.exists(): pytest.skip("estado de EXPZ no presente")
+    """Consecuencia declarada de la decisión 1: las dos EXPZ pasaron DESC con 0 nominadas por FDR; al aplicar la regla se cierran.
+    Usa el estado tal como estaba el 2026-10-24 (commit 92843801): el vivo se relanzó el 25 desde PREFLIGHT con el código vigente."""
+    src = Path(__file__).parent / "fixtures" / "expz_20261024" / f"{cid}.json"
     (tmp_path / "e" / cid).mkdir(parents=True); shutil.copy(src, tmp_path / "e" / cid / "estado.json")
     spec = json.loads((REPO / f"config/autopilot/grillas/campanas/{cid}.json").read_text(encoding="utf-8"))
     em = EM.Embudo(tmp_path / "e", {}, libro=_libro(tmp_path), ahora=lambda: 1.0, log=lambda s: None)

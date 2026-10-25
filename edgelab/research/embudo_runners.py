@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import importlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -67,10 +68,11 @@ def dependencias(ruta: str, vistos=None) -> list:
 
 
 class KaggleRunner:
-    def __init__(self, owner="nicolasbuttaro", python=sys.executable, carpeta=None, dataset_sellado=None):
+    def __init__(self, owner=None, python=sys.executable, carpeta=None, dataset_sellado=None):
         """`dataset_sellado`: si se da, este runner corre las etapas del HOLDOUT en Kaggle leyendo SÓLO ese dataset privado
         (datos desde la sesión del 2026-10-01; nunca se adjunta a etapas de desarrollo)."""
-        self.owner, self.python, self.dataset_sellado = owner, python, dataset_sellado
+        self.owner = owner or os.environ.get("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro")      # SV1: la cuenta de Kaggle de Gonza
+        self.python, self.dataset_sellado = python, dataset_sellado
         self.carpeta = Path(carpeta or tempfile.mkdtemp(prefix="embudo_kernels_"))
 
     def _construir(self, spec) -> Path:
@@ -88,6 +90,7 @@ class KaggleRunner:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
                 n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
+            extra += list(spec.get("datasets_extra", []))                 # p. ej. el almacén de zonas de U1-ZONAS (target-free)
         slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))

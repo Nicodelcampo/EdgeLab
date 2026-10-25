@@ -740,6 +740,19 @@ def process_bridge_request(
     }
 
 
+def _archivar(origen: Path, destino: Path) -> None:
+    """Mueve el pedido procesado a processed/ aunque ya exista uno con el mismo nombre. En Windows `shutil.move` sobre un destino
+    existente falla y cortaba el bucle --watch (PID 23296, 2026-10-25 04:04 UTC). `Path.replace` reemplaza de forma atómica; si
+    tampoco puede (otro proceso lo tiene abierto), se copia y se borra el original, y si nada funciona se avisa sin cortar el bucle."""
+    try:
+        origen.replace(destino)
+    except OSError:
+        try:
+            shutil.copy2(str(origen), str(destino)); origen.unlink(missing_ok=True)
+        except OSError as exc:
+            print(f"no se pudo archivar {origen.name}: {exc}", file=sys.stderr)
+
+
 def watch_bridge_directory(
     bridge_dir: Path,
     client: KaggleClient,
@@ -805,7 +818,7 @@ def watch_bridge_directory(
                 }
             out_path = outbox / f"{resp['request_id']}.response.json"
             out_path.write_text(json.dumps(resp, indent=2, sort_keys=True), encoding="utf-8")
-            shutil.move(str(req_path), str(processed / req_path.name))
+            _archivar(req_path, processed / req_path.name)
         loops += 1
         if max_loops is None or loops < max_loops:
             time.sleep(poll_seconds)

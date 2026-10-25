@@ -72,6 +72,15 @@ No se tocó ningún archivo del manifiesto de protegidos (`config/autopilot/prot
 - **Ancestros sin declaración** (`AREAS_EXP_1_NQ`, `AREAS_EXP_1_USATECH`, `LUXIMB_FADE_VISOR`): cuentan sólo sus pruebas propias.
   Si derivan de algo anterior, hay que declararlo.
 
+## Enmienda del mismo día: falsos negativos (`FALSOS_NEGATIVOS_EMBUDO_20261024.md`)
+A pedido de Nico («que el embudo no descarte candidatas reales, manteniendo el control del error»):
+- **D1:** el m del FDR pasa a ser el de las celdas **evaluables** (filtrado independiente); se publican las dos cuentas. Cero
+  nominadas ya no cierra la campaña: van las top-k pistas a réplica en lote, con un paso de LORD++ (etapa `PISTAS`).
+- **D4:** el linaje es **información** por defecto (`linaje_como: "informacion"`); sigue como compuerta sólo con
+  `"compuerta"` o en estados congelados antes de la enmienda.
+- La meseta ordena y no mata; el bootstrap resuelve el umbral nivel/m (o usa el p analítico por sesión); se evalúan todas las
+  nominadas por FDR; el número efectivo usa Li-Ji cuando hay matriz de P&L.
+
 Aporte al referente: cierra las cuatro vías por las que el embudo podía promover algo sin evidencia (sin nominación, con α
 compartido, con p = 0, con el contador en cero) y evita matar un edge actual por un OOS sin potencia o de otro régimen declarado.
 
@@ -89,3 +98,21 @@ reutilizamos esos datos no nos arriesgamos tanto y el valor de la información q
   - LUX: la mirada fue desfavorable (14 de 14 en SL), así que incluirla es conservador.
 - **En código:** `edgelab/research/holdout_ventanas.py` (`reuso_autorizado`; el embudo lo acepta sólo con `estadistico="e_proceso"`).
   Libro: `docs/research/HOLDOUT_VENTANAS.jsonl` (filas `reuso_autorizado`).
+
+### D5 en el embudo (2026-10-25)
+`edgelab/research/embudo.py`: `holdout.estadistico` = `n_fijo` (por defecto) | `e_proceso`. Con `e_proceso` la campaña declara
+antes de mirar las cotas estructurales (`perdida_max_pts`, `ganancia_max_pts`, `margen_hueco_pts`, `mu_util`); sin ellas el ACTA
+se bloquea. Sólo así `holdout_ventanas.problemas` acepta el reuso autorizado. El HOLDOUT decide en cada conteo con el e-proceso
+(nivel = paso reservado de LORD++), informa el mismo monitor sin las sesiones ya miradas, y una pérdida fuera de cota detiene con
+`LIMITE_VIOLADO` → BLOQUEADA. Una regla sin tope de pérdida (U1 tal cual) no puede usarlo: sigue a N fijo, ciego hasta N.
+Tests: `tests/research/test_embudo_e_proceso.py`.
+
+### D6 — el linaje hereda celdas evaluables, no celdas registradas (2026-10-25)
+Pedido de Nico: «arreglá lo que sea el verdadero problema». La auditoría de EXPZ mostró que el filtro no estaba roto: lo que inflaba
+la multiplicidad eran las celdas que nunca podían rechazar. En las grillas finas el 96-98 % de las celdas no llega a 30 operaciones
+(U1-INDAGA en USATECH: 34.738 evaluables de 2.985.984 por canal). El FDR ya usaba m = evaluables; el linaje, en cambio, heredaba todo lo
+registrado. Ahora `docs/research/EVALUABLES.jsonl` (append-only) dice cuántas fueron evaluables y `linaje.pruebas_propias` usa ese número.
+Es filtrado independiente: el tamaño de muestra de una celda no depende del signo de su resultado. El registro previo
+(`TRIAL_REGISTRY_GLOBAL.jsonl`) no se toca y sigue siendo la cota; una campaña sin dato de evaluables se sigue cobrando entera.
+El embudo anota las evaluables al terminar cada DESC. Datos históricos completados con respaldo en los resultados guardados (U1-INDAGA,
+AREAS v14, EXPZ). Efecto: AREAS_EXP_1_CRUZADO hereda 4,6 M en vez de 19,4 M; el resto son campañas viejas sin el dato (v13 y anteriores).

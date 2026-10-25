@@ -28,3 +28,10 @@ def test_runner_sellado_solo_adjunta_el_dataset_sellado_y_exige_acta(tmp_path):
     with pytest.raises(ValueError): k.argumentos(spec, "HOLDOUT_CONTEO", dict(celdas=[[0]]), [20261001, 20261020])
     a = k.argumentos(spec, "HOLDOUT_CONTEO", dict(celdas=[[0]], acta=dict(cid="X2")), [20261001, 20261020])
     assert "--need" not in a and a.count("--extra-dataset") == 1 and "nicolasbuttaro/edgelab-holdout-sellado" in a and "SELLADO=1" in a
+
+
+def test_datasets_extra_de_la_campana_se_adjuntan(tmp_path):
+    k = R.KaggleRunner(carpeta=tmp_path)
+    spec = dict(cid="X4", experimento="edgelab.research.u1_zonas", sensor="ES", datasets_extra=["nicolasbuttaro/edgelab-zonas-avzp2"])
+    a = k.argumentos(spec, "DESC", dict(cortes=None), [20250701, 20260331])
+    assert "nicolasbuttaro/edgelab-zonas-avzp2" in a and a[a.index("--need") + 1] == "ES:2025-07-01:2026-03-31"

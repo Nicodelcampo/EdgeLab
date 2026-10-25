@@ -1,0 +1,324 @@
+{
+ "etapa": "INDAGA",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1792794359.587105,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1792802905.3436763,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     1,
+     0,
+     2,
+     2,
+     3,
+     2,
+     2,
+     2,
+     23
+    ],
+    [
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     2,
+     29
+    ],
+    [
+     1,
+     0,
+     1,
+     2,
+     0,
+     2,
+     1,
+     2,
+     23
+    ]
+   ]
+  }
+ ],
+ "spec": {
+  "familia": "EXPANSION_ZONAS",
+  "experimento": "edgelab.research.expansion_zonas",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "embudo": true,
+  "activa": true,
+  "n_celdas_por_canal": 233280,
+  "spec": "docs/research/expansion_zonas_20261023/SPEC.md",
+  "justificacion_economica": "Una expansión que nace de una concentración de desequilibrios marca urgencia; el regreso al origen o la continuación dependen de si esas órdenes quedaron pendientes (SPEC.md).",
+  "como_podria_refutarse": "Ninguna celda pasa integridad y OOS, o el holdout a N fijo da media <= 0.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150
+  },
+  "cid": "EXPZ-CFD",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "oos": [
+   20260401,
+   20260930
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400
+  }
+ },
+ "handle": "nicolasbuttaro/embudo-expz-cfd-indaga-20250805",
+ "params": {
+  "cortes": {
+   "velocidad": [
+    1.5637037037036121,
+    3.0003703703704456
+   ],
+   "posicion": [
+    0.403341026486052,
+    0.6288916562892277
+   ],
+   "tamano": [
+    0.0050310742823161305,
+    0.010648804156458894
+   ],
+   "vol_rel": [
+    0.3118360285487664,
+    0.8111127091302608
+   ]
+  },
+  "bases": [
+   [
+    1,
+    0,
+    2,
+    2,
+    3,
+    2,
+    2,
+    2,
+    23
+   ],
+   [
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    2,
+    2,
+    29
+   ],
+   [
+    1,
+    0,
+    1,
+    2,
+    0,
+    2,
+    1,
+    2,
+    23
+   ]
+  ]
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1792803726.7061596,
+ "cortes": {
+  "velocidad": [
+   1.5637037037036121,
+   3.0003703703704456
+  ],
+  "posicion": [
+   0.403341026486052,
+   0.6288916562892277
+  ],
+  "tamano": [
+   0.0050310742823161305,
+   0.010648804156458894
+  ],
+  "vol_rel": [
+   0.3118360285487664,
+   0.8111127091302608
+  ]
+ },
+ "candidatas": [
+  [
+   1,
+   0,
+   2,
+   2,
+   3,
+   2,
+   2,
+   2,
+   23
+  ],
+  [
+   1,
+   0,
+   2,
+   2,
+   3,
+   1,
+   2,
+   2,
+   29
+  ],
+  [
+   1,
+   0,
+   1,
+   2,
+   0,
+   2,
+   1,
+   2,
+   23
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     0,
+     2,
+     2,
+     3,
+     2,
+     2,
+     2,
+     23
+    ],
+    "n": 84,
+    "media_neta": 21.689619047619047,
+    "sesiones": 44,
+    "ic90": [
+     4.333627705627701,
+     41.684437629937634
+    ],
+    "p_sesiones": 0.03498250874562719,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 72.47,
+    "pasa": true,
+    "n_pruebas": 8400.0,
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "t_rw": 1.8935092687606812
+   },
+   {
+    "celda": [
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     2,
+     29
+    ],
+    "n": 56,
+    "media_neta": 20.80271428571428,
+    "sesiones": 48,
+    "ic90": [
+     0.6662446393762153,
+     40.836744816586915
+    ],
+    "p_sesiones": 0.04447776111944028,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 54.84,
+    "pasa": true,
+    "n_pruebas": 8400.0,
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "t_rw": 1.7483214139938354
+   },
+   {
+    "celda": [
+     1,
+     0,
+     1,
+     2,
+     0,
+     2,
+     1,
+     2,
+     23
+    ],
+    "n": 71,
+    "media_neta": 9.718584507042259,
+    "sesiones": 58,
+    "ic90": [
+     0.22753472222222115,
+     21.087799910873436
+    ],
+    "p_sesiones": 0.07146426786606697,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 30.09,
+    "pasa": false,
+    "n_pruebas": 8400.0,
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "t_rw": 1.5969984531402588
+   }
+  ]
+ }
+}
