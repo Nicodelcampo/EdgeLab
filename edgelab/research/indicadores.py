@@ -64,7 +64,7 @@ def causal(fn, ctx: dict, cortes=(0.3, 0.55, 0.8), margen: int = 5, columnas=Non
         pre = fn(cx)
         cols = columnas or [c for c in full.columns if c in pre.columns]
         a = full[full.k <= corte - margen][cols].sort_values(cols).reset_index(drop=True)
-        b = pre[pre.k <= corte - margen][cols].sort_values(cols).reset_index(drop=True) if len(pre) else pre
+        b = pre[pre.k <= corte - margen][cols].sort_values(cols).reset_index(drop=True) if len(pre) else pd.DataFrame(columns=cols)   # sin disparos en el prefijo: mismas columnas
         try: pd.testing.assert_frame_equal(a, b, check_dtype=False)
         except AssertionError as e: errores.append(f"corte {f:.2f}: {str(e)[:300]}")
     return errores
