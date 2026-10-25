@@ -212,9 +212,9 @@ def test_regimen_no_puede_definirse_con_el_holdout():
 # ----------------------------------------------------------------------------------------------- campañas en curso
 @pytest.mark.parametrize("cid", ["EXPZ-NQ", "EXPZ-CFD"])
 def test_expz_en_curso_queda_sin_candidatas(tmp_path, cid):
-    """Consecuencia declarada de la decisión 1: las dos EXPZ pasaron DESC con 0 nominadas por FDR; al aplicar la regla se cierran."""
-    src = REPO / f"docs/research/expansion_zonas_20261023/embudo/{cid}/estado.json"
-    if not src.exists(): pytest.skip("estado de EXPZ no presente")
+    """Consecuencia declarada de la decisión 1: las dos EXPZ pasaron DESC con 0 nominadas por FDR; al aplicar la regla se cierran.
+    Usa el estado tal como estaba el 2026-10-24 (commit 92843801): el vivo se relanzó el 25 desde PREFLIGHT con el código vigente."""
+    src = Path(__file__).parent / "fixtures" / "expz_20261024" / f"{cid}.json"
     (tmp_path / "e" / cid).mkdir(parents=True); shutil.copy(src, tmp_path / "e" / cid / "estado.json")
     spec = json.loads((REPO / f"config/autopilot/grillas/campanas/{cid}.json").read_text(encoding="utf-8"))
     em = EM.Embudo(tmp_path / "e", {}, libro=_libro(tmp_path), ahora=lambda: 1.0, log=lambda s: None)
