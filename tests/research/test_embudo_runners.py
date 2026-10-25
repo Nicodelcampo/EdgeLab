@@ -45,3 +45,10 @@ def test_kernel_sin_corridas_es_error_y_no_espera_para_siempre(monkeypatch, tmp_
     assert k.estado("nicolasbuttaro/x") == "error"
     monkeypatch.setattr(R.subprocess, "run", salida('{"status":"running","failureMessage":""}'))
     assert k.estado("nicolasbuttaro/x") == "running"
+
+
+def test_campana_con_cuenta_kaggle_lanza_en_esa_cuenta(tmp_path):
+    k = R.KaggleRunner(carpeta=tmp_path)
+    spec = dict(cid="X5", experimento="edgelab.research.u1_zonas", sensor="ES", cuenta_kaggle="nicobuttaro")
+    a = k.argumentos(spec, "DESC", dict(cortes=None), [20250801, 20260331])
+    assert a[a.index("--slug") + 1].startswith("nicobuttaro/embudo-x5-desc")

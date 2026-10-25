@@ -17,7 +17,7 @@ def header_file():
 
 def curl_auth(url):
     """Argumentos extra de curl para una URL. Nada para hosts que no sean la API de Kaggle."""
-    if not str(url).startswith("https://www.kaggle.com/"):
+    if not str(url).startswith(("https://www.kaggle.com/", "https://api.kaggle.com/")):
         return []
     h = header_file()
     return ["-H", f"@{h}"] if h else []

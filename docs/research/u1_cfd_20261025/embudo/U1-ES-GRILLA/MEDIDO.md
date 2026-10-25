@@ -13,3 +13,6 @@
 - Evaluables: 346033 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20240102, 20260331]: evaluables 321943 (m del FDR 321943 de 4478976 celdas), FDR 736, RW umbral 5.174069881439209 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
 - INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16]: regla 17.61650000000007, placebo -4.47, latencia 1 vela 18.039886206896476 -> pasa
+- INTEGRIDAD [1, 1, 0, 2, 2, 0, 3, 3, 3, 2, 16]: regla 15.0112142857144, placebo 0.06, latencia 1 vela 15.035829411764697 -> pasa
+- INTEGRIDAD [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]: regla 10.353718918918991, placebo -2.80, latencia 1 vela 7.133442857142772 -> pasa

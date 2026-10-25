@@ -29,3 +29,7 @@ def test_datasets_compartidos_por_cuentas_declaradas(monkeypatch):
     assert validate_push("gonzaloescobar/edgelab-x", ["nicolasbuttaro/edgelab-data-catalog"], "gonzaloescobar") == "gonzaloescobar"
     with pytest.raises(SystemExit):
         validate_push("gonzaloescobar/edgelab-x", ["otro/dataset-ajeno"], "gonzaloescobar")
+
+def test_host_de_la_api_por_cuenta():
+    from kaggle_kernel import api_de, API
+    assert api_de("nicobuttaro") == "https://api.kaggle.com/v1" and api_de("nicolasbuttaro") == API and api_de("otra") == API

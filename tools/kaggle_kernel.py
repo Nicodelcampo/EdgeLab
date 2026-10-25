@@ -9,6 +9,11 @@ Solo datos que ya estén en datasets privados de Kaggle; respetar siempre la cus
 import argparse,hashlib,json,os,re,subprocess,sys
 sys.path.insert(0,os.path.dirname(os.path.abspath(__file__)))
 API="https://www.kaggle.com/api/v1"
+def api_de(owner):
+    """Host de la API para la cuenta dueña del kernel (config/kaggle_cuentas.json); por defecto www.kaggle.com."""
+    p=os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","config","kaggle_cuentas.json")
+    try:return json.load(open(p,encoding="utf-8")).get(owner,API)
+    except (OSError,ValueError):return API
 REF=re.compile(r"^[a-z0-9][a-z0-9-]{0,48}/[a-z0-9][a-z0-9-]{0,48}$")
 def validate_push(slug,datasets,owner=None):
     """Chequeos fail-closed antes de cualquier push (traídos de #120): el kernel y cada dataset montado son de la cuenta dueña.
@@ -29,7 +34,7 @@ def curl(args,body=None):
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("cmd",choices=["push","status","output"]);ap.add_argument("--slug",required=True);ap.add_argument("--title");ap.add_argument("--script");ap.add_argument("--gpu",action="store_true")
     ap.add_argument("--internet",action="store_true");ap.add_argument("--dataset",action="append",default=[]);ap.add_argument("--file");ap.add_argument("--out");a=ap.parse_args()
-    owner,slug=a.slug.split("/")
+    owner,slug=a.slug.split("/");API=api_de(owner)
     if a.cmd=="push":
         validate_push(a.slug,a.dataset);text=open(a.script).read()
         print(json.dumps({"payload_sha256":hashlib.sha256(text.encode()).hexdigest()}))      # identidad de lo que se sube
