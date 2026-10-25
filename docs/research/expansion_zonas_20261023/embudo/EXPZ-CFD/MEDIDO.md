@@ -15,3 +15,4 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 19409143 pruebas de ['LUXIMB_FADE_VISOR', 'LUXIMB_IMPULSOS', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- CORRECCIÓN 2026-10-25: linaje como compuerta (el PREFLIGHT del relanzamiento lo había dejado como información; con 0 nominadas el DESC no cambia)
