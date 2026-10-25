@@ -98,3 +98,11 @@ reutilizamos esos datos no nos arriesgamos tanto y el valor de la información q
   - LUX: la mirada fue desfavorable (14 de 14 en SL), así que incluirla es conservador.
 - **En código:** `edgelab/research/holdout_ventanas.py` (`reuso_autorizado`; el embudo lo acepta sólo con `estadistico="e_proceso"`).
   Libro: `docs/research/HOLDOUT_VENTANAS.jsonl` (filas `reuso_autorizado`).
+
+### D5 en el embudo (2026-10-25)
+`edgelab/research/embudo.py`: `holdout.estadistico` = `n_fijo` (por defecto) | `e_proceso`. Con `e_proceso` la campaña declara
+antes de mirar las cotas estructurales (`perdida_max_pts`, `ganancia_max_pts`, `margen_hueco_pts`, `mu_util`); sin ellas el ACTA
+se bloquea. Sólo así `holdout_ventanas.problemas` acepta el reuso autorizado. El HOLDOUT decide en cada conteo con el e-proceso
+(nivel = paso reservado de LORD++), informa el mismo monitor sin las sesiones ya miradas, y una pérdida fuera de cota detiene con
+`LIMITE_VIOLADO` → BLOQUEADA. Una regla sin tope de pérdida (U1 tal cual) no puede usarlo: sigue a N fijo, ciego hasta N.
+Tests: `tests/research/test_embudo_e_proceso.py`.

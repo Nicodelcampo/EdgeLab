@@ -63,6 +63,10 @@ CONDUCTORES = ("debian", "local")                          # quién conduce cada
 A3_FIN_DESCUBRIMIENTO, A3_INSTRUMENTOS = 20260331, ("ES", "NQ")   # HOLDOUT-A3/A4: ES y NQ descubren hasta acá; abr–sep es réplica
 MAX_HORAS_KAGGLE = 14                                       # Kaggle corta a las 12 h: pasado esto, la etapa se da por caída
 N_BOOT_REPLICA, N_BOOT_HOLDOUT = 2000, 5000                 # bootstrap de `grilla_generica.evaluar` y de `_fin_holdout`
+# D5 (2026-10-24): holdout.estadistico = "e_proceso" exige cotas ESTRUCTURALES declaradas en la campaña antes de mirar (puntos de
+# la ejecución): pérdida y ganancia máximas por construcción, margen de hueco y efecto útil. Una regla sin tope de pérdida (U1 sin
+# tope) no puede usarlo: una cola más ancha que la declarada detiene con LIMITE_VIOLADO (U1-B, 2026-10-23) y queda N fijo.
+COTAS_E_PROCESO = ("perdida_max_pts", "ganancia_max_pts", "margen_hueco_pts", "mu_util")
 
 
 def _cfg(spec, k):
@@ -447,7 +451,12 @@ class Embudo:
         h = _reglas(spec, st, "holdout")
         from edgelab.research import holdout_ventanas as HV                      # ventanas consumidas y una apertura por familia
         libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
-        if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v)):
+        est = h.get("estadistico", "n_fijo")                                       # D5 (2026-10-24): e_proceso permite el reuso autorizado
+        if est not in ("n_fijo", "e_proceso"): return self._cerrar(spec, st, "BLOQUEADA", f"holdout.estadistico {est!r}: n_fijo | e_proceso")
+        cotas = {k: h.get(k) for k in COTAS_E_PROCESO}
+        if est == "e_proceso" and (faltan := [k for k, v in cotas.items() if not isinstance(v, (int, float)) or v <= 0]):
+            return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso sin cotas estructurales declaradas antes de mirar: {faltan}")
+        if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v, estadistico=est)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
         # decisión 3 (2026-10-24): el acta RESERVA su paso de LORD++ (consume α ahora, con el nivel fijo) antes de mirar
         reserva = self.libro.reservar(spec["familia"], f"{spec['cid']}/holdout", f"acta {spec['cid']}") if self.libro else None
@@ -458,6 +467,12 @@ class Embudo:
                     regimen=(st.get("reglas") or {}).get("regimen"), oos=[v["veredicto"] for v in (st.get("oos") or {}).get("veredictos", [])],
                     decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: el paso RESERVADO de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
+        if est == "e_proceso":
+            acta.update(estadistico=est, cotas=cotas, vistas_hasta=HV.ultima_consumida(spec["familia"], libro_v),
+                        decision=f"e-proceso (Ville) sobre las operaciones netas desde {h['desde']}, en cada conteo, hasta {h['n_fijo']}: "
+                                 f"CONFIRMADA si e ≥ 1/α (α={alfa:.5f}, el paso RESERVADO de LORD++) y media > 0; REFUTADA si la futilidad "
+                                 f"(E[x] < {cotas['mu_util']}) llega a e ≥ 10; SIN_POTENCIA si llega a N sin decidir. Se informa también "
+                                 "sin las sesiones ya miradas (D5).")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
@@ -482,14 +497,44 @@ class Embudo:
 
     def _fin_conteo(self, spec, st, res):
         n = int(res["conteo"][0]); st["ultimo_conteo"] = self.ahora(); st["n_holdout"] = n
+        if st["acta"].get("estadistico") == "e_proceso" and n > st.get("n_holdout_decidido", 0):
+            return self._siguiente(spec, st, "HOLDOUT", n=n)                          # e-proceso: se mira en cada conteo con datos nuevos
         if n < st["acta"]["n_fijo"]:
             st["fase"] = "PENDIENTE"; self._guardar(spec, st); return st                  # espera más sesiones (sin mirar P&L)
         return self._siguiente(spec, st, "HOLDOUT", n=n)
 
+    def _fin_holdout_e(self, spec, st, ops, N):
+        """D5: e-proceso (Ville) sobre las netas en orden temporal, válido mirando en cada conteo. Decide con TODO lo que hay desde
+        `holdout.desde` (incluidas las sesiones ya miradas, reuso autorizado) y además informa el mismo monitor sin esas sesiones."""
+        from edgelab.funnel.secuencial import MonitorCandidato
+        from edgelab.research.embudo_runners import friccion
+        a = st["acta"]; c = a["cotas"]; nivel = (a.get("reserva_lord") or {}).get("nivel", a["alfa"])
+        fr = friccion(spec.get("ejecucion") or spec["sensor"])[0]
+        orden = np.argsort(np.asarray(ops.get("t") or []), kind="stable")[:N]
+        x = np.asarray(ops.get("neto") or [], float)[orden]; ses = np.asarray(ops.get("ses") or [], np.int64)[orden]
+        def monitor(xx):
+            m = MonitorCandidato.desde_regla(perdida_max_pts=c["perdida_max_pts"], ganancia_max_pts=c["ganancia_max_pts"], friccion_pts=fr,
+                                             margen_hueco_pts=c["margen_hueco_pts"], mu_util=c["mu_util"], alfa=nivel)
+            try: return m.agregar([float(v) for v in xx]) if len(xx) else m.estado()
+            except ValueError as e: return dict(estado="LIMITE_VIOLADO", n=len(xx), error=str(e))
+        todo = monitor(x); vh = a.get("vistas_hasta")
+        sin = monitor(x[ses > int(vh)]) if vh else None
+        st["holdout"] = dict(estadistico="e_proceso", n=int(len(x)), media=float(x.mean()) if len(x) else None, nivel=nivel, e_proceso=todo,
+                             sin_sesiones_vistas=sin, vistas_hasta=vh)
+        st["n_holdout_decidido"] = int(len(x))
+        self._medido(spec, f"- HOLDOUT (e-proceso): n {len(x)}, {todo['estado']}" + (f"; sin las sesiones vistas: {sin['estado']} (n {sin['n']})" if sin else ""))
+        if todo["estado"] == "LIMITE_VIOLADO": return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso: {todo['error']} (la cota declarada no era estructural)")
+        if todo["estado"] == "EDGE_CONFIRMADO" and x.mean() > 0:
+            return self._cerrar(spec, st, "CONFIRMADA", f"e-proceso {todo['e_edge']:.1f} ≥ {todo['umbral_edge']:.1f} con {len(x)} ops; sin las vistas: {sin['estado'] if sin else 'n/a'}")
+        if todo["estado"] == "REFUTADO_FUTILIDAD": return self._cerrar(spec, st, "REFUTADA", f"futilidad con {len(x)} ops (E[x] < {c['mu_util']})")
+        if len(x) >= N: return self._cerrar(spec, st, "SIN_POTENCIA", f"{len(x)} ops sin decidir (e {todo['e_edge']:.2f})")
+        st["ultimo_conteo"] = self.ahora(); return self._siguiente(spec, st, "CONTEO", n=int(len(x)))     # sigue mirando: es válido
+
     def _fin_holdout(self, spec, st, res):
         from edgelab.funnel.escalera import resumen_resuelto
         ops = res["operaciones"]; N = st["acta"]["n_fijo"]
-        if len(ops.get("t") or []) < N:                                              # CONTEO dijo que había N: no decide con menos
+        if st["acta"].get("estadistico") == "e_proceso": return self._fin_holdout_e(spec, st, ops, N)
+        if len(ops.get("t") or []) < N:                                             # CONTEO dijo que había N: no decide con menos
             return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]
         x = np.asarray(ops["neto"], float)[orden]; ses = np.asarray(ops["ses"])[orden]
