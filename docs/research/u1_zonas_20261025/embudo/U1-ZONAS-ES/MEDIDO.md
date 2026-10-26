@@ -11,3 +11,6 @@
 - INTEGRIDAD [0, 1, 2, 2, 2, 2, 3, 1, 1, 0, 0, 20]: regla 10.38551428571436, placebo -2.39, latencia 1 vela 10.97539523809524 -> pasa
 - INTEGRIDAD [0, 1, 1, 0, 2, 2, 3, 1, 3, 0, 0, 29]: regla 3.198169565217384, placebo -1.06, latencia 1 vela 4.931887628865979 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [nan, nan, -3.53]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [nan, nan, 0.5]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- TOPES: elegida {'celda': [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35], 'tope': ['pts', 50.0], 'puntaje': 15.758396397523297, 'peor': -26.1377}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35] tope ['pts', 50.0]

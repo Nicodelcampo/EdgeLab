@@ -22,3 +22,7 @@
 - Evaluables: 346033 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20240102, 20260331]: evaluables 321943 (m del FDR 321943 de 4478976 celdas), FDR 736, RW umbral 5.174069881439209 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
 - INDAGA: marginales de 3 candidatas guardadas
+- AVISO INTEGRIDAD: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- INTEGRIDAD [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20]: regla 0.9817365781710365, placebo -1.31, latencia 1 vela 1.2071275862069029 -> pasa
+- INTEGRIDAD [1, 2, 0, 1, 2, 1, 3, 3, 1, 0, 4]: regla 0.24949723183389935, placebo -0.64, latencia 1 vela 0.3220551020408291 -> pasa
+- INTEGRIDAD [1, 2, 1, 1, 2, 2, 3, 3, 3, 0, 8]: regla 0.35783993610222864, placebo -1.57, latencia 1 vela 0.30612352941174625 -> pasa
