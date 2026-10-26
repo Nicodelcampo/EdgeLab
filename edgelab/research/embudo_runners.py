@@ -20,7 +20,8 @@ ROOT = Path(__file__).resolve().parents[2]
 TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
-                "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py"]                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py"]             # etapa PERSIST (canasta de régimen)
 
 
 def friccion(instrumento: str) -> tuple:

@@ -56,6 +56,9 @@ def densidad(ctx, D) -> dict:
 
 def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=None, bloques_alineacion=None, log=print) -> dict:
     p = params or {}; celdas = [list(c) for c in p.get("celdas", [])]; cortes = p.get("cortes")
+    if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
+        from edgelab.research import persistencia as PE
+        return PE.correr(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log)
     if etapa == "E0":
         res, D = GG.correr(exp, ctx, modo="E0", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log)
         res["densidad"] = densidad(ctx, D); return res
