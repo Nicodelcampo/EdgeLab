@@ -10,3 +10,4 @@
 - Potencia prevista (informativa): [0, 2, 0, 2, 0, 2, 3, 3, 3, 1, 0, 4]: OOS n 52.5 potencia 0.52, holdout n 150 potencia 0.89; [0, 2, 0, 2, 0, 2, 3, 3, 3, 1, 0, 4]: OOS n 68.0 potencia 0.88, holdout n 150 potencia 1.00
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [0, 2, 0, 2, 0, 2, 3, 3, 3, 1, 0, 4]: regla 3.098014285714286, placebo -0.45, latencia 1 vela 3.4873000000000003 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [0.93]; veredictos ['NO_CONCLUYENTE']; potencias [0.2]; LORD++ sin rechazo

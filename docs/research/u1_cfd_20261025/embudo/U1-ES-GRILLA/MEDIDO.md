@@ -29,3 +29,5 @@
 - AVISO OOS: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
 - OOS [20260401, 20260930] (régimen actual): medias [-0.59, 0.3, -1.3]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.68, 0.38, 0.2]; LORD++ sin rechazo
 - TOPES: elegida {'celda': [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20], 'tope': ['mult', 4.0], 'puntaje': 1.8812154500101466, 'peor': -31.295699999999446}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20] tope ['mult', 4.0]
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)

@@ -1,5 +1,5 @@
 {
- "etapa": "ACTA",
+ "etapa": "CONTEO",
  "fase": "PENDIENTE",
  "historial": [
   {
@@ -190,6 +190,11 @@
   {
    "ts": 1793034587.78871,
    "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793034891.605859,
+   "etapa": "ACTA",
    "fin": true
   }
  ],
@@ -4545,5 +4550,105 @@
   ],
   "puntaje": 1.8812154500101466,
   "peor": -31.295699999999446
+ },
+ "acta": {
+  "cid": "U1-ES-GRILLA",
+  "familia": "U1_ES_GRILLA",
+  "experimento": "edgelab.research.u1_cfd",
+  "sensor": "DK:USA500IDXUSD",
+  "ejecucion": "DK:USA500IDXUSD",
+  "regla": {
+   "celda": [
+    1,
+    1,
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    1,
+    0,
+    20
+   ],
+   "tope": [
+    "mult",
+    4.0
+   ],
+   "puntaje": 1.8812154500101466,
+   "peor": -31.295699999999446
+  },
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.8878071908184637,
+    1.172008339877433
+   ],
+   "vol_ida_rel": [
+    0.7261059778839197,
+    2.6446770000476194
+   ],
+   "vel_vuelta/ida": [
+    0.7984997029114675,
+    1.9833333333333334
+   ]
+  },
+  "holdout_desde": 20261023,
+  "n_fijo": 150,
+  "alfa": 0.0018858947159882456,
+  "registrada": 1793034891.6044295,
+  "reserva_lord": {
+   "familia": "U1_ES_GRILLA",
+   "reserva_id": "U1-ES-GRILLA/holdout",
+   "t": 3,
+   "nivel": 0.0018858947159882456,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "U1_ES_GRILLA",
+    "declarada": true,
+    "padres": [
+     "U1_ORO_GRILLA",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 4654306,
+    "n_heredado": 4654306,
+    "total": 4654306,
+    "justificacion": "misma grilla que U1-ORO-GRILLA (u1_cfd reexporta u1_oro) sobre otro CFD con 27 meses; declarado antes de su DESC (PREREGISTRO_U1_CFD.md §5)",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 4654306,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 1.0,
+   "recorte": {
+    "t": 3.2906673652085683,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "atras": [],
+  "decision": "primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
  }
 }
