@@ -24,3 +24,18 @@ Media neta ≤ 0 con potencia en 2023 en las tres celdas de la familia.
 
 ## Riesgos
 2023 es otro régimen (canal «reciente» = 2026-T1); la escala mensual compensa la volatilidad pero no el régimen.
+
+## Resultado (2026-10-26; `U1_ES_ATRAS_2023.json`, `U1_YM_ATRAS_2023.json`, kernels `nicobuttaro/embudo-u1-{es,ym}-grilla-atras-rep-20230102`)
+| familia | celda | ops 2023 | media neta pts/op | IC90 | DESC (2026-T1) |
+|---|---|---:|---:|---|---:|
+| ES | `…,0,20` | 160 | −0,15 | [−1,74; +1,33] | +7,8 |
+| ES | `…,0,4` | 137 | +0,03 | [−1,04; +1,04] | +4,3 |
+| ES | `…,0,8` | 140 | −1,01 | [−2,50; +0,39] | +4,5 |
+| YM | `…,0,4` | 48 | +2,47 | [−22,3; +25,8] | +53 |
+| YM | `…,1,16` | 135 | +0,55 | [−9,3; +10,0] | +41 |
+| YM | `…,0,5` | 53 | −2,56 | [−13,8; +8,2] | +38 |
+
+LORD++: ninguno de los dos lotes rechaza. En las 6 celdas la media es ≈ 0 y el límite superior del IC90 queda por debajo de la media
+del DESC: **EN CONTRA** las 6, con potencia (en ES el IC es ±1,5 pts contra +4,3/+7,8). Lo que el DESC nominó en el canal reciente
+(3 meses) no se sostiene un año antes. Los embudos siguen su curso (nada pre-registrado se cambia), pero estas candidatas llegan al
+OOS con evidencia en contra escrita.
