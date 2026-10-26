@@ -48,16 +48,16 @@ def test_racimos_por_tipo_iguales_al_indicador(A):
     assert len(ref) > 0 and [(c["bar"], c["low0"], c["high0"]) for c in ref] == [(c["bar"], c["low"], c["high"]) for c in got]
 
 
-def test_avzr_un_almacen_por_tipo(A, monkeypatch):
-    monkeypatch.setattr(A, "PARAMS", dict(A.PARAMS, **SUELTO))
-    out = A.zonas_avzr(_bloques(), 0.25, 25)
-    assert sorted(out) == [f"AVZR{i}" for i in range(len(A.TIPOS_RACIMO))] and len(A.TIPOS_RACIMO) == 8
-    assert all(list(Z.columns) == ["t_ns", "lo", "hi"] for Z in out.values())
-    monkeypatch.setattr(A, "TIPOS_RACIMO", [dict(racimo_min=2, racimo_bars=1000, racimo_altura_ticks=45)])
-    assert len(A.zonas_avzr(_bloques(), 0.25, 25)["AVZR0"]) > 0
-
-
 def test_bt2_zonas_rectangulares_con_fin(A):
     Z = A.zonas_bt2(_bloques(libro=True, dias=6), 0.25, 1)
     assert len(Z) and (Z.hi > Z.lo).all() and set(Z.lado) <= {1, -1}
     fin = Z.t_fin_ns[Z.t_fin_ns > 0]; assert (fin >= Z.t_ns[Z.t_fin_ns > 0]).all()
+
+
+def test_avzrg_grilla_completa(A, monkeypatch):
+    assert len(A.GRILLA_ZONA) == 36 and len(A.GRILLA_RACIMO) == 12
+    monkeypatch.setattr(A, "PARAMS", dict(A.PARAMS, **SUELTO))
+    monkeypatch.setattr(A, "GRILLA_ZONA", [dict(detection_percentile=50.0, median_multiplier=2.0, window_bars=10, min_cluster_ticks=2)])
+    monkeypatch.setattr(A, "GRILLA_RACIMO", [dict(racimo_min=2, racimo_bars=1000, racimo_altura_ticks=45), dict(racimo_min=8, racimo_bars=500, racimo_altura_ticks=30)])
+    Z = A.zonas_avzrg(_bloques(), 0.25, 25)
+    assert list(Z.columns) == ["t_ns", "lo", "hi", "zona", "racimo"] and len(Z) and set(Z.zona) == {0} and set(Z.racimo) <= {0, 1}

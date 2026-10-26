@@ -3,7 +3,7 @@
 # que la crea) y su banda de precio, para que la gramática de U1 (edgelab/research/u1_zonas.py) la use como fuente de zonas.
 # Indicadores: aVolZonePOI2 (edgelab/bridge/indicators/avolzonepoi2.py, PASS en MNQ 25t). Reutiliza fuentes_ticks.bloques_futuro,
 # edgelab/bridge/bars (barras de N ticks, footprint total NT8, sesiones) y oro_0530.trimestres. Sin desenlaces ni retornos.
-# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZR), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
+# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
 # Salida: ZONAS_<IND>_<INST>.parquet y ALMACEN_ZONAS_<IND>.json.
 import json
 import os
@@ -73,12 +73,6 @@ def zonas_bt2(bloques, tick, spec):
                               lado=1 if z["kind"] == "trapped_buyers" else -1) for z in r["zones"]])
 
 
-# Tipos de racimo de aVolZonePOI2 (2026-10-26, pedido de Nico «los tipos de racimos son parámetros también»): las esquinas de la
-# grilla de 36 definiciones de AVZP2-RACIMO-GRILLA (mínimo {4, 8} × ventana {250, 1000} velas × altura {20, 45} ticks), declaradas
-# antes de correr. Las zonas son las mismas (detección de AVZP2 a 25t); cambia sólo cómo se agrupan.
-TIPOS_RACIMO = [dict(racimo_min=m, racimo_bars=w, racimo_altura_ticks=a) for m in (4, 8) for w in (250, 1000) for a in (20, 45)]
-
-
 def racimos_de(zonas, p):
     """Racimos de una lista de zonas de AVZP2 (bar, low_tick, high_tick, en orden de creación) con la regla `_racimo` del indicador
     (se importa, no se copia): un registro por racimo AL FORMARSE (banda de ese momento, barra de formación)."""
@@ -90,30 +84,39 @@ def racimos_de(zonas, p):
     return [dict(bar=c["bar"], low=c["low0"], high=c["high0"]) for c in clusters]
 
 
-def zonas_avzr(bloques, tick, spec):
-    """Racimos de aVolZonePOI2 por tipo: {"AVZR<i>": DataFrame(t_ns de formación, lo, hi)} para cada definición de TIPOS_RACIMO."""
+# Grilla de racimos de AVZP2 (2026-10-26, Nico: «muchas perillas, de la zona individual y del racimo; optimizalo y usá las variantes que
+# valen la pena»). Zona: percentil {90, 95, 98} × multiplicador de la mediana {1,5; 2; 3} × velas por bloque {10, 20} × ancho mínimo
+# del cluster {2, 3} ticks = 36 (el resto queda en la réplica AVZP2: bucket 15 min, 20 sesiones, Suma). Racimo: mínimo {4, 6, 8} ×
+# ventana {500, 1000} velas × altura {30, 45} ticks = 12 (las ventanas largas y alturas medias/anchas son donde AVZP2-RACIMO-GRILLA
+# vio compresión 23/23 y O1). Tipo = zona·12 + racimo (432). Pre-registro: PREREGISTRO_U1_ZONAS_BT2_AVZR.md.
+GRILLA_ZONA = [dict(detection_percentile=pc, median_multiplier=mm, window_bars=wb, min_cluster_ticks=mc)
+               for pc in (90.0, 95.0, 98.0) for mm in (1.5, 2.0, 3.0) for wb in (10, 20) for mc in (2, 3)]
+GRILLA_RACIMO = [dict(racimo_min=m, racimo_bars=w, racimo_altura_ticks=a) for m in (4, 6, 8) for w in (500, 1000) for a in (30, 45)]
+
+
+def zonas_avzrg(bloques, tick, spec):
+    """Racimos de AVZP2 de toda la grilla: un DataFrame (t_ns de formación, lo, hi, zona, racimo). Las barras y el footprint se
+    arman una vez; el indicador corre una vez por definición de zona; los racimos se arman de cada lista de zonas (`racimos_de`)."""
     from edgelab.bridge import bars as B
     from edgelab.bridge.indicators.avolzonepoi2 import run
     from edgelab.bridge.ticks import TickSeries
     bl = list(bloques)
-    if not bl: return {}
+    if not bl: return pd.DataFrame()
     ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
     vol = np.concatenate([b.vol.to_numpy() for b in bl]); del bl
     tk = TickSeries(ts_ns=ts, price_ticks=np.round(px / tick).astype(np.int64), volume=vol.astype(np.int64), bid_ticks=None, ask_ticks=None,
                     sequence=np.arange(len(ts), dtype=np.int64), tick_size=tick)
     bars = B.build_tick_bars(tk, spec); fps = B.build_total_footprint_csr_nt8(tk, bars); del tk
-    end = np.asarray(bars.end_ns, np.int64)
-    r = run(bars, fps, B.session_ids(end), dict(PARAMS, racimo_min=0))         # sin racimo en el indicador: se arman abajo por tipo
-    zs = sorted(r["zones"], key=lambda z: z["bar"])
-    out = {}
-    for i, p in enumerate(TIPOS_RACIMO):
-        R = racimos_de(zs, p)
-        out[f"AVZR{i}"] = pd.DataFrame([dict(t_ns=int(end[c["bar"]]), lo=c["low"] * tick, hi=c["high"] * tick) for c in R],
-                                       columns=["t_ns", "lo", "hi"])
-    return out
+    end = np.asarray(bars.end_ns, np.int64); ses = B.session_ids(end); filas = []
+    for iz, pz in enumerate(GRILLA_ZONA):
+        zs = sorted(run(bars, fps, ses, dict(PARAMS, **pz, racimo_min=0))["zones"], key=lambda z: z["bar"])
+        for ir, pr in enumerate(GRILLA_RACIMO):
+            filas += [(int(end[c["bar"]]), c["low"] * tick, c["high"] * tick, iz, ir) for c in racimos_de(zs, pr)]
+    return pd.DataFrame(filas, columns=["t_ns", "lo", "hi", "zona", "racimo"])
 
 
-INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1), "AVZR": (zonas_avzr, 25)}
+INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1),
+               "AVZRG": (zonas_avzrg, 25)}
 LIBRO = {"BT2"}                    # indicadores que clasifican el agresor con bid/ask
 
 
@@ -129,7 +132,7 @@ def main():
             lo_c = int((pd.Timestamp(str(lo)) - pd.Timedelta(days=CALENTAR)).strftime("%Y%m%d"))
             try: Z = fn(F.bloques_futuro(inst, max(lo_c, D0), hi, ent, libro=ind in LIBRO), tick, spec)
             except (ValueError, IndexError) as e: log(f"{inst} {lo}-{hi}: sin datos ({e})"); continue
-            Zd = Z if isinstance(Z, dict) else {ind: Z}                       # AVZR devuelve un almacén por tipo de racimo
+            Zd = Z if isinstance(Z, dict) else {ind: Z}
             for nombre, Zi in Zd.items():
                 if len(Zi):
                     td = F._td(Zi.t_ns.to_numpy()); Zi = Zi[(td >= lo) & (td <= hi)]
