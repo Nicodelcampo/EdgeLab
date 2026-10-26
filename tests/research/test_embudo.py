@@ -97,3 +97,21 @@ def test_candidata_rara_no_se_elige_si_no_puede_confirmarse_en_el_oos(tmp_path, 
                                                                                               evaluables=2, nominadas_fdr=2)))
     st = em._fin_desc(spec, dict(etapa="DESC", reglas={}, historial=[]), res)
     assert st["candidatas"] == [[1, 1, 1]]                                           # 35/27*6 ≈ 8 < 30; 300/27*6 ≈ 67
+
+
+def test_atras_informativa_nunca_mata(tmp_path):
+    """ATRAS (2026-10-26): el pasado en contra con potencia queda publicado como EN_CONTRA_PASADO y la candidata sigue viva."""
+    em = EM.Embudo(tmp_path, {}, log=lambda s: None, ahora=lambda: 1.0)
+    spec = dict(SPEC, atras=[20230101, 20231231])
+    st = dict(etapa="ATRAS", fase="CORRIENDO", historial=[], candidatas=[[1], [2], [3]],
+              desc=dict(pistas=[dict(celda=[1], media_neta=5.0), dict(celda=[2], media_neta=5.0), dict(celda=[3], media_neta=5.0)]))
+    res = dict(replica=[dict(n=150, media_neta=-1.0, ic90=[-1.5, -0.5]), dict(n=150, media_neta=3.0, ic90=[2.5, 3.5]),
+                        dict(n=8, media_neta=-9.0, ic90=[-60.0, 40.0])])
+    st = em._fin_atras(spec, st, res)
+    assert st["etapa"] == "TOPES" and st["candidatas"] == [[1], [2], [3]]
+    assert [v["veredicto"] for v in st["atras"]["veredictos"]] == ["EN_CONTRA_PASADO", "A_FAVOR", "NO_CONCLUYENTE"]
+
+
+def test_atras_tiene_que_ser_anterior_al_desc():
+    assert any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20250701, 20250901])))
+    assert not any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20230101, 20231231])))

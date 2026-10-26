@@ -88,3 +88,15 @@ def test_operaciones_de_reproduce_el_resumen_de_la_replica():
     ops = GG.operaciones_de(cx, [celda])
     assert len(ops) == rep["replica"][0]["n"] and (ops.t.diff().dropna() >= 0).all()
     if "media_neta" in rep["replica"][0]: assert ops.neto.mean() == pytest.approx(rep["replica"][0]["media_neta"])
+
+
+def test_normalizar_divide_por_el_rango_de_la_sesion_previa(monkeypatch):
+    ctx = GG.contexto_m1(_bloques(dias=20, planta=True, seed=5), tick=0.25)
+    cortes = GG.cortes_e0(U.disparos(ctx), U.VARIABLES)
+    celda = [0, 1, 0, 2, 2, 2, 3, 3, 3, 0]
+    _, cx0 = GG.correr(U, ctx, modo="REP", friccion=1.0, extra_adverso=0.5, cortes=cortes, celdas=[celda], log=lambda s: None)
+    monkeypatch.setattr(U, "NORMALIZAR", "rango_sesion_previa", raising=False)
+    rep, cx1 = GG.correr(U, ctx, modo="REP", friccion=1.0, extra_adverso=0.5, cortes=cortes, celdas=[celda], log=lambda s: None)
+    assert rep["normalizado"]["metodo"] == "rango_sesion_previa"
+    ok = np.isfinite(cx1["net"])
+    assert ok.any() and np.allclose(cx1["net"][ok] * GG.escala_ops("rango_sesion_previa", cx1["ses"][ok], ctx), cx0["net"][ok])

@@ -52,3 +52,27 @@ def test_campana_con_cuenta_kaggle_lanza_en_esa_cuenta(tmp_path):
     spec = dict(cid="X5", experimento="edgelab.research.u1_zonas", sensor="ES", cuenta_kaggle="nicobuttaro")
     a = k.argumentos(spec, "DESC", dict(cortes=None), [20250801, 20260331])
     assert a[a.index("--slug") + 1].startswith("nicobuttaro/embudo-x5-desc")
+
+
+def test_cuenta_auto_elige_la_menos_ocupada(tmp_path, monkeypatch):
+    import json
+    monkeypatch.setenv("EDGELAB_KAGGLE_CUENTAS", "nicolasbuttaro,nicobuttaro")
+    raiz = tmp_path / "estado"
+    for cid, h in (("A", "nicolasbuttaro/embudo-a-desc-1"), ("B", "nicolasbuttaro/embudo-b-desc-1"), ("C", "nicobuttaro/embudo-c-desc-1")):
+        (raiz / cid).mkdir(parents=True); (raiz / cid / "estado.json").write_text(json.dumps(dict(fase="CORRIENDO", handle=h)))
+    k = R.KaggleRunner(carpeta=tmp_path, raiz=raiz)
+    assert k.ocupacion() == {"nicolasbuttaro": 2, "nicobuttaro": 1} and k.elegir_cuenta() == "nicobuttaro"
+    spec = dict(cid="X6", experimento="edgelab.research.u1_zonas", sensor="ES", cuenta_kaggle="auto")
+    a = k.argumentos(spec, "DESC", dict(cortes=None), [20250801, 20260331])
+    assert a[a.index("--slug") + 1].startswith("nicobuttaro/embudo-x6-desc")
+    assert k._env("nicobuttaro")["EDGELAB_KAGGLE_OWNER"] == "nicobuttaro"
+
+
+def test_cabecera_por_cuenta(tmp_path, monkeypatch):
+    import sys
+    sys.path.insert(0, str(R.ROOT / "tools"))
+    import kaggle_auth as KA
+    base = tmp_path / ".kaggle_auth_header"; base.write_text("x"); (tmp_path / ".kaggle_auth_header.nicobuttaro").write_text("y")
+    monkeypatch.setenv("KAGGLE_AUTH_HEADER_FILE", str(base))
+    monkeypatch.setenv("EDGELAB_KAGGLE_OWNER", "nicobuttaro"); assert KA.header_file().name.endswith(".nicobuttaro")
+    monkeypatch.setenv("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro"); assert KA.header_file() == base

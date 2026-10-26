@@ -81,6 +81,8 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
         res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))
+        from edgelab.research.eventos import diagnostico                     # 2026-10-26: informativo (CPI/NFP/FOMC)
+        res["eventos"] = por_celda(ops, len(celdas), lambda g: diagnostico(g.t.to_numpy(), g.neto.to_numpy()))
         res["operaciones"] = ops.to_dict("list"); return res
     if etapa == "TOPES":
         out = {}

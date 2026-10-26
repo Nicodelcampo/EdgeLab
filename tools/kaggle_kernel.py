@@ -12,6 +12,7 @@ API="https://www.kaggle.com/api/v1"
 def api_de(owner):
     """Host de la API para la cuenta dueña del kernel (config/kaggle_cuentas.json); por defecto www.kaggle.com."""
     p=os.path.join(os.path.dirname(os.path.abspath(__file__)),"..","config","kaggle_cuentas.json")
+    if os.environ.get("EDGELAB_KAGGLE_API"):return os.environ["EDGELAB_KAGGLE_API"]   # Debian: un solo host, una cabecera por cuenta (kaggle_auth)
     try:return json.load(open(p,encoding="utf-8")).get(owner,API)
     except (OSError,ValueError):return API
 REF=re.compile(r"^[a-z0-9][a-z0-9-]{0,48}/[a-z0-9][a-z0-9-]{0,48}$")

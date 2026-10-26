@@ -11,7 +11,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from construir_kernel import construir  # noqa: E402
 
 BASE = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py",
-        "edgelab/research/areas_expansion_run.py", "edgelab/research/grilla_generica.py"]
+        "edgelab/research/areas_expansion_run.py", "edgelab/research/grilla_generica.py", "edgelab/research/eventos.py",
+        "edgelab/research/eventos_datos.py"]
 
 
 def construir_experimento(modulo, out, extra=()):

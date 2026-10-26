@@ -333,6 +333,19 @@ def resumen_e0(D, variables, cortes):
     return out
 
 
+NORMALIZACIONES = ("rango_sesion_previa",)
+
+
+def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:
+    """Escala causal por operación (2026-10-26, POTENCIA_MISMOS_DATOS §2): `rango_sesion_previa` = máximo − mínimo de la sesión
+    ANTERIOR a la de la operación en el instrumento de ejecución (conocido antes de operar). Sin sesión anterior: NaN (la operación
+    queda fuera, como un llenado imposible). Un experimento la activa declarando `NORMALIZAR` en su módulo, antes de correr."""
+    if metodo not in NORMALIZACIONES: raise ValueError(f"NORMALIZAR {metodo!r}: {NORMALIZACIONES}")
+    s = pd.DataFrame(dict(ses=ctx_ej["ses"], h=ctx_ej["h"], l=ctx_ej["l"])).groupby("ses").agg(h=("h", "max"), l=("l", "min")).sort_index()
+    previo = (s.h - s.l).shift(1); previo = previo.where(previo > 0)
+    return pd.Series(np.asarray(ses_ops)).map(previo).to_numpy(float)
+
+
 def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None,
            resolucion=None):
     t0 = time.time()
@@ -347,6 +360,16 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
+    if (norm := getattr(exp, "NORMALIZAR", None)):                                         # 2026-10-26: estadístico declarado en el módulo
+        esc = escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx)
+        med = float(np.nanmedian(esc)) if np.isfinite(esc).any() else float("nan")
+        net = net / esc; extra_adverso = extra_adverso / med
+        res["normalizado"] = dict(metodo=norm, escala_mediana=med, sin_escala=int((~np.isfinite(esc)).sum()),
+                                  nota="P&L neto en unidades de la escala; × escala_mediana ≈ puntos (extra_adverso escalado por la mediana)")
+    if (ex := getattr(exp, "EXCLUIR_EVENTOS", None)):                                    # 2026-10-26: filtro declarado en el módulo
+        from edgelab.research.eventos import TIPOS, cerca
+        fuera = cerca(ctx["t"][D.k.to_numpy()[di]], ex.get("antes_min", 15), ex.get("despues_min", 15), tuple(ex.get("tipos", TIPOS)))
+        net = np.where(fuera, np.nan, net); res["excluidas_eventos"] = dict(ex, n=int(fuera.sum()))
     P = perillas(exp, cortes); idx = [b[di] for b in discretizar(D, exp.VARIABLES, cortes)] + [ei]
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)

@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 763 |
+| `docs/research` | 764 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,6 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
+| INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
 | RELANZAMIENTO | 1 | `RELANZAMIENTO_ANALISIS_VIEJOS_20261025.md` | 2026-10-25 | VIGENTE |
 | AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
 | REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
 | FUENTES | 1 | `FUENTES_TERCEROS_LILFISH_YOUTUBE_20260928.md` | 2026-09-28 | - |
 | ESPEJO | 2 | `ESPEJO_JUICIOS_TRIADAS_100T_20260928.md` | 2026-09-28 | - |
-| DECISION | 4 | `DECISION_PROVEEDOR_CANONICO_NT8_20260928.md` | 2026-09-28 | - |
 
 ## Superados (7)
 

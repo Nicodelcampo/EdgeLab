@@ -28,7 +28,7 @@ def main():
     ap.add_argument("--ventanas", default=None, help="libro de ventanas del holdout (por defecto el del repo)")
     a = ap.parse_args()
     lec, tk = ER.lectores_sellados(json.loads(a.sellado), Path(a.raiz))
-    emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
+    emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(raiz=Path(a.raiz)), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
                      registro=TrialRegistry(Path(a.registro)), libro=LibroLord(), ventanas=a.ventanas)   # libro único: RUTA_CANONICA
     specs = [json.loads(Path(c).read_text(encoding="utf-8")) for c in a.campanas]
     if (ajenas := [s["cid"] for s in specs if s.get("conductor") != a.conductor]):

@@ -17,6 +17,9 @@ Etapas (una por ciclo de `avanzar`; idempotente; estado en <raiz>/<cid>/estado.j
   OOS        kaggle     réplica en período no usado; un paso de LORD++ de la familia (libro)  todas refutadas -> REFUTADA_OOS
                         (2026-10-24: mata sólo con potencia declarada, en contra significativo y en el MISMO régimen declarado ex ante;
                         sin potencia = NO_CONCLUYENTE; en contra en otro régimen = EN_CONTRA_OTRO_REGIMEN, sigue viva)
+  ATRAS      kaggle     (2026-10-26, informativa) las candidatas congeladas sobre años ANTERIORES al DESC que la familia no usó
+                        (`atras` de la campaña). NUNCA mata: el pasado no refuta lo que funciona en el régimen actual (ATJ-24,
+                        Nico 2026-10-26); se publica A_FAVOR / EN_CONTRA_PASADO / NO_CONCLUYENTE con potencia y va al acta
   TOPES      kaggle     tope de stop por regla declarada (sólo datos ya usados)              ninguna elegible -> SIN_REGLA_OPERABLE
   ACTA       local      acta de holdout con la regla congelada, N fijo y α RESERVADO en el libro (antes de mirar)
   CONTEO     local      sesiones del holdout: sólo cuenta operaciones (sin P&L) hasta llegar a N
@@ -37,7 +40,7 @@ import numpy as np
 
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
-ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
+ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "ATRAS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
 FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
 DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
@@ -204,14 +207,15 @@ class Embudo:
             if st["etapa"] == "FIN": return st
         if e == "PREFLIGHT": return self._preflight(spec, st)
         if e == "ACTA": return self._acta(spec, st)
-        if e == "OOS" and not spec.get("oos"): return self._siguiente(spec, st, "TOPES", nota="sin período OOS declarado")
+        if e == "OOS" and not spec.get("oos"): return self._siguiente(spec, st, "ATRAS", nota="sin período OOS declarado")
         if e == "OOS" and st.get("oos_cubierto_por_pistas"):                       # la réplica de pistas ya usó ese período
-            return self._siguiente(spec, st, "TOPES", nota="el OOS es la ventana donde se replicaron las pistas: no se reusa")
+            return self._siguiente(spec, st, "ATRAS", nota="el OOS es la ventana donde se replicaron las pistas: no se reusa")
+        if e == "ATRAS" and not spec.get("atras"): return self._siguiente(spec, st, "TOPES", nota="sin período hacia atrás declarado")
         params, periodo, runner = self._params(spec, st, e)
         if e == "CONTEO" and st.get("ultimo_conteo") and self.ahora() - st["ultimo_conteo"] < _reglas(spec, st, "holdout")["conteo_cada_s"]: return st
         if st["fase"] == "PENDIENTE":
             self._registrar(spec, e, params)
-            st["handle"] = self.runners[runner].lanzar(spec, "HOLDOUT_CONTEO" if e == "CONTEO" else ("REP" if e in ("OOS", "HOLDOUT", "PISTAS") else e), params, periodo)
+            st["handle"] = self.runners[runner].lanzar(spec, "HOLDOUT_CONTEO" if e == "CONTEO" else ("REP" if e in ("OOS", "HOLDOUT", "PISTAS", "ATRAS") else e), params, periodo)
             st.update(fase="CORRIENDO", params=params, periodo=periodo, lanzada=self.ahora()); self._guardar(spec, st); return st
         est = self.runners[runner].estado(st["handle"])
         if est in ("running", "queued"):
@@ -233,6 +237,7 @@ class Embudo:
         if e == "INDAGA": return dict(base, bases=st["candidatas"]), spec["desc"], "kaggle"
         if e in ("INTEGRIDAD", "TOPES"): return dict(base, celdas=st["candidatas"], topes=_reglas(spec, st, "topes")["lista"] or None), spec["desc"], "kaggle"
         if e == "OOS": return dict(base, celdas=st["candidatas"], resolucion=self._resolucion(spec, len(st["candidatas"]))), spec["oos"], "kaggle"
+        if e == "ATRAS": return dict(base, celdas=st["candidatas"], resolucion=None), [int(x) for x in spec["atras"]], "kaggle"
         if e == "PISTAS":
             pr = st["pistas_replica"]
             return dict(base, celdas=pr["celdas"], resolucion=self._resolucion(spec, len(pr["celdas"]))), pr["ventana"], "kaggle"
@@ -253,7 +258,7 @@ class Embudo:
             n = spec.get("n_celdas_por_canal")
             if not n: raise ValueError("DESC sin n_celdas_por_canal: el contador global no puede quedar corto (lo fija el PREFLIGHT)")
             n = int(n) * 2
-        elif e in ("OOS", "PISTAS"): n = len(params.get("celdas", []))           # PISTAS: las k congeladas, antes de correr
+        elif e in ("OOS", "PISTAS", "ATRAS"): n = len(params.get("celdas", []))           # PISTAS: las k congeladas, antes de correr
         elif e == "TOPES":
             from edgelab.research.etapas import TOPES_ESTANDAR
             n = len(params.get("celdas", [])) * sum(t is not None for t in (params.get("topes") or TOPES_ESTANDAR))
@@ -270,6 +275,11 @@ class Embudo:
         if not r["ok"]: return self._cerrar(spec, st, "BLOQUEADA", f"preflight: {r['errores'][:3]}")
         if (malos := problemas_campana(spec)):
             self._medido(spec, f"- PREFLIGHT de la campaña: {malos}"); return self._cerrar(spec, st, "BLOQUEADA", f"campaña: {malos[:3]}")
+        from edgelab.research.potencia_previa import informe_previo              # 2026-10-26: informativo, no bloquea
+        if (pp := informe_previo(spec, _meses)):
+            st["potencia_previa"] = pp
+            self._medido(spec, f"- Potencia previa declarada: MDE DESC {pp['desc']['mde']:.3g}, OOS {pp.get('oos', {}).get('mde', float('nan')):.3g}, "
+                               f"holdout {pp['holdout']['mde']:.3g}; meses para el efecto útil {pp.get('meses_necesarios')}")
         reglas = {k: _cfg(spec, k) for k in DEFECTOS}
         if (malos := _problemas_regimen(reglas["regimen"]) + self._problemas_linaje(spec)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
@@ -363,6 +373,13 @@ class Embudo:
                            f"(diagnóstico), linaje {nh} como {como}, pistas sin nominación {no_nom}, candidatas {len(cand)}")
         if not cand: return self._a_pistas(spec, st, pistas, tot)
         st["candidatas"] = cand; st["desc"] = dict(pistas=[p for p in pistas if p["celda"] in cand])
+        from edgelab.research.potencia_previa import por_candidata                 # 2026-10-26: informativo, no mata
+        pp = [por_candidata(p, meses_can[id(p)], m_oos, int(_reglas(spec, st, "holdout")["n_fijo"]), _reglas(spec, st, "regimen")["fraccion_efecto"])
+              for p in pistas if p["celda"] in cand]
+        st["potencia_prevista"] = pp
+        self._medido(spec, "- Potencia prevista (informativa): " + "; ".join(
+            f"{x['celda']}: OOS n {x.get('oos', {}).get('n')} potencia {x.get('oos', {}).get('potencia', 0):.2f}, holdout n {x['holdout']['n']} "
+            f"potencia {x['holdout']['potencia']:.2f}" for x in pp))
         return self._siguiente(spec, st, "INDAGA", candidatas=cand)
 
     def _a_pistas(self, spec, st, pistas, tot):
@@ -469,6 +486,22 @@ class Embudo:
                            f"{'confirma ' + str([c['test'] for c in dec['confirmadas']]) if dec and dec['rechazo'] else 'sin rechazo'}")
         if not vivas: return self._cerrar(spec, st, "REFUTADA_OOS", f"todas las candidatas refutadas en un OOS con potencia y del régimen actual ({DECISIONES_20261024})")
         st["candidatas"] = vivas
+        return self._siguiente(spec, st, "ATRAS")
+
+    def _fin_atras(self, spec, st, res):
+        """Informativa (2026-10-26): no cambia `candidatas`. Con potencia y en contra = EN_CONTRA_PASADO (el edge, si existe, es del
+        régimen actual: lo decide el holdout); sin potencia = NO_CONCLUYENTE; IC90 entero > 0 = A_FAVOR; si no, SIN_RECHAZO."""
+        from edgelab.funnel.escalera import ALFA_CONFIRMACION, potencia
+        reg = _reglas(spec, st, "regimen"); pistas = (st.get("desc") or {}).get("pistas", []); ver = []
+        for c, r in zip(st["candidatas"], res.get("replica") or []):
+            md = next((p["media_neta"] for p in pistas if p["celda"] == c), None); ic = r.get("ic90")
+            if not ic or r.get("media_neta") is None or md is None or md <= 0: ver.append(dict(celda=c, veredicto="NO_CONCLUYENTE", n=r.get("n"))); continue
+            se = (ic[1] - ic[0]) / (2 * 1.6448536); pot = potencia(reg["fraccion_efecto"] * md, se, ALFA_CONFIRMACION)
+            v = ("NO_CONCLUYENTE" if not pot == pot or pot < reg["potencia_min"] else "EN_CONTRA_PASADO" if ic[1] < 0
+                 else "A_FAVOR" if ic[0] > 0 else "SIN_RECHAZO")
+            ver.append(dict(celda=c, veredicto=v, n=r.get("n"), media=r["media_neta"], ic90=ic, media_desc=md, potencia=pot))
+        st["atras"] = dict(periodo=spec["atras"], veredictos=ver, nota="informativa: no mata (ATJ-24)")
+        self._medido(spec, f"- ATRAS {spec['atras']} (informativa, no mata): {[(v['veredicto'], round(v.get('media', float('nan')), 2), v.get('n')) for v in ver]}")
         return self._siguiente(spec, st, "TOPES")
 
     def _fin_topes(self, spec, st, res):
@@ -509,6 +542,7 @@ class Embudo:
                     regla=st["regla"], cortes=st["cortes"], holdout_desde=h["desde"], n_fijo=h["n_fijo"], alfa=alfa, registrada=self.ahora(),
                     reserva_lord=reserva, multiplicidad=self._acta_multiplicidad(spec, st, h["n_fijo"]),
                     regimen=(st.get("reglas") or {}).get("regimen"), oos=[v["veredicto"] for v in (st.get("oos") or {}).get("veredictos", [])],
+                    atras=[v["veredicto"] for v in (st.get("atras") or {}).get("veredictos", [])],
                     decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: el paso RESERVADO de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
         if est == "e_proceso":
@@ -604,7 +638,7 @@ def problemas_campana(spec: dict) -> list:
     import importlib
     from edgelab.research import grilla_generica as GG
     e = []
-    for k in ("desc", "oos"):
+    for k in ("desc", "oos", "atras"):
         per = spec.get(k)
         if per is None: continue
         if len(per) != 2 or int(per[0]) > int(per[1]): e.append(f"{k} {per}: período mal formado")
@@ -613,6 +647,8 @@ def problemas_campana(spec: dict) -> list:
     inst = {spec.get("sensor"), spec.get("ejecucion") or spec.get("sensor")}
     if (a3 := sorted(inst & set(A3_INSTRUMENTOS))) and spec.get("desc") and int(spec["desc"][1]) > A3_FIN_DESCUBRIMIENTO:
         e.append(f"desc {spec['desc']} usa la réplica abr–sep de {a3} (HOLDOUT-A3: descubrimiento hasta {A3_FIN_DESCUBRIMIENTO})")
+    if spec.get("atras") and spec.get("desc") and int(spec["atras"][1]) >= int(spec["desc"][0]):
+        e.append(f"atras {spec['atras']} no es anterior al DESC {spec['desc']} (tiene que ser historia que la familia no usó)")
     if spec.get("linaje_como", "informacion") not in LINAJE_COMO: e.append(f"linaje_como {spec.get('linaje_como')!r}: debe ser uno de {LINAJE_COMO}")
     e += _problemas_pistas(spec)
     try: n = GG.n_celdas(importlib.import_module(spec["experimento"]))
