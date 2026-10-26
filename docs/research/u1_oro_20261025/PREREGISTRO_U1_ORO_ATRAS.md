@@ -26,3 +26,12 @@ Media neta ≤ 0 con potencia en 2023–2025.
 
 ## Riesgos
 Régimen distinto (el oro 2023–2025 tuvo otra volatilidad: la escala mensual lo absorbe en parte); proxy XAU vs GC.
+
+## Resultado (2026-10-26, kernel `nicolasbuttaro/embudo-u1-oro-atras-rep-20230102`; `U1_ORO_ATRAS_RESULTADO.json`)
+| n | sesiones | media neta USD/oz | IC90 | p | peor | drawdown máx | total |
+|---:|---:|---:|---|---:|---:|---:|---:|
+| 197 | 154 | **−0,04** | [−0,60; +0,47] | 0,57 | −26,5 | −67,7 | −8,6 |
+
+LORD++ (`U1_ORO_GRILLA::U1-ORO-ATRAS`, nivel 0,0019): no rechaza. El IC90 es angosto (MDE ≈ 1 USD/oz, mucho menor que el +6,58 del
+DESC): **EN CONTRA**. En 31 meses de XAU que la familia nunca vio, la regla congelada no tiene ventaja neta: el +6,58 del DESC era
+selección sobre 8 meses. El acta del holdout ya registrada se mantiene (no se cambia lo pre-registrado), pero no se le asigna prioridad.
