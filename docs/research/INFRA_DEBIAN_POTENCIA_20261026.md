@@ -18,12 +18,11 @@ U1-ES/YM que dieron en contra sobre 2023 siguen vivas en su embudo; ese resultad
 | 2 | **potencia prevista**: MDE de DESC/OOS/holdout antes de correr, y por candidata al final del DESC | `edgelab/research/potencia_previa.py` | `"potencia_previa": {"ops_mes", "sd_op", "efecto_util"}` (opcional); la de candidatas es automática | ninguno: se publica en MEDIDO y en el estado |
 | 3 | **P&L normalizado** por el rango de la sesión anterior (causal) | `grilla_generica.escala_ops` | `NORMALIZAR = "rango_sesion_previa"` en el módulo del experimento | cambia el estadístico: se declara en el módulo, antes de correr |
 | 4 | **meta-análisis** entre instrumentos de una regla congelada (fijo, aleatorio DerSimonian-Laird, I²) | `edgelab/funnel/metaanalisis.py`, `tools/metaanalisis_embudo.py` | a mano sobre estados del embudo | un paso de LORD++ sólo si se declara en un acta; hoy es diagnóstico |
-| 5 | **calendario de eventos** CPI/NFP/FOMC as-of, filtro y diagnóstico | `edgelab/research/eventos.py`, `eventos_datos.py`, `tools/calendario_eventos.py` | `EXCLUIR_EVENTOS = dict(...)` en el módulo; el diagnóstico sale en toda réplica | filtro: declarado antes; diagnóstico: informativo |
+| 5 | **calendario de eventos** CPI/NFP/FOMC as-of, filtro y diagnóstico | `edgelab/research/eventos.py` sobre el calendario de `edgelab/noticias.py` (`tools/eventos_desde_noticias.py`; corregido el 2026-10-26: el primer calendario duplicaba `noticias.py`) | `EXCLUIR_EVENTOS = dict(...)` en el módulo; el diagnóstico sale en toda réplica | filtro: declarado antes; diagnóstico: informativo |
 | 6 | **reparto entre las dos cuentas de Kaggle** según kernels corriendo | `embudo_runners.KaggleRunner.elegir_cuenta`, `tools/kaggle_auth.py` (cabecera por cuenta) | `"cuenta_kaggle": "auto"`; en el Debian, credencial y variables del paso 3a de `deploy/debian/LEEME.md` | ninguno (ventanas, LORD++ y registro son por familia) |
 | 7 | conductores que sobreviven reinicios | ya lo hace el timer del Debian (`edgelab-autopilot.timer`, cada 10 min, `avanzar_todas`) | pasar la campaña a `"conductor": "debian"` (traspaso de `DECISIONES_20261025_SV1.md` §3) | — |
 
-Fuentes del calendario: ALFRED (Fed de St. Louis, release 10 = CPI y 50 = Employment Situation, 08:30 ET) y el calendario del FOMC de
-la Reserva Federal (día de la decisión, 14:00 ET). Incluye las publicaciones corridas por el cierre del gobierno de oct-nov 2025.
+Fuente del calendario: `config/noticias/calendario_usd_tier1.csv` de `edgelab/noticias.py` (fuente por fila). El 2026-10-26 se había armado un calendario propio desde ALFRED y la Fed sin buscar antes: duplicaba ese módulo y se reemplazó.
 
 ## Para el agente del Debian (orden sugerido en campañas nuevas)
 1. Declarar `potencia_previa` con la frecuencia y el desvío de una familia vecina: si los meses necesarios superan la historia, ampliar

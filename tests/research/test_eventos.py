@@ -4,19 +4,25 @@ from edgelab.research import eventos as EV
 from edgelab.research.eventos_datos import EVENTOS
 
 
-def test_datos_oficiales_basicos():
-    fechas = {(k, f) for _, k, f in EVENTOS}
-    assert ("FOMC", "2024-05-01") in fechas and ("CPI", "2025-10-24") in fechas and ("NFP", "2025-11-20") in fechas   # cierre 2025
-    t = dict(((k, f), t) for t, k, f in EVENTOS)
-    assert t[("CPI", "2024-01-11")] == 1704979800                       # 08:30 EST = 13:30 UTC
-    assert t[("NFP", "2024-07-05")] == 1720182600                       # 08:30 EDT = 12:30 UTC
+def test_datos_embebidos_al_dia_con_noticias():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import eventos_desde_noticias as G
+    assert G.DESTINO.read_text(encoding="utf-8") == G.generar(), "regenerar: python tools/eventos_desde_noticias.py --write"
+
+
+def test_horarios_canonicos():
+    t = {(k, int(ts)) for ts, k, _ in EVENTOS}
+    assert ("CPI", 1704979800) in t                                      # 2024-01-11 08:30 EST = 13:30 UTC
+    assert ("NFP_EMPLOYMENT_SITUATION", 1720182600) in t                 # 2024-07-05 08:30 EDT = 12:30 UTC
 
 
 def test_cerca_ventana():
     t0 = 1704979800
     m = EV.cerca([t0 - 16 * 60, t0 - 15 * 60, t0, t0 + 15 * 60, t0 + 16 * 60], 15, 15)
     assert m.tolist() == [False, True, True, True, False]
-    assert EV.cerca([t0 + 600], 15, 15, tipos=("FOMC",)).tolist() == [False]
+    assert EV.cerca([t0 + 600], 15, 15, tipos=("FOMC_DECISION",)).tolist() == [False]
 
 
 def test_diagnostico():

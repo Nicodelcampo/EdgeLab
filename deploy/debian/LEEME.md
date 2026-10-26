@@ -47,7 +47,7 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
   de la sesión anterior del instrumento de ejecución; causal). Baja la varianza cuando los días son muy distintos.
 - **Eventos macro**: `EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI","NFP","FOMC"))` en el módulo deja fuera las
   entradas en esas ventanas; toda réplica publica además `eventos` (parte de las operaciones y del P&L cerca de un evento). Calendario:
-  `python tools/calendario_eventos.py --write` (fuentes oficiales; regenerar una vez por mes y commitear).
+  el de `edgelab/noticias.py` (fuente única); después de regenerar ese CSV, `python tools/eventos_desde_noticias.py --write` y commitear.
 - **Meta-análisis entre instrumentos** de una regla congelada: `edgelab.funnel.metaanalisis.combinar` (efecto fijo y aleatorio, I²).
 - **Reparto entre cuentas**: `"cuenta_kaggle": "auto"` (paso 3a).
 

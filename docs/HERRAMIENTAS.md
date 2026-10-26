@@ -133,7 +133,6 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/build_tbz_e2_layer.py` | Capa TBZ-E2 para el visor unificado: TODA la lógica medida, sobre el gráfico continuo de 25 ticks. |
 | `tools/build_viewer.py` | build_viewer.py — exporta un STORE a un bundle para el visor v2 (F6.5). |
 | `tools/build_zone_def_batch.py` | Tanda ✓/✗ para validar definiciones de zona de IPC (target-free, a ciegas). Diseño: DISENO_IPC_ABANICO_DE_MECANISMOS_20260927.md §5. |
-| `tools/calendario_eventos.py` | Calendario as-of de eventos macro de EE. UU. (2026-10-26): baja las fechas oficiales y regenera |
 | `tools/calibrate_hftzones_universal_profiles.py` | Perfiles escalados de HFTZones (motor NQ congelado) para todos los activos. **Target-free**: solo ticks. |
 | `tools/camp001_dryrun.py` | Dry run de CAMP-001 — SIN acceso a retornos ni P&L. |
 | `tools/camp001_integrity.py` | CAMP-001 A3 — INTEGRIDAD ANTES DE ABRIR. |
@@ -227,6 +226,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
 | `tools/eurusd_escalonadas_grid.py` | EURUSD-ESCALONADAS-ESCALAS — docs/research/eurusd_escalonadas_20261021/MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md |
+| `tools/eventos_desde_noticias.py` | Genera `edgelab/research/eventos_datos.py` desde el calendario canónico de noticias (`edgelab/noticias.py`, |
 | `tools/evx.py` | EVX: cruces EMA × VWAP de sesión. Etapas E0 (censo) y E1 (información, sin P&L). |
 | `tools/exec_qi.py` | EXEC-QI: costo de entrar pasivo vs agresivo, condicionado al desequilibrio del libro (QI). |
 | `tools/exec_qi_nt8_compare.py` | EXEC-QI, validación de fills: lee los CSV de EdgeLabExecQIProbe (NT8) y compara. |
