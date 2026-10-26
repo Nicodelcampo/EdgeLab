@@ -106,7 +106,7 @@ def test_pistas_ruido_puro_no_confirma(tmp_path):
 def test_oos_cubierto_por_pistas_no_se_reusa(tmp_path):
     em = _em(tmp_path, Fijo([])); st = _st(em, etapa="OOS", candidatas=[[0]], oos_cubierto_por_pistas=True)
     st = em.avanzar(SPEC)
-    assert st["etapa"] == "TOPES" and st["historial"][-1]["nota"].startswith("el OOS es la ventana")
+    assert st["etapa"] == "ATRAS" and st["historial"][-1]["nota"].startswith("el OOS es la ventana")
 
 
 def test_elegir_pistas_ordena_por_cota_inferior_nunca_por_media():
