@@ -61,3 +61,11 @@ def test_avzrg_grilla_completa(A, monkeypatch):
     monkeypatch.setattr(A, "GRILLA_RACIMO", [dict(racimo_min=2, racimo_bars=1000, racimo_altura_ticks=45), dict(racimo_min=8, racimo_bars=500, racimo_altura_ticks=30)])
     Z = A.zonas_avzrg(_bloques(), 0.25, 25)
     assert list(Z.columns) == ["t_ns", "lo", "hi", "zona", "racimo"] and len(Z) and set(Z.zona) == {0} and set(Z.racimo) <= {0, 1}
+
+
+def test_avzg_zonas_individuales_por_definicion(A, monkeypatch):
+    monkeypatch.setattr(A, "PARAMS", dict(A.PARAMS, **SUELTO))
+    monkeypatch.setattr(A, "GRILLA_ZONA", [dict(detection_percentile=50.0, median_multiplier=2.0, window_bars=10, min_cluster_ticks=2),
+                                           dict(detection_percentile=90.0, median_multiplier=2.0, window_bars=10, min_cluster_ticks=2)])
+    Z = A.zonas_avzg(_bloques(), 0.25, 25)
+    assert list(Z.columns) == ["t_ns", "lo", "hi", "zona"] and set(Z.zona) <= {0, 1} and (Z.zona == 0).sum() >= (Z.zona == 1).sum() > -1

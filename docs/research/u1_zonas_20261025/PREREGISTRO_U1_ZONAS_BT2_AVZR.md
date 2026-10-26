@@ -42,3 +42,10 @@ huecos de cotización de LUX-IMB.
 ## 6. Cómo podría refutarse
 Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o,
 en racimos, que ninguna definición se separe de las demás (la perilla no agrega nada). Muere para esa fuente e instrumento.
+
+## 7. Adenda (2026-10-26, antes de correr): zonas individuales en YM
+U1-RACIMOS-GRILLA-YM dio **0 celdas evaluables** (52.629 racimos repartidos en 432 definiciones: N insuficiente, no es un nulo).
+Nico: «relajá el filtro para considerar zonas individuales». Campaña **U1-ZONAS-GRILLA-YM** (familia `U1_ZONAS_GRILLA_YM`,
+`edgelab/research/u1_zonas_grilla.py`): cada zona de AVZP2 es un área, sin racimo; definición de zona (las mismas 36) como perilla; U1
+reducida igual que el nivel 1. 3.888 celdas por canal. Almacén `ZONAS_AVZG_YM`. Linaje: hereda de `U1_RACIMOS_GRILLA_YM` (misma fuente,
+mismo instrumento; la de racimos no produjo resultados que mirar). Refutación: igual que §6.

@@ -3,7 +3,7 @@
 # que la crea) y su banda de precio, para que la gramática de U1 (edgelab/research/u1_zonas.py) la use como fuente de zonas.
 # Indicadores: aVolZonePOI2 (edgelab/bridge/indicators/avolzonepoi2.py, PASS en MNQ 25t). Reutiliza fuentes_ticks.bloques_futuro,
 # edgelab/bridge/bars (barras de N ticks, footprint total NT8, sesiones) y oro_0530.trimestres. Sin desenlaces ni retornos.
-# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
+# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG | AVZG), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
 # Salida: ZONAS_<IND>_<INST>.parquet y ALMACEN_ZONAS_<IND>.json.
 import json
 import os
@@ -115,7 +115,27 @@ def zonas_avzrg(bloques, tick, spec):
     return pd.DataFrame(filas, columns=["t_ns", "lo", "hi", "zona", "racimo"])
 
 
-INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1),
+def zonas_avzg(bloques, tick, spec):
+    """Zonas INDIVIDUALES de AVZP2 para las 36 definiciones de GRILLA_ZONA, sin racimo (2026-10-26, Nico: «relajá el filtro para
+    considerar zonas individuales» — en YM los racimos son demasiado pocos para la gramática de U1). Una fila por zona: t_ns del cierre
+    de la barra que la decide, lo, hi, zona (índice de la definición)."""
+    from edgelab.bridge import bars as B
+    from edgelab.bridge.indicators.avolzonepoi2 import run
+    from edgelab.bridge.ticks import TickSeries
+    bl = list(bloques)
+    if not bl: return pd.DataFrame()
+    ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
+    vol = np.concatenate([b.vol.to_numpy() for b in bl]); del bl
+    tk = TickSeries(ts_ns=ts, price_ticks=np.round(px / tick).astype(np.int64), volume=vol.astype(np.int64), bid_ticks=None, ask_ticks=None,
+                    sequence=np.arange(len(ts), dtype=np.int64), tick_size=tick)
+    bars = B.build_tick_bars(tk, spec); fps = B.build_total_footprint_csr_nt8(tk, bars); del tk
+    end = np.asarray(bars.end_ns, np.int64); ses = B.session_ids(end); filas = []
+    for iz, pz in enumerate(GRILLA_ZONA):
+        filas += [(int(z["end_ns"]), z["low_tick"] * tick, z["high_tick"] * tick, iz) for z in run(bars, fps, ses, dict(PARAMS, **pz, racimo_min=0))["zones"]]
+    return pd.DataFrame(filas, columns=["t_ns", "lo", "hi", "zona"])
+
+
+INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVZG": (zonas_avzg, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1),
                "AVZRG": (zonas_avzrg, 25)}
 LIBRO = {"BT2"}                    # indicadores que clasifican el agresor con bid/ask
 
