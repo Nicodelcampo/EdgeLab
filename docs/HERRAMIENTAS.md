@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-532 scripts.
+538 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -13,6 +13,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/agotamiento.py` | AGOT-EXT: agotamiento en extremo (divergencia de RSI y de delta). Manifiesto aprobado por Nico el 25/09 |
 | `tools/agregar_velas.py` | Bundle de velas Nt a partir de un bundle 25t, agrupando de a k velas DENTRO de cada sesión (como el 100t del visor). |
 | `tools/analisis_profundo_corredores.py` | tools/analisis_profundo_corredores.py |
+| `tools/analizar.py` | Analizador de estrategias (como el Strategy Analyzer de NT8) sobre el simulador sellado y los costos canónicos. |
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
 | `tools/atlas_asimetrico.py` | Atlas nulo — grilla ASIMÉTRICA P/N y horizontes finos. **NULL / DESCRIPTIVO.** |
 | `tools/atlas_excursiones_nulas.py` | ATLAS DE EXCURSIONES NULAS — **NULL / DESCRIPTIVO. NO ES UN EDGE.** |
@@ -141,6 +142,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/camp001_run.py` | CAMP-001 A2 — EJECUCIÓN INMUTABLE. |
 | `tools/campaign_ticks_multi.py` | Campaña multi-instrumento sobre ticks (5 familias x 4 variantes x 5 instrumentos = 100 pruebas). |
 | `tools/campaign_ticks_multi_rerun.py` | Re-corrida CORREGIDA de F3/F4 de la campaña multi-instrumento (bug de apertura RTH, 2026-09-23). |
+| `tools/canasta.py` | Canasta de estrategias de régimen (edgelab/funnel/canasta.py): estado, altas desde el embudo, operaciones forward y retiros. |
 | `tools/censo_es_nq.py` | CENSO DE INTEGRIDAD para `es_full_ticks` y `nq_ticks_clean`. |
 | `tools/censo_integridad.py` | CENSO DE INTEGRIDAD — todos los días de todos los parquets. |
 | `tools/censo_zonas_nq.py` | Censo target-free de zonas HFT sobre NQ, con barrido de umbrales gratis. |
@@ -225,6 +227,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
 | `tools/eurusd_escalonadas_grid.py` | EURUSD-ESCALONADAS-ESCALAS — docs/research/eurusd_escalonadas_20261021/MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md |
+| `tools/eventos_desde_noticias.py` | Genera `edgelab/research/eventos_datos.py` desde el calendario canónico de noticias (`edgelab/noticias.py`, |
 | `tools/evx.py` | EVX: cruces EMA × VWAP de sesión. Etapas E0 (censo) y E1 (información, sin P&L). |
 | `tools/exec_qi.py` | EXEC-QI: costo de entrar pasivo vs agresivo, condicionado al desequilibrio del libro (QI). |
 | `tools/exec_qi_nt8_compare.py` | EXEC-QI, validación de fills: lee los CSV de EdgeLabExecQIProbe (NT8) y compara. |
@@ -266,6 +269,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/hft_reversion_explore.py` | HFT-REV-EXP: ¿una zona HFTZonesNQPureV4 anticipa la reversión cuando el precio vuelve a ella? (exploratorio) |
 | `tools/hftv4_retorno_stage1.py` | HFTV4-RETORNO etapa 1 (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md): zonas HFTZonesNQPureV4 + flecha + pseudo-zonas. |
 | `tools/hftv4_retorno_stage2.py` | HFTV4-RETORNO análisis (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md). |
+| `tools/holdout_canasta.py` | Holdout de la CANASTA de pistas de una familia que terminó PISTAS_VIVAS (decisión de Nico, 2026-10-26, auditoría del filtro: |
 | `tools/ib_vwap_pmh_pml_nq_20260929.py` | Fixed NQ IB/VWAP and PMH/PML development backtest. |
 | `tools/ib_vwap_pmh_pml_nq_raw_audit_20260929.py` | Independent trade execution check directly against raw Parquet ticks. |
 | `tools/ingest_cycle001_lessons.py` | Build the CYCLE-001 genesis ledger for the durable Experimental Hippocampus. |
@@ -358,6 +362,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/mapa_info_costo_analisis.py` | IVC: mapa de información contra costo (manifiesto docs/research/MANIFIESTO_MAPA_INFO_COSTO_20260926.md §5-6). |
 | `tools/mapa_info_costo_kaggle.py` | IVC: grilla de 5 minutos con estados causales y retornos futuros del medio, por sesión (manifiesto |
 | `tools/mcpt_mgc_ema.py` | Full-pipeline intraday permutation test for the MGC EMA headline. |
+| `tools/metaanalisis_embudo.py` | Meta-análisis entre instrumentos de UNA regla congelada a partir de los estados del embudo (2026-10-26). |
 | `tools/mgc_direction_diagnostic.py` | MGC EMA headline: long/short split, random-direction nulls, concentration, D0/D1/D2. Pre-registered in |
 | `tools/mgc_direction_maxnull.py` | Enmienda 1 del pre-registro: nulo de máximo sobre 21 celdas normales con dirección sorteada por sesión. |
 | `tools/mgc_family_t1.py` | PREREGISTRO_FAMILIA_20261004 T1: media de las 21 celdas normales bajo dirección sorteada por sesión. |
@@ -413,6 +418,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/razon_de_varianzas.py` | RAZÓN DE VARIANZAS (Lo–MacKinlay 1988) — ¿hay algo que ganarle a la tabla nula? |
 | `tools/rebuild_hft_bundles_scaled.py` | Regenera los bundles 25t + HFT de los activos no-NQ con el perfil escalado (SCALED_FUNNEL_V1). |
 | `tools/reconstruct_avzvol_candidate_bar_map.py` | Timestamp-only structural QA of candidate AVZVOL bar identity, NOT research. |
+| `tools/reconstruir_kernels.py` | Reconstruye TODOS los kernels commiteados con los módulos actuales (error O6 de |
 | `tools/recortar_spot_holdout.py` | Recorta un dataset SPOT de Dukascopy en la frontera del holdout (HOLDOUT-A4) y deja la carpeta lista para subirla como |
 | `tools/rectify_kaggle_manifest.py` | Rectify the Kaggle manifest from records plus captured remote inventory. |
 | `tools/recut_holdout.py` | Re-corte fisico del holdout sobre los parquets que lo contienen (P-18). |

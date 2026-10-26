@@ -95,7 +95,8 @@ def cambios(wt: Path) -> list:
 
 
 SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Escribís código Python en el directorio actual (una worktree "
-           "descartable). Seguí docs/research/GUIA_GRILLA_MASIVA.md y docs/research_funnel_playbook.md. Reglas fijas: el código nuevo de "
+           "descartable). Seguí docs/research/GUIA_GRILLA_MASIVA.md, docs/research_funnel_playbook.md y docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md "
+           "(errores que no se repiten: leelo antes de escribir). Reglas fijas: el código nuevo de "
            "experimentos va en edgelab/research/agente/, sus kernels en tools/agente/, sus tests en tests/agente/ y su documentación en "
            "docs/research/agente/. Cada módulo de experimento trae tests/agente/test_<modulo>.py con test_control_ruido (ruido puro sin "
            "hallazgos), test_control_plantado (efecto plantado encontrado) y, si usa numba, test_oraculo (Python simple con empates). "

@@ -58,6 +58,7 @@ El ejemplo completo es AREAS-EXP-1: `edgelab/research/areas_expansion*.py`, `too
 | El perfil de volumen por disparo en Python hacía lento el kernel con ticks reales. | Perfilar antes de lanzar; los bucles por evento, en numba y en lote; nada por operación en Python que pueda hacerse por evento. |
 | `fcntl`, `/dev/null` y CRLF rompían herramientas en Windows. | Las herramientas compartidas con el Debian se prueban en las dos plataformas (la suite corre en Windows con `tests/conftest.py`). |
 | Corte del holdout a las 00:00 UTC (deja pasar 2 h de la sesión). | La frontera sale sólo de `edgelab/holdout.py` (apertura de la sesión, 22:00 UTC del día anterior). |
+| Pistas exigidas una por una a nivel LORD++/k (potencia 1–2 %) cerraban familias; también sin resolución o sin ventana (2026-10-26). | Canasta de pistas como una prueba; sólo REFUTADA con potencia cierra; el resto PISTAS_VIVAS. Registro completo de errores y guardas del 2026-10-25/26: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (leerlo antes de lanzar). |
 
 ## 3. Capacidad, cobertura y relevancia
 

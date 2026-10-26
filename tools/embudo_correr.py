@@ -20,17 +20,57 @@ from edgelab.funnel.multiplicity import TrialRegistry  # noqa: E402
 from edgelab.research import embudo as EMB, embudo_runners as ER  # noqa: E402
 
 
+def problemas_conduccion(specs, raiz: Path, repo: Path = ROOT) -> list:
+    """Guardas (2026-10-26): (1) una campaña con estado en OTRA carpeta del repo no se conduce acá (arrancaría de cero y relanzaría su
+    DESC: pasó con U1-ZONAS-NQ); (2) una campaña con un conductor vivo no se conduce dos veces (lock con pid)."""
+    import glob, os
+    e = []
+    for s in specs:
+        otros = [Path(f).parent.parent for f in glob.glob(str(repo / "docs/research/**/embudo" / s["cid"] / "estado.json"), recursive=True)]
+        otros = [o for o in otros if o.resolve() != Path(raiz).resolve()]
+        if otros and not (Path(raiz) / s["cid"] / "estado.json").exists():
+            e.append(f"{s['cid']} tiene estado en {otros[0]}: usar --raiz {otros[0]}")
+        pid = _pid_vivo(Path(raiz) / s["cid"] / ".conductor.pid")
+        if pid and pid != os.getpid(): e.append(f"{s['cid']} ya tiene conductor vivo (pid {pid}); `--detener {s['cid']}` para frenarlo")
+    return e
+
+
+def _pid_vivo(f: Path):
+    import os
+    try: pid = int(f.read_text().strip())
+    except (OSError, ValueError): return None
+    try: os.kill(pid, 0); return pid
+    except OSError: return None
+
+
+def tomar(raiz: Path, cid: str):
+    import os
+    d = Path(raiz) / cid; d.mkdir(parents=True, exist_ok=True); (d / ".conductor.pid").write_text(str(os.getpid()))
+
+
+def detener(raiz: Path, cid: str) -> str:
+    """Frena el conductor de UNA campaña por su pid (nunca `pkill -f`: el patrón también coincide con el shell que lo ejecuta)."""
+    import os, signal
+    pid = _pid_vivo(Path(raiz) / cid / ".conductor.pid")
+    if not pid: return f"{cid}: sin conductor vivo"
+    os.kill(pid, signal.SIGTERM); return f"{cid}: conductor {pid} detenido (frena todas las campañas de ese proceso)"
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("campanas", nargs="+"); ap.add_argument("--raiz", required=True);
+    ap = argparse.ArgumentParser(); ap.add_argument("campanas", nargs="*"); ap.add_argument("--raiz", required=True);
     ap.add_argument("--sellado", default="{}"); ap.add_argument("--intervalo", type=int, default=300); ap.add_argument("--max-errores", type=int, default=5)
     ap.add_argument("--registro", default=str(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"))
     ap.add_argument("--conductor", default="local", choices=EMB.CONDUCTORES)
     ap.add_argument("--ventanas", default=None, help="libro de ventanas del holdout (por defecto el del repo)")
+    ap.add_argument("--detener", default=None, help="CID: frena el conductor de esa campaña (por pid) y sale")
     a = ap.parse_args()
+    if a.detener: print(detener(Path(a.raiz), a.detener)); return
     lec, tk = ER.lectores_sellados(json.loads(a.sellado), Path(a.raiz))
-    emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
+    emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(raiz=Path(a.raiz)), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
                      registro=TrialRegistry(Path(a.registro)), libro=LibroLord(), ventanas=a.ventanas)   # libro único: RUTA_CANONICA
     specs = [json.loads(Path(c).read_text(encoding="utf-8")) for c in a.campanas]
+    if (malos := problemas_conduccion(specs, Path(a.raiz))): sys.exit("NO SE CONDUCE: " + "; ".join(malos))
+    for s in specs: tomar(Path(a.raiz), s["cid"])
     if (ajenas := [s["cid"] for s in specs if s.get("conductor") != a.conductor]):
         sys.exit(f"NO SE CONDUCE: {ajenas} no declaran \"conductor\": \"{a.conductor}\" (un solo conductor por campaña)")
     vivas = {s["cid"] for s in specs}; errores = {}

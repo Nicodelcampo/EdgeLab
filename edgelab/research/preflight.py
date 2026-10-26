@@ -48,6 +48,8 @@ def estatico(exp) -> list:
         if v.modo == "extremos" and n != 3: err.append(f"variable {v.nombre}: modo extremos exige 3 niveles (tiene {n})")
         if v.columna in cols: err.append(f"variable {v.nombre}: columna {v.columna} repetida")
         cols.add(v.columna)
+    from edgelab.research.grilla_generica import NORMALIZACIONES
+    if getattr(exp, "NORMALIZAR", None) not in (None,) + NORMALIZACIONES: err.append(f"NORMALIZAR {exp.NORMALIZAR!r}: uno de {NORMALIZACIONES}")
     nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
     for k in exp.BASE:
         if k not in nombres: err.append(f"BASE nombra una perilla inexistente: {k}")

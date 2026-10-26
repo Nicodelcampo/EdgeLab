@@ -198,12 +198,12 @@ def test_oos_con_potencia_en_contra_y_mismo_regimen_mata(tmp_path):
 
 def test_oos_en_contra_en_otro_regimen_no_mata(tmp_path):
     st = _oos(tmp_path, (-3.0, -1.0), regimen=dict(definicion="volatilidad alta desde ago-2025", actual_desde=20250801), oos=(20230101, 20250731))
-    assert st["etapa"] == "TOPES" and st["oos"]["veredictos"][0]["veredicto"] == "EN_CONTRA_OTRO_REGIMEN"
+    assert st["etapa"] == "ATRAS" and st["oos"]["veredictos"][0]["veredicto"] == "EN_CONTRA_OTRO_REGIMEN"
 
 
 def test_oos_sin_potencia_es_no_concluyente(tmp_path):
     st = _oos(tmp_path, (-40.0, -1.0))                                                # IC enorme: no tiene potencia para 2,5 pts
-    assert st["etapa"] == "TOPES" and st["oos"]["veredictos"][0]["veredicto"] == "NO_CONCLUYENTE"
+    assert st["etapa"] == "ATRAS" and st["oos"]["veredictos"][0]["veredicto"] == "NO_CONCLUYENTE"
 
 
 def test_regimen_no_puede_definirse_con_el_holdout():

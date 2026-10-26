@@ -68,14 +68,16 @@ def _desc(pistas):
 
 
 # ------------------------------------------------------------------------------------------- 1. pistas a réplica (ATJ-25)
-def _hasta_pistas(tmp_path, efecto):
-    """DESC sin nominadas -> PISTAS (congeladas, registradas, réplica en la ventana) -> decisión del lote con UN paso de LORD++."""
+def _hasta_pistas(tmp_path, efecto, difuso=None):
+    """DESC sin nominadas -> PISTAS (congeladas, registradas, réplica en la ventana) -> decisión del lote. `difuso`: todas las pistas con
+    el mismo efecto chico (ninguna confirma sola; la canasta sí debería)."""
     pistas = [_pista([i, i, 0], ic0=10.0 - i, t_rw=1.0 + i) for i in range(6)]
-    rep = []
+    rep = []; ops = dict(celda=[], ses=[], neto=[])
     for j in range(4):                                                       # la réplica: celda 0 y 1 con efecto plantado (o todo ruido)
-        x, s = _ops(efecto if j < 2 else 0.0, seed=100 + j)
+        x, s = _ops(difuso if difuso is not None else (efecto if j < 2 else 0.0), seed=100 + j)
         rep.append(_fila(x, s, [j, j, 0], nivel=0.0109, m=4))
-    reg = Reg(); run = Fijo([_desc(pistas), dict(replica=rep)])
+        ops["celda"] += [j] * len(x); ops["ses"] += s.tolist(); ops["neto"] += x.tolist()
+    reg = Reg(); run = Fijo([_desc(pistas), dict(replica=rep, operaciones=ops)])
     em = _em(tmp_path, run, reg); _st(em)
     st = em.avanzar(SPEC); st = em.avanzar(SPEC)                            # lanza DESC; trae DESC -> PISTAS
     assert st["etapa"] == "PISTAS" and st["pistas_replica"]["celdas"] == [[0, 0, 0], [1, 1, 0], [2, 2, 0], [3, 3, 0]]   # por cota inferior, k = 4
@@ -91,22 +93,37 @@ def test_pistas_efecto_plantado_se_confirma_y_sigue_a_indaga(tmp_path):
     st, em = _hasta_pistas(tmp_path, efecto=0.8)
     assert st["etapa"] == "INDAGA" and st["candidatas"] == [[0, 0, 0], [1, 1, 0]], st.get("motivo")
     fam = em.libro.estado["familias"]["FNF"]
-    assert fam["t"] == 1 and fam["rechazos"] == [1]                           # el lote entero gastó UN paso
+    assert fam["t"] == 2 and fam["rechazos"]                                   # dos pasos: la canasta (una prueba) y el lote de pistas
     assert all(p.get("nominada_replica") for p in st["desc"]["pistas"][:2]) and not st["desc"]["pistas"][2].get("nominada_replica")
     assert st["oos_cubierto_por_pistas"]                                      # la ventana fue el OOS: no se reusa
     assert EM.nominada(st["desc"]["pistas"][0], 10**9, "compuerta")[0]        # cuenta como nominada aguas abajo (revalidación)
 
 
-def test_pistas_ruido_puro_no_confirma(tmp_path):
+def test_pistas_ruido_puro_no_confirma_y_sin_potencia_no_mata(tmp_path):
+    """Ruido puro: nada confirma. La canasta no está en contra con potencia -> PISTAS_VIVAS (viva), no SIN_CANDIDATAS
+    (decisión de Nico 2026-10-26, auditoría del filtro). La canasta gasta su propio paso de LORD++ (t = 2)."""
     st, em = _hasta_pistas(tmp_path, efecto=0.0)
-    assert st["etapa"] == "FIN" and st["fase"] == "SIN_CANDIDATAS" and "pistas a réplica" in st["motivo"]
-    assert em.libro.estado["familias"]["FNF"]["t"] == 1
+    assert st["etapa"] == "FIN" and st["fase"] == "PISTAS_VIVAS" and "canasta" in st["motivo"]
+    assert st["pistas_replica"]["veredicto"]["veredicto"] in ("SIN_RECHAZO", "SIN_POTENCIA")
+    assert em.libro.estado["familias"]["FNF"]["t"] == 2 and not st["candidatas"] if "candidatas" in st else True
+
+
+def test_pistas_canasta_en_contra_con_potencia_refuta(tmp_path):
+    st, _ = _hasta_pistas(tmp_path, efecto=0.0, difuso=-1.0)
+    assert st["fase"] == "SIN_CANDIDATAS" and st["pistas_replica"]["veredicto"]["veredicto"] == "REFUTADA"
+
+
+def test_pistas_edge_difuso_lo_confirma_la_canasta(tmp_path):
+    """Cuatro pistas con el mismo efecto chico: ninguna pasa sola al umbral / 4, la canasta (una prueba) sí."""
+    st, _ = _hasta_pistas(tmp_path, efecto=0.0, difuso=0.45)
+    v = st["pistas_replica"]["veredicto"]["veredicto"]
+    assert v == "CANASTA_CONFIRMADA" and st["etapa"] == "INDAGA" and len(st["candidatas"]) >= 1, (v, st.get("motivo"))
 
 
 def test_oos_cubierto_por_pistas_no_se_reusa(tmp_path):
     em = _em(tmp_path, Fijo([])); st = _st(em, etapa="OOS", candidatas=[[0]], oos_cubierto_por_pistas=True)
     st = em.avanzar(SPEC)
-    assert st["etapa"] == "TOPES" and st["historial"][-1]["nota"].startswith("el OOS es la ventana")
+    assert st["etapa"] == "ATRAS" and st["historial"][-1]["nota"].startswith("el OOS es la ventana")
 
 
 def test_elegir_pistas_ordena_por_cota_inferior_nunca_por_media():

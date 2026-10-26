@@ -1,0 +1,14 @@
+## U1-ZONAS-AVCL-NQ — edgelab.research.u1_zonas_avcl · señal NQ · ejecución NQ
+- Justificación: U1 (la familia más rentable) con zonas de volumen real concentrado (aVolZonePOI2) en lugar de huecos de LUX-IMB, operada en el propio futuro.
+- Refutación: Sin nominadas ni pistas confirmadas; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o rendimiento <= U1 con LUX-IMB en el mismo instrumento.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4654307 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- Evaluables: 1392 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250801, 20260331]: evaluables 1228 (m del FDR 1228 de 4478976 celdas), FDR 0, RW umbral 3.4642956256866455 (diagnóstico), linaje 4654307 como informacion, pistas sin nominación 24, candidatas 0
+- PISTAS a réplica (ATJ-25): 19 congeladas de 24 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 0, 0, 2, 1, 2, 3, 3, 3, 0, 0, 2], [0, 0, 0, 2, 2, 1, 3, 3, 3, 0, 0, 16], [0, 2, 0, 2, 2, 2, 3, 3, 3, 2, 0, 0], [0, 2, 0, 1, 2, 2, 3, 3, 3, 0, 0, 33], [0, 2, 0, 2, 2, 2, 1, 3, 3, 0, 0, 10], [0, 2, 0, 2, 2, 2, 3, 3, 0, 0, 0, 10], [0, 2, 0, 2, 2, 2, 3, 3, 3, 1, 0, 2], [0, 0, 0, 2, 2, 2, 3, 3, 3, 1, 0, 28], [0, 0, 0, 2, 2, 2, 3, 1, 3, 0, 0, 16], [0, 2, 0, 2, 2, 2, 3, 3, 3, 0, 0, 35], [0, 0, 0, 2, 2, 2, 3, 3, 0, 1, 0, 0], [0, 1, 0, 2, 2, 2, 3, 3, 3, 0, 0, 31], [0, 2, 0, 2, 2, 2, 3, 0, 3, 0, 0, 4], [0, 2, 0, 2, 2, 1, 3, 3, 3, 0, 0, 33], [0, 0, 0, 1, 2, 2, 3, 3, 3, 0, 0, 16], [0, 2, 0, 2, 0, 2, 3, 3, 3, 0, 0, 4], [0, 0, 0, 2, 2, 2, 1, 3, 3, 0, 0, 16], [0, 2, 0, 2, 2, 2, 3, 1, 3, 0, 0, 0], [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]]
+- PISTAS canasta (una prueba): media 0.7641102212052429 IC90 [-3.0424876525552254, 4.570578546910806] p 0.37940514871282177 sesiones 69; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.0021873021354976113; confirmadas 1 de 19 [[0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]]
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]: regla 6.829499999999999, placebo -7.57, latencia 1 vela 8.065611111111112 -> pasa

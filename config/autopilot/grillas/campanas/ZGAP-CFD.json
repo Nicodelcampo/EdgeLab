@@ -1,0 +1,32 @@
+{
+ "cid": "ZGAP-CFD",
+ "familia": "ZONAS_GAPS",
+ "experimento": "edgelab.research.zonas_gaps",
+ "sensor": "DK:USATECHIDXUSD",
+ "ejecucion": "NQ",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "local",
+ "activa": true,
+ "n_celdas_por_canal": 933120,
+ "spec": "docs/research/zonas_gaps_20261025/SPEC_ZONAS_GAPS.md",
+ "justificacion_economica": "Evalúa si los gaps y clusters compactos de ZonasDeGaps medidos sobre el feed continuo del CFD (USATECHIDXUSD en 50T y M1) con ejecución tick-a-tick en el futuro NQ capturan vacíos de cotización y atracción magnética (U1) con mayor limpieza microestructural que el futuro directo.",
+ "como_podria_refutarse": "Ninguna celda nominada por FDR q <= 0,10 (con linaje D6 heredado de AREAS_EXP_1_CRUZADO y ZONAS_GAPS) ni Romano-Wolf en DESC, fallo en OOS abr-sep 2026, o media neta <= 0 en el holdout a N=150 fijo.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261023,
+  "n_fijo": 150,
+  "nota": "desde 2026-10-23 (las sesiones 10-01..10-22 quedaron consumidas por U1-CRUZADO y LUXIMB; HOLDOUT_VENTANAS.jsonl).",
+  "apertura_familia": "ZONAS_GAPS tiene UNA sola apertura de holdout: la usa la primera campaña (ZGAP-NQ o ZGAP-CFD) que llegue al ACTA; la otra queda bloqueada."
+ },
+ "cuenta_kaggle": "nicobuttaro"
+}

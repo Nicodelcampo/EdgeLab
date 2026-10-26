@@ -11,13 +11,18 @@ from pathlib import Path
 
 
 def header_file():
-    p = Path(os.environ.get("KAGGLE_AUTH_HEADER_FILE", Path.home() / ".kaggle_auth_header"))
-    return p if p.is_file() else None
+    """Cabecera de la cuenta del kernel (2026-10-26, dos cuentas en el Debian): `<archivo>.<cuenta>` si existe para
+    EDGELAB_KAGGLE_OWNER; si no, la cabecera única de siempre. Sin archivo (sesión en la nube): None, la pone el proxy."""
+    base = Path(os.environ.get("KAGGLE_AUTH_HEADER_FILE", Path.home() / ".kaggle_auth_header"))
+    owner = os.environ.get("EDGELAB_KAGGLE_OWNER")
+    for p in ([base.with_name(f"{base.name}.{owner}")] if owner else []) + [base]:
+        if p.is_file(): return p
+    return None
 
 
 def curl_auth(url):
     """Argumentos extra de curl para una URL. Nada para hosts que no sean la API de Kaggle."""
-    if not str(url).startswith("https://www.kaggle.com/"):
+    if not str(url).startswith(("https://www.kaggle.com/", "https://api.kaggle.com/")):
         return []
     h = header_file()
     return ["-H", f"@{h}"] if h else []

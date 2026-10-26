@@ -10,9 +10,12 @@
 set -euo pipefail
 H=/opt/edgelab
 umask 077
+# Segunda cuenta (2026-10-26, reparto entre cuentas): KAGGLE_CUENTA=nicobuttaro KAGGLE_API_TOKEN=... ./setup_kaggle_credentials.sh
+#   -> /opt/edgelab/.kaggle_auth_header.nicobuttaro, que tools/kaggle_auth.py usa cuando el kernel es de esa cuenta.
 if [ -n "${KAGGLE_API_TOKEN:-}" ]; then
-  printf 'Authorization: Bearer %s\n' "$KAGGLE_API_TOKEN" > "$H/.kaggle_auth_header"
-  chown edgelab:edgelab "$H/.kaggle_auth_header"; chmod 600 "$H/.kaggle_auth_header"
+  F="$H/.kaggle_auth_header${KAGGLE_CUENTA:+.$KAGGLE_CUENTA}"
+  printf 'Authorization: Bearer %s\n' "$KAGGLE_API_TOKEN" > "$F"
+  chown edgelab:edgelab "$F"; chmod 600 "$F"
   rm -f "$H/.curlrc"
   echo "Token Bearer instalado para el usuario edgelab (sólo se envía a www.kaggle.com)."
 else

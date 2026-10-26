@@ -1,0 +1,4473 @@
+{
+ "etapa": "CONTEO",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1792959991.666341,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1792960596.256473,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     1,
+     1,
+     1,
+     2,
+     0,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     35
+    ],
+    [
+     0,
+     1,
+     2,
+     2,
+     2,
+     2,
+     3,
+     1,
+     1,
+     0,
+     0,
+     20
+    ],
+    [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     29
+    ]
+   ]
+  },
+  {
+   "ts": 1792961200.9630706,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1792971841.8175278,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1792972447.2739897,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793031815.805956,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793031885.3469625,
+   "etapa": "ACTA",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "U1-ZONAS-ES",
+  "familia": "U1_ZONAS_ES",
+  "experimento": "edgelab.research.u1_zonas",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 (la familia más rentable) con zonas de volumen real concentrado (aVolZonePOI2) en lugar de huecos de LUX-IMB, operada en el propio futuro.",
+  "como_podria_refutarse": "Sin nominadas ni pistas confirmadas; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o rendimiento <= U1 con LUX-IMB en el mismo instrumento.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS.md",
+  "n_celdas_por_canal": 4478976,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_ZONAS_ES",
+   "declarada": true,
+   "padres": [
+    "U1_ORO_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4654307,
+   "n_heredado": 4654307,
+   "total": 4654307,
+   "justificacion": "U1 con zonas aVolZonePOI2 (u1_zonas); declarado antes del DESC (PREREGISTRO_U1_ZONAS.md §7)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1792959991.6662037,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.7653066819374694,
+    0.9934478657494141
+   ],
+   "vol_ida_rel": [
+    2.5343640797124416,
+    4.41602160249045
+   ],
+   "vel_vuelta/ida": [
+    0.8486666666666666,
+    2.0
+   ]
+  },
+  "celdas": [
+   [
+    1,
+    1,
+    1,
+    2,
+    0,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    35
+   ],
+   [
+    0,
+    1,
+    2,
+    2,
+    2,
+    2,
+    3,
+    1,
+    1,
+    0,
+    0,
+    20
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    29
+   ]
+  ],
+  "topes": null
+ },
+ "periodo": [
+  20250801,
+  20260331
+ ],
+ "lanzada": 1792974979.8840592,
+ "cortes": {
+  "vol_vuelta/ida": [
+   0.7653066819374694,
+   0.9934478657494141
+  ],
+  "vol_ida_rel": [
+   2.5343640797124416,
+   4.41602160249045
+  ],
+  "vel_vuelta/ida": [
+   0.8486666666666666,
+   2.0
+  ]
+ },
+ "candidatas": [
+  [
+   1,
+   1,
+   1,
+   2,
+   0,
+   2,
+   3,
+   1,
+   3,
+   0,
+   0,
+   35
+  ],
+  [
+   0,
+   1,
+   2,
+   2,
+   2,
+   2,
+   3,
+   1,
+   1,
+   0,
+   0,
+   20
+  ],
+  [
+   0,
+   1,
+   1,
+   0,
+   2,
+   2,
+   3,
+   1,
+   3,
+   0,
+   0,
+   29
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     1,
+     1,
+     2,
+     0,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     35
+    ],
+    "n": 54,
+    "media_neta": 10.265077777777778,
+    "sesiones": 29,
+    "ic90": [
+     6.265308408705485,
+     14.149957883275261
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 21.26,
+    "pasa": true,
+    "n_pruebas": 247686.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.247480869293213,
+    "canal": "total",
+    "q_fdr": 0.0078095903399904125,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 247686,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": 0.15456084388903946
+   },
+   {
+    "celda": [
+     0,
+     1,
+     2,
+     2,
+     2,
+     2,
+     3,
+     1,
+     1,
+     0,
+     0,
+     20
+    ],
+    "n": 42,
+    "media_neta": 10.38551428571436,
+    "sesiones": 26,
+    "ic90": [
+     5.334867471590973,
+     15.287997626841285
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 23.33,
+    "pasa": true,
+    "n_pruebas": 247686.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.4238359928131104,
+    "canal": "total",
+    "q_fdr": 0.014490089257656096,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 247686,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": 0.2867756599501198
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     29
+    ],
+    "n": 47,
+    "media_neta": 9.65219361702126,
+    "sesiones": 21,
+    "ic90": [
+     4.945885164835088,
+     13.349906132075466
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 21.21,
+    "pasa": true,
+    "n_pruebas": 247686.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.870159864425659,
+    "canal": "reciente",
+    "q_fdr": 0.04243583632251775,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 92393,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "indagacion": [
+  {
+   "base": [
+    1,
+    1,
+    1,
+    2,
+    0,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    35
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     1,
+     1,
+     2,
+     0,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     35
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 97,
+       "media_neta": 5.259207216494845,
+       "sesiones": 47,
+       "ic90": [
+        1.5779544682017541,
+        8.682657268027684
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 58,
+       "media_neta": 7.377386206896553,
+       "sesiones": 31,
+       "ic90": [
+        2.616511345555171,
+        11.969894294003868
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 49,
+       "media_neta": 5.428626530612245,
+       "sesiones": 30,
+       "ic90": [
+        1.0217444444444443,
+        9.714129268292682
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 192,
+       "media_neta": 2.072586458333333,
+       "sesiones": 78,
+       "ic90": [
+        0.6255846200026682,
+        3.8178352951039574
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 9
+      }
+     ],
+     "vol_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 14,
+       "media_neta": 19.21944285714286,
+       "sesiones": 11,
+       "ic90": [
+        14.338030519480522,
+        23.84008409090909
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 29,
+       "media_neta": 5.620920689655173,
+       "sesiones": 21,
+       "ic90": [
+        0.14658571428571426,
+        10.83614259259259
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vol_ida_rel": [
+      {
+       "nivel": 0,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 86,
+       "media_neta": -0.7423511627906979,
+       "sesiones": 37,
+       "ic90": [
+        -4.382747619047619,
+        3.091094642857142
+       ],
+       "p_sesiones": 0.6327345309381237,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 202,
+       "media_neta": 2.08940396039604,
+       "sesiones": 68,
+       "ic90": [
+        0.07761674781903026,
+        4.403416443108234
+       ],
+       "p_sesiones": 0.06387225548902195,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vel_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 15,
+       "media_neta": 19.22896666666667,
+       "sesiones": 13,
+       "ic90": [
+        12.399319230769233,
+        24.702373529411762
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 22,
+       "media_neta": 3.3168454545454567,
+       "sesiones": 14,
+       "ic90": [
+        -2.83126737012987,
+        8.627015909090908
+       ],
+       "p_sesiones": 0.17764471057884232,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_ida": [
+      {
+       "nivel": 0,
+       "n": 4
+      },
+      {
+       "nivel": 1,
+       "n": 27,
+       "media_neta": 10.547485185185186,
+       "sesiones": 17,
+       "ic90": [
+        1.885126086956522,
+        18.63338477011494
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 23,
+       "media_neta": 13.123169565217394,
+       "sesiones": 18,
+       "ic90": [
+        8.888038636363637,
+        16.665807905138333
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_vuelta": [
+      {
+       "nivel": 0,
+       "n": 17,
+       "media_neta": -1.258288235294075,
+       "sesiones": 15,
+       "ic90": [
+        -5.822526388888761,
+        3.041383333333367
+       ],
+       "p_sesiones": 0.654690618762475,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 25,
+       "media_neta": 5.398299999999986,
+       "sesiones": 16,
+       "ic90": [
+        -1.8510197463767846,
+        12.044496969696933
+       ],
+       "p_sesiones": 0.10179640718562874,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 96,
+       "media_neta": 6.9570916666666704,
+       "sesiones": 42,
+       "ic90": [
+        4.120143715273491,
+        9.390858690206358
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 13,
+       "media_neta": 4.093069230769231,
+       "sesiones": 11,
+       "ic90": [
+        -3.5928136363636356,
+        11.716189860139862
+       ],
+       "p_sesiones": 0.21157684630738524,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 26,
+       "media_neta": 16.141146153846154,
+       "sesiones": 18,
+       "ic90": [
+        9.972175801282052,
+        22.199031770833322
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 15,
+       "media_neta": 5.428966666666668,
+       "sesiones": 10,
+       "ic90": [
+        -0.6223719457013575,
+        11.314780158730159
+       ],
+       "p_sesiones": 0.06986027944111776,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 6
+      },
+      {
+       "nivel": 2,
+       "n": 2
+      }
+     ],
+     "indicador": [
+      {
+       "nivel": 0,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 79,
+       "media_neta": 2.6154645569620256,
+       "sesiones": 37,
+       "ic90": [
+        0.39021208791208783,
+        4.658625231481483
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 79,
+       "media_neta": -2.1440291139240504,
+       "sesiones": 37,
+       "ic90": [
+        -3.8458885932495686,
+        -0.604372237076649
+       ],
+       "p_sesiones": 0.9840319361277445,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 80,
+       "media_neta": 3.5779250000000005,
+       "sesiones": 38,
+       "ic90": [
+        1.353847619047619,
+        5.614267372515126
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 80,
+       "media_neta": -1.9158250000000003,
+       "sesiones": 38,
+       "ic90": [
+        -3.3951597158657516,
+        -0.44854558823529567
+       ],
+       "p_sesiones": 0.9820359281437125,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 81,
+       "media_neta": 4.692546913580246,
+       "sesiones": 38,
+       "ic90": [
+        2.2819318308119794,
+        6.915460919540229
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 81,
+       "media_neta": -1.427823456790124,
+       "sesiones": 38,
+       "ic90": [
+        -3.28582962962963,
+        0.3277211956521707
+       ],
+       "p_sesiones": 0.8982035928143712,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 76,
+       "media_neta": 4.210161842105263,
+       "sesiones": 37,
+       "ic90": [
+        1.8096653846153605,
+        6.294554166666677
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 76,
+       "media_neta": -0.296417105263158,
+       "sesiones": 37,
+       "ic90": [
+        -1.7510539473684195,
+        1.0580464700996688
+       ],
+       "p_sesiones": 0.6467065868263473,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 77,
+       "media_neta": 4.959864935064933,
+       "sesiones": 37,
+       "ic90": [
+        2.5213679112553704,
+        7.206061910860654
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 77,
+       "media_neta": -0.34857662337662587,
+       "sesiones": 37,
+       "ic90": [
+        -2.2618566063044994,
+        1.261946661931815
+       ],
+       "p_sesiones": 0.6307385229540918,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 78,
+       "media_neta": 5.866626923076919,
+       "sesiones": 37,
+       "ic90": [
+        3.2098598867595496,
+        8.193735845740278
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 78,
+       "media_neta": -0.1461935897435948,
+       "sesiones": 37,
+       "ic90": [
+        -2.2187097163865337,
+        1.5989496962915817
+       ],
+       "p_sesiones": 0.5528942115768463,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 70,
+       "media_neta": 4.614085714285662,
+       "sesiones": 35,
+       "ic90": [
+        1.9609459746720552,
+        7.284559483667012
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 70,
+       "media_neta": -0.49662857142862366,
+       "sesiones": 35,
+       "ic90": [
+        -2.453031448227658,
+        1.3395576729668288
+       ],
+       "p_sesiones": 0.6347305389221557,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 71,
+       "media_neta": 5.139060563380225,
+       "sesiones": 35,
+       "ic90": [
+        2.3043031896966473,
+        7.769968057153798
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 71,
+       "media_neta": 0.07920140845064791,
+       "sesiones": 35,
+       "ic90": [
+        -1.9658361329743583,
+        2.0061217089371772
+       ],
+       "p_sesiones": 0.47904191616766467,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 71,
+       "media_neta": 6.161947887323887,
+       "sesiones": 35,
+       "ic90": [
+        3.2378487377278202,
+        8.960070092226582
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 71,
+       "media_neta": 0.035187323943605735,
+       "sesiones": 35,
+       "ic90": [
+        -2.4204898755656497,
+        2.1537739789195696
+       ],
+       "p_sesiones": 0.49700598802395207,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 18,
+       "n": 60,
+       "media_neta": 5.706466666666646,
+       "sesiones": 32,
+       "ic90": [
+        2.226670557681855,
+        9.420365268065256
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 19,
+       "n": 60,
+       "media_neta": 2.4522999999999793,
+       "sesiones": 32,
+       "ic90": [
+        -2.2446417211329486,
+        6.315919402985043
+       ],
+       "p_sesiones": 0.17365269461077845,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 20,
+       "n": 60,
+       "media_neta": 6.406466666666646,
+       "sesiones": 32,
+       "ic90": [
+        2.7909486411843263,
+        10.321975580431175
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 21,
+       "n": 60,
+       "media_neta": 6.3460499999999795,
+       "sesiones": 32,
+       "ic90": [
+        2.7872296733212596,
+        10.135747603121501
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 22,
+       "n": 60,
+       "media_neta": 7.35229999999998,
+       "sesiones": 32,
+       "ic90": [
+        3.4771466419883374,
+        11.473753150912051
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 23,
+       "n": 60,
+       "media_neta": 7.718966666666646,
+       "sesiones": 32,
+       "ic90": [
+        4.145256391242995,
+        11.38204653215633
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 24,
+       "n": 47,
+       "media_neta": 8.475597872340384,
+       "sesiones": 25,
+       "ic90": [
+        3.810659374999978,
+        12.845711544850472
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 25,
+       "n": 47,
+       "media_neta": 9.964959574468043,
+       "sesiones": 25,
+       "ic90": [
+        5.33050046620042,
+        14.252680799755783
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 26,
+       "n": 47,
+       "media_neta": 8.986236170212724,
+       "sesiones": 25,
+       "ic90": [
+        4.1295988636363195,
+        13.42830386100385
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 27,
+       "n": 47,
+       "media_neta": 10.494214893616979,
+       "sesiones": 25,
+       "ic90": [
+        5.567752991452914,
+        15.00420014600902
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 28,
+       "n": 47,
+       "media_neta": 9.89581063829783,
+       "sesiones": 25,
+       "ic90": [
+        4.820827737403055,
+        14.519089215686241
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 29,
+       "n": 47,
+       "media_neta": 11.502193617021234,
+       "sesiones": 25,
+       "ic90": [
+        6.2604022727272355,
+        16.188599660852702
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 30,
+       "n": 54,
+       "media_neta": 7.927114814814815,
+       "sesiones": 29,
+       "ic90": [
+        3.857261240310078,
+        11.741071551724135
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 31,
+       "n": 54,
+       "media_neta": 7.7743370370370375,
+       "sesiones": 29,
+       "ic90": [
+        3.617149137931035,
+        11.66759289372599
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 32,
+       "n": 54,
+       "media_neta": 8.505818518518518,
+       "sesiones": 29,
+       "ic90": [
+        4.092604901215806,
+        12.393623696145124
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 33,
+       "n": 54,
+       "media_neta": 8.246559259259259,
+       "sesiones": 29,
+       "ic90": [
+        3.7624860119047625,
+        12.215085218253968
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 34,
+       "n": 54,
+       "media_neta": 9.376188888888889,
+       "sesiones": 29,
+       "ic90": [
+        4.79901875,
+        13.458691369047619
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 35,
+       "n": 54,
+       "media_neta": 10.265077777777778,
+       "sesiones": 29,
+       "ic90": [
+        6.2734705043859655,
+        14.129288842760767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 36,
+       "n": 61,
+       "media_neta": 4.5672180327868865,
+       "sesiones": 32,
+       "ic90": [
+        1.9677677206851114,
+        7.0109026174168285
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 37,
+       "n": 62,
+       "media_neta": 0.21713870967741897,
+       "sesiones": 32,
+       "ic90": [
+        -2.3414109375,
+        2.7186344988344984
+       ],
+       "p_sesiones": 0.4351297405189621,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 38,
+       "n": 61,
+       "media_neta": 5.593857377049181,
+       "sesiones": 32,
+       "ic90": [
+        2.8779350806451607,
+        8.0371054029304
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 39,
+       "n": 62,
+       "media_neta": 0.9268161290322579,
+       "sesiones": 32,
+       "ic90": [
+        -1.6941610635080644,
+        3.702857795698924
+       ],
+       "p_sesiones": 0.2954091816367265,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 40,
+       "n": 61,
+       "media_neta": 6.84590655737705,
+       "sesiones": 32,
+       "ic90": [
+        3.95104074074074,
+        9.471466666666666
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 41,
+       "n": 62,
+       "media_neta": 1.539719354838709,
+       "sesiones": 32,
+       "ic90": [
+        -1.6631142992424253,
+        4.687978733031671
+       ],
+       "p_sesiones": 0.2215568862275449,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 42,
+       "n": 36,
+       "media_neta": 3.9178555555555556,
+       "sesiones": 22,
+       "ic90": [
+        -0.9692236175115205,
+        7.976973913043479
+       ],
+       "p_sesiones": 0.0658682634730539,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 43,
+       "n": 36,
+       "media_neta": 3.223411111111111,
+       "sesiones": 22,
+       "ic90": [
+        -0.4766959432048678,
+        6.8702861111111115
+       ],
+       "p_sesiones": 0.07584830339321358,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 44,
+       "n": 36,
+       "media_neta": 4.633133333333334,
+       "sesiones": 22,
+       "ic90": [
+        -0.26823075396825447,
+        8.728619444444442
+       ],
+       "p_sesiones": 0.031936127744510975,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 45,
+       "n": 36,
+       "media_neta": 2.9873000000000003,
+       "sesiones": 22,
+       "ic90": [
+        -0.6203785714285722,
+        6.513787016908212
+       ],
+       "p_sesiones": 0.09181636726546906,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 46,
+       "n": 36,
+       "media_neta": 5.730355555555556,
+       "sesiones": 22,
+       "ic90": [
+        0.6656653846153838,
+        9.88174444444444
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 47,
+       "n": 36,
+       "media_neta": 3.3761888888888887,
+       "sesiones": 22,
+       "ic90": [
+        -0.467275163398693,
+        7.250456565656565
+       ],
+       "p_sesiones": 0.06986027944111776,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    1,
+    2,
+    2,
+    2,
+    2,
+    3,
+    1,
+    1,
+    0,
+    0,
+    20
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     2,
+     2,
+     2,
+     2,
+     3,
+     1,
+     1,
+     0,
+     0,
+     20
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 19,
+       "media_neta": 14.293878947368556,
+       "sesiones": 11,
+       "ic90": [
+        7.224255128205365,
+        20.704302288329615
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 38,
+       "media_neta": 8.60045789473692,
+       "sesiones": 23,
+       "ic90": [
+        2.0561684640523428,
+        15.367538844393678
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 33,
+       "media_neta": 5.856996969697075,
+       "sesiones": 22,
+       "ic90": [
+        0.35745178571436265,
+        11.036823969534154
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 241,
+       "media_neta": 1.8720510373444188,
+       "sesiones": 104,
+       "ic90": [
+        0.2706038348082763,
+        3.467773296530275
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 118,
+       "media_neta": 4.181579661016967,
+       "sesiones": 58,
+       "ic90": [
+        1.1727871961805612,
+        7.340802274931048
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vol_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 25,
+       "media_neta": 12.610300000000029,
+       "sesiones": 15,
+       "ic90": [
+        3.997354824561351,
+        18.84621071428579
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 8
+      },
+      {
+       "nivel": 2,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vol_ida_rel": [
+      {
+       "nivel": 0,
+       "n": 9
+      },
+      {
+       "nivel": 1,
+       "n": 18,
+       "media_neta": 12.69979999999999,
+       "sesiones": 12,
+       "ic90": [
+        2.504046794871674,
+        20.504999999999985
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vel_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 18,
+       "media_neta": 11.553966666666708,
+       "sesiones": 11,
+       "ic90": [
+        1.7928829326923064,
+        19.61860000000007
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 12,
+       "media_neta": 12.318550000000108,
+       "sesiones": 9,
+       "ic90": [
+        6.810841666666861,
+        19.212593560606003
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_ida": [
+      {
+       "nivel": 0,
+       "n": 12,
+       "media_neta": 11.774800000000136,
+       "sesiones": 8,
+       "ic90": [
+        -3.7693874999999033,
+        22.827478571428674
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 15,
+       "media_neta": 10.36063333333336,
+       "sesiones": 10,
+       "ic90": [
+        2.089621428571374,
+        18.298512993421188
+       ],
+       "p_sesiones": 0.011976047904191617,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 15,
+       "media_neta": 9.298966666666741,
+       "sesiones": 13,
+       "ic90": [
+        2.4717230769230794,
+        15.10756315789485
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_vuelta": [
+      {
+       "nivel": 0,
+       "n": 12,
+       "media_neta": 2.6018833333333333,
+       "sesiones": 11,
+       "ic90": [
+        -3.0533381118880905,
+        8.9123
+       ],
+       "p_sesiones": 0.23353293413173654,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 34,
+       "media_neta": -4.826670588235299,
+       "sesiones": 22,
+       "ic90": [
+        -10.757842345399638,
+        1.0265424242423398
+       ],
+       "p_sesiones": 0.9041916167664671,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 88,
+       "media_neta": 3.446675000000034,
+       "sesiones": 45,
+       "ic90": [
+        -0.8305027513722876,
+        7.406817020336001
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 27,
+       "media_neta": 3.08822592592594,
+       "sesiones": 14,
+       "ic90": [
+        -1.1259336956521437,
+        6.444421212121237
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 29,
+       "media_neta": -2.052355172413811,
+       "sesiones": 18,
+       "ic90": [
+        -8.133337960829524,
+        4.427267345872464
+       ],
+       "p_sesiones": 0.656686626746507,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 98,
+       "media_neta": 4.694442857142887,
+       "sesiones": 45,
+       "ic90": [
+        1.2006748137109142,
+        8.171701154401193
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 5
+      },
+      {
+       "nivel": 2,
+       "n": 1
+      }
+     ],
+     "indicador": [
+      {
+       "nivel": 0,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 52,
+       "media_neta": 2.1026846153846157,
+       "sesiones": 31,
+       "ic90": [
+        -0.8388413043478266,
+        4.853817857142857
+       ],
+       "p_sesiones": 0.11776447105788423,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 52,
+       "media_neta": -5.027123076923076,
+       "sesiones": 31,
+       "ic90": [
+        -6.8045333333333335,
+        -3.108122240802676
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 52,
+       "media_neta": 2.6820115384615386,
+       "sesiones": 31,
+       "ic90": [
+        -0.41074292929292966,
+        5.558722715965627
+       ],
+       "p_sesiones": 0.06986027944111776,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 52,
+       "media_neta": -4.411738461538461,
+       "sesiones": 31,
+       "ic90": [
+        -6.465459109916368,
+        -1.9555096820123414
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 52,
+       "media_neta": 3.011338461538462,
+       "sesiones": 31,
+       "ic90": [
+        -0.3830696013289037,
+        6.0976693181818185
+       ],
+       "p_sesiones": 0.05788423153692615,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 52,
+       "media_neta": -4.753084615384615,
+       "sesiones": 31,
+       "ic90": [
+        -7.311781027667982,
+        -1.8492501519756863
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 49,
+       "media_neta": 4.407453061224408,
+       "sesiones": 30,
+       "ic90": [
+        1.1902291424417797,
+        7.6547696196659984
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 49,
+       "media_neta": -0.592546938775592,
+       "sesiones": 30,
+       "ic90": [
+        -4.180114215686373,
+        3.347313020833271
+       ],
+       "p_sesiones": 0.5688622754491018,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 49,
+       "media_neta": 4.519697959183592,
+       "sesiones": 30,
+       "ic90": [
+        0.9721428819443941,
+        8.049396006831408
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 49,
+       "media_neta": -1.0338734693878369,
+       "sesiones": 30,
+       "ic90": [
+        -4.76199788961044,
+        3.2800994791665796
+       ],
+       "p_sesiones": 0.6367265469061876,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 49,
+       "media_neta": 4.866636734693796,
+       "sesiones": 30,
+       "ic90": [
+        1.2537115646257597,
+        8.605756563180668
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 49,
+       "media_neta": -1.2354040816327347,
+       "sesiones": 30,
+       "ic90": [
+        -5.240768181818277,
+        3.34256729024938
+       ],
+       "p_sesiones": 0.6686626746506986,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 47,
+       "media_neta": 6.48570425531921,
+       "sesiones": 28,
+       "ic90": [
+        2.7829057316544055,
+        9.719479144385089
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 47,
+       "media_neta": 0.975065957446871,
+       "sesiones": 28,
+       "ic90": [
+        -3.1426771062269814,
+        5.1108943223443815
+       ],
+       "p_sesiones": 0.3473053892215569,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 47,
+       "media_neta": 6.435172340425594,
+       "sesiones": 28,
+       "ic90": [
+        2.4155542229730123,
+        10.120611737804921
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 47,
+       "media_neta": 1.1904914893617646,
+       "sesiones": 28,
+       "ic90": [
+        -3.9387589141316113,
+        6.181512962963008
+       ],
+       "p_sesiones": 0.3313373253493014,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 47,
+       "media_neta": 6.671874468085168,
+       "sesiones": 28,
+       "ic90": [
+        2.375589062500132,
+        10.617022821821047
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 47,
+       "media_neta": 3.666555319148999,
+       "sesiones": 28,
+       "ic90": [
+        -1.1234803391626127,
+        8.064085188216104
+       ],
+       "p_sesiones": 0.09780439121756487,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 18,
+       "n": 42,
+       "media_neta": 9.977776190476263,
+       "sesiones": 26,
+       "ic90": [
+        5.260263406292808,
+        14.669587234042586
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 19,
+       "n": 42,
+       "media_neta": 9.114680952381025,
+       "sesiones": 26,
+       "ic90": [
+        4.106283193277368,
+        13.94956122931456
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 20,
+       "n": 42,
+       "media_neta": 10.38551428571436,
+       "sesiones": 26,
+       "ic90": [
+        5.45418491014803,
+        15.326573255814006
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 21,
+       "n": 42,
+       "media_neta": 9.379561904761978,
+       "sesiones": 26,
+       "ic90": [
+        4.212736432637731,
+        14.313185933806185
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 22,
+       "n": 42,
+       "media_neta": 10.495633333333407,
+       "sesiones": 26,
+       "ic90": [
+        5.3403314171123375,
+        15.746900000000066
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 23,
+       "n": 42,
+       "media_neta": 9.358728571428644,
+       "sesiones": 26,
+       "ic90": [
+        3.9336008373206277,
+        14.374991489361758
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 24,
+       "n": 29,
+       "media_neta": 8.385575862068942,
+       "sesiones": 22,
+       "ic90": [
+        0.8622574074073854,
+        15.391756765232953
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 25,
+       "n": 29,
+       "media_neta": 6.411437931034459,
+       "sesiones": 22,
+       "ic90": [
+        -1.7327142857142974,
+        14.385540927419322
+       ],
+       "p_sesiones": 0.07385229540918163,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 26,
+       "n": 29,
+       "media_neta": 8.726093103448251,
+       "sesiones": 22,
+       "ic90": [
+        0.9300136752136141,
+        15.847124942129629
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 27,
+       "n": 29,
+       "media_neta": 6.510575862068941,
+       "sesiones": 22,
+       "ic90": [
+        -1.9561541666667286,
+        14.613454233870952
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 28,
+       "n": 29,
+       "media_neta": 8.583851724137906,
+       "sesiones": 22,
+       "ic90": [
+        0.640903059581292,
+        15.87051078431369
+       ],
+       "p_sesiones": 0.029940119760479042,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 29,
+       "n": 29,
+       "media_neta": 6.135575862068941,
+       "sesiones": 22,
+       "ic90": [
+        -2.573093478260868,
+        14.643852083333291
+       ],
+       "p_sesiones": 0.09780439121756487,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 30,
+       "n": 32,
+       "media_neta": 10.030268749999998,
+       "sesiones": 23,
+       "ic90": [
+        4.212364516129033,
+        15.998063888888892
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 31,
+       "n": 32,
+       "media_neta": 10.069331249999998,
+       "sesiones": 23,
+       "ic90": [
+        4.270741444600281,
+        16.02584166666667
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 32,
+       "n": 32,
+       "media_neta": 10.334956249999998,
+       "sesiones": 23,
+       "ic90": [
+        4.411371140552997,
+        16.60028624288425
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 33,
+       "n": 32,
+       "media_neta": 10.225581249999998,
+       "sesiones": 23,
+       "ic90": [
+        4.265576209677421,
+        16.525452277039847
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 34,
+       "n": 32,
+       "media_neta": 10.202143749999998,
+       "sesiones": 23,
+       "ic90": [
+        4.232259677419354,
+        16.583341666666666
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 35,
+       "n": 32,
+       "media_neta": 9.967768749999998,
+       "sesiones": 23,
+       "ic90": [
+        3.9124488095238092,
+        16.458785215053762
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 36,
+       "n": 29,
+       "media_neta": 2.0002310344827583,
+       "sesiones": 21,
+       "ic90": [
+        -0.7276938423645322,
+        4.531785294117647
+       ],
+       "p_sesiones": 0.09381237524950099,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 37,
+       "n": 31,
+       "media_neta": -2.4360870967741923,
+       "sesiones": 22,
+       "ic90": [
+        -5.1477258346581865,
+        0.5991055555555551
+       ],
+       "p_sesiones": 0.9281437125748503,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 38,
+       "n": 29,
+       "media_neta": 2.4916103448275866,
+       "sesiones": 21,
+       "ic90": [
+        -0.34883591269841285,
+        5.092058403361344
+       ],
+       "p_sesiones": 0.06187624750499002,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 39,
+       "n": 31,
+       "media_neta": -2.60544193548387,
+       "sesiones": 22,
+       "ic90": [
+        -5.500814864864863,
+        0.688356547619048
+       ],
+       "p_sesiones": 0.9201596806387226,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 40,
+       "n": 29,
+       "media_neta": 2.982989655172414,
+       "sesiones": 21,
+       "ic90": [
+        0.053004022988505886,
+        5.678683272058824
+       ],
+       "p_sesiones": 0.03992015968063872,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 41,
+       "n": 31,
+       "media_neta": -2.7102806451612893,
+       "sesiones": 22,
+       "ic90": [
+        -5.841986317567567,
+        0.7910774725274726
+       ],
+       "p_sesiones": 0.9161676646706587,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 42,
+       "n": 16,
+       "media_neta": 6.877925000000001,
+       "sesiones": 13,
+       "ic90": [
+        -0.36984285714285675,
+        13.55105
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 43,
+       "n": 17,
+       "media_neta": 7.6564176470588245,
+       "sesiones": 13,
+       "ic90": [
+        1.285316826923077,
+        13.91309365079365
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 44,
+       "n": 16,
+       "media_neta": 7.502925000000001,
+       "sesiones": 13,
+       "ic90": [
+        0.12593095238095223,
+        14.396987499999998
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 45,
+       "n": 17,
+       "media_neta": 7.8770058823529405,
+       "sesiones": 13,
+       "ic90": [
+        1.2358576923076927,
+        14.49434365079365
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 46,
+       "n": 16,
+       "media_neta": 8.127925000000001,
+       "sesiones": 13,
+       "ic90": [
+        0.5612285714285712,
+        15.234591021671823
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 47,
+       "n": 17,
+       "media_neta": 8.274064705882353,
+       "sesiones": 13,
+       "ic90": [
+        1.3446809523809529,
+        15.196228571428572
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    1,
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    29
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     29
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 60,
+       "media_neta": 4.24605000000001,
+       "sesiones": 33,
+       "ic90": [
+        -0.31455486111112585,
+        8.357215364583377
+       ],
+       "p_sesiones": 0.043912175648702596,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 82,
+       "media_neta": 3.076019512195129,
+       "sesiones": 45,
+       "ic90": [
+        -0.6447705906996095,
+        6.811118627450985
+       ],
+       "p_sesiones": 0.09381237524950099,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 94,
+       "media_neta": 2.2838425531914894,
+       "sesiones": 49,
+       "ic90": [
+        -0.7941101613965734,
+        5.0223428348909405
+       ],
+       "p_sesiones": 0.10179640718562874,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 277,
+       "media_neta": 0.343798194945842,
+       "sesiones": 104,
+       "ic90": [
+        -1.1386827044025207,
+        1.7826185082398784
+       ],
+       "p_sesiones": 0.3812375249500998,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 36,
+       "media_neta": 6.910911111111087,
+       "sesiones": 24,
+       "ic90": [
+        -0.06756538461536135,
+        12.233037179487173
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vol_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 93,
+       "media_neta": 1.8321924731182688,
+       "sesiones": 54,
+       "ic90": [
+        -1.2744196680754902,
+        5.103974928160903
+       ],
+       "p_sesiones": 0.16367265469061876,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 313,
+       "media_neta": 1.3676514376996671,
+       "sesiones": 89,
+       "ic90": [
+        -0.467695132043343,
+        3.298772388194799
+       ],
+       "p_sesiones": 0.12974051896207583,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vol_ida_rel": [
+      {
+       "nivel": 0,
+       "n": 26,
+       "media_neta": 15.134415384615378,
+       "sesiones": 14,
+       "ic90": [
+        7.975516991341943,
+        19.833003124999966
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": -0.589551851851845,
+       "sesiones": 31,
+       "ic90": [
+        -4.577010515872994,
+        3.6746076923076543
+       ],
+       "p_sesiones": 0.5808383233532934,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vel_vuelta/ida": [
+      {
+       "nivel": 0,
+       "n": 71,
+       "media_neta": 4.428849295774615,
+       "sesiones": 43,
+       "ic90": [
+        0.3962388020832966,
+        8.207656092436983
+       ],
+       "p_sesiones": 0.029940119760479042,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 15,
+       "media_neta": -6.401033333333319,
+       "sesiones": 13,
+       "ic90": [
+        -9.2941375,
+        -2.4784678571428342
+       ],
+       "p_sesiones": 1.0,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_ida": [
+      {
+       "nivel": 0,
+       "n": 35,
+       "media_neta": 2.094442857142858,
+       "sesiones": 25,
+       "ic90": [
+        -3.675684138257514,
+        7.264701315789516
+       ],
+       "p_sesiones": 0.249500998003992,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 42,
+       "media_neta": 5.472419047619048,
+       "sesiones": 31,
+       "ic90": [
+        0.14094290181363278,
+        10.792606186868685
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 38,
+       "media_neta": 1.7011157894736613,
+       "sesiones": 28,
+       "ic90": [
+        -4.204091559829107,
+        6.384174999999992
+       ],
+       "p_sesiones": 0.3093812375249501,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "franja_vuelta": [
+      {
+       "nivel": 0,
+       "n": 38,
+       "media_neta": 3.620194736842112,
+       "sesiones": 27,
+       "ic90": [
+        0.18866824324321382,
+        7.300468259723108
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 87,
+       "media_neta": -1.3509183908046096,
+       "sesiones": 49,
+       "ic90": [
+        -4.481554342031479,
+        1.8463028089887101
+       ],
+       "p_sesiones": 0.782435129740519,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 240,
+       "media_neta": 1.6159458333333263,
+       "sesiones": 80,
+       "ic90": [
+        -0.4111985254380302,
+        3.5698956539565505
+       ],
+       "p_sesiones": 0.09381237524950099,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 29,
+       "media_neta": 1.9554034482758245,
+       "sesiones": 22,
+       "ic90": [
+        -2.344639655172447,
+        6.759785079575573
+       ],
+       "p_sesiones": 0.2634730538922156,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 44,
+       "media_neta": 4.087299999999993,
+       "sesiones": 27,
+       "ic90": [
+        -2.853429729729757,
+        10.67402554347822
+       ],
+       "p_sesiones": 0.1536926147704591,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 42,
+       "media_neta": 3.124800000000013,
+       "sesiones": 24,
+       "ic90": [
+        -1.486517544459625,
+        6.836858423913077
+       ],
+       "p_sesiones": 0.10379241516966067,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 19,
+       "media_neta": 6.408352631578948,
+       "sesiones": 14,
+       "ic90": [
+        -2.1731824561404203,
+        14.485500231481558
+       ],
+       "p_sesiones": 0.10179640718562874,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 2
+      }
+     ],
+     "indicador": [
+      {
+       "nivel": 0,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 171,
+       "media_neta": 0.13569181286549697,
+       "sesiones": 69,
+       "ic90": [
+        -1.6837609079543678,
+        1.6833352350644661
+       ],
+       "p_sesiones": 0.4111776447105788,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 171,
+       "media_neta": -2.8043666666666667,
+       "sesiones": 69,
+       "ic90": [
+        -3.846628813272389,
+        -1.8177809889173067
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 173,
+       "media_neta": -0.10518554913294768,
+       "sesiones": 69,
+       "ic90": [
+        -1.9294782955208643,
+        1.4388104008502858
+       ],
+       "p_sesiones": 0.5548902195608783,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 173,
+       "media_neta": -3.161543930635838,
+       "sesiones": 69,
+       "ic90": [
+        -4.298858937693038,
+        -2.167337381288379
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 176,
+       "media_neta": 0.3864477272727273,
+       "sesiones": 69,
+       "ic90": [
+        -1.4951519230769232,
+        2.0133527761045955
+       ],
+       "p_sesiones": 0.34530938123752497,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 176,
+       "media_neta": -2.9374159090909093,
+       "sesiones": 69,
+       "ic90": [
+        -4.132313259668508,
+        -1.825773941562316
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 162,
+       "media_neta": 0.7625314814815017,
+       "sesiones": 66,
+       "ic90": [
+        -1.0308048202793514,
+        2.770397727127551
+       ],
+       "p_sesiones": 0.25349301397205587,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 162,
+       "media_neta": -1.8779006172839299,
+       "sesiones": 66,
+       "ic90": [
+        -3.4073818087747787,
+        -0.32086265765482946
+       ],
+       "p_sesiones": 0.9780439121756487,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 165,
+       "media_neta": 0.3298000000000213,
+       "sesiones": 66,
+       "ic90": [
+        -1.4947770844798938,
+        2.389834489811127
+       ],
+       "p_sesiones": 0.3712574850299401,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 165,
+       "media_neta": -2.5323212121211913,
+       "sesiones": 66,
+       "ic90": [
+        -4.267712781547437,
+        -0.8448934922789023
+       ],
+       "p_sesiones": 0.998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 166,
+       "media_neta": 0.8129777108433957,
+       "sesiones": 66,
+       "ic90": [
+        -1.0591523015614501,
+        2.887372193877537
+       ],
+       "p_sesiones": 0.24550898203592814,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 166,
+       "media_neta": -2.4038897590361223,
+       "sesiones": 66,
+       "ic90": [
+        -4.157022383949622,
+        -0.6481905172413537
+       ],
+       "p_sesiones": 0.9920159680638723,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 156,
+       "media_neta": 0.960537179487202,
+       "sesiones": 64,
+       "ic90": [
+        -1.2401162087912063,
+        3.364103244426775
+       ],
+       "p_sesiones": 0.2375249500998004,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 156,
+       "media_neta": -1.9336935897435672,
+       "sesiones": 64,
+       "ic90": [
+        -3.6124801601556085,
+        0.020092889335225256
+       ],
+       "p_sesiones": 0.9620758483033932,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 157,
+       "media_neta": 0.47010254777072535,
+       "sesiones": 64,
+       "ic90": [
+        -1.63310137768815,
+        2.8316735193784184
+       ],
+       "p_sesiones": 0.3712574850299401,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 157,
+       "media_neta": -1.956649044585963,
+       "sesiones": 64,
+       "ic90": [
+        -3.8283334041047072,
+        0.23670836513575647
+       ],
+       "p_sesiones": 0.9540918163672655,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 157,
+       "media_neta": 0.7599114649681777,
+       "sesiones": 64,
+       "ic90": [
+        -1.4305448260239204,
+        3.197999272499861
+       ],
+       "p_sesiones": 0.313373253493014,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 157,
+       "media_neta": -0.9327636942674916,
+       "sesiones": 64,
+       "ic90": [
+        -2.7962706669691175,
+        1.2873969112769725
+       ],
+       "p_sesiones": 0.7644710578842315,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 18,
+       "n": 143,
+       "media_neta": 2.0451671328671117,
+       "sesiones": 59,
+       "ic90": [
+        -0.49499924242428495,
+        4.984009701492544
+       ],
+       "p_sesiones": 0.12574850299401197,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 19,
+       "n": 143,
+       "media_neta": 0.2549573426573211,
+       "sesiones": 59,
+       "ic90": [
+        -2.0448340923466755,
+        2.9601883193895366
+       ],
+       "p_sesiones": 0.42714570858283435,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 20,
+       "n": 144,
+       "media_neta": 1.5176819444444256,
+       "sesiones": 59,
+       "ic90": [
+        -1.0423527454027823,
+        4.377146354166691
+       ],
+       "p_sesiones": 0.18163672654690619,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 21,
+       "n": 144,
+       "media_neta": 1.4699388888888703,
+       "sesiones": 59,
+       "ic90": [
+        -1.0106753521127092,
+        4.2279410426838115
+       ],
+       "p_sesiones": 0.17165668662674652,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 22,
+       "n": 144,
+       "media_neta": 1.924799999999981,
+       "sesiones": 59,
+       "ic90": [
+        -0.6243859732072626,
+        4.8610260273972825
+       ],
+       "p_sesiones": 0.1377245508982036,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 23,
+       "n": 144,
+       "media_neta": 1.8796611111110921,
+       "sesiones": 59,
+       "ic90": [
+        -0.6823895424836987,
+        4.74462288897974
+       ],
+       "p_sesiones": 0.13972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 24,
+       "n": 115,
+       "media_neta": 3.5046913043478183,
+       "sesiones": 54,
+       "ic90": [
+        0.46527786538857163,
+        6.222047261211901
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 25,
+       "n": 115,
+       "media_neta": 2.406865217391297,
+       "sesiones": 54,
+       "ic90": [
+        -0.6397059664548804,
+        5.301893167701863
+       ],
+       "p_sesiones": 0.08982035928143713,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 26,
+       "n": 115,
+       "media_neta": 3.148169565217384,
+       "sesiones": 54,
+       "ic90": [
+        0.17798382236633936,
+        5.86460603448275
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 27,
+       "n": 115,
+       "media_neta": 2.688386956521732,
+       "sesiones": 54,
+       "ic90": [
+        -0.5936779946270945,
+        5.689243359374982
+       ],
+       "p_sesiones": 0.08782435129740519,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 28,
+       "n": 115,
+       "media_neta": 3.4568652173912966,
+       "sesiones": 54,
+       "ic90": [
+        0.39875994186574437,
+        6.320488781453862
+       ],
+       "p_sesiones": 0.031936127744510975,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 29,
+       "n": 115,
+       "media_neta": 3.1981695652173836,
+       "sesiones": 54,
+       "ic90": [
+        -0.39026592949017075,
+        6.37127472220177
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 30,
+       "n": 130,
+       "media_neta": 2.460376923076924,
+       "sesiones": 59,
+       "ic90": [
+        0.009811451726567794,
+        5.290149597585512
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 31,
+       "n": 130,
+       "media_neta": 2.2988384615384625,
+       "sesiones": 59,
+       "ic90": [
+        -0.2501571444370716,
+        5.096181641141992
+       ],
+       "p_sesiones": 0.08782435129740519,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 32,
+       "n": 130,
+       "media_neta": 1.980569230769231,
+       "sesiones": 59,
+       "ic90": [
+        -0.3795176421610956,
+        4.875360947204969
+       ],
+       "p_sesiones": 0.11976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 33,
+       "n": 130,
+       "media_neta": 1.7132615384615382,
+       "sesiones": 59,
+       "ic90": [
+        -0.656087273344024,
+        4.646626475155279
+       ],
+       "p_sesiones": 0.16167664670658682,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 34,
+       "n": 130,
+       "media_neta": 2.269992307692308,
+       "sesiones": 59,
+       "ic90": [
+        -0.16913176733780771,
+        5.247464592868038
+       ],
+       "p_sesiones": 0.09381237524950099,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 35,
+       "n": 130,
+       "media_neta": 1.777684615384615,
+       "sesiones": 59,
+       "ic90": [
+        -0.6266062500000007,
+        4.843739393939391
+       ],
+       "p_sesiones": 0.16367265469061876,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 36,
+       "n": 93,
+       "media_neta": 1.179504301075269,
+       "sesiones": 48,
+       "ic90": [
+        -0.7797634349827386,
+        2.9756662135278513
+       ],
+       "p_sesiones": 0.1497005988023952,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 37,
+       "n": 99,
+       "media_neta": -1.5846696969696972,
+       "sesiones": 50,
+       "ic90": [
+        -3.1968428067345496,
+        -0.07980757013201373
+       ],
+       "p_sesiones": 0.9461077844311377,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 38,
+       "n": 93,
+       "media_neta": 0.9308483870967742,
+       "sesiones": 48,
+       "ic90": [
+        -0.8578704545454547,
+        2.9619507352941126
+       ],
+       "p_sesiones": 0.2435129740518962,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 39,
+       "n": 99,
+       "media_neta": -1.1162353535353537,
+       "sesiones": 50,
+       "ic90": [
+        -2.8034919400187444,
+        0.5746175465838447
+       ],
+       "p_sesiones": 0.8642714570858283,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 40,
+       "n": 93,
+       "media_neta": 1.2198268817204303,
+       "sesiones": 48,
+       "ic90": [
+        -0.5815091856060605,
+        3.520125077399378
+       ],
+       "p_sesiones": 0.17964071856287425,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 41,
+       "n": 99,
+       "media_neta": -0.713457575757576,
+       "sesiones": 50,
+       "ic90": [
+        -2.5107076530612242,
+        1.2727185418541842
+       ],
+       "p_sesiones": 0.7524950099800399,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 42,
+       "n": 42,
+       "media_neta": 4.320633333333332,
+       "sesiones": 30,
+       "ic90": [
+        -0.47402935260842244,
+        8.761567139479906
+       ],
+       "p_sesiones": 0.05588822355289421,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 43,
+       "n": 44,
+       "media_neta": 5.282754545454545,
+       "sesiones": 31,
+       "ic90": [
+        0.8678039414414411,
+        9.553688888888887
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 44,
+       "n": 42,
+       "media_neta": 2.9367047619047613,
+       "sesiones": 30,
+       "ic90": [
+        -0.8120999701848546,
+        6.759756395348837
+       ],
+       "p_sesiones": 0.1217564870259481,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 45,
+       "n": 44,
+       "media_neta": 3.788436363636363,
+       "sesiones": 31,
+       "ic90": [
+        -0.16936118421052618,
+        7.258241558441556
+       ],
+       "p_sesiones": 0.043912175648702596,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 46,
+       "n": 42,
+       "media_neta": 3.642061904761905,
+       "sesiones": 30,
+       "ic90": [
+        -0.37273279666070364,
+        7.622962790697674
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 47,
+       "n": 44,
+       "media_neta": 4.049799999999999,
+       "sesiones": 31,
+       "ic90": [
+        -0.1869536140791957,
+        7.725772222222222
+       ],
+       "p_sesiones": 0.043912175648702596,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     1,
+     1,
+     1,
+     2,
+     0,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     35
+    ],
+    "n": 8,
+    "nota": "< 30 operaciones: no evaluable"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     2,
+     2,
+     2,
+     2,
+     3,
+     1,
+     1,
+     0,
+     0,
+     20
+    ],
+    "n": 9,
+    "nota": "< 30 operaciones: no evaluable"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     29
+    ],
+    "n": 43,
+    "media_neta": -3.5313046511628152,
+    "sesiones": 31,
+    "ic90": [
+     -8.355988690476167,
+     1.29578809523807
+    ],
+    "p_sesiones": 0.885932944606414,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 18.31,
+    "pasa": false,
+    "n_pruebas": 3.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 1.0,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 1,
+   "familia": "U1_ZONAS_ES",
+   "run_id": "U1-ZONAS-ES/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     1,
+     1,
+     1,
+     2,
+     0,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     35
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "motivo": "no evaluable en el OOS"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     2,
+     2,
+     2,
+     2,
+     3,
+     1,
+     1,
+     0,
+     0,
+     20
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "motivo": "no evaluable en el OOS"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     3,
+     0,
+     0,
+     29
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -3.5313046511628152,
+    "ic90": [
+     -8.355988690476167,
+     1.29578809523807
+    ],
+    "efecto_para_potencia": 4.82609680851063,
+    "potencia": 0.5000283286299475,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "codigo_cambiado": [
+  {
+   "etapa": "TOPES",
+   "modulos": [
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/etapas.py"
+   ]
+  }
+ ],
+ "regla": {
+  "celda": [
+   1,
+   1,
+   1,
+   2,
+   0,
+   2,
+   3,
+   1,
+   3,
+   0,
+   0,
+   35
+  ],
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "puntaje": 15.758396397523297,
+  "peor": -26.1377
+ },
+ "acta": {
+  "cid": "U1-ZONAS-ES",
+  "familia": "U1_ZONAS_ES",
+  "experimento": "edgelab.research.u1_zonas",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "regla": {
+   "celda": [
+    1,
+    1,
+    1,
+    2,
+    0,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    35
+   ],
+   "tope": [
+    "pts",
+    50.0
+   ],
+   "puntaje": 15.758396397523297,
+   "peor": -26.1377
+  },
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.7653066819374694,
+    0.9934478657494141
+   ],
+   "vol_ida_rel": [
+    2.5343640797124416,
+    4.41602160249045
+   ],
+   "vel_vuelta/ida": [
+    0.8486666666666666,
+    2.0
+   ]
+  },
+  "holdout_desde": 20261023,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793031885.3441195,
+  "reserva_lord": {
+   "familia": "U1_ZONAS_ES",
+   "reserva_id": "U1-ZONAS-ES/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "U1_ZONAS_ES",
+    "declarada": true,
+    "padres": [
+     "U1_ORO_GRILLA",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 4654307,
+    "n_heredado": 4654307,
+    "total": 4654307,
+    "justificacion": "U1 con zonas aVolZonePOI2 (u1_zonas); declarado antes del DESC (PREREGISTRO_U1_ZONAS.md §7)",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 4654307,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 0.15456084388903946,
+   "recorte": {
+    "t": 3.2906673652085683,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "atras": [],
+  "decision": "primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
+}

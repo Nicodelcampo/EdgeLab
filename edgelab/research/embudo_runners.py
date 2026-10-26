@@ -19,7 +19,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
-                "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py"]
+                "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
+                "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
+                "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
 
 def friccion(instrumento: str) -> tuple:
@@ -57,8 +60,13 @@ def dependencias(ruta: str, vistos=None) -> list:
     if ruta in vistos or not (ROOT / ruta).exists(): return vistos
     vistos.append(ruta)
     for n in ast.walk(ast.parse((ROOT / ruta).read_text(encoding="utf-8-sig"))):
-        mods = [n.module] if isinstance(n, ast.ImportFrom) and n.module else [a.name for a in n.names] if isinstance(n, ast.Import) else []
-        if isinstance(n, ast.ImportFrom) and n.module:
+        if isinstance(n, ast.ImportFrom) and n.level:                              # relativo (sim.py: from .holdout_guard import ...)
+            pkg = ".".join(Path(ruta).with_suffix("").parts[:-n.level])
+            base = f"{pkg}.{n.module}" if n.module else pkg
+            mods = [base] + [f"{base}.{a.name}" for a in n.names]
+        else:
+            mods = [n.module] if isinstance(n, ast.ImportFrom) and n.module else [a.name for a in n.names] if isinstance(n, ast.Import) else []
+        if isinstance(n, ast.ImportFrom) and n.module and not n.level:
             mods += [f"{n.module}.{a.name}" for a in n.names]                      # from edgelab.research import u1_indaga
         for m in mods:
             if m.split(".")[0] in ("edgelab", "tests"):
@@ -68,18 +76,21 @@ def dependencias(ruta: str, vistos=None) -> list:
 
 
 class KaggleRunner:
-    def __init__(self, owner=None, python=sys.executable, carpeta=None, dataset_sellado=None):
+    def __init__(self, owner=None, python=sys.executable, carpeta=None, dataset_sellado=None, raiz=None):
         """`dataset_sellado`: si se da, este runner corre las etapas del HOLDOUT en Kaggle leyendo SÓLO ese dataset privado
-        (datos desde la sesión del 2026-10-01; nunca se adjunta a etapas de desarrollo)."""
+        (datos desde la sesión del 2026-10-01; nunca se adjunta a etapas de desarrollo). `raiz`: carpeta de estados del embudo,
+        para repartir las campañas con `"cuenta_kaggle": "auto"` entre las cuentas (`elegir_cuenta`)."""
         self.owner = owner or os.environ.get("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro")      # SV1: la cuenta de Kaggle de Gonza
-        self.python, self.dataset_sellado = python, dataset_sellado
+        self.python, self.dataset_sellado, self.raiz = python, dataset_sellado, Path(raiz) if raiz else None
         self.carpeta = Path(carpeta or tempfile.mkdtemp(prefix="embudo_kernels_"))
 
     def _construir(self, spec) -> Path:
         sys.path.insert(0, str(ROOT / "tools" / "kaggle_grilla"))
         from construir_kernel import construir
         out = self.carpeta / f"kernel_{spec['cid'].lower()}.py"
-        construir("tools/kaggle_grilla/embudo_main.py", str(out), list(dict.fromkeys(BASE_MODULOS + dependencias(modulo_a_ruta(spec["experimento"])))))
+        mods = list(BASE_MODULOS)
+        for m in list(BASE_MODULOS) + [modulo_a_ruta(spec["experimento"])]: mods += dependencias(m)      # también lo que importan las etapas
+        construir("tools/kaggle_grilla/embudo_main.py", str(out), list(dict.fromkeys(mods)))
         return out
 
     def argumentos(self, spec, etapa, params, periodo) -> list:
@@ -91,7 +102,9 @@ class KaggleRunner:
             if ejec != spec["sensor"]:
                 n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
             extra += list(spec.get("datasets_extra", []))                 # p. ej. el almacén de zonas de U1-ZONAS (target-free)
-        slug = f"{self.owner}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
+        cuenta = spec.get("cuenta_kaggle") or self.owner
+        if cuenta == "auto": cuenta = self.elegir_cuenta()
+        slug = f"{cuenta}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
         if self.dataset_sellado:
@@ -103,23 +116,56 @@ class KaggleRunner:
         for k, v in env.items(): a += ["--env", f"{k}={v}"]
         return a
 
+    @staticmethod
+    def cuentas() -> list:
+        """Cuentas utilizables: EDGELAB_KAGGLE_CUENTAS (Debian: las que tienen credencial instalada) o las de config/kaggle_cuentas.json."""
+        if os.environ.get("EDGELAB_KAGGLE_CUENTAS"): return [c.strip() for c in os.environ["EDGELAB_KAGGLE_CUENTAS"].split(",") if c.strip()]
+        return [k for k in json.loads((ROOT / "config/kaggle_cuentas.json").read_text(encoding="utf-8")) if not k.startswith("_")]
+
+    def ocupacion(self) -> dict:
+        """Kernels CORRIENDO por cuenta según los estados del embudo en `raiz` (los de otro conductor no se ven: el reparto es
+        aproximado, el tope de Kaggle lo sigue marcando el 404 de `estado`, que relanza)."""
+        n = {c: 0 for c in self.cuentas()}
+        for f in (self.raiz.glob("*/estado.json") if self.raiz else []):
+            try: st = json.loads(f.read_text(encoding="utf-8"))
+            except (OSError, ValueError): continue
+            h = st.get("handle")
+            if st.get("fase") == "CORRIENDO" and isinstance(h, str) and h.split("/")[0] in n: n[h.split("/")[0]] += 1
+        return n
+
+    def elegir_cuenta(self) -> str:
+        """2026-10-26: la cuenta con menos kernels corriendo (empate: la primera). Las ventanas consumidas, el libro de LORD++ y el
+        registro de pruebas son por familia, no por cuenta: repartir no cambia ninguna regla."""
+        oc = self.ocupacion()
+        return min(oc, key=lambda c: (oc[c], list(oc).index(c))) if oc else self.owner
+
+    def _env(self, cuenta) -> dict:
+        """La cuenta viaja por el entorno hasta kaggle_kernel/kaggle_auth (el lanzador protegido no se toca)."""
+        env = dict(os.environ); cuentas = self.cuentas()
+        if cuenta in cuentas: env.update(EDGELAB_KAGGLE_OWNER=cuenta, EDGELAB_KAGGLE_DATASET_OWNERS=",".join(cuentas))
+        return env
+
     def lanzar(self, spec, etapa, params, periodo) -> str:
         a = self.argumentos(spec, etapa, params, periodo)
+        env = self._env(a[1].split("/")[0])
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
-                           timeout=TIMEOUT_LANZAR_S)
+                           timeout=TIMEOUT_LANZAR_S, env=env)
         if r.returncode != 0 or '"url"' not in r.stdout: raise RuntimeError(f"no se lanzó: {(r.stdout + r.stderr)[-500:]}")
         return a[1]
 
     def estado(self, handle) -> str:
-        r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=120)
+        r = subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", handle], cwd=ROOT, capture_output=True, text=True, timeout=120,
+                           env=self._env(handle.split("/")[0]))
+        out = r.stdout.lower()
         for s in ("complete", "running", "queued", "error", "cancel"):
-            if f'"{s}' in r.stdout.lower(): return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
+            if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
+        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
         return "running"
 
     def traer(self, handle) -> dict:
         out = self.carpeta / f"{handle.split('/')[-1]}_RESULTADO.json"
         subprocess.run([self.python, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", handle, "--file", "RESULTADO.json", "--out", str(out)],
-                       cwd=ROOT, capture_output=True, text=True, timeout=300)
+                       cwd=ROOT, capture_output=True, text=True, timeout=300, env=self._env(handle.split("/")[0]))
         return json.loads(out.read_text(encoding="utf-8"))
 
 

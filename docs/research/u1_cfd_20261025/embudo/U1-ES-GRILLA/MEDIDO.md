@@ -13,3 +13,21 @@
 - Evaluables: 346033 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20240102, 20260331]: evaluables 321943 (m del FDR 321943 de 4478976 celdas), FDR 736, RW umbral 5.174069881439209 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
 - INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16]: regla 17.61650000000007, placebo -4.47, latencia 1 vela 18.039886206896476 -> pasa
+- INTEGRIDAD [1, 1, 0, 2, 2, 0, 3, 3, 3, 2, 16]: regla 15.0112142857144, placebo 0.06, latencia 1 vela 15.035829411764697 -> pasa
+- INTEGRIDAD [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]: regla 10.353718918918991, placebo -2.80, latencia 1 vela 7.133442857142772 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [nan, nan, nan]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [nan, nan, nan]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16], 'tope': ['mult', 2.0], 'puntaje': 20.090466407109975, 'peor': -26.42970000000037}
+- REINICIO 2026-10-25: las candidatas [[1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16], [1, 1, 0, 2, 2, 0, 3, 3, 3, 2, 16], [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.
+- Evaluables: 346033 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 321943 (m del FDR 321943 de 4478976 celdas), FDR 736, RW umbral 5.174069881439209 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
+- AVISO INTEGRIDAD: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- INTEGRIDAD [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20]: regla 0.9817365781710365, placebo -1.31, latencia 1 vela 1.2071275862069029 -> pasa
+- INTEGRIDAD [1, 2, 0, 1, 2, 1, 3, 3, 1, 0, 4]: regla 0.24949723183389935, placebo -0.64, latencia 1 vela 0.3220551020408291 -> pasa
+- INTEGRIDAD [1, 2, 1, 1, 2, 2, 3, 3, 3, 0, 8]: regla 0.35783993610222864, placebo -1.57, latencia 1 vela 0.30612352941174625 -> pasa
+- AVISO OOS: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- OOS [20260401, 20260930] (régimen actual): medias [-0.59, 0.3, -1.3]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.68, 0.38, 0.2]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20], 'tope': ['mult', 4.0], 'puntaje': 1.8812154500101466, 'peor': -31.295699999999446}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20] tope ['mult', 4.0]
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)

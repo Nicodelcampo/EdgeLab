@@ -1,0 +1,16 @@
+## U1-ZONAS-ES — edgelab.research.u1_zonas · señal ES · ejecución ES
+- Justificación: U1 (la familia más rentable) con zonas de volumen real concentrado (aVolZonePOI2) en lugar de huecos de LUX-IMB, operada en el propio futuro.
+- Refutación: Sin nominadas ni pistas confirmadas; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o rendimiento <= U1 con LUX-IMB en el mismo instrumento.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4654307 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 340079 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250801, 20260331]: evaluables 247686 (m del FDR 247686 de 4478976 celdas), FDR 402, RW umbral 5.395550727844238 (diagnóstico), linaje 4654307 como informacion, pistas sin nominación 0, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35]: regla 10.265077777777778, placebo -1.56, latencia 1 vela 10.761338461538461 -> pasa
+- INTEGRIDAD [0, 1, 2, 2, 2, 2, 3, 1, 1, 0, 0, 20]: regla 10.38551428571436, placebo -2.39, latencia 1 vela 10.97539523809524 -> pasa
+- INTEGRIDAD [0, 1, 1, 0, 2, 2, 3, 1, 3, 0, 0, 29]: regla 3.198169565217384, placebo -1.06, latencia 1 vela 4.931887628865979 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [nan, nan, -3.53]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [nan, nan, 0.5]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- TOPES: elegida {'celda': [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35], 'tope': ['pts', 50.0], 'puntaje': 15.758396397523297, 'peor': -26.1377}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35] tope ['pts', 50.0]

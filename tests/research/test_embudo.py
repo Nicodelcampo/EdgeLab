@@ -79,3 +79,39 @@ def test_descarga_diaria_lee_la_config(tmp_path, monkeypatch):
     (tmp_path / "c.json").write_text(json.dumps(dict(dukascopy=dict(simbolos=["USATECHIDXUSD"], salida_sellada=str(tmp_path), desde="2026-10-01"))))
     D.main(str(tmp_path / "c.json"), hoy=dt.date(2026, 10, 6))
     assert [d.isoformat() for _, d in vistos] == ["2026-10-01", "2026-10-02", "2026-10-04", "2026-10-05"]       # sin el sábado 3
+
+
+def test_meses():
+    assert EM._meses([20240102, 20260331]) == 27 and EM._meses([20260401, 20260930]) == 6 and EM._meses(None) == 0
+
+
+def test_candidata_rara_no_se_elige_si_no_puede_confirmarse_en_el_oos(tmp_path, monkeypatch):
+    """2026-10-25: U1-ES-GRILLA eligió celdas con ~1 operación por mes; en un OOS de 6 meses dieron 6, 1 y 0 operaciones."""
+    monkeypatch.setattr(EM, "nominada", lambda p, nh, como: (True, 0.01))
+    em = EM.Embudo(tmp_path / "estado", dict(kaggle=None, local=None), registro=Reg(), log=lambda s: None,
+                   ventanas=tmp_path / "v.jsonl", linajes=tmp_path / "l.jsonl", registro_pruebas=tmp_path / "r.jsonl")
+    spec = dict(SPEC, cid="T-FREC", desc=[20240101, 20260331], oos=[20260401, 20260930])
+    base = dict(sesiones=40, ratio_mov_friccion=5.0, ic90=[1.0, 3.0], media_neta=2.0, meseta=True)
+    rara, frecuente = dict(base, celda=[0, 0, 0], n=35), dict(base, celda=[1, 1, 1], n=300)
+    res = dict(celdas=spec["n_celdas_por_canal"], E0=dict(cortes={}), canales=dict(total=dict(meses=[f"{m}" for m in range(27)], pistas=[rara, frecuente],
+                                                                                              evaluables=2, nominadas_fdr=2)))
+    st = em._fin_desc(spec, dict(etapa="DESC", reglas={}, historial=[]), res)
+    assert st["candidatas"] == [[1, 1, 1]]                                           # 35/27*6 ≈ 8 < 30; 300/27*6 ≈ 67
+
+
+def test_atras_informativa_nunca_mata(tmp_path):
+    """ATRAS (2026-10-26): el pasado en contra con potencia queda publicado como EN_CONTRA_PASADO y la candidata sigue viva."""
+    em = EM.Embudo(tmp_path, {}, log=lambda s: None, ahora=lambda: 1.0)
+    spec = dict(SPEC, atras=[20230101, 20231231])
+    st = dict(etapa="ATRAS", fase="CORRIENDO", historial=[], candidatas=[[1], [2], [3]],
+              desc=dict(pistas=[dict(celda=[1], media_neta=5.0), dict(celda=[2], media_neta=5.0), dict(celda=[3], media_neta=5.0)]))
+    res = dict(replica=[dict(n=150, media_neta=-1.0, ic90=[-1.5, -0.5]), dict(n=150, media_neta=3.0, ic90=[2.5, 3.5]),
+                        dict(n=8, media_neta=-9.0, ic90=[-60.0, 40.0])])
+    st = em._fin_atras(spec, st, res)
+    assert st["etapa"] == "TOPES" and st["candidatas"] == [[1], [2], [3]]
+    assert [v["veredicto"] for v in st["atras"]["veredictos"]] == ["EN_CONTRA_PASADO", "A_FAVOR", "NO_CONCLUYENTE"]
+
+
+def test_atras_tiene_que_ser_anterior_al_desc():
+    assert any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20250701, 20250901])))
+    assert not any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20230101, 20231231])))

@@ -29,6 +29,7 @@ import numpy as np
 EJES = {
     "objeto": {
         "LUX-IMB": "zonas OG/VI del Imbalance Detector (PASS, NQ M1)",
+        "ZONAS-GAPS": "gaps puros y clusters compactos multi-zona en 50T/M1 (NATIVO_AGENTE, NQ y CFD)",
         "aVolClusterPOI": "clusters de volumen POI (PASS, MNQ 50t/200t)",
         "aVolZonePOI2": "zonas, order blocks y racimos de volumen (PASS, MNQ 25t/200t)",
         "VolTicksDef": "barras de volumen por ticks, delta/defensa (PASS, MNQ 150t)",
@@ -129,13 +130,15 @@ MEDIDO = [
          ref="docs/research/TRIAL_REGISTRY_GLOBAL.jsonl (barrido_horario_20261004)"),
     dict(familia="ORB0100 / ORB_HORARIOS", estado="MEDIDA", c=dict(objeto="rango_apertura", evento="invalidacion", lectura="ruptura"),
          ref="docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"),
+    dict(familia="ZONAS_GAPS", estado="VIVA", c=dict(objeto="ZONAS-GAPS", evento="primer_toque"),
+         ref="docs/research/zonas_gaps_20261025/SPEC_ZONAS_GAPS.md"),
     dict(familia="AVOLCLUSTERPOI_EF0", estado="MEDIDA", c=dict(objeto="aVolClusterPOI", evento="primer_toque"),
          ref="docs/research/AVOLCLUSTERPOI_EF0_KAGGLE_RUN_2026-09-01.md"),
 ]
 
 # Paridad: un indicador PASS vale en el instrumento y la resolución de su evidencia (config/autopilot/indicadores.json); en otro
 # instrumento pide su propio oráculo antes de un barrido. Las primitivas de precio son causales por construcción (test_causal).
-PRIMITIVAS = {"expansion", "rango_apertura", "extremos_previos", "vwap", "perfil_volumen", "franja_horaria", "divergencia_activos"}
+PRIMITIVAS = {"ZONAS-GAPS", "expansion", "rango_apertura", "extremos_previos", "vwap", "perfil_volumen", "franja_horaria", "divergencia_activos"}
 PARIDAD_EN = {"LUX-IMB": {"NQ", "DK:USATECHIDXUSD->NQ"}, "aVolClusterPOI": {"NQ"}, "aVolZonePOI2": {"NQ"}, "VolTicksDef": {"NQ"},
               "HFTZonesNQ": {"NQ"}}
 PESO_SIN_PARIDAD = 0.6
