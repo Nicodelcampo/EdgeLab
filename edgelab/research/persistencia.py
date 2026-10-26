@@ -106,9 +106,11 @@ def _resumen_ventanas(filas, claves) -> dict:
     return dict(resumen=out)
 
 
-def correr(exp, ctx, *, friccion, cortes=None, cx_ej=None, log=print) -> dict:
+def correr(exp, ctx, *, friccion, cortes=None, cx_ej=None, log=print, horizontes=None, meta_formacion=None) -> dict:
+    """`horizontes` [[form, prueba, min_ops], ...] y `meta_formacion` [[form, min_ops], ...] los fija el pre-registro (o su adenda)."""
     M = matriz_mensual(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log)
-    pers = [persistencia(M, f, p, mn, desfase=d) for (f, p), mn in zip(HORIZONTES, MIN_OPS_FORMACION) for d in DESFASES]
-    meta = [meta_regla(M, f, k, mn, cr) for f, mn in ((1, 10), (3, 20)) for k in K_META for cr in ("t", "media")]
+    hz = horizontes or [[f, p, mn] for (f, p), mn in zip(HORIZONTES, MIN_OPS_FORMACION)]
+    pers = [persistencia(M, f, p, mn, desfase=d) for f, p, mn in hz for d in DESFASES]
+    meta = [meta_regla(M, f, k, mn, cr) for f, mn in (meta_formacion or ((1, 10), (3, 20))) for k in K_META for cr in ("t", "media")]
     return dict(experimento=exp.NOMBRE, meses=M["meses"], celdas=M["celdas"], cortes=M["cortes"],
                 ops_mes_celda_mas_ancha=[float(np.nanmax(c)) for c in M["C"]], persistencia=pers, meta_regla=meta)
