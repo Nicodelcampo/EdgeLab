@@ -5,8 +5,11 @@ Strategy Analyzer de NT8»). Es un FRENTE: no tiene motor propio.
     señal, gana el adverso si target y stop caen en la misma barra, cierre de sesión, firewall del holdout). Corre en escenario
     «ideal» con bid = ask = cierre de la barra y el costo se cobra UNA vez con la fricción canónica (`edgelab/costos.py`: spread medido +
     comisión + slippage), igual que la grilla y el embudo. Un instrumento sin costo medido no corre.
-  - Datos: barras M1 de `fuentes_ticks` (futuro del release o Dukascopy `DK:...`) vía `grilla_generica.contexto_m1`, recortadas en la
-    frontera del holdout (`edgelab/holdout.py`); pedir una ventana que la toque es un error, no un recorte silencioso.
+  - Datos: ticks de `fuentes_ticks` (futuro del release: precio de cada operación; Dukascopy `DK:...`: mid) recortados en la frontera
+    del holdout (`edgelab/holdout.py`); pedir una ventana que la toque es un error, no un recorte silencioso. Las señales se calculan
+    sobre barras M1 hechas con esos ticks; la EJECUCIÓN es tick a tick por defecto (`resolucion="ticks"`: entrada en el primer tick
+    posterior a la señal, objetivo/stop/time stop en el tick en que se tocan) o, si se pide, sobre las barras (`resolucion="m1"`,
+    más rápido; si objetivo y stop caen en la misma barra gana el adverso).
   - Multiplicidad: CADA corrida se registra en el contador global ANTES de simular (familia de la estrategia, número de variantes del
     barrido). El reporte dice EXPLORATORIO y cuántas pruebas lleva la familia. Nada sale promovido de acá: lo serio va al embudo.
 
@@ -50,6 +53,12 @@ def barras_de_contexto(ctx: dict) -> pd.DataFrame:
                              v=ctx.get("v", np.zeros(len(ctx["c"]))), ses=ctx["ses"]))
 
 
+def bloques(instrumento: str, desde: int, hasta: int, entrada: str):
+    from edgelab.research import fuentes_ticks as F
+    lector, tick = F.resolver(instrumento)
+    return lector(int(desde), int(hasta), entrada), tick
+
+
 def costo(instrumento: str) -> float:
     """Fricción canónica por operación en puntos (la del futuro de referencia para un CFD)."""
     from edgelab.research.embudo_runners import friccion
@@ -72,6 +81,42 @@ def simular(B: pd.DataFrame, senales: list, tick: float, friccion_pts: float) ->
     T["ses"] = B.set_index("ts").ses.reindex(T.entry_ts).to_numpy()
     T["mes"] = pd.to_datetime(T.entry_ts, unit="ms", utc=True).dt.strftime("%Y-%m")
     return T
+
+
+def simular_ticks(fuente_bloques, senales: list, tick: float, friccion_pts: float) -> pd.DataFrame:
+    """Ejecución tick a tick, una sesión por vez (el simulador cierra al fin de sesión, así que ninguna operación cruza sesiones y no
+    hace falta tener todos los ticks en memoria). `fuente_bloques`: iterable de bloques por sesión (ts_ns, px, sesion)."""
+    from edgelab.research import sim
+    if not senales: return pd.DataFrame()
+    por_ses: dict = {}
+    for i, s_ in enumerate(senales): por_ses.setdefault(int(s_["ses"]), []).append((i, s_))
+    partes = []
+    for b in fuente_bloques:
+        ses = int(b.sesion.iloc[0]) if len(b) else None
+        if ses not in por_ses: continue
+        ts = (b.ts_ns.to_numpy(np.int64) // 10**6); px = b.px.to_numpy(float)
+        steps = [dict(ts=int(t), last=p, bid=p, ask=p, session_id=ses) for t, p in zip(ts, px)]
+        sig = [dict(signal_id=f"s{i}", available_at=int(s_["available_at"]), dir=int(s_["dir"]),
+                    target_ticks=max(1, int(round(float(s_["target_pts"]) / tick))), stop_ticks=max(1, int(round(float(s_["stop_pts"]) / tick))),
+                    time_stop_ms=int(float(s_.get("time_stop_min") or 0) * 60_000)) for i, s_ in por_ses[ses]]
+        r = sim.simulate(sig, steps, scenario="ideal", tick_size=tick, tick_value=1.0, guard_caller="analizador")
+        if r.trades: partes.append(pd.DataFrame(r.trades).assign(ses=ses))
+    if not partes: return pd.DataFrame()
+    T = pd.concat(partes, ignore_index=True).sort_values("entry_ts", kind="stable").reset_index(drop=True)
+    T["bruto_pts"] = T.bruto_ticks * tick; T["neto_pts"] = T.bruto_pts - friccion_pts
+    T["mae_pts"] = T.mae_ticks * tick; T["mfe_pts"] = T.mfe_ticks * tick
+    T["mes"] = pd.to_datetime(T.entry_ts, unit="ms", utc=True).dt.strftime("%Y-%m")
+    return T
+
+
+def _con_sesion(B: pd.DataFrame, senales: list) -> list:
+    """Sesión de cada señal = la de la última barra con ts <= available_at (la que la decidió)."""
+    ts = B.ts.to_numpy(); ses = B.ses.to_numpy()
+    out = []
+    for s_ in senales:
+        i = int(np.searchsorted(ts, int(s_["available_at"]), side="right")) - 1
+        if i >= 0: out.append(dict(s_, ses=int(ses[i])))
+    return out
 
 
 def reporte(T: pd.DataFrame) -> dict:
@@ -123,13 +168,18 @@ def pruebas_de_familia(familia: str, registro: Path = REGISTRO) -> int:
 
 
 def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/input", registro=None, B: pd.DataFrame | None = None,
-             tick: float | None = None, friccion_pts: float | None = None) -> dict:
+             tick: float | None = None, friccion_pts: float | None = None, resolucion: str = "ticks", fuente_ticks=None) -> dict:
+    """`resolucion` "ticks" (por defecto) o "m1". `fuente_ticks`: función () -> iterable de bloques por sesión (tests y kernel); si no
+    se da, se leen de `entrada`. Las señales siempre se calculan sobre barras M1 (columna `ses` = sesión del bloque de ticks)."""
     """Corre la estrategia (y su barrido) y devuelve el reporte. `registro`: TrialRegistry (obligatorio salvo en tests con `B`)."""
     for k in ("NOMBRE", "FAMILIA", "INSTRUMENTO", "senales"):
         if not hasattr(estrategia, k): raise ValueError(f"la estrategia no declara {k}")
     if int(hasta) >= HOLDOUT_PRIMERA_SESION_INT: raise ValueError("toca el holdout: el analizador sólo trabaja con desarrollo")
     fr = costo(estrategia.INSTRUMENTO) if friccion_pts is None else float(friccion_pts)   # en Kaggle la pasa el lanzador (costos canónicos)
+    if resolucion not in ("ticks", "m1"): raise ValueError("resolucion: 'ticks' o 'm1'")
     if B is None: B, tick = barras(estrategia.INSTRUMENTO, desde, hasta, entrada)
+    if resolucion == "ticks" and fuente_ticks is None:
+        fuente_ticks = lambda: bloques(estrategia.INSTRUMENTO, desde, hasta, entrada)[0]
     vs = variantes(estrategia); h = huella(estrategia)
     if registro is None: raise ValueError("sin registro de pruebas no se corre (cada variante cuenta)")
     registro.ensure(f"analizador/{estrategia.FAMILIA}/{h}/{desde}-{hasta}", estrategia.FAMILIA, len(vs),
@@ -137,9 +187,10 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
     if (err := causal(estrategia, B, vs[0])): return dict(estrategia=estrategia.NOMBRE, error="NO CAUSAL", detalle=err)
     filas = []
     for p in vs:
-        T = simular(B, estrategia.senales(B, **p), tick, fr)
+        sen = estrategia.senales(B, **p)
+        T = simular_ticks(fuente_ticks(), _con_sesion(B, sen), tick, fr) if resolucion == "ticks" else simular(B, sen, tick, fr)
         filas.append(dict(parametros=p, **reporte(T), operaciones=T.to_dict("list") if len(vs) == 1 else None))
-    return dict(estrategia=estrategia.NOMBRE, familia=estrategia.FAMILIA, instrumento=estrategia.INSTRUMENTO, periodo=[desde, hasta],
+    return dict(estrategia=estrategia.NOMBRE, familia=estrategia.FAMILIA, instrumento=estrategia.INSTRUMENTO, periodo=[desde, hasta], resolucion=resolucion,
                 friccion_pts=fr, huella=h, variantes=len(vs), resultados=filas,
                 aviso=("EXPLORATORIO: nada sale promovido del analizador. Con muchas variantes la mejor está inflada por selección; "
                        "lo prometedor se pre-registra y va al embudo (réplica no mirada y holdout)."),

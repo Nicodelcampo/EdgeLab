@@ -24,5 +24,5 @@ tests `tests/research/test_analizador.py`.
   familia y marca EXPLORATORIO. Nada sale promovido: lo prometedor se pre-registra y va al embudo (réplica no mirada, holdout).
 
 ## Límites
-Barras M1 (dentro de la barra no se sabe el orden de máximo y mínimo: el simulador asume el adverso). Una posición por vez por
-estrategia. Para ticks reales con bid/ask, el simulador es el mismo pero hay que pasarle steps de ticks (pendiente).
+Ejecución **tick a tick por defecto** (entrada en el primer tick posterior a la señal; objetivo, stop y time stop en el tick en que se tocan); `--resolucion m1` ejecuta sobre barras (más rápido; si objetivo y stop caen en la misma barra gana el adverso). Las señales se calculan sobre barras M1 hechas con los mismos ticks. Los futuros del release traen el precio de cada operación (sin bid/ask) y Dukascopy el mid: el spread se cobra con la fricción canónica. Una posición por vez por
+estrategia.
