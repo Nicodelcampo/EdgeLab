@@ -341,6 +341,11 @@ class Embudo:
         # dato target-free: se exige que la del DESC prometa >= min_ops_oos operaciones en la ventana OOS. Sólo endurece la selección.
         meses_can = {id(p): max(1, len(c.get("meses") or []) or _meses(spec.get("desc"))) for c in (res.get("canales") or {}).values() for p in c.get("pistas", [])}
         m_oos = _meses(spec.get("oos")) if spec.get("oos") else 0
+        try:                                                      # escala causal mensual (u1_oro y derivados): el 1.er mes del OOS no dispara
+            import importlib
+            if m_oos and hasattr(importlib.import_module(spec["experimento"]), "escala_por_mes"): m_oos -= 1
+        except ImportError:
+            pass
         # 2026-10-24 (falsos negativos): la meseta ORDENA (primero las que la tienen), no mata; 4 de las 5 celdas de U1 no la tenían
         orden = (lambda p: (not p.get("meseta", False), -p["ic90"][0])) if sel["exigir_meseta"] else (lambda p: -p["ic90"][0])
         for p in sorted(pistas, key=orden):
