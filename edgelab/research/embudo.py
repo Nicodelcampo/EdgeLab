@@ -41,7 +41,7 @@ import numpy as np
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
 ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "ATRAS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
-FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "PISTAS_VIVAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
+FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "PISTAS_VIVAS", "SIN_POTENCIA_HOLDOUT", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
 DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
 FALSOS_NEGATIVOS_20261024 = "docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md"
@@ -54,7 +54,7 @@ DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_fric
                 pistas_replica=dict(activa=True, k=20, ventana=None),
                 integridad=dict(placebo_max_frac=0.25, latencia_1_positiva=False),
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
-                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400),
+                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400, n_max=500, potencia_min=0.8),
                 # decisión 2 (2026-10-24, con el matiz de Nico: «algunas estrategias funcionan por régimen»): `actual_desde` = primer día
                 # (YYYYMMDD, anterior al holdout) del régimen vigente y `definicion` = cómo se lo define, ambos ANTES del OOS. Sin
                 # declaración el OOS cuenta como del régimen actual (no hay excepción a posteriori).
@@ -555,6 +555,15 @@ class Embudo:
             return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso sin cotas estructurales declaradas antes de mirar: {faltan}")
         if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v, estadistico=est)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
+        # Compuerta de potencia (2026-10-26, decisión de Nico; error E8): la única apertura de la familia no se gasta sin poder decidir.
+        # El N se fija ANTES de mirar con el efecto más reciente no mirado (OOS o réplica de pistas; si no hay, fraccion_efecto x DESC),
+        # nunca con el recorte de Harvey-Liu sobre millones de pruebas (deja el efecto en ~0 para cualquier grilla masiva).
+        plan = self._plan_holdout(spec, st, h)
+        st["plan_holdout"] = plan
+        if plan.get("n_fijo") is None:
+            return self._cerrar(spec, st, "SIN_POTENCIA_HOLDOUT", f"potencia del holdout < {h['potencia_min']} aun con N máximo {h['n_max']} "
+                                                                  f"({plan}); la familia sigue viva, sin gastar su apertura")
+        h = dict(h, n_fijo=int(plan["n_fijo"]))
         # decisión 3 (2026-10-24): el acta RESERVA su paso de LORD++ (consume α ahora, con el nivel fijo) antes de mirar
         reserva = self.libro.reservar(spec["familia"], f"{spec['cid']}/holdout", f"acta {spec['cid']}") if self.libro else None
         alfa = reserva["nivel"] if reserva else 0.05
@@ -572,7 +581,10 @@ class Embudo:
                                  f"(E[x] < {cotas['mu_util']}) llega a e ≥ 10; SIN_POTENCIA si llega a N sin decidir. Se informa también "
                                  "sin las sesiones ya miradas (D5).")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
-        self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
+        acta["plan_holdout"] = st.get("plan_holdout")
+        (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+        self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}; "
+                           f"plan {st.get('plan_holdout')}")
         pot_h = (acta.get("multiplicidad") or {}).get("potencia_holdout")
         if pot_h is not None and pot_h < 0.5:
             self._medido(spec, f"- AVISO ACTA: potencia del holdout {pot_h:.2f} < 0,5 con N {h['n_fijo']}: lo más probable es SIN_POTENCIA "
@@ -580,6 +592,25 @@ class Embudo:
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
+
+    def _plan_holdout(self, spec, st, h) -> dict:
+        from edgelab.funnel.escalera import _N, potencia
+        c = st["regla"]["celda"]
+        p = next((x for x in (st.get("desc") or {}).get("pistas", []) if x["celda"] == c), None)
+        if not p or not p.get("ic90") or not p.get("n"): return dict(n_fijo=h["n_fijo"], nota="sin estadísticas de la regla: N declarado")
+        se_d = (p["ic90"][1] - p["ic90"][0]) / (2 * 1.6448536); n_d = int(p["n"])
+        oos = next((v for v in (st.get("oos") or {}).get("veredictos", []) if v.get("celda") == c and v.get("media") is not None), None)
+        rep = (p.get("replica_pistas") or {})
+        if oos and oos["media"] > 0: ef, fuente = float(oos["media"]), "OOS"
+        elif rep.get("media") is not None and rep["media"] > 0: ef, fuente = float(rep["media"]), "réplica de pistas"
+        else: ef, fuente = _reglas(spec, st, "regimen")["fraccion_efecto"] * float(p["media_neta"]), "fracción del DESC"
+        nivel = float(self.libro.nivel(spec["familia"])) if self.libro else 0.05
+        if ef <= 0: return dict(n_fijo=None, efecto=ef, fuente=fuente, nivel=nivel)
+        z = _N.inv_cdf(1 - nivel) + _N.inv_cdf(h["potencia_min"])
+        n80 = int(np.ceil(n_d * (z * se_d / ef) ** 2))
+        n = max(int(h["n_fijo"]), n80)
+        pot = potencia(ef, se_d * (n_d / n) ** 0.5, nivel)
+        return dict(n_fijo=n if n <= int(h["n_max"]) else None, n_necesario=n80, potencia=pot, efecto=ef, fuente=fuente, nivel=nivel)
 
     def _acta_multiplicidad(self, spec, st, n_fijo):
         """Decisión 4: multiplicidad total (familia + linaje) y lo que se espera ver de la regla fuera de muestra con ese cobro

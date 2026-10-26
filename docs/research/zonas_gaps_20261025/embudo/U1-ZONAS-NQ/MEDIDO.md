@@ -17,3 +17,6 @@
 - TOPES: elegida {'celda': [0, 0, 0, 2, 2, 0, 3, 3, 1, 0, 0, 33], 'tope': ['mult', 2.0], 'puntaje': 10.120045367108526, 'peor': -151.72049999999928}
 - ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 0, 0, 2, 2, 0, 3, 3, 1, 0, 0, 33] tope ['mult', 2.0]
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- ACTA ANULADA 2026-10-26 antes de mirar (potencia ≈ 0, error E8; decisión de Nico): vuelve a ACTA con la compuerta de potencia
+- ACTA registrada antes de mirar: primeras 449 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 0, 0, 2, 2, 0, 3, 3, 1, 0, 0, 33] tope ['mult', 2.0]; plan {'n_fijo': 449, 'n_necesario': 449, 'potencia': 0.8009187406869294, 'efecto': 10.720846153846331, 'fuente': 'OOS', 'nivel': 0.0018858947159882456}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 449: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
