@@ -1,5 +1,5 @@
 # Principal ÚNICO del embudo de grilla en Kaggle (lo empaqueta edgelab/research/embudo_runners.py con el experimento).
-# Entorno: EXPERIMENTO (ruta de import), ETAPA (E0|DESC|INDAGA|REP|INTEGRIDAD|TOPES), SENSOR (p. ej. NQ o DK:USATECHIDXUSD),
+# Entorno: CONFIRMADOR (opcional, segundo instrumento para variables), EXPERIMENTO (ruta de import), ETAPA (E0|DESC|INDAGA|REP|INTEGRIDAD|TOPES), SENSOR (p. ej. NQ o DK:USATECHIDXUSD),
 #          EJECUCION (vacío = misma que SENSOR), DESDE/HASTA (YYYYMMDD), FRICCION/EXTRA (de edgelab.costos, los pone el lanzador),
 #          PARAMS (JSON: celdas, cortes, bases, topes, tope). Salida: RESULTADO.json (+ STUDY_RESULTS.json para el ciclo autónomo).
 import importlib
@@ -25,6 +25,8 @@ def main():
     else:
         resolver = F.resolver
     lec_s, tk_s = resolver(sensor); ctx = GG.contexto_m1(lec_s(desde, hasta, ent), tk_s); log(f"señal {sensor}: {len(ctx['c'])} velas")
+    if (conf := os.environ.get("CONFIRMADOR")):                          # 2026-10-26: segundo instrumento sólo para variables (U1-CONFIRMA)
+        lec_c, tk_c = resolver(conf); ctx["conf"] = GG.contexto_m1(lec_c(desde, hasta, ent), tk_c); log(f"confirmador {conf}: {len(ctx['conf']['c'])} velas")
     cx_ej = alin = None
     if ejec and ejec != sensor:
         lec_e, tk_e = resolver(ejec); cx_ej = GG.contexto_m1(lec_e(desde, hasta, ent), tk_e); log(f"ejecución {ejec}: {len(cx_ej['c'])} velas")
