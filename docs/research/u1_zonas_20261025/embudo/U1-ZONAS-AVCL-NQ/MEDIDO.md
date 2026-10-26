@@ -12,3 +12,4 @@
 - PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.0021873021354976113; confirmadas 1 de 19 [[0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]]
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]: regla 6.829499999999999, placebo -7.57, latencia 1 vela 8.065611111111112 -> pasa
+- TOPES: elegida {'celda': [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0], 'tope': ['mult', 3.0], 'puntaje': 4.500718170675654, 'peor': -50.7955}
