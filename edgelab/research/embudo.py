@@ -41,7 +41,7 @@ import numpy as np
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
 ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "ATRAS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
-FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
+FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "PISTAS_VIVAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
 DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
 FALSOS_NEGATIVOS_20261024 = "docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md"
@@ -404,9 +404,16 @@ class Embudo:
     def _fin_pistas(self, spec, st, res):
         """Un paso de LORD++ de la familia para el lote entero (`probar_lote`: Simes para la familia, BH adentro, al nivel del paso).
         Las confirmadas con media > 0 quedan nominadas (`nominada_replica`) y siguen a INDAGA; el resto queda registrado."""
-        from edgelab.funnel.escalera import decidir_pistas
+        from edgelab.funnel.escalera import canasta_pistas, decidir_pistas, veredicto_pistas
         pr_ = st["pistas_replica"]; filas = res.get("replica") or []
         if len(filas) != len(pr_["celdas"]): return self._fallo(spec, st, f"réplica de pistas con {len(filas)} filas para {len(pr_['celdas'])} celdas")
+        # 2026-10-26 (Nico, auditoría del filtro): primero la CANASTA de las k pistas como una sola prueba, con su propio paso de LORD++
+        can = canasta_pistas(res.get("operaciones"), len(filas))
+        dec_can = (self.libro.probar(spec["familia"], f"{spec['cid']}/pistas_canasta", [("canasta", can["p"])], f"canasta de pistas {spec['cid']}")
+                   if self.libro and can.get("p") is not None else None)
+        pr_["canasta"] = dict(can, lord=dec_can)
+        self._medido(spec, f"- PISTAS canasta (una prueba): media {can.get('media')} IC90 {can.get('ic90')} p {can.get('p')} sesiones "
+                           f"{can.get('n_sesiones')}; LORD++ {'rechaza' if (dec_can or {}).get('rechazo') else 'sin rechazo'} (nivel {(dec_can or {}).get('nivel')})")
         nombres = [f"p{i}" for i in range(len(filas))]
         pruebas = [(n, r.get("p_sesiones") if r.get("p_sesiones") is not None else 1.0) for n, r in zip(nombres, filas)]
         dec = self.libro.probar(spec["familia"], f"{spec['cid']}/pistas", pruebas, f"pistas a réplica {spec['cid']} (lote de {len(pruebas)})") if self.libro else None
@@ -419,10 +426,16 @@ class Embudo:
         if (aviso := _aviso_resolucion(dec, filas, len(filas))): pr_["sin_resolucion"] = aviso; self._medido(spec, f"- PISTAS: {aviso}")
         self._medido(spec, f"- PISTAS réplica {pr_['ventana']}: LORD++ t={(dec or {}).get('t')} nivel {(dec or {}).get('nivel')} p Simes "
                            f"{(dec or {}).get('p_simes')}; confirmadas {len(ok)} de {len(filas)} {pr_['confirmadas']}")
+        reg = _reglas(spec, st, "regimen")
+        media_desc = float(np.mean([p["media_neta"] for p in st["desc"]["pistas"]])) if st["desc"]["pistas"] else 0.0
+        ver = veredicto_pistas(ok, can, dec_can, media_desc, reg["fraccion_efecto"], reg["potencia_min"]); pr_["veredicto"] = ver
+        if ver["veredicto"] == "CANASTA_CONFIRMADA" and not ok:                 # la canasta confirma: siguen sus pistas con media > 0
+            ok = [i for i, r in enumerate(filas) if (r.get("media_neta") or 0) > 0]
+            for i in ok: st["desc"]["pistas"][i]["nominada_replica"] = True
         if not ok:
-            return self._cerrar(spec, st, "SIN_CANDIDATAS", f"pistas a réplica: 0 de {len(filas)} confirmadas por el paso de LORD++ del lote "
-                                                            f"(nivel {(dec or {}).get('nivel')}, p Simes {(dec or {}).get('p_simes')})"
-                                                            + ("" if self.libro else " — sin libro de LORD++ no hay confirmación"))
+            texto = (f"pistas a réplica: 0 de {len(filas)} confirmadas una por una (nivel {(dec or {}).get('nivel')}, p Simes {(dec or {}).get('p_simes')}); "
+                     f"canasta media {can.get('media')} IC90 {can.get('ic90')}; {ver.get('motivo', '')}; potencia de la canasta {ver.get('potencia')}")
+            return self._cerrar(spec, st, "SIN_CANDIDATAS" if ver["veredicto"] == "REFUTADA" else "PISTAS_VIVAS", texto)
         sel = _reglas(spec, st, "seleccion")
         orden = sorted(ok, key=lambda i: (filas[i].get("p_sesiones") or 1.0, -(filas[i].get("ic90") or [0])[0]))
         cand = [pr_["celdas"][i] for i in orden[:sel["max_candidatas"]]]

@@ -50,3 +50,18 @@ se fije antes de ver su resultado.
 ## 5. Cómo podría refutarse
 Si en el holdout la canasta de pistas de ZGAP-NQ/EXPZ-NQ da ≈ 0 con potencia, la lectura de «edge difuso» cae y la estrictez del embudo no
 habría costado nada. Si da positiva, el filtro estaba matando familias reales.
+
+## 6. Aplicado (Nico aprobó las cuatro propuestas, 2026-10-26)
+1. **Pistas con potencia** y 2. **canasta como una prueba**: `escalera.canasta_pistas` + `escalera.veredicto_pistas`; `embudo._fin_pistas`
+   corre primero la canasta (su propio paso de LORD++, nivel completo) y después las pistas. Veredictos: CANASTA_CONFIRMADA,
+   PISTAS_CONFIRMADAS, REFUTADA (canasta en contra con potencia) → SIN_CANDIDATAS; SIN_RECHAZO / SIN_POTENCIA → fase **PISTAS_VIVAS**
+   (viva). Tests: ruido no confirma ni mata, canasta en contra refuta, edge difuso lo confirma la canasta.
+3. **Reclasificadas** EXPZ-NQ, EXPZ-CFD, ZGAP-NQ, ZGAP-CFD → PISTAS_VIVAS (veredicto SIN_RECHAZO: con potencia para la mitad del efecto
+   del DESC la canasta no lo alcanza, pero no está en contra). Canasta calculada sobre la réplica ya mirada: no confirma.
+4. **Holdout de canastas** (`tools/holdout_canasta.py`: acta → conteo sin P&L → decisión con el paso reservado):
+   - **ZGAP-NQ: acta registrada** (`ZGAP-NQ-CANASTA`, apertura única de ZONAS_GAPS, α reservado 0,00189, **N = 530 sesiones**: potencia
+     0,8 para la media de la réplica, +5,2 pts por sesión con desvío 32). Al ritmo de ~250 sesiones por año, decide en ≈ 2 años.
+   - **EXPZ-NQ: acta NO registrada.** Con su media de réplica (+2,6) y el nivel de LORD++ actual (0,0019) harían falta ≈ 1.560 sesiones
+     (> 6 años); con 500 la potencia es 0,22. Abrir el holdout así gastaría la única apertura de EXPANSION_ZONAS casi seguro sin poder
+     decidir. Queda viva (PISTAS_VIVAS) esperando una forma de ganar potencia (más instrumentos con la misma regla, o normalización).
+U1-ZONAS-AVCL-NQ siguió a su etapa de pistas con el criterio nuevo (fijado antes de ver su resultado).

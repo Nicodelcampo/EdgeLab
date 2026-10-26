@@ -8,3 +8,4 @@
 - Evaluables: 15882 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250801, 20260331]: evaluables 12821 (m del FDR 12821 de 4478976 celdas), FDR 13, RW umbral 4.275935649871826 (diagnóstico), linaje 4654307 como informacion, pistas sin nominación 40, candidatas 1
 - Potencia prevista (informativa): [0, 2, 0, 2, 0, 2, 3, 3, 3, 1, 0, 4]: OOS n 52.5 potencia 0.52, holdout n 150 potencia 0.89; [0, 2, 0, 2, 0, 2, 3, 3, 3, 1, 0, 4]: OOS n 68.0 potencia 0.88, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas

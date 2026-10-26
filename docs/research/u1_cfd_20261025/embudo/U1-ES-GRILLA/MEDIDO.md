@@ -26,3 +26,5 @@
 - INTEGRIDAD [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20]: regla 0.9817365781710365, placebo -1.31, latencia 1 vela 1.2071275862069029 -> pasa
 - INTEGRIDAD [1, 2, 0, 1, 2, 1, 3, 3, 1, 0, 4]: regla 0.24949723183389935, placebo -0.64, latencia 1 vela 0.3220551020408291 -> pasa
 - INTEGRIDAD [1, 2, 1, 1, 2, 2, 3, 3, 3, 0, 8]: regla 0.35783993610222864, placebo -1.57, latencia 1 vela 0.30612352941174625 -> pasa
+- AVISO OOS: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- OOS [20260401, 20260930] (régimen actual): medias [-0.59, 0.3, -1.3]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.68, 0.38, 0.2]; LORD++ sin rechazo

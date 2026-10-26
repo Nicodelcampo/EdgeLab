@@ -432,6 +432,44 @@ def decidir_pistas(dec_lote: dict, replica: list, nombres: list) -> list:
     return [i for i, (n, r) in enumerate(zip(nombres, replica)) if n in conf and (r.get("media_neta") or 0) > 0]
 
 
+def canasta_pistas(operaciones: dict, k: int, n_boot: int = 4000) -> dict:
+    """Prueba AGREGADA de un lote de pistas (decisión de Nico, 2026-10-26, auditoría del filtro): la canasta igual-ponderada de las k
+    pistas, P&L neto medio por pista y sesión, como UNA serie (bootstrap por sesiones). Detecta un edge repartido en muchas celdas vecinas
+    débiles que la prueba pista por pista (umbral / k) no puede ver. `operaciones`: dict de listas con celda, ses, neto (REP)."""
+    import pandas as pd
+    o = pd.DataFrame(operaciones or {})
+    if not len(o): return dict(n_sesiones=0)
+    g = o.groupby(["ses", "celda"]).neto.sum().unstack().reindex(columns=range(k)).fillna(0.0).mean(axis=1)
+    rs = resumen_sesiones(g.to_numpy(float), g.index.to_numpy(), n_boot=n_boot)
+    return dict(n_sesiones=int(len(g)), media=float(g.mean()), ic90=rs["ic"], p=rs["p_unilateral"], n_boot=n_boot)
+
+
+def veredicto_pistas(confirmadas: list, canasta: dict, dec_canasta: dict | None, media_desc: float, fraccion_efecto: float = 0.5,
+                     potencia_min: float = 0.8) -> dict:
+    """Veredicto del lote de pistas (2026-10-26). Antes: 0 confirmadas una por una = SIN_CANDIDATAS, aunque la potencia fuera del 1–2 %.
+    Ahora, con la misma semántica que el OOS (decisión 2 del 2026-10-24: un nulo sin potencia no mata):
+      CANASTA_CONFIRMADA   el paso de LORD++ de la canasta rechaza y su media > 0
+      PISTAS_CONFIRMADAS   alguna pista individual confirmada (como antes)
+      REFUTADA             la canasta tiene potencia >= potencia_min para fraccion_efecto x media del DESC y su IC90 entero es < 0
+      SIN_RECHAZO          con potencia, sin confirmar ni estar en contra: viva (un efecto menor que el del DESC sigue posible)
+      SIN_POTENCIA         sin potencia: viva. En los dos casos el próximo paso es el holdout de la canasta congelada."""
+    if dec_canasta and dec_canasta.get("rechazo") and (canasta.get("media") or 0) > 0: return dict(veredicto="CANASTA_CONFIRMADA")
+    if confirmadas: return dict(veredicto="PISTAS_CONFIRMADAS")
+    ic = canasta.get("ic90")
+    if not ic: return dict(veredicto="SIN_POTENCIA", motivo="canasta sin operaciones evaluables")
+    se = (ic[1] - ic[0]) / (2 * 1.6448536); ef = fraccion_efecto * max(media_desc, 0.0)
+    nivel = (dec_canasta or {}).get("nivel", ALFA_CONFIRMACION)
+    pot = potencia(ef, se, nivel) if ef > 0 else 0.0
+    if pot == pot and pot >= potencia_min and ic[1] < 0:
+        return dict(veredicto="REFUTADA", potencia=pot, efecto=ef, motivo="canasta en contra con potencia")
+    if pot == pot and pot >= potencia_min:
+        return dict(veredicto="SIN_RECHAZO", potencia=pot, efecto=ef,
+                    motivo=(f"con potencia para {fraccion_efecto:g} x el efecto del DESC: la canasta no lo alcanza (IC90 {ic}) pero no está en contra; "
+                            "un efecto menor sigue posible: la familia sigue viva"))
+    return dict(veredicto="SIN_POTENCIA", potencia=pot, efecto=ef,
+                motivo="ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva")
+
+
 # ----------------------------------------------------------------------------- 7. puente con el ciclo autónomo
 def para_autopilot(pruebas: list) -> dict:
     """Formato `results_flat` que `edgelab.autopilot.analyze.records` ya entiende (no hay que tocar el autopilot para leerlo).
