@@ -225,8 +225,9 @@ def reporte(T: pd.DataFrame) -> dict:
     rs = resumen_sesiones(x, T.ses.to_numpy(), n_boot=2000) if len(x) >= 5 else {}
     return dict(n=int(len(x)), neto_total=float(x.sum()), media=float(x.mean()), ic90_sesiones=rs.get("ic"), p_sesiones=rs.get("p_unilateral"),
                 acierto=float((x > 0).mean()), profit_factor=float(gan / per) if per > 0 else None, mejor=float(x.max()), peor=float(x.min()),
-                drawdown_max=dd, mae_media=float(T.mae_pts.mean()), mfe_media=float(T.mfe_pts.mean()),
-                salidas=T.exit_reason.value_counts().to_dict(), por_mes=T.groupby("mes").neto_pts.agg(["count", "sum", "mean"]).round(3).to_dict("index"),
+                drawdown_max=dd, mae_media=float(T.mae_pts.mean()) if "mae_pts" in T else None, mfe_media=float(T.mfe_pts.mean()) if "mfe_pts" in T else None,
+                salidas=T.exit_reason.value_counts().to_dict() if "exit_reason" in T else None,
+                por_mes=T.groupby("mes").neto_pts.agg(["count", "sum", "mean"]).round(3).to_dict("index"),
                 sin_las_5_mejores=float(np.sort(x)[:-5].sum()) if len(x) > 5 else None)
 
 
@@ -297,3 +298,17 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
                 aviso=("EXPLORATORIO: nada sale promovido del analizador. Con muchas variantes la mejor está inflada por selección; "
                        "lo prometedor se pre-registra y va al embudo (réplica no mirada y holdout)."),
                 pruebas_acumuladas_familia=pruebas_de_familia(estrategia.FAMILIA, getattr(registro, "path", REGISTRO)))
+
+
+def reporte_de_regla(cx, celdas) -> list:
+    """2026-10-26 (Nico: «corré en la herramienta nueva las que dan positivo en el backtest aunque no den señal»): el reporte del
+    analizador para celdas CONGELADAS del embudo, con las operaciones que simuló el motor de la grilla que las eligió (entradas límite,
+    tope y ejecución tick a tick: `grilla_generica.correr` en modo REP). Mismas cifras que un backtest del Strategy Analyzer."""
+    from edgelab.research.grilla_generica import operaciones_de
+    O = operaciones_de(cx, celdas); out = []
+    for i, c in enumerate(celdas):
+        T = O[O.celda == i]
+        T = pd.DataFrame(dict(neto_pts=T.neto.to_numpy(float), ses=T.ses.to_numpy(),
+                              mes=pd.to_datetime(T.t.to_numpy(), unit="s", utc=True).strftime("%Y%m")))
+        out.append(dict(celda=list(c), **reporte(T)))
+    return out
