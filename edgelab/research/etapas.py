@@ -56,6 +56,12 @@ def densidad(ctx, D) -> dict:
 
 def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=None, bloques_alineacion=None, log=print) -> dict:
     p = params or {}; celdas = [list(c) for c in p.get("celdas", [])]; cortes = p.get("cortes")
+    if etapa == "ANALIZAR":                                                # analizador de estrategias (2026-10-26): el registro se hizo al lanzar
+        from edgelab.research import analizador as AN
+        class _Hecho:                                                       # el lanzador ya registró las variantes en el contador global
+            def ensure(self, *a, **k): return False
+        B = AN.barras_de_contexto(cx_ej if cx_ej is not None else ctx)
+        return AN.analizar(exp, int(p["desde"]), int(p["hasta"]), registro=_Hecho(), B=B, tick=float((cx_ej or ctx)["tick"]), friccion_pts=friccion)
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE
         return PE.correr(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log, horizontes=p.get("horizontes"),

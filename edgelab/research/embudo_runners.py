@@ -21,7 +21,8 @@ TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) cort
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
-                "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py"]             # etapa PERSIST (canasta de régimen)
+                "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
+                "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
 
 def friccion(instrumento: str) -> tuple:
@@ -59,8 +60,13 @@ def dependencias(ruta: str, vistos=None) -> list:
     if ruta in vistos or not (ROOT / ruta).exists(): return vistos
     vistos.append(ruta)
     for n in ast.walk(ast.parse((ROOT / ruta).read_text(encoding="utf-8-sig"))):
-        mods = [n.module] if isinstance(n, ast.ImportFrom) and n.module else [a.name for a in n.names] if isinstance(n, ast.Import) else []
-        if isinstance(n, ast.ImportFrom) and n.module:
+        if isinstance(n, ast.ImportFrom) and n.level:                              # relativo (sim.py: from .holdout_guard import ...)
+            pkg = ".".join(Path(ruta).with_suffix("").parts[:-n.level])
+            base = f"{pkg}.{n.module}" if n.module else pkg
+            mods = [base] + [f"{base}.{a.name}" for a in n.names]
+        else:
+            mods = [n.module] if isinstance(n, ast.ImportFrom) and n.module else [a.name for a in n.names] if isinstance(n, ast.Import) else []
+        if isinstance(n, ast.ImportFrom) and n.module and not n.level:
             mods += [f"{n.module}.{a.name}" for a in n.names]                      # from edgelab.research import u1_indaga
         for m in mods:
             if m.split(".")[0] in ("edgelab", "tests"):
@@ -82,7 +88,9 @@ class KaggleRunner:
         sys.path.insert(0, str(ROOT / "tools" / "kaggle_grilla"))
         from construir_kernel import construir
         out = self.carpeta / f"kernel_{spec['cid'].lower()}.py"
-        construir("tools/kaggle_grilla/embudo_main.py", str(out), list(dict.fromkeys(BASE_MODULOS + dependencias(modulo_a_ruta(spec["experimento"])))))
+        mods = list(BASE_MODULOS)
+        for m in list(BASE_MODULOS) + [modulo_a_ruta(spec["experimento"])]: mods += dependencias(m)      # también lo que importan las etapas
+        construir("tools/kaggle_grilla/embudo_main.py", str(out), list(dict.fromkeys(mods)))
         return out
 
     def argumentos(self, spec, etapa, params, periodo) -> list:
