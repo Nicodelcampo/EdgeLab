@@ -48,6 +48,17 @@ def barras(instrumento: str, desde: int, hasta: int, entrada: str) -> tuple[pd.D
     return barras_de_contexto(ctx), tick
 
 
+def barras_de_ticks(ts_ns, px, vol, ses) -> pd.DataFrame:
+    """Barras M1 vectorizadas (= `contexto_m1`: o/h/l/c/v por minuto, marca de cierre, sesión de la última operación del minuto)."""
+    clave = np.asarray(ts_ns, np.int64) // 60_000_000_000 + 1
+    if len(clave) > 1 and (np.diff(clave) < 0).any():
+        o = np.argsort(clave, kind="stable"); clave, px, vol, ses = clave[o], np.asarray(px)[o], np.asarray(vol)[o], np.asarray(ses)[o]
+    ini = np.flatnonzero(np.r_[True, clave[1:] != clave[:-1]]); fin = np.r_[ini[1:], len(clave)] - 1
+    px = np.asarray(px, float)
+    return pd.DataFrame(dict(ts=clave[ini] * 60_000, o=px[ini], h=np.maximum.reduceat(px, ini), l=np.minimum.reduceat(px, ini), c=px[fin],
+                             v=np.add.reduceat(np.asarray(vol, float), ini), ses=np.asarray(ses, np.int64)[fin]))
+
+
 def barras_de_contexto(ctx: dict) -> pd.DataFrame:
     return pd.DataFrame(dict(ts=np.asarray(ctx["t"], np.int64) * 1000, o=ctx["o"], h=ctx["h"], l=ctx["l"], c=ctx["c"],
                              v=ctx.get("v", np.zeros(len(ctx["c"]))), ses=ctx["ses"]))
@@ -138,7 +149,8 @@ class Mercado:
     def __init__(self, ts, last, lo, hi, ses, tick):
         self.ts = np.asarray(ts, np.int64); self.tick = float(tick); self.ses = np.asarray(ses, np.int64)
         k = lambda x: np.round(np.asarray(x, float) / self.tick, 6)
-        self.last, self.lo, self.hi = k(last), k(lo), k(hi)
+        self.last = k(last)
+        self.lo = self.last if lo is last else k(lo); self.hi = self.last if hi is last else k(hi)   # ticks: un solo redondeo
         self.fin_ses = np.r_[self.ses[1:] != self.ses[:-1], True] if len(self.ses) else np.zeros(0, bool)
         if len(self.ts):                                                         # firewall del holdout, una vez para todo el rango
             from edgelab.research.holdout_guard import check_holdout
@@ -146,14 +158,19 @@ class Mercado:
             check_holdout(_iso(int(self.ts[0])), _iso(int(self.ts[-1]) + 1), purpose="development", caller="analizador")
 
     @classmethod
-    def de_ticks(cls, bloques, tick):
-        ts, px, ses = [], [], []
+    def de_ticks(cls, bloques, tick, con_barras: bool = False):
+        """Ticks concatenados (una lectura). Con `con_barras` devuelve también las barras M1 de las señales, hechas con los MISMOS
+        ticks y la misma convención que `grilla_generica.contexto_m1` (marca de cierre del minuto; test de igualdad), sin el perfil de
+        volumen que el analizador no usa."""
+        ts, px, vol, ses = [], [], [], []
         for b in bloques:
             if not len(b): continue
-            ts.append(b.ts_ns.to_numpy(np.int64) // 10**6); px.append(b.px.to_numpy(float)); ses.append(b.sesion.to_numpy(np.int64))
-        if not ts: return cls([], [], [], [], [], tick)
-        p = np.concatenate(px)
-        return cls(np.concatenate(ts), p, p, p, np.concatenate(ses), tick)
+            ts.append(b.ts_ns.to_numpy(np.int64)); px.append(b.px.to_numpy(float)); vol.append(b.vol.to_numpy(float)); ses.append(b.sesion.to_numpy(np.int64))
+        if not ts:
+            m = cls([], [], [], [], [], tick); return (m, pd.DataFrame(columns=["ts", "o", "h", "l", "c", "v", "ses"])) if con_barras else m
+        tns, p, s_ = np.concatenate(ts), np.concatenate(px), np.concatenate(ses)
+        m = cls(tns // 10**6, p, p, p, s_, tick)
+        return (m, barras_de_ticks(tns, p, np.concatenate(vol), s_)) if con_barras else m
 
     @classmethod
     def de_barras(cls, B, tick):
@@ -259,9 +276,8 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
     if resolucion not in ("ticks", "m1"): raise ValueError("resolucion: 'ticks' o 'm1'")
     if B is None and resolucion == "ticks" and fuente_ticks is None:              # una sola lectura de ticks: barras y ejecución
         if int(hasta) >= HOLDOUT_PRIMERA_SESION_INT: raise ValueError("toca el holdout")
-        from edgelab.research import grilla_generica as GG
-        gen, tick = bloques(estrategia.INSTRUMENTO, desde, hasta, entrada); bl = list(gen)
-        B = barras_de_contexto(GG.contexto_m1(bl, tick)); fuente_ticks = lambda: bl
+        gen, tick = bloques(estrategia.INSTRUMENTO, desde, hasta, entrada)
+        mercado, B = Mercado.de_ticks(gen, tick, con_barras=True)
     if B is None: B, tick = barras(estrategia.INSTRUMENTO, desde, hasta, entrada)
     if resolucion == "ticks" and fuente_ticks is None:
         fuente_ticks = lambda: bloques(estrategia.INSTRUMENTO, desde, hasta, entrada)[0]
@@ -270,7 +286,8 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
     registro.ensure(f"analizador/{estrategia.FAMILIA}/{h}/{desde}-{hasta}", estrategia.FAMILIA, len(vs),
                     f"analizador {estrategia.NOMBRE} {estrategia.INSTRUMENTO} {desde}-{hasta}, {len(vs)} variantes")
     if (err := causal(estrategia, B, vs[0])): return dict(estrategia=estrategia.NOMBRE, error="NO CAUSAL", detalle=err)
-    mercado = Mercado.de_ticks(fuente_ticks(), tick) if resolucion == "ticks" else Mercado.de_barras(B, tick)   # una sola lectura
+    if "mercado" not in locals():                                                  # una sola lectura de ticks para todo el barrido
+        mercado = Mercado.de_ticks(fuente_ticks(), tick) if resolucion == "ticks" else Mercado.de_barras(B, tick)
     filas = []
     for p in vs:
         T = mercado.simular(estrategia.senales(B, **p), fr)

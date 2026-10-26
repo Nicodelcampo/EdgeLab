@@ -111,3 +111,12 @@ def test_nucleo_compilado_identico_a_sim(modo):
     for c in ("signal_id", "entry_ts", "exit_ts", "exit_reason", "dir"): assert (T[c].to_numpy() == O[c].to_numpy()).all(), c
     for c in ("bruto_ticks", "mae_ticks", "mfe_ticks"): assert np.allclose(T[c].to_numpy(float), O[c].to_numpy(float)), c
     assert np.allclose(T.entry_px, O.entry_px) and np.allclose(T.exit_px, O.exit_px)
+
+
+def test_barras_vectorizadas_iguales_a_contexto_m1():
+    from edgelab.research import grilla_generica as GG
+    bl = _ticks()
+    B0 = A.barras_de_contexto(GG.contexto_m1(bl, 0.25))
+    _, B1 = A.Mercado.de_ticks(bl, 0.25, con_barras=True)
+    pd.testing.assert_frame_equal(B0.reset_index(drop=True)[["ts", "o", "h", "l", "c", "ses"]], B1[["ts", "o", "h", "l", "c", "ses"]], check_dtype=False)
+    assert np.allclose(B0.v.to_numpy(), B1.v.to_numpy())
