@@ -1,11 +1,22 @@
 {
- "etapa": "DESC",
- "fase": "CORRIENDO",
+ "etapa": "PISTAS",
+ "fase": "PENDIENTE",
  "historial": [
   {
    "ts": 1793040736.1314032,
    "etapa": "PREFLIGHT",
    "fin": true
+  },
+  {
+   "ts": 1793043040.562906,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "ts": 1793043646.4505963,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
   }
  ],
  "spec": {
@@ -103,7 +114,7 @@
   "ts": 1793040736.1310613,
   "desde": "PREFLIGHT"
  },
- "handle": "nicobuttaro/embudo-u1-6b-fut-grilla-desc-20250804",
+ "handle": null,
  "fallas": 0,
  "params": {
   "cortes": null
@@ -112,5 +123,96 @@
   20250804,
   20260331
  ],
- "lanzada": 1793042739.8656182
+ "lanzada": 1793043345.1222622,
+ "cortes": {
+  "vol_vuelta/ida": [
+   0.8454409281095187,
+   1.2112661079816884
+  ],
+  "vol_ida_rel": [
+   1.1333743671946173,
+   2.4832748484367975
+  ],
+  "vel_vuelta/ida": [
+   0.75,
+   1.776315789473684
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793043646.450525,
+  "celdas": [
+   [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    0,
+    2,
+    3,
+    1,
+    10
+   ]
+  ]
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     0,
+     2,
+     3,
+     1,
+     10
+    ],
+    "n": 31,
+    "media_neta": 0.0003475638709677469,
+    "sesiones": 24,
+    "ic90": [
+     2.1440795454568325e-05,
+     0.0006704277011494464
+    ],
+    "p_sesiones": 0.03948025987006497,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 3.35,
+    "pasa": false,
+    "n_pruebas": 48644.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.6893956661224365,
+    "canal": "total",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 48644,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": null
+   }
+  ]
+ }
 }
