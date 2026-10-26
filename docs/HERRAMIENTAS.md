@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-541 scripts.
+542 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -18,6 +18,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
 | `tools/atlas_asimetrico.py` | Atlas nulo — grilla ASIMÉTRICA P/N y horizontes finos. **NULL / DESCRIPTIVO.** |
 | `tools/atlas_excursiones_nulas.py` | ATLAS DE EXCURSIONES NULAS — **NULL / DESCRIPTIVO. NO ES UN EDGE.** |
+| `tools/atras_celdas.py` | ATRAS (2026-10-26): celdas positivas sin señal de las campañas con señal en CFD, sobre la historia NUNCA mirada antes de su DESC. |
 | `tools/audit_analytical_store_parity.py` | (sin docstring) |
 | `tools/audit_avzvol_mnq_metadata.py` | Read-only AVZVOL candidate MNQ metadata review. NEVER a quality/research PASS. |
 | `tools/audit_avzvol_o5_boundary_exports.py` | Opt-in internal-label boundary audit of exposed O5; no prices/new endpoints. |
