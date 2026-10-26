@@ -24,3 +24,11 @@ La traducción a NinjaScript queda para cuando haya algo confirmado y haga falta
 ## Límite que no cambia
 Historia vieja responde «¿funcionó antes?» (estabilidad), no «¿funciona ahora?». Por la regla de régimen (ATJ-24), el pasado no mata;
 la confirmación sigue siendo el holdout a N fijo y después el paper.
+
+## Actualización 2026-10-26: el AddOn no tiene más historia; probar el Strategy Analyzer
+Nico: EdgeLabTickHistory no devuelve más días, pero el Strategy Analyzer sí parece tener la historia. Para eso queda
+`nt8_tools/EdgeLabTickLogger.cs`: una ESTRATEGIA que no opera y escribe los ticks que el SA carga (serie primaria Tick 1, más series
+Bid y Ask de 1 tick para el quote as-of), con el mismo formato `.Last.utc.txt` que el AddOn y su manifiesto; corta si toca el holdout.
+Sin compilar acá (no hay NT8 en el contenedor): primera prueba en NT8 con un día conocido del release, y comparar ese día contra el
+release (cantidad de ticks, precios) antes de exportar historia vieja. Si el SA sólo da barras de minuto para fechas viejas, el
+manifiesto lo muestra (ticks ≈ minutos) y no sirve para la gramática de U1 (necesita ticks para los fills límite).
