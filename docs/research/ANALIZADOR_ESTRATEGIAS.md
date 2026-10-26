@@ -24,5 +24,5 @@ tests `tests/research/test_analizador.py`.
   familia y marca EXPLORATORIO. Nada sale promovido: lo prometedor se pre-registra y va al embudo (réplica no mirada, holdout).
 
 ## Límites
-Ejecución **tick a tick por defecto** (entrada en el primer tick posterior a la señal; objetivo, stop y time stop en el tick en que se tocan); `--resolucion m1` ejecuta sobre barras (más rápido; si objetivo y stop caen en la misma barra gana el adverso). Las señales se calculan sobre barras M1 hechas con los mismos ticks. Los futuros del release traen el precio de cada operación (sin bid/ask) y Dukascopy el mid: el spread se cobra con la fricción canónica. Una posición por vez por
+Ejecución **tick a tick por defecto**, con un núcleo compilado (numba) idéntico a `sim.py` operación por operación (test de equivalencia; ~10 ms por variante sobre 20 M de ticks; los ticks se leen una vez para todo el barrido) (entrada en el primer tick posterior a la señal; objetivo, stop y time stop en el tick en que se tocan); `--resolucion m1` ejecuta sobre barras (más rápido; si objetivo y stop caen en la misma barra gana el adverso). Las señales se calculan sobre barras M1 hechas con los mismos ticks. Los futuros del release traen el precio de cada operación (sin bid/ask) y Dukascopy el mid: el spread se cobra con la fricción canónica. Una posición por vez por
 estrategia.

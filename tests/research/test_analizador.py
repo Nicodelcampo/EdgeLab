@@ -81,3 +81,33 @@ def test_ticks_resuelven_la_barra_ambigua():
     Tt = A.simular_ticks(iter(bl), A._con_sesion(B, sen), 0.25, 0.0)
     assert Tt.entry_px.iloc[0] == 100.0 and Tt.exit_reason.iloc[0] == "target" and Tt.exit_ts.iloc[0] == ts[62] // 10**6
     assert Tt.neto_pts.iloc[0] == 2.5
+
+
+def _oraculo(steps, senales, tick):
+    from edgelab.research import sim
+    sig = [dict(signal_id=f"s{i}", available_at=int(s["available_at"]), dir=int(s["dir"]),
+                target_ticks=max(1, int(round(s["target_pts"] / tick))), stop_ticks=max(1, int(round(s["stop_pts"] / tick))),
+                time_stop_ms=int(float(s.get("time_stop_min") or 0) * 60_000)) for i, s in enumerate(senales)]
+    return pd.DataFrame(sim.simulate(sig, steps, scenario="ideal", tick_size=tick, tick_value=1.0).trades)
+
+
+@pytest.mark.parametrize("modo", ["ticks", "barras"])
+def test_nucleo_compilado_identico_a_sim(modo):
+    r = np.random.default_rng(7); tick = 0.25
+    t0 = pd.Timestamp("2025-03-03 14:30", tz="UTC").value // 10**6
+    n = 6000; ts = t0 + np.cumsum(r.integers(1, 4000, n)); ses = 20250303 + np.arange(n) // 1500   # 4 sesiones
+    px = 20000 + np.round(np.cumsum(r.normal(0, 1, n)) / tick) * tick
+    if modo == "ticks":
+        lo = hi = px; steps = [dict(ts=int(a), last=b, bid=b, ask=b, session_id=int(c)) for a, b, c in zip(ts, px, ses)]
+    else:
+        hi = px + np.round(r.uniform(0, 3, n) / tick) * tick; lo = px - np.round(r.uniform(0, 3, n) / tick) * tick
+        steps = [dict(ts=int(a), last=b, bid=b, ask=b, low=l, high=h, session_id=int(c)) for a, b, l, h, c in zip(ts, px, lo, hi, ses)]
+    av = np.sort(r.choice(ts, 400)); av[::7] = av[::7] - 1                     # empates y bordes
+    sen = [dict(available_at=int(a), dir=int(r.choice([1, -1])), target_pts=float(r.integers(1, 30)) * tick, stop_pts=float(r.integers(1, 30)) * tick,
+                time_stop_min=float(r.choice([0, 5, 30]))) for a in av]
+    T = A.Mercado(ts, px, lo, hi, ses, tick).simular(sen, 0.0)
+    O = _oraculo(steps, sen, tick)
+    assert len(T) == len(O) > 50
+    for c in ("signal_id", "entry_ts", "exit_ts", "exit_reason", "dir"): assert (T[c].to_numpy() == O[c].to_numpy()).all(), c
+    for c in ("bruto_ticks", "mae_ticks", "mfe_ticks"): assert np.allclose(T[c].to_numpy(float), O[c].to_numpy(float)), c
+    assert np.allclose(T.entry_px, O.entry_px) and np.allclose(T.exit_px, O.exit_px)

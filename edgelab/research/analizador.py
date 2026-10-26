@@ -67,6 +67,7 @@ def costo(instrumento: str) -> float:
 
 # --- ejecución -----------------------------------------------------------------------------------------------------------
 def simular(B: pd.DataFrame, senales: list, tick: float, friccion_pts: float) -> pd.DataFrame:
+    """ORÁCULO lento (sim.simulate directo, steps = barras). El analizador usa `Mercado.simular`; los tests comparan los dos."""
     from edgelab.research import sim
     steps = [dict(ts=int(t), last=c, bid=c, ask=c, low=l, high=h, session_id=int(s)) for t, c, l, h, s in
              zip(B.ts.to_numpy(), B.c.to_numpy(), B.l.to_numpy(), B.h.to_numpy(), B.ses.to_numpy())]
@@ -83,30 +84,109 @@ def simular(B: pd.DataFrame, senales: list, tick: float, friccion_pts: float) ->
     return T
 
 
+RAZONES = np.array(["target", "stop", "stop_ambiguous", "time_stop", "data_edge", "session_close"])
+
+
+def _nucleo():
+    """Núcleo compilado (numba) con la semántica EXACTA de `sim.simulate` para steps con bid = ask = last y escenario «ideal»:
+    entrada en el primer step con ts > available_at, rechazo si cambia la sesión o hay una posición abierta, la barra/tick de entrada
+    puede salir, gana el adverso si objetivo y stop se tocan en el mismo step, después time stop > fin de datos > cierre de sesión.
+    El oráculo es `sim.simulate` (tests/research/test_analizador.py lo compara operación por operación)."""
+    from numba import njit
+
+    @njit(cache=True)
+    def correr(ts, last, lo, hi, fin_ses, ses, avail, d, tgt_t, stp_t, tstop):
+        n = len(ts); m = len(avail)
+        e_i = np.full(m, -1, np.int64); x_i = np.full(m, -1, np.int64); raz = np.full(m, -1, np.int8)
+        bruto = np.full(m, np.nan); xpx = np.full(m, np.nan); mae = np.zeros(m); mfe = np.zeros(m)
+        abierta = -1
+        for k in range(m):
+            i = np.searchsorted(ts, avail[k], side="right")
+            if i >= n: continue
+            if i > 0 and ses[i] != ses[i - 1]: continue
+            if i <= abierta: continue
+            dk = d[k]; ent = last[i]
+            tgt = ent + dk * tgt_t[k]; stp = ent - dk * stp_t[k]
+            dl = ts[i] + tstop[k] if tstop[k] > 0 else -1
+            a = 0.0; f = 0.0; j = i; r = -1; ref = 0.0
+            while j < n:
+                fav = hi[j] if dk == 1 else lo[j]; adv = lo[j] if dk == 1 else hi[j]
+                f = max(f, dk * (fav - ent)); a = max(a, dk * (ent - adv))
+                ht = hi[j] >= tgt if dk == 1 else lo[j] <= tgt
+                hs = lo[j] <= stp if dk == 1 else hi[j] >= stp
+                if ht and hs: r = 2; ref = stp; break
+                if ht: r = 0; ref = tgt; break
+                if hs: r = 1; ref = stp; break
+                if dl >= 0 and ts[j] >= dl: r = 3; break
+                if j == n - 1: r = 4; break
+                if fin_ses[j]: r = 5; break
+                j += 1
+            if r < 0: continue
+            e_i[k] = i; x_i[k] = j; raz[k] = r; mae[k] = a; mfe[k] = f
+            if r <= 2: xpx[k] = ref; bruto[k] = dk * (ref - ent)
+            else: xpx[k] = last[j]; bruto[k] = dk * (last[j] - ent)
+            abierta = j
+        return e_i, x_i, raz, bruto, xpx, mae, mfe
+    return correr
+
+
+_CORRER = None
+
+
+class Mercado:
+    """Steps en memoria (unidades de tick, como `sim._norm_steps`), cargados UNA vez para todas las variantes del barrido."""
+    def __init__(self, ts, last, lo, hi, ses, tick):
+        self.ts = np.asarray(ts, np.int64); self.tick = float(tick); self.ses = np.asarray(ses, np.int64)
+        k = lambda x: np.round(np.asarray(x, float) / self.tick, 6)
+        self.last, self.lo, self.hi = k(last), k(lo), k(hi)
+        self.fin_ses = np.r_[self.ses[1:] != self.ses[:-1], True] if len(self.ses) else np.zeros(0, bool)
+        if len(self.ts):                                                         # firewall del holdout, una vez para todo el rango
+            from edgelab.research.holdout_guard import check_holdout
+            from edgelab.research.sim import _iso
+            check_holdout(_iso(int(self.ts[0])), _iso(int(self.ts[-1]) + 1), purpose="development", caller="analizador")
+
+    @classmethod
+    def de_ticks(cls, bloques, tick):
+        ts, px, ses = [], [], []
+        for b in bloques:
+            if not len(b): continue
+            ts.append(b.ts_ns.to_numpy(np.int64) // 10**6); px.append(b.px.to_numpy(float)); ses.append(b.sesion.to_numpy(np.int64))
+        if not ts: return cls([], [], [], [], [], tick)
+        p = np.concatenate(px)
+        return cls(np.concatenate(ts), p, p, p, np.concatenate(ses), tick)
+
+    @classmethod
+    def de_barras(cls, B, tick):
+        return cls(B.ts.to_numpy(), B.c.to_numpy(), B.l.to_numpy(), B.h.to_numpy(), B.ses.to_numpy(), tick)
+
+    def simular(self, senales: list, friccion_pts: float) -> pd.DataFrame:
+        global _CORRER
+        if not senales or not len(self.ts): return pd.DataFrame()
+        if _CORRER is None: _CORRER = _nucleo()
+        orden = sorted(range(len(senales)), key=lambda i: (int(senales[i]["available_at"]), f"s{i}"))   # = sim: (available_at, signal_id)
+        S = [senales[i] for i in orden]
+        av = np.array([int(x["available_at"]) for x in S], np.int64); d = np.array([int(x["dir"]) for x in S], np.int64)
+        if not np.isin(d, (1, -1)).all(): raise ValueError("dir debe ser +1 o -1")
+        tg = np.array([max(1, int(round(float(x["target_pts"]) / self.tick))) for x in S], float)
+        sp = np.array([max(1, int(round(float(x["stop_pts"]) / self.tick))) for x in S], float)
+        tm = np.array([int(float(x.get("time_stop_min") or 0) * 60_000) for x in S], np.int64)
+        e_i, x_i, raz, bruto, xpx, mae, mfe = _CORRER(self.ts, self.last, self.lo, self.hi, self.fin_ses, self.ses, av, d, tg, sp, tm)
+        ok = e_i >= 0
+        if not ok.any(): return pd.DataFrame()
+        ei, xi = e_i[ok], x_i[ok]
+        T = pd.DataFrame(dict(signal_id=[f"s{orden[k]}" for k in np.flatnonzero(ok)], dir=d[ok], entry_ts=self.ts[ei],
+                              entry_px=self.last[ei] * self.tick, exit_ts=self.ts[xi], exit_px=xpx[ok] * self.tick,
+                              exit_reason=RAZONES[raz[ok]], bruto_ticks=bruto[ok], mae_ticks=mae[ok], mfe_ticks=mfe[ok],
+                              bars_held=xi - ei, ses=self.ses[ei]))
+        T["bruto_pts"] = T.bruto_ticks * self.tick; T["neto_pts"] = T.bruto_pts - friccion_pts
+        T["mae_pts"] = T.mae_ticks * self.tick; T["mfe_pts"] = T.mfe_ticks * self.tick
+        T["mes"] = pd.to_datetime(T.entry_ts, unit="ms", utc=True).dt.strftime("%Y-%m")
+        return T
+
+
 def simular_ticks(fuente_bloques, senales: list, tick: float, friccion_pts: float) -> pd.DataFrame:
-    """Ejecución tick a tick, una sesión por vez (el simulador cierra al fin de sesión, así que ninguna operación cruza sesiones y no
-    hace falta tener todos los ticks en memoria). `fuente_bloques`: iterable de bloques por sesión (ts_ns, px, sesion)."""
-    from edgelab.research import sim
-    if not senales: return pd.DataFrame()
-    por_ses: dict = {}
-    for i, s_ in enumerate(senales): por_ses.setdefault(int(s_["ses"]), []).append((i, s_))
-    partes = []
-    for b in fuente_bloques:
-        ses = int(b.sesion.iloc[0]) if len(b) else None
-        if ses not in por_ses: continue
-        ts = (b.ts_ns.to_numpy(np.int64) // 10**6); px = b.px.to_numpy(float)
-        steps = [dict(ts=int(t), last=p, bid=p, ask=p, session_id=ses) for t, p in zip(ts, px)]
-        sig = [dict(signal_id=f"s{i}", available_at=int(s_["available_at"]), dir=int(s_["dir"]),
-                    target_ticks=max(1, int(round(float(s_["target_pts"]) / tick))), stop_ticks=max(1, int(round(float(s_["stop_pts"]) / tick))),
-                    time_stop_ms=int(float(s_.get("time_stop_min") or 0) * 60_000)) for i, s_ in por_ses[ses]]
-        r = sim.simulate(sig, steps, scenario="ideal", tick_size=tick, tick_value=1.0, guard_caller="analizador")
-        if r.trades: partes.append(pd.DataFrame(r.trades).assign(ses=ses))
-    if not partes: return pd.DataFrame()
-    T = pd.concat(partes, ignore_index=True).sort_values("entry_ts", kind="stable").reset_index(drop=True)
-    T["bruto_pts"] = T.bruto_ticks * tick; T["neto_pts"] = T.bruto_pts - friccion_pts
-    T["mae_pts"] = T.mae_ticks * tick; T["mfe_pts"] = T.mfe_ticks * tick
-    T["mes"] = pd.to_datetime(T.entry_ts, unit="ms", utc=True).dt.strftime("%Y-%m")
-    return T
+    """Ejecución tick a tick con el núcleo compilado (todas las sesiones en un solo stream, como `sim.simulate`)."""
+    return Mercado.de_ticks(fuente_bloques, tick).simular(senales, friccion_pts)
 
 
 def _con_sesion(B: pd.DataFrame, senales: list) -> list:
@@ -177,6 +257,11 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
     if int(hasta) >= HOLDOUT_PRIMERA_SESION_INT: raise ValueError("toca el holdout: el analizador sólo trabaja con desarrollo")
     fr = costo(estrategia.INSTRUMENTO) if friccion_pts is None else float(friccion_pts)   # en Kaggle la pasa el lanzador (costos canónicos)
     if resolucion not in ("ticks", "m1"): raise ValueError("resolucion: 'ticks' o 'm1'")
+    if B is None and resolucion == "ticks" and fuente_ticks is None:              # una sola lectura de ticks: barras y ejecución
+        if int(hasta) >= HOLDOUT_PRIMERA_SESION_INT: raise ValueError("toca el holdout")
+        from edgelab.research import grilla_generica as GG
+        gen, tick = bloques(estrategia.INSTRUMENTO, desde, hasta, entrada); bl = list(gen)
+        B = barras_de_contexto(GG.contexto_m1(bl, tick)); fuente_ticks = lambda: bl
     if B is None: B, tick = barras(estrategia.INSTRUMENTO, desde, hasta, entrada)
     if resolucion == "ticks" and fuente_ticks is None:
         fuente_ticks = lambda: bloques(estrategia.INSTRUMENTO, desde, hasta, entrada)[0]
@@ -185,10 +270,10 @@ def analizar(estrategia, desde: int, hasta: int, *, entrada: str = "/kaggle/inpu
     registro.ensure(f"analizador/{estrategia.FAMILIA}/{h}/{desde}-{hasta}", estrategia.FAMILIA, len(vs),
                     f"analizador {estrategia.NOMBRE} {estrategia.INSTRUMENTO} {desde}-{hasta}, {len(vs)} variantes")
     if (err := causal(estrategia, B, vs[0])): return dict(estrategia=estrategia.NOMBRE, error="NO CAUSAL", detalle=err)
+    mercado = Mercado.de_ticks(fuente_ticks(), tick) if resolucion == "ticks" else Mercado.de_barras(B, tick)   # una sola lectura
     filas = []
     for p in vs:
-        sen = estrategia.senales(B, **p)
-        T = simular_ticks(fuente_ticks(), _con_sesion(B, sen), tick, fr) if resolucion == "ticks" else simular(B, sen, tick, fr)
+        T = mercado.simular(estrategia.senales(B, **p), fr)
         filas.append(dict(parametros=p, **reporte(T), operaciones=T.to_dict("list") if len(vs) == 1 else None))
     return dict(estrategia=estrategia.NOMBRE, familia=estrategia.FAMILIA, instrumento=estrategia.INSTRUMENTO, periodo=[desde, hasta], resolucion=resolucion,
                 friccion_pts=fr, huella=h, variantes=len(vs), resultados=filas,
