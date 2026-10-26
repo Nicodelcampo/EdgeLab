@@ -1,7 +1,9 @@
-# Kernel de Kaggle (2026-10-26): spread MEDIDO de un futuro del release (`<INST>_ticks.parquet`) con el criterio del atlas v4
-# (docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md): media de ask − bid en ticks, sobre los ticks con libro válido
-# (0 < bid <= ask), horario regular 08:30–15:00 CT, sólo sesiones de desarrollo (antes de la frontera del holdout). Sin P&L.
-# Entorno: INST (p. ej. 6B). Salida: SPREAD_<INST>.json.
+"""Kernel de Kaggle: spread MEDIDO de un futuro del release con el criterio del atlas v4 (para instrumentos sin spread en costos).
+
+Criterio (docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md): media de ask − bid en ticks sobre los ticks con libro válido
+(0 < bid <= ask), horario regular 08:30–15:00 CT, sólo sesiones de desarrollo (antes de la frontera del holdout). Sin P&L.
+Entorno: INST (p. ej. 6B). Salida: SPREAD_<INST>.json. Se empaqueta con construir_kernel (embebe edgelab/holdout.py).
+"""
 import glob
 import json
 import os
