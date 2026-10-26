@@ -10,3 +10,4 @@
 - INTEGRIDAD [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35]: regla 10.265077777777778, placebo -1.56, latencia 1 vela 10.761338461538461 -> pasa
 - INTEGRIDAD [0, 1, 2, 2, 2, 2, 3, 1, 1, 0, 0, 20]: regla 10.38551428571436, placebo -2.39, latencia 1 vela 10.97539523809524 -> pasa
 - INTEGRIDAD [0, 1, 1, 0, 2, 2, 3, 1, 3, 0, 0, 29]: regla 3.198169565217384, placebo -1.06, latencia 1 vela 4.931887628865979 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [nan, nan, -3.53]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [nan, nan, 0.5]; LORD++ sin rechazo
