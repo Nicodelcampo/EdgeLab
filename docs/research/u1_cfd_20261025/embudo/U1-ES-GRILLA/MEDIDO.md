@@ -21,3 +21,4 @@
 - REINICIO 2026-10-25: las candidatas [[1, 1, 0, 2, 0, 2, 3, 3, 3, 2, 16], [1, 1, 0, 2, 2, 0, 3, 3, 3, 2, 16], [0, 1, 2, 2, 0, 0, 3, 3, 3, 0, 10]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.
 - Evaluables: 346033 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20240102, 20260331]: evaluables 321943 (m del FDR 321943 de 4478976 celdas), FDR 736, RW umbral 5.174069881439209 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
