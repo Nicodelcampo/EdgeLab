@@ -1,0 +1,108 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793040441.2155035,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "U1-6E-FUT-GRILLA",
+  "familia": "U1_6E_FUT_GRILLA",
+  "experimento": "edgelab.research.u1_cfd",
+  "sensor": "DK:EURUSD",
+  "ejecucion": "6E",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "Misma grilla U1 con señal en el spot EURUSD (24 h) y ejecución en el futuro 6E con sus ticks y costos reales: U1-6E-GRILLA operó sobre el spot con costos de 6E como proxy; acá la ejecución es la real.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote a réplica; o media neta en 6E <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "ejecución en 6E (futuro, datos del release)"
+  },
+  "spec": "docs/research/u1_cfd_20261025/PREREGISTRO_U1_CFD.md",
+  "n_celdas_por_canal": 4478976,
+  "cuenta_kaggle": "auto",
+  "decisiones": [
+   "2026-10-26: lanzada por pedido de Nico («si solo uno, lanza el resto»): U1-6E-GRILLA sólo ejecutó en el spot. DESC acotado al rango de ticks de 6E del release (desde 20250805). Hereda el linaje de U1_6E_GRILLA, cuyo DESC ya se miró (0 candidatas, 20 pistas a réplica)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "ejecución en 6E (futuro, datos del release)"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_6E_FUT_GRILLA",
+   "declarada": true,
+   "padres": [
+    "U1_6E_GRILLA",
+    "U1_ES_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5252988,
+   "n_heredado": 5252988,
+   "total": 5252988,
+   "justificacion": "misma grilla que U1-6E-GRILLA (señal en spot EURUSD), ejecución en el futuro 6E; el DESC del spot ya se miró",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793040441.2153196,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
