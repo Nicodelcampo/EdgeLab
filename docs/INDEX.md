@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 771 |
+| `docs/research` | 772 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 |---|---:|---|---|---|
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
+| ERRORES | 1 | `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` | 2026-10-26 | VIGENTE (registro vivo: cada error nuevo se agrega acá en el mismo commit que su |
 | ANALIZADOR | 1 | `ANALIZADOR_ESTRATEGIAS.md` | 2026-10-26 | VIGENTE |
 | RELANZAMIENTO | 1 | `RELANZAMIENTO_ANALISIS_VIEJOS_20261025.md` | 2026-10-25 | VIGENTE |
 | AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
 | EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
 | PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
-| FUENTES | 1 | `FUENTES_TERCEROS_LILFISH_YOUTUBE_20260928.md` | 2026-09-28 | - |
 
 ## Superados (7)
 

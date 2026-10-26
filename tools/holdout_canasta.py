@@ -26,7 +26,16 @@ def _estado(raiz: Path, cid: str) -> dict:
     return json.loads((raiz / cid / "estado.json").read_text(encoding="utf-8"))
 
 
-def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, registro=None, ahora=time.time) -> dict:
+def potencia_planeada(st: dict, n_sesiones: int, nivel: float) -> float:
+    """Potencia del holdout de la canasta a N sesiones, con la media y el desvío por sesión de su réplica (planificación, no decisión)."""
+    from edgelab.funnel.escalera import potencia
+    can = (st.get("pistas_replica") or {}).get("canasta") or {}
+    if not can.get("ic90") or not can.get("n_sesiones") or (can.get("media") or 0) <= 0: return 0.0
+    sd = (can["ic90"][1] - can["ic90"][0]) / (2 * 1.6448536) * can["n_sesiones"] ** 0.5
+    return float(potencia(can["media"], sd / max(n_sesiones, 1) ** 0.5, nivel))
+
+
+def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, registro=None, ahora=time.time, forzar: bool = False) -> dict:
     from edgelab.research import holdout_ventanas as HV
     st = _estado(raiz, cid); spec = st["spec"]; fam = spec["familia"]
     if st.get("fase") != "PISTAS_VIVAS": raise SystemExit(f"{cid} está en {st.get('fase')}: sólo PISTAS_VIVAS va a holdout de canasta")
@@ -34,10 +43,15 @@ def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, regis
     if destino.exists(): raise SystemExit(f"ya hay acta: {destino}")
     libro_v = Path(ventanas) if ventanas else HV.LIBRO; id_ = f"{cid}-CANASTA"
     if (malos := HV.problemas(fam, HOLDOUT_PRIMERA_SESION_INT, id_, libro_v)): raise SystemExit("; ".join(malos))
+    pot = potencia_planeada(st, n_sesiones, (libro or LibroLord()).nivel(fam))
+    if pot < 0.8 and not forzar:                                                # E8: no gastar la única apertura sin poder decidir
+        raise SystemExit(f"potencia {pot:.2f} < 0,8 con N {n_sesiones} (con la media y el desvío de la réplica de la canasta): subir N o "
+                         "ganar potencia antes; --forzar sólo con decisión humana registrada")
     lib = libro or LibroLord(); res = lib.reservar(fam, f"{id_}/holdout", f"acta canasta {cid}")
     a = dict(cid=id_, campana=cid, familia=fam, experimento=spec["experimento"], sensor=spec["sensor"], ejecucion=spec.get("ejecucion"),
              celdas=st["pistas_replica"]["celdas"], cortes=st["cortes"], regla="canasta igual-ponderada: P&L neto medio por pista y sesión",
              holdout_desde=HOLDOUT_PRIMERA_SESION_INT, n_sesiones=int(n_sesiones), alfa=res["nivel"], reserva_lord=res, registrada=ahora(),
+             potencia_planeada=pot, forzada=bool(forzar),
              decision=(f"primeras {n_sesiones} sesiones desde {HOLDOUT_PRIMERA_SESION_INT}: CONFIRMADA si p (bootstrap por sesiones) <= α "
                        f"reservado ({res['nivel']:.5f}) y media > 0; REFUTADA si media <= 0; si no, SIN_POTENCIA"),
              origen="docs/research/auditoria_filtro_20261026/AUDITORIA_FILTRO_PISTAS.md (propuesta 4, aprobada por Nico)")
@@ -69,10 +83,11 @@ def _canasta(raiz: Path, cid: str, sellado: dict, solo_conteo: bool):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("acta", "conteo", "decidir")); ap.add_argument("raiz"); ap.add_argument("cid")
-    ap.add_argument("--n-sesiones", type=int); ap.add_argument("--sellado", default="{}"); a = ap.parse_args(); raiz = Path(a.raiz)
+    ap.add_argument("--n-sesiones", type=int); ap.add_argument("--sellado", default="{}"); ap.add_argument("--forzar", action="store_true")
+    a = ap.parse_args(); raiz = Path(a.raiz)
     if a.cmd == "acta":
         from edgelab.funnel.multiplicity import TrialRegistry
-        out = acta(raiz, a.cid, a.n_sesiones, registro=TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"))
+        out = acta(raiz, a.cid, a.n_sesiones, registro=TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"), forzar=a.forzar)
     elif a.cmd == "conteo":
         acta_, n, _ = _canasta(raiz, a.cid, json.loads(a.sellado), True); out = dict(sesiones=n, faltan=max(0, acta_["n_sesiones"] - n))
     else:

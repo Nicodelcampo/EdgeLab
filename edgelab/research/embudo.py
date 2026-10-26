@@ -173,6 +173,11 @@ class Embudo:
         with (self._dir(spec) / "MEDIDO.md").open("a", encoding="utf-8", newline="\n") as f: f.write(linea + "\n")
 
     def _cerrar(self, spec, st, final, motivo):
+        # Guarda (2026-10-26, auditoría del filtro): «refutada» exige una prueba que PODÍA rechazar. Si la réplica de pistas no tenía
+        # resolución (umbral < p mínimo posible) o su veredicto no es REFUTADA, la familia no se cierra como SIN_CANDIDATAS.
+        pr_ = st.get("pistas_replica") or {}
+        if final == "SIN_CANDIDATAS" and pr_.get("lord") is not None and (pr_.get("veredicto") or {}).get("veredicto") != "REFUTADA":
+            motivo = f"{motivo} | guarda: sin una refutación con potencia no se cierra como SIN_CANDIDATAS"; final = "PISTAS_VIVAS"
         st.update(etapa="FIN", fase=final, motivo=motivo); st["historial"].append(dict(ts=self.ahora(), final=final, motivo=motivo))
         self._medido(spec, f"- **{final}** — {motivo}"); self._guardar(spec, st); return st
 
@@ -390,7 +395,9 @@ class Embudo:
         ventana = cfg.get("ventana") or ventana_pistas(spec, cfg)
         cierre = f"ninguna pista nominada por FDR q {Q_FDR_DESC} cumple la selección; nulo publicado ({tot.get('nulo', {}).get('t', {})})"
         if not cfg.get("activa", True) or not ventana or int(cfg.get("k") or 0) <= 0:
-            return self._cerrar(spec, st, "SIN_CANDIDATAS", cierre + "; pistas a réplica: " + ("apagada" if not cfg.get("activa", True) or not cfg.get("k") else "sin ventana reciente no usada declarada"))
+            if cfg.get("activa", True) and cfg.get("k"):                        # sin dónde replicar no hubo prueba: no es una refutación
+                return self._cerrar(spec, st, "PISTAS_VIVAS", cierre + "; pistas a réplica: sin ventana reciente no usada declarada (no se pudo probar)")
+            return self._cerrar(spec, st, "SIN_CANDIDATAS", cierre + "; pistas a réplica: apagada por la campaña")
         elegidas = elegir_pistas_replica(pistas, int(cfg["k"]), min_dif=sel["min_dif"], min_sesiones=sel["min_sesiones"],
                                          ratio_mov_friccion=sel["ratio_mov_friccion"])
         if not elegidas: return self._cerrar(spec, st, "SIN_CANDIDATAS", cierre + "; pistas a réplica: ninguna pista relevante con media > 0")
@@ -566,6 +573,10 @@ class Embudo:
                                  "sin las sesiones ya miradas (D5).")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
+        pot_h = (acta.get("multiplicidad") or {}).get("potencia_holdout")
+        if pot_h is not None and pot_h < 0.5:
+            self._medido(spec, f"- AVISO ACTA: potencia del holdout {pot_h:.2f} < 0,5 con N {h['n_fijo']}: lo más probable es SIN_POTENCIA "
+                               "(docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)")
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
