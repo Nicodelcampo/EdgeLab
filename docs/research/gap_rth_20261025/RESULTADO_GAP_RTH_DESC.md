@@ -27,3 +27,15 @@ la réplica lee sólo el futuro, que no usa ese lector.
 ## Riesgos
 n chico por celda (49); la nominación es del canal reciente (desarrollo); en el total la misma regla rinde menos (+35); el CFD no es el
 futuro (el canal de desarrollo en el futuro coincide en signo y tamaño).
+
+## Réplica en el futuro NQ, abr → sep 2026 (kernel `nicobuttaro/gap-rth-rep`; `GAP_RTH_rep.json`)
+| celda | ops | media neta pts/op | IC90 | p | MDE | objetivo alcanzado |
+|---|---:|---:|---|---:|---:|---:|
+| 0,6 · cierre previo · fin del día · stop 1 gap | 43 | +3,99 | [−56,8; +65,7] | 0,45 | 92,8 | 19 % |
+| 0,6 · cierre previo · 120 min · sin stop | 43 | −1,35 | [−55,1; +53,7] | 0,51 | 82,3 | 12 % |
+
+Lote de LORD++ (`GAP_RTH::GAP-RTH-REP`, nivel 0,010937): p de Simes 0,514, **no rechaza**. Veredicto: **SIN_POTENCIA**, no confirmada.
+El MDE (82–93 pts/op) es mayor que el efecto del descubrimiento (+58/+79): con 43 operaciones la réplica no podía confirmar ni
+refutar. Pero la estimación puntual cayó a ≈ 0 y el objetivo (cerrar el gap entero) se alcanzó en 12–19 % de los días, contra lo que
+el descubrimiento sugería: la lectura honesta es que el efecto del canal reciente estaba inflado por la selección. La réplica de la
+familia queda consumida; el holdout no se abre con este resultado.
