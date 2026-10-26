@@ -29,3 +29,8 @@ Si las celdas dan lo mismo que su réplica en promedio pero con IC que cruza cer
 Las seis mejores del analizador (reciente +8,5 a +21,1 pts/op) dan −1,0 a −4,9 pts/op en 2023–2025; tres con IC90 entero < 0.
 Lectura fijada: el efecto, si existe, es del régimen actual (no estable): lo decide el holdout. No mata (ATJ-24). Detalle: `EXPZ-CFD.json`.
 ZGAP-CFD: corriendo.
+
+## Resultado ZGAP-CFD (2026-10-26)
+20 celdas, mismo período y proxy: **1 A_FAVOR, 4 EN_CONTRA_PASADO, 15 SIN_RECHAZO**. A_FAVOR: celda `[0,1,0,0,2,1,1,1,2,4,11]`,
+120 ops, +10,3 pts/op, IC90 [+0,7; +21,1]. Con 20 celdas, una A_FAVOR al 90 % unilateral es lo esperable por azar (≈1): no se lee como
+señal por sí sola. Su reporte reciente (analizador) está pendiente de reintento. Detalle: `ZGAP-CFD.json`.
