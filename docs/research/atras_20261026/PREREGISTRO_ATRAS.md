@@ -23,3 +23,9 @@ Por celda: media neta, IC90 por sesiones, resultado por trimestre. A_FAVOR si el
 ## Cómo podría refutarse la utilidad de esta etapa
 Si las celdas dan lo mismo que su réplica en promedio pero con IC que cruza cero en todas, la historia vieja no agrega potencia
 (N por celda chica): se registra y no se repite.
+
+## Resultado EXPZ-CFD (2026-10-26, después de correr)
+20 celdas, 2023-01-03 → 2025-08-04, ejecución proxy en USATECH con costo de NQ: **0 A_FAVOR, 6 EN_CONTRA_PASADO, 14 SIN_RECHAZO**.
+Las seis mejores del analizador (reciente +8,5 a +21,1 pts/op) dan −1,0 a −4,9 pts/op en 2023–2025; tres con IC90 entero < 0.
+Lectura fijada: el efecto, si existe, es del régimen actual (no estable): lo decide el holdout. No mata (ATJ-24). Detalle: `EXPZ-CFD.json`.
+ZGAP-CFD: corriendo.
