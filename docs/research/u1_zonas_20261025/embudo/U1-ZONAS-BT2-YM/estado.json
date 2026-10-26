@@ -1,0 +1,109 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793048214.8504424,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "U1-ZONAS-BT2-YM",
+  "familia": "U1_ZONAS_BT2_YM",
+  "experimento": "edgelab.research.u1_zonas_bt2",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 con los rectángulos de BigTrap2 (traders atrapados), vivos hasta su invalidación: si U1 es «el precio vuelve a donde hubo volumen atrapado», son mejores áreas que los huecos de LUX-IMB.",
+  "como_podria_refutarse": "Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS_BT2_AVZR.md",
+  "n_celdas_por_canal": 4478976,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_ZONAS_BT2_YM",
+   "declarada": true,
+   "padres": [
+    "U1_YM_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4979433,
+   "n_heredado": 4979433,
+   "total": 4979433,
+   "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793048214.8502812,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
