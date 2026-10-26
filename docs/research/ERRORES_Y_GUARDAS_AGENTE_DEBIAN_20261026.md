@@ -40,6 +40,7 @@ el agente del Debian**.
 | O9 | Dos cuentas de Kaggle: sin la cuenta en el entorno, status/output van al host o la cabecera equivocados. | 401 o kernels «perdidos». | **Código**: `KaggleRunner._env(cuenta)` en lanzar/estado/traer; cabecera por cuenta (`kaggle_auth`). | Campañas nuevas con `"cuenta_kaggle": "auto"`. |
 | O10 | Se tocó un archivo protegido (`tools/kaggle_launch.py`). | Rompe el manifiesto de protegidos. | **Código**: `tools/autopilot_protect.py check`. | Correrlo antes de cada commit; la cuenta viaja por entorno, no por el lanzador. |
 | O11 | Un parche externo (Gemini v4) traía una base vieja y revertía blindajes. | Pérdida silenciosa de arreglos. | Regla. | De un parche externo aplicar sólo los archivos nuevos; nunca sobrescribir con su versión de archivos existentes. |
+| O12 | Los conductores crean y modifican `MEDIDO.md`/`estado.json` en cada etapa: el índice de documentos queda desactualizado y el CI falla (`test_indice_de_docs_al_dia…`). | CI rojo con un commit de sólo estado. | Regla. | Antes de commitear estado de embudos: `python tools/docs_index.py --write`. |
 
 ## C. Construcción: reutilizar, motor correcto, datos
 
