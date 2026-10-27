@@ -1,0 +1,71 @@
+{
+  "status": "PROPOSED_NOT_RUN",
+  "parameter_values": {
+    "min_zones": [
+      4,
+      5,
+      6,
+      8,
+      12,
+      18
+    ],
+    "lookback_bars": [
+      250,
+      500,
+      1000,
+      2000
+    ],
+    "max_height_ticks": [
+      10,
+      20,
+      30,
+      45
+    ],
+    "percentile": [
+      80,
+      90,
+      95,
+      97.5
+    ],
+    "window_bars": [
+      5,
+      10,
+      20,
+      40
+    ]
+  },
+  "configurations": 1536,
+  "priority": "support-only screening before examining new outcomes; retain all cells including zeros",
+  "screenshot_example": {
+    "min_zones": 18,
+    "lookback_bars": 2000,
+    "max_height_ticks": 20,
+    "upstream_parameters": "not provided in screenshot"
+  },
+  "compute_plan": [
+    "one block aggregation and score history per window_bars",
+    "one historical-percentile zone detector result per percentile/window pair",
+    "reuse immutable detected-zone tape across cluster triples",
+    "benchmark clustering on synthetic inputs, preserve ties, memberships, creation snapshots and causality before substitution"
+  ],
+  "screen": [
+    "formation births, not mutable updates",
+    "records per complete session and hour when calendar coverage certified",
+    "active-session coverage and support by disjoint period",
+    "collapse repeated triggers from one cluster for opportunity frequency",
+    "shortlist high-frequency cells from count-only training screen; preserve low-height alternatives"
+  ],
+  "effect_tests": [
+    "fixed tick distances AND zone-height normalized distances",
+    "incremental direction versus recent-market context only baseline",
+    "corridor historical visits, rejections and peak confirmations asof entry",
+    "exit speed/distance and return geometry; no future peaks as input",
+    "multiplicity-aware temporal validation, cluster/day dependence"
+  ],
+  "limitations": [
+    "new market replay remains gated; no gate override",
+    "legacy36cells only percentile95/window10",
+    "no timing or profit claims from aggregate formation count",
+    "performance optimization has not yet been benchmarked"
+  ]
+}
