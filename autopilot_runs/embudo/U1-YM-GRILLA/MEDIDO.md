@@ -29,3 +29,4 @@
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 450: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
 - **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
 - REAPERTURA 2026-10-27 (agente del Debian, commit 6685c9a9): BLOQUEADA → CONTEO. O13: IndexError en grilla_generica.correr con 0 disparos en la ventana sellada (crash de infraestructura, no evidencia). El acta sigue vigente; nada del holdout se miró.
+- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
