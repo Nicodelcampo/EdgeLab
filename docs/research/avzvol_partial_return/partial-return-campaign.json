@@ -1,0 +1,178 @@
+{
+  "status": "IMPLEMENTED_AND_SYNTHETIC_TESTED_NOT_MARKET_RUN",
+  "user_priority": "partial-return symmetric first-passage; highest priority over earlier coformation clue",
+  "primary": {
+    "cluster_cells": [
+      "4_1000_20",
+      "4_1000_30",
+      "4_1000_45",
+      "4_500_45",
+      "5_1000_45"
+    ],
+    "min_excursion_ticks": [
+      10,
+      20,
+      40
+    ],
+    "retracement_fractions": [
+      0.25,
+      0.5,
+      0.75
+    ],
+    "endpoint": "touch",
+    "horizon_bars": 2000,
+    "first_departure_only": true
+  },
+  "extended": {
+    "cluster_grid": {
+      "min_zones": [
+        4,
+        5,
+        6,
+        8,
+        12,
+        18
+      ],
+      "lookback_bars": [
+        250,
+        500,
+        1000,
+        2000
+      ],
+      "max_height_ticks": [
+        10,
+        20,
+        30,
+        45
+      ],
+      "percentile": [
+        80,
+        90,
+        95,
+        97.5
+      ],
+      "window_bars": [
+        5,
+        10,
+        20,
+        40
+      ]
+    },
+    "min_excursion_ticks": [
+      5,
+      10,
+      20,
+      40,
+      80
+    ],
+    "min_excursion_h": [
+      0.25,
+      0.5,
+      1,
+      2,
+      4
+    ],
+    "retracement_fractions": [
+      0.1,
+      0.25,
+      0.3333333333333333,
+      0.5,
+      0.6666666666666666,
+      0.75,
+      0.9
+    ],
+    "endpoints": [
+      "touch",
+      "enter_one_tick",
+      "cross_one_tick"
+    ],
+    "horizons_bars": [
+      100,
+      500,
+      2000
+    ],
+    "alternative_horizons_seconds": [
+      30,
+      120,
+      600
+    ],
+    "distance_normalization": [
+      "ticks fixed",
+      "frozen formation height",
+      "pre-departure volatility"
+    ],
+    "peak_rules": [
+      "running observed maximum: prototype",
+      "first distance milestone frozen: future extension"
+    ],
+    "departures": [
+      "first: primary",
+      "nonoverlapping repeated excursions: future extension"
+    ]
+  },
+  "causal_rules": [
+    "running peak only, freeze at trigger",
+    "skip observed trigger overshoots already touching zone; count separately",
+    "frozen formation bounds, not final mutated geometry",
+    "outgoing and returning flow intervals disjoint: lastinside→peak and peak→trigger",
+    "unknown aggressors remain missing with classified-volume coverage",
+    "first-passage outcomes exclude trigger observation; no fill claim",
+    "session and horizon censoring retained",
+    "each touch/enter/cross endpoint has its own equal-distance opposing barrier"
+  ],
+  "causal_features": [
+    "excursion ticks/h/volatility",
+    "time and inclusive bars from lastinside observation to first maximum attainment",
+    "retracement seconds and bars per tick",
+    "speed-return/speed-outgoing ratio",
+    "path efficiency, pauses and renewed peak attempts",
+    "signed aggressive-volume delta and classified-volume coverage",
+    "volume per distance and change of delta from outgoing to return",
+    "asof confirmed peaks and successive lowerhigh/higherlow",
+    "historical corridor visits, rejections and last traversal direction/speed",
+    "simultaneous contained racimos and age of formation"
+  ],
+  "inference": {
+    "selection": "screen count/support before outcomes, then training-only feature cutoffs and nested temporal validation",
+    "frequency": "signals per formation/session/hour of verified coverage, retain no-signal and censored denominators",
+    "report": "target-first/all signals and resolved-only plus unresolved identification bounds; first-passage advantage vs matched context-only benchmark, not automatic50%chance",
+    "dependence": "resample whole trading days and preserve correlated config/zone episodes; do not pool configs as independent N",
+    "multiplicity": "keep full tested family, simultaneous/block-bootstrap or max-statistic correction, retain unseen confirmation rather than winner picking",
+    "fees": "none in this phase; probability above50 does not prove profitability"
+  },
+  "compute_plan": [
+    "aggregate bars/footprints once per window_bars",
+    "reuse historical-score state per window and branch percentiles",
+    "reuse immutable formation tapes across cluster triples",
+    "stream trade chronology once per selected cohort and share rolling-prefix price/flow statistics",
+    "emit triggers online, freeze features, track all opposing/target barriers without rescanning future tape per signal",
+    "prefix/suffix perturbation and pinned source parity before optimizing adapter"
+  ],
+  "required_export": [
+    "contract",
+    "trade sequence",
+    "timestamp and declared session/clock provenance",
+    "integer-tick price",
+    "bar id and bar-formation rule",
+    "volume",
+    "aggressor with provenance/unknown flags",
+    "bid/ask if available; quote sizes needed for genuine orderbook imbalance",
+    "cluster id/config, creation sequence/timestamp, low0/high0 and member provenance",
+    "asof confirmation timestamps for peak indicators"
+  ],
+  "source": {
+    "dataset": "nicolasbuttaro/edgelab-ticks-nt8-canonical",
+    "version": 1,
+    "six_MNQ_files_present_in_Kaggle_metadata": true,
+    "local_tick_payload_read_this_turn": false,
+    "market_replay_approval": false,
+    "calendar_clock_and_aggressor_provenance": "open project gates, NOT cleared by synthetic tests"
+  },
+  "implemented_scope": "pure single-first-departure evaluator on declared ordered tape; extended sweep, seconds horizons and optimized market adapter remain proposals",
+  "synthetic_validation": {
+    "unit_tests": 17,
+    "random_mirror_cases": 900,
+    "fraction_subtests": 7,
+    "synthetic_only": true
+  }
+}
