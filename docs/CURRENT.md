@@ -13,7 +13,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 ## Estado al 2026-10-27 (leer primero)
 
 - **Traspaso de los conductores del embudo al Debian:** los conductores locales de la sesión en la nube están frenados; ubicación de
-  las 24 campañas (`config/autopilot/grillas/campanas/`), sus estados (`docs/research/<estudio>/embudo/<CID>/`) y las vivas en
+  las 24 campañas (`config/autopilot/grillas/campanas/`), sus estados (por ejemplo `docs/research/u1_zonas_20261025/embudo/`) y las vivas en
   `docs/research/TRASPASO_CONDUCTORES_DEBIAN_20261027.md`.
 - **Barridos U1 nuevos (26-oct):** rectángulos de BigTrap2 (NQ: 9 nominadas por FDR, 3 candidatas en INTEGRIDAD), grilla de racimos de
   AVZP2 36×12 (ES: 2 candidatas; YM sin N → zonas individuales, 1 candidata), confirmación cruzada EURUSD/GBPUSD (refutada), GBPUSD
