@@ -38,3 +38,4 @@
 - ACTA registrada antes de mirar: primeras 169 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 0, 1, 2, 2, 3, 3, 1, 0, 20] tope ['mult', 4.0]; plan {'n_fijo': 169, 'n_necesario': 169, 'potencia': 0.8000924818656052, 'efecto': 3.8992970588234463, 'fuente': 'fracción del DESC', 'nivel': 0.0011901877202097062}
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 169: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
 - **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
+- REAPERTURA 2026-10-27 (agente del Debian, commit 6685c9a9): BLOQUEADA → CONTEO. O13: IndexError en grilla_generica.correr con 0 disparos en la ventana sellada de DK:USA500IDXUSD (crash de infraestructura, no evidencia; log del kernel verificado). El acta sigue vigente; nada del holdout se miró.
