@@ -3,6 +3,34 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (04:30 UTC) — de Nico (redactado por la sesión en la nube): arreglate solo; primer caso, el CONTEO del holdout
+
+**Directiva permanente (Nico):** el Debian se arregla a sí mismo. Tené un monitoreo global del proyecto y de vos mismo: en cada ciclo,
+mirá tu propio estado y actuá sin esperar a nadie. Como mínimo:
+- campañas en `BLOQUEADA` o con `fallas > 0` → bajá el log del kernel (`kernels/output`), encontrá la causa raíz, arreglá el código,
+  tests, commit con la causa, y desbloqueá la campaña para que reintente **la misma etapa** (sin rehacer etapas ya hechas ni reabrir
+  ventanas del holdout);
+- unidades systemd en `failed`, timers que no corren, la rama `autopilot/state` sin commits nuevos, CI rojo en `foundation`;
+- registrá cada incidente y su arreglo en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` y, si se puede, agregá una guarda
+  (test o chequeo) para que no se repita.
+Lo único que no es tuyo: operar con dinero real.
+
+**Puntapié inicial — incidente abierto ahora:** 5 campañas terminaron `FIN BLOQUEADA` tras 3 fallas en `CONTEO`: U1-ES-GRILLA,
+U1-YM-GRILLA, U1-ORO-GRILLA, U1-ZONAS-ES, U1-ZONAS-NQ. Log del kernel (`nicolasbuttaro/embudo-u1-es-grilla-holdout-conteo-20261001`):
+`grilla_generica.resumen_e0 → KeyError: 'r_vol'`.
+- **Causa (diagnóstico de la nube; verificalo):** la gramática U1 (`u1_oro.escala_por_mes`, que usan u1_cfd, u1_zonas, u1_zonas_avcl,
+  u1_zonas_bt2, u1_racimos_grilla, u1_zonas_grilla) escala cada mes con el rango M1 del mes ANTERIOR y el primer mes de la ventana no
+  dispara. El holdout empieza el 2026-10-01 y el dataset sellado sólo trae octubre → **cero disparos**; y `grilla_generica.correr` llama a
+  `resumen_e0` antes de chequear `len(D)`, así que con D vacío (columnas de `VACIO`) se cae en vez de devolver n=0.
+- **Probablemente afecte también** a las que siguen en CONTEO (U1-ZONAS-BT2-NQ, U1-RACIMOS-GRILLA-ES/NQ, U1-ZONAS-AVCL-NQ).
+- **Arreglo propuesto:** (1) que la escala del primer mes del holdout salga del mes anterior en DESARROLLO (septiembre no es holdout):
+  por ejemplo congelar `escala_seg` del mes de arranque en el acta al abrirla y pasarla en PARAMS al CONTEO, o montar septiembre del
+  dataset de desarrollo como calentamiento sin que entre al conteo; (2) en `correr`, devolver resultado vacío con n=0 cuando `D` está
+  vacío, antes de `resumen_e0`; (3) test que reproduzca el caso (ventana de un solo mes) y uno que verifique que el calentamiento no
+  cuenta operaciones; (4) desbloquear las 5 con sus mismas actas (N y nivel de LORD++ ya reservados) — no se miró ninguna operación,
+  así que no hay consumo nuevo del holdout.
+- Avisá en la sala cuando esté resuelto, con el commit.
+
 ## 2026-10-27 (01:55 UTC) — de Nico (redactado por la sesión en la nube): generador caído y estado sin publicar
 
 1. **`edgelab-autopilot-generate.service` en `failed` desde el 26-oct 06:19.** El bug conocido del paso `propose` (`TypeError: dict() got
