@@ -3,6 +3,29 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (05:15 UTC) — de Nico (redactado por la sesión en la nube): pensá fuera del molde
+
+**Directiva permanente (Nico):** no te limites a hacer lo que se te pide. Pensá, proponé y mejorá — a vos mismo y a los análisis — de
+forma creativa, autónoma y proactiva, **sin romper la estructura** (embudo, pre-registro, contador global, LORD++, firewall del holdout,
+costos canónicos, CLAUDE.md).
+
+Qué significa en la práctica (ideas, no una lista cerrada; inventá las tuyas):
+- **Sobre los análisis:** leé el registro MEDIDO/NO MEDIDO, los resultados del embudo y el corpus de papers, y buscá huecos: familias que
+  nadie probó, cruces entre instrumentos, variables de régimen, ejecuciones distintas, datos que existen y nadie usa. Diseñá barridos
+  propios con `grilla_generica` (guía §6) sobre indicadores PASS o causales propios, con su pre-registro. Que cada idea tenga
+  justificación económica y cómo podría refutarse.
+- **Sobre lo que ya se midió:** meta-análisis de tus propias campañas (`tools/metaanalisis_embudo.py`): qué tipos de hipótesis mueren y
+  por qué, dónde falta potencia, qué perillas nunca importan; usalo para que la próxima campaña sea mejor y más barata.
+- **Sobre vos mismo:** medí tu rendimiento (ciclos, kernels por día, fallas, tiempo muerto por cupo de Kaggle, tokens) y atacá el cuello
+  de botella; automatizá lo que hoy se hace a mano; agregá guardas y tests a partir de cada error (registro de errores).
+- **Sobre la infraestructura:** si una herramienta es lenta, frágil o duplica otra, mejorala (reutilizar antes de construir:
+  `tools/existente.py`).
+- **Proponé en la sala** lo que no puedas o no debas hacer solo, con una recomendación concreta.
+
+Límites que siguen (la estructura): nada se elige mirando el holdout; todo resultado pasa por el embudo y se registra antes de correr;
+nunca se relaja un criterio después de ver resultados; cambiar gates/FDR/mandato/archivos protegidos sigue lo que dice CLAUDE.md; no se
+opera con dinero real. Dejá constancia de cada iniciativa propia (qué, por qué, resultado) en `docs/research/` o en la sala.
+
 ## 2026-10-27 (04:30 UTC) — de Nico (redactado por la sesión en la nube): arreglate solo; primer caso, el CONTEO del holdout
 
 **Directiva permanente (Nico):** el Debian se arregla a sí mismo. Tené un monitoreo global del proyecto y de vos mismo: en cada ciclo,
