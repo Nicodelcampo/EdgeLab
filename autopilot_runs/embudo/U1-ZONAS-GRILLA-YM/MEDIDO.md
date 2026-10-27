@@ -11,3 +11,6 @@
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [0, 2, 0, 29, 1]: regla 12.781333333333334, placebo -5.90, latencia 1 vela 17.096936170212764 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [3.65]; veredictos ['NO_CONCLUYENTE']; potencias [0.22]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py', 'edgelab/research/embudo_runners.py']); revisar si el cambio toca la medición
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)

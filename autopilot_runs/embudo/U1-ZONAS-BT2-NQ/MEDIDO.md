@@ -12,3 +12,5 @@
 - INTEGRIDAD [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: regla 8.5795, placebo -2.35, latencia 1 vela 7.826948979591836 -> pasa
 - INTEGRIDAD [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: regla -3.7133082191780846, placebo 2.11, latencia 1 vela -3.4003387096774236 -> no pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-8.64, -3.69]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.4, 0.21]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py', 'edgelab/research/embudo_runners.py']); revisar si el cambio toca la medición
+- TOPES: elegida {'celda': [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4], 'tope': ['mult', 2.0], 'puntaje': 3.703689313632251, 'peor': -78.2955}

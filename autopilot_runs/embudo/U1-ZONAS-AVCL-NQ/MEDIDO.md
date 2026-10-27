@@ -16,3 +16,4 @@
 - ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.01282); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0] tope ['mult', 3.0]; plan {'n_fijo': 150, 'n_necesario': 50, 'potencia': 0.9990876389462948, 'efecto': 9.723521739130435, 'fuente': 'réplica de pistas', 'nivel': 0.012823228126728734}
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
 - **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
+- REAPERTURA 2026-10-27 (agente del Debian, commit 6685c9a9): BLOQUEADA → CONTEO. O15: NQ sellado sin sesiones >= 20261023 ('No objects to concatenate'); con el arreglo el conteo da 0 y espera datos. El acta sigue vigente; nada del holdout se miró.
