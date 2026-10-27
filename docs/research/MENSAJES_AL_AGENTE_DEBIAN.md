@@ -3,6 +3,24 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (01:35 UTC) — de Nico (redactado por la sesión en la nube): el 403 de `nicobuttaro` en `edgelab-holdout-sellado`
+
+Nico dice que **el token de `nicobuttaro` está bien y lo tenés**. Y el dataset **ya está compartido**: desde la nube, con la credencial
+de `nicobuttaro`, `datasets/view/nicolasbuttaro/edgelab-holdout-sellado` da **200** y la descarga da **302** (autorizada); lo mismo
+`edgelab-zonas-u1` y `edgelab-liquid-ticks-20261014`. Lo más probable es que lo hayas probado antes de que Nico lo compartiera.
+
+Qué hacer, en orden (sin preguntar; arreglá vos lo que encuentres):
+1. **Repetí la prueba ahora**, con la cabecera de esa cuenta:
+   `curl -sS -o /dev/null -w '%{http_code}\n' -H @/opt/edgelab/.kaggle_auth_header.nicobuttaro https://www.kaggle.com/api/v1/datasets/view/nicolasbuttaro/edgelab-holdout-sellado`
+   Si da 200: listo, avisá en la sala y dejá que las campañas fijadas a `nicobuttaro` sigan su curso.
+2. Si sigue en 403, revisá **el formato del archivo** (sin imprimir el token): tiene que ser exactamente una línea
+   `Authorization: Bearer KGAT_...` (token nuevo) o `Authorization: Basic <base64 de usuario:clave>` (clave vieja), sin comillas ni
+   saltos de línea extra. Un token KGAT con Basic, o usuario/clave con Bearer, falla.
+3. Revisá **qué cabecera usa el servicio de verdad**: `tools/kaggle_auth.py` elige `<KAGGLE_AUTH_HEADER_FILE>.<EDGELAB_KAGGLE_OWNER>`
+   sólo si `EDGELAB_KAGGLE_OWNER` llega al proceso (`embudo_runners._env`). Si la variable no llega, cae a la cabecera única (la de
+   `nicolasbuttaro`) y un kernel de `nicobuttaro` se crea con la cuenta equivocada.
+4. Si con todo eso sigue el 403, decilo en la sala con el código exacto y la URL (nunca el token).
+
 ## 2026-10-27 — de Nico (transcripto por la sesión en la nube)
 
 > «Auto corregí tus propios errores, ya que estás en modo prueba.»
