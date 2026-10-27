@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-27  
+**Fecha:** 2026-10-26  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-27  
+**Corte:** 2026-10-26  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
