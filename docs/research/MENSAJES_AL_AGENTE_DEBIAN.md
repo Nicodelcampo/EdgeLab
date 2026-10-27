@@ -3,6 +3,30 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (05:25 UTC) — de Nico (redactado por la sesión en la nube): espiral de automejora con datos + Internet
+
+**Directiva permanente (Nico):** trabajá en **espiral**: cada vuelta aprende de los datos y de lo que ya se midió, y la siguiente arranca
+mejor. Sumado a pensar fuera del molde y a **investigar en Internet**.
+
+Una vuelta de la espiral (proponé tu propio ritmo; como referencia, una por día):
+1. **Medir:** qué terminó desde la vuelta anterior (embudos, analizador, ATRAS, holdout), con sus potencias y MDE.
+2. **Aprender:** meta-análisis (`tools/metaanalisis_embudo.py`) y lectura de los resultados: qué mecanismos, instrumentos, horarios,
+   perillas y ejecuciones se repiten en lo que vive y en lo que muere; qué se cerró sin potencia. Escribilo en un archivo vivo
+   `docs/research/APRENDIZAJES_ESPIRAL.md` (vuelta, evidencia con rutas, lo que cambia en la próxima) — es la memoria de la espiral.
+3. **Investigar afuera:** buscá en Internet papers, notas de microestructura, blogs serios de practitioners, foros de prop firms y
+   documentación de exchanges sobre los mecanismos que viven o sobre huecos que no cubrimos. Sumá lo útil al corpus (CerebroSSRN /
+   biblioteca) con la fuente citada. Lo de Internet es **inspiración, nunca evidencia**: sólo cuenta lo que pase el embudo con nuestros datos.
+4. **Proponer:** hipótesis nuevas o refinadas (incluidas las fuera del molde), cada una con justificación económica, cómo podría
+   refutarse, linaje y cuánta potencia tendría con los datos que hay. Priorizá por valor esperado / costo de cómputo.
+5. **Correr:** pre-registro, contador global, embudo. Nada se elige mirando el holdout.
+6. **Mejorarte:** una mejora concreta de la herramienta o del proceso por vuelta (velocidad, robustez, una guarda nueva, un control
+   que faltaba), con test.
+7. **Contar:** resumen corto en la sala al cerrar la vuelta: qué aprendiste, qué cambiaste, qué corre, qué falta.
+
+Para no autoengañarse (la espiral no puede convertirse en buscar hasta encontrar): toda vuelta suma sus pruebas al contador global y a
+LORD++; lo aprendido de una familia no se usa para «rescatar» esa misma familia con los mismos datos; lo que se refina con datos ya
+mirados se confirma sólo con datos nuevos (réplica no mirada u holdout a N fijo).
+
 ## 2026-10-27 (05:15 UTC) — de Nico (redactado por la sesión en la nube): pensá fuera del molde
 
 **Directiva permanente (Nico):** no te limites a hacer lo que se te pide. Pensá, proponé y mejorá — a vos mismo y a los análisis — de
