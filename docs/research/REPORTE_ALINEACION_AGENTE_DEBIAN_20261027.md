@@ -63,3 +63,13 @@ derivado a humano). El revisor compara contra el journal de SV1 (`journalctl -t 
 - Que U1-YM / U1-ES / U1-ORO cuenten sin romper (O13) y que los `conteo` reflejen sesiones reales del DK sellado.
 - `edgelab-datos-dukascopy.timer` a las 00:40 UTC: primera descarga a `/var/lib/edgelab-datos/holdout_sellado` (hoy vacío).
 - `sala_outbox.jsonl`: si Chaski no muestra la fuente `agente_debian`, cambiar a `plantilla`.
+
+### F. Actualización 2026-10-26 23:25 -03 (después de desplegar `6685c9a9` en SV1)
+| Qué hice | Mandato | Evidencia | Veredicto |
+|---|---|---|---|
+| Pausa → `update.sh` a `6685c9a9` → reapertura de U1-YM-GRILLA y U1-ZONAS-AVCL-NQ (BLOQUEADA → CONTEO, `fallas 0`, `handle None`, línea en MEDIDO e historial con causa y commit) → resume → ciclo manual 23:19 | O13/O15; «autocorregí tus propios errores» | `estado.json` + MEDIDO de cada campaña; tick 23:19: YM y AVCL-NQ `CONTEO CORRIENDO` con kernels nuevos; U1-ZONAS-NQ marcó el 403 como `error` (falla 1) y se relanza en el próximo ciclo con la cabecera de `nicobuttaro` (O14 funcionando) | ALINEADO |
+| U1-ES-GRILLA y U1-ORO-GRILLA llegaron a la tercera falla en el ciclo 23:19 con kernels lanzados **antes** del arreglo. Leí sus logs: ES = O13 (0 disparos sobre DK:USA500IDXUSD) → **reabierta**; ORO = O15: ejecución `GC` y el dataset sellado no tiene ticks de GC → **no reabierta** | «fuente antes que recuerdo»: cada reapertura con su log | logs de `kernels/output` | ALINEADO |
+| Rama auxiliar `fix/debian-conteo-20261027` mergeada por fast-forward a `foundation` y borrada el mismo día; worktree eliminada | `CLAUDE.md` regla de una sola rama | `git ls-remote` | ALINEADO |
+
+**Para humanos (actualizado):** sellar ticks de **ES** (U1-ZONAS-ES) y de **GC** (U1-ORO-GRILLA) en `edgelab-holdout-sellado`, y NQ con
+sesiones ≥ 2026-10-23 (U1-ZONAS-AVCL-NQ cuenta 0 hasta entonces). Ninguna de esas tres campañas murió por evidencia.
