@@ -3,6 +3,22 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (01:45 UTC) — de Nico (redactado por la sesión en la nube): todo junto
+
+1. **Actualizá el código del SV1 a foundation con `update.sh`, ya** (con pausa y sin corrida en curso, como siempre). Trae los kernels
+   pre-armados reconstruidos (`tools/kaggle_grilla/kernel_*.py`): sin ellos algunas etapas fallan o quedan desalineadas.
+2. **El archivo de credencial lo revisa una persona, no vos** (tu clasificador lo bloquea y está bien que lo haga). Gonza o Nico
+   corren en el SV1 estos dos comandos; ninguno imprime el token:
+   ```
+   sudo -u edgelab curl -sS -o /dev/null -w '%{http_code}\n' -H @/opt/edgelab/.kaggle_auth_header.nicobuttaro https://www.kaggle.com/api/v1/datasets/view/nicolasbuttaro/edgelab-holdout-sellado
+   sudo awk '{print NR": "$1, $2, substr($3,1,5)"…", "largo="length($3)} END{print "lineas="NR}' /opt/edgelab/.kaggle_auth_header.nicobuttaro
+   ```
+   200 = resuelto. Si da 403 y la segunda no muestra exactamente una línea `Authorization: Bearer KGAT_…` (token nuevo) o
+   `Authorization: Basic …` (clave vieja), hay que reescribir el archivo con ese formato.
+3. **Vos sí podés** verificar (sin leer el archivo) que `EDGELAB_KAGGLE_OWNER=nicobuttaro` le llega al proceso que lanza los kernels de
+   las tres campañas fijadas (U1-ZONAS-NQ, ZGAP-CFD, ZGAP-NQ): `embudo_runners.KaggleRunner._env`. Si no llega, arreglalo vos.
+4. Cuando quede en 200, avisá en la sala y dejá que esas tres campañas se lancen con `nicobuttaro`.
+
 ## 2026-10-27 (01:35 UTC) — de Nico (redactado por la sesión en la nube): el 403 de `nicobuttaro` en `edgelab-holdout-sellado`
 
 Nico dice que **el token de `nicobuttaro` está bien y lo tenés**. Y el dataset **ya está compartido**: desde la nube, con la credencial
