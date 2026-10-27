@@ -1,6 +1,6 @@
 {
- "etapa": "TOPES",
- "fase": "PENDIENTE",
+ "etapa": "FIN",
+ "fase": "SIN_POTENCIA_HOLDOUT",
  "historial": [
   {
    "ts": 1792972197.7186751,
@@ -48,6 +48,16 @@
    "etapa": "ATRAS",
    "fin": true,
    "nota": "sin período hacia atrás declarado"
+  },
+  {
+   "ts": 1793036224.7395098,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793036524.7532997,
+   "final": "SIN_POTENCIA_HOLDOUT",
+   "motivo": "potencia del holdout < 0.8 aun con N máximo 500 ({'n_fijo': None, 'n_necesario': 627, 'potencia': 0.8000625411100726, 'efecto': 0.9326124999999997, 'fuente': 'OOS', 'nivel': 0.003607974489558189}); la familia sigue viva, sin gastar su apertura"
   }
  ],
  "spec": {
@@ -174,16 +184,13 @@
     4
    ]
   ],
-  "resolucion": {
-   "nivel": 0.010937333410740489,
-   "m": 1
-  }
+  "topes": null
  },
  "periodo": [
-  20260401,
-  20260930
+  20250801,
+  20260331
  ],
- "lanzada": 1793034287.6400592,
+ "lanzada": 1793035503.6375096,
  "codigo_cambiado": [
   {
    "etapa": "DESC",
@@ -1740,5 +1747,36 @@
     "mismo_regimen": true
    }
   ]
- }
+ },
+ "regla": {
+  "celda": [
+   0,
+   2,
+   0,
+   2,
+   0,
+   2,
+   3,
+   3,
+   3,
+   1,
+   0,
+   4
+  ],
+  "tope": [
+   "mult",
+   3.0
+  ],
+  "puntaje": 8.561355215253846,
+  "peor": -16.1377
+ },
+ "plan_holdout": {
+  "n_fijo": null,
+  "n_necesario": 627,
+  "potencia": 0.8000625411100726,
+  "efecto": 0.9326124999999997,
+  "fuente": "OOS",
+  "nivel": 0.003607974489558189
+ },
+ "motivo": "potencia del holdout < 0.8 aun con N máximo 500 ({'n_fijo': None, 'n_necesario': 627, 'potencia': 0.8000625411100726, 'efecto': 0.9326124999999997, 'fuente': 'OOS', 'nivel': 0.003607974489558189}); la familia sigue viva, sin gastar su apertura"
 }

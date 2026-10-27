@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 772 |
+| `docs/research` | 789 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,6 +38,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
 | ERRORES | 1 | `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` | 2026-10-26 | VIGENTE (registro vivo: cada error nuevo se agrega acá en el mismo commit que su |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
 | IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
 | EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
-| PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
 
 ## Superados (7)
 

@@ -70,3 +70,9 @@ Comisión round-turn all-in en USD y en ticks (tick: 6B/6J 6,25 · MGC 1,00 · M
 | ZB | 2,76 | no figura | no figura | 0,09 (una sola fuente) |
 Las tarifas de YM, MYM y RTY ya estaban en §2. Con esto ningún activo del R2 usa una comisión aproximada salvo ZB (fuente única).
 
+
+## Adenda 2026-10-26 — spread medido de 6B
+Medido con `tools/medir_spread_main.py` (kernel `nicobuttaro/medir-spread-6b`) con el criterio del atlas v4: media ask − bid en ticks
+sobre ticks con libro válido, 08:30–15:00 CT, sólo desarrollo. **6B: 1,06 ticks** (p50 1; 4.167.355 ticks, 291 sesiones). Validación
+del método: el mismo kernel sobre 6E (`nicobuttaro/medir-spread-6e`) da **1,341**, igual al 1,34 del atlas. Cargado en
+`config/costos/costos_canonicos.json`.

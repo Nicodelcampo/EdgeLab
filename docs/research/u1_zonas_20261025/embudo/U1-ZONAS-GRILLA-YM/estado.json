@@ -1,0 +1,227 @@
+{
+ "etapa": "INDAGA",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793049874.9944117,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793050960.5673687,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     2,
+     0,
+     29,
+     1
+    ]
+   ]
+  },
+  {
+   "ts": 1793052658.6387556,
+   "etapa": "INDAGA",
+   "falla": "no se pudo traer el resultado: FileNotFoundError(2, 'No such file or directory')"
+  }
+ ],
+ "spec": {
+  "cid": "U1-ZONAS-GRILLA-YM",
+  "familia": "U1_ZONAS_GRILLA_YM",
+  "experimento": "edgelab.research.u1_zonas_grilla",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 con zonas individuales de volumen real concentrado (aVolZonePOI2), definición de zona como perilla: en YM los racimos son demasiado pocos para medir.",
+  "como_podria_refutarse": "Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o ninguna definición de zona/racimo se separa de las demás.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS_BT2_AVZR.md",
+  "n_celdas_por_canal": 3888,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-10-26: Nico «relajá el filtro para considerar zonas individuales» tras 0 celdas evaluables en U1-RACIMOS-GRILLA-YM; declarada antes de su DESC (adenda §7)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_ZONAS_GRILLA_YM",
+   "declarada": true,
+   "padres": [
+    "U1_RACIMOS_GRILLA_YM",
+    "U1_YM_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4979433,
+   "n_heredado": 4979433,
+   "total": 4979433,
+   "justificacion": "zonas individuales de AVZP2 en YM tras 0 celdas evaluables con racimos",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793049874.9942005,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-u1-zonas-grilla-ym-indaga-20250801",
+ "fallas": 1,
+ "params": {
+  "cortes": {},
+  "bases": [
+   [
+    0,
+    2,
+    0,
+    29,
+    1
+   ]
+  ]
+ },
+ "periodo": [
+  20250801,
+  20260331
+ ],
+ "lanzada": 1793051265.480951,
+ "cortes": {},
+ "candidatas": [
+  [
+   0,
+   2,
+   0,
+   29,
+   1
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     2,
+     0,
+     29,
+     1
+    ],
+    "n": 36,
+    "media_neta": 22.364666666666665,
+    "sesiones": 20,
+    "ic90": [
+     16.626466386554622,
+     28.0936618464961
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 5.84,
+    "pasa": true,
+    "n_pruebas": 932.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.02610859183446239,
+    "media_esperada_fuera": 0.5839099535138065,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 6.103579521179199,
+    "canal": "reciente",
+    "q_fdr": 2.4253197616896927e-08,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 703,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 3888,
+    "q_linaje": 0.0001718125498819667
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    2,
+    0,
+    29,
+    1
+   ],
+   "n_desc": 36,
+   "ops_mes": 12.0,
+   "efecto": 11.182333333333332,
+   "oos": {
+    "n": 72.0,
+    "mde": 6.128709617530384,
+    "potencia": 0.9980855452703703
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 4.246094576959458,
+    "potencia": 0.9999995290893428
+   }
+  }
+ ]
+}

@@ -43,6 +43,10 @@ def zonas_almacen(Zs: pd.DataFrame, t_close) -> dict:
     zi = zi[ok].astype(np.int64); lo, hi = Zs.lo.to_numpy(float)[ok], Zs.hi.to_numpy(float)[ok]
     o = np.argsort(zi, kind="stable"); zi, lo, hi = zi[o], lo[o], hi[o]
     zfin = np.searchsorted(t_close, t_close[zi] + AX.VIDA_MIN * 60, side="right")
+    if "t_fin_ns" in Zs:                     # 2026-10-26: rectángulo extendido (BigTrap2): vive hasta que el indicador lo cierra
+        tf = Zs.t_fin_ns.to_numpy(np.int64)[ok][o] // 10**9
+        zfin = np.where(tf > 0, np.searchsorted(t_close, tf, side="left"), len(t_close))      # muerta ya en la vela que la cierra
+        zfin = np.maximum(zfin, zi + 1)
     return dict(zi=zi, zlo=np.minimum(lo, hi), zhi=np.maximum(lo, hi), zfin=zfin, og=np.zeros(len(zi), bool))
 
 
@@ -57,7 +61,7 @@ def cargar(indicador: str, instrumento: str, entrada: str | None = None) -> pd.D
     entrada = entrada or os.environ.get("ENTRADA", "/kaggle/input")
     f = glob.glob(f"{entrada}/**/ZONAS_{indicador}_{instrumento}.parquet", recursive=True)
     if not f: raise FileNotFoundError(f"sin almacén de zonas {indicador}/{instrumento} en {entrada}")
-    return pd.read_parquet(f[0], columns=["t_ns", "lo", "hi"])
+    Z = pd.read_parquet(f[0]); return Z[[c for c in ("t_ns", "lo", "hi", "t_fin_ns") if c in Z]]
 
 
 def disparos(ctx, r_ref: float | None = None) -> pd.DataFrame:

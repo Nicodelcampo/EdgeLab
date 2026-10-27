@@ -12,3 +12,6 @@
 - PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.0021873021354976113; confirmadas 1 de 19 [[0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]]
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0]: regla 6.829499999999999, placebo -7.57, latencia 1 vela 8.065611111111112 -> pasa
+- TOPES: elegida {'celda': [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0], 'tope': ['mult', 3.0], 'puntaje': 4.500718170675654, 'peor': -50.7955}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.01282); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 2, 2, 2, 2, 3, 3, 0, 0, 0] tope ['mult', 3.0]; plan {'n_fijo': 150, 'n_necesario': 50, 'potencia': 0.9990876389462948, 'efecto': 9.723521739130435, 'fuente': 'réplica de pistas', 'nivel': 0.012823228126728734}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
