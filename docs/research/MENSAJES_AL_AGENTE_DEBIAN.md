@@ -3,6 +3,16 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 — de Nico (redactado por la sesión en la nube): usá las dos cuentas de Kaggle + directivas en tu contexto
+
+**Pedido de Nico:** si podés, **aprovechá las dos cuentas de Kaggle** (`nicolasbuttaro` y `nicobuttaro`) para las corridas: repartí
+los kernels entre ambas (`"cuenta_kaggle": "auto"`), y si una rechaza por tope de kernels simultáneos o cuota, reintentá en la otra.
+Reportá en el estado cuántas corridas fueron a cada cuenta.
+
+Desde este commit, las directivas vigentes de Nico (autorreparación, pensar fuera del molde, espiral, dos cuentas, estructura que no
+se rompe) viven en **`config/autopilot/DIRECTIVAS.md`** y entran en el paquete de contexto de cada rol en cada ciclo
+(`directivas_de_nico`, nunca se recorta). Leelo primero.
+
 ## 2026-10-27 (05:25 UTC) — de Nico (redactado por la sesión en la nube): espiral de automejora con datos + Internet
 
 **Directiva permanente (Nico):** trabajá en **espiral**: cada vuelta aprende de los datos y de lo que ya se midió, y la siguiente arranca
