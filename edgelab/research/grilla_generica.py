@@ -350,7 +350,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
            resolucion=None):
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
-    if "ses" not in D: D["ses"] = ctx["ses"][D.k.to_numpy()]
+    if "ses" not in D: D["ses"] = np.asarray(ctx["ses"])[D.k.to_numpy().astype(np.intp)]   # 2026-10-27 (O13): con 0 disparos `k` no es entera
     cortes = cortes or cortes_e0(D, exp.VARIABLES)
     res = dict(experimento=exp.NOMBRE, modo=modo, E0=resumen_e0(D, exp.VARIABLES, cortes))
     if modo == "E0" or not len(D): return res, D

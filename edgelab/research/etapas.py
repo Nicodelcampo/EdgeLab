@@ -94,6 +94,7 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tope,
                             resolucion=p.get("resolucion"))              # {nivel, m}: B del bootstrap que resuelve el umbral (2026-10-24)
         if etapa == "HOLDOUT_CONTEO":                                     # sin P&L: sólo cuántas operaciones hay
+            if not isinstance(cx, dict): return dict(conteo=[0] * len(celdas), disparos=0)   # 2026-10-27 (O13): 0 disparos en la ventana: aún sin operaciones, el embudo sigue mirando
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
         res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))

@@ -163,6 +163,7 @@ class KaggleRunner:
         for s in ("complete", "running", "queued", "error", "cancel"):
             if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
         if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
+        if '"code":403' in out.replace(" ", ""): return "error"     # 2026-10-27 (O14): el kernel no es de esta cuenta (lanzado sin su cabecera): relanzar, no esperar 14 h
         return "running"
 
     def traer(self, handle) -> dict:

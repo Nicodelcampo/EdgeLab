@@ -45,6 +45,8 @@ def test_kernel_sin_corridas_es_error_y_no_espera_para_siempre(monkeypatch, tmp_
     assert k.estado("nicolasbuttaro/x") == "error"
     monkeypatch.setattr(R.subprocess, "run", salida('{"status":"running","failureMessage":""}'))
     assert k.estado("nicolasbuttaro/x") == "running"
+    monkeypatch.setattr(R.subprocess, "run", salida('{"code":403,"message":"Permission \\u0027kernels.get\\u0027 was denied"}'))
+    assert k.estado("nicobuttaro/x") == "error", "O14: un kernel que esta cuenta no puede ver se relanza, no se espera 14 h"
 
 
 def test_campana_con_cuenta_kaggle_lanza_en_esa_cuenta(tmp_path):
