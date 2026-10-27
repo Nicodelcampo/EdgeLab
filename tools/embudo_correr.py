@@ -60,13 +60,16 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("campanas", nargs="*"); ap.add_argument("--raiz", required=True);
     ap.add_argument("--sellado", default="{}"); ap.add_argument("--intervalo", type=int, default=300); ap.add_argument("--max-errores", type=int, default=5)
     ap.add_argument("--registro", default=str(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"))
+    ap.add_argument("--dataset-sellado", default="nicolasbuttaro/edgelab-holdout-sellado", help="holdout en Kaggle (vacío = local)")
     ap.add_argument("--conductor", default="local", choices=EMB.CONDUCTORES)
     ap.add_argument("--ventanas", default=None, help="libro de ventanas del holdout (por defecto el del repo)")
     ap.add_argument("--detener", default=None, help="CID: frena el conductor de esa campaña (por pid) y sale")
     a = ap.parse_args()
     if a.detener: print(detener(Path(a.raiz), a.detener)); return
     lec, tk = ER.lectores_sellados(json.loads(a.sellado), Path(a.raiz))
-    emb = EMB.Embudo(Path(a.raiz), dict(kaggle=ER.KaggleRunner(raiz=Path(a.raiz)), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local")),
+    runners = dict(kaggle=ER.KaggleRunner(raiz=Path(a.raiz)), local=ER.LocalRunner(lec, tk, carpeta=Path(a.raiz) / "_local"))
+    if a.dataset_sellado: runners["sellado"] = ER.KaggleRunner(raiz=Path(a.raiz), dataset_sellado=a.dataset_sellado)   # holdout en Kaggle
+    emb = EMB.Embudo(Path(a.raiz), runners,
                      registro=TrialRegistry(Path(a.registro)), libro=LibroLord(), ventanas=a.ventanas)   # libro único: RUTA_CANONICA
     specs = [json.loads(Path(c).read_text(encoding="utf-8")) for c in a.campanas]
     if (malos := problemas_conduccion(specs, Path(a.raiz))): sys.exit("NO SE CONDUCE: " + "; ".join(malos))

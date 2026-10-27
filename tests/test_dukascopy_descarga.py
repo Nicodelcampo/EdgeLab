@@ -48,3 +48,11 @@ def test_lector_sellado_lee_jforex_y_rechaza_desarrollo(tmp_path):
     b = pd.concat(F.bloques_spot_sellado("USATECHIDXUSD", 20261001, 20261031, tmp_path))
     assert len(b) == 100 and b.px.iloc[0] == 25000.25
     with pytest.raises(ValueError): next(F.bloques_spot_sellado("USATECHIDXUSD", 20260901, 20261031, tmp_path))
+
+
+def test_lector_sellado_lee_el_parquet_plano_de_kaggle(tmp_path):
+    from edgelab.research import fuentes_ticks as F
+    ms = 1_790_900_000_000 + np.arange(50) * 1000
+    pd.DataFrame(dict(time_utc_ns=ms * 1_000_000, bid=25000.0, ask=25000.5, bid_vol=1.0, ask_vol=1.0)).to_parquet(tmp_path / "USATECHIDXUSD_ticks.parquet")
+    b = pd.concat(F.bloques_spot_sellado("USATECHIDXUSD", 20261001, 20261031, tmp_path))
+    assert len(b) == 50 and b.px.iloc[0] == 25000.25

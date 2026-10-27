@@ -175,7 +175,9 @@ def bloques_spot_sellado(simbolo, desde, hasta, raiz):
     from pathlib import Path
     if desde < HOLDOUT_PRIMERA_SESION_INT: raise ValueError("una apertura del holdout no mezcla sesiones de desarrollo")
     base = Path(raiz) / simbolo; red = REDONDEO_SPOT[simbolo]; partes = []
-    for f in sorted(base.glob("*.parquet")): partes.append(pd.read_parquet(f))
+    plano = Path(raiz) / f"{simbolo}_ticks.parquet"                      # dataset de Kaggle (aplana carpetas): un parquet por símbolo
+    if plano.exists(): partes.append(pd.read_parquet(plano))
+    for f in ([] if partes else sorted(base.glob("*.parquet"))): partes.append(pd.read_parquet(f))
     if not partes and (base / "ticks").exists():
         dt_ = np.dtype([("ms", ">i8"), ("bid", ">f8"), ("ask", ">f8"), ("bv", ">f4"), ("av", ">f4")])
         for f in sorted((base / "ticks").glob("*.bin")):

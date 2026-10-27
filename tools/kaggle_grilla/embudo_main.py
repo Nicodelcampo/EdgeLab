@@ -20,7 +20,8 @@ def main():
         acta = os.path.abspath("ACTA_HOLDOUT.json"); json.dump(params["acta"], open(acta, "w"), default=float)
         raiz = os.path.dirname(glob.glob(ent + "/**/SELLADO.txt", recursive=True)[0])
         def resolver(n):
-            if n.startswith("DK:"): return (lambda d0, d1, e=None: F.bloques_spot_sellado(n[3:], d0, d1, os.path.join(raiz, "dukascopy"))), F.REDONDEO_SPOT[n[3:]]
+            dk = raiz if n.startswith("DK:") and glob.glob(raiz + f"/{n[3:]}_ticks.parquet") else os.path.join(raiz, "dukascopy")   # plano (Kaggle) o carpetas
+            if n.startswith("DK:"): return (lambda d0, d1, e=None: F.bloques_spot_sellado(n[3:], d0, d1, dk)), F.REDONDEO_SPOT[n[3:]]
             return (lambda d0, d1, e=None: F.bloques_nq_sellado(d0, d1, glob.glob(raiz + f"/**/{n}_*ticks.parquet", recursive=True)[0], acta)), F.TICK_FUTURO[n]
     else:
         resolver = F.resolver
