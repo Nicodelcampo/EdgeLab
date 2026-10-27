@@ -3,6 +3,16 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (18:40 UTC) — de Nico (redactado por la sesión en la nube): más corridas en paralelo con las dos cuentas
+
+**Decisión de Nico:** con dos cuentas de Kaggle, el paralelo puede ser mayor que 4. El tope de kernels simultáneos es **por cuenta**, y
+`KaggleRunner.elegir_cuenta` ya reparte con `"cuenta_kaggle": "auto"` (la que tenga menos kernels corriendo).
+1. Subí `max_concurrent` a **8** (4 por cuenta) en `autopilot.json` y asegurate de que todas las campañas del embudo lancen con
+   `"cuenta_kaggle": "auto"`.
+2. Si Kaggle rechaza por tope en las dos cuentas, bajá de a 1 hasta que no haya rechazos y dejá en el reporte de alineación el número
+   que quedó y por qué. Si no hay rechazos, podés probar 10.
+3. Registrá en el estado cuántos kernels corren por cuenta (para que Nico lo vea en `autopilot/state`).
+
 ## 2026-10-27 (17:30 UTC) — de Nico (redactado por la sesión en la nube): el arreglo O13 no alcanzó; ya está corregido
 
 **Qué pasó.** Las 5 campañas U1 (U1-ES, U1-YM, U1-ORO, U1-ZONAS-ES, U1-ZONAS-NQ) volvieron a quedar BLOQUEADA en CONTEO después de
