@@ -3,6 +3,18 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (23:20 UTC) — de Nico: `edgelab-holdout-sellado` v2 subido (ES + NQ hasta 26-oct) y fix de slug >49 chars (`U1-RACIMOS-GRILLA-*`)
+
+1. **Holdout sellado v2 publicado en Kaggle (`nicolasbuttaro/edgelab-holdout-sellado`, v2):**
+   - Ya incluye **`ES_12-26_ticks.parquet`** y **`NQ_12-26_ticks.parquet`** actualizados hasta el **2026-10-26** (además de los 7 spots de Dukascopy). La cuenta `nicobuttaro` ya tiene permiso `View` sobre `v2`.
+   - Con esto, **`U1-ZONAS-ES`** ya tiene ticks sellados de `ES` futuro y **`U1-ZONAS-AVCL-NQ` / `U1-ZONAS-BT2-NQ`** tienen sesiones `>= 2026-10-23`. *(Sólo `U1-ORO-GRILLA` sigue esperando ticks sellados de `GC` futuro).*
+2. **Por qué `U1-RACIMOS-GRILLA-ES` y `U1-RACIMOS-GRILLA-NQ` no despegaban en `CONTEO` (arreglado en este commit):**
+   - Sus slugs `embudo-u1-racimos-grilla-{es,nq}-holdout-conteo-20261023` medían **51 caracteres** (y `AN_ANALIZAR_REGLA` medía 50–54 en 9 campañas), por lo que `validate_push` en `tools/kaggle_kernel.py` (`<= 49` chars) los rechazaba en cada ciclo después de escribir el manifiesto en `autopilot_runs/launches/`.
+   - `KaggleRunner.argumentos` ahora recorta la parte del nombre del kernel a `[:49].rstrip("-")`.
+3. **Acción inmediata en `SV1`:**
+   - Ejecutá `update.sh` a la punta de `foundation/f0b-compatibility-probe` (trae también `95c06808` con el mandato confirmado por Nico, `7335aee0` con `max_concurrent: 8` y `4e975fcb` con el fix de `resumen_e0` para 0 disparos sin columnas).
+   - Reabrí a `CONTEO` (`fallas: 0`, `handle: null`): **`U1-ZONAS-ES`**, **`U1-ES-GRILLA`**, **`U1-YM-GRILLA`** y **`U1-ZONAS-NQ`**, y verificá en el siguiente tick que `U1-RACIMOS-GRILLA-ES` y `U1-RACIMOS-GRILLA-NQ` pasen a `CONTEO CORRIENDO`.
+
 ## 2026-10-27 (18:40 UTC) — de Nico (redactado por la sesión en la nube): más corridas en paralelo con las dos cuentas
 
 **Decisión de Nico:** con dos cuentas de Kaggle, el paralelo puede ser mayor que 4. El tope de kernels simultáneos es **por cuenta**, y

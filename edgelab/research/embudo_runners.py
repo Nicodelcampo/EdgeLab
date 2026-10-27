@@ -106,7 +106,8 @@ class KaggleRunner:
             extra += list(spec.get("datasets_extra", []))                 # p. ej. el almacén de zonas de U1-ZONAS (target-free)
         cuenta = spec.get("cuenta_kaggle") or self.owner
         if cuenta == "auto": cuenta = self.elegir_cuenta()
-        slug = f"{cuenta}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
+        nombre = f"embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:49].rstrip("-")   # Kaggle <=50 y validate_push <=49; sin "_"
+        slug = f"{cuenta}/{nombre}"
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
         if spec.get("confirmador"): env["CONFIRMADOR"] = spec["confirmador"]

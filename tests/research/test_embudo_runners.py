@@ -78,3 +78,17 @@ def test_cabecera_por_cuenta(tmp_path, monkeypatch):
     monkeypatch.setenv("KAGGLE_AUTH_HEADER_FILE", str(base))
     monkeypatch.setenv("EDGELAB_KAGGLE_OWNER", "nicobuttaro"); assert KA.header_file().name.endswith(".nicobuttaro")
     monkeypatch.setenv("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro"); assert KA.header_file() == base
+
+
+def test_slug_largo_pasa_validate_push(tmp_path):
+    """2026-10-27: U1-RACIMOS-GRILLA-ES/NQ en HOLDOUT_CONTEO y AN_ANALIZAR_REGLA armaban slugs de 51-54 chars que validate_push (<=49) rechazaba."""
+    import sys
+    sys.path.insert(0, str(R.ROOT / "tools"))
+    from kaggle_kernel import validate_push
+    k = R.KaggleRunner(carpeta=tmp_path, dataset_sellado="nicolasbuttaro/edgelab-holdout-sellado")
+    spec = dict(cid="U1-RACIMOS-GRILLA-ES", experimento="tests.research.exp_u1_sin_be", sensor="ES", ejecucion="ES")
+    for etapa in ("HOLDOUT_CONTEO", "AN_ANALIZAR_REGLA"):
+        a = k.argumentos(spec, etapa, dict(celdas=[[0]], acta=dict(cid="U1-RACIMOS-GRILLA-ES")), [20261023, 20261026])
+        slug = a[a.index("--slug") + 1]
+        assert len(slug.split("/")[1]) <= 49 and not slug.endswith("-")
+        assert validate_push(slug, ["nicolasbuttaro/edgelab-holdout-sellado"], "nicolasbuttaro") == "nicolasbuttaro"
