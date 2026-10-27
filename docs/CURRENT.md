@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-25  
+**Fecha:** 2026-10-27  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-25  
+**Corte:** 2026-10-27  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,22 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-25 (leer primero)
+## Estado al 2026-10-27 (leer primero)
+
+- **Traspaso de los conductores del embudo al Debian:** los conductores locales de la sesión en la nube están frenados; ubicación de
+  las 24 campañas (`config/autopilot/grillas/campanas/`), sus estados (por ejemplo `docs/research/u1_zonas_20261025/embudo/`) y las vivas en
+  `docs/research/TRASPASO_CONDUCTORES_DEBIAN_20261027.md`.
+- **Barridos U1 nuevos (26-oct):** rectángulos de BigTrap2 (NQ: 9 nominadas por FDR, 3 candidatas en INTEGRIDAD), grilla de racimos de
+  AVZP2 36×12 (ES: 2 candidatas; YM sin N → zonas individuales, 1 candidata), confirmación cruzada EURUSD/GBPUSD (refutada), GBPUSD
+  spot (refutada) y 6B (PISTAS_VIVAS), U1 en 6E futuro (refutada).
+- **Analizador sobre celdas no confirmadas** (`tools/analizar_embudo.py`) y **ATRAS** en la historia no mirada 2023-01→2025-08
+  (`docs/research/atras_20261026/`): EXPZ-CFD 0 a favor / 6 en contra (las mejores recientes son negativas antes de 2025: apuesta de
+  régimen, la decide el holdout); ZGAP-CFD 1/4/15.
+- **Costos:** spread de 6B medido (1,06 ticks; método validado contra 6E = 1,341).
+- **Historia de futuros:** el AddOn de NT8 no da más ticks; queda `nt8_tools/EdgeLabTickLogger.cs` para exportar desde el Strategy Analyzer.
+- **Edges promovidos: 0.**
+
+## Estado al 2026-10-25
 
 - **Validación (decisiones de Nico del 24-oct, aplicadas):** D1–D4 en `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md`;
   arreglos de falsos negativos del embudo (etapa PISTAS, linaje como información para campañas nuevas, m del FDR = evaluables,
