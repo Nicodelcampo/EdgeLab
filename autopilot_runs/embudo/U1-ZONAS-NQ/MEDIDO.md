@@ -23,3 +23,4 @@
 - Decisión de Nico 2026-10-26: el diseño de U1-ES/U1-YM/U1-ZONAS-NQ no heredó la mirada exploratoria de U1-CRUZADO (1–22 oct, consumida por AREAS_EXP_1_CRUZADO); holdout.desde pasa de 20261023 a la frontera 20261001. Nada del holdout se había contado. Acta anulada y re-planificada.
 - ACTA registrada antes de mirar: primeras 449 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 0, 0, 2, 2, 0, 3, 3, 1, 0, 0, 33] tope ['mult', 2.0]; plan {'n_fijo': 449, 'n_necesario': 449, 'potencia': 0.8009187406869294, 'efecto': 10.720846153846331, 'fuente': 'OOS', 'nivel': 0.0018858947159882456}
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 449: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
