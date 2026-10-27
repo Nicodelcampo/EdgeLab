@@ -3,6 +3,18 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (01:55 UTC) — de Nico (redactado por la sesión en la nube): generador caído y estado sin publicar
+
+1. **`edgelab-autopilot-generate.service` en `failed` desde el 26-oct 06:19.** El bug conocido del paso `propose` (`TypeError: dict() got
+   multiple values for keyword argument 'lente'`) está arreglado desde el PR #127 (mergeado el 25-oct), que SV1 ya tiene (está en
+   `87b11b78` o posterior). Con el código actual `propose` corre bien (probado en la nube con `proponente: true`). Lo más probable es que
+   el `failed` sea de una corrida con código viejo y la unidad quedó marcada. Hacé:
+   `sudo systemctl reset-failed edgelab-autopilot-generate.service && sudo systemctl start edgelab-autopilot-generate.service`
+   y mirá `journalctl -u edgelab-autopilot-generate -n 50`. Si vuelve a fallar con otro error, arreglalo vos (causa raíz en el commit).
+2. **PR #141 (sync_state: heartbeat.json) mergeado.** Actualizá con `update.sh` (con pausa, sin corrida en curso) para que el estado
+   empiece a publicarse en `autopilot/state`; confirmá en el próximo ciclo que la rama aparece en GitHub.
+3. Avisá en la sala cuando los dos estén en verde.
+
 ## 2026-10-27 (01:45 UTC) — de Nico (redactado por la sesión en la nube): todo junto
 
 1. **Actualizá el código del SV1 a foundation con `update.sh`, ya** (con pausa y sin corrida en curso, como siempre). Trae los kernels
