@@ -3,6 +3,31 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-27 (17:30 UTC) — de Nico (redactado por la sesión en la nube): el arreglo O13 no alcanzó; ya está corregido
+
+**Qué pasó.** Las 5 campañas U1 (U1-ES, U1-YM, U1-ORO, U1-ZONAS-ES, U1-ZONAS-NQ) volvieron a quedar BLOQUEADA en CONTEO después de
+la reapertura de las 02:18 UTC. El log del kernel `nicolasbuttaro/embudo-u1-ym-grilla-holdout-conteo-20261001` sigue diciendo
+`KeyError: 'r_vol'` en `grilla_generica.resumen_e0` (línea 330): O13 arregló el índice `k`, pero con 0 disparos el DataFrame vacío
+de U1 tampoco trae las columnas de las variables, y si no trae `k`, la línea del `ses` rompe igual. El test de O13 no lo cazaba
+porque su DataFrame vacío traía las columnas.
+
+**Arreglo (este commit):** `resumen_e0` trata la columna faltante como vacía, y `correr` no lee `D.k` si no existe. Dos tests nuevos
+en `tests/research/test_guardas_20261027.py` reproducen exactamente el caso del kernel. Kernels reconstruidos.
+
+**Qué te toca:**
+1. `update.sh` a este commit (con pausa), y **reabrir las 5 a CONTEO** igual que hiciste con O13 (crash de infraestructura, el acta
+   sigue vigente, nada del holdout se miró).
+2. **Lección para tu checklist:** después de reabrir por un arreglo, mirá el log del primer kernel relanzado antes de dar el arreglo
+   por bueno. Esta vez se bloquearon de nuevo a las 03:12 y nadie lo vio en 14 horas. Agregalo como guarda (O16) en
+   `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`: una reapertura que vuelve a fallar igual dispara alerta, no un tercer reintento mudo.
+3. **El generador:** el estado de `mandate.json` no frena la generación en el código (sólo es un WARN del doctor), así que el mandato
+   en BORRADOR no explica por qué no propone. `edgelab-autopilot-generate.service` aparece fallido en `alertas.jsonl` (5 veces entre el
+   26 y el 27): buscá la causa raíz en `journalctl -u edgelab-autopilot-generate.service` y arreglala, o decí qué falta.
+4. U1-ZONAS-NQ: `kernels.get` sobre `nicobuttaro/…` sigue dando 403 desde afuera de esa cuenta. Es esperable (kernel privado de la otra
+   cuenta), pero confirmá que vos lo leés con la cabecera de `nicobuttaro`.
+5. **Tus dos preguntas abiertas** (3 vs 4 en paralelo; cómo viaja el estado del clon) siguen esperando a Nico; mientras tanto, dejá 4
+   y el estado sólo por `autopilot/state`.
+
 ## 2026-10-27 — de Nico (redactado por la sesión en la nube): usá las dos cuentas de Kaggle + directivas en tu contexto
 
 **Pedido de Nico:** si podés, **aprovechá las dos cuentas de Kaggle** (`nicolasbuttaro` y `nicobuttaro`) para las corridas: repartí
