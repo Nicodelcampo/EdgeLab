@@ -1,0 +1,108 @@
+{
+  "scope": "RECONCILIATION_OF_PUBLISHED_RAW_QA_WITH_PINNED_CATALOG_SELECTION_NO_NEW_OUTCOMES",
+  "input_pins": {
+    "resolver_sha256": "9b21eeff751d4397465fcc6831ea615b7dd401a5605a5997f52c8bfd9248117c",
+    "session_risk_summary_sha256": "380f2457a1c86ea1d5035419b34eb0698fb756d0f1462e541e5b88258ef7b7a1",
+    "original_local_summary_crlf_sha256": "77552430786f6ca2985e6926795a13a7e490efd44c7ea20628cb8f3653b0ce9d",
+    "derived_csv_transport_note": "published LF bytes differ from local CRLF pin; exact CRLF reconstruction verified; original source unchanged",
+    "metadata_review_sha256": "f6b85b02275f1c5237da6b4f475246c014da1bc3b9f63027dabbe87d74793f1a",
+    "qa_commit": "b9155170cb63e6a8f42976969379eb322f2f78da",
+    "metadata_commit": "4579f5512b150a440d0bd6ea3115a5032ec8d0f0"
+  },
+  "all_sessions": 560,
+  "selected_sessions": 261,
+  "selected_unique_dates": 261,
+  "selected_count_discrepancies": 0,
+  "all_thin_sessions": 153,
+  "selected_thin_sessions": 0,
+  "selected_min_rows": 778943,
+  "selected_max_jump_ticks": 389,
+  "extreme_jump_1419_membership": [
+    {
+      "contract": "MNQ_09-26",
+      "session_label": "2026-06-09",
+      "cohort": "NONSELECTED_WARMUP_CANDIDATE",
+      "rows": 23479
+    }
+  ],
+  "cohorts": [
+    {
+      "cohort": "OUTSIDE_DECLARED_READ_WINDOW",
+      "sessions": 133,
+      "thin_lt2500_sessions": 91,
+      "source_session_rows": 4629887,
+      "max_adjacent_jump_ticks": 867,
+      "within_session_gaps_gt60s": 25126,
+      "boundary_straddling_nominal_sessions": 0
+    },
+    {
+      "cohort": "NONSELECTED_WARMUP_CANDIDATE",
+      "sessions": 121,
+      "thin_lt2500_sessions": 43,
+      "source_session_rows": 10276004,
+      "max_adjacent_jump_ticks": 1419,
+      "within_session_gaps_gt60s": 24126,
+      "boundary_straddling_nominal_sessions": 2
+    },
+    {
+      "cohort": "SELECTED_EVENT_SESSION",
+      "sessions": 261,
+      "thin_lt2500_sessions": 0,
+      "source_session_rows": 460647378,
+      "max_adjacent_jump_ticks": 389,
+      "within_session_gaps_gt60s": 11,
+      "boundary_straddling_nominal_sessions": 12
+    },
+    {
+      "cohort": "NONSELECTED_EVENT_WINDOW_CANDIDATE",
+      "sessions": 45,
+      "thin_lt2500_sessions": 19,
+      "source_session_rows": 10043691,
+      "max_adjacent_jump_ticks": 150,
+      "within_session_gaps_gt60s": 21,
+      "boundary_straddling_nominal_sessions": 0
+    }
+  ],
+  "selected_sessions_by_contract": {
+    "MNQ_03-26": 57,
+    "MNQ_06-26": 57,
+    "MNQ_09-25": 29,
+    "MNQ_09-26": 46,
+    "MNQ_12-25": 62,
+    "MNQ_12-26": 10
+  },
+  "selected_same_timestamp_adjacent": 284120644,
+  "selected_rows": 460647378,
+  "selected_zero_duration_bar_fraction": null,
+  "interpretation": [
+    "full-file thin activity is not a selected-universe defect",
+    "1419tick jump is outside selected event sessions but is a potential warmup exposure",
+    "catalog selected dates are distinct; full-file cross-contract overlap cannot be applied to this population",
+    "matching totals do not prove intraday completeness or full source certification",
+    "catalog selection declared retrospective components; selected-universe analysis descriptive/exploratory, not automatic asof strategy",
+    "warmup/read-window cohorts use nominal session overlap; full source-session counts NOT ticks inside those windows",
+    "no computed missing-data rate: gaps can reflect inactivity; no10second gap deletion applied"
+  ],
+  "checks": [
+    "all261 identities/direct CSV counts independently matched",
+    "all153 thin-session keys disjoint from selected key set",
+    "no merge inflation or duplicate keys",
+    "all560 source-session categories exhaustive/disjoint"
+  ],
+  "comparison_plan": [
+    {
+      "grain": "source contract-session",
+      "unit": "count",
+      "finding": "zero of153 thin sessions belongs to261 selected sessions",
+      "disposition": "prose",
+      "reason": "single corrected scope claim"
+    },
+    {
+      "grain": "nominal warmup interval and source-session",
+      "unit": "candidate sessions",
+      "finding": "extreme jump can affect warmup despite not being an outcome session",
+      "disposition": "table",
+      "reason": "interval boundary caveat prevents claiming exact tick membership"
+    }
+  ]
+}
