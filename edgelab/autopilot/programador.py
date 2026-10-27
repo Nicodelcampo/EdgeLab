@@ -94,7 +94,8 @@ def cambios(wt: Path) -> list:
     return sorted({p for p in paths if p})
 
 
-SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Escribís código Python en el directorio actual (una worktree "
+SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Leé primero config/autopilot/DIRECTIVAS.md (directivas vigentes de Nico). "
+           "Escribís código Python en el directorio actual (una worktree "
            "descartable). Seguí docs/research/GUIA_GRILLA_MASIVA.md, docs/research_funnel_playbook.md y docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md "
            "(errores que no se repiten: leelo antes de escribir). Reglas fijas: el código nuevo de "
            "experimentos va en edgelab/research/agente/, sus kernels en tools/agente/, sus tests en tests/agente/ y su documentación en "
