@@ -1,0 +1,30 @@
+## U1-YM-GRILLA — edgelab.research.u1_cfd · señal DK:USA30IDXUSD · ejecución DK:USA30IDXUSD
+- Justificación: U1 es la familia más rentable medida (USATECH→NQ +17 a +28 pts/op de desarrollo; oro: 125 nominadas por FDR con INTEGRIDAD). Si el regreso a racimos de huecos LUX-IMB de un feed CFD de 24 h es microestructura general, debería aparecer en USA30IDXUSD con la escala ajustada a su volatilidad; 27 meses de descubrimiento dan potencia al tamiz.
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote; nominadas que no pasan INTEGRIDAD; o media neta <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4654306 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 325091 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 297857 (m del FDR 297857 de 4478976 celdas), FDR 737, RW umbral 5.2287917137146 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [1, 1, 1, 2, 2, 2, 2, 3, 1, 1, 4]: regla 64.98259459459378, placebo -23.45, latencia 1 vela 66.71171428571313 -> pasa
+- INTEGRIDAD [1, 1, 0, 1, 2, 2, 2, 3, 3, 1, 22]: regla 57.79629850746175, placebo 0.26, latencia 1 vela 55.785049180327576 -> pasa
+- INTEGRIDAD [1, 1, 0, 1, 2, 2, 2, 2, 3, 1, 4]: regla 55.19830303030354, placebo -5.53, latencia 1 vela 56.79412903225819 -> pasa
+- REINICIO 2026-10-25: las candidatas [[1, 1, 1, 2, 2, 2, 2, 3, 1, 1, 4], [1, 1, 0, 1, 2, 2, 2, 3, 3, 1, 22], [1, 1, 0, 1, 2, 2, 2, 2, 3, 1, 4]] no pueden confirmarse (frecuencia del DESC: < 30 operaciones esperadas en el OOS de 6 meses; en U1-ES dieron 6, 1 y 0). Se relanza el DESC con la regla nueva `seleccion.min_ops_oos` = 30 (target-free, sólo endurece). Lo que esas candidatas mostraron en INDAGA/INTEGRIDAD/OOS queda como descartado, no se usa.
+- Evaluables: 325091 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 297857 (m del FDR 297857 de 4478976 celdas), FDR 737, RW umbral 5.2287917137146 (diagnóstico), linaje 4654306 como informacion, pistas sin nominación 0, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [1, 0, 1, 1, 2, 1, 3, 3, 3, 0, 4]: regla 16.184325301204748, placebo -9.03, latencia 1 vela 17.388860927152262 -> pasa
+- INTEGRIDAD [0, 2, 0, 2, 2, 2, 0, 3, 3, 1, 16]: regla 2.9746036745405866, placebo -6.27, latencia 1 vela 1.2818412698410524 -> pasa
+- INTEGRIDAD [1, 1, 1, 1, 2, 1, 3, 3, 3, 0, 5]: regla 8.677392265193197, placebo -6.09, latencia 1 vela 6.780649006622498 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [12.69, 10.61, 7.93]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.4, 0.59, 0.33]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 0, 1, 1, 2, 1, 3, 3, 3, 0, 4], 'tope': ['pts', 150.0], 'puntaje': 3.7480324515993138, 'peor': -159.56200000000203}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 1, 1, 2, 1, 3, 3, 3, 0, 4] tope ['pts', 150.0]
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- ACTA ANULADA 2026-10-26 antes de mirar (potencia ≈ 0, error E8; decisión de Nico): vuelve a ACTA con la compuerta de potencia
+- ACTA registrada antes de mirar: primeras 450 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 1, 1, 2, 1, 3, 3, 3, 0, 4] tope ['pts', 150.0]; plan {'n_fijo': 450, 'n_necesario': 450, 'potencia': 0.8001205581260483, 'efecto': 12.685812499999798, 'fuente': 'OOS', 'nivel': 0.0011901877202097062}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 450: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- Decisión de Nico 2026-10-26: el diseño de U1-ES/U1-YM/U1-ZONAS-NQ no heredó la mirada exploratoria de U1-CRUZADO (1–22 oct, consumida por AREAS_EXP_1_CRUZADO); holdout.desde pasa de 20261023 a la frontera 20261001. Nada del holdout se había contado. Acta anulada y re-planificada.
+- ACTA registrada antes de mirar: primeras 450 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00189); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 1, 1, 2, 1, 3, 3, 3, 0, 4] tope ['pts', 150.0]; plan {'n_fijo': 450, 'n_necesario': 450, 'potencia': 0.8001205581260483, 'efecto': 12.685812499999798, 'fuente': 'OOS', 'nivel': 0.0011901877202097062}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 450: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
