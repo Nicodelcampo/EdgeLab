@@ -16,3 +16,4 @@
 - TOPES: elegida {'celda': [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4], 'tope': ['mult', 2.0], 'puntaje': 3.703689313632251, 'peor': -78.2955}
 - ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4] tope ['mult', 2.0]; plan {'n_fijo': 150, 'n_necesario': 59, 'potencia': 0.9984665726283775, 'efecto': 10.710583333333336, 'fuente': 'fracción del DESC', 'nivel': 0.003607974489558189}
 - AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
+- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
