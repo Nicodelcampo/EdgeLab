@@ -70,3 +70,15 @@ def test_calentamiento_desde_eval_no_cuenta_disparos_ni_operaciones():
                                 niveles=lambda r, ej, c: (int(r["k"]), 0, 1, float(c["c"][int(r["k"])]), float(c["c"][int(r["k"])]) - 1.0, float(c["c"][int(r["k"])]) + 1.0, 0))
     res = ET.ejecutar("HOLDOUT_CONTEO", exp, cx, friccion=0.0, extra_adverso=0.0, params=dict(celdas=[[0]], cortes={}))
     assert res["conteo"] == [2]
+
+
+def test_confirmar_en_canasta_regimen_dentro_y_fuera_de_banda():
+    from edgelab.funnel.escalera import confirmar_en_canasta_regimen
+    # Con mu_esperada=10, sd_op_ref=20 y n=4 -> se_n = 10, banda 90% = [-6.45, +26.45]
+    ok = confirmar_en_canasta_regimen([5.0, -2.0, 12.0, 1.0], mu_esperada=10.0, sd_op_ref=20.0)
+    assert ok["confirmada_canasta"] is True and ok["dentro_desviacion"] is True and ok["estado"] == "CONFIRMADA_CANASTA"
+    mal = confirmar_en_canasta_regimen([-15.0, -20.0, -10.0, -12.0], mu_esperada=10.0, sd_op_ref=20.0)
+    assert mal["confirmada_canasta"] is False and mal["dentro_desviacion"] is False and mal["estado"] == "FUERA_DE_BANDA_INFERIOR"
+    vacio = confirmar_en_canasta_regimen([], mu_esperada=10.0, sd_op_ref=20.0)
+    assert vacio["confirmada_canasta"] is False and vacio["estado"] == "SIN_OPERACIONES_AUN"
+

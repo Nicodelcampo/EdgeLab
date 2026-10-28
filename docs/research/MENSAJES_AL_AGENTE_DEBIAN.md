@@ -3,6 +3,60 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-28 (00:48 UTC) — de Nico (redactado por la sesión en la nube): frontera global del holdout desde el 30-sep (2026-10-01), evaluación de canasta de régimen en ventana corta, activos faltantes en el holdout y links/propuestas sobre griegas (0DTE / Gamma / Vanna / Charm)
+
+### A. Directiva global de Nico sobre el Holdout (para todos los agentes, activos y campañas)
+1. **El holdout empieza el 30 de septiembre (apertura `2026-09-30 22:00 UTC` = sesión CME `20261001`) para TODOS los agentes, TODOS los activos y TODO el proyecto:**
+   - **No usar `holdout.desde = 20261023` en campañas que no consumieron octubre.** Las campañas cuyo `DESC` (`20250801..20260331`) y `OOS` (`20260401..20260930`) cerraron el **30 de septiembre de 2026** (`U1-ZONAS-ES`, `U1-ZONAS-AVCL-ES`, `U1-ZONAS-AVCL-NQ`, `U1-ZONAS-BT2-ES`, `U1-ZONAS-BT2-NQ`, `U1-ZONAS-BT2-YM`, `U1-ZONAS-GRILLA-YM`, `U1-RACIMOS-GRILLA-ES`, `U1-RACIMOS-GRILLA-NQ`, `U1-RACIMOS-GRILLA-YM`, `U1-ORO-GRILLA`) deben tener **`holdout.desde = 20261001`**, no `20261023`. Ponerles `20261023` desperdició 3 semanas enteras de octubre (`2026-10-01..2026-10-22`) que nunca fueron tocadas por esas familias.
+   - Si en `HOLDOUT_VENTANAS.jsonl` una apertura fue registrada con `desde: 20261023` antes de mirar P&L (como ya se hizo el 26-oct con `U1-ES-GRILLA`, `U1-YM-GRILLA` y `U1-ZONAS-NQ`), corresponde anular y re-registrar con `desde: 20261001` antes de evaluar P&L.
+2. **Cambio conceptual clave (canasta de estrategias de régimen vs. esperar `n_fijo = 150..450` durante años):**
+   - **Criterio de Nico:** Si estas estrategias tienen edge real, probablemente sea un **edge de régimen**. Con una frecuencia de ~4 a 10 operaciones por mes por celda, exigir `n_fijo = 150..450` antes de confirmarlas implica esperar **1.5 a 4 años**, para cuando el régimen actual probablemente ya haya terminado.
+   - **La idea de una canasta de estrategias de régimen** es que el riesgo se diversifica en la canasta justamente porque **no las probamos individualmente con un holdout de alta potencia a años vista**.
+   - **Regla de confirmación para la canasta en periodo reducido de holdout:** estimar la distribución/desviación esperada del rendimiento de cada estrategia en la ventana corta disponible del holdout (desde el `2026-10-01` hasta hoy) a partir de su media y desvío (`se`) en desarrollo/OOS; **si el rendimiento observado en el período reducido de holdout está dentro de la desviación esperada (no cae por debajo de la banda inferior esperada para ese `n` reducido y mantiene consistencia con el régimen), puede ser confirmada para añadirse a la canasta**.
+3. **Datos de activos que faltan descargar/sellar en `nicolasbuttaro/edgelab-holdout-sellado` (`v2`):**
+   - **Lo que YA está en `edgelab-holdout-sellado` `v2`:**
+     - Futuros CME (`2026-10-01` al `2026-10-27` parcial): `ES_12-26_ticks.parquet` (17 sesiones; faltan en servidor NT8 `2/7/8-oct`) y `NQ_12-26_ticks.parquet` (19 sesiones; falta `7-oct`).
+     - Spots Dukascopy (`2026-10-01` al `2026-10-25`, 21 días): `USATECHIDXUSD`, `USA500IDXUSD`, `USA30IDXUSD`, `XAUUSD`, `EURUSD`, `GBPUSD`, `USDJPY`.
+   - **Lo que FALTA descargar/subir al dataset sellado:**
+     1. **Futuros CME usados como `sensor` o `ejecucion` en campañas activas:**
+        - **`GC` (`GC_12-26_ticks.parquet`)**: bloquea la ejecución de `U1-ORO-GRILLA` (`sensor=DK:XAUUSD`, `ejecucion=GC`).
+        - **`YM` (`YM_12-26_ticks.parquet`)**: necesario para las campañas en `YM` futuro (`U1-RACIMOS-GRILLA-YM`, `U1-ZONAS-BT2-YM`, `U1-ZONAS-GRILLA-YM`, y ejecución cruzada de `U1-YM-GRILLA`).
+        - **`6E` y `6B` (`6E_12-26_ticks.parquet`, `6B_12-26_ticks.parquet`)**: necesarios para `U1-6E-FUT-GRILLA`, `U1-6B-FUT-GRILLA` y ejecuciones cruzadas de `U1-6E-*` / `U1-6B-*`.
+     2. **Actualización de los 7 spots de Dukascopy (`2026-10-26` en adelante):** hoy cortan en `2026-10-25`.
+
+---
+
+### B. Material de referencia (5 documentos de la serie «Las griegas que mueven tu futuro») y propuestas para implementar en EdgeLab
+
+Nico compartió estos 5 documentos para evaluar qué conceptos vale la pena, son posibles y tenemos recursos para sumar a EdgeLab:
+- **Doc 1 (Cap. 6 — Las 0DTE):** https://docs.google.com/document/u/0/d/1t6rBaJtqRx6nm3tk1i0fyLctTx3uTxx8/mobilebasic
+  - *Paper citado:* Adams, Dim, Eraker, Fontaine, Ornthanalai & Vilkov (2026), *"Do S&P 500 Options Increase Market Volatility? Evidence from 0DTEs"*.
+  - *Mecanismo:* Los market makers están largos de gamma en 0DTE en el 88% de los tramos de 10 min; su cobertura con futuros `ES` va contra el movimiento (compran caídas y venden subidas), reduciendo la volatilidad intradía y haciendo que **los desequilibrios de órdenes en el E-mini reviertan durante ~30 minutos**. Con gamma neta baja, reaparece el momentum.
+- **Doc 2 (Cap. 2 — El Delta):** https://docs.google.com/document/u/0/d/1PL8yCyAhbRWMfojgiR1_IpSoI-dHAeAG/mobilebasic
+  - *Papers citados:* Gârleanu, Pedersen & Poteshman (2009, *RFS*); Ni, Pearson, Poteshman & White (2021, *RFS*); Baltussen, Da, Lammers & Martens (2021, *JFE*).
+  - *Mecanismo:* El rebalanceo mecánico de delta de los dealers mete órdenes de futuros no informativas en el libro del `ES` que luego tienden a revertir si el flujo fue puramente mecánico.
+- **Doc 3 (Cap. 5 — El Charm / OPEX):** https://docs.google.com/document/u/0/d/11MkXaNlbKzTfW2wWjK204VltOgxHcvC7/mobilebasic
+  - *Paper citado:* Golez & Jackwerth (2012, *JFE*), *"Pinning in the S&P 500 futures"*.
+  - *Mecanismo:* A medida que pasa el día (especialmente cerca de vencimientos / última hora de días tranquilos), el delta de las puts OTM decae hacia cero (*charm*), sobrando cobertura corta de futuros que los dealers recompran mecánicamente hacia el cierre (*drift* de última hora y *pinning* en días de OPEX).
+- **Doc 4 (Cap. 4 — La Vanna y los anuncios macro):** https://docs.google.com/document/u/0/d/1dEIrfTtnLs3jm1GIQ7oFLnAypHGDhhET/mobilebasic
+  - *Papers citados:* Savor & Wilson (2013, *JFQA*); Ederington & Lee (1996, *JFQA*).
+  - *Mecanismo:* Antes de un anuncio macro programado (`CPI`, `NFP`, `FOMC`, `PPI`), la volatilidad implícita (IV) está inflada. Apenas sale el dato, la incertidumbre se resuelve y la IV cae (*IV crush*), encogiendo el delta de las puts OTM y obligando a los dealers a **recomprar futuros mecánicamente después del dato** (más del 60% de la prima de riesgo anual se gana en días de anuncio macro).
+- **Doc 5 (Cap. 3 — El Gamma y el Gamma Flip):** https://docs.google.com/document/u/0/d/1Hx9AlGuppagwxY0RRG_pNJC2Fn-YkL7F/mobilebasic
+  - *Papers citados:* Barbon & Buraschi (2020), *"Gamma Fragility"*; Baltussen et al. (2021, *JFE*).
+  - *Mecanismo:* Gamma positivo = terreno en forma de valle (reversión a la media, falsas rupturas); Gamma negativo = terreno en forma de colina (las rupturas se amplifican, stops en cadena).
+
+#### Propuestas concretas para que investigues e implementes con los recursos que YA tenemos en el repo:
+1. **Propuesta 1 — Cruce/Filtro de Régimen GEX (`SqueezeMetrics`) sobre nuestras grillas de reversión `U1-*` (Docs 1, 2 y 5):**
+   - *Recursos ya disponibles:* En `GEX-1` y `GEX-1b` (`docs/research/GEX_FUENTES_Y_EVIDENCIA_20261006.md` y `docs/research/GEX1B_RESULTADO_20261005.md`) ya verificamos con `Holm <= 0.022` sobre `SqueezeMetrics` (`2011–2026`, 100% causal con el OI del cierre previo) que con menor GEX ex-ante suben la amplitud (`I1a`), la volatilidad realizada (`I1b`) y la autocorrelación (`ac1`).
+   - *Qué implementar:* Todas nuestras reglas `U1-*` son reversiones tras un impulso/barrido (el mecanismo de absorción de gamma positiva del Doc 1 y Doc 5). Agregá en `edgelab/research/analizador.py` (y como eje/filtro opcional en `grilla_generica`) la partición por el régimen de GEX ex-ante (p. ej. quintil inferior de GEX o GEX < 0 vs. GEX positivo) para verificar si los drawdowns de `U1-ES-GRILLA`, `U1-ZONAS-ES/NQ` y `U1-RACIMOS-GRILLA-ES/NQ` se concentran en días de gamma baja/negativa donde domina el momentum.
+2. **Propuesta 2 — Familia / Estudio de Flujo Post-Macro por Vanna (`t + 10..90 min` tras `CPI`, `NFP`, `FOMC`, `PPI`) (Doc 4):**
+   - *Recursos ya disponibles:* Ya tenemos `edgelab/research/eventos_datos.py` y `edgelab/research/eventos.py` con más de 700 timestamps exactos al segundo de anuncios `tier1`/`tier2` (`2023–2026`) y los ticks completos de `ES`, `NQ` y CFDs. Hoy sólo usamos `EVENTOS` para excluir (`EXCLUIR_EVENTOS`).
+   - *Qué implementar:* Diseñar una familia pre-registrada que mida y opere la ventana **posterior** al anuncio (entrando `10 a 15 minutos después` del release, cuando ya pasó la ventana de `±1..2 min` prohibida por las prop firms y empieza el desarme mecánico de coberturas por *IV crush*), evaluando primero información *target-free* (asimetría de drift / absorción del latigazo inicial en los 60–90 min posteriores al dato) y luego el embudo.
+3. **Propuesta 3 — Ventana RTH y horizonte de reversión de ~30 min por absorción 0DTE (Doc 1) y Drift de última hora / OPEX por Charm (Doc 3):**
+   - *Recursos ya disponibles:* Módulos `edgelab/research/lux_imb.py`, `edgelab/research/u1_oro.py` y calendario de tercer viernes / fin de día RTH (`15:00–16:00 ET`).
+   - *Qué implementar:* Testear en las familias de desequilibrio/absorción (`LUXIMB` / `U1`) la restricción al horario activo de 0DTE (`09:30–15:30 ET`) con salida temporal acotada a la ventana de reversión documentada por Adams et al. (~15 a 30 min), y medir en estudio separado el *drift* de desarme de coberturas en la última hora RTH (`15:00–16:00 ET`) en sesiones tranquilas vs. días de vencimiento.
+   - *(Nota de alcance: descartar por ahora backtests que requieran cadena histórica intradía de strikes/walls antes de jul-2026 porque no hay fuente gratuita causal, y no repetir la prueba `I2n`/`I2d` de Baltussen aislada que ya dio nula en `GEX-1b`).*
+
 ## 2026-10-27 (23:55 UTC) — de Nico: `edgelab-holdout-sellado` v2 subido (ES + NQ hasta 26-oct), fixes de `HOLDOUT_CONTEO` (escala 202609, zonas selladas, calentamiento y slug <=49) y las 8 campañas lanzadas en Kaggle
 
 1. **Holdout sellado v2 publicado en Kaggle (`nicolasbuttaro/edgelab-holdout-sellado`, v2):**
