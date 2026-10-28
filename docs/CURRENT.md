@@ -1,14 +1,24 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-26  
+**Fecha:** 2026-10-27  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-26  
+**Corte:** 2026-10-27  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+
+## Estado al 2026-10-28 (leer primero)
+
+- **Mandato del autopilot confirmado por Nico** (`config/autopilot/mandate.json`, commit `95c06808`; protegidos OK).
+- **Holdout:** frontera única desde la sesión del 2026-10-01 (30-sep 22:00 UTC); dataset sellado v2 y 8 conteos del holdout completados
+  en Kaggle (commits `2cf7af67`, `c4395bc9`). El CONTEO ya no rompe con 0 disparos (O13 + PR #151).
+- **Agente del Debian:** directivas vigentes en `config/autopilot/DIRECTIVAS.md` (entran en el contexto de cada rol); pedido de 8 corridas
+  en paralelo repartidas entre las dos cuentas de Kaggle (`docs/research/MENSAJES_AL_AGENTE_DEBIAN.md`).
+- **Pendiente de datos:** ES 12-26 y NQ 12-26 completos en el holdout sellado (export de NT8).
+- **Edges promovidos: 0.**
 
 ## Estado al 2026-10-27 (leer primero)
 
