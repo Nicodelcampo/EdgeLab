@@ -158,7 +158,7 @@ def resolver(nombre: str):
 FUENTES = {"NQ": (bloques_nq, 0.25, 1.5455, 0.5), "USATECH": (bloques_usatech, 0.01, 1.5455, 0.5)}   # tests/research/test_fuentes_ticks.py: = edgelab.costos
 
 
-def bloques_nq_sellado(desde, hasta, ruta, acta):
+def bloques_nq_sellado(desde, hasta, ruta, acta, tick: float = 0.25):
     """Ticks del HOLDOUT (sesiones >= 2026-10-01) desde la carpeta sellada local. Sólo para una apertura registrada: exige la
     ruta de un acta de apertura committeada ANTES de correr y no entrega nada anterior a la frontera (no mezcla desarrollo).
     No está en FUENTES a propósito: nunca se usa por accidente."""
@@ -171,7 +171,7 @@ def bloques_nq_sellado(desde, hasta, ruta, acta):
     contratos = {c: i for i, c in enumerate(sorted(t.contract.unique()))}
     for td, g in t.groupby("trade_date", sort=True):
         g = g.sort_values("ts_utc_ns", kind="stable")
-        yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * 0.25, vol=g.volume.to_numpy(float),
+        yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * float(tick), vol=g.volume.to_numpy(float),
                                 sesion=np.full(len(g), int(td), np.int64), segmento=g.contract.map(contratos).to_numpy(np.int64)))
 
 

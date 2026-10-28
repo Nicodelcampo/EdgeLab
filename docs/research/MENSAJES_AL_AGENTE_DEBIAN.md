@@ -3,17 +3,21 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
-## 2026-10-27 (23:20 UTC) — de Nico: `edgelab-holdout-sellado` v2 subido (ES + NQ hasta 26-oct) y fix de slug >49 chars (`U1-RACIMOS-GRILLA-*`)
+## 2026-10-27 (23:55 UTC) — de Nico: `edgelab-holdout-sellado` v2 subido (ES + NQ hasta 26-oct), fixes de `HOLDOUT_CONTEO` (escala 202609, zonas selladas, calentamiento y slug <=49) y las 8 campañas lanzadas en Kaggle
 
 1. **Holdout sellado v2 publicado en Kaggle (`nicolasbuttaro/edgelab-holdout-sellado`, v2):**
    - Ya incluye **`ES_12-26_ticks.parquet`** y **`NQ_12-26_ticks.parquet`** actualizados hasta el **2026-10-26** (además de los 7 spots de Dukascopy). La cuenta `nicobuttaro` ya tiene permiso `View` sobre `v2`.
-   - Con esto, **`U1-ZONAS-ES`** ya tiene ticks sellados de `ES` futuro y **`U1-ZONAS-AVCL-NQ` / `U1-ZONAS-BT2-NQ`** tienen sesiones `>= 2026-10-23`. *(Sólo `U1-ORO-GRILLA` sigue esperando ticks sellados de `GC` futuro).*
-2. **Por qué `U1-RACIMOS-GRILLA-ES` y `U1-RACIMOS-GRILLA-NQ` no despegaban en `CONTEO` (arreglado en este commit):**
-   - Sus slugs `embudo-u1-racimos-grilla-{es,nq}-holdout-conteo-20261023` medían **51 caracteres** (y `AN_ANALIZAR_REGLA` medía 50–54 en 9 campañas), por lo que `validate_push` en `tools/kaggle_kernel.py` (`<= 49` chars) los rechazaba en cada ciclo después de escribir el manifiesto en `autopilot_runs/launches/`.
-   - `KaggleRunner.argumentos` ahora recorta la parte del nombre del kernel a `[:49].rstrip("-")`.
+   - Con esto, **`U1-ZONAS-ES`** ya tiene ticks sellados de `ES` futuro y **`U1-ZONAS-AVCL-NQ` / `U1-ZONAS-BT2-NQ` / `U1-RACIMOS-GRILLA-ES` / `U1-RACIMOS-GRILLA-NQ`** tienen sesiones `>= 2026-10-23`. *(Sólo `U1-ORO-GRILLA` sigue esperando ticks sellados de `GC` futuro).*
+2. **Cuatro bugs de `HOLDOUT_CONTEO` corregidos y probados en este commit:**
+   - **Slug >49 chars (`U1-RACIMOS-GRILLA-ES/NQ` y `AN_ANALIZAR_REGLA`):** `KaggleRunner.argumentos` recortaba a `<=50` pero `validate_push` exige `<=49`; ahora recorta a `[:49].rstrip("-")`.
+   - **Escala causal de `202610` en `u1_oro.escala_por_mes`:** cuando la ventana arranca en `202610` (único mes del dataset sellado), `r.shift(1)` dejaba `202610` en `NaN` y todas las campañas `U1-*` daban `0` disparos en todo octubre. Ahora `u1_oro.py` fija `RANGO_M1_202609` (medido sobre los minutos activos de septiembre 2026 en desarrollo) y escala `202610` causalmente con `RANGO_M1_202609[sensor] / r_ref`.
+   - **Zonas en `SELLADO=1` (`u1_zonas.py` y `u1_racimos_grilla.py`):** en el holdout sólo se monta `edgelab-holdout-sellado` (ticks crudos, sin `ZONAS_*.parquet`, lo que rompía `U1-ZONAS-NQ` con `FileNotFoundError`). Cuando `SELLADO=1` y no hay parquet de zonas, `u1_zonas` y `u1_racimos_grilla` calculan las zonas (`AVZP2`, `AVCL`, `BT2`, `AVZRG`) sobre las sesiones selladas `20261001..HASTA`.
+   - **Calentamiento causal `20261001..desde-1` (`embudo_main.py` y `grilla_generica.correr`):** para campañas con `desde > 20261001` (`20261023`), el contexto se arma desde `20261001` para calentar el umbral de 20 bloques de `AVZP2`/`AVCL`, los racimos de `AVZRG` y `base_rate` de `u1_indaga`, y `grilla_generica.correr` filtra `D = D[D.ses >= ctx["desde_eval"]]` antes de `resumen_e0` y `simular_ops` para que el calentamiento nunca cuente disparos ni operaciones.
 3. **Acción inmediata en `SV1`:**
-   - Ejecutá `update.sh` a la punta de `foundation/f0b-compatibility-probe` (trae también `95c06808` con el mandato confirmado por Nico, `7335aee0` con `max_concurrent: 8` y `4e975fcb` con el fix de `resumen_e0` para 0 disparos sin columnas).
-   - Reabrí a `CONTEO` (`fallas: 0`, `handle: null`): **`U1-ZONAS-ES`**, **`U1-ES-GRILLA`**, **`U1-YM-GRILLA`** y **`U1-ZONAS-NQ`**, y verificá en el siguiente tick que `U1-RACIMOS-GRILLA-ES` y `U1-RACIMOS-GRILLA-NQ` pasen a `CONTEO CORRIENDO`.
+   - Ejecutá `update.sh` a la punta de `foundation/f0b-compatibility-probe`.
+   - Reabrí a `CONTEO` (`fallas: 0`, `handle: null`, `ultimo_conteo: null`): **`U1-ZONAS-ES`**, **`U1-ES-GRILLA`**, **`U1-YM-GRILLA`** y **`U1-ZONAS-NQ`**.
+   - Poné **`"ultimo_conteo": null`** en **`U1-ZONAS-AVCL-NQ`** y **`U1-ZONAS-BT2-NQ`** (habían guardado `conteo: 0` hoy a las 03:27 UTC contra `v1` cuando no existían sesiones `>= 2026-10-23`, por lo que `embudo.paso` esperaba `intervalo_conteo_dias = 7` días antes de relanzarlas).
+   - Las 8 corridas de `HOLDOUT_CONTEO` ya fueron lanzadas en Kaggle desde la sesión de Nico con el código nuevo; al dejar `ultimo_conteo: null` / `fase: CORRIENDO` con su handle (o `PENDIENTE`), SV1 tomará los conteos reales.
 
 ## 2026-10-27 (18:40 UTC) — de Nico (redactado por la sesión en la nube): más corridas en paralelo con las dos cuentas
 

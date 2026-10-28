@@ -20,7 +20,8 @@ class _ExpSinDisparos:
 
 def _ctx(n=500):
     c = 20000 + np.cumsum(np.ones(n) * 0.25)
-    return dict(t=np.arange(n) * 60.0, c=c, h=c + 0.25, l=c - 0.25, o=c, ses=np.arange(n) // 100, tick=0.25)
+    return dict(t=np.arange(n) * 60.0, c=c, h=c + 0.25, l=c - 0.25, o=c, ses=np.arange(n) // 100, tick=0.25,
+                tpx=np.zeros(0), tstart=np.zeros(n + 1, np.int64))
 
 
 def test_correr_con_cero_disparos_no_rompe():
@@ -50,3 +51,22 @@ def test_correr_con_cero_disparos_sin_k_ni_columnas():
     exp = types.SimpleNamespace(NOMBRE="X", VARIABLES=[GG.Variable("r", "r_vol", "grupo")], disparos=lambda c: pd.DataFrame(columns=["m"]))
     res, D = GG.correr(exp, {"ses": [1, 2]}, modo="REP", friccion=0.0, extra_adverso=0.0, cortes={}, celdas=[[0]], log=lambda *a: None)
     assert res["E0"]["disparos"] == 0 and len(D) == 0
+
+
+def test_u1_oro_escala_octubre_holdout_usa_septiembre_causal():
+    from edgelab.research import u1_oro as UO
+    t0 = int(pd.Timestamp("2026-10-05 14:30", tz="UTC").timestamp())
+    ctx = dict(t=np.array([t0, t0 + 60]), h=np.array([10.0, 10.0]), l=np.array([8.0, 8.0]), sensor="NQ")
+    _, f = UO.escala_por_mes(ctx, 6.25)
+    assert np.isclose(f[202610], UO.RANGO_M1_202609["NQ"] / 6.25)
+
+
+def test_calentamiento_desde_eval_no_cuenta_disparos_ni_operaciones():
+    import types
+    cx = _ctx(300); cx["ses"] = np.array([20261001] * 100 + [20261023] * 100 + [20261026] * 100)
+    cx["desde_eval"] = 20261023
+    exp = types.SimpleNamespace(NOMBRE="CAL", VARIABLES=[], EJECUCIONES=[(1,)],
+                                disparos=lambda c: pd.DataFrame(dict(k=[50, 150, 250])),
+                                niveles=lambda r, ej, c: (int(r["k"]), 0, 1, float(c["c"][int(r["k"])]), float(c["c"][int(r["k"])]) - 1.0, float(c["c"][int(r["k"])]) + 1.0, 0))
+    res = ET.ejecutar("HOLDOUT_CONTEO", exp, cx, friccion=0.0, extra_adverso=0.0, params=dict(celdas=[[0]], cortes={}))
+    assert res["conteo"] == [2]

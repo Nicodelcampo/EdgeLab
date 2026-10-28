@@ -55,7 +55,7 @@ def main():
         from edgelab.funnel.multiplicity import TrialRegistry
         reg = TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"); hs = json.loads(hf.read_text()) if hf.exists() else {}
         for p in plan(a.raiz_glob):
-            if p["cid"] in hs: continue
+            if p["cid"] in hs and run.estado(hs[p["cid"]]["handle"]) != "error": continue
             reg.ensure(f"analizador_embudo/{p['cid']}/{p['periodo'][0]}-{p['periodo'][1]}", p["spec"]["familia"], len(p["celdas"]),
                        f"analizador de celdas ya miradas de {p['cid']} (exploratorio, desarrollo completo)")
             cuentas = run.cuentas(); spec = dict(p["spec"], cid=p["cid"] + "-AN")
