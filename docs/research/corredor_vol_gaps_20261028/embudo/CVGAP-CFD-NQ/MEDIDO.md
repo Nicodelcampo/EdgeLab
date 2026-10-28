@@ -1,0 +1,18 @@
+## CVGAP-CFD-NQ — edgelab.research.corredor_vol_gaps · señal DK:USATECHIDXUSD · ejecución NQ
+- Justificación: Señal de EmaCorridorTrendVolW2 + ZONAS-GAPS medida sobre el CFD Dukascopy USATECHIDXUSD (50T/M1) y ejecutada en el futuro NQ con traslación causal de base al cierre M1: evalúa si la ruptura de la Caja Amarilla en dirección del impulso + excursión + regreso y puntaje de gaps en el CFD anticipa la reversión hacia el 50%, 25% o 100% del impulso en NQ.
+- Refutación: Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5626417 pruebas de ['ZONAS_GAPS', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/g2.py', 'edgelab/research/sim.py', 'edgelab/bridge/identity.py', 'edgelab/research/costs.py', 'edgelab/research/holdout_guard.py', 'edgelab/regimes/state.py']); revisar si el cambio toca la medición
+- Evaluables: 113636 de 1866240 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 71792 (m del FDR 71792 de 933120 celdas), FDR 80, RW umbral 4.310027122497559 (diagnóstico), linaje 5626417 como informacion, pistas sin nominación 0, candidatas 3
+- Potencia prevista (informativa): [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10]: OOS n 83.2 potencia 0.48, holdout n 150 potencia 0.69; [0, 1, 0, 0, 2, 2, 2, 1, 2, 0, 4]: OOS n 83.2 potencia 0.46, holdout n 150 potencia 0.67; [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10]: OOS n 92.0 potencia 0.92, holdout n 150 potencia 0.99; [0, 1, 0, 0, 2, 2, 2, 1, 2, 0, 4]: OOS n 92.0 potencia 0.91, holdout n 150 potencia 0.99; [0, 1, 1, 0, 2, 2, 3, 1, 2, 0, 2]: OOS n 62.0 potencia 0.95, holdout n 150 potencia 1.00
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10]: regla 17.55810360360361, placebo -2.16, latencia 1 vela 16.4499954954955 -> pasa
+- INTEGRIDAD [0, 1, 0, 0, 2, 2, 2, 1, 2, 0, 4]: regla 17.193238738738742, placebo -2.15, latencia 1 vela 16.393689189189192 -> pasa
+- INTEGRIDAD [0, 1, 1, 0, 2, 2, 3, 1, 2, 0, 2]: regla 13.270073770491807, placebo -1.57, latencia 1 vela 12.24958196721312 -> pasa
+- OOS [20260401, 20260925] (régimen actual): medias [10.5, 10.5, 7.41]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.3, 0.29, 0.6]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10], 'tope': ['pts', 50.0], 'puntaje': 11.321366890840883, 'peor': -74.7955}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10] tope ['pts', 50.0]

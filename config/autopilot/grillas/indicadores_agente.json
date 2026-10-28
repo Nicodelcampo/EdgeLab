@@ -8,6 +8,15 @@
    "test_causal": "tests/research/test_zonas_gaps.py::test_causal",
    "doc": "docs/research/zonas_gaps_20261025/SPEC_ZONAS_GAPS.md",
    "nota": "Gaps puros |O[i]-C[i-1]| >= MinGapTicks y vacíos sin rellenar en 50T y M1, memoria hasta mitigación con AwayDistanceTicks y opacidad por toque, y clusters compactos multi-zona"
+  },
+  {
+   "id": "EmaCorridorTrendVolW2",
+   "modulo": "edgelab/research/corredor_vol_gaps.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Port causal de EmaCorridorTrendVolW2.cs (4 pilares EMA 20/60, sector adelantado W1=100%/W2=200%, caja amarilla P80/P90, anclas POC/VA, MID50/MID25/ORIG100) + cruce con ZONAS-GAPS y prueba de causalidad en tests/research/test_corredor_vol_gaps.py::test_causal",
+   "test_causal": "tests/research/test_corredor_vol_gaps.py::test_causal",
+   "doc": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
+   "nota": "Corredor estable de EMAs (20/60) en 50T y M1 con sector adelantado (TailPct=25%, BeyondPct=25%, ForwardWidthPct 100%/200%), rectángulo amarillo por percentil P80/P90 de volumen, ruptura en dirección del impulso + excursión + regreso y puntaje continuo de gaps"
   }
  ]
 }

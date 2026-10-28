@@ -7,3 +7,8 @@
 - Evaluables: 1635 de 7776 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250801, 20260331]: evaluables 932 (m del FDR 932 de 3888 celdas), FDR 0, RW umbral 3.2698702812194824 (diagnóstico), linaje 4979433 como informacion, pistas sin nominación 36, candidatas 1
 - Potencia prevista (informativa): [0, 2, 0, 29, 1]: OOS n 72.0 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 2, 0, 29, 1]: regla 12.781333333333334, placebo -5.90, latencia 1 vela 17.096936170212764 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [3.65]; veredictos ['NO_CONCLUYENTE']; potencias [0.22]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)

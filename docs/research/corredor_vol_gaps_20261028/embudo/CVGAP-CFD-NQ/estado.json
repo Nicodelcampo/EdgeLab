@@ -1,0 +1,3241 @@
+{
+ "etapa": "CONTEO",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793200986.0815852,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793206560.0,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     0,
+     2
+    ]
+   ]
+  },
+  {
+   "ts": 1793226671.1710708,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793227940.2863238,
+   "etapa": "INTEGRIDAD",
+   "fin": true,
+   "handle": "nicolasbuttaro/embudo-cvgap-cfd-nq-rep-20260401"
+  },
+  {
+   "ts": 1793228941.5791235,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793229824.8126662,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793229867.069676,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793229867.0845184,
+   "etapa": "ACTA",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "CVGAP-CFD-NQ",
+  "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260925
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 933120,
+  "spec": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
+  "justificacion_economica": "Señal de EmaCorridorTrendVolW2 + ZONAS-GAPS medida sobre el CFD Dukascopy USATECHIDXUSD (50T/M1) y ejecutada en el futuro NQ con traslación causal de base al cierre M1: evalúa si la ruptura de la Caja Amarilla en dirección del impulso + excursión + regreso y puntaje de gaps en el CFD anticipa la reversión hacia el 50%, 25% o 100% del impulso en NQ.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-23 (HOLDOUT_VENTANAS.jsonl).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "cuenta_kaggle": "nicobuttaro"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260925
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-23 (HOLDOUT_VENTANAS.jsonl).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "CORREDOR_VOL_GAPS_NQ",
+   "declarada": true,
+   "padres": [
+    "ZONAS_GAPS",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5626417,
+   "n_heredado": 5626417,
+   "total": 5626417,
+   "justificacion": "acopla EmaCorridorTrendVolW2 con el detector y ciclo de vida de ZONAS_GAPS sobre NQ y USATECH->NQ tras mirar réplica OOS de ZGAP-NQ; declarado antes de abrir holdout (SPEC_CORREDOR_VOL_GAPS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793200986.0815852,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "tamano_impulso": [
+    4.487051893977994,
+    7.449342465570724
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    0,
+    0,
+    2,
+    3,
+    2,
+    1,
+    2,
+    0,
+    10
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    4
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    2,
+    0,
+    2
+   ]
+  ],
+  "topes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793228943.7812958,
+ "codigo_cambiado": [
+  {
+   "etapa": "DESC",
+   "modulos": [
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/grilla_masiva.py",
+    "edgelab/funnel/escalera.py",
+    "edgelab/research/g2.py",
+    "edgelab/research/sim.py",
+    "edgelab/bridge/identity.py",
+    "edgelab/research/costs.py",
+    "edgelab/research/holdout_guard.py",
+    "edgelab/regimes/state.py"
+   ]
+  },
+  {
+   "etapa": "INDAGA",
+   "modulos": [
+    "edgelab/funnel/escalera.py"
+   ]
+  }
+ ],
+ "cortes": {
+  "tamano_impulso": [
+   4.487051893977994,
+   7.449342465570724
+  ]
+ },
+ "candidatas": [
+  [
+   0,
+   1,
+   0,
+   0,
+   2,
+   3,
+   2,
+   1,
+   2,
+   0,
+   10
+  ],
+  [
+   0,
+   1,
+   0,
+   0,
+   2,
+   2,
+   2,
+   1,
+   2,
+   0,
+   4
+  ],
+  [
+   0,
+   1,
+   1,
+   0,
+   2,
+   2,
+   3,
+   1,
+   2,
+   0,
+   2
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    "n": 111,
+    "media_neta": 17.55810360360361,
+    "sesiones": 81,
+    "ic90": [
+     9.776472043443281,
+     25.50606987093903
+    ],
+    "p_sesiones": 0.0009995002498750624,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 33.81,
+    "pasa": true,
+    "n_pruebas": 71792.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.5811665058135986,
+    "canal": "total",
+    "q_fdr": 0.1269068910898508,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 71792,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    "n": 111,
+    "media_neta": 17.193238738738742,
+    "sesiones": 81,
+    "ic90": [
+     9.400706674041299,
+     25.22538804713804
+    ],
+    "p_sesiones": 0.0009995002498750624,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 33.81,
+    "pasa": true,
+    "n_pruebas": 71792.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.5037620067596436,
+    "canal": "total",
+    "q_fdr": 0.17022159801693842,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 71792,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    "n": 46,
+    "media_neta": 35.24254347826087,
+    "sesiones": 32,
+    "ic90": [
+     22.577076530612246,
+     49.37384523809523
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 38.58,
+    "pasa": true,
+    "n_pruebas": 71792.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.464249610900879,
+    "canal": "reciente",
+    "q_fdr": 0.009205845708966542,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 41844,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    "n": 46,
+    "media_neta": 34.81319565217392,
+    "sesiones": 32,
+    "ic90": [
+     22.097911607875307,
+     49.01612698412699
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 38.58,
+    "pasa": true,
+    "n_pruebas": 71792.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.35373592376709,
+    "canal": "reciente",
+    "q_fdr": 0.009205845708966542,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 41844,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     0,
+     2
+    ],
+    "n": 31,
+    "media_neta": 32.67224193548389,
+    "sesiones": 23,
+    "ic90": [
+     21.39038362068966,
+     44.254586206896555
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 28.47,
+    "pasa": true,
+    "n_pruebas": 71792.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.703364372253418,
+    "canal": "reciente",
+    "q_fdr": 0.009205845708966542,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 41844,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    3,
+    2,
+    1,
+    2,
+    0,
+    10
+   ],
+   "n_desc": 111,
+   "ops_mes": 13.88,
+   "efecto": 8.779051801801804,
+   "oos": {
+    "n": 83.2,
+    "mde": 13.72820685333284,
+    "potencia": 0.4781577939133589
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 10.227283764097951,
+    "potencia": 0.6877648222795918
+   }
+  },
+  {
+   "celda": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    4
+   ],
+   "n_desc": 111,
+   "ops_mes": 13.88,
+   "efecto": 8.596619369369371,
+   "oos": {
+    "n": 83.2,
+    "mde": 13.811192228844282,
+    "potencia": 0.46129344960613494
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 10.289106476466225,
+    "potencia": 0.6673521208022565
+   }
+  },
+  {
+   "celda": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    3,
+    2,
+    1,
+    2,
+    0,
+    10
+   ],
+   "n_desc": 46,
+   "ops_mes": 15.33,
+   "efecto": 17.621271739130435,
+   "oos": {
+    "n": 92.0,
+    "mde": 14.321689611901526,
+    "potencia": 0.9213897233570016
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 11.216117268540428,
+    "potencia": 0.9881378531177101
+   }
+  },
+  {
+   "celda": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    4
+   ],
+   "n_desc": 46,
+   "ops_mes": 15.33,
+   "efecto": 17.40659782608696,
+   "oos": {
+    "n": 92.0,
+    "mde": 14.386597493649933,
+    "potencia": 0.9136494944380245
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 11.266950266117593,
+    "potencia": 0.9859742209372361
+   }
+  },
+  {
+   "celda": [
+    0,
+    1,
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    2,
+    0,
+    2
+   ],
+   "n_desc": 31,
+   "ops_mes": 10.33,
+   "efecto": 16.336120967741945,
+   "oos": {
+    "n": 62.0,
+    "mde": 12.219906670010173,
+    "potencia": 0.9534413037817946
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 7.856300817167099,
+    "potencia": 0.9997886071933555
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    3,
+    2,
+    1,
+    2,
+    0,
+    10
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 14,
+       "media_neta": 30.436642857142857,
+       "sesiones": 13,
+       "ic90": [
+        -0.8753076923076945,
+        57.96610714285713
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 89,
+       "media_neta": 14.429219101123596,
+       "sesiones": 76,
+       "ic90": [
+        4.624969239811911,
+        24.019633426966283
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 56,
+       "media_neta": 20.20003571428571,
+       "sesiones": 46,
+       "ic90": [
+        8.410907232704401,
+        33.03490909090909
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 79,
+       "media_neta": 13.888044303797471,
+       "sesiones": 58,
+       "ic90": [
+        3.2655338184931497,
+        23.26018201754385
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 27,
+       "media_neta": 12.852648148148146,
+       "sesiones": 24,
+       "ic90": [
+        -0.5113524904214543,
+        25.689230769230765
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 187,
+       "media_neta": -3.9505802139037445,
+       "sesiones": 116,
+       "ic90": [
+        -8.330798022598872,
+        0.48303878440432807
+       ],
+       "p_sesiones": 0.9301397205588823,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 167,
+       "media_neta": -4.090410179640718,
+       "sesiones": 111,
+       "ic90": [
+        -9.689081809396372,
+        1.712003860204118
+       ],
+       "p_sesiones": 0.8822355289421158,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 0
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 1
+      },
+      {
+       "nivel": 1,
+       "n": 9
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 121,
+       "media_neta": 12.873921487603306,
+       "sesiones": 89,
+       "ic90": [
+        4.2950820864931325,
+        21.699001547303265
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": -2.899666666666667,
+       "sesiones": 32,
+       "ic90": [
+        -13.706078431372548,
+        6.706799783549778
+       ],
+       "p_sesiones": 0.6606786427145709,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 259,
+       "media_neta": 5.423611969111969,
+       "sesiones": 118,
+       "ic90": [
+        1.3985563898565732,
+        9.704646144278604
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 82,
+       "media_neta": 16.46669512195122,
+       "sesiones": 64,
+       "ic90": [
+        7.433259985475672,
+        25.216806443556443
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 29,
+       "media_neta": 20.6441551724138,
+       "sesiones": 24,
+       "ic90": [
+        8.452,
+        33.4950172413793
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 87,
+       "media_neta": -12.749522988505744,
+       "sesiones": 69,
+       "ic90": [
+        -23.605122713414634,
+        -2.8119922752809035
+       ],
+       "p_sesiones": 0.9720558882235529,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 67,
+       "media_neta": 5.4918134328358175,
+       "sesiones": 57,
+       "ic90": [
+        -14.010683971774199,
+        22.78998076923076
+       ],
+       "p_sesiones": 0.2994011976047904,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 13,
+       "media_neta": 30.416038461538456,
+       "sesiones": 13,
+       "ic90": [
+        1.2583461538461498,
+        59.982384615384625
+       ],
+       "p_sesiones": 0.043912175648702596,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 278,
+       "media_neta": 5.766550359712229,
+       "sesiones": 129,
+       "ic90": [
+        -0.08555811132832138,
+        12.519152684818021
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 8.206752252252256,
+       "sesiones": 81,
+       "ic90": [
+        3.4692951007326003,
+        12.67864103152739
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 7.402698198198202,
+       "sesiones": 81,
+       "ic90": [
+        2.4046607053077635,
+        12.134474803343162
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 12.718013513513517,
+       "sesiones": 81,
+       "ic90": [
+        6.261813664596273,
+        19.439778386118586
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 11.366662162162166,
+       "sesiones": 81,
+       "ic90": [
+        4.458873436196829,
+        18.568010472563618
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 111,
+       "media_neta": 15.639184684684688,
+       "sesiones": 81,
+       "ic90": [
+        7.694106579056119,
+        23.708012396694212
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 111,
+       "media_neta": 8.474770270270273,
+       "sesiones": 81,
+       "ic90": [
+        3.559283177570093,
+        13.059334905660375
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 111,
+       "media_neta": 7.67071621621622,
+       "sesiones": 81,
+       "ic90": [
+        2.634942732648614,
+        12.44768427656628
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 111,
+       "media_neta": 13.091887387387391,
+       "sesiones": 81,
+       "ic90": [
+        6.384780235988201,
+        19.853202830188668
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 111,
+       "media_neta": 11.74053603603604,
+       "sesiones": 81,
+       "ic90": [
+        4.661629374035885,
+        18.873116929202002
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 111,
+       "media_neta": 16.004049549549553,
+       "sesiones": 81,
+       "ic90": [
+        7.97791557813256,
+        24.019942477876096
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 79,
+       "media_neta": 6.9513354430379755,
+       "sesiones": 64,
+       "ic90": [
+        0.22555263157894703,
+        12.649133575883571
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 79,
+       "media_neta": 5.188677215189872,
+       "sesiones": 64,
+       "ic90": [
+        -2.1544912280701762,
+        11.283608974358964
+       ],
+       "p_sesiones": 0.0998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 79,
+       "media_neta": 7.704500000000001,
+       "sesiones": 64,
+       "ic90": [
+        -1.5902368421052644,
+        15.750353981544764
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 79,
+       "media_neta": 5.666525316455696,
+       "sesiones": 64,
+       "ic90": [
+        -4.105240377632535,
+        14.211318181818175
+       ],
+       "p_sesiones": 0.14570858283433133,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 79,
+       "media_neta": 10.188677215189875,
+       "sesiones": 64,
+       "ic90": [
+        0.49183974358974253,
+        19.303087369420695
+       ],
+       "p_sesiones": 0.033932135728542916,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 79,
+       "media_neta": 7.986145569620257,
+       "sesiones": 64,
+       "ic90": [
+        -1.9310280854430406,
+        17.548398809523807
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    4
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 13,
+       "media_neta": 28.185269230769226,
+       "sesiones": 12,
+       "ic90": [
+        -7.139250000000011,
+        59.13396428571429
+       ],
+       "p_sesiones": 0.06986027944111776,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 89,
+       "media_neta": 13.965735955056182,
+       "sesiones": 76,
+       "ic90": [
+        4.144424770760685,
+        23.584312801932363
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 56,
+       "media_neta": 20.05271428571428,
+       "sesiones": 46,
+       "ic90": [
+        8.152818483577917,
+        33.20018181818182
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 79,
+       "media_neta": 13.587411392405068,
+       "sesiones": 58,
+       "ic90": [
+        2.8339820205479445,
+        22.910947368421045
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 27,
+       "media_neta": 12.019314814814814,
+       "sesiones": 24,
+       "ic90": [
+        -1.096017241379309,
+        24.431999999999995
+       ],
+       "p_sesiones": 0.06387225548902195,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 187,
+       "media_neta": -3.762077540106953,
+       "sesiones": 116,
+       "ic90": [
+        -8.216613989637306,
+        0.6094771125215568
+       ],
+       "p_sesiones": 0.9241516966067864,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 167,
+       "media_neta": -4.669751497005987,
+       "sesiones": 111,
+       "ic90": [
+        -10.274061046511628,
+        1.1417929924453853
+       ],
+       "p_sesiones": 0.9161676646706587,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 0
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 1
+      },
+      {
+       "nivel": 1,
+       "n": 9
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 121,
+       "media_neta": 12.962764462809918,
+       "sesiones": 89,
+       "ic90": [
+        4.509569796513646,
+        22.06162339743589
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": -2.884041666666667,
+       "sesiones": 32,
+       "ic90": [
+        -13.68814705882353,
+        6.690238636363626
+       ],
+       "p_sesiones": 0.656686626746507,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 259,
+       "media_neta": 5.192916988416988,
+       "sesiones": 118,
+       "ic90": [
+        1.1291905393457105,
+        9.519250552426001
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 82,
+       "media_neta": 16.161817073170727,
+       "sesiones": 64,
+       "ic90": [
+        7.101821428571427,
+        24.758850554968273
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 29,
+       "media_neta": 20.109672413793106,
+       "sesiones": 24,
+       "ic90": [
+        7.773350574712645,
+        33.424657967032964
+       ],
+       "p_sesiones": 0.011976047904191617,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 87,
+       "media_neta": -12.815614942528732,
+       "sesiones": 69,
+       "ic90": [
+        -24.221617801771867,
+        -2.51690633108459
+       ],
+       "p_sesiones": 0.9740518962075848,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 67,
+       "media_neta": 5.637335820895519,
+       "sesiones": 57,
+       "ic90": [
+        -13.95748336693549,
+        23.100591269841264
+       ],
+       "p_sesiones": 0.29740518962075846,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 13,
+       "media_neta": 30.262192307692303,
+       "sesiones": 13,
+       "ic90": [
+        1.1804615384615345,
+        59.73046153846155
+       ],
+       "p_sesiones": 0.043912175648702596,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 278,
+       "media_neta": 5.6280611510791365,
+       "sesiones": 129,
+       "ic90": [
+        -0.21701682130786135,
+        12.485460351692103
+       ],
+       "p_sesiones": 0.08982035928143713,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 8.206752252252256,
+       "sesiones": 81,
+       "ic90": [
+        3.4692951007326003,
+        12.67864103152739
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 7.402698198198202,
+       "sesiones": 81,
+       "ic90": [
+        2.4046607053077635,
+        12.134474803343162
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 12.718013513513517,
+       "sesiones": 81,
+       "ic90": [
+        6.261813664596273,
+        19.439778386118586
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 11.366662162162166,
+       "sesiones": 81,
+       "ic90": [
+        4.458873436196829,
+        18.568010472563618
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 111,
+       "media_neta": 17.193238738738742,
+       "sesiones": 81,
+       "ic90": [
+        9.769947557649392,
+        24.867368392328064
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 111,
+       "media_neta": 15.639184684684688,
+       "sesiones": 81,
+       "ic90": [
+        7.694106579056119,
+        23.708012396694212
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 111,
+       "media_neta": 8.474770270270273,
+       "sesiones": 81,
+       "ic90": [
+        3.559283177570093,
+        13.059334905660375
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 111,
+       "media_neta": 7.67071621621622,
+       "sesiones": 81,
+       "ic90": [
+        2.634942732648614,
+        12.44768427656628
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 111,
+       "media_neta": 13.091887387387391,
+       "sesiones": 81,
+       "ic90": [
+        6.384780235988201,
+        19.853202830188668
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 111,
+       "media_neta": 11.74053603603604,
+       "sesiones": 81,
+       "ic90": [
+        4.661629374035885,
+        18.873116929202002
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 111,
+       "media_neta": 17.55810360360361,
+       "sesiones": 81,
+       "ic90": [
+        10.064674348455597,
+        25.22820645709429
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 111,
+       "media_neta": 16.004049549549553,
+       "sesiones": 81,
+       "ic90": [
+        7.97791557813256,
+        24.019942477876096
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 79,
+       "media_neta": 6.9513354430379755,
+       "sesiones": 64,
+       "ic90": [
+        0.22555263157894703,
+        12.649133575883571
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 79,
+       "media_neta": 5.188677215189872,
+       "sesiones": 64,
+       "ic90": [
+        -2.1544912280701762,
+        11.283608974358964
+       ],
+       "p_sesiones": 0.0998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 79,
+       "media_neta": 7.704500000000001,
+       "sesiones": 64,
+       "ic90": [
+        -1.5902368421052644,
+        15.750353981544764
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 79,
+       "media_neta": 5.666525316455696,
+       "sesiones": 64,
+       "ic90": [
+        -4.105240377632535,
+        14.211318181818175
+       ],
+       "p_sesiones": 0.14570858283433133,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 79,
+       "media_neta": 10.188677215189875,
+       "sesiones": 64,
+       "ic90": [
+        0.49183974358974253,
+        19.303087369420695
+       ],
+       "p_sesiones": 0.033932135728542916,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 79,
+       "media_neta": 7.986145569620257,
+       "sesiones": 64,
+       "ic90": [
+        -1.9310280854430406,
+        17.548398809523807
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    1,
+    1,
+    0,
+    2,
+    2,
+    3,
+    1,
+    2,
+    0,
+    2
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     0,
+     2
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 13,
+       "media_neta": 28.819884615384613,
+       "sesiones": 12,
+       "ic90": [
+        -4.16080448717949,
+        61.47116666666665
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 52,
+       "media_neta": 14.233346153846158,
+       "sesiones": 44,
+       "ic90": [
+        0.26006220095693505,
+        27.403405895691606
+       ],
+       "p_sesiones": 0.041916167664670656,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 121,
+       "media_neta": 9.661111570247934,
+       "sesiones": 89,
+       "ic90": [
+        2.1777789855072447,
+        17.050048069187444
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 48,
+       "media_neta": 14.423250000000001,
+       "sesiones": 39,
+       "ic90": [
+        0.31250320128051046,
+        25.77103161264505
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 17,
+       "media_neta": 15.380970588235297,
+       "sesiones": 15,
+       "ic90": [
+        -1.4038333333333357,
+        30.369287581699343
+       ],
+       "p_sesiones": 0.03992015968063872,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 107,
+       "media_neta": -9.316528037383177,
+       "sesiones": 82,
+       "ic90": [
+        -14.083049932007478,
+        -3.6049245283018982
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 96,
+       "media_neta": -11.772062499999999,
+       "sesiones": 77,
+       "ic90": [
+        -17.709356853699866,
+        -5.608113851992414
+       ],
+       "p_sesiones": 1.0,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 0
+      },
+      {
+       "nivel": 2,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 5
+      },
+      {
+       "nivel": 2,
+       "n": 56,
+       "media_neta": 15.106285714285715,
+       "sesiones": 46,
+       "ic90": [
+        5.291679824561401,
+        25.912783730158726
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 6
+      },
+      {
+       "nivel": 1,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 98,
+       "media_neta": 5.730010204081632,
+       "sesiones": 69,
+       "ic90": [
+        -2.6942903225806476,
+        13.788215220949258
+       ],
+       "p_sesiones": 0.1217564870259481,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 52,
+       "media_neta": 13.295846153846158,
+       "sesiones": 44,
+       "ic90": [
+        0.06469074675324551,
+        25.2728222345542
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 9
+      },
+      {
+       "nivel": 2,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 62,
+       "media_neta": -12.017274193548381,
+       "sesiones": 51,
+       "ic90": [
+        -27.59687931034483,
+        1.618786202185783
+       ],
+       "p_sesiones": 0.8862275449101796,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 53,
+       "media_neta": 16.110160377358493,
+       "sesiones": 47,
+       "ic90": [
+        -0.0285596879535584,
+        32.00874056603772
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 11,
+       "media_neta": 20.181772727272723,
+       "sesiones": 11,
+       "ic90": [
+        -5.697772727272733,
+        47.137454545454545
+       ],
+       "p_sesiones": 0.09580838323353294,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 187,
+       "media_neta": 6.097548128342245,
+       "sesiones": 110,
+       "ic90": [
+        -1.4211147540983626,
+        14.381354132255757
+       ],
+       "p_sesiones": 0.11976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 61,
+       "media_neta": 8.155319672131146,
+       "sesiones": 50,
+       "ic90": [
+        -0.9782771493212693,
+        15.601910546139354
+       ],
+       "p_sesiones": 0.033932135728542916,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 61,
+       "media_neta": 7.688106557377047,
+       "sesiones": 50,
+       "ic90": [
+        -1.5844600409836085,
+        15.319144213909988
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 61,
+       "media_neta": 13.270073770491807,
+       "sesiones": 50,
+       "ic90": [
+        1.704715026562102,
+        23.08246052631579
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 61,
+       "media_neta": 12.093844262295082,
+       "sesiones": 50,
+       "ic90": [
+        -0.05353571428571487,
+        22.186971264367823
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 61,
+       "media_neta": 16.040565573770493,
+       "sesiones": 50,
+       "ic90": [
+        1.9659754098360642,
+        28.547560064935066
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 61,
+       "media_neta": 14.651221311475414,
+       "sesiones": 50,
+       "ic90": [
+        0.3243464643993139,
+        27.621506957047785
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 61,
+       "media_neta": 7.59384426229508,
+       "sesiones": 50,
+       "ic90": [
+        -1.7877987288135604,
+        15.114769457245265
+       ],
+       "p_sesiones": 0.04790419161676647,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 61,
+       "media_neta": 7.126631147540982,
+       "sesiones": 50,
+       "ic90": [
+        -2.4955746268656727,
+        14.864749434708875
+       ],
+       "p_sesiones": 0.0658682634730539,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 61,
+       "media_neta": 12.864336065573776,
+       "sesiones": 50,
+       "ic90": [
+        1.3558685597189686,
+        22.545154388714725
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 61,
+       "media_neta": 11.68810655737705,
+       "sesiones": 50,
+       "ic90": [
+        -0.2830640368852485,
+        21.73844926512153
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 61,
+       "media_neta": 15.68810655737705,
+       "sesiones": 50,
+       "ic90": [
+        1.266117726293103,
+        28.06812781954887
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 61,
+       "media_neta": 14.298762295081971,
+       "sesiones": 50,
+       "ic90": [
+        -0.5113069530808368,
+        26.934433805418706
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 40,
+       "media_neta": 8.873249999999997,
+       "sesiones": 36,
+       "ic90": [
+        -0.15483959451401497,
+        17.96873611111111
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 40,
+       "media_neta": 7.585749999999997,
+       "sesiones": 36,
+       "ic90": [
+        -2.113128205128206,
+        17.05276388888889
+       ],
+       "p_sesiones": 0.10978043912175649,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 40,
+       "media_neta": 10.429499999999997,
+       "sesiones": 36,
+       "ic90": [
+        0.3029756097560959,
+        21.625277027027014
+       ],
+       "p_sesiones": 0.0658682634730539,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 40,
+       "media_neta": 8.841999999999997,
+       "sesiones": 36,
+       "ic90": [
+        -2.004928353658539,
+        20.37259210526316
+       ],
+       "p_sesiones": 0.1157684630738523,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 16,
+       "n": 40,
+       "media_neta": 10.298249999999998,
+       "sesiones": 36,
+       "ic90": [
+        -0.39573255813953584,
+        22.736671474358975
+       ],
+       "p_sesiones": 0.09580838323353294,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 17,
+       "n": 40,
+       "media_neta": 8.385749999999998,
+       "sesiones": 36,
+       "ic90": [
+        -2.929288798920383,
+        21.28699237804878
+       ],
+       "p_sesiones": 0.13972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    "n": 110,
+    "media_neta": 10.502227272727273,
+    "sesiones": 69,
+    "ic90": [
+     -2.634821471054721,
+     22.985237279335404
+    ],
+    "p_sesiones": 0.0848965848965849,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 43.92,
+    "pasa": false,
+    "n_pruebas": 1.9999999999999998,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.6956112499972653,
+    "media_esperada_fuera": 7.305467440937189,
+    "n_boot": 8315,
+    "piso_p": 0.00012025012025012025,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    "n": 110,
+    "media_neta": 10.502227272727273,
+    "sesiones": 69,
+    "ic90": [
+     -2.634896845694803,
+     22.98840265265264
+    ],
+    "p_sesiones": 0.08585858585858586,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 43.92,
+    "pasa": false,
+    "n_pruebas": 1.9999999999999998,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.6931999990486931,
+    "media_esperada_fuera": 7.2801439354637045,
+    "n_boot": 8315,
+    "piso_p": 0.00012025012025012025,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     0,
+     2
+    ],
+    "n": 63,
+    "media_neta": 7.414817460317456,
+    "sesiones": 49,
+    "ic90": [
+     -7.173320512820516,
+     21.3116187033582
+    ],
+    "p_sesiones": 0.19757094757094756,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 33.81,
+    "pasa": false,
+    "n_pruebas": 1.9999999999999998,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.31275182162669174,
+    "media_esperada_fuera": 2.3189976677436848,
+    "n_boot": 8315,
+    "piso_p": 0.00012025012025012025,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.0018858947159882456,
+   "p_simes": 0.12878787878787878,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 3,
+   "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+   "run_id": "CVGAP-CFD-NQ/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     3,
+     2,
+     1,
+     2,
+     0,
+     10
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 10.502227272727273,
+    "ic90": [
+     -2.634821471054721,
+     22.985237279335404
+    ],
+    "efecto_para_potencia": 8.779051801801804,
+    "potencia": 0.30237149337178393,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     4
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 10.502227272727273,
+    "ic90": [
+     -2.634896845694803,
+     22.98840265265264
+    ],
+    "efecto_para_potencia": 8.596619369369371,
+    "potencia": 0.29419983989591914,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     2,
+     2,
+     3,
+     1,
+     2,
+     0,
+     2
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 7.414817460317456,
+    "ic90": [
+     -7.173320512820516,
+     21.3116187033582
+    ],
+    "efecto_para_potencia": 16.336120967741945,
+    "potencia": 0.595530266239583,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   0,
+   1,
+   0,
+   0,
+   2,
+   3,
+   2,
+   1,
+   2,
+   0,
+   10
+  ],
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "puntaje": 11.321366890840883,
+  "peor": -74.7955
+ },
+ "acta": {
+  "cid": "CVGAP-CFD-NQ",
+  "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "regla": {
+   "celda": [
+    0,
+    1,
+    0,
+    0,
+    2,
+    3,
+    2,
+    1,
+    2,
+    0,
+    10
+   ],
+   "tope": [
+    "pts",
+    50.0
+   ],
+   "puntaje": 11.321366890840883,
+   "peor": -74.7955
+  },
+  "cortes": {
+   "tamano_impulso": [
+    4.487051893977994,
+    7.449342465570724
+   ]
+  },
+  "holdout_desde": 20261023,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793229867.0828214,
+  "reserva_lord": {
+   "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+   "reserva_id": "CVGAP-CFD-NQ/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "CORREDOR_VOL_GAPS_NQ",
+    "declarada": true,
+    "padres": [
+     "ZONAS_GAPS",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 5626417,
+    "n_heredado": 5626417,
+    "total": 5626417,
+    "justificacion": "acopla EmaCorridorTrendVolW2 con el detector y ciclo de vida de ZONAS_GAPS sobre NQ y USATECH->NQ tras mirar réplica OOS de ZGAP-NQ; declarado antes de abrir holdout (SPEC_CORREDOR_VOL_GAPS.md)",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 5626417,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": null,
+   "recorte": {
+    "t": 3.0903807621810726,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "decision": "primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
+}

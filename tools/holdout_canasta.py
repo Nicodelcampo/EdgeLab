@@ -42,7 +42,8 @@ def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, regis
     destino = raiz / cid / "ACTA_HOLDOUT_CANASTA.json"
     if destino.exists(): raise SystemExit(f"ya hay acta: {destino}")
     libro_v = Path(ventanas) if ventanas else HV.LIBRO; id_ = f"{cid}-CANASTA"
-    if (malos := HV.problemas(fam, HOLDOUT_PRIMERA_SESION_INT, id_, libro_v)): raise SystemExit("; ".join(malos))
+    h_desde = max(HOLDOUT_PRIMERA_SESION_INT, int((spec.get("holdout") or {}).get("desde") or HOLDOUT_PRIMERA_SESION_INT))
+    if (malos := HV.problemas(fam, h_desde, id_, libro_v)): raise SystemExit("; ".join(malos))
     pot = potencia_planeada(st, n_sesiones, (libro or LibroLord()).nivel(fam))
     if pot < 0.8 and not forzar:                                                # E8: no gastar la única apertura sin poder decidir
         raise SystemExit(f"potencia {pot:.2f} < 0,8 con N {n_sesiones} (con la media y el desvío de la réplica de la canasta): subir N o "
@@ -50,13 +51,13 @@ def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, regis
     lib = libro or LibroLord(); res = lib.reservar(fam, f"{id_}/holdout", f"acta canasta {cid}")
     a = dict(cid=id_, campana=cid, familia=fam, experimento=spec["experimento"], sensor=spec["sensor"], ejecucion=spec.get("ejecucion"),
              celdas=st["pistas_replica"]["celdas"], cortes=st["cortes"], regla="canasta igual-ponderada: P&L neto medio por pista y sesión",
-             holdout_desde=HOLDOUT_PRIMERA_SESION_INT, n_sesiones=int(n_sesiones), alfa=res["nivel"], reserva_lord=res, registrada=ahora(),
+             holdout_desde=h_desde, n_sesiones=int(n_sesiones), alfa=res["nivel"], reserva_lord=res, registrada=ahora(),
              potencia_planeada=pot, forzada=bool(forzar),
-             decision=(f"primeras {n_sesiones} sesiones desde {HOLDOUT_PRIMERA_SESION_INT}: CONFIRMADA si p (bootstrap por sesiones) <= α "
+             decision=(f"primeras {n_sesiones} sesiones desde {h_desde}: CONFIRMADA si p (bootstrap por sesiones) <= α "
                        f"reservado ({res['nivel']:.5f}) y media > 0; REFUTADA si media <= 0; si no, SIN_POTENCIA"),
              origen="docs/research/auditoria_filtro_20261026/AUDITORIA_FILTRO_PISTAS.md (propuesta 4, aprobada por Nico)")
     destino.write_text(json.dumps(a, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
-    HV.registrar_apertura(fam, id_, HOLDOUT_PRIMERA_SESION_INT, int(n_sesiones), libro_v)
+    HV.registrar_apertura(fam, id_, h_desde, int(n_sesiones), libro_v)
     if registro is not None: registro.ensure(f"embudo/{cid}/holdout_canasta", fam, 1, f"apertura de holdout: canasta de pistas de {cid}")
     return a
 

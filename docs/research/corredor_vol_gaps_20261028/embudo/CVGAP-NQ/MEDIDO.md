@@ -1,0 +1,19 @@
+## CVGAP-NQ — edgelab.research.corredor_vol_gaps · señal NQ · ejecución NQ
+- Justificación: Cuando EmaCorridorTrendVolW2 (50T/M1, W1=100%/W2=200%) marca un Rectángulo Amarillo (absorción P80/P90 en el extremo del impulso) y el precio no rompe hacia el origen sino que rompe en la misma dirección del impulso inicial, se aleja >= {1, 2, 4}x H_amarilla barriendo gaps previos y regresa (antes, en la caja o en el Value Area Edge), la ruptura tardía se agota y revierte hacia el 50%, 25% o 100% del impulso inicial, asistida por los gaps abiertos en el camino.
+- Refutación: Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5626417 pruebas de ['ZONAS_GAPS', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/g2.py', 'edgelab/research/sim.py', 'edgelab/bridge/identity.py', 'edgelab/research/costs.py', 'edgelab/research/holdout_guard.py', 'edgelab/regimes/state.py']); revisar si el cambio toca la medición
+- Evaluables: 132420 de 1866240 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 83052 (m del FDR 83052 de 933120 celdas), FDR 297, RW umbral 4.2058939933776855 (diagnóstico), linaje 5626417 como informacion, pistas sin nominación 0, candidatas 3
+- Potencia prevista (informativa): [0, 0, 1, 2, 2, 3, 3, 2, 0, 2, 17]: OOS n 62.0 potencia 0.96, holdout n 150 potencia 1.00; [0, 0, 1, 2, 2, 2, 3, 2, 0, 2, 11]: OOS n 68.0 potencia 0.98, holdout n 150 potencia 1.00; [0, 0, 1, 0, 2, 3, 3, 2, 0, 2, 15]: OOS n 152.0 potencia 0.99, holdout n 150 potencia 0.99
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/research/fuentes_ticks.py', 'edgelab/research/grilla_generica.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/embudo_runners.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 3 candidatas guardadas
+- AVISO INTEGRIDAD: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- INTEGRIDAD [0, 0, 1, 2, 2, 3, 3, 2, 0, 2, 17]: regla 18.289499999999997, placebo 3.02, latencia 1 vela 18.036132653061223 -> pasa
+- INTEGRIDAD [0, 0, 1, 2, 2, 2, 3, 2, 0, 2, 11]: regla 14.63737037037037, placebo -3.13, latencia 1 vela 15.466635922330099 -> pasa
+- INTEGRIDAD [0, 0, 1, 0, 2, 3, 3, 2, 0, 2, 15]: regla 8.409261904761903, placebo -2.87, latencia 1 vela 8.973117021276595 -> pasa
+- OOS [20260401, 20260925] (régimen actual): medias [4.02, 19.13, -11.6]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.74, 0.78, 0.7]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 0, 1, 2, 2, 2, 3, 2, 0, 2, 11], 'tope': ['mult', 4.0], 'puntaje': 2.824785358655979, 'peor': -221.7955}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 0, 1, 2, 2, 2, 3, 2, 0, 2, 11] tope ['mult', 4.0]

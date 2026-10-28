@@ -208,15 +208,22 @@ class LocalRunner:
         return self.res[h]
 
 
+def _ruta_acta_holdout(raiz_embudo: Path, cid: str) -> str:
+    p = Path(raiz_embudo) / cid / "ACTA_HOLDOUT.json"
+    if not p.exists() and (Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json").exists():
+        return str(Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json")
+    return str(p)
+
+
 def lectores_sellados(cfg_sellado: dict, raiz_embudo: Path) -> tuple:
     """De la configuración del Debian ({"DK:USATECHIDXUSD": carpeta, "NQ": parquet sellado}) a lectores del LocalRunner. El de NQ
-    exige el acta de holdout de la campaña (la escribe la etapa ACTA antes de mirar)."""
+    exige el acta de holdout de la campaña (la escribe la etapa ACTA o holdout_canasta antes de mirar)."""
     from edgelab.research import fuentes_ticks as F
     lec, ticks = {}, {}
     for nombre, ruta in (cfg_sellado or {}).items():
         if nombre.startswith("DK:"):
             sym = nombre[3:]; lec[nombre] = (lambda d0, d1, spec, s=sym, r=ruta: F.bloques_spot_sellado(s, d0, d1, r)); ticks[nombre] = F.REDONDEO_SPOT[sym]
         else:
-            lec[nombre] = (lambda d0, d1, spec, r=ruta: F.bloques_nq_sellado(d0, d1, r, str(Path(raiz_embudo) / spec["cid"] / "ACTA_HOLDOUT.json")))
+            lec[nombre] = (lambda d0, d1, spec, r=ruta: F.bloques_nq_sellado(d0, d1, r, _ruta_acta_holdout(raiz_embudo, spec["cid"])))
             ticks[nombre] = F.TICK_FUTURO[nombre]
     return lec, ticks
