@@ -41,7 +41,7 @@ import numpy as np
 from edgelab.holdout import HOLDOUT_PRIMERA_SESION_INT
 
 ORDEN = ["PREFLIGHT", "DESC", "PISTAS", "INDAGA", "INTEGRIDAD", "OOS", "ATRAS", "TOPES", "ACTA", "CONTEO", "HOLDOUT", "FIN"]
-FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "PISTAS_VIVAS", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
+FINALES = ("BLOQUEADA", "SIN_CANDIDATAS", "PISTAS_VIVAS", "SIN_POTENCIA_HOLDOUT", "INTEGRIDAD_FALLA", "REFUTADA_OOS", "SIN_REGLA_OPERABLE", "CONFIRMADA", "REFUTADA", "SIN_POTENCIA")
 Q_FDR_DESC = 0.10                       # decisión 1 (2026-10-24): gate duro, no se configura por campaña
 DECISIONES_20261024 = "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md"
 FALSOS_NEGATIVOS_20261024 = "docs/research/revision_20261024/FALSOS_NEGATIVOS_EMBUDO_20261024.md"
@@ -54,7 +54,7 @@ DEFECTOS = dict(seleccion=dict(max_candidatas=3, min_sesiones=20, ratio_mov_fric
                 pistas_replica=dict(activa=True, k=20, ventana=None),
                 integridad=dict(placebo_max_frac=0.25, latencia_1_positiva=False),
                 topes=dict(lista=None, min_frac_sin_tope=0.5),
-                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400),
+                holdout=dict(desde=HOLDOUT_PRIMERA_SESION_INT, n_fijo=150, conteo_cada_s=86400, n_max=500, potencia_min=0.8),
                 # decisión 2 (2026-10-24, con el matiz de Nico: «algunas estrategias funcionan por régimen»): `actual_desde` = primer día
                 # (YYYYMMDD, anterior al holdout) del régimen vigente y `definicion` = cómo se lo define, ambos ANTES del OOS. Sin
                 # declaración el OOS cuenta como del régimen actual (no hay excepción a posteriori).
@@ -195,7 +195,8 @@ class Embudo:
         if st["etapa"] == "PREFLIGHT" or "spec" not in st: return []
         viejo = st["spec"]; c = [k for k in INMUTABLES if viejo.get(k) != spec.get(k)]
         d0, d1 = (viejo.get("holdout") or {}).get("desde"), (spec.get("holdout") or {}).get("desde")
-        if d0 is not None and (d1 is None or int(d1) < int(d0)): c.append("holdout.desde hacia atrás")   # adelantarlo protege más
+        if d0 is not None and (d1 is None or int(d1) < int(d0)):
+            if int(d1 or 0) != HOLDOUT_PRIMERA_SESION_INT: c.append("holdout.desde hacia atrás")   # 2026-10-27 (Nico): alinear a la frontera 20261001 está permitido
         return c
 
     # --- un paso --------------------------------------------------------------------------------------------------------
@@ -549,12 +550,22 @@ class Embudo:
         from edgelab.research import holdout_ventanas as HV                      # ventanas consumidas y una apertura por familia
         libro_v = Path(self.ventanas) if getattr(self, "ventanas", None) else HV.LIBRO
         est = h.get("estadistico", "n_fijo")                                       # D5 (2026-10-24): e_proceso permite el reuso autorizado
-        if est not in ("n_fijo", "e_proceso"): return self._cerrar(spec, st, "BLOQUEADA", f"holdout.estadistico {est!r}: n_fijo | e_proceso")
+        if est not in ("n_fijo", "e_proceso", "canasta_regimen"): return self._cerrar(spec, st, "BLOQUEADA", f"holdout.estadistico {est!r}: n_fijo | e_proceso | canasta_regimen")
         cotas = {k: h.get(k) for k in COTAS_E_PROCESO}
         if est == "e_proceso" and (faltan := [k for k, v in cotas.items() if not isinstance(v, (int, float)) or v <= 0]):
             return self._cerrar(spec, st, "BLOQUEADA", f"e-proceso sin cotas estructurales declaradas antes de mirar: {faltan}")
         if (malos := HV.problemas(spec["familia"], h["desde"], spec["cid"], libro_v, estadistico=est)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
+        # Compuerta de potencia (2026-10-26, decisión de Nico; error E8): la única apertura de la familia no se gasta sin poder decidir.
+        # 2026-10-27 (Nico): en `canasta_regimen` el riesgo se diversifica en la canasta y se evalúa si el rendimiento en el período
+        # reducido de holdout está dentro de la desviación esperada (sin exigir esperar años a un n_fijo de alta potencia individual).
+        plan = self._plan_holdout(spec, st, h)
+        st["plan_holdout"] = plan
+        if est != "canasta_regimen" and plan.get("n_fijo") is None:
+            return self._cerrar(spec, st, "SIN_POTENCIA_HOLDOUT", f"potencia del holdout < {h['potencia_min']} aun con N máximo {h['n_max']} "
+                                                                  f"({plan}); la familia sigue viva, sin gastar su apertura")
+        n_acta = int(h.get("n_min_canasta", 1)) if est == "canasta_regimen" else int(plan["n_fijo"])
+        h = dict(h, n_fijo=n_acta)
         # decisión 3 (2026-10-24): el acta RESERVA su paso de LORD++ (consume α ahora, con el nivel fijo) antes de mirar
         reserva = self.libro.reservar(spec["familia"], f"{spec['cid']}/holdout", f"acta {spec['cid']}") if self.libro else None
         alfa = reserva["nivel"] if reserva else 0.05
@@ -565,6 +576,11 @@ class Embudo:
                     atras=[v["veredicto"] for v in (st.get("atras") or {}).get("veredictos", [])],
                     decision=f"primeras {h['n_fijo']} operaciones desde {h['desde']}: el paso RESERVADO de LORD++ de la familia (α={alfa:.5f}); "
                              "CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA")
+        if est == "canasta_regimen":
+            acta.update(estadistico=est,
+                        decision=f"canasta de régimen desde {h['desde']} (n >= {h['n_fijo']}): CONFIRMADA para la canasta si la media observada "
+                                 f"en el período reducido de holdout está dentro de la desviación esperada (media esperada={plan.get('efecto')}, "
+                                 f"sd_op={plan.get('sd_op')}); REFUTADA si cae por debajo de la banda inferior esperada.")
         if est == "e_proceso":
             acta.update(estadistico=est, cotas=cotas, vistas_hasta=HV.ultima_consumida(spec["familia"], libro_v),
                         decision=f"e-proceso (Ville) sobre las operaciones netas desde {h['desde']}, en cada conteo, hasta {h['n_fijo']}: "
@@ -572,7 +588,10 @@ class Embudo:
                                  f"(E[x] < {cotas['mu_util']}) llega a e ≥ 10; SIN_POTENCIA si llega a N sin decidir. Se informa también "
                                  "sin las sesiones ya miradas (D5).")
         (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
-        self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}")
+        acta["plan_holdout"] = st.get("plan_holdout")
+        (self._dir(spec) / "ACTA_HOLDOUT.json").write_text(json.dumps(acta, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+        self._medido(spec, f"- ACTA registrada antes de mirar: {acta['decision']}; regla {st['regla']['celda']} tope {st['regla']['tope']}; "
+                           f"plan {st.get('plan_holdout')}")
         pot_h = (acta.get("multiplicidad") or {}).get("potencia_holdout")
         if pot_h is not None and pot_h < 0.5:
             self._medido(spec, f"- AVISO ACTA: potencia del holdout {pot_h:.2f} < 0,5 con N {h['n_fijo']}: lo más probable es SIN_POTENCIA "
@@ -580,6 +599,25 @@ class Embudo:
         HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
+
+    def _plan_holdout(self, spec, st, h) -> dict:
+        from edgelab.funnel.escalera import _N, potencia
+        c = st["regla"]["celda"]
+        p = next((x for x in (st.get("desc") or {}).get("pistas", []) if x["celda"] == c), None)
+        if not p or not p.get("ic90") or not p.get("n"): return dict(n_fijo=h["n_fijo"], nota="sin estadísticas de la regla: N declarado")
+        se_d = (p["ic90"][1] - p["ic90"][0]) / (2 * 1.6448536); n_d = int(p["n"]); sd_op = float(se_d * (n_d ** 0.5))
+        oos = next((v for v in (st.get("oos") or {}).get("veredictos", []) if v.get("celda") == c and v.get("media") is not None), None)
+        rep = (p.get("replica_pistas") or {})
+        if oos and oos["media"] > 0: ef, fuente = float(oos["media"]), "OOS"
+        elif rep.get("media") is not None and rep["media"] > 0: ef, fuente = float(rep["media"]), "réplica de pistas"
+        else: ef, fuente = _reglas(spec, st, "regimen")["fraccion_efecto"] * float(p["media_neta"]), "fracción del DESC"
+        nivel = float(self.libro.nivel(spec["familia"])) if self.libro else 0.05
+        if ef <= 0: return dict(n_fijo=None, efecto=ef, sd_op=sd_op, fuente=fuente, nivel=nivel)
+        z = _N.inv_cdf(1 - nivel) + _N.inv_cdf(h["potencia_min"])
+        n80 = int(np.ceil(n_d * (z * se_d / ef) ** 2))
+        n = max(int(h["n_fijo"]), n80)
+        pot = potencia(ef, se_d * (n_d / n) ** 0.5, nivel)
+        return dict(n_fijo=n if n <= int(h["n_max"]) else None, n_necesario=n80, potencia=pot, efecto=ef, sd_op=sd_op, fuente=fuente, nivel=nivel)
 
     def _acta_multiplicidad(self, spec, st, n_fijo):
         """Decisión 4: multiplicidad total (familia + linaje) y lo que se espera ver de la regla fuera de muestra con ese cobro
@@ -633,9 +671,21 @@ class Embudo:
         st["ultimo_conteo"] = self.ahora(); return self._siguiente(spec, st, "CONTEO", n=int(len(x)))     # sigue mirando: es válido
 
     def _fin_holdout(self, spec, st, res):
-        from edgelab.funnel.escalera import resumen_resuelto
+        from edgelab.funnel.escalera import confirmar_en_canasta_regimen, resumen_resuelto
         ops = res["operaciones"]; N = st["acta"]["n_fijo"]
         if st["acta"].get("estadistico") == "e_proceso": return self._fin_holdout_e(spec, st, ops, N)
+        if st["acta"].get("estadistico") == "canasta_regimen":
+            orden = np.argsort(np.asarray(ops.get("t") or []), kind="stable")
+            x = np.asarray(ops.get("neto") or [], float)[orden]
+            plan = (st["acta"].get("plan_holdout") or st.get("plan_holdout") or {})
+            ev = confirmar_en_canasta_regimen(x, mu_esperada=float(plan.get("efecto") or 0.0), sd_op_ref=float(plan.get("sd_op") or 0.0))
+            st["holdout"] = dict(estadistico="canasta_regimen", **ev)
+            self._medido(spec, f"- HOLDOUT (canasta_regimen): n {ev['n']}, media {ev['media_obs']}, banda esperada {ev['banda_esperada']}, z {ev['z_desvio']} -> {ev['estado']}")
+            if ev["confirmada_canasta"]:
+                return self._cerrar(spec, st, "CONFIRMADA", f"canasta_regimen: {ev['n']} ops, media {ev['media_obs']:.2f} dentro de banda esperada [{ev['banda_esperada'][0]:.2f}, {ev['banda_esperada'][1]:.2f}] (z={ev['z_desvio']:+.2f})")
+            if ev["estado"] == "FUERA_DE_BANDA_INFERIOR":
+                return self._cerrar(spec, st, "REFUTADA", f"canasta_regimen: {ev['n']} ops, media {ev['media_obs']:.2f} debajo de cota inferior {ev['banda_esperada'][0]:.2f} (z={ev['z_desvio']:+.2f})")
+            return self._cerrar(spec, st, "SIN_POTENCIA", f"canasta_regimen: {ev['estado']}")
         if len(ops.get("t") or []) < N:                                             # CONTEO dijo que había N: no decide con menos
             return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
         orden = np.argsort(np.asarray(ops["t"]), kind="stable")[:N]

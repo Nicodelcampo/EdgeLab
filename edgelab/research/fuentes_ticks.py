@@ -95,8 +95,9 @@ TICK_FUTURO = {"6B": 0.0001, "6E": 0.00005, "6J": 0.0000005, "ES": 0.25, "GC": 0
                "NQ": 0.25, "RTY": 0.1, "YM": 1.0, "ZB": 0.03125}      # = RESOLVER.json (test)
 
 
-def bloques_futuro(inst, desde, hasta, entrada="/kaggle/input"):
-    """Cualquier futuro del release (`<INST>_ticks.parquet`, mismo esquema que NQ): un bloque por trade_date, sin fuera de horario."""
+def bloques_futuro(inst, desde, hasta, entrada="/kaggle/input", libro=False):
+    """Cualquier futuro del release (`<INST>_ticks.parquet`, mismo esquema que NQ): un bloque por trade_date, sin fuera de horario.
+    `libro=True` agrega bid/ask (precio; NaN si el quote es inválido) para los indicadores que clasifican el agresor (BigTrap2)."""
     import pyarrow.parquet as pq
     _check(desde, hasta)
     f = glob.glob(entrada + f"/**/{inst}_ticks.parquet", recursive=True)[0]; pf = pq.ParquetFile(f); tk = TICK_FUTURO[inst]
@@ -106,10 +107,15 @@ def bloques_futuro(inst, desde, hasta, entrada="/kaggle/input"):
         if st.min < desde or st.max > hasta: continue
         por_dia.setdefault(int(st.min), []).append(g)
     for td in sorted(por_dia):
-        t = pf.read_row_groups(por_dia[td], columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "regime_id", "outside_regular"]).to_pandas()
+        t = pf.read_row_groups(por_dia[td], columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "regime_id", "outside_regular"]
+                               + (["bid_ticks", "ask_ticks"] if libro else [])).to_pandas()
         t = t[(~t.outside_regular) & (t.ts_utc_ns < HOLDOUT_APERTURA_UTC_NS)].sort_values("ts_utc_ns", kind="stable")
-        yield pd.DataFrame(dict(ts_ns=t.ts_utc_ns.to_numpy(), px=t.price_ticks.to_numpy() * tk, vol=t.volume.to_numpy(float),
-                                sesion=t.trade_date.to_numpy(np.int64), segmento=t.regime_id.to_numpy(np.int64)))
+        d = dict(ts_ns=t.ts_utc_ns.to_numpy(), px=t.price_ticks.to_numpy() * tk, vol=t.volume.to_numpy(float),
+                 sesion=t.trade_date.to_numpy(np.int64), segmento=t.regime_id.to_numpy(np.int64))
+        if libro:
+            b, a = t.bid_ticks.to_numpy(float), t.ask_ticks.to_numpy(float); ok = (b > 0) & (a >= b)
+            d.update(bid=np.where(ok, b * tk, np.nan), ask=np.where(ok, a * tk, np.nan))
+        yield pd.DataFrame(d)
 
 
 def bloques_dukascopy(simbolo, desde, hasta, entrada="/kaggle/input"):
@@ -152,7 +158,7 @@ def resolver(nombre: str):
 FUENTES = {"NQ": (bloques_nq, 0.25, 1.5455, 0.5), "USATECH": (bloques_usatech, 0.01, 1.5455, 0.5)}   # tests/research/test_fuentes_ticks.py: = edgelab.costos
 
 
-def bloques_nq_sellado(desde, hasta, ruta, acta):
+def bloques_nq_sellado(desde, hasta, ruta, acta, tick: float = 0.25):
     """Ticks del HOLDOUT (sesiones >= 2026-10-01) desde la carpeta sellada local. Sólo para una apertura registrada: exige la
     ruta de un acta de apertura committeada ANTES de correr y no entrega nada anterior a la frontera (no mezcla desarrollo).
     No está en FUENTES a propósito: nunca se usa por accidente."""
@@ -165,7 +171,7 @@ def bloques_nq_sellado(desde, hasta, ruta, acta):
     contratos = {c: i for i, c in enumerate(sorted(t.contract.unique()))}
     for td, g in t.groupby("trade_date", sort=True):
         g = g.sort_values("ts_utc_ns", kind="stable")
-        yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * 0.25, vol=g.volume.to_numpy(float),
+        yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * float(tick), vol=g.volume.to_numpy(float),
                                 sesion=np.full(len(g), int(td), np.int64), segmento=g.contract.map(contratos).to_numpy(np.int64)))
 
 

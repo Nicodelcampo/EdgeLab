@@ -1,0 +1,414 @@
+{
+ "etapa": "INDAGA",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793048154.5172014,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793050960.499162,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "ts": 1793052658.6399872,
+   "etapa": "INDAGA",
+   "falla": "no se pudo traer el resultado: FileNotFoundError(2, 'No such file or directory')"
+  }
+ ],
+ "spec": {
+  "cid": "U1-RACIMOS-GRILLA-NQ",
+  "familia": "U1_RACIMOS_GRILLA_NQ",
+  "experimento": "edgelab.research.u1_racimos_grilla",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 con racimos de aVolZonePOI2 (volumen real concentrado y repetido) como áreas, con la definición de zona y de racimo como perillas (nivel 1).",
+  "como_podria_refutarse": "Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o ninguna definición de zona/racimo se separa de las demás.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS_BT2_AVZR.md",
+  "n_celdas_por_canal": 46656,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC.",
+   "Decisión global de Nico 2026-10-27: el holdout empieza el 30 de septiembre (apertura 2026-09-30 22:00 UTC = sesión CME 20261001) para todos los agentes, todos los activos y todo el proyecto; holdout.desde pasa de 20261023 a 20261001."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_RACIMOS_GRILLA_NQ",
+   "declarada": true,
+   "padres": [
+    "U1_ZONAS_NQ",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4838367,
+   "n_heredado": 4838367,
+   "total": 4838367,
+   "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793048154.5170658,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-u1-racimos-grilla-nq-indaga-20250801",
+ "fallas": 1,
+ "params": {
+  "cortes": {},
+  "bases": [
+   [
+    1,
+    0,
+    0,
+    9,
+    2,
+    1
+   ],
+   [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   [
+    1,
+    1,
+    0,
+    0,
+    3,
+    1
+   ]
+  ]
+ },
+ "periodo": [
+  20250801,
+  20260331
+ ],
+ "lanzada": 1793051265.2213116,
+ "cortes": {},
+ "candidatas": [
+  [
+   1,
+   0,
+   0,
+   9,
+   2,
+   1
+  ],
+  [
+   1,
+   0,
+   0,
+   9,
+   1,
+   0
+  ],
+  [
+   1,
+   1,
+   0,
+   0,
+   3,
+   1
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    "n": 45,
+    "media_neta": 25.66561111111111,
+    "sesiones": 32,
+    "ic90": [
+     14.853170212765956,
+     35.75018534144427
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 26.77,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.44479225827778346,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.912445068359375,
+    "canal": "total",
+    "q_fdr": 0.003636694635158566,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    "n": 38,
+    "media_neta": 24.23739473684211,
+    "sesiones": 28,
+    "ic90": [
+     14.044913851351351,
+     32.64293750000001
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 28.79,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.42004086686651865,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.272809028625488,
+    "canal": "total",
+    "q_fdr": 0.0015391641539876932,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ],
+    "n": 47,
+    "media_neta": 23.717797872340434,
+    "sesiones": 33,
+    "ic90": [
+     12.648380208333334,
+     33.6687716802168
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 29.76,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.4110361070828834,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.552650213241577,
+    "canal": "total",
+    "q_fdr": 0.023843303937579496,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    1,
+    0,
+    0,
+    9,
+    2,
+    1
+   ],
+   "n_desc": 45,
+   "ops_mes": 6.43,
+   "efecto": 12.832805555555556,
+   "oos": {
+    "n": 38.6,
+    "mde": 17.060214184369624,
+    "potencia": 0.5892006181568985
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 8.651107562699865,
+    "potencia": 0.9794991132785024
+   }
+  },
+  {
+   "celda": [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   "n_desc": 38,
+   "ops_mes": 5.43,
+   "efecto": 12.118697368421055,
+   "oos": {
+    "n": 32.6,
+    "mde": 15.183329528076248,
+    "potencia": 0.6329762460207453
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 7.075217444900708,
+    "potencia": 0.9955265122101454
+   }
+  },
+  {
+   "celda": [
+    1,
+    1,
+    0,
+    0,
+    3,
+    1
+   ],
+   "n_desc": 47,
+   "ops_mes": 6.71,
+   "efecto": 11.858898936170217,
+   "oos": {
+    "n": 40.3,
+    "mde": 17.1609379876211,
+    "potencia": 0.5292563262737907
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 8.893463491449024,
+    "potencia": 0.9526106248472603
+   }
+  }
+ ]
+}

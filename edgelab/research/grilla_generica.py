@@ -327,7 +327,7 @@ def resumen_e0(D, variables, cortes):
     q = lambda s: {p: round(float(np.nanquantile(s, p)), 4) for p in (0.1, 0.25, 0.5, 0.75, 0.9)} if np.isfinite(s).any() else {}
     out = dict(disparos=int(len(D)), sesiones=int(D.ses.nunique()) if "ses" in D else None, cortes=cortes, variables={})
     for v in variables:
-        x = D[v.columna].to_numpy(float)
+        x = D[v.columna].to_numpy(float) if v.columna in D else np.array([], float)   # 2026-10-27: 0 disparos sin columnas (U1 en CONTEO)
         out["variables"][v.nombre] = dict(faltantes=int((~np.isfinite(x)).sum()), cuantiles=q(x),
                                           **({"conteo": {int(k): int(n) for k, n in zip(*np.unique(x[np.isfinite(x)], return_counts=True))}} if v.categoria else {}))
     return out
@@ -350,7 +350,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
            resolucion=None):
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
-    if "ses" not in D: D["ses"] = ctx["ses"][D.k.to_numpy()]
+    if "ses" not in D: D["ses"] = np.asarray(ctx["ses"])[D.k.to_numpy().astype(np.intp)] if "k" in D else np.array([], np.intp)   # 2026-10-27 (O13): con 0 disparos `k` no es entera
+    if ctx.get("desde_eval") and len(D): D = D[D.ses >= int(ctx["desde_eval"])].reset_index(drop=True)                           # calentamiento previo a `desde_eval` no cuenta disparos ni operaciones
     cortes = cortes or cortes_e0(D, exp.VARIABLES)
     res = dict(experimento=exp.NOMBRE, modo=modo, E0=resumen_e0(D, exp.VARIABLES, cortes))
     if modo == "E0" or not len(D): return res, D

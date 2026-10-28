@@ -1,0 +1,10 @@
+## U1-ZONAS-BT2-NQ — edgelab.research.u1_zonas_bt2 · señal NQ · ejecución NQ
+- Justificación: U1 con los rectángulos de BigTrap2 (traders atrapados), vivos hasta su invalidación: si U1 es «el precio vuelve a donde hubo volumen atrapado», son mejores áreas que los huecos de LUX-IMB.
+- Refutación: Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4838367 pruebas de ['U1_ZONAS_NQ', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 67793 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250801, 20260331]: evaluables 54351 (m del FDR 54351 de 4478976 celdas), FDR 9, RW umbral 4.66837739944458 (diagnóstico), linaje 4838367 como informacion, pistas sin nominación 3, candidatas 3
+- Potencia prevista (informativa): [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: OOS n 60.0 potencia 0.90, holdout n 150 potencia 1.00; [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: OOS n 60.0 potencia 0.97, holdout n 150 potencia 1.00; [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: OOS n 72.0 potencia 0.86, holdout n 150 potencia 0.99
+- INDAGA: marginales de 3 candidatas guardadas

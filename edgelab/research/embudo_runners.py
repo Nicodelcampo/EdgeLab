@@ -101,12 +101,16 @@ class KaggleRunner:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
                 n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
+            if spec.get("confirmador"):
+                n3, e3 = datasets(spec["confirmador"], *periodo); needs += n3; extra += e3
             extra += list(spec.get("datasets_extra", []))                 # p. ej. el almacén de zonas de U1-ZONAS (target-free)
         cuenta = spec.get("cuenta_kaggle") or self.owner
         if cuenta == "auto": cuenta = self.elegir_cuenta()
-        slug = f"{cuenta}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
+        nombre = f"embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:49].rstrip("-")   # Kaggle <=50 y validate_push <=49; sin "_"
+        slug = f"{cuenta}/{nombre}"
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+        if spec.get("confirmador"): env["CONFIRMADOR"] = spec["confirmador"]
         if self.dataset_sellado:
             if not params.get("acta"): raise ValueError("etapa de holdout sin acta registrada")
             env["SELLADO"] = "1"
@@ -160,6 +164,7 @@ class KaggleRunner:
         for s in ("complete", "running", "queued", "error", "cancel"):
             if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
         if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
+        if '"code":403' in out.replace(" ", ""): return "error"     # 2026-10-27 (O14): el kernel no es de esta cuenta (lanzado sin su cabecera): relanzar, no esperar 14 h
         return "running"
 
     def traer(self, handle) -> dict:
@@ -185,6 +190,7 @@ class LocalRunner:
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
         ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
         cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
+        if spec.get("confirmador"): ctx["conf"] = GG.contexto_m1(self.lectores[spec["confirmador"]](*periodo, spec), self.ticks[spec["confirmador"]])
         fr, ex = friccion(ejec)
         h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{len(self.res)}"
         if self.carpeta:

@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 772 |
+| `docs/research` | 791 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,6 +38,8 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
+| REPORTE | 2 | `REPORTE_ALINEACION_AGENTE_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE (registro vivo: cada sesión del agente agrega su bloque, lo más nuevo ab |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
 | ERRORES | 1 | `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` | 2026-10-26 | VIGENTE (registro vivo: cada error nuevo se agrega acá en el mismo commit que su |
@@ -51,7 +53,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
 | CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
-| REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
 | IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
 | EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
-| PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
 
 ## Superados (7)
 
