@@ -368,3 +368,28 @@ def test_archivar_reemplaza_un_pedido_ya_procesado_con_el_mismo_nombre(tmp_path)
     nuevo = tmp_path / "x.json"; nuevo.write_text("nuevo")
     M._archivar(nuevo, viejo)
     assert viejo.read_text() == "nuevo" and not nuevo.exists()
+
+
+def test_holdout_sellado_no_se_expone_por_el_puente(tmp_path):
+    """HOLDOUT-A4 (2026-10-28): ni lectura, ni descarga, ni adjuntar como fuente de un kernel, ni salidas de kernels de holdout."""
+    from tools.kaggle_drive_bridge import BridgePolicy, KaggleBridgeError, process_bridge_request
+    pol = BridgePolicy(allow_push=True, allow_data_download=True, allowed_source_owners=("nicolasbuttaro",))
+    sellado = "nicolasbuttaro/edgelab-holdout-sellado"
+    pedidos = [("inspect_dataset", {"dataset": sellado}), ("list_dataset_files", {"dataset": sellado}),
+               ("read_dataset_file_preview", {"dataset": sellado, "file": "SELLADO.txt"}),
+               ("download_file_chunked", {"dataset": sellado, "file": "ES_12-26_ticks.parquet"}),
+               ("push_kernel", {"slug": "mi-kernel", "title": "x", "script": "print(1)", "dataset_sources": [sellado]}),
+               ("get_kernel_output", {"owner": "nicolasbuttaro", "slug": "embudo-u1-es-grilla-holdout-conteo-20261001"})]
+
+    class _C:                                                   # cliente que revienta si alguien lo LLAMA: la guarda tiene que cortar antes
+        def __getattr__(self, k):
+            def _no(*a, **kw):
+                raise AssertionError(f"el cliente no debe llamarse ({k})")
+            return _no
+
+    for i, (accion, params) in enumerate(pedidos):
+        try:
+            process_bridge_request(dict(request_id=f"h{i}", action=accion, params=params), _C(), tmp_path, policy=pol)
+        except KaggleBridgeError:
+            continue
+        raise AssertionError(f"{accion} sobre el holdout sellado no fue bloqueado")

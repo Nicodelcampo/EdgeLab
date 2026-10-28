@@ -522,7 +522,18 @@ def lookup_pinned_discovery_entry(discovery_json_path: Path, version_ref: str, r
     raise KaggleBridgeError(f"File {relative_path!r} under {version_ref!r} not found in discovery.json")
 
 
+_SEALED_RE = re.compile(r"sellado|holdout", re.IGNORECASE)
+
+
+def _check_not_sealed(ref: Any, what: str = "dataset") -> None:
+    """Firewall del holdout (HOLDOUT-A4, 2026-10-28): ningún agente externo lee, previsualiza, descarga ni adjunta el dataset sellado
+    (`edgelab-holdout-sellado`) ni las salidas de kernels de holdout por este puente. Sólo restringe: no habilita nada."""
+    if _SEALED_RE.search(str(ref)):
+        raise KaggleBridgeError(f"{what} {str(ref)!r}: el holdout sellado no se expone por el puente (firewall HOLDOUT-A4)")
+
+
 def _check_download_allowed(dataset: str, file_name: str, policy: BridgePolicy) -> None:
+    _check_not_sealed(dataset)
     if policy.allow_data_download:
         owner = dataset.split("/")[0]
         if owner not in policy.allowed_source_owners:       # con descarga de datos encendida sólo se baja de owners declarados
@@ -553,6 +564,7 @@ def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict
     sources = [str(s).strip() for s in (params.get("dataset_sources") or []) if str(s).strip()]
     ksources = [str(s).strip() for s in (params.get("kernel_sources") or []) if str(s).strip()]
     for s in sources + ksources:
+        _check_not_sealed(s, "source")
         owner = s.split("/")[0]
         if owner not in policy.allowed_source_owners:
             raise KaggleBridgeError(f"source {s!r}: owner no permitido (--allow-source-owner)")
@@ -653,14 +665,17 @@ def process_bridge_request(
             page=int(params.get("page", 1)),
         )
     elif action == "list_dataset_files":
+        _check_not_sealed(params["dataset"])
         result = client.list_dataset_files(
             dataset=str(params["dataset"]),
             page_size=int(params.get("page_size", 100)),
             page_token=params.get("page_token"),
         )
     elif action == "inspect_dataset":
+        _check_not_sealed(params["dataset"])
         result = client.inspect_dataset(str(params["dataset"]))
     elif action == "read_dataset_file_preview":
+        _check_not_sealed(params["dataset"])
         result = client.read_dataset_file_preview(
             dataset=str(params["dataset"]),
             file_name=str(params["file"]),
@@ -719,6 +734,7 @@ def process_bridge_request(
         slug = str(params["slug"]).strip()
         if not _SLUG_RE.match(slug):
             raise KaggleBridgeError("slug inválido")
+        _check_not_sealed(slug, "kernel")
         if owner not in policy.allowed_source_owners:                      # sin owners declarados = nadie permitido (no se leen salidas ajenas)
             raise KaggleBridgeError(f"get_kernel_output: owner {owner!r} no permitido (--allow-source-owner)")
         result = client.get_kernel_output(
