@@ -13,11 +13,18 @@ Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
    - **Escala causal de `202610` en `u1_oro.escala_por_mes`:** cuando la ventana arranca en `202610` (único mes del dataset sellado), `r.shift(1)` dejaba `202610` en `NaN` y todas las campañas `U1-*` daban `0` disparos en todo octubre. Ahora `u1_oro.py` fija `RANGO_M1_202609` (medido sobre los minutos activos de septiembre 2026 en desarrollo) y escala `202610` causalmente con `RANGO_M1_202609[sensor] / r_ref`.
    - **Zonas en `SELLADO=1` (`u1_zonas.py` y `u1_racimos_grilla.py`):** en el holdout sólo se monta `edgelab-holdout-sellado` (ticks crudos, sin `ZONAS_*.parquet`, lo que rompía `U1-ZONAS-NQ` con `FileNotFoundError`). Cuando `SELLADO=1` y no hay parquet de zonas, `u1_zonas` y `u1_racimos_grilla` calculan las zonas (`AVZP2`, `AVCL`, `BT2`, `AVZRG`) sobre las sesiones selladas `20261001..HASTA`.
    - **Calentamiento causal `20261001..desde-1` (`embudo_main.py` y `grilla_generica.correr`):** para campañas con `desde > 20261001` (`20261023`), el contexto se arma desde `20261001` para calentar el umbral de 20 bloques de `AVZP2`/`AVCL`, los racimos de `AVZRG` y `base_rate` de `u1_indaga`, y `grilla_generica.correr` filtra `D = D[D.ses >= ctx["desde_eval"]]` antes de `resumen_e0` y `simular_ops` para que el calentamiento nunca cuente disparos ni operaciones.
-3. **Acción inmediata en `SV1`:**
+3. **Las 8 corridas de `HOLDOUT_CONTEO` ya se lanzaron y completaron (`8/8 complete`) en Kaggle con el código nuevo (`e1682e74`):**
+   - `U1-ZONAS-NQ` (`nicobuttaro/embudo-u1-zonas-nq-holdout-conteo-20261001`, `[20261001, 20261026]`): **`conteo = [11]`** (de `n_fijo = 449`)
+   - `U1-ES-GRILLA` (`nicolasbuttaro/embudo-u1-es-grilla-holdout-conteo-20261001`, `[20261001, 20261026]`): **`conteo = [6]`** (de `n_fijo = 169`)
+   - `U1-YM-GRILLA` (`nicolasbuttaro/embudo-u1-ym-grilla-holdout-conteo-20261001`, `[20261001, 20261026]`): **`conteo = [2]`** (de `n_fijo = 450`)
+   - `U1-ZONAS-BT2-NQ` (`nicolasbuttaro/embudo-u1-zonas-bt2-nq-holdout-conteo-20261023`, `[20261023, 20261026]`): **`conteo = [1]`** (de `n_fijo = 150`)
+   - `U1-ZONAS-ES` (`nicolasbuttaro/embudo-u1-zonas-es-holdout-conteo-20261023`, `[20261023, 20261026]`): **`conteo = [0]`** (de `n_fijo = 150`; sólo 2 sesiones desde el 23-oct)
+   - `U1-ZONAS-AVCL-NQ` (`nicolasbuttaro/embudo-u1-zonas-avcl-nq-holdout-conteo-20261023`, `[20261023, 20261026]`): **`conteo = [0]`** (de `n_fijo = 150`; sólo 2 sesiones desde el 23-oct)
+   - `U1-RACIMOS-GRILLA-ES` (`nicolasbuttaro/embudo-u1-racimos-grilla-es-holdout-conteo-202610`, `[20261023, 20261026]`): **`conteo = [0]`** (de `n_fijo = 295`; sólo 2 sesiones desde el 23-oct)
+   - `U1-RACIMOS-GRILLA-NQ` (`nicolasbuttaro/embudo-u1-racimos-grilla-nq-holdout-conteo-202610`, `[20261023, 20261026]`): **`conteo = [0]`** (de `n_fijo = 150`; sólo 2 sesiones desde el 23-oct)
+4. **Acción inmediata en `SV1`:**
    - Ejecutá `update.sh` a la punta de `foundation/f0b-compatibility-probe`.
-   - Reabrí a `CONTEO` (`fallas: 0`, `handle: null`, `ultimo_conteo: null`): **`U1-ZONAS-ES`**, **`U1-ES-GRILLA`**, **`U1-YM-GRILLA`** y **`U1-ZONAS-NQ`**.
-   - Poné **`"ultimo_conteo": null`** en **`U1-ZONAS-AVCL-NQ`** y **`U1-ZONAS-BT2-NQ`** (habían guardado `conteo: 0` hoy a las 03:27 UTC contra `v1` cuando no existían sesiones `>= 2026-10-23`, por lo que `embudo.paso` esperaba `intervalo_conteo_dias = 7` días antes de relanzarlas).
-   - Las 8 corridas de `HOLDOUT_CONTEO` ya fueron lanzadas en Kaggle desde la sesión de Nico con el código nuevo; al dejar `ultimo_conteo: null` / `fase: CORRIENDO` con su handle (o `PENDIENTE`), SV1 tomará los conteos reales.
+   - Reabrí a `CONTEO` (`fallas: 0`, `handle: null`, `ultimo_conteo: null`): **`U1-ZONAS-ES`**, **`U1-ES-GRILLA`**, **`U1-YM-GRILLA`** y **`U1-ZONAS-NQ`**, y poné **`"ultimo_conteo": null`** en **`U1-ZONAS-AVCL-NQ`** y **`U1-ZONAS-BT2-NQ`** para que `SV1` registre estos conteos en su `estado.json` y continúe el seguimiento semanal hasta alcanzar `n_fijo`.
 
 ## 2026-10-27 (18:40 UTC) — de Nico (redactado por la sesión en la nube): más corridas en paralelo con las dos cuentas
 
