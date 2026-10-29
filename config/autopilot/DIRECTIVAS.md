@@ -17,3 +17,8 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    Dado que los edges operables son de régimen, no se espera años a acumular un `n_fijo` individual gigante: el riesgo se diversifica en una
    canasta de estrategias de régimen y cada candidata se confirma para la canasta si su rendimiento en la ventana reducida de holdout
    disponible está dentro de la desviación esperada según su distribución en desarrollo/OOS.
+7. Auditoría prioritaria de las 16 corridas cosechadas de la sesión en la nube (Olas 1–9, 2026-10-29): ejecutá en el ciclo inmediato
+   `python3 tools/auditar_corridas_nube_20261029.py`, procesá la cola `docs/research/auditoria_corridas_20261029/COLA_AUDITORIA_DEBIAN_20261029.json`
+   (evaluación de las 6 nuevas `ACTA_HOLDOUT.json` en `edgelab-holdout-sellado` con `CONTEO` y `tools/holdout_canasta.py`, y evaluación
+   de las 9 campañas con `PISTAS_VIVAS.json` con `tools/analizar_embudo.py` y `tools/holdout_canasta.py`) y publicá el dictamen firmado en
+   `docs/research/auditoria_corridas_20261029/DICTAMEN_AUDITORIA_DEBIAN_20261029.md`.

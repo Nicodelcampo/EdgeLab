@@ -3,6 +3,34 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-29 (03:50 UTC) — de Nico (redactado por la sesión en la nube): ORDEN DE AUDITORÍA PRIORITARIA de las 16 corridas y 3 módulos de las Olas 1–9 (`ba7c2351` + `de6c3ecf`)
+
+### 1. Contexto y alcance de la auditoría encargada a los agentes del Debian (`SV1`)
+En los commits `ba7c2351` y `de6c3ecf` se integraron al repositorio:
+- **3 módulos experimentales nuevos** (100% causales y con paridad `niveles_lote == niveles`):
+  1. `edgelab/research/corredor_vol_gaps.py` (`CORREDOR_VOL_GAPS_*`: `CVGAP-NQ`, `CVGAP-CFD-NQ`, `CVGAP-ES`, `CVGAP-CFD-ES`, 933.120 celdas/canal).
+  2. `edgelab/research/otr_930_sweep.py` (`OTR_930_SWEEP_*`: `OTR930-NQ`, `OTR930-ES`, `OTR930-CFD-NQ`, `OTR930-CFD-ES`, 184.320 celdas/canal).
+  3. `edgelab/research/oro_almuerzo_ruptura.py` (`ORO_ALMUERZO_RUPTURA_*`: `ORO-ALM-GC`, `ORO-ALM-CFD`, 92.160 celdas/canal).
+- **16 campañas cosechadas de Kaggle (Olas 1 a 9):**
+  - **6 campañas en `CONTEO` con `ACTA_HOLDOUT.json` congelada, apertura en `HOLDOUT_VENTANAS.jsonl` (`desde: 20261001`) y reserva en `LIBRO_LORD.json`:**
+    `CVGAP-NQ`, `CVGAP-CFD-NQ`, `U1-RACIMOS-GRILLA-NQ`, `U1-ZONAS-BT2-ES`, `U1-ZONAS-BT2-NQ`, `U1-RACIMOS-GRILLA-ES`.
+  - **9 campañas en `PISTAS_VIVAS` (`n_pistas_vivas = 20`) listas para `tools/holdout_canasta.py` y `tools/analizar_embudo.py`:**
+    `CVGAP-ES`, `CVGAP-CFD-ES`, `OTR930-NQ`, `OTR930-ES`, `OTR930-CFD-NQ`, `OTR930-CFD-ES`, `ORO-ALM-GC`, `ORO-ALM-CFD`, `U1-6E-GRILLA`.
+  - **1 campaña en `SIN_REGLA_OPERABLE` con candidata viva en desarrollo lista para `tools/analizar_embudo.py`:** `U1-ZONAS-GRILLA-YM`.
+
+### 2. Herramienta y cola lista para ejecutar en el ciclo inmediato
+Ya dejamos creado y verificado `tools/auditar_corridas_nube_20261029.py` junto con la cola estructurada en `docs/research/auditoria_corridas_20261029/COLA_AUDITORIA_DEBIAN_20261029.json` y el reporte base `docs/research/auditoria_corridas_20261029/REPORTE_PREAUDITORIA_20261029.md`.
+
+### 3. Pasos obligatorios para los 3 roles del Debian (`Embudo`, `Programador`, `Auditor`)
+1. **Rol Auditor (`auditor_alineacion.py` + `tools/auditar_corridas_nube_20261029.py`):**
+   - Ejecutar `python3 tools/auditar_corridas_nube_20261029.py --dinamico` para re-verificar causalidad (`indicadores.causal`), paridad lote/escalar, multiplicidad (`LINAJES.jsonl`, `EVALUABLES.jsonl`), reservas LORD++ (`LIBRO_LORD.json`) y cumplimiento estricto de la Directiva #6 (`holdout.desde == 20261001`).
+   - Auditar matemáticamente las etapas `DESC`, `INTEGRIDAD`, `OOS` y `TOPES` registradas en `estado.json` y `MEDIDO.md` de las 16 campañas.
+2. **Rol Conductor de Embudo (`tools/embudo_correr.py` + `tools/holdout_canasta.py` + `tools/analizar_embudo.py`):**
+   - Correr `tools/embudo_correr.py` (`CONTEO` / `HOLDOUT`) y evaluación de canasta de régimen sobre las **6 nuevas `ACTA_HOLDOUT.json`** (`CVGAP-NQ`, `CVGAP-CFD-NQ`, `U1-RACIMOS-GRILLA-NQ`, `U1-ZONAS-BT2-ES`, `U1-ZONAS-BT2-NQ`, `U1-RACIMOS-GRILLA-ES`) usando `edgelab-holdout-sellado` desde `20261001`.
+   - Correr `tools/holdout_canasta.py` sobre las **9 campañas en `PISTAS_VIVAS`** (`CVGAP-ES`, `CVGAP-CFD-ES`, `OTR930-*`, `ORO-ALM-*`, `U1-6E-GRILLA`) y `python3 tools/analizar_embudo.py lanzar` / `traer` sobre las 16 campañas.
+3. **Rol Programador (en worktree descartable):**
+   - Inspeccionar la estabilidad de meseta paramétrica, descomposición por sub-ventana horaria y sensibilidad a costos/slippage de los 3 módulos nuevos (`corredor_vol_gaps.py`, `otr_930_sweep.py`, `oro_almuerzo_ruptura.py`) y publicar el dictamen consolidado en `docs/research/auditoria_corridas_20261029/DICTAMEN_AUDITORIA_DEBIAN_20261029.md`.
+
 ## 2026-10-28 (00:48 UTC) — de Nico (redactado por la sesión en la nube): frontera global del holdout desde el 30-sep (2026-10-01), evaluación de canasta de régimen en ventana corta, activos faltantes en el holdout y links/propuestas sobre griegas (0DTE / Gamma / Vanna / Charm)
 
 ### A. Directiva global de Nico sobre el Holdout (para todos los agentes, activos y campañas)

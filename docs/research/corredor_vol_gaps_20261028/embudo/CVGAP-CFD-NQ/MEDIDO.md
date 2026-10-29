@@ -15,4 +15,4 @@
 - INTEGRIDAD [0, 1, 1, 0, 2, 2, 3, 1, 2, 0, 2]: regla 13.270073770491807, placebo -1.57, latencia 1 vela 12.24958196721312 -> pasa
 - OOS [20260401, 20260925] (régimen actual): medias [10.5, 10.5, 7.41]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.3, 0.29, 0.6]; LORD++ sin rechazo
 - TOPES: elegida {'celda': [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10], 'tope': ['pts', 50.0], 'puntaje': 11.321366890840883, 'peor': -74.7955}
-- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10] tope ['pts', 50.0]
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 1, 0, 0, 2, 3, 2, 1, 2, 0, 10] tope ['pts', 50.0]
