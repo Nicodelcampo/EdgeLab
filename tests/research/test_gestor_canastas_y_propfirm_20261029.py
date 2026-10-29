@@ -84,3 +84,15 @@ def test_emisor_nt8_y_simulador_propfirm(tmp_path: Path) -> None:
     sim = SCP.simular_challenge_montecarlo(pnl_dias, SCP.PERFILES_CUENTAS_PROPFIRM[0], n_simulaciones=500)
     assert sim["pass_rate_pct"] > 90.0
     assert sim["ev_neto_primer_payout_usd"] > 1000.0
+
+
+def test_desduplicar_exposicion_simultanea_activo_y_pesos_regimen() -> None:
+    df = pd.DataFrame([
+        {"t": 1775000000, "ses": 20260401, "usd": 50.0, "unit_id": "U1", "inst": "MNQ", "regimen_tipo": "EXPANSION_REVERSION"},
+        {"t": 1775000100, "ses": 20260401, "usd": 60.0, "unit_id": "U2", "inst": "MNQ", "regimen_tipo": "EXPANSION_REVERSION"},
+        {"t": 1775000200, "ses": 20260401, "usd": -40.0, "unit_id": "U3", "inst": "MNQ", "regimen_tipo": "COMPRESION_RUPTURA"},
+        {"t": 1775000200, "ses": 20260401, "usd": 70.0, "unit_id": "U4", "inst": "MGC", "regimen_tipo": "COMPRESION_RUPTURA"},
+    ])
+    df_cap = GCR.desduplicar_exposicion_simultanea_activo(df, max_slots_simultaneos_por_activo=2, ventana_solapamiento_s=900)
+    assert len(df_cap) == 3
+    assert set(df_cap["unit_id"].tolist()) == {"U1", "U2", "U4"}

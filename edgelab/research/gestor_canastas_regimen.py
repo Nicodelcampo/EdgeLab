@@ -1,17 +1,19 @@
-"""Gestor de Canastas por Régimen y Compuerta Anti-Aplanamiento / Anti-Sobreajuste OOS (2026-10-29).
+"""Gestor de Canastas por Régimen v2 y Compuerta Anti-Aplanamiento / Anti-Sobreajuste OOS (2026-10-29).
 
-Resuelve dos problemas críticos antes de enviar cualquier regla o canasta a ejecución en NinjaTrader 8 o challenges:
+Resuelve tres problemas críticos antes de enviar cualquier regla o canasta a ejecución en NinjaTrader 8 o challenges:
 1. Compuerta Anti-Aplanamiento OOS (`auditar_aplanamiento_oos`):
    Descarta automáticamente cualquier regla o canasta cuya curva en OOS se aplane en la segunda mitad (`H2 <= 0`),
    tenga baja linealidad (`R² < min_r2`), dependa de <= 3 operaciones atípicas (`sin_top3 <= 0`), o pierda más del
    `75%` de su pendiente respecto de `DESC` (`retencion_oos < 0.25`).
-2. Gestor de Canastas por Régimen (`podar_canasta_ortogonal` + `gestor_dinamico_causal_sesion`):
-   - Poda una canasta de 20 pistas eliminando las pistas ruidosas o aplanadas y seleccionando hasta `max_k` pistas
-     ortogonales (correlación diaria entre pistas `<= max_corr`, p. ej. `0.35`) que cubren distintos sub-regímenes.
-   - En operación secuencial sesión a sesión (`gestor_dinamico_causal_sesion`), evalúa de forma estrictamente causal
-     (usando sólo sesiones cerradas `< s`) un freno de sombra (`shadow circuit-breaker`) contra aplanamiento en vivo y
-     pondera las familias activas según el régimen observable de dispersión/volatilidad previa (`COMPRESION_RUPTURA`,
-     `EXPANSION_REVERSION`, `CONFLUENCIA_TENDENCIA`).
+2. Poda Ortogonal y Tope de Exposición Simultánea por Activo (`podar_canasta_ortogonal` + `desduplicar_exposicion_simultanea_activo`):
+   - Poda una canasta de 20 pistas seleccionando hasta `max_k` pistas ortogonales (correlación diaria `<= max_corr`, p. ej. `0.35`).
+   - Limita la exposición simultánea en un mismo instrumento (`MNQ`, `MES`, `MGC`) a `max_slots_simultaneos_por_activo` (por defecto `2`)
+     dentro de la ventana de tenencia (`ventana_solapamiento_s = 900s`), evitando pérdidas correlacionadas cuando varias familias
+     disparan en el mismo minuto.
+3. Gestor Dinámico Causal Sesión a Sesión v2 (`gestor_dinamico_causal_sesion`):
+   - Evalúa de forma estrictamente causal (usando sólo sesiones cerradas `< s`) un freno de sombra (`shadow circuit-breaker`)
+     contra aplanamiento en vivo y asigna multiplicadores adaptativos por régimen observable (`COMPRESION_RUPTURA`,
+     `EXPANSION_REVERSION`, `CONFLUENCIA_TENDENCIA`) según la dispersión realizada en las sesiones previas.
 """
 from __future__ import annotations
 
@@ -237,23 +239,48 @@ def podar_canasta_ortogonal(
     }
 
 
+def desduplicar_exposicion_simultanea_activo(
+    df_ops: pd.DataFrame,
+    *,
+    max_slots_simultaneos_por_activo: int = 2,
+    ventana_solapamiento_s: int = 900,
+) -> pd.DataFrame:
+    """Limita a `max_slots_simultaneos_por_activo` las posiciones abiertas simultáneamente en un mismo activo (`MNQ`, `MES`, `MGC`)."""
+    if df_ops is None or len(df_ops) == 0:
+        return pd.DataFrame()
+    cols_orden = ["t", "unit_id"] if "unit_id" in df_ops.columns else ["t"]
+    df_ord = df_ops.sort_values(cols_orden, kind="stable").reset_index(drop=True)
+    active_by_inst: dict[str, list[int]] = {}
+    keep: list[int] = []
+    cur_ses: int | None = None
+
+    for idx, row in df_ord.iterrows():
+        s = int(row["ses"])
+        t = int(row["t"])
+        inst = str(row.get("inst", "MNQ"))
+        if s != cur_ses:
+            active_by_inst = {}
+            cur_ses = s
+        exits = [x for x in active_by_inst.get(inst, []) if x > t]
+        if len(exits) < int(max_slots_simultaneos_por_activo):
+            exits.append(t + int(ventana_solapamiento_s))
+            active_by_inst[inst] = exits
+            keep.append(idx)
+        else:
+            active_by_inst[inst] = exits
+
+    return df_ord.iloc[keep].reset_index(drop=True)
+
+
 def gestor_dinamico_causal_sesion(
     df_operaciones_unidades: pd.DataFrame,
     *,
     ventana_sesiones_freno: int = 12,
     min_ops_warmup: int = 6,
     umbral_pf_freno: float = 0.85,
+    ponderar_regimen_vol: bool = False,
 ) -> dict[str, Any]:
-    """Ejecuta el Gestor Dinámico Causal de Canastas por Régimen sesión a sesión (estrictamente ex-ante, sin look-ahead).
-
-    En cada sesión `s`:
-    1. Clasifica el régimen observable ex-ante usando únicamente las sesiones cerradas `< s`:
-       - Dispersión / rango realizado reciente de la canasta en las últimas 5 sesiones cerradas.
-       - Si una unidad acumula `>= min_ops_warmup` operaciones en sesiones `< s` y en su ventana móvil de las últimas
-         `ventana_sesiones_freno` activas su Profit Factor cae bajo `umbral_pf_freno` Y su equity está debajo de su media
-         móvil de 5 sesiones activas, activa el **Freno de Sombra Anti-Aplanamiento (`peso = 0.0`)** hasta que sus
-         operaciones en sombra recuperen la media móvil.
-    """
+    """Ejecuta el Gestor Dinámico Causal de Canastas por Régimen v2 sesión a sesión (estrictamente ex-ante, sin look-ahead)."""
     if df_operaciones_unidades is None or len(df_operaciones_unidades) == 0:
         return {"n_ops_totales": 0, "n_ops_ejecutadas": 0, "neto_sin_gestor_usd": 0.0, "neto_con_gestor_usd": 0.0}
 
@@ -263,6 +290,12 @@ def gestor_dinamico_causal_sesion(
 
     historial_por_unidad: dict[str, list[float]] = {u: [] for u in unidades}
     eq_sombra_por_unidad: dict[str, list[float]] = {u: [] for u in unidades}
+    hist_reg_pnl: dict[str, list[float]] = {
+        "COMPRESION_RUPTURA": [],
+        "EXPANSION_REVERSION": [],
+        "CONFLUENCIA_TENDENCIA": [],
+    }
+    hist_mkt_abs: list[float] = []
 
     pesos_por_sesion: dict[int, dict[str, float]] = {}
     filas_ejecutadas: list[pd.DataFrame] = []
@@ -281,24 +314,55 @@ def gestor_dinamico_causal_sesion(
                 pf_rec = gan / per if per > 1e-9 else (99.0 if gan >= 0 else 0.0)
                 ma5 = float(np.mean(eq_hist[-min(5, len(eq_hist)):]))
                 eq_actual = float(eq_hist[-1])
-                # Freno causal de sombra si la unidad se aplana/cae en su ventana reciente
                 if pf_rec < float(umbral_pf_freno) and eq_actual < ma5:
                     pesos_hoy[u] = 0.0
                 else:
                     pesos_hoy[u] = 1.0
+
+        mult_reg: dict[str, float] = {
+            "COMPRESION_RUPTURA": 1.0,
+            "EXPANSION_REVERSION": 1.0,
+            "CONFLUENCIA_TENDENCIA": 1.0,
+        }
+        if ponderar_regimen_vol and len(hist_mkt_abs) >= 10:
+            rec_disp = float(np.mean(hist_mkt_abs[-3:]))
+            med_disp = float(np.median(hist_mkt_abs[:-3]))
+            if rec_disp < 0.85 * med_disp:
+                mult_reg["COMPRESION_RUPTURA"] = 1.25
+                mult_reg["CONFLUENCIA_TENDENCIA"] = 1.15
+            elif rec_disp > 1.15 * med_disp:
+                mult_reg["EXPANSION_REVERSION"] = 1.25
+            for rt, h_list in hist_reg_pnl.items():
+                if len(h_list) >= 5:
+                    arr = np.asarray(h_list[-8:], float)
+                    g_r = float(arr[arr > 0].sum())
+                    p_r = float(-arr[arr < 0].sum())
+                    pf_r = g_r / p_r if p_r > 1e-9 else 99.0
+                    if pf_r < 0.80:
+                        mult_reg[rt] *= 0.60
+                    elif pf_r > 2.00:
+                        mult_reg[rt] *= 1.15
+
         pesos_por_sesion[int(ses)] = pesos_hoy
 
         df_ses = df[df["ses"] == ses].copy()
         df_ses["peso_causal"] = df_ses["unit_id"].map(pesos_hoy).astype(float)
+        if ponderar_regimen_vol and "regimen_tipo" in df_ses.columns:
+            df_ses["mult_regimen"] = df_ses["regimen_tipo"].map(lambda x: mult_reg.get(str(x), 1.0)).astype(float)
+            df_ses["peso_causal"] = df_ses["peso_causal"] * df_ses["mult_regimen"]
         df_ses["usd_gestionado"] = df_ses["usd"].astype(float) * df_ses["peso_causal"]
         filas_ejecutadas.append(df_ses)
 
-        # Al cierre de la sesión `ses`, actualizamos el historial en sombra de cada unidad (causal para sesiones > ses)
+        hist_mkt_abs.append(float(np.abs(df_ses["usd"]).sum()))
         for u, grp_u in df_ses.groupby("unit_id"):
             net_dia = float(grp_u["usd"].sum())
             historial_por_unidad[str(u)].append(net_dia)
             prev_eq = eq_sombra_por_unidad[str(u)][-1] if eq_sombra_por_unidad[str(u)] else 0.0
             eq_sombra_por_unidad[str(u)].append(prev_eq + net_dia)
+        if "regimen_tipo" in df_ses.columns:
+            for rt, grp_r in df_ses.groupby("regimen_tipo"):
+                if str(rt) in hist_reg_pnl:
+                    hist_reg_pnl[str(rt)].append(float(grp_r["usd"].sum()))
 
     df_out = pd.concat(filas_ejecutadas, ignore_index=True)
     activas = df_out[df_out["peso_causal"] > 0]
