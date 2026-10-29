@@ -322,14 +322,14 @@ def resumen_rapido_para_agente(max_chars: int = 8000) -> str:
 
 
 def escribir_artefactos_catalogo(raiz: Path = RAIZ_REPO) -> tuple[Path, Path]:
-    """Escribe `config/autopilot/CATALOGO_MODULOS_ESPIRAL.json` y `docs/MODULES.md`."""
+    """Escribe `config/autopilot/CATALOGO_MODULOS_ESPIRAL.json` y `docs/MODULOS_ESPIRAL.md`."""
     cat = catalogo_completo()
     json_path = raiz / "config/autopilot/CATALOGO_MODULOS_ESPIRAL.json"
     json_path.parent.mkdir(parents=True, exist_ok=True)
     json_path.write_text(json.dumps(cat, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     md_lines = [
-        "# Catálogo Oficial de Módulos y Arquitectura en Espiral de EdgeLab (`docs/MODULES.md`)",
+        "# Catálogo Oficial de Módulos y Arquitectura en Espiral de EdgeLab (`docs/MODULOS_ESPIRAL.md`)",
         "",
         "Estado: **VIGENTE** (generado y verificado por `edgelab/research/catalogo_espiral.py`).",
         "Propósito: Dar acceso inmediato y ordenado a todos los módulos, herramientas, primitivas `@njit` y hallazgos empíricos",
@@ -376,6 +376,6 @@ def escribir_artefactos_catalogo(raiz: Path = RAIZ_REPO) -> tuple[Path, Path]:
             "   Cuando una campaña alcanza `ACTA_HOLDOUT.json` o `PISTAS_VIVAS` con media positiva en OOS, sus funciones `@njit` y su firma de régimen quedan promovidas en `CATALOGO_MODULOS_ESPIRAL.json` y en `APRENDIZAJES_ESPIRAL.md`.",
         ]
     )
-    docs_mod_path = raiz / "docs/MODULES.md"
+    docs_mod_path = raiz / "docs/MODULOS_ESPIRAL.md"
     docs_mod_path.write_text("\n".join(md_lines) + "\n", encoding="utf-8")
     return json_path, docs_mod_path

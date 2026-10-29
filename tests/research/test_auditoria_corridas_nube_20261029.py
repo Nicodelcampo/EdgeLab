@@ -46,8 +46,11 @@ def test_auditoria_28_campanas_y_directiva_6() -> None:
         "ORO-ALM-GC",
         "ORO-ALM-CFD",
         "U1-6E-GRILLA",
+        "CONF-CVR-NQ",
+        "ASIA-NQ",
+        "TORI-NQ",
     }
-    assert len(res["campanas_ola10_desc"]) == 12
+    assert len(res["campanas_ola10_desc"]) == 8
     for cid in res["campanas"]:
         if cid != "U1-6E-GRILLA":
             assert res["campanas"][cid]["holdout_desde"] == 20261001, f"{cid} incumple Directiva #6"
