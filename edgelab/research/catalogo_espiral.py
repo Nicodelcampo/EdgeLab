@@ -271,6 +271,19 @@ MODULOS_CANONICOS: list[ModuloCatalogado] = [
         se_apoya_en=["grilla_generica", "linaje", "holdout_ventanas", "libro_lord"],
         estado_espiral="NUCLEO",
     ),
+    ModuloCatalogado(
+        id_modulo="gestor_canastas_regimen",
+        ruta="edgelab/research/gestor_canastas_regimen.py",
+        capa="L4_INFERENCIA_EMBUDO_Y_CANASTA",
+        categoria="inferencia_embudo_multiagente",
+        descripcion="Compuerta Anti-Aplanamiento OOS (H1>0, H2>0, SinTop3>0, R2>=0.50), poda ortogonal de canastas por régimen (corr<=0.35) y gestor dinámico causal de sesión con freno de sombra.",
+        primitivas_exportadas=["auditar_aplanamiento_oos", "podar_canasta_ortogonal", "gestor_dinamico_causal_sesion"],
+        instrumentos_validados=["NQ", "ES", "GC", "YM", "DK:USATECHIDXUSD", "DK:USA500IDXUSD", "DK:XAUUSD"],
+        se_apoya_en=["paridad_nt8_canastas", "analizador", "regimen"],
+        combinable_con=["TODOS"],
+        evidencia_empirica="Filtra las 12 unidades sostenidas sin aplanamiento (+$26,590 USD OOS, PF 1.85, R2 0.966) y descarta 12 sobreajustadas/aplanadas.",
+        estado_espiral="NUCLEO",
+    ),
     # --- L5: Autopilot Multi-Agente y Espiral ---
     ModuloCatalogado(
         id_modulo="orquestador_multiagente",
