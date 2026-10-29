@@ -311,3 +311,8 @@ Alcance, tal como lo entiende la sesión que lo transcribe (si hay duda, pregunt
   deja fuera de eso es *modificar* esos protocolos y gates (FDR, mandato, archivos protegidos) y operar con dinero real.
 - Errores conocidos a no repetir: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (por ejemplo O6: tocar un módulo embebido
   obliga a `python tools/reconstruir_kernels.py`; O12: `python tools/docs_index.py --write` antes de commitear estado).
+
+## 2026-10-29 — Actualización Directa a Arquitectura Multi-Agente Debian v2, Cierre Ola 10 y Paridad NT8
+
+1. **Arranque en un solo comando**: Ejecutá `python3 tools/actualizar_y_arrancar_debian_v2.py` desde la raíz del repo (`/opt/edgelab`). Ese script sincroniza sin pérdida los libros append-only (`TRIAL_REGISTRY_GLOBAL.jsonl`, `LIBRO_LORD.json`, `HOLDOUT_VENTANAS.jsonl`), verifica las `28` campañas (`6` en `CONTEO` con `ACTA_HOLDOUT.json` + `19` en `PISTAS_VIVAS`, con `0` pendientes en `DESC`), regenera el catálogo en espiral (`config/autopilot/CATALOGO_MODULOS_ESPIRAL.json` y `docs/MODULOS_ESPIRAL.md`) y deja lista la cola de auditoría en `docs/research/auditoria_corridas_20261029/COLA_AUDITORIA_DEBIAN_20261029.json`.
+2. **Paridad con NinjaTrader 8 y Ejecución de Canastas de Regímenes**: Usá `edgelab/research/paridad_nt8_canastas.py` (`filtrar_solapadas_nt8`, `reporte_paridad_nt8`, `simular_canasta_regimen`) junto con `edgelab/research/analizador.py` y `nt8/strategies/EdgeLabSpiralBasketExecutor.cs` para auditar cada regla individual y cada canasta de régimen bajo semántica estricta de NinjaTrader 8 (`EntriesPerDirection = 1`, `Flat-Only`, `aplicar_tope` y `BE = 1` al cierre de `+1R`).

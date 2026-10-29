@@ -302,8 +302,8 @@
         "corredor_vol_gaps",
         "u1_racimos_grilla"
       ],
-      "evidencia_empirica": "Implementado desde TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md con controles sintéticos y causalidad.",
-      "estado_espiral": "ACTIVO"
+      "evidencia_empirica": "TORI-GC (+0,28 pts/op canasta OOS, 16/20 positivas, mejor +2,07 pts/op) y TORI-CFD-NQ (mejor +10,81 pts/op OOS, PISTAS_VIVAS).",
+      "estado_espiral": "PISTAS_VIVAS"
     },
     {
       "id_modulo": "asia_bos_gaps",
@@ -333,8 +333,8 @@
         "oro_0530",
         "corredor_vol_gaps"
       ],
-      "evidencia_empirica": "Implementado desde el catálogo de guardados de Instagram (Tier-1 #2 y #11).",
-      "estado_espiral": "ACTIVO"
+      "evidencia_empirica": "ASIA-NQ (+4,38 pts/op canasta OOS, mejor +55,47 pts/op y +19,44 pts/op p=0,0493), ASIA-CFD-NQ (+1,81 pts/op canasta OOS, mejor +23,22 pts/op) y ASIA-GC (mejor +5,87 pts/op OOS, p=0,0894).",
+      "estado_espiral": "PISTAS_VIVAS"
     },
     {
       "id_modulo": "confluencia_cvgap_racimos",
@@ -365,8 +365,8 @@
         "regimen",
         "eventos"
       ],
-      "evidencia_empirica": "Híbrido directo de las 6 campañas con ACTA_HOLDOUT (CVGAP-NQ, CVGAP-CFD-NQ, RACIMOS-NQ/ES, BT2-NQ/ES) y OTR930.",
-      "estado_espiral": "ACTIVO"
+      "evidencia_empirica": "CONF-CVR-NQ (mejor +10,97 pts/op OOS, p=0,0156, 38 ses.) y CONF-CVR-CFD-NQ (+0,34 pts/op canasta OOS, 13/20 positivas, mejor +9,84 pts/op p=0,0212).",
+      "estado_espiral": "PISTAS_VIVAS"
     },
     {
       "id_modulo": "regimen",
@@ -439,6 +439,39 @@
       ],
       "combinable_con": [],
       "evidencia_empirica": "",
+      "estado_espiral": "NUCLEO"
+    },
+    {
+      "id_modulo": "paridad_nt8_canastas",
+      "ruta": "edgelab/research/paridad_nt8_canastas.py",
+      "capa": "L3_MOTOR_GRILLA_Y_SIMULACION",
+      "categoria": "motor_grilla_simulacion",
+      "descripcion": "Verificador de paridad 1-a-1 con NinjaTrader 8 Strategy Analyzer (EntriesPerDirection=1, Flat-Only), curvas de equity con Polars/Pandas y simulador de ejecución de Canastas de Regímenes (Subcuentas Virtuales 1/K y Cuenta Única Flat Global).",
+      "primitivas_exportadas": [
+        "filtrar_solapadas_nt8",
+        "curva_equity_polars_o_pandas",
+        "reporte_paridad_nt8",
+        "simular_canasta_regimen",
+        "exportar_senales_nt8_csv"
+      ],
+      "instrumentos_validados": [
+        "NQ",
+        "ES",
+        "GC",
+        "YM",
+        "DK:USATECHIDXUSD",
+        "DK:USA500IDXUSD",
+        "DK:XAUUSD"
+      ],
+      "se_apoya_en": [
+        "analizador",
+        "grilla_generica",
+        "areas_expansion"
+      ],
+      "combinable_con": [
+        "TODOS"
+      ],
+      "evidencia_empirica": "Paridad 98-100% en ASIA, OTR930, ORO-ALM, TORI, CONF-CVR y U1; acoplado a nt8/strategies/EdgeLabSpiralBasketExecutor.cs.",
       "estado_espiral": "NUCLEO"
     },
     {

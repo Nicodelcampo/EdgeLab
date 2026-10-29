@@ -3,3 +3,10 @@
 - Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT.
 - PREFLIGHT: ok
 - Linaje: hereda 0 pruebas de ['ZONAS_GAPS', 'CORREDOR_VOL_GAPS_ES']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- DESC [20250805, 20260331]: evaluables 18096, FDR 0, RW umbral 4.431366443634033 (diagnóstico), pistas sin nominación FDR/linaje 40, candidatas 0
+- **SIN_CANDIDATAS** — ninguna pista nominada por FDR q 0.1 (linaje 0) cumple la selección; nulo publicado ({'max': 1.803374625475556, 'min': -7.555677836482499, 'q001': -5.586680846429831, 'q010': -4.293349502740225, 'q500': -1.3806263592984998, 'q990': 1.1117265156221101, 'q999': 1.5978452133872256, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 166})
+- DESC [20250805, 20260331]: evaluables 18096 (m del FDR 18096 de 1119744 celdas), FDR 0, RW umbral 4.431366443634033 (diagnóstico), linaje 0 como compuerta, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 8 congeladas de 40 (k 8), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 2, 0, 0, 3, 3, 3, 2, 2, 13], [1, 1, 0, 2, 3, 2, 0, 2, 1, 13], [1, 1, 1, 2, 3, 3, 3, 1, 2, 21], [1, 1, 1, 0, 3, 3, 3, 1, 2, 15], [1, 1, 0, 2, 3, 2, 3, 2, 1, 15], [2, 1, 0, 2, 3, 2, 0, 2, 1, 12], [2, 1, 0, 0, 0, 2, 3, 2, 2, 12], [2, 0, 2, 0, 3, 3, 3, 2, 2, 15]]
+- PISTAS canasta (una prueba): media -0.5594977678571428 IC90 [-0.9657884207589286, -0.15918511160714274] p 0.9907523119220195 sesiones 112; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.9998633132859486; confirmadas 0 de 8 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 8 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9998633132859486); canasta media -0.5594977678571428 IC90 [-0.9657884207589286, -0.15918511160714274]; canasta en contra con potencia; potencia de la canasta 0.9995416221026978
