@@ -1,4 +1,4 @@
-"""Tests unitarios y de integración para la auditoría de las corridas de las Olas 1–9 (`auditar_corridas_nube_20261029.py`)."""
+"""Tests unitarios y de integración para la auditoría de las corridas de las Olas 1–10 (`auditar_corridas_nube_20261029.py`)."""
 
 from __future__ import annotations
 
@@ -14,6 +14,9 @@ def test_auditoria_modulos_estatica_y_causal() -> None:
         "edgelab.research.corredor_vol_gaps",
         "edgelab.research.otr_930_sweep",
         "edgelab.research.oro_almuerzo_ruptura",
+        "edgelab.research.tori_trend_toque3",
+        "edgelab.research.asia_bos_gaps",
+        "edgelab.research.confluencia_cvgap_racimos",
     }
     for mod, info in rep["modulos"].items():
         assert info["ok"] is True, f"Módulo {mod} falló preflight: {info['errores']}"
@@ -21,10 +24,10 @@ def test_auditoria_modulos_estatica_y_causal() -> None:
         assert len(info["sha12"]) == 12
 
 
-def test_auditoria_16_campanas_y_directiva_6() -> None:
+def test_auditoria_28_campanas_y_directiva_6() -> None:
     res = ACN.ejecutar_auditoria_completa(dinamico=False, escribir_reportes=False)
     assert res["ok_global"] is True, f"Hallazgos en auditoría de campañas: {json.dumps(res['campanas'], indent=2)}"
-    assert res["n_campanas_auditadas"] == 16
+    assert res["n_campanas_auditadas"] == 28
     assert set(res["actas_holdout_listas"]) == {
         "CVGAP-NQ",
         "CVGAP-CFD-NQ",
@@ -44,21 +47,7 @@ def test_auditoria_16_campanas_y_directiva_6() -> None:
         "ORO-ALM-CFD",
         "U1-6E-GRILLA",
     }
-    for cid in [
-        "CVGAP-NQ",
-        "CVGAP-CFD-NQ",
-        "CVGAP-ES",
-        "CVGAP-CFD-ES",
-        "OTR930-NQ",
-        "OTR930-ES",
-        "OTR930-CFD-NQ",
-        "OTR930-CFD-ES",
-        "ORO-ALM-GC",
-        "ORO-ALM-CFD",
-        "U1-RACIMOS-GRILLA-NQ",
-        "U1-RACIMOS-GRILLA-ES",
-        "U1-ZONAS-BT2-ES",
-        "U1-ZONAS-BT2-NQ",
-        "U1-ZONAS-GRILLA-YM",
-    ]:
-        assert res["campanas"][cid]["holdout_desde"] == 20261001, f"{cid} incumple Directiva #6"
+    assert len(res["campanas_ola10_desc"]) == 12
+    for cid in res["campanas"]:
+        if cid != "U1-6E-GRILLA":
+            assert res["campanas"][cid]["holdout_desde"] == 20261001, f"{cid} incumple Directiva #6"

@@ -1,8 +1,8 @@
 {
   "fecha_auditoria": "2026-10-29",
   "ok_global": true,
-  "n_modulos_auditados": 3,
-  "n_campanas_auditadas": 16,
+  "n_modulos_auditados": 6,
+  "n_campanas_auditadas": 28,
   "n_actas_holdout_listas": 6,
   "actas_holdout_listas": [
     "CVGAP-NQ",
@@ -24,6 +24,21 @@
     "ORO-ALM-CFD",
     "U1-6E-GRILLA"
   ],
+  "n_campanas_ola10_desc": 12,
+  "campanas_ola10_desc": [
+    "CONF-CVR-NQ",
+    "CONF-CVR-ES",
+    "CONF-CVR-CFD-NQ",
+    "CONF-CVR-CFD-ES",
+    "TORI-NQ",
+    "TORI-ES",
+    "TORI-GC",
+    "TORI-CFD-NQ",
+    "ASIA-NQ",
+    "ASIA-ES",
+    "ASIA-GC",
+    "ASIA-CFD-NQ"
+  ],
   "modulos": {
     "ok": true,
     "modulos": {
@@ -44,6 +59,24 @@
         "errores": [],
         "avisos": [],
         "sha12": "e974206c49d3"
+      },
+      "edgelab.research.tori_trend_toque3": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "018833025019"
+      },
+      "edgelab.research.asia_bos_gaps": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "57033847f698"
+      },
+      "edgelab.research.confluencia_cvgap_racimos": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "3fe0f200dca3"
       }
     }
   },
@@ -720,6 +753,402 @@
           "python3 tools/analizar_embudo.py lanzar"
         ]
       }
+    },
+    "CONF-CVR-NQ": {
+      "cid": "CONF-CVR-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "CORRIENDO",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "CONF-CVR-NQ",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "CORRIENDO",
+        "handle_kaggle": "nicolasbuttaro/embudo-conf-cvr-nq-desc-20250805",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-NQ.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+        ]
+      }
+    },
+    "CONF-CVR-ES": {
+      "cid": "CONF-CVR-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "DESC",
+      "veredicto": "CORRIENDO",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "CONF-CVR-ES",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "DESC",
+        "veredicto": "CORRIENDO",
+        "handle_kaggle": "nicolasbuttaro/embudo-conf-cvr-es-desc-20250805",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-ES.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+        ]
+      }
+    },
+    "CONF-CVR-CFD-NQ": {
+      "cid": "CONF-CVR-CFD-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "CONF-CVR-CFD-NQ",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-CFD-NQ.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+        ]
+      }
+    },
+    "CONF-CVR-CFD-ES": {
+      "cid": "CONF-CVR-CFD-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "CONF-CVR-CFD-ES",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+        "sensor": "DK:USA500IDXUSD",
+        "ejecucion": "ES",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-CFD-ES.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+        ]
+      }
+    },
+    "TORI-NQ": {
+      "cid": "TORI-NQ",
+      "familia": "TORI_TREND_TOQUE3_NQ",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "CORRIENDO",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "TORI-NQ",
+        "familia": "TORI_TREND_TOQUE3_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "CORRIENDO",
+        "handle_kaggle": "nicolasbuttaro/embudo-tori-nq-desc-20250805",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-NQ.json --raiz docs/research/tori_trend_20261029/embudo"
+        ]
+      }
+    },
+    "TORI-ES": {
+      "cid": "TORI-ES",
+      "familia": "TORI_TREND_TOQUE3_ES",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "TORI-ES",
+        "familia": "TORI_TREND_TOQUE3_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-ES.json --raiz docs/research/tori_trend_20261029/embudo"
+        ]
+      }
+    },
+    "TORI-GC": {
+      "cid": "TORI-GC",
+      "familia": "TORI_TREND_TOQUE3_GC",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "TORI-GC",
+        "familia": "TORI_TREND_TOQUE3_GC",
+        "sensor": "GC",
+        "ejecucion": "GC",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-GC.json --raiz docs/research/tori_trend_20261029/embudo"
+        ]
+      }
+    },
+    "TORI-CFD-NQ": {
+      "cid": "TORI-CFD-NQ",
+      "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "TORI-CFD-NQ",
+        "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-CFD-NQ.json --raiz docs/research/tori_trend_20261029/embudo"
+        ]
+      }
+    },
+    "ASIA-NQ": {
+      "cid": "ASIA-NQ",
+      "familia": "ASIA_BOS_GAPS_NQ",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "CORRIENDO",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "ASIA-NQ",
+        "familia": "ASIA_BOS_GAPS_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "CORRIENDO",
+        "handle_kaggle": "nicolasbuttaro/embudo-asia-nq-desc-20250805",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-NQ.json --raiz docs/research/asia_bos_20261029/embudo"
+        ]
+      }
+    },
+    "ASIA-ES": {
+      "cid": "ASIA-ES",
+      "familia": "ASIA_BOS_GAPS_ES",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "ASIA-ES",
+        "familia": "ASIA_BOS_GAPS_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-ES.json --raiz docs/research/asia_bos_20261029/embudo"
+        ]
+      }
+    },
+    "ASIA-GC": {
+      "cid": "ASIA-GC",
+      "familia": "ASIA_BOS_GAPS_GC",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "ASIA-GC",
+        "familia": "ASIA_BOS_GAPS_GC",
+        "sensor": "GC",
+        "ejecucion": "GC",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-GC.json --raiz docs/research/asia_bos_20261029/embudo"
+        ]
+      }
+    },
+    "ASIA-CFD-NQ": {
+      "cid": "ASIA-CFD-NQ",
+      "familia": "ASIA_BOS_GAPS_CFD_NQ",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "DESC",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+        "prioridad": 2,
+        "cid": "ASIA-CFD-NQ",
+        "familia": "ASIA_BOS_GAPS_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "DESC",
+        "veredicto": "PENDIENTE",
+        "handle_kaggle": null,
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 0,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-CFD-NQ.json --raiz docs/research/asia_bos_20261029/embudo"
+        ]
+      }
     }
   },
   "cola_auditoria_debian": [
@@ -914,6 +1343,134 @@
       ]
     },
     {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "ASIA-CFD-NQ",
+      "familia": "ASIA_BOS_GAPS_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-CFD-NQ.json --raiz docs/research/asia_bos_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "ASIA-ES",
+      "familia": "ASIA_BOS_GAPS_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-ES.json --raiz docs/research/asia_bos_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "ASIA-GC",
+      "familia": "ASIA_BOS_GAPS_GC",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-GC.json --raiz docs/research/asia_bos_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "ASIA-NQ",
+      "familia": "ASIA_BOS_GAPS_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "CORRIENDO",
+      "handle_kaggle": "nicolasbuttaro/embudo-asia-nq-desc-20250805",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/ASIA-NQ.json --raiz docs/research/asia_bos_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "CONF-CVR-CFD-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-CFD-ES.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "CONF-CVR-CFD-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-CFD-NQ.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "CONF-CVR-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "DESC",
+      "veredicto": "CORRIENDO",
+      "handle_kaggle": "nicolasbuttaro/embudo-conf-cvr-es-desc-20250805",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-ES.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "CONF-CVR-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "CORRIENDO",
+      "handle_kaggle": "nicolasbuttaro/embudo-conf-cvr-nq-desc-20250805",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CONF-CVR-NQ.json --raiz docs/research/confluencia_cvr_20261029/embudo"
+      ]
+    },
+    {
       "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
       "prioridad": 2,
       "cid": "CVGAP-CFD-ES",
@@ -1087,6 +1644,70 @@
         "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-NQ --n-sesiones 20",
         "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-NQ",
         "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "TORI-CFD-NQ",
+      "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-CFD-NQ.json --raiz docs/research/tori_trend_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "TORI-ES",
+      "familia": "TORI_TREND_TOQUE3_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-ES.json --raiz docs/research/tori_trend_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "TORI-GC",
+      "familia": "TORI_TREND_TOQUE3_GC",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa_cierre": "DESC",
+      "veredicto": "PENDIENTE",
+      "handle_kaggle": null,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-GC.json --raiz docs/research/tori_trend_20261029/embudo"
+      ]
+    },
+    {
+      "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+      "prioridad": 2,
+      "cid": "TORI-NQ",
+      "familia": "TORI_TREND_TOQUE3_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "DESC",
+      "veredicto": "CORRIENDO",
+      "handle_kaggle": "nicolasbuttaro/embudo-tori-nq-desc-20250805",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 0,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/TORI-NQ.json --raiz docs/research/tori_trend_20261029/embudo"
       ]
     },
     {

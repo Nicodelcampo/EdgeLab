@@ -1,19 +1,11 @@
 #!/usr/bin/env python3
-"""Herramienta ejecutable de auditoría de las corridas cosechadas desde la sesión en la nube (Olas 1-9).
+"""Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10).
 
 Diseñada para que los agentes del Debian (SV1: Conductor de Embudo, Programador en worktree y Auditor)
-verifiquen de manera independiente, determinista y reproducible las 16 campañas cosechadas y los 3 módulos
-nuevos (`corredor_vol_gaps.py`, `otr_930_sweep.py`, `oro_almuerzo_ruptura.py`) sobre el commit vigente,
-y generen la cola exacta de acciones de auditoría empírica y canasta de régimen.
-
-Seis dimensiones de auditoría verificadas:
-  1. Preflight estático y causalidad de indicadores (`preflight.verificar_experimento` + `indicadores.causal`).
-  2. Contabilidad de multiplicidad, linajes (`LINAJES.jsonl`), evaluables (`EVALUABLES.jsonl`) y reservas LORD++ (`LIBRO_LORD.json`).
-  3. Cumplimiento de la frontera de holdout (`Directiva #6`: `holdout.desde == 20261001` en familias cuyo OOS cerró en sep-2026)
-     y consistencia de aperturas en `HOLDOUT_VENTANAS.jsonl`.
-  4. Consistencia matemática de los artefactos por etapa (`DESC`, `INTEGRIDAD`, `OOS`, `TOPES`, `ACTA_HOLDOUT`, `pistas_replica`).
-  5. Vigencia de hashes de código (`preflight.codigo_vigente`) contra los módulos actuales del repositorio.
-  6. Generación de la cola accionable de auditoría para Debian (`COLA_AUDITORIA_DEBIAN_20261029.json` y `REPORTE_PREAUDITORIA_20261029.md`).
+verifiquen de manera independiente, determinista y reproducible las 28 campañas (16 de Olas 1–9 + 12 nuevas de Ola 10)
+y los 6 módulos nuevos (`corredor_vol_gaps`, `otr_930_sweep`, `oro_almuerzo_ruptura`, `tori_trend_toque3`,
+`asia_bos_gaps`, `confluencia_cvgap_racimos`) sobre el commit vigente, y generen la cola exacta de acciones de auditoría
+empírica, embudo y canasta de régimen.
 """
 
 from __future__ import annotations
@@ -30,7 +22,7 @@ RAIZ = pathlib.Path(__file__).resolve().parents[1]
 if str(RAIZ) not in sys.path:
     sys.path.insert(0, str(RAIZ))
 
-from edgelab.research import embudo, holdout_ventanas as HV, linaje, preflight
+from edgelab.research import catalogo_espiral as CE, embudo, holdout_ventanas as HV, linaje, preflight
 from tools import analizar_embudo as AE
 
 CAMPANAS_AUDITADAS: list[str] = [
@@ -54,12 +46,30 @@ CAMPANAS_AUDITADAS: list[str] = [
     "U1-ZONAS-BT2-NQ",
     "U1-ZONAS-GRILLA-YM",
     "U1-6E-GRILLA",
+    # Familia 4: Confluencia CVGAP + Racimos + Apertura (Ola 10 — síntesis de mejores resultados Olas 1-9)
+    "CONF-CVR-NQ",
+    "CONF-CVR-ES",
+    "CONF-CVR-CFD-NQ",
+    "CONF-CVR-CFD-ES",
+    # Familia 5: Tori Trades Stopping-Time Trendlines & 3er Toque (Ola 10 — Scrap + Paper)
+    "TORI-NQ",
+    "TORI-ES",
+    "TORI-GC",
+    "TORI-CFD-NQ",
+    # Familia 6: Compresión Asiática + BOS / IFVG Sweep (Ola 10 — Scrap Instagram)
+    "ASIA-NQ",
+    "ASIA-ES",
+    "ASIA-GC",
+    "ASIA-CFD-NQ",
 ]
 
 MODULOS_NUEVOS: list[str] = [
     "edgelab.research.corredor_vol_gaps",
     "edgelab.research.otr_930_sweep",
     "edgelab.research.oro_almuerzo_ruptura",
+    "edgelab.research.tori_trend_toque3",
+    "edgelab.research.asia_bos_gaps",
+    "edgelab.research.confluencia_cvgap_racimos",
 ]
 
 
@@ -74,7 +84,7 @@ def _sha12_modulo(nombre_mod: str) -> str:
 
 
 def auditar_modulos(dinamico: bool = False) -> dict[str, Any]:
-    """Audita preflight estático (y opcionalmente dinámico en sintético) de los 3 módulos nuevos."""
+    """Audita preflight estático (y opcionalmente dinámico en sintético) de los 6 módulos nuevos."""
     resultados: dict[str, Any] = {}
     ok_global = True
     for mod in MODULOS_NUEVOS:
@@ -102,12 +112,10 @@ def auditar_campana(cid: str, raiz: pathlib.Path = RAIZ) -> dict[str, Any]:
     hallazgos: list[str] = []
     avisos: list[str] = []
 
-    # 1. Problemas estructurales del embudo
     probs_embudo = embudo.problemas_campana(spec)
     if probs_embudo:
         hallazgos.extend([f"problemas_campana: {p}" for p in probs_embudo])
 
-    # 2. Frontera de holdout (Directiva #6: si OOS cerró <= 20260930 y no hay ventana consumida en octubre, desde == 20261001)
     oos_hasta = int(spec["oos"][1])
     h_desde = int(spec["holdout"]["desde"])
     ult_cons = HV.ultima_consumida(spec["familia"])
@@ -116,22 +124,18 @@ def auditar_campana(cid: str, raiz: pathlib.Path = RAIZ) -> dict[str, Any]:
             f"Directiva #6: OOS cerró {oos_hasta} sin ventana consumida en octubre, pero holdout.desde={h_desde} (!= 20261001)"
         )
 
-    # Sincronía entre spec en disco y spec en estado.json
     est_h_desde = int(estado.get("spec", {}).get("holdout", {}).get("desde", 0))
     if est_h_desde != h_desde:
         hallazgos.append(f"Desincronía holdout.desde: spec={h_desde} vs estado.json={est_h_desde}")
 
-    # 3. Linaje y Evaluables
     probs_lin = linaje.problemas(spec["familia"])
     if probs_lin:
         hallazgos.extend([f"linaje: {x}" for x in probs_lin])
 
-    # 4. Estado actual y consistencia de artefactos de etapa
     etapa_actual = estado.get("etapa", "")
     fase_actual = estado.get("fase") or estado.get("veredicto") or ""
     celdas_analizador = AE.celdas_de(estado)
 
-    # 5. Verificación específica de ACTA_HOLDOUT vs PISTAS_VIVAS (en estado.json)
     acta_path = carpeta / "ACTA_HOLDOUT.json"
     pistas_rep = estado.get("pistas_replica") or {}
     n_pistas_vivas = len(pistas_rep.get("celdas") or []) if fase_actual == "PISTAS_VIVAS" else 0
@@ -143,11 +147,9 @@ def auditar_campana(cid: str, raiz: pathlib.Path = RAIZ) -> dict[str, Any]:
             hallazgos.append(
                 f"ACTA_HOLDOUT.json tiene holdout_desde={acta.get('holdout_desde')} != spec={h_desde}"
             )
-        # Verificar apertura en HOLDOUT_VENTANAS.jsonl
         probs_hv = HV.problemas(spec["familia"], h_desde, cid)
         if probs_hv:
             hallazgos.extend([f"HOLDOUT_VENTANAS: {p}" for p in probs_hv])
-        # Verificar reserva en LIBRO_LORD.json
         libro_data = json.loads((raiz / "docs/research/LIBRO_LORD.json").read_text(encoding="utf-8"))
         res_id = acta.get("reserva_lord", {}).get("reserva_id", f"{cid}/holdout")
         clave_res = f"{spec['familia']}::{res_id}"
@@ -193,6 +195,23 @@ def auditar_campana(cid: str, raiz: pathlib.Path = RAIZ) -> dict[str, Any]:
                 "python3 tools/analizar_embudo.py lanzar",
             ],
         }
+    elif etapa_actual == "DESC":
+        accion_debian = {
+            "tipo": "COSECHAR_O_AVANZAR_DESC_OLA10",
+            "prioridad": 2,
+            "cid": cid,
+            "familia": spec["familia"],
+            "sensor": spec["sensor"],
+            "ejecucion": spec["ejecucion"],
+            "etapa_cierre": etapa_actual,
+            "veredicto": fase_actual,
+            "handle_kaggle": estado.get("handle"),
+            "n_pistas_vivas": 0,
+            "n_celdas_analizador": 0,
+            "comandos_debian": [
+                f"python3 tools/embudo_correr.py config/autopilot/grillas/campanas/{cid}.json --raiz {raiz_embudo_rel}",
+            ],
+        }
     else:
         accion_debian = {
             "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
@@ -227,7 +246,7 @@ def auditar_campana(cid: str, raiz: pathlib.Path = RAIZ) -> dict[str, Any]:
 
 
 def ejecutar_auditoria_completa(dinamico: bool = False, escribir_reportes: bool = True) -> dict[str, Any]:
-    """Ejecuta la auditoría completa sobre los 3 módulos y las 16 campañas cosechadas."""
+    """Ejecuta la auditoría completa sobre los 6 módulos y las 28 campañas (Olas 1-10)."""
     rep_modulos = auditar_modulos(dinamico=dinamico)
     campanas_rep: dict[str, Any] = {}
     cola_acciones: list[dict[str, Any]] = []
@@ -244,6 +263,7 @@ def ejecutar_auditoria_completa(dinamico: bool = False, escribir_reportes: bool 
 
     actas_listas = [c for c, r in campanas_rep.items() if r["tiene_acta_holdout"]]
     pistas_con_vivas = [c for c, r in campanas_rep.items() if r["tiene_pistas_vivas"]]
+    ola10_desc = [c for c, r in campanas_rep.items() if r["etapa"] == "DESC"]
 
     resumen = {
         "fecha_auditoria": "2026-10-29",
@@ -254,6 +274,8 @@ def ejecutar_auditoria_completa(dinamico: bool = False, escribir_reportes: bool 
         "actas_holdout_listas": actas_listas,
         "n_campanas_pistas_vivas": len(pistas_con_vivas),
         "campanas_pistas_vivas": pistas_con_vivas,
+        "n_campanas_ola10_desc": len(ola10_desc),
+        "campanas_ola10_desc": ola10_desc,
         "modulos": rep_modulos,
         "campanas": campanas_rep,
         "cola_auditoria_debian": cola_acciones,
@@ -266,15 +288,16 @@ def ejecutar_auditoria_completa(dinamico: bool = False, escribir_reportes: bool 
         cola_path.write_text(json.dumps(resumen, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
         md_lines = [
-            "# Reporte de Pre-Auditoría y Cola de Ejecución para los Agentes del Debian (2026-10-29)",
+            "# Reporte de Pre-Auditoría y Cola de Ejecución para los Agentes del Debian (Olas 1–10, 2026-10-29)",
             "",
             f"- **Estado global de verificación pre-auditoría:** `{'OK (0 errores)' if resumen['ok_global'] else 'CON HALLAZGOS'}`",
-            f"- **Módulos experimentales verificados (`preflight` + causalidad):** `{resumen['n_modulos_auditados']}` (`corredor_vol_gaps`, `otr_930_sweep`, `oro_almuerzo_ruptura`)",
-            f"- **Campañas auditadas (Olas 1–9):** `{resumen['n_campanas_auditadas']}`",
+            f"- **Módulos experimentales verificados (`preflight` + causalidad):** `{resumen['n_modulos_auditados']}` (`corredor_vol_gaps`, `otr_930_sweep`, `oro_almuerzo_ruptura`, `tori_trend_toque3`, `asia_bos_gaps`, `confluencia_cvgap_racimos`)",
+            f"- **Campañas auditadas (Olas 1–10):** `{resumen['n_campanas_auditadas']}`",
             f"- **Campañas en `CONTEO` con `ACTA_HOLDOUT.json` y reserva LORD++:** `{resumen['n_actas_holdout_listas']}` (`{', '.join(actas_listas)}`)",
             f"- **Campañas en `PISTAS_VIVAS` (`n_pistas_vivas == 20`) para canasta de régimen y analizador:** `{resumen['n_campanas_pistas_vivas']}` (`{', '.join(pistas_con_vivas)}`)",
+            f"- **Campañas nuevas Ola 10 en `DESC` (`CORRIENDO` / `PENDIENTE`):** `{resumen['n_campanas_ola10_desc']}` (`{', '.join(ola10_desc)}`)",
             "",
-            "## 1. Tabla Resumen de las 16 Campañas Auditadas",
+            "## 1. Tabla Resumen de las 28 Campañas Auditadas",
             "",
             "| Campaña (`cid`) | Familia | Sensor -> Ejecución | Etapa | Fase / Veredicto | `holdout.desde` | Celdas Analizador | Estado Auditoría | Acción Primaria Debian |",
             "|---|---|---|---|---|---:|---:|---|---|",
@@ -287,34 +310,13 @@ def ejecutar_auditoria_completa(dinamico: bool = False, escribir_reportes: bool 
                 f"| `{cid}` | `{r['familia']}` | `{r['sensor']} -> {r['ejecucion']}` | `{r['etapa']}` | `{r['veredicto']}` | `{r['holdout_desde']}` | `{r['n_celdas_analizador']}` | `{est_ok}` | `{acc}` |"
             )
 
-        md_lines.extend(
-            [
-                "",
-                "## 2. Protocolo de Auditoría Independiente para los Agentes del Debian (`SV1`)",
-                "",
-                "### Fase A — Verificación Determinista Local (Conductor + Auditor)",
-                "1. Ejecutar `python3 tools/auditar_corridas_nube_20261029.py --dinamico` y confirmar `ok_global: true`.",
-                "2. Ejecutar `pytest tests/research/test_auditoria_corridas_nube_20261029.py tests/research/test_corredor_vol_gaps.py tests/research/test_otr_930_sweep.py tests/research/test_oro_almuerzo_ruptura.py tests/autopilot/test_auditor_alineacion.py`.",
-                "",
-                "### Fase B — Evaluación de las 6 Nuevas `ACTA_HOLDOUT.json` en `edgelab-holdout-sellado` (`CONTEO` y `HOLDOUT`)",
-                "Para cada una de las 6 campañas que superaron las 4 etapas del embudo (`CVGAP-NQ`, `CVGAP-CFD-NQ`, `U1-RACIMOS-GRILLA-NQ`, `U1-ZONAS-BT2-ES`, `U1-ZONAS-BT2-NQ`, `U1-RACIMOS-GRILLA-ES`):",
-                "1. Correr `tools/embudo_correr.py` sobre `edgelab-holdout-sellado` desde `holdout.desde = 20261001`.",
-                "2. Evaluar si el rendimiento en la ventana disponible de octubre (`20261001..20261026`) se encuentra dentro de la banda esperada según la distribución de desarrollo/OOS (Directiva #6 de canasta de régimen).",
-                "",
-                "### Fase C — Auditoría de Canasta de Régimen (`tools/holdout_canasta.py`) y Analizador (`tools/analizar_embudo.py`) sobre las 9 Campañas en `PISTAS_VIVAS`",
-                "Para `CVGAP-ES`, `CVGAP-CFD-ES`, `OTR930-NQ`, `OTR930-ES`, `OTR930-CFD-NQ`, `OTR930-CFD-ES`, `ORO-ALM-GC`, `ORO-ALM-CFD` y `U1-6E-GRILLA` (y `U1-ZONAS-GRILLA-YM` en el analizador):",
-                "1. Evaluar la elegibilidad de la canasta de 20 pistas congeladas con `tools/holdout_canasta.py`.",
-                "2. Lanzar `python3 tools/analizar_embudo.py lanzar` y `python3 tools/analizar_embudo.py traer` para generar los perfiles completos de desarrollo (`20250805..20260930`).",
-            ]
-        )
-
         (out_dir / "REPORTE_PREAUDITORIA_20261029.md").write_text("\n".join(md_lines) + "\n", encoding="utf-8")
 
     return resumen
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Audita las 16 campañas y 3 módulos de las Olas 1-9.")
+    parser = argparse.ArgumentParser(description="Audita las 28 campañas y 6 módulos de las Olas 1-10.")
     parser.add_argument("--dinamico", action="store_true", help="Ejecuta también el preflight dinámico en sintético.")
     parser.add_argument("--no-escribir", action="store_true", help="No regenera los archivos en docs/research/auditoria_corridas_20261029.")
     args = parser.parse_args()
@@ -328,6 +330,7 @@ def main() -> int:
                 "n_campanas_auditadas": res["n_campanas_auditadas"],
                 "actas_holdout_listas": res["actas_holdout_listas"],
                 "campanas_pistas_vivas": res["campanas_pistas_vivas"],
+                "campanas_ola10_desc": res["campanas_ola10_desc"],
             },
             indent=2,
             ensure_ascii=False,

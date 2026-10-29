@@ -1,126 +1,50 @@
-# Mapa de modulos de EdgeLab
+# Catálogo Oficial de Módulos y Arquitectura en Espiral de EdgeLab (`docs/MODULES.md`)
 
-> Generado por `tools/check_modules.py --write` desde `config/modules.json`. **No editar a mano**: cambia el registro y regenera.
+Estado: **VIGENTE** (generado y verificado por `edgelab/research/catalogo_espiral.py`).
+Propósito: Dar acceso inmediato y ordenado a todos los módulos, herramientas, primitivas `@njit` y hallazgos empíricos
+para que los agentes del Debian (`Arquitecto Opus 4.6`, `Ingeniero Opus 4.6`, `Auditor Sonnet 4.6`) construyan cada
+familia nueva apoyándose en las anteriores.
 
-Capas (una dependencia nunca apunta a una capa superior):
+## 1. Las 6 Capas Jerárquicas de EdgeLab (`L0` a `L5`)
 
-- **0** — Fuentes externas y captura
-- **1** — Configuracion, instrumentos y sesiones
-- **2** — Datos y custodia
-- **3** — Indicadores y kernels
-- **4** — Contexto, estadistica y busqueda
-- **5** — Ejecucion y validacion
-- **6** — Memoria y gobernanza
-- **7** — Operacion e interfaces
+| Capa | Descripción y Responsabilidad |
+|---|---|
+| `L0_NUCLEO_SELLADO` | Contratos inmutables: holdout_guard, costos canónicos, identidad de activos, puente Drive/Kaggle y árbol limpio. |
+| `L1_DATOS_Y_DETECTORES_PARIDAD` | Lectores de ticks CME/Dukascopy y detectores causales con paridad C# NinjaTrader 8 o test_causal estricto. |
+| `L2_PRIMITIVAS_Y_REGIMEN` | Bloques componibles @njit/vectorizados: cajas amarillas, racimos de zonas, ciclo de vida de gaps, ventanas DST, líneas stopping-time y variables de régimen. |
+| `L3_MOTOR_GRILLA_Y_SIMULACION` | Barrido vectorizado en 1 pasada (grilla_generica, grilla_masiva), niveles_lote, simulador tick a tick (sim.py) y analizador. |
+| `L4_INFERENCIA_EMBUDO_Y_CANASTA` | Escalera del embudo (PREFLIGHT..HOLDOUT), FDR BH-Storey, Romano-Wolf, LORD++ (LibroLord), linajes y canasta de régimen. |
+| `L5_AUTOPILOT_MULTIAGENTE_ESPIRAL` | Orquestador multi-agente Debian (Capataz Python + 2 Opus 4.6 + 1 Sonnet 4.6), sincronizador de ramas, auditor de alineación y memoria en espiral. |
 
-## Modulos
+## 2. Inventario Clasificado de Módulos y Primitivas Reutilizables
 
-| Capa | Id | Modulo | Estado | Funcion | Depende de | Doc | Tests |
-|---|---|---|---|---|---|---|---|
-| 0 | `nt8-capture` | Captura NT8 | core | Indicadores y AddOns C# que exportan ticks, barras, zonas y L2 desde NinjaTrader 8; lectores de exports. | - | `docs/nt8_bridge.md` | `tests/data` |
-| 1 | `config-core` | Configuracion e instrumentos | core | Rutas portables, especificaciones de contrato (tick, valor, comisiones) y configuracion unica. Punto unico de verdad para parametros de instrumento. | - | `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | `tests/foundation` |
-| 1 | `sessions` | Sesiones y regimenes | core | Ventanas intradia, matrices de sesion y estado de regimen causal. | config-core | `docs/research/cme_equity_index_calendar_20260902` | `tests/data` |
-| 2 | `data-catalog` | Catálogo de datos (escaneo y construcción) | experimental | Escanea los datasets de Kaggle/locales y construye el catálogo y el resolver de sesiones aprobadas. | data-custody | `docs/data_catalog/README.md` | **sin tests** |
-| 2 | `data-custody` | Datos y custodia | core | Contratos continuos, regimen de contrato, calendario CME, compuertas de sesion y de datos de research (fail-closed), identidad de eventos, L2. | config-core, sessions, nt8-capture | `docs/nt8_bridge.md` | `tests/data` |
-| 2 | `kaggle-custody` | Custodia y ejecucion en Kaggle | core | Identidad, integridad, inventario, sellado y lectura en streaming de datasets Kaggle; publicacion y etiquetado del espacio. | config-core | `docs/infra/KAGGLE_BORRADO_CANDIDATOS_20261014.md` | `tests/data` |
-| 2 | `liquid-release` | Release liquida de ticks | core | Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes. Incluye el auditor independiente de contenido (originado en el agente de Notion, commit 5aac8bb3) que corre dentro de Kaggle y emite un recibo agregado. | data-custody, sessions, kaggle-custody | `docs/infra/LIQUID_RELEASE_20261014.md` | `tests/data`, `tests/test_liquid_release_payload_audit.py`, `tests/test_daily_data_health.py` |
-| 2 | `research-data-gate` | Compuerta de datos de research (linea main) | core | Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Traído de main el 2026-10-14. | data-custody | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
-| 3 | `bridge-kernels` | Barras, footprint e indicadores (paridad con NT8) | core | Construye barras y footprint canonicos, kernels de indicadores en Python y verifica paridad contra los oraculos de NT8. | data-custody, sessions | `docs/nt8_indicator_parity_contract.md` | `tests/bridge` |
-| 4 | `context` | Contexto causal | experimental | Constructores de contexto target-free (HMM, compuerta L2) para condicionar mediciones. | bridge-kernels, data-custody | `docs/research/PROTOCOLO_CONTEXTOS_L2_NQ_20260928.md` | `tests/research` |
-| 4 | `costos` | Costos de ejecucion canonicos y ventanas de noticias | experimental | Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos). Calendario USD de alto impacto (minuto exacto en UTC, una fuente por fila) y filtro de operaciones que cruzan una ventana de noticia (regla de props y friccion; por defecto +-1 min, LucidDaily). | - | `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md` | `tests/test_costos_canonicos.py`, `tests/test_noticias.py` |
-| 4 | `discovery` | Descubrimiento por familias (escaneo con nulo de máximo) | experimental | Barrido de familias de features con nulo de máximo por sesión (CPU/GPU), réplica cronológica D0/D1 y D2 sellado. | stats, funnel | `edgelab/discovery/README.md` | `tests/test_discovery.py` |
-| 4 | `equivalence` | Equivalencia CFD/spot contra futuros | experimental | Mide la equivalencia entre proxies (Dukascopy) y futuros CME para usarlos como complemento de potencia. | data-custody | `edgelab/equivalence/README.md` | `tests/test_equivalence.py` |
-| 4 | `external-models` | Modelos externos | experimental | Features de modelos preentrenados (Kronos y sucesores) con causalidad y almacen point-in-time. | data-custody | `docs/external_model_contract.md` | `tests/external` |
-| 4 | `funnel` | Funnel exploratorio CPU (linea main) | experimental | Screening exploratorio de CPU con separacion de etapas D0/D1; paridad GPU pendiente. Traído de main el 2026-10-14 (PR #63-#106, linea AVZVOL). Desde 2026-10-22: escalera de decision (tamiz FDR, replica LORD++, economico, potencia del holdout) y monitor secuencial con e-procesos; kernel v2. | stats | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | `tests/test_funnel.py`, `tests/test_funnel_isolation.py`, `tests/test_funnel_multiplicity.py`, `tests/test_funnel_stage_integration.py`, `tests/test_funnel_escalera.py` |
-| 4 | `gex` | GEX (exposicion gamma) | experimental | Reconstruccion diaria de niveles de gamma para condicionar regimenes. | data-custody | `docs/research/GEX_FUENTES_Y_GATES_2026-08-13.md` | **sin tests** |
-| 4 | `holdout` | Frontera unica del holdout | experimental | Fuente unica de la frontera del holdout (sesion CME del 2026-10-01, todos los activos y L2; HOLDOUT-A4) y del corte fisico de los datasets viejos. | - | `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` | `tests/test_holdout_unico.py` |
-| 4 | `research` | Embudo de investigacion | core | Campanas de medicion pre-registradas: nulos, geometria de zonas, embudos por familia, costos, potencia. Produce actas; no promueve edges por si mismo. | data-custody, bridge-kernels, stats, context | `docs/research_funnel_playbook.md` | `tests/research` |
-| 4 | `stats` | Estadistica de validacion | core | Bootstrap estacionario, estimand por cluster/sesion, efecto minimo detectable y primitivos de auditoria estadistica (DSR, MCPT, PBO). | - | `docs/edge_validation_contract.md` | `tests/stats` |
-| 5 | `execution-engine` | Motor de ejecucion tick | core | Motor compartido de fills a nivel tick (entrada al tick siguiente, ask/bid, TP con trade-through, costos). Se escribe una vez; las estrategias solo emiten senales. | config-core | `CONTRATO_LLM.md` | `tests/foundation` |
-| 5 | `propfirm` | Prop firms y costos de cuenta | experimental | Reglas de props como datos, simulador del ciclo evaluacion-fondeo-retiro y esperanza matematica; referencia de comisiones. | config-core, execution-engine | `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | `tests/propfirm` |
-| 5 | `validation` | Validacion de estrategias | core | Arnes de auditoria: prefix_check (sin lookahead), mirror_check (simetria), MCPT, PBO, SPA y walk-forward sobre senales puras. | execution-engine, stats | `docs/edge_validation_contract.md` | `tests/foundation` |
-| 6 | `component-registry` | Registro de componentes (linea main) | legacy | Catalogo previo de 17 componentes con chequeo de navegacion offline (PASS_NAVIGATION_ONLY). Lo supera config/modules.json como registro canonico; se conserva por sus pruebas de navegacion. | - | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
-| 6 | `edge-brain` | Memoria de investigacion (Edge Brain) | experimental | Hipocampo, ledger de resultados, invalidaciones, elegibilidad, cobertura y memoria de episodios: evita repetir lo muerto y conserva el linaje. | research | `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md` | `tests` |
-| 6 | `edge-factory` | Fabrica de hipotesis | experimental | Orquestador y esquemas para generar y registrar hipotesis con justificacion economica y condicion de refutacion. | edge-brain, config-core | `docs/HIPOTESIS_PENDIENTES.md` | `tests` |
-| 6 | `governance` | Gobernanza y documentacion | core | North Star, protocolo de documentacion, registro de edges, canal auditor, contratos de validacion y compuertas de holdout. Define las reglas; ningun modulo las sobrescribe. | - | `docs/DOCUMENTATION_PROTOCOL.md` | `tests/test_north_star_hash.py` |
-| 7 | `agent-bridge` | Puente multi-IA (Drive/Kaggle) | experimental | Permite que agentes sin red o sin datos (Gemini, Notion) pidan lecturas y kernels a la PC local por una carpeta de Drive, con politica de acciones permitidas y parches solo para revision. | kaggle-custody | `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md` | `tests/bridge` |
-| 7 | `autopilot` | Agente autonomo (autopilot) | experimental | Ciclo autonomo: paquete de contexto y lentes para el proponente, roles LLM aislados, criterio de friccion, promocion automatica con pre-registro committeado, ejecucion en Kaggle, sala de Chaski y mejora recursiva acotada. No promueve edges: lanza y registra corridas. Biblioteca trazable del proyecto, doble revisión, auditor post-corrida y abogado del diablo. | kaggle-custody, research | `docs/autopilot/ARQUITECTURA_MULTIAGENTE.md` | `tests/test_autopilot.py`, `tests/test_autopilot_promocion.py`, `tests/test_autopilot_contexto_mejora.py`, `tests/test_autopilot_roles.py`, `tests/test_autopilot_sala.py`, `tests/test_autopilot_conocimiento.py`, `tests/test_autopilot_auditoria.py`, `tests/test_autopilot_pedidos.py`, `tests/test_autopilot_holdout_apertura.py`, `tests/test_autopilot_escalera.py` |
-| 7 | `notion-workers` | Workers de Notion (linea main) | experimental | Integraciones de Notion (auditor y operaciones de investigacion). Traidos de main el 2026-10-14; el auditor de datos vive ademas en la rama feat/research-ops-supervisor-mvp. | - | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
-| 7 | `viewer` | Visor | experimental | Visualizacion de barras, zonas y L2 para inspeccion humana. | bridge-kernels | `docs/research/VIEWER_UNIFICATION_PROPOSAL_20260921.md` | **sin tests** |
+| ID Módulo | Ruta | Capa | Categoría | Primitivas Exportadas | Se Apoya En | Estado / Evidencia Empírica |
+|---|---|---|---|---|---|---|
+| `holdout_guard` | `edgelab/research/holdout_guard.py` | `L0_NUCLEO_SELLADO` | `inferencia_embudo_multiagente` | `HOLDOUT_PRIMERA_SESION_INT`, `verificar_corte_holdout` | — | **NUCLEO** |
+| `costos` | `edgelab/costos.py` | `L0_NUCLEO_SELLADO` | `motor_grilla_simulacion` | `friccion_viaje`, `COSTOS_CANONICOS` | — | **NUCLEO** |
+| `fuentes_ticks` | `edgelab/research/fuentes_ticks.py` | `L1_DATOS_Y_DETECTORES_PARIDAD` | `motor_grilla_simulacion` | `contexto_m1`, `bloques_dukascopy`, `sesiones_disponibles` | `holdout_guard` | **NUCLEO** |
+| `zonas_gaps` | `edgelab/research/zonas_gaps.py` | `L1_DATOS_Y_DETECTORES_PARIDAD` | `sensores_zonas_volumen_gaps` | `_detectar_gaps_y_clusters_nb`, `disparos`, `niveles`, `niveles_lote` | `fuentes_ticks`, `grilla_generica` | **ACTIVO**: ZGAP-NQ: 18/20 pistas positivas (+5,2 pts/sesión, p=0,04); base de CVGAP-NQ y CVGAP-CFD-NQ. |
+| `corredor_vol_gaps` | `edgelab/research/corredor_vol_gaps.py` | `L1_DATOS_Y_DETECTORES_PARIDAD` | `detectores_impulso_corredor` | `_extraer_cajas_amarillas_nb`, `_precomputar_eventos_nb`, `disparos`, `niveles`, `niveles_lote` | `zonas_gaps`, `fuentes_ticks`, `grilla_generica` | **PROMOVIDO_ACTA**: CVGAP-NQ (+19,13 USD/op OOS, ACTA_HOLDOUT) y CVGAP-CFD-NQ (+10,50 USD/op OOS, ACTA_HOLDOUT); CVGAP-ES PISTAS_VIVAS (+24,47 pts/op en p3). |
+| `u1_racimos_grilla` | `edgelab/research/u1_racimos_grilla.py` | `L1_DATOS_Y_DETECTORES_PARIDAD` | `sensores_zonas_volumen_gaps` | `racimos_desde_zonas`, `disparos`, `niveles`, `niveles_lote` | `u1_zonas`, `u1_indaga`, `u1_oro` | **PROMOVIDO_ACTA**: U1-RACIMOS-GRILLA-NQ (+32,83 pts/op OOS, ACTA_HOLDOUT) y U1-RACIMOS-GRILLA-ES (+5,95 pts/op, ACTA_HOLDOUT). |
+| `u1_zonas_bt2` | `edgelab/research/u1_zonas_bt2.py` | `L1_DATOS_Y_DETECTORES_PARIDAD` | `sensores_zonas_volumen_gaps` | `disparos`, `niveles`, `niveles_lote` | `u1_zonas`, `u1_indaga` | **PROMOVIDO_ACTA**: U1-ZONAS-BT2-ES (+2,47 pts/op OOS, ACTA_HOLDOUT) y U1-ZONAS-BT2-NQ (+15,02 pts/op, ACTA_HOLDOUT). |
+| `otr_930_sweep` | `edgelab/research/otr_930_sweep.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `rangos_sesiones_horarios` | `_offset_ny_segundos_nb`, `_extraer_eventos_otr930_nb`, `disparos`, `niveles`, `niveles_lote` | `zonas_gaps`, `corredor_vol_gaps`, `u1_oro` | **PISTAS_VIVAS**: OTR930-NQ (+5,12 pts/op canasta OOS, mejor pista +29,97 pts/op) y OTR930-CFD-NQ (+3,03 pts/op canasta OOS, PISTAS_VIVAS). |
+| `oro_almuerzo_ruptura` | `edgelab/research/oro_almuerzo_ruptura.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `rangos_sesiones_horarios` | `_offset_madrid_segundos_nb`, `_extraer_eventos_almuerzo_oro_nb`, `disparos`, `niveles`, `niveles_lote` | `u1_oro`, `zonas_gaps` | **PISTAS_VIVAS**: ORO-ALM-CFD (+0,42 pts/op canasta OOS, pista +13,62 USD/op p=0,0386) y ORO-ALM-GC (+14,00 USD/op en mejor pista OOS). |
+| `tori_trend_toque3` | `edgelab/research/tori_trend_toque3.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `lineas_tendencia_estructura` | `_extraer_eventos_tori_trend_nb`, `disparos`, `niveles`, `niveles_lote` | `zonas_gaps`, `corredor_vol_gaps`, `u1_oro` | **ACTIVO**: Implementado desde TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md con controles sintéticos y causalidad. |
+| `asia_bos_gaps` | `edgelab/research/asia_bos_gaps.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `rangos_sesiones_horarios` | `_extraer_eventos_asia_bos_nb`, `disparos`, `niveles`, `niveles_lote` | `otr_930_sweep`, `zonas_gaps`, `corredor_vol_gaps`, `u1_oro` | **ACTIVO**: Implementado desde el catálogo de guardados de Instagram (Tier-1 #2 y #11). |
+| `confluencia_cvgap_racimos` | `edgelab/research/confluencia_cvgap_racimos.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `detectores_impulso_corredor` | `_extraer_confluencia_cvgap_racimos_nb`, `disparos`, `niveles`, `niveles_lote` | `corredor_vol_gaps`, `u1_racimos_grilla`, `u1_zonas_bt2`, `otr_930_sweep`, `zonas_gaps` | **ACTIVO**: Híbrido directo de las 6 campañas con ACTA_HOLDOUT (CVGAP-NQ, CVGAP-CFD-NQ, RACIMOS-NQ/ES, BT2-NQ/ES) y OTR930. |
+| `regimen` | `edgelab/research/agente/regimen.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `filtros_regimen_macro_escala` | `VARIABLES_REGIMEN`, `por_vela`, `agregar` | `grilla_generica` | **NUCLEO** |
+| `u1_oro_escala` | `edgelab/research/u1_oro.py` | `L2_PRIMITIVAS_Y_REGIMEN` | `filtros_regimen_macro_escala` | `escala_por_mes`, `RANGO_M1_202609` | — | **NUCLEO** |
+| `grilla_generica` | `edgelab/research/grilla_generica.py` | `L3_MOTOR_GRILLA_Y_SIMULACION` | `motor_grilla_simulacion` | `Variable`, `correr`, `simular_ops`, `n_celdas`, `resumen_e0` | `grilla_masiva`, `sim`, `costos` | **NUCLEO** |
+| `embudo` | `edgelab/research/embudo.py` | `L4_INFERENCIA_EMBUDO_Y_CANASTA` | `inferencia_embudo_multiagente` | `Embudo`, `problemas_campana`, `avanzar_todas` | `grilla_generica`, `linaje`, `holdout_ventanas`, `libro_lord` | **NUCLEO** |
+| `orquestador_multiagente` | `edgelab/autopilot/orquestador_multiagente.py` | `L5_AUTOPILOT_MULTIAGENTE_ESPIRAL` | `inferencia_embudo_multiagente` | `TOPOLOGIA_DEBIAN_V2`, `armar_contexto_amplio_espiral`, `evaluar_velocidad_cuidado`, `auditar_propuesta_sonnet` | `sincronizador_ramas`, `auditor_alineacion`, `catalogo_espiral` | **NUCLEO** |
 
-## Conexiones (flujo de datos)
+## 3. Vía Concreta de Reutilización, Traslado y Unión de Módulos en Espiral
 
-```mermaid
-graph LR
-  sessions --> config_core
-  data_catalog --> data_custody
-  data_custody --> config_core
-  data_custody --> sessions
-  data_custody --> nt8_capture
-  kaggle_custody --> config_core
-  liquid_release --> data_custody
-  liquid_release --> sessions
-  liquid_release --> kaggle_custody
-  research_data_gate --> data_custody
-  bridge_kernels --> data_custody
-  bridge_kernels --> sessions
-  context --> bridge_kernels
-  context --> data_custody
-  discovery --> stats
-  discovery --> funnel
-  equivalence --> data_custody
-  external_models --> data_custody
-  funnel --> stats
-  gex --> data_custody
-  research --> data_custody
-  research --> bridge_kernels
-  research --> stats
-  research --> context
-  execution_engine --> config_core
-  propfirm --> config_core
-  propfirm --> execution_engine
-  validation --> execution_engine
-  validation --> stats
-  edge_brain --> research
-  edge_factory --> edge_brain
-  edge_factory --> config_core
-  agent_bridge --> kaggle_custody
-  autopilot --> kaggle_custody
-  autopilot --> research
-  viewer --> bridge_kernels
-```
-
-(La flecha va del consumidor al proveedor.)
-
-## Entradas y salidas por modulo
-
-- **nt8-capture** — entra: NinjaTrader 8; sale: exports de ticks, CSV de oraculo, L2 CSV.
-- **config-core** — entra: config/*.toml; sale: Config, especificaciones de instrumento.
-- **sessions** — entra: calendario de sesiones, precios; sale: matrices de sesion, estado de regimen.
-- **data-catalog** — entra: listados de Kaggle, archivos locales; sale: docs/data_catalog/RESOLVER.json, DATASETS.md.
-- **data-custody** — entra: exports NT8, calendario oficial CME; sale: series de contrato, decisiones de sesion, gates de datos.
-- **kaggle-custody** — entra: datasets Kaggle; sale: inventarios, sellos, indice del espacio.
-- **liquid-release** — entra: exports NT8 por contrato, calendario; sale: release_manifest.json, Parquet por activo, metadata/*.
-- **research-data-gate** — entra: pines SHA-256, manifiestos de campana; sale: admision de lectura.
-- **bridge-kernels** — entra: ticks, oraculos NT8; sale: barras, zonas, reportes de paridad.
-- **context** — entra: barras, L2; sale: etiquetas de contexto.
-- **costos** — entra: REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md, config/noticias/crudo (BLS, BEA, Census, Fed, ISM, ForexFactory); sale: friccion por viaje en ticks/puntos/USD, ventanas de noticia bloqueadas y mascara por operacion o por minuto.
-- **discovery** — entra: arrays por sesión; sale: resultados de escaneo.
-- **equivalence** — entra: ticks/M1 de proxy y futuro; sale: informes de equivalencia.
-- **external-models** — entra: series; sale: features PIT.
-- **funnel** — entra: tablas de eventos; sale: screens exploratorios.
-- **gex** — entra: cadenas de opciones; sale: niveles GEX diarios.
-- **holdout** — entra: docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md; sale: constantes de frontera.
-- **research** — entra: release de ticks, manifiestos de campana; sale: actas MEDIDO/NO MEDIDO, landscapes target-free.
-- **stats** — entra: series de resultados; sale: IC, p-valores, MDE.
-- **execution-engine** — entra: senales (idx, dirs), ticks con bid/ask; sale: ledger de trades.
-- **propfirm** — entra: reglas scrapeadas, resultados de estrategia; sale: EV por cuenta, filtros de admisibilidad.
-- **validation** — entra: funciones de senal; sale: veredicto de preflight y de robustez.
-- **component-registry** — entra: arbol del repo; sale: PASS_NAVIGATION_ONLY.
-- **edge-brain** — entra: actas, resultados; sale: linaje, invalidaciones, elegibilidad.
-- **edge-factory** — entra: ideas, especificaciones de instrumento; sale: hipotesis registradas.
-- **governance** — entra: decisiones de Nico; sale: reglas, estado vivo.
-- **agent-bridge** — entra: pedidos JSON; sale: respuestas JSON, snapshots de codigo.
-- **autopilot** — entra: candidatas, tablero y fichas de literatura, config/autopilot/*.json; sale: pre-registros, candidates.json, promociones.jsonl, llm_calls.sqlite.
-- **notion-workers** — entra: paginas de Notion; sale: auditorias.
-- **viewer** — entra: bundles de barras y zonas; sale: vistas HTML.
+1. **Consulta Obligatoria Pre-Diseño (`catalogo_espiral.resumen_rapido_para_agente()` + `tools/existente.py buscar`)**:
+   Antes de proponer o programar un módulo, el agente consulta qué detectores (`L1`), primitivas de sesión/estructura (`L2`) y variables de régimen (`regimen.py`) ya existen y qué celdas sobrevivieron en `APRENDIZAJES_ESPIRAL.md`.
+2. **Traslado Multi-Instrumento (`Cross-Asset & Cross-Feed Transfer`)**:
+   Toda primitiva validada en un activo (ej. `corredor_vol_gaps` en `NQ`) se traslada parametrizando sus cortes por cuantiles empíricos de `E0` (`Variable(..., cuantiles=3)`) o por `u1_oro.escala_por_mes(ctx)` para conservar invarianza de escala en `ES`, `GC`, `YM`, `6E` y cruces `CFD -> Futuro`.
+3. **Unión y Composición de Primitivas (`L1 + L2 -> Nueva Familia`)**:
+   Un experimento nuevo une en su pre-cómputo `@njit` dos o más primitivas ortogonales ya probadas (por ejemplo, `confluencia_cvgap_racimos.py` une la Caja Amarilla de `corredor_vol_gaps.py` con la densidad de racimos de `u1_racimos_grilla.py` y el barrido `otr_930_sweep.py`).
+4. **Promoción Automática al Catálogo (`promover_bloque_espiral`)**:
+   Cuando una campaña alcanza `ACTA_HOLDOUT.json` o `PISTAS_VIVAS` con media positiva en OOS, sus funciones `@njit` y su firma de régimen quedan promovidas en `CATALOGO_MODULOS_ESPIRAL.json` y en `APRENDIZAJES_ESPIRAL.md`.

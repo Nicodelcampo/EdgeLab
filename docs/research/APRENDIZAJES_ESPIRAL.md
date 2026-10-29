@@ -57,3 +57,15 @@ Bitácora viva y acumulativa del ciclo en espiral (`Medir -> Aprender -> Investi
 
 ### 3. Biblioteca de Ideas (`docs/research/biblioteca_ideas_20261028/`)
 - Se incorporaron y preclasificaron las `248` estrategias de trading extraídas de los guardados de Instagram (`estrategias_guardadas_trading.md`) y el paper formal de líneas de tendencia por tiempos de parada de Tori Trades (`TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md` + `.docx`), organizadas en el ranking ejecutable `CATALOGO_Y_PRECLASIFICACION_EDGELAB_20261028.md` (Top 12 Tier-1 testeables en M1/ticks hoy + Tier-2 L2/opciones).
+
+## Ola 10 — Síntesis en Espiral (`CONFLUENCIA-CVGAP-RACIMOS`) y Nuevas Familias del Scrap (`ASIA-BOS-GAPS` y `TORI-TREND-TOQUE3`) (2026-10-29)
+
+1. **Resolución del Cuello de Botella de Escala en ES mediante Cortes por Cuantiles (`CONFLUENCIA-CVGAP-RACIMOS`)**:
+   - En `CVGAP-ES` (Ola 5), los umbrales absolutos producían sólo `5.832` celdas evaluables de `933.120`. Al migrar los filtros de puntaje de gaps y de densidad de racimos a cortes empíricos por cuantiles (`extremos`, `cuantiles=3`, invariantes de escala entre NQ y ES), `CONF-CVR-ES` alcanzó **`46.968` celdas evaluables** (`8,05x` más densidad) y `CONF-CVR-NQ` alcanzó **`45.456` celdas evaluables** sobre `314.928` celdas/canal.
+   - En la réplica OOS (`20260401–20260925`), `CONF-CVR-NQ` quedó en **`PISTAS_VIVAS`** (`SIN_RECHAZO`, potencia `0,870`, mejor pista `p9 = [1, 1, 0, 1, 0, 2, 0, 1, 2, 3]` con `+$6,73 pts/op`, `n=79`, `59` sesiones), mientras que `CONF-CVR-ES` fue refutada con potencia (`0,993`, `IC90 [-1,52, -0,16]`), confirmando que en ES la confluencia de absorción requiere el anclaje estructural directo de `U1-RACIMOS-GRILLA-ES` o `U1-ZONAS-BT2-ES` sin exigir simultáneamente caja amarilla adelantada.
+2. **Compresión Asiática + BOS / Sweep Reclaim + `ZONAS-GAPS` (`ASIA-BOS-GAPS`, `ASIA-NQ`)**:
+   - En `DESC` (`20250805–20260331`), `ASIA-NQ` produjo `28.344` celdas evaluables con pistas top de `+$26,82 pts/op` (`IC90 [+9,77, +43,72]`).
+   - En la réplica OOS (`20260401–20260925`), la canasta igual-ponderada de 20 pistas alcanzó **`+$4,38 pts/pista/sesión`** (`IC90 [-0,33, +8,82]`, **`p = 0,0530`**, `102` sesiones, potencia `0,991`), y el lote de 20 pistas registró **`p_simes = 0,0388`** (`LORD++ t=2`). Las pistas individuales `p2 = [1, 0, 0, 2, 1, 3, 3, 2, 2, 3]` (**`+$55,47 pts/op`**, `IC90 [+19,31, +89,66]`, **`p = 0,0039`**, `18` sesiones) y `p3 = [1, 0, 0, 2, 1, 3, 3, 2, 0, 9]` (**`+$54,83 pts/op`**, `IC90 [+19,39, +88,07]`, **`p = 0,0031`**, `18` sesiones) replicaron con IC90 entero positivo en OOS.
+3. **Línea de Tendencia Causal de Tiempo de Parada + 3er Toque (`TORI-TREND-TOQUE3`, `TORI-NQ`)**:
+   - En `DESC` (`20250805–20260331`), `TORI-NQ` evaluó `16.944` celdas con top `+$13,03 pts/op` (`IC90 [+3,95, +22,45]`).
+   - En la réplica OOS (`20260401–20260925`), quedó en **`PISTAS_VIVAS`** (`SIN_RECHAZO`, potencia `0,999`), destacándose la pista `p19 = [1, 0, 1, 0, 3, 2, 3, 2, 1, 15]` con **`+$15,03 pts/op`** (`IC90 [+1,58, +30,08]`, **`p = 0,0505`**, `14` sesiones).

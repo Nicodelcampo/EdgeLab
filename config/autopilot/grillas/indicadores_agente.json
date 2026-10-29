@@ -35,6 +35,33 @@
    "test_causal": "tests/research/test_oro_almuerzo_ruptura.py::test_causal",
    "doc": "docs/research/oro_almuerzo_20261028/SPEC_ORO_ALMUERZO_RUPTURA.md",
    "nota": "Familia ORO-ALMUERZO-RUPTURA (Estrategia del Oro de la Hora de Comer) con paridad horaria Europe/Madrid DST y cruce con hallazgos de ORO-0530 y U1-ORO"
+  },
+  {
+   "id": "TORI-TREND-TOQUE3",
+   "modulo": "edgelab/research/tori_trend_toque3.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Teoría de tiempos de parada y líneas de tendencia causales por pivotes confirmados (Paper Tori Trades 2026-10-26 + Post #943) acoplada a ZONAS-GAPS y EmaCorridorTrendVolW2, con prueba de causalidad en tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_tori",
+   "test_causal": "tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_tori",
+   "doc": "docs/research/tori_trend_20261029/SPEC_TORI_TREND_TOQUE3.md",
+   "nota": "Pivotes causales k in {3,5,8}, recta en precio con pendiente normalizada por ATR14, 3er toque con enfriamiento y tiempo de parada tau"
+  },
+  {
+   "id": "ASIA-BOS-GAPS",
+   "modulo": "edgelab/research/asia_bos_gaps.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Caja de compresión asiática (18:00-20:00 / 18:00-22:00 / 20:00-00:00 ET con ajuste DST exacto) + ruptura BOS con cuerpo fuerte o barrido con reingreso IFVG (Posts #18/#23 @alefx_ar y #159 @algo.jan), con prueba de causalidad en tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_asia",
+   "test_causal": "tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_asia",
+   "doc": "docs/research/asia_bos_20261029/SPEC_ASIA_BOS_GAPS.md",
+   "nota": "Compresión asiática + BOS / IFVG acoplada a ZONAS-GAPS y corredor EMA20/60"
+  },
+  {
+   "id": "CONFLUENCIA-CVGAP-RACIMOS",
+   "modulo": "edgelab/research/confluencia_cvgap_racimos.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Híbrido en espiral de las 6 campañas con ACTA_HOLDOUT (CVGAP-NQ/CFD, U1-RACIMOS-NQ/ES, U1-ZONAS-BT2-NQ/ES) y OTR930 con cuantiles invariantes de escala, con prueba de causalidad en tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_confluencia",
+   "test_causal": "tests/research/test_nuevas_familias_espiral_20261029.py::test_causal_confluencia",
+   "doc": "docs/research/confluencia_cvr_20261029/SPEC_CONFLUENCIA_CVGAP_RACIMOS.md",
+   "nota": "Confluencia de Caja Amarilla P70/P80 + densidad de racimo de absorción (AVZP2/BT2) + cuantiles invariantes de gaps + ventana de apertura NY"
   }
  ]
 }

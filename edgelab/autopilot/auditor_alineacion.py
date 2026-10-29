@@ -1,10 +1,10 @@
 """Auditor determinista y multi-agente de alineación operativa para el Debian (SV1).
 
 Verifica en cada ciclo que el comportamiento real del agente en SV1 cumpla con:
-- config/autopilot/DIRECTIVAS.md
+- config/autopilot/DIRECTIVAS.md (Directivas 1 a 7)
 - docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md (O1..O16, E1..E10)
 - Separación estricta CODE_DIR vs STATE_DIR y sincronía con foundation/f0b-compatibility-probe
-- Funcionamiento de la espiral (APRENDIZAJES_ESPIRAL.md, programador activo, 8 slots en 2 cuentas)
+- Funcionamiento de la espiral (APRENDIZAJES_ESPIRAL.md, CATALOGO_MODULOS_ESPIRAL.json, docs/MODULES.md, programador activo, 8 slots en 2 cuentas)
 """
 from __future__ import annotations
 
@@ -72,8 +72,10 @@ def evaluar_alineacion_estado(
     campanas_bloqueadas_sin_ticket: list[str],
     reaperturas_sin_verificacion_o16: list[str],
     max_chars_contexto: int = 64000,
+    existe_catalogo_espiral: bool = True,
+    campanas_incumplen_directiva6: list[str] | None = None,
 ) -> ReporteAlineacion:
-    """Evalúa los 8 invariantes operativos de alineación de SV1."""
+    """Evalúa los invariantes operativos de alineación de SV1 (SLI-01 a SLI-10)."""
     checks: list[CheckAlineacion] = []
 
     # 1. Sincronía Git con la rama troncal
@@ -85,7 +87,7 @@ def evaluar_alineacion_estado(
             ok=ok_git,
             severidad="CRITICA",
             detalle=f"local={head_local[:8]} vs remoto={head_remoto[:8]}",
-            accion_correctiva="Ejecutar deploy/debian/auto_sync_code.sh antes del ciclo." if not ok_git else "Ninguna",
+            accion_correctiva="Ejecutar sincronizador_ramas.sincronizar_con_troncal() / auto_sync_code.sh antes del ciclo." if not ok_git else "Ninguna",
         )
     )
 
@@ -98,7 +100,7 @@ def evaluar_alineacion_estado(
             ok=ok_clean,
             severidad="CRITICA",
             detalle="0 archivos sucios" if ok_clean else f"{len(archivos_sucios_code)} sucios: {archivos_sucios_code[:3]}",
-            accion_correctiva="Redirigir EVALUABLES/LIBRO_LORD/launches a STATE_DIR." if not ok_clean else "Ninguna",
+            accion_correctiva="Evacuar EVALUABLES/LIBRO_LORD/launches a STATE_DIR con sincronizador_ramas.evacuar_estado_vivo()." if not ok_clean else "Ninguna",
         )
     )
 
@@ -108,7 +110,7 @@ def evaluar_alineacion_estado(
     checks.append(
         CheckAlineacion(
             codigo="SLI-03",
-            nombre="Programador autónomo activo (Agente 2 Opus)",
+            nombre="Programador autónomo activo (Agente 2 Opus 4.6)",
             ok=ok_prog,
             severidad="ALTA",
             detalle=f"programador.activo={prog_cfg.get('activo')}",
@@ -116,7 +118,7 @@ def evaluar_alineacion_estado(
         )
     )
 
-    # 4. Concurrencia 8 en 2 cuentas de Kaggle (Directiva de escala)
+    # 4. Concurrencia 8 en 2 cuentas de Kaggle (Directiva #4)
     kag_cfg = config_autopilot.get("kaggle") or {}
     max_conc = int(kag_cfg.get("max_concurrent") or 0)
     cuentas = kag_cfg.get("accounts") or []
@@ -145,7 +147,7 @@ def evaluar_alineacion_estado(
         )
     )
 
-    # 6. Memoria en espiral presente y actualizada (Directiva #2)
+    # 6. Memoria en espiral presente y actualizada (Directiva #3)
     checks.append(
         CheckAlineacion(
             codigo="SLI-06",
@@ -157,7 +159,7 @@ def evaluar_alineacion_estado(
         )
     )
 
-    # 7. Guarda O16 (verificación de primer kernel tras reapertura) y atención a BLOQUEADAS
+    # 7. Guarda O16 (verificación de primer kernel tras reapertura) y atención a BLOQUEADAS (Directiva #1)
     ok_o16 = len(campanas_bloqueadas_sin_ticket) == 0 and len(reaperturas_sin_verificacion_o16) == 0
     checks_det = (
         "Sin campañas bloqueadas desatendidas ni reaperturas sin verificar"
@@ -184,9 +186,35 @@ def evaluar_alineacion_estado(
             ok=ok_ctx,
             severidad="MEDIA",
             detalle=f"max_chars={max_chars_contexto}",
-            accion_correctiva="Elevar max_chars >= 64000 con compresión estructurada por secciones." if not ok_ctx else "Ninguna",
+            accion_correctiva="Elevar max_chars >= 64000 con armar_contexto_amplio_espiral()." if not ok_ctx else "Ninguna",
         )
     )
+
+    # 9. Catálogo modular en espiral (docs/MODULES.md + CATALOGO_MODULOS_ESPIRAL.json)
+    if not existe_catalogo_espiral:
+        checks.append(
+            CheckAlineacion(
+                codigo="SLI-09",
+                nombre="Catálogo modular en espiral (docs/MODULES.md y CATALOGO_MODULOS_ESPIRAL.json)",
+                ok=False,
+                severidad="ALTA",
+                detalle="Falta docs/MODULES.md o CATALOGO_MODULOS_ESPIRAL.json",
+                accion_correctiva="Ejecutar catalogo_espiral.escribir_artefactos_catalogo().",
+            )
+        )
+
+    # 10. Cumplimiento de Directiva #6 (holdout.desde == 20261001 en familias cuyo OOS cerró en sep-2026)
+    if campanas_incumplen_directiva6:
+        checks.append(
+            CheckAlineacion(
+                codigo="SLI-10",
+                nombre="Cumplimiento de Directiva #6 (frontera holdout.desde == 20261001)",
+                ok=False,
+                severidad="CRITICA",
+                detalle=f"Incumplen: {campanas_incumplen_directiva6}",
+                accion_correctiva="Alinear holdout.desde a 20261001 y actualizar HOLDOUT_VENTANAS.jsonl.",
+            )
+        )
 
     pesos = {"CRITICA": 3.0, "ALTA": 2.0, "MEDIA": 1.0}
     total_peso = sum(pesos[c.severidad] for c in checks)

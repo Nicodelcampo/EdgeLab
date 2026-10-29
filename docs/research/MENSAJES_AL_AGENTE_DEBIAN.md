@@ -3,6 +3,31 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-29 (05:10 UTC) — de Nico (redactado por la sesión en la nube): Infraestructura Multi-Agente Debian v2 (`sincronizador_ramas`, `catalogo_espiral`, `orquestador_multiagente`, `docs/MODULES.md`) + 3 Nuevas Familias en Espiral (Ola 10: `CONFLUENCIA-CVGAP-RACIMOS`, `TORI-TREND-TOQUE3`, `ASIA-BOS-GAPS`)
+
+### 1. Cuatro módulos nuevos de infraestructura ya activos en el repositorio
+1. **`edgelab/autopilot/sincronizador_ramas.py`** (y `deploy/debian/auto_sync_code.sh`):
+   - Evacúa y fusiona sin pérdida los archivos de estado vivo (`EVALUABLES.jsonl`, `LINAJES.jsonl`, `HOLDOUT_VENTANAS.jsonl`, `LIBRO_LORD.json`, `launches/*.json`) desde `CODE_DIR` hacia `STATE_DIR`, y ejecuta `sincronizar_con_troncal()` hacia `origin/foundation/f0b-compatibility-probe` al inicio de cada ciclo (respaldando cualquier commit local en `autopilot/rescate/<ts>` si hubiera divergencia).
+2. **`edgelab/research/catalogo_espiral.py` + `config/autopilot/CATALOGO_MODULOS_ESPIRAL.json` + `docs/MODULES.md`**:
+   - Clasifica todos los módulos de EdgeLab en **6 capas (`L0..L5`)** y **7 categorías funcionales componibles**.
+   - Antes de proponer o programar cualquier experimento nuevo, inyectar `catalogo_espiral.resumen_rapido_para_agente(max_chars=8000)` en el contexto del agente para reutilizar primitivas existentes.
+3. **`edgelab/autopilot/orquestador_multiagente.py` + `config/autopilot/TOPOLOGIA_AGENTES_DEBIAN.json`**:
+   - Formaliza la topología **`Capataz Python Determinista + 2 Agentes Claude Opus 4.6 (Arquitecto + Ingeniero/Doctor en worktree) + 1 Agente Claude Sonnet 4.6 (Auditor Adversario, Alineación 10-SLI y Cronista)`**.
+   - Reemplaza el truncamiento destructivo (`pop()`) por `armar_contexto_amplio_espiral(max_chars=80000)`, aplica la compuerta objetiva **Velocidad vs. Cuidado** (`evaluar_velocidad_cuidado`: `VIA_RAPIDA_COMPOSICION` vs `VIA_CUIDADA_PARIDAD`), exige revisión adversaria pre-lanzamiento (`auditar_propuesta_sonnet`) y administra la **Guarda O16** (`registrar_reapertura_o16` / `verificar_cierre_o16`).
+4. **`edgelab/autopilot/auditor_alineacion.py` (10 SLIs) + `tools/auditar_corridas_nube_20261029.py` (28 campañas y 6 módulos)**:
+   - Audita ahora las **28 campañas** (16 de Olas 1–9 + 12 de Ola 10) y los **6 módulos experimentales nuevos**.
+
+### 2. Doce nuevas campañas de la Ola 10 (3 familias nuevas en espiral)
+- **Familia `CONFLUENCIA-CVGAP-RACIMOS` (`edgelab/research/confluencia_cvgap_racimos.py`, 314.928 celdas/canal)**:
+  - Síntesis en espiral de las 6 campañas ganadoras de Olas 1–9 (`CVGAP-NQ/CFD`, `U1-RACIMOS-GRILLA-NQ/ES`, `U1-ZONAS-BT2-ES/NQ`) y `OTR930`, con cuantiles invariantes de escala para gaps (`g_tom_rel`, `g_cam_rel`) y densidad de racimo de absorción (`rac_dens`).
+  - Campañas: `CONF-CVR-NQ` y `CONF-CVR-ES` (`DESC` ya corriendo en Kaggle), `CONF-CVR-CFD-NQ` y `CONF-CVR-CFD-ES` (`DESC / PENDIENTE` listas para lanzar).
+- **Familia `TORI-TREND-TOQUE3` (`edgelab/research/tori_trend_toque3.py`, 1.119.744 celdas/canal)**:
+  - Derivada del paper de Tori Trades (*Stopping-Time Theory of Swing Trading with Trendlines*) y Post #943 (`@ifriendlytrader`), acoplada con `ZONAS-GAPS` y `EmaCorridorTrendVolW2`.
+  - Campañas: `TORI-NQ` (`DESC` corriendo en Kaggle), `TORI-ES`, `TORI-GC`, `TORI-CFD-NQ` (`DESC / PENDIENTE`).
+- **Familia `ASIA-BOS-GAPS` (`edgelab/research/asia_bos_gaps.py`, 1.119.744 celdas/canal)**:
+  - Derivada del catálogo scrapeado de Instagram (Posts #18/#23 `@alefx_ar` Rango Asia + BOS y Post #159 `@algo.jan` *Asian Session Glitch* / `IFVG`), acoplada con `ZONAS-GAPS` y `EmaCorridorTrendVolW2`.
+  - Campañas: `ASIA-NQ` (`DESC` corriendo en Kaggle), `ASIA-ES`, `ASIA-GC`, `ASIA-CFD-NQ` (`DESC / PENDIENTE`).
+
 ## 2026-10-29 (03:50 UTC) — de Nico (redactado por la sesión en la nube): ORDEN DE AUDITORÍA PRIORITARIA de las 16 corridas y 3 módulos de las Olas 1–9 (`ba7c2351` + `de6c3ecf`)
 
 ### 1. Contexto y alcance de la auditoría encargada a los agentes del Debian (`SV1`)
