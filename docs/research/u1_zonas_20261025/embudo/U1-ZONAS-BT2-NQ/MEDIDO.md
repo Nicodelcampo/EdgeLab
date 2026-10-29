@@ -8,3 +8,11 @@
 - DESC [20250801, 20260331]: evaluables 54351 (m del FDR 54351 de 4478976 celdas), FDR 9, RW umbral 4.66837739944458 (diagnóstico), linaje 4838367 como informacion, pistas sin nominación 3, candidatas 3
 - Potencia prevista (informativa): [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: OOS n 60.0 potencia 0.90, holdout n 150 potencia 1.00; [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: OOS n 60.0 potencia 0.97, holdout n 150 potencia 1.00; [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: OOS n 72.0 potencia 0.86, holdout n 150 potencia 0.99
 - INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: regla 13.641632352941151, placebo 2.16, latencia 1 vela 7.277080645161286 -> pasa
+- INTEGRIDAD [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: regla 15.02116666666667, placebo 0.14, latencia 1 vela 16.148944444444442 -> pasa
+- INTEGRIDAD [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: regla 6.902670731707316, placebo -6.07, latencia 1 vela 7.923249999999999 -> pasa
+- AVISO OOS: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- OOS [20260401, 20260930] (régimen actual): medias [-34.52, -17.49, -19.72]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.31, 0.18, 0.18]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- TOPES: elegida {'celda': [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4], 'tope': ['pts', 50.0], 'puntaje': 2.6914091799746886, 'peor': -52.0455}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4] tope ['pts', 50.0]

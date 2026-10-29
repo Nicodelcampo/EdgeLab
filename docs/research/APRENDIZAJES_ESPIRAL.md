@@ -29,3 +29,31 @@ Bitácora viva y acumulativa del ciclo en espiral (`Medir -> Aprender -> Investi
 ### 3. Primitivas Promovidas al Catálogo Reutilizable (`L1`/`L2`)
 1. `_extraer_cajas_amarillas_nb` (`edgelab/research/corredor_vol_gaps.py`): Detector causal del corredor EMA 20/60 + caja amarilla `W1=100% / W2=200%` con ventana rodante de 50 zonas y soporte de ruptura intra-sector.
 2. `_precomputar_eventos_nb` (`edgelab/research/corredor_vol_gaps.py`): Tensor de eventos en 2 pasadas (`O(N_eventos)` en vez de `O(N_barras)` por celda) con contabilidad causal de gaps tomados (`g_tom`), puntaje ponderado por antigüedad/volumen (`g_pts`) y gaps abiertos en el camino (`g_cam`).
+
+## Ciclo 2026-10-28 (Olas 6–9) — Cosecha Completa de Zonas/Racimos (3 nuevas ACTAs), Barridos `OTR-930-SWEEP` y `ORO-ALMUERZO-RUPTURA`, y Biblioteca de Ideas
+
+### 1. Tres Nuevas Campañas en `CONTEO / PENDIENTE` (`ACTA_HOLDOUT.json` emitidas antes de mirar)
+- **`U1-ZONAS-BT2-ES` (`edgelab.research.u1_zonas_bt2`, futuros ES `2025-08-01..2026-09-30`)**:
+  - **Descubrimiento (`15.960` evaluables)**: `3` nominadas por FDR (`q <= 0,10`), RW `4,24`.
+  - **Integridad (`3/3` aprobadas)**: `[0, 0, 2, 2, 2, 2, 3, 3, 3, 0, 0, 9]` (`+11,45 pts/op`, placebo `-1,24`, latencia 1 vela `+12,71`); `[0, 2, 0, 2, 2, 2, 1, 3, 1, 0, 0, 6]` (`+3,29 pts/op`, placebo `-1,08`, latencia 1 vela `+3,82`); `[0, 2, 0, 2, 2, 2, 0, 0, 3, 0, 0, 4]` (`+2,81 pts/op`, placebo `-1,38`, latencia 1 vela `+4,44`).
+  - **OOS (`2026-04-01..2026-09-30`) y Topes**: La celda `[0, 2, 0, 2, 2, 2, 1, 3, 1, 0, 0, 6]` obtuvo **`+2,47 pts/op`** en OOS y fue seleccionada en `TOPES` con `tope = ['pts', 50.0]` (`puntaje = 12,6946`, `peor = -9,34 pts`). **ACTA registrada antes de mirar** (`n_fijo = 150` desde `2026-10-01`, `α = 0,00361`).
+- **`U1-ZONAS-BT2-NQ` (`edgelab.research.u1_zonas_bt2`, futuros NQ `2025-08-01..2026-09-30`)**:
+  - **Integridad (`3/3` aprobadas)**: `[0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]` (`+13,64 pts/op`, placebo `+2,16`, latencia 1 vela `+7,28`); `[0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]` (`+15,02 pts/op`, placebo `+0,14`, latencia 1 vela `+16,15`); `[0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]` (`+6,90 pts/op`, placebo `-6,07`, latencia 1 vela `+7,92`).
+  - **Topes y Acta Pre-Holdout**: Seleccionada `[0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]` con `tope = ['pts', 50.0]` (`puntaje = 2,6914`, `peor = -52,05 pts`) y **ACTA registrada antes de mirar** (`n_fijo = 150` desde `2026-10-01`, `α = 0,00361`).
+- **`U1-RACIMOS-GRILLA-ES` (`edgelab.research.u1_racimos_grilla`, futuros ES `2025-08-01..2026-09-30`)**:
+  - **Integridad (`2/2` aprobadas tras propagar `escala_seg` en `u1_indaga.py`)**: `[0, 0, 0, 16, 2, 2]` (`+5,95 pts/op`, placebo `-0,75`, latencia 1 vela `+5,72`) y `[0, 1, 0, 16, 2, 3]` (`+4,78 pts/op`, placebo `+0,81`, latencia 1 vela `+4,38`).
+  - **Topes y Acta Pre-Holdout**: Seleccionada `[0, 0, 0, 16, 2, 2]` con `tope = ['pts', 50.0]` (`puntaje = 4,1269`, `peor = -37,51 pts`) y **ACTA registrada antes de mirar** (`n_fijo = 150` desde `2026-10-01`, `α = 0,00361`).
+- **`U1-6E-GRILLA` (`DK:EURUSD -> 6E`)**: Cosechada etapa `PISTAS / REP` y cerrada en `FIN / PISTAS_VIVAS` (`SIN_RECHAZO`).
+
+### 2. Seis Campañas de Nuevas Familias (`OTR-930-SWEEP` y `ORO-ALMUERZO-RUPTURA`) en `FIN / PISTAS_VIVAS`
+- **`OTR-930-SWEEP` (`edgelab/research/otr_930_sweep.py`, `194.400` celdas/canal)**:
+  - **`OTR930-NQ` (`NQ -> NQ`)**: `49.080` celdas evaluables (`1.778` disparos). En OOS (`[2026-04-01, 2026-09-30]`), la canasta de 20 pistas logró **`+5,12 pts/op`** (`p = 0,1075`, `94` sesiones, `potencia = 0,966`, `SIN_RECHAZO` / `PISTAS_VIVAS`), destacando la pista `[0, 1, 1, 0, 3, 3, 0, 1, 1, 10]` con **`+29,97 pts/op`** (`n = 26`, `p = 0,1654`).
+  - **`OTR930-CFD-NQ` (`DK:USATECHIDXUSD -> NQ`)**: `50.640` celdas evaluables (`1.814` disparos). En OOS, la canasta promedió **`+3,03 pts/op`** (`102` sesiones, `PISTAS_VIVAS`), con la pista `[1, 1, 2, 2, 0, 0, 3, 2, 2, 2]` alcanzando **`+17,59 pts/op`** (`n = 58`, `p = 0,1224`).
+  - **`OTR930-ES` (`ES -> ES`)**: `53.184` celdas evaluables (`1.796` disparos). En OOS, la canasta promedió **`+0,45 pts/op`** (`52` sesiones, `potencia = 0,869`, `SIN_RECHAZO` / `PISTAS_VIVAS`), mejor pista `[2, 0, 0, 0, 3, 3, 0, 1, 2, 8]` con `+2,14 pts/op`.
+  - **`OTR930-CFD-ES` (`DK:USA500IDXUSD -> ES`)**: `42.000` celdas evaluables (`1.829` disparos). En OOS, la canasta promedió **`+0,38 pts/op`** (`86` sesiones, `potencia = 1,000`, `SIN_RECHAZO` / `PISTAS_VIVAS`), destacando la pista `[1, 2, 0, 1, 0, 0, 3, 2, 2, 9]` con **`+7,71 pts/op`** (`n = 22`, `p = 0,0595`).
+- **`ORO-ALMUERZO-RUPTURA` (`edgelab/research/oro_almuerzo_ruptura.py`, `194.400` celdas/canal)**:
+  - **`ORO-ALM-GC` (`GC -> GC`)**: `45.828` celdas evaluables (`1.313` disparos). En OOS, la canasta promedió **`+0,21 pts/op`** (`37` sesiones, `potencia = 0,780`, `SIN_POTENCIA` / `PISTAS_VIVAS`), destacando la pista `[1, 2, 3, 2, 1, 0, 0, 2, 1, 11]` con **`+14,00 pts/op`** (`n = 20`, `p = 0,0538`).
+  - **`ORO-ALM-CFD` (`DK:XAUUSD -> GC`)**: `47.556` celdas evaluables (`1.448` disparos). En OOS, la canasta promedió **`+0,42 pts/op`** (`52` sesiones, `potencia = 1,000`, `SIN_RECHAZO` / `PISTAS_VIVAS`), destacando la pista `[0, 2, 1, 2, 0, 3, 0, 2, 2, 2]` con **`+13,62 pts/op`** (`n = 21`, `p = 0,0386`).
+
+### 3. Biblioteca de Ideas (`docs/research/biblioteca_ideas_20261028/`)
+- Se incorporaron y preclasificaron las `248` estrategias de trading extraídas de los guardados de Instagram (`estrategias_guardadas_trading.md`) y el paper formal de líneas de tendencia por tiempos de parada de Tori Trades (`TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md` + `.docx`), organizadas en el ranking ejecutable `CATALOGO_Y_PRECLASIFICACION_EDGELAB_20261028.md` (Top 12 Tier-1 testeables en M1/ticks hoy + Tier-2 L2/opciones).

@@ -17,6 +17,24 @@
    "test_causal": "tests/research/test_corredor_vol_gaps.py::test_causal",
    "doc": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
    "nota": "Corredor estable de EMAs (20/60) en 50T y M1 con sector adelantado (TailPct=25%, BeyondPct=25%, ForwardWidthPct 100%/200%), rectángulo amarillo por percentil P80/P90 de volumen, ruptura en dirección del impulso + excursión + regreso y puntaje continuo de gaps"
+  },
+  {
+   "id": "OTR-930-SWEEP",
+   "modulo": "edgelab/research/otr_930_sweep.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Barrido pre-market NY (08:12-09:12 ET, 08:00-09:15 ET, 08:30-09:29 ET) + toma de liquidez post-09:30 ET y retorno al extremo opuesto (OTR Range Breakout Return) acoplado a U1, SweepGate k36, ZONAS-GAPS y EmaCorridorTrendVolW2, con prueba de causalidad en tests/research/test_otr_930_sweep.py::test_causal",
+   "test_causal": "tests/research/test_otr_930_sweep.py::test_causal",
+   "doc": "docs/research/otr_930_sweep_20261028/SPEC_OTR_930_SWEEP.md",
+   "nota": "Familia OTR-930-SWEEP (9:30 Cheat Code / OTR Range Breakout Return) con paridad horaria America/New_York DST y cruce con primitivas EdgeLab"
+  },
+  {
+   "id": "ORO-ALMUERZO-RUPTURA",
+   "modulo": "edgelab/research/oro_almuerzo_ruptura.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Rango matutino europeo 08:00-14:00 Europe/Madrid (CET/CEST) con filtro de sesgo respecto a Open_08, ruptura a la hora de comer (14:00) y salida horaria 18:00 Madrid (240 min) acoplado a escala mensual causal de u1_oro, ZONAS-GAPS y VWAP, con prueba de causalidad en tests/research/test_oro_almuerzo_ruptura.py::test_causal",
+   "test_causal": "tests/research/test_oro_almuerzo_ruptura.py::test_causal",
+   "doc": "docs/research/oro_almuerzo_20261028/SPEC_ORO_ALMUERZO_RUPTURA.md",
+   "nota": "Familia ORO-ALMUERZO-RUPTURA (Estrategia del Oro de la Hora de Comer) con paridad horaria Europe/Madrid DST y cruce con hallazgos de ORO-0530 y U1-ORO"
   }
  ]
 }

@@ -1,0 +1,31 @@
+{
+ "cid": "OTR930-CFD-NQ",
+ "familia": "OTR_930_SWEEP_CFD_NQ",
+ "experimento": "edgelab.research.otr_930_sweep",
+ "sensor": "DK:USATECHIDXUSD",
+ "ejecucion": "NQ",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260925
+ ],
+ "embudo": true,
+ "conductor": "debian",
+ "activa": true,
+ "n_celdas_por_canal": 1119744,
+ "spec": "docs/research/otr_930_sweep_20261028/SPEC_OTR_930_SWEEP.md",
+ "justificacion_economica": "Sensor en el feed CFD 24h USATECHIDXUSD con ejecución trasladada a NQ futuro (como en U1-CRUZADO y CVGAP-CFD-NQ): mide si los huecos y el barrido pre-market del feed CFD anticipan el retorno post-09:30 ET ejecutado en NQ.",
+ "como_podria_refutarse": "Sin celdas nominadas por FDR q <= 0,10, fallo de alineación/placebo/latencia en INTEGRIDAD cruzada, o refutación en OOS/holdout.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261023,
+  "n_fijo": 150,
+  "nota": "ejecución cruzada en NQ desde 2026-10-23 por prudencia con U1-CRUZADO."
+ },
+ "cuenta_kaggle": "nicobuttaro"
+}

@@ -4,3 +4,12 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 4994415 pruebas de ['U1_ZONAS_ES', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/fuentes_ticks.py', 'edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/g2.py', 'edgelab/research/embudo_runners.py', 'edgelab/research/sim.py', 'edgelab/bridge/identity.py', 'edgelab/research/costs.py', 'edgelab/research/holdout_guard.py', 'edgelab/research/u1_zonas.py', 'edgelab/research/u1_indaga.py', 'edgelab/research/u1_oro.py']); revisar si el cambio toca la medición
+- DESC [20250801, 20260331]: evaluables 15960 (m del FDR 15960 de 4478976 celdas), FDR 3, RW umbral 4.237502574920654 (diagnóstico), linaje 4994415 como informacion, pistas sin nominación 25, candidatas 3
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 0, 2, 2, 2, 2, 3, 3, 3, 0, 0, 9]: regla 11.450971875000045, placebo -1.24, latencia 1 vela 12.707127586206898 -> pasa
+- INTEGRIDAD [0, 2, 0, 2, 2, 2, 1, 3, 1, 0, 0, 6]: regla 3.2949388888888085, placebo -1.08, latencia 1 vela 3.816003703703704 -> pasa
+- INTEGRIDAD [0, 2, 0, 2, 2, 2, 0, 0, 3, 0, 0, 4]: regla 2.814505882352942, placebo -1.38, latencia 1 vela 4.4383869565217395 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-0.59, 2.47, -1.72]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.4, 0.31, 0.15]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 2, 0, 2, 2, 2, 1, 3, 1, 0, 0, 6], 'tope': ['pts', 50.0], 'puntaje': 12.69460988125951, 'peor': -9.343950000000182}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 2, 2, 2, 1, 3, 1, 0, 0, 6] tope ['pts', 50.0]

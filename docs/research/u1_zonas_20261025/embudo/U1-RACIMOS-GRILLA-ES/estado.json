@@ -1,5 +1,5 @@
 {
- "etapa": "INTEGRIDAD",
+ "etapa": "CONTEO",
  "fase": "PENDIENTE",
  "historial": [
   {
@@ -33,6 +33,31 @@
   {
    "ts": 1793051265.8077278,
    "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793234178.8669248,
+   "final": "INTEGRIDAD_FALLA",
+   "motivo": "ninguna candidata pasa placebo/latencia"
+  },
+  {
+   "ts": 1793236478.7125716,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793236478.737657,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793236478.7743478,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793236478.806249,
+   "etapa": "ACTA",
    "fin": true
   }
  ],
@@ -137,7 +162,7 @@
  "fallas": 0,
  "params": {
   "cortes": {},
-  "bases": [
+  "celdas": [
    [
     0,
     0,
@@ -154,13 +179,14 @@
     2,
     3
    ]
-  ]
+  ],
+  "topes": null
  },
  "periodo": [
   20250801,
   20260331
  ],
- "lanzada": 1793050964.4836144,
+ "lanzada": 1793236478.7461314,
  "cortes": {},
  "candidatas": [
   [
@@ -1823,5 +1849,226 @@
     "agregado_sobre": []
    }
   }
- ]
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     0,
+     0,
+     16,
+     2,
+     2
+    ],
+    "n": 46,
+    "media_neta": -0.5371565217391304,
+    "sesiones": 26,
+    "ic90": [
+     -5.181762500000022,
+     4.1816750000000456
+    ],
+    "p_sesiones": 0.5887056471764118,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 18.31,
+    "pasa": false,
+    "n_pruebas": 2.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     16,
+     2,
+     3
+    ],
+    "n": 43,
+    "media_neta": -1.1138627906976835,
+    "sesiones": 25,
+    "ic90": [
+     -5.362651795212773,
+     3.587628014184422
+    ],
+    "p_sesiones": 0.6741629185407296,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 19.52,
+    "pasa": false,
+    "n_pruebas": 2.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.6741629185407296,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 2,
+   "t": 1,
+   "familia": "U1_RACIMOS_GRILLA_ES",
+   "run_id": "U1-RACIMOS-GRILLA-ES/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     0,
+     0,
+     16,
+     2,
+     2
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -0.5371565217391304,
+    "ic90": [
+     -5.181762500000022,
+     4.1816750000000456
+    ],
+    "efecto_para_potencia": 2.972816666666646,
+    "potencia": 0.2741205602959391,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     16,
+     2,
+     3
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -1.1138627906976835,
+    "ic90": [
+     -5.362651795212773,
+     3.587628014184422
+    ],
+    "efecto_para_potencia": 3.394053225806449,
+    "potencia": 0.3455520053695379,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   0,
+   0,
+   0,
+   16,
+   2,
+   2
+  ],
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "puntaje": 4.126933183493344,
+  "peor": -37.5127
+ },
+ "acta": {
+  "cid": "U1-RACIMOS-GRILLA-ES",
+  "familia": "U1_RACIMOS_GRILLA_ES",
+  "experimento": "edgelab.research.u1_racimos_grilla",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "regla": {
+   "celda": [
+    0,
+    0,
+    0,
+    16,
+    2,
+    2
+   ],
+   "tope": [
+    "pts",
+    50.0
+   ],
+   "puntaje": 4.126933183493344,
+   "peor": -37.5127
+  },
+  "cortes": {},
+  "holdout_desde": 20261001,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793236478.7998428,
+  "reserva_lord": {
+   "familia": "U1_RACIMOS_GRILLA_ES",
+   "reserva_id": "U1-RACIMOS-GRILLA-ES/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "U1_RACIMOS_GRILLA_ES",
+    "declarada": true,
+    "padres": [
+     "U1_ZONAS_ES",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 4994415,
+    "n_heredado": 4994415,
+    "total": 4994415,
+    "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 4994415,
+   "recorte": {
+    "t": 2.9678915817176397,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
 }

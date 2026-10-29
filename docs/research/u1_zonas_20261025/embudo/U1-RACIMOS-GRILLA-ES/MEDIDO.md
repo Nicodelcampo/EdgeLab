@@ -6,5 +6,8 @@
 - Linaje: hereda 4994415 pruebas de ['U1_ZONAS_ES', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
 - Evaluables: 721 de 93312 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250801, 20260331]: evaluables 514 (m del FDR 514 de 46656 celdas), FDR 2, RW umbral 3.19563364982605 (diagnóstico), linaje 4994415 como informacion, pistas sin nominación 40, candidatas 2
-- Potencia prevista (informativa): [0, 0, 0, 16, 2, 2]: OOS n 47.2 potencia 0.41, holdout n 150 potencia 0.81; [0, 0, 0, 16, 2, 2]: OOS n 66.0 potencia 0.91, holdout n 150 potencia 1.00; [0, 1, 0, 16, 2, 3]: OOS n 62.0 potencia 0.66, holdout n 150 potencia 0.94
-- INDAGA: marginales de 2 candidatas guardadas
+- INTEGRIDAD [0, 0, 0, 16, 2, 2]: regla 5.945633333333292, placebo -0.75, latencia 1 vela 5.716466666666667 -> pasa
+- INTEGRIDAD [0, 1, 0, 16, 2, 3]: regla 4.780848387096742, placebo 0.81, latencia 1 vela 4.383133333333333 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-0.54, -1.11]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.27, 0.35]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 0, 0, 16, 2, 2], 'tope': ['pts', 50.0], 'puntaje': 4.126933183493344, 'peor': -37.5127}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 0, 0, 16, 2, 2] tope ['pts', 50.0]
