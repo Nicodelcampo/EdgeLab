@@ -1,0 +1,31 @@
+{
+  "cid": "KALMAN-FADE-NQ",
+  "familia": "KALMAN_FADE_NQ",
+  "experimento": "edgelab.research.kalman_fade",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+    20250805,
+    20260331
+  ],
+  "oos": [
+    20260401,
+    20260930
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 216,
+  "spec": "docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md",
+  "justificacion_economica": "Innovaciones extremas de un nivel local de Kalman en NQ M1 son en parte ruido de microestructura transitorio y revierten hacia el nivel estimado (pre-registro en docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md).",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.",
+  "seleccion": {
+    "max_candidatas": 3
+  },
+  "holdout": {
+    "desde": 20261001,
+    "n_fijo": 150,
+    "nota": "desde 2026-10-01 (Directiva #6: desarrollo y OOS cierran en septiembre 2026)."
+  },
+  "cuenta_kaggle": "auto"
+}

@@ -12,11 +12,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 107 |
+| `docs` | 108 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
-| `docs/autopilot` | 11 |
+| `docs/autopilot` | 12 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/data_catalog` | 11 |
@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 791 |
+| `docs/research` | 827 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,8 +38,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | - |
+| ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | - |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
-| REPORTE | 2 | `REPORTE_ALINEACION_AGENTE_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE (registro vivo: cada sesión del agente agrega su bloque, lo más nuevo ab |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
 | ERRORES | 1 | `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` | 2026-10-26 | VIGENTE (registro vivo: cada error nuevo se agrega acá en el mismo commit que su |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PREREG | 5 | `PREREG_TOXIC_ES_ESTABILIDAD_20260929.md` | 2026-09-29 | - |
 | PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
 | IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
-| EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
 
 ## Superados (7)
 
@@ -109,6 +109,12 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (0)
+## Documentos nuevos sin `Estado:` (7)
 
-Ninguno.
+- docs/autopilot/ARQUITECTURA_MULTIAGENTE_Y_ESPIRAL_20261028.md: falta `Estado:` en el encabezado
+- docs/research/ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md: falta `Estado:` en el encabezado
+- docs/research/REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md: falta `Estado:` en el encabezado
+- docs/research/auditoria_corridas_20261029/REPORTE_PREAUDITORIA_20261029.md: falta `Estado:` en el encabezado
+- docs/research/biblioteca_ideas_20261028/CATALOGO_Y_PRECLASIFICACION_EDGELAB_20261028.md: falta `Estado:` en el encabezado
+- docs/research/biblioteca_ideas_20261028/TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md: falta `Estado:` en el encabezado
+- docs/research/biblioteca_ideas_20261028/estrategias_guardadas_trading.md: falta `Estado:` en el encabezado
