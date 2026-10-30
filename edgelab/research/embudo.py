@@ -689,6 +689,9 @@ class Embudo:
                 return self._cerrar(spec, st, "CONFIRMADA", f"canasta_regimen: {ev['n']} ops, media {ev['media_obs']:.2f} dentro de banda esperada [{ev['banda_esperada'][0]:.2f}, {ev['banda_esperada'][1]:.2f}] (z={ev['z_desvio']:+.2f})")
             if ev["estado"] == "FUERA_DE_BANDA_INFERIOR":
                 return self._cerrar(spec, st, "REFUTADA", f"canasta_regimen: {ev['n']} ops, media {ev['media_obs']:.2f} debajo de cota inferior {ev['banda_esperada'][0]:.2f} (z={ev['z_desvio']:+.2f})")
+            if ev["estado"] == "SIN_EVIDENCIA_AUN":                               # 2026-10-30: poco N o media <= 0 dentro de banda: no se mata
+                return self._cerrar(spec, st, "SIN_POTENCIA", f"canasta_regimen: {ev['n']} ops, media {ev['media_obs']:.2f} dentro de banda pero sin evidencia "
+                                                              f"individual (n_min {ev['n_min']}, media > 0); la decide la prueba de la canasta")
             return self._cerrar(spec, st, "SIN_POTENCIA", f"canasta_regimen: {ev['estado']}")
         if len(ops.get("t") or []) < N:                                             # CONTEO dijo que había N: no decide con menos
             return self._cerrar(spec, st, "BLOQUEADA", f"HOLDOUT trajo {len(ops.get('t') or [])} operaciones, menos que N={N} del acta")
