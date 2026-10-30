@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 827 |
+| `docs/research` | 828 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,8 +38,9 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | - |
-| ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | - |
+| REVISION | 8 | `REVISION_SV1_20261030.md` | 2026-10-30 | VIGENTE. Autor: gonzasib-claude (Gonza-PC), a pedido de Nico en la sala #CHY0V3Y |
+| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
+| ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
@@ -47,7 +48,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | ANALIZADOR | 1 | `ANALIZADOR_ESTRATEGIAS.md` | 2026-10-26 | VIGENTE |
 | RELANZAMIENTO | 1 | `RELANZAMIENTO_ANALISIS_VIEJOS_20261025.md` | 2026-10-25 | VIGENTE |
 | AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
-| REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
 | HANDOFF | 16 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |
 | DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
@@ -109,12 +109,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (7)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/autopilot/ARQUITECTURA_MULTIAGENTE_Y_ESPIRAL_20261028.md: falta `Estado:` en el encabezado
-- docs/research/ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md: falta `Estado:` en el encabezado
-- docs/research/REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md: falta `Estado:` en el encabezado
-- docs/research/auditoria_corridas_20261029/REPORTE_PREAUDITORIA_20261029.md: falta `Estado:` en el encabezado
-- docs/research/biblioteca_ideas_20261028/CATALOGO_Y_PRECLASIFICACION_EDGELAB_20261028.md: falta `Estado:` en el encabezado
-- docs/research/biblioteca_ideas_20261028/TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md: falta `Estado:` en el encabezado
-- docs/research/biblioteca_ideas_20261028/estrategias_guardadas_trading.md: falta `Estado:` en el encabezado
+Ninguno.

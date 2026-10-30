@@ -1,5 +1,7 @@
 # The Trend Is Your Friend Until the End: A Stopping-Time Theory of Swing Trading with Trendlines and Market Structure (Tori Trades, 2026-10-26)
 
+Estado: REFERENCIA (fuente de ideas sin validar; no es evidencia).
+
 The Trend Is Your Friend Until the End:
 A Stopping-Time Theory of Swing Trading
 with Trendlines and Market Structure

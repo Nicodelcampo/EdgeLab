@@ -1,5 +1,7 @@
 # Reporte de Pre-Auditoría y Cola de Ejecución para los Agentes del Debian (Olas 1–10, 2026-10-29)
 
+Estado: PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_20261030.md).
+
 - **Estado global de verificación pre-auditoría:** `OK (0 errores)`
 - **Módulos experimentales verificados (`preflight` + causalidad):** `6` (`corredor_vol_gaps`, `otr_930_sweep`, `oro_almuerzo_ruptura`, `tori_trend_toque3`, `asia_bos_gaps`, `confluencia_cvgap_racimos`)
 - **Campañas auditadas (Olas 1–10):** `28`

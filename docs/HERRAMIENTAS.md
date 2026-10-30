@@ -4,11 +4,12 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-542 scripts.
+546 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
 | `tools/_manifiesto_comun.py` | Lógica compartida de los manifiestos de identidad. **Un solo lugar.** |
+| `tools/actualizar_y_arrancar_debian_v2.py` | Bootstrap de un solo paso para que el Agente del Debian se actualice a la troncal y arranque en Modo Multi-Agente Espiral v2. |
 | `tools/aggressor_validate.py` | Valida la columna `aggressor` de research-v2 contra el agresor por cotización del L2 (target-free). |
 | `tools/agotamiento.py` | AGOT-EXT: agotamiento en extremo (divergencia de RSI y de delta). Manifiesto aprobado por Nico el 25/09 |
 | `tools/agregar_velas.py` | Bundle de velas Nt a partir de un bundle 25t, agrupando de a k velas DENTRO de cada sesión (como el 100t del visor). |
@@ -38,6 +39,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/audit_kaggle_notebook_source.py` | Inspect a saved Kaggle get_notebook_info JSON; NEVER execute its source. |
 | `tools/audit_kaggle_raw_ticks.py` | Structural canonical_tick_v1 QA only, never sanitation/liquidity approval. |
 | `tools/audit_mnq_l2_v2_first_session.py` | (sin docstring) |
+| `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
 | `tools/auditar_procedencia.py` | Barre un directorio temporal y busca evidencia que sostenga afirmaciones vivas. |
 | `tools/autopilot_activar_escalera.py` | Activa la regla de decisión `escalera_v1` en el autopilot del Debian, en dos pasos (decisión de Nico, 2026-10-22: «hacé lo que |
 | `tools/autopilot_doctor.py` | Chequeo previo al arranque del autopilot en el Debian (solo lectura). Sale con 0 si todo lo imprescindible está bien. |
@@ -204,6 +206,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/emasep_stage2.py` | EMA-SEP análisis (manifiesto docs/research/EMASEP_CONTRA_MANIFIESTO_20261007.md + enmienda de agotamiento). |
 | `tools/embudo_correr.py` | Corre el embudo automático sobre una o más campañas hasta que terminan o quedan esperando datos del holdout (mismo código que |
 | `tools/embudo_simulacion_potencia.py` | Simulación con verdad conocida: ¿cuántos edges reales confirma cada diseño de decisión y cuántos falsos deja pasar? |
+| `tools/emisor_senales_nt8.py` | Emisor de Señales y Validador de Paridad para NinjaTrader 8 (`EdgeLabSpiralBasketExecutor.cs`, 2026-10-29). |
 | `tools/equivalence_check.py` | Mide qué tan buen sustituto es una serie de ticks de otra fuente (p. ej. spot XAU/USD de Dukascopy) para la EMA 200/500/2000 de barras de 25 ticks de MGC. |
 | `tools/equivalence_m1_gc.py` | Equivalencia de M1 spot (Dukascopy) con GC para horas fijas. Umbrales en docs/research/equivalence_20261004/PREREGISTRO_EQUIVALENCIA_M1.md. |
 | `tools/es_escalonadas_outcomes.py` | ES-ESCALONADAS outcomes — docs/research/MANIFIESTO_ES_ESCALONADAS_OUTCOMES_20260930.md (OK de Nico 30/09). |
@@ -485,6 +488,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/sandbox/l3_touch_rule_bias.py` | L3 audit: cuando la regla de toque rompe el nulo de la carrera simetrica. |
 | `tools/sandbox_pqread.py` | Lector minimo de parquet para ambientes sin pyarrow/duckdb (sandbox de auditoria). |
 | `tools/select_canonical_visual_sessions.py` | Target-free reproducible session selection script for HP007-CAMP-002. |
+| `tools/simulador_challenges_propfirm.py` | Simulador y Optimizador Monte Carlo de Challenges de Cuentas Fondeadas (`tools/simulador_challenges_propfirm.py`, 2026-10-29). |
 | `tools/ssrn_brain_cli.py` | (sin docstring) |
 | `tools/ssrn_corpus_bootstrap.py` | Materialize the in-repo CerebroSSRN corpus (Edge Brain bibliographic hippocampus). |
 | `tools/store_audit.py` | store_audit.py — gate P3 sobre el store del bridge (F6.3). |
