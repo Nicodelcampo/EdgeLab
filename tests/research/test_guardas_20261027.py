@@ -75,10 +75,38 @@ def test_calentamiento_desde_eval_no_cuenta_disparos_ni_operaciones():
 def test_confirmar_en_canasta_regimen_dentro_y_fuera_de_banda():
     from edgelab.funnel.escalera import confirmar_en_canasta_regimen
     # Con mu_esperada=10, sd_op_ref=20 y n=4 -> se_n = 10, banda 90% = [-6.45, +26.45]
-    ok = confirmar_en_canasta_regimen([5.0, -2.0, 12.0, 1.0], mu_esperada=10.0, sd_op_ref=20.0)
+    ok = confirmar_en_canasta_regimen([5.0, -2.0, 12.0, 1.0], mu_esperada=10.0, sd_op_ref=20.0, n_min=4)
     assert ok["confirmada_canasta"] is True and ok["dentro_desviacion"] is True and ok["estado"] == "CONFIRMADA_CANASTA"
     mal = confirmar_en_canasta_regimen([-15.0, -20.0, -10.0, -12.0], mu_esperada=10.0, sd_op_ref=20.0)
     assert mal["confirmada_canasta"] is False and mal["dentro_desviacion"] is False and mal["estado"] == "FUERA_DE_BANDA_INFERIOR"
     vacio = confirmar_en_canasta_regimen([], mu_esperada=10.0, sd_op_ref=20.0)
     assert vacio["confirmada_canasta"] is False and vacio["estado"] == "SIN_OPERACIONES_AUN"
 
+
+
+def test_canasta_regimen_no_confirma_perdiendo_con_poco_n():
+    """2026-10-30: con n chico la banda inferior quedaba < 0 y una media negativa salía CONFIRMADA_CANASTA."""
+    from edgelab.funnel.escalera import confirmar_en_canasta_regimen
+    r = confirmar_en_canasta_regimen([-50.0, -60.0, -40.0], mu_esperada=19.0, sd_op_ref=100.0)      # cota inferior ≈ −76
+    assert r["dentro_desviacion"] is True and r["confirmada_canasta"] is False and r["estado"] == "SIN_EVIDENCIA_AUN"
+    pocas = confirmar_en_canasta_regimen([30.0, 20.0], mu_esperada=19.0, sd_op_ref=100.0)              # gana, pero n < n_min
+    assert pocas["estado"] == "SIN_EVIDENCIA_AUN"
+    bien = confirmar_en_canasta_regimen([30.0, 20.0, 5.0, 40.0, 10.0], mu_esperada=19.0, sd_op_ref=100.0)
+    assert bien["estado"] == "CONFIRMADA_CANASTA"
+    muy_mal = confirmar_en_canasta_regimen([-200.0] * 10, mu_esperada=19.0, sd_op_ref=100.0)
+    assert muy_mal["estado"] == "FUERA_DE_BANDA_INFERIOR"
+
+
+def test_confirmar_canasta_junta_el_n_de_todas():
+    from edgelab.funnel.escalera import confirmar_canasta
+    import numpy as np
+    rng = np.random.default_rng(7)
+    buenas = [dict(cid=f"S{i}", netos=list(rng.normal(30, 100, 4)), sd_op_ref=100.0) for i in range(12)]     # 0,3 sd por operación
+    assert confirmar_canasta(buenas)["n"] == 48
+    ruido = [dict(cid=f"R{i}", netos=list(rng.normal(0, 100, 4)), sd_op_ref=100.0) for i in range(12)]
+    assert confirmar_canasta(ruido)["estado"] != "CANASTA_CONFIRMADA"
+    malas = [dict(cid=f"M{i}", netos=list(rng.normal(-40, 100, 4)), sd_op_ref=100.0) for i in range(12)]
+    assert confirmar_canasta(malas)["estado"] == "CANASTA_EN_CONTRA"
+    assert confirmar_canasta([dict(cid="X", netos=[], sd_op_ref=100.0)])["estado"] == "SIN_OPERACIONES_AUN"
+    pesos = confirmar_canasta([dict(cid="A", netos=[10.0, 12.0], sd_op_ref=10.0), dict(cid="B", netos=[100.0, 120.0], sd_op_ref=100.0)])
+    assert abs(pesos["por_estrategia"]["A"]["media_std"] - pesos["por_estrategia"]["B"]["media_std"]) < 1e-9, "igual riesgo por estrategia"

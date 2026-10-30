@@ -470,7 +470,7 @@ def veredicto_pistas(confirmadas: list, canasta: dict, dec_canasta: dict | None,
                 motivo="ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva")
 
 
-def confirmar_en_canasta_regimen(netos_holdout, *, mu_esperada: float, sd_op_ref: float, z_banda: float = 1.6448536) -> dict:
+def confirmar_en_canasta_regimen(netos_holdout, *, mu_esperada: float, sd_op_ref: float, z_banda: float = 1.6448536, n_min: int = 5) -> dict:
     """Confirmación de una candidata para añadir a una canasta de estrategias de régimen en un período reducido de holdout
     (2026-10-27, decisión de Nico: como un edge real probablemente sea de régimen, no se puede esperar años a acumular n_fijo=150..450
     individual porque el régimen terminaría; el riesgo se diversifica en la canasta y cada estrategia se confirma si su rendimiento
@@ -492,10 +492,34 @@ def confirmar_en_canasta_regimen(netos_holdout, *, mu_esperada: float, sd_op_ref
     lo, hi = float(mu_esperada) - z_banda * se_n, float(mu_esperada) + z_banda * se_n
     z = (obs - float(mu_esperada)) / se_n
     dentro = bool(obs >= lo)
+    # 2026-10-30 (auditoría): con n chico la banda inferior queda muy por debajo de 0 y «dentro» aceptaba medias negativas
+    # (CVGAP-NQ: μ 19, sd ≈ 100, n = 3 -> cota −76: una media de −50 salía CONFIRMADA_CANASTA). Ahora la estrategia sólo es apta si,
+    # además, gana en el holdout (media > 0) con al menos `n_min` operaciones. Por debajo de la banda sigue saliendo (REFUTADA);
+    # el resto queda SIN_EVIDENCIA_AUN, sin matar la familia. La confirmación con poco N es la de la CANASTA (`confirmar_canasta`).
+    apta = bool(dentro and obs > 0 and n >= n_min)
+    estado = "FUERA_DE_BANDA_INFERIOR" if not dentro else ("CONFIRMADA_CANASTA" if apta else "SIN_EVIDENCIA_AUN")
     return dict(n=n, media_obs=obs, total_obs=float(x.sum()), mu_esperada=float(mu_esperada), sd_op_ref=float(sd_op_ref),
-                se_esperado=se_n, banda_esperada=[lo, hi], z_banda=float(z_banda), z_desvio=float(z),
-                dentro_desviacion=dentro, confirmada_canasta=dentro,
-                estado="CONFIRMADA_CANASTA" if dentro else "FUERA_DE_BANDA_INFERIOR")
+                se_esperado=se_n, banda_esperada=[lo, hi], z_banda=float(z_banda), z_desvio=float(z), n_min=int(n_min),
+                dentro_desviacion=dentro, confirmada_canasta=apta, estado=estado)
+
+
+def confirmar_canasta(miembros, *, z_inf: float = 0.8416212) -> dict:
+    """Prueba ÚNICA de una canasta de régimen congelada antes del holdout (2026-10-30). `miembros`: lista de dict(cid, netos, sd_op_ref)
+    con las operaciones netas de cada estrategia en el holdout y su sd por operación de referencia (pre-holdout). Cada estrategia pesa
+    igual en riesgo: sus operaciones se dividen por su sd_op_ref (unidades de «una operación típica»). La canasta se confirma si la
+    media estandarizada combinada es > 0 con cota inferior unilateral al 80 % (z_inf = 0,8416) > 0. Junta el N de todas: con 12
+    estrategias y 3–5 operaciones cada una alcanza lo que ninguna sola alcanza."""
+    zs, por = [], {}
+    for m in miembros:
+        x = np.asarray(m.get("netos") or [], float); x = x[np.isfinite(x)]; sd = float(m.get("sd_op_ref") or 0)
+        if not len(x) or not math.isfinite(sd) or sd <= 0: por[m["cid"]] = dict(n=int(len(x)), media_std=None); continue
+        zz = x / sd; zs.append(zz); por[m["cid"]] = dict(n=int(len(x)), media_std=float(zz.mean()))
+    if not zs: return dict(n=0, media_std=None, cota_inf=None, confirmada=False, estado="SIN_OPERACIONES_AUN", por_estrategia=por)
+    z = np.concatenate(zs); n = int(len(z)); mu = float(z.mean()); se = float(z.std(ddof=1) / math.sqrt(n)) if n > 1 else float("inf")
+    lo = mu - z_inf * se
+    ok = bool(mu > 0 and lo > 0)
+    return dict(n=n, media_std=mu, se=se, cota_inf=lo, z_inf=float(z_inf), confirmada=ok,
+                estado="CANASTA_CONFIRMADA" if ok else ("CANASTA_EN_CONTRA" if mu + z_inf * se < 0 else "SIN_EVIDENCIA_AUN"), por_estrategia=por)
 
 
 # ----------------------------------------------------------------------------- 7. puente con el ciclo autónomo
