@@ -184,24 +184,31 @@ def ops_por_fila(exp, D, ctx):
     return np.array(ops, float) if ops else np.zeros((0, 9))
 
 
-def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False):
+def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False, devolver_barras: bool = False):
     """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo).
+    `devolver_barras` agrega al final (fill, exit): índices de vela en el instrumento de ejecución, -1 sin llenado.
     `cx_ej`: contexto M1 de OTRO instrumento donde se ejecuta (señal en un activo, operación en otro; mismo minuto, base
     trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
     O = _ops_lote(exp, D, ctx) if hasattr(exp, "niveles_lote") else ops_por_fila(exp, D, ctx)
-    if not len(O): return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ())
+    if not len(O):
+        return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ()) + ((np.zeros(0, np.int64),) * 2 if devolver_barras else ())
     if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
-    pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8)
+    pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8); fb = np.full(len(O), -1, np.int64); xb = fb.copy()
     if ok.any():
         st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
-        p_, a_ = AX.simular(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
-                            sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
-        pnl[ok], amb[ok] = p_, a_
+        p_, a_, f_, x_ = AX.simular_cierre(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
+                                           sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
+        pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_
     out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
-    return out + (O,) if devolver_O else out
+    return out + ((O,) if devolver_O else ()) + ((fb, xb) if devolver_barras else ())
+
+
+def hora_de_barra(t, barras):
+    """Cierre (s) de cada vela de `t`; NaN donde `barras` es -1 (sin llenado)."""
+    return np.where(barras >= 0, np.asarray(t, float)[np.maximum(barras, 0)], np.nan)
 
 
 def ejecuciones_equivalentes(di, ei, pnl, ejecuciones) -> list:
@@ -356,7 +363,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res = dict(experimento=exp.NOMBRE, modo=modo, E0=resumen_e0(D, exp.VARIABLES, cortes))
     if modo == "E0" or not len(D): return res, D
     if modo == "REP" and not celdas: raise ValueError("REP exige celdas y cortes CONGELADOS del descubrimiento")
-    di, ei, pnl, amb, dist, O = simular_ops(exp, D, ctx, cx_ej=cx_ej, retraso=retraso, tope=tope, devolver_O=True)
+    di, ei, pnl, amb, dist, O, fb, xb = simular_ops(exp, D, ctx, cx_ej=cx_ej, retraso=retraso, tope=tope, devolver_O=True, devolver_barras=True)
+    t_ej = (cx_ej if cx_ej is not None else ctx)["t"]                                      # f y x son velas de la ejecución; k, del sensor
     res["ejecuciones_equivalentes"] = ejecuciones_equivalentes(di, ei, pnl, exp.EJECUCIONES)
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
@@ -375,7 +383,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
-              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]])
+              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb))
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     cx["n_pruebas_metodo"] = "bruto"
     if modo == "REP" and len(celdas) >= 2:                                                  # 2026-10-24: Li-Ji con la matriz sesión x celda
@@ -408,11 +416,13 @@ def matriz_sesiones(cx, celdas):
 
 def operaciones_de(cx, celdas):
     """Serie por operación de cada celda congelada, en orden de tiempo (lo que necesita un seguimiento secuencial: réplica,
-    holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto."""
+    holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto, t_fill y t_exit
+    (cierre de las velas de llenado y salida en el instrumento de ejecución, s). El orden sigue siendo por t, no por t_exit."""
     filas = []
     for i, c in enumerate(celdas):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
-        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m])))
+        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m],
+                                  t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
 
 
