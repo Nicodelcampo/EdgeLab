@@ -110,3 +110,22 @@ def test_confirmar_canasta_junta_el_n_de_todas():
     assert confirmar_canasta([dict(cid="X", netos=[], sd_op_ref=100.0)])["estado"] == "SIN_OPERACIONES_AUN"
     pesos = confirmar_canasta([dict(cid="A", netos=[10.0, 12.0], sd_op_ref=10.0), dict(cid="B", netos=[100.0, 120.0], sd_op_ref=100.0)])
     assert abs(pesos["por_estrategia"]["A"]["media_std"] - pesos["por_estrategia"]["B"]["media_std"]) < 1e-9, "igual riesgo por estrategia"
+
+
+def test_confirmar_canasta_agrupa_por_sesion():
+    from edgelab.funnel.escalera import confirmar_canasta
+    # Dos reglas idénticas el mismo día no son el doble de evidencia
+    x = [1.0, -0.6, 0.9, -0.5, 0.8, -0.4]; ses = [1, 2, 3, 4, 5, 6]
+    miembros = [dict(cid="A", netos=x, sd_op_ref=1.0, ses=ses), dict(cid="B", netos=x, sd_op_ref=1.0, ses=ses)]
+    sin_ses = [dict(cid="A", netos=x, sd_op_ref=1.0), dict(cid="B", netos=x, sd_op_ref=1.0)]
+    assert confirmar_canasta(miembros)["se"] > confirmar_canasta(sin_ses)["se"]
+
+
+def test_lector_sellado_pasa_tick_y_no_mezcla_activos(monkeypatch, tmp_path):
+    from edgelab.research import embudo_runners as ER, fuentes_ticks as F
+    visto = {}
+    monkeypatch.setattr(F, "bloques_nq_sellado", lambda d0, d1, r, acta, tick=0.25: visto.setdefault(r, tick))
+    lec, tk = ER.lectores_sellados({"YM": "ym.parquet", "GC": "gc.parquet", "NQ": "nq.parquet"}, tmp_path)
+    for n in lec: lec[n](20261001, 20261020, dict(cid="X"))
+    assert visto == {"ym.parquet": F.TICK_FUTURO["YM"], "gc.parquet": F.TICK_FUTURO["GC"], "nq.parquet": F.TICK_FUTURO["NQ"]}
+    assert lec["YM"].ruta == "ym.parquet"

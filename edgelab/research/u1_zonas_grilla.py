@@ -37,7 +37,7 @@ def _zonas_avzg_selladas(inst: str, entrada: str) -> pd.DataFrame:
     from edgelab.research.u1_racimos_grilla import GRILLA_ZONA
     r = glob.glob(f"{entrada}/**/{inst}_*ticks.parquet", recursive=True)
     if not r: raise FileNotFoundError(f"sin ticks sellados de {inst} en {entrada}")
-    acta = os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[inst]
+    acta = os.environ.get("ACTA_HOLDOUT_RUTA") or os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[inst]
     bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, r[0], acta, tick))
     if not bl: return pd.DataFrame(columns=["t_ns", "lo", "hi", "zona"])
     ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
