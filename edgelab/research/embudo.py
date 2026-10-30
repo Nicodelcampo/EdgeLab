@@ -64,6 +64,7 @@ CAMPOS = ("cid", "familia", "experimento", "sensor", "desc", "justificacion_econ
 INMUTABLES = ("familia", "experimento", "sensor", "ejecucion", "desc", "oos", "n_celdas_por_canal", "pistas_replica", "linaje_como")
 CONDUCTORES = ("debian", "local")                          # quién conduce cada campaña: uno solo (auditoría 2026-10-24)
 A3_FIN_DESCUBRIMIENTO, A3_INSTRUMENTOS = 20260331, ("ES", "NQ")   # HOLDOUT-A3/A4: ES y NQ descubren hasta acá; abr–sep es réplica
+GRACIA_NO_ENCONTRADO_S = 3600                              # 404 tolerado tras lanzar (2026-10-30, BLOQUEADAS del 26-10)
 MAX_HORAS_KAGGLE = 14                                       # Kaggle corta a las 12 h: pasado esto, la etapa se da por caída
 GG_MIN_OPS = 30                                              # = grilla_generica.MIN_OPS (test)
 N_BOOT_REPLICA, N_BOOT_HOLDOUT = 2000, 5000                 # bootstrap de `grilla_generica.evaluar` y de `_fin_holdout`
@@ -228,7 +229,10 @@ class Embudo:
             if runner == "kaggle" and st.get("lanzada") and self.ahora() - st["lanzada"] > MAX_HORAS_KAGGLE * 3600:
                 return self._fallo(spec, st, f"sin terminar después de {MAX_HORAS_KAGGLE} h")          # antes esperaba para siempre
             return st
-        if est != "complete": return self._fallo(spec, st, est)
+        if est == "no_encontrado":                  # 2026-10-30: Kaggle da 404 unos minutos después del push; antes contaba como falla y relanzaba
+            if self.ahora() - (st.get("lanzada") or 0) < GRACIA_NO_ENCONTRADO_S: return st          # el mismo slug 3 veces en 30 min -> BLOQUEADA con el kernel completo
+            est = "error (Kaggle no encuentra el kernel después de la gracia)"
+        if est != "complete": return self._fallo(spec, st, f"{est}: {getattr(self.runners[runner], 'ultimo_detalle', '')}".strip(": "))
         try: res = self.runners[runner].traer(st["handle"])
         except Exception as ex: return self._fallo(spec, st, f"no se pudo traer el resultado: {ex!r}")
         from edgelab.research.preflight import codigo_vigente                     # error 23: código que cambió después de lanzar
