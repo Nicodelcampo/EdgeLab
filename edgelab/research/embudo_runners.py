@@ -180,8 +180,9 @@ class LocalRunner:
     `carpeta`: donde se guarda cada resultado. El ciclo del Debian arma un runner NUEVO en cada vuelta; sin carpeta el
     resultado vivía sólo en memoria, la vuelta siguiente veía el handle como desconocido («error») y a la tercera el embudo
     cerraba la campaña como BLOQUEADA: CONTEO y HOLDOUT no podían terminar nunca desde el ciclo."""
-    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True, carpeta=None):
+    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True, carpeta=None, raiz_actas=None):
         self.lectores, self.ticks, self.acta_requerida, self.res = lectores, ticks, acta_requerida, {}
+        self.raiz_actas = raiz_actas
         self.carpeta = Path(carpeta) if carpeta else None
 
     def _archivo(self, h): return self.carpeta / f"{h}.json"
@@ -197,7 +198,16 @@ class LocalRunner:
         if self.carpeta:
             self.carpeta.mkdir(parents=True, exist_ok=True); k = 0
             while self._archivo(h).exists(): k += 1; h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{k}"
-        self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        # 2026-10-30: el mismo entorno que el kernel sellado. Sin SENSOR, u1_zonas caía sin aviso a las zonas LUX-IMB de los tests.
+        ruta = getattr(self.lectores[spec["sensor"]], "ruta", None)
+        ent = dict(SENSOR=spec["sensor"], SELLADO="1", HASTA=str(periodo[1]), ACTA_HOLDOUT_RUTA=_ruta_acta_holdout(self.raiz_actas, spec["cid"]) if self.raiz_actas else "")
+        if ruta: ent["ENTRADA"] = str(Path(ruta).parent)
+        previo = {k: os.environ.get(k) for k in ent}; os.environ.update(ent)
+        try: self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        finally:
+            for k, v in previo.items():
+                if v is None: os.environ.pop(k, None)
+                else: os.environ[k] = v
         if self.carpeta:
             tmp = self._archivo(h).with_suffix(".tmp"); tmp.write_text(json.dumps(self.res[h], default=float), encoding="utf-8"); tmp.replace(self._archivo(h))
         return h
@@ -211,6 +221,9 @@ class LocalRunner:
 
 def _ruta_acta_holdout(raiz_embudo: Path, cid: str) -> str:
     p = Path(raiz_embudo) / cid / "ACTA_HOLDOUT.json"
+    if not p.exists():                                                   # 2026-10-30: las actas de la nube están en docs/research/*/embudo/<cid>/
+        r = sorted((ROOT / "docs/research").glob(f"*/embudo/{cid}/ACTA_HOLDOUT.json"))
+        if len(r) == 1: return str(r[0])
     if not p.exists() and (Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json").exists():
         return str(Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json")
     return str(p)
@@ -225,6 +238,7 @@ def lectores_sellados(cfg_sellado: dict, raiz_embudo: Path) -> tuple:
         if nombre.startswith("DK:"):
             sym = nombre[3:]; lec[nombre] = (lambda d0, d1, spec, s=sym, r=ruta: F.bloques_spot_sellado(s, d0, d1, r)); ticks[nombre] = F.REDONDEO_SPOT[sym]
         else:
-            lec[nombre] = (lambda d0, d1, spec, r=ruta: F.bloques_nq_sellado(d0, d1, r, _ruta_acta_holdout(raiz_embudo, spec["cid"])))
-            ticks[nombre] = F.TICK_FUTURO[nombre]
+            ticks[nombre] = F.TICK_FUTURO[nombre]                # 2026-10-30: el tick del activo; con 0,25 fijo YM y GC salían en otra escala
+            lec[nombre] = (lambda d0, d1, spec, r=ruta, tk=ticks[nombre]: F.bloques_nq_sellado(d0, d1, r, _ruta_acta_holdout(raiz_embudo, spec["cid"]), tk))
+            lec[nombre].ruta = ruta
     return lec, ticks

@@ -66,7 +66,7 @@ def _zonas_selladas(indicador: str, instrumento: str, entrada: str) -> pd.DataFr
     from edgelab.research import fuentes_ticks as F
     r = glob.glob(f"{entrada}/**/{instrumento}_*ticks.parquet", recursive=True)
     if not r: raise FileNotFoundError(f"sin ticks sellados de {instrumento} en {entrada}")
-    acta = os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[instrumento]
+    acta = os.environ.get("ACTA_HOLDOUT_RUTA") or os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[instrumento]
     bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, r[0], acta, tick))
     if not bl: return pd.DataFrame(columns=["t_ns", "lo", "hi"])
     ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])

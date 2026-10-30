@@ -509,13 +509,19 @@ def confirmar_canasta(miembros, *, z_inf: float = 0.8416212) -> dict:
     igual en riesgo: sus operaciones se dividen por su sd_op_ref (unidades de «una operación típica»). La canasta se confirma si la
     media estandarizada combinada es > 0 con cota inferior unilateral al 80 % (z_inf = 0,8416) > 0. Junta el N de todas: con 12
     estrategias y 3–5 operaciones cada una alcanza lo que ninguna sola alcanza."""
-    zs, por = [], {}
+    zs, por, ses = [], {}, []
     for m in miembros:
         x = np.asarray(m.get("netos") or [], float); x = x[np.isfinite(x)]; sd = float(m.get("sd_op_ref") or 0)
         if not len(x) or not math.isfinite(sd) or sd <= 0: por[m["cid"]] = dict(n=int(len(x)), media_std=None); continue
-        zz = x / sd; zs.append(zz); por[m["cid"]] = dict(n=int(len(x)), media_std=float(zz.mean()))
+        zz = x / sd; zs.append(zz)
+        if m.get("ses") is not None: ses.append(np.asarray(m["ses"], np.int64)[np.isfinite(np.asarray(m["netos"], float))])
+        por[m["cid"]] = dict(n=int(len(x)), media_std=float(zz.mean()))
     if not zs: return dict(n=0, media_std=None, cota_inf=None, confirmada=False, estado="SIN_OPERACIONES_AUN", por_estrategia=por)
     z = np.concatenate(zs); n = int(len(z)); mu = float(z.mean()); se = float(z.std(ddof=1) / math.sqrt(n)) if n > 1 else float("inf")
+    if ses and len(ses) == len(zs):                                    # 2026-10-30: las reglas del mismo día se correlacionan: el error va por sesión
+        sa = np.concatenate(ses); u, inv = np.unique(sa, return_inverse=True); dia = np.bincount(inv, weights=z)
+        se_d = float(dia.std(ddof=1) / math.sqrt(len(dia))) if len(dia) > 1 else float("inf")
+        se = se_d * len(dia) / n                                       # el mismo t por sesión, en escala de media por operación
     lo = mu - z_inf * se
     ok = bool(mu > 0 and lo > 0)
     return dict(n=n, media_std=mu, se=se, cota_inf=lo, z_inf=float(z_inf), confirmada=ok,
