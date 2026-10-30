@@ -163,7 +163,8 @@ class KaggleRunner:
         out = r.stdout.lower()
         for s in ("complete", "running", "queued", "error", "cancel"):
             if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
-        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
+        self.ultimo_detalle = (r.stdout + r.stderr)[-300:]                                  # 2026-10-30: el motivo viaja al historial de la etapa
+        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "no_encontrado"   # recién lanzado o el push no arrancó: el embudo decide por antigüedad
         if '"code":403' in out.replace(" ", ""): return "error"     # 2026-10-27 (O14): el kernel no es de esta cuenta (lanzado sin su cabecera): relanzar, no esperar 14 h
         return "running"
 

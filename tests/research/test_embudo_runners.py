@@ -42,7 +42,8 @@ def test_kernel_sin_corridas_es_error_y_no_espera_para_siempre(monkeypatch, tmp_
     k = R.KaggleRunner(carpeta=tmp_path)
     salida = lambda txt: (lambda *a, **kw: subprocess.CompletedProcess(a, 0, stdout=txt, stderr=""))
     monkeypatch.setattr(R.subprocess, "run", salida('{"code":404,"message":"No runs found for kernel"}'))
-    assert k.estado("nicolasbuttaro/x") == "error"
+    assert k.estado("nicolasbuttaro/x") == "no_encontrado", "el embudo decide por antigüedad (gracia tras lanzar)"
+    assert "404" in k.ultimo_detalle
     monkeypatch.setattr(R.subprocess, "run", salida('{"status":"running","failureMessage":""}'))
     assert k.estado("nicolasbuttaro/x") == "running"
     monkeypatch.setattr(R.subprocess, "run", salida('{"code":403,"message":"Permission \\u0027kernels.get\\u0027 was denied"}'))
@@ -92,3 +93,4 @@ def test_slug_largo_pasa_validate_push(tmp_path):
         slug = a[a.index("--slug") + 1]
         assert len(slug.split("/")[1]) <= 49 and not slug.endswith("-")
         assert validate_push(slug, ["nicolasbuttaro/edgelab-holdout-sellado"], "nicolasbuttaro") == "nicolasbuttaro"
+
