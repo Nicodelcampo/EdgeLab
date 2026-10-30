@@ -3,7 +3,7 @@
 # que la crea) y su banda de precio, para que la gramática de U1 (edgelab/research/u1_zonas.py) la use como fuente de zonas.
 # Indicadores: aVolZonePOI2 (edgelab/bridge/indicators/avolzonepoi2.py, PASS en MNQ 25t). Reutiliza fuentes_ticks.bloques_futuro,
 # edgelab/bridge/bars (barras de N ticks, footprint total NT8, sesiones) y oro_0530.trimestres. Sin desenlaces ni retornos.
-# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG | AVZG), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
+# Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG | AVZG | HFT2 | HFTNQ), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
 # Salida: ZONAS_<IND>_<INST>.parquet y ALMACEN_ZONAS_<IND>.json.
 import json
 import os
@@ -135,8 +135,18 @@ def zonas_avzg(bloques, tick, spec):
     return pd.DataFrame(filas, columns=["t_ns", "lo", "hi", "zona"])
 
 
+def zonas_hft2(bloques, tick, spec):
+    from edgelab.research.prerange_hft import zonas_hft2 as z
+    return z(bloques, tick, spec)
+
+
+def zonas_hftnq(bloques, tick, spec):
+    from edgelab.research.prerange_hft import zonas_hftnq as z
+    return z(bloques, tick, spec)
+
+
 INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVZG": (zonas_avzg, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1),
-               "AVZRG": (zonas_avzrg, 25)}
+               "AVZRG": (zonas_avzrg, 25), "HFT2": (zonas_hft2, 25), "HFTNQ": (zonas_hftnq, 1)}
 LIBRO = {"BT2"}                    # indicadores que clasifican el agresor con bid/ask
 
 
