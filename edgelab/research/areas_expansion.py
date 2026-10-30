@@ -261,7 +261,7 @@ def _primero_en_ticks(tpx, a, b, d, st, tp, tick):
 
 
 @njit(cache=False)
-def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
+def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
     """Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
     limite=1: orden límite en `nivel`, se llena si el precio la atraviesa por 1 tick dentro de 120 barras.
     limite=2: mercado en el PRIMER TICK de la vela siguiente (misma sesión). El momento de llenado es una decisión de cada
@@ -270,16 +270,17 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
     el ORDEN DE LOS TICKS de esa vela (`tpx`, con `tstart[j]..tstart[j+1]` los ticks del minuto j). Sin ticks para esa vela:
     se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (240) o fin de sesión al cierre.
     Devuelve (pnl en precio por operación, NaN = sin llenado; código de resolución: 0 sin ambigüedad, 1 resuelta con ticks,
-    2 sin ticks -> stop)."""
+    2 sin ticks -> stop; barra de llenado; barra de salida; ambas -1 sin llenado). Si sale en la vela del llenado, f == x."""
     T = len(start); pnl = np.full(T, np.nan); amb = np.zeros(T, np.int8); n = len(c)
+    fb = np.full(T, -1, np.int64); xb = np.full(T, -1, np.int64)
     for t in range(T):
         k = start[t]; d = s[t]; st = stop0[t]; obj = tp[t]
         if limite[t] == 0:                                                 # E1C: llenado al cierre de la vela de decisión
-            e = c[k]; f = k
+            e = c[k]; f = k; fb[t] = f; xb[t] = f
         elif limite[t] == 2:                                               # E1A: llenado en el primer tick de la vela siguiente
             f = k + 1
             if f >= n or sesion[f] != sesion[k]: continue
-            e = o[f]
+            e = o[f]; fb[t] = f; xb[t] = f
             if tstart[f + 1] > tstart[f]:
                 cod, px = _primero_en_ticks(tpx, tstart[f] + 1, tstart[f + 1], d, st, obj, tick)
                 if cod == 1: pnl[t] = (px - e) * d; amb[t] = 1; continue
@@ -296,6 +297,7 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
                         if (d == 1 and tpx[i] <= e - tick) or (d == -1 and tpx[i] >= e + tick): ia = i + 1; break
                     break
             if f < 0: continue
+            fb[t] = f; xb[t] = f
             # resto de la vela del llenado, en orden de ticks
             if tstart[f + 1] > tstart[f]:
                 cod, px = _primero_en_ticks(tpx, ia, tstart[f + 1], d, st, obj, tick)
@@ -326,8 +328,16 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
             if be[t] == 1 and not armado and (h[j] - e if d == 1 else e - l[j]) >= R:
                 armado = True; st = max(st, e) if d == 1 else min(st, e)
             ult = j; j += 1
-        if np.isnan(x): x = (c[ult] - e) * d
+        xb[t] = j                                                                   # los `break` de arriba dejan j en la vela de salida
+        if np.isnan(x): x = (c[ult] - e) * d; xb[t] = ult
         pnl[t] = x
+    return pnl, amb, fb, xb
+
+
+@njit(cache=False)
+def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
+    """`simular_cierre` sin las barras de llenado y salida: devuelve (pnl, amb)."""
+    pnl, amb, _, _ = simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart)
     return pnl, amb
 
 
