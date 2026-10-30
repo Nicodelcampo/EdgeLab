@@ -353,8 +353,33 @@ def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:
     return pd.Series(np.asarray(ses_ops)).map(previo).to_numpy(float)
 
 
+def neutralizar(net, ei, ses, semilla) -> np.ndarray:
+    """Control nulo del embudo: resta la media global de cada ejecución y multiplica por un +1/-1 aleatorio el P&L de cada SESIÓN
+    completa. Conserva la dependencia intradía y la dimensión de la grilla; destruye la ventaja. Los NaN siguen siendo NaN."""
+    net, ei = np.asarray(net, float), np.asarray(ei); out = net.copy()
+    for e in np.unique(ei):
+        m = (ei == e) & np.isfinite(net)
+        if m.any(): out[m] -= net[m].mean()
+    us, inv = np.unique(ses, return_inverse=True)
+    return out * np.random.default_rng(semilla).choice((-1.0, 1.0), size=len(us))[inv]
+
+
+def resumen_control_nulo(cx, can, semilla, top=5) -> dict:
+    """Por canal: celdas evaluables, nominadas por el FDR y las `top` mejores medias entre las evaluables."""
+    out = dict(semilla=semilla)
+    for nombre, c in can.items():
+        st = GM.estadisticas(*GM.tensor(cx["perillas"], cx["indices"], np.where(np.isin(cx["mes"], c["meses"]), cx["net"], np.nan)))
+        ev = np.flatnonzero(st["evaluable"].ravel()); med = st["media"].ravel()[ev]; mejores = ev[np.argsort(-med, kind="stable")[:top]]
+        out[nombre] = dict(celdas_evaluables=int(ev.size), nominadas_fdr=c["nominadas_fdr"],
+                           mejores_medias=[dict(celda=[int(x) for x in np.unravel_index(f, st["n"].shape)], media=float(st["media"].ravel()[f]), n=int(st["n"].ravel()[f]))
+                                           for f in mejores])
+    return out
+
+
 def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None,
-           resolucion=None):
+           resolucion=None, nulo=None):
+    """`nulo` (semilla, sólo DESC): corre la selección sobre el P&L neutralizado (`neutralizar`), para contar lo que sobrevive por azar."""
+    if nulo is not None and modo != "DESC": raise ValueError("nulo sólo aplica a DESC")
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
     if "ses" not in D: D["ses"] = np.asarray(ctx["ses"])[D.k.to_numpy().astype(np.intp)] if "k" in D else np.array([], np.intp)   # 2026-10-27 (O13): con 0 disparos `k` no es entera
@@ -379,6 +404,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         from edgelab.research.eventos import TIPOS, cerca
         fuera = cerca(ctx["t"][D.k.to_numpy()[di]], ex.get("antes_min", 15), ex.get("despues_min", 15), tuple(ex.get("tipos", TIPOS)))
         net = np.where(fuera, np.nan, net); res["excluidas_eventos"] = dict(ex, n=int(fuera.sum()))
+    if nulo is not None: net = neutralizar(net, ei, D.ses.to_numpy()[di], nulo)
     P = perillas(exp, cortes); idx = [b[di] for b in discretizar(D, exp.VARIABLES, cortes)] + [ei]
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
@@ -401,6 +427,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         return res, cx
     res["canales"] = canales(exp, cx, friccion=friccion, extra_adverso=extra_adverso, q=q, log=log)
     res["indagacion"] = marginales(exp, cx, friccion=friccion, extra_adverso=extra_adverso)
+    if nulo is not None: res["control_nulo"] = resumen_control_nulo(cx, res["canales"], nulo)
     log(f"listo ({time.time() - t0:.0f}s)")
     return res, cx
 
