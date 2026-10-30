@@ -1,5 +1,7 @@
 # Catálogo y Preclasificación de Ideas de Trading para EdgeLab (2026-10-28)
 
+Estado: REFERENCIA (fuente de ideas sin validar; no es evidencia).
+
 ## 1. Archivos Persistidos en esta Carpeta
 1. **`estrategias_guardadas_trading.md`**: Biblioteca filtrada con 248 publicaciones de trading y finanzas cuantitativas extraídas de 1.000 guardados de Instagram (2023–2026).
 2. **`Tori_Trades_-_The_Trend_Is_Your_Friend_Paper.docx`** y **`TORI_TRADES_STOPPING_TIME_TRENDLINES_20261026.md`**: Documento de trabajo completo de Tori Trades (*"The Trend Is Your Friend Until the End: A Stopping-Time Theory of Swing Trading with Trendlines and Market Structure"*, 26 de octubre de 2026), en formato original Word (`.docx`) y transcripción íntegra en Markdown (`.md`) con todas sus proposiciones, ecuaciones y tablas.

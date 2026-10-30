@@ -1,5 +1,7 @@
 # Auditoría Integral del Agente Debian (`SV1`), Sistema Multi-Agente (`2 Opus + 1 Sonnet`) y Arquitectura en Espiral de EdgeLab
 
+Estado: PROPUESTA (redactado por la sesión en la nube el 2026-10-28; auditado el 2026-10-30 en docs/research/REVISION_SV1_20261030.md).
+
 **Fecha:** 28 de octubre de 2026  
 **Rama troncal de referencia:** `foundation/f0b-compatibility-probe` (`faad4600`)  
 **Alcance:** Cosecha completa del embudo (`Ola 1` a `Ola 5`), diagnóstico de desincronización y fallas del agente del servidor Debian (`SV1`), diseño del sistema multi-agente óptimo, protocolo de auditoría automática de alineación (`auditor_alineacion.py`), sincronización automática de ramas (`auto_sync_code.sh`) y taxonomía modular en espiral (`docs/MODULES.md` + `APRENDIZAJES_ESPIRAL.md`).

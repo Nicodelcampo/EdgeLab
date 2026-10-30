@@ -1,5 +1,7 @@
 # Arquitectura de Traducción y Paridad con NinjaTrader 8 Strategy Analyzer y Ejecución de Canastas de Regímenes (`2026-10-29`)
 
+Estado: PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_20261030.md).
+
 ## 1. Diagnóstico de Paridad entre `edgelab/research/analizador.py` (`grilla_generica`) y NinjaTrader 8 Strategy Analyzer
 
 Para garantizar que cada edge descubierto y validado en EdgeLab (`ACTA_HOLDOUT` o `PISTAS_VIVAS`) produzca **exactamente el mismo resultado** al trasladarse a una `Strategy` de NinjaTrader 8 (o a un motor de ejecución en vivo/VPS), auditamos las 5 dimensiones mecánicas donde suelen divergir los motores de investigación y las plataformas de ejecución:

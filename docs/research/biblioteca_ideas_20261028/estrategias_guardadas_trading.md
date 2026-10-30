@@ -1,5 +1,7 @@
 # Biblioteca Filtrada: Estrategias y Contenido de Trading - Nico Buttaro
 
+Estado: REFERENCIA (fuente de ideas sin validar; no es evidencia).
+
 **Fuente:** estrategias_x5f_guardadas_x5f_completo.md  
 **Filtro aplicado:** Exclusión de no-trading (biohacking, neurociencia pura, física cuántica, memes, estilo de vida)  
 **Total posts originales:** 1000  

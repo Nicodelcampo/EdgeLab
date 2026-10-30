@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-27  
+**Fecha:** 2026-10-30  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-27  
+**Corte:** 2026-10-30  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,12 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-28 (leer primero)
+## Estado al 2026-10-30 (leer primero)
+- Revisión del agente de SV1 y de las 45 campañas de la nube: `docs/research/REVISION_SV1_20261030.md`. 0 confirmadas; dos conductores
+  movieron las mismas campañas el 28-29/10 (la nube después del traspaso a SV1): SV1 queda pausado hasta reconciliar estados.
+- `HOLDOUT_VENTANAS.jsonl` restaurado (27 filas append-only borradas por `de6c3ecf`). PR #155 (404 recién lanzado no bloquea), PR #156 (KALMAN-FADE).
+
+## Estado al 2026-10-28
 
 - **Mandato del autopilot confirmado por Nico** (`config/autopilot/mandate.json`, commit `95c06808`; protegidos OK).
 - **Holdout:** frontera única desde la sesión del 2026-10-01 (30-sep 22:00 UTC); dataset sellado v2 y 8 conteos del holdout completados

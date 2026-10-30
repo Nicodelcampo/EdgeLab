@@ -1,5 +1,7 @@
 # Reporte Integral de Avances de la Semana (`22 al 29 de Octubre de 2026`) y Hoja de Ruta del Próximo Mes (`Noviembre 2026`) con el Sistema Multi-Agente del Debian v2
 
+Estado: PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_20261030.md).
+
 ## 1. Síntesis Ejecutiva: De un Embudo Bloqueado a un Sistema Multi-Agente en Espiral con `12` Unidades Aprobadas y Paridad Exacta con NinjaTrader 8
 
 Durante la semana del `22 al 29 de octubre de 2026`, el proyecto **EdgeLab** completó la transición desde una arquitectura de exploración fragmentada (donde el agente del Debian corría como un único proceso aislado en una rama divergente con un embudo trabado en compuertas intermedias y celdas sobreajustadas al período de descubrimiento) hacia una **arquitectura industrial en espiral de 6 capas (`L0` a `L5`)**, sincronizada automáticamente con `origin/foundation/f0b-compatibility-probe` y acoplada a un motor de ejecución con paridad verificada para **NinjaTrader 8** (`nt8/strategies/EdgeLabSpiralBasketExecutor.cs`).
