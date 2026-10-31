@@ -1,0 +1,12 @@
+## TAU-NQ — edgelab.research.tau_tendencia · señal NQ · ejecución NQ
+- Justificación: Regla de tendencia de Tori Trades en NQ M1: la línea por los dos últimos pivotes es momentum adaptativo y salir sólo en su ruptura (τ) deja correr las ganancias (SPEC_TAU_TENDENCIA.md).
+- Refutación: 0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si FIJO_2R iguala o supera a TAU en la misma población, la ventaja de la salida τ queda refutada.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5626417 pruebas de ['TORI_TREND_TOQUE3_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 712 de 1296 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 372 (m del FDR 372 de 648 celdas), FDR 0, RW umbral 3.2426247596740723 (diagnóstico), linaje 5626417 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 1, 2, 1, 1, 3], [2, 1, 1, 0, 1, 3]]
+- PISTAS canasta (una prueba): media -19.337456896551735 IC90 [-53.5783364224138, 15.20480237068961] p 0.8132966758310423 sesiones 116; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.8255872063968016; confirmadas 0 de 2 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.8255872063968016); canasta media -19.337456896551735 IC90 [-53.5783364224138, 15.20480237068961]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.016291191156290075

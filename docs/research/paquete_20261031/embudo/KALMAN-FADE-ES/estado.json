@@ -1,0 +1,109 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1793484236.8870769,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "KALMAN-FADE-ES",
+  "familia": "KALMAN_FADE_ES",
+  "experimento": "edgelab.research.kalman_fade",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 216,
+  "spec": "docs/research/paquete_20261031/PREREGISTRO_KALMAN_ES_GC.md",
+  "justificacion_economica": "Innovaciones extremas de un nivel local de Kalman en ES M1 son en parte ruido de microestructura transitorio y revierten (SPEC_KALMAN_FADE.md, anexo PREREGISTRO_KALMAN_ES_GC.md).",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "KALMAN_FADE_ES",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia raíz: mismo módulo que KALMAN_FADE_NQ en otro instrumento, sin resultados todavía; declarada antes de DESC (docs/research/paquete_20261031/PREREGISTRO_KALMAN_ES_GC.md)",
+   "metodo_n": "declarado",
+   "aviso": null,
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484236.8869207,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-kalman-fade-es-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793484597.6034727
+}

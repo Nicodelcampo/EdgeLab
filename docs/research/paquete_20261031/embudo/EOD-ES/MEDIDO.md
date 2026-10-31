@@ -1,0 +1,12 @@
+## EOD-ES — edgelab.research.eod_momentum · señal ES · ejecución ES
+- Justificación: Momentum intradía de Gao et al. (2018) en ES: rebalanceos forzados y coberturas de gamma operan en la dirección del día en la última media hora (SPEC_EOD_MOM.md).
+- Refutación: 0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si sólo gana con el stop de catástrofe, no es operable con riesgo acotado.
+- PREFLIGHT: ok
+- Linaje (informacion; declarado); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 57 de 486 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 42 (m del FDR 42 de 243 celdas), FDR 0, RW umbral 2.440880537033081 (diagnóstico), linaje 0 como informacion, pistas sin nominación 7, candidatas 0
+- PISTAS a réplica (ATJ-25): 3 congeladas de 7 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 0, 2, 0, 0], [1, 2, 0, 0, 0], [1, 0, 0, 0, 2]]
+- PISTAS canasta (una prueba): media -1.842990476190476 IC90 [-2.911239761904761, -0.7394018571428572] p 0.9987503124218945 sesiones 70; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 1.0; confirmadas 0 de 3 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 3 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -1.842990476190476 IC90 [-2.911239761904761, -0.7394018571428572]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.29951035408108795

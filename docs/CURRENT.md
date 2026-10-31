@@ -1,14 +1,24 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-30  
+**Fecha:** 2026-10-31  
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-30  
+**Corte:** 2026-10-31  
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+
+## Estado al 2026-10-31 (leer primero)
+
+- **Plan del paquete del 31-oct implementado y lanzado** (`docs/research/paquete_20261031/PLAN_PAQUETE_20261031.md`, PR #172):
+  salida por tiempo de parada (τ) en el simulador; familias chicas pre-registradas TAU-TENDENCIA (NQ/ES/GC), EOD-MOM (ES/NQ/YM),
+  RANGO-ASIA0100 (NQ/ES/GC), RANGO-PREAPERTURA (NQ/ES/YM) y KALMAN-FADE (NQ/ES/GC): 15 campañas en DESC, conductor `local` (sesión
+  en la nube), estado en `docs/research/paquete_20261031/embudo/`. Variante τ de las 10 reglas con acta en su propio instrumento:
+  10 kernels ANALIZAR_REGLA sobre DESC (`tools/variante_tau_actas.py`).
+- **ASIA-NQ**: prueba forward de las 20 pistas pre-registrada (PR #171), desde la sesión del 2026-11-02.
+- Canasta de 7: sin cambios (holdout sin abrir). **Edges promovidos: 0.**
 
 ## Estado al 2026-10-30 (leer primero)
 - Revisión del agente de SV1 y de las 45 campañas de la nube: `docs/research/REVISION_SV1_20261030.md`. 0 confirmadas; dos conductores

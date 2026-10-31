@@ -3,6 +3,23 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-10-31 (23:30 UTC) — de Nico (redactado por la sesión en la nube): la cartera viva pasa a ser el centro de EdgeLab
+
+**Decisión de Nico:** «el agente del Debian tiene que ser quien mantenga nuestras canastas actualizadas al régimen». Leé
+`docs/CARTERA_VIVA.md` entero y la directiva 8 de `config/autopilot/DIRECTIVAS.md`. Resumen:
+- Todos los días después del cierre de CME: seguimiento forward, retiros inmediatos, régimen de mañana, afinidad, contratos por cuenta,
+  cola de investigación con plazos y plan del día (`tools/cartera_diaria.py ciclo`). Si algo falla: MODO SEGURO (cero contratos) y alerta.
+- La cola del plan manda: P0 en el día, P1 en 24 h.
+
+**Qué te toca para ponerlo en marcha** (en este orden, todo con test y en tu worktree):
+1. Después de reconciliar y actualizar SV1 (pendiente de Gonza), `install.sh` deja `edgelab-cartera.timer` y `/etc/edgelab/cartera.json`.
+2. Congelá los cortes de régimen de NQ, ES, YM y GC sobre desarrollo (`cartera_diaria.py cortes`) y escribilos en `cortes_regimen`.
+3. Verificá las rutas de `datos` contra lo que tiene SV1 y avisá qué instrumento no tiene datos del día (los futuros dependen del export
+   de NT8: es el bloqueante número 1 del seguimiento diario).
+4. Dalo de alta en PAPEL a medida que haya pre-registros: lo que confirme el embudo, la canasta forward de ASIA-NQ (20 fichas de una
+   celda o ficha multicelda, con test) y las campañas del 31-oct (`docs/research/paquete_20261031/`).
+5. No habilites cuentas reales ni cambies `reglas`: es de Nico.
+
 ## 2026-10-29 (05:10 UTC) — de Nico (redactado por la sesión en la nube): Infraestructura Multi-Agente Debian v2 (`sincronizador_ramas`, `catalogo_espiral`, `orquestador_multiagente`, `docs/MODULES.md`) + 3 Nuevas Familias en Espiral (Ola 10: `CONFLUENCIA-CVGAP-RACIMOS`, `TORI-TREND-TOQUE3`, `ASIA-BOS-GAPS`)
 
 ### 1. Cuatro módulos nuevos de infraestructura ya activos en el repositorio
