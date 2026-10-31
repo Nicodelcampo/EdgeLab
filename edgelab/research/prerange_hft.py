@@ -153,7 +153,19 @@ def _serie(bloques, tick):
 
 
 def zonas_hft2(bloques, tick, spec=25):
-    """HFTZones2 adaptativo. Disponible en ZONE_CREATED (el tick que FINALIZA la racha), no en `created_ms`, que es anterior."""
+    """HFTZones2 adaptativo. Disponible en ZONE_CREATED (el tick que FINALIZA la racha), no en `created_ms`, que es anterior.
+    Numba y sin ciclo de vida (`hft2_rapido`); `spec` no decide zonas: las barras sólo alimentan la expiración."""
+    from edgelab.bridge import sessions as S
+    from edgelab.bridge.indicators import hftzones2 as H2
+    from edgelab.research import hft2_rapido as R
+    tk = _serie(bloques, tick)
+    if tk is None: return pd.DataFrame(columns=["t_ns", "lo", "hi"])
+    Z = R.zonas(tk, S.session_end_ns, H2.DEFAULTS)
+    return pd.DataFrame(dict(t_ns=Z[:, 0], lo=Z[:, 1] * float(tick), hi=Z[:, 2] * float(tick)), columns=["t_ns", "lo", "hi"])
+
+
+def zonas_hft2_lento(bloques, tick, spec=25):
+    """Referencia de `zonas_hft2`: el indicador completo tick a tick en Python, costo ticks × zonas."""
     from edgelab.bridge import bars as B
     from edgelab.bridge.indicators import hftzones2 as H2
     tk = _serie(bloques, tick)
@@ -185,6 +197,8 @@ def cargar(fuente: str, inst: str, entrada: str | None = None) -> pd.DataFrame:
     entrada = entrada or os.environ.get("ENTRADA", "/kaggle/input")
     f = glob.glob(f"{entrada}/**/ZONAS_{fuente}_{inst}.parquet", recursive=True)
     if f: return pd.read_parquet(f[0])[["t_ns", "lo", "hi"]]
+    f = sorted(glob.glob(f"{entrada}/**/ZONAS_{fuente}_{inst}_[0-9]*.parquet", recursive=True))    # bloques trimestrales, sin solape
+    if f: return pd.concat([pd.read_parquet(x)[["t_ns", "lo", "hi"]] for x in f], ignore_index=True).sort_values("t_ns", kind="stable", ignore_index=True)
     if os.environ.get("SELLADO") != "1": raise FileNotFoundError(f"sin almacén de zonas {fuente}/{inst} en {entrada}")
     from edgelab.research import fuentes_ticks as F                       # holdout: las mismas funciones sobre los ticks sellados
     r = glob.glob(f"{entrada}/**/{inst}_*ticks.parquet", recursive=True)

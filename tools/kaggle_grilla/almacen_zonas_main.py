@@ -4,7 +4,10 @@
 # Indicadores: aVolZonePOI2 (edgelab/bridge/indicators/avolzonepoi2.py, PASS en MNQ 25t). Reutiliza fuentes_ticks.bloques_futuro,
 # edgelab/bridge/bars (barras de N ticks, footprint total NT8, sesiones) y oro_0530.trimestres. Sin desenlaces ni retornos.
 # Entorno: INDICADOR (AVZP2 | AVCL | BT2 | AVZRG | AVZG | HFT2 | HFTNQ), INSTS (p. ej. "ES,NQ"), SPEC (ticks por barra; 25 y 50 por defecto).
-# Salida: ZONAS_<IND>_<INST>.parquet y ALMACEN_ZONAS_<IND>.json.
+# TRIM (opcional, YYYYMMDD de inicio del trimestre): corre ese bloque con el mismo calentamiento que la corrida entera y filtra las zonas a
+# sus fechas, así los bloques no se solapan. Si el parquet del bloque ya está en la salida (o en ENTRADA) lo saltea: reanudar es relanzar.
+# Salida: ZONAS_<IND>_<INST>.parquet (o ZONAS_<IND>_<INST>_<TRIM>.parquet) y ALMACEN_ZONAS_<IND>.json.
+import glob
 import json
 import os
 import time
@@ -150,15 +153,28 @@ INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVZG": (zonas_avzg, 25), "AVCL": (zo
 LIBRO = {"BT2"}                    # indicadores que clasifican el agresor con bid/ask
 
 
+def bloques(trim):
+    """Trimestres a correr: todos, o el que empieza en `trim`. Fuera del período (holdout incluido) falla."""
+    from edgelab.research import oro_0530 as O
+    B = list(O.trimestres(D0, D1))
+    if not trim: return B
+    B = [b for b in B if b[0] == int(trim)]
+    if not B: raise ValueError(f"TRIM {trim} no es inicio de trimestre de {D0}-{D1}")
+    return B
+
+
 def main():
-    from edgelab.research import fuentes_ticks as F, oro_0530 as O
+    from edgelab.research import fuentes_ticks as F
     ent = os.environ.get("ENTRADA", "/kaggle/input"); ind = os.environ.get("INDICADOR", "AVZP2"); fn, spec = INDICADORES[ind]
     spec = int(os.environ.get("SPEC", spec))
     t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     res = dict(experimento="ALMACEN-ZONAS", indicador=ind, spec=spec, params=PARAMS, codigo=CODIGO_SHA, modulos=MODULOS_SHA, instrumentos={})
+    trim = os.environ.get("TRIM", ""); sufijo = f"_{trim}" if trim else ""
     for inst in os.environ.get("INSTS", "ES,NQ").split(","):
         tick = F.TICK_FUTURO[inst]; partes = {}
-        for lo, hi in O.trimestres(D0, D1):
+        if trim and glob.glob(f"**/ZONAS_{ind}_{inst}{sufijo}.parquet", recursive=True) + glob.glob(f"{ent}/**/ZONAS_{ind}_{inst}{sufijo}.parquet", recursive=True):
+            log(f"{inst} {trim}: ya está"); continue
+        for lo, hi in bloques(trim):
             lo_c = int((pd.Timestamp(str(lo)) - pd.Timedelta(days=CALENTAR)).strftime("%Y%m%d"))
             try: Z = fn(F.bloques_futuro(inst, max(lo_c, D0), hi, ent, libro=ind in LIBRO), tick, spec)
             except (ValueError, IndexError) as e: log(f"{inst} {lo}-{hi}: sin datos ({e})"); continue
@@ -170,7 +186,7 @@ def main():
                 log(f"{inst} {lo}-{hi} {nombre}: {len(Zi)} zonas")
         for nombre, ps in partes.items():
             Z = pd.concat(ps, ignore_index=True).sort_values("t_ns") if ps else pd.DataFrame()
-            Z.to_parquet(f"ZONAS_{nombre}_{inst}.parquet", index=False)
+            Z.to_parquet(f"ZONAS_{nombre}_{inst}{sufijo}.parquet", index=False)
             res["instrumentos"][f"{nombre}_{inst}"] = dict(zonas=int(len(Z)), sesiones=int(len(np.unique(F._td(Z.t_ns.to_numpy())))) if len(Z) else 0,
                                                            alto_mediano_ticks=float(((Z.hi - Z.lo) / tick).median()) if len(Z) else None)
     json.dump(res, open(f"ALMACEN_ZONAS_{ind}.json", "w"), indent=1, default=float)
