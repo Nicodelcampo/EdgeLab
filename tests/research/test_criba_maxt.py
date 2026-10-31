@@ -97,3 +97,11 @@ def test_compuerta_usa_la_marca_de_la_pista():
 def test_estado_viejo_conserva_fdr_y_nuevo_congela_maxt():
     assert EB._criba(dict(reglas=dict(linaje={}))) == "fdr" and EB._criba({}) == "fdr"
     assert EB._criba(dict(reglas=dict(criba=dict(metodo="maxt")))) == "maxt"
+
+
+def test_alfa_por_canal_reparte_el_error_familiar_entre_los_dos_canales():
+    """2026-10-31: con maxT en los canales total y reciente, cada uno usa alfa/2 (Bonferroni), así la campaña queda en <= 0,10."""
+    import inspect
+    from edgelab.research import grilla_generica as GG
+    assert GG.ALFA_CRIBA_CANAL == GG.ALFA_RW / 2 == 0.05
+    assert "alfa=ALFA_CRIBA_CANAL" in inspect.getsource(GG.canales)

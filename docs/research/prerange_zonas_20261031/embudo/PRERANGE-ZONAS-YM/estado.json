@@ -1,0 +1,116 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793487282.8175945,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "PRERANGE-ZONAS-YM",
+  "familia": "PRERANGE_ZONAS_YM",
+  "experimento": "edgelab.research.prerange_zonas",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 28512,
+  "spec": "docs/research/prerange_zonas_20261031/SPEC_PRERANGE_ZONAS.md",
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-hft",
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "justificacion_economica": "Las zonas ya formadas alrededor del rango 08:12-09:12 ET en YM son liquidez y referencias visibles; su cantidad por encima, debajo y dentro debería cambiar lo que sigue a un barrido.",
+  "como_podria_refutarse": "Sin nominadas por la criba ni canasta con soporte; o celdas con cantidades iguales al control sin cantidades; fallo en INTEGRIDAD o refutación con potencia en OOS/holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro; frontera 2026-10-01."
+  },
+  "cuenta_kaggle": "auto",
+  "decisiones": [
+   "2026-10-31: activa=false; cortes y poda congelados del E0 sin desenlaces.",
+   "2026-10-31 (Nico delega en la sesión en la nube: «encargate del trabajo de gonzasib-claude; armá esa corrida»): se lanza el DESC. Poda en 20 combinaciones únicas (elegida mirando sólo el censo E0, sin desenlaces: target-free); pares con cantidad min(nA, nB) y BASE de 4 ejecuciones × 2 distancias tal como están; AVZP2 indexado en t_decidida_ns (conservador; ver AUDITORIA_T_NS_AVZP2_20261031.md). Conducción: sesión en la nube (conductor local), el Debian está en PAUSE."
+  ],
+  "confirmador": "DK:USA30IDXUSD"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro; frontera 2026-10-01."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "PRERANGE_ZONAS_YM",
+   "declarada": true,
+   "padres": [
+    "PRERANGE_HFT_YM",
+    "U1_ZONAS_GRILLA_YM"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5980794,
+   "n_heredado": 5980794,
+   "total": 5980794,
+   "justificacion": "Rango PRERANGE con filtro de cantidad de zonas por posición; declarada antes de DESC (docs/research/prerange_zonas_20261031/SPEC_PRERANGE_ZONAS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793487282.8173153,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
