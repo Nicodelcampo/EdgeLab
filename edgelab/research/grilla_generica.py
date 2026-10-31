@@ -163,14 +163,15 @@ def _trasladar(O, ctx, cx_ej, retraso):
 
 
 def _ops_lote(exp, D, ctx):
-    """Filas (i, ei, start, limite, s, entrada, stop, objetivo, be) en el MISMO orden que el bucle por disparo y ejecución."""
-    partes = []
+    """Filas (i, ei, start, limite, s, entrada, stop, objetivo, be) en el MISMO orden que el bucle por disparo y ejecución.
+    Un experimento con salida por línea (`lineas_salida`, 2026-10-31) agrega dos columnas: fila de la línea y margen δ."""
+    partes = []; w = _ancho(exp)
     for ei, ej in enumerate(exp.EJECUCIONES):
         X = np.asarray(exp.niveles_lote(D, ej, ctx), float)
-        if X.shape != (len(D), 7): raise ValueError(f"niveles_lote debe devolver ({len(D)}, 7); devolvió {X.shape}")
+        if X.shape != (len(D), w): raise ValueError(f"niveles_lote debe devolver ({len(D)}, {w}); devolvió {X.shape}")
         i = np.flatnonzero(np.isfinite(X[:, 0]))
         partes.append(np.column_stack([i, np.full(len(i), ei), X[i]]))
-    O = np.concatenate(partes) if partes else np.zeros((0, 9))
+    O = np.concatenate(partes) if partes else np.zeros((0, w + 2))
     return O[np.lexsort((O[:, 1], O[:, 0]))] if len(O) else O
 
 
@@ -180,8 +181,15 @@ def ops_por_fila(exp, D, ctx):
     for i, r in enumerate(filas):
         for ei, ej in enumerate(exp.EJECUCIONES):
             nv = exp.niveles(r, ej, ctx)
-            if nv is not None: ops.append((i, ei) + tuple(nv))
-    return np.array(ops, float) if ops else np.zeros((0, 9))
+            if nv is not None:
+                if len(nv) != _ancho(exp): raise ValueError(f"niveles debe devolver {_ancho(exp)} valores; devolvió {len(nv)}")
+                ops.append((i, ei) + tuple(nv))
+    return np.array(ops, float) if ops else np.zeros((0, _ancho(exp) + 2))
+
+
+def _ancho(exp) -> int:
+    """7 valores por operación; 9 si el experimento declara `lineas_salida` (fila de la línea y δ de la salida por tiempo de parada)."""
+    return 9 if hasattr(exp, "lineas_salida") else 7
 
 
 def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False, devolver_barras: bool = False):
@@ -191,16 +199,25 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
     trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
     O = _ops_lote(exp, D, ctx) if hasattr(exp, "niveles_lote") else ops_por_fila(exp, D, ctx)
     if not len(O):
-        return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ()) + ((np.zeros(0, np.int64),) * 2 if devolver_barras else ())
+        return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, _ancho(exp) + 2)),) if devolver_O else ()) + ((np.zeros(0, np.int64),) * 2 if devolver_barras else ())
     if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
+    linea = hasattr(exp, "lineas_salida")
+    if linea and cx_ej is not None:
+        raise ValueError("salida por línea con ejecución en otro instrumento: las líneas están en precios del sensor")
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
     pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8); fb = np.full(len(O), -1, np.int64); xb = fb.copy()
     if ok.any():
         st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
-        p_, a_, f_, x_ = AX.simular_cierre(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
-                                           sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
+        args = (st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
+                sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
+        if linea:
+            lin = np.ascontiguousarray(np.asarray(exp.lineas_salida(sim), float))
+            if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
+            p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float))
+        else:
+            p_, a_, f_, x_ = AX.simular_cierre(*args)
         pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_
     out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
     return out + ((O,) if devolver_O else ()) + ((fb, xb) if devolver_barras else ())

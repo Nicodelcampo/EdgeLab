@@ -262,7 +262,20 @@ def _primero_en_ticks(tpx, a, b, d, st, tp, tick):
 
 @njit(cache=False)
 def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
-    """Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
+    """Sin salida por línea (la regla de siempre). La documentación del simulador está en `simular_cierre_linea`."""
+    T = len(start)
+    return simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart,
+                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T))
+
+
+@njit(cache=False)
+def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl):
+    """SALIDA POR TIEMPO DE PARADA (2026-10-31, paper de Tori Trades, ec. (1): τ = inf{t > t0 : C_t < y(t) − δ}): `lin` son líneas
+    por vela (filas; NaN donde no hay línea) que la experiencia calcula sólo con el pasado de cada vela; `kl[t]` es la fila que sigue
+    la operación t (−1 = sin salida por línea) y `dl[t]` el margen δ en precio. Con la operación abierta, al CIERRE de la vela j
+    (después de stop y objetivo, que se tocan dentro de la vela): compra sale si c[j] < lin[kl, j] − δ, venta si c[j] > lin + δ;
+    se ejecuta en la APERTURA de la vela siguiente (misma sesión; si no hay, al cierre de j). El stop y el objetivo siguen activos.
+    Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
     limite=1: orden límite en `nivel`, se llena si el precio la atraviesa por 1 tick dentro de 120 barras.
     limite=2: mercado en el PRIMER TICK de la vela siguiente (misma sesión). El momento de llenado es una decisión de cada
     análisis: el simulador no impone ninguno; quien lo llama lo declara por operación.
@@ -325,6 +338,12 @@ def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, t
                     if cod == 1: x = (px - e) * d; amb[t] = max(amb[t], 3); break   # lo saltara: optimista con stops cortos)
                 x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d; break
             if tt_: x = (obj - e) * d; break
+            if kl[t] >= 0:
+                y = lin[kl[t], j]
+                if y == y and ((d == 1 and c[j] < y - dl[t]) or (d == -1 and c[j] > y + dl[t])):
+                    if j + 1 < n and sesion[j + 1] == sesion[j]: x = (o[j + 1] - e) * d; j += 1
+                    else: x = (c[j] - e) * d
+                    break
             if be[t] == 1 and not armado and (h[j] - e if d == 1 else e - l[j]) >= R:
                 armado = True; st = max(st, e) if d == 1 else min(st, e)
             ult = j; j += 1

@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-546 scripts.
+547 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -527,6 +527,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/validate_l2_session_boundaries.py` | Valida la continuidad entre sesiones L2 consecutivas de un mismo instrumento+contrato. |
 | `tools/validate_mgc_ema.py` | (sin docstring) |
 | `tools/validate_nq0626_parity_run.py` | validate_nq0626_parity_run.py — validación post-corrida de paridad aVolClusterPOI NQ 06-26 |
+| `tools/variante_tau_actas.py` | Variante τ de las reglas con acta (2026-10-31): mismas entradas congeladas, salida por tiempo de parada, sobre el DESC de cada regla. |
 | `tools/vendor/__init__.py` | (sin docstring) |
 | `tools/vendor/notion_phenomena.py` | Bounded target-free clock-window measurements, not a phenomenon classifier. |
 | `tools/verificar_artefactos.py` | Revisión read-only de procedencia: cada artefacto citado en |

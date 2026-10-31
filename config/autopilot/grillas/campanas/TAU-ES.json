@@ -1,0 +1,31 @@
+{
+  "cid": "TAU-ES",
+  "familia": "TAU_TENDENCIA_ES",
+  "experimento": "edgelab.research.tau_tendencia",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "desc": [
+    20250805,
+    20260331
+  ],
+  "oos": [
+    20260401,
+    20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 648,
+  "spec": "docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md",
+  "justificacion_economica": "Regla de tendencia de Tori Trades en ES M1: la línea por los dos últimos pivotes es momentum adaptativo y salir sólo en su ruptura (τ) deja correr las ganancias (SPEC_TAU_TENDENCIA.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si FIJO_2R iguala o supera a TAU en la misma población, la ventaja de la salida τ queda refutada.",
+  "seleccion": {
+    "max_candidatas": 3
+  },
+  "holdout": {
+    "desde": 20261001,
+    "n_fijo": 150,
+    "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+}
