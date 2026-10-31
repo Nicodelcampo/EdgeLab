@@ -110,6 +110,9 @@ def nominada(p: dict, n_heredado: int = 0, como: str = "compuerta") -> tuple:
     from edgelab.research.linaje import q_con_linaje
     if como not in LINAJE_COMO: raise ValueError(f"linaje_como: {LINAJE_COMO}")
     if p.get("nominada_replica"): return True, None
+    if p.get("criba") == "maxt":                                          # 2026-10-30: decide maxT; BH y linaje quedan como información
+        ql = q_con_linaje(p["q_fdr"], p.get("pi0_fdr", 1.0), int(p["m_fdr"]), int(n_heredado)) if p.get("q_fdr") is not None else None
+        return bool(p.get("nominada_maxt") and (como == "informacion" or (ql is not None and ql <= Q_FDR_DESC))), ql
     if not p.get("nominada_fdr") or p.get("q_fdr") is None: return False, None
     ql = q_con_linaje(p["q_fdr"], p.get("pi0_fdr", 1.0), int(p["m_fdr"]), int(n_heredado))
     return bool(p["q_fdr"] <= Q_FDR_DESC and (como == "informacion" or ql <= Q_FDR_DESC)), ql
@@ -119,6 +122,11 @@ def _como_linaje(st) -> str:
     """Lo congelado en el PREFLIGHT. Un estado congelado antes del 2026-10-24 (sin `como`) conserva la compuerta: aflojarla con
     resultados ya vistos sería relajar un gate después de mirar."""
     return (((st.get("reglas") or {}).get("linaje")) or {}).get("como", "compuerta")
+
+
+def _criba(st) -> str:
+    """Lo congelado en el PREFLIGHT. Un estado anterior al 2026-10-30 (sin `criba`) conserva el FDR: sus actas se reproducen igual."""
+    return ((st.get("reglas") or {}).get("criba") or {}).get("metodo", "fdr")
 
 
 def oos_comprometido(spec: dict) -> bool:
@@ -243,7 +251,7 @@ class Embudo:
 
     def _params(self, spec, st, e):
         base = dict(cortes=st.get("cortes"))
-        if e == "DESC": return dict(cortes=None), spec["desc"], "kaggle"
+        if e == "DESC": return dict(cortes=None, **({} if _criba(st) == "fdr" else {"criba": _criba(st)})), spec["desc"], "kaggle"
         if e == "INDAGA": return dict(base, bases=st["candidatas"]), spec["desc"], "kaggle"
         if e in ("INTEGRIDAD", "TOPES"): return dict(base, celdas=st["candidatas"], topes=_reglas(spec, st, "topes")["lista"] or None), spec["desc"], "kaggle"
         if e == "OOS": return dict(base, celdas=st["candidatas"], resolucion=self._resolucion(spec, len(st["candidatas"]))), spec["oos"], "kaggle"
@@ -294,7 +302,8 @@ class Embudo:
         if (malos := _problemas_regimen(reglas["regimen"]) + self._problemas_linaje(spec)):
             return self._cerrar(spec, st, "BLOQUEADA", "; ".join(malos))
         reglas["pistas_replica"] = dict(reglas["pistas_replica"], ventana=ventana_pistas(spec, reglas["pistas_replica"]))
-        st["reglas"] = dict(reglas, linaje=dict(self._multiplicidad(spec), como=spec.get("linaje_como", "informacion")))   # antes de usarse
+        if (cb := spec.get("criba", "maxt")) not in ("fdr", "maxt"): return self._cerrar(spec, st, "BLOQUEADA", f"criba desconocida: {cb!r}")
+        st["reglas"] = dict(reglas, criba=dict(metodo=cb), linaje=dict(self._multiplicidad(spec), como=spec.get("linaje_como", "informacion")))   # antes de usarse
         st["spec"] = spec                                                              # la campaña que se congela
         st["decisiones_20261024"] = dict(ts=self.ahora(), desde="PREFLIGHT")
         lin = st["reglas"]["linaje"]
@@ -379,7 +388,7 @@ class Embudo:
         tot = (res.get("canales") or {}).get("total", {})
         self._evaluables(spec, res)
         self._medido(spec, f"- DESC {spec['desc']}: evaluables {tot.get('evaluables')} (m del FDR {tot.get('m_fdr', tot.get('evaluables'))} de "
-                           f"{tot.get('celdas', '?')} celdas), FDR {tot.get('nominadas_fdr')}, RW umbral {(tot.get('romano_wolf') or {}).get('umbral')} "
+                           f"{tot.get('celdas', '?')} celdas), FDR {tot.get('nominadas_fdr')}{'' if 'nominadas_maxt' not in tot else ' (informativo), maxT ' + str(tot['nominadas_maxt'])}, RW umbral {(tot.get('romano_wolf') or {}).get('umbral')} "
                            f"(diagnóstico), linaje {nh} como {como}, pistas sin nominación {no_nom}, candidatas {len(cand)}")
         if not cand: return self._a_pistas(spec, st, pistas, tot)
         st["candidatas"] = cand; st["desc"] = dict(pistas=[p for p in pistas if p["celda"] in cand])
