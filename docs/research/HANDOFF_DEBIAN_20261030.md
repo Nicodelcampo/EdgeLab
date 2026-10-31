@@ -1,4 +1,6 @@
 # Handoff para el agente del Debian (SV1), 2026-10-30
+
+Estado: VIGENTE
 Estado leído por SSH: SV1 en 0f3a5466, HEAD sin rama, 3 archivos modificados y 23 sin seguimiento (26 en total), PAUSE activo desde 2026-10-30 01:09. Release objetivo: 9000dcd7 (53 commits por delante al escribir esto).
 
 ## Qué cambió y debe saber

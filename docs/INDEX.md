@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 831 |
+| `docs/research` | 832 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,7 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REVISION | 8 | `REVISION_SV1_20261030.md` | 2026-10-30 | VIGENTE. Autor: gonzasib-claude (Gonza-PC), a pedido de Nico en la sala #CHY0V3Y |
-| HANDOFF | 17 | `HANDOFF_DEBIAN_20261030.md` | 2026-10-30 | - |
+| HANDOFF | 17 | `HANDOFF_DEBIAN_20261030.md` | 2026-10-30 | VIGENTE |
 | REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
@@ -109,6 +109,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (1)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/research/HANDOFF_DEBIAN_20261030.md: falta `Estado:` en el encabezado
+Ninguno.
