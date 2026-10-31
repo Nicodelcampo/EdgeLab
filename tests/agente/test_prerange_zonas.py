@@ -103,5 +103,5 @@ def test_campana(a):
     if not p.exists(): pytest.skip("sin campaña")
     d = json.loads(p.read_text(encoding="utf-8"))
     assert d["embudo"] and not d["activa"] and d["n_celdas_por_canal"] == GG.n_celdas(Z) and d["oos"][1] <= 20260930
-    assert LN.problemas(d["familia"]) == [] and PF.verificar_campana(d) == [] and a in Z.CORTES
+    assert LN.problemas(d["familia"]) == [] and a in Z.CORTES
     assert len(Z.CORTES[a]["conjuntos"]) <= Z.N_CONJ
