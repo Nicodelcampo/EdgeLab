@@ -71,6 +71,33 @@
    "test_causal": "tests/research/test_kalman_fade.py::test_causal",
    "doc": "docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md",
    "nota": "Nivel local de Kalman (R por EWMA de innovaciones, Q = q·R); sin versión NT8, no se opera en vivo"
+  },
+  {
+   "id": "TAU-TENDENCIA",
+   "modulo": "edgelab/research/tau_tendencia.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Pivotes de orden p confirmados p velas después, estructura HH/HL y líneas de soporte/resistencia de Tori Trades (Def. 3.1–3.2) con prueba de causalidad en tests/research/test_paquete_20261031.py::test_causal y líneas sin futuro en test_tau_linea_no_mira_el_futuro",
+   "test_causal": "tests/research/test_paquete_20261031.py::test_causal",
+   "doc": "docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md",
+   "nota": "Salida por tiempo de parada τ en areas_expansion.simular_cierre_linea; θ̃ y t de Newey-West sobre retornos (Prop. 3.5–3.6)"
+  },
+  {
+   "id": "EOD-MOM",
+   "modulo": "edgelab/research/eod_momentum.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Retornos de la primera y la penúltima media hora RTH (Gao et al. 2018) con hora NY y verano, prueba de causalidad en tests/research/test_paquete_20261031.py::test_causal",
+   "test_causal": "tests/research/test_paquete_20261031.py::test_causal",
+   "doc": "docs/research/paquete_20261031/SPEC_EOD_MOM.md",
+   "nota": "Decisión al cierre de la vela de las 15:30 ET, salida forzada 15:59 ET"
+  },
+  {
+   "id": "RANGO-RUPTURA",
+   "modulo": "edgelab/research/rango_ruptura.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Rango de 15 minutos del reloj NY y ruptura por cierre con una reentrada, prueba de causalidad en tests/research/test_paquete_20261031.py::test_causal",
+   "test_causal": "tests/research/test_paquete_20261031.py::test_causal",
+   "doc": "docs/research/paquete_20261031/SPEC_RANGOS.md",
+   "nota": "Lo usan rango_asia0100 (01:00–01:15 ET) y rango_preapertura (09:15–09:30 ET), familias independientes"
   }
  ]
 }

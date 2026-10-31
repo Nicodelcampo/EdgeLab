@@ -67,7 +67,11 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         from edgelab.research import analizador as AN
         res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
                             cx_ej=cx_ej, tope=p.get("tope"))
-        return dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
+        out = dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
+        if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
+            O = GG.operaciones_de(cx, p["celdas"])
+            out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t")} if len(O) else {}
+        return out
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE
         return PE.correr(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log, horizontes=p.get("horizontes"),
