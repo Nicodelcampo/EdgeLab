@@ -3,7 +3,7 @@ local (Debian, datos sellados del holdout). La orquestación y las compuertas es
 
 Etapa         entra                                   sale
 E0            período                                 disparos y variables (target-free) + densidad y régimen por mes
-DESC          período (+nulo: semilla)                tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
+DESC          período (+nulo, +criba)                 tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
 INDAGA        celda base + cortes + período           marginales alrededor de la celda (una perilla por vez)
 REP           celdas + cortes + período (+tope)       réplica por celda + serie por operación
 INTEGRIDAD    celdas + cortes + período               alineación (si señal ≠ ejecución), placebo (5 semillas), latencia 1/2/5
@@ -76,7 +76,7 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, D = GG.correr(exp, ctx, modo="E0", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log)
         res["densidad"] = densidad(ctx, D); return res
     if etapa == "DESC":
-        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"))
+        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"), criba=p.get("criba", "fdr"))
         return res
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
