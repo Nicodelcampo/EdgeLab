@@ -26,3 +26,16 @@ aplanó en jul–sep. Si la salida estructural mejora el pago con las mismas ent
 
 ## Cómo se refuta
 Diferencia ≤ 0 o sin rechazo BH en las 30 comparaciones. La salida τ de la familia TAU-TENDENCIA es otra hipótesis y no se refuta acá.
+
+## Resultado (2026-10-31, `variante_tau/COMPARACION.json`)
+**REFUTADA para las 10 reglas.** 30 comparaciones (10 reglas × pivotes 3/5/8), BH q 0,10: **0 nominadas**. En 27 la diferencia
+τ − original es negativa y en 21 el IC90 queda entero por debajo de 0. Las 3 positivas son U1-ZONAS-BT2-NQ (+0,4 a +1,8 por sesión,
+IC90 que cruza 0; es además una regla excluida de la canasta de 7).
+- Lo que pasa: la salida τ sube el cociente ganancia/pérdida en la mayoría (por ejemplo, CVGAP-NQ 0,75 → 1,2–1,6), pero corta antes
+  operaciones que la regla original deja madurar, y la media cae (CVGAP-NQ +15,2 → −0,6/+2,7; U1-ZONAS-NQ +30,6 → −1,4/+0,9;
+  U1-ZONAS-ES +10,3 → ≈0). Estas reglas son de reversión hacia una zona: el pago está en llegar al objetivo, no en seguir una
+  tendencia, y la línea de estructura se rompe antes de que llegue.
+- Alcance de la refutación: la salida τ con δ = 0 sobre estas entradas congeladas, en DESC. No refuta la salida τ en reglas de
+  tendencia (TAU-TENDENCIA, que se mide aparte) ni dice nada del OOS o del holdout de estas reglas, que no se tocaron.
+- MDE: con 28–220 sesiones por regla, el semiancho del IC90 de la diferencia va de 1,2 (U1-ZONAS-BT2-ES) a 19 puntos por sesión
+  (U1-ZONAS-NQ); las diferencias observadas en contra superan ese MDE en 21 de 30.

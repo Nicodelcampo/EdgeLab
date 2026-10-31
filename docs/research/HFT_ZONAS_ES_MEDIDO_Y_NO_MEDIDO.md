@@ -971,3 +971,13 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - MEDIDO (kernels 08 y 09 y réplica v2, release v4, verificado contra las salidas crudas): O1 con nulo espejado 0/6 en ES, MES, MNQ, NQ; O6rev 0/7 (ES, MNQ) y 0/4 (NQ); interacción con `session_auction` v3 0/6 tras Holm en ES y MNQ; carrera al centro ES `6_1000_30`: 26,87 % vs 25,44 % pseudo (p 0,328), por debajo del break-even. **Cerrado sólo para esas definiciones/activos/estimandos.** O5 vigente como estado de compresión (NQ 6/6, MGC 6/6, ES/MES/MNQ 7/7; GC 4/6; 6E 2/6). Revisión: `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` (corrige 3 cifras de O5_t0 y el break-even citado).
 - NO MEDIDO: otras definiciones de racimo, P&L, ejecución, regímenes distintos de `session_auction`.
 
+
+## Paquete del 31-oct — 31/10/2026
+- **MEDIDO — variante τ de las 10 reglas con acta en su instrumento (DESC, pareada por sesión):** REFUTADA. 0 de 30 nominadas por BH
+  q 0,10; 27 de 30 en contra, 21 con IC90 entero < 0. La salida por estructura corta las reversiones antes del objetivo.
+  `docs/research/paquete_20261031/PREREGISTRO_VARIANTE_TAU_ACTAS.md` §Resultado.
+- **MEDIDO — auditoría t_ns de AVZP2:** sin lookahead en U1 (`docs/research/AUDITORIA_T_NS_AVZP2_20261031.md`).
+- **MEDIDO (DESC/réplica de pistas):** TAU-ES, TAU-GC, EOD-NQ, EOD-YM y RANGO0100-ES sin candidatas; TAU-NQ, EOD-ES y PREAPERTURA-NQ en
+  PISTAS_VIVAS sin confirmar (estado en `docs/research/paquete_20261031/embudo/`).
+- **NO MEDIDO todavía:** KALMAN-FADE NQ/ES/GC, PREAPERTURA-ES/YM, RANGO0100-NQ/GC y PRERANGE-ZONAS NQ/ES/YM (corriendo); ASIA-NQ
+  forward (desde la sesión del 2026-11-02).
