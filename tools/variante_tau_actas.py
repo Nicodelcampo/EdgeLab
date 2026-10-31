@@ -13,6 +13,7 @@ import argparse
 import glob
 import json
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -80,13 +81,19 @@ def main():
             reg.ensure(f"variante_tau/{p['cid']}/{p['periodo'][0]}-{p['periodo'][1]}", "VARIANTE_TAU_ACTAS", len(VARIANTES) - 1,
                        f"salida τ (pivotes 3/5/8) contra la salida original de {p['cid']}, DESC, comparación pareada")
             params = dict(cortes=p["cortes"], celdas=p["celdas"], tope=p["tope"], operaciones=True)
-            try: h = run.lanzar(p["spec"], "ANALIZAR_REGLA", params, p["periodo"])
-            except RuntimeError as e: print("no se lanzó", p["cid"], str(e)[-160:]); continue
-            hs[p["cid"]] = dict(handle=h, periodo=p["periodo"]); hf.write_text(json.dumps(hs, indent=1)); print("lanzada", p["cid"], h)
+            cuentas = run.cuentas(); spec = dict(p["spec"]); h = None
+            for i in range(len(cuentas)):                                   # tope de kernels simultáneos por cuenta: alternar
+                spec["cuenta_kaggle"] = cuentas[(len(hs) + i) % len(cuentas)]
+                try: h = run.lanzar(spec, "ANALIZAR_REGLA", params, p["periodo"]); break
+                except RuntimeError as e: print("no se lanzó", p["cid"], spec["cuenta_kaggle"], str(e)[-160:])
+            if h is None: continue
+            hs[p["cid"]] = dict(handle=h, periodo=p["periodo"], ts=time.time()); hf.write_text(json.dumps(hs, indent=1)); print("lanzada", p["cid"], h)
         return
     hs = json.loads(hf.read_text()); filas = []
-    for cid, h in hs.items():
+    for cid, h in list(hs.items()):
         e = run.estado(h["handle"])
+        if e == "no_encontrado" and time.time() - h.get("ts", 0) > 3600:      # rechazo silencioso de Kaggle: se relanza con `lanzar`
+            print(cid, "no encontrado: se borra el handle"); hs.pop(cid); hf.write_text(json.dumps(hs, indent=1)); continue
         if e != "complete": print(cid, e); continue
         r = run.traer(h["handle"]); (SALIDA / f"{cid}.json").write_text(json.dumps(r, indent=1, default=float))
         for x in comparar(r.get("operaciones") or {}, len(VARIANTES)): filas.append(dict(cid=cid, orden=VARIANTES[x["variante"]], **x))
