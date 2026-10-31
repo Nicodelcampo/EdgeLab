@@ -36,6 +36,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 4 | `holdout` | Frontera unica del holdout | experimental | Fuente unica de la frontera del holdout (sesion CME del 2026-10-01, todos los activos y L2; HOLDOUT-A4) y del corte fisico de los datasets viejos. | - | `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` | `tests/test_holdout_unico.py` |
 | 4 | `research` | Embudo de investigacion | core | Campanas de medicion pre-registradas: nulos, geometria de zonas, embudos por familia, costos, potencia. Produce actas; no promueve edges por si mismo. | data-custody, bridge-kernels, stats, context | `docs/research_funnel_playbook.md` | `tests/research` |
 | 4 | `stats` | Estadistica de validacion | core | Bootstrap estacionario, estimand por cluster/sesion, efecto minimo detectable y primitivos de auditoria estadistica (DSR, MCPT, PBO). | - | `docs/edge_validation_contract.md` | `tests/stats` |
+| 5 | `cartera` | Cartera viva (centro de EdgeLab) | core | Mantiene las canastas al día con el régimen todos los días: seguimiento forward con e-procesos, retiros inmediatos, régimen de mañana, afinidad por régimen, contratos por cuenta (prop firms, Axi, propio), cola de investigación con plazos y plan del día con modo seguro. | research, funnel, propfirm | `docs/CARTERA_VIVA.md` | `tests/research/test_cartera_viva.py` |
 | 5 | `execution-engine` | Motor de ejecucion tick | core | Motor compartido de fills a nivel tick (entrada al tick siguiente, ask/bid, TP con trade-through, costos). Se escribe una vez; las estrategias solo emiten senales. | config-core | `CONTRATO_LLM.md` | `tests/foundation` |
 | 5 | `propfirm` | Prop firms y costos de cuenta | experimental | Reglas de props como datos, simulador del ciclo evaluacion-fondeo-retiro y esperanza matematica; referencia de comisiones. | config-core, execution-engine | `docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | `tests/propfirm` |
 | 5 | `validation` | Validacion de estrategias | core | Arnes de auditoria: prefix_check (sin lookahead), mirror_check (simetria), MCPT, PBO, SPA y walk-forward sobre senales puras. | execution-engine, stats | `docs/edge_validation_contract.md` | `tests/foundation` |
@@ -76,6 +77,9 @@ graph LR
   research --> bridge_kernels
   research --> stats
   research --> context
+  cartera --> research
+  cartera --> funnel
+  cartera --> propfirm
   execution_engine --> config_core
   propfirm --> config_core
   propfirm --> execution_engine
@@ -113,6 +117,7 @@ graph LR
 - **holdout** — entra: docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md; sale: constantes de frontera.
 - **research** — entra: release de ticks, manifiestos de campana; sale: actas MEDIDO/NO MEDIDO, landscapes target-free.
 - **stats** — entra: series de resultados; sale: IC, p-valores, MDE.
+- **cartera** — entra: fichas pre-registradas, datos del día, reglas de las cuentas; sale: PLAN.json/PLAN.md del día, alertas, cola de investigación.
 - **execution-engine** — entra: senales (idx, dirs), ticks con bid/ask; sale: ledger de trades.
 - **propfirm** — entra: reglas scrapeadas, resultados de estrategia; sale: EV por cuenta, filtros de admisibilidad.
 - **validation** — entra: funciones de senal; sale: veredicto de preflight y de robustez.

@@ -38,8 +38,12 @@ install -d -o edgelab -g edgelab $S/backups
 # 5) systemd
 for u in edgelab-autopilot.service edgelab-autopilot.timer edgelab-autopilot-generate.service edgelab-autopilot-generate.timer \
          edgelab-autopilot-programador.service edgelab-autopilot-programador.timer edgelab-datos-dukascopy.service edgelab-datos-dukascopy.timer \
-         edgelab-propfirm-refresh.service edgelab-propfirm-refresh.timer edgelab-watchdog.service edgelab-watchdog.timer edgelab-alerta@.service; do
+         edgelab-propfirm-refresh.service edgelab-propfirm-refresh.timer edgelab-watchdog.service edgelab-watchdog.timer edgelab-alerta@.service \
+         edgelab-cartera.service edgelab-cartera.timer; do
   cp $H/EdgeLab/deploy/debian/$u /etc/systemd/system/
 done
 systemctl daemon-reload
+# cartera viva: configuración propia (las cuentas reales se habilitan a mano) y su carpeta de estado
+[ -f /etc/edgelab/cartera.json ] || install -o edgelab -g edgelab -m 0644 $H/EdgeLab/config/cartera/cartera.json /etc/edgelab/cartera.json
+install -d -o edgelab -g edgelab $S/state/cartera
 echo "Instalado. Siguiente: LEEME.md (credencial de Kaggle, deploy key, doctor, primer ciclo en modo propose)."

@@ -1,0 +1,109 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1793484234.3161879,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "KALMAN-FADE-NQ",
+  "familia": "KALMAN_FADE_NQ",
+  "experimento": "edgelab.research.kalman_fade",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 216,
+  "spec": "docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md",
+  "justificacion_economica": "Innovaciones extremas de un nivel local de Kalman en NQ M1 son en parte ruido de microestructura transitorio y revierten hacia el nivel estimado (pre-registro en docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md).",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (Directiva #6: desarrollo y OOS cierran en septiembre 2026)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (Directiva #6: desarrollo y OOS cierran en septiembre 2026)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "KALMAN_FADE_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia raíz: nivel local de Kalman sobre M1, sin padres en EdgeLab; declarada antes de DESC (docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md)",
+   "metodo_n": "declarado",
+   "aviso": null,
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484234.3160272,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-kalman-fade-nq-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793484594.026861
+}

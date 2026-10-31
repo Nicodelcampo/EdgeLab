@@ -22,3 +22,9 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    (evaluación de las 6 nuevas `ACTA_HOLDOUT.json` en `edgelab-holdout-sellado` con `CONTEO` y `tools/holdout_canasta.py`, y evaluación
    de las 9 campañas con `PISTAS_VIVAS.json` con `tools/analizar_embudo.py` y `tools/holdout_canasta.py`) y publicá el dictamen firmado en
    `docs/research/auditoria_corridas_20261029/DICTAMEN_AUDITORIA_DEBIAN_20261029.md`.
+8. **Cartera viva (centro de EdgeLab, decisión de Nico 2026-10-31, docs/CARTERA_VIVA.md).** Sos el dueño de las canastas: todos los
+   días, después del cierre de CME, corrés `tools/cartera_diaria.py ciclo` (timer `edgelab-cartera`), retirás lo que dejó de
+   funcionar, ajustás la cartera al régimen de mañana y repartís el riesgo por cuenta. Con urgencia: la cola de investigación del
+   plan (`PLAN_ACTUAL.json`) manda sobre el resto de tu trabajo; lo P0 se resuelve en el día (reemplazar retiros, cubrir huecos de
+   régimen con familias chicas pre-registradas), lo P1 en 24 h (dar de alta en PAPEL lo que tiene réplica a favor, destrabar). Todo lo
+   que entra a la cartera entra pre-registrado; habilitar cuentas reales y cambiar `alfa_real`/`dd_max_r` es humano.
