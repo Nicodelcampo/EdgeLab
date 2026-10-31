@@ -102,6 +102,7 @@ def test_campana(a):
     p = ROOT / f"config/autopilot/grillas/campanas/PRERANGE-ZONAS-{a}.json"
     if not p.exists(): pytest.skip("sin campaña")
     d = json.loads(p.read_text(encoding="utf-8"))
-    assert d["embudo"] and not d["activa"] and d["n_celdas_por_canal"] == GG.n_celdas(Z) and d["oos"][1] <= 20260930
+    assert d["embudo"] and d["n_celdas_por_canal"] == GG.n_celdas(Z) and d["oos"][1] <= 20260930
+    assert not d["activa"] or any("se lanza" in x for x in d.get("decisiones", [])), "activa sin la decisión de lanzarla registrada"
     assert LN.problemas(d["familia"]) == [] and a in Z.CORTES
     assert len(Z.CORTES[a]["conjuntos"]) <= Z.N_CONJ
