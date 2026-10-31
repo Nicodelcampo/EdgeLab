@@ -105,7 +105,9 @@ def cargar_zonas(ctx, ind, sensor=None):
         Z = Z[Z.t_decidida_ns > 0]
         return Z.assign(t_ns=np.maximum(Z.t_ns.to_numpy(np.int64), Z.t_decidida_ns.to_numpy(np.int64)))[["t_ns", "lo", "hi"]].sort_values("t_ns", kind="stable", ignore_index=True)
     if ind == "AVZG":
-        Z = UZ.cargar(ind, sensor, ent); return Z[Z.zona == ZONA_AVZG_YM][["t_ns", "lo", "hi"]].reset_index(drop=True)
+        Z = _almacen(ind, sensor, ent)
+        if Z is None: raise FileNotFoundError(f"sin almacén AVZG/{sensor} en {ent}")
+        return Z[Z.zona == ZONA_AVZG_YM][["t_ns", "lo", "hi"]].reset_index(drop=True)
     return UZ.cargar(ind, sensor, ent)
 
 
@@ -205,7 +207,7 @@ def censo(ctx, inds) -> dict:
     return dict(disparos=n, sesiones=len(np.unique(ses)), zonas=zonas, dist=dist, cant=cant, conjuntos=filas)
 
 
-def podar(c: dict, tope: int = N_CONJ, min_unicas: int = 200) -> list:
+def podar(c: dict, tope: int = N_CONJ, min_unicas: int = 20) -> list:
     """Sin P&L: conjuntos con al menos `min_unicas` combinaciones únicas, los de más únicas primero, hasta `tope`. Empate: nombre."""
     v = [(f["unicas"], n) for n, f in c["conjuntos"].items() if f["unicas"] >= min_unicas]
     return [n for _, n in sorted(v, key=lambda x: (-x[0], x[1]))[:tope]]
