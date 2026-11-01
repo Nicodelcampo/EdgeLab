@@ -116,3 +116,6 @@ celdas por canal**. La celda de cada lectura está en `modelo_asia.LECTURAS`; la
 - Los dos kernels de la regla literal v1: `literal_v1_descartada/`.
 - Sus 480 + 480 pruebas ya están en el registro global y **siguen contando** para la familia.
 Las campañas nuevas son `MODELO-ASIA-V2-NQ` y `MODELO-ASIA-V2-CFD-NQ`, con las mismas familias, linaje y ventanas.
+- Los JSON de campaña de la v1 (`MODELO-ASIA-NQ.json`, `MODELO-ASIA-CFD-NQ.json`) se borraron el 2026-11-01. Declaraban 240 celdas, el
+  módulo actual corre 420, y la validación de campañas lo marcaba como error. Quedan en la historia de git; los estados están en
+  `embudo_v1_descartada/`.
