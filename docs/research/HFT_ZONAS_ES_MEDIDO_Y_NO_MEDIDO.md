@@ -992,3 +992,12 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - **Límite de datos:** los indicadores de zonas (aVolZone, aVolCluster, BigTrap, HFT) necesitan ticks de futuros; el release empieza en
   jul/ago-2025, así que no pueden correr sobre historia no mirada. Desbloqueo: exportar ES/NQ/YM 2023 → 2025-07 con
   `nt8_tools/EdgeLabTickLogger.cs` desde el Strategy Analyzer (`docs/research/atras_20261026/PLAN_HISTORIA_NT8.md`).
+
+## Estrategia de las 8:12 — cierre del 01/11/2026
+- **MEDIDO — PRERANGE-BASE (CFD ene-2023 → jul-2025, 144 celdas, maxT):** ES y YM sin candidatas (mediana del nulo negativa); NQ con 2
+  pistas y réplica **en contra** (canasta −4,80 pts/op, IC90 [−8,88; −0,38]). La regla base del barrido de las 8:12, sin zonas, no
+  tiene edge en la historia no mirada de ninguno de los tres índices.
+- **MEDIDO — PRERANGE-ZONAS-YM:** PISTAS_VIVAS, canasta −7,68 (IC90 [−24,9; +10,3]).
+- Saldo de la familia: ES y YM en contra o sin nada; sólo PRERANGE-ZONAS-NQ queda positiva (+5,7, sin potencia), con las zonas como
+  filtro sobre una base que en CFD NQ es negativa. Lo que queda por medir son las zonas sobre historia de futuros no mirada (requiere
+  exportar ES/NQ/YM 2023 → 2025-07 desde NT8).
