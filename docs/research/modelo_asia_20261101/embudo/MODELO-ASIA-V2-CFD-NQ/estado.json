@@ -1,0 +1,106 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793567218.8720937,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "MODELO-ASIA-V2-CFD-NQ",
+  "familia": "MODELO_ASIA_CFD_NQ",
+  "experimento": "edgelab.research.modelo_asia",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "DK:USATECHIDXUSD",
+  "desc": [
+   20230103,
+   20240628
+  ],
+  "oos": [
+   20240701,
+   20250731
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 420,
+  "spec": "docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md",
+  "justificacion_economica": "Asia 18:00-20:00 ET acumula órdenes en los bordes de un rango de 2 h y NY trae el volumen que las ejecuta; el filtro 100-300 pts elige un rango ni chop ni expandido y la EMA20 M5 a las 20:15 alinea con el flujo (Modelo Asia de @alphatraders_latam; SPEC_MODELO_ASIA.md).",
+  "como_podria_refutarse": "0 nominadas por maxT en DESC y canasta de pistas en contra con potencia, o media <= 0 en réplica/holdout; la celda literal se informa siempre con IC y MDE (un nulo sin potencia no la mata).",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20240701,
+    20250731
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "MODELO_ASIA_CFD_NQ",
+   "declarada": true,
+   "padres": [
+    "ASIA_BOS_GAPS_CFD_NQ"
+   ],
+   "propias": 480,
+   "bruto_heredado": 5626417,
+   "n_heredado": 5626417,
+   "total": 5626897,
+   "justificacion": "Misma caja asiática 18:00-20:00 ET que ASIA_BOS_GAPS_CFD_NQ con otra regla (ancho en puntos 100-300, sesgo EMA20 M5 a las 20:15, tenencia hasta NY); hereda su multiplicidad; declarada antes de DESC (docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793567218.8719347,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
