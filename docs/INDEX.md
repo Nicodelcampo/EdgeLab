@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` (2026-10-16)
+`docs/research/HANDOFF_DEBIAN_20261030.md` (2026-10-30)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -12,24 +12,24 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 107 |
+| `docs` | 109 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
-| `docs/autopilot` | 11 |
+| `docs/autopilot` | 12 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
 | `docs/data_catalog` | 11 |
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 17 |
-| `docs/infra` | 22 |
+| `docs/infra` | 23 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 772 |
+| `docs/research` | 873 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,20 +38,24 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
+| LECTURA | 3 | `LECTURA_ROBOTEDGE_20261101.md` | 2026-11-01 | VIGENTE. Fecha: 2026-11-01. Insumos (subidos por Nico): |
+| AUDITORIA | 15 | `AUDITORIA_T_NS_AVZP2_20261031.md` | 2026-10-31 | VIGENTE. Heredado de gonzasib-claude (pedido de Nico: «encargate del trabajo que |
+| REVISION | 8 | `REVISION_SV1_20261030.md` | 2026-10-30 | VIGENTE. Autor: gonzasib-claude (Gonza-PC), a pedido de Nico en la sala #CHY0V3Y |
+| HANDOFF | 17 | `HANDOFF_DEBIAN_20261030.md` | 2026-10-30 | VIGENTE |
+| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
+| ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
+| TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
 | INFRA | 1 | `INFRA_DEBIAN_POTENCIA_20261026.md` | 2026-10-26 | VIGENTE |
 | ERRORES | 1 | `ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` | 2026-10-26 | VIGENTE (registro vivo: cada error nuevo se agrega acá en el mismo commit que su |
 | ANALIZADOR | 1 | `ANALIZADOR_ESTRATEGIAS.md` | 2026-10-26 | VIGENTE |
 | RELANZAMIENTO | 1 | `RELANZAMIENTO_ANALISIS_VIEJOS_20261025.md` | 2026-10-25 | VIGENTE |
-| AUDITORIA | 14 | `AUDITORIA_EMBUDO_DEBIAN_20261024.md` | 2026-10-24 | VIGENTE |
-| REVISION | 7 | `REVISION_RESULTADOS_K34_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | REVISIÓN — lectura del informe (las tres copias .docx son el mismo documento) y  |
 | INFORME | 6 | `INFORME_EXTERNO_K32_REPLICACION_RRE_20261016.md` | 2026-10-16 | PROVISIONAL (informe externo, no verificado en el repo; ver AUDITORIA_K32_REPLIC |
-| HANDOFF | 16 | `HANDOFF_CORREDOR_X_HFT_PARA_GEMINI_20261016.md` | 2026-10-16 | VIGENTE (instrucciones de trabajo; la corrida de desenlaces NO está autorizada t |
 | DEFINICION | 1 | `DEFINICION_INICIAL_CORREDOR_X_HFT_20261016.md` | 2026-10-16 | BORRADOR — definición inicial para que Nico y Gemini la diseñen en detalle y la  |
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
 | CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
-| REPORTE | 1 | `REPORTE_PARA_GEMINI_REVISION_CORREDOR_20261015.md` | 2026-10-15 | PROPUESTA — solicitud de revisión cruzada (no es un resultado confirmatorio) |
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
@@ -94,10 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | BORRADOR | 3 | `BORRADOR_PROTOCOLO_ESPEJO_L2_PREDICTIBILIDAD_20260930.md` | 2026-09-30 | - |
 | PROTOCOLO | 4 | `PROTOCOLO_CONTEXTOS_L2_ES_MES_MNQ_20260929.md` | 2026-09-29 | escrito antes de extraer ni entrenar (pedido de Nico: «ejecutá todos los pasos») |
 | PREREG | 5 | `PREREG_TOXIC_ES_ESTABILIDAD_20260929.md` | 2026-09-29 | - |
-| PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
-| IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
-| EJECUCION | 1 | `EJECUCION_IB_VWAP_PMH_PML_NQ_20260929.md` | 2026-09-29 | - |
-| PARIDAD | 8 | `PARIDAD_PROVEEDOR_LUCID_NT8_20260928.md` | 2026-09-28 | - |
 
 ## Superados (7)
 

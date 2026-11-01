@@ -1,0 +1,18 @@
+## U1-RACIMOS-GRILLA-NQ — edgelab.research.u1_racimos_grilla · señal NQ · ejecución NQ
+- Justificación: U1 con racimos de aVolZonePOI2 (volumen real concentrado y repetido) como áreas, con la definición de zona y de racimo como perillas (nivel 1).
+- Refutación: Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o ninguna definición de zona/racimo se separa de las demás.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4838367 pruebas de ['U1_ZONAS_NQ', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 1315 de 93312 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250801, 20260331]: evaluables 955 (m del FDR 955 de 46656 celdas), FDR 77, RW umbral 3.443068027496338 (diagnóstico), linaje 4838367 como informacion, pistas sin nominación 0, candidatas 3
+- Potencia prevista (informativa): [1, 0, 0, 9, 2, 1]: OOS n 38.6 potencia 0.59, holdout n 150 potencia 0.98; [1, 0, 0, 9, 1, 0]: OOS n 32.6 potencia 0.63, holdout n 150 potencia 1.00; [1, 1, 0, 0, 3, 1]: OOS n 40.3 potencia 0.53, holdout n 150 potencia 0.95
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/research/fuentes_ticks.py', 'edgelab/research/grilla_generica.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/embudo_runners.py', 'edgelab/research/u1_racimos_grilla.py', 'edgelab/research/u1_indaga.py', 'edgelab/research/u1_oro.py', 'edgelab/research/u1_zonas.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 3 candidatas guardadas
+- AVISO INTEGRIDAD: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- INTEGRIDAD [1, 0, 0, 9, 2, 1]: regla 25.66561111111111, placebo -3.74, latencia 1 vela 27.8498488372093 -> pasa
+- INTEGRIDAD [1, 0, 0, 9, 1, 0]: regla 24.23739473684211, placebo -14.21, latencia 1 vela 22.19061111111112 -> pasa
+- INTEGRIDAD [1, 1, 0, 0, 3, 1]: regla 23.71779787234043, placebo -3.54, latencia 1 vela 23.43227777777778 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [32.83, 19.78, 5.74]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.31, 0.2, 0.13]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 0, 0, 9, 1, 0], 'tope': ['pts', 100.0], 'puntaje': 9.156097463987843, 'peor': -70.7955}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 0, 9, 1, 0] tope ['pts', 100.0]

@@ -809,6 +809,37 @@
       "tests": [
         "tests/test_holdout_unico.py"
       ]
+    },
+    {
+      "id": "cartera",
+      "name": "Cartera viva (centro de EdgeLab)",
+      "layer": 5,
+      "status": "core",
+      "function": "Mantiene las canastas al día con el régimen todos los días: seguimiento forward con e-procesos, retiros inmediatos, régimen de mañana, afinidad por régimen, contratos por cuenta (prop firms, Axi, propio), cola de investigación con plazos y plan del día con modo seguro.",
+      "paths": [
+        "edgelab/cartera",
+        "tools/cartera_diaria.py",
+        "config/cartera"
+      ],
+      "inputs": [
+        "fichas pre-registradas",
+        "datos del día",
+        "reglas de las cuentas"
+      ],
+      "outputs": [
+        "PLAN.json/PLAN.md del día",
+        "alertas",
+        "cola de investigación"
+      ],
+      "depends_on": [
+        "research",
+        "funnel",
+        "propfirm"
+      ],
+      "doc": "docs/CARTERA_VIVA.md",
+      "tests": [
+        "tests/research/test_cartera_viva.py"
+      ]
     }
   ],
   "unowned_ok": [

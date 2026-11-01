@@ -115,3 +115,30 @@ def test_atras_informativa_nunca_mata(tmp_path):
 def test_atras_tiene_que_ser_anterior_al_desc():
     assert any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20250701, 20250901])))
     assert not any("atras" in e for e in EM.problemas_campana(dict(SPEC, atras=[20230101, 20231231])))
+
+
+def test_404_recien_lanzado_espera_y_pasada_la_gracia_cuenta_como_falla(tmp_path, monkeypatch):
+    """2026-10-30: el 26-10 siete campañas quedaron BLOQUEADAS en CONTEO con los kernels completos en Kaggle: el 404 de los primeros
+    minutos después del push contaba como falla y relanzaba el mismo slug tres veces seguidas."""
+    class Runner404(RunnerLocal):
+        ultimo_detalle = '{"code":404,"message":"No runs found"}'
+        def estado(self, h): return "no_encontrado"
+    monkeypatch.setattr(GG, "B_RW", 30)
+    monkeypatch.setattr(U, "INDICADORES", ["LUX-IMB"], raising=False)
+    from edgelab.research import linaje as LN
+    LN.declarar("TEST", [], 0, "familia raíz de prueba", libro=tmp_path / "linajes.jsonl")
+    reloj = [1_792_900_000.0]
+    run = Runner404()
+    em = EM.Embudo(tmp_path / "estado", dict(kaggle=run, local=run), registro=Reg(), ahora=lambda: reloj[0], log=lambda s: None,
+                   ventanas=tmp_path / "ventanas.jsonl", linajes=tmp_path / "linajes.jsonl", registro_pruebas=tmp_path / "registro.jsonl")
+    spec = dict(SPEC, cid="TEST-404")
+    for _ in range(6):                                            # hasta que una etapa de Kaggle quede CORRIENDO
+        st = em.avanzar(spec)
+        if st["fase"] == "CORRIENDO" and st.get("lanzada"): break
+    assert st["fase"] == "CORRIENDO", (st["etapa"], st["fase"], st.get("motivo"))
+    reloj[0] += 600
+    st = em.avanzar(spec)
+    assert st["fase"] == "CORRIENDO" and st.get("fallas", 0) == 0, "un 404 a los 10 min del push no es una falla"
+    reloj[0] += EM.GRACIA_NO_ENCONTRADO_S
+    st = em.avanzar(spec)
+    assert st.get("fallas") == 1 and "404" in st["historial"][-1]["falla"], st["historial"][-1]

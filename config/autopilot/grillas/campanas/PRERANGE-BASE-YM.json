@@ -1,0 +1,34 @@
+{
+  "cid": "PRERANGE-BASE-YM",
+  "familia": "PRERANGE_BASE_CFD_YM",
+  "experimento": "edgelab.research.prerange_base",
+  "sensor": "DK:USA30IDXUSD",
+  "ejecucion": "DK:USA30IDXUSD",
+  "desc": [
+    20230103,
+    20240628
+  ],
+  "oos": [
+    20240701,
+    20250731
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 144,
+  "spec": "docs/research/prerange_base_20261101/SPEC_PRERANGE_BASE.md",
+  "justificacion_economica": "Barrido del rango 08:12-09:12 NY en DK:USA30IDXUSD: el rango previo a la apertura acumula stops en sus extremos y el barrido libera ese flujo (SPEC_PRERANGE_BASE.md).",
+  "como_podria_refutarse": "0 nominadas por maxT en DESC y canasta de pistas en contra con potencia, o media <= 0 en réplica/holdout.",
+  "seleccion": {
+    "max_candidatas": 3
+  },
+  "holdout": {
+    "desde": 20261001,
+    "n_fijo": 150,
+    "nota": "frontera única HOLDOUT-A4."
+  },
+  "cuenta_kaggle": "auto",
+  "decisiones": [
+    "2026-11-01 (Nico: «hacé lo que más convenga para tener más posibilidades de buenos resultados»): se lanza; grilla chica sobre historia CFD no mirada por las familias del rango de las 8:12."
+  ]
+}

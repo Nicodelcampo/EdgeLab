@@ -1,0 +1,306 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793048214.8504424,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793048820.9972064,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
+  },
+  {
+   "ts": 1793051265.1966922,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.8275109170305677); canasta media -13.311749999999996 IC90 [-37.7247, 11.1851625]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.03842864907892063"
+  }
+ ],
+ "spec": {
+  "cid": "U1-ZONAS-BT2-YM",
+  "familia": "U1_ZONAS_BT2_YM",
+  "experimento": "edgelab.research.u1_zonas_bt2",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 con los rectángulos de BigTrap2 (traders atrapados), vivos hasta su invalidación: si U1 es «el precio vuelve a donde hubo volumen atrapado», son mejores áreas que los huecos de LUX-IMB.",
+  "como_podria_refutarse": "Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS_BT2_AVZR.md",
+  "n_celdas_por_canal": 4478976,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC.",
+   "Decisión global de Nico 2026-10-27: el holdout empieza el 30 de septiembre (apertura 2026-09-30 22:00 UTC = sesión CME 20261001) para todos los agentes, todos los activos y todo el proyecto; holdout.desde pasa de 20261023 a 20261001."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_ZONAS_BT2_YM",
+   "declarada": true,
+   "padres": [
+    "U1_YM_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4979433,
+   "n_heredado": 4979433,
+   "total": 4979433,
+   "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793048214.8502812,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-u1-zonas-bt2-ym-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.6816517066560267,
+    0.8327634822147064
+   ],
+   "vol_ida_rel": [
+    1.8901635377350001,
+    3.0754726340647833
+   ],
+   "vel_vuelta/ida": [
+    0.5569753086419752,
+    1.876
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    1,
+    0,
+    3
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793050963.7969134,
+ "cortes": {
+  "vol_vuelta/ida": [
+   0.6816517066560267,
+   0.8327634822147064
+  ],
+  "vol_ida_rel": [
+   1.8901635377350001,
+   3.0754726340647833
+  ],
+  "vel_vuelta/ida": [
+   0.5569753086419752,
+   1.876
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793048820.997131,
+  "celdas": [
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    1,
+    0,
+    3
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 16,
+   "media": -13.311749999999996,
+   "ic90": [
+    -37.7247,
+    11.1851625
+   ],
+   "p": 0.8130467383154212,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.8130467383154212,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "U1_ZONAS_BT2_YM",
+    "run_id": "U1-ZONAS-BT2-YM/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.8275109170305677,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "U1_ZONAS_BT2_YM",
+   "run_id": "U1-ZONAS-BT2-YM/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.03842864907892063,
+   "efecto": 7.780451612903224,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     2,
+     0,
+     2,
+     2,
+     2,
+     3,
+     3,
+     3,
+     1,
+     0,
+     3
+    ],
+    "n": 31,
+    "media_neta": 15.560903225806449,
+    "sesiones": 23,
+    "ic90": [
+     1.4633867102396507,
+     30.948862068965514
+    ],
+    "p_sesiones": 0.04847576211894053,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": true,
+    "ratio_mov_friccion": 7.62,
+    "pasa": false,
+    "n_pruebas": 62.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.7227754592895508,
+    "canal": "total",
+    "q_fdr": 0.9685690831049594,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 62,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 19,
+     "media": -11.2098947368421,
+     "ic90": [
+      -31.109575757575755,
+      9.674447368421047
+     ],
+     "p": 0.8275109170305677,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.8275109170305677); canasta media -13.311749999999996 IC90 [-37.7247, 11.1851625]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.03842864907892063"
+}

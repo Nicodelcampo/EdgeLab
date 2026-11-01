@@ -1,0 +1,262 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793484234.3161879,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793489716.5714078,
+   "etapa": "DESC",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793492937.6060576,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
+  },
+  {
+   "ts": 1793498836.4532318,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.46926536731634183); canasta media 0.25318749999999896 IC90 [-6.4032285714285715, 7.280545982142854]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08775769770156105"
+  }
+ ],
+ "spec": {
+  "cid": "KALMAN-FADE-NQ",
+  "familia": "KALMAN_FADE_NQ",
+  "experimento": "edgelab.research.kalman_fade",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 216,
+  "spec": "docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md",
+  "justificacion_economica": "Innovaciones extremas de un nivel local de Kalman en NQ M1 son en parte ruido de microestructura transitorio y revierten hacia el nivel estimado (pre-registro en docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md).",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (Directiva #6: desarrollo y OOS cierran en septiembre 2026)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (Directiva #6: desarrollo y OOS cierran en septiembre 2026)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "KALMAN_FADE_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia raíz: nivel local de Kalman sobre M1, sin padres en EdgeLab; declarada antes de DESC (docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md)",
+   "metodo_n": "declarado",
+   "aviso": null,
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484234.3160272,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-kalman-fade-nq-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "regimen_vol": [
+    0.6047794873179533,
+    0.8908600391957392
+   ]
+  },
+  "celdas": [
+   [
+    2,
+    2,
+    1,
+    2
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793493247.7729535,
+ "cortes": {
+  "regimen_vol": [
+   0.6047794873179533,
+   0.8908600391957392
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793492937.6060023,
+  "celdas": [
+   [
+    2,
+    2,
+    1,
+    2
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 56,
+   "media": 0.25318749999999896,
+   "ic90": [
+    -6.4032285714285715,
+    7.280545982142854
+   ],
+   "p": 0.46738315421144716,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.46738315421144716,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "KALMAN_FADE_NQ",
+    "run_id": "KALMAN-FADE-NQ/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.46926536731634183,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "KALMAN_FADE_NQ",
+   "run_id": "KALMAN-FADE-NQ/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.08775769770156105,
+   "efecto": 3.9010304878048783,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     2,
+     2,
+     1,
+     2
+    ],
+    "n": 41,
+    "media_neta": 7.8020609756097565,
+    "sesiones": 35,
+    "ic90": [
+     1.4026570512820506,
+     14.775928571428572
+    ],
+    "p_sesiones": 0.028985507246376812,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 21.84,
+    "pasa": false,
+    "n_pruebas": 208.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.8976210355758667,
+    "canal": "reciente",
+    "q_fdr": 0.9999999991532065,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 168,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 216,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 73,
+     "media": 0.19422602739725933,
+     "ic90": [
+      -4.664011904761906,
+      5.713126639061421
+     ],
+     "p": 0.46926536731634183,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.46926536731634183); canasta media 0.25318749999999896 IC90 [-6.4032285714285715, 7.280545982142854]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08775769770156105"
+}

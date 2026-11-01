@@ -62,6 +62,7 @@ class BridgePolicy:
     """Qué puede hacer el puente. Por defecto: sólo lectura de metadatos y archivos de texto chicos."""
     allow_push: bool = False
     allow_data_download: bool = False
+    allow_git_push: bool = False
     max_download_bytes: int = 50_000_000
     text_suffixes: tuple = (".json", ".md", ".csv", ".txt", ".html")
     allowed_source_owners: tuple = field(default_factory=tuple)
@@ -522,7 +523,18 @@ def lookup_pinned_discovery_entry(discovery_json_path: Path, version_ref: str, r
     raise KaggleBridgeError(f"File {relative_path!r} under {version_ref!r} not found in discovery.json")
 
 
+_SEALED_RE = re.compile(r"sellado|holdout", re.IGNORECASE)
+
+
+def _check_not_sealed(ref: Any, what: str = "dataset") -> None:
+    """Firewall del holdout (HOLDOUT-A4, 2026-10-28): ningún agente externo lee, previsualiza, descarga ni adjunta el dataset sellado
+    (`edgelab-holdout-sellado`) ni las salidas de kernels de holdout por este puente. Sólo restringe: no habilita nada."""
+    if _SEALED_RE.search(str(ref)):
+        raise KaggleBridgeError(f"{what} {str(ref)!r}: el holdout sellado no se expone por el puente (firewall HOLDOUT-A4)")
+
+
 def _check_download_allowed(dataset: str, file_name: str, policy: BridgePolicy) -> None:
+    _check_not_sealed(dataset)
     if policy.allow_data_download:
         owner = dataset.split("/")[0]
         if owner not in policy.allowed_source_owners:       # con descarga de datos encendida sólo se baja de owners declarados
@@ -553,6 +565,7 @@ def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict
     sources = [str(s).strip() for s in (params.get("dataset_sources") or []) if str(s).strip()]
     ksources = [str(s).strip() for s in (params.get("kernel_sources") or []) if str(s).strip()]
     for s in sources + ksources:
+        _check_not_sealed(s, "source")
         owner = s.split("/")[0]
         if owner not in policy.allowed_source_owners:
             raise KaggleBridgeError(f"source {s!r}: owner no permitido (--allow-source-owner)")
@@ -623,6 +636,148 @@ def check_patch(repo: Path, bridge_dir: Path, name: str) -> dict[str, Any]:
             "note": "NO se aplicó. La revisión del diff y la aplicación son humanas o del agente local tras revisión; nunca automáticas."}
 
 
+_SELF_PROTECTED_PATHS = frozenset({
+    "tools/kaggle_drive_bridge.py",
+    "config/autopilot/protected.json",
+    "edgelab/holdout.py",
+})
+
+
+def _extract_patch_paths(patch_text: str) -> list[str]:
+    """Extrae todas las rutas relativas tocadas por un diff unificado y bloquea path traversal o rutas fuera del repo."""
+    paths: list[str] = []
+    seen: set[str] = set()
+    for line in patch_text.splitlines():
+        if line.startswith("diff --git "):
+            parts = line.split()
+            for tok in parts[2:4]:
+                if tok.startswith(("a/", "b/")):
+                    rel = tok[2:].strip()
+                    if rel and rel != "/dev/null" and rel not in seen:
+                        seen.add(rel)
+                        paths.append(rel)
+        elif line.startswith(("--- a/", "+++ b/")):
+            rel = line[6:].strip()
+            if rel and rel != "/dev/null" and rel not in seen:
+                seen.add(rel)
+                paths.append(rel)
+    for rel in paths:
+        norm = rel.replace("\\", "/")
+        if norm.startswith("/") or ".." in norm.split("/") or norm.startswith(".git/"):
+            raise KaggleBridgeError(f"ruta inválida o prohibida en parche: {rel!r}")
+    return paths
+
+
+def _verify_protected_l0(repo: Path, touched_paths: list[str] | None = None) -> None:
+    """Verifica que ningún archivo de L0 (`config/autopilot/protected.json` ni el propio puente) sea tocado ni alterado."""
+    prot_path = repo / "config" / "autopilot" / "protected.json"
+    protected_map: dict[str, str] = {}
+    if prot_path.is_file():
+        doc = json.loads(prot_path.read_text(encoding="utf-8"))
+        raw_files = doc.get("files") or {}
+        if isinstance(raw_files, Mapping):
+            protected_map = {str(k).replace("\\", "/"): str(v).lower() for k, v in raw_files.items()}
+    forbidden = set(_SELF_PROTECTED_PATHS) | set(protected_map.keys())
+    if touched_paths:
+        for rel in touched_paths:
+            norm = rel.replace("\\", "/")
+            if norm in forbidden:
+                raise KaggleBridgeError(f"parche bloqueado por guarda L0: intenta tocar archivo protegido {norm!r}")
+    for rel_norm, expected_sha in protected_map.items():
+        fp = repo / rel_norm
+        if not fp.is_file():
+            raise KaggleBridgeError(f"guarda L0: falta archivo protegido {rel_norm!r}")
+        actual_sha = _sha256_file(fp).lower()
+        if actual_sha != expected_sha:
+            raise KaggleBridgeError(f"guarda L0: hash SHA-256 alterado en {rel_norm!r}")
+
+
+def git_apply_and_push(
+    repo: Path,
+    bridge_dir: Path,
+    name: str,
+    message: str,
+    *,
+    policy: BridgePolicy,
+    push_remote: bool = True,
+    remote: str = "origin",
+    branch: str | None = None,
+) -> dict[str, Any]:
+    """Aplica un parche verificado desde patches_for_review/, valida integridad L0 antes y después, hace commit y push a origin."""
+    if not policy.allow_git_push:
+        raise KaggleBridgeError("git_apply_and_push deshabilitado. Encender con --allow-git-push al iniciar el puente.")
+    if not _PATCH_NAME_RE.match(str(name)):
+        raise KaggleBridgeError("nombre de parche inválido (letras, números, _ . - y extensión .patch/.diff)")
+    clean_msg = " ".join(str(message or "").strip().splitlines()).strip()
+    if not clean_msg or len(clean_msg) > 240:
+        raise KaggleBridgeError("message obligatorio (1..240 caracteres)")
+    path = bridge_dir / "patches_for_review" / name
+    if not path.is_file():
+        raise KaggleBridgeError(f"no existe patches_for_review/{name}")
+    if path.stat().st_size > MAX_PATCH_BYTES:
+        raise KaggleBridgeError("parche demasiado grande")
+
+    patch_text = path.read_text(encoding="utf-8", errors="replace")
+    touched = _extract_patch_paths(patch_text)
+    if not touched:
+        raise KaggleBridgeError("el parche no contiene archivos modificados")
+    _verify_protected_l0(repo, touched)
+
+    status_before = [l for l in _git(repo, "status", "--porcelain").splitlines() if l.strip()]
+    if status_before:
+        raise KaggleBridgeError(f"árbol de trabajo sucio antes de aplicar ({len(status_before)} archivos); limpiar antes de publicar")
+
+    cur_branch = _git(repo, "rev-parse", "--abbrev-ref", "HEAD").strip()
+    target_branch = _check_ref(branch) if branch else cur_branch
+    if target_branch != cur_branch:
+        raise KaggleBridgeError(f"rama activa {cur_branch!r} != rama solicitada {target_branch!r}")
+
+    chk = subprocess.run(
+        ["git", "-C", str(repo), "apply", "--check", "--verbose", "--ignore-space-change", str(path)],
+        capture_output=True,
+        timeout=120,
+    )
+    if chk.returncode != 0:
+        detail = (chk.stderr or chk.stdout).decode("utf-8", errors="replace")[:1000]
+        raise KaggleBridgeError(f"git apply --check falló: {detail}")
+
+    ap = subprocess.run(
+        ["git", "-C", str(repo), "apply", "--ignore-space-change", str(path)],
+        capture_output=True,
+        timeout=120,
+    )
+    if ap.returncode != 0:
+        detail = (ap.stderr or ap.stdout).decode("utf-8", errors="replace")[:1000]
+        raise KaggleBridgeError(f"git apply falló: {detail}")
+
+    try:
+        _verify_protected_l0(repo, touched)
+    except Exception:
+        subprocess.run(["git", "-C", str(repo), "reset", "--hard", "HEAD"], capture_output=True, timeout=60)
+        subprocess.run(["git", "-C", str(repo), "clean", "-fd"], capture_output=True, timeout=60)
+        raise
+
+    _git(repo, "add", "-A")
+    _git(repo, "commit", "-m", clean_msg)
+    new_head = _git(repo, "rev-parse", "HEAD").strip()
+
+    pushed = False
+    if push_remote:
+        clean_remote = _check_ref(remote)
+        _git(repo, "push", clean_remote, target_branch, timeout=180)
+        pushed = True
+
+    return {
+        "patch": name,
+        "sha256": _sha256_file(path),
+        "branch": target_branch,
+        "head": new_head,
+        "files_changed": len(touched),
+        "pushed": pushed,
+        "message": clean_msg,
+    }
+
+
 def process_bridge_request(
     request_data: Mapping[str, Any],
     client: KaggleClient,
@@ -653,14 +808,17 @@ def process_bridge_request(
             page=int(params.get("page", 1)),
         )
     elif action == "list_dataset_files":
+        _check_not_sealed(params["dataset"])
         result = client.list_dataset_files(
             dataset=str(params["dataset"]),
             page_size=int(params.get("page_size", 100)),
             page_token=params.get("page_token"),
         )
     elif action == "inspect_dataset":
+        _check_not_sealed(params["dataset"])
         result = client.inspect_dataset(str(params["dataset"]))
     elif action == "read_dataset_file_preview":
+        _check_not_sealed(params["dataset"])
         result = client.read_dataset_file_preview(
             dataset=str(params["dataset"]),
             file_name=str(params["file"]),
@@ -708,6 +866,17 @@ def process_bridge_request(
         result["artifact_dir"] = f"artifacts/{req_id}"
     elif action == "check_patch":
         result = check_patch(_resolve_repo(params, policy), bridge_dir, str(params.get("patch", "")))
+    elif action == "git_apply_and_push":
+        result = git_apply_and_push(
+            _resolve_repo(params, policy),
+            bridge_dir,
+            str(params.get("patch", "")),
+            str(params.get("message", "")),
+            policy=policy,
+            push_remote=bool(params.get("push_remote", True)),
+            remote=str(params.get("remote", "origin")),
+            branch=params.get("branch"),
+        )
     elif action == "get_kernel_status":
         result = client.get_kernel_status(
             owner=str(params["owner"]),
@@ -719,6 +888,7 @@ def process_bridge_request(
         slug = str(params["slug"]).strip()
         if not _SLUG_RE.match(slug):
             raise KaggleBridgeError("slug inválido")
+        _check_not_sealed(slug, "kernel")
         if owner not in policy.allowed_source_owners:                      # sin owners declarados = nadie permitido (no se leen salidas ajenas)
             raise KaggleBridgeError(f"get_kernel_output: owner {owner!r} no permitido (--allow-source-owner)")
         result = client.get_kernel_output(
@@ -775,6 +945,8 @@ def watch_bridge_directory(
                "read_dataset_file_preview", "download_file_chunked", "get_kernel_status", "get_kernel_output"]
     if policy.repos:
         actions += ["git_head_info", "git_export_delta", "check_patch"]
+        if policy.allow_git_push:
+            actions.append("git_apply_and_push")
     if policy.allow_push:
         actions.append("push_kernel")
     status_file.write_text(
@@ -785,9 +957,10 @@ def watch_bridge_directory(
                 "started_at_utc": _utc_now_iso(),
                 "chunk_limit_bytes": DEFAULT_CHUNK_BYTES,
                 "policy": {"allow_push": policy.allow_push, "allow_data_download": policy.allow_data_download,
+                           "allow_git_push": policy.allow_git_push,
                            "max_download_bytes": policy.max_download_bytes, "repos": sorted(policy.repos),
                            "allowed_source_owners": list(policy.allowed_source_owners),
-                           "patches": "se dejan en patches_for_review/; nunca se aplican ni ejecutan automaticamente"},
+                           "patches": "git_apply_and_push habilitado con guarda L0" if policy.allow_git_push else "se dejan en patches_for_review/; nunca se aplican ni ejecutan automaticamente"},
                 "supported_actions": actions,
             },
             indent=2,
@@ -838,7 +1011,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-push", action="store_true", help="Habilita push_kernel (ejecuta código en Kaggle con tu cuenta). Apagado por defecto.")
     parser.add_argument("--allow-source-owner", action="append", default=[], help="Owner de Kaggle permitido como dataset_source en push_kernel (repetible)")
     parser.add_argument("--allow-data-download", action="store_true", help="Habilita descargar archivos binarios/de datos a Drive. Apagado por defecto (licencia CME).")
-    parser.add_argument("--repo", action="append", default=[], metavar="NOMBRE=RUTA", help="Registra un repo git local para git_head_info / git_export_delta / check_patch (repetible)")
+    parser.add_argument("--allow-git-push", action="store_true", help="Habilita git_apply_and_push sobre repos registrados (con guarda L0 y árbol limpio). Apagado por defecto.")
+    parser.add_argument("--repo", action="append", default=[], metavar="NOMBRE=RUTA", help="Registra un repo git local para git_head_info / git_export_delta / check_patch / git_apply_and_push (repetible)")
     args = parser.parse_args(argv)
 
     if args.chunk_file:
@@ -864,6 +1038,7 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(f"--repo debe ser NOMBRE=RUTA a un repo git: {item!r}")
         repos[name] = path
     policy = BridgePolicy(allow_push=args.allow_push, allow_data_download=args.allow_data_download,
+                          allow_git_push=args.allow_git_push,
                           allowed_source_owners=tuple(args.allow_source_owner), repos=repos)
 
     if args.list_my_datasets:
@@ -875,7 +1050,7 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.bridge_dir and (args.watch or args.once):
-        print(f"Puente activo. push_kernel={'ON' if policy.allow_push else 'OFF'}, descarga de datos={'ON' if policy.allow_data_download else 'OFF'}.")
+        print(f"Puente activo. push_kernel={'ON' if policy.allow_push else 'OFF'}, descarga de datos={'ON' if policy.allow_data_download else 'OFF'}, git_push={'ON' if policy.allow_git_push else 'OFF'}.")
         watch_bridge_directory(
             args.bridge_dir,
             client,

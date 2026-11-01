@@ -3,7 +3,7 @@ local (Debian, datos sellados del holdout). La orquestación y las compuertas es
 
 Etapa         entra                                   sale
 E0            período                                 disparos y variables (target-free) + densidad y régimen por mes
-DESC          período                                 tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
+DESC          período (+nulo, +criba)                 tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
 INDAGA        celda base + cortes + período           marginales alrededor de la celda (una perilla por vez)
 REP           celdas + cortes + período (+tope)       réplica por celda + serie por operación
 INTEGRIDAD    celdas + cortes + período               alineación (si señal ≠ ejecución), placebo (5 semillas), latencia 1/2/5
@@ -63,6 +63,22 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         B = AN.barras_de_contexto(cx_ej if cx_ej is not None else ctx)
         return AN.analizar(exp, int(p["desde"]), int(p["hasta"]), registro=_Hecho(), B=B, tick=float((cx_ej or ctx)["tick"]), friccion_pts=friccion,
                            resolucion=p.get("resolucion", "ticks"))
+    if etapa == "DESCRIBIR":                                               # 2026-11-01: descripción target-free que define el experimento
+        return dict(descripcion=exp.describir(ctx))
+    if etapa == "DIARIO":                                                  # cartera viva (2026-11-01): barras diarias por sesión CME, target-free
+        import pandas as _pd
+        d = _pd.DataFrame(dict(ses=ctx["ses"], h=ctx["h"], l=ctx["l"], c=ctx["c"])).groupby("ses", sort=True).agg(
+            h=("h", "max"), l=("l", "min"), c=("c", "last")).reset_index()
+        return dict(diario=dict(fecha=d.ses.astype(int).tolist(), h=d.h.tolist(), l=d.l.tolist(), c=d.c.tolist()))
+    if etapa == "ANALIZAR_REGLA":                                          # reporte del analizador de celdas congeladas (2026-10-26)
+        from edgelab.research import analizador as AN
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
+                            cx_ej=cx_ej, tope=p.get("tope"))
+        out = dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
+        if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
+            O = GG.operaciones_de(cx, p["celdas"])
+            out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t")} if len(O) else {}
+        return out
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE
         return PE.correr(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log, horizontes=p.get("horizontes"),
@@ -71,7 +87,7 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, D = GG.correr(exp, ctx, modo="E0", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log)
         res["densidad"] = densidad(ctx, D); return res
     if etapa == "DESC":
-        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"), criba=p.get("criba", "fdr"))
         return res
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
@@ -89,6 +105,7 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tope,
                             resolucion=p.get("resolucion"))              # {nivel, m}: B del bootstrap que resuelve el umbral (2026-10-24)
         if etapa == "HOLDOUT_CONTEO":                                     # sin P&L: sólo cuántas operaciones hay
+            if not isinstance(cx, dict): return dict(conteo=[0] * len(celdas), disparos=0)   # 2026-10-27 (O13): 0 disparos en la ventana: aún sin operaciones, el embudo sigue mirando
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
         res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))

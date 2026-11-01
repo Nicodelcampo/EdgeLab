@@ -1,0 +1,1556 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_POTENCIA_HOLDOUT",
+ "historial": [
+  {
+   "ts": 1793484223.4845488,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793489717.8842165,
+   "etapa": "DESC",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793492942.297455,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     0,
+     2,
+     0,
+     0,
+     5
+    ],
+    [
+     2,
+     0,
+     2,
+     0,
+     0,
+     3
+    ],
+    [
+     1,
+     0,
+     2,
+     0,
+     1,
+     5
+    ]
+   ]
+  },
+  {
+   "ts": 1793498839.4866936,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793499444.8818293,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793500050.1372888,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793500350.1423504,
+   "etapa": "ATRAS",
+   "fin": true,
+   "nota": "sin período hacia atrás declarado"
+  },
+  {
+   "ts": 1793501130.1417623,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793501430.1523428,
+   "final": "SIN_POTENCIA_HOLDOUT",
+   "motivo": "potencia del holdout < 0.8 aun con N máximo 500 ({'n_fijo': None, 'n_necesario': 1625, 'potencia': 0.8002691988879183, 'efecto': 1.8213157894737746, 'sd_op': 20.802912937223162, 'fuente': 'OOS', 'nivel': 0.003607974489558189}); la familia sigue viva, sin gastar su apertura"
+  }
+ ],
+ "spec": {
+  "cid": "RANGO0100-GC",
+  "familia": "RANGO_ASIA0100_GC",
+  "experimento": "edgelab.research.rango_asia0100",
+  "sensor": "GC",
+  "ejecucion": "GC",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 648,
+  "spec": "docs/research/paquete_20261031/SPEC_RANGOS.md",
+  "justificacion_economica": "Ruptura del rango 01:00–01:15 ET en GC con una reentrada tras falso quiebre (@theagent_trades; SPEC_RANGOS.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si el intento 2 no supera al 1, la reentrada queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "RANGO_ASIA0100_GC",
+   "declarada": true,
+   "padres": [
+    "ASIA_BOS_GAPS_GC"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4654311,
+   "n_heredado": 4654311,
+   "total": 4654311,
+   "justificacion": "Rango de la sesión asiática como ASIA_BOS_GAPS_GC (otra ventana y otra regla); hereda su multiplicidad; declarada antes de DESC (docs/research/paquete_20261031/SPEC_RANGOS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484223.4844174,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "ancho_rango": [
+    3.4521197007481312,
+    4.509201024924485
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    2,
+    0,
+    0,
+    5
+   ],
+   [
+    2,
+    0,
+    2,
+    0,
+    0,
+    3
+   ],
+   [
+    1,
+    0,
+    2,
+    0,
+    1,
+    5
+   ]
+  ],
+  "topes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793500654.4271667,
+ "cortes": {
+  "ancho_rango": [
+   3.4521197007481312,
+   4.509201024924485
+  ]
+ },
+ "candidatas": [
+  [
+   0,
+   0,
+   2,
+   0,
+   0,
+   5
+  ],
+  [
+   2,
+   0,
+   2,
+   0,
+   0,
+   3
+  ],
+  [
+   1,
+   0,
+   2,
+   0,
+   1,
+   5
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     0,
+     2,
+     0,
+     0,
+     5
+    ],
+    "n": 48,
+    "media_neta": 5.644999999999971,
+    "sesiones": 48,
+    "ic90": [
+     0.9636458333332797,
+     10.841458333333335
+    ],
+    "p_sesiones": 0.03648175912043978,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 165.29,
+    "pasa": false,
+    "n_pruebas": 96.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.7341655492782593,
+    "canal": "total",
+    "q_fdr": 0.09390332070169073,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.375,
+    "m_fdr": 96,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     2,
+     0,
+     2,
+     0,
+     0,
+     3
+    ],
+    "n": 148,
+    "media_neta": 1.937567567567553,
+    "sesiones": 148,
+    "ic90": [
+     0.719324324324324,
+     3.140236486486483
+    ],
+    "p_sesiones": 0.006496751624187906,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 11.9,
+    "pasa": false,
+    "n_pruebas": 96.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.492110252380371,
+    "canal": "total",
+    "q_fdr": 0.09390332070169073,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.375,
+    "m_fdr": 96,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     1,
+     0,
+     2,
+     0,
+     1,
+     5
+    ],
+    "n": 74,
+    "media_neta": 3.6517567567566878,
+    "sesiones": 74,
+    "ic90": [
+     0.7150675675674668,
+     6.804864864864854
+    ],
+    "p_sesiones": 0.02498750624687656,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 165.29,
+    "pasa": false,
+    "n_pruebas": 96.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.953189730644226,
+    "canal": "total",
+    "q_fdr": 0.09390332070169073,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.375,
+    "m_fdr": 96,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    5
+   ],
+   "n_desc": 48,
+   "ops_mes": 6.0,
+   "efecto": 2.8224999999999856,
+   "oos": {
+    "n": 36.0,
+    "mde": 8.620986674013816,
+    "potencia": 0.20304756564598558
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 4.223403686133462,
+    "potencia": 0.5067246993952286
+   }
+  },
+  {
+   "celda": [
+    2,
+    0,
+    2,
+    0,
+    0,
+    3
+   ],
+   "n_desc": 148,
+   "ops_mes": 18.5,
+   "efecto": 0.9687837837837765,
+   "oos": {
+    "n": 111.0,
+    "mde": 2.1128819249158486,
+    "potencia": 0.3068592695088821
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 1.817569756898127,
+    "potencia": 0.3746598997058752
+   }
+  },
+  {
+   "celda": [
+    1,
+    0,
+    2,
+    0,
+    1,
+    5
+   ],
+   "n_desc": 74,
+   "ops_mes": 9.25,
+   "efecto": 1.8258783783783439,
+   "oos": {
+    "n": 55.5,
+    "mde": 5.314948157544581,
+    "potencia": 0.21457153273528173
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 3.232956750318974,
+    "potencia": 0.4049456950602357
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    0,
+    0,
+    2,
+    0,
+    0,
+    5
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     0,
+     2,
+     0,
+     0,
+     5
+    ],
+    "por_perilla": {
+     "cuerpo_fuerte": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 100,
+       "media_neta": 1.3009999999999904,
+       "sesiones": 100,
+       "ic90": [
+        -1.6404499999999633,
+        4.607299999999978
+       ],
+       "p_sesiones": 0.21956087824351297,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 148,
+       "media_neta": 2.709864864864848,
+       "sesiones": 148,
+       "ic90": [
+        0.21449324324317928,
+        5.529695945945909
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "volumen_rel": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 28,
+       "media_neta": 2.1128571428571226,
+       "sesiones": 28,
+       "ic90": [
+        -2.2026785714285646,
+        7.3703571428571
+       ],
+       "p_sesiones": 0.2694610778443114,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ancho_rango": [
+      {
+       "nivel": 0,
+       "n": 8
+      },
+      {
+       "nivel": 1,
+       "n": 21,
+       "media_neta": 5.056904761904722,
+       "sesiones": 21,
+       "ic90": [
+        -1.1545238095238755,
+        12.234285714285601
+       ],
+       "p_sesiones": 0.10778443113772455,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "eficiencia": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 7
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      }
+     ],
+     "intento": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 26,
+       "media_neta": -3.9742307692307666,
+       "sesiones": 26,
+       "ic90": [
+        -6.1324999999999745,
+        -1.7890384615384318
+       ],
+       "p_sesiones": 1.0,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": -0.5133333333334077,
+       "sesiones": 48,
+       "ic90": [
+        -1.9352083333334393,
+        1.0837499999999514
+       ],
+       "p_sesiones": 0.7485029940119761,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 48,
+       "media_neta": 0.7158333333332401,
+       "sesiones": 48,
+       "ic90": [
+        -1.3426041666666986,
+        3.182916666666551
+       ],
+       "p_sesiones": 0.3073852295409182,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 48,
+       "media_neta": 2.238749999999886,
+       "sesiones": 48,
+       "ic90": [
+        -1.9282291666668312,
+        6.872083333333233
+       ],
+       "p_sesiones": 0.16966067864271456,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 48,
+       "media_neta": 2.994999999999994,
+       "sesiones": 48,
+       "ic90": [
+        1.0993749999999884,
+        5.177500000000022
+       ],
+       "p_sesiones": 0.011976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 48,
+       "media_neta": 2.511666666666636,
+       "sesiones": 48,
+       "ic90": [
+        -0.40114583333341025,
+        5.596041666666599
+       ],
+       "p_sesiones": 0.08782435129740519,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 48,
+       "media_neta": 5.644999999999971,
+       "sesiones": 48,
+       "ic90": [
+        1.2439583333332827,
+        10.867083333333332
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    2,
+    0,
+    2,
+    0,
+    0,
+    3
+   ],
+   "indagacion": {
+    "base": [
+     2,
+     0,
+     2,
+     0,
+     0,
+     3
+    ],
+    "por_perilla": {
+     "cuerpo_fuerte": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 2.994999999999994,
+       "sesiones": 48,
+       "ic90": [
+        1.0993749999999884,
+        5.177500000000022
+       ],
+       "p_sesiones": 0.011976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 100,
+       "media_neta": 1.4299999999999817,
+       "sesiones": 100,
+       "ic90": [
+        -0.21120000000002712,
+        2.9220499999999787
+       ],
+       "p_sesiones": 0.06187624750499002,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "volumen_rel": [
+      {
+       "nivel": 0,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 92,
+       "media_neta": 1.956956521739119,
+       "sesiones": 92,
+       "ic90": [
+        0.4361413043478264,
+        3.7005978260869585
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ancho_rango": [
+      {
+       "nivel": 0,
+       "n": 36,
+       "media_neta": 0.4922222222222092,
+       "sesiones": 36,
+       "ic90": [
+        -1.1330555555555433,
+        2.100972222222199
+       ],
+       "p_sesiones": 0.3093812375249501,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 57,
+       "media_neta": 2.945877192982442,
+       "sesiones": 57,
+       "ic90": [
+        0.5056140350877162,
+        5.497368421052596
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "eficiencia": [
+      {
+       "nivel": 0,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 20,
+       "media_neta": 0.479999999999945,
+       "sesiones": 20,
+       "ic90": [
+        -4.601499999999984,
+        5.056749999999923
+       ],
+       "p_sesiones": 0.4291417165668663,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 1
+      }
+     ],
+     "intento": [
+      {
+       "nivel": 0,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 100,
+       "media_neta": 1.1239999999999868,
+       "sesiones": 100,
+       "ic90": [
+        -0.3273000000000041,
+        2.5826499999999895
+       ],
+       "p_sesiones": 0.08582834331337326,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 148,
+       "media_neta": -0.024594594594612794,
+       "sesiones": 148,
+       "ic90": [
+        -0.7764189189189596,
+        0.7491554054053918
+       ],
+       "p_sesiones": 0.5149700598802395,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 148,
+       "media_neta": 1.4172972972972429,
+       "sesiones": 148,
+       "ic90": [
+        0.320574324324261,
+        2.5354729729729093
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 148,
+       "media_neta": 2.259189189189131,
+       "sesiones": 148,
+       "ic90": [
+        -0.00530405405411434,
+        4.767263513513456
+       ],
+       "p_sesiones": 0.06986027944111776,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 148,
+       "media_neta": 1.937567567567553,
+       "sesiones": 148,
+       "ic90": [
+        0.7247635135135139,
+        3.0973986486486362
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 148,
+       "media_neta": 1.2031081081080857,
+       "sesiones": 148,
+       "ic90": [
+        -0.36989864864868577,
+        2.8833445945945573
+       ],
+       "p_sesiones": 0.10978043912175649,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 148,
+       "media_neta": 2.709864864864848,
+       "sesiones": 148,
+       "ic90": [
+        0.21449324324317928,
+        5.529695945945909
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    1,
+    0,
+    2,
+    0,
+    1,
+    5
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     0,
+     2,
+     0,
+     1,
+     5
+    ],
+    "por_perilla": {
+     "cuerpo_fuerte": [
+      {
+       "nivel": 0,
+       "n": 26,
+       "media_neta": -3.9742307692307666,
+       "sesiones": 26,
+       "ic90": [
+        -6.1324999999999745,
+        -1.7890384615384318
+       ],
+       "p_sesiones": 1.0,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 1.6689999999999505,
+       "sesiones": 100,
+       "ic90": [
+        -0.6290000000000531,
+        4.0840499999999675
+       ],
+       "p_sesiones": 0.11976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "volumen_rel": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 45,
+       "media_neta": 4.843888888888834,
+       "sesiones": 45,
+       "ic90": [
+        0.6656666666666196,
+        9.775333333333267
+       ],
+       "p_sesiones": 0.05588822355289421,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ancho_rango": [
+      {
+       "nivel": 0,
+       "n": 34,
+       "media_neta": 3.0332352941175875,
+       "sesiones": 34,
+       "ic90": [
+        -0.4066176470588601,
+        6.789264705882302
+       ],
+       "p_sesiones": 0.08782435129740519,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 17,
+       "media_neta": 4.871470588235181,
+       "sesiones": 17,
+       "ic90": [
+        -2.1629411764705937,
+        13.17205882352921
+       ],
+       "p_sesiones": 0.15568862275449102,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "eficiencia": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 1
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      }
+     ],
+     "intento": [
+      {
+       "nivel": 0,
+       "n": 100,
+       "media_neta": 1.3009999999999904,
+       "sesiones": 100,
+       "ic90": [
+        -1.6404499999999633,
+        4.607299999999978
+       ],
+       "p_sesiones": 0.21956087824351297,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": -0.44554054054058145,
+       "sesiones": 74,
+       "ic90": [
+        -1.45777027027037,
+        0.6372297297296929
+       ],
+       "p_sesiones": 0.7544910179640718,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 0.11662162162156711,
+       "sesiones": 74,
+       "ic90": [
+        -1.2422297297297797,
+        1.5952702702702262
+       ],
+       "p_sesiones": 0.43912175648702595,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 74,
+       "media_neta": 2.3841891891891125,
+       "sesiones": 74,
+       "ic90": [
+        -0.14567567567570064,
+        5.257972972972833
+       ],
+       "p_sesiones": 0.09780439121756487,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 74,
+       "media_neta": 1.6963513513513349,
+       "sesiones": 74,
+       "ic90": [
+        0.17445945945941504,
+        3.308716216216166
+       ],
+       "p_sesiones": 0.041916167664670656,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 74,
+       "media_neta": 1.8341891891891517,
+       "sesiones": 74,
+       "ic90": [
+        -0.5296621621621637,
+        4.3220945945945735
+       ],
+       "p_sesiones": 0.10778443113772455,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 74,
+       "media_neta": 3.6517567567566878,
+       "sesiones": 74,
+       "ic90": [
+        0.7709459459458924,
+        6.8540540540539725
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     0,
+     2,
+     0,
+     0,
+     5
+    ],
+    "n": 38,
+    "media_neta": 1.8213157894737746,
+    "sesiones": 38,
+    "ic90": [
+     -2.8939473684210926,
+     6.779736842105386
+    ],
+    "p_sesiones": 0.25728862973760935,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 165.29,
+    "pasa": false,
+    "n_pruebas": 3.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     2,
+     0,
+     2,
+     0,
+     0,
+     3
+    ],
+    "n": 121,
+    "media_neta": -1.9578925619834968,
+    "sesiones": 121,
+    "ic90": [
+     -3.307314049586784,
+     -0.55152892561985
+    ],
+    "p_sesiones": 0.9930758017492711,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 14.05,
+    "pasa": false,
+    "n_pruebas": 3.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     1,
+     0,
+     2,
+     0,
+     1,
+     5
+    ],
+    "n": 71,
+    "media_neta": -0.9726056338028742,
+    "sesiones": 71,
+    "ic90": [
+     -4.104859154929638,
+     2.6233098591548663
+    ],
+    "p_sesiones": 0.6767492711370262,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 165.29,
+    "pasa": false,
+    "n_pruebas": 3.0,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.7718658892128281,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 1,
+   "familia": "RANGO_ASIA0100_GC",
+   "run_id": "RANGO0100-GC/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     0,
+     2,
+     0,
+     0,
+     5
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 1.8213157894737746,
+    "ic90": [
+     -2.8939473684210926,
+     6.779736842105386
+    ],
+    "efecto_para_potencia": 2.8224999999999856,
+    "potencia": 0.24666797148577424,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     2,
+     0,
+     2,
+     0,
+     0,
+     3
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -1.9578925619834968,
+    "ic90": [
+     -3.307314049586784,
+     -0.55152892561985
+    ],
+    "efecto_para_potencia": 0.9687837837837765,
+    "potencia": 0.3126432015785139,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     1,
+     0,
+     2,
+     0,
+     1,
+     5
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -0.9726056338028742,
+    "ic90": [
+     -4.104859154929638,
+     2.6233098591548663
+    ],
+    "efecto_para_potencia": 1.8258783783783439,
+    "potencia": 0.22599581758148934,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   0,
+   0,
+   2,
+   0,
+   0,
+   5
+  ],
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "puntaje": 8.328261871830364,
+  "peor": -16.80499999999982
+ },
+ "plan_holdout": {
+  "n_fijo": null,
+  "n_necesario": 1625,
+  "potencia": 0.8002691988879183,
+  "efecto": 1.8213157894737746,
+  "sd_op": 20.802912937223162,
+  "fuente": "OOS",
+  "nivel": 0.003607974489558189
+ },
+ "motivo": "potencia del holdout < 0.8 aun con N máximo 500 ({'n_fijo': None, 'n_necesario': 1625, 'potencia': 0.8002691988879183, 'efecto': 1.8213157894737746, 'sd_op': 20.802912937223162, 'fuente': 'OOS', 'nivel': 0.003607974489558189}); la familia sigue viva, sin gastar su apertura"
+}

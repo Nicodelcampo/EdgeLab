@@ -19,7 +19,7 @@ def api(path:str)->dict|list:
         u=f"https://www.kaggle.com/api/v1/{path}";r=subprocess.run(["curl","-sS","--fail-with-body",*curl_auth(u),u],capture_output=True,text=True)
         if r.returncode==0:return json.loads(r.stdout)
         err=(r.stdout[:150]+r.stderr[:100])
-        if "404" in err:break
+        if "404" in err or "403" in err:break
         time.sleep(min(60,4*2**k)+random.random()*3)
     raise RuntimeError(f"{path}: {err}")
 
@@ -46,7 +46,7 @@ def download(slug:str,name:str,dest:Path,owner:str=OWNER)->None:
         u=f"https://www.kaggle.com/api/v1/datasets/download/{owner}/{slug}?fileName={quote(name)}";r=subprocess.run(["curl","-sSL","--fail",*curl_auth(u),"-o",str(dest),u],capture_output=True,text=True)
         if r.returncode==0:return
         err=r.stderr[:200]
-        if "404" in err:break
+        if "404" in err or "403" in err:break
         time.sleep(min(60,3*2**k)+random.random()*3)
     raise RuntimeError(f"descarga {slug}/{name}: {err}")
 

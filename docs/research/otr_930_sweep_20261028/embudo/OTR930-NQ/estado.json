@@ -1,0 +1,1907 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793234516.6051195,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793235750.6833916,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 20
+  },
+  {
+   "ts": 1793235751.6833916,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.2808005687100126); canasta media 5.1169101063829805 IC90 [-1.1836961037234037, 12.041061542553189]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-1.1836961037234037, 12.041061542553189]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.9660183516329104"
+  }
+ ],
+ "spec": {
+  "cid": "OTR930-NQ",
+  "familia": "OTR_930_SWEEP_NQ",
+  "experimento": "edgelab.research.otr_930_sweep",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260925
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 1119744,
+  "spec": "docs/research/otr_930_sweep_20261028/SPEC_OTR_930_SWEEP.md",
+  "justificacion_economica": "El rango pre-market de NY (08:12-09:12 ET literal del setup OTR Range Breakout Return, 08:00-09:15 ET y 08:30-09:29 ET) concentra liquidez alrededor de los anuncios macro de las 08:30 ET; cuando la apertura de contado (09:30 ET) barre uno de los bordes del rango y reingresa o gira 25% estilo U1 con absorción SweepGate y gaps de ZONAS-GAPS como imán, el precio recorre el rango en sentido inverso hacia el POC (65%), el 50% o el extremo opuesto (100%).",
+  "como_podria_refutarse": "Sin celdas nominadas por FDR q <= 0,10 ni canasta de pistas con soporte, fallo de integridad placebo/latencia, o refutación con potencia en OOS/holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en NQ futuro; frontera 2026-10-01."
+  },
+  "cuenta_kaggle": "nicolasbuttaro"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260925
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "nota": "sensor y ejecución en NQ futuro; frontera 2026-10-01."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "OTR_930_SWEEP_NQ",
+   "declarada": true,
+   "padres": [
+    "ZONAS_GAPS"
+   ],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Nueva familia OTR_930_SWEEP_NQ cruzada con primitivas EdgeLab (['ZONAS_GAPS'])",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793234516.6046066,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-otr930-nq-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "tamano_rango": [
+    6.168824061246801,
+    8.937990865749555
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    1,
+    0,
+    3,
+    3,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    3,
+    3,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    0,
+    3,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    1,
+    0,
+    0,
+    2,
+    0,
+    3,
+    1,
+    2,
+    1,
+    11
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    3,
+    3,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    3,
+    3,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    0,
+    3,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    1,
+    0,
+    0,
+    2,
+    3,
+    3,
+    1,
+    2,
+    1,
+    5
+   ],
+   [
+    0,
+    0,
+    1,
+    2,
+    0,
+    3,
+    3,
+    2,
+    2,
+    19
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    2,
+    0,
+    2,
+    2,
+    0,
+    3,
+    0,
+    2,
+    2,
+    10
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0,
+    2,
+    3
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    3,
+    3,
+    3,
+    0,
+    2,
+    3
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    3,
+    0,
+    2,
+    9
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    3,
+    3,
+    0,
+    2,
+    9
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 20
+  }
+ },
+ "periodo": [
+  20260401,
+  20260925
+ ],
+ "lanzada": 1793235752.1093612,
+ "codigo_cambiado": [
+  {
+   "etapa": "DESC",
+   "modulos": [
+    "edgelab/research/fuentes_ticks.py",
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/etapas.py"
+   ]
+  },
+  {
+   "etapa": "DESC",
+   "modulos": [
+    "edgelab/research/fuentes_ticks.py",
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/etapas.py"
+   ]
+  }
+ ],
+ "cortes": {
+  "tamano_rango": [
+   6.168824061246801,
+   8.937990865749555
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260925
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793235750.6830683,
+  "celdas": [
+   [
+    0,
+    1,
+    1,
+    0,
+    3,
+    3,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    3,
+    3,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    0,
+    3,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    1,
+    0,
+    0,
+    2,
+    0,
+    3,
+    1,
+    2,
+    1,
+    11
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    3,
+    3,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    3,
+    3,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    0,
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    0,
+    1,
+    1,
+    0,
+    0,
+    3,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    1,
+    0,
+    0,
+    2,
+    3,
+    3,
+    1,
+    2,
+    1,
+    5
+   ],
+   [
+    0,
+    0,
+    1,
+    2,
+    0,
+    3,
+    3,
+    2,
+    2,
+    19
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    10
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0,
+    1,
+    2,
+    10
+   ],
+   [
+    2,
+    0,
+    2,
+    2,
+    0,
+    3,
+    0,
+    2,
+    2,
+    10
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    3,
+    0,
+    0,
+    1,
+    1,
+    4
+   ],
+   [
+    2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    2,
+    4
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    3,
+    0,
+    2,
+    3
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    3,
+    3,
+    3,
+    0,
+    2,
+    3
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    3,
+    0,
+    3,
+    0,
+    2,
+    9
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    3,
+    3,
+    0,
+    2,
+    9
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 94,
+   "media": 5.1169101063829805,
+   "ic90": [
+    -1.1836961037234037,
+    12.041061542553189
+   ],
+   "p": 0.10747313171707074,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.10747313171707074,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "OTR_930_SWEEP_NQ",
+    "run_id": "OTR930-NQ/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.2808005687100126,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 20,
+   "t": 2,
+   "familia": "OTR_930_SWEEP_NQ",
+   "run_id": "OTR930-NQ/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_RECHAZO",
+   "potencia": 0.9660183516329104,
+   "efecto": 16.553673319327736,
+   "motivo": "con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-1.1836961037234037, 12.041061542553189]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     3,
+     3,
+     0,
+     1,
+     2,
+     4
+    ],
+    "n": 34,
+    "media_neta": 38.07214705882353,
+    "sesiones": 34,
+    "ic90": [
+     10.849720588235286,
+     66.05449999999998
+    ],
+    "p_sesiones": 0.013493253373313344,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1606478691101074,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.329499999999992,
+     "ic90": [
+      -19.43973076923078,
+      81.79103846153845
+     ],
+     "p": 0.16848034122600755,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     3,
+     3,
+     0,
+     1,
+     1,
+     4
+    ],
+    "n": 34,
+    "media_neta": 38.07214705882353,
+    "sesiones": 34,
+    "ic90": [
+     10.849720588235286,
+     66.05449999999998
+    ],
+    "p_sesiones": 0.013493253373313344,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1606478691101074,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.329499999999992,
+     "ic90": [
+      -19.43973076923078,
+      81.79103846153845
+     ],
+     "p": 0.16848034122600755,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     3,
+     0,
+     1,
+     2,
+     4
+    ],
+    "n": 34,
+    "media_neta": 38.07214705882353,
+    "sesiones": 34,
+    "ic90": [
+     10.849720588235286,
+     66.05449999999998
+    ],
+    "p_sesiones": 0.013493253373313344,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1606478691101074,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.329499999999992,
+     "ic90": [
+      -19.43973076923078,
+      81.79103846153845
+     ],
+     "p": 0.16848034122600755,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     0,
+     3,
+     0,
+     1,
+     1,
+     4
+    ],
+    "n": 34,
+    "media_neta": 38.07214705882353,
+    "sesiones": 34,
+    "ic90": [
+     10.849720588235286,
+     66.05449999999998
+    ],
+    "p_sesiones": 0.013493253373313344,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1606478691101074,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.329499999999992,
+     "ic90": [
+      -19.43973076923078,
+      81.79103846153845
+     ],
+     "p": 0.16848034122600755,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     2,
+     0,
+     3,
+     1,
+     2,
+     1,
+     11
+    ],
+    "n": 35,
+    "media_neta": 28.5545,
+    "sesiones": 33,
+    "ic90": [
+     10.126034749034746,
+     47.00472467320261
+    ],
+    "p_sesiones": 0.006496751624187906,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 34.94,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.535261869430542,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 22,
+     "media": 6.022681818181815,
+     "ic90": [
+      -29.40790118577075,
+      42.072194805194805
+     ],
+     "p": 0.38163722863236177,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     3,
+     3,
+     0,
+     1,
+     1,
+     10
+    ],
+    "n": 34,
+    "media_neta": 37.43979411764706,
+    "sesiones": 34,
+    "ic90": [
+     10.06332352941176,
+     65.42435294117645
+    ],
+    "p_sesiones": 0.014992503748125937,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.119701385498047,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.973730769230762,
+     "ic90": [
+      -18.990211538461544,
+      82.66363461538461
+     ],
+     "p": 0.16541805654289932,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     3,
+     3,
+     0,
+     1,
+     2,
+     10
+    ],
+    "n": 34,
+    "media_neta": 37.43979411764706,
+    "sesiones": 34,
+    "ic90": [
+     10.06332352941176,
+     65.42435294117645
+    ],
+    "p_sesiones": 0.014992503748125937,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.119701385498047,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.973730769230762,
+     "ic90": [
+      -18.990211538461544,
+      82.66363461538461
+     ],
+     "p": 0.16541805654289932,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     0,
+     0,
+     3,
+     0,
+     1,
+     1,
+     10
+    ],
+    "n": 34,
+    "media_neta": 37.43979411764706,
+    "sesiones": 34,
+    "ic90": [
+     10.06332352941176,
+     65.42435294117645
+    ],
+    "p_sesiones": 0.014992503748125937,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.119701385498047,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.973730769230762,
+     "ic90": [
+      -18.990211538461544,
+      82.66363461538461
+     ],
+     "p": 0.16541805654289932,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     0,
+     0,
+     3,
+     0,
+     1,
+     2,
+     10
+    ],
+    "n": 34,
+    "media_neta": 37.43979411764706,
+    "sesiones": 34,
+    "ic90": [
+     10.06332352941176,
+     65.42435294117645
+    ],
+    "p_sesiones": 0.014992503748125937,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 76.35,
+    "pasa": true,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.119701385498047,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 26,
+     "media": 29.973730769230762,
+     "ic90": [
+      -18.990211538461544,
+      82.66363461538461
+     ],
+     "p": 0.16541805654289932,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     2,
+     3,
+     3,
+     1,
+     2,
+     1,
+     5
+    ],
+    "n": 35,
+    "media_neta": 28.2045,
+    "sesiones": 33,
+    "ic90": [
+     9.723428571428569,
+     46.820239268680446
+    ],
+    "p_sesiones": 0.0079960019990005,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 34.94,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.496264934539795,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 22,
+     "media": 6.22722727272727,
+     "ic90": [
+      -29.32267391304348,
+      42.37400757575759
+     ],
+     "p": 0.37775468912342103,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     0,
+     3,
+     3,
+     2,
+     2,
+     19
+    ],
+    "n": 34,
+    "media_neta": 43.03538235294118,
+    "sesiones": 32,
+    "ic90": [
+     8.266296218487389,
+     78.16703246753245
+    ],
+    "p_sesiones": 0.021989005497251374,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 116.87,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.9531850814819336,
+    "canal": "reciente",
+    "q_fdr": 0.8670836772564107,
+    "nominada_fdr": false,
+    "pi0_fdr": 0.9661366313309776,
+    "m_fdr": 13584,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 74,
+     "media": -13.410364864864864,
+     "ic90": [
+      -36.295500000000025,
+      10.507699404761906
+     ],
+     "p": 0.8300432000874939,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1,
+     10
+    ],
+    "n": 30,
+    "media_neta": 37.00450000000001,
+    "sesiones": 29,
+    "ic90": [
+     7.506057285873188,
+     65.83825
+    ],
+    "p_sesiones": 0.01899050474762619,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 62.76,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.089355230331421,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 27,
+     "media": 28.213759259259263,
+     "ic90": [
+      -6.673972222222227,
+      62.50760960591133
+     ],
+     "p": 0.08722042981352873,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     0,
+     0,
+     0,
+     3,
+     0,
+     0,
+     1,
+     2,
+     10
+    ],
+    "n": 30,
+    "media_neta": 37.00450000000001,
+    "sesiones": 29,
+    "ic90": [
+     7.506057285873188,
+     65.83825
+    ],
+    "p_sesiones": 0.01899050474762619,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 62.76,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.089355230331421,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 27,
+     "media": 28.213759259259263,
+     "ic90": [
+      -6.673972222222227,
+      62.50760960591133
+     ],
+     "p": 0.08722042981352873,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     0,
+     2,
+     2,
+     0,
+     3,
+     0,
+     2,
+     2,
+     10
+    ],
+    "n": 42,
+    "media_neta": 22.133071428571427,
+    "sesiones": 42,
+    "ic90": [
+     7.388428571428567,
+     36.675928571428564
+    ],
+    "p_sesiones": 0.0079960019990005,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 33.32,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.4786579608917236,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 30,
+     "media": 0.6878333333333304,
+     "ic90": [
+      -25.63474731182796,
+      26.635534482758622
+     ],
+     "p": 0.4924263137748127,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     0,
+     0,
+     0,
+     3,
+     0,
+     0,
+     1,
+     1,
+     4
+    ],
+    "n": 30,
+    "media_neta": 36.679500000000004,
+    "sesiones": 29,
+    "ic90": [
+     7.049021690767516,
+     65.66688505747126
+    ],
+    "p_sesiones": 0.020989505247376312,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 62.76,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.06357479095459,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 27,
+     "media": 28.667462962962965,
+     "ic90": [
+      -6.309923076923085,
+      63.164877984084875
+     ],
+     "p": 0.0851971345764751,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     2,
+     4
+    ],
+    "n": 30,
+    "media_neta": 36.679500000000004,
+    "sesiones": 29,
+    "ic90": [
+     7.049021690767516,
+     65.66688505747126
+    ],
+    "p_sesiones": 0.020989505247376312,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 62.76,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.06357479095459,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 27,
+     "media": 28.667462962962965,
+     "ic90": [
+      -6.309923076923085,
+      63.164877984084875
+     ],
+     "p": 0.0851971345764751,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     3,
+     0,
+     2,
+     3
+    ],
+    "n": 35,
+    "media_neta": 22.7045,
+    "sesiones": 29,
+    "ic90": [
+     6.292,
+     39.48227777777778
+    ],
+    "p_sesiones": 0.017491254372813594,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 32.03,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.10089373588562,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 33,
+     "media": 9.469651515151513,
+     "ic90": [
+      -9.511063322368424,
+      29.057168845315903
+     ],
+     "p": 0.21031333734346805,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     3,
+     3,
+     3,
+     0,
+     2,
+     3
+    ],
+    "n": 35,
+    "media_neta": 22.7045,
+    "sesiones": 29,
+    "ic90": [
+     6.292,
+     39.48227777777778
+    ],
+    "p_sesiones": 0.017491254372813594,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 32.03,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.10089373588562,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 34,
+     "media": 7.064794117647059,
+     "ic90": [
+      -11.392442724458212,
+      26.37246875
+     ],
+     "p": 0.2696997867337453,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     3,
+     0,
+     3,
+     0,
+     2,
+     9
+    ],
+    "n": 35,
+    "media_neta": 22.697357142857143,
+    "sesiones": 29,
+    "ic90": [
+     6.2552352941176474,
+     39.50693055555555
+    ],
+    "p_sesiones": 0.01699150424787606,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 32.03,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1006641387939453,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 34,
+     "media": 6.733911764705883,
+     "ic90": [
+      -11.708319602272729,
+      26.006772727272725
+     ],
+     "p": 0.279433477333625,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     0,
+     3,
+     3,
+     0,
+     2,
+     9
+    ],
+    "n": 35,
+    "media_neta": 22.697357142857143,
+    "sesiones": 29,
+    "ic90": [
+     6.2552352941176474,
+     39.50693055555555
+    ],
+    "p_sesiones": 0.01699150424787606,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 32.03,
+    "pasa": false,
+    "n_pruebas": 49080.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.1006641387939453,
+    "canal": "total",
+    "q_fdr": 0.9999999999999895,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49080,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 1119744,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 33,
+     "media": 9.128742424242422,
+     "ic90": [
+      -9.882865591397854,
+      28.652416666666664
+     ],
+     "p": 0.21889867118718215,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.2808005687100126); canasta media 5.1169101063829805 IC90 [-1.1836961037234037, 12.041061542553189]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-1.1836961037234037, 12.041061542553189]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.9660183516329104"
+}

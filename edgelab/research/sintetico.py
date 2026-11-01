@@ -9,8 +9,10 @@ import numpy as np
 import pandas as pd
 
 
-def bloques(dias=40, seed=1, planta=True, prob_salto=0.005, fuerza=0.03, tick=0.25):
-    rng = np.random.default_rng(seed); t0 = 1_760_000_000 * 10**9; nivel = 20000.0
+def bloques(dias=40, seed=1, planta=True, prob_salto=0.005, fuerza=0.03, tick=0.25, t0_s=1_760_000_000):
+    """`t0_s`: inicio del primer bloque de 23 h (s UTC). Por defecto 2025-10-09 08:53 UTC (bloques no alineados a la sesión CME, como
+    siempre). Un experimento que depende de la hora de la sesión lo alinea con `PREFLIGHT_T0_S` (2026-11-01, MODELO-ASIA)."""
+    rng = np.random.default_rng(seed); t0 = int(t0_s) * 10**9; nivel = 20000.0
     for d in range(dias):
         n = 23 * 60 * 6; ts = t0 + d * 86400 * 10**9 + np.sort(rng.integers(0, 23 * 3600 * 10**9, n))
         paso = rng.choice([-tick, 0.0, tick], n, p=[.33, .34, .33])

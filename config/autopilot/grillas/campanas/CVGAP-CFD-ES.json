@@ -1,0 +1,32 @@
+{
+  "cid": "CVGAP-CFD-ES",
+  "familia": "CORREDOR_VOL_GAPS_CFD_ES",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "DK:USA500IDXUSD",
+  "ejecucion": "ES",
+  "desc": [
+    20250805,
+    20260331
+  ],
+  "oos": [
+    20260401,
+    20260925
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 933120,
+  "spec": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
+  "justificacion_economica": "Señal de EmaCorridorTrendVolW2 + ZONAS-GAPS medida sobre el CFD Dukascopy USA500IDXUSD (50T/M1) y ejecutada en el futuro ES con traslación causal de base al cierre M1: evalúa si la ruptura de la Caja Amarilla en dirección del impulso + excursión + regreso y puntaje de gaps en el CFD anticipa la reversión hacia el 50%, 25% o 100% del impulso en ES.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.",
+  "seleccion": {
+    "max_candidatas": 3
+  },
+  "holdout": {
+    "desde": 20261001,
+    "n_fijo": 150,
+    "nota": "desde 2026-10-01 (Directiva #6: OOS cerró 2026-09-25 sin tocar octubre).",
+    "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "cuenta_kaggle": "nicobuttaro"
+}

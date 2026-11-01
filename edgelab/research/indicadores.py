@@ -61,6 +61,9 @@ def causal(fn, ctx: dict, cortes=(0.3, 0.55, 0.8), margen: int = 5, columnas=Non
         if "vp_start" in ctx:
             hasta = int(ctx["vp_start"][m]); cx["vp_px"], cx["vp_vol"] = ctx["vp_px"][:hasta], ctx["vp_vol"][:hasta]
         if "tstart" in ctx: cx["tpx"] = ctx["tpx"][:int(ctx["tstart"][m])]
+        if "conf" in ctx:                                                  # segundo instrumento (U1-CONFIRMA): también se corta en el tiempo
+            mc = int(np.searchsorted(ctx["conf"]["t"], ctx["t"][corte], side="right")); nc = len(ctx["conf"]["c"])
+            cx["conf"] = {k: (v[:mc] if isinstance(v, np.ndarray) and len(v) == nc else v) for k, v in ctx["conf"].items()}
         pre = fn(cx)
         cols = columnas or [c for c in full.columns if c in pre.columns]
         a = full[full.k <= corte - margen][cols].sort_values(cols).reset_index(drop=True)

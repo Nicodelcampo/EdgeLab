@@ -211,6 +211,38 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, see
 
 
 
+def criba_maxt(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, seed=20261030):
+    """Criba con error familiar bajo dependencia: Westfall-Young maxT por inversión de signo de SESIONES enteras.
+    T_j = suma_s x_sj / raíz(suma_s x_sj²), con x_sj el P&L de la celda j en la sesión s: el denominador no depende de los signos,
+    así que la nula es exacta si cada sesión es simétrica en signo, sin aproximación normal y sin importar la correlación entre
+    celdas (el mismo signo se aplica a todas las celdas de la sesión) ni dentro de la sesión.
+    Distinto de `romano_wolf`, que usa media / sd bootstrap sin reestudentizar cada réplica: medido en el control nulo de CVGAP-NQ
+    rechazó en 3 de 3 semillas (18, 12 y 465 celdas), sobre todo celdas de ~30 sesiones.
+    Nominadas: T_j estrictamente sobre el umbral, lo que implica p_ajustado = (1 + #{max* >= T_j}) / (B + 1) <= alfa."""
+    ev = st["evaluable"].ravel(); n_ev = int(ev.sum()); shp = st["n"].shape
+    out = dict(metodo="maxt_signos_sesion", B=B, alfa=alfa, seed=seed, evaluables=n_ev)
+    if not n_ev: return dict(out, t=np.full(shp, np.nan), p_ajustado=np.ones(shp), umbral=np.inf, t_max=float("nan"), p_del_maximo=float("nan"),
+                             nula_max_q={}, nominadas=[], n_nominadas=0)
+    us, inv = np.unique(np.asarray(sesiones), return_inverse=True)
+    W = np.random.default_rng(seed).choice((-1.0, 1.0), size=(B, len(us)))
+    bs = _Bootstrap(perillas, indices, valores, inv, len(us), ev, W)
+    T = np.full(n_ev, np.nan); mx = np.full(B, -np.inf)
+    for a in range(0, n_ev, bs.ancho):
+        b = min(n_ev, a + bs.ancho); ES = bs._sumas(a, b)[0]; d = np.sqrt((ES ** 2).sum(0))
+        with np.errstate(invalid="ignore", divide="ignore"):
+            T[a:b] = ES.sum(0) / d; R = (W @ ES) / d
+        mx = np.maximum(mx, np.where(np.isfinite(R), R, -np.inf).max(1))
+    orden = np.sort(mx); k = int(math.floor(alfa * (B + 1)))                   # el k-ésimo máximo: nadie sobre él tiene p_ajustado > alfa
+    umbral = float(orden[B - k]) if k >= 1 else np.inf
+    ok = np.isfinite(T); p_aj = np.ones(n_ev)
+    p_aj[ok] = (1 + B - np.searchsorted(orden, T[ok], side="left")) / (B + 1)
+    nom = np.flatnonzero(ok & (T > umbral)); nom = nom[np.argsort(-T[nom], kind="stable")]
+    TT = np.full(st["n"].size, np.nan); PP = np.ones(st["n"].size); TT[np.flatnonzero(ev)] = T; PP[np.flatnonzero(ev)] = p_aj
+    return dict(out, t=TT.reshape(shp), p_ajustado=PP.reshape(shp), umbral=umbral, t_max=float(np.nanmax(T)) if ok.any() else float("nan"),
+                p_del_maximo=float(p_aj.min()), nula_max_q=dict(q50=float(np.quantile(mx, .5)), q90=float(np.quantile(mx, .9)), q95=float(np.quantile(mx, .95))),
+                nominadas=[tuple(int(v) for v in np.unravel_index(f, shp)) for f in np.flatnonzero(ev)[nom]], n_nominadas=int(len(nom)))
+
+
 # ------------------------------------------------------------------ bootstrap por sesiones sin recorrer el tensor denso B veces
 # Antes: B llamadas a `tensor` (bincount + acumulación de TODAS las celdas, vacías incluidas) => O(B x celdas x perillas).
 # Ahora: (1) se agregan las operaciones por (sesión, celda cruda); (2) cada par se expande una sola vez a las celdas EVALUABLES
@@ -298,10 +330,14 @@ class _Bootstrap:
         self.ancho = max(1, min(self.n_ev, bb // (16 * max(self.n_ses, 1) + 8 * B)))
         self.guardar = B * self.n_ev * 4 <= mem; self._cache = {}; self._std = None
 
-    def _medias(self, a, b):
+    def _sumas(self, a, b):
         ES = np.zeros((self.n_ses, b - a)); EC = np.zeros((self.n_ses, b - a))
         _expandir(self.ses_ini, self.lv, self.sv, self.cv, self.fmin, self.fmax, self.niveles, self.modos, self.strides, self.evmap, a, b,
                   int(self.evflat[a]), int(self.evflat[b - 1]), ES, EC)
+        return ES, EC
+
+    def _medias(self, a, b):
+        ES, EC = self._sumas(a, b)
         with np.errstate(invalid="ignore", divide="ignore"): return ((self.W @ ES) / (self.W @ EC)).astype(np.float32)
 
     def bloque(self, a, b):

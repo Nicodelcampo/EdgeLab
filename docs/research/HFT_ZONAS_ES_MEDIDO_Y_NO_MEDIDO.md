@@ -971,3 +971,63 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - MEDIDO (kernels 08 y 09 y réplica v2, release v4, verificado contra las salidas crudas): O1 con nulo espejado 0/6 en ES, MES, MNQ, NQ; O6rev 0/7 (ES, MNQ) y 0/4 (NQ); interacción con `session_auction` v3 0/6 tras Holm en ES y MNQ; carrera al centro ES `6_1000_30`: 26,87 % vs 25,44 % pseudo (p 0,328), por debajo del break-even. **Cerrado sólo para esas definiciones/activos/estimandos.** O5 vigente como estado de compresión (NQ 6/6, MGC 6/6, ES/MES/MNQ 7/7; GC 4/6; 6E 2/6). Revisión: `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` (corrige 3 cifras de O5_t0 y el break-even citado).
 - NO MEDIDO: otras definiciones de racimo, P&L, ejecución, regímenes distintos de `session_auction`.
 
+
+## Paquete del 31-oct — 31/10/2026
+- **MEDIDO — variante τ de las 10 reglas con acta en su instrumento (DESC, pareada por sesión):** REFUTADA. 0 de 30 nominadas por BH
+  q 0,10; 27 de 30 en contra, 21 con IC90 entero < 0. La salida por estructura corta las reversiones antes del objetivo.
+  `docs/research/paquete_20261031/PREREGISTRO_VARIANTE_TAU_ACTAS.md` §Resultado.
+- **MEDIDO — auditoría t_ns de AVZP2:** sin lookahead en U1 (`docs/research/AUDITORIA_T_NS_AVZP2_20261031.md`).
+- **MEDIDO (DESC/réplica de pistas):** TAU-ES, TAU-GC, EOD-NQ, EOD-YM y RANGO0100-ES sin candidatas; TAU-NQ, EOD-ES y PREAPERTURA-NQ en
+  PISTAS_VIVAS sin confirmar (estado en `docs/research/paquete_20261031/embudo/`).
+- **NO MEDIDO todavía:** KALMAN-FADE NQ/ES/GC, PREAPERTURA-ES/YM, RANGO0100-NQ/GC y PRERANGE-ZONAS NQ/ES/YM (corriendo); ASIA-NQ
+  forward (desde la sesión del 2026-11-02).
+
+## Cosecha del 01/11/2026 (paquete del 31-oct, PRERANGE-ZONAS, PRERANGE-BASE)
+- **MEDIDO, sin candidatas (0 nominadas en DESC):** KALMAN-FADE-ES, PREAPERTURA-ES, PREAPERTURA-YM, PRERANGE-BASE-ES y PRERANGE-BASE-YM
+  (CFD ene-2023 → jun-2024: la regla base del barrido de las 8:12, sin zonas, no muestra nada).
+- **MEDIDO, réplica en contra:** PRERANGE-ZONAS-ES (canasta −1,54 pts/op, IC90 [−2,50; −0,66]) y EOD-ES (−1,84, IC90 [−2,91; −0,74]).
+- **MEDIDO, PISTAS_VIVAS sin potencia:** PRERANGE-ZONAS-NQ (+5,68, IC90 [−2,91; +14,97]), RANGO0100-NQ (+13,7, IC90 [−3,7; +30,7], p
+  Simes 0,09), KALMAN-FADE-NQ (+0,25), KALMAN-FADE-GC (−0,19, con potencia), PREAPERTURA-NQ (−28,3) y TAU-NQ (−19,3).
+- **NO MEDIDO todavía:** PRERANGE-ZONAS-YM (réplica), PRERANGE-BASE-NQ y RANGO0100-GC (corriendo).
+- **Límite de datos:** los indicadores de zonas (aVolZone, aVolCluster, BigTrap, HFT) necesitan ticks de futuros; el release empieza en
+  jul/ago-2025, así que no pueden correr sobre historia no mirada. Desbloqueo: exportar ES/NQ/YM 2023 → 2025-07 con
+  `nt8_tools/EdgeLabTickLogger.cs` desde el Strategy Analyzer (`docs/research/atras_20261026/PLAN_HISTORIA_NT8.md`).
+
+## Estrategia de las 8:12 — cierre del 01/11/2026
+- **MEDIDO — PRERANGE-BASE (CFD ene-2023 → jul-2025, 144 celdas, maxT):** ES y YM sin candidatas (mediana del nulo negativa); NQ con 2
+  pistas y réplica **en contra** (canasta −4,80 pts/op, IC90 [−8,88; −0,38]). La regla base del barrido de las 8:12, sin zonas, no
+  tiene edge en la historia no mirada de ninguno de los tres índices.
+- **MEDIDO — PRERANGE-ZONAS-YM:** PISTAS_VIVAS, canasta −7,68 (IC90 [−24,9; +10,3]).
+- Saldo de la familia: ES y YM en contra o sin nada; sólo PRERANGE-ZONAS-NQ queda positiva (+5,7, sin potencia), con las zonas como
+  filtro sobre una base que en CFD NQ es negativa. Lo que queda por medir son las zonas sobre historia de futuros no mirada (requiere
+  exportar ES/NQ/YM 2023 → 2025-07 desde NT8).
+
+## MODELO-ASIA (Modelo Asia de @alphatraders_latam) — 01/11/2026
+Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres lecturas de "puntos").
+- **MEDIDO, unidad de "puntos" (target-free, etapa DESCRIBIR, CFD USATECH, 662 sesiones 2023–2025-07):** ancho del rango 18:00–20:00 ET
+  mediana 36 puntos (p10 17, p90 95). Por tramo: 10–25 → 175 sesiones; **25–75 (= 100–300 ticks de NQ) → 370 (56 %)**; 75–100 → 52;
+  **100–300 puntos del índice → 60 (9 %)**; >300 → 1.
+  **NQ futuros 2025-08 → 2026-09 (289 sesiones): mediana 81,5 puntos (p10 37, p75 130, p90 192). 100–300 puntos → 104 sesiones (36 %)**;
+  25–75 → 125; 75–100 → 48. La mediana mensual va de 36 (sep-2025) a 161 (jun-2026). En el régimen actual la lectura literal (puntos
+  del índice) es habitual, no rara. El ancho depende mucho del régimen de volatilidad.
+- **MEDIDO, regla literal con costos, todo el desarrollo (exploratorio: celdas fijadas por el post, no elegidas mirando).**
+  Media en puntos netos por operación, IC90 por sesiones:
+
+  | Datos | Lectura | n | Media | IC90 | Acierto | PF |
+  |---|---|---|---|---|---|---|
+  | NQ futuros 2025-08 → 2026-09 | 100–300 pts | 89 | +15,2 | [−33,2; +67,2] | 36 % | 1,15 |
+  | NQ futuros 2025-08 → 2026-09 | 100–300 ticks | 107 | −12,7 | [−29,7; +6,7] | 19 % | 0,74 |
+  | NQ futuros 2025-08 → 2026-09 | MT5 | 5 | −29,6 | — | — | — |
+  | CFD 2023 → 2025-07 | 100–300 pts | 53 | +30,6 | [−28,3; +82,9] | 42 % | 1,36 |
+  | CFD 2023 → 2025-07 | 100–300 ticks | 331 | +8,0 | [−2,6; +18,8] | 23 % | 1,22 |
+  | CFD 2023 → 2025-07 | MT5 | 162 | −3,1 | [−11,4; +5,7] | 12 % | 0,86 |
+
+  Ningún IC excluye el cero. La lectura literal (puntos del índice) da positivo en los dos datos, pero con una varianza enorme: hay
+  operaciones de cientos de puntos y la muestra es de 53–89 operaciones. Sin potencia, la regla queda **viva**: ni confirmada ni
+  refutada.
+- **MEDIDO, DESC del embudo (maxT, 420 celdas por canal):**
+  - CFD: `SIN_CANDIDATAS`, 0 maxT. La distribución nula de la canasta es casi toda negativa.
+  - NQ futuros: 0 maxT y 14 pistas sin nominación. La que se congeló para la réplica abr–sep 2026 es [M1 · 25–75 pts · a favor de la
+    EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
+- **MEDIDO, réplica abr–sep 2026 de la pista de NQ** [M1 · 25–75 pts · a favor · MID, 2R, 16:00]: 38 sesiones, media +2,3 pts,
+  IC90 [−13,8; +18,3], p 0,41. Potencia 0,04 → `PISTAS_VIVAS` (`SIN_POTENCIA`): no confirma ni refuta. MODELO-ASIA-V2-NQ queda en FIN.

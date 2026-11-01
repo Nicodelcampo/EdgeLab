@@ -61,7 +61,10 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
     err, avisos = [], []
     viejo_b = GG.B_RW; GG.B_RW = b_rw
     try:
-        ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=11), tick=0.25)
+        t0 = dict(t0_s=exp.PREFLIGHT_T0_S) if hasattr(exp, "PREFLIGHT_T0_S") else {}   # 2026-11-01: bloques alineados a la sesión CME
+        ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=11, **t0), tick=0.25)          # si el experimento lo pide
+        if getattr(exp, "CONFIRMADOR", False):                        # experimento con segundo instrumento: otro sintético independiente
+            ctx["conf"] = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=12), tick=0.25)
         D = exp.disparos(ctx)
         if not len(D): return [f"disparos vacío en {dias} días sintéticos: el objeto no aparece o la definición es demasiado estrecha"], avisos
         faltan = [c for c in ["k"] + [v.columna for v in exp.VARIABLES] if c not in D.columns]
