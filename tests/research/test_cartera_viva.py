@@ -132,3 +132,33 @@ def test_sesion_cerrada_salta_fin_de_semana():
     from datetime import datetime, timezone
     assert CI.sesion_cerrada(datetime(2026, 11, 1, 12, tzinfo=timezone.utc)) == 20261030                # domingo -> viernes
     assert CI.sesion_cerrada(datetime(2026, 11, 2, 22, tzinfo=timezone.utc)) == 20261102                # lunes después del cierre
+
+
+def test_canasta_por_sesion_promedia_entre_celdas():
+    from edgelab.cartera.papel import canasta_por_sesion
+    assert canasta_por_sesion([(2, 3.0), (1, 4.0), (2, -1.0)], 4) == [(1, 1.0), (2, 0.5)]
+
+
+def test_altas_declaradas_entran_solas_y_son_idempotentes(cart):
+    c, tmp = cart
+    d = dict(id="K", familia="FAM_K", cid="C-K", instrumento="NQ", regla=dict(spec=dict(experimento="x", sensor="NQ"), celdas=[[0], [1]],
+             cortes={}, tope=None, unidad="sesion_canasta"), preregistro="PRE.md", perdida_max_pts=10.0, ganancia_max_pts=20.0,
+             margen_hueco_pts=0.0, friccion_pts=0.5, mu_util=1.0, sd_desarrollo=8.0, desde=20261102, ops_desarrollo=[[20260901, 1.0]])
+    malo = dict(d, id="M", familia="FAM_M", cid="C-M", preregistro="NO.md")
+    (tmp / "altas.json").write_text(json.dumps(dict(fichas=[d, malo])))
+    cfg = dict(altas=str(tmp / "altas.json"), alertas=str(tmp / "alertas.jsonl"))
+    r = CI.altas_pendientes(c, cfg, tmp)
+    assert [x["alta"] for x in r] == [True, False] and c.fichas["K"].nivel == "PAPEL" and "M" not in c.fichas
+    assert [x["id"] for x in CI.altas_pendientes(c, cfg, tmp)] == ["M"]                                   # K ya está: no se repite
+
+
+def test_seguimiento_de_canasta_agrega_por_sesion(cart):
+    from edgelab.cartera import papel as PA
+    c, tmp = cart
+    c.alta(_ficha(id_="K", regla=dict(spec=dict(experimento="x", sensor="NQ"), celdas=[[0], [1]], cortes={}, tope=None)), tmp)
+
+    class R:
+        def lanzar(self, spec, etapa, params, periodo): assert params["celdas"] == [[0], [1]]; return "h"
+        def traer(self, h): return dict(operaciones=dict(ses=[20261102, 20261102, 20261103], neto=[4.0, 2.0, -1.0]))
+    PA.actualizar(c, R(), 20261103)
+    assert c.fichas["K"].ops == [[20261102, 3.0], [20261103, -0.5]]

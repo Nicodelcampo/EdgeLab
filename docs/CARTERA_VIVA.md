@@ -84,6 +84,9 @@ de celdas: la falta de potencia de las grillas de 10⁶ celdas está medida.
    - la canasta forward de ASIA-NQ. Hoy una ficha sigue una sola celda; para una canasta de 20 pistas hay que dar de alta las 20 o
      extender la ficha a multicelda;
    - lo que salga de las campañas del 31-oct.
+   - **Hecho (2026-11-01, OK de Nico):** cuatro canastas declaradas en `config/cartera/altas.json` (RANGO0100-NQ, PRERANGE-ZONAS-NQ,
+     OTR930-NQ y ASIA-NQ). Las fichas ya admiten multicelda (`regla.celdas`, una observación por sesión). El ciclo las da de alta solo
+     en su primera corrida. Pre-registro: `docs/research/cartera_20261101/PREREGISTRO_FORWARD_CANASTAS_PAPEL_20261101.md`.
 5. **Demo NT8.** Para ejecutar en demo cada estrategia necesita su versión NinjaScript con paridad. Mientras tanto, la cuenta DEMO del
    plan es papel simulado. Los fills reales, cuando existan, entran por `fills.jsonl` y el plan reporta la brecha ejecución − papel.
 

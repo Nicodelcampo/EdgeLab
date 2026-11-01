@@ -15,7 +15,7 @@ from pathlib import Path
 import pandas as pd
 
 from edgelab.cartera import afinidad as AF, asignacion as AS, investigacion as IV, papel as PA, regimen as RG
-from edgelab.cartera.ficha import Cartera
+from edgelab.cartera.ficha import Cartera, Ficha
 
 
 def regimen_siguiente(diario: pd.DataFrame, cortes: dict) -> tuple:
@@ -43,11 +43,29 @@ def _reglas_firma(cuenta: dict, catalogos: list):
     raise ValueError(f"cuenta {cuenta['id']}: {cuenta['firma']}/{cuenta['plan']} no está en los catálogos")
 
 
+def altas_pendientes(cart, cfg: dict, repo: Path) -> list:
+    """Da de alta en PAPEL las fichas declaradas en `cfg["altas"]` (JSON committeado, `tools/cartera_diaria.py preparar-altas`) que
+    la cartera todavía no tiene. Idempotente. Una alta rechazada (sin pre-registro, ventana ya usada, regla retirada) se informa y no
+    frena el ciclo: no es motivo de modo seguro."""
+    ruta = cfg.get("altas")
+    if not ruta: return []
+    ruta = Path(ruta) if Path(ruta).is_absolute() else Path(repo) / ruta
+    if not ruta.exists(): return [dict(error=f"no existe {ruta}")]
+    out = []
+    for d in json.loads(ruta.read_text(encoding="utf-8")).get("fichas", []):
+        if d["id"] in cart.fichas: continue
+        try: out.append(dict(id=cart.alta(Ficha(**d), repo).id, alta=True))
+        except ValueError as ex:
+            out.append(dict(id=d["id"], alta=False, motivo=str(ex))); _alerta(cfg, f"cartera viva: alta de {d['id']} rechazada: {ex}")
+    return out
+
+
 def correr(cfg: dict, hasta: int, diarios: dict, runner=None, fills: list | None = None, ahora=time.time, repo: Path = Path(".")) -> dict:
     t0 = ahora(); pasos = {}; seguro = None
     cart = Cartera(Path(cfg["cartera"]), reglas=cfg.get("reglas"), libro_ventanas=cfg.get("libro_ventanas"))
     plan = dict(schema="edgelab_cartera_plan_v1", hasta=int(hasta), generado=datetime.now(timezone.utc).isoformat(timespec="seconds"))
     try:
+        pasos["altas"] = altas_pendientes(cart, cfg, repo)
         antes = {f.id for f in cart.activas()}
         pasos["seguimiento"] = PA.actualizar(cart, runner, hasta, cfg.get("calentamiento_dias", 45)) if runner is not None else []
         retiros = [dict(id=k, motivo=cart.fichas[k].motivo) for k in antes if cart.fichas[k].estado == "RETIRADA"]
@@ -68,7 +86,7 @@ def correr(cfg: dict, hasta: int, diarios: dict, runner=None, fills: list | None
             papel = {(f.id, int(s)): x for f in cart.fichas.values() for s, x in f.ops}
             g = [(r["estrategia"], r["neto_pts"] - papel[(r["estrategia"], int(r["ses"]))]) for r in fills if (r["estrategia"], int(r["ses"])) in papel]
             brecha = pd.DataFrame(g, columns=["estrategia", "dif"]).groupby("estrategia").dif.agg(["count", "mean"]).reset_index().to_dict("records") if g else []
-        plan.update(regimen_manana=reg_man, rasgos=rasgos, multiplicadores=mult, retiros_hoy=retiros, cuentas=cuentas, cola_investigacion=cola,
+        plan.update(altas=pasos["altas"], regimen_manana=reg_man, rasgos=rasgos, multiplicadores=mult, retiros_hoy=retiros, cuentas=cuentas, cola_investigacion=cola,
                     ejecucion_vs_papel=brecha, cartera=[dict(id=f.id, familia=f.familia, instrumento=f.instrumento, nivel=f.nivel, estado=f.estado,
                                                               n_forward=len(f.ops), neto_forward=round(sum(x for _, x in f.ops), 2),
                                                               motivo=f.motivo) for f in cart.fichas.values()])
