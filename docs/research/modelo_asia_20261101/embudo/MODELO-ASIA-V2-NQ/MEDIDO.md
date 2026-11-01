@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 5626418 pruebas de ['ASIA_BOS_GAPS_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 270 de 840 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 180 (m del FDR 180 de 420 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.047719955444336 (diagnóstico), linaje 5626418 como informacion, pistas sin nominación 14, candidatas 0
+- PISTAS a réplica (ATJ-25): 1 congeladas de 14 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 2, 1, 6]]
