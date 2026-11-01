@@ -75,3 +75,9 @@ def test_ancho_cae_en_el_tramo_de_cada_lectura():
     D = M.disparos(_sesion_literal(ancho=60.0)); x = D[D.ses == 3].ancho.iloc[0]
     assert GG.discretizar(D[D.ses == 3], M.VARIABLES, {})[1][0] == 2 and x == 60.0          # 60 pts = 240 ticks: lectura "ticks"
     D2 = M.disparos(_sesion_literal(ancho=200.0)); assert GG.discretizar(D2[D2.ses == 3], M.VARIABLES, {})[1][0] == 4
+
+
+def test_describir_es_el_ancho_por_sesion():
+    from edgelab.research import etapas as ET, modelo_asia_describir as MD
+    r = ET.ejecutar("DESCRIBIR", MD, _sesion_literal(ancho=200.0), friccion=0, extra_adverso=0)["descripcion"]
+    assert r["ancho"][3] == 200.0 and r["por_tramo"]["4"] >= 1 and r["sesiones"] == 4
