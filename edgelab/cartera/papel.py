@@ -2,6 +2,10 @@
 celda, cortes y tope congelados, sobre las sesiones nuevas. El período arranca `calentamiento_dias` antes de la primera sesión pedida
 (indicadores con memoria) y sólo se toman operaciones de sesiones posteriores a la última registrada.
 `runner`: `embudo_runners.LocalRunner` (o uno con la misma interfaz) con lectores de los datos nuevos del Debian.
+
+Canasta (2026-11-01): una ficha con `regla.celdas` (lista) sigue la canasta igual-ponderada de esas celdas, como la réplica que la
+dejó viva (`escalera.canasta_pistas`, `tools/equity_pistas.py`): una observación por sesión con operaciones = suma del neto de todas
+las celdas / número de celdas. Una ficha con `regla.celda` sigue una sola celda, una observación por operación.
 """
 from __future__ import annotations
 
@@ -13,13 +17,20 @@ def _menos_dias(yyyymmdd: int, dias: int) -> int:
     return d.year * 10000 + d.month * 100 + d.day
 
 
+def canasta_por_sesion(filas, k: int) -> list:
+    """[(ses, neto)] por operación -> [(ses, suma/k)] por sesión con operaciones (las celdas sin operación aportan 0)."""
+    acc = {}
+    for s, x in filas: acc[int(s)] = acc.get(int(s), 0.0) + float(x)
+    return [(s, v / k) for s, v in sorted(acc.items())]
+
+
 def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> list:
     out = []
     for f in cartera.activas():
         d0 = f.ultima_ses() + 1
         if d0 > hasta: continue
-        r = f.regla; spec = dict(r["spec"], cid=f.cid)
-        params = dict(cortes=r["cortes"], celdas=[r["celda"]], tope=r.get("tope"), operaciones=True)
+        r = f.regla; spec = dict(r["spec"], cid=f.cid); celdas = r.get("celdas") or [r["celda"]]
+        params = dict(cortes=r["cortes"], celdas=celdas, tope=r.get("tope"), operaciones=True)
         try:
             h = runner.lanzar(spec, "ANALIZAR_REGLA", params, [_menos_dias(d0, calentamiento_dias), hasta])
             res = runner.traer(h)
@@ -27,6 +38,7 @@ def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> lis
             out.append(dict(id=f.id, error=f"{type(ex).__name__}: {str(ex)[:200]}")); continue
         o = res.get("operaciones") or {}
         filas = [(s, x) for s, x in zip(o.get("ses", []), o.get("neto", [])) if int(s) >= d0]
+        if r.get("celdas"): filas = canasta_por_sesion(filas, len(celdas))
         out.append(cartera.agregar_ops(f.id, filas))
     return out
 

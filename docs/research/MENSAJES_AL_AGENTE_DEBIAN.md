@@ -3,6 +3,50 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-11-01 (03:45 UTC) — de Nico (redactado por la sesión en la nube): cuatro canastas en PAPEL
+
+Nico aprobó dar de alta en PAPEL RANGO0100-NQ, PRERANGE-ZONAS-NQ, OTR930-NQ y ASIA-NQ, forward desde la sesión del 2026-11-02.
+Pre-registro: `docs/research/cartera_20261101/PREREGISTRO_FORWARD_CANASTAS_PAPEL_20261101.md`.
+- **No las des de alta a mano.** Están declaradas en `config/cartera/altas.json`, y la config apunta ahí (`"altas"`). El primer ciclo
+  de la cartera las da de alta solo, de forma idempotente. Si una alta se rechaza, se registra como alerta y no pasa a modo seguro.
+- Las aperturas de sus ventanas (estadístico `e_proceso`) se escriben en `docs/research/HOLDOUT_VENTANAS.jsonl` al dar el alta. Es un
+  libro append-only: unilo como dice el paso 3 del runbook.
+- Lo que bloquea: sin ticks de NQ del día en `holdout_sellado` no suman sesiones. Octubre queda afuera: sigue siendo holdout para la
+  apertura formal de cada familia.
+- El orden del runbook no cambia: actualizar, reconciliar, cortes de régimen y recién después prender el timer de la cartera.
+
+## 2026-11-01 (03:15 UTC) — de Nico (redactado por la sesión en la nube): estado, qué cambió y qué hacer al despertar
+
+**Tu estado (leído de `autopilot/state`):** en PAUSE desde el 2026-10-30 01:09 (-03); último ciclo 2026-10-30 04:03 UTC; sólo publicás el
+estado una vez por día. Seguís en `0f3a5466`; `foundation` va ~85 commits adelante. Nada se lanzó desde entonces.
+
+**Lo primero: seguí `docs/research/RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md`** (foto, respaldo de los libros append-only, unión con
+los del repo, `update.sh` al último `foundation`, reconciliación de campañas con el estado del repo como fuente de verdad, unidades de la
+cartera viva, doctor y tests). La pausa se levanta cuando Gonza o Nico lo confirmen (regla del handoff del 30-oct); hasta entonces
+dejá todo listo y reportá en el reporte de alineación.
+
+**Qué cambió mientras estabas pausado (todo en `foundation`):**
+- Cartera viva: el centro de EdgeLab (`docs/CARTERA_VIVA.md`, directiva 8). Vos sos el dueño del ciclo diario.
+- Criba maxT con alfa 0,05 por canal para campañas nuevas (PR #174); las congeladas conservan FDR.
+- Auditoría de `t_ns` de AVZP2: **sin lookahead** en las reglas U1 (la canasta de 7 no cambia).
+- Salida por tiempo de parada (τ) en el simulador; la variante τ de las 10 reglas con acta quedó **refutada** (0/30).
+- Corridas cerradas (registro en `docs/research/HFT_ZONAS_ES_MEDIDO_Y_NO_MEDIDO.md`): la estrategia de las 8:12 sin zonas no tiene edge
+  (PRERANGE-BASE en CFD 2023-25: ES/YM sin candidatas, NQ en contra); PRERANGE-ZONAS-ES en contra, -NQ viva sin potencia; TAU, EOD,
+  PREAPERTURA, KALMAN-FADE y RANGO0100 sin candidatas o vivas sin potencia. **0 candidatos nuevos para el holdout.**
+- Mejores pistas (equity IS+OOS en `docs/research/equity_pistas_20261101/`): RANGO0100-NQ (+13,7/sesión OOS), PRERANGE-ZONAS-NQ (+5,7),
+  OTR930-NQ (+5,1), ASIA-NQ (+4,4; prueba forward pre-registrada desde la sesión del 2026-11-02).
+
+**Al tomar la conducción:**
+1. Las campañas que hoy conduce la nube (`conductor: local`): paquete del 31-oct (sólo RANGO0100-GC sigue corriendo), PRERANGE-ZONAS y
+   PRERANGE-BASE (terminadas). Pasalas a `conductor: debian` en un commit **coordinado**: la nube deja de conducir en ese momento.
+2. **Datasets de zonas sin compartir con `nicobuttaro`:** un kernel de PRERANGE-ZONAS lanzado desde esa cuenta falló y en
+   `nicolasbuttaro` corrió bien. Compartí `nicolasbuttaro/edgelab-zonas-hft` y `edgelab-zonas-u1` con `nicobuttaro` (lectura) o
+   forzá `cuenta_kaggle: nicolasbuttaro` en las campañas que los usan. Verificalo con un kernel chico.
+3. Cartera viva: congelá los cortes de régimen (`tools/cartera_diaria.py cortes`) y dejá el timer listo; primeras altas en PAPEL cuando
+   Nico apruebe RANGO0100-NQ, PRERANGE-ZONAS-NQ y OTR930-NQ (los pre-registros forward los escribe la sesión en la nube).
+4. Bloqueante de datos para las zonas: hacen falta ticks de futuros 2023 → 2025-07 (export de NT8 con `EdgeLabTickLogger.cs`); sin eso
+   las zonas sólo se miden sobre el período ya usado.
+
 ## 2026-10-31 (23:30 UTC) — de Nico (redactado por la sesión en la nube): la cartera viva pasa a ser el centro de EdgeLab
 
 **Decisión de Nico:** «el agente del Debian tiene que ser quien mantenga nuestras canastas actualizadas al régimen». Leé
