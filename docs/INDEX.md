@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 863 |
+| `docs/research` | 864 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,6 +38,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
 | AUDITORIA | 15 | `AUDITORIA_T_NS_AVZP2_20261031.md` | 2026-10-31 | VIGENTE. Heredado de gonzasib-claude (pedido de Nico: «encargate del trabajo que |
 | REVISION | 8 | `REVISION_SV1_20261030.md` | 2026-10-30 | VIGENTE. Autor: gonzasib-claude (Gonza-PC), a pedido de Nico en la sala #CHY0V3Y |
 | HANDOFF | 17 | `HANDOFF_DEBIAN_20261030.md` | 2026-10-30 | VIGENTE |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROTOCOLO | 4 | `PROTOCOLO_CONTEXTOS_L2_ES_MES_MNQ_20260929.md` | 2026-09-29 | escrito antes de extraer ni entrenar (pedido de Nico: «ejecutá todos los pasos») |
 | PREREG | 5 | `PREREG_TOXIC_ES_ESTABILIDAD_20260929.md` | 2026-09-29 | - |
 | PENDIENTES | 1 | `PENDIENTES_L2_APLICACIONES_20260929.md` | 2026-09-29 | PENDIENTE DE INVESTIGACIÓN. Autorización de Nico en chat: registrar las opciones |
-| IPC | 1 | `IPC_MNQ_HYBRID_DRAFT_20260929.md` | 2026-09-29 | IMPLEMENTADO, PRUEBAS SINTÉTICAS PASS; SIN CALIBRACIÓN NI CENSO REAL MNQ. |
 
 ## Superados (7)
 
