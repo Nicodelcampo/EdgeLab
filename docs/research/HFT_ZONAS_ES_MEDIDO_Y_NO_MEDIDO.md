@@ -981,3 +981,14 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
   PISTAS_VIVAS sin confirmar (estado en `docs/research/paquete_20261031/embudo/`).
 - **NO MEDIDO todavía:** KALMAN-FADE NQ/ES/GC, PREAPERTURA-ES/YM, RANGO0100-NQ/GC y PRERANGE-ZONAS NQ/ES/YM (corriendo); ASIA-NQ
   forward (desde la sesión del 2026-11-02).
+
+## Cosecha del 01/11/2026 (paquete del 31-oct, PRERANGE-ZONAS, PRERANGE-BASE)
+- **MEDIDO, sin candidatas (0 nominadas en DESC):** KALMAN-FADE-ES, PREAPERTURA-ES, PREAPERTURA-YM, PRERANGE-BASE-ES y PRERANGE-BASE-YM
+  (CFD ene-2023 → jun-2024: la regla base del barrido de las 8:12, sin zonas, no muestra nada).
+- **MEDIDO, réplica en contra:** PRERANGE-ZONAS-ES (canasta −1,54 pts/op, IC90 [−2,50; −0,66]) y EOD-ES (−1,84, IC90 [−2,91; −0,74]).
+- **MEDIDO, PISTAS_VIVAS sin potencia:** PRERANGE-ZONAS-NQ (+5,68, IC90 [−2,91; +14,97]), RANGO0100-NQ (+13,7, IC90 [−3,7; +30,7], p
+  Simes 0,09), KALMAN-FADE-NQ (+0,25), KALMAN-FADE-GC (−0,19, con potencia), PREAPERTURA-NQ (−28,3) y TAU-NQ (−19,3).
+- **NO MEDIDO todavía:** PRERANGE-ZONAS-YM (réplica), PRERANGE-BASE-NQ y RANGO0100-GC (corriendo).
+- **Límite de datos:** los indicadores de zonas (aVolZone, aVolCluster, BigTrap, HFT) necesitan ticks de futuros; el release empieza en
+  jul/ago-2025, así que no pueden correr sobre historia no mirada. Desbloqueo: exportar ES/NQ/YM 2023 → 2025-07 con
+  `nt8_tools/EdgeLabTickLogger.cs` desde el Strategy Analyzer (`docs/research/atras_20261026/PLAN_HISTORIA_NT8.md`).
