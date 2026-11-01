@@ -73,3 +73,22 @@ derivado a humano). El revisor compara contra el journal de SV1 (`journalctl -t 
 
 **Para humanos (actualizado):** sellar ticks de **ES** (U1-ZONAS-ES) y de **GC** (U1-ORO-GRILLA) en `edgelab-holdout-sellado`, y NQ con
 sesiones ≥ 2026-10-23 (U1-ZONAS-AVCL-NQ cuenta 0 hasta entonces). Ninguna de esas tres campañas murió por evidencia.
+
+## Sesión 2026-11-01 00:00 → (hora -03), SV1 — reconciliación de libros antes de actualizar (RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101)
+
+Ejecuta: Claude Code de Gonza en SV1 (sin root; pasos con root quedan para Gonza). Código en SV1 al empezar: `0f3a5466` (100 commits detrás de `1ee7d482`). PAUSE puesto desde 2026-10-30 01:09 -03 y no se toca.
+
+**Paso 1 (foto):** 3 archivos modificados y 23 manifiestos sin seguimiento en el clon; 23 campañas en `state/autopilot_runs/embudo/`; timers `edgelab-autopilot` (bloqueado por PAUSE), `-generate`, `-watchdog`, `-propfirm-refresh` activos; `edgelab-datos-dukascopy.service` en `failed` (timeout, ya conocido).
+
+**Paso 2 (respaldo):** `/var/lib/edgelab-autopilot/backup_20261101/` (10 MB): LIBRO_LORD.json, TRIAL_REGISTRY_GLOBAL.jsonl, HOLDOUT_VENTANAS.jsonl, EVALUABLES.jsonl, `autopilot_runs/`, los 23 manifiestos (`launches_clon/`), las 23 campañas (`embudo_sv1/`) y `/etc/edgelab/autopilot.json`.
+
+**Paso 3 (unión de libros), comparado línea a línea contra `1ee7d482`:**
+- `TRIAL_REGISTRY_GLOBAL.jsonl` y `HOLDOUT_VENTANAS.jsonl` del clon: SV1 no tiene ninguna fila que falte en el repo. Nada que subir.
+- `autopilot_runs/account_launches.jsonl`: **45 filas sólo en SV1** (lanzamientos `manual` del 27-oct 00:55 UTC al 28-oct 03:40 UTC). Se suben en este commit como unión ordenada por `ts` (256 + 45 = 301 filas; ninguna del repo se pierde ni se reescribe).
+- `docs/data_catalog/launches/`: **17 manifiestos sólo en SV1** (kernels lanzados desde el Debian: holdout-conteo, integridad, rep, topes). Se suben tal cual. Otros 6 existen en el repo con contenido distinto (`embudo-u1-es-grilla-holdout-conteo-20261001`, etc.): manda el del repo; la copia de SV1 queda en el respaldo y en `state/autopilot_runs/launches/`.
+- `EVALUABLES.jsonl`: la única fila sólo en SV1 es `embudo/U1-ZONAS-BT2-ES/desc` con `registrada: 2026-10-26`; el repo tiene la misma fila (mismos n_registradas 8.957.952 y n_evaluables 19.935) con `registrada: 2026-10-28`. Es el mismo hecho registrado dos veces por dos conductores: **no se agrega**, para no duplicar evaluables.
+- `LIBRO_LORD.json`: el del repo tiene 55 familias / 97 corridas / 19 reservas; el de SV1, 22 / 35 / 15. SV1 **no tiene familias ni reservas que falten en el repo**. Difieren las 6 familias del episodio "dos conductores" (REVISION_SV1_20261030 §B): `U1_6E_GRILLA`, `U1_RACIMOS_GRILLA_ES/NQ`, `U1_ZONAS_BT2_ES/NQ`, `U1_ZONAS_GRILLA_YM`, con el mismo `t` en ambos libros pero etiquetas y, en 2 casos, p-valores distintos (`U1-6E-GRILLA/pistas_canasta` p 0,98 en SV1 vs 0,25 en repo; `U1-ZONAS-BT2-NQ/oos` p 0,71 m=2 vs 0,97 m=3). SV1 tiene 2 corridas que el repo no: `U1-ZONAS-BT2-ES/pistas_canasta` (t=1) y `U1-ZONAS-BT2-ES/pistas` (t=2), que son los mismos dos pasos de α que el repo registra como `OOS` y `acta` de esa familia. Unirlas repetiría pasos; **manda el libro del repo** (coherente con las actas y con los estados que se copian en el paso 5). El libro de SV1 queda íntegro en el respaldo para que Nico decida si hay que reabrir algo.
+- `state/autopilot_runs/HOLDOUT_VENTANAS.jsonl` (el que escribe el ciclo del Debian): 3 aperturas sólo en SV1 (RACIMOS-ES n_fijo 295, RACIMOS-NQ 150, BT2-NQ 150, `desde 20261023`, 27-oct). El repo tiene aperturas posteriores para las 3 con `desde 20261001` (regla global, 29-oct), que las reemplazan en `aperturas_vigentes`. **No se suben** (quedarían después y volverían a ser las vigentes); siguen en el libro del estado de SV1, donde `sincronizar` les agrega las del repo a continuación.
+- `state/autopilot_runs/trial_registry.jsonl` es el registro encadenado del autopilot, otro libro: no se une con TRIAL_REGISTRY_GLOBAL.
+
+Decisiones tomadas acá que alguien puede revertir con el respaldo: libro LORD++ del repo sobre el de SV1; no duplicar la fila de EVALUABLES; no subir las 3 aperturas viejas.
