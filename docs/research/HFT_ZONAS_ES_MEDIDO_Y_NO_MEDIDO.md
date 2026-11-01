@@ -1001,3 +1001,29 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - Saldo de la familia: ES y YM en contra o sin nada; sólo PRERANGE-ZONAS-NQ queda positiva (+5,7, sin potencia), con las zonas como
   filtro sobre una base que en CFD NQ es negativa. Lo que queda por medir son las zonas sobre historia de futuros no mirada (requiere
   exportar ES/NQ/YM 2023 → 2025-07 desde NT8).
+
+## MODELO-ASIA (Modelo Asia de @alphatraders_latam) — 01/11/2026
+Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres lecturas de "puntos").
+- **MEDIDO, unidad de "puntos" (target-free, etapa DESCRIBIR, CFD USATECH, 662 sesiones 2023–2025-07):** ancho del rango 18:00–20:00 ET
+  mediana 36 puntos (p10 17, p90 95). Por tramo: 10–25 → 175 sesiones; **25–75 (= 100–300 ticks de NQ) → 370 (56 %)**; 75–100 → 52;
+  **100–300 puntos del índice → 60 (9 %)**; >300 → 1. NQ futuros: pendiente (kernel corriendo).
+- **MEDIDO, regla literal con costos, todo el desarrollo (exploratorio: celdas fijadas por el post, no elegidas mirando).**
+  Media en puntos netos por operación, IC90 por sesiones:
+
+  | Datos | Lectura | n | Media | IC90 | Acierto | PF |
+  |---|---|---|---|---|---|---|
+  | NQ futuros 2025-08 → 2026-09 | 100–300 pts | 89 | +15,2 | [−33,2; +67,2] | 36 % | 1,15 |
+  | NQ futuros 2025-08 → 2026-09 | 100–300 ticks | 107 | −12,7 | [−29,7; +6,7] | 19 % | 0,74 |
+  | NQ futuros 2025-08 → 2026-09 | MT5 | 5 | −29,6 | — | — | — |
+  | CFD 2023 → 2025-07 | 100–300 pts | 53 | +30,6 | [−28,3; +82,9] | 42 % | 1,36 |
+  | CFD 2023 → 2025-07 | 100–300 ticks | 331 | +8,0 | [−2,6; +18,8] | 23 % | 1,22 |
+  | CFD 2023 → 2025-07 | MT5 | 162 | −3,1 | [−11,4; +5,7] | 12 % | 0,86 |
+
+  Ningún IC excluye el cero. La lectura literal (puntos del índice) da positivo en los dos datos, pero con una varianza enorme: hay
+  operaciones de cientos de puntos y la muestra es de 53–89 operaciones. Sin potencia, la regla queda **viva**: ni confirmada ni
+  refutada.
+- **MEDIDO, DESC del embudo (maxT, 420 celdas por canal):**
+  - CFD: `SIN_CANDIDATAS`, 0 maxT. La distribución nula de la canasta es casi toda negativa.
+  - NQ futuros: 0 maxT y 14 pistas sin nominación. La que se congeló para la réplica abr–sep 2026 es [M1 · 25–75 pts · a favor de la
+    EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
+- **NO MEDIDO todavía:** réplica de la pista de NQ; descripción del ancho sobre NQ futuros.
