@@ -3,6 +3,18 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-11-01 (03:45 UTC) — de Nico (redactado por la sesión en la nube): cuatro canastas en PAPEL
+
+Nico aprobó dar de alta en PAPEL RANGO0100-NQ, PRERANGE-ZONAS-NQ, OTR930-NQ y ASIA-NQ, forward desde la sesión del 2026-11-02.
+Pre-registro: `docs/research/cartera_20261101/PREREGISTRO_FORWARD_CANASTAS_PAPEL_20261101.md`.
+- **No las des de alta a mano.** Están declaradas en `config/cartera/altas.json`, y la config apunta ahí (`"altas"`). El primer ciclo
+  de la cartera las da de alta solo, de forma idempotente. Si una alta se rechaza, se registra como alerta y no pasa a modo seguro.
+- Las aperturas de sus ventanas (estadístico `e_proceso`) se escriben en `docs/research/HOLDOUT_VENTANAS.jsonl` al dar el alta. Es un
+  libro append-only: unilo como dice el paso 3 del runbook.
+- Lo que bloquea: sin ticks de NQ del día en `holdout_sellado` no suman sesiones. Octubre queda afuera: sigue siendo holdout para la
+  apertura formal de cada familia.
+- El orden del runbook no cambia: actualizar, reconciliar, cortes de régimen y recién después prender el timer de la cartera.
+
 ## 2026-11-01 (03:15 UTC) — de Nico (redactado por la sesión en la nube): estado, qué cambió y qué hacer al despertar
 
 **Tu estado (leído de `autopilot/state`):** en PAUSE desde el 2026-10-30 01:09 (-03); último ciclo 2026-10-30 04:03 UTC; sólo publicás el

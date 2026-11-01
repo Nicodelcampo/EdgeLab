@@ -7,6 +7,8 @@
   python tools/cartera_diaria.py cortes --config config/cartera/cartera.json --instrumento NQ      # congela los cortes de régimen (desarrollo)
   python tools/cartera_diaria.py alta   --config ... --estado <estado.json> --celda '[...]' --tope '["pts",50]' --preregistro <md>
                                         --desde 20261102 --perdida-max 50 --ganancia-max 200 --mu-util 2 --sd 15 [--confirmada]
+  python tools/cartera_diaria.py preparar-altas --config ... --plan <altas_plan.json> --salida config/cartera/altas.json
+        # canastas congeladas (pistas de la réplica) -> fichas declarativas que el ciclo da de alta solo (`altas` en la config)
 """
 import argparse
 import json
@@ -36,13 +38,50 @@ def _diarios(cfg, lec, ticks, hasta):
     return out
 
 
+def preparar_altas(plan: dict) -> dict:
+    """Fichas de canasta desde el estado del embudo (celdas de `pistas_replica`, cortes del DESC) y la serie de desarrollo por sesión
+    de `tools/equity_pistas.py` (hasta 2026-09-30, nunca el holdout). Cotas DECLARADAS antes del forward: `mult_cota` × el peor y el
+    mejor valor por sesión del desarrollo (las reglas no tienen tope en puntos; ver el pre-registro). Efecto útil:
+    min(fraccion_util × efecto del DESC, fraccion_util × media de la réplica)."""
+    import glob
+
+    import polars as pl
+    from edgelab.costos import friccion_rt_puntos
+    from edgelab.funnel.multiplicity import TrialRegistry
+    reg = TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl"); fichas = []
+    for e in plan["estrategias"]:
+        cid = e["cid"]; st = json.loads(Path(sorted(glob.glob(str(ROOT / f"docs/research/*/embudo/{cid}/estado.json")))[0]).read_text(encoding="utf-8"))
+        sp, pr = st["spec"], st["pistas_replica"]; inst = sp.get("ejecucion") or sp["sensor"]
+        s = pl.read_csv(ROOT / plan["equity"] / f"{cid}_equity.csv").filter(pl.col("ses") <= 20260930)
+        m = float(plan["mult_cota"]); fu = float(plan["fraccion_util"])
+        mu = round(min(fu * pr["veredicto"]["efecto"], fu * pr["canasta"]["media"]), 2)
+        reg.ensure(f"cartera_forward/{cid}/{plan['desde']}", "CARTERA_FORWARD", 1,
+                   f"canasta congelada de {len(pr['celdas'])} celdas de {cid} en papel desde {plan['desde']}, e-proceso edge/futilidad")
+        fichas.append(dict(id=cid + "-CANASTA", familia=sp["familia"], cid=cid, instrumento=inst,
+                           regla=dict(spec=dict(experimento=sp["experimento"], sensor=sp["sensor"], ejecucion=inst, familia=sp["familia"],
+                                                datasets_extra=sp.get("datasets_extra", [])), celdas=pr["celdas"], cortes=st.get("cortes") or {},
+                                      tope=None, unidad="sesion_canasta"),
+                           preregistro=e["preregistro"], perdida_max_pts=round(m * abs(min(0.0, s["canasta"].min())), 2),
+                           ganancia_max_pts=round(m * max(0.0, s["canasta"].max()), 2), margen_hueco_pts=0.0, friccion_pts=friccion_rt_puntos(inst),
+                           mu_util=mu, sd_desarrollo=round(float(s["canasta"].std()), 2), desde=int(plan["desde"]),
+                           ops_desarrollo=[[int(a), round(float(b), 4)] for a, b in zip(s["ses"], s["canasta"])]))
+    return dict(_nota="Generado por tools/cartera_diaria.py preparar-altas; lo lee el ciclo (`altas` en la config). No editar a mano.",
+                plan=plan, fichas=fichas)
+
+
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("ciclo", "estado", "cortes", "alta")); ap.add_argument("--config", required=True)
+    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("ciclo", "estado", "cortes", "alta", "preparar-altas")); ap.add_argument("--config", required=True)
     ap.add_argument("--hasta", type=int); ap.add_argument("--instrumento"); ap.add_argument("--estado"); ap.add_argument("--celda")
     ap.add_argument("--tope"); ap.add_argument("--preregistro"); ap.add_argument("--desde", type=int); ap.add_argument("--perdida-max", type=float)
     ap.add_argument("--ganancia-max", type=float); ap.add_argument("--margen-hueco", type=float, default=0.0); ap.add_argument("--mu-util", type=float)
     ap.add_argument("--sd", type=float); ap.add_argument("--confirmada", action="store_true"); ap.add_argument("--id")
+    ap.add_argument("--plan"); ap.add_argument("--salida")
     a = ap.parse_args(); cfg = json.loads(Path(a.config).read_text(encoding="utf-8"))
+    if a.cmd == "preparar-altas":
+        out = preparar_altas(json.loads(Path(a.plan).read_text(encoding="utf-8")))
+        Path(a.salida).write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
+        for f in out["fichas"]: print(f["id"], len(f["regla"]["celdas"]), "celdas", f["perdida_max_pts"], f["ganancia_max_pts"], f["mu_util"])
+        return
     cart = Cartera(Path(cfg["cartera"]), reglas=cfg.get("reglas"), libro_ventanas=cfg.get("libro_ventanas"))
     if a.cmd == "estado":
         for f in cart.fichas.values(): print(f.id, f.nivel, f.estado, len(f.ops), round(sum(x for _, x in f.ops), 2), f.motivo or "")
