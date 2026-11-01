@@ -100,3 +100,19 @@ El sintético del preflight armaba bloques de 23 h desde las 03:54 ET, y las tre
 fuera de la sesión. Eso hacía idénticas las ejecuciones por hora: un artefacto de los datos de control, no de la grilla. El módulo
 declara `PREFLIGHT_T0_S` (bloques desde las 18:00 ET) y `preflight.dinamico` lo usa sólo si el experimento lo declara. Ninguna
 verificación se relaja, y el resto de los experimentos corre con el sintético de siempre.
+
+## v2 (2026-11-01, antes de mirar resultados): tres lecturas de "puntos"
+Nico preguntó si "100–300 puntos" podía referirse a otra unidad. Con el CFD del S&P en M1 (`/data/spot_new`, como escala), el
+rango 18:00–20:00 ET de NQ tiene una mediana de ~25–55 puntos según el año y un p90 de ~45–125. Entonces 100–300 **puntos del índice**
+pasa sólo en ~5–15 % de los días (más en 2025–26), y hay otras dos lecturas plausibles:
+- **ticks de NQ** (0,25): 100–300 ticks = 25–75 puntos, la zona media de la distribución. Encaja con "+500 pts" (= 125 puntos) como
+  objetivo de una noche;
+- **points de MT5** con paso 0,1, típico del NAS100 en CFD: 10–30 puntos.
+La variable `ancho_pts` pasa a 6 tramos más "cualquiera": <10 | 10–25 | 25–75 | 75–100 | 100–300 | >300. Son 2 × 7 × 3 × 10 = **420
+celdas por canal**. La celda de cada lectura está en `modelo_asia.LECTURAS`; la de MT5 se aproxima con el tramo 10–25.
+
+**Corridas v1 descartadas sin mirar** (regla de la guía de grilla masiva):
+- `MODELO-ASIA-NQ` y `MODELO-ASIA-CFD-NQ`: frenadas en DESC/CORRIENDO, con estados en `embudo_v1_descartada/`.
+- Los dos kernels de la regla literal v1: `literal_v1_descartada/`.
+- Sus 480 + 480 pruebas ya están en el registro global y **siguen contando** para la familia.
+Las campañas nuevas son `MODELO-ASIA-V2-NQ` y `MODELO-ASIA-V2-CFD-NQ`, con las mismas familias, linaje y ventanas.

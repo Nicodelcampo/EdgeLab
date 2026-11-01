@@ -21,7 +21,7 @@ def _ctx():
 
 
 def test_preflight_tamano_y_literal():
-    assert PF.estatico(M) == [] and GG.n_celdas(M) == 2 * 4 * 3 * 10
+    assert PF.estatico(M) == [] and GG.n_celdas(M) == 2 * 7 * 3 * 10
     assert M.EJECUCIONES[M.CELDA_LITERAL[-1]] == ("OPUESTO", "ABIERTO", 960) and M.TOPE_BARRAS > AX.TOPE_OPERACION
 
 
@@ -71,6 +71,7 @@ def test_regla_literal_compra_y_queda_abierta_hasta_las_16():
     assert D[(D.ses == 3)].ancho.iloc[0] == 200.0
 
 
-def test_ancho_fuera_de_100_300_cae_en_otro_nivel():
+def test_ancho_cae_en_el_tramo_de_cada_lectura():
     D = M.disparos(_sesion_literal(ancho=60.0)); x = D[D.ses == 3].ancho.iloc[0]
-    assert GG.discretizar(D[D.ses == 3], M.VARIABLES, {})[1][0] == 0 and x == 60.0
+    assert GG.discretizar(D[D.ses == 3], M.VARIABLES, {})[1][0] == 2 and x == 60.0          # 60 pts = 240 ticks: lectura "ticks"
+    D2 = M.disparos(_sesion_literal(ancho=200.0)); assert GG.discretizar(D2[D2.ses == 3], M.VARIABLES, {})[1][0] == 4

@@ -23,7 +23,8 @@ Construcción (causal; minutos NY de CIERRE de vela; `rel` = minutos desde las 1
   - ABIERTO, con cierre a las 09:30, 12:00 o 16:00 ET.
   Las salidas por hora usan la salida por línea de `areas_expansion.simular_cierre_linea`. El +500 del post es un ejemplo, no una
   regla: casi nunca se alcanza en una noche y duplicaba la ejecución ABIERTO-16:00 (el preflight la marcó como perilla muerta).
-Celda literal: gatillo 0 · ancho [100, 300] · sesgo a favor · (OPUESTO, ABIERTO, 16:00).
+Celda literal: gatillo 0 · ancho [100, 300] pts · sesgo a favor · (OPUESTO, ABIERTO, 16:00). Las otras dos lecturas de "puntos"
+(ticks de NQ y points de MT5) son las celdas de `LECTURAS`.
 """
 from __future__ import annotations
 
@@ -37,20 +38,24 @@ from edgelab.research.regimen_sesion import minuto_ny
 NOMBRE = "MODELO-ASIA"
 INDICADORES = ["MODELO-ASIA"]
 INI_REL, FIN_REL, SESGO_REL, LIMITE_REL = 0, 120, 135, 930          # 18:00, 20:00, 20:15 y 09:30 ET en minutos desde las 18:00
-ANCHO_PTS = (100.0, 300.25)                                         # [100, 300] puntos inclusive (300,25 = 300 + 1 tick de NQ)
+# Ancho del rango en puntos del índice. "100–300 puntos" tiene tres lecturas posibles y las tres se miden (v2, 2026-11-01):
+#   100–300 puntos del índice (literal; ~5–15 % de los días en 2025–26), 100–300 ticks de NQ = 25–75 puntos (zona media de la
+#   distribución) y 100–300 "points" de MT5 con paso 0,1 = 10–30 puntos (aproximado por el nivel 10–25).
+ANCHO_PTS = (10.0, 25.0, 75.25, 100.0, 300.25)                      # <10 | 10–25 | 25–75 | 75–100 | 100–300 | >300 (inclusive arriba)
 SALIDAS = (570, 720, 960)                                           # 09:30, 12:00 y 16:00 ET (minutos NY)
 TOPE_BARRAS = 1300                                                  # 20:15 → 16:00 del día siguiente = 1185 velas
 PREFLIGHT_T0_S = 1_760_047_200                                      # preflight: bloques de 23 h desde las 18:00 ET (2025-10-09 22:00 UTC)
 VARIABLES = [
     Variable("gatillo", "gat", "grupo", categoria=2),               # 0: cierre M1 · 1: cierre M5
-    Variable("ancho_pts", "ancho", "eq_any", cortes=ANCHO_PTS),     # 0: <100 · 1: 100–300 (literal) · 2: >300 · 3: cualquiera
+    Variable("ancho_pts", "ancho", "eq_any", cortes=ANCHO_PTS),     # 0..5 los tramos de ANCHO_PTS · 6: cualquiera
     Variable("sesgo_ema", "sesgo", "eq_any", categoria=2),          # 0: contra la EMA20 M5 · 1: a favor (literal) · 2: cualquiera
 ]
 EJES_ORDINALES = (1,)
 EJECUCIONES = [(sl, tp, sal) for sl in ("OPUESTO", "MID")
                for tp, sal in (("1R", 960), ("2R", 960), ("ABIERTO", 570), ("ABIERTO", 720), ("ABIERTO", 960))]
-BASE = {"gatillo": 0, "ancho_pts": 1, "sesgo_ema": 1, "ejecución": 4}
-CELDA_LITERAL = [0, 1, 1, 4]
+BASE = {"gatillo": 0, "ancho_pts": 4, "sesgo_ema": 1, "ejecución": 4}
+CELDA_LITERAL = [0, 4, 1, 4]                                        # 100–300 puntos del índice
+LECTURAS = {"puntos_indice": CELDA_LITERAL, "ticks_nq": [0, 2, 1, 4], "points_mt5": [0, 1, 1, 4]}
 
 
 def ema_m5(c: np.ndarray, m: np.ndarray, n: int = 20) -> np.ndarray:
