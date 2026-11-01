@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-551 scripts.
+552 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -208,6 +208,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/embudo_correr.py` | Corre el embudo automático sobre una o más campañas hasta que terminan o quedan esperando datos del holdout (mismo código que |
 | `tools/embudo_simulacion_potencia.py` | Simulación con verdad conocida: ¿cuántos edges reales confirma cada diseño de decisión y cuántos falsos deja pasar? |
 | `tools/emisor_senales_nt8.py` | Emisor de Señales y Validador de Paridad para NinjaTrader 8 (`EdgeLabSpiralBasketExecutor.cs`, 2026-10-29). |
+| `tools/equity_pistas.py` | Curvas de equity IS + OOS de las celdas congeladas (pistas/candidatas) de campañas del embudo (2026-11-01, pedido de Nico: «de las |
 | `tools/equivalence_check.py` | Mide qué tan buen sustituto es una serie de ticks de otra fuente (p. ej. spot XAU/USD de Dukascopy) para la EMA 200/500/2000 de barras de 25 ticks de MGC. |
 | `tools/equivalence_m1_gc.py` | Equivalencia de M1 spot (Dukascopy) con GC para horas fijas. Umbrales en docs/research/equivalence_20261004/PREREGISTRO_EQUIVALENCIA_M1.md. |
 | `tools/es_escalonadas_outcomes.py` | ES-ESCALONADAS outcomes — docs/research/MANIFIESTO_ES_ESCALONADAS_OUTCOMES_20260930.md (OK de Nico 30/09). |
