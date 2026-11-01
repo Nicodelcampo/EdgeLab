@@ -1029,4 +1029,5 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - CFD: `SIN_CANDIDATAS`, 0 maxT. La distribución nula de la canasta es casi toda negativa.
   - NQ futuros: 0 maxT y 14 pistas sin nominación. La que se congeló para la réplica abr–sep 2026 es [M1 · 25–75 pts · a favor de la
     EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
-- **NO MEDIDO todavía:** réplica de la pista de NQ.
+- **MEDIDO, réplica abr–sep 2026 de la pista de NQ** [M1 · 25–75 pts · a favor · MID, 2R, 16:00]: 38 sesiones, media +2,3 pts,
+  IC90 [−13,8; +18,3], p 0,41. Potencia 0,04 → `PISTAS_VIVAS` (`SIN_POTENCIA`): no confirma ni refuta. MODELO-ASIA-V2-NQ queda en FIN.

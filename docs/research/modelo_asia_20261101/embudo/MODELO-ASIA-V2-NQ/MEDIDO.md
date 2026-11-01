@@ -7,3 +7,6 @@
 - Evaluables: 270 de 840 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20250805, 20260331]: evaluables 180 (m del FDR 180 de 420 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.047719955444336 (diagnóstico), linaje 5626418 como informacion, pistas sin nominación 14, candidatas 0
 - PISTAS a réplica (ATJ-25): 1 congeladas de 14 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 2, 1, 6]]
+- PISTAS canasta (una prueba): media 2.2768684210526295 IC90 [-13.76326315789474, 18.323250000000005] p 0.40589852536865784 sesiones 38; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.4007996001999001; confirmadas 0 de 1 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.4007996001999001); canasta media 2.2768684210526295 IC90 [-13.76326315789474, 18.323250000000005]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.041151553782950656
