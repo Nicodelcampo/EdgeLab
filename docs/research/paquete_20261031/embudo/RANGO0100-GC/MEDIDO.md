@@ -13,3 +13,4 @@
 - INTEGRIDAD [1, 0, 2, 0, 1, 5]: regla 3.6517567567566878, placebo -0.75, latencia 1 vela 3.6152702702701984 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [1.82, -1.96, -0.97]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.25, 0.31, 0.23]; LORD++ sin rechazo
 - TOPES: elegida {'celda': [0, 0, 2, 0, 0, 5], 'tope': ['pts', 50.0], 'puntaje': 8.328261871830364, 'peor': -16.80499999999982}
+- **SIN_POTENCIA_HOLDOUT** — potencia del holdout < 0.8 aun con N máximo 500 ({'n_fijo': None, 'n_necesario': 1625, 'potencia': 0.8002691988879183, 'efecto': 1.8213157894737746, 'sd_op': 20.802912937223162, 'fuente': 'OOS', 'nivel': 0.003607974489558189}); la familia sigue viva, sin gastar su apertura
