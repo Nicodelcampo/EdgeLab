@@ -1006,7 +1006,10 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres lecturas de "puntos").
 - **MEDIDO, unidad de "puntos" (target-free, etapa DESCRIBIR, CFD USATECH, 662 sesiones 2023–2025-07):** ancho del rango 18:00–20:00 ET
   mediana 36 puntos (p10 17, p90 95). Por tramo: 10–25 → 175 sesiones; **25–75 (= 100–300 ticks de NQ) → 370 (56 %)**; 75–100 → 52;
-  **100–300 puntos del índice → 60 (9 %)**; >300 → 1. NQ futuros: pendiente (kernel corriendo).
+  **100–300 puntos del índice → 60 (9 %)**; >300 → 1.
+  **NQ futuros 2025-08 → 2026-09 (289 sesiones): mediana 81,5 puntos (p10 37, p75 130, p90 192). 100–300 puntos → 104 sesiones (36 %)**;
+  25–75 → 125; 75–100 → 48. La mediana mensual va de 36 (sep-2025) a 161 (jun-2026). En el régimen actual la lectura literal (puntos
+  del índice) es habitual, no rara. El ancho depende mucho del régimen de volatilidad.
 - **MEDIDO, regla literal con costos, todo el desarrollo (exploratorio: celdas fijadas por el post, no elegidas mirando).**
   Media en puntos netos por operación, IC90 por sesiones:
 
@@ -1026,4 +1029,4 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - CFD: `SIN_CANDIDATAS`, 0 maxT. La distribución nula de la canasta es casi toda negativa.
   - NQ futuros: 0 maxT y 14 pistas sin nominación. La que se congeló para la réplica abr–sep 2026 es [M1 · 25–75 pts · a favor de la
     EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
-- **NO MEDIDO todavía:** réplica de la pista de NQ; descripción del ancho sobre NQ futuros.
+- **NO MEDIDO todavía:** réplica de la pista de NQ.
