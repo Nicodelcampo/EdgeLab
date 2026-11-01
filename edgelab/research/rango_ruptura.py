@@ -79,15 +79,25 @@ def _lote(D, ej, ctx):
     return ok, k, s, e, st, tp, kl
 
 
-def niveles(d, ej: tuple, ctx: dict):
-    ok, k, s, e, st, tp, kl = _lote(pd.DataFrame([d]), ej, ctx)
+def niveles_con(lote, d, ej: tuple, ctx: dict):
+    """Una operación (9 columnas, entrada en el primer tick de la vela siguiente) desde una función `lote` que devuelve
+    (ok, k, s, e, st, tp, kl). La comparten las familias de ruptura de rango (2026-11-01: también `modelo_asia`)."""
+    ok, k, s, e, st, tp, kl = lote(pd.DataFrame([d]), ej, ctx)
     if not ok[0]: return None
     return (int(k[0]), 2, int(s[0]), float(e[0]), float(st[0]), float(tp[0]), 0, int(kl[0]), 0.0)
 
 
-def niveles_lote(D: pd.DataFrame, ej: tuple, ctx: dict) -> np.ndarray:
+def niveles_lote_con(lote, D: pd.DataFrame, ej: tuple, ctx: dict) -> np.ndarray:
     out = np.full((len(D), 9), np.nan)
     if not len(D): return out
-    ok, k, s, e, st, tp, kl = _lote(D, ej, ctx)
+    ok, k, s, e, st, tp, kl = lote(D, ej, ctx)
     out[ok] = np.column_stack([k, np.full(len(D), 2), s, e, st, tp, np.zeros(len(D)), kl, np.zeros(len(D))])[ok]
     return out
+
+
+def niveles(d, ej: tuple, ctx: dict):
+    return niveles_con(_lote, d, ej, ctx)
+
+
+def niveles_lote(D: pd.DataFrame, ej: tuple, ctx: dict) -> np.ndarray:
+    return niveles_lote_con(_lote, D, ej, ctx)

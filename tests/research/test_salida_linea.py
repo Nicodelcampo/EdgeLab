@@ -15,7 +15,7 @@ def _serie():
 def _uno(kl, dl, lin, stop=90.0, tp=200.0):
     o, h, l, c, ses, ts = _serie()
     a = (np.array([0]), np.array([1]), np.array([0]), np.array([np.nan]), np.array([stop]), np.array([tp]), np.array([0]))
-    return AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, lin, np.array([kl], np.int64), np.array([dl]))
+    return AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, lin, np.array([kl], np.int64), np.array([dl]), 240)
 
 
 def test_sale_en_la_apertura_siguiente_al_cierre_que_cruza():
@@ -43,7 +43,7 @@ def test_sin_linea_igual_a_simular_cierre():
     a = (np.array([0, 2]), np.array([1, -1]), np.array([0, 0]), np.array([np.nan, np.nan]), np.array([95.0, 110.0]),
          np.array([104.0, 99.0]), np.array([0, 1]))
     r1 = AX.simular_cierre(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts)
-    r2 = AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, np.full((1, 1), np.nan), np.array([-1, -1], np.int64), np.zeros(2))
+    r2 = AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, np.full((1, 1), np.nan), np.array([-1, -1], np.int64), np.zeros(2), 240)
     for x, y in zip(r1, r2):
         assert np.array_equal(x, y, equal_nan=True)
 
@@ -52,5 +52,5 @@ def test_venta_sale_si_cierra_sobre_la_resistencia():
     o, h, l, c, ses, ts = _serie()
     lin = np.array([[110, 109, 108, 107, 106, 104.8, 104, 103, 102, 101]], float)
     a = (np.array([0]), np.array([-1]), np.array([0]), np.array([np.nan]), np.array([120.0]), np.array([80.0]), np.array([0]))
-    pnl, _, _, xb = AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, lin, np.array([0], np.int64), np.array([0.0]))
+    pnl, _, _, xb = AX.simular_cierre_linea(*a, o, h, l, c, ses, 0.25, np.zeros(0), ts, lin, np.array([0], np.int64), np.array([0.0]), 240)
     assert xb[0] == 6 and pnl[0] == -(c[5] - 100)          # vela 5 cierra 105 > 104.8: sale en la apertura de la 6 (105)

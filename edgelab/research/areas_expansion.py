@@ -265,11 +265,11 @@ def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, t
     """Sin salida por línea (la regla de siempre). La documentación del simulador está en `simular_cierre_linea`."""
     T = len(start)
     return simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart,
-                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T))
+                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T), TOPE_OPERACION)
 
 
 @njit(cache=False)
-def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl):
+def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl, tope_barras):
     """SALIDA POR TIEMPO DE PARADA (2026-10-31, paper de Tori Trades, ec. (1): τ = inf{t > t0 : C_t < y(t) − δ}): `lin` son líneas
     por vela (filas; NaN donde no hay línea) que la experiencia calcula sólo con el pasado de cada vela; `kl[t]` es la fila que sigue
     la operación t (−1 = sin salida por línea) y `dl[t]` el margen δ en precio. Con la operación abierta, al CIERRE de la vela j
@@ -281,7 +281,8 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
     análisis: el simulador no impone ninguno; quien lo llama lo declara por operación.
     AMBIGÜEDAD M1 (pedido de Nico): si una vela toca stop y objetivo, o en la vela del llenado de una límite, se resuelve con
     el ORDEN DE LOS TICKS de esa vela (`tpx`, con `tstart[j]..tstart[j+1]` los ticks del minuto j). Sin ticks para esa vela:
-    se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (240) o fin de sesión al cierre.
+    se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (`tope_barras` velas de tenencia; 240
+    = TOPE_OPERACION salvo que el experimento declare `TOPE_BARRAS`, 2026-11-01) o fin de sesión al cierre.
     Devuelve (pnl en precio por operación, NaN = sin llenado; código de resolución: 0 sin ambigüedad, 1 resuelta con ticks,
     2 sin ticks -> stop; barra de llenado; barra de salida; ambas -1 sin llenado). Si sale en la vela del llenado, f == x."""
     T = len(start); pnl = np.full(T, np.nan); amb = np.zeros(T, np.int8); n = len(c)
@@ -320,7 +321,7 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
                 pnl[t] = (st - e) * d; amb[t] = 2; continue
         R = abs(e - stop0[t]); x = np.nan; armado = False
         j = f + 1; ult = f
-        while j < n and j - f <= 240 and sesion[j] == sesion[f]:
+        while j < n and j - f <= tope_barras and sesion[j] == sesion[f]:
             if d == 1: ts_, tt_ = l[j] <= st, h[j] >= obj + tick
             else: ts_, tt_ = h[j] >= st, l[j] <= obj - tick
             if ts_ and tt_:                                                         # ambigua en M1: orden de los ticks
