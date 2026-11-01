@@ -217,7 +217,8 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
         if linea:
             lin = np.ascontiguousarray(np.asarray(exp.lineas_salida(sim), float))
             if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
-            p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float))
+            p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
+                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))
         else:
             p_, a_, f_, x_ = AX.simular_cierre(*args)
         pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_

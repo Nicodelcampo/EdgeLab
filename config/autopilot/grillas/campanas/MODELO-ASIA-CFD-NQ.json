@@ -1,0 +1,31 @@
+{
+  "cid": "MODELO-ASIA-CFD-NQ",
+  "familia": "MODELO_ASIA_CFD_NQ",
+  "experimento": "edgelab.research.modelo_asia",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "DK:USATECHIDXUSD",
+  "desc": [
+    20230103,
+    20240628
+  ],
+  "oos": [
+    20240701,
+    20250731
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 240,
+  "spec": "docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md",
+  "justificacion_economica": "Asia 18:00-20:00 ET acumula órdenes en los bordes de un rango de 2 h y NY trae el volumen que las ejecuta; el filtro 100-300 pts elige un rango ni chop ni expandido y la EMA20 M5 a las 20:15 alinea con el flujo (Modelo Asia de @alphatraders_latam; SPEC_MODELO_ASIA.md).",
+  "como_podria_refutarse": "0 nominadas por maxT en DESC y canasta de pistas en contra con potencia, o media <= 0 en réplica/holdout; la celda literal se informa siempre con IC y MDE (un nulo sin potencia no la mata).",
+  "seleccion": {
+    "max_candidatas": 3
+  },
+  "holdout": {
+    "desde": 20261001,
+    "n_fijo": 150,
+    "nota": "frontera única HOLDOUT-A4."
+  },
+  "cuenta_kaggle": "auto"
+}
