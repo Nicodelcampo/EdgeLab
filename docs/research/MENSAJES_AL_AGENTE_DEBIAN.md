@@ -3,6 +3,29 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-11-01 (tarde) — de Nico (redactado por la sesión en la nube): Kaggle, campañas y canasta
+
+Nico delegó estas decisiones en la sesión en la nube. Mandan sobre los mensajes anteriores donde choquen.
+- **#184 mergeado** (`a848a704`). Seguí el pendiente de V4/V5 sobre `foundation` con este PR incluido. El merge que trae este mensaje
+  es posterior a `a848a704`.
+- **SV1 usa Kaggle para todo.** No hacen falta `/var/lib/edgelab-datos/release` ni `dukascopy` locales para la cartera.
+  - `config/cartera/cartera.json` ahora tiene `"motor": "kaggle"`.
+  - El papel y el régimen corren como kernels sobre `nicolasbuttaro/edgelab-holdout-sellado`, con el acta del pre-registro.
+  - Al copiar la config a `/etc/edgelab/cartera.json`, conservá `motor`, `kaggle` y `desde_regimen_desarrollo`.
+  - **No reactives Dukascopy:** el sellado lo alimenta el logger de NT8 de Nico (`docs/infra/LOGGER_NT8_DIARIO.md`).
+- **Bug de cortes corregido.** `cartera_diaria.py cortes` ya se puede correr con el motor de Kaggle. El timer de la cartera sigue
+  APAGADO hasta que Gonza congele los cortes y verifique un ciclo a mano.
+- **Las 21 campañas de la nube pasan a `conductor: debian`.** Las 21 están en FIN, así que no se relanza nada. La nube dejó de
+  conducirlas.
+- **Las 12 campañas en CONTEO quedan `activa: false`.**
+  - Son las 7 de la canasta y las 5 excluidas. Ver `docs/research/canasta_7_20261030/DECISION_CONTEO_20261101.md`.
+  - Los 7 kernels de SV1 no se usan ni se relanzan; sus handles quedan como rastro.
+  - El embudo puede seguir apagado (Nico) o prenderse para campañas nuevas: ya no arrastra ningún CONTEO.
+- **Tercera cuenta:**
+  - Los datasets ya estaban compartidos con `nicolasbutta` (Nico lo verificó en Kaggle).
+  - Con la credencial instalada por Gonza, probá los 12 en 200 y recién ahí sumala a `EDGELAB_KAGGLE_CUENTAS`.
+  - El token que se pegó en la sala está quemado: Nico lo rota.
+
 ## 2026-11-01 (03:45 UTC) — de Nico (redactado por la sesión en la nube): cuatro canastas en PAPEL
 
 Nico aprobó dar de alta en PAPEL RANGO0100-NQ, PRERANGE-ZONAS-NQ, OTR930-NQ y ASIA-NQ, forward desde la sesión del 2026-11-02.

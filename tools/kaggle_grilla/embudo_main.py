@@ -24,9 +24,9 @@ def main():
             if n.startswith("DK:"): return (lambda d0, d1, e=None: F.bloques_spot_sellado(n[3:], d0, d1, dk)), F.REDONDEO_SPOT[n[3:]]
             return (lambda d0, d1, e=None: F.bloques_nq_sellado(d0, d1, sellado_de(n), acta, F.TICK_FUTURO[n])), F.TICK_FUTURO[n]
         def sellado_de(n):
-            r = glob.glob(raiz + f"/**/{n}_*ticks.parquet", recursive=True)
+            r = sorted(glob.glob(raiz + f"/**/{n}_*ticks.parquet", recursive=True))
             if not r: raise ValueError(f"sin ticks sellados de {n} en el dataset (O15): hay que sellar {n} antes de contar su holdout")
-            return r[0]
+            return r                                                      # 2026-11-01: todos (exports por contrato + diarios del logger)
     else:
         resolver = F.resolver
     lec_s, tk_s = resolver(sensor)
