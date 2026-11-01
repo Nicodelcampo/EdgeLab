@@ -158,6 +158,20 @@ def resolver(nombre: str):
 FUENTES = {"NQ": (bloques_nq, 0.25, 1.5455, 0.5), "USATECH": (bloques_usatech, 0.01, 1.5455, 0.5)}   # tests/research/test_fuentes_ticks.py: = edgelab.costos
 
 
+def _leer_sellado_futuro(ruta):
+    """Un parquet o una lista (2026-11-01: el logger de NT8 sube un archivo por día, `<INST>_<yyyymmdd>_ticks.parquet`, junto a los
+    exports por contrato). Si una sesión está en varios archivos, manda el diario más nuevo: nunca se suman dos copias de un día."""
+    import re
+    import pyarrow.parquet as pq
+    rutas = [ruta] if isinstance(ruta, (str, bytes)) or not hasattr(ruta, "__iter__") else list(ruta)
+    rutas = sorted(map(str, rutas), key=lambda r: (bool(re.search(r"_\d{8}_ticks\.parquet$", r)), r))
+    partes, vistos = [], set()
+    for r in reversed(rutas):
+        t = pq.read_table(r, columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "contract"]).to_pandas()
+        t = t[~t.trade_date.isin(vistos)]; vistos |= set(t.trade_date.unique().tolist()); partes.append(t)
+    return pd.concat(partes, ignore_index=True) if partes else pd.DataFrame(columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "contract"])
+
+
 def bloques_nq_sellado(desde, hasta, ruta, acta, tick: float = 0.25):
     """Ticks del HOLDOUT (sesiones >= 2026-10-01) desde la carpeta sellada local. Sólo para una apertura registrada: exige la
     ruta de un acta de apertura committeada ANTES de correr y no entrega nada anterior a la frontera (no mezcla desarrollo).
@@ -166,7 +180,7 @@ def bloques_nq_sellado(desde, hasta, ruta, acta, tick: float = 0.25):
     import pyarrow.parquet as pq
     if not acta or not Path(acta).exists(): raise ValueError("apertura del holdout sin acta registrada")
     if desde < HOLDOUT_PRIMERA_SESION_INT: raise ValueError("una apertura del holdout no mezcla sesiones de desarrollo")
-    t = pq.read_table(ruta, columns=["ts_utc_ns", "price_ticks", "volume", "trade_date", "contract"]).to_pandas()
+    t = _leer_sellado_futuro(ruta)
     t = t[(t.trade_date >= desde) & (t.trade_date <= hasta) & (t.ts_utc_ns >= HOLDOUT_APERTURA_UTC_NS)]
     contratos = {c: i for i, c in enumerate(sorted(t.contract.unique()))}
     for td, g in t.groupby("trade_date", sort=True):

@@ -60,7 +60,7 @@ def altas_pendientes(cart, cfg: dict, repo: Path) -> list:
     return out
 
 
-def correr(cfg: dict, hasta: int, diarios: dict, runner=None, fills: list | None = None, ahora=time.time, repo: Path = Path(".")) -> dict:
+def correr(cfg: dict, hasta: int, diarios, runner=None, fills: list | None = None, ahora=time.time, repo: Path = Path(".")) -> dict:
     t0 = ahora(); pasos = {}; seguro = None
     cart = Cartera(Path(cfg["cartera"]), reglas=cfg.get("reglas"), libro_ventanas=cfg.get("libro_ventanas"))
     plan = dict(schema="edgelab_cartera_plan_v1", hasta=int(hasta), generado=datetime.now(timezone.utc).isoformat(timespec="seconds"))
@@ -69,6 +69,7 @@ def correr(cfg: dict, hasta: int, diarios: dict, runner=None, fills: list | None
         antes = {f.id for f in cart.activas()}
         pasos["seguimiento"] = PA.actualizar(cart, runner, hasta, cfg.get("calentamiento_dias", 45)) if runner is not None else []
         retiros = [dict(id=k, motivo=cart.fichas[k].motivo) for k in antes if cart.fichas[k].estado == "RETIRADA"]
+        if callable(diarios): diarios = diarios()                                  # motor de Kaggle: los kernels del régimen corrieron en paralelo
         reg_ses, reg_man, rasgos = {}, {}, {}
         for inst, d in diarios.items():
             if inst not in (cfg.get("cortes_regimen") or {}): continue

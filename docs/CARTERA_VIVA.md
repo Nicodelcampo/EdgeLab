@@ -73,11 +73,17 @@ de celdas: la falta de potencia de las grillas de 10⁶ celdas está medida.
 | Alta en PAPEL con pre-registro; seguimiento; retiros; promoción a REAL por e-proceso; régimen; pesos; contratos; cola; alertas | Habilitar cuentas reales y sus montos; cambiar `alfa_real`, `min_ops_real` y `dd_max_r` (son compuertas); verificar las reglas de Axi Select; operar con dinero real |
 
 ## 8. Lo que falta para que el ciclo corra completo (en orden)
-1. **Datos nuevos de futuros todos los días.** El seguimiento de NQ, ES, YM y GC necesita los ticks del día en
-   `/var/lib/edgelab-datos/holdout_sellado/<INST>_12-26_ticks.parquet`. Los CFD de Dukascopy ya se bajan solos en el Debian. Los
-   futuros hoy dependen de un export manual de NT8. Hay que automatizarlo: un logger de NT8 en la PC de Nico que suba cada noche.
-2. **Cortes de régimen congelados** por instrumento: `python tools/cartera_diaria.py cortes --config ... --instrumento NQ` (sobre
-   desarrollo, hasta el 2026-03-31) y copiarlos a `cortes_regimen` en `/etc/edgelab/cartera.json`.
+1. **Datos nuevos de futuros todos los días: resuelto el 2026-11-01, falta instalarlo en la PC de Nico.**
+   - SV1 usa Kaggle: `"motor": "kaggle"` y `edgelab/cartera/motor_kaggle.py`. El papel corre como ANALIZAR_REGLA sellado, con el
+     pre-registro de la ficha como acta. El régimen corre como DIARIO: el desarrollo una vez, en caché, y desde el 2026-10-01 sobre el
+     dataset sellado.
+   - Los ticks los graba NT8 en vivo y se suben cada día al dataset sellado (`docs/infra/LOGGER_NT8_DIARIO.md`).
+   - PRERANGE-ZONAS-NQ no puede seguirse en Kaggle sellado: sus almacenes de zonas cubren sólo el desarrollo. Queda sin seguimiento,
+     informado en el plan, hasta que exista el cálculo de zonas sobre el sellado.
+2. **Cortes de régimen congelados** por instrumento: `python tools/cartera_diaria.py cortes --config ... --instrumento NQ`. Con el
+   motor de Kaggle lanza un kernel DIARIO de desarrollo, hasta el 2026-03-31. Después se copian a `cortes_regimen` en
+   `/etc/edgelab/cartera.json`. El bug del 2026-11-01 (un futuro en los cortes mandaba el ciclo a MODO SEGURO) está corregido: el
+   régimen tiene su propia acta (`__regimen__`) y un instrumento sin datos queda con afinidad neutra.
 3. **Reconciliar SV1 y actualizarlo** (pendiente de Gonza). Después, `install.sh` instala `edgelab-cartera.timer` y su configuración.
 4. **Primeras altas en PAPEL**:
    - las reglas de la canasta de 7, después de su holdout;

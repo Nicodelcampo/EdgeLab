@@ -25,20 +25,29 @@ def canasta_por_sesion(filas, k: int) -> list:
 
 
 def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> list:
-    out = []
+    """Dos pasadas: lanza todas las fichas y después trae, así los kernels de Kaggle del día corren en paralelo. Con un runner
+    sellado (`dataset_sellado`, motor de Kaggle) el período empieza en la primera sesión pendiente: el kernel calienta desde el
+    inicio del holdout y sólo informa operaciones desde ahí. El acta del kernel es el pre-registro de la ficha."""
+    out, lanzadas = [], []
+    sellado = getattr(runner, "dataset_sellado", None)
     for f in cartera.activas():
         d0 = f.ultima_ses() + 1
         if d0 > hasta: continue
-        r = f.regla; spec = dict(r["spec"], cid=f.cid); celdas = r.get("celdas") or [r["celda"]]
+        r = f.regla; spec = dict(r["spec"], cid=f.cid, cuenta_kaggle=r["spec"].get("cuenta_kaggle", "auto")); celdas = r.get("celdas") or [r["celda"]]
         params = dict(cortes=r["cortes"], celdas=celdas, tope=r.get("tope"), operaciones=True)
-        try:
-            h = runner.lanzar(spec, "ANALIZAR_REGLA", params, [_menos_dias(d0, calentamiento_dias), hasta])
-            res = runner.traer(h)
+        if sellado and r["spec"].get("datasets_extra"):
+            out.append(dict(id=f.id, error="necesita almacenes de zonas que no cubren el forward (datasets_extra): sin seguimiento")); continue
+        if sellado: params["acta"] = dict(tipo="cartera_forward", preregistro=f.preregistro, cid=f.cid, desde=f.desde)
+        periodo = [d0, hasta] if sellado else [_menos_dias(d0, calentamiento_dias), hasta]
+        try: lanzadas.append((f, d0, celdas, runner.lanzar(spec, "ANALIZAR_REGLA", params, periodo)))
+        except Exception as ex: out.append(dict(id=f.id, error=f"{type(ex).__name__}: {str(ex)[:200]}"))
+    for f, d0, celdas, h in lanzadas:
+        try: res = runner.traer(h)
         except Exception as ex:                                              # un instrumento sin datos no frena al resto
             out.append(dict(id=f.id, error=f"{type(ex).__name__}: {str(ex)[:200]}")); continue
         o = res.get("operaciones") or {}
         filas = [(s, x) for s, x in zip(o.get("ses", []), o.get("neto", [])) if int(s) >= d0]
-        if r.get("celdas"): filas = canasta_por_sesion(filas, len(celdas))
+        if f.regla.get("celdas"): filas = canasta_por_sesion(filas, len(celdas))
         out.append(cartera.agregar_ops(f.id, filas))
     return out
 

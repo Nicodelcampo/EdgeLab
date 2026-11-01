@@ -63,6 +63,11 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         B = AN.barras_de_contexto(cx_ej if cx_ej is not None else ctx)
         return AN.analizar(exp, int(p["desde"]), int(p["hasta"]), registro=_Hecho(), B=B, tick=float((cx_ej or ctx)["tick"]), friccion_pts=friccion,
                            resolucion=p.get("resolucion", "ticks"))
+    if etapa == "DIARIO":                                                  # cartera viva (2026-11-01): barras diarias por sesión CME, target-free
+        import pandas as _pd
+        d = _pd.DataFrame(dict(ses=ctx["ses"], h=ctx["h"], l=ctx["l"], c=ctx["c"])).groupby("ses", sort=True).agg(
+            h=("h", "max"), l=("l", "min"), c=("c", "last")).reset_index()
+        return dict(diario=dict(fecha=d.ses.astype(int).tolist(), h=d.h.tolist(), l=d.l.tolist(), c=d.c.tolist()))
     if etapa == "ANALIZAR_REGLA":                                          # reporte del analizador de celdas congeladas (2026-10-26)
         from edgelab.research import analizador as AN
         res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,

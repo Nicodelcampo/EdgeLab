@@ -23,13 +23,13 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 17 |
-| `docs/infra` | 22 |
+| `docs/infra` | 23 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 865 |
+| `docs/research` | 866 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
