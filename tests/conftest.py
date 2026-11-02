@@ -35,3 +35,20 @@ def pytest_collection_modifyitems(config, items):
     for it in items:
         if any(f"{os.sep}{d}{os.sep}" in str(it.fspath) for d in _SOLO_POSIX):
             it.add_marker(marca)
+
+
+@pytest.fixture(autouse=True)
+def _candado_causalidad(request, monkeypatch):
+    """El candado de causalidad del lanzamiento (`embudo_runners.exigir_causalidad`, 2026-11-02) certifica cada experimento con
+    datos de control: en las pruebas de runners eso sería lento y escribiría el archivo de certificados del repo. Se reemplaza por
+    uno que no hace nada, salvo en las pruebas marcadas `causalidad_real`, que prueban el candado de verdad (y en ésas el archivo
+    de certificados se redirige a un temporal)."""
+    if request.node.get_closest_marker("causalidad_real"):
+        from edgelab.research import preflight as PF
+        monkeypatch.setattr(PF, "CERTIFICADOS", __import__("pathlib").Path(tempfile.mkdtemp()) / "cert.json")
+        return
+    try:
+        from edgelab.research import embudo_runners as ER
+    except Exception:
+        return
+    monkeypatch.setattr(ER, "exigir_causalidad", lambda modulo: None)

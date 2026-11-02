@@ -184,7 +184,15 @@ def eventos(Z, t_close, G, ns=None, ws=None):
 
 
 def disparos(ev, h, l, c, t_close, fin=None, xs=None):
-    """Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
+    """Desde el 2026-11-02 es la versión CAUSAL (decisión de Nico: «que ninguna corrida pueda mirar al futuro»). La versión
+    anterior, que cortaba el área mirando hasta `fin`, queda como `disparos_con_lookahead_historico`, sólo para reproducir
+    resultados viejos. Ver docs/research/HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md."""
+    return disparos_causales(ev, h, l, c, t_close, fin=fin, xs=xs)
+
+
+def disparos_con_lookahead_historico(ev, h, l, c, t_close, fin=None, xs=None):
+    """NO USAR EN CORRIDAS: mira el futuro (ver `disparos`). Sólo para reproducir resultados anteriores al 2026-11-02.
+    Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
     Un ciclo: el precio cierra fuera del área (lado), se aleja >= 1·H del borde cercano sin volver a cerrar adentro (si vuelve
     antes, el ciclo se reinicia sin descartar el área) y después regresa; el disparo de cada x es el primer cierre con
     D <= x·A. El ciclo termina cuando vuelve a cerrar dentro del área (o cruza); el siguiente arranca en la barra siguiente,
@@ -214,6 +222,35 @@ def disparos(ev, h, l, c, t_close, fin=None, xs=None):
                 q = int(np.argmax(cond)); k = int(jj[q])
                 out.append(dict(m=m, k=k, xi=xi, ciclo=ciclo, lado=lado, lo=lo, hi=hi, H=H, E=float(E[q]), A=float(A[q]), D=float(D[q])))
         ciclo += 1; j0 = int(jj[q_fin]) + 1
+    return out
+
+
+def disparos_causales(ev, h, l, c, t_close, fin=None, xs=None):
+    """Versión CAUSAL de `disparos` (2026-11-02, hallazgo al portar U1 a JForex). `disparos` corta el área entera (`break`) si,
+    mirando hasta `fin`, el lado del ciclo nunca se aleja 1·H; eso descarta también los ciclos posteriores del otro lado, aunque
+    sus disparos ocurran antes de que se sepa. En vivo no se puede saber: acá un ciclo que vuelve a cerrar adentro antes de
+    alejarse 1·H se reinicia siempre, y un ciclo sin alejamiento simplemente no dispara. Mismos disparos que `disparos` en todo
+    lo demás (misma regla q > a1, q <= vuelta adentro, MAX_CICLOS); los de `disparos` son un subconjunto de éstos."""
+    m, lo, hi, _ = ev; H = hi - lo; xs = XS if xs is None else xs
+    if H <= 0: return []
+    fin = min(len(c), fin if fin is not None else np.searchsorted(t_close, t_close[m] + TOPE_DISPARO_MIN * 60, side="right"))
+    out = []; j = m + 1; ciclo = 0; buscando = True; lado = 0; E = 0.0; alej = False; hecho = set()
+    while j < fin and ciclo < MAX_CICLOS:
+        if buscando:
+            if not (c[j] > hi or c[j] < lo): j += 1; continue
+            lado = 1 if c[j] > hi else -1; E = h[j] if lado == 1 else l[j]; alej = False; hecho = set(); buscando = False
+        else:
+            E = max(E, h[j]) if lado == 1 else min(E, l[j])
+        A = E - hi if lado == 1 else lo - E; D = c[j] - hi if lado == 1 else lo - c[j]; adentro = D <= 0
+        if not alej:
+            if A >= H: alej = True                                              # a1: el disparo sólo puede venir después
+            elif adentro: buscando = True                                       # volvió antes de alejarse: reinicia
+            j += 1; continue
+        for xi, x in enumerate(xs):
+            if xi not in hecho and D <= x * A:
+                hecho.add(xi); out.append(dict(m=m, k=j, xi=xi, ciclo=ciclo, lado=lado, lo=lo, hi=hi, H=H, E=float(E), A=float(A), D=float(D)))
+        if adentro: ciclo += 1; buscando = True
+        j += 1
     return out
 
 

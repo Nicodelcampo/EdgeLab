@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from edgelab.cartera import afinidad as AF, asignacion as AS, investigacion as IV, papel as PA, regimen as RG
+from edgelab.cartera import canasta as CN, afinidad as AF, asignacion as AS, investigacion as IV, papel as PA, regimen as RG
 from edgelab.cartera.ficha import Cartera, Ficha
 
 
@@ -69,6 +69,10 @@ def correr(cfg: dict, hasta: int, diarios, runner=None, fills: list | None = Non
         antes = {f.id for f in cart.activas()}
         pasos["seguimiento"] = PA.actualizar(cart, runner, hasta, cfg.get("calentamiento_dias", 45)) if runner is not None else []
         retiros = [dict(id=k, motivo=cart.fichas[k].motivo) for k in antes if cart.fichas[k].estado == "RETIRADA"]
+        try: pasos["canasta"] = CN.seguir(cart, cfg)                                  # 2026-11-02: seguimiento y promoción por canasta
+        except ValueError as ex: pasos["canasta"] = dict(error=str(ex))
+        if pasos["canasta"].get("estado") in ("REFUTADO_FUTILIDAD", "LIMITE_VIOLADO"):
+            _alerta(cfg, f"cartera viva ({hasta}): canasta {pasos['canasta']['estado']}")
         if callable(diarios): diarios = diarios()                                  # motor de Kaggle: los kernels del régimen corrieron en paralelo
         reg_ses, reg_man, rasgos = {}, {}, {}
         for inst, d in diarios.items():
@@ -87,7 +91,7 @@ def correr(cfg: dict, hasta: int, diarios, runner=None, fills: list | None = Non
             papel = {(f.id, int(s)): x for f in cart.fichas.values() for s, x in f.ops}
             g = [(r["estrategia"], r["neto_pts"] - papel[(r["estrategia"], int(r["ses"]))]) for r in fills if (r["estrategia"], int(r["ses"])) in papel]
             brecha = pd.DataFrame(g, columns=["estrategia", "dif"]).groupby("estrategia").dif.agg(["count", "mean"]).reset_index().to_dict("records") if g else []
-        plan.update(altas=pasos["altas"], regimen_manana=reg_man, rasgos=rasgos, multiplicadores=mult, retiros_hoy=retiros, cuentas=cuentas, cola_investigacion=cola,
+        plan.update(canasta=pasos["canasta"], altas=pasos["altas"], regimen_manana=reg_man, rasgos=rasgos, multiplicadores=mult, retiros_hoy=retiros, cuentas=cuentas, cola_investigacion=cola,
                     ejecucion_vs_papel=brecha, cartera=[dict(id=f.id, familia=f.familia, instrumento=f.instrumento, nivel=f.nivel, estado=f.estado,
                                                               n_forward=len(f.ops), neto_forward=round(sum(x for _, x in f.ops), 2),
                                                               motivo=f.motivo) for f in cart.fichas.values()])

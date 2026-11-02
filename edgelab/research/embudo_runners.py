@@ -48,6 +48,18 @@ def datasets(nombre: str, desde: int, hasta: int) -> tuple:
     return [f"{nombre}:{f(desde)}:{f(hasta)}"], []
 
 
+class NoCausal(RuntimeError):
+    pass
+
+
+def exigir_causalidad(modulo: str):
+    """Candado: ningún kernel se lanza (Kaggle ni local) si el experimento no tiene certificado de causalidad para el código
+    actual (`preflight.certificar_causalidad`). Sin excepciones por variable de entorno: un experimento que no pasa, no corre."""
+    from edgelab.research.preflight import certificar_causalidad
+    err = certificar_causalidad(modulo)
+    if err: raise NoCausal(f"{modulo} no pasa la causalidad estricta, no se lanza: {err[0]}")
+
+
 def modulo_a_ruta(mod: str) -> str:
     return mod.replace(".", "/") + ".py"
 
@@ -150,6 +162,7 @@ class KaggleRunner:
         return env
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        exigir_causalidad(spec["experimento"])
         a = self.argumentos(spec, etapa, params, periodo)
         env = self._env(a[1].split("/")[0])
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
@@ -189,6 +202,7 @@ class LocalRunner:
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
         from edgelab.research import etapas as ET, grilla_generica as GG
+        exigir_causalidad(spec["experimento"])
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
         ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
         cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None

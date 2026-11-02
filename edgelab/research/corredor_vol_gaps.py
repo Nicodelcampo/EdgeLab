@@ -693,7 +693,9 @@ def _extraer_cajas_amarillas_nb(
                 imp_w = max(1, end_bar - origin_bar)
                 fwd_bars = max(1, int(round(float(imp_w) * (fwd_width_pct / 100.0))))
                 fwd_end = end_bar + fwd_bars
-                if h_imp > 2.0 * tick and fwd_end < n:
+                if h_imp > 2.0 * tick:                      # 2026-11-02: antes `and fwd_end < n` (exigía datos futuros hasta el cierre
+                                                            # adelantado; en vivo ningún sector reciente se registraba). Si `fwd_end`
+                                                            # cae fuera de los datos, el cierre 1b simplemente no llega.
                     tail_off = h_imp * (TAIL_PCT / 100.0)
                     bey_off = h_imp * (BEYOND_PCT / 100.0)
                     if z_dir_cur == 1:
@@ -801,7 +803,7 @@ def _escanear_ruptura_excursion_regreso_nb(
     for j in range(nz):
         k0 = z_k[j]
         k_ic = min(z_k_ic[j], k0)
-        if k0 >= n_m1 - 2:
+        if k0 >= n_m1 - 1:                                  # 2026-11-02: antes `n_m1 - 2` (causalidad estricta, ver abajo)
             continue
         d = z_dir[j]
         blo = z_box_lo[j]
@@ -859,8 +861,10 @@ def _escanear_ruptura_excursion_regreso_nb(
         fired_1 = False
         fired_2 = False
 
-        # Límite de seguimiento hasta VIDA_MAX_M1 minutos desde k0
-        m_end = min(n_m1 - 1, k0 + VIDA_MAX_M1)
+        # Límite de seguimiento hasta VIDA_MAX_M1 minutos desde k0. 2026-11-02 (candado de causalidad): antes `min(n_m1 - 1, …)`
+        # dejaba afuera la última vela disponible, así que en vivo el disparo de la vela m aparecía recién al cerrar m+1 mientras el
+        # backtest entraba al cierre de m. Con historia completa el resultado es idéntico; sólo cambia el borde de los datos.
+        m_end = min(n_m1, k0 + VIDA_MAX_M1)
         for m in range(k0 + 1, m_end):
             hm = h[m]
             lm = l[m]
