@@ -39,3 +39,7 @@ Futilidad del e-proceso o media forward ≤ 0.
 
 ## Registro
 2 pruebas en `TRIAL_REGISTRY_GLOBAL.jsonl` (`cartera_forward/CVGAP-ES-C`, `cartera_forward/CVGAP-CFD-ES-C`).
+
+## Agregado (2026-11-02, Nico: «sí», antes de mirar su holdout): U1-ZONAS-AVCL-ES-C
+Se suma con las mismas reglas (ventana desde 20261001, cotas, `mu_util` y `sd` de sus operaciones causales de DESC + réplica). Su corrida
+de holdout está lanzada y sin mirar.
