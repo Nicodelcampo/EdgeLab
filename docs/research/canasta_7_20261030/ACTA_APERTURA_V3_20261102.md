@@ -52,3 +52,21 @@ Media ≤ 0 en la revisión de 60 sesiones, o una regla que cruce su umbral de c
   revisa sin mirar P&L de nuevo y queda registrado.
 - **Lectura.** El holdout no confirma la canasta: las dos reglas CVGAP, las de más peso en operaciones, van en contra en octubre.
   Nada se ajusta con este resultado.
+
+## Integridad del sellado y corrección de la revisión 1 (2026-11-02)
+Chequeo target-free, `RACIMOS_INTEGRIDAD_SELLADO.json` (kernel `nicolasbuttaro/racimos-integridad-sellado`).
+- **Dos sesiones NQ incompletas en el sellado:**
+  - 2026-10-07: 7.401 ticks;
+  - 2026-10-29: 68.907 ticks;
+  - contra unos 600 mil en una sesión normal.
+- El acta pedía «las primeras 20 sesiones con datos válidos de las dos fuentes», pero la revisión 1 se calculó con todos los días
+  hábiles. Aplicando la regla declarada, con válida = al menos el 50 % de la mediana de ticks, quedan exactamente 20 sesiones válidas
+  (10-01 → 10-30 sin el 07 ni el 29).
+- **Revisión 1 corregida: t = −0,73**, media −0,37. Antes era t = −1,51. **Sigue sin aprobar.** El umbral del 50 % se fijó al
+  corregir, después de ver el resultado; con cualquiera de los dos cálculos la decisión es la misma.
+- **U1-RACIMOS:** en el sellado aparecen racimos de la definición congelada todos los días desde el 10-02 (16–36 por día), igual que
+  en desarrollo (≈ 20). La falta de operaciones antes del 10-13 es mercado, no dato.
+  - Además, el almacén de desarrollo termina el 2026-09-25, así que el calentamiento no cubre del 26 al 30 de septiembre. Sólo afecta
+    el primer día.
+- **Pendiente:** completar el NQ del 7 y del 29 de octubre en el dataset sellado (export de NT8). Las aperturas de U1-CRUZADO y de la
+  canasta usaron esos días incompletos.

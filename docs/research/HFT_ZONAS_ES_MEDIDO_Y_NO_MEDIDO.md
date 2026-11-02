@@ -1071,3 +1071,12 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   Spearman de la media mensual contra rango, tendencia y volatilidad de las 20 sesiones previas: +0,21 / −0,13 / +0,24, Holm 0,44
   en las tres. Ninguna separa los meses. MDE |rho| ≈ 0,4. `areas_expansion_20261022/u1/regimen_causal/`.
 - **NO MEDIDO**: régimen con medidas relativas al nivel (rango / precio) — no pre-registrado; no se mira sobre estos datos.
+
+## Experimentos 2 y 3 e integridad del sellado — 02/11/2026
+- **MEDIDO, U1-VOL (W y G escalados por el rango M1 del mes anterior):** ninguna escala deja positivo 2023–25 (−2,1 / −0,9 / −15,2).
+  Refutada según su pre-registro. `u1/u1_vol/`.
+- **MEDIDO, U1 con sensor NQ:** desarrollo −2,5 (78), réplica −1,0 (111), contra +4,4 y +15,6 con sensor CFD. El CFD aporta.
+  `u1/sensor_ejecucion/`.
+- **MEDIDO, sellado:** el NQ del 10-07 y del 10-29 está incompleto (7 mil y 69 mil ticks). Canasta v3, revisión 1 con sesiones
+  válidas: t = −0,73, no aprueba. Los racimos del sellado son normales (16–36 por día).
+- **NO MEDIDO:** las sesiones del 10-07 y el 10-29 completas.

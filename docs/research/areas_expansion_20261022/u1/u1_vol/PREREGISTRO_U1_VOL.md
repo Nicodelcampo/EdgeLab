@@ -33,3 +33,18 @@ Que ninguna escala dé media > 0 en 2023–2025, o que la escala 1 no mejore a l
 
 ## Registro
 3 pruebas (una por escala) en `TRIAL_REGISTRY_GLOBAL.jsonl` (`exp2/U1-VOL`).
+
+## Resultado (2026-11-02)
+Media neta por operación, E1A/T3/S3 con tope 3×. Entre paréntesis, la cantidad de operaciones.
+
+| Tramo | e = 0,5 | e = 1 | e = 2 | Fija (experimento 1) |
+|---|---|---|---|---|
+| US 2023-01 → 2024-03 | +0,4 (687) | +1,7 (164) | +8,5 (29) | −0,8 (36) |
+| US 2024-04 → 2025-07 | −4,3 (791) | −2,8 (233) | −29,9 (47) | −11,5 (135) |
+| NQ desarrollo | +1,1 (311) | −5,2 (80) | +7,8 (12) | +4,4 (64) |
+| NQ réplica | +2,4 (168) | +29,0 (46) | +78,7 (7) | +15,6 (109) |
+
+**Lectura (fijada antes): refutada.** Ninguna escala deja positivo el período 2023–2025; agregado da −2,1, −0,9 y −15,2. Escalar
+banda y separación por la volatilidad del mes anterior no rescata a U1 en otros regímenes.
+- La escala 1 reduce la pérdida de 2023–25, pero empeora el desarrollo (−5,2 contra +4,4).
+- Los números grandes de la réplica salen de muy pocas operaciones (46 y 7).

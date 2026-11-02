@@ -23,3 +23,14 @@ Que las diferencias cambien de signo entre desarrollo y réplica.
 
 ## Registro
 2 pruebas (desarrollo y réplica) en `TRIAL_REGISTRY_GLOBAL.jsonl` (`exp3/U1-SENSOR-NQ`).
+
+## Resultado (2026-11-02)
+Celda congelada de U1, E1A/T3/S3 con tope 3×, con sensor y ejecución en NQ:
+- desarrollo: −2,5 (78 operaciones, IC90 [−18,6; +12,5]);
+- réplica: −1,0 (111, IC90 [−17,4; +13,6]).
+
+Con sensor CFD (U1-CRUZADO, mismo código causal) da +4,4 (64) y +15,6 (109).
+
+**Lectura.** El sensor CFD queda mejor en los dos tramos y con el mismo signo: el CFD aporta información, que puede venir de su feed
+continuo o de su cotización. Los IC se superponen: no es una diferencia probada, pero es consistente. U1 no se simplifica a NQ solo.
+CVGAP va en la dirección contraria (sensor NQ +15,8 contra CFD +5,8 en la réplica): el sensor que conviene depende de la familia.
