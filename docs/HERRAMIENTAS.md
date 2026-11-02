@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-561 scripts.
+562 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -165,6 +165,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/compilar_nt8_cs.py` | T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader. |
 | `tools/compile_emacorridortrendvol.py` | (sin docstring) |
 | `tools/convert_l2_to_parquet.py` | Batch conversion script for CME Level 2 depth CSV files to compressed Parquets. |
+| `tools/correlacion_nominadas.py` | Correlación entre las 12 nominadas al holdout + U1-CRUZADO, con su P&L CAUSAL de DESC + réplica (nunca el holdout). |
 | `tools/correr_gates.py` | Corre los gates de paridad de todos los oráculos y clasifica los FAIL. |
 | `tools/corridor_anchors.py` | Anclas del sector de volumen de EmaCorridorTrendVol (espejo en Python de ComputeAnchors del indicador de NT8). |
 | `tools/corridor_hft_census/build_census_script.py` | Arma el kernel de Kaggle del censo corredor x HFT: Pasada 2 + DET_NT8 + dev addon (sin main_dev) + port HFT Flat + census_addon. |
