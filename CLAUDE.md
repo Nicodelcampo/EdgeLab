@@ -190,6 +190,9 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 > desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
 > por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
+- **Sesiones excluidas (2026-11-02):** las sesiones incompletas del sellado están declaradas en `edgelab/holdout.py`
+  (`SESIONES_EXCLUIDAS_HOLDOUT`, p. ej. el 7-oct en CME, ES 29 y 30-oct) y los lectores sellados las descartan siempre. Ningún
+  análisis las lee por otro camino; una sesión sale de la tabla sólo con datos completos re-sellados y re-medidos.
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,

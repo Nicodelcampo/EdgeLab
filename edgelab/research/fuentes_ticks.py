@@ -183,7 +183,11 @@ def bloques_nq_sellado(desde, hasta, ruta, acta, tick: float = 0.25):
     t = _leer_sellado_futuro(ruta)
     t = t[(t.trade_date >= desde) & (t.trade_date <= hasta) & (t.ts_utc_ns >= HOLDOUT_APERTURA_UTC_NS)]
     contratos = {c: i for i, c in enumerate(sorted(t.contract.unique()))}
+    from edgelab.holdout import sesion_excluida
+    inst = (str(t.contract.iloc[0]).split()[0].split("_")[0] if "contract" in t and len(t) else
+            Path(ruta[0] if isinstance(ruta, (list, tuple)) else ruta).name.split("_")[0])
     for td, g in t.groupby("trade_date", sort=True):
+        if sesion_excluida(inst, td): continue                          # 2026-11-02: sesiones incompletas declaradas (holdout.py)
         g = g.sort_values("ts_utc_ns", kind="stable")
         yield pd.DataFrame(dict(ts_ns=g.ts_utc_ns.to_numpy(), px=g.price_ticks.to_numpy() * float(tick), vol=g.volume.to_numpy(float),
                                 sesion=np.full(len(g), int(td), np.int64), segmento=g.contract.map(contratos).to_numpy(np.int64)))
@@ -206,4 +210,6 @@ def bloques_spot_sellado(simbolo, desde, hasta, raiz):
     if not partes: return
     t = pd.concat(partes, ignore_index=True).sort_values("time_utc_ns", kind="stable")
     t = t[t.time_utc_ns >= HOLDOUT_APERTURA_UTC_NS]
-    yield from _spot_df(t, _td(t.time_utc_ns.to_numpy()), desde, hasta, red)
+    from edgelab.holdout import sesion_excluida
+    td = _td(t.time_utc_ns.to_numpy()); fuera = np.array([sesion_excluida(simbolo, d) for d in td], bool)   # 2026-11-02: declaradas
+    yield from _spot_df(t[~fuera], td[~fuera], desde, hasta, red)

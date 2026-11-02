@@ -32,7 +32,8 @@ def validas(instrumentos):
     ok = None
     for i in instrumentos:
         v = {s: n for s, n in por.get(i, {}).items() if 20261001 <= s <= 20261030}; med = np.median(list(v.values()))
-        b = {s for s, n in v.items() if n >= 0.5 * med}; ok = b if ok is None else ok & b
+        from edgelab.holdout import sesion_excluida                      # 2026-11-02: además las declaradas en holdout.py
+        b = {s for s, n in v.items() if n >= 0.5 * med and not sesion_excluida(i, s)}; ok = b if ok is None else ok & b
     return ok or set()
 
 
