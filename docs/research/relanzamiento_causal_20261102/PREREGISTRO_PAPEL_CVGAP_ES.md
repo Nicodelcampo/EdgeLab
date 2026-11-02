@@ -43,3 +43,15 @@ Futilidad del e-proceso o media forward ≤ 0.
 ## Agregado (2026-11-02, Nico: «sí», antes de mirar su holdout): U1-ZONAS-AVCL-ES-C
 Se suma con las mismas reglas (ventana desde 20261001, cotas, `mu_util` y `sd` de sus operaciones causales de DESC + réplica). Su corrida
 de holdout está lanzada y sin mirar.
+
+## Parámetros fijados (2026-11-02, antes de mirar octubre)
+Salen de las operaciones causales de DESC + réplica (`papel_desarrollo/`), idénticas en n y media a las del embudo. Están en
+`config/cartera/altas.json`.
+
+| Ficha | Cotas (pérdida / ganancia) | `mu_util` | `sd` |
+|---|---|---|---|
+| CVGAP-ES-C-PAPEL | −114,4 / +344,6 | 2,64 | 25,5 |
+| CVGAP-CFD-ES-C-PAPEL | −133,9 / +79,8 | 0,64 | 12,9 |
+| U1-ZONAS-AVCL-ES-C-PAPEL | −119,7 / +81,8 | 1,00 | 10,7 |
+
+Todas en puntos de ES.
