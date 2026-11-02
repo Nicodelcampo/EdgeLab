@@ -12,6 +12,10 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 
 ## Estado al 2026-11-02 (leer primero)
 
+- **Holdout sellado al día por NT8** (`docs/infra/LOGGER_NT8_DIARIO.md`): versión de `nicolasbuttaro/edgelab-holdout-sellado` del
+  2026-11-02 con la sesión 20261030 de NQ/ES/YM/GC (OK x4; 20261029 ya estaba). Logger en vivo en la PC de Nico desde el 2-nov
+  (`E:\DatosNT8\tick_live`) y tarea diaria 19:15 AR. Exportador sólo-holdout `nt8_tools/EdgeLabTickHistorySellado.cs` (PR #187);
+  `iniciar` deja `dataset-metadata.json` con `id` (kaggle CLI 2.x). Sin mirar contenido.
 - **Cartera viva en Kaggle** (SV1 sin datos locales): 4 canastas NQ en papel desde 2026-11-02, más U1-CRUZADO en papel (etapa
   `OPERAR`, paridad verificada). Seguimiento y promoción a REAL **por canasta** (`edgelab/cartera/canasta.py`, decisión de Nico).
   Logger de NT8 y subida al sellado: `docs/infra/LOGGER_NT8_DIARIO.md` (exportación por lotes; sellado con sesiones hasta 2026-10-30).
