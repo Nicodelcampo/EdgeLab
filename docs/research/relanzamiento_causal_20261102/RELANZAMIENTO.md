@@ -49,4 +49,8 @@ rechazada por Romano-Wolf».
 1. Que el preflight exija 0 nominadas por el FDR, coherente con la decisión del 2026-10-24: Romano-Wolf es diagnóstico.
 2. Subir `B_RW` del chequeo de ruido (por ejemplo a 400) y volver a medir su tasa de falsos rechazos.
 
-Hasta que haya decisión, esas 4 siguen BLOQUEADAS y las otras 7 siguen el embudo.
+Después se bloquearon también U1-ZONAS-AVCL-ES-C y U1-ZONAS-BT2-YM-C (familia `u1_zonas`), con el mismo mensaje. Total: **6 BLOQUEADAS**
+hasta que haya decisión; el diagnóstico de arriba se hizo sobre `u1_cfd`.
+
+**5 en descubrimiento (DESC lanzado):** U1-6E-CONFIRMA-GBP-C, U1-RACIMOS-GRILLA-YM-C, U1-ZONAS-GRILLA-YM-C, CVGAP-ES-C y CVGAP-CFD-ES-C. Las
+conduce `tools/embudo_correr.py` desde esta sesión, con estado en `embudo/`.
