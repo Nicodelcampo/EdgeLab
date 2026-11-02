@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-553 scripts.
+554 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -443,6 +443,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/registrar_resultado_h2_65s.py` | Registra los resultados de la corrida de 65 sesiones de H2 + Escalon 5 en documentacion y git. |
 | `tools/registro_global.py` | Contador GLOBAL de pruebas del proyecto (revisión 2026-10-04): consolida los registros por familia en un único |
 | `tools/release_io.py` | Lector mínimo y seguro de la release `liquid_tick_v1` para scripts de research del repo de investigación. |
+| `tools/remedir_canasta_causal.py` | Re-medición CAUSAL de las 7 reglas de la canasta del holdout (2026-11-02, Nico: «asegurate de que todas las estrategias sean |
 | `tools/replay_p2_es_0626.py` | P2 Parity Replay for ES 06-26 aVolClusterPOI v0.5. |
 | `tools/reportes.py` | Índice de los reportes del repo — generado del disco, nunca escrito a mano. |
 | `tools/research_ema_reversion_nq.py` | tools/research_ema_reversion_nq.py |

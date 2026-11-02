@@ -184,7 +184,15 @@ def eventos(Z, t_close, G, ns=None, ws=None):
 
 
 def disparos(ev, h, l, c, t_close, fin=None, xs=None):
-    """Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
+    """Desde el 2026-11-02 es la versión CAUSAL (decisión de Nico: «que ninguna corrida pueda mirar al futuro»). La versión
+    anterior, que cortaba el área mirando hasta `fin`, queda como `disparos_con_lookahead_historico`, sólo para reproducir
+    resultados viejos. Ver docs/research/HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md."""
+    return disparos_causales(ev, h, l, c, t_close, fin=fin, xs=xs)
+
+
+def disparos_con_lookahead_historico(ev, h, l, c, t_close, fin=None, xs=None):
+    """NO USAR EN CORRIDAS: mira el futuro (ver `disparos`). Sólo para reproducir resultados anteriores al 2026-11-02.
+    Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
     Un ciclo: el precio cierra fuera del área (lado), se aleja >= 1·H del borde cercano sin volver a cerrar adentro (si vuelve
     antes, el ciclo se reinicia sin descartar el área) y después regresa; el disparo de cada x es el primer cierre con
     D <= x·A. El ciclo termina cuando vuelve a cerrar dentro del área (o cruza); el siguiente arranca en la barra siguiente,

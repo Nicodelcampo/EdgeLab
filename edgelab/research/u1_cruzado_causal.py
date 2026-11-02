@@ -21,3 +21,8 @@ def operar_papel(ctx_us: dict, ctx_nq: dict, friccion: float, desde: int | None 
     return dict(operaciones=dict(celda=[0] * len(g), ses=g.ses.astype(int).tolist(), neto=(g.bruto.to_numpy(float) - friccion).tolist(),
                                  t=g.t.astype(float).tolist(), lado=g.lado.astype(int).tolist(), k_us=g.k_us.astype(int).tolist()),
                 resumen=dict(n=int(len(g)), media=float(np.mean(g.bruto - friccion)) if len(g) else None))
+
+
+def disparos(ctx: dict):
+    """Las señales sobre el sensor (para el certificado de causalidad del lanzamiento)."""
+    return U1C.senales(ctx)

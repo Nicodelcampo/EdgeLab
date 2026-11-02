@@ -95,10 +95,14 @@ def anatomia(m, k, lado, lo, hi, E, A, h, l, c, v, ses, vp_start, vp_px, vp_vol,
     return out
 
 
-def disparos(ctx, causal: bool = False):
-    """`causal=True` (2026-11-02): usa `AX.disparos_causales` (lo único que se puede operar en vivo; ver su docstring)."""
+def disparos(ctx, causal: bool = True):
+    """Siempre causal desde el 2026-11-02. `causal=False` reproduce la versión con look-ahead y sólo se acepta para
+    reproducir resultados viejos, con EDGELAB_REPRODUCIR_LOOKAHEAD=1 (nunca en una corrida)."""
+    import os
+    if not causal and os.environ.get("EDGELAB_REPRODUCIR_LOOKAHEAD") != "1":
+        raise ValueError("u1_indaga.disparos(causal=False) mira el futuro: prohibido en corridas (HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md)")
     o, h, l, c, v, t, ses, seg = (ctx[x] for x in ("o", "h", "l", "c", "v", "t", "ses", "seg"))
-    fn_disp = AX.disparos_causales if causal else AX.disparos
+    fn_disp = AX.disparos_causales if causal else AX.disparos_con_lookahead_historico
     filas = []
     esc = ctx.get("escala_seg")                      # opcional {segmento: factor} (traslado de U1 a otro instrumento, u1_oro)
     for sg in pd.unique(seg):
