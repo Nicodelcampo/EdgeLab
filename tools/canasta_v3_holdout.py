@@ -13,19 +13,22 @@ from remedir_canasta_causal import _cargar  # noqa: E402
 
 SALIDA = ROOT / "docs/research/canasta_7_20261030/holdout_v3"
 ACTA = "docs/research/canasta_7_20261030/ACTA_APERTURA_V3_20261102.md"
+ACTA_INDIVIDUAL = "docs/research/canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md"
 S = {"CVGAP-NQ": 78.0207, "U1-RACIMOS-GRILLA-NQ": 33.9181, "CVGAP-CFD-NQ": 48.7089, "U1-ZONAS-AVCL-NQ": 17.2718, "U1-ZONAS-NQ": 74.4533}
+S4 = dict(S, **{"U1-ZONAS-BT2-NQ": 38.50, "U1-ZONAS-BT2-ES": 6.00})   # v4: desvío de las operaciones causales DESC+réplica
+RESTO = ["U1-ORO-GRILLA", "U1-YM-GRILLA", "U1-ES-GRILLA", "U1-RACIMOS-GRILLA-ES", "U1-ZONAS-BT2-ES", "U1-ZONAS-BT2-NQ", "U1-ZONAS-ES"]
 PERIODO = [20261001, 20261030]; UMBRAL = {20: 2.39, 40: 1.69, 60: 1.38}
 
 
-def lanzar(commit):
+def lanzar(commit, reglas=None, acta=ACTA):
     from edgelab.research.embudo_runners import KaggleRunner
     run = KaggleRunner(dataset_sellado="nicolasbuttaro/edgelab-holdout-sellado", raiz=None)
     SALIDA.mkdir(parents=True, exist_ok=True); hf = SALIDA / "handles.json"; hs = json.loads(hf.read_text()) if hf.exists() else {}
-    for cid in S:
+    for cid in (reglas or S):
         if cid in hs: continue
         st, acta = _cargar(cid); sp = dict(st["spec"], cid=f"{cid}-V3H"); r = acta["regla"]
         params = dict(cortes=acta.get("cortes") or st.get("cortes"), celdas=[r["celda"]], tope=r.get("tope"), operaciones=True,
-                      acta=dict(tipo="canasta_v3", acta=ACTA, commit=commit, cid=cid))
+                      acta=dict(tipo="holdout", acta=acta, commit=commit, cid=cid))
         try: h = run.lanzar(sp, "ANALIZAR_REGLA", params, PERIODO)
         except Exception as ex: print("no se lanzó", cid, str(ex)[-300:]); continue
         hs[cid] = dict(handle=h); hf.write_text(json.dumps(hs, indent=1)); print("lanzada", cid, h, flush=True)
@@ -69,7 +72,7 @@ def traer():
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("lanzar", "traer")); ap.add_argument("--commit", default="")
+    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("lanzar", "traer")); ap.add_argument("--commit", default=""); ap.add_argument("--resto", action="store_true")
     a = ap.parse_args()
-    if a.cmd == "lanzar": lanzar(a.commit)
+    if a.cmd == "lanzar": lanzar(a.commit, RESTO if a.resto else None, ACTA_INDIVIDUAL if a.resto else ACTA)
     else: print(traer())
