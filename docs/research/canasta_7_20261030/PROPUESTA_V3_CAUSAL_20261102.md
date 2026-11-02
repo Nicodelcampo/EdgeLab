@@ -54,3 +54,20 @@ U1-ZONAS-NQ.
   2. acta de apertura con reserva LORD++, registrada antes de lanzar (`holdout_ventanas`);
   3. lanzamiento con el embudo o el protocolo de apertura. Con 20 sesiones válidas (1 → 30 de octubre) se puede hacer la primera
      revisión de la v2.
+
+## Re-medición causal de las 5 nominadas que quedaron afuera (2026-11-02, después de firmada la v3)
+Fuente: `remedicion_causal_20261102/RESUMEN.json`.
+
+| Regla | DESC causal (n, media, p) | Réplica antes | Réplica causal (n, media, p) |
+|---|---|---|---|
+| U1-ZONAS-BT2-ES | 36, +3,3, 0,0005 | 29, +2,5 | 29, **+2,5**, 0,037 |
+| U1-ZONAS-BT2-NQ | 62, +4,5, 0,13 | 42, −17,5 | 46, **+5,1**, 0,19 |
+| U1-ZONAS-ES | 60, +8,9, 0,0005 | 8 | 13, −0,1, 0,50 |
+| U1-RACIMOS-GRILLA-ES | 85, +4,9, 0,0005 | 46, −0,5 | 64, −0,9, 0,64 |
+| U1-ES-GRILLA | 421, +0,4, 0,29 | 39, −0,6 | 53, −1,5, 0,81 |
+
+- **U1-ZONAS-BT2-NQ cambia de signo** con el código causal: réplica +5,1 (antes −17,5).
+- **U1-ZONAS-BT2-ES** queda igual: +2,5, p 0,037.
+
+Sumar alguna de las dos a la canasta sería otra selección mirando la réplica. Es una decisión de Nico, así que no se toca la v3
+firmada.
