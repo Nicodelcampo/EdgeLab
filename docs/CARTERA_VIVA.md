@@ -45,6 +45,11 @@ El agente del Debian es el dueño de esa cartera. Todos los días, después del 
 - **Afinidad** = media de la estrategia en ese régimen, contraída hacia su media global (K = 20 días), dividida por la media global,
   recortada a [0, 2]. Pocos días en un régimen no alcanzan para creerle. Un régimen nunca visto da afinidad 1.
 
+## 4b. Seguimiento y promoción por canasta (2026-11-02, decisión de Nico)
+`edgelab/cartera/canasta.py`. Toda la cartera se sigue como una sola serie, en unidades de riesgo igual, con el mismo e-proceso.
+Con edge confirmado y al menos `min_ops_real` sesiones, las fichas en PAPEL pasan a REAL por canasta. La futilidad de la canasta
+avisa, no retira. Pre-registro: `docs/research/cartera_20261101/PREREGISTRO_U1_CRUZADO_PAPEL_Y_CANASTA_20261102.md`.
+
 ## 5. Riesgo por cuenta (`asignacion.py`)
 - **Presupuesto del día** = mínimo entre (fracción × límite de pérdida diaria) y (fracción × distancia al piso de drawdown). Si todas
   las posiciones pierden su máximo el mismo día, la cuenta no llega al piso.
