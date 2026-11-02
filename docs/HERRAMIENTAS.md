@@ -280,7 +280,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/hftv4_retorno_stage1.py` | HFTV4-RETORNO etapa 1 (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md): zonas HFTZonesNQPureV4 + flecha + pseudo-zonas. |
 | `tools/hftv4_retorno_stage2.py` | HFTV4-RETORNO análisis (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md). |
 | `tools/holdout_canasta.py` | Holdout de la CANASTA de pistas de una familia que terminó PISTAS_VIVAS (decisión de Nico, 2026-10-26, auditoría del filtro: |
-| `tools/holdout_en_r.py` | Holdout en R (pedido de Nico, 2026-11-02): las 15 reglas de grilla (12 nominadas + 3 forzadas) y U1-CRUZADO, con su regla congelada, |
+| `tools/holdout_en_r.py` | Holdout en R (pedido de Nico 2026-11-02): re-corre las 16 reglas congeladas sobre el mismo sellado (10-01 -> 10-30) con el riesgo |
 | `tools/holdout_exploratorio.py` | Mirada EXPLORATORIA al holdout de una campaña del embudo (decisión de Nico, 2026-10-26: «mirar igual, sabiendo el costo»). |
 | `tools/holdout_individual.py` | Evaluación de las aperturas INDIVIDUALES del holdout (canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md): cada nominada |
 | `tools/holdout_vs_desarrollo.py` | ¿El holdout difiere del resto de los períodos con el código causal? Por regla (12 nominadas + U1-CRUZADO): media neta del holdout |
