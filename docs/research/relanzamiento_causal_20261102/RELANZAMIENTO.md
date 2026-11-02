@@ -70,3 +70,24 @@ conduce `tools/embudo_correr.py` desde esta sesión, con estado en `embudo/`.
 - PISTAS_VIVAS significa sin potencia para decidir: siguen vivas, pero no son candidatas al holdout.
 - **En curso (DESC lanzado 18:10):** U1-6B-FUT-GRILLA-C, U1-6B-GRILLA-C, U1-6E-FUT-GRILLA-C, U1-6E-GRILLA-C, U1-ZONAS-AVCL-ES-C y
   U1-ZONAS-BT2-YM-C.
+
+## Cierre del relanzamiento (2026-11-02 19:00 UTC): 11 de 11 en FIN, sin candidatas del embudo
+| Campaña | Estado | Lectura |
+|---|---|---|
+| U1-6B-GRILLA-C | SIN_CANDIDATAS | canasta de pistas **en contra con potencia** en la réplica |
+| U1-6E-GRILLA-C | SIN_CANDIDATAS | canasta de pistas **en contra con potencia** |
+| U1-6E-FUT-GRILLA-C | SIN_CANDIDATAS | canasta de pistas **en contra con potencia** |
+| U1-6E-CONFIRMA-GBP-C | SIN_CANDIDATAS | canasta en contra |
+| U1-RACIMOS-GRILLA-YM-C | SIN_CANDIDATAS | sin dato (0 celdas evaluables) |
+| U1-6B-FUT-GRILLA-C | PISTAS_VIVAS | 1 pista, no confirma |
+| U1-ZONAS-AVCL-ES-C | PISTAS_VIVAS | canasta −0,49, IC90 [−1,17; +0,12] |
+| U1-ZONAS-BT2-YM-C | PISTAS_VIVAS | 1 pista, no confirma |
+| U1-ZONAS-GRILLA-YM-C | PISTAS_VIVAS | 3 pistas, no confirman |
+| CVGAP-ES-C | PISTAS_VIVAS | canasta +1,3, no confirma |
+| CVGAP-CFD-ES-C | PISTAS_VIVAS | no confirma |
+
+**Lectura.**
+- **U1 sobre FX (6B y 6E, spot y futuro), con código causal: en contra con potencia en la réplica.** Esa línea queda cerrada para estas
+  celdas.
+- **Nominación forzada** (`NOMINACION_FORZADA.json`): CVGAP-ES-C, CVGAP-CFD-ES-C y **U1-ZONAS-AVCL-ES-C** (réplica +2,0 en 33 operaciones,
+  IC90 [−1,9; +5,7]; DESC +4,1).
