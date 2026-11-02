@@ -1080,3 +1080,13 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO, sellado:** el NQ del 10-07 y del 10-29 está incompleto (7 mil y 69 mil ticks). Canasta v3, revisión 1 con sesiones
   válidas: t = −0,73, no aprueba. Los racimos del sellado son normales (16–36 por día).
 - **NO MEDIDO:** las sesiones del 10-07 y el 10-29 completas.
+
+## Holdout — aperturas individuales de las 12 nominadas (código causal), interino — 02/11/2026
+- **MEDIDO:** todas EN CURSO, lejos de su N fijo.
+  - En contra, con IC90 < 0: CVGAP-NQ −34,9 (20), CVGAP-CFD-NQ −22,9 (16), U1-ES −6,2 (11).
+  - A favor, con n chico: U1-ZONAS-AVCL-NQ +15,0 (7), U1-RACIMOS-NQ +43,7 (5), BT2-NQ +6,9 (10), RACIMOS-ES +4,5 (13).
+  - Canasta v4, revisión 1 informativa: t −0,93.
+  - Integridad: influencia baja.
+
+  Acta: `canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md`.
+- **Auditoría vela a vela (experimento 4):** 0 fallas en las corridas terminadas.
