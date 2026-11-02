@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-563 scripts.
+564 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -395,6 +395,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/mnq_escalonadas_grid.py` | MNQ-ESCALONADAS-ESCALAS — docs/research/MANIFIESTO_MNQ_ESCALONADAS_ESCALAS_20260930.md (+ enmienda 1). |
 | `tools/mnq_l2_prepare.py` | One-command LOCAL export. Target-free only; no return/fill/SL/TP engine. |
 | `tools/mnq_l2_prepare_v2.py` | V2 DIAGNOSTIC CANDIDATE: observed publication boundary + peak-time snapshots. |
+| `tools/nominacion_forzada.py` | Nominación forzada al holdout (relanzamiento_causal_20261102/PREREGISTRO_NOMINACION_FORZADA.md, decisión de Nico): por familia del |
 | `tools/noticias_calendario.py` | Construye `config/noticias/calendario_usd_tier1.csv` desde las transcripciones de `config/noticias/crudo/`. |
 | `tools/noticias_impacto_operaciones.py` | Cuenta (target-free) cuántas operaciones/eventos ya publicados cruzan una ventana de noticia (`edgelab.noticias`). |
 | `tools/nq_cruce25_clima.py` | NQ-CRUCE25-CLIMA — pre-registro docs/research/MANIFIESTO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md (v2, tras Entrada 067). |
