@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "CORRIENDO",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793656522.2096567,
@@ -12,6 +12,11 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 2
+  },
+  {
+   "ts": 1793659708.6563678,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.8281323654190629); canasta media -0.09748048910566627 IC90 [-0.2886172628580512, 0.10379867098906809]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.264481083337068"
   }
  ],
  "spec": {
@@ -169,7 +174,44 @@
     1,
     1
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 69,
+   "media": -0.09748048910566627,
+   "ic90": [
+    -0.2886172628580512,
+    0.10379867098906809
+   ],
+   "p": 0.7910522369407648,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.0018858947159882456,
+    "p_simes": 0.7910522369407648,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 3,
+    "familia": "KALMAN_FADE_GC",
+    "run_id": "KALMAN-FADE-GC-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.0011901877202097062,
+   "p_simes": 0.8281323654190629,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 2,
+   "t": 4,
+   "familia": "KALMAN_FADE_GC",
+   "run_id": "KALMAN-FADE-GC-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.264481083337068,
+   "efecto": 0.2704274775990184,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -217,7 +259,20 @@
     "t_maxt": 2.390849759261932,
     "p_maxt": 0.3956043956043956,
     "nominada_maxt": false,
-    "q_linaje": 0.25398836110024803
+    "q_linaje": 0.25398836110024803,
+    "replica_pistas": {
+     "n": 91,
+     "media": -0.05459427875830373,
+     "ic90": [
+      -0.23197025591913575,
+      0.12722744784456477
+     ],
+     "p": 0.6958612237201848,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -263,8 +318,31 @@
     "t_maxt": 1.8414480606158181,
     "p_maxt": 0.8291708291708292,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 42,
+     "media": -0.20200543165657864,
+     "ic90": [
+      -0.5490875212213651,
+      0.17378889001929787
+     ],
+     "p": 0.8281323654190629,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "codigo_cambiado": [
+  {
+   "etapa": "PISTAS",
+   "modulos": [
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/etapas.py"
+   ]
+  }
+ ],
+ "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.8281323654190629); canasta media -0.09748048910566627 IC90 [-0.2886172628580512, 0.10379867098906809]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.264481083337068"
 }

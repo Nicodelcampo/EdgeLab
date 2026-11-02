@@ -58,3 +58,12 @@ def test_estadistico_r_en_params(monkeypatch):
     r = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, operaciones=True, estadistico="R"), log=lambda s: None)
     o, b = r["operaciones"], base["operaciones"]
     assert np.allclose(np.array(o["neto"]), np.array(b["neto"]) / np.array(b["riesgo"])) and not hasattr(X, "NORMALIZAR")
+
+
+def test_marginales_globales_cuadran_con_el_total(monkeypatch):
+    """Cada perilla reparte todas las operaciones evaluables entre sus niveles: la suma por nivel = la suma total."""
+    ctx, cx, cortes = _cx(monkeypatch)
+    r = ET.ejecutar("MARGINALES", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(cortes=cortes, estadistico="R"), log=lambda s: None)
+    mg = r["marginales_globales"]; tot = {k: sum(f["suma"] for f in v) for k, v in mg.items() if not k.endswith("etiquetas")}
+    assert "ejecución.entrada" in mg and r["normalizado"]["metodo"] == "riesgo"
+    assert np.allclose(tot["ejecución"], tot["ejecución.entrada"]) and np.allclose(tot["ejecución"], tot["ejecución.stop"])

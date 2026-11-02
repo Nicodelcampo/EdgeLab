@@ -458,6 +458,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         res["aviso_n_pruebas"] = "n_pruebas bruto (celdas evaluables): sin matriz de P&L de todas las celdas, Li-Ji no aplicable"
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
+    res["marginales_globales"] = marginales_globales(P, idx, net, cx["ses"], exp.EJECUCIONES)   # 2026-11-02: ideas transferibles
+    if modo == "MARG": return res, cx
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
         res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, resolucion=resolucion)
@@ -469,6 +471,27 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if nulo is not None: res["control_nulo"] = resumen_control_nulo(cx, res["canales"], nulo)
     log(f"listo ({time.time() - t0:.0f}s)")
     return res, cx
+
+
+def marginales_globales(P, idx, net, ses, ejecuciones) -> dict:
+    """Media del P&L neto por nivel de CADA perilla, sobre todas las operaciones de la grilla (no alrededor de una celda): n, suma,
+    suma de cuadrados y sesiones distintas por nivel, para el meta-análisis entre familias (2026-11-02, Nico: «ideas o lógicas que se
+    pueden aplicar en otras estrategias»). La ejecución se descompone además en sus componentes (entrada, objetivo, stop, BE).
+    Target sobre datos ya usados por la grilla: no elige celdas ni consume pruebas nuevas."""
+    net = np.asarray(net, float); ok = np.isfinite(net); ses = np.asarray(ses); out = {}
+    def _agg(ix, nombre):
+        ix = np.asarray(ix); filas = []
+        for lv in np.unique(ix[ok & (ix >= 0)]):
+            m = ok & (ix == lv); x = net[m]
+            filas.append(dict(nivel=int(lv), n=int(m.sum()), suma=float(x.sum()), suma2=float((x * x).sum()), sesiones=int(len(np.unique(ses[m])))))
+        out[nombre] = filas
+    for p, ix in zip(P, idx): _agg(ix, p.nombre)
+    ei = np.asarray(idx[-1]); comps = ("entrada", "objetivo", "stop", "be")
+    for c in range(min(len(comps), len(ejecuciones[0]) if len(ejecuciones) else 0)):
+        etiquetas = sorted({str(e[c]) for e in ejecuciones}); mapa = np.array([etiquetas.index(str(e[c])) for e in ejecuciones])
+        _agg(np.where(ei >= 0, mapa[np.clip(ei, 0, len(mapa) - 1)], -1), f"ejecución.{comps[c]}")
+        out[f"ejecución.{comps[c]}.etiquetas"] = etiquetas
+    return out
 
 
 def matriz_sesiones(cx, celdas):
