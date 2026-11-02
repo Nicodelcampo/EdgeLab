@@ -44,7 +44,7 @@ por operación en puntos del instrumento de ejecución; IC90 por sesiones, inter
 | U1-ZONAS-AVCL-NQ | 7 / 150 | +15,0 | [+6,4; +23,6] | igual |
 | U1-RACIMOS-GRILLA-NQ | 5 / 150 | +43,7 | [+27,3; +60,1] | igual |
 | U1-YM-GRILLA | 3 / 450 | +67,0 | — | igual |
-| U1-ZONAS-ES | (corriendo) | | | |
+| U1-ZONAS-ES | 2 / 150 | +1,0 | [−12,3; +14,4] | igual |
 | U1-CRUZADO (acta propia) | 18 | +25,8 | e-proceso NO_CONCLUYENTE | igual |
 
 **Lectura interina.**

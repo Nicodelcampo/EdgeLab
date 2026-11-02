@@ -1090,3 +1090,6 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 
   Acta: `canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md`.
 - **Auditoría vela a vela (experimento 4):** 0 fallas en las corridas terminadas.
+
+## Auditoría vela a vela de la canasta (experimento 4) y U1-ZONAS-ES en el holdout — 02/11/2026
+- **MEDIDO:** 14 de 14 corridas, 0 fallas. U1-ZONAS-ES en el holdout: 2 operaciones, +1,0 (EN CURSO, N fijo 150).

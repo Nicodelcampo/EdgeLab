@@ -26,3 +26,8 @@ simulador:
 
 ## Cómo podría refutarse
 Que aparezca una sola operación imposible.
+
+## Resultado (2026-11-02), en `RESUMEN.json`
+**14 de 14 corridas (7 reglas × DESC y réplica): 0 fallas.** No hubo llenados anteriores a la decisión, entradas fuera del rango de la
+vela, salidas antes del llenado ni stops u objetivos salteados. Tampoco hubo casos con break-even o con salida por línea para revisar.
+Las cifras de la canasta corresponden a operaciones posibles en tiempo real con su ejecución declarada.
