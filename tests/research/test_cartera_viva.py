@@ -162,3 +162,52 @@ def test_seguimiento_de_canasta_agrega_por_sesion(cart):
         def traer(self, h): return dict(operaciones=dict(ses=[20261102, 20261102, 20261103], neto=[4.0, 2.0, -1.0]))
     PA.actualizar(c, R(), 20261103)
     assert c.fichas["K"].ops == [[20261102, 3.0], [20261103, -0.5]]
+
+
+def _canasta(tmp, filas_a, filas_b, hasta):
+    c = Cartera(tmp / "c2.json", libro_ventanas=tmp / "v2.jsonl")
+    (tmp / "PRE.md").write_text("x")
+    for i, fil in (("A", filas_a), ("B", filas_b)):
+        c.alta(_ficha(id_=i, perdida_max_pts=40.0, ganancia_max_pts=60.0, ops_desarrollo=[[20260101 + k, (6.0 if k % 3 else -4.0)] for k in range(60)]), tmp)
+        c.agregar_ops(i, fil, hasta=hasta)
+    return c
+
+
+def test_canasta_serie_espera_a_todas_y_promueve_por_canasta(tmp_path):
+    from edgelab.cartera import canasta as CN
+    sesiones = [20261102 + i for i in range(80)]
+    c = _canasta(tmp_path, [(s, 6.0 if i % 4 else -3.0) for i, s in enumerate(sesiones)], [(s, 5.0 if i % 3 else -2.0) for i, s in enumerate(sesiones[:40])],
+                 hasta=sesiones[-1])
+    c.fichas["B"].evaluada_hasta = sesiones[39]                                   # B evaluó menos: la canasta espera
+    for f in c.fichas.values(): f.canasta_desde = sesiones[0]
+    assert max(s for s, _ in CN.serie(list(c.fichas.values()))) == sesiones[39]
+    r = CN.seguir(c, dict(canasta=dict(activa=True, mult_cota=3.0)))
+    assert r["n"] == 40 and r["estado"] in ("EDGE_CONFIRMADO", "SIN_DECIDIR")
+    c.fichas["B"].evaluada_hasta = sesiones[-1]
+    for f in c.fichas.values(): f.nivel = "PAPEL"                                 # sin la promoción individual: sólo la de la canasta
+    r = CN.seguir(c, dict(canasta=dict(activa=True, mult_cota=3.0)))
+    assert r["estado"] == "EDGE_CONFIRMADO" and r["n"] >= c.reglas["min_ops_real"]
+    assert {f.nivel for f in c.fichas.values() if f.estado == "ACTIVA"} == {"REAL"} and sorted(r["promovidas_hoy"]) == ["A", "B"]
+    assert any(b["evento"] == "COTAS_CANASTA" for b in c.bitacora)
+    assert Cartera(tmp_path / "c2.json", libro_ventanas=tmp_path / "v2.jsonl").canasta["cotas"]       # persiste
+
+
+def test_canasta_sin_edge_no_promueve(tmp_path):
+    from edgelab.cartera import canasta as CN
+    rng = np.random.default_rng(0); ses = [20261102 + i for i in range(80)]
+    c = _canasta(tmp_path, [(s, float(rng.normal(0, 5))) for s in ses], [(s, float(rng.normal(0, 5))) for s in ses], hasta=ses[-1])
+    r = CN.seguir(c, dict(canasta=dict(activa=True)))
+    assert r["estado"] != "EDGE_CONFIRMADO" and not r["promovidas_hoy"] and all(f.nivel == "PAPEL" for f in c.fichas.values())
+    assert CN.seguir(c, dict(canasta=dict(activa=False))) == dict(activa=False)
+
+
+def test_canasta_ficha_sin_evaluar_no_frena_y_entra_sin_reescribir(tmp_path):
+    from edgelab.cartera import canasta as CN
+    ses = [20261102 + i for i in range(10)]
+    c = _canasta(tmp_path, [(s, 3.0) for s in ses], [], hasta=ses[-1])
+    c.fichas["B"].evaluada_hasta = 0                                              # B nunca se pudo evaluar
+    r = CN.seguir(c, dict(canasta=dict(activa=True)))
+    assert r["n"] == 10 and r["miembros"] == ["A"] and c.fichas["B"].canasta_desde == 0
+    c.agregar_ops("B", [(s, 1.0) for s in ses + [20261112]], hasta=20261112); c.agregar_ops("A", [(20261112, 2.0)], hasta=20261112)
+    r = CN.seguir(c, dict(canasta=dict(activa=True)))
+    assert c.fichas["B"].canasta_desde == ses[-1] + 1 and r["n"] == 11                 # entra desde la sesión siguiente: el pasado no cambia

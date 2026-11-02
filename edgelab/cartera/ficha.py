@@ -47,6 +47,8 @@ class Ficha:
     ops: list = field(default_factory=list)          # [[ses, neto_pts], ...] forward, en orden
     ops_desarrollo: list = field(default_factory=list)   # [[ses, neto_pts]] de DESC/OOS: sólo para la afinidad con el régimen
     alta_ts: float = 0.0
+    evaluada_hasta: int = 0          # última sesión que el seguimiento ya miró (con o sin operaciones): la usa la canasta
+    canasta_desde: int = 0           # primera sesión en la que cuenta para la canasta (0 = todavía no entró)
 
     def monitor(self, alfa_real: float, alfa_futilidad: float) -> MonitorCandidato:
         m = MonitorCandidato.desde_regla(perdida_max_pts=self.perdida_max_pts, ganancia_max_pts=self.ganancia_max_pts,
@@ -76,10 +78,12 @@ class Cartera:
         self.reglas = {**DEFECTOS, **(d.get("reglas") or {}), **(reglas or {})}
         self.fichas = {k: Ficha(**v) for k, v in (d.get("fichas") or {}).items()}
         self.bitacora = d.get("bitacora", [])
+        self.canasta = d.get("canasta", {})                                          # seguimiento por canasta (canasta.py)
 
     def guardar(self):
         self.ruta.parent.mkdir(parents=True, exist_ok=True); tmp = self.ruta.with_suffix(".tmp")
-        tmp.write_text(json.dumps(dict(reglas=self.reglas, fichas={k: asdict(v) for k, v in self.fichas.items()}, bitacora=self.bitacora),
+        tmp.write_text(json.dumps(dict(reglas=self.reglas, fichas={k: asdict(v) for k, v in self.fichas.items()}, bitacora=self.bitacora,
+                                  canasta=self.canasta),
                                   indent=1, ensure_ascii=False, default=float), encoding="utf-8")
         tmp.replace(self.ruta)
 
@@ -107,10 +111,12 @@ class Cartera:
         self.fichas[f.id] = f; self._log("ALTA", f.id, nivel=f.nivel, preregistro=f.preregistro); self.guardar(); return f
 
     # --- seguimiento -------------------------------------------------------------------------------------------------------------
-    def agregar_ops(self, id_: str, filas) -> dict:
-        """filas: [(ses, neto_pts)] de sesiones posteriores a la última registrada (idempotente: lo ya visto se ignora)."""
+    def agregar_ops(self, id_: str, filas, hasta: int | None = None) -> dict:
+        """filas: [(ses, neto_pts)] de sesiones posteriores a la última registrada (idempotente: lo ya visto se ignora).
+        `hasta`: última sesión evaluada en esta corrida, haya o no operaciones (la usa el seguimiento de la canasta)."""
         f = self.fichas[id_]
         if f.estado != "ACTIVA": return dict(id=id_, estado=f.estado)
+        if hasta: f.evaluada_hasta = max(int(f.evaluada_hasta or 0), int(hasta))
         nuevas = sorted([(int(s), float(x)) for s, x in filas if int(s) > f.ultima_ses() and int(s) >= f.desde])
         try:
             st = f.monitor(self.reglas["alfa_real"], self.reglas["alfa_futilidad"]).agregar([x for _, x in nuevas]) if nuevas else \

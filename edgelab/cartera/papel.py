@@ -39,7 +39,8 @@ def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> lis
             out.append(dict(id=f.id, error="necesita almacenes de zonas que no cubren el forward (datasets_extra): sin seguimiento")); continue
         if sellado: params["acta"] = dict(tipo="cartera_forward", preregistro=f.preregistro, cid=f.cid, desde=f.desde)
         periodo = [d0, hasta] if sellado else [_menos_dias(d0, calentamiento_dias), hasta]
-        try: lanzadas.append((f, d0, celdas, runner.lanzar(spec, "ANALIZAR_REGLA", params, periodo)))
+        etapa = r.get("etapa", "ANALIZAR_REGLA")                            # OPERAR: regla congelada fuera de la grilla (U1-CRUZADO)
+        try: lanzadas.append((f, d0, celdas, runner.lanzar(spec, etapa, params, periodo)))
         except Exception as ex: out.append(dict(id=f.id, error=f"{type(ex).__name__}: {str(ex)[:200]}"))
     for f, d0, celdas, h in lanzadas:
         try: res = runner.traer(h)
@@ -48,7 +49,7 @@ def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> lis
         o = res.get("operaciones") or {}
         filas = [(s, x) for s, x in zip(o.get("ses", []), o.get("neto", [])) if int(s) >= d0]
         if f.regla.get("celdas"): filas = canasta_por_sesion(filas, len(celdas))
-        out.append(cartera.agregar_ops(f.id, filas))
+        out.append(cartera.agregar_ops(f.id, filas, hasta=hasta))
     return out
 
 

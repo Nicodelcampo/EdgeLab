@@ -1031,3 +1031,15 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
     EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
 - **MEDIDO, réplica abr–sep 2026 de la pista de NQ** [M1 · 25–75 pts · a favor · MID, 2R, 16:00]: 38 sesiones, media +2,3 pts,
   IC90 [−13,8; +18,3], p 0,41. Potencia 0,04 → `PISTAS_VIVAS` (`SIN_POTENCIA`): no confirma ni refuta. MODELO-ASIA-V2-NQ queda en FIN.
+
+## U1-CRUZADO — holdout completo (2026-10-01 → 10-30) — 02/11/2026
+- **MEDIDO** (acta `areas_expansion_20261022/u1/ACTA_HOLDOUT_COMPLETO_U1_CRUZADO_20261102.md`, regla congelada, nivel LORD++
+  0,0109): 18 operaciones, +25,8 pts netos por operación, 15 de 18 ganadoras. e-proceso 1,15 contra un umbral de 91,4.
+  **NO_CONCLUYENTE**. Sesiones no miradas (10-23 → 10-30): 8 operaciones, +34,9.
+- **NO MEDIDO**: noviembre en adelante. Lo junta la cartera viva en papel (requiere CFD USATECH diario).
+
+## Look-ahead en `areas_expansion.disparos` (familia U1) — 02/11/2026
+- **MEDIDO**: con la versión causal, U1-CRUZADO da DESC +4,4 por op (64 ops, p 0,31) y réplica +15,6 (109 ops, p 0,026), contra +21,3
+  y +27,3 de la versión de investigación. Los 29 disparos que ésta ocultaba promediaban −48 a −69 pts. El holdout del 2026-11-02
+  (+25,8) usó la versión de investigación: **no vale como estimación operable**. Ver `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md`.
+- **NO MEDIDO**: el resto de la familia U1 (incluidas 5 de las 7 de la canasta del holdout) con la versión causal.

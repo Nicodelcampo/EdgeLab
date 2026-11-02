@@ -70,6 +70,7 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
         faltan = [c for c in ["k"] + [v.columna for v in exp.VARIABLES] if c not in D.columns]
         if faltan: return [f"disparos no trae las columnas {faltan}"], avisos
         if (dif := I.causal(exp.disparos, ctx)): err.append(f"no causal: {dif[0]}")
+        if (dif := I.causal_por_disparo(exp.disparos, ctx)): err.append(f"no causal (corte en la vela del disparo): {dif[0]}")
         cortes = GG.cortes_e0(D, exp.VARIABLES)
         for v, b in zip(exp.VARIABLES, GG.discretizar(D, exp.VARIABLES, cortes)):
             if v.cuantiles:
@@ -137,3 +138,39 @@ def codigo_vigente(resultado: dict, repo: Path = ROOT) -> list:
         if f.name == "__init__.py": continue                              # se embeben vacíos
         if not f.exists() or hashlib.sha256(f.read_bytes()).hexdigest() != sha: cambios.append(m)
     return cambios
+
+
+CERTIFICADOS = ROOT / "config/causalidad_certificados.json"
+
+
+def huella_codigo(modulo: str) -> str:
+    """sha256 del experimento y de todo lo que importa del repo (lo que se embebe en el kernel)."""
+    import hashlib
+    from edgelab.research.embudo_runners import BASE_MODULOS, dependencias, modulo_a_ruta
+    rutas = sorted(set(dependencias(modulo_a_ruta(modulo)) + [r for b in BASE_MODULOS for r in dependencias(b)]))
+    h = hashlib.sha256()
+    for r in rutas: h.update(r.encode()); h.update((ROOT / r).read_bytes())
+    return h.hexdigest()
+
+
+def certificar_causalidad(modulo: str, guardar: bool = True) -> list:
+    """Candado del lanzamiento (2026-11-02, Nico: «que ninguna corrida pueda mirar al futuro»). Un experimento sólo se lanza
+    si `disparos` pasa la prueba de corte en la vela de cada disparo sobre los datos de control del preflight, con el código
+    EXACTO que va a correr (huella del experimento y sus dependencias). El resultado se guarda por huella: si el código no
+    cambió, no se repite. Devuelve la lista de errores (vacía = certificado)."""
+    import time
+    huella = huella_codigo(modulo)
+    cert = json.loads(CERTIFICADOS.read_text(encoding="utf-8")) if CERTIFICADOS.exists() else {}
+    if cert.get(modulo, {}).get("huella") == huella and cert[modulo].get("ok"): return []
+    from edgelab.research import grilla_generica as GG, indicadores as I, sintetico
+    exp = importlib.import_module(modulo)
+    if not hasattr(exp, "disparos"): return [f"{modulo} no expone `disparos`: sin eso no se puede certificar que no mira el futuro"]
+    t0 = dict(t0_s=exp.PREFLIGHT_T0_S) if hasattr(exp, "PREFLIGHT_T0_S") else {}
+    ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=False, seed=11, **t0), tick=0.25)
+    if getattr(exp, "CONFIRMADOR", False): ctx["conf"] = GG.contexto_m1(sintetico.bloques(dias=150, planta=False, seed=12), tick=0.25)
+    try: err = I.causal_por_disparo(exp.disparos, ctx) + [f"cortes fijos: {e}" for e in I.causal(exp.disparos, ctx)]
+    except Exception as ex: err = [f"no se pudo certificar: {type(ex).__name__}: {str(ex)[:200]}"]
+    if guardar:
+        cert[modulo] = dict(huella=huella, ok=not err, errores=err[:3], ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        CERTIFICADOS.write_text(json.dumps(cert, indent=1, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+    return err

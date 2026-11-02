@@ -15,9 +15,16 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 - **Holdout sellado al día por NT8** (`docs/infra/LOGGER_NT8_DIARIO.md`): versión de `nicolasbuttaro/edgelab-holdout-sellado` del
   2026-11-02 con la sesión 20261030 de NQ/ES/YM/GC (OK x4; 20261029 ya estaba). Logger en vivo en la PC de Nico desde el 2-nov
   (`E:\DatosNT8\tick_live`) y tarea diaria 19:15 AR. Exportador sólo-holdout `nt8_tools/EdgeLabTickHistorySellado.cs` (PR #187);
-  `iniciar` deja `dataset-metadata.json` con `id` (kaggle CLI 2.x). Sin mirar contenido. **Edges promovidos: 0.**
+  `iniciar` deja `dataset-metadata.json` con `id` (kaggle CLI 2.x). Sin mirar contenido.
+- **Cartera viva en Kaggle** (SV1 sin datos locales): 4 canastas NQ en papel desde 2026-11-02, más U1-CRUZADO en papel (etapa
+  `OPERAR`, paridad verificada). Seguimiento y promoción a REAL **por canasta** (`edgelab/cartera/canasta.py`, decisión de Nico).
+  Logger de NT8 y subida al sellado: `docs/infra/LOGGER_NT8_DIARIO.md` (exportación por lotes; sellado con sesiones hasta 2026-10-30).
+- **U1-CRUZADO, holdout completo (1→30 oct)**: 18 operaciones, +25,8 pts netos por operación, e-proceso 1,15 contra un umbral de 91,4,
+  **NO_CONCLUYENTE**. Acta: `docs/research/areas_expansion_20261022/u1/ACTA_HOLDOUT_COMPLETO_U1_CRUZADO_20261102.md`.
+- **MODELO-ASIA**: medido en tres lecturas de "puntos". Sin candidatas en el CFD; en NQ queda `PISTAS_VIVAS` (`SIN_POTENCIA`).
+- Las 12 campañas en CONTEO quedaron apagadas (`DECISION_CONTEO_20261101.md`). **Edges promovidos: 0.**
 
-## Estado al 2026-10-31 (leer primero)
+## Estado al 2026-10-31
 
 - **Plan del paquete del 31-oct implementado y lanzado** (`docs/research/paquete_20261031/PLAN_PAQUETE_20261031.md`, PR #172):
   salida por tiempo de parada (τ) en el simulador; familias chicas pre-registradas TAU-TENDENCIA (NQ/ES/GC), EOD-MOM (ES/NQ/YM),

@@ -63,6 +63,8 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         B = AN.barras_de_contexto(cx_ej if cx_ej is not None else ctx)
         return AN.analizar(exp, int(p["desde"]), int(p["hasta"]), registro=_Hecho(), B=B, tick=float((cx_ej or ctx)["tick"]), friccion_pts=friccion,
                            resolucion=p.get("resolucion", "ticks"))
+    if etapa == "OPERAR":                                                  # 2026-11-02: regla congelada fuera de la grilla (U1-CRUZADO en papel)
+        return exp.operar_papel(ctx, cx_ej if cx_ej is not None else ctx, friccion=friccion, desde=ctx.get("desde_eval"))
     if etapa == "DESCRIBIR":                                               # 2026-11-01: descripción target-free que define el experimento
         return dict(descripcion=exp.describir(ctx))
     if etapa == "DIARIO":                                                  # cartera viva (2026-11-01): barras diarias por sesión CME, target-free
