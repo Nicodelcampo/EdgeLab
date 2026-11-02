@@ -7,3 +7,5 @@
 - Evaluables: 370792 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
 - DESC [20240102, 20260331]: evaluables 339554 (m del FDR 339554 de 4478976 celdas), FDR 38 (informativo), maxT 3, RW umbral 5.184964179992676 (diagnóstico), linaje 4654321 como informacion, pistas sin nominación 40, candidatas 2
 - Potencia prevista (informativa): [1, 2, 0, 2, 0, 0, 3, 3, 3, 0, 2]: OOS n 51.7 potencia 1.00, holdout n 150 potencia 1.00; [0, 2, 0, 2, 2, 2, 1, 3, 3, 1, 0]: OOS n 93.3 potencia 1.00, holdout n 150 potencia 1.00
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/holdout.py', 'edgelab/research/fuentes_ticks.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 2 candidatas guardadas
