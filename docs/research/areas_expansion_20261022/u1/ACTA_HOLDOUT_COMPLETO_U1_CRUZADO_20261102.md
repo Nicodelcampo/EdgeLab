@@ -41,3 +41,17 @@ tope ni la ejecución.
 ## Registro
 Apertura en `docs/research/HOLDOUT_VENTANAS.jsonl` (cid `U1-CRUZADO`, desde 20261001, estadístico e_proceso) antes de lanzar.
 Conteo: 1 prueba en `TRIAL_REGISTRY_GLOBAL.jsonl`.
+
+## Resultado (2026-11-02), en `RESULTADO_HOLDOUT_COMPLETO_U1_CRUZADO.json`
+Kernel `nicolasbuttaro/embudo-u1-cruzado-holdout-operar-20261001`.
+- **Principal, e-proceso sobre 10-01 → 10-30**: 18 operaciones en 8 sesiones, media +25,8 pts netos por operación, 15 de 18
+  ganadoras, peor −94,3. e_edge = 1,15 contra un umbral de 91,4; e_futilidad = 0,93. **Veredicto: NO_CONCLUYENTE**, como se esperaba
+  con este n.
+- **Sólo las no miradas (10-23 → 10-30)**: 8 operaciones en 3 sesiones, media +34,9, 7 de 8 ganadoras, peor −42,0. A favor, pero son
+  3 sesiones: el IC por sesiones no es informativo.
+- **Lo ya mirado (10-01 → 10-22)**: 10 operaciones, media +18,4. Ahora hay 10 y no 8, porque el NQ sellado está completo; antes
+  faltaban el 7 y el 8 de octubre.
+- Reserva LORD++ resuelta con p = 1/e = 0,87 (sin rechazo).
+- **Lectura.** Todo lo que se vio fuera de la muestra va a favor: desarrollo +21, réplica +27 y holdout +26 pts por operación. Pero
+  18 operaciones no alcanzan para confirmar. Hace falta acumular operaciones nuevas, y eso lo hace la cartera viva en papel desde el
+  2026-11-02, con la misma regla y otro e-proceso que se puede mirar todos los días.
