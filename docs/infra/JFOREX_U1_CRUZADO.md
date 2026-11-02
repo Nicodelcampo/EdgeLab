@@ -55,3 +55,14 @@ python tools/paridad_jforex_u1.py comparar --ticks "<carpeta>/ticks_USATECHIDXUS
   repetidos con la misma marca, el log lo muestra.
 - **Cierre de vela:** se cierra en `onBar` M1 o con el primer tick del minuto siguiente. Un tick tardío del minuto anterior se ignora,
   igual que en el armado de Python, que exige orden.
+
+## Primera corrida de Nico (tester de JForex, 2026-11-02)
+Archivo: `jforex_u1_paridad/senales_U1_USATECHIDXUSD_tester_20261102.csv`. Son 8 señales, entre el 2026-10-26 y el 2026-10-29.
+Es holdout, pero se usa sólo para paridad, que es target-free.
+- **7 de 7 coinciden al minuto y con el mismo lado** con las operaciones de U1-CRUZADO causal en Python sobre el USATECH sellado de
+  Kaggle (`RESULTADO_HOLDOUT_CAUSAL_U1_CRUZADO.json`): 10-26 ×3, 10-28 ×4. Esa es la paridad sobre el feed real: tick de JForex
+  contra parquet de Dukascopy.
+- **Señal extra de JForex el 10-29 14:01.** Python no tiene ninguna operación el 10-29 ni el 10-30. Falta ver si Python tuvo la señal
+  y no operó por falta de vela NQ, o si no la tuvo.
+- **Lo que no se pudo comparar:** los niveles exactos (lo, hi, E, A). El resultado de Python guarda las operaciones, no las señales.
+  Con los archivos de ticks de esa corrida, `tools/paridad_jforex_u1.py comparar` cierra la comparación completa.
