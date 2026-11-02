@@ -471,15 +471,19 @@ def matriz_sesiones(cx, celdas):
     return M
 
 
-def operaciones_de(cx, celdas):
+def operaciones_de(cx, celdas, sim=None):
     """Serie por operación de cada celda congelada, en orden de tiempo (lo que necesita un seguimiento secuencial: réplica,
     holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto, t_fill y t_exit
     (cierre de las velas de llenado y salida en el instrumento de ejecución, s). El orden sigue siendo por t, no por t_exit."""
     filas = []
     for i, c in enumerate(celdas):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
-        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m],
-                                  t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])))
+        d = dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])
+        if sim is not None:                                            # 2026-11-02: riesgo inicial (entrada real a stop) para medir en R
+            O = cx["O"][m]; fb = np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m])
+            e = np.where(O[:, 3] == 2, np.asarray(sim["o"], float)[np.minimum(fb, len(sim["o"]) - 1)], O[:, 5])
+            d["riesgo"] = np.abs(e - O[:, 6])
+        filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
 
 

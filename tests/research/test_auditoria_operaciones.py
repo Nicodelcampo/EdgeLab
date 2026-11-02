@@ -32,3 +32,10 @@ def test_detecta_entrada_imposible_y_llenado_anticipado(monkeypatch):
     cx["O"][m, 3] = 1; cx["O"][m, 5] = 1e9; cx["t_fill"][m] = cx["t"][m]      # límite a un precio imposible y llenado anticipado
     a = GG.auditar_operaciones(cx, CELDAS, ctx)
     assert a["entrada"] >= 1 and a["causal"] >= 1
+
+
+def test_operaciones_traen_riesgo_positivo(monkeypatch):
+    ctx, cx, cortes = _cx(monkeypatch)
+    r = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, operaciones=True), log=lambda s: None)
+    o = r["operaciones"]
+    assert len(o["riesgo"]) == len(o["neto"]) > 0 and all(x > 0 for x in o["riesgo"])

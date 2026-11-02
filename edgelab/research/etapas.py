@@ -78,8 +78,8 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
                             cx_ej=cx_ej, tope=p.get("tope"))
         out = dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
         if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
-            O = GG.operaciones_de(cx, p["celdas"])
-            out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t")} if len(O) else {}
+            O = GG.operaciones_de(cx, p["celdas"], cx_ej if cx_ej is not None else ctx)
+            out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t", "riesgo")} if len(O) else {}
         if p.get("auditoria"):                                             # 2026-11-02, experimento 4: auditoría vela a vela
             out["auditoria"] = GG.auditar_operaciones(cx, p["celdas"], cx_ej if cx_ej is not None else ctx,
                                                        linea=hasattr(exp, "lineas_salida"))
