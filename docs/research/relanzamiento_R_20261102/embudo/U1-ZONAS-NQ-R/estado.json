@@ -1,6 +1,6 @@
 {
- "etapa": "INTEGRIDAD",
- "fase": "CORRIENDO",
+ "etapa": "FIN",
+ "fase": "SIN_REGLA_OPERABLE",
  "historial": [
   {
    "ts": 1793658146.2223613,
@@ -32,6 +32,27 @@
    "ts": 1793660868.843141,
    "etapa": "INDAGA",
    "fin": true
+  },
+  {
+   "ts": 1793661834.5348248,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793662610.6891034,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793662855.3825269,
+   "etapa": "ATRAS",
+   "fin": true,
+   "nota": "sin período hacia atrás declarado"
+  },
+  {
+   "ts": 1793663359.5902126,
+   "final": "SIN_REGLA_OPERABLE",
+   "motivo": "ningún tope conserva el edge (la pérdida máxima no se puede acotar)"
   }
  ],
  "spec": {
@@ -137,7 +158,7 @@
   "ts": 1793658146.2220657,
   "desde": "PREFLIGHT"
  },
- "handle": "nicobuttaro/embudo-u1-zonas-nq-r-integridad-20250801",
+ "handle": "nicobuttaro/embudo-u1-zonas-nq-r-topes-20250801",
  "fallas": 0,
  "params": {
   "cortes": {
@@ -176,7 +197,7 @@
   20250801,
   20260331
  ],
- "lanzada": 1793661590.31524,
+ "lanzada": 1793663114.8305085,
  "cortes": {
   "vol_vuelta/ida": [
    0.7396366298467989,
@@ -1481,5 +1502,95 @@
     "agregado_sobre": []
    }
   }
- ]
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     2,
+     0,
+     2,
+     2,
+     1,
+     2,
+     3,
+     2,
+     0,
+     0,
+     2
+    ],
+    "n": 33,
+    "media_neta": 0.008680339681753716,
+    "sesiones": 24,
+    "ic90": [
+     -0.09483300731058161,
+     0.09530322428180145
+    ],
+    "p_sesiones": 0.46134992458521873,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 8.09,
+    "pasa": false,
+    "n_pruebas": 1.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 1.0,
+    "media_esperada_fuera": 0.008680339681753716,
+    "n_boot": 5303,
+    "piso_p": 0.0001885369532428356,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.0018858947159882456,
+   "p_simes": 0.46134992458521873,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 3,
+   "familia": "U1_ZONAS_NQ",
+   "run_id": "U1-ZONAS-NQ-R/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     2,
+     0,
+     2,
+     2,
+     1,
+     2,
+     3,
+     2,
+     0,
+     0,
+     2
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 0.008680339681753716,
+    "ic90": [
+     -0.09483300731058161,
+     0.09530322428180145
+    ],
+    "efecto_para_potencia": 0.06922632482677629,
+    "potencia": 0.32739759091189935,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "motivo": "ningún tope conserva el edge (la pérdida máxima no se puede acotar)"
 }

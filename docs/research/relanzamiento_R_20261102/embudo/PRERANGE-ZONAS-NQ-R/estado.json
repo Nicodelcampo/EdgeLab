@@ -1,11 +1,31 @@
 {
- "etapa": "DESC",
- "fase": "CORRIENDO",
+ "etapa": "FIN",
+ "fase": "BLOQUEADA",
  "historial": [
   {
    "ts": 1793656675.9984965,
    "etapa": "PREFLIGHT",
    "fin": true
+  },
+  {
+   "ts": 1793662232.0601475,
+   "etapa": "DESC",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793662981.110683,
+   "etapa": "DESC",
+   "falla": "error: {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793663483.3057375,
+   "etapa": "DESC",
+   "falla": "error: {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793663483.3057463,
+   "final": "BLOQUEADA",
+   "motivo": "la etapa DESC falló 3 veces (error: {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n)"
   }
  ],
  "spec": {
@@ -116,7 +136,7 @@
   "desde": "PREFLIGHT"
  },
  "handle": "nicobuttaro/embudo-prerange-zonas-nq-r-desc-20250805",
- "fallas": 0,
+ "fallas": 3,
  "params": {
   "cortes": null,
   "criba": "maxt"
@@ -125,5 +145,6 @@
   20250805,
   20260331
  ],
- "lanzada": 1793658399.05715
+ "lanzada": 1793663234.9633706,
+ "motivo": "la etapa DESC falló 3 veces (error: {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n)"
 }

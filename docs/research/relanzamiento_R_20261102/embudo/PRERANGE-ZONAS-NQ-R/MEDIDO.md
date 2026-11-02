@@ -4,3 +4,5 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 5905911 pruebas de ['PRERANGE_HFT_NQ', 'OTR_930_SWEEP_NQ', 'U1_ZONAS_NQ', 'U1_ZONAS_BT2_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- **BLOQUEADA** — la etapa DESC falló 3 veces (error: {"code":404,"message":"No runs found for this kernel."}
+)

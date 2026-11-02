@@ -9,3 +9,7 @@
 - Potencia prevista (informativa): [0, 2, 0, 2, 2, 1, 2, 3, 2, 0, 0, 2]: OOS n 64.0 potencia 1.00, holdout n 150 potencia 1.00
 - AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/holdout.py', 'edgelab/research/fuentes_ticks.py']); revisar si el cambio toca la medición
 - INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 2, 0, 2, 2, 1, 2, 3, 2, 0, 0, 2]: regla 0.0009998108893206205, placebo -3.25, latencia 1 vela 0.024624872490588905 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [0.01]; veredictos ['NO_CONCLUYENTE']; potencias [0.33]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)
