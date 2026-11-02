@@ -55,6 +55,15 @@ def densidad(ctx, D) -> dict:
 
 
 def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=None, bloques_alineacion=None, log=print) -> dict:
+    """`params["estadistico"] == "R"` (2026-11-02, decisión de Nico): todo el P&L de la etapa se mide en R (neto / riesgo inicial),
+    con `NORMALIZAR = "riesgo"` mientras corre la etapa. Lo declara la campaña (`"estadistico": "R"`) y viaja en los params."""
+    if (params or {}).get("estadistico") == "R" and getattr(exp, "NORMALIZAR", None) != "riesgo":
+        previo = getattr(exp, "NORMALIZAR", None); exp.NORMALIZAR = "riesgo"
+        try: return ejecutar(etapa, exp, ctx, friccion=friccion, extra_adverso=extra_adverso, cx_ej=cx_ej, params=params,
+                             bloques_alineacion=bloques_alineacion, log=log)
+        finally:
+            if previo is None: delattr(exp, "NORMALIZAR")
+            else: exp.NORMALIZAR = previo
     p = params or {}; celdas = [list(c) for c in p.get("celdas", [])]; cortes = p.get("cortes")
     if etapa == "ANALIZAR":                                                # analizador de estrategias (2026-10-26): el registro se hizo al lanzar
         from edgelab.research import analizador as AN

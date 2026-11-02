@@ -49,3 +49,12 @@ def test_normalizar_riesgo_da_r(monkeypatch):
     m = np.isfinite(cx["net"]) & np.isfinite(cxr["net"])
     rg = GG.riesgo_ops(cx["O"], np.searchsorted(ctx["t"], cx["t_fill"]), ctx)
     assert m.sum() > 0 and np.allclose(cxr["net"][m], cx["net"][m] / rg[m]) and res["normalizado"]["metodo"] == "riesgo"
+
+
+def test_estadistico_r_en_params(monkeypatch):
+    """`estadistico: "R"` en los params mide la etapa en R y deja el módulo como estaba."""
+    ctx, cx, cortes = _cx(monkeypatch)
+    base = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, operaciones=True), log=lambda s: None)
+    r = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, operaciones=True, estadistico="R"), log=lambda s: None)
+    o, b = r["operaciones"], base["operaciones"]
+    assert np.allclose(np.array(o["neto"]), np.array(b["neto"]) / np.array(b["riesgo"])) and not hasattr(X, "NORMALIZAR")
