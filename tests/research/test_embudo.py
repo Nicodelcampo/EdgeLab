@@ -22,8 +22,9 @@ class RunnerLocal:
     def __init__(self): self.h = {}; self.vistos = []
     def lanzar(self, spec, etapa, params, periodo):
         seed = 22 if periodo[0] >= 20261001 else 21
-        if seed not in self._cache:
-            ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=True, seed=seed, prob_salto=0.02, fuerza=0.05), tick=0.25); ej = dict(ctx)
+        if seed not in self._cache:              # fuerza 0,05 -> 0,08 (2026-11-02): con disparos causales entran los perdedores que la
+                                                 # versión con look-ahead escondía, y el efecto plantado más débil ya no alcanzaba
+            ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=True, seed=seed, prob_salto=0.02, fuerza=0.08), tick=0.25); ej = dict(ctx)
             for k in ("o", "h", "l", "c", "tpx"): ej[k] = ctx[k] + 25.0
             self._cache[seed] = (ctx, ej)
         ctx, ej = self._cache[seed]

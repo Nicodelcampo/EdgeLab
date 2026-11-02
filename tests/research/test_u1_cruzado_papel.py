@@ -39,8 +39,10 @@ def test_disparos_causales_contienen_a_los_de_investigacion_y_no_miran_el_futuro
     for lista in EV.values():
         for ev in lista:
             fin = int(Z["zfin"][ev[3]].max())
-            b = {(d["k"], d["xi"], d["lado"]) for d in AX.disparos(ev, h, l, c, t, fin=fin, xs=U.XS_U1)}
+            b = {(d["k"], d["xi"], d["lado"]) for d in AX.disparos_con_lookahead_historico(ev, h, l, c, t, fin=fin, xs=U.XS_U1)}
             cc = {(d["k"], d["xi"], d["lado"]) for d in AX.disparos_causales(ev, h, l, c, t, fin=fin, xs=U.XS_U1)}
             assert b <= cc; n_b += len(b); n_c += len(cc)
     assert n_c > n_b                                                               # la versión de investigación descartaba disparos
     assert IND.causal(lambda cx: U.disparos(cx, causal=True), ctx) == []
+    assert all(x == y for x, y in zip(AX.disparos(EV[(3, 40.0)][0], h, l, c, t, fin=int(Z["zfin"][EV[(3, 40.0)][0][3]].max())),
+                                       AX.disparos_causales(EV[(3, 40.0)][0], h, l, c, t, fin=int(Z["zfin"][EV[(3, 40.0)][0][3]].max()))))
