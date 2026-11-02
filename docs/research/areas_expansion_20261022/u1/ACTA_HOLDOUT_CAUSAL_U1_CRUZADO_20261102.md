@@ -36,3 +36,12 @@ arman sólo con ticks del holdout, igual que en la corrida anterior, para que la
 
 ## Cómo podría refutarse
 e_futilidad ≥ 10, o media neta ≤ 0 en el holdout con el código operable.
+
+## Resultado (2026-11-02), en `RESULTADO_HOLDOUT_CAUSAL_U1_CRUZADO.json` y `..._EPROCESO.json`
+Kernel `nicolasbuttaro/embudo-u1-cruzado-holdout-causal-operar-20261001` (otro hash de código que la corrida anterior).
+- **Las mismas 18 operaciones, con el mismo P&L, una por una.** En este período la mirada al futuro no cambió ninguna operación:
+  la versión causal no agregó ni quitó disparos dentro de la celda congelada.
+- Media +25,8 netos por operación. e_edge = 1,15 contra un umbral de 277; e_futilidad = 0,93. **Veredicto: NO_CONCLUYENTE.**
+- Reserva LORD++ t = 2 resuelta sin rechazo (p = 0,87).
+- **Lectura.** El +25,8 del holdout ya es una estimación operable; lo que se corrigió afectaba otros períodos (DESC +21 → +4,4
+  causal; réplica +27 → +15,6). La evidencia a favor sigue siendo chica: hacen falta operaciones nuevas, que suma la ficha en papel.

@@ -1049,3 +1049,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - CVGAP-NQ +15,8 (p 0,04); U1-RACIMOS-NQ +14,8 (16 ops); CVGAP-CFD-NQ +5,8; U1-ZONAS-AVCL-NQ +4,0; U1-ZONAS-NQ +2,9;
   - **U1-ORO −1,2 y U1-YM −10,2** (negativas: se propone sacarlas).
   - Propuesta v3 de 5 reglas, pendiente de la firma de Nico.
+
+## U1-CRUZADO — holdout con código causal (2026-10-01 → 10-30) — 02/11/2026
+- **MEDIDO**: re-corrida con disparos causales (decisión de Nico). Mismas 18 operaciones y mismo P&L que la corrida con mirada al
+  futuro: +25,8 netos por operación. e-proceso NO_CONCLUYENTE (e_edge 1,15 contra 277, α LORD++ 0,0036, t = 2).
+  Acta: `areas_expansion_20261022/u1/ACTA_HOLDOUT_CAUSAL_U1_CRUZADO_20261102.md`.
+- **NO MEDIDO**: holdout con calentamiento de zonas de desarrollo (esta corrida las arma sólo con ticks del holdout, igual que la anterior).

@@ -47,7 +47,7 @@ def tstat(x):
 def traer():
     from edgelab.research.embudo_runners import KaggleRunner
     run = KaggleRunner(dataset_sellado="nicolasbuttaro/edgelab-holdout-sellado", raiz=None)
-    hs = json.loads((SALIDA / "handles.json").read_text()); ops, por_regla, ses_validas = {}, {}, None
+    hs = json.loads((SALIDA / "handles.json").read_text()); ops, por_regla = {}, {}
     for cid, h in hs.items():
         out = SALIDA / f"{cid}.json"
         if not out.exists():
@@ -56,10 +56,16 @@ def traer():
             out.write_text(json.dumps(run.traer(h["handle"]), indent=1, default=float))
         r = json.loads(out.read_text()); o = r.get("operaciones") or ((r.get("reportes") or [{}])[0].get("operaciones")) or {}
         ses, neto = [int(s) for s in o.get("ses", [])], [float(v) for v in o.get("neto", [])]
-        ops[cid] = (ses, neto); sv = r.get("sesiones_validas") or ((r.get("reportes") or [{}])[0].get("sesiones_validas"))
-        if sv: ses_validas = sorted(set(sv) if ses_validas is None else set(ses_validas) & set(sv))
+        ops[cid] = (ses, neto)
         por_regla[cid] = dict(n=len(neto), media=float(np.mean(neto)) if neto else None)
-    return ops, por_regla, ses_validas
+    import pandas as pd
+    ses = [int(d.strftime("%Y%m%d")) for d in pd.bdate_range("2026-10-01", "2026-10-30")]   # días hábiles CME de octubre (sin feriados)
+    out = dict(por_regla=por_regla, sesiones=len(ses))
+    for n in (20, 40, 60):
+        if len(ses) < n: break
+        x = serie(ops, ses[:n]); out[f"rev_{n}"] = dict(t=tstat(x), umbral=UMBRAL[n], aprueba=bool(tstat(x) >= UMBRAL[n]), media=float(x.mean()))
+    solo = serie(ops, sorted({s for v in ops.values() for s in v[0]})); out["informativo_solo_con_ops"] = dict(n=len(solo), t=tstat(solo))
+    (SALIDA / "RESULTADO.json").write_text(json.dumps(out, indent=1, default=float)); return out
 
 
 if __name__ == "__main__":
