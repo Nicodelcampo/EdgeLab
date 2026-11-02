@@ -1,0 +1,5 @@
+## U1-ZONAS-BT2-YM-C — edgelab.research.u1_zonas_bt2 · señal YM · ejecución YM
+- Justificación: U1 con los rectángulos de BigTrap2 (traders atrapados), vivos hasta su invalidación: si U1 es «el precio vuelve a donde hubo volumen atrapado», son mejores áreas que los huecos de LUX-IMB.
+- Refutación: Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia.
+- PREFLIGHT: ['ruido puro con 1 celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables']
+- **BLOQUEADA** — preflight: ['ruido puro con 1 celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables']

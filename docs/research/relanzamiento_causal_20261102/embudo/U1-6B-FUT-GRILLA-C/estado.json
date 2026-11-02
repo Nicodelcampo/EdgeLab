@@ -1,0 +1,47 @@
+{
+ "etapa": "FIN",
+ "fase": "BLOQUEADA",
+ "historial": [
+  {
+   "ts": 1793638616.603823,
+   "final": "BLOQUEADA",
+   "motivo": "preflight: ['ruido puro con 1 celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables']"
+  }
+ ],
+ "spec": {
+  "cid": "U1-6B-FUT-GRILLA-C",
+  "familia": "U1_6B_FUT_GRILLA",
+  "experimento": "edgelab.research.u1_cfd",
+  "sensor": "DK:GBPUSD",
+  "ejecucion": "6B",
+  "desc": [
+   20250804,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "Misma grilla U1 (regreso a racimos de huecos LUX-IMB en un feed CFD de 24 h) sobre GBPUSD: si es microestructura general de FX, debería aparecer también en la libra, con la escala ajustada a su volatilidad.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote a réplica; o media neta <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "ejecución en 6B (futuro, datos del release)"
+  },
+  "spec": "docs/research/u1_cfd_20261025/PREREGISTRO_U1_CFD.md",
+  "n_celdas_por_canal": 4478976,
+  "cuenta_kaggle": "nicolasbuttaro",
+  "decisiones": [
+   "2026-10-26: aprobada por Nico («apruebo») junto con la confirmación cruzada EURUSD/GBPUSD; declarada antes de cualquier DESC sobre GBPUSD.",
+   "2026-11-02: relanzada con el código causal (Nico: «dale, lanzá las 11»). La corrida original usó areas_expansion.disparos con mirada al futuro o CVGAP con los dos problemas de borde; queda descartada (GUIA_GRILLA_MASIVA: una corrida con código que después se corrigió no se mira). Misma familia: hereda su multiplicidad y su libro de LORD++."
+  ]
+ },
+ "motivo": "preflight: ['ruido puro con 1 celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables']"
+}
