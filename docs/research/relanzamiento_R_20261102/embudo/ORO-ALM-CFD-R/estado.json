@@ -1,0 +1,119 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1793656530.2018588,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "ORO-ALM-CFD-R",
+  "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+  "experimento": "edgelab.research.oro_almuerzo_ruptura",
+  "sensor": "DK:XAUUSD",
+  "ejecucion": "GC",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 1259712,
+  "spec": "docs/research/oro_almuerzo_20261028/SPEC_ORO_ALMUERZO_RUPTURA.md",
+  "justificacion_economica": "Estrategia del Oro de la Hora de Comer (08:00-14:00 Europe/Madrid) medida en XAUUSD spot/CFD y ejecutada en GC futuro: cuando la mañana europea acumula cierres por debajo de Open_08 sin romper soporte y a partir de las 14:00 Madrid (apertura de flujo NY) rompe el máximo de la mañana (o simétrico/fadeo U1), captura la expansión de la tarde hasta las 18:00 Madrid (240 min), condicionada por la escala mensual de u1_oro y ZONAS-GAPS.",
+  "como_podria_refutarse": "Sin celdas nominadas por FDR q <= 0,10 ni canasta confirmada, fallo de integridad cruzada XAUUSD->GC, o refutación en OOS/holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera global 2026-10-01; sensor DK:XAUUSD y ejecución GC."
+  },
+  "cuenta_kaggle": "nicolasbuttaro",
+  "estadistico": "R",
+  "decisiones": [
+   "2026-11-02: relanzada midiendo el P&L en R (neto / riesgo inicial), decisión de Nico («si, relanza todo»). Ver docs/research/MEDIR_EN_R_20261102.md. Misma familia: hereda su multiplicidad y su libro de LORD++; las pruebas se cuentan de nuevo."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera global 2026-10-01; sensor DK:XAUUSD y ejecución GC."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+   "declarada": true,
+   "padres": [
+    "U1_ORO_GRILLA"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4654321,
+   "n_heredado": 4654321,
+   "total": 4654321,
+   "justificacion": "Nueva familia ORO_ALMUERZO_RUPTURA_CFD cruzada con primitivas EdgeLab (['U1_ORO_GRILLA'])",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793656530.2015975,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-oro-alm-cfd-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793657988.729574
+}

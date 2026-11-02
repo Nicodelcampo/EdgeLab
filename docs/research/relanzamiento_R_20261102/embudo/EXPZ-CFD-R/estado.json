@@ -1,0 +1,115 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793656646.8054426,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "familia": "EXPANSION_ZONAS",
+  "experimento": "edgelab.research.expansion_zonas",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "pausa": "2026-10-24, OK de Nico (P-96 P1): DESC con 0 nominadas por FDR q 0,10 y 0 por Romano-Wolf; con la compuerta dura de FDR no pasa a INDAGA. No consume réplica ni holdout. Ver docs/research/auditoria_kaggle_20261024/.",
+  "n_celdas_por_canal": 233280,
+  "spec": "docs/research/expansion_zonas_20261023/SPEC.md",
+  "justificacion_economica": "Una expansión que nace de una concentración de desequilibrios marca urgencia; el regreso al origen o la continuación dependen de si esas órdenes quedaron pendientes (SPEC.md).",
+  "como_podria_refutarse": "Ninguna celda pasa integridad y OOS, o el holdout a N fijo da media <= 0.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-23: las sesiones 10-01..10-22 quedaron consumidas por las miradas exploratorias de U1-CRUZADO y LUXIMB (docs/research/HOLDOUT_VENTANAS.jsonl; revisión 2026-10-24)",
+   "apertura_familia": "EXPANSION_ZONAS tiene UNA apertura: la usa la primera campaña (EXPZ-NQ o EXPZ-CFD) que llegue al ACTA; la otra queda BLOQUEADA (holdout_ventanas). Declarado antes de ver resultados de DESC."
+  },
+  "cid": "EXPZ-CFD-R",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "estadistico": "R",
+  "cuenta_kaggle": "nicobuttaro",
+  "decisiones": [
+   "2026-11-02: relanzada midiendo el P&L en R (neto / riesgo inicial), decisión de Nico («si, relanza todo»). Ver docs/research/MEDIR_EN_R_20261102.md. Misma familia: hereda su multiplicidad y su libro de LORD++; las pruebas se cuentan de nuevo."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261023,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-23: las sesiones 10-01..10-22 quedaron consumidas por las miradas exploratorias de U1-CRUZADO y LUXIMB (docs/research/HOLDOUT_VENTANAS.jsonl; revisión 2026-10-24)",
+   "apertura_familia": "EXPANSION_ZONAS tiene UNA apertura: la usa la primera campaña (EXPZ-NQ o EXPZ-CFD) que llegue al ACTA; la otra queda BLOQUEADA (holdout_ventanas). Declarado antes de ver resultados de DESC."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "EXPANSION_ZONAS",
+   "declarada": true,
+   "padres": [
+    "LUXIMB_FADE_VISOR",
+    "LUXIMB_IMPULSOS",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 24250,
+   "bruto_heredado": 4626789,
+   "n_heredado": 4626789,
+   "total": 4651039,
+   "justificacion": "SPEC.md (Antecedente: regla del visor de LUX-IMB-IMPULSOS) y HOLDOUT_VENTANAS (diseñada después de las miradas de LUXIMB y U1-CRUZADO). Declarado después de su DESC: sólo puede endurecer.",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793656646.8052592,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
