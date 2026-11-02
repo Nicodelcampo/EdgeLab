@@ -20,8 +20,8 @@ CELDA_U1 = dict(ni=0, xi=1, ah_min=8.0)                     # N >= 3, x = 0,25, 
 EJECUCIONES = (("E1A", "T1", "S3"), ("E1A", "T3", "S3"))     # «objetivo: el borde cercano o el lejano»
 
 
-def senales(ctx_us) -> pd.DataFrame:
-    D = U.disparos(ctx_us)
+def senales(ctx_us, causal: bool = False) -> pd.DataFrame:
+    D = U.disparos(ctx_us, causal=causal)
     if not len(D): return D
     return D[(D.ni == CELDA_U1["ni"]) & (D.xi == CELDA_U1["xi"]) & (D.A_H >= CELDA_U1["ah_min"])].reset_index(drop=True)
 
@@ -40,11 +40,11 @@ def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> f
     return np.ceil(st2 / tick) * tick if s == 1 else np.floor(st2 / tick) * tick
 
 
-def operar(ctx_us, ctx_nq, S=None, retraso: int = 0, tope=None) -> pd.DataFrame:
+def operar(ctx_us, ctx_nq, S=None, retraso: int = 0, tope=None, causal: bool = False) -> pd.DataFrame:
     """Una fila por (señal, ejecución): base, niveles en NQ, P&L bruto en puntos de NQ (NaN = sin llenado) y motivo si no se opera.
     `retraso` (minutos): la misma orden entra `retraso` velas de NQ más tarde, con los mismos niveles; si en el medio el precio ya
     tocó el objetivo o el stop, no se opera (prueba de latencia: un edge real se degrada suave, no desaparece con 1 minuto)."""
-    S = senales(ctx_us) if S is None else S
+    S = senales(ctx_us, causal=causal) if S is None else S
     t_nq = ctx_nq["t"]; tick = ctx_nq["tick"]; filas = []
     for r in S.to_dict("records"):
         k = int(r["k"]); t = ctx_us["t"][k]; j = int(np.searchsorted(t_nq, t))

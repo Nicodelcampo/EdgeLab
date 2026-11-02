@@ -1037,3 +1037,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   0,0109): 18 operaciones, +25,8 pts netos por operación, 15 de 18 ganadoras. e-proceso 1,15 contra un umbral de 91,4.
   **NO_CONCLUYENTE**. Sesiones no miradas (10-23 → 10-30): 8 operaciones, +34,9.
 - **NO MEDIDO**: noviembre en adelante. Lo junta la cartera viva en papel (requiere CFD USATECH diario).
+
+## Look-ahead en `areas_expansion.disparos` (familia U1) — 02/11/2026
+- **MEDIDO**: con la versión causal, U1-CRUZADO da DESC +4,4 por op (64 ops, p 0,31) y réplica +15,6 (109 ops, p 0,026), contra +21,3
+  y +27,3 de la versión de investigación. Los 29 disparos que ésta ocultaba promediaban −48 a −69 pts. El holdout del 2026-11-02
+  (+25,8) usó la versión de investigación: **no vale como estimación operable**. Ver `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md`.
+- **NO MEDIDO**: el resto de la familia U1 (incluidas 5 de las 7 de la canasta del holdout) con la versión causal.

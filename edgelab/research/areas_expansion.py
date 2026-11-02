@@ -217,6 +217,35 @@ def disparos(ev, h, l, c, t_close, fin=None, xs=None):
     return out
 
 
+def disparos_causales(ev, h, l, c, t_close, fin=None, xs=None):
+    """Versión CAUSAL de `disparos` (2026-11-02, hallazgo al portar U1 a JForex). `disparos` corta el área entera (`break`) si,
+    mirando hasta `fin`, el lado del ciclo nunca se aleja 1·H; eso descarta también los ciclos posteriores del otro lado, aunque
+    sus disparos ocurran antes de que se sepa. En vivo no se puede saber: acá un ciclo que vuelve a cerrar adentro antes de
+    alejarse 1·H se reinicia siempre, y un ciclo sin alejamiento simplemente no dispara. Mismos disparos que `disparos` en todo
+    lo demás (misma regla q > a1, q <= vuelta adentro, MAX_CICLOS); los de `disparos` son un subconjunto de éstos."""
+    m, lo, hi, _ = ev; H = hi - lo; xs = XS if xs is None else xs
+    if H <= 0: return []
+    fin = min(len(c), fin if fin is not None else np.searchsorted(t_close, t_close[m] + TOPE_DISPARO_MIN * 60, side="right"))
+    out = []; j = m + 1; ciclo = 0; buscando = True; lado = 0; E = 0.0; alej = False; hecho = set()
+    while j < fin and ciclo < MAX_CICLOS:
+        if buscando:
+            if not (c[j] > hi or c[j] < lo): j += 1; continue
+            lado = 1 if c[j] > hi else -1; E = h[j] if lado == 1 else l[j]; alej = False; hecho = set(); buscando = False
+        else:
+            E = max(E, h[j]) if lado == 1 else min(E, l[j])
+        A = E - hi if lado == 1 else lo - E; D = c[j] - hi if lado == 1 else lo - c[j]; adentro = D <= 0
+        if not alej:
+            if A >= H: alej = True                                              # a1: el disparo sólo puede venir después
+            elif adentro: buscando = True                                       # volvió antes de alejarse: reinicia
+            j += 1; continue
+        for xi, x in enumerate(xs):
+            if xi not in hecho and D <= x * A:
+                hecho.add(xi); out.append(dict(m=m, k=j, xi=xi, ciclo=ciclo, lado=lado, lo=lo, hi=hi, H=H, E=float(E), A=float(A), D=float(D)))
+        if adentro: ciclo += 1; buscando = True
+        j += 1
+    return out
+
+
 def perfil_volumen(d, vp_min_start, vp_px, vp_vol):
     """Tramo de máximo volumen entre el borde cercano y el extremo, con las operaciones de m+1..k. Devuelve (p_vol, vol_conc, precio).
     (Versión de a uno; el conductor usa `perfiles_volumen`, compilada y en lote, con el mismo resultado.)"""

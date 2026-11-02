@@ -95,8 +95,10 @@ def anatomia(m, k, lado, lo, hi, E, A, h, l, c, v, ses, vp_start, vp_px, vp_vol,
     return out
 
 
-def disparos(ctx):
+def disparos(ctx, causal: bool = False):
+    """`causal=True` (2026-11-02): usa `AX.disparos_causales` (lo único que se puede operar en vivo; ver su docstring)."""
     o, h, l, c, v, t, ses, seg = (ctx[x] for x in ("o", "h", "l", "c", "v", "t", "ses", "seg"))
+    fn_disp = AX.disparos_causales if causal else AX.disparos
     filas = []
     esc = ctx.get("escala_seg")                      # opcional {segmento: factor} (traslado de U1 a otro instrumento, u1_oro)
     for sg in pd.unique(seg):
@@ -107,7 +109,7 @@ def disparos(ctx):
         EV = AX.eventos(Z, t[a:b], G_U1 * f, ns=NS_U1, ws=(W_U1 * f,))
         for (n_, _w), lista in EV.items():
             for ev in lista:
-                for d in AX.disparos(ev, h[a:b], l[a:b], c[a:b], t[a:b], fin=int(Z["zfin"][ev[3]].max()), xs=XS_U1):
+                for d in fn_disp(ev, h[a:b], l[a:b], c[a:b], t[a:b], fin=int(Z["zfin"][ev[3]].max()), xs=XS_U1):
                     filas.append(dict(d, m=d["m"] + a, k=d["k"] + a, ni=NS_U1.index(n_), A_H=d["A"] / d["H"]))
     D = pd.DataFrame(filas)
     if not len(D): return D

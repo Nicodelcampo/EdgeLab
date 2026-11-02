@@ -30,3 +30,17 @@ def test_papel_usa_la_etapa_de_la_ficha(tmp_path):
         def traer(self, h): return dict(operaciones=dict(ses=[20261102], neto=[12.0]))
     PA.actualizar(c, R(), 20261103)
     assert vistos == ["OPERAR"] and c.fichas["U"].ops == [[20261102, 12.0]] and c.fichas["U"].evaluada_hasta == 20261103
+
+
+def test_disparos_causales_contienen_a_los_de_investigacion_y_no_miran_el_futuro():
+    from edgelab.research import areas_expansion as AX, grilla_generica as GG, indicadores as IND, sintetico, u1_indaga as U
+    ctx = GG.contexto_m1(sintetico.bloques(dias=40, planta=False, seed=1), tick=0.25); t, o, h, l, c = (ctx[x] for x in ("t", "o", "h", "l", "c"))
+    Z = AX.zonas(t, o, h, l, c); EV = AX.eventos(Z, t, 1.0, ns=(3,), ws=(40.0,)); n_b = n_c = 0
+    for lista in EV.values():
+        for ev in lista:
+            fin = int(Z["zfin"][ev[3]].max())
+            b = {(d["k"], d["xi"], d["lado"]) for d in AX.disparos(ev, h, l, c, t, fin=fin, xs=U.XS_U1)}
+            cc = {(d["k"], d["xi"], d["lado"]) for d in AX.disparos_causales(ev, h, l, c, t, fin=fin, xs=U.XS_U1)}
+            assert b <= cc; n_b += len(b); n_c += len(cc)
+    assert n_c > n_b                                                               # la versión de investigación descartaba disparos
+    assert IND.causal(lambda cx: U.disparos(cx, causal=True), ctx) == []
