@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
 - Linaje: hereda 5626427 pruebas de ['ZONAS_GAPS']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 54096 de 2239488 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 42000 (m del FDR 42000 de 1119744 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.1861252784729 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260925], un paso de LORD++ por lote; celdas [[1, 2, 0, 1, 0, 3, 0, 2, 2, 0], [1, 2, 0, 1, 3, 3, 0, 2, 2, 6], [2, 2, 2, 2, 3, 0, 0, 2, 1, 2], [1, 2, 0, 1, 0, 3, 0, 2, 1, 6], [1, 2, 0, 1, 3, 3, 0, 2, 1, 0], [2, 2, 0, 1, 0, 3, 0, 2, 2, 2], [2, 2, 0, 1, 3, 3, 0, 2, 2, 8], [0, 2, 0, 1, 0, 3, 3, 2, 1, 8], [0, 2, 0, 1, 3, 3, 3, 2, 1, 2], [0, 2, 1, 1, 3, 3, 3, 2, 2, 2], [2, 2, 1, 1, 0, 3, 3, 2, 1, 8], [0, 2, 1, 1, 0, 3, 3, 2, 2, 8], [0, 2, 0, 1, 3, 3, 3, 2, 2, 8], [0, 2, 0, 1, 0, 3, 3, 2, 2, 2], [2, 2, 2, 2, 3, 0, 3, 2, 1, 8], [1, 0, 1, 2, 0, 3, 3, 0, 2, 7], [0, 2, 0, 1, 0, 0, 3, 2, 2, 8], [0, 2, 0, 1, 3, 0, 3, 2, 2, 2], [1, 2, 1, 1, 0, 3, 3, 2, 2, 2], [1, 2, 0, 1, 3, 0, 3, 2, 2, 8]]

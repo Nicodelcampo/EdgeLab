@@ -49,7 +49,8 @@ def actualizar(cartera, runner, hasta: int, calentamiento_dias: int = 45) -> lis
         o = res.get("operaciones") or {}
         filas = [(s, x) for s, x in zip(o.get("ses", []), o.get("neto", [])) if int(s) >= d0]
         if f.regla.get("celdas"): filas = canasta_por_sesion(filas, len(celdas))
-        out.append(cartera.agregar_ops(f.id, filas, hasta=hasta))
+        rg = [(s, x, r) for s, x, r in zip(o.get("ses", []), o.get("neto", []), o.get("riesgo") or [None] * len(o.get("neto", []))) if int(s) >= d0]
+        out.append(cartera.agregar_ops(f.id, filas, hasta=hasta, riesgos=rg))
     return out
 
 

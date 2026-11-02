@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20240701, 20250731]
 - Linaje: hereda 5626427 pruebas de ['ASIA_BOS_GAPS_CFD_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 300 de 840 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20230103, 20240628]: evaluables 180 (m del FDR 180 de 420 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.0774967670440674 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 7, candidatas 0
+- **SIN_CANDIDATAS** — ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.5758709452717512, 'min': -4.250369878191874, 'q001': -4.231981479026153, 'q010': -3.9291710290368234, 'q500': -1.0458693437166935, 'q990': 0.4469524917951663, 'q999': 0.5710176254351784, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 10}); pistas a réplica: ninguna pista relevante con media > 0
