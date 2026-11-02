@@ -56,5 +56,5 @@ def test_kernel_u1_cruzado_al_dia(tmp_path):
     from construir_kernel import construir
     from construir_kernel_experimento import BASE
     out = tmp_path / "k.py"
-    construir("tools/kaggle_grilla/u1_cruzado_main.py", str(out), BASE + ["edgelab/research/u1_indaga.py", "edgelab/research/u1_cruzado.py"])
+    construir("tools/kaggle_grilla/u1_cruzado_main.py", str(out), BASE + ["edgelab/research/u1_indaga.py", "edgelab/research/u1_oro.py", "edgelab/research/u1_cruzado.py"])
     assert out.read_bytes() == (ROOT / "tools/kaggle_grilla/kernel_u1_cruzado.py").read_bytes(), "reconstruir kernel_u1_cruzado.py"
