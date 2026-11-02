@@ -22,6 +22,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT))
 SALIDA = ROOT / "docs/research/canasta_7_20261030/remedicion_causal_20261102"
 CANASTA = ["CVGAP-NQ", "CVGAP-CFD-NQ", "U1-ZONAS-AVCL-NQ", "U1-ORO-GRILLA", "U1-RACIMOS-GRILLA-NQ", "U1-YM-GRILLA", "U1-ZONAS-NQ"]
+EXCLUIDAS = ["U1-ES-GRILLA", "U1-RACIMOS-GRILLA-ES", "U1-ZONAS-BT2-ES", "U1-ZONAS-BT2-NQ", "U1-ZONAS-ES"]   # nominadas al holdout, fuera de la canasta
 
 
 def _cargar(cid):
@@ -29,11 +30,11 @@ def _cargar(cid):
     return json.loads((d / "estado.json").read_text(encoding="utf-8")), json.loads((d / "ACTA_HOLDOUT.json").read_text(encoding="utf-8"))
 
 
-def lanzar():
+def lanzar(reglas=None):
     from edgelab.research.embudo_runners import KaggleRunner
     run = KaggleRunner(raiz=None); cs = run.cuentas(); SALIDA.mkdir(parents=True, exist_ok=True); hf = SALIDA / "handles.json"
     hs = json.loads(hf.read_text()) if hf.exists() else {}
-    for i, cid in enumerate(CANASTA):
+    for i, cid in enumerate(reglas or CANASTA):
         st, acta = _cargar(cid); sp = st["spec"]; r = acta["regla"]
         for tramo, per in (("desc", sp["desc"]), ("oos", sp["oos"])):
             clave = f"{cid}/{tramo}"
@@ -73,5 +74,5 @@ def traer():
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("lanzar", "traer")); a = ap.parse_args()
-    {"lanzar": lanzar, "traer": traer}[a.cmd]()
+    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("lanzar", "traer")); ap.add_argument("--excluidas", action="store_true"); a = ap.parse_args()
+    lanzar(EXCLUIDAS if a.excluidas else None) if a.cmd == "lanzar" else traer()

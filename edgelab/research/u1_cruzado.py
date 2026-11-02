@@ -153,9 +153,27 @@ def operar_propio(ctx_us, S=None, tope=None) -> pd.DataFrame:
 
 
 def densidad_dia(b) -> dict:
-    """Target-free, por día de trading: ticks, minutos con datos, velas M1 con hueco (OG/VI de LUX-IMB), rango del día."""
+    """Target-free, por día de trading: ticks, minutos con datos, velas M1 con hueco (OG/VI de LUX-IMB), rango y cierre del día."""
     t = (b.ts_ns.to_numpy() // 60_000_000_000)
     df = pd.DataFrame(dict(t=t, p=b.px.to_numpy())); g = df.groupby("t").p
     o, h, l, c = g.first().to_numpy(), g.max().to_numpy(), g.min().to_numpy(), g.last().to_numpy()
     z = AX.detect(o, h, l, c)
-    return dict(ses=int(b.sesion.iloc[0]), ticks=int(len(b)), minutos=int(len(o)), zonas=int(len(z)), rango=float(h.max() - l.min()) if len(h) else 0.0)
+    return dict(ses=int(b.sesion.iloc[0]), ticks=int(len(b)), minutos=int(len(o)), zonas=int(len(z)), rango=float(h.max() - l.min()) if len(h) else 0.0,
+                cierre=float(c[-1]) if len(c) else float("nan"))
+
+
+ESCALAS_VOL = (0.5, 1.0, 2.0)
+
+
+def senales_vol(ctx_us, r_ref: float | None = None, escalas=ESCALAS_VOL) -> pd.DataFrame:
+    """U1-VOL (experimento 2, 2026-11-02): la celda de U1-CRUZADO con banda W y separación G escaladas por mes con el rango M1 mediano
+    del mes ANTERIOR (causal, `u1_oro.escala_por_mes`) × escala. A/H es adimensional: no cambia. Columna `esc` = índice de escala.
+    Las zonas se arman por mes (segmento), igual que U1-ORO."""
+    from edgelab.research import u1_oro as UO
+    mes, f = UO.escala_por_mes(ctx_us, r_ref or UO.R_USATECH); out = []
+    for i, e in enumerate(escalas):
+        D = U.disparos(dict(ctx_us, seg=mes, escala_seg={m: v * e for m, v in f.items()}))
+        if len(D):
+            D = D[(D.ni == CELDA_U1["ni"]) & (D.xi == CELDA_U1["xi"]) & (D.A_H >= CELDA_U1["ah_min"])]
+            out.append(D.assign(esc=i))
+    return pd.concat(out, ignore_index=True) if out else pd.DataFrame()

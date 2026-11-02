@@ -1,5 +1,6 @@
 """U1-CRUZADO: señal en USATECH, operación en NQ. Oráculo (misma serie = U1 propio), invariancia a la base, minutos faltantes."""
 import numpy as np
+import pandas as pd
 import pytest
 
 from edgelab.research import areas_expansion as AX, grilla_generica as GG, u1_cruzado as X, u1_indaga as U
@@ -89,3 +90,12 @@ def test_conductor_generico_reproduce_u1_cruzado(ctx):
         for e, (en, ob, sl, _b) in enumerate(exp.EJECUCIONES):
             a = np.sort(pnl[(ei == e) & np.isfinite(pnl)]); b = np.sort(ref[(ref.ejecucion == f"{en}/{ob}/{sl}")].bruto.dropna().to_numpy())
             assert np.allclose(a, b), (kw, e, len(a), len(b))
+
+
+def test_senales_vol_escala_por_mes_causal():
+    """U1-VOL: tres escalas, sólo la celda de U1-CRUZADO, y el primer mes (sin mes anterior) no dispara."""
+    ctx = GG.contexto_m1(_bloques(dias=70, planta=True), tick=0.25)
+    S = X.senales_vol(ctx)
+    assert len(S) and set(S.esc) <= {0, 1, 2} and (S.xi == 1).all() and (S.A_H >= 8).all()
+    mes0 = pd.to_datetime(ctx["t"][0] - 60, unit="s").strftime("%Y%m")
+    assert not (pd.to_datetime(ctx["t"][S.k.to_numpy()] - 60, unit="s").strftime("%Y%m") == mes0).any()

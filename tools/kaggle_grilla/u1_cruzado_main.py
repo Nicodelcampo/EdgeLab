@@ -51,6 +51,21 @@ def main():
         json.dump(dict(experimento="U1-DENSIDAD", desde=desde, hasta=hasta, codigo=CODIGO_SHA, modulos=MODULOS_SHA, senales_por_trimestre=sen), open(f"{nombre}.json", "w"), indent=1)
         log("densidad lista"); return
     us = GG.contexto_m1(F.bloques_usatech(desde, hasta, ent), F.FUENTES["USATECH"][1]); log(f"USATECH {len(us['c'])} velas")
+    if modo == "VOL":                                                        # experimento 2: U1-VOL (W y G escalados por el rango del mes anterior)
+        SV = X.senales_vol(us); log(f"señales U1-VOL: {len(SV)}")
+        con_nq = os.environ.get("EJECUCION", "NQ") == "NQ"
+        if con_nq: del us["tpx"]; nq = GG.contexto_m1(F.bloques_nq(desde, hasta, ent), F.FUENTES["NQ"][1])
+        ops = []
+        for i in sorted(SV.esc.unique()) if len(SV) else []:
+            S_ = SV[SV.esc == i].drop(columns="esc").reset_index(drop=True)
+            o = X.operar(us, nq, S_, tope=("mult", 3.0)) if con_nq else X.operar_propio(us, S_, tope=("mult", 3.0))
+            o["neto"] = o.bruto - fr; o["esc"] = X.ESCALAS_VOL[i]; ops.append(o)
+        O = pd.concat(ops) if ops else pd.DataFrame(columns=["esc", "ejecucion", "neto", "ses", "t"])
+        O["mes"] = pd.to_datetime(O.t, unit="s", utc=True).dt.strftime("%Y%m")
+        nombre = f"U1_VOL_{'NQ' if con_nq else 'US'}_{desde}_{hasta}"
+        res = {f"{e}/{ej}": resumen(g.neto.to_numpy(float), g.ses.to_numpy(), g.mes.to_numpy()) for (e, ej), g in O.groupby(["esc", "ejecucion"])}
+        json.dump(dict(experimento="U1-VOL", desde=desde, hasta=hasta, codigo=CODIGO_SHA, modulos=MODULOS_SHA, por_escala=res), open(f"{nombre}.json", "w"), indent=1, default=float)
+        O.to_csv(f"{nombre}_operaciones.csv", index=False); log(json.dumps({k: (v.get("n"), round(v.get("media", float("nan")), 2)) for k, v in res.items()})); return
     S = X.senales(us); log(f"señales U1: {len(S)}")
     # P&L de las mismas señales operadas en el propio USATECH (referencia del traslado)
     propio = []
