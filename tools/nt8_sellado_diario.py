@@ -132,6 +132,14 @@ def kaggle(*args) -> str:
     return r.stdout
 
 
+def _metadata_con_id(espejo: Path, dataset: str) -> None:
+    """`kaggle datasets metadata` (CLI 2.x) guarda {"info": {...}} sin `id`, y `datasets version` falla con «ID or slug must be
+    specified in the metadata» (2026-11-02). Se reescribe con el formato que acepta `version`."""
+    f = Path(espejo) / "dataset-metadata.json"; m = json.loads(f.read_text(encoding="utf-8")); i = m.get("info", m)
+    f.write_text(json.dumps(dict(id=dataset, title=i["title"], subtitle=i.get("subtitle", ""), description=i.get("description", ""),
+                                 isPrivate=True, licenses=i.get("licenses") or [{"name": "CC0-1.0"}]), ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("cmd", choices=("iniciar", "convertir", "subir", "diario"))
@@ -141,7 +149,7 @@ def main(argv=None):
     a = ap.parse_args(argv)
     if a.cmd == "iniciar":
         a.espejo.mkdir(parents=True, exist_ok=True); kaggle("datasets", "download", a.dataset, "-p", str(a.espejo), "--unzip")
-        kaggle("datasets", "metadata", a.dataset, "-p", str(a.espejo))
+        kaggle("datasets", "metadata", a.dataset, "-p", str(a.espejo)); _metadata_con_id(a.espejo, a.dataset)
         print("espejo listo:", sorted(p.name for p in a.espejo.iterdir())); return
     if a.cmd in ("convertir", "diario"):
         if not a.fuente: raise SystemExit("falta --fuente (carpeta del logger)")
