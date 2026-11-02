@@ -1,4 +1,4 @@
-# Kernel generado por tools/kaggle_grilla/construir_kernel.py (no editar a mano). Principal: tools/kaggle_grilla/u1_cruzado_main.py. Código: bb6b4e624240e3c9b3ce41787f88fff4020b236b56f2d9e76f555dd2f36dc3f0
+# Kernel generado por tools/kaggle_grilla/construir_kernel.py (no editar a mano). Principal: tools/kaggle_grilla/u1_cruzado_main.py. Código: 0649d4136e08e993bf0bafe6ca10357241f02faba5d31747a4a7f4a550d9753b
 import base64, os, sys
 _MODS = {
     'edgelab/__init__.py': '',
@@ -22,7 +22,7 @@ for _m, _b in _MODS.items():
     _p = os.path.join(_base, _m); os.makedirs(os.path.dirname(_p), exist_ok=True)
     open(_p, "wb").write(base64.b64decode(_b))
 sys.path.insert(0, _base)
-CODIGO_SHA = 'bb6b4e624240e3c9b3ce41787f88fff4020b236b56f2d9e76f555dd2f36dc3f0'
+CODIGO_SHA = '0649d4136e08e993bf0bafe6ca10357241f02faba5d31747a4a7f4a550d9753b'
 MODULOS_SHA = {'edgelab/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/funnel/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/research/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/holdout.py': 'c790f4d0339f37a005f45fcd59060f7382eb37c9bd3760dca64d92d8a332ea99', 'edgelab/research/fuentes_ticks.py': '706289a615596d4d6eb3a271a73a8f903641cb76765488f6a9230abc92150736', 'edgelab/research/areas_expansion.py': '2aa14d7add636186cae445945ef34f4ebb6e510484bf87dcab492db5cf4cdbe6', 'edgelab/research/areas_expansion_run.py': '723158e3836c5927b685d63a6a4914b4a07ba7f7548d0ddff09df6543e9db899', 'edgelab/research/grilla_generica.py': '916d01247361be3511e3bda2626560592182702e49e9d4ed39386f1c1e53132e', 'edgelab/research/eventos.py': 'd10f8eb5e04363f7ca2457afb260d2b7499bb3dd2ef2aa2a379efb70d4b3856b', 'edgelab/research/eventos_datos.py': '95dc9ad5535ce4eb5bd79b266e8a420a31a52bf29ff87c56723c1c194bf1e0c8', 'edgelab/research/u1_indaga.py': '0d582d6d5112dfefcfcfcaf597feffed636ee8cbcb71935b998126b6f0062997', 'edgelab/research/u1_oro.py': '90b3d996abee5eb62bf96291cea17d383964124b9e9e21192d875115fb37d13c', 'edgelab/research/u1_cruzado.py': 'f2074aaf954e053516525d8c8ede2d73d740d08f52dfc6075c28c69a99118cd0', 'edgelab/research/grilla_masiva.py': '6341a581b64a010b76bf0bcdd2bd37b1b289287c1a5c91db1b9e8b65ee059986', 'edgelab/funnel/escalera.py': 'f2e98fc6346c52fc17253e803f17523cc71dee91f1a1a622f2f31a1b42908c40'}
 # Principal del kernel U1-CRUZADO: señal U1 en USATECH, operación en NQ (manifiesto u1/MANIFIESTO_U1_CRUZADO.md).
 # Entorno: DESDE/HASTA = YYYYMMDD (antes del holdout). Salidas: U1_CRUZADO_<DESDE>_<HASTA>.json (+ _operaciones.csv).
@@ -76,7 +76,10 @@ def main():
         pd.DataFrame(dias).to_csv(f"{nombre}_dias.csv", index=False)
         json.dump(dict(experimento="U1-DENSIDAD", desde=desde, hasta=hasta, codigo=CODIGO_SHA, modulos=MODULOS_SHA, senales_por_trimestre=sen), open(f"{nombre}.json", "w"), indent=1)
         log("densidad lista"); return
-    us = GG.contexto_m1(F.bloques_usatech(desde, hasta, ent), F.FUENTES["USATECH"][1]); log(f"USATECH {len(us['c'])} velas")
+    if os.environ.get("SENSOR_U1") == "NQ":                                 # experimento 3: la misma señal U1 sobre el propio futuro (sensor = ejecución)
+        us = GG.contexto_m1(F.bloques_nq(desde, hasta, ent), F.FUENTES["NQ"][1]); log(f"sensor NQ {len(us['c'])} velas")
+    else:
+        us = GG.contexto_m1(F.bloques_usatech(desde, hasta, ent), F.FUENTES["USATECH"][1]); log(f"USATECH {len(us['c'])} velas")
     if modo == "VOL":                                                        # experimento 2: U1-VOL (W y G escalados por el rango del mes anterior)
         SV = X.senales_vol(us); log(f"señales U1-VOL: {len(SV)}")
         con_nq = os.environ.get("EJECUCION", "NQ") == "NQ"
@@ -112,7 +115,7 @@ def main():
             o["mes"] = pd.to_datetime(o.t, unit="s", utc=True).dt.strftime("%Y%m"); ops.append(o)
             out[o.tope.iloc[0] if len(o) else str(tp_)] = {ej: dict(neto=resumen(g.neto.to_numpy(float), g.ses.to_numpy(), g.mes.to_numpy()), riesgo=riesgo(g))
                                                            for ej, g in o.groupby("ejecucion")}
-        nombre = f"U1_TOPES_{'NQ' if con_nq else 'US'}_{desde}_{hasta}"
+        nombre = f"U1_TOPES_{'NQ' if con_nq else 'US'}{'_SNQ' if os.environ.get('SENSOR_U1') == 'NQ' else ''}_{desde}_{hasta}"
         json.dump(dict(experimento="U1-TOPES", ejecucion="NQ" if con_nq else "USATECH", desde=desde, hasta=hasta, friccion_pts=fr, codigo=CODIGO_SHA,
                        modulos=MODULOS_SHA, por_tope=out), open(f"{nombre}.json", "w"), indent=1, default=float)
         pd.concat(ops).to_csv(f"{nombre}_operaciones.csv", index=False)
