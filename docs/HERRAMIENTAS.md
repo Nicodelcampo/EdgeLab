@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-559 scripts.
+561 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -280,6 +280,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/hftv4_retorno_stage2.py` | HFTV4-RETORNO análisis (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md). |
 | `tools/holdout_canasta.py` | Holdout de la CANASTA de pistas de una familia que terminó PISTAS_VIVAS (decisión de Nico, 2026-10-26, auditoría del filtro: |
 | `tools/holdout_exploratorio.py` | Mirada EXPLORATORIA al holdout de una campaña del embudo (decisión de Nico, 2026-10-26: «mirar igual, sabiendo el costo»). |
+| `tools/holdout_individual.py` | Evaluación de las aperturas INDIVIDUALES del holdout (canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md): cada nominada |
 | `tools/ib_vwap_pmh_pml_nq_20260929.py` | Fixed NQ IB/VWAP and PMH/PML development backtest. |
 | `tools/ib_vwap_pmh_pml_nq_raw_audit_20260929.py` | Independent trade execution check directly against raw Parquet ticks. |
 | `tools/ingest_cycle001_lessons.py` | Build the CYCLE-001 genesis ledger for the durable Experimental Hippocampus. |
@@ -316,6 +317,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/prerange_hft_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/prerange_zonas_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/racimos_integridad_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/sellado_conteo_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_cruzado_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_oro_main.py` | (sin docstring) |
 | `tools/kaggle_hippocampus_ingest.py` | Verified aggregate evidence -> existing durable Hipocampo. Never a trial/edge. |
