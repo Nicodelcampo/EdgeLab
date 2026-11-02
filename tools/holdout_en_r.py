@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.p
 from remedir_canasta_causal import _cargar  # noqa: E402
 from holdout_individual import REGLAS, validas, fuente  # noqa: E402
 
-SAL = ROOT / "docs/research/canasta_7_20261030/holdout_en_r"; ACTA = "docs/research/APERTURA_HOLDOUT_CONJUNTA_20261102.md"
+import os
+SAL = ROOT / os.environ.get("HOLDOUT_R_SALIDA", "docs/research/canasta_7_20261030/holdout_en_r"); ACTA = "docs/research/APERTURA_HOLDOUT_CONJUNTA_20261102.md"
 
 
 def runner():
@@ -28,11 +29,11 @@ def lanzar(commit):
         try:
             if cid == "U1-CRUZADO":
                 sp = dict(cid="U1-CRUZADO-R", experimento="edgelab.research.u1_cruzado_papel", sensor="DK:USATECHIDXUSD", ejecucion="NQ", cuenta_kaggle="nicobuttaro")
-                h = run.lanzar(sp, "OPERAR", dict(acta=dict(tipo="holdout_r", acta=ACTA, commit=commit, cid="U1-CRUZADO")), [20261001, 20261030])
+                h = run.lanzar(sp, "OPERAR", dict(acta=dict(tipo="holdout_r", acta=ACTA, commit=commit, cid="U1-CRUZADO")), [20261001, int(os.environ.get("HOLDOUT_HASTA", 20261030))])
             else:
                 st, acta = _cargar(cid); r = acta["regla"]
                 h = run.lanzar(dict(st["spec"], cid=f"{cid}-R"), "ANALIZAR_REGLA", dict(cortes=acta.get("cortes") or st.get("cortes"), celdas=[r["celda"]],
-                               tope=r.get("tope"), operaciones=True, acta=dict(tipo="holdout_r", acta=ACTA, commit=commit, cid=cid)), [20261001, 20261030])
+                               tope=r.get("tope"), operaciones=True, acta=dict(tipo="holdout_r", acta=ACTA, commit=commit, cid=cid)), [20261001, int(os.environ.get("HOLDOUT_HASTA", 20261030))])
         except Exception as ex: print("no se lanzó", cid, str(ex)[-200:]); continue
         hs[cid] = h; hf.write_text(json.dumps(hs, indent=1)); print("lanzada", cid, h, flush=True)
 

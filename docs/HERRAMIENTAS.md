@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-567 scripts.
+568 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -322,6 +322,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/prerange_hft_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/prerange_zonas_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/racimos_integridad_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/sellado_cobertura_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/sellado_conteo_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_cruzado_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_oro_main.py` | (sin docstring) |
