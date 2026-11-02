@@ -54,3 +54,19 @@ hasta que haya decisión; el diagnóstico de arriba se hizo sobre `u1_cfd`.
 
 **5 en descubrimiento (DESC lanzado):** U1-6E-CONFIRMA-GBP-C, U1-RACIMOS-GRILLA-YM-C, U1-ZONAS-GRILLA-YM-C, CVGAP-ES-C y CVGAP-CFD-ES-C. Las
 conduce `tools/embudo_correr.py` desde esta sesión, con estado en `embudo/`.
+
+## Resultados (2026-11-02 18:10 UTC)
+| Campaña | DESC causal | Pistas a réplica (abr–sep 2026) | Estado |
+|---|---|---|---|
+| CVGAP-ES-C | 165.540 evaluables, FDR 0 | 0 de 20 confirmadas (Simes 0,37) | PISTAS_VIVAS |
+| CVGAP-CFD-ES-C | 29.752 evaluables, FDR 0 | 0 de 20 (Simes 0,95) | PISTAS_VIVAS |
+| U1-ZONAS-GRILLA-YM-C | 1.009 evaluables, FDR 0 | 0 de 3 (Simes 0,15) | PISTAS_VIVAS |
+| U1-6E-CONFIRMA-GBP-C | 535.450 evaluables, FDR 2 (no cumplen la selección) | 0 de 20 (Simes 1,0; canasta −5,2) | SIN_CANDIDATAS |
+| U1-RACIMOS-GRILLA-YM-C | 0 evaluables (ninguna celda llega a 30 operaciones) | — | SIN_CANDIDATAS (sin dato) |
+
+**Lectura.**
+- Con el código causal, ninguna de las 5 da candidatas, igual que con el código viejo: la corrección no cambió el veredicto de estas
+  familias.
+- PISTAS_VIVAS significa sin potencia para decidir: siguen vivas, pero no son candidatas al holdout.
+- **En curso (DESC lanzado 18:10):** U1-6B-FUT-GRILLA-C, U1-6B-GRILLA-C, U1-6E-FUT-GRILLA-C, U1-6E-GRILLA-C, U1-ZONAS-AVCL-ES-C y
+  U1-ZONAS-BT2-YM-C.
