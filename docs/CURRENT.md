@@ -14,7 +14,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 
 - **Holdout sellado al día por NT8** (`docs/infra/LOGGER_NT8_DIARIO.md`): versión de `nicolasbuttaro/edgelab-holdout-sellado` del
   2026-11-02 con la sesión 20261030 de NQ/ES/YM/GC (OK x4; 20261029 ya estaba). Logger en vivo en la PC de Nico desde el 2-nov
-  (`E:\DatosNT8	ick_live`) y tarea diaria 19:15 AR. Exportador sólo-holdout `nt8_tools/EdgeLabTickHistorySellado.cs` (PR #187);
+  (`E:\DatosNT8\tick_live`) y tarea diaria 19:15 AR. Exportador sólo-holdout `nt8_tools/EdgeLabTickHistorySellado.cs` (PR #187);
   `iniciar` deja `dataset-metadata.json` con `id` (kaggle CLI 2.x). Sin mirar contenido. **Edges promovidos: 0.**
 
 ## Estado al 2026-10-31 (leer primero)
