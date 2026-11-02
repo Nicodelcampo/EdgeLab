@@ -1,7 +1,7 @@
 # Propuesta v3 de la canasta del holdout, con código causal (2026-11-02)
 
-Estado: PROPUESTA. Necesita la firma de Nico, igual que la v2: cambiar la composición de un pre-registro firmado es una decisión
-humana. Mientras no se firme sigue vigente `PREREGISTRO.md` (v2), y el holdout de la canasta **no se abre**. Referente:
+Estado: VIGENTE. **Firmada por Nico el 2026-11-02** en la sesión en la nube («firmo la canasta V3»). Reemplaza a `PREREGISTRO.md` (v2)
+en la composición; todo lo demás de la v2 sigue igual. Apertura: `ACTA_APERTURA_V3_20261102.md`. Referente:
 `docs/NORTH_STAR.md`, cuerpo sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 ## Por qué
