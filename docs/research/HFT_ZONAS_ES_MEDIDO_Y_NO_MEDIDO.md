@@ -1055,3 +1055,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   futuro: +25,8 netos por operación. e-proceso NO_CONCLUYENTE (e_edge 1,15 contra 277, α LORD++ 0,0036, t = 2).
   Acta: `areas_expansion_20261022/u1/ACTA_HOLDOUT_CAUSAL_U1_CRUZADO_20261102.md`.
 - **NO MEDIDO**: holdout con calentamiento de zonas de desarrollo (esta corrida las arma sólo con ticks del holdout, igual que la anterior).
+
+## Canasta v3 — holdout, revisión 1 (20 sesiones, 10-01 → 10-28) — 02/11/2026
+- **MEDIDO**: t = −1,51 contra 2,39: no aprueba y sigue a la revisión 2. CVGAP-NQ −34,9 (n 20) y CVGAP-CFD-NQ −22,9 (n 16) en alerta.
+  U1-ZONAS-AVCL +15,0 (n 7), U1-RACIMOS +43,7 (n 5), U1-ZONAS −14,6 (n 17). Acta: `canasta_7_20261030/ACTA_APERTURA_V3_20261102.md`.
+- **NO MEDIDO**: si la ausencia de operaciones de U1-RACIMOS antes del 10-13 es mercado o calentamiento.

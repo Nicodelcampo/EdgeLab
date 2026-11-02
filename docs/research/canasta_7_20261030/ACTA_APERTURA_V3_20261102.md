@@ -33,3 +33,22 @@ Las 5 reglas de la v3: CVGAP-NQ, U1-RACIMOS-GRILLA-NQ, CVGAP-CFD-NQ, U1-ZONAS-AV
 
 ## Cómo podría refutarse
 Media ≤ 0 en la revisión de 60 sesiones, o una regla que cruce su umbral de colapso.
+
+## Resultado de la revisión 1 (2026-11-02), en `holdout_v3/RESULTADO.json`
+- **Principal, 20 sesiones (10-01 → 10-28):** media −0,62 por sesión (en unidades de S), **t = −1,51** contra un umbral de 2,39.
+  **No aprueba.** La canasta sigue hacia la revisión de 40 sesiones; con este arranque, aprobar ahí exige un cambio grande.
+- Informativo, sólo las sesiones con operaciones: 18 sesiones, t = −0,73.
+
+| Regla | n | Media neta | Estado contra `umbrales_estado.json` |
+|---|---|---|---|
+| CVGAP-NQ | 20 | −34,9 | debajo del p5 de n = 20 (−18,3), arriba del colapso (−36,2): **alerta** |
+| CVGAP-CFD-NQ | 16 | −22,9 | entre los umbrales de n = 10 y n = 20: **alerta**, sin colapso |
+| U1-ZONAS-NQ | 17 | −14,6 | dentro de lo esperable (p5 n = 20: −31,6) |
+| U1-ZONAS-AVCL-NQ | 7 | +15,0 | a favor |
+| U1-RACIMOS-GRILLA-NQ | 5 | +43,7 | a favor; operaciones recién desde el 10-13 (ver abajo) |
+
+- **Integridad por revisar antes de la revisión 2.** U1-RACIMOS no tiene operaciones del 10-01 al 10-12. Puede ser el mercado o que el
+  calentamiento de racimos del sellado no esté entrando (el almacén de racimos de desarrollo puede no llegar a la frontera). Se
+  revisa sin mirar P&L de nuevo y queda registrado.
+- **Lectura.** El holdout no confirma la canasta: las dos reglas CVGAP, las de más peso en operaciones, van en contra en octubre.
+  Nada se ajusta con este resultado.
