@@ -204,7 +204,7 @@ def cargar(fuente: str, inst: str, entrada: str | None = None) -> pd.DataFrame:
     r = glob.glob(f"{entrada}/**/{inst}_*ticks.parquet", recursive=True)
     if not r: raise FileNotFoundError(f"sin ticks sellados de {inst} en {entrada}")
     tick = F.TICK_FUTURO[inst]; hasta = int(os.environ.get("HASTA", 20991231))
-    return _GENERADORES[fuente](F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, r[0], os.path.abspath("ACTA_HOLDOUT.json"), tick), tick)
+    return _GENERADORES[fuente](F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, sorted(r), os.path.abspath("ACTA_HOLDOUT.json"), tick), tick)
 
 
 def _zonas_control(ctx, fuente):

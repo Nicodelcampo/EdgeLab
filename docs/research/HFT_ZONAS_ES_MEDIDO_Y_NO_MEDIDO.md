@@ -1043,3 +1043,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   y +27,3 de la versión de investigación. Los 29 disparos que ésta ocultaba promediaban −48 a −69 pts. El holdout del 2026-11-02
   (+25,8) usó la versión de investigación: **no vale como estimación operable**. Ver `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md`.
 - **NO MEDIDO**: el resto de la familia U1 (incluidas 5 de las 7 de la canasta del holdout) con la versión causal.
+
+## Canasta del holdout re-medida con código causal — 02/11/2026
+- **MEDIDO** (`canasta_7_20261030/PROPUESTA_V3_CAUSAL_20261102.md`), réplica causal por operación:
+  - CVGAP-NQ +15,8 (p 0,04); U1-RACIMOS-NQ +14,8 (16 ops); CVGAP-CFD-NQ +5,8; U1-ZONAS-AVCL-NQ +4,0; U1-ZONAS-NQ +2,9;
+  - **U1-ORO −1,2 y U1-YM −10,2** (negativas: se propone sacarlas).
+  - Propuesta v3 de 5 reglas, pendiente de la firma de Nico.

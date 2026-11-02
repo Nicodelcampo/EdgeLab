@@ -108,7 +108,8 @@ class KaggleRunner:
     def argumentos(self, spec, etapa, params, periodo) -> list:
         ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
         if self.dataset_sellado:                                         # holdout: sólo el dataset sellado, nada del release
-            needs, extra = [], [self.dataset_sellado]
+            needs, extra = [], [self.dataset_sellado] + list(spec.get("datasets_extra", []))   # + almacenes de zonas de desarrollo
+            # (target-free, 2026-11-02): sirven de calentamiento — las zonas creadas antes de la frontera siguen vivas, como en vivo
         else:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:

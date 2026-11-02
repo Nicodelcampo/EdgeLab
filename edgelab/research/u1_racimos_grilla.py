@@ -50,7 +50,7 @@ def _racimos_sellados(inst: str, entrada: str) -> pd.DataFrame:
     r = glob.glob(f"{entrada}/**/{inst}_*ticks.parquet", recursive=True)
     if not r: raise FileNotFoundError(f"sin ticks sellados de {inst} en {entrada}")
     acta = os.environ.get("ACTA_HOLDOUT_RUTA") or os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[inst]
-    bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, r[0], acta, tick))
+    bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, sorted(r), acta, tick))
     if not bl: return pd.DataFrame(columns=["t_ns", "lo", "hi", "zona", "racimo"])
     ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
     vol = np.concatenate([b.vol.to_numpy() for b in bl])
@@ -76,8 +76,13 @@ def _cargar(inst):
     import glob
     ent = os.environ.get("ENTRADA", "/kaggle/input")
     f = glob.glob(f"{ent}/**/ZONAS_{FUENTE}_{inst}.parquet", recursive=True)
+    if os.environ.get("SELLADO") == "1":                 # 2026-11-02: calentamiento con los racimos de desarrollo anteriores a la frontera
+        Zs = _racimos_sellados(inst, ent)
+        if not f: return Zs
+        from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS
+        Zd = pd.read_parquet(f[0], columns=["t_ns", "lo", "hi", "zona", "racimo"]); Zd = Zd[Zd.t_ns < HOLDOUT_APERTURA_UTC_NS]
+        return pd.concat([Zd, Zs[["t_ns", "lo", "hi", "zona", "racimo"]]], ignore_index=True).sort_values("t_ns", kind="stable", ignore_index=True)
     if not f:
-        if os.environ.get("SELLADO") == "1": return _racimos_sellados(inst, ent)
         raise FileNotFoundError(f"sin almacén {FUENTE}/{inst}: nunca se cae a otra fuente")
     return pd.read_parquet(f[0], columns=["t_ns", "lo", "hi", "zona", "racimo"])
 

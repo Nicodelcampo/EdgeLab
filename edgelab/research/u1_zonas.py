@@ -67,7 +67,7 @@ def _zonas_selladas(indicador: str, instrumento: str, entrada: str) -> pd.DataFr
     r = glob.glob(f"{entrada}/**/{instrumento}_*ticks.parquet", recursive=True)
     if not r: raise FileNotFoundError(f"sin ticks sellados de {instrumento} en {entrada}")
     acta = os.environ.get("ACTA_HOLDOUT_RUTA") or os.path.abspath("ACTA_HOLDOUT.json"); hasta = int(os.environ.get("HASTA", 20991231)); tick = F.TICK_FUTURO[instrumento]
-    bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, r[0], acta, tick))
+    bl = list(F.bloques_nq_sellado(F.HOLDOUT_PRIMERA_SESION_INT, hasta, sorted(r), acta, tick))
     if not bl: return pd.DataFrame(columns=["t_ns", "lo", "hi"])
     ts = np.concatenate([b.ts_ns.to_numpy() for b in bl]); px = np.concatenate([b.px.to_numpy() for b in bl])
     vol = np.concatenate([b.vol.to_numpy() for b in bl])
@@ -96,8 +96,14 @@ def _zonas_selladas(indicador: str, instrumento: str, entrada: str) -> pd.DataFr
 def cargar(indicador: str, instrumento: str, entrada: str | None = None) -> pd.DataFrame:
     entrada = entrada or os.environ.get("ENTRADA", "/kaggle/input")
     f = glob.glob(f"{entrada}/**/ZONAS_{indicador}_{instrumento}.parquet", recursive=True)
+    if os.environ.get("SELLADO") == "1":                 # 2026-11-02: como en vivo, las zonas creadas ANTES de la frontera siguen
+        Zs = _zonas_selladas(indicador, instrumento, entrada)      # vivas al abrir el holdout (calentamiento con el almacén de desarrollo)
+        if not f: return Zs
+        from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS
+        Zd = pd.read_parquet(f[0]); Zd = Zd[Zd.t_ns < HOLDOUT_APERTURA_UTC_NS]
+        cols = [c for c in ("t_ns", "lo", "hi", "t_fin_ns") if c in Zd and c in Zs] or ["t_ns", "lo", "hi"]
+        return pd.concat([Zd[cols], Zs[cols]], ignore_index=True).sort_values("t_ns", kind="stable", ignore_index=True)
     if not f:
-        if os.environ.get("SELLADO") == "1": return _zonas_selladas(indicador, instrumento, entrada)
         raise FileNotFoundError(f"sin almacén de zonas {indicador}/{instrumento} en {entrada}")
     Z = pd.read_parquet(f[0]); return Z[[c for c in ("t_ns", "lo", "hi", "t_fin_ns") if c in Z]]
 
