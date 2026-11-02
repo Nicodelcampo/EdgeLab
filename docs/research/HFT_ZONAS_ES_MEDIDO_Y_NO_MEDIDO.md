@@ -1097,3 +1097,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## Holdout contra desarrollo, todo con código causal — 02/11/2026
 - **MEDIDO:** ninguna de las 13 reglas difiere significativamente de su DESC + réplica causal tras Holm. Las dos CVGAP son las más
   apartadas (z −2,70 y −2,45, Holm 0,20 y 0,22). `canasta_7_20261030/HOLDOUT_VS_DESARROLLO_20261102.md`.
+
+## Apertura conjunta del holdout (código causal) — 02/11/2026
+- **MEDIDO:** 16 reglas (12 nominadas, U1-CRUZADO y 3 forzadas). Todas EN CURSO o NO_CONCLUYENTE; papel de las 3 forzadas SIN_DECIDIR.
+  La señal fuerte es mala: CVGAP-NQ y CVGAP-CFD-NQ en alerta (z −2,7 / −2,45). `docs/research/APERTURA_HOLDOUT_CONJUNTA_20261102.md`.

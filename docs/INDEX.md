@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 901 |
+| `docs/research` | 902 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,6 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | HALLAZGO | 1 | `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md` | 2026-11-02 | VIGENTE. Lo encontró la sesión en la nube al portar U1-CRUZADO a JForex, a pedid |
+| APERTURA | 1 | `APERTURA_HOLDOUT_CONJUNTA_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «cuando termine todo abrimos el holdout con las nominad |
 | RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
 | LECTURA | 3 | `LECTURA_ROBOTEDGE_20261101.md` | 2026-11-01 | VIGENTE. Fecha: 2026-11-01. Insumos (subidos por Nico): |
 | AUDITORIA | 15 | `AUDITORIA_T_NS_AVZP2_20261031.md` | 2026-10-31 | VIGENTE. Heredado de gonzasib-claude (pedido de Nico: «encargate del trabajo que |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PREPARACION | 2 | `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md` | 2026-09-30 | PREPARADO / NO MEDIDO EN MNQ REAL. R02/I-3; no rescate de climas. |
 | ENTREGA | 2 | `ENTREGA_LOCAL_L2_GC_ES_20260930.md` | 2026-09-30 | - |
 | BORRADOR | 3 | `BORRADOR_PROTOCOLO_ESPEJO_L2_PREDICTIBILIDAD_20260930.md` | 2026-09-30 | - |
-| PROTOCOLO | 4 | `PROTOCOLO_CONTEXTOS_L2_ES_MES_MNQ_20260929.md` | 2026-09-29 | escrito antes de extraer ni entrenar (pedido de Nico: «ejecutá todos los pasos») |
 
 ## Superados (7)
 
