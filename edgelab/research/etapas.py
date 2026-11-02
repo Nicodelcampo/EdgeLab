@@ -80,6 +80,9 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
             O = GG.operaciones_de(cx, p["celdas"])
             out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t")} if len(O) else {}
+        if p.get("auditoria"):                                             # 2026-11-02, experimento 4: auditoría vela a vela
+            out["auditoria"] = GG.auditar_operaciones(cx, p["celdas"], cx_ej if cx_ej is not None else ctx,
+                                                       linea=hasattr(exp, "lineas_salida"))
         return out
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE

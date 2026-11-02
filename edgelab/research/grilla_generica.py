@@ -483,6 +483,37 @@ def operaciones_de(cx, celdas):
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
 
 
+def auditar_operaciones(cx, celdas, sim, linea: bool = False, max_detalle: int = 50) -> dict:
+    """Auditoría vela a vela (experimento 4, 2026-11-02), independiente del simulador, de cada operación con llenado de las celdas
+    congeladas, sobre las velas M1 del instrumento de ejecución `sim`. No usa ni devuelve P&L: sólo tiempos, precios y niveles.
+      causal      el llenado ocurre DESPUÉS del cierre de la vela de decisión (t_fill > t). E1C (llenado al cierre de la misma vela)
+                  es un supuesto declarado y se cuenta aparte;
+      entrada     el precio de entrada está dentro del rango [l, h] de la vela de llenado (±1 tick): no hay fills imposibles;
+      orden       t_exit >= t_fill;
+      toque_previo una vela entre el llenado y la salida (exclusive) ya tocó el stop o el objetivo y la operación siguió abierta
+                  (un stop o un objetivo salteado). Con BE o con salida por línea el stop puede haberse movido: se informa aparte.
+    Devuelve los conteos y hasta `max_detalle` casos de cada falla."""
+    O = cx["O"]; tk = float(sim["tick"]); t_ej = np.asarray(sim["t"], float); o_, h, l = sim["o"], sim["h"], sim["l"]
+    fallas = dict(causal=[], entrada=[], orden=[], toque_previo=[], toque_previo_con_be=[]); n = 0; al_cierre = 0
+    for i, c in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"]))
+        for r in m:
+            n += 1; tf, tx, t0 = cx["t_fill"][r], cx["t_exit"][r], cx["t"][r]
+            fb = int(np.searchsorted(t_ej, tf)); xb = int(np.searchsorted(t_ej, tx))
+            lim, s, sl, tp, be = int(O[r, 3]), int(O[r, 4]), float(O[r, 6]), float(O[r, 7]), int(O[r, 8])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5])                # E1A llena en la apertura; E1C al cierre; límite en su nivel
+            caso = dict(celda=i, t=float(t0), t_fill=float(tf), t_exit=float(tx), lim=lim, s=s, e=e, sl=sl, tp=tp)
+            if lim == 0 and tf == t0: al_cierre += 1                         # E1C: supuesto declarado (llenado al cierre de la decisión)
+            elif not tf > t0: fallas["causal"].append(caso)
+            if not (l[fb] - tk <= e <= h[fb] + tk): fallas["entrada"].append(dict(caso, h=float(h[fb]), l=float(l[fb])))
+            if not tx >= tf: fallas["orden"].append(caso)
+            for j in range(fb + 1, xb):
+                toca = (l[j] <= sl or h[j] >= tp + tk) if s == 1 else (h[j] >= sl or l[j] <= tp - tk)   # objetivo: atravesado por 1 tick
+                if toca:
+                    fallas["toque_previo_con_be" if be or linea else "toque_previo"].append(dict(caso, vela=float(t_ej[j]))); break
+    return dict(operaciones=n, llenado_al_cierre_e1c=al_cierre, **{k: len(v) for k, v in fallas.items()}, detalle={k: v[:max_detalle] for k, v in fallas.items() if v})
+
+
 def para_autopilot(res, fuente):
     """results_flat: pistas como informativas; réplica `/rep/` es lo único que puede contar como acierto."""
     nom = lambda c: "_".join(str(x) for x in c); exp = res.get("experimento", "GRILLA")
