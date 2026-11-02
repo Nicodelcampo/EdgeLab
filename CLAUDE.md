@@ -157,6 +157,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   hace con `one`); si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py`
   falla con una función copiada (línea base `config/clones_baseline.json`) o con un script nuevo fuera del catálogo; el
   programador del Debian recibe la búsqueda en su prompt.
+- **Medir en R (Nico, 2026-11-02):** el P&L de toda campaña nueva se mide en R (neto / riesgo inicial, entrada real a stop):
+  `"estadistico": "R"` en la campaña. Los puntos sobrestiman reglas cuyas ganancias caen en stops lejanos (U1-CRUZADO: +15,6 pts =
+  +0,015R). Para pasar a REAL se exige además R forward > 0 (`cartera/ficha.py::puede_promover`). Ver `docs/research/MEDIR_EN_R_20261102.md`;
+  ideas transferibles entre familias: `docs/research/atlas_ideas_r_20261102/`.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
