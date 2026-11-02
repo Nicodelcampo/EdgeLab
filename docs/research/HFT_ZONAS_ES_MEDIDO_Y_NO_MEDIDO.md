@@ -1060,3 +1060,14 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO**: t = −1,51 contra 2,39: no aprueba y sigue a la revisión 2. CVGAP-NQ −34,9 (n 20) y CVGAP-CFD-NQ −22,9 (n 16) en alerta.
   U1-ZONAS-AVCL +15,0 (n 7), U1-RACIMOS +43,7 (n 5), U1-ZONAS −14,6 (n 17). Acta: `canasta_7_20261030/ACTA_APERTURA_V3_20261102.md`.
 - **NO MEDIDO**: si la ausencia de operaciones de U1-RACIMOS antes del 10-13 es mercado o calentamiento.
+
+## U1-CRUZADO causal — régimen mensual (experimento 1) — 02/11/2026
+- **MEDIDO**: tramos causales, E1A/T3/S3 con tope 3×:
+  - US 2023-01 → 2024-03: −0,8 (36 operaciones);
+  - US 2024-04 → 2025-07: −11,5 (135);
+  - NQ desarrollo: +4,4 (64);
+  - NQ réplica: +15,6 (109).
+
+  Spearman de la media mensual contra rango, tendencia y volatilidad de las 20 sesiones previas: +0,21 / −0,13 / +0,24, Holm 0,44
+  en las tres. Ninguna separa los meses. MDE |rho| ≈ 0,4. `areas_expansion_20261022/u1/regimen_causal/`.
+- **NO MEDIDO**: régimen con medidas relativas al nivel (rango / precio) — no pre-registrado; no se mira sobre estos datos.

@@ -42,3 +42,19 @@ Que las correlaciones sean ≈ 0, o que cambien de signo entre 2023–2025 (USAT
 
 ## Registro
 3 pruebas en `TRIAL_REGISTRY_GLOBAL.jsonl` (`exp1/U1-REGIMEN-MENSUAL-CAUSAL`).
+
+## Resultado (2026-11-02), en `RESULTADO.json` y `MENSUAL.csv`
+`tools/u1/u1_regimen_mensual_causal.py`, con 39 meses (2023-02 → 2026-09).
+
+| Medida | rho | IC90 | p Holm | rho US / NQ |
+|---|---|---|---|---|
+| rango | +0,21 | [−0,08; +0,48] | 0,44 | +0,04 / +0,60 |
+| tendencia | −0,13 | [−0,39; +0,16] | 0,44 | −0,18 / −0,02 |
+| volatilidad | +0,24 | [−0,06; +0,52] | 0,44 | +0,05 / +0,46 |
+
+**Lectura (fijada antes): ninguna medida pasa Holm.** No hay una variable simple de régimen para elegir cuándo operar U1-CRUZADO.
+- **MDE.** Con 39 meses el error estándar de rho es ≈ 0,16, así que sólo se detectaría |rho| ≳ 0,4. Una relación moderada no se
+  descarta.
+- **Rango y volatilidad tienen el mismo signo** en los dos tramos, pero sólo en NQ son fuertes (+0,60 y +0,46, con 13 meses).
+  El rango está en puntos y el nivel del índice se duplicó entre 2023 y 2026: en parte mide nivel, no régimen.
+- No se busca otra variable sobre estos mismos datos.
