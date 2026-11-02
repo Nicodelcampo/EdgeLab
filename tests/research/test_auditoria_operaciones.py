@@ -39,3 +39,13 @@ def test_operaciones_traen_riesgo_positivo(monkeypatch):
     r = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, operaciones=True), log=lambda s: None)
     o = r["operaciones"]
     assert len(o["riesgo"]) == len(o["neto"]) > 0 and all(x > 0 for x in o["riesgo"])
+
+
+def test_normalizar_riesgo_da_r(monkeypatch):
+    """NORMALIZAR = "riesgo": el P&L neto de cada operación queda dividido por su riesgo inicial (R)."""
+    ctx, cx, cortes = _cx(monkeypatch)
+    monkeypatch.setattr(X, "NORMALIZAR", "riesgo", raising=False)
+    res, cxr = GG.correr(X, ctx, modo="REP", friccion=0.5, extra_adverso=0.25, cortes=cortes, celdas=CELDAS, log=lambda s: None)
+    m = np.isfinite(cx["net"]) & np.isfinite(cxr["net"])
+    rg = GG.riesgo_ops(cx["O"], np.searchsorted(ctx["t"], cx["t_fill"]), ctx)
+    assert m.sum() > 0 and np.allclose(cxr["net"][m], cx["net"][m] / rg[m]) and res["normalizado"]["metodo"] == "riesgo"

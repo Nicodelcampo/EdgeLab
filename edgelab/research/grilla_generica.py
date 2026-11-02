@@ -370,14 +370,22 @@ def resumen_e0(D, variables, cortes):
     return out
 
 
-NORMALIZACIONES = ("rango_sesion_previa",)
+NORMALIZACIONES = ("rango_sesion_previa", "riesgo")
+
+
+def riesgo_ops(O, fb, sim) -> np.ndarray:
+    """Riesgo inicial por operación (2026-11-02, medir en R): |entrada real − stop|, ambos conocidos al llenar. E1A (límite 2) llena
+    en la apertura de la vela de llenado; mercado al cierre y límites, en su nivel. `fb`: vela de llenado (-1 sin llenado -> NaN)."""
+    O = np.asarray(O); fb = np.asarray(fb, np.int64); o = np.asarray(sim["o"], float)
+    e = np.where(O[:, 3] == 2, o[np.clip(fb, 0, len(o) - 1)], O[:, 5])
+    r = np.abs(e - O[:, 6]); return np.where((fb >= 0) & (r > 0), r, np.nan)
 
 
 def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:
     """Escala causal por operación (2026-10-26, POTENCIA_MISMOS_DATOS §2): `rango_sesion_previa` = máximo − mínimo de la sesión
     ANTERIOR a la de la operación en el instrumento de ejecución (conocido antes de operar). Sin sesión anterior: NaN (la operación
     queda fuera, como un llenado imposible). Un experimento la activa declarando `NORMALIZAR` en su módulo, antes de correr."""
-    if metodo not in NORMALIZACIONES: raise ValueError(f"NORMALIZAR {metodo!r}: {NORMALIZACIONES}")
+    if metodo not in NORMALIZACIONES or metodo == "riesgo": raise ValueError(f"escala_ops {metodo!r}: sólo rango_sesion_previa (riesgo usa riesgo_ops)")
     s = pd.DataFrame(dict(ses=ctx_ej["ses"], h=ctx_ej["h"], l=ctx_ej["l"])).groupby("ses").agg(h=("h", "max"), l=("l", "min")).sort_index()
     previo = (s.h - s.l).shift(1); previo = previo.where(previo > 0)
     return pd.Series(np.asarray(ses_ops)).map(previo).to_numpy(float)
@@ -425,7 +433,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
     if (norm := getattr(exp, "NORMALIZAR", None)):                                         # 2026-10-26: estadístico declarado en el módulo
-        esc = escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx)
+        esc = (riesgo_ops(O, fb, cx_ej if cx_ej is not None else ctx) if norm == "riesgo"     # 2026-11-02: P&L en R
+               else escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx))
         med = float(np.nanmedian(esc)) if np.isfinite(esc).any() else float("nan")
         net = net / esc; extra_adverso = extra_adverso / med
         res["normalizado"] = dict(metodo=norm, escala_mediana=med, sin_escala=int((~np.isfinite(esc)).sum()),
@@ -480,9 +489,7 @@ def operaciones_de(cx, celdas, sim=None):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
         d = dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])
         if sim is not None:                                            # 2026-11-02: riesgo inicial (entrada real a stop) para medir en R
-            O = cx["O"][m]; fb = np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m])
-            e = np.where(O[:, 3] == 2, np.asarray(sim["o"], float)[np.minimum(fb, len(sim["o"]) - 1)], O[:, 5])
-            d["riesgo"] = np.abs(e - O[:, 6])
+            d["riesgo"] = riesgo_ops(cx["O"][m], np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]), sim)
         filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
 
