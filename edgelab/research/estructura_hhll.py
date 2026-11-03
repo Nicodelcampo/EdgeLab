@@ -32,6 +32,7 @@ M0, M1 = 180, 870
 ENFRIAMIENTO = 35
 TOPE_BARRAS = 180
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("pendiente_estructura", "pend_atr", "ge", cortes=(0.50, 1.10)),
     Variable("profundidad_pullback", "prof_ret", "extremos", cuantiles=3),

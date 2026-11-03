@@ -25,8 +25,9 @@ from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "COMEX-CIERRE-ORO"
 INDICADORES = ["COMEX-CIERRE-ORO"]
-M_PIT0, M_PIT1, M_SALE = 750, 810, 955
+M_PIT0, M_PIT1, M_SALE = 750, 810, 835
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=2),
     Variable("desplazamiento_pit", "desp_rango", "ge", cortes=(0.35, 0.60)),

@@ -26,8 +26,9 @@ from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "PRIMERA-HORA-CONT"
 INDICADORES = ["PRIMERA-HORA-CONT"]
-M_INI, M_FIN, M_LIM, M_SALE = 570, 630, 750, 955
+M_INI, M_FIN, M_LIM, M_SALE = 570, 630, 750, 835
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("asim_ib", "asim", "ge", cortes=(0.30, 0.55)),
     Variable("ancho_ib", "ib_atr", "extremos", cuantiles=3),

@@ -20,13 +20,15 @@ import pandas as pd
 
 from edgelab.research import rango_ruptura as RR
 from edgelab.research.grilla_generica import Variable
+from edgelab.research.oro_almuerzo_ruptura import _offset_madrid_segundos_nb
 from edgelab.research.regimen_sesion import minuto_ny, rv_relativa
 from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "WM-FIXING"
 INDICADORES = ["WM-FIXING"]
-M_PRE0, M_INI, M_FIX, M_SALE = 570, 630, 660, 750
+M_PRE0_UK, M_INI_UK, M_FIX_UK, M_SALE = 870, 930, 960, 750
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=2),
     Variable("impulso_fix", "imp_atr", "ge", cortes=(0.75, 1.35)),
@@ -41,13 +43,14 @@ VACIO = ["k", "ses", "regla", "lado", "imp_atr", "v_ratio", "rv_rel", "rango_fix
 
 def disparos(ctx: dict) -> pd.DataFrame:
     o, h, l, c, v = (np.asarray(ctx[x], float) for x in ("o", "h", "l", "c", "v"))
-    ses = np.asarray(ctx["ses"], np.int64); m = minuto_ny(np.asarray(ctx["t"], np.int64))
+    t_arr = np.asarray(ctx["t"], np.int64); ses = np.asarray(ctx["ses"], np.int64)
+    m_uk = np.array([((int(ts) + _offset_madrid_segundos_nb(int(ts)) - 3600) % 86400) // 60 for ts in t_arr], dtype=np.int64)
     atr = _atr_causal(h, l, c); rv = rv_relativa(c, ses, 30, 390); filas = []
     for sg in np.unique(ses):
-        idx = np.flatnonzero(ses == sg); mm = m[idx]
-        w_fix = idx[(mm > M_INI) & (mm <= M_FIX)]
-        w_prev = idx[(mm > M_PRE0) & (mm <= M_INI)]
-        if len(w_fix) < 20 or len(w_prev) < 30 or m[w_fix[-1]] != M_FIX: continue
+        idx = np.flatnonzero(ses == sg); mm = m_uk[idx]
+        w_fix = idx[(mm > M_INI_UK) & (mm <= M_FIX_UK)]
+        w_prev = idx[(mm > M_PRE0_UK) & (mm <= M_INI_UK)]
+        if len(w_fix) < 20 or len(w_prev) < 30 or m_uk[w_fix[-1]] != M_FIX_UK: continue
         k = int(w_fix[-1]); a = int(w_fix[0])
         if k <= a: continue
         r_fix = float(c[k] - o[a]); rng_fix = float(h[w_fix].max() - l[w_fix].min())

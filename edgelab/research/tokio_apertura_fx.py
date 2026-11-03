@@ -28,8 +28,9 @@ from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "TOKIO-APERTURA-FX"
 INDICADORES = ["TOKIO-APERTURA-FX"]
-REL_INI, REL_FIN, REL_LIM, M_SALE = 60, 120, 330, 115
+M_JST_INI, M_JST_FIN, M_JST_LIM, M_SALE = 540, 600, 810, 115
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("cuerpo_ruptura", "cuerpo", "ge", cortes=(0.45, 0.65)),
     Variable("volumen_rel", "rvol", "ge", cortes=(1.0, 1.25)),
@@ -43,16 +44,17 @@ VACIO = ["k", "ses", "lado", "hi", "lo", "mid", "cuerpo", "rvol", "ancho_atr"]
 
 def disparos(ctx: dict) -> pd.DataFrame:
     o, h, l, c, v = (np.asarray(ctx[x], float) for x in ("o", "h", "l", "c", "v"))
-    ses = np.asarray(ctx["ses"], np.int64); m = minuto_ny(np.asarray(ctx["t"], np.int64)); rel = (m - 1080) % 1440
+    t_arr = np.asarray(ctx["t"], np.int64); ses = np.asarray(ctx["ses"], np.int64)
+    m_jst = ((t_arr + 9 * 3600) % 86400) // 60
     atr = _atr_causal(h, l, c); filas = []
     for sg in np.unique(ses):
-        idx = np.flatnonzero(ses == sg); rr = rel[idx]
-        rg = idx[(rr > REL_INI) & (rr <= REL_FIN)]
+        idx = np.flatnonzero(ses == sg); mj = m_jst[idx]
+        rg = idx[(mj > M_JST_INI) & (mj <= M_JST_FIN)]
         if len(rg) < 45: continue
         hi, lo = float(h[rg].max()), float(l[rg].min()); mid = 0.5 * (hi + lo)
         if not hi > lo or not atr[rg[-1]] > 0: continue
         ancho_atr = (hi - lo) / float(atr[rg[-1]])
-        post = idx[(idx > rg[-1]) & (rr > REL_FIN) & (rr <= REL_LIM)]
+        post = idx[(idx > rg[-1]) & (mj > M_JST_FIN) & (mj <= M_JST_LIM)]
         for s in (1, -1):
             fuera = post[c[post] > hi] if s == 1 else post[c[post] < lo]
             if not len(fuera): continue

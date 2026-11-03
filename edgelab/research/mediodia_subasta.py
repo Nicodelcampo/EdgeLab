@@ -26,8 +26,9 @@ from edgelab.research.regimen_sesion import minuto_ny
 
 NOMBRE = "MEDIODIA-SUBASTA"
 INDICADORES = ["MEDIODIA-SUBASTA"]
-M_AM0, M_INI, M_FIN, M_LIM, M_SALE = 570, 690, 780, 885, 955
+M_AM0, M_INI, M_FIN, M_LIM, M_SALE = 570, 690, 780, 830, 835
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("compresion_almuerzo", "comp_ratio", "le", cortes=(0.75, 1.05)),
     Variable("cuerpo_quiebre", "cuerpo", "ge", cortes=(0.45, 0.65)),

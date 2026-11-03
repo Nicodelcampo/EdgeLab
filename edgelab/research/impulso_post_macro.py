@@ -31,6 +31,7 @@ NOMBRE = "IMPULSO-POST-MACRO"
 INDICADORES = ["IMPULSO-POST-MACRO"]
 M_CH0, M_INI, M_FIN, M_LIM, M_SALE = 505, 515, 540, 630, 720
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("choque_0830", "choque_atr", "extremos", cuantiles=3),
     Variable("cuerpo_ruptura", "cuerpo", "ge", cortes=(0.45, 0.65)),

@@ -24,13 +24,14 @@ import pandas as pd
 from edgelab.research import rango_ruptura as RR
 from edgelab.research.londres_impulso import _lote  # noqa: F401
 from edgelab.research.grilla_generica import Variable
-from edgelab.research.regimen_sesion import minuto_ny
+from edgelab.research.oro_almuerzo_ruptura import _offset_madrid_segundos_nb
 from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "APERTURA-EUROPA-ORO"
 INDICADORES = ["APERTURA-EUROPA-ORO"]
-REL_ASIA_FIN, M_INI, M_FIN, M_LIM, M_SALE = 480, 120, 210, 450, 625
+REL_ASIA_FIN, M_INI_UK, M_FIN_UK, M_LIM_UK, M_SALE = 480, 420, 510, 750, 505
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("alineacion_asia", "alin_asia", "eq_any", categoria=2),
     Variable("cuerpo_quiebre", "cuerpo", "ge", cortes=(0.45, 0.65)),
@@ -44,18 +45,19 @@ VACIO = ["k", "ses", "lado", "hi", "lo", "mid", "alin_asia", "cuerpo", "ancho_at
 
 def disparos(ctx: dict) -> pd.DataFrame:
     o, h, l, c = (np.asarray(ctx[x], float) for x in ("o", "h", "l", "c"))
-    ses = np.asarray(ctx["ses"], np.int64); m = minuto_ny(np.asarray(ctx["t"], np.int64)); rel = (m - 1080) % 1440
+    t_arr = np.asarray(ctx["t"], np.int64); ses = np.asarray(ctx["ses"], np.int64)
+    m_uk = np.array([((int(ts) + _offset_madrid_segundos_nb(int(ts)) - 3600) % 86400) // 60 for ts in t_arr], dtype=np.int64)
     atr = _atr_causal(h, l, c); filas = []
     for sg in np.unique(ses):
-        idx = np.flatnonzero(ses == sg); mm = m[idx]; rr = rel[idx]
-        asia = idx[(rr > 0) & (rr <= REL_ASIA_FIN)]
-        rg = idx[(mm > M_INI) & (mm <= M_FIN)]
+        idx = np.flatnonzero(ses == sg); mm = m_uk[idx]
+        asia = idx[(mm >= 0) & (mm <= M_INI_UK)]
+        rg = idx[(mm > M_INI_UK) & (mm <= M_FIN_UK)]
         if len(asia) < 60 or len(rg) < 65: continue
         hi, lo = float(h[rg].max()), float(l[rg].min()); mid = 0.5 * (hi + lo)
         if not hi > lo or not atr[rg[-1]] > 0: continue
         dir_asia = int(np.sign(c[asia[-1]] - o[asia[0]]))
         ancho_atr = (hi - lo) / float(atr[rg[-1]])
-        post = idx[(idx > rg[-1]) & (mm > M_FIN) & (mm <= M_LIM)]
+        post = idx[(idx > rg[-1]) & (mm > M_FIN_UK) & (mm <= M_LIM_UK)]
         for s in (1, -1):
             fuera = post[c[post] > hi] if s == 1 else post[c[post] < lo]
             if not len(fuera): continue

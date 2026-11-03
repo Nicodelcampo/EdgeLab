@@ -27,8 +27,9 @@ from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "OVERNIGHT-INVENTARIO"
 INDICADORES = ["OVERNIGHT-INVENTARIO"]
-REL_FIN_ON, M_DEC, M_SALE = 929, 570, 690
+REL_FIN_ON, M_DEC, M_SALE = 929, 570, 595
 PREFLIGHT_T0_S = 1_760_047_200
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=2),
     Variable("desequilibrio_on", "imb_on", "ge", cortes=(0.30, 0.55)),
