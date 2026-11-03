@@ -1127,4 +1127,6 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO (pre-registrado, lanzado 03/11):** INTENTO-FALLIDO, la idea de Nico (aproximación a la zona que no llega y rechaza; vías
   A y B), en 4 fuentes de zonas. `intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md`. Familias de Gemini corregidas: 6 de 12, en 20
   campañas. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
+- **MEDIDO (relanzamiento con cola t, 03/11/2026):** con la cola t, CVGAP-NQ-R pasa de 11 nominadas a 0. U1-6E-CONFIRMA corre y queda en
+  contra con potencia (−0,044R). CVGAP-CFD-NQ conserva 3 candidatas con OOS negativo no concluyente. `relanzamiento_R_20261102/descartadas_cola_normal/README.md`.
 
