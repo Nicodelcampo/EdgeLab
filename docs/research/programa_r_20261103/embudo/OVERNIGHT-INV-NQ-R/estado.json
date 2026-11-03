@@ -1,0 +1,109 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793731832.0014725,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "OVERNIGHT-INV-NQ-R",
+  "familia": "OVERNIGHT_INVENTARIO_NQ",
+  "experimento": "edgelab.research.overnight_inventario",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "La sesión overnight de Globex (18:00–09:29 ET) opera con una fracción de la liquidez del horario regular. Cuando el flujo overnight desplaza el precio de forma persistente hacia un extremo del rango nocturno (alto desequilibrio neto y alta  (DISENO_OVERNIGHT_INVENTARIO.md).",
+  "como_podria_refutarse": "Si ni la liquidación (regla 0) ni la continuación (regla 1) nominan celdas en DESC y confirman en réplica OOS, o si los días con inventario extremo (imb_on >= 0,55) no difieren del resto.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_OVERNIGHT_INVENTARIO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "correcciones": "docs/research/programa_r_20261103/CORRECCIONES_GEMINI_20261103.md",
+  "decisiones": [
+   "2026-11-03: corregida antes de correr (noticias durante toda la operación, reloj de Londres en WM, sólo días con dato en POST-MACRO); tamiz FDR con cola t (decisión de Nico)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "OVERNIGHT_INVENTARIO_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva del programa R (OVERNIGHT-INVENTARIO en NQ->NQ), sin padres; declarada antes de DESC (docs/research/programa_r_20261103/DISENO_OVERNIGHT_INVENTARIO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793731832.0012693,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}

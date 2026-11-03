@@ -27,7 +27,7 @@ vuelta y avanza z en dirección contraria: (A) ¿qué entradas rentables se pued
   - **B-CONTRA (r = 0,5 / 0,8)**: en el mismo momento, entrar en contra (segundo rechazo).
 - **Ejecución** (entrada en el primer tick de la vela siguiente; stops estructurales, como pide el atlas en R): a favor del rechazo, el stop va un
   tick más allá del precio más cercano del intento; hacia T, un tick más allá del extremo del rechazo. Objetivos: 2R, 3R, o LEJOS
-  (origen E para el rechazo y borde lejano de la zona para el segundo intento). 5 × 3 × 3 × 4 × 2 = 360 celdas × 3 ejecuciones = **1.080 por canal**.
+  (origen E para el rechazo y borde lejano de la zona para el segundo intento). 5 × 3 × 3 × 3 × 2 = 270 celdas × 3 ejecuciones = **810 por canal** (A/H con piso: ≥ 4, ≥ 8, ≥ 16; corregido el 03/11 antes de cualquier desenlace: el conductor bloqueó la primera carga por el conteo).
 - **Noticias**: sin entradas a ±5 min de un dato tier1 y salida forzada antes de cada dato.
 
 ## Campañas (fuentes de zonas, por prioridad del mapa)
