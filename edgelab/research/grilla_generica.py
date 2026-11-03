@@ -205,7 +205,9 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
     if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
     linea = hasattr(exp, "lineas_salida")
-    if linea and cx_ej is not None:
+    # 2026-11-03: una línea sólo de TIEMPO (±inf: salida forzada a una hora o antes de una noticia) no tiene precio que trasladar; se
+    # calcula sobre las velas de la ejecución y vale con señal en otro instrumento. El experimento lo declara con LINEAS_SOLO_TIEMPO.
+    if linea and cx_ej is not None and not getattr(exp, "LINEAS_SOLO_TIEMPO", False):
         raise ValueError("salida por línea con ejecución en otro instrumento: las líneas están en precios del sensor")
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
@@ -216,6 +218,8 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
                 sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
         if linea:
             lin = np.ascontiguousarray(np.asarray(exp.lineas_salida(sim), float))
+            if getattr(exp, "LINEAS_SOLO_TIEMPO", False) and np.isfinite(lin).any():
+                raise ValueError("LINEAS_SOLO_TIEMPO con líneas de precio finito")
             if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
             p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
                                                      int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))

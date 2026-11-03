@@ -77,4 +77,7 @@ La estrategia ahora **opera** (`operar = true`) con la regla del papel: E1A/T3/S
 - **Cierre forzado:** opcional, a una hora de Nueva York, sin entradas en los últimos N minutos.
 - **Registro:** cada operación cerrada va a `operaciones_U1_<instrumento>.csv`, con su R (resultado / riesgo inicial).
 El núcleo de la señal no cambió: la paridad con Python (`tests/research/test_paridad_jforex_u1.py`) sigue pasando.
+- **Tamaño (corregido el 03/11):** en USATECH, `cantidad` va en millones y 1 unidad = 1 USD por punto. `0.000002` equivale a 1 MNQ y
+  `0.00002` a 1 NQ. El valor anterior, `0.001`, eran 1.000 USD por punto: en la primera corrida de Nico hizo llenados parciales por
+  margen, un margin cut y dejó la cuenta en cero.
 

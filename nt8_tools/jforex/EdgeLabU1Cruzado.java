@@ -29,7 +29,7 @@ public class EdgeLabU1Cruzado implements IStrategy {
     @Configurable("Desde (yyyy-MM-dd HH:mm, UTC; vacío = sin límite)") public String desde = "";
     @Configurable("Hasta (yyyy-MM-dd HH:mm, UTC; vacío = sin límite)") public String hasta = "";
     @Configurable("Operar (false = sólo registrar señales)") public boolean operar = true;
-    @Configurable("Cantidad (millones de unidades; CFD índice: 0.001 = 1 contrato)") public double cantidad = 0.001;
+    @Configurable("Cantidad (millones; USATECH: 0.000001 = 1 unidad = 1 USD por punto; 0.000002 = MNQ, 0.00002 = NQ)") public double cantidad = 0.000002;
     @Configurable("Objetivo: true = borde lejano (T3), false = cercano (T1)") public boolean objetivoLejano = true;
     @Configurable("Tope del stop (múltiplos de la distancia al TP; 0 = sin tope)") public double topeMult = 3.0;
     @Configurable("Slippage máximo (pips; 0 = cualquiera)") public double slippagePips = 0;

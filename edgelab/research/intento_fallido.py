@@ -43,6 +43,7 @@ REGLAS = ("A_HACIA", "A_RECHAZO", "B50_HACIA", "B80_HACIA", "B50_RECHAZO", "B80_
 LIMITE = 240                       # velas máximas desde el disparo de U1 para que ocurra el intento y la vía B
 AH_CORTES = (4.0, 8.0, 16.0)
 EXCLUIR_EVENTOS = dict(antes_min=5, despues_min=5, tipos=TIPOS_TIER1)
+LINEAS_SOLO_TIEMPO = True          # la única línea es la salida por noticias (±inf): vale con señal en el CFD y ejecución en NQ
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=len(REGLAS)),
     Variable("y", "yi", "grupo", categoria=len(YS)),

@@ -64,3 +64,12 @@ def test_niveles_stop_estructural_y_objetivos():
     h = dict(r, lado=-1, regla=0, stop_ref=103.1)
     assert [IF.niveles(h, (z, 0.0), ctx)[5] for z in ("Z1", "Z2", "Z3")] == [100.0, 97.5, 95.0]
     assert IF.niveles(h, ("Z1", 0.0), ctx)[4] == 103.5 and IF.niveles(h, ("Z1", 0.0), ctx)[7] == 1
+
+
+def test_lineas_de_noticias_valen_con_ejecucion_cruzada():
+    """La única línea es de tiempo (±inf): la simulación con señal en un instrumento y ejecución en otro no la rechaza."""
+    from edgelab.research import grilla_generica as GG, intento_fallido_lux as X, sintetico
+    assert X.LINEAS_SOLO_TIEMPO
+    ctx = GG.contexto_m1(sintetico.bloques(dias=3, planta=False, seed=1), tick=0.25)
+    lin = X.lineas_salida(ctx)
+    assert not np.isfinite(lin).any()
