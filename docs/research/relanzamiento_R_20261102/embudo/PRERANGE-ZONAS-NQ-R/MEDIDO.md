@@ -19,3 +19,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 7281988 pruebas de ['PRERANGE_HFT_NQ', 'OTR_930_SWEEP_NQ', 'U1_ZONAS_NQ', 'U1_ZONAS_BT2_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 8744 de 57024 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 5616 (m del FDR 5616 de 28512 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.8150017261505127 (diagnóstico), linaje 7281988 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 0, 0, 1, 1, 1, 1, 1, 0], [1, 0, 0, 1, 0, 1, 1, 1, 1]]
