@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "PENDIENTE",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793732517.316715,
@@ -12,6 +12,11 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 9
+  },
+  {
+   "ts": 1793734637.4932764,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 9 confirmadas una por una (nivel 0.002718730629044442, p Simes 0.18375179913641454); canasta media 0.010462020997454963 IC90 [-0.023153395609263248, 0.044063722956691725]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.023153395609263248, 0.044063722956691725]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.8329362081740552"
   }
  ],
  "spec": {
@@ -117,17 +122,161 @@
   "ts": 1793732517.316433,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicobuttaro/embudo-u1-zonas-avcl-nq-r-rep-20260401",
  "fallas": 0,
  "params": {
-  "cortes": null,
-  "criba": "maxt"
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.6428828900993272,
+    0.8896420249947046
+   ],
+   "vol_ida_rel": [
+    2.258965540920505,
+    4.08218885436955
+   ],
+   "vel_vuelta/ida": [
+    0.6678571428571428,
+    1.4166666666666665
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    0,
+    2,
+    2,
+    1,
+    3,
+    3,
+    3,
+    0,
+    0,
+    19
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    1,
+    0,
+    0
+   ],
+   [
+    0,
+    0,
+    0,
+    2,
+    1,
+    2,
+    3,
+    3,
+    3,
+    0,
+    0,
+    12
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    2,
+    0,
+    0
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    1,
+    0,
+    4
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    1,
+    3,
+    3,
+    0,
+    0,
+    6
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    2,
+    2,
+    3,
+    1,
+    3,
+    0,
+    0,
+    16
+   ],
+   [
+    0,
+    2,
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    3,
+    0,
+    0,
+    2
+   ],
+   [
+    0,
+    2,
+    0,
+    2,
+    1,
+    2,
+    3,
+    3,
+    3,
+    0,
+    0,
+    2
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.0018123009693675287,
+   "m": 9
+  }
  },
  "periodo": [
-  20250801,
-  20260331
+  20260401,
+  20260930
  ],
- "lanzada": 1793733452.3152668,
+ "lanzada": 1793734331.948254,
  "cortes": {
   "vol_vuelta/ida": [
    0.6428828900993272,
@@ -277,7 +426,44 @@
     0,
     2
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 69,
+   "media": 0.010462020997454963,
+   "ic90": [
+    -0.023153395609263248,
+    0.044063722956691725
+   ],
+   "p": 0.3164208947763059,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.004798162209767896,
+    "p_simes": 0.3164208947763059,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 4,
+    "familia": "U1_ZONAS_AVCL_NQ",
+    "run_id": "U1-ZONAS-AVCL-NQ-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.002718730629044442,
+   "p_simes": 0.18375179913641454,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 9,
+   "t": 5,
+   "familia": "U1_ZONAS_AVCL_NQ",
+   "run_id": "U1-ZONAS-AVCL-NQ-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_RECHAZO",
+   "potencia": 0.8329362081740552,
+   "efecto": 0.07265568503625726,
+   "motivo": "con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.023153395609263248, 0.044063722956691725]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -333,7 +519,20 @@
     "t_maxt": 2.2630330878467135,
     "p_maxt": 0.942057942057942,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 49,
+     "media": -0.13957919882005035,
+     "ic90": [
+      -0.34384665288548766,
+      0.09265703924317004
+     ],
+     "p": 0.8659337118923925,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -387,7 +586,20 @@
     "t_maxt": 3.913542365133744,
     "p_maxt": 0.006993006993006993,
     "nominada_maxt": true,
-    "q_linaje": 0.5099883280241732
+    "q_linaje": 0.5099883280241732,
+    "replica_pistas": {
+     "n": 32,
+     "media": 0.025441552830169304,
+     "ic90": [
+      -0.038916743773228166,
+      0.1050920441824956
+     ],
+     "p": 0.35123434416656596,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -441,7 +653,20 @@
     "t_maxt": 2.0527069179172766,
     "p_maxt": 0.986013986013986,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 43,
+     "media": 0.0523702457023263,
+     "ic90": [
+      -0.11053794641591591,
+      0.19936806891974626
+     ],
+     "p": 0.28387902219000444,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -495,7 +720,20 @@
     "t_maxt": 3.2406365982253393,
     "p_maxt": 0.15384615384615385,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 24,
+     "media": 0.052920869185071995,
+     "ic90": [
+      -0.0012023963825774939,
+      0.1033284556474888
+     ],
+     "p": 0.04063469050783295,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -549,7 +787,20 @@
     "t_maxt": 2.055682992955905,
     "p_maxt": 0.6223776223776224,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 98,
+     "media": 0.0692604456570889,
+     "ic90": [
+      0.00630306769360713,
+      0.13292470720419736
+     ],
+     "p": 0.03688937215577302,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -603,7 +854,20 @@
     "t_maxt": 1.96871400543844,
     "p_maxt": 0.993006993006993,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 37,
+     "media": -0.0663647728240997,
+     "ic90": [
+      -0.1800596414008284,
+      0.03452725659279142
+     ],
+     "p": 0.8460794974024405,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -657,7 +921,20 @@
     "t_maxt": 1.736839537515917,
     "p_maxt": 1.0,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 40,
+     "media": 0.06780827957291125,
+     "ic90": [
+      -0.05119279392658343,
+      0.19959757139490764
+     ],
+     "p": 0.2009383432000322,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -711,7 +988,20 @@
     "t_maxt": 2.0052229624632574,
     "p_maxt": 0.99000999000999,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 65,
+     "media": 0.015559780073890212,
+     "ic90": [
+      -0.04599662622870213,
+      0.07766695670498613
+     ],
+     "p": 0.3519592444927711,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -765,8 +1055,22 @@
     "t_maxt": 1.7105066111484575,
     "p_maxt": 1.0,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 42,
+     "media": 0.022485730899344938,
+     "ic90": [
+      -0.06863444039374379,
+      0.10415188640563589
+     ],
+     "p": 0.34346180178003305,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.002718730629044442,
+     "t_lord": 5,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "motivo": "pistas a réplica: 0 de 9 confirmadas una por una (nivel 0.002718730629044442, p Simes 0.18375179913641454); canasta media 0.010462020997454963 IC90 [-0.023153395609263248, 0.044063722956691725]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.023153395609263248, 0.044063722956691725]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.8329362081740552"
 }

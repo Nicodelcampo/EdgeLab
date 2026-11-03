@@ -42,10 +42,10 @@ vuelta y avanza z en dirección contraria: (A) ¿qué entradas rentables se pued
 
 | Campaña | Zonas | Señal → ejecución |
 |---|---|---|
-| IF-LUX-CFD-NQ-R | racimos LUX-IMB (fuente de U1-CRUZADO) | USATECH CFD → NQ |
-| IF-LUX-NQ-R | racimos LUX-IMB | NQ → NQ |
-| IF-AVCL-NQ-R | racimos aVolClusterPOI | NQ → NQ |
-| IF-RACIMOS-NQ-R | racimos aVolZonePOI2 | NQ → NQ |
+| IF-LUX-CFD-NQ-R2 | racimos LUX-IMB (fuente de U1-CRUZADO) | USATECH CFD → NQ |
+| IF-LUX-NQ-R2 | racimos LUX-IMB | NQ → NQ |
+| IF-AVCL-NQ-R2 | racimos aVolClusterPOI | NQ → NQ |
+| IF-RACIMOS-NQ-R2 | racimos aVolZonePOI2 | NQ → NQ |
 
 Las cuatro comparten mecanismo, pero son familias distintas por fuente de zonas. Linaje: **hijas de U1** (misma población de aproximaciones),
 así que heredan la multiplicidad de su padre U1 por fuente (`LINAJES.jsonl`). Abr–sep ya fue mirado por U1: la réplica no es virgen para
@@ -66,3 +66,6 @@ agrupados detrás del intento. Si gana el control y no la idea, la zona no atrae
 - A y B no difieren de sus controles: los rechazos sin zona, que no se miden acá, quedan como NO MEDIDO para una etapa posterior si alguna pasa.
 - La ventaja depende de un único y o z aislado, sin meseta.
 - Integridad: placebo y latencia de una vela.
+
+**Ids (03/11).** La v2 corre como `-R2`: el contador global de pruebas (append-only) ya tenía registradas 1.620 de la v1 con el id `-R`.
+Esas pruebas quedan contadas en la misma familia (conservador). Total de la familia por fuente: 1.620 + 7.776.
