@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1071 |
+| `docs/research` | 1074 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,7 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |
-| PROPUESTA | 3 | `PROPUESTA_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | PROPUESTA — extender la excepción humana del 2026-11-02 requiere el OK de Nico.  |
+| PREREGISTRO | 1 | `PREREGISTRO_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Regis |
 | MAPA | 1 | `MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md` | 2026-11-03 | DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autor |
 | AVANCES | 1 | `AVANCES_Y_RELANZAMIENTOS_20261103.md` | 2026-11-03 | INFORME — fotografía del trabajo, no habilita corridas. Referente docs/NORTH_STA |
 | MEDIR | 1 | `MEDIR_EN_R_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «encargate de resolver cualquier aspecto en el que esto |
@@ -62,6 +62,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | CORREDOR | 1 | `CORREDOR_EMA_MEDIDO_Y_NO_MEDIDO.md` | 2026-10-16 | VIGENTE (registro vivo; se actualiza en el mismo commit que cualquier resultado  |
 | CENSO | 4 | `CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md` | 2026-10-16 | MEDIDO (censo; sin desenlaces ni retornos) |
 | RESULTADOS | 2 | `RESULTADOS_PILOTO_SOPORTE_EXP_REV_GRID_20261015.md` | 2026-10-15 | MEDIDO (desarrollo; solo camino de precios, sin modelo ni indicador) |
+| PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
 | INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
@@ -97,7 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
 | FUNNEL | 1 | `FUNNEL_AUDIT_20261003.md` | 2026-10-03 | - |
 | CUDA | 2 | `CUDA_PARITY_RESULT_20261003.md` | 2026-10-03 | - |
-| RESULTADO | 38 | `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` | 2026-09-30 | - |
 
 ## Superados (7)
 

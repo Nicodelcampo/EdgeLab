@@ -1,6 +1,6 @@
-# Propuesta: nominación forzada al holdout de las campañas en R (03/11/2026)
+# Pre-registro: nominación forzada al holdout de las campañas en R (03/11/2026)
 
-Estado: PROPUESTA — extender la excepción humana del 2026-11-02 requiere el OK de Nico. Referente `docs/NORTH_STAR.md`, cuerpo
+Estado: VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Registrado antes de abrir el holdout de estas reglas. Referente `docs/NORTH_STAR.md`, cuerpo
 SHA-256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Regla de origen: `relanzamiento_causal_20261102/PREREGISTRO_NOMINACION_FORZADA.md` (`tools/nominacion_forzada.py`).
 
 ## Qué se hizo antes
@@ -67,3 +67,10 @@ CVGAP-CFD-ES-C, U1-ZONAS-AVCL-ES-C, PRERANGE-ZONAS-NQ y RANGO0100-NQ, que sí es
 2. Revisar el papel: sacar, o marcar para no seguir, las reglas cuya réplica en R quedó ≤ 0. La regla de R > 0 forward para promover
    (firmada) ya las frenaría, pero hoy ocupan lugar en la cartera.
 3. Correr la misma selección sobre SEGUNDO-INTENTO cuando termine.
+
+## Ejecución aprobada
+
+1. **Nominadas:** TORI-NQ-R y CONF-CVR-CFD-NQ-R, con acta \`ACTA_HOLDOUT.json\` de N fijo 150, paso de LORD++ reservado antes y sin tope.
+   Luego papel con e-proceso. La herramienta es \`tools/nominacion_forzada.py --cota-min 0\`.
+2. **Retiradas del papel** (réplica en R ≤ 0): CVGAP-CFD-ES-C-PAPEL, U1-ZONAS-AVCL-ES-C-PAPEL, PRERANGE-ZONAS-NQ-CANASTA y RANGO0100-NQ-CANASTA.
+3. **SEGUNDO-INTENTO** pasa por la misma selección al terminar.

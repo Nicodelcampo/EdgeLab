@@ -4,6 +4,9 @@ relanzamiento causal que termina sin candidata, la pista de réplica con n >= 30
 inferior del IC90 (desempate: media). Escribe su ACTA_HOLDOUT.json (N fijo 150, sin tope, paso de LORD++ reservado ANTES de mirar).
   python tools/nominacion_forzada.py            # sólo informa
   python tools/nominacion_forzada.py --actas    # además reserva LORD++ y escribe las actas de las elegidas
+  python tools/nominacion_forzada.py --raiz docs/research/relanzamiento_R_20261102/embudo --cota-min 0 --solo TORI-NQ-R CONF-CVR-CFD-NQ-R \
+      --pre docs/research/PREREGISTRO_NOMINACION_FORZADA_R_20261103.md --actas
+      # 2026-11-03 (Nico): la misma regla sobre las campañas en R, con la cota inferior del IC90 de réplica > 0
 """
 import argparse, json, sys, time
 from pathlib import Path
@@ -14,6 +17,9 @@ PRE = "docs/research/relanzamiento_causal_20261102/PREREGISTRO_NOMINACION_FORZAD
 N_MIN, N_FIJO = 30, 150
 
 
+COTA_MIN = None
+
+
 def elegir(st):
     if st.get("etapa") != "FIN": return None, "sin terminar"
     pistas = (st.get("desc") or {}).get("pistas") or []
@@ -21,17 +27,20 @@ def elegir(st):
     ok = []
     for p in pistas:
         r = p.get("replica_pistas") or {}; ic = r.get("ic90") or [None, None]; md = p.get("media_neta", p.get("media"))
-        if (r.get("n") or 0) >= N_MIN and (r.get("media") or 0) > 0 and (md is None or md > 0) and ic[0] is not None:
+        if (r.get("n") or 0) >= N_MIN and (r.get("media") or 0) > 0 and (md is None or md > 0) and ic[0] is not None \
+                and (COTA_MIN is None or ic[0] > COTA_MIN):
             ok.append((ic[0], r["media"], p))
     if not ok: return None, f"ninguna pista cumple (n >= {N_MIN}, réplica > 0, DESC > 0)"
     ok.sort(key=lambda t: (t[0], t[1]), reverse=True); return ok[0][2], "elegida"
 
 
-def main(actas):
+def main(actas, solo=None):
     from edgelab.funnel.libro_lord import LibroLord
     out = []
     for f in sorted(RAIZ.glob("*/estado.json")):
-        st = json.loads(f.read_text()); cid = f.parent.name; p, motivo = elegir(st)
+        st = json.loads(f.read_text()); cid = f.parent.name
+        if solo and cid not in solo: continue
+        p, motivo = elegir(st)
         fila = dict(cid=cid, etapa=st.get("etapa"), fase=st.get("fase"), motivo=motivo)
         if p:
             r = p["replica_pistas"]; fila.update(celda=p["celda"], media_desc=p.get("media_neta", p.get("media")), n_rep=r["n"], media_rep=r["media"], ic90_rep=r["ic90"])
@@ -49,5 +58,9 @@ def main(actas):
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("--actas", action="store_true"); a = ap.parse_args()
-    for r in main(a.actas): print(r)
+    ap = argparse.ArgumentParser(); ap.add_argument("--actas", action="store_true"); ap.add_argument("--raiz"); ap.add_argument("--pre")
+    ap.add_argument("--cota-min", type=float); ap.add_argument("--solo", nargs="*"); a = ap.parse_args()
+    if a.raiz: RAIZ = ROOT / a.raiz
+    if a.pre: PRE = a.pre
+    COTA_MIN = a.cota_min
+    for r in main(a.actas, a.solo): print(r)
