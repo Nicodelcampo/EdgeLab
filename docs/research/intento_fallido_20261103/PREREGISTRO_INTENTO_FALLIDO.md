@@ -14,20 +14,28 @@ vuelta y avanza z en dirección contraria: (A) ¿qué entradas rentables se pued
 
 - **Espacio enumerado**: (1) creación de la zona; (2) aproximación; (3) primer toque; (4) toque n-ésimo; (5) invalidación; (6) expiración;
   (7) confluencia; (8) estado continuo; (9) **aproximación fallida** (acercarse sin tocar y rechazar). U1 mide (2) y opera hacia la zona.
-  Ésta mide (9), **el complemento de U1**: los caminos en que U1 no llega a su objetivo. Se elige (9) porque es exactamente la pregunta,
+  Ésta mide (9), **el complemento de U1**: los caminos en que U1 no llega a su objetivo. La hipótesis principal es que la zona sigue atrayendo después del intento fallido (entrar hacia ella); a favor del rechazo es el control. Se elige (9) porque es exactamente la pregunta,
   y porque reutiliza zonas, recorridos y disparos causales de U1 ya auditados (paridad, causalidad por disparo, holdout cerrado).
 - **x (de dónde viene)** = el recorrido A de U1 (de la zona al extremo E), con A/H ≥ 4 como piso y variable ordinal A/H (4, 8, 16).
   La aproximación se toma en el **primer** disparo de U1 (le falta un tercio del camino), una vez por camino.
 - **Evento vela a vela, causal**: distancia al objetivo T (borde cercano de la zona) con el precio más cercano de cada vela. Si T se toca,
   no hay evento. Si lo más cerca que llegó es ≤ y·A y después el cierre se aleja ≥ z·A desde ahí, hay **intento fallido**. Ventana de 240
   velas desde el disparo de U1, dentro de la misma sesión.
-- **Grilla**: y ∈ {0,05; 0,10; 0,20}·A; z ∈ {0,10; 0,20; 0,35}·A; N (3 o 5 zonas en el racimo); A/H. **Reglas** (variable de grupo):
-  - **A**: entrar al cierre del alejamiento z, a favor del rechazo;
-  - **B-HACIA (r = 0,5 / 0,8)**: después de A, cuando el cierre recupera la fracción r del rechazo hacia T, entrar hacia T (segundo intento);
-  - **B-CONTRA (r = 0,5 / 0,8)**: en el mismo momento, entrar en contra (segundo rechazo).
-- **Ejecución** (entrada en el primer tick de la vela siguiente; stops estructurales, como pide el atlas en R): a favor del rechazo, el stop va un
-  tick más allá del precio más cercano del intento; hacia T, un tick más allá del extremo del rechazo. Objetivos: 2R, 3R, o LEJOS
-  (origen E para el rechazo y borde lejano de la zona para el segundo intento). 5 × 3 × 3 × 3 × 2 = 270 celdas × 3 ejecuciones = **810 por canal** (A/H con piso: ≥ 4, ≥ 8, ≥ 16; corregido el 03/11 antes de cualquier desenlace: el conductor bloqueó la primera carga por el conteo).
+- **Grilla**: y ∈ {0,05; 0,10; 0,20}·A; z ∈ {0,10; 0,20; 0,35}·A; N (3 o 5 zonas en el racimo); A/H (piso 4; ≥ 4, ≥ 8, ≥ 16).
+  **Reglas** (variable de grupo, 6). **Enmienda de Nico, 03/11, antes de ver resultados: «la idea es entrar hacia la zona, no a favor del
+  rechazo; probá las dos, con distintos niveles de TP»**:
+  - **A_HACIA** (la idea): al cierre del alejamiento z, entrar HACIA la zona;
+  - **A_RECHAZO** (control): en el mismo momento, entrar a favor del rechazo;
+  - **B50/B80_HACIA**: cuando el cierre recupera el 50 % / 80 % del rechazo, entrar hacia la zona (segundo intento);
+  - **B50/B80_RECHAZO** (control): en el mismo momento, a favor del rechazo.
+- **Ejecución** (entrada en el primer tick de la vela siguiente). Stops estructurales, como pide el atlas en R:
+  - hacia la zona: un tick más allá del extremo del rechazo;
+  - a favor del rechazo: un tick más allá del precio más cercano del intento;
+  - en los dos casos, colchón opcional de 0 o 0,5·z.
+
+  **TP**: 1R, 2R, 3R, o niveles de estructura Z1/Z2/Z3. Hacia la zona son el borde cercano, el medio y el borde lejano; a favor del rechazo,
+  un tercio, dos tercios y todo el camino de vuelta al origen E. 6 TP × 2 colchones = 12 ejecuciones. 6 × 3 × 3 × 3 × 2 = 324 celdas × 12 =
+  **3.888 por canal**. La primera carga (5 reglas, 3 ejecuciones) se detuvo en DESC sin que hubiera resultados: `superadas_v1/`.
 - **Noticias**: sin entradas a ±5 min de un dato tier1 y salida forzada antes de cada dato.
 
 ## Campañas (fuentes de zonas, por prioridad del mapa)
@@ -45,9 +53,12 @@ el mecanismo padre, pero sí para este evento, que U1 nunca midió. Holdout: fro
 
 ## Justificación económica
 
-Una zona con liquidez que el precio no alcanza revela que del otro lado hay absorción, o que el flujo que empujaba se agotó. El rechazo
-cerca del objetivo deja stops agrupados detrás del intento. Por eso **A** apuesta a la continuación del rechazo. **B-HACIA** apuesta a que
-el segundo intento llegue, cuando la absorción se agotó. **B-CONTRA** apuesta al doble techo o piso.
+**La idea (hacia la zona).** La zona es un imán de liquidez. Si el precio llega cerca y no la toca, la liquidez sigue sin tomar y el
+rechazo suele ser una toma de ganancias o una absorción pasajera. Entrar hacia la zona, al rechazo (A_HACIA) o en el reacercamiento
+(B_HACIA), apuesta a que el segundo intento la alcance, con un stop chico detrás del extremo del rechazo.
+
+**El control (a favor del rechazo).** El rechazo revela que del otro lado hay absorción, o que el flujo que empujaba se agotó, y deja stops
+agrupados detrás del intento. Si gana el control y no la idea, la zona no atrae: repele.
 
 ## Cómo podría refutarse
 

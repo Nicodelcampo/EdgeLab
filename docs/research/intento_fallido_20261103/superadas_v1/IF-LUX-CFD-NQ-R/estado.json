@@ -1,21 +1,21 @@
 {
  "etapa": "DESC",
- "fase": "PENDIENTE",
+ "fase": "CORRIENDO",
  "historial": [
   {
-   "ts": 1793732504.1694825,
+   "ts": 1793732191.8089745,
    "etapa": "PREFLIGHT",
    "fin": true
   }
  ],
  "spec": {
-  "cid": "IF-RACIMOS-NQ-R",
-  "familia": "INTENTO_FALLIDO_RACIMOS_NQ",
-  "experimento": "edgelab.research.intento_fallido_racimos",
-  "sensor": "NQ",
+  "cid": "IF-LUX-CFD-NQ-R",
+  "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
+  "experimento": "edgelab.research.intento_fallido_lux",
+  "sensor": "DK:USATECHIDXUSD",
   "ejecucion": "NQ",
   "n_celdas_por_canal": 810,
-  "justificacion_economica": "Una zona que el precio no alcanza revela absorción o agotamiento del flujo; el rechazo cerca del objetivo deja stops detrás del intento (A: continuación del rechazo; B-HACIA: segundo intento cuando la absorción se agotó; B-CONTRA: doble techo/piso). Racimos de aVolZonePOI2.",
+  "justificacion_economica": "Una zona que el precio no alcanza revela absorción o agotamiento del flujo; el rechazo cerca del objetivo deja stops detrás del intento (A: continuación del rechazo; B-HACIA: segundo intento cuando la absorción se agotó; B-CONTRA: doble techo/piso). Zonas de U1-CRUZADO (LUX-IMB en el CFD), operado en NQ.",
   "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 (cola t) ni pista que replique en abr–sep en R; ventaja en un único y/z sin meseta; falla de placebo o latencia.",
   "cuenta_kaggle": "nicolasbuttaro",
   "desc": [
@@ -38,10 +38,7 @@
    "desde": 20261001,
    "n_fijo": 150,
    "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
-  },
-  "datasets_extra": [
-   "nicolasbuttaro/edgelab-zonas-u1"
-  ]
+  }
  },
  "reglas": {
   "seleccion": {
@@ -86,16 +83,16 @@
    "metodo": "maxt"
   },
   "linaje": {
-   "familia": "INTENTO_FALLIDO_RACIMOS_NQ",
+   "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
    "declarada": true,
    "padres": [
-    "U1_RACIMOS_GRILLA_NQ",
-    "AREAS_EXP_1_CRUZADO"
+    "AREAS_EXP_1_CRUZADO",
+    "LUXIMB_GRILLA_CFD"
    ],
    "propias": 0,
-   "bruto_heredado": 5088462,
-   "n_heredado": 5088462,
-   "total": 5088462,
+   "bruto_heredado": 4626808,
+   "n_heredado": 4626808,
+   "total": 4626808,
    "justificacion": "Hija de U1: misma población de aproximaciones, evento complementario (aproximación fallida); declarada antes de DESC (docs/research/intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md)",
    "metodo_n": "bruto",
    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
@@ -103,9 +100,18 @@
   }
  },
  "decisiones_20261024": {
-  "ts": 1793732504.1690528,
+  "ts": 1793732191.8086462,
   "desde": "PREFLIGHT"
  },
- "handle": null,
- "fallas": 0
+ "handle": "nicolasbuttaro/embudo-if-lux-cfd-nq-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793732810.404453
 }

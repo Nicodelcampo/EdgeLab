@@ -22,13 +22,14 @@ def test_toca_el_objetivo_no_hay_intento():
 
 
 def test_via_a_y_via_b():
-    # se acerca a 100.9 (best = 0.8 <= y=1.0), rebota +2 (z=2.0) al cierre -> A; luego recupera la mitad -> B hacia y B en contra
+    # se acerca a 100.9 (best = 0.8 <= y=1.0), rebota +2 (z=2.0) al cierre -> A (hacia y a favor del rechazo); luego recupera la mitad -> B
     F = _corre([110, 106, 103, 101.0, 102.0, 103.0, 101.8, 104])
     reglas = [(f[3], f[4]) for f in F]
-    assert (0, 5) in reglas                                       # A al cierre de la vela 5 (103 - 100 - 0.9 >= 2.0)
-    assert (1, 6) in reglas and (3, 6) in reglas                  # B50: vuelve a <= 3.0 - 0.5*(3.0 - 0.9) = 1.95 -> 101.8
-    a = [f for f in F if f[3] == 0][0]
-    assert abs(a[5] - 100.9) < 1e-9                               # stop_ref = precio más cercano del intento
+    assert (0, 5) in reglas and (1, 5) in reglas                  # A al cierre de la vela 5 (103 - 100 - 0.9 >= 2.0)
+    assert (2, 6) in reglas and (4, 6) in reglas                  # B50: vuelve a <= 3.0 - 0.5*(3.0 - 0.9) = 1.95 -> 101.8
+    a_rech = [f for f in F if f[3] == 1][0]; a_hacia = [f for f in F if f[3] == 0][0]
+    assert abs(a_rech[5] - 100.9) < 1e-9                          # a favor del rechazo: stop detrás del intento
+    assert abs(a_hacia[5] - 103.1) < 1e-9                         # hacia la zona: stop detrás del extremo del rechazo
 
 
 def test_sin_acercarse_a_y_no_hay_evento():
@@ -52,8 +53,14 @@ def test_causal_truncar_el_futuro_no_cambia_lo_ya_decidido():
 
 def test_niveles_stop_estructural_y_objetivos():
     ctx = dict(c=np.array([103.0]), tick=0.25)
-    r = dict(lado=1, k=0, stop_ref=100.9, lejos=110.0)
-    k, lim, s, e, st, tp, be, kl, dl = IF.niveles(r, ("2R",), ctx)
+    # a favor del rechazo (largo, precio arriba de la zona 95-100, origen E = 110)
+    r = dict(lado=1, k=0, regla=1, stop_ref=100.9, zA=2.0, T=100.0, mid=97.5, lejos_zona=95.0, E=110.0)
+    k, lim, s, e, st, tp, be, kl, dl = IF.niveles(r, ("2R", 0.0), ctx)
     assert (s, st, kl) == (1, 100.5, 0) and abs(tp - (103 + 2 * 2.5)) < 1e-9
-    assert IF.niveles(r, ("LEJOS",), ctx)[5] == 110.0
-    assert IF.niveles(dict(r, stop_ref=104.0), ("2R",), ctx) is None          # stop del lado equivocado: no se opera
+    assert IF.niveles(r, ("2R", 0.5), ctx)[4] == 99.5                       # colchón 0,5·z = 1.0 más allá
+    assert IF.niveles(r, ("Z3", 0.0), ctx)[5] == 110.0                     # todo el camino de vuelta al origen
+    assert IF.niveles(dict(r, stop_ref=104.0), ("2R", 0.0), ctx) is None   # stop del lado equivocado: no se opera
+    # hacia la zona (corto): Z1 borde cercano, Z2 medio, Z3 borde lejano
+    h = dict(r, lado=-1, regla=0, stop_ref=103.1)
+    assert [IF.niveles(h, (z, 0.0), ctx)[5] for z in ("Z1", "Z2", "Z3")] == [100.0, 97.5, 95.0]
+    assert IF.niveles(h, ("Z1", 0.0), ctx)[4] == 103.5 and IF.niveles(h, ("Z1", 0.0), ctx)[7] == 1

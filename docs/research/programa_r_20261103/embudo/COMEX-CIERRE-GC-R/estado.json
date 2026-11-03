@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "PENDIENTE",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793731709.1017103,
@@ -12,6 +12,11 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 1
+  },
+  {
+   "ts": 1793733172.6183724,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.1779475982532751); canasta media 0.2265400708600445 IC90 [-0.16760963769713075, 0.6328532715656254]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.05783414891291305"
   }
  ],
  "spec": {
@@ -110,17 +115,34 @@
   "ts": 1793731709.1014135,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicolasbuttaro/embudo-comex-cierre-gc-r-rep-20260401",
  "fallas": 0,
  "params": {
-  "cortes": null,
-  "criba": "maxt"
+  "cortes": {
+   "tamano_subasta": [
+    6.376425120773236,
+    7.9522102747904855
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    0,
+    0,
+    1
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
  },
  "periodo": [
-  20250805,
-  20260331
+  20260401,
+  20260930
  ],
- "lanzada": 1793732170.4320953,
+ "lanzada": 1793732870.683765,
  "cortes": {
   "tamano_subasta": [
    6.376425120773236,
@@ -143,7 +165,44 @@
     0,
     1
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 27,
+   "media": 0.2265400708600445,
+   "ic90": [
+    -0.16760963769713075,
+    0.6328532715656254
+   ],
+   "p": 0.18195451137215696,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.18195451137215696,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "COMEX_CIERRE_ORO_GC",
+    "run_id": "COMEX-CIERRE-GC-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.1779475982532751,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "COMEX_CIERRE_ORO_GC",
+   "run_id": "COMEX-CIERRE-GC-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.05783414891291305,
+   "efecto": 0.17502716264193008,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -192,8 +251,22 @@
     "t_maxt": 1.852271590037012,
     "p_maxt": 0.34465534465534464,
     "nominada_maxt": false,
-    "q_linaje": 0.721439905781884
+    "q_linaje": 0.721439905781884,
+    "replica_pistas": {
+     "n": 27,
+     "media": 0.2265400708600445,
+     "ic90": [
+      -0.17285226577102164,
+      0.6274530827646977
+     ],
+     "p": 0.1779475982532751,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.1779475982532751); canasta media 0.2265400708600445 IC90 [-0.16760963769713075, 0.6328532715656254]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.05783414891291305"
 }
