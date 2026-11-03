@@ -8,3 +8,6 @@
 - DESC [20240102, 20260331]: evaluables 362189 (m del FDR 362189 de 4478976 celdas), FDR 42 (informativo), maxT 3, RW umbral 5.156867504119873 (diagnóstico), linaje 4654321 como informacion, pistas sin nominación 40, candidatas 2
 - Potencia prevista (informativa): [1, 2, 0, 1, 2, 1, 3, 3, 1, 0, 4]: OOS n 63.3 potencia 1.00, holdout n 150 potencia 1.00; [1, 2, 0, 0, 2, 0, 3, 3, 1, 0, 6]: OOS n 50.0 potencia 1.00, holdout n 150 potencia 1.00
 - INDAGA: marginales de 2 candidatas guardadas
+- INTEGRIDAD [1, 2, 0, 1, 2, 1, 3, 3, 1, 0, 4]: regla -0.035928740035947336, placebo -1.09, latencia 1 vela -0.031764963243312364 -> no pasa
+- INTEGRIDAD [1, 2, 0, 0, 2, 0, 3, 3, 1, 0, 6]: regla -0.025716633440725438, placebo -1.33, latencia 1 vela -0.04269737941999322 -> no pasa
+- **INTEGRIDAD_FALLA** — ninguna candidata pasa placebo/latencia
