@@ -1116,4 +1116,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO (03/11/2026):** bug de `riesgo_ops`. Un stop en la entrada daba riesgo ≈ 1e-10, que se dividía, y producía ±1e9 R. Afectó a 6
   campañas en R; se corrigió y se relanzaron, con el mismo desenlace. En U1-6B y U1-6E, las canastas de pistas en réplica quedan
   **en contra con potencia** (−0,036R y −0,041R). `relanzamiento_R_20261102/descartadas_riesgo_flotante/README.md`.
+- **MEDIDO (atlas de ideas en R, 03/11/2026, 118/118):** tres componentes de ejecución se confirman en réplica, sobre 15 familias de la
+  gramática U1. Stop estructural S3: +0,134R (réplica +0,121R). Objetivo lejano T3: +0,065R. Objetivo cercano T1: −0,070R. Son efectos
+  relativos a la media de la familia, y en los tres casos van en la dirección de dejar correr. Las entradas no mueven más de 0,05R.
+  `atlas_ideas_r_20261102/RESULTADO_ATLAS_IDEAS_R_20261103.md`.
+- **NO MEDIDO:** la transferencia de S3/T3 a gramáticas que no son U1; be=0,5 (sólo 4 familias, no pasa BH).
 
