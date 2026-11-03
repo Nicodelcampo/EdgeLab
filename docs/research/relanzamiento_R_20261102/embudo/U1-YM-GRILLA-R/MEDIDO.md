@@ -4,3 +4,7 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 4690446 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 370787 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 339551 (m del FDR 339551 de 4478976 celdas), FDR 38 (informativo), maxT 3, RW umbral 5.184964179992676 (diagnóstico), linaje 4690446 como informacion, pistas sin nominación 40, candidatas 2
+- Potencia prevista (informativa): [1, 2, 0, 2, 0, 0, 3, 3, 3, 0, 2]: OOS n 51.7 potencia 1.00, holdout n 150 potencia 1.00; [0, 2, 0, 2, 2, 2, 1, 3, 3, 1, 0]: OOS n 93.3 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 2 candidatas guardadas
