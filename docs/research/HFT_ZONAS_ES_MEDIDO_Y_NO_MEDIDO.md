@@ -1141,4 +1141,6 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   empeora en las 3 fuentes y en las 2 ventanas, y la entrada con confirmación es la mejor. Nada es positivo todavía.
   `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
 - **NO MEDIDO:** el filtro combinado (`dur_ida` alto + A/H alto + CONF) en datos no usados de 2024-01 a 2025-07.
+- **MEDIDO (confirmación del filtro IFH, 2024-01 a 2025-07 en CFD):** NO CONCLUYENTE. 10 sesiones, +0,13R, IC90 −0,46 a +0,67, potencia 0,07.
+  El filtro es demasiado restrictivo. `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
 

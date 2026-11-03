@@ -39,3 +39,13 @@ es la mejor en todas.
 La combinación pre-declarada `dur_ida alto + A/H alto + CONF (+ vol_zona alto en LUX-CFD)` es una hipótesis **nueva**. Se confirma
 sólo en datos no usados: 2024-01 → 2025-07, anterior al DESC de estas familias. Si se mide sobre las mismas ventanas, el resultado sale
 inflado por haber elegido el filtro mirándolas.
+
+## Confirmación del filtro (2024-01 → 2025-07, CFD con costos de NQ; `PREREGISTRO_IF_HACIA_CONFIRMACION.md`)
+
+**NO CONCLUYENTE.** El filtro congelado deja **10 sesiones** en 19 meses: 84 filas, que son las mismas pocas entradas repetidas en las
+12 combinaciones de r y TP. El resultado es +0,13R, con IC90 de −0,46 a +0,67 y p 0,36. La potencia para detectar 0,05R es 0,07.
+Ninguna conclusión es posible. Datos: `confirmacion/RESUMEN.json`.
+
+**Lectura:** el filtro A/H alto + `dur_ida` alto + `vol_zona` alto + CONF es demasiado restrictivo para la frecuencia de U1 en el
+CFD. La pista sigue viva; para decidir hace falta muestra: forward en papel o una versión con menos condiciones, pre-registrada antes
+de mirar más datos.
