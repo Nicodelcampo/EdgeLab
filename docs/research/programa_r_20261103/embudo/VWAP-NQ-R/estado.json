@@ -1,0 +1,114 @@
+{
+ "etapa": "DESC",
+ "fase": "CORRIENDO",
+ "historial": [
+  {
+   "ts": 1793674080.3339927,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "VWAP-NQ-R",
+  "familia": "VWAP_REV_NQ",
+  "experimento": "edgelab.research.vwap_rev",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 72,
+  "justificacion_economica": "Reversión al VWAP de la sesión regular (Berkowitz et al. 1988; Madhavan 2002): los ejecutores de VWAP absorben desvíos de flujo transitorio.",
+  "como_podria_refutarse": "Los desvíos de 2σ continúan en vez de revertir; sin nominadas en R ni pistas que repliquen.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "VWAP_REV_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva (reversión al VWAP RTH), sin padres (docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793674080.3338392,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-vwap-nq-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793674414.223849
+}
