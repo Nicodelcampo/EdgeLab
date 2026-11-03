@@ -222,3 +222,18 @@ def test_promocion_exige_r_forward_positivo(cart):
     assert r["nivel"] == "PAPEL" and c.r_forward("A") < 0 and any(b["evento"] == "PROMOCION_RETENIDA" for b in c.bitacora)
     c2 = Cartera(tmp / "c3.json", libro_ventanas=tmp / "v3.jsonl"); c2.alta(_ficha(id_="Z", familia="FAM_Z", cid="C-Z"), tmp)
     assert c2.agregar_ops("Z", filas)["nivel"] == "PAPEL"                    # sin riesgo registrado: no se promueve
+
+
+def test_bajas_declaradas_retiran_y_no_se_vuelven_a_dar_de_alta(cart):
+    """2026-11-03: `bajas` en el mismo JSON retira la ficha activa (idempotente) y no la vuelve a dar de alta."""
+    c, tmp = cart
+    d = dict(id="K", familia="FAM_K", cid="C-K", instrumento="NQ", regla=dict(spec=dict(experimento="x", sensor="NQ"), celdas=[[0]],
+             cortes={}, tope=None, unidad="sesion_canasta"), preregistro="PRE.md", perdida_max_pts=10.0, ganancia_max_pts=20.0,
+             margen_hueco_pts=0.0, friccion_pts=0.5, mu_util=1.0, sd_desarrollo=8.0, desde=20261102, ops_desarrollo=[[20260901, 1.0]])
+    cfg = dict(altas=str(tmp / "altas.json"), alertas=str(tmp / "alertas.jsonl"))
+    (tmp / "altas.json").write_text(json.dumps(dict(fichas=[d])))
+    CI.altas_pendientes(c, cfg, tmp); assert c.fichas["K"].estado == "ACTIVA"
+    (tmp / "altas.json").write_text(json.dumps(dict(fichas=[d], bajas=[dict(id="K", motivo="réplica en R <= 0")])))
+    r = CI.altas_pendientes(c, cfg, tmp)
+    assert r[0]["baja"] and c.fichas["K"].estado == "RETIRADA" and c.fichas["K"].motivo == "réplica en R <= 0"
+    assert CI.altas_pendientes(c, cfg, tmp) == []
