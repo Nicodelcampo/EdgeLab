@@ -1,6 +1,6 @@
 # Propuesta: el tamiz FDR usa la cola normal y nomina ruido con n chico (03/11/2026)
 
-Estado: PROPUESTA — requiere decisión de Nico (cambia la compuerta FDR; regla permanente: gates/FDR sólo humanos). No se tocó código.
+Estado: DECIDIDA — Nico aprobó la opción 1 el 2026-11-03. Implementación local pendiente de validación e integración; ver `docs/DECISIONES_20261103_COLA_T_FDR.md`.
 
 ## Hallazgo (causa raíz del bloqueo de U1-6E-CONFIRMA-GBP-C-R)
 El preflight de ruido de `u1_confirma` nomina por FDR q 0,10 en **3 de 8 semillas** (11, 13 y 16). Bajo la nula global se esperaría

@@ -1,14 +1,21 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-02  
+**Fecha:** 2026-11-03
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-02  
+**Corte:** 2026-11-03 (revisión)
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+
+## Estado de revisión al 2026-11-03 (leer primero)
+
+- Nico aprobó cola t con n−1 para el tamiz FDR; implementación local todavía no integrada por una prueba estadística que falla. No se relajó el umbral. Preflight de U1-6E-CONFIRMA agotó 240 s sin conclusión; no se relanzó. Ver `docs/DECISIONES_20261103_COLA_T_FDR.md` y `docs/research/AVANCES_Y_RELANZAMIENTOS_20261103.md`.
+- Las 12 familias de Gemini se revisaron pero siguen sin integrar ni activar: noticias, relojes, costos y solapamientos pendientes. Ver `docs/research/REVISION_GEMINI_12_FAMILIAS_20261103.md`.
+- Mapa de objetivos en zonas y diseño de intento fallido A/B, incluida U1-CRUZADO: `docs/research/MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md`. Sin nuevos outcomes ni apertura del holdout.
+- Debian figuraba pausado en el último control de la sesión previa; verificar antes de asumir que el seguimiento en papel está corriendo.
 
 ## Estado al 2026-11-02 (leer primero)
 

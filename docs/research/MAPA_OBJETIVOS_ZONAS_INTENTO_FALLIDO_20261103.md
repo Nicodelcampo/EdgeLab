@@ -1,0 +1,51 @@
+# Mapa de objetivos en zonas y propuesta de intento fallido
+
+Estado: DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autorización de holdout. Fecha 2026-11-03. Referente: `docs/NORTH_STAR.md`, SHA-256 del cuerpo `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+
+## Pregunta de Nico
+
+Precio viene desde una distancia x hacia un objetivo/zona; se aproxima a menos de y sin alcanzar el nivel objetivo, se aleja z en contra. ¿Da entrada rentable (A) en el alejamiento, o (B) si luego vuelve a acercarse hasta otra distancia? Las dos decisiones deben ser causales y poder perder. Este documento no responde que exista rentabilidad: clasifica dónde vale la pena probarla. Es pariente directo de `IDEA_ESPEJO_INTENTO_FALLIDO_LIQUIDEZ_20260927.md`, cuyo estado es idea sin medir.
+
+## Inventario por geometría, no por nombre
+
+Alcance: módulos de research y manifiestos/campañas accesibles al HEAD `82e02f26`; búsquedas por objetivos/zonas y revisión de los linajes listados. No es garantía de haber agotado scripts históricos fuera de esos módulos; se indica dónde la relación con la zona es condicional. Los estados se toman de los `MEDIDO.md` R, no son recomendación de trading; PISTAS_VIVAS no significa confirmada.
+
+| Familia / instrumentos | Zona y objetivo | Estado relevante y límites |
+|---|---|---|
+| AREAS-EXP-1 / U1-INDAGA | Racimo LUX-IMB OG/VI; T1 borde cercano, T2 medio, T3 borde lejano. Sólo ejecuciones hacia área; las de continuación no aplican directamente. | Ancestro de U1; resultados viejos afectados por lookahead en disparos. Usar implementación causal y linaje completo. |
+| U1-CRUZADO | USATECH CFD detecta racimo LUX; NQ ejecuta; T1/T3 trasladados con base contemporánea. | Es el caso más directo y expresamente pedido. Causal en papel, sin edge confirmado; no usar el holdout antiguo +25,8 puntos como estimación operable: se corrió con versión no causal. Sale de v5 por R casi nulo. |
+| U1-ORO-GRILLA-R | XAU LUX → GC, T1/T2/T3. | INTEGRIDAD_FALLA; no rescatar la misma celda como si confirmara. |
+| U1-ES/YM-GRILLA-R | USA500/USA30 LUX → ES/YM, bordes/medio U1. | INTEGRIDAD_FALLA en ambos; variantes del mecanismo, no confirmaciones. |
+| U1-6E/6B spot y futuro, CONFIRMA | Racimos LUX con escalas y, en CONFIRMA, sensor GBP adicional; T1/T2/T3. | 6E futuro PISTAS_VIVAS; 6E spot y 6B spot/futuro SIN_CANDIDATAS; 6E-CONFIRMA bloqueada en preflight. El manifiesto de CONFIRMA usa EURUSD spot como ejecución con costo proxy 6E; no confundir con operación real en 6E. |
+| U1-ZONAS ES/NQ | Racimos aVolZonePOI2 de volumen; T1/T2/T3. | Ambos SIN_REGLA_OPERABLE por topes; NQ OOS inconcluso y ES OOS negativo inconcluso. Aptitud geométrica, no evidencia de ventaja. |
+| U1-RACIMOS-GRILLA ES/NQ/YM | Racimos AVZP2; T1/T2 en grilla. | ES y NQ PISTAS_VIVAS; YM SIN_CANDIDATAS. NQ aparece en v5 como regla congelada seleccionada post hoc, no prueba independiente. |
+| U1-ZONAS-AVCL ES/NQ | Racimos aVolClusterPOI; T1/T2/T3. | ES y NQ PISTAS_VIVAS; ambas reglas integran v5, cuya confirmación es forward. Revisar caveats de paridad por instrumento. |
+| U1-ZONAS-BT2 ES/NQ/YM | Rectángulos BigTrap2; T1/T2/T3. | ES y YM SIN_CANDIDATAS; NQ INTEGRIDAD_FALLA en embudo R. Algunas reglas históricas se eligieron para v5 en otro proceso; no confundir esos estados. BT2 sólo tiene paridad citada en 6E, caveat para otros activos. |
+| U1-ZONAS-GRILLA-YM | Zona individual AVZP2, sin exigir racimo; objetivos U1. | PISTAS_VIVAS. Menos estricta, útiles censos de cobertura; no se garantiza potencia del nuevo evento. |
+| ZGAP NQ/CFD | Gap o cluster; algunas ejecuciones FAVOR apuntan al ancla de zona, otras fracciones/extensiones o dirección contraria. | Ambas SIN_CANDIDATAS en R; sólo seleccionar geométricamente variantes que efectivamente apunten al ancla. No asumir que todo TP está en el gap. |
+| EXPANSION-ZONAS NQ/CFD | Zonas LUX en inicio de expansión; variante CONTRA/ZONAS apunta al centro de zonas; A y 50 apuntan a origen/fracción. | Ambas PISTAS_VIVAS. Sólo variante ZONAS satisface literalmente el criterio, otras son niveles estructurales próximos. |
+| LUXIMB-GRILLA y regla de visor | Zonas LUX cerca del origen del impulso; fade 1×D apunta al origen A, no necesariamente dentro de una zona. | Proximidad condicional, verificar por evento. No clasificar por nombre como TP de zona. |
+| GAP-RTH | Objetivo por fracción del gap de apertura hasta el cierre previo o mitad. | Nivel estructural de gap, no necesariamente una zona LUX o volumen; útil extensión secundaria sólo si se define el borde. |
+| CORREDOR × HFT / IPC | HFT en primera mitad del impulso y reversión hacia ella; IPC acumulación de picos. | Censo target-free del corredor × HFT, sin P&L; no existe evidencia de rentabilidad de esta idea. Revisar disponibilidad y paridad antes de proponer corrida. |
+| CVGAP / CONF-CVR / PRERANGE-HFT / PRERANGE-ZONAS / ASIA-BOS / TORI | Gaps o zonas de volumen/HFT se usan como contexto; sus TP son origen/porcentaje de impulso, rango opuesto, medio o swing. | **No TP de zona por definición.** Incluir sólo si coincidencia real con zona se certifica causalmente; no venderlas como antecedentes medidos del mismo setup. |
+
+## Priorización para investigar, no ranking de rentabilidad
+
+1. **U1-CRUZADO causal, T1 y T3 separados:** misma estructura solicitada, señal y ejecución conocidas, pero gran multiplicidad, lookahead histórico y base cambiante CFD/NQ. Congelar nivel traducido y medir spread/base en el reloj de cada decisión; no tocar regla operativa de papel. T3 puede ser alcanzado después de entrar al área: «no tocó el objetivo» no es «no tocó ninguna parte de la zona».
+2. **U1-RACIMOS-GRILLA-NQ y U1-ZONAS-AVCL-NQ:** T1/T2/T3 según cada implementación, con zonas de volumen real y reglas en v5. Elegir unas pocas definiciones por criterio ex ante de cobertura y trazabilidad, no por mejor P&L conocido. Diferenciar selección v5 de validación independiente.
+3. **U1-ZONAS-AVCL-ES y RACIMOS-ES:** contraste de instrumento y fuente, no réplica independiente; medir solapamiento de sesiones y señales con NQ.
+4. **EXPZ variante ZONAS y ZGAP FAVOR/ancla:** otra construcción de zona; ZGAP original R no confirmó. Sus otros objetivos son controles geométricos o familias distintas.
+5. **BT2 y HFT/corredor:** aportan mecanismo distinto pero BT2 tiene fallas y caveats de paridad; HFT/corredor sólo cuenta con censo de coexistencia. No prometer ejecución hasta verificar almacenes, trazas y paridad.
+
+## Diseño causal propuesto, pendiente de pre-registro
+
+- **Universo:** todos los acercamientos elegibles a una zona viva conocida en el instante de partida, no sólo trades ganadores ni sólo los que llegan a z. Registrar no disparados, vencimientos y censura. Congelar zona, borde/nivel objetivo y estado de vida as-of; definir si una actualización invalida el intento. Una zona puede tener varios episodios: regla de primer intento o enfriamiento declarada; agrupar por sesión y zona.
+- **Geometría:** para zona objetivo congelada T y dirección s hacia ella, distancia positiva `d(t)=s*(T−P(t))`. Inicio cuando la distancia causal observada alcanza x; primer acercamiento al mínimo d entre 0 y y sin tocar ni cruzar T; después primer instante en que d aumenta al menos z respecto del mínimo observado. Si T se toca primero, se invalida. Congelar x, y y z en ticks o unidades causales predefinidas (ancho de zona/ATR anterior), no mezclar puntos entre instrumentos ni usar altura futura. Si x es distancia inicial al TP, no presupone que el precio haya salido de la zona; si se exige ese origen, declararlo separadamente.
+- **A:** decidir al primer cruce causal de z; probar una hipótesis de continuación del rechazo, con stop/TP/tiempo definidos antes. **B:** tras z, definir una distancia de reacercamiento w respecto del objetivo (por ejemplo primer d ≤ w, w > 0) y vencimiento; medir entrada hacia zona y/o rechazo como hipótesis separadas, no usar simultáneamente una y presentarla como confirmación de otra. Un segundo acercamiento no ocurre en todos los eventos: reportar su frecuencia y riesgo condicional, y por cada intento inicial; nunca seleccionar con conocimiento futuro.
+- **Orden de ticks y fills:** usar ticks de ejecución bid/ask o hipótesis conservadora explícita, costes canónicos y latencia; no decidir el orden en una M1 que puede tocar T y z. Si no hay ticks, marcar ambiguo/excluir según regla anterior, con sensibilidad conservadora. Establecer precio de fill posterior a la señal, stop inicial y R = neto con fricción / riesgo inicial efectivo. Faltantes, saltos, sesiones, zonas caducadas y anuncio USD tienen reglas previas fail-closed.
+- **Comparadores:** aproximaciones a la misma clase de zona sin rechazo z, casi-zona/zonas fantasma emparejadas con información disponible (sin el espejo degenerado de HFT), y alejarse z sin posterior reacercamiento; emparejar por distancia, ancho, volatilidad, sesión, edad, dirección y costos. Comparar A en el instante de z; comparar B sólo con controles elegibles desde el mismo instante B para evitar sesgo de supervivencia. Distinguir frecuencia del evento, P&L neto y efecto incremental vs control.
+- **Preregistro y validación:** primero censo target-free de cobertura, sesiones y tamaños; luego definir rejilla acotada x/y/z/w, dos vías, fuentes, ventanas, n efectivo y multiplicidad heredada (no son 2 pruebas si se barre una grilla). Prueba por sesión o cluster, costos adversos, latencia, placebo, MDE y no-confirmación posible. DESC no contaminado si existe; abr–sep ya consumido por estos linajes, por lo que no es réplica virgen al reusar esta información. Reservar muestra verdaderamente nueva y autorización aplicable; no consultar octubre+ sellado para seleccionar nada. Pedir OK explícito antes de medir P&L conforme a AGENTS.md.
+
+## Referencias del repo
+
+`edgelab/research/{areas_expansion,u1_indaga,u1_cruzado,u1_zonas,u1_racimos_grilla,zonas_gaps,expansion_zonas,corredor_vol_gaps,prerange_zonas}.py`; `docs/research/u1_zonas_20261025/SPEC_U1_ZONAS.md`; `docs/research/HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md`; `docs/research/canasta_7_20261030/CANASTA_V5_R_20261102.md`; `docs/research/relanzamiento_R_20261102/embudo/*/MEDIDO.md`; `docs/research/CENSO_CORREDOR_X_HFT_RESULTADOS_20261016.md`.
