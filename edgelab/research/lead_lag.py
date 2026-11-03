@@ -17,6 +17,7 @@ import numpy as np
 import pandas as pd
 
 from edgelab.research.grilla_generica import Variable
+from edgelab.research.par_relativo import _alinear  # noqa: F401 (minuto del confirmador alineado al del sensor)
 from edgelab.research.regimen_sesion import minuto_ny
 
 NOMBRE = "LEAD-LAG"
@@ -34,12 +35,6 @@ EJES_ORDINALES = (1,)
 EJECUCIONES = [("OBJ", a, "STOP", b) for a in (1.0, 2.0) for b in (1.0, 2.0)]
 BASE = {"horizonte": 1, "z_lider": 0, "franja": 0, "rho_fuerte": 1, "ejecución": 1}
 VACIO = ["k", "ses", "lado", "li", "zc_abs", "franja", "rho_f", "sd_pts"]
-
-
-def _alinear(ctx):
-    cf = ctx["conf"]; t = np.asarray(ctx["t"], np.int64); tc = np.asarray(cf["t"], np.int64)
-    j = np.searchsorted(tc, t); jc = np.clip(j, 0, len(tc) - 1)
-    return np.where((j < len(tc)) & (tc[jc] == t), np.asarray(cf["c"], float)[jc], np.nan)
 
 
 def _franja(m):                                         # Asia 18:00–03:00, Europa 03:00–09:30, EE.UU. 09:30–17:00 (hora NY)
