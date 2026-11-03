@@ -1,0 +1,115 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793732079.2965693,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "CVGAP-CFD-NQ-R",
+  "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260925
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "nota_20261101": "Apagada por decisión del 2026-11-01 (docs/research/canasta_7_20261030/DECISION_CONTEO_20261101.md): en la canasta de 7: su holdout lo mide el pre-registro de la canasta, no el CONTEO por campaña.",
+  "n_celdas_por_canal": 933120,
+  "spec": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
+  "justificacion_economica": "Señal de EmaCorridorTrendVolW2 + ZONAS-GAPS medida sobre el CFD Dukascopy USATECHIDXUSD (50T/M1) y ejecutada en el futuro NQ con traslación causal de base al cierre M1: evalúa si la ruptura de la Caja Amarilla en dirección del impulso + excursión + regreso y puntaje de gaps en el CFD anticipa la reversión hacia el 50%, 25% o 100% del impulso en NQ.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (Directiva #6: OOS cerró 2026-09-25 sin tocar octubre).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "cuenta_kaggle": "nicobuttaro",
+  "estadistico": "R",
+  "decisiones": [
+   "2026-11-02: relanzada midiendo el P&L en R (neto / riesgo inicial), decisión de Nico («si, relanza todo»). Ver docs/research/MEDIR_EN_R_20261102.md. Misma familia: hereda su multiplicidad y su libro de LORD++; las pruebas se cuentan de nuevo."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260925
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (Directiva #6: OOS cerró 2026-09-25 sin tocar octubre).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+   "declarada": true,
+   "padres": [
+    "CORREDOR_VOL_GAPS_NQ",
+    "ZONAS_GAPS",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 113645,
+   "bruto_heredado": 6757336,
+   "n_heredado": 6757336,
+   "total": 6870981,
+   "justificacion": "variante cruzada USATECH->NQ de CORREDOR_VOL_GAPS con familia propia en LORD++ y ventana de holdout independiente (SPEC_CORREDOR_VOL_GAPS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793732079.2962914,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}

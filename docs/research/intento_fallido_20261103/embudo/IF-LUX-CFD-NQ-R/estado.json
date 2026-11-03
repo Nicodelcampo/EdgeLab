@@ -1,0 +1,108 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793732191.8089745,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "IF-LUX-CFD-NQ-R",
+  "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
+  "experimento": "edgelab.research.intento_fallido_lux",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 810,
+  "justificacion_economica": "Una zona que el precio no alcanza revela absorción o agotamiento del flujo; el rechazo cerca del objetivo deja stops detrás del intento (A: continuación del rechazo; B-HACIA: segundo intento cuando la absorción se agotó; B-CONTRA: doble techo/piso). Zonas de U1-CRUZADO (LUX-IMB en el CFD), operado en NQ.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 (cola t) ni pista que replique en abr–sep en R; ventaja en un único y/z sin meseta; falla de placebo o latencia.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
+   "declarada": true,
+   "padres": [
+    "AREAS_EXP_1_CRUZADO",
+    "LUXIMB_GRILLA_CFD"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4626808,
+   "n_heredado": 4626808,
+   "total": 4626808,
+   "justificacion": "Hija de U1: misma población de aproximaciones, evento complementario (aproximación fallida); declarada antes de DESC (docs/research/intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793732191.8086462,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
