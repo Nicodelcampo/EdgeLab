@@ -24,3 +24,12 @@ Origen: las marginales de `RESULTADO_IF_HACIA.md`. OK de Nico el 03/11.
 ## Cómo podría refutarse
 
 El filtro se eligió mirando DESC y abr–sep. Si en 2024–jul 2025 no rinde, era ajuste a esas ventanas.
+
+## Enmienda por datos (03/11/2026, antes de ver cualquier resultado)
+
+La primera carga falló sin producir desenlaces: los futuros NQ del release empiezan el **2025-08-05** y no cubren 2024–jul 2025. Lo que
+cambia:
+- **Ejecución:** la regla congelada corre con señal **y ejecución** en el CFD USATECH, con la fricción canónica de NQ como proxy (la
+  convención del repo: U1-ES-GRILLA, U1-6E-CONFIRMA). Es la misma ejecución que la corrida real de Nico en JForex.
+- **Fuente:** queda sólo IFH-LUX-CFD (sus cortes son del mismo sensor). IFH-LUX-NQ no tiene datos de NQ para esa ventana y no entra.
+- **Prueba:** una sola, sin Holm. Las 24 pruebas registradas de la primera carga quedan en el contador global, que es lo conservador.
