@@ -12,7 +12,7 @@ Estado: VIGENTE, registrado antes de correr. Pedido de Nico: «diseñá las fami
    - una apuesta relativa (neutral al mercado);
    - otro activo con su propio motor (oro, dólar);
    - una franja de muchas operaciones (el mediodía del horario regular).
-3. **Pocas perillas:** 108 o 144 celdas por canal, contra cientos de miles a millones en las familias anteriores. La potencia se usa en
+3. **Pocas perillas:** entre 72 y 216 celdas por canal, contra cientos de miles a millones en las familias anteriores. La potencia se usa en
    la medición, no en la búsqueda.
 4. **Todo en R** (`"estadistico": "R"`), con código causal certificado, sesiones válidas, fricción canónica y triple barrera (objetivo,
    stop y tiempo), según López de Prado.
@@ -27,7 +27,7 @@ Estado: VIGENTE, registrado antes de correr. Pedido de Nico: «diseñá las fami
 | Familia | Módulo | Mecanismo y fuente | Campañas | Celdas por canal |
 |---|---|---|---|---|
 | PAR-REL | `par_relativo.py` | Valor relativo intradía entre índices: el spread log(sensor) − β·log(ES) revierte. Gatev, Goetzmann y Rouwenhorst (2006) | PAR-NQES-R (NQ contra ES), PAR-YMES-R (YM contra ES) | 108 |
-| LEAD-LAG | `lead_lag.py` | El dólar (EURUSD) lidera al oro: el oro incorpora con rezago un movimiento fuerte del dólar. Hasbrouck (1995); Chordia y Swaminathan (2000) | LEADLAG-GC-EUR-R | 144 |
+| LEAD-LAG | `lead_lag.py` | El dólar (EURUSD) lidera al oro: el oro incorpora con rezago un movimiento fuerte del dólar. Hasbrouck (1995); Chordia y Swaminathan (2000) | LEADLAG-GC-EUR-R | 216 (incluye la perilla `rho_fuerte`) |
 | VWAP-REV | `vwap_rev.py` | Reversión al VWAP de la sesión regular tras un desvío ≥ 2σ con vela de giro, fuera de noticias. Berkowitz, Logue y Noser (1988); Madhavan (2002) | VWAP-NQ-R, VWAP-ES-R | 72 |
 
 **Ejecución en las tres:** entrada en la vela siguiente (E1A), objetivo y stop en desvíos de la propia señal, y salida forzada por tiempo
