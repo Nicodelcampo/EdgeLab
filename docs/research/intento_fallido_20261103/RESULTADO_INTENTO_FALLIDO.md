@@ -1,6 +1,6 @@
 # Resultado: INTENTO-FALLIDO v2 (03/11/2026)
 
-Estado: PARCIAL — 3 de 4 fuentes terminadas; IF-LUX-CFD-NQ-R2 (U1-CRUZADO) en curso. Pre-registro: `PREREGISTRO_INTENTO_FALLIDO.md`.
+Estado: VIGENTE — las 4 fuentes terminadas. Pre-registro: `PREREGISTRO_INTENTO_FALLIDO.md`.
 Embudo en R con cola t. Holdout sin tocar.
 
 | Campaña | DESC | Réplica abr–sep (canasta de pistas) | Desenlace |
@@ -8,7 +8,7 @@ Embudo en R con cola t. Holdout sin tocar.
 | IF-RACIMOS-NQ-R2 | 2.380 evaluables; **320 nominadas por FDR**, ninguna candidata | 15 pistas (12 HACIA): **−0,26R** (IC90 −0,43 a −0,10) | PISTAS_VIVAS; la réplica va en contra |
 | IF-LUX-NQ-R2 | 950 evaluables; 0 nominadas | 3 pistas (las 3 HACIA): **+0,12R** (IC90 −0,12 a +0,38), 53 sesiones, potencia 0,27 | PISTAS_VIVAS, sin potencia para decidir |
 | IF-AVCL-NQ-R2 | 286 evaluables; 0 nominadas | — | SIN_CANDIDATAS |
-| IF-LUX-CFD-NQ-R2 | en curso (la primera carga chocó con la salida por línea en ejecución cruzada: corregido con `LINEAS_SOLO_TIEMPO`) | | |
+| IF-LUX-CFD-NQ-R2 (U1-CRUZADO) | 816 evaluables; 0 nominadas | 6 pistas (3 A_RECHAZO, 2 B80_HACIA, 1 B50_HACIA): **−0,015R** (IC90 −0,105 a +0,079), 88 sesiones | PISTAS_VIVAS; ni a favor ni en contra |
 
 Lectura: las celdas que destacan en DESC son casi todas **hacia la zona**, sobre todo B80_HACIA (la idea de Nico). En racimos de
 aVolZonePOI2 el efecto de DESC es maldición del ganador: la réplica lo invierte. En LUX sobre NQ la réplica es positiva, pero sin potencia.
@@ -33,3 +33,6 @@ Es una **pista**, no un edge.
 - variar la confirmación (80/90/100 %) y el objetivo (Z1/Z2/Z3) **dentro** del pre-registro;
 - fuentes con más eventos (LUX sobre CFD y ES);
 - multiplicidad heredada de INTENTO-FALLIDO.
+
+
+**U1-CRUZADO (CFD → NQ):** sin nominadas; pistas en réplica ≈ 0R. B80_HACIA aparece otra vez entre las pistas (2 de 6): es la única regla presente en las 4 fuentes.

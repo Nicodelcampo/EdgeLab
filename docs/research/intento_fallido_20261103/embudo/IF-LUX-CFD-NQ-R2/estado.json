@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "PENDIENTE",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793737957.0575342,
@@ -12,6 +12,11 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 6
+  },
+  {
+   "ts": 1793739199.7942977,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 6 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6848915618735192); canasta media -0.01544830608551866 IC90 [-0.10532815514975018, 0.07905350880695936]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10532815514975018, 0.07905350880695936]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.8173860402288964"
   }
  ],
  "spec": {
@@ -113,17 +118,70 @@
   "ts": 1793737957.0573497,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicolasbuttaro/embudo-if-lux-cfd-nq-r2-rep-20260401",
  "fallas": 0,
  "params": {
-  "cortes": null,
-  "criba": "maxt"
+  "cortes": {},
+  "celdas": [
+   [
+    2,
+    2,
+    0,
+    1,
+    0,
+    5
+   ],
+   [
+    3,
+    1,
+    2,
+    0,
+    0,
+    1
+   ],
+   [
+    1,
+    2,
+    0,
+    0,
+    1,
+    0
+   ],
+   [
+    1,
+    0,
+    0,
+    0,
+    0,
+    1
+   ],
+   [
+    3,
+    2,
+    0,
+    1,
+    0,
+    3
+   ],
+   [
+    1,
+    1,
+    2,
+    0,
+    0,
+    0
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 6
+  }
  },
  "periodo": [
-  20250805,
-  20260331
+  20260401,
+  20260930
  ],
- "lanzada": 1793738291.4421048,
+ "lanzada": 1793738898.5294,
  "cortes": {},
  "pistas_replica": {
   "k": 20,
@@ -182,7 +240,44 @@
     0,
     0
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 88,
+   "media": -0.01544830608551866,
+   "ic90": [
+    -0.10532815514975018,
+    0.07905350880695936
+   ],
+   "p": 0.6075981004748813,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.6075981004748813,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
+    "run_id": "IF-LUX-CFD-NQ-R2/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.6848915618735192,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 6,
+   "t": 2,
+   "familia": "INTENTO_FALLIDO_LUX_CFD_NQ",
+   "run_id": "IF-LUX-CFD-NQ-R2/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_RECHAZO",
+   "potencia": 0.8173860402288964,
+   "efecto": 0.17924084046414257,
+   "motivo": "con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10532815514975018, 0.07905350880695936]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -232,7 +327,20 @@
     "t_maxt": 2.6146151615338016,
     "p_maxt": 0.6133866133866134,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 55,
+     "media": 0.11289750002963779,
+     "ic90": [
+      -0.28356583152332066,
+      0.4892578489995509
+     ],
+     "p": 0.3103699653726991,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -280,7 +388,20 @@
     "t_maxt": 1.9794328980274214,
     "p_maxt": 0.985014985014985,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 44,
+     "media": -0.25094215552759286,
+     "ic90": [
+      -0.44749857133393156,
+      -0.06052313719493838
+     ],
+     "p": 0.9843265901221068,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -328,7 +449,20 @@
     "t_maxt": 2.1890655100563285,
     "p_maxt": 0.7662337662337663,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 87,
+     "media": -0.1208657469574013,
+     "ic90": [
+      -0.27969443139960654,
+      0.03750561949325754
+     ],
+     "p": 0.8891926371423364,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -376,7 +510,20 @@
     "t_maxt": 2.006095093466268,
     "p_maxt": 0.981018981018981,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 79,
+     "media": -0.020728237840479603,
+     "ic90": [
+      -0.21973003180918338,
+      0.17987237931164593
+     ],
+     "p": 0.5666119919810461,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -424,7 +571,20 @@
     "t_maxt": 1.5836342858560928,
     "p_maxt": 1.0,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 53,
+     "media": 0.07784735430418159,
+     "ic90": [
+      -0.23980753392405726,
+      0.39237447746603604
+     ],
+     "p": 0.3424457809367596,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -472,8 +632,22 @@
     "t_maxt": 1.6825069509246808,
     "p_maxt": 1.0,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 62,
+     "media": 0.07584399556452157,
+     "ic90": [
+      -0.12567341672760252,
+      0.28973125460660065
+     ],
+     "p": 0.27811190085657006,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "motivo": "pistas a réplica: 0 de 6 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6848915618735192); canasta media -0.01544830608551866 IC90 [-0.10532815514975018, 0.07905350880695936]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10532815514975018, 0.07905350880695936]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.8173860402288964"
 }
