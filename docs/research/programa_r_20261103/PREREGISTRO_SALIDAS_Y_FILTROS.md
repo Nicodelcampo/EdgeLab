@@ -52,3 +52,30 @@ mejora sin la regla de mayor peso.
 
 ## Registro
 hasta 35 en DESC (28 políticas + 5 filtros) y 2 en réplica: `programa_r/salidas_filtros/20261103` en `TRIAL_REGISTRY_GLOBAL.jsonl`.
+
+## Resultado (2026-11-03), en `SALIDAS_RESULTADO.json` (decisión) y `SALIDAS_REP_DESCRIPTIVO.json` (descriptivo)
+**Validación del motor:** reproduce el R real de las reglas. Correlación por operación 0,99 en DESC y 0,98 en réplica; media agrupada
++0,236 contra +0,232 real en DESC y +0,104 contra +0,118 en réplica.
+
+**Decisión pre-registrada: nada se confirma.**
+- **Política elegida en DESC:** objetivo 2R con stop 0,75. En DESC da +0,079R contra la base, con IC90 [−0,018; +0,172] (no excluye 0).
+  En réplica da +0,008R (p 0,46, Holm 0,92): **no confirma**.
+- **Filtro elegido:** sacar Europa. En DESC −0,013R; en réplica −0,034R: **no confirma**.
+- **Todos los filtros empeoran el R en DESC.** Las reglas ganan en todas las franjas y en los dos lados: sacar una parte saca ganancia.
+
+**Lo que sí se repite en DESC y en réplica** (descriptivo; no es una prueba nueva, pero tiene el mismo signo en las dos ventanas):
+
+| Política | DESC | Réplica |
+|---|---|---|
+| Cerrar a las 15 velas | −0,17 | −0,09 |
+| Cerrar a las 30 velas | −0,14 | −0,07 |
+| Cerrar a las 60 velas | −0,10 | −0,04 |
+| Objetivo de 0,5R | −0,14 | −0,09 |
+| Break-even + cierre a las 30 velas | −0,14 | −0,08 |
+| Trailing (las tres variantes) | −0,02 a −0,05 | −0,01 a −0,03 |
+
+**Lectura (idea transferible, negativa): no cortar las ganancias.** Salir antes por tiempo, por objetivo chico, por break-even o por
+trailing le resta R a estas reglas en los dos tramos. Su salida natural ya es casi óptima entre las variantes probadas.
+
+Lo único con signo positivo en los dos tramos es ampliar el objetivo a 2R con un stop más corto: +0,08 / +0,05 (stop 0,5) y
++0,08 / +0,01 (stop 0,75). Sin significancia. Queda como pista para probar en familias nuevas, no se aplica a la v5.

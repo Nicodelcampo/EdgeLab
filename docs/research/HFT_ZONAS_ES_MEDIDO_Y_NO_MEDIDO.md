@@ -1101,3 +1101,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## Apertura conjunta del holdout (código causal) — 02/11/2026
 - **MEDIDO:** 16 reglas (12 nominadas, U1-CRUZADO y 3 forzadas). Todas EN CURSO o NO_CONCLUYENTE; papel de las 3 forzadas SIN_DECIDIR.
   La señal fuerte es mala: CVGAP-NQ y CVGAP-CFD-NQ en alerta (z −2,7 / −2,45). `docs/research/APERTURA_HOLDOUT_CONJUNTA_20261102.md`.
+
+## Programa R: salidas, filtros y maldición del ganador — 03/11/2026
+- **MEDIDO:** con las 8 reglas de la v5 agrupadas (467 operaciones DESC, 379 réplica), ninguna de las 28 políticas de salida ni de los
+  5 filtros confirma en réplica. Cortar ganancias (tiempo ≤ 60 velas, objetivo 0,5R, BE, trailing) resta R en los dos tramos.
+  `programa_r_20261103/`.
+- **MEDIDO:** canastas de pistas de 44 familias en su réplica no usada (relanzamiento en R), efecto aleatorio −0,042R
+  (IC90 −0,056 a −0,028; 10 de 44 positivas). Las mejores celdas de una grilla grande no rinden fuera de muestra.
