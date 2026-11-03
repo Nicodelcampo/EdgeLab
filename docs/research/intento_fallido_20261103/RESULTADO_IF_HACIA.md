@@ -1,6 +1,6 @@
 # Resultado: INTENTO-FALLIDO-HACIA (03/11/2026)
 
-Estado: PARCIAL — embudo terminado; marginales por variable (piernas, volumen, entradas) en curso. Pre-registro: `PREREGISTRO_IF_HACIA.md`.
+Estado: VIGENTE — embudo y marginales terminados. Pre-registro: `PREREGISTRO_IF_HACIA.md`.
 
 | Campaña | DESC | Réplica abr–sep (canasta de pistas) | Desenlace |
 |---|---|---|---|
@@ -15,3 +15,27 @@ Ninguna pasó la selección (meseta y sesiones) y la réplica no lo sostiene.
 
 **Pendiente (pregunta directa de Nico):** ¿cambian el resultado la cantidad de velas de cada pierna, cuánto se acercó, cuánto
 rechazó, el volumen sobre la zona o la lógica de entrada? Las marginales están lanzadas en DESC y en réplica (`marginales/`).
+
+
+## Marginales por variable (R medio por operación; terciles de DESC: bajo / alto / cualquiera)
+
+Datos: `marginales/*.json`. Lo que repite el signo de la diferencia en DESC **y** en réplica:
+
+| Variable | Lectura | LUX CFD→NQ (DESC / REP) | LUX NQ | Racimos NQ |
+|---|---|---|---|---|
+| **dur_ida** (velas de la primera pierna, alejamiento de la zona) | **pierna corta = peor, en las 3 fuentes y en las 2 ventanas** | bajo −0,18 / −0,16 · alto +0,04 / −0,01 | −0,15 / −0,33 · +0,07 / −0,24 | −0,26 / −0,12 · +0,02 / −0,05 |
+| **entrada CONF** (esperar una vela que cierre hacia la zona) | **la mejor entrada en las 3 fuentes y en las 2 ventanas** | CONF 0,00 / +0,01 · MERC −0,05 / −0,02 | −0,05 / −0,23 · −0,08 / −0,24 | −0,03 / 0,00 · −0,08 / −0,07 |
+| A/H (cuánto se alejó) | bajo = peor en CFD y racimos; LUX NQ no | bajo −0,13 / −0,06 · alto 0,00 / −0,03 | mixto | bajo −0,13 / −0,16 · alto +0,01 / −0,01 |
+| vol_zona (comercio sobre la zona) | zona poco comerciada = peor en CFD; mixto en el resto | bajo −0,18 / −0,18 · alto +0,01 / −0,04 | mixto | mixto |
+| acerco | racimos: acercarse menos = mejor (+0,10 / +0,09); en LUX no repite | | | |
+| dur_aprox, dur_rech, dur_reac, r, TP | sin patrón estable entre ventanas | | | |
+
+**Respuesta a la pregunta de Nico («¿la cantidad de velas de algún impulso cambia el resultado?»):** sí, la de la **primera pierna**.
+Cuando el alejamiento de la zona fue rápido (pocas velas), el reacercamiento hacia la zona rinde peor, en las 3 fuentes y en las 2
+ventanas. Las piernas de aproximación, rechazo y reacercamiento no muestran un patrón estable. De las entradas, **la confirmación (CONF)**
+es la mejor en todas.
+
+**Lo que no cambia:** todos los niveles siguen ≤ 0R en réplica. Los filtros mejoran la regla, pero no la vuelven positiva por sí solos.
+La combinación pre-declarada `dur_ida alto + A/H alto + CONF (+ vol_zona alto en LUX-CFD)` es una hipótesis **nueva**. Se confirma
+sólo en datos no usados: 2024-01 → 2025-07, anterior al DESC de estas familias. Si se mide sobre las mismas ventanas, el resultado sale
+inflado por haber elegido el filtro mirándolas.

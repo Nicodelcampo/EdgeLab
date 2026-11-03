@@ -1137,4 +1137,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **⭐ PISTA DESTACADA (Nico, 03/11/2026): B80_HACIA** de INTENTO-FALLIDO (tras un intento fallido, cuando el precio recupera el 80 % del
   rechazo, entrar hacia la zona). Es la regla que más se repite entre las pistas de las 3 fuentes. Sin confirmación. Línea a profundizar:
   `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
+- **MEDIDO (INTENTO-FALLIDO-HACIA, 03/11/2026):** ninguna candidata. En las marginales, la primera pierna corta (alejamiento rápido)
+  empeora en las 3 fuentes y en las 2 ventanas, y la entrada con confirmación es la mejor. Nada es positivo todavía.
+  `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
+- **NO MEDIDO:** el filtro combinado (`dur_ida` alto + A/H alto + CONF) en datos no usados de 2024-01 a 2025-07.
 
