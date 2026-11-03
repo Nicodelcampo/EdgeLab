@@ -76,3 +76,20 @@ Referente: `docs/NORTH_STAR.md`, cuerpo sha256 `16a108dfce2671b7a7c502d7db3eccdb
 4. Ponderación de la v5 con contracción.
 5. Variantes de la v5 a papel desde sesiones nuevas.
 6. Familias nuevas guiadas por correlación y por el atlas.
+
+## Iteración 1 (2026-11-03): lo medido
+1. **Mejorar el R con salidas o filtros comunes: no.** Ninguna de las 28 políticas ni de los 5 filtros confirma en réplica.
+   - Cortar ganancias resta R en los dos tramos.
+   - Ampliar el objetivo a 2R con stop corto da un poco a favor en los dos, sin significancia: queda como pista para familias nuevas.
+   - Ver `PREREGISTRO_SALIDAS_Y_FILTROS.md`.
+2. **La maldición del ganador, medida:** las canastas de pistas de 44 familias rinden −0,042R en su réplica no usada (z −4,9).
+   - **No depende del tamaño de la grilla:** Spearman con log(celdas) +0,14, p 0,36; grillas de menos de 1.000 celdas dan −0,05R.
+   - **El problema no es cuánto se busca, sino que estas lógicas no tienen ventaja neta fuera de muestra.** Elegir la mejor celda de una
+     familia sin ventaja da cero menos costos.
+3. **Consecuencia para crear lógicas (punto 1):** más grillas sobre las mismas ideas no ayuda.
+   - Hacen falta **mecanismos nuevos con justificación económica**, medidos con pocas perillas, en R, y diseñados contra la correlación
+     con la cartera.
+   - Ganar potencia agrupando funciona para **medir**, no para **crear** ventaja.
+4. **Lo que sigue en pie:**
+   - la v5 (8 reglas con R > 0 en DESC y réplica), en papel con e-proceso desde sesiones nuevas;
+   - la salida natural de las reglas, que no conviene recortar.
