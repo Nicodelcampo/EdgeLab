@@ -103,6 +103,13 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
     if etapa == "DESC":
         res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"), criba=p.get("criba", "fdr"))
         return res
+    if etapa == "TRAYECTORIAS":                                            # 2026-11-02: camino en R por operación (programa de mejora de R)
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
+                            cx_ej=cx_ej, tope=tuple(p["tope"]) if p.get("tope") else None)
+        cols = [v.columna for v in exp.VARIABLES if v.columna in cx["D"]]
+        extra = {c_: cx["D"][c_].to_numpy(float)[cx["di"]] for c_ in cols}
+        return dict(trayectorias=GG.trayectorias(cx, p["celdas"], cx_ej if cx_ej is not None else ctx, friccion, int(p.get("k", 240)), extra),
+                    variables=cols)
     if etapa == "MARGINALES":                                              # 2026-11-02: medias globales por nivel de perilla (meta-análisis)
         res, _ = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
         return dict(marginales_globales=res.get("marginales_globales"), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),

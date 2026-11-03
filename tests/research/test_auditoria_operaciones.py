@@ -67,3 +67,15 @@ def test_marginales_globales_cuadran_con_el_total(monkeypatch):
     mg = r["marginales_globales"]; tot = {k: sum(f["suma"] for f in v) for k, v in mg.items() if not k.endswith("etiquetas")}
     assert "ejecución.entrada" in mg and r["normalizado"]["metodo"] == "riesgo"
     assert np.allclose(tot["ejecución"], tot["ejecución.entrada"]) and np.allclose(tot["ejecución"], tot["ejecución.stop"])
+
+
+def test_trayectorias_coherentes_con_el_simulador(monkeypatch):
+    """La trayectoria arranca en la vela de llenado, el stop es −1R, y si la regla se detuvo por stop el camino toca −1R."""
+    ctx, cx, cortes = _cx(monkeypatch)
+    r = ET.ejecutar("TRAYECTORIAS", X, ctx, friccion=0.5, extra_adverso=0.25, params=dict(celdas=CELDAS, cortes=cortes, k=120), log=lambda s: None)
+    T = r["trayectorias"]
+    assert T and all(t["stop_R"] == -1.0 and len(t["f"]) == len(t["a"]) == len(t["c"]) >= 1 for t in T)
+    for t in T:
+        if t["R_regla"] is not None and t["R_regla"] < -0.99 - t["friccion_R"]:   # perdió el riesgo completo: tocó el stop
+            assert min(t["a"]) <= -1.0 + 1e-6
+    assert set(r["variables"]) <= set(T[0]["x"])

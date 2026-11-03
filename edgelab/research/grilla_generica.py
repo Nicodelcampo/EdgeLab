@@ -432,6 +432,7 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
+    net_puntos = net.copy()
     if (norm := getattr(exp, "NORMALIZAR", None)):                                         # 2026-10-26: estadístico declarado en el módulo
         esc = (riesgo_ops(O, fb, cx_ej if cx_ej is not None else ctx) if norm == "riesgo"     # 2026-11-02: P&L en R
                else escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx))
@@ -448,7 +449,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
-              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb))
+              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb),
+              net_puntos=net_puntos, D=D, di=di)        # D y di por referencia (sin copia)
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     cx["n_pruebas_metodo"] = "bruto"
     if modo == "REP" and len(celdas) >= 2:                                                  # 2026-10-24: Li-Ji con la matriz sesión x celda
@@ -515,6 +517,31 @@ def operaciones_de(cx, celdas, sim=None):
             d["riesgo"] = riesgo_ops(cx["O"][m], np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]), sim)
         filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
+
+
+def trayectorias(cx, celdas, sim, friccion: float, k: int = 240, extra=None) -> list:
+    """Camino vela a vela, en R, de cada operación con llenado de las celdas congeladas (2026-11-02, programa de mejora de R): desde
+    la vela de llenado y hasta `k` velas o el fin de la sesión. Por vela: lo más favorable (`f`), lo más adverso (`a`) y el cierre
+    (`c`), todos como (precio − entrada) × lado / riesgo. Más: el stop y el objetivo de la regla en R (stop = −1 por construcción), la
+    fricción en R, el R realizado por la regla, la hora de entrada y las variables de la celda en `extra` (columnas de D, causales).
+    Con esto se evalúan políticas de salida y filtros OFFLINE, sin una corrida por política. Datos ya usados por la regla."""
+    O = cx["O"]; t_ej = np.asarray(sim["t"], float); o_, h, l, c, ses = (np.asarray(sim[x]) for x in ("o", "h", "l", "c", "ses"))
+    out = []
+    for i, cel in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(cel)) & np.isfinite(cx["net"]))
+        for r in m:
+            fb = int(np.searchsorted(t_ej, cx["t_fill"][r])); lim, s_ = int(O[r, 3]), int(O[r, 4])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5]); rg = abs(e - float(O[r, 6]))
+            if not rg > 0: continue
+            j1 = min(len(c), fb + k); fin = fb + int(np.argmax(ses[fb:j1] != ses[fb])) if (ses[fb:j1] != ses[fb]).any() else j1
+            hh, ll, cc = h[fb:fin], l[fb:fin], c[fb:fin]
+            fav = ((hh - e) if s_ == 1 else (e - ll)) / rg; adv = ((ll - e) if s_ == 1 else (e - hh)) / rg; cie = (cc - e) * s_ / rg
+            fila = dict(celda=i, t=float(cx["t"][r]), ses=int(cx["ses"][r]), lado=s_, riesgo=rg, stop_R=-1.0,
+                        objetivo_R=float((O[r, 7] - e) * s_ / rg), friccion_R=float(friccion / rg), R_regla=float(cx["net_puntos"][r] / rg)
+                        if "net_puntos" in cx else None, f=np.round(fav, 3).tolist(), a=np.round(adv, 3).tolist(), c=np.round(cie, 3).tolist())
+            if extra: fila["x"] = {k_: float(v[r]) for k_, v in extra.items()}
+            out.append(fila)
+    return out
 
 
 def auditar_operaciones(cx, celdas, sim, linea: bool = False, max_detalle: int = 50) -> dict:
