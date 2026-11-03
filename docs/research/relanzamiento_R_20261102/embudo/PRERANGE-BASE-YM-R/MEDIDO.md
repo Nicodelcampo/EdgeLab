@@ -4,3 +4,5 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20240701, 20250731]
 - Linaje: hereda 5988811 pruebas de ['PRERANGE_ZONAS_YM', 'PRERANGE_HFT_YM']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- **BLOQUEADA** — la etapa DESC falló 3 veces (error (Kaggle no encuentra el kernel después de la gracia): {"code":404,"message":"No runs found for this kernel."}
+)

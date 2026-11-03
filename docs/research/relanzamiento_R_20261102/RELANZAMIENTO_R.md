@@ -18,3 +18,26 @@ Estado: VIGENTE. Decisión de Nico: «sí, relanza todo». Motivo y alcance: `do
 ## Conducción
 4 conductores locales (`tools/embudo_correr.py`) desde esta sesión, con estado en `embudo/`. El chequeo diario los retoma si el contenedor
 se reinicia.
+
+## Resultado (2026-11-03 01:30 UTC): 68 de 68 en FIN, ninguna candidata llega al holdout en R
+| Estado | n |
+|---|---|
+| PISTAS_VIVAS (sin potencia para decidir) | 33 |
+| SIN_CANDIDATAS | 23 |
+| INTEGRIDAD_FALLA | 4 |
+| SIN_REGLA_OPERABLE | 2 |
+| BLOQUEADA | 6 |
+
+- **Nominadas por el FDR en R que no pasaron** (6 familias):
+  - **INTEGRIDAD_FALLA** (ninguna candidata pasa placebo o latencia): U1-ES, U1-ORO, U1-YM y U1-ZONAS-BT2-NQ.
+  - **SIN_REGLA_OPERABLE** (pasaron integridad, pero ningún tope conserva el resultado en las dos mitades): U1-ZONAS-ES y U1-ZONAS-NQ.
+    U1-ZONAS-ES tuvo además OOS −0,11R, no concluyente (potencia 0,15).
+- **Bloqueadas:**
+  - 4 por kernels de Kaggle que no aparecieron (404 tres veces): PREAPERTURA-NQ, PRERANGE-BASE-YM, PRERANGE-ZONAS-NQ y RANGO0100-ES.
+    Se relanzan: el estado bloqueado queda archivado.
+  - CVGAP-CFD-NQ-R: su familia ya usó su única apertura del holdout. Es correcto, por diseño.
+  - U1-6E-CONFIRMA-GBP-C-R: preflight de ruido con 2 nominadas por el FDR. Causa raíz pendiente; la familia FX ya estaba en contra con
+    potencia.
+
+**Lectura.** Medido en R, el embudo encontró nominaciones que en puntos no aparecían, pero ninguna sobrevivió la integridad o los topes.
+No hay edge confirmado en R en estas 68 familias, y eso es coherente con el holdout de octubre (≈ 0R).
