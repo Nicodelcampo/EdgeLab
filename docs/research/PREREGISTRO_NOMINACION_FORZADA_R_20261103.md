@@ -74,3 +74,25 @@ CVGAP-CFD-ES-C, U1-ZONAS-AVCL-ES-C, PRERANGE-ZONAS-NQ y RANGO0100-NQ, que sí es
    Luego papel con e-proceso. La herramienta es `tools/nominacion_forzada.py --cota-min 0`.
 2. **Retiradas del papel** (réplica en R ≤ 0): CVGAP-CFD-ES-C-PAPEL, U1-ZONAS-AVCL-ES-C-PAPEL, PRERANGE-ZONAS-NQ-CANASTA y RANGO0100-NQ-CANASTA.
 3. **SEGUNDO-INTENTO** pasa por la misma selección al terminar.
+
+## Papel (fichas, con las mismas reglas que las forzadas del 02/11, `PREREGISTRO_PAPEL_CVGAP_ES.md`)
+
+- **Cotas:** 3 × la peor y la mejor operación de desarrollo (DESC + réplica, causal, en puntos).
+- **`mu_util`:** 0,5 × min(media DESC, media réplica).
+- **`sd`:** el de esas mismas operaciones de desarrollo.
+- **Ventana:** desde 20261001.
+- **Retiro y promoción:** por e-proceso, con la regla de R > 0 forward para pasar a REAL.
+
+| Ficha | Cotas (pérdida / ganancia, pts) | `mu_util` | `sd` |
+|---|---|---|---|
+| TORI-NQ-R-PAPEL | −290,4 / +356,9 | 4,83 | 31,7 |
+| CONF-CVR-CFD-NQ-R-PAPEL | −432,9 / +223,4 | 2,49 | 29,1 |
+
+## Holdout (primera lectura, 2026-10-01 → 30; N fijo 150 → EN CURSO)
+
+| Regla | Desarrollo DESC / réplica (R; reproduce el embudo) | Holdout: n, media R, IC90 |
+|---|---|---|
+| TORI-NQ-R | +0,29 / +0,27 | 8 ops, **−0,14R** (−0,60 a +0,32) |
+| CONF-CVR-CFD-NQ-R | +0,15 / +0,12 | 4 ops, **+0,19R** (+0,15 a +0,22) |
+
+Con 8 y 4 operaciones no hay decisión: el veredicto es a las 150 o por el e-proceso del papel.
