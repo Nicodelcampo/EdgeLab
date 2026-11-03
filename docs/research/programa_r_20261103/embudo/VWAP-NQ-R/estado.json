@@ -1,11 +1,34 @@
 {
- "etapa": "DESC",
- "fase": "CORRIENDO",
+ "etapa": "FIN",
+ "fase": "INTEGRIDAD_FALLA",
  "historial": [
   {
    "ts": 1793674080.3339927,
    "etapa": "PREFLIGHT",
    "fin": true
+  },
+  {
+   "ts": 1793674662.214527,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     0,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "ts": 1793675150.2842035,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793675637.2828772,
+   "final": "INTEGRIDAD_FALLA",
+   "motivo": "ninguna candidata pasa placebo/latencia"
   }
  ],
  "spec": {
@@ -100,15 +123,303 @@
   "ts": 1793674080.3338392,
   "desde": "PREFLIGHT"
  },
- "handle": "nicobuttaro/embudo-vwap-nq-r-desc-20250805",
+ "handle": "nicobuttaro/embudo-vwap-nq-r-integridad-20250805",
  "fallas": 0,
  "params": {
-  "cortes": null,
-  "criba": "maxt"
+  "cortes": {
+   "regimen_vol": [
+    1.2991656696379736,
+    1.7000615390768128
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    2,
+    1
+   ]
+  ],
+  "topes": null
  },
  "periodo": [
   20250805,
   20260331
  ],
- "lanzada": 1793674414.223849
+ "lanzada": 1793675396.0537014,
+ "cortes": {
+  "regimen_vol": [
+   1.2991656696379736,
+   1.7000615390768128
+  ]
+ },
+ "candidatas": [
+  [
+   0,
+   0,
+   2,
+   1
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     0,
+     2,
+     1
+    ],
+    "n": 35,
+    "media_neta": 0.23777325285678894,
+    "sesiones": 28,
+    "ic90": [
+     0.07825353163131997,
+     0.3835238113016095
+    ],
+    "p_sesiones": 0.00399800099950025,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 39.95,
+    "pasa": false,
+    "n_pruebas": 12.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.6276973796692187,
+    "media_esperada_fuera": 0.14924964777363298,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.4690470695495605,
+    "canal": "reciente",
+    "q_fdr": 0.018611595146748927,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.5,
+    "m_fdr": 4,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 72,
+    "criba": "maxt",
+    "t_maxt": 2.267797064641754,
+    "p_maxt": 0.03696303696303696,
+    "nominada_maxt": true,
+    "q_linaje": 0.018611595146748927
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    0,
+    2,
+    1
+   ],
+   "n_desc": 35,
+   "ops_mes": 11.67,
+   "efecto": 0.11888662642839447,
+   "oos": {
+    "n": 70.0,
+    "mde": 0.16315348469442076,
+    "potencia": 0.5663110568084194
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 0.11145504833056483,
+    "potencia": 0.8431320481243982
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    0,
+    0,
+    2,
+    1
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     0,
+     2,
+     1
+    ],
+    "por_perilla": {
+     "desvio": [
+      {
+       "nivel": 0,
+       "n": 88,
+       "media_neta": -0.01711523937401954,
+       "sesiones": 74,
+       "ic90": [
+        -0.15155899080349072,
+        0.10068678105473934
+       ],
+       "p_sesiones": 0.5608782435129741,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 3
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      }
+     ],
+     "franja": [
+      {
+       "nivel": 0,
+       "n": 88,
+       "media_neta": -0.01711523937401954,
+       "sesiones": 74,
+       "ic90": [
+        -0.15155899080349072,
+        0.10068678105473934
+       ],
+       "p_sesiones": 0.5608782435129741,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 45,
+       "media_neta": -0.16598411360317059,
+       "sesiones": 42,
+       "ic90": [
+        -0.32501984673880313,
+        -0.0005293483592116958
+       ],
+       "p_sesiones": 0.9560878243512974,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "regimen_vol": [
+      {
+       "nivel": 0,
+       "n": 17,
+       "media_neta": 0.09416804742881237,
+       "sesiones": 16,
+       "ic90": [
+        -0.15013457412165962,
+        0.3402730702461911
+       ],
+       "p_sesiones": 0.26746506986027946,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 36,
+       "media_neta": -0.1205297298662605,
+       "sesiones": 35,
+       "ic90": [
+        -0.33600694009929843,
+        0.0892843180953136
+       ],
+       "p_sesiones": 0.7984031936127745,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 88,
+       "media_neta": -0.01711523937401954,
+       "sesiones": 74,
+       "ic90": [
+        -0.15155899080349072,
+        0.10068678105473934
+       ],
+       "p_sesiones": 0.5608782435129741,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 88,
+       "media_neta": -0.09722017342414285,
+       "sesiones": 74,
+       "ic90": [
+        -0.29118821631318215,
+        0.08201939082062833
+       ],
+       "p_sesiones": 0.7744510978043913,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 88,
+       "media_neta": -0.01711523937401954,
+       "sesiones": 74,
+       "ic90": [
+        -0.15155899080349072,
+        0.10068678105473934
+       ],
+       "p_sesiones": 0.5608782435129741,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 88,
+       "media_neta": -0.15931414940661545,
+       "sesiones": 74,
+       "ic90": [
+        -0.4223709292725534,
+        0.08768373286023523
+       ],
+       "p_sesiones": 0.8343313373253493,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 88,
+       "media_neta": -0.04182186268114207,
+       "sesiones": 74,
+       "ic90": [
+        -0.22277218860066425,
+        0.12992883640239836
+       ],
+       "p_sesiones": 0.624750499001996,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "motivo": "ninguna candidata pasa placebo/latencia"
 }

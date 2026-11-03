@@ -62,3 +62,29 @@ cada familia.
 - **Correlación esperada con la canasta v5:** se calcula con el P&L de las pistas antes de cualquier nominación
   (`tools/correlacion_nominadas.py`).
 - **Atlas:** las marginales globales de las tres entran al atlas de ideas.
+
+## Resultado de la primera corrida (03/11/2026, embudo en R, conductor local)
+Raíz: `docs/research/programa_r_20261103/embudo/`. Las cinco terminaron en FIN y **ninguna llegó a réplica ni al holdout**.
+
+| Campaña | Evaluables DESC (m FDR) | FDR | Pistas | z de la celda (mín / mediana / máx) | Desenlace |
+|---|---|---|---|---|---|
+| PAR-NQES-R | 68 de 108 | 0 | 2 | −13,6 / −2,9 / −0,57 | SIN_CANDIDATAS |
+| PAR-YMES-R | 68 de 108 | 0 | 2 | −13,7 / −3,3 / +0,44 | SIN_CANDIDATAS |
+| LEADLAG-GC-EUR-R | 156 de 216 | 0 | 9 | −7,4 / −1,8 / +1,56 | SIN_CANDIDATAS |
+| VWAP-NQ-R | 12 de 72 | 0 | 1 candidata | — | INTEGRIDAD_FALLA (regla −0,017R, latencia 1 vela −0,022R) |
+| VWAP-ES-R | 16 de 72 | 0 | 3 | −1,3 / −0,6 / +0,18 | SIN_CANDIDATAS |
+
+Lectura:
+- **PAR-REL (fade del spread) queda REFUTADA en R en su forma registrada.** No es un nulo sin potencia. Entre 33 y 35 de 68 celdas
+  quedan por debajo de −z del tamiz, y ninguna queda por encima. Con fricción, fadear el spread NQ/ES o YM/ES a 2σ pierde de forma
+  sistemática. La lectura inversa (el spread *continúa*) **no se toma de acá**: elegir la dirección después de ver el signo es snooping.
+  Si se registra, va como familia hija en `LINAJES.jsonl`, hereda estas 216 pruebas y antes separa bruto de fricción. Con stops cortos
+  en R, la fricción puede ser todo el efecto.
+- **LEAD-LAG GC/EURUSD:** sin señal positiva (máx z +1,56 de 156 evaluables). Pérdida moderada: el oro ya acompañó al dólar dentro de la
+  vela de 1 minuto. Esta es su condición de refutación declarada. Refutada en esta resolución; queda abierta una medición sub-minuto,
+  que hoy no está soportada (P-28: `sequence` no es secuencia del exchange).
+- **VWAP-REV: SIN POTENCIA, no refutada.** Sólo 12 a 16 de 72 celdas llegan a 30 operaciones: el disparo (|dev| ≥ 2 + vela de giro +
+  franja + régimen) es demasiado raro. La única candidata (NQ) murió en integridad: retrasarla una vela la empeora, y el placebo da −2,57.
+  Para que sea medible necesita más dato o un disparo menos restrictivo **declarado antes**, no relajado sobre este resultado.
+- **Correlación con la canasta v5:** no aplica, porque no hubo pistas con media > 0 para correlacionar. Las marginales quedan para el
+  atlas.

@@ -4,3 +4,9 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 16 de 144 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 12 (m del FDR 12 de 72 celdas), FDR 0 (informativo), maxT 0, RW umbral 2.2180137634277344 (diagnóstico), linaje 0 como informacion, pistas sin nominación 0, candidatas 1
+- Potencia prevista (informativa): [0, 0, 2, 1]: OOS n 70.0 potencia 0.57, holdout n 150 potencia 0.84
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 0, 2, 1]: regla -0.01711523937401954, placebo -2.57, latencia 1 vela -0.022242388387961456 -> no pasa
+- **INTEGRIDAD_FALLA** — ninguna candidata pasa placebo/latencia

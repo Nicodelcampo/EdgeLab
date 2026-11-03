@@ -1108,3 +1108,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   `programa_r_20261103/`.
 - **MEDIDO:** canastas de pistas de 44 familias en su réplica no usada (relanzamiento en R), efecto aleatorio −0,042R
   (IC90 −0,056 a −0,028; 10 de 44 positivas). Las mejores celdas de una grilla grande no rinden fuera de muestra.
+- **MEDIDO (familias nuevas del Programa R, 03/11/2026):** PAR-NQES-R, PAR-YMES-R, LEADLAG-GC-EUR-R, VWAP-NQ-R y VWAP-ES-R, en R. Ninguna
+  nominada por FDR. PAR-REL (fade del spread) queda refutada: la mitad de las celdas tienen z ≤ −z del tamiz y ninguna es positiva.
+  LEAD-LAG GC/EUR queda refutado en 1 minuto. VWAP-REV no tiene potencia (12 a 16 evaluables de 72); su candidata NQ falló integridad.
+  `programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md`.
+- **NO MEDIDO:** el spread como continuación (sólo como familia hija con linaje); LEAD-LAG sub-minuto; VWAP con disparo menos raro.
