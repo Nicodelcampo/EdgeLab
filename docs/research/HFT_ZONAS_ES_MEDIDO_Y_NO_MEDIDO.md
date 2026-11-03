@@ -1113,3 +1113,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   LEAD-LAG GC/EUR queda refutado en 1 minuto. VWAP-REV no tiene potencia (12 a 16 evaluables de 72); su candidata NQ falló integridad.
   `programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md`.
 - **NO MEDIDO:** el spread como continuación (sólo como familia hija con linaje); LEAD-LAG sub-minuto; VWAP con disparo menos raro.
+- **MEDIDO (03/11/2026):** bug de `riesgo_ops`. Un stop en la entrada daba riesgo ≈ 1e-10, que se dividía, y producía ±1e9 R. Afectó a 6
+  campañas en R; se corrigió y se relanzaron, con el mismo desenlace. En U1-6B y U1-6E, las canastas de pistas en réplica quedan
+  **en contra con potencia** (−0,036R y −0,041R). `relanzamiento_R_20261102/descartadas_riesgo_flotante/README.md`.
+

@@ -13,9 +13,22 @@ declarada (una operación sin riesgo no se mide en R). Test: `tests/research/tes
 |---|---|
 | TAU-GC-R | SIN_CANDIDATAS |
 | U1-6B-GRILLA-C-R | SIN_CANDIDATAS |
-| U1-6E-CONFIRMA-GBP-C-R | BLOQUEADA (preflight: 2 nominadas por FDR sobre ruido; probablemente la misma causa) |
+| U1-6E-CONFIRMA-GBP-C-R | BLOQUEADA (preflight: 2 nominadas por FDR sobre ruido) |
 | U1-6E-GRILLA-C-R | SIN_CANDIDATAS |
 | U1-ES-GRILLA-R | INTEGRIDAD_FALLA |
 | U1-YM-GRILLA-R | INTEGRIDAD_FALLA |
 
 Las otras 62 campañas del relanzamiento en R no tienen medias marginales anómalas (máximo 2,6R por nivel en ZGAP-CFD) y se conservan.
+
+## Relanzamiento con el código corregido (03/11/2026, 05:2x UTC)
+Mismo desenlace en las seis; el bug no cambió ninguna decisión del embudo (el FDR y las pistas trabajan por celda, y las celdas con
+riesgo ≈ 0 no llegaban a nominarse).
+
+| Campaña | Desenlace corregido |
+|---|---|
+| TAU-GC-R | SIN_CANDIDATAS (368 evaluables, ninguna celda sobre +z; 156 bajo −z) |
+| U1-6B-GRILLA-C-R | SIN_CANDIDATAS; canasta de 19 pistas en réplica −0,036R (IC90 −0,059 a −0,014), **en contra con potencia** |
+| U1-6E-GRILLA-C-R | SIN_CANDIDATAS; canasta de 20 pistas en réplica −0,041R (IC90 −0,060 a −0,024), **en contra con potencia** |
+| U1-ES-GRILLA-R | INTEGRIDAD_FALLA (2 candidatas: regla −0,036 / −0,026R, latencia peor) |
+| U1-YM-GRILLA-R | INTEGRIDAD_FALLA (2 candidatas: regla −0,081 / −0,085R) |
+| U1-6E-CONFIRMA-GBP-C-R | **sigue BLOQUEADA** en el preflight: la causa NO era este bug (el preflight corre sobre ruido sintético). Causa raíz pendiente. |
