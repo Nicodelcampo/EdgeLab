@@ -10,3 +10,5 @@
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [1, 2, 0, 2, 2, 2, 1, 0, 0, 0, 0, 12]: regla 0.04410057029239287, placebo -1.16, latencia 1 vela 0.05418162278740861 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-0.11]; veredictos ['NO_CONCLUYENTE']; potencias [0.15]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)
