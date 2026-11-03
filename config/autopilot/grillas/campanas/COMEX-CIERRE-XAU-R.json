@@ -1,0 +1,32 @@
+{
+ "cid": "COMEX-CIERRE-XAU-R",
+ "familia": "COMEX_CIERRE_ORO_XAU",
+ "experimento": "edgelab.research.comex_cierre_oro",
+ "sensor": "DK:XAUUSD",
+ "ejecucion": "GC",
+ "n_celdas_por_canal": 108,
+ "justificacion_economica": "El precio de liquidación diaria (Daily Settlement) de futuros y opciones de oro en COMEX se fija a las 13:30 ET. Entre las 12:30 y las 13:30 ET, productores, bullion banks y operadores de opciones ejecutan coberturas de delta y margen. Al c (DISENO_COMEX_CIERRE_ORO.md).",
+ "como_podria_refutarse": "Ausencia de celdas nominadas en R o fallo en réplica OOS; si las velas con desplazamiento fuerte en el pit (desp_rango >= 0,60) rinden igual o peor que las de desplazamiento débil.",
+ "cuenta_kaggle": "nicolasbuttaro",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "local",
+ "activa": false,
+ "estadistico": "R",
+ "spec": "docs/research/programa_r_20261103/DISENO_COMEX_CIERRE_ORO.md",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+ }
+}
