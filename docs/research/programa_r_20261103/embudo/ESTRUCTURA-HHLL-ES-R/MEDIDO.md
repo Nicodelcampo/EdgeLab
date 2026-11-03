@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 212 de 216 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 108 (m del FDR 108 de 108 celdas), FDR 0 (informativo), maxT 0, RW umbral 2.74357008934021 (diagnóstico), linaje 0 como informacion, pistas sin nominación 1, candidatas 0
+- **SIN_CANDIDATAS** — ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.2978352972803275, 'min': -11.579710095251924, 'q001': -11.557059213122006, 'q010': -11.299204201717524, 'q500': -5.019290355732063, 'q990': 0.1691953444839611, 'q999': 0.28778160219158455, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 74}); pistas a réplica: ninguna pista relevante con media > 0
