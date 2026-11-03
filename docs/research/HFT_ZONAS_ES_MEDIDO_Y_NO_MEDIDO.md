@@ -1132,4 +1132,6 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO (Gemini corregidas, 03/11/2026):** 20 campañas, 0 nominadas por FDR. ABSORCION-CLIMAX y ESTRUCTURA-HHLL quedan refutadas en R
   (la mayoría de las celdas significativamente negativas). COMEX-CIERRE-GC sigue viva sin potencia (réplica +0,23R en 27 sesiones).
   WM, POST-MACRO y OVERNIGHT no tienen potencia. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
+- **MEDIDO (INTENTO-FALLIDO v2, 3 de 4 fuentes, 03/11/2026):** en racimos NQ, 320 nominadas en DESC, pero las pistas en réplica dan
+  −0,26R. En LUX NQ, +0,12R sin potencia. En AVCL, nada. Las pistas son casi todas «hacia la zona». `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
 
