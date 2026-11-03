@@ -68,6 +68,22 @@ def lineas_salida(ctx, salida: int) -> np.ndarray:
     return np.vstack([np.where(f, np.inf, np.nan), np.where(f, -np.inf, np.nan)])
 
 
+def lineas_salida_noticias(ctx, salida: int, antes_min: float = 3, despues_min: float = 1, zona: str | None = None) -> np.ndarray:
+    """`lineas_salida` + salida forzada antes de cada noticia tier1 (2026-11-03, revisión de Gemini: «las operaciones no pueden ser
+    durante noticias», Nico 2026-10-25). Las velas cuyo cierre cae en [evento − antes, evento + después] llevan línea ±inf: la
+    operación abierta sale en la APERTURA de la vela siguiente, o sea ≥ 2 min antes del dato. El calendario se conoce de antemano: es
+    causal. Las ENTRADAS cerca del dato se bloquean aparte con `EXCLUIR_EVENTOS` (tipos `eventos.TIPOS_TIER1`)."""
+    from edgelab.research.eventos import TIPOS_TIER1, cerca
+    if zona is None: lin = lineas_salida(ctx, salida)
+    else:                                                                   # `salida` en minutos de la hora local de `zona`
+        from edgelab.research.regimen_sesion import minuto_local
+        m = minuto_local(np.asarray(ctx["t"], np.int64), zona); g = (m >= salida) & (m < salida + 120)
+        lin = np.vstack([np.where(g, np.inf, np.nan), np.where(g, -np.inf, np.nan)])
+    f = cerca(np.asarray(ctx["t"], np.int64), antes_min, despues_min, TIPOS_TIER1)
+    lin[0, f] = np.inf; lin[1, f] = -np.inf
+    return lin
+
+
 def _lote(D, ej, ctx):
     tick = float(ctx["tick"]); c = np.asarray(ctx["c"], float)
     k = D["k"].to_numpy(np.int64); s = D["lado"].to_numpy(np.int64); e = c[k]

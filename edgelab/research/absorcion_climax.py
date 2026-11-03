@@ -21,6 +21,8 @@ import numpy as np
 import pandas as pd
 
 from edgelab.research.grilla_generica import Variable
+from edgelab.research import rango_ruptura as RR
+from edgelab.research.eventos import TIPOS_TIER1
 from edgelab.research.regimen_sesion import minuto_ny
 from edgelab.research.zonas_gaps import _atr_causal
 
@@ -30,7 +32,10 @@ M0, M1 = 180, 870
 ENFRIAMIENTO = 35
 TOPE_BARRAS = 120
 PREFLIGHT_T0_S = 1_760_047_200
-EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION"))
+# 2026-11-03 (revisión de Gemini): el filtro de ±15 min sólo miraba la ENTRADA y sólo CPI/NFP/FOMC. Ahora: sin entradas a ±15 min
+# de cualquier dato tier1 y salida forzada antes de cada dato y a las 15:55 ET (`lineas_salida`).
+EXCLUIR_EVENTOS = dict(antes_min=15, despues_min=15, tipos=TIPOS_TIER1)
+M_SALE = 955
 VARIABLES = [
     Variable("mecha_rechazo", "mecha", "ge", cortes=(0.45, 0.58)),
     Variable("climax_volumen", "rvol", "ge", cortes=(1.55, 2.00)),
@@ -75,12 +80,18 @@ def _lote(D, ej, ctx):
     return k, s, e, st, np.round((e + s * float(ej[2]) * np.abs(e - st)) / tick) * tick
 
 
+def _lote9(D, ej, ctx):
+    k, s, e, st, tp = _lote(D, ej, ctx)
+    return np.ones(len(D), bool), k, s, e, st, tp, (s == -1).astype(np.int64)
+
+
+def lineas_salida(ctx) -> np.ndarray:
+    return RR.lineas_salida_noticias(ctx, M_SALE)
+
+
 def niveles(d, ej: tuple, ctx: dict):
-    k, s, e, st, tp = _lote(pd.DataFrame([d]), ej, ctx)
-    return (int(k[0]), 2, int(s[0]), float(e[0]), float(st[0]), float(tp[0]), 0)
+    return RR.niveles_con(_lote9, d, ej, ctx)
 
 
 def niveles_lote(D: pd.DataFrame, ej: tuple, ctx: dict) -> np.ndarray:
-    if not len(D): return np.full((0, 7), np.nan)
-    k, s, e, st, tp = _lote(D, ej, ctx)
-    return np.column_stack([k, np.full(len(D), 2), s, e, st, tp, np.zeros(len(D))]).astype(float)
+    return RR.niveles_lote_con(_lote9, D, ej, ctx)

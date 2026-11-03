@@ -5,7 +5,7 @@
  "sensor": "6E",
  "ejecucion": "6E",
  "n_celdas_por_canal": 108,
- "justificacion_economica": "Los fondos pasivos y gestores globales de renta fija/variable ejecutan sus coberturas cambiarias al tipo de referencia WMR de las 16:00 de Londres (11:00 ET). El flujo acumulado entre 10:30 y 11:00 ET produce presión de inventario que o bie (DISENO_WM_FIXING.md).",
+ "justificacion_economica": "Los fondos pasivos y gestores globales de renta fija/variable ejecutan sus coberturas cambiarias al tipo de referencia WMR de las 16:00 de Londres (hora de Londres, con su horario de verano). El flujo acumulado entre las 15:30 y las 16:00 de Londres produce presión de inventario que o bie (DISENO_WM_FIXING.md).",
  "como_podria_refutarse": "Si ni la rama de reversión (regla 0) ni la de continuación (regla 1) superan el tamiz FDR q <= 0,10 en DESC o no replican en OOS, o si la ventaja no crece con el impulso y volumen relativo del Fix.",
  "cuenta_kaggle": "nicolasbuttaro",
  "desc": [
@@ -18,7 +18,7 @@
  ],
  "embudo": true,
  "conductor": "local",
- "activa": false,
+ "activa": true,
  "estadistico": "R",
  "spec": "docs/research/programa_r_20261103/DISENO_WM_FIXING.md",
  "seleccion": {
@@ -28,5 +28,9 @@
   "desde": 20261001,
   "n_fijo": 150,
   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
- }
+ },
+ "correcciones": "docs/research/programa_r_20261103/CORRECCIONES_GEMINI_20261103.md",
+ "decisiones": [
+  "2026-11-03: corregida antes de correr (noticias durante toda la operación, reloj de Londres en WM, sólo días con dato en POST-MACRO); tamiz FDR con cola t (decisión de Nico)."
+ ]
 }

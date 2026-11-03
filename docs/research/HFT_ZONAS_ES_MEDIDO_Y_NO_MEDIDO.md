@@ -1121,4 +1121,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   relativos a la media de la familia, y en los tres casos van en la dirección de dejar correr. Las entradas no mueven más de 0,05R.
   `atlas_ideas_r_20261102/RESULTADO_ATLAS_IDEAS_R_20261103.md`.
 - **NO MEDIDO:** la transferencia de S3/T3 a gramáticas que no son U1; be=0,5 (sólo 4 familias, no pasa BH).
+- **MEDIDO (03/11/2026):** tamiz FDR con cola t (decisión de Nico). Sobre ruido sintético de U1-6E-CONFIRMA, la cola normal nominaba en
+  3 de 8 semillas, siempre celdas de 30 a 40 operaciones. En el test de dependencia por sesión, BH baja de 22,3 % a 19,8 % (maxT 11 %).
+  `DECISIONES_20261103_COLA_T_FDR.md`.
+- **NO MEDIDO (pre-registrado, lanzado 03/11):** INTENTO-FALLIDO, la idea de Nico (aproximación a la zona que no llega y rechaza; vías
+  A y B), en 4 fuentes de zonas. `intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md`. Familias de Gemini corregidas: 6 de 12, en 20
+  campañas. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
 
