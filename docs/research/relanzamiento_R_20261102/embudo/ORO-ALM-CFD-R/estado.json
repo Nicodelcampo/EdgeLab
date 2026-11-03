@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "CORRIENDO",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793656530.2018588,
@@ -17,6 +17,16 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 20
+  },
+  {
+   "ts": 1793666114.9053612,
+   "etapa": "PISTAS",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793666607.176829,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.6474182476520952); canasta media -0.004429625163985589 IC90 [-0.10072181312838761, 0.1027876096942742]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10072181312838761, 0.1027876096942742]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.9961936432729714"
   }
  ],
  "spec": {
@@ -117,7 +127,7 @@
   "desde": "PREFLIGHT"
  },
  "handle": "nicolasbuttaro/embudo-oro-alm-cfd-r-rep-20260401",
- "fallas": 0,
+ "fallas": 1,
  "params": {
   "cortes": {
    "compresion_manana": [
@@ -380,7 +390,7 @@
   20260401,
   20260930
  ],
- "lanzada": 1793662428.840682,
+ "lanzada": 1793666360.932992,
  "cortes": {
   "compresion_manana": [
    9.365801219635603,
@@ -640,7 +650,44 @@
     2,
     2
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 89,
+   "media": -0.004429625163985589,
+   "ic90": [
+    -0.10072181312838761,
+    0.1027876096942742
+   ],
+   "p": 0.5048737815546114,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.0018858947159882456,
+    "p_simes": 0.5048737815546114,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 3,
+    "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+    "run_id": "ORO-ALM-CFD-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.0011901877202097062,
+   "p_simes": 0.6474182476520952,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 20,
+   "t": 4,
+   "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+   "run_id": "ORO-ALM-CFD-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_RECHAZO",
+   "potencia": 0.9961936432729714,
+   "efecto": 0.34429086160670785,
+   "motivo": "con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10072181312838761, 0.1027876096942742]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -694,7 +741,20 @@
     "t_maxt": 2.4875560332121593,
     "p_maxt": 0.9120879120879121,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 13,
+     "media": 0.15125888129199183,
+     "ic90": [
+      -0.6705134080562578,
+      1.3638120470598518
+     ],
+     "p": 0.34956436465130314,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -746,7 +806,20 @@
     "t_maxt": 2.4816915709155456,
     "p_maxt": 0.9170829170829171,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 21,
+     "media": 0.5173012619277094,
+     "ic90": [
+      -0.25141832954849785,
+      1.3437772479178673
+     ],
+     "p": 0.14359936634858372,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -798,7 +871,20 @@
     "t_maxt": 2.197513008053418,
     "p_maxt": 0.988011988011988,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 16,
+     "media": 0.9009778260951001,
+     "ic90": [
+      -0.08518144235714054,
+      1.9143484132211124
+     ],
+     "p": 0.07717911967713952,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -850,7 +936,20 @@
     "t_maxt": 2.189639211091814,
     "p_maxt": 0.988011988011988,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 10,
+     "media": 0.5132043499478306,
+     "ic90": [
+      -0.5484055520437854,
+      1.5777420080456102
+     ],
+     "p": 0.34996982612303396,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -902,7 +1001,20 @@
     "t_maxt": 2.373248820392676,
     "p_maxt": 0.9600399600399601,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 26,
+     "media": -0.1988493213145848,
+     "ic90": [
+      -0.6367197494887916,
+      0.2869097413184164
+     ],
+     "p": 0.7511409497227775,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -954,7 +1066,20 @@
     "t_maxt": 2.3278461176298064,
     "p_maxt": 0.9690309690309691,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 15,
+     "media": 0.029714327638283317,
+     "ic90": [
+      -0.5768863566456796,
+      0.6900264348745098
+     ],
+     "p": 0.44418775694942103,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1006,7 +1131,20 @@
     "t_maxt": 2.3278461176298064,
     "p_maxt": 0.9690309690309691,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 16,
+     "media": 0.058744479560938034,
+     "ic90": [
+      -0.5156854133264385,
+      0.6765501357861825
+     ],
+     "p": 0.4228114509863086,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1058,7 +1196,20 @@
     "t_maxt": 2.38355914476271,
     "p_maxt": 0.958041958041958,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 37,
+     "media": -0.24146228245937207,
+     "ic90": [
+      -0.6622919587690269,
+      0.2293310753604772
+     ],
+     "p": 0.8082732998906197,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1110,7 +1261,20 @@
     "t_maxt": 2.38355914476271,
     "p_maxt": 0.958041958041958,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 47,
+     "media": -0.18589602232350347,
+     "ic90": [
+      -0.56401982181953,
+      0.23174779721308322
+     ],
+     "p": 0.7729510051672764,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1162,7 +1326,20 @@
     "t_maxt": 2.351141131053698,
     "p_maxt": 0.965034965034965,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 43,
+     "media": -0.15288776939099366,
+     "ic90": [
+      -0.5982046798423473,
+      0.36712020063904954
+     ],
+     "p": 0.6795817146305586,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1214,7 +1391,20 @@
     "t_maxt": 2.351141131053698,
     "p_maxt": 0.965034965034965,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 56,
+     "media": 0.04900995610018187,
+     "ic90": [
+      -0.39137050933820555,
+      0.5441900835355198
+     ],
+     "p": 0.409949835929544,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1266,7 +1456,20 @@
     "t_maxt": 2.353688961874756,
     "p_maxt": 0.965034965034965,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 39,
+     "media": -0.2358899219719378,
+     "ic90": [
+      -0.5865581301650173,
+      0.14051935907921986
+     ],
+     "p": 0.8564949270169351,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1318,7 +1521,20 @@
     "t_maxt": 2.304659750346175,
     "p_maxt": 0.972027972027972,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 14,
+     "media": 0.10608372788899388,
+     "ic90": [
+      -0.5334118342080637,
+      0.8006336426001834
+     ],
+     "p": 0.37889903066420244,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1370,7 +1586,20 @@
     "t_maxt": 2.304659750346175,
     "p_maxt": 0.972027972027972,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 17,
+     "media": -0.00702185110812113,
+     "ic90": [
+      -0.5514731737123986,
+      0.5760037981431301
+     ],
+     "p": 0.4922302266812507,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1422,7 +1651,20 @@
     "t_maxt": 2.332042674622569,
     "p_maxt": 0.968031968031968,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 34,
+     "media": -0.1450612129268632,
+     "ic90": [
+      -0.5479268314885226,
+      0.2907688179441887
+     ],
+     "p": 0.708671217893109,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1474,7 +1716,20 @@
     "t_maxt": 2.4133026223749545,
     "p_maxt": 0.949050949050949,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 48,
+     "media": -0.14306429375428312,
+     "ic90": [
+      -0.47689081015154644,
+      0.21209800794576122
+     ],
+     "p": 0.7458699505902765,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1526,7 +1781,20 @@
     "t_maxt": 2.30604282367374,
     "p_maxt": 0.972027972027972,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 51,
+     "media": -0.1634097439080357,
+     "ic90": [
+      -0.48863355339378,
+      0.1829432872453767
+     ],
+     "p": 0.7844170784143628,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1578,7 +1846,20 @@
     "t_maxt": 2.387420563219523,
     "p_maxt": 0.957042957042957,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 32,
+     "media": -0.09687618855301888,
+     "ic90": [
+      -0.5311221502561341,
+      0.3721549968010047
+     ],
+     "p": 0.6274846301814204,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1630,7 +1911,20 @@
     "t_maxt": 2.2954265340239686,
     "p_maxt": 0.9760239760239761,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 21,
+     "media": 0.47786257483485384,
+     "ic90": [
+      0.06377277625147305,
+      0.9002298582489066
+     ],
+     "p": 0.03237091238260476,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    },
    {
     "celda": [
@@ -1682,8 +1976,22 @@
     "t_maxt": 2.3036798234278097,
     "p_maxt": 0.973026973026973,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 14,
+     "media": 0.4325050585252169,
+     "ic90": [
+      -0.10779046240226528,
+      0.9890684193698489
+     ],
+     "p": 0.10088447176856637,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.0011901877202097062,
+     "t_lord": 4,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "motivo": "pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.6474182476520952); canasta media -0.004429625163985589 IC90 [-0.10072181312838761, 0.1027876096942742]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-0.10072181312838761, 0.1027876096942742]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.9961936432729714"
 }
