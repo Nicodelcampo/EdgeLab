@@ -70,7 +70,7 @@ CVGAP-CFD-ES-C, U1-ZONAS-AVCL-ES-C, PRERANGE-ZONAS-NQ y RANGO0100-NQ, que sí es
 
 ## Ejecución aprobada
 
-1. **Nominadas:** TORI-NQ-R y CONF-CVR-CFD-NQ-R, con acta \`ACTA_HOLDOUT.json\` de N fijo 150, paso de LORD++ reservado antes y sin tope.
-   Luego papel con e-proceso. La herramienta es \`tools/nominacion_forzada.py --cota-min 0\`.
+1. **Nominadas:** TORI-NQ-R y CONF-CVR-CFD-NQ-R, con acta `ACTA_HOLDOUT.json` de N fijo 150, paso de LORD++ reservado antes y sin tope.
+   Luego papel con e-proceso. La herramienta es `tools/nominacion_forzada.py --cota-min 0`.
 2. **Retiradas del papel** (réplica en R ≤ 0): CVGAP-CFD-ES-C-PAPEL, U1-ZONAS-AVCL-ES-C-PAPEL, PRERANGE-ZONAS-NQ-CANASTA y RANGO0100-NQ-CANASTA.
 3. **SEGUNDO-INTENTO** pasa por la misma selección al terminar.
