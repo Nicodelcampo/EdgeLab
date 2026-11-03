@@ -378,7 +378,10 @@ def riesgo_ops(O, fb, sim) -> np.ndarray:
     en la apertura de la vela de llenado; mercado al cierre y límites, en su nivel. `fb`: vela de llenado (-1 sin llenado -> NaN)."""
     O = np.asarray(O); fb = np.asarray(fb, np.int64); o = np.asarray(sim["o"], float)
     e = np.where(O[:, 3] == 2, o[np.clip(fb, 0, len(o) - 1)], O[:, 5])
-    r = np.abs(e - O[:, 6]); return np.where((fb >= 0) & (r > 0), r, np.nan)
+    # 2026-11-03: riesgo menor a medio tick es un stop en la entrada con residuo de coma flotante (~1e-10), no un riesgo real; dividir
+    # por él daba ±1e8 R (TAU-GC, U1-6B/6E/ES/YM en el atlas). Queda NaN como el riesgo 0 que ya se excluía.
+    r = np.abs(e - O[:, 6]); tk = float(sim.get("tick", 0.0) or 0.0)
+    return np.where((fb >= 0) & (r > max(tk / 2, 1e-12)), r, np.nan)
 
 
 def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:

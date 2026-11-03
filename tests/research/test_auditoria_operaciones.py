@@ -79,3 +79,12 @@ def test_trayectorias_coherentes_con_el_simulador(monkeypatch):
         if t["R_regla"] is not None and t["R_regla"] < -0.99 - t["friccion_R"]:   # perdió el riesgo completo: tocó el stop
             assert min(t["a"]) <= -1.0 + 1e-6
     assert set(r["variables"]) <= set(T[0]["x"])
+
+
+def test_riesgo_ops_descarta_residuo_de_coma_flotante():
+    """2026-11-03: un stop en la entrada con residuo ~1e-10 no es riesgo; antes daba ±1e8 R en el atlas."""
+    O = np.zeros((3, 8)); O[:, 3] = 1; O[:, 5] = [1.08500, 1.08500, 1.08500]
+    O[:, 6] = [1.08500 + 1e-10, 1.08500, 1.08500 - 0.00050]
+    sim = dict(o=np.array([1.085]), tick=0.00005)
+    r = GG.riesgo_ops(O, np.zeros(3, np.int64), sim)
+    assert np.isnan(r[0]) and np.isnan(r[1]) and abs(r[2] - 0.0005) < 1e-12
