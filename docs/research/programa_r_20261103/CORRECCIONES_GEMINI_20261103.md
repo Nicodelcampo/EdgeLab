@@ -43,3 +43,16 @@ y se cuentan juntas. Las 6 familias no lanzadas no consumen pruebas.
 
 La misma condición de cada diseño (`DISENO_*.md`): ninguna celda nominada por FDR q 0,10 (con la cola t aprobada hoy) ni pista que
 replique en abr–sep. Que la ventaja dependa de operar durante un dato ya no es posible por construcción.
+
+## Resultado (03/11/2026, embudo en R con cola t)
+
+Ninguna de las 20 nominó por FDR. Ninguna llega a réplica confirmada ni al holdout.
+
+| Familia | Evaluables / 108 | Desenlace | Lectura |
+|---|---|---|---|
+| ABSORCION-CLIMAX (ES, NQ, GC, 6E) | 108 | SIN_CANDIDATAS | **Refutada**: en ES, 84 de 108 celdas con z ≤ −z del tamiz y máximo −1,16. Fadear el clímax pierde con fricción. |
+| ESTRUCTURA-HHLL (ES, NQ, YM, GC) | 108 | SIN_CANDIDATAS | **Refutada**: en NQ, 62 celdas bajo −z y ninguna positiva (máximo −0,98). |
+| WM-FIXING (6E, 6B, GC) | 40–88 | SIN_CANDIDATAS | Sin señal; potencia media (pocas sesiones por año). |
+| OVERNIGHT-INV (ES, NQ, YM, GC) | 28–44 | ES y NQ PISTAS_VIVAS; YM y GC SIN_CANDIDATAS | Canastas de pistas en réplica: ES −0,065R, NQ +0,009R. Sin potencia para decidir. |
+| COMEX-CIERRE (GC) | 24 | PISTAS_VIVAS | 1 pista: réplica +0,23R (IC90 −0,17 a +0,63) en 27 sesiones, potencia 0,06. **Única con media positiva**; viva, pero sin datos para decidir. |
+| POST-MACRO (ES, NQ, GC, 6E) | 20–24 | SIN_CANDIDATAS | Sin potencia: sólo días con dato a las 08:30. |

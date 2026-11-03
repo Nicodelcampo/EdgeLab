@@ -1129,4 +1129,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   campañas. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
 - **MEDIDO (relanzamiento con cola t, 03/11/2026):** con la cola t, CVGAP-NQ-R pasa de 11 nominadas a 0. U1-6E-CONFIRMA corre y queda en
   contra con potencia (−0,044R). CVGAP-CFD-NQ conserva 3 candidatas con OOS negativo no concluyente. `relanzamiento_R_20261102/descartadas_cola_normal/README.md`.
+- **MEDIDO (Gemini corregidas, 03/11/2026):** 20 campañas, 0 nominadas por FDR. ABSORCION-CLIMAX y ESTRUCTURA-HHLL quedan refutadas en R
+  (la mayoría de las celdas significativamente negativas). COMEX-CIERRE-GC sigue viva sin potencia (réplica +0,23R en 27 sesiones).
+  WM, POST-MACRO y OVERNIGHT no tienen potencia. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
 
