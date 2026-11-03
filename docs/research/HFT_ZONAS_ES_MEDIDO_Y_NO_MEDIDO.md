@@ -1134,4 +1134,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   WM, POST-MACRO y OVERNIGHT no tienen potencia. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
 - **MEDIDO (INTENTO-FALLIDO v2, 3 de 4 fuentes, 03/11/2026):** en racimos NQ, 320 nominadas en DESC, pero las pistas en réplica dan
   −0,26R. En LUX NQ, +0,12R sin potencia. En AVCL, nada. Las pistas son casi todas «hacia la zona». `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
+- **⭐ PISTA DESTACADA (Nico, 03/11/2026): B80_HACIA** de INTENTO-FALLIDO (tras un intento fallido, cuando el precio recupera el 80 % del
+  rechazo, entrar hacia la zona). Es la regla que más se repite entre las pistas de las 3 fuentes. Sin confirmación. Línea a profundizar:
+  `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
 

@@ -12,3 +12,24 @@ Embudo en R con cola t. Holdout sin tocar.
 
 Lectura: las celdas que destacan en DESC son casi todas **hacia la zona**, sobre todo B80_HACIA (la idea de Nico). En racimos de
 aVolZonePOI2 el efecto de DESC es maldición del ganador: la réplica lo invierte. En LUX sobre NQ la réplica es positiva, pero sin potencia.
+
+## ⭐ Pista destacada para profundizar (Nico, 03/11/2026): B80_HACIA
+
+**Lógica:** el precio va hacia la zona, se queda cerca sin tocarla (< y), rechaza z y después **recupera el 80 % del rechazo**.
+Recién ahí se entra **hacia la zona**, con stop detrás del extremo del rechazo.
+
+**Por qué se destaca:** en las tres fuentes terminadas, las celdas que más resaltan en DESC son casi todas «hacia la zona», y
+B80_HACIA es la que más se repite:
+- racimos: 6 de las 15 pistas;
+- LUX NQ: 2 de 3;
+- LUX NQ: réplica de la canasta +0,12R.
+
+**Qué NO está probado:** ninguna celda confirmó en réplica. En racimos la canasta va en contra (−0,26R), y en LUX no hay potencia.
+Es una **pista**, no un edge.
+
+**Cómo profundizar (próximo paso, pre-registrado aparte):**
+- B80_HACIA como familia hija sola, con muestra propia y potencia calculada antes;
+- controles: el mismo reacercamiento del 80 % sin intento fallido previo, y zonas fantasma;
+- variar la confirmación (80/90/100 %) y el objetivo (Z1/Z2/Z3) **dentro** del pre-registro;
+- fuentes con más eventos (LUX sobre CFD y ES);
+- multiplicidad heredada de INTENTO-FALLIDO.
