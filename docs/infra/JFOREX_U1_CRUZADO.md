@@ -66,3 +66,15 @@ Es holdout, pero se usa sólo para paridad, que es target-free.
   y no operó por falta de vela NQ, o si no la tuvo.
 - **Lo que no se pudo comparar:** los niveles exactos (lo, hi, E, A). El resultado de Python guarda las operaciones, no las señales.
   Con los archivos de ticks de esa corrida, `tools/paridad_jforex_u1.py comparar` cierra la comparación completa.
+
+## Ejecución real y rango (03/11/2026)
+
+La estrategia ahora **opera** (`operar = true`) con la regla del papel: E1A/T3/S3 con tope de 3×.
+- **Entrada:** orden a mercado al cierre de la vela de la señal; llena con el spread y el slippage reales de JForex.
+- **SL y TP:** se calculan con el precio de llenado real y quedan en el servidor.
+- **Límites:** una posición a la vez; nunca opera señales del calentamiento.
+- **Rango:** `Desde` y `Hasta`, en UTC (`yyyy-MM-dd` o `yyyy-MM-dd HH:mm`). Las señales fuera del rango se registran marcadas y no se operan.
+- **Cierre forzado:** opcional, a una hora de Nueva York, sin entradas en los últimos N minutos.
+- **Registro:** cada operación cerrada va a `operaciones_U1_<instrumento>.csv`, con su R (resultado / riesgo inicial).
+El núcleo de la señal no cambió: la paridad con Python (`tests/research/test_paridad_jforex_u1.py`) sigue pasando.
+

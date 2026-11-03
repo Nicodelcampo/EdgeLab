@@ -6,48 +6,85 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * EdgeLab U1-CRUZADO, señal CAUSAL sobre USATECH (2026-11-02).
+ * EdgeLab U1-CRUZADO, señal CAUSAL sobre USATECH y EJECUCIÓN REAL (2026-11-03).
  *
- * Port 1:1 de `edgelab/research/u1_cruzado.py::senales` con `areas_expansion.disparos_causales`:
- *   - velas M1 armadas con los ticks: mid = rint(((bid+ask)/2)/0,01)·0,01, marca de cierre = (minuto + 1)·60 s, sólo minutos con ticks;
- *   - zonas LUX-IMB (VI y OG, alcista y bajista) con 500 min de vida;
- *   - áreas: N >= 3 zonas vivas enteras en una banda de 40 pts, G = 1, sin repetir en 500 min;
- *   - ciclo causal: cierre afuera, alejamiento A >= H y regreso; dispara la primera vela con D <= 0,25·A, si A/H >= 8.
- * NO OPERA. Escribe cada señal y todos los ticks usados (también los del calentamiento) en la carpeta de archivos de JForex:
- *   ticks_USATECHIDXUSD_YYYYMMDD.csv   time_ms,bid,ask,bid_vol,ask_vol        (día UTC)
- *   senales_U1_USATECH.csv             t_cierre_s,lado,lo,hi,H,E,A,D,c,t_area_s,fase
- * La paridad con Python se mide con `tools/paridad_jforex_u1.py` sobre esos mismos ticks.
- * En NQ (NT8): base = cierre NQ − cierre USATECH en ese minuto; objetivo T3 = borde lejano + base; stop = E + base más allá de 1 tick
- * (hacia afuera), con tope de 3 × la distancia al objetivo; entrada en el primer tick de la vela NQ siguiente.
+ * Señal: port 1:1 de `edgelab/research/u1_cruzado.py::senales` (núcleo `U1Nucleo` abajo, sin cambios; paridad con
+ * `tools/paridad_jforex_u1.py`).
+ *
+ * Ejecución, la misma regla que el papel (`u1_cruzado_papel.py`, E1A/T3/S3 con tope 3×):
+ *   - la señal sale al CIERRE de la vela M1; la orden es A MERCADO en ese momento (llena en el primer tick siguiente, con el spread y el
+ *     slippage reales del motor de JForex: no se simula ningún precio);
+ *   - lado: lado = 1 (precio arriba del área) -> VENTA; lado = -1 -> COMPRA;
+ *   - TP: borde lejano del área (T3) o cercano (T1), configurable; SL: 1 pip más allá del extremo E, con tope de 3 × la distancia al TP;
+ *     el SL y el TP se calculan con el precio de LLENADO real (si el llenado deja el TP detrás, la orden se cierra y se registra);
+ *   - SL y TP quedan en el servidor (se disparan con bid/ask como en una cuenta real);
+ *   - una posición a la vez (configurable), sin señales del calentamiento, sólo dentro del rango [Desde, Hasta) configurado;
+ *   - opcional: cierre forzado a una hora fija (hora de Nueva York) y no entrar en los últimos minutos antes.
+ * Archivos (carpeta de JForex): ticks_*.csv y senales_U1_*.csv (como antes) y operaciones_U1_*.csv (una fila por operación cerrada:
+ * entrada y salida reales, R neto = resultado / riesgo inicial en precio).
  */
 public class EdgeLabU1Cruzado implements IStrategy {
-    @Configurable("Instrumento (sensor)") public Instrument instrument = Instrument.USATECHIDXUSD;
-    @Configurable("Calentamiento (horas de ticks históricos)") public int warmupHoras = 48;
+    @Configurable("Instrumento (sensor y ejecución)") public Instrument instrument = Instrument.USATECHIDXUSD;
+    @Configurable("Calentamiento (horas de ticks antes del inicio)") public int warmupHoras = 48;
+    @Configurable("Desde (yyyy-MM-dd HH:mm, UTC; vacío = sin límite)") public String desde = "";
+    @Configurable("Hasta (yyyy-MM-dd HH:mm, UTC; vacío = sin límite)") public String hasta = "";
+    @Configurable("Operar (false = sólo registrar señales)") public boolean operar = true;
+    @Configurable("Cantidad (millones de unidades; CFD índice: 0.001 = 1 contrato)") public double cantidad = 0.001;
+    @Configurable("Objetivo: true = borde lejano (T3), false = cercano (T1)") public boolean objetivoLejano = true;
+    @Configurable("Tope del stop (múltiplos de la distancia al TP; 0 = sin tope)") public double topeMult = 3.0;
+    @Configurable("Slippage máximo (pips; 0 = cualquiera)") public double slippagePips = 0;
+    @Configurable("Máximo de posiciones abiertas") public int maxPosiciones = 1;
+    @Configurable("Cierre forzado (HH:mm hora de Nueva York; vacío = no)") public String cierreNY = "";
+    @Configurable("No entrar en los últimos minutos antes del cierre forzado") public int sinEntradaMin = 15;
     @Configurable("Carpeta de salida (vacío = carpeta de archivos de JForex)") public String outDir = "";
 
     private IContext context;
     private IConsole console;
     private IHistory history;
+    private IEngine engine;
     private File dir;
     private U1Nucleo nucleo;
     private long ultimoTickMs = Long.MIN_VALUE;
+    private long desdeMs = Long.MIN_VALUE, hastaMs = Long.MAX_VALUE;
+    private int cierreMin = -1;
     private String diaLog = null;
     private PrintWriter logTicks = null;
     private PrintWriter logSenales = null;
+    private PrintWriter logOps = null;
+    private int nOrden = 0;
+    private final Map<String, double[]> riesgo = new HashMap<>();       // label -> {riesgo, tp, sl, t_señal, lado, lo, hi, E}
     private final SimpleDateFormat fdia = new SimpleDateFormat("yyyyMMdd");
+    private final TimeZone ny = TimeZone.getTimeZone("America/New_York");
+
+    private static long fecha(String s, long def) throws JFException {
+        if (s == null || s.trim().isEmpty()) return def;
+        try {
+            SimpleDateFormat f = new SimpleDateFormat(s.trim().length() > 10 ? "yyyy-MM-dd HH:mm" : "yyyy-MM-dd");
+            f.setTimeZone(TimeZone.getTimeZone("UTC"));
+            return f.parse(s.trim()).getTime();
+        } catch (Exception e) { throw new JFException("fecha inválida: " + s); }
+    }
 
     @Override
     public void onStart(IContext ctx) throws JFException {
-        context = ctx; console = ctx.getConsole(); history = ctx.getHistory();
+        context = ctx; console = ctx.getConsole(); history = ctx.getHistory(); engine = ctx.getEngine();
         fdia.setTimeZone(TimeZone.getTimeZone("UTC"));
+        desdeMs = fecha(desde, Long.MIN_VALUE); hastaMs = fecha(hasta, Long.MAX_VALUE);
+        if (cierreNY != null && !cierreNY.trim().isEmpty()) {
+            String[] p = cierreNY.trim().split(":"); cierreMin = Integer.parseInt(p[0]) * 60 + Integer.parseInt(p[1]);
+        }
         ctx.setSubscribedInstruments(Collections.singleton(instrument), true);
         dir = outDir == null || outDir.isEmpty() ? ctx.getFilesDir() : new File(outDir);
         dir.mkdirs();
         try {
             logSenales = new PrintWriter(new FileWriter(new File(dir, "senales_U1_" + instrument.name() + ".csv"), true), true);
-        } catch (IOException e) { throw new JFException("no se pudo abrir el archivo de señales: " + e); }
+            File fo = new File(dir, "operaciones_U1_" + instrument.name() + ".csv"); boolean nuevo = !fo.exists();
+            logOps = new PrintWriter(new FileWriter(fo, true), true);
+            if (nuevo) logOps.println("label,t_senal_s,lado,t_entrada_ms,entrada,sl,tp,t_salida_ms,salida,motivo,pnl_precio,riesgo_precio,R,comision_usd");
+        } catch (IOException e) { throw new JFException("no se pudieron abrir los archivos: " + e); }
         nucleo = new U1Nucleo(U1Nucleo.AH_MIN_U1);
-        // Calentamiento: ticks históricos de las últimas `warmupHoras` horas, en tramos de 1 h, por el mismo camino que los vivos.
+        // Calentamiento: ticks históricos de las `warmupHoras` horas previas al inicio (el primer tick del tester o el último en vivo),
+        // por el mismo camino que los vivos. Sus señales se registran pero NUNCA se operan.
         long fin = history.getTimeOfLastTick(instrument);
         long ini = fin - warmupHoras * 3600_000L;
         int n = 0;
@@ -56,16 +93,18 @@ public class EdgeLabU1Cruzado implements IStrategy {
             List<ITick> ts = history.getTicks(instrument, a, b);
             for (ITick t : ts) { alimentar(t, "calentamiento"); n++; }
         }
-        console.getOut().println("U1-CRUZADO: calentamiento con " + n + " ticks, " + nucleo.velas() + " velas M1. Salida en " + dir);
+        console.getOut().println("U1-CRUZADO: calentamiento con " + n + " ticks, " + nucleo.velas() + " velas M1. Rango ["
+                + (desde.isEmpty() ? "-" : desde) + ", " + (hasta.isEmpty() ? "-" : hasta) + "). Operar = " + operar + ". Salida en " + dir);
     }
 
-    private void alimentar(ITick t, String fase) {
+    private void alimentar(ITick t, String fase) throws JFException {
         long ms = t.getTime();
         if (ms < ultimoTickMs) return;                       // nunca hacia atrás (el ensamble de velas exige orden)
         if (ms == ultimoTickMs && "vivo".equals(fase) && nucleo.vistoEnBorde(t.getBid(), t.getAsk())) return;   // empalme calentamiento/vivo
         ultimoTickMs = ms;
-        logTick(ms, t.getBid(), t.getAsk(), t.getBidVolume(), t.getAskVolume());
+        if (ms < hastaMs) logTick(ms, t.getBid(), t.getAsk(), t.getBidVolume(), t.getAskVolume());
         for (U1Nucleo.Senal s : nucleo.tick(ms, t.getBid(), t.getAsk())) emitir(s, fase);
+        if ("vivo".equals(fase)) cierreForzado(ms);
     }
 
     private void logTick(long ms, double bid, double ask, double bv, double av) {
@@ -83,10 +122,55 @@ public class EdgeLabU1Cruzado implements IStrategy {
         if (logTicks != null) logTicks.println(ms + "," + bid + "," + ask + "," + bv + "," + av);
     }
 
-    private void emitir(U1Nucleo.Senal s, String fase) {
-        String linea = s.csv() + "," + fase;
+    private int minutoNY(long ms) {
+        Calendar c = Calendar.getInstance(ny); c.setTimeInMillis(ms);
+        return c.get(Calendar.HOUR_OF_DAY) * 60 + c.get(Calendar.MINUTE);
+    }
+
+    private void emitir(U1Nucleo.Senal s, String fase) throws JFException {
+        long tMs = s.t * 1000L;
+        boolean enRango = tMs >= desdeMs && tMs < hastaMs;
+        String linea = s.csv() + "," + fase + (enRango ? "" : "_fuera_de_rango");
         logSenales.println(linea);
         console.getOut().println("SEÑAL U1 " + (s.lado == 1 ? "VENTA (vuelve desde arriba)" : "COMPRA (vuelve desde abajo)") + " " + linea);
+        if (operar && enRango && "vivo".equals(fase)) entrar(s);
+    }
+
+    private void entrar(U1Nucleo.Senal s) throws JFException {
+        if (cierreMin >= 0) {
+            int m = minutoNY(s.t * 1000L), falta = ((cierreMin - m) % 1440 + 1440) % 1440;
+            if (falta < sinEntradaMin) { console.getOut().println("  no se opera: a " + falta + " min del cierre forzado"); return; }
+        }
+        int abiertas = 0;
+        for (IOrder o : engine.getOrders(instrument)) if (o.getLabel().startsWith("U1_") && o.getState() == IOrder.State.FILLED) abiertas++;
+        if (abiertas >= maxPosiciones) { console.getOut().println("  no se opera: ya hay " + abiertas + " posición(es) abierta(s)"); return; }
+        IEngine.OrderCommand cmd = s.lado == 1 ? IEngine.OrderCommand.SELL : IEngine.OrderCommand.BUY;
+        String label = "U1_" + s.t + "_" + (++nOrden);
+        riesgo.put(label, new double[]{Double.NaN, Double.NaN, Double.NaN, s.t, s.lado, s.lo, s.hi, s.E});
+        // A mercado, sin SL/TP: se ponen con el precio de llenado real (onMessage ORDER_FILL_OK).
+        engine.submitOrder(label, instrument, cmd, cantidad, 0, slippagePips > 0 ? slippagePips : -1);
+    }
+
+    private void ponerNiveles(IOrder o) throws JFException {
+        double[] r = riesgo.get(o.getLabel()); if (r == null) return;
+        int lado = (int) r[4]; double lo = r[5], hi = r[6], E = r[7], e = o.getOpenPrice(), pip = instrument.getPipValue();
+        int s = -lado;                                                         // lado de la operación: +1 compra, -1 venta
+        double tp = objetivoLejano ? (lado == 1 ? lo : hi) : (lado == 1 ? hi : lo);
+        double dist = (tp - e) * s;
+        if (dist <= 0) { console.getOut().println("  " + o.getLabel() + ": el llenado ya pasó el TP, se cierra"); o.close(); return; }
+        double sl = E + lado * pip;                                            // más allá del extremo
+        if (topeMult > 0 && (e - sl) * s > topeMult * dist) sl = e - s * topeMult * dist;
+        double esc = Math.pow(10, instrument.getPipScale() + 1);
+        tp = Math.round(tp * esc) / esc; sl = (s == 1 ? Math.floor(sl * esc) : Math.ceil(sl * esc)) / esc;   // el stop, nunca más favorable
+        r[0] = (e - sl) * s; r[1] = tp; r[2] = sl;
+        o.setStopLossPrice(sl); o.setTakeProfitPrice(tp);
+        console.getOut().println("  " + o.getLabel() + " llenada a " + e + "  SL " + sl + "  TP " + tp + "  riesgo " + r[0]);
+    }
+
+    private void cierreForzado(long ms) throws JFException {
+        if (cierreMin < 0 || minutoNY(ms) != cierreMin) return;
+        for (IOrder o : engine.getOrders(instrument))
+            if (o.getLabel().startsWith("U1_") && o.getState() == IOrder.State.FILLED) o.close();
     }
 
     @Override
@@ -102,13 +186,33 @@ public class EdgeLabU1Cruzado implements IStrategy {
         if (logTicks != null) logTicks.flush();
     }
 
-    @Override public void onMessage(IMessage message) throws JFException { }
+    @Override
+    public void onMessage(IMessage m) throws JFException {
+        IOrder o = m.getOrder();
+        if (o == null || !o.getLabel().startsWith("U1_")) return;
+        if (m.getType() == IMessage.Type.ORDER_FILL_OK) ponerNiveles(o);
+        else if (m.getType() == IMessage.Type.ORDER_SUBMIT_REJECTED || m.getType() == IMessage.Type.ORDER_FILL_REJECTED)
+            console.getErr().println("  " + o.getLabel() + " rechazada: " + m.getContent());
+        else if (m.getType() == IMessage.Type.ORDER_CLOSE_OK) {
+            double[] r = riesgo.remove(o.getLabel());
+            if (r == null || o.getClosePrice() == 0) return;
+            int s = o.isLong() ? 1 : -1; double pnl = (o.getClosePrice() - o.getOpenPrice()) * s;
+            String motivo = m.getReasons().contains(IMessage.Reason.ORDER_CLOSED_BY_SL) ? "SL"
+                    : m.getReasons().contains(IMessage.Reason.ORDER_CLOSED_BY_TP) ? "TP" : "CIERRE";
+            double Rr = r[0] > 0 ? pnl / r[0] : Double.NaN;
+            logOps.println(o.getLabel() + "," + (long) r[3] + "," + s + "," + o.getFillTime() + "," + o.getOpenPrice() + "," + r[2] + "," + r[1] + ","
+                    + o.getCloseTime() + "," + o.getClosePrice() + "," + motivo + "," + pnl + "," + r[0] + "," + Rr + "," + o.getCommissionInUSD());
+            console.getOut().println("  " + o.getLabel() + " cerrada por " + motivo + ": " + pnl + " (" + Rr + " R, antes de comisión)");
+        }
+    }
+
     @Override public void onAccount(IAccount account) throws JFException { }
 
     @Override
     public void onStop() throws JFException {
         if (logTicks != null) logTicks.close();
         if (logSenales != null) logSenales.close();
+        if (logOps != null) logOps.close();
         console.getOut().println("U1-CRUZADO detenida. " + nucleo.velas() + " velas.");
     }
 }
