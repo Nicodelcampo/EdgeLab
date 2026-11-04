@@ -25,6 +25,7 @@ import gc
 import glob
 import importlib
 import json
+import os
 import sys
 import time
 from collections import defaultdict
@@ -41,9 +42,12 @@ sys.path.insert(0, str(ROOT / "tools"))
 from edgelab.research import contexto_comun as CC, etapas as ET, fuentes_ticks as F, grilla_generica as GG  # noqa: E402
 from edgelab.research.embudo_runners import friccion as friccion_canonica  # noqa: E402
 
-SAL = ROOT / "docs/research/programa_r_20261103/contexto_marginales"
+# 2026-11-04 (revisión de fricción): ATLAS_SALIDA elige otra carpeta (relanzamiento bruto/neto); ATLAS_CLAVE elige qué marginales leer
+# ("marginales_globales" = neto, "marginales_globales_bruto" = sin fricción). Con ATLAS_SALIDA no se mezclan corridas viejas (ATLAS_PREV).
+SAL = Path(os.environ["ATLAS_SALIDA"]) if os.environ.get("ATLAS_SALIDA") else ROOT / "docs/research/programa_r_20261103/contexto_marginales"
 CRUDO = SAL / "crudo"
-ATLAS_PREV = ROOT / "docs/research/atlas_ideas_r_20261102"
+ATLAS_PREV = ROOT / "docs/research/atlas_ideas_r_20261102" if not os.environ.get("ATLAS_SALIDA") else SAL / "_sin_previo"
+CLAVE_MG = os.environ.get("ATLAS_CLAVE", "marginales_globales")
 DATA_LOCAL = Path("D:/edgelab_release_work/release_v4/data")
 
 # Clasificación a priori por mecanismo económico del módulo de experimento
@@ -549,13 +553,13 @@ def _cargar_marginales_unificadas(tramo: str) -> list[dict]:
         f_prev = ATLAS_PREV / "crudo" / f"{cid}__{tramo}.json"
         if f_prev.exists():
             try:
-                mg.update((json.loads(f_prev.read_text(encoding="utf-8")) or {}).get("marginales_globales") or {})
+                mg.update((json.loads(f_prev.read_text(encoding="utf-8")) or {}).get(CLAVE_MG) or {})
             except Exception:
                 pass
         f_new = CRUDO / f"{cid}__{tramo}.json"
         if f_new.exists():
             try:
-                mg.update((json.loads(f_new.read_text(encoding="utf-8")) or {}).get("marginales_globales") or {})
+                mg.update((json.loads(f_new.read_text(encoding="utf-8")) or {}).get(CLAVE_MG) or {})
             except Exception:
                 pass
         tot = mg.get("ejecución") or []
@@ -946,7 +950,7 @@ def analizar() -> dict:
         meta_ejecucion_colapsado_por_mecanismo=meta_ejec,
         evaluacion_11_reglas=eval_11,
     )
-    (SAL / "RESULTADO.json").write_text(json.dumps(out, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    (SAL / ("RESULTADO.json" if CLAVE_MG == "marginales_globales" else "RESULTADO_BRUTO.json")).write_text(json.dumps(out, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
     return out
 
 
