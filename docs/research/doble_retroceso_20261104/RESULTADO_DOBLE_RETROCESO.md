@@ -29,3 +29,20 @@ ejecución realistas.
 
 **No medido:** otras resoluciones (25 o 500 ticks), entradas distintas (límite en P4), stops por debajo de P2, y la paridad con el indicador
 de NT8.
+
+## Holdout forzado de las 7 mejores pistas (octubre 2026; `PREREGISTRO_HOLDOUT_FORZADO.md`; N fijo 150 → EN CURSO)
+
+| Regla | n | Media R | IC90 |
+|---|---|---|---|
+| DRC-NQ | 18 | +0,58 | −0,16 a +1,42 |
+| DRC-USATECH | 12 | +0,04 | −0,74 a +0,83 |
+| DRC-XAU | 8 | −0,38 | −1,14 a +0,37 |
+| DRC-USA500 | 8 | −0,42 | −1,16 a +0,36 |
+| DRC-GC | 11 | −0,72 | **−1,29 a −0,08** |
+| DRC-EURUSD | 6 | −0,86 | −1,63 a +0,52 |
+| DRC-YM | 11 | −1,24 | **−2,27 a −0,40** |
+| **Las 7 juntas** | **74** | **−0,30** | |
+
+Con 6 a 18 operaciones por regla no hay veredicto formal: todas siguen EN CURSO hasta 150 operaciones. La lectura agregada es
+**−0,30R por operación**, y GC e YM ya tienen el IC90 entero por debajo de cero. NQ es la única positiva, en 18 operaciones. Lo esperado
+por la maldición del ganador se cumple. **No pasan a papel** salvo decisión de Nico; NQ se puede seguir sumando con noviembre.
