@@ -93,3 +93,17 @@ Referente: `docs/NORTH_STAR.md`, cuerpo sha256 `16a108dfce2671b7a7c502d7db3eccdb
 4. **Lo que sigue en pie:**
    - la v5 (8 reglas con R > 0 en DESC y réplica), en papel con e-proceso desde sesiones nuevas;
    - la salida natural de las reglas, que no conviene recortar.
+
+## Iteración 2 (2026-11-04): Atlas de Contexto Causal Común y Vetos Estructurales en R
+- **Reporte completo y manual de referencia:** `docs/research/programa_r_20261103/RESULTADO_CONTEXTO_Y_VETOS_R_20261104.md` (pre-registro en `PREREGISTRO_CONTEXTO_Y_VETOS_R_20261104.md`, datos crudos en `contexto_marginales/RESULTADO.json`).
+- **Infraestructura permanente incorporada:**
+  - `edgelab/research/contexto_comun.py`: `atr_sesion` y `vwap_sesion` reiniciados en cada borde de sesión CME, hora NY con DST (`regimen_sesion.minuto_ny`), cuantiles móviles causales (`P33/P67/P90`) de las 20 sesiones cerradas previas (`calentamiento_dias = 40` en `embudo_main.py`), 7 variables `ctx_*` y 4 vetos estructurales `veto_*` orientados por el lado `s`, integrados en `STAGE_MARGINALES` (`grilla_generica.py`).
+  - `nt8_tools/jforex/EdgeLabU1Cruzado.java`: paridad JForex ↔ Python agregando `maxDuracionMin = 240` y cierre diario `cierreNY = "16:59"` ET.
+- **Lo confirmado en el Atlas (`135` campañas en R, `69` clusters independientes `(familia_base, activo)`):**
+  1. **Ejecución colapsando `Futuro + CFD` (`K = 13` clusters):** `ejecución.stop=S3` confirma con `+0,1235R` en `DESC` ($p < 10^{-6}$) y `+0,1057R` en `REP` ($p = 4,4 \times 10^{-5}$), **13/13 (100 %) clusters positivos**; `ejecución.objetivo=T3` suma en **13/13** y `T1` resta en **13/13**.
+  2. **Compresión intradía resta en todos los mecanismos:** `ctx_atr_rel=bajo` (`< P33` de 20 sesiones) resta **`-0,0793R` en `DESC`** ($p = 1,8 \times 10^{-5}$) y **`-0,0722R` en `REP`** ($p_{\text{uni}} = 0,0005$); `ctx_vol_rel=bajo` resta **`-0,0698R` en `DESC`** y **`-0,0631R` en `REP`** ($p_{\text{uni}} = 0,0024$). En cambio, `ctx_atr_rel=alto` (`+0,0380R` / `+0,0278R`) y `ctx_vol_rel=alto` (`+0,0289R` / `+0,0240R`) suman.
+  3. **Ventana horaria de reversión:** `ctx_hora_ny=ny_manana_0930_12` suma **`+0,0765R` en `DESC`** y **`+0,0585R` en `REP`** ($p_{\text{uni}} = 0,0078$) en `REVERSION`.
+  4. **De «Muro» a «Imán Estructural» en reversión (`veto_muro=vetado`):** tener `VWAP`, `OR30` o `ONH/ONL/PDH/PDL` entre la entrada y el 75 % del recorrido hacia `T3` suma **`+0,0883R` en `DESC`** ($z = +4,93$, $p = 10^{-6}$, 87,1 % clusters $+$) y **`+0,0732R` en `REP`** ($z = +3,21$, $p_{\text{uni}} = 0,0007$, 77,4 % clusters $+$) en `REVERSION`. En reversión, los niveles de sesión no actúan como muros sino como **imanes de equilibrio**.
+- **Evaluación en las 11 reglas (`DESC + REP`, $N = 1.161$ ops) y defensa contra sobreajuste:**
+  - El Atlas evitó adoptar `veto_vol_diaria_baja`, que en las 11 reglas aparentaba `+0,0311R` (`LOMO 14/14`) pero en los 69 clusters del Atlas tuvo efecto nulo (`-0,0071R`, $p = 0,71$).
+  - `atlas_veto_sin_iman_estructural` (exigir imán estructural hacia `T3`) es el único filtro que pasa el Atlas, supera el $\text{MDE}_{80\%}$ (`+0,0699R > +0,0677R`, llevando la cartera de `+0,1235R` a `+0,1934R`, `+0,0847R` en `DESC` y `+0,0574R` en `REP`) y pasa las 3 compuertas (`8/11` reglas, `LOMO 14/14`, $p_{\text{nulo}} = 0,0195$). Por tener signo opuesto a la dirección pre-registrada de `veto_muro`, queda congelado para validación prospectiva desde **noviembre 2026 (`202611+`)**.

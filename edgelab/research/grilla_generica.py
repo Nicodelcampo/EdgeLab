@@ -468,6 +468,18 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
     res["marginales_globales"] = marginales_globales(P, idx, net, cx["ses"], exp.EJECUCIONES)   # 2026-11-02: ideas transferibles
+    # 2026-11-04: contexto común y vetos (contexto_comun.py, rama de Gemini). Nunca tumba la campaña: si falla, queda el error en el resultado.
+    # Se guardan también los marginales del BRUTO (sin fricción, en las mismas unidades) para separar contexto de mercado de fricción en R.
+    try:
+        from edgelab.research import contexto_comun as CC
+        sim_cc = cx_ej if cx_ej is not None else ctx; cache_cc = {}
+        res["marginales_globales"].update(CC.marginales_contexto(sim_cc, O, net, cx["ses"], cache=cache_cc))
+        bruto = (pnl / esc) if norm else pnl.copy()
+        bruto = np.where(np.isfinite(net), bruto, np.nan)
+        res["marginales_globales_bruto"] = marginales_globales(P, idx, bruto, cx["ses"], exp.EJECUCIONES)
+        res["marginales_globales_bruto"].update(CC.marginales_contexto(sim_cc, O, bruto, cx["ses"], cache=cache_cc))
+    except Exception as e_cc:                                                                  # noqa: BLE001
+        res["contexto_comun_error"] = f"{type(e_cc).__name__}: {e_cc}"[:300]; log(f"AVISO: contexto común no calculado ({res['contexto_comun_error']})")
     if modo == "MARG": return res, cx
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
