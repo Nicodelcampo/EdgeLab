@@ -11,7 +11,7 @@ using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.Strategies;
 #endregion
 
-// EdgeLabCvgapESC (version=1.0, 2026-11-04)
+// EdgeLabCvgapESC (version=1.1, 2026-11-04)
 // Port nativo de la regla congelada CVGAP-ES-C (edgelab/research/corredor_vol_gaps.py, escala M1) para ES, señal y ejecución en el
 // mismo gráfico. Traducción línea a línea de:
 //   _atr_y_vwap_m1_nb, _gaps_barras_nb (M1), _eval_stability_window_nb, _find_zone_origin_nb, _acumular_perfil_sector_nb,
@@ -99,6 +99,17 @@ namespace NinjaTrader.NinjaScript.Strategies
             }
             else if (State == State.Terminated)
             {
+                if (logOps != null && SystemPerformance != null)
+                {   // 1.1: operaciones reales desde SystemPerformance (entrada y salida con precio, hora y motivo)
+                    foreach (Trade tr in SystemPerformance.AllTrades)
+                    {
+                        string id = tr.Entry.Name, mot = tr.Exit.Name == "Stop loss" ? "STOP" : tr.Exit.Name == "Profit target" ? "OBJETIVO"
+                                  : tr.Exit.Name == "TIEMPO" ? "TIEMPO" : tr.Exit.Name == "Exit on session close" ? "SESION" : tr.Exit.Name;
+                        int lado = tr.Entry.MarketPosition == MarketPosition.Long ? 1 : -1;
+                        logOps.WriteLine(string.Join(",", id, "ENTRADA", Epoch(tr.Entry.Time), F(tr.Entry.Price), tr.Quantity, id, lado, "", "", ""));
+                        logOps.WriteLine(string.Join(",", id, "SALIDA", Epoch(tr.Exit.Time), F(tr.Exit.Price), tr.Quantity, mot, lado, "", "", ""));
+                    }
+                }
                 if (logDisp != null) { logDisp.Dispose(); logDisp = null; }
                 if (logOps != null) { logOps.Dispose(); logOps = null; }
             }
@@ -489,6 +500,13 @@ namespace NinjaTrader.NinjaScript.Strategies
 
         private void ManejarOrdenes(int i)
         {
+            // 1.1: el estado sale de la posición (en el backtest OnExecutionUpdate puede no llegar con la orden): entrada vista -> barra de entrada;
+            // posición plana después de haber entrado -> operación terminada; orden que nunca llenó en 3 velas -> se libera.
+            if (activa != null)
+            {
+                if (Position.MarketPosition != MarketPosition.Flat) { if (barraEntrada < 0) barraEntrada = CurrentBars[0] - 1; }
+                else if (barraEntrada >= 0 || CurrentBars[0] - envioBarra > 3) { activa = null; barraEntrada = -1; }
+            }
             if (activa != null && Position.MarketPosition != MarketPosition.Flat && barraEntrada >= 0 && CurrentBars[0] - barraEntrada >= MaxBars)
             {
                 if (Position.MarketPosition == MarketPosition.Long) ExitLong("TIEMPO", activa); else ExitShort("TIEMPO", activa);
@@ -497,13 +515,13 @@ namespace NinjaTrader.NinjaScript.Strategies
             Orden p = pendiente; pendiente = null;
             if (Bars.IsLastBarOfSession || SES[i] != SES[p.BarraDecision]) { Log(p.Id, "OMITIDA", Time[0], 0, 0, "fin_de_sesion", p); return; }
             if (activa != null || Position.MarketPosition != MarketPosition.Flat) { Log(p.Id, "OMITIDA", Time[0], 0, 0, "posicion_abierta", p); return; }
-            activa = p.Id; barraEntrada = -1;
+            activa = p.Id; barraEntrada = -1; envioBarra = CurrentBars[0];
             SetStopLoss(p.Id, CalculationMode.Price, p.Stop, false);
             SetProfitTarget(p.Id, CalculationMode.Price, p.Obj);
             if (p.Lado == 1) EnterLong(Quantity, p.Id); else EnterShort(Quantity, p.Id);
             ultima = p;
         }
-        private Orden ultima = null;
+        private Orden ultima = null; private int envioBarra = -1;
 
         private void Log(string id, string ev, DateTime t, double precio, int cant, string motivo, Orden p)
         {
@@ -518,14 +536,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         {
             if (execution.Order == null) return;
             string nombre = execution.Order.Name;
-            if (execution.IsEntry) { barraEntrada = CurrentBars[0]; Log(nombre, "ENTRADA", time, price, quantity, nombre, ultima); }
-            else if (execution.IsExit)
-            {
-                string mot = nombre == "Stop loss" ? "STOP" : nombre == "Profit target" ? "OBJETIVO" : nombre == "TIEMPO" ? "TIEMPO"
-                           : nombre == "Exit on session close" ? "SESION" : nombre;
-                Log(execution.Order.FromEntrySignal, "SALIDA", time, price, quantity, mot, ultima);
-                if (Position.MarketPosition == MarketPosition.Flat) { activa = null; barraEntrada = -1; }
-            }
+            if (execution.IsEntry && barraEntrada < 0) barraEntrada = CurrentBars[0];
         }
 
         #region Properties
