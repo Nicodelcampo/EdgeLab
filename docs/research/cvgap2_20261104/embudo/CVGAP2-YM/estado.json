@@ -1,0 +1,107 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793810744.2439828,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "CVGAP2-YM",
+  "familia": "CVGAP2_YM",
+  "experimento": "edgelab.research.cvgap2",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "n_celdas_por_canal": 466560,
+  "justificacion_economica": "La ruptura tardía de la caja amarilla (absorción alta) en la dirección del impulso barre stops tardíos; el regreso confirmado hacia la caja anticipa el relleno del impulso. Stop estructural detrás del extremo de la excursión (familia hija de CVGAP con lo aprendido el 02-04/11).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr-sep 2026; las duraciones no separan; la confirmación no mejora a mercado; media neta <= 0 en el holdout.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "CVGAP2_YM",
+   "declarada": true,
+   "padres": [
+    "CORREDOR_VOL_GAPS_ES"
+   ],
+   "propias": 0,
+   "bruto_heredado": 7913030,
+   "n_heredado": 7913030,
+   "total": 7913030,
+   "justificacion": "Hija de CVGAP (confirmación, stop estructural, duraciones de piernas, salida por noticias); declarada antes de DESC (docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793810744.243754,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
