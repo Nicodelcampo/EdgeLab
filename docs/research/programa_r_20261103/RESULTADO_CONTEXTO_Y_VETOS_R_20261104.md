@@ -1,6 +1,6 @@
 # Resultado Exhaustivo y Manual de Referencia: Atlas de Contexto Causal Común y Vetos Estructurales en $R$ (2026-11-04)
 
-Estado: VIGENTE con reservas — ver `REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md` (fricción en R y lado inferido en 3 de las 11 reglas) y el control bruto/neto en curso (`contexto_bruto_neto/`).
+Estado: VIGENTE con reservas — sus efectos confirmados resultaron fricción en R (`contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`); vale el módulo, el arreglo de JForex y el método.
 
 - **Pre-registro:** [`docs/research/programa_r_20261103/PREREGISTRO_CONTEXTO_Y_VETOS_R_20261104.md`](file:///e:/EdgeLab-port/docs/research/programa_r_20261103/PREREGISTRO_CONTEXTO_Y_VETOS_R_20261104.md)
 - **Módulo causal reutilizable (`L1/L2`):** [`edgelab/research/contexto_comun.py`](file:///e:/EdgeLab-port/edgelab/research/contexto_comun.py)
