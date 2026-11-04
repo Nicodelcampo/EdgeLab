@@ -236,3 +236,14 @@ def test_marginales_bruto_en_R_y_fallo_no_tumba(monkeypatch):
     monkeypatch.setattr(CC, "marginales_contexto", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("x")))
     res2, _ = GG.correr(X, ctx, modo="MARG", friccion=1.0, extra_adverso=0.0, log=lambda *a: None)
     assert res2["contexto_comun_error"].startswith("RuntimeError") and res2["marginales_globales"]
+
+
+def test_etapa_marginales_devuelve_el_bruto(monkeypatch):
+    """La ETAPA (no sólo `correr`) tiene que devolver los marginales del bruto: el 04/11 la etapa los descartaba y la corrida del atlas
+    bruto/neto salió sin ellos."""
+    from edgelab.research import cvgap2 as X, etapas as ET, grilla_generica as GG, sintetico
+    ctx = GG.contexto_m1(sintetico.bloques(dias=30, planta=False, seed=19), tick=0.25)
+    monkeypatch.setattr(X, "NORMALIZAR", "riesgo", raising=False)
+    D = X.disparos(ctx); cortes = GG.cortes_e0(D, X.VARIABLES)
+    r = ET.ejecutar("MARGINALES", X, ctx, friccion=1.0, extra_adverso=0.0, cx_ej=None, params=dict(cortes=cortes), log=lambda *a: None)
+    assert r.get("marginales_globales_bruto") and "ctx_hora_ny" in r["marginales_globales_bruto"]

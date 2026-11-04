@@ -113,7 +113,8 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
     if etapa == "MARGINALES":                                              # 2026-11-02: medias globales por nivel de perilla (meta-análisis)
         res, _ = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
         return dict(marginales_globales=res.get("marginales_globales"), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
-                    perillas=res.get("perillas"))
+                    perillas=res.get("perillas"), marginales_globales_bruto=res.get("marginales_globales_bruto"),   # 2026-11-04: bruto/neto
+                    contexto_comun_error=res.get("contexto_comun_error"))
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
         bases = p.get("bases") or [p["base"]]; out = []
