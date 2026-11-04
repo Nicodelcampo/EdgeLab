@@ -1,6 +1,6 @@
 # Resultado: atlas de contexto en bruto y en neto (04/11/2026)
 
-Estado: VIGENTE — preliminar con 203 de 212 corridas (las 9 restantes no arrancaron en Kaggle por cupo; se actualiza al llegar). Pre-registro:
+Estado: VIGENTE — completo, 212 de 212 corridas (con las 203 primeras ya salía igual: ninguna clase cambió con las 9 últimas; los K de la tabla son los del preliminar, difieren en 1–2 grupos). Pre-registro:
 `PREREGISTRO_BRUTO_NETO.md`. Datos: `RESULTADO.json` (neto), `RESULTADO_BRUTO.json` (bruto, `pnl / riesgo`), `CLASIFICACION.json`.
 Mismo meta-análisis DerSimonian-Laird, con grupos (familia, activo) y futuro + CFD juntos.
 
