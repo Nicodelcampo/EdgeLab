@@ -11,7 +11,7 @@ using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.Strategies;
 #endregion
 
-// EdgeLabSignalReplay (version=1.0, 2026-11-04)
+// EdgeLabSignalReplay (version=1.1, 2026-11-04)
 // Repite en NT8 (Market Replay o Sim) las operaciones que EdgeLab simuló para una regla congelada, a partir de un CSV de señales
 // exportado por `tools/senales_nt8.py`, y registra cada llenado real para medir:
 //   - paridad de ejecución: misma entrada, stop, objetivo y salida que la simulación de Python;
@@ -167,7 +167,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             string nombre = execution.Order.Name;
             if (execution.IsEntry)
             {
-                Log(execution.Order.FromEntrySignal ?? nombre, "ENTRADA", time, price, quantity, nombre);
+                Log(nombre, "ENTRADA", time, price, quantity, nombre);          // la orden de entrada lleva el id de la señal como nombre
                 barraEntrada = CurrentBar; ordenLimite = null;
             }
             else if (execution.IsExit)

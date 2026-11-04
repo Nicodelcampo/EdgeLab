@@ -63,6 +63,9 @@ def comparar(cid: str, csv_nt8: str) -> dict:
     peor para nosotros); de salida, contra el nivel de stop u objetivo cuando sale por ellos. Paridad = mismo motivo de salida."""
     from edgelab.research.embudo_runners import friccion
     d = SAL / cid; P = pd.read_csv(d / "operaciones_python.csv"); N = pd.read_csv(csv_nt8)
+    N["id"] = N["id"].fillna("").astype(str)
+    vacio = (N.evento == "ENTRADA") & (N["id"] == "")                          # v1.0 de la estrategia: el id quedó en `motivo`
+    N.loc[vacio, "id"] = N.loc[vacio, "motivo"]
     st, _ = _cargar(cid); ejec = st["spec"].get("ejecucion") or st["spec"]["sensor"]; fr_base, _ = friccion(ejec)
     ent = N[N.evento == "ENTRADA"].drop_duplicates("id").set_index("id"); sal = N[N.evento == "SALIDA"].groupby("id").last()
     omit = set(N.loc[N.evento.isin(["OMITIDA", "CANCELADA"]), "id"])
