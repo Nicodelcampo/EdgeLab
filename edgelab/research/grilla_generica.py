@@ -468,6 +468,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
     res["marginales_globales"] = marginales_globales(P, idx, net, cx["ses"], exp.EJECUCIONES)   # 2026-11-02: ideas transferibles
+    from edgelab.research import contexto_comun as CC
+    res["marginales_globales"].update(CC.marginales_contexto(cx_ej if cx_ej is not None else ctx, O, net, cx["ses"]))
     if modo == "MARG": return res, cx
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))

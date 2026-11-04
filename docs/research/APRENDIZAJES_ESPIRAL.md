@@ -77,3 +77,26 @@ Bitácora viva y acumulativa del ciclo en espiral (`Medir -> Aprender -> Investi
    - **`ASIA-GC` (`GC -> GC`)**: `PISTAS_VIVAS` (`SIN_RECHAZO`), liderada en OOS por `[1, 1, 0, 2, 0, 1, 0, 1, 1, 1]` (**`+$5,87 pts/op`**, `p = 0,0894`, `33` sesiones, `+$193,73 pts` en GC) y `+$5,74 pts/op` (`p = 0,0998`, `33` sesiones).
    - **`CONF-CVR-CFD-ES` (`DK:USA500IDXUSD -> ES`)**, **`ASIA-ES` (`ES -> ES`)** y **`TORI-CFD-NQ` (`DK:USATECHIDXUSD -> NQ`)**: Cerraron en `PISTAS_VIVAS` (`SIN_RECHAZO`), destacando `TORI-CFD-NQ` con top OOS `+$10,81 pts/op` (`19` sesiones) y `CONF-CVR-CFD-ES` con `9/20` positivas (top `+$1,98 pts/op`, `28` sesiones). **`TORI-ES`** cerró en `SIN_CANDIDATAS` (`REFUTADA`, `IC90 [-0,97, -0,16] < 0`).
    - **Paridad con NinjaTrader 8 Strategy Analyzer (`edgelab/research/paridad_nt8_canastas.py` + `nt8/strategies/EdgeLabSpiralBasketExecutor.cs`)**: Se verificó que todas las reglas individuales y las `11` canastas de regímenes OOS positivas mantienen paridad del `82%` al `100%` bajo bloqueo `EntriesPerDirection = 1` (`Flat-Only`), operando las canastas mediante multiplexación de subcuentas virtuales (`VirtualSubAccountsNetting`, `1/K`) o bloqueo global (`SingleGlobalFlatLock`).
+
+## Ciclo 2026-11-04 — Atlas de Contexto Causal Común y Vetos Estructurales en $R$ (`edgelab/research/contexto_comun.py`)
+
+### 1. Qué funcionó (Confirmado en `DESC` con BH $q \le 0,10$ y en `REP` con $p_{\text{uni}} < 0,05$ sobre $69$ clusters independientes)
+- **Stop estructural ancho (`ejecución.stop=S3`) + Objetivo lejano (`ejecución.objetivo=T3`) colapsando `Futuro + CFD` (`K = 13` clusters `(familia_base, activo)`):**
+  - `ejecución.stop=S3`: **`+0,1235R` en `DESC`** ($z = +6,51$, $p < 10^{-6}$) y **`+0,1057R` en `REP`** ($z = +4,08$, $p = 4,4 \times 10^{-5}$), **13/13 ($100\,\%$) clusters positivos** en ambos tramos.
+  - `ejecución.objetivo=T3`: positivo en **13/13 ($100\,\%$) clusters** (`+0,0569R` en `DESC`, `+0,0456R` en `REP`), mientras que `T1` resta en **13/13 ($100\,\%$) clusters** (`-0,0630R` en `DESC`, `-0,0448R` en `REP`).
+- **Exclusión de compresión intradía (`ctx_atr_rel=bajo` y `ctx_vol_rel=bajo` respecto de las 20 sesiones previas):**
+  - `ctx_atr_rel=bajo` ($\text{ATR}_{14} < P_{33}$): **`-0,0793R` en `DESC`** ($z = -4,29$, $p = 1,8 \times 10^{-5}$, $90,0\,\%$ clusters $-$) y **`-0,0722R` en `REP`** ($z = -3,31$, $p_{\text{uni}} = 0,0005$, $84,3\,\%$ clusters $-$).
+  - `ctx_vol_rel=bajo` ($V_k < P_{33}$): **`-0,0698R` en `DESC`** ($z = -3,71$, $p = 0,00020$) y **`-0,0631R` en `REP`** ($z = -2,82$, $p_{\text{uni}} = 0,0024$).
+- **Imán Estructural en Reversión (`veto_muro=vetado` $\to$ `atlas_veto_sin_iman_estructural`):**
+  - En las familias de `REVERSION` ($K = 31$ clusters), tener `VWAP`, `OR30_H/L`, `ONH/ONL` o `PDH/PDL` ubicado entre $e + 0,25R$ y $0,75\,\text{TP}$ no frena la operación sino que actúa como **imán de reversión hacia el equilibrio de la sesión**: **`+0,0883R` en `DESC`** ($z = +4,93$, $p = 10^{-6}$, $87,1\,\%$ clusters $+$) y **`+0,0732R` en `REP`** ($z = +3,21$, $p_{\text{uni}} = 0,0007$, $77,4\,\%$ clusters $+$).
+  - Aplicado sobre las 11 reglas (`N = 1.161` ops en `DESC + REP`), exigir dicho imán (`atlas_veto_sin_iman_estructural`) eleva el promedio de **`+0,1235R` a `+0,1934R`** ($\Delta R = +0,0699R > \text{MDE}_{80\%}$, `+0,0847R` en `DESC`, `+0,0574R` en `REP`, `8/11` reglas mejoradas, `LOMO 14/14`, $p_{\text{nulo}} = 0,0195$). Congelado para validación prospectiva desde `202611+`.
+- **Ventana horaria `09:30–12:00 ET` (`ctx_hora_ny=ny_manana_0930_12`):**
+  - Suma **`+0,0765R` en `DESC`** ($p = 0,00022$) y **`+0,0585R` en `REP`** ($p_{\text{uni}} = 0,0078$) en `REVERSION`, y **`+0,0487R` / `+0,0402R`** en `GLOBAL`.
+
+### 2. Qué quedó refutado y qué lecciones metodológicas dejó
+- **Falso positivo de `veto_vol_diaria_baja` en muestras seleccionadas:** Evaluado sólo en las 11 reglas daba `+0,0311R` (`LOMO 14/14`), pero en el Atlas de 69 clusters su efecto real fue `-0,0071R` ($p = 0,71$). Esto demuestra empíricamente por qué nunca se debe seleccionar un filtro común directamente sobre la canasta de reglas ganadoras sin antes confirmarlo en el Atlas multi-familia.
+- **Discrepancia de duración en JForex (`> 4h`):** Las pérdidas de operaciones largas observadas en JForex en `U1-CRUZADO` provenían de que `EdgeLabU1Cruzado.java` no aplicaba el corte de `MAX_VELAS = 240` (4h) ni el cierre de sesión (`16:59 ET`) que el simulador de Python (`grilla_comun.py`) siempre aplica. Corregido en `nt8_tools/jforex/EdgeLabU1Cruzado.java`.
+
+### 3. Primitivas Promovidas al Catálogo Reutilizable (`L1`/`L2`)
+1. `edgelab/research/contexto_comun.py`: `atr_sesion`, `vwap_sesion`, `por_vela`, `etiquetar_operaciones` y `marginales_operaciones` (certificados con 7 tests de truncado y bordes de sesión en `tests/research/test_contexto_comun.py`).
+2. `tools/atlas_contexto_r.py`: Agregador M1 acelerado con Numba (`_bloque_m1_nb`), lanzador híbrido local/Kaggle de `STAGE_MARGINALES` y meta-análisis DerSimonian-Laird por mecanismo con colapso de clusters `(familia_base, activo)` (reporte exhaustivo en `docs/research/programa_r_20261103/RESULTADO_CONTEXTO_Y_VETOS_R_20261104.md`).
