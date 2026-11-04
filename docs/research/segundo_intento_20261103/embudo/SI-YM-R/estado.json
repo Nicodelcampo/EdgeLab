@@ -1,6 +1,6 @@
 {
- "etapa": "PISTAS",
- "fase": "PENDIENTE",
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
  "historial": [
   {
    "ts": 1793748944.8894231,
@@ -12,6 +12,11 @@
    "etapa": "DESC",
    "fin": true,
    "pistas": 1
+  },
+  {
+   "ts": 1793751296.4427948,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.92103948025987); canasta media -0.3120288868874934 IC90 [-0.6511428934992939, 0.04826163305922404]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.07981668017108778"
   }
  ],
  "spec": {
@@ -109,17 +114,38 @@
   "ts": 1793748944.8892314,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicolasbuttaro/embudo-si-ym-r-rep-20260401",
  "fallas": 0,
  "params": {
-  "cortes": null,
-  "criba": "maxt"
+  "cortes": {
+   "A/H": [
+    3.4166666666666665,
+    8.0
+   ],
+   "dur_ida": [
+    13.0,
+    41.0
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    2,
+    1,
+    1,
+    3
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
  },
  "periodo": [
-  20250805,
-  20260331
+  20260401,
+  20260930
  ],
- "lanzada": 1793750347.6841674,
+ "lanzada": 1793750987.8663373,
  "cortes": {
   "A/H": [
    3.4166666666666665,
@@ -146,7 +172,44 @@
     1,
     3
    ]
-  ]
+  ],
+  "canasta": {
+   "n_sesiones": 34,
+   "media": -0.3120288868874934,
+   "ic90": [
+    -0.6511428934992939,
+    0.04826163305922404
+   ],
+   "p": 0.9292676830792302,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.9292676830792302,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "SEGUNDO_INTENTO_YM",
+    "run_id": "SI-YM-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.92103948025987,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "SEGUNDO_INTENTO_YM",
+   "run_id": "SI-YM-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.07981668017108778,
+   "efecto": 0.18841624070297316,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
  },
  "desc": {
   "pistas": [
@@ -195,8 +258,22 @@
     "t_maxt": 1.5562945206583814,
     "p_maxt": 0.8051948051948052,
     "nominada_maxt": false,
-    "q_linaje": 1.0
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 40,
+     "media": -0.26522455385436944,
+     "ic90": [
+      -0.5641773860306574,
+      0.04506473733525608
+     ],
+     "p": 0.92103948025987,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
    }
   ]
- }
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.92103948025987); canasta media -0.3120288868874934 IC90 [-0.6511428934992939, 0.04826163305922404]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.07981668017108778"
 }

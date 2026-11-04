@@ -1143,4 +1143,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:** el filtro combinado (`dur_ida` alto + A/H alto + CONF) en datos no usados de 2024-01 a 2025-07.
 - **MEDIDO (confirmación del filtro IFH, 2024-01 a 2025-07 en CFD):** NO CONCLUYENTE. 10 sesiones, +0,13R, IC90 −0,46 a +0,67, potencia 0,07.
   El filtro es demasiado restrictivo. `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
+- **MEDIDO (SEGUNDO-INTENTO, 12 campañas, 04/11/2026):** 0 nominadas. 8 terminan SIN_CANDIDATAS y 4 PISTAS_VIVAS con réplica ≤ 0. El
+  segundo intento hacia la zona no tiene edge con muestra amplia, y ninguna pista califica para nominación forzada.
+  `segundo_intento_20261103/RESULTADO_SEGUNDO_INTENTO.md`.
 
