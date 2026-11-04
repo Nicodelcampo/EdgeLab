@@ -533,7 +533,13 @@ def operaciones_de(cx, celdas, sim=None):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
         d = dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])
         if sim is not None:                                            # 2026-11-02: riesgo inicial (entrada real a stop) para medir en R
-            d["riesgo"] = riesgo_ops(cx["O"][m], np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]), sim)
+            fb = np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]); Om = cx["O"][m]
+            d["riesgo"] = riesgo_ops(Om, fb, sim)
+            # 2026-11-04: precios absolutos en el instrumento de ejecución, para repetir la operación en NT8 (Market Replay) y medir
+            # paridad de ejecución y fricción real. `entrada` es la de la simulación: primer tick de la vela de llenado si límite=2.
+            o_ = np.asarray(sim["o"], float); fbc = np.clip(fb, 0, len(o_) - 1)
+            d["lado"] = Om[:, 4].astype(int); d["limite"] = Om[:, 3].astype(int)
+            d["entrada"] = np.where(Om[:, 3] == 2, o_[fbc], Om[:, 5]); d["stop"] = Om[:, 6]; d["objetivo"] = Om[:, 7]
         filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
 

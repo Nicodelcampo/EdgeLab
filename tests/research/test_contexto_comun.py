@@ -247,3 +247,17 @@ def test_etapa_marginales_devuelve_el_bruto(monkeypatch):
     D = X.disparos(ctx); cortes = GG.cortes_e0(D, X.VARIABLES)
     r = ET.ejecutar("MARGINALES", X, ctx, friccion=1.0, extra_adverso=0.0, cx_ej=None, params=dict(cortes=cortes), log=lambda *a: None)
     assert r.get("marginales_globales_bruto") and "ctx_hora_ny" in r["marginales_globales_bruto"]
+
+
+def test_analizar_regla_con_precios_para_market_replay():
+    """`precios=True` agrega lado, tipo de entrada y precios absolutos de entrada, stop y objetivo (2026-11-04, NT8 Market Replay)."""
+    import numpy as np
+    from edgelab.research import cvgap2 as X, etapas as ET, grilla_generica as GG, sintetico
+    ctx = GG.contexto_m1(sintetico.bloques(dias=30, planta=False, seed=19), tick=0.25)
+    D = X.disparos(ctx); cortes = GG.cortes_e0(D, X.VARIABLES); base = [X.BASE[v.nombre] for v in X.VARIABLES] + [0]
+    r = ET.ejecutar("ANALIZAR_REGLA", X, ctx, friccion=1.0, extra_adverso=0.0, cx_ej=None,
+                    params=dict(cortes=cortes, celdas=[base], operaciones=True, precios=True), log=lambda *a: None)
+    O = r["operaciones"]
+    assert O and len(O["entrada"]) == len(O["neto"]) > 0
+    lado, e, st, tp = (np.asarray(O[c], float) for c in ("lado", "entrada", "stop", "objetivo"))
+    assert ((e - st) * lado > 0).all() and ((tp - e) * lado > 0).all()          # stop detrás y objetivo delante de la entrada
