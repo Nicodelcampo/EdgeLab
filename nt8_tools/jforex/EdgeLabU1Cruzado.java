@@ -34,7 +34,8 @@ public class EdgeLabU1Cruzado implements IStrategy {
     @Configurable("Tope del stop (múltiplos de la distancia al TP; 0 = sin tope)") public double topeMult = 3.0;
     @Configurable("Slippage máximo (pips; 0 = cualquiera)") public double slippagePips = 0;
     @Configurable("Máximo de posiciones abiertas") public int maxPosiciones = 1;
-    @Configurable("Cierre forzado (HH:mm hora de Nueva York; vacío = no)") public String cierreNY = "";
+    @Configurable("Duración máxima de la operación (minutos; 240 = 4h igual a Python, 0 = sin tope)") public int maxDuracionMin = 240;
+    @Configurable("Cierre forzado de sesión (HH:mm hora de Nueva York; 16:59 = fin sesión CME, vacío = no)") public String cierreNY = "16:59";
     @Configurable("No entrar en los últimos minutos antes del cierre forzado") public int sinEntradaMin = 15;
     @Configurable("Carpeta de salida (vacío = carpeta de archivos de JForex)") public String outDir = "";
 
@@ -53,6 +54,7 @@ public class EdgeLabU1Cruzado implements IStrategy {
     private PrintWriter logOps = null;
     private int nOrden = 0;
     private final Map<String, double[]> riesgo = new HashMap<>();       // label -> {riesgo, tp, sl, t_señal, lado, lo, hi, E}
+    private final Map<String, String> motivoCierre = new HashMap<>();   // label -> "TIEMPO" | "SESION"
     private final SimpleDateFormat fdia = new SimpleDateFormat("yyyyMMdd");
     private final TimeZone ny = TimeZone.getTimeZone("America/New_York");
 
@@ -167,10 +169,26 @@ public class EdgeLabU1Cruzado implements IStrategy {
         console.getOut().println("  " + o.getLabel() + " llenada a " + e + "  SL " + sl + "  TP " + tp + "  riesgo " + r[0]);
     }
 
+    private long proximoCierreMs(long fillMs) {
+        Calendar c = Calendar.getInstance(ny); c.setTimeInMillis(fillMs);
+        c.set(Calendar.HOUR_OF_DAY, cierreMin / 60); c.set(Calendar.MINUTE, cierreMin % 60);
+        c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0);
+        if (c.getTimeInMillis() <= fillMs) c.add(Calendar.DAY_OF_MONTH, 1);
+        return c.getTimeInMillis();
+    }
+
     private void cierreForzado(long ms) throws JFException {
-        if (cierreMin < 0 || minutoNY(ms) != cierreMin) return;
-        for (IOrder o : engine.getOrders(instrument))
-            if (o.getLabel().startsWith("U1_") && o.getState() == IOrder.State.FILLED) o.close();
+        if (maxDuracionMin <= 0 && cierreMin < 0) return;
+        for (IOrder o : engine.getOrders(instrument)) {
+            if (!o.getLabel().startsWith("U1_") || o.getState() != IOrder.State.FILLED) continue;
+            long fillMs = o.getFillTime();
+            boolean porTiempo = maxDuracionMin > 0 && fillMs > 0 && ms - fillMs >= maxDuracionMin * 60_000L;
+            boolean porSesion = cierreMin >= 0 && fillMs > 0 && ms >= proximoCierreMs(fillMs);
+            if (porTiempo || porSesion) {
+                motivoCierre.putIfAbsent(o.getLabel(), porSesion ? "SESION" : "TIEMPO");
+                o.close();
+            }
+        }
     }
 
     @Override
@@ -182,7 +200,9 @@ public class EdgeLabU1Cruzado implements IStrategy {
     public void onBar(Instrument inst, Period period, IBar askBar, IBar bidBar) throws JFException {
         // Cierra la vela en curso apenas termina su minuto (sin esperar al próximo tick). Mismo contenido: los ticks llegan en orden.
         if (inst != instrument || period != Period.ONE_MIN) return;
-        for (U1Nucleo.Senal s : nucleo.cerrarSiVencida(bidBar.getTime() + 60_000L)) emitir(s, "vivo");
+        long finBarraMs = bidBar.getTime() + 60_000L;
+        for (U1Nucleo.Senal s : nucleo.cerrarSiVencida(finBarraMs)) emitir(s, "vivo");
+        cierreForzado(finBarraMs);
         if (logTicks != null) logTicks.flush();
     }
 
@@ -195,10 +215,11 @@ public class EdgeLabU1Cruzado implements IStrategy {
             console.getErr().println("  " + o.getLabel() + " rechazada: " + m.getContent());
         else if (m.getType() == IMessage.Type.ORDER_CLOSE_OK) {
             double[] r = riesgo.remove(o.getLabel());
+            String mc = motivoCierre.remove(o.getLabel());
             if (r == null || o.getClosePrice() == 0) return;
             int s = o.isLong() ? 1 : -1; double pnl = (o.getClosePrice() - o.getOpenPrice()) * s;
             String motivo = m.getReasons().contains(IMessage.Reason.ORDER_CLOSED_BY_SL) ? "SL"
-                    : m.getReasons().contains(IMessage.Reason.ORDER_CLOSED_BY_TP) ? "TP" : "CIERRE";
+                    : m.getReasons().contains(IMessage.Reason.ORDER_CLOSED_BY_TP) ? "TP" : (mc != null ? mc : "CIERRE");
             double Rr = r[0] > 0 ? pnl / r[0] : Double.NaN;
             logOps.println(o.getLabel() + "," + (long) r[3] + "," + s + "," + o.getFillTime() + "," + o.getOpenPrice() + "," + r[2] + "," + r[1] + ","
                     + o.getCloseTime() + "," + o.getClosePrice() + "," + motivo + "," + pnl + "," + r[0] + "," + Rr + "," + o.getCommissionInUSD());

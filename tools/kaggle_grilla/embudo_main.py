@@ -48,6 +48,19 @@ def main():
     if ejec and ejec != sensor:
         lec_e, tk_e = resolver(ejec); cx_ej = GG.contexto_m1(lec_e(desde, hasta, ent), tk_e); log(f"ejecución {ejec}: {len(cx_ej['c'])} velas")
         if etapa == "INTEGRIDAD": alin = (lec_s(desde, hasta, ent), lec_e(desde, hasta, ent))
+    if os.environ.get("SELLADO") != "1" and (etapa == "MARGINALES" or params.get("calentamiento_dias")):
+        import datetime as _dt
+        dias_cal = int(params.get("calentamiento_dias") or 40)
+        f_d0 = _dt.date(d0_ctx // 10000, (d0_ctx // 100) % 100, d0_ctx % 100)
+        d_cal = int((f_d0 - _dt.timedelta(days=dias_cal)).strftime("%Y%m%d"))
+        d_ant = int((f_d0 - _dt.timedelta(days=1)).strftime("%Y%m%d"))
+        sim_obj = cx_ej if cx_ej is not None else ctx
+        lec_cal, tk_cal = (lec_e, tk_e) if cx_ej is not None else (lec_s, tk_s)
+        try:
+            bl_cal = list(lec_cal(d_cal, d_ant, ent))
+            if bl_cal: sim_obj["calentamiento"] = GG.contexto_m1(bl_cal, tk_cal)
+        except Exception:
+            pass
     res = ET.ejecutar(etapa, exp, ctx, friccion=float(os.environ["FRICCION"]), extra_adverso=float(os.environ["EXTRA"]), cx_ej=cx_ej,
                       params=params, bloques_alineacion=alin, log=log)
     res.update(experimento_modulo=os.environ["EXPERIMENTO"], etapa=etapa, sensor=sensor, ejecucion=ejec or sensor, desde=desde, hasta=hasta,
