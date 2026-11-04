@@ -45,6 +45,7 @@ VARIABLES = [
     VARIABLES_REGIMEN["hora"],
 ]
 EJES_ORDINALES = (2, 3)
+BUSQUEDA_MAX = 2880                   # velas M1 hacia atrás para hallar el extremo y la salida de la caja (~2 días)
 ENTRADAS = ("MERC", "CONF")
 STOPS = ("S_E1", "S_EXT")              # un tick más allá del extremo · colchón del padre max(2 ticks, 0,15·H_am)
 TPS = ("MID50", "MID25", "ORIG100", "2R")
@@ -55,22 +56,24 @@ BASE = {"escala": 0, "variante_w": 1, "pct_vol": 0, "exc_amarilla": 1, "punto_re
 
 @njit(cache=False)
 def _duraciones(k, d, ext, ancla, h, l, ses):
-    """Por disparo (vela k, dirección del impulso d, extremo ext, ancla): (dur_ida, dur_reg) en velas M1, sólo con velas <= k."""
+    """Por disparo (vela k, dirección del impulso d, extremo ext, ancla): (dur_ida, dur_reg) en velas M1, sólo con velas <= k.
+    La búsqueda cruza sesiones (el padre no reinicia la caja amarilla al cambiar de sesión: ~7 % de los disparos tienen la excursión en la
+    sesión anterior); `ses` queda en la firma por compatibilidad. Cuenta velas, no minutos de reloj."""
     m = len(k); di = np.full(m, np.nan); dr = np.full(m, np.nan)
     for t in range(m):
-        s0 = ses[k[t]]; j = k[t]; je = -1
-        while j >= 0 and ses[j] == s0:                          # última vela que tocó el extremo
+        j = k[t]; je = -1; j0 = max(k[t] - BUSQUEDA_MAX, 0)
+        while j >= j0:                          # última vela que tocó el extremo
             if (d[t] == 1 and h[j] >= ext[t] - 1e-9) or (d[t] == -1 and l[j] <= ext[t] + 1e-9):
                 je = j; break
             j -= 1
         if je < 0: continue
         dr[t] = k[t] - je
         j = je - 1; jo = -1
-        while j >= 0 and ses[j] == s0:                          # última vela antes del extremo del lado de la caja (respecto del ancla)
+        while j >= j0:                                          # última vela antes del extremo del lado de la caja (respecto del ancla)
             if (d[t] == 1 and l[j] <= ancla[t]) or (d[t] == -1 and h[j] >= ancla[t]):
                 jo = j; break
             j -= 1
-        di[t] = je - (jo if jo >= 0 else j + 1)
+        di[t] = je - (jo if jo >= 0 else j0)
     return di, dr
 
 
@@ -87,11 +90,13 @@ def niveles(r, ej, ctx):
     """9 valores: (start, límite, s, entrada, stop, objetivo, be, fila de la línea de noticias, δ). Siempre contra la ruptura."""
     en, sl_, tp_ = ej; k = int(r["k"]); c = ctx["c"]; ses = ctx["ses"]; tick = float(ctx["tick"]); s = -int(r["dir_imp"])
     if k + 1 >= len(c) or ses[k + 1] != ses[k]: return None
-    start, e = k, float(c[k])
+    start, e = k, float(c[k]); ext = float(r["ext"])
     if en == "CONF":
         if k + 2 >= len(c) or ses[k + 2] != ses[k] or (c[k + 1] - c[k]) * s <= 0: return None
         start, e = k + 1, float(c[k + 1])
-    ext = float(r["ext"]); h_am = max(float(r["h_am"]), tick)
+        # la vela de confirmación puede marcar un extremo nuevo: el stop estructural va detrás del extremo vigente al decidir
+        ext = max(ext, float(ctx["h"][k + 1])) if s == -1 else min(ext, float(ctx["l"][k + 1]))
+    h_am = max(float(r["h_am"]), tick)
     col = tick if sl_ == "S_E1" else max(2.0 * tick, 0.15 * h_am)
     st = ext - s * col
     st = np.floor(st / tick) * tick if s == 1 else np.ceil(st / tick) * tick

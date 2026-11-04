@@ -28,10 +28,13 @@ def test_causal():
 
 
 def test_niveles():
-    ctx = dict(c=np.array([100.0, 99.5, 99.0]), ses=np.zeros(3, np.int64), tick=0.25)
+    ctx = dict(c=np.array([100.0, 99.5, 99.0]), h=np.array([100.2, 100.8, 99.3]), l=np.array([99.8, 99.4, 98.8]),
+               ses=np.zeros(3, np.int64), tick=0.25)
     r = dict(k=0, dir_imp=1, ext=101.0, h_am=2.0, mid50=95.0, mid25=93.0, orig100=90.0)   # ruptura alcista: operamos venta
     k, lim, s, e, st, tp, be, kl, dl = X.niveles(r, ("MERC", "S_E1", "MID50"), ctx)
     assert (k, lim, s, e, st, tp, kl) == (0, 2, -1, 100.0, 101.25, 95.0, 1)
     assert X.niveles(r, ("MERC", "S_EXT", "2R"), ctx)[4] == 101.5 and X.niveles(r, ("MERC", "S_EXT", "2R"), ctx)[5] == 97.0
     assert X.niveles(r, ("CONF", "S_E1", "MID50"), ctx)[:4] == (1, 2, -1, 99.5)               # la vela 1 cerró a favor
     assert X.niveles(r, ("CONF", "S_E1", "MID50"), dict(ctx, c=np.array([100.0, 100.5, 99.0]))) is None
+    # la vela de confirmación hizo un máximo nuevo (101.6 > ext): el stop va detrás de ese extremo
+    assert X.niveles(r, ("CONF", "S_E1", "MID50"), dict(ctx, h=np.array([100.2, 101.6, 99.3])))[4] == 102.0

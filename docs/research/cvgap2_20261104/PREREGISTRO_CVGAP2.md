@@ -80,3 +80,17 @@ Un nulo sin potencia no cierra la familia.
 La ruptura tardía de una caja con absorción alta, en la dirección de un impulso ya maduro, barre los stops de los que entran tarde.
 Si el precio vuelve a la caja y lo confirma, los que rompieron quedan atrapados y el impulso se rellena. El stop detrás del extremo de
 la excursión invalida exactamente esa lectura.
+
+## Iteración de revisión antes de lanzar (04/11, pedido de Nico)
+
+Correcciones hechas antes de la primera corrida. Nada se midió sobre retornos.
+
+1. **Stop con CONF:** la vela de confirmación puede marcar un extremo nuevo. Ahora el stop estructural va detrás del extremo vigente al
+   decidir (incluye la vela k+1). Antes podía quedar dentro del rango ya recorrido.
+2. **Duraciones que cruzan la sesión:** el padre no reinicia la caja amarilla al cambiar de sesión. Con la búsqueda limitada a la
+   sesión se perdía ~7 % de los disparos (33 de 453 en sintético), con el extremo en la sesión anterior. La búsqueda ahora cruza la
+   sesión, acotada a 2.880 velas M1 hacia atrás, y la población queda idéntica a la del padre (453 de 453).
+3. **Riesgo:** en sintético ninguna operación tiene un R menor de 4 ticks (mediana de unos 185 ticks), así que no hace falta un piso.
+   La fricción no domina el R.
+
+**Verificación:** tests en verde, certificado de causalidad sin errores y ninguna de las 16 ejecuciones equivale a otra.
