@@ -4,3 +4,9 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 798970 de 1492992 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 499053 (m del FDR 499053 de 746496 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.7070088386535645 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 1, 0, 1, 3, 0, 1, 0, 2, 1, 4], [1, 1, 0, 1, 2, 0, 1, 0, 1, 1, 4]]
+- PISTAS canasta (una prueba): media -1.0118073487045312 IC90 [-1.3717616583239451, -0.6458333173535303] p 1.0 sesiones 60; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 1.0; confirmadas 0 de 2 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -1.0118073487045312 IC90 [-1.3717616583239451, -0.6458333173535303]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.20406125360512406

@@ -4,3 +4,9 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 782619 de 1492992 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 500259 (m del FDR 500259 de 746496 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.786008834838867 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 7 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 2, 2, 1, 0, 3, 1, 2, 2, 2, 4], [0, 2, 2, 3, 0, 1, 1, 2, 2, 2, 4], [0, 2, 2, 2, 0, 2, 1, 2, 2, 2, 4], [1, 2, 1, 1, 0, 3, 1, 2, 2, 2, 5], [1, 2, 2, 2, 0, 2, 1, 2, 2, 2, 5], [0, 2, 2, 1, 0, 2, 1, 2, 2, 2, 5], [1, 2, 2, 3, 0, 2, 1, 2, 2, 2, 4]]
+- PISTAS canasta (una prueba): media -0.07895249267084728 IC90 [-0.3001376876485395, 0.14904174026812236] p 0.7118220444888778 sesiones 62; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.9400187441424555; confirmadas 0 de 7 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 7 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9400187441424555); canasta media -0.07895249267084728 IC90 [-0.3001376876485395, 0.14904174026812236]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.36387304191191194

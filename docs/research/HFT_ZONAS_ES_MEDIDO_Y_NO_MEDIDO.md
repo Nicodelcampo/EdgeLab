@@ -1146,4 +1146,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO (SEGUNDO-INTENTO, 12 campañas, 04/11/2026):** 0 nominadas. 8 terminan SIN_CANDIDATAS y 4 PISTAS_VIVAS con réplica ≤ 0. El
   segundo intento hacia la zona no tiene edge con muestra amplia, y ninguna pista califica para nominación forzada.
   `segundo_intento_20261103/RESULTADO_SEGUNDO_INTENTO.md`.
+- **MEDIDO (DOBLE-RETROCESO, 10 activos × 3 resoluciones de tick, 746.496 celdas por canal, 04/11/2026):** 0 nominadas por FDR en
+  todos. Las réplicas de las pistas son ≤ 0; van en contra con potencia en USA500 y USA30, y en contra en ES y GBPUSD. Ninguna califica
+  para nominación forzada. `doble_retroceso_20261104/RESULTADO_DOBLE_RETROCESO.md`.
+- **NO MEDIDO:** 25 o 500 ticks, entrada límite en P4, y paridad con el indicador de NT8.
 
