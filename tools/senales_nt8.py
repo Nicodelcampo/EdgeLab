@@ -53,7 +53,12 @@ def traer(cid: str) -> pd.DataFrame | None:
     S = pd.concat(partes, ignore_index=True).sort_values("t", kind="stable").reset_index(drop=True)
     S.insert(0, "id", [f"{cid}-{i:04d}" for i in range(len(S))])
     S.to_csv(d / "operaciones_python.csv", index=False)
-    S[["id", "t", "lado", "limite", "entrada", "stop", "objetivo"]].astype({"t": "int64"}).to_csv(d / "senales.csv", index=False)
+    # 2026-11-04: NT8 manda la orden al cierre de la vela `t` del CSV y llena en el tick siguiente. Python llena una entrada a mercado
+    # (límite 2) en el primer tick de la vela de llenado, que puede ser k+2 (p. ej. SIG de CVGAP): la señal para NT8 es entonces el cierre
+    # de la vela anterior a la de llenado (t_fill − 60), no el de la vela de decisión. Con `t` se entraba un minuto antes que Python.
+    E = S[["id", "t", "lado", "limite", "entrada", "stop", "objetivo"]].copy()
+    if "t_fill" in S: E["t"] = np.where(S.limite == 2, S.t_fill - 60, S.t)
+    E.astype({"t": "int64"}).to_csv(d / "senales.csv", index=False)
     print(f"{len(S)} señales -> {d / 'senales.csv'} (de {pd.to_datetime(S.t.min(), unit='s')} a {pd.to_datetime(S.t.max(), unit='s')})")
     return S
 
