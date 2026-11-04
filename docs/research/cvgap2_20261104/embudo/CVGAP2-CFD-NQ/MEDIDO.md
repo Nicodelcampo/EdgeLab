@@ -10,3 +10,6 @@
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [0, 1, 0, 2, 2, 2, 1, 2, 0, 2, 1]: regla 0.07348647557483298, placebo -1.49, latencia 1 vela 0.07372927720362288 -> pasa
 - OOS [20260401, 20260925] (régimen actual): medias [-0.01]; veredictos ['NO_CONCLUYENTE']; potencias [0.61]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 1, 0, 2, 2, 2, 1, 2, 0, 2, 1], 'tope': ['pts', 150.0], 'puntaje': 3.8713523037995285, 'peor': -1.0239612403100775}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 1, 0, 2, 2, 2, 1, 2, 0, 2, 1] tope ['pts', 150.0]; plan {'n_fijo': 150, 'n_necesario': 124, 'potencia': 0.8850758169023123, 'efecto': 0.07740128687649067, 'sd_op': 0.24385287753937188, 'fuente': 'fracción del DESC', 'nivel': 0.003607974489558189}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)

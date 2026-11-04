@@ -12,3 +12,5 @@
 - INTEGRIDAD [0, 0, 0, 2, 2, 2, 2, 1, 2, 2, 0]: regla 0.0010898385849421595, placebo -9.37, latencia 1 vela 0.00998391475032325 -> pasa
 - INTEGRIDAD [0, 0, 0, 1, 2, 2, 1, 2, 0, 2, 0]: regla -0.009689536660150926, placebo -6.41, latencia 1 vela -0.016577860133986533 -> no pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-0.04, -0.07]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.44, 0.33]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)
