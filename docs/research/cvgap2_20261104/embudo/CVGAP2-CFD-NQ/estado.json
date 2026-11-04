@@ -153,7 +153,7 @@
   "ts": 1793810708.7183363,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicobuttaro/embudo-cvgap2-cfd-nq-holdout-conteo-20261001",
  "fallas": 0,
  "params": {
   "cortes": {
@@ -185,13 +185,122 @@
     1
    ]
   ],
-  "topes": null
+  "tope": [
+   "pts",
+   150.0
+  ],
+  "acta": {
+   "cid": "CVGAP2-CFD-NQ",
+   "familia": "CVGAP2_CFD_NQ",
+   "experimento": "edgelab.research.cvgap2",
+   "sensor": "DK:USATECHIDXUSD",
+   "ejecucion": "NQ",
+   "regla": {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "tope": [
+     "pts",
+     150.0
+    ],
+    "puntaje": 3.8713523037995285,
+    "peor": -1.0239612403100775
+   },
+   "cortes": {
+    "tamano_impulso": [
+     4.487051893977994,
+     7.449342465570724
+    ],
+    "dur_ida": [
+     1.0,
+     6.0
+    ],
+    "dur_reg": [
+     2.0,
+     15.0
+    ]
+   },
+   "holdout_desde": 20261001,
+   "n_fijo": 150,
+   "alfa": 0.003607974489558189,
+   "registrada": 1793814545.7214684,
+   "reserva_lord": {
+    "familia": "CVGAP2_CFD_NQ",
+    "reserva_id": "CVGAP2-CFD-NQ/holdout",
+    "t": 2,
+    "nivel": 0.003607974489558189,
+    "resuelta": false
+   },
+   "multiplicidad": {
+    "linaje": {
+     "familia": "CVGAP2_CFD_NQ",
+     "declarada": true,
+     "padres": [
+      "CORREDOR_VOL_GAPS_CFD_NQ"
+     ],
+     "propias": 0,
+     "bruto_heredado": 6870981,
+     "n_heredado": 6870981,
+     "total": 6870981,
+     "justificacion": "Hija de CVGAP (confirmación, stop estructural, duraciones de piernas, salida por noticias); declarada antes de DESC (docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md)",
+     "metodo_n": "bruto",
+     "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+     "como": "informacion"
+    },
+    "total": 6870981,
+    "linaje_como": "informacion",
+    "metodo_n": "bruto",
+    "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+    "via": "nominada_fdr",
+    "q_linaje": 1.0,
+    "recorte": {
+     "t": 3.2906673652085683,
+     "t_ajustado": 0.0,
+     "p_ajustada": 1.0,
+     "conservado": 0.0,
+     "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+    },
+    "efecto_esperado": 0.0,
+    "potencia_holdout": 0.0
+   },
+   "regimen": {
+    "definicion": null,
+    "actual_desde": null,
+    "fraccion_efecto": 0.5,
+    "potencia_min": 0.8
+   },
+   "oos": [
+    "NO_CONCLUYENTE"
+   ],
+   "atras": [],
+   "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
+   "plan_holdout": {
+    "n_fijo": 150,
+    "n_necesario": 124,
+    "potencia": 0.8850758169023123,
+    "efecto": 0.07740128687649067,
+    "sd_op": 0.24385287753937188,
+    "fuente": "fracción del DESC",
+    "nivel": 0.003607974489558189
+   }
+  }
  },
  "periodo": [
-  20250805,
-  20260331
+  20261001,
+  20261103
  ],
- "lanzada": 1793813938.45425,
+ "lanzada": 1793814851.1910248,
  "cortes": {
   "tamano_impulso": [
    4.487051893977994,
@@ -1229,5 +1338,7 @@
    "fuente": "fracción del DESC",
    "nivel": 0.003607974489558189
   }
- }
+ },
+ "ultimo_conteo": 1793815152.4804866,
+ "n_holdout": 15
 }
