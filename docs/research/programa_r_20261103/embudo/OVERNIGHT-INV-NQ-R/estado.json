@@ -1,0 +1,351 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793731832.0014725,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793735883.7410738,
+   "etapa": "DESC",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793736508.307579,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 2
+  },
+  {
+   "ts": 1793737122.7278671,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.4547726136931534); canasta media 0.008788646004128538 IC90 [-0.07286060099138593, 0.09607350051559878]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.7909768234728565"
+  }
+ ],
+ "spec": {
+  "cid": "OVERNIGHT-INV-NQ-R",
+  "familia": "OVERNIGHT_INVENTARIO_NQ",
+  "experimento": "edgelab.research.overnight_inventario",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "La sesión overnight de Globex (18:00–09:29 ET) opera con una fracción de la liquidez del horario regular. Cuando el flujo overnight desplaza el precio de forma persistente hacia un extremo del rango nocturno (alto desequilibrio neto y alta  (DISENO_OVERNIGHT_INVENTARIO.md).",
+  "como_podria_refutarse": "Si ni la liquidación (regla 0) ni la continuación (regla 1) nominan celdas en DESC y confirman en réplica OOS, o si los días con inventario extremo (imb_on >= 0,55) no difieren del resto.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_OVERNIGHT_INVENTARIO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "correcciones": "docs/research/programa_r_20261103/CORRECCIONES_GEMINI_20261103.md",
+  "decisiones": [
+   "2026-11-03: corregida antes de correr (noticias durante toda la operación, reloj de Londres en WM, sólo días con dato en POST-MACRO); tamiz FDR con cola t (decisión de Nico)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "OVERNIGHT_INVENTARIO_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva del programa R (OVERNIGHT-INVENTARIO en NQ->NQ), sin padres; declarada antes de DESC (docs/research/programa_r_20261103/DISENO_OVERNIGHT_INVENTARIO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793731832.0012693,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-overnight-inv-nq-r-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "apertura_rth": [
+    1.0566037735849056,
+    1.4264919941775838
+   ]
+  },
+  "celdas": [
+   [
+    1,
+    0,
+    1,
+    2,
+    0
+   ],
+   [
+    0,
+    1,
+    0,
+    2,
+    1
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 2
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793736820.5461338,
+ "cortes": {
+  "apertura_rth": [
+   1.0566037735849056,
+   1.4264919941775838
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793736508.3074732,
+  "celdas": [
+   [
+    1,
+    0,
+    1,
+    2,
+    0
+   ],
+   [
+    0,
+    1,
+    0,
+    2,
+    1
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 97,
+   "media": 0.008788646004128538,
+   "ic90": [
+    -0.07286060099138593,
+    0.09607350051559878
+   ],
+   "p": 0.4446388402899275,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.4446388402899275,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "OVERNIGHT_INVENTARIO_NQ",
+    "run_id": "OVERNIGHT-INV-NQ-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.4547726136931534,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 2,
+   "t": 2,
+   "familia": "OVERNIGHT_INVENTARIO_NQ",
+   "run_id": "OVERNIGHT-INV-NQ-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.7909768234728565,
+   "efecto": 0.15931299840548488,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     0,
+     1,
+     2,
+     0
+    ],
+    "n": 64,
+    "media_neta": 0.4374489034446054,
+    "sesiones": 64,
+    "ic90": [
+     0.12402798476385644,
+     0.7368058935449979
+    ],
+    "p_sesiones": 0.011494252873563218,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 111.78,
+    "pasa": false,
+    "n_pruebas": 40.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.04442810921984988,
+    "media_esperada_fuera": 0.019435027660340495,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.3987767696380615,
+    "canal": "total",
+    "q_fdr": 0.3119850946648489,
+    "nominada_fdr": false,
+    "pi0_fdr": 0.9,
+    "m_fdr": 40,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 108,
+    "criba": "maxt",
+    "t_maxt": 2.2676830050786347,
+    "p_maxt": 0.2047952047952048,
+    "nominada_maxt": false,
+    "q_linaje": 0.3119850946648489,
+    "replica_pistas": {
+     "n": 47,
+     "media": 0.012309470640702347,
+     "ic90": [
+      -0.3366843393176006,
+      0.33679295914298235
+     ],
+     "p": 0.4547726136931534,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     1
+    ],
+    "n": 111,
+    "media_neta": 0.1998030901773341,
+    "sesiones": 111,
+    "ic90": [
+     0.016927827503625908,
+     0.3983951832853511
+    ],
+    "p_sesiones": 0.04897551224387806,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 260.92,
+    "pasa": true,
+    "n_pruebas": 40.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.816150426864624,
+    "canal": "total",
+    "q_fdr": 0.38162611173207583,
+    "nominada_fdr": false,
+    "pi0_fdr": 0.9,
+    "m_fdr": 40,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 108,
+    "criba": "maxt",
+    "t_maxt": 1.7661450272941204,
+    "p_maxt": 0.5134865134865135,
+    "nominada_maxt": false,
+    "q_linaje": 0.38162611173207583,
+    "replica_pistas": {
+     "n": 85,
+     "media": 0.013252378878681432,
+     "ic90": [
+      -0.14607992707689854,
+      0.18125636398373654
+     ],
+     "p": 0.4397801099450275,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.4547726136931534); canasta media 0.008788646004128538 IC90 [-0.07286060099138593, 0.09607350051559878]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.7909768234728565"
+}

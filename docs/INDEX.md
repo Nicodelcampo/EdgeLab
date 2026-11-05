@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_DEBIAN_20261030.md` (2026-10-30)
+`docs/research/HANDOFF_20261105_PARA_ANTIGRAVITY.md` (2026-11-05)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 109 |
+| `docs` | 111 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
@@ -23,13 +23,13 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
 | `docs/incidents` | 17 |
-| `docs/infra` | 23 |
+| `docs/infra` | 24 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 876 |
+| `docs/research` | 1111 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -38,12 +38,17 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| HANDOFF | 18 | `HANDOFF_20261105_PARA_ANTIGRAVITY.md` | 2026-11-05 | VIGENTE. Rama claude/vibrant-clarke-s9z6e2 (la rama gemini/filtros-20261104 ya e |
+| REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |
+| PREREGISTRO | 1 | `PREREGISTRO_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Regis |
+| MAPA | 1 | `MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md` | 2026-11-03 | DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autor |
+| AVANCES | 1 | `AVANCES_Y_RELANZAMIENTOS_20261103.md` | 2026-11-03 | INFORME — fotografía del trabajo, no habilita corridas. Referente docs/NORTH_STA |
+| MEDIR | 1 | `MEDIR_EN_R_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «encargate de resolver cualquier aspecto en el que esto |
 | HALLAZGO | 1 | `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md` | 2026-11-02 | VIGENTE. Lo encontró la sesión en la nube al portar U1-CRUZADO a JForex, a pedid |
+| APERTURA | 1 | `APERTURA_HOLDOUT_CONJUNTA_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «cuando termine todo abrimos el holdout con las nominad |
 | RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
 | LECTURA | 3 | `LECTURA_ROBOTEDGE_20261101.md` | 2026-11-01 | VIGENTE. Fecha: 2026-11-01. Insumos (subidos por Nico): |
 | AUDITORIA | 15 | `AUDITORIA_T_NS_AVZP2_20261031.md` | 2026-10-31 | VIGENTE. Heredado de gonzasib-claude (pedido de Nico: «encargate del trabajo que |
-| REVISION | 8 | `REVISION_SV1_20261030.md` | 2026-10-30 | VIGENTE. Autor: gonzasib-claude (Gonza-PC), a pedido de Nico en la sala #CHY0V3Y |
-| HANDOFF | 17 | `HANDOFF_DEBIAN_20261030.md` | 2026-10-30 | VIGENTE |
 | REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
@@ -93,11 +98,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
 | FUNNEL | 1 | `FUNNEL_AUDIT_20261003.md` | 2026-10-03 | - |
 | CUDA | 2 | `CUDA_PARITY_RESULT_20261003.md` | 2026-10-03 | - |
-| RESULTADO | 38 | `RESULTADO_MNQ_L2_V2_PRIMERA_SESION_TARGETFREE_20260930.md` | 2026-09-30 | - |
-| PREPARACION | 2 | `PREPARACION_MNQ_ESCALONADAS_L2_20260930.md` | 2026-09-30 | PREPARADO / NO MEDIDO EN MNQ REAL. R02/I-3; no rescate de climas. |
-| ENTREGA | 2 | `ENTREGA_LOCAL_L2_GC_ES_20260930.md` | 2026-09-30 | - |
-| BORRADOR | 3 | `BORRADOR_PROTOCOLO_ESPEJO_L2_PREDICTIBILIDAD_20260930.md` | 2026-09-30 | - |
-| PROTOCOLO | 4 | `PROTOCOLO_CONTEXTOS_L2_ES_MES_MNQ_20260929.md` | 2026-09-29 | escrito antes de extraer ni entrenar (pedido de Nico: «ejecutá todos los pasos») |
 
 ## Superados (7)
 

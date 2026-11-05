@@ -1,0 +1,12 @@
+## SI-YM-R — edgelab.research.segundo_intento · señal YM · ejecución YM
+- Justificación: La zona que el precio no alcanzó sigue siendo liquidez sin tomar; el segundo intento confirmado tras un alejamiento largo es lo que se sostuvo entre fuentes de INTENTO-FALLIDO-HACIA (Nico, 03/11: más operaciones y diversificación).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique; dur_ida alto no supera a 'cualquiera'; falla de integridad.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5390531 pruebas de ['U1_YM_GRILLA', 'IF_HACIA_LUX_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 433 de 648 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 247 (m del FDR 247 de 324 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.1303467750549316 (diagnóstico), linaje 5390531 como informacion, pistas sin nominación 26, candidatas 0
+- PISTAS a réplica (ATJ-25): 1 congeladas de 26 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 2, 1, 1, 3]]
+- PISTAS canasta (una prueba): media -0.3120288868874934 IC90 [-0.6511428934992939, 0.04826163305922404] p 0.9292676830792302 sesiones 34; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.92103948025987; confirmadas 0 de 1 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.92103948025987); canasta media -0.3120288868874934 IC90 [-0.6511428934992939, 0.04826163305922404]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.07981668017108778

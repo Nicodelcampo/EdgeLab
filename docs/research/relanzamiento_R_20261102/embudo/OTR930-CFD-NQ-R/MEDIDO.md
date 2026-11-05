@@ -1,0 +1,12 @@
+## OTR930-CFD-NQ-R — edgelab.research.otr_930_sweep · señal DK:USATECHIDXUSD · ejecución NQ
+- Justificación: Sensor en el feed CFD 24h USATECHIDXUSD con ejecución trasladada a NQ futuro (como en U1-CRUZADO y CVGAP-CFD-NQ): mide si los huecos y el barrido pre-market del feed CFD anticipan el retorno post-09:30 ET ejecutado en NQ.
+- Refutación: Sin celdas nominadas por FDR q <= 0,10, fallo de alineación/placebo/latencia en INTEGRIDAD cruzada, o refutación en OOS/holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5626427 pruebas de ['ZONAS_GAPS']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 66672 de 2239488 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 50640 (m del FDR 50640 de 1119744 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.984226703643799 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260925], un paso de LORD++ por lote; celdas [[2, 2, 0, 2, 3, 0, 0, 2, 1, 8], [2, 2, 0, 0, 3, 0, 0, 2, 1, 2], [2, 2, 1, 0, 3, 0, 0, 2, 1, 8], [2, 2, 1, 2, 3, 0, 0, 2, 1, 2], [2, 2, 0, 0, 3, 0, 0, 2, 2, 8], [1, 2, 0, 2, 3, 0, 3, 2, 1, 10], [2, 2, 0, 2, 3, 0, 0, 2, 2, 2], [1, 2, 0, 0, 3, 0, 3, 2, 1, 4], [2, 2, 0, 0, 0, 0, 0, 2, 1, 8], [2, 2, 0, 2, 0, 0, 0, 2, 1, 2], [1, 2, 0, 0, 3, 0, 3, 2, 2, 10], [1, 2, 0, 0, 3, 0, 0, 2, 1, 10], [1, 2, 1, 2, 3, 0, 0, 2, 1, 10], [1, 2, 0, 2, 3, 0, 3, 2, 2, 4], [2, 2, 1, 2, 0, 0, 0, 2, 1, 8], [1, 2, 1, 0, 3, 0, 0, 2, 1, 4], [2, 2, 1, 0, 0, 0, 0, 2, 1, 2], [1, 2, 0, 2, 3, 0, 0, 2, 1, 4], [2, 2, 0, 0, 3, 3, 0, 2, 1, 8], [2, 2, 0, 2, 3, 3, 0, 2, 1, 2]]
+- PISTAS canasta (una prueba): media 0.005808235768740308 IC90 [-0.16658168524921801, 0.18826713424386202] p 0.4753811547113222 sesiones 111; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260925]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 0.5967931874091117; confirmadas 0 de 20 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.5967931874091117); canasta media 0.005808235768740308 IC90 [-0.16658168524921801, 0.18826713424386202]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.22082933200820132

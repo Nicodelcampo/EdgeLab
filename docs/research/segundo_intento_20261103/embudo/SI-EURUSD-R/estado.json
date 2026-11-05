@@ -1,0 +1,133 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793747470.206737,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793750666.320469,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -1.197083230433147, 'min': -23.288270610969462, 'q001': -22.695300110191912, 'q010': -20.25778988330422, 'q500': -7.201742010187946, 'q990': -1.8197953478193678, 'q999': -1.218419278201502, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 258}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "SI-EURUSD-R",
+  "familia": "SEGUNDO_INTENTO_EURUSD",
+  "experimento": "edgelab.research.segundo_intento",
+  "sensor": "DK:EURUSD",
+  "ejecucion": "DK:EURUSD",
+  "n_celdas_por_canal": 324,
+  "justificacion_economica": "La zona que el precio no alcanzó sigue siendo liquidez sin tomar; el segundo intento confirmado tras un alejamiento largo es lo que se sostuvo entre fuentes de INTENTO-FALLIDO-HACIA (Nico, 03/11: más operaciones y diversificación).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique; dur_ida alto no supera a 'cualquiera'; falla de integridad.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20240102,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/segundo_intento_20261103/PREREGISTRO_SEGUNDO_INTENTO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "SEGUNDO_INTENTO_EURUSD",
+   "declarada": true,
+   "padres": [
+    "U1_6E_GRILLA",
+    "IF_HACIA_LUX_CFD_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5558253,
+   "n_heredado": 5558253,
+   "total": 5558253,
+   "justificacion": "Lo mejor de INTENTO-FALLIDO-HACIA con más eventos; declarada antes de DESC (docs/research/segundo_intento_20261103/PREREGISTRO_SEGUNDO_INTENTO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793747470.2064786,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-si-eurusd-r-desc-20240102",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20240102,
+  20260331
+ ],
+ "lanzada": 1793750327.4521267,
+ "cortes": {
+  "A/H": [
+   3.320000000000355,
+   9.0
+  ],
+  "dur_ida": [
+   16.0,
+   48.0
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -1.197083230433147, 'min': -23.288270610969462, 'q001': -22.695300110191912, 'q010': -20.25778988330422, 'q500': -7.201742010187946, 'q990': -1.8197953478193678, 'q999': -1.218419278201502, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 258}); pistas a réplica: ninguna pista relevante con media > 0"
+}

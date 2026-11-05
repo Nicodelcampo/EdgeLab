@@ -85,7 +85,9 @@ def seguir(cartera, cfg: dict) -> dict:
     if st["estado"] == "EDGE_CONFIRMADO" and st["n"] >= r["min_ops_real"]:
         for f in fichas:
             if f.estado == "ACTIVA" and f.nivel == "PAPEL":
-                f.nivel = "REAL"; promovidas.append(f.id); cartera._log("PROMOCION_CANASTA", f.id, e=st["e_edge"], n=st["n"])
+                ok, por = cartera.puede_promover(f.id)                      # 2026-11-02 (Nico): además R forward > 0 por ficha
+                if ok: f.nivel = "REAL"; promovidas.append(f.id); cartera._log("PROMOCION_CANASTA", f.id, e=st["e_edge"], n=st["n"], r=por)
+                else: cartera._log("PROMOCION_RETENIDA", f.id, e=st["e_edge"], n=st["n"], motivo=por)
     est["promovidas_hoy"] = promovidas
     cartera.guardar()
     return dict(activa=True, **est)

@@ -1,0 +1,13 @@
+## KALMAN-FADE-GC-R — edgelab.research.kalman_fade · señal GC · ejecución GC
+- Justificación: Innovaciones extremas de un nivel local de Kalman en GC M1 son en parte ruido de microestructura transitorio y revierten (SPEC_KALMAN_FADE.md, anexo PREREGISTRO_KALMAN_ES_GC.md).
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.
+- PREFLIGHT: ok
+- Linaje (informacion; declarado); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 360 de 432 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 200 (m del FDR 200 de 216 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.274003028869629 (diagnóstico), linaje 0 como informacion, pistas sin nominación 14, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 14 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 1, 1, 3], [1, 2, 1, 1]]
+- AVISO PISTAS: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- PISTAS canasta (una prueba): media -0.09748048910566627 IC90 [-0.2886172628580512, 0.10379867098906809] p 0.7910522369407648 sesiones 69; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 0.8281323654190629; confirmadas 0 de 2 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.8281323654190629); canasta media -0.09748048910566627 IC90 [-0.2886172628580512, 0.10379867098906809]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.264481083337068

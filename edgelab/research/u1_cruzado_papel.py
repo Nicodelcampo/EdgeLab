@@ -28,8 +28,12 @@ def operar_papel(ctx_us: dict, ctx_nq: dict, friccion: float, desde: int | None 
     g = F[(F.ejecucion == EJECUCION) & F.bruto.notna()]
     if desde is not None: g = g[g.ses >= int(desde)]
     g = g.sort_values(["ses", "t"], kind="stable")
+    riesgo = [None] * len(g)                                               # 2026-11-02: riesgo inicial (para medir en R)
+    if len(g) and "j_nq" in g and "o" in ctx_nq:                           # E1A: llena en la apertura de la vela siguiente
+        jj = g.j_nq.to_numpy(np.int64) + 1
+        riesgo = np.abs(np.asarray(ctx_nq["o"], float)[np.minimum(jj, len(ctx_nq["o"]) - 1)] - g.stop.to_numpy(float)).tolist()
     return dict(operaciones=dict(celda=[0] * len(g), ses=g.ses.astype(int).tolist(), neto=(g.bruto.to_numpy(float) - friccion).tolist(),
-                                 t=g.t.astype(float).tolist()),
+                                 t=g.t.astype(float).tolist(), riesgo=riesgo),
                 resumen=dict(n=int(len(g)), media=float(np.mean(g.bruto - friccion)) if len(g) else None))
 
 

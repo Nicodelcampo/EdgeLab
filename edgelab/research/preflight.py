@@ -12,7 +12,7 @@ Qué ataca cada chequeo (número = error de la revisión):
   causalidad de disparos/variables ................... look-ahead en general
   cortes por cuantiles no degenerados (>= 10 % por nivel) 2
   control de ruido con potencia (celdas evaluables > 0) 16
-  ruido puro: 0 rechazadas por Romano-Wolf ............ 7
+  ruido puro: 0 nominadas por el FDR q 0,10 ............ 7  (Romano-Wolf: aviso; decisión de Nico 2026-11-02)
   ejecuciones equivalentes (perillas muertas) ......... 4
   niveles_lote (si existe) idéntico a niveles ......... camino rápido sin oráculo
   sin excepciones con celdas vacías ................... 15
@@ -85,7 +85,11 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
         res, _ = GG.correr(exp, ctx, modo="DESC", friccion=1.0, extra_adverso=0.5, cortes=cortes, log=lambda s: None)
         tot = res["canales"]["total"]
         if tot["evaluables"] == 0: err.append("control de ruido sin celdas evaluables: no tiene con qué fallar (más días o perillas más anchas)")
-        if tot["n_rechazadas_rw"] > 0: err.append(f"ruido puro con {tot['n_rechazadas_rw']} celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables")
+        # 2026-11-02 (decisión de Nico, opción 1): la compuerta es la misma que nomina en DESC desde el 2026-10-24, el FDR q 0,10.
+        # Romano-Wolf con B_RW = 40 y pagos muy asimétricos rechazaba de más sobre ruido (2 de 6 semillas en u1_cfd, sin sesgo del
+        # simulador): queda como aviso. Ver docs/research/relanzamiento_causal_20261102/RELANZAMIENTO.md.
+        if tot["nominadas_fdr"] > 0: err.append(f"ruido puro con {tot['nominadas_fdr']} celdas nominadas por el FDR: hay un sesgo en el simulador o en las variables")
+        if tot["n_rechazadas_rw"] > 0: avisos.append(f"ruido puro con {tot['n_rechazadas_rw']} celdas rechazadas por Romano-Wolf (diagnóstico, B_RW={GG.B_RW})")
         if res.get("ejecuciones_equivalentes"): err.append(f"{len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas): rediseñar, no duplicar pruebas")
         if res["celdas"] != GG.n_celdas(exp, cortes): err.append("n_celdas no coincide con las celdas que se corren")
         return err, avisos

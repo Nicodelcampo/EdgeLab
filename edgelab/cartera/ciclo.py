@@ -52,7 +52,14 @@ def altas_pendientes(cart, cfg: dict, repo: Path) -> list:
     ruta = Path(ruta) if Path(ruta).is_absolute() else Path(repo) / ruta
     if not ruta.exists(): return [dict(error=f"no existe {ruta}")]
     out = []
-    for d in json.loads(ruta.read_text(encoding="utf-8")).get("fichas", []):
+    doc = json.loads(ruta.read_text(encoding="utf-8"))
+    # 2026-11-03 (Nico): bajas declarativas en el mismo JSON. Una ficha ACTIVA listada en `bajas` se retira con su motivo. Idempotente.
+    for b in doc.get("bajas", []):
+        f = cart.fichas.get(b["id"])
+        if f is not None and f.estado == "ACTIVA": out.append(dict(cart.retirar(b["id"], b["motivo"]), baja=True))
+    bajas = {b["id"] for b in doc.get("bajas", [])}
+    for d in doc.get("fichas", []):
+        if d["id"] in bajas: continue
         if d["id"] in cart.fichas: continue
         try: out.append(dict(id=cart.alta(Ficha(**d), repo).id, alta=True))
         except ValueError as ex:

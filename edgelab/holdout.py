@@ -30,3 +30,24 @@ def es_holdout_trade_date(td) -> bool:
 
 def es_holdout_ns(ts_utc_ns: int) -> bool:
     return int(ts_utc_ns) >= HOLDOUT_APERTURA_UTC_NS
+
+
+# Sesiones del holdout que NINGÚN análisis usa (2026-11-02, Nico: «asegurate que cualquier agente no use los días que no se deben usar»).
+# Medido target-free sobre el dataset sellado v5 (docs/research/canasta_7_20261030/SELLADO_CONTEO_v5.json): sesión con menos del 50 % de
+# los ticks de la mediana del instrumento en octubre, más los días que NT8 no tiene (10-07 en CME). Los domingos de FX son restos del
+# fin de semana, no sesiones. Los lectores sellados (`fuentes_ticks.bloques_nq_sellado` / `bloques_spot_sellado`) las descartan siempre;
+# `tests/test_holdout_unico.py` lo verifica. Una sesión sólo sale de esta tabla con datos completos re-sellados y re-medidos.
+_CME = ("NQ", "MNQ", "ES", "MES", "YM", "MYM", "GC", "MGC", "6B", "6E", "6J", "MBT")
+SESIONES_EXCLUIDAS_HOLDOUT = {
+    **{s: {20261007} for s in ("NQ", "MNQ", "ES", "MES", "GC", "MGC", "YM", "MYM")},     # NT8 no tiene el 7-oct (YM a medias)
+    "ES": {20261007, 20261029, 20261030}, "MES": {20261007, 20261029, 20261030},          # 40 % y 47 % de una sesión normal
+    "6B": {20261029}, "6E": {20261029},
+    "USATECHIDXUSD": {20261029}, "USA500IDXUSD": {20261012, 20261029}, "USA30IDXUSD": {20261029}, "XAUUSD": {20261029},
+    "EURUSD": {20261004, 20261011, 20261018, 20261025, 20261029}, "GBPUSD": {20261004, 20261011, 20261018, 20261025, 20261029},
+    "USDJPY": {20261004, 20261011, 20261012, 20261018, 20261025, 20261029},
+}
+
+
+def sesion_excluida(instrumento: str, trade_date) -> bool:
+    """True si la sesión `trade_date` (YYYYMMDD) del `instrumento` (futuro o símbolo Dukascopy) no se usa en ningún análisis."""
+    return int(str(trade_date).replace("-", "")[:8]) in SESIONES_EXCLUIDAS_HOLDOUT.get(str(instrumento).upper().replace("DK:", ""), set())

@@ -81,7 +81,7 @@ def test_futilidad_retira_y_no_resucita(cart):
 def test_e_proceso_promueve_a_real_y_agregar_es_idempotente(cart):
     c, tmp = cart; c.alta(_ficha(), tmp)
     filas = [(20261102 + i, 8.0 if i % 4 else -2.0) for i in range(60)]
-    r = c.agregar_ops("A", filas)
+    r = c.agregar_ops("A", filas, riesgos=[(s, x, 10.0) for s, x in filas])
     assert r["nivel"] == "REAL"
     n = len(c.fichas["A"].ops); c.agregar_ops("A", filas)
     assert len(c.fichas["A"].ops) == n
@@ -169,7 +169,7 @@ def _canasta(tmp, filas_a, filas_b, hasta):
     (tmp / "PRE.md").write_text("x")
     for i, fil in (("A", filas_a), ("B", filas_b)):
         c.alta(_ficha(id_=i, perdida_max_pts=40.0, ganancia_max_pts=60.0, ops_desarrollo=[[20260101 + k, (6.0 if k % 3 else -4.0)] for k in range(60)]), tmp)
-        c.agregar_ops(i, fil, hasta=hasta)
+        c.agregar_ops(i, fil, hasta=hasta, riesgos=[(s, x, 10.0) for s, x in fil])
     return c
 
 
@@ -211,3 +211,29 @@ def test_canasta_ficha_sin_evaluar_no_frena_y_entra_sin_reescribir(tmp_path):
     c.agregar_ops("B", [(s, 1.0) for s in ses + [20261112]], hasta=20261112); c.agregar_ops("A", [(20261112, 2.0)], hasta=20261112)
     r = CN.seguir(c, dict(canasta=dict(activa=True)))
     assert c.fichas["B"].canasta_desde == ses[-1] + 1 and r["n"] == 11                 # entra desde la sesión siguiente: el pasado no cambia
+
+
+def test_promocion_exige_r_forward_positivo(cart):
+    """Regla firmada por Nico el 2026-11-02: e-proceso confirmado no alcanza si la media de R forward no es > 0 (o falta el riesgo)."""
+    c, tmp = cart; c.alta(_ficha(), tmp)
+    filas = [(20261102 + i, 8.0 if i % 4 else -2.0) for i in range(60)]
+    riesgo = [(s, x, 1.0 if x < 0 else 100.0) for s, x in filas]          # ganancias en stops lejanos, pérdidas en stops cortos: R < 0
+    r = c.agregar_ops("A", filas, riesgos=riesgo)
+    assert r["nivel"] == "PAPEL" and c.r_forward("A") < 0 and any(b["evento"] == "PROMOCION_RETENIDA" for b in c.bitacora)
+    c2 = Cartera(tmp / "c3.json", libro_ventanas=tmp / "v3.jsonl"); c2.alta(_ficha(id_="Z", familia="FAM_Z", cid="C-Z"), tmp)
+    assert c2.agregar_ops("Z", filas)["nivel"] == "PAPEL"                    # sin riesgo registrado: no se promueve
+
+
+def test_bajas_declaradas_retiran_y_no_se_vuelven_a_dar_de_alta(cart):
+    """2026-11-03: `bajas` en el mismo JSON retira la ficha activa (idempotente) y no la vuelve a dar de alta."""
+    c, tmp = cart
+    d = dict(id="K", familia="FAM_K", cid="C-K", instrumento="NQ", regla=dict(spec=dict(experimento="x", sensor="NQ"), celdas=[[0]],
+             cortes={}, tope=None, unidad="sesion_canasta"), preregistro="PRE.md", perdida_max_pts=10.0, ganancia_max_pts=20.0,
+             margen_hueco_pts=0.0, friccion_pts=0.5, mu_util=1.0, sd_desarrollo=8.0, desde=20261102, ops_desarrollo=[[20260901, 1.0]])
+    cfg = dict(altas=str(tmp / "altas.json"), alertas=str(tmp / "alertas.jsonl"))
+    (tmp / "altas.json").write_text(json.dumps(dict(fichas=[d])))
+    CI.altas_pendientes(c, cfg, tmp); assert c.fichas["K"].estado == "ACTIVA"
+    (tmp / "altas.json").write_text(json.dumps(dict(fichas=[d], bajas=[dict(id="K", motivo="réplica en R <= 0")])))
+    r = CI.altas_pendientes(c, cfg, tmp)
+    assert r[0]["baja"] and c.fichas["K"].estado == "RETIRADA" and c.fichas["K"].motivo == "réplica en R <= 0"
+    assert CI.altas_pendientes(c, cfg, tmp) == []

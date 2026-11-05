@@ -21,6 +21,7 @@ TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) cort
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/regimen_sesion.py", "edgelab/research/contexto_comun.py",          # contexto común y vetos causales (2026-11-04)
                 "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
                 "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
@@ -108,7 +109,8 @@ class KaggleRunner:
     def argumentos(self, spec, etapa, params, periodo) -> list:
         ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
         if self.dataset_sellado:                                         # holdout: sólo el dataset sellado, nada del release
-            needs, extra = [], [self.dataset_sellado]
+            needs, extra = [], [self.dataset_sellado] + list(spec.get("datasets_extra", []))   # + almacenes de zonas de desarrollo
+            # (target-free, 2026-11-02): sirven de calentamiento — las zonas creadas antes de la frontera siguen vivas, como en vivo
         else:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
@@ -162,6 +164,7 @@ class KaggleRunner:
         return env
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         exigir_causalidad(spec["experimento"])
         a = self.argumentos(spec, etapa, params, periodo)
         env = self._env(a[1].split("/")[0])
@@ -201,6 +204,7 @@ class LocalRunner:
     def _archivo(self, h): return self.carpeta / f"{h}.json"
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         from edgelab.research import etapas as ET, grilla_generica as GG
         exigir_causalidad(spec["experimento"])
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]

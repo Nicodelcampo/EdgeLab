@@ -30,7 +30,11 @@ def test_sin_senal_pocas_corridas_con_alguna_nominada_y_bh_no_lo_logra():
     for sd in range(N):
         mt, st = _corrida(sd); maxt += mt["n_nominadas"] > 0; bh += GM.criba(st, q=0.10)["n_nominadas"] > 0
     assert maxt / N <= 0.12                                                  # nominal 10 %, ee 0,95 %; 3.000 semillas midieron 10,4 %
-    assert bh / N > 2 * maxt / N                                             # el defecto que motiva la criba sigue visible
+    # El defecto que motiva la criba sigue visible: BH supera con holgura el 10 % nominal bajo dependencia por sesión.
+    # 2026-11-03 (cola t, decisión de Nico): antes se exigía bh > 2·maxT. Con la cola normal daba 22,3 % contra 11,0 % (2,03; pasaba
+    # casi sin margen). La cola t corrige la parte de n chico y deja la de dependencia: 19,8 %. Una diferencia de > 5 errores estándar
+    # sobre el nominal (0,10 + 5·0,0095 ≈ 0,15) sigue mostrando el defecto sin depender de la cola.
+    assert bh / N > 0.15
 
 
 def test_con_senal_plantada_la_detecta():
@@ -105,3 +109,13 @@ def test_alfa_por_canal_reparte_el_error_familiar_entre_los_dos_canales():
     from edgelab.research import grilla_generica as GG
     assert GG.ALFA_CRIBA_CANAL == GG.ALFA_RW / 2 == 0.05
     assert "alfa=ALFA_CRIBA_CANAL" in inspect.getsource(GG.canales)
+
+
+def test_cola_t_en_estadisticas_coincide_con_escalera_y_supera_a_la_normal_con_n_chico():
+    """2026-11-03: p del tamiz con t de Student n − 1 g.l. (PROPUESTA_COLA_T_TAMIZ_FDR_20261103.md)."""
+    from edgelab.funnel.escalera import t_cola_superior
+    r = np.random.default_rng(3); C = np.array([30.0, 40.0, 500.0]); x = [r.standard_t(3, int(n)) + 1.0 for n in C]
+    S = np.array([v.sum() for v in x]); Q = np.array([(v ** 2).sum() for v in x]); st = GM.estadisticas(S, Q, C)
+    for i in range(3): assert abs(st["p"][i] - t_cola_superior(float(st["t"][i]), C[i] - 1)) <= 1e-12 * max(st["p"][i], 1e-300) + 1e-15
+    assert (st["p"] >= GM._cola_superior(st["t"])).all()                    # la t nunca da un p menor que la normal
+    assert GM._cola_t_superior(np.array([5.8]), np.array([29.0]))[0] > 100 * GM._cola_superior(np.array([5.8]))[0]

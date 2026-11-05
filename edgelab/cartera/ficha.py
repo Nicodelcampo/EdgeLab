@@ -46,6 +46,7 @@ class Ficha:
     motivo: str | None = None
     ops: list = field(default_factory=list)          # [[ses, neto_pts], ...] forward, en orden
     ops_desarrollo: list = field(default_factory=list)   # [[ses, neto_pts]] de DESC/OOS: sólo para la afinidad con el régimen
+    ops_r: list = field(default_factory=list)            # [[ses, R]] forward (neto / riesgo inicial); 2026-11-02, regla R > 0
     alta_ts: float = 0.0
     evaluada_hasta: int = 0          # última sesión que el seguimiento ya miró (con o sin operaciones): la usa la canasta
     canasta_desde: int = 0           # primera sesión en la que cuenta para la canasta (0 = todavía no entró)
@@ -111,7 +112,19 @@ class Cartera:
         self.fichas[f.id] = f; self._log("ALTA", f.id, nivel=f.nivel, preregistro=f.preregistro); self.guardar(); return f
 
     # --- seguimiento -------------------------------------------------------------------------------------------------------------
-    def agregar_ops(self, id_: str, filas, hasta: int | None = None) -> dict:
+    def r_forward(self, id_: str):
+        """Media de R forward de la ficha, o None si no hay R registrado (sin riesgo por operación no se puede promover)."""
+        xs = [r for _, r in self.fichas[id_].ops_r if r is not None]
+        return (sum(xs) / len(xs)) if xs else None
+
+    def puede_promover(self, id_: str) -> tuple:
+        """Regla firmada por Nico el 2026-11-02 (docs/research/MEDIR_EN_R_20261102.md): para pasar a REAL, además del e-proceso,
+        la media de R forward tiene que ser > 0."""
+        r = self.r_forward(id_)
+        if r is None: return False, "sin R forward registrado (falta el riesgo por operación)"
+        return (r > 0), f"R forward medio {r:+.3f}"
+
+    def agregar_ops(self, id_: str, filas, hasta: int | None = None, riesgos=None) -> dict:
         """filas: [(ses, neto_pts)] de sesiones posteriores a la última registrada (idempotente: lo ya visto se ignora).
         `hasta`: última sesión evaluada en esta corrida, haya o no operaciones (la usa el seguimiento de la canasta)."""
         f = self.fichas[id_]
@@ -124,12 +137,17 @@ class Cartera:
         except ValueError as ex:
             f.ops += [list(r) for r in nuevas]; return self.retirar(id_, f"cota estructural violada: {ex}")
         f.ops += [list(r) for r in nuevas]
+        if riesgos is not None:                                             # [(ses, neto, riesgo)] de las mismas operaciones
+            ult = max([s_ for s_, _ in f.ops_r] or [0])
+            f.ops_r += [[int(s_), (float(x) / float(rg)) if rg and rg > 0 else None] for s_, x, rg in riesgos if int(s_) > ult and int(s_) >= f.desde]
         if st["estado"] == "REFUTADO_FUTILIDAD":
             return self.retirar(id_, f"futilidad: E[x] < mu_util {f.mu_util} (e {st['e_futilidad']:.1f}, n {st['n']})")
         if f.drawdown() < -self.reglas["dd_max_r"] * f.perdida_max_pts:
             return self.retirar(id_, f"drawdown forward {f.drawdown():.1f} < −{self.reglas['dd_max_r']} × {f.perdida_max_pts}")
         if f.nivel == "PAPEL" and st["estado"] == "EDGE_CONFIRMADO" and st["n"] >= self.reglas["min_ops_real"]:
-            f.nivel = "REAL"; self._log("PROMOCION", id_, e=st["e_edge"], n=st["n"])
+            ok, por = self.puede_promover(id_)
+            if ok: f.nivel = "REAL"; self._log("PROMOCION", id_, e=st["e_edge"], n=st["n"], r=por)
+            else: self._log("PROMOCION_RETENIDA", id_, e=st["e_edge"], n=st["n"], motivo=por)
         self.guardar(); return dict(id=id_, estado=f.estado, nivel=f.nivel, nuevas=len(nuevas), monitor=st)
 
     def retirar(self, id_: str, motivo: str) -> dict:

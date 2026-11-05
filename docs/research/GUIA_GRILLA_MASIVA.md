@@ -207,3 +207,14 @@ Una celda con menos de `MIN_OPS` (30) operaciones no puede rechazar nunca: no es
 (target-free) cuántas operaciones tendrá cada celda y preferir menos perillas por evento a más celdas vacías. El linaje hereda sólo las
 evaluables (`docs/research/EVALUABLES.jsonl`, D6), pero una grilla con la mayoría de las celdas vacías igual pierde potencia: la señal
 real queda repartida en celdas chicas que no llegan al tamiz.
+
+
+## Medir en R (2026-11-02)
+Toda campaña nueva declara `"estadistico": "R"`. Así el P&L de todas las etapas queda en R, porque `etapas.ejecutar` pone
+`NORMALIZAR = "riesgo"`. Cada operación devuelve además su `riesgo` en puntos.
+
+- **Stops muy cortos:** dan R extremos. Si la regla los admite, declarar un piso de riesgo **antes** de correr.
+- **Reglas que salen por tiempo o por línea:** informar también puntos y MAE, porque el stop de seguridad subestima el riesgo real.
+- **Ideas que funcionan en varias familias:** `tools/atlas_ideas_r.py`, con etapa `MARGINALES`.
+
+Fundamento: `docs/research/MEDIR_EN_R_20261102.md`.

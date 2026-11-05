@@ -1,0 +1,130 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793731743.184,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793732557.701309,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -3.32916727901535, 'min': -28.11985194391714, 'q001': -27.993196255922488, 'q010': -26.774155638726235, 'q500': -11.65202586685873, 'q990': -5.055220692574688, 'q999': -3.512560551820135, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 108}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "ABSORCION-CLIMAX-6E-R",
+  "familia": "ABSORCION_CLIMAX_6E",
+  "experimento": "edgelab.research.absorcion_climax",
+  "sensor": "6E",
+  "ejecucion": "6E",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "Según el modelo de provisión de liquidez de Grossman-Miller y Campbell-Grossman-Wang, los movimientos de precio acompañados de picos anormales de volumen fuera de noticias públicas son impulsados por demanda de inmediatez no informada (liqu (DISENO_ABSORCION_CLIMAX.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC, fallo de integridad con 1 vela de latencia, o ausencia de confirmación en réplica OOS.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_ABSORCION_CLIMAX.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "correcciones": "docs/research/programa_r_20261103/CORRECCIONES_GEMINI_20261103.md",
+  "decisiones": [
+   "2026-11-03: corregida antes de correr (noticias durante toda la operación, reloj de Londres en WM, sólo días con dato en POST-MACRO); tamiz FDR con cola t (decisión de Nico)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ABSORCION_CLIMAX_6E",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva del programa R (ABSORCION-CLIMAX en 6E->6E), sin padres; declarada antes de DESC (docs/research/programa_r_20261103/DISENO_ABSORCION_CLIMAX.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793731743.183776,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-absorcion-climax-6e-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793732191.931651,
+ "cortes": {
+  "extension_previa": [
+   3.279698581561031,
+   5.99999999999849
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -3.32916727901535, 'min': -28.11985194391714, 'q001': -27.993196255922488, 'q010': -26.774155638726235, 'q500': -11.65202586685873, 'q990': -5.055220692574688, 'q999': -3.512560551820135, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 108}); pistas a réplica: ninguna pista relevante con media > 0"
+}

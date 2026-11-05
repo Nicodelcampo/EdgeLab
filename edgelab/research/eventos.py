@@ -16,6 +16,9 @@ import numpy as np
 from edgelab.research.eventos_datos import EVENTOS
 
 TIPOS = ("CPI", "NFP_EMPLOYMENT_SITUATION", "FOMC_DECISION")       # nombres de evento de edgelab/noticias.py
+# 2026-11-03 (revisión de las familias de Gemini): todos los eventos tier1 del calendario canónico, la regla de las firmas (Lucid:
+# carpeta roja USD, ±1 min). Para familias nuevas: entradas bloqueadas cerca y salida forzada antes (`rango_ruptura.lineas_salida_noticias`).
+TIPOS_TIER1 = tuple(sorted({k for _, k, imp in EVENTOS if imp == "tier1"}))
 
 
 def tiempos(tipos=TIPOS) -> np.ndarray:
