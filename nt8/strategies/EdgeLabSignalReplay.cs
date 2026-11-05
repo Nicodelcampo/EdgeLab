@@ -11,7 +11,7 @@ using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.Strategies;
 #endregion
 
-// EdgeLabSignalReplay (version=1.1, 2026-11-04)
+// EdgeLabSignalReplay (version=1.2, 2026-11-05)
 // Repite en NT8 (Market Replay o Sim) las operaciones que EdgeLab simuló para una regla congelada, a partir de un CSV de señales
 // exportado por `tools/senales_nt8.py`, y registra cada llenado real para medir:
 //   - paridad de ejecución: misma entrada, stop, objetivo y salida que la simulación de Python;
@@ -36,7 +36,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         private readonly Dictionary<long, List<Senal>> porMinuto = new Dictionary<long, List<Senal>>();
         private StreamWriter salida;
         private string activa = null;          // id de la señal en curso
-        private int barraEntrada = -1;
+        private int barraEntrada = -1, envioBarra = -1;
         private int barraOrdenLimite = -1;
         private Order ordenLimite = null;
 
@@ -129,13 +129,22 @@ namespace NinjaTrader.NinjaScript.Strategies
                 CancelOrder(ordenLimite);
             }
 
+            // 1.2: estado desde la posición (no depende de que llegue OnExecutionUpdate): entrada vista -> barra de entrada;
+            // plana después de entrar -> terminada; orden que no llenó en 3 velas -> se libera.
+            if (activa != null)
+            {
+                if (Position.MarketPosition != MarketPosition.Flat) { if (barraEntrada < 0) barraEntrada = CurrentBar - 1; }
+                else if (barraEntrada >= 0 || CurrentBar - envioBarra > 3) { if (barraEntrada < 0) Log(activa, "SIN_LLENADO", Time[0], 0, 0, "liberada"); activa = null; barraEntrada = -1; }
+            }
+
             List<Senal> l;
             if (!porMinuto.TryGetValue(EpochUtc(Time[0]), out l)) return;
+            if (State == State.Historical) { foreach (Senal s0 in l) Log(s0.Id, "OMITIDA", Time[0], 0, 0, "historico_previo_al_replay"); return; }
             foreach (Senal s in l)
             {
                 Log(s.Id, "SEÑAL", Time[0], s.Entrada, 0, "lim" + s.Limite);
                 if (activa != null || Position.MarketPosition != MarketPosition.Flat) { Log(s.Id, "OMITIDA", Time[0], 0, 0, "posicion_abierta"); continue; }
-                activa = s.Id; barraEntrada = -1;
+                activa = s.Id; barraEntrada = -1; envioBarra = CurrentBar;
                 SetStopLoss(s.Id, CalculationMode.Price, s.Stop, false);
                 SetProfitTarget(s.Id, CalculationMode.Price, s.Objetivo);
                 if (s.Limite == 1)
