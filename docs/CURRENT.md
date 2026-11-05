@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-03
+**Fecha:** 2026-11-05
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-03 (revisión)
+**Corte:** 2026-11-05
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,19 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado de revisión al 2026-11-03 (leer primero)
+## Estado al 2026-11-05 (leer primero)
+
+- **Paridad NT8 de CVGAP-ES-C** (port nativo `nt8/strategies/EdgeLabCvgapESC.cs` v1.1): 27 de 29 señales de Python en el mismo minuto con
+  niveles exactos; 26 operaciones emparejadas con la misma entrada y el P&L igual (±1 pt) en 24. Faltan los disparos extra de NT8 y la
+  fricción real (Market Replay). Ver `docs/research/nt8_replay/CVGAP-ES-C/PARIDAD_SENAL_V1.md`.
+- **Atlas de contexto en bruto y en neto** (212 corridas): los efectos «confirmados» por la rama de Gemini (ATR y volumen relativos, NY
+  9:30–12, stop S3, imán) son **fricción en R**. Sólo `veto_huida` en continuación sobrevive en bruto. Ver
+  `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`.
+- **CVGAP-2** (8 activos): sin edge. **Piso de riesgo frente a la fricción**: refutado según el pre-registro (u = 0,10 queda para validar
+  desde noviembre). **DOBLE-RETROCESO**: sin candidatas; holdout forzado −0,30R.
+- Todas las operaciones se ejecutan en futuros: el CFD es sólo fuente de señal. **Edges promovidos: 0.**
+
+## Estado de revisión al 2026-11-03
 
 - Nico aprobó cola t con n−1 para el tamiz FDR; implementación local todavía no integrada por una prueba estadística que falla. No se relajó el umbral. Preflight de U1-6E-CONFIRMA agotó 240 s sin conclusión; no se relanzó. Ver `docs/DECISIONES_20261103_COLA_T_FDR.md` y `docs/research/AVANCES_Y_RELANZAMIENTOS_20261103.md`.
 - Las 12 familias de Gemini se revisaron pero siguen sin integrar ni activar: noticias, relojes, costos y solapamientos pendientes. Ver `docs/research/REVISION_GEMINI_12_FAMILIAS_20261103.md`.
