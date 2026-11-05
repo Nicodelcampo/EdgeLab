@@ -24,3 +24,14 @@ Ventana comparada: del 08/06 al 30/09/2026 (octubre es papel y queda afuera).
   3. **Operaciones sin llenado en Python.** Python sólo lista las que llenaron (la vela k+2 tiene que ser de la misma sesión), mientras que
      el disparo de NT8 se registra aunque no opere.
 - La ejecución de la v1.0 estaba rota: quedaba en «posición abierta» y omitía todo. Está corregida en la v1.1.
+
+## v1.1 — paridad de ejecución (Strategy Analyzer, del 01/06 al 03/11/2026)
+
+- **Operaciones en NT8:** 50; **+63,2 pts brutos** (sin comisión), 48 % ganadoras.
+- **Emparejadas con Python en el mismo minuto:** 26.
+  - **Entrada:** mismo minuto de llenado (apertura de k+2) y mismo precio en las 26 (slippage 0: el backtest llena en la apertura, igual que Python).
+  - **P&L por operación:** NT8 +5,65 contra Python +5,56 pts brutos de media. 24 de 26 difieren ≤ 1 punto. Las otras 2 son salidas por
+    TIEMPO, con 1 vela de diferencia en el conteo de las 240.
+  - **Motivos de salida:** sesión 10, tiempo 10, stop 5, objetivo 1.
+- **Conclusión:** la regla nativa reproduce la simulación de Python en señal, niveles y ejecución. Lo que queda abierto es la cobertura (los
+  disparos extra de NT8, ver arriba) y la fricción real, que el backtest no mide: para eso, Market Replay o simulación en vivo.
