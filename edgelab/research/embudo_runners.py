@@ -21,6 +21,7 @@ TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) cort
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/regimen_sesion.py", "edgelab/research/contexto_comun.py",          # contexto común y vetos causales (2026-11-04)
                 "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
                 "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
@@ -46,6 +47,18 @@ def datasets(nombre: str, desde: int, hasta: int) -> tuple:
         return [], ["nicolasbuttaro/" + resolver["spot_datasets"][fut]]
     f = lambda d: f"{str(d)[:4]}-{str(d)[4:6]}-{str(d)[6:]}"
     return [f"{nombre}:{f(desde)}:{f(hasta)}"], []
+
+
+class NoCausal(RuntimeError):
+    pass
+
+
+def exigir_causalidad(modulo: str):
+    """Candado: ningún kernel se lanza (Kaggle ni local) si el experimento no tiene certificado de causalidad para el código
+    actual (`preflight.certificar_causalidad`). Sin excepciones por variable de entorno: un experimento que no pasa, no corre."""
+    from edgelab.research.preflight import certificar_causalidad
+    err = certificar_causalidad(modulo)
+    if err: raise NoCausal(f"{modulo} no pasa la causalidad estricta, no se lanza: {err[0]}")
 
 
 def modulo_a_ruta(mod: str) -> str:
@@ -96,17 +109,22 @@ class KaggleRunner:
     def argumentos(self, spec, etapa, params, periodo) -> list:
         ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
         if self.dataset_sellado:                                         # holdout: sólo el dataset sellado, nada del release
-            needs, extra = [], [self.dataset_sellado]
+            needs, extra = [], [self.dataset_sellado] + list(spec.get("datasets_extra", []))   # + almacenes de zonas de desarrollo
+            # (target-free, 2026-11-02): sirven de calentamiento — las zonas creadas antes de la frontera siguen vivas, como en vivo
         else:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
                 n2, e2 = datasets(ejec, *periodo); needs += n2; extra += e2
+            if spec.get("confirmador"):
+                n3, e3 = datasets(spec["confirmador"], *periodo); needs += n3; extra += e3
             extra += list(spec.get("datasets_extra", []))                 # p. ej. el almacén de zonas de U1-ZONAS (target-free)
         cuenta = spec.get("cuenta_kaggle") or self.owner
         if cuenta == "auto": cuenta = self.elegir_cuenta()
-        slug = f"{cuenta}/embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:100]   # Kaggle no acepta "_" (HOLDOUT_CONTEO)
+        nombre = f"embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:49].rstrip("-")   # Kaggle <=50 y validate_push <=49; sin "_"
+        slug = f"{cuenta}/{nombre}"
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
                    FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+        if spec.get("confirmador"): env["CONFIRMADOR"] = spec["confirmador"]
         if self.dataset_sellado:
             if not params.get("acta"): raise ValueError("etapa de holdout sin acta registrada")
             env["SELLADO"] = "1"
@@ -146,6 +164,8 @@ class KaggleRunner:
         return env
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
+        exigir_causalidad(spec["experimento"])
         a = self.argumentos(spec, etapa, params, periodo)
         env = self._env(a[1].split("/")[0])
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
@@ -159,7 +179,9 @@ class KaggleRunner:
         out = r.stdout.lower()
         for s in ("complete", "running", "queued", "error", "cancel"):
             if f'"{s}' in out: return "complete" if s == "complete" else ("running" if s in ("running", "queued") else "error")
-        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "error"     # el push no arrancó (p. ej. tope de sesiones): relanzar, no esperar para siempre
+        self.ultimo_detalle = (r.stdout + r.stderr)[-300:]                                  # 2026-10-30: el motivo viaja al historial de la etapa
+        if '"code":404' in out.replace(" ", "") or "no runs found" in out: return "no_encontrado"   # recién lanzado o el push no arrancó: el embudo decide por antigüedad
+        if '"code":403' in out.replace(" ", ""): return "error"     # 2026-10-27 (O14): el kernel no es de esta cuenta (lanzado sin su cabecera): relanzar, no esperar 14 h
         return "running"
 
     def traer(self, handle) -> dict:
@@ -174,23 +196,36 @@ class LocalRunner:
     `carpeta`: donde se guarda cada resultado. El ciclo del Debian arma un runner NUEVO en cada vuelta; sin carpeta el
     resultado vivía sólo en memoria, la vuelta siguiente veía el handle como desconocido («error») y a la tercera el embudo
     cerraba la campaña como BLOQUEADA: CONTEO y HOLDOUT no podían terminar nunca desde el ciclo."""
-    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True, carpeta=None):
+    def __init__(self, lectores: dict, ticks: dict, acta_requerida=True, carpeta=None, raiz_actas=None):
         self.lectores, self.ticks, self.acta_requerida, self.res = lectores, ticks, acta_requerida, {}
+        self.raiz_actas = raiz_actas
         self.carpeta = Path(carpeta) if carpeta else None
 
     def _archivo(self, h): return self.carpeta / f"{h}.json"
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         from edgelab.research import etapas as ET, grilla_generica as GG
+        exigir_causalidad(spec["experimento"])
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
         ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
         cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
+        if spec.get("confirmador"): ctx["conf"] = GG.contexto_m1(self.lectores[spec["confirmador"]](*periodo, spec), self.ticks[spec["confirmador"]])
         fr, ex = friccion(ejec)
         h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{len(self.res)}"
         if self.carpeta:
             self.carpeta.mkdir(parents=True, exist_ok=True); k = 0
             while self._archivo(h).exists(): k += 1; h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{k}"
-        self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        # 2026-10-30: el mismo entorno que el kernel sellado. Sin SENSOR, u1_zonas caía sin aviso a las zonas LUX-IMB de los tests.
+        ruta = getattr(self.lectores[spec["sensor"]], "ruta", None)
+        ent = dict(SENSOR=spec["sensor"], SELLADO="1", HASTA=str(periodo[1]), ACTA_HOLDOUT_RUTA=_ruta_acta_holdout(self.raiz_actas, spec["cid"]) if self.raiz_actas else "")
+        if ruta: ent["ENTRADA"] = str(Path(ruta).parent)
+        previo = {k: os.environ.get(k) for k in ent}; os.environ.update(ent)
+        try: self.res[h] = json.loads(json.dumps(ET.ejecutar(etapa, exp, ctx, friccion=fr, extra_adverso=ex, cx_ej=cx_ej, params=params, log=lambda s: None), default=float))
+        finally:
+            for k, v in previo.items():
+                if v is None: os.environ.pop(k, None)
+                else: os.environ[k] = v
         if self.carpeta:
             tmp = self._archivo(h).with_suffix(".tmp"); tmp.write_text(json.dumps(self.res[h], default=float), encoding="utf-8"); tmp.replace(self._archivo(h))
         return h
@@ -202,15 +237,26 @@ class LocalRunner:
         return self.res[h]
 
 
+def _ruta_acta_holdout(raiz_embudo: Path, cid: str) -> str:
+    p = Path(raiz_embudo) / cid / "ACTA_HOLDOUT.json"
+    if not p.exists():                                                   # 2026-10-30: las actas de la nube están en docs/research/*/embudo/<cid>/
+        r = sorted((ROOT / "docs/research").glob(f"*/embudo/{cid}/ACTA_HOLDOUT.json"))
+        if len(r) == 1: return str(r[0])
+    if not p.exists() and (Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json").exists():
+        return str(Path(raiz_embudo) / cid / "ACTA_HOLDOUT_CANASTA.json")
+    return str(p)
+
+
 def lectores_sellados(cfg_sellado: dict, raiz_embudo: Path) -> tuple:
     """De la configuración del Debian ({"DK:USATECHIDXUSD": carpeta, "NQ": parquet sellado}) a lectores del LocalRunner. El de NQ
-    exige el acta de holdout de la campaña (la escribe la etapa ACTA antes de mirar)."""
+    exige el acta de holdout de la campaña (la escribe la etapa ACTA o holdout_canasta antes de mirar)."""
     from edgelab.research import fuentes_ticks as F
     lec, ticks = {}, {}
     for nombre, ruta in (cfg_sellado or {}).items():
         if nombre.startswith("DK:"):
             sym = nombre[3:]; lec[nombre] = (lambda d0, d1, spec, s=sym, r=ruta: F.bloques_spot_sellado(s, d0, d1, r)); ticks[nombre] = F.REDONDEO_SPOT[sym]
         else:
-            lec[nombre] = (lambda d0, d1, spec, r=ruta: F.bloques_nq_sellado(d0, d1, r, str(Path(raiz_embudo) / spec["cid"] / "ACTA_HOLDOUT.json")))
-            ticks[nombre] = F.TICK_FUTURO[nombre]
+            ticks[nombre] = F.TICK_FUTURO[nombre]                # 2026-10-30: el tick del activo; con 0,25 fijo YM y GC salían en otra escala
+            lec[nombre] = (lambda d0, d1, spec, r=ruta, tk=ticks[nombre]: F.bloques_nq_sellado(d0, d1, r, _ruta_acta_holdout(raiz_embudo, spec["cid"]), tk))
+            lec[nombre].ruta = ruta
     return lec, ticks

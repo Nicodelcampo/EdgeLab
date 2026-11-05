@@ -1,0 +1,69 @@
+{
+  "schema": "edgelab_topologia_multiagente_debian_v2",
+  "arquitectura_seleccionada": "CAPATAZ_PYTHON + 2_OPUS_4_6 + 1_SONNET_4_6",
+  "justificacion_seleccion": "Un solo agente sufre sesgo de autoconfirmación y agota contexto mezclando estrategia con depuración Numba; 1 Opus + 1 Sonnet deja al único Opus como juez y parte de su propio código; 2 Opus puros encarece y enlentece los chequeos adversarios de alta frecuencia. La tríada 2 Opus 4.6 (Arquitecto + Ingeniero/Doctor aislados) + 1 Sonnet 4.6 (Auditor Adversario, Alineación 10-SLI y Cronista) sobre el Capataz Python determinista maximiza rigor, velocidad, creatividad y separación de poderes.",
+  "agentes": {
+    "capa_0_capataz": {
+      "motor": "python_determinista",
+      "cadencia_min": 10,
+      "responsabilidades": [
+        "Sincronización automática con origin/foundation/f0b-compatibility-probe (sincronizador_ramas.py)",
+        "Avance determinista del embudo (Embudo.avanzar_todas) con balanceo 8 slots en 2 cuentas Kaggle",
+        "Ejecución de los 10 SLIs de auditor_alineacion.py y apertura de tickets de reparación",
+        "Seguimiento del estado VERIFICANDO_O16 tras cada reapertura de campaña"
+      ]
+    },
+    "agente_1_arquitecto": {
+      "modelo": "claude-opus-4-6",
+      "rol": "Arquitecto Cuantitativo, Meta-Analista e Investigador en Espiral",
+      "max_chars_contexto": 80000,
+      "herramientas": [
+        "Read",
+        "Grep",
+        "Glob",
+        "WebSearch",
+        "WebFetch"
+      ],
+      "responsabilidades": [
+        "Analizar APRENDIZAJES_ESPIRAL.md, RESUMEN.json del analizador y metaanalisis_embudo.py",
+        "Combinar bloques de catalogo_espiral.py (L1 + L2 + regimen) y biblioteca de ideas",
+        "Clasificar cada diseño mediante la compuerta Velocidad vs. Cuidado (VIA_RAPIDA_COMPOSICION vs VIA_CUIDADA_PARIDAD)",
+        "Emitir especificaciones de campaña y pedidos de código sin tocar el checkout vivo"
+      ]
+    },
+    "agente_2_ingeniero_doctor": {
+      "modelo": "claude-opus-4-6",
+      "rol": "Ingeniero de Módulos Numba y Doctor Autorreparador en Worktree",
+      "max_chars_contexto": 80000,
+      "herramientas": [
+        "Read",
+        "Edit",
+        "Write",
+        "Glob",
+        "Grep",
+        "Bash(pytest)",
+        "Bash(preflight)"
+      ],
+      "responsabilidades": [
+        "Implementar experimentos en git worktree aislada reutilizando primitivas de catalogo_espiral.py",
+        "Aprobar los 4 controles sintéticos (ruido, plantado, oráculo, causal) + preflight + densidad E0 >= 30 ops",
+        "Diagnosticar logs reales de campañas BLOQUEADAS, reparar causa raíz, reconstruir kernels (O6) y activar VERIFICANDO_O16"
+      ]
+    },
+    "agente_3_auditor_cronista": {
+      "modelo": "claude-sonnet-4-6",
+      "rol": "Auditor Adversario Pre-Lanzamiento, Guardián de Alineación (10 SLIs) y Cronista",
+      "max_chars_contexto": 48000,
+      "herramientas": [
+        "Read",
+        "Grep",
+        "Glob"
+      ],
+      "responsabilidades": [
+        "Ejecutar abogado_del_diablo y auditar_propuesta_sonnet antes de autorizar corridas en Kaggle",
+        "Verificar cumplimiento de Directivas 1 a 7 (holdout.desde == 20261001, linaje declarado, invarianza de escala)",
+        "Publicar dictamen de alineación y crónica clara en sala_outbox.jsonl"
+      ]
+    }
+  }
+}

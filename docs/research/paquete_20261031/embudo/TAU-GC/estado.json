@@ -1,0 +1,123 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793484210.0017602,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793484903.7730072,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.1625298775965596, 'min': -13.582840509550987, 'q001': -12.842976157633435, 'q010': -7.877114669030429, 'q500': -1.8224192668568036, 'q990': 0.9901576580913335, 'q999': 1.1625298775965596, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 70}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "TAU-GC",
+  "familia": "TAU_TENDENCIA_GC",
+  "experimento": "edgelab.research.tau_tendencia",
+  "sensor": "GC",
+  "ejecucion": "GC",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 648,
+  "spec": "docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md",
+  "justificacion_economica": "Regla de tendencia de Tori Trades en GC M1: la línea por los dos últimos pivotes es momentum adaptativo y salir sólo en su ruptura (τ) deja correr las ganancias (SPEC_TAU_TENDENCIA.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si FIJO_2R iguala o supera a TAU en la misma población, la ventaja de la salida τ queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "TAU_TENDENCIA_GC",
+   "declarada": true,
+   "padres": [
+    "TORI_TREND_TOQUE3_GC"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4654311,
+   "n_heredado": 4654311,
+   "total": 4654311,
+   "justificacion": "Misma fuente (paper de Tori Trades) que TORI_TREND_TOQUE3_GC; hereda su multiplicidad aunque la población (estructura y ruptura de pivote, salida τ) es otra; declarada antes de DESC (docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484210.001288,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-tau-gc-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793484554.4124687,
+ "cortes": {
+  "angulo_norm": [
+   -0.001705336032529975,
+   0.09142478813728838
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.1625298775965596, 'min': -13.582840509550987, 'q001': -12.842976157633435, 'q010': -7.877114669030429, 'q500': -1.8224192668568036, 'q990': 0.9901576580913335, 'q999': 1.1625298775965596, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 70}); pistas a réplica: ninguna pista relevante con media > 0"
+}

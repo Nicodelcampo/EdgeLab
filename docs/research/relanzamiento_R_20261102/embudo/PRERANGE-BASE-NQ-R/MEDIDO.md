@@ -1,0 +1,12 @@
+## PRERANGE-BASE-NQ-R — edgelab.research.prerange_base · señal DK:USATECHIDXUSD · ejecución DK:USATECHIDXUSD
+- Justificación: Barrido del rango 08:12-09:12 NY en DK:USATECHIDXUSD: el rango previo a la apertura acumula stops en sus extremos y el barrido libera ese flujo (SPEC_PRERANGE_BASE.md).
+- Refutación: 0 nominadas por maxT en DESC y canasta de pistas en contra con potencia, o media <= 0 en réplica/holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20240701, 20250731]
+- Linaje: hereda 5914674 pruebas de ['PRERANGE_ZONAS_NQ', 'PRERANGE_HFT_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 200 de 288 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20230103, 20240628]: evaluables 120 (m del FDR 120 de 144 celdas), FDR 0 (informativo), maxT 0, RW umbral 2.7844367027282715 (diagnóstico), linaje 5914674 como informacion, pistas sin nominación 10, candidatas 0
+- PISTAS a réplica (ATJ-25): 1 congeladas de 10 (k 20), ventana [20240701, 20250731], un paso de LORD++ por lote; celdas [[1, 2, 1]]
+- PISTAS canasta (una prueba): media -0.18083118317395674 IC90 [-0.34617308126290536, -0.005117060711147844] p 0.9597600599850038 sesiones 276; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20240701, 20250731]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 0.9570135746606335; confirmadas 0 de 1 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.9570135746606335); canasta media -0.18083118317395674 IC90 [-0.34617308126290536, -0.005117060711147844]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.01016093748272473

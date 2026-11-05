@@ -3,7 +3,7 @@ local (Debian, datos sellados del holdout). La orquestación y las compuertas es
 
 Etapa         entra                                   sale
 E0            período                                 disparos y variables (target-free) + densidad y régimen por mes
-DESC          período                                 tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
+DESC          período (+nulo, +criba)                 tamiz, Romano-Wolf (total/reciente), pistas, nulo, marginales
 INDAGA        celda base + cortes + período           marginales alrededor de la celda (una perilla por vez)
 REP           celdas + cortes + período (+tope)       réplica por celda + serie por operación
 INTEGRIDAD    celdas + cortes + período               alineación (si señal ≠ ejecución), placebo (5 semillas), latencia 1/2/5
@@ -55,6 +55,15 @@ def densidad(ctx, D) -> dict:
 
 
 def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=None, bloques_alineacion=None, log=print) -> dict:
+    """`params["estadistico"] == "R"` (2026-11-02, decisión de Nico): todo el P&L de la etapa se mide en R (neto / riesgo inicial),
+    con `NORMALIZAR = "riesgo"` mientras corre la etapa. Lo declara la campaña (`"estadistico": "R"`) y viaja en los params."""
+    if (params or {}).get("estadistico") == "R" and getattr(exp, "NORMALIZAR", None) != "riesgo":
+        previo = getattr(exp, "NORMALIZAR", None); exp.NORMALIZAR = "riesgo"
+        try: return ejecutar(etapa, exp, ctx, friccion=friccion, extra_adverso=extra_adverso, cx_ej=cx_ej, params=params,
+                             bloques_alineacion=bloques_alineacion, log=log)
+        finally:
+            if previo is None: delattr(exp, "NORMALIZAR")
+            else: exp.NORMALIZAR = previo
     p = params or {}; celdas = [list(c) for c in p.get("celdas", [])]; cortes = p.get("cortes")
     if etapa == "ANALIZAR":                                                # analizador de estrategias (2026-10-26): el registro se hizo al lanzar
         from edgelab.research import analizador as AN
@@ -63,6 +72,29 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         B = AN.barras_de_contexto(cx_ej if cx_ej is not None else ctx)
         return AN.analizar(exp, int(p["desde"]), int(p["hasta"]), registro=_Hecho(), B=B, tick=float((cx_ej or ctx)["tick"]), friccion_pts=friccion,
                            resolucion=p.get("resolucion", "ticks"))
+    if etapa == "OPERAR":                                                  # 2026-11-02: regla congelada fuera de la grilla (U1-CRUZADO en papel)
+        return exp.operar_papel(ctx, cx_ej if cx_ej is not None else ctx, friccion=friccion, desde=ctx.get("desde_eval"))
+    if etapa == "DESCRIBIR":                                               # 2026-11-01: descripción target-free que define el experimento
+        return dict(descripcion=exp.describir(ctx))
+    if etapa == "DIARIO":                                                  # cartera viva (2026-11-01): barras diarias por sesión CME, target-free
+        import pandas as _pd
+        d = _pd.DataFrame(dict(ses=ctx["ses"], h=ctx["h"], l=ctx["l"], c=ctx["c"])).groupby("ses", sort=True).agg(
+            h=("h", "max"), l=("l", "min"), c=("c", "last")).reset_index()
+        return dict(diario=dict(fecha=d.ses.astype(int).tolist(), h=d.h.tolist(), l=d.l.tolist(), c=d.c.tolist()))
+    if etapa == "ANALIZAR_REGLA":                                          # reporte del analizador de celdas congeladas (2026-10-26)
+        from edgelab.research import analizador as AN
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
+                            cx_ej=cx_ej, tope=p.get("tope"))
+        out = dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
+        if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
+            O = GG.operaciones_de(cx, p["celdas"], cx_ej if cx_ej is not None else ctx)
+            cols = ("celda", "ses", "neto", "t", "riesgo") + (("t_fill", "t_exit", "lado", "limite", "entrada", "stop", "objetivo")
+                                                            if p.get("precios") else ())       # 2026-11-04: para Market Replay en NT8
+            out["operaciones"] = {c: O[c].tolist() for c in cols} if len(O) else {}
+        if p.get("auditoria"):                                             # 2026-11-02, experimento 4: auditoría vela a vela
+            out["auditoria"] = GG.auditar_operaciones(cx, p["celdas"], cx_ej if cx_ej is not None else ctx,
+                                                       linea=hasattr(exp, "lineas_salida"))
+        return out
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE
         return PE.correr(exp, ctx, friccion=friccion, cortes=cortes, cx_ej=cx_ej, log=log, horizontes=p.get("horizontes"),
@@ -71,8 +103,20 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, D = GG.correr(exp, ctx, modo="E0", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log)
         res["densidad"] = densidad(ctx, D); return res
     if etapa == "DESC":
-        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"), criba=p.get("criba", "fdr"))
         return res
+    if etapa == "TRAYECTORIAS":                                            # 2026-11-02: camino en R por operación (programa de mejora de R)
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
+                            cx_ej=cx_ej, tope=tuple(p["tope"]) if p.get("tope") else None)
+        cols = [v.columna for v in exp.VARIABLES if v.columna in cx["D"]]
+        extra = {c_: cx["D"][c_].to_numpy(float)[cx["di"]] for c_ in cols}
+        return dict(trayectorias=GG.trayectorias(cx, p["celdas"], cx_ej if cx_ej is not None else ctx, friccion, int(p.get("k", 240)), extra),
+                    variables=cols)
+    if etapa == "MARGINALES":                                              # 2026-11-02: medias globales por nivel de perilla (meta-análisis)
+        res, _ = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        return dict(marginales_globales=res.get("marginales_globales"), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
+                    perillas=res.get("perillas"), marginales_globales_bruto=res.get("marginales_globales_bruto"),   # 2026-11-04: bruto/neto
+                    contexto_comun_error=res.get("contexto_comun_error"))
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
         bases = p.get("bases") or [p["base"]]; out = []
@@ -89,6 +133,7 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=celdas, log=log, cx_ej=cx_ej, tope=tope,
                             resolucion=p.get("resolucion"))              # {nivel, m}: B del bootstrap que resuelve el umbral (2026-10-24)
         if etapa == "HOLDOUT_CONTEO":                                     # sin P&L: sólo cuántas operaciones hay
+            if not isinstance(cx, dict): return dict(conteo=[0] * len(celdas), disparos=0)   # 2026-10-27 (O13): 0 disparos en la ventana: aún sin operaciones, el embudo sigue mirando
             return dict(conteo=[int((GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])).sum()) for c in celdas])
         ops = GG.operaciones_de(cx, celdas)
         res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))

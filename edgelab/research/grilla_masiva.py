@@ -99,7 +99,10 @@ def estadisticas(S, Q, C, min_n=30):
         mu = S / C; var = (Q - C * mu ** 2) / (C - 1); t = mu / np.sqrt(var / C)
     ev = (C >= min_n) & np.isfinite(t)
     p = np.ones(C.shape)
-    if ev.any(): p[ev] = _cola_superior(t[ev])                              # sin evaluables: todo p = 1 (no revienta)
+    # 2026-11-03 (decisión de Nico, opción 1 de PROPUESTA_COLA_T_TAMIZ_FDR_20261103.md): p con la cola t de Student con n − 1 g.l.
+    # La cola normal nominaba ruido en celdas de 30-40 operaciones con m de millones (umbral BH ~6e-8, donde normal y t difieren
+    # 100-1000 veces). Con n grande es la misma cola.
+    if ev.any(): p[ev] = _cola_t_superior(t[ev], C[ev] - 1.0)               # sin evaluables: todo p = 1 (no revienta)
     return dict(media=mu, t=t, p=p, n=C, evaluable=ev)
 
 
@@ -211,6 +214,38 @@ def romano_wolf(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, see
 
 
 
+def criba_maxt(perillas, indices, valores, sesiones, st, B=1000, alfa=0.10, seed=20261030):
+    """Criba con error familiar bajo dependencia: Westfall-Young maxT por inversión de signo de SESIONES enteras.
+    T_j = suma_s x_sj / raíz(suma_s x_sj²), con x_sj el P&L de la celda j en la sesión s: el denominador no depende de los signos,
+    así que la nula es exacta si cada sesión es simétrica en signo, sin aproximación normal y sin importar la correlación entre
+    celdas (el mismo signo se aplica a todas las celdas de la sesión) ni dentro de la sesión.
+    Distinto de `romano_wolf`, que usa media / sd bootstrap sin reestudentizar cada réplica: medido en el control nulo de CVGAP-NQ
+    rechazó en 3 de 3 semillas (18, 12 y 465 celdas), sobre todo celdas de ~30 sesiones.
+    Nominadas: T_j estrictamente sobre el umbral, lo que implica p_ajustado = (1 + #{max* >= T_j}) / (B + 1) <= alfa."""
+    ev = st["evaluable"].ravel(); n_ev = int(ev.sum()); shp = st["n"].shape
+    out = dict(metodo="maxt_signos_sesion", B=B, alfa=alfa, seed=seed, evaluables=n_ev)
+    if not n_ev: return dict(out, t=np.full(shp, np.nan), p_ajustado=np.ones(shp), umbral=np.inf, t_max=float("nan"), p_del_maximo=float("nan"),
+                             nula_max_q={}, nominadas=[], n_nominadas=0)
+    us, inv = np.unique(np.asarray(sesiones), return_inverse=True)
+    W = np.random.default_rng(seed).choice((-1.0, 1.0), size=(B, len(us)))
+    bs = _Bootstrap(perillas, indices, valores, inv, len(us), ev, W)
+    T = np.full(n_ev, np.nan); mx = np.full(B, -np.inf)
+    for a in range(0, n_ev, bs.ancho):
+        b = min(n_ev, a + bs.ancho); ES = bs._sumas(a, b)[0]; d = np.sqrt((ES ** 2).sum(0))
+        with np.errstate(invalid="ignore", divide="ignore"):
+            T[a:b] = ES.sum(0) / d; R = (W @ ES) / d
+        mx = np.maximum(mx, np.where(np.isfinite(R), R, -np.inf).max(1))
+    orden = np.sort(mx); k = int(math.floor(alfa * (B + 1)))                   # el k-ésimo máximo: nadie sobre él tiene p_ajustado > alfa
+    umbral = float(orden[B - k]) if k >= 1 else np.inf
+    ok = np.isfinite(T); p_aj = np.ones(n_ev)
+    p_aj[ok] = (1 + B - np.searchsorted(orden, T[ok], side="left")) / (B + 1)
+    nom = np.flatnonzero(ok & (T > umbral)); nom = nom[np.argsort(-T[nom], kind="stable")]
+    TT = np.full(st["n"].size, np.nan); PP = np.ones(st["n"].size); TT[np.flatnonzero(ev)] = T; PP[np.flatnonzero(ev)] = p_aj
+    return dict(out, t=TT.reshape(shp), p_ajustado=PP.reshape(shp), umbral=umbral, t_max=float(np.nanmax(T)) if ok.any() else float("nan"),
+                p_del_maximo=float(p_aj.min()), nula_max_q=dict(q50=float(np.quantile(mx, .5)), q90=float(np.quantile(mx, .9)), q95=float(np.quantile(mx, .95))),
+                nominadas=[tuple(int(v) for v in np.unravel_index(f, shp)) for f in np.flatnonzero(ev)[nom]], n_nominadas=int(len(nom)))
+
+
 # ------------------------------------------------------------------ bootstrap por sesiones sin recorrer el tensor denso B veces
 # Antes: B llamadas a `tensor` (bincount + acumulación de TODAS las celdas, vacías incluidas) => O(B x celdas x perillas).
 # Ahora: (1) se agregan las operaciones por (sesión, celda cruda); (2) cada par se expande una sola vez a las celdas EVALUABLES
@@ -298,10 +333,14 @@ class _Bootstrap:
         self.ancho = max(1, min(self.n_ev, bb // (16 * max(self.n_ses, 1) + 8 * B)))
         self.guardar = B * self.n_ev * 4 <= mem; self._cache = {}; self._std = None
 
-    def _medias(self, a, b):
+    def _sumas(self, a, b):
         ES = np.zeros((self.n_ses, b - a)); EC = np.zeros((self.n_ses, b - a))
         _expandir(self.ses_ini, self.lv, self.sv, self.cv, self.fmin, self.fmax, self.niveles, self.modos, self.strides, self.evmap, a, b,
                   int(self.evflat[a]), int(self.evflat[b - 1]), ES, EC)
+        return ES, EC
+
+    def _medias(self, a, b):
+        ES, EC = self._sumas(a, b)
         with np.errstate(invalid="ignore", divide="ignore"): return ((self.W @ ES) / (self.W @ EC)).astype(np.float32)
 
     def bloque(self, a, b):
@@ -343,6 +382,55 @@ def _cola_superior_nb(t):
     out = np.empty(len(t))
     for i in range(len(t)): out[i] = 1.0 - 0.5 * (1.0 + math.erf(t[i] / math.sqrt(2.0)))     # = 1 - NormalDist().cdf(t) (fórmula de 3.13)
     return out
+
+
+@njit(cache=True)
+def _betacf_nb(a, b, x):
+    """Fracción continua de la beta incompleta (Lentz modificado), igual que `escalera._betacf`."""
+    tiny = 1e-300
+    d = 1.0 - (a + b) * x / (a + 1.0)
+    if abs(d) < tiny: d = tiny
+    d = 1.0 / d; c = 1.0; h = d
+    for m in range(1, 500):
+        m2 = 2 * m
+        aa = m * (b - m) * x / ((a - 1 + m2) * (a + m2))
+        d = 1.0 + aa * d
+        if abs(d) < tiny: d = tiny
+        c = 1.0 + aa / c
+        if abs(c) < tiny: c = tiny
+        d = 1.0 / d; h *= d * c
+        aa = -(a + m) * (a + b + m) * x / ((a + m2) * (a + 1 + m2))
+        d = 1.0 + aa * d
+        if abs(d) < tiny: d = tiny
+        c = 1.0 + aa / c
+        if abs(c) < tiny: c = tiny
+        d = 1.0 / d; de = d * c; h *= de
+        if abs(de - 1.0) < 1e-15: break
+    return h
+
+
+@njit(cache=True)
+def _cola_t_nb(t, gl):
+    out = np.empty(len(t))
+    for i in range(len(t)):
+        ti, g = t[i], gl[i]
+        if not np.isfinite(ti):
+            out[i] = 0.0 if ti > 0 else 1.0; continue
+        x = g / (g + ti * ti); a = g / 2.0; b = 0.5
+        if x <= 0.0: ib = 0.0
+        elif x >= 1.0: ib = 1.0
+        else:
+            lbt = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b) + a * math.log(x) + b * math.log1p(-x)
+            if x < (a + 1.0) / (a + b + 2.0): ib = math.exp(lbt) * _betacf_nb(a, b, x) / a
+            else: ib = 1.0 - math.exp(lbt) * _betacf_nb(b, a, 1.0 - x) / b
+        cola = 0.5 * ib                                                    # = P(|T| > |t|) / 2
+        out[i] = cola if ti > 0 else 1.0 - cola
+    return out
+
+
+def _cola_t_superior(t, gl):
+    """P(T > t), T de Student con `gl` g.l., vectorizado (2026-11-03). Misma fórmula que `escalera.t_cola_superior`."""
+    return _cola_t_nb(np.ascontiguousarray(t, dtype=np.float64), np.ascontiguousarray(gl, dtype=np.float64))
 
 
 def _cola_superior(t):

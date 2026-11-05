@@ -33,6 +33,8 @@ from edgelab.research import grilla_masiva as GM
 
 MIN_OPS, MIN_SESIONES, RATIO_MOV_FRICCION = 30, 20, 3.0
 MESES_RECIENTES, B_RW, ALFA_RW, K_PISTAS = 3, 1000, 0.10, 20     # B_RW 200 -> 1000 (decisión 2026-10-24)
+ALFA_CRIBA_CANAL = ALFA_RW / 2                                    # 2026-10-31: maxT en DOS canales (total y reciente), Bonferroni: error familiar <= 0,10 por campaña
+CRIBAS = ("fdr", "maxt")                                         # default de código "fdr": reproduce actas; el embudo congela "maxt" en campañas nuevas
 
 
 @dataclass(frozen=True)
@@ -163,14 +165,15 @@ def _trasladar(O, ctx, cx_ej, retraso):
 
 
 def _ops_lote(exp, D, ctx):
-    """Filas (i, ei, start, limite, s, entrada, stop, objetivo, be) en el MISMO orden que el bucle por disparo y ejecución."""
-    partes = []
+    """Filas (i, ei, start, limite, s, entrada, stop, objetivo, be) en el MISMO orden que el bucle por disparo y ejecución.
+    Un experimento con salida por línea (`lineas_salida`, 2026-10-31) agrega dos columnas: fila de la línea y margen δ."""
+    partes = []; w = _ancho(exp)
     for ei, ej in enumerate(exp.EJECUCIONES):
         X = np.asarray(exp.niveles_lote(D, ej, ctx), float)
-        if X.shape != (len(D), 7): raise ValueError(f"niveles_lote debe devolver ({len(D)}, 7); devolvió {X.shape}")
+        if X.shape != (len(D), w): raise ValueError(f"niveles_lote debe devolver ({len(D)}, {w}); devolvió {X.shape}")
         i = np.flatnonzero(np.isfinite(X[:, 0]))
         partes.append(np.column_stack([i, np.full(len(i), ei), X[i]]))
-    O = np.concatenate(partes) if partes else np.zeros((0, 9))
+    O = np.concatenate(partes) if partes else np.zeros((0, w + 2))
     return O[np.lexsort((O[:, 1], O[:, 0]))] if len(O) else O
 
 
@@ -180,28 +183,56 @@ def ops_por_fila(exp, D, ctx):
     for i, r in enumerate(filas):
         for ei, ej in enumerate(exp.EJECUCIONES):
             nv = exp.niveles(r, ej, ctx)
-            if nv is not None: ops.append((i, ei) + tuple(nv))
-    return np.array(ops, float) if ops else np.zeros((0, 9))
+            if nv is not None:
+                if len(nv) != _ancho(exp): raise ValueError(f"niveles debe devolver {_ancho(exp)} valores; devolvió {len(nv)}")
+                ops.append((i, ei) + tuple(nv))
+    return np.array(ops, float) if ops else np.zeros((0, _ancho(exp) + 2))
 
 
-def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False):
+def _ancho(exp) -> int:
+    """7 valores por operación; 9 si el experimento declara `lineas_salida` (fila de la línea y δ de la salida por tiempo de parada)."""
+    return 9 if hasattr(exp, "lineas_salida") else 7
+
+
+def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O: bool = False, devolver_barras: bool = False):
     """Cada (disparo, ejecución) se simula una vez. Devuelve (di, ei, pnl, amb, dist_objetivo).
+    `devolver_barras` agrega al final (fill, exit): índices de vela en el instrumento de ejecución, -1 sin llenado.
     `cx_ej`: contexto M1 de OTRO instrumento donde se ejecuta (señal en un activo, operación en otro; mismo minuto, base
     trasladada). `retraso`: velas de demora en la entrada (control de latencia). `tope`: pérdida máxima por construcción."""
     O = _ops_lote(exp, D, ctx) if hasattr(exp, "niveles_lote") else ops_por_fila(exp, D, ctx)
-    if not len(O): return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, 9)),) if devolver_O else ())
+    if not len(O):
+        return (np.zeros(0, int),) * 2 + (np.zeros(0),) * 3 + ((np.zeros((0, _ancho(exp) + 2)),) if devolver_O else ()) + ((np.zeros(0, np.int64),) * 2 if devolver_barras else ())
     if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
+    linea = hasattr(exp, "lineas_salida")
+    # 2026-11-03: una línea sólo de TIEMPO (±inf: salida forzada a una hora o antes de una noticia) no tiene precio que trasladar; se
+    # calcula sobre las velas de la ejecución y vale con señal en otro instrumento. El experimento lo declara con LINEAS_SOLO_TIEMPO.
+    if linea and cx_ej is not None and not getattr(exp, "LINEAS_SOLO_TIEMPO", False):
+        raise ValueError("salida por línea con ejecución en otro instrumento: las líneas están en precios del sensor")
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
-    pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8)
+    pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8); fb = np.full(len(O), -1, np.int64); xb = fb.copy()
     if ok.any():
         st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
-        p_, a_ = AX.simular(st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
-                            sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
-        pnl[ok], amb[ok] = p_, a_
+        args = (st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
+                sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
+        if linea:
+            lin = np.ascontiguousarray(np.asarray(exp.lineas_salida(sim), float))
+            if getattr(exp, "LINEAS_SOLO_TIEMPO", False) and np.isfinite(lin).any():
+                raise ValueError("LINEAS_SOLO_TIEMPO con líneas de precio finito")
+            if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
+            p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
+                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))
+        else:
+            p_, a_, f_, x_ = AX.simular_cierre(*args)
+        pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_
     out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
-    return out + (O,) if devolver_O else out
+    return out + ((O,) if devolver_O else ()) + ((fb, xb) if devolver_barras else ())
+
+
+def hora_de_barra(t, barras):
+    """Cierre (s) de cada vela de `t`; NaN donde `barras` es -1 (sin llenado)."""
+    return np.where(barras >= 0, np.asarray(t, float)[np.maximum(barras, 0)], np.nan)
 
 
 def ejecuciones_equivalentes(di, ei, pnl, ejecuciones) -> list:
@@ -287,20 +318,24 @@ def marginales(exp, cx, *, friccion, extra_adverso):
     return out
 
 
-def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
+def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print, criba="fdr"):
     """Canal `total` y canal `reciente` (últimos MESES_RECIENTES meses, declarados antes): tamiz, Romano-Wolf y pistas.
     Se evalúan (2026-10-24, falsos negativos) las top 3·K_PISTAS distintas por t de Romano-Wolf Y TODAS las celdas nominadas por
     el FDR (antes sólo las 60 primeras por t de RW: una nominada fuera de ese corte nunca se evaluaba). `k_evaluadas` declara
-    cuántas de cada origen. Las nominadas relevantes van todas a `pistas` (marcadas); las no nominadas, las K_PISTAS mejores."""
+    cuántas de cada origen. Las nominadas relevantes van todas a `pistas` (marcadas); las no nominadas, las K_PISTAS mejores.
+    `criba` (2026-10-30): "fdr" reproduce lo ya emitido. "maxt" nomina por `GM.criba_maxt` y deja BH como columna informativa
+    (`q_fdr`, `nominada_fdr`, `nominadas_fdr`): el control nulo de CVGAP-NQ nominó 14, 36 y 9.918 celdas por BH."""
+    if criba not in CRIBAS: raise ValueError(f"criba: {CRIBAS}")
     P, idx, net, mes = cx["perillas"], cx["indices"], cx["net"], cx["mes"]
     meses = sorted(set(mes.tolist())); rec = np.isin(mes, meses[-MESES_RECIENTES:]); out = {}
     for nombre, msk in (("total", None), ("reciente", rec)):
         v = net if msk is None else np.where(msk, net, np.nan)
         st = cx["st"] if msk is None else GM.estadisticas(*GM.tensor(P, idx, v))
         cr = GM.criba(st, q=q); rw = GM.romano_wolf(P, idx, v, cx["ses"], st, B=B_RW, alfa=ALFA_RW, seed=7)
+        mt = GM.criba_maxt(P, idx, v, cx["ses"], st, B=B_RW, alfa=ALFA_CRIBA_CANAL) if criba == "maxt" else None
         c2 = dict(cx, net=v, st=st)
         por_rw = GM.pistas(st, rw["t"], k=3 * K_PISTAS)
-        nom_todas = [tuple(int(x) for x in np.unravel_index(f_, st["n"].shape)) for f_ in np.flatnonzero(cr["q_valores"].ravel() <= q)]
+        nom_todas = [tuple(int(x) for x in np.unravel_index(f_, st["n"].shape)) for f_ in np.flatnonzero(cr["q_valores"].ravel() <= q)] if mt is None else list(mt["nominadas"])
         a_evaluar = list(dict.fromkeys(por_rw + nom_todas))                      # sin repetir, primero el orden por RW
         ev = [r for r in (evaluar(c, c2, friccion=friccion, extra_adverso=extra_adverso) for c in a_evaluar) if r]
         for r in ev:
@@ -309,15 +344,21 @@ def canales(exp, cx, *, friccion, extra_adverso, q=0.10, log=print):
             # (la lista `nominadas` tiene tope). m_fdr = celdas EVALUABLES (filtrado independiente); `celdas_canal` = todas.
             r.update(canal=nombre, q_fdr=float(cr["q_valores"][tuple(r["celda"])]), nominada_fdr=bool(cr["q_valores"][tuple(r["celda"])] <= q),
                      pi0_fdr=float(cr["pi0"]), m_fdr=int(cr["m"]), m_fdr_sobre=cr["m_sobre"], celdas_canal=int(cr["celdas"]))
+            if mt is not None: r.update(criba="maxt", t_maxt=float(mt["t"][tuple(r["celda"])]), p_maxt=float(mt["p_ajustado"][tuple(r["celda"])]),
+                                        nominada_maxt=bool(mt["t"][tuple(r["celda"])] > mt["umbral"]))
         rel = sorted([r for r in ev if r["sesiones"] >= MIN_SESIONES and r["ratio_mov_friccion"] >= RATIO_MOV_FRICCION], key=lambda r: -r["ic90"][0])
-        nom_rel = [r for r in rel if r["nominada_fdr"]]
-        pistas_canal = nom_rel + [r for r in rel if not r["nominada_fdr"]][:K_PISTAS]
+        marca = "nominada_fdr" if mt is None else "nominada_maxt"
+        nom_rel = [r for r in rel if r[marca]]
+        pistas_canal = nom_rel + [r for r in rel if not r[marca]][:K_PISTAS]
         out[nombre] = dict(meses=meses if msk is None else meses[-MESES_RECIENTES:], nominadas_fdr=int(cr["n_nominadas"]), evaluables=cr["evaluables"],
-                           m_fdr=int(cr["m"]), celdas=int(cr["celdas"]), nominadas=[list(c) for c in cr["nominadas"][:300]],
+                           m_fdr=int(cr["m"]), celdas=int(cr["celdas"]), nominadas=[list(c) for c in (cr["nominadas"] if mt is None else mt["nominadas"])[:300]],
                            k_evaluadas=dict(por_romano_wolf=len(por_rw), nominadas_fdr=len(nom_todas), total=len(a_evaluar), evaluables_30ops=len(ev)),
                            romano_wolf={k: rw[k] for k in ("B", "alfa", "umbral", "umbrales", "t_max", "p_rw_del_maximo", "nula_max_q")},
                            rechazadas_rw=[list(c) for c in rw["rechazadas"][:300]], n_rechazadas_rw=len(rw["rechazadas"]), pistas=pistas_canal,
                            nulo=GM.resumen_nulo(st, P, q=q, referencia=friccion))
+        if mt is not None:
+            out[nombre].update(criba="maxt", nominadas_maxt=mt["n_nominadas"], maxt={k: mt[k] for k in ("metodo", "B", "alfa", "seed", "umbral", "t_max", "p_del_maximo", "nula_max_q")})
+            log(f"canal {nombre}: maxT {mt['n_nominadas']} nominadas, umbral {mt['umbral']:.2f} T_max {mt['t_max']:.2f}")
         log(f"canal {nombre}: FDR {cr['n_nominadas']} (m {cr['m']} evaluables de {cr['celdas']}), RW umbral {rw['umbral']:.2f} t_max {rw['t_max']:.2f} "
             f"rechazadas {len(rw['rechazadas'])}, evaluadas {len(a_evaluar)}, pistas {len(pistas_canal)} ({len(nom_rel)} nominadas)")
     return out
@@ -327,41 +368,81 @@ def resumen_e0(D, variables, cortes):
     q = lambda s: {p: round(float(np.nanquantile(s, p)), 4) for p in (0.1, 0.25, 0.5, 0.75, 0.9)} if np.isfinite(s).any() else {}
     out = dict(disparos=int(len(D)), sesiones=int(D.ses.nunique()) if "ses" in D else None, cortes=cortes, variables={})
     for v in variables:
-        x = D[v.columna].to_numpy(float)
+        x = D[v.columna].to_numpy(float) if v.columna in D else np.array([], float)   # 2026-10-27: 0 disparos sin columnas (U1 en CONTEO)
         out["variables"][v.nombre] = dict(faltantes=int((~np.isfinite(x)).sum()), cuantiles=q(x),
                                           **({"conteo": {int(k): int(n) for k, n in zip(*np.unique(x[np.isfinite(x)], return_counts=True))}} if v.categoria else {}))
     return out
 
 
-NORMALIZACIONES = ("rango_sesion_previa",)
+NORMALIZACIONES = ("rango_sesion_previa", "riesgo")
+
+
+def riesgo_ops(O, fb, sim) -> np.ndarray:
+    """Riesgo inicial por operación (2026-11-02, medir en R): |entrada real − stop|, ambos conocidos al llenar. E1A (límite 2) llena
+    en la apertura de la vela de llenado; mercado al cierre y límites, en su nivel. `fb`: vela de llenado (-1 sin llenado -> NaN)."""
+    O = np.asarray(O); fb = np.asarray(fb, np.int64); o = np.asarray(sim["o"], float)
+    e = np.where(O[:, 3] == 2, o[np.clip(fb, 0, len(o) - 1)], O[:, 5])
+    # 2026-11-03: riesgo menor a medio tick es un stop en la entrada con residuo de coma flotante (~1e-10), no un riesgo real; dividir
+    # por él daba ±1e8 R (TAU-GC, U1-6B/6E/ES/YM en el atlas). Queda NaN como el riesgo 0 que ya se excluía.
+    r = np.abs(e - O[:, 6]); tk = float(sim.get("tick", 0.0) or 0.0)
+    return np.where((fb >= 0) & (r > max(tk / 2, 1e-12)), r, np.nan)
 
 
 def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:
     """Escala causal por operación (2026-10-26, POTENCIA_MISMOS_DATOS §2): `rango_sesion_previa` = máximo − mínimo de la sesión
     ANTERIOR a la de la operación en el instrumento de ejecución (conocido antes de operar). Sin sesión anterior: NaN (la operación
     queda fuera, como un llenado imposible). Un experimento la activa declarando `NORMALIZAR` en su módulo, antes de correr."""
-    if metodo not in NORMALIZACIONES: raise ValueError(f"NORMALIZAR {metodo!r}: {NORMALIZACIONES}")
+    if metodo not in NORMALIZACIONES or metodo == "riesgo": raise ValueError(f"escala_ops {metodo!r}: sólo rango_sesion_previa (riesgo usa riesgo_ops)")
     s = pd.DataFrame(dict(ses=ctx_ej["ses"], h=ctx_ej["h"], l=ctx_ej["l"])).groupby("ses").agg(h=("h", "max"), l=("l", "min")).sort_index()
     previo = (s.h - s.l).shift(1); previo = previo.where(previo > 0)
     return pd.Series(np.asarray(ses_ops)).map(previo).to_numpy(float)
 
 
+def neutralizar(net, ei, ses, semilla) -> np.ndarray:
+    """Control nulo del embudo: resta la media global de cada ejecución y multiplica por un +1/-1 aleatorio el P&L de cada SESIÓN
+    completa. Conserva la dependencia intradía y la dimensión de la grilla; destruye la ventaja. Los NaN siguen siendo NaN."""
+    net, ei = np.asarray(net, float), np.asarray(ei); out = net.copy()
+    for e in np.unique(ei):
+        m = (ei == e) & np.isfinite(net)
+        if m.any(): out[m] -= net[m].mean()
+    us, inv = np.unique(ses, return_inverse=True)
+    return out * np.random.default_rng(semilla).choice((-1.0, 1.0), size=len(us))[inv]
+
+
+def resumen_control_nulo(cx, can, semilla, top=5) -> dict:
+    """Por canal: celdas evaluables, nominadas por el FDR y las `top` mejores medias entre las evaluables."""
+    out = dict(semilla=semilla)
+    for nombre, c in can.items():
+        st = GM.estadisticas(*GM.tensor(cx["perillas"], cx["indices"], np.where(np.isin(cx["mes"], c["meses"]), cx["net"], np.nan)))
+        ev = np.flatnonzero(st["evaluable"].ravel()); med = st["media"].ravel()[ev]; mejores = ev[np.argsort(-med, kind="stable")[:top]]
+        out[nombre] = dict(celdas_evaluables=int(ev.size), nominadas_fdr=c["nominadas_fdr"], **({"nominadas_maxt": c["nominadas_maxt"]} if "nominadas_maxt" in c else {}),
+                           mejores_medias=[dict(celda=[int(x) for x in np.unravel_index(f, st["n"].shape)], media=float(st["media"].ravel()[f]), n=int(st["n"].ravel()[f]))
+                                           for f in mejores])
+    return out
+
+
 def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None, q=0.10, log=print, cx_ej=None, retraso=0, tope=None,
-           resolucion=None):
+           resolucion=None, nulo=None, criba="fdr"):
+    """`nulo` (semilla, sólo DESC): corre la selección sobre el P&L neutralizado (`neutralizar`), para contar lo que sobrevive por azar."""
+    if nulo is not None and modo != "DESC": raise ValueError("nulo sólo aplica a DESC")
     t0 = time.time()
     D = exp.disparos(ctx).reset_index(drop=True); log(f"{exp.NOMBRE}: {len(D)} disparos ({time.time() - t0:.0f}s)")
-    if "ses" not in D: D["ses"] = ctx["ses"][D.k.to_numpy()]
+    if "ses" not in D: D["ses"] = np.asarray(ctx["ses"])[D.k.to_numpy().astype(np.intp)] if "k" in D else np.array([], np.intp)   # 2026-10-27 (O13): con 0 disparos `k` no es entera
+    if ctx.get("desde_eval") and len(D): D = D[D.ses >= int(ctx["desde_eval"])].reset_index(drop=True)                           # calentamiento previo a `desde_eval` no cuenta disparos ni operaciones
     cortes = cortes or cortes_e0(D, exp.VARIABLES)
     res = dict(experimento=exp.NOMBRE, modo=modo, E0=resumen_e0(D, exp.VARIABLES, cortes))
     if modo == "E0" or not len(D): return res, D
     if modo == "REP" and not celdas: raise ValueError("REP exige celdas y cortes CONGELADOS del descubrimiento")
-    di, ei, pnl, amb, dist, O = simular_ops(exp, D, ctx, cx_ej=cx_ej, retraso=retraso, tope=tope, devolver_O=True)
+    di, ei, pnl, amb, dist, O, fb, xb = simular_ops(exp, D, ctx, cx_ej=cx_ej, retraso=retraso, tope=tope, devolver_O=True, devolver_barras=True)
+    t_ej = (cx_ej if cx_ej is not None else ctx)["t"]                                      # f y x son velas de la ejecución; k, del sensor
     res["ejecuciones_equivalentes"] = ejecuciones_equivalentes(di, ei, pnl, exp.EJECUCIONES)
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
+    net_puntos = net.copy()
     if (norm := getattr(exp, "NORMALIZAR", None)):                                         # 2026-10-26: estadístico declarado en el módulo
-        esc = escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx)
+        esc = (riesgo_ops(O, fb, cx_ej if cx_ej is not None else ctx) if norm == "riesgo"     # 2026-11-02: P&L en R
+               else escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx))
         med = float(np.nanmedian(esc)) if np.isfinite(esc).any() else float("nan")
         net = net / esc; extra_adverso = extra_adverso / med
         res["normalizado"] = dict(metodo=norm, escala_mediana=med, sin_escala=int((~np.isfinite(esc)).sum()),
@@ -370,11 +451,13 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         from edgelab.research.eventos import TIPOS, cerca
         fuera = cerca(ctx["t"][D.k.to_numpy()[di]], ex.get("antes_min", 15), ex.get("despues_min", 15), tuple(ex.get("tipos", TIPOS)))
         net = np.where(fuera, np.nan, net); res["excluidas_eventos"] = dict(ex, n=int(fuera.sum()))
+    if nulo is not None: net = neutralizar(net, ei, D.ses.to_numpy()[di], nulo)
     P = perillas(exp, cortes); idx = [b[di] for b in discretizar(D, exp.VARIABLES, cortes)] + [ei]
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
-              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]])
+              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb),
+              net_puntos=net_puntos, D=D, di=di)        # D y di por referencia (sin copia)
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     cx["n_pruebas_metodo"] = "bruto"
     if modo == "REP" and len(celdas) >= 2:                                                  # 2026-10-24: Li-Ji con la matriz sesión x celda
@@ -384,16 +467,52 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         res["aviso_n_pruebas"] = "n_pruebas bruto (celdas evaluables): sin matriz de P&L de todas las celdas, Li-Ji no aplicable"
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
+    res["marginales_globales"] = marginales_globales(P, idx, net, cx["ses"], exp.EJECUCIONES)   # 2026-11-02: ideas transferibles
+    # 2026-11-04: contexto común y vetos (contexto_comun.py, rama de Gemini). Nunca tumba la campaña: si falla, queda el error en el resultado.
+    # Se guardan también los marginales del BRUTO (sin fricción, en las mismas unidades) para separar contexto de mercado de fricción en R.
+    try:
+        from edgelab.research import contexto_comun as CC
+        sim_cc = cx_ej if cx_ej is not None else ctx; cache_cc = {}
+        res["marginales_globales"].update(CC.marginales_contexto(sim_cc, O, net, cx["ses"], cache=cache_cc))
+        bruto = (pnl / esc) if norm else pnl.copy()
+        bruto = np.where(np.isfinite(net), bruto, np.nan)
+        res["marginales_globales_bruto"] = marginales_globales(P, idx, bruto, cx["ses"], exp.EJECUCIONES)
+        res["marginales_globales_bruto"].update(CC.marginales_contexto(sim_cc, O, bruto, cx["ses"], cache=cache_cc))
+    except Exception as e_cc:                                                                  # noqa: BLE001
+        res["contexto_comun_error"] = f"{type(e_cc).__name__}: {e_cc}"[:300]; log(f"AVISO: contexto común no calculado ({res['contexto_comun_error']})")
+    if modo == "MARG": return res, cx
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
         res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, resolucion=resolucion)
                           or dict(celda=list(c), **_evaluar_mascara(GM.mascara(P, idx, tuple(c)), cx, resolucion=resolucion), nota=f"< {MIN_OPS} operaciones: no evaluable")
                           for c in celdas]                         # el n real, no 0 (error de reporte del 2026-10-23)
         return res, cx
-    res["canales"] = canales(exp, cx, friccion=friccion, extra_adverso=extra_adverso, q=q, log=log)
+    res["canales"] = canales(exp, cx, friccion=friccion, extra_adverso=extra_adverso, q=q, log=log, criba=criba)
     res["indagacion"] = marginales(exp, cx, friccion=friccion, extra_adverso=extra_adverso)
+    if nulo is not None: res["control_nulo"] = resumen_control_nulo(cx, res["canales"], nulo)
     log(f"listo ({time.time() - t0:.0f}s)")
     return res, cx
+
+
+def marginales_globales(P, idx, net, ses, ejecuciones) -> dict:
+    """Media del P&L neto por nivel de CADA perilla, sobre todas las operaciones de la grilla (no alrededor de una celda): n, suma,
+    suma de cuadrados y sesiones distintas por nivel, para el meta-análisis entre familias (2026-11-02, Nico: «ideas o lógicas que se
+    pueden aplicar en otras estrategias»). La ejecución se descompone además en sus componentes (entrada, objetivo, stop, BE).
+    Target sobre datos ya usados por la grilla: no elige celdas ni consume pruebas nuevas."""
+    net = np.asarray(net, float); ok = np.isfinite(net); ses = np.asarray(ses); out = {}
+    def _agg(ix, nombre):
+        ix = np.asarray(ix); filas = []
+        for lv in np.unique(ix[ok & (ix >= 0)]):
+            m = ok & (ix == lv); x = net[m]
+            filas.append(dict(nivel=int(lv), n=int(m.sum()), suma=float(x.sum()), suma2=float((x * x).sum()), sesiones=int(len(np.unique(ses[m])))))
+        out[nombre] = filas
+    for p, ix in zip(P, idx): _agg(ix, p.nombre)
+    ei = np.asarray(idx[-1]); comps = ("entrada", "objetivo", "stop", "be")
+    for c in range(min(len(comps), len(ejecuciones[0]) if len(ejecuciones) else 0)):
+        etiquetas = sorted({str(e[c]) for e in ejecuciones}); mapa = np.array([etiquetas.index(str(e[c])) for e in ejecuciones])
+        _agg(np.where(ei >= 0, mapa[np.clip(ei, 0, len(mapa) - 1)], -1), f"ejecución.{comps[c]}")
+        out[f"ejecución.{comps[c]}.etiquetas"] = etiquetas
+    return out
 
 
 def matriz_sesiones(cx, celdas):
@@ -405,14 +524,80 @@ def matriz_sesiones(cx, celdas):
     return M
 
 
-def operaciones_de(cx, celdas):
+def operaciones_de(cx, celdas, sim=None):
     """Serie por operación de cada celda congelada, en orden de tiempo (lo que necesita un seguimiento secuencial: réplica,
-    holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto."""
+    holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto, t_fill y t_exit
+    (cierre de las velas de llenado y salida en el instrumento de ejecución, s). El orden sigue siendo por t, no por t_exit."""
     filas = []
     for i, c in enumerate(celdas):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
-        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m])))
+        d = dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])
+        if sim is not None:                                            # 2026-11-02: riesgo inicial (entrada real a stop) para medir en R
+            fb = np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]); Om = cx["O"][m]
+            d["riesgo"] = riesgo_ops(Om, fb, sim)
+            # 2026-11-04: precios absolutos en el instrumento de ejecución, para repetir la operación en NT8 (Market Replay) y medir
+            # paridad de ejecución y fricción real. `entrada` es la de la simulación: primer tick de la vela de llenado si límite=2.
+            o_ = np.asarray(sim["o"], float); fbc = np.clip(fb, 0, len(o_) - 1)
+            d["lado"] = Om[:, 4].astype(int); d["limite"] = Om[:, 3].astype(int)
+            d["entrada"] = np.where(Om[:, 3] == 2, o_[fbc], Om[:, 5]); d["stop"] = Om[:, 6]; d["objetivo"] = Om[:, 7]
+        filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
+
+
+def trayectorias(cx, celdas, sim, friccion: float, k: int = 240, extra=None) -> list:
+    """Camino vela a vela, en R, de cada operación con llenado de las celdas congeladas (2026-11-02, programa de mejora de R): desde
+    la vela de llenado y hasta `k` velas o el fin de la sesión. Por vela: lo más favorable (`f`), lo más adverso (`a`) y el cierre
+    (`c`), todos como (precio − entrada) × lado / riesgo. Más: el stop y el objetivo de la regla en R (stop = −1 por construcción), la
+    fricción en R, el R realizado por la regla, la hora de entrada y las variables de la celda en `extra` (columnas de D, causales).
+    Con esto se evalúan políticas de salida y filtros OFFLINE, sin una corrida por política. Datos ya usados por la regla."""
+    O = cx["O"]; t_ej = np.asarray(sim["t"], float); o_, h, l, c, ses = (np.asarray(sim[x]) for x in ("o", "h", "l", "c", "ses"))
+    out = []
+    for i, cel in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(cel)) & np.isfinite(cx["net"]))
+        for r in m:
+            fb = int(np.searchsorted(t_ej, cx["t_fill"][r])); lim, s_ = int(O[r, 3]), int(O[r, 4])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5]); rg = abs(e - float(O[r, 6]))
+            if not rg > 0: continue
+            j1 = min(len(c), fb + k); fin = fb + int(np.argmax(ses[fb:j1] != ses[fb])) if (ses[fb:j1] != ses[fb]).any() else j1
+            hh, ll, cc = h[fb:fin], l[fb:fin], c[fb:fin]
+            fav = ((hh - e) if s_ == 1 else (e - ll)) / rg; adv = ((ll - e) if s_ == 1 else (e - hh)) / rg; cie = (cc - e) * s_ / rg
+            fila = dict(celda=i, t=float(cx["t"][r]), ses=int(cx["ses"][r]), lado=s_, riesgo=rg, stop_R=-1.0,
+                        objetivo_R=float((O[r, 7] - e) * s_ / rg), friccion_R=float(friccion / rg), R_regla=float(cx["net_puntos"][r] / rg)
+                        if "net_puntos" in cx else None, f=np.round(fav, 3).tolist(), a=np.round(adv, 3).tolist(), c=np.round(cie, 3).tolist())
+            if extra: fila["x"] = {k_: float(v[r]) for k_, v in extra.items()}
+            out.append(fila)
+    return out
+
+
+def auditar_operaciones(cx, celdas, sim, linea: bool = False, max_detalle: int = 50) -> dict:
+    """Auditoría vela a vela (experimento 4, 2026-11-02), independiente del simulador, de cada operación con llenado de las celdas
+    congeladas, sobre las velas M1 del instrumento de ejecución `sim`. No usa ni devuelve P&L: sólo tiempos, precios y niveles.
+      causal      el llenado ocurre DESPUÉS del cierre de la vela de decisión (t_fill > t). E1C (llenado al cierre de la misma vela)
+                  es un supuesto declarado y se cuenta aparte;
+      entrada     el precio de entrada está dentro del rango [l, h] de la vela de llenado (±1 tick): no hay fills imposibles;
+      orden       t_exit >= t_fill;
+      toque_previo una vela entre el llenado y la salida (exclusive) ya tocó el stop o el objetivo y la operación siguió abierta
+                  (un stop o un objetivo salteado). Con BE o con salida por línea el stop puede haberse movido: se informa aparte.
+    Devuelve los conteos y hasta `max_detalle` casos de cada falla."""
+    O = cx["O"]; tk = float(sim["tick"]); t_ej = np.asarray(sim["t"], float); o_, h, l = sim["o"], sim["h"], sim["l"]
+    fallas = dict(causal=[], entrada=[], orden=[], toque_previo=[], toque_previo_con_be=[]); n = 0; al_cierre = 0
+    for i, c in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"]))
+        for r in m:
+            n += 1; tf, tx, t0 = cx["t_fill"][r], cx["t_exit"][r], cx["t"][r]
+            fb = int(np.searchsorted(t_ej, tf)); xb = int(np.searchsorted(t_ej, tx))
+            lim, s, sl, tp, be = int(O[r, 3]), int(O[r, 4]), float(O[r, 6]), float(O[r, 7]), int(O[r, 8])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5])                # E1A llena en la apertura; E1C al cierre; límite en su nivel
+            caso = dict(celda=i, t=float(t0), t_fill=float(tf), t_exit=float(tx), lim=lim, s=s, e=e, sl=sl, tp=tp)
+            if lim == 0 and tf == t0: al_cierre += 1                         # E1C: supuesto declarado (llenado al cierre de la decisión)
+            elif not tf > t0: fallas["causal"].append(caso)
+            if not (l[fb] - tk <= e <= h[fb] + tk): fallas["entrada"].append(dict(caso, h=float(h[fb]), l=float(l[fb])))
+            if not tx >= tf: fallas["orden"].append(caso)
+            for j in range(fb + 1, xb):
+                toca = (l[j] <= sl or h[j] >= tp + tk) if s == 1 else (h[j] >= sl or l[j] <= tp - tk)   # objetivo: atravesado por 1 tick
+                if toca:
+                    fallas["toque_previo_con_be" if be or linea else "toque_previo"].append(dict(caso, vela=float(t_ej[j]))); break
+    return dict(operaciones=n, llenado_al_cierre_e1c=al_cierre, **{k: len(v) for k, v in fallas.items()}, detalle={k: v[:max_detalle] for k, v in fallas.items() if v})
 
 
 def para_autopilot(res, fuente):

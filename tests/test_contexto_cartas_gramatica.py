@@ -12,3 +12,8 @@ def test_paquete_con_cartas_acotado_y_sanitizable():
     chico = armar_paquete(tablero={}, vacios=["v" * 400] * 5, fichas=["f" * 400] * 5, retiradas=[], lente="regimen_declarado",
                           cartas=cs, max_chars=4500)
     assert not chico["fichas"] and len(chico["cartas_gramatica"]) <= len(cs)   # se recortan fichas antes que cartas
+
+
+def test_directivas_de_nico_van_en_el_paquete_y_no_se_recortan():
+    p = armar_paquete(tablero={}, vacios=["v" * 4000] * 5, fichas=["f" * 4000] * 5, retiradas=[], lente="regimen_declarado", max_chars=3000)
+    assert "dos cuentas de Kaggle" in p["directivas_de_nico"] and "espiral" in p["directivas_de_nico"]

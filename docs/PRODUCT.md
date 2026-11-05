@@ -12,6 +12,8 @@ Fecha: 2026-10-14
 **Qué NO es objetivo:** paridad exacta, infraestructura o visor por sí mismos. Son medios.
 **Métrica de progreso:** cuánto reduce la distancia hacia un edge neto, robusto y operable. Hoy: **0 edges promovidos** (`EDGES_DISCOVERED.md`).
 
+**Centro del producto (2026-10-31): la cartera viva** — canastas de estrategias de régimen que el agente del Debian reorganiza todos los días (seguimiento forward, retiros, régimen, riesgo por cuenta, investigación con plazos). Ver `docs/CARTERA_VIVA.md`.
+
 ## 2. Para quién
 - **Nico:** decide aprobaciones (licencia, política de liquidez, P&L, holdout, cuenta), pone el capital.
 - **Agentes de IA** (Claude local, Gemini, Notion, otros): ejecutan, auditan y proponen. Deben poder continuar sin la conversación previa: todo lo que decide algo vive en el repo.

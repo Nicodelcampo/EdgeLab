@@ -1,0 +1,122 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793674018.5315423,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793674660.4741917,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.4405271709775936, 'min': -13.730440957518121, 'q001': -13.67681325657085, 'q010': -13.194163948045398, 'q500': -3.2567108147192867, 'q990': -0.07133188028728632, 'q999': 0.389341265851111, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 35}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "PAR-YMES-R",
+  "familia": "PAR_REL_YMES",
+  "experimento": "edgelab.research.par_relativo",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "Valor relativo YM contra ES (Gatev et al. 2006): mismo mecanismo que PAR-NQES con otro par (Dow contra S&P).",
+  "como_podria_refutarse": "Sin nominadas en R ni pistas que repliquen; el spread no revierte en 120 velas.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "confirmador": "ES"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "PAR_REL_YMES",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva (valor relativo YM/ES), sin padres (docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793674018.5313861,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-par-ymes-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793674358.596951,
+ "cortes": {},
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.4405271709775936, 'min': -13.730440957518121, 'q001': -13.67681325657085, 'q010': -13.194163948045398, 'q500': -3.2567108147192867, 'q990': -0.07133188028728632, 'q999': 0.389341265851111, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 35}); pistas a réplica: ninguna pista relevante con media > 0"
+}

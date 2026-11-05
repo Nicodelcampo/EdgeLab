@@ -1,0 +1,16 @@
+## CVGAP-CFD-NQ-R — edgelab.research.corredor_vol_gaps · señal DK:USATECHIDXUSD · ejecución NQ
+- Justificación: Señal de EmaCorridorTrendVolW2 + ZONAS-GAPS medida sobre el CFD Dukascopy USATECHIDXUSD (50T/M1) y ejecutada en el futuro NQ con traslación causal de base al cierre M1: evalúa si la ruptura de la Caja Amarilla en dirección del impulso + excursión + regreso y puntaje de gaps en el CFD anticipa la reversión hacia el 50%, 25% o 100% del impulso en NQ.
+- Refutación: Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5626427 pruebas de ['CORREDOR_VOL_GAPS_NQ', 'ZONAS_GAPS', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 113624 de 1866240 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 71792 (m del FDR 71792 de 933120 celdas), FDR 37 (informativo), maxT 8, RW umbral 4.599058628082275 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 27, candidatas 3
+- Potencia prevista (informativa): [0, 0, 1, 2, 2, 2, 3, 2, 1, 2, 7]: OOS n 34.5 potencia 0.83, holdout n 150 potencia 1.00; [0, 0, 1, 2, 2, 3, 2, 2, 1, 2, 7]: OOS n 35.2 potencia 0.85, holdout n 150 potencia 1.00; [0, 0, 1, 2, 2, 3, 3, 2, 1, 2, 1]: OOS n 35.2 potencia 0.87, holdout n 150 potencia 1.00
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 0, 1, 2, 2, 2, 3, 2, 1, 2, 7]: regla 0.13246298949918794, placebo -13.75, latencia 1 vela 0.17544534604829473 -> pasa
+- INTEGRIDAD [0, 0, 1, 2, 2, 3, 2, 2, 1, 2, 7]: regla 0.13013897642473712, placebo -10.01, latencia 1 vela 0.17589874389347315 -> pasa
+- INTEGRIDAD [0, 0, 1, 2, 2, 3, 3, 2, 1, 2, 1]: regla 0.12275897916092514, placebo -9.99, latencia 1 vela 0.1767457298098612 -> pasa
+- OOS [20260401, 20260925] (régimen actual): medias [-0.06, -0.06, -0.03]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.28, 0.27, 0.37]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [0, 0, 1, 2, 2, 2, 3, 2, 1, 2, 7], 'tope': ['pts', 150.0], 'puntaje': 6.48112077684924, 'peor': -1.0092683658170916}
+- **BLOQUEADA** — la familia CORREDOR_VOL_GAPS_CFD_NQ ya tiene su única apertura del holdout (CVGAP-CFD-NQ)

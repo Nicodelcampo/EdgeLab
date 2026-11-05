@@ -1,0 +1,12 @@
+## KALMAN-FADE-NQ — edgelab.research.kalman_fade · señal NQ · ejecución NQ
+- Justificación: Innovaciones extremas de un nivel local de Kalman en NQ M1 son en parte ruido de microestructura transitorio y revierten hacia el nivel estimado (pre-registro en docs/research/kalman_fade_20261030/SPEC_KALMAN_FADE.md).
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT; si sólo sobrevive CONTINUACION, la reversión queda refutada.
+- PREFLIGHT: ok
+- Linaje (informacion; declarado); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 376 de 432 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 208 (m del FDR 208 de 216 celdas), FDR 0, RW umbral 3.2507095336914062 (diagnóstico), linaje 0 como informacion, pistas sin nominación 27, candidatas 0
+- PISTAS a réplica (ATJ-25): 1 congeladas de 27 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 2, 1, 2]]
+- PISTAS canasta (una prueba): media 0.25318749999999896 IC90 [-6.4032285714285715, 7.280545982142854] p 0.46738315421144716 sesiones 56; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.46926536731634183; confirmadas 0 de 1 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.46926536731634183); canasta media 0.25318749999999896 IC90 [-6.4032285714285715, 7.280545982142854]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08775769770156105

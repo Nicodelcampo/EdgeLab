@@ -1,0 +1,130 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793731784.4807286,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793732559.2834096,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -0.9823222852977674, 'min': -7.616500775828547, 'q001': -7.547604426013232, 'q010': -6.920724691035353, 'q500': -3.416661666885555, 'q990': -0.9875940956768008, 'q999': -0.9823276636494945, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 62}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "ESTRUCTURA-HHLL-NQ-R",
+  "familia": "ESTRUCTURA_HHLL_NQ",
+  "experimento": "edgelab.research.estructura_hhll",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "Cuando una sesión desarrolla una secuencia confirmada de pivotes de orden P=5 alcista (Higher-High h2 > h1 y Higher-Low l2 > l1) o bajista (Lower-Low l2 < l1 y Lower-High h2 < h1), los algoritmos seguidores de tendencia compran los retroces (DISENO_ESTRUCTURA_HHLL.md).",
+  "como_podria_refutarse": "Si la pendiente estructural entre pivotes (pend_atr) no discrimina el retorno en R o ninguna celda supera FDR q <= 0,10 y réplica OOS.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_ESTRUCTURA_HHLL.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "correcciones": "docs/research/programa_r_20261103/CORRECCIONES_GEMINI_20261103.md",
+  "decisiones": [
+   "2026-11-03: corregida antes de correr (noticias durante toda la operación, reloj de Londres en WM, sólo días con dato en POST-MACRO); tamiz FDR con cola t (decisión de Nico)."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESTRUCTURA_HHLL_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva del programa R (ESTRUCTURA-HHLL en NQ->NQ), sin padres; declarada antes de DESC (docs/research/programa_r_20261103/DISENO_ESTRUCTURA_HHLL.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793731784.4804559,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-estructura-hhll-nq-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793732202.8232234,
+ "cortes": {
+  "profundidad_pullback": [
+   0.4827586206896552,
+   0.7108433734939759
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -0.9823222852977674, 'min': -7.616500775828547, 'q001': -7.547604426013232, 'q010': -6.920724691035353, 'q500': -3.416661666885555, 'q990': -0.9875940956768008, 'q999': -0.9823276636494945, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 62}); pistas a réplica: ninguna pista relevante con media > 0"
+}

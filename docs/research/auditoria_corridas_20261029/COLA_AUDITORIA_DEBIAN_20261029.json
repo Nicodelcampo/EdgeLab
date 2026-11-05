@@ -1,0 +1,1854 @@
+{
+  "fecha_auditoria": "2026-10-29",
+  "ok_global": true,
+  "n_modulos_auditados": 6,
+  "n_campanas_auditadas": 28,
+  "n_actas_holdout_listas": 6,
+  "actas_holdout_listas": [
+    "CVGAP-NQ",
+    "CVGAP-CFD-NQ",
+    "U1-RACIMOS-GRILLA-NQ",
+    "U1-RACIMOS-GRILLA-ES",
+    "U1-ZONAS-BT2-ES",
+    "U1-ZONAS-BT2-NQ"
+  ],
+  "n_campanas_pistas_vivas": 19,
+  "campanas_pistas_vivas": [
+    "CVGAP-ES",
+    "CVGAP-CFD-ES",
+    "OTR930-NQ",
+    "OTR930-ES",
+    "OTR930-CFD-NQ",
+    "OTR930-CFD-ES",
+    "ORO-ALM-GC",
+    "ORO-ALM-CFD",
+    "U1-6E-GRILLA",
+    "CONF-CVR-NQ",
+    "CONF-CVR-CFD-NQ",
+    "CONF-CVR-CFD-ES",
+    "TORI-NQ",
+    "TORI-GC",
+    "TORI-CFD-NQ",
+    "ASIA-NQ",
+    "ASIA-ES",
+    "ASIA-GC",
+    "ASIA-CFD-NQ"
+  ],
+  "n_campanas_ola10_desc": 0,
+  "campanas_ola10_desc": [],
+  "modulos": {
+    "ok": true,
+    "modulos": {
+      "edgelab.research.corredor_vol_gaps": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "822e5449c811"
+      },
+      "edgelab.research.otr_930_sweep": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "2d623d55244b"
+      },
+      "edgelab.research.oro_almuerzo_ruptura": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "e974206c49d3"
+      },
+      "edgelab.research.tori_trend_toque3": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "018833025019"
+      },
+      "edgelab.research.asia_bos_gaps": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "57033847f698"
+      },
+      "edgelab.research.confluencia_cvgap_racimos": {
+        "ok": true,
+        "errores": [],
+        "avisos": [],
+        "sha12": "3fe0f200dca3"
+      }
+    }
+  },
+  "campanas": {
+    "CVGAP-NQ": {
+      "cid": "CVGAP-NQ",
+      "familia": "CORREDOR_VOL_GAPS_NQ",
+      "experimento": "edgelab.research.corredor_vol_gaps",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 3,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "CVGAP-NQ",
+        "familia": "CORREDOR_VOL_GAPS_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          0,
+          0,
+          1,
+          2,
+          2,
+          2,
+          3,
+          2,
+          0,
+          2,
+          11
+        ],
+        "tope": [
+          "mult",
+          4.0
+        ],
+        "n_celdas_analizador": 3,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CVGAP-NQ.json --raiz docs/research/corredor_vol_gaps_20261028/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CVGAP-CFD-NQ": {
+      "cid": "CVGAP-CFD-NQ",
+      "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+      "experimento": "edgelab.research.corredor_vol_gaps",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 3,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "CVGAP-CFD-NQ",
+        "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          0,
+          1,
+          0,
+          0,
+          2,
+          3,
+          2,
+          1,
+          2,
+          0,
+          10
+        ],
+        "tope": [
+          "pts",
+          50.0
+        ],
+        "n_celdas_analizador": 3,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CVGAP-CFD-NQ.json --raiz docs/research/corredor_vol_gaps_20261028/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CVGAP-ES": {
+      "cid": "CVGAP-ES",
+      "familia": "CORREDOR_VOL_GAPS_ES",
+      "experimento": "edgelab.research.corredor_vol_gaps",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "CVGAP-ES",
+        "familia": "CORREDOR_VOL_GAPS_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 1.3251720000000007,
+        "ic90_canasta_oos": [
+          -1.0449898076923074,
+          3.801989903846153
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/corredor_vol_gaps_20261028/embudo CVGAP-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/corredor_vol_gaps_20261028/embudo CVGAP-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CVGAP-CFD-ES": {
+      "cid": "CVGAP-CFD-ES",
+      "familia": "CORREDOR_VOL_GAPS_CFD_ES",
+      "experimento": "edgelab.research.corredor_vol_gaps",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "CVGAP-CFD-ES",
+        "familia": "CORREDOR_VOL_GAPS_CFD_ES",
+        "sensor": "DK:USA500IDXUSD",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -0.16797102150537618,
+        "ic90_canasta_oos": [
+          -1.1324163145161288,
+          0.8164506317204299
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/corredor_vol_gaps_20261028/embudo CVGAP-CFD-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/corredor_vol_gaps_20261028/embudo CVGAP-CFD-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "OTR930-NQ": {
+      "cid": "OTR930-NQ",
+      "familia": "OTR_930_SWEEP_NQ",
+      "experimento": "edgelab.research.otr_930_sweep",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "OTR930-NQ",
+        "familia": "OTR_930_SWEEP_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 5.1169101063829805,
+        "ic90_canasta_oos": [
+          -1.1836961037234037,
+          12.041061542553189
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "OTR930-ES": {
+      "cid": "OTR930-ES",
+      "familia": "OTR_930_SWEEP_ES",
+      "experimento": "edgelab.research.otr_930_sweep",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "OTR930-ES",
+        "familia": "OTR_930_SWEEP_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.44768384615384643,
+        "ic90_canasta_oos": [
+          -1.8915210961538456,
+          2.8010094999999993
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "OTR930-CFD-NQ": {
+      "cid": "OTR930-CFD-NQ",
+      "familia": "OTR_930_SWEEP_CFD_NQ",
+      "experimento": "edgelab.research.otr_930_sweep",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "OTR930-CFD-NQ",
+        "familia": "OTR_930_SWEEP_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 3.030464460784323,
+        "ic90_canasta_oos": [
+          -8.37300120098038,
+          15.122471458333344
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "OTR930-CFD-ES": {
+      "cid": "OTR930-CFD-ES",
+      "familia": "OTR_930_SWEEP_CFD_ES",
+      "experimento": "edgelab.research.otr_930_sweep",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "OTR930-CFD-ES",
+        "familia": "OTR_930_SWEEP_CFD_ES",
+        "sensor": "DK:USA500IDXUSD",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.3776973255813958,
+        "ic90_canasta_oos": [
+          -0.6331562238372092,
+          1.4355569505813954
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ORO-ALM-GC": {
+      "cid": "ORO-ALM-GC",
+      "familia": "ORO_ALMUERZO_RUPTURA_GC",
+      "experimento": "edgelab.research.oro_almuerzo_ruptura",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ORO-ALM-GC",
+        "familia": "ORO_ALMUERZO_RUPTURA_GC",
+        "sensor": "GC",
+        "ejecucion": "GC",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.21116216216215272,
+        "ic90_canasta_oos": [
+          -2.3001635135135188,
+          2.8628888513513506
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/oro_almuerzo_20261028/embudo ORO-ALM-GC --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/oro_almuerzo_20261028/embudo ORO-ALM-GC",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ORO-ALM-CFD": {
+      "cid": "ORO-ALM-CFD",
+      "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+      "experimento": "edgelab.research.oro_almuerzo_ruptura",
+      "sensor": "DK:XAUUSD",
+      "ejecucion": "GC",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ORO-ALM-CFD",
+        "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+        "sensor": "DK:XAUUSD",
+        "ejecucion": "GC",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.4214230769230905,
+        "ic90_canasta_oos": [
+          -0.6788762019230665,
+          1.5494370192307931
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/oro_almuerzo_20261028/embudo ORO-ALM-CFD --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/oro_almuerzo_20261028/embudo ORO-ALM-CFD",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-RACIMOS-GRILLA-NQ": {
+      "cid": "U1-RACIMOS-GRILLA-NQ",
+      "familia": "U1_RACIMOS_GRILLA_NQ",
+      "experimento": "edgelab.research.u1_racimos_grilla",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 3,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "U1-RACIMOS-GRILLA-NQ",
+        "familia": "U1_RACIMOS_GRILLA_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          1,
+          0,
+          0,
+          9,
+          1,
+          0
+        ],
+        "tope": [
+          "pts",
+          100.0
+        ],
+        "n_celdas_analizador": 3,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-RACIMOS-GRILLA-NQ.json --raiz docs/research/u1_zonas_20261025/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-RACIMOS-GRILLA-ES": {
+      "cid": "U1-RACIMOS-GRILLA-ES",
+      "familia": "U1_RACIMOS_GRILLA_ES",
+      "experimento": "edgelab.research.u1_racimos_grilla",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 2,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "U1-RACIMOS-GRILLA-ES",
+        "familia": "U1_RACIMOS_GRILLA_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          0,
+          0,
+          0,
+          16,
+          2,
+          2
+        ],
+        "tope": [
+          "pts",
+          50.0
+        ],
+        "n_celdas_analizador": 2,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-RACIMOS-GRILLA-ES.json --raiz docs/research/u1_zonas_20261025/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-ZONAS-BT2-ES": {
+      "cid": "U1-ZONAS-BT2-ES",
+      "familia": "U1_ZONAS_BT2_ES",
+      "experimento": "edgelab.research.u1_zonas_bt2",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 3,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "U1-ZONAS-BT2-ES",
+        "familia": "U1_ZONAS_BT2_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          0,
+          2,
+          0,
+          2,
+          2,
+          2,
+          1,
+          3,
+          1,
+          0,
+          0,
+          6
+        ],
+        "tope": [
+          "pts",
+          50.0
+        ],
+        "n_celdas_analizador": 3,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-ZONAS-BT2-ES.json --raiz docs/research/u1_zonas_20261025/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-ZONAS-BT2-NQ": {
+      "cid": "U1-ZONAS-BT2-NQ",
+      "familia": "U1_ZONAS_BT2_NQ",
+      "experimento": "edgelab.research.u1_zonas_bt2",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "CONTEO",
+      "veredicto": "PENDIENTE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": true,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 3,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+        "prioridad": 1,
+        "cid": "U1-ZONAS-BT2-NQ",
+        "familia": "U1_ZONAS_BT2_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "holdout_desde": 20261001,
+        "n_fijo": 150,
+        "alfa_lord": 0.003607974489558189,
+        "celda_ganadora": [
+          0,
+          2,
+          0,
+          1,
+          2,
+          2,
+          3,
+          2,
+          3,
+          0,
+          0,
+          4
+        ],
+        "tope": [
+          "pts",
+          50.0
+        ],
+        "n_celdas_analizador": 3,
+        "comandos_debian": [
+          "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-ZONAS-BT2-NQ.json --raiz docs/research/u1_zonas_20261025/embudo",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-ZONAS-GRILLA-YM": {
+      "cid": "U1-ZONAS-GRILLA-YM",
+      "familia": "U1_ZONAS_GRILLA_YM",
+      "experimento": "edgelab.research.u1_zonas_grilla",
+      "sensor": "YM",
+      "ejecucion": "YM",
+      "etapa": "FIN",
+      "veredicto": "SIN_REGLA_OPERABLE",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 1,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+        "prioridad": 3,
+        "cid": "U1-ZONAS-GRILLA-YM",
+        "familia": "U1_ZONAS_GRILLA_YM",
+        "etapa_cierre": "FIN",
+        "veredicto": "SIN_REGLA_OPERABLE",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 1,
+        "comandos_debian": [
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "U1-6E-GRILLA": {
+      "cid": "U1-6E-GRILLA",
+      "familia": "U1_6E_GRILLA",
+      "experimento": "edgelab.research.u1_cfd",
+      "sensor": "DK:EURUSD",
+      "ejecucion": "DK:EURUSD",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "U1-6E-GRILLA",
+        "familia": "U1_6E_GRILLA",
+        "sensor": "DK:EURUSD",
+        "ejecucion": "DK:EURUSD",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 1.252000000007486e-06,
+        "ic90_canasta_oos": [
+          -1.3979999999965522e-06,
+          3.902000000011524e-06
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/u1_cfd_20261025/embudo U1-6E-GRILLA --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/u1_cfd_20261025/embudo U1-6E-GRILLA",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CONF-CVR-NQ": {
+      "cid": "CONF-CVR-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "CONF-CVR-NQ",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -0.9332939583333338,
+        "ic90_canasta_oos": [
+          -4.775004614583334,
+          2.7537428333333325
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CONF-CVR-ES": {
+      "cid": "CONF-CVR-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "SIN_CANDIDATAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+        "prioridad": 3,
+        "cid": "CONF-CVR-ES",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "SIN_CANDIDATAS",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CONF-CVR-CFD-NQ": {
+      "cid": "CONF-CVR-CFD-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "CONF-CVR-CFD-NQ",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.34065672268907593,
+        "ic90_canasta_oos": [
+          -2.5746840126050423,
+          3.2794399999999992
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "CONF-CVR-CFD-ES": {
+      "cid": "CONF-CVR-CFD-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+      "experimento": "edgelab.research.confluencia_cvgap_racimos",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "CONF-CVR-CFD-ES",
+        "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+        "sensor": "DK:USA500IDXUSD",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -0.18347333333333316,
+        "ic90_canasta_oos": [
+          -0.7821678455882352,
+          0.4132519534313725
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "TORI-NQ": {
+      "cid": "TORI-NQ",
+      "familia": "TORI_TREND_TOQUE3_NQ",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "TORI-NQ",
+        "familia": "TORI_TREND_TOQUE3_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -2.0281239669421485,
+        "ic90_canasta_oos": [
+          -4.382009307851238,
+          0.14073346074380175
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "TORI-ES": {
+      "cid": "TORI-ES",
+      "familia": "TORI_TREND_TOQUE3_ES",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "SIN_CANDIDATAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": false,
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 8,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+        "prioridad": 3,
+        "cid": "TORI-ES",
+        "familia": "TORI_TREND_TOQUE3_ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "SIN_CANDIDATAS",
+        "n_pistas_vivas": 0,
+        "n_celdas_analizador": 8,
+        "comandos_debian": [
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "TORI-GC": {
+      "cid": "TORI-GC",
+      "familia": "TORI_TREND_TOQUE3_GC",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "TORI-GC",
+        "familia": "TORI_TREND_TOQUE3_GC",
+        "sensor": "GC",
+        "ejecucion": "GC",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 0.27850609756098255,
+        "ic90_canasta_oos": [
+          -0.535295934959322,
+          1.1705291666666835
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-GC --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-GC",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "TORI-CFD-NQ": {
+      "cid": "TORI-CFD-NQ",
+      "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+      "experimento": "edgelab.research.tori_trend_toque3",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "TORI-CFD-NQ",
+        "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -1.5525997685185187,
+        "ic90_canasta_oos": [
+          -3.1645298611111117,
+          0.10763018518518347
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-CFD-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-CFD-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ASIA-NQ": {
+      "cid": "ASIA-NQ",
+      "familia": "ASIA_BOS_GAPS_NQ",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ASIA-NQ",
+        "familia": "ASIA_BOS_GAPS_NQ",
+        "sensor": "NQ",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 4.378614950980394,
+        "ic90_canasta_oos": [
+          -0.3275982598039201,
+          8.819669313725493
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ASIA-ES": {
+      "cid": "ASIA-ES",
+      "familia": "ASIA_BOS_GAPS_ES",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ASIA-ES",
+        "familia": "ASIA_BOS_GAPS_ES",
+        "sensor": "ES",
+        "ejecucion": "ES",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -0.23072949541284402,
+        "ic90_canasta_oos": [
+          -0.7300975642201833,
+          0.24862496788990815
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-ES --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-ES",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ASIA-GC": {
+      "cid": "ASIA-GC",
+      "familia": "ASIA_BOS_GAPS_GC",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ASIA-GC",
+        "familia": "ASIA_BOS_GAPS_GC",
+        "sensor": "GC",
+        "ejecucion": "GC",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": -0.46640259740259893,
+        "ic90_canasta_oos": [
+          -1.9087836038960921,
+          1.0055060064935057
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-GC --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-GC",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    },
+    "ASIA-CFD-NQ": {
+      "cid": "ASIA-CFD-NQ",
+      "familia": "ASIA_BOS_GAPS_CFD_NQ",
+      "experimento": "edgelab.research.asia_bos_gaps",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "holdout_desde": 20261001,
+      "tiene_acta_holdout": false,
+      "tiene_pistas_vivas": true,
+      "n_pistas_vivas": 20,
+      "n_celdas_analizador": 20,
+      "ok": true,
+      "hallazgos": [],
+      "avisos": [],
+      "accion_debian": {
+        "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+        "prioridad": 2,
+        "cid": "ASIA-CFD-NQ",
+        "familia": "ASIA_BOS_GAPS_CFD_NQ",
+        "sensor": "DK:USATECHIDXUSD",
+        "ejecucion": "NQ",
+        "etapa_cierre": "FIN",
+        "veredicto": "PISTAS_VIVAS",
+        "n_pistas_vivas": 20,
+        "media_canasta_oos": 1.8079867500000009,
+        "ic90_canasta_oos": [
+          -2.294647275,
+          5.8652435125
+        ],
+        "n_celdas_analizador": 20,
+        "comandos_debian": [
+          "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-CFD-NQ --n-sesiones 20",
+          "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-CFD-NQ",
+          "python3 tools/analizar_embudo.py lanzar"
+        ]
+      }
+    }
+  },
+  "cola_auditoria_debian": [
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "CVGAP-CFD-NQ",
+      "familia": "CORREDOR_VOL_GAPS_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        0,
+        1,
+        0,
+        0,
+        2,
+        3,
+        2,
+        1,
+        2,
+        0,
+        10
+      ],
+      "tope": [
+        "pts",
+        50.0
+      ],
+      "n_celdas_analizador": 3,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CVGAP-CFD-NQ.json --raiz docs/research/corredor_vol_gaps_20261028/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "CVGAP-NQ",
+      "familia": "CORREDOR_VOL_GAPS_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        0,
+        0,
+        1,
+        2,
+        2,
+        2,
+        3,
+        2,
+        0,
+        2,
+        11
+      ],
+      "tope": [
+        "mult",
+        4.0
+      ],
+      "n_celdas_analizador": 3,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/CVGAP-NQ.json --raiz docs/research/corredor_vol_gaps_20261028/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "U1-RACIMOS-GRILLA-ES",
+      "familia": "U1_RACIMOS_GRILLA_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        0,
+        0,
+        0,
+        16,
+        2,
+        2
+      ],
+      "tope": [
+        "pts",
+        50.0
+      ],
+      "n_celdas_analizador": 2,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-RACIMOS-GRILLA-ES.json --raiz docs/research/u1_zonas_20261025/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "U1-RACIMOS-GRILLA-NQ",
+      "familia": "U1_RACIMOS_GRILLA_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        1,
+        0,
+        0,
+        9,
+        1,
+        0
+      ],
+      "tope": [
+        "pts",
+        100.0
+      ],
+      "n_celdas_analizador": 3,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-RACIMOS-GRILLA-NQ.json --raiz docs/research/u1_zonas_20261025/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "U1-ZONAS-BT2-ES",
+      "familia": "U1_ZONAS_BT2_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        0,
+        2,
+        0,
+        2,
+        2,
+        2,
+        1,
+        3,
+        1,
+        0,
+        0,
+        6
+      ],
+      "tope": [
+        "pts",
+        50.0
+      ],
+      "n_celdas_analizador": 3,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-ZONAS-BT2-ES.json --raiz docs/research/u1_zonas_20261025/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ACTA_Y_EVALUAR_HOLDOUT",
+      "prioridad": 1,
+      "cid": "U1-ZONAS-BT2-NQ",
+      "familia": "U1_ZONAS_BT2_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "holdout_desde": 20261001,
+      "n_fijo": 150,
+      "alfa_lord": 0.003607974489558189,
+      "celda_ganadora": [
+        0,
+        2,
+        0,
+        1,
+        2,
+        2,
+        3,
+        2,
+        3,
+        0,
+        0,
+        4
+      ],
+      "tope": [
+        "pts",
+        50.0
+      ],
+      "n_celdas_analizador": 3,
+      "comandos_debian": [
+        "python3 tools/embudo_correr.py config/autopilot/grillas/campanas/U1-ZONAS-BT2-NQ.json --raiz docs/research/u1_zonas_20261025/embudo",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ASIA-CFD-NQ",
+      "familia": "ASIA_BOS_GAPS_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 1.8079867500000009,
+      "ic90_canasta_oos": [
+        -2.294647275,
+        5.8652435125
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-CFD-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-CFD-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ASIA-ES",
+      "familia": "ASIA_BOS_GAPS_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -0.23072949541284402,
+      "ic90_canasta_oos": [
+        -0.7300975642201833,
+        0.24862496788990815
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ASIA-GC",
+      "familia": "ASIA_BOS_GAPS_GC",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -0.46640259740259893,
+      "ic90_canasta_oos": [
+        -1.9087836038960921,
+        1.0055060064935057
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-GC --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-GC",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ASIA-NQ",
+      "familia": "ASIA_BOS_GAPS_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 4.378614950980394,
+      "ic90_canasta_oos": [
+        -0.3275982598039201,
+        8.819669313725493
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/asia_bos_20261029/embudo ASIA-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/asia_bos_20261029/embudo ASIA-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "CONF-CVR-CFD-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_ES",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -0.18347333333333316,
+      "ic90_canasta_oos": [
+        -0.7821678455882352,
+        0.4132519534313725
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "CONF-CVR-CFD-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.34065672268907593,
+      "ic90_canasta_oos": [
+        -2.5746840126050423,
+        3.2794399999999992
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-CFD-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "CONF-CVR-NQ",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -0.9332939583333338,
+      "ic90_canasta_oos": [
+        -4.775004614583334,
+        2.7537428333333325
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/confluencia_cvr_20261029/embudo CONF-CVR-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/confluencia_cvr_20261029/embudo CONF-CVR-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "CVGAP-CFD-ES",
+      "familia": "CORREDOR_VOL_GAPS_CFD_ES",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -0.16797102150537618,
+      "ic90_canasta_oos": [
+        -1.1324163145161288,
+        0.8164506317204299
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/corredor_vol_gaps_20261028/embudo CVGAP-CFD-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/corredor_vol_gaps_20261028/embudo CVGAP-CFD-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "CVGAP-ES",
+      "familia": "CORREDOR_VOL_GAPS_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 1.3251720000000007,
+      "ic90_canasta_oos": [
+        -1.0449898076923074,
+        3.801989903846153
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/corredor_vol_gaps_20261028/embudo CVGAP-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/corredor_vol_gaps_20261028/embudo CVGAP-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ORO-ALM-CFD",
+      "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+      "sensor": "DK:XAUUSD",
+      "ejecucion": "GC",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.4214230769230905,
+      "ic90_canasta_oos": [
+        -0.6788762019230665,
+        1.5494370192307931
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/oro_almuerzo_20261028/embudo ORO-ALM-CFD --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/oro_almuerzo_20261028/embudo ORO-ALM-CFD",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "ORO-ALM-GC",
+      "familia": "ORO_ALMUERZO_RUPTURA_GC",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.21116216216215272,
+      "ic90_canasta_oos": [
+        -2.3001635135135188,
+        2.8628888513513506
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/oro_almuerzo_20261028/embudo ORO-ALM-GC --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/oro_almuerzo_20261028/embudo ORO-ALM-GC",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "OTR930-CFD-ES",
+      "familia": "OTR_930_SWEEP_CFD_ES",
+      "sensor": "DK:USA500IDXUSD",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.3776973255813958,
+      "ic90_canasta_oos": [
+        -0.6331562238372092,
+        1.4355569505813954
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "OTR930-CFD-NQ",
+      "familia": "OTR_930_SWEEP_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 3.030464460784323,
+      "ic90_canasta_oos": [
+        -8.37300120098038,
+        15.122471458333344
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-CFD-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "OTR930-ES",
+      "familia": "OTR_930_SWEEP_ES",
+      "sensor": "ES",
+      "ejecucion": "ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.44768384615384643,
+      "ic90_canasta_oos": [
+        -1.8915210961538456,
+        2.8010094999999993
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-ES --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-ES",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "OTR930-NQ",
+      "familia": "OTR_930_SWEEP_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 5.1169101063829805,
+      "ic90_canasta_oos": [
+        -1.1836961037234037,
+        12.041061542553189
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/otr_930_sweep_20261028/embudo OTR930-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/otr_930_sweep_20261028/embudo OTR930-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "TORI-CFD-NQ",
+      "familia": "TORI_TREND_TOQUE3_CFD_NQ",
+      "sensor": "DK:USATECHIDXUSD",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -1.5525997685185187,
+      "ic90_canasta_oos": [
+        -3.1645298611111117,
+        0.10763018518518347
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-CFD-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-CFD-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "TORI-GC",
+      "familia": "TORI_TREND_TOQUE3_GC",
+      "sensor": "GC",
+      "ejecucion": "GC",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 0.27850609756098255,
+      "ic90_canasta_oos": [
+        -0.535295934959322,
+        1.1705291666666835
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-GC --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-GC",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "TORI-NQ",
+      "familia": "TORI_TREND_TOQUE3_NQ",
+      "sensor": "NQ",
+      "ejecucion": "NQ",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": -2.0281239669421485,
+      "ic90_canasta_oos": [
+        -4.382009307851238,
+        0.14073346074380175
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/tori_trend_20261029/embudo TORI-NQ --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/tori_trend_20261029/embudo TORI-NQ",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_PISTAS_VIVAS_Y_CANASTA_REGIMEN",
+      "prioridad": 2,
+      "cid": "U1-6E-GRILLA",
+      "familia": "U1_6E_GRILLA",
+      "sensor": "DK:EURUSD",
+      "ejecucion": "DK:EURUSD",
+      "etapa_cierre": "FIN",
+      "veredicto": "PISTAS_VIVAS",
+      "n_pistas_vivas": 20,
+      "media_canasta_oos": 1.252000000007486e-06,
+      "ic90_canasta_oos": [
+        -1.3979999999965522e-06,
+        3.902000000011524e-06
+      ],
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/holdout_canasta.py acta docs/research/u1_cfd_20261025/embudo U1-6E-GRILLA --n-sesiones 20",
+        "python3 tools/holdout_canasta.py conteo docs/research/u1_cfd_20261025/embudo U1-6E-GRILLA",
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+      "prioridad": 3,
+      "cid": "CONF-CVR-ES",
+      "familia": "CONFLUENCIA_CVGAP_RACIMOS_ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "SIN_CANDIDATAS",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 20,
+      "comandos_debian": [
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+      "prioridad": 3,
+      "cid": "TORI-ES",
+      "familia": "TORI_TREND_TOQUE3_ES",
+      "etapa_cierre": "FIN",
+      "veredicto": "SIN_CANDIDATAS",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 8,
+      "comandos_debian": [
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    },
+    {
+      "tipo": "AUDITAR_ANALIZADOR_DESARROLLO",
+      "prioridad": 3,
+      "cid": "U1-ZONAS-GRILLA-YM",
+      "familia": "U1_ZONAS_GRILLA_YM",
+      "etapa_cierre": "FIN",
+      "veredicto": "SIN_REGLA_OPERABLE",
+      "n_pistas_vivas": 0,
+      "n_celdas_analizador": 1,
+      "comandos_debian": [
+        "python3 tools/analizar_embudo.py lanzar"
+      ]
+    }
+  ]
+}

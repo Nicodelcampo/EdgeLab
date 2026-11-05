@@ -1,0 +1,12 @@
+## U1-6B-GRILLA-C-R — edgelab.research.u1_cfd · señal DK:GBPUSD · ejecución DK:GBPUSD
+- Justificación: Misma grilla U1 (regreso a racimos de huecos LUX-IMB en un feed CFD de 24 h) sobre GBPUSD: si es microestructura general de FX, debería aparecer también en la libra, con la escala ajustada a su volatilidad.
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote a réplica; o media neta <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 6291509 pruebas de ['U1_6E_GRILLA', 'U1_ES_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 326716 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 299575 (m del FDR 299575 de 4478976 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.86164665222168 (diagnóstico), linaje 6291509 como informacion, pistas sin nominación 28, candidatas 0
+- PISTAS a réplica (ATJ-25): 19 congeladas de 28 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 1, 1, 2, 1, 0, 3, 2, 3, 0, 35], [0, 1, 2, 2, 1, 2, 2, 3, 1, 0, 40], [0, 1, 0, 0, 2, 0, 2, 3, 1, 1, 39], [0, 0, 2, 2, 1, 2, 2, 3, 1, 0, 38], [0, 1, 1, 0, 2, 0, 3, 2, 3, 0, 35], [0, 1, 2, 0, 2, 2, 2, 3, 1, 0, 14], [1, 1, 0, 0, 1, 0, 3, 2, 3, 0, 35], [0, 1, 1, 0, 2, 0, 2, 3, 3, 0, 29], [1, 0, 0, 2, 2, 2, 3, 1, 3, 1, 31], [0, 0, 2, 0, 2, 0, 3, 3, 1, 0, 10], [1, 1, 2, 1, 2, 2, 3, 3, 3, 0, 4], [0, 0, 0, 2, 2, 0, 1, 2, 3, 1, 35], [1, 0, 1, 0, 1, 2, 2, 3, 1, 0, 14], [0, 0, 2, 0, 1, 2, 2, 3, 1, 0, 4], [0, 1, 2, 0, 2, 2, 3, 3, 1, 0, 18], [1, 0, 0, 0, 2, 2, 2, 2, 1, 1, 6], [0, 0, 2, 0, 1, 2, 2, 3, 3, 0, 12], [0, 0, 2, 0, 2, 2, 2, 3, 1, 0, 8], [0, 1, 2, 0, 2, 0, 2, 3, 1, 0, 4]]
+- PISTAS canasta (una prueba): media -0.03631363013294941 IC90 [-0.059212021266878745, -0.014377004550298474] p 0.9945013746563359 sesiones 55; LORD++ sin rechazo (nivel 0.0008328359130561962)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=6 nivel 0.0006221132491578226 p Simes 1.0; confirmadas 0 de 19 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 19 confirmadas una por una (nivel 0.0006221132491578226, p Simes 1.0); canasta media -0.03631363013294941 IC90 [-0.059212021266878745, -0.014377004550298474]; canasta en contra con potencia; potencia de la canasta 0.9999542831964581

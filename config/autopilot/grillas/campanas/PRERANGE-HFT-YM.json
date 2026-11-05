@@ -1,0 +1,37 @@
+{
+ "cid": "PRERANGE-HFT-YM",
+ "familia": "PRERANGE_HFT_YM",
+ "experimento": "edgelab.research.prerange_hft",
+ "sensor": "YM",
+ "ejecucion": "YM",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "debian",
+ "activa": false,
+ "n_celdas_por_canal": 7776,
+ "spec": "docs/research/prerange_hft_20261030/SPEC_PRERANGE_HFT.md",
+ "datasets_extra": [
+  "nicolasbuttaro/edgelab-zonas-hft"
+ ],
+ "justificacion_economica": "Los stops del rango 08:12-09:12 ET quedan en sus extremos. Cuando el barrido ocurre en YM junto a rachas agresivas recientes (zonas HFT), esa liquidez ya absorbida debería volver más probable el retorno confirmado hacia el rango que el mismo barrido sin zonas.",
+ "como_podria_refutarse": "Sin celdas nominadas por FDR q <= 0,10 ni canasta con soporte; celdas con S iguales al control sin S; fallo en INTEGRIDAD; o refutación con potencia en OOS/holdout.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "sensor y ejecución en el futuro; frontera 2026-10-01."
+ },
+ "cuenta_kaggle": "nicolasbuttaro",
+ "decisiones": [
+  "2026-10-30: activa=false hasta publicar el dataset de zonas HFT y revisar el E0."
+ ]
+}

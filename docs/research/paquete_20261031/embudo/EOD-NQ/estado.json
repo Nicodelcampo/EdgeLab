@@ -1,0 +1,125 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793484214.323349,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793485217.3580894,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.9388027447078005, 'min': -1.9373897073015627, 'q001': -1.935524412152213, 'q010': -1.9187367558080657, 'q500': -0.031097467123964218, 'q990': 0.9084933730577301, 'q999': 0.9357718075427938, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 0}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "EOD-NQ",
+  "familia": "EOD_MOM_NQ",
+  "experimento": "edgelab.research.eod_momentum",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 243,
+  "spec": "docs/research/paquete_20261031/SPEC_EOD_MOM.md",
+  "justificacion_economica": "Momentum intradía de Gao et al. (2018) en NQ: rebalanceos forzados y coberturas de gamma operan en la dirección del día en la última media hora (SPEC_EOD_MOM.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si sólo gana con el stop de catástrofe, no es operable con riesgo acotado.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "EOD_MOM_NQ",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia raíz: ninguna regla de EdgeLab opera la última media hora RTH; declarada antes de DESC (docs/research/paquete_20261031/SPEC_EOD_MOM.md)",
+   "metodo_n": "declarado",
+   "aviso": null,
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484214.3231728,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-eod-nq-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793484562.4426956,
+ "cortes": {
+  "magnitud": [
+   0.08697396888161903,
+   0.250718071211675
+  ],
+  "regimen_vol": [
+   0.7069309280288764,
+   0.8591938791028411
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 0.9388027447078005, 'min': -1.9373897073015627, 'q001': -1.935524412152213, 'q010': -1.9187367558080657, 'q500': -0.031097467123964218, 'q990': 0.9084933730577301, 'q999': 0.9357718075427938, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 0}); pistas a réplica: ninguna pista relevante con media > 0"
+}

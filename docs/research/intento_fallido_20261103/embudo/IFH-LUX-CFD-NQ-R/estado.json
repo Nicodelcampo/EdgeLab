@@ -1,0 +1,158 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793739845.4876335,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793740579.5337992,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.7421748479522443, 'min': -3.1911198481985488, 'q001': -2.9007876853490266, 'q010': -2.2621486039906396, 'q500': -0.3685227034899883, 'q990': 1.2919060938136018, 'q999': 1.6425741334819086, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 0}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "IFH-LUX-CFD-NQ-R",
+  "familia": "IF_HACIA_LUX_CFD_NQ",
+  "experimento": "edgelab.research.intento_fallido_hacia_lux",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 236196,
+  "justificacion_economica": "Si la zona sigue siendo un imán tras el intento fallido, el reacercamiento que recupera el rechazo es el segundo intento; la forma de las piernas (duración y profundidad) y el comercio sobre la zona deberían separar los que llegan (Nico, 03/11).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr–sep en R; las variables de piernas y volumen no separan; falla de integridad.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/intento_fallido_20261103/PREREGISTRO_IF_HACIA.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "IF_HACIA_LUX_CFD_NQ",
+   "declarada": true,
+   "padres": [
+    "INTENTO_FALLIDO_LUX_CFD_NQ",
+    "AREAS_EXP_1_CRUZADO",
+    "LUXIMB_GRILLA_CFD"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4629644,
+   "n_heredado": 4629644,
+   "total": 4629644,
+   "justificacion": "Hija de INTENTO-FALLIDO (pista B80_HACIA) con piernas medidas; declarada antes de DESC (docs/research/intento_fallido_20261103/PREREGISTRO_IF_HACIA.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793739845.4874525,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-ifh-lux-cfd-nq-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793740265.1984293,
+ "cortes": {
+  "A/H": [
+   5.109022556391312,
+   7.282052549941224
+  ],
+  "vol_zona": [
+   0.4822071912968242,
+   1.0823646173288488
+  ],
+  "acerco": [
+   0.7524650478292931,
+   0.82184925706365
+  ],
+  "rechazo": [
+   0.20192495794045368,
+   0.3755193453604581
+  ],
+  "dur_ida": [
+   25.0,
+   83.0
+  ],
+  "dur_aprox": [
+   16.0,
+   49.0
+  ],
+  "dur_rech": [
+   3.0,
+   9.0
+  ],
+  "dur_reac": [
+   3.0,
+   12.0
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.7421748479522443, 'min': -3.1911198481985488, 'q001': -2.9007876853490266, 'q010': -2.2621486039906396, 'q500': -0.3685227034899883, 'q990': 1.2919060938136018, 'q999': 1.6425741334819086, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 0}); pistas a réplica: ninguna pista relevante con media > 0"
+}

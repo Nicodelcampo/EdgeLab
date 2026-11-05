@@ -971,3 +971,183 @@ Criterios: O5 ≥ 5/7 celdas, O1 ≥ 4/6.
 - MEDIDO (kernels 08 y 09 y réplica v2, release v4, verificado contra las salidas crudas): O1 con nulo espejado 0/6 en ES, MES, MNQ, NQ; O6rev 0/7 (ES, MNQ) y 0/4 (NQ); interacción con `session_auction` v3 0/6 tras Holm en ES y MNQ; carrera al centro ES `6_1000_30`: 26,87 % vs 25,44 % pseudo (p 0,328), por debajo del break-even. **Cerrado sólo para esas definiciones/activos/estimandos.** O5 vigente como estado de compresión (NQ 6/6, MGC 6/6, ES/MES/MNQ 7/7; GC 4/6; 6E 2/6). Revisión: `REVISION_CLAUDE_LOCAL_CIERRE_AVZP2_Y_PARCHES_V2_20261014.md` (corrige 3 cifras de O5_t0 y el break-even citado).
 - NO MEDIDO: otras definiciones de racimo, P&L, ejecución, regímenes distintos de `session_auction`.
 
+
+## Paquete del 31-oct — 31/10/2026
+- **MEDIDO — variante τ de las 10 reglas con acta en su instrumento (DESC, pareada por sesión):** REFUTADA. 0 de 30 nominadas por BH
+  q 0,10; 27 de 30 en contra, 21 con IC90 entero < 0. La salida por estructura corta las reversiones antes del objetivo.
+  `docs/research/paquete_20261031/PREREGISTRO_VARIANTE_TAU_ACTAS.md` §Resultado.
+- **MEDIDO — auditoría t_ns de AVZP2:** sin lookahead en U1 (`docs/research/AUDITORIA_T_NS_AVZP2_20261031.md`).
+- **MEDIDO (DESC/réplica de pistas):** TAU-ES, TAU-GC, EOD-NQ, EOD-YM y RANGO0100-ES sin candidatas; TAU-NQ, EOD-ES y PREAPERTURA-NQ en
+  PISTAS_VIVAS sin confirmar (estado en `docs/research/paquete_20261031/embudo/`).
+- **NO MEDIDO todavía:** KALMAN-FADE NQ/ES/GC, PREAPERTURA-ES/YM, RANGO0100-NQ/GC y PRERANGE-ZONAS NQ/ES/YM (corriendo); ASIA-NQ
+  forward (desde la sesión del 2026-11-02).
+
+## Cosecha del 01/11/2026 (paquete del 31-oct, PRERANGE-ZONAS, PRERANGE-BASE)
+- **MEDIDO, sin candidatas (0 nominadas en DESC):** KALMAN-FADE-ES, PREAPERTURA-ES, PREAPERTURA-YM, PRERANGE-BASE-ES y PRERANGE-BASE-YM
+  (CFD ene-2023 → jun-2024: la regla base del barrido de las 8:12, sin zonas, no muestra nada).
+- **MEDIDO, réplica en contra:** PRERANGE-ZONAS-ES (canasta −1,54 pts/op, IC90 [−2,50; −0,66]) y EOD-ES (−1,84, IC90 [−2,91; −0,74]).
+- **MEDIDO, PISTAS_VIVAS sin potencia:** PRERANGE-ZONAS-NQ (+5,68, IC90 [−2,91; +14,97]), RANGO0100-NQ (+13,7, IC90 [−3,7; +30,7], p
+  Simes 0,09), KALMAN-FADE-NQ (+0,25), KALMAN-FADE-GC (−0,19, con potencia), PREAPERTURA-NQ (−28,3) y TAU-NQ (−19,3).
+- **NO MEDIDO todavía:** PRERANGE-ZONAS-YM (réplica), PRERANGE-BASE-NQ y RANGO0100-GC (corriendo).
+- **Límite de datos:** los indicadores de zonas (aVolZone, aVolCluster, BigTrap, HFT) necesitan ticks de futuros; el release empieza en
+  jul/ago-2025, así que no pueden correr sobre historia no mirada. Desbloqueo: exportar ES/NQ/YM 2023 → 2025-07 con
+  `nt8_tools/EdgeLabTickLogger.cs` desde el Strategy Analyzer (`docs/research/atras_20261026/PLAN_HISTORIA_NT8.md`).
+
+## Estrategia de las 8:12 — cierre del 01/11/2026
+- **MEDIDO — PRERANGE-BASE (CFD ene-2023 → jul-2025, 144 celdas, maxT):** ES y YM sin candidatas (mediana del nulo negativa); NQ con 2
+  pistas y réplica **en contra** (canasta −4,80 pts/op, IC90 [−8,88; −0,38]). La regla base del barrido de las 8:12, sin zonas, no
+  tiene edge en la historia no mirada de ninguno de los tres índices.
+- **MEDIDO — PRERANGE-ZONAS-YM:** PISTAS_VIVAS, canasta −7,68 (IC90 [−24,9; +10,3]).
+- Saldo de la familia: ES y YM en contra o sin nada; sólo PRERANGE-ZONAS-NQ queda positiva (+5,7, sin potencia), con las zonas como
+  filtro sobre una base que en CFD NQ es negativa. Lo que queda por medir son las zonas sobre historia de futuros no mirada (requiere
+  exportar ES/NQ/YM 2023 → 2025-07 desde NT8).
+
+## MODELO-ASIA (Modelo Asia de @alphatraders_latam) — 01/11/2026
+Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres lecturas de "puntos").
+- **MEDIDO, unidad de "puntos" (target-free, etapa DESCRIBIR, CFD USATECH, 662 sesiones 2023–2025-07):** ancho del rango 18:00–20:00 ET
+  mediana 36 puntos (p10 17, p90 95). Por tramo: 10–25 → 175 sesiones; **25–75 (= 100–300 ticks de NQ) → 370 (56 %)**; 75–100 → 52;
+  **100–300 puntos del índice → 60 (9 %)**; >300 → 1.
+  **NQ futuros 2025-08 → 2026-09 (289 sesiones): mediana 81,5 puntos (p10 37, p75 130, p90 192). 100–300 puntos → 104 sesiones (36 %)**;
+  25–75 → 125; 75–100 → 48. La mediana mensual va de 36 (sep-2025) a 161 (jun-2026). En el régimen actual la lectura literal (puntos
+  del índice) es habitual, no rara. El ancho depende mucho del régimen de volatilidad.
+- **MEDIDO, regla literal con costos, todo el desarrollo (exploratorio: celdas fijadas por el post, no elegidas mirando).**
+  Media en puntos netos por operación, IC90 por sesiones:
+
+  | Datos | Lectura | n | Media | IC90 | Acierto | PF |
+  |---|---|---|---|---|---|---|
+  | NQ futuros 2025-08 → 2026-09 | 100–300 pts | 89 | +15,2 | [−33,2; +67,2] | 36 % | 1,15 |
+  | NQ futuros 2025-08 → 2026-09 | 100–300 ticks | 107 | −12,7 | [−29,7; +6,7] | 19 % | 0,74 |
+  | NQ futuros 2025-08 → 2026-09 | MT5 | 5 | −29,6 | — | — | — |
+  | CFD 2023 → 2025-07 | 100–300 pts | 53 | +30,6 | [−28,3; +82,9] | 42 % | 1,36 |
+  | CFD 2023 → 2025-07 | 100–300 ticks | 331 | +8,0 | [−2,6; +18,8] | 23 % | 1,22 |
+  | CFD 2023 → 2025-07 | MT5 | 162 | −3,1 | [−11,4; +5,7] | 12 % | 0,86 |
+
+  Ningún IC excluye el cero. La lectura literal (puntos del índice) da positivo en los dos datos, pero con una varianza enorme: hay
+  operaciones de cientos de puntos y la muestra es de 53–89 operaciones. Sin potencia, la regla queda **viva**: ni confirmada ni
+  refutada.
+- **MEDIDO, DESC del embudo (maxT, 420 celdas por canal):**
+  - CFD: `SIN_CANDIDATAS`, 0 maxT. La distribución nula de la canasta es casi toda negativa.
+  - NQ futuros: 0 maxT y 14 pistas sin nominación. La que se congeló para la réplica abr–sep 2026 es [M1 · 25–75 pts · a favor de la
+    EMA · stop MID, 2R, 16:00]; la réplica está corriendo.
+- **MEDIDO, réplica abr–sep 2026 de la pista de NQ** [M1 · 25–75 pts · a favor · MID, 2R, 16:00]: 38 sesiones, media +2,3 pts,
+  IC90 [−13,8; +18,3], p 0,41. Potencia 0,04 → `PISTAS_VIVAS` (`SIN_POTENCIA`): no confirma ni refuta. MODELO-ASIA-V2-NQ queda en FIN.
+
+## U1-CRUZADO — holdout completo (2026-10-01 → 10-30) — 02/11/2026
+- **MEDIDO** (acta `areas_expansion_20261022/u1/ACTA_HOLDOUT_COMPLETO_U1_CRUZADO_20261102.md`, regla congelada, nivel LORD++
+  0,0109): 18 operaciones, +25,8 pts netos por operación, 15 de 18 ganadoras. e-proceso 1,15 contra un umbral de 91,4.
+  **NO_CONCLUYENTE**. Sesiones no miradas (10-23 → 10-30): 8 operaciones, +34,9.
+- **NO MEDIDO**: noviembre en adelante. Lo junta la cartera viva en papel (requiere CFD USATECH diario).
+
+## Look-ahead en `areas_expansion.disparos` (familia U1) — 02/11/2026
+- **MEDIDO**: con la versión causal, U1-CRUZADO da DESC +4,4 por op (64 ops, p 0,31) y réplica +15,6 (109 ops, p 0,026), contra +21,3
+  y +27,3 de la versión de investigación. Los 29 disparos que ésta ocultaba promediaban −48 a −69 pts. El holdout del 2026-11-02
+  (+25,8) usó la versión de investigación: **no vale como estimación operable**. Ver `HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md`.
+- **NO MEDIDO**: el resto de la familia U1 (incluidas 5 de las 7 de la canasta del holdout) con la versión causal.
+
+## Canasta del holdout re-medida con código causal — 02/11/2026
+- **MEDIDO** (`canasta_7_20261030/PROPUESTA_V3_CAUSAL_20261102.md`), réplica causal por operación:
+  - CVGAP-NQ +15,8 (p 0,04); U1-RACIMOS-NQ +14,8 (16 ops); CVGAP-CFD-NQ +5,8; U1-ZONAS-AVCL-NQ +4,0; U1-ZONAS-NQ +2,9;
+  - **U1-ORO −1,2 y U1-YM −10,2** (negativas: se propone sacarlas).
+  - Propuesta v3 de 5 reglas, pendiente de la firma de Nico.
+
+## U1-CRUZADO — holdout con código causal (2026-10-01 → 10-30) — 02/11/2026
+- **MEDIDO**: re-corrida con disparos causales (decisión de Nico). Mismas 18 operaciones y mismo P&L que la corrida con mirada al
+  futuro: +25,8 netos por operación. e-proceso NO_CONCLUYENTE (e_edge 1,15 contra 277, α LORD++ 0,0036, t = 2).
+  Acta: `areas_expansion_20261022/u1/ACTA_HOLDOUT_CAUSAL_U1_CRUZADO_20261102.md`.
+- **NO MEDIDO**: holdout con calentamiento de zonas de desarrollo (esta corrida las arma sólo con ticks del holdout, igual que la anterior).
+
+## Canasta v3 — holdout, revisión 1 (20 sesiones, 10-01 → 10-28) — 02/11/2026
+- **MEDIDO**: t = −1,51 contra 2,39: no aprueba y sigue a la revisión 2. CVGAP-NQ −34,9 (n 20) y CVGAP-CFD-NQ −22,9 (n 16) en alerta.
+  U1-ZONAS-AVCL +15,0 (n 7), U1-RACIMOS +43,7 (n 5), U1-ZONAS −14,6 (n 17). Acta: `canasta_7_20261030/ACTA_APERTURA_V3_20261102.md`.
+- **NO MEDIDO**: si la ausencia de operaciones de U1-RACIMOS antes del 10-13 es mercado o calentamiento.
+
+## U1-CRUZADO causal — régimen mensual (experimento 1) — 02/11/2026
+- **MEDIDO**: tramos causales, E1A/T3/S3 con tope 3×:
+  - US 2023-01 → 2024-03: −0,8 (36 operaciones);
+  - US 2024-04 → 2025-07: −11,5 (135);
+  - NQ desarrollo: +4,4 (64);
+  - NQ réplica: +15,6 (109).
+
+  Spearman de la media mensual contra rango, tendencia y volatilidad de las 20 sesiones previas: +0,21 / −0,13 / +0,24, Holm 0,44
+  en las tres. Ninguna separa los meses. MDE |rho| ≈ 0,4. `areas_expansion_20261022/u1/regimen_causal/`.
+- **NO MEDIDO**: régimen con medidas relativas al nivel (rango / precio) — no pre-registrado; no se mira sobre estos datos.
+
+## Experimentos 2 y 3 e integridad del sellado — 02/11/2026
+- **MEDIDO, U1-VOL (W y G escalados por el rango M1 del mes anterior):** ninguna escala deja positivo 2023–25 (−2,1 / −0,9 / −15,2).
+  Refutada según su pre-registro. `u1/u1_vol/`.
+- **MEDIDO, U1 con sensor NQ:** desarrollo −2,5 (78), réplica −1,0 (111), contra +4,4 y +15,6 con sensor CFD. El CFD aporta.
+  `u1/sensor_ejecucion/`.
+- **MEDIDO, sellado:** el NQ del 10-07 y del 10-29 está incompleto (7 mil y 69 mil ticks). Canasta v3, revisión 1 con sesiones
+  válidas: t = −0,73, no aprueba. Los racimos del sellado son normales (16–36 por día).
+- **NO MEDIDO:** las sesiones del 10-07 y el 10-29 completas.
+
+## Holdout — aperturas individuales de las 12 nominadas (código causal), interino — 02/11/2026
+- **MEDIDO:** todas EN CURSO, lejos de su N fijo.
+  - En contra, con IC90 < 0: CVGAP-NQ −34,9 (20), CVGAP-CFD-NQ −22,9 (16), U1-ES −6,2 (11).
+  - A favor, con n chico: U1-ZONAS-AVCL-NQ +15,0 (7), U1-RACIMOS-NQ +43,7 (5), BT2-NQ +6,9 (10), RACIMOS-ES +4,5 (13).
+  - Canasta v4, revisión 1 informativa: t −0,93.
+  - Integridad: influencia baja.
+
+  Acta: `canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md`.
+- **Auditoría vela a vela (experimento 4):** 0 fallas en las corridas terminadas.
+
+## Auditoría vela a vela de la canasta (experimento 4) y U1-ZONAS-ES en el holdout — 02/11/2026
+- **MEDIDO:** 14 de 14 corridas, 0 fallas. U1-ZONAS-ES en el holdout: 2 operaciones, +1,0 (EN CURSO, N fijo 150).
+
+## Holdout contra desarrollo, todo con código causal — 02/11/2026
+- **MEDIDO:** ninguna de las 13 reglas difiere significativamente de su DESC + réplica causal tras Holm. Las dos CVGAP son las más
+  apartadas (z −2,70 y −2,45, Holm 0,20 y 0,22). `canasta_7_20261030/HOLDOUT_VS_DESARROLLO_20261102.md`.
+
+## Apertura conjunta del holdout (código causal) — 02/11/2026
+- **MEDIDO:** 16 reglas (12 nominadas, U1-CRUZADO y 3 forzadas). Todas EN CURSO o NO_CONCLUYENTE; papel de las 3 forzadas SIN_DECIDIR.
+  La señal fuerte es mala: CVGAP-NQ y CVGAP-CFD-NQ en alerta (z −2,7 / −2,45). `docs/research/APERTURA_HOLDOUT_CONJUNTA_20261102.md`.
+
+## Programa R: salidas, filtros y maldición del ganador — 03/11/2026
+- **MEDIDO:** con las 8 reglas de la v5 agrupadas (467 operaciones DESC, 379 réplica), ninguna de las 28 políticas de salida ni de los
+  5 filtros confirma en réplica. Cortar ganancias (tiempo ≤ 60 velas, objetivo 0,5R, BE, trailing) resta R en los dos tramos.
+  `programa_r_20261103/`.
+- **MEDIDO:** canastas de pistas de 44 familias en su réplica no usada (relanzamiento en R), efecto aleatorio −0,042R
+  (IC90 −0,056 a −0,028; 10 de 44 positivas). Las mejores celdas de una grilla grande no rinden fuera de muestra.
+- **MEDIDO (familias nuevas del Programa R, 03/11/2026):** PAR-NQES-R, PAR-YMES-R, LEADLAG-GC-EUR-R, VWAP-NQ-R y VWAP-ES-R, en R. Ninguna
+  nominada por FDR. PAR-REL (fade del spread) queda refutada: la mitad de las celdas tienen z ≤ −z del tamiz y ninguna es positiva.
+  LEAD-LAG GC/EUR queda refutado en 1 minuto. VWAP-REV no tiene potencia (12 a 16 evaluables de 72); su candidata NQ falló integridad.
+  `programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md`.
+- **NO MEDIDO:** el spread como continuación (sólo como familia hija con linaje); LEAD-LAG sub-minuto; VWAP con disparo menos raro.
+- **MEDIDO (03/11/2026):** bug de `riesgo_ops`. Un stop en la entrada daba riesgo ≈ 1e-10, que se dividía, y producía ±1e9 R. Afectó a 6
+  campañas en R; se corrigió y se relanzaron, con el mismo desenlace. En U1-6B y U1-6E, las canastas de pistas en réplica quedan
+  **en contra con potencia** (−0,036R y −0,041R). `relanzamiento_R_20261102/descartadas_riesgo_flotante/README.md`.
+- **MEDIDO (atlas de ideas en R, 03/11/2026, 118/118):** tres componentes de ejecución se confirman en réplica, sobre 15 familias de la
+  gramática U1. Stop estructural S3: +0,134R (réplica +0,121R). Objetivo lejano T3: +0,065R. Objetivo cercano T1: −0,070R. Son efectos
+  relativos a la media de la familia, y en los tres casos van en la dirección de dejar correr. Las entradas no mueven más de 0,05R.
+  `atlas_ideas_r_20261102/RESULTADO_ATLAS_IDEAS_R_20261103.md`.
+- **NO MEDIDO:** la transferencia de S3/T3 a gramáticas que no son U1; be=0,5 (sólo 4 familias, no pasa BH).
+- **MEDIDO (03/11/2026):** tamiz FDR con cola t (decisión de Nico). Sobre ruido sintético de U1-6E-CONFIRMA, la cola normal nominaba en
+  3 de 8 semillas, siempre celdas de 30 a 40 operaciones. En el test de dependencia por sesión, BH baja de 22,3 % a 19,8 % (maxT 11 %).
+  `DECISIONES_20261103_COLA_T_FDR.md`.
+- **NO MEDIDO (pre-registrado, lanzado 03/11):** INTENTO-FALLIDO, la idea de Nico (aproximación a la zona que no llega y rechaza; vías
+  A y B), en 4 fuentes de zonas. `intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md`. Familias de Gemini corregidas: 6 de 12, en 20
+  campañas. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
+- **MEDIDO (relanzamiento con cola t, 03/11/2026):** con la cola t, CVGAP-NQ-R pasa de 11 nominadas a 0. U1-6E-CONFIRMA corre y queda en
+  contra con potencia (−0,044R). CVGAP-CFD-NQ conserva 3 candidatas con OOS negativo no concluyente. `relanzamiento_R_20261102/descartadas_cola_normal/README.md`.
+- **MEDIDO (Gemini corregidas, 03/11/2026):** 20 campañas, 0 nominadas por FDR. ABSORCION-CLIMAX y ESTRUCTURA-HHLL quedan refutadas en R
+  (la mayoría de las celdas significativamente negativas). COMEX-CIERRE-GC sigue viva sin potencia (réplica +0,23R en 27 sesiones).
+  WM, POST-MACRO y OVERNIGHT no tienen potencia. `programa_r_20261103/CORRECCIONES_GEMINI_20261103.md`.
+- **MEDIDO (INTENTO-FALLIDO v2, 3 de 4 fuentes, 03/11/2026):** en racimos NQ, 320 nominadas en DESC, pero las pistas en réplica dan
+  −0,26R. En LUX NQ, +0,12R sin potencia. En AVCL, nada. Las pistas son casi todas «hacia la zona». `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
+- **⭐ PISTA DESTACADA (Nico, 03/11/2026): B80_HACIA** de INTENTO-FALLIDO (tras un intento fallido, cuando el precio recupera el 80 % del
+  rechazo, entrar hacia la zona). Es la regla que más se repite entre las pistas de las 3 fuentes. Sin confirmación. Línea a profundizar:
+  `intento_fallido_20261103/RESULTADO_INTENTO_FALLIDO.md`.
+- **MEDIDO (INTENTO-FALLIDO-HACIA, 03/11/2026):** ninguna candidata. En las marginales, la primera pierna corta (alejamiento rápido)
+  empeora en las 3 fuentes y en las 2 ventanas, y la entrada con confirmación es la mejor. Nada es positivo todavía.
+  `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
+- **NO MEDIDO:** el filtro combinado (`dur_ida` alto + A/H alto + CONF) en datos no usados de 2024-01 a 2025-07.
+- **MEDIDO (confirmación del filtro IFH, 2024-01 a 2025-07 en CFD):** NO CONCLUYENTE. 10 sesiones, +0,13R, IC90 −0,46 a +0,67, potencia 0,07.
+  El filtro es demasiado restrictivo. `intento_fallido_20261103/RESULTADO_IF_HACIA.md`.
+- **MEDIDO (SEGUNDO-INTENTO, 12 campañas, 04/11/2026):** 0 nominadas. 8 terminan SIN_CANDIDATAS y 4 PISTAS_VIVAS con réplica ≤ 0. El
+  segundo intento hacia la zona no tiene edge con muestra amplia, y ninguna pista califica para nominación forzada.
+  `segundo_intento_20261103/RESULTADO_SEGUNDO_INTENTO.md`.
+- **MEDIDO (DOBLE-RETROCESO, 10 activos × 3 resoluciones de tick, 746.496 celdas por canal, 04/11/2026):** 0 nominadas por FDR en
+  todos. Las réplicas de las pistas son ≤ 0; van en contra con potencia en USA500 y USA30, y en contra en ES y GBPUSD. Ninguna califica
+  para nominación forzada. `doble_retroceso_20261104/RESULTADO_DOBLE_RETROCESO.md`.
+- **NO MEDIDO:** 25 o 500 ticks, entrada límite en P4, y paridad con el indicador de NT8.
+

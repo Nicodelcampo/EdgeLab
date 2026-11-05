@@ -1,0 +1,31 @@
+{
+ "cid": "ORO-ALM-CFD",
+ "familia": "ORO_ALMUERZO_RUPTURA_CFD",
+ "experimento": "edgelab.research.oro_almuerzo_ruptura",
+ "sensor": "DK:XAUUSD",
+ "ejecucion": "GC",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "debian",
+ "activa": true,
+ "n_celdas_por_canal": 1259712,
+ "spec": "docs/research/oro_almuerzo_20261028/SPEC_ORO_ALMUERZO_RUPTURA.md",
+ "justificacion_economica": "Estrategia del Oro de la Hora de Comer (08:00-14:00 Europe/Madrid) medida en XAUUSD spot/CFD y ejecutada en GC futuro: cuando la mañana europea acumula cierres por debajo de Open_08 sin romper soporte y a partir de las 14:00 Madrid (apertura de flujo NY) rompe el máximo de la mañana (o simétrico/fadeo U1), captura la expansión de la tarde hasta las 18:00 Madrid (240 min), condicionada por la escala mensual de u1_oro y ZONAS-GAPS.",
+ "como_podria_refutarse": "Sin celdas nominadas por FDR q <= 0,10 ni canasta confirmada, fallo de integridad cruzada XAUUSD->GC, o refutación en OOS/holdout.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "frontera global 2026-10-01; sensor DK:XAUUSD y ejecución GC."
+ },
+ "cuenta_kaggle": "nicobuttaro"
+}

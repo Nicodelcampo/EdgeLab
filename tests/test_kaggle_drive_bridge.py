@@ -368,3 +368,128 @@ def test_archivar_reemplaza_un_pedido_ya_procesado_con_el_mismo_nombre(tmp_path)
     nuevo = tmp_path / "x.json"; nuevo.write_text("nuevo")
     M._archivar(nuevo, viejo)
     assert viejo.read_text() == "nuevo" and not nuevo.exists()
+
+
+def test_holdout_sellado_no_se_expone_por_el_puente(tmp_path):
+    """HOLDOUT-A4 (2026-10-28): ni lectura, ni descarga, ni adjuntar como fuente de un kernel, ni salidas de kernels de holdout."""
+    from tools.kaggle_drive_bridge import BridgePolicy, KaggleBridgeError, process_bridge_request
+    pol = BridgePolicy(allow_push=True, allow_data_download=True, allowed_source_owners=("nicolasbuttaro",))
+    sellado = "nicolasbuttaro/edgelab-holdout-sellado"
+    pedidos = [("inspect_dataset", {"dataset": sellado}), ("list_dataset_files", {"dataset": sellado}),
+               ("read_dataset_file_preview", {"dataset": sellado, "file": "SELLADO.txt"}),
+               ("download_file_chunked", {"dataset": sellado, "file": "ES_12-26_ticks.parquet"}),
+               ("push_kernel", {"slug": "mi-kernel", "title": "x", "script": "print(1)", "dataset_sources": [sellado]}),
+               ("get_kernel_output", {"owner": "nicolasbuttaro", "slug": "embudo-u1-es-grilla-holdout-conteo-20261001"})]
+
+    class _C:                                                   # cliente que revienta si alguien lo LLAMA: la guarda tiene que cortar antes
+        def __getattr__(self, k):
+            def _no(*a, **kw):
+                raise AssertionError(f"el cliente no debe llamarse ({k})")
+            return _no
+
+    for i, (accion, params) in enumerate(pedidos):
+        try:
+            process_bridge_request(dict(request_id=f"h{i}", action=accion, params=params), _C(), tmp_path, policy=pol)
+        except KaggleBridgeError:
+            continue
+        raise AssertionError(f"{accion} sobre el holdout sellado no fue bloqueado")
+
+
+
+def test_git_apply_and_push_aplica_commitea_y_bloquea_archivos_protegidos_l0(tmp_path):
+    """Verifica que git_apply_and_push aplique parches limpios, haga commit+push a un remoto bare, y bloquee tocar L0 o el puente."""
+    import hashlib, json, subprocess
+    from tools.kaggle_drive_bridge import BridgePolicy, KaggleBridgeError, process_bridge_request
+
+    remote = tmp_path / "remote.git"
+    subprocess.run(["git", "init", "--bare", "-q", str(remote)], check=True)
+
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    subprocess.run(["git", "-C", str(repo), "init", "-q", "-b", "foundation/f0b-compatibility-probe"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.email", "edge@edgelab.local"], check=True)
+    subprocess.run(["git", "-C", str(repo), "config", "user.name", "EdgeLab"], check=True)
+    subprocess.run(["git", "-C", str(repo), "remote", "add", "origin", str(remote)], check=True)
+
+    # Crear archivo protegido L0 y archivo normal
+    (repo / "edgelab").mkdir()
+    f_l0 = repo / "edgelab" / "holdout.py"
+    f_l0.write_text("HOLDOUT_PRIMERA_SESION_INT = 20261001\n", encoding="utf-8")
+    sha_l0 = hashlib.sha256(f_l0.read_bytes()).hexdigest()
+
+    (repo / "config" / "autopilot").mkdir(parents=True)
+    (repo / "config" / "autopilot" / "protected.json").write_text(
+        json.dumps({"files": {"edgelab/holdout.py": sha_l0}}), encoding="utf-8"
+    )
+    (repo / "docs").mkdir()
+    (repo / "docs" / "NOTA.md").write_text("linea 1\n", encoding="utf-8")
+
+    subprocess.run(["git", "-C", str(repo), "add", "-A"], check=True)
+    subprocess.run(["git", "-C", str(repo), "commit", "-q", "-m", "init"], check=True)
+    subprocess.run(["git", "-C", str(repo), "push", "-q", "origin", "foundation/f0b-compatibility-probe"], check=True)
+
+    bridge_dir = tmp_path / "bridge"
+    patches_dir = bridge_dir / "patches_for_review"
+    patches_dir.mkdir(parents=True)
+
+    # 1. Parche válido sobre docs/NOTA.md
+    valid_patch = (
+        "diff --git a/docs/NOTA.md b/docs/NOTA.md\n"
+        "--- a/docs/NOTA.md\n"
+        "+++ b/docs/NOTA.md\n"
+        "@@ -1 +1,2 @@\n"
+        " linea 1\n"
+        "+linea 2\n"
+    )
+    (patches_dir / "ok.patch").write_text(valid_patch, encoding="utf-8")
+
+    class _NoClient:
+        pass
+
+    # Sin allow_git_push debe fallar
+    pol_off = BridgePolicy(allow_git_push=False, repos={"edgelab": str(repo)})
+    try:
+        process_bridge_request(
+            {"request_id": "g1", "action": "git_apply_and_push", "params": {"repo": "edgelab", "patch": "ok.patch", "message": "test"}},
+            _NoClient(),
+            bridge_dir,
+            policy=pol_off,
+        )
+        raise AssertionError("debio bloquearse con allow_git_push=False")
+    except KaggleBridgeError:
+        pass
+
+    # Con allow_git_push=True aplica, commitea y pushea al remoto bare
+    pol_on = BridgePolicy(allow_git_push=True, repos={"edgelab": str(repo)})
+    resp = process_bridge_request(
+        {"request_id": "g2", "action": "git_apply_and_push", "params": {"repo": "edgelab", "patch": "ok.patch", "message": "feat: nota"}},
+        _NoClient(),
+        bridge_dir,
+        policy=pol_on,
+    )
+    assert resp["status"] == "OK"
+    assert resp["result"]["pushed"] is True
+    assert resp["result"]["files_changed"] == 1
+    remote_head = subprocess.check_output(["git", "-C", str(remote), "rev-parse", "refs/heads/foundation/f0b-compatibility-probe"], text=True).strip()
+    assert remote_head == resp["result"]["head"]
+
+    # 2. Parche que intenta tocar archivo protegido L0 (edgelab/holdout.py) debe ser rechazado
+    bad_patch = (
+        "diff --git a/edgelab/holdout.py b/edgelab/holdout.py\n"
+        "--- a/edgelab/holdout.py\n"
+        "+++ b/edgelab/holdout.py\n"
+        "@@ -1 +1 @@\n"
+        "-HOLDOUT_PRIMERA_SESION_INT = 20261001\n"
+        "+HOLDOUT_PRIMERA_SESION_INT = 20261101\n"
+    )
+    (patches_dir / "bad_l0.patch").write_text(bad_patch, encoding="utf-8")
+    try:
+        process_bridge_request(
+            {"request_id": "g3", "action": "git_apply_and_push", "params": {"repo": "edgelab", "patch": "bad_l0.patch", "message": "hack"}},
+            _NoClient(),
+            bridge_dir,
+            policy=pol_on,
+        )
+        raise AssertionError("debio bloquearse por guarda L0")
+    except KaggleBridgeError:
+        pass

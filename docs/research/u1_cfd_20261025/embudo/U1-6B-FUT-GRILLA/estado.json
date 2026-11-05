@@ -1,0 +1,306 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793040736.1314032,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793043040.562906,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "ts": 1793043646.4505963,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
+  },
+  {
+   "ts": 1793044251.8247428,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6866812227074236); canasta media -8.598719999999567e-05 IC90 [-0.0004064703999999942, 0.00022552959999996413]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08257435517251754"
+  }
+ ],
+ "spec": {
+  "cid": "U1-6B-FUT-GRILLA",
+  "familia": "U1_6B_FUT_GRILLA",
+  "experimento": "edgelab.research.u1_cfd",
+  "sensor": "DK:GBPUSD",
+  "ejecucion": "6B",
+  "desc": [
+   20250804,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "Misma grilla U1 (regreso a racimos de huecos LUX-IMB en un feed CFD de 24 h) sobre GBPUSD: si es microestructura general de FX, debería aparecer también en la libra, con la escala ajustada a su volatilidad.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista confirmada en lote a réplica; o media neta <= 0 en el OOS abr-sep 2026 con potencia y en contra significativo.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "ejecución en 6B (futuro, datos del release)"
+  },
+  "spec": "docs/research/u1_cfd_20261025/PREREGISTRO_U1_CFD.md",
+  "n_celdas_por_canal": 4478976,
+  "cuenta_kaggle": "auto",
+  "decisiones": [
+   "2026-10-26: aprobada por Nico («apruebo») junto con la confirmación cruzada EURUSD/GBPUSD; declarada antes de cualquier DESC sobre GBPUSD."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "ejecución en 6B (futuro, datos del release)"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_6B_FUT_GRILLA",
+   "declarada": true,
+   "padres": [
+    "U1_6E_GRILLA",
+    "U1_ES_GRILLA",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5252988,
+   "n_heredado": 5252988,
+   "total": 5252988,
+   "justificacion": "misma grilla U1 sobre GBPUSD; el DESC de EURUSD (instrumento correlacionado) ya se miró",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793040736.1310613,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-u1-6b-fut-grilla-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "vol_vuelta/ida": [
+    0.8454409281095187,
+    1.2112661079816884
+   ],
+   "vol_ida_rel": [
+    1.1333743671946173,
+    2.4832748484367975
+   ],
+   "vel_vuelta/ida": [
+    0.75,
+    1.776315789473684
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    0,
+    2,
+    3,
+    1,
+    10
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793043951.0018353,
+ "cortes": {
+  "vol_vuelta/ida": [
+   0.8454409281095187,
+   1.2112661079816884
+  ],
+  "vol_ida_rel": [
+   1.1333743671946173,
+   2.4832748484367975
+  ],
+  "vel_vuelta/ida": [
+   0.75,
+   1.776315789473684
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793043646.450525,
+  "celdas": [
+   [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    0,
+    2,
+    3,
+    1,
+    10
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 25,
+   "media": -8.598719999999567e-05,
+   "ic90": [
+    -0.0004064703999999942,
+    0.00022552959999996413
+   ],
+   "p": 0.6778305423644089,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.6778305423644089,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "U1_6B_FUT_GRILLA",
+    "run_id": "U1-6B-FUT-GRILLA/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.6866812227074236,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "U1_6B_FUT_GRILLA",
+   "run_id": "U1-6B-FUT-GRILLA/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.08257435517251754,
+   "efecto": 0.00017378193548387344,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     0,
+     2,
+     3,
+     1,
+     10
+    ],
+    "n": 31,
+    "media_neta": 0.0003475638709677469,
+    "sesiones": 24,
+    "ic90": [
+     2.1440795454568325e-05,
+     0.0006704277011494464
+    ],
+    "p_sesiones": 0.03948025987006497,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 3.35,
+    "pasa": false,
+    "n_pruebas": 48644.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.6893956661224365,
+    "canal": "total",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 48644,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 4478976,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 29,
+     "media": -7.412689655172037e-05,
+     "ic90": [
+      -0.0003427587096774171,
+      0.00020592615384614252
+     ],
+     "p": 0.6866812227074236,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6866812227074236); canasta media -8.598719999999567e-05 IC90 [-0.0004064703999999942, 0.00022552959999996413]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08257435517251754"
+}

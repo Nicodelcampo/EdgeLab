@@ -1,0 +1,12 @@
+## DRC-GC-R — edgelab.research.doble_retroceso · señal GC · ejecución GC
+- Justificación: El impulso 2 barre la liquidez de P1; el retroceso 2 que no toma P2 muestra que el lado contrario no recupera la estructura; stop corto y estructural detrás de P2 (patrón de Nico, 04/11).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique; las variables de piernas no separan; falla de integridad o de paridad con NT8.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 766071 de 1492992 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 447921 (m del FDR 447921 de 746496 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.857734203338623 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 0, 1, 2, 3, 3, 1, 1, 0, 0, 4], [0, 0, 1, 2, 2, 2, 1, 1, 0, 0, 4], [0, 0, 1, 1, 3, 3, 1, 2, 0, 0, 4], [0, 0, 1, 3, 3, 2, 1, 1, 0, 0, 4], [0, 0, 1, 3, 2, 3, 1, 1, 0, 0, 4], [0, 0, 1, 2, 3, 2, 1, 2, 0, 0, 4], [0, 0, 1, 2, 3, 3, 1, 2, 0, 0, 1], [0, 0, 1, 2, 2, 3, 1, 2, 0, 0, 4], [0, 0, 1, 1, 2, 2, 1, 2, 0, 0, 4], [0, 0, 1, 1, 3, 2, 1, 2, 0, 0, 1], [0, 0, 1, 1, 2, 3, 1, 2, 0, 0, 1], [0, 0, 0, 1, 3, 3, 1, 1, 0, 0, 4], [0, 0, 1, 3, 3, 3, 1, 1, 0, 0, 2], [0, 0, 0, 1, 3, 2, 1, 1, 0, 0, 1], [1, 0, 1, 1, 3, 3, 1, 2, 0, 0, 3], [1, 0, 1, 2, 3, 2, 1, 1, 0, 0, 4], [0, 0, 1, 3, 3, 2, 0, 2, 0, 0, 4], [0, 0, 0, 1, 2, 2, 1, 1, 0, 0, 4], [1, 0, 1, 1, 3, 2, 2, 1, 0, 0, 3], [1, 0, 1, 2, 3, 3, 1, 1, 0, 0, 3]]
+- PISTAS canasta (una prueba): media 0.0423226392846186 IC90 [-0.2025578619677091, 0.2939462063610673] p 0.37190702324418895 sesiones 64; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.6167708694093558; confirmadas 0 de 20 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6167708694093558); canasta media 0.0423226392846186 IC90 [-0.2025578619677091, 0.2939462063610673]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.5862498948722026

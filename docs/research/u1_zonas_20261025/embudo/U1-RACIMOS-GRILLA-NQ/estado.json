@@ -1,0 +1,2119 @@
+{
+ "etapa": "CONTEO",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793048154.5172014,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793050960.499162,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ]
+   ]
+  },
+  {
+   "ts": 1793052658.6399872,
+   "etapa": "INDAGA",
+   "falla": "no se pudo traer el resultado: FileNotFoundError(2, 'No such file or directory')"
+  },
+  {
+   "ts": 1793225954.2501273,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793227790.425667,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793228512.7435827,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793229193.7868063,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793229193.799741,
+   "etapa": "ACTA",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "U1-RACIMOS-GRILLA-NQ",
+  "familia": "U1_RACIMOS_GRILLA_NQ",
+  "experimento": "edgelab.research.u1_racimos_grilla",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250801,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "justificacion_economica": "U1 con racimos de aVolZonePOI2 (volumen real concentrado y repetido) como áreas, con la definición de zona y de racimo como perillas (nivel 1).",
+  "como_podria_refutarse": "Sin nominadas por FDR q 0,10 ni pistas confirmadas en lote a réplica; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o ninguna definición de zona/racimo se separa de las demás.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "spec": "docs/research/u1_zonas_20261025/PREREGISTRO_U1_ZONAS_BT2_AVZR.md",
+  "n_celdas_por_canal": 46656,
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC.",
+   "Decisión global de Nico 2026-10-27: el holdout empieza el 30 de septiembre (apertura 2026-09-30 22:00 UTC = sesión CME 20261001) para todos los agentes, todos los activos y todo el proyecto; holdout.desde pasa de 20261023 a 20261001."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecución en el futuro: sin cruce"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "U1_RACIMOS_GRILLA_NQ",
+   "declarada": true,
+   "padres": [
+    "U1_ZONAS_NQ",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 4838367,
+   "n_heredado": 4838367,
+   "total": 4838367,
+   "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793048154.5170658,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {},
+  "celdas": [
+   [
+    1,
+    0,
+    0,
+    9,
+    2,
+    1
+   ],
+   [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   [
+    1,
+    1,
+    0,
+    0,
+    3,
+    1
+   ]
+  ],
+  "topes": null
+ },
+ "periodo": [
+  20250801,
+  20260331
+ ],
+ "lanzada": 1793228514.1823194,
+ "cortes": {},
+ "candidatas": [
+  [
+   1,
+   0,
+   0,
+   9,
+   2,
+   1
+  ],
+  [
+   1,
+   0,
+   0,
+   9,
+   1,
+   0
+  ],
+  [
+   1,
+   1,
+   0,
+   0,
+   3,
+   1
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    "n": 45,
+    "media_neta": 25.66561111111111,
+    "sesiones": 32,
+    "ic90": [
+     14.853170212765956,
+     35.75018534144427
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 26.77,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.44479225827778346,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.912445068359375,
+    "canal": "total",
+    "q_fdr": 0.003636694635158566,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    "n": 38,
+    "media_neta": 24.23739473684211,
+    "sesiones": 28,
+    "ic90": [
+     14.044913851351351,
+     32.64293750000001
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 28.79,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.42004086686651865,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.272809028625488,
+    "canal": "total",
+    "q_fdr": 0.0015391641539876932,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ],
+    "n": 47,
+    "media_neta": 23.717797872340434,
+    "sesiones": 33,
+    "ic90": [
+     12.648380208333334,
+     33.6687716802168
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 29.76,
+    "pasa": true,
+    "n_pruebas": 955.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.017330281221522317,
+    "media_esperada_fuera": 0.4110361070828834,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 3.552650213241577,
+    "canal": "total",
+    "q_fdr": 0.023843303937579496,
+    "nominada_fdr": true,
+    "pi0_fdr": 0.6094240837696335,
+    "m_fdr": 955,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 46656,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    1,
+    0,
+    0,
+    9,
+    2,
+    1
+   ],
+   "n_desc": 45,
+   "ops_mes": 6.43,
+   "efecto": 12.832805555555556,
+   "oos": {
+    "n": 38.6,
+    "mde": 17.060214184369624,
+    "potencia": 0.5892006181568985
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 8.651107562699865,
+    "potencia": 0.9794991132785024
+   }
+  },
+  {
+   "celda": [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   "n_desc": 38,
+   "ops_mes": 5.43,
+   "efecto": 12.118697368421055,
+   "oos": {
+    "n": 32.6,
+    "mde": 15.183329528076248,
+    "potencia": 0.6329762460207453
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 7.075217444900708,
+    "potencia": 0.9955265122101454
+   }
+  },
+  {
+   "celda": [
+    1,
+    1,
+    0,
+    0,
+    3,
+    1
+   ],
+   "n_desc": 47,
+   "ops_mes": 6.71,
+   "efecto": 11.858898936170217,
+   "oos": {
+    "n": 40.3,
+    "mde": 17.1609379876211,
+    "potencia": 0.5292563262737907
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 8.893463491449024,
+    "potencia": 0.9526106248472603
+   }
+  }
+ ],
+ "codigo_cambiado": [
+  {
+   "etapa": "INDAGA",
+   "modulos": [
+    "edgelab/research/fuentes_ticks.py",
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/grilla_masiva.py",
+    "edgelab/funnel/escalera.py",
+    "edgelab/research/embudo_runners.py",
+    "edgelab/research/u1_racimos_grilla.py",
+    "edgelab/research/u1_indaga.py",
+    "edgelab/research/u1_oro.py",
+    "edgelab/research/u1_zonas.py"
+   ]
+  },
+  {
+   "etapa": "INTEGRIDAD",
+   "modulos": [
+    "edgelab/funnel/escalera.py"
+   ]
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    1,
+    0,
+    0,
+    9,
+    2,
+    1
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 175,
+       "media_neta": 5.803785714285716,
+       "sesiones": 84,
+       "ic90": [
+        -1.1080670077972723,
+        12.066527261168721
+       ],
+       "p_sesiones": 0.06786427145708583,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 54,
+       "media_neta": 11.512370370370377,
+       "sesiones": 32,
+       "ic90": [
+        0.094524038461536,
+        23.587175438596482
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 55,
+       "media_neta": 4.624954545454545,
+       "sesiones": 35,
+       "ic90": [
+        -6.46478666413374,
+        13.05411221246973
+       ],
+       "p_sesiones": 0.20159680638722555,
+       "chica": false
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 10,
+       "media_neta": 43.867,
+       "sesiones": 8,
+       "ic90": [
+        3.3007673611111072,
+        70.66842045454543
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 1
+      }
+     ],
+     "def_zona": [
+      {
+       "nivel": 0,
+       "n": 22,
+       "media_neta": 6.789727272727273,
+       "sesiones": 17,
+       "ic90": [
+        -16.48005882352941,
+        26.380312728937707
+       ],
+       "p_sesiones": 0.32335329341317365,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 21,
+       "media_neta": 22.704500000000003,
+       "sesiones": 15,
+       "ic90": [
+        11.189677139037432,
+        34.7341611952862
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 2
+      },
+      {
+       "nivel": 3,
+       "n": 1
+      },
+      {
+       "nivel": 4,
+       "n": 32,
+       "media_neta": 14.071687499999998,
+       "sesiones": 27,
+       "ic90": [
+        -0.6661101190476209,
+        28.15040277777776
+       ],
+       "p_sesiones": 0.05189620758483034,
+       "chica": false
+      },
+      {
+       "nivel": 5,
+       "n": 29,
+       "media_neta": 6.402775862068966,
+       "sesiones": 22,
+       "ic90": [
+        -12.354093750000004,
+        23.49479477196886
+       ],
+       "p_sesiones": 0.2934131736526946,
+       "chica": true
+      },
+      {
+       "nivel": 6,
+       "n": 3
+      },
+      {
+       "nivel": 7,
+       "n": 2
+      },
+      {
+       "nivel": 8,
+       "n": 36,
+       "media_neta": 17.721861111111114,
+       "sesiones": 28,
+       "ic90": [
+        3.035881967905405,
+        32.57612162162161
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 2
+      },
+      {
+       "nivel": 11,
+       "n": 1
+      },
+      {
+       "nivel": 12,
+       "n": 6
+      },
+      {
+       "nivel": 13,
+       "n": 6
+      },
+      {
+       "nivel": 14,
+       "n": 0
+      },
+      {
+       "nivel": 15,
+       "n": 0
+      },
+      {
+       "nivel": 16,
+       "n": 7
+      },
+      {
+       "nivel": 17,
+       "n": 4
+      },
+      {
+       "nivel": 18,
+       "n": 0
+      },
+      {
+       "nivel": 19,
+       "n": 0
+      },
+      {
+       "nivel": 20,
+       "n": 6
+      },
+      {
+       "nivel": 21,
+       "n": 4
+      },
+      {
+       "nivel": 22,
+       "n": 0
+      },
+      {
+       "nivel": 23,
+       "n": 0
+      },
+      {
+       "nivel": 24,
+       "n": 0
+      },
+      {
+       "nivel": 25,
+       "n": 0
+      },
+      {
+       "nivel": 26,
+       "n": 0
+      },
+      {
+       "nivel": 27,
+       "n": 0
+      },
+      {
+       "nivel": 28,
+       "n": 0
+      },
+      {
+       "nivel": 29,
+       "n": 0
+      },
+      {
+       "nivel": 30,
+       "n": 0
+      },
+      {
+       "nivel": 31,
+       "n": 0
+      },
+      {
+       "nivel": 32,
+       "n": 0
+      },
+      {
+       "nivel": 33,
+       "n": 0
+      },
+      {
+       "nivel": 34,
+       "n": 0
+      },
+      {
+       "nivel": 35,
+       "n": 0
+      }
+     ],
+     "def_racimo": [
+      {
+       "nivel": 0,
+       "n": 17,
+       "media_neta": 20.888323529411764,
+       "sesiones": 12,
+       "ic90": [
+        -0.3753177083333327,
+        46.82755555555554
+       ],
+       "p_sesiones": 0.08582834331337326,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 37,
+       "media_neta": 30.21463513513514,
+       "sesiones": 31,
+       "ic90": [
+        13.922571338383836,
+        44.905255166931646
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 59,
+       "media_neta": 26.615516949152543,
+       "sesiones": 45,
+       "ic90": [
+        12.674665094339622,
+        40.25077140974966
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 1
+      },
+      {
+       "nivel": 5,
+       "n": 4
+      },
+      {
+       "nivel": 6,
+       "n": 8
+      },
+      {
+       "nivel": 7,
+       "n": 12,
+       "media_neta": 32.7045,
+       "sesiones": 11,
+       "ic90": [
+        18.943041666666666,
+        46.51960416666666
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true
+      },
+      {
+       "nivel": 8,
+       "n": 0
+      },
+      {
+       "nivel": 9,
+       "n": 0
+      },
+      {
+       "nivel": 10,
+       "n": 1
+      },
+      {
+       "nivel": 11,
+       "n": 3
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 47,
+       "media_neta": 17.53428723404256,
+       "sesiones": 30,
+       "ic90": [
+        3.4610919452887527,
+        30.9541336996337
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 48,
+       "media_neta": 17.31127083333333,
+       "sesiones": 31,
+       "ic90": [
+        4.268510989010987,
+        31.81075765931373
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 36,
+       "media_neta": 14.760750000000042,
+       "sesiones": 26,
+       "ic90": [
+        -0.1932697649572882,
+        27.57913208575573
+       ],
+       "p_sesiones": 0.033932135728542916,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 36,
+       "media_neta": 8.003805555555594,
+       "sesiones": 26,
+       "ic90": [
+        -9.69486197916647,
+        23.604956349206336
+       ],
+       "p_sesiones": 0.18962075848303392,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 20,
+       "media_neta": 16.628249999999927,
+       "sesiones": 15,
+       "ic90": [
+        -9.702779411764663,
+        41.86952083333324
+       ],
+       "p_sesiones": 0.13373253493013973,
+       "chica": true
+      },
+      {
+       "nivel": 5,
+       "n": 20,
+       "media_neta": 0.4719999999999251,
+       "sesiones": 15,
+       "ic90": [
+        -28.96398684210508,
+        26.477016233766097
+       ],
+       "p_sesiones": 0.47704590818363274,
+       "chica": true
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 146,
+       "media_neta": 4.8003904109589035,
+       "sesiones": 74,
+       "ic90": [
+        -3.3045884825079526,
+        12.249969475779695
+       ],
+       "p_sesiones": 0.1596806387225549,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 36,
+       "media_neta": 16.75311111111112,
+       "sesiones": 29,
+       "ic90": [
+        5.498737451737449,
+        27.95672953216372
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 33,
+       "media_neta": 6.583287878787878,
+       "sesiones": 27,
+       "ic90": [
+        -2.914119544592031,
+        14.959208254269441
+       ],
+       "p_sesiones": 0.10578842315369262,
+       "chica": false
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 6
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      }
+     ],
+     "def_zona": [
+      {
+       "nivel": 0,
+       "n": 23,
+       "media_neta": 3.693630434782607,
+       "sesiones": 18,
+       "ic90": [
+        -24.62428787878788,
+        27.451690476190468
+       ],
+       "p_sesiones": 0.4231536926147705,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 19,
+       "media_neta": 1.2176578947368408,
+       "sesiones": 15,
+       "ic90": [
+        -29.397722222222228,
+        26.43426190476189
+       ],
+       "p_sesiones": 0.48902195608782434,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 1
+      },
+      {
+       "nivel": 3,
+       "n": 1
+      },
+      {
+       "nivel": 4,
+       "n": 27,
+       "media_neta": 14.463759259259257,
+       "sesiones": 21,
+       "ic90": [
+        -8.896628762541807,
+        33.19100530503978
+       ],
+       "p_sesiones": 0.10778443113772455,
+       "chica": true
+      },
+      {
+       "nivel": 5,
+       "n": 35,
+       "media_neta": 12.690214285714283,
+       "sesiones": 28,
+       "ic90": [
+        -3.357855169340466,
+        25.224903377110692
+       ],
+       "p_sesiones": 0.0499001996007984,
+       "chica": false
+      },
+      {
+       "nivel": 6,
+       "n": 4
+      },
+      {
+       "nivel": 7,
+       "n": 4
+      },
+      {
+       "nivel": 8,
+       "n": 37,
+       "media_neta": 10.839635135135135,
+       "sesiones": 29,
+       "ic90": [
+        -5.553888278388279,
+        23.802275735294106
+       ],
+       "p_sesiones": 0.10978043912175649,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 3
+      },
+      {
+       "nivel": 11,
+       "n": 3
+      },
+      {
+       "nivel": 12,
+       "n": 5
+      },
+      {
+       "nivel": 13,
+       "n": 4
+      },
+      {
+       "nivel": 14,
+       "n": 0
+      },
+      {
+       "nivel": 15,
+       "n": 0
+      },
+      {
+       "nivel": 16,
+       "n": 2
+      },
+      {
+       "nivel": 17,
+       "n": 3
+      },
+      {
+       "nivel": 18,
+       "n": 0
+      },
+      {
+       "nivel": 19,
+       "n": 0
+      },
+      {
+       "nivel": 20,
+       "n": 1
+      },
+      {
+       "nivel": 21,
+       "n": 0
+      },
+      {
+       "nivel": 22,
+       "n": 0
+      },
+      {
+       "nivel": 23,
+       "n": 0
+      },
+      {
+       "nivel": 24,
+       "n": 0
+      },
+      {
+       "nivel": 25,
+       "n": 0
+      },
+      {
+       "nivel": 26,
+       "n": 0
+      },
+      {
+       "nivel": 27,
+       "n": 0
+      },
+      {
+       "nivel": 28,
+       "n": 0
+      },
+      {
+       "nivel": 29,
+       "n": 0
+      },
+      {
+       "nivel": 30,
+       "n": 0
+      },
+      {
+       "nivel": 31,
+       "n": 0
+      },
+      {
+       "nivel": 32,
+       "n": 0
+      },
+      {
+       "nivel": 33,
+       "n": 0
+      },
+      {
+       "nivel": 34,
+       "n": 0
+      },
+      {
+       "nivel": 35,
+       "n": 0
+      }
+     ],
+     "def_racimo": [
+      {
+       "nivel": 0,
+       "n": 16,
+       "media_neta": 16.907625,
+       "sesiones": 11,
+       "ic90": [
+        -4.9331976284584975,
+        41.99340931372547
+       ],
+       "p_sesiones": 0.1317365269461078,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 47,
+       "media_neta": 17.53428723404256,
+       "sesiones": 30,
+       "ic90": [
+        3.4610919452887527,
+        30.9541336996337
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 59,
+       "media_neta": 23.41636440677966,
+       "sesiones": 45,
+       "ic90": [
+        11.217692204301077,
+        34.44398537095088
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 1
+      },
+      {
+       "nivel": 5,
+       "n": 4
+      },
+      {
+       "nivel": 6,
+       "n": 8
+      },
+      {
+       "nivel": 7,
+       "n": 12,
+       "media_neta": 31.579499999999996,
+       "sesiones": 11,
+       "ic90": [
+        15.562454545454544,
+        46.40137500000001
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true
+      },
+      {
+       "nivel": 8,
+       "n": 0
+      },
+      {
+       "nivel": 9,
+       "n": 0
+      },
+      {
+       "nivel": 10,
+       "n": 1
+      },
+      {
+       "nivel": 11,
+       "n": 3
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 37,
+       "media_neta": 26.50855405405406,
+       "sesiones": 31,
+       "ic90": [
+        12.94128571428571,
+        38.83068243243244
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 37,
+       "media_neta": 30.21463513513514,
+       "sesiones": 31,
+       "ic90": [
+        13.922571338383836,
+        44.905255166931646
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 26,
+       "media_neta": 29.85546153846179,
+       "sesiones": 23,
+       "ic90": [
+        7.1245000000005065,
+        49.851277777777945
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": true
+      },
+      {
+       "nivel": 3,
+       "n": 26,
+       "media_neta": 36.83142307692333,
+       "sesiones": 23,
+       "ic90": [
+        13.425373076923242,
+        58.79038782051322
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": true
+      },
+      {
+       "nivel": 4,
+       "n": 11,
+       "media_neta": 27.28859090909084,
+       "sesiones": 10,
+       "ic90": [
+        -3.5336785714280365,
+        61.33187500000014
+       ],
+       "p_sesiones": 0.11377245508982035,
+       "chica": true
+      },
+      {
+       "nivel": 5,
+       "n": 11,
+       "media_neta": 29.277227272727202,
+       "sesiones": 10,
+       "ic90": [
+        -3.4753863636368143,
+        67.43212499999987
+       ],
+       "p_sesiones": 0.0998003992015968,
+       "chica": true
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    1,
+    1,
+    0,
+    0,
+    3,
+    1
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ],
+    "por_perilla": {
+     "N": [
+      {
+       "nivel": 0,
+       "n": 155,
+       "media_neta": -1.9132419354838721,
+       "sesiones": 72,
+       "ic90": [
+        -9.077007924122627,
+        5.405242115027823
+       ],
+       "p_sesiones": 0.654690618762475,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      }
+     ],
+     "x": [
+      {
+       "nivel": 0,
+       "n": 42,
+       "media_neta": 19.35628571428571,
+       "sesiones": 36,
+       "ic90": [
+        1.3100034396497784,
+        35.947033212560385
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 43,
+       "media_neta": 3.742290697674418,
+       "sesiones": 33,
+       "ic90": [
+        -9.177687500000001,
+        13.91689429175476
+       ],
+       "p_sesiones": 0.2954091816367265,
+       "chica": false
+      }
+     ],
+     "A/H": [
+      {
+       "nivel": 0,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 5
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      }
+     ],
+     "def_zona": [
+      {
+       "nivel": 0,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 12.676375,
+       "sesiones": 33,
+       "ic90": [
+        -4.31001023391813,
+        26.764014802631575
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 1
+      },
+      {
+       "nivel": 3,
+       "n": 1
+      },
+      {
+       "nivel": 4,
+       "n": 51,
+       "media_neta": 7.079499999999999,
+       "sesiones": 42,
+       "ic90": [
+        -7.365807750759882,
+        20.607262803234498
+       ],
+       "p_sesiones": 0.21956087824351297,
+       "chica": false
+      },
+      {
+       "nivel": 5,
+       "n": 51,
+       "media_neta": 6.398127450980391,
+       "sesiones": 37,
+       "ic90": [
+        -7.269887254901962,
+        20.630994660364145
+       ],
+       "p_sesiones": 0.249500998003992,
+       "chica": false
+      },
+      {
+       "nivel": 6,
+       "n": 5
+      },
+      {
+       "nivel": 7,
+       "n": 5
+      },
+      {
+       "nivel": 8,
+       "n": 60,
+       "media_neta": 7.558666666666664,
+       "sesiones": 44,
+       "ic90": [
+        -6.514550480769238,
+        20.5623373015873
+       ],
+       "p_sesiones": 0.17764471057884232,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 59,
+       "media_neta": 13.539245762711863,
+       "sesiones": 39,
+       "ic90": [
+        -0.3364598214285739,
+        26.79955208333334
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 8
+      },
+      {
+       "nivel": 11,
+       "n": 6
+      },
+      {
+       "nivel": 12,
+       "n": 6
+      },
+      {
+       "nivel": 13,
+       "n": 4
+      },
+      {
+       "nivel": 14,
+       "n": 0
+      },
+      {
+       "nivel": 15,
+       "n": 0
+      },
+      {
+       "nivel": 16,
+       "n": 7
+      },
+      {
+       "nivel": 17,
+       "n": 4
+      },
+      {
+       "nivel": 18,
+       "n": 1
+      },
+      {
+       "nivel": 19,
+       "n": 1
+      },
+      {
+       "nivel": 20,
+       "n": 6
+      },
+      {
+       "nivel": 21,
+       "n": 6
+      },
+      {
+       "nivel": 22,
+       "n": 0
+      },
+      {
+       "nivel": 23,
+       "n": 0
+      },
+      {
+       "nivel": 24,
+       "n": 0
+      },
+      {
+       "nivel": 25,
+       "n": 0
+      },
+      {
+       "nivel": 26,
+       "n": 0
+      },
+      {
+       "nivel": 27,
+       "n": 0
+      },
+      {
+       "nivel": 28,
+       "n": 0
+      },
+      {
+       "nivel": 29,
+       "n": 0
+      },
+      {
+       "nivel": 30,
+       "n": 0
+      },
+      {
+       "nivel": 31,
+       "n": 0
+      },
+      {
+       "nivel": 32,
+       "n": 0
+      },
+      {
+       "nivel": 33,
+       "n": 0
+      },
+      {
+       "nivel": 34,
+       "n": 0
+      },
+      {
+       "nivel": 35,
+       "n": 0
+      }
+     ],
+     "def_racimo": [
+      {
+       "nivel": 0,
+       "n": 15,
+       "media_neta": 19.5045,
+       "sesiones": 12,
+       "ic90": [
+        8.240958333333335,
+        31.66960416666665
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 21,
+       "media_neta": 31.859261904761915,
+       "sesiones": 17,
+       "ic90": [
+        11.834496867167918,
+        46.73085281385281
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 22,
+       "media_neta": 3.056772727272727,
+       "sesiones": 16,
+       "ic90": [
+        -19.972062500000007,
+        21.5721510989011
+       ],
+       "p_sesiones": 0.4031936127744511,
+       "chica": true
+      },
+      {
+       "nivel": 3,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 2
+      },
+      {
+       "nivel": 5,
+       "n": 3
+      },
+      {
+       "nivel": 6,
+       "n": 4
+      },
+      {
+       "nivel": 7,
+       "n": 15,
+       "media_neta": 3.8545,
+       "sesiones": 13,
+       "ic90": [
+        -28.71101282051283,
+        28.756166666666655
+       ],
+       "p_sesiones": 0.4111776447105788,
+       "chica": true
+      },
+      {
+       "nivel": 8,
+       "n": 0
+      },
+      {
+       "nivel": 9,
+       "n": 1
+      },
+      {
+       "nivel": 10,
+       "n": 1
+      },
+      {
+       "nivel": 11,
+       "n": 2
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 39,
+       "media_neta": 12.569884615384618,
+       "sesiones": 35,
+       "ic90": [
+        -1.5690328185328242,
+        24.559385866166362
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 20.282625,
+       "sesiones": 35,
+       "ic90": [
+        4.645716216216215,
+        32.960877627627625
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 32,
+       "media_neta": 14.040437499999772,
+       "sesiones": 28,
+       "ic90": [
+        -3.6758588709678173,
+        26.985460410556836
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 32,
+       "media_neta": 22.65762499999977,
+       "sesiones": 28,
+       "ic90": [
+        2.9594126344082787,
+        36.79688758553235
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 14,
+       "media_neta": 28.27592857142857,
+       "sesiones": 13,
+       "ic90": [
+        -10.660561813187043,
+        61.473484375
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": true
+      },
+      {
+       "nivel": 5,
+       "n": 14,
+       "media_neta": 37.00807142857143,
+       "sesiones": 13,
+       "ic90": [
+        -6.052773351648687,
+        72.77887500000007
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": true
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    "n": 21,
+    "media_neta": 32.82950000000001,
+    "sesiones": 11,
+    "ic90": [
+     15.928700148809519,
+     52.34278125
+    ],
+    "p_sesiones": 0.004373177842565598,
+    "chica": true,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones",
+    "nota": "< 30 operaciones: no evaluable"
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    "n": 13,
+    "media_neta": 19.781423076923073,
+    "sesiones": 10,
+    "ic90": [
+     -7.028833333333339,
+     43.412454545454544
+    ],
+    "p_sesiones": 0.10604956268221574,
+    "chica": true,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones",
+    "nota": "< 30 operaciones: no evaluable"
+   },
+   {
+    "celda": [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ],
+    "n": 12,
+    "media_neta": 5.7357499999999995,
+    "sesiones": 11,
+    "ic90": [
+     -36.69671753246754,
+     41.22180769230769
+    ],
+    "p_sesiones": 0.4271137026239067,
+    "chica": true,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones",
+    "nota": "< 30 operaciones: no evaluable"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.013119533527696793,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 1,
+   "familia": "U1_RACIMOS_GRILLA_NQ",
+   "run_id": "U1-RACIMOS-GRILLA-NQ/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     2,
+     1
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 32.82950000000001,
+    "ic90": [
+     15.928700148809519,
+     52.34278125
+    ],
+    "efecto_para_potencia": 12.832805555555556,
+    "potencia": 0.3136547784369299,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     9,
+     1,
+     0
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 19.781423076923073,
+    "ic90": [
+     -7.028833333333339,
+     43.412454545454544
+    ],
+    "efecto_para_potencia": 12.118697368421055,
+    "potencia": 0.19641681099094732,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     1,
+     1,
+     0,
+     0,
+     3,
+     1
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 5.7357499999999995,
+    "ic90": [
+     -36.69671753246754,
+     41.22180769230769
+    ],
+    "efecto_para_potencia": 11.858898936170217,
+    "potencia": 0.12627597339974828,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   1,
+   0,
+   0,
+   9,
+   1,
+   0
+  ],
+  "tope": [
+   "pts",
+   100.0
+  ],
+  "puntaje": 9.156097463987843,
+  "peor": -70.7955
+ },
+ "acta": {
+  "cid": "U1-RACIMOS-GRILLA-NQ",
+  "familia": "U1_RACIMOS_GRILLA_NQ",
+  "experimento": "edgelab.research.u1_racimos_grilla",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "regla": {
+   "celda": [
+    1,
+    0,
+    0,
+    9,
+    1,
+    0
+   ],
+   "tope": [
+    "pts",
+    100.0
+   ],
+   "puntaje": 9.156097463987843,
+   "peor": -70.7955
+  },
+  "cortes": {},
+  "holdout_desde": 20261001,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793229193.798331,
+  "reserva_lord": {
+   "familia": "U1_RACIMOS_GRILLA_NQ",
+   "reserva_id": "U1-RACIMOS-GRILLA-NQ/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "U1_RACIMOS_GRILLA_NQ",
+    "declarada": true,
+    "padres": [
+     "U1_ZONAS_NQ",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 4838367,
+    "n_heredado": 4838367,
+    "total": 4838367,
+    "justificacion": "misma gramática U1 con otra fuente de zonas en el mismo instrumento",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 4838367,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 1.0,
+   "recorte": {
+    "t": 3.2906673652085683,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
+}

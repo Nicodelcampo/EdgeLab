@@ -12,7 +12,7 @@ Qué ataca cada chequeo (número = error de la revisión):
   causalidad de disparos/variables ................... look-ahead en general
   cortes por cuantiles no degenerados (>= 10 % por nivel) 2
   control de ruido con potencia (celdas evaluables > 0) 16
-  ruido puro: 0 rechazadas por Romano-Wolf ............ 7
+  ruido puro: 0 nominadas por el FDR q 0,10 ............ 7  (Romano-Wolf: aviso; decisión de Nico 2026-11-02)
   ejecuciones equivalentes (perillas muertas) ......... 4
   niveles_lote (si existe) idéntico a niveles ......... camino rápido sin oráculo
   sin excepciones con celdas vacías ................... 15
@@ -61,12 +61,16 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
     err, avisos = [], []
     viejo_b = GG.B_RW; GG.B_RW = b_rw
     try:
-        ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=11), tick=0.25)
+        t0 = dict(t0_s=exp.PREFLIGHT_T0_S) if hasattr(exp, "PREFLIGHT_T0_S") else {}   # 2026-11-01: bloques alineados a la sesión CME
+        ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=11, **t0), tick=0.25)          # si el experimento lo pide
+        if getattr(exp, "CONFIRMADOR", False):                        # experimento con segundo instrumento: otro sintético independiente
+            ctx["conf"] = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=12), tick=0.25)
         D = exp.disparos(ctx)
         if not len(D): return [f"disparos vacío en {dias} días sintéticos: el objeto no aparece o la definición es demasiado estrecha"], avisos
         faltan = [c for c in ["k"] + [v.columna for v in exp.VARIABLES] if c not in D.columns]
         if faltan: return [f"disparos no trae las columnas {faltan}"], avisos
         if (dif := I.causal(exp.disparos, ctx)): err.append(f"no causal: {dif[0]}")
+        if (dif := I.causal_por_disparo(exp.disparos, ctx)): err.append(f"no causal (corte en la vela del disparo): {dif[0]}")
         cortes = GG.cortes_e0(D, exp.VARIABLES)
         for v, b in zip(exp.VARIABLES, GG.discretizar(D, exp.VARIABLES, cortes)):
             if v.cuantiles:
@@ -81,7 +85,11 @@ def dinamico(exp, dias=150, b_rw=40) -> tuple:
         res, _ = GG.correr(exp, ctx, modo="DESC", friccion=1.0, extra_adverso=0.5, cortes=cortes, log=lambda s: None)
         tot = res["canales"]["total"]
         if tot["evaluables"] == 0: err.append("control de ruido sin celdas evaluables: no tiene con qué fallar (más días o perillas más anchas)")
-        if tot["n_rechazadas_rw"] > 0: err.append(f"ruido puro con {tot['n_rechazadas_rw']} celdas rechazadas por Romano-Wolf: hay un sesgo en el simulador o en las variables")
+        # 2026-11-02 (decisión de Nico, opción 1): la compuerta es la misma que nomina en DESC desde el 2026-10-24, el FDR q 0,10.
+        # Romano-Wolf con B_RW = 40 y pagos muy asimétricos rechazaba de más sobre ruido (2 de 6 semillas en u1_cfd, sin sesgo del
+        # simulador): queda como aviso. Ver docs/research/relanzamiento_causal_20261102/RELANZAMIENTO.md.
+        if tot["nominadas_fdr"] > 0: err.append(f"ruido puro con {tot['nominadas_fdr']} celdas nominadas por el FDR: hay un sesgo en el simulador o en las variables")
+        if tot["n_rechazadas_rw"] > 0: avisos.append(f"ruido puro con {tot['n_rechazadas_rw']} celdas rechazadas por Romano-Wolf (diagnóstico, B_RW={GG.B_RW})")
         if res.get("ejecuciones_equivalentes"): err.append(f"{len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas): rediseñar, no duplicar pruebas")
         if res["celdas"] != GG.n_celdas(exp, cortes): err.append("n_celdas no coincide con las celdas que se corren")
         return err, avisos
@@ -134,3 +142,39 @@ def codigo_vigente(resultado: dict, repo: Path = ROOT) -> list:
         if f.name == "__init__.py": continue                              # se embeben vacíos
         if not f.exists() or hashlib.sha256(f.read_bytes()).hexdigest() != sha: cambios.append(m)
     return cambios
+
+
+CERTIFICADOS = ROOT / "config/causalidad_certificados.json"
+
+
+def huella_codigo(modulo: str) -> str:
+    """sha256 del experimento y de todo lo que importa del repo (lo que se embebe en el kernel)."""
+    import hashlib
+    from edgelab.research.embudo_runners import BASE_MODULOS, dependencias, modulo_a_ruta
+    rutas = sorted(set(dependencias(modulo_a_ruta(modulo)) + [r for b in BASE_MODULOS for r in dependencias(b)]))
+    h = hashlib.sha256()
+    for r in rutas: h.update(r.encode()); h.update((ROOT / r).read_bytes())
+    return h.hexdigest()
+
+
+def certificar_causalidad(modulo: str, guardar: bool = True) -> list:
+    """Candado del lanzamiento (2026-11-02, Nico: «que ninguna corrida pueda mirar al futuro»). Un experimento sólo se lanza
+    si `disparos` pasa la prueba de corte en la vela de cada disparo sobre los datos de control del preflight, con el código
+    EXACTO que va a correr (huella del experimento y sus dependencias). El resultado se guarda por huella: si el código no
+    cambió, no se repite. Devuelve la lista de errores (vacía = certificado)."""
+    import time
+    huella = huella_codigo(modulo)
+    cert = json.loads(CERTIFICADOS.read_text(encoding="utf-8")) if CERTIFICADOS.exists() else {}
+    if cert.get(modulo, {}).get("huella") == huella and cert[modulo].get("ok"): return []
+    from edgelab.research import grilla_generica as GG, indicadores as I, sintetico
+    exp = importlib.import_module(modulo)
+    if not hasattr(exp, "disparos"): return [f"{modulo} no expone `disparos`: sin eso no se puede certificar que no mira el futuro"]
+    t0 = dict(t0_s=exp.PREFLIGHT_T0_S) if hasattr(exp, "PREFLIGHT_T0_S") else {}
+    ctx = GG.contexto_m1(sintetico.bloques(dias=150, planta=False, seed=11, **t0), tick=0.25)
+    if getattr(exp, "CONFIRMADOR", False): ctx["conf"] = GG.contexto_m1(sintetico.bloques(dias=150, planta=False, seed=12), tick=0.25)
+    try: err = I.causal_por_disparo(exp.disparos, ctx) + [f"cortes fijos: {e}" for e in I.causal(exp.disparos, ctx)]
+    except Exception as ex: err = [f"no se pudo certificar: {type(ex).__name__}: {str(ex)[:200]}"]
+    if guardar:
+        cert[modulo] = dict(huella=huella, ok=not err, errores=err[:3], ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+        CERTIFICADOS.write_text(json.dumps(cert, indent=1, ensure_ascii=False, sort_keys=True), encoding="utf-8")
+    return err

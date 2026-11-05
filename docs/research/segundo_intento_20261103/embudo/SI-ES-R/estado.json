@@ -1,0 +1,133 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793748579.7750595,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793750669.1381989,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.1403388621582453, 'min': -4.211473839271774, 'q001': -4.2056927657147885, 'q010': -4.099368032333487, 'q500': -1.891913378370222, 'q990': 0.48977375415495616, 'q999': 1.0741450753565662, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 15}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "SI-ES-R",
+  "familia": "SEGUNDO_INTENTO_ES",
+  "experimento": "edgelab.research.segundo_intento",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "n_celdas_por_canal": 324,
+  "justificacion_economica": "La zona que el precio no alcanzó sigue siendo liquidez sin tomar; el segundo intento confirmado tras un alejamiento largo es lo que se sostuvo entre fuentes de INTENTO-FALLIDO-HACIA (Nico, 03/11: más operaciones y diversificación).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique; dur_ida alto no supera a 'cualquiera'; falla de integridad.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/segundo_intento_20261103/PREREGISTRO_SEGUNDO_INTENTO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "SEGUNDO_INTENTO_ES",
+   "declarada": true,
+   "padres": [
+    "U1_ES_GRILLA",
+    "IF_HACIA_LUX_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5432353,
+   "n_heredado": 5432353,
+   "total": 5432353,
+   "justificacion": "Lo mejor de INTENTO-FALLIDO-HACIA con más eventos; declarada antes de DESC (docs/research/segundo_intento_20261103/PREREGISTRO_SEGUNDO_INTENTO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793748579.7748673,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-si-es-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793750342.5565324,
+ "cortes": {
+  "A/H": [
+   3.611111111111111,
+   12.8
+  ],
+  "dur_ida": [
+   14.0,
+   48.0
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.1403388621582453, 'min': -4.211473839271774, 'q001': -4.2056927657147885, 'q010': -4.099368032333487, 'q500': -1.891913378370222, 'q990': 0.48977375415495616, 'q999': 1.0741450753565662, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 15}); pistas a réplica: ninguna pista relevante con media > 0"
+}

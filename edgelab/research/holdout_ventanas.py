@@ -3,7 +3,9 @@
 Una mirada al holdout, exploratoria o confirmatoria, CONSUME las sesiones que vio para su familia y para las familias que
 derivan de ella (diseño informado por ese resultado). Este libro (append-only, versionado en el repo) lo hace cumplir:
   - `consumida`: familia, desde, hasta (YYYYMMDD) y `relacionadas` (familias cuyo diseño heredó la mirada);
-  - `apertura`: la apertura confirmatoria de una familia (una sola por familia, la registra el embudo al escribir el acta).
+  - `apertura`: la apertura confirmatoria de una familia (una sola por familia, la registra el embudo al escribir el acta);
+  - `anulacion` (2026-10-26, decisión de Nico): anula una apertura ANTES de mirar dato alguno del holdout (p. ej. registrada sin
+    potencia). La familia recupera su apertura; la anulación queda escrita con su motivo. Nunca después de mirar.
 `problemas(familia, desde, cid)` devuelve por qué una apertura NO puede hacerse; vacío = permitida.
 Mover una ventana hacia adelante protege más; ningún registro se borra ni se edita (una corrección es una línea nueva).
 """
@@ -43,13 +45,32 @@ def problemas(familia: str, desde: int, cid: str, libro: Path = LIBRO, estadisti
         u = None
     if u is not None and int(desde) <= u:
         e.append(f"holdout.desde={desde} reusa sesiones ya consumidas por la familia {familia} (o una de la que deriva) hasta {u}; debe empezar después")
-    otras = [r["cid"] for r in leer(libro) if r.get("tipo") == "apertura" and r["familia"] == familia and r["cid"] != cid]
+    otras = [r["cid"] for r in aperturas_vigentes(familia, libro) if r["cid"] != cid]
     if otras: e.append(f"la familia {familia} ya tiene su única apertura del holdout ({otras[0]})")
     return e
 
 
+def aperturas_vigentes(familia: str, libro: Path = LIBRO) -> list:
+    """Aperturas de la familia que no fueron anuladas DESPUÉS de registrarse (orden del libro)."""
+    vig = []
+    for r in leer(libro):
+        if r.get("familia") != familia: continue
+        if r.get("tipo") == "apertura": vig = [v for v in vig if v["cid"] != r["cid"]] + [r]
+        elif r.get("tipo") == "anulacion": vig = [v for v in vig if v["cid"] != r["cid"]]
+    return vig
+
+
+def anular_apertura(familia: str, cid: str, motivo: str, n_mirado: int = 0, libro: Path = LIBRO, ahora=None) -> dict:
+    """Sólo si no se miró ningún dato del holdout (`n_mirado` = operaciones o sesiones ya contadas con P&L: tiene que ser 0)."""
+    if n_mirado: raise ValueError(f"no se anula una apertura con {n_mirado} observaciones del holdout ya miradas")
+    if not any(r["cid"] == cid for r in aperturas_vigentes(familia, libro)): raise ValueError(f"{cid}: sin apertura vigente")
+    row = dict(tipo="anulacion", familia=familia, cid=cid, motivo=motivo, ts=ahora or time.time())
+    with Path(libro).open("a", encoding="utf-8", newline="\n") as f: f.write(json.dumps(row, ensure_ascii=False) + "\n")
+    return row
+
+
 def registrar_apertura(familia: str, cid: str, desde: int, n_fijo: int, libro: Path = LIBRO, ahora=None) -> dict:
-    if any(r.get("tipo") == "apertura" and r["familia"] == familia and r["cid"] == cid for r in leer(libro)):
+    if any(r["cid"] == cid for r in aperturas_vigentes(familia, libro)):
         return {}
     row = dict(tipo="apertura", familia=familia, cid=cid, desde=int(desde), n_fijo=int(n_fijo), ts=ahora or time.time())
     Path(libro).parent.mkdir(parents=True, exist_ok=True)

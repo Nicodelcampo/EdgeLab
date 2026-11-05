@@ -16,7 +16,7 @@ KERNELS = [  # (salida, función) — los mismos que verifican tests/research/te
                                                                 ["edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py"])),
     ("tools/kaggle_grilla/kernel_u1_indaga.py", lambda o: construir_experimento("edgelab/research/u1_indaga.py", o)),
     ("tools/kaggle_grilla/kernel_u1_cruzado.py", lambda o: construir("tools/kaggle_grilla/u1_cruzado_main.py", o,
-                                                                     BASE + ["edgelab/research/u1_indaga.py", "edgelab/research/u1_cruzado.py"])),
+                                                                     BASE + ["edgelab/research/u1_indaga.py", "edgelab/research/u1_oro.py", "edgelab/research/u1_cruzado.py"])),
     ("tools/kaggle_grilla/kernel_luximb_grilla.py", lambda o: construir_experimento(
         "edgelab/research/luximb_grilla.py", o, ["edgelab/research/agente/regimen.py", "edgelab/regimes/state.py",
                                                  "edgelab/bridge/indicators/espejo_impulsos.py"])),

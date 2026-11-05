@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-10-25  
+**Fecha:** 2026-11-05
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-10-25  
+**Corte:** 2026-11-05
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,76 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-10-25 (leer primero)
+## Estado al 2026-11-05 (leer primero)
+
+- **Paridad NT8 de CVGAP-ES-C** (port nativo `nt8/strategies/EdgeLabCvgapESC.cs` v1.1): 27 de 29 señales de Python en el mismo minuto con
+  niveles exactos; 26 operaciones emparejadas con la misma entrada y el P&L igual (±1 pt) en 24. Faltan los disparos extra de NT8 y la
+  fricción real (Market Replay). Ver `docs/research/nt8_replay/CVGAP-ES-C/PARIDAD_SENAL_V1.md`.
+- **Atlas de contexto en bruto y en neto** (212 corridas): los efectos «confirmados» por la rama de Gemini (ATR y volumen relativos, NY
+  9:30–12, stop S3, imán) son **fricción en R**. Sólo `veto_huida` en continuación sobrevive en bruto. Ver
+  `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`.
+- **CVGAP-2** (8 activos): sin edge. **Piso de riesgo frente a la fricción**: refutado según el pre-registro (u = 0,10 queda para validar
+  desde noviembre). **DOBLE-RETROCESO**: sin candidatas; holdout forzado −0,30R.
+- Todas las operaciones se ejecutan en futuros: el CFD es sólo fuente de señal. **Edges promovidos: 0.**
+
+## Estado de revisión al 2026-11-03
+
+- Nico aprobó cola t con n−1 para el tamiz FDR; implementación local todavía no integrada por una prueba estadística que falla. No se relajó el umbral. Preflight de U1-6E-CONFIRMA agotó 240 s sin conclusión; no se relanzó. Ver `docs/DECISIONES_20261103_COLA_T_FDR.md` y `docs/research/AVANCES_Y_RELANZAMIENTOS_20261103.md`.
+- Las 12 familias de Gemini se revisaron pero siguen sin integrar ni activar: noticias, relojes, costos y solapamientos pendientes. Ver `docs/research/REVISION_GEMINI_12_FAMILIAS_20261103.md`.
+- Mapa de objetivos en zonas y diseño de intento fallido A/B, incluida U1-CRUZADO: `docs/research/MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md`. Sin nuevos outcomes ni apertura del holdout.
+- Debian figuraba pausado en el último control de la sesión previa; verificar antes de asumir que el seguimiento en papel está corriendo.
+
+## Estado al 2026-11-02 (leer primero)
+
+- **Cartera viva en Kaggle** (SV1 sin datos locales): 4 canastas NQ en papel desde 2026-11-02, más U1-CRUZADO en papel (etapa
+  `OPERAR`, paridad verificada). Seguimiento y promoción a REAL **por canasta** (`edgelab/cartera/canasta.py`, decisión de Nico).
+  Logger de NT8 y subida al sellado: `docs/infra/LOGGER_NT8_DIARIO.md` (exportación por lotes; sellado con sesiones hasta 2026-10-30).
+- **U1-CRUZADO, holdout completo (1→30 oct)**: 18 operaciones, +25,8 pts netos por operación, e-proceso 1,15 contra un umbral de 91,4,
+  **NO_CONCLUYENTE**. Acta: `docs/research/areas_expansion_20261022/u1/ACTA_HOLDOUT_COMPLETO_U1_CRUZADO_20261102.md`.
+- **MODELO-ASIA**: medido en tres lecturas de "puntos". Sin candidatas en el CFD; en NQ queda `PISTAS_VIVAS` (`SIN_POTENCIA`).
+- Las 12 campañas en CONTEO quedaron apagadas (`DECISION_CONTEO_20261101.md`). **Edges promovidos: 0.**
+
+## Estado al 2026-10-31
+
+- **Plan del paquete del 31-oct implementado y lanzado** (`docs/research/paquete_20261031/PLAN_PAQUETE_20261031.md`, PR #172):
+  salida por tiempo de parada (τ) en el simulador; familias chicas pre-registradas TAU-TENDENCIA (NQ/ES/GC), EOD-MOM (ES/NQ/YM),
+  RANGO-ASIA0100 (NQ/ES/GC), RANGO-PREAPERTURA (NQ/ES/YM) y KALMAN-FADE (NQ/ES/GC): 15 campañas en DESC, conductor `local` (sesión
+  en la nube), estado en `docs/research/paquete_20261031/embudo/`. Variante τ de las 10 reglas con acta en su propio instrumento:
+  10 kernels ANALIZAR_REGLA sobre DESC (`tools/variante_tau_actas.py`).
+- **ASIA-NQ**: prueba forward de las 20 pistas pre-registrada (PR #171), desde la sesión del 2026-11-02.
+- Canasta de 7: sin cambios (holdout sin abrir). **Edges promovidos: 0.**
+
+## Estado al 2026-10-30 (leer primero)
+- Revisión del agente de SV1 y de las 45 campañas de la nube: `docs/research/REVISION_SV1_20261030.md`. 0 confirmadas; dos conductores
+  movieron las mismas campañas el 28-29/10 (la nube después del traspaso a SV1): SV1 queda pausado hasta reconciliar estados.
+- `HOLDOUT_VENTANAS.jsonl` restaurado (27 filas append-only borradas por `de6c3ecf`). PR #155 (404 recién lanzado no bloquea), PR #156 (KALMAN-FADE).
+
+## Estado al 2026-10-28
+
+- **Mandato del autopilot confirmado por Nico** (`config/autopilot/mandate.json`, commit `95c06808`; protegidos OK).
+- **Holdout:** frontera única desde la sesión del 2026-10-01 (30-sep 22:00 UTC); dataset sellado v2 y 8 conteos del holdout completados
+  en Kaggle (commits `2cf7af67`, `c4395bc9`). El CONTEO ya no rompe con 0 disparos (O13 + PR #151).
+- **Agente del Debian:** directivas vigentes en `config/autopilot/DIRECTIVAS.md` (entran en el contexto de cada rol); pedido de 8 corridas
+  en paralelo repartidas entre las dos cuentas de Kaggle (`docs/research/MENSAJES_AL_AGENTE_DEBIAN.md`).
+- **Pendiente de datos:** ES 12-26 y NQ 12-26 completos en el holdout sellado (export de NT8).
+- **Edges promovidos: 0.**
+
+## Estado al 2026-10-27 (leer primero)
+
+- **Traspaso de los conductores del embudo al Debian:** los conductores locales de la sesión en la nube están frenados; ubicación de
+  las 24 campañas (`config/autopilot/grillas/campanas/`), sus estados (por ejemplo `docs/research/u1_zonas_20261025/embudo/`) y las vivas en
+  `docs/research/TRASPASO_CONDUCTORES_DEBIAN_20261027.md`.
+- **Barridos U1 nuevos (26-oct):** rectángulos de BigTrap2 (NQ: 9 nominadas por FDR, 3 candidatas en INTEGRIDAD), grilla de racimos de
+  AVZP2 36×12 (ES: 2 candidatas; YM sin N → zonas individuales, 1 candidata), confirmación cruzada EURUSD/GBPUSD (refutada), GBPUSD
+  spot (refutada) y 6B (PISTAS_VIVAS), U1 en 6E futuro (refutada).
+- **Analizador sobre celdas no confirmadas** (`tools/analizar_embudo.py`) y **ATRAS** en la historia no mirada 2023-01→2025-08
+  (`docs/research/atras_20261026/`): EXPZ-CFD 0 a favor / 6 en contra (las mejores recientes son negativas antes de 2025: apuesta de
+  régimen, la decide el holdout); ZGAP-CFD 1/4/15.
+- **Costos:** spread de 6B medido (1,06 ticks; método validado contra 6E = 1,341).
+- **Historia de futuros:** el AddOn de NT8 no da más ticks; queda `nt8_tools/EdgeLabTickLogger.cs` para exportar desde el Strategy Analyzer.
+- **Edges promovidos: 0.**
+
+## Estado al 2026-10-25
 
 - **Validación (decisiones de Nico del 24-oct, aplicadas):** D1–D4 en `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md`;
   arreglos de falsos negativos del embudo (etapa PISTAS, linaje como información para campañas nuevas, m del FDR = evaluables,

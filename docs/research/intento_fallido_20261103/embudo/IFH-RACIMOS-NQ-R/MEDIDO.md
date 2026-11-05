@@ -1,0 +1,12 @@
+## IFH-RACIMOS-NQ-R — edgelab.research.intento_fallido_hacia_racimos · señal NQ · ejecución NQ
+- Justificación: Si la zona sigue siendo un imán tras el intento fallido, el reacercamiento que recupera el rechazo es el segundo intento; la forma de las piernas (duración y profundidad) y el comercio sobre la zona deberían separar los que llegan (Nico, 03/11).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr–sep en R; las variables de piernas y volumen no separan; falla de integridad.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5093965 pruebas de ['INTENTO_FALLIDO_RACIMOS_NQ', 'U1_RACIMOS_GRILLA_NQ', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 37362 de 472392 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 27550 (m del FDR 27550 de 236196 celdas), FDR 3862 (informativo), maxT 0, RW umbral 8.448561668395996 (diagnóstico), linaje 5093965 como informacion, pistas sin nominación 8, candidatas 0
+- PISTAS a réplica (ATJ-25): 4 congeladas de 8 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 2, 2, 2, 1, 2, 0, 1, 2, 4], [0, 2, 2, 2, 1, 0, 2, 2, 2, 6], [0, 2, 2, 2, 1, 2, 0, 2, 2, 5], [0, 0, 2, 2, 1, 2, 2, 2, 2, 4]]
+- PISTAS canasta (una prueba): media 0.03507606355615894 IC90 [-0.4540935767004198, 0.43856620412351116] p 0.5016245938515371 sesiones 38; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.6329598250888221; confirmadas 0 de 4 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 4 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.6329598250888221); canasta media 0.03507606355615894 IC90 [-0.4540935767004198, 0.43856620412351116]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.021982505328043578

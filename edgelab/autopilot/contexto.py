@@ -10,7 +10,8 @@ Después, un filtro de novedad descarta propuestas que repiten algo existente o 
 Lo que sale es un BORRADOR: no entra a candidates.json sin pre-registro committeado y promote humano.
 """
 from __future__ import annotations
-import json, re
+import json
+from pathlib import Path, re
 
 PRIORIDADES = [
     "Objetivo: edges netos (después de costos), robustos fuera de muestra y operables; útiles para challenges y combinables.",
@@ -51,10 +52,16 @@ def elegir_lente(historial: list) -> str:
     return sorted(LENTES, key=lambda k: (uso[k], -hits[k], k))[0]
 
 
+def directivas(root=None) -> str:
+    """Directivas vigentes de Nico (config/autopilot/DIRECTIVAS.md, 2026-10-27): van en cada paquete y nunca se recortan."""
+    f = Path(root or Path(__file__).resolve().parents[2]) / "config/autopilot/DIRECTIVAS.md"
+    return f.read_text(encoding="utf-8")[:4000] if f.exists() else ""
+
+
 def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000, cartas=None) -> dict:
     """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos, después cartas de la gramática
     (edgelab/research/agente/gramatica.py: coordenadas lejos de lo medido, sin resultados); prioridades y lente nunca se recortan."""
-    p = dict(prioridades=PRIORIDADES, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
+    p = dict(prioridades=PRIORIDADES, directivas_de_nico=directivas(), lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
              cartas_gramatica=[dict(id=c["id"], coordenadas=c["coordenadas"], cercana_medida=c.get("cercana_medida"), paridad=c.get("paridad"))
                                for c in (cartas or [])],
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),

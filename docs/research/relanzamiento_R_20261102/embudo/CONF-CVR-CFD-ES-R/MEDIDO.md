@@ -1,0 +1,13 @@
+## CONF-CVR-CFD-ES-R — edgelab.research.confluencia_cvgap_racimos · señal DK:USA500IDXUSD · ejecución ES
+- Justificación: Hipótesis estructural y microestructural pre-registrada en docs/research/confluencia_cvr_20261029/SPEC_CONFLUENCIA_CVGAP_RACIMOS.md: captura la absorción o transición de régimen en DK:USA500IDXUSD->ES combinando bloques validados de la espiral EdgeLab.
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 6291353 pruebas de ['CORREDOR_VOL_GAPS_CFD_ES', 'U1_RACIMOS_GRILLA_ES']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 37680 de 629856 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 26760 (m del FDR 26760 de 314928 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.385763168334961 (diagnóstico), linaje 6291353 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 16 congeladas de 40 (k 20), ventana [20260401, 20260925], un paso de LORD++ por lote; celdas [[0, 1, 0, 2, 2, 2, 1, 2, 1, 18], [0, 1, 0, 2, 2, 0, 1, 2, 2, 18], [0, 2, 0, 2, 2, 0, 0, 2, 2, 18], [0, 1, 0, 2, 2, 0, 2, 2, 1, 13], [1, 2, 0, 2, 2, 2, 2, 1, 2, 4], [0, 0, 0, 1, 0, 2, 0, 0, 2, 1], [1, 2, 0, 2, 2, 2, 2, 1, 1, 10], [1, 2, 0, 2, 1, 2, 2, 2, 2, 5], [1, 2, 0, 2, 1, 2, 0, 2, 2, 11], [1, 2, 0, 1, 2, 2, 2, 1, 2, 10], [0, 1, 0, 2, 0, 2, 1, 2, 2, 18], [0, 1, 0, 2, 2, 2, 1, 2, 2, 12], [0, 1, 0, 1, 2, 0, 1, 2, 1, 18], [1, 1, 0, 1, 0, 2, 2, 1, 2, 11], [1, 2, 0, 1, 1, 2, 2, 1, 2, 4], [0, 1, 0, 2, 2, 2, 2, 2, 1, 19]]
+- AVISO PISTAS: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- PISTAS canasta (una prueba): media -0.07339124604575617 IC90 [-0.14640778863961465, -0.002973296798855969] p 0.9505123719070232 sesiones 56; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260925]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 1.0; confirmadas 0 de 16 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 16 confirmadas una por una (nivel 0.0011901877202097062, p Simes 1.0); canasta media -0.07339124604575617 IC90 [-0.14640778863961465, -0.002973296798855969]; canasta en contra con potencia; potencia de la canasta 0.8214751294955213

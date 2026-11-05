@@ -1,0 +1,2726 @@
+{
+ "etapa": "CONTEO",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793200994.1094697,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793206560.0,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     17
+    ],
+    [
+     0,
+     0,
+     1,
+     2,
+     2,
+     2,
+     3,
+     2,
+     0,
+     2,
+     11
+    ],
+    [
+     0,
+     0,
+     1,
+     0,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     15
+    ]
+   ]
+  },
+  {
+   "ts": 1793225671.270584,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793226668.7140949,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793227787.8702836,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793228510.4085977,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793228510.428545,
+   "etapa": "ACTA",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "CVGAP-NQ",
+  "familia": "CORREDOR_VOL_GAPS_NQ",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260925
+  ],
+  "embudo": true,
+  "conductor": "debian",
+  "activa": true,
+  "n_celdas_por_canal": 933120,
+  "spec": "docs/research/corredor_vol_gaps_20261028/SPEC_CORREDOR_VOL_GAPS.md",
+  "justificacion_economica": "Cuando EmaCorridorTrendVolW2 (50T/M1, W1=100%/W2=200%) marca un Rectángulo Amarillo (absorción P80/P90 en el extremo del impulso) y el precio no rompe hacia el origen sino que rompe en la misma dirección del impulso inicial, se aleja >= {1, 2, 4}x H_amarilla barriendo gaps previos y regresa (antes, en la caja o en el Value Area Edge), la ruptura tardía se agota y revierte hacia el 50%, 25% o 100% del impulso inicial, asistida por los gaps abiertos en el camino.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (Directiva #6: OOS cerró 2026-09-25 sin tocar octubre).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "cuenta_kaggle": "nicolasbuttaro"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260925
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-23 (HOLDOUT_VENTANAS.jsonl).",
+   "apertura_familia": "Comparte la familia ZONAS_GAPS en LINAJES.jsonl y LIBRO_LORD.json."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "CORREDOR_VOL_GAPS_NQ",
+   "declarada": true,
+   "padres": [
+    "ZONAS_GAPS",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5626417,
+   "n_heredado": 5626417,
+   "total": 5626417,
+   "justificacion": "acopla EmaCorridorTrendVolW2 con el detector y ciclo de vida de ZONAS_GAPS sobre NQ y USATECH->NQ tras mirar réplica OOS de ZGAP-NQ; declarado antes de abrir holdout (SPEC_CORREDOR_VOL_GAPS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793200994.1094697,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "tamano_impulso": [
+    2.5804676753782667,
+    4.4639939351415
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    17
+   ],
+   [
+    0,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    2,
+    0,
+    2,
+    11
+   ],
+   [
+    0,
+    0,
+    1,
+    0,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    15
+   ]
+  ],
+  "topes": null
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793227790.4037476,
+ "codigo_cambiado": [
+  {
+   "etapa": "DESC",
+   "modulos": [
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/grilla_masiva.py",
+    "edgelab/funnel/escalera.py",
+    "edgelab/research/g2.py",
+    "edgelab/research/sim.py",
+    "edgelab/bridge/identity.py",
+    "edgelab/research/costs.py",
+    "edgelab/research/holdout_guard.py",
+    "edgelab/regimes/state.py"
+   ]
+  },
+  {
+   "etapa": "INDAGA",
+   "modulos": [
+    "edgelab/research/fuentes_ticks.py",
+    "edgelab/research/grilla_generica.py",
+    "edgelab/research/grilla_masiva.py",
+    "edgelab/funnel/escalera.py",
+    "edgelab/research/embudo_runners.py"
+   ]
+  },
+  {
+   "etapa": "INTEGRIDAD",
+   "modulos": [
+    "edgelab/funnel/escalera.py"
+   ]
+  }
+ ],
+ "cortes": {
+  "tamano_impulso": [
+   2.5804676753782667,
+   4.4639939351415
+  ]
+ },
+ "candidatas": [
+  [
+   0,
+   0,
+   1,
+   2,
+   2,
+   3,
+   3,
+   2,
+   0,
+   2,
+   17
+  ],
+  [
+   0,
+   0,
+   1,
+   2,
+   2,
+   2,
+   3,
+   2,
+   0,
+   2,
+   11
+  ],
+  [
+   0,
+   0,
+   1,
+   0,
+   2,
+   3,
+   3,
+   2,
+   0,
+   2,
+   15
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     17
+    ],
+    "n": 31,
+    "media_neta": 53.10772580645162,
+    "sesiones": 22,
+    "ic90": [
+     35.766608150470205,
+     72.07175806451612
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 51.12,
+    "pasa": true,
+    "n_pruebas": 83052.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.920356750488281,
+    "canal": "reciente",
+    "q_fdr": 0.0024439544717409383,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49368,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 0.2809787743354023
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     2,
+     3,
+     2,
+     0,
+     2,
+     11
+    ],
+    "n": 34,
+    "media_neta": 42.10155882352941,
+    "sesiones": 22,
+    "ic90": [
+     29.439812500000006,
+     56.244364158829676
+    ],
+    "p_sesiones": 0.0009995002498750624,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 42.87,
+    "pasa": true,
+    "n_pruebas": 83052.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 5.082068920135498,
+    "canal": "reciente",
+    "q_fdr": 0.010726061433178384,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49368,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 1.0
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     0,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     15
+    ],
+    "n": 76,
+    "media_neta": 31.615684210526307,
+    "sesiones": 44,
+    "ic90": [
+     22.763692735949096,
+     40.490710444485096
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 34.37,
+    "pasa": true,
+    "n_pruebas": 83052.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 5.985537528991699,
+    "canal": "reciente",
+    "q_fdr": 0.00035767407915017203,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 49368,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 933120,
+    "q_linaje": 0.0411213979365046
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    17
+   ],
+   "n_desc": 31,
+   "ops_mes": 10.33,
+   "efecto": 26.55386290322581,
+   "oos": {
+    "n": 62.0,
+    "mde": 19.403499506167055,
+    "potencia": 0.9606185450128686
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 12.474704851904955,
+    "potencia": 0.9998678026463181
+   }
+  },
+  {
+   "celda": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    2,
+    0,
+    2,
+    11
+   ],
+   "n_desc": 34,
+   "ops_mes": 11.33,
+   "efecto": 21.050779411764704,
+   "oos": {
+    "n": 68.0,
+    "mde": 14.325849255725318,
+    "potencia": 0.9777228353809696
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 9.645599020295236,
+    "potencia": 0.9999221153909454
+   }
+  },
+  {
+   "celda": [
+    0,
+    0,
+    1,
+    0,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    15
+   ],
+   "n_desc": 76,
+   "ops_mes": 25.33,
+   "efecto": 15.807842105263154,
+   "oos": {
+    "n": 152.0,
+    "mde": 9.474308195056304,
+    "potencia": 0.9938569545806593
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 9.537261101520526,
+    "potencia": 0.9933649034613126
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    17
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     17
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 14,
+       "media_neta": -40.88478571428572,
+       "sesiones": 12,
+       "ic90": [
+        -65.6963012820513,
+        -14.532843750000026
+       ],
+       "p_sesiones": 1.0,
+       "chica": true
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 106,
+       "media_neta": 10.848367924528302,
+       "sesiones": 76,
+       "ic90": [
+        -5.53436325326591,
+        25.401601190476182
+       ],
+       "p_sesiones": 0.13373253493013973,
+       "chica": false
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 238,
+       "media_neta": 8.565844537815124,
+       "sesiones": 117,
+       "ic90": [
+        -0.15005990629183644,
+        16.294367698560233
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 210,
+       "media_neta": 8.644976190476191,
+       "sesiones": 126,
+       "ic90": [
+        -2.049718952396376,
+        19.17308416252073
+       ],
+       "p_sesiones": 0.08183632734530938,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 177,
+       "media_neta": 8.02370903954802,
+       "sesiones": 114,
+       "ic90": [
+        -2.471303146483347,
+        18.005896262230312
+       ],
+       "p_sesiones": 0.11776447105788423,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 9
+      },
+      {
+       "nivel": 1,
+       "n": 36,
+       "media_neta": 28.079500000000003,
+       "sesiones": 36,
+       "ic90": [
+        8.242347222222218,
+        49.07220833333332
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 3
+      },
+      {
+       "nivel": 2,
+       "n": 97,
+       "media_neta": 17.918417525773194,
+       "sesiones": 75,
+       "ic90": [
+        0.4186226415094308,
+        31.957257694691158
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 8
+      },
+      {
+       "nivel": 1,
+       "n": 15,
+       "media_neta": 2.4378333333333293,
+       "sesiones": 13,
+       "ic90": [
+        -43.66392105263157,
+        55.28623076923076
+       ],
+       "p_sesiones": 0.5249500998003992,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 77,
+       "media_neta": 18.38956493506494,
+       "sesiones": 62,
+       "ic90": [
+        3.9254285201149357,
+        33.252304054054036
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 28,
+       "media_neta": -3.5990714285714285,
+       "sesiones": 26,
+       "ic90": [
+        -29.11098531289911,
+        17.334361111111107
+       ],
+       "p_sesiones": 0.5848303393213573,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 39,
+       "media_neta": 23.935269230769237,
+       "sesiones": 33,
+       "ic90": [
+        1.074520325203248,
+        46.13242467948716
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 80,
+       "media_neta": -13.998625000000004,
+       "sesiones": 65,
+       "ic90": [
+        -28.45410166139241,
+        -2.0831524390243956
+       ],
+       "p_sesiones": 0.9421157684630739,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 180,
+       "media_neta": 3.939222222222222,
+       "sesiones": 107,
+       "ic90": [
+        -4.83204099462366,
+        12.20598305084745
+       ],
+       "p_sesiones": 0.24750499001996007,
+       "chica": false
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 42,
+       "media_neta": 7.353309523809522,
+       "sesiones": 35,
+       "ic90": [
+        -8.578741671904464,
+        24.177015227021034
+       ],
+       "p_sesiones": 0.25948103792415167,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 26,
+       "media_neta": -9.007038461538462,
+       "sesiones": 23,
+       "ic90": [
+        -38.209354166666664,
+        17.567055555555548
+       ],
+       "p_sesiones": 0.6866267465069861,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 11,
+       "media_neta": 36.704499999999996,
+       "sesiones": 11,
+       "ic90": [
+        10.25563636363636,
+        66.07381818181817
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": true
+      },
+      {
+       "nivel": 4,
+       "n": 179,
+       "media_neta": 12.890254189944132,
+       "sesiones": 110,
+       "ic90": [
+        1.9453770718231997,
+        22.292161281998347
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 111,
+       "media_neta": 7.159454954954956,
+       "sesiones": 79,
+       "ic90": [
+        0.6217631658595623,
+        13.419237142646626
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 111,
+       "media_neta": 7.269815315315316,
+       "sesiones": 79,
+       "ic90": [
+        0.3526623328629955,
+        13.83030518018018
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 111,
+       "media_neta": 14.109905405405408,
+       "sesiones": 79,
+       "ic90": [
+        5.6331317497295945,
+        22.186554924242415
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 13.681977477477481,
+       "sesiones": 79,
+       "ic90": [
+        4.735876560046282,
+        21.967214291961852
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 111,
+       "media_neta": 15.517563063063067,
+       "sesiones": 79,
+       "ic90": [
+        1.0741040578393495,
+        26.725543577981643
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false
+      },
+      {
+       "nivel": 5,
+       "n": 111,
+       "media_neta": 14.814860360360363,
+       "sesiones": 79,
+       "ic90": [
+        -0.32519031531531717,
+        26.265329420263672
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false
+      },
+      {
+       "nivel": 6,
+       "n": 111,
+       "media_neta": 7.044590090090091,
+       "sesiones": 79,
+       "ic90": [
+        0.47268181818181637,
+        13.30132014106583
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 7,
+       "n": 111,
+       "media_neta": 7.154950450450452,
+       "sesiones": 79,
+       "ic90": [
+        0.123344138198755,
+        13.706016020737717
+       ],
+       "p_sesiones": 0.031936127744510975,
+       "chica": false
+      },
+      {
+       "nivel": 8,
+       "n": 111,
+       "media_neta": 14.049094594594598,
+       "sesiones": 79,
+       "ic90": [
+        5.667329131652659,
+        22.10361931818181
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 111,
+       "media_neta": 13.62116666666667,
+       "sesiones": 79,
+       "ic90": [
+        4.631542079207922,
+        21.95667451965239
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 111,
+       "media_neta": 15.792337837837842,
+       "sesiones": 79,
+       "ic90": [
+        1.4773650210083982,
+        26.975126573175103
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false
+      },
+      {
+       "nivel": 11,
+       "n": 111,
+       "media_neta": 15.089635135135138,
+       "sesiones": 79,
+       "ic90": [
+        0.2763468468468447,
+        26.543558190843896
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false
+      },
+      {
+       "nivel": 12,
+       "n": 100,
+       "media_neta": 5.167000000000001,
+       "sesiones": 77,
+       "ic90": [
+        -6.45891666666667,
+        16.164673948220067
+       ],
+       "p_sesiones": 0.2634730538922156,
+       "chica": false
+      },
+      {
+       "nivel": 13,
+       "n": 100,
+       "media_neta": 4.536999999999999,
+       "sesiones": 77,
+       "ic90": [
+        -7.9521250000000006,
+        16.410359375000002
+       ],
+       "p_sesiones": 0.2834331337325349,
+       "chica": false
+      },
+      {
+       "nivel": 14,
+       "n": 100,
+       "media_neta": 12.472000000000001,
+       "sesiones": 77,
+       "ic90": [
+        -2.0463473875661404,
+        25.49089205682272
+       ],
+       "p_sesiones": 0.05788423153692615,
+       "chica": false
+      },
+      {
+       "nivel": 15,
+       "n": 100,
+       "media_neta": 11.779500000000002,
+       "sesiones": 77,
+       "ic90": [
+        -3.809354756011316,
+        24.720964428191476
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false
+      },
+      {
+       "nivel": 16,
+       "n": 100,
+       "media_neta": 19.069499999999998,
+       "sesiones": 77,
+       "ic90": [
+        2.8515238095238056,
+        33.382906902086646
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false
+      },
+      {
+       "nivel": 17,
+       "n": 100,
+       "media_neta": 18.289499999999997,
+       "sesiones": 77,
+       "ic90": [
+        1.4981974789915942,
+        33.38912922403003
+       ],
+       "p_sesiones": 0.017964071856287425,
+       "chica": false
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    2,
+    0,
+    2,
+    11
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     2,
+     3,
+     2,
+     0,
+     2,
+     11
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 14,
+       "media_neta": -44.90264285714285,
+       "sesiones": 12,
+       "ic90": [
+        -81.76280769230767,
+        -8.381750000000036
+       ],
+       "p_sesiones": 0.9740518962075848,
+       "chica": true
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 116,
+       "media_neta": 11.062258620689654,
+       "sesiones": 78,
+       "ic90": [
+        -2.2388903133903173,
+        24.397462677953044
+       ],
+       "p_sesiones": 0.08582834331337326,
+       "chica": false
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 253,
+       "media_neta": 8.451535573122527,
+       "sesiones": 117,
+       "ic90": [
+        0.45100401633160186,
+        15.749207259168847
+       ],
+       "p_sesiones": 0.041916167664670656,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 230,
+       "media_neta": 10.001239130434781,
+       "sesiones": 129,
+       "ic90": [
+        2.114113920683834,
+        18.903213235294107
+       ],
+       "p_sesiones": 0.03792415169660679,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 193,
+       "media_neta": 9.350873056994814,
+       "sesiones": 116,
+       "ic90": [
+        0.1409467137994209,
+        19.38376938592559
+       ],
+       "p_sesiones": 0.0718562874251497,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 11,
+       "media_neta": -9.363681818181822,
+       "sesiones": 10,
+       "ic90": [
+        -36.35146590909091,
+        24.78449999999999
+       ],
+       "p_sesiones": 0.6846307385229541,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 43,
+       "media_neta": 35.29170930232558,
+       "sesiones": 41,
+       "ic90": [
+        14.777740165631467,
+        52.56967857142857
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 3
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 111,
+       "media_neta": 15.089635135135138,
+       "sesiones": 79,
+       "ic90": [
+        0.2763468468468447,
+        26.543558190843896
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 8
+      },
+      {
+       "nivel": 1,
+       "n": 14,
+       "media_neta": -10.956214285714285,
+       "sesiones": 12,
+       "ic90": [
+        -61.98256597222222,
+        45.940958333333334
+       ],
+       "p_sesiones": 0.7105788423153693,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 86,
+       "media_neta": 16.893453488372092,
+       "sesiones": 67,
+       "ic90": [
+        4.437208006792055,
+        29.758876434308643
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 29,
+       "media_neta": 0.7907068965517204,
+       "sesiones": 27,
+       "ic90": [
+        -22.151965517241383,
+        22.950445083014046
+       ],
+       "p_sesiones": 0.49700598802395207,
+       "chica": true
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 16.698249999999994,
+       "sesiones": 35,
+       "ic90": [
+        -5.543181872391179,
+        37.222013736263726
+       ],
+       "p_sesiones": 0.10778443113772455,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 91,
+       "media_neta": -10.757038461538459,
+       "sesiones": 70,
+       "ic90": [
+        -24.447647315855196,
+        0.7289397095959484
+       ],
+       "p_sesiones": 0.8882235528942116,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 199,
+       "media_neta": 3.024851758793969,
+       "sesiones": 110,
+       "ic90": [
+        -5.562973429951692,
+        10.818865275575726
+       ],
+       "p_sesiones": 0.29740518962075846,
+       "chica": false
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 53,
+       "media_neta": 4.723367924528301,
+       "sesiones": 43,
+       "ic90": [
+        -7.473682870370372,
+        16.755560315430497
+       ],
+       "p_sesiones": 0.28542914171656686,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 29,
+       "media_neta": -23.27825862068966,
+       "sesiones": 24,
+       "ic90": [
+        -49.19318518518519,
+        2.4226662087911937
+       ],
+       "p_sesiones": 0.9341317365269461,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 13,
+       "media_neta": 28.166038461538456,
+       "sesiones": 13,
+       "ic90": [
+        6.008346153846153,
+        52.95546153846152
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": true
+      },
+      {
+       "nivel": 4,
+       "n": 203,
+       "media_neta": 7.4988349753694585,
+       "sesiones": 110,
+       "ic90": [
+        -2.13897620558376,
+        16.024622430039972
+       ],
+       "p_sesiones": 0.08183632734530938,
+       "chica": false
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 108,
+       "media_neta": 6.512370370370371,
+       "sesiones": 77,
+       "ic90": [
+        -0.7995137614678927,
+        13.289546932234432
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 108,
+       "media_neta": 6.625796296296296,
+       "sesiones": 77,
+       "ic90": [
+        -0.9693120997057323,
+        13.652457813582812
+       ],
+       "p_sesiones": 0.05788423153692615,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 108,
+       "media_neta": 13.155888888888889,
+       "sesiones": 77,
+       "ic90": [
+        4.138287642782967,
+        22.10757493324432
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 108,
+       "media_neta": 12.716074074074076,
+       "sesiones": 77,
+       "ic90": [
+        2.757438034188032,
+        21.579305194805183
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 108,
+       "media_neta": 15.123481481481482,
+       "sesiones": 77,
+       "ic90": [
+        0.3698935185185131,
+        27.84718647504848
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 5,
+       "n": 108,
+       "media_neta": 14.401259259259259,
+       "sesiones": 77,
+       "ic90": [
+        -1.6203944805194836,
+        27.773950354609923
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 6,
+       "n": 108,
+       "media_neta": 6.39662962962963,
+       "sesiones": 77,
+       "ic90": [
+        -0.7858624307384899,
+        13.212152050919379
+       ],
+       "p_sesiones": 0.06187624750499002,
+       "chica": false
+      },
+      {
+       "nivel": 7,
+       "n": 108,
+       "media_neta": 6.510055555555556,
+       "sesiones": 77,
+       "ic90": [
+        -1.0455910294604471,
+        13.576495192307693
+       ],
+       "p_sesiones": 0.0658682634730539,
+       "chica": false
+      },
+      {
+       "nivel": 8,
+       "n": 108,
+       "media_neta": 13.095703703703704,
+       "sesiones": 77,
+       "ic90": [
+        4.010636363636362,
+        22.136231443941984
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 108,
+       "media_neta": 12.65588888888889,
+       "sesiones": 77,
+       "ic90": [
+        2.682066574652916,
+        21.53804123354122
+       ],
+       "p_sesiones": 0.015968063872255488,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 108,
+       "media_neta": 15.359592592592593,
+       "sesiones": 77,
+       "ic90": [
+        0.3952324735449692,
+        28.09283208428847
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 11,
+       "n": 108,
+       "media_neta": 14.63737037037037,
+       "sesiones": 77,
+       "ic90": [
+        -1.4043095238095276,
+        28.006825724104065
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 12,
+       "n": 97,
+       "media_neta": 4.420994845360823,
+       "sesiones": 75,
+       "ic90": [
+        -8.368156250000002,
+        15.473886441647597
+       ],
+       "p_sesiones": 0.2954091816367265,
+       "chica": false
+      },
+      {
+       "nivel": 13,
+       "n": 97,
+       "media_neta": 3.7715103092783497,
+       "sesiones": 75,
+       "ic90": [
+        -9.536938679245281,
+        15.066273255813952
+       ],
+       "p_sesiones": 0.34530938123752497,
+       "chica": false
+      },
+      {
+       "nivel": 14,
+       "n": 97,
+       "media_neta": 11.395221649484535,
+       "sesiones": 75,
+       "ic90": [
+        -3.8517263257575802,
+        24.440712871287122
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": false
+      },
+      {
+       "nivel": 15,
+       "n": 97,
+       "media_neta": 10.681304123711339,
+       "sesiones": 75,
+       "ic90": [
+        -5.115023809523811,
+        24.043313195732818
+       ],
+       "p_sesiones": 0.10179640718562874,
+       "chica": false
+      },
+      {
+       "nivel": 16,
+       "n": 97,
+       "media_neta": 18.722541237113397,
+       "sesiones": 75,
+       "ic90": [
+        2.1185616246498564,
+        32.39867763157893
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false
+      },
+      {
+       "nivel": 17,
+       "n": 97,
+       "media_neta": 17.918417525773194,
+       "sesiones": 75,
+       "ic90": [
+        0.4186226415094308,
+        31.957257694691158
+       ],
+       "p_sesiones": 0.023952095808383235,
+       "chica": false
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  },
+  {
+   "base": [
+    0,
+    0,
+    1,
+    0,
+    2,
+    3,
+    3,
+    2,
+    0,
+    2,
+    15
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     0,
+     1,
+     0,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     15
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 21,
+       "media_neta": -17.926452380952384,
+       "sesiones": 19,
+       "ic90": [
+        -55.89123934837092,
+        21.674138157894724
+       ],
+       "p_sesiones": 0.7884231536926147,
+       "chica": true
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 215,
+       "media_neta": 3.0905465116279074,
+       "sesiones": 115,
+       "ic90": [
+        -5.780600196188341,
+        10.609542016806722
+       ],
+       "p_sesiones": 0.23552894211576847,
+       "chica": false
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 503,
+       "media_neta": 2.367024850894631,
+       "sesiones": 146,
+       "ic90": [
+        -2.145643752200058,
+        6.571966633819305
+       ],
+       "p_sesiones": 0.17165668662674652,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 177,
+       "media_neta": 7.530771186440678,
+       "sesiones": 114,
+       "ic90": [
+        -1.6984151469641697,
+        16.08208890304645
+       ],
+       "p_sesiones": 0.0718562874251497,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 100,
+       "media_neta": 11.779500000000002,
+       "sesiones": 77,
+       "ic90": [
+        -3.809354756011316,
+        24.720964428191476
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 100,
+       "media_neta": -5.980499999999999,
+       "sesiones": 73,
+       "ic90": [
+        -12.38305198019802,
+        1.474653632774986
+       ],
+       "p_sesiones": 0.9401197604790419,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 137,
+       "media_neta": 7.781142335766423,
+       "sesiones": 95,
+       "ic90": [
+        -0.2835094905094929,
+        17.46530633997784
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      }
+     ],
+     "gap_score_tomados": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 3
+      },
+      {
+       "nivel": 2,
+       "n": 207,
+       "media_neta": 7.8458043478260855,
+       "sesiones": 125,
+       "ic90": [
+        -1.3496728286384962,
+        16.67018399937066
+       ],
+       "p_sesiones": 0.08383233532934131,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      }
+     ],
+     "gap_iman_camino": [
+      {
+       "nivel": 0,
+       "n": 9
+      },
+      {
+       "nivel": 1,
+       "n": 17,
+       "media_neta": 3.219205882352937,
+       "sesiones": 14,
+       "ic90": [
+        -40.31930952380953,
+        49.752937499999994
+       ],
+       "p_sesiones": 0.5089820359281437,
+       "chica": true
+      },
+      {
+       "nivel": 2,
+       "n": 184,
+       "media_neta": 8.143358695652172,
+       "sesiones": 117,
+       "ic90": [
+        0.4617485126357719,
+        16.07035773273273
+       ],
+       "p_sesiones": 0.04790419161676647,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 56,
+       "media_neta": -9.398178571428573,
+       "sesiones": 48,
+       "ic90": [
+        -24.823997023809525,
+        4.053025185936442
+       ],
+       "p_sesiones": 0.8403193612774451,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 61,
+       "media_neta": 8.532368852459017,
+       "sesiones": 47,
+       "ic90": [
+        -9.3262196969697,
+        23.741045566502454
+       ],
+       "p_sesiones": 0.2055888223552894,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 353,
+       "media_neta": -3.37623654390935,
+       "sesiones": 151,
+       "ic90": [
+        -9.138622068532847,
+        1.4216917613636264
+       ],
+       "p_sesiones": 0.8403193612774451,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 563,
+       "media_neta": 1.0197753108348113,
+       "sesiones": 160,
+       "ic90": [
+        -3.3610096660808453,
+        4.7364740853658525
+       ],
+       "p_sesiones": 0.3273453093812375,
+       "chica": false
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 64,
+       "media_neta": 1.8216874999999986,
+       "sesiones": 53,
+       "ic90": [
+        -8.487851310483874,
+        11.360718497983868
+       ],
+       "p_sesiones": 0.37524950099800397,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": -5.458,
+       "sesiones": 36,
+       "ic90": [
+        -22.71049155405405,
+        9.737557491289156
+       ],
+       "p_sesiones": 0.7085828343313373,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 31,
+       "media_neta": 8.865790322580644,
+       "sesiones": 30,
+       "ic90": [
+        -2.323725806451614,
+        19.0792678396872
+       ],
+       "p_sesiones": 0.09381237524950099,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 345,
+       "media_neta": 5.620442028985505,
+       "sesiones": 147,
+       "ic90": [
+        0.5333548577780886,
+        11.16713954656335
+       ],
+       "p_sesiones": 0.04590818363273453,
+       "chica": false
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 233,
+       "media_neta": 4.794628755364806,
+       "sesiones": 130,
+       "ic90": [
+        1.1631190881311189,
+        8.85616369689973
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 1,
+       "n": 233,
+       "media_neta": 5.886903433476394,
+       "sesiones": 130,
+       "ic90": [
+        1.8398939640372263,
+        10.42470977554017
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false
+      },
+      {
+       "nivel": 2,
+       "n": 233,
+       "media_neta": 9.833255364806869,
+       "sesiones": 130,
+       "ic90": [
+        4.047459334896748,
+        15.563237285441824
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 3,
+       "n": 233,
+       "media_neta": 10.541409871244635,
+       "sesiones": 130,
+       "ic90": [
+        4.413608704991017,
+        17.098050459956706
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false
+      },
+      {
+       "nivel": 4,
+       "n": 233,
+       "media_neta": 9.895487124463518,
+       "sesiones": 130,
+       "ic90": [
+        1.851327387339053,
+        17.834831015500505
+       ],
+       "p_sesiones": 0.021956087824351298,
+       "chica": false
+      },
+      {
+       "nivel": 5,
+       "n": 233,
+       "media_neta": 10.176603004291845,
+       "sesiones": 130,
+       "ic90": [
+        1.292050138312584,
+        19.154663349237993
+       ],
+       "p_sesiones": 0.029940119760479042,
+       "chica": false
+      },
+      {
+       "nivel": 6,
+       "n": 233,
+       "media_neta": 4.727032188841201,
+       "sesiones": 130,
+       "ic90": [
+        1.10123067574137,
+        8.801731886672506
+       ],
+       "p_sesiones": 0.03592814371257485,
+       "chica": false
+      },
+      {
+       "nivel": 7,
+       "n": 233,
+       "media_neta": 5.819306866952789,
+       "sesiones": 130,
+       "ic90": [
+        1.80489289232068,
+        10.356696874344449
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 8,
+       "n": 233,
+       "media_neta": 9.802139484978541,
+       "sesiones": 130,
+       "ic90": [
+        3.9660143317600993,
+        15.595562167497572
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false
+      },
+      {
+       "nivel": 9,
+       "n": 233,
+       "media_neta": 10.51029399141631,
+       "sesiones": 130,
+       "ic90": [
+        4.366085277437648,
+        17.049483766233763
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false
+      },
+      {
+       "nivel": 10,
+       "n": 233,
+       "media_neta": 10.012439914163089,
+       "sesiones": 130,
+       "ic90": [
+        1.8794959415584382,
+        17.96596835329876
+       ],
+       "p_sesiones": 0.01996007984031936,
+       "chica": false
+      },
+      {
+       "nivel": 11,
+       "n": 233,
+       "media_neta": 10.276388412017166,
+       "sesiones": 130,
+       "ic90": [
+        1.4544999999999975,
+        19.181866115937897
+       ],
+       "p_sesiones": 0.027944111776447105,
+       "chica": false
+      },
+      {
+       "nivel": 12,
+       "n": 210,
+       "media_neta": 2.639023809523807,
+       "sesiones": 126,
+       "ic90": [
+        -3.81785854442424,
+        8.443599053159074
+       ],
+       "p_sesiones": 0.23353293413173654,
+       "chica": false
+      },
+      {
+       "nivel": 13,
+       "n": 210,
+       "media_neta": 3.3092619047619034,
+       "sesiones": 126,
+       "ic90": [
+        -3.8959585662182663,
+        9.860573667711584
+       ],
+       "p_sesiones": 0.19760479041916168,
+       "chica": false
+      },
+      {
+       "nivel": 14,
+       "n": 210,
+       "media_neta": 7.571166666666666,
+       "sesiones": 126,
+       "ic90": [
+        -0.4866331519611699,
+        15.39782924190728
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 15,
+       "n": 210,
+       "media_neta": 8.409261904761903,
+       "sesiones": 126,
+       "ic90": [
+        -0.0663674465962951,
+        16.829013424377546
+       ],
+       "p_sesiones": 0.05389221556886228,
+       "chica": false
+      },
+      {
+       "nivel": 16,
+       "n": 210,
+       "media_neta": 8.365214285714286,
+       "sesiones": 126,
+       "ic90": [
+        -1.3396680385342372,
+        17.066272827687765
+       ],
+       "p_sesiones": 0.059880239520958084,
+       "chica": false
+      },
+      {
+       "nivel": 17,
+       "n": 210,
+       "media_neta": 8.644976190476191,
+       "sesiones": 126,
+       "ic90": [
+        -2.049718952396376,
+        19.17308416252073
+       ],
+       "p_sesiones": 0.08183632734530938,
+       "chica": false
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     17
+    ],
+    "n": 77,
+    "media_neta": 4.019435064935063,
+    "sesiones": 51,
+    "ic90": [
+     -14.826585526315787,
+     23.251321273379936
+    ],
+    "p_sesiones": 0.38010204081632654,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 45.62,
+    "pasa": false,
+    "n_pruebas": 2.000000000000001,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     2,
+     3,
+     2,
+     0,
+     2,
+     11
+    ],
+    "n": 88,
+    "media_neta": 19.133477272727276,
+    "sesiones": 58,
+    "ic90": [
+     4.50910051721791,
+     33.20837259989621
+    ],
+    "p_sesiones": 0.015306122448979591,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 40.52,
+    "pasa": true,
+    "n_pruebas": 2.000000000000001,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.8657743311715775,
+    "media_esperada_fuera": 16.565273488782037,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     0,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     15
+    ],
+    "n": 148,
+    "media_neta": -11.60293243243243,
+    "sesiones": 84,
+    "ic90": [
+     -24.229271854828372,
+     -0.15371271646420281
+    ],
+    "p_sesiones": 0.9347667638483965,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 31.46,
+    "pasa": false,
+    "n_pruebas": 2.000000000000001,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2743,
+    "piso_p": 0.00036443148688046647,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.04591836734693877,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 1,
+   "familia": "CORREDOR_VOL_GAPS_NQ",
+   "run_id": "CVGAP-NQ/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     17
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 4.019435064935063,
+    "ic90": [
+     -14.826585526315787,
+     23.251321273379936
+    ],
+    "efecto_para_potencia": 26.55386290322581,
+    "potencia": 0.7419096481275919,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     2,
+     2,
+     2,
+     3,
+     2,
+     0,
+     2,
+     11
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": 19.133477272727276,
+    "ic90": [
+     4.50910051721791,
+     33.20837259989621
+    ],
+    "efecto_para_potencia": 21.050779411764704,
+    "potencia": 0.7787953012650543,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     0,
+     1,
+     0,
+     2,
+     3,
+     3,
+     2,
+     0,
+     2,
+     15
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -11.60293243243243,
+    "ic90": [
+     -24.229271854828372,
+     -0.15371271646420281
+    ],
+    "efecto_para_potencia": 15.807842105263154,
+    "potencia": 0.6967741113779916,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   0,
+   0,
+   1,
+   2,
+   2,
+   2,
+   3,
+   2,
+   0,
+   2,
+   11
+  ],
+  "tope": [
+   "mult",
+   4.0
+  ],
+  "puntaje": 2.824785358655979,
+  "peor": -221.7955
+ },
+ "acta": {
+  "cid": "CVGAP-NQ",
+  "familia": "CORREDOR_VOL_GAPS_NQ",
+  "experimento": "edgelab.research.corredor_vol_gaps",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "regla": {
+   "celda": [
+    0,
+    0,
+    1,
+    2,
+    2,
+    2,
+    3,
+    2,
+    0,
+    2,
+    11
+   ],
+   "tope": [
+    "mult",
+    4.0
+   ],
+   "puntaje": 2.824785358655979,
+   "peor": -221.7955
+  },
+  "cortes": {
+   "tamano_impulso": [
+    2.5804676753782667,
+    4.4639939351415
+   ]
+  },
+  "holdout_desde": 20261023,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793228510.426705,
+  "reserva_lord": {
+   "familia": "CORREDOR_VOL_GAPS_NQ",
+   "reserva_id": "CVGAP-NQ/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "CORREDOR_VOL_GAPS_NQ",
+    "declarada": true,
+    "padres": [
+     "ZONAS_GAPS",
+     "AREAS_EXP_1_CRUZADO"
+    ],
+    "propias": 0,
+    "bruto_heredado": 5626417,
+    "n_heredado": 5626417,
+    "total": 5626417,
+    "justificacion": "acopla EmaCorridorTrendVolW2 con el detector y ciclo de vida de ZONAS_GAPS sobre NQ y USATECH->NQ tras mirar réplica OOS de ZGAP-NQ; declarado antes de abrir holdout (SPEC_CORREDOR_VOL_GAPS.md)",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 5626417,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 1.0,
+   "recorte": {
+    "t": 3.0903807621810726,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE"
+  ],
+  "decision": "primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
+}

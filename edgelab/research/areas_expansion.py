@@ -184,7 +184,15 @@ def eventos(Z, t_close, G, ns=None, ws=None):
 
 
 def disparos(ev, h, l, c, t_close, fin=None, xs=None):
-    """Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
+    """Desde el 2026-11-02 es la versión CAUSAL (decisión de Nico: «que ninguna corrida pueda mirar al futuro»). La versión
+    anterior, que cortaba el área mirando hasta `fin`, queda como `disparos_con_lookahead_historico`, sólo para reproducir
+    resultados viejos. Ver docs/research/HALLAZGO_LOOKAHEAD_DISPAROS_U1_20261102.md."""
+    return disparos_causales(ev, h, l, c, t_close, fin=fin, xs=xs)
+
+
+def disparos_con_lookahead_historico(ev, h, l, c, t_close, fin=None, xs=None):
+    """NO USAR EN CORRIDAS: mira el futuro (ver `disparos`). Sólo para reproducir resultados anteriores al 2026-11-02.
+    Ciclos de alejamiento y regreso sobre UNA área (pedido de Nico: atravesarla no la invalida; se evalúa varias veces).
     Un ciclo: el precio cierra fuera del área (lado), se aleja >= 1·H del borde cercano sin volver a cerrar adentro (si vuelve
     antes, el ciclo se reinicia sin descartar el área) y después regresa; el disparo de cada x es el primer cierre con
     D <= x·A. El ciclo termina cuando vuelve a cerrar dentro del área (o cruza); el siguiente arranca en la barra siguiente,
@@ -214,6 +222,35 @@ def disparos(ev, h, l, c, t_close, fin=None, xs=None):
                 q = int(np.argmax(cond)); k = int(jj[q])
                 out.append(dict(m=m, k=k, xi=xi, ciclo=ciclo, lado=lado, lo=lo, hi=hi, H=H, E=float(E[q]), A=float(A[q]), D=float(D[q])))
         ciclo += 1; j0 = int(jj[q_fin]) + 1
+    return out
+
+
+def disparos_causales(ev, h, l, c, t_close, fin=None, xs=None):
+    """Versión CAUSAL de `disparos` (2026-11-02, hallazgo al portar U1 a JForex). `disparos` corta el área entera (`break`) si,
+    mirando hasta `fin`, el lado del ciclo nunca se aleja 1·H; eso descarta también los ciclos posteriores del otro lado, aunque
+    sus disparos ocurran antes de que se sepa. En vivo no se puede saber: acá un ciclo que vuelve a cerrar adentro antes de
+    alejarse 1·H se reinicia siempre, y un ciclo sin alejamiento simplemente no dispara. Mismos disparos que `disparos` en todo
+    lo demás (misma regla q > a1, q <= vuelta adentro, MAX_CICLOS); los de `disparos` son un subconjunto de éstos."""
+    m, lo, hi, _ = ev; H = hi - lo; xs = XS if xs is None else xs
+    if H <= 0: return []
+    fin = min(len(c), fin if fin is not None else np.searchsorted(t_close, t_close[m] + TOPE_DISPARO_MIN * 60, side="right"))
+    out = []; j = m + 1; ciclo = 0; buscando = True; lado = 0; E = 0.0; alej = False; hecho = set()
+    while j < fin and ciclo < MAX_CICLOS:
+        if buscando:
+            if not (c[j] > hi or c[j] < lo): j += 1; continue
+            lado = 1 if c[j] > hi else -1; E = h[j] if lado == 1 else l[j]; alej = False; hecho = set(); buscando = False
+        else:
+            E = max(E, h[j]) if lado == 1 else min(E, l[j])
+        A = E - hi if lado == 1 else lo - E; D = c[j] - hi if lado == 1 else lo - c[j]; adentro = D <= 0
+        if not alej:
+            if A >= H: alej = True                                              # a1: el disparo sólo puede venir después
+            elif adentro: buscando = True                                       # volvió antes de alejarse: reinicia
+            j += 1; continue
+        for xi, x in enumerate(xs):
+            if xi not in hecho and D <= x * A:
+                hecho.add(xi); out.append(dict(m=m, k=j, xi=xi, ciclo=ciclo, lado=lado, lo=lo, hi=hi, H=H, E=float(E), A=float(A), D=float(D)))
+        if adentro: ciclo += 1; buscando = True
+        j += 1
     return out
 
 
@@ -261,25 +298,40 @@ def _primero_en_ticks(tpx, a, b, d, st, tp, tick):
 
 
 @njit(cache=False)
-def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
-    """Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
+def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
+    """Sin salida por línea (la regla de siempre). La documentación del simulador está en `simular_cierre_linea`."""
+    T = len(start)
+    return simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart,
+                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T), TOPE_OPERACION)
+
+
+@njit(cache=False)
+def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl, tope_barras):
+    """SALIDA POR TIEMPO DE PARADA (2026-10-31, paper de Tori Trades, ec. (1): τ = inf{t > t0 : C_t < y(t) − δ}): `lin` son líneas
+    por vela (filas; NaN donde no hay línea) que la experiencia calcula sólo con el pasado de cada vela; `kl[t]` es la fila que sigue
+    la operación t (−1 = sin salida por línea) y `dl[t]` el margen δ en precio. Con la operación abierta, al CIERRE de la vela j
+    (después de stop y objetivo, que se tocan dentro de la vela): compra sale si c[j] < lin[kl, j] − δ, venta si c[j] > lin + δ;
+    se ejecuta en la APERTURA de la vela siguiente (misma sesión; si no hay, al cierre de j). El stop y el objetivo siguen activos.
+    Una operación por fila. s = +1 compra / -1 venta. limite=0: mercado al cierre de `start` (precio c[start]).
     limite=1: orden límite en `nivel`, se llena si el precio la atraviesa por 1 tick dentro de 120 barras.
     limite=2: mercado en el PRIMER TICK de la vela siguiente (misma sesión). El momento de llenado es una decisión de cada
     análisis: el simulador no impone ninguno; quien lo llama lo declara por operación.
     AMBIGÜEDAD M1 (pedido de Nico): si una vela toca stop y objetivo, o en la vela del llenado de una límite, se resuelve con
     el ORDEN DE LOS TICKS de esa vela (`tpx`, con `tstart[j]..tstart[j+1]` los ticks del minuto j). Sin ticks para esa vela:
-    se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (240) o fin de sesión al cierre.
+    se toma el stop (conservador) y se cuenta. Stop con hueco al precio real. Salida por tiempo (`tope_barras` velas de tenencia; 240
+    = TOPE_OPERACION salvo que el experimento declare `TOPE_BARRAS`, 2026-11-01) o fin de sesión al cierre.
     Devuelve (pnl en precio por operación, NaN = sin llenado; código de resolución: 0 sin ambigüedad, 1 resuelta con ticks,
-    2 sin ticks -> stop)."""
+    2 sin ticks -> stop; barra de llenado; barra de salida; ambas -1 sin llenado). Si sale en la vela del llenado, f == x."""
     T = len(start); pnl = np.full(T, np.nan); amb = np.zeros(T, np.int8); n = len(c)
+    fb = np.full(T, -1, np.int64); xb = np.full(T, -1, np.int64)
     for t in range(T):
         k = start[t]; d = s[t]; st = stop0[t]; obj = tp[t]
         if limite[t] == 0:                                                 # E1C: llenado al cierre de la vela de decisión
-            e = c[k]; f = k
+            e = c[k]; f = k; fb[t] = f; xb[t] = f
         elif limite[t] == 2:                                               # E1A: llenado en el primer tick de la vela siguiente
             f = k + 1
             if f >= n or sesion[f] != sesion[k]: continue
-            e = o[f]
+            e = o[f]; fb[t] = f; xb[t] = f
             if tstart[f + 1] > tstart[f]:
                 cod, px = _primero_en_ticks(tpx, tstart[f] + 1, tstart[f + 1], d, st, obj, tick)
                 if cod == 1: pnl[t] = (px - e) * d; amb[t] = 1; continue
@@ -296,6 +348,7 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
                         if (d == 1 and tpx[i] <= e - tick) or (d == -1 and tpx[i] >= e + tick): ia = i + 1; break
                     break
             if f < 0: continue
+            fb[t] = f; xb[t] = f
             # resto de la vela del llenado, en orden de ticks
             if tstart[f + 1] > tstart[f]:
                 cod, px = _primero_en_ticks(tpx, ia, tstart[f + 1], d, st, obj, tick)
@@ -305,7 +358,7 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
                 pnl[t] = (st - e) * d; amb[t] = 2; continue
         R = abs(e - stop0[t]); x = np.nan; armado = False
         j = f + 1; ult = f
-        while j < n and j - f <= 240 and sesion[j] == sesion[f]:
+        while j < n and j - f <= tope_barras and sesion[j] == sesion[f]:
             if d == 1: ts_, tt_ = l[j] <= st, h[j] >= obj + tick
             else: ts_, tt_ = h[j] >= st, l[j] <= obj - tick
             if ts_ and tt_:                                                         # ambigua en M1: orden de los ticks
@@ -323,11 +376,25 @@ def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tp
                     if cod == 1: x = (px - e) * d; amb[t] = max(amb[t], 3); break   # lo saltara: optimista con stops cortos)
                 x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d; break
             if tt_: x = (obj - e) * d; break
+            if kl[t] >= 0:
+                y = lin[kl[t], j]
+                if y == y and ((d == 1 and c[j] < y - dl[t]) or (d == -1 and c[j] > y + dl[t])):
+                    if j + 1 < n and sesion[j + 1] == sesion[j]: x = (o[j + 1] - e) * d; j += 1
+                    else: x = (c[j] - e) * d
+                    break
             if be[t] == 1 and not armado and (h[j] - e if d == 1 else e - l[j]) >= R:
                 armado = True; st = max(st, e) if d == 1 else min(st, e)
             ult = j; j += 1
-        if np.isnan(x): x = (c[ult] - e) * d
+        xb[t] = j                                                                   # los `break` de arriba dejan j en la vela de salida
+        if np.isnan(x): x = (c[ult] - e) * d; xb[t] = ult
         pnl[t] = x
+    return pnl, amb, fb, xb
+
+
+@njit(cache=False)
+def simular(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart):
+    """`simular_cierre` sin las barras de llenado y salida: devuelve (pnl, amb)."""
+    pnl, amb, _, _ = simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart)
     return pnl, amb
 
 
