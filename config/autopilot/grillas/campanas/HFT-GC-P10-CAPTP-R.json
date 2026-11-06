@@ -1,0 +1,39 @@
+{
+ "cid": "HFT-GC-P10-CAPTP-R",
+ "familia": "HFT_GC_P10_CAPTP",
+ "experimento": "edgelab.research.hft_gc_p10_captp",
+ "sensor": "GC",
+ "ejecucion": "GC",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "periodos_consumidos": {
+  "oos": "COMPROMETIDO por HFT-GC-P10-R/PISTAS"
+ },
+ "pistas_replica": {
+  "activa": false
+ },
+ "embudo": true,
+ "conductor": "local",
+ "activa": true,
+ "n_celdas_por_canal": 4800,
+ "justificacion_economica": "Cuando una zona HFT vigente aparece delante de la entrada a distancia intermedia (>= 1,0R o >= 1,5R pero antes del TP de 2R/3R/4R), adelantar el TP causalmente 2 ticks delante del borde cercano captura el tramo libre antes del muro de liquidez HFT, vetando solo cuando la barrera esta pegada a la entrada.",
+ "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC [20250805, 20260331] (sin rescate por PISTAS porque 202604..202609 ya fue usado por la madre HFT_GC_P10); fallo en INTEGRIDAD o TOPES; refutacion en OOS; o no confirmacion en HOLDOUT sellado a N=150.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "sensor y ejecucion en el futuro GC: sin cruce; OOS comprometido por la madre solo puede refutar, confirmacion limpia en holdout sellado"
+ },
+ "spec": "docs/research/hft_gc_p10_20261105/PREREGISTRO_BARRERAS_HFT_R.md",
+ "estadistico": "R",
+ "cuenta_kaggle": "nicobuttaro"
+}
+

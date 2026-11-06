@@ -1,0 +1,126 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793905334.4321728,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793905958.164354,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.7204328250868604, 'min': -18.618609571477496, 'q001': -18.559697858200757, 'q010': -16.101291268840015, 'q500': -3.816289525160016, 'q990': 1.064064103255207, 'q999': 1.5291593769698346, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 2017}); pistas a réplica: apagada por la campaña"
+  }
+ ],
+ "spec": {
+  "cid": "HFT-GC-P10-CAPTP-R",
+  "familia": "HFT_GC_P10_CAPTP",
+  "experimento": "edgelab.research.hft_gc_p10_captp",
+  "sensor": "GC",
+  "ejecucion": "GC",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "periodos_consumidos": {
+   "oos": "COMPROMETIDO por HFT-GC-P10-R/PISTAS"
+  },
+  "pistas_replica": {
+   "activa": false
+  },
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 4800,
+  "justificacion_economica": "Cuando una zona HFT vigente aparece delante de la entrada a distancia intermedia (>= 1,0R o >= 1,5R pero antes del TP de 2R/3R/4R), adelantar el TP causalmente 2 ticks delante del borde cercano captura el tramo libre antes del muro de liquidez HFT, vetando solo cuando la barrera esta pegada a la entrada.",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC [20250805, 20260331] (sin rescate por PISTAS porque 202604..202609 ya fue usado por la madre HFT_GC_P10); fallo en INTEGRIDAD o TOPES; refutacion en OOS; o no confirmacion en HOLDOUT sellado a N=150.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecucion en el futuro GC: sin cruce; OOS comprometido por la madre solo puede refutar, confirmacion limpia en holdout sellado"
+  },
+  "spec": "docs/research/hft_gc_p10_20261105/PREREGISTRO_BARRERAS_HFT_R.md",
+  "estadistico": "R",
+  "cuenta_kaggle": "nicobuttaro"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": false,
+   "k": 20,
+   "ventana": null
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecucion en el futuro GC: sin cruce; OOS comprometido por la madre solo puede refutar, confirmacion limpia en holdout sellado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "HFT_GC_P10_CAPTP",
+   "declarada": true,
+   "padres": [
+    "HFT_GC_P10"
+   ],
+   "propias": 0,
+   "bruto_heredado": 11672,
+   "n_heredado": 11672,
+   "total": 11672,
+   "justificacion": "Hija de HFT_GC_P10 con veto corto (<1.0R/1.5R) + recorte causal de TP 2 ticks delante de la primera barrera HFT frontal (4 tipos x 5 antiguedades desde 5m x 2 mitigaciones); OOS 202604..202609 declarado COMPROMETIDO; declarada antes de DESC (docs/research/hft_gc_p10_20261105/PREREGISTRO_BARRERAS_HFT_R.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793905334.4311733,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-hft-gc-p10-captp-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793905653.099678,
+ "cortes": {},
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.7204328250868604, 'min': -18.618609571477496, 'q001': -18.559697858200757, 'q010': -16.101291268840015, 'q500': -3.816289525160016, 'q990': 1.064064103255207, 'q999': 1.5291593769698346, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 2017}); pistas a réplica: apagada por la campaña"
+}

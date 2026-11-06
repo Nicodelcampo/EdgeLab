@@ -1,0 +1,12 @@
+## HFT-GC-P10-R — edgelab.research.hft_gc_cluster_p10 · señal GC · ejecución GC
+- Justificación: Zonas HFT de sub-segundo calibradas para Oro COMEX (GC) con confirmacion fija de alejamiento (20 ticks -> Borde Gris + Flecha) y Clusters causales en el P10 de los 100 grupos previos de 4 zonas HFT vigentes: evalua en R mitigacion Limit de zona gris (B2), continuacion en la vela de la flecha (B1), regreso al POC del Cluster P10 (A1) y soporte/resistencia post-escape del Cluster P10 (A2).
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 ni confirmadas en PISTAS (LORD++) en 20260401..20260930; fallo en INTEGRIDAD (placebo o latencia +1 vela) o TOPES; o media neta en R <= 0 en OOS o en HOLDOUT sellado a N=150.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 11664 de 19440 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 6936 (m del FDR 6936 de 9720 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.321352481842041 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 8 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 2, 0, 2, 2, 0, 4], [1, 0, 2, 0, 1, 0, 4], [1, 1, 2, 2, 2, 0, 4], [1, 1, 0, 2, 2, 1, 4], [1, 1, 1, 2, 1, 2, 4], [1, 0, 2, 4, 1, 0, 5], [1, 0, 0, 4, 1, 0, 3], [1, 1, 1, 2, 1, 1, 5]]
+- PISTAS canasta (una prueba): media -0.17651062468093218 IC90 [-0.3075462545396111, -0.05033721851617087] p 0.989502624343914 sesiones 96; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.9997266265718973; confirmadas 0 de 8 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 8 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9997266265718973); canasta media -0.17651062468093218 IC90 [-0.3075462545396111, -0.05033721851617087]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.6077051642231502

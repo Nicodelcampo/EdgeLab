@@ -1,0 +1,33 @@
+{
+ "cid": "HFT-GC-P10-R",
+ "familia": "HFT_GC_P10",
+ "experimento": "edgelab.research.hft_gc_cluster_p10",
+ "sensor": "GC",
+ "ejecucion": "GC",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "local",
+ "activa": true,
+ "n_celdas_por_canal": 9720,
+ "justificacion_economica": "Zonas HFT de sub-segundo calibradas para Oro COMEX (GC) con confirmacion fija de alejamiento (20 ticks -> Borde Gris + Flecha) y Clusters causales en el P10 de los 100 grupos previos de 4 zonas HFT vigentes: evalua en R mitigacion Limit de zona gris (B2), continuacion en la vela de la flecha (B1), regreso al POC del Cluster P10 (A1) y soporte/resistencia post-escape del Cluster P10 (A2).",
+ "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 ni confirmadas en PISTAS (LORD++) en 20260401..20260930; fallo en INTEGRIDAD (placebo o latencia +1 vela) o TOPES; o media neta en R <= 0 en OOS o en HOLDOUT sellado a N=150.",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "sensor y ejecucion en el futuro GC: sin cruce"
+ },
+ "spec": "docs/research/hft_gc_p10_20261105/PREREGISTRO_HFT_GC_P10.md",
+ "estadistico": "R",
+ "cuenta_kaggle": "nicobuttaro"
+}
+
