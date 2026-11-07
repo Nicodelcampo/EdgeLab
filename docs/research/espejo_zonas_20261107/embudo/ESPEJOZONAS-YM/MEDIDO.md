@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 83357 pruebas de ['ESPEJO_MACRO_10T_TIEMPO_YM', 'ESPEJO_MACRO_10T_ANCHO_YM', 'ESPEJO_PICOS_YM']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 32200 de 648000 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 17496 (m del FDR 17496 de 324000 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.083198547363281 (diagnóstico), linaje 83357 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 18 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 0, 2, 3, 0, 1, 2, 0, 2], [0, 0, 2, 3, 0, 3, 3, 2, 6], [0, 0, 2, 3, 0, 1, 3, 2, 7], [1, 0, 2, 3, 0, 3, 2, 2, 2], [1, 0, 2, 3, 0, 1, 2, 2, 3], [0, 0, 1, 2, 4, 3, 4, 1, 3], [0, 0, 1, 3, 0, 1, 4, 2, 3], [0, 0, 1, 3, 0, 1, 2, 0, 2], [0, 0, 2, 2, 3, 1, 1, 0, 3], [0, 0, 2, 2, 3, 3, 1, 2, 3], [1, 0, 2, 3, 0, 3, 2, 0, 1], [1, 0, 1, 2, 3, 1, 3, 2, 4], [0, 0, 2, 2, 4, 1, 4, 2, 3], [0, 0, 1, 3, 0, 3, 2, 2, 2], [0, 0, 2, 2, 4, 1, 2, 0, 3], [0, 0, 2, 3, 0, 1, 2, 2, 2], [0, 0, 1, 3, 0, 1, 4, 0, 6], [1, 0, 2, 2, 3, 1, 3, 0, 4]]
