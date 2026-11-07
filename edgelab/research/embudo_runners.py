@@ -123,7 +123,7 @@ class KaggleRunner:
         nombre = f"embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:49].rstrip("-")   # Kaggle <=50 y validate_push <=49; sin "_"
         slug = f"{cuenta}/{nombre}"
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
-                   FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+                   FRICCION=repr(fr), EXTRA=repr(ex), BARRA=str(spec.get("ticks_por_barra") or ""), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
         if spec.get("confirmador"): env["CONFIRMADOR"] = spec["confirmador"]
         if self.dataset_sellado:
             if not params.get("acta"): raise ValueError("etapa de holdout sin acta registrada")
@@ -208,8 +208,9 @@ class LocalRunner:
         from edgelab.research import etapas as ET, grilla_generica as GG
         exigir_causalidad(spec["experimento"])
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
-        ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
-        cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
+        tb = spec.get("ticks_por_barra")
+        ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]], tb)
+        cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec], tb) if ejec != spec["sensor"] else None
         if spec.get("confirmador"): ctx["conf"] = GG.contexto_m1(self.lectores[spec["confirmador"]](*periodo, spec), self.ticks[spec["confirmador"]])
         fr, ex = friccion(ejec)
         h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{len(self.res)}"

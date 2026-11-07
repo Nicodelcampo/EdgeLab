@@ -90,12 +90,14 @@ def n_celdas(exp, cortes=None) -> int:
     return int(np.prod([p.tamano_celdas() for p in perillas(exp, cortes or {v.nombre: [0.0] * (v.cuantiles - 1) for v in exp.VARIABLES if v.cuantiles})]))
 
 
-def contexto_m1(bloques, tick):
-    from edgelab.research.areas_expansion_run import m1_y_perfil
-    t, M, vpp, vpv, vps, tpx, tstart = m1_y_perfil(bloques)
+def contexto_m1(bloques, tick, ticks_por_barra=None):
+    """Contexto de velas M1 (por defecto) o de velas de `ticks_por_barra` ticks (2026-11-07): mismas claves, el motor de la grilla y el
+    simulador no cambian. Con velas de ticks, «barra» = vela de n ticks en todo el motor (TOPE_BARRAS, límite de 120 barras, etc.)."""
+    from edgelab.research.areas_expansion_run import m1_y_perfil, ticks_y_perfil
+    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(bloques, int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(bloques)
     return dict(t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
                 ses=M.ses.to_numpy().astype(np.int64), seg=M.seg.to_numpy(), vp_px=vpp, vp_vol=vpv, vp_start=vps, tpx=tpx, tstart=tstart,
-                tick=float(tick))
+                tick=float(tick), ticks_por_barra=int(ticks_por_barra) if ticks_por_barra else None)
 
 
 def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> float:
