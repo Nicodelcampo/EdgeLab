@@ -37,3 +37,9 @@ def test_etapa_cubo_de_punta_a_punta(monkeypatch):
     r = ET.ejecutar("CUBO", X, ctx, friccion=1.0, extra_adverso=0.0, cx_ej=None, params=dict(cortes=cortes, estadistico="R"), log=lambda *a: None)
     c = RO.decodificar(r["cubo"], "cvgap2"); d = RO.series_diarias(c, min_ops=5)
     assert c.idx.shape[1] == len(X.VARIABLES) + 1 and len(c.net) == r["cubo"]["n"] > 0 and d.S.shape[1] > 0
+
+
+def test_cada_mes_positivo():
+    D = [RO.series_diarias(_cubo(f"c{i}", i == 0, i), min_ops=30) for i in range(3)]
+    r = RO.walk_forward(D, W=3, k=1, min_ops=20, min_dias=10, B_azar=20, seed=5, cada_mes_pos=True, min_dias_mes=4)
+    assert r["n_ventanas"] >= 6 and r["delta_azar"] > 0.2

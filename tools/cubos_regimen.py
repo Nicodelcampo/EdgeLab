@@ -54,14 +54,14 @@ def traer():
     print("pendientes", pend, "en caché", len(list(CACHE.glob("*.json"))))
 
 
-def buscar(W, k, min_ops, min_dias, min_pos, nulo, solo=None):
+def buscar(W, k, min_ops, min_dias, min_pos, nulo, solo=None, cada_mes_pos=False, min_dias_mes=4):
     from edgelab.research import regimen_offline as RO
     D = []
     for f in sorted(CACHE.glob("*.json")):
         if solo and f.stem not in solo: continue
         c = (json.loads(f.read_text()) or {}).get("cubo")
         if c and c.get("n"): D.append(RO.series_diarias(RO.decodificar(c, f.stem), min_ops=30))
-    kw = dict(W=W, k=k, min_ops=min_ops, min_dias=min_dias, min_pos=min_pos)
+    kw = dict(W=W, k=k, min_ops=min_ops, min_dias=min_dias, min_pos=min_pos, cada_mes_pos=cada_mes_pos, min_dias_mes=min_dias_mes)
     r = RO.nulo_signo(D, B=nulo, **kw) if nulo else dict(observado=RO.walk_forward(D, **kw))
     o = r["observado"]
     print(f"{len(D)} cubos · W={W} k={k} · ventanas {o['n_ventanas']} · Δ azar {o['delta_azar']:+.3f} (t {o['t_azar']:.2f}) · "
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("lanzar", "traer", "buscar")); ap.add_argument("cids", nargs="*")
     ap.add_argument("--W", type=int, default=3); ap.add_argument("--k", type=int, default=3); ap.add_argument("--min-ops", type=int, default=20)
     ap.add_argument("--min-dias", type=int, default=10); ap.add_argument("--min-pos", type=float, default=0.0); ap.add_argument("--nulo", type=int, default=0)
-    ap.add_argument("--solo", nargs="*"); a = ap.parse_args()
+    ap.add_argument("--solo", nargs="*"); ap.add_argument("--cada-mes-pos", action="store_true"); ap.add_argument("--min-dias-mes", type=int, default=4); a = ap.parse_args()
     if a.cmd == "lanzar": lanzar(a.cids or None)
     elif a.cmd == "traer": traer()
-    else: buscar(a.W, a.k, a.min_ops, a.min_dias, a.min_pos, a.nulo, a.solo)
+    else: buscar(a.W, a.k, a.min_ops, a.min_dias, a.min_pos, a.nulo, a.solo, a.cada_mes_pos, a.min_dias_mes)

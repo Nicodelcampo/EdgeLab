@@ -100,7 +100,17 @@ def puntaje(S, C, filas, min_ops=20, min_dias=10, min_pos=0.0):
 def _mes(d): return np.asarray(d) // 100
 
 
-def walk_forward(diarios, W=3, k=3, min_ops=20, min_dias=10, min_pos=0.0, B_azar=200, signo=None, seed=0) -> dict:
+def meses_positivos(S, C, dias, meses_W, min_dias_mes=4):
+    """Máscara de celdas con R > 0 y al menos `min_dias_mes` días con operaciones en CADA mes de W (pedido de Nico, 07/11)."""
+    ok = np.ones(S.shape[1], bool); mm = _mes(dias)
+    for m in meses_W:
+        f = mm == m; s = S[f].sum(0); nd = (C[f] > 0).sum(0)
+        ok &= (s > 0) & (nd >= min_dias_mes)
+    return ok
+
+
+def walk_forward(diarios, W=3, k=3, min_ops=20, min_dias=10, min_pos=0.0, B_azar=200, signo=None, seed=0,
+                 cada_mes_pos=False, min_dias_mes=4) -> dict:
     """`diarios`: lista de Diario (uno por cubo). `signo`: dict sesión → ±1 (nulo). Devuelve por mes H: R/op elegida, azar y estática."""
     rng = np.random.default_rng(seed)
     meses = np.unique(np.concatenate([_mes(d.dias) for d in diarios]))
@@ -116,6 +126,7 @@ def walk_forward(diarios, W=3, k=3, min_ops=20, min_dias=10, min_pos=0.0, B_azar
             mm = _mes(d.dias); fW = np.flatnonzero(np.isin(mm, mW)); fH = np.flatnonzero(mm == mH); fP = np.flatnonzero(mm < mH)
             if not len(fW) or not len(fH): continue
             sc = puntaje(S, d.C, fW, min_ops, min_dias, min_pos)
+            if cada_mes_pos: sc = np.where(meses_positivos(S, d.C, d.dias, mW, min_dias_mes), sc, np.nan)
             if not np.isfinite(sc).any(): continue
             sH, cH = S[fH].sum(0), d.C[fH].sum(0)
             j = int(np.nanargmax(sc)); cand.append((sc[j], sH[j], cH[j]))
