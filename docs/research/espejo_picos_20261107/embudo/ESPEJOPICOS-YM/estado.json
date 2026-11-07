@@ -1,0 +1,109 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1794093406.1401439,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJOPICOS-YM",
+  "familia": "ESPEJO_PICOS_YM",
+  "experimento": "edgelab.research.espejo_picos",
+  "sensor": "YM",
+  "ejecucion": "YM",
+  "ticks_por_barra": 10,
+  "n_celdas_por_canal": 259200,
+  "justificacion_economica": "Si el primer impulso existió para tomar picos de liquidez, al tomarlos el motivo desaparece: la vuelta completa el espejo o va más allá de A (hipótesis de Nico).",
+  "como_podria_refutarse": "Los espejos con picos tomados no llegan a A ni lo pasan más que los sin picos a igual ancho, duración y horario; ninguna celda nominada por FDR q 0,10 ni pista que replique.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/espejo_picos_20261107/PREREGISTRO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_PICOS_YM",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_MACRO_10T_TIEMPO_YM",
+    "ESPEJO_MACRO_10T_ANCHO_YM"
+   ],
+   "propias": 0,
+   "bruto_heredado": 3493,
+   "n_heredado": 3493,
+   "total": 3493,
+   "justificacion": "Espejo clasificado por qué picos tomó la ida (docs/research/espejo_picos_20261107/PREREGISTRO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794093406.1398757,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
