@@ -24,6 +24,13 @@ Si el primer impulso existió para tomar picos de liquidez, cuando los tomó el 
   - **cualquiera:** todo pico vivo en las 2000 velas previas a A;
   - **consecutivo:** sólo los de series de 3 o más con separación ≤ 60 velas (w = 3) o ≤ 200 velas (w = 10).
 - **Escala del pivote:** w = 3 o w = 10.
+- **Antigüedad del pico** (enmienda de Nico, 07/11, antes de cualquier corrida: «si son recientes tienen una importancia distinta»):
+  edad = tiempo desde la vela del pico hasta A. Perilla de grupo con bandas disjuntas:
+  - **recientes:** confirmados hasta 30 min antes de A (la ida dura como máximo 60 min: es la liquidez de la sesión en curso);
+  - **viejos:** más de 30 min antes de A;
+  - **todos.**
+  La banda se aplica antes de armar las series, así que «consecutivo reciente» es una serie de picos recientes. «Quedan» se cuenta
+  dentro de la misma banda.
 - **Qué tomó la ida:**
   - cantidad de picos tomados: 0, 1–2, 3+ o cualquiera;
   - posición media dentro del impulso: inicio, medio o final;
@@ -32,11 +39,18 @@ Si el primer impulso existió para tomar picos de liquidez, cuando los tomó el 
 - **Perillas del padre que quedan:** fracción de entrada (25 / 50 / 75 %), ancho en viajes (≥ 5 / 10 / 20) y RTH. Los retrocesos
   quedan fijos en el laxo (0,40).
 - **Ejecuciones (8):** stop en B (1 tick o 10 % de W) × objetivo A, 1,25 W, 1,5 W (más allá de A, la hipótesis) o 2R.
-- **Tamaño:** 259.200 celdas por canal.
+- **Tamaño:** 777.600 celdas por canal (259.200 × 3 bandas de antigüedad).
+
+## Enmienda del 07/11 (antes de correr)
+
+Las cuatro campañas se lanzaron al conductor a las 23:16 y quedaron en cola sin subir nada a Kaggle (sin handle, sin datos vistos).
+Se frenó el conductor, se agregó la antigüedad, se borraron los estados sin corrida y se relanzó con este documento. Ningún resultado
+de esta familia existía al enmendar.
 
 ## Orden de medición
 
-1. **Información, sin P&L:** probabilidad de llegar a A y de pasarlo (1,25 W y 1,5 W) por clase, contra el control emparejado. El
+1. **Información, sin P&L:** probabilidad de llegar a A y de pasarlo (1,25 W y 1,5 W) por clase y por antigüedad (recientes contra
+   viejos), contra el control emparejado. El
    control son los espejos sin picos tomados con el mismo ancho, duración y horario.
 2. **Embudo en R:** ESPEJOPICOS-{NQ,ES,YM,GC}, con linaje hijo de la variante en tiempo de cada activo (y de la de ancho en ES e
    YM): hereda su multiplicidad bruta.

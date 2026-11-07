@@ -10,10 +10,14 @@ def test_clasificar_picos_tomados_y_que_quedan():
     for q, v in ((4, 110.0), (9, 108.0), (14, 106.0)): x[q] = v
     x[20:30] = np.linspace(100, 109, 10)
     piv = np.zeros(40, bool); piv[[4, 9, 14]] = True
-    n_t, pos, sob, n_q, techo = X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 60, False)
+    T = np.arange(40) * 60.0                                                         # una vela por minuto
+    n_t, pos, sob, n_q, techo = X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 60, False, T, 2, X.EDAD_RECIENTE_S)
     assert (n_t, n_q, techo) == (2, 1, 109.0)
     assert abs(pos - ((6 / 9 + 8 / 9) / 2)) < 1e-9 and abs(sob - 1 / 9) < 1e-9
-    assert X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 3, True)[0] == 0          # separación > 3: no forman serie
+    assert X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 3, True, T, 2, X.EDAD_RECIENTE_S)[0] == 0   # separación > 3: sin serie
+    # antigüedad con corte de 10 min: picos de 16, 11 y 6 min antes de A -> recientes {106}; viejos {110, 108}
+    assert X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 60, False, T, 0, 600.0)[:4:3] == (1, 0)     # toma 106, no queda nada
+    assert X._clasificar(x, piv, 2, 20, 29, 100.0, 2000, 60, False, T, 1, 600.0)[:4:3] == (1, 1)     # toma 108, queda 110
 
 
 def test_causal_estatico_y_niveles():

@@ -12,6 +12,10 @@ anterior), como en `tools/peaks_rule.py`. Dos definiciones (perilla, decisión d
   - CONSECUTIVO: sólo los que forman series de >= 3 con separación <= MAX_GAP velas entre picos seguidos (el pool de liquidez).
 Dos escalas de pivote (w = 3 y w = 10 velas de 10 ticks). Todo se mide en la vela de decisión k con datos <= k.
 
+Antigüedad (enmienda de Nico antes de correr, 07/11: «si son recientes tienen una importancia distinta»): edad del pico = tiempo desde
+su vela hasta A. Perilla de grupo con bandas disjuntas: RECIENTES (<= 30 min antes de A) · VIEJOS (> 30 min) · TODOS. La banda se
+aplica antes de armar las series consecutivas, así que «consecutivo reciente» es una serie de picos recientes.
+
 Qué tomó la ida (extremo de la ida por mechas, de A al extremo B):
   - n_tom: picos tomados (entre A y el extremo de la ida);
   - pos: dónde estaban dentro del impulso (0 ninguno · 1 inicio · 2 medio · 3 final, por la posición media);
@@ -42,6 +46,8 @@ ESCALAS = (3, 10)                     # w del pivote, en velas de 10 ticks
 LOOK = 2000                           # velas hacia atrás desde A para buscar picos vivos
 MAX_GAP = (60, 200)                   # separación máxima entre picos seguidos de una serie, por escala
 N_SERIE = 3
+EDAD_RECIENTE_S = 1800.0              # 30 min: un pico confirmado hasta 30 min antes de A es «reciente»
+BANDAS_EDAD = 3                       # 0 recientes · 1 viejos · 2 todos
 VIAJES_LAXO = 5.0                     # base corregida (07/11): topes en tiempo y ancho mínimo laxo de 5 viajes, como ESPEJO-MACRO-10T-ANCHO
 VARIABLES = [
     Variable("fraccion", "fi", "grupo", categoria=len(P.FRACCIONES)),
@@ -49,6 +55,7 @@ VARIABLES = [
     Variable("rth", "rth", "eq_any", categoria=2),
     Variable("tipo_pico", "ti", "grupo", categoria=2),            # 0 cualquiera · 1 consecutivo
     Variable("escala_pico", "ei", "grupo", categoria=2),          # 0 w = 3 · 1 w = 10
+    Variable("antiguedad", "ai", "grupo", categoria=BANDAS_EDAD),  # 0 recientes (<= 30 min) · 1 viejos · 2 todos
     Variable("n_tomados", "n_tom", "eq_any", cortes=(0.5, 2.5)),  # 0 · 1–2 · 3+ · cualquiera
     Variable("posicion", "pos", "eq_any", categoria=4),
     Variable("sobrepaso", "sobre", "eq_any", categoria=4),
@@ -58,7 +65,7 @@ EJES_ORDINALES = ()
 STOPS = ("B1", "B10")
 TPS = ("A", "A125", "A150", "2R")
 EJECUCIONES = [(sl, tp) for sl in STOPS for tp in TPS]
-BASE = {"fraccion": 1, "viajes": 1, "rth": 2, "tipo_pico": 0, "escala_pico": 0, "n_tomados": 3, "posicion": 4, "sobrepaso": 4,
+BASE = {"fraccion": 1, "viajes": 1, "rth": 2, "tipo_pico": 0, "escala_pico": 0, "antiguedad": 2, "n_tomados": 3, "posicion": 4, "sobrepaso": 4,
         "quedan": 2, "ejecución": 0}
 
 
@@ -76,9 +83,10 @@ def _pivotes(x, ses, w):
 
 
 @njit(cache=False)
-def _clasificar(x, piv, w, i0, ie, A, look, max_gap, consecutivo):
+def _clasificar(x, piv, w, i0, ie, A, look, max_gap, consecutivo, T, banda, edad_s):
     """En el espacio «techo» (x = h si el impulso sube, −l si baja): picos vivos antes de A, cuáles tomó la ida (de i0 a ie) y cuántos
-    quedan más allá. Devuelve (n_tom, pos_media, sobre, n_quedan, techo_ida). Sólo usa velas <= ie."""
+    quedan más allá. `banda` filtra por edad (T[i0] − T[q]): 0 <= edad_s · 1 > edad_s · 2 todos. Devuelve (n_tom, pos_media, sobre,
+    n_quedan, techo_ida). Sólo usa velas <= ie."""
     techo = A
     for j in range(i0, ie + 1):
         if x[j] > techo: techo = x[j]
@@ -89,7 +97,10 @@ def _clasificar(x, piv, w, i0, ie, A, look, max_gap, consecutivo):
         vivo = True
         for j in range(q + 1, i0):
             if x[j] > x[q]: vivo = False; break
-        if vivo: qs.append(q)
+        if not vivo: continue
+        edad = T[i0] - T[q]
+        if (banda == 0 and edad > edad_s) or (banda == 1 and edad <= edad_s): continue
+        qs.append(q)
     if consecutivo and len(qs) > 0:                                  # series de >= N_SERIE con separación <= max_gap
         keep = []; grupo = [qs[0]]
         for u in range(1, len(qs)):
@@ -123,19 +134,20 @@ def disparos(ctx) -> pd.DataFrame:
             x = h if lado == 1 else -l                               # espacio «techo»: los picos del lado del impulso son máximos
             A = l[i0] if lado == 1 else -h[i0]                       # origen de la ida por mecha, en ese espacio
             for ei, w in enumerate(ESCALAS):
-                for ti in (0, 1):
-                    n_t, pos, sob, n_q, techo = _clasificar(x, piv[(lado, ei)], w, i0, ie, A, LOOK, MAX_GAP[ei], ti == 1)
-                    filas.append((k, -lado, fi, W / 2.0 / fr, ti, ei, n_t,
+                for ti, ai in ((t, a) for t in (0, 1) for a in range(BANDAS_EDAD)):
+                    n_t, pos, sob, n_q, techo = _clasificar(x, piv[(lado, ei)], w, i0, ie, A, LOOK, MAX_GAP[ei], ti == 1,
+                                                            T, ai, EDAD_RECIENTE_S)
+                    filas.append((k, -lado, fi, W / 2.0 / fr, ti, ei, ai, n_t,
                                   0 if n_t == 0 else (1 if pos < 1 / 3 else (2 if pos < 2 / 3 else 3)),
                                   0 if n_t == 0 else (1 if sob <= 0.10 else (2 if sob <= 0.25 else 3)),
                                   1 if n_q > 0 else 0, C[i0] * tick, C[ie] * tick, W * tick))
-    cols = ["k", "lado", "fi", "viajes", "ti", "ei", "n_tom", "pos", "sobre", "quedan", "A", "B", "W"]
+    cols = ["k", "lado", "fi", "viajes", "ti", "ei", "ai", "n_tom", "pos", "sobre", "quedan", "A", "B", "W"]
     if not filas: return pd.DataFrame(columns=cols + ["rth", "ses"])
     D = pd.DataFrame(filas, columns=cols)
     from edgelab.research.regimen_sesion import minuto_ny
     mny = minuto_ny(np.asarray(ctx["t"], float)[D.k.to_numpy()].astype(np.int64))
     D["rth"] = ((mny >= P.RTH_INI) & (mny < P.RTH_FIN)).astype(np.int64); D["ses"] = ses[D.k.to_numpy()]
-    return D.sort_values(["k", "fi", "ei", "ti"], kind="stable", ignore_index=True)
+    return D.sort_values(["k", "fi", "ei", "ti", "ai"], kind="stable", ignore_index=True)
 
 
 def niveles(r, ej, ctx):
