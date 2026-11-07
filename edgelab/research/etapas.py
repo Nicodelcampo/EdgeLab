@@ -117,6 +117,12 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
         return dict(marginales_globales=res.get("marginales_globales"), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
                     perillas=res.get("perillas"), marginales_globales_bruto=res.get("marginales_globales_bruto"),   # 2026-11-04: bruto/neto
                     contexto_comun_error=res.get("contexto_comun_error"))
+    if etapa == "CUBO":                                                    # 2026-11-07: base de operaciones para buscar regímenes offline
+        res, cx = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        if not isinstance(cx, dict): return dict(cubo=None, operaciones=0)
+        from edgelab.research import regimen_offline as RO
+        return dict(cubo=RO.codificar(cx), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
+                    perillas=res.get("perillas"), cortes=cortes)
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
         bases = p.get("bases") or [p["base"]]; out = []

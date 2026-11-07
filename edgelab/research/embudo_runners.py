@@ -21,7 +21,7 @@ TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) cort
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
-                "edgelab/research/regimen_sesion.py", "edgelab/research/contexto_comun.py",          # contexto común y vetos causales (2026-11-04)
+                "edgelab/research/regimen_sesion.py", "edgelab/research/contexto_comun.py", "edgelab/research/regimen_offline.py",          # contexto común y vetos causales (2026-11-04)
                 "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
                 "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
