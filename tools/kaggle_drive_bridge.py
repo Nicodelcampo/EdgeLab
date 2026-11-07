@@ -859,7 +859,7 @@ def process_bridge_request(
         }
     elif action == "push_kernel":
         result = client.push_kernel(**_check_push_allowed(params, policy))
-    elif action == "git_head_info":
+    elif action in ("git_head_info", "git_head"):
         result = git_head_info(_resolve_repo(params, policy))
     elif action == "git_export_delta":
         result = git_export_delta(_resolve_repo(params, policy), params.get("base"), params.get("head"), bridge_dir / "artifacts" / req_id)
@@ -944,7 +944,7 @@ def watch_bridge_directory(
     actions = ["ping", "search_datasets", "list_my_datasets", "list_dataset_files", "inspect_dataset",
                "read_dataset_file_preview", "download_file_chunked", "get_kernel_status", "get_kernel_output"]
     if policy.repos:
-        actions += ["git_head_info", "git_export_delta", "check_patch"]
+        actions += ["git_head_info", "git_head", "git_export_delta", "check_patch"]
         if policy.allow_git_push:
             actions.append("git_apply_and_push")
     if policy.allow_push:

@@ -21,4 +21,4 @@ El trío del tablero (`ABSORCION-NQ-3R`, `PREAPERTURA-ES`, `COMPRESION-NR-GC`) a
 
 ## Alcance
 
-Esto refuta, en estas 26 series y estos dos horizontes, «rotar al top 3 por R reciente, una celda por familia e instrumento, sube el R/op del mes siguiente por encima del azar y de la calidad estática». No refuta un régimen definido por la amplitud del mercado (H-REG-2). Ese test necesita la amplitud observable antes de operar; no está en estas series diarias de R y no se improvisó.
+Esto refuta, en estas 26 series y estos dos horizontes, «rotar al top 3 por R reciente, una celda por familia e instrumento, sube el R/op del mes siguiente por encima del azar y de la calidad estática». El test de amplitud quedó corrido después, con su propio pre-registro: `RESULTADO_HREG2_AMPLITUD_20261107.md`. No pasa.

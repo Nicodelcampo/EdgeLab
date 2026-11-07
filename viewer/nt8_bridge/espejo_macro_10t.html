@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Espejos macro, velas de 10 ticks</title>
+<script src="vendor/lightweight-charts.standalone.production.js"></script>
+<style>
+  :root { --bg:#f5f6f8; --panel:#fff; --ink:#111827; --muted:#6b7280; --line:#e5e7eb; --accent:#2563eb; --ok:#16a34a; --no:#dc2626; }
+  body { margin:0; font-family:"Segoe UI",sans-serif; background:var(--bg); color:var(--ink); }
+  header { display:flex; align-items:center; gap:16px; padding:10px 16px; background:var(--panel); border-bottom:1px solid var(--line); }
+  header h1 { font-size:16px; margin:0; }
+  header .muted { color:var(--muted); font-size:13px; }
+  #chart { height:560px; margin:12px 16px; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  .meta { padding:0 16px 8px; color:var(--muted); font-size:13px; }
+  .bar { display:flex; gap:10px; align-items:center; padding:0 16px 12px; flex-wrap:wrap; }
+  button { font:inherit; padding:7px 14px; border-radius:6px; border:1px solid var(--line); background:#fff; cursor:pointer; }
+  button.si { background:var(--ok); color:#fff; border-color:var(--ok); }
+  button.no { background:var(--no); color:#fff; border-color:var(--no); }
+  button.on { outline:3px solid var(--ink); }
+  .help { padding:0 16px 16px; color:var(--muted); font-size:13px; line-height:1.5; max-width:920px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Candidatos a espejo en velas de 10 ticks</h1>
+  <span class="muted" id="prog"></span>
+  <span class="muted" id="save"></span>
+</header>
+<div class="meta" id="meta"></div>
+<div id="chart"></div>
+<div class="bar">
+  <button class="si" id="si">Sí, es espejo</button>
+  <button class="no" id="no">No</button>
+  <button id="duda">No estoy seguro</button>
+  <span style="flex:1"></span>
+  <button id="prev">← Anterior</button>
+  <button id="next">Siguiente →</button>
+</div>
+<div class="help" id="help"></div>
+<script>
+(async function () {
+  const NAME = "espejo_macro_10t_nq";
+  const D = await (await fetch("bundles/" + NAME + ".json", {cache: "no-store"})).json();
+  let L = {schema: "EDGELAB_ESPEJO_MACRO_10T_JUICIOS_V1", source: NAME, judgments: {}};
+  try { const r = await fetch("labels/" + NAME + ".json", {cache: "no-store"}); if (r.ok) L = await r.json(); } catch (e) {}
+  const $ = id => document.getElementById(id);
+  let k = 0;
+  const firstOpen = D.items.findIndex(it => L.judgments[it.id] == null);
+  if (firstOpen >= 0) k = firstOpen;
+  let chart = null;
+  $("help").innerHTML = "Regla: vela de <b>" + D.ticks_por_vela +
+    " ticks</b>, impulso de al menos <b>" + D.min_w_puntos + " puntos</b> (" + D.min_w_ticks + " ticks), para que al 50 % todavía queden <b>" +
+    D.viajes_severos_en_lo_que_falta + " viajes</b> de fricción severa de NQ. Sin un cierre que devuelva más del <b>" +
+    Math.round(D.retro_marcado * 100) + " %</b> de lo ya recorrido, y la vuelta igual de limpia. El gráfico corta en el primer cierre que deshizo el <b>" +
+    Math.round(D.mitad * 100) + " %</b>. Lo que pasó después no está. Ventana " + D.ventana[0] + "–" + D.ventana[1] +
+    ", " + D.sesiones + " sesiones, " + D.items.length + " candidatos. Esto clasifica la forma; no es un resultado de P&amp;L.";
+
+  function save() {
+    fetch("api/labels/" + NAME, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(L)})
+      .then(r => $("save").textContent = r.ok ? "guardado" : "no se pudo guardar")
+      .catch(() => $("save").textContent = "no se pudo guardar");
+  }
+  function juzgar(valor) {
+    const it = D.items[k];
+    L.judgments[it.id] = {espejo: valor, at: new Date().toISOString()};
+    save();
+    if (k < D.items.length - 1) k++;
+    render();
+  }
+  function render() {
+    if (!D.items.length) { $("meta").textContent = "No hay candidatos en esta ventana."; return; }
+    const it = D.items[k];
+    const hecho = Object.keys(L.judgments).length;
+    const j = L.judgments[it.id];
+    $("prog").textContent = (k + 1) + " de " + D.items.length + " · clasificados " + hecho;
+    $("si").classList.toggle("on", j && j.espejo === true);
+    $("no").classList.toggle("on", j && j.espejo === false);
+    $("duda").classList.toggle("on", j && j.espejo === null);
+    const ses = String(it.sesion);
+    $("meta").textContent = ses.slice(0, 4) + "-" + ses.slice(4, 6) + "-" + ses.slice(6) +
+      " · " + it.contrato + " · " + (it.lado > 0 ? "impulso al alza, vuelta a la baja" : "impulso a la baja, vuelta al alza") +
+      " · ancho " + (it.W_ticks * D.tick).toFixed(2) + " puntos (" + it.W_ticks + " ticks)" +
+      " · ida " + it.barras_ida + " velas, vuelta " + it.barras_vuelta +
+      " · señal " + it.ts_senal_utc + " UTC";
+    if (chart) { chart.remove(); chart = null; }
+    chart = LightweightCharts.createChart($("chart"), {
+      layout: {background: {color: "#fff"}, textColor: "#6b7280"},
+      grid: {vertLines: {color: "#f1f5f9"}, horzLines: {color: "#f1f5f9"}},
+      timeScale: {visible: false}, rightPriceScale: {borderColor: "#e5e7eb"},
+      crosshair: {mode: 0}, handleScroll: true, handleScale: true});
+    const s = chart.addCandlestickSeries({upColor: "#16a34a", downColor: "#dc2626", wickUpColor: "#16a34a", wickDownColor: "#dc2626", borderVisible: false,
+      priceFormat: {type: "price", precision: 2, minMove: D.tick}});
+    s.setData(it.candles);
+    s.createPriceLine({price: it.A, color: "#0ea5e9", lineWidth: 2, lineStyle: 2, title: "A"});
+    s.createPriceLine({price: it.B, color: "#f59e0b", lineWidth: 2, lineStyle: 2, title: "B"});
+    s.setMarkers([
+      {time: it.i0 + 1, position: it.lado > 0 ? "belowBar" : "aboveBar", color: "#0ea5e9", shape: "circle", text: "A"},
+      {time: it.iext + 1, position: it.lado > 0 ? "aboveBar" : "belowBar", color: "#f59e0b", shape: "circle", text: "B"},
+      {time: it.k + 1, position: it.lado > 0 ? "belowBar" : "aboveBar", color: "#111827", shape: "circle", text: "50%"}
+    ]);
+    chart.timeScale().fitContent();
+    new ResizeObserver(() => chart.applyOptions({width: $("chart").clientWidth})).observe($("chart"));
+  }
+  $("si").onclick = () => juzgar(true);
+  $("no").onclick = () => juzgar(false);
+  $("duda").onclick = () => juzgar(null);
+  $("prev").onclick = () => { if (k > 0) { k--; render(); } };
+  $("next").onclick = () => { if (k < D.items.length - 1) { k++; render(); } };
+  document.addEventListener("keydown", e => {
+    if (e.key === "s" || e.key === "S") juzgar(true);
+    if (e.key === "n" || e.key === "N") juzgar(false);
+    if (e.key === "d" || e.key === "D") juzgar(null);
+    if (e.key === "ArrowRight") $("next").click();
+    if (e.key === "ArrowLeft") $("prev").click();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

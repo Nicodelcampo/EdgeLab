@@ -8,7 +8,7 @@ Procedencia: series `series_diarias_regimen_20261106.json` del parche `befcd4bc8
 
 ## Veredicto
 
-El libro diario es aritméticamente consistente y no contiene sesiones de holdout. El resultado económico **no está verificado contra ticks** en esta máquina, y el nombre público de `ABSORCION-NQ-3R` no coincide con la celda que declara. Por eso **el holdout no se abrió**.
+El libro diario es aritméticamente consistente y no contiene sesiones de holdout. Los rótulos del tablero quedaron alineados con `EJECUCIONES` y los tests de causalidad de absorción y compresión pasan. El R diario publicado sigue sin recomputarse contra ticks: los cortes por cuantiles no están archivados y `DOBLE_RETROCESO` no está en el checkout. Por eso **el holdout no se abrió**.
 
 ## Lo que sí cierra
 
@@ -21,12 +21,12 @@ Sobre las 26 series de `series_cand` y las 21 de `series_p4`:
 
 ## Lo que no cierra
 
-1. Esos generadores no estaban en el checkout. Se restauraron `absorcion_climax.py`, `compresion_nr.py`, `rango_preapertura.py`, `rango_ruptura.py` y `regimen_sesion.py`. Sin cache de tensores y sin ticks locales no se puede recomputar un solo día.
-2. `ABSORCION-NQ-3R` declara `celda_coord = [1, 2, 0, 3]` y el texto «Stop 1.3 ATR · TP 3.0R». En `EJECUCIONES` el índice 3 es `("ATR", 1.3, 3.5)`: stop 1,3 ATR y objetivo **3,5R**. No existe la tupla `(1.3, 3.0)`. El rótulo 3,0R es falso respecto del código.
-3. `COMPRESION-NR-GC` con coord `[2, 2, 2, 1]` cae en `("CAJA", 1.0, 4.0)`. El texto «NR7» no es lo que mide el módulo: mide el rango de 30 velas contra los tres bloques previos de 30.
-4. `tests/research/test_absorcion_climax.py` y `test_compresion_nr.py` no corren en esta rama: `sintetico.bloques` no acepta `t0_s`. La causalidad quedó leída en el código (el disparo usa la vela `k` y la entrada es el tick siguiente) y no ejecutada.
-5. No hay directorio de ticks en esta máquina. El puente prohíbe bajar `edgelab-holdout-sellado` (`_check_not_sealed`). Abrir octubre para confirmar una serie no recomputada gastaría el sello.
+1. Los generadores se restauraron y quedaron registrados como `NATIVO_AGENTE` en `config/autopilot/grillas/indicadores_agente.json`. `tests/research/test_absorcion_climax.py` y `test_compresion_nr.py` pasan, incluido `test_causal`. Eso verifica que el disparo no mira velas futuras en el sintético. No verifica que el R diario publicado salga de esos disparos sobre los ticks.
+2. El tablero decía «Stop 1.3 ATR · TP 3.0R». En `EJECUCIONES` el índice 3 es `("ATR", 1.3, 3.5)`. No existe `(1.3, 3.0)`. El texto del HTML quedó en 3,5R. El id `ABSORCION-NQ-3R` no se renombró.
+3. `COMPRESION-NR-GC` con coord `[2, 2, 2, 1]` es `("CAJA", 1.0, 4.0)`. El texto «NR7» del tablero quedó en «NR 30 barras»: el módulo compara el rango de 30 velas con los tres bloques previos de 30. Sus cortes son fijos, así que esta celda sí se podría recomputar si se corre el simulador sobre el GC de pre-holdout. Esa corrida no está hecha.
+4. `extension_previa` de absorción y `ancho_rango` de preapertura salen de cuantiles del E0. Esos cortes no están en la serie ni en el módulo. Sin ellos la coordenada no recupera los mismos disparos. `DRC-YM-4` (`DOBLE_RETROCESO`) no tiene módulo en el checkout.
+5. No se bajó `edgelab-holdout-sellado`. Los ticks de pre-holdout que se usen para H-REG-2 no reemplazan este hueco: el rango de la sesión no identifica la celda.
 
 ## Decisión de apertura
 
-Pedido de Nico el 2026-11-07: abrir el holdout después de auditar si el resultado es verídico. La auditoría no llega a «verídico». La apertura queda **sin hacer** y sin fila nueva en `docs/holdout_access_log.md`.
+Pedido de Nico el 2026-11-07: abrir el holdout después de auditar si el resultado es verídico. La auditoría no llega a «el R publicado sale de estos ticks». La apertura queda **sin hacer** y sin fila nueva en `docs/holdout_access_log.md`. La canasta estática queda en `RESULTADO_CANASTA_ESTATICA_20261107.md` con el mismo cierre.

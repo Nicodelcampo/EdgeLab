@@ -176,3 +176,28 @@ Artefacto: `artifacts/research/espejo_macro/CURVA/`.
   poco. No se ve una cola lejana ni más casos que mueren en A.
 - **Qué sigue sin medir:** el mismo análisis condicionado a imanes, dirección o agotamiento.
 - **Tamiz:** sigue en SÍ; esto no lo mueve.
+
+### 2026-09-28 — economía en velas de 100 ticks (medido; no estaba en este registro)
+
+- `ESPEJO-NICO-100T`: 0 de 8. Sin efecto. Re-corrido con el pool corregido, mismo veredicto.
+- Continuación, seis instrumentos: ningún R bruto positivo. ES, 0 de 1.035 celdas. En NQ y YM las
+  celdas que sobreviven tienen objetivo 0,25·W; el control empírico las leyó como residuo del nulo.
+- Reversión en ES: el precio llega menos que el azar a cada tramo, y el R bruto es negativo.
+- El nulo que vale es `edgelab/research/espejo_nulo.py`. `P(completar) = f` no se vuelve a usar.
+
+### 2026-11-07 — orden para barrer, sin esos umbrales
+
+La mediana de semejanza, la etiqueta `ineficiente` y el objetivo 0,25·W no entran en la orden.
+Módulo `edgelab/research/espejo_regla.py`. Spec `docs/research/espejo_regla_20261107/SPEC_ESPEJO_REGLA.md`.
+Stop un tick más allá de B, objetivo en A, entradas al cruce de 0,25 y de 0,50.
+
+### 2026-11-07 — ESPEJO-REGLA, descubrimiento y pistas (medido)
+
+- ES, agosto 2025–marzo 2026: `SIN_CANDIDATAS`. 180 celdas evaluables, 0 nominadas por FDR q 0,10. Ninguna pista con media neta positiva. El nulo de la grilla queda por debajo de cero.
+- NQ: una pista del canal reciente (eficiencia baja, volumen alto, semejanza alta, venta, entrada 0,25, sólo RTH) dio +6,73 neto en descubrimiento (n 76) y no pasó el FDR (q 0,81). En abril–septiembre quedó en −1,43, IC que cruza cero, p 0,89. Canasta −2,42, potencia 0,29. Veredicto `PISTAS_VIVAS`: no confirma y no hay potencia para cerrarla.
+- El holdout no se abrió. Actas en `docs/research/espejo_regla_20261107/embudo/`.
+
+### 2026-11-07 — candidatos macro en velas de 10 ticks (forma, sin medir)
+
+Detector `edgelab/research/espejo_macro_10t.py`. Regla en `docs/research/espejo_macro_10t_20261107/REGLA.md`.
+NQ, sesiones 2026-04-01 a 2026-06-30 (lo último del preholdout en Kaggle; no hay julio–septiembre). 68 sesiones, 2230 candidatos, corte en el cierre del 50 %. La clasificación humana está en el visor y todavía no se leyó. No hay P&L.
