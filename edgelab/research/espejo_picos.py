@@ -1,8 +1,9 @@
 """ESPEJO-PICOS (2026-11-07, hipótesis de Nico): el espejo de ESPEJO-MACRO-10T clasificado por QUÉ PICOS TOMÓ LA IDA.
 
 Hipótesis: si el primer impulso existió para tomar picos de liquidez, cuando los tomó el motivo desapareció y la vuelta completa el
-espejo o va más allá de A. Familia hija de ESPEJO_MACRO_10T (linaje): mismo detector causal (`espejo_macro_grilla._detectar`, umbrales
-laxos), sin tocar el módulo padre, y las perillas de retroceso del padre quedan fijas en el valor laxo.
+espejo o va más allá de A. Familia hija del espejo (linaje): detector causal con topes en TIEMPO (`espejo_macro_tiempo._detectar_t`, 60 / 120 min) y ancho
+mínimo laxo de 5 viajes (como ESPEJO-MACRO-10T-ANCHO; con 10 viajes ES no tiene eventos), sin tocar los módulos padre; las perillas de
+retroceso del padre quedan fijas en el valor laxo.
 
 Pico = pivote del lado del impulso (máximos si sube, mínimos si baja) de `w` velas por lado, confirmado `w` velas después y ANTES del
 inicio A, que sigue SIN ROMPER hasta A (liquidez viva). Los picos sin romper forman por construcción una escalera (cada uno no supera al
@@ -23,7 +24,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
-from edgelab.research import espejo_macro_grilla as P
+from edgelab.research import espejo_macro_grilla as P, espejo_macro_tiempo as TI
 from edgelab.research.grilla_generica import Variable
 from edgelab.research.intento_fallido import EXCLUIR_EVENTOS, lineas_salida  # noqa: F401
 
@@ -41,9 +42,10 @@ ESCALAS = (3, 10)                     # w del pivote, en velas de 10 ticks
 LOOK = 2000                           # velas hacia atrás desde A para buscar picos vivos
 MAX_GAP = (60, 200)                   # separación máxima entre picos seguidos de una serie, por escala
 N_SERIE = 3
+VIAJES_LAXO = 5.0                     # base corregida (07/11): topes en tiempo y ancho mínimo laxo de 5 viajes, como ESPEJO-MACRO-10T-ANCHO
 VARIABLES = [
     Variable("fraccion", "fi", "grupo", categoria=len(P.FRACCIONES)),
-    Variable("viajes", "viajes", "ge", cortes=(10.0, 20.0, 40.0), piso=True),
+    Variable("viajes", "viajes", "ge", cortes=(5.0, 10.0, 20.0), piso=True),
     Variable("rth", "rth", "eq_any", categoria=2),
     Variable("tipo_pico", "ti", "grupo", categoria=2),            # 0 cualquiera · 1 consecutivo
     Variable("escala_pico", "ei", "grupo", categoria=2),          # 0 w = 3 · 1 w = 10
@@ -110,12 +112,13 @@ def _clasificar(x, piv, w, i0, ie, A, look, max_gap, consecutivo):
 
 def disparos(ctx) -> pd.DataFrame:
     tick = float(ctx["tick"]); C = np.asarray(ctx["c"], float) / tick; ses = np.asarray(ctx["ses"], np.int64)
-    h = np.asarray(ctx["h"], float) / tick; l = np.asarray(ctx["l"], float) / tick
-    fr = P._friccion_ticks(ctx); min_w = 2.0 * P.VIAJES_MIN * fr
+    h = np.asarray(ctx["h"], float) / tick; l = np.asarray(ctx["l"], float) / tick; T = np.asarray(ctx["t"], float)
+    fr = P._friccion_ticks(ctx); min_w = 2.0 * VIAJES_LAXO * fr
     piv = {(s, ei): P_ for ei, w in enumerate(ESCALAS) for s, P_ in ((1, _pivotes(h, ses, w)), (-1, _pivotes(-l, ses, w)))}
     filas = []
     for fi, f in enumerate(P.FRACCIONES):
-        for (i0, ie, k, lado, W, ri, rv) in P._detectar(C, ses, P.RETRO_LAXO, f, min_w, P.MIN_IDA, P.MIN_VUELTA, P.MAX_IDA):
+        for (i0, ie, k, lado, W, ri, rv) in TI._detectar_t(C, T, ses, P.RETRO_LAXO, f, min_w, P.MIN_IDA, P.MIN_VUELTA,
+                                                           TI.MAX_SEG_IDA, TI.MAX_SEG_TOTAL):
             i0, ie, k, lado = int(i0), int(ie), int(k), int(lado)
             x = h if lado == 1 else -l                               # espacio «techo»: los picos del lado del impulso son máximos
             A = l[i0] if lado == 1 else -h[i0]                       # origen de la ida por mecha, en ese espacio

@@ -1,7 +1,8 @@
-# Pre-registro (BORRADOR): ESPEJO-PICOS — el espejo clasificado por qué picos tomó la ida (07/11/2026)
+# Pre-registro: ESPEJO-PICOS — el espejo clasificado por qué picos tomó la ida (07/11/2026)
 
-Estado: BORRADOR — no lanzar hasta observar el barrido sin condicionales (`espejo_macro_10t_20261107/`, pedido de Nico). Se cierra en
-un commit propio, con el hash del referente, antes de lanzar.
+Estado: PRE-REGISTRO (commiteado antes de lanzar, pedido de Nico «lanzá los picos»). Referente `docs/NORTH_STAR.md`, cuerpo SHA-256
+`16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Etapa **EF2**. La base sin condicionales ya se observó: `espejo_macro_10t_20261107/RESULTADO_BARRIDO.md` (sin edge; NQ réplica
+−0,18 R/op).
 
 ## Hipótesis (Nico)
 
@@ -15,7 +16,8 @@ Si el primer impulso existió para tomar picos de liquidez, cuando los tomó el 
 
 ## Definición (`edgelab/research/espejo_picos.py`, tests en `tests/research/test_espejo_picos.py`)
 
-- **Detector:** el mismo del padre ESPEJO-MACRO-10T (causal, umbrales laxos). El módulo padre no se toca.
+- **Detector:** el del espejo con la base corregida: topes en tiempo (60 / 120 min) y ancho mínimo laxo de 5 viajes, como
+  ESPEJO-MACRO-10T-ANCHO. Con la base original ES no tenía eventos. Los módulos padre no se tocan.
 - **Pico:** pivote del lado del impulso de w velas de 10 ticks, confirmado antes de A y vivo (sin romper) hasta A. Los picos vivos
   forman una escalera, como en `tools/peaks_rule.py`.
 - **Tipo** (perilla, decisión de Nico: los dos):
@@ -27,7 +29,8 @@ Si el primer impulso existió para tomar picos de liquidez, cuando los tomó el 
   - posición media dentro del impulso: inicio, medio o final;
   - sobrepaso del último pico tomado: ≤ 0,10 W, ≤ 0,25 W o más;
   - si quedaron picos vivos más allá del extremo.
-- **Fijo como en el padre:** fracción de entrada, ancho en viajes de fricción y RTH.
+- **Perillas del padre que quedan:** fracción de entrada (25 / 50 / 75 %), ancho en viajes (≥ 5 / 10 / 20) y RTH. Los retrocesos
+  quedan fijos en el laxo (0,40).
 - **Ejecuciones (8):** stop en B (1 tick o 10 % de W) × objetivo A, 1,25 W, 1,5 W (más allá de A, la hipótesis) o 2R.
 - **Tamaño:** 259.200 celdas por canal.
 
@@ -35,7 +38,8 @@ Si el primer impulso existió para tomar picos de liquidez, cuando los tomó el 
 
 1. **Información, sin P&L:** probabilidad de llegar a A y de pasarlo (1,25 W y 1,5 W) por clase, contra el control emparejado. El
    control son los espejos sin picos tomados con el mismo ancho, duración y horario.
-2. **Embudo en R:** con linaje hijo de ESPEJO_MACRO_10T_{NQ,ES,YM,GC}, que hereda su multiplicidad.
+2. **Embudo en R:** ESPEJOPICOS-{NQ,ES,YM,GC}, con linaje hijo de la variante en tiempo de cada activo (y de la de ancho en ES e
+   YM): hereda su multiplicidad bruta.
 
 ## Después (fase 2)
 
