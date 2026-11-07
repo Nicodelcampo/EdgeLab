@@ -18,6 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
+TOPE_KERNEL_BYTES = 1_000_000                 # Kaggle rechaza fuentes de 1 MB o más (ESPEJO-ZONAS, 07/11: 1.071.481 bytes)
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
@@ -167,6 +168,10 @@ class KaggleRunner:
         if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         exigir_causalidad(spec["experimento"])
         a = self.argumentos(spec, etapa, params, periodo)
+        script = Path(a[a.index("--script") + 1])
+        if script.stat().st_size >= TOPE_KERNEL_BYTES:       # Kaggle: «The kernel source must be less than 1 megabytes» (07/11)
+            raise RuntimeError(f"no se lanzó: kernel de {script.stat().st_size} bytes (tope {TOPE_KERNEL_BYTES}); "
+                               "achicar las dependencias del experimento")
         env = self._env(a[1].split("/")[0])
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
                            timeout=TIMEOUT_LANZAR_S, env=env)

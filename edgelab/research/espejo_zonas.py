@@ -2,8 +2,10 @@
 la ida, en lugar de pivotes. Hermana de ESPEJO-PICOS: misma base (detector causal con topes en tiempo de `espejo_macro_tiempo`, ancho
 mínimo laxo de 5 viajes, retrocesos fijos en el laxo), mismas ejecuciones y las mismas preguntas sobre la ida.
 
-Zonas: almacenes precalculados de indicadores PASS por instrumento (`prerange_zonas.cargar_zonas`, que resuelve HFT por trimestre,
-AVZP2 en `t_decidida_ns`, AVZG en su zona base de YM y el holdout sellado). Disponibilidad: la zona entra en la primera vela que cierra
+Zonas: almacenes precalculados de indicadores PASS por instrumento, con las reglas de `prerange_zonas.cargar_zonas` (HFT en bloques
+trimestrales, AVZP2 en `t_decidida_ns`, AVZG en su zona base de YM) pero en un lector propio que sólo lee parquet: importar
+`prerange_zonas` arrastra los generadores de indicadores y el kernel pasaba el tope de 1 MB de Kaggle (1.071.481 bytes, 07/11). Con
+SELLADO=1 falla a propósito: el holdout necesita esos generadores y se resuelve antes de abrirlo. Disponibilidad: la zona entra en la primera vela que cierra
 en o después de su instante (`t_ns`); se usa sólo de esa vela en adelante. LUX-IMB queda afuera: se calcula sobre velas M1 y acá las
 velas son de 10 ticks (con otra vela es otro indicador).
 
@@ -19,12 +21,13 @@ Todo se mide con datos <= k (la vela de decisión).
 """
 from __future__ import annotations
 
+import glob
 import os
 
 import numpy as np
 import pandas as pd
 
-from edgelab.research import espejo_macro_grilla as P, espejo_macro_tiempo as TI, prerange_zonas as PZ
+from edgelab.research import espejo_macro_grilla as P, espejo_macro_tiempo as TI
 from edgelab.research.espejo_picos import EJECUCIONES, STOPS, TPS, niveles  # noqa: F401
 from edgelab.research.grilla_generica import Variable
 from edgelab.research.intento_fallido import EXCLUIR_EVENTOS, lineas_salida  # noqa: F401
@@ -116,9 +119,29 @@ def _clasificar(zi, near, far, cruce, tz, ses_z, i0, ie, ini, A, techo, ses0, t0
     return n_t, (spos / n_t if n_t > 0 else -1.0), n_m
 
 
+ZONA_AVZG_YM = 17                     # la de prerange_zonas / U1-ZONAS-GRILLA
+
+
+def _almacen(ctx, ind):
+    """Zonas (t_ns de disponibilidad, lo, hi) de un indicador, sólo del almacén en parquet; nunca cae a otra fuente."""
+    if "zonas" in ctx: return ctx["zonas"][ind]
+    if os.environ.get("SELLADO") == "1":
+        raise NotImplementedError("ESPEJO-ZONAS en el holdout sellado: falta el lector con generadores (ver PREREGISTRO)")
+    sensor = ctx.get("sensor") or os.environ.get("SENSOR"); ent = os.environ.get("ENTRADA", "/kaggle/input")
+    f = glob.glob(f"{ent}/**/ZONAS_{ind}_{sensor}.parquet", recursive=True)
+    f = f[:1] or sorted(glob.glob(f"{ent}/**/ZONAS_{ind}_{sensor}_[0-9]*.parquet", recursive=True))     # bloques trimestrales (HFT)
+    if not f: raise FileNotFoundError(f"sin almacén de zonas {ind}/{sensor} en {ent}")
+    Z = pd.concat([pd.read_parquet(x) for x in f], ignore_index=True)
+    if ind == "AVZP2":
+        Z = Z[Z.t_decidida_ns > 0]
+        Z = Z.assign(t_ns=np.maximum(Z.t_ns.to_numpy(np.int64), Z.t_decidida_ns.to_numpy(np.int64)))
+    if ind == "AVZG": Z = Z[Z.zona == ZONA_AVZG_YM]
+    return Z[["t_ns", "lo", "hi"]].sort_values("t_ns", kind="stable", ignore_index=True)
+
+
 def _zonas(ctx, ind, T, C, tick, ses):
     """(zi, lo, hi en ticks, t de disponibilidad en s, sesión, primer cruce hacia arriba de hi, primer cruce hacia abajo de lo)."""
-    Z = PZ.cargar_zonas(ctx, ind)
+    Z = _almacen(ctx, ind)
     tz = Z.t_ns.to_numpy(np.int64) / 1e9
     ok = (tz >= T[0]) & (tz <= T[-1]); tz = tz[ok]
     a = Z.lo.to_numpy(float)[ok] / tick; b = Z.hi.to_numpy(float)[ok] / tick

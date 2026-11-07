@@ -43,6 +43,10 @@ formas de relacionar zona e impulso:
   - YM: AVZG (zona base 17, como U1-ZONAS-GRILLA), BT2, HFT2, HFTNQ;
   - GC: sin almacén, no se corre;
   - LUX-IMB queda afuera: se calcula sobre velas M1 y acá las velas son de 10 ticks (sería otro indicador).
+  - Lector propio, sólo parquet, con las mismas reglas que `prerange_zonas.cargar_zonas` (bloques trimestrales de HFT, AVZP2 en
+    `t_decidida_ns`, AVZG zona 17). Motivo: importar `prerange_zonas` metía los generadores de indicadores y el kernel pasaba el tope
+    de 1 MB de Kaggle (rechazado con 1.071.481 bytes el 07/11, antes de correr nada). **Pendiente antes de abrir el holdout:** el
+    holdout sellado trae ticks crudos y necesita esos generadores; con `SELLADO=1` el lector falla a propósito.
   - Disponibilidad: primera vela que cierra en o después del instante de la zona; se usa desde esa vela. Sólo zonas de la misma
     sesión que A (las de otra sesión pueden ser de otro contrato tras un roll).
 - **Espacio «techo»:** si la ida baja, se niegan los precios. A = mecha de la vela de inicio; techo = extremo de la ida por mechas;

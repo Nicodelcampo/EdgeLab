@@ -48,3 +48,26 @@ def test_causal_estatico_y_disparos():
     D = X.disparos(ctx)
     assert len(D) and set(D.ai) == {0, 1, 2, 3, 4} and set(D.zi_ind) == {0, 1}
     assert I.causal(X.disparos, ctx) == []
+
+
+def test_almacen_liviano(tmp_path, monkeypatch):
+    import pandas as pd
+    monkeypatch.setenv("ENTRADA", str(tmp_path)); monkeypatch.delenv("SELLADO", raising=False)
+    pd.DataFrame(dict(t_ns=[5, 1], lo=[1.0, 2.0], hi=[2.0, 3.0], t_decidida_ns=[9, 0])).to_parquet(tmp_path / "ZONAS_AVZP2_NQ.parquet")
+    pd.DataFrame(dict(t_ns=[3], lo=[1.0], hi=[2.0])).to_parquet(tmp_path / "ZONAS_HFT2_NQ_20260101.parquet")
+    pd.DataFrame(dict(t_ns=[1], lo=[1.0], hi=[2.0])).to_parquet(tmp_path / "ZONAS_HFT2_NQ_20251001.parquet")
+    pd.DataFrame(dict(t_ns=[1, 2], lo=[1.0, 1.0], hi=[2.0, 2.0], zona=[17, 5])).to_parquet(tmp_path / "ZONAS_AVZG_YM.parquet")
+    assert X._almacen({"sensor": "NQ"}, "AVZP2").t_ns.tolist() == [9]                     # sin decidir afuera; disponible al decidirse
+    assert X._almacen({"sensor": "NQ"}, "HFT2").t_ns.tolist() == [1, 3]                   # bloques trimestrales, ordenados
+    assert X._almacen({"sensor": "YM"}, "AVZG").t_ns.tolist() == [1]                      # zona base de YM
+    monkeypatch.setenv("SELLADO", "1")
+    import pytest
+    with pytest.raises(NotImplementedError): X._almacen({"sensor": "NQ"}, "HFT2")
+
+
+def test_kernel_liviano():
+    from pathlib import Path
+    from edgelab.research import embudo_runners as R
+    for m in ("edgelab/research/espejo_zonas.py", "edgelab/research/espejo_picos2.py"):
+        assert not any("prerange" in d or "u1_" in d for d in R.dependencias(m))           # el kernel pasaba el tope de 1 MB
+        assert sum(Path(d).stat().st_size for d in set(R.dependencias(m)) | {m}) < 400_000
