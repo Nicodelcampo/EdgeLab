@@ -1,0 +1,108 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1794092429.0362365,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJO10TT-ES",
+  "familia": "ESPEJO_MACRO_10T_TIEMPO_ES",
+  "experimento": "edgelab.research.espejo_macro_tiempo",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "ticks_por_barra": 10,
+  "n_celdas_por_canal": 31104,
+  "justificacion_economica": "Impulso limpio sin aceptación que se deshace: la vuelta limpia que ya deshizo una fracción de W sigue hacia A; el ancho mínimo en viajes de fricción severa deja recorrido frente al costo.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 en DESC y ninguna pista que replique; o R neto sólo con el objetivo más corto.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/espejo_macro_10t_20261107/PREREGISTRO_TIEMPO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_MACRO_10T_TIEMPO_ES",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_MACRO_10T_ES"
+   ],
+   "propias": 0,
+   "bruto_heredado": 721,
+   "n_heredado": 721,
+   "total": 721,
+   "justificacion": "Topes del espejo en tiempo en vez de velas (docs/research/espejo_macro_10t_20261107/PREREGISTRO_TIEMPO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794092429.0360246,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}
