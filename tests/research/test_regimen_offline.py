@@ -43,3 +43,9 @@ def test_cada_mes_positivo():
     D = [RO.series_diarias(_cubo(f"c{i}", i == 0, i), min_ops=30) for i in range(3)]
     r = RO.walk_forward(D, W=3, k=1, min_ops=20, min_dias=10, B_azar=20, seed=5, cada_mes_pos=True, min_dias_mes=4)
     assert r["n_ventanas"] >= 6 and r["delta_azar"] > 0.2
+
+
+def test_varias_variantes_corregidas_juntas():
+    D = [RO.series_diarias(_cubo(f"c{i}", i == 0, i), min_ops=30) for i in range(3)]
+    r = RO.nulo_signo_multi(D, k=1, B=8, seed=6)
+    assert set(r["variantes"]) == set(RO.VARIANTES) and all(0 < v["p_familia"] <= 1 for v in r["variantes"].values() if v["p_familia"] == v["p_familia"])

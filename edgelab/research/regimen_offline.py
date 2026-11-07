@@ -166,3 +166,31 @@ def nulo_signo(diarios, B=50, seed=0, **kw) -> dict:
     nul = np.asarray([x for x in nul if np.isfinite(x)])
     p = float((np.sum(nul >= obs["delta_azar"]) + 1) / (len(nul) + 1)) if len(nul) else float("nan")
     return dict(observado=obs, p_nulo=p, nulo_q05_q50_q95=np.quantile(nul, [.05, .5, .95]).tolist() if len(nul) else None)
+
+
+# ----------------------------------------------------------------------------------------------- varias definiciones a la vez
+VARIANTES = {   # 2026-11-07 (Nico: «más días o más estabilidad entre días podrían reemplazar a los 3 meses»); se corrigen juntas
+    "A_3M_CADA_MES": dict(W=3, min_ops=30, min_dias=20, min_pos=0.50, cada_mes_pos=True, min_dias_mes=4),
+    "B_2M_ESTABLE": dict(W=2, min_ops=30, min_dias=20, min_pos=0.55, cada_mes_pos=True, min_dias_mes=6),
+    "C_1M_MUY_ESTABLE": dict(W=1, min_ops=25, min_dias=12, min_pos=0.60),
+    "D_3M_SIN_CADA_MES": dict(W=3, min_ops=30, min_dias=20, min_pos=0.50),
+}
+
+
+def nulo_signo_multi(diarios, variantes=None, k=3, B=50, seed=0) -> dict:
+    """Todas las variantes contra el MISMO nulo de signo por sesión, corregido por haberlas probado juntas: en cada réplica se toma el
+    máximo Δ contra azar entre las variantes, y el p de cada variante es la fracción de réplicas cuyo máximo lo iguala o supera."""
+    variantes = variantes or VARIANTES
+    obs = {n: walk_forward(diarios, k=k, seed=seed, **v) for n, v in variantes.items()}
+    dias = np.unique(np.concatenate([d.dias for d in diarios])); rng = np.random.default_rng(seed + 1); maxi = []
+    for b in range(B):
+        sg = dict(zip(dias.tolist(), rng.choice([-1.0, 1.0], size=len(dias)).tolist()))
+        vals = [walk_forward(diarios, k=k, signo=sg, seed=seed + 2 + b, B_azar=50, **v)["delta_azar"] for v in variantes.values()]
+        vals = [x for x in vals if np.isfinite(x)]
+        if vals: maxi.append(max(vals))
+    maxi = np.asarray(maxi)
+    out = {}
+    for n, o in obs.items():
+        p = float((np.sum(maxi >= o["delta_azar"]) + 1) / (len(maxi) + 1)) if len(maxi) and np.isfinite(o["delta_azar"]) else float("nan")
+        out[n] = dict(observado={kk: vv for kk, vv in o.items() if kk != "ventanas"}, ventanas=o["ventanas"], p_familia=p)
+    return dict(variantes=out, nulo_max_q50_q95=np.quantile(maxi, [.5, .95]).tolist() if len(maxi) else None, B=len(maxi))
