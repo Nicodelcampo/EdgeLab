@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-572 scripts.
+573 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -444,6 +444,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/rank_hft_corridor_configs.py` | Evaluate target-free visual ranking of HFT corridor configurations. |
 | `tools/razon_de_varianzas.py` | RAZÓN DE VARIANZAS (Lo–MacKinlay 1988) — ¿hay algo que ganarle a la tabla nula? |
 | `tools/rebuild_hft_bundles_scaled.py` | Regenera los bundles 25t + HFT de los activos no-NQ con el perfil escalado (SCALED_FUNNEL_V1). |
+| `tools/recomputo_canasta_estatica.py` | Recomputo contra ticks de la canasta estática del régimen corto (PREAPERTURA-ES, PREAPERTURA-NQ, DRC-YM-4) con los cortes congelados |
 | `tools/reconstruct_avzvol_candidate_bar_map.py` | Timestamp-only structural QA of candidate AVZVOL bar identity, NOT research. |
 | `tools/reconstruir_kernels.py` | Reconstruye TODOS los kernels commiteados con los módulos actuales (error O6 de |
 | `tools/recortar_spot_holdout.py` | Recorta un dataset SPOT de Dukascopy en la frontera del holdout (HOLDOUT-A4) y deja la carpeta lista para subirla como |
