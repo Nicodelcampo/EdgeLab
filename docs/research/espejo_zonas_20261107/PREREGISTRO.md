@@ -1,6 +1,6 @@
 # Pre-registro: ESPEJO-ZONAS — el espejo clasificado por las zonas de otros indicadores que encontró la ida (07/11/2026)
 
-Estado: PRE-REGISTRO (commiteado antes de lanzar; pedido de Nico: «en lugar de picos use zonas de otros indicadores… en qué parte del
+Estado: PRE-REGISTRO (commiteado antes de lanzar; lanzado el 07/11 por pedido de Nico «elegí cortes de 30 y también 120 minutos. Lanzalo»; pedido de Nico: «en lugar de picos use zonas de otros indicadores… en qué parte del
 impulso están, la cantidad, la antigüedad, y si hay o no más zonas más allá cercanamente del impulso inicial»). Referente
 `docs/NORTH_STAR.md`, cuerpo SHA-256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Etapa **EF2**.
 Hermana de ESPEJO-PICOS (`docs/research/espejo_picos_20261107/PREREGISTRO.md`): misma base de eventos y mismas ejecuciones; cambia
@@ -51,15 +51,16 @@ formas de relacionar zona e impulso:
   la zona (salvo BT2), así que se calcula igual para todos.
 - **Perillas:**
   - indicador (5 niveles; en YM el quinto queda vacío);
-  - antigüedad: recientes (≤ 30 min antes de A) · viejas (> 30 min, misma sesión) · nacidas en la ida · todas;
+  - antigüedad (cortes de Nico, 30 y 120 min): ≤ 30 min antes de A · 30–120 min · > 120 min (misma sesión) · nacidas en la ida ·
+    todas;
   - zonas tomadas (la ida alcanzó su borde cercano): 0 · 1–2 · 3+ · cualquiera;
   - posición media de las tomadas en el impulso: inicio (< 1/3 W) · medio · final (≥ 2/3 W) · cualquiera;
   - más allá cercana: hay o no una zona viva no alcanzada con borde cercano a ≤ 0,25·W del extremo · cualquiera;
   - del padre: fracción de entrada (25 / 50 / 75 %), ancho en viajes (≥ 5 / 10 / 20) y RTH.
 - **Ejecuciones (8):** las de ESPEJO-PICOS: stop en B (1 tick o 10 % de W) × objetivo A, 1,25 W, 1,5 W o 2R.
-- **Tamaño:** 259.200 celdas por canal.
+- **Tamaño:** 324.000 celdas por canal.
 
-Cortes elegidos sin ver datos: 30 min (igual que ESPEJO-PICOS) y 0,25·W (cerca = un cuarto del impulso, la mitad de lo que el objetivo
+Cortes elegidos sin ver datos: 30 y 120 min (Nico, 07/11, antes de lanzar) y 0,25·W (cerca = un cuarto del impulso, la mitad de lo que el objetivo
 1,5 W pide más allá de A).
 
 ## Linaje y multiplicidad

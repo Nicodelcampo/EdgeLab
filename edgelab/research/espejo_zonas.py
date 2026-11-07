@@ -13,8 +13,8 @@ ida por mechas, W = techo − A. Una zona cuenta si su punto medio está más al
     nacidas durante la ida se cuentan sin esa condición: son la huella del propio impulso.
   - TOMADA por la ida: el techo llegó a su borde cercano. Posición = punto medio en fracción de W (0 inicio … 1 extremo).
   - MÁS ALLÁ CERCANA: viva, no alcanzada, con el borde cercano a <= 0,25·W del techo (liquidez que queda justo después del impulso).
-Antigüedad (perilla de grupo, bandas disjuntas salvo «todas»): recientes (<= 30 min antes de A) · viejas (> 30 min antes de A, misma
-sesión) · nacidas en la ida (entre A y el extremo) · todas. Las zonas de otra sesión no se usan (precios de otro contrato tras un roll).
+Antigüedad (perilla de grupo, bandas disjuntas salvo «todas»; cortes de Nico, 30 y 120 min): recientes (<= 30 min antes de A) ·
+intermedias (30–120 min) · viejas (> 120 min, misma sesión) · nacidas en la ida (entre A y el extremo) · todas. Las zonas de otra sesión no se usan (precios de otro contrato tras un roll).
 Todo se mide con datos <= k (la vela de decisión).
 """
 from __future__ import annotations
@@ -40,13 +40,13 @@ INDICADORES = ["ESPEJO-MACRO-10T", "HFTZones2", "HFTZonesNQ", "aVolZonePOI2", "a
 LINEAS_SOLO_TIEMPO = True
 TOPE_BARRAS = P.TOPE_BARRAS
 VIAJES_LAXO = 5.0
-EDAD_RECIENTE_S = 1800.0              # 30 min antes de A
+EDAD_CORTES_S = (1800.0, 7200.0)      # 30 y 120 min antes de A (Nico, 07/11)
 CERCA_W = 0.25                        # «más allá cercana»: borde cercano a <= 0,25·W del techo
 IND_POR_INST = {"NQ": ("AVZP2", "AVCL", "BT2", "HFT2", "HFTNQ"),
                 "ES": ("AVZP2", "AVCL", "BT2", "HFT2", "HFTNQ"),
                 "YM": ("AVZG", "BT2", "HFT2", "HFTNQ")}           # almacenes existentes (edgelab-zonas-u1, edgelab-zonas-hft); GC no tiene
 N_IND = 5                             # tope; en YM el quinto nivel queda vacío
-BANDAS = 4                            # 0 recientes · 1 viejas · 2 nacidas en la ida · 3 todas
+BANDAS = 5                            # 0 <= 30 min · 1 30–120 min · 2 > 120 min · 3 nacidas en la ida · 4 todas
 VARIABLES = [
     Variable("fraccion", "fi", "grupo", categoria=len(P.FRACCIONES)),
     Variable("viajes", "viajes", "ge", cortes=(5.0, 10.0, 20.0), piso=True),
@@ -58,7 +58,7 @@ VARIABLES = [
     Variable("mas_alla", "mas", "eq_any", categoria=2),           # 0 sin zona cercana más allá · 1 con
 ]
 EJES_ORDINALES = ()
-BASE = {"fraccion": 1, "viajes": 1, "rth": 2, "indicador": 0, "antiguedad": 3, "n_tomadas": 3, "posicion": 4, "mas_alla": 2,
+BASE = {"fraccion": 1, "viajes": 1, "rth": 2, "indicador": 0, "antiguedad": 4, "n_tomadas": 3, "posicion": 4, "mas_alla": 2,
         "ejecución": 0}
 
 
@@ -88,7 +88,7 @@ def _primer_cruce(c, zi, umbral, arriba):
 
 
 @njit(cache=False)
-def _clasificar(zi, near, far, cruce, tz, ses_z, i0, ie, ini, A, techo, ses0, t0, banda, edad_s, cerca_w):
+def _clasificar(zi, near, far, cruce, tz, ses_z, i0, ie, ini, A, techo, ses0, t0, banda, c1, c2, cerca_w):
     """Zonas en espacio techo (near <= far) ordenadas por zi; `ini` = primera vela de la sesión de A. Devuelve (n_tomadas, pos_media,
     n_mas_alla)."""
     W = techo - A; n_t = 0; spos = 0.0; n_m = 0
@@ -101,12 +101,13 @@ def _clasificar(zi, near, far, cruce, tz, ses_z, i0, ie, ini, A, techo, ses0, t0
         if mid <= A: continue
         ida = zi[z] >= i0
         if ida:
-            if banda == 0 or banda == 1: continue
+            if banda <= 2: continue
         else:
             edad = t0 - tz[z]
-            if banda == 2: continue
-            if banda == 0 and edad > edad_s: continue
-            if banda == 1 and edad <= edad_s: continue
+            if banda == 3: continue
+            if banda == 0 and edad > c1: continue
+            if banda == 1 and (edad <= c1 or edad > c2): continue
+            if banda == 2 and edad <= c2: continue
             if cruce[z] < i0: continue                              # ya cruzada antes de A: no está viva
         if near[z] <= techo:
             n_t += 1; x = (mid - A) / W; spos += 1.0 if x > 1.0 else x
@@ -158,7 +159,7 @@ def disparos(ctx) -> pd.DataFrame:
             for ii, (zi, lo, hi, tz, sz, cu, cd) in enumerate(zs):
                 near, far, cruce = (lo, hi, cu) if lado == 1 else (-hi, -lo, cd)
                 for ai in range(BANDAS):
-                    n_t, pos, n_m = _clasificar(zi, near, far, cruce, tz, sz, i0, ie, ini_ses[i0], A, techo, ses[i0], T[i0], ai, EDAD_RECIENTE_S, CERCA_W)
+                    n_t, pos, n_m = _clasificar(zi, near, far, cruce, tz, sz, i0, ie, ini_ses[i0], A, techo, ses[i0], T[i0], ai, *EDAD_CORTES_S, CERCA_W)
                     filas.append((k, -lado, fi, W / 2.0 / fr, ii, ai, n_t,
                                   0 if n_t == 0 else (1 if pos < 1 / 3 else (2 if pos < 2 / 3 else 3)),
                                   1 if n_m > 0 else 0, C[i0] * tick, C[ie] * tick, W * tick))
