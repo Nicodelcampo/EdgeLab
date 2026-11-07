@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-05
+**Fecha:** 2026-11-07
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-05
+**Corte:** 2026-11-07
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,17 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-11-05 (leer primero)
+## Estado al 2026-11-07 (leer primero)
+
+- **Régimen:** la racha reciente no le gana a la calidad estática (H-REG-1). Canasta estática PREAPERTURA-ES/NQ recalculada contra
+  ticks (idéntica); su holdout da +0,12 / +0,07 R/op, EN CURSO (`regimen_corto_20261106_recomputo/`). Motor de régimen offline con
+  cubos (`edgelab/research/regimen_offline.py`, `tools/cubos_regimen.py`), con 4 definiciones corregidas juntas; cubos en curso.
+- **Embudo en velas de N ticks** (`ticks_por_barra`). **ESPEJO-MACRO-10T** en descubrimiento (4 activos): el detector original de
+  foundation miraba el futuro y se corrigió. **ESPEJO-PICOS** construido, sin lanzar.
+- **Agente del Debian:** directiva 9 y `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md` (régimen y lectura de corridas).
+  **Edges promovidos: 0.**
+
+## Estado al 2026-11-05
 
 - **Paridad NT8 de CVGAP-ES-C** (port nativo `nt8/strategies/EdgeLabCvgapESC.cs` v1.1): 27 de 29 señales de Python en el mismo minuto con
   niveles exactos; 26 operaciones emparejadas con la misma entrada y el P&L igual (±1 pt) en 24. Faltan los disparos extra de NT8 y la

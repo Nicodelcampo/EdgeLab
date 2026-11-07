@@ -11,7 +11,8 @@ Lo que sale es un BORRADOR: no entra a candidates.json sin pre-registro committe
 """
 from __future__ import annotations
 import json
-from pathlib import Path, re
+import re
+from pathlib import Path
 
 PRIORIDADES = [
     "Objetivo: edges netos (después de costos), robustos fuera de muestra y operables; útiles para challenges y combinables.",
@@ -27,6 +28,7 @@ PRIORIDADES = [
     "Modalidad de barrido (2026-10-23): diseñar barridos propios de millones de escenarios con el conductor genérico (edgelab/research/grilla_generica.py; guía §6) sobre indicadores PASS de config/autopilot/indicadores.json o indicadores propios causales; filtrar con tamiz + Romano-Wolf + réplica; antes de un P&L básico de una variante buena, indagarla con marginales (ATJ-26). Lo que no cubre millones de variantes con poco costo no es prioridad. Un experimento propio se lanza escribiendo su campaña en config/autopilot/grillas/campanas/ con embudo=true: el embudo automático (guía §8) lo lleva solo hasta la decisión del holdout, en cualquier activo (señal y ejecución pueden ser distintos).",
     "Fricción primero: elegir escenarios (instrumento, horario, régimen, horizonte) donde el movimiento esperado sea al menos 3 veces la fricción por viaje; no proponer análisis donde la fricción probablemente gana.",
     "Grilla masiva (AREAS-EXP-1, 2026-10-22): para explorar miles o millones de variantes de una idea, perillas ordinales + tensor de sumas acumuladas + tamiz FDR + E2 por sesiones + réplica congelada (docs/research/GUIA_GRILLA_MASIVA.md). Las variantes se cambian sin código con la variable GRILLA; un experimento nuevo trae controles de ruido y plantado.",
+    "Régimen (Nico 2026-11-07): la unidad de evidencia es el DÍA; un régimen corto con muchas operaciones y días estables tiene potencia. Toda regla de régimen se prueba en el motor offline de cubos (edgelab/research/regimen_offline.py) en walk-forward contra azar, calidad estática (que le ganó a la racha en H-REG-1) y nulo de signo por sesión; todo filtro común se juzga también en bruto (marginales_globales_bruto: si sólo mejora en neto es fricción). Leer corridas anteriores inspira; confirmar exige datos nuevos. Guía: docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md.",
     "Fills pasivos sólo por replay tick a tick con máquina de estados causal (espera acotada, cancelación si el precio escapa, excursiones medidas después del fill, stop primero): el modelo 'tocó el precio en la ventana' infló ~0,6 ticks/op en ES (k32). Una partición es réplica sólo si el registro de la familia la declara sin usar. Un gate diseñado después de ver la pérdida es una prueba nueva.",
 ]
 LENTES = {
@@ -39,6 +41,7 @@ LENTES = {
     "ingenieria_inversa": "Tomá un resultado ya medido (ganadoras vs. perdedoras, o eventos que el detector descartó) y preguntá qué estado previo lo habría anticipado. Lo que encuentres es una HIPÓTESIS nueva: debe probarse en una muestra que no participó del hallazgo, nunca en la misma.",
     "hueco_gramatica": "Tomá UNA de las cartas_gramatica (coordenadas lejos de lo ya medido, elegidas sin mirar resultados) y convertila en familia: mecanismo económico, espacio de eventos enumerado, régimen declarado ex ante y perillas del barrido. Si ninguna tiene un mecanismo plausible, decilo y proponé la variante más cercana que sí lo tenga.",
     "regimen_declarado": "Tomá una lectura viva o una carta y proponé su versión condicionada a un régimen detectable en tiempo real (edgelab/research/agente/regimen.py como perilla, o regimen.definicion/actual_desde en la campaña), escrito ANTES de mirar el OOS: qué régimen, por qué el mecanismo depende de él y qué resultado lo refuta.",
+    "regimen_cubos": "Tomá las corridas ya medidas (RESULTADO*.md, MEDIDO.md, cubos en data/cubos) y proponé UNA definición de régimen nueva (ventana, días mínimos, estabilidad entre días) para probar en el motor offline contra azar, calidad estática y nulo de signo; escribí antes qué resultado la refuta y qué familia nueva alimentaría la rotación.",
     "meta_etiquetado": "Sobre una señal primaria viva, proponé un filtro secundario (meta-labeling) entrenado sólo con predicciones fuera de pliegue, con su partición de evaluación declarada antes y su conteo de pruebas.",
 }
 
@@ -55,7 +58,7 @@ def elegir_lente(historial: list) -> str:
 def directivas(root=None) -> str:
     """Directivas vigentes de Nico (config/autopilot/DIRECTIVAS.md, 2026-10-27): van en cada paquete y nunca se recortan."""
     f = Path(root or Path(__file__).resolve().parents[2]) / "config/autopilot/DIRECTIVAS.md"
-    return f.read_text(encoding="utf-8")[:4000] if f.exists() else ""
+    return f.read_text(encoding="utf-8")[:8000] if f.exists() else ""          # 2026-11-07: 4000 cortaba la directiva 9
 
 
 def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000, cartas=None) -> dict:

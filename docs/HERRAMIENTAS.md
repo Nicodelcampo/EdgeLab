@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-574 scripts.
+580 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -150,6 +150,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/campaign_ticks_multi.py` | Campaña multi-instrumento sobre ticks (5 familias x 4 variantes x 5 instrumentos = 100 pruebas). |
 | `tools/campaign_ticks_multi_rerun.py` | Re-corrida CORREGIDA de F3/F4 de la campaña multi-instrumento (bug de apertura RTH, 2026-09-23). |
 | `tools/canasta.py` | Canasta de estrategias de régimen (edgelab/funnel/canasta.py): estado, altas desde el embudo, operaciones forward y retiros. |
+| `tools/canasta_estatica_ledger.py` | Libro de la canasta estática PREAPERTURA-ES, PREAPERTURA-NQ, DRC-YM-4. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
 | `tools/censo_es_nq.py` | CENSO DE INTEGRIDAD para `es_full_ticks` y `nq_ticks_clean`. |
@@ -230,6 +231,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_curva.py` | Diagnóstico de la curva de ESPEJO-MACRO al 75 % (2026-09-27, pedido de Nico: «¿la curva parece pareja?»). |
 | `tools/espejo_gc_p1p2.py` | Candidato GC (reversión tras el espejo) — controles P1 y P2 pedidos por el auditor (062/063), OK de Nico 29/09. |
 | `tools/espejo_macro.py` | ESPEJO-MACRO: el espejo de impulsos grandes en velas de tiempo (5 y 15 min), SPY descubre y ES replica. |
+| `tools/espejo_macro_10t_nq.py` | Candidatos a espejo en velas de 10 ticks de NQ, para clasificar a ojo. |
 | `tools/espejo_mas_alla.py` | ESPEJO-MÁS-ALLÁ, Fase 0 (manifiesto `docs/research/MANIFIESTO_ESPEJO_MAS_ALLA_BORRADOR_20260927.md`). |
 | `tools/espejo_nico_descubrimiento.py` | ESPEJO-NICO-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_SEMEJANZA_NICO_100T_20260928.md |
 | `tools/espejo_null_control.py` | Control empírico del nulo de CONT/REV (pedido de Nico 28/09, Kaggle). |
@@ -288,6 +290,8 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/holdout_exploratorio.py` | Mirada EXPLORATORIA al holdout de una campaña del embudo (decisión de Nico, 2026-10-26: «mirar igual, sabiendo el costo»). |
 | `tools/holdout_individual.py` | Evaluación de las aperturas INDIVIDUALES del holdout (canasta_7_20261030/ACTA_APERTURAS_INDIVIDUALES_20261102.md): cada nominada |
 | `tools/holdout_vs_desarrollo.py` | ¿El holdout difiere del resto de los períodos con el código causal? Por regla (12 nominadas + U1-CRUZADO): media neta del holdout |
+| `tools/hreg1_walkforward.py` | Walk-forward H-REG-1 congelado en PREREGISTRO_HREG1_WALKFORWARD_20261107.md. |
+| `tools/hreg2_amplitud.py` | H-REG-2: el tercil del rango de la sesión previa, observable antes de operar. |
 | `tools/ib_vwap_pmh_pml_nq_20260929.py` | Fixed NQ IB/VWAP and PMH/PML development backtest. |
 | `tools/ib_vwap_pmh_pml_nq_raw_audit_20260929.py` | Independent trade execution check directly against raw Parquet ticks. |
 | `tools/ingest_cycle001_lessons.py` | Build the CYCLE-001 genesis ledger for the durable Experimental Hippocampus. |
@@ -442,6 +446,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/query_remote_kaggle.py` | (sin docstring) |
 | `tools/r2_recorrido_vs_friccion.py` | R2: recorrido bruto disponible vs friccion de viaje redondo. Manifiesto: docs/research/R2_RECORRIDO_VS_FRICCION_MANIFIESTO_20261014.md |
 | `tools/r3_direccion.py` | R3: direccion a 15-60 min (familias A: persistencia de retorno, B: presion de flujo agresor). Manifiesto APROBADO y congelado: |
+| `tools/rango_sesion_preholdout.py` | Rango de sesión (max − min) por trade_date, un contrato por día. |
 | `tools/rank_hft_corridor_configs.py` | Evaluate target-free visual ranking of HFT corridor configurations. |
 | `tools/razon_de_varianzas.py` | RAZÓN DE VARIANZAS (Lo–MacKinlay 1988) — ¿hay algo que ganarle a la tabla nula? |
 | `tools/rebuild_hft_bundles_scaled.py` | Regenera los bundles 25t + HFT de los activos no-NQ con el perfil escalado (SCALED_FUNNEL_V1). |
@@ -453,6 +458,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/recut_holdout.py` | Re-corte fisico del holdout sobre los parquets que lo contienen (P-18). |
 | `tools/refresh_decisions.py` | Recalcula las decisiones por sesión de una release YA escrita (p. ej. tras corregir el calendario derivado) SIN reescribir |
 | `tools/regimen_escala_m1.py` | Etapa 0 en escala mayor (decisión de Nico, 2026-10-06): ¿persiste la tendencia (eficiencia) o la dirección en barras |
+| `tools/regimen_estructural_diagnostico.py` | Diagnóstico estructural de regímenes cortos (1M–2M) sin lookahead frente a Nulo A (signo por sesión) y Nulo B (permutación temporal con fricción real). |
 | `tools/regimen_etapa0.py` | Etapa 0 de VTD-DIR: validación target-free del detector de régimen (edgelab/regimes/state.py). |
 | `tools/regimes_6e_stage1.py` | Familia 6E-REGIMES, etapa 1 target-free (protocolo: docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md). |
 | `tools/registrar_campanias_20261020.py` | Registro retroactivo en el contador GLOBAL de las campanias con desenlaces corridas entre 2026-10-20 y 2026-10-22 |

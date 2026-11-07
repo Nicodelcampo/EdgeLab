@@ -28,3 +28,9 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    plan (`PLAN_ACTUAL.json`) manda sobre el resto de tu trabajo; lo P0 se resuelve en el día (reemplazar retiros, cubrir huecos de
    régimen con familias chicas pre-registradas), lo P1 en 24 h (dar de alta en PAPEL lo que tiene réplica a favor, destrabar). Todo lo
    que entra a la cartera entra pre-registrado; habilitar cuentas reales y cambiar `alfa_real`/`dd_max_r` es humano.
+
+9. **Régimen y aprendizaje de corridas (Nico 2026-11-07).** Trabajá siempre sobre el estado actual del repo (`foundation`). Las
+   estrategias por régimen son prioridad: pocos meses pero muchas operaciones y días estables. Probalas con el motor offline de cubos
+   (`tools/cubos_regimen.py`, walk-forward contra azar, calidad estática y nulo de signo) y generá el cubo de cada campaña nueva. Leé las
+   corridas anteriores para inspirarte; lo que salga de mirarlas se confirma con datos nuevos. Guía:
+   `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md`.
