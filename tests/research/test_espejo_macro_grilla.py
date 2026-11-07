@@ -44,3 +44,9 @@ def test_niveles_hacia_a_con_stop_mas_alla_de_b():
     k, lim, s, e, st, tp, be, kl, dl = X.niveles(r, ("B1", "A"), ctx)
     assert (s, st, tp, lim) == (-1, 20120.25, 20000.0, 2)
     assert X.niveles(r, ("B10", "M75"), ctx)[4:6] == (20132.0, 20030.0)
+
+
+def test_friccion_fija_coincide_con_costos():
+    from edgelab import costos
+    for inst, v in X.FRICCION_SEVERA_TICKS.items():
+        assert abs(costos.friccion_rt_ticks(inst, "severo") - v) < 1e-3, inst

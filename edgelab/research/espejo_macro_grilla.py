@@ -149,11 +149,18 @@ def _detectar(C, ses, retro, f, min_w, min_ida, min_vuelta, max_ida):
     return out
 
 
+# Fricción ida y vuelta, escenario severo, en ticks (copia de `edgelab/costos.friccion_rt_ticks(inst, "severo")` al 2026-11-07). Va fija
+# en el módulo porque el kernel de Kaggle no lleva config/costos/ (el 07/11 las 4 campañas fallaron por eso). Sólo define el ANCHO
+# MÍNIMO del detector (una variable target-free), no el P&L: los costos del P&L siguen saliendo de la tabla canónica en el lanzador.
+# tests/research/test_espejo_macro_grilla.py::test_friccion_fija_coincide_con_costos verifica que no se desactualice.
+FRICCION_SEVERA_TICKS = {"NQ": 10.182, "ES": 7.5508, "YM": 9.052, "GC": 10.05}
+
+
 def _friccion_ticks(ctx) -> float:
-    from edgelab import costos
-    inst = str(ctx.get("ejecucion_inst") or ctx.get("sensor") or "NQ").replace("DK:", "")
-    try: return float(costos.friccion_rt_ticks(inst, "severo"))
-    except Exception: return float(costos.friccion_rt_ticks("NQ", "severo"))
+    from edgelab.research.fuentes_ticks import DUKASCOPY
+    inst = str(ctx.get("sensor") or "NQ")
+    if inst.startswith("DK:"): inst = next((k for k, v in DUKASCOPY.items() if v == inst[3:] and not k.startswith("M")), "NQ")
+    return float(FRICCION_SEVERA_TICKS.get(inst.upper(), FRICCION_SEVERA_TICKS["NQ"]))
 
 
 VACIO = ["k", "ses", "lado", "fi", "retro_ida", "retro_vuelta", "viajes", "dur_ida", "ritmo", "rth", "A", "B", "W"]
