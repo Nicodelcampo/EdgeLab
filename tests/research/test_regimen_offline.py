@@ -28,3 +28,12 @@ def test_walk_forward_encuentra_la_celda_plantada_y_el_nulo_no():
     assert r["n_ventanas"] >= 8 and r["delta_azar"] > 0.2
     nul = RO.nulo_signo(D, B=10, seed=4, W=3, k=1, min_ops=20, min_dias=10)
     assert nul["p_nulo"] <= 0.2
+
+
+def test_etapa_cubo_de_punta_a_punta(monkeypatch):
+    from edgelab.research import cvgap2 as X, etapas as ET, grilla_generica as GG, sintetico
+    ctx = GG.contexto_m1(sintetico.bloques(dias=30, planta=False, seed=19), tick=0.25)
+    D = X.disparos(ctx); cortes = GG.cortes_e0(D, X.VARIABLES)
+    r = ET.ejecutar("CUBO", X, ctx, friccion=1.0, extra_adverso=0.0, cx_ej=None, params=dict(cortes=cortes, estadistico="R"), log=lambda *a: None)
+    c = RO.decodificar(r["cubo"], "cvgap2"); d = RO.series_diarias(c, min_ops=5)
+    assert c.idx.shape[1] == len(X.VARIABLES) + 1 and len(c.net) == r["cubo"]["n"] > 0 and d.S.shape[1] > 0

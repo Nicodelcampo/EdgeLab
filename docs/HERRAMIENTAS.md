@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-573 scripts.
+574 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -177,6 +177,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/corridor_pass2/dev_filters_analysis.py` | Adenda D — analisis local de la tabla de eventos de desarrollo (ES, 299 sesiones). |
 | `tools/corridor_pass2/edgelab_es_corridor_pass2_falsification_v4_sym.py` | EDGELAB — PASADA 2: BATERÍA COMPLETA ANTI-OVERFIT Y FALSACIÓN DE FALSOS EDGES |
 | `tools/corridor_pass2/ema_corridor_trend.py` | EmaCorridorTrend v4.0 — Detector de Zonas y Corredores Tendenciales Estables sobre EMA. |
+| `tools/cubos_regimen.py` | Cubos de operaciones para buscar regímenes offline (`edgelab/research/regimen_offline.py`). |
 | `tools/daily_data_health.py` | Chequeo diario de datos (R0: captura continua). Detecta que la captura se haya cortado y que el respaldo de L2 este al dia. |
 | `tools/data_catalog_build.py` | Construye el catálogo legible (docs/data_catalog) desde el inventario crudo. |
 | `tools/data_curate.py` | Selección de datos APROBADOS para análisis: aplica reglas fijas, por sesión, al catálogo y escribe docs/data_catalog/{curated.json,CURATED.md,REEXPORT.md}. |
