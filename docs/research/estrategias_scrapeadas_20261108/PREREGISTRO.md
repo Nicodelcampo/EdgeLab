@@ -38,3 +38,9 @@ Sin nominadas con MDE < 0,1 R; nominadas sólo en CFD y negativas en futuros; me
 ## 6. Multiplicidad y linaje
 Registro global `estrategias_scrapeadas/<familia>/desc`. Linajes: ORO_RANGO, MARTES_DEBIL, EMA_VWAP, ORB_EMA20 ← sin padre medido
 (ORB_EMA20 ← ORB_NQ, refutada hoy, n heredado bruto).
+
+## Enmienda ORB_EMA20 (2026-11-08, antes de ver ningún resultado de esta familia)
+Revisión del código pedida por Nico: (1) la EMA20 de 2 min se sembraba a las 09:30 del día, así que a las 10:10 tenía 20 velas de
+historia y no era la EMA del gráfico; ahora es continua sobre todo el feed. (2) En la vela de entrada se contaba el objetivo aunque el
+máximo pudo ocurrir antes del toque (optimista); ahora en esa vela sólo cuenta el stop. La versión 1 falló y la 2 (con el código
+viejo) se descarta sin mirar; vale la versión 3. Mismas 24 pruebas, sin cambios de grilla.

@@ -34,3 +34,8 @@ def test_memoria_ideas_rota_y_entra_en_el_paquete():
     assert "kemet" in a["indice"] and a["reel"]["archivo"] != b["reel"]["archivo"]
     p = contexto.armar_paquete(tablero={}, vacios=[], fichas=[], retiradas=[], lente=next(iter(contexto.LENTES)), memoria=a)
     assert p["memoria_ideas"]["indice"] and "12. **Memoria de ideas" in p["directivas_de_nico"]
+
+
+def test_orb_ema20_vela_de_entrada_solo_stop():
+    ctx = _ctx(30, 3); R = X.orb_ema20(ctx)
+    assert len(R) and (R[R.motivo == 2].bruto > 0).all() and (R[R.motivo == 1].bruto < 0).all()

@@ -136,7 +136,14 @@ def ema_vwap(ctx) -> pd.DataFrame:
 
 
 def orb_ema20(ctx) -> pd.DataFrame:
+    """Corregida 2026-11-08 (antes de mirar resultados): EMA20 continua sobre todas las velas de 2 min del feed (no sembrada a las
+    09:30, que con 20 velas de historia no es la EMA del gráfico) y, en la vela de entrada, sólo cuenta el stop (el máximo de esa vela
+    pudo ocurrir antes del toque: contar el objetivo ahí era optimista)."""
     o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; m, f, _ = _hora(ctx, "America/New_York"); filas = []
+    tmin = (np.asarray(ctx["t"]) - 60) // 60                                          # minuto de inicio; 09:30 ET cae en minuto par
+    O2, H2, L2, C2, _, fin2 = _agregar(o, h, l, c, np.ones(len(c)), tmin // 2)
+    em_prev = np.r_[np.nan, _ema(C2, 20)[:-1]]                                       # EMA20 conocida al abrir cada vela de 2 min
+    vela2 = np.repeat(np.arange(len(fin2)), np.diff(np.r_[-1, fin2]))                # vela de 2 min de cada M1
     for dia in np.unique(f):
         ix = np.flatnonzero(f == dia); mm = m[ix]
         orr = ix[(mm >= 570) & (mm < 600)]; post = ix[(mm >= 600) & (mm < 960)]
@@ -151,20 +158,19 @@ def orb_ema20(ctx) -> pd.DataFrame:
         if not d: continue
         rest = ix[(ix > k10) & (mm < 960)]
         if len(rest) < 2: continue
-        g2 = (m[rest] - 570) // 2
-        O2, H2, L2, C2, _, fin2 = _agregar(o[rest], h[rest], l[rest], c[rest], np.ones(len(rest)), g2)
-        pre = ix[(ix <= k10) & (mm >= 570)]
-        _, _, _, Cp, _, _ = _agregar(o[pre], h[pre], l[pre], c[pre], np.ones(len(pre)), (m[pre] - 570) // 2)
-        em = _ema(np.r_[Cp, C2], 20)[len(Cp) - 1:-1]                                   # EMA20 conocida al abrir cada vela de 2 min
-        hora2 = m[rest][fin2]
-        j = next((q for q in range(len(C2)) if hora2[q] < 900 and ((L2[q] <= em[q]) if d == 1 else (H2[q] >= em[q]))), None)
+        v = np.unique(vela2[rest]); v = v[fin2[v] <= rest[-1]]
+        hora = m[fin2[v]]
+        j = next((q for q in v if m[fin2[q]] < 900 and np.isfinite(em_prev[q]) and ((L2[q] <= em_prev[q]) if d == 1 else (H2[q] >= em_prev[q]))), None)
         if j is None: continue
-        ent = min(O2[j], em[j]) if d == 1 else max(O2[j], em[j])
+        ent = min(O2[j], em_prev[j]) if d == 1 else max(O2[j], em_prev[j]); ult = int(v[-1])
         for celda in ORB_CELDAS:
             s, rr = celda
             sl = d * (ent - (lo if d == 1 else hi)) if s == "opuesto" else d * (ent - (lo + w / 2))
             if not sl > 0: continue
-            b, mot = _sim_velas(O2, H2, L2, C2, j, ent, d, sl, rr * sl, None, len(C2) - 1)
+            st = ent - d * sl
+            if (L2[j] <= st) if d == 1 else (H2[j] >= st): b, mot = -sl, 1
+            elif j == ult: b, mot = d * (C2[j] - ent), 3
+            else: b, mot = _sim_velas(O2, H2, L2, C2, j + 1, ent, d, sl, rr * sl, None, ult)
             filas.append(dict(fecha=int(dia), celda=celda, lado=d, riesgo=float(sl), bruto=float(b), motivo=mot))
     return pd.DataFrame(filas)
 
