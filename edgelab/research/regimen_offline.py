@@ -228,21 +228,33 @@ def _puntaje_agr(s, sq, nd, npos, ops, min_ops, min_dias, min_pos):
 
 
 def buscar_streaming(fuentes, variantes=None, k=3, B=50, seed=0, min_ops_serie=30, B_azar_obs=200, B_azar_nulo=50, max_eleg=256,
-                     detalle=False):
+                     detalle=False, punto_control=None, log=None):
     """`nulo_signo_multi` en flujo: un cubo por vez y un mes por vez, con el observado y las B réplicas del nulo juntos. `fuentes`:
     lista de (nombre, función que devuelve el Cubo). Elegida y estática son idénticas a `walk_forward` (mismo puntaje y mismos
     signos: la misma semilla que `nulo_signo_multi`); el azar sortea dentro de una muestra uniforme de hasta `max_eleg` celdas
     elegibles por cubo (sigue siendo uniforme). Memoria: la de un mes de un cubo."""
     variantes = variantes or VARIANTES; nv = list(variantes)
     sesiones = []
-    for _, f in fuentes: sesiones.append(np.unique(f().ses))
+    for nombre, f in fuentes:
+        pd_ = (punto_control / f"{nombre}_sesiones.npy") if punto_control else None
+        if pd_ is not None and pd_.exists(): sesiones.append(np.load(pd_)); continue
+        x = np.unique(f().ses); sesiones.append(x)
+        if pd_ is not None: punto_control.mkdir(parents=True, exist_ok=True); np.save(pd_, x)
     dias_glob = np.unique(np.concatenate(sesiones)); meses_glob = np.unique(_mes(dias_glob))
     rng = np.random.default_rng(seed + 1)
     G = np.ones((B + 1, len(dias_glob)))
     for b in range(B): G[b + 1] = rng.choice([-1.0, 1.0], size=len(dias_glob))
-    rs = np.random.default_rng(seed + 7)
     reg = {(v, h): dict(cand=[], estat=[], eleg=[]) for v in nv for h in range(len(meses_glob))}   # por cubo, arrays (B+1,)
-    for nombre, f in fuentes:
+    import hashlib, pickle, time as _t, zlib as _z
+    huella = hashlib.sha256(repr((sorted(variantes.items()), k, B, seed, min_ops_serie, max_eleg, len(dias_glob))).encode()).hexdigest()[:12]
+    for nc, (nombre, f) in enumerate(fuentes):
+        pc = (punto_control / f"{nombre}_{huella}.pkl") if punto_control else None
+        if pc is not None and pc.exists():                       # 2026-11-08: un reinicio del contenedor no pierde los cubos hechos
+            for key, R in pickle.loads(pc.read_bytes()).items():
+                for c in ("cand", "estat", "eleg"): reg[key][c] += R[c]
+            continue
+        t0 = _t.time(); rs = np.random.default_rng([seed + 7, _z.crc32(nombre.encode())])   # independiente del orden de los cubos
+        propio = {key: dict(cand=[], estat=[], eleg=[]) for key in reg}
         cubo = f(); ventana = []; acum = None
         for m, s, sq, nd, npos, ops in _cubo_mensual(cubo, min_ops_serie, G, dias_glob):
             h = int(np.searchsorted(meses_glob, m))
@@ -261,7 +273,7 @@ def buscar_streaming(fuentes, variantes=None, k=3, B=50, seed=0, min_ops_serie=3
                     sc = np.where(okm, sc, np.nan)
                 st = (_puntaje_agr(acum[0], acum[1], acum[2], acum[3], acum[4], p["min_ops"], p["min_dias"], p.get("min_pos", 0.0))
                       if acum is not None else np.full_like(sc, np.nan))
-                R = reg[(v, h)]
+                R = propio[(v, h)]
                 for b in range(B + 1):
                     fila = sc[b]
                     if not np.isfinite(fila).any(): R["cand"].append(None); R["estat"].append(None); R["eleg"].append(None); continue
@@ -274,6 +286,10 @@ def buscar_streaming(fuentes, variantes=None, k=3, B=50, seed=0, min_ops_serie=3
             ventana = (ventana + [(m, s, sq, nd, npos, ops)])[-3:]
             acum = (s, sq, nd, npos, ops) if acum is None else tuple(a + x for a, x in zip(acum, (s, sq, nd, npos, ops)))
         del cubo
+        for key, R in propio.items():
+            for c in ("cand", "estat", "eleg"): reg[key][c] += R[c]
+        if pc is not None: pc.write_bytes(pickle.dumps(propio))
+        if log: log(f"cubo {nc + 1}/{len(fuentes)} {nombre} {_t.time() - t0:.0f}s")
     obs, maxi = {}, []
     filas_b = {v: {b: [] for b in range(B + 1)} for v in nv}
     for (v, h), R in sorted(reg.items(), key=lambda x: x[0][1]):

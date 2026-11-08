@@ -32,3 +32,13 @@ def test_streaming_igual_a_walk_forward():
                     x,y=a[m][key],s[m][key]; ncomp+=1
                     if not ((np.isnan(x) and np.isnan(y)) or abs(x-y)<1e-5): nmal+=1
     assert ncomp > 100 and nmal == 0
+
+
+def test_punto_de_control_retoma_igual(tmp_path):
+    cubos = [_cubo(s) for s in range(4)]; F = [(c.nombre, (lambda c=c: c)) for c in cubos]
+    V = {"D": dict(W=2, min_ops=20, min_dias=10, min_pos=0.0)}
+    a = RO.buscar_streaming(F, V, k=3, B=2, seed=1, punto_control=tmp_path)            # escribe un archivo por cubo
+    assert len(list(tmp_path.glob("*.pkl"))) == 4
+    def explota(): raise AssertionError("no debía recalcular un cubo ya hecho")
+    b = RO.buscar_streaming([(n, explota) if i < 2 else (n, f) for i, (n, f) in enumerate(F)], V, k=3, B=2, seed=1, punto_control=tmp_path)
+    assert a["variantes"]["D"]["ventanas"] == b["variantes"]["D"]["ventanas"]
