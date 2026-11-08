@@ -1,0 +1,138 @@
+<title>El agente del Debian</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+/* Layout: una sola columna de lectura, con un "registro de turno" lateral como pieza propia del tema (un servidor que no duerme). */
+:root{
+  --bg:#f3f5f4; --panel:#ffffff; --fg:#17201e; --muted:#5a6763; --line:#d8dfdc;
+  --accent:#0f6b5c; --accent-soft:#e2efec; --warn:#a1461f; --ok:#2f7a3f;
+  --display:"IBM Plex Serif", Georgia, serif; --body:"IBM Plex Sans", system-ui, sans-serif; --mono:"IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#101615; --panel:#172120; --fg:#e4ebe8; --muted:#9aa8a3; --line:#2a3633;
+  --accent:#5cc2ad; --accent-soft:#1c312d; --warn:#e48a62; --ok:#7cc48a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#101615; --panel:#172120; --fg:#e4ebe8; --muted:#9aa8a3; --line:#2a3633;
+  --accent:#5cc2ad; --accent-soft:#1c312d; --warn:#e48a62; --ok:#7cc48a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:46rem;margin:0 auto;padding-block:48px 72px;display:grid;gap:44px}
+h1,h2{font-family:var(--display);text-wrap:balance;line-height:1.2;margin:0}
+h1{font-size:clamp(2rem,6vw,2.8rem)} h2{font-size:1.45rem}
+p{margin:0;max-width:65ch} section{display:grid;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lead{font-size:1.15rem;color:var(--muted)}
+.log{font-family:var(--mono);font-size:.85rem;background:var(--panel);border:1px solid var(--line);border-radius:6px;
+  padding:14px 16px;overflow-x:auto;white-space:pre;color:var(--muted)}
+.log b{color:var(--fg);font-weight:600} .log .ok{color:var(--ok)} .log .w{color:var(--warn)}
+ol.ciclo{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:c}
+ol.ciclo li{counter-increment:c;display:grid;grid-template-columns:2.2rem 1fr;gap:12px;align-items:baseline}
+ol.ciclo li::before{content:counter(c);font-family:var(--mono);font-weight:600;color:var(--accent);
+  border:1px solid var(--accent);border-radius:50%;width:1.8rem;height:1.8rem;display:grid;place-items:center;font-size:.85rem}
+.dos{display:grid;grid-template-columns:repeat(auto-fit,minmax(16rem,1fr));gap:14px}
+.dos>div{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px;display:grid;gap:8px;min-width:0}
+.dos h3{margin:0;font-size:1rem}
+ul{margin:0;padding-left:1.2rem;display:grid;gap:6px} li{max-width:65ch}
+.cifra{font-family:var(--mono);font-variant-numeric:tabular-nums;color:var(--accent);font-weight:600}
+.nota{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px 14px;border-radius:0 6px 6px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem} .tabla{overflow-x:auto}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.75rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+code{font-family:var(--mono);font-size:.88em;background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:16px}
+</style>
+
+<main>
+  <header style="display:grid;gap:14px">
+    <span class="eyebrow">EdgeLab · para Gonza</span>
+    <h1>El agente que no se duerme</h1>
+    <p class="lead">Por qué EdgeLab necesita un proceso corriendo todo el tiempo en tu Debian, qué hace ahí y qué no hace.</p>
+  </header>
+
+  <section>
+    <h2>Qué es EdgeLab, en tres líneas</h2>
+    <p>EdgeLab busca estrategias de trading en futuros (NQ, ES, YM, GC y otros) que sigan siendo rentables después de comisiones y deslizamiento. Casi todo lo que se prueba resulta ser ruido, así que el proyecto vive de medir mucho y descartar rápido, con reglas estadísticas fijadas antes de mirar los resultados.</p>
+    <p>El cálculo pesado corre gratis en Kaggle. Lo que falta es alguien que lance, espere, recoja y encadene esas corridas sin parar. Ese es el agente.</p>
+  </section>
+
+  <section>
+    <h2>Qué hace el agente, cada 10 minutos</h2>
+    <ol class="ciclo">
+      <li><span><b>Se pone al día con el repositorio</b>, para trabajar siempre sobre la última versión del código y de las decisiones.</span></li>
+      <li><span><b>Avanza el embudo de investigación.</b> Cada estrategia pasa por etapas (descubrimiento, réplica, auditoría, holdout). El agente revisa qué terminó en Kaggle, baja el resultado y lanza la etapa siguiente, repartiendo hasta 8 corridas entre 2 cuentas.</span></li>
+      <li><span><b>Relanza lo que Kaggle pierde.</b> Kaggle a veces acepta una corrida y nunca la ejecuta. Sin alguien mirando, esa estrategia queda trabada para siempre.</span></li>
+      <li><span><b>Audita.</b> Corre chequeos automáticos de coherencia (holdout intacto, costos canónicos, conteo de pruebas) y abre un pedido de arreglo si algo no cierra.</span></li>
+      <li><span><b>Propone y revisa con modelos de Claude</b>, por roles: uno propone, otro revisa de forma independiente, otro audita cada corrida. El código decide; los modelos no pueden saltarse las reglas.</span></li>
+    </ol>
+    <div class="log"><b>08/11, sesión en la nube</b> (lo que pasa sin el Debian)
+<span class="w">04:10</span>  búsqueda de régimen cortada en el cubo 22 de 106: el contenedor se durmió
+<span class="w">06:04</span>  relanzada; cortada otra vez al quedar inactiva
+<span class="w">··</span>    casi 90 trabajos aceptados por Kaggle que nunca corrieron, relanzados a mano
+<span class="ok">07:49</span>  movida a Kaggle para que terminara: resultado recién a las 12:52</div>
+  </section>
+
+  <section>
+    <h2>Por qué en el Debian y no en la nube</h2>
+    <div class="dos">
+      <div>
+        <h3>Una sesión en la nube</h3>
+        <ul>
+          <li>Se apaga cuando nadie la está mirando y se lleva los procesos largos.</li>
+          <li>Cada chequeo gasta créditos de la conversación.</li>
+          <li>Depende de que Nico esté conectado para avanzar.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>El Debian</h3>
+        <ul>
+          <li>Está prendido las 24 horas: las etapas se encadenan de noche y el fin de semana.</li>
+          <li>El ciclo numérico no gasta nada: es Python determinista.</li>
+          <li>Guarda el estado del embudo y lo sube al repositorio, así cualquiera puede ver en qué va cada estrategia.</li>
+        </ul>
+      </div>
+    </div>
+    <p class="nota">Una idea pasa por cinco o seis etapas, y cada una tarda de 20 minutos a varias horas en Kaggle. Sin un proceso que las encadene solo, una sola idea puede demorar días por puro tiempo muerto.</p>
+  </section>
+
+  <section>
+    <h2>Qué consume de tu lado</h2>
+    <ul>
+      <li><b>La máquina:</b> poco. El agente orquesta; el cálculo pesado lo hace Kaggle. Necesita estar prendida, con red y con algo de disco para cachés.</li>
+      <li><b>El cupo de Claude:</b> los modelos usan la suscripción (nunca una API key) y comparten el cupo con tu uso propio. Todo arranca apagado y se enciende por etapas desde <code>/etc/edgelab/autopilot.json</code>:</li>
+    </ul>
+    <div class="tabla"><table>
+      <thead><tr><th>Etapa</th><th>Qué se enciende</th><th>Llamadas por día (estimación)</th></tr></thead>
+      <tbody>
+        <tr><td class="cifra">0–1</td><td>Ciclo numérico, sin modelos</td><td class="cifra">0</td></tr>
+        <tr><td class="cifra">2</td><td>Auditor (Sonnet) y cronista (Haiku)</td><td>~2–10 Sonnet, ~10–40 Haiku</td></tr>
+        <tr><td class="cifra">3</td><td>Más el proponente (Opus)</td><td>+1–2 Opus</td></tr>
+        <tr><td class="cifra">4</td><td>Más la promoción automática con dos revisores</td><td>+2–8 Opus, +1–5 Sonnet</td></tr>
+      </tbody>
+    </table></div>
+    <p>Son estimaciones, no mediciones. El consumo real queda registrado llamada por llamada en <code>llm_calls.sqlite</code>. Si se llega al límite, el agente espera al reinicio del cupo y la parte numérica sigue andando.</p>
+  </section>
+
+  <section>
+    <h2>Qué no hace</h2>
+    <ul>
+      <li><b>No opera dinero real.</b> Eso es una decisión exclusivamente humana.</li>
+      <li><b>No toca el holdout</b> (los datos desde el 1 de octubre de 2026, reservados para confirmar) fuera del protocolo: una sola apertura por familia, registrada antes de lanzar.</li>
+      <li><b>No cambia las reglas del juego.</b> Los criterios estadísticos y los archivos protegidos solo los cambia una persona.</li>
+      <li><b>Se puede frenar en cualquier momento</b> con el interruptor de pausa desde la consola. La sala de chat no puede levantar una pausa puesta desde ahí.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Qué necesitamos de vos</h2>
+    <ul>
+      <li>Que el equipo quede prendido y conectado.</li>
+      <li>Instalar o actualizar el agente al commit revisado, siguiendo <code>deploy/debian/LEEME.md</code>.</li>
+      <li>Activar el vigilante, que revisa cada 30 minutos y avisa si algo se cae: <code>sudo systemctl enable --now edgelab-watchdog.timer</code>.</li>
+      <li>Opcional: avisos al celular con ntfy, agregando <code>EDGELAB_ALERT_URL</code> en <code>/etc/edgelab/autopilot.env</code>.</li>
+      <li>Decidir con Nico qué cuenta de Claude usan los modelos, mirando el consumo real de la primera semana.</li>
+    </ul>
+  </section>
+
+  <footer>Preparado el 08/11/2026 a partir del estado del repositorio EdgeLab (rama de trabajo, arquitectura en <code>docs/autopilot/ARQUITECTURA_MULTIAGENTE.md</code> y el mensaje del 19/10 en <code>docs/autopilot/MENSAJE_DUENO_DEBIAN_20261019.md</code>).</footer>
+</main>
