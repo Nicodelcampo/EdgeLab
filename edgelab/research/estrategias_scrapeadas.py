@@ -150,6 +150,7 @@ def orb_ema20(ctx) -> pd.DataFrame:
             if c[u] < lo: d, k10 = -1, u; break
         if not d: continue
         rest = ix[(ix > k10) & (mm < 960)]
+        if len(rest) < 2: continue
         g2 = (m[rest] - 570) // 2
         O2, H2, L2, C2, _, fin2 = _agregar(o[rest], h[rest], l[rest], c[rest], np.ones(len(rest)), g2)
         pre = ix[(ix <= k10) & (mm >= 570)]

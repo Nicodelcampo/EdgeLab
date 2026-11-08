@@ -48,3 +48,6 @@ Un efecto sólo en 2023–2024 que desaparece en «reciente» tampoco sirve.
 ## 8. Multiplicidad, linaje, riesgos
 - Registro global `gap_continuacion/desc`, 240 pruebas, antes de correr. Linaje `GAP_CONTINUACION` ← `GAP_RTH` (480).
 - Riesgos: el CFD no es el futuro; la condición «no tocado» usa velas M1 (un toque intra-vela cuenta); feriados y medias jornadas se pierden.
+
+## Resultado (2026-11-08)
+0 nominadas de 208 evaluables; media −0,149 R en total, MDE 0,13: refutada. Ver `../estrategias_scrapeadas_20261108/RESULTADO_DESC.md`.

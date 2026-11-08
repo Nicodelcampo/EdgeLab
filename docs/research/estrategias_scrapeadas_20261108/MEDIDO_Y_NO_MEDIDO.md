@@ -1,0 +1,11 @@
+# ESTRATEGIAS DE REELS — MEDIDO / NO MEDIDO
+
+Estado: VIGENTE (registro vivo).
+
+## MEDIDO
+- 2026-11-08 DESC: GAP_CONTINUACION refutada; EMA_VWAP refutada; ORO_RANGO sin efecto; MARTES_DEBIL no evaluable (`RESULTADO_DESC.md`).
+
+## NO MEDIDO
+- ORB_EMA20 (kernel relanzado 2026-11-08 tras fallo). USDJPY (6J sin spread medido). Bias Tracker / Gao (DavidTrades).
+- Gap continuación con entrada a las 09:30 (sin condición de tiempo); relleno tardío después de las 10:30.
+- EMA_VWAP con volumen real de futuros (el CFD sólo tiene volumen de ticks); oro con salida a 1 rango de objetivo.
