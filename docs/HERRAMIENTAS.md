@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-605 scripts.
+606 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -279,6 +279,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/gex1_run.py` | GEX-1 (manifiesto docs/research/GEX1_REGISTRO_Y_MANIFIESTO_20261006.md, OK de Nico 2026-10-06). Sólo información. |
 | `tools/gex1_run_kaggle.py` | GEX-1 (manifiesto docs/research/GEX1_REGISTRO_Y_MANIFIESTO_20261006.md, OK de Nico 2026-10-06). Sólo información. |
 | `tools/gex1b_run.py` | GEX-1b (docs/research/GEX1B_PREREGISTRO_20261005.md): extensión por potencia de GEX-1. Sólo información. |
+| `tools/gex_u1.py` | GEX-U1 (pre-registro docs/research/gex_u1_20261108/PREREGISTRO.md): R de la canasta U1 de CANASTA-GLOBAL por tercil del GEX del día |
 | `tools/ghost_cov_scan.py` | (sin docstring) |
 | `tools/ghost_holdout_cesta.py` | Enmienda 5 (antes de HOLDOUT-A4; hoy jul-sep es desarrollo): cesta 1 MES + 1 RTY + 1 YM, holdout (sesiones >= 2026-07-01). Una sola apertura. |
 | `tools/ghost_holdout_cesta_es_nq.py` | Enmienda 6: cesta 1 ES + 1 NQ, sesiones completas del catálogo (2026-07-01 a 2026-09-25). Una sola apertura. |
