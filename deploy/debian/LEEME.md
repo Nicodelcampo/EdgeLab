@@ -86,6 +86,6 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
   holdout de una familia sin candidato confirmado si declara antes la probabilidad de azar de desarrollo y la combinación (Fisher o
   Stouffer). Una apertura por familia, sólo holdout, nunca para elegir.
 - Topes diarios por rol más altos (`edgelab/autopilot/roles.py`: Opus 24 + 40 + 20, Sonnet 40 + 60) y en la plantilla
-  `max_per_day: 12`, `max_concurrent: 8`.
+  `max_per_day: null` (sin tope diario: hace las corridas necesarias) y `max_concurrent: 8` (los lugares de Kaggle).
 - **Hay que refrescar el manifiesto de protegidos** después de instalar este commit: el protocolo de apertura y los roles están en él,
   y sin refrescarlo el ciclo se detiene por protegidos alterados.

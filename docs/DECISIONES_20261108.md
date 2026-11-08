@@ -18,4 +18,4 @@ por ejemplo 10 %, una canasta de estrategias con esas características va a ser 
 
 «Que sí lo pueda abrir»: el agente puede abrir el holdout de una familia sin candidato confirmado (modo exploratorio de
 `edgelab/autopilot/holdout_apertura.py`), declarando antes la probabilidad de azar de desarrollo y la combinación. Topes diarios de
-Opus y Sonnet más altos, 12 corridas por día y 8 en paralelo: el agente usa el plan Max.
+Opus y Sonnet más altos, sin tope diario de corridas (hace las necesarias) y 8 en paralelo: el agente usa el plan Max.
