@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
-TOPE_KERNEL_BYTES = 1_000_000                 # Kaggle rechaza fuentes de 1 MB o más (ESPEJO-ZONAS, 07/11: 1.071.481 bytes)
+TOPE_KERNEL_BYTES = 1_048_576                 # Kaggle: «less than 1 megabytes» (rechazó 1.071.481 bytes el 07/11)
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)

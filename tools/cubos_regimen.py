@@ -56,14 +56,18 @@ def traer():
 
 def buscar(W, k, min_ops, min_dias, min_pos, nulo, solo=None, cada_mes_pos=False, min_dias_mes=4, variantes=False):
     from edgelab.research import regimen_offline as RO
-    D = []
+    def _carga(f):
+        return lambda: RO.decodificar(json.loads(f.read_text())["cubo"], f.stem)
+    fuentes = []
     for f in sorted(CACHE.glob("*.json")):
         if solo and f.stem not in solo: continue
         c = (json.loads(f.read_text()) or {}).get("cubo")
-        if c and c.get("n"): D.append(RO.series_diarias(RO.decodificar(c, f.stem), min_ops=30))
+        if c and c.get("n"): fuentes.append((f.stem, _carga(f)))
+    D = [] if variantes else [RO.series_diarias(g(), min_ops=30) for _, g in fuentes]
     kw = dict(W=W, k=k, min_ops=min_ops, min_dias=min_dias, min_pos=min_pos, cada_mes_pos=cada_mes_pos, min_dias_mes=min_dias_mes)
     if variantes:                                                          # todas las definiciones de RO.VARIANTES, corregidas juntas
-        r = RO.nulo_signo_multi(D, k=k, B=nulo or 50)
+        # 2026-11-08: en flujo (un cubo y un mes por vez): los 82 cubos densos ocupaban ~27 GB y mataban el proceso
+        r = RO.buscar_streaming(fuentes, k=k, B=nulo or 50)
         for n, v in r["variantes"].items():
             o = v["observado"]; print(f"{n:20s} ventanas {o['n_ventanas']:2d} · Δ azar {o['delta_azar']:+.3f} (t {o['t_azar']:.2f}) · "
                                       f"Δ estática {o['delta_estatica']:+.3f} (t {o['t_estatica']:.2f}) · p familia {v['p_familia']:.3f}")

@@ -194,3 +194,114 @@ def nulo_signo_multi(diarios, variantes=None, k=3, B=50, seed=0) -> dict:
         p = float((np.sum(maxi >= o["delta_azar"]) + 1) / (len(maxi) + 1)) if len(maxi) and np.isfinite(o["delta_azar"]) else float("nan")
         out[n] = dict(observado={kk: vv for kk, vv in o.items() if kk != "ventanas"}, ventanas=o["ventanas"], p_familia=p)
     return dict(variantes=out, nulo_max_q50_q95=np.quantile(maxi, [.5, .95]).tolist() if len(maxi) else None, B=len(maxi))
+
+
+# ----------------------------------------------------------------------------------------------- versión en flujo (memoria acotada)
+def _cubo_mensual(cubo: Cubo, min_ops: int, G: np.ndarray, dias_glob: np.ndarray):
+    """Recorre el cubo mes a mes sin armar la matriz diaria completa. Para cada mes con operaciones devuelve (mes, suma con signo
+    (B+1, E), suma de cuadrados (E,), días activos (E,), días positivos con signo (B+1, E), operaciones (E,)). G: signos (B+1, días
+    globales); la fila 0 es el observado (todo +1)."""
+    idx = [cubo.idx[:, j] for j in range(cubo.idx.shape[1])]
+    _, _, Ctot = GM.tensor(cubo.perillas, idx, cubo.net); ev = np.flatnonzero(Ctot.ravel() >= min_ops)
+    orden = np.argsort(cubo.ses, kind="stable"); ses_o = cubo.ses[orden]; dias = np.unique(ses_o)
+    cortes = np.searchsorted(ses_o, dias, side="left").tolist() + [len(ses_o)]
+    gcol = np.searchsorted(dias_glob, dias); meses = _mes(dias)
+    for m in np.unique(meses):
+        fd = np.flatnonzero(meses == m); S = np.zeros((len(fd), len(ev)), np.float32); C = np.zeros_like(S)   # float32 como el original
+        for r, d in enumerate(fd):
+            o = orden[cortes[d]:cortes[d + 1]]
+            Sd, _, Cd = GM.tensor(cubo.perillas, [ix[o] for ix in idx], cubo.net[o]); S[r] = Sd.ravel()[ev]; C[r] = Cd.ravel()[ev]
+        g = G[:, gcol[fd]].astype(np.float32); act = C > 0
+        npos = (g > 0).astype(np.float32) @ ((S > 0) & act).astype(np.float32) + (g < 0).astype(np.float32) @ ((S < 0) & act).astype(np.float32)
+        yield int(m), g @ S, (S.astype(np.float64) ** 2).sum(0), act.sum(0).astype(np.float64), npos, C.sum(0).astype(np.float64)
+
+
+def _puntaje_agr(s, sq, nd, npos, ops, min_ops, min_dias, min_pos):
+    """`puntaje` a partir de sumas: s, npos (B+1, E); sq, nd, ops (E,). Mismo t del R diario sobre días activos."""
+    with np.errstate(invalid="ignore", divide="ignore"):
+        mu = np.where(nd > 0, s / nd, np.nan)
+        var = np.where(nd > 1, (sq - nd * mu ** 2) / (nd - 1), np.nan)
+        t = mu / np.sqrt(var / nd)
+        pos = np.where(nd > 0, npos / np.maximum(nd, 1), 0.0)
+    ok = (ops >= min_ops) & (nd >= min_dias) & (pos >= min_pos) & np.isfinite(t)
+    return np.where(ok, t, np.nan)
+
+
+def buscar_streaming(fuentes, variantes=None, k=3, B=50, seed=0, min_ops_serie=30, B_azar_obs=200, B_azar_nulo=50, max_eleg=256,
+                     detalle=False):
+    """`nulo_signo_multi` en flujo: un cubo por vez y un mes por vez, con el observado y las B réplicas del nulo juntos. `fuentes`:
+    lista de (nombre, función que devuelve el Cubo). Elegida y estática son idénticas a `walk_forward` (mismo puntaje y mismos
+    signos: la misma semilla que `nulo_signo_multi`); el azar sortea dentro de una muestra uniforme de hasta `max_eleg` celdas
+    elegibles por cubo (sigue siendo uniforme). Memoria: la de un mes de un cubo."""
+    variantes = variantes or VARIANTES; nv = list(variantes)
+    sesiones = []
+    for _, f in fuentes: sesiones.append(np.unique(f().ses))
+    dias_glob = np.unique(np.concatenate(sesiones)); meses_glob = np.unique(_mes(dias_glob))
+    rng = np.random.default_rng(seed + 1)
+    G = np.ones((B + 1, len(dias_glob)))
+    for b in range(B): G[b + 1] = rng.choice([-1.0, 1.0], size=len(dias_glob))
+    rs = np.random.default_rng(seed + 7)
+    reg = {(v, h): dict(cand=[], estat=[], eleg=[]) for v in nv for h in range(len(meses_glob))}   # por cubo, arrays (B+1,)
+    for nombre, f in fuentes:
+        cubo = f(); ventana = []; acum = None
+        for m, s, sq, nd, npos, ops in _cubo_mensual(cubo, min_ops_serie, G, dias_glob):
+            h = int(np.searchsorted(meses_glob, m))
+            for v in nv:
+                p = variantes[v]; W = p["W"]
+                win = [x for x in ventana if x[0] in set(meses_glob[max(0, h - W):h].tolist())]
+                if not win or h < W: continue
+                ws = sum(x[1] for x in win); wsq = sum(x[2] for x in win); wnd = sum(x[3] for x in win)
+                wnp = sum(x[4] for x in win); wop = sum(x[5] for x in win)
+                sc = _puntaje_agr(ws, wsq, wnd, wnp, wop, p["min_ops"], p["min_dias"], p.get("min_pos", 0.0))
+                if p.get("cada_mes_pos"):
+                    okm = np.ones_like(sc, bool)
+                    for mw in meses_glob[h - W:h]:
+                        x = next((y for y in win if y[0] == mw), None)
+                        okm &= (x[1] > 0) & (x[3] >= p.get("min_dias_mes", 4)) if x is not None else False
+                    sc = np.where(okm, sc, np.nan)
+                st = (_puntaje_agr(acum[0], acum[1], acum[2], acum[3], acum[4], p["min_ops"], p["min_dias"], p.get("min_pos", 0.0))
+                      if acum is not None else np.full_like(sc, np.nan))
+                R = reg[(v, h)]
+                for b in range(B + 1):
+                    fila = sc[b]
+                    if not np.isfinite(fila).any(): R["cand"].append(None); R["estat"].append(None); R["eleg"].append(None); continue
+                    j = int(np.nanargmax(fila)); cand = (fila[j], s[b, j], ops[j])
+                    fs = st[b]; est = None
+                    if np.isfinite(fs).any(): js = int(np.nanargmax(fs)); est = (fs[js], s[b, js], ops[js])
+                    el = np.flatnonzero(np.isfinite(fila))
+                    if len(el) > max_eleg: el = rs.choice(el, size=max_eleg, replace=False)
+                    R["cand"].append((b, cand)); R["estat"].append((b, est)); R["eleg"].append((b, s[b, el], ops[el]))
+            ventana = (ventana + [(m, s, sq, nd, npos, ops)])[-3:]
+            acum = (s, sq, nd, npos, ops) if acum is None else tuple(a + x for a, x in zip(acum, (s, sq, nd, npos, ops)))
+        del cubo
+    obs, maxi = {}, []
+    filas_b = {v: {b: [] for b in range(B + 1)} for v in nv}
+    for (v, h), R in sorted(reg.items(), key=lambda x: x[0][1]):
+        for b in range(B + 1):
+            cand = [c[1] for c in R["cand"] if c is not None and c[0] == b]
+            if len(cand) < k: continue
+            est = [e[1] for e in R["estat"] if e is not None and e[0] == b and e[1] is not None]
+            eleg = [(e[1], e[2]) for e in R["eleg"] if e is not None and e[0] == b]
+            def _ro(lst):
+                top = sorted(lst, key=lambda x: -x[0])[:k]; c = sum(x[2] for x in top)
+                return sum(x[1] for x in top) / c if c > 0 else np.nan
+            ra = np.random.default_rng(seed + 2 + b + 1000 * h); az = []
+            for _ in range(B_azar_obs if b == 0 else B_azar_nulo):
+                pick = ra.choice(len(eleg), size=k, replace=False); ss = cc = 0.0
+                for i in pick:
+                    sH, cH = eleg[i]; j = ra.integers(len(sH)); ss += sH[j]; cc += cH[j]
+                az.append(ss / cc if cc > 0 else np.nan)
+            filas_b[v][b].append(dict(mes=int(meses_glob[h]), elegida=_ro(cand), azar=float(np.nanmean(az)),
+                                      estatica=_ro(est) if len(est) >= k else np.nan, cubos=len(cand)))
+    for b in range(1, B + 1):
+        vals = [_resumen(filas_b[v][b])["delta_azar"] for v in nv]; vals = [x for x in vals if np.isfinite(x)]
+        if vals: maxi.append(max(vals))
+    maxi = np.asarray(maxi); out = {}
+    for v in nv:
+        o = _resumen(filas_b[v][0])
+        p = float((np.sum(maxi >= o["delta_azar"]) + 1) / (len(maxi) + 1)) if len(maxi) and np.isfinite(o["delta_azar"]) else float("nan")
+        out[v] = dict(observado=dict(W=variantes[v]["W"], k=k, **o), ventanas=filas_b[v][0], p_familia=p)
+    res = dict(variantes=out, nulo_max_q50_q95=np.quantile(maxi, [.5, .95]).tolist() if len(maxi) else None, B=len(maxi),
+               cubos=len(fuentes), dias=len(dias_glob))
+    if detalle: res["filas"] = filas_b; res["signos"] = {b: dict(zip(dias_glob.tolist(), G[b].tolist())) for b in range(B + 1)}
+    return res
