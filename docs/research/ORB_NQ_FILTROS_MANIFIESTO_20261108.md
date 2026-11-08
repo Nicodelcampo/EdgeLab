@@ -1,6 +1,6 @@
 # ORB NQ — propuesta para 5, 15 y 30 minutos con filtros
 
-Estado: PROPUESTA — NO AUTORIZA P&L NI LANZAMIENTO
+Estado: VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS
 Fecha: 2026-11-08
 Familia / módulo: ORB-NQ-FILTROS
 North Star: `d85364e21951980c0e9273ed1883ce14413db157052162ed38ac9ab2403375a1`
@@ -12,7 +12,7 @@ Procedencia: diseño y prototipo sin outcomes sobre base `70a373088af0289c32f8c5
 
 Unidad: primera ruptura **por duración y sesión**; cada sesión aporta como máximo tres señales correlacionadas. Una señal con filtros que no pasan no habilita una segunda entrada. No confundir tiempo de señal con hora exacta de fill. No se separan largo/corto para seleccionar resultados. No se operan otros instrumentos ni aperturas.
 
-## Reglas propuestas, aún sujetas a aprobación
+## Reglas aprobadas, ejecución condicionada a guardas
 
 - Sesión regular de Nueva York, `America/New_York`, incluidas transiciones DST. Tres cajas: 09:30–09:35, 09:30–09:45 y 09:30–10:00 ET. Usar las velas M1 cuyos cierres están en `(09:30, fin]`; exigir cada minuto presente, válido y del mismo segmento contractual. Si no, esa caja no existe ese día.
 - Primera vela M1 con cierre estrictamente fuera de la caja después de finalizarla y antes de 15:55 ET: largo por arriba, corto por abajo. Una señal por caja y sesión; ejecutar a mercado en el primer tick posterior, con precio realizable y fricción canónica. Sin reentradas. **Es ruptura por cierre M1**: no es idéntica a la ORB de stop apoyado de `strategies/orb.py`, ni a la señal de cierre de 5 min de ORB-HORARIOS. Documentar los gaps y los casos de fill inválido sin reemplazarlos con el cierre previo.
@@ -41,7 +41,7 @@ Hipótesis predefinidas: **3 × 6 × 5 × 4 = 360 celdas nominales** por canal, 
 
 ## Integridad y condiciones para ejecutar
 
-1. Revisar independientemente y aprobar este manifiesto; registrarlo en un commit propio antes de cualquier medición de outcomes. Pedir OK explícito de Nico para este diseño y datos. E0 target-free por separado **no** equivale a permiso para P&L.
+1. Nico aprobó este diseño y datos en chat el 2026-11-08; decisión registrada en `docs/DECISIONES_20261108.md`. Mantener manifiesto y decisión versionados antes de medir. Completar la revisión independiente y las guardas antes de outcomes. E0 target-free por separado **no** elimina esas guardas.
 2. El archivo `patches_for_review/orb_nq_20261108/senales_orb.py` es únicamente un prototipo de señales target-free; no es un módulo de campaña ni un simulador, y no declara autorización para ejecutar datos reales. Validar sus bordes, fechas DST, causalidad por disparo y equivalencia con un oráculo independiente. Pruebas sintéticas: `python -m pytest -q patches_for_review/orb_nq_20261108/test_senales_orb.py` → 10 pasadas en el entorno local de pruebas. Cubren tres rangos, corte causal por señal, huecos en caja/post-caja, ATR, segmentos, orden y transiciones DST; no certifican el motor integrado ni ejecución.
 3. Integrar la ejecución al embudo con coste y R por fill, tiempo y news interval, EOD real, entradas/salidas causales, corte de contrato y validación punto-en-tiempo. El filtro `EXCLUIR_EVENTOS` de `grilla_generica.py` comprueba la cercanía de la señal y **no garantiza** que la operación no cruce noticias. No usarlo como sustituto.
 4. La rama base emplea cola normal en `grilla_masiva.estadisticas`; Nico eligió t de Student en el trabajo previo. Incorporar y verificar el cambio aprobado en el código exacto, o resolver formalmente el conflicto antes de cualquier tamiz FDR. MaxT no habilita a presentar como corregidos los p/q de un FDR que usa otra cola. No reducir tolerancias para pasar pruebas.
