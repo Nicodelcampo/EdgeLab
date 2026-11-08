@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-588 scripts.
+589 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -317,6 +317,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_discovery_parity_kernel.py` | (sin docstring) |
 | `tools/kaggle_drive_bridge.py` | EdgeLab <-> Google Drive <-> Kaggle local bridge and chunked transfer tool (versión endurecida). |
 | `tools/kaggle_grilla/almacen_zonas_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/canasta_orb_holdout_main.py` | Kernel de Kaggle: HOLDOUT de CANASTA-ORB (decisión explícita de Nico, docs/research/orb_nq_20261108/PREREGISTRO_CANASTA.md). Base: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILT |
 | `tools/kaggle_grilla/construir_kernel.py` | Empaquetador GENÉRICO de kernels de Kaggle autocontenidos (reutilizable por cualquier corrida de grilla masiva). |
 | `tools/kaggle_grilla/construir_kernel_experimento.py` | Kernel autocontenido para CUALQUIER experimento de grilla genérica (edgelab/research/grilla_generica.py). |
 | `tools/kaggle_grilla/construir_kernel_u1_cruzado.py` | python tools/kaggle_grilla/construir_kernel_u1_cruzado.py tools/kaggle_grilla/kernel_u1_cruzado.py |

@@ -28,3 +28,17 @@ precio más el spread canónico de `edgelab/costos.py` (en desarrollo se usó bi
 sobre desarrollo. El horario regular se toma por reloj (09:30–16:00 ET) y las sesiones de cierre temprano se excluyen.
 
 **Cómo podría refutarse:** p de la selección ≥ 0,10, o la canasta no es positiva en el holdout.
+
+## Enmienda del 08/11: apertura del holdout por decisión explícita de Nico (antes de abrirlo)
+
+La selección dio p = 0,37 (`RESULTADO_CANASTA.md`), así que por la regla acordada no correspondía abrir. Nico decide abrirlo igual:
+«Abrí el holdout igual, quizás su resultado reduce la probabilidad de que sean azar». Es una excepción humana al protocolo de
+apertura (`edgelab/autopilot/holdout_apertura.py` exige un candidato confirmado); queda registrada como tal y **consume la única
+apertura de la familia CANASTA_ORB / ORB_VARIANTES**.
+- Canasta congelada: `YM|30|O|2.0` y `NQ|30|O|C`, igual ponderadas por sesión. Modelo de llenado last ± medio spread canónico.
+- Sesiones del holdout desde el 01/10/2026 hasta la última sellada, menos las excluidas de `edgelab/holdout.py`.
+- p del holdout: R medio diario de la canasta > 0, una cola, inversión de signo por sesión (B = 10.000).
+- **Combinación fijada ahora:** Fisher sobre p_selección (0,37, desarrollo) y p_holdout (datos independientes):
+  χ² = −2(ln p1 + ln p2) con 4 grados de libertad. La meta de Nico (< 0,10) se evalúa sobre ese p combinado.
+- Con ≈ 25 sesiones el holdout tiene poca potencia; el resultado se sigue en papel si no es concluyente. No se usa para elegir,
+  ajustar ni reintentar.
