@@ -83,32 +83,57 @@ def elegir(cands, series, G_b):
     return el, float(c.mean() / (s / np.sqrt(len(c)))) if s > 0 else 0.0
 
 
-def correr(fuentes, B=200, seed=20261108, log=None):
-    """fuentes: lista de (nombre, instrumento, función que devuelve el Cubo). Dos pasadas por cubo; memoria de un bloque de un cubo."""
-    dias = set()
-    for _, _, f in fuentes:
-        s = f().ses; dias |= set(s[(s >= VENTANA[0]) & (s <= VENTANA[1])].tolist())
-    dias = np.array(sorted(dias)); rng = np.random.default_rng(seed)
-    G = np.ones((B + 1, len(dias))); G[1:] = rng.choice([-1.0, 1.0], size=(B, len(dias)))
-    por_rep = [[] for _ in range(B + 1)]; series = {}; info = {}
+def signos(dias, B, seed=20261108):
+    rng = np.random.default_rng(seed); G = np.ones((B + 1, len(dias))); G[1:] = rng.choice([-1.0, 1.0], size=(B, len(dias)))
+    return G
+
+
+def procesar(fuentes, dias, B=200, seed=20261108, log=None):
+    """Una tanda de cubos (2026-11-08: en paralelo, una tanda por kernel). Devuelve lo necesario para combinar: candidatas por
+    réplica y series diarias sin signo de su unión. Los días y la semilla deben ser los mismos en todas las tandas."""
+    G = signos(dias, B, seed); out = []
     for n, (nombre, inst, f) in enumerate(fuentes):
         cubo = f(); ev, top, tt = candidatos_cubo(cubo, dias, G)
         union = np.unique(np.concatenate(top)) if any(len(x) for x in top) else np.zeros(0, np.int64)
-        X = series_cubo(cubo, dias, union); col = {int(j): i for i, j in enumerate(union)}
-        for i, j in enumerate(union): series[(nombre, int(j))] = X[:, i].astype(float)
-        for b in range(B + 1):
-            por_rep[b] += [(float(tv), nombre, inst, (nombre, int(j))) for j, tv in zip(top[b], tt[b])]
-        info[nombre] = dict(instrumento=inst, ev=ev, perillas=cubo.perillas)
+        out.append(dict(nombre=nombre, instrumento=inst, ev=ev[union] if len(union) else np.zeros(0, np.int64), union=union,
+                        series=series_cubo(cubo, dias, union), top=[np.searchsorted(union, x) for x in top], tt=tt,
+                        perillas=[q.nombre for q in cubo.perillas]))
         if log: log(f"cubo {n + 1}/{len(fuentes)} {nombre} evaluables {len(ev)} candidatas obs {len(top[0])}")
         del cubo
-    obs, t_obs = elegir(por_rep[0], series, G[0]); nul = [elegir(por_rep[b], series, G[b])[1] for b in range(1, B + 1)]
-    p = float((1 + sum(x >= t_obs for x in nul)) / (B + 1)) if obs else 1.0
+    return out
+
+
+def combinar(partes, dias, B=200, seed=20261108, completo=True):
+    """Selección global sobre las tandas disponibles. Con `completo=False` (tandas parciales) informa la canasta observada sin p."""
+    G = signos(dias, B, seed); por_rep = [[] for _ in range(B + 1)]; series = {}; meta = {}
+    for c in partes:
+        for i in range(len(c["union"])): series[(c["nombre"], i)] = c["series"][:, i].astype(float)
+        meta[c["nombre"]] = c
+        for b in range(B + 1): por_rep[b] += [(float(tv), c["nombre"], c["instrumento"], (c["nombre"], int(j))) for j, tv in zip(c["top"][b], c["tt"][b])]
+    obs, t_obs = elegir(por_rep[0], series, G[0])
+    if completo:
+        nul = [elegir(por_rep[b], series, G[b])[1] for b in range(1, B + 1)]
+        p = float((1 + sum(x >= t_obs for x in nul)) / (B + 1)) if obs else 1.0; q = np.quantile(nul, [.5, .9, .95]).tolist()
+    else: p, q = None, None
     reglas = []
     for cu, inst, (nm, j) in obs:
-        P = info[nm]["perillas"]; x = series[(nm, j)]; bl = np.array_split(x, N_BLOQUES)
-        reglas.append(dict(cubo=nm, instrumento=inst, celda_plana=int(info[nm]["ev"][j]), media_diaria=float(x.mean()),
-                           medias_bloques=[float(b.mean()) for b in bl], perillas=[q.nombre for q in P]))
+        x = series[(nm, j)]
+        reglas.append(dict(cubo=nm, instrumento=inst, celda_plana=int(meta[nm]["ev"][j]), perillas=meta[nm]["perillas"], media_diaria=float(x.mean()),
+                           medias_bloques=[float(b.mean()) for b in np.array_split(x, N_BLOQUES)]))
     c = np.mean([series[k] for _, _, k in obs], axis=0) if obs else np.zeros(len(dias))
-    return dict(reglas=reglas, t_canasta=t_obs, p_seleccion=p, B=B, sesiones=len(dias), media_diaria_canasta=float(c.mean()),
-                medias_bloques_canasta=[float(b.mean()) for b in np.array_split(c, N_BLOQUES)],
-                nulo_q50_q90_q95=np.quantile(nul, [.5, .9, .95]).tolist(), serie_canasta=[float(v) for v in c], dias=[int(d) for d in dias])
+    return dict(reglas=reglas, t_canasta=t_obs, p_seleccion=p, B=B, sesiones=len(dias), cubos=len(partes), completo=completo,
+                media_diaria_canasta=float(c.mean()), medias_bloques_canasta=[float(b.mean()) for b in np.array_split(c, N_BLOQUES)],
+                nulo_q50_q90_q95=q, serie_canasta=[float(v) for v in c], dias=[int(d) for d in dias])
+
+
+def dias_de(fuentes):
+    d = set()
+    for _, _, f in fuentes:
+        s = f().ses; d |= set(s[(s >= VENTANA[0]) & (s <= VENTANA[1])].tolist())
+    return np.array(sorted(d))
+
+
+def correr(fuentes, B=200, seed=20261108, log=None):
+    """Todo en un proceso (tests y corridas chicas)."""
+    dias = dias_de(fuentes)
+    return combinar(procesar(fuentes, dias, B, seed, log), dias, B, seed)

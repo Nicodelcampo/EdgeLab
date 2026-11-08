@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-590 scripts.
+597 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -152,6 +152,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/campaign_ticks_multi_rerun.py` | Re-corrida CORREGIDA de F3/F4 de la campaña multi-instrumento (bug de apertura RTH, 2026-09-23). |
 | `tools/canasta.py` | Canasta de estrategias de régimen (edgelab/funnel/canasta.py): estado, altas desde el embudo, operaciones forward y retiros. |
 | `tools/canasta_estatica_ledger.py` | Libro de la canasta estática PREAPERTURA-ES, PREAPERTURA-NQ, DRC-YM-4. |
+| `tools/canasta_global.py` | CANASTA-GLOBAL en tandas paralelas (docs/research/canasta_global_20261108/PREREGISTRO.md). |
 | `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
@@ -318,6 +319,12 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_drive_bridge.py` | EdgeLab <-> Google Drive <-> Kaggle local bridge and chunked transfer tool (versión endurecida). |
 | `tools/kaggle_grilla/almacen_zonas_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/canasta_global_main.py` | Kernel de Kaggle: CANASTA-GLOBAL (docs/research/canasta_global_20261108/PREREGISTRO.md) sobre nicolasbuttaro/edgelab-cubos-regimen. |
+| `tools/kaggle_grilla/canasta_global_tanda0_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 0 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_global_tanda1_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 1 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_global_tanda2_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 2 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_global_tanda3_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 3 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_global_tanda4_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 4 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_global_tanda5_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 5 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
 | `tools/kaggle_grilla/canasta_orb_holdout_main.py` | Kernel de Kaggle: HOLDOUT de CANASTA-ORB (decisión explícita de Nico, docs/research/orb_nq_20261108/PREREGISTRO_CANASTA.md). Base: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILT |
 | `tools/kaggle_grilla/construir_kernel.py` | Empaquetador GENÉRICO de kernels de Kaggle autocontenidos (reutilizable por cualquier corrida de grilla masiva). |
 | `tools/kaggle_grilla/construir_kernel_experimento.py` | Kernel autocontenido para CUALQUIER experimento de grilla genérica (edgelab/research/grilla_generica.py). |
