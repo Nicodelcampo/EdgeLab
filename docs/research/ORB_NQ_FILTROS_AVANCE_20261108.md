@@ -57,6 +57,17 @@ Bajo esta nula global, cualquier nominación es falsa; estas proporciones estima
 
 Reproducción desde la raíz del repo: `NUMBA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=. python patches_for_review/orb_nq_20261108/control_t_sintetico.py`. Base `713c98083349bd015245d826fd8b3821e320c02b`; Python 3.13, numpy 2.4.6, scipy 1.18.1 y numba 0.68.1. El script de revisión calcula la cola t con SciPy independientemente del parche pendiente, compara ambas colas y ambos métodos, y no reemplaza código de producción.
 
+## Control sintético de la forma de grilla ORB
+
+Se ensayó **un solo canal** maxT con 360 celdas nominales `3 × 6 × 5 × 4`, 160 sesiones, `min_n=30`, alfa 0,05, 299 inversiones de signo por sesión y 500 semillas nuevas `3000..3499`, fijadas antes de la corrida. Cada sesión sintética tiene una señal por duración; día, hora y ATR son categorías simuladas independientes del ruido. Las tres duraciones comparten un factor simétrico por sesión. No se usaron precios, calendario real, exclusión de noticias ni salidas del E0.
+
+- Nula global: hubo al menos una nominación en **26/500 = 5,2%**, IC 95% Wilson [3,6%, 7,5%]. Es compatible con 5% en este único escenario, no una certificación del control de error en datos reales o bajo nulas parciales.
+- Mediana **39 de 360 celdas evaluables** por conteo (rango 37–39), con este generador deliberadamente simplificado. Es una advertencia de escasez de muestra en cruces finos, **no** una estimación de las celdas evaluables de ORB real ni una medición de potencia real.
+- Con ventaja sintética fija +0,7 en la duración 15 y objetivo predeterminado sin filtros, la celda se nominó 499/500 veces (IC Wilson [98,9%, 100,0%]); se trata de un efecto artificial grande en la escala de este generador, no evidencia ni potencia esperada para NQ.
+- Se verificaron las 360 sumas, sumas cuadradas y conteos contra máscaras directas para una semilla, y una señal por duración/sesión. Los contrastes no incluyen todavía el segundo canal reciente, incertidumbre del calendario, ausencias, ni distribuciones asimétricas. La simetría de signos por sesión es construida en la nula, no demostrada para mercado.
+
+Reproducción: `NUMBA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=. python patches_for_review/orb_nq_20261108/control_grid_sintetico.py` con las versiones del entorno del control anterior. No habilita integración ni ejecución de P&L: sigue pendiente el análisis de potencia y de hipótesis con el universo elegible real, sin usar outcomes para selección.
+
 ## Bloqueos antes de P&L
 
 1. Release adjuntada y hashes verificados en E0; falta contrastar sesiones presentes, contratos, días cortos y calibración inicial con el registro. No tocar octubre ni el holdout.
