@@ -1,9 +1,17 @@
 # Avance — ORB NQ 5, 15 y 30 con filtros
 
-Estado: PROVISIONAL — E0 COMPLETO, NO CONGELAR; P&L NO MEDIDO
+Estado: MEDICIÓN EXPLORATORIA COMPLETA — NO VALIDADA NI APROBADA PARA OPERAR
 Fecha: 2026-11-08
 Familia / módulo: ORB-NQ-FILTROS
 Procedencia: código E0 commit `a38f5a3524394f1d31289b89b665a94411296196`; simulador sintético commit `6f27b97376c144a768df501f093d4c936e06356f`; kernel privado `nicolasbuttaro/orb-nq-e0-target-free-20261108` versiones 1–4; release fijada `db9c42cdb714634b131fc8ff886cda67771bea6070d27c0e56e2d2fd6eb14ce5`.
+
+## Actualización — medición exploratoria completada
+
+Esta actualización prevalece sobre los estados anteriores de este documento, que quedan como historial. En el commit `4f3220c8a4d7af438e193d11edef18312690cf04` se fijó previamente el manifiesto exploratorio, el código y sus pruebas. El notebook privado [ORB NQ 5 15 30 filtros exploratorio](https://www.kaggle.com/code/nicolasbuttaro/orb-nq-5-15-30-filtros-exploratorio-20261108), versión 1, terminó `COMPLETE` y guardó `ORB_NQ_E0_CONGELADO.json` y `ORB_NQ_RESULTADOS_EXPLORATORIOS.json` en su salida privada. El log identifica el commit y confirma la finalización. No se abrieron datos de holdout para la medición.
+
+El resultado detallado queda en Kaggle privado; revisar las condiciones de licencia antes de extraer o publicar datos de la release o sus derivados. La ejecución es exploratoria: calendario de noticias incompleto y retrospectivo, selección de calidad de sesión retrospectiva, calibración inicial in-sample y ausencia de auditoría independiente integral. El período reciente está contenido en el total, no es réplica OOS. No se promueve ninguna estrategia ni se afirma cumplimiento integral de la regla de noticias.
+
+Para una auditoría externa independiente: revisar el commit exacto, el manifiesto y los archivos `patches_for_review/orb_nq_20261108/medir_exploratorio.py`, `senales_orb.py` y pruebas. Con acceso autorizado a Kaggle privado, comprobar que el código y hashes ejecutados, la release v4, los períodos, las fechas y filtros, las operaciones y sus costos, y la aplicación de maxT coinciden con lo declarado; examinar causalidad, calidad y selección de sesiones, cobertura de noticias, sesgos y supuestos. Reproducir con controles independientes donde sea posible, sin abrir el holdout ni exportar ticks u operaciones individuales. Documentar hallazgos, alcance, limitaciones y diferencias; el código público por sí solo no permite auditar datos privados ni recomputar el resultado. Un resumen agregado tampoco sustituye una reconstrucción independiente desde los datos autorizados.
 
 ## Rectificación después de revisar el repositorio y las ramas
 
