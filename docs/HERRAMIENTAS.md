@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-587 scripts.
+588 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -327,6 +327,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/orb0100_atras_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/orb_nq_filtros_main.py` | Kernel de Kaggle: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
 | `tools/kaggle_grilla/orb_rr_menor_main.py` | Kernel de Kaggle: ORB-RR-MENOR (docs/research/orb_nq_20261108/PREREGISTRO_RR_MENOR.md), variante de ORB-VARIANTES; base: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la s |
+| `tools/kaggle_grilla/orb_series_last_main.py` | Kernel de Kaggle: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
 | `tools/kaggle_grilla/orb_series_main.py` | Kernel de Kaggle: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
 | `tools/kaggle_grilla/orb_variantes_main.py` | Kernel de Kaggle: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
 | `tools/kaggle_grilla/oro_0530_main.py` | (sin docstring) |
