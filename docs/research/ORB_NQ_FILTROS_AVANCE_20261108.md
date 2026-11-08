@@ -30,6 +30,15 @@ El output `E0_ORB_NQ_PRELIMINAR.json` contiene conteos de sesiones y señales, y
 
 Notebook privado: https://www.kaggle.com/code/nicolasbuttaro/orb-nq-e0-target-free-20261108 (versión 4, output y logs). No se calcularon fills, stops, retornos ni P&L.
 
+## Continuación — bordes sintéticos y calendario
+
+- Se corrigió el prototipo del simulador: el primer fill debe tener timestamp **estrictamente mayor** que el cierre de señal. Si varios ticks comparten el instante de la señal, no se inventa su orden intrananosegundo. El E0 de la versión 4 no usa este simulador; sus resultados no se modificaron.
+- Se añadió un límite exclusivo de sesión que debe suministrar y justificar el llamador. Una posición sin salida antes de ese límite aborta en vez de valorar un tick de otra sesión. Es una barrera adicional, no prueba de captura completa ni de una demora de salida aceptable; falta certificar sesión y contrato, política de huecos y disponibilidad antes de medir.
+- Resultado local: **28 pruebas sintéticas aprobadas**, incluidas dos de los bordes temporales y una comparación de 1.000 casos seudorrandómicos con una implementación escalar de prueba. No es revisión humana independiente, paridad contra el motor de producción, ni autorización para datos reales. El prototipo continúa en `patches_for_review/`.
+- Hallazgo de calendario: `docs/research/cme_equity_index_calendar_20260902/cme_equity_index_session_calendar_v1.json` cubre las fechas propuestas de descubrimiento y marca sesiones normales, cerradas y de cierre anticipado con fuentes CME. Fue capturado el 2026-09-02, después del descubrimiento; por sí solo **no acredita que cada horario se conocía en el momento histórico** ni demuestra captura íntegra de ticks. El propio README señala que el 2025-11-28 tuvo una sesión discontinua no representada por el modelo de intervalo continuo. Antes de usarlo hay que validar su alcance, las excepciones y su disponibilidad ex ante.
+- `NQSessionEligibilityGateV1` descarta cierres anticipados y se abstiene ante calendario/captura desconocidos, pero sus parámetros por defecto para captura y roll no prueban evidencia; métricas de volumen o ticks de toda la sesión pueden introducir información posterior a la señal. No se enchufó al runner ni se usó como certificación de elegibilidad. La completitud y point-in-time de noticias sigue sin resolverse.
+- La corrección Student-t aprobada sigue sin integrar: el borrador previo no supera una prueba estadística histórica que sí pasa con la base. No se relajó su umbral. Resolver ese conflicto y la prueba de ruido es condición anterior al tamiz; los ensayos sintéticos de simulador no lo sustituyen.
+
 ## Bloqueos antes de P&L
 
 1. Release adjuntada y hashes verificados en E0; falta contrastar sesiones presentes, contratos, días cortos y calibración inicial con el registro. No tocar octubre ni el holdout.
