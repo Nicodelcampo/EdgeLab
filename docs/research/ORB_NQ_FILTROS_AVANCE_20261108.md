@@ -39,6 +39,24 @@ Notebook privado: https://www.kaggle.com/code/nicolasbuttaro/orb-nq-e0-target-fr
 - `NQSessionEligibilityGateV1` descarta cierres anticipados y se abstiene ante calendario/captura desconocidos, pero sus parámetros por defecto para captura y roll no prueban evidencia; métricas de volumen o ticks de toda la sesión pueden introducir información posterior a la señal. No se enchufó al runner ni se usó como certificación de elegibilidad. La completitud y point-in-time de noticias sigue sin resolverse.
 - La corrección Student-t aprobada sigue sin integrar: el borrador previo no supera una prueba estadística histórica que sí pasa con la base. No se relajó su umbral. Resolver ese conflicto y la prueba de ruido es condición anterior al tamiz; los ensayos sintéticos de simulador no lo sustituyen.
 
+## Continuación — diagnóstico del tamiz con ruido sintético
+
+Se comparó el control histórico en **1.000 semillas nuevas** (`1000..1999`, elegidas antes de esta corrida, luego de examinar `0..999`). Es la misma construcción sintética, no una nueva distribución ni un control de mercado: 160 sesiones, factor común simétrico por sesión, error t(4) por operación, `min_n=10`, `q=alfa=0,10` y 299 permutaciones de signo por sesión. Esto **no calibra** la grilla ORB de 360 celdas, cuyo nivel es 0,05 por canal, ni el preflight de U1, que usa otra grilla. No se usaron datos reales ni holdout.
+
+| Tamiz en nula global | Corridas con ≥1 nominación / 1.000 | Proporción e IC 95% Wilson |
+|---|---:|---:|
+| maxT por sesión | 91 | 9,1% [7,5%, 11,0%] |
+| t por operación + Storey | 181 | 18,1% [15,8%, 20,6%] |
+| t por operación + BH | 118 | 11,8% [9,9%, 13,9%] |
+| normal por operación + Storey | 216 | 21,6% [19,2%, 24,3%] |
+| normal por operación + BH | 148 | 14,8% [12,7%, 17,1%] |
+
+Bajo esta nula global, cualquier nominación es falsa; estas proporciones estiman la frecuencia de al menos un falso positivo y también el FDR global de este escenario. Las simulaciones están emparejadas por semilla. La comparación descriptiva t+Storey vs maxT dio 95 semillas sólo con nominación de t+Storey y 5 sólo con nominación de maxT (prueba binomial exacta bilateral sobre discordancias `p ≈ 1,25e-22`). Comparaciones múltiples y selección de este escenario tras conocer el test anterior: no extrapolar estos p como garantía general. Los IC son por proporción, no intervalos de la diferencia emparejada.
+
+**Hallazgo de contrato:** el test histórico se llama BH, pero invoca `GM.criba` sin `metodo`, cuyo default es **Storey**, no BH puro. La cola t reduce nominaciones bajo esta nula frente a la normal, pero no basta para garantizar calibración con dependencia intrasesión y estimación adaptativa. maxT tiene fundamento con simetría de signos por sesión — impuesta en esta simulación, **no acreditada en NQ real**. La tasa observada por sí sola tampoco lo valida universalmente. No se cambió el umbral >2 ni se integró el parche Student-t; ambos siguen sujetos a revisión. Las 9 pruebas restantes de `test_criba_maxt.py` pasaron en la base, incluido el caso de señal plantada, y se excluyó explícitamente el test de relación histórica de esa ejecución. Las 2 pruebas numéricas del borrador t pasaron contra SciPy y la referencia del proyecto; eso verifica el cálculo, no la validez estadística bajo dependencia.
+
+Reproducción desde la raíz del repo: `NUMBA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=. python patches_for_review/orb_nq_20261108/control_t_sintetico.py`. Base `713c98083349bd015245d826fd8b3821e320c02b`; Python 3.13, numpy 2.4.6, scipy 1.18.1 y numba 0.68.1. El script de revisión calcula la cola t con SciPy independientemente del parche pendiente, compara ambas colas y ambos métodos, y no reemplaza código de producción.
+
 ## Bloqueos antes de P&L
 
 1. Release adjuntada y hashes verificados en E0; falta contrastar sesiones presentes, contratos, días cortos y calibración inicial con el registro. No tocar octubre ni el holdout.
