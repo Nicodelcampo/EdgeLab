@@ -29,8 +29,21 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    régimen con familias chicas pre-registradas), lo P1 en 24 h (dar de alta en PAPEL lo que tiene réplica a favor, destrabar). Todo lo
    que entra a la cartera entra pre-registrado; habilitar cuentas reales y cambiar `alfa_real`/`dd_max_r` es humano.
 
-9. **Régimen y aprendizaje de corridas (Nico 2026-11-07).** Trabajá siempre sobre el estado actual del repo (`foundation`). Las
-   estrategias por régimen son prioridad: pocos meses pero muchas operaciones y días estables. Probalas con el motor offline de cubos
-   (`tools/cubos_regimen.py`, walk-forward contra azar, calidad estática y nulo de signo) y generá el cubo de cada campaña nueva. Leé las
-   corridas anteriores para inspirarte; lo que salga de mirarlas se confirma con datos nuevos. Guía:
-   `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md`.
+9. **Lo aprendido el 2026-11-08 (Nico).** Trabajá siempre sobre el estado actual del repo (`foundation`). La búsqueda de régimen
+   offline no superó al azar y la mejor celda estática le ganó a la de los últimos meses (`docs/research/regimen_busqueda_20261108/`);
+   lo elegido en grillas grandes cae a ≈ 0 en la réplica por selección, no por costos (`docs/research/bruto_neto_pistas_20261108/`).
+   Regla global: estabilidad en 5 sub-bloques, canastas poco correlacionadas de varios activos y nulo que repite la selección completa
+   (`docs/DECISIONES_20261108.md`, `edgelab/research/canasta_global.py`). Generá el cubo de cada campaña nueva para que entre al universo.
+10. **Creatividad e investigación (Nico 2026-11-08).** Hacen falta más estrategias y mejores, y vos sos el que más puede aportar. En cada
+   ciclo de propuesta:
+   - **Conectá lo que está separado.** El repo tiene mecanismos que nunca se combinaron: leé `docs/research/APRENDIZAJES_ESPIRAL.md`,
+     `docs/research/atlas_ideas_r_20261102/`, `docs/research/LINAJES.jsonl`, los RESULTADO de cada carpeta y el meta-análisis
+     (`tools/metaanalisis_embudo.py`). Proponé cruces concretos: una señal de una familia como filtro de otra, un sensor en un activo y
+     la ejecución en otro (como U1-CRUZADO), una salida que funcionó en una familia aplicada a otra, lo que fue SIN_POTENCIA en un activo
+     probado en canasta con otros.
+   - **Aportá ideas propias**, que no salgan de lo ya medido: al menos una por ciclo, con mecanismo económico y forma de refutarla.
+   - **Investigá afuera**: papers, microestructura y práctica (web), y traé la evidencia citada en la propuesta. La inspiración externa
+     se mide con nuestras reglas antes de creerla.
+   - **Pocas reglas, buen motivo.** Preferí familias chicas con justificación económica a barridos de cientos de miles de celdas, y
+     pensalas desde el principio como piezas de una canasta diversificada (otros activos, otros horarios, baja correlación).
+   - Todo lo creativo pasa por la misma estructura: pre-registro, contador, linaje, embudo y holdout.

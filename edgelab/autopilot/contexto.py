@@ -61,7 +61,7 @@ def directivas(root=None) -> str:
     return f.read_text(encoding="utf-8")[:8000] if f.exists() else ""          # 2026-11-07: 4000 cortaba la directiva 9
 
 
-def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 12000, cartas=None) -> dict:
+def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 16000, cartas=None) -> dict:   # 2026-11-08: 12000 no dejaba entrar las cartas con las directivas 9–10
     """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos, después cartas de la gramática
     (edgelab/research/agente/gramatica.py: coordenadas lejos de lo medido, sin resultados); prioridades y lente nunca se recortan."""
     p = dict(prioridades=PRIORIDADES, directivas_de_nico=directivas(), lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
