@@ -99,7 +99,8 @@ class Autopilot:
             errs = guard.all_checks(spec, set(self.cfg.get("allow_internet", [])), self.repo, Path(prot) if prot else None)
             if spec.kind == "holdout":                                                # apertura del holdout: protocolo verificado acá (decisión 2026-10-20)
                 from .holdout_apertura import requisitos
-                errs += requisitos(spec, self.ledger, self.root, exigir_escalera=self.escalera)
+                errs += requisitos(spec, self.ledger, self.root, exigir_escalera=self.escalera,
+                                  permitir_exploratoria=bool(self.cfg.get("holdout_exploratorio")))
             if not self.escalera and self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
             if self.cfg.get("mode", "propose") != "execute":

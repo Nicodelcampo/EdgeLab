@@ -105,15 +105,15 @@ footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padd
     <h2>Qué consume de tu lado</h2>
     <ul>
       <li><b>La máquina:</b> poco. El agente orquesta; el cálculo pesado lo hace Kaggle. Necesita estar prendida, con red y con algo de disco para cachés.</li>
-      <li><b>El cupo de Claude:</b> los modelos usan la suscripción (nunca una API key) y comparten el cupo con tu uso propio. Todo arranca apagado y se enciende por etapas desde <code>/etc/edgelab/autopilot.json</code>:</li>
+      <li><b>El cupo de Claude:</b> el agente usa el plan Max por suscripción (nunca una API key). La idea es aprovecharlo: hasta 12 corridas nuevas por día y 8 en paralelo en Kaggle, y cada una pasa por Opus para proponerla, revisarla y buscarle la explicación alternativa. Todo arranca apagado y se enciende por etapas desde <code>/etc/edgelab/autopilot.json</code>:</li>
     </ul>
     <div class="tabla"><table>
       <thead><tr><th>Etapa</th><th>Qué se enciende</th><th>Llamadas por día (estimación)</th></tr></thead>
       <tbody>
         <tr><td class="cifra">0–1</td><td>Ciclo numérico, sin modelos</td><td class="cifra">0</td></tr>
         <tr><td class="cifra">2</td><td>Auditor (Sonnet) y cronista (Haiku)</td><td>~2–10 Sonnet, ~10–40 Haiku</td></tr>
-        <tr><td class="cifra">3</td><td>Más el proponente (Opus)</td><td>+1–2 Opus</td></tr>
-        <tr><td class="cifra">4</td><td>Más la promoción automática con dos revisores</td><td>+2–8 Opus, +1–5 Sonnet</td></tr>
+        <tr><td class="cifra">3</td><td>Más el proponente (Opus)</td><td>+10–20 Opus (tope 24)</td></tr>
+        <tr><td class="cifra">4</td><td>Más la promoción automática con dos revisores y el abogado del diablo</td><td>+20–40 Opus y +20–40 Sonnet (topes: 84 Opus y 100 Sonnet por día)</td></tr>
       </tbody>
     </table></div>
     <p>Son estimaciones, no mediciones. El consumo real queda registrado llamada por llamada en <code>llm_calls.sqlite</code>. Si se llega al límite, el agente espera al reinicio del cupo y la parte numérica sigue andando.</p>
@@ -123,7 +123,7 @@ footer{color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padd
     <h2>Qué no hace</h2>
     <ul>
       <li><b>No opera dinero real.</b> Eso es una decisión exclusivamente humana.</li>
-      <li><b>Sí puede abrir el holdout</b> (los datos desde el 1 de octubre de 2026, reservados para confirmar) sin esperar a una persona, con la regla congelada y la apertura registrada antes de lanzar. Lo que el holdout no puede hacer es servir para elegir o ajustar: confirma o refuta, y nada más.</li>
+      <li><b>Sí puede abrir el holdout</b> (los datos desde el 1 de octubre de 2026, reservados para confirmar) sin esperar a una persona, con la regla congelada y la apertura registrada antes de lanzar. Desde el 08/11 también puede abrirlo para estimar cuánto baja la probabilidad de azar de una estrategia todavía no confirmada, si declara antes esa probabilidad y cómo la va a combinar. Una apertura por familia, y el holdout nunca sirve para elegir ni ajustar.</li>
       <li><b>No cambia las reglas del juego.</b> Los criterios estadísticos y los archivos protegidos solo los cambia una persona.</li>
       <li><b>Se puede frenar en cualquier momento</b> con el interruptor de pausa desde la consola. La sala de chat no puede levantar una pausa puesta desde ahí.</li>
     </ul>

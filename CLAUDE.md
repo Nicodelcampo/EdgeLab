@@ -203,6 +203,11 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   configuración que el candidato), sólo datos del holdout, una apertura por
   familia, registrada en `holdout_aperturas.jsonl` antes de lanzar. El resultado
   confirma o refuta; nunca se usa para elegir, ajustar ni reintentar.
+- **Modo exploratorio (Nico, 2026-11-08):** el agente también puede abrir el holdout de una familia
+  sin candidato confirmado, si declara antes la probabilidad de azar de desarrollo y la combinación
+  (Fisher/Stouffer) en el pre-registro. Sigue siendo una apertura por familia, sólo holdout, y nunca
+  para elegir. Regla global de evidencia: estabilidad en sub-bloques y canastas diversificadas
+  (`docs/DECISIONES_20261108.md`).
 
 ## Reglas permanentes
 

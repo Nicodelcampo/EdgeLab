@@ -39,3 +39,21 @@ def test_apertura_rechazada_sin_hallazgo_auditado_o_con_regla_cambiada(tmp_path)
     errs = " ".join(H.requisitos(s, led, tmp_path))
     assert "hit=false" in errs and "CONFORME" in errs and "congelada" in errs
     assert H.requisitos(_spec("ho3", kind="holdout", needs="ES:2026-10-01:2026-12-31"), led, tmp_path)   # sin candidato
+
+
+def test_apertura_exploratoria(tmp_path):
+    """Modo exploratorio (Nico, 2026-11-08): sin candidato confirmado, pero con p de desarrollo, combinación y pre-registro; sigue
+    una por familia y sólo holdout; deshabilitado por defecto."""
+    from types import SimpleNamespace
+    from edgelab.autopilot import holdout_apertura as H
+    led = SimpleNamespace(db=SimpleNamespace(execute=lambda *a: SimpleNamespace(fetchone=lambda: None)))
+    def sp(**o):
+        return SimpleNamespace(origin=dict(modo="exploratoria", **o), prereg="docs/x.md", family="F", needs=[f"NQ:{H.HOLDOUT_FIRST_TRADE_DATE}:2026-11-07"],
+                               env={}, run_id="r1")
+    assert H.requisitos(sp(p_desarrollo=0.37, combinacion="fisher"), led, tmp_path) != []                       # no habilitado
+    assert H.requisitos(sp(p_desarrollo=0.37, combinacion="fisher"), led, tmp_path, permitir_exploratoria=True) == []
+    assert H.requisitos(sp(combinacion="fisher"), led, tmp_path, permitir_exploratoria=True)                      # falta p
+    malo = sp(p_desarrollo=0.37, combinacion="fisher"); malo.needs = ["NQ:2026-01-01:2026-11-07"]
+    assert H.requisitos(malo, led, tmp_path, permitir_exploratoria=True)                                         # mezcla desarrollo
+    H.registrar(sp(p_desarrollo=0.37, combinacion="fisher"), tmp_path)
+    assert any("única apertura" in x for x in H.requisitos(sp(p_desarrollo=0.37, combinacion="fisher"), led, tmp_path, permitir_exploratoria=True))
