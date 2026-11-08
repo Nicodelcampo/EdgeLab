@@ -24,12 +24,20 @@ import pandas as pd
 from edgelab.research import rango_ruptura as RR
 from edgelab.research.londres_impulso import _lote  # noqa: F401
 from edgelab.research.grilla_generica import Variable
+from edgelab.research.eventos import TIPOS_TIER1, cerca
+from edgelab.research.eventos_datos import EVENTOS
 from edgelab.research.regimen_sesion import er_sesion, minuto_ny
 from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "IMPULSO-POST-MACRO"
 INDICADORES = ["IMPULSO-POST-MACRO"]
 M_CH0, M_INI, M_FIN, M_LIM, M_SALE = 505, 515, 540, 630, 720
+# 2026-11-03 (revisión de Gemini; Nico 2026-10-25 «no operar durante noticias»): sin entradas a ±5 min de un dato tier1 y salida
+# forzada antes de cada dato (`RR.lineas_salida_noticias`).
+EXCLUIR_EVENTOS = dict(antes_min=5, despues_min=5, tipos=TIPOS_TIER1)
+# 2026-11-03 (revisión de Gemini): la familia es «después de un dato macro», pero la ventana de 08:30 corría también los días sin dato.
+# Ahora sólo dispara las sesiones con un dato programado (cualquier impacto del calendario canónico) a las 08:30 ET.
+TIPOS_DATO = tuple(sorted({k for _, k, _ in EVENTOS}))
 PREFLIGHT_T0_S = 1_760_047_200
 VARIABLES = [
     Variable("choque_0830", "choque_atr", "extremos", cuantiles=3),
@@ -46,11 +54,12 @@ def disparos(ctx: dict) -> pd.DataFrame:
     o, h, l, c = (np.asarray(ctx[x], float) for x in ("o", "h", "l", "c"))
     ses = np.asarray(ctx["ses"], np.int64); m = minuto_ny(np.asarray(ctx["t"], np.int64))
     atr = _atr_causal(h, l, c); er = er_sesion(c, ses, 25); filas = []
+    dato = cerca(np.asarray(ctx["t"], np.int64), 0, 1, TIPOS_DATO)          # vela que cierra en [dato, dato + 1 min]: conocido de antemano
     for sg in np.unique(ses):
         idx = np.flatnonzero(ses == sg); mm = m[idx]
         ch = idx[(mm > M_CH0) & (mm <= M_INI)]
         dig = idx[(mm > M_INI) & (mm <= M_FIN)]
-        if len(ch) < 6 or len(dig) < 20: continue
+        if len(ch) < 6 or len(dig) < 20 or not dato[ch].any(): continue
         hi, lo = float(h[dig].max()), float(l[dig].min()); mid = 0.5 * (hi + lo)
         if not hi > lo or not atr[dig[-1]] > 0: continue
         choque = float(h[ch].max() - l[ch].min()) / float(atr[dig[-1]])
@@ -65,7 +74,7 @@ def disparos(ctx: dict) -> pd.DataFrame:
 
 
 def lineas_salida(ctx) -> np.ndarray:
-    return RR.lineas_salida(ctx, M_SALE)
+    return RR.lineas_salida_noticias(ctx, M_SALE)
 
 
 def niveles(d, ej: tuple, ctx: dict):

@@ -1,0 +1,12 @@
+## ESPEJO10T-NQ — edgelab.research.espejo_macro_grilla · señal NQ · ejecución NQ
+- Justificación: Impulso limpio sin aceptación que se deshace: la vuelta limpia que ya deshizo una fracción de W sigue hacia A; el ancho mínimo en viajes de fricción severa deja recorrido frente al costo.
+- Refutación: Ninguna celda nominada por FDR q 0,10 en DESC y ninguna pista que replique; o R neto sólo con el objetivo más corto.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de ['ESPEJO_REGLA']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 6636 de 46656 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 3666 (m del FDR 3666 de 23328 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.6276280879974365 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 9 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 0, 2, 0, 1, 2, 1, 3], [1, 3, 3, 0, 1, 0, 2, 2], [0, 0, 0, 0, 2, 2, 2, 0], [1, 0, 3, 0, 1, 2, 2, 3], [0, 0, 0, 0, 0, 2, 0, 5], [2, 3, 1, 0, 2, 2, 2, 0], [1, 0, 1, 0, 2, 2, 1, 0], [2, 1, 1, 0, 2, 2, 2, 3], [1, 2, 3, 0, 1, 0, 2, 0]]
+- PISTAS canasta (una prueba): media -0.1775942619312398 IC90 [-0.28533728491565385, -0.06893552334459427] p 0.9962509372656836 sesiones 115; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.9996354799513973; confirmadas 0 de 9 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 9 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9996354799513973); canasta media -0.1775942619312398 IC90 [-0.28533728491565385, -0.06893552334459427]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.3337647388209938

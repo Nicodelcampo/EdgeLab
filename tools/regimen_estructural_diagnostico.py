@@ -25,7 +25,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tools"))
 
-from edgelab.research import embudo_regimen_corto as ERC, fuentes_ticks as F, grilla_generica as GG, grilla_masiva as GM  # noqa: E402
+from edgelab.research import fuentes_ticks as F, grilla_generica as GG, grilla_masiva as GM  # noqa: E402
+try:                                              # 2026-11-07: el módulo nunca se commiteó (quedó en la máquina de Gemini); sin él
+    from edgelab.research import embudo_regimen_corto as ERC  # noqa: E402   # el diagnóstico completo no corre, pero el resto sí
+except ImportError:
+    ERC = None
 from edgelab.research.embudo_runners import friccion as friccion_canonica  # noqa: E402
 
 BASE = ROOT / "docs/research/regimen_corto_20261106"

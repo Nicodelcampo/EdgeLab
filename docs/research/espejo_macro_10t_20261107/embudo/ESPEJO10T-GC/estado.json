@@ -1,0 +1,467 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1794090000.766369,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1794090624.9707756,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "ts": 1794091247.6773973,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "nota": "2026-11-07: fallas por costos_canonicos.json ausente en el kernel (corregido); se resetean y se relanza"
+  },
+  {
+   "ts": 1794092167.667962,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 3
+  },
+  {
+   "ts": 1794092780.1153123,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 3 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9143586005830904); canasta media -0.151397095466555 IC90 [-0.3618265872618892, 0.0733194675839286]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08015091314407963"
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJO10T-GC",
+  "familia": "ESPEJO_MACRO_10T_GC",
+  "experimento": "edgelab.research.espejo_macro_grilla",
+  "sensor": "GC",
+  "ejecucion": "GC",
+  "ticks_por_barra": 10,
+  "n_celdas_por_canal": 23328,
+  "justificacion_economica": "Impulso limpio sin aceptación que se deshace: la vuelta limpia que ya deshizo una fracción de W sigue hacia A; el ancho mínimo en viajes de fricción severa deja recorrido frente al costo.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 en DESC y ninguna pista que replique; o R neto sólo con el objetivo más corto.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/espejo_macro_10t_20261107/PREREGISTRO_BARRIDO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_MACRO_10T_GC",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_REGLA"
+   ],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Espejo macro en velas de 10 ticks, sin lógica condicional (docs/research/espejo_macro_10t_20261107/PREREGISTRO_BARRIDO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794090000.7662132,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-espejo10t-gc-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "dur_ida": [
+    66.0,
+    142.0
+   ],
+   "ritmo": [
+    0.3404255319148936,
+    0.5982905982905983
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    0,
+    2,
+    0,
+    2,
+    1,
+    0,
+    2
+   ],
+   [
+    0,
+    2,
+    3,
+    0,
+    2,
+    1,
+    0,
+    2
+   ],
+   [
+    1,
+    1,
+    2,
+    0,
+    2,
+    2,
+    1,
+    5
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 3
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1794092478.3027954,
+ "cortes": {
+  "dur_ida": [
+   66.0,
+   142.0
+  ],
+  "ritmo": [
+   0.3404255319148936,
+   0.5982905982905983
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1794092167.6678991,
+  "celdas": [
+   [
+    0,
+    0,
+    2,
+    0,
+    2,
+    1,
+    0,
+    2
+   ],
+   [
+    0,
+    2,
+    3,
+    0,
+    2,
+    1,
+    0,
+    2
+   ],
+   [
+    1,
+    1,
+    2,
+    0,
+    2,
+    2,
+    1,
+    5
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 51,
+   "media": -0.151397095466555,
+   "ic90": [
+    -0.3618265872618892,
+    0.0733194675839286
+   ],
+   "p": 0.875781054736316,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.875781054736316,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "ESPEJO_MACRO_10T_GC",
+    "run_id": "ESPEJO10T-GC/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.9143586005830904,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 3,
+   "t": 2,
+   "familia": "ESPEJO_MACRO_10T_GC",
+   "run_id": "ESPEJO10T-GC/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.08015091314407963,
+   "efecto": 0.11752369784575634,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     0,
+     2,
+     0,
+     2,
+     1,
+     0,
+     2
+    ],
+    "n": 62,
+    "media_neta": 0.23968988055930932,
+    "sesiones": 22,
+    "ic90": [
+     0.06660273297152541,
+     0.49829801191919726
+    ],
+    "p_sesiones": 0.06096951524237881,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 22.31,
+    "pasa": true,
+    "n_pruebas": 2890.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.7080051898956299,
+    "canal": "total",
+    "q_fdr": 0.9980499788412662,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 2890,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 23328,
+    "criba": "maxt",
+    "t_maxt": 1.9587752951544097,
+    "p_maxt": 0.935064935064935,
+    "nominada_maxt": false,
+    "q_linaje": 0.9980499788412662,
+    "replica_pistas": {
+     "n": 43,
+     "media": -0.1467481086500495,
+     "ic90": [
+      -0.5356868638176465,
+      0.215700711212719
+     ],
+     "p": 0.7292274052478134,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     2,
+     3,
+     0,
+     2,
+     1,
+     0,
+     2
+    ],
+    "n": 67,
+    "media_neta": 0.228430615422714,
+    "sesiones": 23,
+    "ic90": [
+     0.0458859478416726,
+     0.47812498628580086
+    ],
+    "p_sesiones": 0.059470264867566215,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 21.82,
+    "pasa": true,
+    "n_pruebas": 2890.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.610166311264038,
+    "canal": "total",
+    "q_fdr": 0.9980499788412662,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 2890,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 23328,
+    "criba": "maxt",
+    "t_maxt": 1.7772415584248935,
+    "p_maxt": 0.977022977022977,
+    "nominada_maxt": false,
+    "q_linaje": 0.9980499788412662,
+    "replica_pistas": {
+     "n": 49,
+     "media": -0.14012650302581575,
+     "ic90": [
+      -0.5620016145600575,
+      0.23714606848961473
+     ],
+     "p": 0.6935131195335277,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     1,
+     2,
+     0,
+     2,
+     2,
+     1,
+     5
+    ],
+    "n": 74,
+    "media_neta": 0.23702169109251467,
+    "sesiones": 25,
+    "ic90": [
+     0.02680697870692851,
+     0.5007045616637568
+    ],
+    "p_sesiones": 0.06846576711644178,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 46.61,
+    "pasa": true,
+    "n_pruebas": 2890.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.6791326999664307,
+    "canal": "total",
+    "q_fdr": 0.9980499788412662,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 2890,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 23328,
+    "criba": "maxt",
+    "t_maxt": 1.6995563270206362,
+    "p_maxt": 0.993006993006993,
+    "nominada_maxt": false,
+    "q_linaje": 0.9980499788412662,
+    "replica_pistas": {
+     "n": 33,
+     "media": -0.30264812988381273,
+     "ic90": [
+      -0.6624392652687516,
+      0.05710176864288551
+     ],
+     "p": 0.9143586005830904,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 3 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9143586005830904); canasta media -0.151397095466555 IC90 [-0.3618265872618892, 0.0733194675839286]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.08015091314407963"
+}

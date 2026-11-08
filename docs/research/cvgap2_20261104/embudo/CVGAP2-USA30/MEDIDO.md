@@ -1,0 +1,16 @@
+## CVGAP2-USA30 — edgelab.research.cvgap2 · señal DK:USA30IDXUSD · ejecución DK:USA30IDXUSD
+- Justificación: La ruptura tardía de la caja amarilla (absorción alta) en la dirección del impulso barre stops tardíos; el regreso confirmado hacia la caja anticipa el relleno del impulso. Stop estructural detrás del extremo de la excursión (familia hija de CVGAP con lo aprendido el 02-04/11).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr-sep 2026; las duraciones no separan; la confirmación no mejora a mercado; media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 7913030 pruebas de ['CORREDOR_VOL_GAPS_ES']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 53278 de 933120 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 47280 (m del FDR 47280 de 466560 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.6290740966796875 (diagnóstico), linaje 7913030 como informacion, pistas sin nominación 12, candidatas 3
+- Potencia prevista (informativa): [0, 0, 0, 2, 2, 2, 1, 2, 2, 2, 0]: OOS n 96.0 potencia 1.00, holdout n 150 potencia 1.00; [0, 0, 0, 2, 2, 2, 2, 1, 2, 2, 0]: OOS n 82.0 potencia 1.00, holdout n 150 potencia 1.00; [0, 0, 0, 1, 2, 2, 1, 2, 0, 2, 0]: OOS n 72.0 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 3 candidatas guardadas
+- INTEGRIDAD [0, 0, 0, 2, 2, 2, 1, 2, 2, 2, 0]: regla 0.0012074366695594765, placebo -13.57, latencia 1 vela 0.01222858846664488 -> pasa
+- INTEGRIDAD [0, 0, 0, 2, 2, 2, 2, 1, 2, 2, 0]: regla 0.0010898385849421595, placebo -9.37, latencia 1 vela 0.00998391475032325 -> pasa
+- INTEGRIDAD [0, 0, 0, 1, 2, 2, 1, 2, 0, 2, 0]: regla -0.009689536660150926, placebo -6.41, latencia 1 vela -0.016577860133986533 -> no pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-0.04, -0.07]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.44, 0.33]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)

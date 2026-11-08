@@ -83,7 +83,7 @@ def main():
             try: st = emb.avanzar(s); errores[s["cid"]] = 0
             except Exception as e:                    # un corte de red no abandona la campaña: se reintenta en la vuelta siguiente
                 errores[s["cid"]] = errores.get(s["cid"], 0) + 1
-                print(time.strftime("%H:%M:%S"), s["cid"], f"ERROR {errores[s['cid']]}/{a.max_errores}", repr(e)[:400], flush=True)
+                print(time.strftime("%H:%M:%S"), s["cid"], f"ERROR {errores[s['cid']]}/{a.max_errores}", repr(e)[:150], "…", repr(e)[-450:], flush=True)
                 if errores[s["cid"]] >= a.max_errores: vivas.discard(s["cid"])
                 continue
             print(time.strftime("%H:%M:%S"), s["cid"], st["etapa"], st.get("fase"), st.get("motivo", ""), flush=True)

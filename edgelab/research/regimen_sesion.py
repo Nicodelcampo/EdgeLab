@@ -53,3 +53,13 @@ def rv_relativa(c, ses, corta, larga):
         a += (r * r - a) / corta; b += (r * r - b) / larga; m += 1
         if m >= corta and b > 0.0: out[k] = (a / b) ** 0.5
     return out
+
+
+def minuto_local(t, zona: str) -> np.ndarray:
+    """Minuto del día en la hora local de `zona` (IANA, p. ej. "Europe/London", "Asia/Tokyo"), con su horario de verano; `t` en
+    segundos UTC (cierre de la vela). 2026-11-03 (revisión de Gemini): el fixing de Londres y la apertura de Tokio no están a una
+    hora fija de Nueva York; las semanas en que los cambios de horario no coinciden corrían una hora."""
+    import pandas as pd
+    x = pd.to_datetime(np.asarray(t, np.int64), unit="s", utc=True).tz_convert(zona)
+    return (x.hour * 60 + x.minute).to_numpy(np.int64)
+

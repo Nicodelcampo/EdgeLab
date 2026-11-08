@@ -1,0 +1,15 @@
+## U1-ZONAS-NQ-R — edgelab.research.u1_zonas · señal NQ · ejecución NQ
+- Justificación: U1 (la familia más rentable) con zonas de volumen real concentrado (aVolZonePOI2) en lugar de huecos de LUX-IMB, operada en el propio futuro.
+- Refutación: Sin nominadas ni pistas confirmadas; nominadas que no pasan INTEGRIDAD; OOS en contra con potencia; o rendimiento <= U1 con LUX-IMB en el mismo instrumento.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4654321 pruebas de ['U1_ORO_GRILLA', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 211000 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250801, 20260331]: evaluables 152897 (m del FDR 152897 de 4478976 celdas), FDR 55 (informativo), maxT 1, RW umbral 5.197847843170166 (diagnóstico), linaje 4654321 como informacion, pistas sin nominación 40, candidatas 1
+- Potencia prevista (informativa): [0, 2, 0, 2, 2, 1, 2, 3, 2, 0, 0, 2]: OOS n 64.0 potencia 1.00, holdout n 150 potencia 1.00
+- AVISO INDAGA: el resultado se calculó con módulos que cambiaron después (['edgelab/holdout.py', 'edgelab/research/fuentes_ticks.py']); revisar si el cambio toca la medición
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 2, 0, 2, 2, 1, 2, 3, 2, 0, 0, 2]: regla 0.0009998108893206205, placebo -3.25, latencia 1 vela 0.024624872490588905 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [0.01]; veredictos ['NO_CONCLUYENTE']; potencias [0.33]; LORD++ sin rechazo
+- TOPES: ninguna variante con tope conserva el resultado en las dos mitades
+- **SIN_REGLA_OPERABLE** — ningún tope conserva el edge (la pérdida máxima no se puede acotar)

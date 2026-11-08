@@ -20,12 +20,19 @@ import pandas as pd
 
 from edgelab.research import rango_ruptura as RR
 from edgelab.research.grilla_generica import Variable
-from edgelab.research.regimen_sesion import minuto_ny, rv_relativa
+from edgelab.research.eventos import TIPOS_TIER1
+from edgelab.research.regimen_sesion import minuto_local, rv_relativa
 from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "WM-FIXING"
 INDICADORES = ["WM-FIXING"]
-M_PRE0, M_INI, M_FIX, M_SALE = 570, 630, 660, 750
+# 2026-11-03 (revisión de Gemini): los minutos son de la HORA DE LONDRES (el fixing es a las 16:00 de Londres; en las semanas en que
+# EE. UU. y Reino Unido no cambian de horario a la vez, 16:00 Londres son las 12:00 ET y no las 11:00). Ventana previa 14:30–15:30,
+# ventana del fixing 15:30–16:00, decisión al cierre de la vela de las 16:00, salida forzada 17:30 (todo en hora de Londres).
+ZONA = "Europe/London"
+M_PRE0, M_INI, M_FIX, M_SALE = 870, 930, 960, 1050
+# Noticias (Nico 2026-10-25): sin entradas a ±5 min de un dato tier1 y salida forzada antes de cada dato (lineas_salida).
+EXCLUIR_EVENTOS = dict(antes_min=5, despues_min=5, tipos=TIPOS_TIER1)
 PREFLIGHT_T0_S = 1_760_047_200
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=2),
@@ -41,7 +48,7 @@ VACIO = ["k", "ses", "regla", "lado", "imp_atr", "v_ratio", "rv_rel", "rango_fix
 
 def disparos(ctx: dict) -> pd.DataFrame:
     o, h, l, c, v = (np.asarray(ctx[x], float) for x in ("o", "h", "l", "c", "v"))
-    ses = np.asarray(ctx["ses"], np.int64); m = minuto_ny(np.asarray(ctx["t"], np.int64))
+    ses = np.asarray(ctx["ses"], np.int64); m = minuto_local(np.asarray(ctx["t"], np.int64), ZONA)
     atr = _atr_causal(h, l, c); rv = rv_relativa(c, ses, 30, 390); filas = []
     for sg in np.unique(ses):
         idx = np.flatnonzero(ses == sg); mm = m[idx]
@@ -61,7 +68,7 @@ def disparos(ctx: dict) -> pd.DataFrame:
 
 
 def lineas_salida(ctx) -> np.ndarray:
-    return RR.lineas_salida(ctx, M_SALE)
+    return RR.lineas_salida_noticias(ctx, M_SALE, zona=ZONA)
 
 
 def _lote(D, ej, ctx):

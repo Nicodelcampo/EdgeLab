@@ -78,3 +78,14 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - Con la regla vieja (sin `decision: escalera_v1`), si la riqueza de alfa se agota deja de lanzar campañas nuevas. Con `escalera_v1` eso no pasa: el tamiz FDR nomina y LORD++ confirma en réplica (`confirmaciones_lordpp.json`, que `sync_state.sh` sube).
 - `max_per_day` y `max_concurrent` acotan el uso de cómputo de Kaggle (cuota de GPU/CPU de tu cuenta).
 - Las claves nunca van al repo ni a la configuración: solo `.netrc` (0600) y la deploy key.
+
+
+## Cambio del 2026-11-08 (decisión de Nico): holdout exploratorio y más ritmo
+
+- `edgelab/autopilot/holdout_apertura.py` agrega el **modo exploratorio** (clave `holdout_exploratorio`): el agente puede abrir el
+  holdout de una familia sin candidato confirmado si declara antes la probabilidad de azar de desarrollo y la combinación (Fisher o
+  Stouffer). Una apertura por familia, sólo holdout, nunca para elegir.
+- Topes diarios por rol más altos (`edgelab/autopilot/roles.py`: Opus 24 + 40 + 20, Sonnet 40 + 60) y en la plantilla
+  `max_per_day: null` (sin tope diario: hace las corridas necesarias) y `max_concurrent: 8` (los lugares de Kaggle).
+- **Hay que refrescar el manifiesto de protegidos** después de instalar este commit: el protocolo de apertura y los roles están en él,
+  y sin refrescarlo el ciclo se detiene por protegidos alterados.

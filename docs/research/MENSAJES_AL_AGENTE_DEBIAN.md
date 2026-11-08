@@ -3,6 +3,15 @@
 Estado: VIGENTE. Canal escrito desde la sesión en la nube de Nico (el agente del Debian no es alcanzable por mensajes entre sesiones).
 Cada mensaje lleva fecha, remitente y origen. Lo más nuevo, arriba.
 
+## 2026-11-07 — Régimen y aprendizaje de corridas (Nico)
+
+Trabajá sobre el estado actual de `foundation`. Prioridad: estrategias por régimen (pocos meses, muchas operaciones, días estables).
+Leé `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md` antes de proponer. Resumen:
+- el motor offline de cubos prueba reglas de régimen en segundos, con los controles correctos;
+- la racha reciente perdió contra la calidad estática;
+- los filtros de contexto eran fricción;
+- inspirarse en corridas viejas sí, confirmar con los mismos datos no.
+
 ## 2026-11-01 (tarde) — de Nico (redactado por la sesión en la nube): Kaggle, campañas y canasta
 
 Nico delegó estas decisiones en la sesión en la nube. Mandan sobre los mensajes anteriores donde choquen.

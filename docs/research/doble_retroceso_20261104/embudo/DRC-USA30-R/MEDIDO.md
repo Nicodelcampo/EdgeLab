@@ -1,0 +1,12 @@
+## DRC-USA30-R — edgelab.research.doble_retroceso · señal DK:USA30IDXUSD · ejecución DK:USA30IDXUSD
+- Justificación: El impulso 2 barre la liquidez de P1; el retroceso 2 que no toma P2 muestra que el lado contrario no recupera la estructura; stop corto y estructural detrás de P2 (patrón de Nico, 04/11).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique; las variables de piernas no separan; falla de integridad o de paridad con NT8.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de []; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 846839 de 1492992 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20240102, 20260331]: evaluables 506268 (m del FDR 506268 de 746496 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.744215965270996 (diagnóstico), linaje 0 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 1, 0, 3, 1, 2, 0, 0, 2, 0, 4], [0, 1, 0, 3, 1, 1, 0, 0, 2, 0, 3], [1, 1, 1, 1, 1, 1, 0, 1, 1, 2, 3], [1, 1, 0, 2, 0, 3, 1, 0, 1, 0, 4], [0, 2, 0, 1, 1, 0, 2, 1, 1, 0, 1], [0, 1, 0, 1, 1, 3, 0, 0, 2, 1, 4], [0, 1, 0, 1, 1, 2, 0, 0, 1, 1, 4], [1, 1, 1, 2, 1, 0, 0, 1, 1, 2, 3], [0, 2, 0, 2, 1, 0, 2, 1, 1, 0, 0], [0, 1, 1, 3, 3, 1, 0, 0, 1, 0, 4], [0, 2, 1, 3, 1, 0, 2, 1, 1, 0, 1], [1, 1, 3, 2, 0, 3, 2, 0, 0, 1, 1], [1, 1, 3, 3, 0, 2, 2, 0, 0, 1, 1], [1, 1, 3, 0, 0, 1, 2, 0, 0, 1, 1], [1, 1, 0, 1, 1, 2, 0, 0, 1, 2, 3], [0, 2, 1, 1, 1, 0, 2, 1, 1, 0, 0], [1, 1, 0, 1, 1, 3, 0, 0, 2, 2, 3], [1, 1, 0, 1, 0, 1, 2, 0, 0, 1, 3], [1, 1, 3, 3, 0, 3, 2, 0, 0, 1, 3], [1, 1, 3, 1, 0, 2, 2, 0, 0, 1, 3]]
+- PISTAS canasta (una prueba): media -0.09840119630663471 IC90 [-0.15937044454226973, -0.03886186214516005] p 0.9942514371407148 sesiones 108; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 1.0; confirmadas 0 de 20 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -0.09840119630663471 IC90 [-0.15937044454226973, -0.03886186214516005]; canasta en contra con potencia; potencia de la canasta 0.9999999997616402

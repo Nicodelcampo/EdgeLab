@@ -18,9 +18,11 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 TIMEOUT_LANZAR_S = 480       # el servicio del Debian (TimeoutStartSec=900) corta el ciclo entero: un push no puede comérselo solo
+TOPE_KERNEL_BYTES = 1_048_576                 # Kaggle: «less than 1 megabytes» (rechazó 1.071.481 bytes el 07/11)
 BASE_MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/areas_expansion.py", "edgelab/research/areas_expansion_run.py",
                 "edgelab/research/grilla_generica.py", "edgelab/research/controles.py", "edgelab/research/etapas.py",
                 "edgelab/research/eventos.py", "edgelab/research/eventos_datos.py",                  # filtro/diagnóstico de eventos (2026-10-26)
+                "edgelab/research/regimen_sesion.py", "edgelab/research/contexto_comun.py", "edgelab/research/regimen_offline.py",          # contexto común y vetos causales (2026-11-04)
                 "edgelab/research/persistencia.py", "edgelab/research/grilla_masiva.py",
                 "edgelab/research/analizador.py"]                                                    # etapa ANALIZAR             # etapa PERSIST (canasta de régimen)
 
@@ -108,7 +110,8 @@ class KaggleRunner:
     def argumentos(self, spec, etapa, params, periodo) -> list:
         ejec = spec.get("ejecucion") or spec["sensor"]; fr, ex = friccion(ejec)
         if self.dataset_sellado:                                         # holdout: sólo el dataset sellado, nada del release
-            needs, extra = [], [self.dataset_sellado]
+            needs, extra = [], [self.dataset_sellado] + list(spec.get("datasets_extra", []))   # + almacenes de zonas de desarrollo
+            # (target-free, 2026-11-02): sirven de calentamiento — las zonas creadas antes de la frontera siguen vivas, como en vivo
         else:
             needs, extra = datasets(spec["sensor"], *periodo)
             if ejec != spec["sensor"]:
@@ -121,7 +124,7 @@ class KaggleRunner:
         nombre = f"embudo-{spec['cid'].lower()}-{etapa.lower()}-{periodo[0]}".replace("_", "-")[:49].rstrip("-")   # Kaggle <=50 y validate_push <=49; sin "_"
         slug = f"{cuenta}/{nombre}"
         env = dict(EXPERIMENTO=spec["experimento"], ETAPA=etapa, SENSOR=spec["sensor"], EJECUCION=ejec, DESDE=str(periodo[0]), HASTA=str(periodo[1]),
-                   FRICCION=repr(fr), EXTRA=repr(ex), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
+                   FRICCION=repr(fr), EXTRA=repr(ex), BARRA=str(spec.get("ticks_por_barra") or ""), PARAMS=json.dumps(params, separators=(",", ":"), default=float))
         if spec.get("confirmador"): env["CONFIRMADOR"] = spec["confirmador"]
         if self.dataset_sellado:
             if not params.get("acta"): raise ValueError("etapa de holdout sin acta registrada")
@@ -162,8 +165,13 @@ class KaggleRunner:
         return env
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         exigir_causalidad(spec["experimento"])
         a = self.argumentos(spec, etapa, params, periodo)
+        script = Path(a[a.index("--script") + 1])
+        if script.stat().st_size >= TOPE_KERNEL_BYTES:       # Kaggle: «The kernel source must be less than 1 megabytes» (07/11)
+            raise RuntimeError(f"no se lanzó: kernel de {script.stat().st_size} bytes (tope {TOPE_KERNEL_BYTES}); "
+                               "achicar las dependencias del experimento")
         env = self._env(a[1].split("/")[0])
         r = subprocess.run([self.python, "-X", "utf8", str(ROOT / "tools/kaggle_launch.py"), *a], cwd=ROOT, capture_output=True, text=True,
                            timeout=TIMEOUT_LANZAR_S, env=env)
@@ -201,11 +209,13 @@ class LocalRunner:
     def _archivo(self, h): return self.carpeta / f"{h}.json"
 
     def lanzar(self, spec, etapa, params, periodo) -> str:
+        if spec.get("estadistico"): params = dict(params, estadistico=spec["estadistico"])   # 2026-11-02: P&L en R si la campaña lo declara
         from edgelab.research import etapas as ET, grilla_generica as GG
         exigir_causalidad(spec["experimento"])
         exp = importlib.import_module(spec["experimento"]); ejec = spec.get("ejecucion") or spec["sensor"]
-        ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]])
-        cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec]) if ejec != spec["sensor"] else None
+        tb = spec.get("ticks_por_barra")
+        ctx = GG.contexto_m1(self.lectores[spec["sensor"]](*periodo, spec), self.ticks[spec["sensor"]], tb)
+        cx_ej = GG.contexto_m1(self.lectores[ejec](*periodo, spec), self.ticks[ejec], tb) if ejec != spec["sensor"] else None
         if spec.get("confirmador"): ctx["conf"] = GG.contexto_m1(self.lectores[spec["confirmador"]](*periodo, spec), self.ticks[spec["confirmador"]])
         fr, ex = friccion(ejec)
         h = f"local-{spec['cid']}-{etapa}-{periodo[0]}-{periodo[1]}-{len(self.res)}"

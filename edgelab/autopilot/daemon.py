@@ -89,7 +89,11 @@ class Autopilot:
         running = self.ledger.running()                                              # 2) ¿cupo y presupuesto?
         if len(running) >= self.cfg.get("max_concurrent", 1):
             return self._note(event="tick_no_capacity", **rep)
-        hyp_full = self.ledger.launched_since(now - 86400) >= self.cfg.get("max_per_day", 2); bm_full = self.ledger.launched_since(now - 86400, benchmark=True) >= self.cfg.get("max_benchmarks_per_day", 4)
+        # 2026-11-08 (Nico: «no le pongas tope a las corridas, que haga las necesarias»): max_per_day = null → sin tope diario;
+        # el único límite es max_concurrent (lugares de Kaggle). La clave ausente conserva el tope viejo (2) por compatibilidad.
+        tope_h = self.cfg.get("max_per_day", 2); tope_b = self.cfg.get("max_benchmarks_per_day", 4)
+        hyp_full = tope_h is not None and self.ledger.launched_since(now - 86400) >= tope_h
+        bm_full = tope_b is not None and self.ledger.launched_since(now - 86400, benchmark=True) >= tope_b
         if hyp_full and bm_full: return self._note(event="tick_no_capacity", **rep)
         if (cap := self.cfg.get("account_max_per_day")) and account.count_since(now - 86400, self.cfg.get("account_log")) >= cap:
             return self._note(event="tick_account_cap", reason=f"la cuenta ya lanzó {cap} kernels en 24 h (autopilot + manuales + otros agentes)", **rep)
@@ -99,7 +103,8 @@ class Autopilot:
             errs = guard.all_checks(spec, set(self.cfg.get("allow_internet", [])), self.repo, Path(prot) if prot else None)
             if spec.kind == "holdout":                                                # apertura del holdout: protocolo verificado acá (decisión 2026-10-20)
                 from .holdout_apertura import requisitos
-                errs += requisitos(spec, self.ledger, self.root, exigir_escalera=self.escalera)
+                errs += requisitos(spec, self.ledger, self.root, exigir_escalera=self.escalera,
+                                  permitir_exploratoria=bool(self.cfg.get("holdout_exploratorio")))
             if not self.escalera and self.fdr.wealth < 1e-4: errs.append("riqueza de alfa agotada: no se lanzan campañas nuevas hasta que haya replicaciones que la recarguen")
             if errs: rep["blocked"].append((spec.run_id, errs)); continue
             if self.cfg.get("mode", "propose") != "execute":

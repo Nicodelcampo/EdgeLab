@@ -1,0 +1,12 @@
+## PREAPERTURA-ES-R — edgelab.research.rango_preapertura · señal ES · ejecución ES
+- Justificación: Ruptura del rango 09:15–09:30 ET en ES con una reentrada tras falso quiebre (@theagent_trades; SPEC_RANGOS.md).
+- Refutación: 0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si el intento 2 no supera al 1, la reentrada queda refutada.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5626427 pruebas de ['OTR_930_SWEEP_ES']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 168 de 1296 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 120 (m del FDR 120 de 648 celdas), FDR 0 (informativo), maxT 0, RW umbral 2.9445207118988037 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 15, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 15 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 1, 1, 0, 0, 5], [1, 0, 1, 0, 0, 5]]
+- PISTAS canasta (una prueba): media 0.22909702696540604 IC90 [-0.13777420914096922, 0.6047524151824369] p 0.15321169707573107 sesiones 58; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.22088955522238882; confirmadas 0 de 2 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.22088955522238882); canasta media 0.22909702696540604 IC90 [-0.13777420914096922, 0.6047524151824369]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.13047907577018303

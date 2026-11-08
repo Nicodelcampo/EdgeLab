@@ -99,7 +99,10 @@ def estadisticas(S, Q, C, min_n=30):
         mu = S / C; var = (Q - C * mu ** 2) / (C - 1); t = mu / np.sqrt(var / C)
     ev = (C >= min_n) & np.isfinite(t)
     p = np.ones(C.shape)
-    if ev.any(): p[ev] = _cola_superior(t[ev])                              # sin evaluables: todo p = 1 (no revienta)
+    # 2026-11-03 (decisión de Nico, opción 1 de PROPUESTA_COLA_T_TAMIZ_FDR_20261103.md): p con la cola t de Student con n − 1 g.l.
+    # La cola normal nominaba ruido en celdas de 30-40 operaciones con m de millones (umbral BH ~6e-8, donde normal y t difieren
+    # 100-1000 veces). Con n grande es la misma cola.
+    if ev.any(): p[ev] = _cola_t_superior(t[ev], C[ev] - 1.0)               # sin evaluables: todo p = 1 (no revienta)
     return dict(media=mu, t=t, p=p, n=C, evaluable=ev)
 
 
@@ -379,6 +382,55 @@ def _cola_superior_nb(t):
     out = np.empty(len(t))
     for i in range(len(t)): out[i] = 1.0 - 0.5 * (1.0 + math.erf(t[i] / math.sqrt(2.0)))     # = 1 - NormalDist().cdf(t) (fórmula de 3.13)
     return out
+
+
+@njit(cache=True)
+def _betacf_nb(a, b, x):
+    """Fracción continua de la beta incompleta (Lentz modificado), igual que `escalera._betacf`."""
+    tiny = 1e-300
+    d = 1.0 - (a + b) * x / (a + 1.0)
+    if abs(d) < tiny: d = tiny
+    d = 1.0 / d; c = 1.0; h = d
+    for m in range(1, 500):
+        m2 = 2 * m
+        aa = m * (b - m) * x / ((a - 1 + m2) * (a + m2))
+        d = 1.0 + aa * d
+        if abs(d) < tiny: d = tiny
+        c = 1.0 + aa / c
+        if abs(c) < tiny: c = tiny
+        d = 1.0 / d; h *= d * c
+        aa = -(a + m) * (a + b + m) * x / ((a + m2) * (a + 1 + m2))
+        d = 1.0 + aa * d
+        if abs(d) < tiny: d = tiny
+        c = 1.0 + aa / c
+        if abs(c) < tiny: c = tiny
+        d = 1.0 / d; de = d * c; h *= de
+        if abs(de - 1.0) < 1e-15: break
+    return h
+
+
+@njit(cache=True)
+def _cola_t_nb(t, gl):
+    out = np.empty(len(t))
+    for i in range(len(t)):
+        ti, g = t[i], gl[i]
+        if not np.isfinite(ti):
+            out[i] = 0.0 if ti > 0 else 1.0; continue
+        x = g / (g + ti * ti); a = g / 2.0; b = 0.5
+        if x <= 0.0: ib = 0.0
+        elif x >= 1.0: ib = 1.0
+        else:
+            lbt = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b) + a * math.log(x) + b * math.log1p(-x)
+            if x < (a + 1.0) / (a + b + 2.0): ib = math.exp(lbt) * _betacf_nb(a, b, x) / a
+            else: ib = 1.0 - math.exp(lbt) * _betacf_nb(b, a, 1.0 - x) / b
+        cola = 0.5 * ib                                                    # = P(|T| > |t|) / 2
+        out[i] = cola if ti > 0 else 1.0 - cola
+    return out
+
+
+def _cola_t_superior(t, gl):
+    """P(T > t), T de Student con `gl` g.l., vectorizado (2026-11-03). Misma fórmula que `escalera.t_cola_superior`."""
+    return _cola_t_nb(np.ascontiguousarray(t, dtype=np.float64), np.ascontiguousarray(gl, dtype=np.float64))
 
 
 def _cola_superior(t):

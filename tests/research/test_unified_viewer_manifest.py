@@ -28,4 +28,7 @@ def test_no_hay_paginas_competidoras_en_el_visor():
     html = sorted(p.name for p in VIEWER.glob("*.html"))
     # Herramientas de juicio ciego de Nico (espejo), anteriores a esta regla y todavia en uso: se declaran explicitamente como excepcion
 # (decision 2026-10-14, ver docs/DECISIONES_20261014.md). Cualquier otra pagina nueva sigue siendo una pagina competidora.
-    assert html == ["blind_espejo.html", "espejo_triads.html", "index.html", "index_invariant.html", "spec_review.html", "store_viewer.html"], html
+    # 2026-11-08: espejo_macro_10t.html (detector de espejos macro en velas de 10 ticks, commit 70a37308, trabajo de espejos pedido por
+    # Nico) es de la misma familia de herramientas de juicio de espejo: se declara como excepcion explicita, no es un visor competidor.
+    assert html == ["blind_espejo.html", "espejo_macro_10t.html", "espejo_triads.html", "index.html", "index_invariant.html",
+                    "spec_review.html", "store_viewer.html"], html

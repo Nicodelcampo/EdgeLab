@@ -90,12 +90,14 @@ def n_celdas(exp, cortes=None) -> int:
     return int(np.prod([p.tamano_celdas() for p in perillas(exp, cortes or {v.nombre: [0.0] * (v.cuantiles - 1) for v in exp.VARIABLES if v.cuantiles})]))
 
 
-def contexto_m1(bloques, tick):
-    from edgelab.research.areas_expansion_run import m1_y_perfil
-    t, M, vpp, vpv, vps, tpx, tstart = m1_y_perfil(bloques)
+def contexto_m1(bloques, tick, ticks_por_barra=None):
+    """Contexto de velas M1 (por defecto) o de velas de `ticks_por_barra` ticks (2026-11-07): mismas claves, el motor de la grilla y el
+    simulador no cambian. Con velas de ticks, «barra» = vela de n ticks en todo el motor (TOPE_BARRAS, límite de 120 barras, etc.)."""
+    from edgelab.research.areas_expansion_run import m1_y_perfil, ticks_y_perfil
+    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(bloques, int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(bloques)
     return dict(t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
                 ses=M.ses.to_numpy().astype(np.int64), seg=M.seg.to_numpy(), vp_px=vpp, vp_vol=vpv, vp_start=vps, tpx=tpx, tstart=tstart,
-                tick=float(tick))
+                tick=float(tick), ticks_por_barra=int(ticks_por_barra) if ticks_por_barra else None)
 
 
 def aplicar_tope(e: float, s: int, st: float, tp: float, tope, tick: float) -> float:
@@ -205,7 +207,9 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
     if tope is not None: O[:, 6] = aplicar_tope_lote(O[:, 5], O[:, 4], O[:, 6], O[:, 7], tope, ctx["tick"])
     sim = ctx; ok = np.ones(len(O), bool)
     linea = hasattr(exp, "lineas_salida")
-    if linea and cx_ej is not None:
+    # 2026-11-03: una línea sólo de TIEMPO (±inf: salida forzada a una hora o antes de una noticia) no tiene precio que trasladar; se
+    # calcula sobre las velas de la ejecución y vale con señal en otro instrumento. El experimento lo declara con LINEAS_SOLO_TIEMPO.
+    if linea and cx_ej is not None and not getattr(exp, "LINEAS_SOLO_TIEMPO", False):
         raise ValueError("salida por línea con ejecución en otro instrumento: las líneas están en precios del sensor")
     if cx_ej is not None or retraso:
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
@@ -216,6 +220,8 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
                 sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
         if linea:
             lin = np.ascontiguousarray(np.asarray(exp.lineas_salida(sim), float))
+            if getattr(exp, "LINEAS_SOLO_TIEMPO", False) and np.isfinite(lin).any():
+                raise ValueError("LINEAS_SOLO_TIEMPO con líneas de precio finito")
             if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
             p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
                                                      int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))
@@ -370,14 +376,25 @@ def resumen_e0(D, variables, cortes):
     return out
 
 
-NORMALIZACIONES = ("rango_sesion_previa",)
+NORMALIZACIONES = ("rango_sesion_previa", "riesgo")
+
+
+def riesgo_ops(O, fb, sim) -> np.ndarray:
+    """Riesgo inicial por operación (2026-11-02, medir en R): |entrada real − stop|, ambos conocidos al llenar. E1A (límite 2) llena
+    en la apertura de la vela de llenado; mercado al cierre y límites, en su nivel. `fb`: vela de llenado (-1 sin llenado -> NaN)."""
+    O = np.asarray(O); fb = np.asarray(fb, np.int64); o = np.asarray(sim["o"], float)
+    e = np.where(O[:, 3] == 2, o[np.clip(fb, 0, len(o) - 1)], O[:, 5])
+    # 2026-11-03: riesgo menor a medio tick es un stop en la entrada con residuo de coma flotante (~1e-10), no un riesgo real; dividir
+    # por él daba ±1e8 R (TAU-GC, U1-6B/6E/ES/YM en el atlas). Queda NaN como el riesgo 0 que ya se excluía.
+    r = np.abs(e - O[:, 6]); tk = float(sim.get("tick", 0.0) or 0.0)
+    return np.where((fb >= 0) & (r > max(tk / 2, 1e-12)), r, np.nan)
 
 
 def escala_ops(metodo: str, ses_ops, ctx_ej) -> np.ndarray:
     """Escala causal por operación (2026-10-26, POTENCIA_MISMOS_DATOS §2): `rango_sesion_previa` = máximo − mínimo de la sesión
     ANTERIOR a la de la operación en el instrumento de ejecución (conocido antes de operar). Sin sesión anterior: NaN (la operación
     queda fuera, como un llenado imposible). Un experimento la activa declarando `NORMALIZAR` en su módulo, antes de correr."""
-    if metodo not in NORMALIZACIONES: raise ValueError(f"NORMALIZAR {metodo!r}: {NORMALIZACIONES}")
+    if metodo not in NORMALIZACIONES or metodo == "riesgo": raise ValueError(f"escala_ops {metodo!r}: sólo rango_sesion_previa (riesgo usa riesgo_ops)")
     s = pd.DataFrame(dict(ses=ctx_ej["ses"], h=ctx_ej["h"], l=ctx_ej["l"])).groupby("ses").agg(h=("h", "max"), l=("l", "min")).sort_index()
     previo = (s.h - s.l).shift(1); previo = previo.where(previo > 0)
     return pd.Series(np.asarray(ses_ops)).map(previo).to_numpy(float)
@@ -424,8 +441,10 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     if res["ejecuciones_equivalentes"]: log(f"AVISO: {len(res['ejecuciones_equivalentes'])} grupos de ejecuciones idénticas (perillas muertas)")
     res["ambiguedad_M1"] = dict(resueltas_con_ticks=int((amb == 1).sum()), sin_ticks_stop=int((amb == 2).sum()), operaciones=int(len(amb)))
     net = pnl - friccion; log(f"operaciones {len(net)}, con llenado {int(np.isfinite(pnl).sum())} ({time.time() - t0:.0f}s)")
+    net_puntos = net.copy()
     if (norm := getattr(exp, "NORMALIZAR", None)):                                         # 2026-10-26: estadístico declarado en el módulo
-        esc = escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx)
+        esc = (riesgo_ops(O, fb, cx_ej if cx_ej is not None else ctx) if norm == "riesgo"     # 2026-11-02: P&L en R
+               else escala_ops(norm, D.ses.to_numpy()[di], cx_ej if cx_ej is not None else ctx))
         med = float(np.nanmedian(esc)) if np.isfinite(esc).any() else float("nan")
         net = net / esc; extra_adverso = extra_adverso / med
         res["normalizado"] = dict(metodo=norm, escala_mediana=med, sin_escala=int((~np.isfinite(esc)).sum()),
@@ -439,7 +458,8 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     mes = pd.to_datetime(ctx["t"][D.k.to_numpy()[di]], unit="s", utc=True).strftime("%Y%m").to_numpy()
     S, Q, C = GM.tensor(P, idx, net); st = GM.estadisticas(S, Q, C)
     cx = dict(perillas=P, indices=idx, net=net, st=st, ses=D.ses.to_numpy()[di], mes=mes, dist=dist, ejes=tuple(getattr(exp, "EJES_ORDINALES", ())), O=O,
-              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb))
+              k=D.k.to_numpy()[di], t=ctx["t"][D.k.to_numpy()[di]], t_fill=hora_de_barra(t_ej, fb), t_exit=hora_de_barra(t_ej, xb),
+              net_puntos=net_puntos, D=D, di=di)        # D y di por referencia (sin copia)
     cx["n_pruebas"] = len(celdas) if modo == "REP" else int(st["evaluable"].sum())          # para el recorte de la maldición del ganador
     cx["n_pruebas_metodo"] = "bruto"
     if modo == "REP" and len(celdas) >= 2:                                                  # 2026-10-24: Li-Ji con la matriz sesión x celda
@@ -449,6 +469,20 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
         res["aviso_n_pruebas"] = "n_pruebas bruto (celdas evaluables): sin matriz de P&L de todas las celdas, Li-Ji no aplicable"
     res.update(operaciones=int(len(net)), con_llenado=int(np.isfinite(pnl).sum()), celdas=int(S.size),
                perillas=[(p.nombre, p.niveles, p.modo) for p in P], ejecuciones=[list(e) for e in exp.EJECUCIONES])
+    res["marginales_globales"] = marginales_globales(P, idx, net, cx["ses"], exp.EJECUCIONES)   # 2026-11-02: ideas transferibles
+    # 2026-11-04: contexto común y vetos (contexto_comun.py, rama de Gemini). Nunca tumba la campaña: si falla, queda el error en el resultado.
+    # Se guardan también los marginales del BRUTO (sin fricción, en las mismas unidades) para separar contexto de mercado de fricción en R.
+    try:
+        from edgelab.research import contexto_comun as CC
+        sim_cc = cx_ej if cx_ej is not None else ctx; cache_cc = {}
+        res["marginales_globales"].update(CC.marginales_contexto(sim_cc, O, net, cx["ses"], cache=cache_cc))
+        bruto = (pnl / esc) if norm else pnl.copy()
+        bruto = np.where(np.isfinite(net), bruto, np.nan)
+        res["marginales_globales_bruto"] = marginales_globales(P, idx, bruto, cx["ses"], exp.EJECUCIONES)
+        res["marginales_globales_bruto"].update(CC.marginales_contexto(sim_cc, O, bruto, cx["ses"], cache=cache_cc))
+    except Exception as e_cc:                                                                  # noqa: BLE001
+        res["contexto_comun_error"] = f"{type(e_cc).__name__}: {e_cc}"[:300]; log(f"AVISO: contexto común no calculado ({res['contexto_comun_error']})")
+    if modo == "MARG": return res, cx
     if modo == "REP":
         res["n_pruebas"] = dict(n=float(cx["n_pruebas"]), metodo=cx["n_pruebas_metodo"], bruto=len(celdas))
         res["replica"] = [evaluar(tuple(c), cx, friccion=friccion, extra_adverso=extra_adverso, resolucion=resolucion)
@@ -462,6 +496,27 @@ def correr(exp, ctx, *, modo, friccion, extra_adverso, cortes=None, celdas=None,
     return res, cx
 
 
+def marginales_globales(P, idx, net, ses, ejecuciones) -> dict:
+    """Media del P&L neto por nivel de CADA perilla, sobre todas las operaciones de la grilla (no alrededor de una celda): n, suma,
+    suma de cuadrados y sesiones distintas por nivel, para el meta-análisis entre familias (2026-11-02, Nico: «ideas o lógicas que se
+    pueden aplicar en otras estrategias»). La ejecución se descompone además en sus componentes (entrada, objetivo, stop, BE).
+    Target sobre datos ya usados por la grilla: no elige celdas ni consume pruebas nuevas."""
+    net = np.asarray(net, float); ok = np.isfinite(net); ses = np.asarray(ses); out = {}
+    def _agg(ix, nombre):
+        ix = np.asarray(ix); filas = []
+        for lv in np.unique(ix[ok & (ix >= 0)]):
+            m = ok & (ix == lv); x = net[m]
+            filas.append(dict(nivel=int(lv), n=int(m.sum()), suma=float(x.sum()), suma2=float((x * x).sum()), sesiones=int(len(np.unique(ses[m])))))
+        out[nombre] = filas
+    for p, ix in zip(P, idx): _agg(ix, p.nombre)
+    ei = np.asarray(idx[-1]); comps = ("entrada", "objetivo", "stop", "be")
+    for c in range(min(len(comps), len(ejecuciones[0]) if len(ejecuciones) else 0)):
+        etiquetas = sorted({str(e[c]) for e in ejecuciones}); mapa = np.array([etiquetas.index(str(e[c])) for e in ejecuciones])
+        _agg(np.where(ei >= 0, mapa[np.clip(ei, 0, len(mapa) - 1)], -1), f"ejecución.{comps[c]}")
+        out[f"ejecución.{comps[c]}.etiquetas"] = etiquetas
+    return out
+
+
 def matriz_sesiones(cx, celdas):
     """P&L neto sumado por sesión (filas) y celda (columnas), 0 donde la celda no operó: la matriz para Li-Ji."""
     us, inv = np.unique(cx["ses"], return_inverse=True); M = np.zeros((len(us), len(celdas)))
@@ -471,16 +526,80 @@ def matriz_sesiones(cx, celdas):
     return M
 
 
-def operaciones_de(cx, celdas):
+def operaciones_de(cx, celdas, sim=None):
     """Serie por operación de cada celda congelada, en orden de tiempo (lo que necesita un seguimiento secuencial: réplica,
     holdout o paper). Columnas: celda (índice en `celdas`), t (cierre de la vela de decisión, s), ses, k, neto, t_fill y t_exit
     (cierre de las velas de llenado y salida en el instrumento de ejecución, s). El orden sigue siendo por t, no por t_exit."""
     filas = []
     for i, c in enumerate(celdas):
         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
-        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m],
-                                  t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])))
+        d = dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], t_fill=cx["t_fill"][m], t_exit=cx["t_exit"][m])
+        if sim is not None:                                            # 2026-11-02: riesgo inicial (entrada real a stop) para medir en R
+            fb = np.searchsorted(np.asarray(sim["t"], float), cx["t_fill"][m]); Om = cx["O"][m]
+            d["riesgo"] = riesgo_ops(Om, fb, sim)
+            # 2026-11-04: precios absolutos en el instrumento de ejecución, para repetir la operación en NT8 (Market Replay) y medir
+            # paridad de ejecución y fricción real. `entrada` es la de la simulación: primer tick de la vela de llenado si límite=2.
+            o_ = np.asarray(sim["o"], float); fbc = np.clip(fb, 0, len(o_) - 1)
+            d["lado"] = Om[:, 4].astype(int); d["limite"] = Om[:, 3].astype(int)
+            d["entrada"] = np.where(Om[:, 3] == 2, o_[fbc], Om[:, 5]); d["stop"] = Om[:, 6]; d["objetivo"] = Om[:, 7]
+        filas.append(pd.DataFrame(d))
     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
+
+
+def trayectorias(cx, celdas, sim, friccion: float, k: int = 240, extra=None) -> list:
+    """Camino vela a vela, en R, de cada operación con llenado de las celdas congeladas (2026-11-02, programa de mejora de R): desde
+    la vela de llenado y hasta `k` velas o el fin de la sesión. Por vela: lo más favorable (`f`), lo más adverso (`a`) y el cierre
+    (`c`), todos como (precio − entrada) × lado / riesgo. Más: el stop y el objetivo de la regla en R (stop = −1 por construcción), la
+    fricción en R, el R realizado por la regla, la hora de entrada y las variables de la celda en `extra` (columnas de D, causales).
+    Con esto se evalúan políticas de salida y filtros OFFLINE, sin una corrida por política. Datos ya usados por la regla."""
+    O = cx["O"]; t_ej = np.asarray(sim["t"], float); o_, h, l, c, ses = (np.asarray(sim[x]) for x in ("o", "h", "l", "c", "ses"))
+    out = []
+    for i, cel in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(cel)) & np.isfinite(cx["net"]))
+        for r in m:
+            fb = int(np.searchsorted(t_ej, cx["t_fill"][r])); lim, s_ = int(O[r, 3]), int(O[r, 4])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5]); rg = abs(e - float(O[r, 6]))
+            if not rg > 0: continue
+            j1 = min(len(c), fb + k); fin = fb + int(np.argmax(ses[fb:j1] != ses[fb])) if (ses[fb:j1] != ses[fb]).any() else j1
+            hh, ll, cc = h[fb:fin], l[fb:fin], c[fb:fin]
+            fav = ((hh - e) if s_ == 1 else (e - ll)) / rg; adv = ((ll - e) if s_ == 1 else (e - hh)) / rg; cie = (cc - e) * s_ / rg
+            fila = dict(celda=i, t=float(cx["t"][r]), ses=int(cx["ses"][r]), lado=s_, riesgo=rg, stop_R=-1.0,
+                        objetivo_R=float((O[r, 7] - e) * s_ / rg), friccion_R=float(friccion / rg), R_regla=float(cx["net_puntos"][r] / rg)
+                        if "net_puntos" in cx else None, f=np.round(fav, 3).tolist(), a=np.round(adv, 3).tolist(), c=np.round(cie, 3).tolist())
+            if extra: fila["x"] = {k_: float(v[r]) for k_, v in extra.items()}
+            out.append(fila)
+    return out
+
+
+def auditar_operaciones(cx, celdas, sim, linea: bool = False, max_detalle: int = 50) -> dict:
+    """Auditoría vela a vela (experimento 4, 2026-11-02), independiente del simulador, de cada operación con llenado de las celdas
+    congeladas, sobre las velas M1 del instrumento de ejecución `sim`. No usa ni devuelve P&L: sólo tiempos, precios y niveles.
+      causal      el llenado ocurre DESPUÉS del cierre de la vela de decisión (t_fill > t). E1C (llenado al cierre de la misma vela)
+                  es un supuesto declarado y se cuenta aparte;
+      entrada     el precio de entrada está dentro del rango [l, h] de la vela de llenado (±1 tick): no hay fills imposibles;
+      orden       t_exit >= t_fill;
+      toque_previo una vela entre el llenado y la salida (exclusive) ya tocó el stop o el objetivo y la operación siguió abierta
+                  (un stop o un objetivo salteado). Con BE o con salida por línea el stop puede haberse movido: se informa aparte.
+    Devuelve los conteos y hasta `max_detalle` casos de cada falla."""
+    O = cx["O"]; tk = float(sim["tick"]); t_ej = np.asarray(sim["t"], float); o_, h, l = sim["o"], sim["h"], sim["l"]
+    fallas = dict(causal=[], entrada=[], orden=[], toque_previo=[], toque_previo_con_be=[]); n = 0; al_cierre = 0
+    for i, c in enumerate(celdas):
+        m = np.flatnonzero(GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"]))
+        for r in m:
+            n += 1; tf, tx, t0 = cx["t_fill"][r], cx["t_exit"][r], cx["t"][r]
+            fb = int(np.searchsorted(t_ej, tf)); xb = int(np.searchsorted(t_ej, tx))
+            lim, s, sl, tp, be = int(O[r, 3]), int(O[r, 4]), float(O[r, 6]), float(O[r, 7]), int(O[r, 8])
+            e = float(o_[fb]) if lim == 2 else float(O[r, 5])                # E1A llena en la apertura; E1C al cierre; límite en su nivel
+            caso = dict(celda=i, t=float(t0), t_fill=float(tf), t_exit=float(tx), lim=lim, s=s, e=e, sl=sl, tp=tp)
+            if lim == 0 and tf == t0: al_cierre += 1                         # E1C: supuesto declarado (llenado al cierre de la decisión)
+            elif not tf > t0: fallas["causal"].append(caso)
+            if not (l[fb] - tk <= e <= h[fb] + tk): fallas["entrada"].append(dict(caso, h=float(h[fb]), l=float(l[fb])))
+            if not tx >= tf: fallas["orden"].append(caso)
+            for j in range(fb + 1, xb):
+                toca = (l[j] <= sl or h[j] >= tp + tk) if s == 1 else (h[j] >= sl or l[j] <= tp - tk)   # objetivo: atravesado por 1 tick
+                if toca:
+                    fallas["toque_previo_con_be" if be or linea else "toque_previo"].append(dict(caso, vela=float(t_ej[j]))); break
+    return dict(operaciones=n, llenado_al_cierre_e1c=al_cierre, **{k: len(v) for k, v in fallas.items()}, detalle={k: v[:max_detalle] for k, v in fallas.items() if v})
 
 
 def para_autopilot(res, fuente):

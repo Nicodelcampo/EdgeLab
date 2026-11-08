@@ -70,3 +70,20 @@ def test_el_visor_js_usa_la_misma_frontera():
             if m.group(2).replace("_", "") not in {str(H.HOLDOUT_APERTURA_UTC_NS), str(H.HOLDOUT_APERTURA_UTC_S), str(H.HOLDOUT_APERTURA_UTC_S * 1000)}:
                 malas.append(f"{rel}: {m.group(1)} = {m.group(2)}")
     assert malas == [], malas
+
+
+def test_sesiones_excluidas_no_salen_de_los_lectores_sellados(tmp_path):
+    """2026-11-02 (Nico): ningún agente usa las sesiones incompletas declaradas en `holdout.SESIONES_EXCLUIDAS_HOLDOUT`."""
+    import numpy as np
+    import pandas as pd
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, sesion_excluida
+    from edgelab.research import fuentes_ticks as F
+    assert sesion_excluida("ES", 20261029) and sesion_excluida("DK:USATECHIDXUSD", "2026-10-29") and not sesion_excluida("NQ", 20261029)
+    filas = []
+    for td, base in ((20261006, 0), (20261007, 86400), (20261008, 2 * 86400)):
+        ts = HOLDOUT_APERTURA_UTC_NS + (5 * 86400 + base) * 10**9 + np.arange(5) * 10**9
+        filas.append(pd.DataFrame(dict(ts_utc_ns=ts, trade_date=td, price_ticks=np.arange(5) + 80000, volume=1, contract="NQ 12-26")))
+    f = tmp_path / "NQ_12-26_ticks.parquet"; pd.concat(filas).to_parquet(f)
+    acta = tmp_path / "ACTA.json"; acta.write_text("{}")
+    dias = {int(b.sesion.iloc[0]) for b in F.bloques_nq_sellado(20261001, 20261030, [str(f)], str(acta), 0.25)}
+    assert 20261007 not in dias and {20261006, 20261008} <= dias

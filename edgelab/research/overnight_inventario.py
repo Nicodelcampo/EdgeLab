@@ -22,12 +22,16 @@ import pandas as pd
 
 from edgelab.research import rango_ruptura as RR
 from edgelab.research.grilla_generica import Variable
+from edgelab.research.eventos import TIPOS_TIER1
 from edgelab.research.regimen_sesion import minuto_ny
 from edgelab.research.zonas_gaps import _atr_causal
 
 NOMBRE = "OVERNIGHT-INVENTARIO"
 INDICADORES = ["OVERNIGHT-INVENTARIO"]
 REL_FIN_ON, M_DEC, M_SALE = 929, 570, 690
+# 2026-11-03 (revisión de Gemini; Nico 2026-10-25 «no operar durante noticias»): sin entradas a ±5 min de un dato tier1 y salida
+# forzada antes de cada dato (`RR.lineas_salida_noticias`).
+EXCLUIR_EVENTOS = dict(antes_min=5, despues_min=5, tipos=TIPOS_TIER1)
 PREFLIGHT_T0_S = 1_760_047_200
 VARIABLES = [
     Variable("regla", "regla", "grupo", categoria=2),
@@ -63,7 +67,7 @@ def disparos(ctx: dict) -> pd.DataFrame:
 
 
 def lineas_salida(ctx) -> np.ndarray:
-    return RR.lineas_salida(ctx, M_SALE)
+    return RR.lineas_salida_noticias(ctx, M_SALE)
 
 
 def _lote(D, ej, ctx):

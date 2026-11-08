@@ -318,3 +318,13 @@ def test_account_cap_counts_launches_from_any_source(repo, tmp_path):
     ap = Autopilot(tmp_path / "root", FakeExecutor({}), _cfg(tmp_path, account_max_per_day=2, account_log=str(log)), repo=repo, registry=Reg())
     t = ap.tick([spec()]); assert t["event"] == "tick_account_cap" and ap.ledger.running() == [] and ap.ledger.uncertain() == []
     ap2 = Autopilot(tmp_path / "root2", FakeExecutor({}), _cfg(tmp_path, account_max_per_day=3, account_log=str(log)), repo=repo, registry=Reg()); assert ap2.tick([spec()])["launched"][0] == "r1"
+
+
+def test_sin_tope_diario_de_corridas(repo, tmp_path):
+    """max_per_day = None (Nico, 2026-11-08): sin tope diario; con el tope viejo, 1.000 lanzadas en 24 h frenan el ciclo."""
+    for tope, frena in ((None, False), (5, True)):
+        c = _cfg(tmp_path); c["max_per_day"] = tope; c["max_benchmarks_per_day"] = tope
+        ap = Autopilot(tmp_path / f"root{tope}", FakeExecutor({}), c, repo=repo, registry=Reg())
+        ap.ledger.launched_since = lambda *a, **k: 1000
+        t = ap.tick([spec()])
+        assert (t["event"] == "tick_no_capacity") == frena and (frena or t["launched"][0] == "r1")

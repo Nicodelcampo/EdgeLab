@@ -1,0 +1,12 @@
+## ESPEJOZONAS-NQ — edgelab.research.espejo_zonas · señal NQ · ejecución NQ
+- Justificación: Si el impulso fue a buscar la liquidez de las zonas de los indicadores, al alcanzarlas el motivo desaparece: la vuelta completa el espejo o va más allá de A; zonas vivas justo más allá del extremo deberían hacerlo fallar.
+- Refutación: Los espejos con zonas tomadas no llegan a A ni lo pasan más que los sin zonas a igual ancho, duración y horario, y las zonas cercanas más allá no cambian el resultado; ninguna celda nominada por FDR q 0,10 ni pista que replique.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 181464 pruebas de ['ESPEJO_MACRO_10T_TIEMPO_NQ', 'ESPEJO_PICOS_NQ']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 95636 de 648000 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 52868 (m del FDR 52868 de 324000 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.531064033508301 (diagnóstico), linaje 181464 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 0, 2, 1, 4, 3, 4, 1, 1], [0, 0, 2, 1, 4, 0, 0, 1, 1], [0, 0, 0, 4, 1, 3, 4, 1, 4], [0, 0, 0, 4, 1, 3, 0, 1, 7], [0, 0, 0, 4, 1, 0, 4, 1, 7], [0, 0, 0, 4, 1, 0, 0, 1, 4], [0, 0, 2, 1, 0, 0, 4, 1, 1], [0, 0, 2, 1, 0, 3, 0, 1, 1], [0, 0, 0, 3, 4, 1, 2, 1, 7], [0, 0, 0, 2, 4, 2, 3, 2, 4], [0, 0, 2, 4, 3, 2, 1, 0, 6], [1, 0, 0, 3, 2, 1, 4, 0, 2], [2, 0, 1, 3, 0, 2, 4, 2, 3], [0, 0, 0, 2, 1, 0, 0, 1, 7], [0, 0, 1, 4, 4, 0, 0, 1, 5], [1, 0, 2, 0, 2, 0, 4, 1, 4], [1, 0, 2, 0, 2, 3, 0, 1, 4], [2, 0, 2, 4, 0, 2, 4, 2, 3], [0, 0, 0, 2, 1, 0, 4, 1, 4], [0, 0, 0, 2, 1, 3, 0, 1, 4]]
+- PISTAS canasta (una prueba): media -0.16305471547533662 IC90 [-0.22376785451198042, -0.10137748187184227] p 1.0 sesiones 123; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 1.0; confirmadas 0 de 20 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -0.16305471547533662 IC90 [-0.22376785451198042, -0.10137748187184227]; canasta en contra con potencia; potencia de la canasta 0.9999995969618093

@@ -1,0 +1,1344 @@
+{
+ "etapa": "CONTEO",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793810708.7186446,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793811430.6742358,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ]
+   ]
+  },
+  {
+   "ts": 1793812085.8691454,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1793812717.2954192,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1793813331.3054795,
+   "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1793813632.2382748,
+   "etapa": "ATRAS",
+   "fin": true,
+   "nota": "sin período hacia atrás declarado"
+  },
+  {
+   "ts": 1793814244.7398863,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1793814545.7248957,
+   "etapa": "ACTA",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "CVGAP2-CFD-NQ",
+  "familia": "CVGAP2_CFD_NQ",
+  "experimento": "edgelab.research.cvgap2",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 466560,
+  "justificacion_economica": "La ruptura tardía de la caja amarilla (absorción alta) en la dirección del impulso barre stops tardíos; el regreso confirmado hacia la caja anticipa el relleno del impulso. Stop estructural detrás del extremo de la excursión (familia hija de CVGAP con lo aprendido el 02-04/11).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr-sep 2026; las duraciones no separan; la confirmación no mejora a mercado; media neta <= 0 en el holdout.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260925
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260925
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "CVGAP2_CFD_NQ",
+   "declarada": true,
+   "padres": [
+    "CORREDOR_VOL_GAPS_CFD_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 6870981,
+   "n_heredado": 6870981,
+   "total": 6870981,
+   "justificacion": "Hija de CVGAP (confirmación, stop estructural, duraciones de piernas, salida por noticias); declarada antes de DESC (docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793810708.7183363,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-cvgap2-cfd-nq-holdout-conteo-20261001",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "tamano_impulso": [
+    4.487051893977994,
+    7.449342465570724
+   ],
+   "dur_ida": [
+    1.0,
+    6.0
+   ],
+   "dur_reg": [
+    2.0,
+    15.0
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    2,
+    1
+   ]
+  ],
+  "tope": [
+   "pts",
+   150.0
+  ],
+  "acta": {
+   "cid": "CVGAP2-CFD-NQ",
+   "familia": "CVGAP2_CFD_NQ",
+   "experimento": "edgelab.research.cvgap2",
+   "sensor": "DK:USATECHIDXUSD",
+   "ejecucion": "NQ",
+   "regla": {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "tope": [
+     "pts",
+     150.0
+    ],
+    "puntaje": 3.8713523037995285,
+    "peor": -1.0239612403100775
+   },
+   "cortes": {
+    "tamano_impulso": [
+     4.487051893977994,
+     7.449342465570724
+    ],
+    "dur_ida": [
+     1.0,
+     6.0
+    ],
+    "dur_reg": [
+     2.0,
+     15.0
+    ]
+   },
+   "holdout_desde": 20261001,
+   "n_fijo": 150,
+   "alfa": 0.003607974489558189,
+   "registrada": 1793814545.7214684,
+   "reserva_lord": {
+    "familia": "CVGAP2_CFD_NQ",
+    "reserva_id": "CVGAP2-CFD-NQ/holdout",
+    "t": 2,
+    "nivel": 0.003607974489558189,
+    "resuelta": false
+   },
+   "multiplicidad": {
+    "linaje": {
+     "familia": "CVGAP2_CFD_NQ",
+     "declarada": true,
+     "padres": [
+      "CORREDOR_VOL_GAPS_CFD_NQ"
+     ],
+     "propias": 0,
+     "bruto_heredado": 6870981,
+     "n_heredado": 6870981,
+     "total": 6870981,
+     "justificacion": "Hija de CVGAP (confirmación, stop estructural, duraciones de piernas, salida por noticias); declarada antes de DESC (docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md)",
+     "metodo_n": "bruto",
+     "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+     "como": "informacion"
+    },
+    "total": 6870981,
+    "linaje_como": "informacion",
+    "metodo_n": "bruto",
+    "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+    "via": "nominada_fdr",
+    "q_linaje": 1.0,
+    "recorte": {
+     "t": 3.2906673652085683,
+     "t_ajustado": 0.0,
+     "p_ajustada": 1.0,
+     "conservado": 0.0,
+     "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+    },
+    "efecto_esperado": 0.0,
+    "potencia_holdout": 0.0
+   },
+   "regimen": {
+    "definicion": null,
+    "actual_desde": null,
+    "fraccion_efecto": 0.5,
+    "potencia_min": 0.8
+   },
+   "oos": [
+    "NO_CONCLUYENTE"
+   ],
+   "atras": [],
+   "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
+   "plan_holdout": {
+    "n_fijo": 150,
+    "n_necesario": 124,
+    "potencia": 0.8850758169023123,
+    "efecto": 0.07740128687649067,
+    "sd_op": 0.24385287753937188,
+    "fuente": "fracción del DESC",
+    "nivel": 0.003607974489558189
+   }
+  }
+ },
+ "periodo": [
+  20261001,
+  20261103
+ ],
+ "lanzada": 1793814851.1910248,
+ "cortes": {
+  "tamano_impulso": [
+   4.487051893977994,
+   7.449342465570724
+  ],
+  "dur_ida": [
+   1.0,
+   6.0
+  ],
+  "dur_reg": [
+   2.0,
+   15.0
+  ]
+ },
+ "candidatas": [
+  [
+   0,
+   1,
+   0,
+   2,
+   2,
+   2,
+   1,
+   2,
+   0,
+   2,
+   1
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "n": 51,
+    "media_neta": 0.15480257375298134,
+    "sesiones": 30,
+    "ic90": [
+     0.09771577424895211,
+     0.21004688209507152
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 22.16,
+    "pasa": true,
+    "n_pruebas": 37527.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 4.546741008758545,
+    "canal": "reciente",
+    "q_fdr": 0.0123203748841977,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 17362,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 466560,
+    "criba": "maxt",
+    "t_maxt": 3.9568835617315408,
+    "p_maxt": 0.03196803196803197,
+    "nominada_maxt": true,
+    "q_linaje": 1.0
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    2,
+    1
+   ],
+   "n_desc": 51,
+   "ops_mes": 17.0,
+   "efecto": 0.07740128687649067,
+   "oos": {
+    "n": 102.0,
+    "mde": 0.0600360169502045,
+    "potencia": 0.9407178255584577
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 0.04950696784541309,
+    "potencia": 0.9875388934353899
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    2,
+    1
+   ],
+   "indagacion": {
+    "base": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "por_perilla": {
+     "escala": [
+      {
+       "nivel": 0,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 23,
+       "media_neta": 0.0034857954400351276,
+       "sesiones": 18,
+       "ic90": [
+        -0.13433208177254113,
+        0.11619303136792418
+       ],
+       "p_sesiones": 0.48303393213572854,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "variante_w": [
+      {
+       "nivel": 0,
+       "n": 118,
+       "media_neta": 0.04455689628194612,
+       "sesiones": 82,
+       "ic90": [
+        -0.012727522349526597,
+        0.10488902876818536
+       ],
+       "p_sesiones": 0.10778443113772455,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "pct_vol": [
+      {
+       "nivel": 0,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 58,
+       "media_neta": 0.032840007367117036,
+       "sesiones": 44,
+       "ic90": [
+        -0.03966558718964946,
+        0.11091463060507237
+       ],
+       "p_sesiones": 0.23552894211576847,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "exc_amarilla": [
+      {
+       "nivel": 0,
+       "n": 188,
+       "media_neta": 0.08233308695286846,
+       "sesiones": 98,
+       "ic90": [
+        0.02613763604011403,
+        0.14192182740728573
+       ],
+       "p_sesiones": 0.007984031936127744,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 178,
+       "media_neta": 0.05959504970280876,
+       "sesiones": 93,
+       "ic90": [
+        0.00633624076451687,
+        0.11523909723733104
+       ],
+       "p_sesiones": 0.04790419161676647,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "punto_regreso": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 40,
+       "media_neta": 0.13676140763267625,
+       "sesiones": 35,
+       "ic90": [
+        -0.019389201606117814,
+        0.2946559400238822
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "tamano_impulso": [
+      {
+       "nivel": 0,
+       "n": 94,
+       "media_neta": 0.06811934720390074,
+       "sesiones": 62,
+       "ic90": [
+        0.010816241687080367,
+        0.11949504997982645
+       ],
+       "p_sesiones": 0.011976047904191617,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 10,
+       "media_neta": 0.19960906069256054,
+       "sesiones": 10,
+       "ic90": [
+        0.07911641050908935,
+        0.3008575515464767
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "dur_ida": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 141,
+       "media_neta": 0.07042443609019869,
+       "sesiones": 84,
+       "ic90": [
+        0.02712195117455229,
+        0.1175458248884998
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "dur_reg": [
+      {
+       "nivel": 0,
+       "n": 0
+      },
+      {
+       "nivel": 1,
+       "n": 125,
+       "media_neta": 0.062226267478696376,
+       "sesiones": 74,
+       "ic90": [
+        0.0176229792537006,
+        0.10902001524129598
+       ],
+       "p_sesiones": 0.013972055888223553,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "vwap": [
+      {
+       "nivel": 0,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 91,
+       "media_neta": 0.038309376418483226,
+       "sesiones": 66,
+       "ic90": [
+        -0.06530912771492554,
+        0.12153709987801559
+       ],
+       "p_sesiones": 0.24550898203592814,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 228,
+       "media_neta": 0.0594464930168162,
+       "sesiones": 116,
+       "ic90": [
+        0.0158081466088935,
+        0.10223913485190925
+       ],
+       "p_sesiones": 0.00998003992015968,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "reg_hora": [
+      {
+       "nivel": 0,
+       "n": 71,
+       "media_neta": -0.009962798775699448,
+       "sesiones": 54,
+       "ic90": [
+        -0.086426029433774,
+        0.07102684371732243
+       ],
+       "p_sesiones": 0.6307385229540918,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 84,
+       "media_neta": -0.09872606035931954,
+       "sesiones": 59,
+       "ic90": [
+        -0.19656969339285613,
+        -0.01571115504716078
+       ],
+       "p_sesiones": 0.9520958083832335,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 10,
+       "media_neta": -0.006691672727884684,
+       "sesiones": 8,
+       "ic90": [
+        -0.13976873846099053,
+        0.10673726077249458
+       ],
+       "p_sesiones": 0.5548902195608783,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 302,
+       "media_neta": 0.0033125253086614946,
+       "sesiones": 130,
+       "ic90": [
+        -0.033694005926145035,
+        0.03789880188738524
+       ],
+       "p_sesiones": 0.4550898203592814,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 130,
+       "media_neta": 0.03677254908539218,
+       "sesiones": 80,
+       "ic90": [
+        0.0016036054058235375,
+        0.07064151524919488
+       ],
+       "p_sesiones": 0.029940119760479042,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 137,
+       "media_neta": 0.07348647557483298,
+       "sesiones": 83,
+       "ic90": [
+        0.028869365347047447,
+        0.1199444809306021
+       ],
+       "p_sesiones": 0.003992015968063872,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 140,
+       "media_neta": 0.07470790821060518,
+       "sesiones": 84,
+       "ic90": [
+        0.0077558900251674424,
+        0.13403450099593137
+       ],
+       "p_sesiones": 0.02594810379241517,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 140,
+       "media_neta": 0.11657795761016744,
+       "sesiones": 84,
+       "ic90": [
+        -0.021798995271455908,
+        0.2600079766727558
+       ],
+       "p_sesiones": 0.09580838323353294,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 130,
+       "media_neta": 0.03430924429027669,
+       "sesiones": 80,
+       "ic90": [
+        7.882780999209459e-05,
+        0.06767326012531477
+       ],
+       "p_sesiones": 0.0499001996007984,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 137,
+       "media_neta": 0.06914159101309571,
+       "sesiones": 83,
+       "ic90": [
+        0.025497834456533752,
+        0.11489482479389868
+       ],
+       "p_sesiones": 0.005988023952095809,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 140,
+       "media_neta": 0.06929926803081093,
+       "sesiones": 84,
+       "ic90": [
+        0.0030560613228995054,
+        0.12827433926674528
+       ],
+       "p_sesiones": 0.033932135728542916,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 140,
+       "media_neta": 0.10701982984191512,
+       "sesiones": 84,
+       "ic90": [
+        -0.029140334625147556,
+        0.2456625713572775
+       ],
+       "p_sesiones": 0.11377245508982035,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 54,
+       "media_neta": 0.028008639898985634,
+       "sesiones": 42,
+       "ic90": [
+        -0.010953038947335614,
+        0.06013927107938515
+       ],
+       "p_sesiones": 0.07784431137724551,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 63,
+       "media_neta": 0.03789722833045874,
+       "sesiones": 48,
+       "ic90": [
+        -0.017456220975460325,
+        0.09074801156479985
+       ],
+       "p_sesiones": 0.12574850299401197,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 68,
+       "media_neta": 0.025878495779616994,
+       "sesiones": 50,
+       "ic90": [
+        -0.06604135825275945,
+        0.10617345787060309
+       ],
+       "p_sesiones": 0.28542914171656686,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 72,
+       "media_neta": 0.046002204018360235,
+       "sesiones": 53,
+       "ic90": [
+        -0.11031347163244161,
+        0.2335832716956769
+       ],
+       "p_sesiones": 0.34530938123752497,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 12,
+       "n": 54,
+       "media_neta": 0.027070924811954142,
+       "sesiones": 42,
+       "ic90": [
+        -0.010936269345929662,
+        0.058412296543578116
+       ],
+       "p_sesiones": 0.07984031936127745,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 13,
+       "n": 63,
+       "media_neta": 0.03560200461501776,
+       "sesiones": 48,
+       "ic90": [
+        -0.018790286428989295,
+        0.08764869379285065
+       ],
+       "p_sesiones": 0.1377245508982036,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 14,
+       "n": 68,
+       "media_neta": 0.022960576494872674,
+       "sesiones": 50,
+       "ic90": [
+        -0.06745985656402452,
+        0.10175781896971012
+       ],
+       "p_sesiones": 0.313373253493014,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 15,
+       "n": 72,
+       "media_neta": 0.06889372407519073,
+       "sesiones": 53,
+       "ic90": [
+        -0.08043590305132677,
+        0.2528837102740315
+       ],
+       "p_sesiones": 0.25948103792415167,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "n": 109,
+    "media_neta": -0.01485259917702798,
+    "sesiones": 65,
+    "ic90": [
+     -0.08042324970882368,
+     0.052717157098327215
+    ],
+    "p_sesiones": 0.6516741629185407,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 23.46,
+    "pasa": false,
+    "n_pruebas": 1.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.6516741629185407,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 1,
+   "familia": "CVGAP2_CFD_NQ",
+   "run_id": "CVGAP2-CFD-NQ/oos"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     2,
+     2,
+     2,
+     1,
+     2,
+     0,
+     2,
+     1
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -0.01485259917702798,
+    "ic90": [
+     -0.08042324970882368,
+     0.052717157098327215
+    ],
+    "efecto_para_potencia": 0.07740128687649067,
+    "potencia": 0.6055042389074408,
+    "mismo_regimen": true
+   }
+  ]
+ },
+ "regla": {
+  "celda": [
+   0,
+   1,
+   0,
+   2,
+   2,
+   2,
+   1,
+   2,
+   0,
+   2,
+   1
+  ],
+  "tope": [
+   "pts",
+   150.0
+  ],
+  "puntaje": 3.8713523037995285,
+  "peor": -1.0239612403100775
+ },
+ "plan_holdout": {
+  "n_fijo": 150,
+  "n_necesario": 124,
+  "potencia": 0.8850758169023123,
+  "efecto": 0.07740128687649067,
+  "sd_op": 0.24385287753937188,
+  "fuente": "fracción del DESC",
+  "nivel": 0.003607974489558189
+ },
+ "acta": {
+  "cid": "CVGAP2-CFD-NQ",
+  "familia": "CVGAP2_CFD_NQ",
+  "experimento": "edgelab.research.cvgap2",
+  "sensor": "DK:USATECHIDXUSD",
+  "ejecucion": "NQ",
+  "regla": {
+   "celda": [
+    0,
+    1,
+    0,
+    2,
+    2,
+    2,
+    1,
+    2,
+    0,
+    2,
+    1
+   ],
+   "tope": [
+    "pts",
+    150.0
+   ],
+   "puntaje": 3.8713523037995285,
+   "peor": -1.0239612403100775
+  },
+  "cortes": {
+   "tamano_impulso": [
+    4.487051893977994,
+    7.449342465570724
+   ],
+   "dur_ida": [
+    1.0,
+    6.0
+   ],
+   "dur_reg": [
+    2.0,
+    15.0
+   ]
+  },
+  "holdout_desde": 20261001,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1793814545.7214684,
+  "reserva_lord": {
+   "familia": "CVGAP2_CFD_NQ",
+   "reserva_id": "CVGAP2-CFD-NQ/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "CVGAP2_CFD_NQ",
+    "declarada": true,
+    "padres": [
+     "CORREDOR_VOL_GAPS_CFD_NQ"
+    ],
+    "propias": 0,
+    "bruto_heredado": 6870981,
+    "n_heredado": 6870981,
+    "total": 6870981,
+    "justificacion": "Hija de CVGAP (confirmación, stop estructural, duraciones de piernas, salida por noticias); declarada antes de DESC (docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md)",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 6870981,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 1.0,
+   "recorte": {
+    "t": 3.2906673652085683,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE"
+  ],
+  "atras": [],
+  "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
+  "plan_holdout": {
+   "n_fijo": 150,
+   "n_necesario": 124,
+   "potencia": 0.8850758169023123,
+   "efecto": 0.07740128687649067,
+   "sd_op": 0.24385287753937188,
+   "fuente": "fracción del DESC",
+   "nivel": 0.003607974489558189
+  }
+ },
+ "ultimo_conteo": 1793815152.4804866,
+ "n_holdout": 15
+}

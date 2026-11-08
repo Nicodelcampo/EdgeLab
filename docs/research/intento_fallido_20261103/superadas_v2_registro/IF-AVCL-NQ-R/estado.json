@@ -1,0 +1,114 @@
+{
+ "etapa": "DESC",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1793733907.7080894,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "IF-AVCL-NQ-R",
+  "familia": "INTENTO_FALLIDO_AVCL_NQ",
+  "experimento": "edgelab.research.intento_fallido_avcl",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 3888,
+  "justificacion_economica": "La idea de Nico: una zona que el precio no alcanzó en el primer intento sigue atrayéndolo; tras alejarse z, entrar HACIA la zona (al rechazo o en el reacercamiento) captura el segundo intento. Control: a favor del rechazo (absorción o agotamiento del flujo).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 (cola t) ni pista que replique en abr–sep en R; ventaja en un único y/z sin meseta; falla de placebo o latencia.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "datasets_extra": [
+   "nicolasbuttaro/edgelab-zonas-u1"
+  ],
+  "decisiones": [
+   "2026-11-03 (Nico, antes de ver resultados): la idea es entrar HACIA la zona; se prueban las dos direcciones con TP 1R/2R/3R y niveles de estructura Z1-Z3, colchón de stop 0/0,5·z. La primera carga (v1) se detuvo en DESC sin resultados: superadas_v1/."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "INTENTO_FALLIDO_AVCL_NQ",
+   "declarada": true,
+   "padres": [
+    "U1_ZONAS_AVCL_NQ",
+    "AREAS_EXP_1_CRUZADO"
+   ],
+   "propias": 1620,
+   "bruto_heredado": 4693786,
+   "n_heredado": 4693786,
+   "total": 4695406,
+   "justificacion": "Hija de U1: misma población de aproximaciones, evento complementario (aproximación fallida); declarada antes de DESC (docs/research/intento_fallido_20261103/PREREGISTRO_INTENTO_FALLIDO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793733907.7079222,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0
+}

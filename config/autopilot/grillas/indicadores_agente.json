@@ -109,22 +109,166 @@
    "nota": "Modelo Asia de @alphatraders_latam (ancho 100–300 pts, sesgo EMA20 M5 a las 20:15, tenencia hasta NY)"
   },
   {
-   "id": "ABSORCION-CLIMAX",
-   "modulo": "edgelab/research/absorcion_climax.py",
+   "id": "PAR-REL",
+   "modulo": "edgelab/research/par_relativo.py",
    "estado": "NATIVO_AGENTE",
-   "evidencia": "Clímax de volumen y mecha de rechazo tras extensión de 60 minutos, con prueba de causalidad en tests/research/test_absorcion_climax.py::test_causal",
-   "test_causal": "tests/research/test_absorcion_climax.py::test_causal",
-   "doc": "docs/research/programa_r_20261103/DISENO_ABSORCION_CLIMAX.md",
-   "nota": "El índice 3 de EJECUCIONES es stop 1,3 ATR y objetivo 3,5R. No hay tupla (1,3 ATR, 3,0R)."
+   "evidencia": "Spread log(sensor) − β·log(ES), β de la sesión anterior, z en ventana W dentro de la sesión; causalidad por disparo en tests/research/test_familias_nuevas_r.py::test_causal",
+   "test_causal": "tests/research/test_familias_nuevas_r.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+   "nota": "programa R 2026-11-03"
+  },
+  {
+   "id": "LEAD-LAG",
+   "modulo": "edgelab/research/lead_lag.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Retornos de L minutos del líder y del seguidor en desvíos de la sesión anterior; ρ de la sesión anterior; causalidad por disparo en tests/research/test_familias_nuevas_r.py::test_causal",
+   "test_causal": "tests/research/test_familias_nuevas_r.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+   "nota": "programa R 2026-11-03"
+  },
+  {
+   "id": "VWAP-REV",
+   "modulo": "edgelab/research/vwap_rev.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "VWAP y desvío ponderado desde 09:30 NY, desvío ≥ 2 con vela de giro; causalidad por disparo en tests/research/test_familias_nuevas_r.py::test_causal",
+   "test_causal": "tests/research/test_familias_nuevas_r.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+   "nota": "programa R 2026-11-03"
+  },
+  {
+   "id": "LONDRES-IMPULSO",
+   "modulo": "edgelab/research/londres_impulso.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Ruptura del balance inicial de apertura de Londres (02:00-03:00 ET) con objetivos amplios en R; causalidad por disparo en tests/research/test_londres_impulso.py::test_causal",
+   "test_causal": "tests/research/test_londres_impulso.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_LONDRES_IMPULSO.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "WM-FIXING",
+   "modulo": "edgelab/research/wm_fixing.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Flujo institucional pre-Fix WMR 4pm Londres (10:30-11:00 ET) y reacción a las 11:00 ET; causalidad por disparo en tests/research/test_wm_fixing.py::test_causal",
+   "test_causal": "tests/research/test_wm_fixing.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_WM_FIXING.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "COMEX-CIERRE-ORO",
+   "modulo": "edgelab/research/comex_cierre_oro.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Flujo de tasación del cierre del pit de COMEX (12:30-13:30 ET) y reacción a las 13:30 ET; causalidad por disparo en tests/research/test_comex_cierre_oro.py::test_causal",
+   "test_causal": "tests/research/test_comex_cierre_oro.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_COMEX_CIERRE_ORO.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "MEDIODIA-SUBASTA",
+   "modulo": "edgelab/research/mediodia_subasta.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Compresión del almuerzo de Nueva York (11:30-13:00 ET) y ruptura vespertina hacia el cierre; causalidad por disparo en tests/research/test_mediodia_subasta.py::test_causal",
+   "test_causal": "tests/research/test_mediodia_subasta.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_MEDIODIA_SUBASTA.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "PRIMERA-HORA-CONT",
+   "modulo": "edgelab/research/primera_hora_cont.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Continuación del Initial Balance de primera hora RTH (09:30-10:30 ET) con tenencia hasta 15:55 ET; causalidad por disparo en tests/research/test_primera_hora_cont.py::test_causal",
+   "test_causal": "tests/research/test_primera_hora_cont.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_PRIMERA_HORA_CONT.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
   },
   {
    "id": "COMPRESION-NR",
    "modulo": "edgelab/research/compresion_nr.py",
    "estado": "NATIVO_AGENTE",
-   "evidencia": "Rango de 30 velas contra los tres bloques previos de 30 y ruptura del canal de 15, con prueba de causalidad en tests/research/test_compresion_nr.py::test_causal",
+   "evidencia": "Compresión de volatilidad intradía NR4 en bloques de 30 minutos y ruptura de canal; causalidad por disparo en tests/research/test_compresion_nr.py::test_causal",
    "test_causal": "tests/research/test_compresion_nr.py::test_causal",
    "doc": "docs/research/programa_r_20261103/DISENO_COMPRESION_NR.md",
-   "nota": "No es el NR7 de calendario. El índice 1 de EJECUCIONES es stop 1,0 por el rango de la caja y objetivo 4R."
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "ABSORCION-CLIMAX",
+   "modulo": "edgelab/research/absorcion_climax.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Barra de clímax de volumen y mecha de absorción tras extensión de 60 minutos fuera de macro; causalidad por disparo en tests/research/test_absorcion_climax.py::test_causal",
+   "test_causal": "tests/research/test_absorcion_climax.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_ABSORCION_CLIMAX.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "OVERNIGHT-INVENTARIO",
+   "modulo": "edgelab/research/overnight_inventario.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Desequilibrio de inventario Globex (18:00-09:29 ET) evaluado en la apertura RTH (09:30 ET); causalidad por disparo en tests/research/test_overnight_inventario.py::test_causal",
+   "test_causal": "tests/research/test_overnight_inventario.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_OVERNIGHT_INVENTARIO.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "TOKIO-APERTURA-FX",
+   "modulo": "edgelab/research/tokio_apertura_fx.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Balance de apertura de Tokio y Nakane Fix (19:00-20:00 ET) con ruptura en sesión asiática; causalidad por disparo en tests/research/test_tokio_apertura_fx.py::test_causal",
+   "test_causal": "tests/research/test_tokio_apertura_fx.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_TOKIO_APERTURA_FX.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "ESTRUCTURA-HHLL",
+   "modulo": "edgelab/research/estructura_hhll.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Continuación en primer retroceso a EMA60 sobre estructura causal de pivotes confirmados (HH+HL / LL+LH); causalidad por disparo en tests/research/test_estructura_hhll.py::test_causal",
+   "test_causal": "tests/research/test_estructura_hhll.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_ESTRUCTURA_HHLL.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "APERTURA-EUROPA-ORO",
+   "modulo": "edgelab/research/apertura_europa_oro.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Caja de acumulación física de lingotes Zurich/Londres (02:00-03:30 ET) y ruptura europea; causalidad por disparo en tests/research/test_apertura_europa_oro.py::test_causal",
+   "test_causal": "tests/research/test_apertura_europa_oro.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_APERTURA_EUROPA_ORO.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "IMPULSO-POST-MACRO",
+   "modulo": "edgelab/research/impulso_post_macro.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Caja de digestión post-macro (08:35-09:00 ET) tras el choque inicial de las 08:30 ET; causalidad por disparo en tests/research/test_impulso_post_macro.py::test_causal",
+   "test_causal": "tests/research/test_impulso_post_macro.py::test_causal",
+   "doc": "docs/research/programa_r_20261103/DISENO_IMPULSO_POST_MACRO.md",
+   "nota": "programa R 2026-11-03 (grilla chica 108 celdas)"
+  },
+  {
+   "id": "DOBLE-RETROCESO",
+   "modulo": "edgelab/research/doble_retroceso.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Detector causal de 5 piernas (P0..P5) en barras de 50/100/250 ticks construidas con los ticks del contexto; tests de geometría y de truncado en tests/research/test_doble_retroceso.py",
+   "test_causal": "tests/research/test_doble_retroceso.py::test_causal_truncar_no_cambia_lo_ya_decidido",
+   "doc": "docs/research/doble_retroceso_20261104/PREREGISTRO_DOBLE_RETROCESO.md",
+   "nota": "Patrón de Nico (charla con Gemini 03/11): impulso, retroceso, impulso que toma P1 sin pasarse mucho, retroceso que vuelve cerca de P2 sin tomarlo, impulso. Paridad con el C# de NT8 pendiente."
+  },
+  {
+   "id": "CVGAP-2",
+   "modulo": "edgelab/research/cvgap2.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Mismo evento causal que CORREDOR-VOL-GAPS más duraciones de piernas (velas <= decisión); tests en tests/research/test_cvgap2.py",
+   "test_causal": "tests/research/test_cvgap2.py::test_causal",
+   "doc": "docs/research/cvgap2_20261104/PREREGISTRO_CVGAP2.md",
+   "nota": "Hija de CVGAP (04/11): confirmación, stop estructural, duraciones, salida por noticias, más activos"
+  },
+  {
+   "id": "ESPEJO-MACRO-10T",
+   "modulo": "edgelab/research/espejo_macro_grilla.py",
+   "estado": "NATIVO_AGENTE",
+   "evidencia": "Port numba del detector espejo_macro_10t (foundation): impulso y vuelta limpios en velas de 10 ticks, corte en la fracción; tests de geometría y causalidad en tests/research/test_espejo_macro_grilla.py",
+   "test_causal": "tests/research/test_espejo_macro_grilla.py::test_causal_y_estatico",
+   "doc": "docs/research/espejo_macro_10t_20261107/PREREGISTRO_BARRIDO.md",
+   "nota": "Regla de Nico (espejos macro, 07/11), sin lógica condicional; umbrales como perillas medidas; variante con topes en tiempo: edgelab/research/espejo_macro_tiempo.py"
   },
   {
    "id": "ESPEJO-REGLA",

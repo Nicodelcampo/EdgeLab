@@ -1,5 +1,7 @@
 # Resultado del Diagnóstico Estructural de Regímenes Cortos (`2026-11-06`)
 
+Estado: VIGENTE (diagnóstico del régimen corto, 06/11; ver H-REG-1 y la canasta estática en esta carpeta).
+
 - **Pre-registro:** `docs/research/regimen_corto_20261106/PREREGISTRO_REGIMEN_ESTRUCTURAL_20261106.md`
 - **Artefactos crudos:** `docs/research/regimen_corto_20261106/resultado_estructural.json` y `docs/research/regimen_corto_20261106/series_diarias_regimen_20261106.json`
 - **Tableros diarios interactivos:** `docs/research/regimen_corto_20261106/estabilidad_diaria_en_r.html` y `docs/research/regimen_corto_20261106/top3_estabilidad_diaria_q3.html`

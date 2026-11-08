@@ -8,7 +8,7 @@ Reglas que este módulo hace cumplir, no el prompt:
 - Ningún rol recibe credenciales, rutas locales ni métricas privadas: `sanitize` falla cerrado.
 - Una salida que no valida se reintenta una vez; después queda `LLM_INVALID_OUTPUT` y el ciclo sigue.
 - Idempotencia: la misma (rol, entrada) ya respondida no se vuelve a pagar.
-- Gobernador: tope diario de llamadas por rol y bloqueo hasta el reset ante límite de la suscripción.
+- Gobernador (topes subidos el 2026-11-08 por decisión de Nico: plan Max y más corridas por día): tope diario de llamadas por rol y bloqueo hasta el reset ante límite de la suscripción.
 - Ninguna salida de un rol es evidencia: es texto estructurado que el orquestador puede usar o descartar.
 """
 from __future__ import annotations
@@ -37,25 +37,25 @@ ROLES = {
         system="Armás fichas de literatura a partir de los pasajes recibidos. La literatura nunca es evidencia propia; citá siempre la ref."),
     "cronista": dict(model=HAIKU, daily_cap=100, schema=_obj({"resumen_sala": S, "aporte_al_referente": S}),
         system="Redactás el resumen del ciclo para la sala, en español rioplatense, con los números exactamente como vienen. No inventes cifras."),
-    "proponente": dict(model=OPUS, daily_cap=6, schema=_obj({
+    "proponente": dict(model=OPUS, daily_cap=24, schema=_obj({
         "familia": S, "mecanismo": S, "prediccion": S, "refutacion": S,
         "parametros_libres": {"type": "array", "maxItems": 3, "items": S}, "refs": {"type": "array", "maxItems": 10, "items": S},
         "pedido_codigo": S}, required=["familia", "mecanismo", "prediccion", "refutacion", "parametros_libres", "refs"]),
         system="Proponés UNA familia de hipótesis falsable: o una hipótesis puntual con a lo sumo 3 parámetros libres, o un BARRIDO MASIVO (millones de variantes) que declara todas sus perillas y cuenta todas sus celdas, sobre el conductor genérico (edgelab/research/grilla_generica.py) y con indicadores PASS de config/autopilot/indicadores.json o propios causales. Si la familia necesita una primitiva, un detector o un experimento que todavía no existe, describilo en pedido_codigo (qué hace, con qué datos, qué controles) y lo escribe el programador; si no hace falta, dejalo vacío. Para miles de variantes de una misma idea preferí la grilla masiva (docs/research/GUIA_GRILLA_MASIVA.md). Ponderá TODO el paquete: tablero, fichas del research propio, del cerebro y de papers; citá en refs las fichas que usaste (su campo ref). Lo ya medido o retirado no se repropone; los papers no son evidencia propia."),
-    "revisor": dict(model=OPUS, daily_cap=10, schema=_obj({
+    "revisor": dict(model=OPUS, daily_cap=40, schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "regla_nueva": S}),
         system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Si vienen antecedentes (research propio y papers del proyecto, con ref), contrastá el borrador con ellos: si repite algo ya medido o muerto, o contradice un resultado propio sin explicarlo, KILL. Criterios del dueño: macro antes que micro (la fricción mata lo chico); un edge condicionado a régimen vale si el régimen se detecta en tiempo real y está pre-registrado; queremos edges ACTUALES: que una idea haya fallado en datos viejos no es motivo de KILL si la propuesta mide lo reciente con ventana declarada antes y confirma hacia adelante; preferí lo que diversifica una cartera de varias estrategias. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
     # Segunda opinión SÓLO ante un PROMOTE del revisor: otro modelo, otra consigna, sin ver la razón del primero.
-    "revisor2": dict(model=SONNET, daily_cap=10, schema=_obj({
+    "revisor2": dict(model=SONNET, daily_cap=40, schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "riesgo_principal": S}),
         system="Sos un segundo revisor escéptico e independiente. Recibís un pre-registro, métricas públicas y antecedentes del proyecto. Buscá activamente por qué NO debería lanzarse: repetición de algo ya medido, multiplicidad NO contada o no filtrada (un barrido masivo con todas sus celdas registradas, tamiz, Romano-Wolf y réplica no es multiplicidad excesiva), fricción que gana, sesgo de selección, look-ahead. Sólo PROMOTE si no encontrás un motivo concreto. Ante la duda, KILL."),
     # Auditor post-corrida: compara lo corrido contra lo pre-registrado. Los chequeos mecánicos ya vienen hechos.
-    "auditor": dict(model=SONNET, daily_cap=20, schema=_obj({
+    "auditor": dict(model=SONNET, daily_cap=60, schema=_obj({
         "veredicto": {"enum": ["CONFORME", "DESVIO", "SOSPECHA_FUGA"]},
         "desvios": {"type": "array", "maxItems": 10, "items": S}, "razon": S}),
         system="Auditás una corrida terminada contra su pre-registro. Recibís el texto del pre-registro, la especificación lanzada, la decisión numérica y los chequeos mecánicos. Marcá DESVIO si se corrió algo distinto de lo pre-registrado (pruebas no planeadas, otra métrica, otro período, otra regla de decisión) y SOSPECHA_FUGA si algo sugiere uso de datos del holdout o de información futura. No reinterpretes los números ni opines sobre si el efecto es interesante."),
     # Abogado del diablo: sólo sobre hallazgos (hit). Propone la explicación no-edge más plausible y cómo refutarla.
-    "abogado": dict(model=OPUS, daily_cap=6, schema=_obj({
+    "abogado": dict(model=OPUS, daily_cap=20, schema=_obj({
         "explicacion_alternativa": S, "tipo": {"enum": ["artefacto", "look_ahead", "costos", "multiplicidad", "regimen", "datos", "otro"]},
         "prueba_refutadora": S, "gravedad": {"enum": ["baja", "media", "alta"]}}),
         system="Recibís un hallazgo exploratorio (pasó Holm) con su pre-registro y antecedentes. Formulá la explicación NO-edge más plausible (artefacto de microestructura, look-ahead, costos, multiplicidad, régimen, datos) y la prueba concreta y barata que la refutaría. No digas si es un edge."),

@@ -1,5 +1,7 @@
 # Pre-registro: Diagnóstico Estructural de Regímenes Cortos (`2026-11-06`)
 
+Estado: VIGENTE (diagnóstico del régimen corto, 06/11; ver H-REG-1 y la canasta estática en esta carpeta).
+
 - **Rama objetivo:** `gemini/regimen-corto-20261106`
 - **Ventana evaluada:** `2025-08-05 .. 2026-09-30` (el período holdout `>= 2026-10-01` permanece cerrado e intacto).
 - **Universos evaluados:**

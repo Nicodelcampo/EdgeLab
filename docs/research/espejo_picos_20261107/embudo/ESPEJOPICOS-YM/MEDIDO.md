@@ -1,0 +1,13 @@
+## ESPEJOPICOS-YM — edgelab.research.espejo_picos · señal YM · ejecución YM
+- Justificación: Si el primer impulso existió para tomar picos de liquidez, al tomarlos el motivo desaparece: la vuelta completa el espejo o va más allá de A (hipótesis de Nico).
+- Refutación: Los espejos con picos tomados no llegan a A ni lo pasan más que los sin picos a igual ancho, duración y horario; ninguna celda nominada por FDR q 0,10 ni pista que replique.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 65701 pruebas de ['ESPEJO_MACRO_10T_TIEMPO_YM', 'ESPEJO_MACRO_10T_ANCHO_YM']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 66592 de 1555200 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 38408 (m del FDR 38408 de 777600 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.485050678253174 (diagnóstico), linaje 65701 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 0, 2, 0, 0, 1, 2, 3, 4, 0, 2], [0, 0, 0, 0, 0, 1, 2, 4, 4, 0, 2], [0, 0, 0, 1, 1, 2, 2, 4, 4, 0, 2], [0, 0, 1, 1, 1, 0, 1, 2, 3, 2, 7], [0, 0, 2, 1, 1, 0, 1, 2, 3, 1, 7], [0, 0, 2, 0, 0, 1, 2, 4, 2, 0, 2], [0, 0, 1, 1, 1, 0, 1, 2, 3, 1, 4], [0, 0, 2, 1, 1, 0, 1, 2, 3, 2, 4], [0, 0, 2, 1, 1, 0, 1, 2, 4, 2, 7], [0, 0, 0, 0, 0, 2, 3, 2, 4, 0, 2], [0, 0, 1, 1, 1, 2, 1, 2, 3, 1, 7], [0, 0, 2, 0, 1, 2, 3, 2, 2, 0, 1], [1, 0, 1, 0, 1, 0, 2, 4, 1, 2, 4], [0, 0, 2, 1, 1, 0, 1, 2, 4, 1, 4], [0, 0, 1, 1, 1, 0, 3, 3, 2, 1, 4], [1, 0, 2, 0, 1, 1, 2, 4, 2, 2, 3], [0, 0, 1, 1, 1, 0, 1, 2, 4, 1, 7], [0, 0, 2, 0, 1, 1, 2, 3, 4, 0, 1], [0, 0, 1, 1, 1, 0, 1, 4, 4, 2, 7], [0, 0, 1, 1, 1, 0, 1, 4, 4, 1, 4]]
+- AVISO PISTAS: el resultado se calculó con módulos que cambiaron después (['edgelab/research/embudo_runners.py']); revisar si el cambio toca la medición
+- PISTAS canasta (una prueba): media -0.07286501449393379 IC90 [-0.14189658292849006, -0.001958063590040202] p 0.9592601849537615 sesiones 93; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 1.0; confirmadas 0 de 20 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -0.07286501449393379 IC90 [-0.14189658292849006, -0.001958063590040202]; canasta en contra con potencia; potencia de la canasta 0.9999995092541552

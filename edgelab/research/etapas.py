@@ -55,6 +55,15 @@ def densidad(ctx, D) -> dict:
 
 
 def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=None, bloques_alineacion=None, log=print) -> dict:
+    """`params["estadistico"] == "R"` (2026-11-02, decisión de Nico): todo el P&L de la etapa se mide en R (neto / riesgo inicial),
+    con `NORMALIZAR = "riesgo"` mientras corre la etapa. Lo declara la campaña (`"estadistico": "R"`) y viaja en los params."""
+    if (params or {}).get("estadistico") == "R" and getattr(exp, "NORMALIZAR", None) != "riesgo":
+        previo = getattr(exp, "NORMALIZAR", None); exp.NORMALIZAR = "riesgo"
+        try: return ejecutar(etapa, exp, ctx, friccion=friccion, extra_adverso=extra_adverso, cx_ej=cx_ej, params=params,
+                             bloques_alineacion=bloques_alineacion, log=log)
+        finally:
+            if previo is None: delattr(exp, "NORMALIZAR")
+            else: exp.NORMALIZAR = previo
     p = params or {}; celdas = [list(c) for c in p.get("celdas", [])]; cortes = p.get("cortes")
     if etapa == "ANALIZAR":                                                # analizador de estrategias (2026-10-26): el registro se hizo al lanzar
         from edgelab.research import analizador as AN
@@ -78,8 +87,13 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
                             cx_ej=cx_ej, tope=p.get("tope"))
         out = dict(reportes=AN.reporte_de_regla(cx, p["celdas"]), aviso="EXPLORATORIO: celdas ya miradas; nada se promueve desde acá")
         if p.get("operaciones"):                                           # 2026-10-31: comparación pareada por sesión (variante τ)
-            O = GG.operaciones_de(cx, p["celdas"])
-            out["operaciones"] = {c: O[c].tolist() for c in ("celda", "ses", "neto", "t")} if len(O) else {}
+            O = GG.operaciones_de(cx, p["celdas"], cx_ej if cx_ej is not None else ctx)
+            cols = ("celda", "ses", "neto", "t", "riesgo") + (("t_fill", "t_exit", "lado", "limite", "entrada", "stop", "objetivo")
+                                                            if p.get("precios") else ())       # 2026-11-04: para Market Replay en NT8
+            out["operaciones"] = {c: O[c].tolist() for c in cols} if len(O) else {}
+        if p.get("auditoria"):                                             # 2026-11-02, experimento 4: auditoría vela a vela
+            out["auditoria"] = GG.auditar_operaciones(cx, p["celdas"], cx_ej if cx_ej is not None else ctx,
+                                                       linea=hasattr(exp, "lineas_salida"))
         return out
     if etapa == "PERSIST":                                                 # canasta de régimen: persistencia de toda la grilla (2026-10-26)
         from edgelab.research import persistencia as PE
@@ -91,6 +105,24 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
     if etapa == "DESC":
         res, D = GG.correr(exp, ctx, modo="DESC", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej, nulo=p.get("nulo"), criba=p.get("criba", "fdr"))
         return res
+    if etapa == "TRAYECTORIAS":                                            # 2026-11-02: camino en R por operación (programa de mejora de R)
+        res, cx = GG.correr(exp, ctx, modo="REP", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, celdas=p["celdas"], log=log,
+                            cx_ej=cx_ej, tope=tuple(p["tope"]) if p.get("tope") else None)
+        cols = [v.columna for v in exp.VARIABLES if v.columna in cx["D"]]
+        extra = {c_: cx["D"][c_].to_numpy(float)[cx["di"]] for c_ in cols}
+        return dict(trayectorias=GG.trayectorias(cx, p["celdas"], cx_ej if cx_ej is not None else ctx, friccion, int(p.get("k", 240)), extra),
+                    variables=cols)
+    if etapa == "MARGINALES":                                              # 2026-11-02: medias globales por nivel de perilla (meta-análisis)
+        res, _ = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        return dict(marginales_globales=res.get("marginales_globales"), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
+                    perillas=res.get("perillas"), marginales_globales_bruto=res.get("marginales_globales_bruto"),   # 2026-11-04: bruto/neto
+                    contexto_comun_error=res.get("contexto_comun_error"))
+    if etapa == "CUBO":                                                    # 2026-11-07: base de operaciones para buscar regímenes offline
+        res, cx = GG.correr(exp, ctx, modo="MARG", friccion=friccion, extra_adverso=extra_adverso, cortes=cortes, log=log, cx_ej=cx_ej)
+        if not isinstance(cx, dict): return dict(cubo=None, operaciones=0)
+        from edgelab.research import regimen_offline as RO
+        return dict(cubo=RO.codificar(cx), operaciones=res.get("operaciones"), normalizado=res.get("normalizado"),
+                    perillas=res.get("perillas"), cortes=cortes)
     if etapa == "INDAGA":
         base_viejo = getattr(exp, "BASE", None); nombres = [v.nombre for v in exp.VARIABLES] + ["ejecución"]
         bases = p.get("bases") or [p["base"]]; out = []

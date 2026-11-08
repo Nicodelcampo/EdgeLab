@@ -1,0 +1,122 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793673988.7856073,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793674904.0966427,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -0.5693244191587905, 'min': -13.58457119895905, 'q001': -13.376759195129326, 'q010': -11.506451160661802, 'q500': -2.924646822533502, 'q990': -0.5899328813702885, 'q999': -0.57138526537994, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 33}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "PAR-NQES-R",
+  "familia": "PAR_REL_NQES",
+  "experimento": "edgelab.research.par_relativo",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 108,
+  "justificacion_economica": "Valor relativo NQ contra ES (Gatev et al. 2006): desvíos intradía del spread por flujos sectoriales transitorios que revierten.",
+  "como_podria_refutarse": "Sin nominadas en R ni pistas que repliquen; el spread no revierte en 120 velas; la ganancia depende de un solo día.",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "confirmador": "ES"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; sesiones excluidas de holdout.py"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "PAR_REL_NQES",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva (valor relativo entre índices), sin padres; declarada antes de DESC (docs/research/programa_r_20261103/DISENO_FAMILIAS_NUEVAS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793673988.7854373,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-par-nqes-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793674353.7688248,
+ "cortes": {},
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -0.5693244191587905, 'min': -13.58457119895905, 'q001': -13.376759195129326, 'q010': -11.506451160661802, 'q500': -2.924646822533502, 'q990': -0.5899328813702885, 'q999': -0.57138526537994, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 33}); pistas a réplica: ninguna pista relevante con media > 0"
+}

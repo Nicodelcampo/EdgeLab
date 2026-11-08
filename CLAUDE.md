@@ -157,6 +157,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   hace con `one`); si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py`
   falla con una función copiada (línea base `config/clones_baseline.json`) o con un script nuevo fuera del catálogo; el
   programador del Debian recibe la búsqueda en su prompt.
+- **Medir en R (Nico, 2026-11-02):** el P&L de toda campaña nueva se mide en R (neto / riesgo inicial, entrada real a stop):
+  `"estadistico": "R"` en la campaña. Los puntos sobrestiman reglas cuyas ganancias caen en stops lejanos (U1-CRUZADO: +15,6 pts =
+  +0,015R). Para pasar a REAL se exige además R forward > 0 (`cartera/ficha.py::puede_promover`). Ver `docs/research/MEDIR_EN_R_20261102.md`;
+  ideas transferibles entre familias: `docs/research/atlas_ideas_r_20261102/`.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
@@ -186,6 +190,9 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 > desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
 > por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
+- **Sesiones excluidas (2026-11-02):** las sesiones incompletas del sellado están declaradas en `edgelab/holdout.py`
+  (`SESIONES_EXCLUIDAS_HOLDOUT`, p. ej. el 7-oct en CME, ES 29 y 30-oct) y los lectores sellados las descartan siempre. Ningún
+  análisis las lee por otro camino; una sesión sale de la tabla sólo con datos completos re-sellados y re-medidos.
 - **Prohibido** usar el holdout para elegir dirección, entradas/salidas,
   thresholds, bar_spec, costos o candidatos.
 - **Permitido** solo para validaciones target-free (paridad, determinismo,
@@ -196,6 +203,11 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
   configuración que el candidato), sólo datos del holdout, una apertura por
   familia, registrada en `holdout_aperturas.jsonl` antes de lanzar. El resultado
   confirma o refuta; nunca se usa para elegir, ajustar ni reintentar.
+- **Modo exploratorio (Nico, 2026-11-08):** el agente también puede abrir el holdout de una familia
+  sin candidato confirmado, si declara antes la probabilidad de azar de desarrollo y la combinación
+  (Fisher/Stouffer) en el pre-registro. Sigue siendo una apertura por familia, sólo holdout, y nunca
+  para elegir. Regla global de evidencia: estabilidad en sub-bloques y canastas diversificadas
+  (`docs/DECISIONES_20261108.md`).
 
 ## Reglas permanentes
 

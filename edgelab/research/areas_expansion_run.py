@@ -38,6 +38,38 @@ def m1_y_perfil(bloques):
     return t, M, VP.p.to_numpy(float), VP.v.to_numpy(float), start, tpx, tstart
 
 
+def ticks_y_perfil(bloques, n: int):
+    """Como `m1_y_perfil` pero con velas de `n` ticks (2026-11-07, Nico: «el embudo no debería funcionar sólo con velas de un minuto»).
+    Las velas se arman DENTRO de cada sesión; el resto que no completa `n` ticks al final de la sesión se descarta (no cruza el corte).
+    La marca de cada vela es el instante de su último tick, en segundos con fracción (float), estrictamente creciente: varias velas
+    pueden cerrar en el mismo segundo. `tpx`/`tstart` son los ticks de cada vela en orden (resolución de stop/objetivo dentro de la
+    vela) y el perfil de volumen es por vela: sus n ticks con su volumen."""
+    partes = []                                                        # (t0, DataFrame de velas, precios (m*n), volúmenes (m*n))
+    for b in bloques:
+        if not len(b): continue
+        ts = b.ts_ns.to_numpy(np.int64); px = b.px.to_numpy(float); vol = b.vol.to_numpy(float)
+        ses = b.sesion.to_numpy(); seg = b.segmento.to_numpy()
+        cortes = np.flatnonzero(np.r_[True, ses[1:] != ses[:-1], True])
+        for a0, a1 in zip(cortes[:-1], cortes[1:]):
+            m = (a1 - a0) // n
+            if m <= 0: continue
+            sl = slice(a0, a0 + m * n); P = px[sl].reshape(m, n); V = vol[sl].reshape(m, n)
+            F = pd.DataFrame(dict(t=ts[a0 + n - 1:a0 + m * n:n] / 1e9, o=P[:, 0], h=P.max(1), l=P.min(1), c=P[:, -1], v=V.sum(1),
+                                  ses=ses[a0:a0 + m * n:n], seg=seg[a0 + n - 1:a0 + m * n:n]))
+            partes.append((float(F.t.iloc[0]), F, P.ravel(), V.ravel()))
+    if not partes: raise ValueError("sin ticks suficientes para armar velas")
+    partes.sort(key=lambda x: x[0])
+    M = pd.concat([p[1] for p in partes], ignore_index=True)
+    tpx = np.concatenate([p[2] for p in partes]); vvol = np.concatenate([p[3] for p in partes])
+    t = M.t.to_numpy(float).copy()
+    if (np.diff(t) < 0).any(): raise ValueError("velas de ticks fuera de orden entre bloques")
+    for i in range(1, len(t)):                                            # estrictamente creciente (velas en el mismo instante)
+        if t[i] <= t[i - 1]: t[i] = np.nextafter(t[i - 1], np.inf)
+    tstart = (np.arange(len(t) + 1) * n).astype(np.int64)
+    M.index = t
+    return t, M, tpx.copy(), vvol, tstart.copy(), tpx, tstart
+
+
 def para_autopilot(res, fuente):
     """Formato `results_flat` que lee el ciclo autónomo (analyze.records / confirmacion escalera_v1). Descubrimiento: las celdas
     evaluadas en E2 (p por sesiones), nombradas `GRILLA/<fuente>/<celda>/disc`. Réplica: `.../rep/...`, que es lo único que
