@@ -61,17 +61,37 @@ def directivas(root=None) -> str:
     return f.read_text(encoding="utf-8")[:8000] if f.exists() else ""          # 2026-11-07: 4000 cortaba la directiva 9
 
 
-def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 16000, cartas=None) -> dict:   # 2026-11-08: 12000 no dejaba entrar las cartas con las directivas 9–10
+def memoria_ideas(semilla: int = 0, root=None, n_hallazgos: int = 3) -> dict:
+    """Memoria que se recuerda en TODOS los ciclos (pedido de Nico, 2026-11-08): el índice de ideas externas completo, un reel que rota
+    y hallazgos robustos del CerebroSSRN que rotan. Determinista por semilla (día + ciclo); acotado (~3.000 caracteres)."""
+    r = Path(root or Path(__file__).resolve().parents[2]); out = dict(indice="", reel=None, hallazgos_ssrn=[], cerebro="corpus/ssrn/cerebro/COMO_USAR.md")
+    ind = r / "docs/research/ideas_externas/INDICE.md"
+    if ind.exists(): out["indice"] = "\n".join(l for l in ind.read_text(encoding="utf-8").splitlines() if l.startswith("- "))[:1600]
+    reels = sorted((r / "docs/research/ideas_externas/reels").glob("*.md"))
+    if reels:
+        f = reels[semilla % len(reels)]; t = f.read_text(encoding="utf-8")
+        i = t.find("## Resumen"); out["reel"] = dict(archivo=str(f.relative_to(r)), extracto=(t[i:] if i >= 0 else t)[:1200])
+    h = r / "corpus/ssrn/cerebro/hallazgos_por_mercado.md"
+    if h.exists():
+        ls = [l for l in h.read_text(encoding="utf-8").splitlines() if l.startswith("- **[alta]**")]
+        if ls: out["hallazgos_ssrn"] = [ls[(semilla * 7 + k * 101) % len(ls)][:350] for k in range(n_hallazgos)]
+    return out
+
+
+def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 19000, cartas=None, memoria=None) -> dict:   # 2026-11-08: 12000 no dejaba entrar las cartas con las directivas 9–10
     """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos, después cartas de la gramática
     (edgelab/research/agente/gramatica.py: coordenadas lejos de lo medido, sin resultados); prioridades y lente nunca se recortan."""
     p = dict(prioridades=PRIORIDADES, directivas_de_nico=directivas(), lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
              cartas_gramatica=[dict(id=c["id"], coordenadas=c["coordenadas"], cercana_medida=c.get("cercana_medida"), paridad=c.get("paridad"))
                                for c in (cartas or [])],
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
+             memoria_ideas=memoria if memoria is not None else memoria_ideas(),
              vacios=list(vacios), fichas=list(fichas), prohibido=dict(familias_retiradas=list(retiradas),
              reglas=["no abrir holdout", "no P&L sin pre-registro publicado y doble revisión (la aprobación es del agente, no de un humano)", "a lo sumo 3 parámetros libres por hipótesis puntual; un barrido masivo declara todas sus perillas y registra todas sus celdas", "el código nuevo lo escribe el programador (pedido_codigo), dentro de su perímetro y con tests"]))
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and (p["fichas"] or p["vacios"] or p["cartas_gramatica"]):
         (p["fichas"] or p["vacios"] or p["cartas_gramatica"]).pop()
+    while len(json.dumps(p, ensure_ascii=False)) > max_chars and p["memoria_ideas"].get("hallazgos_ssrn"):
+        p["memoria_ideas"]["hallazgos_ssrn"].pop()                       # la memoria se recorta última y el índice nunca
     return p
 
 

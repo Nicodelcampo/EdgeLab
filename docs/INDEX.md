@@ -29,7 +29,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1184 |
+| `docs/research` | 1190 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -109,6 +109,10 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (0)
+## Documentos nuevos sin `Estado:` (5)
 
-Ninguno.
+- docs/research/ideas_externas/reels/alphazone_ema_vwap.md: falta `Estado:` en el encabezado
+- docs/research/ideas_externas/reels/davidtrades_bias_tracker.md: falta `Estado:` en el encabezado
+- docs/research/ideas_externas/reels/flexingjoe_orb_ema20.md: falta `Estado:` en el encabezado
+- docs/research/ideas_externas/reels/italianfounder_4_estrategias.md: falta `Estado:` en el encabezado
+- docs/research/ideas_externas/reels/kemet_gap_sp500.md: falta `Estado:` en el encabezado

@@ -52,3 +52,8 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    es correr la misma regla con motivo económico en los 14 activos de la release (no suma selección); después, familias en velas de pocos
    ticks y varios horarios. Condición de diseño: el recorrido típico por operación tiene que ser varias veces la fricción canónica del
    instrumento (con objetivos chicos la fricción se come la ganancia: `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`).
+12. **Memoria de ideas (Nico 2026-11-08).** En cada ciclo recibís `memoria_ideas`: el índice de ideas externas
+   (`docs/research/ideas_externas/INDICE.md`, reels que junta Nico), un reel completo que rota y hallazgos robustos del CerebroSSRN
+   (`corpus/ssrn/cerebro/`). Usalos para combinar ideas (p. ej. tamaño del gap de Kemet × momentum de cierre de Gao/Baltussen ×
+   régimen de gamma) y proponer familias nuevas con motivo económico. Lo que dice un reel o un paper no es evidencia: se mide con
+   pre-registro, costos canónicos y R. Mirá el estado en el índice antes de repetir algo ya medido; si medís una idea, actualizá su línea.

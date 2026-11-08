@@ -26,3 +26,11 @@ def test_familias_corren_y_son_coherentes():
 def test_sim_velas_stop_antes_que_objetivo():
     o = np.array([10.0]); h = np.array([12.0]); l = np.array([8.0]); c = np.array([11.0])
     assert X._sim_velas(o, h, l, c, 0, 10.0, 1, 1.0, 1.0, None, 0) == (-1.0, 1)
+
+
+def test_memoria_ideas_rota_y_entra_en_el_paquete():
+    from edgelab.autopilot import contexto
+    a, b = contexto.memoria_ideas(0), contexto.memoria_ideas(1)
+    assert "kemet" in a["indice"] and a["reel"]["archivo"] != b["reel"]["archivo"]
+    p = contexto.armar_paquete(tablero={}, vacios=[], fichas=[], retiradas=[], lente=next(iter(contexto.LENTES)), memoria=a)
+    assert p["memoria_ideas"]["indice"] and "12. **Memoria de ideas" in p["directivas_de_nico"]

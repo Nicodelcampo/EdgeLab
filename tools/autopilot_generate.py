@@ -100,7 +100,8 @@ def main():
         from edgelab.research.agente import gramatica                   # cartas lejos de lo medido (sin resultados), semilla = día + ciclo
         cartas = gramatica.cartas(n=int(cfg.get("cartas_gramatica", 6)), semilla=int(time.strftime("%Y%m%d")) * 100 + len(hist) % 100)
         paquete = contexto.armar_paquete(tablero=tab, vacios=ctx["vacios"], fichas=fichas,
-                                         retiradas=cfg.get("familias_retiradas", []), lente=lente, cartas=cartas)
+                                         retiradas=cfg.get("familias_retiradas", []), lente=lente, cartas=cartas,
+                                         memoria=contexto.memoria_ideas(semilla=int(time.strftime("%Y%m%d")) + len(hist)))
         existentes = list(cfg.get("familias_retiradas", [])) + [h["borrador"]["familia"] for h in hist if h.get("borrador")]
         r = contexto.proponer(RoleRunner(Path(cfg["roles_ledger"])), paquete, existentes)
         usadas = {f["ref"] for f in paquete["fichas"]}
