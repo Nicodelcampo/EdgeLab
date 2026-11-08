@@ -47,3 +47,8 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    - **Pocas reglas, buen motivo.** Preferí familias chicas con justificación económica a barridos de cientos de miles de celdas, y
      pensalas desde el principio como piezas de una canasta diversificada (otros activos, otros horarios, baja correlación).
    - Todo lo creativo pasa por la misma estructura: pre-registro, contador, linaje, embudo y holdout.
+11. **Frecuencia (Nico 2026-11-08).** Buscá estrategias que operen mucho más seguido: una canasta con 30 operaciones por mes no se puede
+   confirmar nunca. Apuntá a ≥ 0,5 operaciones por sesión por regla y ≥ 3 por sesión por canasta. La forma preferida de ganar frecuencia
+   es correr la misma regla con motivo económico en los 14 activos de la release (no suma selección); después, familias en velas de pocos
+   ticks y varios horarios. Condición de diseño: el recorrido típico por operación tiene que ser varias veces la fricción canónica del
+   instrumento (con objetivos chicos la fricción se come la ganancia: `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`).

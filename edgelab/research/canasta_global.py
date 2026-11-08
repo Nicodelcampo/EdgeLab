@@ -15,6 +15,7 @@ import numpy as np
 from edgelab.research import grilla_masiva as GM
 
 VENTANA = (20250805, 20260930)
+OPS_SESION_REGLA, OPS_SESION_CANASTA = 0.0, 0.0   # 2026-11-08 (Nico: «estrategias que operen mucho más seguido»): 0 = sin exigencia
 N_BLOQUES, MIN_POS, T_MIN, CORR_MAX, MAX_REGLAS, MAX_POR_CUBO, MIN_INST, TOP_POR_CUBO, MIN_OPS = 5, 4, 1.0, 0.3, 10, 3, 3, 20, 30
 
 
@@ -22,7 +23,8 @@ def _dia_cubo(cubo, dias):
     """Iterador (posición global del día, R por celda evaluable) y el índice de celdas evaluables (>= MIN_OPS en la ventana)."""
     m = (cubo.ses >= VENTANA[0]) & (cubo.ses <= VENTANA[1])
     idx = [cubo.idx[m, j] for j in range(cubo.idx.shape[1])]; ses = cubo.ses[m]; net = cubo.net[m]
-    _, _, Ct = GM.tensor(cubo.perillas, idx, net); ev = np.flatnonzero(Ct.ravel() >= MIN_OPS)
+    _, _, Ct = GM.tensor(cubo.perillas, idx, net); piso = max(MIN_OPS, int(np.ceil(OPS_SESION_REGLA * len(dias))))
+    ev = np.flatnonzero(Ct.ravel() >= piso); _dia_cubo.ops = Ct.ravel()[ev]
     orden = np.argsort(ses, kind="stable"); so = ses[orden]; u = np.unique(so)
     cortes = np.searchsorted(so, u, side="left").tolist() + [len(so)]; pos = np.searchsorted(dias, u)
 
@@ -69,7 +71,7 @@ def series_cubo(cubo, dias, columnas):
     return X
 
 
-def elegir(cands, series, G_b):
+def elegir(cands, series, G_b, ops=None):
     """cands: lista de (t, cubo, instrumento, clave); series: clave -> serie sin signo; G_b: signos (D,). Devuelve (elegidas, t)."""
     el, por_cubo, Xs = [], {}, []
     for t, cu, inst, k in sorted(cands, key=lambda c: -c[0]):
@@ -79,6 +81,7 @@ def elegir(cands, series, G_b):
         el.append((cu, inst, k)); Xs.append(x); por_cubo[cu] = por_cubo.get(cu, 0) + 1
         if len(el) == MAX_REGLAS: break
     if len({i for _, i, _ in el}) < MIN_INST: return [], 0.0
+    if OPS_SESION_CANASTA and ops is not None and sum(ops[k] for _, _, k in el) < OPS_SESION_CANASTA * len(G_b): return [], 0.0
     c = np.mean(Xs, axis=0); s = c.std(ddof=1)
     return el, float(c.mean() / (s / np.sqrt(len(c)))) if s > 0 else 0.0
 
@@ -96,6 +99,7 @@ def procesar(fuentes, dias, B=200, seed=20261108, log=None):
         cubo = f(); ev, top, tt = candidatos_cubo(cubo, dias, G)
         union = np.unique(np.concatenate(top)) if any(len(x) for x in top) else np.zeros(0, np.int64)
         out.append(dict(nombre=nombre, instrumento=inst, ev=ev[union] if len(union) else np.zeros(0, np.int64), union=union,
+                        ops=_dia_cubo.ops[union] if len(union) else np.zeros(0),
                         series=series_cubo(cubo, dias, union), top=[np.searchsorted(union, x) for x in top], tt=tt,
                         perillas=[q.nombre for q in cubo.perillas]))
         if log: log(f"cubo {n + 1}/{len(fuentes)} {nombre} evaluables {len(ev)} candidatas obs {len(top[0])}")
@@ -105,20 +109,22 @@ def procesar(fuentes, dias, B=200, seed=20261108, log=None):
 
 def combinar(partes, dias, B=200, seed=20261108, completo=True):
     """Selección global sobre las tandas disponibles. Con `completo=False` (tandas parciales) informa la canasta observada sin p."""
-    G = signos(dias, B, seed); por_rep = [[] for _ in range(B + 1)]; series = {}; meta = {}
+    G = signos(dias, B, seed); por_rep = [[] for _ in range(B + 1)]; series = {}; meta = {}; ops = {}
     for c in partes:
-        for i in range(len(c["union"])): series[(c["nombre"], i)] = c["series"][:, i].astype(float)
+        for i in range(len(c["union"])):
+            series[(c["nombre"], i)] = c["series"][:, i].astype(float); ops[(c["nombre"], i)] = float(c.get("ops", np.zeros(len(c["union"])))[i])
         meta[c["nombre"]] = c
         for b in range(B + 1): por_rep[b] += [(float(tv), c["nombre"], c["instrumento"], (c["nombre"], int(j))) for j, tv in zip(c["top"][b], c["tt"][b])]
-    obs, t_obs = elegir(por_rep[0], series, G[0])
+    obs, t_obs = elegir(por_rep[0], series, G[0], ops)
     if completo:
-        nul = [elegir(por_rep[b], series, G[b])[1] for b in range(1, B + 1)]
+        nul = [elegir(por_rep[b], series, G[b], ops)[1] for b in range(1, B + 1)]
         p = float((1 + sum(x >= t_obs for x in nul)) / (B + 1)) if obs else 1.0; q = np.quantile(nul, [.5, .9, .95]).tolist()
     else: p, q = None, None
     reglas = []
     for cu, inst, (nm, j) in obs:
         x = series[(nm, j)]
         reglas.append(dict(cubo=nm, instrumento=inst, celda_plana=int(meta[nm]["ev"][j]), perillas=meta[nm]["perillas"], media_diaria=float(x.mean()),
+                           ops_por_sesion=ops[(nm, j)] / len(dias),
                            medias_bloques=[float(b.mean()) for b in np.array_split(x, N_BLOQUES)]))
     c = np.mean([series[k] for _, _, k in obs], axis=0) if obs else np.zeros(len(dias))
     return dict(reglas=reglas, t_canasta=t_obs, p_seleccion=p, B=B, sesiones=len(dias), cubos=len(partes), completo=completo,

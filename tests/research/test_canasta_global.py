@@ -19,3 +19,11 @@ def test_senal_y_ruido(monkeypatch):
     assert len(r["reglas"]) >= 3 and r["p_seleccion"] <= 0.05 and len({x["instrumento"] for x in r["reglas"]}) >= 3
     ruido = [(f"c{s}", inst, (lambda s=s: _cubo(s, 0.0))) for s, inst in zip(range(10, 13), ("NQ", "ES", "YM"))]
     assert CG.correr(ruido, B=60, seed=1)["p_seleccion"] > 0.05
+
+
+def test_exigencia_de_frecuencia(monkeypatch):
+    """Con un piso de operaciones por sesión que ninguna regla alcanza, la canasta queda vacía (p = 1)."""
+    monkeypatch.setattr(CG, "MIN_OPS", 30); monkeypatch.setattr(CG, "OPS_SESION_REGLA", 50.0)
+    con = [(f"c{s}", inst, (lambda s=s: _cubo(s, 0.35))) for s, inst in zip(range(3), ("NQ", "ES", "YM"))]
+    r = CG.correr(con, B=20, seed=1)
+    assert r["reglas"] == [] and r["p_seleccion"] == 1.0

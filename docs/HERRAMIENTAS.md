@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-598 scripts.
+604 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -319,6 +319,12 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_discovery_parity_kernel.py` | (sin docstring) |
 | `tools/kaggle_drive_bridge.py` | EdgeLab <-> Google Drive <-> Kaggle local bridge and chunked transfer tool (versión endurecida). |
 | `tools/kaggle_grilla/almacen_zonas_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/canasta_frecuente_tanda0_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 0 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_frecuente_tanda1_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 1 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_frecuente_tanda2_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 2 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_frecuente_tanda3_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 3 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_frecuente_tanda4_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 4 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
+| `tools/kaggle_grilla/canasta_frecuente_tanda5_main.py` | Kernel de Kaggle: CANASTA-GLOBAL-FRECUENTE, tanda 5 de 6 (docs/research/canasta_global_frecuente_20261108/PREREGISTRO.md). Procesa sus cubos |
 | `tools/kaggle_grilla/canasta_global_main.py` | Kernel de Kaggle: CANASTA-GLOBAL (docs/research/canasta_global_20261108/PREREGISTRO.md) sobre nicolasbuttaro/edgelab-cubos-regimen. |
 | `tools/kaggle_grilla/canasta_global_tanda0_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 0 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
 | `tools/kaggle_grilla/canasta_global_tanda1_main.py` | Kernel de Kaggle: CANASTA-GLOBAL, tanda 1 de 6 (docs/research/canasta_global_20261108/PREREGISTRO.md). Procesa sus cubos |
