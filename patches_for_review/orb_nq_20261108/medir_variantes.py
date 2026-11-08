@@ -22,7 +22,7 @@ RR = ME.RR
 INSTR = {"NQ": (0.25, 5.0), "ES": (0.25, 12.5), "YM": (1.0, 5.0)}   # tick, USD por tick (edgelab/costos.py)
 COMISION_USD = 5.76
 CAJAS = (5, 15, 30); STOPS = ("O", "M"); SALIDAS = ("C", 1.0, 2.0, 3.0)
-DESC = (20250805, 20260331); REP = (20260401, 20260930)
+DESC = (20250805, 20260331); REP = (20260401, 20260618)   # 2026-11-08: el calendario CME versionado termina el 18/06/2026
 B = 10000; SEED = 20261108; Q = .10; M_HEREDADO = 720 + 705; NMIN = 30
 BASE_PRE = [("NQ", d, "O", "C") for d in CAJAS]
 

@@ -30,3 +30,10 @@ ORB-NQ-FILTROS):**
 **Riesgos:** pocas operaciones por regla (≈ 130 en DESC, ≈ 100 en réplica): la potencia contra efectos de 0,1 R es baja; el MDE se
 reporta. El objetivo límite no modela la cola de la orden (se exige atravesar el precio). Selección retrospectiva por datos completos
 de la sesión (heredada, declarada).
+
+## Enmienda del 08/11 (antes de ver la réplica)
+
+La réplica falló en los tres instrumentos: el calendario CME versionado (`cme_equity_index_session_calendar_v1.json`) termina el
+18/06/2026 y el conciliador exige cobertura completa. La ventana de réplica pasa a **01/04 → 18/06/2026**. Corte por integridad de
+datos, decidido sin ver ninguna operación de la réplica (no se calculó ninguna). El DESC no cambia (mismas 96 reglas, 0 nominadas).
+La réplica pierde potencia (≈ 2,5 meses en vez de 6).
