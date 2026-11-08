@@ -25,6 +25,7 @@ CAJAS = (5, 15, 30); STOPS = ("O", "M"); SALIDAS = ("C", 1.0, 2.0, 3.0)
 DESC = (20250805, 20260331); REP = (20260401, 20260618)   # 2026-11-08: el calendario CME versionado termina el 18/06/2026
 B = 10000; SEED = 20261108; Q = .10; M_HEREDADO = 720 + 705; NMIN = 30
 BASE_PRE = [("NQ", d, "O", "C") for d in CAJAS]
+SERIES = False
 
 
 def preparar(df, tick):
@@ -145,7 +146,10 @@ def run(root, out=Path("/kaggle/working")):
     desc = {"|".join(map(str, k)): dict(v, nomina=k in nom) for k, v in res.items()}
     base = dict(estado="EXPLORATORIO_DESC_Y_REPLICA_CONGELADA", m_total=m_total, q=Q, reglas_desc=len(res), nominadas=len(nom),
                 congeladas=["|".join(map(str, k)) for k in congeladas], desc=desc)
-    (out / "ORB_VARIANTES_DESC.json").write_text(json.dumps(base, indent=1, default=float))   # 2026-11-08: el DESC no se pierde si falla la réplica
+    (out / "ORB_VARIANTES_DESC.json").write_text(json.dumps(base, indent=1, default=float))
+    if SERIES:                                                          # 2026-11-08: series diarias por regla (CANASTA-ORB)
+        ser = {"|".join(map(str, k)): g.groupby("ses").r.sum().round(6).to_dict() for k, g in resumir(O).items()}
+        (out / "ORB_SERIES_DESC.json").write_text(json.dumps({k: {str(d): v for d, v in x.items()} for k, x in ser.items()}))   # 2026-11-08: el DESC no se pierde si falla la réplica
     # ---- RÉPLICA sólo para lo congelado (por instrumento; un error queda registrado con su traza)
     import traceback
     partes, errores = [], {}
