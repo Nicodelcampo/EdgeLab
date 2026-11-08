@@ -65,7 +65,7 @@ def test_fin_integridad_relanza_un_resultado_desalineado_del_kernel_viejo(tmp_pa
 # --- 2. el ciclo del Debian arma un LocalRunner nuevo por vuelta ---------------------------------------------------------
 def test_local_runner_persiste_entre_instancias(tmp_path, monkeypatch):
     monkeypatch.setattr(ET, "ejecutar", lambda *a, **k: dict(conteo=[7]))
-    monkeypatch.setattr(GG, "contexto_m1", lambda b, t: {})
+    monkeypatch.setattr(GG, "contexto_m1", lambda b, t, ticks_por_barra=None: {})   # firma con ticks_por_barra (07/11)
     monkeypatch.setattr(ER, "friccion", lambda i: (1.0, 0.5))
     lec = {"NQ": lambda d0, d1, s: []}
     r1 = ER.LocalRunner(lec, {"NQ": 0.25}, carpeta=tmp_path / "_local")
