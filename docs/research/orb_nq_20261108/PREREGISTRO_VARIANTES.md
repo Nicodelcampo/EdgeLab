@@ -23,7 +23,8 @@ ORB-NQ-FILTROS):**
 - DESC 05/08/2025 → 31/03/2026: p por inversión de signo por sesión; nominación BH q 0,10 con **m = 96 + 1.425 heredadas**.
 - Se congelan (se escriben a disco ANTES de leer la réplica) las nominadas **y las 3 ORB base de NQ (O, C)**, pre-registradas acá.
 - Réplica 01/04 → 30/09/2026 sólo para lo congelado: una regla congelada CONFIRMA si su media en la réplica es > 0 con p ≤ 0,05
-  (una cola); con más de una, Holm sobre las congeladas. Nada se promueve sin holdout a N fijo.
+  (una cola); con más de una, Holm sobre las congeladas. El lote de la réplica tiene alfa reservado en LORD++ (familia ORB_VARIANTES,
+  reserva `ORB-VARIANTES/replica`, hecha antes de ver resultados): el nivel efectivo es el que fija el libro, no 0,05. Nada se promueve sin holdout a N fijo.
 - Sin holdout: el lector corta en la frontera (01/10/2026).
 
 **Riesgos:** pocas operaciones por regla (≈ 130 en DESC, ≈ 100 en réplica): la potencia contra efectos de 0,1 R es baja; el MDE se
