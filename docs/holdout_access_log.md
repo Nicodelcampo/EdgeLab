@@ -82,3 +82,4 @@
 | 2026-09-24T20:10:00Z | amendment | SIGNED_BY_NICO | 2026-07-01T00:00:00 | 2026-10-31T23:59:59 | Enmienda L2: L2 jul-oct = desarrollo; L2 nov-dic = holdout L2 sellado (docs/research/ENMIENDA_PROPUESTA_HOLDOUT_L2_20260924.md). Ticks/barras sin cambio |
 
 | 2026-11-08 | CANASTA_ORB (ORB_VARIANTES) | YM|30|O|2.0 + NQ|30|O|C | Apertura por decisión explícita de Nico pese a p_selección 0,37; ver docs/research/orb_nq_20261108/PREREGISTRO_CANASTA.md | sesión en la nube |
+| 2026-11-08 | CANASTA_GLOBAL | 10 reglas U1 (RESULTADO_CANASTA_GLOBAL.json) | Apertura exploratoria (modo del 08/11), p_desarrollo 0,0099, Fisher; docs/research/canasta_global_20261108/PREREGISTRO_HOLDOUT.md | sesión en la nube |
