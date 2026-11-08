@@ -143,13 +143,19 @@ def run(root, out=Path("/kaggle/working")):
     congeladas = sorted(set(nom) | {k for k in reglas if k in BASE_PRE}, key=str)
     (out / "ORB_VARIANTES_CONGELADAS.json").write_text(json.dumps([list(map(str, k)) for k in congeladas]))   # antes de la réplica
     desc = {"|".join(map(str, k)): dict(v, nomina=k in nom) for k, v in res.items()}
-    # ---- RÉPLICA sólo para lo congelado
-    Or = pd.concat([operaciones(root, i, *REP, files, permitidas(i, *REP), events) for i in INSTR], ignore_index=True)
-    rr = resumir(Or); rr = {k: v for k, v in rr.items() if k in set(congeladas)}
+    base = dict(estado="EXPLORATORIO_DESC_Y_REPLICA_CONGELADA", m_total=m_total, q=Q, reglas_desc=len(res), nominadas=len(nom),
+                congeladas=["|".join(map(str, k)) for k in congeladas], desc=desc)
+    (out / "ORB_VARIANTES_DESC.json").write_text(json.dumps(base, indent=1, default=float))   # 2026-11-08: el DESC no se pierde si falla la réplica
+    # ---- RÉPLICA sólo para lo congelado (por instrumento; un error queda registrado con su traza)
+    import traceback
+    partes, errores = [], {}
+    for i in INSTR:
+        try: partes.append(operaciones(root, i, *REP, files, permitidas(i, *REP), events))
+        except Exception as e: errores[i] = traceback.format_exc()[-1500:]
+    Or = pd.concat(partes, ignore_index=True) if partes else pd.DataFrame(columns=["ses", "inst", "caja", "stop", "salida", "r", "r_adv"])
+    rr = resumir(Or) if len(Or) else {}; rr = {k: v for k, v in rr.items() if k in set(congeladas)}
     rep = {"|".join(map(str, k)): v for k, v in evaluar(rr, np.sort(Or.ses.unique()), SEED + 1).items()} if rr else {}
-    (out / "ORB_VARIANTES_RESULTADOS.json").write_text(json.dumps(dict(
-        estado="EXPLORATORIO_DESC_Y_REPLICA_CONGELADA", m_total=m_total, q=Q, reglas_desc=len(res), nominadas=len(nom),
-        congeladas=["|".join(map(str, k)) for k in congeladas], desc=desc, replica=rep), indent=1, default=float))
+    (out / "ORB_VARIANTES_RESULTADOS.json").write_text(json.dumps(dict(base, replica=rep, errores_replica=errores), indent=1, default=float))
     print("ORB_VARIANTES_COMPLETA", len(res), len(nom), flush=True)
 
 
