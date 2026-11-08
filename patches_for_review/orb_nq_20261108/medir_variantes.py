@@ -26,6 +26,8 @@ DESC = (20250805, 20260331); REP = (20260401, 20260618)   # 2026-11-08: el calen
 B = 10000; SEED = 20261108; Q = .10; M_HEREDADO = 720 + 705; NMIN = 30
 BASE_PRE = [("NQ", d, "O", "C") for d in CAJAS]
 SERIES = False
+MODELO = "bidask"          # "last": último precio ± medio spread canónico (holdout sellado sin bid/ask; 2026-11-08)
+SPREAD_TICKS = {"NQ": 3.03, "ES": 1.09, "YM": 1.9}   # edgelab/costos.py::spread_ticks
 
 
 def preparar(df, tick):
@@ -47,10 +49,15 @@ def preparar(df, tick):
     return df, s
 
 
+SPREAD_ACTUAL = 0.0
+
+
 def llenar(t, last, bid, ask, senal, cierre, limite, lado, stop, slip, tick, com_pts, objetivo_r):
     """Como `ME.fill` (entrada en bid/ask + slippage, stop por last) con objetivo opcional en múltiplos del riesgo inicial."""
     i = int(np.searchsorted(t, senal, side="right"))
     if i >= len(t) or t[i] >= cierre: return None
+    if MODELO == "last":                                                    # mismo modelo que el embudo: last ± medio spread
+        bid = last - SPREAD_ACTUAL / 2.0; ask = last + SPREAD_ACTUAL / 2.0
     entrada = (ask[i] if lado == 1 else bid[i]) * tick + lado * slip * tick
     riesgo = lado * (entrada - stop)
     if riesgo <= 0: return None
@@ -69,7 +76,8 @@ def llenar(t, last, bid, ask, senal, cierre, limite, lado, stop, slip, tick, com
 
 
 def operaciones(root, inst, d0, d1, files, allowed, events):
-    tick, usd_tick = INSTR[inst]; com_pts = COMISION_USD / (usd_tick / tick)
+    global SPREAD_ACTUAL
+    tick, usd_tick = INSTR[inst]; com_pts = COMISION_USD / (usd_tick / tick); SPREAD_ACTUAL = SPREAD_TICKS[inst]
     pf = pq.ParquetFile(files[inst].path); ix = pf.schema_arrow.names.index("trade_date"); por_dia = {}
     for g in RR.select_row_groups(pf, d0, d1):
         st = pf.metadata.row_group(g).column(ix).statistics
@@ -166,3 +174,62 @@ def run(root, out=Path("/kaggle/working")):
 if __name__ == "__main__":
     import glob, os
     run(Path(os.environ.get("RELEASE_DIR") or Path(sorted(glob.glob("/kaggle/input/**/release_manifest.json", recursive=True))[0]).parent))
+
+
+# ------------------------------------------------------------------------------------------- holdout sellado (CANASTA-ORB)
+HOLDOUT_INI = 20261001
+HOLDOUT_TS = 1_790_805_600_000_000_000                                       # edgelab/holdout.py::HOLDOUT_APERTURA_UTC_NS
+EXCLUIDAS = {"NQ": {20261007}, "YM": {20261007}, "ES": {20261007, 20261029, 20261030}}   # edgelab/holdout.py (SESIONES_EXCLUIDAS)
+
+
+def ticks_sellados(entrada, inst):
+    """Ticks del holdout (`<INST>_*ticks.parquet`, el diario más nuevo manda) en el formato de la release: sin bid/ask (el modelo
+    `last` los arma con el spread canónico) y con el horario regular por reloj (09:30–16:00 ET)."""
+    import glob, re
+    rutas = sorted(glob.glob(f"{entrada}/**/{inst}_*ticks.parquet", recursive=True), key=lambda r: (bool(re.search(r"_\d{8}_ticks\.parquet$", r)), r))
+    partes, vistos = [], set()
+    for r in reversed(rutas):
+        t = pq.read_table(r, columns=["ts_utc_ns", "price_ticks", "trade_date", "contract"]).to_pandas()
+        t = t[~t.trade_date.isin(vistos)]; vistos |= set(t.trade_date.unique().tolist()); partes.append(t)
+    t = pd.concat(partes, ignore_index=True)
+    t = t[(t.trade_date >= HOLDOUT_INI) & (t.ts_utc_ns >= HOLDOUT_TS) & ~t.trade_date.isin(EXCLUIDAS.get(inst, set()))].copy()
+    et = pd.to_datetime(t.ts_utc_ns, utc=True).dt.tz_convert(ME.ET); mins = et.dt.hour * 60 + et.dt.minute
+    t["outside_regular"] = ~((mins >= 570) & (mins < 960)); t["bid_ticks"] = t.price_ticks; t["ask_ticks"] = t.price_ticks
+    t["regime_id"] = t.contract.astype("category").cat.codes
+    return t.sort_values("ts_utc_ns", kind="stable")
+
+
+def operaciones_holdout(entrada, inst, events):
+    global SPREAD_ACTUAL
+    tick, usd_tick = INSTR[inst]; com_pts = COMISION_USD / (usd_tick / tick); SPREAD_ACTUAL = SPREAD_TICKS[inst]; filas = []
+    T = ticks_sellados(entrada, inst)
+    for dia, raw in T.groupby("trade_date", sort=True):
+        p = preparar(raw.reset_index(drop=True), tick)
+        if p is None: continue
+        tk, senales = p; base = ME.midnight(int(dia)); cierre = base + 955 * ME.MIN; lim = base + 960 * ME.MIN
+        t = tk.ts_utc_ns.to_numpy(np.int64); last = tk.price_ticks.to_numpy(float)
+        for s in senales.itertuples():
+            if ME.blocked(s.signal_ns, cierre, events): continue
+            for sp in STOPS:
+                stop = (s.lo if s.lado == 1 else s.hi) if sp == "O" else (s.lo + s.hi) / 2.0
+                for sa in SALIDAS:
+                    obj = None if sa == "C" else sa
+                    a = llenar(t, last, last, last, s.signal_ns, cierre, lim, int(s.lado), stop, 1, tick, com_pts, obj)
+                    if a is not None: filas.append(dict(ses=int(dia), inst=inst, caja=int(s.duracion), stop=sp, salida=str(sa), r=a, r_adv=np.nan))
+    return pd.DataFrame(filas)
+
+
+def run_holdout(entrada, reglas, out=Path("/kaggle/working")):
+    """Canasta congelada en el holdout: R medio diario (igual ponderado entre reglas) y p de una cola por inversión de signo."""
+    global MODELO
+    MODELO = "last"; out = Path(out); out.mkdir(parents=True, exist_ok=True)
+    news = pd.read_csv(ME.NEWS); events = pd.to_datetime(news.ts_utc, utc=True).dt.as_unit("ns").astype("int64").to_numpy()
+    O = pd.concat([operaciones_holdout(entrada, i, events) for i in sorted({r.split("|")[0] for r in reglas})], ignore_index=True)
+    O["regla"] = O.inst + "|" + O.caja.astype(str) + "|" + O.stop + "|" + O.salida; O = O[O.regla.isin(reglas)]
+    X = O.pivot_table(index="ses", columns="regla", values="r", aggfunc="sum").reindex(columns=reglas).fillna(0.0)
+    c = X.mean(1).to_numpy(); rng = np.random.default_rng(SEED + 7)
+    Z = (rng.choice((-1., 1.), size=(B, len(c))) * c).mean(1); p = float((1 + (Z >= c.mean()).sum()) / (B + 1))
+    res = dict(estado="HOLDOUT_CANASTA_ORB", reglas=reglas, sesiones=len(c), operaciones=len(O), media_r_diaria=float(c.mean()),
+               r_total=float(c.sum()), p_una_cola=p, por_regla={k: dict(n=int((O.regla == k).sum()), media_r=float(O.r[O.regla == k].mean()) if (O.regla == k).any() else None) for k in reglas},
+               dias=[int(x) for x in X.index])
+    (out / "CANASTA_ORB_HOLDOUT.json").write_text(json.dumps(res, indent=1, default=float)); print("CANASTA_ORB_HOLDOUT", res["media_r_diaria"], p, flush=True)

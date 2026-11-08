@@ -24,3 +24,10 @@ def test_objetivo_stop_y_cierre():
 def test_bh_usa_m_heredado():
     res = {("a",): dict(p=0.0001, evaluable=True), ("b",): dict(p=0.03, evaluable=True), ("c",): dict(p=0.5, evaluable=False)}
     assert V.bh(res, 2) == {("a",), ("b",)} and V.bh(res, 100) == {("a",)} and V.bh(res, 5000) == set()
+
+
+def test_modelo_last_usa_medio_spread():
+    last = np.array([100., 100, 101, 102, 105, 103, 99, 97, 100, 100]); V.MODELO = "last"; V.SPREAD_ACTUAL = 2.0
+    try:   # entrada last[1]+1 = 101 (igual que ask), riesgo 3; objetivo 1R = 104 atravesado -> +1R
+        assert abs(V.llenar(T, last, BID, ASK, 5, 85, 100, 1, 98.0, 0, 1.0, 0.0, 1.0) - 1.0) < 1e-12
+    finally: V.MODELO = "bidask"; V.SPREAD_ACTUAL = 0.0
