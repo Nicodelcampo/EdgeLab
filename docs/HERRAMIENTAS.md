@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-604 scripts.
+605 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -567,6 +567,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/tickbar_diag_v2.py` | TICKBAR-001 classifier v2: separates bar cuts from event attribution. |
 | `tools/toxic_es_estabilidad.py` | TOXIC-ES-1 (docs/research/PREREG_TOXIC_ES_ESTABILIDAD_20260929.md) y CLIMA-NQ-EST-1 |
 | `tools/trace_avzvol_postexpiry_identities.py` | Trace bounded post-expiry source identities; never decode prices or outcomes. |
+| `tools/transferencia_multiactivo.py` | TRANSFERENCIA-MULTIACTIVO (pre-registro docs/research/transferencia_multiactivo_20261108/PREREGISTRO.md): reglas congeladas |
 | `tools/trayectorias_v5.py` | Trayectorias en R por operación (etapa TRAYECTORIAS) de las 8 reglas de la canasta v5, en DESC y réplica (nunca el holdout). |
 | `tools/trend_micro.py` | TREND-MICRO: rupturas con filtro de microestructura. Manifiesto con iteración 1: |
 | `tools/u1/u1_regimen_mensual_causal.py` | Experimento 1 (regimen_causal/PREREGISTRO_REGIMEN_MENSUAL_CAUSAL.md): U1-CRUZADO causal, media neta mensual (E1A/T3/S3, tope mult:3) |
