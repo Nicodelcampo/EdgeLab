@@ -68,6 +68,14 @@ Se ensayó **un solo canal** maxT con 360 celdas nominales `3 × 6 × 5 × 4`, 1
 
 Reproducción: `NUMBA_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 PYTHONPATH=. python patches_for_review/orb_nq_20261108/control_grid_sintetico.py` con las versiones del entorno del control anterior. No habilita integración ni ejecución de P&L: sigue pendiente el análisis de potencia y de hipótesis con el universo elegible real, sin usar outcomes para selección.
 
+## Continuación — inventario privado de sesiones y noticias
+
+Se versionó `patches_for_review/orb_nq_20261108/diagnostico_universo.py` en el commit `d628f8899d66941661362c3da7b5e335e4411cc0` (SHA-256 del archivo `bd93536030f30ed90734267373fb85d96f4c8f69345eacb793e419636636eddb`). Su código fija hashes del calendario y CSV, valida el hash canónico del calendario y usa el lector oficial para verificar la release completa y los pies del NQ; el diagnóstico no deserializa columnas de precios. Clasifica fechas presentes en row groups frente al calendario y cruza presencia de eventos listados durante la sesión completa, sin declarar aptitud operativa. La ausencia de eventos listados **no demuestra ausencia de noticias**, y la presencia en el footer no demuestra captura íntegra o ticks RTH. El calendario y las noticias son retrospectivos y no están certificados point-in-time.
+
+La versión **5** del notebook privado terminó `COMPLETE` y guardó `E0_ORB_NQ_UNIVERSO_PRIVADO.json` dentro de Kaggle. El inventario señala fechas de clase normal sin grupos, fechas de cierre anticipado con grupos y un grupo en una fecha clasificada como cerrada. Hay que contrastar estas discrepancias con la fuente y el horario aplicable; ninguna se convierte automáticamente en sesión operable o defecto. El detalle por fecha permanece en el output privado, sujeto a la revisión de licencia antes de sacar datos de Kaggle. Las 37 pruebas sintéticas del conjunto ORB pasan, incluidas 9 del inventario y los bordes de DST y ventanas cerradas.
+
+**Incidente de ejecución:** al guardar la versión 5, el editor conservó otra celda de la versión anterior y `Save & Run All` ejecutó también el E0 previo. Ese E0 sí deserializó precios del intervalo pre-holdout para contar señales y generar cortes preliminares; sus resultados se repitieron sin calcular fills, stops, retornos ni P&L. Las guardas de fecha y footer mantuvieron excluido el holdout. El inventario nuevo únicamente verificó archivos y leyó sus metadatos. Antes de otra ejecución en el editor, revisar **todas** las celdas y su orden: sustituir el contenido de una celda no elimina las demás. No inferir elegibilidad ni congelar cortes a partir de esta repetición.
+
 ## Bloqueos antes de P&L
 
 1. Release adjuntada y hashes verificados en E0; falta contrastar sesiones presentes, contratos, días cortos y calibración inicial con el registro. No tocar octubre ni el holdout.
