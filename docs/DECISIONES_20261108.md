@@ -1,3 +1,7 @@
+# Decisiones del 2026-11-08
+
+Estado: VIGENTE — decisiones de Nico del 08/11/2026 (regla global de evidencia, holdout exploratorio).
+
 
 ## Regla global: estabilidad entre días, sub-bloques y canastas diversificadas (Nico, 08/11)
 
@@ -9,3 +13,9 @@ por ejemplo 10 %, una canasta de estrategias con esas características va a ser 
 - La probabilidad de azar se estima con un nulo que repite TODA la selección (inversión de signo por sesión, la misma para todas
   las reglas), para que elegir entre muchas no la infle; el objetivo es < 10 %.
 - La confirmación es en el holdout, con la canasta congelada antes de abrirlo. Primera aplicación: ORB (`docs/research/orb_nq_20261108/PREREGISTRO_CANASTA.md`).
+
+## Holdout exploratorio y más ritmo del agente (Nico, 08/11)
+
+«Que sí lo pueda abrir»: el agente puede abrir el holdout de una familia sin candidato confirmado (modo exploratorio de
+`edgelab/autopilot/holdout_apertura.py`), declarando antes la probabilidad de azar de desarrollo y la combinación. Topes diarios de
+Opus y Sonnet más altos, 12 corridas por día y 8 en paralelo: el agente usa el plan Max.

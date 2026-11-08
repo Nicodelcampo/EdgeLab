@@ -109,6 +109,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (1)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/DECISIONES_20261108.md: falta `Estado:` en el encabezado
+Ninguno.
