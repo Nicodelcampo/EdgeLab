@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-586 scripts.
+587 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -152,6 +152,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/campaign_ticks_multi_rerun.py` | Re-corrida CORREGIDA de F3/F4 de la campaña multi-instrumento (bug de apertura RTH, 2026-09-23). |
 | `tools/canasta.py` | Canasta de estrategias de régimen (edgelab/funnel/canasta.py): estado, altas desde el embudo, operaciones forward y retiros. |
 | `tools/canasta_estatica_ledger.py` | Libro de la canasta estática PREAPERTURA-ES, PREAPERTURA-NQ, DRC-YM-4. |
+| `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
 | `tools/censo_es_nq.py` | CENSO DE INTEGRIDAD para `es_full_ticks` y `nq_ticks_clean`. |
