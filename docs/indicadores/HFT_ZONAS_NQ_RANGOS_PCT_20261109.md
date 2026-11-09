@@ -18,3 +18,14 @@ Linaje: el indicador de clusters anterior (`HFTClusterZonesNQ.cs`) salió del pr
 `archive/h_cluster_nq_fuera_del_proyecto/`; éste es una definición nueva (por percentil) a pedido de Nico. Antes de usarlo en
 research: paridad Python, censo as-of y familia registrada (regla de CLAUDE.md). No compilado en este entorno (sin compilador C#):
 compilar en NinjaTrader y avisar errores.
+
+## Versión liviana (2026-11-09, segunda entrega)
+Nico no lo podía cargar. Cambios sólo de dibujo (el detector no cambia):
+- Antes cada tick recorría TODAS las zonas para ver cuáles faltaba dibujar (cuadrático en el histórico): ahora un puntero a la primera
+  pendiente, y en el histórico se dibuja en la serie primaria, no por tick. En vivo la zona aparece en el tick en que se cierra.
+- En el histórico sólo se crean objetos para las zonas de las últimas `VelasDibujoHistorico` (1.500) velas; las más viejas siguen
+  contando para los rangos pero no se dibujan.
+- Los rangos por percentil se calculan una sola vez al terminar el histórico (antes cada 5 velas, borrando y redibujando todo); en vivo,
+  cada `PctRecomputeBars`.
+- Texto por zona apagado por defecto (`MostrarTexto`).
+Lo que sigue pesando es la carga de la serie de 1 tick (es el detector): cargar pocos días (2–3) en el gráfico.

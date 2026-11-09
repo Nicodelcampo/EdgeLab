@@ -193,7 +193,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ColorAbsorb              = Brushes.MediumPurple;
                 ExtensionDibujo          = 600;
                 Opacidad                 = 30;
-                MostrarTexto             = true;
+                MostrarTexto             = false;   // rápido: un texto por zona pesa mucho
+                VelasDibujoHistorico     = 1500;
                 ColorPredator            = Brushes.Gold;
                 ColorUltra               = Brushes.Silver;
                 ColorBull                = Brushes.DodgerBlue;
@@ -252,6 +253,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 fTicks = 0;
                 voidRecomputeCounter = 0;
                 voidCounter = 0;
+                primeraPendiente = 0;
                 voidTags.Clear();
                 clusterCounter = 0;
                 clusterTags.Clear();
@@ -313,7 +315,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 if (CurrentBars[1] < 5) return;
                 ProcesarSweeps();
-                if (!ModoExportacionPuro) DibujarPendientes();
+                // en vivo la zona aparece en el tick en que se cierra; en el histórico se dibuja en la serie primaria (más liviano)
+                if (!ModoExportacionPuro && State == State.Realtime) DibujarPendientes();
                 return;
             }
             if (BarsInProgress != 0) return;
@@ -327,8 +330,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (MostrarRangosPct)
             {
-                pctCounter++;
-                if (pctCounter >= Math.Max(1, PctRecomputeBars)) { pctCounter = 0; RecalcularRangosPct(); }
+                // rápido: en el histórico se calcula una sola vez, en la última vela; en vivo cada PctRecomputeBars
+                bool finHistorico = State == State.Historical && CurrentBars[0] >= BarsArray[0].Count - 2;
+                if (State == State.Realtime)
+                {
+                    pctCounter++;
+                    if (pctCounter >= Math.Max(1, PctRecomputeBars)) { pctCounter = 0; RecalcularRangosPct(); }
+                }
+                else if (finHistorico) RecalcularRangosPct();
             }
             else if (pctTags.Count > 0) LimpiarPct();
 
@@ -629,10 +638,16 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void DibujarPendientes()
         {
             if (ModoExportacionPuro) return;
-            for (int i = 0; i < zones.Count; i++)
+            // rápido: puntero a la primera pendiente (antes recorría todas las zonas en cada llamada) y, en el histórico,
+            // las zonas viejas se marcan como dibujadas sin crear objetos (sólo se dibujan las de las últimas VelasDibujoHistorico)
+            int corte = (State == State.Historical) ? BarsArray[0].Count - Math.Max(1, VelasDibujoHistorico) : int.MinValue;
+            while (primeraPendiente < zones.Count && zones[primeraPendiente].Drawn) primeraPendiente++;
+            for (int i = primeraPendiente; i < zones.Count; i++)
             {
                 Zone z = zones[i];
                 if (z.Drawn) continue;
+                if (z.EndBar + Math.Max(0, ExtensionDibujo) < corte) { z.Drawn = true; z.DrawnBar = CurrentBars[0]; continue; }
+                if (CurrentBars[0] < corte) break;
                 int barsAgoStart = CurrentBars[0] - z.StartBar;
                 int barsAgoEnd   = CurrentBars[0] - z.EndBar;
                 if (barsAgoStart < 0) continue;
@@ -1030,6 +1045,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         // ===================== RANGOS POR PERCENTIL (clusters densos y vacios amplios) =====================
         private int pctCounter;
+        private int primeraPendiente;
         private int pctSeq;
         private readonly List<string> pctTags = new List<string>();
 
@@ -1048,7 +1064,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             for (int i = 0; i < zones.Count; i++)
             {
                 Zone z = zones[i];
-                if (z.Drawn && z.EndBar >= b0 && z.EndBar <= b1) zs.Add(z);      // sólo zonas ya terminadas y visibles: causal
+                if (z.EndBar >= b0 && z.EndBar <= b1) zs.Add(z);      // zonas ya terminadas por el detector: causal
             }
             LimpiarPct();
             int ext = Math.Max(0, PctExtensionBars);
@@ -1452,6 +1468,8 @@ namespace NinjaTrader.NinjaScript.Indicators
         [Browsable(false)] public string ColorVacioPctSerializable { get { return Serialize.BrushToString(ColorVacioPct); } set { ColorVacioPct = Serialize.StringToBrush(value); } }
         [Display(Name="Mostrar texto", Order=11, GroupName="P. Rangos por percentil")]
         public bool MostrarTextoPct { get; set; }
+        [Range(100, 1000000)][Display(Name="Velas con zonas dibujadas (historico)", Order=12, GroupName="P. Rangos por percentil", Description="Rápido: en el histórico sólo se dibujan las zonas de las últimas N velas; el detector y los rangos usan todas")]
+        public int VelasDibujoHistorico { get; set; }
         #endregion
 
         #region Properties
