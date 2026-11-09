@@ -1,5 +1,7 @@
 # Reel @flexingjoetrades - DfJdAz6xa_B - Opening Range + 20 EMA - Documento Completo
 
+Estado: REFERENCIA (material externo juntado por Nico; no es evidencia, ver ../INDICE.md).
+
 **URL:** https://www.instagram.com/reel/DfJdAz6xa_B/?obrf=N2J2eGowMWQ4MjI2
 **Post ID:** 462917778375579002284
 **Fecha:** 2026-10-30

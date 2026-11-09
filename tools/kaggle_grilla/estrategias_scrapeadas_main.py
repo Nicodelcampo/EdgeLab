@@ -37,17 +37,9 @@ def leer(fuente, d0, d1, ent, log):
     return pd.concat(filas, ignore_index=True) if filas else pd.DataFrame()
 
 
-def celda_resumen(g, fr, fra, n_boot):
-    from edgelab.funnel import escalera as ES
-    x = (g.bruto.to_numpy(float) - fr) / g.riesgo.to_numpy(float); ses = g.fecha.to_numpy()
-    c = dict(ops=int(len(x)), sesiones=int(len(np.unique(ses))))
-    if len(x) < 30: return dict(c, p=1.0, nota="< 30 operaciones: no evaluable")
-    rs = ES.resumen_sesiones(x, ses, n_boot=n_boot)
-    return dict(c, media=rs["media"], ic90=rs["ic"], p=rs["p_unilateral"], mde=float(ES.mde(rs["se"])), acierto=float((x > 0).mean()),
-                media_adversa=float(((g.bruto.to_numpy(float) - fra) / g.riesgo.to_numpy(float)).mean()), bruto=float(g.bruto.mean()),
-                frac_stop=float((g.motivo == 1).mean()), largos=float(x[g.lado.to_numpy() == 1].mean()) if (g.lado == 1).any() else None,
-                cortos=float(x[g.lado.to_numpy() == -1].mean()) if (g.lado == -1).any() else None,
-                por_anio={str(a): float(v) for a, v in pd.Series(x).groupby(ses // 10000).mean().items()})
+def celda_resumen(*a, **k):
+    from edgelab.research.gap_continuacion import celda_resumen as f
+    return f(*a, **k)
 
 
 def main():

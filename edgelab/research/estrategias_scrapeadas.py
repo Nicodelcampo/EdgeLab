@@ -40,9 +40,7 @@ def _agregar(o, h, l, c, v, grupos):
 
 
 def _ema(x, n):
-    a = 2 / (n + 1); e = np.empty(len(x)); e[0] = x[0]
-    for i in range(1, len(x)): e[i] = a * x[i] + (1 - a) * e[i - 1]
-    return e
+    return pd.Series(np.asarray(x, float)).ewm(span=n, adjust=False).mean().to_numpy()
 
 
 def _sim_velas(o, h, l, c, i0, entrada, d, sl, tp, salida_ok, ult):

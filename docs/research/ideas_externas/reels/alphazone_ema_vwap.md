@@ -1,5 +1,7 @@
 # Reel @alphazone.ai - DfVvb5ek-Nq - EMA + VWAP Cross - Documento Completo
 
+Estado: REFERENCIA (material externo juntado por Nico; no es evidencia, ver ../INDICE.md).
+
 **URL:** https://www.instagram.com/reel/DfVvb5ek-Nq/?exln=YWtmanExOHFpNzEw
 **Post ID:** 070300696620506331804
 **Fecha:** 2026-11-04

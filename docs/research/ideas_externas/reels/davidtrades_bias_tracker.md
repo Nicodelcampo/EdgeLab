@@ -1,5 +1,7 @@
 # Reel @davidtrades_model - DffkN31PrN7 - Bias Tracker + Market Intraday Momentum - Documento Completo con Respaldo Académico
 
+Estado: REFERENCIA (material externo juntado por Nico; no es evidencia, ver ../INDICE.md).
+
 **URL:** https://www.instagram.com/reel/DffkN31PrN7/?rpxt=MXRreHAwYzRja2YyOQ==
 **Post ID:** 532053983152457387692
 **Fecha:** 2026-11-08 (hoy, recién subido)

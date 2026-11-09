@@ -1,5 +1,7 @@
 # Reel @italian_founder - DfO091jBtvQ - 4 Estrategias Rápido + Backtests Lie - Documento Completo
 
+Estado: REFERENCIA (material externo juntado por Nico; no es evidencia, ver ../INDICE.md).
+
 **URL:** https://www.instagram.com/reel/DfO091jBtvQ/?psln=Njl2c3NvOG9mZWdy
 **Post ID:** 821664598680116673476
 **Fecha:** 2026-11-02

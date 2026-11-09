@@ -1,5 +1,7 @@
 # Reel @kemet.capital - DfSn9phMxuX - Gap S&P 500 ES - Documento Completo
 
+Estado: REFERENCIA (material externo juntado por Nico; no es evidencia, ver ../INDICE.md).
+
 **URL:** https://www.instagram.com/reel/DfSn9phMxuX/?exln=NDh0dm9xeWp2Y3hi
 **Post ID:** 727606440650877922563
 **Fecha:** 2026-11-03
