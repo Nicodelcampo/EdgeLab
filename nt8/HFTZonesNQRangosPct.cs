@@ -160,6 +160,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 PctAngosto        = 10;
                 PctAmplio         = 3;
                 ZigZagTicks       = 60;
+                ExpPorSesion      = 1.0;
                 PctMinHistoria    = 30;
                 ExpVentanaBars    = 400;
                 PctRecomputeBars  = 20;
@@ -257,6 +258,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 voidCounter = 0;
                 primeraPendiente = 0;
                 primeraSinCluster = 0; pctCounter = 0; pctSeq = 0;
+                sesionesVistas = 0; ultimaFechaSesion = DateTime.MinValue; ultExp = null;
                 zzDir = 0; zzIni = 0; zzIniBar = 0; zzExt = 0; zzExtBar = 0;
                 histAnchoCluster.Clear(); histAltoExp.Clear(); clustersDib.Clear(); expVistas.Clear(); pctTags.Clear();
                 voidTags.Clear();
@@ -335,6 +337,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (MostrarRangosPct)
             {
+                if (Times[0][0].Date != ultimaFechaSesion) { ultimaFechaSesion = Times[0][0].Date; sesionesVistas++; }
                 // Causal y a lo largo de TODO el histórico: cada zona nueva se evalúa como posible cluster al cerrarse, y las
                 // expansiones se buscan en una ventana móvil cada PctRecomputeBars velas. Lo marcado queda fijo (no se borra).
                 while (primeraSinCluster < zones.Count)
@@ -1137,6 +1140,9 @@ namespace NinjaTrader.NinjaScript.Indicators
         // timeframe). Dentro de cada tramo terminado se busca el mayor recorrido de precio contiguo que ninguna zona viva cubría
         // durante el tramo. Se marca si ese recorrido está en el PctAmplio% más largo de todos los tramos vistos hasta ahora.
         private int zzDir, zzIniBar, zzExtBar;
+        private int sesionesVistas;
+        private DateTime ultimaFechaSesion = DateTime.MinValue;
+        private double[] ultExp;
         private double zzIni, zzExt;
 
         private void AvanzarZigZag()
@@ -1193,16 +1199,28 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
             if (hi - cursor > mejor) { mejor = hi - cursor; gLo = cursor; gHi = hi; }
             double t = mejor / TickSize;
+            if (t < 1) return;
             histAltoExp.Add(t);
-            if (t < 1 || histAltoExp.Count < Math.Max(10, PctMinHistoria) || t < Percentil(histAltoExp, 100 - PctAmplio)) return;
+            int n = histAltoExp.Count;
+            if (n < Math.Max(10, PctMinHistoria)) return;
+            // INFRECUENTES: el umbral se fija para que, en la historia vista, salgan en promedio ExpPorSesion expansiones por sesión
+            // (y nunca más que el PctAmplio% más largo). No depende del timeframe ni de cuántas zonas haya.
+            double frac = Math.Min(PctAmplio / 100.0, Math.Max(0.1, ExpPorSesion) * Math.Max(1, sesionesVistas) / n);
+            if (t < Percentil(histAltoExp, 100.0 * (1 - frac))) return;
             int cb = CurrentBars[0];
-            string tag = "HFTPCT_V_" + (pctSeq++);
-            Draw.Rectangle(this, tag, false, cb - b0, gHi, cb - b1, gLo, ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
-            pctTags.Add(tag);
+            // juntar con la expansión anterior si está pegada en el tiempo y se solapa en precio (un solo movimiento)
+            if (ultExp != null && b0 <= (int)ultExp[3] + 2 && gLo <= ultExp[1] && ultExp[0] <= gHi)
+            {
+                ultExp[0] = Math.Min(ultExp[0], gLo); ultExp[1] = Math.Max(ultExp[1], gHi); ultExp[3] = Math.Max(ultExp[3], b1);
+            }
+            else ultExp = new double[] { gLo, gHi, b0, b1, pctSeq++ };
+            string tag = "HFTPCT_V_" + (int)ultExp[4];
+            Draw.Rectangle(this, tag, false, cb - (int)ultExp[2], ultExp[1], cb - (int)ultExp[3], ultExp[0], ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
+            if (!pctTags.Contains(tag)) pctTags.Add(tag);
             if (MostrarTextoPct)
             {
-                Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", t), cb - b0, gHi + TickSize * 2, ColorVacioPct);
-                pctTags.Add(tag + "_T");
+                Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", (ultExp[1] - ultExp[0]) / TickSize), cb - (int)ultExp[2], ultExp[1] + TickSize * 2, ColorVacioPct);
+                if (!pctTags.Contains(tag + "_T")) pctTags.Add(tag + "_T");
             }
         }
 
@@ -1510,6 +1528,8 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int PctMinHistoria { get; set; }
         [Range(50, 5000)][Browsable(false)]
         public int ExpVentanaBars { get; set; }
+        [Range(0.1, 50)][Display(Name="Expansiones por sesion (promedio)", Order=14, GroupName="P. Rangos por percentil", Description="Cuantas expansiones salen en promedio por sesion: las mas largas. Bajalo para menos")]
+        public double ExpPorSesion { get; set; }
         [Range(4, 10000)][Browsable(false)]
         public int ZigZagTicks { get; set; }
         [Range(1, 1000)][Browsable(false)][Display(Name="(sin uso)", Order=6, GroupName="P. Rangos por percentil")]

@@ -61,3 +61,8 @@ El zigzag partía en varias expansiones un tramo sin ninguna zona (Nico: «acá 
 expansión es todo lo que recorrió el precio entre el fin de una zona y el inicio de la siguiente, sin importar velas ni vaivenes: del
 mínimo al máximo de ese intervalo se toma el mayor recorrido contiguo que ninguna zona viva cubría. Se evalúa al aparecer la zona
 nueva (causal) y se marca si está en el 3 % más largo de todos los intervalos vistos. `ZigZagTicks` queda sin uso (oculto).
+
+## Expansiones infrecuentes por diseño (2026-11-09, séptima entrega)
+Seguían saliendo varias por pantalla: el 3 % de muchos intervalos chicos es un umbral bajo. Ahora el umbral se fija por frecuencia:
+`ExpPorSesion` (1 por defecto) = cuántas expansiones salen en promedio por sesión según la historia vista (las más largas), con techo
+`PctAmplio`. Expansiones pegadas en el tiempo que se solapan en precio se juntan en una sola caja.
