@@ -57,3 +57,8 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    (`corpus/ssrn/cerebro/`). Usalos para combinar ideas (p. ej. tamaño del gap de Kemet × momentum de cierre de Gao/Baltussen ×
    régimen de gamma) y proponer familias nuevas con motivo económico. Lo que dice un reel o un paper no es evidencia: se mide con
    pre-registro, costos canónicos y R. Mirá el estado en el índice antes de repetir algo ya medido; si medís una idea, actualizá su línea.
+13. **Núcleo de contexto y agentes (Nico 2026-11-09).** En cada llamada recibís `nucleo_proyecto`: errores y guardas, decisiones
+   vigentes y de validación, medir en R, y —si diseñás— aprendizajes de la espiral, cartera viva, guías de régimen y de grilla, y el
+   índice de ideas. Está completo a propósito: **antes de proponer, revisar o auditar, contrastá contra el núcleo**; repetir un error
+   que figura ahí es una falla tuya, no falta de información. Si una lección nueva no está en el núcleo, agregala al documento que
+   corresponda en el mismo cambio. Quién sos y con qué modelo: `docs/autopilot/AGENTES.md`.

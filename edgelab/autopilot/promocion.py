@@ -89,10 +89,11 @@ def promover_auto(candidatas, *, draft_fn, to_runspec, runner, repo: Path, candi
         entrada = {"borrador": texto[:9000], "publicas": dict(score=c.score, pruebas=c.n_trials, a_favor=c.pro, en_contra=c.contra, regla=c.rule)}
         if ant: entrada["antecedentes"] = ant
         row["antecedentes"] = [a_.get("ref") for a_ in ant]
-        rev = runner.call("revisor", entrada)
+        from edgelab.autopilot.contexto import con_nucleo
+        rev = runner.call("revisor", con_nucleo("revisor", entrada))
         if rev.get("status") not in ("OK", "CACHED") or rev["output"]["decision"] != "PROMOTE":
             _log(log_path, dict(row, decision="RECHAZADA_REVISOR", revisor=rev.get("output") or rev.get("status"))); out.append((c.cid, "RECHAZADA_REVISOR")); continue
-        rev2 = runner.call("revisor2", entrada)                            # misma entrada, sin la razón del primero
+        rev2 = runner.call("revisor2", con_nucleo("revisor2", entrada))                            # misma entrada, sin la razón del primero
         row["revisor2"] = rev2.get("output") or rev2.get("status")
         if rev2.get("status") not in ("OK", "CACHED") or rev2["output"]["decision"] != "PROMOTE":
             _log(log_path, dict(row, decision="RECHAZADA_REVISOR2", revisor=rev["output"])); out.append((c.cid, "RECHAZADA_REVISOR2")); continue

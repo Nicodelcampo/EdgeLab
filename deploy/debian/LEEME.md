@@ -89,3 +89,13 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
   `max_per_day: null` (sin tope diario: hace las corridas necesarias) y `max_concurrent: 8` (los lugares de Kaggle).
 - **Hay que refrescar el manifiesto de protegidos** después de instalar este commit: el protocolo de apertura y los roles están en él,
   y sin refrescarlo el ciclo se detiene por protegidos alterados.
+
+## Agentes, modelos y contexto (2026-11-09)
+
+- **Fuente única:** `config/autopilot/AGENTES.json` (tabla legible en `docs/autopilot/AGENTES.md`). El arquitecto (proponente, abogado,
+  meta-analista) usa Fable 5.2; el juez (revisor) y el ingeniero (programador) Opus 5.5; el auditor y el revisor2 Sonnet 5.5; lector,
+  bibliotecario y cronista Haiku 5.5. **Si `autopilot.json` del servidor tiene un bloque `modelos` con valores, pisa la tabla: dejarlo
+  en `{}`** (y quitar `programador.modelo`) para que valga la fuente única.
+- **Núcleo de contexto:** cada rol recibe completos los documentos de lo ya aprendido (`edgelab/autopilot/contexto.py::NUCLEO_FUENTES`);
+  el prompt pesa ~100 KB y por eso va por la entrada estándar de `claude -p`. Verificar que el `claude` del servidor acepte los
+  identificadores de modelo nuevos (`claude --model claude-fable-5-2 -p` con una prueba corta) antes de reactivar el proponente.

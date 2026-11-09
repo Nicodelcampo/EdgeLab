@@ -1,0 +1,31 @@
+{
+ "schema": "edgelab_agentes_v1",
+ "actualizado": "2026-11-09",
+ "_nota": "FUENTE ÚNICA de agentes, roles, modelos, topes y presupuesto de contexto del agente del Debian. La leen edgelab/autopilot/roles.py (modelo y tope de cada rol), programador.py, orquestador_multiagente.py (topología) y contexto.py (presupuesto). docs/autopilot/AGENTES.md se genera de acá (tools/agentes.py --write). Para cambiar un modelo se edita ESTE archivo; el bloque `modelos` de la configuración del servidor queda sólo para excepciones.",
+ "modelos": {
+  "fable": {"id": "claude-fable-5-2", "usd_mtok_entrada": 8.0, "usd_mtok_salida": 40.0, "para": "criterio, síntesis y diseño: pocas llamadas, las que más pesan"},
+  "opus": {"id": "claude-opus-5-5", "usd_mtok_entrada": 4.0, "usd_mtok_salida": 20.0, "para": "juicio independiente y código"},
+  "sonnet": {"id": "claude-sonnet-5-5", "usd_mtok_entrada": 2.0, "usd_mtok_salida": 10.0, "para": "revisión adversaria y auditoría frecuentes"},
+  "haiku": {"id": "claude-haiku-5-5", "usd_mtok_entrada": 0.1, "usd_mtok_salida": 0.5, "para": "resúmenes y fichas en volumen"}
+ },
+ "agentes": {
+  "capataz": {"motor": "python_determinista", "cadencia_min": 10, "rol": "Capataz determinista: sincroniza con foundation, avanza el embudo, reparte Kaggle, corre los SLIs de alineación", "roles": []},
+  "arquitecto": {"modelo": "fable", "rol": "Arquitecto cuantitativo y meta-analista: decide QUÉ vale la pena investigar", "contexto_max_chars": 160000, "roles": ["proponente", "abogado", "meta_analista"]},
+  "ingeniero": {"modelo": "opus", "rol": "Ingeniero de módulos y doctor autorreparador (worktree aislada)", "contexto_max_chars": 80000, "roles": ["programador"]},
+  "juez": {"modelo": "opus", "rol": "Revisor independiente del arquitecto: otro modelo que el que propone", "contexto_max_chars": 120000, "roles": ["revisor"]},
+  "auditor": {"modelo": "sonnet", "rol": "Auditor adversario, guardián de alineación", "contexto_max_chars": 120000, "roles": ["revisor2", "auditor"]},
+  "escribas": {"modelo": "haiku", "rol": "Lectura, fichas y crónica en volumen", "contexto_max_chars": 30000, "roles": ["lector", "bibliotecario", "cronista"]}
+ },
+ "roles": {
+  "proponente": {"tope_diario": 24, "timeout_s": 1800, "nucleo": true, "tarea": "Propone UNA familia falsable por ciclo, priorizando indagar lo que ya mostró ventaja (FACTORES_CON_VENTAJA) antes que abrir familias nuevas"},
+  "abogado": {"tope_diario": 20, "timeout_s": 1800, "nucleo": true, "tarea": "Sobre cada hallazgo: la explicación no-edge más plausible y la prueba que la refuta"},
+  "meta_analista": {"tope_diario": 12, "timeout_s": 1800, "nucleo": true, "tarea": "Tras cada campaña cerrada: qué factor aportó, cuánto, dónde, y qué indagar después; mantiene el registro de factores con ventaja"},
+  "programador": {"tope_diario": 1, "timeout_s": 3600, "nucleo": true, "tarea": "Escribe y repara código dentro de su perímetro, con tests y controles sintéticos"},
+  "revisor": {"tope_diario": 40, "timeout_s": 900, "nucleo": true, "tarea": "PROMOTE / KILL / DERIVE de un pre-registro contra antecedentes del proyecto"},
+  "revisor2": {"tope_diario": 40, "timeout_s": 600, "nucleo": true, "tarea": "Segunda opinión escéptica ante un PROMOTE, sin ver la razón del primero"},
+  "auditor": {"tope_diario": 60, "timeout_s": 600, "nucleo": true, "tarea": "Compara lo corrido contra lo pre-registrado: CONFORME / DESVIO / SOSPECHA_FUGA"},
+  "lector": {"tope_diario": 200, "timeout_s": 600, "nucleo": false, "tarea": "Resume resultados de corridas, sin juicio"},
+  "bibliotecario": {"tope_diario": 100, "timeout_s": 600, "nucleo": false, "tarea": "Fichas de literatura con referencia"},
+  "cronista": {"tope_diario": 100, "timeout_s": 600, "nucleo": false, "tarea": "Redacta el resumen del ciclo para la sala con los números tal cual"}
+ }
+}

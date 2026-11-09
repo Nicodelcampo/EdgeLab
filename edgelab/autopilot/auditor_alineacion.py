@@ -110,7 +110,7 @@ def evaluar_alineacion_estado(
     checks.append(
         CheckAlineacion(
             codigo="SLI-03",
-            nombre="Programador autónomo activo (Agente 2 Opus 4.6)",
+            nombre="Programador autónomo activo (agente ingeniero)",
             ok=ok_prog,
             severidad="ALTA",
             detalle=f"programador.activo={prog_cfg.get('activo')}",

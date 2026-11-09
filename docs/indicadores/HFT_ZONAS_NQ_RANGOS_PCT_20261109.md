@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (indicador visual, target-free; sin paridad Python todavía). Fecha: 2026-11-09. Pedido de Nico.
 
-Archivo: `nt8/HFTZonesNQRangosPct.cs`. Detector HFT idéntico a `nt8/HFTZonesNQPureV4_V2.cs` (mismo motor de rachas y mismos
+Archivo: `nt8/user_indicators/HFTZonesNQRangosPct.cs` (indicador visual sin paridad: fuera del conjunto gobernado de `nt8/`, que exige triaje ULP). Detector HFT idéntico a `nt8/HFTZonesNQPureV4_V2.cs` (mismo motor de rachas y mismos
 parámetros por defecto); sólo se agrega una capa de dibujo. Logging a SQLite apagado por defecto (no toca los oráculos).
 
 Capa nueva (grupo «P. Rangos por percentil»), recalculada cada `PctRecomputeBars` velas con las zonas ya terminadas dentro de

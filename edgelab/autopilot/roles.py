@@ -15,8 +15,10 @@ from __future__ import annotations
 import dataclasses, hashlib, json, os, re, sqlite3, subprocess, time
 from pathlib import Path
 
-# Versiones FIJADAS (reproducibilidad: cada llamada registra el modelo exacto). Se pueden cambiar por configuración (`modelos`).
-HAIKU, SONNET, OPUS = "claude-haiku-5-5", "claude-sonnet-5-5", "claude-opus-5-5"
+# Modelos y topes: FUENTE ÚNICA `config/autopilot/AGENTES.json` (edgelab/autopilot/agentes.py). Acá sólo viven el esquema de salida
+# y la consigna de cada rol; cada llamada registra el modelo exacto. La configuración (`modelos`) queda para excepciones.
+from edgelab.autopilot import agentes as _AG
+HAIKU, SONNET, OPUS, FABLE = (_AG.tabla()["modelos"][k]["id"] for k in ("haiku", "sonnet", "opus", "fable"))
 SECRET = re.compile(r"(KGAT_|gho_|ghp_|github_pat_|sk-ant-|BEGIN [A-Z ]*PRIVATE KEY|KAGGLE_KEY|password|passwd|secret)", re.I)
 LOCAL_PATH = re.compile(r"(^|[\s'\"])(/(etc|home|opt|var|root|mnt)/|[A-Za-z]:[\\/])")
 PRIVATE_KEYS = {"holdout", "private", "d2", "secrets", "credentials", "token"}
@@ -27,35 +29,35 @@ def _obj(props, required=None):
 
 S = {"type": "string", "maxLength": 2000}
 ROLES = {
-    "lector": dict(model=HAIKU, daily_cap=200, schema=_obj({
+    "lector": dict(schema=_obj({
         "familias": {"type": "array", "maxItems": 50, "items": _obj({"familia": S, "resumen": S, "sobrevivientes": {"type": "integer"}})},
         "tres_lineas": S}),
         system="Resumís resultados de corridas de investigación. Sin juicio ni recomendaciones: sólo lo que dicen los números recibidos."),
-    "bibliotecario": dict(model=HAIKU, daily_cap=100, schema=_obj({
+    "bibliotecario": dict(schema=_obj({
         "fichas": {"type": "array", "maxItems": 12, "items": _obj({"ref": S, "afirma": S, "a_favor_o_en_contra": {"enum": ["a_favor", "en_contra", "neutral"]}})},
         "vacios": {"type": "array", "maxItems": 10, "items": S}}),
         system="Armás fichas de literatura a partir de los pasajes recibidos. La literatura nunca es evidencia propia; citá siempre la ref."),
-    "cronista": dict(model=HAIKU, daily_cap=100, schema=_obj({"resumen_sala": S, "aporte_al_referente": S}),
+    "cronista": dict(schema=_obj({"resumen_sala": S, "aporte_al_referente": S}),
         system="Redactás el resumen del ciclo para la sala, en español rioplatense, con los números exactamente como vienen. No inventes cifras."),
-    "proponente": dict(model=OPUS, daily_cap=24, schema=_obj({
+    "proponente": dict(schema=_obj({
         "familia": S, "mecanismo": S, "prediccion": S, "refutacion": S,
         "parametros_libres": {"type": "array", "maxItems": 3, "items": S}, "refs": {"type": "array", "maxItems": 10, "items": S},
         "pedido_codigo": S}, required=["familia", "mecanismo", "prediccion", "refutacion", "parametros_libres", "refs"]),
         system="Proponés UNA familia de hipótesis falsable: o una hipótesis puntual con a lo sumo 3 parámetros libres, o un BARRIDO MASIVO (millones de variantes) que declara todas sus perillas y cuenta todas sus celdas, sobre el conductor genérico (edgelab/research/grilla_generica.py) y con indicadores PASS de config/autopilot/indicadores.json o propios causales. Si la familia necesita una primitiva, un detector o un experimento que todavía no existe, describilo en pedido_codigo (qué hace, con qué datos, qué controles) y lo escribe el programador; si no hace falta, dejalo vacío. Para miles de variantes de una misma idea preferí la grilla masiva (docs/research/GUIA_GRILLA_MASIVA.md). Ponderá TODO el paquete: tablero, fichas del research propio, del cerebro y de papers; citá en refs las fichas que usaste (su campo ref). Lo ya medido o retirado no se repropone; los papers no son evidencia propia."),
-    "revisor": dict(model=OPUS, daily_cap=40, schema=_obj({
+    "revisor": dict(schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "regla_nueva": S}),
         system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Si vienen antecedentes (research propio y papers del proyecto, con ref), contrastá el borrador con ellos: si repite algo ya medido o muerto, o contradice un resultado propio sin explicarlo, KILL. Criterios del dueño: macro antes que micro (la fricción mata lo chico); un edge condicionado a régimen vale si el régimen se detecta en tiempo real y está pre-registrado; queremos edges ACTUALES: que una idea haya fallado en datos viejos no es motivo de KILL si la propuesta mide lo reciente con ventana declarada antes y confirma hacia adelante; preferí lo que diversifica una cartera de varias estrategias. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
     # Segunda opinión SÓLO ante un PROMOTE del revisor: otro modelo, otra consigna, sin ver la razón del primero.
-    "revisor2": dict(model=SONNET, daily_cap=40, schema=_obj({
+    "revisor2": dict(schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "riesgo_principal": S}),
         system="Sos un segundo revisor escéptico e independiente. Recibís un pre-registro, métricas públicas y antecedentes del proyecto. Buscá activamente por qué NO debería lanzarse: repetición de algo ya medido, multiplicidad NO contada o no filtrada (un barrido masivo con todas sus celdas registradas, tamiz, Romano-Wolf y réplica no es multiplicidad excesiva), fricción que gana, sesgo de selección, look-ahead. Sólo PROMOTE si no encontrás un motivo concreto. Ante la duda, KILL."),
     # Auditor post-corrida: compara lo corrido contra lo pre-registrado. Los chequeos mecánicos ya vienen hechos.
-    "auditor": dict(model=SONNET, daily_cap=60, schema=_obj({
+    "auditor": dict(schema=_obj({
         "veredicto": {"enum": ["CONFORME", "DESVIO", "SOSPECHA_FUGA"]},
         "desvios": {"type": "array", "maxItems": 10, "items": S}, "razon": S}),
         system="Auditás una corrida terminada contra su pre-registro. Recibís el texto del pre-registro, la especificación lanzada, la decisión numérica y los chequeos mecánicos. Marcá DESVIO si se corrió algo distinto de lo pre-registrado (pruebas no planeadas, otra métrica, otro período, otra regla de decisión) y SOSPECHA_FUGA si algo sugiere uso de datos del holdout o de información futura. No reinterpretes los números ni opines sobre si el efecto es interesante."),
     # Abogado del diablo: sólo sobre hallazgos (hit). Propone la explicación no-edge más plausible y cómo refutarla.
-    "abogado": dict(model=OPUS, daily_cap=20, schema=_obj({
+    "abogado": dict(schema=_obj({
         "explicacion_alternativa": S, "tipo": {"enum": ["artefacto", "look_ahead", "costos", "multiplicidad", "regimen", "datos", "otro"]},
         "prueba_refutadora": S, "gravedad": {"enum": ["baja", "media", "alta"]}}),
         system="Recibís un hallazgo exploratorio (pasó Holm) con su pre-registro y antecedentes. Formulá la explicación NO-edge más plausible (artefacto de microestructura, look-ahead, costos, multiplicidad, régimen, datos) y la prueba concreta y barata que la refutaría. No digas si es un edge."),
@@ -63,10 +65,20 @@ ROLES = {
 
 
 def configurar_modelos(modelos: dict | None) -> None:
-    """Permite fijar otras versiones desde la configuración: {"revisor2": "claude-sonnet-5-5", ...}. Rol desconocido = error."""
+    """Permite fijar otras versiones desde la configuración: {"revisor2": "<id de modelo>", ...} (sólo excepciones: la fuente es AGENTES.json). Rol desconocido = error."""
     for rol, m in (modelos or {}).items():
         if rol not in ROLES: raise ValueError(f"rol desconocido en modelos: {rol}")
         ROLES[rol]["model"] = str(m)
+
+ROLES["meta_analista"] = dict(schema=_obj({
+    "factores": {"type": "array", "maxItems": 12, "items": _obj({
+        "factor": S, "evidencia": S, "efecto_r": S, "donde": S, "confianza": {"enum": ["baja", "media", "alta"]},
+        "siguiente_indagacion": S})},
+    "que_no_repetir": {"type": "array", "maxItems": 8, "items": S},
+    "prioridad_siguiente": S}),
+    system="Sos el meta-analista de EdgeLab. Recibís el resultado de una campaña cerrada (celdas, canales, costos, R) y el registro vigente de factores con ventaja. Extraé QUÉ factor aportó la ventaja o la pérdida (horario, activo, stop, filtro, régimen, dirección), con el número en R y la referencia al archivo; distinguí efecto de selección y de fricción. Para cada factor decí la indagación siguiente más barata que lo confirmaría o lo mataría en datos no usados. Un resultado nulo con potencia también es un factor: decí qué no repetir. No inventes cifras ni promuevas nada: esto ordena la investigación, no es evidencia.")
+for _r in ROLES:                                                    # modelo, tope y timeout: de AGENTES.json
+    _d = _AG.rol(_r); ROLES[_r].update(model=_d["modelo"], daily_cap=_d["tope_diario"], timeout=_d["timeout_s"])
 
 
 class UnsafeInput(ValueError):
@@ -95,12 +107,13 @@ def _digest(x):
     return hashlib.sha256(json.dumps(x, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
 
 
-def claude_cli(prompt, *, model, schema, system, timeout=600):
+def claude_cli(prompt, *, model, schema, system, timeout=600, **_):
     """La única llamada real. argv fijo, sin shell, sin herramientas, MCP ni settings de usuario. Entorno mínimo."""
     env = {k: os.environ[k] for k in ("PATH", "HOME", "USERPROFILE", "SYSTEMROOT", "APPDATA", "LOCALAPPDATA", "CLAUDE_CODE_OAUTH_TOKEN") if k in os.environ}
-    argv = ["claude", "-p", prompt, "--model", model, "--output-format", "json", "--json-schema", json.dumps(schema),
+    # El prompt va por la ENTRADA ESTÁNDAR: con el núcleo de contexto pesa ~100 KB y un argumento de más de 128 KB no arranca (E2BIG).
+    argv = ["claude", "-p", "--model", model, "--output-format", "json", "--json-schema", json.dumps(schema),
             "--system-prompt", system, "--tools", "", "--strict-mcp-config", "--setting-sources", "", "--no-session-persistence"]
-    r = subprocess.run(argv, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout, env=env, shell=False)
+    r = subprocess.run(argv, input=prompt, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout, env=env, shell=False)
     try:
         return json.loads(r.stdout)
     except json.JSONDecodeError:
@@ -148,7 +161,8 @@ class RoleRunner:
                 return dict(status="SKIPPED_CAP")
         prompt = "Entrada (JSON):\n" + json.dumps(payload, ensure_ascii=False)
         for attempt in (1, 2):
-            resp = self.cli(prompt, model=spec["model"], schema=spec["schema"], system=spec["system"])
+            try: resp = self.cli(prompt, model=spec["model"], schema=spec["schema"], system=spec["system"], timeout=spec.get("timeout", 600))
+            except TypeError: resp = self.cli(prompt, model=spec["model"], schema=spec["schema"], system=spec["system"])   # cli de test sin timeout
             out = resp.get("structured_output")
             with self._db() as db:
                 if resp.get("is_error") and (str(resp.get("api_error_status")) == "429" or "rate limit" in str(resp.get("result", "")).lower()):

@@ -4,12 +4,13 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-608 scripts.
+609 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
 | `tools/_manifiesto_comun.py` | Lógica compartida de los manifiestos de identidad. **Un solo lugar.** |
 | `tools/actualizar_y_arrancar_debian_v2.py` | Bootstrap de un solo paso para que el Agente del Debian se actualice a la troncal y arranque en Modo Multi-Agente Espiral v2. |
+| `tools/agentes.py` | Tabla de agentes del Debian (config/autopilot/AGENTES.json): imprime o regenera docs/autopilot/AGENTES.md. |
 | `tools/aggressor_validate.py` | Valida la columna `aggressor` de research-v2 contra el agresor por cotización del L2 (target-free). |
 | `tools/agotamiento.py` | AGOT-EXT: agotamiento en extremo (divergencia de RSI y de delta). Manifiesto aprobado por Nico el 25/09 |
 | `tools/agregar_velas.py` | Bundle de velas Nt a partir de un bundle 25t, agrupando de a k velas DENTRO de cada sesión (como el 100t del visor). |

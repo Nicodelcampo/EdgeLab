@@ -62,16 +62,7 @@ campaña, junto con el libro de LORD++, suben a `autopilot/state`.
 ```
 
 ## 3. Roles, modelos y límites
-| Rol | Modelo (fijado) | Tope/día | Recibe | Devuelve | Efecto |
-|---|---|---|---|---|---|
-| proponente | `claude-opus-5-5` | 6 | prioridades, lente rotativa, tablero (retiradas, edges, corridas, auditorías), fichas citables de la biblioteca (research propio y papers por separado), vacíos | 1 familia falsable, ≤3 parámetros, refs | borrador en `propuestas.jsonl` (con fuentes exactas y huella de la biblioteca) |
-| revisor | `claude-opus-5-5` | 10 | pre-registro, métricas públicas, antecedentes | PROMOTE / KILL / DERIVE | primer filtro |
-| revisor2 | `claude-sonnet-5-5` | 10 | **la misma entrada**, sin la razón del primero, consigna escéptica | PROMOTE / KILL / DERIVE + riesgo | sólo se llama si el primero dijo PROMOTE; hacen falta **los dos** |
-| auditor | `claude-sonnet-5-5` | 20 | pre-registro, especificación lanzada, decisión numérica, chequeos mecánicos | CONFORME / DESVIO / SOSPECHA_FUGA | estado de la corrida en `auditorias.jsonl` |
-| abogado | `claude-opus-5-5` | 6 | hallazgo (hit), pre-registro, antecedentes | explicación no-edge, tipo, prueba refutadora, gravedad | gravedad alta → EN_DUDA |
-| lector | `claude-haiku-5-5` | 200 | resultados | resumen por familia | informes |
-| bibliotecario | `claude-haiku-5-5` | 100 | pasajes de papers | fichas (afirma, a favor/en contra) | enriquece la biblioteca |
-| cronista | `claude-haiku-5-5` | 100 | hechos del ciclo (números aparte) | texto para la sala | `sala_outbox.jsonl` |
+> **Tabla vigente de roles, modelos y topes: `docs/autopilot/AGENTES.md`** (generada de `config/autopilot/AGENTES.json`, fuente única desde el 2026-11-09). La tabla que estaba acá quedó vieja y se quitó para que no haya dos versiones.
 
 Los modelos se cambian sin tocar código con `"modelos": {...}` en `/etc/edgelab/autopilot.json`.
 Por qué así: Opus donde la calidad del razonamiento decide (crear y adjudicar, refutar), Sonnet como segunda mirada de

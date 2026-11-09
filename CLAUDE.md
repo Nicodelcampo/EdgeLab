@@ -325,6 +325,8 @@ de apertura) y operar con dinero real. Decisión: `docs/DECISIONES_20261020.md`.
 
 ## Punteros
 
+- `config/autopilot/AGENTES.json` → `docs/autopilot/AGENTES.md` — **fuente única de agentes, roles y modelos del Debian** (2026-11-09); núcleo de contexto que nunca se recorta: `edgelab/autopilot/contexto.py::NUCLEO_FUENTES`.
+
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).
 - `docs/infra/LIQUID_RELEASE_20261014.md` + `docs/infra/MANANA_PENDIENTES_20261014.md` — **datos canónicos** (release `liquid_tick_v1`, 14 activos, un Parquet por activo, Kaggle privado `nicolasbuttaro/edgelab-liquid-ticks-20261014`, CANDIDATE_NOT_RESEARCH_APPROVED; lector seguro `edgelab/data/liquid_release/release_reader.py`; rama `data/liquid-release-20261014`). Exports faltantes: `docs/infra/MISSING_EXPORTS_20261014.md`.
 - `docs/research/AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` — racimos de aVolZonePOI2 replican en ES (compresión 7/7, continuación a favor de tendencia 6/6); manifiesto de P&L **propuesto** (desde 2026-10-20 lo aprueba el agente autónomo, no Nico): `docs/research/AVZP2_PNL_MANIFIESTO_PROPUESTO_20261014.md`.
@@ -363,7 +365,7 @@ práctica llevaban días divergiendo — la misma familia de falla que
 `docs/AVISO_DIVERGENCIA_DE_RAMAS_2026-08-06.md` describe. Ahora la declaración dice lo
 que efectivamente pasa.
 
-`main` = alineada con `foundation` desde el 2026-10-14 (la línea AVZVOL, el funnel y la compuerta de datos ya están integrados); no es baseline. Ver `docs/DECISIONES_20261014.md`.
+`main` se alineó con `foundation` el 2026-10-14 y desde entonces quedó atrás (549 commits al 2026-11-09): no es baseline y no se trabaja ahí. Ver `docs/DECISIONES_20261014.md`.
 
 > La frase «Branch de trabajo:» de arriba **la parsea `tools/estado.py`**
 > (`rama_declarada()`, regex `Branch de trabajo:\s*\n?` + backticks). Si se

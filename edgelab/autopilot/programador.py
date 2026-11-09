@@ -168,7 +168,7 @@ def existentes(repo: Path, consulta: str, k: int = 12) -> str:
             f"fallar tests/test_existente.py.\n{filas}\n")
 
 
-def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, model: str = "claude-opus-5-5", python: str = sys.executable,
+def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, model: str | None = None, python: str = sys.executable,
               tests=("tests",), timeout_s: int = 3600, protegidos=(), push: bool = True, aplicar: bool = True, ahora=None) -> dict:
     """Un pedido -> worktree -> código -> zona -> controles -> tests -> commit -> aplicar o proponer. Siempre deja una fila en programacion.jsonl."""
     repo, root = Path(repo), Path(root); pid = re.sub(r"[^A-Za-z0-9_-]", "-", pedido["id"])[:60]
@@ -180,6 +180,8 @@ def programar(pedido: dict, *, repo: Path, root: Path, cli=claude_code_cli, mode
         prompt = (f"Pedido {pedido['id']}: {pedido.get('que', '')}\nPor qué: {pedido.get('por_que', '')}\n"
                   f"Aceptación: {pedido.get('aceptacion') or 'tests verdes y controles de la guía'}\nPython del entorno: {python}\n"
                   + existentes(repo, f"{pedido.get('que', '')} {pedido.get('por_que', '')}"))
+        if not model:                                                   # fuente única: config/autopilot/AGENTES.json
+            from edgelab.autopilot import agentes as _AG; model = _AG.modelo("programador")
         resp = cli(prompt, cwd=str(wt), model=model, python=python, timeout=timeout_s)
         row["resumen"] = str((resp or {}).get("result", ""))[-1500:]
         if _git("status", "--porcelain", cwd=repo) != antes:      # escribió fuera de la worktree: no se usa nada y se avisa
@@ -230,7 +232,7 @@ def ciclo(root: Path, repo: Path, cfg: dict, cli=claude_code_cli, ahora=None) ->
     ahora = ahora or time.time(); hoy = [r for r in _filas(Path(root) / LOG) if ahora - r.get("ts", 0) < 86400]
     cupo = int(c.get("max_por_dia", 1)) - len(hoy)
     prot = tuple(json.loads(Path(cfg["protected"]).read_text())) if cfg.get("protected") and Path(cfg["protected"]).exists() else ()
-    return [programar(p, repo=repo, root=root, cli=cli, model=c.get("modelo", "claude-opus-5-5"), python=c.get("python", sys.executable),
+    return [programar(p, repo=repo, root=root, cli=cli, model=c.get("modelo"), python=c.get("python", sys.executable),
                       tests=tuple(c.get("tests", ["tests"])), timeout_s=int(c.get("timeout_s", 3600)), protegidos=prot,
                       push=bool(c.get("push", True)), aplicar=bool(c.get("aplicar", True)), ahora=ahora)
             for p in pendientes(Path(root))[:max(cupo, 0)]]

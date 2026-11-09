@@ -21,6 +21,8 @@ from . import guard
 from .spec import RunSpec
 
 
+from edgelab.autopilot.contexto import con_nucleo as _cn
+
 def _commit_ts(repo: Path, rel: str, primero: bool = False):
     a = ["git", "log", "--format=%ct", "--", rel]
     r = subprocess.run(a, cwd=repo, capture_output=True, text=True).stdout.split()
@@ -62,10 +64,10 @@ def auditar(ledger, repo: Path, log_path: Path, runner=None, antecedentes_fn=Non
         especificacion = dict(family=spec.family, group=spec.group, script=spec.script, needs=list(spec.needs), n_trials=spec.n_trials, env=dict(spec.env))
         ant = list(antecedentes_fn(spec)) if antecedentes_fn else []
         if runner is not None and not mec:
-            a = runner.call("auditor", dict(preregistro=texto, especificacion=especificacion, decision=publico, chequeos_mecanicos=mec))
+            a = runner.call("auditor", _cn("auditor", dict(preregistro=texto, especificacion=especificacion, decision=publico, chequeos_mecanicos=mec)))
             row["auditor"] = a.get("output") or a.get("status")
             if row["hit"]:
-                d = runner.call("abogado", dict(preregistro=texto, decision=publico, antecedentes=ant))
+                d = runner.call("abogado", _cn("abogado", dict(preregistro=texto, decision=publico, antecedentes=ant)))
                 row["abogado"] = d.get("output") or d.get("status")
         aud, abo = row.get("auditor"), row.get("abogado")
         if mec or (isinstance(aud, dict) and aud.get("veredicto") == "SOSPECHA_FUGA"): estado = "BLOQUEADA"

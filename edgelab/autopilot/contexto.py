@@ -58,7 +58,55 @@ def elegir_lente(historial: list) -> str:
 def directivas(root=None) -> str:
     """Directivas vigentes de Nico (config/autopilot/DIRECTIVAS.md, 2026-10-27): van en cada paquete y nunca se recortan."""
     f = Path(root or Path(__file__).resolve().parents[2]) / "config/autopilot/DIRECTIVAS.md"
-    return f.read_text(encoding="utf-8")[:8000] if f.exists() else ""          # 2026-11-07: 4000 cortaba la directiva 9
+    return f.read_text(encoding="utf-8") if f.exists() else ""                 # completas: cualquier corte dejó afuera directivas (4000 → la 9; 8000 → la 12)
+
+
+# ---- NÚCLEO: lo que el proyecto ya aprendió y NUNCA se recorta (pedido de Nico, 2026-11-09) ---------------------------------
+# Antes el paquete tenía un tope de 19.000 caracteres y lo aprendido (errores y guardas, aprendizajes, decisiones) quedaba afuera:
+# los agentes repetían errores ya documentados. Ahora cada rol recibe su núcleo completo; lo que se recorta es lo rotativo.
+# (clave, ruta, roles que lo reciben: "todos" = cualquier rol con `nucleo: true` en AGENTES.json; "diseño" = proponente y programador)
+NUCLEO_FUENTES = [
+    ("directivas_de_nico", "config/autopilot/DIRECTIVAS.md", "todos"),
+    ("factores_con_ventaja", "docs/research/FACTORES_CON_VENTAJA.md", "todos"),          # lo más valioso descubierto (si existe)
+    ("errores_y_guardas", "docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md", "todos"),
+    ("decisiones_vigentes", "docs/DECISIONES_20261108.md", "todos"),
+    ("decisiones_de_validacion", "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md", "todos"),
+    ("medir_en_r", "docs/research/MEDIR_EN_R_20261102.md", "todos"),
+    ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
+    ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),
+    ("guia_regimen", "docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md", "diseño"),
+    ("guia_grilla_masiva", "docs/research/GUIA_GRILLA_MASIVA.md", "diseño"),
+    ("ideas_externas_indice", "docs/research/ideas_externas/INDICE.md", "diseño"),
+]
+ROLES_DISENO = ("proponente", "programador", "meta_analista")
+
+
+def redactar(texto: str) -> str:
+    """Deja pasar un documento del repo por `roles.sanitize` sin perder contenido: neutraliza rutas locales y palabras de secreto."""
+    from edgelab.autopilot.roles import LOCAL_PATH, SECRET
+    t = LOCAL_PATH.sub(lambda m: m.group(1) + "<ruta-local>/", texto)
+    return SECRET.sub("<redactado>", t)
+
+
+def nucleo(rol: str = "proponente", root=None) -> dict:
+    """Núcleo de contexto del rol: documentos completos, en orden fijo. Un rol sin `nucleo` en AGENTES.json recibe {}."""
+    from edgelab.autopilot import agentes as AG
+    if not AG.rol(rol).get("nucleo"): return {}
+    r = Path(root or Path(__file__).resolve().parents[2]); out = {}
+    for clave, ruta, quien in NUCLEO_FUENTES:
+        if quien == "diseño" and rol not in ROLES_DISENO: continue
+        f = r / ruta
+        if f.exists(): out[clave] = redactar(f.read_text(encoding="utf-8"))
+    return out
+
+
+def con_nucleo(rol: str, entrada: dict, root=None) -> dict:
+    """Entrada de un rol + su núcleo (para revisor, revisor2, auditor, abogado, meta_analista). Falla si no entra en su presupuesto."""
+    from edgelab.autopilot import agentes as AG
+    p = dict(entrada, nucleo_proyecto=nucleo(rol, root)); tope = AG.rol(rol)["contexto_max_chars"]
+    n = len(json.dumps(p, ensure_ascii=False))
+    if n > tope: raise ValueError(f"la entrada de {rol} ({n} caracteres) no entra en su presupuesto ({tope}): subir contexto_max_chars en AGENTES.json o achicar la entrada, nunca el núcleo")
+    return p
 
 
 def memoria_ideas(semilla: int = 0, root=None, n_hallazgos: int = 3) -> dict:
@@ -78,10 +126,15 @@ def memoria_ideas(semilla: int = 0, root=None, n_hallazgos: int = 3) -> dict:
     return out
 
 
-def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int = 19000, cartas=None, memoria=None) -> dict:   # 2026-11-08: 12000 no dejaba entrar las cartas con las directivas 9–10
+def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list, lente: str, max_chars: int | None = None, cartas=None, memoria=None,
+                  rol: str = "proponente", con_nucleo_completo: bool | None = None) -> dict:   # 2026-11-08: 12000 no dejaba entrar las cartas con las directivas 9–10
     """Determinista y acotado. Recorta por prioridad: primero fichas, después vacíos, después cartas de la gramática
     (edgelab/research/agente/gramatica.py: coordenadas lejos de lo medido, sin resultados); prioridades y lente nunca se recortan."""
-    p = dict(prioridades=PRIORIDADES, directivas_de_nico=directivas(), lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
+    from edgelab.autopilot import agentes as AG
+    if con_nucleo_completo is None: con_nucleo_completo = max_chars is None           # un tope explícito (tests, diagnósticos) = paquete liviano
+    max_chars = max_chars or AG.rol(rol)["contexto_max_chars"]
+    nuc = nucleo(rol) if con_nucleo_completo else {}
+    p = dict(prioridades=PRIORIDADES, directivas_de_nico=nuc.pop("directivas_de_nico", None) or directivas(), nucleo_proyecto=nuc, lente=dict(nombre=lente, consigna=LENTES[lente]), tablero=tablero,
              cartas_gramatica=[dict(id=c["id"], coordenadas=c["coordenadas"], cercana_medida=c.get("cercana_medida"), paridad=c.get("paridad"))
                                for c in (cartas or [])],
              friccion=__import__('edgelab.autopilot.friccion', fromlist=['x']).tabla_para_contexto(),
@@ -92,6 +145,8 @@ def armar_paquete(*, tablero: dict, vacios: list, fichas: list, retiradas: list,
         (p["fichas"] or p["vacios"] or p["cartas_gramatica"]).pop()
     while len(json.dumps(p, ensure_ascii=False)) > max_chars and p["memoria_ideas"].get("hallazgos_ssrn"):
         p["memoria_ideas"]["hallazgos_ssrn"].pop()                       # la memoria se recorta última y el índice nunca
+    if con_nucleo_completo and len(json.dumps(p, ensure_ascii=False)) > max_chars:
+        raise ValueError(f"el núcleo de {rol} no entra en {max_chars} caracteres: subir contexto_max_chars en config/autopilot/AGENTES.json")
     return p
 
 

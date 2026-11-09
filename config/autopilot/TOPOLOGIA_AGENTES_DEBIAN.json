@@ -1,7 +1,7 @@
 {
   "schema": "edgelab_topologia_multiagente_debian_v2",
-  "arquitectura_seleccionada": "CAPATAZ_PYTHON + 2_OPUS_4_6 + 1_SONNET_4_6",
-  "justificacion_seleccion": "Un solo agente sufre sesgo de autoconfirmación y agota contexto mezclando estrategia con depuración Numba; 1 Opus + 1 Sonnet deja al único Opus como juez y parte de su propio código; 2 Opus puros encarece y enlentece los chequeos adversarios de alta frecuencia. La tríada 2 Opus 4.6 (Arquitecto + Ingeniero/Doctor aislados) + 1 Sonnet 4.6 (Auditor Adversario, Alineación 10-SLI y Cronista) sobre el Capataz Python determinista maximiza rigor, velocidad, creatividad y separación de poderes.",
+  "arquitectura_seleccionada": "CAPATAZ_PYTHON + ARQUITECTO + INGENIERO + JUEZ + AUDITOR (modelos en config/autopilot/AGENTES.json)",
+  "justificacion_seleccion": "Un solo agente sufre sesgo de autoconfirmación y agota contexto mezclando estrategia con depuración Numba; un mismo modelo como arquitecto y juez queda juez y parte; el modelo más capaz en todos los roles encarece y enlentece los chequeos adversarios de alta frecuencia. Arquitecto (el modelo más capaz, pocas llamadas) + Ingeniero/Doctor aislado + Juez y Auditor de OTROS modelos (separación de poderes) sobre el Capataz Python determinista maximiza rigor, velocidad, creatividad y separación de poderes.",
   "agentes": {
     "capa_0_capataz": {
       "motor": "python_determinista",
@@ -14,9 +14,9 @@
       ]
     },
     "agente_1_arquitecto": {
-      "modelo": "claude-opus-4-6",
+      "modelo": "claude-fable-5-2",
       "rol": "Arquitecto Cuantitativo, Meta-Analista e Investigador en Espiral",
-      "max_chars_contexto": 80000,
+      "max_chars_contexto": 160000,
       "herramientas": [
         "Read",
         "Grep",
@@ -32,7 +32,7 @@
       ]
     },
     "agente_2_ingeniero_doctor": {
-      "modelo": "claude-opus-4-6",
+      "modelo": "claude-opus-5-5",
       "rol": "Ingeniero de Módulos Numba y Doctor Autorreparador en Worktree",
       "max_chars_contexto": 80000,
       "herramientas": [
@@ -51,7 +51,7 @@
       ]
     },
     "agente_3_auditor_cronista": {
-      "modelo": "claude-sonnet-4-6",
+      "modelo": "claude-sonnet-5-5",
       "rol": "Auditor Adversario Pre-Lanzamiento, Guardián de Alineación (10 SLIs) y Cronista",
       "max_chars_contexto": 48000,
       "herramientas": [

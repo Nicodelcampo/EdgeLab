@@ -48,7 +48,7 @@ def test_daily_cap(tmp_path, monkeypatch):
     r, cli, _ = runner(tmp_path, [good])
     assert r.call("proponente", {"brain": "a"})["status"] == "OK"
     assert r.call("proponente", {"brain": "b"})["status"] == "SKIPPED_CAP"
-    assert len(cli.calls) == 1 and cli.calls[0][0] == "claude-opus-5-5"
+    assert len(cli.calls) == 1 and cli.calls[0][0] == ROLES["proponente"]["model"] == "claude-fable-5-2"
 
 @pytest.mark.parametrize("payload", [
     {"holdout": {"sharpe": 2}}, {"private_metrics": 1}, {"nota": "token KGAT_abc123"}, {"x": ["ghp_xxxxxxxx"]},

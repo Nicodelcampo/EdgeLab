@@ -5,15 +5,15 @@ Implementa en código ejecutable la arquitectura seleccionada para el servidor D
     Sincroniza `CODE_DIR` con `origin/foundation/f0b-compatibility-probe` (`sincronizador_ramas.py`), avanza el embudo,
     balancea los 8 slots de Kaggle entre `nicolasbuttaro` y `nicobuttaro`, ejecuta `auditor_alineacion.py` (10 SLIs)
     y administra la máquina de estados de la Guarda `O16` (`VERIFICANDO_O16`).
-  - **Agente 1 — Arquitecto Cuantitativo, Meta-Analista e Investigador (`Claude Opus 4.6`)**:
+  - **Agente 1 — Arquitecto Cuantitativo, Meta-Analista e Investigador (modelo de `AGENTES.json`: agente `arquitecto`)**:
     Recibe el paquete de contexto jerárquico amplio (`armar_contexto_amplio_espiral`, hasta `80.000` chars sin el bucle
     `pop()` destructivo que borraba fichas y vacíos), aplica el criterio **Velocidad vs. Cuidado** (`evaluar_velocidad_cuidado`)
     y emite campañas o pedidos de código apoyados en `catalogo_espiral.py`.
-  - **Agente 2 — Ingeniero de Módulos, Optimizador Numba y Doctor Autorreparador (`Claude Opus 4.6` en `git worktree`)**:
+  - **Agente 2 — Ingeniero de Módulos, Optimizador Numba y Doctor Autorreparador (agente `ingeniero`, en `git worktree`)**:
     Ejecuta `programador.py` con los 4 controles sintéticos (`ruido`, `plantado`, `oráculo`, `causal`), preflight estático/dinámico,
     compuerta de densidad local (`E0 >= 30 ops`) y verificación obligatoria del primer kernel relanzado tras reparar una
     campaña `BLOQUEADA` (`Guarda O16`).
-  - **Agente 3 — Auditor Adversario, Guardián de Alineación y Cronista (`Claude Sonnet 4.6`)**:
+  - **Agente 3 — Auditor Adversario, Guardián de Alineación y Cronista (agente `auditor`)**:
     Ejecuta revisión adversaria rápida (`auditar_propuesta_sonnet`) antes de gastar cuota de Kaggle (verificando invarianza
     de escala, multiplicidad, frontera `holdout.desde == 20261001` de Directiva #6 y reservas LORD++), audita los 10 SLIs
     de alineación y redacta la crónica verificable para la sala.
@@ -27,16 +27,17 @@ from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
+from edgelab.autopilot import agentes as AG
 from edgelab.research import catalogo_espiral as CE, embudo, holdout_ventanas as HV, linaje
 
 TOPOLOGIA_DEBIAN_V2: dict[str, Any] = {
     "schema": "edgelab_topologia_multiagente_debian_v2",
-    "arquitectura_seleccionada": "CAPATAZ_PYTHON + 2_OPUS_4_6 + 1_SONNET_4_6",
+    "arquitectura_seleccionada": "CAPATAZ_PYTHON + ARQUITECTO + INGENIERO + JUEZ + AUDITOR (modelos en config/autopilot/AGENTES.json)",
     "justificacion_seleccion": (
         "Un solo agente sufre sesgo de autoconfirmación y agota contexto mezclando estrategia con depuración Numba; "
-        "1 Opus + 1 Sonnet deja al único Opus como juez y parte de su propio código; 2 Opus puros encarece y enlentece "
-        "los chequeos adversarios de alta frecuencia. La tríada 2 Opus 4.6 (Arquitecto + Ingeniero/Doctor aislados) + "
-        "1 Sonnet 4.6 (Auditor Adversario, Alineación 10-SLI y Cronista) sobre el Capataz Python determinista maximiza "
+        "un mismo modelo como arquitecto y juez queda juez y parte; el modelo más capaz en todos los roles encarece y enlentece "
+        "los chequeos adversarios de alta frecuencia. Arquitecto (el modelo más capaz, pocas llamadas) + Ingeniero/Doctor aislado + "
+        "Juez y Auditor de OTROS modelos (separación de poderes) sobre el Capataz Python determinista maximiza "
         "rigor, velocidad, creatividad y separación de poderes."
     ),
     "agentes": {
@@ -51,9 +52,9 @@ TOPOLOGIA_DEBIAN_V2: dict[str, Any] = {
             ],
         },
         "agente_1_arquitecto": {
-            "modelo": "claude-opus-4-6",
+            "modelo": AG.modelo("proponente"),
             "rol": "Arquitecto Cuantitativo, Meta-Analista e Investigador en Espiral",
-            "max_chars_contexto": 80000,
+            "max_chars_contexto": AG.rol("proponente")["contexto_max_chars"],
             "herramientas": ["Read", "Grep", "Glob", "WebSearch", "WebFetch"],
             "responsabilidades": [
                 "Analizar APRENDIZAJES_ESPIRAL.md, RESUMEN.json del analizador y metaanalisis_embudo.py",
@@ -63,7 +64,7 @@ TOPOLOGIA_DEBIAN_V2: dict[str, Any] = {
             ],
         },
         "agente_2_ingeniero_doctor": {
-            "modelo": "claude-opus-4-6",
+            "modelo": AG.modelo("programador"),
             "rol": "Ingeniero de Módulos Numba y Doctor Autorreparador en Worktree",
             "max_chars_contexto": 80000,
             "herramientas": ["Read", "Edit", "Write", "Glob", "Grep", "Bash(pytest)", "Bash(preflight)"],
@@ -74,7 +75,7 @@ TOPOLOGIA_DEBIAN_V2: dict[str, Any] = {
             ],
         },
         "agente_3_auditor_cronista": {
-            "modelo": "claude-sonnet-4-6",
+            "modelo": AG.modelo("auditor"),
             "rol": "Auditor Adversario Pre-Lanzamiento, Guardián de Alineación (10 SLIs) y Cronista",
             "max_chars_contexto": 48000,
             "herramientas": ["Read", "Grep", "Glob"],
@@ -154,7 +155,7 @@ def armar_contexto_amplio_espiral(
     fichas_existentes: list[dict[str, Any]],
     max_chars: int = 80000,
 ) -> dict[str, Any]:
-    """Construye el paquete de contexto amplio para el Arquitecto Opus 4.6 con presupuesto garantizado por sección.
+    """Construye el paquete de contexto amplio para el Arquitecto con presupuesto garantizado por sección.
     Nunca elimina secciones completas mediante `pop()` ciego: comprime proporcionalmente cada lista si el total
     supera `max_chars`, preservando siempre Directivas, Catálogo en Espiral, Aprendizajes, Cartas, Vacíos y Fichas.
     """
@@ -190,7 +191,7 @@ def armar_contexto_amplio_espiral(
 
 
 def auditar_propuesta_sonnet(spec_campana: dict[str, Any]) -> dict[str, Any]:
-    """Revisión adversaria determinista + reglas del Agente 3 (Sonnet 4.6) antes de autorizar una campaña en Kaggle."""
+    """Revisión adversaria determinista + reglas del Agente 3 (auditor) antes de autorizar una campaña en Kaggle."""
     objeciones: list[str] = []
     avisos: list[str] = []
 

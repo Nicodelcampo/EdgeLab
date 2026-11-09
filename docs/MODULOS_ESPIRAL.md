@@ -2,7 +2,7 @@
 
 Estado: **VIGENTE** (generado y verificado por `edgelab/research/catalogo_espiral.py`).
 Propósito: Dar acceso inmediato y ordenado a todos los módulos, herramientas, primitivas `@njit` y hallazgos empíricos
-para que los agentes del Debian (`Arquitecto Opus 4.6`, `Ingeniero Opus 4.6`, `Auditor Sonnet 4.6`) construyan cada
+para que los agentes del Debian (arquitecto, ingeniero, juez y auditor: `config/autopilot/AGENTES.json`) construyan cada
 familia nueva apoyándose en las anteriores.
 
 ## 1. Las 6 Capas Jerárquicas de EdgeLab (`L0` a `L5`)
@@ -14,7 +14,7 @@ familia nueva apoyándose en las anteriores.
 | `L2_PRIMITIVAS_Y_REGIMEN` | Bloques componibles @njit/vectorizados: cajas amarillas, racimos de zonas, ciclo de vida de gaps, ventanas DST, líneas stopping-time y variables de régimen. |
 | `L3_MOTOR_GRILLA_Y_SIMULACION` | Barrido vectorizado en 1 pasada (grilla_generica, grilla_masiva), niveles_lote, simulador tick a tick (sim.py) y analizador. |
 | `L4_INFERENCIA_EMBUDO_Y_CANASTA` | Escalera del embudo (PREFLIGHT..HOLDOUT), FDR BH-Storey, Romano-Wolf, LORD++ (LibroLord), linajes y canasta de régimen. |
-| `L5_AUTOPILOT_MULTIAGENTE_ESPIRAL` | Orquestador multi-agente Debian (Capataz Python + 2 Opus 4.6 + 1 Sonnet 4.6), sincronizador de ramas, auditor de alineación y memoria en espiral. |
+| `L5_AUTOPILOT_MULTIAGENTE_ESPIRAL` | Orquestador multi-agente Debian (Capataz Python + agentes de config/autopilot/AGENTES.json), sincronizador de ramas, auditor de alineación y memoria en espiral. |
 
 ## 2. Inventario Clasificado de Módulos y Primitivas Reutilizables
 
