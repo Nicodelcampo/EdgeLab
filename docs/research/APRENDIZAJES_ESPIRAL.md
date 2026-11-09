@@ -80,7 +80,12 @@ Bitácora viva y acumulativa del ciclo en espiral (`Medir -> Aprender -> Investi
 
 ## Ciclo 2026-11-04 — Atlas de Contexto Causal Común y Vetos Estructurales en $R$ (`edgelab/research/contexto_comun.py`)
 
-### 1. Qué funcionó (Confirmado en `DESC` con BH $q \le 0,10$ y en `REP` con $p_{\text{uni}} < 0,05$ sobre $69$ clusters independientes)
+> **CORRECCIÓN (2026-11-04, asentada acá el 2026-11-09): todo lo de esta sección resultó FRICCIÓN en R, no contexto de mercado.** El atlas en bruto
+> (`docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`, 212 corridas) mostró que el stop ancho S3, T3/T1, ATR y volumen
+> relativos, el horario 09:30–12:00 y el «imán» conservan en bruto sólo 3–31 % de su efecto neto y ninguno se confirma. El imán se retiró. No usar
+> como filtros de mercado. Lo vigente está en `docs/research/FACTORES_CON_VENTAJA.md` (palanca: diseñar con stop grande frente a la fricción).
+
+### 1. Qué pareció funcionar en NETO (confirmado en `DESC` con BH $q \le 0,10$ y en `REP` con $p_{\text{uni}} < 0,05$ sobre $69$ clusters independientes)
 - **Stop estructural ancho (`ejecución.stop=S3`) + Objetivo lejano (`ejecución.objetivo=T3`) colapsando `Futuro + CFD` (`K = 13` clusters `(familia_base, activo)`):**
   - `ejecución.stop=S3`: **`+0,1235R` en `DESC`** ($z = +6,51$, $p < 10^{-6}$) y **`+0,1057R` en `REP`** ($z = +4,08$, $p = 4,4 \times 10^{-5}$), **13/13 ($100\,\%$) clusters positivos** en ambos tramos.
   - `ejecución.objetivo=T3`: positivo en **13/13 ($100\,\%$) clusters** (`+0,0569R` en `DESC`, `+0,0456R` en `REP`), mientras que `T1` resta en **13/13 ($100\,\%$) clusters** (`-0,0630R` en `DESC`, `-0,0448R` en `REP`).

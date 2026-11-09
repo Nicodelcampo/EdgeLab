@@ -99,3 +99,7 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
 - **Núcleo de contexto:** cada rol recibe completos los documentos de lo ya aprendido (`edgelab/autopilot/contexto.py::NUCLEO_FUENTES`);
   el prompt pesa ~100 KB y por eso va por la entrada estándar de `claude -p`. Verificar que el `claude` del servidor acepte los
   identificadores de modelo nuevos (`claude --model claude-fable-5-2 -p` con una prueba corta) antes de reactivar el proponente.
+- **Registro de factores y meta-analista:** al cerrar una campaña el embudo deja `embudo/<cid>/META_PENDIENTE.json`; el ciclo de
+  propuesta (`tools/autopilot_generate.py propose`) llama al rol `meta_analista` y asienta lo extraído en
+  `factores_propuestos.jsonl` del estado (se publica en `autopilot/state`). Pasarlo al libro del repo (`docs/research/FACTORES.jsonl`)
+  es una revisión: `python tools/factores.py agregar entrada.json`.

@@ -62,3 +62,9 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    índice de ideas. Está completo a propósito: **antes de proponer, revisar o auditar, contrastá contra el núcleo**; repetir un error
    que figura ahí es una falla tuya, no falta de información. Si una lección nueva no está en el núcleo, agregala al documento que
    corresponda en el mismo cambio. Quién sos y con qué modelo: `docs/autopilot/AGENTES.md`.
+14. **Lo más valioso primero (Nico 2026-11-09).** `nucleo_proyecto.factores_con_ventaja` es el registro de lo que ya mostró algo
+   (`docs/research/FACTORES.jsonl`). Orden de trabajo: (1) indagar una PISTA_VIVA con la prueba más barata que la confirme o la mate;
+   (2) aplicar una PALANCA_DE_DISENO a una idea con motivo económico; (3) recién después, una familia nueva. Lo que está en NO_REPETIR
+   no se propone igual. Cuando una estrategia muestra ventaja aunque sea poca, lo que sigue NO es agregar variantes: es entender qué
+   factor la dio (activo, horario, lado, stop frente a la fricción, régimen), mirarlo en bruto y en neto, y asentarlo. Toda campaña
+   cerrada pasa por el meta-analista y deja su entrada (aunque sea SIN_FACTOR); un resultado que no queda en el registro se pierde.

@@ -188,7 +188,11 @@ class Embudo:
         if final == "SIN_CANDIDATAS" and pr_.get("lord") is not None and (pr_.get("veredicto") or {}).get("veredicto") != "REFUTADA":
             motivo = f"{motivo} | guarda: sin una refutación con potencia no se cierra como SIN_CANDIDATAS"; final = "PISTAS_VIVAS"
         st.update(etapa="FIN", fase=final, motivo=motivo); st["historial"].append(dict(ts=self.ahora(), final=final, motivo=motivo))
-        self._medido(spec, f"- **{final}** — {motivo}"); self._guardar(spec, st); return st
+        self._medido(spec, f"- **{final}** — {motivo}"); self._guardar(spec, st)
+        # Cierre de ciclo (2026-11-09): toda campaña cerrada deja un pendiente para el meta-analista (edgelab/autopilot/meta_analisis.py),
+        # que extrae qué factor aportó y lo asienta en docs/research/FACTORES.jsonl. El embudo no llama a ningún LLM.
+        (self._dir(spec) / "META_PENDIENTE.json").write_text(json.dumps(dict(cid=spec["cid"], final=final, motivo=motivo, ts=self.ahora()), ensure_ascii=False), encoding="utf-8")
+        return st
 
     def _siguiente(self, spec, st, etapa, **datos):
         st["historial"].append(dict(ts=self.ahora(), etapa=st["etapa"], fin=True, **{k: v for k, v in datos.items() if k != "resultado"}))

@@ -5,7 +5,7 @@ from edgelab.autopilot.mejora import RegistroMejoras, diagnosticar
 
 def test_lente_rota_y_prefiere_la_menos_usada():
     h = [{"lente": k, "hit": False} for k in LENTES if k != "artefacto"]
-    assert elegir_lente(h) == "artefacto"
+    assert elegir_lente(h, pistas_vivas=0) == "artefacto"        # rotación pura; con pistas vivas manda indagar_factor (tests/research/test_factores.py)
     assert elegir_lente([]) in LENTES
 
 def test_paquete_siempre_lleva_prioridades_y_lente_aunque_recorte():

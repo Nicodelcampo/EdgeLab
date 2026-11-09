@@ -1,0 +1,71 @@
+# Factores con ventaja — lo más valioso descubierto y qué indagar primero
+
+Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/factores.py --write`; no editar a mano).
+
+Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
+no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
+
+## PISTA_VIVA (2)
+
+_Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
+
+- **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
+  - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
+  - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
+  - Siguiente: Antes de cualquier variante: mirar el BRUTO de esa celda contra las de stop a mitad de rango. Si la diferencia es sólo neta, es fricción y pasa a la palanca de diseño; si se mantiene en bruto, una sola réplica congelada en futuros abr–sep.
+  - Evidencia: `docs/research/estrategias_scrapeadas_20261108/RESULTADO_DESC.md`
+- **No entrar en continuación justo después de una huida fuerte en contra (`veto_huida`)** (`F-HUIDA-CONTINUACION`, 2026-11-04, humano)
+  - Efecto: −0,05 R (DESC) / −0,11 R (réplica) cuando se entra igual; igual en bruto que en neto (ratio 1,14 / 0,90): es lo ÚNICO del atlas de contexto que no es fricción. K = 13 grupos, no confirmado con BH.
+  - Dónde: Familias de continuación, futuro + CFD (atlas de 212 corridas)
+  - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
+  - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
+
+## PALANCA_DE_DISENO (1)
+
+_Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
+
+- **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
+  - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
+  - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ
+  - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
+  - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
+
+## EN_SEGUIMIENTO (1)
+
+_Regla congelada que se sigue hacia adelante (papel)._
+
+- **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
+  - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
+  - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo
+  - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
+  - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
+
+## NO_REPETIR (5)
+
+_Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
+
+- **Continuación de gap grande no rellenado (Kemet), mecha en VWAP con salida por EMA9 (AlphaZone), ruptura del rango de Londres en oro, ORB directo** (`F-REELS-20261108`, 2026-11-09, humano)
+  - Efecto: Gap continuación −0,149 R (MDE 0,13; 1 de 120 celdas positiva). EMA9+VWAP −0,193 R (MDE 0,06; miles de operaciones). Oro Londres −0,05 R. ORB NQ base: +0,20 R en DESC y −0,26 R en réplica.
+  - Dónde: CFD de NQ, ES, YM y oro 2023–2026; futuros jul-2025 → mar-2026
+  - Siguiente: No reproponer estas reglas tal cual. «Martes débil» quedó sin potencia (8 operaciones por año): ni vive ni muere.
+  - Evidencia: `docs/research/estrategias_scrapeadas_20261108/RESULTADO_DESC.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
+- **Elegir la mejor celda de una grilla grande y esperar que replique** (`F-SELECCION-EN-GRILLAS-GRANDES`, 2026-11-08, humano)
+  - Efecto: Las pistas valen ≈ +0,20 R por operación en bruto donde se eligieron y ≈ 0 en la réplica (71 campañas: −0,01 bruto, −0,08 neto, costo 0,11 R). 80 campañas: SIN_SEÑAL 51, INDETERMINADO 29, FRICCIÓN 0. La pérdida es selección, no costos: mejorar la ejecución no rescata estas familias.
+  - Dónde: 86 campañas del embudo con pistas en réplica
+  - Siguiente: Preferir pocas hipótesis con motivo económico corridas iguales en muchos activos (no suma selección) y nulo que repite la selección completa. Única excepción aislada: TORI-GC-R con bruto de réplica +0,08 R (IC90 +0,03 a +0,14).
+  - Evidencia: `docs/research/bruto_neto_pistas_20261108/RESULTADO.md`
+- **Rotar reglas por régimen reciente (elegir lo que funcionó en los últimos 1–3 meses)** (`F-REGIMEN-OFFLINE`, 2026-11-08, humano)
+  - Efecto: Le gana apenas al azar (+0,06 a +0,09 R, t 2,5–4,1 en dos variantes) pero pierde contra la mejor celda estática (−0,08 a −0,16 R) y el R neto elegido es negativo (−0,10 a −0,18); p de familia 0,12–0,74.
+  - Dónde: 106 cubos, walk-forward con nulo de signo por sesión
+  - Siguiente: No repetir la rotación por rendimiento reciente. Un régimen sólo vale con una variable de estado declarada antes y medible en tiempo real.
+  - Evidencia: `docs/research/regimen_busqueda_20261108/RESULTADO.md`
+- **Ganar frecuencia eligiendo las reglas frecuentes más estables de las grillas existentes, o transfiriendo reglas a otros activos** (`F-FRECUENCIA-POR-SELECCION`, 2026-11-08, humano)
+  - Efecto: Canasta frecuente: p de selección 0,985 (el nulo da canastas más fuertes que la observada). Transferencia multi-activo: −0,071 R por sesión, t −5,4, en contra con potencia.
+  - Dónde: 106 cubos; 35 pares regla–activo, 5.673 operaciones
+  - Siguiente: La frecuencia tiene que salir de una regla con motivo económico diseñada para operar seguido, no de filtrar o transferir lo ya elegido.
+  - Evidencia: `docs/research/canasta_global_frecuente_20261108/RESULTADO.md`, `docs/research/transferencia_multiactivo_20261108/RESULTADO.md`
+- **Stop ancho S3, objetivo lejano T3, ATR o volumen relativo bajo, horario NY 09:30–12:00 y el «imán estructural» como filtros de CONTEXTO** (`F-ATLAS-CONTEXTO-ES-FRICCION`, 2026-11-04, humano)
+  - Efecto: Confirmados en neto (p. ej. S3 +0,121 / +0,105 R; imán en reversión +0,081 / +0,069 R) pero en bruto conservan sólo 3–31 % (S3 +0,020 / +0,018 R; imán +0,013 / +0,008 R) y ninguno se confirma: son fricción en R, no comportamiento del mercado. El imán se retiró como hipótesis de contexto.
+  - Dónde: Atlas de contexto, 212 corridas, futuro + CFD
+  - Siguiente: No proponerlos como filtros de mercado ni citar la sección «Qué funcionó» del ciclo 2026-11-04 de APRENDIZAJES_ESPIRAL sin su corrección. Lo aprovechable está en F-STOP-GRANDE-FRENTE-A-FRICCION.
+  - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`

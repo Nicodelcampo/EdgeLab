@@ -32,6 +32,7 @@ PRIORIDADES = [
     "Fills pasivos sólo por replay tick a tick con máquina de estados causal (espera acotada, cancelación si el precio escapa, excursiones medidas después del fill, stop primero): el modelo 'tocó el precio en la ventana' infló ~0,6 ticks/op en ES (k32). Una partición es réplica sólo si el registro de la familia la declara sin usar. Un gate diseñado después de ver la pérdida es una prueba nueva.",
 ]
 LENTES = {
+    "indagar_factor": "Elegí UNA entrada PISTA_VIVA o PALANCA_DE_DISENO de nucleo_proyecto.factores_con_ventaja y proponé su `siguiente` indagación tal como está escrita (o una más barata que responda lo mismo): qué mide, en qué datos no usados, y qué resultado la pasa a NO_REPETIR. No abras una familia nueva.",
     "puente_mecanismo": "Llevá un hallazgo de información ya medido a un mecanismo económico publicado que lo explique y predecí algo nuevo.",
     "replica_debil": "Tomá una pista débil y diseñá su réplica en una muestra que todavía no se usó.",
     "artefacto": "Buscá el artefacto más probable detrás del resultado más sospechoso del tablero (microestructura, rebote bid-ask, look-ahead).",
@@ -46,8 +47,16 @@ LENTES = {
 }
 
 
-def elegir_lente(historial: list) -> str:
-    """Rotación con memoria: la lente menos usada; a igualdad, la que más hallazgos dio. historial = [{'lente','hit'}]."""
+def elegir_lente(historial: list, pistas_vivas: int | None = None) -> str:
+    """Rotación con memoria: la lente menos usada; a igualdad, la que más hallazgos dio. historial = [{'lente','hit'}].
+    Criterio de Nico (2026-11-09): lo ya descubierto va primero. Mientras haya pistas vivas en el registro de factores, uno de cada dos
+    ciclos es `indagar_factor`; el otro sigue la rotación (para no dejar de explorar)."""
+    if pistas_vivas is None:
+        try:
+            from edgelab.research import factores as _F
+            pistas_vivas = sum(e["estado"] in ("PISTA_VIVA", "PALANCA_DE_DISENO") for e in _F.cargar())
+        except Exception: pistas_vivas = 0
+    if pistas_vivas and (not historial or historial[-1].get("lente") != "indagar_factor"): return "indagar_factor"
     uso = {k: 0 for k in LENTES}; hits = {k: 0 for k in LENTES}
     for h in historial:
         if h.get("lente") in uso:

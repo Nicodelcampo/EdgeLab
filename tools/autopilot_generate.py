@@ -90,6 +90,14 @@ def main():
         cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos")); log = st / "propuestas.jsonl"
         if not (cfg.get("proponente") and cfg.get("roles_ledger")): print("proponente apagado (config: proponente=false o sin roles_ledger)"); return
         hist = [json.loads(l) for l in log.read_text().splitlines() if l.strip()] if log.exists() else []
+        # Cierre de ciclo: campañas cerradas → meta-analista → factores propuestos (en el ESTADO, no en el checkout; se publican en
+        # autopilot/state y se pasan al libro del repo con `tools/factores.py agregar` tras revisión).
+        libro_prop = st / "factores_propuestos.jsonl"
+        try:
+            from edgelab.autopilot import meta_analisis as MA
+            for raiz_e in (st / "embudo", st / "autopilot_runs" / "embudo"):
+                if raiz_e.is_dir(): print("meta-analista:", json.dumps(MA.procesar(RoleRunner(Path(cfg["roles_ledger"])), raiz_e, libro=libro_prop), ensure_ascii=False))
+        except Exception as e: print("meta-analista: no corrió:", repr(e)[:200])
         lente = contexto.elegir_lente(hist); outcomes = RunLedger(Path(a.ledger)).outcomes() if a.ledger else []
         ctx = K.contexto_para(idx, (a.tema or contexto.LENTES[lente]) + " " + " ".join(cfg.get("temas_prioritarios", [])))
         def ok(f):
@@ -102,6 +110,8 @@ def main():
         paquete = contexto.armar_paquete(tablero=tab, vacios=ctx["vacios"], fichas=fichas,
                                          retiradas=cfg.get("familias_retiradas", []), lente=lente, cartas=cartas,
                                          memoria=contexto.memoria_ideas(semilla=int(time.strftime("%Y%m%d")) + len(hist)))
+        if libro_prop.exists():                                         # lo último que extrajo el meta-analista, todavía sin revisar
+            paquete["factores_propuestos_sin_revisar"] = [json.loads(l) for l in libro_prop.read_text(encoding="utf-8").splitlines() if l.strip()][-15:]
         existentes = list(cfg.get("familias_retiradas", [])) + [h["borrador"]["familia"] for h in hist if h.get("borrador")]
         r = contexto.proponer(RoleRunner(Path(cfg["roles_ledger"])), paquete, existentes)
         usadas = {f["ref"] for f in paquete["fichas"]}
