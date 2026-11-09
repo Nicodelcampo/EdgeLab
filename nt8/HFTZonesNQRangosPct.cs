@@ -159,7 +159,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 MinZonasCluster   = 4;
                 PctAngosto        = 10;
                 PctAmplio         = 10;
-                PctLookbackBars   = 1200;
+                PctLookbackBars   = 3000;
                 PctRecomputeBars  = 5;
                 PctExtensionBars  = 50;
                 OpacidadPct       = 35;
@@ -194,7 +194,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ExtensionDibujo          = 600;
                 Opacidad                 = 30;
                 MostrarTexto             = false;   // rápido: un texto por zona pesa mucho
-                VelasDibujoHistorico     = 1500;
+                VelasDibujoHistorico     = 20000;
                 ColorPredator            = Brushes.Gold;
                 ColorUltra               = Brushes.Silver;
                 ColorBull                = Brushes.DodgerBlue;
@@ -210,8 +210,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 MostrarVacios     = false;
                 VoidBinTicks      = 2;
-                VoidMinAltoTicks  = 6;
-                VoidMinAnchoBars  = 10;
+                VoidMinAltoTicks  = 4;
+                VoidMinAnchoBars  = 3;
                 VoidLookbackBars  = 1200;
                 VoidRecomputeBars = 20;
                 VoidExtensionBars = 0;
@@ -652,7 +652,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 int barsAgoEnd   = CurrentBars[0] - z.EndBar;
                 if (barsAgoStart < 0) continue;
                 Draw.Rectangle(this, z.TagRect, false,
-                    barsAgoStart, z.Upper, -ExtensionDibujo, z.Lower,
+                    barsAgoStart, z.Upper, CurrentBars[0] - (z.EndBar + Math.Max(0, ExtensionDibujo)), z.Lower,   // extension desde el fin de CADA zona
                     Brushes.Transparent, z.ColorZ, Opacidad);
                 if (MostrarTexto)
                 {
@@ -662,12 +662,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
                 z.Drawn = true;
                 z.DrawnBar = CurrentBars[0];
-                z.VisualEndBar = CurrentBars[0] + ExtensionDibujo;
+                z.VisualEndBar = z.EndBar + ExtensionDibujo;
 
-                if (MostrarClusters)
-                {
-                    DetectarSolapamientoCluster(i);
-                }
             }
         }
 
@@ -892,18 +888,18 @@ namespace NinjaTrader.NinjaScript.Indicators
         // zona HFT cubre. Cada zona cuenta con su extension hacia adelante (ExtensionDibujo): si una
         // zona se proyecta y atraviesa la expansion, esta deja de marcarse. Las celdas vacias se
         // agrupan en regiones conexas y se dibuja un rectangulo (bounding box) por expansion.
-        private void DetectarVacios()
+        // Regiones (velas x precio) por donde el precio PASO y ninguna zona cubria en ese momento; bounding box por region conexa.
+        // Devuelve {cMin, cMax, kMin, kMax} relativos a b0 / lo / binSize.
+        private List<int[]> RegionesVacias(int b0, int b1, out double lo, out double binSize, int maxN)
         {
-            if (ModoExportacionPuro) return;
-            double binSize = Math.Max(1, VoidBinTicks) * TickSize;
-            if (binSize <= 0) return;
+            lo = 0; binSize = Math.Max(1, VoidBinTicks) * TickSize;
+            var vacio = new List<int[]>();
+            if (binSize <= 0) return vacio;
 
-            int b1 = CurrentBars[0];
-            int b0 = Math.Max(0, b1 - Math.Max(10, VoidLookbackBars));
             int nBars = b1 - b0 + 1;
-            if (nBars < Math.Max(2, VoidMinAnchoBars)) return;
+            if (nBars < Math.Max(2, VoidMinAnchoBars)) return vacio;
 
-            double lo = double.MaxValue, hi = double.MinValue;
+            lo = double.MaxValue; double hi = double.MinValue;
             for (int b = b0; b <= b1; b++)
             {
                 double L = Lows[0].GetValueAt(b);
@@ -911,10 +907,10 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (L < lo) lo = L;
                 if (H > hi) hi = H;
             }
-            if (hi <= lo) return;
+            if (hi <= lo) return vacio;
 
             int nBins = (int)Math.Ceiling((hi - lo) / binSize) + 1;
-            if (nBins < 2) return;
+            if (nBins < 2) return vacio;
             // Rango de precio muy grande: agrandar el bin para no exceder la grilla (en vez de no dibujar nada).
             while (nBins > 2000 && binSize > 0)
             {
@@ -1018,11 +1014,22 @@ namespace NinjaTrader.NinjaScript.Indicators
                     if (rw >= minW && rh >= minBins)
                     {
                         nuevos.Add(new int[] { cMin, cMax, kMin, kMax });
-                        if (nuevos.Count >= Math.Max(1, VoidMax)) { cc0 = nBars; break; }
+                        if (nuevos.Count >= Math.Max(1, maxN)) { cc0 = nBars; break; }
                     }
                 }
             }
 
+            if (VoidDebug) Print("[Vacios] zonas=" + zc + " celdasVacias=" + voidCells + " regiones=" + regionsTotal + " candidatas=" + nuevos.Count);
+            return nuevos;
+        }
+
+        private void DetectarVacios()
+        {
+            if (ModoExportacionPuro) return;
+            int b1 = CurrentBars[0];
+            int b0 = Math.Max(0, b1 - Math.Max(10, VoidLookbackBars));
+            double lo, binSize;
+            List<int[]> nuevos = RegionesVacias(b0, b1, out lo, out binSize, VoidMax);
             // 4) Redibujar cada expansion en su rango real de barras y precio.
             LimpiarVacios();
             int op = Math.Max(1, Math.Min(100, VoidOpacidad));
@@ -1040,7 +1047,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                 Draw.Rectangle(this, tag, false, barsAgo0, top, barsAgo1, bottom, ColorVoid, ColorVoid, op);
                 voidTags.Add(tag);
             }
-            if (VoidDebug) Print("[Vacios] zonas=" + zc + " celdasVacias=" + voidCells + " regiones=" + regionsTotal + " mejorWxH=" + bestW + "x" + bestH + " marcadas=" + nuevos.Count + " | nBars=" + nBars + " nBins=" + nBins + " minW=" + minW + " minBins=" + minBins + " (alto en ticks: bin=" + binTicksActual.ToString("F1") + ")");
         }
 
         // ===================== RANGOS POR PERCENTIL (clusters densos y vacios amplios) =====================
@@ -1119,33 +1125,24 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
             }
 
-            // ---- 2) Rangos vacíos: huecos de precio sin zonas; el PctAmplio% más amplio ----
-            double pLo = double.MaxValue, pHi = double.MinValue;
-            for (int b = b0; b <= b1; b++) { pLo = Math.Min(pLo, Lows[0].GetValueAt(b)); pHi = Math.Max(pHi, Highs[0].GetValueAt(b)); }
-            if (pHi <= pLo) return;
-            var iv = zs.Select(z => new double[] { Math.Min(z.Lower, z.Upper), Math.Max(z.Lower, z.Upper) }).OrderBy(x => x[0]).ToList();
-            var huecos = new List<double[]>();                                     // {lo, hi, ancho}
-            double cursor = pLo;
-            foreach (var x in iv)
+            // ---- 2) Expansiones: regiones donde el precio paso sin ninguna zona que lo cubriera EN ESE MOMENTO
+            //         (misma regla que los vacios del V4_V2); se marca el PctAmplio% de mayor amplitud de precio y
+            //         se dibujan solo en las velas donde ocurrieron, sin extension.
+            double lo2, bin2;
+            List<int[]> regs = RegionesVacias(b0, b1, out lo2, out bin2, 100000);
+            if (regs.Count > 0)
             {
-                if (x[0] > cursor) huecos.Add(new double[] { cursor, Math.Min(x[0], pHi), Math.Min(x[0], pHi) - cursor });
-                cursor = Math.Max(cursor, x[1]);
-                if (cursor >= pHi) break;
-            }
-            if (cursor < pHi) huecos.Add(new double[] { cursor, pHi, pHi - cursor });
-            huecos = huecos.Where(q => q[2] >= TickSize).ToList();
-            if (huecos.Count > 0)
-            {
-                int nSel = Math.Max(1, (int)Math.Ceiling(huecos.Count * Math.Max(1, PctAmplio) / 100.0));
-                foreach (var h in huecos.OrderByDescending(q => q[2]).Take(nSel))
+                int nSel = Math.Max(1, (int)Math.Ceiling(regs.Count * Math.Max(1, PctAmplio) / 100.0));
+                foreach (var r in regs.OrderByDescending(q => q[3] - q[2]).Take(nSel))
                 {
+                    double bottom = lo2 + r[2] * bin2, top = lo2 + (r[3] + 1) * bin2;
                     string tag = "HFTPCT_V_" + (pctSeq++);
-                    Draw.Rectangle(this, tag, false, b1 - b0, h[1], -ext, h[0], ColorVacioPct, ColorVacioPct, op);
+                    Draw.Rectangle(this, tag, false, b1 - (b0 + r[0]), top, b1 - (b0 + r[1]), bottom, ColorVacioPct, ColorVacioPct, op);
                     pctTags.Add(tag);
                     if (MostrarTextoPct)
                     {
                         string tt = tag + "_T";
-                        Draw.Text(this, tt, string.Format("VACIO {0:F0}t", h[2] / TickSize), 0, (h[0] + h[1]) * 0.5, ColorVacioPct);
+                        Draw.Text(this, tt, string.Format("EXPANSION {0:F0}t", (top - bottom) / TickSize), b1 - (b0 + r[0]), top + TickSize * 2, ColorVacioPct);
                         pctTags.Add(tt);
                     }
                 }

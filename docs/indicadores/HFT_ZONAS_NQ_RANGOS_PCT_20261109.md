@@ -29,3 +29,12 @@ Nico no lo podía cargar. Cambios sólo de dibujo (el detector no cambia):
   cada `PctRecomputeBars`.
 - Texto por zona apagado por defecto (`MostrarTexto`).
 Lo que sigue pesando es la carga de la serie de 1 tick (es el detector): cargar pocos días (2–3) en el gráfico.
+
+## Correcciones tras verlo en el gráfico (2026-11-09, tercera entrega)
+- Las zonas terminaban todas en la misma vela: el rectángulo se extendía `ExtensionDibujo` velas desde la vela en que se DIBUJABA (en el
+  histórico se dibujaban juntas). Ahora la extensión cuenta desde el fin de cada zona.
+- Zonas que dejaban de dibujarse: el corte histórico de 1.500 velas era corto para 50 ticks; ahora 20.000 (`VelasDibujoHistorico`).
+- Se quitaron los clusters viejos del V4_V2 («★ CLUSTER 4x (POC…)»), que se mezclaban con los nuevos.
+- **Expansiones** (antes «vacíos» por huecos de precio de toda la ventana): ahora son regiones velas × precio por donde el precio pasó
+  sin ninguna zona que lo cubriera en ese momento (la regla de vacíos del V4_V2), dibujadas sólo en las velas donde ocurrieron, sin
+  extensión. Se marca el `PctAmplio` (10 %) de mayor amplitud de precio. Ventana por defecto 3.000 velas (`PctLookbackBars`).
