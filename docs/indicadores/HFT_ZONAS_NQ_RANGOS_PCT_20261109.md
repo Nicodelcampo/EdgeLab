@@ -38,3 +38,14 @@ Lo que sigue pesando es la carga de la serie de 1 tick (es el detector): cargar 
 - **Expansiones** (antes «vacíos» por huecos de precio de toda la ventana): ahora son regiones velas × precio por donde el precio pasó
   sin ninguna zona que lo cubriera en ese momento (la regla de vacíos del V4_V2), dibujadas sólo en las velas donde ocurrieron, sin
   extensión. Se marca el `PctAmplio` (10 %) de mayor amplitud de precio. Ventana por defecto 3.000 velas (`PctLookbackBars`).
+
+## Rediseño: marcado a lo largo de todo el histórico (2026-11-09, cuarta entrega)
+Nico: sólo se marcaba el final; en 10 ticks aparecían expansiones por todos lados y faltaban clusters. Ahora todo es causal, por evento
+y fijo (lo marcado no se borra), con umbrales que salen de la distribución de TODO lo visto hasta ese momento, en ticks:
+- **Cluster:** al cerrarse cada zona se busca el rango más angosto que la contiene junto con 3 zonas vivas (rectángulo todavía
+  extendido). Se marca si su ancho está en el 10 % más angosto de todos los anchos vistos (`PctAngosto`). Clusters que se solapan en
+  precio y tiempo se fusionan. Se extiende `PctExtensionBars` (300) velas tras su última zona.
+- **Expansión:** cada `PctRecomputeBars` (20) velas se buscan, en las últimas `ExpVentanaBars` (400), regiones velas × precio
+  terminadas por donde pasó el precio sin zona que lo cubriera; cada una entra una sola vez a la historia y se marca si su alto está en
+  el 5 % más alto de todas (`PctAmplio`, antes 10 %: marca menos y más amplias).
+- No se marca nada hasta tener `PctMinHistoria` (30) casos.

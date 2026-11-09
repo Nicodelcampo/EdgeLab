@@ -158,10 +158,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                 MostrarRangosPct  = true;
                 MinZonasCluster   = 4;
                 PctAngosto        = 10;
-                PctAmplio         = 10;
-                PctLookbackBars   = 3000;
-                PctRecomputeBars  = 5;
-                PctExtensionBars  = 50;
+                PctAmplio         = 5;
+                PctMinHistoria    = 30;
+                ExpVentanaBars    = 400;
+                PctRecomputeBars  = 20;
+                PctExtensionBars  = 300;
                 OpacidadPct       = 35;
                 ColorClusterPct   = Brushes.Gold;
                 ColorVacioPct     = Brushes.DeepSkyBlue;
@@ -254,6 +255,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 voidRecomputeCounter = 0;
                 voidCounter = 0;
                 primeraPendiente = 0;
+                primeraSinCluster = 0; pctCounter = 0; pctSeq = 0;
+                histAnchoCluster.Clear(); histAltoExp.Clear(); clustersDib.Clear(); expVistas.Clear(); pctTags.Clear();
                 voidTags.Clear();
                 clusterCounter = 0;
                 clusterTags.Clear();
@@ -330,14 +333,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (MostrarRangosPct)
             {
-                // rápido: en el histórico se calcula una sola vez, en la última vela; en vivo cada PctRecomputeBars
-                bool finHistorico = State == State.Historical && CurrentBars[0] >= BarsArray[0].Count - 2;
-                if (State == State.Realtime)
-                {
-                    pctCounter++;
-                    if (pctCounter >= Math.Max(1, PctRecomputeBars)) { pctCounter = 0; RecalcularRangosPct(); }
-                }
-                else if (finHistorico) RecalcularRangosPct();
+                // Causal y a lo largo de TODO el histórico: cada zona nueva se evalúa como posible cluster al cerrarse, y las
+                // expansiones se buscan en una ventana móvil cada PctRecomputeBars velas. Lo marcado queda fijo (no se borra).
+                while (primeraSinCluster < zones.Count) EvaluarCluster(primeraSinCluster++);
+                pctCounter++;
+                if (pctCounter >= Math.Max(1, PctRecomputeBars)) { pctCounter = 0; BuscarExpansiones(); }
             }
             else if (pctTags.Count > 0) LimpiarPct();
 
@@ -908,6 +908,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (H > hi) hi = H;
             }
             if (hi <= lo) return vacio;
+            lo = Math.Floor(lo / binSize) * binSize;                               // grilla alineada entre ventanas
 
             int nBins = (int)Math.Ceiling((hi - lo) / binSize) + 1;
             if (nBins < 2) return vacio;
@@ -1061,90 +1062,97 @@ namespace NinjaTrader.NinjaScript.Indicators
             pctTags.Clear();
         }
 
-        private void RecalcularRangosPct()
-        {
-            if (ModoExportacionPuro) return;
-            int b1 = CurrentBars[0];
-            int b0 = Math.Max(0, b1 - Math.Max(10, PctLookbackBars));
-            var zs = new List<Zone>();
-            for (int i = 0; i < zones.Count; i++)
-            {
-                Zone z = zones[i];
-                if (z.EndBar >= b0 && z.EndBar <= b1) zs.Add(z);      // zonas ya terminadas por el detector: causal
-            }
-            LimpiarPct();
-            int ext = Math.Max(0, PctExtensionBars);
-            int op  = Math.Max(1, Math.Min(100, OpacidadPct));
+        private int primeraSinCluster;
+        private readonly List<double> histAnchoCluster = new List<double>();   // ancho (ticks) del cluster más angosto de cada zona nueva
+        private readonly List<double> histAltoExp = new List<double>();        // alto (ticks) de cada expansión terminada
+        private readonly List<double[]> clustersDib = new List<double[]>();   // {lo, hi, barIni, barFin, id}
+        private readonly HashSet<long> expVistas = new HashSet<long>();
 
-            // ---- 1) Clusters densos: grupos de K zonas consecutivas por precio; el PctAngosto% más angosto ----
-            int K = Math.Max(2, MinZonasCluster);
-            zs.Sort((a, b) => ((a.Upper + a.Lower) * 0.5).CompareTo((b.Upper + b.Lower) * 0.5));
-            var vent = new List<double[]>();                                       // {lo, hi, ancho, i0}
-            for (int i = 0; i + K <= zs.Count; i++)
+        private static double Percentil(List<double> v, double p)
+        {
+            var c = new List<double>(v); c.Sort();
+            int k = (int)Math.Floor(Math.Max(0, Math.Min(100, p)) / 100.0 * (c.Count - 1));
+            return c[k];
+        }
+
+        // Cluster: al cerrarse una zona, el rango más angosto que la contiene junto con MinZonasCluster-1 zonas vivas (su rectángulo
+        // todavía se extiende). Se marca si ese ancho está en el PctAngosto% más angosto de TODOS los anchos vistos hasta ahora.
+        private void EvaluarCluster(int idx)
+        {
+            Zone z = zones[idx];
+            int K = Math.Max(2, MinZonasCluster), ext = Math.Max(0, ExtensionDibujo);
+            var vivas = new List<Zone>();
+            for (int j = idx; j >= 0; j--)
+            {
+                Zone w = zones[j];
+                if (w.EndBar < z.EndBar - ext - 5000) break;                       // corte de búsqueda (las zonas están casi ordenadas)
+                if (w.EndBar <= z.EndBar && w.EndBar + ext >= z.EndBar) vivas.Add(w);
+            }
+            if (vivas.Count < K) return;
+            vivas.Sort((a, b) => ((a.Upper + a.Lower) * 0.5).CompareTo((b.Upper + b.Lower) * 0.5));
+            int pos = vivas.IndexOf(z);
+            double mejor = double.MaxValue; int i0m = -1;
+            for (int i0 = Math.Max(0, pos - K + 1); i0 <= pos && i0 + K <= vivas.Count; i0++)
             {
                 double lo = double.MaxValue, hi = double.MinValue;
-                for (int j = i; j < i + K; j++)
-                {
-                    lo = Math.Min(lo, Math.Min(zs[j].Lower, zs[j].Upper));
-                    hi = Math.Max(hi, Math.Max(zs[j].Lower, zs[j].Upper));
-                }
-                vent.Add(new double[] { lo, hi, hi - lo, i });
+                for (int j = i0; j < i0 + K; j++) { lo = Math.Min(lo, Math.Min(vivas[j].Lower, vivas[j].Upper)); hi = Math.Max(hi, Math.Max(vivas[j].Lower, vivas[j].Upper)); }
+                if (hi - lo < mejor) { mejor = hi - lo; i0m = i0; }
             }
-            if (vent.Count > 0)
+            if (i0m < 0) return;
+            double ancho = mejor / TickSize;
+            histAnchoCluster.Add(ancho);
+            if (histAnchoCluster.Count < Math.Max(10, PctMinHistoria) || ancho > Percentil(histAnchoCluster, PctAngosto)) return;
+            double cLo = double.MaxValue, cHi = double.MinValue; int ini = int.MaxValue, fin = int.MinValue;
+            for (int j = i0m; j < i0m + K; j++)
             {
-                int nSel = Math.Max(1, (int)Math.Ceiling(vent.Count * Math.Max(1, PctAngosto) / 100.0));
-                var orden = vent.OrderBy(v => v[2]).Take(nSel).OrderBy(v => v[0]).ToList();
-                // fusionar rangos solapados en un solo cluster
-                var grupos = new List<double[]>();                                   // {lo, hi, i0min, i1max}
-                foreach (var v in orden)
-                {
-                    int i0 = (int)v[3], i1 = i0 + K - 1;
-                    if (grupos.Count > 0 && v[0] <= grupos[grupos.Count - 1][1])
-                    {
-                        var g = grupos[grupos.Count - 1];
-                        g[1] = Math.Max(g[1], v[1]); g[2] = Math.Min(g[2], i0); g[3] = Math.Max(g[3], i1);
-                    }
-                    else grupos.Add(new double[] { v[0], v[1], i0, i1 });
-                }
-                foreach (var g in grupos)
-                {
-                    int sBar = int.MaxValue;
-                    for (int j = (int)g[2]; j <= (int)g[3]; j++) sBar = Math.Min(sBar, zs[j].StartBar);
-                    // contar todas las zonas contenidas en el rango (pueden ser más que las del grupo)
-                    int dentro = 0;
-                    foreach (var z in zs) if (Math.Min(z.Lower, z.Upper) >= g[0] && Math.Max(z.Lower, z.Upper) <= g[1]) dentro++;
-                    string tag = "HFTPCT_C_" + (pctSeq++);
-                    Draw.Rectangle(this, tag, false, Math.Max(0, b1 - sBar), g[1], -ext, g[0], ColorClusterPct, ColorClusterPct, op);
-                    pctTags.Add(tag);
-                    if (MostrarTextoPct)
-                    {
-                        string tt = tag + "_T";
-                        Draw.Text(this, tt, string.Format("CLUSTER {0}z {1:F0}t", dentro, (g[1] - g[0]) / TickSize), 0, g[1] + TickSize * 2, ColorClusterPct);
-                        pctTags.Add(tt);
-                    }
-                }
+                Zone w = vivas[j];
+                cLo = Math.Min(cLo, Math.Min(w.Lower, w.Upper)); cHi = Math.Max(cHi, Math.Max(w.Lower, w.Upper));
+                ini = Math.Min(ini, w.StartBar); fin = Math.Max(fin, w.EndBar + Math.Max(0, PctExtensionBars));
             }
+            // fusionar con un cluster dibujado que se solape en precio y en tiempo
+            double[] c = null;
+            foreach (var x in clustersDib) if (x[0] <= cHi && cLo <= x[1] && x[3] >= ini) { c = x; break; }
+            if (c == null) { c = new double[] { cLo, cHi, ini, fin, pctSeq++ }; clustersDib.Add(c); }
+            else { c[0] = Math.Min(c[0], cLo); c[1] = Math.Max(c[1], cHi); c[2] = Math.Min(c[2], ini); c[3] = Math.Max(c[3], fin); }
+            int n = 0;
+            for (int j = idx; j >= 0 && zones[j].EndBar >= (int)c[2]; j--)
+                if (Math.Min(zones[j].Lower, zones[j].Upper) >= c[0] && Math.Max(zones[j].Lower, zones[j].Upper) <= c[1]) n++;
+            string tag = "HFTPCT_C_" + (int)c[4];
+            int cb = CurrentBars[0];
+            Draw.Rectangle(this, tag, false, cb - (int)c[2], c[1], cb - (int)c[3], c[0], ColorClusterPct, ColorClusterPct, Math.Max(1, Math.Min(100, OpacidadPct)));
+            if (!pctTags.Contains(tag)) pctTags.Add(tag);
+            if (MostrarTextoPct)
+            {
+                Draw.Text(this, tag + "_T", string.Format("CLUSTER {0}z {1:F0}t", n, (c[1] - c[0]) / TickSize), cb - (int)c[2], c[1] + TickSize * 2, ColorClusterPct);
+                if (!pctTags.Contains(tag + "_T")) pctTags.Add(tag + "_T");
+            }
+        }
 
-            // ---- 2) Expansiones: regiones donde el precio paso sin ninguna zona que lo cubriera EN ESE MOMENTO
-            //         (misma regla que los vacios del V4_V2); se marca el PctAmplio% de mayor amplitud de precio y
-            //         se dibujan solo en las velas donde ocurrieron, sin extension.
-            double lo2, bin2;
-            List<int[]> regs = RegionesVacias(b0, b1, out lo2, out bin2, 100000);
-            if (regs.Count > 0)
+        // Expansiones: regiones velas x precio por donde pasó el precio sin zona que lo cubriera en ese momento, ya terminadas.
+        // Se marcan sólo si su alto (ticks) está en el PctAmplio% más alto de TODAS las expansiones vistas hasta ahora.
+        private void BuscarExpansiones()
+        {
+            int b1 = CurrentBars[0], margen = Math.Max(2, PctRecomputeBars);
+            int b0 = Math.Max(0, b1 - Math.Max(50, ExpVentanaBars));
+            double lo, bin;
+            List<int[]> regs = RegionesVacias(b0, b1, out lo, out bin, 100000);
+            foreach (var r in regs)
             {
-                int nSel = Math.Max(1, (int)Math.Ceiling(regs.Count * Math.Max(1, PctAmplio) / 100.0));
-                foreach (var r in regs.OrderByDescending(q => q[3] - q[2]).Take(nSel))
+                if (r[0] == 0 && b0 > 0) continue;                                  // tocada por el borde izquierdo: ya vista entera antes
+                if (b0 + r[1] > b1 - margen) continue;                              // todavía puede crecer
+                long clave = (long)(b0 + r[0]) * 1000003L + (long)Math.Round((lo + r[2] * bin) / TickSize);
+                if (!expVistas.Add(clave)) continue;
+                double alto = (r[3] - r[2] + 1) * bin / TickSize;
+                histAltoExp.Add(alto);
+                if (histAltoExp.Count < Math.Max(10, PctMinHistoria) || alto < Percentil(histAltoExp, 100 - PctAmplio)) continue;
+                double bottom = lo + r[2] * bin, top = lo + (r[3] + 1) * bin;
+                string tag = "HFTPCT_V_" + (pctSeq++);
+                Draw.Rectangle(this, tag, false, b1 - (b0 + r[0]), top, b1 - (b0 + r[1]), bottom, ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
+                pctTags.Add(tag);
+                if (MostrarTextoPct)
                 {
-                    double bottom = lo2 + r[2] * bin2, top = lo2 + (r[3] + 1) * bin2;
-                    string tag = "HFTPCT_V_" + (pctSeq++);
-                    Draw.Rectangle(this, tag, false, b1 - (b0 + r[0]), top, b1 - (b0 + r[1]), bottom, ColorVacioPct, ColorVacioPct, op);
-                    pctTags.Add(tag);
-                    if (MostrarTextoPct)
-                    {
-                        string tt = tag + "_T";
-                        Draw.Text(this, tt, string.Format("EXPANSION {0:F0}t", (top - bottom) / TickSize), b1 - (b0 + r[0]), top + TickSize * 2, ColorVacioPct);
-                        pctTags.Add(tt);
-                    }
+                    Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", alto), b1 - (b0 + r[0]), top + TickSize * 2, ColorVacioPct);
+                    pctTags.Add(tag + "_T");
                 }
             }
         }
@@ -1449,11 +1457,13 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int PctAngosto { get; set; }
         [Range(1, 100)][Display(Name="% rangos mas amplios sin zonas (vacios)", Order=4, GroupName="P. Rangos por percentil")]
         public int PctAmplio { get; set; }
-        [Range(10, 100000)][Display(Name="Ventana (velas)", Order=5, GroupName="P. Rangos por percentil", Description="Zonas terminadas dentro de estas velas")]
-        public int PctLookbackBars { get; set; }
-        [Range(1, 1000)][Display(Name="Recalcular cada (velas)", Order=6, GroupName="P. Rangos por percentil")]
+        [Range(10, 100000)][Display(Name="Historia minima (casos)", Order=5, GroupName="P. Rangos por percentil", Description="No marca nada hasta tener esta cantidad de casos para el percentil")]
+        public int PctMinHistoria { get; set; }
+        [Range(50, 5000)][Display(Name="Ventana de busqueda de expansiones (velas)", Order=13, GroupName="P. Rangos por percentil")]
+        public int ExpVentanaBars { get; set; }
+        [Range(1, 1000)][Display(Name="Buscar expansiones cada (velas)", Order=6, GroupName="P. Rangos por percentil")]
         public int PctRecomputeBars { get; set; }
-        [Range(0, 5000)][Display(Name="Extension a la derecha (velas)", Order=7, GroupName="P. Rangos por percentil")]
+        [Range(0, 5000)][Display(Name="Extension del cluster tras su ultima zona (velas)", Order=7, GroupName="P. Rangos por percentil")]
         public int PctExtensionBars { get; set; }
         [Range(1, 100)][Display(Name="Opacidad", Order=8, GroupName="P. Rangos por percentil")]
         public int OpacidadPct { get; set; }
