@@ -158,7 +158,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 MostrarRangosPct  = true;
                 MinZonasCluster   = 4;
                 PctAngosto        = 10;
-                PctAmplio         = 5;
+                PctAmplio         = 3;
+                ZigZagTicks       = 60;
                 PctMinHistoria    = 30;
                 ExpVentanaBars    = 400;
                 PctRecomputeBars  = 20;
@@ -256,6 +257,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 voidCounter = 0;
                 primeraPendiente = 0;
                 primeraSinCluster = 0; pctCounter = 0; pctSeq = 0;
+                zzDir = 0; zzIni = 0; zzIniBar = 0; zzExt = 0; zzExtBar = 0;
                 histAnchoCluster.Clear(); histAltoExp.Clear(); clustersDib.Clear(); expVistas.Clear(); pctTags.Clear();
                 voidTags.Clear();
                 clusterCounter = 0;
@@ -336,8 +338,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 // Causal y a lo largo de TODO el histórico: cada zona nueva se evalúa como posible cluster al cerrarse, y las
                 // expansiones se buscan en una ventana móvil cada PctRecomputeBars velas. Lo marcado queda fijo (no se borra).
                 while (primeraSinCluster < zones.Count) EvaluarCluster(primeraSinCluster++);
-                pctCounter++;
-                if (pctCounter >= Math.Max(1, PctRecomputeBars)) { pctCounter = 0; BuscarExpansiones(); }
+                AvanzarZigZag();
             }
             else if (pctTags.Count > 0) LimpiarPct();
 
@@ -1128,32 +1129,66 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // Expansiones: regiones velas x precio por donde pasó el precio sin zona que lo cubriera en ese momento, ya terminadas.
-        // Se marcan sólo si su alto (ticks) está en el PctAmplio% más alto de TODAS las expansiones vistas hasta ahora.
-        private void BuscarExpansiones()
+        // Expansiones (rediseño 2026-11-09): un TRAMO de precio = pierna de zigzag con giro de ZigZagTicks (en ticks: no depende del
+        // timeframe). Dentro de cada tramo terminado se busca el mayor recorrido de precio contiguo que ninguna zona viva cubría
+        // durante el tramo. Se marca si ese recorrido está en el PctAmplio% más largo de todos los tramos vistos hasta ahora.
+        private int zzDir, zzIniBar, zzExtBar;
+        private double zzIni, zzExt;
+
+        private void AvanzarZigZag()
         {
-            int b1 = CurrentBars[0], margen = Math.Max(2, PctRecomputeBars);
-            int b0 = Math.Max(0, b1 - Math.Max(50, ExpVentanaBars));
-            double lo, bin;
-            List<int[]> regs = RegionesVacias(b0, b1, out lo, out bin, 100000);
-            foreach (var r in regs)
+            int b = CurrentBars[0]; double H = Highs[0][0], L = Lows[0][0], R = Math.Max(4, ZigZagTicks) * TickSize;
+            if (zzDir == 0)
             {
-                if (r[0] == 0 && b0 > 0) continue;                                  // tocada por el borde izquierdo: ya vista entera antes
-                if (b0 + r[1] > b1 - margen) continue;                              // todavía puede crecer
-                long clave = (long)(b0 + r[0]) * 1000003L + (long)Math.Round((lo + r[2] * bin) / TickSize);
-                if (!expVistas.Add(clave)) continue;
-                double alto = (r[3] - r[2] + 1) * bin / TickSize;
-                histAltoExp.Add(alto);
-                if (histAltoExp.Count < Math.Max(10, PctMinHistoria) || alto < Percentil(histAltoExp, 100 - PctAmplio)) continue;
-                double bottom = lo + r[2] * bin, top = lo + (r[3] + 1) * bin;
-                string tag = "HFTPCT_V_" + (pctSeq++);
-                Draw.Rectangle(this, tag, false, b1 - (b0 + r[0]), top, b1 - (b0 + r[1]), bottom, ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
-                pctTags.Add(tag);
-                if (MostrarTextoPct)
-                {
-                    Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", alto), b1 - (b0 + r[0]), top + TickSize * 2, ColorVacioPct);
-                    pctTags.Add(tag + "_T");
-                }
+                if (zzIniBar == 0 && zzIni == 0) { zzIni = Closes[0][0]; zzIniBar = b; zzExt = zzIni; zzExtBar = b; return; }
+                if (H - zzIni >= R) { zzDir = 1; zzExt = H; zzExtBar = b; }
+                else if (zzIni - L >= R) { zzDir = -1; zzExt = L; zzExtBar = b; }
+                return;
+            }
+            if (zzDir == 1)
+            {
+                if (H >= zzExt) { zzExt = H; zzExtBar = b; }
+                else if (zzExt - L >= R) { EvaluarTramo(zzIni, zzIniBar, zzExt, zzExtBar); zzIni = zzExt; zzIniBar = zzExtBar; zzDir = -1; zzExt = L; zzExtBar = b; }
+            }
+            else
+            {
+                if (L <= zzExt) { zzExt = L; zzExtBar = b; }
+                else if (H - zzExt >= R) { EvaluarTramo(zzIni, zzIniBar, zzExt, zzExtBar); zzIni = zzExt; zzIniBar = zzExtBar; zzDir = 1; zzExt = H; zzExtBar = b; }
+            }
+        }
+
+        private void EvaluarTramo(double p0, int b0, double p1, int b1)
+        {
+            double lo = Math.Min(p0, p1), hi = Math.Max(p0, p1); int ext = Math.Max(0, ExtensionDibujo);
+            var iv = new List<double[]>();
+            for (int j = zones.Count - 1; j >= 0; j--)
+            {
+                Zone z = zones[j];
+                if (z.EndBar < b0 - ext - 5000) break;
+                if (z.StartBar > b1 || z.EndBar + ext < b0) continue;                 // no estaba viva durante el tramo
+                double zl = Math.Min(z.Lower, z.Upper), zh = Math.Max(z.Lower, z.Upper);
+                if (zh < lo || zl > hi) continue;
+                iv.Add(new double[] { Math.Max(lo, zl), Math.Min(hi, zh) });
+            }
+            iv.Sort((x, y) => x[0].CompareTo(y[0]));
+            double cursor = lo, gLo = 0, gHi = 0, mejor = 0;
+            foreach (var x in iv)
+            {
+                if (x[0] - cursor > mejor) { mejor = x[0] - cursor; gLo = cursor; gHi = x[0]; }
+                cursor = Math.Max(cursor, x[1]);
+            }
+            if (hi - cursor > mejor) { mejor = hi - cursor; gLo = cursor; gHi = hi; }
+            double t = mejor / TickSize;
+            histAltoExp.Add(t);
+            if (t < 1 || histAltoExp.Count < Math.Max(10, PctMinHistoria) || t < Percentil(histAltoExp, 100 - PctAmplio)) return;
+            int cb = CurrentBars[0];
+            string tag = "HFTPCT_V_" + (pctSeq++);
+            Draw.Rectangle(this, tag, false, cb - b0, gHi, cb - b1, gLo, ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
+            pctTags.Add(tag);
+            if (MostrarTextoPct)
+            {
+                Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", t), cb - b0, gHi + TickSize * 2, ColorVacioPct);
+                pctTags.Add(tag + "_T");
             }
         }
 
@@ -1459,9 +1494,11 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int PctAmplio { get; set; }
         [Range(10, 100000)][Display(Name="Historia minima (casos)", Order=5, GroupName="P. Rangos por percentil", Description="No marca nada hasta tener esta cantidad de casos para el percentil")]
         public int PctMinHistoria { get; set; }
-        [Range(50, 5000)][Display(Name="Ventana de busqueda de expansiones (velas)", Order=13, GroupName="P. Rangos por percentil")]
+        [Range(50, 5000)][Browsable(false)]
         public int ExpVentanaBars { get; set; }
-        [Range(1, 1000)][Display(Name="Buscar expansiones cada (velas)", Order=6, GroupName="P. Rangos por percentil")]
+        [Range(4, 10000)][Display(Name="Giro del tramo para expansiones (ticks)", Order=13, GroupName="P. Rangos por percentil", Description="Más alto = tramos más largos")]
+        public int ZigZagTicks { get; set; }
+        [Range(1, 1000)][Browsable(false)][Display(Name="(sin uso)", Order=6, GroupName="P. Rangos por percentil")]
         public int PctRecomputeBars { get; set; }
         [Range(0, 5000)][Display(Name="Extension del cluster tras su ultima zona (velas)", Order=7, GroupName="P. Rangos por percentil")]
         public int PctExtensionBars { get; set; }

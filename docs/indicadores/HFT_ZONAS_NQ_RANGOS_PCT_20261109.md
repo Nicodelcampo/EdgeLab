@@ -49,3 +49,9 @@ y fijo (lo marcado no se borra), con umbrales que salen de la distribución de T
   terminadas por donde pasó el precio sin zona que lo cubriera; cada una entra una sola vez a la historia y se marca si su alto está en
   el 5 % más alto de todas (`PctAmplio`, antes 10 %: marca menos y más amplias).
 - No se marca nada hasta tener `PctMinHistoria` (30) casos.
+
+## Expansiones por tramo (2026-11-09, quinta entrega)
+La grilla velas × precio partía cada movimiento en pedazos (cualquier zona chica cortaba la región): salían muchas de 80–120 ticks.
+Ahora una expansión se mide sobre **tramos de zigzag** con giro de `ZigZagTicks` (60 ticks, independiente del timeframe): en cada
+tramo terminado, el mayor recorrido de precio contiguo que ninguna zona viva durante el tramo cubría. Se marca si está en el 3 %
+más largo de todos los tramos vistos (`PctAmplio`). Más infrecuentes y más largas: subir `ZigZagTicks` o bajar `PctAmplio`.
