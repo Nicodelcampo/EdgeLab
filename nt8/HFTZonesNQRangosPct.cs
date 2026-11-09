@@ -337,8 +337,12 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 // Causal y a lo largo de TODO el histórico: cada zona nueva se evalúa como posible cluster al cerrarse, y las
                 // expansiones se buscan en una ventana móvil cada PctRecomputeBars velas. Lo marcado queda fijo (no se borra).
-                while (primeraSinCluster < zones.Count) EvaluarCluster(primeraSinCluster++);
-                AvanzarZigZag();
+                while (primeraSinCluster < zones.Count)
+                {
+                    int k = primeraSinCluster++;
+                    EvaluarCluster(k);
+                    if (k > 0) EvaluarIntervalo(zones[k - 1].EndBar, zones[k].StartBar);
+                }
             }
             else if (pctTags.Count > 0) LimpiarPct();
 
@@ -1157,6 +1161,16 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
+        // Expansión (sexta entrega): todo lo que recorrió el precio ENTRE DOS ZONAS CONSECUTIVAS (de la anterior a la nueva), sin importar
+        // cuántas velas ni cuántos vaivenes. Se evalúa cuando aparece la zona nueva (causal).
+        private void EvaluarIntervalo(int b0, int b1)
+        {
+            if (b1 - b0 < 1 || b0 < 0) return;
+            double lo = double.MaxValue, hi = double.MinValue;
+            for (int b = b0; b <= b1; b++) { lo = Math.Min(lo, Lows[0].GetValueAt(b)); hi = Math.Max(hi, Highs[0].GetValueAt(b)); }
+            if (hi > lo) EvaluarTramo(lo, b0, hi, b1);
+        }
+
         private void EvaluarTramo(double p0, int b0, double p1, int b1)
         {
             double lo = Math.Min(p0, p1), hi = Math.Max(p0, p1); int ext = Math.Max(0, ExtensionDibujo);
@@ -1496,7 +1510,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         public int PctMinHistoria { get; set; }
         [Range(50, 5000)][Browsable(false)]
         public int ExpVentanaBars { get; set; }
-        [Range(4, 10000)][Display(Name="Giro del tramo para expansiones (ticks)", Order=13, GroupName="P. Rangos por percentil", Description="Más alto = tramos más largos")]
+        [Range(4, 10000)][Browsable(false)]
         public int ZigZagTicks { get; set; }
         [Range(1, 1000)][Browsable(false)][Display(Name="(sin uso)", Order=6, GroupName="P. Rangos por percentil")]
         public int PctRecomputeBars { get; set; }

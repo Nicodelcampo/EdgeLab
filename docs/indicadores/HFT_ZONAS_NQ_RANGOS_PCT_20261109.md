@@ -55,3 +55,9 @@ La grilla velas × precio partía cada movimiento en pedazos (cualquier zona chi
 Ahora una expansión se mide sobre **tramos de zigzag** con giro de `ZigZagTicks` (60 ticks, independiente del timeframe): en cada
 tramo terminado, el mayor recorrido de precio contiguo que ninguna zona viva durante el tramo cubría. Se marca si está en el 3 %
 más largo de todos los tramos vistos (`PctAmplio`). Más infrecuentes y más largas: subir `ZigZagTicks` o bajar `PctAmplio`.
+
+## Expansión = recorrido entre dos zonas consecutivas (2026-11-09, sexta entrega)
+El zigzag partía en varias expansiones un tramo sin ninguna zona (Nico: «acá no hay ninguna zona, ¿por qué muchas azules?»). Ahora una
+expansión es todo lo que recorrió el precio entre el fin de una zona y el inicio de la siguiente, sin importar velas ni vaivenes: del
+mínimo al máximo de ese intervalo se toma el mayor recorrido contiguo que ninguna zona viva cubría. Se evalúa al aparecer la zona
+nueva (causal) y se marca si está en el 3 % más largo de todos los intervalos vistos. `ZigZagTicks` queda sin uso (oculto).
