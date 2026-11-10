@@ -205,8 +205,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ZigZagTicks        = 40;
                 PctMinHistoria     = 25;
                 PctExtensionBars   = 300;
-                OpacidadPct        = 18;
-                ColorClusterPct    = Brushes.Gold;
+                OpacidadPct        = 22;
+                ColorClusterPct    = Brushes.DarkOrange;
                 ColorVacioPct      = Brushes.DeepSkyBlue;
                 MostrarTextoPct    = true;
 
@@ -276,7 +276,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 primeraSinEvaluar = 0;
                 sesionesVistas = 0;
                 ultimaFechaSesion = DateTime.MinValue;
-                escalaVolTicks = 12.0;
+                escalaVolTicks = 24.0;
                 escalaVolZonaMean = 40.0;
 
                 impDir = 0;
@@ -352,8 +352,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             double barRangeTicks = (Highs[0][0] - Lows[0][0]) / TickSize;
             if (barRangeTicks > 0)
             {
-                // Escala equivalente a un impulso corto (~4 velas), piso de 6 ticks
-                double targetScale = Math.Max(6.0, barRangeTicks * 2.5);
+                // Escala equivalente a un impulso corto (~4 velas), piso de 16 ticks (4 puntos NQ)
+                double targetScale = Math.Max(16.0, barRangeTicks * 2.5);
                 escalaVolTicks = 0.98 * escalaVolTicks + 0.02 * targetScale;
             }
 
@@ -383,7 +383,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                     // Asegurar que la zona nunca tenga DetectBar posterior a la barra actual primaria
                     if (z.DetectBar > CurrentBars[0]) break;
                     primeraSinEvaluar++;
-                    escalaVolTicks = 0.95 * escalaVolTicks + 0.05 * Math.Max(6.0, z.HeightTicks * 1.5);
                     escalaVolZonaMean = 0.96 * escalaVolZonaMean + 0.04 * Math.Max(20.0, z.TotalVol);
                     EvaluarClusterCausal(primeraSinEvaluar - 1);
                     NotificarZonaNuevaEnImpulso(z);
@@ -712,10 +711,13 @@ namespace NinjaTrader.NinjaScript.Indicators
         // 1) CLUSTERS HFT CAUSALES:
         // Se evalúa en el instante en que la zona idx es detectada (detectBar = z.DetectBar).
         // Sólo considera zonas que YA fueron detectadas (w.DetectBar <= detectBar) y siguen vigentes (w.VisualEndBar >= detectBar).
-        // El rectángulo del cluster comienza estrictamente en detectBar (sin look-ahead hacia atrás).
+        // Evalúa la DENSIDAD DE SOLAPAMIENTO (packing y gap libre entre zonas) normalizada por la altura propia de las zonas,
+        // de modo que apilamientos de zonas de 3-6 puntos (40-60 ticks de alto total con alto solapamiento) se detecten igual de bien
+        // que micro-zonas angostas. El rectángulo del cluster comienza estrictamente en detectBar (sin look-ahead hacia atrás).
         private void EvaluarClusterCausal(int idx)
         {
             Zone z = zones[idx];
+            if (!MostrarAbsorb && z.Bucket == HFTBucket.Absorb) return;
             int detectBar = z.DetectBar;
             int K = Math.Max(2, MinZonasCluster);
             int ext = Math.Max(1, ExtensionDibujo);
@@ -725,6 +727,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 Zone w = zones[j];
                 if (w.DetectBar < detectBar - ext - 2000) break;
+                if (!MostrarAbsorb && w.Bucket == HFTBucket.Absorb) continue;
                 if (w.DetectBar <= detectBar && w.VisualEndBar >= detectBar)
                     vivas.Add(w);
             }
@@ -735,56 +738,101 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (pos < 0) return;
 
             double mejorScore = double.MaxValue;
-            double bestLo = 0, bestHi = 0, bestPoc = 0;
+            double bestLo = 0, bestHi = 0, bestPoc = 0, bestPacking = 0;
             int bestCount = 0;
 
             for (int i0 = Math.Max(0, pos - K + 1); i0 <= pos && i0 + K <= vivas.Count; i0++)
             {
+                int i1 = i0 + K - 1;
                 double lo = double.MaxValue, hi = double.MinValue;
-                double sumH = 0, sumVol = 0, wSumMid = 0;
-                for (int j = i0; j < i0 + K; j++)
+                double baseSumH = 0;
+                for (int j = i0; j <= i1; j++)
                 {
                     Zone w = vivas[j];
                     double wLo = Math.Min(w.Lower, w.Upper);
                     double wHi = Math.Max(w.Lower, w.Upper);
                     if (wLo < lo) lo = wLo;
                     if (wHi > hi) hi = wHi;
-                    sumH += Math.Max(TickSize, wHi - wLo);
-                    double v = Math.Max(1.0, w.TotalVol);
-                    sumVol += v;
-                    wSumMid += ((wLo + wHi) * 0.5) * v;
+                    baseSumH += Math.Max(TickSize * 2.0, wHi - wLo);
                 }
 
-                // Contar todas las zonas vivas adicionales que caen dentro de la misma banda [lo, hi]
+                double avgZoneHeight = baseSumH / K;
+                double maxJoinGap = Math.Max(TickSize * 4.0, avgZoneHeight * 0.35);
+
+                // Expandir la pila contigua para incluir todas las zonas vivas adyacentes que se solapen con [lo, hi]
+                bool expanded = true;
+                while (expanded)
+                {
+                    expanded = false;
+                    if (i0 > 0)
+                    {
+                        Zone prev = vivas[i0 - 1];
+                        double pLo = Math.Min(prev.Lower, prev.Upper);
+                        double pHi = Math.Max(prev.Lower, prev.Upper);
+                        if (pHi >= lo - maxJoinGap && (Math.Max(hi, pHi) - Math.Min(lo, pLo)) <= Math.Max(88.0 * TickSize, escalaVolTicks * 3.2 * TickSize))
+                        {
+                            lo = Math.Min(lo, pLo);
+                            hi = Math.Max(hi, pHi);
+                            i0--;
+                            expanded = true;
+                        }
+                    }
+                    if (i1 + 1 < vivas.Count)
+                    {
+                        Zone next = vivas[i1 + 1];
+                        double nLo = Math.Min(next.Lower, next.Upper);
+                        double nHi = Math.Max(next.Lower, next.Upper);
+                        if (nLo <= hi + maxJoinGap && (Math.Max(hi, nHi) - Math.Min(lo, nLo)) <= Math.Max(88.0 * TickSize, escalaVolTicks * 3.2 * TickSize))
+                        {
+                            lo = Math.Min(lo, nLo);
+                            hi = Math.Max(hi, nHi);
+                            i1++;
+                            expanded = true;
+                        }
+                    }
+                }
+
+                // Sumar todas las zonas vivas que participan o se solapan en la banda [lo, hi]
                 int mTotal = 0;
-                double totalBandVol = 0, totalWeightedMid = 0;
+                double sumH = 0, totalBandVol = 0, totalWeightedMid = 0;
                 for (int j = 0; j < vivas.Count; j++)
                 {
                     Zone w = vivas[j];
                     double wLo = Math.Min(w.Lower, w.Upper);
                     double wHi = Math.Max(w.Lower, w.Upper);
                     double wMid = (wLo + wHi) * 0.5;
-                    if (wMid >= lo && wMid <= hi)
+                    double ov = Math.Min(hi, wHi) - Math.Max(lo, wLo);
+                    if ((j >= i0 && j <= i1) || (wMid >= lo && wMid <= hi) || ov >= TickSize * 2.0)
                     {
                         mTotal++;
+                        sumH += Math.Max(TickSize * 2.0, wHi - wLo);
                         double v = Math.Max(1.0, w.TotalVol);
                         totalBandVol += v;
                         totalWeightedMid += wMid * v;
                     }
                 }
-                if (mTotal < K) mTotal = K;
+                if (mTotal < K) continue;
 
-                double spanPrice = Math.Max(TickSize, hi - lo);
+                double spanPrice = Math.Max(TickSize * 2.0, hi - lo);
                 double spanTicks = spanPrice / TickSize;
-                // Exigir confluencia real: la suma de alturas de las zonas debe empaquetarse con densidad real
-                double packing = sumH / spanPrice;
-                if (packing < 0.85 && spanTicks > escalaVolTicks * 1.5) continue;
+                double maxAllowedTicks = Math.Max(88.0, escalaVolTicks * 3.2);
+                if (spanTicks > maxAllowedTicks) continue;
 
-                double anchoNorm = spanTicks / Math.Max(4.0, escalaVolTicks);
-                double bonusZonas = Math.Sqrt((double)mTotal / K);
+                // Densidad real de solapamiento (packing = suma de alturas individuales / altura total de la pila)
+                double packing = sumH / spanPrice;
+                if (packing < 0.70) continue;
+
+                double avgZoneTicks = Math.Max(6.0, (sumH / mTotal) / TickSize);
+                // Paso por zona normalizado por la altura media de las zonas que componen el cluster (no penaliza zonas de 4-6 pts)
+                double pasoNorm = (spanTicks / mTotal) / avgZoneTicks;
+                double gapLibreTicks = Math.Max(0.0, spanPrice - sumH * 0.75) / TickSize;
+                double gapNorm = (gapLibreTicks / mTotal) / avgZoneTicks;
+
+                double bonusZonas = Math.Pow((double)mTotal / K, 0.80);
+                double bonusPack = Math.Sqrt(Math.Max(0.6, packing));
                 double volRatio = (totalBandVol / mTotal) / Math.Max(10.0, escalaVolZonaMean);
                 double bonusVol = 1.0 + 0.15 * Math.Min(3.0, volRatio);
-                double score = anchoNorm / (bonusZonas * bonusVol);
+                double score = (pasoNorm + 0.65 * gapNorm) / (bonusZonas * bonusPack * bonusVol);
 
                 if (score < mejorScore)
                 {
@@ -792,6 +840,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     bestLo = lo;
                     bestHi = hi;
                     bestCount = mTotal;
+                    bestPacking = packing;
                     bestPoc = totalBandVol > 0 ? (totalWeightedMid / totalBandVol) : ((lo + hi) * 0.5);
                 }
             }
@@ -812,15 +861,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
             }
 
-            // Registrar candidato en la distribución histórica causal
-            AgregarHistoriaAcotada(histScoreCluster, mejorScore);
-
             if (activoSolapado != null)
             {
-                if (bestCount > activoSolapado.ZoneCount || mejorScore < activoSolapado.Score)
+                if (bestCount > activoSolapado.ZoneCount || mejorScore < activoSolapado.Score || bestLo < activoSolapado.Lower || bestHi > activoSolapado.Upper)
                 {
                     activoSolapado.Lower = Math.Min(activoSolapado.Lower, bestLo);
                     activoSolapado.Upper = Math.Max(activoSolapado.Upper, bestHi);
+                    activoSolapado.PocPrice = bestPoc;
                     activoSolapado.WidthTicks = (activoSolapado.Upper - activoSolapado.Lower) / TickSize;
                     activoSolapado.VisualEndBar = Math.Max(activoSolapado.VisualEndBar, detectBar + Math.Max(10, PctExtensionBars));
                     activoSolapado.ZoneCount = Math.Max(activoSolapado.ZoneCount, bestCount);
@@ -830,13 +877,23 @@ namespace NinjaTrader.NinjaScript.Indicators
                 return;
             }
 
-            int nHist = histScoreCluster.Count;
-            if (nHist < Math.Max(10, PctMinHistoria)) return;
+            // Registrar en la historia sólo candidatos de formaciones distintas (evita inflar nHist con cada zona repetida del mismo cluster)
+            AgregarHistoriaAcotada(histScoreCluster, mejorScore);
 
-            double fracSesion = Math.Max(0.2, ClustersPorSesion) * Math.Max(1, sesionesVistas) / nHist;
-            double pctEfectivo = Math.Min((double)PctAngosto, 100.0 * fracSesion);
-            double umbral = Percentil(histScoreCluster, Math.Max(1.0, pctEfectivo));
-            if (mejorScore > umbral) return;
+            int nHist = histScoreCluster.Count;
+            bool altaConfluenciaDirecta = (bestCount >= K + 1 && bestPacking >= 1.35) || (bestCount >= K && bestPacking >= 1.65);
+
+            if (nHist < Math.Max(6, PctMinHistoria / 2))
+            {
+                if (!altaConfluenciaDirecta) return;
+            }
+            else
+            {
+                double fracSesion = Math.Max(0.5, ClustersPorSesion) * Math.Max(1, sesionesVistas) / Math.Max(1, nHist);
+                double pctEfectivo = Math.Max((double)PctAngosto, Math.Min(35.0, 100.0 * fracSesion));
+                double umbral = Percentil(histScoreCluster, Math.Max(5.0, pctEfectivo));
+                if (mejorScore > umbral && !altaConfluenciaDirecta) return;
+            }
 
             // Confirmado en detectBar: nace en detectBar y se proyecta hacia adelante
             var nuevoCluster = new CausalCluster
@@ -1228,11 +1285,12 @@ namespace NinjaTrader.NinjaScript.Indicators
                 dxUltraEdge  = (ColorUltra    ?? Brushes.Silver).ToDxBrush(RenderTarget);       dxUltraEdge.Opacity  = opEdge;
                 dxAbsorbEdge = (ColorAbsorb   ?? Brushes.MediumPurple).ToDxBrush(RenderTarget); dxAbsorbEdge.Opacity = opEdge;
 
-                Brush cClust = ColorClusterPct ?? Brushes.Gold;
-                dxClusterFill   = cClust.ToDxBrush(RenderTarget); dxClusterFill.Opacity   = opPct;
-                dxClusterBorder = cClust.ToDxBrush(RenderTarget); dxClusterBorder.Opacity = Math.Min(0.92f, opPct * 3.0f);
-                dxClusterAccent = cClust.ToDxBrush(RenderTarget); dxClusterAccent.Opacity = 0.92f;
-                dxClusterText   = cClust.ToDxBrush(RenderTarget); dxClusterText.Opacity   = 0.95f;
+                Brush cClust = ColorClusterPct ?? Brushes.DarkOrange;
+                Brush cClustEdge = (cClust == Brushes.Gold) ? Brushes.DarkOrange : cClust;
+                dxClusterFill   = cClust.ToDxBrush(RenderTarget);     dxClusterFill.Opacity   = opPct;
+                dxClusterBorder = cClustEdge.ToDxBrush(RenderTarget); dxClusterBorder.Opacity = Math.Min(0.95f, opPct * 3.4f);
+                dxClusterAccent = cClustEdge.ToDxBrush(RenderTarget); dxClusterAccent.Opacity = 0.95f;
+                dxClusterText   = cClustEdge.ToDxBrush(RenderTarget); dxClusterText.Opacity   = 0.98f;
 
                 Brush cExp = ColorVacioPct ?? Brushes.DeepSkyBlue;
                 dxExpFill   = cExp.ToDxBrush(RenderTarget); dxExpFill.Opacity   = Math.Max(0.03f, opPct * 0.85f);
