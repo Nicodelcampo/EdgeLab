@@ -25,7 +25,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (3)
+## PALANCA_DE_DISENO (4)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -39,6 +39,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ, ES, YM, GC; 2025-07 → 2026-03, horario regular
   - Siguiente: Paso INFO (rebote e imán contra control) con las definiciones elegidas en NQ y ES; no usar la definición de 4 zonas para P&L.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_E0.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_E0B.md`
+- **Antes de lanzar una indagación por rasgos/estratos: correrla sobre ruido puro (0 seleccionadas), cortes sin colapso por empates, réplica con la misma función de celda y un caso a mano por rasgo** (`F-CHECKLIST-INDAGACION-RASGOS`, 2026-11-10, sesion)
+  - Efecto: En HFT-RUPTURA, tres versiones del kernel tenían errores de medición encontrados antes de ver resultados: terciles colapsados en rasgos discretos, réplica que probaba otra celda, y una regla de selección que elegía 3 de 69 celdas sobre una caminata al azar (habría gastado la única réplica en ruido).
+  - Dónde: Toda indagación exploratoria que estratifica eventos por rasgos y elige reglas para confirmar
+  - Siguiente: Aplicar la lista K10–K18 (checklist D.12) en cada pre-registro de indagación; reutilizar hft_ruptura.estrato / diagnostico_estratos / marginales en vez de reescribirlos.
+  - Evidencia: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`, `docs/research/hft_clusters_u1_20261110/PREREGISTRO_RUPTURA.md`, `tests/research/test_hft_ruptura.py`
 - **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
   - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
   - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ

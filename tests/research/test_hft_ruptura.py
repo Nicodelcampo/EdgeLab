@@ -41,6 +41,7 @@ def test_seleccion_mecanica():
          dict(base, rasgo="c", rompe_real=0.09, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": -0.1}),  # inconsistente
          dict(base, rasgo="e", rompe_real=0.085, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": -0.2},
               n_por_activo={"NQ": 400, "ES": 40}),                                                                   # ES chico: no cuenta
+         dict(base, rasgo="g", rompe_real=0.30, dif_vs_control=0.1, meses_positivos=8, por_activo={"NQ": 0.3}, nominada_bh=False),  # no pasa el FDR
          dict(base, rasgo="d", rompe_real=0.05, dif_vs_control=0.1, meses_positivos=7, por_activo={"NQ": 0.05})]      # no paga
     assert [(m["rasgo"], m["tercil"]) for m in H.seleccionar(M)] == [("a", 0), ("e", 0)]
 
@@ -81,3 +82,54 @@ def test_salida_desde_el_ultimo_tick_dentro_y_eficiencia():
 
 def test_minuto_desde_la_apertura_de_la_sesion():
     assert list(H._minutos_et([1_700_000_000 * S])) == [1393]                      # 17:13 ET = 1.393 min desde las 18:00 ET del día anterior
+
+
+def _tabla_ruido(dias=24):
+    F = []
+    for inst in ("NQ", "ES"):
+        for d in range(dias):
+            rng = np.random.default_rng(d + (0 if inst == "NQ" else 99)); n = 40000
+            ts = 1_700_000_000 * S + d * 86400 * S + np.arange(n) * S; px = 20000 + np.cumsum(rng.normal(0, 1.5, n)); ks = rng.integers(3000, 35000, 12)
+            C = pd.DataFrame(dict(t_ns=ts[ks], lo=px[ks] - 4, hi=px[ks] + 4, n_zonas=rng.integers(8, 14, 12), packing=rng.random(12),
+                                  net_dir=rng.integers(-1, 2, 12)))
+            F += H.ruptura_del_dia(inst, 20250801 + (d % 8) * 100, ts, px, np.ones(n), C, 0.25, 1.5455)
+    return pd.DataFrame(F)
+
+
+def test_ruido_puro_no_selecciona_nada_y_la_replica_reproduce_la_celda():
+    """Preflight (errores 2, 7 y 15): sobre una caminata al azar la regla mecánica no elige nada, ningún rasgo queda sin dato y la
+    celda que congelaría la réplica contiene exactamente los mismos eventos que la de la indagación."""
+    T = _tabla_ruido(); M = H.marginales(T, n_boot=200)
+    assert H.seleccionar(M) == []
+    E = H.diagnostico_estratos(T); assert not any(v.get("sin_dato") for k, v in E.items() if k not in ("n_zonas", "packing", "flujo_alineado"))
+    for m in M[:10]:
+        e = H.estrato(T, m["rasgo"], {i: tuple(c) for i, c in m["cortes_por_activo"].items()}) == m["tercil"]
+        assert int((e & (T.placebo == 0).to_numpy()).sum()) == m["n_real"]
+    assert T[T.placebo == 1].flujo_alineado.isna().all()                         # el control no tiene zonas
+
+
+def test_evento_en_los_bordes_del_bloque_no_rompe():
+    """O18: un cluster detectado en el primer tick y otro a 3 ticks del final no rompen el día."""
+    ts, px, v = _sesion(n=6000)
+    C = pd.DataFrame(dict(t_ns=[int(ts[0]), int(ts[-3])], lo=[px[0] - 4, px[-3] - 4], hi=[px[0] + 4, px[-3] + 4], n_zonas=[8, 8],
+                          packing=[1.0, 1.0], net_dir=[1, 1]))
+    H.ruptura_del_dia("NQ", 20250805, ts, px, v, C, 0.25, 1.5455)
+
+
+def test_friccion_del_kernel_es_la_canonica():
+    """Costos sólo de edgelab/costos.py: la tabla escrita en el kernel no puede divergir de la canónica."""
+    import ast
+    from pathlib import Path
+    from edgelab import costos
+    src = (Path(__file__).resolve().parents[2] / "tools/kaggle_grilla/hft_clusters_info_main.py").read_text(encoding="utf-8")
+    F = ast.literal_eval(src.split("FRICCION = ", 1)[1].split("\n", 1)[0].split("#")[0].strip())
+    assert all(abs(F[i] - costos.friccion_rt_puntos(i)) < 1e-4 for i in F)
+
+
+def test_traer_rechaza_resultados_de_codigo_no_vigente():
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import hft_clusters_info as K
+    assert K.no_vigente("ruptura", dict(modulos={"edgelab/research/hft_ruptura.py": "0" * 64})) == ["edgelab/research/hft_ruptura.py"]
+    assert K.no_vigente("contexto", dict(modulos={"edgelab/research/hft_ruptura.py": "0" * 64})) == []   # no lo usa

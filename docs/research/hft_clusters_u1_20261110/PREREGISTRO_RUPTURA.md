@@ -100,3 +100,18 @@ Mejoras de medición («expansión limpia» en tres partes, todas causales):
 Pruebas: 23 rasgos × 3 = **69** celdas exploratorias (+6, `hft_ruptura/indaga_c`). Selección (§2) y réplica (§3) sin cambios.
 `n_zonas`, `packing` y `flujo_alineado` no existen en el control: su comparación contra control queda vacía y la regla de selección
 los evalúa sólo por umbral, meses y activos.
+
+## 9. Revisión R2 (2026-11-10, segunda iteración pedida por Nico, ANTES de ver resultados)
+La versión 3 no llegó a lanzarse; se lanza la versión 4 con estos cambios (registrados como errores K10–K18 en
+`docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`):
+1. **Barra estadística en la selección (cambio de la regla de §2, más estricto):** el chequeo de ruido puro (preflight, error 7)
+   mostró que la regla mecánica elegía 3 de 69 celdas sobre una caminata al azar. Ahora una celda sólo puede elegirse si además está
+   **nominada por BH q 0,10 entre las 69 celdas** (H0: ruptura media ≤ 0; error estándar por bootstrap de sesiones). Es la misma
+   exigencia que el proyecto pone a todo DESC (decisión del 2026-10-24). Si ninguna celda se nomina, la indagación se informa como
+   pistas (INDAGAR) y la réplica no se gasta.
+2. `tendencia_alineada` pasa de signo (±1) a magnitud: avance de la sesión a favor de la llegada en unidades de X (terciles).
+3. Salida del kernel: `estratos` (fracción de eventos por estrato y activo; < 10 % queda marcado) y, por celda, `ic90_real`,
+   `p_real`, `nominada_bh`, `n_por_activo`.
+4. `traer` rechaza una salida cuyo código (SHA de los módulos que usa el modo) no es el vigente (`*.NO_VIGENTE.*`).
+5. Test de costos: la fricción escrita en el kernel debe coincidir con `edgelab/costos.py`.
+Pruebas: sin cambio (69 celdas exploratorias + 3 de réplica).

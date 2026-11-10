@@ -82,12 +82,33 @@ def recomendaciones(modo: str) -> str:
     return out.relative_to(ROOT)
 
 
+USA = {"base": MODULOS[:5], "rebotes": ["edgelab/research/hft_rebotes.py"], "contexto": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py"],
+       "ruptura": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py"]}
+
+
+def no_vigente(modo: str, res: dict) -> list:
+    """Módulos que el modo USA y que cambiaron desde que se construyó el kernel (`preflight.codigo_vigente` restringido al modo:
+    un cambio en un módulo que el modo no importa no invalida la corrida)."""
+    from edgelab.research.preflight import codigo_vigente
+    usa = set(USA["base"] + USA.get(modo.replace("_rep", ""), []))
+    return [m for m in codigo_vigente(res, ROOT) if m in usa]
+
+
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--")]; slug = lambda m: f"nicolasbuttaro/hft-clusters-info-{m}-20261110"
     k = lambda *x: subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), *x], capture_output=True, text=True).stdout
     if a[0] == "traer":
         for ext in ("json", "csv"): print(k("output", "--slug", slug(a[1]), "--file", f"HFTC_{a[1]}.{ext}", "--out", str(DIR / f"HFTC_{a[1]}.{ext}")).strip())
-        if (DIR / f"HFTC_{a[1]}.json").exists() and a[1] in ("info", "rebotes", "contexto"): print("escrito", recomendaciones(a[1]))
+        js = DIR / f"HFTC_{a[1]}.json"
+        if js.exists():                                                  # error 23 de preflight: ¿corrió con el código vigente?
+            viejo = no_vigente(a[1], json.loads(js.read_text(encoding="utf-8")))
+            if viejo:
+                for ext in ("json", "csv"):
+                    f = DIR / f"HFTC_{a[1]}.{ext}"
+                    if f.exists(): f.rename(DIR / f"HFTC_{a[1]}.NO_VIGENTE.{ext}")
+                raise SystemExit(f"NO VIGENTE: el resultado bajado corrió con otra versión de {viejo} (¿versión anterior del kernel o todavía "
+                                 "corriendo?). Se renombró a HFTC_<modo>.NO_VIGENTE.*: no se interpreta. Esperar la versión nueva.")
+        if js.exists() and a[1] in ("info", "rebotes", "contexto"): print("escrito", recomendaciones(a[1]))
         return
     if a[0] == "recomendar": print("escrito", recomendaciones(a[1])); return
     out = construir(a[0]); print("construido", out.relative_to(ROOT))

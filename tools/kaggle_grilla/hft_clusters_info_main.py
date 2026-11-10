@@ -66,6 +66,7 @@ def main():
         R0 = T[T.placebo == 0]; res["rasgos"] = RU.RASGOS
         res["global"] = dict(rompe_real=float(R0.rompe.mean()), rompe_control=float(T[T.placebo == 1].rompe.mean()),
                              por_activo_mes={i: {str(m): float(v) for m, v in h.assign(m=h.fecha // 100).groupby("m").rompe.mean().items()} for i, h in R0.groupby("inst")})
+        res["estratos"] = RU.diagnostico_estratos(T)
         res["marginales"] = RU.marginales(T); res["seleccion"] = RU.seleccionar(res["marginales"])
     elif MODO == "ruptura_rep" and len(T):
         res["reglas"] = []

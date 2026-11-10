@@ -9,13 +9,15 @@ anteriores o iguales al toque, salvo los desenlaces) y varios desenlaces. Signo:
 Rasgos (familias):
   aproximación   segundos de los últimos X/2, excursión previa (en X), segundos afuera
   cluster        edad, ancho (en X), zonas, packing, alineación del flujo de sus zonas con la dirección de llegada, nº de visita
-  sesión         minuto del día (ET), tendencia de la sesión respecto de la llegada, distancia al extremo de la sesión (en X),
+  sesión         minutos desde la apertura (18:00 ET), avance de la sesión a favor de la llegada (en X), distancia al extremo de la sesión (en X),
                  rango de los últimos 30 min (en X)
   toque          volumen de los 30 s anteriores al toque contra la mediana de la sesión, desequilibrio (tick rule) en la dirección
                  de llegada en esos 30 s
 Desenlaces: carrera ±X, ±X/2 y ±2X (+1 = rompe), segundos hasta resolver ±X, máximo avance a favor de la ruptura en 15 min (en X).
 """
 from __future__ import annotations
+
+from statistics import NormalDist
 
 import numpy as np
 import pandas as pd
@@ -32,7 +34,7 @@ RASGOS = ["aprox_s", "excursion_x", "afuera_s", "edad_s", "ancho_x", "n_zonas", 
           "salida_eficiencia", "pasada_s"]
 # Estratos fijos para rasgos discretos (con cuantiles, los empates colapsaban todo en un tercil): (corte_1, corte_2), estrato =
 # (v > corte_1) + (v > corte_2). El resto usa los terciles de los reales de cada activo con la misma regla.
-CORTES_FIJOS = {"picos_dentro": (0.5, 1.5), "picos_sin_tomar": (0.5, 1.5), "tendencia_alineada": (-0.5, 0.5),
+CORTES_FIJOS = {"picos_dentro": (0.5, 1.5), "picos_sin_tomar": (0.5, 1.5),
                 "flujo_alineado": (-0.5, 0.5), "visita": (2.5, 3.5)}
 W_PICO = 3                                                         # pico = pivote de 3 velas de 1 min por lado (misma definición que espejo_picos)
 
@@ -71,7 +73,7 @@ def rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, ses_ini, c, n_
     return dict(aprox_s=aprox_s, excursion_x=float(dist.max() / X) if dist.size else 0.0, afuera_s=float((t - ts[j_sal]) / NS),
                 edad_s=float((t - c["t_ns"]) / NS), ancho_x=float((c["hi"] - c["lo"]) / X), n_zonas=float(c.get("n_zonas", np.nan)),
                 packing=float(c.get("packing", np.nan)), flujo_alineado=float(np.sign(c.get("net_dir", np.nan)) * llegada), visita=float(n_visita),
-                minuto_et=float(minuto_et), tendencia_alineada=float(np.sign(px[j] - px[ses_ini]) * llegada),
+                minuto_et=float(minuto_et), tendencia_alineada=float((px[j] - px[ses_ini]) / X * llegada),
                 dist_extremo_x=float(abs(px[j] - extremo) / X), rango30_x=float((px[w1800].max() - px[w1800].min()) / X),
                 vol30_rel=float(v30 / med30) if med30 and med30 > 0 else np.nan, deseq30=float(s30 / v30 * llegada) if v30 > 0 else 0.0)
 
@@ -201,6 +203,20 @@ def estrato(T, r, cortes):
     return out
 
 
+def diagnostico_estratos(T: pd.DataFrame, rasgos=RASGOS) -> dict:
+    """Preflight de cortes (error 2 de `preflight`): fracción de eventos reales por estrato y activo. Un estrato con < 10 % de los
+    eventos de un activo queda marcado: esa celda casi no tiene muestra y su lectura se informa como tal."""
+    out = {}; R = T[T.placebo == 0]
+    for r in rasgos:
+        if r not in R or R[r].notna().sum() == 0: out[r] = dict(sin_dato=True); continue
+        e = estrato(R, r, cortes_de(T, r)); d = {}
+        for i in R.inst.unique():
+            m = (R.inst.to_numpy() == i) & (e >= 0); n = max(int(m.sum()), 1)
+            d[i] = [round(float((e[m] == k).sum()) / n, 3) for k in (0, 1, 2)]
+        out[r] = dict(fracciones=d, degenerado=any(min(v) < 0.10 for v in d.values()), sin_dato_frac=round(float(R[r].isna().mean()), 3))
+    return out
+
+
 def marginales(T: pd.DataFrame, rasgos=RASGOS, n_boot: int = 2000) -> list:
     """Por rasgo: terciles definidos en los eventos reales de cada activo; por tercil, desenlace medio de ruptura (real y control),
     diferencia real − control y estabilidad mensual del tercil extremo. Exploratorio: sin decisión, alimenta la regla de selección."""
@@ -215,14 +231,29 @@ def marginales(T: pd.DataFrame, rasgos=RASGOS, n_boot: int = 2000) -> list:
             if (S.placebo == 0).sum() < 100: continue
             reales = S[S.placebo == 0]
             c = contraste(S.assign(resultado=S.rompe), n_boot=n_boot) if (S.placebo == 1).sum() >= 30 else {}
-            mes = reales.assign(m=reales.fecha // 100).groupby("m").rompe.mean()
+            mes = reales.assign(m=reales.fecha // 100).groupby("m").rompe.mean(); mu, se = _media_por_sesion(reales.rompe, reales, n_boot)
             out.append(dict(rasgo=r, tercil=t, cortes_por_activo={i: [float(x) for x in v] for i, v in cortes.items()}, n_real=int(len(reales)),
                             rompe_real=float(reales.rompe.mean()), rompe_media=float(reales.rompe_media.mean()), rompe_doble=float(reales.rompe_doble.mean()),
                             avance15=float(reales.avance15_x.mean()), dif_vs_control=c.get("diferencia"), ic90_vs_control=c.get("ic90"),
-                            meses_positivos=int((mes > 0).sum()), meses=int(len(mes)),
+                            meses_positivos=int((mes > 0).sum()), meses=int(len(mes)), se_real=se,
+                            ic90_real=[mu - 1.645 * se, mu + 1.645 * se] if np.isfinite(se) else None,
+                            p_real=float(1 - NormalDist().cdf(mu / se)) if se and np.isfinite(se) and se > 0 else 1.0,
                             por_activo={i: float(h.rompe.mean()) for i, h in reales.groupby("inst")},
                             n_por_activo={i: int(len(h)) for i, h in reales.groupby("inst")}))
+    ps = sorted((m["p_real"], k) for k, m in enumerate(out)); n = len(ps)        # BH q 0,10 entre TODAS las celdas (H0: ruptura ≤ 0)
+    kmax = max([i + 1 for i, (p, _) in enumerate(ps) if p <= 0.10 * (i + 1) / max(n, 1)] or [0])
+    for _, k in ps[:kmax]: out[k]["nominada_bh"] = True
+    for m in out: m.setdefault("nominada_bh", False)
     return out
+
+
+def _media_por_sesion(x, D, n_boot):
+    """Media y error estándar por bootstrap de sesiones (inst, fecha): los eventos de una misma sesión no son independientes."""
+    g = pd.DataFrame(dict(x=x.to_numpy(float), k=D.inst.astype(str) + D.fecha.astype(str))).groupby("k").x.agg(["sum", "count"]).to_numpy(float)
+    mu = float(g[:, 0].sum() / g[:, 1].sum())
+    if len(g) < 5: return mu, np.nan
+    rng = np.random.default_rng(7); idx = rng.integers(0, len(g), (n_boot, len(g)))
+    b = g[idx, 0].sum(1) / g[idx, 1].sum(1); return mu, float(b.std(ddof=1))
 
 
 def _activos_ok(m, n_min: int = 100):
@@ -232,10 +263,10 @@ def _activos_ok(m, n_min: int = 100):
 
 
 def seleccionar(M: list, max_reglas: int = 3) -> list:
-    """Regla MECÁNICA (pre-registrada) para pasar de la indagación a la confirmación: celdas rasgo × tercil con ruptura real media
-    ≥ 0,08 (paga la fricción), mejor que el control, ≥ 5 de 8 meses positivos y mismo signo en NQ y ES (o sólo NQ si ES < 100
+    """Regla MECÁNICA (pre-registrada; R2: más nominación BH q 0,10 entre todas las celdas) para pasar de la indagación a la
+    confirmación: celdas rasgo × tercil nominadas, con ruptura real media ≥ 0,08 (paga la fricción), mejor que el control, ≥ 5 de 8 meses positivos y mismo signo en NQ y ES (o sólo NQ si ES < 100
     eventos). Se ordenan por ruptura media y se toman hasta 3, de rasgos distintos."""
-    ok = [m for m in M if m["rompe_real"] >= 0.08 and (m["dif_vs_control"] is None or m["dif_vs_control"] > 0)
+    ok = [m for m in M if m.get("nominada_bh", True) and m["rompe_real"] >= 0.08 and (m["dif_vs_control"] is None or m["dif_vs_control"] > 0)
           and m["meses_positivos"] >= max(5, int(0.6 * m["meses"])) and _activos_ok(m)]
     out, vistos = [], set()
     for m in sorted(ok, key=lambda m: -m["rompe_real"]):
