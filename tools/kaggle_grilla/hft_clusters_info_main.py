@@ -25,17 +25,18 @@ def main():
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
-    for inst in (INSTRUMENTOS if MODO == "e0" else [i for i in INSTRUMENTOS if i in DEFS]):
+    ZN, CL = (H.ZONAS, H.CLUSTERS) if MODO != "e0b" else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
+    for inst in (INSTRUMENTOS if MODO in ("e0", "e0b") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
         try: bloques = list(F.bloques_futuro(inst, d0, d1, ent))             # generador: la falta de archivo salta al iterar
         except (IndexError, ValueError): log(f"{inst}: sin datos"); continue
         for B in bloques:
             if len(B) < 1000: continue
             fecha = int(B.sesion.iloc[0]); ts, px = B.ts_ns.to_numpy(), B.px.to_numpy()
-            D = H.clusters_del_dia(ts, px, B.vol.to_numpy(), B.sesion.to_numpy(), tk); n += 1
-            if MODO == "e0":
-                for zk in H.ZONAS:
-                    for ck in H.CLUSTERS: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
+            D = H.clusters_del_dia(ts, px, B.vol.to_numpy(), B.sesion.to_numpy(), tk, ZN, CL, H.barrera(FRICCION[inst], tk)); n += 1
+            if MODO in ("e0", "e0b"):
+                for zk in ZN:
+                    for ck in CL: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
             else:
                 C = D.get(tuple(DEFS[inst]))
                 if C is not None:
@@ -43,7 +44,9 @@ def main():
                     filas += [dict(f, prueba="iman") for f in H.iman_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])]
         log(f"{inst}: {n} sesiones, {len(filas)} filas acumuladas")
     T = pd.DataFrame(filas); T.to_csv(f"HFTC_{MODO}.csv", index=False)
-    if MODO == "e0" and len(T):
+    if MODO == "e0b" and len(T):
+        res["equilibrio"] = H.elegir_equilibrio(T, FRICCION)
+    elif MODO == "e0" and len(T):
         g = T.groupby(["inst", "zona", "cluster"])
         res["definiciones"] = [dict(inst=k[0], zona=k[1], cluster=k[2], sesiones=int(len(h)), clusters_por_sesion=float(h.n.mean()),
                                     ancho_pts_mediano=float(h.ancho_pts_med.median()) if "ancho_pts_med" in h else None,
@@ -59,7 +62,7 @@ def main():
                 z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
                 r["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
             res[prueba] = r
-    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps(res.get("eleccion") or {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res}))
+    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res}))
 
 
 if __name__ == "__main__":

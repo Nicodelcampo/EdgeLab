@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """HFT-CLUSTERS-INFO: construir y lanzar los kernels (docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md).
   python tools/hft_clusters_info.py e0                     # paso sin retornos (4 activos, DESC)
+  python tools/hft_clusters_info.py e0b                    # E0-b sin retornos: 40 definiciones (más zonas, ancho mínimo), equilibrio potencia/fricción
   python tools/hft_clusters_info.py info                   # paso de información en DESC con la definición que eligió el E0
   python tools/hft_clusters_info.py rep                    # réplica abr → sep (sólo si el paso info pasó; una vez)
   python tools/hft_clusters_info.py traer e0|info|rep      # baja el resultado a la carpeta de la familia
@@ -20,7 +21,7 @@ DATASET = "nicolasbuttaro/edgelab-liquid-ticks-20261014"
 def construir(modo: str) -> Path:
     from construir_kernel import construir as K
     src = (ROOT / "tools/kaggle_grilla/hft_clusters_info_main.py").read_text(encoding="utf-8").replace('MODO = "e0"', f'MODO = "{modo}"', 1)
-    if modo != "e0":
+    if modo not in ("e0", "e0b"):
         el = json.loads((DIR / "HFTC_e0.json").read_text(encoding="utf-8"))["eleccion"]
         if not el: raise SystemExit("el E0 no eligió ninguna definición: el paso de información no se corre")
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps({i: [v["zona"], v["cluster"]] for i, v in sorted(el.items())}), 1)

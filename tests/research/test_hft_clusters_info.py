@@ -85,3 +85,11 @@ def test_iman_vuelve_o_huye_y_el_control_temporal_tiene_la_misma_condicion():
     F = pd.DataFrame(H.iman_del_dia("NQ", 20250805, ts, px, C, 0.25, 1.5455))
     assert (F.placebo == 0).sum() <= 1 and (F.placebo == 1).sum() >= 2 and set(F.resultado) <= {-1, 0, 1}
     assert (np.abs(F[F.placebo == 1].t_ns - int(ts[8000])) >= H.MARGEN_S * S).all()
+
+
+def test_equilibrio_prefiere_el_punto_medio_entre_potencia_y_friccion():
+    f = lambda ck, n, ancho: [dict(inst="NQ", fecha=20250800 + 100 * m + d, zona="Z_CERT", cluster=ck, n=n, ancho_pts_med=ancho) for m in range(4) for d in range(1, 21)]
+    E0 = pd.DataFrame(f("muchas_angostas", 30, 3.0) + f("medio", 4, 16.0) + f("pocas_anchas", 0.05, 40.0))
+    r = H.elegir_equilibrio(E0, {"NQ": 1.5455})["NQ"]
+    assert r["elegida"]["cluster"] == "medio" and len(r["tabla"]) == 3
+    assert abs(r["elegida"]["borde_detectable"] - (2.49 / 320 ** 0.5 + 1.5455 / 16.0)) < 1e-9

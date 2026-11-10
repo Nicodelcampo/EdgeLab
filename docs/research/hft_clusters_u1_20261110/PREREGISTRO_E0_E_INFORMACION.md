@@ -95,3 +95,9 @@ regla mecánica de §8 (lo demás queda igual):
 - **Elegibles:** CV mensual ≤ 0,5. Se elige por activo la de menor `borde_detectable`; se publica la tabla completa de las 40.
 - **Límite declarado:** N cuenta clusters, no toques (no todo cluster da un evento de rebote o de imán); el criterio ordena
   definiciones, no predice la potencia real, que se informa con el MDE del resultado.
+
+### 8.2 Límites del E0-b tal como se implementó (2026-11-10, al lanzarlo)
+- Packing fijo 0,85 y zona `Z_CERT` en las 40 definiciones (`hft_clusters_info.CLUSTERS_B`).
+- El ancho mínimo se aplica DESPUÉS de detectar: como la geometría queda congelada al nacer y un cluster vivo bloquea otro solapado
+  durante 1.800 s, un cluster que nace angosto y después se ensancha no cuenta como ancho. El filtro subestima los clusters anchos.
+- Elección: `hft_clusters_info.elegir_equilibrio` (criterio de §8.1). Kernel `hft-clusters-info-e0b-20261110`. Sin retornos.
