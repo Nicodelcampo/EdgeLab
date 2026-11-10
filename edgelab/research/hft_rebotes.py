@@ -67,8 +67,8 @@ def _aprox_seg(t, dist, ent, umbral):
 
 
 def eventos(t, p, v, lo, hi, X, tick):
-    """{definición: (índice del evento, precio de referencia, lado)} — a lo sumo un evento por definición. `lado` = +1 si el rebote es
-    hacia arriba (el cluster hace de soporte)."""
+    """{definición: (índice del evento, precio de referencia, lado, índice de la salida previa)} — a lo sumo un evento por definición.
+    `lado` = +1 si el rebote es hacia arriba (el cluster hace de soporte); la salida previa marca el comienzo de la excursión."""
     V = visitas(t, p, v, lo, hi, X / 4); out = {}
     if not V: return out
     dist = np.maximum(np.maximum(lo - p, p - hi), 0.0); ancho = hi - lo
@@ -83,18 +83,18 @@ def eventos(t, p, v, lo, hi, X, tick):
         if k == 0: continue
         ref = (hi if r["lado_regreso"] > 0 else lo); lado = r["lado_regreso"]; i = r["ini"]
         ex, ta = r["excursion"], r["t_afuera"]
-        if "D0_BASE" not in out and ex >= X / 2: out["D0_BASE"] = (i, ref, lado)
-        if "D1_FRESCO_LEJANO" not in out and ex >= X and k <= 3 and r["seg_dentro_antes"] <= 600: out["D1_FRESCO_LEJANO"] = (i, ref, lado)
+        if "D0_BASE" not in out and ex >= X / 2: out["D0_BASE"] = (i, ref, lado, r["_ent"][0])
+        if "D1_FRESCO_LEJANO" not in out and ex >= X and k <= 3 and r["seg_dentro_antes"] <= 600: out["D1_FRESCO_LEJANO"] = (i, ref, lado, r["_ent"][0])
         if t[i] > VENTANA_NACIMIENTO_S and ex >= X:
-            if acept and "D2_ACEPTADO_Y_ABANDONADO" not in out: out["D2_ACEPTADO_Y_ABANDONADO"] = (i, ref, lado)
-            if rech and "D3_RECHAZADO_AL_NACER" not in out: out["D3_RECHAZADO_AL_NACER"] = (i, ref, lado)
-        if "D4_MEMORIA" not in out and ex >= X and ta >= 900: out["D4_MEMORIA"] = (i, ref, lado)
-        if "D5_DERIVA" not in out and ex >= X / 2 and _aprox_seg(t, dist, r["_ent"], X / 2) >= 120: out["D5_DERIVA"] = (i, ref, lado)
+            if acept and "D2_ACEPTADO_Y_ABANDONADO" not in out: out["D2_ACEPTADO_Y_ABANDONADO"] = (i, ref, lado, r["_ent"][0])
+            if rech and "D3_RECHAZADO_AL_NACER" not in out: out["D3_RECHAZADO_AL_NACER"] = (i, ref, lado, r["_ent"][0])
+        if "D4_MEMORIA" not in out and ex >= X and ta >= 900: out["D4_MEMORIA"] = (i, ref, lado, r["_ent"][0])
+        if "D5_DERIVA" not in out and ex >= X / 2 and _aprox_seg(t, dist, r["_ent"], X / 2) >= 120: out["D5_DERIVA"] = (i, ref, lado, r["_ent"][0])
         if "D6_PENETRACION_FALLIDA" not in out and ex >= X / 2 and r["salio"]:
             tramo = slice(i, r["fin"] + 1); pen = float((hi - p[tramo].min()) if lado > 0 else (p[tramo].max() - lo))
             toca_lejano = bool((p[tramo] <= lo).any()) if lado > 0 else bool((p[tramo] >= hi).any())
             if r["lado_salida"] == lado and 2 * tick <= pen <= min(ancho / 2, X / 4) and not toca_lejano and t[r["fin"]] - t[i] <= 120:
-                out["D6_PENETRACION_FALLIDA"] = (r["fin"], float(p[r["fin"]]), lado)
+                out["D6_PENETRACION_FALLIDA"] = (r["fin"], float(p[r["fin"]]), lado, r["_ent"][0])
     return out
 
 
@@ -110,7 +110,7 @@ def _cluster(ts, px, vol, t_ns, lo, hi, X, tick):
     if i1 - i0 < 3: return {}
     t = (ts[i0:i1] - t_ns) / NS
     ev = eventos(t, px[i0:i1], vol[i0:i1], lo, hi, X, tick)
-    return {d: (lado, _carrera(ts, px, i0 + j, ref, lado, X)) for d, (j, ref, lado) in ev.items()}
+    return {d: (lado, _carrera(ts, px, i0 + j, ref, lado, X)) for d, (j, ref, lado, _) in ev.items()}
 
 
 def rebotes_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -> list:

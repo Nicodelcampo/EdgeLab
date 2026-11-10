@@ -47,7 +47,7 @@ def test_memoria_y_deriva():
 
 def test_penetracion_fallida_entra_en_la_salida():
     e = _ev([(102.0, 30, 15), (130.0, 60, 30), (103.5, 30, 30), (106.0, 20, 20), (140.0, 60, 30)])
-    j, ref, lado = e["D6_PENETRACION_FALLIDA"]; assert lado == 1 and ref >= HI + 0.5
+    j, ref, lado, _ = e["D6_PENETRACION_FALLIDA"]; assert lado == 1 and ref >= HI + 0.5
     e = _ev([(102.0, 30, 15), (130.0, 60, 30), (99.0, 30, 30), (106.0, 20, 20), (140.0, 60, 30)])   # toca el borde lejano
     assert "D6_PENETRACION_FALLIDA" not in e
     e = _ev([(102.0, 30, 15), (130.0, 60, 30), (104.0, 30, 30), (140.0, 60, 30)])        # toca y se va sin entrar: no es penetración

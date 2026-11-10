@@ -13,19 +13,20 @@ import pandas as pd
 
 MODO = "e0"                                                   # lo fija tools/hft_clusters_info.py al construir
 DEFS = {}                                                     # {inst: [zona, cluster]}, congelado tras el E0
+DEF_CONTEXTO = "D0_BASE"                                      # modo contexto: definición de rebote elegida por regla (hft_contexto.elegir_definicion)
 INSTRUMENTOS = ("NQ", "ES", "YM", "GC")
 DESC, REP = (20250701, 20260331), (20260401, 20260930)
 FRICCION = {"NQ": 1.5455, "ES": 0.8877, "YM": 5.052, "GC": 0.605}   # edgelab/costos.py, puntos por viaje (2026-11-10)
 
 
 def main():
-    from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB
+    from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB, hft_contexto as KX
     ent = os.environ.get("ENTRADA", "/kaggle/input"); t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     d0, d1 = REP if MODO == "rep" else DESC
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
-    ZN, CL = (H.ZONAS, H.CLUSTERS) if MODO not in ("e0b", "rebotes") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
+    ZN, CL = (H.ZONAS, H.CLUSTERS) if MODO not in ("e0b", "rebotes", "contexto") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
     for inst in (INSTRUMENTOS if MODO in ("e0", "e0b") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
         try: bloques = list(F.bloques_futuro(inst, d0, d1, ent))             # generador: la falta de archivo salta al iterar
@@ -39,7 +40,9 @@ def main():
                     for ck in CL: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
             else:
                 C = D.get(tuple(DEFS[inst]))
-                if C is not None and MODO == "rebotes":
+                if C is not None and MODO == "contexto":
+                    filas += KX.contexto_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst], DEF_CONTEXTO)
+                elif C is not None and MODO == "rebotes":
                     filas += RB.rebotes_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
                 elif C is not None:
                     filas += [dict(f, prueba="rebote") for f in H.info_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])]
@@ -56,6 +59,9 @@ def main():
                                     friccion_r_stop_ancho=float(h.friccion_r_stop_ancho.median()) if "friccion_r_stop_ancho" in h else None,
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
+    elif MODO == "contexto" and len(T):
+        res["definicion"] = DEF_CONTEXTO; res["contrastes"] = KX.CONTRASTES
+        res.update(KX.analizar(T)); res["por_activo_conteos"] = {i: {v: {str(k): int(n) for k, n in h[v].value_counts().items()} for v in KX.CONTRASTES} for i, h in T.groupby("inst")}
     elif MODO == "rebotes" and len(T):
         res["definiciones_texto"] = RB.DEFINICIONES; res["por_definicion"] = {}
         for d, Td in T.groupby("definicion"):
@@ -76,7 +82,7 @@ def main():
                 z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
                 r["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
             res[prueba] = r
-    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"nominadas": res.get("nominadas_bh_q010")} if MODO == "rebotes" else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
+    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"nominadas": res.get("nominadas_bh_q010")} if MODO in ("rebotes", "contexto") else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
 
 
 if __name__ == "__main__":

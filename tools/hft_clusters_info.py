@@ -2,6 +2,7 @@
 """HFT-CLUSTERS-INFO: construir y lanzar los kernels (docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md).
   python tools/hft_clusters_info.py e0                     # paso sin retornos (4 activos, DESC)
   python tools/hft_clusters_info.py e0b                    # E0-b sin retornos: 40 definiciones (más zonas, ancho mínimo), equilibrio potencia/fricción
+  python tools/hft_clusters_info.py contexto               # contexto de otros clusters (6 variables) sobre la definición elegida por regla
   python tools/hft_clusters_info.py rebotes                # 7 definiciones de rebote (D0–D6) con los clusters del E0-b en NQ y ES
   python tools/hft_clusters_info.py info                   # paso de información en DESC con la definición que eligió el E0
   python tools/hft_clusters_info.py rep                    # réplica abr → sep (sólo si el paso info pasó; una vez)
@@ -15,14 +16,18 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.p
 DIR = ROOT / "docs/research/hft_clusters_u1_20261110"
 MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/bridge/indicators/hftzones_nq.py",
            "edgelab/bridge/indicators/hftzones_nq_rangos_pct_v2.py",
-           "edgelab/research/hft_clusters_info.py", "edgelab/research/hft_rebotes.py"]
+           "edgelab/research/hft_clusters_info.py", "edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py"]
 DATASET = "nicolasbuttaro/edgelab-liquid-ticks-20261014"
 
 
 def construir(modo: str) -> Path:
     from construir_kernel import construir as K
     src = (ROOT / "tools/kaggle_grilla/hft_clusters_info_main.py").read_text(encoding="utf-8").replace('MODO = "e0"', f'MODO = "{modo}"', 1)
-    if modo == "rebotes":                                              # clusters del E0-b (equilibrio potencia/fricción); YM y GC fuera
+    if modo == "contexto":                                             # misma base que rebotes + la definición elegida por regla
+        from edgelab.research.hft_contexto import elegir_definicion
+        d = elegir_definicion(json.loads((DIR / "HFTC_rebotes.json").read_text(encoding="utf-8")))
+        src = src.replace('DEF_CONTEXTO = "D0_BASE"', f'DEF_CONTEXTO = "{d}"', 1); print("definición elegida para el contexto:", d)
+    if modo in ("rebotes", "contexto"):                                              # clusters del E0-b (equilibrio potencia/fricción); YM y GC fuera
         eq = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]
         el = {i: ["Z_CERT", eq[i]["elegida"]["cluster"]] for i in ("NQ", "ES") if eq.get(i, {}).get("elegida")}
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1)
