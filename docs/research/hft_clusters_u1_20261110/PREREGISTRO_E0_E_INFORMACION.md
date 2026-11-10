@@ -51,3 +51,20 @@ grande); o efecto en un solo activo que no replica.
   (período de holdout, sin P&L). Por eso acá NO se usan: sólo familia P con umbrales geométricos fijos.
 - Sin paridad contra oráculo de NinjaTrader para los clusters (sí para el detector de zonas). Resultado provisional hasta tenerla.
 - 9 meses de DESC: pocos eventos por activo; por eso se combinan 4 activos con la misma regla.
+
+## 7. Enmienda (2026-11-10, antes de tener ningún resultado): segunda hipótesis, el cluster como IMÁN / objetivo
+Pedido de Nico. El rebote (§3) mide qué pasa DESPUÉS del toque; no dice nada sobre si el precio LLEGA al cluster más que a otro nivel.
+Un nivel puede atraer y dejar pasar (buen objetivo, mala entrada) o al revés. Se mide aparte, con el mismo almacén y la misma elección
+mecánica del E0. Población: ítem (b) «alejamiento» de §1.
+- **Evento:** el precio se aleja al menos X/2 del rango del cluster dentro de 1.800 s; en ese punto está a distancia d del borde cercano.
+- **Desenlace:** +1 si vuelve a tocar el borde antes de alejarse otra d (nivel espejo); −1 si llega antes al espejo; 0 si ninguna en
+  3.600 s. Bajo paseo al azar es 50/50.
+- **Control (placebo temporal):** pseudo-clusters del mismo ancho, en la misma sesión, centrados en el precio que había 20 y 40 minutos
+  antes y después, a más de 10 minutos de todo cluster real, con el MISMO procedimiento. Así el control tiene la misma condición que
+  el real (parte del nivel y se aleja X/2); es la lección de BigTrap2, donde la carrera contra el espejo era positiva y un control sin
+  zona con la misma geometría daba casi lo mismo.
+- **Estadístico y decisión:** diferencia real − control del desenlace medio, bootstrap por sesión, Stouffer entre activos; pasa a
+  réplica con p < 0,05. Es información sobre dónde poner un objetivo, **no un sistema**: sólo sirve para mejorar una regla que ya
+  tenga entrada, y eso se pre-registra aparte.
+- **Pruebas:** 4 activos + 1 combinada = **5** más (`hft_clusters_info/iman`). Total de la familia: 10.
+- **Refutación:** diferencia ≤ 0 con MDE < 0,10 → el cluster no atrae más que cualquier nivel con la misma geometría.

@@ -72,3 +72,16 @@ def test_clusters_del_dia_es_causal_por_prefijo():
         antes = C[C.t_ns < ts[n - 50]].reset_index(drop=True)                    # margen: la última racha del prefijo queda censurada
         c2 = corto.get(k, pd.DataFrame(columns=C.columns)); c2 = c2[c2.t_ns < ts[n - 50]].reset_index(drop=True)
         pd.testing.assert_frame_equal(antes, c2, check_dtype=False)
+
+
+def test_iman_vuelve_o_huye_y_el_control_temporal_tiene_la_misma_condicion():
+    # cluster [100, 102]; se aleja a 112 (d = 10 del borde 102); vuelve a 102 antes de llegar al espejo 122 → +1
+    ts, px = _camino([101, 106, 112, 108, 102, 99]); assert H.iman(ts, px, int(ts[0]), 100.0, 102.0, 10.0) == (1, 1)
+    ts, px = _camino([101, 106, 112, 118, 122, 125]); assert H.iman(ts, px, int(ts[0]), 100.0, 102.0, 10.0) == (1, -1)
+    ts, px = _camino([101, 101.5, 101, 100.5]); assert H.iman(ts, px, int(ts[0]), 100.0, 102.0, 10.0) is None
+    # control temporal: sólo usa precios de la misma sesión, lejos de los clusters reales, y nunca ticks anteriores a su propia hora
+    rng = np.random.default_rng(3); n = 20000; ts, px = _camino(20000 + np.cumsum(rng.normal(0, 1.0, n)), paso_s=1.0)
+    C = pd.DataFrame(dict(t_ns=[int(ts[8000])], lo=[px[8000] - 1], hi=[px[8000] + 1]))
+    F = pd.DataFrame(H.iman_del_dia("NQ", 20250805, ts, px, C, 0.25, 1.5455))
+    assert (F.placebo == 0).sum() <= 1 and (F.placebo == 1).sum() >= 2 and set(F.resultado) <= {-1, 0, 1}
+    assert (np.abs(F[F.placebo == 1].t_ns - int(ts[8000])) >= H.MARGEN_S * S).all()

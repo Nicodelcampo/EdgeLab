@@ -38,7 +38,9 @@ def main():
                     for ck in H.CLUSTERS: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
             else:
                 C = D.get(tuple(DEFS[inst]))
-                if C is not None: filas += H.info_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])
+                if C is not None:
+                    filas += [dict(f, prueba="rebote") for f in H.info_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])]
+                    filas += [dict(f, prueba="iman") for f in H.iman_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])]
         log(f"{inst}: {n} sesiones, {len(filas)} filas acumuladas")
     T = pd.DataFrame(filas); T.to_csv(f"HFTC_{MODO}.csv", index=False)
     if MODO == "e0" and len(T):
@@ -50,13 +52,14 @@ def main():
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
     elif len(T):
-        res["por_activo"] = {i: H.contraste(h) for i, h in T.groupby("inst")}
-        res["conjunto"] = H.contraste(T)                                   # todas las sesiones de todos los activos, bootstrap por (activo, fecha)
-        ps = [c["p_unilateral"] for c in res["por_activo"].values() if "p_unilateral" in c]
-        if ps:
-            z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
-            res["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
-    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps(res.get("eleccion") or res.get("stouffer") or {}))
+        for prueba, Tp in T.groupby("prueba"):                             # dos hipótesis separadas: rebote (tras el toque) e imán (antes del toque)
+            r = dict(por_activo={i: H.contraste(h) for i, h in Tp.groupby("inst")}, conjunto=H.contraste(Tp))
+            ps = [c["p_unilateral"] for c in r["por_activo"].values() if "p_unilateral" in c]
+            if ps:
+                z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
+                r["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
+            res[prueba] = r
+    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps(res.get("eleccion") or {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res}))
 
 
 if __name__ == "__main__":

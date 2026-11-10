@@ -101,6 +101,48 @@ def carrera(ts, px, t_ns: int, lo: float, hi: float, sep: float, X: float):
     return (1 if arriba else -1), res
 
 
+def iman(ts, px, t_ns: int, lo: float, hi: float, sep: float):
+    """¿El cluster atrae? Tras `t_ns` el precio se aleja `sep` del rango; desde ese punto, a distancia d del borde cercano, se corre
+    una carrera: +1 si vuelve a tocar el borde antes de alejarse otra d (nivel espejo), −1 si llega antes al espejo, 0 si ninguna en
+    el horizonte. Bajo paseo al azar es 50/50. None si no hubo alejamiento. Sólo ticks posteriores a `t_ns`."""
+    i0 = int(np.searchsorted(ts, t_ns, side="right"))
+    fin_vida = int(np.searchsorted(ts, t_ns + VIDA_CLUSTER_S * 1_000_000_000, side="right"))
+    p = px[i0:fin_vida]
+    if p.size < 3: return None
+    a = _primero((p >= hi + sep) | (p <= lo - sep))
+    if a < 0: return None
+    arriba = p[a] >= hi + sep; borde = hi if arriba else lo; d = abs(p[a] - borde); espejo = p[a] + (d if arriba else -d)
+    j0 = i0 + a; j1 = int(np.searchsorted(ts, ts[j0] + HORIZONTE_S * 1_000_000_000, side="right")); r = px[j0 + 1:j1]
+    toca = _primero(r <= borde) if arriba else _primero(r >= borde)
+    huye = _primero(r >= espejo) if arriba else _primero(r <= espejo)
+    if toca < 0 and huye < 0: res = 0
+    elif huye < 0 or (0 <= toca < huye): res = 1
+    else: res = -1
+    return (1 if arriba else -1), res
+
+
+DESFASES_S = (-2400, -1200, 1200, 2400)                   # placebo temporal del imán: mismo ancho, centrado en el precio de otra hora
+MARGEN_S = 600                                            # el placebo temporal no puede caer a menos de 10 min de un cluster real
+
+
+def iman_del_dia(inst, fecha, ts, px, C: pd.DataFrame, tick, friccion) -> list:
+    """Carrera de imán para cada cluster real y para pseudo-clusters de control: mismo ancho, misma sesión, centrados en el precio que
+    había 20 y 40 minutos antes y después (lejos de todo cluster real). El control tiene la MISMA condición que el real (el precio
+    parte del nivel y se aleja `sep`), que es lo que faltaba en la «carrera contra el espejo» de BigTrap2."""
+    X = barrera(friccion, tick); sep = X / 2; filas = []; reales = C.t_ns.to_numpy(np.int64)
+    for c in C.itertuples(index=False):
+        r = iman(ts, px, int(c.t_ns), c.lo, c.hi, sep)
+        if r is not None: filas.append(dict(inst=inst, fecha=int(fecha), t_ns=int(c.t_ns), placebo=0, desplazamiento=0.0, lado=r[0], resultado=r[1]))
+        w = float(c.hi - c.lo)
+        for des in DESFASES_S:
+            t2 = int(c.t_ns) + des * 1_000_000_000
+            if t2 <= ts[0] or t2 >= ts[-1] or np.abs(reales - t2).min() < MARGEN_S * 1_000_000_000: continue
+            k = int(np.searchsorted(ts, t2, side="right")) - 1; centro = float(px[k])
+            r = iman(ts, px, int(ts[k]), centro - w / 2, centro + w / 2, sep)
+            if r is not None: filas.append(dict(inst=inst, fecha=int(fecha), t_ns=int(ts[k]), placebo=1, desplazamiento=float(des), lado=r[0], resultado=r[1]))
+    return filas
+
+
 def info_del_dia(inst, fecha, ts, px, C: pd.DataFrame, tick, friccion) -> list:
     """Carreras reales y placebo de los clusters de una sesión. El placebo conserva hora y ancho y corre el nivel ±1,5X y ±3X."""
     X = barrera(friccion, tick); sep = X / 2; filas = []
