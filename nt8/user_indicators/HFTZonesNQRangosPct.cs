@@ -376,6 +376,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (MostrarRangosPct)
             {
                 // 1) Evaluar cada zona HFT recién detectada como posible Cluster HFT causal
+                //    y cortar el impulso libre de HFT si una zona nueva aparece en la frontera del movimiento
                 while (primeraSinEvaluar < zones.Count)
                 {
                     Zone z = zones[primeraSinEvaluar];
@@ -385,6 +386,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     escalaVolTicks = 0.95 * escalaVolTicks + 0.05 * Math.Max(6.0, z.HeightTicks * 1.5);
                     escalaVolZonaMean = 0.96 * escalaVolZonaMean + 0.04 * Math.Max(20.0, z.TotalVol);
                     EvaluarClusterCausal(primeraSinEvaluar - 1);
+                    NotificarZonaNuevaEnImpulso(z);
                 }
 
                 // 2) Evaluar en tiempo real el impulso actual para detectar Expansiones sin HFT en el punto exacto
@@ -810,12 +812,16 @@ namespace NinjaTrader.NinjaScript.Indicators
                 }
             }
 
+            // Registrar candidato en la distribución histórica causal
+            AgregarHistoriaAcotada(histScoreCluster, mejorScore);
+
             if (activoSolapado != null)
             {
-                // Si el nuevo refuerzo mejora la densidad o agrega zonas, extendemos hacia adelante desde detectBar
-                // sin modificar lo dibujado en barras anteriores a detectBar
                 if (bestCount > activoSolapado.ZoneCount || mejorScore < activoSolapado.Score)
                 {
+                    activoSolapado.Lower = Math.Min(activoSolapado.Lower, bestLo);
+                    activoSolapado.Upper = Math.Max(activoSolapado.Upper, bestHi);
+                    activoSolapado.WidthTicks = (activoSolapado.Upper - activoSolapado.Lower) / TickSize;
                     activoSolapado.VisualEndBar = Math.Max(activoSolapado.VisualEndBar, detectBar + Math.Max(10, PctExtensionBars));
                     activoSolapado.ZoneCount = Math.Max(activoSolapado.ZoneCount, bestCount);
                     activoSolapado.Score = Math.Min(activoSolapado.Score, mejorScore);
@@ -824,8 +830,6 @@ namespace NinjaTrader.NinjaScript.Indicators
                 return;
             }
 
-            // Candidato independiente: registrar en la distribución histórica causal
-            AgregarHistoriaAcotada(histScoreCluster, mejorScore);
             int nHist = histScoreCluster.Count;
             if (nHist < Math.Max(10, PctMinHistoria)) return;
 
@@ -853,14 +857,18 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        // 2) EXPANSIONES SIN HFT CAUSALES:
-        // Rastrea la pierna direccional en curso y mide el mayor corredor libre de zonas HFT activas.
-        // Cuando el corredor libre supera el umbral infrecuente en la barra actual b, la zona de expansión
-        // se empieza a dibujar en DetectBar = b (sin look-ahead). Si en barras posteriores de la misma pierna
-        // el corredor se amplía, se escalona desde la barra nueva sin tocar lo ya dibujado.
+        // 2) EXPANSIONES SIN HFT CAUSALES (SIN DESFASE Y SIN SUPERPOSICIÓN):
+        // - Rastrea cada impulso direccional libre de nuevas zonas HFT.
+        // - Cuando una nueva zona HFT aparece en la trayectoria del impulso, sella el tramo libre de HFT en el borde
+        //   de esa zona y reinicia el origen del siguiente tramo en el borde opuesto de la zona.
+        // - Cuando el impulso supera el umbral de expansión infrecuente en la barra b, crea UNA única zona de expansión
+        //   con DetectBar = b. Mientras ese mismo impulso continúa sin zonas HFT, actualiza su frontera líder in-place
+        //   manteniendo fijo DetectBar (sin escalones duplicados y sin desfasar el inicio al pico/valle final).
+        // - Garantiza 0% superposición: recorta en DetectBar cualquier expansión previa activa que se solape en precio,
+        //   y cierra la proyección visual cuando el precio mitiga (>= 70%) el vacío.
         private void RegistrarPiernaEnHistoria()
         {
-            if (impBestScoreRegistrado > 0.25)
+            if (impBestScoreRegistrado > 0.15)
             {
                 AgregarHistoriaAcotada(histScoreExp, impBestScoreRegistrado);
             }
@@ -869,13 +877,103 @@ namespace NinjaTrader.NinjaScript.Indicators
             impActiveExpansion = null;
         }
 
+        private void RecortarExpansionesSolapadas(CausalExpansion actual)
+        {
+            if (actual == null) return;
+            for (int i = expansionsPct.Count - 1; i >= 0; i--)
+            {
+                CausalExpansion prev = expansionsPct[i];
+                if (ReferenceEquals(prev, actual)) continue;
+                if (prev.VisualEndBar <= actual.DetectBar) continue;
+                double ov = Math.Min(prev.Upper, actual.Upper) - Math.Max(prev.Lower, actual.Lower);
+                if (ov >= -TickSize)
+                {
+                    prev.VisualEndBar = Math.Min(prev.VisualEndBar, actual.DetectBar);
+                }
+            }
+        }
+
+        private void NotificarZonaNuevaEnImpulso(Zone z)
+        {
+            if (z == null || impDir == 0) return;
+            if (!MostrarAbsorb && z.Bucket == HFTBucket.Absorb) return;
+
+            int b = CurrentBars[0];
+            double zl = Math.Min(z.Lower, z.Upper);
+            double zh = Math.Max(z.Lower, z.Upper);
+
+            if (impDir == 1)
+            {
+                if (zh >= impStartPrice && zl <= impExtPrice + TickSize * 2)
+                {
+                    if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId && zl > impActiveExpansion.Lower + TickSize * 4)
+                    {
+                        impActiveExpansion.Upper = Math.Max(impActiveExpansion.Upper, zl);
+                        impActiveExpansion.MidPrice = (impActiveExpansion.Lower + impActiveExpansion.Upper) * 0.5;
+                        impActiveExpansion.HeightTicks = (impActiveExpansion.Upper - impActiveExpansion.Lower) / TickSize;
+                        impActiveExpansion.Label = string.Format("EXP {0:F0}t", impActiveExpansion.HeightTicks);
+                        RecortarExpansionesSolapadas(impActiveExpansion);
+                    }
+                    RegistrarPiernaEnHistoria();
+                    impStartPrice = zh;
+                    impExtPrice = Math.Max(zh, Highs[0][0]);
+                    impStartBar = b;
+                    impExtBar = b;
+                    impSumRange = Math.Max(TickSize, Highs[0][0] - Lows[0][0]);
+                    impLegId++;
+                }
+            }
+            else if (impDir == -1)
+            {
+                if (zl <= impStartPrice && zh >= impExtPrice - TickSize * 2)
+                {
+                    if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId && zh < impActiveExpansion.Upper - TickSize * 4)
+                    {
+                        impActiveExpansion.Lower = Math.Min(impActiveExpansion.Lower, zh);
+                        impActiveExpansion.MidPrice = (impActiveExpansion.Lower + impActiveExpansion.Upper) * 0.5;
+                        impActiveExpansion.HeightTicks = (impActiveExpansion.Upper - impActiveExpansion.Lower) / TickSize;
+                        impActiveExpansion.Label = string.Format("EXP {0:F0}t", impActiveExpansion.HeightTicks);
+                        RecortarExpansionesSolapadas(impActiveExpansion);
+                    }
+                    RegistrarPiernaEnHistoria();
+                    impStartPrice = zl;
+                    impExtPrice = Math.Min(zl, Lows[0][0]);
+                    impStartBar = b;
+                    impExtBar = b;
+                    impSumRange = Math.Max(TickSize, Highs[0][0] - Lows[0][0]);
+                    impLegId++;
+                }
+            }
+        }
+
         private void ActualizarImpulsoYExpansionCausal()
         {
             int b = CurrentBars[0];
             double H = Highs[0][0];
             double L = Lows[0][0];
             double barRng = Math.Max(TickSize, H - L);
-            double giroMin = Math.Max(4, ZigZagTicks) * TickSize;
+
+            // 1) Mitigar expansiones previas selladas si el precio ya rellenó >= 75% de su rango
+            for (int i = expansionsPct.Count - 1; i >= 0; i--)
+            {
+                CausalExpansion prev = expansionsPct[i];
+                if (ReferenceEquals(prev, impActiveExpansion)) continue;
+                if (prev.VisualEndBar <= b) continue;
+                double span = prev.Upper - prev.Lower;
+                if (span <= TickSize) continue;
+                if (prev.Direction == -1 && H >= prev.Lower + 0.75 * span)
+                {
+                    prev.VisualEndBar = b;
+                }
+                else if (prev.Direction == 1 && L <= prev.Upper - 0.75 * span)
+                {
+                    prev.VisualEndBar = b;
+                }
+            }
+
+            // Giro local adaptativo (sin escalar por 0.38 * legHeight, que desfasaba los giros hasta 80 puntos)
+            double giroTicks = Math.Max(12.0, Math.Min((double)Math.Max(12, ZigZagTicks), escalaVolTicks * 2.2));
+            double giroReq = giroTicks * TickSize;
 
             if (impDir == 0)
             {
@@ -888,14 +986,14 @@ namespace NinjaTrader.NinjaScript.Indicators
                     return;
                 }
                 impSumRange += barRng;
-                if (H - impStartPrice >= giroMin)
+                if (H - impStartPrice >= giroReq)
                 {
                     impDir = 1;
                     impExtPrice = H;
                     impExtBar = b;
                     impLegId++;
                 }
-                else if (impStartPrice - L >= giroMin)
+                else if (impStartPrice - L >= giroReq)
                 {
                     impDir = -1;
                     impExtPrice = L;
@@ -908,8 +1006,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             bool nuevoExtremo = false;
             if (impDir == 1)
             {
-                double legHeight = Math.Max(TickSize, impExtPrice - impStartPrice);
-                double giroReq = Math.Max(giroMin, 0.38 * legHeight);
                 if (H >= impExtPrice)
                 {
                     impExtPrice = H;
@@ -936,8 +1032,6 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
             else
             {
-                double legHeight = Math.Max(TickSize, impStartPrice - impExtPrice);
-                double giroReq = Math.Max(giroMin, 0.38 * legHeight);
                 if (L <= impExtPrice)
                 {
                     impExtPrice = L;
@@ -965,50 +1059,58 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (!nuevoExtremo) return;
 
-            // Evaluar el mayor corredor sin zonas HFT dentro de la pierna actual [impStartBar .. b]
             double lo = Math.Min(impStartPrice, impExtPrice);
             double hi = Math.Max(impStartPrice, impExtPrice);
             double dispTicks = (hi - lo) / TickSize;
-            if (dispTicks < Math.Max(8, MinExpTicks)) return;
+            if (dispTicks < 6.0) return;
 
-            int ext = Math.Max(1, ExtensionDibujo);
-            var iv = new List<double[]>();
+            // Determinar el corredor libre de zonas HFT en la FRONTERA LÍDER del impulso actual [impStartBar .. b]
+            double gLo = lo;
+            double gHi = hi;
             for (int j = zones.Count - 1; j >= 0; j--)
             {
                 Zone z = zones[j];
-                if (z.DetectBar < impStartBar - ext - 2000) break;
-                // Estrictamente causal: sólo zonas ya detectadas en o antes de b, cuya vigencia cubra el tramo
-                if (z.DetectBar > b || z.VisualEndBar < impStartBar) continue;
+                if (z.DetectBar < impStartBar - 15) break;
+                if (z.DetectBar > b) continue;
+                if (!MostrarAbsorb && z.Bucket == HFTBucket.Absorb) continue;
                 double zl = Math.Min(z.Lower, z.Upper);
                 double zh = Math.Max(z.Lower, z.Upper);
                 if (zh < lo || zl > hi) continue;
-                iv.Add(new double[] { Math.Max(lo, zl), Math.Min(hi, zh) });
-            }
 
-            iv.Sort((x, y) => x[0].CompareTo(y[0]));
-            double cursor = lo, gLo = 0, gHi = 0, mejorGap = 0;
-            for (int i = 0; i < iv.Count; i++)
-            {
-                double x0 = iv[i][0], x1 = iv[i][1];
-                if (x0 - cursor > mejorGap)
+                if (impDir == 1)
                 {
-                    mejorGap = x0 - cursor;
-                    gLo = cursor;
-                    gHi = x0;
+                    // En impulso alcista, el corredor limpio va desde el techo de la última zona tocada hasta hi
+                    if (zl <= hi && zh >= hi - TickSize) return;
+                    if (zh > gLo && zh < hi) gLo = zh;
                 }
-                if (x1 > cursor) cursor = x1;
+                else
+                {
+                    // En impulso bajista, el corredor limpio va desde lo hasta el piso de la última zona tocada
+                    if (zh >= lo && zl <= lo + TickSize) return;
+                    if (zl < gHi && zl > lo) gHi = zl;
+                }
             }
-            if (hi - cursor > mejorGap)
+
+            // Si la expansión ya estaba activa en esta pierna, mantener su ancla de inicio fija y sólo expandir la frontera líder
+            if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId)
             {
-                mejorGap = hi - cursor;
-                gLo = cursor;
-                gHi = hi;
+                if (impDir == 1)
+                {
+                    gLo = impActiveExpansion.Lower;
+                    gHi = Math.Max(impActiveExpansion.Upper, gHi);
+                }
+                else
+                {
+                    gHi = impActiveExpansion.Upper;
+                    gLo = Math.Min(impActiveExpansion.Lower, gLo);
+                }
             }
 
+            double mejorGap = gHi - gLo;
             double gapTicks = mejorGap / TickSize;
-            if (gapTicks < Math.Max(8, MinExpTicks)) return;
+            if (gapTicks < 6.0) return;
 
-            // Eficiencia direccional: qué tan limpio y rápido fue el impulso frente al ruido acumulado
+            // Eficiencia direccional y puntaje normalizado por volatilidad
             double netMove = Math.Abs(impExtPrice - impStartPrice);
             double eficiencia = Math.Min(1.0, netMove / Math.Max(netMove, impSumRange * 0.45));
             double altoNorm = gapTicks / Math.Max(6.0, escalaVolTicks);
@@ -1017,6 +1119,23 @@ namespace NinjaTrader.NinjaScript.Indicators
             if (scoreExp > impBestScoreRegistrado)
                 impBestScoreRegistrado = scoreExp;
 
+            if (gapTicks < Math.Max(8, MinExpTicks)) return;
+
+            // Si ya se activó la expansión en esta pierna, actualizar in-place su frontera líder (manteniendo DetectBar fijo!)
+            if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId)
+            {
+                impActiveExpansion.Lower = gLo;
+                impActiveExpansion.Upper = gHi;
+                impActiveExpansion.MidPrice = (gLo + gHi) * 0.5;
+                impActiveExpansion.HeightTicks = gapTicks;
+                impActiveExpansion.Efficiency = eficiencia;
+                impActiveExpansion.VisualEndBar = Math.Max(impActiveExpansion.VisualEndBar, b + Math.Max(10, PctExtensionBars));
+                impActiveExpansion.Label = string.Format("EXP {0:F0}t", gapTicks);
+                impLastTriggeredHeightTicks = gapTicks;
+                RecortarExpansionesSolapadas(impActiveExpansion);
+                return;
+            }
+
             int nHist = histScoreExp.Count;
             if (nHist < Math.Max(10, PctMinHistoria)) return;
 
@@ -1024,26 +1143,16 @@ namespace NinjaTrader.NinjaScript.Indicators
             double umbral = Percentil(histScoreExp, 100.0 * (1.0 - frac));
             if (scoreExp < umbral) return;
 
-            // Evitar micro-escalones por 1-2 ticks en la misma pierna: exigir al menos +20% o +8 ticks para escalonar
-            if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId)
+            // Evitar abrir una expansión redundante contenida dentro de una expansión activa de sentido opuesto
+            for (int i = expansionsPct.Count - 1; i >= 0; i--)
             {
-                if (gapTicks < impLastTriggeredHeightTicks + Math.Max(6.0, impLastTriggeredHeightTicks * 0.15))
-                    return;
-                // Truncar el escalón previo en la barra actual b para no alterar el pasado, y abrir el nuevo escalón en b
-                if (impActiveExpansion.DetectBar < b)
+                CausalExpansion prev = expansionsPct[i];
+                if (prev.VisualEndBar <= b) continue;
+                double inter = Math.Min(prev.Upper, gHi) - Math.Max(prev.Lower, gLo);
+                if (inter > 0 && inter >= 0.70 * mejorGap && b - prev.DetectBar < 40)
                 {
-                    impActiveExpansion.VisualEndBar = b;
-                }
-                else
-                {
-                    // Misma barra b: actualizar in-place
-                    impActiveExpansion.Lower = gLo;
-                    impActiveExpansion.Upper = gHi;
-                    impActiveExpansion.MidPrice = (gLo + gHi) * 0.5;
-                    impActiveExpansion.HeightTicks = gapTicks;
-                    impActiveExpansion.Efficiency = eficiencia;
-                    impActiveExpansion.Label = string.Format("EXP {0:F0}t", gapTicks);
-                    impLastTriggeredHeightTicks = gapTicks;
+                    // El movimiento actual es un retroceso/mitigación dentro de la expansión recién abierta: cerrarla en b
+                    prev.VisualEndBar = b;
                     return;
                 }
             }
@@ -1063,6 +1172,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 Label        = string.Format("EXP {0:F0}t", gapTicks)
             };
             impActiveExpansion = nuevaExp;
+            RecortarExpansionesSolapadas(nuevaExp);
             lock (syncRoot)
             {
                 expansionsPct.Add(nuevaExp);
