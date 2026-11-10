@@ -1,0 +1,122 @@
+{
+ "nombre": "REBOTE_NIVEL_SESION",
+ "familia": "REBOTE_NIVEL_SESION",
+ "linaje": "HFT_RUPTURA_OTROS",
+ "etapa": "EF2",
+ "generador": "niveles_sesion",
+ "tabla": "docs/research/hft_clusters_u1_20261110/HFTC_niveles_replica.csv",
+ "ventana": [
+  20260401,
+  20260930
+ ],
+ "desenlace": "rompe",
+ "columnas_desenlace": [
+  "rompe",
+  "rompe_media",
+  "rompe_doble",
+  "t_res_s",
+  "avance15_x"
+ ],
+ "excluir": [
+  "lado"
+ ],
+ "direccion": 0,
+ "nulo": 0.0,
+ "umbral_economico": 0.08,
+ "k": 3,
+ "q": 0.1,
+ "min_n": 100,
+ "min_n_b": 60,
+ "pares": true,
+ "rasgos": [
+  "aprox_s",
+  "excursion_x",
+  "afuera_s",
+  "edad_s",
+  "minuto_et",
+  "tendencia_alineada",
+  "dist_extremo_x",
+  "rango30_x",
+  "vol30_rel",
+  "deseq30",
+  "picos_dentro",
+  "picos_sin_tomar",
+  "salida_s",
+  "vol_banda_rel",
+  "ema9_pend",
+  "ema21_pend",
+  "salida_eficiencia",
+  "dist_zona_600",
+  "dist_zona_1800",
+  "dist_zona_3600",
+  "dist_cluster",
+  "n_zonas_1x_1800"
+ ],
+ "cortes_fijos": {
+  "picos_dentro": [
+   0.5,
+   1.5
+  ],
+  "picos_sin_tomar": [
+   0.5,
+   1.5
+  ],
+  "dist_zona_600": [
+   0.5,
+   1.0
+  ],
+  "dist_zona_1800": [
+   0.5,
+   1.0
+  ],
+  "dist_zona_3600": [
+   0.5,
+   1.0
+  ],
+  "dist_cluster": [
+   0.5,
+   1.0
+  ],
+  "n_zonas_1x_1800": [
+   0.5,
+   2.5
+  ]
+ },
+ "hipotesis_previas": [
+  {
+   "rasgos": [
+    "dist_zona_1800"
+   ],
+   "estratos": [
+    2
+   ],
+   "signo": -1,
+   "origen": "control de clusters en DESC (ESTABILIDAD_CLUSTERS.md §3) + idea de Nico"
+  },
+  {
+   "rasgos": [
+    "dist_zona_3600"
+   ],
+   "estratos": [
+    2
+   ],
+   "signo": -1,
+   "origen": "idem, ventana de 60 min"
+  },
+  {
+   "rasgos": [
+    "dist_cluster"
+   ],
+   "estratos": [
+    2
+   ],
+   "signo": -1,
+   "origen": "idem, sin cluster vivo cerca"
+  }
+ ],
+ "justificacion_economica": "La liquidez pasiva del primer paso defiende el nivel en el regreso; donde hubo ejecución agresiva grande (zonas HFT) ya se consumió.",
+ "como_refutar": "Previas sin nominar ni estables y vs_resto ≈ 0; o rebote < 0,08 en todos los estratos.",
+ "tabla_no_mirada": true,
+ "habilitada": true,
+ "nota": "Pre-registro: docs/research/hft_clusters_u1_20261110/PREREGISTRO_REBOTE_NIVEL.md"
+}

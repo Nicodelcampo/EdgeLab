@@ -20,7 +20,7 @@ es una prueba nueva (registro global + linaje a la familia original) y nunca usa
 | `CM-BANCO-DE-EVENTOS` | 2026-11-10 | Muchas ideas sobre una misma tabla de eventos se prueban con el banco (exploración en A, k hipótesis en B). | Familias que probaron 1–7 hipótesis sobre una tabla de eventos pueden explorar cientos de combinaciones de rasgos con el mismo costo, en una tabla nueva (otro activo u otra ventana no usada). | Correr el generador de la familia sobre datos no mirados y pasar la tabla por tools/banco_eventos.py con todos sus rasgos. |
 | `CM-ESTABILIDAD-SUB-BLOQUES` | 2026-11-08 | Regla global de evidencia: con efectos chicos se mide estabilidad en 5 sub-bloques de sesiones y probabilidad de azar con un nulo de inversión de signo por sesión que repite toda la selección (desde el 2026-11-10 automático en el banco de eventos). | Familias cerradas como SIN_CANDIDATAS o sin potencia por un contraste único pueden tener efectos chicos estables (p azar < 10 % en ≥ 4/5 bloques) que la regla nueva sí reconoce; y pistas elegidas entre muchas pueden caer al repetir la selección en el nulo. | Recalcular sobre los resultados ya corridos: banco_eventos.estabilidad por sesión y nulo_de_seleccion si la pista se eligió entre varias. |
 
-## Familias candidatas (203; se listan las 40 de mayor prioridad)
+## Familias candidatas (204; se listan las 40 de mayor prioridad)
 
 | Prioridad | Familia | Registrada | Cambios que la alcanzan | Último desenlace | Carpetas |
 |---|---|---|---|---|---|

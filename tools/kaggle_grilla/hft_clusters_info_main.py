@@ -22,14 +22,17 @@ FRICCION = {"NQ": 1.5455, "ES": 0.8877, "YM": 5.052, "GC": 0.605, "RTY": 0.4436,
 
 def main():
     from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB, hft_contexto as KX, hft_ruptura as RU
+    from edgelab.research import niveles_sesion as NV
     ent = os.environ.get("ENTRADA", "/kaggle/input"); t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
-    BASE = MODO.replace("_otros", "")                                  # *_otros: mismo análisis sobre los activos nuevos (INSTRUMENTOS)
-    d0, d1 = REP if BASE in ("rep", "ruptura_rep") else DESC
+    BASE = MODO.replace("_otros", "").replace("_replica", "")          # *_otros: activos nuevos; *_replica: ventana abr → sep, sólo tabla
+    d0, d1 = REP if (BASE in ("rep", "ruptura_rep") or MODO.endswith("_replica")) else DESC
+    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica")   # K19: nada con desenlaces dentro del kernel
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
     ZN, CL = (H.ZONAS, H.CLUSTERS) if BASE not in ("e0b", "rebotes", "contexto", "ruptura", "ruptura_rep") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
-    for inst in (INSTRUMENTOS if BASE in ("e0", "e0b") else [i for i in INSTRUMENTOS if i in DEFS]):
+    if BASE == "niveles": CL = {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}   # sólo las definiciones elegidas
+    for inst in (INSTRUMENTOS if BASE in ("e0", "e0b", "niveles") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
         try: bloques = list(F.bloques_futuro(inst, d0, d1, ent))             # generador: la falta de archivo salta al iterar
         except (IndexError, ValueError): log(f"{inst}: sin datos"); continue
@@ -40,6 +43,9 @@ def main():
             if BASE in ("e0", "e0b"):
                 for zk in ZN:
                     for ck in CL: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
+            elif BASE == "niveles":
+                Z = NV.zonas_del_dia(ts, px, B.vol.to_numpy(), B.sesion.to_numpy(), tk)
+                filas += NV.niveles_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), Z, D.get(tuple(DEFS[inst])) if inst in DEFS else None, tk, FRICCION[inst])
             else:
                 C = D.get(tuple(DEFS[inst]))
                 if C is not None and BASE in ("ruptura", "ruptura_rep"):
@@ -63,8 +69,9 @@ def main():
                                     friccion_r_stop_ancho=float(h.friccion_r_stop_ancho.median()) if "friccion_r_stop_ancho" in h else None,
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
-    elif MODO == "ruptura_otros" and len(T):                           # tabla para el BANCO: nada que use desenlaces (K19, tabla no mirada)
-        res["rasgos"] = RU.RASGOS; res["estratos"] = RU.diagnostico_estratos(T)
+    elif SOLO_TABLA and len(T):                                        # tabla para el banco o la confirmación: nada que use desenlaces (K19)
+        res["rasgos"] = NV.RASGOS if BASE == "niveles" else RU.RASGOS
+        if BASE != "niveles": res["estratos"] = RU.diagnostico_estratos(T)
         res["conteos"] = {i: dict(reales=int((h.placebo == 0).sum()), control=int((h.placebo == 1).sum()), sesiones=int(h.fecha.nunique()))
                           for i, h in T.groupby("inst")}
     elif BASE == "ruptura" and len(T):
@@ -107,7 +114,7 @@ def main():
                 z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
                 r["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
             res[prueba] = r
-    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"seleccion": [(s["rasgo"], s["tercil"]) for s in res.get("seleccion", [])]} if MODO == "ruptura" else res.get("conteos") if MODO == "ruptura_otros" else {"nominadas": res.get("nominadas_bh_q010")} if BASE in ("rebotes", "contexto") else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
+    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"seleccion": [(s["rasgo"], s["tercil"]) for s in res.get("seleccion", [])]} if MODO == "ruptura" else res.get("conteos") if SOLO_TABLA else {"nominadas": res.get("nominadas_bh_q010")} if BASE in ("rebotes", "contexto") else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
 
 
 if __name__ == "__main__":
