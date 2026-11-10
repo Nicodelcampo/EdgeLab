@@ -54,3 +54,22 @@ Ninguna celda cumple la regla de selección; o ninguna regla supera 0,08 en la r
 - 45 celdas exploratorias: con el umbral económico, la estabilidad mensual y la consistencia entre activos se espera muy poca selección
   por azar, pero no cero; por eso hay réplica.
 - Si la familia usa la réplica abr–sep, `HFT_CLUSTERS_INFO` conserva la suya para D4 u otra hipótesis (familias distintas).
+
+## 7. Enmienda A1 (2026-11-10, pedido de Nico, ANTES de ver resultado alguno de la indagación)
+La corrida v1 de la indagación (15 rasgos, kernel `hft-clusters-info-ruptura-20261110`) se lanzó y **se descarta sin mirar**: se
+relanza con el mismo código más 6 rasgos. Ningún resultado de la v1 se leyó antes de esta enmienda.
+
+Rasgos agregados (todos causales: sólo velas de 1 min completas antes del toque y ticks ≤ toque):
+- `picos_dentro`: picos de liquidez vivos (pivote de 3 velas de 1 min por lado, la misma definición que `espejo_picos`, confirmado y
+  sin romper hasta el toque) cuyo precio cae dentro del rango del cluster.
+- `picos_sin_tomar`: picos que la aproximación dejó atrás sin tomar (llega bajando → máximos vivos arriba; subiendo → mínimos), desde
+  la última salida del rango.
+- `salida_s`: «expansión limpia» de la última pasada: segundos desde que el precio dejó el rango hasta estar a X/2 de él (chico =
+  salida limpia; sin dato si nunca se alejó X/2).
+- `vol_banda_rel`: volumen del cluster, proxy declarado: volumen negociado dentro del rango en los 30 min previos a la detección,
+  contra el volumen medio por 30 min de la sesión.
+- `ema9_pend`, `ema21_pend`: pendiente de la EMA 9 y la EMA 21 de cierres de 1 min en las últimas 5 velas completas, en unidades de X
+  y con signo hacia el cluster (> 0 = el precio llega con las EMAs inclinadas hacia el cluster).
+
+Pruebas exploratorias extra: 6 × 3 terciles = **18** (`hft_ruptura/indaga_b`). La regla de selección (§2) y la réplica (§3, ≤ 3
+reglas) no cambian. Total de la indagación: 63 celdas, todas exploratorias.

@@ -41,3 +41,18 @@ def test_seleccion_mecanica():
          dict(base, rasgo="c", rompe_real=0.09, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": -0.1}),  # inconsistente
          dict(base, rasgo="d", rompe_real=0.05, dif_vs_control=0.1, meses_positivos=7, por_activo={"NQ": 0.05})]      # no paga
     assert [(m["rasgo"], m["tercil"]) for m in H.seleccionar(M)] == [("a", 0)]
+
+
+def test_rasgos_extra_picos_y_ema():
+    # 30 velas de 1 min bajando 1 punto por minuto con un repunte de +6 cada 8 velas (deja máximos vivos arriba) hasta un cluster [100, 104]
+    t, p = [], []; base = 140.0
+    for m in range(30):
+        for k in range(6):
+            t.append(1_700_000_000 * S + (m * 60 + k * 10) * S); p.append(base - m + (6.0 if (m % 8 == 4 and k == 3) else 0.0))
+    t.append(t[-1] + 5 * S); p.append(104.0); ts = np.array(t); px = np.array(p); v = np.ones(len(px))
+    M = H.minutos(ts, px); j = len(px) - 1
+    c = dict(lo=100.0, hi=104.0, t_ns=int(ts[0]))
+    r = H.rasgos_extra(ts, px, v, j, 0, +1, 20.0, c, M)                           # llega bajando a un soporte (lado +1)
+    assert r["ema9_pend"] > 0 and r["ema21_pend"] > 0                              # las EMAs bajan hacia el cluster
+    assert r["picos_sin_tomar"] >= 1 and r["picos_dentro"] == 0
+    assert np.isfinite(r["salida_s"]) or np.isnan(r["salida_s"])

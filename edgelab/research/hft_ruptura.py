@@ -25,7 +25,10 @@ from edgelab.research.hft_clusters_info import HORIZONTE_S, VIDA_CLUSTER_S, _pri
 
 NS = 1_000_000_000
 RASGOS = ["aprox_s", "excursion_x", "afuera_s", "edad_s", "ancho_x", "n_zonas", "packing", "flujo_alineado", "visita",
-          "minuto_et", "tendencia_alineada", "dist_extremo_x", "rango30_x", "vol30_rel", "deseq30"]
+          "minuto_et", "tendencia_alineada", "dist_extremo_x", "rango30_x", "vol30_rel", "deseq30",
+          # Enmienda (Nico, 2026-11-10, antes de ver resultados): picos, expansión de salida, volumen del cluster y pendiente de EMAs
+          "picos_dentro", "picos_sin_tomar", "salida_s", "vol_banda_rel", "ema9_pend", "ema21_pend"]
+W_PICO = 3                                                         # pico = pivote de 3 velas de 1 min por lado (misma definición que espejo_picos)
 
 
 def _carrera(px, j0, ref, d, X, j1):
@@ -67,6 +70,48 @@ def rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, ses_ini, c, n_
                 vol30_rel=float(v30 / med30) if med30 and med30 > 0 else np.nan, deseq30=float(s30 / v30 * llegada) if v30 > 0 else 0.0)
 
 
+def minutos(ts, px):
+    """Velas de 1 minuto de la sesión: índice de vela por tick, primer tick de cada vela, máximos, mínimos, cierres y EMAs 9 y 21."""
+    m = (ts - ts[0]) // (60 * NS); ini = np.flatnonzero(np.r_[True, m[1:] != m[:-1]])
+    H = np.maximum.reduceat(px, ini); L = np.minimum.reduceat(px, ini); Cc = px[np.r_[ini[1:], len(px)] - 1]
+    e9 = pd.Series(Cc).ewm(span=9, adjust=False).mean().to_numpy(); e21 = pd.Series(Cc).ewm(span=21, adjust=False).mean().to_numpy()
+    vela = np.repeat(np.arange(len(ini)), np.diff(np.r_[ini, len(px)]))
+    return dict(vela=vela, ini=ini, H=H, L=L, C=Cc, e9=e9, e21=e21)
+
+
+def _picos_vivos(x, desde, hasta_vela, x_parcial):
+    """Pivotes de máximo de `x` (velas) con índice en [desde, hasta_vela − W], confirmados W velas después (≤ hasta_vela) y sin
+    romper hasta el toque (velas completas hasta `hasta_vela` y el tramo parcial de la vela en curso, `x_parcial`)."""
+    out = []
+    for q in range(max(W_PICO, desde), hasta_vela - W_PICO + 1):
+        if all(x[q] >= x[q - o] and x[q] >= x[q + o] for o in range(1, W_PICO + 1)):
+            if x[q + 1:hasta_vela + 1].max(initial=-np.inf) < x[q] and x_parcial < x[q]: out.append(q)
+    return out
+
+
+def rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M):
+    """Rasgos de la enmienda. Sólo velas completas antes del toque y ticks ≤ j."""
+    llegada = -lado; vj = int(M["vela"][j]); km = vj - 1                         # última vela COMPLETA antes del toque
+    if km < 2 * W_PICO + 1: return dict(picos_dentro=np.nan, picos_sin_tomar=np.nan, salida_s=np.nan, vol_banda_rel=np.nan, ema9_pend=np.nan, ema21_pend=np.nan)
+    parcial = slice(int(M["ini"][vj]), j + 1)
+    hp, lp = float(px[parcial].max()), float(px[parcial].min())
+    altos = _picos_vivos(M["H"], 0, km, hp); bajos = _picos_vivos(-M["L"], 0, km, -lp)
+    dentro = sum(1 for q in altos if c["lo"] <= M["H"][q] <= c["hi"]) + sum(1 for q in bajos if c["lo"] <= M["L"][q] <= c["hi"])
+    # picos que la aproximación dejó atrás sin tomar: llega bajando (llegada −1) → máximos que quedaron arriba; subiendo → mínimos
+    v_sal = int(M["vela"][j_sal])
+    atras = [q for q in (altos if llegada < 0 else bajos) if q >= v_sal]
+    # expansión de la última salida: segundos desde que dejó el rango hasta estar a X/2 de él
+    dist = np.maximum(np.maximum(c["lo"] - px[j_sal:j + 1], px[j_sal:j + 1] - c["hi"]), 0.0)
+    k = _primero(dist >= X / 2); salida_s = float((ts[j_sal + k] - ts[j_sal]) / NS) if k >= 0 else np.nan
+    # volumen negociado dentro del rango en los 30 min previos a la detección, contra el volumen medio por 30 min de la sesión
+    t0 = c["t_ns"]; a = int(np.searchsorted(ts, t0 - 1800 * NS)); b = int(np.searchsorted(ts, t0))
+    dentro_b = (px[a:b] >= c["lo"]) & (px[a:b] <= c["hi"]); horas = max((ts[b - 1] - ts[0]) / (1800 * NS), 1.0) if b > 0 else 1.0
+    vol_rel = float(vol[a:b][dentro_b].sum() / (vol[:b].sum() / horas)) if b > a and vol[:b].sum() > 0 else np.nan
+    pend = lambda e: float((e[km] - e[km - 5]) / X * llegada) if km >= 5 else np.nan   # >0: la EMA se mueve hacia el cluster
+    return dict(picos_dentro=float(dentro), picos_sin_tomar=float(len(atras)), salida_s=salida_s, vol_banda_rel=vol_rel,
+                ema9_pend=pend(M["e9"]), ema21_pend=pend(M["e21"]))
+
+
 def desenlaces(ts, px, j, ref, lado, X):
     d = -lado; j1 = int(np.searchsorted(ts, ts[j] + HORIZONTE_S * NS, side="right"))
     rX, iX = _carrera(px, j, ref, d, X, j1); rh, _ = _carrera(px, j, ref, d, X / 2, j1); r2, _ = _carrera(px, j, ref, d, 2 * X, j1)
@@ -82,7 +127,7 @@ def _minutos_et(t_ns):
 def ruptura_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -> list:
     """Filas por toque D0 real (placebo 0) y de control (placebo 1, misma ubicación que hft_rebotes), con rasgos y desenlaces."""
     X = barrera(friccion, tick); filas = []; C = C.reset_index(drop=True); reales = C.t_ns.to_numpy(np.int64)
-    r_lo, r_hi = C.lo.to_numpy(float), C.hi.to_numpy(float); signo = _tick_rule(px)
+    r_lo, r_hi = C.lo.to_numpy(float), C.hi.to_numpy(float); signo = _tick_rule(px); M = minutos(ts, px)
 
     def uno(t0, lo, hi, info, placebo):
         i0 = int(np.searchsorted(ts, t0, side="right")); i1 = int(np.searchsorted(ts, t0 + VIDA_CLUSTER_S * NS, side="right"))
@@ -95,6 +140,7 @@ def ruptura_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -
         c = dict(info, lo=lo, hi=hi, t_ns=t0)
         filas.append(dict(inst=inst, fecha=int(fecha), placebo=placebo, lado=lado,
                           **rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, 0, c, nv, int(_minutos_et([ts[j]])[0])),
+                          **rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M),
                           **desenlaces(ts, px, j, ref, lado, X)))
 
     for k, c in enumerate(C.itertuples(index=False)):
