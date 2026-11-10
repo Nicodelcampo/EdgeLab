@@ -68,3 +68,5 @@ def test_la_lente_prioriza_lo_ya_descubierto():
     assert elegir_lente([], pistas_vivas=2) == "indagar_factor"
     assert elegir_lente([{"lente": "indagar_factor"}], pistas_vivas=2) != "indagar_factor"      # alterna: no deja de explorar
     assert elegir_lente([], pistas_vivas=0) != "indagar_factor"
+    assert elegir_lente([{"lente": "indagar_factor"}], pistas_vivas=2, remediciones=5) == "remedir"   # re-medir entra en la rotación
+    assert elegir_lente([{"lente": "remedir"}, {"lente": "indagar_factor"}], pistas_vivas=2, remediciones=5) != "remedir"

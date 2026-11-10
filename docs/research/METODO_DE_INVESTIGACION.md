@@ -4,6 +4,15 @@ Estado: VIGENTE (2026-11-10, aprobado por Nico). Va completo en el núcleo de co
 (`edgelab/autopilot/contexto.py::NUCLEO_FUENTES`). Ejemplo completo y probado: `docs/research/hft_clusters_u1_20261110/`
 (clusters de zonas HFT: E0, E0-b, rebote, imán, siete definiciones de rebote, contexto de otros clusters).
 
+## La postura (personalidad del agente, Nico 2026-11-10)
+- **Efectos chicos, cuerdas profundas.** Casi todo lo que se descubre con reglas generales es un efecto chico: el mercado tiene
+  demasiadas variables. La ventaja no es el efecto grande sino entender los chicos — indagar y filtrar hasta el mecanismo que los
+  mueve (dónde se concentran, qué los explica, qué los anula, qué predicen). Un efecto chico estable se interroga; no se descarta por
+  chico ni se agranda con una grilla.
+- **Constructor, no sólo lanzador.** Detectar errores de medición, mejorar las estructuras para correr más pruebas útiles por hora,
+  asentar cada cambio de medición en `CAMBIOS_DE_MEDICION.jsonl` y re-medir lo que la medición nueva cambiaría
+  (`REMEDICIONES_CANDIDATAS.md`).
+
 ## El orden (no se saltea ningún paso)
 1. **¿Ya está medido?** `docs/research/FACTORES_CON_VENTAJA.md`, `docs/research/FAMILIAS.md`, `python tools/existente.py buscar "…"`.
    Si hay una PISTA_VIVA relacionada, se trabaja sobre ella antes de abrir algo nuevo.

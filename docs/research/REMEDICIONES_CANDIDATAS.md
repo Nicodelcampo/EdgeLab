@@ -1,0 +1,69 @@
+# Re-mediciones candidatas — qué corridas darían otro resultado con la medición de hoy
+
+Estado: VIGENTE (GENERADO con `python tools/remediciones.py --write`; no editar a mano). Registro de cambios:
+`docs/research/CAMBIOS_DE_MEDICION.jsonl` (un cambio de medición nuevo se asienta ahí en el mismo commit que lo introduce).
+
+Son CANDIDATAS: antes de relanzar, verificar en la carpeta de la familia que el cambio de verdad la alcanza. Una re-medición
+es una prueba nueva (registro global + linaje a la familia original) y nunca usa datos ya usados para elegir.
+
+## Cambios de medición
+
+| Id | Fecha | Qué cambió | Por qué daría otro resultado | Cómo re-medir |
+|---|---|---|---|---|
+| `CM-R-EN-LUGAR-DE-PUNTOS` | 2026-11-02 | El P&L se mide en R (neto / riesgo inicial) en vez de puntos. | Los puntos sobrestiman reglas cuyas ganancias caen en stops lejanos (U1-CRUZADO: +15,6 pts = +0,015 R); una familia medida en puntos puede cambiar de signo o de ranking en R. | Relanzar la campaña con "estadistico": "R" (docs/research/MEDIR_EN_R_20261102.md). |
+| `CM-PISTAS-NO-SON-REFUTACION` | 2026-10-26 | SIN_CANDIDATAS de pistas ya no cierra una familia: la canasta de pistas se prueba y sólo REFUTADA mata (E1–E3). | Familias cerradas por falta de potencia (p. ej. ZGAP-NQ: 18/20 pistas positivas, canasta +5,2 pts/sesión) pueden quedar PISTAS_VIVAS. | Re-decidir con embudo._fin_pistas (canasta + veredicto_pistas) sobre los resultados ya corridos; no hace falta re-correr el DESC. |
+| `CM-BRUTO-ADEMAS-DE-NETO` | 2026-11-04 | Todo filtro o variante se juzga también en bruto (marginales_globales_bruto); si sólo mejora en neto es fricción (K2). | Efectos «de contexto» confirmados en R neto eran el stop grande pesando distinto la fricción: en bruto pueden desaparecer, y efectos chicos en bruto con stop bien elegido pueden aparecer. | Releer o recorrer con marginales en bruto y stop ≥ fricción / 0,08. |
+| `CM-STOP-MINIMO-POR-FRICCION` | 2026-11-10 | Stop mínimo = fricción / 0,08 (fricción en R ≤ 0,08); antes el stop era la estructura (ancho de zona o cluster). | Con stop = ancho de zona la fricción costaba 0,13–0,77 R por operación: familias de zonas muertas por costos pueden tener un borde bruto que con la barrera X sí sea medible. | Re-medir la información (carrera ±X con X = fricción / 0,08, real contra control) antes de cualquier P&L. |
+| `CM-VIGENCIA-EN-SEGUNDOS` | 2026-11-10 | Vigencias de zonas y clusters en segundos de reloj, no en barras (K6). | Una vigencia en barras cambia con la actividad: el evento podía vencer antes del re-testeo o durar horas en sesiones lentas. | Re-generar los eventos con vigencia en segundos (hft_clusters_info.clusters_del_dia como referencia). |
+| `CM-CONTROL-QUE-COMPARTE-CONDICION` | 2026-11-10 | Todo efecto de evento se compara con un control que comparte la condición (pseudo-objeto desplazado sin superponerse con uno vivo) y diferencia en diferencias. | Sin ese control, un efecto atribuido al objeto puede ser estructura del precio (BigTrap2: el espejo sin zona daba casi lo mismo); con él, efectos chicos se separan del ruido de fondo. | Re-medir con control temporal desplazado (hft_rebotes.DESFASES_S) y reportar real − control. |
+| `CM-ESTRATOS-CON-EMPATES` | 2026-11-10 | Estratos por cuantiles con (v > c1) + (v > c2) y cortes fijos para rasgos discretos (K10). | Con searchsorted sobre cuantiles empatados, un rasgo discreto mandaba todo a un estrato: la indagación de ese rasgo no medía nada. | Re-estratificar con banco_eventos.estrato / cortes (la tabla ya corrida alcanza si sus desenlaces no se usaron para elegir). |
+| `CM-BANCO-DE-EVENTOS` | 2026-11-10 | Muchas ideas sobre una misma tabla de eventos se prueban con el banco (exploración en A, k hipótesis en B). | Familias que probaron 1–7 hipótesis sobre una tabla de eventos pueden explorar cientos de combinaciones de rasgos con el mismo costo, en una tabla nueva (otro activo u otra ventana no usada). | Correr el generador de la familia sobre datos no mirados y pasar la tabla por tools/banco_eventos.py con todos sus rasgos. |
+
+## Familias candidatas (172; se listan las 40 de mayor prioridad)
+
+| Prioridad | Familia | Registrada | Cambios que la alcanzan | Último desenlace | Carpetas |
+|---|---|---|---|---|---|
+| 15.0 | `PRERANGE_ZONAS_ES` | 2026-10-31 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | PRERANGE-ZONAS-ES-R: SIN_CANDIDATAS; PRERANGE-ZONAS-ES: SIN_CANDIDATAS | `prerange_zonas_20261031`, `relanzamiento_R_20261102` |
+| 15.0 | `U1_ZONAS_BT2_ES` | 2026-10-26 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | U1-ZONAS-BT2-ES-R: SIN_CANDIDATAS | `relanzamiento_R_20261102`, `u1_zonas_20261025` |
+| 15.0 | `U1_ZONAS_BT2_YM` | 2026-10-26 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | U1-ZONAS-BT2-YM-C-R: SIN_CANDIDATAS; U1-ZONAS-BT2-YM-C: PISTAS_VIVAS | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102` |
+| 15.0 | `ZONAS_GAPS` | 2026-10-25 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ZGAP-CFD-R: SIN_CANDIDATAS; ZGAP-NQ-R: SIN_CANDIDATAS | `relanzamiento_R_20261102`, `zonas_gaps_20261025` |
+| 12.5 | `EXPANSION_ZONAS` | 2026-10-24 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
+| 12.5 | `PRERANGE_ZONAS_NQ` | 2026-10-31 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | PRERANGE-ZONAS-NQ-R: PISTAS_VIVAS; PRERANGE-ZONAS-NQ: PISTAS_VIVAS | `prerange_zonas_20261031`, `relanzamiento_R_20261102` |
+| 12.5 | `PRERANGE_ZONAS_YM` | 2026-10-31 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | PRERANGE-ZONAS-YM-R: PISTAS_VIVAS; PRERANGE-ZONAS-YM: PISTAS_VIVAS | `prerange_zonas_20261031`, `relanzamiento_R_20261102` |
+| 12.5 | `U1_ZONAS_AVCL_ES` | 2026-10-25 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | U1-ZONAS-AVCL-ES-C-R: PISTAS_VIVAS; U1-ZONAS-AVCL-ES-C: PISTAS_VIVAS | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102` |
+| 12.5 | `U1_ZONAS_AVCL_NQ` | 2026-10-25 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | U1-ZONAS-AVCL-NQ-R: PISTAS_VIVAS | `relanzamiento_R_20261102`, `u1_zonas_20261025` |
+| 12.5 | `U1_ZONAS_GRILLA_YM` | 2026-10-26 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | U1-ZONAS-GRILLA-YM-C-R: PISTAS_VIVAS; U1-ZONAS-GRILLA-YM-C: PISTAS_VIVAS | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102` |
+| 12.0 | `CONFLUENCIA_CVGAP_RACIMOS_CFD_ES` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CONF-CVR-CFD-ES-R: SIN_CANDIDATAS; CONF-CVR-CFD-ES: PISTAS_VIVAS | `confluencia_cvr_20261029`, `relanzamiento_R_20261102` |
+| 12.0 | `CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CONF-CVR-CFD-NQ-R: SIN_CANDIDATAS; CONF-CVR-CFD-NQ: PISTAS_VIVAS | `confluencia_cvr_20261029`, `relanzamiento_R_20261102` |
+| 12.0 | `CONFLUENCIA_CVGAP_RACIMOS_ES` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CONF-CVR-ES-R: SIN_CANDIDATAS; CONF-CVR-ES: SIN_CANDIDATAS | `confluencia_cvr_20261029`, `relanzamiento_R_20261102` |
+| 12.0 | `ESPEJO_ZONAS_NQ` | 2026-11-07 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOZONAS-NQ: SIN_CANDIDATAS | `espejo_zonas_20261107` |
+| 12.0 | `ESPEJO_ZONAS_YM` | 2026-11-07 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOZONAS-YM: SIN_CANDIDATAS | `espejo_zonas_20261107` |
+| 12.0 | `HFT_GC_P10_CAPTP` | 2026-11-05 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | HFT-GC-P10-CAPTP-R: SIN_CANDIDATAS | `hft_gc_p10_20261105` |
+| 12.0 | `HFT_GC_P10_VETO` | 2026-11-05 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | HFT-GC-P10-VETO-R: SIN_CANDIDATAS | `hft_gc_p10_20261105` |
+| 10.0 | `ASIA_BOS_GAPS_CFD_NQ` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ASIA-CFD-NQ-R: PISTAS_VIVAS; ASIA-CFD-NQ: PISTAS_VIVAS | `asia_bos_20261029`, `relanzamiento_R_20261102` |
+| 10.0 | `ASIA_BOS_GAPS_ES` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ASIA-ES-R: PISTAS_VIVAS; ASIA-ES: PISTAS_VIVAS | `asia_bos_20261029`, `relanzamiento_R_20261102` |
+| 10.0 | `ASIA_BOS_GAPS_GC` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ASIA-GC-R: PISTAS_VIVAS; ASIA-GC: PISTAS_VIVAS | `asia_bos_20261029`, `relanzamiento_R_20261102` |
+| 10.0 | `ASIA_BOS_GAPS_NQ` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ASIA-NQ-R: PISTAS_VIVAS; ASIA-NQ: PISTAS_VIVAS | `asia_bos_20261029`, `relanzamiento_R_20261102` |
+| 10.0 | `CONFLUENCIA_CVGAP_RACIMOS_NQ` | 2026-10-29 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CONF-CVR-NQ-R: PISTAS_VIVAS; CONF-CVR-NQ: PISTAS_VIVAS | `confluencia_cvr_20261029`, `relanzamiento_R_20261102` |
+| 10.0 | `CORREDOR_VOL_GAPS_CFD_ES` | 2026-10-28 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP-CFD-ES-C-R: PISTAS_VIVAS; CVGAP-CFD-ES-C: PISTAS_VIVAS | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102` |
+| 10.0 | `CORREDOR_VOL_GAPS_ES` | 2026-10-28 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP-ES-C-R: PISTAS_VIVAS; CVGAP-ES-C: PISTAS_VIVAS | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102` |
+| 10.0 | `CORREDOR_VOL_GAPS_NQ` | 2026-10-28 | CM-BRUTO-ADEMAS-DE-NETO, CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP-NQ-R: PISTAS_VIVAS | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102` |
+| 10.0 | `ESPEJO_ZONAS_ES` | 2026-11-07 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOZONAS-ES: PISTAS_VIVAS | `espejo_zonas_20261107` |
+| 10.0 | `HFT_GC_P10` | 2026-11-05 | CM-STOP-MINIMO-POR-FRICCION, CM-VIGENCIA-EN-SEGUNDOS, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | HFT-GC-P10-R: PISTAS_VIVAS | `hft_gc_p10_20261105` |
+| 7.5 | `CVGAP2_CFD_ES` | 2026-11-04 | CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP2-CFD-ES: PISTAS_VIVAS | `cvgap2_20261104` |
+| 7.5 | `CVGAP2_ES` | 2026-11-04 | CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP2-ES: PISTAS_VIVAS | `cvgap2_20261104` |
+| 7.5 | `CVGAP2_GC` | 2026-11-04 | CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP2-GC: PISTAS_VIVAS | `cvgap2_20261104` |
+| 7.5 | `CVGAP2_NQ` | 2026-11-04 | CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP2-NQ: PISTAS_VIVAS | `cvgap2_20261104` |
+| 7.5 | `CVGAP2_XAU` | 2026-11-04 | CM-STOP-MINIMO-POR-FRICCION, CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | CVGAP2-XAU: PISTAS_VIVAS | `cvgap2_20261104` |
+| 6.0 | `ESPEJO_MACRO_10T_ES` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJO10T-ES: SIN_CANDIDATAS | `espejo_macro_10t_20261107` |
+| 6.0 | `ESPEJO_MACRO_10T_YM` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJO10T-YM: SIN_CANDIDATAS | `espejo_macro_10t_20261107` |
+| 6.0 | `ESPEJO_PICOS2_GC` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS2-GC: SIN_CANDIDATAS | `espejo_picos2_20261107` |
+| 6.0 | `ESPEJO_PICOS2_NQ` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS2-NQ: SIN_CANDIDATAS | `espejo_picos2_20261107` |
+| 6.0 | `ESPEJO_PICOS2_YM` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS2-YM: SIN_CANDIDATAS | `espejo_picos2_20261107` |
+| 6.0 | `ESPEJO_PICOS_GC` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS-GC: SIN_CANDIDATAS | `espejo_picos_20261107` |
+| 6.0 | `ESPEJO_PICOS_NQ` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS-NQ: SIN_CANDIDATAS | `espejo_picos_20261107` |
+| 6.0 | `ESPEJO_PICOS_YM` | 2026-11-07 | CM-CONTROL-QUE-COMPARTE-CONDICION, CM-BANCO-DE-EVENTOS | ESPEJOPICOS-YM: SIN_CANDIDATAS | `espejo_picos_20261107` |
+
+## Código con la medición vieja (0)
+
+Ninguno.

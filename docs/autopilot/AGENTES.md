@@ -7,10 +7,10 @@ Estado: VIGENTE (GENERADO de `config/autopilot/AGENTES.json` con `python tools/a
 | Agente | Modelo | Función | Contexto máx. (caracteres) | Roles |
 |---|---|---|---|---|
 | capataz | `python_determinista` | Capataz determinista: sincroniza con foundation, avanza el embudo, reparte Kaggle, corre los SLIs de alineación | — | — |
-| arquitecto | `claude-fable-5-2` | Arquitecto cuantitativo y meta-analista: decide QUÉ vale la pena investigar | 160000 | proponente, abogado, meta_analista |
+| arquitecto | `claude-fable-5-2` | Arquitecto cuantitativo y meta-analista: decide QUÉ vale la pena investigar | 200000 | proponente, abogado, meta_analista |
 | ingeniero | `claude-opus-5-5` | Ingeniero de módulos y doctor autorreparador (worktree aislada) | 80000 | programador |
-| juez | `claude-opus-5-5` | Revisor independiente del arquitecto: otro modelo que el que propone | 120000 | revisor |
-| auditor | `claude-sonnet-5-5` | Auditor adversario, guardián de alineación | 120000 | revisor2, auditor |
+| juez | `claude-opus-5-5` | Revisor independiente del arquitecto: otro modelo que el que propone | 140000 | revisor |
+| auditor | `claude-sonnet-5-5` | Auditor adversario, guardián de alineación | 140000 | revisor2, auditor |
 | escribas | `claude-haiku-5-5` | Lectura, fichas y crónica en volumen | 30000 | lector, bibliotecario, cronista |
 
 ## Roles

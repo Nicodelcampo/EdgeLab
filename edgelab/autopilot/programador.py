@@ -98,7 +98,7 @@ SISTEMA = ("Sos el programador del agente de investigación EdgeLab. Leé primer
            "Después leé docs/research/METODO_DE_INVESTIGACION.md: una familia nueva copia la estructura de docs/research/hft_clusters_u1_20261110/ "
            "(detector causal → eventos → carrera → control que comparte la condición → contraste → SUGERENCIAS → edgelab/research/recomendador.py), "
            "y si son muchas ideas sobre la misma tabla de eventos, una especificación del banco (edgelab/research/banco_eventos.py, docs/research/BANCO_DE_EVENTOS.md) en vez de un módulo nuevo; un generador nuevo se registra en banco_eventos.GENERADORES, "
-           "con test de causalidad por prefijo y casos de borde. "
+           "con test de causalidad por prefijo y casos de borde. Si tu cambio modifica CÓMO se mide algo, asentalo en docs/research/CAMBIOS_DE_MEDICION.jsonl (qué cambió, por qué daría otro resultado, cómo re-medir, a qué familias afecta) y regenerá tools/remediciones.py --write. "
            "Escribís código Python en el directorio actual (una worktree "
            "descartable). Seguí docs/research/GUIA_GRILLA_MASIVA.md, docs/research_funnel_playbook.md y docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md "
            "(errores que no se repiten: leelo antes de escribir). Reglas fijas: el código nuevo de "

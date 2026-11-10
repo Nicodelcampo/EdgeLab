@@ -15,6 +15,8 @@ import re
 from pathlib import Path
 
 PRIORIDADES = [
+    "Personalidad del agente (Nico 2026-11-10) — efectos chicos, cuerdas profundas: lo que se descubre con reglas generales casi siempre es un efecto CHICO (el mercado tiene demasiadas variables para que una lógica global a priori dé algo fuerte). Un efecto chico con control y estabilidad no se descarta ni se infla: se ENTIENDE. La ventaja de EdgeLab es indagar y filtrar hasta encontrar el mecanismo (la «cuerda») que lo mueve: en qué condición se concentra, qué lo explica, qué lo anula, y qué predice que todavía no se midió. Cada resultado chico deja la próxima pregunta más precisa, no una grilla más grande.",
+    "Personalidad del agente (Nico 2026-11-10) — constructor, no sólo lanzador: además de lanzar corridas, detectá errores en la medición, mejorá las estructuras (guardas, generadores, banco de eventos, herramientas) para que se corran más pruebas útiles en menos tiempo, y revisá qué corridas anteriores darían otro resultado con la forma de medir de hoy (docs/research/REMEDICIONES_CANDIDATAS.md). Todo cambio de medición se asienta en docs/research/CAMBIOS_DE_MEDICION.jsonl en el mismo commit.",
     "Objetivo: edges netos (después de costos), robustos fuera de muestra y operables; útiles para challenges y combinables.",
     "Cadena obligatoria: geometría -> información -> P&L bruto -> edge neto replicado. No saltar a P&L.",
     "Preferir lo que más reduce la distancia a un edge operable por unidad de cómputo. Evitar refinamientos triviales.",
@@ -43,20 +45,28 @@ LENTES = {
     "hueco_gramatica": "Tomá UNA de las cartas_gramatica (coordenadas lejos de lo ya medido, elegidas sin mirar resultados) y convertila en familia: mecanismo económico, espacio de eventos enumerado, régimen declarado ex ante y perillas del barrido. Si ninguna tiene un mecanismo plausible, decilo y proponé la variante más cercana que sí lo tenga.",
     "regimen_declarado": "Tomá una lectura viva o una carta y proponé su versión condicionada a un régimen detectable en tiempo real (edgelab/research/agente/regimen.py como perilla, o regimen.definicion/actual_desde en la campaña), escrito ANTES de mirar el OOS: qué régimen, por qué el mecanismo depende de él y qué resultado lo refuta.",
     "regimen_cubos": "Tomá las corridas ya medidas (RESULTADO*.md, MEDIDO.md, cubos en data/cubos) y proponé UNA definición de régimen nueva (ventana, días mínimos, estabilidad entre días) para probar en el motor offline contra azar, calidad estática y nulo de signo; escribí antes qué resultado la refuta y qué familia nueva alimentaría la rotación.",
+    "cuerdas": "Tomá UN efecto chico ya medido (PISTA_VIVA, una celda INDAGAR de unas RECOMENDACIONES o lo mejor de un banco de eventos) y diseñá la indagación que encuentre su mecanismo: en qué sub-condición se concentra (activo, hora, régimen, lado, tamaño), qué variable lo explicaría y cuál lo anularía, y qué predicción NUEVA haría ese mecanismo que todavía no se midió. Un filtro que concentra el efecto se prueba en datos no usados; el mecanismo vale más que el filtro.",
+    "mejorar_estructura": "Buscá UN error o cuello de botella en cómo se mide hoy (un resultado sospechoso, una guarda que falta, un estrato degenerado, una herramienta lenta, una medición que no reutiliza el banco de eventos o los generadores) y proponé el cambio de estructura en pedido_codigo, con su test. Si cambia la forma de medir, asentalo en docs/research/CAMBIOS_DE_MEDICION.jsonl. Medí la ganancia: más pruebas útiles por hora o menos falsos.",
+    "remedir": "Tomá la familia de mayor prioridad de nucleo_proyecto.remediciones_candidatas que todavía no se re-midió, verificá en su carpeta que el cambio de medición de verdad la alcanza, y proponé su re-medición con la estructura de hoy (sobre datos que no se usaron para elegir, con linaje a la familia original). Decí qué resultado distinto esperás y por qué; si el cambio no la alcanza, decilo y pasá a la siguiente.",
     "meta_etiquetado": "Sobre una señal primaria viva, proponé un filtro secundario (meta-labeling) entrenado sólo con predicciones fuera de pliegue, con su partición de evaluación declarada antes y su conteo de pruebas.",
 }
 
 
-def elegir_lente(historial: list, pistas_vivas: int | None = None) -> str:
+def elegir_lente(historial: list, pistas_vivas: int | None = None, remediciones: int | None = None) -> str:
     """Rotación con memoria: la lente menos usada; a igualdad, la que más hallazgos dio. historial = [{'lente','hit'}].
     Criterio de Nico (2026-11-09): lo ya descubierto va primero. Mientras haya pistas vivas en el registro de factores, uno de cada dos
-    ciclos es `indagar_factor`; el otro sigue la rotación (para no dejar de explorar)."""
+    ciclos es `indagar_factor`; el otro sigue la rotación (para no dejar de explorar). Desde el 2026-11-10, si hay re-mediciones
+    candidatas, `remedir` entra al menos una vez cada cinco ciclos."""
     if pistas_vivas is None:
         try:
             from edgelab.research import factores as _F
             pistas_vivas = sum(e["estado"] in ("PISTA_VIVA", "PALANCA_DE_DISENO") for e in _F.cargar())
         except Exception: pistas_vivas = 0
     if pistas_vivas and (not historial or historial[-1].get("lente") != "indagar_factor"): return "indagar_factor"
+    if remediciones is None:                                                   # re-medir lo medido con la estructura vieja (Nico 2026-11-10)
+        f = Path(__file__).resolve().parents[2] / "docs/research/REMEDICIONES_CANDIDATAS.md"
+        remediciones = len(re.findall(r"^\| [0-9.]+ \| `", f.read_text(encoding="utf-8"), flags=re.M)) if f.exists() else 0
+    if remediciones and all(h.get("lente") != "remedir" for h in historial[-4:]): return "remedir"
     uso = {k: 0 for k in LENTES}; hits = {k: 0 for k in LENTES}
     for h in historial:
         if h.get("lente") in uso:
@@ -84,6 +94,7 @@ NUCLEO_FUENTES = [
     ("metodo_de_investigacion", "docs/research/METODO_DE_INVESTIGACION.md", "todos"),              # el orden de una idea a una decisión
     ("practicas_de_trabajo", "docs/research/PRACTICAS_DE_TRABAJO_20261110.md", "todos"),          # qué salió bien y mal, con guardas
     ("banco_de_eventos", "docs/research/BANCO_DE_EVENTOS.md", "todos"),                           # muchos experimentos, poca multiplicidad
+    ("remediciones_candidatas", "docs/research/REMEDICIONES_CANDIDATAS.md", "diseño"),           # qué medido antes daría otro resultado hoy
     ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
     ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),
     ("guia_regimen", "docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md", "diseño"),

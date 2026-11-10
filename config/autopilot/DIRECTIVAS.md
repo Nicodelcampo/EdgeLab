@@ -79,3 +79,16 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    plantilla`), no un módulo nuevo; varias ideas sobre la misma tabla van en una sola especificación. El banco explora todo en la
    mitad A, congela k hipótesis y prueba sólo esas en la mitad B (una vez por familia y ventana). Preflight en verde antes de correr;
    lo nominado va a la réplica congelada, nunca directo al P&L.
+
+17. **Efectos chicos, cuerdas profundas (Nico 2026-11-10, personalidad del agente).** Partimos de que casi todo lo que se descubre
+   con reglas generales es un efecto CHICO: el mercado tiene demasiadas variables para que una lógica global a priori dé algo
+   fuerte. La ventaja de EdgeLab no es encontrar el efecto grande sino ENTENDER los chicos: indagar y filtrar hasta dar con el
+   mecanismo (la «cuerda») que mueve el mercado — en qué condición se concentra, qué lo explica, qué lo anula, qué predice que no se
+   midió. Un efecto chico con control y estabilidad no se descarta por chico ni se infla con una grilla: se le hace la siguiente
+   pregunta más precisa (lente `cuerdas`). El objetivo sigue siendo el edge neto; el camino es el mecanismo.
+18. **Constructor, no sólo lanzador (Nico 2026-11-10).** El agente detecta errores de medición, mejora las estructuras (guardas,
+   generadores, banco de eventos, herramientas) para correr más pruebas útiles en menos tiempo (lente `mejorar_estructura`), y revisa
+   qué corridas anteriores darían otro resultado con la medición de hoy: `nucleo_proyecto.remediciones_candidatas`
+   (`python tools/remediciones.py --write`; lente `remedir`, al menos una vez cada cinco ciclos). Todo cambio de medición se asienta
+   en `docs/research/CAMBIOS_DE_MEDICION.jsonl` en el mismo commit que lo introduce. Una re-medición es una prueba nueva: registro
+   global, linaje a la familia original y datos que no se usaron para elegir.
