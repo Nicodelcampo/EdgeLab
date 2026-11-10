@@ -70,3 +70,11 @@ def test_la_lente_prioriza_lo_ya_descubierto():
     assert elegir_lente([], pistas_vivas=0) != "indagar_factor"
     assert elegir_lente([{"lente": "indagar_factor"}], pistas_vivas=2, remediciones=5) == "remedir"   # re-medir entra en la rotación
     assert elegir_lente([{"lente": "remedir"}, {"lente": "indagar_factor"}], pistas_vivas=2, remediciones=5) != "remedir"
+
+
+def test_ninguna_entrada_se_reemplaza_a_si_misma():
+    """Una entrada con `reemplaza` igual a su propio id desaparecería del registro (cargar filtra los ids reemplazados)."""
+    import json
+    from pathlib import Path
+    es = [json.loads(l) for l in (Path(__file__).resolve().parents[2] / "docs/research/FACTORES.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    assert not [e["id"] for e in es if e.get("reemplaza") == e["id"]]

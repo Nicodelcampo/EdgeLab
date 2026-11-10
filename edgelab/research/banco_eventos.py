@@ -36,16 +36,23 @@ DEFECTOS = dict(direccion=1, nulo=0.0, umbral_economico=0.08, k=3, q=0.10, min_n
                 hipotesis_previas=[])
 Z = NormalDist()
 
-# Generadores conocidos: quién produce tablas con el contrato del banco. Un generador nuevo se agrega acá con su test de causalidad.
+# Generadores conocidos: quién produce tablas con el contrato del banco. Un generador nuevo (o propio del agente, acotación de F9 del
+# 2026-11-10) se agrega acá con funcion, tabla, eventos, desenlaces, test_causalidad (archivo::test), mecanismo y como_refutar.
 GENERADORES = {
     "hft_ruptura": dict(funcion="edgelab.research.hft_ruptura.ruptura_del_dia", kernel="tools/hft_clusters_info.py ruptura",
                         tabla="docs/research/hft_clusters_u1_20261110/HFTC_ruptura.csv",
                         eventos="primer regreso (D0) a un cluster HFT grande de NQ/ES tras alejarse X/2; control = pseudo-clusters desplazados",
-                        desenlaces=["rompe", "rompe_media", "rompe_doble", "t_res_s", "avance15_x"]),
+                        desenlaces=["rompe", "rompe_media", "rompe_doble", "t_res_s", "avance15_x"],
+                        test_causalidad="tests/research/test_hft_ruptura.py::test_ruptura_del_dia_rasgos_completos_y_causales",
+                        mecanismo="cómo llega el precio a un cluster grande (flujo, picos, EMAs, tendencia de la sesión) decide si la liquidez lo defiende",
+                        como_refutar="ningún rasgo nominado en B ni previa replicada con potencia en tablas no miradas"),
     "hft_contexto": dict(funcion="edgelab.research.hft_contexto.contexto_del_dia", kernel="tools/hft_clusters_info.py contexto",
                          tabla="docs/research/hft_clusters_u1_20261110/HFTC_contexto.csv",
                          eventos="toques de la definición de rebote elegida, con el contexto de otros clusters vivos",
-                         desenlaces=["resultado"]),
+                         desenlaces=["resultado"],
+                         test_causalidad="tests/research/test_hft_contexto.py::test_contexto_es_causal_por_prefijo",
+                         mecanismo="otros clusters vivos (respaldo, obstáculo, densidad, edad) cambian la defensa del tocado",
+                         como_refutar="ninguna variable de contexto nominada con potencia (ver RESULTADO_CONTEXTO.md)"),
 }
 
 
@@ -381,6 +388,17 @@ def preflight(spec: dict, T: pd.DataFrame, n_calibracion: int = 40) -> dict:
     A, B, _ = partir(spec, T); avisos = []
     sa, sb = A[["inst", "fecha"]].drop_duplicates().shape[0], B[["inst", "fecha"]].drop_duplicates().shape[0]
     if min(sa, sb) < 20: err.append(f"pocas sesiones por mitad (A {sa}, B {sb} < 20)")
+    # K21: potencia ANTES de gastar B. Un estrato de un rasgo tiene ≈ n_A / 3 eventos: si eso no llega a min_n, ninguna celda puede
+    # elegirse en A y B se gasta en el modelo solo. Las previas usan toda la tabla: MDE ≈ 2,49 · sd / √(n / 3).
+    n_a = int((A.placebo == 0).sum()) if "placebo" in A else len(A)
+    if n_a / 3 < spec["min_n"]:
+        err.append(f"sin potencia para celdas: A tiene {n_a} eventos (≈ {n_a // 3} por estrato) < min_n {spec['min_n']}; sumar datos o "
+                   "bajar min_n en la especificación ANTES de correr (declarado), nunca después")
+    R = T[T.placebo == 0]; sd = float(R[spec["desenlace"]].std()) if len(R) > 1 else np.nan
+    for h in spec["hipotesis_previas"]:
+        mde = 2.49 * sd / np.sqrt(max(len(R) / 3, 1))
+        if np.isfinite(mde) and mde > 2 * spec["umbral_economico"]:
+            avisos.append(f"previa {h['rasgos']}={h['estratos']}: MDE ≈ {mde:.2f} > 2 × umbral económico (sin potencia para un efecto útil)")
     for r in rasgos_de(spec, T):
         c = cortes(A, r, spec["cortes_fijos"]); e = estrato(A, r, c); e = e[e >= 0]
         if e.size and min((e == k).mean() for k in (0, 1, 2)) < 0.10: avisos.append(f"{r}: algún estrato con < 10 % de A")

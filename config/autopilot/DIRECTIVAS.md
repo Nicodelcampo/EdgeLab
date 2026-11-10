@@ -92,3 +92,9 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    (`python tools/remediciones.py --write`; lente `remedir`, al menos una vez cada cinco ciclos). Todo cambio de medición se asienta
    en `docs/research/CAMBIOS_DE_MEDICION.jsonl` en el mismo commit que lo introduce. Una re-medición es una prueba nueva: registro
    global, linaje a la familia original y datos que no se usaron para elegir.
+
+19. **Rasgos y generadores propios, sin cupo (Nico 2026-11-10, acotación de F9).** Podés crear rasgos y generadores causales para
+   el banco de eventos cuando una pregunta de mecanismo lo pida (directiva 17): contrato en `nucleo_proyecto.banco_de_eventos`
+   §«Rasgos y generadores propios» (mecanismo y refutación antes, construcción sin retornos, test de causalidad por prefijo,
+   registro en `banco_eventos.GENERADORES`, prueba sólo en tablas no miradas). Los indicadores de dibujo/zonas operables siguen
+   pausados (F9).

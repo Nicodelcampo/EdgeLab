@@ -35,6 +35,21 @@ cosas de forma mecánica.
 7. **Salida como guía.** `RESULTADO.json` + `RECOMENDACIONES.md` (`recomendador.py`: CONFIRMAR, INDAGAR, ESTRUCTURA_DE_PRECIO,
    DESCARTAR…). Lo nominado va a la **réplica congelada** de la familia (o al embudo); nada se promueve desde el banco.
 
+## Rasgos y generadores propios (Nico 2026-11-10, acotación de F9, sin cupo)
+El agente puede crear rasgos nuevos (una columna causal más en la tabla de un generador) y generadores nuevos (un detector de
+eventos con su control). No puede crear indicadores de dibujo/zonas operables: eso sigue pausado (F9). Contrato:
+1. **Antes de tocar retornos:** mecanismo que mide, justificación económica y cómo podría refutarse, escritos en el docstring del
+   generador o del rasgo y en `GENERADORES`.
+2. **Construcción sin retornos:** parámetros fijados por una regla mecánica sobre frecuencia, estabilidad y escala (E0); nunca
+   ajustados mirando desenlaces.
+3. **Causal por contrato:** test de causalidad por prefijo (cambiar lo posterior al evento no cambia el rasgo) y casos de borde (primer
+   y último tick). `GENERADORES[<nombre>]["test_causalidad"]` apunta al test; `tests/research/test_banco_eventos.py` verifica que
+   exista.
+4. **Versión congelada:** un rasgo o un parámetro nuevo es una versión nueva del generador, y su tabla es una tabla nueva.
+5. **Prueba sólo en datos no mirados:** lo que inspiró el rasgo nunca sirve para evaluarlo (otra ventana, otro activo o el
+   forward). El banco lo hace cumplir con `tabla_no_mirada` y el libro de usos.
+6. **Retiro:** un rasgo que el banco no nomina con potencia queda NO_REPETIR en `FACTORES.jsonl` con su MDE.
+
 ## Cuánto cuesta
 - Registro global: `banco/<nombre>/A` (celdas exploradas, nota «no confirmatoria») y `banco/<nombre>/B` (k + 1 pruebas, las únicas
   que gastan α).

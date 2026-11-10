@@ -59,3 +59,17 @@ def test_control_recibe_contexto_y_el_analisis_lo_usa_solo_como_diagnostico():
     T = pd.concat([F.assign(fecha=20250801 + i) for i in range(200)], ignore_index=True)
     A = K.analizar(T, n_boot=500)
     assert set(A["variables"]) == set(K.CONTRASTES)                                       # el control no agrega pruebas
+
+
+def test_contexto_es_causal_por_prefijo():
+    """Los clusters detectados DESPUÉS del evento no cambian su contexto (sólo cuentan los ya detectados y vivos)."""
+    import numpy as np
+    import pandas as pd
+    from edgelab.research import hft_contexto as K
+    NS = 10**9; t0 = 1_700_000_000 * NS
+    C = pd.DataFrame(dict(t_ns=[t0, t0 + 100 * NS, t0 + 200 * NS, t0 + 900 * NS, t0 + 950 * NS], lo=[100.0, 96.0, 104.0, 99.0, 101.0],
+                          hi=[102.0, 98.0, 106.0, 101.0, 103.0]))
+    t_ev = t0 + 600 * NS
+    a = K.contexto(C, 0, t_ev, t0 + 300 * NS, 102.0, +1, 4.0)
+    b = K.contexto(C[C.t_ns < t_ev].reset_index(drop=True), 0, t_ev, t0 + 300 * NS, 102.0, +1, 4.0)
+    assert {k: v for k, v in a.items() if not (isinstance(v, float) and np.isnan(v))} == {k: v for k, v in b.items() if not (isinstance(v, float) and np.isnan(v))}

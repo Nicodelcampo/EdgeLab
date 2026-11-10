@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (4)
+## PISTA_VIVA (5)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,11 +14,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
   - Siguiente: Pre-registrar la hipótesis de RUPTURA (carrera a favor de atravesar el cluster tras el toque) con la misma definición de NQ, umbrales fijos, y probarla una vez en la réplica abr → sep 2026. No elegir umbrales mirando esta tabla.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTES.md`
-- **Toque D0 de un cluster HFT grande cuando la sesión va en contra de la dirección de llegada (retroceso): el precio atraviesa el cluster** (`F-HFT-RUPTURA-RETROCESO-CONTRA-SESION`, 2026-11-10, sesion)
-  - Efecto: Ruptura +0,082 (IC90 +0,034…+0,131, p 0,0024, n 1.067), 8/9 meses, NQ +0,086 y ES +0,066, +0,114 sobre el control. No nominada por BH entre 67 celdas (umbral 0,0015). DESC ya usado.
-  - Dónde: NQ y ES, clusters del E0-b, DESC jul-2025 → mar-2026
-  - Siguiente: Indagación barata: magnitud continua y tendencia de 2 h; la réplica congelada sólo si Nico decide gastarla en esta hipótesis.
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_INDAGA.md`, `docs/research/hft_clusters_u1_20261110/HFTC_ruptura.json`
+- **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0)** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE`, 2026-11-10, sesion)
+  - Efecto: NQ (HFT-REBOTES, DESC): +0,076; RTY+YM+6E+6B (DESC, activos no mirados): +0,125 (se 0,056, z 2,2; RTY +0,088, YM +0,207). Diagnóstico, no prueba pre-registrada.
+  - Dónde: Futuros de índices (NQ, RTY, YM); clusters del E0-b, toque D0, carrera ±X con X = fricción / 0,08
+  - Siguiente: Pre-registrar «real − control > 0» como hipótesis previa en la réplica abr–sep de NQ/ES/RTY/YM; indagar por qué el control rebota (reversión de la sesión) y el cluster no.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_OTROS.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTES.md`
+- **Retroceso contra la tendencia de la sesión que llega a un cluster HFT grande: lo atraviesa** (`F-HFT-RUPTURA-RETROCESO-CONTRA-SESION-B`, 2026-11-10, sesion)
+  - Efecto: NQ/ES DESC +0,082 (p 0,0024, no nominada entre 67). En RTY/YM/6E/6B (hipótesis previa): +0,011 (se 0,067, MDE ≈ 0,19): sin potencia; RTY en contra, YM a favor.
+  - Dónde: NQ y ES; no replicada con potencia en otros activos
+  - Siguiente: Decidirla en la réplica abr–sep de NQ/ES como hipótesis previa (prueba única, con la de real − control).
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_INDAGA.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_OTROS.md`
 - **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
   - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
   - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas

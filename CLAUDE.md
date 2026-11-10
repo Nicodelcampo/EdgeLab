@@ -125,6 +125,13 @@ Holdout **intacto**. Detector `HFTZonesESPureV2Flat` **no modificado**.
 de descubrimiento sobre los 5 indicadores existentes. Agregar indicadores hoy
 amplía el espacio de búsqueda y el data snooping sin evidencia de que haga falta.
 
+**Acotación de F9 (Nico, 2026-11-10, opción b):** la pausa sigue para indicadores de dibujo/zonas operables (tipo NT8). El agente
+SÍ puede crear, sin cupo, **rasgos y generadores causales** para el banco de eventos, con el contrato de
+`docs/research/BANCO_DE_EVENTOS.md` §«Rasgos y generadores propios»: mecanismo, justificación económica y cómo podría refutarse
+declarados antes; construcción sin retornos; test de causalidad por prefijo; registro en `banco_eventos.GENERADORES`; y prueba sólo
+en tablas no miradas (nunca en los datos que lo inspiraron). Pasar a indicadores operables (levantar F9) se decide cuando el banco
+muestre calibración sana en datos reales.
+
 ## Rituales permanentes
 
 - Todo **checkpoint de turno termina con "Aporte al referente: …"** (1–2 líneas:

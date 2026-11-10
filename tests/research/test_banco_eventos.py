@@ -104,3 +104,19 @@ def test_hipotesis_previa_se_prueba_en_toda_la_tabla():
     za = p["a=2"]["vs_resto"]["estimacion"] / p["a=2"]["vs_resto"]["se"]; zb = p["b=2"]["vs_resto"]["estimacion"] / p["b=2"]["vs_resto"]["se"]
     assert za > 3 and abs(zb) < 2.5                                               # el mecanismo está en `a`, no en `b`
     assert p["a=2"]["n_b"] > max(r["n_b"] for r in out["resultados"] if r["tipo"] == "celda")   # usa toda la tabla, no sólo B
+
+
+def test_preflight_frena_sin_potencia_para_celdas():
+    """K21: una tabla donde ningún estrato de A llega a min_n no gasta la mitad B."""
+    p = BE.preflight(dict(SPEC, min_n=2000), _tabla(n_dias=60), n_calibracion=2)
+    assert not p["ok"] and any("sin potencia para celdas" in e for e in p["errores"])
+
+
+def test_generadores_cumplen_el_contrato():
+    """Acotación de F9: todo generador (propio o no) declara mecanismo y refutación y apunta a un test de causalidad que existe."""
+    from pathlib import Path
+    root = Path(__file__).resolve().parents[2]
+    for n, g in BE.GENERADORES.items():
+        assert {"funcion", "tabla", "eventos", "desenlaces", "test_causalidad", "mecanismo", "como_refutar"} <= set(g), n
+        archivo, test = g["test_causalidad"].split("::")
+        assert f"def {test}(" in (root / archivo).read_text(encoding="utf-8"), f"{n}: falta {g['test_causalidad']}"
