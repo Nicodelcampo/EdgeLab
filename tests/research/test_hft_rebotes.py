@@ -63,3 +63,17 @@ def test_rebotes_del_dia_solo_ticks_posteriores_y_control_lejos():
     px2 = px.copy(); px2[:12000] = 0.0                                                    # cambiar el pasado no cambia nada
     F2 = pd.DataFrame(R.rebotes_del_dia("NQ", 20250805, ts, px2, np.ones(n), C, 0.25, 1.5455))
     pd.testing.assert_frame_equal(F[F.placebo == 0].reset_index(drop=True), F2[F2.placebo == 0].reset_index(drop=True))
+
+
+def test_control_no_se_solapa_con_un_cluster_real_vivo(monkeypatch):
+    monkeypatch.setattr(R, "DESFASES_S", (-1200, 1200))                                    # a ±20 min el cluster real sigue vivo (vida 30 min)
+    """Con el precio oscilando siempre alrededor del cluster real, todo control caería encima de él: no tiene que haber control.
+    Con el precio en otra zona en las horas de control, sí."""
+    n = 30000; ts = 1_700_000_000 * S + np.arange(n) * S
+    osc = 20000 + 30 * np.sin(2 * np.pi * np.arange(n) / 1200.0)                           # período 20 min: a ±20/40 min, mismo precio
+    C = pd.DataFrame(dict(t_ns=[int(ts[15000])], lo=[osc[15000] - 4], hi=[osc[15000] + 4]))
+    F = pd.DataFrame(R.rebotes_del_dia("NQ", 20250805, ts, osc, np.ones(n), C, 0.25, 1.5455))
+    assert (F.placebo == 0).any() and not (F.placebo == 1).any()
+    lejos = osc.copy(); lejos[:14500] += 500; lejos[15500:] += 500                          # a ±20 min el precio está 500 pts más arriba
+    F2 = pd.DataFrame(R.rebotes_del_dia("NQ", 20250805, ts, lejos, np.ones(n), C, 0.25, 1.5455))
+    assert (F2.placebo == 1).any()

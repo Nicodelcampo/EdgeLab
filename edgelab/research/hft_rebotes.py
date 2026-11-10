@@ -31,7 +31,7 @@ DEFINICIONES = {
     "D4_MEMORIA": "Regreso tras ≥ 900 s afuera y una excursión ≥ X (¿el nivel se recuerda pasado un rato?).",
     "D5_DERIVA": "Regreso tras una excursión ≥ X/2 en el que los últimos X/2 de la aproximación tardaron ≥ 120 s (llega sin impulso).",
     "D6_PENETRACION_FALLIDA": "Tras una excursión ≥ X/2 el precio entra, penetra al menos 2 ticks y a lo sumo min(ancho/2, X/4) sin tocar el borde lejano y "
-                              "vuelve a salir por el mismo lado (≥ 2 ticks) dentro de 120 s; evento en esa salida (entrada confirmada).",
+                              "vuelve a alejarse X/4 por el mismo lado dentro de 120 s del toque; evento en ese punto (entrada confirmada).",
 }
 DESFASES_S = (-2400, -1200, 1200, 2400)
 MARGEN_S = 300
@@ -93,8 +93,7 @@ def eventos(t, p, v, lo, hi, X, tick):
         if "D6_PENETRACION_FALLIDA" not in out and ex >= X / 2 and r["salio"]:
             tramo = slice(i, r["fin"] + 1); pen = float((hi - p[tramo].min()) if lado > 0 else (p[tramo].max() - lo))
             toca_lejano = bool((p[tramo] <= lo).any()) if lado > 0 else bool((p[tramo] >= hi).any())
-            if (r["lado_salida"] == lado and 2 * tick <= pen <= min(ancho / 2, X / 4) and not toca_lejano and t[r["fin"]] - t[i] <= 120
-                    and lado * (p[r["fin"]] - ref) >= 2 * tick):
+            if r["lado_salida"] == lado and 2 * tick <= pen <= min(ancho / 2, X / 4) and not toca_lejano and t[r["fin"]] - t[i] <= 120:
                 out["D6_PENETRACION_FALLIDA"] = (r["fin"], float(p[r["fin"]]), lado)
     return out
 
@@ -117,6 +116,7 @@ def _cluster(ts, px, vol, t_ns, lo, hi, X, tick):
 def rebotes_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -> list:
     """Filas (definición, real/control, lado, resultado) de una sesión: clusters reales y pseudo-clusters de control."""
     X = barrera(friccion, tick); filas = []; reales = C.t_ns.to_numpy(np.int64)
+    r_lo, r_hi = C.lo.to_numpy(float), C.hi.to_numpy(float)
     for c in C.itertuples(index=False):
         for d, (lado, res) in _cluster(ts, px, vol, int(c.t_ns), float(c.lo), float(c.hi), X, tick).items():
             filas.append(dict(inst=inst, fecha=int(fecha), definicion=d, placebo=0, lado=lado, resultado=res))
@@ -124,7 +124,11 @@ def rebotes_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -
         for des in DESFASES_S:
             t2 = int(c.t_ns) + des * NS
             if t2 <= ts[0] or t2 >= ts[-1] or np.abs(reales - t2).min() < MARGEN_S * NS: continue
-            k = int(np.searchsorted(ts, t2, side="right")) - 1; centro = float(px[k])
-            for d, (lado, res) in _cluster(ts, px, vol, int(ts[k]), centro - w / 2, centro + w / 2, X, tick).items():
+            k = int(np.searchsorted(ts, t2, side="right")) - 1; centro = float(px[k]); plo, phi = centro - w / 2, centro + w / 2
+            # Revisión 2026-11-10: el control no puede compartir precio (± X/4) con un cluster real vivo en algún momento de su vida
+            # (si no, mide el cluster real y la diferencia real − control se achica hacia 0).
+            vivo = (reales < t2 + VIDA_CLUSTER_S * NS) & (reales + VIDA_CLUSTER_S * NS > t2)
+            if (vivo & (r_lo <= phi + X / 4) & (plo - X / 4 <= r_hi)).any(): continue
+            for d, (lado, res) in _cluster(ts, px, vol, int(ts[k]), plo, phi, X, tick).items():
                 filas.append(dict(inst=inst, fecha=int(fecha), definicion=d, placebo=1, lado=lado, resultado=res))
     return filas

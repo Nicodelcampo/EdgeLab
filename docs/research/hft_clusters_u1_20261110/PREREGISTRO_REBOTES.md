@@ -25,7 +25,7 @@ velocidad de aproximación; dentro de cada visita, penetración, segundos y volu
 | D3_RECHAZADO_AL_NACER | en los primeros 300 s: ≤ 30 s adentro y ya se alejó ≥ X; primer regreso | el nivel fue rechazado de inmediato: el ejecutor terminó ahí y el regreso encuentra liquidez opuesta |
 | D4_MEMORIA | regreso tras ≥ 900 s afuera y excursión ≥ X | ¿el nivel se recuerda pasado un rato o se olvida? |
 | D5_DERIVA | regreso tras excursión ≥ X/2 en el que los últimos X/2 tardaron ≥ 120 s | llegar sin impulso favorece que la liquidez del nivel frene; el impulso tiende a atravesar |
-| D6_PENETRACION_FALLIDA | tras excursión ≥ X/2, entra ≥ 2 ticks y a lo sumo min(ancho/2, X/4), no toca el borde lejano y sale por el mismo lado ≥ 2 ticks dentro de 120 s; evento en la salida | entrada confirmada: el rechazo ya ocurrió; mide si continúa |
+| D6_PENETRACION_FALLIDA | tras excursión ≥ X/2, entra ≥ 2 ticks y a lo sumo min(ancho/2, X/4), no toca el borde lejano y vuelve a alejarse X/4 por el mismo lado dentro de 120 s del toque; evento en ese punto | entrada confirmada: el rechazo ya ocurrió; mide si continúa |
 
 Población (CLAUDE.md): cubre aproximación (D5), primer toque tras alejarse (D0, D1, D3), toque n-ésimo acotado (D1), estado al nacer
 (D2, D3), expiración por tiempo (D4) y confirmación (D6). Quedan NO MEDIDOS: estado continuo por barra e invalidación por ruptura.
@@ -48,3 +48,15 @@ Ninguna definición nominada con MDE < 0,10; o nominadas sólo en un activo; o d
 - Las definiciones se escribieron después de conocer el E0 y el E0-b (sin retornos) y sin conocer ningún resultado con retornos.
 - D0 comparte eventos con el paso INFO de la definición de 4 zonas: no es independiente de ese resultado.
 - Los umbrales (300 s, 120 s, 40 %, 600 s, 900 s, X/4) son redondos y fijos; no se ajustan después de ver resultados.
+
+## 7. Revisión antes de lanzar (2026-11-10, sin resultados)
+1. **Control contaminado (corregido):** un pseudo-cluster que compartía precio (± X/4) con un cluster real vivo en algún momento de
+   su vida medía el cluster real y achicaba la diferencia hacia 0. Ahora se descarta.
+2. **D6 (corregido):** la salida que dispara el evento es el fin de la visita (alejarse X/4), no «2 ticks»; la carrera parte de ese
+   precio. Descripción alineada con el código.
+3. **Revisado y sin cambios:** causalidad (sólo ticks posteriores a la detección; D2/D3 sólo disparan después de los 300 s que las
+   definen), un evento por cluster y definición, lado del rebote = lado desde el que volvió, carrera acotada a la sesión, BH sobre
+   las 7 p combinadas, dependencia entre clusters solapados absorbida por el bootstrap por sesión.
+4. **Límites que quedan:** D0 y D1 comparten muchos eventos (las 7 p no son independientes; BH sigue siendo válido bajo dependencia
+   positiva). Un salto que cruza la banda sin un tick adentro no cuenta como visita (raro con 17–20 pts de ancho). Con 20 clusters
+   por sesión en NQ el control temporal puede quedar con pocos casos: se informa su n y, si no alcanza, SIN_POTENCIA.
