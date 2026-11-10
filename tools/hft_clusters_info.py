@@ -108,7 +108,7 @@ def no_vigente(modo: str, res: dict) -> list:
 
 
 def main():
-    a = [x for x in sys.argv[1:] if not x.startswith("--")]; slug = lambda m: f"nicolasbuttaro/hft-clusters-info-{m}-20261110"
+    a = [x for x in sys.argv[1:] if not x.startswith("--")]; slug = lambda m: f"nicolasbuttaro/hft-clusters-info-{m.replace('_', '-')}-20261110"   # Kaggle no admite «_» en el slug
     k = lambda *x: subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), *x], capture_output=True, text=True).stdout
     if a[0] == "traer":
         for ext in ("json", "csv"): print(k("output", "--slug", slug(a[1]), "--file", f"HFTC_{a[1]}.{ext}", "--out", str(DIR / f"HFTC_{a[1]}.{ext}")).strip())
@@ -130,7 +130,10 @@ def main():
     if a[0] == "recomendar": print("escrito", recomendaciones(a[1])); return
     out = construir(a[0]); print("construido", out.relative_to(ROOT))
     if "--solo-construir" not in sys.argv:
-        print(k("push", "--slug", slug(a[0]), "--title", f"hft clusters info {a[0]} 20261110", "--script", str(out), "--dataset", DATASET)[-300:])
+        r = k("push", "--slug", slug(a[0]), "--title", f"hft clusters info {a[0]} 20261110", "--script", str(out), "--dataset", DATASET)
+        print(r[-300:])
+        if '"versionNumber"' not in r or '"hasError":true' in r:            # O19: un push fallido no puede pasar en silencio
+            raise SystemExit(f"FALLÓ el lanzamiento de {slug(a[0])}: revisar la salida de tools/kaggle_kernel.py push")
 
 
 if __name__ == "__main__":
