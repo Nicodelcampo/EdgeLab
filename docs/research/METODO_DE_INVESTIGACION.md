@@ -24,6 +24,8 @@ Estado: VIGENTE (2026-11-10, aprobado por Nico). Va completo en el núcleo de co
 8. **Salida como guía, no como 0/1:** `edgelab/research/recomendador.py` traduce cada resultado en categoría, lectura, próximo
    análisis y prioridad (CONFIRMAR, INDAGAR, ESTRUCTURA_DE_PRECIO, INCONSISTENTE, SIN_MUESTRA, DESCARTAR, NO_CONCLUYENTE) y escribe
    `RECOMENDACIONES_<modo>.md`. Cada módulo define `SUGERENCIAS` (el próximo análisis de cada ítem si muestra algo).
+8b. **Muchas ideas sobre los mismos eventos → banco de eventos** (`docs/research/BANCO_DE_EVENTOS.md`): si la tabla ya existe, la
+   idea es una especificación JSON; el banco explora en la mitad A, congela k hipótesis y las prueba en la mitad B (BH q 0,10).
 9. **Réplica congelada** (una vez, mismo código) sólo para lo CONFIRMAR; **P&L con ejecución fija** sólo después de la réplica.
 10. **Cierre:** RESULTADO + RECOMENDACIONES + entrada en `FACTORES.jsonl` (aunque sea SIN_FACTOR o NO_REPETIR) en el mismo commit.
 

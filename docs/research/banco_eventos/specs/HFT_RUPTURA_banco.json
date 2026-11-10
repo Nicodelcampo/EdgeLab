@@ -1,0 +1,78 @@
+{
+ "nombre": "HFT_RUPTURA_banco",
+ "familia": "HFT_RUPTURA_BANCO",
+ "linaje": "HFT_RUPTURA",
+ "etapa": "EF2",
+ "generador": "hft_ruptura",
+ "tabla": "docs/research/hft_clusters_u1_20261110/HFTC_ruptura.csv",
+ "ventana": [
+  20250701,
+  20260331
+ ],
+ "desenlace": "rompe",
+ "columnas_desenlace": [
+  "rompe",
+  "rompe_media",
+  "rompe_doble",
+  "t_res_s",
+  "avance15_x"
+ ],
+ "excluir": [
+  "lado"
+ ],
+ "direccion": 0,
+ "nulo": 0.0,
+ "umbral_economico": 0.08,
+ "k": 3,
+ "q": 0.1,
+ "min_n": 100,
+ "min_n_b": 60,
+ "pares": true,
+ "rasgos": [
+  "aprox_s",
+  "excursion_x",
+  "afuera_s",
+  "edad_s",
+  "ancho_x",
+  "n_zonas",
+  "packing",
+  "flujo_alineado",
+  "visita",
+  "minuto_et",
+  "tendencia_alineada",
+  "dist_extremo_x",
+  "rango30_x",
+  "vol30_rel",
+  "deseq30",
+  "picos_dentro",
+  "picos_sin_tomar",
+  "salida_s",
+  "vol_banda_rel",
+  "ema9_pend",
+  "ema21_pend",
+  "salida_eficiencia",
+  "pasada_s"
+ ],
+ "cortes_fijos": {
+  "picos_dentro": [
+   0.5,
+   1.5
+  ],
+  "picos_sin_tomar": [
+   0.5,
+   1.5
+  ],
+  "flujo_alineado": [
+   -0.5,
+   0.5
+  ],
+  "visita": [
+   2.5,
+   3.5
+  ]
+ },
+ "justificacion_economica": "Un cluster HFT grande es tamaño ejecutado; según cómo llega el precio (flujo, picos, EMAs, volumen) la liquidez defiende o no el nivel: ruptura o rebote.",
+ "como_refutar": "Ninguna celda ni el modelo se nominan en B con BH q 0,10, o lo nominado no supera 0,08 en la réplica.",
+ "habilitada": false,
+ "nota": "Deshabilitada hasta cerrar la indagación pre-registrada de HFT-RUPTURA (ver BANCO_DE_EVENTOS.md, Primer uso)."
+}

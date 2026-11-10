@@ -26,6 +26,7 @@ Capas (una dependencia nunca apunta a una capa superior):
 | 2 | `liquid-release` | Release liquida de ticks | core | Construye, verifica, audita y publica la release canonica liquid_tick_v1: un contrato liquido por sesion, doble reloj, sin holdout, con manifiesto y SHA-256. Lector con preflight de ambos relojes. Incluye el auditor independiente de contenido (originado en el agente de Notion, commit 5aac8bb3) que corre dentro de Kaggle y emite un recibo agregado. | data-custody, sessions, kaggle-custody | `docs/infra/LIQUID_RELEASE_20261014.md` | `tests/data`, `tests/test_liquid_release_payload_audit.py`, `tests/test_daily_data_health.py` |
 | 2 | `research-data-gate` | Compuerta de datos de research (linea main) | core | Compuerta opt-in fail-closed para lectores de datos de research y guard de acceso Kaggle; los lectores legacy aun no estan cableados. Traído de main el 2026-10-14. | data-custody | `docs/research/INVENTARIO_LINEA_MAIN_20261014.md` | **sin tests** |
 | 3 | `bridge-kernels` | Barras, footprint e indicadores (paridad con NT8) | core | Construye barras y footprint canonicos, kernels de indicadores en Python y verifica paridad contra los oraculos de NT8. | data-custody, sessions | `docs/nt8_indicator_parity_contract.md` | `tests/bridge` |
+| 4 | `banco-eventos` | Banco de eventos | experimental | Estructura central para probar muchos experimentos sobre una tabla de eventos: especificación JSON, partición honesta A/B por semanas, exploración libre en A (celdas de 1 y 2 rasgos y modelo aditivo), k hipótesis congeladas y probadas en B con BH, calibración contra permutaciones, libro de usos de B y recomendaciones. | research, funnel, holdout | `docs/research/BANCO_DE_EVENTOS.md` | `tests/research/test_banco_eventos.py` |
 | 4 | `context` | Contexto causal | experimental | Constructores de contexto target-free (HMM, compuerta L2) para condicionar mediciones. | bridge-kernels, data-custody | `docs/research/PROTOCOLO_CONTEXTOS_L2_NQ_20260928.md` | `tests/research` |
 | 4 | `costos` | Costos de ejecucion canonicos y ventanas de noticias | experimental | Fuente unica de spread, comision y slippage por instrumento y escenario G3; falla cerrado si falta un componente medido (no transporta costos entre instrumentos). Calendario USD de alto impacto (minuto exacto en UTC, una fuente por fila) y filtro de operaciones que cruzan una ventana de noticia (regla de props y friccion; por defecto +-1 min, LucidDaily). | - | `docs/research/auditoria_embudo_20261022/AUDITORIA_EMBUDO_A_FONDO_20261022.md` | `tests/test_costos_canonicos.py`, `tests/test_noticias.py` |
 | 4 | `discovery` | Descubrimiento por familias (escaneo con nulo de máximo) | experimental | Barrido de familias de features con nulo de máximo por sesión (CPU/GPU), réplica cronológica D0/D1 y D2 sellado. | stats, funnel | `edgelab/discovery/README.md` | `tests/test_discovery.py` |
@@ -65,6 +66,9 @@ graph LR
   research_data_gate --> data_custody
   bridge_kernels --> data_custody
   bridge_kernels --> sessions
+  banco_eventos --> research
+  banco_eventos --> funnel
+  banco_eventos --> holdout
   context --> bridge_kernels
   context --> data_custody
   discovery --> stats
@@ -107,6 +111,7 @@ graph LR
 - **liquid-release** — entra: exports NT8 por contrato, calendario; sale: release_manifest.json, Parquet por activo, metadata/*.
 - **research-data-gate** — entra: pines SHA-256, manifiestos de campana; sale: admision de lectura.
 - **bridge-kernels** — entra: ticks, oraculos NT8; sale: barras, zonas, reportes de paridad.
+- **banco-eventos** — entra: tablas de eventos de los generadores (GENERADORES), docs/research/banco_eventos/specs/*.json; sale: HIPOTESIS_CONGELADAS.json, RESULTADO.json, RECOMENDACIONES.md, USOS.jsonl, entradas en TRIAL_REGISTRY_GLOBAL.jsonl.
 - **context** — entra: barras, L2; sale: etiquetas de contexto.
 - **costos** — entra: REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md, config/noticias/crudo (BLS, BEA, Census, Fed, ISM, ForexFactory); sale: friccion por viaje en ticks/puntos/USD, ventanas de noticia bloqueadas y mascara por operacion o por minuto.
 - **discovery** — entra: arrays por sesión; sale: resultados de escaneo.

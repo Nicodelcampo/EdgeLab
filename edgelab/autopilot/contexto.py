@@ -83,6 +83,7 @@ NUCLEO_FUENTES = [
     ("medir_en_r", "docs/research/MEDIR_EN_R_20261102.md", "todos"),
     ("metodo_de_investigacion", "docs/research/METODO_DE_INVESTIGACION.md", "todos"),              # el orden de una idea a una decisión
     ("practicas_de_trabajo", "docs/research/PRACTICAS_DE_TRABAJO_20261110.md", "todos"),          # qué salió bien y mal, con guardas
+    ("banco_de_eventos", "docs/research/BANCO_DE_EVENTOS.md", "todos"),                           # muchos experimentos, poca multiplicidad
     ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
     ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),
     ("guia_regimen", "docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md", "diseño"),

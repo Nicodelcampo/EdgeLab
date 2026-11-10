@@ -25,7 +25,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (4)
+## PALANCA_DE_DISENO (5)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -44,6 +44,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Toda indagación exploratoria que estratifica eventos por rasgos y elige reglas para confirmar
   - Siguiente: Aplicar la lista K10–K18 (checklist D.12) en cada pre-registro de indagación; reutilizar hft_ruptura.estrato / diagnostico_estratos / marginales en vez de reescribirlos.
   - Evidencia: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`, `docs/research/hft_clusters_u1_20261110/PREREGISTRO_RUPTURA.md`, `tests/research/test_hft_ruptura.py`
+- **Muchas ideas sobre los mismos eventos se prueban con el banco de eventos: exploración libre en la mitad A, k hipótesis congeladas y probadas en la mitad B** (`F-BANCO-DE-EVENTOS`, 2026-11-10, sesion)
+  - Efecto: Explorar miles de celdas cuesta k + 1 pruebas (no miles). En sintéticos: efecto plantado de +0,24 en un tercil se nomina; con el desenlace permutado la tasa de error de familia es 8–13 % con q 0,10.
+  - Dónde: Toda familia con un generador de eventos con cientos de eventos por mitad
+  - Siguiente: Primer uso real: especificación HFT_RUPTURA_banco (deshabilitada hasta cerrar la indagación pre-registrada); sumar generadores de otras familias de eventos.
+  - Evidencia: `docs/research/BANCO_DE_EVENTOS.md`, `edgelab/research/banco_eventos.py`, `tests/research/test_banco_eventos.py`
 - **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
   - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
   - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ

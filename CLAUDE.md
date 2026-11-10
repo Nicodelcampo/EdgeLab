@@ -159,6 +159,10 @@ amplía el espacio de búsqueda y el data snooping sin evidencia de que haga fal
 - **Barridos propios y variante buena (Nico, 2026-10-23):** el agente diseña barridos con el conductor genérico
   (`edgelab/research/grilla_generica.py`, guía §6) sobre indicadores PASS (`config/autopilot/indicadores.json`) o
   propios causales. Una variante buena se **indaga antes del P&L básico** (ATJ-26), nunca pasa directo.
+- **Banco de eventos (Nico, 2026-11-10):** muchas ideas sobre los mismos eventos se prueban como especificación JSON del banco
+  (`docs/research/BANCO_DE_EVENTOS.md`, `python tools/banco_eventos.py`): exploración libre en la mitad A, k hipótesis congeladas
+  y probadas en la mitad B (BH q 0,10, una vez por familia y ventana), preflight con calibración contra permutaciones. No se escribe
+  un módulo por experimento; un generador nuevo se registra en `banco_eventos.GENERADORES`.
 - **Reutilizar antes de construir (Nico, 2026-10-24):** casi todo ya existe en el repo. Antes de escribir un script, módulo
   o función: `python tools/existente.py buscar "qué querés hacer"`, más `docs/MODULES.md` y `docs/HERRAMIENTAS.md`
   (catálogo de `tools/`). Si algo sirve, se importa o se le reemplaza el lector (como `barrido_horario_etapa_c_parquet.py`

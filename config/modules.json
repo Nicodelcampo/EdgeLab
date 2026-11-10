@@ -840,6 +840,38 @@
       "tests": [
         "tests/research/test_cartera_viva.py"
       ]
+    },
+    {
+      "id": "banco-eventos",
+      "name": "Banco de eventos",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Estructura central para probar muchos experimentos sobre una tabla de eventos: especificación JSON, partición honesta A/B por semanas, exploración libre en A (celdas de 1 y 2 rasgos y modelo aditivo), k hipótesis congeladas y probadas en B con BH, calibración contra permutaciones, libro de usos de B y recomendaciones.",
+      "paths": [
+        "edgelab/research/banco_eventos.py",
+        "tools/banco_eventos.py",
+        "docs/research/banco_eventos"
+      ],
+      "inputs": [
+        "tablas de eventos de los generadores (GENERADORES)",
+        "docs/research/banco_eventos/specs/*.json"
+      ],
+      "outputs": [
+        "HIPOTESIS_CONGELADAS.json",
+        "RESULTADO.json",
+        "RECOMENDACIONES.md",
+        "USOS.jsonl",
+        "entradas en TRIAL_REGISTRY_GLOBAL.jsonl"
+      ],
+      "depends_on": [
+        "research",
+        "funnel",
+        "holdout"
+      ],
+      "doc": "docs/research/BANCO_DE_EVENTOS.md",
+      "tests": [
+        "tests/research/test_banco_eventos.py"
+      ]
     }
   ],
   "unowned_ok": [

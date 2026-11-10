@@ -73,3 +73,9 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    pocas pruebas → control que comparte la condición → desenlace en bruto contra el umbral económico → contexto con diferencia en
    diferencias → RECOMENDACIONES (no un 0/1) → réplica → P&L. Toda familia nueva copia la estructura de `docs/research/hft_clusters_u1_20261110/`
    y deja `RECOMENDACIONES_*.md` con `edgelab/research/recomendador.py`; el meta-analista las convierte en factores.
+
+16. **Banco de eventos (Nico 2026-11-10).** `nucleo_proyecto.banco_de_eventos` es la estructura central para probar muchas ideas
+   sobre eventos: una idea sobre una tabla que ya tiene generador es una ESPECIFICACIÓN JSON (`python tools/banco_eventos.py
+   plantilla`), no un módulo nuevo; varias ideas sobre la misma tabla van en una sola especificación. El banco explora todo en la
+   mitad A, congela k hipótesis y prueba sólo esas en la mitad B (una vez por familia y ventana). Preflight en verde antes de correr;
+   lo nominado va a la réplica congelada, nunca directo al P&L.

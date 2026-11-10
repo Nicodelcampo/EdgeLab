@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-618 scripts.
+619 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -86,6 +86,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/avzvol_reaction_smoke.py` | Synthetic continuation vs failed-break classifier; no market input support. |
 | `tools/avzvol_response_smoke.py` | Synthetic measurement demo only, no market loader or implicit policies. |
 | `tools/axf.py` | AXF: agotamiento por flujo → barrido del último extremo participante → reversión confirmada. NQ, exploración. |
+| `tools/banco_eventos.py` | Banco de eventos: muchos experimentos sobre una tabla de eventos, con exploración libre en la mitad A y pocas pruebas congeladas |
 | `tools/barreras_en_reglas_seguidas.py` | Barreras HFT frontales aplicadas a las reglas en seguimiento de `Estabilidad mensual en R2.html` (2026-11-05). |
 | `tools/barrido_horario_dukascopy_fetch.py` | Descarga de ticks de XAU/USD de Dukascopy (solo las horas UTC que cubren la franja 04:15 CT). Uso: python tools/barrido_horario_dukascopy_fetch.py AAAA-MM-DD AAAA-MM-DD etiqueta  (escribe en ./raw/). Límite de velocidad  |
 | `tools/barrido_horario_etapa_a.py` | Etapa A del barrido horario (PREREGISTRO_ETAPA_A.md). Solo datos previos al holdout. |
