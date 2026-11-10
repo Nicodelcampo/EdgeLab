@@ -32,7 +32,8 @@ DIR = ROOT / "docs/research/banco_eventos"
 IDS = ("inst", "fecha", "placebo")
 OBLIGATORIOS = ("nombre", "familia", "tabla", "desenlace", "columnas_desenlace", "ventana", "justificacion_economica", "como_refutar")
 DEFECTOS = dict(direccion=1, nulo=0.0, umbral_economico=0.08, k=3, q=0.10, min_n=100, min_n_b=60, pares=True, cortes_fijos={},
-                rasgos="todos", max_rasgos=60, habilitada=True, etapa="EF2", linaje=None, n_boot=2000, encogimiento=200)
+                rasgos="todos", max_rasgos=60, habilitada=True, etapa="EF2", linaje=None, n_boot=2000, encogimiento=200,
+                hipotesis_previas=[])
 Z = NormalDist()
 
 # Generadores conocidos: quién produce tablas con el contrato del banco. Un generador nuevo se agrega acá con su test de causalidad.
@@ -247,15 +248,18 @@ def evaluar(B: pd.DataFrame, ctrl: pd.DataFrame, congelado: dict, spec: dict) ->
                 mc = _mascara(ctrl, h, C)
                 if mc.sum() >= 30: ctl = float(sg * ctrl[spec["desenlace"]].to_numpy(float)[mc].mean())
             nombre = " ∧ ".join(f"{r}={s}" for r, s in zip(h["rasgos"], h["estratos"]))
+            vr, vse = dif_sesion(sg * y, ses, m.astype(int), spec["n_boot"])  # mecanismo: la celda contra el RESTO (no contra el nulo)
+            resto = dict(estimacion=None if not np.isfinite(vr) else float(vr), se=None if not np.isfinite(vse) else float(vse))
         else:
             sc = puntaje(B, h["rasgos"], C, h["efectos"]); g = _tercil_puntaje(B, sc, h["cortes_puntaje"]); m = np.isin(g, (0, 2))
             est, se = dif_sesion(sg * y[m], ses[m], (g[m] == 2).astype(int), spec["n_boot"]); n = int(min((g == 2).sum(), (g == 0).sum()))
             mu = float(sg * y[g == 2].mean()) if (g == 2).any() else np.nan; ctl = None; nombre = "modelo aditivo: tercil alto − tercil bajo"
+            resto = None
         p = float(1 - Z.cdf(est / se)) if se and np.isfinite(se) and se > 0 and np.isfinite(est) else 1.0
         out.append(dict(nombre=nombre, tipo=h["tipo"], signo=sg, n_b=n, estimacion=None if not np.isfinite(est) else float(est),
                         media_b=None if not np.isfinite(mu) else float(mu), se=None if not np.isfinite(se) else float(se),
                         ic90=None if not (se and np.isfinite(se) and np.isfinite(est)) else [float(est - 1.645 * se), float(est + 1.645 * se)],
-                        p=p, control=ctl, a=h["a"], compuerta_ok=n >= spec["min_n_b"]))
+                        p=p, control=ctl, vs_resto=resto, a=h["a"], compuerta_ok=n >= spec["min_n_b"]))
     for r, nom in zip(out, bh([r["p"] if r["compuerta_ok"] else 1.0 for r in out], spec["q"])): r["nominada"] = nom
     return out
 
@@ -301,12 +305,17 @@ def correr(spec: dict, T: pd.DataFrame, raiz: Path = DIR, registro: Path | None 
             g = TrialRegistry(registro)
             g.ensure(f"banco/{spec['nombre']}/A", spec["familia"], ex["n_celdas"] + 1, "banco de eventos, mitad A: exploración, no confirmatoria")
             g.ensure(f"banco/{spec['nombre']}/B", spec["familia"], len(ex["hipotesis"]), "banco de eventos, mitad B: pruebas congeladas, BH q 0,10")
+            if spec["hipotesis_previas"]:
+                g.ensure(f"banco/{spec['nombre']}/previas", spec["familia"], len(spec["hipotesis_previas"]),
+                         "banco de eventos: hipótesis elegidas en OTROS datos, probadas en toda esta tabla (BH q 0,10 aparte)")
     res = evaluar(B, K, congelado, spec)
+    prev = previas(T, spec, rasgos)
     out = dict(experimento=spec["nombre"], familia=spec["familia"], etapa=spec["etapa"], ventana=spec["ventana"], desenlace=spec["desenlace"],
                direccion=spec["direccion"], umbral_economico=spec["umbral_economico"], rasgos=rasgos, n_a=len(A), n_b=len(B), n_control_b=len(K),
                sesiones_a=int(A[["inst", "fecha"]].drop_duplicates().shape[0]), sesiones_b=int(B[["inst", "fecha"]].drop_duplicates().shape[0]),
                celdas_exploradas=ex["n_celdas"], pruebas_en_b=len(res), hipotesis_sha=congelado["sha"], resultados=res,
-               nominadas=[r["nombre"] for r in res if r["nominada"]],
+               nominadas=[r["nombre"] for r in res if r["nominada"]], previas=prev,
+               previas_nominadas=[r["nombre"] for r in prev if r["nominada"]],
                mejores_a=sorted(ex["celdas"], key=lambda c: -abs(c["t"]))[:20])
     if not ensayo:
         (carpeta / "RESULTADO.json").write_text(json.dumps(out, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
@@ -317,10 +326,24 @@ def correr(spec: dict, T: pd.DataFrame, raiz: Path = DIR, registro: Path | None 
     return out
 
 
+def previas(T: pd.DataFrame, spec: dict, rasgos: list) -> list:
+    """Hipótesis elegidas en OTROS datos (otro activo, otra familia) y declaradas en la especificación ANTES de mirar esta tabla:
+    no salen de A, así que se prueban con TODA la tabla (A ∪ B) y con su propio BH. Cortes: terciles de esta tabla (no usan
+    desenlaces) o los fijos declarados. Formato: {"rasgos": [...], "estratos": [...], "signo": ±1, "origen": "..."}."""
+    if not spec["hipotesis_previas"]: return []
+    R = T[T.placebo == 0].reset_index(drop=True); K = T[T.placebo == 1].reset_index(drop=True)
+    usados = sorted({r for h in spec["hipotesis_previas"] for r in h["rasgos"]})
+    falt = [r for r in usados if r not in T]
+    if falt: raise ValueError(f"hipótesis previas con rasgos que la tabla no tiene: {falt}")
+    C = {r: cortes(R, r, spec["cortes_fijos"]) for r in usados}
+    hs = [dict(tipo="celda", rasgos=h["rasgos"], estratos=h["estratos"], signo=h.get("signo", 1), a=dict(origen=h.get("origen", ""))) for h in spec["hipotesis_previas"]]
+    return evaluar(R, K, dict(cortes=C, hipotesis=hs), spec)
+
+
 def recomendaciones(out: dict, spec: dict) -> str:
     from edgelab.research import recomendador as RC
     items = []
-    for r in out["resultados"]:
+    for r in out["resultados"] + [dict(x, nombre="previa: " + x["nombre"]) for x in out.get("previas", [])]:
         se = r["se"]
         items.append(dict(nombre=r["nombre"], diferencia=r["estimacion"], ic90=r["ic90"], se=se, mde80=2.49 * se if se else None,
                           nominada=r["nominada"], n_min=r["n_b"], compuerta_ok=r["compuerta_ok"], media_a=r["media_b"], signo_esperado=1,

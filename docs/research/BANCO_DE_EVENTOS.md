@@ -27,6 +27,11 @@ cosas de forma mecánica.
    declarada) y el modelo se escriben en `HIPOTESIS_CONGELADAS.json` con su sha.
 6. **Mitad B: k + 1 pruebas.** Media por bootstrap de sesiones, p de una cola contra el nulo, BH q 0,10. El modelo se prueba como
    «tercil alto del puntaje − tercil bajo». El control (placebo) con la misma celda va como diagnóstico.
+6b. **Hipótesis previas** (`hipotesis_previas`): las elegidas en OTROS datos (otro activo, otra familia) y declaradas antes de
+   mirar esta tabla no salen de A, así que se prueban con TODA la tabla y su propio BH (registro `banco/<nombre>/previas`). Es la
+   forma barata de confirmar una pista en datos independientes sin gastar la réplica.
+6c. **Mecanismo, no herencia:** cada celda informa también `vs_resto` (celda − resto de la tabla, bootstrap por sesión). La prueba
+   «la celda paga» (media > nulo) puede salir positiva sólo porque el evento entero paga; `vs_resto` dice si la condición agrega algo.
 7. **Salida como guía.** `RESULTADO.json` + `RECOMENDACIONES.md` (`recomendador.py`: CONFIRMAR, INDAGAR, ESTRUCTURA_DE_PRECIO,
    DESCARTAR…). Lo nominado va a la **réplica congelada** de la familia (o al embudo); nada se promueve desde el banco.
 

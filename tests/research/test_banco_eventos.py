@@ -91,3 +91,16 @@ def test_calibracion_mide_la_tasa_de_falsos():
     assert c["tasa"] > 0.5
     c = BE.calibrar(dict(SPEC, q=0.2), _tabla(efecto=0.0, n_dias=60, seed=2), n=10)   # sano: no bloquea
     assert c["ok"]
+
+
+def test_hipotesis_previa_se_prueba_en_toda_la_tabla():
+    """Una hipótesis elegida en otros datos se prueba con A ∪ B y su propio BH. La prueba es «la celda paga» (media > nulo): una
+    celda sin mecanismo propio puede heredar la media positiva del evento; `vs_resto` separa el mecanismo de esa herencia."""
+    T = _tabla(efecto=0.12, n_dias=100)
+    s = dict(SPEC, hipotesis_previas=[dict(rasgos=["a"], estratos=[2], signo=1, origen="NQ/ES"), dict(rasgos=["b"], estratos=[2], signo=1)])
+    out = BE.correr(s, T, ensayo=True)
+    p = {r["nombre"]: r for r in out["previas"]}
+    assert p["a=2"]["nominada"]
+    za = p["a=2"]["vs_resto"]["estimacion"] / p["a=2"]["vs_resto"]["se"]; zb = p["b=2"]["vs_resto"]["estimacion"] / p["b=2"]["vs_resto"]["se"]
+    assert za > 3 and abs(zb) < 2.5                                               # el mecanismo está en `a`, no en `b`
+    assert p["a=2"]["n_b"] > max(r["n_b"] for r in out["resultados"] if r["tipo"] == "celda")   # usa toda la tabla, no sólo B

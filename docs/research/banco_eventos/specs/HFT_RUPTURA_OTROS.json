@@ -1,0 +1,111 @@
+{
+ "nombre": "HFT_RUPTURA_OTROS",
+ "familia": "HFT_RUPTURA_OTROS",
+ "linaje": "HFT_RUPTURA",
+ "etapa": "EF2",
+ "generador": "hft_ruptura",
+ "tabla": "docs/research/hft_clusters_u1_20261110/HFTC_ruptura_otros.csv",
+ "ventana": [
+  20250701,
+  20260331
+ ],
+ "desenlace": "rompe",
+ "columnas_desenlace": [
+  "rompe",
+  "rompe_media",
+  "rompe_doble",
+  "t_res_s",
+  "avance15_x"
+ ],
+ "excluir": [
+  "lado"
+ ],
+ "direccion": 0,
+ "nulo": 0.0,
+ "umbral_economico": 0.08,
+ "k": 3,
+ "q": 0.1,
+ "min_n": 100,
+ "min_n_b": 60,
+ "pares": true,
+ "rasgos": [
+  "aprox_s",
+  "excursion_x",
+  "afuera_s",
+  "edad_s",
+  "ancho_x",
+  "n_zonas",
+  "packing",
+  "flujo_alineado",
+  "visita",
+  "minuto_et",
+  "tendencia_alineada",
+  "dist_extremo_x",
+  "rango30_x",
+  "vol30_rel",
+  "deseq30",
+  "picos_dentro",
+  "picos_sin_tomar",
+  "salida_s",
+  "vol_banda_rel",
+  "ema9_pend",
+  "ema21_pend",
+  "salida_eficiencia",
+  "pasada_s"
+ ],
+ "cortes_fijos": {
+  "picos_dentro": [
+   0.5,
+   1.5
+  ],
+  "picos_sin_tomar": [
+   0.5,
+   1.5
+  ],
+  "flujo_alineado": [
+   -0.5,
+   0.5
+  ],
+  "visita": [
+   2.5,
+   3.5
+  ]
+ },
+ "hipotesis_previas": [
+  {
+   "rasgos": [
+    "tendencia_alineada"
+   ],
+   "estratos": [
+    0
+   ],
+   "signo": 1,
+   "origen": "HFT-RUPTURA NQ/ES DESC: +0,082 (p 0,0024), pista viva"
+  },
+  {
+   "rasgos": [
+    "picos_dentro"
+   ],
+   "estratos": [
+    1
+   ],
+   "signo": 1,
+   "origen": "HFT-RUPTURA NQ/ES DESC: +0,105 (p 0,013)"
+  },
+  {
+   "rasgos": [
+    "picos_sin_tomar"
+   ],
+   "estratos": [
+    1
+   ],
+   "signo": -1,
+   "origen": "HFT-RUPTURA NQ/ES DESC: rebote −0,075 (canal opuesto)"
+  }
+ ],
+ "justificacion_economica": "Un cluster HFT grande es tamaño ejecutado; si la liquidez ya no está o el precio vuelve como retroceso contra la sesión, el nivel no frena. Si es microestructura de clusters, aparece fuera de NQ/ES.",
+ "como_refutar": "Las previas no se nominan (o van en contra) en activos independientes y el banco no nomina nada en B con calibración sana.",
+ "tabla_no_mirada": true,
+ "habilitada": true,
+ "nota": "Pre-registro: docs/research/hft_clusters_u1_20261110/PREREGISTRO_RUPTURA_OTROS.md. La tabla la produce `tools/hft_clusters_info.py ruptura_otros` sin calcular nada con desenlaces."
+}

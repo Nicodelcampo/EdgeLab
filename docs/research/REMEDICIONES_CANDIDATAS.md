@@ -19,7 +19,7 @@ es una prueba nueva (registro global + linaje a la familia original) y nunca usa
 | `CM-ESTRATOS-CON-EMPATES` | 2026-11-10 | Estratos por cuantiles con (v > c1) + (v > c2) y cortes fijos para rasgos discretos (K10). | Con searchsorted sobre cuantiles empatados, un rasgo discreto mandaba todo a un estrato: la indagación de ese rasgo no medía nada. | Re-estratificar con banco_eventos.estrato / cortes (la tabla ya corrida alcanza si sus desenlaces no se usaron para elegir). |
 | `CM-BANCO-DE-EVENTOS` | 2026-11-10 | Muchas ideas sobre una misma tabla de eventos se prueban con el banco (exploración en A, k hipótesis en B). | Familias que probaron 1–7 hipótesis sobre una tabla de eventos pueden explorar cientos de combinaciones de rasgos con el mismo costo, en una tabla nueva (otro activo u otra ventana no usada). | Correr el generador de la familia sobre datos no mirados y pasar la tabla por tools/banco_eventos.py con todos sus rasgos. |
 
-## Familias candidatas (172; se listan las 40 de mayor prioridad)
+## Familias candidatas (173; se listan las 40 de mayor prioridad)
 
 | Prioridad | Familia | Registrada | Cambios que la alcanzan | Último desenlace | Carpetas |
 |---|---|---|---|---|---|

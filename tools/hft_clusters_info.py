@@ -2,6 +2,8 @@
 """HFT-CLUSTERS-INFO: construir y lanzar los kernels (docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md).
   python tools/hft_clusters_info.py e0                     # paso sin retornos (4 activos, DESC)
   python tools/hft_clusters_info.py e0b                    # E0-b sin retornos: 40 definiciones (más zonas, ancho mínimo), equilibrio potencia/fricción
+  python tools/hft_clusters_info.py e0b_otros              # E0-b sin retornos en RTY, 6E, 6B y MBT (regla mecánica de definición)
+  python tools/hft_clusters_info.py ruptura_otros          # tabla de ruptura (generador) en esos activos + YM, SIN mirar desenlaces → banco
   python tools/hft_clusters_info.py ruptura                # indagación de la ruptura en clusters grandes (DESC, exploratoria)
   python tools/hft_clusters_info.py ruptura_rep            # confirmación en la réplica abr → sep de las reglas que eligió la indagación
   python tools/hft_clusters_info.py contexto               # contexto de otros clusters (6 variables) sobre la definición elegida por regla
@@ -22,6 +24,7 @@ MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/b
            "edgelab/bridge/indicators/hftzones_nq_rangos_pct_v2.py",
            "edgelab/research/hft_clusters_info.py", "edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py", "edgelab/research/hft_ruptura.py"]
 DATASET = "nicolasbuttaro/edgelab-liquid-ticks-20261014"
+OTROS = ("RTY", "6E", "6B", "MBT")                                     # activos con costo medido sin E0-b (6J y ZB: spread sin medir)
 
 
 def construir(modo: str) -> Path:
@@ -38,11 +41,20 @@ def construir(modo: str) -> Path:
         for m in sel:                                                   # cortes de la indagación (DESC), por activo, sin recalcular en la réplica
             reglas.append(dict(rasgo=m["rasgo"], tercil=m["tercil"], cortes_por_activo=m["cortes_por_activo"]))
         src = src.replace("REGLAS_RUPTURA = []", "REGLAS_RUPTURA = " + json.dumps(reglas), 1); print("reglas congeladas:", reglas)
-    if modo in ("rebotes", "contexto", "ruptura", "ruptura_rep"):                                              # clusters del E0-b (equilibrio potencia/fricción); YM y GC fuera
+    if modo == "e0b_otros":                                            # E0-b sin retornos en los activos nuevos con costo medido
+        src = src.replace('INSTRUMENTOS = ("NQ", "ES", "YM", "GC")', "INSTRUMENTOS = " + repr(OTROS), 1)
+    if modo == "ruptura_otros":                                        # definición elegida por el E0-b de cada activo (YM: la del E0-b original)
+        el = {i: ["Z_CERT", v["elegida"]["cluster"]] for i, v in json.loads((DIR / "HFTC_e0b_otros.json").read_text(encoding="utf-8"))["equilibrio"].items() if v.get("elegida")}
+        ym = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]["YM"]["elegida"]
+        if ym: el["YM"] = ["Z_CERT", ym["cluster"]]
+        if not el: raise SystemExit("ningún activo nuevo con definición elegible en el E0-b")
+        src = src.replace('INSTRUMENTOS = ("NQ", "ES", "YM", "GC")', "INSTRUMENTOS = " + repr(tuple(sorted(el))), 1)
+        src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1); print("definiciones:", el)
+    elif modo in ("rebotes", "contexto", "ruptura", "ruptura_rep"):                                              # clusters del E0-b (equilibrio potencia/fricción); YM y GC fuera
         eq = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]
         el = {i: ["Z_CERT", eq[i]["elegida"]["cluster"]] for i in ("NQ", "ES") if eq.get(i, {}).get("elegida")}
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1)
-    elif modo not in ("e0", "e0b"):
+    elif modo not in ("e0", "e0b", "e0b_otros"):
         el = json.loads((DIR / "HFTC_e0.json").read_text(encoding="utf-8"))["eleccion"]
         if not el: raise SystemExit("el E0 no eligió ninguna definición: el paso de información no se corre")
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps({i: [v["zona"], v["cluster"]] for i, v in sorted(el.items())}), 1)
@@ -91,7 +103,7 @@ def no_vigente(modo: str, res: dict) -> list:
     """Módulos que el modo USA y que cambiaron desde que se construyó el kernel (`preflight.codigo_vigente` restringido al modo:
     un cambio en un módulo que el modo no importa no invalida la corrida)."""
     from edgelab.research.preflight import codigo_vigente
-    usa = set(USA["base"] + USA.get(modo.replace("_rep", ""), []))
+    usa = set(USA["base"] + USA.get(modo.replace("_rep", "").replace("_otros", ""), []))
     return [m for m in codigo_vigente(res, ROOT) if m in usa]
 
 
