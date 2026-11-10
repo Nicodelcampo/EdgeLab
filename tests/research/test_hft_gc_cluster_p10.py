@@ -126,6 +126,7 @@ def test_paridad_sqlite_nt8():
     rc_s = np.array([inv[x] for x in rc])
     assert int((rc_s != z_m["resolution"].to_numpy()).sum()) == 0
     assert int((ab != z_m["resolved_bar"].to_numpy()).sum()) == 0
+    assert int((ad != z_m["away_dir"].to_numpy()).sum()) == 0
 
 
 def test_almacen_gc_numba_compila():
@@ -136,4 +137,3 @@ def test_almacen_gc_numba_compila():
     assert len(out["HFTGCP10"]) >= 1
     out_vacio = HGC.almacen_gc([], tick=0.10, spec=50)
     assert len(out_vacio["HFTGCP10"]) == 0
-    assert int((ad != z_m["away_dir"].to_numpy()).sum()) == 0
