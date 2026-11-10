@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (5)
+## PISTA_VIVA (6)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,6 +24,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, RTY, YM; carrera ±X con X = fricción / 0,08
   - Siguiente: Pre-registrar REBOTE_NIVEL_SESION como familia propia (generador de niveles de la sesión, banco con rasgos de llegada) en datos no mirados; buscar la condición que lo concentre por encima de 0,08.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.json`
+- **Donde hubo actividad HFT (clusters grandes o de 4 zonas) el nivel rebota MENOS que un nivel cualquiera de la sesión; la estabilidad lo muestra en casi todas las definiciones y activos** (`F-HFT-ZONAS-NO-SON-SOPORTE`, 2026-11-10, sesion)
+  - Efecto: Re-medición con estabilidad de DESC: rebote real − control D0 −0,107 (1/5 bloques +), D1 −0,180, D6 −0,084 (0/5); clusters de 4 zonas −0,057 (535 sesiones, 1/5) con NQ −0,063, GC −0,050, YM −0,161, ES −0,012.
+  - Dónde: NQ, GC, YM (ES débil); clusters HFT grandes y chicos
+  - Siguiente: Lo deciden la confirmación congelada (CONFIRMACION_NO_DEFIENDE.md) y REBOTE_NIVEL_SESION (distancia a zonas como parámetro); no repetir hipótesis de rebote EN zonas HFT.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_REMEDICION_HFT.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_REMEDICION_HFT.json`
 - **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
   - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
   - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
