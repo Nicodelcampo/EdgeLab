@@ -93,3 +93,10 @@ def test_equilibrio_prefiere_el_punto_medio_entre_potencia_y_friccion():
     r = H.elegir_equilibrio(E0, {"NQ": 1.5455})["NQ"]
     assert r["elegida"]["cluster"] == "medio" and len(r["tabla"]) == 3
     assert abs(r["elegida"]["borde_detectable"] - (2.49 / 320 ** 0.5 + 1.5455 / 16.0)) < 1e-9
+
+
+def test_evento_en_el_ultimo_tick_no_rompe():
+    """El alejamiento o el toque caen en el último tick disponible: no hay nada por delante (falló así el primer kernel del paso INFO)."""
+    ts, px = _camino([101, 105, 113]); assert H.carrera(ts, px, int(ts[0]), 100.0, 102.0, 10.0, 20.0) is None
+    ts, px = _camino([101, 105, 113, 108, 102]); assert H.carrera(ts, px, int(ts[0]), 100.0, 102.0, 10.0, 20.0) == (1, 0)
+    ts, px = _camino([101, 105, 109, 113]); assert H.iman(ts, px, int(ts[0]), 100.0, 102.0, 10.0) == (1, 0)

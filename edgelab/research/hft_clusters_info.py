@@ -80,7 +80,8 @@ def e0_fila(inst, fecha, zk, ck, C, tick, friccion) -> dict:
 
 
 def _primero(cond: np.ndarray) -> int:
-    i = int(np.argmax(cond)); return i if cond.size and cond[i] else -1
+    if not cond.size: return -1                       # sin ticks por delante (el evento cae en el último tick): no hay primero
+    i = int(np.argmax(cond)); return i if cond[i] else -1
 
 
 def carrera(ts, px, t_ns: int, lo: float, hi: float, sep: float, X: float):
