@@ -68,3 +68,16 @@ mecánica del E0. Población: ítem (b) «alejamiento» de §1.
   tenga entrada, y eso se pre-registra aparte.
 - **Pruebas:** 4 activos + 1 combinada = **5** más (`hft_clusters_info/iman`). Total de la familia: 10.
 - **Refutación:** diferencia ≤ 0 con MDE < 0,10 → el cluster no atrae más que cualquier nivel con la misma geometría.
+
+## 8. Enmienda (2026-11-10, tras el E0 y ANTES de ver el paso INFO): definición «cluster grande e infrecuente»
+Pedido de Nico a partir de `RESULTADO_E0.md` (4 zonas = 22 a 73 clusters por sesión: no es un evento raro, y 82–93 % son más
+angostos que el stop mínimo). Se declara una segunda tanda, **sin lanzar**, que se decide sólo con criterios sin retornos:
+- **Ejes del E0-b:** zonas mínimas K ∈ {8, 12, 16}; ancho mínimo del cluster ∈ {X/2, X} (X = stop mínimo del activo); vida de zona
+  {900, 1.800} s; zona `Z_CERT`. 12 definiciones por activo. Falta agregar al código el filtro de ancho mínimo.
+- **Regla mecánica:** igual que §2 pero con objetivo 1 cluster por sesión (elegibles: 0,3 a 3 por sesión y CV mensual ≤ 0,5).
+- **Por qué ancho ≥ X:** si el cluster es al menos tan ancho como el stop mínimo, la estructura define el riesgo y la fricción queda
+  ≤ 0,08 R sin piso artificial.
+- **Después:** las mismas dos hipótesis (rebote §3 e imán §7) con la definición elegida; 10 pruebas más en el registro global, que se
+  cuentan al lanzar. El resultado de la tanda de 4 zonas se informa igual, pase o no.
+- **Riesgo declarado:** con ~1 evento por sesión y 150–180 sesiones por activo la potencia es baja; se combinan los 4 activos y, si
+  no alcanza, se informa SIN_POTENCIA (no refutado).
