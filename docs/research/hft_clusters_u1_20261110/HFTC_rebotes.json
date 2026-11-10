@@ -1,0 +1,449 @@
+{
+ "experimento": "HFT-CLUSTERS-INFO",
+ "modo": "rebotes",
+ "ventana": [
+  20250701,
+  20260331
+ ],
+ "codigo": "5b290bc8265c463a040824f41b65044b05cf56153b63cfc3884b8ad8d4e6bf32",
+ "modulos": {
+  "edgelab/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/bridge/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/bridge/indicators/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/funnel/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/holdout.py": "e73229e15742a1f58097ef623594ba784e1fc04095875fabdcd7dcb1b995ffbd",
+  "edgelab/research/fuentes_ticks.py": "1f3ae518e9a0bba32e5427fe106312119a5a8322be45bdc61b6382193305f09c",
+  "edgelab/bridge/indicators/hftzones_nq.py": "0077c7040805d191b0cfe169016ccdbd1148b7ac16fa47770b2fee9f8e50a2d7",
+  "edgelab/bridge/indicators/hftzones_nq_rangos_pct_v2.py": "ea83a1b09e6049d8edcb7934f97256e96595db257c98a340fc684965999f86ce",
+  "edgelab/research/hft_clusters_info.py": "727713c13094ffa00ab7fb84907422738e823449f9f2b68c2c1688da953a0568",
+  "edgelab/research/hft_rebotes.py": "d1d4bdb80b05bfa96592bf69f8fc3455864a9ff1f74920da833c8d2dd721d0e3",
+  "edgelab/research/grilla_masiva.py": "0d608f007acb86aaa323b0f46292b40a15610fbae5f407d1f542783b8bdc825e",
+  "edgelab/funnel/escalera.py": "f2e98fc6346c52fc17253e803f17523cc71dee91f1a1a622f2f31a1b42908c40"
+ },
+ "friccion_pts": {
+  "NQ": 1.5455,
+  "ES": 0.8877,
+  "YM": 5.052,
+  "GC": 0.605
+ },
+ "barrera_pts": {
+  "NQ": 19.5,
+  "ES": 11.25,
+  "YM": 64.0,
+  "GC": 7.6000000000000005
+ },
+ "zonas": {
+  "Z_CERT": {
+   "max_avg_ms": 25.0,
+   "min_total_volume": 50.0,
+   "detect_absorb": true
+  },
+  "Z_VOL10": {
+   "max_avg_ms": 25.0,
+   "min_total_volume": 10.0,
+   "detect_absorb": true
+  }
+ },
+ "clusters": {
+  "K4_PK085_V300": {
+   "k": 4,
+   "min_packing": 0.85,
+   "vida_zona_s": 300
+  },
+  "K4_PK085_V900": {
+   "k": 4,
+   "min_packing": 0.85,
+   "vida_zona_s": 900
+  },
+  "K4_PK125_V300": {
+   "k": 4,
+   "min_packing": 1.25,
+   "vida_zona_s": 300
+  },
+  "K4_PK125_V900": {
+   "k": 4,
+   "min_packing": 1.25,
+   "vida_zona_s": 900
+  }
+ },
+ "definiciones_texto": {
+  "D0_BASE": "Primer regreso al borde tras alejarse X/2 (la definici\u00f3n del paso INFO, como referencia).",
+  "D1_FRESCO_LEJANO": "Regreso tras una excursi\u00f3n \u2265 X desde la \u00faltima visita; s\u00f3lo mientras el cluster est\u00e9 fresco: visita n\u00ba \u2264 3 y \u2264 600 s negociados adentro en total (despu\u00e9s deja de considerarse).",
+  "D2_ACEPTADO_Y_ABANDONADO": "En los primeros 300 s el precio pas\u00f3 \u2265 120 s adentro y negoci\u00f3 \u2265 40 % del volumen de esa ventana (el nivel fue aceptado como valor); despu\u00e9s se alej\u00f3 \u2265 X; evento: el primer regreso.",
+  "D3_RECHAZADO_AL_NACER": "En los primeros 300 s pas\u00f3 \u2264 30 s adentro y ya se alej\u00f3 \u2265 X (el nivel se rechaz\u00f3 al nacer); evento: el primer regreso.",
+  "D4_MEMORIA": "Regreso tras \u2265 900 s afuera y una excursi\u00f3n \u2265 X (\u00bfel nivel se recuerda pasado un rato?).",
+  "D5_DERIVA": "Regreso tras una excursi\u00f3n \u2265 X/2 en el que los \u00faltimos X/2 de la aproximaci\u00f3n tardaron \u2265 120 s (llega sin impulso).",
+  "D6_PENETRACION_FALLIDA": "Tras una excursi\u00f3n \u2265 X/2 el precio entra, penetra al menos 2 ticks y a lo sumo min(ancho/2, X/4) sin tocar el borde lejano y vuelve a alejarse X/4 por el mismo lado dentro de 120 s del toque; evento en ese punto (entrada confirmada)."
+ },
+ "por_definicion": {
+  "D0_BASE": {
+   "por_activo": {
+    "ES": {
+     "n_real": 539,
+     "n_placebo": 97,
+     "sesiones": 135,
+     "media_real": -0.025974025974025976,
+     "media_placebo": -0.07216494845360824,
+     "diferencia": 0.046190922479582265,
+     "ic90": [
+      -0.12735679435290428,
+      0.2282650321279489
+     ],
+     "p_unilateral": 0.33795,
+     "se": 0.10832546179156795,
+     "mde80": 0.2697303998610042
+    },
+    "NQ": {
+     "n_real": 2658,
+     "n_placebo": 924,
+     "sesiones": 163,
+     "media_real": -0.009781790820165538,
+     "media_placebo": 0.07792207792207792,
+     "diferencia": -0.08770386874224345,
+     "ic90": [
+      -0.1584280345534118,
+      -0.02004628618000202
+     ],
+     "p_unilateral": 0.9843,
+     "se": 0.0422245923415045,
+     "mde80": 0.1051392349303462
+    }
+   },
+   "conjunto": {
+    "n_real": 3197,
+    "n_placebo": 1021,
+    "sesiones": 298,
+    "media_real": -0.012511729746637473,
+    "media_placebo": 0.06366307541625857,
+    "diferencia": -0.07617480516289604,
+    "ic90": [
+     -0.1422632589526132,
+     -0.013153565416754364
+    ],
+    "p_unilateral": 0.977,
+    "se": 0.0392470314591364,
+    "mde80": 0.09772510833324964
+   },
+   "stouffer": {
+    "z": -1.2260538379013473,
+    "p": 0.8899107921486206,
+    "activos": 2
+   }
+  },
+  "D1_FRESCO_LEJANO": {
+   "por_activo": {
+    "ES": {
+     "n_real": 124,
+     "n_placebo": 14,
+     "sesiones": 72,
+     "media_real": -0.016129032258064516,
+     "media_placebo": 0.35714285714285715,
+     "diferencia": -0.37327188940092165,
+     "ic90": [
+      -0.875,
+      0.18286852248307647
+     ],
+     "p_unilateral": 0.8755,
+     "se": 0.32159039679879486,
+     "mde80": 0.8007600880289992
+    },
+    "NQ": {
+     "n_real": 1275,
+     "n_placebo": 382,
+     "sesiones": 159,
+     "media_real": 0.021176470588235293,
+     "media_placebo": 0.08638743455497382,
+     "diferencia": -0.06521096396673852,
+     "ic90": [
+      -0.15854542104282918,
+      0.028943956987411514
+     ],
+     "p_unilateral": 0.87635,
+     "se": 0.05690974815169963,
+     "mde80": 0.14170527289773208
+    }
+   },
+   "conjunto": {
+    "n_real": 1399,
+    "n_placebo": 396,
+    "sesiones": 231,
+    "media_real": 0.017869907076483203,
+    "media_placebo": 0.09595959595959595,
+    "diferencia": -0.07808968888311275,
+    "ic90": [
+     -0.17071186249470283,
+     0.012378483947389555
+    ],
+    "p_unilateral": 0.9194,
+    "se": 0.05586689337877715,
+    "mde80": 0.13910856451315512
+   },
+   "stouffer": {
+    "z": -1.63321446395256,
+    "p": 0.9487880505034768,
+    "activos": 2
+   }
+  },
+  "D2_ACEPTADO_Y_ABANDONADO": {
+   "por_activo": {
+    "ES": {
+     "n_real": 105,
+     "n_placebo": 19,
+     "sesiones": 67,
+     "media_real": -0.01904761904761905,
+     "media_placebo": 0.05263157894736842,
+     "diferencia": -0.07167919799498747,
+     "ic90": [
+      -0.49047131042276676,
+      0.34269030690575186
+     ],
+     "p_unilateral": 0.6171,
+     "se": 0.2530283292599919,
+     "mde80": 0.63004053985738
+    },
+    "NQ": {
+     "n_real": 685,
+     "n_placebo": 293,
+     "sesiones": 157,
+     "media_real": 0.04817518248175182,
+     "media_placebo": 0.06825938566552901,
+     "diferencia": -0.02008420318377719,
+     "ic90": [
+      -0.16205690729005398,
+      0.12247478768464169
+     ],
+     "p_unilateral": 0.59415,
+     "se": 0.0865042931598816,
+     "mde80": 0.2153956899681052
+    }
+   },
+   "conjunto": {
+    "n_real": 790,
+    "n_placebo": 312,
+    "sesiones": 224,
+    "media_real": 0.039240506329113925,
+    "media_placebo": 0.0673076923076923,
+    "diferencia": -0.02806718597857838,
+    "ic90": [
+     -0.1611676202740081,
+     0.10615127768948553
+    ],
+    "p_unilateral": 0.63705,
+    "se": 0.08176102363605663,
+    "mde80": 0.203584948853781
+   },
+   "stouffer": {
+    "z": -0.3790846265485609,
+    "p": 0.6476874889685328,
+    "activos": 2
+   }
+  },
+  "D3_RECHAZADO_AL_NACER": {
+   "por_activo": {
+    "ES": {
+     "n_real": 0,
+     "n_placebo": 0
+    },
+    "NQ": {
+     "n_real": 239,
+     "n_placebo": 35,
+     "sesiones": 108,
+     "media_real": 0.02092050209205021,
+     "media_placebo": 0.11428571428571428,
+     "diferencia": -0.09336521219366407,
+     "ic90": [
+      -0.34931282051282053,
+      0.17855504073385414
+     ],
+     "p_unilateral": 0.71355,
+     "se": 0.16123563911396468,
+     "mde80": 0.4014767413937721
+    }
+   },
+   "conjunto": {
+    "n_real": 249,
+    "n_placebo": 35,
+    "sesiones": 117,
+    "media_real": 0.028112449799196786,
+    "media_placebo": 0.11428571428571428,
+    "diferencia": -0.08617326448651749,
+    "ic90": [
+     -0.346255383290267,
+     0.1843091711503957
+    ],
+    "p_unilateral": 0.70535,
+    "se": 0.161214009839747,
+    "mde80": 0.4014228845009701
+   },
+   "stouffer": {
+    "z": -0.5637856778947105,
+    "p": 0.71355,
+    "activos": 1
+   }
+  },
+  "D4_MEMORIA": {
+   "por_activo": {
+    "ES": {
+     "n_real": 36,
+     "n_placebo": 4,
+     "sesiones": 35,
+     "media_real": 0.08333333333333333,
+     "media_placebo": 0.75,
+     "diferencia": -0.6666666666666666,
+     "ic90": [
+      -1.0909090909090908,
+      -0.10416666666666666
+     ],
+     "p_unilateral": 0.96715,
+     "se": 0.3016543619681928,
+     "mde80": 0.7511193613008001
+    },
+    "NQ": {
+     "n_real": 261,
+     "n_placebo": 93,
+     "sesiones": 131,
+     "media_real": 0.08812260536398467,
+     "media_placebo": -0.08602150537634409,
+     "diferencia": 0.17414411074032876,
+     "ic90": [
+      -0.0198677814708794,
+      0.36401795145150523
+     ],
+     "p_unilateral": 0.07175,
+     "se": 0.11729016044505829,
+     "mde80": 0.2920524995081952
+    }
+   },
+   "conjunto": {
+    "n_real": 297,
+    "n_placebo": 97,
+    "sesiones": 166,
+    "media_real": 0.08754208754208755,
+    "media_placebo": -0.05154639175257732,
+    "diferencia": 0.13908847929466486,
+    "ic90": [
+     -0.05028704556383791,
+     0.32219441399839355
+    ],
+    "p_unilateral": 0.1138,
+    "se": 0.11322472985390618,
+    "mde80": 0.2819295773362264
+   },
+   "stouffer": {
+    "z": -0.2669923432105337,
+    "p": 0.6052624717974215,
+    "activos": 2
+   }
+  },
+  "D5_DERIVA": {
+   "por_activo": {
+    "ES": {
+     "n_real": 122,
+     "n_placebo": 34,
+     "sesiones": 90,
+     "media_real": -0.00819672131147541,
+     "media_placebo": 0.0,
+     "diferencia": -0.00819672131147541,
+     "ic90": [
+      -0.2818728059724732,
+      0.24812321103304705
+     ],
+     "p_unilateral": 0.52765,
+     "se": 0.16043033226879175,
+     "mde80": 0.3994715273492915
+    },
+    "NQ": {
+     "n_real": 99,
+     "n_placebo": 74,
+     "sesiones": 99,
+     "media_real": -0.0707070707070707,
+     "media_placebo": 0.1891891891891892,
+     "diferencia": -0.2598962598962599,
+     "ic90": [
+      -0.5046974356688655,
+      -0.010265700483091791
+     ],
+     "p_unilateral": 0.95665,
+     "se": 0.1504629922691326,
+     "mde80": 0.3746528507501402
+    }
+   },
+   "conjunto": {
+    "n_real": 221,
+    "n_placebo": 108,
+    "sesiones": 189,
+    "media_real": -0.03619909502262444,
+    "media_placebo": 0.12962962962962962,
+    "diferencia": -0.16582872465225407,
+    "ic90": [
+     -0.34921948059209956,
+     0.01477541422909685
+    ],
+    "p_unilateral": 0.9337,
+    "se": 0.11145323384643155,
+    "mde80": 0.27751855227761457
+   },
+   "stouffer": {
+    "z": -1.2603697672836065,
+    "p": 0.8962319986977514,
+    "activos": 2
+   }
+  },
+  "D6_PENETRACION_FALLIDA": {
+   "por_activo": {
+    "ES": {
+     "n_real": 211,
+     "n_placebo": 20,
+     "sesiones": 87,
+     "media_real": -0.08530805687203792,
+     "media_placebo": -0.6,
+     "diferencia": 0.5146919431279621,
+     "ic90": [
+      0.1696837369326452,
+      0.802740964074778
+     ],
+     "p_unilateral": 0.0102,
+     "se": 0.193347279123921,
+     "mde80": 0.4814347250185633
+    },
+    "NQ": {
+     "n_real": 1945,
+     "n_placebo": 579,
+     "sesiones": 162,
+     "media_real": -0.037017994858611826,
+     "media_placebo": 0.0846286701208981,
+     "diferencia": -0.12164666497950993,
+     "ic90": [
+      -0.20177372283305203,
+      -0.044249971885453536
+     ],
+     "p_unilateral": 0.9951,
+     "se": 0.04813036295286687,
+     "mde80": 0.11984460375263851
+    }
+   },
+   "conjunto": {
+    "n_real": 2156,
+    "n_placebo": 599,
+    "sesiones": 249,
+    "media_real": -0.041743970315398886,
+    "media_placebo": 0.06176961602671119,
+    "diferencia": -0.10351358634211008,
+    "ic90": [
+     -0.180421907066381,
+     -0.026565227738045427
+    ],
+    "p_unilateral": 0.9866,
+    "se": 0.04661152651127542,
+    "mde80": 0.1160627010130758
+   },
+   "stouffer": {
+    "z": -0.18660476262527081,
+    "p": 0.5740147338458584,
+    "activos": 2
+   }
+  }
+ },
+ "nominadas_bh_q010": []
+}

@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (2)
+## PISTA_VIVA (3)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
+  - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
+  - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
+  - Siguiente: Pre-registrar la hipótesis de RUPTURA (carrera a favor de atravesar el cluster tras el toque) con la misma definición de NQ, umbrales fijos, y probarla una vez en la réplica abr → sep 2026. No elegir umbrales mirando esta tabla.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTES.md`
 - **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
   - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
   - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
