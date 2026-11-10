@@ -6,7 +6,8 @@
   python tools/hft_clusters_info.py rebotes                # 7 definiciones de rebote (D0–D6) con los clusters del E0-b en NQ y ES
   python tools/hft_clusters_info.py info                   # paso de información en DESC con la definición que eligió el E0
   python tools/hft_clusters_info.py rep                    # réplica abr → sep (sólo si el paso info pasó; una vez)
-  python tools/hft_clusters_info.py traer e0|info|rep      # baja el resultado a la carpeta de la familia
+  python tools/hft_clusters_info.py traer e0|info|rep      # baja el resultado a la carpeta de la familia (y escribe RECOMENDACIONES_<modo>.md)
+  python tools/hft_clusters_info.py recomendar rebotes|contexto|info   # rehace las recomendaciones de un resultado ya bajado
 Agregar --solo-construir para no lanzar. La definición del paso info sale de HFTC_e0.json (campo `eleccion`), nunca a mano.
 """
 import json, subprocess, sys
@@ -42,12 +43,44 @@ def construir(modo: str) -> Path:
     return out
 
 
+def _item(nombre, c, sugerencia, por_activo=None, nominada=False, control=None, compuerta=True, monotono=None):
+    c = c or {}
+    return dict(nombre=nombre, diferencia=c.get("diferencia"), ic90=c.get("ic90"), se=c.get("se"), mde80=c.get("mde80"), nominada=nominada,
+                n_min=min(c.get("n_real", 0), c.get("n_placebo", 0)), compuerta_ok=compuerta, media_a=c.get("media_real"),
+                por_activo=por_activo or {}, control_diferencia=control, monotono=monotono, sugerencia=sugerencia)
+
+
+def recomendaciones(modo: str) -> str:
+    """Lectura y próximo análisis de un resultado (edgelab/research/recomendador.py) → RECOMENDACIONES_<modo>.md."""
+    from edgelab.research import hft_contexto as KX, hft_rebotes as RB, recomendador as RC
+    res = json.loads((DIR / f"HFTC_{modo}.json").read_text(encoding="utf-8"))
+    if modo == "rebotes":
+        nom = set(res.get("nominadas_bh_q010") or [])
+        its = [_item(d, v.get("conjunto"), RB.SUGERENCIAS.get(d), {i: (c or {}).get("diferencia") for i, c in v["por_activo"].items()}, d in nom)
+               for d, v in res.get("por_definicion", {}).items()]
+    elif modo == "contexto":
+        nom = set(res.get("nominadas_bh_q010") or [])
+        its = [_item(var, v if v.get("estado") == "PROBADA" else {"n_real": v["conteos"].get(v["estratos"][0], 0), "n_placebo": v["conteos"].get(v["estratos"][1], 0)},
+                     KX.SUGERENCIAS.get(var), v.get("por_activo"), var in nom, (v.get("control") or {}).get("diferencia"),
+                     v.get("estado") == "PROBADA", v.get("monotono")) for var, v in res.get("variables", {}).items()]
+    else:
+        its = [_item(p, res[p].get("conjunto"), {"rebote": "Pasar a las 7 definiciones de rebote (HFT-REBOTES) para ver qué condición lo concentra.",
+                                                  "iman": "Medir la distancia al cluster como objetivo de reglas que ya tengan entrada."}[p],
+                     {i: (c or {}).get("diferencia") for i, c in res[p]["por_activo"].items()},
+                     (res[p].get("stouffer") or {}).get("p", 1) < 0.05) for p in ("rebote", "iman") if p in res]
+    rec = RC.recomendar(its); out = DIR / f"RECOMENDACIONES_{modo}.md"
+    out.write_text(RC.markdown(f"Recomendaciones — HFT-CLUSTERS {modo}", rec, f"HFTC_{modo}.json"), encoding="utf-8")
+    return out.relative_to(ROOT)
+
+
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--")]; slug = lambda m: f"nicolasbuttaro/hft-clusters-info-{m}-20261110"
     k = lambda *x: subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), *x], capture_output=True, text=True).stdout
     if a[0] == "traer":
         for ext in ("json", "csv"): print(k("output", "--slug", slug(a[1]), "--file", f"HFTC_{a[1]}.{ext}", "--out", str(DIR / f"HFTC_{a[1]}.{ext}")).strip())
+        if (DIR / f"HFTC_{a[1]}.json").exists() and a[1] in ("info", "rebotes", "contexto"): print("escrito", recomendaciones(a[1]))
         return
+    if a[0] == "recomendar": print("escrito", recomendaciones(a[1])); return
     out = construir(a[0]); print("construido", out.relative_to(ROOT))
     if "--solo-construir" not in sys.argv:
         print(k("push", "--slug", slug(a[0]), "--title", f"hft clusters info {a[0]} 20261110", "--script", str(out), "--dataset", DATASET)[-300:])

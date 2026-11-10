@@ -105,6 +105,11 @@ def analizar(T: pd.DataFrame, n_boot: int = 20000) -> dict:
         c["p_dos_colas"] = float(min(1.0, 2 * min(p1, 1 - p1)))
         c["p_declarada"] = float(p1 if signo > 0 else (1 - p1) if signo < 0 else c["p_dos_colas"])
         r.update(c, estado="PROBADA")
+        r["por_activo"] = {i: contraste(h, n_boot=2000).get("diferencia") for i, h in S.groupby("inst")} if "inst" in S else {}
+        niveles = [x for x in T[var].dropna().unique()]
+        if len(niveles) == 3:                                              # dosis-respuesta: el estrato del medio entre los extremos
+            medio = [x for x in niveles if x not in (a, b)][0]; m = {x: float(T[T[var] == x].resultado.mean()) for x in (a, medio, b)}
+            r["medias_por_estrato"] = m; r["monotono"] = bool((m[a] - m[medio]) * (m[medio] - m[b]) > 0)
         # Diagnóstico (no entra al BH): el mismo contraste en los pseudo-clusters de control. Si el control muestra el mismo efecto,
         # lo que se mide es la estructura del precio alrededor (hora, volatilidad, tendencia), no el cluster vecino.
         Sc = T_ctrl[T_ctrl[var].isin([a, b])].assign(placebo=lambda d: (d[var] == b).astype(int)) if var in T_ctrl else T_ctrl
@@ -124,3 +129,13 @@ def elegir_definicion(res_rebotes: dict) -> str:
     if not nom: return "D0_BASE"
     n = lambda d: (res_rebotes["por_definicion"][d].get("conjunto") or {}).get("n_real", 0)
     return max(nom, key=n)
+
+
+SUGERENCIAS = {  # próximo análisis si la variable muestra algo (lo usa el recomendador)
+    "respaldo": "Dosis-respuesta por cantidad de clusters detrás y por su distancia al borde (continuo).",
+    "obstaculo": "Usar el obstáculo como objetivo: carrera hasta el obstáculo contra carrera hasta +X, y efecto contra la distancia continua.",
+    "densidad": "Separar la densidad por lado (detrás contra adelante) para ver qué parte importa.",
+    "confluencia": "Ver si la confluencia con clusters de otra definición de zona (otro volumen mínimo) refuerza o diluye el efecto.",
+    "mas_nuevo": "Edad continua del tocado y de los vecinos: ¿pesa la edad absoluta o el orden?",
+    "huella": "Cruzar con las expansiones del indicador: una salida sin clusters es una expansión; medir el regreso tras expansión aparte.",
+}

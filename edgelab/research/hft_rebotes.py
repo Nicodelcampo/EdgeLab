@@ -132,3 +132,14 @@ def rebotes_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -
             for d, (lado, res) in _cluster(ts, px, vol, int(ts[k]), plo, phi, X, tick).items():
                 filas.append(dict(inst=inst, fecha=int(fecha), definicion=d, placebo=1, lado=lado, resultado=res))
     return filas
+
+
+SUGERENCIAS = {  # próximo análisis si la definición muestra algo (lo usa el recomendador)
+    "D0_BASE": "Comparar contra D1–D6: ¿qué condición concentra el efecto? Si ninguna lo concentra, el efecto es del toque en sí.",
+    "D1_FRESCO_LEJANO": "Dosis-respuesta por número de visita (1, 2, 3) y por segundos negociados adentro: ¿el nivel se gasta con cada visita?",
+    "D2_ACEPTADO_Y_ABANDONADO": "Medir si el volumen negociado adentro al nacer predice el tamaño del rebote (continuo, no umbral) en la réplica.",
+    "D3_RECHAZADO_AL_NACER": "Medir la velocidad de la salida inicial y separar regresos antes y después de 15 min.",
+    "D4_MEMORIA": "Curva del efecto contra minutos afuera (continuo) para encontrar cuándo el nivel se olvida.",
+    "D5_DERIVA": "Contrastar con la aproximación en impulso (el complemento) y con la velocidad continua de llegada.",
+    "D6_PENETRACION_FALLIDA": "Es una entrada operable: pre-registrar P&L con ejecución fija (entrada en la salida, stop al borde lejano, objetivo X).",
+}

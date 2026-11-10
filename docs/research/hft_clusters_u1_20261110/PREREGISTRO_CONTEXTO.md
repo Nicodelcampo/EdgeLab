@@ -42,3 +42,20 @@ Ninguna variable con potencia y efecto; o efectos que el control reproduce (estr
   esas dos variables no tienen diagnóstico completo.
 - Con 10–20 clusters por sesión casi todo evento tiene vecinos: «densidad 0» y «obstáculo ninguno» pueden no pasar la compuerta.
 - Diseño escrito después de conocer el E0 y el E0-b (sin retornos) y sin conocer ningún resultado con retornos.
+
+## 6. Salida como guía, no como 0/1 (enmienda 2026-11-10, antes de cualquier resultado; pedido de Nico)
+Cada resultado de esta familia (`info`, `rebotes`, `contexto`) se traduce automáticamente, al traerlo, en `RECOMENDACIONES_<modo>.md`
+con `edgelab/research/recomendador.py`: por ítem, una categoría, una lectura, el próximo análisis sugerido y una prioridad, y la lista
+ordenada de «qué hacer después». Reglas fijadas acá, antes de ver nada:
+| Categoría | Cuándo | Qué sugiere |
+|---|---|---|
+| CONFIRMAR | nominada por BH, sin las alertas de abajo | réplica congelada + la indagación específica del ítem |
+| INDAGAR | diferencia ≥ MDE/2 o IC90 que excluye 0, sin nominar | la indagación específica (`SUGERENCIAS` de cada módulo) |
+| ESTRUCTURA_DE_PRECIO | el control muestra el mismo signo y ≥ la mitad del efecto | medir la variable de precio directamente como familia aparte |
+| INCONSISTENTE | signo opuesto entre activos (ambos ≥ 1 error estándar) | indagar por activo antes de combinar |
+| SIN_MUESTRA | no pasa la compuerta o MDE > 0,25 | cuánta muestra falta y de dónde sacarla |
+| DESCARTAR | MDE ≤ 0,10 y diferencia < MDE/2 | NO_REPETIR con su MDE |
+| NO_CONCLUYENTE | el resto | en espera |
+Prioridad = peso de la categoría × |z| × 1,5 si el grupo de interés ya supera 0,08 en bruto × 1,3 si la dosis-respuesta es monótona.
+Las recomendaciones no cambian las reglas de decisión de los pre-registros: ordenan qué mirar después. Toda indagación sugerida se
+pre-registra aparte antes de correr.
