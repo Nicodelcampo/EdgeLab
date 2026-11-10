@@ -69,8 +69,8 @@ def main():
         res["marginales"] = RU.marginales(T); res["seleccion"] = RU.seleccionar(res["marginales"])
     elif MODO == "ruptura_rep" and len(T):
         res["reglas"] = []
-        for r in REGLAS_RUPTURA:                                           # celda congelada: rasgo dentro de [corte_inf, corte_sup)
-            m = (T[r["rasgo"]] >= r["inf"]) & (T[r["rasgo"]] < r["sup"])
+        for r in REGLAS_RUPTURA:                                           # celda congelada: mismo estrato y mismos cortes por activo que la indagación
+            m = RU.estrato(T, r["rasgo"], {i: tuple(c) for i, c in r["cortes_por_activo"].items()}) == r["tercil"]
             S = T[m]; c = H.contraste(S.assign(resultado=S.rompe), n_boot=20000) if (S.placebo == 1).sum() >= 30 else {}
             R0 = S[S.placebo == 0]; mu = float(R0.rompe.mean()) if len(R0) else None
             import numpy as _np

@@ -34,13 +34,15 @@ def test_ruptura_del_dia_rasgos_completos_y_causales():
 
 
 def test_seleccion_mecanica():
-    base = dict(rasgo="r", tercil=0, n_real=500, rompe_media=0, rompe_doble=0, avance15=0, ic90_vs_control=None, meses=8, corte=[0, 0])
+    base = dict(rasgo="r", tercil=0, n_real=500, rompe_media=0, rompe_doble=0, avance15=0, ic90_vs_control=None, meses=8, cortes_por_activo={"NQ": [0, 0]})
     M = [dict(base, rasgo="a", rompe_real=0.12, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": 0.15}),
          dict(base, rasgo="a", tercil=2, rompe_real=0.10, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1}),
          dict(base, rasgo="b", rompe_real=0.09, dif_vs_control=0.1, meses_positivos=4, por_activo={"NQ": 0.1}),       # inestable
          dict(base, rasgo="c", rompe_real=0.09, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": -0.1}),  # inconsistente
+         dict(base, rasgo="e", rompe_real=0.085, dif_vs_control=0.1, meses_positivos=6, por_activo={"NQ": 0.1, "ES": -0.2},
+              n_por_activo={"NQ": 400, "ES": 40}),                                                                   # ES chico: no cuenta
          dict(base, rasgo="d", rompe_real=0.05, dif_vs_control=0.1, meses_positivos=7, por_activo={"NQ": 0.05})]      # no paga
-    assert [(m["rasgo"], m["tercil"]) for m in H.seleccionar(M)] == [("a", 0)]
+    assert [(m["rasgo"], m["tercil"]) for m in H.seleccionar(M)] == [("a", 0), ("e", 0)]
 
 
 def test_rasgos_extra_picos_y_ema():
@@ -56,3 +58,26 @@ def test_rasgos_extra_picos_y_ema():
     assert r["ema9_pend"] > 0 and r["ema21_pend"] > 0                              # las EMAs bajan hacia el cluster
     assert r["picos_sin_tomar"] >= 1 and r["picos_dentro"] == 0
     assert np.isfinite(r["salida_s"]) or np.isnan(r["salida_s"])
+
+
+def test_estratos_discretos_no_colapsan_y_cortes_por_activo():
+    T = pd.DataFrame(dict(inst=["NQ"] * 9 + ["ES"] * 3, placebo=0, picos_sin_tomar=[0, 0, 0, 0, 0, 0, 1, 2, 5, 0, 1, 3],
+                          aprox_s=[1, 2, 3, 4, 5, 6, 7, 8, 9, 100, 200, 300.0]))
+    e = H.estrato(T, "picos_sin_tomar", H.cortes_de(T, "picos_sin_tomar"))
+    assert list(e) == [0] * 6 + [1, 2, 2, 0, 1, 2]                                 # 0 | 1 | ≥ 2, no todo en un tercil
+    c = H.cortes_de(T, "aprox_s"); e = H.estrato(T, "aprox_s", c)
+    assert sorted(e[:9]) == [0, 0, 0, 1, 1, 1, 2, 2, 2] and list(e[9:]) == [0, 1, 2]   # cada activo con sus propios terciles
+    assert c["ES"][0] > c["NQ"][1]
+
+
+def test_salida_desde_el_ultimo_tick_dentro_y_eficiencia():
+    ts = 1_700_000_000 * S + np.arange(12) * S
+    px = np.array([102, 103, 104, 106, 105, 108, 110, 112, 111, 108, 105, 104.0])   # sale del rango [100, 104] en el tick 2→3 y vuelve
+    M = H.minutos(ts, px)
+    r = H.rasgos_extra(ts, px, np.ones(12), 11, 5, +1, 10.0, dict(lo=100.0, hi=104.0, t_ns=int(ts[0])), M, i0=0, pasada_s=3.0)
+    assert r["salida_s"] == 4.0                                                     # del tick 2 (último dentro, 104) al 6 (110 ≥ hi + X/2)
+    assert abs(r["salida_eficiencia"] - 6 / 8) < 1e-12 and r["pasada_s"] == 3.0    # desplazamiento 6 sobre un camino de 8
+
+
+def test_minuto_desde_la_apertura_de_la_sesion():
+    assert list(H._minutos_et([1_700_000_000 * S])) == [1393]                      # 17:13 ET = 1.393 min desde las 18:00 ET del día anterior

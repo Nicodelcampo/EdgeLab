@@ -27,7 +27,13 @@ NS = 1_000_000_000
 RASGOS = ["aprox_s", "excursion_x", "afuera_s", "edad_s", "ancho_x", "n_zonas", "packing", "flujo_alineado", "visita",
           "minuto_et", "tendencia_alineada", "dist_extremo_x", "rango30_x", "vol30_rel", "deseq30",
           # Enmienda (Nico, 2026-11-10, antes de ver resultados): picos, expansión de salida, volumen del cluster y pendiente de EMAs
-          "picos_dentro", "picos_sin_tomar", "salida_s", "vol_banda_rel", "ema9_pend", "ema21_pend"]
+          "picos_dentro", "picos_sin_tomar", "salida_s", "vol_banda_rel", "ema9_pend", "ema21_pend",
+          # Revisión R1 (2026-11-10, antes de ver resultados): la «expansión limpia» se mide en tres partes
+          "salida_eficiencia", "pasada_s"]
+# Estratos fijos para rasgos discretos (con cuantiles, los empates colapsaban todo en un tercil): (corte_1, corte_2), estrato =
+# (v > corte_1) + (v > corte_2). El resto usa los terciles de los reales de cada activo con la misma regla.
+CORTES_FIJOS = {"picos_dentro": (0.5, 1.5), "picos_sin_tomar": (0.5, 1.5), "tendencia_alineada": (-0.5, 0.5),
+                "flujo_alineado": (-0.5, 0.5), "visita": (2.5, 3.5)}
 W_PICO = 3                                                         # pico = pivote de 3 velas de 1 min por lado (misma definición que espejo_picos)
 
 
@@ -64,7 +70,7 @@ def rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, ses_ini, c, n_
     extremo = float(p_ses.min() if llegada < 0 else p_ses.max())
     return dict(aprox_s=aprox_s, excursion_x=float(dist.max() / X) if dist.size else 0.0, afuera_s=float((t - ts[j_sal]) / NS),
                 edad_s=float((t - c["t_ns"]) / NS), ancho_x=float((c["hi"] - c["lo"]) / X), n_zonas=float(c.get("n_zonas", np.nan)),
-                packing=float(c.get("packing", np.nan)), flujo_alineado=float(c.get("net_dir", 0) * llegada), visita=float(n_visita),
+                packing=float(c.get("packing", np.nan)), flujo_alineado=float(np.sign(c.get("net_dir", np.nan)) * llegada), visita=float(n_visita),
                 minuto_et=float(minuto_et), tendencia_alineada=float(np.sign(px[j] - px[ses_ini]) * llegada),
                 dist_extremo_x=float(abs(px[j] - extremo) / X), rango30_x=float((px[w1800].max() - px[w1800].min()) / X),
                 vol30_rel=float(v30 / med30) if med30 and med30 > 0 else np.nan, deseq30=float(s30 / v30 * llegada) if v30 > 0 else 0.0)
@@ -76,40 +82,61 @@ def minutos(ts, px):
     H = np.maximum.reduceat(px, ini); L = np.minimum.reduceat(px, ini); Cc = px[np.r_[ini[1:], len(px)] - 1]
     e9 = pd.Series(Cc).ewm(span=9, adjust=False).mean().to_numpy(); e21 = pd.Series(Cc).ewm(span=21, adjust=False).mean().to_numpy()
     vela = np.repeat(np.arange(len(ini)), np.diff(np.r_[ini, len(px)]))
-    return dict(vela=vela, ini=ini, H=H, L=L, C=Cc, e9=e9, e21=e21)
+    return dict(vela=vela, ini=ini, H=H, L=L, C=Cc, e9=e9, e21=e21, piv_H=pivotes(H), piv_L=pivotes(-L))
 
 
-def _picos_vivos(x, desde, hasta_vela, x_parcial):
-    """Pivotes de máximo de `x` (velas) con índice en [desde, hasta_vela − W], confirmados W velas después (≤ hasta_vela) y sin
-    romper hasta el toque (velas completas hasta `hasta_vela` y el tramo parcial de la vela en curso, `x_parcial`)."""
-    out = []
-    for q in range(max(W_PICO, desde), hasta_vela - W_PICO + 1):
-        if all(x[q] >= x[q - o] and x[q] >= x[q + o] for o in range(1, W_PICO + 1)):
-            if x[q + 1:hasta_vela + 1].max(initial=-np.inf) < x[q] and x_parcial < x[q]: out.append(q)
-    return out
+def pivotes(x):
+    """Índices q con x[q] ≥ las W velas de cada lado (pivote de máximo; para mínimos pasar −L). Se confirma en la vela q + W."""
+    n = len(x); ok = np.zeros(n, bool); ok[W_PICO:n - W_PICO] = True
+    for o in range(1, W_PICO + 1):
+        ok[W_PICO:n - W_PICO] &= (x[W_PICO:n - W_PICO] >= x[W_PICO - o:n - W_PICO - o]) & (x[W_PICO:n - W_PICO] >= x[W_PICO + o:n - W_PICO + o])
+    return np.flatnonzero(ok)
 
 
-def rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M):
-    """Rasgos de la enmienda. Sólo velas completas antes del toque y ticks ≤ j."""
+def _picos_vivos(x, piv, hasta_vela, x_parcial):
+    """Pivotes de `piv` confirmados a más tardar en `hasta_vela` (q + W ≤ hasta_vela) y sin romper hasta el toque: ninguna vela
+    completa posterior (≤ hasta_vela) ni el tramo parcial de la vela del toque (`x_parcial`) lo superó."""
+    q = piv[piv + W_PICO <= hasta_vela]
+    if not q.size: return q
+    suf = np.maximum.accumulate(x[:hasta_vela + 1][::-1])[::-1]                   # suf[k] = máx de x[k..hasta_vela]
+    despues = np.append(suf[1:], -np.inf)[q]
+    return q[(despues < x[q]) & (x_parcial < x[q])]
+
+
+def rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M, i0=0, pasada_s=np.nan):
+    """Rasgos de la enmienda A1 y la revisión R1. Sólo velas de 1 min COMPLETAS antes del toque y ticks ≤ j.
+    `j_sal` = salida previa (primer tick a X/4 del rango tras la visita anterior); `i0` = primer tick de la vida del cluster;
+    `pasada_s` = segundos dentro del rango en la visita anterior (la última pasada del precio por el cluster)."""
     llegada = -lado; vj = int(M["vela"][j]); km = vj - 1                         # última vela COMPLETA antes del toque
-    if km < 2 * W_PICO + 1: return dict(picos_dentro=np.nan, picos_sin_tomar=np.nan, salida_s=np.nan, vol_banda_rel=np.nan, ema9_pend=np.nan, ema21_pend=np.nan)
-    parcial = slice(int(M["ini"][vj]), j + 1)
-    hp, lp = float(px[parcial].max()), float(px[parcial].min())
-    altos = _picos_vivos(M["H"], 0, km, hp); bajos = _picos_vivos(-M["L"], 0, km, -lp)
-    dentro = sum(1 for q in altos if c["lo"] <= M["H"][q] <= c["hi"]) + sum(1 for q in bajos if c["lo"] <= M["L"][q] <= c["hi"])
-    # picos que la aproximación dejó atrás sin tomar: llega bajando (llegada −1) → máximos que quedaron arriba; subiendo → mínimos
-    v_sal = int(M["vela"][j_sal])
-    atras = [q for q in (altos if llegada < 0 else bajos) if q >= v_sal]
-    # expansión de la última salida: segundos desde que dejó el rango hasta estar a X/2 de él
-    dist = np.maximum(np.maximum(c["lo"] - px[j_sal:j + 1], px[j_sal:j + 1] - c["hi"]), 0.0)
-    k = _primero(dist >= X / 2); salida_s = float((ts[j_sal + k] - ts[j_sal]) / NS) if k >= 0 else np.nan
-    # volumen negociado dentro del rango en los 30 min previos a la detección, contra el volumen medio por 30 min de la sesión
-    t0 = c["t_ns"]; a = int(np.searchsorted(ts, t0 - 1800 * NS)); b = int(np.searchsorted(ts, t0))
-    dentro_b = (px[a:b] >= c["lo"]) & (px[a:b] <= c["hi"]); horas = max((ts[b - 1] - ts[0]) / (1800 * NS), 1.0) if b > 0 else 1.0
-    vol_rel = float(vol[a:b][dentro_b].sum() / (vol[:b].sum() / horas)) if b > a and vol[:b].sum() > 0 else np.nan
-    pend = lambda e: float((e[km] - e[km - 5]) / X * llegada) if km >= 5 else np.nan   # >0: la EMA se mueve hacia el cluster
-    return dict(picos_dentro=float(dentro), picos_sin_tomar=float(len(atras)), salida_s=salida_s, vol_banda_rel=vol_rel,
-                ema9_pend=pend(M["e9"]), ema21_pend=pend(M["e21"]))
+    out = dict(picos_dentro=np.nan, picos_sin_tomar=np.nan, ema9_pend=np.nan, ema21_pend=np.nan, pasada_s=float(pasada_s))
+    if km >= 2 * W_PICO:
+        parcial = slice(int(M["ini"][vj]), j + 1); hp, lp = float(px[parcial].max()), float(px[parcial].min())
+        altos = _picos_vivos(M["H"], M["piv_H"], km, hp); bajos = _picos_vivos(-M["L"], M["piv_L"], km, -lp)
+        # liquidez dentro: picos vivos con precio en el rango (en la práctica, los del lado de llegada: los del otro lado ya se tomaron)
+        out["picos_dentro"] = float(((M["H"][altos] >= c["lo"]) & (M["H"][altos] <= c["hi"])).sum()
+                                    + ((M["L"][bajos] >= c["lo"]) & (M["L"][bajos] <= c["hi"])).sum())
+        # picos que la aproximación dejó atrás sin tomar desde la salida previa: llega bajando → máximos arriba; subiendo → mínimos abajo
+        v_sal = int(M["vela"][j_sal]); atras = altos if llegada < 0 else bajos
+        out["picos_sin_tomar"] = float((atras >= v_sal).sum())
+    for e, span in (("ema9_pend", "e9"), ("ema21_pend", "e21")):                 # pendiente en 5 velas; nada hasta que la EMA se asienta
+        if km >= int(span[1:]) + 5: out[e] = float((M[span][km] - M[span][km - 5]) / X * llegada)   # > 0: la EMA va hacia el cluster
+    # expansión de la última salida: desde el ÚLTIMO tick dentro del rango antes de j_sal hasta estar a X/2 (segundos y eficiencia)
+    seg = px[i0:j_sal + 1]; adentro = np.flatnonzero((seg >= c["lo"]) & (seg <= c["hi"]))
+    out["salida_s"] = out["salida_eficiencia"] = np.nan
+    if adentro.size:
+        a = i0 + int(adentro[-1]); dist = np.maximum(np.maximum(c["lo"] - px[a:j + 1], px[a:j + 1] - c["hi"]), 0.0)
+        k = _primero(dist >= X / 2)
+        if k > 0:
+            out["salida_s"] = float((ts[a + k] - ts[a]) / NS)
+            camino = float(np.abs(np.diff(px[a:a + k + 1])).sum())
+            out["salida_eficiencia"] = float(abs(px[a + k] - px[a]) / camino) if camino > 0 else np.nan   # 1 = línea recta
+    # volumen del cluster (proxy): negociado dentro del rango en los 30 min previos a la detección / volumen medio por 30 min de la sesión
+    t0 = c["t_ns"]; a = int(np.searchsorted(ts, t0 - 1800 * NS)); b = int(np.searchsorted(ts, t0, side="right"))
+    if b > a and vol[:b].sum() > 0:
+        bloques = max((ts[b - 1] - ts[0]) / (1800 * NS), 1.0); en = (px[a:b] >= c["lo"]) & (px[a:b] <= c["hi"])
+        out["vol_banda_rel"] = float(vol[a:b][en].sum() / (vol[:b].sum() / bloques))
+    else: out["vol_banda_rel"] = np.nan
+    return out
 
 
 def desenlaces(ts, px, j, ref, lado, X):
@@ -121,7 +148,8 @@ def desenlaces(ts, px, j, ref, lado, X):
 
 
 def _minutos_et(t_ns):
-    return pd.to_datetime(np.asarray(t_ns), unit="ns", utc=True).tz_convert("America/New_York").map(lambda x: x.hour * 60 + x.minute).to_numpy()
+    m = pd.to_datetime(np.asarray(t_ns), unit="ns", utc=True).tz_convert("America/New_York").map(lambda x: x.hour * 60 + x.minute).to_numpy()
+    return (m - 18 * 60) % 1440                                                    # minutos desde la apertura de la sesión (18:00 ET)
 
 
 def ruptura_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -> list:
@@ -137,10 +165,11 @@ def ruptura_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -
         if ev is None: return
         j, ref, lado, j_sal = ev; j += i0; j_sal += i0
         V = RB.visitas(tt, px[i0:i1], vol[i0:i1], lo, hi, X / 4); nv = sum(1 for r in V if r["ini"] + i0 <= j)
+        prev = [r for r in V if r["fin"] + i0 == j_sal]; pasada = prev[0]["seg_dentro"] if prev else np.nan
         c = dict(info, lo=lo, hi=hi, t_ns=t0)
         filas.append(dict(inst=inst, fecha=int(fecha), placebo=placebo, lado=lado,
                           **rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, 0, c, nv, int(_minutos_et([ts[j]])[0])),
-                          **rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M),
+                          **rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M, i0=i0, pasada_s=pasada),
                           **desenlaces(ts, px, j, ref, lado, X)))
 
     for k, c in enumerate(C.itertuples(index=False)):
@@ -153,8 +182,23 @@ def ruptura_del_dia(inst, fecha, ts, px, vol, C: pd.DataFrame, tick, friccion) -
             kk = int(np.searchsorted(ts, t2, side="right")) - 1; centro = float(px[kk]); plo, phi = centro - w / 2, centro + w / 2
             vivo = (reales < t2 + VIDA_CLUSTER_S * NS) & (reales + VIDA_CLUSTER_S * NS > t2)
             if (vivo & (r_lo <= phi + X / 4) & (plo - X / 4 <= r_hi)).any(): continue
-            uno(int(ts[kk]), plo, phi, dict(n_zonas=np.nan, packing=np.nan, net_dir=0), 1)
+            uno(int(ts[kk]), plo, phi, dict(n_zonas=np.nan, packing=np.nan, net_dir=np.nan), 1)   # el control no tiene zonas
     return filas
+
+
+def cortes_de(T, r):
+    """(corte_1, corte_2) por activo: fijos si el rasgo es discreto; si no, terciles de los eventos REALES de ese activo."""
+    if r in CORTES_FIJOS: return {i: tuple(CORTES_FIJOS[r]) for i in T.inst.unique()}
+    return {i: tuple(np.nanquantile(h[h.placebo == 0][r], [1 / 3, 2 / 3])) for i, h in T.groupby("inst")}
+
+
+def estrato(T, r, cortes):
+    """0, 1, 2 con estrato = (v > corte_1) + (v > corte_2) usando los cortes del activo de cada fila; −1 sin dato o sin cortes."""
+    out = np.full(len(T), -1)
+    for i, (c1, c2) in cortes.items():
+        m = (T.inst.to_numpy() == i) & np.isfinite(T[r].to_numpy(float)); v = T[r].to_numpy(float)[m]
+        out[m] = (v > c1).astype(int) + (v > c2).astype(int)
+    return out
 
 
 def marginales(T: pd.DataFrame, rasgos=RASGOS, n_boot: int = 2000) -> list:
@@ -164,21 +208,27 @@ def marginales(T: pd.DataFrame, rasgos=RASGOS, n_boot: int = 2000) -> list:
     out = []
     for r in rasgos:
         if r not in T or T[r].notna().sum() < 300: continue
-        X = T.copy()
-        cortes = {i: np.nanquantile(h[h.placebo == 0][r], [1 / 3, 2 / 3]) for i, h in X.groupby("inst")}
-        X["tercil"] = [np.searchsorted(cortes[i], v, side="right") if np.isfinite(v) else -1 for i, v in zip(X.inst, X[r])]
+        X = T.copy(); cortes = cortes_de(X, r)
+        X["tercil"] = estrato(X, r, cortes)
         for t in (0, 1, 2):
             S = X[X.tercil == t]
             if (S.placebo == 0).sum() < 100: continue
             reales = S[S.placebo == 0]
             c = contraste(S.assign(resultado=S.rompe), n_boot=n_boot) if (S.placebo == 1).sum() >= 30 else {}
             mes = reales.assign(m=reales.fecha // 100).groupby("m").rompe.mean()
-            out.append(dict(rasgo=r, tercil=t, corte=[float(x) for x in np.nanmean(list(cortes.values()), axis=0)], n_real=int(len(reales)),
+            out.append(dict(rasgo=r, tercil=t, cortes_por_activo={i: [float(x) for x in v] for i, v in cortes.items()}, n_real=int(len(reales)),
                             rompe_real=float(reales.rompe.mean()), rompe_media=float(reales.rompe_media.mean()), rompe_doble=float(reales.rompe_doble.mean()),
                             avance15=float(reales.avance15_x.mean()), dif_vs_control=c.get("diferencia"), ic90_vs_control=c.get("ic90"),
                             meses_positivos=int((mes > 0).sum()), meses=int(len(mes)),
-                            por_activo={i: float(h.rompe.mean()) for i, h in reales.groupby("inst")}))
+                            por_activo={i: float(h.rompe.mean()) for i, h in reales.groupby("inst")},
+                            n_por_activo={i: int(len(h)) for i, h in reales.groupby("inst")}))
     return out
+
+
+def _activos_ok(m, n_min: int = 100):
+    """Mismo signo (> 0) en cada activo con ≥ `n_min` eventos reales en la celda; NQ siempre cuenta."""
+    n = m.get("n_por_activo") or {}
+    return all(v > 0 for i, v in m["por_activo"].items() if i == "NQ" or n.get(i, n_min) >= n_min)
 
 
 def seleccionar(M: list, max_reglas: int = 3) -> list:
@@ -186,7 +236,7 @@ def seleccionar(M: list, max_reglas: int = 3) -> list:
     ≥ 0,08 (paga la fricción), mejor que el control, ≥ 5 de 8 meses positivos y mismo signo en NQ y ES (o sólo NQ si ES < 100
     eventos). Se ordenan por ruptura media y se toman hasta 3, de rasgos distintos."""
     ok = [m for m in M if m["rompe_real"] >= 0.08 and (m["dif_vs_control"] is None or m["dif_vs_control"] > 0)
-          and m["meses_positivos"] >= max(5, int(0.6 * m["meses"])) and all(v > 0 for v in m["por_activo"].values())]
+          and m["meses_positivos"] >= max(5, int(0.6 * m["meses"])) and _activos_ok(m)]
     out, vistos = [], set()
     for m in sorted(ok, key=lambda m: -m["rompe_real"]):
         if m["rasgo"] in vistos: continue

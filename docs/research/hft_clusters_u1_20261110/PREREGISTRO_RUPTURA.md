@@ -30,7 +30,7 @@ Otras poblaciones posibles (toque n-ésimo, penetración, estado continuo) queda
   sesión, desequilibrio por tick rule en la dirección de llegada).
 - **Desenlaces:** carrera ±X (principal), ±X/2, ±2X, tiempo hasta resolver, avance máximo a favor de la ruptura en 15 min.
 - **Salida:** por rasgo y tercil (cortes en los reales de cada activo): ruptura real, diferencia contra control, meses positivos, por
-  activo. Es descriptiva: no decide nada por sí sola. Pruebas contadas: 15 × 3 = **45** (`hft_ruptura/indaga`).
+  activo. Es descriptiva: no decide nada por sí sola. Pruebas contadas: 15 × 3 = **45** (`hft_ruptura/indaga`; con §7 y §8, 69).
 - **Regla de selección (mecánica, `hft_ruptura.seleccionar`):** celdas con ruptura real media ≥ 0,08 (paga la fricción con stop = X),
   mejor que el control, ≥ 5 de 8 meses positivos y mismo signo en NQ y ES (o sólo NQ si ES tiene < 100 eventos); se ordenan por
   ruptura media y se toman hasta 3 de rasgos distintos. Si ninguna cumple: la familia se cierra como SIN_RUPTURA_DISTINTIVA.
@@ -73,3 +73,30 @@ Rasgos agregados (todos causales: sólo velas de 1 min completas antes del toque
 
 Pruebas exploratorias extra: 6 × 3 terciles = **18** (`hft_ruptura/indaga_b`). La regla de selección (§2) y la réplica (§3, ≤ 3
 reglas) no cambian. Total de la indagación: 63 celdas, todas exploratorias.
+
+## 8. Revisión R1 (2026-11-10, pedido de Nico de iterar las definiciones, ANTES de ver resultados)
+La versión 2 del kernel (enmienda A1) **se descarta sin mirar** y se relanza como versión 3. Errores corregidos:
+1. **Estratos con empates (afectaba a la v1 y la v2):** con terciles por `searchsorted(side="right")`, un rasgo discreto con mayoría
+   de ceros (picos, tendencia ±1, flujo, nº de visita) mandaba TODO al tercil superior y dejaba vacíos los otros. Ahora estrato =
+   (v > corte_1) + (v > corte_2) y los rasgos discretos tienen cortes fijos: picos 0 | 1 | ≥ 2; tendencia y flujo en contra | neutro
+   | a favor; visita 2 | 3 | ≥ 4. El resto, terciles de los reales de cada activo.
+2. **La réplica no reproducía la celda:** congelaba el promedio de los cortes de NQ y ES y usaba otra regla de borde. Ahora congela
+   los cortes de cada activo y usa la misma función (`hft_ruptura.estrato`) que la indagación.
+3. **Regla de activos:** el código exigía signo positivo en ES aunque tuviera pocos eventos; ahora cumple lo escrito en §2 (ES sólo
+   cuenta con ≥ 100 eventos reales en la celda).
+4. **Minuto del día:** era la hora del reloj ET, que parte la sesión CME en dos (cruza medianoche); ahora son minutos desde la
+   apertura (18:00 ET).
+5. **Flujo de zonas en el control:** valía 0 (neutro) y caía en el estrato del medio; el control no tiene zonas → sin dato.
+6. **`salida_s` medía otra cosa:** arrancaba en la salida a X/4 (no cuando el precio deja el rango). Ahora va desde el último tick
+   dentro del rango hasta estar a X/2.
+7. **EMAs:** sin dato hasta que la EMA se asienta (9 + 5 y 21 + 5 velas de la sesión).
+
+Mejoras de medición («expansión limpia» en tres partes, todas causales):
+- `salida_s` (corregida, arriba); `salida_eficiencia`: desplazamiento / camino recorrido en ese tramo (1 = línea recta);
+  `pasada_s`: segundos dentro del rango en la visita anterior (la última pasada del precio por el cluster; chico = la cruzó rápido).
+- Picos: misma definición, pivotes calculados una vez por sesión (antes O(velas²) por evento). Aclaración: los picos «dentro» que
+  sobreviven al toque son en la práctica los del lado de llegada (los del otro lado ya los tomó el precio al llegar).
+
+Pruebas: 23 rasgos × 3 = **69** celdas exploratorias (+6, `hft_ruptura/indaga_c`). Selección (§2) y réplica (§3) sin cambios.
+`n_zonas`, `packing` y `flujo_alineado` no existen en el control: su comparación contra control queda vacía y la regla de selección
+los evalúa sólo por umbral, meses y activos.

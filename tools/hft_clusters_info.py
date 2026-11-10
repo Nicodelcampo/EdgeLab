@@ -34,10 +34,8 @@ def construir(modo: str) -> Path:
         sel = json.loads((DIR / "HFTC_ruptura.json").read_text(encoding="utf-8")).get("seleccion") or []
         if not sel: raise SystemExit("la indagación no seleccionó ninguna regla: no hay nada que confirmar")
         reglas = []
-        for m in sel:
-            c = m["corte"]; inf = -1e18 if m["tercil"] == 0 else c[0] if m["tercil"] == 1 else c[1]
-            sup = c[0] if m["tercil"] == 0 else c[1] if m["tercil"] == 1 else 1e18
-            reglas.append(dict(rasgo=m["rasgo"], tercil=m["tercil"], inf=inf, sup=sup))
+        for m in sel:                                                   # cortes de la indagación (DESC), por activo, sin recalcular en la réplica
+            reglas.append(dict(rasgo=m["rasgo"], tercil=m["tercil"], cortes_por_activo=m["cortes_por_activo"]))
         src = src.replace("REGLAS_RUPTURA = []", "REGLAS_RUPTURA = " + json.dumps(reglas), 1); print("reglas congeladas:", reglas)
     if modo in ("rebotes", "contexto", "ruptura", "ruptura_rep"):                                              # clusters del E0-b (equilibrio potencia/fricción); YM y GC fuera
         eq = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]
