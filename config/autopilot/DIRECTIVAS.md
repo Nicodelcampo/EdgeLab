@@ -68,3 +68,8 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    no se propone igual. Cuando una estrategia muestra ventaja aunque sea poca, lo que sigue NO es agregar variantes: es entender qué
    factor la dio (activo, horario, lado, stop frente a la fricción, régimen), mirarlo en bruto y en neto, y asentarlo. Toda campaña
    cerrada pasa por el meta-analista y deja su entrada (aunque sea SIN_FACTOR); un resultado que no queda en el registro se pierde.
+15. **Método de investigación (Nico 2026-11-10).** `nucleo_proyecto.metodo_de_investigacion` es el orden obligatorio de una idea a una
+   decisión: ¿ya está medido? → población escrita → E0 sin retornos con regla mecánica → varias definiciones con hipótesis propia y
+   pocas pruebas → control que comparte la condición → desenlace en bruto contra el umbral económico → contexto con diferencia en
+   diferencias → RECOMENDACIONES (no un 0/1) → réplica → P&L. Toda familia nueva copia la estructura de `docs/research/hft_clusters_u1_20261110/`
+   y deja `RECOMENDACIONES_*.md` con `edgelab/research/recomendador.py`; el meta-analista las convierte en factores.

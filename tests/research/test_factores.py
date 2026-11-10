@@ -45,6 +45,7 @@ def test_el_embudo_deja_pendiente_y_el_meta_analista_lo_asienta(tmp_path):
     raiz = tmp_path / "embudo"; (raiz / "ZGAP-NQ").mkdir(parents=True)
     (raiz / "ZGAP-NQ" / "META_PENDIENTE.json").write_text(json.dumps(dict(cid="ZGAP-NQ", final="PISTAS_VIVAS", motivo="sin potencia", ts=0)))
     (raiz / "ZGAP-NQ" / "estado.json").write_text(json.dumps(dict(etapa="FIN", fase="PISTAS_VIVAS", historial=[], spec={"cid": "ZGAP-NQ"})))
+    (raiz / "ZGAP-NQ" / "RECOMENDACIONES_rebotes.md").write_text("1. D1 (INDAGAR, prioridad 2.1): dosis-respuesta por visita")
 
     class Runner:
         def __init__(self): self.entradas = []
@@ -57,6 +58,8 @@ def test_el_embudo_deja_pendiente_y_el_meta_analista_lo_asienta(tmp_path):
     assert hechos == [dict(cid="ZGAP-NQ", estado="ASENTADO", factores=1)] and not MA.pendientes(raiz)
     rol, entrada = r.entradas[0]
     assert rol == "meta_analista" and "errores_y_guardas" in entrada["nucleo_proyecto"] and entrada["factores_vigentes"] == []
+    assert "INDAGAR" in entrada["recomendaciones"]["RECOMENDACIONES_rebotes.md"]
+    assert "metodo_de_investigacion" in entrada["nucleo_proyecto"]
     e = F.cargar(libro)[0]; assert e["estado"] == "PROPUESTO_META" and e["origen"] == "meta_analista" and e["evidencia"] == ["config/autopilot/grillas/campanas/ZGAP-NQ.json"]
 
 

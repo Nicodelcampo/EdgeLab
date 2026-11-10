@@ -81,11 +81,12 @@ NUCLEO_FUENTES = [
     ("decisiones_vigentes", "docs/DECISIONES_20261108.md", "todos"),
     ("decisiones_de_validacion", "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md", "todos"),
     ("medir_en_r", "docs/research/MEDIR_EN_R_20261102.md", "todos"),
+    ("metodo_de_investigacion", "docs/research/METODO_DE_INVESTIGACION.md", "todos"),              # el orden de una idea a una decisión
     ("practicas_de_trabajo", "docs/research/PRACTICAS_DE_TRABAJO_20261110.md", "todos"),          # qué salió bien y mal, con guardas
     ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
     ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),
     ("guia_regimen", "docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md", "diseño"),
-    ("guia_grilla_masiva", "docs/research/GUIA_GRILLA_MASIVA.md", "diseño"),
+    ("guia_grilla_masiva", "docs/research/GUIA_GRILLA_MASIVA.md", "codigo"),                    # la usa quien construye (2026-11-10: el método desaconseja grillas grandes)
     ("ideas_externas_indice", "docs/research/ideas_externas/INDICE.md", "diseño"),
 ]
 ROLES_DISENO = ("proponente", "programador", "meta_analista")
@@ -105,6 +106,7 @@ def nucleo(rol: str = "proponente", root=None) -> dict:
     r = Path(root or Path(__file__).resolve().parents[2]); out = {}
     for clave, ruta, quien in NUCLEO_FUENTES:
         if quien == "diseño" and rol not in ROLES_DISENO: continue
+        if quien == "codigo" and rol != "programador": continue
         f = r / ruta
         if f.exists(): out[clave] = redactar(f.read_text(encoding="utf-8"))
     return out

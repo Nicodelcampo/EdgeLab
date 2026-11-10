@@ -42,8 +42,11 @@ def procesar(runner, raiz_embudo, *, limite: int = 3, root: Path = F.ROOT, libro
         ev = _evidencia(cid, st.get("spec") or {}, root)
         if not ev: hechos.append(dict(cid=cid, estado="SIN_EVIDENCIA_EN_REPO")); continue      # se reintenta cuando la campaña esté en el repo
         vig = [dict(id=e["id"], estado=e["estado"], factor=e["factor"]) for e in F.cargar(libro)]
+        # Método de investigación §8: si la campaña dejó RECOMENDACIONES_*.md (recomendador), van al meta-analista como punto de partida
+        dirs = {marca.parent} | ({(root / (st.get("spec") or {}).get("preregistro", "")).parent} if (st.get("spec") or {}).get("preregistro") else set())
+        recs = {f.name: redactar(f.read_text(encoding="utf-8"))[:12000] for d in dirs if d.is_dir() for f in sorted(d.glob("RECOMENDACIONES_*.md"))[:3]}
         r = runner.call("meta_analista", con_nucleo("meta_analista", dict(campana=cid, cierre=dict(final=m["final"], motivo=redactar(str(m["motivo"]))),
-                                                                          estado_campana=_resumen(st), factores_vigentes=vig)))
+                                                                          estado_campana=_resumen(st), factores_vigentes=vig, recomendaciones=recs)))
         if r.get("status") not in ("OK", "CACHED"): hechos.append(dict(cid=cid, estado=r.get("status"))); continue
         out = r["output"]; n = 0
         for k, fx in enumerate(out.get("factores") or []):

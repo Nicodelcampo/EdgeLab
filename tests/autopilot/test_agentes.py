@@ -44,7 +44,7 @@ def test_nucleo_completo_entra_y_pasa_el_saneado():
         if not A.rol(r)["nucleo"]: assert n == {}; continue
         for clave, ruta, quien in C.NUCLEO_FUENTES:
             f = ROOT / ruta
-            if f.exists() and (quien == "todos" or r in C.ROLES_DISENO):
+            if f.exists() and (quien == "todos" or (quien == "diseño" and r in C.ROLES_DISENO) or (quien == "codigo" and r == "programador")):
                 assert n[clave] == C.redactar(f.read_text(encoding="utf-8")), f"{clave} recortado para {r}"
         assert len(json.dumps(n, ensure_ascii=False)) < 0.75 * A.rol(r)["contexto_max_chars"], f"el núcleo de {r} deja < 25 % para la tarea"
 
