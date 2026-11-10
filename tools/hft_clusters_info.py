@@ -5,6 +5,7 @@
   python tools/hft_clusters_info.py e0b_otros              # E0-b sin retornos en RTY, 6E, 6B y MBT (regla mecánica de definición)
   python tools/hft_clusters_info.py ruptura_otros          # tabla de ruptura (generador) en esos activos + YM, SIN mirar desenlaces → banco
   python tools/hft_clusters_info.py ruptura_replica        # tabla de la confirmación de «no defiende» (abr → sep; sin desenlaces en el kernel)
+  python tools/hft_clusters_info.py niveles_op_replica     # OP-1: niveles de reloj y de pivote con fills pasivos y 3 geometrías (sólo tabla)
   python tools/hft_clusters_info.py niveles_replica        # REBOTE_NIVEL_SESION: niveles de la sesión con zonas y clusters (abr → sep) → banco
   python tools/hft_clusters_info.py ruptura                # indagación de la ruptura en clusters grandes (DESC, exploratoria)
   python tools/hft_clusters_info.py ruptura_rep            # confirmación en la réplica abr → sep de las reglas que eligió la indagación
@@ -25,7 +26,7 @@ DIR = ROOT / "docs/research/hft_clusters_u1_20261110"
 MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/bridge/indicators/hftzones_nq.py",
            "edgelab/bridge/indicators/hftzones_nq_rangos_pct_v2.py",
            "edgelab/research/hft_clusters_info.py", "edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py", "edgelab/research/hft_ruptura.py",
-           "edgelab/research/niveles_sesion.py"]
+           "edgelab/research/niveles_sesion.py", "edgelab/research/fill_pasivo.py"]
 DATASET = "nicolasbuttaro/edgelab-liquid-ticks-20261014"
 OTROS = ("RTY", "6E", "6B", "MBT")                                     # activos con costo medido sin E0-b (6J y ZB: spread sin medir)
 REPLICA_INST = ("NQ", "ES", "RTY", "YM")                                # confirmación de «el cluster grande no defiende» (CONFIRMACION_NO_DEFIENDE.md)
@@ -48,7 +49,7 @@ def construir(modo: str) -> Path:
         src = src.replace("REGLAS_RUPTURA = []", "REGLAS_RUPTURA = " + json.dumps(reglas), 1); print("reglas congeladas:", reglas)
     if modo == "e0b_otros":                                            # E0-b sin retornos en los activos nuevos con costo medido
         src = src.replace('INSTRUMENTOS = ("NQ", "ES", "YM", "GC")', "INSTRUMENTOS = " + repr(OTROS), 1)
-    if modo in ("ruptura_replica", "niveles_replica"):                 # réplica abr → sep: definiciones congeladas de los dos E0-b
+    if modo in ("ruptura_replica", "niveles_replica", "niveles_op_replica"):                 # réplica abr → sep: definiciones congeladas de los dos E0-b
         el = {i: ["Z_CERT", v["elegida"]["cluster"]] for f in ("HFTC_e0b.json", "HFTC_e0b_otros.json")
               for i, v in json.loads((DIR / f).read_text(encoding="utf-8"))["equilibrio"].items() if v.get("elegida")}
         inst = REPLICA_INST if modo == "ruptura_replica" else NIVELES_INST
@@ -66,7 +67,7 @@ def construir(modo: str) -> Path:
         eq = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]
         el = {i: ["Z_CERT", eq[i]["elegida"]["cluster"]] for i in ("NQ", "ES") if eq.get(i, {}).get("elegida")}
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1)
-    elif modo not in ("e0", "e0b", "e0b_otros", "ruptura_replica", "niveles_replica"):
+    elif modo not in ("e0", "e0b", "e0b_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica"):
         el = json.loads((DIR / "HFTC_e0.json").read_text(encoding="utf-8"))["eleccion"]
         if not el: raise SystemExit("el E0 no eligió ninguna definición: el paso de información no se corre")
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps({i: [v["zona"], v["cluster"]] for i, v in sorted(el.items())}), 1)
@@ -109,14 +110,14 @@ def recomendaciones(modo: str) -> str:
 
 USA = {"base": MODULOS[:5], "rebotes": ["edgelab/research/hft_rebotes.py"], "contexto": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py"],
        "ruptura": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py"],
-       "niveles": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py", "edgelab/research/niveles_sesion.py"]}
+       "niveles": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py", "edgelab/research/niveles_sesion.py", "edgelab/research/fill_pasivo.py"]}
 
 
 def no_vigente(modo: str, res: dict) -> list:
     """Módulos que el modo USA y que cambiaron desde que se construyó el kernel (`preflight.codigo_vigente` restringido al modo:
     un cambio en un módulo que el modo no importa no invalida la corrida)."""
     from edgelab.research.preflight import codigo_vigente
-    usa = set(USA["base"] + USA.get(modo.replace("_replica", "").replace("_rep", "").replace("_otros", ""), []))
+    usa = set(USA["base"] + USA.get(modo.replace("_op", "").replace("_replica", "").replace("_rep", "").replace("_otros", ""), []))
     return [m for m in codigo_vigente(res, ROOT) if m in usa]
 
 

@@ -17,6 +17,7 @@ from __future__ import annotations
 import numpy as np
 import pandas as pd
 
+from edgelab.research import fill_pasivo as FP
 from edgelab.research import hft_rebotes as RB
 from edgelab.research import hft_ruptura as RU
 from edgelab.research.hft_clusters_info import VIDA_CLUSTER_S, ZONAS, barrera
@@ -25,6 +26,12 @@ NS = 1_000_000_000
 PASO_S, ANCHO_FRAC, VIDA_S = 600, 0.25, VIDA_CLUSTER_S
 VENTANAS_S = (600, 1800, 3600)
 SIN_ZONA = 99.0
+# OP-1 (PLAN_OPERABLE_Y_CUERDAS.md §2 e iteración §7): orden límite en el borde del nivel, activa desde que el precio se alejó X/2,
+# stop X, tres objetivos fijados ANTES de mirar (X/2, X, 2X), salida por tiempo a los 900 s del fill; dos modelos de fill.
+GEOMETRIAS = {"g05": 0.5, "g1": 1.0, "g2": 2.0}
+T_MAX_OP_S = 900
+COLUMNAS_OP = [f"op_{m}_llena" for m in FP.MODELOS] + [f"op_{m}_{g}" for m in FP.MODELOS for g in GEOMETRIAS] + ["op_costo_r"]
+TIPOS = ("reloj", "pivote")
 RASGOS_ZONA = [f"dist_zona_{t}" for t in VENTANAS_S] + ["dist_cluster", "n_zonas_1x_1800"]
 RASGOS = [r for r in RU.RASGOS if r not in ("ancho_x", "n_zonas", "packing", "flujo_alineado", "visita", "pasada_s")] + RASGOS_ZONA   # constantes o sin sentido para un nivel
 CORTES_FIJOS = dict({k: list(v) for k, v in RU.CORTES_FIJOS.items() if k in RASGOS},
@@ -65,13 +72,44 @@ def rasgos_zona(t_ev: int, lo: float, hi: float, X: float, Z: pd.DataFrame, C: p
     return out
 
 
-def niveles_del_dia(inst, fecha, ts, px, vol, Z: pd.DataFrame, C: pd.DataFrame | None, tick, friccion) -> list:
-    """Una fila por nivel que tuvo su primer regreso D0 (placebo = 0: el banco contrasta estratos de la misma tabla)."""
+def operacion_nivel(ts, px, i0: int, i1: int, lo: float, hi: float, X: float, tick: float, friccion: float) -> dict:
+    """OP-1 sobre un nivel: la orden se activa en el primer tick a ≥ X/2 de la banda (antes, se llenaría en el acto) y vence con la
+    vida del nivel. Compra límite en `hi` si el precio se fue arriba; venta límite en `lo` si se fue abajo. R bruto por geometría y
+    modelo (0 si no se llenó) y el costo en R (fricción / X) para el neto."""
+    d = np.maximum(np.maximum(lo - px[i0:i1], px[i0:i1] - hi), 0.0); k = np.flatnonzero(d >= X / 2)
+    out = {c: np.nan for c in COLUMNAS_OP}; out["op_costo_r"] = float(friccion / X)
+    if not k.size: return out
+    ja = i0 + int(k[0]); lado = 1 if px[ja] > hi else -1; lim = hi if lado > 0 else lo
+    for m in FP.MODELOS:
+        for g, f in GEOMETRIAS.items():
+            r = FP.operar(ts, px, ja, i1, lim, lado, X, f * X, T_MAX_OP_S, tick, m)
+            out[f"op_{m}_{g}"] = r["r_bruto"] if r["llena"] else np.nan; out[f"op_{m}_llena"] = float(r["llena"])
+    return out
+
+
+def _niveles(ts, px, tipo: str):
+    """[(t0, centro)]: «reloj» = cada PASO_S s el último precio; «pivote» = máximos y mínimos de 1 min (pivote de W velas por lado,
+    misma definición que `hft_ruptura`) en el instante en que se CONFIRMAN (cierre de la vela q + W)."""
+    if tipo == "reloj":
+        return [(t0, float(px[int(np.searchsorted(ts, t0, side="right")) - 1]))
+                for t0 in range(int(ts[0]) + PASO_S * NS, int(ts[-1]) - 60 * NS, PASO_S * NS)]
+    M = RU.minutos(ts, px); fin = np.r_[M["ini"][1:], len(px)] - 1; out = []
+    for piv, serie in ((M["piv_H"], M["H"]), (M["piv_L"], M["L"])):
+        for q in piv:
+            c = q + RU.W_PICO
+            if c < len(fin): out.append((int(ts[fin[c]]) + 1, float(serie[q])))
+    return sorted(out)
+
+
+def niveles_del_dia(inst, fecha, ts, px, vol, Z: pd.DataFrame, C: pd.DataFrame | None, tick, friccion, tipo: str = "reloj",
+                    con_operacion: bool = False) -> list:
+    """Una fila por nivel que tuvo su primer regreso D0 (placebo = 0: el banco contrasta estratos de la misma tabla).
+    `con_operacion` agrega las columnas de OP-1 (desenlaces: van en `columnas_desenlace` de la especificación)."""
     X = barrera(friccion, tick); w = ANCHO_FRAC * X; filas = []
     signo = RU._tick_rule(px); M = RU.minutos(ts, px)
-    for t0 in range(int(ts[0]) + PASO_S * NS, int(ts[-1]) - 60 * NS, PASO_S * NS):
-        k = int(np.searchsorted(ts, t0, side="right")) - 1; centro = float(px[k]); lo, hi = centro - w / 2, centro + w / 2
-        i0 = k + 1; i1 = int(np.searchsorted(ts, t0 + VIDA_S * NS, side="right"))
+    for t0, centro in _niveles(ts, px, tipo):
+        lo, hi = centro - w / 2, centro + w / 2
+        i0 = int(np.searchsorted(ts, t0, side="right")); i1 = int(np.searchsorted(ts, t0 + VIDA_S * NS, side="right"))
         if i1 - i0 < 3: continue
         tt = (ts[i0:i1] - t0) / NS
         ev = RB.eventos(tt, px[i0:i1], vol[i0:i1], lo, hi, X, tick).get("D0_BASE")
@@ -81,5 +119,7 @@ def niveles_del_dia(inst, fecha, ts, px, vol, Z: pd.DataFrame, C: pd.DataFrame |
         r = RU.rasgos_evento(ts, px, vol, signo, i0, j, j_sal, ref, lado, X, 0, c, 2, int(RU._minutos_et([ts[j]])[0]))
         r.update(RU.rasgos_extra(ts, px, vol, j, j_sal, lado, X, c, M, i0=i0))
         r.update(rasgos_zona(int(ts[j]), lo, hi, X, Z, C))
-        filas.append(dict(inst=inst, fecha=int(fecha), placebo=0, lado=lado, **{q: r[q] for q in RASGOS}, **RU.desenlaces(ts, px, j, ref, lado, X)))
+        fila = dict(inst=inst, fecha=int(fecha), placebo=0, lado=lado, tipo_nivel=tipo, **{q: r[q] for q in RASGOS}, **RU.desenlaces(ts, px, j, ref, lado, X))
+        if con_operacion: fila.update(operacion_nivel(ts, px, i0, i1, lo, hi, X, tick, friccion))
+        filas.append(fila)
     return filas

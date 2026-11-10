@@ -26,7 +26,8 @@ def main():
     ent = os.environ.get("ENTRADA", "/kaggle/input"); t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     BASE = MODO.replace("_otros", "").replace("_replica", "")          # *_otros: activos nuevos; *_replica: ventana abr → sep, sólo tabla
     d0, d1 = REP if (BASE in ("rep", "ruptura_rep") or MODO.endswith("_replica")) else DESC
-    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica")   # K19: nada con desenlaces dentro del kernel
+    BASE = "niveles" if MODO == "niveles_op_replica" else BASE
+    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica")   # K19: nada con desenlaces dentro del kernel
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
@@ -45,7 +46,9 @@ def main():
                     for ck in CL: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
             elif BASE == "niveles":
                 Z = NV.zonas_del_dia(ts, px, B.vol.to_numpy(), B.sesion.to_numpy(), tk)
-                filas += NV.niveles_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), Z, D.get(tuple(DEFS[inst])) if inst in DEFS else None, tk, FRICCION[inst])
+                for tipo in (NV.TIPOS if MODO == "niveles_op_replica" else ("reloj",)):   # op: OP-1 con fills pasivos y niveles de pivote (I2)
+                    filas += NV.niveles_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), Z, D.get(tuple(DEFS[inst])) if inst in DEFS else None, tk,
+                                                FRICCION[inst], tipo=tipo, con_operacion=MODO == "niveles_op_replica")
             else:
                 C = D.get(tuple(DEFS[inst]))
                 if C is not None and BASE in ("ruptura", "ruptura_rep"):

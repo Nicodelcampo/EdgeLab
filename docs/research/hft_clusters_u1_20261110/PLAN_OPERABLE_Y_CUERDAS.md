@@ -74,3 +74,18 @@ Cada indagación es una especificación del banco o una hipótesis previa (no un
 - **Datos escasos sin mirar:** después de abr–sep sólo queda el holdout y el forward; cada familia tiene UNA apertura.
 - **Efecto del orden del umbral:** sin concentración, OP-1 da ≈ 0 neto; el plan no lo fuerza.
 - **Correlación entre niveles** de la misma sesión: el riesgo real es por sesión, no por evento.
+
+## 7. Iteración 1 (2026-11-10, antes de ver resultados) — lo que cambió al llevarlo a cabo
+- **Motor de fills pasivos construido** (`edgelab/research/fill_pasivo.py`, tests): máquina de estados ESPERA → EN_LIBRO → LLENA →
+  CERRADA/VENCIDA; modelos «toca» (optimista) y «atraviesa» (decide); stop gana en empate; salida por tiempo.
+- **La orden de OP-1 se activa recién a ≥ X/2 del nivel** (si estuviera desde que el nivel se fija, se llenaría en el acto):
+  coincide con el evento D0 y es causal.
+- **Nulo de selección adversa medido:** en una caminata al azar sintética, la orden límite con fill «atraviesa» da R bruto ≈ −0,07
+  (objetivo X), −0,04 (X/2), −0,085 (2X). Consecuencia: el rebote +0,08 de la carrera desde el borde no alcanza; OP-1 necesita un
+  filtro que lleve el rebote bruto a ≳ +0,15. Esto vuelve más importantes las indagaciones de concentración (I1, I4, I5) y OP-3.
+- **Geometrías fijadas antes:** objetivo X/2, X (primaria) y 2X, siempre con stop X (fricción en R = 0,08; un stop menor la sube).
+- **Tipos de nivel (I2) implementados:** «reloj» y «pivote» (máximo/mínimo de 1 min confirmado) en el mismo generador.
+- **Tabla operable lanzada** (`niveles_op_replica`: abr–sep, NQ/ES/RTY/YM/GC, los dos tipos, fills y geometrías; sólo tabla).
+  Pre-registro y análisis congelado: `PREREGISTRO_OP1.md`, `tools/op1_niveles.py` (24 pruebas, familia REBOTE_NIVEL_SESION).
+- **OP-3 (veto):** requiere las operaciones de estrategias de reversión ya medidas con su instante de entrada; queda como tarea del
+  agente (lente `cuerdas`/`remedir`): listar candidatas en `FAMILIAS.md` con trayectorias disponibles y medir el veto en bruto.
