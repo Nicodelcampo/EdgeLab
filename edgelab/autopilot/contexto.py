@@ -81,6 +81,7 @@ NUCLEO_FUENTES = [
     ("decisiones_vigentes", "docs/DECISIONES_20261108.md", "todos"),
     ("decisiones_de_validacion", "docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md", "todos"),
     ("medir_en_r", "docs/research/MEDIR_EN_R_20261102.md", "todos"),
+    ("practicas_de_trabajo", "docs/research/PRACTICAS_DE_TRABAJO_20261110.md", "todos"),          # qué salió bien y mal, con guardas
     ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
     ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),
     ("guia_regimen", "docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md", "diseño"),

@@ -20,7 +20,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (2)
+## PALANCA_DE_DISENO (3)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -29,6 +29,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Toda familia nueva sobre un indicador (zonas, clusters, niveles)
   - Siguiente: Aplicar la lista K4–K9 de ERRORES_Y_GUARDAS a cada pre-registro; el revisor hace KILL si falta alguno.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/DICTAMEN_ABOGADO_20261110.md`, `docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md`
+- **Clusters de zonas HFT: más zonas y más vida los ensanchan sin volverlos raros; el equilibrio potencia/fricción está en K8 (NQ) y K12 (ES) con vida de 1.800 s** (`F-HFT-CLUSTERS-E0`, 2026-11-10, sesion)
+  - Efecto: Sin retornos. Con 4 zonas: 22–73 clusters por sesión y 82–93 % más angostos que el stop mínimo (fricción 0,16–0,30 R). Con K8/1.800 s en NQ: 20 por sesión, ancho mediano 19,75 pts, borde detectable 0,121 (antes 0,165); ES K12 ancho ≥ X: 10 por sesión, 17 pts, 0,111 (antes 0,261). YM y GC no sirven con umbrales calibrados para NQ.
+  - Dónde: NQ, ES, YM, GC; 2025-07 → 2026-03, horario regular
+  - Siguiente: Paso INFO (rebote e imán contra control) con las definiciones elegidas en NQ y ES; no usar la definición de 4 zonas para P&L.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_E0.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_E0B.md`
 - **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
   - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
   - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ

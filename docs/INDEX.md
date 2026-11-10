@@ -30,7 +30,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1212 |
+| `docs/research` | 1214 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,6 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |
 | HANDOFF | 18 | `HANDOFF_20261105_PARA_ANTIGRAVITY.md` | 2026-11-05 | VIGENTE. Rama claude/vibrant-clarke-s9z6e2 (la rama gemini/filtros-20261104 ya e |
@@ -98,7 +99,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
 | AVCL | 25 | `AVCL_VOL3_ROBUSTEZ_MANIFIESTO_20261006.md` | 2026-10-06 | - |
 | GEX1B | 2 | `GEX1B_RESULTADO_20261005.md` | 2026-10-05 | - |
-| CANONICAL | 1 | `CANONICAL_DATA_AUDIT_20261004.md` | 2026-10-04 | - |
 
 ## Superados (7)
 
