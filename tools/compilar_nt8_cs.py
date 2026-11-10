@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader.
+r"""T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader.
 
 ## Por qué existe
 
@@ -213,7 +213,8 @@ def main(argv=None):
     if not csc:
         return emitir("ABSTAIN", "no se encontro csc.exe de .NET Framework")
     res["csc"] = csc
-    v = subprocess.run([csc, "/version"], capture_output=True, text=True)
+    v = subprocess.run([csc, "/version"], capture_output=True, text=True,
+                       encoding="utf-8", errors="replace")
     res["csc_version"] = (v.stdout or v.stderr or "").strip()[:120]
 
     refs, err = referencias()

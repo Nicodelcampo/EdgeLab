@@ -148,13 +148,21 @@ def zonas_hftnq(bloques, tick, spec):
     return z(bloques, tick, spec)
 
 
+def zonas_hftgcp10(bloques, tick, spec):
+    from edgelab.bridge.indicators.hft_gc_cluster_p10 import almacen_gc
+    return almacen_gc(bloques, tick, spec)
+
+
 INDICADORES = {"AVZP2": (zonas_avzp2, 25), "AVZG": (zonas_avzg, 25), "AVCL": (zonas_avcl, 50), "BT2": (zonas_bt2, 1),
-               "AVZRG": (zonas_avzrg, 25), "HFT2": (zonas_hft2, 25), "HFTNQ": (zonas_hftnq, 1)}
+               "AVZRG": (zonas_avzrg, 25), "HFT2": (zonas_hft2, 25), "HFTNQ": (zonas_hftnq, 1),
+               "HFTGCP10": (zonas_hftgcp10, 50)}
 LIBRO = {"BT2"}                    # indicadores que clasifican el agresor con bid/ask
 
 
-def bloques(trim):
+def bloques(trim, ind=""):
     """Trimestres a correr: todos, o el que empieza en `trim`. Fuera del período (holdout incluido) falla."""
+    if ind == "HFTGCP10" and not trim:
+        return [(D0, D1)]
     from edgelab.research import oro_0530 as O
     B = list(O.trimestres(D0, D1))
     if not trim: return B
@@ -174,7 +182,7 @@ def main():
         tick = F.TICK_FUTURO[inst]; partes = {}
         if trim and glob.glob(f"**/ZONAS_{ind}_{inst}{sufijo}.parquet", recursive=True) + glob.glob(f"{ent}/**/ZONAS_{ind}_{inst}{sufijo}.parquet", recursive=True):
             log(f"{inst} {trim}: ya está"); continue
-        for lo, hi in bloques(trim):
+        for lo, hi in bloques(trim, ind):
             lo_c = int((pd.Timestamp(str(lo)) - pd.Timedelta(days=CALENTAR)).strftime("%Y%m%d"))
             try: Z = fn(F.bloques_futuro(inst, max(lo_c, D0), hi, ent, libro=ind in LIBRO), tick, spec)
             except (ValueError, IndexError) as e: log(f"{inst} {lo}-{hi}: sin datos ({e})"); continue

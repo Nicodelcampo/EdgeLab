@@ -1,0 +1,33 @@
+diff --git a/edgelab/research/etapas.py b/edgelab/research/etapas.py
+index d573e1b4..cc864f6e 100644
+--- a/edgelab/research/etapas.py
++++ b/edgelab/research/etapas.py
+@@ -100,6 +100,15 @@ def ejecutar(etapa, exp, ctx, *, friccion, extra_adverso, cx_ej=None, params=Non
+         res["riesgo"] = por_celda(ops, len(celdas), lambda g: _resumen(g.neto, g.ses))
+         from edgelab.research.eventos import diagnostico                     # 2026-10-26: informativo (CPI/NFP/FOMC)
+         res["eventos"] = por_celda(ops, len(celdas), lambda g: diagnostico(g.t.to_numpy(), g.neto.to_numpy()))
++        if len(ops):                                                        # filtros as-of: solo velas cerradas antes de la decisión
++            import pandas as pd
++            lc = np.log(ctx["c"]); r = pd.Series(np.r_[0.0, np.diff(lc)]); v = r.rolling(60).std().shift(1); k = ops.k.to_numpy()
++            z = (r.abs() / r.rolling(390).std().shift(1)).to_numpy(); ult = pd.Series(np.where(z > 4, np.arange(len(z)), np.nan)).ffill().shift(1).to_numpy()
++            d = np.abs(np.diff(ctx["c"], prepend=ctx["c"][0])); suma = pd.Series(d).rolling(60).sum().shift(1).to_numpy()
++            ok = k >= 62; ops["vol_pct"] = v.rolling(1000).rank(pct=True).to_numpy()[k]; ops["min_salto"] = k - ult[k]
++            ops["mom"] = np.where(ok, (lc[k - 2] - lc[np.maximum(k - 62, 0)]) / (v.to_numpy()[k] * 60 ** .5), np.nan)
++            ops["er"] = np.where(ok, np.abs(ctx["c"][k - 1] - ctx["c"][np.maximum(k - 61, 0)]) / suma[k], np.nan)
++            ops = ops.astype(object).where(ops.notna(), None)
+         res["operaciones"] = ops.to_dict("list"); return res
+     if etapa == "TOPES":
+         out = {}
+diff --git a/edgelab/research/grilla_generica.py b/edgelab/research/grilla_generica.py
+index 30773ad4..3b3175dd 100644
+--- a/edgelab/research/grilla_generica.py
++++ b/edgelab/research/grilla_generica.py
+@@ -412,7 +412,7 @@ def operaciones_de(cx, celdas):
+     filas = []
+     for i, c in enumerate(celdas):
+         m = GM.mascara(cx["perillas"], cx["indices"], tuple(c)) & np.isfinite(cx["net"])
+-        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m])))
++        filas.append(pd.DataFrame(dict(celda=i, t=cx["t"][m], ses=cx["ses"][m], k=cx["k"][m], neto=cx["net"][m], lado=cx["O"][m, 4])))
+     return pd.concat(filas).sort_values(["t", "celda"], kind="stable").reset_index(drop=True) if filas else pd.DataFrame()
+ 
+ 

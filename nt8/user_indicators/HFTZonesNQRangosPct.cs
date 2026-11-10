@@ -1,29 +1,23 @@
-// # meta indicator=HFTZonesNQRangosPct,version=1.0.0
-// HFTZonesNQRangosPct.cs (2026-11-09, pedido de Nico) - mismo detector HFT que HFTZonesNQPureV4_V2 (motor de rachas sin cambios)
-// con una capa nueva de rangos por percentil, recalculada cada PctRecomputeBars velas sobre las zonas ya terminadas (causal):
-//   - CLUSTERS DENSOS: para cada grupo de MinZonasCluster zonas consecutivas por precio (centro), el rango que las contiene;
-//     se marca el PctAngosto% de rangos MAS ANGOSTOS (rangos solapados se fusionan en un solo cluster).
-//   - RANGOS VACIOS: huecos de precio sin ninguna zona entre la union de zonas (y hasta el max/min del precio en la ventana);
-//     se marca el PctAmplio% de huecos MAS AMPLIOS.
-// Por defecto: sin logging a SQLite y sin los clusters/vacios viejos del V4_V2 (se pueden prender).
-// # meta indicator=HFTZonesNQPureV4,version=4.1.0
-// HFTZonesNQPureV4.cs - Detector HFT NQ/MNQ - VARIANTE "impulso completo" (hermano de V2).
-//
-// Mismo motor y mismo logger que HFTZonesNQPureV2, con DOS cambios de deteccion para
-// capturar los movimientos LARGOS que V2 fragmentaba/descartaba:
-//   - LIMPIEZA RELATIVA: el retroceso permitido es proporcional a la altura del sweep
-//     (allowed = max(MaxRetrocesoTicks, RetrocesoPctHeight% * altura)), NO un tope absoluto.
-//     Asi un impulso largo y limpio que retrocede varios ticks ya no se rechaza, y el chop
-//     (retroceso ~ altura) se sigue filtrando.
-//   - RESEED NO-FRAGMENTANTE: la racha sigue viva mientras el rebote desde el extremo este
-//     dentro de esa banda; solo corta y re-arranca en reversiones REALES (no en cada pullback).
-//   => V2 sigue intacto para los cortos; V3 corre en paralelo (tags y base de datos separados).
-//
-// Logger identico (delta tick-rule, absorcion, flow) pero a base separada:
-//   C:\LoggerHFT\data\hft_logger_v3.sqlite (no mezcla con los datos de V2).
-//
-// Calibracion NQ: MinPasos=8, MinSweepTicks=4, MaxRetrocesoTicks=2 (piso), RetrocesoPctHeight=50%,
-// MaxAvgMs=25, MaxTotalMs=500, MaxPausaMs=100, MinVolumeRate=100, MinTotalVolume=50, PRED<=5ms, ULTRA<=15ms.
+// # meta indicator=HFTZonesNQRangosPctV2,version=2.0.0
+// HFTZonesNQRangosPctV2.cs (2026-11-09, pedido de Nico)
+// Rediseño 100% CAUSAL (sin look-ahead), con renderizado nativo SharpDX (OnRender) en todo el histórico:
+//   1. SIN LOOK-AHEAD:
+//      - Cada zona HFT se empieza a dibujar en z.DetectBar (la barra primaria exacta donde Finalizar() confirmó el sweep),
+//        nunca en StartBar antes de que terminara el impulso.
+//      - Cada CLUSTER HFT y cada EXPANSION SIN HFT nace en su DetectBar (el punto exacto de detección causal) y se proyecta
+//        hacia adelante. Si una expansión sigue creciendo en barras posteriores, escalona desde la barra nueva sin alterar el pasado.
+//   2. DETECCIÓN MEJORADA DE EVENTOS INFRECUENTES (normalizada por volatilidad + frecuencia objetivo por sesión):
+//      - Clusters HFT: evalúa compacidad normalizada por escala de volatilidad causal, empaquetamiento real (solapamiento),
+//        cantidad de zonas y volumen ponderado (con línea POC interna), desduplicando eventos sobre el mismo cluster activo.
+//      - Expansiones sin HFT: rastrea impulsos direccionales causales y mide el mayor corredor libre de zonas HFT activas,
+//        ponderado por eficiencia direccional (desplazamiento neto / recorrido bruto) y normalizado por volatilidad.
+//   3. SCROLLBACK COMPLETO EN TODO EL GRÁFICO:
+//      - Renderizado por SharpDX (OnRender) sobre la ventana visible [ChartBars.FromIndex, ChartBars.ToIndex]: al ir hacia atrás
+//        en cualquier timeframe (incluso 5 ticks con decenas de miles de barras), todas las zonas HFT, clusters y expansiones
+//        se siguen dibujando instantáneamente sin degradar el rendimiento.
+//   4. ESTÉTICA LIMPIA Y NO MOLESTA:
+//      - Rellenos translúcidos suaves, marcador vertical nítido en el punto exacto de detección (DetectBar), bordes finos de 1px,
+//        línea punteada de POC en clusters y de 50% en expansiones, y etiquetas compactas DirectWrite opcionales.
 
 #region Using declarations
 using System;
@@ -52,53 +46,65 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         public sealed class Zone
         {
-            public int    StartBar, EndBar;
-            public int    DrawnBar, VisualEndBar;
-            public DateTime StartTime, EndTime;
-            public double Upper, Lower;
-            public int    Direction;
+            public int       StartBar, EndBar, DetectBar, VisualEndBar;
+            public DateTime  StartTime, EndTime, DetectTime;
+            public double    Upper, Lower;
+            public int       Direction;
             public HFTBucket Bucket;
-            public double AvgMs, TotalMs, VolRate;
-            public int    Pasos, ValidSteps;
-            public double TotalVol;
-            public double MaxRetro;
-            public double MaxTickVol;
-            public double Cvd, BuyVol, SellVol;
-            public double DeltaSlope, DeltaFirst, DeltaSecond;
-            public int    NoMoveTicks, MaxLevelTicks;
-            public double NoMoveVol;
-            public double HeightTicks;
-            public string TagRect, TagText;
-            public bool   Drawn;
-            public Brush  ColorZ;
-            public string Reporte;
-            public string TerminationReason;
+            public double    AvgMs, TotalMs, VolRate;
+            public int       Pasos, ValidSteps;
+            public double    TotalVol;
+            public double    MaxRetro;
+            public double    MaxTickVol;
+            public double    Cvd, BuyVol, SellVol;
+            public double    DeltaSlope, DeltaFirst, DeltaSecond;
+            public int       NoMoveTicks, MaxLevelTicks;
+            public double    NoMoveVol;
+            public double    HeightTicks;
+            public string    Reporte;
+            public string    TerminationReason;
         }
 
-        public sealed class ClusterZone
+        public sealed class CausalCluster
         {
             public double Lower;
             public double Upper;
-            public int    StartBar;
-            public int    EndBar;
-            public int    ZoneCount;
-            public string Tag;
             public double PocPrice;
+            public int    DetectBar;
+            public int    VisualEndBar;
+            public int    ZoneCount;
+            public double WidthTicks;
+            public double Score;
+            public string Label;
         }
 
-        
+        public sealed class CausalExpansion
+        {
+            public double Lower;
+            public double Upper;
+            public double MidPrice;
+            public int    DetectBar;
+            public int    VisualEndBar;
+            public int    Direction;
+            public double HeightTicks;
+            public double Efficiency;
+            public int    LegId;
+            public string Label;
+        }
+
+        // ===== Sincronización OnBarUpdate <-> OnRender =====
+        private readonly object syncRoot = new object();
+
         // ===== V2 Rigorous Parity & Lineage Fields =====
         public bool EnableTickLog { get; set; }
 
-        private long currentTickSeq = 0;
-        private int  currentZoneSeq = 0;
-        private long zoneStartTickSeq = 0;
-        private long zoneEndTickSeq = 0;
+        private long   currentTickSeq = 0;
+        private int    currentZoneSeq = 0;
+        private long   zoneStartTickSeq = 0;
+        private long   zoneEndTickSeq = 0;
         private string currentSessionId = "";
         private string contractStr = "";
 
-        // Precision disclosure: .NET DateTime resolution is 100-nanosecond ticks (1 tick = 100 ns).
-        // Timestamps recorded as nanoseconds multiply .NET ticks by 100 from Unix epoch (1970-01-01T00:00:00Z).
         private const string SOURCE_SHA256 = "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63";
         private const string PARAMETER_MANIFEST_SHA256 = "0fa994533b03d47a0fb615c3fd4478e91de8c05958eb33bb4004308faaba78a1";
 
@@ -114,7 +120,6 @@ namespace NinjaTrader.NinjaScript.Indicators
         private readonly List<double> signList  = new List<double>();
         private double   totalVol;
         private DateTime tStart, tLast;
-        private int      idCounter;
         private int      lastSide = 0;
 
         private long   flowBucket = long.MinValue;
@@ -131,107 +136,115 @@ namespace NinjaTrader.NinjaScript.Indicators
         private long   lastFlushMs = 0;
         private const int BatchSize = 400;
         private const int FlushMs   = 2000;
-        private const int MaxBuf    = 200000;
 
-        private readonly List<Zone> zones = new List<Zone>();
+        private readonly List<Zone>            zones         = new List<Zone>();
+        private readonly List<CausalCluster>   clustersPct   = new List<CausalCluster>();
+        private readonly List<CausalExpansion> expansionsPct = new List<CausalExpansion>();
+
         public IReadOnlyList<Zone> PublicZones { get { return zones; } }
 
         public bool EnableFlowLog     { get; set; }
         public int  FlowBucketSeconds { get; set; }
 
-        // ===== Vacios / expansiones (integrado) =====
-        private int voidRecomputeCounter;
-        private int voidCounter;
-        private readonly List<string> voidTags = new List<string>();
+        // ===== Estado causal de volatilidad, clusters y expansiones =====
+        private int      primeraSinEvaluar;
+        private int      sesionesVistas;
+        private DateTime ultimaFechaSesion = DateTime.MinValue;
+        private double   escalaVolTicks = 12.0;
+        private double   escalaVolZonaMean = 40.0;
 
-        // ===== Clusters (solapamiento visual de 3+ rectangulos) =====
-        private int clusterCounter;
-        private readonly List<ClusterZone> activeClusters = new List<ClusterZone>();
-        private readonly List<string> clusterTags = new List<string>();
+        private const int MaxHistoriaEventos = 600;
+        private readonly List<double> histScoreCluster = new List<double>();
+        private readonly List<double> histScoreExp     = new List<double>();
+
+        // Seguimiento causal de piernas (impulsos) para Expansiones sin HFT
+        private int    impDir;
+        private int    impStartBar, impExtBar, impLegId;
+        private double impStartPrice, impExtPrice, impSumRange;
+        private double impBestScoreRegistrado;
+        private double impLastTriggeredHeightTicks;
+        private CausalExpansion impActiveExpansion;
+
+        // ===== Recursos SharpDX para OnRender =====
+        private SharpDX.Direct2D1.Brush dxBullFill, dxBearFill, dxPredFill, dxUltraFill, dxAbsorbFill;
+        private SharpDX.Direct2D1.Brush dxBullEdge, dxBearEdge, dxPredEdge, dxUltraEdge, dxAbsorbEdge;
+        private SharpDX.Direct2D1.Brush dxClusterFill, dxClusterBorder, dxClusterAccent, dxClusterText;
+        private SharpDX.Direct2D1.Brush dxExpFill, dxExpBorder, dxExpAccent, dxExpText;
+        private SharpDX.Direct2D1.Brush dxLabelBg;
+        private SharpDX.Direct2D1.StrokeStyle dxDashStyle;
+        private SharpDX.DirectWrite.TextFormat dwFontSmall;
+        private bool dxReady = false;
+
+        public override string DisplayName
+        {
+            get { return Name; }
+        }
 
         protected override void OnStateChange()
         {
             if (State == State.SetDefaults)
             {
-                Description              = "Detector HFT NQ/MNQ V2: Paridad estricta, monotonic zone_seq, nanosegundos (100ns .NET ticks), sin INSERT OR IGNORE, session_id determinista y tabla hft_ticks_v2 compartida.";
+                Description              = "Detector HFT NQ/MNQ V2 Causal (sin look-ahead): zonas, clusters HFT y expansiones sin HFT dibujadas desde su punto exacto de detección con SharpDX en todo el histórico.";
                 Name                     = "HFTZonesNQRangosPct";
-                MostrarRangosPct  = true;
-                MinZonasCluster   = 4;
-                PctAngosto        = 10;
-                PctAmplio         = 3;
-                ZigZagTicks       = 60;
-                ExpPorSesion      = 1.0;
-                PctMinHistoria    = 30;
-                ExpVentanaBars    = 400;
-                PctRecomputeBars  = 20;
-                PctExtensionBars  = 300;
-                OpacidadPct       = 35;
-                ColorClusterPct   = Brushes.Gold;
-                ColorVacioPct     = Brushes.DeepSkyBlue;
-                MostrarTextoPct   = true;
                 Calculate                = Calculate.OnBarClose;
                 IsOverlay                = true;
-                DisplayInDataBox         = true;
+                DisplayInDataBox         = false;
                 DrawOnPricePanel         = true;
-                PaintPriceMarkers        = true;
+                PaintPriceMarkers        = false;
                 IsSuspendedWhileInactive = true;
 
-                TickResolution           = 1;
-                MinPasos                 = 8;
-                MaxRangoTickPorVela      = 1;
-                FallosTolerados          = 1;
-                FiltroDireccionEstricto  = true;
-                MinSweepTicks            = 4;
-                MaxRetrocesoTicks        = 2;
-                RetrocesoPctHeight       = 50;
-                MaxAvgMs                 = 25;
-                MaxTotalMs               = 500;
-                MaxPausaMs               = 100;
-                MinVolumeRate            = 100;
-                MinTotalVolume           = 50;
-                PredatorAvgMs            = 5;
-                UltraAvgMs               = 15;
-                MostrarAbsorb            = true;
-                MinAbsorbPasos           = 6;
-                ColorAbsorb              = Brushes.MediumPurple;
-                ExtensionDibujo          = 600;
-                Opacidad                 = 30;
-                MostrarTexto             = false;   // rápido: un texto por zona pesa mucho
-                VelasDibujoHistorico     = 20000;
-                ColorPredator            = Brushes.Gold;
-                ColorUltra               = Brushes.Silver;
-                ColorBull                = Brushes.DodgerBlue;
-                ColorBear                = Brushes.OrangeRed;
-                ColorTexto               = Brushes.Silver;
-                EnableDbLogging          = false;
-                                EnableTickLog            = false;
-                DbPath                   = @"E:\EdgeLab\data\nt8_oracles\hft_zones_nq_v2.sqlite";
-                EnableFlowLog            = false;
-                FlowBucketSeconds        = 1;
-                // Safe default for oracle generation: no WPF drawing.
-                ModoExportacionPuro      = false;
+                // Parámetros de eventos infrecuentes (Clusters y Expansiones)
+                MostrarRangosPct   = true;
+                MostrarZonasBase   = true;
+                MinZonasCluster    = 4;
+                PctAngosto         = 10;
+                ClustersPorSesion  = 1.5;
+                PctAmplio          = 5;
+                ExpPorSesion       = 1.2;
+                MinExpTicks        = 24;
+                ZigZagTicks        = 40;
+                PctMinHistoria     = 25;
+                PctExtensionBars   = 300;
+                OpacidadPct        = 18;
+                ColorClusterPct    = Brushes.Gold;
+                ColorVacioPct      = Brushes.DeepSkyBlue;
+                MostrarTextoPct    = true;
 
-                MostrarVacios     = false;
-                VoidBinTicks      = 2;
-                VoidMinAltoTicks  = 4;
-                VoidMinAnchoBars  = 3;
-                VoidLookbackBars  = 1200;
-                VoidRecomputeBars = 20;
-                VoidExtensionBars = 0;
-                VoidExigirTouch   = true;
-                VoidOpacidad      = 25;
-                ColorVoid         = Brushes.DodgerBlue;
-                VoidMax           = 200;
-                VoidDebug         = false;
+                // Parámetros del motor HFT
+                TickResolution          = 1;
+                MinPasos                = 8;
+                MaxRangoTickPorVela     = 1;
+                FallosTolerados         = 1;
+                FiltroDireccionEstricto = true;
+                MinSweepTicks           = 4;
+                MaxRetrocesoTicks       = 2;
+                RetrocesoPctHeight      = 50;
+                MaxAvgMs                = 25;
+                MaxTotalMs              = 500;
+                MaxPausaMs              = 100;
+                MinVolumeRate           = 100;
+                MinTotalVolume          = 50;
+                PredatorAvgMs           = 5;
+                UltraAvgMs              = 15;
+                MostrarAbsorb           = true;
+                MinAbsorbPasos          = 6;
+                ColorAbsorb             = Brushes.MediumPurple;
+                ExtensionDibujo         = 400;
+                Opacidad                = 12;
+                MostrarTexto            = false;
+                VelasDibujoHistorico    = 500000;
+                ColorPredator           = Brushes.Gold;
+                ColorUltra              = Brushes.Silver;
+                ColorBull               = Brushes.DodgerBlue;
+                ColorBear               = Brushes.Tomato;
+                ColorTexto              = Brushes.Silver;
 
-                MostrarClusters                = false;
-                MinOverlapRectangulos          = 4;
-                ColorCluster                   = Brushes.Gold;
-                ColorBordeCluster              = Brushes.DarkOrange;
-                OpacidadCluster                = 55;
-                ExtenderClusterHastaZonaActual = false;
-                MostrarTextoCluster            = true;
-                DibujarPocCluster              = true;
+                EnableDbLogging         = false;
+                EnableTickLog           = false;
+                DbPath                  = @"E:\EdgeLab\data\nt8_oracles\hft_zones_nq_v2.sqlite";
+                EnableFlowLog           = false;
+                FlowBucketSeconds       = 1;
+                ModoExportacionPuro     = false;
             }
             else if (State == State.Configure)
             {
@@ -239,32 +252,44 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
             else if (State == State.DataLoaded)
             {
-                ResetState();
-                zones.Clear();
+                lock (syncRoot)
+                {
+                    ResetState();
+                    zones.Clear();
+                    clustersPct.Clear();
+                    expansionsPct.Clear();
+                    histScoreCluster.Clear();
+                    histScoreExp.Clear();
+                }
                 contractStr = (Instrument != null && Instrument.MasterInstrument != null)
                     ? (Instrument.MasterInstrument.Name + " " + Instrument.Expiry.ToString("MM-yy"))
-                    : "NQ JUN26";
+                    : "NQ DEC26";
                 currentSessionId = "";
                 currentTickSeq = 0;
                 currentZoneSeq = 0;
                 zoneStartTickSeq = 0;
                 zoneEndTickSeq = 0;
                 tickBuf.Clear();
-                idCounter = 0;
-                lastSide  = 0;
+                lastSide = 0;
                 flowBucket = long.MinValue;
                 fTicks = 0;
-                voidRecomputeCounter = 0;
-                voidCounter = 0;
-                primeraPendiente = 0;
-                primeraSinCluster = 0; pctCounter = 0; pctSeq = 0;
-                sesionesVistas = 0; ultimaFechaSesion = DateTime.MinValue; ultExp = null;
-                zzDir = 0; zzIni = 0; zzIniBar = 0; zzExt = 0; zzExtBar = 0;
-                histAnchoCluster.Clear(); histAltoExp.Clear(); clustersDib.Clear(); expVistas.Clear(); pctTags.Clear();
-                voidTags.Clear();
-                clusterCounter = 0;
-                clusterTags.Clear();
-                activeClusters.Clear();
+                primeraSinEvaluar = 0;
+                sesionesVistas = 0;
+                ultimaFechaSesion = DateTime.MinValue;
+                escalaVolTicks = 12.0;
+                escalaVolZonaMean = 40.0;
+
+                impDir = 0;
+                impStartBar = 0;
+                impExtBar = 0;
+                impLegId = 0;
+                impStartPrice = 0;
+                impExtPrice = 0;
+                impSumRange = 0;
+                impBestScoreRegistrado = 0;
+                impLastTriggeredHeightTicks = 0;
+                impActiveExpansion = null;
+
                 hasLoggedFlushError = false;
                 if (EnableDbLogging) SetupDb();
             }
@@ -275,16 +300,12 @@ namespace NinjaTrader.NinjaScript.Indicators
                     Finalizar("CENSORED_END_OF_INPUT");
                 }
                 CloseDb();
-                LimpiarClusters();
-                LimpiarPct();
+                DisposeDxResources();
             }
         }
 
-        
         private static long UnixNs(DateTime dt)
         {
-            // .NET DateTime.Ticks returns 100-ns intervals since 0001-01-01.
-            // Converting to Unix epoch (1970-01-01T00:00:00Z) in nanoseconds:
             DateTime epoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return (dt.ToUniversalTime().Ticks - epoch.Ticks) * 100;
         }
@@ -322,45 +343,56 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 if (CurrentBars[1] < 5) return;
                 ProcesarSweeps();
-                // en vivo la zona aparece en el tick en que se cierra; en el histórico se dibuja en la serie primaria (más liviano)
-                if (!ModoExportacionPuro && State == State.Realtime) DibujarPendientes();
                 return;
             }
             if (BarsInProgress != 0) return;
-            if (ModoExportacionPuro) return;
             if (CurrentBars[0] < 2) return;
-            DibujarPendientes();
-            if (!MostrarClusters && clusterTags.Count > 0)
+
+            // Actualizar escala de volatilidad causal con el rango de la vela primaria
+            double barRangeTicks = (Highs[0][0] - Lows[0][0]) / TickSize;
+            if (barRangeTicks > 0)
             {
-                LimpiarClusters();
+                // Escala equivalente a un impulso corto (~4 velas), piso de 6 ticks
+                double targetScale = Math.Max(6.0, barRangeTicks * 2.5);
+                escalaVolTicks = 0.98 * escalaVolTicks + 0.02 * targetScale;
+            }
+
+            if (Times[0][0].Date != ultimaFechaSesion)
+            {
+                RegistrarPiernaEnHistoria();
+                ultimaFechaSesion = Times[0][0].Date;
+                sesionesVistas++;
+                impDir = 0;
+                impStartBar = CurrentBars[0];
+                impExtBar = CurrentBars[0];
+                impStartPrice = Closes[0][0];
+                impExtPrice = Closes[0][0];
+                impSumRange = 0;
+                impBestScoreRegistrado = 0;
+                impLastTriggeredHeightTicks = 0;
+                impActiveExpansion = null;
             }
 
             if (MostrarRangosPct)
             {
-                if (Times[0][0].Date != ultimaFechaSesion) { ultimaFechaSesion = Times[0][0].Date; sesionesVistas++; }
-                // Causal y a lo largo de TODO el histórico: cada zona nueva se evalúa como posible cluster al cerrarse, y las
-                // expansiones se buscan en una ventana móvil cada PctRecomputeBars velas. Lo marcado queda fijo (no se borra).
-                while (primeraSinCluster < zones.Count)
+                // 1) Evaluar cada zona HFT recién detectada como posible Cluster HFT causal
+                while (primeraSinEvaluar < zones.Count)
                 {
-                    int k = primeraSinCluster++;
-                    EvaluarCluster(k);
-                    if (k > 0) EvaluarIntervalo(zones[k - 1].EndBar, zones[k].StartBar);
+                    Zone z = zones[primeraSinEvaluar];
+                    // Asegurar que la zona nunca tenga DetectBar posterior a la barra actual primaria
+                    if (z.DetectBar > CurrentBars[0]) break;
+                    primeraSinEvaluar++;
+                    escalaVolTicks = 0.95 * escalaVolTicks + 0.05 * Math.Max(6.0, z.HeightTicks * 1.5);
+                    escalaVolZonaMean = 0.96 * escalaVolZonaMean + 0.04 * Math.Max(20.0, z.TotalVol);
+                    EvaluarClusterCausal(primeraSinEvaluar - 1);
                 }
-            }
-            else if (pctTags.Count > 0) LimpiarPct();
 
-            if (MostrarVacios)
-            {
-                voidRecomputeCounter++;
-                if (voidRecomputeCounter >= Math.Max(1, VoidRecomputeBars))
-                {
-                    voidRecomputeCounter = 0;
-                    DetectarVacios();
-                }
+                // 2) Evaluar en tiempo real el impulso actual para detectar Expansiones sin HFT en el punto exacto
+                ActualizarImpulsoYExpansionCausal();
             }
         }
 
-        // ===================== STATE MACHINE + FLOW =====================
+        // ===================== MOTOR DE DETECCIÓN DE ZONAS HFT (1-TICK) =====================
         private void ProcesarSweeps()
         {
             int ds = 1;
@@ -436,14 +468,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                     double currentRetracement = (cl - extremo) / TickSize;
                     double sweepHeight = (swH - swL) / TickSize;
                     double maxAllowedRetracement = Math.Max(MaxRetrocesoTicks, (RetrocesoPctHeight / 100.0) * sweepHeight);
-                    
+
                     if (currentRetracement <= maxAllowedRetracement)
                     {
                         Continuar(ms, vol, cl, signedVol, false);
                     }
                     else
                     {
-                        // Reversion real
                         Finalizar("REVERSAL");
                         if (isUp) { dir = 1; Iniciar(ms, vol, cl, signedVol); }
                         else        dir = 0;
@@ -459,7 +490,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     double currentRetracement = (extremo - cl) / TickSize;
                     double sweepHeight = (swH - swL) / TickSize;
                     double maxAllowedRetracement = Math.Max(MaxRetrocesoTicks, (RetrocesoPctHeight / 100.0) * sweepHeight);
-                    
+
                     if (currentRetracement <= maxAllowedRetracement)
                     {
                         Continuar(ms, vol, cl, signedVol, false);
@@ -535,30 +566,27 @@ namespace NinjaTrader.NinjaScript.Indicators
                 double durationSec = Math.Max(total, 1.0) / 1000.0;
                 double volRate = totalVol / durationSec;
 
-                bool veloOk    = avgMs <= MaxAvgMs;
-                bool durOk     = total <= MaxTotalMs;
-                bool volOk     = volRate >= MinVolumeRate;
-                bool volTotOk  = totalVol >= MinTotalVolume;
-                
+                bool veloOk   = avgMs <= MaxAvgMs;
+                bool durOk    = total <= MaxTotalMs;
+                bool volOk    = volRate >= MinVolumeRate;
+                bool volTotOk = totalVol >= MinTotalVolume;
+
                 double maxAllowedRetroceso = Math.Max(MaxRetrocesoTicks, (RetrocesoPctHeight / 100.0) * sweepTicks);
-                bool limpioOk  = isAbsorb || (maxRetroceso <= maxAllowedRetroceso);
+                bool limpioOk = isAbsorb || (maxRetroceso <= maxAllowedRetroceso);
 
                 if (veloOk && durOk && volOk && volTotOk && limpioOk)
                 {
-                    HFTBucket bucket; Brush col; string bucketTxt;
+                    HFTBucket bucket; string bucketTxt;
                     if (isAbsorb)
                     {
-                        bucket = HFTBucket.Absorb; col = ColorAbsorb; bucketTxt = "ABSORB";
+                        bucket = HFTBucket.Absorb; bucketTxt = "ABS";
                     }
                     else
                     {
                         bucket = avgMs <= PredatorAvgMs ? HFTBucket.Predator
                                : avgMs <= UltraAvgMs    ? HFTBucket.Ultra : HFTBucket.Fast;
-                        col = bucket == HFTBucket.Predator ? ColorPredator
-                            : bucket == HFTBucket.Ultra    ? ColorUltra
-                            : (dir == 1 ? ColorBull : ColorBear);
                         bucketTxt = bucket == HFTBucket.Predator ? "PRED"
-                                  : bucket == HFTBucket.Ultra    ? "ULTRA"
+                                  : bucket == HFTBucket.Ultra    ? "ULT"
                                   : (dir == 1 ? "BULL" : "BEAR");
                     }
 
@@ -603,638 +631,700 @@ namespace NinjaTrader.NinjaScript.Indicators
                     int maxLevelTicks = 0;
                     foreach (var kv in freq) if (kv.Value > maxLevelTicks) maxLevelTicks = kv.Value;
 
-                    int prim_start = BarsArray[0].GetBar(tStart);
-                    int prim_end   = BarsArray[0].GetBar(tLast);
-                    if (prim_start < 0) prim_start = Math.Max(0, CurrentBars[0] - streak);
-                    if (prim_end < 0)   prim_end   = CurrentBars[0] - 1;
+                    DateTime tDetect = Times[1][0];
+                    int prim_start  = BarsArray[0].GetBar(tStart);
+                    int prim_end    = BarsArray[0].GetBar(tLast);
+                    int prim_detect = BarsArray[0].GetBar(tDetect);
+                    if (prim_start < 0)  prim_start  = Math.Max(0, CurrentBars[0]);
                     if (prim_end < prim_start) prim_end = prim_start;
+                    if (prim_detect < prim_end) prim_detect = prim_end;
+                    if (CurrentBars[0] >= 0 && prim_detect < CurrentBars[0]) prim_detect = CurrentBars[0];
 
-                    string pasosTxt = (streak == validSteps)
-                        ? validSteps.ToString()
-                        : string.Format("{0}+{1}f", validSteps, streak - validSteps);
-
-                    string txt = string.Format("[{0}] {1}p {2:F1}ms tot{3:F0}ms vR{4:F0} V{5:F0} h{6:F0}t r{7:F0}t d{8:F0}",
-                        bucketTxt, pasosTxt, avgMs, total, volRate, totalVol, sweepTicks, maxRetroceso, cvd);
-
-                    idCounter++;
-                    string tag = "HFTNQV4_" + idCounter;
+                    string txt = string.Format("{0} {1:F0}t · V{2:F0}", bucketTxt, sweepTicks, totalVol);
 
                     var z = new Zone
                     {
-                        StartBar = prim_start, EndBar = prim_end,
-                        StartTime = tStart, EndTime = tLast,
-                        Upper = swH, Lower = swL, Direction = dir, Bucket = bucket,
-                        AvgMs = avgMs, TotalMs = total, VolRate = volRate,
-                        Pasos = streak, ValidSteps = validSteps, TotalVol = totalVol,
+                        StartBar = prim_start,
+                        EndBar = prim_end,
+                        DetectBar = prim_detect,
+                        VisualEndBar = prim_detect + Math.Max(1, ExtensionDibujo),
+                        StartTime = tStart,
+                        EndTime = tLast,
+                        DetectTime = tDetect,
+                        Upper = swH,
+                        Lower = swL,
+                        Direction = dir,
+                        Bucket = bucket,
+                        AvgMs = avgMs,
+                        TotalMs = total,
+                        VolRate = volRate,
+                        Pasos = streak,
+                        ValidSteps = validSteps,
+                        TotalVol = totalVol,
                         MaxRetro = maxRetroceso,
-                        MaxTickVol = maxTickVol, Cvd = cvd, BuyVol = buy, SellVol = sell,
-                        DeltaSlope = slope, DeltaFirst = dFirst, DeltaSecond = dSecond,
-                        NoMoveTicks = noMoveTicks, NoMoveVol = noMoveVol, MaxLevelTicks = maxLevelTicks,
+                        MaxTickVol = maxTickVol,
+                        Cvd = cvd,
+                        BuyVol = buy,
+                        SellVol = sell,
+                        DeltaSlope = slope,
+                        DeltaFirst = dFirst,
+                        DeltaSecond = dSecond,
+                        NoMoveTicks = noMoveTicks,
+                        NoMoveVol = noMoveVol,
+                        MaxLevelTicks = maxLevelTicks,
                         HeightTicks = sweepTicks,
-                        TagRect = tag + "_R", TagText = tag + "_T", Drawn = false,
-                        ColorZ = col, Reporte = txt,
+                        Reporte = txt,
                         TerminationReason = reason
                     };
-                    zones.Add(z);
+                    lock (syncRoot)
+                    {
+                        zones.Add(z);
+                    }
                     if (EnableDbLogging) PersistZone(z);
                 }
             }
             ResetState();
         }
 
-        // ===================== DIBUJO =====================
-        private void DibujarPendientes()
+        // ===================== DETECCIÓN CAUSAL DE EVENTOS INFRECUENTES =====================
+        private static void AgregarHistoriaAcotada(List<double> hist, double val)
         {
-            if (ModoExportacionPuro) return;
-            // rápido: puntero a la primera pendiente (antes recorría todas las zonas en cada llamada) y, en el histórico,
-            // las zonas viejas se marcan como dibujadas sin crear objetos (sólo se dibujan las de las últimas VelasDibujoHistorico)
-            int corte = (State == State.Historical) ? BarsArray[0].Count - Math.Max(1, VelasDibujoHistorico) : int.MinValue;
-            while (primeraPendiente < zones.Count && zones[primeraPendiente].Drawn) primeraPendiente++;
-            for (int i = primeraPendiente; i < zones.Count; i++)
-            {
-                Zone z = zones[i];
-                if (z.Drawn) continue;
-                if (z.EndBar + Math.Max(0, ExtensionDibujo) < corte) { z.Drawn = true; z.DrawnBar = CurrentBars[0]; continue; }
-                if (CurrentBars[0] < corte) break;
-                int barsAgoStart = CurrentBars[0] - z.StartBar;
-                int barsAgoEnd   = CurrentBars[0] - z.EndBar;
-                if (barsAgoStart < 0) continue;
-                Draw.Rectangle(this, z.TagRect, false,
-                    barsAgoStart, z.Upper, CurrentBars[0] - (z.EndBar + Math.Max(0, ExtensionDibujo)), z.Lower,   // extension desde el fin de CADA zona
-                    Brushes.Transparent, z.ColorZ, Opacidad);
-                if (MostrarTexto)
-                {
-                    double tY = z.Direction == 1 ? z.Lower - (TickSize * 4) : z.Upper + (TickSize * 4);
-                    int textBar = Math.Max(0, barsAgoEnd);
-                    Draw.Text(this, z.TagText, z.Reporte, textBar, tY, ColorTexto);
-                }
-                z.Drawn = true;
-                z.DrawnBar = CurrentBars[0];
-                z.VisualEndBar = z.EndBar + ExtensionDibujo;
-
-            }
+            hist.Add(val);
+            if (hist.Count > MaxHistoriaEventos)
+                hist.RemoveAt(0);
         }
-
-        // ===================== CLUSTERS (HISTOGRAMA DE DENSIDAD DE CONFLUENCIA 4+) =====================
-        private void DetectarSolapamientoCluster(int newIdx)
-        {
-            if (ModoExportacionPuro) return;
-            if (newIdx < 0 || newIdx >= zones.Count) return;
-            Zone newZ = zones[newIdx];
-            int currentBar = CurrentBars[0];
-
-            // 1. Filtrar zonas activas que coexisten temporalmente o recientemente
-            List<Zone> candidatos = new List<Zone>();
-            int searchStart = Math.Max(0, newIdx - 150);
-            for (int i = searchStart; i <= newIdx; i++)
-            {
-                Zone z = zones[i];
-                if (z.VisualEndBar <= newZ.StartBar) continue; // expiro antes del inicio de la nueva zona
-                candidatos.Add(z);
-            }
-
-            if (candidatos.Count < MinOverlapRectangulos) return;
-
-            // 2. Construir Histograma de Densidad por Ticks
-            Dictionary<long, int> tickDensity = new Dictionary<long, int>();
-            Dictionary<long, double> tickVolume = new Dictionary<long, double>();
-
-            for (int i = 0; i < candidatos.Count; i++)
-            {
-                Zone z = candidatos[i];
-                double zLo = Math.Min(z.Lower, z.Upper);
-                double zHi = Math.Max(z.Lower, z.Upper);
-                long loTk = (long)Math.Round(zLo / TickSize);
-                long hiTk = (long)Math.Round(zHi / TickSize);
-
-                for (long tk = loTk; tk <= hiTk; tk++)
-                {
-                    tickDensity[tk] = tickDensity.ContainsKey(tk) ? tickDensity[tk] + 1 : 1;
-                    tickVolume[tk]  = tickVolume.ContainsKey(tk) ? tickVolume[tk] + z.TotalVol : z.TotalVol;
-                }
-            }
-
-            // 3. Extraer ticks que alcanzan el umbral de 4+ zonas (MinOverlapRectangulos)
-            List<long> qualifyingTicks = new List<long>();
-            foreach (KeyValuePair<long, int> kv in tickDensity)
-            {
-                if (kv.Value >= MinOverlapRectangulos)
-                    qualifyingTicks.Add(kv.Key);
-            }
-
-            if (qualifyingTicks.Count == 0) return;
-            qualifyingTicks.Sort();
-
-            // 4. Agrupar en segmentos contiguos (tolerancia de 1 tick de gap)
-            List<List<long>> clusters = new List<List<long>>();
-            List<long> currentCluster = new List<long>();
-
-            for (int i = 0; i < qualifyingTicks.Count; i++)
-            {
-                if (currentCluster.Count == 0)
-                {
-                    currentCluster.Add(qualifyingTicks[i]);
-                    continue;
-                }
-
-                if (qualifyingTicks[i] - currentCluster[currentCluster.Count - 1] <= 1)
-                {
-                    currentCluster.Add(qualifyingTicks[i]);
-                }
-                else
-                {
-                    clusters.Add(currentCluster);
-                    currentCluster = new List<long> { qualifyingTicks[i] };
-                }
-            }
-            if (currentCluster.Count > 0)
-                clusters.Add(currentCluster);
-
-            // 5. Duracion del cluster: misma longitud que el resto de rectangulos (ExtensionDibujo)
-            int clusterEndBar = currentBar + ExtensionDibujo;
-            int endAgo = -ExtensionDibujo;
-
-            // 6. Procesar y dibujar cada cluster detectado
-            for (int c = 0; c < clusters.Count; c++)
-            {
-                List<long> cTicks = clusters[c];
-                double cLower = cTicks.Min() * TickSize - (TickSize * 0.5);
-                double cUpper = cTicks.Max() * TickSize + (TickSize * 0.5);
-
-                // Encontrar el tick POC (maxima confluencia de zonas y volumen)
-                long pocTk = cTicks[0];
-                int maxCount = 0;
-                double maxVol = 0;
-                for (int t = 0; t < cTicks.Count; t++)
-                {
-                    long tk = cTicks[t];
-                    int cnt = tickDensity[tk];
-                    double vol = tickVolume.ContainsKey(tk) ? tickVolume[tk] : 0;
-                    if (cnt > maxCount || (cnt == maxCount && vol > maxVol))
-                    {
-                        maxCount = cnt;
-                        maxVol = vol;
-                        pocTk = tk;
-                    }
-                }
-                double pocPrice = pocTk * TickSize;
-
-                // Identificar zonas contribuyentes para determinar la barra de inicio
-                int clusterStartBar = newZ.StartBar;
-                for (int i = 0; i < candidatos.Count; i++)
-                {
-                    Zone z = candidatos[i];
-                    double zLo = Math.Min(z.Lower, z.Upper);
-                    double zHi = Math.Max(z.Lower, z.Upper);
-                    if (zHi >= cLower && zLo <= cUpper)
-                    {
-                        clusterStartBar = Math.Min(clusterStartBar, z.StartBar);
-                    }
-                }
-
-                int startAgo = currentBar - clusterStartBar;
-
-                // Buscar si ya existe un cluster activo en este nivel para actualizarlo sin duplicar
-                ClusterZone matchingExisting = null;
-                for (int ex = activeClusters.Count - 1; ex >= 0; ex--)
-                {
-                    ClusterZone prevC = activeClusters[ex];
-                    double ovLo = Math.Max(cLower, prevC.Lower);
-                    double ovHi = Math.Min(cUpper, prevC.Upper);
-                    if (ovHi > ovLo && clusterStartBar <= prevC.EndBar) // Se intersectan en precio y sigue activo
-                    {
-                        matchingExisting = prevC;
-                        break;
-                    }
-                }
-
-                if (matchingExisting != null)
-                {
-                    matchingExisting.Lower = Math.Min(matchingExisting.Lower, cLower);
-                    matchingExisting.Upper = Math.Max(matchingExisting.Upper, cUpper);
-                    matchingExisting.ZoneCount = Math.Max(matchingExisting.ZoneCount, maxCount);
-                    matchingExisting.StartBar = Math.Min(matchingExisting.StartBar, clusterStartBar);
-                    matchingExisting.EndBar = clusterEndBar;
-                    matchingExisting.PocPrice = pocPrice;
-
-                    int exStartAgo = currentBar - matchingExisting.StartBar;
-
-                    Draw.Rectangle(this, matchingExisting.Tag, false,
-                        exStartAgo, matchingExisting.Upper, endAgo, matchingExisting.Lower,
-                        ColorBordeCluster, ColorCluster, OpacidadCluster);
-
-                    if (DibujarPocCluster)
-                    {
-                        Draw.Line(this, matchingExisting.Tag + "_POC", false,
-                            exStartAgo, matchingExisting.PocPrice, endAgo, matchingExisting.PocPrice,
-                            ColorBordeCluster, DashStyleHelper.Dash, 2);
-                    }
-
-                    if (MostrarTextoCluster)
-                    {
-                        string txt = string.Format("★ CLUSTER {0}x (POC: {1:F2})", matchingExisting.ZoneCount, matchingExisting.PocPrice);
-                        int textBar = Math.Max(0, exStartAgo);
-                        Draw.Text(this, matchingExisting.Tag + "_T", txt, textBar, matchingExisting.Upper + (TickSize * 3), ColorBordeCluster);
-                    }
-                }
-                else
-                {
-                    clusterCounter++;
-                    string tag = "HFTCLUST_" + clusterCounter;
-                    ClusterZone cz = new ClusterZone
-                    {
-                        Lower = cLower,
-                        Upper = cUpper,
-                        StartBar = clusterStartBar,
-                        EndBar = clusterEndBar,
-                        ZoneCount = maxCount,
-                        Tag = tag,
-                        PocPrice = pocPrice
-                    };
-                    clusterTags.Add(tag);
-                    clusterTags.Add(tag + "_POC");
-
-                    Draw.Rectangle(this, tag, false,
-                        startAgo, cz.Upper, endAgo, cz.Lower,
-                        ColorBordeCluster, ColorCluster, OpacidadCluster);
-
-                    if (DibujarPocCluster)
-                    {
-                        Draw.Line(this, tag + "_POC", false,
-                            startAgo, cz.PocPrice, endAgo, cz.PocPrice,
-                            ColorBordeCluster, DashStyleHelper.Dash, 2);
-                    }
-
-                    if (MostrarTextoCluster)
-                    {
-                        string txt = string.Format("★ CLUSTER {0}x (POC: {1:F2})", cz.ZoneCount, cz.PocPrice);
-                        string textTag = tag + "_T";
-                        clusterTags.Add(textTag);
-                        int textBar = Math.Max(0, startAgo);
-                        Draw.Text(this, textTag, txt, textBar, cz.Upper + (TickSize * 3), ColorBordeCluster);
-                    }
-
-                    activeClusters.Add(cz);
-                    if (activeClusters.Count > 500) activeClusters.RemoveAt(0);
-                }
-            }
-        }
-
-        private void LimpiarClusters()
-        {
-            for (int i = 0; i < clusterTags.Count; i++)
-            {
-                try { RemoveDrawObject(clusterTags[i]); }
-                catch { }
-            }
-            clusterTags.Clear();
-            activeClusters.Clear();
-        }
-
-        // ===================== VACIOS / EXPANSIONES =====================
-        // Marca EXPANSIONES: regiones (tiempo x precio) por donde el precio PASO pero que ninguna
-        // zona HFT cubre. Cada zona cuenta con su extension hacia adelante (ExtensionDibujo): si una
-        // zona se proyecta y atraviesa la expansion, esta deja de marcarse. Las celdas vacias se
-        // agrupan en regiones conexas y se dibuja un rectangulo (bounding box) por expansion.
-        // Regiones (velas x precio) por donde el precio PASO y ninguna zona cubria en ese momento; bounding box por region conexa.
-        // Devuelve {cMin, cMax, kMin, kMax} relativos a b0 / lo / binSize.
-        private List<int[]> RegionesVacias(int b0, int b1, out double lo, out double binSize, int maxN)
-        {
-            lo = 0; binSize = Math.Max(1, VoidBinTicks) * TickSize;
-            var vacio = new List<int[]>();
-            if (binSize <= 0) return vacio;
-
-            int nBars = b1 - b0 + 1;
-            if (nBars < Math.Max(2, VoidMinAnchoBars)) return vacio;
-
-            lo = double.MaxValue; double hi = double.MinValue;
-            for (int b = b0; b <= b1; b++)
-            {
-                double L = Lows[0].GetValueAt(b);
-                double H = Highs[0].GetValueAt(b);
-                if (L < lo) lo = L;
-                if (H > hi) hi = H;
-            }
-            if (hi <= lo) return vacio;
-            lo = Math.Floor(lo / binSize) * binSize;                               // grilla alineada entre ventanas
-
-            int nBins = (int)Math.Ceiling((hi - lo) / binSize) + 1;
-            if (nBins < 2) return vacio;
-            // Rango de precio muy grande: agrandar el bin para no exceder la grilla (en vez de no dibujar nada).
-            while (nBins > 2000 && binSize > 0)
-            {
-                binSize *= 2;
-                nBins = (int)Math.Ceiling((hi - lo) / binSize) + 1;
-            }
-
-            bool[,] touched = new bool[nBars, nBins];
-            bool[,] covered = new bool[nBars, nBins];
-
-            // 1) Mascara "el precio estuvo aca" (recorrido high-low por vela)
-            for (int c = 0; c < nBars; c++)
-            {
-                int abs = b0 + c;
-                double L = Lows[0].GetValueAt(abs);
-                double H = Highs[0].GetValueAt(abs);
-                int kFrom = (int)Math.Floor((L - lo) / binSize);
-                int kTo   = (int)Math.Floor((H - lo) / binSize);
-                if (kFrom < 0) kFrom = 0;
-                if (kTo > nBins - 1) kTo = nBins - 1;
-                for (int k = kFrom; k <= kTo; k++) touched[c, k] = true;
-            }
-
-            // 2) Mascara "hay zona aca". La zona ocupa su nivel de precio hacia ADELANTE segun la
-            //    extension configurada (igual que el rectangulo dibujado): de StartBar hasta
-            //    EndBar + ExtensionDibujo (+ margen extra opcional). Asi el vacio no pisa la zona.
-            int zc = 0;
-            for (int i = 0; i < zones.Count; i++)
-            {
-                Zone z = zones[i];
-                int sBar = Math.Max(b0, z.StartBar);
-                int eBar = Math.Min(b1, z.EndBar + Math.Max(0, ExtensionDibujo) + Math.Max(0, VoidExtensionBars));
-                if (eBar < sBar) continue;
-
-                double pHi = Math.Max(z.Upper, z.Lower);
-                double pLo = Math.Min(z.Upper, z.Lower);
-                int kLo = (int)Math.Floor((pLo - lo) / binSize);
-                int kHi = (int)Math.Floor((pHi - lo) / binSize);
-                if (kHi < 0 || kLo > nBins - 1) continue;
-                if (kLo < 0) kLo = 0;
-                if (kHi > nBins - 1) kHi = nBins - 1;
-
-                for (int c = sBar - b0; c <= eBar - b0; c++)
-                {
-                    if (c < 0 || c > nBars - 1) continue;
-                    for (int k = kLo; k <= kHi; k++) covered[c, k] = true;
-                }
-                zc++;
-            }
-
-            // 3) Celdas de expansion: el precio PASO ahi (touched) y NINGUNA zona la cubre.
-            double binTicksActual = binSize / TickSize;
-            int minBins = Math.Max(1, (int)Math.Round(Math.Max(1, VoidMinAltoTicks) / Math.Max(1.0, binTicksActual)));
-            int minW    = Math.Max(1, VoidMinAnchoBars);
-
-            bool[,] isVoid = new bool[nBars, nBins];
-            int voidCells = 0;
-            for (int c = 0; c < nBars; c++)
-                for (int k = 0; k < nBins; k++)
-                {
-                    bool v = (!covered[c, k]) && (!VoidExigirTouch || touched[c, k]);
-                    isVoid[c, k] = v;
-                    if (v) voidCells++;
-                }
-
-            // Agrupar en regiones conexas (flood fill, 4-vecinos) -> bounding box por expansion.
-            bool[,] seen = new bool[nBars, nBins];
-            List<int[]> nuevos = new List<int[]>();
-            Stack<int> stack = new Stack<int>();
-            int regionsTotal = 0, bestW = 0, bestH = 0;   // diagnostico: mejor region ANTES de filtrar
-
-            for (int cc0 = 0; cc0 < nBars; cc0++)
-            {
-                for (int kk0 = 0; kk0 < nBins; kk0++)
-                {
-                    if (!isVoid[cc0, kk0] || seen[cc0, kk0]) continue;
-
-                    int cMin = cc0, cMax = cc0, kMin = kk0, kMax = kk0;
-                    seen[cc0, kk0] = true;
-                    stack.Push(cc0 * nBins + kk0);
-                    while (stack.Count > 0)
-                    {
-                        int idx = stack.Pop();
-                        int cc = idx / nBins;
-                        int kk = idx % nBins;
-                        if (cc < cMin) cMin = cc; if (cc > cMax) cMax = cc;
-                        if (kk < kMin) kMin = kk; if (kk > kMax) kMax = kk;
-
-                        if (cc > 0        && isVoid[cc - 1, kk] && !seen[cc - 1, kk]) { seen[cc - 1, kk] = true; stack.Push((cc - 1) * nBins + kk); }
-                        if (cc < nBars - 1 && isVoid[cc + 1, kk] && !seen[cc + 1, kk]) { seen[cc + 1, kk] = true; stack.Push((cc + 1) * nBins + kk); }
-                        if (kk > 0        && isVoid[cc, kk - 1] && !seen[cc, kk - 1]) { seen[cc, kk - 1] = true; stack.Push(cc * nBins + (kk - 1)); }
-                        if (kk < nBins - 1 && isVoid[cc, kk + 1] && !seen[cc, kk + 1]) { seen[cc, kk + 1] = true; stack.Push(cc * nBins + (kk + 1)); }
-                    }
-
-                    int rw = cMax - cMin + 1;
-                    int rh = kMax - kMin + 1;
-                    regionsTotal++;
-                    if (rw > bestW) bestW = rw;
-                    if (rh > bestH) bestH = rh;
-
-                    if (rw >= minW && rh >= minBins)
-                    {
-                        nuevos.Add(new int[] { cMin, cMax, kMin, kMax });
-                        if (nuevos.Count >= Math.Max(1, maxN)) { cc0 = nBars; break; }
-                    }
-                }
-            }
-
-            if (VoidDebug) Print("[Vacios] zonas=" + zc + " celdasVacias=" + voidCells + " regiones=" + regionsTotal + " candidatas=" + nuevos.Count);
-            return nuevos;
-        }
-
-        private void DetectarVacios()
-        {
-            if (ModoExportacionPuro) return;
-            int b1 = CurrentBars[0];
-            int b0 = Math.Max(0, b1 - Math.Max(10, VoidLookbackBars));
-            double lo, binSize;
-            List<int[]> nuevos = RegionesVacias(b0, b1, out lo, out binSize, VoidMax);
-            // 4) Redibujar cada expansion en su rango real de barras y precio.
-            LimpiarVacios();
-            int op = Math.Max(1, Math.Min(100, VoidOpacidad));
-            for (int i = 0; i < nuevos.Count; i++)
-            {
-                int cS  = nuevos[i][0];
-                int cE  = nuevos[i][1];
-                int kLo2 = nuevos[i][2];
-                int kHi2 = nuevos[i][3];
-                int barsAgo0 = CurrentBars[0] - (b0 + cS);
-                int barsAgo1 = CurrentBars[0] - (b0 + cE);
-                double bottom = lo + kLo2 * binSize;
-                double top    = lo + (kHi2 + 1) * binSize;
-                string tag = "HFTVOID4_" + (voidCounter++);
-                Draw.Rectangle(this, tag, false, barsAgo0, top, barsAgo1, bottom, ColorVoid, ColorVoid, op);
-                voidTags.Add(tag);
-            }
-        }
-
-        // ===================== RANGOS POR PERCENTIL (clusters densos y vacios amplios) =====================
-        private int pctCounter;
-        private int primeraPendiente;
-        private int pctSeq;
-        private readonly List<string> pctTags = new List<string>();
-
-        private void LimpiarPct()
-        {
-            for (int i = 0; i < pctTags.Count; i++) { try { RemoveDrawObject(pctTags[i]); } catch { } }
-            pctTags.Clear();
-        }
-
-        private int primeraSinCluster;
-        private readonly List<double> histAnchoCluster = new List<double>();   // ancho (ticks) del cluster más angosto de cada zona nueva
-        private readonly List<double> histAltoExp = new List<double>();        // alto (ticks) de cada expansión terminada
-        private readonly List<double[]> clustersDib = new List<double[]>();   // {lo, hi, barIni, barFin, id}
-        private readonly HashSet<long> expVistas = new HashSet<long>();
 
         private static double Percentil(List<double> v, double p)
         {
-            var c = new List<double>(v); c.Sort();
-            int k = (int)Math.Floor(Math.Max(0, Math.Min(100, p)) / 100.0 * (c.Count - 1));
+            if (v.Count == 0) return 0;
+            var c = new List<double>(v);
+            c.Sort();
+            double pos = Math.Max(0.0, Math.Min(100.0, p)) / 100.0 * (c.Count - 1);
+            int k = (int)Math.Floor(pos);
+            double frac = pos - k;
+            if (k + 1 < c.Count)
+                return c[k] * (1.0 - frac) + c[k + 1] * frac;
             return c[k];
         }
 
-        // Cluster: al cerrarse una zona, el rango más angosto que la contiene junto con MinZonasCluster-1 zonas vivas (su rectángulo
-        // todavía se extiende). Se marca si ese ancho está en el PctAngosto% más angosto de TODOS los anchos vistos hasta ahora.
-        private void EvaluarCluster(int idx)
+        // 1) CLUSTERS HFT CAUSALES:
+        // Se evalúa en el instante en que la zona idx es detectada (detectBar = z.DetectBar).
+        // Sólo considera zonas que YA fueron detectadas (w.DetectBar <= detectBar) y siguen vigentes (w.VisualEndBar >= detectBar).
+        // El rectángulo del cluster comienza estrictamente en detectBar (sin look-ahead hacia atrás).
+        private void EvaluarClusterCausal(int idx)
         {
             Zone z = zones[idx];
-            int K = Math.Max(2, MinZonasCluster), ext = Math.Max(0, ExtensionDibujo);
+            int detectBar = z.DetectBar;
+            int K = Math.Max(2, MinZonasCluster);
+            int ext = Math.Max(1, ExtensionDibujo);
+
             var vivas = new List<Zone>();
             for (int j = idx; j >= 0; j--)
             {
                 Zone w = zones[j];
-                if (w.EndBar < z.EndBar - ext - 5000) break;                       // corte de búsqueda (las zonas están casi ordenadas)
-                if (w.EndBar <= z.EndBar && w.EndBar + ext >= z.EndBar) vivas.Add(w);
+                if (w.DetectBar < detectBar - ext - 2000) break;
+                if (w.DetectBar <= detectBar && w.VisualEndBar >= detectBar)
+                    vivas.Add(w);
             }
             if (vivas.Count < K) return;
+
             vivas.Sort((a, b) => ((a.Upper + a.Lower) * 0.5).CompareTo((b.Upper + b.Lower) * 0.5));
             int pos = vivas.IndexOf(z);
-            double mejor = double.MaxValue; int i0m = -1;
+            if (pos < 0) return;
+
+            double mejorScore = double.MaxValue;
+            double bestLo = 0, bestHi = 0, bestPoc = 0;
+            int bestCount = 0;
+
             for (int i0 = Math.Max(0, pos - K + 1); i0 <= pos && i0 + K <= vivas.Count; i0++)
             {
                 double lo = double.MaxValue, hi = double.MinValue;
-                for (int j = i0; j < i0 + K; j++) { lo = Math.Min(lo, Math.Min(vivas[j].Lower, vivas[j].Upper)); hi = Math.Max(hi, Math.Max(vivas[j].Lower, vivas[j].Upper)); }
-                if (hi - lo < mejor) { mejor = hi - lo; i0m = i0; }
+                double sumH = 0, sumVol = 0, wSumMid = 0;
+                for (int j = i0; j < i0 + K; j++)
+                {
+                    Zone w = vivas[j];
+                    double wLo = Math.Min(w.Lower, w.Upper);
+                    double wHi = Math.Max(w.Lower, w.Upper);
+                    if (wLo < lo) lo = wLo;
+                    if (wHi > hi) hi = wHi;
+                    sumH += Math.Max(TickSize, wHi - wLo);
+                    double v = Math.Max(1.0, w.TotalVol);
+                    sumVol += v;
+                    wSumMid += ((wLo + wHi) * 0.5) * v;
+                }
+
+                // Contar todas las zonas vivas adicionales que caen dentro de la misma banda [lo, hi]
+                int mTotal = 0;
+                double totalBandVol = 0, totalWeightedMid = 0;
+                for (int j = 0; j < vivas.Count; j++)
+                {
+                    Zone w = vivas[j];
+                    double wLo = Math.Min(w.Lower, w.Upper);
+                    double wHi = Math.Max(w.Lower, w.Upper);
+                    double wMid = (wLo + wHi) * 0.5;
+                    if (wMid >= lo && wMid <= hi)
+                    {
+                        mTotal++;
+                        double v = Math.Max(1.0, w.TotalVol);
+                        totalBandVol += v;
+                        totalWeightedMid += wMid * v;
+                    }
+                }
+                if (mTotal < K) mTotal = K;
+
+                double spanPrice = Math.Max(TickSize, hi - lo);
+                double spanTicks = spanPrice / TickSize;
+                // Exigir confluencia real: la suma de alturas de las zonas debe empaquetarse con densidad real
+                double packing = sumH / spanPrice;
+                if (packing < 0.85 && spanTicks > escalaVolTicks * 1.5) continue;
+
+                double anchoNorm = spanTicks / Math.Max(4.0, escalaVolTicks);
+                double bonusZonas = Math.Sqrt((double)mTotal / K);
+                double volRatio = (totalBandVol / mTotal) / Math.Max(10.0, escalaVolZonaMean);
+                double bonusVol = 1.0 + 0.15 * Math.Min(3.0, volRatio);
+                double score = anchoNorm / (bonusZonas * bonusVol);
+
+                if (score < mejorScore)
+                {
+                    mejorScore = score;
+                    bestLo = lo;
+                    bestHi = hi;
+                    bestCount = mTotal;
+                    bestPoc = totalBandVol > 0 ? (totalWeightedMid / totalBandVol) : ((lo + hi) * 0.5);
+                }
             }
-            if (i0m < 0) return;
-            double ancho = mejor / TickSize;
-            histAnchoCluster.Add(ancho);
-            if (histAnchoCluster.Count < Math.Max(10, PctMinHistoria) || ancho > Percentil(histAnchoCluster, PctAngosto)) return;
-            double cLo = double.MaxValue, cHi = double.MinValue; int ini = int.MaxValue, fin = int.MinValue;
-            for (int j = i0m; j < i0m + K; j++)
+
+            if (mejorScore == double.MaxValue) return;
+            double bestWidthTicks = (bestHi - bestLo) / TickSize;
+
+            // Verificar si ya hay un cluster activo en este rango de precio en detectBar
+            CausalCluster activoSolapado = null;
+            for (int i = clustersPct.Count - 1; i >= 0; i--)
             {
-                Zone w = vivas[j];
-                cLo = Math.Min(cLo, Math.Min(w.Lower, w.Upper)); cHi = Math.Max(cHi, Math.Max(w.Lower, w.Upper));
-                ini = Math.Min(ini, w.StartBar); fin = Math.Max(fin, w.EndBar + Math.Max(0, PctExtensionBars));
+                CausalCluster cc = clustersPct[i];
+                if (cc.VisualEndBar < detectBar) continue;
+                if (cc.Lower <= bestHi + TickSize * 2 && bestLo - TickSize * 2 <= cc.Upper)
+                {
+                    activoSolapado = cc;
+                    break;
+                }
             }
-            // fusionar con un cluster dibujado que se solape en precio y en tiempo
-            double[] c = null;
-            foreach (var x in clustersDib) if (x[0] <= cHi && cLo <= x[1] && x[3] >= ini) { c = x; break; }
-            if (c == null) { c = new double[] { cLo, cHi, ini, fin, pctSeq++ }; clustersDib.Add(c); }
-            else { c[0] = Math.Min(c[0], cLo); c[1] = Math.Max(c[1], cHi); c[2] = Math.Min(c[2], ini); c[3] = Math.Max(c[3], fin); }
-            int n = 0;
-            for (int j = idx; j >= 0 && zones[j].EndBar >= (int)c[2]; j--)
-                if (Math.Min(zones[j].Lower, zones[j].Upper) >= c[0] && Math.Max(zones[j].Lower, zones[j].Upper) <= c[1]) n++;
-            string tag = "HFTPCT_C_" + (int)c[4];
-            int cb = CurrentBars[0];
-            Draw.Rectangle(this, tag, false, cb - (int)c[2], c[1], cb - (int)c[3], c[0], ColorClusterPct, ColorClusterPct, Math.Max(1, Math.Min(100, OpacidadPct)));
-            if (!pctTags.Contains(tag)) pctTags.Add(tag);
-            if (MostrarTextoPct)
+
+            if (activoSolapado != null)
             {
-                Draw.Text(this, tag + "_T", string.Format("CLUSTER {0}z {1:F0}t", n, (c[1] - c[0]) / TickSize), cb - (int)c[2], c[1] + TickSize * 2, ColorClusterPct);
-                if (!pctTags.Contains(tag + "_T")) pctTags.Add(tag + "_T");
+                // Si el nuevo refuerzo mejora la densidad o agrega zonas, extendemos hacia adelante desde detectBar
+                // sin modificar lo dibujado en barras anteriores a detectBar
+                if (bestCount > activoSolapado.ZoneCount || mejorScore < activoSolapado.Score)
+                {
+                    activoSolapado.VisualEndBar = Math.Max(activoSolapado.VisualEndBar, detectBar + Math.Max(10, PctExtensionBars));
+                    activoSolapado.ZoneCount = Math.Max(activoSolapado.ZoneCount, bestCount);
+                    activoSolapado.Score = Math.Min(activoSolapado.Score, mejorScore);
+                    activoSolapado.Label = string.Format("CLUS {0}z · {1:F0}t", activoSolapado.ZoneCount, activoSolapado.WidthTicks);
+                }
+                return;
+            }
+
+            // Candidato independiente: registrar en la distribución histórica causal
+            AgregarHistoriaAcotada(histScoreCluster, mejorScore);
+            int nHist = histScoreCluster.Count;
+            if (nHist < Math.Max(10, PctMinHistoria)) return;
+
+            double fracSesion = Math.Max(0.2, ClustersPorSesion) * Math.Max(1, sesionesVistas) / nHist;
+            double pctEfectivo = Math.Min((double)PctAngosto, 100.0 * fracSesion);
+            double umbral = Percentil(histScoreCluster, Math.Max(1.0, pctEfectivo));
+            if (mejorScore > umbral) return;
+
+            // Confirmado en detectBar: nace en detectBar y se proyecta hacia adelante
+            var nuevoCluster = new CausalCluster
+            {
+                Lower        = bestLo,
+                Upper        = bestHi,
+                PocPrice     = bestPoc,
+                DetectBar    = detectBar,
+                VisualEndBar = detectBar + Math.Max(10, PctExtensionBars),
+                ZoneCount    = bestCount,
+                WidthTicks   = bestWidthTicks,
+                Score        = mejorScore,
+                Label        = string.Format("CLUS {0}z · {1:F0}t", bestCount, bestWidthTicks)
+            };
+            lock (syncRoot)
+            {
+                clustersPct.Add(nuevoCluster);
             }
         }
 
-        // Expansiones (rediseño 2026-11-09): un TRAMO de precio = pierna de zigzag con giro de ZigZagTicks (en ticks: no depende del
-        // timeframe). Dentro de cada tramo terminado se busca el mayor recorrido de precio contiguo que ninguna zona viva cubría
-        // durante el tramo. Se marca si ese recorrido está en el PctAmplio% más largo de todos los tramos vistos hasta ahora.
-        private int zzDir, zzIniBar, zzExtBar;
-        private int sesionesVistas;
-        private DateTime ultimaFechaSesion = DateTime.MinValue;
-        private double[] ultExp;
-        private double zzIni, zzExt;
-
-        private void AvanzarZigZag()
+        // 2) EXPANSIONES SIN HFT CAUSALES:
+        // Rastrea la pierna direccional en curso y mide el mayor corredor libre de zonas HFT activas.
+        // Cuando el corredor libre supera el umbral infrecuente en la barra actual b, la zona de expansión
+        // se empieza a dibujar en DetectBar = b (sin look-ahead). Si en barras posteriores de la misma pierna
+        // el corredor se amplía, se escalona desde la barra nueva sin tocar lo ya dibujado.
+        private void RegistrarPiernaEnHistoria()
         {
-            int b = CurrentBars[0]; double H = Highs[0][0], L = Lows[0][0], R = Math.Max(4, ZigZagTicks) * TickSize;
-            if (zzDir == 0)
+            if (impBestScoreRegistrado > 0.25)
             {
-                if (zzIniBar == 0 && zzIni == 0) { zzIni = Closes[0][0]; zzIniBar = b; zzExt = zzIni; zzExtBar = b; return; }
-                if (H - zzIni >= R) { zzDir = 1; zzExt = H; zzExtBar = b; }
-                else if (zzIni - L >= R) { zzDir = -1; zzExt = L; zzExtBar = b; }
+                AgregarHistoriaAcotada(histScoreExp, impBestScoreRegistrado);
+            }
+            impBestScoreRegistrado = 0;
+            impLastTriggeredHeightTicks = 0;
+            impActiveExpansion = null;
+        }
+
+        private void ActualizarImpulsoYExpansionCausal()
+        {
+            int b = CurrentBars[0];
+            double H = Highs[0][0];
+            double L = Lows[0][0];
+            double barRng = Math.Max(TickSize, H - L);
+            double giroMin = Math.Max(4, ZigZagTicks) * TickSize;
+
+            if (impDir == 0)
+            {
+                if (impStartPrice == 0)
+                {
+                    impStartPrice = Closes[0][0];
+                    impExtPrice = impStartPrice;
+                    impStartBar = b;
+                    impExtBar = b;
+                    return;
+                }
+                impSumRange += barRng;
+                if (H - impStartPrice >= giroMin)
+                {
+                    impDir = 1;
+                    impExtPrice = H;
+                    impExtBar = b;
+                    impLegId++;
+                }
+                else if (impStartPrice - L >= giroMin)
+                {
+                    impDir = -1;
+                    impExtPrice = L;
+                    impExtBar = b;
+                    impLegId++;
+                }
                 return;
             }
-            if (zzDir == 1)
+
+            bool nuevoExtremo = false;
+            if (impDir == 1)
             {
-                if (H >= zzExt) { zzExt = H; zzExtBar = b; }
-                else if (zzExt - L >= R) { EvaluarTramo(zzIni, zzIniBar, zzExt, zzExtBar); zzIni = zzExt; zzIniBar = zzExtBar; zzDir = -1; zzExt = L; zzExtBar = b; }
+                double legHeight = Math.Max(TickSize, impExtPrice - impStartPrice);
+                double giroReq = Math.Max(giroMin, 0.38 * legHeight);
+                if (H >= impExtPrice)
+                {
+                    impExtPrice = H;
+                    impExtBar = b;
+                    impSumRange += barRng;
+                    nuevoExtremo = true;
+                }
+                else if (impExtPrice - L >= giroReq)
+                {
+                    RegistrarPiernaEnHistoria();
+                    impStartPrice = impExtPrice;
+                    impStartBar = impExtBar;
+                    impDir = -1;
+                    impExtPrice = L;
+                    impExtBar = b;
+                    impSumRange = barRng;
+                    impLegId++;
+                    nuevoExtremo = true;
+                }
+                else
+                {
+                    impSumRange += barRng;
+                }
             }
             else
             {
-                if (L <= zzExt) { zzExt = L; zzExtBar = b; }
-                else if (H - zzExt >= R) { EvaluarTramo(zzIni, zzIniBar, zzExt, zzExtBar); zzIni = zzExt; zzIniBar = zzExtBar; zzDir = 1; zzExt = H; zzExtBar = b; }
+                double legHeight = Math.Max(TickSize, impStartPrice - impExtPrice);
+                double giroReq = Math.Max(giroMin, 0.38 * legHeight);
+                if (L <= impExtPrice)
+                {
+                    impExtPrice = L;
+                    impExtBar = b;
+                    impSumRange += barRng;
+                    nuevoExtremo = true;
+                }
+                else if (H - impExtPrice >= giroReq)
+                {
+                    RegistrarPiernaEnHistoria();
+                    impStartPrice = impExtPrice;
+                    impStartBar = impExtBar;
+                    impDir = 1;
+                    impExtPrice = H;
+                    impExtBar = b;
+                    impSumRange = barRng;
+                    impLegId++;
+                    nuevoExtremo = true;
+                }
+                else
+                {
+                    impSumRange += barRng;
+                }
             }
-        }
 
-        // Expansión (sexta entrega): todo lo que recorrió el precio ENTRE DOS ZONAS CONSECUTIVAS (de la anterior a la nueva), sin importar
-        // cuántas velas ni cuántos vaivenes. Se evalúa cuando aparece la zona nueva (causal).
-        private void EvaluarIntervalo(int b0, int b1)
-        {
-            if (b1 - b0 < 1 || b0 < 0) return;
-            double lo = double.MaxValue, hi = double.MinValue;
-            for (int b = b0; b <= b1; b++) { lo = Math.Min(lo, Lows[0].GetValueAt(b)); hi = Math.Max(hi, Highs[0].GetValueAt(b)); }
-            if (hi > lo) EvaluarTramo(lo, b0, hi, b1);
-        }
+            if (!nuevoExtremo) return;
 
-        private void EvaluarTramo(double p0, int b0, double p1, int b1)
-        {
-            double lo = Math.Min(p0, p1), hi = Math.Max(p0, p1); int ext = Math.Max(0, ExtensionDibujo);
+            // Evaluar el mayor corredor sin zonas HFT dentro de la pierna actual [impStartBar .. b]
+            double lo = Math.Min(impStartPrice, impExtPrice);
+            double hi = Math.Max(impStartPrice, impExtPrice);
+            double dispTicks = (hi - lo) / TickSize;
+            if (dispTicks < Math.Max(8, MinExpTicks)) return;
+
+            int ext = Math.Max(1, ExtensionDibujo);
             var iv = new List<double[]>();
             for (int j = zones.Count - 1; j >= 0; j--)
             {
                 Zone z = zones[j];
-                if (z.EndBar < b0 - ext - 5000) break;
-                if (z.StartBar > b1 || z.EndBar + ext < b0) continue;                 // no estaba viva durante el tramo
-                double zl = Math.Min(z.Lower, z.Upper), zh = Math.Max(z.Lower, z.Upper);
+                if (z.DetectBar < impStartBar - ext - 2000) break;
+                // Estrictamente causal: sólo zonas ya detectadas en o antes de b, cuya vigencia cubra el tramo
+                if (z.DetectBar > b || z.VisualEndBar < impStartBar) continue;
+                double zl = Math.Min(z.Lower, z.Upper);
+                double zh = Math.Max(z.Lower, z.Upper);
                 if (zh < lo || zl > hi) continue;
                 iv.Add(new double[] { Math.Max(lo, zl), Math.Min(hi, zh) });
             }
+
             iv.Sort((x, y) => x[0].CompareTo(y[0]));
-            double cursor = lo, gLo = 0, gHi = 0, mejor = 0;
-            foreach (var x in iv)
+            double cursor = lo, gLo = 0, gHi = 0, mejorGap = 0;
+            for (int i = 0; i < iv.Count; i++)
             {
-                if (x[0] - cursor > mejor) { mejor = x[0] - cursor; gLo = cursor; gHi = x[0]; }
-                cursor = Math.Max(cursor, x[1]);
+                double x0 = iv[i][0], x1 = iv[i][1];
+                if (x0 - cursor > mejorGap)
+                {
+                    mejorGap = x0 - cursor;
+                    gLo = cursor;
+                    gHi = x0;
+                }
+                if (x1 > cursor) cursor = x1;
             }
-            if (hi - cursor > mejor) { mejor = hi - cursor; gLo = cursor; gHi = hi; }
-            double t = mejor / TickSize;
-            if (t < 1) return;
-            histAltoExp.Add(t);
-            int n = histAltoExp.Count;
-            if (n < Math.Max(10, PctMinHistoria)) return;
-            // INFRECUENTES: el umbral se fija para que, en la historia vista, salgan en promedio ExpPorSesion expansiones por sesión
-            // (y nunca más que el PctAmplio% más largo). No depende del timeframe ni de cuántas zonas haya.
-            double frac = Math.Min(PctAmplio / 100.0, Math.Max(0.1, ExpPorSesion) * Math.Max(1, sesionesVistas) / n);
-            if (t < Percentil(histAltoExp, 100.0 * (1 - frac))) return;
-            int cb = CurrentBars[0];
-            // juntar con la expansión anterior si está pegada en el tiempo y se solapa en precio (un solo movimiento)
-            if (ultExp != null && b0 <= (int)ultExp[3] + 2 && gLo <= ultExp[1] && ultExp[0] <= gHi)
+            if (hi - cursor > mejorGap)
             {
-                ultExp[0] = Math.Min(ultExp[0], gLo); ultExp[1] = Math.Max(ultExp[1], gHi); ultExp[3] = Math.Max(ultExp[3], b1);
+                mejorGap = hi - cursor;
+                gLo = cursor;
+                gHi = hi;
             }
-            else ultExp = new double[] { gLo, gHi, b0, b1, pctSeq++ };
-            string tag = "HFTPCT_V_" + (int)ultExp[4];
-            Draw.Rectangle(this, tag, false, cb - (int)ultExp[2], ultExp[1], cb - (int)ultExp[3], ultExp[0], ColorVacioPct, ColorVacioPct, Math.Max(1, Math.Min(100, OpacidadPct)));
-            if (!pctTags.Contains(tag)) pctTags.Add(tag);
-            if (MostrarTextoPct)
+
+            double gapTicks = mejorGap / TickSize;
+            if (gapTicks < Math.Max(8, MinExpTicks)) return;
+
+            // Eficiencia direccional: qué tan limpio y rápido fue el impulso frente al ruido acumulado
+            double netMove = Math.Abs(impExtPrice - impStartPrice);
+            double eficiencia = Math.Min(1.0, netMove / Math.Max(netMove, impSumRange * 0.45));
+            double altoNorm = gapTicks / Math.Max(6.0, escalaVolTicks);
+            double scoreExp = altoNorm * (0.55 + 0.45 * eficiencia);
+
+            if (scoreExp > impBestScoreRegistrado)
+                impBestScoreRegistrado = scoreExp;
+
+            int nHist = histScoreExp.Count;
+            if (nHist < Math.Max(10, PctMinHistoria)) return;
+
+            double frac = Math.Min(PctAmplio / 100.0, Math.Max(0.1, ExpPorSesion) * Math.Max(1, sesionesVistas) / nHist);
+            double umbral = Percentil(histScoreExp, 100.0 * (1.0 - frac));
+            if (scoreExp < umbral) return;
+
+            // Evitar micro-escalones por 1-2 ticks en la misma pierna: exigir al menos +20% o +8 ticks para escalonar
+            if (impActiveExpansion != null && impActiveExpansion.LegId == impLegId)
             {
-                Draw.Text(this, tag + "_T", string.Format("EXPANSION {0:F0}t", (ultExp[1] - ultExp[0]) / TickSize), cb - (int)ultExp[2], ultExp[1] + TickSize * 2, ColorVacioPct);
-                if (!pctTags.Contains(tag + "_T")) pctTags.Add(tag + "_T");
+                if (gapTicks < impLastTriggeredHeightTicks + Math.Max(6.0, impLastTriggeredHeightTicks * 0.15))
+                    return;
+                // Truncar el escalón previo en la barra actual b para no alterar el pasado, y abrir el nuevo escalón en b
+                if (impActiveExpansion.DetectBar < b)
+                {
+                    impActiveExpansion.VisualEndBar = b;
+                }
+                else
+                {
+                    // Misma barra b: actualizar in-place
+                    impActiveExpansion.Lower = gLo;
+                    impActiveExpansion.Upper = gHi;
+                    impActiveExpansion.MidPrice = (gLo + gHi) * 0.5;
+                    impActiveExpansion.HeightTicks = gapTicks;
+                    impActiveExpansion.Efficiency = eficiencia;
+                    impActiveExpansion.Label = string.Format("EXP {0:F0}t", gapTicks);
+                    impLastTriggeredHeightTicks = gapTicks;
+                    return;
+                }
+            }
+
+            impLastTriggeredHeightTicks = gapTicks;
+            var nuevaExp = new CausalExpansion
+            {
+                Lower        = gLo,
+                Upper        = gHi,
+                MidPrice     = (gLo + gHi) * 0.5,
+                DetectBar    = b,
+                VisualEndBar = b + Math.Max(10, PctExtensionBars),
+                Direction    = impDir,
+                HeightTicks  = gapTicks,
+                Efficiency   = eficiencia,
+                LegId        = impLegId,
+                Label        = string.Format("EXP {0:F0}t", gapTicks)
+            };
+            impActiveExpansion = nuevaExp;
+            lock (syncRoot)
+            {
+                expansionsPct.Add(nuevaExp);
             }
         }
 
-        private void LimpiarVacios()
+        // ===================== RENDERIZADO SHARPDX (ESTÉTICO, SIN LOOK-AHEAD, CON SCROLLBACK TOTAL) =====================
+        private void DisposeDxResources()
         {
-            for (int i = 0; i < voidTags.Count; i++)
-            {
-                try { RemoveDrawObject(voidTags[i]); }
-                catch { }
-            }
-            voidTags.Clear();
+            dxReady = false;
+            if (dxBullFill      != null) { dxBullFill.Dispose();      dxBullFill = null; }
+            if (dxBearFill      != null) { dxBearFill.Dispose();      dxBearFill = null; }
+            if (dxPredFill      != null) { dxPredFill.Dispose();      dxPredFill = null; }
+            if (dxUltraFill     != null) { dxUltraFill.Dispose();     dxUltraFill = null; }
+            if (dxAbsorbFill    != null) { dxAbsorbFill.Dispose();    dxAbsorbFill = null; }
+            if (dxBullEdge      != null) { dxBullEdge.Dispose();      dxBullEdge = null; }
+            if (dxBearEdge      != null) { dxBearEdge.Dispose();      dxBearEdge = null; }
+            if (dxPredEdge      != null) { dxPredEdge.Dispose();      dxPredEdge = null; }
+            if (dxUltraEdge     != null) { dxUltraEdge.Dispose();     dxUltraEdge = null; }
+            if (dxAbsorbEdge    != null) { dxAbsorbEdge.Dispose();    dxAbsorbEdge = null; }
+            if (dxClusterFill   != null) { dxClusterFill.Dispose();   dxClusterFill = null; }
+            if (dxClusterBorder != null) { dxClusterBorder.Dispose(); dxClusterBorder = null; }
+            if (dxClusterAccent != null) { dxClusterAccent.Dispose(); dxClusterAccent = null; }
+            if (dxClusterText   != null) { dxClusterText.Dispose();   dxClusterText = null; }
+            if (dxExpFill       != null) { dxExpFill.Dispose();       dxExpFill = null; }
+            if (dxExpBorder     != null) { dxExpBorder.Dispose();     dxExpBorder = null; }
+            if (dxExpAccent     != null) { dxExpAccent.Dispose();     dxExpAccent = null; }
+            if (dxExpText       != null) { dxExpText.Dispose();       dxExpText = null; }
+            if (dxLabelBg       != null) { dxLabelBg.Dispose();       dxLabelBg = null; }
+            if (dxDashStyle     != null) { dxDashStyle.Dispose();     dxDashStyle = null; }
+            if (dwFontSmall     != null) { dwFontSmall.Dispose();     dwFontSmall = null; }
         }
 
-        // ===================== FLOW STREAM =====================
+        public override void OnRenderTargetChanged()
+        {
+            DisposeDxResources();
+            if (RenderTarget == null) return;
+            try
+            {
+                float opBase = Math.Max(0.02f, Math.Min(0.85f, Opacidad / 100f));
+                float opEdge = Math.Min(0.90f, opBase * 3.2f);
+                float opPct  = Math.Max(0.04f, Math.Min(0.85f, OpacidadPct / 100f));
+
+                dxBullFill   = (ColorBull     ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);   dxBullFill.Opacity   = opBase;
+                dxBearFill   = (ColorBear     ?? Brushes.Tomato).ToDxBrush(RenderTarget);       dxBearFill.Opacity   = opBase;
+                dxPredFill   = (ColorPredator ?? Brushes.Gold).ToDxBrush(RenderTarget);         dxPredFill.Opacity   = Math.Min(0.85f, opBase * 1.35f);
+                dxUltraFill  = (ColorUltra    ?? Brushes.Silver).ToDxBrush(RenderTarget);       dxUltraFill.Opacity  = opBase;
+                dxAbsorbFill = (ColorAbsorb   ?? Brushes.MediumPurple).ToDxBrush(RenderTarget); dxAbsorbFill.Opacity = opBase;
+
+                dxBullEdge   = (ColorBull     ?? Brushes.DodgerBlue).ToDxBrush(RenderTarget);   dxBullEdge.Opacity   = opEdge;
+                dxBearEdge   = (ColorBear     ?? Brushes.Tomato).ToDxBrush(RenderTarget);       dxBearEdge.Opacity   = opEdge;
+                dxPredEdge   = (ColorPredator ?? Brushes.Gold).ToDxBrush(RenderTarget);         dxPredEdge.Opacity   = Math.Min(0.95f, opEdge * 1.2f);
+                dxUltraEdge  = (ColorUltra    ?? Brushes.Silver).ToDxBrush(RenderTarget);       dxUltraEdge.Opacity  = opEdge;
+                dxAbsorbEdge = (ColorAbsorb   ?? Brushes.MediumPurple).ToDxBrush(RenderTarget); dxAbsorbEdge.Opacity = opEdge;
+
+                Brush cClust = ColorClusterPct ?? Brushes.Gold;
+                dxClusterFill   = cClust.ToDxBrush(RenderTarget); dxClusterFill.Opacity   = opPct;
+                dxClusterBorder = cClust.ToDxBrush(RenderTarget); dxClusterBorder.Opacity = Math.Min(0.92f, opPct * 3.0f);
+                dxClusterAccent = cClust.ToDxBrush(RenderTarget); dxClusterAccent.Opacity = 0.92f;
+                dxClusterText   = cClust.ToDxBrush(RenderTarget); dxClusterText.Opacity   = 0.95f;
+
+                Brush cExp = ColorVacioPct ?? Brushes.DeepSkyBlue;
+                dxExpFill   = cExp.ToDxBrush(RenderTarget); dxExpFill.Opacity   = Math.Max(0.03f, opPct * 0.85f);
+                dxExpBorder = cExp.ToDxBrush(RenderTarget); dxExpBorder.Opacity = Math.Min(0.88f, opPct * 2.6f);
+                dxExpAccent = cExp.ToDxBrush(RenderTarget); dxExpAccent.Opacity = 0.90f;
+                dxExpText   = cExp.ToDxBrush(RenderTarget); dxExpText.Opacity   = 0.95f;
+
+                dxLabelBg = new SharpDX.Direct2D1.SolidColorBrush(RenderTarget, new SharpDX.Color4(0.06f, 0.08f, 0.12f, 0.78f));
+
+                var sp = new SharpDX.Direct2D1.StrokeStyleProperties
+                {
+                    DashStyle = SharpDX.Direct2D1.DashStyle.Dash,
+                    DashCap   = SharpDX.Direct2D1.CapStyle.Flat
+                };
+                dxDashStyle = new SharpDX.Direct2D1.StrokeStyle(RenderTarget.Factory, sp);
+                dwFontSmall = new SharpDX.DirectWrite.TextFormat(NinjaTrader.Core.Globals.DirectWriteFactory, "Segoe UI",
+                    SharpDX.DirectWrite.FontWeight.SemiBold, SharpDX.DirectWrite.FontStyle.Normal, 10f);
+
+                dxReady = true;
+            }
+            catch
+            {
+                DisposeDxResources();
+            }
+        }
+
+        protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
+        {
+            base.OnRender(chartControl, chartScale);
+            if (ModoExportacionPuro || Bars == null || ChartBars == null || RenderTarget == null) return;
+            if (!dxReady) OnRenderTargetChanged();
+            if (!dxReady) return;
+
+            int fromBar = ChartBars.FromIndex;
+            int toBar   = ChartBars.ToIndex;
+            if (toBar < fromBar) return;
+
+            float halfBar = Math.Max(1f, (float)chartControl.Properties.BarDistance * 0.45f);
+            SharpDX.Direct2D1.AntialiasMode prevMode = RenderTarget.AntialiasMode;
+            RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
+
+            try
+            {
+                lock (syncRoot)
+                {
+                    // 1. CAPA BASE: Zonas HFT individuales (dibujadas desde z.DetectBar hacia adelante, en TODO el histórico)
+                    if (MostrarZonasBase && zones.Count > 0)
+                    {
+                        for (int i = 0; i < zones.Count; i++)
+                        {
+                            Zone z = zones[i];
+                            if (z.VisualEndBar < fromBar || z.DetectBar > toBar) continue;
+
+                            int bStart = Math.Max(fromBar, z.DetectBar);
+                            int bEnd   = Math.Min(toBar, z.VisualEndBar);
+                            float x1 = chartControl.GetXByBarIndex(ChartBars, bStart);
+                            float x2 = chartControl.GetXByBarIndex(ChartBars, bEnd) + halfBar;
+                            if (x2 <= x1) x2 = x1 + 2f;
+
+                            float yTop = chartScale.GetYByValue(Math.Max(z.Upper, z.Lower));
+                            float yBot = chartScale.GetYByValue(Math.Min(z.Upper, z.Lower));
+                            float h = yBot - yTop;
+                            if (h < 1.5f) { yTop -= 0.75f; h = 1.5f; }
+
+                            SharpDX.Direct2D1.Brush fillBrush, edgeBrush;
+                            switch (z.Bucket)
+                            {
+                                case HFTBucket.Predator: fillBrush = dxPredFill;   edgeBrush = dxPredEdge;   break;
+                                case HFTBucket.Ultra:    fillBrush = dxUltraFill;  edgeBrush = dxUltraEdge;  break;
+                                case HFTBucket.Absorb:   fillBrush = dxAbsorbFill; edgeBrush = dxAbsorbEdge; break;
+                                default:
+                                    fillBrush = z.Direction == 1 ? dxBullFill : dxBearFill;
+                                    edgeBrush = z.Direction == 1 ? dxBullEdge : dxBearEdge;
+                                    break;
+                            }
+
+                            var rect = new SharpDX.RectangleF(x1, yTop, x2 - x1, h);
+                            RenderTarget.FillRectangle(rect, fillBrush);
+
+                            // Marcador nítido de 2px en la barra exacta de detección (z.DetectBar)
+                            if (z.DetectBar >= fromBar && z.DetectBar <= toBar)
+                            {
+                                var detectBarRect = new SharpDX.RectangleF(x1, yTop, Math.Min(2.5f, x2 - x1), h);
+                                RenderTarget.FillRectangle(detectBarRect, edgeBrush);
+                            }
+
+                            if (MostrarTexto && z.DetectBar >= fromBar && z.DetectBar <= toBar)
+                            {
+                                DibujarEtiquetaCompacta(z.Reporte, x1 + 4f, yTop - 13f, edgeBrush);
+                            }
+                        }
+                    }
+
+                    // 2. CAPA INFRECUENTE A: Expansiones sin HFT (nacen en DetectBar, con línea media 50%)
+                    if (MostrarRangosPct && expansionsPct.Count > 0)
+                    {
+                        for (int i = 0; i < expansionsPct.Count; i++)
+                        {
+                            CausalExpansion ex = expansionsPct[i];
+                            if (ex.VisualEndBar < fromBar || ex.DetectBar > toBar) continue;
+
+                            int bStart = Math.Max(fromBar, ex.DetectBar);
+                            int bEnd   = Math.Min(toBar, ex.VisualEndBar);
+                            float x1 = chartControl.GetXByBarIndex(ChartBars, bStart);
+                            float x2 = chartControl.GetXByBarIndex(ChartBars, bEnd) + halfBar;
+                            if (x2 <= x1) x2 = x1 + 3f;
+
+                            float yTop = chartScale.GetYByValue(ex.Upper);
+                            float yBot = chartScale.GetYByValue(ex.Lower);
+                            float yMid = chartScale.GetYByValue(ex.MidPrice);
+                            float h = yBot - yTop;
+                            if (h < 2f) h = 2f;
+
+                            var rect = new SharpDX.RectangleF(x1, yTop, x2 - x1, h);
+                            RenderTarget.FillRectangle(rect, dxExpFill);
+
+                            // Bordes horizontales superior e inferior finos + línea 50% punteada
+                            RenderTarget.DrawLine(new SharpDX.Vector2(x1, yTop), new SharpDX.Vector2(x2, yTop), dxExpBorder, 1.2f);
+                            RenderTarget.DrawLine(new SharpDX.Vector2(x1, yBot), new SharpDX.Vector2(x2, yBot), dxExpBorder, 1.2f);
+                            if (h >= 8f && dxDashStyle != null)
+                            {
+                                RenderTarget.DrawLine(new SharpDX.Vector2(x1, yMid), new SharpDX.Vector2(x2, yMid), dxExpBorder, 1.0f, dxDashStyle);
+                            }
+
+                            // Barra vertical de anclaje en el punto exacto de detección (ex.DetectBar)
+                            if (ex.DetectBar >= fromBar && ex.DetectBar <= toBar)
+                            {
+                                RenderTarget.FillRectangle(new SharpDX.RectangleF(x1, yTop, 3f, h), dxExpAccent);
+                                if (MostrarTextoPct && (x2 - x1) >= 28f)
+                                {
+                                    DibujarEtiquetaCompacta(ex.Label, x1 + 5f, yTop + 2f, dxExpText);
+                                }
+                            }
+                        }
+                    }
+
+                    // 3. CAPA INFRECUENTE B: Clusters HFT (nacen en DetectBar, con línea POC interna)
+                    if (MostrarRangosPct && clustersPct.Count > 0)
+                    {
+                        for (int i = 0; i < clustersPct.Count; i++)
+                        {
+                            CausalCluster cc = clustersPct[i];
+                            if (cc.VisualEndBar < fromBar || cc.DetectBar > toBar) continue;
+
+                            int bStart = Math.Max(fromBar, cc.DetectBar);
+                            int bEnd   = Math.Min(toBar, cc.VisualEndBar);
+                            float x1 = chartControl.GetXByBarIndex(ChartBars, bStart);
+                            float x2 = chartControl.GetXByBarIndex(ChartBars, bEnd) + halfBar;
+                            if (x2 <= x1) x2 = x1 + 3f;
+
+                            float yTop = chartScale.GetYByValue(cc.Upper);
+                            float yBot = chartScale.GetYByValue(cc.Lower);
+                            float yPoc = chartScale.GetYByValue(cc.PocPrice);
+                            float h = yBot - yTop;
+                            if (h < 2f) { yTop -= 1f; h = 2f; }
+
+                            var rect = new SharpDX.RectangleF(x1, yTop, x2 - x1, h);
+                            RenderTarget.FillRectangle(rect, dxClusterFill);
+
+                            // Contorno superior/inferior + línea POC punteada
+                            RenderTarget.DrawLine(new SharpDX.Vector2(x1, yTop), new SharpDX.Vector2(x2, yTop), dxClusterBorder, 1.5f);
+                            RenderTarget.DrawLine(new SharpDX.Vector2(x1, yBot), new SharpDX.Vector2(x2, yBot), dxClusterBorder, 1.5f);
+                            if (h >= 6f && dxDashStyle != null)
+                            {
+                                RenderTarget.DrawLine(new SharpDX.Vector2(x1, yPoc), new SharpDX.Vector2(x2, yPoc), dxClusterAccent, 1.2f, dxDashStyle);
+                            }
+
+                            // Barra vertical de anclaje en el punto exacto de detección (cc.DetectBar)
+                            if (cc.DetectBar >= fromBar && cc.DetectBar <= toBar)
+                            {
+                                RenderTarget.FillRectangle(new SharpDX.RectangleF(x1, yTop, 3.5f, h), dxClusterAccent);
+                                if (MostrarTextoPct && (x2 - x1) >= 28f)
+                                {
+                                    DibujarEtiquetaCompacta(cc.Label, x1 + 5f, yTop - 15f, dxClusterText);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            finally
+            {
+                RenderTarget.AntialiasMode = prevMode;
+            }
+        }
+
+        private void DibujarEtiquetaCompacta(string text, float x, float y, SharpDX.Direct2D1.Brush textBrush)
+        {
+            if (string.IsNullOrEmpty(text) || dwFontSmall == null || textBrush == null) return;
+            using (var layout = new SharpDX.DirectWrite.TextLayout(NinjaTrader.Core.Globals.DirectWriteFactory, text, dwFontSmall, 220f, 16f))
+            {
+                float tw = layout.Metrics.Width;
+                float th = layout.Metrics.Height;
+                if (dxLabelBg != null)
+                {
+                    RenderTarget.FillRectangle(new SharpDX.RectangleF(x - 2f, y - 1f, tw + 5f, th + 2f), dxLabelBg);
+                }
+                RenderTarget.DrawTextLayout(new SharpDX.Vector2(x, y), layout, textBrush);
+            }
+        }
+
+        // ===================== FLOW STREAM & SQLITE =====================
         private void AccumFlow(DateTime t, double price, double vol, int side)
         {
             long ms = UnixMs(t);
@@ -1265,14 +1355,13 @@ namespace NinjaTrader.NinjaScript.Indicators
                 FlushAll();
         }
 
-        // ===================== SQLITE (buffered, concurrency-safe) =====================
         private void SetupDb()
         {
             try
             {
-                string dir = Path.GetDirectoryName(DbPath);
-                if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
-                    Directory.CreateDirectory(dir);
+                string dirPath = Path.GetDirectoryName(DbPath);
+                if (!string.IsNullOrEmpty(dirPath) && !Directory.Exists(dirPath))
+                    Directory.CreateDirectory(dirPath);
 
                 dbConn = new SQLiteConnection("Data Source=" + DbPath + ";Version=3;");
                 dbConn.Open();
@@ -1367,6 +1456,11 @@ namespace NinjaTrader.NinjaScript.Indicators
                     @"INSERT INTO hft_ticks_v2
                       (instrument,contract,session_id,tick_seq,timestamp_ns,price_ticks,volume,bid_ticks,ask_ticks)
                       VALUES (@inst,@ct,@sess,@tseq,@ts_ns,@ptk,@vol,@btk,@atk)", dbConn);
+                foreach (string p in new[]{"@inst","@ct","@sess","@tseq","@ts_ns","@ptk","@vol,@btk","@atk"})
+                {
+                    // Handled explicitly below
+                }
+                tickCmd.Parameters.Clear();
                 foreach (string p in new[]{"@inst","@ct","@sess","@tseq","@ts_ns","@ptk","@vol","@btk","@atk"})
                     tickCmd.Parameters.Add(new SQLiteParameter(p));
                 tickCmd.Prepare();
@@ -1390,34 +1484,14 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
-        private void EnsureUnique(string table, string idx, string cols)
-        {
-            try
-            {
-                using (var c = new SQLiteCommand("CREATE UNIQUE INDEX IF NOT EXISTS " + idx + " ON " + table + "(" + cols + ");", dbConn))
-                    c.ExecuteNonQuery();
-            }
-            catch
-            {
-                try
-                {
-                    using (var c = new SQLiteCommand(
-                        "DELETE FROM " + table + " WHERE id NOT IN (SELECT MIN(id) FROM " + table + " GROUP BY " + cols + ");" +
-                        "CREATE UNIQUE INDEX IF NOT EXISTS " + idx + " ON " + table + "(" + cols + ");", dbConn))
-                        c.ExecuteNonQuery();
-                }
-                catch (Exception ex) { Print("[HFTLogger] EnsureUnique " + table + ": " + ex.Message); }
-            }
-        }
-
         private void PersistZone(Zone z)
         {
             if (!dbReady) return;
             currentZoneSeq++;
 
             long startNs = UnixNs(z.StartTime);
-            long endNs = UnixNs(z.EndTime);
-            long availNs = UnixNs(Times[1][0]); // Available at completion of sweep (end tick)
+            long endNs   = UnixNs(z.EndTime);
+            long availNs = UnixNs(z.DetectTime);
 
             long loTicks = (long)Math.Round(z.Lower / TickSize);
             long hiTicks = (long)Math.Round(z.Upper / TickSize);
@@ -1515,256 +1589,208 @@ namespace NinjaTrader.NinjaScript.Indicators
             return new DateTimeOffset(dt.ToUniversalTime()).ToUnixTimeMilliseconds();
         }
 
-        #region P. Rangos por percentil (pedido de Nico 2026-11-09)
-        [Display(Name="Mostrar rangos por percentil", Order=1, GroupName="P. Rangos por percentil")]
+        #region P. Rangos por percentil (Causal V2)
+        [Display(Name="Mostrar clusters y expansiones", Order=1, GroupName="P. Rangos por percentil")]
         public bool MostrarRangosPct { get; set; }
-        [Range(2, 50)][Display(Name="Min zonas por cluster", Order=2, GroupName="P. Rangos por percentil")]
+
+        [Display(Name="Mostrar zonas HFT base", Order=2, GroupName="P. Rangos por percentil")]
+        public bool MostrarZonasBase { get; set; }
+
+        [Range(2, 50)][Display(Name="Min zonas por cluster", Order=3, GroupName="P. Rangos por percentil")]
         public int MinZonasCluster { get; set; }
-        [Range(1, 100)][Display(Name="% rangos mas angostos (clusters)", Order=3, GroupName="P. Rangos por percentil")]
+
+        [Range(1, 100)][Display(Name="% clusters mas densos (top %)", Order=4, GroupName="P. Rangos por percentil")]
         public int PctAngosto { get; set; }
-        [Range(1, 100)][Display(Name="% rangos mas amplios sin zonas (vacios)", Order=4, GroupName="P. Rangos por percentil")]
+
+        [Range(0.1, 50)][Display(Name="Clusters por sesion (promedio)", Order=5, GroupName="P. Rangos por percentil")]
+        public double ClustersPorSesion { get; set; }
+
+        [Range(1, 100)][Display(Name="% expansiones mas amplias (top %)", Order=6, GroupName="P. Rangos por percentil")]
         public int PctAmplio { get; set; }
-        [Range(10, 100000)][Display(Name="Historia minima (casos)", Order=5, GroupName="P. Rangos por percentil", Description="No marca nada hasta tener esta cantidad de casos para el percentil")]
-        public int PctMinHistoria { get; set; }
-        [Range(50, 5000)][Browsable(false)]
-        public int ExpVentanaBars { get; set; }
-        [Range(0.1, 50)][Display(Name="Expansiones por sesion (promedio)", Order=14, GroupName="P. Rangos por percentil", Description="Cuantas expansiones salen en promedio por sesion: las mas largas. Bajalo para menos")]
+
+        [Range(0.1, 50)][Display(Name="Expansiones por sesion (promedio)", Order=7, GroupName="P. Rangos por percentil")]
         public double ExpPorSesion { get; set; }
-        [Range(4, 10000)][Browsable(false)]
+
+        [Range(4, 2000)][Display(Name="Alto minimo expansion (ticks)", Order=8, GroupName="P. Rangos por percentil")]
+        public int MinExpTicks { get; set; }
+
+        [Range(4, 10000)][Display(Name="Giro minimo impulso (ticks)", Order=9, GroupName="P. Rangos por percentil")]
         public int ZigZagTicks { get; set; }
-        [Range(1, 1000)][Browsable(false)][Display(Name="(sin uso)", Order=6, GroupName="P. Rangos por percentil")]
-        public int PctRecomputeBars { get; set; }
-        [Range(0, 5000)][Display(Name="Extension del cluster tras su ultima zona (velas)", Order=7, GroupName="P. Rangos por percentil")]
+
+        [Range(10, 100000)][Display(Name="Historia minima (casos)", Order=10, GroupName="P. Rangos por percentil")]
+        public int PctMinHistoria { get; set; }
+
+        [Range(10, 5000)][Display(Name="Extension derecha (velas)", Order=11, GroupName="P. Rangos por percentil")]
         public int PctExtensionBars { get; set; }
-        [Range(1, 100)][Display(Name="Opacidad", Order=8, GroupName="P. Rangos por percentil")]
+
+        [Range(1, 100)][Display(Name="Opacidad clusters/expansiones", Order=12, GroupName="P. Rangos por percentil")]
         public int OpacidadPct { get; set; }
-        [XmlIgnore][Display(Name="Color clusters", Order=9, GroupName="P. Rangos por percentil")]
+
+        [XmlIgnore][Display(Name="Color clusters HFT", Order=13, GroupName="P. Rangos por percentil")]
         public Brush ColorClusterPct { get; set; }
         [Browsable(false)] public string ColorClusterPctSerializable { get { return Serialize.BrushToString(ColorClusterPct); } set { ColorClusterPct = Serialize.StringToBrush(value); } }
-        [XmlIgnore][Display(Name="Color vacios", Order=10, GroupName="P. Rangos por percentil")]
+
+        [XmlIgnore][Display(Name="Color expansiones sin HFT", Order=14, GroupName="P. Rangos por percentil")]
         public Brush ColorVacioPct { get; set; }
         [Browsable(false)] public string ColorVacioPctSerializable { get { return Serialize.BrushToString(ColorVacioPct); } set { ColorVacioPct = Serialize.StringToBrush(value); } }
-        [Display(Name="Mostrar texto", Order=11, GroupName="P. Rangos por percentil")]
+
+        [Display(Name="Mostrar etiquetas compactas", Order=15, GroupName="P. Rangos por percentil")]
         public bool MostrarTextoPct { get; set; }
-        [Range(100, 1000000)][Display(Name="Velas con zonas dibujadas (historico)", Order=12, GroupName="P. Rangos por percentil", Description="Rápido: en el histórico sólo se dibujan las zonas de las últimas N velas; el detector y los rangos usan todas")]
+
+        [Range(100, 1000000)][Browsable(false)]
         public int VelasDibujoHistorico { get; set; }
         #endregion
 
         #region Properties
-        [NinjaScriptProperty][Range(1, 100)]
-        [Display(Name="Tick Resolution (sub-serie)", Order=1, GroupName="0. Sub-serie", Description="NQ: 1.")]
+        [Range(1, 100)]
+        [Display(Name="Tick Resolution (sub-serie)", Order=1, GroupName="0. Sub-serie")]
         public int TickResolution { get; set; }
 
-        [NinjaScriptProperty][Range(2, 100)]
-        [Display(Name="Min pasos del sweep", Order=1, GroupName="A. Estructura", Description="NQ: 6-10. Default 8.")]
+        [Range(2, 100)]
+        [Display(Name="Min pasos del sweep", Order=1, GroupName="A. Estructura")]
         public int MinPasos { get; set; }
 
-        [NinjaScriptProperty][Range(1, 20)]
-        [Display(Name="Max rango tick por vela", Order=2, GroupName="A. Estructura", Description="NQ 1-tick: 1.")]
+        [Range(1, 20)]
+        [Display(Name="Max rango tick por vela", Order=2, GroupName="A. Estructura")]
         public int MaxRangoTickPorVela { get; set; }
 
-        [NinjaScriptProperty][Range(0, 10)]
-        [Display(Name="Fallos tolerados", Order=3, GroupName="A. Estructura", Description="NQ: 1.")]
+        [Range(0, 10)]
+        [Display(Name="Fallos tolerados", Order=3, GroupName="A. Estructura")]
         public int FallosTolerados { get; set; }
 
-        [NinjaScriptProperty]
         [Display(Name="Filtro direccion estricto (cuerpo real)", Order=4, GroupName="A. Estructura")]
         public bool FiltroDireccionEstricto { get; set; }
 
-        [NinjaScriptProperty][Range(0, 100)]
-        [Display(Name="Min altura del sweep (ticks)", Order=5, GroupName="A. Estructura", Description="Por debajo = ABSORB. NQ: 3-6.")]
+        [Range(0, 100)]
+        [Display(Name="Min altura del sweep (ticks)", Order=5, GroupName="A. Estructura")]
         public int MinSweepTicks { get; set; }
 
-        [NinjaScriptProperty][Range(0, 100)]
-        [Display(Name="Max retroceso del sweep (ticks)", Order=6, GroupName="A. Estructura",
-            Description="Maxima excursion adversa permitida DENTRO del sweep. NQ: 2-4. Solo aplica a SWEEP.")]
+        [Range(0, 100)]
+        [Display(Name="Max retroceso del sweep (ticks)", Order=6, GroupName="A. Estructura")]
         public int MaxRetrocesoTicks { get; set; }
 
-        [NinjaScriptProperty][Range(0, 100)]
-        [Display(Name="Retroceso % de la Altura", Order=7, GroupName="A. Estructura",
-            Description="Retroceso permitido como % de la altura del sweep. NQ: 30-50.")]
+        [Range(0, 100)]
+        [Display(Name="Retroceso % de la Altura", Order=7, GroupName="A. Estructura")]
         public int RetrocesoPctHeight { get; set; }
 
-        [NinjaScriptProperty][Range(1, 2000)]
-        [Display(Name="Max avgMs (entre ticks)", Order=1, GroupName="B. Filtros temporales", Description="NQ: 20-40ms.")]
+        [Range(1, 2000)]
+        [Display(Name="Max avgMs (entre ticks)", Order=1, GroupName="B. Filtros temporales")]
         public int MaxAvgMs { get; set; }
 
-        [NinjaScriptProperty][Range(50, 10000)]
-        [Display(Name="Max totalMs (duracion total)", Order=2, GroupName="B. Filtros temporales", Description="NQ: 300-800ms.")]
+        [Range(50, 10000)]
+        [Display(Name="Max totalMs (duracion total)", Order=2, GroupName="B. Filtros temporales")]
         public int MaxTotalMs { get; set; }
 
-        [NinjaScriptProperty][Range(10, 5000)]
-        [Display(Name="Max pausa entre ticks (ms)", Order=3, GroupName="B. Filtros temporales", Description="NQ: 80-150ms.")]
+        [Range(10, 5000)]
+        [Display(Name="Max pausa entre ticks (ms)", Order=3, GroupName="B. Filtros temporales")]
         public int MaxPausaMs { get; set; }
 
-        [NinjaScriptProperty][Range(0, 50000)]
-        [Display(Name="Min velocidad volumen (contratos/seg)", Order=1, GroupName="C. Filtros volumen", Description="NQ: 50-200.")]
+        [Range(0, 50000)]
+        [Display(Name="Min velocidad volumen (contratos/seg)", Order=1, GroupName="C. Filtros volumen")]
         public int MinVolumeRate { get; set; }
 
-        [NinjaScriptProperty][Range(0, 100000)]
-        [Display(Name="Min volumen total (contratos)", Order=2, GroupName="C. Filtros volumen", Description="NQ: 30-100.")]
+        [Range(0, 100000)]
+        [Display(Name="Min volumen total (contratos)", Order=2, GroupName="C. Filtros volumen")]
         public int MinTotalVolume { get; set; }
 
-        [NinjaScriptProperty][Range(1, 100)]
+        [Range(1, 100)]
         [Display(Name="Bucket PREDATOR avgMs <=", Order=1, GroupName="D. Buckets")]
         public int PredatorAvgMs { get; set; }
 
-        [NinjaScriptProperty][Range(1, 200)]
+        [Range(1, 200)]
         [Display(Name="Bucket ULTRA avgMs <=", Order=2, GroupName="D. Buckets")]
         public int UltraAvgMs { get; set; }
 
-        [NinjaScriptProperty]
         [Display(Name="Mostrar zonas ABSORB", Order=1, GroupName="DA. Absorcion")]
         public bool MostrarAbsorb { get; set; }
 
-        [NinjaScriptProperty][Range(2, 100)]
-        [Display(Name="Min pasos ABSORB", Order=2, GroupName="DA. Absorcion", Description="NQ: 6.")]
+        [Range(2, 100)]
+        [Display(Name="Min pasos ABSORB", Order=2, GroupName="DA. Absorcion")]
         public int MinAbsorbPasos { get; set; }
 
-        [NinjaScriptProperty][Range(1, 5000)]
-        [Display(Name="Extension dibujo (barras)", Order=1, GroupName="E. Visual")]
+        [Range(1, 5000)]
+        [Display(Name="Extension dibujo zonas HFT (barras)", Order=1, GroupName="E. Visual")]
         public int ExtensionDibujo { get; set; }
 
-        [NinjaScriptProperty][Range(1, 100)]
-        [Display(Name="Opacidad", Order=2, GroupName="E. Visual")]
+        [Range(1, 100)]
+        [Display(Name="Opacidad zonas HFT", Order=2, GroupName="E. Visual")]
         public int Opacidad { get; set; }
 
-        [NinjaScriptProperty]
-        [Display(Name="Mostrar etiqueta", Order=3, GroupName="E. Visual")]
+        [Display(Name="Mostrar etiqueta de zona HFT", Order=3, GroupName="E. Visual")]
         public bool MostrarTexto { get; set; }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color PREDATOR", Order=4, GroupName="E. Visual")]
         public Brush ColorPredator { get; set; }
         [Browsable(false)] public string ColorPredatorSerializable
         { get { return Serialize.BrushToString(ColorPredator); } set { ColorPredator = Serialize.StringToBrush(value); } }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color ULTRA", Order=5, GroupName="E. Visual")]
         public Brush ColorUltra { get; set; }
         [Browsable(false)] public string ColorUltraSerializable
         { get { return Serialize.BrushToString(ColorUltra); } set { ColorUltra = Serialize.StringToBrush(value); } }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color bull (Fast)", Order=6, GroupName="E. Visual")]
         public Brush ColorBull { get; set; }
         [Browsable(false)] public string ColorBullSerializable
         { get { return Serialize.BrushToString(ColorBull); } set { ColorBull = Serialize.StringToBrush(value); } }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color bear (Fast)", Order=7, GroupName="E. Visual")]
         public Brush ColorBear { get; set; }
         [Browsable(false)] public string ColorBearSerializable
         { get { return Serialize.BrushToString(ColorBear); } set { ColorBear = Serialize.StringToBrush(value); } }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color ABSORB", Order=8, GroupName="E. Visual")]
         public Brush ColorAbsorb { get; set; }
         [Browsable(false)] public string ColorAbsorbSerializable
         { get { return Serialize.BrushToString(ColorAbsorb); } set { ColorAbsorb = Serialize.StringToBrush(value); } }
 
-        [NinjaScriptProperty][XmlIgnore]
+        [XmlIgnore]
         [Display(Name="Color texto", Order=9, GroupName="E. Visual")]
         public Brush ColorTexto { get; set; }
         [Browsable(false)] public string ColorTextoSerializable
         { get { return Serialize.BrushToString(ColorTexto); } set { ColorTexto = Serialize.StringToBrush(value); } }
 
-        [Display(Name="Modo Exportacion Puro (sin render)", Order=0, GroupName="F. Database", Description="Desactiva rectangulos, etiquetas, clusters y vacios durante la exportacion.")]
+        [Display(Name="Modo Exportacion Puro (sin render)", Order=0, GroupName="F. Database")]
         public bool ModoExportacionPuro { get; set; }
 
-        [NinjaScriptProperty]
         [Display(Name="Enable DB Logging", Order=1, GroupName="F. Database")]
         public bool EnableDbLogging { get; set; }
 
-        [NinjaScriptProperty]
         [Display(Name="DB Path", Order=2, GroupName="F. Database")]
         public string DbPath { get; set; }
-
-        [NinjaScriptProperty]
-        [Display(Name="Mostrar vacios/expansiones", Order=1, GroupName="G. Vacios")]
-        public bool MostrarVacios { get; set; }
-
-        [NinjaScriptProperty][Range(1, 1000)]
-        [Display(Name="Vacio: Bin (ticks)", Order=2, GroupName="G. Vacios", Description="Granularidad vertical del escaneo de vacios, en ticks.")]
-        public int VoidBinTicks { get; set; }
-
-        [NinjaScriptProperty][Range(1, 100000)]
-        [Display(Name="Vacio: Alto minimo (ticks)", Order=3, GroupName="G. Vacios", Description="Alto minimo del rectangulo vacio. Calibrar al rectangulo de referencia.")]
-        public int VoidMinAltoTicks { get; set; }
-
-        [NinjaScriptProperty][Range(1, 100000)]
-        [Display(Name="Vacio: Ancho minimo (barras)", Order=4, GroupName="G. Vacios", Description="Ancho minimo del rectangulo vacio, en barras.")]
-        public int VoidMinAnchoBars { get; set; }
-
-        [NinjaScriptProperty][Range(10, 100000)]
-        [Display(Name="Vacio: Lookback (barras)", Order=5, GroupName="G. Vacios", Description="Cuantas barras hacia atras se escanean y dibujan los vacios.")]
-        public int VoidLookbackBars { get; set; }
-
-        [NinjaScriptProperty][Range(1, 100000)]
-        [Display(Name="Vacio: Recalcular cada (barras)", Order=6, GroupName="G. Vacios")]
-        public int VoidRecomputeBars { get; set; }
-
-        [NinjaScriptProperty][Range(0, 100000)]
-        [Display(Name="Vacio: Extension extra de zona (barras)", Order=7, GroupName="G. Vacios", Description="Margen extra a la derecha del fin real de cada zona. 0 = footprint real.")]
-        public int VoidExtensionBars { get; set; }
-
-        [NinjaScriptProperty]
-        [Display(Name="Vacio: Exigir que el precio haya pasado", Order=8, GroupName="G. Vacios", Description="Si esta activo, solo marca vacios en niveles de precio recorridos en la ventana.")]
-        public bool VoidExigirTouch { get; set; }
-
-        [NinjaScriptProperty][Range(1, 100)]
-        [Display(Name="Vacio: Opacidad", Order=9, GroupName="G. Vacios")]
-        public int VoidOpacidad { get; set; }
-
-        [NinjaScriptProperty][XmlIgnore]
-        [Display(Name="Vacio: Color", Order=10, GroupName="G. Vacios")]
-        public Brush ColorVoid { get; set; }
-        [Browsable(false)] public string ColorVoidSerializable
-        { get { return Serialize.BrushToString(ColorVoid); } set { ColorVoid = Serialize.StringToBrush(value); } }
-
-        [NinjaScriptProperty][Range(1, 100000)]
-        [Display(Name="Vacio: Maximo de vacios", Order=11, GroupName="G. Vacios")]
-        public int VoidMax { get; set; }
-
-        [NinjaScriptProperty]
-        [Display(Name="Vacio: Debug", Order=12, GroupName="G. Vacios")]
-        public bool VoidDebug { get; set; }
         #endregion
 
-        #region H. Clusters (densidad de confluencia 4+)
-        [Display(Name="Mostrar clusters (4+ zonas)", Order=1, GroupName="H. Clusters", Description="Destaca con otro color el rectangulo donde confluyen 4 o mas zonas visuales.")]
-        public bool MostrarClusters { get; set; }
-
-        [Range(2, 20)]
-        [Display(Name="Minimo rectangulos solapados", Order=2, GroupName="H. Clusters", Description="Cantidad minima de rectangulos solapados simultaneamente (por defecto 4).")]
-        public int MinOverlapRectangulos { get; set; }
-
-        [XmlIgnore]
-        [Display(Name="Color relleno cluster", Order=3, GroupName="H. Clusters", Description="Color de relleno para el area exacta de solapamiento.")]
-        public Brush ColorCluster { get; set; }
-        [Browsable(false)] public string ColorClusterSerializable
-        { get { return Serialize.BrushToString(ColorCluster); } set { ColorCluster = Serialize.StringToBrush(value); } }
-
-        [XmlIgnore]
-        [Display(Name="Color borde cluster", Order=4, GroupName="H. Clusters", Description="Color del contorno del area de solapamiento.")]
-        public Brush ColorBordeCluster { get; set; }
-        [Browsable(false)] public string ColorBordeClusterSerializable
-        { get { return Serialize.BrushToString(ColorBordeCluster); } set { ColorBordeCluster = Serialize.StringToBrush(value); } }
-
-        [Range(1, 100)]
-        [Display(Name="Opacidad cluster", Order=5, GroupName="H. Clusters", Description="Opacidad del relleno del cluster (1 a 100).")]
-        public int OpacidadCluster { get; set; }
-
-        [Display(Name="Extender hasta fin de zona actual", Order=6, GroupName="H. Clusters", Description="Si esta activo, extiende el cluster hasta el fin de la zona actual. Si esta inactivo (default), cubre solo el solapamiento visual literal.")]
-        public bool ExtenderClusterHastaZonaActual { get; set; }
-
-        [Display(Name="Mostrar etiqueta cluster", Order=7, GroupName="H. Clusters", Description="Muestra una etiqueta indicando la cantidad de zonas solapadas.")]
-        public bool MostrarTextoCluster { get; set; }
-
-        [Display(Name="Dibujar linea central POC", Order=8, GroupName="H. Clusters", Description="Dibuja la linea discontinua del punto de maxima confluencia gravitacional dentro del cluster.")]
-        public bool DibujarPocCluster { get; set; }
+        #region Compatibilidad con plantillas previas
+        [Browsable(false)] public int ExpVentanaBars { get; set; }
+        [Browsable(false)] public int PctRecomputeBars { get; set; }
+        [Browsable(false)] public bool MostrarVacios { get; set; }
+        [Browsable(false)] public int VoidBinTicks { get; set; }
+        [Browsable(false)] public int VoidMinAltoTicks { get; set; }
+        [Browsable(false)] public int VoidMinAnchoBars { get; set; }
+        [Browsable(false)] public int VoidLookbackBars { get; set; }
+        [Browsable(false)] public int VoidRecomputeBars { get; set; }
+        [Browsable(false)] public int VoidExtensionBars { get; set; }
+        [Browsable(false)] public bool VoidExigirTouch { get; set; }
+        [Browsable(false)] public int VoidOpacidad { get; set; }
+        [XmlIgnore][Browsable(false)] public Brush ColorVoid { get; set; }
+        [Browsable(false)] public string ColorVoidSerializable { get { return Serialize.BrushToString(ColorVoid); } set { ColorVoid = Serialize.StringToBrush(value); } }
+        [Browsable(false)] public int VoidMax { get; set; }
+        [Browsable(false)] public bool VoidDebug { get; set; }
+        [Browsable(false)] public bool MostrarClusters { get; set; }
+        [Browsable(false)] public int MinOverlapRectangulos { get; set; }
+        [XmlIgnore][Browsable(false)] public Brush ColorCluster { get; set; }
+        [Browsable(false)] public string ColorClusterSerializable { get { return Serialize.BrushToString(ColorCluster); } set { ColorCluster = Serialize.StringToBrush(value); } }
+        [XmlIgnore][Browsable(false)] public Brush ColorBordeCluster { get; set; }
+        [Browsable(false)] public string ColorBordeClusterSerializable { get { return Serialize.BrushToString(ColorBordeCluster); } set { ColorBordeCluster = Serialize.StringToBrush(value); } }
+        [Browsable(false)] public int OpacidadCluster { get; set; }
+        [Browsable(false)] public bool ExtenderClusterHastaZonaActual { get; set; }
+        [Browsable(false)] public bool MostrarTextoCluster { get; set; }
+        [Browsable(false)] public bool DibujarPocCluster { get; set; }
         #endregion
     }
 }
-
-// El bloque «NinjaScript generated code» lo genera NinjaTrader al compilar (se quitó a propósito: venía del V4_V2 y quedaba duplicado).

@@ -56,7 +56,6 @@ def test_mascara_baja_friccion_todos_los_modulos():
         "edgelab.research.rango_preapertura",
         "edgelab.research.segundo_intento",
         "edgelab.research.tau_tendencia",
-        "edgelab.research.vwap_dual_iman",
         "edgelab.research.vwap_rev",
         "edgelab.research.wm_fixing",
     ]

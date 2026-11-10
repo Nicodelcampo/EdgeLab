@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-07
+**Fecha:** 2026-11-09
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-07
+**Corte:** 2026-11-09
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,13 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-11-07 (leer primero)
+## Estado al 2026-11-09 (leer primero)
+
+- **Agente del Debian (una sola definición y contexto completo):** toda la asignación de modelos y roles vive en `config/autopilot/AGENTES.json` (con `docs/autopilot/AGENTES.md` generado automáticamente); presupuesto de contexto ampliado a 160 KB con núcleo íntegro pasado por entrada estándar (`edgelab/autopilot/agentes.py`).
+- **Indicador HFT NQ/MNQ en NT8 (`nt8/user_indicators/HFTZonesNQRangosPctV2.cs` y `nt8/user_indicators/HFTZonesNQRangosPct.cs`):** versión V2 100 % causal (sin look-ahead: zonas, clusters y expansiones se dibujan desde su barra de detección), renderizado nativo SharpDX sin corte de scrollback histórico y detección normalizada por volatilidad de eventos infrecuentes (clusters HFT y expansiones sin HFT).
+- **Consolidación de ramas remotas (`docs/RAMAS_20261109.md`):** borradas las 26 ramas integradas, archivadas con etiqueta y borradas las 2 ramas viejas, e integrados los artefactos únicos de las 6 ramas recientes. **Edges promovidos: 0.**
+
+## Estado al 2026-11-07
 
 - **Régimen:** la racha reciente no le gana a la calidad estática (H-REG-1). Canasta estática PREAPERTURA-ES/NQ recalculada contra
   ticks (idéntica); su holdout da +0,12 / +0,07 R/op, EN CURSO (`regimen_corto_20261106_recomputo/`). Motor de régimen offline con
