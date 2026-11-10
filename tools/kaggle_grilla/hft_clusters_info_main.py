@@ -13,6 +13,7 @@ import pandas as pd
 
 MODO = "e0"                                                   # lo fija tools/hft_clusters_info.py al construir
 DEFS = {}                                                     # {inst: [zona, cluster]}, congelado tras el E0
+REGLAS_RUPTURA = []                                           # ruptura_rep: reglas congeladas por hft_ruptura.seleccionar
 DEF_CONTEXTO = "D0_BASE"                                      # modo contexto: definición de rebote elegida por regla (hft_contexto.elegir_definicion)
 INSTRUMENTOS = ("NQ", "ES", "YM", "GC")
 DESC, REP = (20250701, 20260331), (20260401, 20260930)
@@ -20,13 +21,13 @@ FRICCION = {"NQ": 1.5455, "ES": 0.8877, "YM": 5.052, "GC": 0.605}   # edgelab/co
 
 
 def main():
-    from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB, hft_contexto as KX
+    from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB, hft_contexto as KX, hft_ruptura as RU
     ent = os.environ.get("ENTRADA", "/kaggle/input"); t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
-    d0, d1 = REP if MODO == "rep" else DESC
+    d0, d1 = REP if MODO in ("rep", "ruptura_rep") else DESC
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
-    ZN, CL = (H.ZONAS, H.CLUSTERS) if MODO not in ("e0b", "rebotes", "contexto") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
+    ZN, CL = (H.ZONAS, H.CLUSTERS) if MODO not in ("e0b", "rebotes", "contexto", "ruptura", "ruptura_rep") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
     for inst in (INSTRUMENTOS if MODO in ("e0", "e0b") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
         try: bloques = list(F.bloques_futuro(inst, d0, d1, ent))             # generador: la falta de archivo salta al iterar
@@ -40,7 +41,9 @@ def main():
                     for ck in CL: filas.append(H.e0_fila(inst, fecha, zk, ck, D.get((zk, ck)), tk, FRICCION[inst]))
             else:
                 C = D.get(tuple(DEFS[inst]))
-                if C is not None and MODO == "contexto":
+                if C is not None and MODO in ("ruptura", "ruptura_rep"):
+                    filas += RU.ruptura_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
+                elif C is not None and MODO == "contexto":
                     filas += KX.contexto_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst], DEF_CONTEXTO)
                 elif C is not None and MODO == "rebotes":
                     filas += RB.rebotes_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
@@ -59,6 +62,22 @@ def main():
                                     friccion_r_stop_ancho=float(h.friccion_r_stop_ancho.median()) if "friccion_r_stop_ancho" in h else None,
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
+    elif MODO == "ruptura" and len(T):
+        R0 = T[T.placebo == 0]; res["rasgos"] = RU.RASGOS
+        res["global"] = dict(rompe_real=float(R0.rompe.mean()), rompe_control=float(T[T.placebo == 1].rompe.mean()),
+                             por_activo_mes={i: {str(m): float(v) for m, v in h.assign(m=h.fecha // 100).groupby("m").rompe.mean().items()} for i, h in R0.groupby("inst")})
+        res["marginales"] = RU.marginales(T); res["seleccion"] = RU.seleccionar(res["marginales"])
+    elif MODO == "ruptura_rep" and len(T):
+        res["reglas"] = []
+        for r in REGLAS_RUPTURA:                                           # celda congelada: rasgo dentro de [corte_inf, corte_sup)
+            m = (T[r["rasgo"]] >= r["inf"]) & (T[r["rasgo"]] < r["sup"])
+            S = T[m]; c = H.contraste(S.assign(resultado=S.rompe), n_boot=20000) if (S.placebo == 1).sum() >= 30 else {}
+            R0 = S[S.placebo == 0]; mu = float(R0.rompe.mean()) if len(R0) else None
+            import numpy as _np
+            rng = _np.random.default_rng(1); g = R0.groupby(["inst", "fecha"]).rompe.agg(["sum", "count"]).to_numpy(float)
+            b = [g[i, 0].sum() / g[i, 1].sum() for i in (rng.integers(0, len(g), len(g)) for _ in range(20000))] if len(g) else []
+            p_umbral = float(_np.mean(_np.array(b) <= 0.08)) if b else 1.0          # H1: ruptura media > 0,08 (paga la fricción)
+            res["reglas"].append(dict(r, n_real=int(len(R0)), rompe_real=mu, p_mayor_umbral=p_umbral, vs_control=c))
     elif MODO == "contexto" and len(T):
         res["definicion"] = DEF_CONTEXTO; res["contrastes"] = KX.CONTRASTES
         res.update(KX.analizar(T)); res["por_activo_conteos"] = {i: {v: {str(k): int(n) for k, n in h[v].value_counts().items()} for v in KX.CONTRASTES} for i, h in T.groupby("inst")}
@@ -82,7 +101,7 @@ def main():
                 z = sum(NormalDist().inv_cdf(min(max(1 - p, 1e-6), 1 - 1e-6)) for p in ps) / len(ps) ** 0.5
                 r["stouffer"] = dict(z=float(z), p=float(1 - NormalDist().cdf(z)), activos=len(ps))
             res[prueba] = r
-    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"nominadas": res.get("nominadas_bh_q010")} if MODO in ("rebotes", "contexto") else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
+    json.dump(res, open(f"HFTC_{MODO}.json", "w"), indent=1, default=float); log(json.dumps({i: (v["elegida"] or {}) for i, v in res["equilibrio"].items()} if "equilibrio" in res else res.get("eleccion") or ({"seleccion": [(s["rasgo"], s["tercil"]) for s in res.get("seleccion", [])]} if MODO == "ruptura" else {"nominadas": res.get("nominadas_bh_q010")} if MODO in ("rebotes", "contexto") else {k: res[k].get("stouffer") for k in ("rebote", "iman") if k in res})))
 
 
 if __name__ == "__main__":

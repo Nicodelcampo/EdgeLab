@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-239 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+240 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -113,6 +113,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `HFT_GC_P10` | 2026-11-05 | — | 19448 | 1 | HFT-GC-P10-R: PISTAS_VIVAS | — | `hft_gc_p10_20261105` |
 | `HFT_GC_P10_CAPTP` | 2026-11-05 | HFT_GC_P10 | 9600 | 1 | HFT-GC-P10-CAPTP-R: SIN_CANDIDATAS | — | `hft_gc_p10_20261105` |
 | `HFT_GC_P10_VETO` | 2026-11-05 | HFT_GC_P10 | 9600 | 1 | HFT-GC-P10-VETO-R: SIN_CANDIDATAS | — | `hft_gc_p10_20261105` |
+| `HFT_RUPTURA` | 2026-11-10 | HFT_CLUSTERS_INFO | 48 | — | — | F-CHECKLIST-PRE-CORRIDA (PALANCA_DE_DISENO); F-HFT-CLUSTERS-E0 (PALANCA_DE_DISENO); F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ (PISTA_VIVA); F-HFT-CLUSTERS-K4-INFO (NO_REPETIR) | `hft_clusters_u1_20261110` |
 | `IF_HACIA_LUX_CFD_NQ` | 2026-11-03 | INTENTO_FALLIDO_LUX_CFD_NQ, AREAS_EXP_1_CRUZADO, LUXIMB_GRILLA_CFD | 472416 | 1 | IFH-LUX-CFD-NQ-R: SIN_CANDIDATAS | — | `intento_fallido_20261103` |
 | `IF_HACIA_LUX_NQ` | 2026-11-03 | INTENTO_FALLIDO_LUX_NQ, AREAS_EXP_1_CRUZADO, LUXIMB_GRILLA | 472406 | 1 | IFH-LUX-NQ-R: PISTAS_VIVAS | — | `intento_fallido_20261103` |
 | `IF_HACIA_RACIMOS_NQ` | 2026-11-03 | INTENTO_FALLIDO_RACIMOS_NQ, U1_RACIMOS_GRILLA_NQ, AREAS_EXP_1_CRUZADO | 472396 | 1 | IFH-RACIMOS-NQ-R: PISTAS_VIVAS | — | `intento_fallido_20261103` |

@@ -67,7 +67,8 @@ def clusters_del_dia(ts_ns, px, vol, sesion, tick: float, zonas=None, clusters=N
             if len(ki) and c.get("ancho_min_frac", 0.0) > 0:               # ancho mínimo (post-detección: ver límite en el pre-registro §8.2)
                 ok = kf[:, 3] * tick >= c["ancho_min_frac"] * X - 1e-9; ki, kf = ki[ok], kf[ok]
             if len(ki):
-                out[(zk, ck)] = pd.DataFrame(dict(t_ns=ki[:, 2], lo=kf[:, 0], hi=kf[:, 1], n_zonas=ki[:, 3], packing=kf[:, 4], width_ticks=kf[:, 3]))
+                out[(zk, ck)] = pd.DataFrame(dict(t_ns=ki[:, 2], lo=kf[:, 0], hi=kf[:, 1], n_zonas=ki[:, 3], packing=kf[:, 4], width_ticks=kf[:, 3],
+                                                 net_dir=ki[:, 4]))
     return out
 
 
