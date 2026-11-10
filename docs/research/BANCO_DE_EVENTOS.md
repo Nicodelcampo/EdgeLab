@@ -32,6 +32,10 @@ cosas de forma mecánica.
    forma barata de confirmar una pista en datos independientes sin gastar la réplica.
 6c. **Mecanismo, no herencia:** cada celda informa también `vs_resto` (celda − resto de la tabla, bootstrap por sesión). La prueba
    «la celda paga» (media > nulo) puede salir positiva sólo porque el evento entero paga; `vs_resto` dice si la condición agrega algo.
+6d. **Estabilidad (regla 08/11, efectos chicos):** cada prueba informa `estabilidad` (5 sub-bloques cronológicos de sesiones,
+   probabilidad de azar por inversión de signo por sesión; `estable` = ≥ 4/5 positivos y p < 0,10) y el resultado trae
+   `real_menos_control` con la misma medida. Un efecto chico estable que no pasa el BH no se lee como «sin potencia»: es candidato
+   a canasta y a confirmación congelada. Una pista elegida entre muchas celdas se juzga con `nulo_de_seleccion`.
 7. **Salida como guía.** `RESULTADO.json` + `RECOMENDACIONES.md` (`recomendador.py`: CONFIRMAR, INDAGAR, ESTRUCTURA_DE_PRECIO,
    DESCARTAR…). Lo nominado va a la **réplica congelada** de la familia (o al embudo); nada se promueve desde el banco.
 

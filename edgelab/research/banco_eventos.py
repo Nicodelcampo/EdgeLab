@@ -167,6 +167,57 @@ def dif_sesion(y, ses, g, n_boot=2000, seed=7):
     return d, float(b.std(ddof=1)) if b.size > 10 else np.nan
 
 
+# Regla global de evidencia (Nico, 08/11, docs/DECISIONES_20261108.md): con efectos chicos la potencia de un contraste no alcanza;
+# se mira la ESTABILIDAD en sub-bloques de sesiones y la probabilidad de azar con un nulo de inversión de signo por sesión. Mismos
+# parámetros que la canasta ORB (tools/canasta_orb.py: 5 bloques, ≥ 4 positivos).
+N_BLOQUES, MIN_BLOQUES_POS, P_AZAR = 5, 4, 0.10
+
+
+def estabilidad(y, fechas, ses, n_perm=4000, seed=11) -> dict:
+    """`y` ya orientado y centrado en el nulo (positivo = a favor). Bloques = 5 tramos cronológicos de sesiones. Nulo: cada sesión
+    invierte el signo de todos sus eventos (conserva la dependencia dentro de la sesión). Devuelve bloques positivos, p de la media y
+    p de los bloques, y `estable` = ≥ 4/5 bloques positivos con p de la media < 0,10."""
+    y = np.asarray(y, float); f = np.asarray(fechas, np.int64); s = np.asarray(ses)
+    if y.size < 10: return dict(bloques_pos=None, bloques=0, p_media=None, p_bloques=None, estable=False)
+    u, k = np.unique(s, return_inverse=True); su = np.bincount(k, y, len(u)); nu = np.bincount(k, None, len(u))
+    fu = np.zeros(len(u), np.int64); fu[k] = f; orden = np.argsort(fu, kind="stable")
+    B = [b for b in np.array_split(orden, min(N_BLOQUES, len(u))) if len(b)]
+    def stats(signo):
+        m = (signo * su).sum() / nu.sum(); pos = sum((signo[b] * su[b]).sum() > 0 for b in B); return m, pos
+    m0, pos0 = stats(np.ones(len(u)))
+    F = np.random.default_rng(seed).choice([-1.0, 1.0], (n_perm, len(u)))
+    mm = (F * su).sum(1) / nu.sum(); pp = np.array([sum((F[i, b] * su[b]).sum() > 0 for b in B) for i in range(n_perm)])
+    p_m = float((1 + (mm >= m0).sum()) / (n_perm + 1)); p_b = float((1 + (pp >= pos0).sum()) / (n_perm + 1))
+    return dict(bloques_pos=int(pos0), bloques=len(B), media=float(m0), p_media=p_m, p_bloques=p_b,
+                por_bloque=[float(su[b].sum() / nu[b].sum()) for b in B], estable=bool(pos0 >= MIN_BLOQUES_POS and p_m < P_AZAR))
+
+
+def real_menos_control(T: pd.DataFrame, desenlace: str, n_perm=4000) -> dict:
+    """Diagnóstico del objeto contra su control, por sesión: d = media real − media control en las sesiones que tienen los dos."""
+    g = T.groupby(["inst", "fecha", "placebo"])[desenlace].mean().unstack("placebo")
+    if 0 not in g or 1 not in g: return {}
+    g = g.dropna(); d = (g[0] - g[1]).to_numpy(float); idx = g.index.to_frame(index=False)
+    e = estabilidad(d, idx.fecha.to_numpy(), (idx.inst.astype(str) + "|" + idx.fecha.astype(str)).to_numpy(), n_perm)
+    return dict(sesiones=int(len(d)), por_activo={i: float(np.mean(d[idx.inst.to_numpy() == i])) for i in idx.inst.unique()}, **e)
+
+
+def nulo_de_seleccion(T: pd.DataFrame, rasgos: list, desenlace: str, cortes_fijos: dict, elegida: tuple, nulo=0.0, n_perm=4000, seed=13) -> dict:
+    """Probabilidad de azar de una celda ELEGIDA entre todas las de 1 rasgo (por t, en cualquier dirección), repitiendo la selección
+    completa bajo el nulo de inversión de signo por sesión (regla 08/11: «un nulo que repite TODA la selección»).
+    `elegida` = (rasgo, estrato, signo). Estadístico por celda: t = Σy / √Σy² (invariante al signo de cada sesión)."""
+    R = T[T.placebo == 0].reset_index(drop=True); y = R[desenlace].to_numpy(float) - nulo; ses = _sesiones(R); ns = ses.max() + 1
+    cols, nombres = [], []
+    for r in rasgos:
+        e = estrato(R, r, cortes(R, r, cortes_fijos))
+        for st in (0, 1, 2):
+            m = e == st
+            if m.sum() >= 30: cols.append(m); nombres.append((r, st))
+    S = np.column_stack([np.bincount(ses[m], y[m], ns) for m in cols]); Q = np.array([(y[m] ** 2).sum() for m in cols])
+    t_obs = S.sum(0) / np.sqrt(Q); j = nombres.index(elegida[:2]); t_el = elegida[2] * t_obs[j]
+    F = np.random.default_rng(seed).choice([-1.0, 1.0], (n_perm, ns)); tmax = np.abs(F @ S / np.sqrt(Q)).max(1)
+    return dict(celdas=len(cols), t_elegida=float(t_el), p_seleccion=float((1 + (tmax >= t_el).sum()) / (n_perm + 1)))
+
+
 def bh(ps, q):
     o = sorted(range(len(ps)), key=lambda i: ps[i]); m = len(ps)
     k = max([j + 1 for j, i in enumerate(o) if ps[i] <= q * (j + 1) / max(m, 1)] or [0])
@@ -263,10 +314,11 @@ def evaluar(B: pd.DataFrame, ctrl: pd.DataFrame, congelado: dict, spec: dict) ->
             mu = float(sg * y[g == 2].mean()) if (g == 2).any() else np.nan; ctl = None; nombre = "modelo aditivo: tercil alto − tercil bajo"
             resto = None
         p = float(1 - Z.cdf(est / se)) if se and np.isfinite(se) and se > 0 and np.isfinite(est) else 1.0
+        estab = estabilidad(sg * y[m] - sg * spec["nulo"], B.fecha.to_numpy()[m], ses[m]) if h["tipo"] == "celda" else None
         out.append(dict(nombre=nombre, tipo=h["tipo"], signo=sg, n_b=n, estimacion=None if not np.isfinite(est) else float(est),
                         media_b=None if not np.isfinite(mu) else float(mu), se=None if not np.isfinite(se) else float(se),
                         ic90=None if not (se and np.isfinite(se) and np.isfinite(est)) else [float(est - 1.645 * se), float(est + 1.645 * se)],
-                        p=p, control=ctl, vs_resto=resto, a=h["a"], compuerta_ok=n >= spec["min_n_b"]))
+                        p=p, control=ctl, vs_resto=resto, estabilidad=estab, a=h["a"], compuerta_ok=n >= spec["min_n_b"]))
     for r, nom in zip(out, bh([r["p"] if r["compuerta_ok"] else 1.0 for r in out], spec["q"])): r["nominada"] = nom
     return out
 
@@ -323,6 +375,8 @@ def correr(spec: dict, T: pd.DataFrame, raiz: Path = DIR, registro: Path | None 
                celdas_exploradas=ex["n_celdas"], pruebas_en_b=len(res), hipotesis_sha=congelado["sha"], resultados=res,
                nominadas=[r["nombre"] for r in res if r["nominada"]], previas=prev,
                previas_nominadas=[r["nombre"] for r in prev if r["nominada"]],
+               real_menos_control=real_menos_control(T, spec["desenlace"]) if (T.placebo == 1).any() else {},
+               estables=[r["nombre"] for r in res + prev if (r.get("estabilidad") or {}).get("estable")],
                mejores_a=sorted(ex["celdas"], key=lambda c: -abs(c["t"]))[:20])
     if not ensayo:
         (carpeta / "RESULTADO.json").write_text(json.dumps(out, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
@@ -355,7 +409,9 @@ def recomendaciones(out: dict, spec: dict) -> str:
         items.append(dict(nombre=r["nombre"], diferencia=r["estimacion"], ic90=r["ic90"], se=se, mde80=2.49 * se if se else None,
                           nominada=r["nominada"], n_min=r["n_b"], compuerta_ok=r["compuerta_ok"], media_a=r["media_b"], signo_esperado=1,
                           control_diferencia=None if r["control"] is None or r["media_b"] is None else r["media_b"] - r["control"],
-                          sugerencia=("Réplica congelada de esta celda (mismos cortes de A) en la ventana de réplica de la familia; si "
+                          sugerencia=(f"ESTABLE en sub-bloques ({r['estabilidad']['bloques_pos']}/{r['estabilidad']['bloques']}, p azar "
+                                      f"{r['estabilidad']['p_media']:.3f}): efecto chico consistente, candidato a canasta y a confirmación congelada "
+                                      "(regla 08/11). " if (r.get("estabilidad") or {}).get("estable") else "") + ("Réplica congelada de esta celda (mismos cortes de A) en la ventana de réplica de la familia; si "
                                       "sobrevive, P&L con ejecución fija." if r["tipo"] == "celda" else
                                       "El conjunto de rasgos ordena el desenlace: mirar qué rasgos pesan en el modelo y replicar el puntaje congelado.")))
     return RC.markdown(f"Recomendaciones — banco de eventos: {out['experimento']}", RC.recomendar(items),

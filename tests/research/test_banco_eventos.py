@@ -120,3 +120,24 @@ def test_generadores_cumplen_el_contrato():
         assert {"funcion", "tabla", "eventos", "desenlaces", "test_causalidad", "mecanismo", "como_refutar"} <= set(g), n
         archivo, test = g["test_causalidad"].split("::")
         assert f"def {test}(" in (root / archivo).read_text(encoding="utf-8"), f"{n}: falta {g['test_causalidad']}"
+
+
+def test_estabilidad_en_sub_bloques():
+    """Regla 08/11: un efecto chico constante es estable (≥ 4/5 bloques, p azar < 0,10); el ruido no; un efecto concentrado en un
+    solo tramo tampoco aunque la media sea positiva."""
+    rng = np.random.default_rng(4); n_s = 200
+    fechas = np.repeat(pd.bdate_range("2025-07-01", periods=n_s).strftime("%Y%m%d").astype(int).to_numpy(), 20); ses = fechas.copy()
+    chico = np.where(rng.random(n_s * 20) < 0.54, 1.0, -1.0)                       # +0,08 en todos lados
+    e = BE.estabilidad(chico, fechas, ses); assert e["estable"] and e["bloques_pos"] >= 4
+    ruido = np.where(rng.random(n_s * 20) < 0.5, 1.0, -1.0)
+    assert not BE.estabilidad(ruido, fechas, ses)["estable"]
+    tramo = np.where(rng.random(n_s * 20) < np.where(np.arange(n_s * 20) < 800, 0.80, 0.5), 1.0, -1.0)   # todo en el primer quinto
+    e = BE.estabilidad(tramo, fechas, ses); assert e["media"] > 0 and not e["estable"]
+
+
+def test_real_menos_control_y_nulo_de_seleccion():
+    T = _tabla(efecto=0.12, n_dias=120)
+    rc = BE.real_menos_control(T, "rompe"); assert rc["media"] > 0 and rc["sesiones"] > 100
+    s = BE.nulo_de_seleccion(T, ["a", "b", "c"], "rompe", {}, ("a", 2, 1)); assert s["celdas"] == 9 and s["p_seleccion"] < 0.05
+    s = BE.nulo_de_seleccion(_tabla(efecto=0.0, n_dias=120, seed=9), ["a", "b", "c"], "rompe", {}, ("b", 1, 1))
+    assert s["p_seleccion"] > 0.10                                                  # elegir la mejor de 9 en ruido no es evidencia
