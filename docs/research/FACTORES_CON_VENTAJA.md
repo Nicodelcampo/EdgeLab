@@ -40,7 +40,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (6)
+## PALANCA_DE_DISENO (8)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -69,6 +69,16 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Todas las familias; prioridad a las de zonas y eventos con desenlace SIN_CANDIDATAS o PISTAS_VIVAS
   - Siguiente: Lente remedir (una de cada cinco) sobre la primera de REMEDICIONES_CANDIDATAS.md; lente cuerdas sobre la pista del retroceso contra la sesión.
   - Evidencia: `docs/research/REMEDICIONES_CANDIDATAS.md`, `docs/research/CAMBIOS_DE_MEDICION.jsonl`, `config/autopilot/DIRECTIVAS.md`
+- **Una entrada con orden límite en un nivel paga selección adversa: con fill conservador, en una caminata al azar pierde ≈ 0,07 R en bruto (objetivo X, stop X)** (`F-SELECCION-ADVERSA-PASIVA`, 2026-11-10, sesion)
+  - Efecto: Motor fill_pasivo, caminata al azar sintética: R bruto −0,04 (objetivo X/2), −0,07 (X), −0,085 (2X) con fill «atraviesa»; −0,06 con «toca». Un rebote de +0,08 medido como carrera desde el borde no alcanza.
+  - Dónde: Toda regla que entra pasivo en un nivel (fade, rebote, retest)
+  - Siguiente: Medir toda entrada pasiva con fill_pasivo y su nulo; preferir entradas por confirmación si la selección adversa se come el efecto.
+  - Evidencia: `edgelab/research/fill_pasivo.py`, `tests/research/test_fill_pasivo.py`, `docs/research/hft_clusters_u1_20261110/PLAN_OPERABLE_Y_CUERDAS.md`
+- **El control que comparte la condición se lee también solo: puede contener el efecto (un nivel cualquiera de la sesión rebota) que el objeto anula** (`F-CONTROL-COMO-HALLAZGO`, 2026-11-10, sesion)
+  - Efecto: Clusters HFT: el objeto no rebotaba, pero el control sí (+0,07–0,10, estable en NQ); de ahí salió REBOTE_NIVEL_SESION.
+  - Dónde: Toda familia con control (pseudo-objeto desplazado)
+  - Siguiente: Informar siempre el control con su estabilidad; si es estable, abrir su familia (con datos no mirados).
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`
 - **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
   - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
   - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ

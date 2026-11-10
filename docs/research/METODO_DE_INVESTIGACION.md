@@ -36,6 +36,9 @@ Estado: VIGENTE (2026-11-10, aprobado por Nico). Va completo en el núcleo de co
 8b. **Muchas ideas sobre los mismos eventos → banco de eventos** (`docs/research/BANCO_DE_EVENTOS.md`): si la tabla ya existe, la
    idea es una especificación JSON; el banco explora en la mitad A, congela k hipótesis y las prueba en la mitad B (BH q 0,10).
 9. **Réplica congelada** (una vez, mismo código) sólo para lo CONFIRMAR; **P&L con ejecución fija** sólo después de la réplica.
+9b. **De efecto a operable** (`docs/research/hft_clusters_u1_20261110/PLAN_OPERABLE_Y_CUERDAS.md`): concentrar (la cuerda),
+   geometría fijada antes (pocas, medidas juntas), veto en estrategias existentes, canasta. Toda entrada pasiva se mide con el motor
+   de fills (`edgelab/research/fill_pasivo.py`, modelo «atraviesa») y contra su nulo de selección adversa; nunca con «tocó el precio».
 10. **Cierre:** RESULTADO + RECOMENDACIONES + entrada en `FACTORES.jsonl` (aunque sea SIN_FACTOR o NO_REPETIR) en el mismo commit.
 
 ## Guardas técnicas que todo detector cumple antes de lanzar

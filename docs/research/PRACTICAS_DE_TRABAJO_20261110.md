@@ -49,6 +49,24 @@ choca con una regla de `CLAUDE.md` o con un resultado medido, manda la regla o e
 9. **Suite completa de 28 minutos corrida mientras se editaba el árbol:** dio fallos falsos. Guarda: dejar que la corra el CI
    sobre el commit y correr local sólo lo afectado.
 
+## Lecciones de la tarde del 10/11 (clusters HFT → niveles de la sesión)
+1. **El control también es un hallazgo.** La cuerda más sólida del día salió de mirar el CONTROL (un nivel cualquiera rebota) y no
+   el objeto (el cluster): «real − control» se lee en sus dos partes. Guarda: todo resultado informa el control por sí solo.
+2. **Lo que muere al derecho puede vivir al revés.** Ninguna de las 7 definiciones de rebote en zonas sobrevivió, pero el signo
+   contrario fue estable en casi todas: se miden siempre los dos canales con estabilidad (`banco_eventos.estabilidad`).
+3. **Con efectos chicos, estabilidad antes que «sin potencia».** 5 sub-bloques de sesiones y nulo de inversión de signo; una pista
+   elegida entre muchas se juzga repitiendo la selección (`nulo_de_seleccion`): el retroceso pasó de p 0,002 a p 0,24.
+4. **Confirmar barato en datos independientes:** una pista de NQ/ES se prueba como hipótesis previa en otros activos sobre toda la
+   tabla, sin gastar la réplica; y una re-lectura de tablas viejas con la medición nueva (sin datos nuevos) sumó evidencia.
+5. **El kernel que alimenta al banco no calcula nada con desenlaces** (sólo tabla, conteos y estratos): si no, la tabla ya está
+   mirada. Y dos familias que comparten ventana declaran el ORDEN en que se miran.
+6. **El análisis de una confirmación se escribe y se commitea antes de que exista la tabla** (`tools/confirmar_no_defiende.py`,
+   `tools/op1_niveles.py`), con el α de LORD++ reservado antes de mirar.
+7. **Una carrera desde el borde no es una operación.** Con orden límite y fills realistas, en una caminata al azar se pierde ≈ 0,07 R
+   en bruto por selección adversa (`edgelab/research/fill_pasivo.py`): el efecto tiene que superar fricción + selección adversa.
+8. **El presupuesto de datos se gasta rápido:** en una tarde se consumió abr–sep para una familia. Antes de lanzar, escribir qué
+   ventana/activo queda sin mirar para cada familia y qué la va a confirmar después.
+
 ## Orden de trabajo que resume lo anterior
 1. ¿Ya está medido? (`FACTORES_CON_VENTAJA.md`, `FAMILIAS.md`, `tools/existente.py buscar`).
 2. Escribir la población, la hipótesis, el control y la regla de decisión; contar las pruebas.
