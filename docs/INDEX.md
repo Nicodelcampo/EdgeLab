@@ -30,7 +30,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1193 |
+| `docs/research` | 1211 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,7 +39,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| ORB | 2 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
+| ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |
 | HANDOFF | 18 | `HANDOFF_20261105_PARA_ANTIGRAVITY.md` | 2026-11-05 | VIGENTE. Rama claude/vibrant-clarke-s9z6e2 (la rama gemini/filtros-20261104 ya e |
 | REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |

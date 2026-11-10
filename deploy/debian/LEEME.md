@@ -103,3 +103,8 @@ El agente se rige por [`MANDATO.md`](../../MANDATO.md) (edges útiles para chall
   propuesta (`tools/autopilot_generate.py propose`) llama al rol `meta_analista` y asienta lo extraído en
   `factores_propuestos.jsonl` del estado (se publica en `autopilot/state`). Pasarlo al libro del repo (`docs/research/FACTORES.jsonl`)
   es una revisión: `python tools/factores.py agregar entrada.json`.
+- **Actualización sin tocar el servidor (2026-11-10):** el bloque `modelos` y `programador.modelo` de `/etc/edgelab/autopilot.json`
+  se **ignoran** (aviso en el log): los modelos salen de `config/autopilot/AGENTES.json`, que llega con el código. Una excepción
+  deliberada va en `modelos_excepcion` / `programador.modelo_excepcion`. Tras cada actualización, `auto_sync_code.sh` corre
+  `tools/agentes.py --probar` (sólo si cambió la tabla) y deja `agentes_prueba.json` en el estado; si el `claude` del servidor no
+  acepta un modelo, el rol usa su `respaldo` y queda `MODELO_NO_DISPONIBLE` en `llm_calls.sqlite`. No hace falta ninguna acción manual.

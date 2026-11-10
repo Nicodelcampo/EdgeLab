@@ -1,5 +1,7 @@
 # Revisión del agente de SV1 y preparación v2 (2026-10-30)
 
+Estado: HISTÓRICO (revisión del 2026-10-29, integrada desde la rama `audit/sesion-20261030`).
+
 ## A. Historial real del agente de SV1 (19→30 oct), medido por SSH el 2026-10-30 00:33
 
 **Código en SV1:** `0f3a5466` (26-10 23:20, "Reporte de alineación del agente del Debian"). `foundation` va por `4537f5b9`: SV1 está 3 días atrás y no tiene la v2 ni las olas 1–10.

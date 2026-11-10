@@ -334,6 +334,8 @@ de apertura) y operar con dinero real. Decisión: `docs/DECISIONES_20261020.md`.
 ## Punteros
 
 - `docs/research/FACTORES_CON_VENTAJA.md` (generado de `docs/research/FACTORES.jsonl`, `tools/factores.py`) — **lo más valioso descubierto y qué indagar primero**: pistas vivas, palancas de diseño y qué no repetir. Todo resultado nuevo deja su entrada en el mismo commit (`tests/research/test_factores.py`).
+- `docs/research/FAMILIAS.md` (generado, `tools/familias.py --write`) — **índice único de familias**: linaje, pruebas contadas, campañas, último desenlace del embudo y factores.
+- **Antes de una corrida con retornos:** lista K4–K9 de `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (E0 sin retornos → una hipótesis contra placebo → P&L con ejecución fija; fricción en R ≤ 0,08; reloj en segundos; test de causalidad por prefijo). Ejemplo completo: `docs/research/hft_clusters_u1_20261110/`.
 - `config/autopilot/AGENTES.json` → `docs/autopilot/AGENTES.md` — **fuente única de agentes, roles y modelos del Debian** (2026-11-09); núcleo de contexto que nunca se recorta: `edgelab/autopilot/contexto.py::NUCLEO_FUENTES`.
 
 - `docs/NORTH_STAR.md` — referente canónico (fuente de verdad).

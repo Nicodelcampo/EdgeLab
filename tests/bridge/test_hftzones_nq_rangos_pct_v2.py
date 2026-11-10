@@ -242,7 +242,7 @@ def test_almacen_clusters_hft_grilla_una_pasada():
         )
     }
     df = hzv2.almacen_clusters_hft_grilla(
-        ts, px, vol, grilla_zona=gz_mini, grilla_cluster=gc_mini
+        ts, px, vol, session_ids=np.zeros(len(ts), dtype=np.int64), grilla_zona=gz_mini, grilla_cluster=gc_mini   # sesión explícita (K8)
     )
     expected_cols = {
         "t_ns",

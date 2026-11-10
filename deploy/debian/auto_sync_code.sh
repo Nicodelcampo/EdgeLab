@@ -66,3 +66,7 @@ for svc in edgelab-autopilot-generate.service edgelab-autopilot-programador.serv
     echo "[auto_sync_code] Servicio recuperado de estado failed: $svc"
   fi
 done
+
+# 4. Autoprueba de agentes: sólo cuando cambió config/autopilot/AGENTES.json (una llamada mínima por modelo). Nunca corta el ciclo.
+PY="${EDGELAB_PYTHON:-python3}"
+"$PY" tools/agentes.py --probar "$STATE_DIR/autopilot_runs" 2>&1 | sed 's/^/[auto_sync_code] /' || true

@@ -232,7 +232,7 @@ def ciclo(root: Path, repo: Path, cfg: dict, cli=claude_code_cli, ahora=None) ->
     ahora = ahora or time.time(); hoy = [r for r in _filas(Path(root) / LOG) if ahora - r.get("ts", 0) < 86400]
     cupo = int(c.get("max_por_dia", 1)) - len(hoy)
     prot = tuple(json.loads(Path(cfg["protected"]).read_text())) if cfg.get("protected") and Path(cfg["protected"]).exists() else ()
-    return [programar(p, repo=repo, root=root, cli=cli, model=c.get("modelo"), python=c.get("python", sys.executable),
+    return [programar(p, repo=repo, root=root, cli=cli, model=c.get("modelo_excepcion"), python=c.get("python", sys.executable),
                       tests=tuple(c.get("tests", ["tests"])), timeout_s=int(c.get("timeout_s", 3600)), protegidos=prot,
                       push=bool(c.get("push", True)), aplicar=bool(c.get("aplicar", True)), ahora=ahora)
             for p in pendientes(Path(root))[:max(cupo, 0)]]

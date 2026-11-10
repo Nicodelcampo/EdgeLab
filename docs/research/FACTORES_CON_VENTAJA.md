@@ -20,10 +20,15 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (1)
+## PALANCA_DE_DISENO (2)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **Antes de una corrida con retornos: E0 sin retornos, una hipótesis contra placebo, y recién después P&L (no una grilla de ejecución)** (`F-CHECKLIST-PRE-CORRIDA`, 2026-11-10, sesion)
+  - Efecto: La propuesta U1-HFT-CLUSTERS (20.736 celdas, 9 meses, un activo, stop = ancho del cluster) repetía selección en grilla grande y pagaba 0,13–0,77 R de fricción por operación; se reemplazó por 8 definiciones sin retornos y 5 pruebas.
+  - Dónde: Toda familia nueva sobre un indicador (zonas, clusters, niveles)
+  - Siguiente: Aplicar la lista K4–K9 de ERRORES_Y_GUARDAS a cada pre-registro; el revisor hace KILL si falta alguno.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/DICTAMEN_ABOGADO_20261110.md`, `docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md`
 - **Diseñar reglas con stop naturalmente grande frente a la fricción del instrumento (la fricción fija pesa en R cuanto más chico es el stop)** (`F-STOP-GRANDE-FRENTE-A-FRICCION`, 2026-11-04, humano)
   - Efecto: Tercil de stop grande vs chico: +0,125 R en neto, +0,064 R en bruto; la mitad es fricción. Filtrar después NO paga (cortar stops chicos también saca ganadoras): se aplica al diseñar, no como filtro. ORB con objetivos chicos: 5 de 18 canastas positivas contra 19 de 24 con objetivos amplios.
   - Dónde: 11 reglas en R (846 operaciones) y atlas de 212 corridas; ORB NQ

@@ -71,7 +71,7 @@ def main():
     if a.cmd == "audit":
         from edgelab.autopilot import auditoria
         from edgelab.autopilot.roles import RoleRunner, configurar_modelos
-        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos")); st = Path(a.state)
+        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos"), cfg.get("modelos_excepcion")); st = Path(a.state)
         runner = RoleRunner(Path(cfg["roles_ledger"])) if cfg.get("auditor") and cfg.get("roles_ledger") else None
         ant = _antecedentes(st) if runner else None
         out = auditoria.auditar(RunLedger(Path(a.ledger)), ROOT, st / "auditorias.jsonl", runner=runner,
@@ -87,7 +87,7 @@ def main():
         from edgelab.autopilot import contexto
         from edgelab.autopilot.roles import RoleRunner, UnsafeInput, sanitize, configurar_modelos
         from edgelab.autopilot.auditoria import estados
-        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos")); log = st / "propuestas.jsonl"
+        cfg = json.loads(Path(a.config).read_text()); configurar_modelos(cfg.get("modelos"), cfg.get("modelos_excepcion")); log = st / "propuestas.jsonl"
         if not (cfg.get("proponente") and cfg.get("roles_ledger")): print("proponente apagado (config: proponente=false o sin roles_ledger)"); return
         hist = [json.loads(l) for l in log.read_text().splitlines() if l.strip()] if log.exists() else []
         # Cierre de ciclo: campañas cerradas → meta-analista → factores propuestos (en el ESTADO, no en el checkout; se publican en
@@ -143,7 +143,7 @@ def main():
         if not cfg.get("auto_promocion"): print("auto_promocion=false: interruptor apagado en la configuración; no se promueve nada"); return
         from edgelab.autopilot.promocion import promover_auto
         from edgelab.autopilot.roles import RoleRunner, configurar_modelos
-        configurar_modelos(cfg.get("modelos"))
+        configurar_modelos(cfg.get("modelos"), cfg.get("modelos_excepcion"))
         led = RunLedger(Path(a.ledger)) if a.ledger else None
         cs = generate(led.outcomes() if led else [], runtime=Path(a.runtime) if a.runtime else None)
         out = promover_auto(cs, draft_fn=lambda c: draft_prereg(c, lits), to_runspec=to_runspec, runner=RoleRunner(Path(cfg["roles_ledger"])), repo=ROOT,

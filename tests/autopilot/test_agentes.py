@@ -65,3 +65,21 @@ def test_con_nucleo_falla_en_vez_de_recortar():
 
 def test_redactar_deja_pasar_documentos_con_rutas():
     t = C.redactar("ver /opt/edgelab/x y E:\\EdgeLab y la password"); sanitize({"t": t})
+
+
+def test_el_bloque_modelos_del_servidor_se_ignora_y_la_excepcion_vale(monkeypatch, capsys):
+    from edgelab.autopilot import roles as R
+    antes = R.ROLES["proponente"]["model"]; monkeypatch.setitem(R.ROLES["revisor2"], "model", R.ROLES["revisor2"]["model"])
+    R.configurar_modelos({"proponente": "modelo-viejo"}, {"revisor2": "modelo-x"})
+    assert R.ROLES["proponente"]["model"] == antes and R.ROLES["revisor2"]["model"] == "modelo-x" and "se ignora" in capsys.readouterr().out
+
+
+def test_respaldo_si_el_cli_no_conoce_el_modelo(tmp_path):
+    from edgelab.autopilot.roles import RoleRunner
+    bueno = {"is_error": False, "structured_output": {"familia": "f", "mecanismo": "m", "prediccion": "p", "refutacion": "r", "parametros_libres": [], "refs": []}}
+    vistos = []
+    def cli(prompt, *, model, schema, system, timeout=600):
+        vistos.append(model)
+        return {"is_error": True, "result": "API Error: model not found"} if model == A.modelo("proponente") else bueno
+    r = RoleRunner(tmp_path / "l.sqlite", cli=cli)
+    assert r.call("proponente", {"x": 1})["status"] == "OK" and vistos == [A.modelo("proponente"), A.respaldo("proponente")]

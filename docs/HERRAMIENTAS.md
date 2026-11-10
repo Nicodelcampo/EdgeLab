@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-610 scripts.
+618 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -17,8 +17,10 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/analisis_profundo_corredores.py` | tools/analisis_profundo_corredores.py |
 | `tools/analizar.py` | Analizador de estrategias (como el Strategy Analyzer de NT8) sobre el simulador sellado y los costos canónicos. |
 | `tools/analizar_embudo.py` | Reporte del analizador (estilo Strategy Analyzer) de las celdas que dieron positivo en el backtest y no confirmaron en el embudo. |
+| `tools/analizar_hft_gc_cluster_p10.py` | Análisis estructurado en EdgeLab para HFTZonesGCClusterP10 (SQLite Logger NT8). |
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
 | `tools/atlas_asimetrico.py` | Atlas nulo — grilla ASIMÉTRICA P/N y horizontes finos. **NULL / DESCRIPTIVO.** |
+| `tools/atlas_barreras_hft_r.py` | Atlas transversal de Barreras HFT frontales en R (Vía 2, 2026-11-05). |
 | `tools/atlas_contexto_r.py` | Atlas de Contexto Causal Común y Vetos Estructurales en R (2026-11-04). |
 | `tools/atlas_excursiones_nulas.py` | ATLAS DE EXCURSIONES NULAS — **NULL / DESCRIPTIVO. NO ES UN EDGE.** |
 | `tools/atlas_ideas_r.py` | Atlas de ideas transferibles en R (docs/research/atlas_ideas_r_20261102/PREREGISTRO_ATLAS_IDEAS_R.md): etapa MARGINALES con |
@@ -84,6 +86,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/avzvol_reaction_smoke.py` | Synthetic continuation vs failed-break classifier; no market input support. |
 | `tools/avzvol_response_smoke.py` | Synthetic measurement demo only, no market loader or implicit policies. |
 | `tools/axf.py` | AXF: agotamiento por flujo → barrido del último extremo participante → reversión confirmada. NQ, exploración. |
+| `tools/barreras_en_reglas_seguidas.py` | Barreras HFT frontales aplicadas a las reglas en seguimiento de `Estabilidad mensual en R2.html` (2026-11-05). |
 | `tools/barrido_horario_dukascopy_fetch.py` | Descarga de ticks de XAU/USD de Dukascopy (solo las horas UTC que cubren la franja 04:15 CT). Uso: python tools/barrido_horario_dukascopy_fetch.py AAAA-MM-DD AAAA-MM-DD etiqueta  (escribe en ./raw/). Límite de velocidad  |
 | `tools/barrido_horario_etapa_a.py` | Etapa A del barrido horario (PREREGISTRO_ETAPA_A.md). Solo datos previos al holdout. |
 | `tools/barrido_horario_etapa_b_gc.py` | Etapa B GC (PREREGISTRO_ETAPA_B_GC.md). Solo datos previos al holdout. |
@@ -257,6 +260,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |
 | `tools/factores.py` | Registro de factores con ventaja (edgelab/research/factores.py). |
 | `tools/falsification_battery.py` | tools/falsification_battery.py |
+| `tools/familias.py` | Índice de FAMILIAS de investigación: un renglón por familia con su linaje, pruebas contadas, campañas, último desenlace del embudo |
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
@@ -287,6 +291,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/ghost_holdout_cesta_es_nq.py` | Enmienda 6: cesta 1 ES + 1 NQ, sesiones completas del catálogo (2026-07-01 a 2026-09-25). Una sola apertura. |
 | `tools/grid_support_pilot/support_pilot_kernel.py` | Piloto de SOPORTE de etiquetas para EXP-REV-GRID (sin modelo, sin indicador, sin entrenar). |
 | `tools/grid_support_pilot/support_pilot_l2window.py` | Soporte de etiquetas (primer paso) sobre la ventana L2 de ES usando los trades del L1 local (E:/l2_parquet). |
+| `tools/hft_clusters_info.py` | HFT-CLUSTERS-INFO: construir y lanzar los kernels (docs/research/hft_clusters_u1_20261110/PREREGISTRO_E0_E_INFORMACION.md). |
 | `tools/hft_reversion_cortes.py` | HFT-REV-EXP, enmienda 1: cortes por contexto de la reversión en el primer retorno (D = 20; R = 40 y 80). |
 | `tools/hft_reversion_explore.py` | HFT-REV-EXP: ¿una zona HFTZonesNQPureV4 anticipa la reversión cuando el precio vuelve a ella? (exploratorio) |
 | `tools/hftv4_retorno_stage1.py` | HFTV4-RETORNO etapa 1 (manifiesto docs/research/HFTV4_RETORNO_MANIFIESTO_20261006.md): zonas HFTZonesNQPureV4 + flecha + pseudo-zonas. |
@@ -338,12 +343,14 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/canasta_orb_holdout_main.py` | Kernel de Kaggle: HOLDOUT de CANASTA-ORB (decisión explícita de Nico, docs/research/orb_nq_20261108/PREREGISTRO_CANASTA.md). Base: ORB-VARIANTES (docs/research/orb_nq_20261108/PREREGISTRO_VARIANTES.md); base: ORB-NQ-FILT |
 | `tools/kaggle_grilla/construir_kernel.py` | Empaquetador GENÉRICO de kernels de Kaggle autocontenidos (reutilizable por cualquier corrida de grilla masiva). |
 | `tools/kaggle_grilla/construir_kernel_experimento.py` | Kernel autocontenido para CUALQUIER experimento de grilla genérica (edgelab/research/grilla_generica.py). |
+| `tools/kaggle_grilla/construir_kernel_u1_combo_e0.py` | python tools/kaggle_grilla/construir_kernel_u1_combo_e0.py <salida.py> |
 | `tools/kaggle_grilla/construir_kernel_u1_cruzado.py` | python tools/kaggle_grilla/construir_kernel_u1_cruzado.py tools/kaggle_grilla/kernel_u1_cruzado.py |
 | `tools/kaggle_grilla/embudo_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/estrategias_scrapeadas_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/gap_continuacion_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/gap_rth_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/grilla_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/hft_clusters_info_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/nul2_maxt_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/orb0100_atras_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/orb_nq_filtros_main.py` | Kernel de Kaggle: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
@@ -359,6 +366,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/regimen_busqueda_main.py` | Kernel de Kaggle: búsqueda de régimen pre-registrada (docs/research/regimen_busqueda_20261108/PREREGISTRO.md) sobre el dataset |
 | `tools/kaggle_grilla/sellado_cobertura_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/sellado_conteo_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/u1_combo_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_cruzado_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_oro_main.py` | (sin docstring) |
 | `tools/kaggle_hippocampus_ingest.py` | Verified aggregate evidence -> existing durable Hipocampo. Never a trial/edge. |

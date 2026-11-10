@@ -46,7 +46,7 @@ ROLES = {
         system="Proponés UNA familia de hipótesis falsable: o una hipótesis puntual con a lo sumo 3 parámetros libres, o un BARRIDO MASIVO (millones de variantes) que declara todas sus perillas y cuenta todas sus celdas, sobre el conductor genérico (edgelab/research/grilla_generica.py) y con indicadores PASS de config/autopilot/indicadores.json o propios causales. Si la familia necesita una primitiva, un detector o un experimento que todavía no existe, describilo en pedido_codigo (qué hace, con qué datos, qué controles) y lo escribe el programador; si no hace falta, dejalo vacío. Para miles de variantes de una misma idea preferí la grilla masiva (docs/research/GUIA_GRILLA_MASIVA.md). Ponderá TODO el paquete: tablero, fichas del research propio, del cerebro y de papers; citá en refs las fichas que usaste (su campo ref). Lo ya medido o retirado no se repropone; los papers no son evidencia propia. ORDEN DE PRIORIDAD (criterio del dueño: centrar el esfuerzo en lo más valioso ya descubierto): primero indagar una PISTA_VIVA de nucleo_proyecto.factores_con_ventaja; después aplicar una PALANCA_DE_DISENO a una idea con motivo económico; recién después una familia nueva. Nada de lo que figura en NO_REPETIR se propone igual. Declará siempre la fricción en R esperada (fricción del instrumento / stop mediano): si supera ~0,08 R por operación, rediseñá antes de proponer."),
     "revisor": dict(schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "regla_nueva": S}),
-        system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Si vienen antecedentes (research propio y papers del proyecto, con ref), contrastá el borrador con ellos: si repite algo ya medido o muerto, o contradice un resultado propio sin explicarlo, KILL. Criterios del dueño: macro antes que micro (la fricción mata lo chico); un edge condicionado a régimen vale si el régimen se detecta en tiempo real y está pre-registrado; queremos edges ACTUALES: que una idea haya fallado en datos viejos no es motivo de KILL si la propuesta mide lo reciente con ventana declarada antes y confirma hacia adelante; preferí lo que diversifica una cartera de varias estrategias. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
+        system="Adjudicás una familia con métricas públicas. Sos independiente del proponente. Si vienen antecedentes (research propio y papers del proyecto, con ref), contrastá el borrador con ellos: si repite algo ya medido o muerto, o contradice un resultado propio sin explicarlo, KILL. Criterios del dueño: macro antes que micro (la fricción mata lo chico); un edge condicionado a régimen vale si el régimen se detecta en tiempo real y está pre-registrado; queremos edges ACTUALES: que una idea haya fallado en datos viejos no es motivo de KILL si la propuesta mide lo reciente con ventana declarada antes y confirma hacia adelante; preferí lo que diversifica una cartera de varias estrategias. KILL también (errores K4–K9 del núcleo): grilla con retornos de más de 500 celdas sin un E0 sin retornos previo que la reduzca por regla mecánica; pre-registro que no declara la fricción en R esperada o que supera 0,08 R por operación sin rediseñar el stop; vigencias en barras en vez de segundos; detector nuevo sin test de causalidad por prefijo; P&L propuesto sin un paso previo de información contra placebo. Ante la duda, KILL o DERIVE, nunca PROMOTE."),
     # Segunda opinión SÓLO ante un PROMOTE del revisor: otro modelo, otra consigna, sin ver la razón del primero.
     "revisor2": dict(schema=_obj({
         "decision": {"enum": ["PROMOTE", "KILL", "DERIVE"]}, "razon": S, "riesgo_principal": S}),
@@ -64,10 +64,13 @@ ROLES = {
 }
 
 
-def configurar_modelos(modelos: dict | None) -> None:
-    """Permite fijar otras versiones desde la configuración: {"revisor2": "<id de modelo>", ...} (sólo excepciones: la fuente es AGENTES.json). Rol desconocido = error."""
-    for rol, m in (modelos or {}).items():
-        if rol not in ROLES: raise ValueError(f"rol desconocido en modelos: {rol}")
+def configurar_modelos(modelos: dict | None, excepciones: dict | None = None) -> None:
+    """La fuente de modelos es `config/autopilot/AGENTES.json`: se actualiza sola con el código. El bloque `modelos` que quedó en la
+    configuración de los servidores (copiado de una plantilla vieja) se IGNORA con un aviso, para que cambiar un modelo no exija
+    tocar el servidor. Una excepción deliberada va en `modelos_excepcion`: {"revisor2": "<id>"}. Rol desconocido = error."""
+    if modelos: print("aviso: el bloque `modelos` de la configuración se ignora (fuente: config/autopilot/AGENTES.json); usar `modelos_excepcion` si es deliberado")
+    for rol, m in (excepciones or {}).items():
+        if rol not in ROLES: raise ValueError(f"rol desconocido en modelos_excepcion: {rol}")
         ROLES[rol]["model"] = str(m)
 
 ROLES["meta_analista"] = dict(schema=_obj({
@@ -174,6 +177,12 @@ class RoleRunner:
                     self._log(db, role, spec["model"], in_sha, "OK", out, resp)
                     return dict(status="OK", output=out)
                 self._log(db, role, spec["model"], in_sha, "INVALID_ATTEMPT_%d" % attempt, resp=resp)
+                # El CLI del servidor puede no conocer todavía un modelo nuevo: se baja al respaldo de AGENTES.json y el ciclo sigue.
+                txt = str(resp.get("result", "")).lower()
+                if resp.get("is_error") and "model" in txt and any(k in txt for k in ("not found", "invalid", "not exist", "unknown", "access", "not available")):
+                    resp_m = _AG.respaldo(role)
+                    if resp_m and resp_m != spec["model"]:
+                        self._log(db, role, spec["model"], in_sha, "MODELO_NO_DISPONIBLE", resp=resp); spec = dict(spec, model=resp_m)
         return dict(status="LLM_INVALID_OUTPUT")
 
     def usage(self, day=None):

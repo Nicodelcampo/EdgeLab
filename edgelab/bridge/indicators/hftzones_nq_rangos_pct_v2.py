@@ -2204,7 +2204,8 @@ def almacen_clusters_hft_grilla(
     vol_arr = np.asarray(volume, dtype=np.float64)
     n = len(px_arr)
     if session_ids is None:
-        ses_arr = ts_arr // 86_400_000_000_000
+        # K8 (2026-11-10): el día UTC NO es la sesión CME (corta rachas y cuenta sesiones mal). Para research pasar `trade_date`.
+        raise ValueError("almacen_clusters_hft_grilla: falta session_ids (sesión CME, p. ej. trade_date del release); el día UTC no se usa")
     else:
         ses_arr = np.asarray(session_ids, dtype=np.int64)
 
@@ -2217,10 +2218,10 @@ def almacen_clusters_hft_grilla(
     escala_vol_arr = np.full(n_bars, 24.0, dtype=np.float64)
     esc = 24.0
     for b in range(n_bars):
+        escala_vol_arr[b] = esc          # K8 (2026-11-10): escala conocida AL ABRIR la barra b; antes incluía ticks posteriores a la detección
         rng_tk = (bar_hi[b] - bar_lo[b]) / tick_size
         if rng_tk > 0.0:
             esc = 0.98 * esc + 0.02 * max(16.0, rng_tk * 2.5)
-        escala_vol_arr[b] = esc
 
     # 1) ÚNICA pasada 1-tick: censo completo de candidatos
     cand_int, cand_flt = detectar_candidatos_nb(

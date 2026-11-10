@@ -34,6 +34,12 @@ def modelo(rol: str) -> str:
     t = tabla(); return t["modelos"][t["agentes"][agente_de(rol)]["modelo"]]["id"]
 
 
+def respaldo(rol: str) -> str | None:
+    """Modelo de respaldo del rol (campo `respaldo` del agente), o None. Se usa si el CLI del servidor no acepta el modelo titular."""
+    t = tabla(); alias = t["agentes"][agente_de(rol)].get("respaldo")
+    return t["modelos"][alias]["id"] if alias else None
+
+
 def rol(nombre: str) -> dict:
     t = tabla(); a = t["agentes"][agente_de(nombre)]
     return dict(t["roles"][nombre], modelo=modelo(nombre), agente=agente_de(nombre), contexto_max_chars=a.get("contexto_max_chars", 30000))
