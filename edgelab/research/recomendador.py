@@ -11,7 +11,9 @@ Entrada: lista de ítems con
   signo_esperado (+1 la hipótesis espera A > B, −1 A < B, 0 sin dirección; por defecto +1).
 Corrección 2026-11-10 (con el primer resultado real): antes se ignoraba el signo (un efecto en contra salía «INDAGAR») y la
 inconsistencia entre activos usaba el error estándar combinado (un activo chico y ruidoso la disparaba). Ahora: signo esperado y error
-estándar de cada activo.
+estándar de cada activo. Segunda corrección (2026-11-10, DESPUÉS de ver HFT-REBOTES, declarada): INCONSISTENTE se evalúa antes
+que EN_CONTRA (si los activos van en sentidos opuestos, la cifra combinada mezcla dos comportamientos). RECOMENDACIONES_rebotes.md
+se dejó como salió con la versión anterior.
 Salida: por ítem, categoría, lectura, próximo paso y prioridad; más la lista ordenada de «qué hacer después».
 """
 from __future__ import annotations
@@ -44,16 +46,16 @@ def clasificar(it: dict) -> dict:
         cat = "SIN_MUESTRA"
         paso = (f"Hoy {n} eventos en el estrato más chico" + (f"; para MDE {MDE_UTIL} harían falta ≈ {fac:.1f}× más" if fac else "")
                 + ". Opciones: la réplica abr–sep, otro activo con la misma regla, o una definición menos restrictiva declarada antes.")
-    elif sg and d * sg < 0 and ic[0] is not None and (ic[1] < 0 if sg > 0 else ic[0] > 0):
-        cat = "EN_CONTRA"
-        paso = (f"Diferencia {d:+.3f} con IC90 [{ic[0]:+.3f}, {ic[1]:+.3f}], opuesta a lo esperado. La hipótesis contraria se pre-registra "
-                "aparte y se prueba en datos no usados; ésta queda NO_REPETIR.")
     elif cd is not None and d * cd > 0 and abs(cd) >= 0.5 * abs(d) and abs(d) >= mde / 2:
         cat = "ESTRUCTURA_DE_PRECIO"
         paso = (f"Reales {d:+.3f}, control {cd:+.3f}: el efecto no depende del cluster. Medir directamente la variable de precio que lo "
                 "explica (hora, volatilidad reciente, tendencia de la sesión) como familia aparte.")
     elif len(firmes) >= 2 and min(firmes.values()) * max(firmes.values()) < 0:
         cat = "INCONSISTENTE"; paso = f"Por activo: {', '.join(f'{k} {v:+.3f}' for k, v in pa.items() if v is not None)}. " + (it.get("sugerencia") or "")
+    elif sg and d * sg < 0 and ic[0] is not None and (ic[1] < 0 if sg > 0 else ic[0] > 0):
+        cat = "EN_CONTRA"
+        paso = (f"Diferencia {d:+.3f} con IC90 [{ic[0]:+.3f}, {ic[1]:+.3f}], opuesta a lo esperado. La hipótesis contraria se pre-registra "
+                "aparte y se prueba en datos no usados; ésta queda NO_REPETIR.")
     elif it.get("nominada"):
         cat = "CONFIRMAR"; paso = "Réplica congelada abr → sep 2026, mismo código. " + (it.get("sugerencia") or "")
     elif ds >= mde / 2 or (ic[0] is not None and sg and (ic[0] > 0 if sg > 0 else ic[1] < 0)) or (not sg and ic[0] is not None and (ic[0] > 0 or ic[1] < 0)):

@@ -37,3 +37,9 @@ def test_signo_y_error_por_activo_caso_real_20261110():
     assert RC.clasificar(iman)["categoria"] == "DESCARTAR"                                  # YM no es firme con su propio error
     assert RC.clasificar(dict(reb, ic90=[-0.05, -0.01]))["categoria"] == "EN_CONTRA"
     assert RC.clasificar(dict(reb, diferencia=0.05, ic90=[-0.01, 0.10], signo_esperado=0))["categoria"] == "INDAGAR"
+
+
+def test_inconsistente_va_antes_que_en_contra():
+    it = dict(B, nombre="D6", diferencia=-0.104, ic90=[-0.18, -0.027], se=0.047, mde80=0.116,
+              por_activo={"NQ": {"diferencia": -0.122, "se": 0.05}, "ES": {"diferencia": 0.515, "se": 0.15}})
+    assert RC.clasificar(it)["categoria"] == "INCONSISTENTE"
