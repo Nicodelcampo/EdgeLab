@@ -22,6 +22,11 @@ for _m, _b in _MODS.items():
     _p = os.path.join(_base, _m); os.makedirs(os.path.dirname(_p), exist_ok=True)
     open(_p, "wb").write(base64.b64decode(_b))
 sys.path.insert(0, _base)
+def _error_kernel(tipo, valor, tb):                      # un kernel que falla deja el error como archivo de salida (Kaggle no siempre da el log)
+    import traceback
+    try: open("ERROR_KERNEL.txt", "w", encoding="utf-8").write("".join(traceback.format_exception(tipo, valor, tb))[-20000:])
+    finally: sys.__excepthook__(tipo, valor, tb)
+sys.excepthook = _error_kernel
 CODIGO_SHA = '3da8db9daec3fb27ab981c47b846c94875abea5b9da1195a12ff048c45f7274a'
 MODULOS_SHA = {'edgelab/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/funnel/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/research/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/holdout.py': 'e73229e15742a1f58097ef623594ba784e1fc04095875fabdcd7dcb1b995ffbd', 'edgelab/research/fuentes_ticks.py': '1f3ae518e9a0bba32e5427fe106312119a5a8322be45bdc61b6382193305f09c', 'edgelab/research/areas_expansion.py': '2aa14d7add636186cae445945ef34f4ebb6e510484bf87dcab492db5cf4cdbe6', 'edgelab/research/areas_expansion_run.py': 'e922eb7a5a46ccbbf43f1f5e26603c7368eb029416c2dd50ef14e331c482dd15', 'edgelab/research/grilla_generica.py': '6ca8f8a599b57138675f3904a0300e4b0129e6db3a3a44044da209c91986a789', 'edgelab/research/eventos.py': '3a4242dff084cab1311d417b93038d99d98d3302fcd27d0111f2734414e8fc7e', 'edgelab/research/eventos_datos.py': '95dc9ad5535ce4eb5bd79b266e8a420a31a52bf29ff87c56723c1c194bf1e0c8', 'edgelab/research/u1_indaga.py': '0d582d6d5112dfefcfcfcaf597feffed636ee8cbcb71935b998126b6f0062997', 'edgelab/research/u1_oro.py': '90b3d996abee5eb62bf96291cea17d383964124b9e9e21192d875115fb37d13c', 'edgelab/research/u1_cruzado.py': 'f2074aaf954e053516525d8c8ede2d73d740d08f52dfc6075c28c69a99118cd0', 'edgelab/research/grilla_masiva.py': '0d608f007acb86aaa323b0f46292b40a15610fbae5f407d1f542783b8bdc825e', 'edgelab/funnel/escalera.py': 'f2e98fc6346c52fc17253e803f17523cc71dee91f1a1a622f2f31a1b42908c40'}
 # Principal del kernel U1-CRUZADO: señal U1 en USATECH, operación en NQ (manifiesto u1/MANIFIESTO_U1_CRUZADO.md).

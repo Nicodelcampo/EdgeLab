@@ -38,6 +38,11 @@ for _m, _b in _MODS.items():
     _p = os.path.join(_base, _m); os.makedirs(os.path.dirname(_p), exist_ok=True)
     open(_p, "wb").write(base64.b64decode(_b))
 sys.path.insert(0, _base)
+def _error_kernel(tipo, valor, tb):                      # un kernel que falla deja el error como archivo de salida (Kaggle no siempre da el log)
+    import traceback
+    try: open("ERROR_KERNEL.txt", "w", encoding="utf-8").write("".join(traceback.format_exception(tipo, valor, tb))[-20000:])
+    finally: sys.__excepthook__(tipo, valor, tb)
+sys.excepthook = _error_kernel
 CODIGO_SHA = {codigo!r}
 MODULOS_SHA = {shas!r}
 '''

@@ -43,6 +43,14 @@ Recordatorios:
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
 
+### Estado al 2026-11-09
+
+> **0 edges promovidos.** Lo más valioso descubierto y qué indagar primero: `docs/research/FACTORES_CON_VENTAJA.md` (2 pistas vivas,
+> 1 palanca de diseño —stop grande frente a la fricción—, la familia U1 de baja frecuencia en seguimiento, y la lista de qué no
+> repetir). Lección dura del 04–08/11: los efectos «de contexto» confirmados en R neto eran fricción, y lo elegido en grillas grandes
+> cae a ≈ 0 en la réplica por selección. Agentes del Debian: `docs/autopilot/AGENTES.md`. Ramas: `docs/RAMAS_20261109.md` (216 remotas
+> además de `foundation`; propuesta de limpieza sin ejecutar).
+
 ### Estado del 2026-08-21 (histórico)
 
 > **Punto de entrada operativo: `docs/research/HANDOFF_2026-08-21_ESTADO_COMPLETO.md`.**

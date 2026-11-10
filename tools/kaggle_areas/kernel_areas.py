@@ -14,6 +14,11 @@ for _m, _b in _MODS.items():
     _p = os.path.join(_base, _m); os.makedirs(os.path.dirname(_p), exist_ok=True)
     open(_p, "wb").write(base64.b64decode(_b))
 sys.path.insert(0, _base)
+def _error_kernel(tipo, valor, tb):                      # un kernel que falla deja el error como archivo de salida (Kaggle no siempre da el log)
+    import traceback
+    try: open("ERROR_KERNEL.txt", "w", encoding="utf-8").write("".join(traceback.format_exception(tipo, valor, tb))[-20000:])
+    finally: sys.__excepthook__(tipo, valor, tb)
+sys.excepthook = _error_kernel
 CODIGO_SHA = 'e95f44220bf91cc027d2153f7bdc3be545aca52bd56386e8f2bbff58d526f265'
 MODULOS_SHA = {'edgelab/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/funnel/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/research/__init__.py': 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'edgelab/research/areas_expansion.py': '2aa14d7add636186cae445945ef34f4ebb6e510484bf87dcab492db5cf4cdbe6', 'edgelab/research/areas_expansion_run.py': 'e922eb7a5a46ccbbf43f1f5e26603c7368eb029416c2dd50ef14e331c482dd15', 'edgelab/research/grilla_masiva.py': '0d608f007acb86aaa323b0f46292b40a15610fbae5f407d1f542783b8bdc825e', 'edgelab/funnel/escalera.py': 'f2e98fc6346c52fc17253e803f17523cc71dee91f1a1a622f2f31a1b42908c40'}
 # Principal del kernel AREAS-EXP-1 (lo envuelve tools/kaggle_areas/construir_kernel.py con los módulos embebidos).

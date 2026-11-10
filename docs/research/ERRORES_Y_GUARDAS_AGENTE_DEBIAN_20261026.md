@@ -44,6 +44,7 @@ el agente del Debian**.
 | O13 | **SV1, 2026-10-26 22:00–23:00:** el CONTEO del holdout de U1-YM-GRILLA (también U1-ES/U1-ORO) cayó 3 veces con `IndexError` en `grilla_generica.correr` porque la señal dio **0 disparos** en la ventana sellada (`D.k` vacía no es entera) y el conteo leía `cx["perillas"]` de un DataFrame. Tres fallas = BLOQUEADA sin evidencia. | Una campaña muerta por un crash, no por datos. | **Código**: `correr` castea `k` a entera; `etapas.HOLDOUT_CONTEO` devuelve `conteo=[0,…]` cuando no hay disparos (`tests/research/test_guardas_20261027.py`). | Una BLOQUEADA por «la etapa X falló 3 veces (error)» se investiga en el log del kernel (`tools/kaggle_kernel.py output`), nunca se toma como veredicto; se reabre cuando la causa es infraestructura. |
 | O14 | U1-ZONAS-NQ se lanzó a las 21:57 con slug `nicobuttaro/…` **antes** de que existiera la cabecera de esa cuenta (22:15): el push salió con la cabecera de `nicolasbuttaro` y `kernels/status` devuelve **403** `kernels.get denied`. `KaggleRunner.estado` no conocía el 403 y devolvía `running`: la campaña habría esperado 14 h (`MAX_HORAS_KAGGLE`). | Campaña trabada en silencio (O5 con otro código). | **Código**: 403 → `error` → relanza (test en `test_embudo_runners.py`). | Antes de habilitar una campaña fijada a una cuenta, verificar que su cabecera exista y dé 200 (`curl … datasets/view`). |
 | O15 | CONTEO de U1-ZONAS-ES: el dataset sellado **no tiene ticks de ES** (`glob(...)[0]` → `IndexError`); CONTEO de U1-ZONAS-AVCL-NQ: NQ sellado **sin sesiones ≥ 20261023** (`m1_y_perfil` → «No objects to concatenate»). Las dos cerraron BLOQUEADA. | Falta de datos ≠ falta de edge. | **Código**: `embudo_main` dice «sin ticks sellados de ES» (O15) y, si no hay sesiones selladas en la ventana, escribe `conteo 0` (el embudo sigue mirando). | Sellar el instrumento antes de abrir su holdout (acción humana); mientras tanto la campaña espera en CONTEO. |
+| O17 | **2026-11-08:** el kernel de ORB+EMA20 terminó en `error` y Kaggle no devolvió log: se relanzó a ciegas con una guarda supuesta. | Diagnóstico por conjetura; una corrida más. | **Código**: todo kernel de `construir_kernel.py` escribe `ERROR_KERNEL.txt` (traza completa) como archivo de salida. | Ante un kernel en `error`, bajar `ERROR_KERNEL.txt` antes de tocar nada. |
 
 ## C. Construcción: reutilizar, motor correcto, datos
 
@@ -56,6 +57,14 @@ el agente del Debian**.
 | C5 | Candidatas de celdas raras (30–37 operaciones en 26 meses) que en el OOS daban 6, 1 y 0 operaciones. | OOS imposible de concluir. | **Código**: `seleccion.min_ops_oos` = 30. | — |
 | C6 | Tests que fijaban la secuencia de etapas (OOS → TOPES) rompieron al agregar ATRAS. | CI rojo por cambio de flujo legítimo. | Regla. | Al cambiar el flujo del embudo, buscar `"TOPES"`, `"OOS"` en `tests/` y actualizar en el mismo commit. |
 
+## E2. Errores de criterio (2026-11-09)
+
+| # | Qué pasó | Por qué importa | Guarda | Qué hace el agente |
+|---|---|---|---|---|
+| K1 | `APRENDIZAJES_ESPIRAL.md` siguió diciendo «Qué funcionó (confirmado)» para el stop ancho, el horario 09:30–12 y el imán cinco días después de que el atlas en bruto mostrara que son fricción en R. | El documento que lee el agente contradecía un resultado propio; se iba a reproponer como filtro. | **Código**: `docs/research/FACTORES.jsonl` es el registro único de lo vigente (corregir = entrada nueva con `reemplaza`); va completo en el núcleo. Corrección asentada en el documento. | Cuando un resultado contradice una lección escrita, corregir la lección en el mismo commit y asentar la entrada en el registro. |
+| K2 | Efectos confirmados en R neto (S3, T3, ATR/volumen relativos, horario, imán) eran la fricción fija pesando distinto según el tamaño del stop. | Un filtro «de contexto» que en realidad selecciona stops grandes. | **Código**: `grilla_generica.correr` guarda `marginales_globales_bruto`. | Todo filtro o variante se juzga también en bruto; si sólo mejora en neto es fricción. |
+| K3 | Ante una regla con poca ventaja se agregaban variantes (más celdas, más selección) en vez de entender qué factor la daba. | Infla la multiplicidad y la réplica cae a ≈ 0. | **Código**: lente `indagar_factor` uno de cada dos ciclos mientras haya pistas vivas; consigna del proponente y directiva 14. | Primero la indagación más barata del factor (bruto vs neto, activo, horario, lado); después, si sobrevive, una réplica congelada. |
+
 ## D. Lo que el agente del Debian tiene que vigilar siempre (checklist por ciclo)
 1. `tools/autopilot_protect.py check` → OK.
 2. Ninguna campaña en CORRIENDO hace más de 14 h sin kernel vivo.
@@ -65,3 +74,5 @@ el agente del Debian**.
 6. Antes de construir algo: `tools/existente.py buscar` (C1) y docstring del módulo (C2).
 7. Ningún resultado post-hoc presentado como confirmación (E6).
 8. Cambios de regla: frenar antes las campañas afectadas (E10) y consultar a Nico si es semántica de validación.
+9. Antes de proponer: leer `factores_con_ventaja` del núcleo (K1–K3); toda campaña cerrada deja su entrada en el registro.
+10. Kernel en `error`: bajar `ERROR_KERNEL.txt` (O17).
