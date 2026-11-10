@@ -103,6 +103,7 @@ namespace NinjaTrader.NinjaScript.Indicators
         private long   zoneStartTickSeq = 0;
         private long   zoneEndTickSeq = 0;
         private string currentSessionId = "";
+        private DateTime currentSessionDate = DateTime.MinValue;
         private string contractStr = "";
 
         private const string SOURCE_SHA256 = "841cdbcccbe54ca525e20456d38d1ece0beec5fdd7b820de980bbb01acebeb63";
@@ -112,14 +113,18 @@ namespace NinjaTrader.NinjaScript.Indicators
         private readonly List<object[]> tickBuf = new List<object[]>();
 
         private int      streak, validSteps, dir, fails;
+        private int      startPrimBar, lastPrimBar;
         private double   swH, swL;
         private double   extremo, maxRetroceso;
-        private readonly List<double> msList    = new List<double>();
+        private double   totalMs;
+        private int      msCount;
         private readonly List<double> priceList = new List<double>();
         private readonly List<double> volList   = new List<double>();
         private readonly List<double> signList  = new List<double>();
         private double   totalVol;
         private DateTime tStart, tLast;
+        private DateTime prevTickTime = DateTime.MinValue;
+        private double   prevTickClose = 0;
         private int      lastSide = 0;
 
         private long   flowBucket = long.MinValue;
@@ -154,8 +159,12 @@ namespace NinjaTrader.NinjaScript.Indicators
         private double   escalaVolZonaMean = 40.0;
 
         private const int MaxHistoriaEventos = 600;
-        private readonly List<double> histScoreCluster = new List<double>();
-        private readonly List<double> histScoreExp     = new List<double>();
+        private readonly List<double> histScoreCluster = new List<double>(MaxHistoriaEventos + 4);
+        private readonly List<double> histScoreExp     = new List<double>(MaxHistoriaEventos + 4);
+        private readonly List<double> sortScratch      = new List<double>(MaxHistoriaEventos + 4);
+        private readonly List<Zone>   vivasBuf         = new List<Zone>(64);
+        private double cachedUmbralExp = double.MaxValue;
+        private bool   umbralExpDirty  = true;
 
         // Seguimiento causal de piernas (impulsos) para Expansiones sin HFT
         private int    impDir;
@@ -265,11 +274,14 @@ namespace NinjaTrader.NinjaScript.Indicators
                     ? (Instrument.MasterInstrument.Name + " " + Instrument.Expiry.ToString("MM-yy"))
                     : "NQ DEC26";
                 currentSessionId = "";
+                currentSessionDate = DateTime.MinValue;
                 currentTickSeq = 0;
                 currentZoneSeq = 0;
                 zoneStartTickSeq = 0;
                 zoneEndTickSeq = 0;
                 tickBuf.Clear();
+                prevTickTime = DateTime.MinValue;
+                prevTickClose = 0;
                 lastSide = 0;
                 flowBucket = long.MinValue;
                 fTicks = 0;
@@ -278,6 +290,8 @@ namespace NinjaTrader.NinjaScript.Indicators
                 ultimaFechaSesion = DateTime.MinValue;
                 escalaVolTicks = 24.0;
                 escalaVolZonaMean = 40.0;
+                cachedUmbralExp = double.MaxValue;
+                umbralExpDirty = true;
 
                 impDir = 0;
                 impStartBar = 0;
@@ -312,14 +326,15 @@ namespace NinjaTrader.NinjaScript.Indicators
 
         private void CheckSessionBoundary(DateTime tickTime)
         {
-            string sessId = tickTime.ToString("yyyyMMdd");
-            if (sessId != currentSessionId)
+            DateTime d = tickTime.Date;
+            if (d != currentSessionDate)
             {
                 if (dir != 0 && streak > 0)
                 {
                     Finalizar("END_OF_SESSION");
                 }
-                currentSessionId = sessId;
+                currentSessionDate = d;
+                currentSessionId = EnableDbLogging ? d.ToString("yyyyMMdd") : "";
                 currentTickSeq = 0;
                 currentZoneSeq = 0;
                 hasLoggedFlushError = false;
@@ -330,7 +345,11 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void ResetState()
         {
             streak = 0; validSteps = 0; dir = 0; fails = 0;
-            msList.Clear(); priceList.Clear(); volList.Clear(); signList.Clear();
+            totalMs = 0; msCount = 0;
+            if (EnableDbLogging)
+            {
+                priceList.Clear(); volList.Clear(); signList.Clear();
+            }
             totalVol = 0;
             extremo = 0; maxRetroceso = 0;
             zoneStartTickSeq = 0;
@@ -396,17 +415,30 @@ namespace NinjaTrader.NinjaScript.Indicators
         // ===================== MOTOR DE DETECCIÓN DE ZONAS HFT (1-TICK) =====================
         private void ProcesarSweeps()
         {
-            int ds = 1;
-            if (CurrentBars[ds] < 1) return;
-
+            const int ds = 1;
             DateTime tickTime = Times[ds][0];
-            CheckSessionBoundary(tickTime);
+            double cl  = Closes[ds][0];
+            double vol = Volumes[ds][0];
+
+            if (prevTickTime == DateTime.MinValue)
+            {
+                prevTickTime = tickTime;
+                prevTickClose = cl;
+                currentSessionDate = tickTime.Date;
+                if (EnableDbLogging) currentSessionId = currentSessionDate.ToString("yyyyMMdd");
+                return;
+            }
+
+            if (tickTime.Date != currentSessionDate)
+            {
+                CheckSessionBoundary(tickTime);
+            }
             currentTickSeq++;
 
             if (EnableTickLog && dbReady)
             {
                 long tsNs = UnixNs(tickTime);
-                long pTicks = (long)Math.Round(Closes[ds][0] / TickSize);
+                long pTicks = (long)Math.Round(cl / TickSize);
                 double curBid = 0, curAsk = 0;
                 try { curBid = GetCurrentBid(ds); } catch { }
                 try { curAsk = GetCurrentAsk(ds); } catch { }
@@ -414,55 +446,66 @@ namespace NinjaTrader.NinjaScript.Indicators
                 long aTicks = curAsk > 0 ? (long)Math.Round(curAsk / TickSize) : 0;
                 tickBuf.Add(new object[] {
                     Instrument.FullName, contractStr, currentSessionId, currentTickSeq,
-                    tsNs, pTicks, Volumes[ds][0], bTicks, aTicks
+                    tsNs, pTicks, vol, bTicks, aTicks
                 });
                 if (tickBuf.Count >= 2000)
                     FlushAll();
             }
 
-            double rng = (Highs[ds][0] - Lows[ds][0]) / TickSize;
-            bool small = rng <= MaxRangoTickPorVela;
-            double ms  = Times[ds][0].Subtract(Times[ds][1]).TotalMilliseconds;
-            double vol = Volumes[ds][0];
+            double ms  = (tickTime.Ticks - prevTickTime.Ticks) * 0.0001;
+            double clP = prevTickClose;
+            prevTickTime  = tickTime;
+            prevTickClose = cl;
 
-            double op  = Opens[ds][0];
-            double cl  = Closes[ds][0];
-            double clP = Closes[ds][1];
+            double hi, lo, op;
+            bool small;
+            if (TickResolution <= 1)
+            {
+                hi = cl; lo = cl; op = cl;
+                small = true;
+            }
+            else
+            {
+                hi = Highs[ds][0];
+                lo = Lows[ds][0];
+                op = Opens[ds][0];
+                small = (hi - lo) <= MaxRangoTickPorVela * TickSize;
+            }
 
             int side = cl > clP ? 1 : (cl < clP ? -1 : lastSide);
             if (side == 0) side = 1;
             lastSide = side;
             double signedVol = side * vol;
 
-            if (EnableFlowLog) AccumFlow(Times[ds][0], cl, vol, side);
+            if (EnableFlowLog) AccumFlow(tickTime, cl, vol, side);
 
             bool isDown, isUp;
-            if (FiltroDireccionEstricto)
-            {
-                isDown = small && cl <= clP && cl <= op;
-                isUp   = small && cl >= clP && cl >= op;
-            }
-            else
+            if (TickResolution <= 1 || !FiltroDireccionEstricto)
             {
                 isDown = small && cl <= clP;
                 isUp   = small && cl >= clP;
             }
+            else
+            {
+                isDown = small && cl <= clP && cl <= op;
+                isUp   = small && cl >= clP && cl >= op;
+            }
 
             if (dir != 0 && ms > MaxPausaMs)
             {
-                Finalizar("MAX_PAUSE");
+                Finalizar("MAX_PAUSE", tickTime);
                 dir = 0;
                 return;
             }
 
             if (dir == 0)
             {
-                if (isDown)    { dir = -1; Iniciar(ms, vol, cl, signedVol); }
-                else if (isUp) { dir =  1; Iniciar(ms, vol, cl, signedVol); }
+                if (isDown)    { dir = -1; Iniciar(tickTime, hi, lo, cl, vol, signedVol); }
+                else if (isUp) { dir =  1; Iniciar(tickTime, hi, lo, cl, vol, signedVol); }
             }
             else if (dir == -1)
             {
-                if (isDown) { Continuar(ms, vol, cl, signedVol, true); fails = 0; }
+                if (isDown) { Continuar(tickTime, hi, lo, cl, ms, vol, signedVol, true); fails = 0; }
                 else
                 {
                     fails++;
@@ -472,19 +515,19 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                     if (currentRetracement <= maxAllowedRetracement)
                     {
-                        Continuar(ms, vol, cl, signedVol, false);
+                        Continuar(tickTime, hi, lo, cl, ms, vol, signedVol, false);
                     }
                     else
                     {
-                        Finalizar("REVERSAL");
-                        if (isUp) { dir = 1; Iniciar(ms, vol, cl, signedVol); }
+                        Finalizar("REVERSAL", tickTime);
+                        if (isUp) { dir = 1; Iniciar(tickTime, hi, lo, cl, vol, signedVol); }
                         else        dir = 0;
                     }
                 }
             }
             else
             {
-                if (isUp) { Continuar(ms, vol, cl, signedVol, true); fails = 0; }
+                if (isUp) { Continuar(tickTime, hi, lo, cl, ms, vol, signedVol, true); fails = 0; }
                 else
                 {
                     fails++;
@@ -494,44 +537,48 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                     if (currentRetracement <= maxAllowedRetracement)
                     {
-                        Continuar(ms, vol, cl, signedVol, false);
+                        Continuar(tickTime, hi, lo, cl, ms, vol, signedVol, false);
                     }
                     else
                     {
-                        Finalizar("REVERSAL");
-                        if (isDown) { dir = -1; Iniciar(ms, vol, cl, signedVol); }
+                        Finalizar("REVERSAL", tickTime);
+                        if (isDown) { dir = -1; Iniciar(tickTime, hi, lo, cl, vol, signedVol); }
                         else          dir = 0;
                     }
                 }
             }
         }
 
-        private void Iniciar(double ms, double vol, double cl, double signedVol)
+        private void Iniciar(DateTime tickTime, double hi, double lo, double cl, double vol, double signedVol)
         {
-            int ds = 1;
             streak = 1; validSteps = 1; fails = 0;
-            swH = Highs[ds][0]; swL = Lows[ds][0];
-            extremo = Closes[ds][0];
+            swH = hi; swL = lo;
+            extremo = cl;
             maxRetroceso = 0;
-            msList.Clear();
-            priceList.Clear(); volList.Clear(); signList.Clear();
-            priceList.Add(cl); volList.Add(vol); signList.Add(signedVol);
+            totalMs = 0;
+            msCount = 0;
+            if (EnableDbLogging)
+            {
+                priceList.Clear(); volList.Clear(); signList.Clear();
+                priceList.Add(cl); volList.Add(vol); signList.Add(signedVol);
+            }
             totalVol = vol;
-            tStart = Times[ds][0];
-            tLast  = Times[ds][0];
+            tStart = tickTime;
+            tLast  = tickTime;
+            int pBar = CurrentBars[0] >= 0 ? CurrentBars[0] : 0;
+            startPrimBar = pBar;
+            lastPrimBar  = pBar;
             zoneStartTickSeq = currentTickSeq;
             zoneEndTickSeq   = currentTickSeq;
         }
 
-        private void Continuar(double ms, double vol, double cl, double signedVol, bool valid)
+        private void Continuar(DateTime tickTime, double hi, double lo, double clC, double ms, double vol, double signedVol, bool valid)
         {
-            int ds = 1;
             streak++;
             if (valid) validSteps++;
-            swH = Math.Max(swH, Highs[ds][0]);
-            swL = Math.Min(swL, Lows[ds][0]);
+            if (hi > swH) swH = hi;
+            if (lo < swL) swL = lo;
 
-            double clC = Closes[ds][0];
             if (dir == 1)
             {
                 if (clC > extremo) extremo = clC;
@@ -545,14 +592,19 @@ namespace NinjaTrader.NinjaScript.Indicators
                 if (adv > maxRetroceso) maxRetroceso = adv;
             }
 
-            msList.Add(ms);
-            priceList.Add(cl); volList.Add(vol); signList.Add(signedVol);
+            totalMs += ms;
+            msCount++;
+            if (EnableDbLogging)
+            {
+                priceList.Add(clC); volList.Add(vol); signList.Add(signedVol);
+            }
             totalVol += vol;
-            tLast = Times[ds][0];
+            tLast = tickTime;
+            if (CurrentBars[0] >= 0) lastPrimBar = CurrentBars[0];
             zoneEndTickSeq = currentTickSeq;
         }
 
-        private void Finalizar(string reason = "REVERSAL")
+        private void Finalizar(string reason = "REVERSAL", DateTime detectTickTime = default(DateTime))
         {
             double sweepTicks = (swH - swL) / TickSize;
             bool isSweep  = sweepTicks >= MinSweepTicks;
@@ -561,8 +613,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (validSteps >= minPasosReq && (isSweep || isAbsorb))
             {
-                double total = msList.Sum();
-                int    nIntervals = msList.Count;
+                double total = totalMs;
+                int    nIntervals = msCount;
                 double avgMs = total / Math.Max(1, nIntervals);
                 double durationSec = Math.Max(total, 1.0) / 1000.0;
                 double volRate = totalVol / durationSec;
@@ -592,56 +644,59 @@ namespace NinjaTrader.NinjaScript.Indicators
                     }
 
                     double cvd = 0, buy = 0, sell = 0, maxTickVol = 0;
-                    for (int i = 0; i < signList.Count; i++)
-                    {
-                        double sv = signList[i];
-                        cvd += sv;
-                        if (sv >= 0) buy += volList[i]; else sell += volList[i];
-                        if (volList[i] > maxTickVol) maxTickVol = volList[i];
-                    }
-
                     double slope = 0, dFirst = 0, dSecond = 0;
-                    int nS = signList.Count;
-                    if (nS >= 2)
+                    int noMoveTicks = 0, maxLevelTicks = 0;
+                    double noMoveVol = 0;
+
+                    if (EnableDbLogging)
                     {
-                        double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, cum = 0;
-                        for (int i = 0; i < nS; i++)
+                        for (int i = 0; i < signList.Count; i++)
                         {
-                            cum += signList[i];
-                            sumX += i; sumY += cum; sumXY += i * cum; sumXX += (double)i * i;
+                            double sv = signList[i];
+                            cvd += sv;
+                            if (sv >= 0) buy += volList[i]; else sell += volList[i];
+                            if (volList[i] > maxTickVol) maxTickVol = volList[i];
                         }
-                        double den = nS * sumXX - sumX * sumX;
-                        if (Math.Abs(den) > 1e-9) slope = (nS * sumXY - sumX * sumY) / den;
-                        int half = nS / 2;
-                        for (int i = 0; i < nS; i++)
+
+                        int nS = signList.Count;
+                        if (nS >= 2)
                         {
-                            if (i < half) dFirst += signList[i]; else dSecond += signList[i];
+                            double sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, cum = 0;
+                            for (int i = 0; i < nS; i++)
+                            {
+                                cum += signList[i];
+                                sumX += i; sumY += cum; sumXY += i * cum; sumXX += (double)i * i;
+                            }
+                            double den = nS * sumXX - sumX * sumX;
+                            if (Math.Abs(den) > 1e-9) slope = (nS * sumXY - sumX * sumY) / den;
+                            int half = nS / 2;
+                            for (int i = 0; i < nS; i++)
+                            {
+                                if (i < half) dFirst += signList[i]; else dSecond += signList[i];
+                            }
                         }
+
+                        var freq = new Dictionary<long, int>();
+                        long prevTk = long.MinValue;
+                        for (int i = 0; i < priceList.Count; i++)
+                        {
+                            long tk = (long)Math.Round(priceList[i] / TickSize);
+                            if (i > 0 && tk == prevTk) { noMoveTicks++; noMoveVol += volList[i]; }
+                            prevTk = tk;
+                            int c; freq.TryGetValue(tk, out c); freq[tk] = c + 1;
+                        }
+                        foreach (var kv in freq) if (kv.Value > maxLevelTicks) maxLevelTicks = kv.Value;
                     }
 
-                    int noMoveTicks = 0; double noMoveVol = 0;
-                    var freq = new Dictionary<long, int>();
-                    long prevTk = long.MinValue;
-                    for (int i = 0; i < priceList.Count; i++)
-                    {
-                        long tk = (long)Math.Round(priceList[i] / TickSize);
-                        if (i > 0 && tk == prevTk) { noMoveTicks++; noMoveVol += volList[i]; }
-                        prevTk = tk;
-                        int c; freq.TryGetValue(tk, out c); freq[tk] = c + 1;
-                    }
-                    int maxLevelTicks = 0;
-                    foreach (var kv in freq) if (kv.Value > maxLevelTicks) maxLevelTicks = kv.Value;
+                    DateTime tDetect = detectTickTime != default(DateTime) ? detectTickTime : tLast;
+                    int curPrim = CurrentBars[0] >= 0 ? CurrentBars[0] : 0;
+                    int prim_start  = startPrimBar;
+                    int prim_end    = Math.Max(prim_start, lastPrimBar);
+                    int prim_detect = Math.Max(prim_end, curPrim);
 
-                    DateTime tDetect = Times[1][0];
-                    int prim_start  = BarsArray[0].GetBar(tStart);
-                    int prim_end    = BarsArray[0].GetBar(tLast);
-                    int prim_detect = BarsArray[0].GetBar(tDetect);
-                    if (prim_start < 0)  prim_start  = Math.Max(0, CurrentBars[0]);
-                    if (prim_end < prim_start) prim_end = prim_start;
-                    if (prim_detect < prim_end) prim_detect = prim_end;
-                    if (CurrentBars[0] >= 0 && prim_detect < CurrentBars[0]) prim_detect = CurrentBars[0];
-
-                    string txt = string.Format("{0} {1:F0}t · V{2:F0}", bucketTxt, sweepTicks, totalVol);
+                    string txt = (MostrarTexto || EnableDbLogging)
+                        ? string.Format("{0} {1:F0}t · V{2:F0}", bucketTxt, sweepTicks, totalVol)
+                        : bucketTxt;
 
                     var z = new Zone
                     {
@@ -695,17 +750,24 @@ namespace NinjaTrader.NinjaScript.Indicators
                 hist.RemoveAt(0);
         }
 
-        private static double Percentil(List<double> v, double p)
+        private double Percentil(List<double> v, double p)
         {
-            if (v.Count == 0) return 0;
-            var c = new List<double>(v);
-            c.Sort();
-            double pos = Math.Max(0.0, Math.Min(100.0, p)) / 100.0 * (c.Count - 1);
+            int n = v.Count;
+            if (n == 0) return 0;
+            sortScratch.Clear();
+            for (int i = 0; i < n; i++) sortScratch.Add(v[i]);
+            sortScratch.Sort();
+            double pos = Math.Max(0.0, Math.Min(100.0, p)) / 100.0 * (n - 1);
             int k = (int)Math.Floor(pos);
             double frac = pos - k;
-            if (k + 1 < c.Count)
-                return c[k] * (1.0 - frac) + c[k + 1] * frac;
-            return c[k];
+            if (k + 1 < n)
+                return sortScratch[k] * (1.0 - frac) + sortScratch[k + 1] * frac;
+            return sortScratch[k];
+        }
+
+        private static int CompareZonesByMid(Zone a, Zone b)
+        {
+            return (a.Upper + a.Lower).CompareTo(b.Upper + b.Lower);
         }
 
         // 1) CLUSTERS HFT CAUSALES:
@@ -721,109 +783,108 @@ namespace NinjaTrader.NinjaScript.Indicators
             int detectBar = z.DetectBar;
             int K = Math.Max(2, MinZonasCluster);
             int ext = Math.Max(1, ExtensionDibujo);
+            int minDetectBarViva = detectBar - ext;
 
-            var vivas = new List<Zone>();
+            vivasBuf.Clear();
             for (int j = idx; j >= 0; j--)
             {
                 Zone w = zones[j];
-                if (w.DetectBar < detectBar - ext - 2000) break;
+                if (w.DetectBar < minDetectBarViva) break;
                 if (!MostrarAbsorb && w.Bucket == HFTBucket.Absorb) continue;
                 if (w.DetectBar <= detectBar && w.VisualEndBar >= detectBar)
-                    vivas.Add(w);
+                    vivasBuf.Add(w);
             }
-            if (vivas.Count < K) return;
+            if (vivasBuf.Count < K) return;
 
-            vivas.Sort((a, b) => ((a.Upper + a.Lower) * 0.5).CompareTo((b.Upper + b.Lower) * 0.5));
-            int pos = vivas.IndexOf(z);
+            vivasBuf.Sort(CompareZonesByMid);
+            int pos = vivasBuf.IndexOf(z);
             if (pos < 0) return;
 
             double mejorScore = double.MaxValue;
             double bestLo = 0, bestHi = 0, bestPoc = 0, bestPacking = 0;
             int bestCount = 0;
+            int nVivas = vivasBuf.Count;
+            double maxAllowedSpanPrice = Math.Max(88.0, escalaVolTicks * 3.2) * TickSize;
 
-            for (int i0 = Math.Max(0, pos - K + 1); i0 <= pos && i0 + K <= vivas.Count; i0++)
+            for (int startIdx = Math.Max(0, pos - K + 1); startIdx <= pos && startIdx + K <= nVivas; startIdx++)
             {
-                int i1 = i0 + K - 1;
+                int i0 = startIdx;
+                int i1 = startIdx + K - 1;
                 double lo = double.MaxValue, hi = double.MinValue;
-                double baseSumH = 0;
+                double sumH = 0, totalBandVol = 0, totalWeightedMid = 0;
+
                 for (int j = i0; j <= i1; j++)
                 {
-                    Zone w = vivas[j];
+                    Zone w = vivasBuf[j];
                     double wLo = Math.Min(w.Lower, w.Upper);
                     double wHi = Math.Max(w.Lower, w.Upper);
                     if (wLo < lo) lo = wLo;
                     if (wHi > hi) hi = wHi;
-                    baseSumH += Math.Max(TickSize * 2.0, wHi - wLo);
+                    double hZ = Math.Max(TickSize * 2.0, wHi - wLo);
+                    sumH += hZ;
+                    double v = Math.Max(1.0, w.TotalVol);
+                    totalBandVol += v;
+                    totalWeightedMid += ((wLo + wHi) * 0.5) * v;
                 }
 
-                double avgZoneHeight = baseSumH / K;
+                double avgZoneHeight = sumH / K;
                 double maxJoinGap = Math.Max(TickSize * 4.0, avgZoneHeight * 0.35);
 
-                // Expandir la pila contigua para incluir todas las zonas vivas adyacentes que se solapen con [lo, hi]
+                // Expandir la pila contigua en O(1) amortizado sobre la lista ya ordenada por precio medio
                 bool expanded = true;
                 while (expanded)
                 {
                     expanded = false;
                     if (i0 > 0)
                     {
-                        Zone prev = vivas[i0 - 1];
+                        Zone prev = vivasBuf[i0 - 1];
                         double pLo = Math.Min(prev.Lower, prev.Upper);
                         double pHi = Math.Max(prev.Lower, prev.Upper);
-                        if (pHi >= lo - maxJoinGap && (Math.Max(hi, pHi) - Math.Min(lo, pLo)) <= Math.Max(88.0 * TickSize, escalaVolTicks * 3.2 * TickSize))
+                        double newLo = Math.Min(lo, pLo);
+                        double newHi = Math.Max(hi, pHi);
+                        if (pHi >= lo - maxJoinGap && (newHi - newLo) <= maxAllowedSpanPrice)
                         {
-                            lo = Math.Min(lo, pLo);
-                            hi = Math.Max(hi, pHi);
+                            lo = newLo;
+                            hi = newHi;
                             i0--;
+                            sumH += Math.Max(TickSize * 2.0, pHi - pLo);
+                            double v = Math.Max(1.0, prev.TotalVol);
+                            totalBandVol += v;
+                            totalWeightedMid += ((pLo + pHi) * 0.5) * v;
                             expanded = true;
                         }
                     }
-                    if (i1 + 1 < vivas.Count)
+                    if (i1 + 1 < nVivas)
                     {
-                        Zone next = vivas[i1 + 1];
+                        Zone next = vivasBuf[i1 + 1];
                         double nLo = Math.Min(next.Lower, next.Upper);
                         double nHi = Math.Max(next.Lower, next.Upper);
-                        if (nLo <= hi + maxJoinGap && (Math.Max(hi, nHi) - Math.Min(lo, nLo)) <= Math.Max(88.0 * TickSize, escalaVolTicks * 3.2 * TickSize))
+                        double newLo = Math.Min(lo, nLo);
+                        double newHi = Math.Max(hi, nHi);
+                        if (nLo <= hi + maxJoinGap && (newHi - newLo) <= maxAllowedSpanPrice)
                         {
-                            lo = Math.Min(lo, nLo);
-                            hi = Math.Max(hi, nHi);
+                            lo = newLo;
+                            hi = newHi;
                             i1++;
+                            sumH += Math.Max(TickSize * 2.0, nHi - nLo);
+                            double v = Math.Max(1.0, next.TotalVol);
+                            totalBandVol += v;
+                            totalWeightedMid += ((nLo + nHi) * 0.5) * v;
                             expanded = true;
                         }
                     }
                 }
 
-                // Sumar todas las zonas vivas que participan o se solapan en la banda [lo, hi]
-                int mTotal = 0;
-                double sumH = 0, totalBandVol = 0, totalWeightedMid = 0;
-                for (int j = 0; j < vivas.Count; j++)
-                {
-                    Zone w = vivas[j];
-                    double wLo = Math.Min(w.Lower, w.Upper);
-                    double wHi = Math.Max(w.Lower, w.Upper);
-                    double wMid = (wLo + wHi) * 0.5;
-                    double ov = Math.Min(hi, wHi) - Math.Max(lo, wLo);
-                    if ((j >= i0 && j <= i1) || (wMid >= lo && wMid <= hi) || ov >= TickSize * 2.0)
-                    {
-                        mTotal++;
-                        sumH += Math.Max(TickSize * 2.0, wHi - wLo);
-                        double v = Math.Max(1.0, w.TotalVol);
-                        totalBandVol += v;
-                        totalWeightedMid += wMid * v;
-                    }
-                }
-                if (mTotal < K) continue;
-
+                int mTotal = i1 - i0 + 1;
                 double spanPrice = Math.Max(TickSize * 2.0, hi - lo);
-                double spanTicks = spanPrice / TickSize;
-                double maxAllowedTicks = Math.Max(88.0, escalaVolTicks * 3.2);
-                if (spanTicks > maxAllowedTicks) continue;
+                if (spanPrice > maxAllowedSpanPrice) continue;
 
                 // Densidad real de solapamiento (packing = suma de alturas individuales / altura total de la pila)
                 double packing = sumH / spanPrice;
                 if (packing < 0.70) continue;
 
+                double spanTicks = spanPrice / TickSize;
                 double avgZoneTicks = Math.Max(6.0, (sumH / mTotal) / TickSize);
-                // Paso por zona normalizado por la altura media de las zonas que componen el cluster (no penaliza zonas de 4-6 pts)
                 double pasoNorm = (spanTicks / mTotal) / avgZoneTicks;
                 double gapLibreTicks = Math.Max(0.0, spanPrice - sumH * 0.75) / TickSize;
                 double gapNorm = (gapLibreTicks / mTotal) / avgZoneTicks;
@@ -847,12 +908,14 @@ namespace NinjaTrader.NinjaScript.Indicators
 
             if (mejorScore == double.MaxValue) return;
             double bestWidthTicks = (bestHi - bestLo) / TickSize;
+            int extPct = Math.Max(10, PctExtensionBars);
 
             // Verificar si ya hay un cluster activo en este rango de precio en detectBar
             CausalCluster activoSolapado = null;
             for (int i = clustersPct.Count - 1; i >= 0; i--)
             {
                 CausalCluster cc = clustersPct[i];
+                if (cc.DetectBar < detectBar - extPct * 3) break;
                 if (cc.VisualEndBar < detectBar) continue;
                 if (cc.Lower <= bestHi + TickSize * 2 && bestLo - TickSize * 2 <= cc.Upper)
                 {
@@ -869,7 +932,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                     activoSolapado.Upper = Math.Max(activoSolapado.Upper, bestHi);
                     activoSolapado.PocPrice = bestPoc;
                     activoSolapado.WidthTicks = (activoSolapado.Upper - activoSolapado.Lower) / TickSize;
-                    activoSolapado.VisualEndBar = Math.Max(activoSolapado.VisualEndBar, detectBar + Math.Max(10, PctExtensionBars));
+                    activoSolapado.VisualEndBar = Math.Max(activoSolapado.VisualEndBar, detectBar + extPct);
                     activoSolapado.ZoneCount = Math.Max(activoSolapado.ZoneCount, bestCount);
                     activoSolapado.Score = Math.Min(activoSolapado.Score, mejorScore);
                     activoSolapado.Label = string.Format("CLUS {0}z · {1:F0}t", activoSolapado.ZoneCount, activoSolapado.WidthTicks);
@@ -877,22 +940,19 @@ namespace NinjaTrader.NinjaScript.Indicators
                 return;
             }
 
-            // Registrar en la historia sólo candidatos de formaciones distintas (evita inflar nHist con cada zona repetida del mismo cluster)
+            // Registrar en la historia sólo candidatos de formaciones distintas
             AgregarHistoriaAcotada(histScoreCluster, mejorScore);
 
             int nHist = histScoreCluster.Count;
             bool altaConfluenciaDirecta = (bestCount >= K + 1 && bestPacking >= 1.35) || (bestCount >= K && bestPacking >= 1.65);
 
-            if (nHist < Math.Max(6, PctMinHistoria / 2))
+            if (!altaConfluenciaDirecta)
             {
-                if (!altaConfluenciaDirecta) return;
-            }
-            else
-            {
+                if (nHist < Math.Max(6, PctMinHistoria / 2)) return;
                 double fracSesion = Math.Max(0.5, ClustersPorSesion) * Math.Max(1, sesionesVistas) / Math.Max(1, nHist);
                 double pctEfectivo = Math.Max((double)PctAngosto, Math.Min(35.0, 100.0 * fracSesion));
                 double umbral = Percentil(histScoreCluster, Math.Max(5.0, pctEfectivo));
-                if (mejorScore > umbral && !altaConfluenciaDirecta) return;
+                if (mejorScore > umbral) return;
             }
 
             // Confirmado en detectBar: nace en detectBar y se proyecta hacia adelante
@@ -902,7 +962,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 Upper        = bestHi,
                 PocPrice     = bestPoc,
                 DetectBar    = detectBar,
-                VisualEndBar = detectBar + Math.Max(10, PctExtensionBars),
+                VisualEndBar = detectBar + extPct,
                 ZoneCount    = bestCount,
                 WidthTicks   = bestWidthTicks,
                 Score        = mejorScore,
@@ -915,19 +975,12 @@ namespace NinjaTrader.NinjaScript.Indicators
         }
 
         // 2) EXPANSIONES SIN HFT CAUSALES (SIN DESFASE Y SIN SUPERPOSICIÓN):
-        // - Rastrea cada impulso direccional libre de nuevas zonas HFT.
-        // - Cuando una nueva zona HFT aparece en la trayectoria del impulso, sella el tramo libre de HFT en el borde
-        //   de esa zona y reinicia el origen del siguiente tramo en el borde opuesto de la zona.
-        // - Cuando el impulso supera el umbral de expansión infrecuente en la barra b, crea UNA única zona de expansión
-        //   con DetectBar = b. Mientras ese mismo impulso continúa sin zonas HFT, actualiza su frontera líder in-place
-        //   manteniendo fijo DetectBar (sin escalones duplicados y sin desfasar el inicio al pico/valle final).
-        // - Garantiza 0% superposición: recorta en DetectBar cualquier expansión previa activa que se solape en precio,
-        //   y cierra la proyección visual cuando el precio mitiga (>= 70%) el vacío.
         private void RegistrarPiernaEnHistoria()
         {
             if (impBestScoreRegistrado > 0.15)
             {
                 AgregarHistoriaAcotada(histScoreExp, impBestScoreRegistrado);
+                umbralExpDirty = true;
             }
             impBestScoreRegistrado = 0;
             impLastTriggeredHeightTicks = 0;
@@ -937,9 +990,11 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void RecortarExpansionesSolapadas(CausalExpansion actual)
         {
             if (actual == null) return;
+            int minBar = actual.DetectBar - Math.Max(10, PctExtensionBars) * 3;
             for (int i = expansionsPct.Count - 1; i >= 0; i--)
             {
                 CausalExpansion prev = expansionsPct[i];
+                if (prev.DetectBar < minBar) break;
                 if (ReferenceEquals(prev, actual)) continue;
                 if (prev.VisualEndBar <= actual.DetectBar) continue;
                 double ov = Math.Min(prev.Upper, actual.Upper) - Math.Max(prev.Lower, actual.Lower);
@@ -1009,11 +1064,14 @@ namespace NinjaTrader.NinjaScript.Indicators
             double H = Highs[0][0];
             double L = Lows[0][0];
             double barRng = Math.Max(TickSize, H - L);
+            int extPct = Math.Max(10, PctExtensionBars);
+            int minBarActiva = b - extPct * 3;
 
             // 1) Mitigar expansiones previas selladas si el precio ya rellenó >= 75% de su rango
             for (int i = expansionsPct.Count - 1; i >= 0; i--)
             {
                 CausalExpansion prev = expansionsPct[i];
+                if (prev.DetectBar < minBarActiva) break;
                 if (ReferenceEquals(prev, impActiveExpansion)) continue;
                 if (prev.VisualEndBar <= b) continue;
                 double span = prev.Upper - prev.Lower;
@@ -1124,7 +1182,7 @@ namespace NinjaTrader.NinjaScript.Indicators
             // Determinar el corredor libre de zonas HFT en la FRONTERA LÍDER del impulso actual [impStartBar .. b]
             double gLo = lo;
             double gHi = hi;
-            for (int j = zones.Count - 1; j >= 0; j--)
+            for (int j = primeraSinEvaluar - 1; j >= 0; j--)
             {
                 Zone z = zones[j];
                 if (z.DetectBar < impStartBar - 15) break;
@@ -1136,13 +1194,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 
                 if (impDir == 1)
                 {
-                    // En impulso alcista, el corredor limpio va desde el techo de la última zona tocada hasta hi
                     if (zl <= hi && zh >= hi - TickSize) return;
                     if (zh > gLo && zh < hi) gLo = zh;
                 }
                 else
                 {
-                    // En impulso bajista, el corredor limpio va desde lo hasta el piso de la última zona tocada
                     if (zh >= lo && zl <= lo + TickSize) return;
                     if (zl < gHi && zl > lo) gHi = zl;
                 }
@@ -1186,7 +1242,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 impActiveExpansion.MidPrice = (gLo + gHi) * 0.5;
                 impActiveExpansion.HeightTicks = gapTicks;
                 impActiveExpansion.Efficiency = eficiencia;
-                impActiveExpansion.VisualEndBar = Math.Max(impActiveExpansion.VisualEndBar, b + Math.Max(10, PctExtensionBars));
+                impActiveExpansion.VisualEndBar = Math.Max(impActiveExpansion.VisualEndBar, b + extPct);
                 impActiveExpansion.Label = string.Format("EXP {0:F0}t", gapTicks);
                 impLastTriggeredHeightTicks = gapTicks;
                 RecortarExpansionesSolapadas(impActiveExpansion);
@@ -1196,19 +1252,23 @@ namespace NinjaTrader.NinjaScript.Indicators
             int nHist = histScoreExp.Count;
             if (nHist < Math.Max(10, PctMinHistoria)) return;
 
-            double frac = Math.Min(PctAmplio / 100.0, Math.Max(0.1, ExpPorSesion) * Math.Max(1, sesionesVistas) / nHist);
-            double umbral = Percentil(histScoreExp, 100.0 * (1.0 - frac));
-            if (scoreExp < umbral) return;
+            if (umbralExpDirty)
+            {
+                double frac = Math.Min(PctAmplio / 100.0, Math.Max(0.1, ExpPorSesion) * Math.Max(1, sesionesVistas) / nHist);
+                cachedUmbralExp = Percentil(histScoreExp, 100.0 * (1.0 - frac));
+                umbralExpDirty = false;
+            }
+            if (scoreExp < cachedUmbralExp) return;
 
             // Evitar abrir una expansión redundante contenida dentro de una expansión activa de sentido opuesto
             for (int i = expansionsPct.Count - 1; i >= 0; i--)
             {
                 CausalExpansion prev = expansionsPct[i];
+                if (prev.DetectBar < b - 45) break;
                 if (prev.VisualEndBar <= b) continue;
                 double inter = Math.Min(prev.Upper, gHi) - Math.Max(prev.Lower, gLo);
                 if (inter > 0 && inter >= 0.70 * mejorGap && b - prev.DetectBar < 40)
                 {
-                    // El movimiento actual es un retroceso/mitigación dentro de la expansión recién abierta: cerrarla en b
                     prev.VisualEndBar = b;
                     return;
                 }
@@ -1221,7 +1281,7 @@ namespace NinjaTrader.NinjaScript.Indicators
                 Upper        = gHi,
                 MidPrice     = (gLo + gHi) * 0.5,
                 DetectBar    = b,
-                VisualEndBar = b + Math.Max(10, PctExtensionBars),
+                VisualEndBar = b + extPct,
                 Direction    = impDir,
                 HeightTicks  = gapTicks,
                 Efficiency   = eficiencia,
@@ -1317,6 +1377,42 @@ namespace NinjaTrader.NinjaScript.Indicators
             }
         }
 
+        private int BuscarPrimeraZona(int minDetectBar)
+        {
+            int lo = 0, hi = zones.Count - 1;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) >> 1;
+                if (zones[mid].DetectBar < minDetectBar) lo = mid + 1;
+                else hi = mid - 1;
+            }
+            return lo;
+        }
+
+        private int BuscarPrimeraExp(int minDetectBar)
+        {
+            int lo = 0, hi = expansionsPct.Count - 1;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) >> 1;
+                if (expansionsPct[mid].DetectBar < minDetectBar) lo = mid + 1;
+                else hi = mid - 1;
+            }
+            return lo;
+        }
+
+        private int BuscarPrimerCluster(int minDetectBar)
+        {
+            int lo = 0, hi = clustersPct.Count - 1;
+            while (lo <= hi)
+            {
+                int mid = (lo + hi) >> 1;
+                if (clustersPct[mid].DetectBar < minDetectBar) lo = mid + 1;
+                else hi = mid - 1;
+            }
+            return lo;
+        }
+
         protected override void OnRender(ChartControl chartControl, ChartScale chartScale)
         {
             base.OnRender(chartControl, chartScale);
@@ -1328,6 +1424,8 @@ namespace NinjaTrader.NinjaScript.Indicators
             int toBar   = ChartBars.ToIndex;
             if (toBar < fromBar) return;
 
+            int extBase = Math.Max(1, ExtensionDibujo);
+            int extPct  = Math.Max(10, PctExtensionBars) * 3;
             float halfBar = Math.Max(1f, (float)chartControl.Properties.BarDistance * 0.45f);
             SharpDX.Direct2D1.AntialiasMode prevMode = RenderTarget.AntialiasMode;
             RenderTarget.AntialiasMode = SharpDX.Direct2D1.AntialiasMode.Aliased;
@@ -1336,13 +1434,15 @@ namespace NinjaTrader.NinjaScript.Indicators
             {
                 lock (syncRoot)
                 {
-                    // 1. CAPA BASE: Zonas HFT individuales (dibujadas desde z.DetectBar hacia adelante, en TODO el histórico)
+                    // 1. CAPA BASE: Zonas HFT individuales (búsqueda binaria O(log N) + corte inmediato en toBar)
                     if (MostrarZonasBase && zones.Count > 0)
                     {
-                        for (int i = 0; i < zones.Count; i++)
+                        int iStart = BuscarPrimeraZona(fromBar - extBase);
+                        for (int i = iStart; i < zones.Count; i++)
                         {
                             Zone z = zones[i];
-                            if (z.VisualEndBar < fromBar || z.DetectBar > toBar) continue;
+                            if (z.DetectBar > toBar) break;
+                            if (z.VisualEndBar < fromBar) continue;
 
                             int bStart = Math.Max(fromBar, z.DetectBar);
                             int bEnd   = Math.Min(toBar, z.VisualEndBar);
@@ -1384,13 +1484,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                         }
                     }
 
-                    // 2. CAPA INFRECUENTE A: Expansiones sin HFT (nacen en DetectBar, con línea media 50%)
+                    // 2. CAPA INFRECUENTE A: Expansiones sin HFT (búsqueda binaria O(log N) + corte en toBar)
                     if (MostrarRangosPct && expansionsPct.Count > 0)
                     {
-                        for (int i = 0; i < expansionsPct.Count; i++)
+                        int iStart = BuscarPrimeraExp(fromBar - extPct);
+                        for (int i = iStart; i < expansionsPct.Count; i++)
                         {
                             CausalExpansion ex = expansionsPct[i];
-                            if (ex.VisualEndBar < fromBar || ex.DetectBar > toBar) continue;
+                            if (ex.DetectBar > toBar) break;
+                            if (ex.VisualEndBar < fromBar) continue;
 
                             int bStart = Math.Max(fromBar, ex.DetectBar);
                             int bEnd   = Math.Min(toBar, ex.VisualEndBar);
@@ -1427,13 +1529,15 @@ namespace NinjaTrader.NinjaScript.Indicators
                         }
                     }
 
-                    // 3. CAPA INFRECUENTE B: Clusters HFT (nacen en DetectBar, con línea POC interna)
+                    // 3. CAPA INFRECUENTE B: Clusters HFT (búsqueda binaria O(log N) + corte en toBar)
                     if (MostrarRangosPct && clustersPct.Count > 0)
                     {
-                        for (int i = 0; i < clustersPct.Count; i++)
+                        int iStart = BuscarPrimerCluster(fromBar - extPct);
+                        for (int i = iStart; i < clustersPct.Count; i++)
                         {
                             CausalCluster cc = clustersPct[i];
-                            if (cc.VisualEndBar < fromBar || cc.DetectBar > toBar) continue;
+                            if (cc.DetectBar > toBar) break;
+                            if (cc.VisualEndBar < fromBar) continue;
 
                             int bStart = Math.Max(fromBar, cc.DetectBar);
                             int bEnd   = Math.Min(toBar, cc.VisualEndBar);
@@ -1480,16 +1584,13 @@ namespace NinjaTrader.NinjaScript.Indicators
         private void DibujarEtiquetaCompacta(string text, float x, float y, SharpDX.Direct2D1.Brush textBrush)
         {
             if (string.IsNullOrEmpty(text) || dwFontSmall == null || textBrush == null) return;
-            using (var layout = new SharpDX.DirectWrite.TextLayout(NinjaTrader.Core.Globals.DirectWriteFactory, text, dwFontSmall, 220f, 16f))
+            float tw = text.Length * 5.8f + 6f;
+            float th = 14f;
+            if (dxLabelBg != null)
             {
-                float tw = layout.Metrics.Width;
-                float th = layout.Metrics.Height;
-                if (dxLabelBg != null)
-                {
-                    RenderTarget.FillRectangle(new SharpDX.RectangleF(x - 2f, y - 1f, tw + 5f, th + 2f), dxLabelBg);
-                }
-                RenderTarget.DrawTextLayout(new SharpDX.Vector2(x, y), layout, textBrush);
+                RenderTarget.FillRectangle(new SharpDX.RectangleF(x - 2f, y - 1f, tw, th), dxLabelBg);
             }
+            RenderTarget.DrawText(text, dwFontSmall, new SharpDX.RectangleF(x, y - 1f, tw + 20f, th + 2f), textBrush);
         }
 
         // ===================== FLOW STREAM & SQLITE =====================
