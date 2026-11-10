@@ -81,3 +81,17 @@ angostos que el stop mínimo). Se declara una segunda tanda, **sin lanzar**, que
   cuentan al lanzar. El resultado de la tanda de 4 zonas se informa igual, pase o no.
 - **Riesgo declarado:** con ~1 evento por sesión y 150–180 sesiones por activo la potencia es baja; se combinan los 4 activos y, si
   no alcanza, se informa SIN_POTENCIA (no refutado).
+
+### 8.1 Corrección de la regla de §8 (2026-11-10, mismo día, antes de ver el paso INFO): equilibrio entre potencia y fricción
+Pedido de Nico: no hace falta 1 cluster por sesión; se busca el punto que equilibre potencia y fricción. Reemplaza los ejes y la
+regla mecánica de §8 (lo demás queda igual):
+- **Ejes del E0-b:** zonas mínimas K ∈ {4, 6, 8, 12, 16}; ancho mínimo ∈ {sin mínimo, X/4, X/2, X}; vida de zona {900, 1.800} s;
+  zona `Z_CERT`. 40 definiciones por activo, todas sin retornos.
+- **Criterio único (se minimiza):** `borde_detectable = 2,49 / √N + fricción_R`, donde N = eventos totales de la definición en la
+  ventana (clusters × sesiones) y `fricción_R` = fricción canónica / ancho mediano del cluster (stop = ancho, sin piso). El primer
+  término es la diferencia mínima que la prueba puede detectar con 80 % de potencia (desenlace ±1); el segundo, lo que hay que
+  ganar para pagar costos. La suma es el borde bruto más chico que sería **a la vez detectable y rentable**: pocas y anchas pierden
+  por el primer término; muchas y angostas, por el segundo.
+- **Elegibles:** CV mensual ≤ 0,5. Se elige por activo la de menor `borde_detectable`; se publica la tabla completa de las 40.
+- **Límite declarado:** N cuenta clusters, no toques (no todo cluster da un evento de rebote o de imán); el criterio ordena
+  definiciones, no predice la potencia real, que se informa con el MDE del resultado.
