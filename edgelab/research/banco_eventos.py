@@ -75,6 +75,9 @@ def validar(spec: dict, T: pd.DataFrame | None = None) -> list:
     if spec["desenlace"] not in spec["columnas_desenlace"]: err.append("el desenlace tiene que estar en `columnas_desenlace`")
     if spec["direccion"] not in (-1, 0, 1): err.append("`direccion` es +1, −1 o 0")
     if not spec.get("habilitada", True): err.append("especificación no habilitada (`habilitada: false`)")
+    if spec.get("tabla_no_mirada") is not True:                              # K19: sin desenlaces vistos no hay mitad B honesta
+        err.append("declarar `tabla_no_mirada: true`: nadie miró los desenlaces de esta tabla (ni marginales ni resultados); "
+                   "una tabla ya analizada no tiene mitad B honesta")
     if T is None: return err
     falt = [c for c in IDS + (spec["desenlace"],) if c not in T]
     if falt: return err + [f"la tabla no tiene {falt}"]
@@ -367,4 +370,5 @@ PLANTILLA = dict(nombre="FAMILIA_idea_20261110", familia="FAMILIA", linaje="FAMI
                  tabla="docs/research/.../tabla.csv", ventana=[20250701, 20260331], desenlace="rompe",
                  columnas_desenlace=["rompe", "rompe_media", "rompe_doble", "t_res_s", "avance15_x"], direccion=1, nulo=0.0,
                  umbral_economico=0.08, k=3, q=0.10, min_n=100, min_n_b=60, pares=True, rasgos="todos", cortes_fijos={},
-                 justificacion_economica="por qué el mercado pagaría esto", como_refutar="qué resultado lo mataría", habilitada=True)
+                 justificacion_economica="por qué el mercado pagaría esto", como_refutar="qué resultado lo mataría", habilitada=True,
+                 tabla_no_mirada=True)

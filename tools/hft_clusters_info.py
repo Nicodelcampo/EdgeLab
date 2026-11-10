@@ -9,6 +9,7 @@
   python tools/hft_clusters_info.py info                   # paso de información en DESC con la definición que eligió el E0
   python tools/hft_clusters_info.py rep                    # réplica abr → sep (sólo si el paso info pasó; una vez)
   python tools/hft_clusters_info.py traer e0|info|rep      # baja el resultado a la carpeta de la familia (y escribe RECOMENDACIONES_<modo>.md)
+      [modulo=justificación]                               # si el resultado es NO VIGENTE y el diff de ese módulo se revisó y no toca el modo
   python tools/hft_clusters_info.py recomendar rebotes|contexto|info   # rehace las recomendaciones de un resultado ya bajado
 Agregar --solo-construir para no lanzar. La definición del paso info sale de HFTC_e0.json (campo `eleccion`), nunca a mano.
 """
@@ -101,7 +102,11 @@ def main():
         for ext in ("json", "csv"): print(k("output", "--slug", slug(a[1]), "--file", f"HFTC_{a[1]}.{ext}", "--out", str(DIR / f"HFTC_{a[1]}.{ext}")).strip())
         js = DIR / f"HFTC_{a[1]}.json"
         if js.exists():                                                  # error 23 de preflight: ¿corrió con el código vigente?
-            viejo = no_vigente(a[1], json.loads(js.read_text(encoding="utf-8")))
+            res = json.loads(js.read_text(encoding="utf-8")); viejo = no_vigente(a[1], res)
+            acept = dict(x.split("=", 1) for x in sys.argv if "=" in x and x.split("=", 1)[0] in viejo)   # modulo=justificación (diff revisado)
+            if viejo and set(viejo) <= set(acept):                       # cambio revisado y declarado irrelevante: queda escrito en el resultado
+                res["cambios_aceptados"] = acept; js.write_text(json.dumps(res, indent=1, ensure_ascii=False), encoding="utf-8")
+                print("cambios de código aceptados con justificación:", acept); viejo = []
             if viejo:
                 for ext in ("json", "csv"):
                     f = DIR / f"HFTC_{a[1]}.{ext}"

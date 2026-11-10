@@ -24,7 +24,7 @@ def _tabla(efecto=0.0, n_dias=160, por_dia=30, seed=1):
 
 
 SPEC = dict(nombre="TEST_banco", familia="TEST_BANCO", tabla="x.csv", ventana=[20250701, 20260331], desenlace="rompe",
-            columnas_desenlace=["rompe", "avance"], justificacion_economica="prueba", como_refutar="prueba", n_boot=400, cortes_fijos={"k": [0.5, 1.5]})
+            columnas_desenlace=["rompe", "avance"], justificacion_economica="prueba", como_refutar="prueba", n_boot=400, tabla_no_mirada=True, cortes_fijos={"k": [0.5, 1.5]})
 
 
 def test_contrato_detecta_fugas_holdout_y_campos():
@@ -36,6 +36,7 @@ def test_contrato_detecta_fugas_holdout_y_campos():
     T2 = T.copy(); T2.loc[0, "fecha"] = 20261005
     assert any("holdout" in e for e in BE.validar(BE.especificacion(SPEC), T2))
     assert "avance" not in BE.rasgos_de(BE.especificacion(SPEC), T)
+    assert any("tabla_no_mirada" in e for e in BE.validar(BE.especificacion(dict(SPEC, tabla_no_mirada=False)), T))
 
 
 def test_particion_solo_depende_de_la_fecha_y_es_balanceada():

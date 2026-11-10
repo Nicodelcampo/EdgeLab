@@ -1,0 +1,346 @@
+{
+ "experimento": "HFT-CLUSTERS-INFO",
+ "modo": "contexto",
+ "ventana": [
+  20250701,
+  20260331
+ ],
+ "codigo": "ddce2e5dced4f6098ee355f0cc365480d8d338f7e0c4717411fc32406c7d2d80",
+ "modulos": {
+  "edgelab/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/bridge/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/bridge/indicators/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/funnel/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/research/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "edgelab/holdout.py": "e73229e15742a1f58097ef623594ba784e1fc04095875fabdcd7dcb1b995ffbd",
+  "edgelab/research/fuentes_ticks.py": "1f3ae518e9a0bba32e5427fe106312119a5a8322be45bdc61b6382193305f09c",
+  "edgelab/bridge/indicators/hftzones_nq.py": "0077c7040805d191b0cfe169016ccdbd1148b7ac16fa47770b2fee9f8e50a2d7",
+  "edgelab/bridge/indicators/hftzones_nq_rangos_pct_v2.py": "ea83a1b09e6049d8edcb7934f97256e96595db257c98a340fc684965999f86ce",
+  "edgelab/research/hft_clusters_info.py": "727713c13094ffa00ab7fb84907422738e823449f9f2b68c2c1688da953a0568",
+  "edgelab/research/hft_rebotes.py": "c7956f0f4935fb34f828e992efe40f2b5b5a384b246f20f8107432fe4d32c29f",
+  "edgelab/research/hft_contexto.py": "c742323364bce4ba88b68d2b383b7ca4121c4ea3e7ae10a1dd22f2e5a04a96ff",
+  "edgelab/research/grilla_masiva.py": "0d608f007acb86aaa323b0f46292b40a15610fbae5f407d1f542783b8bdc825e",
+  "edgelab/funnel/escalera.py": "f2e98fc6346c52fc17253e803f17523cc71dee91f1a1a622f2f31a1b42908c40"
+ },
+ "friccion_pts": {
+  "NQ": 1.5455,
+  "ES": 0.8877,
+  "YM": 5.052,
+  "GC": 0.605
+ },
+ "barrera_pts": {
+  "NQ": 19.5,
+  "ES": 11.25,
+  "YM": 64.0,
+  "GC": 7.6000000000000005
+ },
+ "zonas": {
+  "Z_CERT": {
+   "max_avg_ms": 25.0,
+   "min_total_volume": 50.0,
+   "detect_absorb": true
+  },
+  "Z_VOL10": {
+   "max_avg_ms": 25.0,
+   "min_total_volume": 10.0,
+   "detect_absorb": true
+  }
+ },
+ "clusters": {
+  "K4_PK085_V300": {
+   "k": 4,
+   "min_packing": 0.85,
+   "vida_zona_s": 300
+  },
+  "K4_PK085_V900": {
+   "k": 4,
+   "min_packing": 0.85,
+   "vida_zona_s": 900
+  },
+  "K4_PK125_V300": {
+   "k": 4,
+   "min_packing": 1.25,
+   "vida_zona_s": 300
+  },
+  "K4_PK125_V900": {
+   "k": 4,
+   "min_packing": 1.25,
+   "vida_zona_s": 900
+  }
+ },
+ "definicion": "D0_BASE",
+ "contrastes": {
+  "respaldo": [
+   "≥2",
+   "0",
+   1
+  ],
+  "obstaculo": [
+   "cerca",
+   "ninguno",
+   -1
+  ],
+  "densidad": [
+   "0",
+   "≥3",
+   0
+  ],
+  "confluencia": [
+   "sí",
+   "no",
+   1
+  ],
+  "mas_nuevo": [
+   "sí",
+   "no",
+   1
+  ],
+  "huella": [
+   "0",
+   "≥1",
+   0
+  ]
+ },
+ "variables": {
+  "respaldo": {
+   "conteos": {
+    "0": 3119,
+    "1": 78
+   },
+   "estratos": [
+    "≥2",
+    "0"
+   ],
+   "signo_esperado": 1,
+   "estado": "SIN_POTENCIA (A 0, B 3119 < 150)"
+  },
+  "obstaculo": {
+   "conteos": {
+    "ninguno": 2303,
+    "cerca": 626,
+    "lejos": 268
+   },
+   "estratos": [
+    "cerca",
+    "ninguno"
+   ],
+   "signo_esperado": -1,
+   "n_real": 626,
+   "n_placebo": 2303,
+   "sesiones": 289,
+   "media_real": 0.019169329073482427,
+   "media_placebo": -0.02344767694311767,
+   "diferencia": 0.042617006016600095,
+   "ic90": [
+    -0.027385100556515562,
+    0.1146692784939969
+   ],
+   "p_unilateral": 0.16065,
+   "se": 0.04320175227823578,
+   "mde80": 0.10757236317280709,
+   "p_dos_colas": 0.3213,
+   "p_declarada": 0.83935,
+   "estado": "PROBADA",
+   "por_activo": {
+    "ES": {
+     "diferencia": 0.41722648752399233,
+     "se": 0.2473372798368373
+    },
+    "NQ": {
+     "diferencia": 0.02779341686445512,
+     "se": 0.04523890986076995
+    }
+   },
+   "medias_por_estrato": {
+    "cerca": 0.019169329073482427,
+    "lejos": 0.007462686567164179,
+    "ninguno": -0.02344767694311767
+   },
+   "monotono": true,
+   "control": {
+    "n": 964,
+    "diferencia": 0.20374449339207049,
+    "ic90": [
+     -0.03711829694169541,
+     0.446390290850206
+    ]
+   },
+   "dif_en_dif": -0.1611274873754704
+  },
+  "densidad": {
+   "conteos": {
+    "1-2": 1613,
+    "0": 1551,
+    "≥3": 33
+   },
+   "estratos": [
+    "0",
+    "≥3"
+   ],
+   "signo_esperado": 0,
+   "estado": "SIN_POTENCIA (A 1551, B 33 < 150)"
+  },
+  "confluencia": {
+   "conteos": {
+    "no": 3197
+   },
+   "estratos": [
+    "sí",
+    "no"
+   ],
+   "signo_esperado": 1,
+   "estado": "SIN_POTENCIA (A 0, B 3197 < 150)"
+  },
+  "mas_nuevo": {
+   "conteos": {
+    "sí": 1220,
+    "no": 426
+   },
+   "estratos": [
+    "sí",
+    "no"
+   ],
+   "signo_esperado": 1,
+   "n_real": 1220,
+   "n_placebo": 426,
+   "sesiones": 171,
+   "media_real": -0.005737704918032787,
+   "media_placebo": 0.03286384976525822,
+   "diferencia": -0.038601554683291,
+   "ic90": [
+    -0.1398272514392303,
+    0.06448078079038046
+   ],
+   "p_unilateral": 0.7262,
+   "se": 0.062431063756059474,
+   "mde80": 0.1554533487525881,
+   "p_dos_colas": 0.5476000000000001,
+   "p_declarada": 0.7262,
+   "estado": "PROBADA",
+   "por_activo": {
+    "ES": {
+     "diferencia": -0.15000000000000002,
+     "se": 0.4835885674953483
+    },
+    "NQ": {
+     "diferencia": -0.03317467416304626,
+     "se": 0.063223115709307
+    }
+   },
+   "control": {
+    "n": 237,
+    "diferencia": 0.10287081339712918,
+    "ic90": [
+     -0.16836185594508357,
+     0.35563137351192015
+    ]
+   },
+   "dif_en_dif": -0.14147236808042019
+  },
+  "huella": {
+   "conteos": {
+    "0": 2763,
+    "≥1": 434
+   },
+   "estratos": [
+    "0",
+    "≥1"
+   ],
+   "signo_esperado": 0,
+   "n_real": 2763,
+   "n_placebo": 434,
+   "sesiones": 289,
+   "media_real": -0.020267824828085413,
+   "media_placebo": 0.03686635944700461,
+   "diferencia": -0.057134184275090025,
+   "ic90": [
+    -0.14964523757420703,
+    0.03410664138745994
+   ],
+   "p_unilateral": 0.84695,
+   "se": 0.05588061125265955,
+   "mde80": 0.13914272201912228,
+   "p_dos_colas": 0.30610000000000004,
+   "p_declarada": 0.30610000000000004,
+   "estado": "PROBADA",
+   "por_activo": {
+    "ES": {
+     "diferencia": -0.4340264650283554,
+     "se": 0.2962209496915757
+    },
+    "NQ": {
+     "diferencia": -0.04531173459907772,
+     "se": 0.05789461842822061
+    }
+   },
+   "control": {
+    "n": 1021,
+    "diferencia": 0.08396086661317204,
+    "ic90": [
+     -0.1759834198274062,
+     0.31804567596395306
+    ]
+   },
+   "dif_en_dif": -0.14109505088826207
+  }
+ },
+ "probadas": 3,
+ "nominadas_bh_q010": [],
+ "por_activo_conteos": {
+  "ES": {
+   "respaldo": {
+    "0": 636
+   },
+   "obstaculo": {
+    "ninguno": 615,
+    "cerca": 19,
+    "lejos": 2
+   },
+   "densidad": {
+    "0": 603,
+    "1-2": 33
+   },
+   "confluencia": {
+    "no": 636
+   },
+   "mas_nuevo": {
+    "sí": 21,
+    "no": 12
+   },
+   "huella": {
+    "0": 624,
+    "≥1": 12
+   }
+  },
+  "NQ": {
+   "respaldo": {
+    "0": 3503,
+    "1": 79
+   },
+   "obstaculo": {
+    "ninguno": 2596,
+    "cerca": 663,
+    "lejos": 323
+   },
+   "densidad": {
+    "1-2": 1814,
+    "0": 1732,
+    "≥3": 36
+   },
+   "confluencia": {
+    "no": 3582
+   },
+   "mas_nuevo": {
+    "sí": 1370,
+    "no": 480
+   },
+   "huella": {
+    "0": 3092,
+    "≥1": 490
+   }
+  }
+ },
+ "cambios_aceptados": {
+  "edgelab/research/hft_clusters_info.py": "diff 7ac35e7f..74a26458 sólo agrega la columna net_dir a clusters_del_dia; hft_contexto y hft_rebotes no la leen (grep), así que los eventos y el contexto son idénticos"
+ }
+}

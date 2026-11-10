@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (3)
+## PISTA_VIVA (4)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
   - Siguiente: Pre-registrar la hipótesis de RUPTURA (carrera a favor de atravesar el cluster tras el toque) con la misma definición de NQ, umbrales fijos, y probarla una vez en la réplica abr → sep 2026. No elegir umbrales mirando esta tabla.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTES.md`
+- **Toque D0 de un cluster HFT grande cuando la sesión va en contra de la dirección de llegada (retroceso): el precio atraviesa el cluster** (`F-HFT-RUPTURA-RETROCESO-CONTRA-SESION`, 2026-11-10, sesion)
+  - Efecto: Ruptura +0,082 (IC90 +0,034…+0,131, p 0,0024, n 1.067), 8/9 meses, NQ +0,086 y ES +0,066, +0,114 sobre el control. No nominada por BH entre 67 celdas (umbral 0,0015). DESC ya usado.
+  - Dónde: NQ y ES, clusters del E0-b, DESC jul-2025 → mar-2026
+  - Siguiente: Indagación barata: magnitud continua y tendencia de 2 h; la réplica congelada sólo si Nico decide gastarla en esta hipótesis.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_INDAGA.md`, `docs/research/hft_clusters_u1_20261110/HFTC_ruptura.json`
 - **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
   - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
   - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
@@ -65,7 +70,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (6)
+## NO_REPETIR (8)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -74,6 +79,16 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
   - Siguiente: No repetir con 4 zonas. Las definiciones grandes (E0-b) y las 7 definiciones de rebote se juzgan con su propio resultado.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_INFO.md`
+- **Volumen del cluster, pendiente de EMA 9/21, expansión limpia de la salida, eficiencia y duración de la última pasada no discriminan ruptura en clusters HFT grandes** (`F-HFT-RUPTURA-RASGOS-SIN-EFECTO`, 2026-11-10, sesion)
+  - Efecto: Todos los estratos entre −0,01 y +0,05 de ruptura (n ≈ 1.060 por estrato). Picos sin tomar ≥ 1 → rebote (−0,075, canal opuesto, sin pre-registrar).
+  - Dónde: NQ y ES, clusters del E0-b, toques D0, DESC
+  - Siguiente: No repetir con esta definición; los picos sin tomar como rebote se pre-registran aparte si se siguen.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_RUPTURA_INDAGA.md`
+- **El contexto de otros clusters grandes (obstáculo adelante, el más nuevo, huella) no modula el rebote D0; respaldo, confluencia y densidad no tienen población con clusters tan escasos** (`F-HFT-CONTEXTO-CLUSTERS-GRANDES`, 2026-11-10, sesion)
+  - Efecto: 0 de 3 probadas nominadas (diferencias −0,06…+0,04, MDE 0,11–0,16); respaldo ≥2 y confluencia: 0 eventos.
+  - Dónde: NQ y ES, clusters del E0-b, DESC
+  - Siguiente: Sólo con una definición de cluster más densa o con la distancia continua al vecino más cercano.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_CONTEXTO.md`, `docs/research/hft_clusters_u1_20261110/RECOMENDACIONES_contexto.md`
 - **Continuación de gap grande no rellenado (Kemet), mecha en VWAP con salida por EMA9 (AlphaZone), ruptura del rango de Londres en oro, ORB directo** (`F-REELS-20261108`, 2026-11-09, humano)
   - Efecto: Gap continuación −0,149 R (MDE 0,13; 1 de 120 celdas positiva). EMA9+VWAP −0,193 R (MDE 0,06; miles de operaciones). Oro Londres −0,05 R. ORB NQ base: +0,20 R en DESC y −0,26 R en réplica.
   - Dónde: CFD de NQ, ES, YM y oro 2023–2026; futuros jul-2025 → mar-2026

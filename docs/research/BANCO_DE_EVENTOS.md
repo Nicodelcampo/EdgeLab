@@ -37,7 +37,7 @@ cosas de forma mecánica.
   idea nueva sobre la misma familia y ventana no va al banco: va a la réplica o espera datos nuevos.
 
 ## Guardas automáticas (`python tools/banco_eventos.py preflight <spec>`)
-- Contrato: campos obligatorios, ventana y tabla antes del holdout (`edgelab/holdout.py`), sin sesiones excluidas, rasgos numéricos,
+- Contrato: campos obligatorios, `tabla_no_mirada: true` declarado (K19), ventana y tabla antes del holdout (`edgelab/holdout.py`), sin sesiones excluidas, rasgos numéricos,
   ningún rasgo que sea desenlace, desenlace finito, a lo sumo `max_rasgos` rasgos (la biblioteca se declara, no se vuelca).
 - Muestra: ≥ 20 sesiones en cada mitad; aviso si un estrato tiene < 10 % de A.
 - **Calibración:** el mismo proceso con el desenlace permutado dentro de (activo, mes) y centrado en el nulo. Mide la tasa de error
@@ -64,6 +64,7 @@ cosas de forma mecánica.
   prefijo obligatorio).
 
 ## Primer uso declarado
-`docs/research/banco_eventos/specs/HFT_RUPTURA_banco.json` (tabla de HFT-RUPTURA). **Deshabilitada** hasta cerrar la indagación
-pre-registrada de esa familia: correr el banco sobre la misma tabla y ventana sería un segundo análisis de DESC. Se habilita sólo si
-la indagación cierra sin selección y Nico lo decide, declarándolo como análisis adicional en el pre-registro.
+`docs/research/banco_eventos/specs/HFT_RUPTURA_banco.json` queda como plantilla: **no se corre sobre `HFTC_ruptura.csv`** porque la
+indagación pre-registrada de HFT-RUPTURA miró todo DESC (las dos mitades) el 2026-11-10. **Regla: el banco sólo corre sobre una
+tabla cuyos desenlaces nadie miró** (otro activo, otra ventana no usada o un generador nuevo). Una tabla ya analizada no tiene
+mitad B honesta.
