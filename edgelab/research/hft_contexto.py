@@ -105,7 +105,7 @@ def analizar(T: pd.DataFrame, n_boot: int = 20000) -> dict:
         c["p_dos_colas"] = float(min(1.0, 2 * min(p1, 1 - p1)))
         c["p_declarada"] = float(p1 if signo > 0 else (1 - p1) if signo < 0 else c["p_dos_colas"])
         r.update(c, estado="PROBADA")
-        r["por_activo"] = {i: contraste(h, n_boot=2000).get("diferencia") for i, h in S.groupby("inst")} if "inst" in S else {}
+        r["por_activo"] = {i: {k: v for k, v in contraste(h, n_boot=2000).items() if k in ("diferencia", "se")} for i, h in S.groupby("inst")} if "inst" in S else {}
         niveles = [x for x in T[var].dropna().unique()]
         if len(niveles) == 3:                                              # dosis-respuesta: el estrato del medio entre los extremos
             medio = [x for x in niveles if x not in (a, b)][0]; m = {x: float(T[T[var] == x].resultado.mean()) for x in (a, medio, b)}

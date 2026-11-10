@@ -43,11 +43,11 @@ def construir(modo: str) -> Path:
     return out
 
 
-def _item(nombre, c, sugerencia, por_activo=None, nominada=False, control=None, compuerta=True, monotono=None):
+def _item(nombre, c, sugerencia, por_activo=None, nominada=False, control=None, compuerta=True, monotono=None, signo=1):
     c = c or {}
     return dict(nombre=nombre, diferencia=c.get("diferencia"), ic90=c.get("ic90"), se=c.get("se"), mde80=c.get("mde80"), nominada=nominada,
                 n_min=min(c.get("n_real", 0), c.get("n_placebo", 0)), compuerta_ok=compuerta, media_a=c.get("media_real"),
-                por_activo=por_activo or {}, control_diferencia=control, monotono=monotono, sugerencia=sugerencia)
+                por_activo=por_activo or {}, control_diferencia=control, monotono=monotono, sugerencia=sugerencia, signo_esperado=signo)
 
 
 def recomendaciones(modo: str) -> str:
@@ -56,17 +56,17 @@ def recomendaciones(modo: str) -> str:
     res = json.loads((DIR / f"HFTC_{modo}.json").read_text(encoding="utf-8"))
     if modo == "rebotes":
         nom = set(res.get("nominadas_bh_q010") or [])
-        its = [_item(d, v.get("conjunto"), RB.SUGERENCIAS.get(d), {i: (c or {}).get("diferencia") for i, c in v["por_activo"].items()}, d in nom)
+        its = [_item(d, v.get("conjunto"), RB.SUGERENCIAS.get(d), {i: dict(diferencia=(c or {}).get("diferencia"), se=(c or {}).get("se")) for i, c in v["por_activo"].items()}, d in nom)
                for d, v in res.get("por_definicion", {}).items()]
     elif modo == "contexto":
         nom = set(res.get("nominadas_bh_q010") or [])
         its = [_item(var, v if v.get("estado") == "PROBADA" else {"n_real": v["conteos"].get(v["estratos"][0], 0), "n_placebo": v["conteos"].get(v["estratos"][1], 0)},
                      KX.SUGERENCIAS.get(var), v.get("por_activo"), var in nom, (v.get("control") or {}).get("diferencia"),
-                     v.get("estado") == "PROBADA", v.get("monotono")) for var, v in res.get("variables", {}).items()]
+                     v.get("estado") == "PROBADA", v.get("monotono"), v.get("signo_esperado", 0)) for var, v in res.get("variables", {}).items()]
     else:
         its = [_item(p, res[p].get("conjunto"), {"rebote": "Pasar a las 7 definiciones de rebote (HFT-REBOTES) para ver qué condición lo concentra.",
                                                   "iman": "Medir la distancia al cluster como objetivo de reglas que ya tengan entrada."}[p],
-                     {i: (c or {}).get("diferencia") for i, c in res[p]["por_activo"].items()},
+                     {i: dict(diferencia=(c or {}).get("diferencia"), se=(c or {}).get("se")) for i, c in res[p]["por_activo"].items()},
                      (res[p].get("stouffer") or {}).get("p", 1) < 0.05) for p in ("rebote", "iman") if p in res]
     rec = RC.recomendar(its); out = DIR / f"RECOMENDACIONES_{modo}.md"
     out.write_text(RC.markdown(f"Recomendaciones — HFT-CLUSTERS {modo}", rec, f"HFTC_{modo}.json"), encoding="utf-8")

@@ -50,10 +50,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (5)
+## NO_REPETIR (6)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Rebote e imán en clusters de 4 zonas HFT (la definición frecuente y angosta) contra un nivel cualquiera** (`F-HFT-CLUSTERS-K4-INFO`, 2026-11-10, sesion)
+  - Efecto: Rebote: real − control −0,021 (IC90 −0,043 a +0,001, MDE 0,033, 9.752 eventos en NQ/ES/GC/YM); imán: −0,014 (IC90 −0,033 a +0,004, MDE 0,028). El desenlace real ≈ 0, lejos del umbral 0,08.
+  - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
+  - Siguiente: No repetir con 4 zonas. Las definiciones grandes (E0-b) y las 7 definiciones de rebote se juzgan con su propio resultado.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_INFO.md`
 - **Continuación de gap grande no rellenado (Kemet), mecha en VWAP con salida por EMA9 (AlphaZone), ruptura del rango de Londres en oro, ORB directo** (`F-REELS-20261108`, 2026-11-09, humano)
   - Efecto: Gap continuación −0,149 R (MDE 0,13; 1 de 120 celdas positiva). EMA9+VWAP −0,193 R (MDE 0,06; miles de operaciones). Oro Londres −0,05 R. ORB NQ base: +0,20 R en DESC y −0,26 R en réplica.
   - Dónde: CFD de NQ, ES, YM y oro 2023–2026; futuros jul-2025 → mar-2026
