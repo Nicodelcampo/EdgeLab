@@ -78,7 +78,7 @@ def test_guards_still_apply_after_promotion(tmp_path):
 
 def test_friction_blocks_where_friction_likely_wins_and_orders_by_it(tmp_path):
     caro = cand("MNQ-1"); caro.cfg = dict(CFG, inst="MNQ", mov_esperado_ticks=12)        # 12 / 7,91 = 1,5 < 3
-    sin = cand("YM-1"); sin.cfg = dict(CFG, inst="YM")                                   # sin fricción medida
+    sin = cand("YM-1"); sin.cfg = dict(CFG, inst="ZB")                                   # sin fricción medida (YM sí la tiene desde 2026-11-11: FRICCION_TODOS)
     info = cand("INFO-1"); info.cfg = dict(CFG, inst="MNQ", mov_esperado_ticks=5); info.utility_class = "info"
     out, _, _, rows, rev = run(tmp_path, [caro, sin, info], max_por_ciclo=3)
     d = dict(out)
