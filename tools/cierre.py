@@ -10,9 +10,10 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REGENERAR = [["tools/docs_index.py", "--write"], ["tools/existente.py", "catalogo", "--write"], ["tools/familias.py", "--write"],
-             ["tools/factores.py", "--write"], ["tools/remediciones.py", "--write"], ["tools/agentes.py", "--write"]]
+             ["tools/factores.py", "--write"], ["tools/remediciones.py", "--write"], ["tools/agentes.py", "--write"],
+             ["tools/check_modules.py", "--write"]]
 TESTS = ["tests/test_existente.py", "tests/test_verify_indices.py", "tests/research/test_factores.py", "tests/test_holdout_unico.py",
-         "tests/test_dependencias_lock.py"]
+         "tests/test_dependencias_lock.py", "tests/test_parametros_por_defecto.py", "tests/test_cadena_accesible.py"]
 
 
 def main() -> int:
