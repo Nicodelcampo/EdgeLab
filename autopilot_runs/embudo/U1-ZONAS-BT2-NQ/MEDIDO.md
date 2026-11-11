@@ -8,12 +8,11 @@
 - DESC [20250801, 20260331]: evaluables 54351 (m del FDR 54351 de 4478976 celdas), FDR 9, RW umbral 4.66837739944458 (diagnóstico), linaje 4838367 como informacion, pistas sin nominación 3, candidatas 3
 - Potencia prevista (informativa): [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: OOS n 60.0 potencia 0.90, holdout n 150 potencia 1.00; [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: OOS n 60.0 potencia 0.97, holdout n 150 potencia 1.00; [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: OOS n 72.0 potencia 0.86, holdout n 150 potencia 0.99
 - INDAGA: marginales de 3 candidatas guardadas
-- INTEGRIDAD [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: regla 5.807927419354931, placebo -1.42, latencia 1 vela -2.2260555555555586 -> pasa
-- INTEGRIDAD [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: regla 8.5795, placebo -2.35, latencia 1 vela 7.826948979591836 -> pasa
-- INTEGRIDAD [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: regla -3.7133082191780846, placebo 2.11, latencia 1 vela -3.4003387096774236 -> no pasa
-- OOS [20260401, 20260930] (régimen actual): medias [-8.64, -3.69]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.4, 0.21]; LORD++ sin rechazo
-- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py', 'edgelab/research/embudo_runners.py']); revisar si el cambio toca la medición
-- TOPES: elegida {'celda': [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4], 'tope': ['mult', 2.0], 'puntaje': 3.703689313632251, 'peor': -78.2955}
-- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4] tope ['mult', 2.0]; plan {'n_fijo': 150, 'n_necesario': 59, 'potencia': 0.9984665726283775, 'efecto': 10.710583333333336, 'fuente': 'fracción del DESC', 'nivel': 0.003607974489558189}
-- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
-- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)
+- INTEGRIDAD [0, 1, 0, 2, 2, 1, 3, 2, 3, 0, 0, 10]: regla 13.641632352941151, placebo 2.16, latencia 1 vela 7.277080645161286 -> pasa
+- INTEGRIDAD [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4]: regla 15.02116666666667, placebo 0.14, latencia 1 vela 16.148944444444442 -> pasa
+- INTEGRIDAD [0, 1, 0, 1, 2, 2, 3, 2, 3, 0, 0, 2]: regla 6.902670731707316, placebo -6.07, latencia 1 vela 7.923249999999999 -> pasa
+- AVISO OOS: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- OOS [20260401, 20260930] (régimen actual): medias [-34.52, -17.49, -19.72]; veredictos ['NO_CONCLUYENTE', 'NO_CONCLUYENTE', 'NO_CONCLUYENTE']; potencias [0.31, 0.18, 0.18]; LORD++ sin rechazo
+- AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/funnel/escalera.py']); revisar si el cambio toca la medición
+- TOPES: elegida {'celda': [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4], 'tope': ['pts', 50.0], 'puntaje': 2.6914091799746886, 'peor': -52.0455}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [0, 2, 0, 1, 2, 2, 3, 2, 3, 0, 0, 4] tope ['pts', 50.0]

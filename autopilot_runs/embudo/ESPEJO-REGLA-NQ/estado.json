@@ -1,0 +1,298 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1794083290.4635527,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1794083708.5827234,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
+  },
+  {
+   "ts": 1794083959.6750796,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.887056471764118); canasta media -2.424225 IC90 [-5.584122500000001, 0.793501562499999]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.28861334593279897"
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJO-REGLA-NQ",
+  "familia": "ESPEJO_REGLA",
+  "experimento": "edgelab.research.espejo_regla",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 216,
+  "justificacion_economica": "La misma vuelta B hacia A, en NQ, con la fricción canónica de NQ. No se transportan los costos de ES.",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC, o un R neto que sólo aparece con un objetivo de 0,25 W (residuo ya medido el 2026-09-28).",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "spec": "docs/research/espejo_regla_20261107/SPEC_ESPEJO_REGLA.md",
+  "linaje_como": "informacion",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "regimen": {
+   "definicion": "perilla solo_rth declarada en el módulo; sesión CME completa del lector",
+   "actual_desde": 20250805
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  },
+  "regimen": {
+   "definicion": "perilla solo_rth declarada en el módulo; sesión CME completa del lector",
+   "actual_desde": 20250805,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_REGLA",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_IND",
+    "ESPEJO_NICO_100T",
+    "ESPEJO_CONT_100T"
+   ],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "La orden usa el censo ESPEJO-IND y la misma geometría A-B que ya se midió en ESPEJO-NICO-100T (0/8) y en la continuación de 100 ticks (seis instrumentos, R bruto no positivo). Declarada antes del DESC (docs/research/espejo_regla_20261107/SPEC_ESPEJO_REGLA.md).",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794083290.4609141,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-espejo-regla-nq-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "eficiencia": [
+    0.8,
+    1.0
+   ],
+   "volumen_por_tick": [
+    24.431372549019606,
+    59.475703324808165
+   ],
+   "semejanza": [
+    0.5325641025641026,
+    0.6144605380451622
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1794083837.590571,
+ "cortes": {
+  "eficiencia": [
+   0.8,
+   1.0
+  ],
+  "volumen_por_tick": [
+   24.431372549019606,
+   59.475703324808165
+  ],
+  "semejanza": [
+   0.5325641025641026,
+   0.6144605380451622
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1794083708.581724,
+  "celdas": [
+   [
+    0,
+    1,
+    1,
+    1,
+    0,
+    1,
+    0
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 80,
+   "media": -2.424225,
+   "ic90": [
+    -5.584122500000001,
+    0.793501562499999
+   ],
+   "p": 0.8905273681579605,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.8905273681579605,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "ESPEJO_REGLA",
+    "run_id": "ESPEJO-REGLA-NQ/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.887056471764118,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "ESPEJO_REGLA",
+   "run_id": "ESPEJO-REGLA-NQ/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.28861334593279897,
+   "efecto": 3.3637631578947365,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     1,
+     1,
+     0,
+     1,
+     0
+    ],
+    "n": 76,
+    "media_neta": 6.727526315789473,
+    "sesiones": 42,
+    "ic90": [
+     3.077148070010938,
+     10.607133443552195
+    ],
+    "p_sesiones": 0.005497251374312844,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 12.05,
+    "pasa": false,
+    "n_pruebas": 180.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.91583514213562,
+    "canal": "reciente",
+    "q_fdr": 0.8119446268437436,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 180,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 216,
+    "criba": "maxt",
+    "t_maxt": 2.7379357372648645,
+    "p_maxt": 0.15184815184815184,
+    "nominada_maxt": false,
+    "q_linaje": 0.8119446268437436,
+    "replica_pistas": {
+     "n": 136,
+     "media": -1.4260147058823527,
+     "ic90": [
+      -3.329846594097184,
+      0.4651520685197149
+     ],
+     "p": 0.887056471764118,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.887056471764118); canasta media -2.424225 IC90 [-5.584122500000001, 0.793501562499999]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.28861334593279897"
+}

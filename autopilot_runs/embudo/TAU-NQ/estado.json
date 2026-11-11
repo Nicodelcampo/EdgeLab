@@ -1,0 +1,338 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793484079.615148,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793484902.0281475,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 2
+  },
+  {
+   "ts": 1793485524.1227124,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.8255872063968016); canasta media -19.337456896551735 IC90 [-53.5783364224138, 15.20480237068961]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.016291191156290075"
+  }
+ ],
+ "spec": {
+  "cid": "TAU-NQ",
+  "familia": "TAU_TENDENCIA_NQ",
+  "experimento": "edgelab.research.tau_tendencia",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 648,
+  "spec": "docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md",
+  "justificacion_economica": "Regla de tendencia de Tori Trades en NQ M1: la línea por los dos últimos pivotes es momentum adaptativo y salir sólo en su ruptura (τ) deja correr las ganancias (SPEC_TAU_TENDENCIA.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si FIJO_2R iguala o supera a TAU en la misma población, la ventaja de la salida τ queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "TAU_TENDENCIA_NQ",
+   "declarada": true,
+   "padres": [
+    "TORI_TREND_TOQUE3_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5626417,
+   "n_heredado": 5626417,
+   "total": 5626417,
+   "justificacion": "Misma fuente (paper de Tori Trades) que TORI_TREND_TOQUE3_NQ; hereda su multiplicidad aunque la población (estructura y ruptura de pivote, salida τ) es otra; declarada antes de DESC (docs/research/paquete_20261031/SPEC_TAU_TENDENCIA.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484079.6149542,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-tau-nq-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "angulo_norm": [
+    0.0005394476464736939,
+    0.09136721761900769
+   ]
+  },
+  "celdas": [
+   [
+    2,
+    1,
+    2,
+    1,
+    1,
+    3
+   ],
+   [
+    2,
+    1,
+    1,
+    0,
+    1,
+    3
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 2
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793485212.340312,
+ "cortes": {
+  "angulo_norm": [
+   0.0005394476464736939,
+   0.09136721761900769
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793484902.0280526,
+  "celdas": [
+   [
+    2,
+    1,
+    2,
+    1,
+    1,
+    3
+   ],
+   [
+    2,
+    1,
+    1,
+    0,
+    1,
+    3
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 116,
+   "media": -19.337456896551735,
+   "ic90": [
+    -53.5783364224138,
+    15.20480237068961
+   ],
+   "p": 0.8132966758310423,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.8132966758310423,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "TAU_TENDENCIA_NQ",
+    "run_id": "TAU-NQ/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.8255872063968016,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 2,
+   "t": 2,
+   "familia": "TAU_TENDENCIA_NQ",
+   "run_id": "TAU-NQ/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.016291191156290075,
+   "efecto": 3.2480488684785325,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     2,
+     1,
+     2,
+     1,
+     1,
+     3
+    ],
+    "n": 535,
+    "media_neta": 6.729266355140186,
+    "sesiones": 159,
+    "ic90": [
+     0.9797428540566286,
+     12.702781382991551
+    ],
+    "p_sesiones": 0.03548225887056472,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 54.67,
+    "pasa": true,
+    "n_pruebas": 372.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.9305369853973389,
+    "canal": "total",
+    "q_fdr": 0.9999999999999741,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 372,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 445,
+     "media": -5.049432584269665,
+     "ic90": [
+      -14.234317640316753,
+      4.238275713810631
+     ],
+     "p": 0.8095952023988006,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     2,
+     1,
+     1,
+     0,
+     1,
+     3
+    ],
+    "n": 522,
+    "media_neta": 6.262929118773944,
+    "sesiones": 158,
+    "ic90": [
+     0.5267442796929079,
+     11.82077665007715
+    ],
+    "p_sesiones": 0.03398300849575212,
+    "meseta": true,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 53.06,
+    "pasa": true,
+    "n_pruebas": 372.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.7884061336517334,
+    "canal": "total",
+    "q_fdr": 0.9999999999999741,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 372,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 435,
+     "media": -5.147798850574714,
+     "ic90": [
+      -14.094019892955075,
+      4.620807335170355
+     ],
+     "p": 0.8255872063968016,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.8255872063968016); canasta media -19.337456896551735 IC90 [-53.5783364224138, 15.20480237068961]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.016291191156290075"
+}

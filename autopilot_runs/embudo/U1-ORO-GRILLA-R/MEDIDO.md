@@ -1,0 +1,12 @@
+## U1-ORO-GRILLA-R — edgelab.research.u1_oro · señal DK:XAUUSD · ejecución GC
+- Justificación: U1 fue la familia más rentable en USATECH→NQ (+17 a +28 pts/op de desarrollo): el regreso a áreas donde se concentraron huecos de cotización LUX-IMB. Si es microestructura de un feed CFD de 24 h, debería aparecer en el oro (XAU) operado en GC, con la escala del área ajustada a la volatilidad del oro.
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni confirmada en pistas a réplica; o media neta en GC <= 0 en el holdout a N fijo. La transferencia congelada (U1_ORO) ya dio INCONCLUSO: esta grilla no la usa como ancla favorable.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4626705 pruebas de ['U1_ORO', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 36125 de 8957952 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 33282 (m del FDR 33282 de 4478976 celdas), FDR 11 (informativo), maxT 3, RW umbral 4.519472122192383 (diagnóstico), linaje 4626705 como informacion, pistas sin nominación 40, candidatas 1
+- Potencia prevista (informativa): [0, 2, 0, 1, 2, 1, 3, 3, 3, 0, 0]: OOS n 61.7 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [0, 2, 0, 1, 2, 1, 3, 3, 3, 0, 0]: regla -0.0510800445727852, placebo -0.68, latencia 1 vela -0.07136424279832747 -> no pasa
+- **INTEGRIDAD_FALLA** — ninguna candidata pasa placebo/latencia

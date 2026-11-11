@@ -14,4 +14,3 @@
 - AVISO TOPES: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
 - TOPES: elegida {'celda': [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35], 'tope': ['pts', 50.0], 'puntaje': 15.758396397523297, 'peor': -26.1377}
 - ACTA registrada antes de mirar: primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 1, 1, 2, 0, 2, 3, 1, 3, 0, 0, 35] tope ['pts', 50.0]
-- **BLOQUEADA** — la etapa CONTEO falló 3 veces (error)

@@ -1,6 +1,6 @@
 {
- "etapa": "FIN",
- "fase": "BLOQUEADA",
+ "etapa": "CONTEO",
+ "fase": "CORRIENDO",
  "historial": [
   {
    "ts": 1793048214.869055,
@@ -62,55 +62,28 @@
    "fin": true
   },
   {
-   "ts": 1793063279.7968435,
-   "etapa": "INTEGRIDAD",
-   "falla": "error"
-  },
-  {
-   "ts": 1793064623.1518023,
+   "ts": 1793234178.8876212,
    "etapa": "INTEGRIDAD",
    "fin": true
   },
   {
-   "ts": 1793065924.9574459,
+   "ts": 1793234578.0924242,
    "etapa": "OOS",
    "fin": true
   },
   {
-   "ts": 1793066566.407865,
-   "etapa": "ATRAS",
-   "fin": true,
-   "nota": "sin período hacia atrás declarado"
-  },
-  {
-   "ts": 1793067553.1417449,
+   "ts": 1793234578.982643,
    "etapa": "TOPES",
    "fin": true
   },
   {
-   "ts": 1793068191.3373213,
+   "ts": 1793234579.011235,
    "etapa": "ACTA",
    "fin": true
   },
   {
-   "ts": 1793156941.4395695,
-   "etapa": "CONTEO",
-   "falla": "error"
-  },
-  {
-   "ts": 1793158201.6260974,
-   "etapa": "CONTEO",
-   "falla": "error"
-  },
-  {
-   "ts": 1793159472.092218,
-   "etapa": "CONTEO",
-   "falla": "error"
-  },
-  {
-   "ts": 1793159472.092229,
-   "final": "BLOQUEADA",
-   "motivo": "la etapa CONTEO falló 3 veces (error)"
+   "ts": 1794357018.7730649,
+   "nota": "reconciliación SV1 2026-11-10: estado del repo con el handle de SV1 conservado (decisión de Gonza); no relanzar CONTEO"
   }
  ],
  "spec": {
@@ -136,7 +109,7 @@
    "max_candidatas": 3
   },
   "holdout": {
-   "desde": 20261023,
+   "desde": 20261001,
    "n_fijo": 150,
    "nota": "sensor y ejecución en el futuro: sin cruce"
   },
@@ -146,7 +119,8 @@
    "nicolasbuttaro/edgelab-zonas-u1"
   ],
   "decisiones": [
-   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC."
+   "2026-10-26: pedido y diseño aprobados por Nico («optimizalo bien y usá las variantes que valen la pena»); declarada antes de su DESC.",
+   "Decisión global de Nico 2026-10-27: el holdout empieza el 30 de septiembre (apertura 2026-09-30 22:00 UTC = sesión CME 20261001) para todos los agentes, todos los activos y todo el proyecto; holdout.desde pasa de 20261023 a 20261001."
   ]
  },
  "reglas": {
@@ -175,7 +149,7 @@
    "min_frac_sin_tope": 0.5
   },
   "holdout": {
-   "desde": 20261023,
+   "desde": 20261001,
    "n_fijo": 150,
    "conteo_cada_s": 86400,
    "n_max": 500,
@@ -210,7 +184,7 @@
   "desde": "PREFLIGHT"
  },
  "handle": "nicolasbuttaro/embudo-u1-zonas-bt2-nq-holdout-conteo-20261023",
- "fallas": 3,
+ "fallas": 0,
  "params": {
   "cortes": {
    "vol_vuelta/ida": [
@@ -402,6 +376,20 @@
    0,
    0,
    4
+  ],
+  [
+   0,
+   1,
+   0,
+   1,
+   2,
+   2,
+   3,
+   2,
+   3,
+   0,
+   0,
+   2
   ]
  ],
  "desc": {
@@ -4416,6 +4404,20 @@
    }
   }
  ],
+ "codigo_cambiado": [
+  {
+   "etapa": "OOS",
+   "modulos": [
+    "edgelab/funnel/escalera.py"
+   ]
+  },
+  {
+   "etapa": "TOPES",
+   "modulos": [
+    "edgelab/funnel/escalera.py"
+   ]
+  }
+ ],
  "oos": {
   "replica": [
    {
@@ -4433,14 +4435,14 @@
      0,
      10
     ],
-    "n": 54,
-    "media_neta": -8.637629629629604,
-    "sesiones": 37,
+    "n": 37,
+    "media_neta": -34.51560135135133,
+    "sesiones": 30,
     "ic90": [
-     -34.26606144067789,
-     13.785428139400963
+     -64.7688166118421,
+     -6.3088010835909545
     ],
-    "p_sesiones": 0.7146426786606697,
+    "p_sesiones": 0.9725137431284357,
     "meseta": false,
     "economico": {
      "neto_base_positivo": false,
@@ -4449,9 +4451,9 @@
      "sin_colapso_adverso": false
     },
     "regimen_reciente": false,
-    "ratio_mov_friccion": 41.92,
+    "ratio_mov_friccion": 52.28,
     "pasa": false,
-    "n_pruebas": 1.9999999999999998,
+    "n_pruebas": 1.9999999999999993,
     "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
     "conservado": 0.0,
     "media_esperada_fuera": -0.0,
@@ -4474,14 +4476,14 @@
      0,
      4
     ],
-    "n": 46,
-    "media_neta": -3.6868043478260892,
-    "sesiones": 35,
+    "n": 42,
+    "media_neta": -17.48597619047619,
+    "sesiones": 34,
     "ic90": [
-     -25.37828419384058,
-     16.385826086956527
+     -42.600441860465125,
+     6.354165032679735
     ],
-    "p_sesiones": 0.6361819090454772,
+    "p_sesiones": 0.8765617191404298,
     "meseta": false,
     "economico": {
      "neto_base_positivo": false,
@@ -4490,9 +4492,50 @@
      "sin_colapso_adverso": false
     },
     "regimen_reciente": false,
-    "ratio_mov_friccion": 22.73,
+    "ratio_mov_friccion": 33.0,
     "pasa": false,
-    "n_pruebas": 1.9999999999999998,
+    "n_pruebas": 1.9999999999999993,
+    "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones"
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     1,
+     2,
+     2,
+     3,
+     2,
+     3,
+     0,
+     0,
+     2
+    ],
+    "n": 49,
+    "media_neta": -19.716418367346943,
+    "sesiones": 38,
+    "ic90": [
+     -42.19281826241136,
+     3.5608974329324705
+    ],
+    "p_sesiones": 0.9240379810094953,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 34.62,
+    "pasa": false,
+    "n_pruebas": 1.9999999999999993,
     "n_pruebas_metodo": "Li-Ji (autovalores de la correlación de P&L)",
     "conservado": 0.0,
     "media_esperada_fuera": -0.0,
@@ -4503,10 +4546,10 @@
   ],
   "lord": {
    "nivel": 0.010937333410740489,
-   "p_simes": 0.7146426786606697,
+   "p_simes": 0.9725137431284357,
    "rechazo": false,
    "confirmadas": [],
-   "m": 2,
+   "m": 3,
    "t": 1,
    "familia": "U1_ZONAS_BT2_NQ",
    "run_id": "U1-ZONAS-BT2-NQ/oos"
@@ -4535,13 +4578,13 @@
      10
     ],
     "veredicto": "NO_CONCLUYENTE",
-    "media": -8.637629629629604,
+    "media": -34.51560135135133,
     "ic90": [
-     -34.26606144067789,
-     13.785428139400963
+     -64.7688166118421,
+     -6.3088010835909545
     ],
     "efecto_para_potencia": 20.512041666666754,
-    "potencia": 0.4049497760090518,
+    "potencia": 0.3118602971567497,
     "mismo_regimen": true
    },
    {
@@ -4560,27 +4603,42 @@
      4
     ],
     "veredicto": "NO_CONCLUYENTE",
-    "media": -3.6868043478260892,
+    "media": -17.48597619047619,
     "ic90": [
-     -25.37828419384058,
-     16.385826086956527
+     -42.600441860465125,
+     6.354165032679735
     ],
     "efecto_para_potencia": 10.710583333333336,
-    "potencia": 0.21150959869977404,
+    "potencia": 0.1774539039033438,
+    "mismo_regimen": true
+   },
+   {
+    "celda": [
+     0,
+     1,
+     0,
+     1,
+     2,
+     2,
+     3,
+     2,
+     3,
+     0,
+     0,
+     2
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -19.716418367346943,
+    "ic90": [
+     -42.19281826241136,
+     3.5608974329324705
+    ],
+    "efecto_para_potencia": 10.286277777777778,
+    "potencia": 0.18266201084665257,
     "mismo_regimen": true
    }
   ]
  },
- "codigo_cambiado": [
-  {
-   "etapa": "TOPES",
-   "modulos": [
-    "edgelab/research/grilla_generica.py",
-    "edgelab/research/etapas.py",
-    "edgelab/research/embudo_runners.py"
-   ]
-  }
- ],
  "regla": {
   "celda": [
    0,
@@ -4597,19 +4655,11 @@
    4
   ],
   "tope": [
-   "mult",
-   2.0
+   "pts",
+   50.0
   ],
-  "puntaje": 3.703689313632251,
-  "peor": -78.2955
- },
- "plan_holdout": {
-  "n_fijo": 150,
-  "n_necesario": 59,
-  "potencia": 0.9984665726283775,
-  "efecto": 10.710583333333336,
-  "fuente": "fracción del DESC",
-  "nivel": 0.003607974489558189
+  "puntaje": 2.6914091799746886,
+  "peor": -52.0455
  },
  "acta": {
   "cid": "U1-ZONAS-BT2-NQ",
@@ -4633,11 +4683,11 @@
     4
    ],
    "tope": [
-    "mult",
-    2.0
+    "pts",
+    50.0
    ],
-   "puntaje": 3.703689313632251,
-   "peor": -78.2955
+   "puntaje": 2.6914091799746886,
+   "peor": -52.0455
   },
   "cortes": {
    "vol_vuelta/ida": [
@@ -4653,10 +4703,10 @@
     1.6749999999999998
    ]
   },
-  "holdout_desde": 20261023,
+  "holdout_desde": 20261001,
   "n_fijo": 150,
   "alfa": 0.003607974489558189,
-  "registrada": 1793068191.333875,
+  "registrada": 1793234579.0068822,
   "reserva_lord": {
    "familia": "U1_ZONAS_BT2_NQ",
    "reserva_id": "U1-ZONAS-BT2-NQ/holdout",
@@ -4706,20 +4756,9 @@
   },
   "oos": [
    "NO_CONCLUYENTE",
+   "NO_CONCLUYENTE",
    "NO_CONCLUYENTE"
   ],
-  "atras": [],
-  "decision": "primeras 150 operaciones desde 20261023: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
-  "plan_holdout": {
-   "n_fijo": 150,
-   "n_necesario": 59,
-   "potencia": 0.9984665726283775,
-   "efecto": 10.710583333333336,
-   "fuente": "fracción del DESC",
-   "nivel": 0.003607974489558189
-  }
- },
- "ultimo_conteo": 1793069504.892294,
- "n_holdout": 0,
- "motivo": "la etapa CONTEO falló 3 veces (error)"
+  "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA"
+ }
 }

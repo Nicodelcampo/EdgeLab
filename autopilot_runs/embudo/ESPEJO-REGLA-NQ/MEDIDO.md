@@ -1,0 +1,12 @@
+## ESPEJO-REGLA-NQ — edgelab.research.espejo_regla · señal NQ · ejecución NQ
+- Justificación: La misma vuelta B hacia A, en NQ, con la fricción canónica de NQ. No se transportan los costos de ES.
+- Refutación: 0 nominadas por FDR q <= 0,10 en DESC, o un R neto que sólo aparece con un objetivo de 0,25 W (residuo ya medido el 2026-09-28).
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 0 pruebas de ['ESPEJO_IND', 'ESPEJO_NICO_100T', 'ESPEJO_CONT_100T']; régimen actual desde 20250805
+- Evaluables: 360 de 432 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 180 (m del FDR 180 de 216 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.031505584716797 (diagnóstico), linaje 0 como informacion, pistas sin nominación 5, candidatas 0
+- PISTAS a réplica (ATJ-25): 1 congeladas de 5 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 1, 1, 1, 0, 1, 0]]
+- PISTAS canasta (una prueba): media -2.424225 IC90 [-5.584122500000001, 0.793501562499999] p 0.8905273681579605 sesiones 80; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.887056471764118; confirmadas 0 de 1 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.887056471764118); canasta media -2.424225 IC90 [-5.584122500000001, 0.793501562499999]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.28861334593279897

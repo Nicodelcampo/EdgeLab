@@ -1,0 +1,142 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1794083248.2486448,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1794083706.5804489,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -2.4235522647389702, 'min': -23.1048846873726, 'q001': -22.843593868020346, 'q010': -20.137372184850793, 'q500': -6.674444063434468, 'q990': -2.544549521766325, 'q999': -2.4423395685324425, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 168}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJO-REGLA-ES",
+  "familia": "ESPEJO_REGLA",
+  "experimento": "edgelab.research.espejo_regla",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "n_celdas_por_canal": 216,
+  "justificacion_economica": "La vuelta de un impulso sin aceptación deshace el tramo de B hacia A. El recorrido tiene que pagar la fricción canónica de ES. Quien pierde del otro lado es quien compró el extremo y no encuentra continuación.",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC, o un R neto que sólo aparece con un objetivo de 0,25 W (residuo ya medido el 2026-09-28).",
+  "cuenta_kaggle": "nicolasbuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "spec": "docs/research/espejo_regla_20261107/SPEC_ESPEJO_REGLA.md",
+  "linaje_como": "informacion",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "regimen": {
+   "definicion": "perilla solo_rth declarada en el módulo; sesión CME completa del lector",
+   "actual_desde": 20250805
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  },
+  "regimen": {
+   "definicion": "perilla solo_rth declarada en el módulo; sesión CME completa del lector",
+   "actual_desde": 20250805,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_REGLA",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_IND",
+    "ESPEJO_NICO_100T",
+    "ESPEJO_CONT_100T"
+   ],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "La orden usa el censo ESPEJO-IND y la misma geometría A-B que ya se midió en ESPEJO-NICO-100T (0/8) y en la continuación de 100 ticks (seis instrumentos, R bruto no positivo). Declarada antes del DESC (docs/research/espejo_regla_20261107/SPEC_ESPEJO_REGLA.md).",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794083248.2468207,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-espejo-regla-es-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1794083452.520365,
+ "cortes": {
+  "eficiencia": [
+   0.6190476190476191,
+   1.0
+  ],
+  "volumen_por_tick": [
+   416.42606516290726,
+   1357.822222222222
+  ],
+  "semejanza": [
+   0.537037037037037,
+   0.625
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': -2.4235522647389702, 'min': -23.1048846873726, 'q001': -22.843593868020346, 'q010': -20.137372184850793, 'q500': -6.674444063434468, 'q990': -2.544549521766325, 'q999': -2.4423395685324425, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 168}); pistas a réplica: ninguna pista relevante con media > 0"
+}

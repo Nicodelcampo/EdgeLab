@@ -1,0 +1,994 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793751826.2683387,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793752499.3047657,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 8
+  },
+  {
+   "ts": 1793753150.805083,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 8 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -0.4594488223721878 IC90 [-0.7242690347717953, -0.19017599803334415]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.19406977101285117"
+  }
+ ],
+ "spec": {
+  "cid": "DRC-ES-R",
+  "familia": "DOBLE_RETROCESO_ES",
+  "experimento": "edgelab.research.doble_retroceso",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "n_celdas_por_canal": 746496,
+  "justificacion_economica": "El impulso 2 barre la liquidez de P1; el retroceso 2 que no toma P2 muestra que el lado contrario no recupera la estructura; stop corto y estructural detrás de P2 (patrón de Nico, 04/11).",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 ni pista que replique; las variables de piernas no separan; falla de integridad o de paridad con NT8.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/doble_retroceso_20261104/PREREGISTRO_DOBLE_RETROCESO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4; spot/CFD con fricción del futuro como proxy declarado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "DOBLE_RETROCESO_ES",
+   "declarada": true,
+   "padres": [],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Familia nueva (patrón de 5 piernas de Nico); declarada antes de DESC (docs/research/doble_retroceso_20261104/PREREGISTRO_DOBLE_RETROCESO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793751826.2681825,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-drc-es-r-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "imp1": [
+    4.0,
+    6.999999999999999,
+    10.347826086956522
+   ],
+   "ret1": [
+    0.2916666666666667,
+    0.47368421052631576,
+    0.6875
+   ],
+   "pasa_p1": [
+    0.8,
+    1.4482758620689653,
+    2.382978723404255
+   ],
+   "cerca_p2": [
+    1.575,
+    2.5454545454545454,
+    4.052631578947368
+   ],
+   "velas_imp1": [
+    12.0,
+    40.0
+   ],
+   "velas_ret1": [
+    2.0,
+    5.0
+   ],
+   "velas_imp2": [
+    6.0,
+    11.0
+   ],
+   "velas_ret2": [
+    1.0,
+    2.0
+   ]
+  },
+  "celdas": [
+   [
+    1,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    4
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    1
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    1,
+    2,
+    0,
+    4
+   ],
+   [
+    1,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    1,
+    2,
+    0,
+    3
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   [
+    1,
+    2,
+    1,
+    2,
+    3,
+    1,
+    0,
+    2,
+    2,
+    0,
+    4
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    2,
+    2,
+    0,
+    0
+   ],
+   [
+    1,
+    2,
+    1,
+    3,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    1
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 8
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793752817.2689836,
+ "cortes": {
+  "imp1": [
+   4.0,
+   6.999999999999999,
+   10.347826086956522
+  ],
+  "ret1": [
+   0.2916666666666667,
+   0.47368421052631576,
+   0.6875
+  ],
+  "pasa_p1": [
+   0.8,
+   1.4482758620689653,
+   2.382978723404255
+  ],
+  "cerca_p2": [
+   1.575,
+   2.5454545454545454,
+   4.052631578947368
+  ],
+  "velas_imp1": [
+   12.0,
+   40.0
+  ],
+  "velas_ret1": [
+   2.0,
+   5.0
+  ],
+  "velas_imp2": [
+   6.0,
+   11.0
+  ],
+  "velas_ret2": [
+   1.0,
+   2.0
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793752499.304694,
+  "celdas": [
+   [
+    1,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    4
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    1
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    1,
+    2,
+    0,
+    4
+   ],
+   [
+    1,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    1,
+    2,
+    0,
+    3
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    3,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   [
+    1,
+    2,
+    1,
+    2,
+    3,
+    1,
+    0,
+    2,
+    2,
+    0,
+    4
+   ],
+   [
+    0,
+    2,
+    1,
+    1,
+    3,
+    2,
+    0,
+    2,
+    2,
+    0,
+    0
+   ],
+   [
+    1,
+    2,
+    1,
+    3,
+    3,
+    3,
+    0,
+    1,
+    2,
+    0,
+    1
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 87,
+   "media": -0.4594488223721878,
+   "ic90": [
+    -0.7242690347717953,
+    -0.19017599803334415
+   ],
+   "p": 0.9970007498125468,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.9970007498125468,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "DOBLE_RETROCESO_ES",
+    "run_id": "DRC-ES-R/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 1.0,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 8,
+   "t": 2,
+   "familia": "DOBLE_RETROCESO_ES",
+   "run_id": "DRC-ES-R/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.19406977101285117,
+   "efecto": 0.23208991038008403,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     2,
+     1,
+     1,
+     3,
+     3,
+     0,
+     1,
+     2,
+     0,
+     4
+    ],
+    "n": 41,
+    "media_neta": 0.5586487228352018,
+    "sesiones": 28,
+    "ic90": [
+     0.14737934838593966,
+     0.9944293329829538
+    ],
+    "p_sesiones": 0.017491254372813594,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 23.66,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 2.0952982902526855,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.9872325068943537,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 96,
+     "media": -0.3896802174701734,
+     "ic90": [
+      -0.6643419363099196,
+      -0.10079533555816896
+     ],
+     "p": 0.9923455440131219,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     2,
+     1,
+     1,
+     3,
+     3,
+     0,
+     1,
+     2,
+     0,
+     1
+    ],
+    "n": 44,
+    "media_neta": 0.512737644448428,
+    "sesiones": 27,
+    "ic90": [
+     0.12021185917100519,
+     0.9365570999661988
+    ],
+    "p_sesiones": 0.02498750624687656,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 20.28,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.9366376399993896,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.9031733473345425,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 106,
+     "media": -0.45284724990525715,
+     "ic90": [
+      -0.7293115424822532,
+      -0.1502970431084534
+     ],
+     "p": 0.9958993985784582,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     2,
+     1,
+     1,
+     3,
+     2,
+     0,
+     1,
+     2,
+     0,
+     4
+    ],
+    "n": 36,
+    "media_neta": 0.5225320005631028,
+    "sesiones": 23,
+    "ic90": [
+     0.08594216236147861,
+     1.0104315393302874
+    ],
+    "p_sesiones": 0.0399800099950025,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 19.01,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.8492920398712158,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.8432157926071617,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 94,
+     "media": -0.4067680182824526,
+     "ic90": [
+      -0.6744523126291077,
+      -0.12588424579456606
+     ],
+     "p": 0.9949425915800985,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     2,
+     1,
+     1,
+     3,
+     2,
+     0,
+     1,
+     2,
+     0,
+     3
+    ],
+    "n": 34,
+    "media_neta": 0.39847087744876875,
+    "sesiones": 24,
+    "ic90": [
+     0.046253301018669195,
+     0.7562959568770993
+    ],
+    "p_sesiones": 0.031484257871064465,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 14.08,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.8942540884017944,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.8184482001295323,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 84,
+     "media": -0.4142674537099727,
+     "ic90": [
+      -0.6638381146978966,
+      -0.14657864243366261
+     ],
+     "p": 0.996172772006561,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     2,
+     1,
+     1,
+     3,
+     3,
+     0,
+     1,
+     1,
+     0,
+     0
+    ],
+    "n": 31,
+    "media_neta": 0.454448235576262,
+    "sesiones": 24,
+    "ic90": [
+     0.012630698458493161,
+     0.9672049147913709
+    ],
+    "p_sesiones": 0.07196401799100449,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 10.14,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.6562155485153198,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.622718932835728,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 86,
+     "media": -0.6012577062619737,
+     "ic90": [
+      -0.8581988383541936,
+      -0.32984649801004273
+     ],
+     "p": 1.0,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     2,
+     1,
+     2,
+     3,
+     1,
+     0,
+     2,
+     2,
+     0,
+     4
+    ],
+    "n": 30,
+    "media_neta": 0.5421228360804923,
+    "sesiones": 23,
+    "ic90": [
+     0.01053505810759575,
+     1.081218908518856
+    ],
+    "p_sesiones": 0.04997501249375312,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 18.16,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.6435848474502563,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.6031170432465756,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 63,
+     "media": -0.26973500209092327,
+     "ic90": [
+      -0.6445702516849287,
+      0.1403755445333765
+     ],
+     "p": 0.8745215965008202,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     0,
+     2,
+     1,
+     1,
+     3,
+     2,
+     0,
+     2,
+     2,
+     0,
+     0
+    ],
+    "n": 43,
+    "media_neta": 0.39704723008298426,
+    "sesiones": 28,
+    "ic90": [
+     0.0038570530143795965,
+     0.8161064843899658
+    ],
+    "p_sesiones": 0.06146926536731634,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 11.83,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.5191816091537476,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.5017963064721918,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 96,
+     "media": -0.47867550342124415,
+     "ic90": [
+      -0.738095150626645,
+      -0.210649731967236
+     ],
+     "p": 0.9991798797156917,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   },
+   {
+    "celda": [
+     1,
+     2,
+     1,
+     3,
+     3,
+     3,
+     0,
+     1,
+     2,
+     0,
+     1
+    ],
+    "n": 66,
+    "media_neta": 0.3274310190461049,
+    "sesiones": 42,
+    "ic90": [
+     0.001221036241165637,
+     0.6550990731285236
+    ],
+    "p_sesiones": 0.050974512743628186,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": true,
+    "ratio_mov_friccion": 22.81,
+    "pasa": false,
+    "n_pruebas": 568735.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.7213702201843262,
+    "canal": "reciente",
+    "q_fdr": 1.0,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 518300,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 746496,
+    "criba": "maxt",
+    "t_maxt": 1.5868187449933098,
+    "p_maxt": 1.0,
+    "nominada_maxt": false,
+    "q_linaje": 1.0,
+    "replica_pistas": {
+     "n": 136,
+     "media": -0.34320805128722937,
+     "ic90": [
+      -0.6168192168266933,
+      -0.06333500401082218
+     ],
+     "p": 0.979907053034445,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 8 confirmadas una por una (nivel 0.003607974489558189, p Simes 1.0); canasta media -0.4594488223721878 IC90 [-0.7242690347717953, -0.19017599803334415]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.19406977101285117"
+}

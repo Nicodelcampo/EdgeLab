@@ -1,0 +1,126 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1793905322.3888545,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793905955.683087,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.9851264241632454, 'min': -18.62463294216038, 'q001': -18.578489064805993, 'q010': -17.29763432062062, 'q500': -3.9354526168237722, 'q990': 0.6157745589327153, 'q999': 1.176953495668069, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 1998}); pistas a réplica: apagada por la campaña"
+  }
+ ],
+ "spec": {
+  "cid": "HFT-GC-P10-VETO-R",
+  "familia": "HFT_GC_P10_VETO",
+  "experimento": "edgelab.research.hft_gc_p10_veto",
+  "sensor": "GC",
+  "ejecucion": "GC",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "periodos_consumidos": {
+   "oos": "COMPROMETIDO por HFT-GC-P10-R/PISTAS"
+  },
+  "pistas_replica": {
+   "activa": false
+  },
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 4800,
+  "justificacion_economica": "Las entradas HFT de Oro COMEX (en particular continuacion tras alejamiento de 20 ticks y retest de borde gris) chocan contra absorcion institucional vecina cuando abren posicion de cara a una zona HFT vigente cercana: vetar entradas sin camino libre frontal (1R/2R/4R) segun tipo de barrera, antiguedad activa (5m..sesion) y estado de mitigacion aisla recorridos a cielo abierto.",
+  "como_podria_refutarse": "0 celdas nominadas por FDR q <= 0,10 en DESC [20250805, 20260331] (sin rescate por PISTAS porque 202604..202609 ya fue usado por la madre HFT_GC_P10); fallo en INTEGRIDAD o TOPES; refutacion en OOS; o no confirmacion en HOLDOUT sellado a N=150.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "sensor y ejecucion en el futuro GC: sin cruce; OOS comprometido por la madre solo puede refutar, confirmacion limpia en holdout sellado"
+  },
+  "spec": "docs/research/hft_gc_p10_20261105/PREREGISTRO_BARRERAS_HFT_R.md",
+  "estadistico": "R",
+  "cuenta_kaggle": "nicolasbuttaro"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": false,
+   "k": 20,
+   "ventana": null
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "sensor y ejecucion en el futuro GC: sin cruce; OOS comprometido por la madre solo puede refutar, confirmacion limpia en holdout sellado"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "HFT_GC_P10_VETO",
+   "declarada": true,
+   "padres": [
+    "HFT_GC_P10"
+   ],
+   "propias": 0,
+   "bruto_heredado": 11672,
+   "n_heredado": 11672,
+   "total": 11672,
+   "justificacion": "Hija de HFT_GC_P10 con veto causal de entradas cuando existe barrera HFT frontal (4 tipos x 5 antiguedades desde 5m x 2 mitigaciones x rango libre 1R/2R/4R); OOS 202604..202609 declarado COMPROMETIDO; declarada antes de DESC (docs/research/hft_gc_p10_20261105/PREREGISTRO_BARRERAS_HFT_R.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793905322.3888545,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-hft-gc-p10-veto-r-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1793905643.9361339,
+ "cortes": {},
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({'max': 1.9851264241632454, 'min': -18.62463294216038, 'q001': -18.578489064805993, 'q010': -17.29763432062062, 'q500': -3.9354526168237722, 'q990': 0.6157745589327153, 'q999': 1.176953495668069, 'sobre_z_tamiz': 0, 'bajo_menos_z_tamiz': 1998}); pistas a réplica: apagada por la campaña"
+}

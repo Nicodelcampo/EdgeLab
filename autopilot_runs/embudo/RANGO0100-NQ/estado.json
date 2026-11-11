@@ -1,0 +1,270 @@
+{
+ "etapa": "FIN",
+ "fase": "PISTAS_VIVAS",
+ "historial": [
+  {
+   "ts": 1793484218.601412,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1793489717.6760461,
+   "etapa": "DESC",
+   "falla": "error (Kaggle no encuentra el kernel después de la gracia): {\"code\":404,\"message\":\"No runs found for this kernel.\"}\n"
+  },
+  {
+   "ts": 1793492941.589282,
+   "etapa": "DESC",
+   "fin": true,
+   "pistas": 1
+  },
+  {
+   "ts": 1793498838.6717505,
+   "final": "PISTAS_VIVAS",
+   "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.0927947598253275); canasta media 13.732277777777778 IC90 [-3.6760555555555565, 30.741999999999997]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.04979516179972032"
+  }
+ ],
+ "spec": {
+  "cid": "RANGO0100-NQ",
+  "familia": "RANGO_ASIA0100_NQ",
+  "experimento": "edgelab.research.rango_asia0100",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "n_celdas_por_canal": 648,
+  "spec": "docs/research/paquete_20261031/SPEC_RANGOS.md",
+  "justificacion_economica": "Ruptura del rango 01:00–01:15 ET en NQ con una reentrada tras falso quiebre (@theagent_trades; SPEC_RANGOS.md).",
+  "como_podria_refutarse": "0 nominadas por FDR q <= 0,10 en DESC sin pistas que repliquen, falla en INTEGRIDAD, media <= 0 en OOS/HOLDOUT; si el intento 2 no supera al 1, la reentrada queda refutada.",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "cuenta_kaggle": "auto"
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "desde 2026-10-01 (frontera única HOLDOUT-A4)."
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "linaje": {
+   "familia": "RANGO_ASIA0100_NQ",
+   "declarada": true,
+   "padres": [
+    "ASIA_BOS_GAPS_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 5626418,
+   "n_heredado": 5626418,
+   "total": 5626418,
+   "justificacion": "Rango de la sesión asiática como ASIA_BOS_GAPS_NQ (otra ventana y otra regla); hereda su multiplicidad; declarada antes de DESC (docs/research/paquete_20261031/SPEC_RANGOS.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1793484218.6012828,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicolasbuttaro/embudo-rango0100-nq-rep-20260401",
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "ancho_rango": [
+    3.472204652470307,
+    4.75445045045045
+   ]
+  },
+  "celdas": [
+   [
+    0,
+    1,
+    2,
+    0,
+    0,
+    4
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1793493255.6837895,
+ "cortes": {
+  "ancho_rango": [
+   3.472204652470307,
+   4.75445045045045
+  ]
+ },
+ "pistas_replica": {
+  "k": 20,
+  "ventana": [
+   20260401,
+   20260930
+  ],
+  "orden": "cota inferior IC90 por sesiones (desc), desempate t Romano-Wolf",
+  "congeladas": 1793492941.589217,
+  "celdas": [
+   [
+    0,
+    1,
+    2,
+    0,
+    0,
+    4
+   ]
+  ],
+  "canasta": {
+   "n_sesiones": 27,
+   "media": 13.732277777777778,
+   "ic90": [
+    -3.6760555555555565,
+    30.741999999999997
+   ],
+   "p": 0.09322669332666833,
+   "n_boot": 4000,
+   "lord": {
+    "nivel": 0.010937333410740489,
+    "p_simes": 0.09322669332666833,
+    "rechazo": false,
+    "confirmadas": [],
+    "m": 1,
+    "t": 1,
+    "familia": "RANGO_ASIA0100_NQ",
+    "run_id": "RANGO0100-NQ/pistas_canasta"
+   }
+  },
+  "lord": {
+   "nivel": 0.003607974489558189,
+   "p_simes": 0.0927947598253275,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 2,
+   "familia": "RANGO_ASIA0100_NQ",
+   "run_id": "RANGO0100-NQ/pistas"
+  },
+  "confirmadas": [],
+  "veredicto": {
+   "veredicto": "SIN_POTENCIA",
+   "potencia": 0.04979516179972032,
+   "efecto": 6.755475806451613,
+   "motivo": "ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva"
+  }
+ },
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     0,
+     1,
+     2,
+     0,
+     0,
+     4
+    ],
+    "n": 31,
+    "media_neta": 13.510951612903225,
+    "sesiones": 31,
+    "ic90": [
+     1.2589354838709659,
+     25.52345161290323
+    ],
+    "p_sesiones": 0.03798100949525238,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 25.56,
+    "pasa": false,
+    "n_pruebas": 132.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 1.719183325767517,
+    "canal": "total",
+    "q_fdr": 0.9866016360306359,
+    "nominada_fdr": false,
+    "pi0_fdr": 1.0,
+    "m_fdr": 132,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 648,
+    "q_linaje": null,
+    "replica_pistas": {
+     "n": 27,
+     "media": 13.732277777777778,
+     "ic90": [
+      -3.1742037037037063,
+      31.02764814814815
+     ],
+     "p": 0.0927947598253275,
+     "metodo_p": "bootstrap por sesiones",
+     "nivel": 0.003607974489558189,
+     "t_lord": 2,
+     "confirmada": false
+    }
+   }
+  ]
+ },
+ "motivo": "pistas a réplica: 0 de 1 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.0927947598253275); canasta media 13.732277777777778 IC90 [-3.6760555555555565, 30.741999999999997]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.04979516179972032"
+}

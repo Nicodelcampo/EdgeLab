@@ -1,0 +1,146 @@
+{
+ "etapa": "FIN",
+ "fase": "SIN_CANDIDATAS",
+ "historial": [
+  {
+   "ts": 1794089993.7025733,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1794090624.5991523,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "ts": 1794091247.2431073,
+   "etapa": "DESC",
+   "falla": "error"
+  },
+  {
+   "nota": "2026-11-07: fallas por costos_canonicos.json ausente en el kernel (corregido); se resetean y se relanza"
+  },
+  {
+   "ts": 1794092166.0180526,
+   "final": "SIN_CANDIDATAS",
+   "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({}); pistas a réplica: ninguna pista relevante con media > 0"
+  }
+ ],
+ "spec": {
+  "cid": "ESPEJO10T-ES",
+  "familia": "ESPEJO_MACRO_10T_ES",
+  "experimento": "edgelab.research.espejo_macro_grilla",
+  "sensor": "ES",
+  "ejecucion": "ES",
+  "ticks_por_barra": 10,
+  "n_celdas_por_canal": 23328,
+  "justificacion_economica": "Impulso limpio sin aceptación que se deshace: la vuelta limpia que ya deshizo una fracción de W sigue hacia A; el ancho mínimo en viajes de fricción severa deja recorrido frente al costo.",
+  "como_podria_refutarse": "Ninguna celda nominada por FDR q 0,10 en DESC y ninguna pista que replique; o R neto sólo con el objetivo más corto.",
+  "cuenta_kaggle": "nicobuttaro",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/espejo_macro_10t_20261107/PREREGISTRO_BARRIDO.md",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera única HOLDOUT-A4"
+  }
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera única HOLDOUT-A4"
+  },
+  "regimen": {
+   "definicion": null,
+   "actual_desde": null,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "ESPEJO_MACRO_10T_ES",
+   "declarada": true,
+   "padres": [
+    "ESPEJO_REGLA"
+   ],
+   "propias": 0,
+   "bruto_heredado": 0,
+   "n_heredado": 0,
+   "total": 0,
+   "justificacion": "Espejo macro en velas de 10 ticks, sin lógica condicional (docs/research/espejo_macro_10t_20261107/PREREGISTRO_BARRIDO.md)",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1794089993.7024114,
+  "desde": "PREFLIGHT"
+ },
+ "handle": "nicobuttaro/embudo-espejo10t-es-desc-20250805",
+ "fallas": 0,
+ "params": {
+  "cortes": null,
+  "criba": "maxt"
+ },
+ "periodo": [
+  20250805,
+  20260331
+ ],
+ "lanzada": 1794091853.7685366,
+ "cortes": {
+  "dur_ida": [
+   177.0,
+   240.0
+  ],
+  "ritmo": [
+   0.2727272727272727,
+   0.2875
+  ]
+ },
+ "motivo": "ninguna pista nominada por FDR q 0.1 cumple la selección; nulo publicado ({}); pistas a réplica: ninguna pista relevante con media > 0"
+}

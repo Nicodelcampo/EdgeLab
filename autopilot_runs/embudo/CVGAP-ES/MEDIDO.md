@@ -1,0 +1,17 @@
+## CVGAP-ES — edgelab.research.corredor_vol_gaps · señal ES · ejecución ES
+- Justificación: En el futuro ES (50T/M1), cuando EmaCorridorTrendVolW2 marca un Rectángulo Amarillo (P80/P90) y el precio rompe en la misma dirección del impulso inicial, se aleja >= {1, 2, 4}x H_amarilla y regresa, la excursión tras absorción institucional revierte hacia el 50%, 25% o 100% del impulso inicial, modulada por el puntaje de gaps barridos y abiertos.
+- Refutación: Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5994141 pruebas de ['ZONAS_GAPS', 'U1_ZONAS_ES', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Justificación: En el futuro ES (50T/M1), cuando EmaCorridorTrendVolW2 marca un Rectángulo Amarillo (P80/P90) y el precio rompe en la misma dirección del impulso inicial, se aleja >= {1, 2, 4}x H_amarilla y regresa, la excursión tras absorción institucional revierte hacia el 50%, 25% o 100% del impulso inicial, modulada por el puntaje de gaps barridos y abiertos.
+- Refutación: Ninguna celda nominada por FDR q <= 0,10 ni Romano-Wolf en DESC, fallo de integridad/OOS en abr-sep 2026, o media neta <= 0 en el holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260925]
+- Linaje: hereda 5994141 pruebas de ['ZONAS_GAPS', 'U1_ZONAS_ES', 'AREAS_EXP_1_CRUZADO']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- AVISO DESC: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/grilla_masiva.py', 'edgelab/funnel/escalera.py', 'edgelab/research/g2.py', 'edgelab/research/sim.py', 'edgelab/bridge/identity.py', 'edgelab/research/costs.py', 'edgelab/research/holdout_guard.py', 'edgelab/regimes/state.py']); revisar si el cambio toca la medición
+- Evaluables: 256446 de 1866240 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 165540 (m del FDR 165540 de 933120 celdas), FDR 0, RW umbral 4.623501777648926 (diagnóstico), linaje 5994141 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS canasta (una prueba): media 1.3251720000000007 IC90 [-1.0449898076923074, 3.801989903846153] p 0.1804548862784304 sesiones 65; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260925]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.38739463631463406; confirmadas 0 de 20 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.38739463631463406); canasta media 1.3251720000000007 IC90 [-1.0449898076923074, 3.801989903846153]; con potencia para 0.5 x el efecto del DESC: la canasta no lo alcanza (IC90 [-1.0449898076923074, 3.801989903846153]) pero no está en contra; un efecto menor sigue posible: la familia sigue viva; potencia de la canasta 0.8508595153103269

@@ -1,0 +1,12 @@
+## TORI-ES-R — edgelab.research.tori_trend_toque3 · señal ES · ejecución ES
+- Justificación: Hipótesis estructural y microestructural pre-registrada en docs/research/tori_trend_20261029/SPEC_TORI_TREND_TOQUE3.md: captura la absorción o transición de régimen en ES->ES combinando bloques validados de la espiral EdgeLab.
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 6250617 pruebas de ['ZONAS_GAPS', 'CORREDOR_VOL_GAPS_ES']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 20112 de 2239488 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 18096 (m del FDR 18096 de 1119744 celdas), FDR 0 (informativo), maxT 0, RW umbral 4.390352725982666 (diagnóstico), linaje 6250617 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 9 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 1, 0, 0, 3, 2, 0, 2, 2, 12], [2, 1, 0, 2, 3, 2, 3, 2, 2, 12], [2, 2, 0, 0, 3, 3, 3, 2, 2, 15], [2, 1, 0, 2, 3, 2, 0, 2, 2, 18], [2, 1, 0, 0, 3, 2, 3, 2, 2, 13], [2, 2, 0, 2, 3, 2, 3, 2, 2, 13], [2, 1, 0, 0, 3, 3, 0, 2, 2, 13], [2, 0, 0, 2, 3, 3, 2, 2, 0, 3], [2, 1, 1, 0, 3, 3, 3, 2, 2, 12]]
+- PISTAS canasta (una prueba): media -0.2564120793836619 IC90 [-0.3294410353804751, -0.18284215588991487] p 1.0 sesiones 119; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 1.0; confirmadas 0 de 9 []
+- **SIN_CANDIDATAS** — pistas a réplica: 0 de 9 confirmadas una por una (nivel 0.0011901877202097062, p Simes 1.0); canasta media -0.2564120793836619 IC90 [-0.3294410353804751, -0.18284215588991487]; canasta en contra con potencia; potencia de la canasta 0.9954448489758737

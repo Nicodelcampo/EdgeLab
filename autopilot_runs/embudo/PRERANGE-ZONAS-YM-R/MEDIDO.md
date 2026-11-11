@@ -1,0 +1,12 @@
+## PRERANGE-ZONAS-YM-R — edgelab.research.prerange_zonas · señal YM · ejecución YM
+- Justificación: Las zonas ya formadas alrededor del rango 08:12-09:12 ET en YM son liquidez y referencias visibles; su cantidad por encima, debajo y dentro debería cambiar lo que sigue a un barrido.
+- Refutación: Sin nominadas por la criba ni canasta con soporte; o celdas con cantidades iguales al control sin cantidades; fallo en INTEGRIDAD o refutación con potencia en OOS/holdout.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5982557 pruebas de ['PRERANGE_HFT_YM', 'U1_ZONAS_GRILLA_YM']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 6252 de 57024 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 4484 (m del FDR 4484 de 28512 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.851762294769287 (diagnóstico), linaje 5982557 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 6 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[1, 0, 0, 1, 0, 0, 0, 1, 2], [1, 0, 1, 0, 0, 0, 0, 1, 2], [8, 0, 0, 0, 0, 0, 0, 1, 2], [8, 0, 1, 1, 0, 0, 0, 1, 2], [1, 0, 1, 1, 0, 0, 0, 1, 3], [1, 0, 0, 0, 0, 0, 0, 1, 3]]
+- PISTAS canasta (una prueba): media -0.24766222860114118 IC90 [-0.5329611297988562, 0.04248532957565623] p 0.9197700574856286 sesiones 66; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 0.922619983027941; confirmadas 0 de 6 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 6 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.922619983027941); canasta media -0.24766222860114118 IC90 [-0.5329611297988562, 0.04248532957565623]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.09260366158826616

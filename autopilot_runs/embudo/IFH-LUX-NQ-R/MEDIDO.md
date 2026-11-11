@@ -1,0 +1,12 @@
+## IFH-LUX-NQ-R — edgelab.research.intento_fallido_hacia_lux · señal NQ · ejecución NQ
+- Justificación: Si la zona sigue siendo un imán tras el intento fallido, el reacercamiento que recupera el rechazo es el segundo intento; la forma de las piernas (duración y profundidad) y el comercio sobre la zona deberían separar los que llegan (Nico, 03/11).
+- Refutación: Ninguna celda nominada por FDR q 0,10 ni pista que replique en abr–sep en R; las variables de piernas y volumen no separan; falla de integridad.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 4629819 pruebas de ['INTENTO_FALLIDO_LUX_NQ', 'AREAS_EXP_1_CRUZADO', 'LUXIMB_GRILLA']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 1044 de 472392 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 772 (m del FDR 772 de 236196 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.4617252349853516 (diagnóstico), linaje 4629819 como informacion, pistas sin nominación 32, candidatas 0
+- PISTAS a réplica (ATJ-25): 2 congeladas de 32 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 2, 2, 1, 2, 2, 2, 2, 2, 9], [0, 2, 2, 2, 2, 1, 2, 2, 2, 8]]
+- PISTAS canasta (una prueba): media -0.31498610793164344 IC90 [-0.5895419085782482, -0.017761087369737676] p 0.971007248187953 sesiones 67; LORD++ sin rechazo (nivel 0.010937333410740489)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=2 nivel 0.003607974489558189 p Simes 0.9970014992503748; confirmadas 0 de 2 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 2 confirmadas una por una (nivel 0.003607974489558189, p Simes 0.9970014992503748); canasta media -0.31498610793164344 IC90 [-0.5895419085782482, -0.017761087369737676]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.11314399524451901

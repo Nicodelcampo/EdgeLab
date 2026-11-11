@@ -1,0 +1,13 @@
+## ASIA-CFD-NQ-R — edgelab.research.asia_bos_gaps · señal DK:USATECHIDXUSD · ejecución NQ
+- Justificación: Hipótesis estructural y microestructural pre-registrada en docs/research/asia_bos_20261029/SPEC_ASIA_BOS_GAPS.md: captura la absorción o transición de régimen en DK:USATECHIDXUSD->NQ combinando bloques validados de la espiral EdgeLab.
+- Refutación: 0 celdas nominadas por FDR q <= 0,10 en DESC, fallo en INTEGRIDAD (placebo >= 25% o latencia 1 vela destructiva), o media <= 0 en OOS/HOLDOUT.
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 5626427 pruebas de ['OTR_930_SWEEP_CFD_NQ', 'ZONAS_GAPS']; régimen actual desde sin declarar (el OOS cuenta como régimen actual)
+- Evaluables: 37200 de 2239488 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 28608 (m del FDR 28608 de 1119744 celdas), FDR 0 (informativo), maxT 0, RW umbral 3.756190061569214 (diagnóstico), linaje 5626427 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[0, 2, 2, 2, 0, 0, 2, 0, 2, 14], [0, 2, 2, 0, 0, 0, 3, 0, 0, 14], [0, 2, 2, 0, 0, 3, 3, 0, 0, 13], [0, 2, 2, 0, 0, 3, 2, 0, 2, 13], [0, 2, 2, 2, 0, 3, 3, 0, 2, 13], [0, 2, 2, 2, 0, 3, 2, 0, 0, 13], [1, 0, 0, 0, 3, 0, 3, 1, 2, 2], [1, 0, 0, 0, 3, 3, 3, 1, 0, 2], [1, 0, 0, 2, 3, 3, 3, 1, 2, 2], [1, 0, 0, 2, 3, 0, 3, 1, 0, 2], [1, 0, 0, 2, 3, 0, 3, 1, 2, 8], [1, 0, 0, 0, 3, 3, 3, 1, 2, 8], [1, 0, 0, 2, 3, 3, 3, 1, 0, 8], [1, 0, 0, 0, 3, 0, 3, 1, 0, 8], [0, 2, 2, 2, 0, 3, 3, 0, 0, 19], [0, 2, 2, 2, 0, 3, 2, 0, 2, 19], [1, 1, 0, 0, 3, 0, 3, 1, 2, 6], [1, 1, 0, 2, 3, 0, 3, 1, 0, 6], [1, 0, 0, 0, 3, 0, 2, 1, 0, 2], [1, 0, 0, 2, 3, 0, 2, 1, 2, 2]]
+- AVISO PISTAS: el resultado se calculó con módulos que cambiaron después (['edgelab/research/grilla_generica.py', 'edgelab/research/etapas.py']); revisar si el cambio toca la medición
+- PISTAS canasta (una prueba): media 0.060298581305840065 IC90 [-0.08750681504794745, 0.21183508457608108] p 0.2509372656835791 sesiones 46; LORD++ sin rechazo (nivel 0.0018858947159882456)
+- PISTAS réplica [20260401, 20260930]: LORD++ t=4 nivel 0.0011901877202097062 p Simes 0.2635735299664316; confirmadas 0 de 20 []
+- **PISTAS_VIVAS** — pistas a réplica: 0 de 20 confirmadas una por una (nivel 0.0011901877202097062, p Simes 0.2635735299664316); canasta media 0.060298581305840065 IC90 [-0.08750681504794745, 0.21183508457608108]; ni pistas ni canasta confirman y no hay potencia para decidir: la familia sigue viva; potencia de la canasta 0.29659738299514526
