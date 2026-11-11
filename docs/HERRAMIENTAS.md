@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-622 scripts.
+623 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -454,6 +454,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/nt8_reexport_merge.py` | Fusiona la re-exportación NT8 del 2026-10-04/05 (AddOn EdgeLab Tick History) con el parquet canónico previo de |
 | `tools/nt8_sellado_diario.py` | Ticks diarios de NT8 -> dataset sellado de Kaggle (2026-11-01, Nico: «para los ticks tengo NT8»; «el SV1 tiene que usar Kaggle»). |
 | `tools/op1_niveles.py` | Análisis CONGELADO de OP-1 (docs/research/hft_clusters_u1_20261110/PREREGISTRO_OP1.md): R neto de la orden límite en el nivel limpio, |
+| `tools/op2_clusters.py` | Análisis CONGELADO de OP-2 (docs/research/hft_clusters_u1_20261110/PREREGISTRO_OP2.md): R neto de la continuación a mercado en el |
 | `tools/orb0100/gc_nocturno.py` | GC nocturno en abr-jun 2026 (preregistro PREREGISTRO_GC_NOCTURNO_20261021.md). Uso: gc_nocturno.py <out.json> <bundle>... |
 | `tools/orb0100/orb0100.py` | ORB0100: rango 01:00-01:15 NY, ruptura por cierre de vela de 5 min. Grilla del manifiesto |
 | `tools/orb0100/orb0100_replica.py` | Replicacion NQ abr-sep 2026 de la celda congelada (preregistro REPLICACION_NQ_ABR_SEP_PREREGISTRO_20261021.md). |
@@ -597,6 +598,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/ulp_sweep.py` | Barrido ESTÁTICO de la regla de diseño: ningún umbral de precio en `double`. |
 | `tools/universe_design.py` | Cruza el mapa de volatilidad (UNIVERSE_SIGMA.json) con los umbrales de las cuentas (THRESHOLDS.json): para cada celda instrumento × franja × horizonte elige el tamaño |
 | `tools/universe_sigma.py` | Mapa descriptivo de volatilidad por instrumento × franja horaria (CT) × horizonte, para diseñar el universo de corridas (no prueba ninguna hipótesis; no mira retornos futuros condicionados a nada). |
+| `tools/uso_agente.py` | Uso del agente del Debian por día (arranque 2026-11-11, §4 y §5): LLM por rol y modelo, Kaggle por cuenta, tiempo muerto y producción. |
 | `tools/validate_hft_v2_certification.py` | Fail-closed preflight for an HFTZones V2 shared-input SQLite export. |
 | `tools/validate_hft_v2_export_readiness.py` | Static guardrails for the audited HFT V2 exporter source. |
 | `tools/validate_l2_session_boundaries.py` | Valida la continuidad entre sesiones L2 consecutivas de un mismo instrumento+contrato. |
