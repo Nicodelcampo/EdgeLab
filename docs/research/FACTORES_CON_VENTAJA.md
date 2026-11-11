@@ -9,11 +9,11 @@ no se vuelve a proponer igual. Un factor ordena la investigación, no es evidenc
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
-- **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0)** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-C`, 2026-11-11, sesion)
-  - Efecto: Réplica abr–sep (congelada, una vez): NQ+RTY+YM +0,087 por sesión, 5/5 bloques, p 0,052; NQ +0,089, RTY +0,049, YM +0,133, ES +0,182. No confirmada al nivel LORD++ (0,0109; Simes 0,104); estable por la regla 08/11. DESC: +0,10.
-  - Dónde: NQ, RTY, YM, ES; clusters del E0-b, toque D0, carrera ±X
-  - Siguiente: Holdout en modo exploratorio (una apertura) con probabilidad de azar de desarrollo declarada; versión operable: continuación en el cluster (OP-2) medida con geometría fija y fills realistas.
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_CONFIRMACION_NO_DEFIENDE.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_CONFIRMACION_NO_DEFIENDE.json`
+- **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0); sostenido en el holdout** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-D`, 2026-11-11, sesion)
+  - Efecto: Holdout exploratorio oct-2026 (una apertura, regla congelada): NQ+YM +0,269 por sesión, 5/5 bloques, p 0,030 (28 sesiones; NQ +0,267, YM +0,275). Fisher con desarrollo (0,088; 0,052): p 0,0068, nominada por BH q 0,10. Es un contraste contra el control, no un P&L: la ruptura absoluta a mercado (OP-2) no paga en NQ/ES/RTY.
+  - Dónde: NQ y YM (RTY sin ticks sellados); clusters del E0-b, toque D0, carrera ±X
+  - Siguiente: Ya no queda holdout para HFT_RUPTURA: seguir en forward con e-proceso. Usarlo como VETO (OP-3: no hacer fades de reversión en niveles con cluster grande), que no necesita que la ruptura pague por sí sola.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.json`
 - **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
   - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
@@ -89,11 +89,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Niveles de pivote de 1 min, NQ/ES/RTY/YM/GC
   - Siguiente: Sirve de veto (OP-3) o de condición de continuación (OP-2); confirmar en el holdout junto con «no defiende».
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP1_DESARROLLO.md`
-- **OP-2 en YM: la continuación en el primer regreso a un cluster grande paga en bruto (≈ +0,11) en los dos períodos** (`F-OP2-YM`, 2026-11-11, sesion)
-  - Efecto: DESC +0,035 neto (bruto +0,114, n 150, p 0,29); réplica +0,025 (bruto +0,104, n 112, p 0,38). Sin potencia (MDE ≈ 0,2).
-  - Dónde: YM, cluster K4_A025_V1800
-  - Siguiente: Hipótesis previa en el holdout/forward junto con C1 (stops del otro lado) y C2 (veto de huida); no elegir geometría mirando 2X.
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.md`
+- **OP-2 en YM: la continuación en el primer regreso a un cluster grande paga en bruto (≈ +0,11–0,13) en tres períodos** (`F-OP2-YM-B`, 2026-11-11, sesion)
+  - Efecto: IS +0,035 neto (n 150, p 0,29); OOS +0,025 (n 112, p 0,38); holdout oct-2026 +0,055 (n 12, 9 sesiones, p 0,41). Fisher 0,40: NO_CONCLUYENTE. Sin potencia (MDE holdout ≈ 0,6 R).
+  - Dónde: YM, cluster K4_A025_V1800, stop X, objetivo X, 900 s
+  - Siguiente: Forward en papel con regla congelada y e-proceso; no elegir geometría ni filtros mirando estos datos (C1/C2 sólo como previas en forward).
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.md`, `docs/research/hft_clusters_u1_20261110/OP2_YM_CURVA.svg`
 - **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
   - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
   - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo

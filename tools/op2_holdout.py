@@ -28,9 +28,10 @@ def neto_ym(T: pd.DataFrame) -> pd.DataFrame:
 
 
 def fisher(ps) -> float:
-    from scipy.stats import chi2
-    ps = [min(max(float(p), 1e-12), 1.0) for p in ps]
-    return float(chi2.sf(-2 * np.sum(np.log(ps)), 2 * len(ps)))
+    """Fisher sin scipy: la cola chi² con 2k grados de libertad tiene forma cerrada, e^(−x/2)·Σ_{i<k} (x/2)^i / i!."""
+    import math
+    ps = [min(max(float(p), 1e-12), 1.0) for p in ps]; h = -np.sum(np.log(ps))
+    return float(math.exp(-h) * sum(h ** i / math.factorial(i) for i in range(len(ps))))
 
 
 def analizar(T_op: pd.DataFrame, T_rup: pd.DataFrame) -> dict:
