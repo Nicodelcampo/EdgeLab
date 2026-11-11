@@ -72,10 +72,13 @@ def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None):
         for x in extra: a += ["--extra-dataset", x]
         for kv in (env_extra or {}).items(): a += ["--env", "=".join(kv)]
         r = subprocess.run(a, capture_output=True, text=True); sal = r.stdout + r.stderr
+        fila = dict(ts=time.time(), modulo=modulo, fuente=f, desde=d0, hasta=d1, slug=sl, uso=uso, congeladas=congeladas, env_extra=env_extra)
+        if "Maximum batch CPU session count" in sal:                     # tope de kernels simultáneos de Kaggle: a la cola, no a mano
+            with LANZADAS.open("a", encoding="utf-8") as fh: fh.write(json.dumps(dict(fila, estado="en_cola"), ensure_ascii=False) + "\n")
+            print("en cola (tope de Kaggle)", sl); continue
         if r.returncode or '"versionNumber"' not in sal or '"hasError":true' in sal:   # O19: un push fallido no pasa en silencio
             raise SystemExit(f"FALLÓ el lanzamiento de {sl}:\n{sal[-800:]}")
-        with LANZADAS.open("a", encoding="utf-8") as fh:
-            fh.write(json.dumps(dict(ts=time.time(), modulo=modulo, fuente=f, desde=d0, hasta=d1, slug=sl, uso=uso, congeladas=congeladas), ensure_ascii=False) + "\n")
+        with LANZADAS.open("a", encoding="utf-8") as fh: fh.write(json.dumps(fila, ensure_ascii=False) + "\n")
         print("lanzada", sl)
 
 
@@ -85,10 +88,20 @@ def _estado(sl):
     except (ValueError, IndexError): return "?"
 
 
+def reintentar_cola():
+    """Relanza lo que quedó en cola por el tope de Kaggle (lo llama `traer`, así el ciclo del Debian lo hace solo)."""
+    L = _leer(); lanzados = {x["slug"] for x in L if x.get("estado") != "en_cola"}
+    for x in L:
+        if x.get("estado") == "en_cola" and x["slug"] not in lanzados:
+            try: lanzar(x["modulo"], [(x["fuente"], x["desde"], x["hasta"])], uso=x["uso"], congeladas=x.get("congeladas"), env_extra=x.get("env_extra"))
+            except SystemExit as ex: print("sigue sin lanzarse", x["slug"], str(ex)[:200])
+            lanzados.add(x["slug"])
+
+
 def traer(modulo=None):
     from edgelab.research.preflight import codigo_vigente
-    pend = []
-    for L in _leer():
+    reintentar_cola(); pend = []
+    for L in [x for x in _leer() if x.get("estado") != "en_cola"]:
         if modulo and L["modulo"] != modulo: continue
         nom = f"TABLA_{TB.cargar(L['modulo']).NOMBRE}_{L['fuente'].replace('DK:', '')}_{L['desde']}_{L['hasta']}"
         dest = carpeta(L["modulo"]) / {"confirmacion": "confirmacion", "holdout": "holdout"}.get(L["uso"], "tablas"); dest.mkdir(parents=True, exist_ok=True)
