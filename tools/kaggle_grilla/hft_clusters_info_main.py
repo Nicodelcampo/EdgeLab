@@ -14,7 +14,8 @@ import pandas as pd
 MODO = "e0"                                                   # lo fija tools/hft_clusters_info.py al construir
 DEFS = {}                                                     # {inst: [zona, cluster]}, congelado tras el E0
 REGLAS_RUPTURA = []                                           # ruptura_rep: reglas congeladas por hft_ruptura.seleccionar
-DEF_CONTEXTO = "D0_BASE"                                      # modo contexto: definición de rebote elegida por regla (hft_contexto.elegir_definicion)
+DEF_CONTEXTO = "D0_BASE"
+ACTA = {}                                                     # op2_holdout: acta de apertura (pre-registro y commit), la fija el constructor                                      # modo contexto: definición de rebote elegida por regla (hft_contexto.elegir_definicion)
 INSTRUMENTOS = ("NQ", "ES", "YM", "GC")
 DESC, REP = (20250701, 20260331), (20260401, 20260930)
 FRICCION = {"NQ": 1.5455, "ES": 0.8877, "YM": 5.052, "GC": 0.605, "RTY": 0.4436, "6E": 0.00020796, "6B": 0.00038792, "MBT": 58.45}   # edgelab/costos.py, puntos por viaje (2026-11-10)
@@ -27,17 +28,27 @@ def main():
     BASE = MODO.replace("_otros", "").replace("_replica", "")          # *_otros: activos nuevos; *_replica: ventana abr → sep, sólo tabla
     d0, d1 = REP if (BASE in ("rep", "ruptura_rep") or MODO.endswith("_replica")) else DESC
     if MODO == "op2": d0, d1 = DESC[0], REP[1]                       # OP-2: desarrollo sobre las dos ventanas ya miradas de esta línea
+    SELLADO = MODO == "op2_holdout"                                   # apertura exploratoria del holdout de HFT_RUPTURA (PREREGISTRO_HOLDOUT_HFT_RUPTURA.md)
+    if SELLADO:
+        d0, d1 = F.HOLDOUT_PRIMERA_SESION_INT, 20991231
+        with open("ACTA_HOLDOUT.json", "w") as fa: json.dump(ACTA, fa)  # bloques_nq_sellado exige el acta registrada antes de leer
     BASE = "niveles" if MODO == "niveles_op_replica" else BASE
-    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica", "op2")   # K19: nada con desenlaces dentro del kernel
+    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica", "op2", "op2_holdout")   # K19: nada con desenlaces dentro del kernel
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
-    filas = []
+    filas, filas_rup = [], []
     ZN, CL = (H.ZONAS, H.CLUSTERS) if BASE not in ("e0b", "rebotes", "contexto", "ruptura", "ruptura_rep") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
-    if MODO == "op2": ZN, CL = {"Z_CERT": H.ZONAS["Z_CERT"]}, {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}
+    if MODO in ("op2", "op2_holdout"): ZN, CL = {"Z_CERT": H.ZONAS["Z_CERT"]}, {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}
     if BASE == "niveles": CL = {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}   # sólo las definiciones elegidas
     for inst in (INSTRUMENTOS if BASE in ("e0", "e0b", "niveles") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
-        try: bloques = list(F.bloques_futuro(inst, d0, d1, ent))             # generador: la falta de archivo salta al iterar
+        try:
+            if SELLADO:                                                     # ticks sellados: <INST>_<contrato|fecha>_ticks.parquet
+                import glob as _g
+                rs = sorted(_g.glob(ent + f"/**/{inst}_*ticks.parquet", recursive=True))
+                if not rs: raise ValueError("sin ticks sellados")
+                bloques = list(F.bloques_nq_sellado(d0, d1, rs, os.path.abspath("ACTA_HOLDOUT.json"), tk))
+            else: bloques = list(F.bloques_futuro(inst, d0, d1, ent))   # generador: la falta de archivo salta al iterar
         except (IndexError, ValueError): log(f"{inst}: sin datos"); continue
         for B in bloques:
             if len(B) < 1000: continue
@@ -55,6 +66,9 @@ def main():
                 C = D.get(tuple(DEFS[inst]))
                 if C is not None and MODO == "op2":
                     filas += O2.op2_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
+                elif C is not None and SELLADO:                             # las dos tablas de la apertura: OP-2 y ruptura (H1)
+                    filas += O2.op2_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
+                    filas_rup += RU.ruptura_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
                 elif C is not None and BASE in ("ruptura", "ruptura_rep"):
                     filas += RU.ruptura_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
                 elif C is not None and BASE == "contexto":
@@ -66,6 +80,7 @@ def main():
                     filas += [dict(f, prueba="iman") for f in H.iman_del_dia(inst, fecha, ts, px, C, tk, FRICCION[inst])]
         log(f"{inst}: {n} sesiones, {len(filas)} filas acumuladas")
     T = pd.DataFrame(filas); T.to_csv(f"HFTC_{MODO}.csv", index=False)
+    if SELLADO: pd.DataFrame(filas_rup).to_csv("HFTC_ruptura_holdout.csv", index=False); res["acta"] = ACTA
     if BASE == "e0b" and len(T):
         res["equilibrio"] = H.elegir_equilibrio(T, FRICCION)
     elif BASE == "e0" and len(T):
@@ -77,8 +92,8 @@ def main():
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
     elif SOLO_TABLA and len(T):                                        # tabla para el banco o la confirmación: nada que use desenlaces (K19)
-        res["rasgos"] = NV.RASGOS if BASE == "niveles" else ([] if MODO == "op2" else RU.RASGOS)
-        if BASE != "niveles" and MODO != "op2": res["estratos"] = RU.diagnostico_estratos(T)
+        res["rasgos"] = NV.RASGOS if BASE == "niveles" else ([] if MODO in ("op2", "op2_holdout") else RU.RASGOS)
+        if BASE != "niveles" and MODO not in ("op2", "op2_holdout"): res["estratos"] = RU.diagnostico_estratos(T)
         res["conteos"] = {i: dict(reales=int((h.placebo == 0).sum()), control=int((h.placebo == 1).sum()), sesiones=int(h.fecha.nunique()))
                           for i, h in T.groupby("inst")}
     elif BASE == "ruptura" and len(T):
