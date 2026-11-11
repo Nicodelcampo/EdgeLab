@@ -53,6 +53,18 @@ def contrato(mod) -> list:
     return e
 
 
+def contexto(modulo, bloques, tick) -> dict:
+    """Contexto M1 + (opcional) lo que el módulo calcula sobre los TICKS crudos de cada día: `POR_BLOQUE(bloque, tick) ->
+    DataFrame` (p. ej. zonas HFT, que necesitan cada tick con su volumen). Queda en ctx["por_bloque"]; cada fila debe traer
+    `t_ns` (instante en que el dato está disponible) para que el módulo no use nada posterior a la vela."""
+    from edgelab.research import grilla_generica as GG
+    mod = cargar(modulo); fn = getattr(mod, "POR_BLOQUE", None)
+    if fn is None: return GG.contexto_m1(bloques, tick)
+    bl = list(bloques); extra = [fn(b, tick) for b in bl if len(b)]
+    ctx = GG.contexto_m1(bl, tick); ctx["por_bloque"] = pd.concat(extra, ignore_index=True) if extra else pd.DataFrame()
+    return ctx
+
+
 def generar(modulo, ctx) -> pd.DataFrame:
     mod = cargar(modulo); E = mod.eventos(ctx)
     falta = [c for c in OBLIGATORIAS if c not in E.columns]
@@ -122,10 +134,10 @@ def bloques_sinteticos(mod, dias: int, seed: int):
 def preflight(modulo: str, dias: int = 60, kernel: bool = True) -> list:
     """Errores que impiden lanzar (vacía = puede lanzarse): contrato, causalidad por disparo y por cortes de los eventos, motor
     calibrado sin optimismo, la tabla sintética completa, y el kernel generado corriendo de punta a punta con FUENTE=SINT."""
-    from edgelab.research import grilla_generica as GG, indicadores as I
+    from edgelab.research import indicadores as I
     mod = cargar(modulo); e = contrato(mod)
     if e: return e
-    ctx = GG.contexto_m1(list(bloques_sinteticos(mod, dias, 11)), tick=getattr(mod, "PREFLIGHT_PRECIO", (None, 0.25))[1])
+    ctx = contexto(mod, list(bloques_sinteticos(mod, dias, 11)), getattr(mod, "PREFLIGHT_PRECIO", (None, 0.25))[1])
     try:
         e += [f"causalidad: {x}" for x in I.causal_por_disparo(mod.eventos, ctx)[:3]]
         e += [f"causalidad (cortes): {x}" for x in I.causal(mod.eventos, ctx)[:3]]

@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-245 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+246 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -142,6 +142,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `LUXIMB_FUT_VS_CFD` | 2026-10-24 | LUXIMB_FADE_VISOR | 7 | — | — | — | — |
 | `LUXIMB_GRILLA` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, LUXIMB_ESCALONADAS_AREA, LUXIMB_FUT_VS_CFD | — | 1 | — | — | `luximb_grilla_20261024` |
 | `LUXIMB_GRILLA_CFD` | 2026-10-24 | LUXIMB_GRILLA, LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, LUXIMB_ESCALONADAS_AREA, LUXIMB_FUT_VS_CFD, AREAS_EXP_1_CRUZADO | — | 1 | — | — | — |
+| `LUXIMB_HFT` | 2026-11-11 | LUXIMB_GRILLA, HFT_CLUSTERS_INFO | 1120 | — | — | — | `luximb_hft_20261111` |
 | `LUXIMB_HVN` | 2026-11-11 | LUXIMB_FADE_VISOR, LUXIMB_GRILLA, EXPANSION_ZONAS | 27602 | — | — | F-LUXIMB-HVN-DEFINICION (PALANCA_DE_DISENO); F-LUXIMB-ZONAS-VS-CONTROL (PISTA_VIVA) | `luximb_hvn_20261111` |
 | `LUXIMB_HVN2` | 2026-11-11 | LUXIMB_HVN | 3200 | — | — | F-LUXIMB-HVN-DEFINICION (PALANCA_DE_DISENO); F-LUXIMB-ZONAS-VS-CONTROL (PISTA_VIVA) | `luximb_hvn_20261111` |
 | `LUXIMB_IMPULSOS` | 2026-10-24 | LUXIMB_FADE_VISOR | 40 | — | — | — | — |

@@ -29,7 +29,7 @@ def main():
             bl = F.bloques_nq_sellado(d0, d1, rs, acta, tick)
     else:
         lector, tick = F.resolver(fuente); bl = lector(d0, d1, ent)
-    ctx = GG.contexto_m1(bl, tick); log(f"{fuente}: {len(ctx['c'])} velas, {len(ctx['tpx'])} ticks")
+    ctx = TB.contexto(mod, bl, tick); log(f"{fuente}: {len(ctx['c'])} velas, {len(ctx['tpx'])} ticks")
     T = TB.generar(mod, ctx); log(f"{len(T)} eventos")
     nom = f"TABLA_{mod.NOMBRE}_{fuente.replace('DK:', '')}_{d0}_{d1}"
     T.to_csv(nom + ".csv.gz", index=False)
