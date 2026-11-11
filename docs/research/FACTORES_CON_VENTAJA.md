@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (6)
+## PISTA_VIVA (5)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -18,11 +18,6 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Efecto: ESTABLE (regla 08/11): activos independientes RTY/YM/6E/6B +0,099 por sesión, 4/5 bloques, p azar 0,088; NQ+ES +0,107 (4/5, p 0,032); NQ solo +0,151 (p 0,005). ES no (−0,010).
   - Dónde: NQ, RTY, YM (no ES); clusters del E0-b, toque D0, carrera ±X
   - Siguiente: Confirmación congelada (réplica abr–sep o holdout exploratorio) con la probabilidad de azar declarada; el efecto operable es el rebote en niveles SIN cluster (ver F-REBOTE-NIVEL-SESION).
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.json`
-- **Primer regreso a un nivel de la sesión visitado 20–40 min antes (tras alejarse X/2), sin cluster HFT grande vivo cerca: rebota** (`F-REBOTE-NIVEL-SESION`, 2026-11-10, sesion)
-  - Efecto: Control de los clusters: NQ +0,078 (4/5 bloques, p 0,023), RTY +0,100 (3/5, p 0,087), YM +0,073 (4/5, p 0,11); ES −0,072. Del orden del umbral económico (0,08) en bruto.
-  - Dónde: NQ, RTY, YM; carrera ±X con X = fricción / 0,08
-  - Siguiente: Pre-registrar REBOTE_NIVEL_SESION como familia propia (generador de niveles de la sesión, banco con rasgos de llegada) en datos no mirados; buscar la condición que lo concentre por encima de 0,08.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.json`
 - **Donde hubo actividad HFT (clusters grandes o de 4 zonas) el nivel rebota MENOS que un nivel cualquiera de la sesión; la estabilidad lo muestra en casi todas las definiciones y activos** (`F-HFT-ZONAS-NO-SON-SOPORTE`, 2026-11-10, sesion)
   - Efecto: Re-medición con estabilidad de DESC: rebote real − control D0 −0,107 (1/5 bloques +), D1 −0,180, D6 −0,084 (0/5); clusters de 4 zonas −0,057 (535 sesiones, 1/5) con NQ −0,063, GC −0,050, YM −0,161, ES −0,012.
@@ -100,10 +95,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (8)
+## NO_REPETIR (9)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Primer regreso a un nivel de la sesión (cada 600 s, banda X/4): no rebota, y la distancia a zonas HFT (espacio × tiempo) no lo cambia** (`F-REBOTE-NIVEL-SESION-B`, 2026-11-11, sesion)
+  - Efecto: Réplica abr–sep, 29.560 eventos en NQ/ES/RTY/YM/GC: rebote −0,007 (se ≈ 0,006, 2/5 bloques); previas «sin zonas» −0,017/−0,023/−0,005, ninguna nominada ni estable; calibración 2,5 %.
+  - Dónde: Niveles de reloj de la sesión, D0, carrera ±X con X = fricción / 0,08
+  - Siguiente: No repetir con niveles de reloj; el rebote del control en DESC no se transporta. Niveles de pivote: sólo como descriptivo de OP-1.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTE_NIVEL.md`, `docs/research/banco_eventos/REBOTE_NIVEL_SESION/RESULTADO.json`
 - **Rebote e imán en clusters de 4 zonas HFT (la definición frecuente y angosta) contra un nivel cualquiera** (`F-HFT-CLUSTERS-K4-INFO`, 2026-11-10, sesion)
   - Efecto: Rebote: real − control −0,021 (IC90 −0,043 a +0,001, MDE 0,033, 9.752 eventos en NQ/ES/GC/YM); imán: −0,014 (IC90 −0,033 a +0,004, MDE 0,028). El desenlace real ≈ 0, lejos del umbral 0,08.
   - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
