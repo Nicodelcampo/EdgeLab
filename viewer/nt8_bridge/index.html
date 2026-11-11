@@ -1442,7 +1442,7 @@
   </div>
 </div>
 
-<script src="bundles/manifest.js"></script>
+<script>document.write('<script src="bundles/manifest.js?v=' + Date.now() + '"><\/script>');</script>
 <script src="bundles/manifest_nqlit.js" onerror="void 0"></script>
 <script src="density_field.js"></script>
 <script src="espejo_impulsos.js"></script>
@@ -3103,13 +3103,13 @@
   }
   // EDGELAB_CONC_ZONAS_V1 (2026-11-11): bandas de concentración OG+VI (&cz=1). En cada vela M1 (causal: sólo zonas ya nacidas
   // y vivas, vida 500 min) busca la banda de alto czh pips que contiene completas más zonas; si son >= czk, marca la banda
-  // desde ese momento por 500 min. Una banda nueva no se marca si pisa otra todavía viva. Calibrado en EURUSD mar-jun 2026:
-  // 8 pips y 25 zonas -> ~2 bandas cada 2 días. Sólo dibujo, sin desenlaces.
+  // desde ese momento; mientras la concentración siga en ese precio la banda se alarga y termina 500 min después de la última vela que la cumplió. Calibrado en EURUSD mar-jun 2026:
+  // 8 pips y 22 zonas -> ~1,9 bandas cada 2 días (bandas encadenadas unidas). Sólo dibujo, sin desenlaces.
   var cz = { key: null, bands: [] };
   function czCompute() {
     var q = new URLSearchParams(window.location.search); if (q.get("cz") !== "1" || !state.run || !state.data) { cz.bands = []; return; }
     var tk = (state.data.meta && state.data.meta.tick_size) || 0.00001, pip = tk < 0.001 ? tk * 10 : tk;
-    var H = (parseFloat(q.get("czh")) || 8) * pip, K = parseInt(q.get("czk"), 10) || 25, L = 500 * 60;
+    var H = (parseFloat(q.get("czh")) || 8) * pip, K = parseInt(q.get("czk"), 10) || 22, L = 500 * 60;
     var bs1 = state.data.bar_series && state.data.bar_series.time_1m; if (!bs1) { cz.bands = []; return; }
     var key = state.run.id + "|" + H + "|" + K; if (cz.key === key) return; cz.key = key;
     var Z = state.run.zones.filter(function (z) { return z.source === "luxalgo"; }).sort(function (a, b) { return a.t0 - b.t0; });
@@ -3126,16 +3126,16 @@
         if (n > bn) { bn = n; bb = b; }
       }
       if (bn < K) return;
-      for (var m = 0; m < out.length; m++) if (t < out[m].t0 + L && bb < out[m].lo + H && bb + H > out[m].lo) return;
-      out.push({ t0: t, lo: bb, hi: bb + H, n: bn });
+      for (var m = 0; m < out.length; m++) if (t <= out[m].t1 && bb < out[m].lo + H && bb + H > out[m].lo) { out[m].t1 = t + L; out[m].n = Math.max(out[m].n, bn); return; }   // misma banda: se alarga
+      out.push({ t0: t, t1: t + L, lo: bb, hi: bb + H, n: bn });
     });
     cz.bands = out;
   }
   function drawConc(ctx, vr, X, Y) {
     czCompute(); var L = 500 * 60;
     cz.bands.forEach(function (b) {
-      if (b.t0 + L < vr.from || b.t0 > vr.to) return;
-      var x0 = X(null, Math.max(b.t0, vr.from)), x1 = X(null, Math.min(b.t0 + L, vr.to)), y0 = Y(b.hi), y1 = Y(b.lo);
+      if (b.t1 < vr.from || b.t0 > vr.to) return;
+      var x0 = X(null, Math.max(b.t0, vr.from)), x1 = X(null, Math.min(b.t1, vr.to)), y0 = Y(b.hi), y1 = Y(b.lo);
       if (!isFinite(x0) || !isFinite(x1) || !isFinite(y0) || !isFinite(y1)) return;
       ctx.fillStyle = "rgba(244,114,138,0.28)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
       ctx.strokeStyle = "rgba(225,29,72,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
