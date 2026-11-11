@@ -36,3 +36,9 @@ búsqueda y repita en DESC y REP en los dos activos se congela y se confirma en 
 1. Causalidad: la decisión es al cierre de la vela; el sector usa sólo velas ≤ kf; el percentil, sólo sectores cerrados antes; la
    entrada, en el tick siguiente (test de prefijo del preflight).
 2. Secuencia: test con un recorrido a mano (tres puntos en orden; invalidación antes de armarse); objetivos y stops del lado correcto.
+
+## Adenda (2026-11-11, antes de ver ninguna tabla): relajar si hay pocos casos (pedido de Nico)
+Regla mecánica, fijada ahora: si en las tablas de desarrollo **menos de la mitad de las definiciones del visor** llega a 30 operaciones
+por corte, se lanza UNA versión relajada (`LUXIMB-AMARILLA-R`), con todo lo demás igual: caja «amarilla» con P60 (en vez de P80),
+excursión e = 0,5 además de 1/2/4, W = 0,5 además de 1/2, y bases con ≥ 1 zona en el 25 % inicial (z1) y amplitud p60 sin piso
+de 60 puntos. Se registra como prueba aparte (multiplicidad sumada) y se decide sólo con el conteo de casos, nunca con el P&L.
