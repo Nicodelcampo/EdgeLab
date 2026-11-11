@@ -872,6 +872,49 @@
       "tests": [
         "tests/research/test_banco_eventos.py"
       ]
+    },
+    {
+      "id": "cadena-de-corrida",
+      "name": "Cadena estándar de una corrida (tablas de eventos)",
+      "layer": 4,
+      "status": "experimental",
+      "function": "Motor único de ejecuciones tick a tick calibrado, contrato de familia como tabla de eventos, kernel genérico, preflight completo, lanzador/traída, análisis exploratorio con nulo de la búsqueda, congelado con hash, confirmación única, holdout exploratorio, curva de capital, antecedentes y presupuesto de datos, cierre.",
+      "paths": [
+        "edgelab/research/ejecucion.py",
+        "edgelab/research/tablas.py",
+        "edgelab/research/analizar_tabla.py",
+        "edgelab/research/plantilla_tabla.py",
+        "edgelab/research/curva.py",
+        "tools/tablas.py",
+        "tools/kaggle_grilla/tabla_main.py",
+        "tools/antecedentes.py",
+        "tools/cierre.py",
+        "docs/research/tablas"
+      ],
+      "inputs": [
+        "módulo de familia con el contrato de edgelab/research/tablas.py",
+        "ticks del release y de Dukascopy (fuentes_ticks)"
+      ],
+      "outputs": [
+        "TABLA_<NOMBRE>_<fuente>_<desde>_<hasta>.csv.gz/json",
+        "EXPLORACION.md/json",
+        "CONGELADAS_*.json",
+        "RESULTADO_CONFIRMACION_*.md/json",
+        "CURVA_*.svg",
+        "docs/research/tablas/LANZADAS.jsonl"
+      ],
+      "depends_on": [
+        "research",
+        "funnel",
+        "holdout"
+      ],
+      "doc": "docs/research/CADENA_DE_CORRIDA.md",
+      "tests": [
+        "tests/research/test_ejecucion.py",
+        "tests/research/test_tablas.py",
+        "tests/test_dependencias_lock.py",
+        "tests/test_parametros_por_defecto.py"
+      ]
     }
   ],
   "unowned_ok": [

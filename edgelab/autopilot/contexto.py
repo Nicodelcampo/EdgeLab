@@ -94,6 +94,7 @@ NUCLEO_FUENTES = [
     ("metodo_de_investigacion", "docs/research/METODO_DE_INVESTIGACION.md", "todos"),              # el orden de una idea a una decisión
     ("practicas_de_trabajo", "docs/research/PRACTICAS_DE_TRABAJO_20261110.md", "todos"),          # qué salió bien y mal, con guardas
     ("banco_de_eventos", "docs/research/BANCO_DE_EVENTOS.md", "todos"),                           # muchos experimentos, poca multiplicidad
+    ("cadena_de_corrida", "docs/research/CADENA_DE_CORRIDA.md", "todos"),                         # 2026-11-11: módulo + tools/tablas.py, sin simuladores propios
     ("remediciones_candidatas", "docs/research/REMEDICIONES_CANDIDATAS.md", "diseño"),           # qué medido antes daría otro resultado hoy
     ("aprendizajes_espiral", "docs/research/APRENDIZAJES_ESPIRAL.md", "diseño"),
     ("cartera_viva", "docs/CARTERA_VIVA.md", "diseño"),

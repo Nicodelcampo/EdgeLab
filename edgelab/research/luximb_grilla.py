@@ -139,12 +139,14 @@ def _detectar_nb(t, H, L, C, thr_arr, W, e0, r, gap):
     return od[:m], oa[:m], oe[:m], oi0[:m], oie[:m], oj[:m], ow[:m], oja[:m]
 
 
-def detectar(t, h, l, c, tick):
-    """Tramos del detector sobre precios (se pasan a ticks enteros como en el original). Diccionario de arreglos."""
+def detectar(t, h, l, c, tick, atr_k=None, max_bars=None):
+    """Tramos del detector sobre precios (se pasan a ticks enteros como en el original). Diccionario de arreglos.
+    `atr_k` y `max_bars` (2026-11-11, LUXIMB-HVN: definición del impulso parametrizable); por defecto, los del visor."""
+    atr_k = ATR_K if atr_k is None else atr_k; max_bars = MAX_BARS if max_bars is None else max_bars   # globales al llamar (tests los cambian)
     H, L, C = np.round(h / tick), np.round(l / tick), np.round(c / tick)
-    thr = ATR_K * atr_prev(H, L, C, ATR_N)
-    if len(C) <= MAX_BARS: z = np.zeros(0, np.int64); return dict(d=z, a=np.zeros(0), ext=np.zeros(0), i0=z, iext=z, jconf=z, why=z, jact=z)
-    r = _detectar_nb(np.asarray(t, float), H, L, C, thr, MAX_BARS, E_MIN, RETR, GAP_RESET_S)
+    thr = atr_k * atr_prev(H, L, C, ATR_N)
+    if len(C) <= max_bars: z = np.zeros(0, np.int64); return dict(d=z, a=np.zeros(0), ext=np.zeros(0), i0=z, iext=z, jconf=z, why=z, jact=z)
+    r = _detectar_nb(np.asarray(t, float), H, L, C, thr, int(max_bars), E_MIN, RETR, GAP_RESET_S)
     return dict(zip(("d", "a", "ext", "i0", "iext", "jconf", "why", "jact"), r))
 
 
@@ -216,10 +218,11 @@ def _umbrales(R, V, ics, kbs, pcts):
     return ok, U, vmin
 
 
-def marcas_segmento(t, o, h, l, c, tick, Z=None):
+def marcas_segmento(t, o, h, l, c, tick, Z=None, atr_k=None, max_bars=None, amp=None, zon=None):
     """Todas las marcas de un segmento contiguo (un contrato): DataFrame con una fila por (definición de amplitud, definición de
     zonas, tramo) marcado. Columnas: k (vela de marca), d, i0, iext, pa (precio de A), ext, rg, velas, nz, nini25, nini50, amp, zon."""
-    T = detectar(t, h, l, c, tick)
+    amp = AMP if amp is None else amp; zon = ZON if zon is None else zon
+    T = detectar(t, h, l, c, tick, atr_k, max_bars)
     cols = ["k", "d", "i0", "iext", "pa", "ext", "rg", "velas", "nz", "nini25", "nini50", "amp", "zon"]
     if not len(T["d"]): return pd.DataFrame(columns=cols)
     Z = Z if Z is not None else AX.zonas(t, o, h, l, c)
@@ -236,14 +239,14 @@ def marcas_segmento(t, o, h, l, c, tick, Z=None):
                                               zs.astype(np.int64), ze.astype(np.int64), zi, zlo, zhi, h.astype(float), l.astype(float),
                                               VIDA, np.array(FRACS, float))
     if not len(g): return pd.DataFrame(columns=cols)
-    ok, U, vmin = _umbrales(R, V, ic, kb, [p for p, _ in AMP])
+    ok, U, vmin = _umbrales(R, V, ic, kb, [p for p, _ in amp])
     vl = iext - i0[g] + 1
     with np.errstate(invalid="ignore", divide="ignore"):
         rapido = ok & (rg / np.maximum(vl, 1) >= vmin)
     filas = []
-    for ai, (_, piso) in enumerate(AMP):
+    for ai, (_, piso) in enumerate(amp):
         c_amp = rapido & (rg >= np.maximum(U[:, ai], piso))
-        for zj, (frac, mini) in enumerate(ZON):
+        for zj, (frac, mini) in enumerate(zon):
             if mini == 0: cond = c_amp
             else:
                 n_ini = nini[:, FRACS.index(frac)]

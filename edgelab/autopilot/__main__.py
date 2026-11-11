@@ -41,6 +41,10 @@ def main():
             emb = EMB.Embudo(raiz, runners,
                              registro=reg, libro=LibroLord(), ventanas=ventanas)                 # libro único (decisión 2026-10-24)
             rep["embudo"] = EMB.avanzar_todas(Path(ce.get("campanas", "config/autopilot/grillas/campanas")), emb, conductor=ce.get("conductor", "debian"))
+        if (cfg.get("tablas") or {}).get("activo"):                # tablas de eventos lanzadas (tools/tablas.py): traer las terminadas sin esperar a nadie
+            import subprocess, sys as _s
+            r = subprocess.run([_s.executable, "tools/tablas.py", "traer"], cwd=Path(__file__).resolve().parents[2], capture_output=True, text=True, timeout=600)
+            rep["tablas"] = [l for l in (r.stdout + r.stderr).splitlines() if l.startswith(("traída", "pendiente"))][:20]
         from .pedidos import desde_ciclo
         if (pd := desde_ciclo(Path(a.root), rep)): rep["pedidos"] = [p["id"] for p in pd]   # lo que sólo una persona puede resolver
         print(json.dumps(rep, default=str), flush=True)

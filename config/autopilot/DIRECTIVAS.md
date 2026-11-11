@@ -99,3 +99,10 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    §«Rasgos y generadores propios» (mecanismo y refutación antes, construcción sin retornos, test de causalidad por prefijo,
    registro en `banco_eventos.GENERADORES`, prueba sólo en tablas no miradas). Los indicadores de dibujo/zonas operables siguen
    pausados (F9).
+
+20. **Cadena estándar de una corrida (Nico 2026-11-11, `docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`).** Diseño:
+   `python tools/antecedentes.py "<idea>" --familia F` (familias parecidas, NO_REPETIR, código reutilizable y qué datos quedan
+   sin mirar para el linaje) antes de escribir nada. Implementación: una familia de reglas sobre eventos es un módulo con el contrato
+   de `edgelab/research/tablas.py` (plantilla `edgelab/research/plantilla_tabla.py`); nunca un simulador ni un kernel propio: el
+   motor único `edgelab/research/ejecucion.py` (stop al tick que lo cruza, calibrado sin optimismo) y `python tools/tablas.py
+   preflight → lanzar → traer → explorar → congelar → confirmar`. Cierre: `python tools/cierre.py` antes de cada commit.
