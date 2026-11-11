@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-625 scripts.
+626 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -392,6 +392,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/l2_phase2_info.py` | L2 Fase 2 — informacion condicional del libro tras la latencia (GC 08-26, pre-holdout). |
 | `tools/l2_public_pilot.py` | P0: exploratory BTC minute-flow proxies; no strategy or fill simulation. |
 | `tools/literatura.py` | Búsqueda de literatura para EdgeLab con APIs oficiales y gratuitas (no Google Scholar: sus términos prohíben el |
+| `tools/luximb_parity/bandas_concentracion.py` | Bandas de concentración OG+VI sobre un bundle LUX-IMB M1 del visor: lista de bandas y calibración del umbral. |
 | `tools/luximb_parity/build_luximb_fx_bundle.py` | Bundle del visor para FX de Dukascopy (JForex: timestamp UTC, bid, ask, last=mid): velas M1 y 25t + zonas LUX-IMB. |
 | `tools/luximb_parity/build_luximb_nq_m1_bundle.py` | Bundle del visor: NQ (un contrato, sin merge ni back-adjust) en velas M1 + zonas LUX-IMB (OG + VI). |
 | `tools/luximb_parity/build_luximb_spot_m1_bundle.py` | Bundle del visor con velas M1 de Dukascopy (spot/CFD, p. ej. USATECH ~ NQ) + zonas LUX-IMB (OG+VI). Target-free. |
