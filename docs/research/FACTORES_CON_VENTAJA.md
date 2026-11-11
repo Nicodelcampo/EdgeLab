@@ -9,16 +9,16 @@ no se vuelve a proponer igual. Un factor ordena la investigación, no es evidenc
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0)** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-C`, 2026-11-11, sesion)
+  - Efecto: Réplica abr–sep (congelada, una vez): NQ+RTY+YM +0,087 por sesión, 5/5 bloques, p 0,052; NQ +0,089, RTY +0,049, YM +0,133, ES +0,182. No confirmada al nivel LORD++ (0,0109; Simes 0,104); estable por la regla 08/11. DESC: +0,10.
+  - Dónde: NQ, RTY, YM, ES; clusters del E0-b, toque D0, carrera ±X
+  - Siguiente: Holdout en modo exploratorio (una apertura) con probabilidad de azar de desarrollo declarada; versión operable: continuación en el cluster (OP-2) medida con geometría fija y fills realistas.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_CONFIRMACION_NO_DEFIENDE.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_CONFIRMACION_NO_DEFIENDE.json`
 - **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
   - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
   - Siguiente: Pre-registrar la hipótesis de RUPTURA (carrera a favor de atravesar el cluster tras el toque) con la misma definición de NQ, umbrales fijos, y probarla una vez en la réplica abr → sep 2026. No elegir umbrales mirando esta tabla.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTES.md`
-- **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0)** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-B`, 2026-11-10, sesion)
-  - Efecto: ESTABLE (regla 08/11): activos independientes RTY/YM/6E/6B +0,099 por sesión, 4/5 bloques, p azar 0,088; NQ+ES +0,107 (4/5, p 0,032); NQ solo +0,151 (p 0,005). ES no (−0,010).
-  - Dónde: NQ, RTY, YM (no ES); clusters del E0-b, toque D0, carrera ±X
-  - Siguiente: Confirmación congelada (réplica abr–sep o holdout exploratorio) con la probabilidad de azar declarada; el efecto operable es el rebote en niveles SIN cluster (ver F-REBOTE-NIVEL-SESION).
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.json`
 - **Donde hubo actividad HFT (clusters grandes o de 4 zonas) el nivel rebota MENOS que un nivel cualquiera de la sesión; la estabilidad lo muestra en casi todas las definiciones y activos** (`F-HFT-ZONAS-NO-SON-SOPORTE`, 2026-11-10, sesion)
   - Efecto: Re-medición con estabilidad de DESC: rebote real − control D0 −0,107 (1/5 bloques +), D1 −0,180, D6 −0,084 (0/5); clusters de 4 zonas −0,057 (535 sesiones, 1/5) con NQ −0,063, GC −0,050, YM −0,161, ES −0,012.
   - Dónde: NQ, GC, YM (ES débil); clusters HFT grandes y chicos
@@ -80,22 +80,17 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (2)
+## EN_SEGUIMIENTO (1)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
-- **Retroceso contra la tendencia de la sesión que llega a un cluster HFT grande: lo atraviesa** (`F-HFT-RUPTURA-RETROCESO-CONTRA-SESION-C`, 2026-11-10, sesion)
-  - Efecto: NQ/ES +0,082, 5/5 bloques, pero p azar con el nulo que repite la selección entre 68 celdas = 0,24; en RTY/YM/6E/6B +0,011 (1/5 bloques).
-  - Dónde: NQ y ES; no aparece en otros activos
-  - Siguiente: No gastar réplica en ella sola; sólo como componente de una canasta si otra evidencia la sostiene.
-  - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_CLUSTERS.md`
 - **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
   - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
   - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (9)
+## NO_REPETIR (10)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -104,6 +99,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Niveles de reloj de la sesión, D0, carrera ±X con X = fricción / 0,08
   - Siguiente: No repetir con niveles de reloj; el rebote del control en DESC no se transporta. Niveles de pivote: sólo como descriptivo de OP-1.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_REBOTE_NIVEL.md`, `docs/research/banco_eventos/REBOTE_NIVEL_SESION/RESULTADO.json`
+- **Retroceso contra la tendencia de la sesión que llega a un cluster HFT grande: lo atraviesa** (`F-HFT-RUPTURA-RETROCESO-CONTRA-SESION-D`, 2026-11-11, sesion)
+  - Efecto: Réplica abr–sep (cortes de DESC congelados): −0,023, 2/5 bloques, p 0,73. En DESC era +0,082 elegida entre 68 celdas (p de selección 0,24).
+  - Dónde: NQ y ES
+  - Siguiente: No repetir.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_CONFIRMACION_NO_DEFIENDE.md`
 - **Rebote e imán en clusters de 4 zonas HFT (la definición frecuente y angosta) contra un nivel cualquiera** (`F-HFT-CLUSTERS-K4-INFO`, 2026-11-10, sesion)
   - Efecto: Rebote: real − control −0,021 (IC90 −0,043 a +0,001, MDE 0,033, 9.752 eventos en NQ/ES/GC/YM); imán: −0,014 (IC90 −0,033 a +0,004, MDE 0,028). El desenlace real ≈ 0, lejos del umbral 0,08.
   - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
