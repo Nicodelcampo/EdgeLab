@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (6)
+## PISTA_VIVA (7)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ y USATECH, D3_20 amplitud p60/60 pts
   - Siguiente: Sólo como filtro de contexto (no señal); seguir en forward con e-proceso. No gastar más datos limpios en la diferencia sola.
   - Evidencia: `docs/research/luximb_hvn_20261111/RESULTADO_CONFIRMACION_H_ZONAS.json`, `docs/research/luximb_hvn_20261111/CONFIRMACION_H_ZONAS.md`
+- **Caja amarilla: entrar en contra recién cuando el precio cierra de vuelta del otro lado del borde interno (DESPUES), objetivo 50 % del impulso, con el precio a ≥ 1 desvío del VWAP** (`F-AMARILLA-DESPUES-VWAP-LEJOS`, 2026-11-11, sesion)
+  - Efecto: LUXIMB-AMARILLA-R2: en los CUATRO cortes (NQ/USATECH × DESC/REP) hay celdas sobre el p95 del nulo de la búsqueda (6/20/6/6) y TODAS son de esta forma (DESPUES, obj_50 o 75, VWAP lejos), con 5/5 sub-bloques; R neto chico (+0,05 a +0,16 R) con t 4–5,5 y n 35–120 por corte. Las celdas exactas cambian de corte a corte (W, e, VWAP diario o NY, con o sin zonas) y aparecen con y SIN zonas (control): la regla es de la secuencia de la caja, no de LUX-IMB.
+  - Dónde: NQ y USATECH 2025-08 → 2026-09, impulsos de hasta 40 velas
+  - Siguiente: Congelar UNA forma (impulso de 40 velas sin condición de zonas, DESPUES, obj 50 %, stop en el extremo, VWAP diario a ≥ 1 desvío y yendo hacia él) y confirmarla en datos no mirados: holdout desde 2026-10-23 (una apertura de la familia) o forward.
+  - Evidencia: `docs/research/luximb_amarilla_20261111/r2/EXPLORACION.md`
 - **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
   - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
