@@ -180,6 +180,9 @@ muestre calibración sana en datos reales.
   `"estadistico": "R"` en la campaña. Los puntos sobrestiman reglas cuyas ganancias caen en stops lejanos (U1-CRUZADO: +15,6 pts =
   +0,015R). Para pasar a REAL se exige además R forward > 0 (`cartera/ficha.py::puede_promover`). Ver `docs/research/MEDIR_EN_R_20261102.md`;
   ideas transferibles entre familias: `docs/research/atlas_ideas_r_20261102/`.
+- **Cadena estándar de una corrida (Nico, 2026-11-11):** `tools/antecedentes.py` → módulo con el contrato de `edgelab/research/tablas.py`
+  (motor único `ejecucion.py`, calibrado) → `tools/tablas.py preflight|lanzar|traer|explorar|congelar|confirmar` → `tools/cierre.py`.
+  Nada de simuladores ni kernels propios (`docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`).
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

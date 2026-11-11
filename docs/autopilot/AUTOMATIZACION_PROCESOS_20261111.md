@@ -1,6 +1,6 @@
 # Procesos de una corrida que se pueden automatizar o estandarizar (relevamiento del 2026-11-11)
 
-Estado: PROPUESTA (pedido de Nico, 2026-11-11: «repasá todos los pasos de la corrida de recién… cuáles se pueden automatizar,
+Estado: IMPLEMENTADA EN PARTE (ver §8; pedido de Nico, 2026-11-11: «repasá todos los pasos de la corrida de recién… cuáles se pueden automatizar,
 estandarizar o simplificar para que el agente del Debian ahorre tiempo y tokens, se equivoque menos y lance más y mejores
 corridas»). Sin implementar: Nico pide la implementación después.
 Fuente: lo que hubo que hacer a mano en LUXIMB-HVN (`docs/research/luximb_hvn_20261111/`), en OP-2 y en la apertura del holdout de
@@ -83,3 +83,37 @@ Prioridad: **A** = ahorra mucho o evita errores ya cometidos; **B** = ahorra tok
 
 Estimación: con 1–3, la corrida de LUXIMB-HVN habría sido una especificación de ≈ 60 líneas más el módulo de eventos, en vez de
 ≈ 700 líneas nuevas y cinco errores encontrados durante el trabajo.
+
+## 8. Iteración e implementación (2026-11-11, pedido de Nico: «iterá una vez más sobre la propuesta, luego implementala»)
+
+### Qué cambió al iterar
+- **Reutilizar antes que construir:** el grafo de imports ya existía (`embudo_runners.dependencias`), la causalidad por disparo
+  también (`indicadores.causal_por_disparo`), igual que `fill_pasivo`, `banco_eventos` (estabilidad, BH) y `construir_kernel`.
+  La implementación los usa; no hay copias.
+- **La calibración del motor tenía que ser por sesión:** con t por evento daba falsas alarmas (±3–4,6) porque las entradas al azar
+  del mismo día se pisan. Con t por sesión, cero falsas alarmas y el sesgo real del stop sigue apareciendo (t = 6,6).
+- **El presupuesto de datos encontró un error mío en el acto:** el pre-registro de LUXIMB-HVN llamaba «nunca mirado por el linaje»
+  a USATECH 2023–2025, y U1 (ancestro vía EXPANSION_ZONAS) lo usó para SU regla. Quedó enmendado antes de generar ninguna tabla.
+- **L4 tenía otra causa además del formato:** la tabla de fricción del ciclo tenía sólo 6 instrumentos; ahora usa todos los de
+  `edgelab/costos.py` y entiende propuestas de varios instrumentos (toma el más caro).
+
+### Implementado
+| ítem | dónde | prueba |
+|---|---|---|
+| I3, V1, V3 motor único + calibración | `edgelab/research/ejecucion.py` (MERCADO con parcial/BE, VUELTA, LIMITE; `calibrar`) | `tests/research/test_ejecucion.py` (incluye que la calibración atrapa el stop acreditado en su nivel) |
+| I1, I5, I6, L1, V2, R5 contrato de tablas, kernel genérico, preflight completo, conteo | `edgelab/research/tablas.py`, `tools/kaggle_grilla/tabla_main.py`, plantilla `edgelab/research/plantilla_tabla.py` | `tests/research/test_tablas.py` (el preflight atrapa un look-ahead) |
+| I7, L2, L3 lanzador, traída y registro | `tools/tablas.py` (`lanzar`, `traer`, `estado`; `docs/research/tablas/LANZADAS.jsonl`); el ciclo trae solo con `tablas.activo` | ídem |
+| F1–F3, C1 analizador genérico con nulo de la búsqueda, control y guarda de fricción | `edgelab/research/analizar_tabla.py` (`explorar`, `informe_exploracion`) | ídem |
+| F4 congelar y confirmar una vez | `analizar_tabla.congelar/confirmar` + `tools/tablas.py congelar|confirmar` (hash, registro global, veredicto por regla) | ídem (tocar las congeladas rompe el hash) |
+| F5 holdout exploratorio | `tools/tablas.py holdout|confirmar_holdout` + modo sellado del kernel (futuros y spot) | contrato; sin corrida real todavía |
+| R1, R2 antecedentes y presupuesto de datos | `tools/antecedentes.py "<idea>" --familia F` | probado sobre LUXIMB-HVN |
+| I8 imports fuera del entorno | `tests/test_dependencias_lock.py` + línea base `config/imports_baseline.json` | atrapa un `import scipy` nuevo |
+| C3 cierre en un comando | `tools/cierre.py` | — |
+| L4 fricción multi-instrumento | `edgelab/autopilot/friccion.py` (`instrumentos`, `FRICCION_TODOS`) | tests de costos y autopilot |
+| L5 PAUSE con motivo y paso | `tools/autopilot_watchdog.py` | tests del watchdog |
+| Consignas | directiva 20 (`config/autopilot/DIRECTIVAS.md`), consigna del programador | tests de autopilot |
+
+### Pendiente (para una próxima vuelta)
+- I2 (lint de parámetros atados al importar), I4 (biblioteca de rasgos: perfil por franjas, distancia a clusters HFT), I9 (curva
+  de capital genérica), C2 (asentar FACTORES/MEDIDO desde el JSON), F6 (regenerar índices en el merge).
+- Migrar LUXIMB-HVN al contrato de tablas cuando lleguen sus tablas actuales (cambiar el módulo ahora las volvería «no vigentes»).

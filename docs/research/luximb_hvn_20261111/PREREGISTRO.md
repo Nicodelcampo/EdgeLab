@@ -48,7 +48,10 @@ Cómo podría refutarse la población: real − control ≈ 0 en el mecanismo y 
 - **Desarrollo (ya mirado por el linaje; exploración libre e iteraciones):** NQ 2025-08-05 → 2026-03-31 y 2026-04-01 → 2026-09-25;
   USATECH 2025-08-05 → 2026-03-31 y 2026-04-01 → 2026-09-30. DESC y REP se informan por separado (que algo aparezca en los dos es
   el primer filtro).
-- **Confirmación (NUNCA mirado por este linaje): USATECH 2023-01-03 → 2025-07-31.** Se genera recién después de congelar, por
+- **Confirmación: USATECH 2023-01-03 → 2025-07-31.** Enmienda (2026-11-11, antes de generar ninguna tabla, la detectó
+  `tools/antecedentes.py`): no es «nunca mirado» por el linaje. U1 (`AREAS_EXP_1_CRUZADO`, ancestro vía EXPANSION_ZONAS) midió ahí SU
+  regla (OOS de U1, negativo) en el CFD. Ninguna regla de LUX-IMB se midió en esa ventana y el diseño de LUXIMB-HVN no usa ese
+  resultado; se usa igual como confirmación, declarado, y la multiplicidad del linaje se hereda. Se genera recién después de congelar, por
   escrito, ≤ k hipótesis (definición + ejecución + filtro + signo) y se prueba UNA vez: BH q 0,10 sobre las k, estabilidad en 5
   sub-bloques, R neto > 0. Para NQ: forward en papel y, si una hipótesis confirma en USATECH, una apertura del holdout desde la
   sesión del 2026-10-23 (lo anterior está consumido para el linaje), por protocolo.
