@@ -84,11 +84,11 @@ def eventos(ctx) -> pd.DataFrame:
     return construir(ctx, BASES, WS, ES, PCT, None)
 
 
-def construir(ctx, BASES, WS, ES, PCT, amp) -> pd.DataFrame:
+def construir(ctx, BASES, WS, ES, PCT, amp, largos=False) -> pd.DataFrame:
     """La regla con sus parámetros explícitos (la versión relajada LUXIMB-AMARILLA-R usa otros)."""
     h, l, c, seg = (np.asarray(ctx[x]) for x in ("h", "l", "c", "seg")); n = len(c)
     vs = np.asarray(ctx["vp_start"], np.int64); vpx = np.asarray(ctx["vp_px"], float); vvo = np.asarray(ctx["vp_vol"], float)
-    M = H.eventos(ctx, amp=amp)
+    M = H.eventos(ctx, amp=amp, largos=largos)
     cols = ["k", "lado", "ref", "ext", "rg", "base", "W", "filtro", "e", "punto", "k_marca", "sector_vpb", "obj_50", "obj_75", "obj_0", "stop_ext", "stop_ext25"]
     if not len(M): return pd.DataFrame(columns=cols + [f"{b}|W{w}|{f}|e{e:g}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS])
     M = M[M[list(BASES.values())].any(axis=1)].reset_index(drop=True)

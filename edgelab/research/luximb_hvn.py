@@ -38,7 +38,8 @@ except ImportError:                                     # sin numba: misma lógi
         return (lambda f: f) if not (a and callable(a[0])) else a[0]
 
 NOMBRE = "LUXIMB-HVN"
-DETECTORES = {"D3_20": (3.0, 20), "D2_20": (2.0, 20), "D4_20": (4.0, 20), "D3_40": (3.0, 40)}   # (k·ATR(14), velas máx.)
+DETECTORES = {"D3_20": (3.0, 20), "D2_20": (2.0, 20), "D4_20": (4.0, 20), "D3_40": (3.0, 40)}
+DETECTORES_LARGOS = {"D3_60": (3.0, 60)}                # 2026-11-11 (LUXIMB-AMARILLA-R2): impulsos de hasta 60 velas, sólo si se piden   # (k·ATR(14), velas máx.)
 AMP = ((60.0, 60.0), (80.0, 60.0))                     # (percentil causal de amplitud, piso en puntos); 0 = la del visor
 ZON = LG.ZON                                           # (franja inicial, mínimo de zonas); 0 = control sin zonas, 2 = visor
 VISOR = "D3_20_a0_z2"
@@ -67,20 +68,20 @@ def nombre_ext(x) -> str:
 
 
 # ----------------------------------------------------------------------------------------------------------- eventos
-def eventos(ctx, amp=None) -> pd.DataFrame:
+def eventos(ctx, amp=None, largos=False) -> pd.DataFrame:
     """Una fila por evento único (k, d, i0) con una columna booleana por definición `<det>_a<i>_z<j>` y los rasgos causales."""
     o, h, l, c, v, t, ses, seg = (np.asarray(ctx[x]) for x in ("o", "h", "l", "c", "v", "t", "ses", "seg"))
     tick = float(ctx["tick"]); partes = []
     for sg in pd.unique(seg):
         idx = np.flatnonzero(seg == sg); a0, b0 = idx[0], idx[-1] + 1
         Z = AX.zonas(t[a0:b0], o[a0:b0], h[a0:b0], l[a0:b0], c[a0:b0])
-        for det, (ak, mb) in DETECTORES.items():
+        for det, (ak, mb) in {**DETECTORES, **(DETECTORES_LARGOS if largos else {})}.items():
             M = LG.marcas_segmento(t[a0:b0], o[a0:b0], h[a0:b0], l[a0:b0], c[a0:b0], tick, Z=Z, atr_k=ak, max_bars=mb, amp=AMP if amp is None else amp, zon=ZON)
             if not len(M): continue
             for col in ("k", "i0", "iext"): M[col] = M[col].astype(np.int64) + a0
             M["defn"] = [f"{det}_a{int(a)}_z{int(z)}" for a, z in zip(M.amp, M.zon)]; M["a0"] = a0
             partes.append(M)
-    defs = [f"{d}_a{a}_z{z}" for d in DETECTORES for a in range(len(AMP if amp is None else amp)) for z in range(len(ZON))]
+    defs = [f"{d}_a{a}_z{z}" for d in {**DETECTORES, **(DETECTORES_LARGOS if largos else {})} for a in range(len(AMP if amp is None else amp)) for z in range(len(ZON))]
     if not partes: return pd.DataFrame(columns=["k", "d", "i0", "pa", "ext", "rg"] + defs)
     D = pd.concat(partes, ignore_index=True)
     piv = pd.crosstab([D.k, D.d, D.i0], D.defn).reindex(columns=defs, fill_value=0).astype(bool)
