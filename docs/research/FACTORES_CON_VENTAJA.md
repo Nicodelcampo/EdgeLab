@@ -80,7 +80,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (2)
+## EN_SEGUIMIENTO (3)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -89,13 +89,18 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Niveles de pivote de 1 min, NQ/ES/RTY/YM/GC
   - Siguiente: Sirve de veto (OP-3) o de condición de continuación (OP-2); confirmar en el holdout junto con «no defiende».
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP1_DESARROLLO.md`
+- **OP-2 en YM: la continuación en el primer regreso a un cluster grande paga en bruto (≈ +0,11) en los dos períodos** (`F-OP2-YM`, 2026-11-11, sesion)
+  - Efecto: DESC +0,035 neto (bruto +0,114, n 150, p 0,29); réplica +0,025 (bruto +0,104, n 112, p 0,38). Sin potencia (MDE ≈ 0,2).
+  - Dónde: YM, cluster K4_A025_V1800
+  - Siguiente: Hipótesis previa en el holdout/forward junto con C1 (stops del otro lado) y C2 (veto de huida); no elegir geometría mirando 2X.
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.md`
 - **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
   - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
   - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (11)
+## NO_REPETIR (12)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -114,6 +119,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Niveles de reloj y de pivote de 1 min, D0
   - Siguiente: No repetir el fade; medir la continuación en clusters grandes (OP-2) y el veto HFT (OP-3) en fades de otras familias.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP1_DESARROLLO.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_OP1_DESARROLLO.json`
+- **Continuación a mercado en el primer regreso a un cluster HFT grande (stop X, objetivo X) en NQ/ES/RTY** (`F-OP2-CONTINUACION-CLUSTER`, 2026-11-11, sesion)
+  - Efecto: DESC + réplica, 5.927 operaciones: R neto −0,079 (bruto 0,000), 0/5 bloques en los dos períodos; real − control +0,09 también en R. La expectativa (≈ −0,08) estaba escrita antes.
+  - Dónde: NQ, ES, RTY; clusters del E0-b
+  - Siguiente: No repetir; usar «no defiende» como veto (OP-3).
+  - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.json`
 - **Rebote e imán en clusters de 4 zonas HFT (la definición frecuente y angosta) contra un nivel cualquiera** (`F-HFT-CLUSTERS-K4-INFO`, 2026-11-10, sesion)
   - Efecto: Rebote: real − control −0,021 (IC90 −0,043 a +0,001, MDE 0,033, 9.752 eventos en NQ/ES/GC/YM); imán: −0,014 (IC90 −0,033 a +0,004, MDE 0,028). El desenlace real ≈ 0, lejos del umbral 0,08.
   - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
