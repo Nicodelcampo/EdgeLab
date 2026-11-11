@@ -22,16 +22,18 @@ FRICCION = {"NQ": 1.5455, "ES": 0.8877, "YM": 5.052, "GC": 0.605, "RTY": 0.4436,
 
 def main():
     from edgelab.research import fuentes_ticks as F, hft_clusters_info as H, hft_rebotes as RB, hft_contexto as KX, hft_ruptura as RU
-    from edgelab.research import niveles_sesion as NV
+    from edgelab.research import niveles_sesion as NV, op2_clusters as O2
     ent = os.environ.get("ENTRADA", "/kaggle/input"); t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     BASE = MODO.replace("_otros", "").replace("_replica", "")          # *_otros: activos nuevos; *_replica: ventana abr → sep, sólo tabla
     d0, d1 = REP if (BASE in ("rep", "ruptura_rep") or MODO.endswith("_replica")) else DESC
+    if MODO == "op2": d0, d1 = DESC[0], REP[1]                       # OP-2: desarrollo sobre las dos ventanas ya miradas de esta línea
     BASE = "niveles" if MODO == "niveles_op_replica" else BASE
-    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica")   # K19: nada con desenlaces dentro del kernel
+    SOLO_TABLA = MODO in ("ruptura_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica", "op2")   # K19: nada con desenlaces dentro del kernel
     res = dict(experimento="HFT-CLUSTERS-INFO", modo=MODO, ventana=[d0, d1], codigo=CODIGO_SHA, modulos=MODULOS_SHA, friccion_pts=FRICCION,
                barrera_pts={i: H.barrera(FRICCION[i], F.TICK_FUTURO[i]) for i in INSTRUMENTOS}, zonas=H.ZONAS, clusters=H.CLUSTERS)
     filas = []
     ZN, CL = (H.ZONAS, H.CLUSTERS) if BASE not in ("e0b", "rebotes", "contexto", "ruptura", "ruptura_rep") else ({"Z_CERT": H.ZONAS["Z_CERT"]}, H.CLUSTERS_B)
+    if MODO == "op2": ZN, CL = {"Z_CERT": H.ZONAS["Z_CERT"]}, {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}
     if BASE == "niveles": CL = {k: v for k, v in H.CLUSTERS_B.items() if k in {d[1] for d in DEFS.values()}}   # sólo las definiciones elegidas
     for inst in (INSTRUMENTOS if BASE in ("e0", "e0b", "niveles") else [i for i in INSTRUMENTOS if i in DEFS]):
         tk = F.TICK_FUTURO[inst]; n = 0
@@ -51,7 +53,9 @@ def main():
                                                 FRICCION[inst], tipo=tipo, con_operacion=MODO == "niveles_op_replica")
             else:
                 C = D.get(tuple(DEFS[inst]))
-                if C is not None and BASE in ("ruptura", "ruptura_rep"):
+                if C is not None and MODO == "op2":
+                    filas += O2.op2_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
+                elif C is not None and BASE in ("ruptura", "ruptura_rep"):
                     filas += RU.ruptura_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst])
                 elif C is not None and BASE == "contexto":
                     filas += KX.contexto_del_dia(inst, fecha, ts, px, B.vol.to_numpy(), C, tk, FRICCION[inst], DEF_CONTEXTO)
@@ -73,8 +77,8 @@ def main():
                                     por_mes={str(m): float(v) for m, v in h.assign(mes=h.fecha // 100).groupby("mes").n.mean().items()}) for k, h in g]
         res["eleccion"] = H.elegir_definicion(T)
     elif SOLO_TABLA and len(T):                                        # tabla para el banco o la confirmación: nada que use desenlaces (K19)
-        res["rasgos"] = NV.RASGOS if BASE == "niveles" else RU.RASGOS
-        if BASE != "niveles": res["estratos"] = RU.diagnostico_estratos(T)
+        res["rasgos"] = NV.RASGOS if BASE == "niveles" else ([] if MODO == "op2" else RU.RASGOS)
+        if BASE != "niveles" and MODO != "op2": res["estratos"] = RU.diagnostico_estratos(T)
         res["conteos"] = {i: dict(reales=int((h.placebo == 0).sum()), control=int((h.placebo == 1).sum()), sesiones=int(h.fecha.nunique()))
                           for i, h in T.groupby("inst")}
     elif BASE == "ruptura" and len(T):
