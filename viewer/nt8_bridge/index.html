@@ -869,6 +869,7 @@
       <button class="nt8-btn" id="btn-props" title="Indicadores: agregar, quitar y configurar (una sola configuración para todos los activos)"><span>Indicadores</span> <span class="arrow">▾</span></button>
     </div>
     <div class="tb-group tb-icons" aria-label="Ventana">
+      <button class="nt8-btn tb-icon" id="btn-hline" title="Línea horizontal: activar y hacer clic en el precio · clic sobre una línea la borra · Esc sale"><span>―</span></button>
       <button class="nt8-btn tb-icon" id="btn-theme" title="Tema claro / oscuro"><span>◐</span></button>
       <button class="nt8-btn tb-icon" id="btn-reset" title="Ajustar a pantalla"><span>⤢</span></button>
     </div>
@@ -1441,10 +1442,11 @@
   </div>
 </div>
 
-<script src="bundles/manifest.js"></script>
+<script>document.write('<script src="bundles/manifest.js?v=' + Date.now() + '"><\/script>');</script>
 <script src="bundles/manifest_nqlit.js" onerror="void 0"></script>
 <script src="density_field.js"></script>
 <script src="espejo_impulsos.js"></script>
+<script src="bandas_concentracion.js"></script>
 <script>
 (function () {
   "use strict";
@@ -1664,6 +1666,33 @@
     wickUpColor: "#16a34a",
     wickDownColor: "#dc2626",
     priceFormat: { type: "price", precision: 5, minMove: 0.00005 }
+  });
+  // EDGELAB_HLINES_V1 (2026-11-11): líneas horizontales dibujadas a mano, por activo (localStorage). Sólo dibujo.
+  var hl = { on: false, aid: null, lines: [] };
+  function hlKey() { return "edgelab_hlines_" + (hl.aid || ""); }
+  function hlSave() { try { localStorage.setItem(hlKey(), JSON.stringify(hl.lines.map(function (l) { return l.p; }))); } catch (e) {} }
+  function hlAdd(p) {
+    hl.lines.push({ p: p, ref: series.createPriceLine({ price: p, color: "#2563eb", lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: "" }) });
+  }
+  function hlinesLoad(aid) {
+    hl.lines.forEach(function (l) { try { series.removePriceLine(l.ref); } catch (e) {} });
+    hl.lines = []; hl.aid = aid; var ps = [];
+    try { ps = JSON.parse(localStorage.getItem(hlKey()) || "[]") || []; } catch (e) {}
+    ps.forEach(hlAdd);
+  }
+  function hlSet(on) { hl.on = on; var b = document.getElementById("btn-hline"); if (b) b.classList.toggle("active", on); document.getElementById("chart") && (document.getElementById("chart").style.cursor = on ? "crosshair" : ""); }
+  document.getElementById("btn-hline").addEventListener("click", function () { hlSet(!hl.on); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && hl.on) hlSet(false); });
+  chart.subscribeClick(function (p) {
+    if (!p || !p.point) return;
+    var y = p.point.y, near = -1;
+    hl.lines.forEach(function (l, i) { var ly = series.priceToCoordinate(l.p); if (ly !== null && Math.abs(ly - y) <= 4) near = i; });
+    if (near >= 0) { try { series.removePriceLine(hl.lines[near].ref); } catch (e) {} hl.lines.splice(near, 1); hlSave(); return; }
+    if (!hl.on) return;
+    var pr = series.coordinateToPrice(y); if (pr === null) return;
+    var tk = (state.data && state.data.meta && state.data.meta.tick_size) || 0;
+    if (tk > 0) pr = Math.round(pr / tk) * tk;
+    hlAdd(pr); hlSave();
   });
   var zonesPrim = {
     _req: null,
@@ -3018,7 +3047,8 @@
   var luxImp = { data: null };
   function luxImpLoad(aid) {
     luxImp.data = null; luxImp._dashKey = null;
-    if (new URLSearchParams(window.location.search).get("solo") === "det") {           // modo solo-detecciones: sin impulsos ni tablero
+    var qImp = new URLSearchParams(window.location.search);
+    if (qImp.get("solo") === "det" || qImp.get("cz") === "1") {           // modo solo-detecciones o bandas de concentración: sin impulsos ni tablero
       var dsh = document.getElementById("luximb-sim-dash"); if (dsh) dsh.remove(); return;
     }
     fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -3071,6 +3101,33 @@
       "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio " + (100 * luxImp._slk / (luxImp._tpk + luxImp._slk)).toFixed(1) + "%)" +
       "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R.toFixed(1) + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
       "<br>Por operación: " + (c ? ((R / c >= 0 ? "+" : "") + (R / c).toFixed(3) + " R") : "–");
+  }
+  // EDGELAB_CONC_ZONAS_V1 (2026-11-11): bandas de concentración OG+VI (&cz=1). En cada vela M1 (causal: sólo zonas ya nacidas
+  // y vivas, vida 500 min) busca la banda de alto czh pips que contiene completas más zonas; si son >= czk, marca la banda (y repite sin esas zonas)
+  // desde ese momento; mientras la concentración siga en ese precio la banda se alarga y termina 500 min después de la última vela que la cumplió. Calibrado en EURUSD mar-jun 2026:
+  // 8 pips y 22 zonas -> ~1,9 bandas cada 2 días (bandas encadenadas unidas). Sólo dibujo, sin desenlaces.
+  var cz = { key: null, bands: [] };
+  function czCompute() {
+    var q = new URLSearchParams(window.location.search); if (q.get("cz") !== "1" || !state.run || !state.data) { cz.bands = []; return; }
+    var tk = (state.data.meta && state.data.meta.tick_size) || 0.00001, pip = tk < 0.001 ? tk * 10 : tk;
+    var H = (parseFloat(q.get("czh")) || 8) * pip, K = parseInt(q.get("czk"), 10) || 22, L = 500 * 60;
+    var bs1 = state.data.bar_series && state.data.bar_series.time_1m; if (!bs1) { cz.bands = []; return; }
+    var key = state.run.id + "|" + H + "|" + K; if (cz.key === key) return; cz.key = key;
+    var Z = state.run.zones.filter(function (z) { return z.source === "luxalgo"; });
+    cz.bands = BandasConcentracion.detectar(Z, bs1.candles.map(function (c) { return c.time; }), H, K, L)
+      .map(function (b) { return { t0: b.t0, t1: b.t1, lo: b.piso, hi: b.techo, n: b.n }; });
+
+  }
+  function drawConc(ctx, vr, X, Y) {
+    czCompute(); var L = 500 * 60;
+    cz.bands.forEach(function (b) {
+      if (b.t1 < vr.from || b.t0 > vr.to) return;
+      var x0 = X(null, Math.max(b.t0, vr.from)), x1 = X(null, Math.min(b.t1, vr.to)), y0 = Y(b.hi), y1 = Y(b.lo);
+      if (!isFinite(x0) || !isFinite(x1) || !isFinite(y0) || !isFinite(y1)) return;
+      ctx.fillStyle = "rgba(244,114,138,0.28)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      ctx.strokeStyle = "rgba(225,29,72,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+      if (b.t0 >= vr.from) { ctx.fillStyle = "#be123c"; ctx.font = "bold 10px 'Segoe UI', sans-serif"; ctx.fillText(b.n + " zonas", x0 + 3, y0 - 3); }
+    });
   }
   function drawLuxImp(ctx, vr, X, Y) {
     if (!luxImp.data) return;
@@ -4545,7 +4602,7 @@
     labSave(); rev.k++; revShow();
   }
   function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on && !luxImp.data) || !series) return;
+    if ((!lab.data && !peaksDet.on && !luxImp.data && new URLSearchParams(window.location.search).get("cz") !== "1") || !series) return;
     if (!lab.data) lab.data = labEmpty();
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
@@ -4557,6 +4614,7 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    drawConc(ctx, vr, XI, Y);
     drawLuxImp(ctx, vr, XI, Y);
     (lab.data.judgments || []).forEach(function (j) {
       if (j.t1 < vr.from || j.t0 > vr.to) return;
@@ -6135,6 +6193,7 @@
         labLoad(aid);
         peaksDetLoad(aid);
         luxImpLoad(aid);
+        hlinesLoad(aid);
         var qGo = new URLSearchParams(window.location.search), tGo = parseInt(qGo.get("t"), 10), tfGo = qGo.get("tf");
         if (tfGo && data.bar_series && data.bar_series[tfGo] && state.activeBarKey !== tfGo) { try { switchTimeframe(tfGo); } catch (e) {} }
         var wGo = state.activeBarKey === "time_1m" ? 90 * 60 : 8 * 60;                // &t=<epoch s>: centra el gráfico ahí
