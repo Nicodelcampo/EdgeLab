@@ -40,12 +40,13 @@ def lanzar(f, d0, d1):
 
 
 def traer(f, d0, d1):
-    nom = f"LXH_{FUENTE[f].replace('DK:', '')}_{d0}_{d1}"; DIR.mkdir(parents=True, exist_ok=True); (DIR / "tablas").mkdir(parents=True, exist_ok=True)
+    sub = "confirmacion" if int(d1) < 20250805 else "tablas"                    # 2023-01 → 2025-07: confirmación de H-ZONAS (CONFIRMACION_H_ZONAS.md)
+    nom = f"LXH_{FUENTE[f].replace('DK:', '')}_{d0}_{d1}"; DIR.mkdir(parents=True, exist_ok=True); (DIR / sub).mkdir(parents=True, exist_ok=True)
     for ext in ("json", "csv.gz"):
         r = subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", slug(f, d0, d1), "--file", f"{nom}.{ext}",
-                            "--out", str(DIR / "tablas" / f"{nom}.{ext}")], capture_output=True, text=True); print(r.stdout.strip()[-200:])
+                            "--out", str(DIR / sub / f"{nom}.{ext}")], capture_output=True, text=True); print(r.stdout.strip()[-200:])
     from edgelab.research.preflight import codigo_vigente
-    js = DIR / "tablas" / f"{nom}.json"
+    js = DIR / sub / f"{nom}.json"
     if js.exists():
         viejo = codigo_vigente(json.loads(js.read_text()), ROOT)
         if viejo: raise SystemExit(f"NO VIGENTE: la tabla corrió con otra versión de {viejo}; no se interpreta")
