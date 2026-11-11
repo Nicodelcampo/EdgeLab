@@ -869,6 +869,7 @@
       <button class="nt8-btn" id="btn-props" title="Indicadores: agregar, quitar y configurar (una sola configuración para todos los activos)"><span>Indicadores</span> <span class="arrow">▾</span></button>
     </div>
     <div class="tb-group tb-icons" aria-label="Ventana">
+      <button class="nt8-btn tb-icon" id="btn-hline" title="Línea horizontal: activar y hacer clic en el precio · clic sobre una línea la borra · Esc sale"><span>―</span></button>
       <button class="nt8-btn tb-icon" id="btn-theme" title="Tema claro / oscuro"><span>◐</span></button>
       <button class="nt8-btn tb-icon" id="btn-reset" title="Ajustar a pantalla"><span>⤢</span></button>
     </div>
@@ -1664,6 +1665,33 @@
     wickUpColor: "#16a34a",
     wickDownColor: "#dc2626",
     priceFormat: { type: "price", precision: 5, minMove: 0.00005 }
+  });
+  // EDGELAB_HLINES_V1 (2026-11-11): líneas horizontales dibujadas a mano, por activo (localStorage). Sólo dibujo.
+  var hl = { on: false, aid: null, lines: [] };
+  function hlKey() { return "edgelab_hlines_" + (hl.aid || ""); }
+  function hlSave() { try { localStorage.setItem(hlKey(), JSON.stringify(hl.lines.map(function (l) { return l.p; }))); } catch (e) {} }
+  function hlAdd(p) {
+    hl.lines.push({ p: p, ref: series.createPriceLine({ price: p, color: "#2563eb", lineWidth: 1, lineStyle: 0, axisLabelVisible: true, title: "" }) });
+  }
+  function hlinesLoad(aid) {
+    hl.lines.forEach(function (l) { try { series.removePriceLine(l.ref); } catch (e) {} });
+    hl.lines = []; hl.aid = aid; var ps = [];
+    try { ps = JSON.parse(localStorage.getItem(hlKey()) || "[]") || []; } catch (e) {}
+    ps.forEach(hlAdd);
+  }
+  function hlSet(on) { hl.on = on; var b = document.getElementById("btn-hline"); if (b) b.classList.toggle("active", on); document.getElementById("chart") && (document.getElementById("chart").style.cursor = on ? "crosshair" : ""); }
+  document.getElementById("btn-hline").addEventListener("click", function () { hlSet(!hl.on); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && hl.on) hlSet(false); });
+  chart.subscribeClick(function (p) {
+    if (!p || !p.point) return;
+    var y = p.point.y, near = -1;
+    hl.lines.forEach(function (l, i) { var ly = series.priceToCoordinate(l.p); if (ly !== null && Math.abs(ly - y) <= 4) near = i; });
+    if (near >= 0) { try { series.removePriceLine(hl.lines[near].ref); } catch (e) {} hl.lines.splice(near, 1); hlSave(); return; }
+    if (!hl.on) return;
+    var pr = series.coordinateToPrice(y); if (pr === null) return;
+    var tk = (state.data && state.data.meta && state.data.meta.tick_size) || 0;
+    if (tk > 0) pr = Math.round(pr / tk) * tk;
+    hlAdd(pr); hlSave();
   });
   var zonesPrim = {
     _req: null,
@@ -6135,6 +6163,7 @@
         labLoad(aid);
         peaksDetLoad(aid);
         luxImpLoad(aid);
+        hlinesLoad(aid);
         var qGo = new URLSearchParams(window.location.search), tGo = parseInt(qGo.get("t"), 10), tfGo = qGo.get("tf");
         if (tfGo && data.bar_series && data.bar_series[tfGo] && state.activeBarKey !== tfGo) { try { switchTimeframe(tfGo); } catch (e) {} }
         var wGo = state.activeBarKey === "time_1m" ? 90 * 60 : 8 * 60;                // &t=<epoch s>: centra el gráfico ahí
