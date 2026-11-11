@@ -91,6 +91,16 @@ el agente del Debian**.
 | K21 | El banco corrió HFT-RUPTURA-OTROS (524 eventos) con `min_n` 100: ningún estrato de A podía llegar a 100, así que la mitad B se gastó en una sola prueba (el modelo) y las previas tenían MDE ≈ 0,19 contra un efecto de 0,08. El preflight no lo miraba. | La mitad B es de un solo uso: gastarla sin potencia es perder la tabla. | **Código**: `banco_eventos.preflight` bloquea si n_A / 3 < `min_n` y avisa el MDE de cada previa. **Test**: `test_preflight_frena_sin_potencia_para_celdas`. | Antes de correr el banco, mirar el aviso de potencia; ajustar `min_n` sólo ANTES de correr y declarado. |
 | K22 | Una corrección del registro de factores usó `reemplaza` con el MISMO id: `cargar` filtra los ids reemplazados y la entrada nueva habría desaparecido. | Lo aprendido se pierde en silencio. | **Test**: `test_ninguna_entrada_se_reemplaza_a_si_misma`. | La corrección lleva un id nuevo (sufijo -B, -C…). |
 
+## E4. Operación de SV1: actualización y reconciliación (2026-11-01 → 2026-11-10)
+
+| # | Qué pasó | Por qué importa | Guarda | Qué hace el agente |
+|---|---|---|---|---|
+| O20 | Al unir `HOLDOUT_VENTANAS`, agregar al final las 3 aperturas viejas de SV1 (`desde 20261023`) las habría vuelto vigentes: `aperturas_vigentes` se queda con la ÚLTIMA fila de cada `cid`. | Una unión «append-only» literal cambia en silencio la apertura del holdout de 3 familias, contra la directiva 6. | Simular `aperturas_vigentes` antes y después de toda unión; deben ser iguales. | Una apertura superada entra como `apertura_superada_sv1` (tipo que nadie lee como apertura), nunca como `apertura` (PR #184). |
+| O21 | `update.sh` copia el `LIBRO_LORD` sucio del clon al estado y, después del checkout, restaura el del estado si difiere del release: con el libro viejo de SV1 (22 familias) habría pisado el de foundation (108). | Se re-gastan pasos de α ya consumidos y se pierden reservas. | Antes de `update.sh`: árbol limpio y `state/autopilot_runs/libro_lord.json` = LORD de la punta (mismo sha256). | Verificar familias y sha256 de clon y estado después del update. |
+| O22 | `TRIAL_REGISTRY_GLOBAL` es una cadena de hash: copiar filas de otro registro rompe `prev`. | El contador global queda inválido. | `TrialRegistry.ensure` + `verify()`. | Nunca unir ese registro por líneas. |
+| O23 | `sync_state.sh` copia los manifiestos con `cp -u`: después de un checkout, la versión del repo (más nueva) pisa en el estado la de SV1 de los 6 CONTEO del 26/27-oct. | Se pierde la custodia local de lo que lanzó el Debian. | Copia aparte en `state/autopilot_runs/launches_sv1_conteo_20261101/` antes del update. | Conservar y reportar los manifiestos de conteo locales (handoff 30-oct). |
+| O24 | `git merge` como `edgelab` falla sin `user.name`, y un script encadenado siguió sobre la rama sin mergear (el TRIAL quedó encadenado sobre un head viejo; se descartó antes de commitear). | Commits sobre una base equivocada. | `git -c user.name='Agente Debian SV1' -c user.email=...` y `set -e` con comprobación de MERGE_HEAD y de ancestro. | Cortar ante el primer fallo de git. |
+
 ## D. Lo que el agente del Debian tiene que vigilar siempre (checklist por ciclo)
 1. `tools/autopilot_protect.py check` → OK.
 2. Ninguna campaña en CORRIENDO hace más de 14 h sin kernel vivo.
