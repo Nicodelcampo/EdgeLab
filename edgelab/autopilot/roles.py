@@ -131,6 +131,8 @@ class RoleRunner:
             db.execute("CREATE TABLE IF NOT EXISTS llm_calls (id INTEGER PRIMARY KEY, ts REAL, day TEXT, role TEXT, model TEXT, "
                        "in_sha TEXT, out_sha TEXT, status TEXT, tokens_in INTEGER, tokens_out INTEGER, cost_usd REAL, output TEXT)")
             db.execute("CREATE TABLE IF NOT EXISTS governor (role TEXT PRIMARY KEY, blocked_until REAL)")
+            if "dur_s" not in {r[1] for r in db.execute("PRAGMA table_info(llm_calls)")}:     # 2026-11-10: duración por llamada (uso y tiempo muerto)
+                db.execute("ALTER TABLE llm_calls ADD COLUMN dur_s REAL")
 
     def _db(self):
         db = sqlite3.connect(self.path, timeout=10)
@@ -140,12 +142,12 @@ class RoleRunner:
     def _day(self):
         return time.strftime("%Y-%m-%d", time.gmtime(self.clock()))
 
-    def _log(self, db, role, model, in_sha, status, out=None, resp=None):
+    def _log(self, db, role, model, in_sha, status, out=None, resp=None, dur=None):
         u = (resp or {}).get("usage") or {}
-        db.execute("INSERT INTO llm_calls (ts,day,role,model,in_sha,out_sha,status,tokens_in,tokens_out,cost_usd,output) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+        db.execute("INSERT INTO llm_calls (ts,day,role,model,in_sha,out_sha,status,tokens_in,tokens_out,cost_usd,output,dur_s) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)",
                    (self.clock(), self._day(), role, model, in_sha, _digest(out) if out is not None else None, status,
                     int(u.get("input_tokens", 0)) + int(u.get("cache_creation_input_tokens", 0)) + int(u.get("cache_read_input_tokens", 0)),
-                    int(u.get("output_tokens", 0)), float((resp or {}).get("total_cost_usd") or 0), json.dumps(out) if out is not None else None))
+                    int(u.get("output_tokens", 0)), float((resp or {}).get("total_cost_usd") or 0), json.dumps(out) if out is not None else None, dur))
 
     def call(self, role, payload, *, rate_limit_sleep=3600):
         spec = ROLES[role]
@@ -164,19 +166,20 @@ class RoleRunner:
                 return dict(status="SKIPPED_CAP")
         prompt = "Entrada (JSON):\n" + json.dumps(payload, ensure_ascii=False)
         for attempt in (1, 2):
+            t0 = self.clock()
             try: resp = self.cli(prompt, model=spec["model"], schema=spec["schema"], system=spec["system"], timeout=spec.get("timeout", 600))
             except TypeError: resp = self.cli(prompt, model=spec["model"], schema=spec["schema"], system=spec["system"])   # cli de test sin timeout
-            out = resp.get("structured_output")
+            out = resp.get("structured_output"); dur = round(self.clock() - t0, 3)
             with self._db() as db:
                 if resp.get("is_error") and (str(resp.get("api_error_status")) == "429" or "rate limit" in str(resp.get("result", "")).lower()):
                     until = self.clock() + rate_limit_sleep
                     db.execute("INSERT OR REPLACE INTO governor VALUES (?,?)", (role, until))
-                    self._log(db, role, spec["model"], in_sha, "RATE_LIMITED", resp=resp)
+                    self._log(db, role, spec["model"], in_sha, "RATE_LIMITED", resp=resp, dur=dur)
                     return dict(status="RATE_LIMITED", until=until)
                 if not resp.get("is_error") and out is not None and _valid(out, spec["schema"]):
-                    self._log(db, role, spec["model"], in_sha, "OK", out, resp)
+                    self._log(db, role, spec["model"], in_sha, "OK", out, resp, dur=dur)
                     return dict(status="OK", output=out)
-                self._log(db, role, spec["model"], in_sha, "INVALID_ATTEMPT_%d" % attempt, resp=resp)
+                self._log(db, role, spec["model"], in_sha, "INVALID_ATTEMPT_%d" % attempt, resp=resp, dur=dur)
                 # El CLI del servidor puede no conocer todavía un modelo nuevo: se baja al respaldo de AGENTES.json y el ciclo sigue.
                 txt = str(resp.get("result", "")).lower()
                 if resp.get("is_error") and "model" in txt and any(k in txt for k in ("not found", "invalid", "not exist", "unknown", "access", "not available")):
