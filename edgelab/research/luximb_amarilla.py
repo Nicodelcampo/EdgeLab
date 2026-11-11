@@ -43,9 +43,9 @@ ES = (1.0, 2.0, 4.0)
 PUNTOS = ("ANTES", "EN_CAJA", "DESPUES")
 PCT, MIN_HIST, HIST = 80.0, 20, 50
 VENCE = 1440
-DEFINICIONES = [f"{b}|W{w}|{f}|e{int(e)}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS]
-CONTROL = {**{f"{b}|W{w}|amarilla|e{int(e)}|{p}": f"{b}|W{w}|sin_filtro|e{int(e)}|{p}" for b in BASES for w in WS for e in ES for p in PUNTOS},
-           **{f"{b}|W{w}|{f}|e{int(e)}|{p}": f"ctrl|W{w}|{f}|e{int(e)}|{p}" for b in ("visor", "z3", "d2") for w in WS for f in ("sin_filtro",)
+DEFINICIONES = [f"{b}|W{w}|{f}|e{e:g}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS]
+CONTROL = {**{f"{b}|W{w}|amarilla|e{e:g}|{p}": f"{b}|W{w}|sin_filtro|e{e:g}|{p}" for b in BASES for w in WS for e in ES for p in PUNTOS},
+           **{f"{b}|W{w}|{f}|e{e:g}|{p}": f"ctrl|W{w}|{f}|e{e:g}|{p}" for b in ("visor", "z3", "d2") for w in WS for f in ("sin_filtro",)
               for e in ES for p in PUNTOS}}
 EJECUCIONES = [("PRECIOS", o, s) for o in ("obj_50", "obj_75", "obj_0") for s in ("stop_ext", "stop_ext25")]
 PERIODOS = [("DESC", 20250805, 20260331), ("REP", 20260401, 20260930)]
@@ -81,11 +81,16 @@ def _secuencia_nb(h, l, c, kf, fin, d, lo_s, hi_s, ham, e):
 
 
 def eventos(ctx) -> pd.DataFrame:
+    return construir(ctx, BASES, WS, ES, PCT, None)
+
+
+def construir(ctx, BASES, WS, ES, PCT, amp) -> pd.DataFrame:
+    """La regla con sus parámetros explícitos (la versión relajada LUXIMB-AMARILLA-R usa otros)."""
     h, l, c, seg = (np.asarray(ctx[x]) for x in ("h", "l", "c", "seg")); n = len(c)
     vs = np.asarray(ctx["vp_start"], np.int64); vpx = np.asarray(ctx["vp_px"], float); vvo = np.asarray(ctx["vp_vol"], float)
-    M = H.eventos(ctx)
+    M = H.eventos(ctx, amp=amp)
     cols = ["k", "lado", "ref", "ext", "rg", "base", "W", "filtro", "e", "punto", "k_marca", "sector_vpb", "obj_50", "obj_75", "obj_0", "stop_ext", "stop_ext25"]
-    if not len(M): return pd.DataFrame(columns=cols + DEFINICIONES)
+    if not len(M): return pd.DataFrame(columns=cols + [f"{b}|W{w}|{f}|e{e:g}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS])
     M = M[M[list(BASES.values())].any(axis=1)].reset_index(drop=True)
     ini = np.r_[0, np.flatnonzero(seg[1:] != seg[:-1]) + 1]; finseg = np.r_[ini[1:], n]
     filas = []
@@ -94,7 +99,7 @@ def eventos(ctx) -> pd.DataFrame:
         orden = []
         for r in M.itertuples():
             k = int(r.k); d = int(r.d); B = float(r.ext); Hh = float(r.rg); pa = float(r.pa)
-            kf = k + w * (k - int(r.i0) + 1)
+            kf = k + max(1, int(round(w * (k - int(r.i0) + 1))))
             sg = np.searchsorted(ini, k, side="right") - 1; fin = int(finseg[sg])
             if kf >= fin - 1 or Hh <= 0: continue
             lo_s, hi_s = sorted((B - d * 0.25 * Hh, B + d * 0.25 * Hh)); ham = 0.5 * Hh
@@ -118,8 +123,9 @@ def eventos(ctx) -> pd.DataFrame:
                                       obj_50=pa + 0.5 * (B - pa), obj_75=pa + 0.25 * (B - pa), obj_0=pa,
                                       stop_ext=E, stop_ext25=E + d * 0.25 * ham))
     E_ = pd.DataFrame(filas)
-    if not len(E_): return pd.DataFrame(columns=cols + DEFINICIONES)
+    if not len(E_): return pd.DataFrame(columns=cols + [f"{b}|W{w}|{f}|e{e:g}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS])
     defs = {}
+    DEFS = [f"{b}|W{w}|{f}|e{e:g}|{p}" for b in BASES for w in WS for f in FILTROS_VOL for e in ES for p in PUNTOS]
     for b in BASES:
         tiene = E_.base.str.split(",").apply(lambda xs: b in xs).to_numpy()
         for w in WS:
@@ -127,7 +133,7 @@ def eventos(ctx) -> pd.DataFrame:
                 mf = E_.amarilla.to_numpy() if f == "amarilla" else np.ones(len(E_), bool)
                 for e in ES:
                     for p in PUNTOS:
-                        defs[f"{b}|W{w}|{f}|e{int(e)}|{p}"] = tiene & (E_.W.to_numpy() == w) & mf & (E_.e.to_numpy() == e) & (E_.punto.to_numpy() == p)
+                        defs[f"{b}|W{w}|{f}|e{e:g}|{p}"] = tiene & (E_.W.to_numpy() == w) & mf & (E_.e.to_numpy() == e) & (E_.punto.to_numpy() == p)
     E_ = pd.concat([E_, pd.DataFrame(defs, index=E_.index)], axis=1)
     E_["filtro"] = np.where(E_.amarilla, "amarilla", "sin_filtro")
     return E_.sort_values(["k", "k_marca"], kind="mergesort").reset_index(drop=True)

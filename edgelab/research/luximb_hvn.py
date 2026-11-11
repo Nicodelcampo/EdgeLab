@@ -67,7 +67,7 @@ def nombre_ext(x) -> str:
 
 
 # ----------------------------------------------------------------------------------------------------------- eventos
-def eventos(ctx) -> pd.DataFrame:
+def eventos(ctx, amp=None) -> pd.DataFrame:
     """Una fila por evento único (k, d, i0) con una columna booleana por definición `<det>_a<i>_z<j>` y los rasgos causales."""
     o, h, l, c, v, t, ses, seg = (np.asarray(ctx[x]) for x in ("o", "h", "l", "c", "v", "t", "ses", "seg"))
     tick = float(ctx["tick"]); partes = []
@@ -75,12 +75,12 @@ def eventos(ctx) -> pd.DataFrame:
         idx = np.flatnonzero(seg == sg); a0, b0 = idx[0], idx[-1] + 1
         Z = AX.zonas(t[a0:b0], o[a0:b0], h[a0:b0], l[a0:b0], c[a0:b0])
         for det, (ak, mb) in DETECTORES.items():
-            M = LG.marcas_segmento(t[a0:b0], o[a0:b0], h[a0:b0], l[a0:b0], c[a0:b0], tick, Z=Z, atr_k=ak, max_bars=mb, amp=AMP, zon=ZON)
+            M = LG.marcas_segmento(t[a0:b0], o[a0:b0], h[a0:b0], l[a0:b0], c[a0:b0], tick, Z=Z, atr_k=ak, max_bars=mb, amp=AMP if amp is None else amp, zon=ZON)
             if not len(M): continue
             for col in ("k", "i0", "iext"): M[col] = M[col].astype(np.int64) + a0
             M["defn"] = [f"{det}_a{int(a)}_z{int(z)}" for a, z in zip(M.amp, M.zon)]; M["a0"] = a0
             partes.append(M)
-    defs = [f"{d}_a{a}_z{z}" for d in DETECTORES for a in range(len(AMP)) for z in range(len(ZON))]
+    defs = [f"{d}_a{a}_z{z}" for d in DETECTORES for a in range(len(AMP if amp is None else amp)) for z in range(len(ZON))]
     if not partes: return pd.DataFrame(columns=["k", "d", "i0", "pa", "ext", "rg"] + defs)
     D = pd.concat(partes, ignore_index=True)
     piv = pd.crosstab([D.k, D.d, D.i0], D.defn).reindex(columns=defs, fill_value=0).astype(bool)
