@@ -3046,7 +3046,8 @@
   var luxImp = { data: null };
   function luxImpLoad(aid) {
     luxImp.data = null; luxImp._dashKey = null;
-    if (new URLSearchParams(window.location.search).get("solo") === "det") {           // modo solo-detecciones: sin impulsos ni tablero
+    var qImp = new URLSearchParams(window.location.search);
+    if (qImp.get("solo") === "det" || qImp.get("cz") === "1") {           // modo solo-detecciones o bandas de concentración: sin impulsos ni tablero
       var dsh = document.getElementById("luximb-sim-dash"); if (dsh) dsh.remove(); return;
     }
     fetch("bundles/luximb_imp/" + aid + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); })
@@ -3099,6 +3100,47 @@
       "<br>Acierto: <b>" + (c ? (100 * w / c).toFixed(1) : "–") + "%</b> (equilibrio " + (100 * luxImp._slk / (luxImp._tpk + luxImp._slk)).toFixed(1) + "%)" +
       "<br>Resultado: <b>" + (R >= 0 ? "+" : "") + R.toFixed(1) + " R</b> · " + (pts * uM >= 0 ? "+" : "") + (pts * uM).toFixed(1) + uN +
       "<br>Por operación: " + (c ? ((R / c >= 0 ? "+" : "") + (R / c).toFixed(3) + " R") : "–");
+  }
+  // EDGELAB_CONC_ZONAS_V1 (2026-11-11): bandas de concentración OG+VI (&cz=1). En cada vela M1 (causal: sólo zonas ya nacidas
+  // y vivas, vida 500 min) busca la banda de alto czh pips que contiene completas más zonas; si son >= czk, marca la banda
+  // desde ese momento por 500 min. Una banda nueva no se marca si pisa otra todavía viva. Calibrado en EURUSD mar-jun 2026:
+  // 8 pips y 25 zonas -> ~2 bandas cada 2 días. Sólo dibujo, sin desenlaces.
+  var cz = { key: null, bands: [] };
+  function czCompute() {
+    var q = new URLSearchParams(window.location.search); if (q.get("cz") !== "1" || !state.run || !state.data) { cz.bands = []; return; }
+    var tk = (state.data.meta && state.data.meta.tick_size) || 0.00001, pip = tk < 0.001 ? tk * 10 : tk;
+    var H = (parseFloat(q.get("czh")) || 8) * pip, K = parseInt(q.get("czk"), 10) || 25, L = 500 * 60;
+    var bs1 = state.data.bar_series && state.data.bar_series.time_1m; if (!bs1) { cz.bands = []; return; }
+    var key = state.run.id + "|" + H + "|" + K; if (cz.key === key) return; cz.key = key;
+    var Z = state.run.zones.filter(function (z) { return z.source === "luxalgo"; }).sort(function (a, b) { return a.t0 - b.t0; });
+    var act = [], j = 0, out = [];
+    bs1.candles.forEach(function (c) {
+      var t = c.time;
+      while (j < Z.length && Z[j].t0 <= t) act.push(Z[j++]);
+      act = act.filter(function (z) { return (z.t1 || z.t0 + L) > t; });
+      if (act.length < K) return;
+      var srt = act.slice().sort(function (a, b) { return a.bottom - b.bottom; }), bn = 0, bb = 0;
+      for (var i = 0; i < srt.length; i++) {
+        var b = srt[i].bottom, n = 0;
+        for (var k = i; k < srt.length; k++) if (srt[k].top <= b + H) n++;
+        if (n > bn) { bn = n; bb = b; }
+      }
+      if (bn < K) return;
+      for (var m = 0; m < out.length; m++) if (t < out[m].t0 + L && bb < out[m].lo + H && bb + H > out[m].lo) return;
+      out.push({ t0: t, lo: bb, hi: bb + H, n: bn });
+    });
+    cz.bands = out;
+  }
+  function drawConc(ctx, vr, X, Y) {
+    czCompute(); var L = 500 * 60;
+    cz.bands.forEach(function (b) {
+      if (b.t0 + L < vr.from || b.t0 > vr.to) return;
+      var x0 = X(null, Math.max(b.t0, vr.from)), x1 = X(null, Math.min(b.t0 + L, vr.to)), y0 = Y(b.hi), y1 = Y(b.lo);
+      if (!isFinite(x0) || !isFinite(x1) || !isFinite(y0) || !isFinite(y1)) return;
+      ctx.fillStyle = "rgba(244,114,138,0.28)"; ctx.fillRect(x0, y0, x1 - x0, y1 - y0);
+      ctx.strokeStyle = "rgba(225,29,72,0.6)"; ctx.lineWidth = 1; ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
+      if (b.t0 >= vr.from) { ctx.fillStyle = "#be123c"; ctx.font = "bold 10px 'Segoe UI', sans-serif"; ctx.fillText(b.n + " zonas", x0 + 3, y0 - 3); }
+    });
   }
   function drawLuxImp(ctx, vr, X, Y) {
     if (!luxImp.data) return;
@@ -4573,7 +4615,7 @@
     labSave(); rev.k++; revShow();
   }
   function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on && !luxImp.data) || !series) return;
+    if ((!lab.data && !peaksDet.on && !luxImp.data && new URLSearchParams(window.location.search).get("cz") !== "1") || !series) return;
     if (!lab.data) lab.data = labEmpty();
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
@@ -4585,6 +4627,7 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    drawConc(ctx, vr, XI, Y);
     drawLuxImp(ctx, vr, XI, Y);
     (lab.data.judgments || []).forEach(function (j) {
       if (j.t1 < vr.from || j.t0 > vr.to) return;
