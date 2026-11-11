@@ -31,3 +31,12 @@ def test_atraviesa_y_stop_gana_en_empate_y_tiempo():
 def test_orden_fuera_de_su_vida_no_llena():
     ts, px = _serie([105, 104, 103, 99.0, 98])
     assert not FP.operar(ts, px, 0, 3, 100.0, +1, 5.0, 5.0, 60, 0.25, "toca")["llena"]   # vence antes del tick 3
+
+
+def test_mercado_entra_en_el_tick_y_stop_gana_en_empate():
+    ts, px = _serie([100, 101, 103, 106.0])
+    assert FP.operar_mercado(ts, px, 0, +1, 5.0, 5.0, 60) == dict(r_bruto=1.0, salida="objetivo")
+    ts, px = _serie([100, 99, 94.0, 110])
+    assert FP.operar_mercado(ts, px, 0, +1, 5.0, 5.0, 60)["salida"] == "stop"
+    ts, px = _serie([100, 98, 97.0])
+    assert FP.operar_mercado(ts, px, 0, -1, 5.0, 5.0, 60)["r_bruto"] == pytest.approx(0.6)   # venta a 100, sale por tiempo a 97

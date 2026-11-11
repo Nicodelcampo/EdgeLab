@@ -40,3 +40,15 @@ def operar(ts, px, j_activa: int, j_vence: int, limite: float, lado: int, stop: 
         r, sal = (float(m[-1]) / stop, "tiempo") if len(post) else (0.0, "tiempo")
     jx = jf + 1 + k if len(post) else jf
     return dict(llena=True, r_bruto=float(r), salida=sal, t_fill_s=float((ts[jf] - ts[j_activa]) / NS), t_dur_s=float((ts[jx] - ts[jf]) / NS))
+
+
+def operar_mercado(ts, px, j: int, lado: int, stop: float, objetivo: float, t_max_s: float) -> dict:
+    """Entrada a MERCADO en el tick `j` (el que dispara la señal: el precio de ese trade, sin mejora) en la dirección `lado`
+    (+1 compra, −1 venta). Stop y objetivo a distancias fijas desde la entrada; empate = stop; salida por tiempo al último precio.
+    El slippage del escenario de costos va aparte (en `edgelab/costos.py`, dentro de la fricción)."""
+    entrada = float(px[j]); j_fin = int(np.searchsorted(ts, ts[j] + int(t_max_s * NS), side="right"))
+    post = px[j + 1:j_fin]; m = lado * (post - entrada)
+    s = np.flatnonzero(m <= -stop); g = np.flatnonzero(m >= objetivo)
+    if s.size and (not g.size or s[0] <= g[0]): return dict(r_bruto=-1.0, salida="stop")
+    if g.size: return dict(r_bruto=objetivo / stop, salida="objetivo")
+    return dict(r_bruto=float(m[-1]) / stop if len(post) else 0.0, salida="tiempo")
