@@ -109,13 +109,23 @@ def calibracion() -> dict:
     return c
 
 
+def bloques_sinteticos(mod, dias: int, seed: int):
+    """Bloques sintéticos a la escala del módulo: `PREFLIGHT_PRECIO = (precio base, tick)` (p. ej. FX: (1.10, 0.00001)); si no,
+    los de NQ (20000, 0,25). Mismo recorrido en ticks: sólo cambia la escala."""
+    from edgelab.research import sintetico
+    base, tick = getattr(mod, "PREFLIGHT_PRECIO", (None, 0.25))
+    for b in sintetico.bloques(dias=dias, planta=False, seed=seed):
+        if base is not None: b = b.assign(px=base + (b.px - 20000.0) * tick / 0.25)
+        yield b
+
+
 def preflight(modulo: str, dias: int = 60, kernel: bool = True) -> list:
     """Errores que impiden lanzar (vacía = puede lanzarse): contrato, causalidad por disparo y por cortes de los eventos, motor
     calibrado sin optimismo, la tabla sintética completa, y el kernel generado corriendo de punta a punta con FUENTE=SINT."""
-    from edgelab.research import grilla_generica as GG, indicadores as I, sintetico
+    from edgelab.research import grilla_generica as GG, indicadores as I
     mod = cargar(modulo); e = contrato(mod)
     if e: return e
-    ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=11), tick=0.25)
+    ctx = GG.contexto_m1(list(bloques_sinteticos(mod, dias, 11)), tick=getattr(mod, "PREFLIGHT_PRECIO", (None, 0.25))[1])
     try:
         e += [f"causalidad: {x}" for x in I.causal_por_disparo(mod.eventos, ctx)[:3]]
         e += [f"causalidad (cortes): {x}" for x in I.causal(mod.eventos, ctx)[:3]]

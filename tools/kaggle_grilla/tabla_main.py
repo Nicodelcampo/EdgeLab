@@ -16,8 +16,7 @@ def main():
     d0, d1 = int(os.environ.get("DESDE", 20250805)), int(os.environ.get("HASTA", 20260331)); ent = os.environ.get("ENTRADA", "/kaggle/input")
     t0 = time.time(); log = lambda s: print(f"[{time.time() - t0:7.0f}s] {s}", flush=True)
     if fuente == "SINT":                                                   # prueba local del kernel (preflight)
-        from edgelab.research import sintetico
-        bl, tick = sintetico.bloques(dias=20, planta=False, seed=5), 0.25
+        bl, tick = list(TB.bloques_sinteticos(mod, 20, 5)), getattr(mod, "PREFLIGHT_PRECIO", (None, 0.25))[1]
     elif os.environ.get("SELLADO") == "1":
         acta = os.path.abspath("ACTA_HOLDOUT.json"); json.dump(json.loads(os.environ["ACTA_JSON"]), open(acta, "w"))
         d0 = max(d0, F.HOLDOUT_PRIMERA_SESION_INT)

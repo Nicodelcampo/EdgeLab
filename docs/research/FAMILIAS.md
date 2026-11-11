@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-244 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+245 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -136,6 +136,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `LONDRES_IMPULSO_6E` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_GC` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_NQ` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
+| `LUXIMB_CONCENTRACION` | 2026-11-11 | — | 336 | — | — | — | `bandas_concentracion_20261111` |
 | `LUXIMB_ESCALONADAS_AREA` | 2026-10-24 | LUXIMB_FADE_VISOR | 12 | — | — | — | — |
 | `LUXIMB_FADE_VISOR` |  | — | 48 | — | — | — | — |
 | `LUXIMB_FUT_VS_CFD` | 2026-10-24 | LUXIMB_FADE_VISOR | 7 | — | — | — | — |
