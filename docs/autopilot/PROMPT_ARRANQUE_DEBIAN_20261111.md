@@ -38,7 +38,7 @@ comandos exactos. Nunca imprimas credenciales. Respondé en castellano rioplaten
    - U1-ZONAS-AVCL-NQ y U1-ZONAS-BT2-NQ: relanzar con el código actual sólo en una cuenta que vea `edgelab-zonas-hft`; si ninguna lo
      ve, en espera de datos.
    - Los 4 slugs de la ventana 20261023: se rigen por la frontera vigente (`desde 20261001`); si su ventana no coincide, se relanzan.
-   - Toda apertura de holdout sigue el protocolo (`holdout_apertura.py`), una por familia, registrada antes de lanzar.
+   - Toda apertura de holdout sigue el protocolo (`edgelab/autopilot/holdout_apertura.py`), una por familia, registrada antes de lanzar.
 2. Prioridades de investigación (núcleo `factores_con_ventaja` y `PAQUETE_DEBIAN_20261110.md` §5):
    a. Lente `remedir`: primera candidata de `REMEDICIONES_CANDIDATAS.md`, verificada en su carpeta.
    b. OP-2: continuación en el primer regreso a un cluster HFT grande (la pista viva `F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-C`), con
