@@ -113,7 +113,19 @@ Estimación: con 1–3, la corrida de LUXIMB-HVN habría sido una especificació
 | L5 PAUSE con motivo y paso | `tools/autopilot_watchdog.py` | tests del watchdog |
 | Consignas | directiva 20 (`config/autopilot/DIRECTIVAS.md`), consigna del programador | tests de autopilot |
 
+### Segunda vuelta (2026-11-11, «una iteración más: automatizar, corregir errores, más rápido»)
+- **Motor 50–100× más rápido:** un solo pase numba por ejecución sobre todos los eventos (antes, una llamada por evento desde
+  Python): 20.000 eventos × 22 ejecuciones en 0,8 s.
+- **Analizador sin cuellos de botella:** la fricción se consulta una vez por fuente (antes, por fila y por celda) y la estabilidad
+  de las celdas de arriba se calcula sobre su serie directa (`analizar_tabla.serie`) en vez de recorrer la búsqueda entera por cada una.
+- **I9 curva genérica:** `edgelab/research/curva.py` + `python tools/tablas.py curva <modulo> <definición|-> <ejecución> [filtro]`
+  (IS / OOS / confirmación / holdout, con drawdown).
+- **I2 lint:** `tests/test_parametros_por_defecto.py` frena parámetros nuevos atados a constantes del módulo (línea base de 112 en
+  `config/defaults_baseline.json`, sólo se achica).
+- **Actualización del Debian:** no hace falta un paso aparte: `deploy/debian/auto_sync_code.sh` avanza solo a `foundation` antes
+  de los ciclos del proponente y del programador. El ciclo principal sigue frenado por `PAUSE` (sólo lo quita el operador en la máquina).
+
 ### Pendiente (para una próxima vuelta)
-- I2 (lint de parámetros atados al importar), I4 (biblioteca de rasgos: perfil por franjas, distancia a clusters HFT), I9 (curva
-  de capital genérica), C2 (asentar FACTORES/MEDIDO desde el JSON), F6 (regenerar índices en el merge).
+- I4 (biblioteca de rasgos: perfil por franjas, distancia a clusters HFT), C2 (asentar FACTORES/MEDIDO desde el JSON), F6
+  (regenerar índices en el merge).
 - Migrar LUXIMB-HVN al contrato de tablas cuando lleguen sus tablas actuales (cambiar el módulo ahora las volvería «no vigentes»).

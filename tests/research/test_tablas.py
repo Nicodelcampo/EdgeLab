@@ -68,3 +68,19 @@ def test_cli_slug_y_ventanas():
     s = CLI.slug("edgelab.research.plantilla_tabla", "DK:USATECHIDXUSD", 20230103, 20250731, "nicolasbuttaro")
     assert "_" not in s and len(s) <= 49 and s.startswith("nicolasbuttaro/t-plantilla-usatech-")
     assert CLI._ventanas(["DK:USATECHIDXUSD:20230103:20250731", "NQ:20250805:20260331"]) == [("DK:USATECHIDXUSD", 20230103, 20250731), ("NQ", 20250805, 20260331)]
+
+
+def test_cli_curva(tmp_path, monkeypatch):
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
+    import tablas as CLI
+    (tmp_path / "tablas").mkdir()
+    for seed, desde in ((3, 20250801), (4, 20260401)):
+        T = _tabla(seed, desde=desde); n = f"TABLA_PLANTILLA_NQ_{desde}_x"
+        T.drop(columns=["fuente"]).to_csv(tmp_path / "tablas" / f"{n}.csv.gz", index=False)
+        (tmp_path / "tablas" / f"{n}.json").write_text(json.dumps(dict(fuente="NQ")))
+    monkeypatch.setattr(CLI, "carpeta", lambda m: tmp_path)
+    CLI.curva("edgelab.research.plantilla_tabla", "def_m3", "M_sl0.5_tp1.0_N")
+    res = json.loads(next(tmp_path.glob("CURVA_*.json")).read_text())
+    assert set(res) == {"IS", "OOS"} and res["IS"]["n"] > 0 and next(tmp_path.glob("CURVA_*.svg")).read_text().startswith("<svg")

@@ -57,5 +57,9 @@ def test_calibracion_detecta_el_stop_acreditado_en_su_nivel(monkeypatch):
             if fav <= -risk: return -1.0, risk
             if fav >= tp * D: return tp * D / risk, risk
         return fav / risk, risk
-    monkeypatch.setattr(X, "_mercado_nb", sesgado)
+    def lote(tpx, j0, jw, ok, lado, ref, sl, tp, pt, be):
+        out = np.full((len(j0), 2), np.nan)
+        for q in np.flatnonzero(ok): out[q] = sesgado(tpx, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be)
+        return out
+    monkeypatch.setattr(X, "_lote_mercado", lote)
     assert X.calibrar(specs=[("MERCADO", 0.2, 1.0, 0, 0)], n=800, dias=30, seeds=(21,))["optimistas"] == ["M_sl0.2_tp1.0_N"]

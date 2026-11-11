@@ -8,6 +8,7 @@
   python tools/tablas.py explorar <modulo>                                    # análisis de desarrollo → EXPLORACION.md/json
   python tools/tablas.py congelar <modulo> <hipotesis.json> --familia F FUENTE:DESDE:HASTA [...]   # congela y lanza la confirmación
   python tools/tablas.py confirmar <modulo> <CONGELADAS_*.json>               # UNA vez → RESULTADO_CONFIRMACION_<hash>.md/json
+  python tools/tablas.py curva <modulo> <definición|-> <ejecución> [filtro]   # curva de capital IS / OOS / confirmación / holdout (SVG)
   python tools/tablas.py holdout <modulo> <CONGELADAS_*.json> FUENTE:DESDE:HASTA --acta <md committeado> --p <p1,p2,...>
                                                                                # apertura exploratoria de la familia (una sola): registra y lanza
   python tools/tablas.py confirmar_holdout <modulo> <CONGELADAS_*.json>       # UNA vez: veredicto + Fisher con las p de desarrollo
@@ -174,6 +175,25 @@ def confirmar_holdout(modulo, cong):
         f"{h['ejec']}: {h['p_fisher']:.4f}" for h in res["hipotesis"]) + "\n", encoding="utf-8"); print("escrito", out.with_suffix(".md").relative_to(ROOT))
 
 
+def curva(modulo, dfn, ej, fn="todos"):
+    """R neto por operación, en orden, por tramo: DESC = IS, REP = OOS, la confirmación y el holdout (si existen sus tablas)."""
+    import numpy as np
+    from edgelab.research import analizar_tabla as AT, curva as CV
+    tramos = []
+    for sub, nom in (("tablas", None), ("confirmacion", "CONFIRMACION"), ("holdout", "HOLDOUT")):
+        try: T = _tablas(modulo, sub)
+        except SystemExit: continue
+        T = T.sort_values(["t", "k"], kind="mergesort").reset_index(drop=True); y = AT.serie(TB.cargar(modulo), T, None if dfn == "-" else dfn, ej, fn)
+        grupos = [(("IS" if p == "DESC" else "OOS" if p == "REP" else p), g) for p, g in T.groupby(TB.periodo(TB.cargar(modulo), T.ses))] if nom is None else [(nom, T)]
+        for n, g in grupos:
+            yy = y[g.index]; yy = yy[np.isfinite(yy)]
+            if len(yy): tramos.append((n, f"{int(g.ses.min())}–{int(g.ses.max())}", yy))
+    orden = {"IS": 0, "OOS": 1, "CONFIRMACION": 2, "HOLDOUT": 3}; tramos.sort(key=lambda x: orden.get(x[0], 9))
+    s, res = CV.svg(tramos, f"{TB.cargar(modulo).NOMBRE} — {ej}", f"definición {dfn}, filtro {fn}; R neto acumulado con costos de edgelab/costos.py")
+    out = carpeta(modulo) / f"CURVA_{ej}_{dfn}_{fn}.svg".replace("/", "-"); out.write_text(s, encoding="utf-8")
+    out.with_suffix(".json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8"); print("escrito", out)
+
+
 def estado():
     for L in _leer(): print(L["slug"], L["uso"], _estado(L["slug"]))
 
@@ -188,6 +208,7 @@ def main():
     elif op == "congelar":
         fam = sys.argv[sys.argv.index("--familia") + 1]; congelar(a[1], a[2], fam, _ventanas([x for x in a[3:] if x != fam]))
     elif op == "confirmar": confirmar(a[1], a[2])
+    elif op == "curva": curva(*a[1:5])
     elif op == "holdout":
         acta = sys.argv[sys.argv.index("--acta") + 1]; ps = [float(x) for x in sys.argv[sys.argv.index("--p") + 1].split(",")]
         holdout(a[1], a[2], _ventanas([x for x in a[3:] if ":" in x]), acta, ps)

@@ -36,9 +36,16 @@ def fisher(ps) -> float:
     return float(math.exp(-h) * sum(h ** i / math.factorial(i) for i in range(len(ps))))
 
 
-def neto(mod, T: pd.DataFrame, ej: str):
+def friccion_filas(mod, T: pd.DataFrame) -> np.ndarray:
+    """Fricción en puntos de cada fila: una consulta por fuente, no por fila (2026-11-11: era el cuello de botella)."""
+    if "fuente" not in T: return np.full(len(T), np.nan)
+    por = {f: friccion_rt_puntos(TB.fuente_costo(mod, f)) for f in pd.unique(T.fuente)}
+    return T.fuente.map(por).to_numpy(float)
+
+
+def neto(mod, T: pd.DataFrame, ej: str, fr=None):
     """R neto y fricción en R de la ejecución `ej` (nombre de ejecucion.nombre) para cada fila."""
-    fr = np.array([friccion_rt_puntos(TB.fuente_costo(mod, f)) for f in T.fuente], float) if "fuente" in T else np.nan
+    fr = friccion_filas(mod, T) if fr is None else fr
     k = T[f"k_{ej}"].to_numpy(float)
     with np.errstate(invalid="ignore", divide="ignore"):
         return T[f"r_{ej}"].to_numpy(float) - fr / k, fr / k
@@ -58,13 +65,21 @@ def celdas(mod, T: pd.DataFrame):
     from edgelab.research.ejecucion import nombre
     defs = list(getattr(mod, "DEFINICIONES", []) or []) or [None]
     fil = {"todos": None, **(getattr(mod, "FILTROS", {}) or {})}
+    fr = friccion_filas(mod, T); mf = {fn: (TB.filtro(T, f) if f else np.ones(len(T), bool)) for fn, f in fil.items()}
+    netos = {nombre(s): neto(mod, T, nombre(s), fr) for s in mod.EJECUCIONES}
     for dfn in defs:
         m0 = T[dfn].astype(bool).to_numpy() if dfn else np.ones(len(T), bool)
-        for s in mod.EJECUCIONES:
-            ej = nombre(s); y, cr = neto(mod, T, ej)
-            for fn, f in fil.items():
-                m = m0 & (TB.filtro(T, f) if f else True)
+        for ej, (y, cr) in netos.items():
+            for fn in fil:
+                m = m0 & mf[fn]
                 yield dfn, ej, fn, m, np.where(m, y, np.nan), cr
+
+
+def serie(mod, T: pd.DataFrame, dfn, ej: str, fn: str = "todos") -> np.ndarray:
+    """R neto de UNA celda (sin recorrer la búsqueda)."""
+    f = (getattr(mod, "FILTROS", {}) or {}).get(fn) if fn != "todos" else None
+    m = (T[dfn].astype(bool).to_numpy() if dfn else np.ones(len(T), bool)) & (TB.filtro(T, f) if f else True)
+    return np.where(m, neto(mod, T, ej)[0], np.nan)
 
 
 def nulo_busqueda(sumas, n_perm=300, seed=17) -> dict:
@@ -97,9 +112,8 @@ def explorar(mod, T: pd.DataFrame, top: int = 25, n_min: int = 30) -> dict:
         arriba = P[P.elegible].sort_values("t", ascending=False).head(top).copy()
         est = []
         for r in arriba.itertuples():
-            S2 = S if r.defn is None else S
-            y = next(yy for d, e, f, _, yy, _ in celdas(mod, S2) if d == r.defn and e == r.ejec and f == r.filtro)
-            m = np.isfinite(y); e = BE.estabilidad(y[m], S2.ses.to_numpy()[m], BE._sesiones(S2[m].assign(inst=S2.fuente[m], fecha=S2.ses[m])), n_perm=2000)
+            y = serie(mod, S, r.defn, r.ejec, r.filtro)
+            m = np.isfinite(y); e = BE.estabilidad(y[m], S.ses.to_numpy()[m], BE._sesiones(S[m].assign(inst=S.fuente[m], fecha=S.ses[m])), n_perm=2000)
             est.append((e.get("bloques_pos"), e.get("p_media")))
         arriba["bloques"] = [x[0] for x in est]; arriba["p"] = [x[1] for x in est]
         arriba["sobre_nulo_p95"] = arriba.t > nu.get("t_max_p95", np.inf)
@@ -163,7 +177,7 @@ def confirmar(mod, T: pd.DataFrame, congeladas: Path, alfa_mde: float = 0.10) ->
     desarrollo| si se declaró, si no ≤ 0,1 R); SIN_POTENCIA = n < 30 sesiones o MDE80 > 0,1 R; NO_CONCLUYENTE = el resto."""
     mod = TB.cargar(mod); C = verificar_congeladas(congeladas); filas = []
     for h in C["hipotesis"]:
-        y = next(yy for d, e, f, _, yy, _ in celdas(mod, T) if d == h.get("defn") and e == h["ejec"] and f == h.get("filtro", "todos"))
+        y = serie(mod, T, h.get("defn"), h["ejec"], h.get("filtro", "todos"))
         m = np.isfinite(y); S = T[m]; s = _ses_sum(y, T.ses.to_numpy())
         if m.sum() < 10:
             filas.append(dict(h, n=int(m.sum()), p=1.0, veredicto="SIN_POTENCIA")); continue

@@ -162,24 +162,59 @@ def _mec_nb(tpx, j0, jw, lado, ref, ext, rg):
     return xa, xm, ta, tm
 
 
+@njit(cache=False)
+def _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg):
+    n = len(j0); out = np.full((n, 4), np.nan)
+    for q in range(n):
+        if ok[q]:
+            a, b, c, d = _mec_nb(tpx, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q]); out[q, 0] = a; out[q, 1] = b; out[q, 2] = c; out[q, 3] = d
+    return out
+
+
+@njit(cache=False)
+def _lote_mercado(tpx, j0, jw, ok, lado, ref, sl, tp, pt, be):
+    n = len(j0); out = np.full((n, 2), np.nan)
+    for q in range(n):
+        if ok[q]:
+            r, k = _mercado_nb(tpx, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be); out[q, 0] = r; out[q, 1] = k
+    return out
+
+
+@njit(cache=False)
+def _lote_vuelta(tpx, ts, fin, j0, jw, ok, lado, ref, ext, rg, e, r, b, obj, c):
+    n = len(j0); out = np.full((n, 2), np.nan)
+    for q in range(n):
+        if ok[q]:
+            x, k = _vuelta_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q], e, r, b, obj, c); out[q, 0] = x; out[q, 1] = k
+    return out
+
+
+@njit(cache=False)
+def _lote_limite(tpx, ts, fin, j0, jw, ok, lado, ext, rg, tick, x, sl, tp):
+    n = len(j0); out = np.full((n, 2), np.nan)
+    for q in range(n):
+        if ok[q]:
+            v, k = _limite_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ext[q], rg[q], tick, x, sl, tp); out[q, 0] = v; out[q, 1] = k
+    return out
+
+
 def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
-    """Agrega a la tabla de eventos (contrato del módulo) el recorrido `mec_*` y `r_`/`k_` de cada ejecución."""
+    """Agrega a la tabla de eventos (contrato del módulo) el recorrido `mec_*` y `r_`/`k_` de cada ejecución. Un solo pase numba
+    por ejecución sobre TODOS los eventos (2026-11-11: antes una llamada por evento desde Python)."""
     err = validar(specs)
     if err: raise ValueError("; ".join(err))
     if not len(E): return E
     tpx = np.asarray(ctx["tpx"], float); ts = np.asarray(ctx["tstart"], np.int64); tick = float(ctx["tick"])
     j0, jw, fin = limites(ctx, E.k.to_numpy(np.int64))
     lado = E.lado.to_numpy(np.int64); ref = E.ref.to_numpy(float); ext = E.ext.to_numpy(float); rg = E.rg.to_numpy(float)
-    n = len(E); ok = jw > j0 + 1; cols = {}
-    mec = np.full((n, 4), np.nan)
-    for q in np.flatnonzero(ok): mec[q] = _mec_nb(tpx, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q])
+    ok = jw > j0 + 1; cols = {}
+    mec = _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg)
     cols.update(mec_ext_antes_ref=mec[:, 0], mec_ext_antes_mitad=mec[:, 1], mec_toca_ref=mec[:, 2], mec_toca_mitad=mec[:, 3])
     for s in specs:
-        o = np.full((n, 2), np.nan)
-        for q in np.flatnonzero(ok):
-            if s[0] == "MERCADO": o[q] = _mercado_nb(tpx, j0[q], jw[q], lado[q], ref[q], *s[1:])
-            elif s[0] == "VUELTA": o[q] = _vuelta_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q], *s[1:])
-            else: o[q] = _limite_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ext[q], rg[q], tick, *s[1:])
+        p = [float(v) for v in s[1:]]
+        if s[0] == "MERCADO": o = _lote_mercado(tpx, j0, jw, ok, lado, ref, *p)
+        elif s[0] == "VUELTA": o = _lote_vuelta(tpx, ts, fin, j0, jw, ok, lado, ref, ext, rg, p[0], p[1], p[2], int(p[3]), p[4])
+        else: o = _lote_limite(tpx, ts, fin, j0, jw, ok, lado, ext, rg, tick, *p)
         cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]
     return pd.concat([E.reset_index(drop=True), pd.DataFrame(cols)], axis=1)
 
