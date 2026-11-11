@@ -21,7 +21,7 @@ es una prueba nueva (registro global + linaje a la familia original) y nunca usa
 | `CM-ESTABILIDAD-SUB-BLOQUES` | 2026-11-08 | Regla global de evidencia: con efectos chicos se mide estabilidad en 5 sub-bloques de sesiones y probabilidad de azar con un nulo de inversión de signo por sesión que repite toda la selección (desde el 2026-11-10 automático en el banco de eventos). | Familias cerradas como SIN_CANDIDATAS o sin potencia por un contraste único pueden tener efectos chicos estables (p azar < 10 % en ≥ 4/5 bloques) que la regla nueva sí reconoce; y pistas elegidas entre muchas pueden caer al repetir la selección en el nulo. | Recalcular sobre los resultados ya corridos: banco_eventos.estabilidad por sesión y nulo_de_seleccion si la pista se eligió entre varias. |
 | `CM-FILLS-PASIVOS` | 2026-11-10 | Las entradas con orden límite se miden con el motor de fills pasivos tick a tick (modelo «atraviesa») y contra el nulo de selección adversa, no con «el precio tocó el nivel». | «Tocó» supone primera posición en la cola: sobrestima ≈ 0,6 ticks/op (k32) y en una caminata al azar esconde una pérdida de ≈ 0,07 R; reglas de fade/rebote/retest que parecían pagar pueden no hacerlo. | Re-simular la entrada con edgelab/research/fill_pasivo.operar sobre los mismos eventos y comparar con el nulo de selección adversa. |
 
-## Familias candidatas (204; se listan las 40 de mayor prioridad)
+## Familias candidatas (205; se listan las 40 de mayor prioridad)
 
 | Prioridad | Familia | Registrada | Cambios que la alcanzan | Último desenlace | Carpetas |
 |---|---|---|---|---|---|

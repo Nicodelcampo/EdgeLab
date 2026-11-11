@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-625 scripts.
+633 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -18,6 +18,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/analizar.py` | Analizador de estrategias (como el Strategy Analyzer de NT8) sobre el simulador sellado y los costos canónicos. |
 | `tools/analizar_embudo.py` | Reporte del analizador (estilo Strategy Analyzer) de las celdas que dieron positivo en el backtest y no confirmaron en el embudo. |
 | `tools/analizar_hft_gc_cluster_p10.py` | Análisis estructurado en EdgeLab para HFTZonesGCClusterP10 (SQLite Logger NT8). |
+| `tools/antecedentes.py` | Ficha de antecedentes de una idea y presupuesto de datos de su linaje, en una página (AUTOMATIZACION_PROCESOS_20261111 R1/R2). |
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
 | `tools/atlas_asimetrico.py` | Atlas nulo — grilla ASIMÉTRICA P/N y horizontes finos. **NULL / DESCRIPTIVO.** |
 | `tools/atlas_barreras_hft_r.py` | Atlas transversal de Barreras HFT frontales en R (Vía 2, 2026-11-05). |
@@ -171,6 +172,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/check_nt8_cs.py` | Verifica un `.cs` de NinjaScript antes de instalarlo en NT8. |
 | `tools/check_remote_metadata.py` | (sin docstring) |
 | `tools/check_research_data_gate.py` | Check pinned eligibility metadata only. Never opens market-data source files. |
+| `tools/cierre.py` | Cierre de un turno de trabajo en UN comando (AUTOMATIZACION_PROCESOS_20261111 C3): regenera todos los archivos generados y |
 | `tools/cobertura_release_preholdout.py` | Cobertura por activo del release líquido de Kaggle hasta la apertura del holdout, desde su índice de sesiones (sin ticks). |
 | `tools/compare_session_parity.py` | Comparador de paridad por sesion CME, con veredictos separados por capa. |
 | `tools/compilar_nt8_cs.py` | T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader. |
@@ -353,6 +355,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/gap_rth_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/grilla_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/hft_clusters_info_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/luximb_hvn_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/nul2_maxt_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/orb0100_atras_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/orb_nq_filtros_main.py` | Kernel de Kaggle: ORB-NQ-FILTROS exploratorio (docs/research/ORB_NQ_FILTROS_MANIFIESTO_20261108.md), lanzado por la sesión de |
@@ -368,6 +371,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/regimen_busqueda_main.py` | Kernel de Kaggle: búsqueda de régimen pre-registrada (docs/research/regimen_busqueda_20261108/PREREGISTRO.md) sobre el dataset |
 | `tools/kaggle_grilla/sellado_cobertura_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/sellado_conteo_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/tabla_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_combo_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_cruzado_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_oro_main.py` | (sin docstring) |
@@ -392,6 +396,9 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/l2_phase2_info.py` | L2 Fase 2 — informacion condicional del libro tras la latencia (GC 08-26, pre-holdout). |
 | `tools/l2_public_pilot.py` | P0: exploratory BTC minute-flow proxies; no strategy or fill simulation. |
 | `tools/literatura.py` | Búsqueda de literatura para EdgeLab con APIs oficiales y gratuitas (no Google Scholar: sus términos prohíben el |
+| `tools/luximb_hvn.py` | LUXIMB-HVN (docs/research/luximb_hvn_20261111/PREREGISTRO.md): construir, lanzar y traer las tablas de Kaggle. |
+| `tools/luximb_hvn_analisis.py` | Análisis EXPLORATORIO de LUXIMB-HVN sobre las tablas de DESARROLLO (docs/research/luximb_hvn_20261111/PREREGISTRO.md §5). |
+| `tools/luximb_hvn_confirmar.py` | Análisis CONGELADO de la confirmación de H-ZONAS (docs/research/luximb_hvn_20261111/CONFIRMACION_H_ZONAS.md). Una sola vez, |
 | `tools/luximb_parity/build_luximb_fx_bundle.py` | Bundle del visor para FX de Dukascopy (JForex: timestamp UTC, bid, ask, last=mid): velas M1 y 25t + zonas LUX-IMB. |
 | `tools/luximb_parity/build_luximb_nq_m1_bundle.py` | Bundle del visor: NQ (un contrato, sin merge ni back-adjust) en velas M1 + zonas LUX-IMB (OG + VI). |
 | `tools/luximb_parity/build_luximb_spot_m1_bundle.py` | Bundle del visor con velas M1 de Dukascopy (spot/CFD, p. ej. USATECH ~ NQ) + zonas LUX-IMB (OG+VI). Target-free. |
@@ -572,6 +579,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/summarize_mgc_tick_stability.py` | (sin docstring) |
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
 | `tools/tabla_decision_pnk.py` | TABLA DE DECISIÓN P/N/K — para elegir la geometría ANTES de mirar zonas. |
+| `tools/tablas.py` | Tablas de eventos de punta a punta con UNA herramienta (edgelab/research/tablas.py; AUTOMATIZACION_PROCESOS_20261111). |
 | `tools/tbz_e2.py` | TBZ-E2: la expansión como área de patinaje. Diseño y enmiendas: docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md |
 | `tools/tbz_stage1.py` | Familia TBZ, etapa E1 target-free (protocolo: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md). |
 | `tools/tbzx_espejo.py` | TBZX: impulsos de poco volumen por tick; qué hace el precio AFUERA de la franja y cómo REINGRESA. |

@@ -28,7 +28,12 @@ def revisar(state: Path, max_latido: int, ahora: float, systemctl=True) -> list:
         if h.get("send_uncertain"): out.append(("envio_incierto", f"conciliar a mano, nunca reenviar: {h['send_uncertain']}"))
     for nombre in ("PAUSE", "PAUSE_SALA"):
         for p in (state / nombre, state.parent.parent / nombre):
-            if p.exists() and ahora - p.stat().st_mtime > 24 * 3600: out.append(("pausa_larga", f"{p} existe hace más de 24 h"))
+            if p.exists() and ahora - p.stat().st_mtime > 24 * 3600:                # 2026-11-11: decir por qué y qué falta, no sólo «existe»
+                try: motivo = (p.read_text(encoding="utf-8", errors="ignore").strip().splitlines() or ["sin motivo escrito"])[0][:160]
+                except OSError: motivo = "ilegible"
+                horas = int((ahora - p.stat().st_mtime) // 3600)
+                out.append(("pausa_larga", f"{p} existe hace {horas} h (motivo: {motivo}). Para reanudar: pruebas de §1–2 de "
+                            "docs/autopilot/PROMPT_ARRANQUE_DEBIAN_20261111.md en verde y borrar el archivo (operador)"))
     try:
         import sys; sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
         from edgelab.autopilot.pedidos import abiertos

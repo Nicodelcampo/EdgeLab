@@ -49,6 +49,15 @@ comandos exactos. Nunca imprimas credenciales. Respondé en castellano rioplaten
 3. NO decidas por tu cuenta la apertura del holdout de `HFT_RUPTURA` en modo exploratorio: prepará el acta (probabilidades de azar
    de desarrollo: 0,088 DESC independiente, 0,052 réplica) y dejala para Nico.
 
+## 3b. Herramientas nuevas del 11/11 (usarlas siempre; están en el núcleo como `cadena_de_corrida`)
+- Diseño: `python tools/antecedentes.py "<idea>" --familia F` antes de escribir un pre-registro.
+- Una familia de reglas sobre eventos = UN módulo con el contrato de `edgelab/research/tablas.py` (plantilla
+  `edgelab/research/plantilla_tabla.py`) y `python tools/tablas.py preflight|lanzar|traer|explorar|curva|congelar|confirmar|holdout`.
+  Nada de simuladores, kernels ni análisis propios (el revisor los mata).
+- Cierre: `python tools/cierre.py` antes de cada commit. Activar `"tablas": {"activo": true}` en `/etc/edgelab/autopilot.json`
+  (paso de Gonza) para que el ciclo traiga solo las tablas terminadas.
+- Guía corta: `docs/research/CADENA_DE_CORRIDA.md`; origen y pendientes: `docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`.
+
 ## 4. Sin tiempos muertos entre llamadas
 Hoy hay huecos de diseño: `edgelab-autopilot.timer` espera 10 min entre ciclos (`OnUnitInactiveSec=10min`); el proponente corre
 una vez por día (06:17) y el programador una vez por día (07:41).
