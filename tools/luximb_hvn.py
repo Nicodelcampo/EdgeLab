@@ -40,7 +40,7 @@ def lanzar(f, d0, d1):
 
 
 def traer(f, d0, d1):
-    nom = f"LXH_{FUENTE[f].replace('DK:', '')}_{d0}_{d1}"; DIR.mkdir(parents=True, exist_ok=True)
+    nom = f"LXH_{FUENTE[f].replace('DK:', '')}_{d0}_{d1}"; DIR.mkdir(parents=True, exist_ok=True); (DIR / "tablas").mkdir(parents=True, exist_ok=True)
     for ext in ("json", "csv.gz"):
         r = subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", slug(f, d0, d1), "--file", f"{nom}.{ext}",
                             "--out", str(DIR / "tablas" / f"{nom}.{ext}")], capture_output=True, text=True); print(r.stdout.strip()[-200:])

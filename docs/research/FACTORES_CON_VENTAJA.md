@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (5)
+## PISTA_VIVA (6)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ y YM (RTY sin ticks sellados); clusters del E0-b, toque D0, carrera ±X
   - Siguiente: Ya no queda holdout para HFT_RUPTURA: seguir en forward con e-proceso. Usarlo como VETO (OP-3: no hacer fades de reversión en niveles con cluster grande), que no necesita que la ruptura pague por sí sola.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.json`
+- **Expansión con ≥ 3 zonas LUX-IMB en su 25 % inicial (visor) revierte mejor que una expansión igual sin condición de zonas (control)** (`F-LUXIMB-ZONAS-VS-CONTROL`, 2026-11-11, sesion)
+  - Efecto: Fade a mercado, stop 0,5·D, objetivo 1,0·D, R neto visor − control: NQ DESC +0,04, NQ REP +0,17, USATECH DESC +0,09, USATECH REP +0,005 (4/4 ≥ 0). En absoluto el visor queda ≈ 0 neto (−0,01 / +0,13 / +0,02 / −0,05) y el control negativo (−0,04 a −0,08). Con stop 0,2·D la diferencia es +0,2 en 3/4 pero la fricción pasa de 0,08 R.
+  - Dónde: NQ y USATECH, D3_20, amplitud ≥ max(p60, 60 pts), 2025-08 → 2026-09 (desarrollo, mirado)
+  - Siguiente: Es la hipótesis previa H-ZONAS: candidata a congelar y confirmar en USATECH 2023-01 → 2025-07 (declarado: lo usó U1, ancestro del linaje). Usar como filtro (zonas sí / no), no como señal sola.
+  - Evidencia: `docs/research/luximb_hvn_20261111/EXPLORACION.md`, `docs/research/luximb_hvn_20261111/PREREGISTRO.md`
 - **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
   - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
@@ -35,10 +40,15 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (8)
+## PALANCA_DE_DISENO (9)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
+  - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
+  - Dónde: NQ y USATECH, 2025-08 → 2026-09
+  - Siguiente: Redefinir el HVN en relativo (franja más allá contra la mediana del perfil de la sesión o contra el POC, umbrales por percentil causal) y re-explorar en desarrollo; no confirmar con la definición actual.
+  - Evidencia: `docs/research/luximb_hvn_20261111/EXPLORACION.md`
 - **Antes de una corrida con retornos: E0 sin retornos, una hipótesis contra placebo, y recién después P&L (no una grilla de ejecución)** (`F-CHECKLIST-PRE-CORRIDA`, 2026-11-10, sesion)
   - Efecto: La propuesta U1-HFT-CLUSTERS (20.736 celdas, 9 meses, un activo, stop = ancho del cluster) repetía selección en grilla grande y pagaba 0,13–0,77 R de fricción por operación; se reemplazó por 8 definiciones sin retornos y 5 pruebas.
   - Dónde: Toda familia nueva sobre un indicador (zonas, clusters, niveles)
