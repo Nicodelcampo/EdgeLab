@@ -82,8 +82,13 @@ def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None):
         print("lanzada", sl)
 
 
+def _env_cuenta(sl):
+    """La credencial de la cuenta dueña del kernel (cada cuenta tiene su host en config/kaggle_cuentas.json)."""
+    return dict(os.environ, EDGELAB_KAGGLE_OWNER=sl.split("/")[0])
+
+
 def _estado(sl):
-    r = subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", sl], capture_output=True, text=True)
+    r = subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), "status", "--slug", sl], capture_output=True, text=True, env=_env_cuenta(sl))
     try: return json.loads(r.stdout.strip().splitlines()[-1]).get("status")
     except (ValueError, IndexError): return "?"
 
@@ -101,7 +106,7 @@ def reintentar_cola():
 def traer(modulo=None):
     from edgelab.research.preflight import codigo_vigente
     reintentar_cola(); pend = []
-    for L in [x for x in _leer() if x.get("estado") != "en_cola"]:
+    for L in [x for x in _leer() if x.get("estado") not in ("en_cola", "movida")]:
         if modulo and L["modulo"] != modulo: continue
         nom = f"TABLA_{TB.cargar(L['modulo']).NOMBRE}_{L['fuente'].replace('DK:', '')}_{L['desde']}_{L['hasta']}"
         dest = carpeta(L["modulo"]) / {"confirmacion": "confirmacion", "holdout": "holdout"}.get(L["uso"], "tablas"); dest.mkdir(parents=True, exist_ok=True)
@@ -110,7 +115,7 @@ def traer(modulo=None):
         if st != "complete": pend.append((L["slug"], st)); continue
         for ext in ("json", "csv.gz"):
             subprocess.run([sys.executable, str(ROOT / "tools/kaggle_kernel.py"), "output", "--slug", L["slug"], "--file", f"{nom}.{ext}", "--out", str(dest / f"{nom}.{ext}")],
-                           capture_output=True, text=True)
+                           capture_output=True, text=True, env=_env_cuenta(L["slug"]))
         js = dest / f"{nom}.json"
         if not js.exists(): pend.append((L["slug"], "sin salida (¿ERROR_KERNEL.txt?)")); continue
         viejo = codigo_vigente(json.loads(js.read_text(encoding="utf-8")), ROOT)
@@ -208,7 +213,7 @@ def curva(modulo, dfn, ej, fn="todos"):
 
 
 def estado():
-    for L in _leer(): print(L["slug"], L["uso"], _estado(L["slug"]))
+    for L in _leer(): print(L["slug"], L.get("uso", L.get("estado")), L.get("estado") or _estado(L["slug"]))
 
 
 def main():

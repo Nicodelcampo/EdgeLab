@@ -14,11 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ y YM (RTY sin ticks sellados); clusters del E0-b, toque D0, carrera ±X
   - Siguiente: Ya no queda holdout para HFT_RUPTURA: seguir en forward con e-proceso. Usarlo como VETO (OP-3: no hacer fades de reversión en niveles con cluster grande), que no necesita que la ruptura pague por sí sola.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.json`
-- **Expansión con ≥ 3 zonas LUX-IMB en su 25 % inicial (visor) revierte mejor que una expansión igual sin condición de zonas (control)** (`F-LUXIMB-ZONAS-VS-CONTROL`, 2026-11-11, sesion)
-  - Efecto: Fade a mercado, stop 0,5·D, objetivo 1,0·D, R neto visor − control: NQ DESC +0,04, NQ REP +0,17, USATECH DESC +0,09, USATECH REP +0,005 (4/4 ≥ 0). En absoluto el visor queda ≈ 0 neto (−0,01 / +0,13 / +0,02 / −0,05) y el control negativo (−0,04 a −0,08). Con stop 0,2·D la diferencia es +0,2 en 3/4 pero la fricción pasa de 0,08 R.
-  - Dónde: NQ y USATECH, D3_20, amplitud ≥ max(p60, 60 pts), 2025-08 → 2026-09 (desarrollo, mirado)
-  - Siguiente: Es la hipótesis previa H-ZONAS: candidata a congelar y confirmar en USATECH 2023-01 → 2025-07 (declarado: lo usó U1, ancestro del linaje). Usar como filtro (zonas sí / no), no como señal sola.
-  - Evidencia: `docs/research/luximb_hvn_20261111/EXPLORACION.md`, `docs/research/luximb_hvn_20261111/PREREGISTRO.md`
+- **Expansión con ≥ 3 zonas OG/VI en su 25 % inicial revierte mejor que la misma expansión sin zonas** (`F-LUXIMB-ZONAS-VS-CONTROL-B`, 2026-11-11, sesion)
+  - Efecto: Confirmación congelada en USATECH 2023-01 → 2025-07 (una vez): visor − control +0,056 R (stop 0,5·D) y +0,048 (0,35·D), 4/5 sub-bloques, p 0,27 / 0,40, MDE80 0,15: NO_CONFIRMADA por potencia. Mismo signo que desarrollo (5/5 cortes ≥ 0 sumando la confirmación). El visor queda ≈ 0 neto en absoluto.
+  - Dónde: NQ y USATECH, D3_20 amplitud p60/60 pts
+  - Siguiente: Sólo como filtro de contexto (no señal); seguir en forward con e-proceso. No gastar más datos limpios en la diferencia sola.
+  - Evidencia: `docs/research/luximb_hvn_20261111/RESULTADO_CONFIRMACION_H_ZONAS.json`, `docs/research/luximb_hvn_20261111/CONFIRMACION_H_ZONAS.md`
 - **Clusters HFT grandes de NQ (8 zonas, ancho ≥ X/2): al tocarlos el precio los atraviesa MÁS que a un nivel cualquiera (lo contrario de la defensa)** (`F-HFT-CLUSTERS-GRANDES-RUPTURA-NQ`, 2026-11-10, sesion)
   - Efecto: Real − control: D0 −0,076 (IC90 −0,142 a −0,013; NQ −0,088 con 2.658 eventos), D6 penetración fallida −0,104 (IC90 −0,180 a −0,027; NQ −0,122). ES va al revés (+0,05 y +0,52 con pocos eventos). Ninguna de las 7 definiciones de rebote nominada.
   - Dónde: NQ (y ES con signo opuesto); DESC 2025-07 → 2026-03
@@ -90,7 +90,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (3)
+## EN_SEGUIMIENTO (4)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -104,13 +104,18 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: YM, cluster K4_A025_V1800, stop X, objetivo X, 900 s
   - Siguiente: Forward en papel con regla congelada y e-proceso; no elegir geometría ni filtros mirando estos datos (C1/C2 sólo como previas en forward).
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_HOLDOUT_HFT_RUPTURA.md`, `docs/research/hft_clusters_u1_20261110/OP2_YM_CURVA.svg`
+- **Ir hacia una banda de concentración OG+VI desde x pips (1:1 / 1:1,5, objetivo borde cercano o lejano) en EURUSD** (`F-BANDAS-EURUSD-APROX`, 2026-11-11, sesion)
+  - Efecto: EXPLORA 2020–2024 (11.328 eventos, 2.486 celdas): ninguna celda elegible por fricción ≤ 0,08 R con costos de 6E; nada sobre el nulo (p95 3,14). La tabla de real − espejo salió con valores ~1e10: falla del control espejo con rg mínimo (riesgo ≈ 0) — resultado de control NO interpretable hasta corregirlo.
+  - Dónde: EURUSD Dukascopy
+  - Siguiente: Corregir el espejo (riesgo en precio, no rg=PIP) y re-explorar; CONFIRMA 2025–2026 sin tocar.
+  - Evidencia: `docs/research/bandas_concentracion_20261111/eurusd/EXPLORACION.md`
 - **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
   - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
   - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (12)
+## NO_REPETIR (13)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -134,6 +139,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ, ES, RTY; clusters del E0-b
   - Siguiente: No repetir; usar «no defiende» como veto (OP-3).
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.md`, `docs/research/hft_clusters_u1_20261110/RESULTADO_OP2_DESARROLLO.json`
+- **Impulsos del visor en NQ con n ≥ 1…12 zonas HFT en el 25 % inicial (fade hacia A)** (`F-LUXIMB-HFT-ZONAS`, 2026-11-11, sesion)
+  - Efecto: Exploración (11.188 eventos, 4.998 celdas): nada sobre el nulo de la búsqueda (mejor t 2,1 vs p95 3,7). Real − control (stop 0,35·D) +0,13…+0,29 en DESC y −0,09…−0,20 en REP: se invierte.
+  - Dónde: NQ 2025-08 → 2026-09
+  - Siguiente: No repetir esta regla; la cuerda HFT vigente es «no defiende» (veto), coherente con REP.
+  - Evidencia: `docs/research/luximb_hft_20261111/EXPLORACION.md`
 - **Rebote e imán en clusters de 4 zonas HFT (la definición frecuente y angosta) contra un nivel cualquiera** (`F-HFT-CLUSTERS-K4-INFO`, 2026-11-10, sesion)
   - Efecto: Rebote: real − control −0,021 (IC90 −0,043 a +0,001, MDE 0,033, 9.752 eventos en NQ/ES/GC/YM); imán: −0,014 (IC90 −0,033 a +0,004, MDE 0,028). El desenlace real ≈ 0, lejos del umbral 0,08.
   - Dónde: NQ, ES, GC, YM; DESC 2025-07 → 2026-03
