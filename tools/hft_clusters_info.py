@@ -30,6 +30,9 @@ MODULOS = ["edgelab/holdout.py", "edgelab/research/fuentes_ticks.py", "edgelab/b
            "edgelab/research/niveles_sesion.py", "edgelab/research/fill_pasivo.py",
            "edgelab/research/op2_clusters.py"]
 DATASET = "nicolasbuttaro/edgelab-liquid-ticks-20261014"
+DATASET_SELLADO = "nicolasbuttaro/edgelab-holdout-sellado"                # sólo op2_holdout (una apertura de HFT_RUPTURA, por protocolo)
+SELLADO_INST = ("NQ", "ES", "YM")                                         # los de la regla con ticks sellados (RTY no está sellado)
+CID_HOLDOUT = "HFT_RUPTURA::holdout_exploratorio_20261111"
 OTROS = ("RTY", "6E", "6B", "MBT")                                     # activos con costo medido sin E0-b (6J y ZB: spread sin medir)
 REPLICA_INST = ("NQ", "ES", "RTY", "YM")                                # confirmación de «el cluster grande no defiende» (CONFIRMACION_NO_DEFIENDE.md)
 NIVELES_INST = ("NQ", "ES", "RTY", "YM", "GC")                          # REBOTE_NIVEL_SESION (PREREGISTRO_REBOTE_NIVEL.md)
@@ -51,10 +54,17 @@ def construir(modo: str) -> Path:
         src = src.replace("REGLAS_RUPTURA = []", "REGLAS_RUPTURA = " + json.dumps(reglas), 1); print("reglas congeladas:", reglas)
     if modo == "e0b_otros":                                            # E0-b sin retornos en los activos nuevos con costo medido
         src = src.replace('INSTRUMENTOS = ("NQ", "ES", "YM", "GC")', "INSTRUMENTOS = " + repr(OTROS), 1)
-    if modo in ("ruptura_replica", "niveles_replica", "niveles_op_replica", "op2"):                 # réplica abr → sep: definiciones congeladas de los dos E0-b
+    if modo == "op2_holdout":                                          # apertura exploratoria del holdout de HFT_RUPTURA: regla congelada
+        acta = DIR / "PREREGISTRO_HOLDOUT_HFT_RUPTURA.md"
+        if not acta.exists(): raise SystemExit("sin pre-registro de la apertura: no se lanza")
+        commit = subprocess.run(["git", "log", "-1", "--format=%H", "--", str(acta)], capture_output=True, text=True, cwd=ROOT).stdout.strip()
+        if not commit: raise SystemExit("el pre-registro de la apertura no está committeado: no se lanza")
+        src = src.replace("ACTA = {}", "ACTA = " + json.dumps(dict(acta=str(acta.relative_to(ROOT)), commit=commit, familia="HFT_RUPTURA",
+                                                                    cid=CID_HOLDOUT)), 1)
+    if modo in ("ruptura_replica", "niveles_replica", "niveles_op_replica", "op2", "op2_holdout"):                 # réplica abr → sep: definiciones congeladas de los dos E0-b
         el = {i: ["Z_CERT", v["elegida"]["cluster"]] for f in ("HFTC_e0b.json", "HFTC_e0b_otros.json")
               for i, v in json.loads((DIR / f).read_text(encoding="utf-8"))["equilibrio"].items() if v.get("elegida")}
-        inst = REPLICA_INST if modo in ("ruptura_replica", "op2") else NIVELES_INST
+        inst = SELLADO_INST if modo == "op2_holdout" else REPLICA_INST if modo in ("ruptura_replica", "op2") else NIVELES_INST
         el = {i: d for i, d in el.items() if i in inst}
         src = src.replace('INSTRUMENTOS = ("NQ", "ES", "YM", "GC")', "INSTRUMENTOS = " + repr(tuple(inst)), 1)
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1); print("activos:", inst, "definiciones:", el)
@@ -69,7 +79,7 @@ def construir(modo: str) -> Path:
         eq = json.loads((DIR / "HFTC_e0b.json").read_text(encoding="utf-8"))["equilibrio"]
         el = {i: ["Z_CERT", eq[i]["elegida"]["cluster"]] for i in ("NQ", "ES") if eq.get(i, {}).get("elegida")}
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps(el), 1)
-    elif modo not in ("e0", "e0b", "e0b_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica", "op2"):
+    elif modo not in ("e0", "e0b", "e0b_otros", "ruptura_replica", "niveles_replica", "niveles_op_replica", "op2", "op2_holdout"):
         el = json.loads((DIR / "HFTC_e0.json").read_text(encoding="utf-8"))["eleccion"]
         if not el: raise SystemExit("el E0 no eligió ninguna definición: el paso de información no se corre")
         src = src.replace("DEFS = {}", "DEFS = " + json.dumps({i: [v["zona"], v["cluster"]] for i, v in sorted(el.items())}), 1)
@@ -113,7 +123,8 @@ def recomendaciones(modo: str) -> str:
 USA = {"base": MODULOS[:5], "rebotes": ["edgelab/research/hft_rebotes.py"], "contexto": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_contexto.py"],
        "ruptura": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py"],
        "niveles": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py", "edgelab/research/niveles_sesion.py", "edgelab/research/fill_pasivo.py"],
-       "op2": ["edgelab/research/hft_rebotes.py", "edgelab/research/fill_pasivo.py", "edgelab/research/op2_clusters.py"]}
+       "op2": ["edgelab/research/hft_rebotes.py", "edgelab/research/fill_pasivo.py", "edgelab/research/op2_clusters.py"],
+       "op2_holdout": ["edgelab/research/hft_rebotes.py", "edgelab/research/hft_ruptura.py", "edgelab/research/fill_pasivo.py", "edgelab/research/op2_clusters.py"]}
 
 
 def no_vigente(modo: str, res: dict) -> list:
@@ -147,7 +158,7 @@ def main():
     if a[0] == "recomendar": print("escrito", recomendaciones(a[1])); return
     out = construir(a[0]); print("construido", out.relative_to(ROOT))
     if "--solo-construir" not in sys.argv:
-        r = k("push", "--slug", slug(a[0]), "--title", f"hft clusters info {a[0]} 20261110", "--script", str(out), "--dataset", DATASET)
+        r = k("push", "--slug", slug(a[0]), "--title", f"hft clusters info {a[0]} 20261110", "--script", str(out), "--dataset", DATASET_SELLADO if a[0] == "op2_holdout" else DATASET)
         print(r[-300:])
         if '"versionNumber"' not in r or '"hasError":true' in r:            # O19: un push fallido no puede pasar en silencio
             raise SystemExit(f"FALLÓ el lanzamiento de {slug(a[0])}: revisar la salida de tools/kaggle_kernel.py push")
