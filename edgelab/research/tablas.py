@@ -72,13 +72,22 @@ def generar(modulo, ctx) -> pd.DataFrame:
     k = E.k.to_numpy(np.int64)
     if "ses" not in E: E["ses"] = np.asarray(ctx["ses"])[k]
     if "t" not in E: E["t"] = np.asarray(ctx["t"], float)[k]
+    from edgelab.research import rasgos_comunes as RC
+    E = RC.agregar(E, ctx)                                                   # VWAP diario y de NY para toda familia (filtros comunes)
     return X.desenlaces(E, ctx, mod.EJECUCIONES)
+
+
+def filtros(mod, T=None) -> dict:
+    """Filtros del módulo + los comunes (rasgos_comunes.FILTROS) cuyas columnas existen (o todos, si no se da la tabla)."""
+    from edgelab.research import rasgos_comunes as RC
+    com = {n: f for n, f in RC.FILTROS.items() if T is None or f[0] in T}
+    return {**com, **(getattr(mod, "FILTROS", {}) or {})}
 
 
 def conteo(modulo) -> int:
     """Celdas de la exploración: definiciones × (ejecuciones × (1 + filtros))."""
     mod = cargar(modulo)
-    return max(len(getattr(mod, "DEFINICIONES", []) or [None]), 1) * len(mod.EJECUCIONES) * (1 + len(getattr(mod, "FILTROS", {}) or {}))
+    return max(len(getattr(mod, "DEFINICIONES", []) or [None]), 1) * len(mod.EJECUCIONES) * (1 + len(filtros(mod)))
 
 
 # ----------------------------------------------------------------------------------------------- kernel (I5, I6)
@@ -86,15 +95,40 @@ def modulo_a_ruta(m: str) -> str:
     return m.replace(".", "/") + ".py"
 
 
+NUCLEO_KERNEL = ("edgelab/research/tablas.py", "edgelab/research/ejecucion.py", "edgelab/research/rasgos_comunes.py",
+                 "edgelab/research/fuentes_ticks.py", "edgelab/research/grilla_generica.py", "edgelab/research/areas_expansion_run.py",
+                 "edgelab/research/sintetico.py", "edgelab/holdout.py")
+TOPE_KERNEL_BYTES = 950_000                                               # Kaggle rechaza fuentes de 1 MB o más
+
+
+def _deps_nivel_superior(ruta: str, vistos: list) -> list:
+    """Imports del repo en el NIVEL SUPERIOR del módulo (también dentro de try/if de nivel superior), recursivo. Los imports dentro
+    de funciones no se siguen: arrastraban medio repo (autopilot, embudo) y el kernel pasaba el tope de Kaggle (2026-11-11). Si
+    alguno hace falta en la corrida, la prueba del kernel con FUENTE=SINT del preflight falla (el paquete no está instalado)."""
+    import ast
+    if ruta in vistos or not (ROOT / ruta).exists(): return vistos
+    vistos.append(ruta); tree = ast.parse((ROOT / ruta).read_text(encoding="utf-8-sig"))
+    nodos = []
+    for n in tree.body:
+        nodos += [n] if isinstance(n, (ast.Import, ast.ImportFrom)) else [x for x in ast.walk(n) if isinstance(x, (ast.Import, ast.ImportFrom))] if isinstance(n, (ast.Try, ast.If)) else []
+    for n in nodos:
+        if isinstance(n, ast.ImportFrom) and n.level:
+            pkg = ".".join(Path(ruta).with_suffix("").parts[:-n.level]); base = f"{pkg}.{n.module}" if n.module else pkg
+            mods = [base] + [f"{base}.{a.name}" for a in n.names]
+        elif isinstance(n, ast.ImportFrom): mods = [n.module] + [f"{n.module}.{a.name}" for a in n.names] if n.module else []
+        else: mods = [a.name for a in n.names]
+        for m in mods:
+            if m.split(".")[0] == "edgelab" and (ROOT / modulo_a_ruta(m)).exists(): _deps_nivel_superior(modulo_a_ruta(m), vistos)
+    return vistos
+
+
 def dependencias(modulo: str) -> list:
-    """Todo lo que el kernel tiene que embeber: el módulo, el motor, los lectores y lo que importen (grafo de imports)."""
-    from edgelab.research.embudo_runners import dependencias as dep
-    rutas = []
-    for r in (modulo_a_ruta(modulo), "edgelab/research/tablas.py", "edgelab/research/fuentes_ticks.py", "edgelab/research/grilla_generica.py",
-              "edgelab/research/sintetico.py", "edgelab/holdout.py"):
-        for x in dep(r):
-            if x not in rutas: rutas.append(x)
-    return rutas
+    """Lo que el kernel embebe: el núcleo de la cadena, el módulo y sus imports de nivel superior (+ los nombres en DEPENDENCIAS_KERNEL
+    del módulo, para imports perezosos que use en la corrida)."""
+    vistos: list = []
+    mod = cargar(modulo); extra = [modulo_a_ruta(m) for m in getattr(mod, "DEPENDENCIAS_KERNEL", ())]
+    for r in (*NUCLEO_KERNEL, modulo_a_ruta(modulo), *extra): _deps_nivel_superior(r, vistos)
+    return vistos
 
 
 def ruta_kernel(modulo) -> Path:
@@ -106,6 +140,8 @@ def construir_kernel(modulo: str) -> Path:
     from construir_kernel import construir
     out = ruta_kernel(modulo); out.parent.mkdir(parents=True, exist_ok=True)
     construir("tools/kaggle_grilla/tabla_main.py", str(out), dependencias(modulo))
+    if out.stat().st_size >= TOPE_KERNEL_BYTES:
+        raise RuntimeError(f"kernel de {out.stat().st_size} bytes (tope {TOPE_KERNEL_BYTES}): achicar las dependencias del módulo")
     return out
 
 

@@ -32,3 +32,10 @@ H-ZONAS; la confirmación sería en forward o en el holdout desde 2026-10-23, un
 
 ## Cómo podría refutarse
 Con `hvr` ≥ 1,5 o `poc_cerca_fuerte`, la vuelta rinde igual o peor que sin nodo (con n suficiente: ≥ 30 operaciones por celda).
+
+## Adenda (2026-11-11, antes de ver ninguna tabla): filtros de VWAP
+Pedido de Nico: «probá filtrar con VWAP diario, VWAP de NY y ambos; no hay una manera definida, usá todas las mejores». La cadena
+agrega a toda tabla `edgelab/research/rasgos_comunes.py`: VWAP anclado a la sesión y a las 09:30 de Nueva York, con su desvío
+ponderado por volumen, y 10 filtros (hacia / contra cada VWAP, los dos hacia / los dos contra, lejos ≥ 1 desvío, lejos y hacia).
+Las celdas suben en consecuencia (`tablas.conteo`) y la diferencia se registra aparte (`.../vwap`). Las tablas lanzadas antes de esta
+adenda se relanzan con el código nuevo y no se miran.

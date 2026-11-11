@@ -20,7 +20,8 @@ def test_contrato_y_conteo():
     malo = types.SimpleNamespace(NOMBRE="a_b", EJECUCIONES=[("MERCADO", 0.5, 0.5, 0.5, 0)], FILTROS={"x": ("c", "~", 1)})
     e = TB.contrato(malo)
     assert any("NOMBRE" in x for x in e) and any("eventos" in x for x in e) and any("FILTROS" in x for x in e) and any("parcial" in x for x in e)
-    assert TB.conteo(P) == 2 * 4 * 2
+    from edgelab.research import rasgos_comunes as RC
+    assert TB.conteo(P) == 2 * 4 * (1 + 1 + len(RC.FILTROS))
     assert TB.fuente_costo(P, "USATECHIDXUSD") == "NQ" and TB.fuente_costo(P, "NQ") == "NQ"
 
 
@@ -84,3 +85,17 @@ def test_cli_curva(tmp_path, monkeypatch):
     CLI.curva("edgelab.research.plantilla_tabla", "def_m3", "M_sl0.5_tp1.0_N")
     res = json.loads(next(tmp_path.glob("CURVA_*.json")).read_text())
     assert set(res) == {"IS", "OOS"} and res["IS"]["n"] > 0 and next(tmp_path.glob("CURVA_*.svg")).read_text().startswith("<svg")
+
+
+def test_vwap_causal_y_anclado():
+    from edgelab.research import rasgos_comunes as RC
+    ctx = GG.contexto_m1(list(sintetico.bloques(dias=6, planta=False, seed=2)), tick=0.25)
+    W = RC.vwap(ctx); n = len(ctx["c"]); ses = np.asarray(ctx["ses"])
+    corto = {k: (v[:n // 2] if isinstance(v, np.ndarray) and len(v) == n else v) for k, v in ctx.items()}
+    corto["vp_start"] = ctx["vp_start"][:n // 2 + 1]
+    W2 = RC.vwap(corto)
+    assert np.allclose(W["vwap_d"][:n // 2], W2["vwap_d"], equal_nan=True) and np.allclose(W["vwap_ny"][:n // 2], W2["vwap_ny"], equal_nan=True)
+    i = int(np.flatnonzero(np.r_[True, ses[1:] != ses[:-1]])[1])                # primera vela de la segunda sesión: VWAP = su propio precio medio
+    assert ctx["l"][i] - 1e-9 <= W["vwap_d"][i] <= ctx["h"][i] + 1e-9
+    T = TB.generar(P, GG.contexto_m1(list(sintetico.bloques(dias=40, planta=False, seed=3)), tick=0.25))
+    assert {"vwapd_hacia", "vwapny_dist", "vwap_ambos"} <= set(T.columns) and "vwapD_hacia" in TB.filtros(P, T)

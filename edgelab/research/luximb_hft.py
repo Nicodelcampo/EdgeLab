@@ -26,6 +26,7 @@ DEFINICIONES = [f"{d}_a{a}_z{z}" for d in DETECTORES for a in range(len(AMP)) fo
 CONTROL = {f"{d}_a{a}_z{z}": f"{d}_a{a}_z0" for d in DETECTORES for a in range(len(AMP)) for z in range(1, len(ZON))}
 EJECUCIONES = [("MERCADO", sl, tp, 0, be) for sl in (0.2, 0.35, 0.5) for tp in (0.5, 1.0) for be in (0, 0.25)] + \
               [("VUELTA", e, r, 0.1, o, round(e + 0.5, 4)) for e in (0.1, 0.25) for r in (0.1, 0.2) for o in (0, 1)]
+DEPENDENCIAS_KERNEL = ("edgelab.research.niveles_sesion",)                 # import perezoso en POR_BLOQUE (zonas HFT)
 PERIODOS = [("DESC", 20250805, 20260331), ("REP", 20260401, 20260930)]
 
 

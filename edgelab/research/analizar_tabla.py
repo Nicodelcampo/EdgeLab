@@ -64,7 +64,7 @@ def celdas(mod, T: pd.DataFrame):
     """Itera (definición, ejecución, filtro, máscara de filas, R neto, fricción en R)."""
     from edgelab.research.ejecucion import nombre
     defs = list(getattr(mod, "DEFINICIONES", []) or []) or [None]
-    fil = {"todos": None, **(getattr(mod, "FILTROS", {}) or {})}
+    fil = {"todos": None, **TB.filtros(mod, T)}
     fr = friccion_filas(mod, T); mf = {fn: (TB.filtro(T, f) if f else np.ones(len(T), bool)) for fn, f in fil.items()}
     netos = {nombre(s): neto(mod, T, nombre(s), fr) for s in mod.EJECUCIONES}
     for dfn in defs:
@@ -77,7 +77,7 @@ def celdas(mod, T: pd.DataFrame):
 
 def serie(mod, T: pd.DataFrame, dfn, ej: str, fn: str = "todos") -> np.ndarray:
     """R neto de UNA celda (sin recorrer la búsqueda)."""
-    f = (getattr(mod, "FILTROS", {}) or {}).get(fn) if fn != "todos" else None
+    f = TB.filtros(mod, T).get(fn) if fn != "todos" else None
     m = (T[dfn].astype(bool).to_numpy() if dfn else np.ones(len(T), bool)) & (TB.filtro(T, f) if f else True)
     return np.where(m, neto(mod, T, ej)[0], np.nan)
 
@@ -152,7 +152,7 @@ def congelar(mod, hipotesis: list, familia: str, carpeta: Path, ventana_confirma
     confirmación declarada y registra k pruebas en el contador global. Falla si k > K_MAX o una hipótesis no existe en el módulo."""
     from edgelab.research.ejecucion import nombre
     mod = TB.cargar(mod); ejs = {nombre(s) for s in mod.EJECUCIONES}; defs = set(getattr(mod, "DEFINICIONES", []) or []) | {None}
-    fil = {"todos"} | set(getattr(mod, "FILTROS", {}) or {})
+    fil = {"todos"} | set(TB.filtros(mod))
     if not 0 < len(hipotesis) <= K_MAX: raise ValueError(f"entre 1 y {K_MAX} hipótesis")
     for h in hipotesis:
         if h.get("ejec") not in ejs or h.get("defn") not in defs or h.get("filtro", "todos") not in fil: raise ValueError(f"hipótesis inválida: {h}")

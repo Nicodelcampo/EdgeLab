@@ -44,3 +44,10 @@ EURUSD de Dukascopy (`edgelab-dukascopy-6e-eurusd`, ≈ 4,5 años hasta 2026-09-
   acerca tendería a ir a buscarlas (imán) y a recorrerlas.
 - **Refutación:** real − espejo ≤ 0 (ir hacia la banda no paga más que ir hacia una franja cualquiera a la misma distancia), o
   ninguna celda elegible queda sobre el nulo de la búsqueda en EXPLORA, o lo congelado da R neto ≤ 0 en CONFIRMA.
+
+## Adenda (2026-11-11, antes de ver ninguna tabla): filtros de VWAP
+Pedido de Nico: «probá filtrar con VWAP diario, VWAP de NY y ambos; no hay una manera definida, usá todas las mejores». La cadena
+agrega a toda tabla `edgelab/research/rasgos_comunes.py`: VWAP anclado a la sesión y a las 09:30 de Nueva York, con su desvío
+ponderado por volumen, y 10 filtros (hacia / contra cada VWAP, los dos hacia / los dos contra, lejos ≥ 1 desvío, lejos y hacia).
+Las celdas suben en consecuencia (`tablas.conteo`) y la diferencia se registra aparte (`.../vwap`). Las tablas lanzadas antes de esta
+adenda se relanzan con el código nuevo y no se miran.
