@@ -36,9 +36,14 @@ def carpeta(mod) -> Path:
 
 
 def slug(mod, fuente, d0, d1, owner) -> str:
-    f = fuente.replace("DK:", "").replace("IDXUSD", "").lower()
-    s = f"t-{TB.cargar(mod).NOMBRE.lower()[:14]}-{f}-{str(d0)[2:]}-{str(d1)[2:]}".replace("_", "-")
-    return f"{owner}/{s[:49 - len(owner) - 1].rstrip('-')}"
+    """Único por módulo: nombre corto + 6 caracteres del sha del NOMBRE completo (2026-11-11: cortar el nombre a 14 caracteres hizo
+    que LUXIMB-AMARILLA, -R y -R2 compartieran slug y cada lanzamiento pisara al anterior)."""
+    import hashlib
+    nom = TB.cargar(mod).NOMBRE; h = hashlib.sha256(nom.encode()).hexdigest()[:6]
+    f = fuente.replace("DK:", "").replace("IDXUSD", "").lower()[:4]
+    s = f"t-{nom.lower()[:5].rstrip('-')}-{h}-{f}-{str(d0)[2:]}-{str(d1)[2:]}".replace("_", "-")
+    if len(s) > 49 - len(owner) - 1: raise ValueError(f"slug demasiado largo: {s}")
+    return f"{owner}/{s}"
 
 
 def _ventanas(args):
@@ -105,8 +110,9 @@ def reintentar_cola():
 
 def traer(modulo=None):
     from edgelab.research.preflight import codigo_vigente
-    reintentar_cola(); pend = []
-    for L in [x for x in _leer() if x.get("estado") not in ("en_cola", "movida")]:
+    reintentar_cola(); pend = []; todas = _leer()
+    anuladas = {(x.get("modulo"), x["slug"]) for x in todas if x.get("estado") == "anulada"}   # kernel pisado por otro módulo
+    for L in [x for x in todas if x.get("estado") not in ("en_cola", "movida", "anulada") and (x.get("modulo"), x["slug"]) not in anuladas]:
         if modulo and L["modulo"] != modulo: continue
         nom = f"TABLA_{TB.cargar(L['modulo']).NOMBRE}_{L['fuente'].replace('DK:', '')}_{L['desde']}_{L['hasta']}"
         dest = carpeta(L["modulo"]) / {"confirmacion": "confirmacion", "holdout": "holdout"}.get(L["uso"], "tablas"); dest.mkdir(parents=True, exist_ok=True)

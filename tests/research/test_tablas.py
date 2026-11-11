@@ -67,7 +67,11 @@ def test_cli_slug_y_ventanas():
     sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "tools"))
     import tablas as CLI
     s = CLI.slug("edgelab.research.plantilla_tabla", "DK:USATECHIDXUSD", 20230103, 20250731, "nicolasbuttaro")
-    assert "_" not in s and len(s) <= 49 and s.startswith("nicolasbuttaro/t-plantilla-usatech-")
+    assert "_" not in s and len(s) <= 49 and s.startswith("nicolasbuttaro/t-plant") and "-usat-" in s
+    a = CLI.slug("edgelab.research.luximb_amarilla", "NQ", 20250805, 20260331, "nicobuttaro")
+    b = CLI.slug("edgelab.research.luximb_amarilla_r", "NQ", 20250805, 20260331, "nicobuttaro")
+    c = CLI.slug("edgelab.research.luximb_amarilla_r2", "NQ", 20250805, 20260331, "nicobuttaro")
+    assert len({a, b, c}) == 3                                             # módulos distintos nunca comparten kernel
     assert CLI._ventanas(["DK:USATECHIDXUSD:20230103:20250731", "NQ:20250805:20260331"]) == [("DK:USATECHIDXUSD", 20230103, 20250731), ("NQ", 20250805, 20260331)]
 
 
