@@ -63,3 +63,11 @@ def test_calibracion_detecta_el_stop_acreditado_en_su_nivel(monkeypatch):
         return out
     monkeypatch.setattr(X, "_lote_mercado", lote)
     assert X.calibrar(specs=[("MERCADO", 0.2, 1.0, 0, 0)], n=800, dias=30, seeds=(21,))["optimistas"] == ["M_sl0.2_tp1.0_N"]
+
+
+def test_precios_por_fila():
+    # venta: entrada 100, objetivo 90, stop 104 → riesgo 4; toca el objetivo: +10/4
+    assert X._precios_nb(_p(100, 98, 90), 0, 3, -1, 90.0, 104.0) == (2.5, 4.0)
+    assert X._precios_nb(_p(100, 103, 105), 0, 3, -1, 90.0, 104.0)[0] == -1.25         # stop al tick: 105
+    assert np.isnan(X._precios_nb(_p(105, 90), 0, 2, -1, 90.0, 104.0)[0])             # la entrada ya pasó el stop
+    assert not X.validar([("PRECIOS", "obj", "stop")]) and X.nombre(("PRECIOS", "obj", "stop")) == "P_obj_stop"

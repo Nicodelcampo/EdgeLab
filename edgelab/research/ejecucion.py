@@ -20,6 +20,8 @@ Ejecuciones (tuplas; `nombre(spec)` da la columna):
   ("VUELTA", e, r, b, obj, c)        espera que el precio se extienda e·rg más allá de `ext` (en contra) y vuelva r·rg; entra a
                                      mercado; stop b·rg más allá del extremo; objetivo ref (obj 0) o la mitad entre ref y ext
                                      (obj 1); se cancela si se extiende más de c·rg, si toca ref antes o al vencer la espera
+  ("PRECIOS", "col_obj", "col_stop") entrada a mercado; objetivo y stop en PRECIOS por fila (columnas de la tabla): para reglas con
+                                     stop estructural (detrás de un extremo) y objetivos en niveles del impulso
   ("LIMITE", x, sl, tp)              orden límite x·rg más allá de `ext` (en contra), viva durante la espera; stop sl·rg y
                                      objetivo tp·rg desde el límite (fill «atraviesa», `fill_pasivo.operar`)
 Salida por ejecución: `r_<nombre>` (R bruto, NaN = sin operación) y `k_<nombre>` (riesgo inicial en precio, para restar la
@@ -57,6 +59,8 @@ def nombre(spec) -> str:
     if t == "LIMITE":
         x, sl, tp = p
         return f"L_x{x}_sl{sl}_tp{tp}"
+    if t == "PRECIOS":
+        return f"P_{p[0]}_{p[1]}"
     raise ValueError(f"ejecución desconocida: {spec!r}")
 
 
@@ -71,6 +75,7 @@ def validar(specs) -> list:
         if s[0] == "MERCADO" and (s[1] <= 0 or s[2] <= 0 or max(s[3], s[4]) >= s[2]): e.append(f"{n}: stop y objetivo > 0; parcial/BE antes del objetivo")
         if s[0] == "VUELTA" and not (0 < s[2] and s[1] < s[5] and s[3] > 0): e.append(f"{n}: r > 0, b > 0 y c > e")
         if s[0] == "LIMITE" and not (s[2] > 0 and s[3] > 0): e.append(f"{n}: stop y objetivo > 0")
+        if s[0] == "PRECIOS" and not (len(s) == 3 and all(isinstance(x, str) for x in s[1:])): e.append(f"{n}: (\"PRECIOS\", columna objetivo, columna stop)")
     return e
 
 
@@ -130,6 +135,27 @@ def _vuelta_nb(tpx, ts, fin, j0, jw, lado, ref, ext, rg, e, r, b, obj, c):
         if fav <= -risk: return fav / risk, risk
         if fav >= rew: return rew / risk, risk
     return fav / risk, risk
+
+
+@njit(cache=False)
+def _precios_nb(tpx, j0, jw, lado, obj, stop):
+    e = tpx[j0]; risk = lado * (e - stop); rew = lado * (obj - e)
+    if not (risk > 0 and rew > 0): return np.nan, np.nan                   # la entrada real ya pasó el stop o el objetivo
+    fav = 0.0
+    for j in range(j0 + 1, jw):
+        fav = lado * (tpx[j] - e)
+        if fav <= -risk: return fav / risk, risk
+        if fav >= rew: return rew / risk, risk
+    return fav / risk, risk
+
+
+@njit(cache=False)
+def _lote_precios(tpx, j0, jw, ok, lado, obj, stop):
+    n = len(j0); out = np.full((n, 2), np.nan)
+    for q in range(n):
+        if ok[q] and np.isfinite(obj[q]) and np.isfinite(stop[q]):
+            r, k = _precios_nb(tpx, j0[q], jw[q], lado[q], obj[q], stop[q]); out[q, 0] = r; out[q, 1] = k
+    return out
 
 
 @njit(cache=False)
@@ -211,6 +237,9 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
     mec = _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg)
     cols.update(mec_ext_antes_ref=mec[:, 0], mec_ext_antes_mitad=mec[:, 1], mec_toca_ref=mec[:, 2], mec_toca_mitad=mec[:, 3])
     for s in specs:
+        if s[0] == "PRECIOS":
+            o = _lote_precios(tpx, j0, jw, ok, lado, E[s[1]].to_numpy(float), E[s[2]].to_numpy(float))
+            cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]; continue
         p = [float(v) for v in s[1:]]
         if s[0] == "MERCADO": o = _lote_mercado(tpx, j0, jw, ok, lado, ref, *p)
         elif s[0] == "VUELTA": o = _lote_vuelta(tpx, ts, fin, j0, jw, ok, lado, ref, ext, rg, p[0], p[1], p[2], int(p[3]), p[4])
@@ -222,7 +251,7 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
 # ------------------------------------------------------------------------------------------------- calibración (V3)
 CALIBRACION_BASE = [("MERCADO", sl, tp, pt, be) for sl in (0.2, 0.5) for tp in (0.5, 1.0) for pt, be in ((0, 0), (0.25, 0), (0, 0.25))] + \
                    [("VUELTA", e, r, 0.1, o, e + 0.5) for e in (0.1, 0.25) for r in (0.05, 0.1) for o in (0, 1)] + \
-                   [("LIMITE", x, 0.5, 1.0) for x in (0.1, 0.25)]
+                   [("LIMITE", x, 0.5, 1.0) for x in (0.1, 0.25)] + [("PRECIOS", "obj_cal", "stop_cal")]
 
 
 def huella_motor() -> str:
@@ -242,7 +271,7 @@ def calibrar(specs=None, n=3000, dias=40, seeds=(21, 22), escala=60.0, umbral_t=
             ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=seed, prob_salto=saltos), tick=0.25)
             rng = np.random.default_rng(seed); m = len(ctx["c"]); k = rng.integers(50, m - TOPE - 5, n); lado = rng.choice([-1, 1], n)
             c = np.asarray(ctx["c"])[k]
-            E = pd.DataFrame(dict(k=k, lado=lado, ref=c + lado * escala, ext=c, rg=escala))
+            E = pd.DataFrame(dict(k=k, lado=lado, ref=c + lado * escala, ext=c, rg=escala, obj_cal=c + lado * escala, stop_cal=c - lado * escala / 2))
             T = desenlaces(E, ctx, specs)
             ses = np.asarray(ctx["ses"])[k]
             for s in specs:
