@@ -109,11 +109,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: EURUSD Dukascopy
   - Siguiente: Corregir el espejo (riesgo en precio, no rg=PIP) y re-explorar; CONFIRMA 2025–2026 sin tocar.
   - Evidencia: `docs/research/bandas_concentracion_20261111/eurusd/EXPLORACION.md`
-- **Impulso → caja amarilla → ruptura a favor → regreso → entrada en contra; con zonas LUX-IMB o sin ellas** (`F-LUXIMB-AMARILLA`, 2026-11-11, sesion)
-  - Efecto: Desarrollo NQ+USATECH (43.606 eventos, 6.024 celdas por corte): 5 celdas sobre el nulo de la búsqueda en un solo corte cada una (NQ REP 3, USATECH DESC 2), todas con impulsos SIN condición de zonas, regreso DESPUES (borde interno), n 31–36. Ninguna repite en los cuatro cortes. Real − control: zonas −0,03 R (las zonas OG/VI empeoran), caja amarilla vs sin filtro +0,04 R. Pocos casos: 12–13 de 36 definiciones del visor con ≥ 30 operaciones → versión relajada por la adenda.
-  - Dónde: NQ y USATECH, 2025-08 → 2026-09
-  - Siguiente: Ver la versión relajada (LUXIMB-AMARILLA-R); si la secuencia sin zonas, regreso al borde interno, repite en los cuatro cortes, congelarla y confirmar en forward/holdout.
-  - Evidencia: `docs/research/luximb_amarilla_20261111/EXPLORACION.md`, `docs/research/luximb_amarilla_20261111/PREREGISTRO.md`
+- **Impulso → caja amarilla → ruptura a favor → regreso → entrada en contra (original, relajada R e impulsos largos R2)** (`F-LUXIMB-AMARILLA-B`, 2026-11-11, sesion)
+  - Efecto: Celdas con R neto > 0 y fricción ≤ 0,08 R en los 4 cortes (NQ/USATECH × DESC/REP): original 124 de 2.684, R 264 de 12.384, R2 236 de 12.810 — MENOS que el 1/16 esperable por azar si cada corte fuera una moneda (168 / 774 / 800): no hay consistencia más allá del azar. Lo más repetido: regreso ANTES (40 % de la excursión) y, en R2, impulsos de 40 velas con ≥ 3 zonas en el 50 % inicial contra el VWAP de NY (mínimo +0,24 R en los 4 cortes, n ≥ 30 por corte), elegido entre 12.810 celdas.
+  - Dónde: NQ y USATECH 2025-08 → 2026-09
+  - Siguiente: Sólo si Nico decide gastar la apertura del holdout de la familia (desde 2026-10-23): congelar ≤ 3 celdas de la regla ANTES de R2 y confirmarlas una vez; si no, seguir en papel/forward.
+  - Evidencia: `docs/research/luximb_amarilla_20261111/MEDIDO_Y_NO_MEDIDO.md`
 - **Familia U1 de baja frecuencia (zonas y grillas U1 en NQ, ES, GC y CFD): única canasta que supera al nulo que repite la selección** (`F-U1-BAJA-FRECUENCIA`, 2026-11-08, humano)
   - Efecto: Desarrollo: +0,013 R por sesión, positiva en los 5 sub-bloques, p de selección 0,0099. Holdout exploratorio: −0,011 R por sesión en 14 sesiones y 30 operaciones (p 0,68); Fisher 0,040 pero media negativa → no pasa, sin potencia. No depende del régimen de gamma (terciles de GEX: +0,014 / +0,013 / +0,012 R, p 0,78).
   - Dónde: CANASTA-GLOBAL: 10 reglas U1, 338 sesiones de desarrollo
