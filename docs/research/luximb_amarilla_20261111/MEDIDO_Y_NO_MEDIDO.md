@@ -11,5 +11,7 @@ Estado: VIGENTE.
 
 | 2026-11-11 | HOLDOUT desde 2026-10-01 (NQ+USATECH, congeladas 845c37fc, acta ACTA_HOLDOUT.md) | obj 50 %: +0,086 R, n 11, 11/11 ganadoras, p 0,002, Fisher 0,001 → SIN_POTENCIA (n chico). obj 75 % con caja amarilla: −0,117 R (n 12); obj 75 % sin filtro: −0,236 R (n 18) → EN_CONTRA_SIN_POTENCIA. Desde 23-oct: n 3 / 3 / 7, mismos signos. |
 
+| 2026-11-12 | R3 stops cortos (desarrollo, amarilla, VWAP diario lejos, n 77/90) | obj 50 %: stop en extremo +0,066 R (95 % ganadoras, 4/4 cortes); borde+0,1 +0,006, borde+0,5 −0,005, mitad +0,013. obj 75 %: extremo +0,145; stops cortos +0,09 a +0,12 pero negativos en los dos DESC. Achicar el stop NO mejora: se pierde más por stops de lo que se gana por R. |
+
 ## NO MEDIDO
 - Forward con e-proceso de obj 50 % hasta n ≥ 30 (el holdout de la familia ya se usó).
