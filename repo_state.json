@@ -1,0 +1,62 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-09-15T10:16:00-03:00",
+  "purpose": "Compact routing metadata; never overrides frozen specs, manifests, PENDIENTE.md, or docs/CURRENT.md.",
+  "repository": "Nicodelcampo/EdgeLab",
+  "canonical_operational_branch": "foundation/f0b-compatibility-probe",
+  "canonical_operational_tip_observed": "08153f5438a766e8e67d761727fc17c26d97677e",
+  "default_branch": "main",
+  "default_branch_role": "historical_portable_baseline_not_live_work",
+  "default_branch_tip_observed": "cde6d93a75240f550db1fc3b96ca90605ca967c8",
+  "branch_snapshot": {
+    "path": "docs/BRANCH_SAFETY_SNAPSHOT_2026-09-15.json",
+    "count": 60,
+    "protected_count": 0,
+    "unique_tip_count": 58
+  },
+  "authority_order": [
+    "frozen_spec_or_manifest_for_the_governed_object",
+    "PENDIENTE.md",
+    "docs/CURRENT.md",
+    "PROJECT_INDEX.md_and_other_indexes",
+    "historical_summaries"
+  ],
+  "required_entrypoints": [
+    "AGENTS.md",
+    "repo_state.json",
+    "docs/CURRENT.md",
+    "PROJECT_INDEX.md"
+  ],
+  "scientific_state": {
+    "nq_certified_rolls": 0,
+    "nq_provisional_rolls": 4,
+    "source_capture_completeness": "NOT_APPROVED",
+    "ef0": "BLOCKED",
+    "campaign_outcomes_opened": false,
+    "preexisting_outcome_exposure": true,
+    "holdout": {
+      "start": "2026-07-01",
+      "end": "2026-12-31",
+      "sealed": true
+    }
+  },
+  "safety": {
+    "no_delete": true,
+    "no_branch_close": true,
+    "no_merge_without_explicit_approval": true,
+    "no_data_move": true,
+    "no_artifact_rewrite": true,
+    "frozen_read_only_branches": [
+      "audit/notion-ai-sltp-p2b-provenance-20260830"
+    ]
+  },
+  "commands": {
+    "state": ".venv\\Scripts\\python tools\\estado.py",
+    "tests": "pytest -q"
+  },
+  "notes": [
+    "Resolve remote HEAD at session start; do not trust a remembered hash.",
+    "Large raw data, some runs, real oracles, and quarantines may be local-only by design.",
+    "This file is routing metadata, not scientific evidence or authorization."
+  ]
+}
