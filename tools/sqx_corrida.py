@@ -81,6 +81,19 @@ def diseno_macro(wtb: str) -> str:
     return re.sub(r'generationType="[^"]+"', 'generationType="random-generation"', wtb)
 
 
+def opciones_macro(op: str) -> str:
+    """Macro = la posición puede quedar abierta de noche y el fin de semana (cuentas swing de CFD): sin cierre de viernes ni de fin de día.
+    Las plantillas de SQX traen ExitOnFriday activo, que cortaría cada operación de días en el primer viernes."""
+    for k in ("ExitOnFriday", "ExitAtEndOfDay"):
+        op = re.sub(rf'(<Param key="{k}" className="{k}">)(true|false)(</Param>)', r"\1false\3", op)
+    return op
+
+
+def parada(rk: str, horas: int) -> str:
+    """El Build se detiene solo a las `horas` (real y nulo con el mismo presupuesto; el K real de cada uno se lee de get_project_status)."""
+    return re.sub(r"<StopCondition [^>]*/>", f'<StopCondition type="time-limit" passedStrategies="1000" restartCount="5" days="0" hours="{horas}" minutes="0" />', rk)
+
+
 def preparar(idea, simbolo, tf):
     from edgelab.research import ideas as I
     if not any(x["id"] == idea for x in I.leer()): raise SystemExit(f"{idea}: no está en el banco de ideas (tools/ideas.py)")
@@ -106,6 +119,10 @@ def preparar(idea, simbolo, tf):
            f'{inst.get("swap") or '<Swap use="false" type="points" long="0" short="0" tripleSwapOn="NEVER" />'}</Setup></Setups><OutOfSample showGraph="false"><Range dateFrom="{oos}" dateTo="{hasta}" /></OutOfSample></Data>')
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Data", "xml": xml})
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "RiskMoneyManagement", "xml": MM_R})
+    op = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Options"})["xml"]
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Options", "xml": opciones_macro(op)})
+    rk = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings"})["xml"]
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings", "xml": parada(rk, int(_arg("--horas", "6")))})
     wtb = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"})["xml"]
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild", "xml": diseno_macro(wtb)})
     m = dict(id=cid, proyecto=nombre, idea=idea, base=base, plantilla=_arg("--plantilla"), simbolo=simbolo, instrumento=datos[simbolo]["instrument"],

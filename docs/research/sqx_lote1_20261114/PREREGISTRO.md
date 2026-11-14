@@ -18,8 +18,10 @@ Construcción 2012-01-20 → 2019-12-31 (OOS interno de SQX 2017–2019, sólo i
 TP 2–8 ATR; riesgo fijo 1.000 USD por operación (R = P/L / 1.000); costos del instrumento Dukascopy (spread, swap); datos ≤ 2026-09-29.
 
 ## Ejecución
-- Real y nulo corren con el MISMO total generado (K): se detienen al llegar a 20.000 estrategias generadas cada uno (o al tope de 6 h; si
-  uno no llega, el otro se recorta a su K). `estado` vuelca K al contador global (familias SQX_<idea>).
+- Real y nulo corren con el MISMO presupuesto: parada automática de SQX a las 6 h (`StopCondition time-limit`); el K de cada uno se lee de
+  `get_project_status` y va al contador. Si los K difieren más del doble, el umbral del nulo se escala por √(2·ln K) (máximo de K normales).
+- Enmienda antes de lanzar (2026-11-14): las plantillas traían `ExitOnFriday` activo (cerraba toda posición el viernes 23:00); se apagó
+  junto con `ExitAtEndOfDay` en los 10 proyectos (macro = tenencia de varios días; requiere cuenta swing). `estado` vuelca K al contador global (familias SQX_<idea>).
 - Se exportan TODAS las aceptadas por SQX (filtro de SQX laxo: sólo AvgTradesPerMonth > 0) del real y del nulo.
 
 ## Evaluación (fijada antes)
