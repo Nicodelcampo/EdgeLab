@@ -36,7 +36,9 @@ la esperanza medida, no la preferencia). Cliente MCP: `tools/mcp_cliente.py`.
 9. **Desafío chico** (humano): sólo si 6–8 pasan.
 
 ## Datos
-- SQX: Dukascopy M1 de 27 activos hasta el **30-sep-2026** (nada del holdout, que empieza el 1-oct-2026). Construcción hasta 2019;
+- SQX: Dukascopy M1 de 27 activos (descarga completa 2026-11-14). Los 10 originales quedaron con barras hasta el 2026-10-01 y el holdout
+  empieza con la sesión CME del 1-oct (apertura 2026-09-30 22:00 UTC): **todo proyecto de SQX fija su rango de fechas con fin ≤ 2026-09-29**
+  (regla mecánica, sin mirar esas barras); la pseudo-réplica termina el 29-sep. Construcción hasta 2019;
   OOS de SQX 2020–2023; reciente sin mirar 2024 → jul-2025; pseudo-réplica ago-2025 → sep-2026. Bonos y Russell (desde 2017–2019) sólo
   como mercados adicionales.
 - MT5: datos del bróker de la cuenta objetivo, importables a SQX para backtest con sus spreads reales.
