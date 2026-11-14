@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Corridas de StrategyQuant X gobernadas por EdgeLab (2026-11-14). Docs: docs/infra/SQX_MT5_EDGELAB_INFRA.md.
 
-  python tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--base "NQ CFD H1 - Dukascopy"] [--plantilla TrendFollowing]
+  python tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--base Builder] [--plantilla TrendFollowing]
                               [--desde 2011.01.01] [--hasta 2019.12.31] [--oos 2017.01.01]
       clona el proyecto base, (opcional) aplica la plantilla del Builder, fija los datos del Build (costos del instrumento,
       rango que NUNCA pasa del 2026-09-29) y escribe sqx/corridas/<id>/manifest.json. No lanza nada.
@@ -54,10 +54,37 @@ def _fecha_ok(f: str) -> str:
     return f
 
 
+# Guardas de diseño (contrato de calidad, edgelab/research/sqx_calidad.py): pocas condiciones, stop y objetivo en ATR grandes frente
+# al spread, generación ALEATORIA (no genética: menos sobreajuste y el total generado es el K honesto de la corrección).
+DISENO = dict(max_condiciones=3, max_salidas=2, max_periodo=200, sl_atr=(2.0, 5.0), pt_atr=(2.0, 8.0), atr_periodo=(14, 50))
+
+
+RIESGO_USD = 1000.0                                   # riesgo fijo por operación: R = P/L / RIESGO_USD (medición en R, CLAUDE.md)
+MM_R = (f'<RiskMoneyManagement><MoneyManagement><Method type="FixedAmount" use="true"><Params>'
+        f'<Param key="RiskedMoney" className="FixedAmount">{RIESGO_USD:g}</Param><Param key="Decimals" className="FixedAmount">3</Param>'
+        f'<Param key="LotsIfNoMM" className="FixedAmount">0.01</Param><Param key="MaxLots" className="FixedAmount">100000</Param></Params></Method>'
+        f'<InitialCapital>1000000</InitialCapital></MoneyManagement><RiskManagement maxDrawdown="100"><Method type="AllowAllTrades" use="true">'
+        f'<Params /></Method></RiskManagement></RiskMoneyManagement>')
+
+
+def diseno_macro(wtb: str) -> str:
+    d = DISENO
+    def tag(x, k, v): return re.sub(rf"<{k}>[^<]*</{k}>", f"<{k}>{v}</{k}>", x)
+    wtb = re.sub(r'maxConditions="\d+"', f'maxConditions="{d["max_condiciones"]}"', wtb)
+    wtb = re.sub(r'maxExitConditions="\d+"', f'maxExitConditions="{d["max_salidas"]}"', wtb)
+    wtb = re.sub(r'maxPeriod="\d+"', f'maxPeriod="{d["max_periodo"]}"', wtb)
+    for k, v in (("SLRequired", "true"), ("PTRequired", "true"), ("SLFixedPips", "false"), ("PTFixedPips", "false"), ("SLPercent", "false"),
+                 ("PTPercent", "false"), ("SLATR", "true"), ("PTATR", "true"), ("MinSLATRMultiple", d["sl_atr"][0]), ("MaxSLATRMultiple", d["sl_atr"][1]),
+                 ("MinPTATRMultiple", d["pt_atr"][0]), ("MaxPTATRMultiple", d["pt_atr"][1]), ("MinSLATRPeriod", d["atr_periodo"][0]),
+                 ("MaxSLATRPeriod", d["atr_periodo"][1]), ("MinPTATRPeriod", d["atr_periodo"][0]), ("MaxPTATRPeriod", d["atr_periodo"][1])):
+        wtb = tag(wtb, k, v)
+    return re.sub(r'generationType="[^"]+"', 'generationType="random"', wtb)
+
+
 def preparar(idea, simbolo, tf):
     from edgelab.research import ideas as I
     if not any(x["id"] == idea for x in I.leer()): raise SystemExit(f"{idea}: no está en el banco de ideas (tools/ideas.py)")
-    c = MC.Cliente("sqx"); base = _arg("--base", "NQ CFD H1 - Dukascopy"); cid = _id(idea, simbolo, tf); nombre = f"EL {cid}"
+    c = MC.Cliente("sqx"); base = _arg("--base", "Builder"); cid = _id(idea, simbolo, tf); nombre = f"EL {cid}"
     desde, hasta, oos = _fecha_ok(_arg("--desde", "2011.01.01")), _fecha_ok(_arg("--hasta", "2019.12.31")), _arg("--oos", "2017.01.01")
     datos = {x["symbol"]: x for x in c.llamar("list_data", {"filter": simbolo, "detail": True}).get("data", [])}
     if simbolo not in datos: raise SystemExit(f"{simbolo}: no está en list_data")
@@ -75,11 +102,14 @@ def preparar(idea, simbolo, tf):
            f'{inst["commissions"].replace("<Method", "<Commissions><Method", 1) + "</Commissions>" if "<Commissions" not in inst["commissions"] else inst["commissions"]}'
            f'{inst["swap"]}</Setup></Setups><OutOfSample showGraph="false"><Range dateFrom="{oos}" dateTo="{hasta}" /></OutOfSample></Data>')
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Data", "xml": xml})
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "RiskMoneyManagement", "xml": MM_R})
+    wtb = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"})["xml"]
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild", "xml": diseno_macro(wtb)})
     m = dict(id=cid, proyecto=nombre, idea=idea, base=base, plantilla=_arg("--plantilla"), simbolo=simbolo, instrumento=datos[simbolo]["instrument"],
              timeframe=tf, build=dict(desde=desde, hasta=hasta, oos_desde=oos), tope_datos=TOPE, servidor=c.servidor,
              datos=dict(rango=[datos[simbolo].get("dateFrom"), datos[simbolo].get("dateTo")], filas=datos[simbolo].get("rows")),
              costos=dict(spread=inst["defaultSpread"], swap=inst["swap"], comision=inst["commissions"]),
-             config_build=c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"}).get("xml", "")[:4000],
+             diseno=DISENO, riesgo_usd=RIESGO_USD, config_build=c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"}).get("xml", "")[:4000],
              creado=dt.datetime.now(dt.UTC).replace(tzinfo=None).isoformat() + "Z", estado="PREPARADA")
     _guardar(cid, m); print("preparada", cid, "→", nombre, "| commiteá el manifiesto antes de lanzar")
 

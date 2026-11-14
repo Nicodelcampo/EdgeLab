@@ -53,6 +53,9 @@ ningún secreto.
 - `tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--plantilla ...]`: clona el proyecto base (Build + 9 Retests de SQX), fija datos y costos
   del instrumento con tope 2026-09-29 y escribe `sqx/corridas/<id>/manifest.json`; `lanzar` exige el manifiesto committeado; `estado`
   vuelca el total generado al contador global; `exportar` baja trades (CSV) y pseudocódigo de cada estrategia al repo.
+- `tools/sqx_nulo.py crear SIMBOLO TF SEMILLA`: serie sintética (bloques de semanas o de barras del propio activo) subida a SQX como
+  símbolo `NULO_*`; el mismo Builder corre sobre ella para el umbral del nulo de la búsqueda.
+- Contrato de calidad (qué estrategia vale la pena): `docs/infra/CONTRATO_CALIDAD_ESTRATEGIAS.md`.
 - `tools/ideas.py`: banco de ideas multi-fuente y lote balanceado (de ahí sale el IDEA de cada corrida).
 
 ## Pendiente
