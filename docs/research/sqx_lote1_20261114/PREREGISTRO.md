@@ -21,7 +21,8 @@ TP 2–8 ATR; riesgo fijo 1.000 USD por operación (R = P/L / 1.000); costos del
 - Real y nulo corren con el MISMO presupuesto: parada automática de SQX a las 6 h (`StopCondition time-limit`); el K de cada uno se lee de
   `get_project_status` y va al contador. Si los K difieren más del doble, el umbral del nulo se escala por √(2·ln K) (máximo de K normales).
 - Enmienda antes de lanzar (2026-11-14): las plantillas traían `ExitOnFriday` activo (cerraba toda posición el viernes 23:00); se apagó
-  junto con `ExitAtEndOfDay` en los 10 proyectos (macro = tenencia de varios días; requiere cuenta swing). `estado` vuelca K al contador global (familias SQX_<idea>).
+  junto con `ExitAtEndOfDay` en los 10 proyectos (macro = tenencia de varios días; requiere cuenta swing). Se activó
+  `RealisticGapsHandling` (el stop atravesado por el gap del domingo se llena al precio después del gap) y el contrato suma el control de gaps. `estado` vuelca K al contador global (familias SQX_<idea>).
 - Se exportan TODAS las aceptadas por SQX (filtro de SQX laxo: sólo AvgTradesPerMonth > 0) del real y del nulo.
 
 ## Evaluación (fijada antes)

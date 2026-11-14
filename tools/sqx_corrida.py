@@ -86,6 +86,12 @@ def opciones_macro(op: str) -> str:
     Las plantillas de SQX traen ExitOnFriday activo, que cortaría cada operación de días en el primer viernes."""
     for k in ("ExitOnFriday", "ExitAtEndOfDay"):
         op = re.sub(rf'(<Param key="{k}" className="{k}">)(true|false)(</Param>)', r"\1false\3", op)
+    # Gap del domingo (y de noticias): el stop/límite atravesado por un gap se llena al precio DESPUÉS del gap, como en real
+    # (RealisticGapsHandling, motores MT4/MT5). Sin esto SQX lo llena en el precio pedido y regala el gap.
+    if 'key="RealisticGapsHandling"' in op:
+        op = re.sub(r'(<Param key="RealisticGapsHandling" className="RealisticGapsHandling">)(true|false)(</Param>)', r"\1true\3", op)
+    else:
+        op = op.replace("</Params>", '<Param key="RealisticGapsHandling" className="RealisticGapsHandling">true</Param></Params>', 1)
     return op
 
 

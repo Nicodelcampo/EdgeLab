@@ -29,6 +29,7 @@ Los umbrales se fijaron antes de ver resultados; cambiarlos es decisión humana 
 | 12 | Diversificación | ≤ 2 estrategias por (idea, activo) | no repetir la misma apuesta |
 | 13 | Diseño (antes de correr, `tools/sqx_corrida.py`) | ≤ 3 condiciones; SL 2–5 ATR, TP 2–8 ATR; generación aleatoria; datos ≤ 2026-09-29 | menos grados de libertad; fricción baja en R |
 | 14 | Después: paridad MT5 y demo forward | trades del EA = trades de SQX; forward secuencial sin alarma | ejecutabilidad real |
+| 15a | Gaps (domingo, noticias), con llenado realista en SQX (`RealisticGapsHandling`) | peor operación ≥ −3 R; lo perdido más allá de −1 R ≤ 30 % del resultado | que el resultado no dependa de que el gap no te agarre |
 | 15 | Cuenta | esperanza del desafío > 0 con sus reglas reales (`edgelab/propfirm/`) | el referente es cobrar |
 
 ## Qué NO es evidencia

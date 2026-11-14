@@ -24,6 +24,8 @@ REQ = dict(
     top5_max=0.5,                # las 5 mejores operaciones no pueden explicar más de la mitad del resultado
     corr_cartera_max=0.3,        # correlación del P&L diario con cada estrategia ya en cartera
     por_idea_activo_max=2,       # diversificación: a lo sumo 2 estrategias por (idea, activo)
+    peor_op_min_r=-3.0,          # gaps (domingo, noticias): con llenado realista una pérdida puede pasar de −1 R; más allá de −3 R no
+    gap_r_max=0.3,               # R perdido por encima de −1 R (gaps) como fracción del resultado total
 )
 
 
@@ -49,6 +51,9 @@ def evaluar(T: pd.DataFrame, riesgo: float, *, t_nulo_p95: float | None = None, 
     C["drawdown"] = (dd <= REQ["dd_max_r"], f"{dd:.1f} R")
     C["racha"] = (racha <= REQ["racha_perdedora_max"], f"{racha}")
     C["concentracion"] = (top5 <= REQ["top5_max"], f"top5 = {top5:.0%} del total")
+    exceso = float(np.clip(-r - 1.0, 0, None).sum()); peor = float(r.min()) if n else np.nan
+    C["peor_operacion"] = (peor >= REQ["peor_op_min_r"], f"{peor:+.2f} R")
+    C["gaps"] = (exceso <= REQ["gap_r_max"] * max(eq[-1], 1e-9) if n else False, f"{exceso:.1f} R perdidos más allá de −1 R")
     tt = m / se if se and se > 0 else np.nan
     C["nulo_busqueda"] = (None, "falta el nulo") if t_nulo_p95 is None else (tt > t_nulo_p95, f"t {tt:.2f} vs p95 nulo {t_nulo_p95:.2f}")
     C["reciente"] = (None, "falta el tramo reciente") if reciente_r is None else (reciente_r > 0, f"{reciente_r:+.3f} R")
