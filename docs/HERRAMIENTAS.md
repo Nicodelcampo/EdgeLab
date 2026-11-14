@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-633 scripts.
+634 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -435,6 +435,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/manifiesto_oraculos.py` | Manifiesto de identidad de `oracles/` — hashes versionados, contenido afuera. |
 | `tools/mapa_info_costo_analisis.py` | IVC: mapa de información contra costo (manifiesto docs/research/MANIFIESTO_MAPA_INFO_COSTO_20260926.md §5-6). |
 | `tools/mapa_info_costo_kaggle.py` | IVC: grilla de 5 minutos con estados causales y retornos futuros del medio, por sesión (manifiesto |
+| `tools/mcp_cliente.py` | Cliente MCP (HTTP «streamable», JSON-RPC) para StrategyQuant X y MetaTrader 5 desde EdgeLab (2026-11-14). |
 | `tools/mcpt_mgc_ema.py` | Full-pipeline intraday permutation test for the MGC EMA headline. |
 | `tools/medir_spread_main.py` | Kernel de Kaggle: spread MEDIDO de un futuro del release con el criterio del atlas v4 (para instrumentos sin spread en costos). |
 | `tools/metaanalisis_embudo.py` | Meta-análisis entre instrumentos de UNA regla congelada a partir de los estados del embudo (2026-10-26). |

@@ -24,7 +24,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/foundation` | 2 |
 | `docs/incidents` | 17 |
 | `docs/indicadores` | 1 |
-| `docs/infra` | 24 |
+| `docs/infra` | 25 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
