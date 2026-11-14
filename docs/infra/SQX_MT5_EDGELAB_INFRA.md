@@ -48,6 +48,13 @@ la esperanza medida, no la preferencia). Cliente MCP: `tools/mcp_cliente.py`.
 nulo), `estrategias/*.sqx`, `trades/*.csv`; `mt5/ea/*.mq5` (generados), `mt5/forward/<cuenta>/historial.csv`. Nada con licencia «@»,
 ningún secreto.
 
+## Herramientas
+- `tools/mcp_cliente.py sqx|mt5 <herramienta> '<json>'`: cliente MCP con guardas.
+- `tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--plantilla ...]`: clona el proyecto base (Build + 9 Retests de SQX), fija datos y costos
+  del instrumento con tope 2026-09-29 y escribe `sqx/corridas/<id>/manifest.json`; `lanzar` exige el manifiesto committeado; `estado`
+  vuelca el total generado al contador global; `exportar` baja trades (CSV) y pseudocódigo de cada estrategia al repo.
+- `tools/ideas.py`: banco de ideas multi-fuente y lote balanceado (de ahí sale el IDEA de cada corrida).
+
 ## Pendiente
 - MT5: activar su MCP con trading apagado y exponerlo (segundo túnel o proxy).
 - Relevar reglas oficiales de prop firms de CFD (FTMO Swing, FundedNext, The5ers, Blue Guardian, FundingPips) y sumarlas a `config/propfirms/`.

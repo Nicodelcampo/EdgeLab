@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-635 scripts.
+636 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -572,6 +572,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/select_canonical_visual_sessions.py` | Target-free reproducible session selection script for HP007-CAMP-002. |
 | `tools/senales_nt8.py` | Señales de una regla congelada para NT8 Market Replay (`nt8/strategies/EdgeLabSignalReplay.cs`) y comparación de llenados. |
 | `tools/simulador_challenges_propfirm.py` | Simulador y Optimizador Monte Carlo de Challenges de Cuentas Fondeadas (`tools/simulador_challenges_propfirm.py`, 2026-10-29). |
+| `tools/sqx_corrida.py` | Corridas de StrategyQuant X gobernadas por EdgeLab (2026-11-14). Docs: docs/infra/SQX_MT5_EDGELAB_INFRA.md. |
 | `tools/ssrn_brain_cli.py` | (sin docstring) |
 | `tools/ssrn_corpus_bootstrap.py` | Materialize the in-repo CerebroSSRN corpus (Edge Brain bibliographic hippocampus). |
 | `tools/store_audit.py` | store_audit.py — gate P3 sobre el store del bridge (F6.3). |
