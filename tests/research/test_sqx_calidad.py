@@ -7,7 +7,7 @@ from edgelab.research import sqx_calidad as Q
 def _trades(n, media, sd=1.0, seed=0, anios=10):
     rng = np.random.default_rng(seed); t = pd.date_range("2012-01-02", periods=n, freq=f"{int(anios * 365 * 24 / n)}h")
     return pd.DataFrame(dict(openTime=t.strftime("%Y.%m.%d %H:%M:%S"), closeTime=(t + pd.Timedelta(hours=5)).strftime("%Y.%m.%d %H:%M:%S"),
-                             pl=1000 * rng.normal(media, sd, n)))
+                             pl=1000 * np.clip(rng.normal(media, sd, n), -1.0, None)))   # stop real: pérdidas hasta −1 R
 
 
 def test_sin_nulo_queda_pendiente_y_ruido_no_vale():
