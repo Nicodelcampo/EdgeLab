@@ -5,9 +5,10 @@ Disparos (`deltasweep_seq.POR_BLOQUE`, 1-tick causal con agresor bid/ask) por co
 V4W (ráfaga ancha), V3 (adaptativa z), V5 (barre el swing y recupera), spread ≤ 2 ticks.
 Patrón = n disparos seguidos en la misma dirección y sesión, cada uno a ≤ g s del anterior, con una forma:
   any       sin condición de precio;
-  compacto  todos dentro de 40 ticks (los disparos se apilan en el mismo nivel);
-  escalera  cada disparo mejor que el anterior a favor (compras con precios más altos: el barrido ya no hace nuevos extremos).
-Se dispara una vez, en el n-ésimo. n ∈ {2, 3, 4, 5}, g ∈ {60, 300, 900} s, NY 09:30–12:00 o 09:30–16:00. Control: n = 1 de la misma
+  escalera  cada disparo mejor que el anterior a favor (compras con precios más altos: el barrido ya no hace nuevos extremos);
+  dpX       dispersión (máx − mín del precio) de los disparos ANTERIORES al de la entrada ≤ X ticks (X = 8, 16, 32);
+  dtX       dispersión de TODOS los disparos del patrón, incluido el de la entrada, ≤ X ticks.
+Se dispara una vez, en el n-ésimo. n ∈ {2, 3, 4, 5}, g ∈ {10, 30, 60, 300} s, NY 09:30–12:00 o 09:30–16:00. Control: n = 1 de la misma
 compuerta y régimen. Entrada a favor de los disparos:
   MERCADO  vela M1 siguiente; stop/objetivo fijos sobre D = 160 ticks: 80/160, 160/160, 160/320, 240/480;
   LIMITE   retroceso de 0,25·D o 0,5·D desde el cierre de la vela del patrón, stop D y objetivo 2·D desde el límite;
@@ -26,10 +27,11 @@ DEPENDENCIAS_KERNEL = ("edgelab.research.deltasweep_nq",)
 POR_BLOQUE = DS.POR_BLOQUE
 GATES = {"PERM": -1, "V4W": 64, "V3": 4, "V5": 16}
 NS = (1, 2, 3, 4, 5)
-GAPS = (60, 300, 900)
-FORMAS = ("any", "compacto", "escalera")
+GAPS = (10, 30, 60, 300)                                 # s entre disparos (v2: se agregan 10 y 30 s; se saca 900, pedido de Nico)
+DISP = (8, 16, 32)                                       # dispersión en precio (ticks) de los disparos del patrón
+FORMAS = ("any", "escalera") + tuple(f"dp{x}" for x in DISP) + tuple(f"dt{x}" for x in DISP)
 REGS = {"AM": (930, 1200), "RTH": (930, 1600)}
-D_TICKS, COMPACTO_T = 160, 40
+D_TICKS = 160
 DEFINICIONES = ([f"{g}|n1|{r}" for g in GATES for r in REGS] +
                 [f"{g}|n{n}|g{gp}|{f}|{r}" for g in GATES for n in NS[1:] for gp in GAPS for f in FORMAS for r in REGS])
 CONTROL = {f"{g}|n{n}|g{gp}|{f}|{r}": f"{g}|n1|{r}" for g in GATES for n in NS[1:] for gp in GAPS for f in FORMAS for r in REGS}
@@ -48,9 +50,9 @@ def patrones(Z: pd.DataFrame, bit: int, n: int, gap: int, forma: str, tick: floa
         ok = bool(racha) and s[i] == s[racha[-1]] and d[i] == d[racha[-1]] and t[i] - t[racha[-1]] <= gap * 1_000_000_000
         if ok and forma == "escalera": ok = d[i] * (px[i] - px[racha[-1]]) > 0
         racha = racha + [i] if ok else [i]
-        if forma == "compacto":
-            while len(racha) > 1 and (px[racha].max() - px[racha].min()) > COMPACTO_T * tick: racha = racha[1:]
         if len(racha) == n:
+            if forma.startswith("dp") and (px[racha[:-1]].max() - px[racha[:-1]].min()) > int(forma[2:]) * tick: continue
+            if forma.startswith("dt") and (px[racha].max() - px[racha].min()) > int(forma[2:]) * tick: continue
             out[i] = True; xt_pat[i] = xt[racha].min() if d[i] == 1 else xt[racha].max()
     return out, xt_pat
 

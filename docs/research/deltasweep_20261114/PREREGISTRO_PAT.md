@@ -29,3 +29,11 @@ Ninguna celda cumple (1)–(3); o el efecto no crece con n ni con la compacidad 
 
 ## Riesgos
 REP ya fue mirado por la forma S2 (13-nov y SEQ): pesa DESC + nulo; lo que pase va a forward congelado. Entrada en la vela M1 siguiente.
+
+## Enmienda v2 (2026-11-14, antes de ver resultados; pedido de Nico)
+La v1 (gaps 60/300/900 s, forma «compacto ≤ 40 ticks») se relanzó sobre el mismo kernel ANTES de mirar nada y no se analiza. v2:
+- gaps {10, 30, 60, 300} s (15 min es demasiado para la frecuencia de los disparos; 60 s como mínimo también);
+- dispersión en precio (máx − mín) de los disparos del patrón como variable: `dpX` = de los disparos ANTERIORES al de la entrada,
+  `dtX` = de TODOS incluido el de la entrada, X ∈ {8, 16, 32} ticks; se mantienen «any» y «escalera»; sale «compacto».
+- 1.032 definiciones × 7 ejecuciones × ~11 filtros ≈ 79.000 celdas (se registran en el contador; la v1 también queda contada).
+El filtro de pistas no cambia. Al traer, se verifica que la tabla venga del código v2 (`codigo`/`modulos` del JSON de la tabla).
