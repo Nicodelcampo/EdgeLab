@@ -153,8 +153,10 @@ def estado(cid):
     from edgelab.funnel.multiplicity import TrialRegistry
     m = _cargar(cid); s = MC.Cliente("sqx").llamar("get_project_status", {"name": m["proyecto"]}); m["ultimo_estado"] = s
     gen = int(s.get("strategiesGenerated") or 0)
-    if gen: TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl").ensure(f"sqx/{cid}", f"SQX_{m['idea']}", gen, f"SQX {m['proyecto']}: estrategias generadas")
-    if not s.get("running") and gen: m["estado"] = "TERMINADA"
+    if not s.get("running") and gen:                       # el contador es inmutable por id: se registra UNA vez, al terminar cada lanzamiento
+        TrialRegistry(ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl").ensure(f"sqx/{cid}/lanzamiento{len(m.get('historial', [])) + 1}",
+                                                                                 f"SQX_{m['idea']}", gen, f"SQX {m['proyecto']}: estrategias generadas")
+        m["estado"] = "TERMINADA"
     _guardar(cid, m); print(json.dumps({k: s.get(k) for k in ("status", "strategiesGenerated", "strategiesAccepted", "running")}))
 
 
