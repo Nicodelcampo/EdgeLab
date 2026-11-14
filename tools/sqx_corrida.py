@@ -2,7 +2,7 @@
 """Corridas de StrategyQuant X gobernadas por EdgeLab (2026-11-14). Docs: docs/infra/SQX_MT5_EDGELAB_INFRA.md.
 
   python tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--base Builder] [--plantilla TrendFollowing]
-                              [--desde 2011.01.01] [--hasta 2019.12.31] [--oos 2017.01.01]
+                              [--desde 2011.01.01] [--hasta 2019.12.31] [--oos 2017.01.01] [--nulo-de ID_REAL]
       clona el proyecto base, (opcional) aplica la plantilla del Builder, fija los datos del Build (costos del instrumento,
       rango que NUNCA pasa del 2026-09-29) y escribe sqx/corridas/<id>/manifest.json. No lanza nada.
   python tools/sqx_corrida.py lanzar ID          # run_project (exige el manifiesto committeado: pre-registro antes de correr)
@@ -78,29 +78,32 @@ def diseno_macro(wtb: str) -> str:
                  ("MinPTATRMultiple", d["pt_atr"][0]), ("MaxPTATRMultiple", d["pt_atr"][1]), ("MinSLATRPeriod", d["atr_periodo"][0]),
                  ("MaxSLATRPeriod", d["atr_periodo"][1]), ("MinPTATRPeriod", d["atr_periodo"][0]), ("MaxPTATRPeriod", d["atr_periodo"][1])):
         wtb = tag(wtb, k, v)
-    return re.sub(r'generationType="[^"]+"', 'generationType="random"', wtb)
+    return re.sub(r'generationType="[^"]+"', 'generationType="random-generation"', wtb)
 
 
 def preparar(idea, simbolo, tf):
     from edgelab.research import ideas as I
     if not any(x["id"] == idea for x in I.leer()): raise SystemExit(f"{idea}: no está en el banco de ideas (tools/ideas.py)")
-    c = MC.Cliente("sqx"); base = _arg("--base", "Builder"); cid = _id(idea, simbolo, tf); nombre = f"EL {cid}"
+    c = MC.Cliente("sqx"); base = _arg("--base", "Builder")
+    existente = _arg("--proyecto")                        # completar un clon ya creado (p. ej. tras un error a mitad de camino)
+    cid = existente[3:] if existente else _id(idea, simbolo, tf); nombre = existente or f"EL {cid}"
     desde, hasta, oos = _fecha_ok(_arg("--desde", "2011.01.01")), _fecha_ok(_arg("--hasta", "2019.12.31")), _arg("--oos", "2017.01.01")
     datos = {x["symbol"]: x for x in c.llamar("list_data", {"filter": simbolo, "detail": True}).get("data", [])}
     if simbolo not in datos: raise SystemExit(f"{simbolo}: no está en list_data")
     inst = c.llamar("list_instruments", {"filter": datos[simbolo]["instrument"]})["instruments"][0]
-    antes = {p["name"] for p in c.llamar("list_projects")["projects"]}
-    c.llamar("manage_project", {"name": base, "action": "clone"})
-    nuevo = ({p["name"] for p in c.llamar("list_projects")["projects"]} - antes).pop()
-    c.llamar("manage_project", {"name": nuevo, "action": "rename", "newName": nombre})
+    if not existente:
+        antes = {p["name"] for p in c.llamar("list_projects")["projects"]}
+        c.llamar("manage_project", {"name": base, "action": "clone"})
+        nuevo = ({p["name"] for p in c.llamar("list_projects")["projects"]} - antes).pop()
+        c.llamar("manage_project", {"name": nuevo, "action": "rename", "newName": nombre})
     px = c.llamar("get_project_config", {"name": nombre})["projectXml"]
     build = re.search(r'<Task type="Build" name="([^"]+)"[^>]*taskXMLFile="([^"]+)"', px)
     if not build: raise SystemExit("el proyecto base no tiene tarea Build")
     if _arg("--plantilla"): c.llamar("apply_build_template", {"name": nombre, "template": _arg("--plantilla"), "task": build.group(1)})
     xml = (f'<Data><Setups><Setup dateFrom="{desde}" dateTo="{hasta}" testPrecision="1" session="No Session" slippage="0" minDist="0" '
            f'engine="MetaTrader5 (hedged)"><Chart symbol="{simbolo}" timeframe="{tf}" spread="{inst["defaultSpread"]}" />'
-           f'{inst["commissions"].replace("<Method", "<Commissions><Method", 1) + "</Commissions>" if "<Commissions" not in inst["commissions"] else inst["commissions"]}'
-           f'{inst["swap"]}</Setup></Setups><OutOfSample showGraph="false"><Range dateFrom="{oos}" dateTo="{hasta}" /></OutOfSample></Data>')
+           f'{(inst.get("commissions") or "<Method type=\"SizeBased\" use=\"true\"><Params><Param key=\"Commission\" className=\"SizeBased\">0</Param></Params></Method>").replace("<Method", "<Commissions><Method", 1) + "</Commissions>" if "<Commissions" not in (inst.get("commissions") or "") else inst["commissions"]}'
+           f'{inst.get("swap") or '<Swap use="false" type="points" long="0" short="0" tripleSwapOn="NEVER" />'}</Setup></Setups><OutOfSample showGraph="false"><Range dateFrom="{oos}" dateTo="{hasta}" /></OutOfSample></Data>')
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Data", "xml": xml})
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "RiskMoneyManagement", "xml": MM_R})
     wtb = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"})["xml"]
@@ -108,8 +111,9 @@ def preparar(idea, simbolo, tf):
     m = dict(id=cid, proyecto=nombre, idea=idea, base=base, plantilla=_arg("--plantilla"), simbolo=simbolo, instrumento=datos[simbolo]["instrument"],
              timeframe=tf, build=dict(desde=desde, hasta=hasta, oos_desde=oos), tope_datos=TOPE, servidor=c.servidor,
              datos=dict(rango=[datos[simbolo].get("dateFrom"), datos[simbolo].get("dateTo")], filas=datos[simbolo].get("rows")),
-             costos=dict(spread=inst["defaultSpread"], swap=inst["swap"], comision=inst["commissions"]),
+             costos=dict(spread=inst["defaultSpread"], swap=inst.get("swap"), comision=inst.get("commissions")),
              diseno=DISENO, riesgo_usd=RIESGO_USD, config_build=c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"}).get("xml", "")[:4000],
+             nulo_de=_arg("--nulo-de"), es_nulo=simbolo.startswith("NULO_"),
              creado=dt.datetime.now(dt.UTC).replace(tzinfo=None).isoformat() + "Z", estado="PREPARADA")
     _guardar(cid, m); print("preparada", cid, "→", nombre, "| commiteá el manifiesto antes de lanzar")
 

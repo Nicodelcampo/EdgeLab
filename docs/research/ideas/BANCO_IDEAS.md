@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 5, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 3, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 8, "bajo": 3}, "estado": {"PROPUESTA": 13, "EN_PRUEBA": 1}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 3, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 5, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 3, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 8, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 11, "EN_PRUEBA": 1}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 3, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -69,7 +69,7 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 5, "sqx": 2, "practicante
 - Fuentes: docs/research/luximb_amarilla_20261111/r2/EXPLORACION.md (todas las celdas sobre el nulo tenían VWAP lejos)
 
 ## SQX-PLANTILLA-REVERSION — Línea de base: plantilla de reversión de SQX
-- Clase: reversion · fuente: sqx · prior: bajo · estado: PROPUESTA · horizonte: días · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD
+- Clase: reversion · fuente: sqx · prior: bajo · estado: EN_DISENO · horizonte: días · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD
 - Mecanismo: Builder con la plantilla estándar de reversión (señales contrarias, órdenes límite) sobre la canasta.
 - Justificación económica: Línea de base para las ideas de reversión (caja amarilla, VWAP lejos).
 - Cómo podría refutarse: Si las ideas de reversión con mecanismo no le ganan, no agregan nada.
@@ -85,7 +85,7 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 5, "sqx": 2, "practicante
 - Fuentes: FACTORES: F-HFT-CLUSTER-GRANDE-NO-DEFIENDE (A-D), F-HFT-ZONAS-NO-SON-SOPORTE
 
 ## LIT-TSMOM — Momentum de serie de tiempo multi-activo
-- Clase: tendencia · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: días-meses · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD, XAGUSD, WTI, BRENT, COBRE, GAS, EURUSD, USDJPY, GBPUSD, AUDUSD, USDCAD
+- Clase: tendencia · fuente: literatura · prior: alto · estado: EN_DISENO · horizonte: días-meses · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD, XAGUSD, WTI, BRENT, COBRE, GAS, EURUSD, USDJPY, GBPUSD, AUDUSD, USDCAD
 - Mecanismo: El retorno de los últimos 1-12 meses de un activo predice el signo del próximo mes en índices, bonos, monedas y materias primas.
 - Justificación económica: Subreacción inicial a la información y sobrerreacción tardía (anclaje, flujos de cobertura y de inversores lentos); prima de riesgo por crisis.
 - Cómo podría refutarse: La canasta 2013-2026 (posterior a la publicación) en CFD no supera a la misma canasta con señales de signo aleatorio, después de costos y swap.
