@@ -32,6 +32,7 @@ def POR_BLOQUE(B: pd.DataFrame, tick: float) -> pd.DataFrame:
     d = DS.detectar_eventos_tick(B.ts_ns.to_numpy(), B.px.to_numpy(), B.vol.to_numpy(), bid, ask, tick_size=tick)
     return pd.DataFrame(dict(t_ns=d["ts_ns"].astype(np.int64), dir=d["dir"].astype(np.int64), vm=d["var_mask"].astype(np.int64),
                              sp=d["spread_ticks"].astype(float), hhmm=d["ny_hhmm"].astype(np.int64),
+                             px=d["dot_tick"].astype(float) * tick, xt=d["ext_tick"].astype(float) * tick,
                              ses=np.full(len(d["ts_ns"]), int(B.sesion.iloc[0]) if len(B) else 0, np.int64)))
 
 
