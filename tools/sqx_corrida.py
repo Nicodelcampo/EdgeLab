@@ -7,6 +7,7 @@
       rango que NUNCA pasa del 2026-09-29) y escribe sqx/corridas/<id>/manifest.json. No lanza nada.
   python tools/sqx_corrida.py lanzar ID          # run_project (exige el manifiesto committeado: pre-registro antes de correr)
   python tools/sqx_corrida.py estado ID          # get_project_status → manifiesto + contador global (total generado = pruebas)
+  python tools/sqx_corrida.py avance ID          # parcial mientras corre: real vs su nulo (piso económico), sin decidir nada
   python tools/sqx_corrida.py exportar ID [--databank Results] [--max 50]
       trades de cada estrategia del databank (JSON del MCP → sqx/corridas/<id>/trades/<estrategia>.csv) y su pseudocódigo.
 
@@ -160,6 +161,36 @@ def estado(cid):
     _guardar(cid, m); print(json.dumps({k: s.get(k) for k in ("status", "strategiesGenerated", "strategiesAccepted", "running")}))
 
 
+def _filas(c, proyecto, db="Results"):
+    cols = "Net profit (IS),# of trades (IS),Net profit (OOS),# of trades (OOS)"; out, off = [], 0
+    while True:
+        r = c.llamar("query_databank", {"name": proyecto, "databank": db, "columns": cols, "limit": 500, "offset": off})
+        rows = r.get("rows", []); out += rows; off += len(rows)
+        if not rows or off >= r.get("totalRows", 0): return out
+
+
+def _num(x):
+    try: return float(str(x).replace(",", "").replace("$", "").strip())
+    except ValueError: return float("nan")
+
+
+def avance(cid):
+    """Lectura PARCIAL mientras corre (no decide nada: no se para ni se elige por esto). Real contra su nulo: cuántas estrategias aceptadas
+    por SQX cumplen el piso económico del contrato (R medio ≥ 0,10 con ≥ 200 operaciones, IS+OOS) y la mejor R media."""
+    c = MC.Cliente("sqx"); m = _cargar(cid); res = {}
+    for nom, proy in (("real", m["proyecto"]), ("nulo", m.get("nulo_proyecto"))):
+        if not proy: continue
+        F = _filas(c, proy); vals = []
+        for f in F:
+            v = f.get("values", [0, 0, 0, 0])                 # orden de `cols`: neto IS, # IS, neto OOS, # OOS
+            pl = _num(v[0]) + _num(v[2]); n = _num(v[1]) + _num(v[3])
+            if n > 0: vals.append((pl / RIESGO_USD / n, n))
+        ok = [r for r, n in vals if r >= 0.10 and n >= 200]
+        res[nom] = dict(aceptadas=len(vals), piso_economico=len(ok), mejor_r=round(max([r for r, n in vals if n >= 200], default=float("nan")), 3),
+                        generadas=c.llamar("get_project_status", {"name": proy}).get("strategiesGenerated"))
+    m.setdefault("avances", []).append(dict(cuando=dt.datetime.now(dt.UTC).isoformat(), **res)); _guardar(cid, m); print(json.dumps(res, ensure_ascii=False))
+
+
 def exportar(cid):
     c = MC.Cliente("sqx"); m = _cargar(cid); db = _arg("--databank", "Results"); tope = int(_arg("--max", "50"))
     est = c.llamar("list_strategies", {"name": m["proyecto"], "databank": db})
@@ -180,7 +211,7 @@ def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--") and (sys.argv[sys.argv.index(x) - 1] if sys.argv.index(x) else "")[:2] != "--"]
     op = a[0] if a else None
     if op == "preparar": preparar(*a[1:4])
-    elif op in ("lanzar", "estado", "exportar"): globals()[op](a[1])
+    elif op in ("lanzar", "estado", "exportar", "avance"): globals()[op](a[1])
     else: raise SystemExit(__doc__)
 
 
