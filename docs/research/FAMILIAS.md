@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-247 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+248 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -52,6 +52,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `CVGAP2_USA30` | 2026-11-04 | CORREDOR_VOL_GAPS_ES | 933134 | 1 | CVGAP2-USA30: SIN_REGLA_OPERABLE | — | `cvgap2_20261104` |
 | `CVGAP2_XAU` | 2026-11-04 | CORREDOR_VOL_GAPS_NQ | 933140 | 1 | CVGAP2-XAU: PISTAS_VIVAS | — | `cvgap2_20261104` |
 | `CVGAP2_YM` | 2026-11-04 | CORREDOR_VOL_GAPS_ES | 933120 | 1 | CVGAP2-YM: INTEGRIDAD_FALLA | — | `cvgap2_20261104` |
+| `DELTASWEEP_NQ` | 2026-11-14 | — | 9583 | — | — | — | `deltasweep_20261114` |
 | `DISCOVERY_GRID_SIGN_FLIP_MAXNULL` |  | — | 143579 | — | — | — | — |
 | `DOBLE_RETROCESO_ES` | 2026-11-04 | — | 1493000 | 1 | DRC-ES-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `DOBLE_RETROCESO_EURUSD` | 2026-11-04 | — | 1492999 | 1 | DRC-EURUSD-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
@@ -136,7 +137,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `LONDRES_IMPULSO_6E` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_GC` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_NQ` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
-| `LUXIMB_AMARILLA` | 2026-11-11 | LUXIMB_GRILLA, LUXIMB_HVN, CORREDOR_VOL_GAPS | 171251 | — | — | F-AMARILLA-DESPUES-VWAP-LEJOS (PISTA_VIVA); F-LUXIMB-AMARILLA (EN_SEGUIMIENTO); F-LUXIMB-AMARILLA-B (EN_SEGUIMIENTO) | `luximb_amarilla_20261111` |
+| `LUXIMB_AMARILLA` | 2026-11-11 | LUXIMB_GRILLA, LUXIMB_HVN, CORREDOR_VOL_GAPS | 171647 | — | — | F-AMARILLA-DESPUES-VWAP-LEJOS (PISTA_VIVA); F-LUXIMB-AMARILLA (EN_SEGUIMIENTO); F-LUXIMB-AMARILLA-B (EN_SEGUIMIENTO) | `luximb_amarilla_20261111` |
 | `LUXIMB_CONCENTRACION` | 2026-11-11 | — | 3696 | — | — | F-BANDAS-EURUSD-APROX (EN_SEGUIMIENTO) | `bandas_concentracion_20261111` |
 | `LUXIMB_ESCALONADAS_AREA` | 2026-10-24 | LUXIMB_FADE_VISOR | 12 | — | — | — | — |
 | `LUXIMB_FADE_VISOR` |  | — | 48 | — | — | — | — |

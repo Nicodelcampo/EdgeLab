@@ -28,7 +28,7 @@ def main():
             tick = F.TICK_FUTURO[fuente]; rs = sorted(glob.glob(ent + f"/**/{fuente}_*ticks.parquet", recursive=True))
             bl = F.bloques_nq_sellado(d0, d1, rs, acta, tick)
     else:
-        lector, tick = F.resolver(fuente); bl = lector(d0, d1, ent)
+        lector, tick = F.resolver(fuente, libro=bool(getattr(mod, "LIBRO", False))); bl = lector(d0, d1, ent)
     ctx = TB.contexto(mod, bl, tick); log(f"{fuente}: {len(ctx['c'])} velas, {len(ctx['tpx'])} ticks")
     T = TB.generar(mod, ctx); log(f"{len(T)} eventos")
     nom = f"TABLA_{mod.NOMBRE}_{fuente.replace('DK:', '')}_{d0}_{d1}"

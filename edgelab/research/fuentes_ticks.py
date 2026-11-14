@@ -145,12 +145,13 @@ def _spot_df(t, td, desde, hasta, red):
     yield from _por_dia(ts, mid, vol, td)
 
 
-def resolver(nombre: str):
-    """'NQ' -> futuro del release; 'DK:USATECHIDXUSD' -> spot de Dukascopy. Devuelve (lector(desde, hasta, entrada), tick)."""
+def resolver(nombre: str, libro: bool = False):
+    """'NQ' -> futuro del release; 'DK:USATECHIDXUSD' -> spot de Dukascopy. Devuelve (lector(desde, hasta, entrada), tick).
+    `libro=True` (módulos con `LIBRO = True`, p. ej. DeltaSweep): los futuros traen bid/ask para clasificar el agresor."""
     if nombre.startswith("DK:"):
         sym = nombre[3:]
         return (lambda d0, d1, e="/kaggle/input": bloques_dukascopy(sym, d0, d1, e)), REDONDEO_SPOT[sym]
-    return (lambda d0, d1, e="/kaggle/input": bloques_futuro(nombre, d0, d1, e)), TICK_FUTURO[nombre]
+    return (lambda d0, d1, e="/kaggle/input": bloques_futuro(nombre, d0, d1, e, libro=libro)), TICK_FUTURO[nombre]
 
 
 # fuente -> (lector, tick, fricción por operación en puntos, adverso extra). NQ: edgelab.costos base/adverso. USATECH: CFD,
