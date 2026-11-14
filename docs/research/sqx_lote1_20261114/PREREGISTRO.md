@@ -34,3 +34,8 @@ TP 2–8 ATR; riesgo fijo 1.000 USD por operación (R = P/L / 1.000); costos del
 ## Justificación económica y cómo podría refutarse
 Ver fichas LIT-TSMOM y SQX-PLANTILLA-REVERSION en `docs/research/ideas/BANCO_IDEAS.md`. Refutación del lote: ninguna estrategia real
 supera el p95 de su nulo, o las que lo superan fallan el tramo reciente.
+
+## Enmienda 2 (2026-11-14 22:4x UTC, decisión de Nico): nada abierto el fin de semana
+Cierre obligatorio el viernes 23:00 (hora del servidor de datos, EST+07 = 16:00 NY) en los 10 proyectos; se mantiene la tenencia nocturna y el
+llenado realista de gaps. El par S&P D1 ya lanzado se detuvo a los ~4 min (13.154 y 14.033 generadas, contadas como pruebas, databank
+vaciado sin mirar) y se relanza con esta configuración.

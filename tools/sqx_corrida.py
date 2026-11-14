@@ -82,10 +82,11 @@ def diseno_macro(wtb: str) -> str:
 
 
 def opciones_macro(op: str) -> str:
-    """Macro = la posición puede quedar abierta de noche y el fin de semana (cuentas swing de CFD): sin cierre de viernes ni de fin de día.
-    Las plantillas de SQX traen ExitOnFriday activo, que cortaría cada operación de días en el primer viernes."""
-    for k in ("ExitOnFriday", "ExitAtEndOfDay"):
-        op = re.sub(rf'(<Param key="{k}" className="{k}">)(true|false)(</Param>)', r"\1false\3", op)
+    """Macro de días, pero NADA abierto el fin de semana (decisión de Nico, 2026-11-14): cierre obligatorio el viernes a las 23:00 hora
+    del servidor de datos (EST+07 = 16:00 de Nueva York); sí puede quedar abierta de noche (sin cierre de fin de día)."""
+    op = re.sub(r'(<Param key="ExitAtEndOfDay" className="ExitAtEndOfDay">)(true|false)(</Param>)', r"\1false\3", op)
+    op = re.sub(r'(<Param key="ExitOnFriday" className="ExitOnFriday">)(true|false)(</Param>)', r"\1true\3", op)
+    op = re.sub(r'(<Param key="FridayExitTime" className="ExitOnFriday">)\d+(</Param>)', r"\g<1>2300\2", op)
     # Gap del domingo (y de noticias): el stop/límite atravesado por un gap se llena al precio DESPUÉS del gap, como en real
     # (RealisticGapsHandling, motores MT4/MT5). Sin esto SQX lo llena en el precio pedido y regala el gap.
     if 'key="RealisticGapsHandling"' in op:
