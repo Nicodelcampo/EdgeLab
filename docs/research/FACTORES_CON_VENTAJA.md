@@ -130,10 +130,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (13)
+## NO_REPETIR (14)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
+  - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
+  - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas
+  - Siguiente: No agrandar la grilla de patrones. Lo único vivo de la familia es S2 V4W AM en forward (F-DELTASWEEP-SEQ2-AM).
+  - Evidencia: `docs/research/deltasweep_20261114/MEDIDO_Y_NO_MEDIDO.md`, `docs/research/deltasweep_20261114/pat/EXPLORACION.md`
 - **Primer regreso a un nivel de la sesión (cada 600 s, banda X/4): no rebota, y la distancia a zonas HFT (espacio × tiempo) no lo cambia** (`F-REBOTE-NIVEL-SESION-B`, 2026-11-11, sesion)
   - Efecto: Réplica abr–sep, 29.560 eventos en NQ/ES/RTY/YM/GC: rebote −0,007 (se ≈ 0,006, 2/5 bloques); previas «sin zonas» −0,017/−0,023/−0,005, ninguna nominada ni estable; calibración 2,5 %.
   - Dónde: Niveles de reloj de la sesión, D0, carrera ±X con X = fricción / 0,08

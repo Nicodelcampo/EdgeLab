@@ -48,7 +48,7 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 5, "sqx": 2, "practicante
 - Clase: microestructura · fuente: edgelab · prior: bajo · estado: EN_PRUEBA · horizonte: intradía · activos: NQ
 - Mecanismo: Dos o más barridos de delta con flip en el mismo sentido en poco tiempo marcan absorción insistente y resuelven a favor del que absorbe.
 - Justificación económica: Agresores atrapados repetidamente en un nivel defendido.
-- Cómo podría refutarse: Forward congelado en NQ con n ≥ 30 no da R > 0; DELTASWEEP-PAT sin celdas sobre el nulo.
+- Cómo podría refutarse: Forward congelado en NQ con n ≥ 30 no da R > 0; DELTASWEEP-PAT sin celdas sobre el nulo. | 2026-11-14: patrones (DELTASWEEP-PAT, ≈79.000 celdas) refutados; queda sólo S2 V4W AM en forward.
 - Traducción: No traducible a barras de SQX (necesita ticks con bid/ask): sigue en EdgeLab; en MT5 sólo si el bróker da ticks reales.
 - Fuentes: docs/research/deltasweep_20261114/MEDIDO_Y_NO_MEDIDO.md (S2 V4W AM: +0,26/+0,28 R, bajo el nulo)
 
