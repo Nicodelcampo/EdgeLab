@@ -130,7 +130,7 @@ def preparar(idea, simbolo, tf):
     op = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Options"})["xml"]
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Options", "xml": opciones_macro(op)})
     rk = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings"})["xml"]
-    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings", "xml": parada(rk, int(_arg("--horas", "6")))})
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings", "xml": parada(rk, int(_arg("--horas", "2")))})
     wtb = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"})["xml"]
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild", "xml": diseno_macro(wtb)})
     m = dict(id=cid, proyecto=nombre, idea=idea, base=base, plantilla=_arg("--plantilla"), simbolo=simbolo, instrumento=datos[simbolo]["instrument"],

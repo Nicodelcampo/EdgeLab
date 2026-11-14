@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-250 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+251 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -133,6 +133,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `L2_CLIMAS_ESTABILIDAD` |  | — | 4 | — | — | — | — |
 | `L2_TOXIC_ESTABILIDAD` |  | — | 1 | — | — | — | — |
 | `LEAD_LAG_GC_EUR` | 2026-11-03 | — | 432 | 1 | LEADLAG-GC-EUR-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
+| `LIT_MACRO` | 2026-11-14 | SQX_LIT-TSMOM | 148 | — | — | — | `macro_literatura_20261114` |
 | `LONDRES_IMPULSO_6B` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_6E` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `LONDRES_IMPULSO_GC` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |

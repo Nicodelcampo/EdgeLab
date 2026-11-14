@@ -36,9 +36,16 @@ class Cliente:
 
     def _rpc(self, metodo, params, notif=False, timeout=600):
         self.n += 1; cuerpo = {"jsonrpc": "2.0", "method": metodo, **({} if notif else {"id": self.n}), **({"params": params} if params is not None else {})}
-        req = urllib.request.Request(self.url, json.dumps(cuerpo).encode(), {**self.h, **({"mcp-session-id": self.sid} if self.sid else {})})
-        with urllib.request.urlopen(req, timeout=timeout) as r:
-            self.sid = r.headers.get("mcp-session-id", self.sid); txt = r.read().decode("utf-8", "replace")
+        import time, urllib.error
+        for intento in range(6):                           # el túnel o SQX ocupado devuelven 502/503/504: reintento con espera creciente
+            req = urllib.request.Request(self.url, json.dumps(cuerpo).encode(), {**self.h, **({"mcp-session-id": self.sid} if self.sid else {})})
+            try:
+                with urllib.request.urlopen(req, timeout=timeout) as r:
+                    self.sid = r.headers.get("mcp-session-id", self.sid); txt = r.read().decode("utf-8", "replace")
+                break
+            except urllib.error.HTTPError as e:
+                if e.code not in (502, 503, 504) or intento == 5: raise
+                time.sleep(2 ** intento)
         if notif: return None
         datos = [l[5:].strip() for l in txt.splitlines() if l.startswith("data:")] or [txt]
         msg = json.loads(datos[-1])

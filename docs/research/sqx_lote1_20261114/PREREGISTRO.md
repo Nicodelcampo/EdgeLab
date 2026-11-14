@@ -39,3 +39,7 @@ supera el p95 de su nulo, o las que lo superan fallan el tramo reciente.
 Cierre obligatorio el viernes 23:00 (hora del servidor de datos, EST+07 = 16:00 NY) en los 10 proyectos; se mantiene la tenencia nocturna y el
 llenado realista de gaps. El par S&P D1 ya lanzado se detuvo a los ~4 min (13.154 y 14.033 generadas, contadas como pruebas, databank
 vaciado sin mirar) y se relanza con esta configuración.
+
+## Enmienda 3 (2026-11-14, decisión de Nico, antes de lanzar los pares 2–5): parada a las 2 h
+El máximo del nulo crece ~√(2·ln K): de ~400 mil a ~1,2 millones de generadas casi no cambia la vara. Los pares 2–5 paran a las 2 h (real y
+nulo con el mismo presupuesto); el par 1 (S&P D1, ya corriendo) mantiene las 6 h pre-registradas. Los parciales vistos del par 1 no influyeron.
