@@ -44,6 +44,9 @@ class Cliente:
                     self.sid = r.headers.get("mcp-session-id", self.sid); txt = r.read().decode("utf-8", "replace")
                 break
             except urllib.error.HTTPError as e:
+                if e.code == 404 and self.sid and metodo != "initialize" and intento < 5:   # sesión MCP vencida: reconectar y repetir
+                    self.sid = None; self._rpc("initialize", {"protocolVersion": "2025-03-26", "capabilities": {}, "clientInfo": {"name": "edgelab", "version": "1"}})
+                    self._rpc("notifications/initialized", None, notif=True); continue
                 if e.code not in (502, 503, 504) or intento == 5: raise
                 time.sleep(2 ** intento)
         if notif: return None

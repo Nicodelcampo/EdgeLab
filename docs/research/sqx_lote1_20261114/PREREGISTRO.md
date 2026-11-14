@@ -43,3 +43,13 @@ vaciado sin mirar) y se relanza con esta configuración.
 ## Enmienda 3 (2026-11-14, decisión de Nico, antes de lanzar los pares 2–5): parada a las 2 h
 El máximo del nulo crece ~√(2·ln K): de ~400 mil a ~1,2 millones de generadas casi no cambia la vara. Los pares 2–5 paran a las 2 h (real y
 nulo con el mismo presupuesto); el par 1 (S&P D1, ya corriendo) mantiene las 6 h pre-registradas. Los parciales vistos del par 1 no influyeron.
+
+## Enmienda 4 (2026-11-14, decisión de Nico): se cancela el par S&P D1 de 6 h y se fija el orden por información
+El par S&P D1 se detuvo a ~110.000 generadas por proyecto (contadas en el registro; databanks vaciados sin analizar) y pasa a 2 h. Orden de
+lanzamiento (de más a menos informativo; un par a la vez, cada uno 2 h):
+1. Ideas de la literatura directo en Kaggle (`docs/research/macro_literatura_20261114/`), en paralelo a SQX: lo más barato y de prior más alto.
+2. LIT-TSMOM S&P D1: idea central y prueba de punta a punta del circuito SQX → EdgeLab.
+3. LIT-TSMOM Oro D1: otra clase de activo (diversificación).
+4. LIT-TSMOM Crudo WTI H4: tercera clase, otro marco temporal.
+5. SQX-PLANTILLA-REVERSION S&P H4: línea de base (¿el mecanismo le gana a la búsqueda genérica?).
+6. LIT-TSMOM S&P H4: el menos informativo (mismo activo que el 2).
