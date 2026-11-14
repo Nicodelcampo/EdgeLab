@@ -95,10 +95,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (5)
+## EN_SEGUIMIENTO (6)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **DeltaSweep NQ: dos disparos V4 ancho seguidos en la misma dirección (≤ 600 s) en la mañana de NY, entrada a favor, 160/320 ticks** (`F-DELTASWEEP-SEQ2-AM`, 2026-11-14, sesion)
+  - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta.
+  - Dónde: NQ ago-2025 → sep-2026, entrada en la vela M1 siguiente
+  - Siguiente: Congelar V4W|S2g600|AM 160/320 y seguir en forward (e-proceso) hasta n ≥ 30; no agrandar la grilla.
+  - Evidencia: `docs/research/deltasweep_20261114/MEDIDO_Y_NO_MEDIDO.md`, `docs/research/deltasweep_20261114/EXPLORACION.md`
 - **Un pivote de 1 min con zonas HFT recientes cerca se atraviesa más que uno lejos: como fade pierde ≈ 0,06 R más** (`F-PIVOTE-CERCA-DE-ZONAS-HFT`, 2026-11-11, sesion)
   - Efecto: Abr–sep, descriptivo de OP-1: limpio − resto +0,054…+0,068 en las 6 combinaciones de pivote (fill × geometría).
   - Dónde: Niveles de pivote de 1 min, NQ/ES/RTY/YM/GC
