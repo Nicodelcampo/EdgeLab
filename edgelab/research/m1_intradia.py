@@ -217,3 +217,84 @@ def familia(DD: dict, spreads: dict) -> dict:
         miembros = [v for k, v in F.items() if k.split("|")[0] == reg and k.split("|")[2:] == par]
         out[f"CANASTA|{clave}"] = pd.concat(miembros, ignore_index=True)
     return out
+
+
+# ---------------------------------------------------------------------------------------------------------- lote 2 (2026-11-15)
+GAP_TAM = ((0.1, 0.3), (0.3, 0.6), (0.6, 9.9))          # |gap| / ATR20 diario (rango RTH), causal
+
+
+def _rth(D: pd.DataFrame):
+    """Por día: índices de la barra 09:30 y de la 15:59 (NY), máximo, mínimo y cierre RTH."""
+    out = []
+    for d, g in _dias(D):
+        mins = (g.index.hour * 60 + g.index.minute).to_numpy()
+        ia, ic = np.searchsorted(mins, 570), np.searchsorted(mins, 959)
+        if ia >= len(mins) or mins[ia] != 570 or ic >= len(mins): continue
+        out.append((d, g, ia, ic, g.h.to_numpy()[ia:ic + 1].max(), g.l.to_numpy()[ia:ic + 1].min(), g.c.to_numpy()[ic]))
+    return out
+
+
+def gap_apertura(D: pd.DataFrame, spread: float) -> pd.DataFrame:
+    """Gap = apertura 09:30 − cierre RTH previo; tamaño en ATR20 (rango RTH de los 20 días previos). Entrada a mercado 09:31.
+    FILL: hacia el cierre previo (objetivo), stop 0,5·|gap| más allá de la apertura. CONT: a favor del gap, objetivo 1 R, stop en el cierre
+    previo… acotado a 0,5·|gap| detrás de la apertura (mismo riesgo que FILL). Cierre 15:55."""
+    R = _rth(D); filas = []; rangos = []
+    for i, (d, g, ia, ic, hi, lo, cl) in enumerate(R):
+        rangos.append(hi - lo)
+        if i < 21: continue
+        atr = float(np.mean(rangos[-21:-1])); prev_c = R[i - 1][6]
+        o, h, l, c = (g[k].to_numpy() for k in "ohlc"); gap = o[ia] - prev_c; tam = abs(gap) / atr if atr > 0 else 0
+        b = next((j for j, (a, z) in enumerate(GAP_TAM) if a <= tam < z), None)
+        if b is None: continue
+        s = 1 if gap > 0 else -1; i_fin = int(np.searchsorted((g.index.hour * 60 + g.index.minute).to_numpy(), 955))
+        for modo, lado, stop, obj in (("FILL", -s, o[ia] + s * 0.5 * abs(gap), prev_c), ("CONT", s, o[ia] - s * 0.5 * abs(gap), o[ia] + s * 0.5 * abs(gap))):
+            pe, ps, ie = _simular(o, h, l, c, ia + 1, lado, 0, 0.0, stop, obj, i_fin)
+            if ie < 0: continue
+            riesgo = lado * (pe - stop)
+            if riesgo <= 0.05 * atr: continue
+            rb = lado * (ps - pe) / riesgo
+            filas.append((d, b, modo, rb, rb - spread / riesgo))
+    return pd.DataFrame(filas, columns=["dia", "tam", "modo", "r_bruto", "r_neto"])
+
+
+def ruptura_previo(D: pd.DataFrame, spread: float) -> pd.DataFrame:
+    """Máximo/mínimo RTH del día previo (PDH/PDL). Desde las 10:00, primer cierre fuera: CONT a mercado (barra siguiente), stop en la mitad
+    del rango previo, objetivo 1 R o 2 R; FALSA: si dentro de los 15 min siguientes cierra de vuelta adentro, entrada en contra con stop
+    detrás del extremo de la ruptura y objetivo la mitad del rango previo. Cierre 15:55."""
+    R = _rth(D); filas = []
+    for i in range(1, len(R)):
+        d, g, ia, ic, *_ = R[i]; pdh, pdl = R[i - 1][4], R[i - 1][5]; mid = (pdh + pdl) / 2
+        o, h, l, c = (g[k].to_numpy() for k in "ohlc"); mins = (g.index.hour * 60 + g.index.minute).to_numpy()
+        i10, i_fin = np.searchsorted(mins, 600), np.searchsorted(mins, 955)
+        fuera = np.flatnonzero((c[i10:i_fin] > pdh) | (c[i10:i_fin] < pdl))
+        if not len(fuera): continue
+        k = i10 + fuera[0]; s = 1 if c[k] > pdh else -1
+        for nom, ob in (("CONT1R", 1.0), ("CONT2R", 2.0)):
+            R0 = s * (c[k] - mid)
+            if R0 <= 0: continue
+            pe, ps, ie = _simular(o, h, l, c, k + 1, s, 0, 0.0, mid, c[k] + s * ob * R0, i_fin)
+            if ie < 0: continue
+            rs = s * (pe - mid)
+            if rs > 0: filas.append((d, nom, s * (ps - pe) / rs, s * (ps - pe) / rs - spread / rs))
+        vuelta = np.flatnonzero((c[k + 1:min(k + 16, i_fin)] <= pdh) & (c[k + 1:min(k + 16, i_fin)] >= pdl))
+        if len(vuelta):
+            j = k + 1 + vuelta[0]; ext = h[k:j + 1].max() if s == 1 else l[k:j + 1].min(); lado = -s
+            pe, ps, ie = _simular(o, h, l, c, j + 1, lado, 0, 0.0, ext + s * 0.0001, mid, i_fin)
+            if ie >= 0:
+                rs = lado * (pe - ext)
+                if rs > 0: filas.append((d, "FALSA", lado * (ps - pe) / rs, lado * (ps - pe) / rs - spread / rs))
+    return pd.DataFrame(filas, columns=["dia", "modo", "r_bruto", "r_neto"])
+
+
+def familia2(DD: dict, spreads: dict) -> dict:
+    F = {}
+    for s, D in DD.items():
+        G = gap_apertura(D, spreads.get(s, 0.0))
+        for (b, mo), g in G.groupby(["tam", "modo"]): F[f"GAP|{s}|t{b}|{mo}"] = g[["dia", "r_bruto", "r_neto"]]
+        P = ruptura_previo(D, spreads.get(s, 0.0))
+        for mo, g in P.groupby("modo"): F[f"PREVIO|{s}|{mo}"] = g[["dia", "r_bruto", "r_neto"]]
+    out = dict(F)
+    for clave in {"|".join([k.split("|")[0]] + k.split("|")[2:]) for k in F}:
+        reg, *par = clave.split("|"); miembros = [v for k, v in F.items() if k.split("|")[0] == reg and k.split("|")[2:] == par]
+        out[f"CANASTA|{clave}"] = pd.concat(miembros, ignore_index=True)
+    return out

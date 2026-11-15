@@ -7,11 +7,13 @@ import subprocess, sys
 from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 KS = "nicolasbuttaro/edgelab-m1-intradia"; DS = ("nicolasbuttaro/edgelab-sqx-m1", "nicolasbuttaro/edgelab-sqx-barras")
-def lanzar():
+def lanzar(lote="1"):
     k = ROOT / "data/m1_intradia_kernel.py"; k.parent.mkdir(exist_ok=True)
-    k.write_text("import sys, types\n_m = types.ModuleType('m1_intradia')\nexec(compile(" + repr((ROOT / "edgelab/research/m1_intradia.py").read_text()) +
+    pre = "" if lote == "1" else f"import os\nos.environ['LOTE'] = '2'\nos.environ['IDX'] = 'NQ_M1_dukas,SP_M1_dukas,DJ_M1_dukas,DEUIDXEUR'\nos.environ['REPS'] = '20'\n"
+    k.write_text(pre + "import sys, types\n_m = types.ModuleType('m1_intradia')\nexec(compile(" + repr((ROOT / "edgelab/research/m1_intradia.py").read_text()) +
                  ", 'm1_intradia.py', 'exec'), _m.__dict__)\nsys.modules['m1_intradia'] = _m\n" + (ROOT / "tools/kaggle_grilla/m1_intradia_main.py").read_text())
-    a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", KS, "--title", "edgelab m1 intradia", "--script", str(k)]
+    ks = KS if lote == "1" else KS + "-lote2"
+    a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", ks, "--title", ks.split("/")[1].replace("-", " "), "--script", str(k)]
     for d in DS: a += ["--dataset", d]
     subprocess.run(a, cwd=ROOT, check=True)
 def lanzar_vwapb():
@@ -29,7 +31,8 @@ def traer_vwapb():
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", "nicolasbuttaro/edgelab-vwapb-ops", "--file", "VWAPB_OPS.csv.gz", "--out", str(o / "VWAPB_OPS.csv.gz")], cwd=ROOT, check=True)
 
 
-def traer():
+def traer(lote="1"):
     o = ROOT / "docs/research/m1_intradia_20261114"; o.mkdir(parents=True, exist_ok=True)
-    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", KS, "--file", "RESULTADO.json", "--out", str(o / "RESULTADO.json")], cwd=ROOT, check=True)
-if __name__ == "__main__": globals()[sys.argv[1]]()
+    ks, f = (KS, "RESULTADO.json") if lote == "1" else (KS + "-lote2", "RESULTADO_LOTE2.json")
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", ks, "--file", "RESULTADO.json", "--out", str(o / f)], cwd=ROOT, check=True)
+if __name__ == "__main__": globals()[sys.argv[1]](*sys.argv[2:])
