@@ -218,8 +218,8 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `SESSION_FLIP_MAX_Z_5_HORIZONS` |  | — | 5 | — | — | — | — |
 | `SESSION_FLIP_MEAN_OF_21_CELLS` |  | — | 1 | — | — | — | — |
 | `SLOT_COND_HOLD_STOP_TARGET_GRID` |  | — | 2108 | — | — | — | — |
-| `SQX_LIT-TSMOM` | 2026-11-14 | — | 254118 | — | — | — | `sqx_lote1_20261114` |
-| `SQX_SQX-PLANTILLA-REVERSION` | 2026-11-14 | — | — | — | — | — | `sqx_lote1_20261114` |
+| `SQX_LIT-TSMOM` | 2026-11-14 | — | 521406 | — | — | F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
+| `SQX_SQX-PLANTILLA-REVERSION` | 2026-11-14 | — | — | — | — | F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
 | `TAU_TENDENCIA_ES` | 2026-10-31 | TORI_TREND_TOQUE3_ES | 2592 | 2 | TAU-ES-R: SIN_CANDIDATAS; TAU-ES: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `TAU_TENDENCIA_GC` | 2026-10-31 | TORI_TREND_TOQUE3_GC | 2592 | 2 | TAU-GC-R: SIN_CANDIDATAS; TAU-GC: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `TAU_TENDENCIA_NQ` | 2026-10-31 | TORI_TREND_TOQUE3_NQ | 2596 | 2 | TAU-NQ-R: PISTAS_VIVAS; TAU-NQ: PISTAS_VIVAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |

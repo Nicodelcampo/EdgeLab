@@ -130,7 +130,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (15)
+## NO_REPETIR (16)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -139,6 +139,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: CFD Dukascopy D1/H1, 27 activos
   - Siguiente: No repetir estas formas. Si se retoma TSMOM, en su forma mensual (requiere fin de semana abierto: decisión de Nico) o como filtro de régimen de otras reglas.
   - Evidencia: `docs/research/macro_literatura_20261114/RESULTADO.md`
+- **Builder de SQX (plantilla de tendencia, aleatorio, ≤ 3 condiciones, SL/TP en ATR, cierre de viernes) sobre S&P D1 2012–2019** (`F-SQX-TSMOM-SP-D1`, 2026-11-15, sesion)
+  - Efecto: 133 mil generadas: la mejor real t 4,13 contra máximo del nulo 5,54; el nulo supera al real en todos los cuantiles. 0 candidatas, aunque SQX aceptó 4.507.
+  - Dónde: CFD USA500 Dukascopy D1, 2012–2019
+  - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
+  - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`
 - **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
   - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
   - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas
