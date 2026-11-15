@@ -145,10 +145,10 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: No repetir estas formas. Si se retoma TSMOM, en su forma mensual (requiere fin de semana abierto: decisión de Nico) o como filtro de régimen de otras reglas.
   - Evidencia: `docs/research/macro_literatura_20261114/RESULTADO.md`
 - **Builder de SQX (plantilla de tendencia, aleatorio, ≤ 3 condiciones, SL/TP en ATR, cierre de viernes) sobre S&P D1 2012–2019** (`F-SQX-TSMOM-SP-D1`, 2026-11-15, sesion)
-  - Efecto: 133 mil generadas: la mejor real t 4,13 contra máximo del nulo 5,54; el nulo supera al real en todos los cuantiles. 0 candidatas, aunque SQX aceptó 4.507.
+  - Efecto: 133 mil generadas: la mejor real t 4,13 contra máximo del nulo 5,54; el nulo supera al real en todos los cuantiles. 0 candidatas, aunque SQX aceptó 4.507. | Oro D1 (13.719 generadas): distribución real ≈ nulo; una sola sobre el máximo del nulo con +0,06 R (bajo el piso de +0,10): no vale.
   - Dónde: CFD USA500 Dukascopy D1, 2012–2019
   - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
-  - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`
+  - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`, `docs/research/sqx_lote1_20261114/RESULTADO_PAR_ORO_D1.md`
 - **Pre-rango 08:12–09:12 NY: barrido de un extremo y vuelta hacia el opuesto (H-SWEEP-1)** (`F-PRERANGO-0812`, 2026-11-15, sesion)
   - Efecto: 8 índices M1 2012–2026: bruto −0,03 / +0,02 / +0,04 / −0,02 R por tramo; doble toque ≈ 63 % de las sesiones sin ventaja operable.
   - Dónde: 8 índices M1
