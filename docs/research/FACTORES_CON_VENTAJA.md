@@ -135,7 +135,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (20)
+## NO_REPETIR (21)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -164,6 +164,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: 4 índices M1 Dukascopy
   - Siguiente: No repetir estas formas intradía.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO_LOTE2.md`
+- **Plantilla de reversión del Builder de SQX sobre S&P CFD H4** (`F-SQX-REVERSION-SP-H4`, 2026-11-15, sesion)
+  - Efecto: 15.561 generadas: t máx real 3,77 contra 4,44 del nulo de semanas re-encadenadas; cola real no mejor que la del nulo; 0 candidatas.
+  - Dónde: SP CFD H4 (Dukascopy), desarrollo hasta 2026-09-29
+  - Siguiente: No repetir esta plantilla en S&P H4.
+  - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR_REVERSION_SP_H4.md`
 - **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
   - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
   - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas
