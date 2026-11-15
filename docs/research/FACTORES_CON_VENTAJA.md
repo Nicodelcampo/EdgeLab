@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (8)
+## PISTA_VIVA (7)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -39,11 +39,6 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, GC, YM (ES débil); clusters HFT grandes y chicos
   - Siguiente: Lo deciden la confirmación congelada (CONFIRMACION_NO_DEFIENDE.md) y REBOTE_NIVEL_SESION (distancia a zonas como parámetro); no repetir hipótesis de rebote EN zonas HFT.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_REMEDICION_HFT.md`, `docs/research/hft_clusters_u1_20261110/ESTABILIDAD_REMEDICION_HFT.json`
-- **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
-  - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal.
-  - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
-  - Siguiente: Antes de cualquier variante: mirar el BRUTO de esa celda contra las de stop a mitad de rango. Si la diferencia es sólo neta, es fricción y pasa a la palanca de diseño; si se mantiene en bruto, una sola réplica congelada en futuros abr–sep.
-  - Evidencia: `docs/research/estrategias_scrapeadas_20261108/RESULTADO_DESC.md`
 - **No entrar en continuación justo después de una huida fuerte en contra (`veto_huida`)** (`F-HUIDA-CONTINUACION`, 2026-11-04, humano)
   - Efecto: −0,05 R (DESC) / −0,11 R (réplica) cuando se entra igual; igual en bruto que en neto (ratio 1,14 / 0,90): es lo ÚNICO del atlas de contexto que no es fricción. K = 13 grupos, no confirmado con BH.
   - Dónde: Familias de continuación, futuro + CFD (atlas de 212 corridas)
@@ -100,10 +95,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (6)
+## EN_SEGUIMIENTO (7)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las 09:30 NY), objetivo VWAP, stop extremo + 0,5σ o banda 4** (`F-VWAP-BANDA3-REVERSION`, 2026-11-15, sesion)
+  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto.
+  - Dónde: 8 índices M1 Dukascopy 2012 → 2026-09
+  - Siguiente: Mapa de régimen por sesión (rango nocturno, vol20, tendencia) re-corriendo con operaciones por día; medir en futuros NQ/YM.
+  - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`
 - **DeltaSweep NQ: dos disparos V4 ancho seguidos en la misma dirección (≤ 600 s) en la mañana de NY, entrada a favor, 160/320 ticks** (`F-DELTASWEEP-SEQ2-AM`, 2026-11-14, sesion)
   - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta.
   - Dónde: NQ ago-2025 → sep-2026, entrada en la vela M1 siguiente
@@ -135,7 +135,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (16)
+## NO_REPETIR (18)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -149,6 +149,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: CFD USA500 Dukascopy D1, 2012–2019
   - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
   - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`
+- **Pre-rango 08:12–09:12 NY: barrido de un extremo y vuelta hacia el opuesto (H-SWEEP-1)** (`F-PRERANGO-0812`, 2026-11-15, sesion)
+  - Efecto: 8 índices M1 2012–2026: bruto −0,03 / +0,02 / +0,04 / −0,02 R por tramo; doble toque ≈ 63 % de las sesiones sin ventaja operable.
+  - Dónde: 8 índices M1
+  - Siguiente: No repetir esta forma.
+  - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`
 - **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
   - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
   - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas
@@ -194,6 +199,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ y ES, clusters del E0-b, DESC
   - Siguiente: Sólo con una definición de cluster más densa o con la distancia continua al vecino más cercano.
   - Evidencia: `docs/research/hft_clusters_u1_20261110/RESULTADO_CONTEXTO.md`, `docs/research/hft_clusters_u1_20261110/RECOMENDACIONES_contexto.md`
+- **ORB 09:30–10:00 con entrada en el primer retroceso a la EMA20 de 2 min, sólo NQ y sólo con stop en el extremo opuesto del rango** (`F-ORB-EMA20-NQ-STOP-OPUESTO`, 2026-11-09, humano)
+  - Efecto: +0,013 a +0,023 R (2023–2026), +0,02 a +0,07 R (desde jul-2025), +0,04 a +0,075 R (futuros jul–mar); positivo en los tres canales pero ningún IC90 excluye el cero (inferiores −0,02 a −0,07). ES no. Coherente con la palanca stop grande frente a fricción: puede ser eso y no una señal. | 2026-11-15, M1 8 índices 2012–2026 (~20 mil operaciones por variante): bruto ≈ 0 o negativo; OPUESTO −0,031 vs MITAD −0,051 en bruto: era fricción/ruido.
+  - Dónde: NQ (CFD y futuro); 24 pruebas, 0 nominadas
+  - Siguiente: Antes de cualquier variante: mirar el BRUTO de esa celda contra las de stop a mitad de rango. Si la diferencia es sólo neta, es fricción y pasa a la palanca de diseño; si se mantiene en bruto, una sola réplica congelada en futuros abr–sep.
+  - Evidencia: `docs/research/estrategias_scrapeadas_20261108/RESULTADO_DESC.md`, `docs/research/m1_intradia_20261114/RESULTADO.md`
 - **Continuación de gap grande no rellenado (Kemet), mecha en VWAP con salida por EMA9 (AlphaZone), ruptura del rango de Londres en oro, ORB directo** (`F-REELS-20261108`, 2026-11-09, humano)
   - Efecto: Gap continuación −0,149 R (MDE 0,13; 1 de 120 celdas positiva). EMA9+VWAP −0,193 R (MDE 0,06; miles de operaciones). Oro Londres −0,05 R. ORB NQ base: +0,20 R en DESC y −0,26 R en réplica.
   - Dónde: CFD de NQ, ES, YM y oro 2023–2026; futuros jul-2025 → mar-2026
