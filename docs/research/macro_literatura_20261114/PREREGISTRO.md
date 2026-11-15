@@ -26,3 +26,10 @@ spread de Dukascopy por ida y vuelta. Swap no incluido (tenencias de horas a 4 d
 ## Justificación económica y cómo podría refutarse
 En las fichas del banco. Refutación: ninguna variante supera el umbral, o las que lo superan son negativas en OOS o en RECIENTE
 (efecto publicado que ya no está: decaimiento post-publicación).
+
+## Corrida v1 descartada (2026-11-15, antes de concluir)
+La v1 usó spreads con la unidad mal convertida desde el catálogo de SQX en plata (0,6 → 98 pb) e índice dólar (5 → 495 pb), y 0 en los
+bonos; esos activos dominaban el promedio de las canastas (TSMOM canasta t −5 a −8 por eso). Se corrigen a spreads típicos de Dukascopy
+(plata 0,025; índice dólar 0,03; bonos 0,02–0,03) y se relanza (v2). Se agrega el R BRUTO (sin spread) para separar señal de fricción.
+Archivo de la v1 conservado: `RESULTADO_v1_DESCARTADO_spreads.json` (no se usa para concluir). Lectura de la v1 que no depende del
+error: IMOM en S&P da ≈ 0 en bruto (−0,003 R) y −0,04 en neto: la hora final no paga el spread.

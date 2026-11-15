@@ -18,6 +18,9 @@ def dataset():
     for x in c.llamar("list_data", {"detail": True}).get("data", []):
         if x["symbol"].startswith(("NULO_", "PRUEBA_")): continue
         sp[x["symbol"]] = float(x.get("spread", 0)) * float(x.get("tickSize", 0) or 0)          # spread en precio (puntos × tamaño de tick)
+    # Correcciones de unidad (2026-11-15): el tamaño de tick del catálogo de SQX no corresponde en estos símbolos (plata 98 pb, índice dólar
+    # 495 pb) y los bonos venían en 0; se usan spreads típicos de Dukascopy. Ver docs/research/macro_literatura_20261114/RESULTADO.md.
+    sp.update({"XAGUSD": 0.025, "DOLLARIDXUSD": 0.03, "USTBONDTRUSD": 0.02, "BUNDTREUR": 0.02, "UKGILTTRGBP": 0.03})
     (DIR / "spreads.json").write_text(json.dumps(sp, indent=1))
     hay = subprocess.run([sys.executable, "tools/kaggle_kernel.py", "status", "--slug", KS], cwd=ROOT, capture_output=True, text=True)
     cmd = "version" if "edgelab-sqx-barras" in subprocess.run(["curl", "-sS", f"https://www.kaggle.com/api/v1/datasets/view/{DS}"], capture_output=True, text=True).stdout else "create"

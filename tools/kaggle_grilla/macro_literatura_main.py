@@ -9,6 +9,7 @@ H1 = {os.path.basename(p)[:-7]: ML.leer(p) for p in glob.glob(ent + "/**/*_H1.cs
 SPREADS = json.loads(open(glob.glob(ent + "/**/spreads.json", recursive=True)[0]).read())
 F = ML.familia(D1, H1, SPREADS); F.update(ML.canastas(F))
 res = {k: ML.por_periodo(v) for k, v in F.items()}
+FB = ML.familia(D1, H1, {}); FB.update(ML.canastas(FB)); res_bruto = {k: ML.por_periodo(v) for k, v in FB.items()}   # sin spread: señal vs fricción
 def tmax(F, per="DESC"):
     ts = [ML.por_periodo(v)[per]["t"] for v in F.values() if len(v)]
     return max([t for t in ts if t is not None], default=float("nan"))
@@ -18,6 +19,6 @@ for s in range(int(os.environ.get("REPS", "200"))):
     Fs = ML.familia(D1s, H1s, SPREADS); Fs.update(ML.canastas(Fs)); nulos.append(tmax(Fs))
     if s % 20 == 0: print(f"[{time.time() - t0:6.0f}s] nulo {s}", flush=True)
 umbral = float(np.nanpercentile(nulos, 95))
-json.dump(dict(variantes=res, nulo_tmax_desc=nulos, umbral_p95_desc=umbral, activos_d1=sorted(D1), activos_h1=sorted(H1),
+json.dump(dict(variantes=res, variantes_bruto=res_bruto, nulo_tmax_desc=nulos, umbral_p95_desc=umbral, activos_d1=sorted(D1), activos_h1=sorted(H1),
                segundos=round(time.time() - t0)), open("RESULTADO.json", "w"), indent=1, default=float)
 print("listo", len(F), "variantes; umbral p95 t DESC", round(umbral, 2))
