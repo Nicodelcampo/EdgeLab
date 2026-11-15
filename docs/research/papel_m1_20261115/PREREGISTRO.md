@@ -38,3 +38,9 @@ Principio «edges actuales» (ATJ-24, 2026-10-22): el pasado no mata. Se reempla
 - Multiplicidad: las 4 variables × 4 reglas se registran en el contador; la prueba (b) usa el motor offline de régimen
   (`edgelab/research/regimen_offline.py`, guía `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md`) con su nulo de signo por sesión.
 - La validación de la fuente (punto 1) no cambia.
+
+## Enmienda 2 (2026-11-15): otros mercados
+ASIA-NQ y OTR930-NQ congeladas (mismas celdas y cortes) sobre M1 de S&P (`M1DK:SP_M1_dukas`, costos de ES) y Dow (`M1DK:DJ_M1_dukas`,
+costos de YM), 2012 → 2026-09 completo. Requisito 7 del contrato (≥ 60 % de los mercados de su clase con R > 0, sin re-optimizar) y
+prueba de transferencia del régimen de ASIA: ¿la dosis noche baja < media < alta se repite en S&P y Dow? (pista F-ASIA-NQ-NOCHE-MOVIDA).
+Los cortes están en puntos de NQ: en S&P y Dow las celdas que dependen de magnitudes absolutas pueden no ser equivalentes; se informa.
