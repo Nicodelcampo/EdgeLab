@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-642 scripts.
+643 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -477,6 +477,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/orb0100/orb_horarios.py` | ORB-HORARIOS: barrido de 44 ventanas x 2 reglas x 8 activos + embudo de confirmacion. |
 | `tools/ou1_study.py` | OU-1 — diagnóstico de reversión (Ornstein-Uhlenbeck) por activo × escala, y chequeo de mecanismo en las celdas de GC. |
 | `tools/ou2_mid.py` | OU-2 — ¿la reversión de ZB a 5-15 min sobrevive con el precio medio bid/ask? (descarta el rebote bid-ask). SOLO información. |
+| `tools/papel_m1.py` | Reglas de papel (config/cartera/altas.json) CONGELADAS, re-medidas sobre M1 de Dukascopy 2012–2026 (fuente M1DK, 2026-11-15). |
 | `tools/paridad_avolzonepoi2.py` | Paridad aVolZonePOI2 NT8 <-> Python: bloques (score, nivel, franja), zonas y clasificación orderblock. |
 | `tools/paridad_avolzonesimple.py` | Paridad NT8 ↔ Python de AVolZoneSimple, capa 1: el algoritmo. |
 | `tools/paridad_hftimpulse.py` | Paridad NT8 ↔ Python de HFTImpulseZones_P. |

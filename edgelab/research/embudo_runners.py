@@ -32,6 +32,9 @@ def friccion(instrumento: str) -> tuple:
     from edgelab import costos as C
     from edgelab.research.fuentes_ticks import DUKASCOPY
     inst = instrumento
+    if inst.startswith("M1DK:"):                                           # M1 de Dukascopy: costos del futuro equivalente
+        from edgelab.research.fuentes_ticks import M1DK_FUTURO
+        inst = M1DK_FUTURO[inst[5:]]
     if inst.startswith("DK:"):
         inst = next((k for k, v in DUKASCOPY.items() if v == inst[3:] and not k.startswith("M")), None)
         if inst is None: raise ValueError(f"{instrumento}: sin futuro de referencia para el costo")
@@ -41,6 +44,9 @@ def friccion(instrumento: str) -> tuple:
 
 def datasets(nombre: str, desde: int, hasta: int) -> tuple:
     """(needs, extra_datasets) para kaggle_launch."""
+    if nombre.startswith("M1DK:"):
+        from edgelab.research.fuentes_ticks import M1DK_DATASET
+        return [], [M1DK_DATASET]
     if nombre.startswith("DK:"):
         resolver = json.loads((ROOT / "docs/data_catalog/RESOLVER.json").read_text(encoding="utf-8"))
         from edgelab.research.fuentes_ticks import DUKASCOPY

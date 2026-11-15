@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-252 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+253 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -177,6 +177,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `OVERNIGHT_INVENTARIO_GC` | 2026-11-03 | — | 216 | 1 | OVERNIGHT-INV-GC-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `OVERNIGHT_INVENTARIO_NQ` | 2026-11-03 | — | 218 | 1 | OVERNIGHT-INV-NQ-R: PISTAS_VIVAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `OVERNIGHT_INVENTARIO_YM` | 2026-11-03 | — | 216 | 1 | OVERNIGHT-INV-YM-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
+| `PAPEL_M1` |  | — | 4 | — | — | — | — |
 | `PAR_REL_NQES` | 2026-11-03 | — | 216 | 1 | PAR-NQES-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `PAR_REL_YMES` | 2026-11-03 | — | 216 | 1 | PAR-YMES-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `PISO_RIESGO_FRICCION` | 2026-11-04 | — | 3 | — | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |

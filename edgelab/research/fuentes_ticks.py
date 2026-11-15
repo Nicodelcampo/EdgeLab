@@ -145,9 +145,45 @@ def _spot_df(t, td, desde, hasta, red):
     yield from _por_dia(ts, mid, vol, td)
 
 
+# M1 de Dukascopy (CFD, 2003/2012 → 2026-09-29) exportadas de SQX: dataset privado `edgelab-sqx-m1` (2026-11-15). Cada símbolo se mide
+# con el tick y los costos del futuro equivalente (precios de la misma escala).
+M1DK_FUTURO = {"NQ_M1_dukas": "NQ", "SP_M1_dukas": "ES", "DJ_M1_dukas": "YM", "USSC2000IDXUSD": "RTY", "XAUUSD_M1_dukas": "GC"}
+M1DK_DATASET = "nicolasbuttaro/edgelab-sqx-m1"
+SERVIDOR_MENOS_NY_H = 7                                          # hora del servidor de datos de SQX (EST+07, sigue el horario de NY)
+
+
+def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
+    """M1 de Dukascopy como ticks: 4 por barra (apertura; mínimo y máximo en el orden conservador —si la vela cierra al alza, primero el
+    mínimo; si cierra a la baja, primero el máximo—; cierre) a +0/15/30/45 s, volumen repartido. Sesión CME (desde las 18:00 de NY es el
+    día siguiente). Precio redondeado al tick del futuro equivalente. Nunca entrega nada desde la apertura del holdout."""
+    _check(desde, hasta)
+    f = sorted(glob.glob(entrada + f"/**/{simbolo}-M1-*.csv", recursive=True))[0]; tk = TICK_FUTURO[M1DK_FUTURO[simbolo]]
+    D = pd.read_csv(f, dtype={"Date": str, "Time": str})
+    ny = pd.to_datetime(D.Date + " " + D.Time, format="%Y%m%d %H:%M:%S") - pd.Timedelta(hours=SERVIDOR_MENOS_NY_H)
+    utc = ny.dt.tz_localize("America/New_York", ambiguous="NaT", nonexistent="shift_forward").dt.tz_convert("UTC")
+    ok = utc.notna().to_numpy(); D, ny, utc = D[ok], ny[ok], utc[ok]
+    td = (ny + pd.Timedelta(hours=6)).dt.strftime("%Y%m%d").astype(np.int64).to_numpy()   # 18:00 NY → sesión del día siguiente
+    t0 = utc.dt.tz_convert(None).astype("datetime64[ns]").astype(np.int64).to_numpy()
+    ok = pd.to_datetime(td.astype(str), format="%Y%m%d").dayofweek.to_numpy() < 5           # sin sesiones de fin de semana
+    D, td, t0 = D[ok], td[ok], t0[ok]
+    o, h, l, c, v = (D[k].to_numpy(float) for k in ("Open", "High", "Low", "Close", "Volume"))
+    sube = c >= o
+    p1 = np.where(sube, l, h); p2 = np.where(sube, h, l)
+    for d in np.unique(td[(td >= desde) & (td <= hasta)]):
+        m = np.flatnonzero(td == d)
+        ts = (t0[m][:, None] + np.array([0, 15, 30, 45]) * 1_000_000_000).ravel()
+        px = np.column_stack([o[m], p1[m], p2[m], c[m]]).ravel(); px = np.round(px / tk) * tk
+        vv = np.repeat(v[m] / 4.0, 4); keep = ts < HOLDOUT_APERTURA_UTC_NS
+        yield pd.DataFrame(dict(ts_ns=ts[keep], px=px[keep], vol=vv[keep], sesion=np.full(int(keep.sum()), int(d), np.int64),
+                                segmento=np.zeros(int(keep.sum()), np.int64)))
+
+
 def resolver(nombre: str, libro: bool = False):
     """'NQ' -> futuro del release; 'DK:USATECHIDXUSD' -> spot de Dukascopy. Devuelve (lector(desde, hasta, entrada), tick).
     `libro=True` (módulos con `LIBRO = True`, p. ej. DeltaSweep): los futuros traen bid/ask para clasificar el agresor."""
+    if nombre.startswith("M1DK:"):
+        sym = nombre[5:]
+        return (lambda d0, d1, e="/kaggle/input": bloques_m1dk(sym, d0, d1, e)), TICK_FUTURO[M1DK_FUTURO[sym]]
     if nombre.startswith("DK:"):
         sym = nombre[3:]
         return (lambda d0, d1, e="/kaggle/input": bloques_dukascopy(sym, d0, d1, e)), REDONDEO_SPOT[sym]
