@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 4, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 9, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 8, "REFUTADA": 3, "EN_PRUEBA": 2}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 4, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 4, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 9, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 8, "REFUTADA": 4, "EN_PRUEBA": 1}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 4, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -61,10 +61,10 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Fuentes: docs/research/FACTORES_CON_VENTAJA.md: F-AMARILLA-DESPUES-VWAP-LEJOS (holdout obj 50 % +0,086 R, n 11)
 
 ## EL-VWAP-BANDA3 — Tercera banda del VWAP (±3 desvíos): extensión extrema intradía
-- Clase: reversion · fuente: edgelab · prior: medio · estado: EN_PRUEBA · horizonte: intradía · activos: SP, NQ, DJ, Russell, DAX, Nikkei, FTSE, EuroStoxx
+- Clase: reversion · fuente: edgelab · prior: medio · estado: REFUTADA · horizonte: intradía · activos: SP, NQ, DJ, Russell, DAX, Nikkei, FTSE, EuroStoxx
 - Mecanismo: Un cierre más allá de ±3 desvíos del VWAP de la sesión marca una extensión extrema: o revierte hacia la banda 2/1/VWAP (agotamiento) o, en días de tendencia, continúa; la dosis (1→2→3 desvíos) debería ordenar el efecto.
 - Justificación económica: El VWAP es el precio de referencia de ejecución institucional; a 3 desvíos los algoritmos de ejecución dejan de comprar caro/vender barato y aparecen los que revierten a la media; en tendencias fuertes, en cambio, el desvío lo mueve el flujo y la banda se vuelve soporte en movimiento.
-- Cómo podría refutarse: En M1 de 12 años (8 índices) la reversión desde ±3σ no supera al nulo intradía ni a la misma regla desde ±2σ (sin dosis-respuesta), o sólo funciona en neto (fricción). | 2026-11-15: dosis en bruto en 2012–2019 y 2025-08→2026-09, negativa 2020–2023: candidata de régimen (RESULTADO.md).
+- Cómo podría refutarse: En M1 de 12 años (8 índices) la reversión desde ±3σ no supera al nulo intradía ni a la misma regla desde ±2σ (sin dosis-respuesta), o sólo funciona en neto (fricción). | 2026-11-15: dosis en bruto en 2012–2019 y 2025-08→2026-09, negativa 2020–2023: candidata de régimen (RESULTADO.md). | régimen no detectable (RESULTADO_REGIMEN_VWAPB.md).
 - Traducción: Generador en m1_intradia: primer cierre fuera de ±3σ del VWAP anclado a las 09:30 NY (después de 30 min); reversión a mercado con objetivo banda 2σ / 1σ / VWAP y stop 4σ o extremo + 0,5σ; continuación como variante opuesta; control ±2σ; cierre 15:55; nada al fin de semana.
 - Fuentes: Pedido de Nico (2026-11-15); edgelab/research/rasgos_comunes.py (VWAP y desvíos ya calculados; sólo se usa ≥ 1 desvío); docs/research/luximb_amarilla_20261111/r2/EXPLORACION.md (todas las celdas sobre el nulo tenían VWAP lejos)
 

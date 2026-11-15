@@ -95,15 +95,10 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (7)
+## EN_SEGUIMIENTO (6)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
-- **Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las 09:30 NY), objetivo VWAP, stop extremo + 0,5σ o banda 4** (`F-VWAP-BANDA3-REVERSION`, 2026-11-15, sesion)
-  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto.
-  - Dónde: 8 índices M1 Dukascopy 2012 → 2026-09
-  - Siguiente: Mapa de régimen por sesión (rango nocturno, vol20, tendencia) re-corriendo con operaciones por día; medir en futuros NQ/YM.
-  - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`
 - **DeltaSweep NQ: dos disparos V4 ancho seguidos en la misma dirección (≤ 600 s) en la mañana de NY, entrada a favor, 160/320 ticks** (`F-DELTASWEEP-SEQ2-AM`, 2026-11-14, sesion)
   - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta.
   - Dónde: NQ ago-2025 → sep-2026, entrada en la vela M1 siguiente
@@ -135,7 +130,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (18)
+## NO_REPETIR (19)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -149,6 +144,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: CFD USA500 Dukascopy D1, 2012–2019
   - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
   - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`, `docs/research/sqx_lote1_20261114/RESULTADO_PAR_ORO_D1.md`
+- **Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las 09:30 NY), objetivo VWAP, stop extremo + 0,5σ o banda 4** (`F-VWAP-BANDA3-REVERSION`, 2026-11-15, sesion)
+  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto. | Régimen (2026-11-15): ninguna variable ordena el resultado en ≥ 3 tramos y el encendido walk-forward no supera al azar (1/32 con p < 0,05). No detectable a tiempo.
+  - Dónde: 8 índices M1 Dukascopy 2012 → 2026-09
+  - Siguiente: No repetir en CFD; si se retoma, en futuros con costos bajos y con una variable de régimen nueva declarada antes.
+  - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`, `docs/research/m1_intradia_20261114/RESULTADO_REGIMEN_VWAPB.md`
 - **Pre-rango 08:12–09:12 NY: barrido de un extremo y vuelta hacia el opuesto (H-SWEEP-1)** (`F-PRERANGO-0812`, 2026-11-15, sesion)
   - Efecto: 8 índices M1 2012–2026: bruto −0,03 / +0,02 / +0,04 / −0,02 R por tramo; doble toque ≈ 63 % de las sesiones sin ventaja operable.
   - Dónde: 8 índices M1
