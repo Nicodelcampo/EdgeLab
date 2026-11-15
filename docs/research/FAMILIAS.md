@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-251 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+252 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -149,6 +149,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `LUXIMB_HVN` | 2026-11-11 | LUXIMB_FADE_VISOR, LUXIMB_GRILLA, EXPANSION_ZONAS | 27602 | — | — | F-LUXIMB-HVN-DEFINICION (PALANCA_DE_DISENO); F-LUXIMB-ZONAS-VS-CONTROL (PISTA_VIVA); F-LUXIMB-ZONAS-VS-CONTROL-B (PISTA_VIVA) | `luximb_hvn_20261111` |
 | `LUXIMB_HVN2` | 2026-11-11 | LUXIMB_HVN | 6400 | — | — | F-LUXIMB-HVN-DEFINICION (PALANCA_DE_DISENO); F-LUXIMB-ZONAS-VS-CONTROL (PISTA_VIVA); F-LUXIMB-ZONAS-VS-CONTROL-B (PISTA_VIVA) | `luximb_hvn_20261111` |
 | `LUXIMB_IMPULSOS` | 2026-10-24 | LUXIMB_FADE_VISOR | 40 | — | — | — | — |
+| `M1_INTRADIA` | 2026-11-15 | ORB_SCRAPEADAS, YM_PRERANGE | 333 | — | — | — | `m1_intradia_20261114` |
 | `MARTES_DEBIL` | 2026-11-08 | — | 4 | — | — | F-ORB-EMA20-NQ-STOP-OPUESTO (PISTA_VIVA); F-REELS-20261108 (NO_REPETIR) | `estrategias_scrapeadas_20261108` |
 | `MEDIODIA_SUBASTA_ES` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `MEDIODIA_SUBASTA_NQ` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
