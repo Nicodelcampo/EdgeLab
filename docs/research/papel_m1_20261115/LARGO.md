@@ -33,3 +33,12 @@ Estado: RESULTADO (EF4 + régimen, enmienda 1: el largo NO da de baja). Código:
   el mismo encendido walk-forward (p 0,007). En el S&P el orden se insinúa pero los valores son chicos: los cortes de la regla están en
   puntos de NQ y el S&P se mueve ~1/4 (las celdas no son equivalentes); no cuenta ni a favor ni en contra.
 - Lectura: el mecanismo (rupturas y gaps de la sesión asiática necesitan una noche con recorrido) es de mercado, no del NQ.
+
+## ASIA-NQ congelada sobre ticks REALES de YM (ago-2025 → sep-2026; enmienda 3)
+241 sesiones, media +0,65 pts. Por tercil de rango nocturno (Dow CFD, causal): **baja −8,44 (ee 1,75; n 78), media −4,34 (ee 2,17; n 86),
+alta +15,44 (ee 4,51; n 77)**. La dosis-respuesta se repite en el futuro real de un segundo índice: con noche alta gana, con noche
+baja o media pierde. (Desarrollo, no holdout; el filtro se eligió con NQ, así que YM es un mercado no usado para elegirlo.)
+
+## OTR930-NQ congelada en el Dow M1 (2012 → 2026-09)
+Negativa en los cuatro tramos (−2,83 / −4,29 / −0,99 / −5,19 pts por sesión); ningún tercil de noche ordena el resultado; encendido:
+tend60 p 0,008 (1 de 4, sin dosis), el resto p 0,16–0,38. OTR930 no se sostiene fuera del Nasdaq ni tiene régimen.

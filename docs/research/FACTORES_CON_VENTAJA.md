@@ -10,7 +10,7 @@ no se vuelve a proponer igual. Un factor ordena la investigación, no es evidenc
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
-  - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente).
+  - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
   - Siguiente: Congelar el filtro (noche tercil alto, rank causal de 250 días) sobre ASIA-NQ y seguirlo en papel/forward con el estadístico secuencial; en el holdout de la familia sólo con regla congelada y potencia declarada.
   - Evidencia: `docs/research/papel_m1_20261115/LARGO.md`, `docs/research/papel_m1_20261115/LARGO_otros.json`
@@ -95,10 +95,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (6)
+## EN_SEGUIMIENTO (7)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-15, sesion)
+  - Efecto: NQ M1 2012→2025-07 negativa (−0,8 a −3,0 pts/sesión), positiva sólo 2025-08→2026-09; Dow M1 negativa en los 4 tramos; ninguna variable de régimen la ordena.
+  - Dónde: NQ y Dow M1
+  - Siguiente: Sigue en papel (el pasado no mata) pero sin respaldo: la decide el forward.
+  - Evidencia: `docs/research/papel_m1_20261115/LARGO.md`
 - **DeltaSweep NQ: dos disparos V4 ancho seguidos en la misma dirección (≤ 600 s) en la mañana de NY, entrada a favor, 160/320 ticks** (`F-DELTASWEEP-SEQ2-AM`, 2026-11-14, sesion)
   - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta.
   - Dónde: NQ ago-2025 → sep-2026, entrada en la vela M1 siguiente
@@ -130,7 +135,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (19)
+## NO_REPETIR (20)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -154,6 +159,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: 8 índices M1
   - Siguiente: No repetir esta forma.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`
+- **Gap de apertura (relleno/continuación por tamaño en ATR) y ruptura del máximo/mínimo del día previo (continuación y falsa) intradía en NQ, S&P, Dow, DAX** (`F-GAP-Y-RUPTURA-PREVIO-M1`, 2026-11-15, sesion)
+  - Efecto: M1 2012–2026: ninguna supera el nulo; bruto ≈ 0 sin signo estable entre tramos; neto negativo en CFD.
+  - Dónde: 4 índices M1 Dukascopy
+  - Siguiente: No repetir estas formas intradía.
+  - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO_LOTE2.md`
 - **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
   - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
   - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas

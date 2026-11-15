@@ -88,7 +88,7 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Clase: ruptura · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: horas-días · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD
 - Mecanismo: Donde hubo mucha actividad el precio atraviesa más que en un nivel cualquiera; en escala macro, la ruptura del máximo/mínimo del día o semana previa continúa.
 - Justificación económica: Stops acumulados detrás de niveles visibles; al dispararse aceleran el movimiento.
-- Cómo podría refutarse: Rupturas del máximo/mínimo previo en H1/H4 no continúan más que cruces de niveles al azar a igual distancia.
+- Cómo podría refutarse: Rupturas del máximo/mínimo previo en H1/H4 no continúan más que cruces de niveles al azar a igual distancia. | 2026-11-15: ruptura del día previo intradía en 4 índices M1 ≈ 0 en bruto (RESULTADO_LOTE2.md); la versión H1/H4 multi-día sigue sin medir.
 - Traducción: SQX H1/H4: orden stop en el máximo/mínimo del día o semana previa; objetivo y stop en ATR.
 - Fuentes: FACTORES: F-HFT-CLUSTER-GRANDE-NO-DEFIENDE (A-D), F-HFT-ZONAS-NO-SON-SOPORTE
 
