@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 4, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 9, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 11, "EN_PRUEBA": 2}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 4, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 4, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 9, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 8, "REFUTADA": 3, "EN_PRUEBA": 2}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 4, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -21,18 +21,18 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Fuentes: Carver (2015), Systematic Trading; Moreira, Muir (2017), Volatility-Managed Portfolios, JF
 
 ## LIT-FIN-DE-MES — Cambio de mes en índices
-- Clase: estacionalidad · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: días · activos: USA500, USATECH, USA30, DAX, Nikkei, FTSE, EuroStoxx, Russell
+- Clase: estacionalidad · fuente: literatura · prior: alto · estado: REFUTADA · horizonte: días · activos: USA500, USATECH, USA30, DAX, Nikkei, FTSE, EuroStoxx, Russell
 - Mecanismo: Los índices rinden más en los últimos días hábiles y primeros del mes que en el resto.
 - Justificación económica: Flujos de caja institucionales periódicos (pagos y aportes de fin de mes) presionan precios de forma predecible.
-- Cómo podría refutarse: 2013-2026 en los 8 índices: la ventana de cambio de mes no rinde más que ventanas del mismo largo elegidas al azar.
+- Cómo podría refutarse: 2013-2026 en los 8 índices: la ventana de cambio de mes no rinde más que ventanas del mismo largo elegidas al azar. | 2026-11-15: refutada en CFD (docs/research/macro_literatura_20261114/RESULTADO.md).
 - Traducción: SQX D1: largo del día -N al +M del mes (N, M ≤ 4), salida por tiempo; sin indicadores.
 - Fuentes: Ariel (1987), A Monthly Effect in Stock Returns, JFE; Etula, Rinne, Suominen, Vaittinen (2020), Dash for Cash: Monthly Market Impact of Institutional Liquidity Needs, RFS
 
 ## LIT-NOCHE — Retorno nocturno vs diurno en índices
-- Clase: estacionalidad · fuente: literatura · prior: medio · estado: PROPUESTA · horizonte: overnight · activos: USA500, USATECH, USA30, Russell
+- Clase: estacionalidad · fuente: literatura · prior: medio · estado: REFUTADA · horizonte: overnight · activos: USA500, USATECH, USA30, Russell
 - Mecanismo: Casi todo el retorno de los índices de EE.UU. ocurre fuera del horario regular (cierre → apertura).
 - Justificación económica: Prima por cargar riesgo durante el cierre (sin poder salir) y presión de venta intradía.
-- Cómo podría refutarse: 2013-2026: largo del cierre a la apertura no rinde más que largo de la apertura al cierre, después de swap y spread.
+- Cómo podría refutarse: 2013-2026: largo del cierre a la apertura no rinde más que largo de la apertura al cierre, después de swap y spread. | 2026-11-15: refutada en CFD (docs/research/macro_literatura_20261114/RESULTADO.md).
 - Traducción: SQX H1: largo al cierre RTH, salida a la apertura; requiere tenencia overnight.
 - Fuentes: Cliff, Cooper, Gulen (2008), Return Differences between Trading and Non-trading Hours
 
@@ -96,15 +96,15 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Clase: tendencia · fuente: literatura · prior: alto · estado: EN_DISENO · horizonte: días-meses · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD, XAGUSD, WTI, BRENT, COBRE, GAS, EURUSD, USDJPY, GBPUSD, AUDUSD, USDCAD
 - Mecanismo: El retorno de los últimos 1-12 meses de un activo predice el signo del próximo mes en índices, bonos, monedas y materias primas.
 - Justificación económica: Subreacción inicial a la información y sobrerreacción tardía (anclaje, flujos de cobertura y de inversores lentos); prima de riesgo por crisis.
-- Cómo podría refutarse: La canasta 2013-2026 (posterior a la publicación) en CFD no supera a la misma canasta con señales de signo aleatorio, después de costos y swap.
+- Cómo podría refutarse: La canasta 2013-2026 (posterior a la publicación) en CFD no supera a la misma canasta con señales de signo aleatorio, después de costos y swap. | 2026-11-15: forma semanal sin fin de semana ≈ 0 en bruto (RESULTADO.md); la forma mensual sigue sin medir. Sigue en SQX (lote 1).
 - Traducción: SQX D1/H4: largo/corto según el retorno de N días (N 20-250) o cruce de medias lentas; stop ATR largo; tamaño por volatilidad; fitness sobre la canasta.
 - Fuentes: Moskowitz, Ooi, Pedersen (2012), Time Series Momentum, JFE; Hurst, Ooi, Pedersen (2017), A Century of Evidence on Trend-Following Investing, JPM
 
 ## LIT-INTRADAY-MOM — Momentum intradía de la primera media hora
-- Clase: tendencia · fuente: literatura · prior: medio · estado: PROPUESTA · horizonte: intradía · activos: USA500, USATECH, USA30, Russell
+- Clase: tendencia · fuente: literatura · prior: medio · estado: REFUTADA · horizonte: intradía · activos: USA500, USATECH, USA30, Russell
 - Mecanismo: El retorno de la primera media hora (con el overnight) predice el de la última media hora del mismo día.
 - Justificación económica: Rebalanceo tardío de inversores informados y cobertura de opciones/ETF apalancados al cierre.
-- Cómo podría refutarse: En USA500/USATECH 2013-2026 la última media hora con el signo de la primera no supera al azar después de costos.
+- Cómo podría refutarse: En USA500/USATECH 2013-2026 la última media hora con el signo de la primera no supera al azar después de costos. | 2026-11-15: refutada en CFD (docs/research/macro_literatura_20261114/RESULTADO.md).
 - Traducción: SQX M30/H1 con filtro horario: entrada 15:30 ET según el signo 16:00(t-1)→10:00, salida al cierre.
 - Fuentes: Gao, Han, Li, Zhou (2018), Market Intraday Momentum, JFE
 

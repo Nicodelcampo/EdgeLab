@@ -130,10 +130,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (14)
+## NO_REPETIR (15)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
+  - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
+  - Dónde: CFD Dukascopy D1/H1, 27 activos
+  - Siguiente: No repetir estas formas. Si se retoma TSMOM, en su forma mensual (requiere fin de semana abierto: decisión de Nico) o como filtro de régimen de otras reglas.
+  - Evidencia: `docs/research/macro_literatura_20261114/RESULTADO.md`
 - **Patrones de 2–5 disparos DeltaSweep (tiempo entre disparos 10–300 s, dispersión en precio, escalera) como señal en NQ** (`F-DELTASWEEP-PATRONES`, 2026-11-14, sesion)
   - Efecto: ≈79.000 celdas: ninguna sobre el nulo de la búsqueda; en DESC el R neto empeora con más disparos (PERM, V3) y ni la dispersión ni el tiempo entre disparos ordenan el resultado. Lo de REP no replica DESC.
   - Dónde: NQ ago-2025 → sep-2026, entrada M1 siguiente, 7 entradas/salidas
