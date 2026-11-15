@@ -806,9 +806,10 @@ def detectar_eventos_tick(
     bid: np.ndarray | None = None,
     ask: np.ndarray | None = None,
     *,
-    tick_size: float = TICK_NQ,
+    tick_size: float | None = None,
 ) -> dict[str, np.ndarray]:
     """Wrapper vectorizado + causal sobre arrays de ticks de una sesion."""
+    tick_size = TICK_NQ if tick_size is None else tick_size
     ts_arr = np.ascontiguousarray(ts_ns, dtype=np.int64)
     px_arr = np.ascontiguousarray(px, dtype=np.float64)
     vol_arr = np.ascontiguousarray(vol, dtype=np.float64)
@@ -1098,7 +1099,7 @@ def evaluar_sesiones(
     sesiones_iter,
     *,
     split_oos_desde: int = 20260401,
-    tick_size: float = TICK_NQ,
+    tick_size: float | None = None,
     eval_delayed_all_perm: bool = False,
     min_ops_desc: int = 20,
     min_ops_oos: int = 10,
@@ -1108,6 +1109,7 @@ def evaluar_sesiones(
 
     Cada `df` debe traer columnas `ts_ns, px, vol, sesion` (+ opcional `bid, ask`) de sesiones < `HOLDOUT_PRIMERA_SESION_INT`.
     """
+    tick_size = TICK_NQ if tick_size is None else tick_size
     setup_kind = np.array([s[0] for s in SETUP_SPECS], dtype=np.int8)
     setup_param_x = np.array([s[1] for s in SETUP_SPECS], dtype=np.int64)
     sl_arr = np.array(BRACKET_SL, dtype=np.int64)
@@ -1474,12 +1476,13 @@ def evaluar_v4_focalizado(
     sesiones_iter,
     *,
     split_oos_desde: int = 20260401,
-    tick_size: float = TICK_NQ,
+    tick_size: float | None = None,
     min_ops_desc: int = 20,
     min_ops_oos: int = 15,
     n_boot: int = 2000,
 ) -> dict:
     """Campana 2 preregistrada: solo compuertas V4 (STRICT/MED/WIDE) para maximizar potencia FDR + CSCV PBO + Walk-Forward."""
+    tick_size = TICK_NQ if tick_size is None else tick_size
     setup_kind = np.array([s[0] for s in V4_SETUP_SPECS], dtype=np.int8)
     setup_param_x = np.array([s[1] for s in V4_SETUP_SPECS], dtype=np.int64)
     sl_arr = np.array([b[1] for b in V4_BRACKETS], dtype=np.int64)
@@ -1996,12 +1999,13 @@ def evaluar_lim_flecha_secuencias(
     sesiones_iter,
     *,
     split_oos_desde: int = 20260401,
-    tick_size: float = TICK_NQ,
+    tick_size: float | None = None,
     min_ops_desc: int = 20,
     min_ops_oos: int = 15,
     n_boot: int = 2000,
 ) -> dict:
     """Campana 3: Orden limite en precio exacto de flecha + timeouts + SL/TP amplios + secuencias 1/2/3/reversa."""
+    tick_size = TICK_NQ if tick_size is None else tick_size
     sl_arr = np.array([b[1] for b in LIM_WIDE_BRACKETS], dtype=np.int64)
     tp_arr = np.array([b[2] for b in LIM_WIDE_BRACKETS], dtype=np.int64)
     max_ns_arr = np.array([b[3] * 1_000_000_000 for b in LIM_WIDE_BRACKETS], dtype=np.int64)

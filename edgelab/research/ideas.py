@@ -23,7 +23,8 @@ OBLIGATORIOS = ("id", "titulo", "fuente_tipo", "fuentes", "clase", "mecanismo", 
                 "traduccion", "activos", "horizonte", "prior", "estado")
 
 
-def leer(p: Path = BANCO) -> list:
+def leer(p: Path | None = None) -> list:
+    p = BANCO if p is None else p
     return [json.loads(l) for l in p.read_text(encoding="utf-8").splitlines() if l.strip()] if p.exists() else []
 
 
@@ -36,7 +37,8 @@ def validar(f: dict) -> list:
     return e
 
 
-def agregar(f: dict, p: Path = BANCO, umbral: float = 0.6) -> dict:
+def agregar(f: dict, p: Path | None = None, umbral: float = 0.6) -> dict:
+    p = BANCO if p is None else p
     """Agrega una ficha si es válida y nueva; si el mecanismo ya existe (Jaccard ≥ umbral) devuelve la parecida sin agregar."""
     from edgelab.autopilot.contexto import novedad
     if (e := validar(f)): raise ValueError("; ".join(e))

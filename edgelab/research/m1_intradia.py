@@ -64,10 +64,7 @@ def _dias(D: pd.DataFrame):
         if d.dayofweek < 5 and len(g) > 300: yield d, g
 
 
-def _ema(x: np.ndarray, n: int) -> np.ndarray:
-    a = 2 / (n + 1); out = np.empty_like(x); out[0] = x[0]
-    for i in range(1, len(x)): out[i] = a * x[i] + (1 - a) * out[i - 1]
-    return out
+from edgelab.research.ema_zones import ema as _ema  # noqa: E402  (reutilizada, no copiada)
 
 
 def orb(D: pd.DataFrame, spread: float) -> pd.DataFrame:
