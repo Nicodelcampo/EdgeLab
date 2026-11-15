@@ -53,3 +53,6 @@ lanzamiento (de más a menos informativo; un par a la vez, cada uno 2 h):
 4. LIT-TSMOM Crudo WTI H4: tercera clase, otro marco temporal.
 5. SQX-PLANTILLA-REVERSION S&P H4: línea de base (¿el mecanismo le gana a la búsqueda genérica?).
 6. LIT-TSMOM S&P H4: el menos informativo (mismo activo que el 2).
+
+## Nota (2026-11-15 06:3x): par crudo H4 FALLIDO
+SQX se detuvo por «Exceeded memory limit» a los 44 min (313 y 330 generadas, contadas). No se evalúa; se relanza cuando SQX tenga más memoria (-Xmx) y la laptop no esté compartida.
