@@ -29,3 +29,12 @@ Dow, Russell desde 2019, DAX, Nikkei, FTSE, Euro Stoxx). Linaje: F-ORB-EMA20-NQ-
 ORB: la primera media hora concentra la información de la noche y del flujo institucional de apertura; la ruptura con stop en el extremo
 opuesto deja correr el desequilibrio. Pre-rango: el rango previo a la apertura acumula órdenes en sus extremos; el barrido y regreso
 señala absorción. Refutación: nada supera el nulo, o lo que lo supera es negativo en OOS o en RECIENTE, o la ventaja de ORB es sólo neta.
+
+## Enmienda 1 (2026-11-15, antes de lanzar; pedido de Nico): tercera banda del VWAP
+Se suma `VWAPB` (ficha EL-VWAP-BANDA3) al mismo kernel: VWAP anclado a las 09:30 NY con volumen de ticks de Dukascopy y su desvío
+ponderado; desde las 10:00, el primer cierre del día fuera de ±K desvíos (K = 3, y K = 2 como control de dosis-respuesta) dispara
+REV (hacia el VWAP: objetivo VWAP o banda 1; stop banda K+1 o extremo del día + 0,5 desvío) o CONT (a favor: objetivo 1 R o 2 R; stop
+banda K−1). Bandas congeladas al disparo; cierre 15:55; piso de riesgo 0,5 desvío. 12 variantes por índice × 8 + 12 canastas = **108**
+más en el contador. Lectura fijada: la banda 3 vale si supera al nulo, le gana a la banda 2 en la misma regla (dosis) y la ventaja existe
+en bruto. Validado en caminatas aleatorias (|t| < 3). Limitación: volumen de ticks (proxy); la pseudo-réplica se re-mide en futuros con
+volumen real.

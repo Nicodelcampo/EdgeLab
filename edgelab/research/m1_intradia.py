@@ -26,7 +26,8 @@ def leer_m1(path) -> pd.DataFrame:
     D = pd.read_csv(path)
     D.columns = [c.strip().lower() for c in D.columns]
     t = pd.to_datetime(D["date"].astype(str) + " " + D["time"].astype(str), format="%Y%m%d %H:%M:%S") - pd.Timedelta(hours=SERVIDOR_MENOS_NY)
-    return pd.DataFrame(dict(o=D.open.to_numpy(float), h=D.high.to_numpy(float), l=D.low.to_numpy(float), c=D.close.to_numpy(float)), index=t)
+    return pd.DataFrame(dict(o=D.open.to_numpy(float), h=D.high.to_numpy(float), l=D.low.to_numpy(float), c=D.close.to_numpy(float),
+                             v=D.volume.to_numpy(float) if "volume" in D else np.ones(len(D))), index=t)
 
 
 @njit(cache=False)
@@ -135,6 +136,47 @@ def prerango(D: pd.DataFrame, spread: float) -> pd.DataFrame:
     return pd.DataFrame(filas, columns=["dia", "toques", "r_bruto", "r_neto", "riesgo", "rango"])
 
 
+VB_K = (2.0, 3.0)                              # banda del VWAP (desvíos); 2 = control de dosis-respuesta de la 3
+
+
+def vwap_banda(D: pd.DataFrame, spread: float) -> pd.DataFrame:
+    """VWAP anclado a las 09:30 NY (volumen de ticks de Dukascopy) y su desvío ponderado. Desde las 10:00, el PRIMER cierre del día fuera
+    de ±K desvíos (K = 2, 3) dispara:
+      REV  reversión a mercado (barra siguiente) hacia el VWAP: objetivo VWAP o banda 1; stop en la banda K+1 o en el extremo del
+           día + 0,5 desvío;
+      CONT continuación a favor: objetivo 1 R o 2 R; stop en la banda K−1.
+    Bandas y VWAP se congelan al momento del disparo (causal). Cierre 15:55 NY."""
+    filas = []
+    for d, g in _dias(D):
+        t = g.index; mins = (t.hour * 60 + t.minute).to_numpy(); o, h, l, c = (g[k].to_numpy() for k in "ohlc")
+        v = g["v"].to_numpy() if "v" in g else np.ones(len(g)); v = np.where(v > 0, v, 1.0)
+        ia, i10, i_fin = np.searchsorted(mins, 570), np.searchsorted(mins, 600), np.searchsorted(mins, 15 * 60 + 55)
+        if ia >= i10 or i10 >= i_fin: continue
+        tp = (h + l + c) / 3; w = np.cumsum(v[ia:]); vw = np.cumsum(tp[ia:] * v[ia:]) / w
+        sd = np.sqrt(np.maximum(np.cumsum(v[ia:] * tp[ia:] ** 2) / w - vw ** 2, 0))
+        for K in VB_K:
+            z = (c[ia:] - vw) / np.where(sd > 0, sd, np.nan)
+            cand = np.flatnonzero(np.abs(z[i10 - ia:i_fin - ia]) >= K)
+            if not len(cand): continue
+            j = i10 + cand[0]; q = j - ia; s_ = 1 if z[q] > 0 else -1; VW, SD = vw[q], sd[q]
+            ext = h[ia:j + 1].max() if s_ == 1 else l[ia:j + 1].min()
+            for modo, obj_n, stop_n, lado, stop, obj in (
+                    ("REV", "VWAP", "K+1", -s_, VW + s_ * (K + 1) * SD, VW), ("REV", "VWAP", "EXT", -s_, ext + s_ * 0.5 * SD, VW),
+                    ("REV", "B1", "K+1", -s_, VW + s_ * (K + 1) * SD, VW + s_ * SD), ("REV", "B1", "EXT", -s_, ext + s_ * 0.5 * SD, VW + s_ * SD),
+                    ("CONT", "1R", "K-1", s_, VW + s_ * (K - 1) * SD, None), ("CONT", "2R", "K-1", s_, VW + s_ * (K - 1) * SD, None)):
+                ref = c[j]; R0 = lado * (ref - stop)
+                if R0 <= 0: continue
+                if obj is None: obj = ref + lado * (1.0 if obj_n == "1R" else 2.0) * R0
+                if lado * (obj - ref) <= 0: continue
+                pe, ps, ie = _simular(o, h, l, c, j + 1, lado, 0, 0.0, stop, obj, i_fin)
+                if ie < 0: continue
+                riesgo = lado * (pe - stop)
+                if riesgo <= 0.5 * SD: continue                 # piso de riesgo
+                rb = lado * (ps - pe) / riesgo
+                filas.append((d, K, modo, obj_n, stop_n, rb, rb - spread / riesgo))
+    return pd.DataFrame(filas, columns=["dia", "k", "modo", "obj", "stop", "r_bruto", "r_neto"])
+
+
 def por_periodo(dias: pd.Series, r: pd.Series) -> dict:
     out = {}
     for nom, a, b in PERIODOS:
@@ -167,6 +209,8 @@ def familia(DD: dict, spreads: dict) -> dict:
         for (N, e, st, ob), g in O.groupby(["min", "entrada", "stop", "obj"]): F[f"ORB|{s}|{N}|{e}|{st}|{ob:g}"] = g[["dia", "r_bruto", "r_neto"]]
         P = prerango(D, spreads.get(s, 0.0)); F[f"PRERANGO|{s}"] = P[["dia", "r_bruto", "r_neto"]].dropna()
         F[f"PRERANGO_INFO|{s}"] = P[["dia", "toques"]]
+        V = vwap_banda(D, spreads.get(s, 0.0))
+        for (K, mo, ob, st), g in V.groupby(["k", "modo", "obj", "stop"]): F[f"VWAPB|{s}|{K:g}|{mo}|{ob}|{st}"] = g[["dia", "r_bruto", "r_neto"]]
     out = dict(F)
     for clave in {"|".join([k.split("|")[0]] + k.split("|")[2:]) for k in F if not k.startswith("PRERANGO_INFO")}:
         reg, *par = clave.split("|")
