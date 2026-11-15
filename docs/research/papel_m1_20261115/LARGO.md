@@ -1,4 +1,4 @@
-# Papel M1 — el largo con régimen (2026-11-15, parcial: falta OTR930 2020→2025-07)
+# Papel M1 — el largo con régimen (2026-11-15)
 Estado: RESULTADO (EF4 + régimen, enmienda 1: el largo NO da de baja). Código: `edgelab/research/papel_regimen.py`. Datos: `resultados/`,
 `LARGO_parcial.json`. Variables de régimen causales (día previo) fijadas antes: vol20, tend60, noche (rango 18:00→09:30 NY), dst.
 
@@ -19,6 +19,17 @@ Estado: RESULTADO (EF4 + régimen, enmienda 1: el largo NO da de baja). Código:
 - Lectura: ASIA-NQ es una regla de **noche movida**: con rango nocturno chico pierde siempre; con rango alto gana, y más en los últimos
   dos años. El estado se conoce antes de la apertura (causal, operable).
 
-## OTR930-NQ (sólo 2012–2019 por ahora)
-- 2012–2019 −0,82 por sesión (5/32 trimestres positivos); 2025-08→2026-09 +2,53. Encendido: ninguna variable supera al azar
-  (noche p 0,15, vol20 p 0,27). Faltan 2020–2023 y 2024→2025-07 (relanzados).
+## OTR930-NQ (completo)
+- Siempre: 2012–2019 −0,82; 2020–2023 −1,80; 2024→2025-07 −3,01; 2025-08→2026-09 +2,53. Ninguna variable de régimen ordena el
+  resultado (la noche movida incluso empeora antes de 2025) y ningún encendido supera al azar (p 0,63–0,71). **Sin régimen detectable**:
+  vive sólo en el último año. Por el principio de edges actuales no se da de baja, pero queda sin respaldo histórico ni filtro.
+
+## Otros mercados: ASIA-NQ congelada en S&P y Dow (2012 → 2026-09; `LARGO_otros.json`)
+| Mercado | 2012–2019 (baja / media / alta noche) | 2020–2023 | 2024→2025-07 | 2025-08→2026-09 | Encendido por noche |
+|---|---|---|---|---|---|
+| Dow | −3,86 / −1,80 / −1,78 | −6,11 / −5,20 / −1,35 | −6,44 / −4,33 / +0,50 | −8,24 / −3,41 / **+7,63** | **+345 vs −7.145 siempre, −863 azar (p 0,007)** |
+| S&P | −0,47 / −0,51 / −0,18 | −0,60 / −0,68 / −0,13 | −0,64 / −1,24 / −0,37 | −1,05 / +0,21 / +0,54 | −71 vs −1.049, −117 azar (p 0,23) |
+- **El régimen de noche movida se repite en el Dow** con la misma forma (baja < alta en los 4 tramos, alta positiva en lo reciente) y
+  el mismo encendido walk-forward (p 0,007). En el S&P el orden se insinúa pero los valores son chicos: los cortes de la regla están en
+  puntos de NQ y el S&P se mueve ~1/4 (las celdas no son equivalentes); no cuenta ni a favor ni en contra.
+- Lectura: el mecanismo (rupturas y gaps de la sesión asiática necesitan una noche con recorrido) es de mercado, no del NQ.
