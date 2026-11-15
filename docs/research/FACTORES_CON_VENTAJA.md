@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (7)
+## PISTA_VIVA (8)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
+  - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025.
+  - Dónde: NQ / USATECH M1, 2012 → 2026-09
+  - Siguiente: Congelar el filtro (noche tercil alto, rank causal de 250 días) sobre ASIA-NQ y seguirlo en papel/forward con el estadístico secuencial; en el holdout de la familia sólo con regla congelada y potencia declarada.
+  - Evidencia: `docs/research/papel_m1_20261115/LARGO.md`
 - **En el primer regreso a un cluster HFT grande el precio lo atraviesa más que a un nivel cualquiera de la sesión (real − control > 0); sostenido en el holdout** (`F-HFT-CLUSTER-GRANDE-NO-DEFIENDE-D`, 2026-11-11, sesion)
   - Efecto: Holdout exploratorio oct-2026 (una apertura, regla congelada): NQ+YM +0,269 por sesión, 5/5 bloques, p 0,030 (28 sesiones; NQ +0,267, YM +0,275). Fisher con desarrollo (0,088; 0,052): p 0,0068, nominada por BH q 0,10. Es un contraste contra el control, no un P&L: la ruptura absoluta a mercado (OP-2) no paga en NQ/ES/RTY.
   - Dónde: NQ y YM (RTY sin ticks sellados); clusters del E0-b, toque D0, carrera ±X

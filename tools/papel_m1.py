@@ -25,7 +25,8 @@ def lanzar(tramo, fichas):
     for fid in fichas or FICHAS:
         f = _ficha(fid); r = f["regla"]; spec = dict(r["spec"], sensor=SENSOR, ejecucion=SENSOR, cid=f"PM1-{fid}"[:30], datasets_extra=[])
         params = dict(celdas=r.get("celdas") or [r["celda"]], cortes=r.get("cortes") or {}, tope=r.get("tope"), operaciones=True)
-        for p in TRAMOS[tramo]:
+        solo = [tuple(map(int, x.split("-"))) for x in __import__("os").environ.get("PAPEL_M1_PERIODOS", "").split(",") if x]
+        for p in (solo or TRAMOS[tramo]):
             h = run.lanzar(spec, "ANALIZAR_REGLA", params, p)
             with REG.open("a", encoding="utf-8") as fh: fh.write(json.dumps(dict(ficha=fid, tramo=tramo, periodo=p, handle=h)) + "\n")
             print("lanzado", fid, p, h)
