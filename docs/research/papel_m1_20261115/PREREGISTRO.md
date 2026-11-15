@@ -44,3 +44,10 @@ ASIA-NQ y OTR930-NQ congeladas (mismas celdas y cortes) sobre M1 de S&P (`M1DK:S
 costos de YM), 2012 → 2026-09 completo. Requisito 7 del contrato (≥ 60 % de los mercados de su clase con R > 0, sin re-optimizar) y
 prueba de transferencia del régimen de ASIA: ¿la dosis noche baja < media < alta se repite en S&P y Dow? (pista F-ASIA-NQ-NOCHE-MOVIDA).
 Los cortes están en puntos de NQ: en S&P y Dow las celdas que dependen de magnitudes absolutas pueden no ser equivalentes; se informa.
+
+## Enmienda 3 (2026-11-15): ASIA con noche alta en futuros reales y OTR930 en Dow
+- ASIA-NQ congelada sobre ticks REALES de YM (`sensor YM`, costos de YM), ago-2025 → sep-2026 (desarrollo; el holdout no se toca): ¿el régimen
+  de noche alta (variable del Dow CFD, misma sesión) separa días ganadores de perdedores también en el futuro real? Filtro congelado:
+  tercil superior del rango nocturno 18:00→09:30 NY contra los 250 días previos (`edgelab/research/papel_regimen.py::variables`).
+- OTR930-NQ congelada en Dow M1 2012 → 2026-09 (otros mercados y mapa de régimen).
+- 2 pruebas más en el contador.
