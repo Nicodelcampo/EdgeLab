@@ -31,3 +31,13 @@ Nada miró el holdout.
 Holdout de la familia SOM (una apertura): NQ, celda `eod` (no queda abierta el fin de semana, apta para prop), regla congelada, spot USATECH
 sellado 2026-10-01 → 2026-11-13; luego forward con el comando bajo demanda. Potencia baja en 31 sesiones (≈ 31 operaciones, MDE ≈ 0,3 R):
 decide más el forward. Antes: correlación con la v2, la Cartera B y Franklin (comparten la apertura de NY).
+
+## Celda `sin_finde` (enmienda 2: mantiene de noche, cierra el viernes 15:55 NY) — pasa en NQ, va al holdout
+| | A 2012–2019 | B 2020 → 2026-09 | Reciente |
+|---|---|---|---|
+| NQ | 1.680 / +0,046 (p 0,039) | 1.602 / **+0,075** (p 0,001) | 268 / +0,162 |
+| ES | −0,031 | +0,030 (p 0,10) | +0,097 |
+| YM | −0,007 | −0,021 | −0,089 |
+
+Correlación diaria (ago-25 → sep-26) de SOM sin_finde NQ con: v2 0,03 · Cartera B 0,30 · Franklin 0,42 (misma dirección el 63 % de los días
+en que operan los dos). Mensual: −0,09 a 0,18. Diversifica a la v2; con la B y Franklin comparte la apertura de NY.

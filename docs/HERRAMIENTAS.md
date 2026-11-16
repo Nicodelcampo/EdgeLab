@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-661 scripts.
+663 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -384,6 +384,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/regimen_busqueda_main.py` | Kernel de Kaggle: búsqueda de régimen pre-registrada (docs/research/regimen_busqueda_20261108/PREREGISTRO.md) sobre el dataset |
 | `tools/kaggle_grilla/sellado_cobertura_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/sellado_conteo_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/som_main.py` | Kernel: SessionOpenMomentum (celda sin_finde, congelada) en NQ sobre desarrollo + USATECH sellado (holdout o forward). Lo arma tools/som_seguimiento.py. |
 | `tools/kaggle_grilla/tabla_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_combo_e0_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/u1_cruzado_main.py` | (sin docstring) |
@@ -590,10 +591,11 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/sandbox/l3_power.py` | Potencia de la carrera simetrica L3, con la aritmetica exacta del spec. |
 | `tools/sandbox/l3_touch_rule_bias.py` | L3 audit: cuando la regla de toque rompe el nulo de la carrera simetrica. |
 | `tools/sandbox_pqread.py` | Lector minimo de parquet para ambientes sin pyarrow/duckdb (sandbox de auditoria). |
-| `tools/seguimiento_forward.py` | Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES. |
+| `tools/seguimiento_forward.py` | Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM. |
 | `tools/select_canonical_visual_sessions.py` | Target-free reproducible session selection script for HP007-CAMP-002. |
 | `tools/senales_nt8.py` | Señales de una regla congelada para NT8 Market Replay (`nt8/strategies/EdgeLabSignalReplay.cs`) y comparación de llenados. |
 | `tools/simulador_challenges_propfirm.py` | Simulador y Optimizador Monte Carlo de Challenges de Cuentas Fondeadas (`tools/simulador_challenges_propfirm.py`, 2026-10-29). |
+| `tools/som_seguimiento.py` | SessionOpenMomentum (celda sin_finde) en datos no vistos: holdout (ACTA_HOLDOUT_SOM.md) y forward bajo demanda. |
 | `tools/sqx_barras.py` | Exporta barras de StrategyQuant X (Dukascopy) a CSV para medir ideas de pocos parámetros en EdgeLab/Kaggle sin pasar por el Builder |
 | `tools/sqx_cola.py` | Cola de corridas de SQX, un proyecto por vez (8 GB de RAM). Pre-registro: docs/research/sqx_lote2_20261116/PREREGISTRO.md. |
 | `tools/sqx_corrida.py` | Corridas de StrategyQuant X gobernadas por EdgeLab (2026-11-14). Docs: docs/infra/SQX_MT5_EDGELAB_INFRA.md. |
