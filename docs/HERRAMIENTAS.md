@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-647 scripts.
+648 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -496,6 +496,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/peaks_learn.py` | Detector de «picos consecutivos» (acumulaciones de liquidez) aprendido de las etiquetas de Nico. Versión 0. |
 | `tools/peaks_learn_v1.py` | Detector de «picos consecutivos» v1: candidatos amplios + rasgos por zona + clasificador validado entre sesiones. |
 | `tools/peaks_rule.py` | Detector de «picos consecutivos» v2 — regla de Nico: **cada pico no supera al anterior**. |
+| `tools/perdidas_concentradas.py` | Dónde se concentran las pérdidas: stop corto relativo (pre-registro docs/research/cartera_20261116/PREREGISTRO_PERDIDAS_CONCENTRADAS.md). |
 | `tools/pivotes_barrido.py` | PIVOTES-BARRIDO-MES — OK de Nico 28/09. Manifiesto: docs/research/MANIFIESTO_PIVOTES_BARRIDO_MES_20260928.md |
 | `tools/pred004_analyze.py` | pred004_analyze.py — el instrumento que mide PRED-004 COMO FUE ESCRITA. |
 | `tools/propfirm_ev_report.py` | Reporte de prop firms: para cada cuenta del catálogo, (1) el EV del participante sin ventaja (control de Hall), |
