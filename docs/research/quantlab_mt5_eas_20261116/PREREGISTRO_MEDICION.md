@@ -19,7 +19,7 @@ del propio EA, coherente con «nada abierto el fin de semana»).
 
 ## Datos, costos y decisión
 M1 Dukascopy USATECH → NQ, USA500 → ES, USA30 → YM; A = 2012-01-20 → 2019-12-31, B = 2020-01-01 → 2026-09-29; reciente 2025-08-05 →
-2026-09-29 descriptivo. R = (pts − fricción canónica) / riesgo inicial (8 × ATR14 M5 de la vela de señal). Pasa si R > 0 en A y en B, p de B
+2026-09-29 descriptivo. R = (pts − fricción canónica) / riesgo inicial (|entrada − stop inicial| = 8 × ATR14 M5). Pasa si R > 0 en A y en B, p de B
 (bootstrap por sesión) sobrevive BH q 0,10 sobre 6 (2 celdas × 3 índices) y fricción mediana ≤ 0,08 R. Russell queda fuera (el CSV está en
 UTC y la regla usa hora del servidor fija).
 
@@ -30,3 +30,9 @@ correr (F-SALIDA-TECNICA-REGALA-LA-GANANCIA). Se refuta con R ≤ 0 en algún tr
 
 ## Contador y linaje
 Registro global `quantlab_mt5_20261116/SOM`: 6. Linaje SOM ← DOS_VELAS, ORB_EMA20.
+
+## Enmienda 1 (2026-11-16, después de una primera corrida que se DESCARTA)
+La primera corrida se miró y se descarta: el motor traducido llenaba el stop a su precio aunque la vela abriera más allá (gap; optimista,
+sobre todo en `sin_eod`, que cruza noches y fines de semana) y no revisaba el stop en la vela de entrada. Se corrige el motor (llenado a la
+apertura si hay gap; stop válido en la vela de entrada; los tests contra el Tester siguen pasando) y se relanza con la misma regla, celdas y
+decisión. Cifras descartadas, para que consten: NQ sin_eod A +0,059 / B +0,093 R; eod +0,023 / +0,065; ES B +0,048 / +0,021; YM ≤ 0.

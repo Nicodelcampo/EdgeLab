@@ -2,7 +2,7 @@
 """SessionOpenMomentum (traducción QuantLab MT5) en NQ/ES/YM con costos canónicos y en R (docs/research/quantlab_mt5_eas_20261116/PREREGISTRO_MEDICION.md).
 
   python tools/quantlab_mt5_medir.py <carpeta M1>   # -> docs/research/quantlab_mt5_eas_20261116/RESULTADO_SOM.json
-Reusa quantlab_mt5 (motor y cargador), reels_20261116.tramo (estadística por tramo) y fundedsync_tanda2._bh.
+Reusa quantlab_mt5 (motor y cargador), reels_20261116.tramo (estadística por tramo); riesgo = |entrada − stop inicial| y fundedsync_tanda2._bh.
 """
 import json, sys
 from dataclasses import replace
@@ -13,15 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.p
 from reels_20261116 import tramo, A, B, REC  # noqa: E402
 from fundedsync_tanda2 import _bh  # noqa: E402
 OUT = ROOT / "docs/research/quantlab_mt5_eas_20261116"
-FUENTES = {"NQ": ("NQ_M1_dukas", "USATECH"), "ES": ("SP_M1_dukas", "USA500"), "YM": ("DJ_M1_dukas", "USA30")}
-
-
-def riesgo_inicial(df, T, cfg):
-    """8 × ATR14 M5 de la vela de señal (la anterior a la entrada), con los mismos indicadores del motor."""
-    from edgelab.research.quantlab_mt5.indicators import mql5_atr, resample_ohlc
-    m5 = resample_ohlc(df, 5); atr = mql5_atr(m5.high.to_numpy(float), m5.low.to_numpy(float), m5.close.to_numpy(float), cfg.atr_period)
-    k = np.searchsorted(m5.ts_ns.to_numpy(np.int64), T.entry_time_utc.to_numpy(np.int64), side="left") - 1
-    return cfg.sl_atr_mult * atr[np.clip(k, 0, len(atr) - 1)]
+FUENTES = {"NQ": ("NQ_M1_dukas", "USATECH"), "ES": ("SP_M1_dukas", "USA500"), "YM": ("DJ_M1_dukas", "USA500")}          # YM: preset de redondeo de USA500 (sólo afecta USD y redondeo a 0,01)
 
 
 def main(carpeta):
@@ -33,7 +25,7 @@ def main(carpeta):
         df = load_ohlc_data(Path(carpeta) / f"{arch}.csv", start="2012-01-20"); fr = friccion(inst)[0]
         for celda, cfg in (("sin_eod", SessionOpenMomentumConfig()), ("eod", replace(SessionOpenMomentumConfig(), close_eod=True))):
             T = correr_session_open_momentum(df, config=cfg, instrument=spec)
-            rg = riesgo_inicial(df, T, cfg)
+            rg = (T.entry_price - T.stop_price).abs().to_numpy(float)                 # stop_price = stop inicial (1 R) en el motor
             g = pd.DataFrame(dict(fecha=pd.to_datetime(T.entry_time_utc, unit="ns").dt.strftime("%Y%m%d").astype(int), riesgo=rg, bruto=T.pnl_pts.to_numpy(float),
                                   salida=T.exit_name.values, horas=(T.exit_time_utc - T.entry_time_utc).to_numpy(float) / 3.6e12))
             g = g[g.riesgo > 0]; g["dia"] = pd.to_datetime(g.fecha.astype(str)); g["neto"] = g.bruto - fr; g["R"] = g.neto / g.riesgo; g["Rb"] = g.bruto / g.riesgo; g["fricR"] = fr / g.riesgo

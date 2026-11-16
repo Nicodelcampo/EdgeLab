@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (12)
+## PISTA_VIVA (13)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -34,6 +34,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, ES (señal M1 de CFD, costos de futuros)
   - Siguiente: Forward con e-proceso (Franklin NQ+ES y T filtrado) desde 2026-11-14 en la tarea diaria.
   - Evidencia: `docs/research/reels_20261116/RESULTADO.md`, `docs/research/reels_20261116/FRANKLIN_MEJORAS.json`
+- **SessionOpenMomentum (EA QuantLab MT5, de fábrica): a las 09:35 NY compra/vende según el cierre de la vela M5 de las 09:30 vs EMA12; stop 8 × ATR14 M5; trailing a la EMA120 M5 desde +0,5 R; con o sin cierre diario** (`F-SOM-QUANTLAB-NQ`, 2026-11-16, humano)
+  - Efecto: NQ pasa (BH sobre 6, positivo en los dos tramos): sin_eod +0,043 / +0,089 R (2012–19 / 2020–26), eod +0,022 / +0,064; reciente +0,15–0,17; fricción 0,011 R; 11/15 años positivos. ES sólo desde 2020 (+0,04/+0,02); YM negativo. Motor corregido (gaps) antes de mirar la corrida válida.
+  - Dónde: NQ (señal M1 USATECH, costos de futuros)
+  - Siguiente: Holdout de la familia SOM (NQ, eod) y forward; antes, correlación con v2, Cartera B y Franklin.
+  - Evidencia: `docs/research/quantlab_mt5_eas_20261116/RESULTADO_SOM.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

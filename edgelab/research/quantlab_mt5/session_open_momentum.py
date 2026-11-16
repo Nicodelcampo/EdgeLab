@@ -203,7 +203,8 @@ def correr_session_open_momentum(
             sl_hit = (l <= sl) if side > 0 else (h >= sl)
             if sl_hit:
                 exit_label = "TRAIL_SL" if pos["trailed"] else "INIT_SL"
-                rec, pnl = _finalize_som_trade(pos, cur_ts, sl, exit_label, i - pos["entry_idx"] + 1, spec)
+                px = min(o, sl) if side > 0 else max(o, sl)           # 2026-11-16: si abre con gap más allá del stop, llena a la apertura
+                rec, pnl = _finalize_som_trade(pos, cur_ts, px, exit_label, i - pos["entry_idx"] + 1, spec)
                 trades.append(rec)
                 balance += pnl
                 pos = None
@@ -294,6 +295,9 @@ def correr_session_open_momentum(
             "mae_pts": 0.0,
             "entry_name": f"SOM_{'BUY' if side > 0 else 'SELL'}_x{adapt_f:.2f}",
         }
+        if (l <= init_sl) if side > 0 else (h >= init_sl):           # 2026-11-16: el stop también vale en la vela de entrada
+            rec, pnl = _finalize_som_trade(pos, cur_ts, init_sl, "INIT_SL", 1, spec)
+            trades.append(rec); balance += pnl; pos = None
 
     # Cierre al final del periodo si quedo abierta
     if pos is not None:

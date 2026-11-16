@@ -1,0 +1,33 @@
+# SessionOpenMomentum (QuantLab MT5): resultado (2026-11-16)
+
+Estado: RESULTADO — pre-registro `PREREGISTRO_MEDICION.md` (+ enmienda 1: la primera corrida se descartó por llenado optimista del motor en
+gaps; motor corregido). Cifras: `RESULTADO_SOM.json`. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+Nada miró el holdout.
+
+## Resultado: **pasa en NQ (las dos celdas)**; ES sólo régimen reciente; YM no
+| Prueba | A 2012–2019: n / R (p) | B 2020 → 2026-09: n / R (p) | Reciente (ago-25 →) | Fricción mediana |
+|---|---|---|---|---|
+| NQ sin_eod (de fábrica) | 1.559 / +0,043 (0,068) | 1.517 / **+0,089** (< 0,001) | 254 / +0,167 | 0,011 R |
+| NQ eod (cierre 15:55 NY) | 1.937 / +0,022 (0,148) | 1.735 / **+0,064** (0,001) | 297 / +0,148 | 0,011 R |
+| ES sin_eod | 1.397 / −0,023 | 1.505 / +0,044 (0,044) | +0,127 | 0,029 R |
+| ES eod | 1.664 / −0,024 | 1.733 / +0,020 (0,17) | +0,094 | 0,029 R |
+| YM (las dos) | ≈ 0 | −0,02 / −0,04 | −0,08 / −0,09 | 0,02 R |
+
+- Nominadas por BH q 0,10 sobre 6 y positivas en los dos tramos: **NQ sin_eod y NQ eod**. ES es régimen reciente (B > 0 sólo), YM no.
+- NQ año por año: 11 de 15 años positivos en las dos celdas. Con cierre diario ganan los dos lados (largos +0,056, cortos +0,027 R); sin cierre
+  diario el lado largo carga más (+0,111 vs +0,017): parte es la deriva del Nasdaq al quedar abierta varios días.
+- Acierto ≈ 50 %; ganadora mediana +0,47 R, perdedora −0,73 (eod) / −1,0 R. El stop de 8 × ATR M5 es grande frente a la fricción (0,011 R):
+  es la palanca F-STOP-GRANDE-FRENTE-A-FRICCION, y el trailing lento deja correr (F-SALIDA-TECNICA-REGALA-LA-GANANCIA). Frente a DOS_VELAS
+  (misma idea de apertura, objetivo 1:1, ≈ 0) lo que cambia es la salida.
+
+## QLB_K_XAUUSD_3x: no se mide (motivo en el pre-registro: gatillos inferidos; cambio de mes ya refutado).
+
+## Integridad: dos arreglos en la traducción
+1. `quantlab_mt5/indicators.load_ohlc_data` cortaba en 2026-10-01 00:00 UTC; el holdout abre 2026-09-30 22:00 UTC → 2 h de fuga. Ahora usa
+   `edgelab.holdout.HOLDOUT_APERTURA_UTC_ISO`.
+2. `session_open_momentum`: llenado del stop a la apertura si hay gap y stop válido en la vela de entrada (antes, optimista).
+
+## Siguiente (propuesto)
+Holdout de la familia SOM (una apertura): NQ, celda `eod` (no queda abierta el fin de semana, apta para prop), regla congelada, spot USATECH
+sellado 2026-10-01 → 2026-11-13; luego forward con el comando bajo demanda. Potencia baja en 31 sesiones (≈ 31 operaciones, MDE ≈ 0,3 R):
+decide más el forward. Antes: correlación con la v2, la Cartera B y Franklin (comparten la apertura de NY).
