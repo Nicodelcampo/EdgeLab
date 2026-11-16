@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-648 scripts.
+649 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -447,6 +447,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/mcp_cliente.py` | Cliente MCP (HTTP «streamable», JSON-RPC) para StrategyQuant X y MetaTrader 5 desde EdgeLab (2026-11-14). |
 | `tools/mcpt_mgc_ema.py` | Full-pipeline intraday permutation test for the MGC EMA headline. |
 | `tools/medir_spread_main.py` | Kernel de Kaggle: spread MEDIDO de un futuro del release con el criterio del atlas v4 (para instrumentos sin spread en costos). |
+| `tools/mejoras_cartera.py` | Mejoras de la cartera (pre-registro docs/research/cartera_20261116/PREREGISTRO_MEJORAS.md). |
 | `tools/metaanalisis_embudo.py` | Meta-análisis entre instrumentos de UNA regla congelada a partir de los estados del embudo (2026-10-26). |
 | `tools/mgc_direction_diagnostic.py` | MGC EMA headline: long/short split, random-direction nulls, concentration, D0/D1/D2. Pre-registered in |
 | `tools/mgc_direction_maxnull.py` | Enmienda 1 del pre-registro: nulo de máximo sobre 21 celdas normales con dirección sorteada por sesión. |
