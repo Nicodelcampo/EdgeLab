@@ -105,7 +105,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Sigue en papel (el pasado no mata) pero sin respaldo: la decide el forward.
   - Evidencia: `docs/research/papel_m1_20261115/LARGO.md`
 - **DeltaSweep NQ: dos disparos V4 ancho seguidos en la misma dirección (≤ 600 s) en la mañana de NY, entrada a favor, 160/320 ticks** (`F-DELTASWEEP-SEQ2-AM`, 2026-11-14, sesion)
-  - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta.
+  - Efecto: Cadena estándar: DESC +0,26 R (n 82), REP +0,28 R (n 65) contra +0,04/+0,03 del disparo suelto; ninguna celda sobre el p95 del nulo de la búsqueda (t ≤ 2,75 contra 3,44). La réplica no es limpia (forma elegida mirando REP el 13-nov). Como gatillo dentro de la caja amarilla no aporta. | Holdout 1-oct→13-nov (único): n 30, −0,24 R neto, EN_CONTRA_SIN_POTENCIA.
   - Dónde: NQ ago-2025 → sep-2026, entrada en la vela M1 siguiente
   - Siguiente: Congelar V4W|S2g600|AM 160/320 y seguir en forward (e-proceso) hasta n ≥ 30; no agrandar la grilla.
   - Evidencia: `docs/research/deltasweep_20261114/MEDIDO_Y_NO_MEDIDO.md`, `docs/research/deltasweep_20261114/EXPLORACION.md`
@@ -150,7 +150,7 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
   - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`, `docs/research/sqx_lote1_20261114/RESULTADO_PAR_ORO_D1.md`
 - **Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las 09:30 NY), objetivo VWAP, stop extremo + 0,5σ o banda 4** (`F-VWAP-BANDA3-REVERSION`, 2026-11-15, sesion)
-  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto. | Régimen (2026-11-15): ninguna variable ordena el resultado en ≥ 3 tramos y el encendido walk-forward no supera al azar (1/32 con p < 0,05). No detectable a tiempo.
+  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto. | Régimen (2026-11-15): ninguna variable ordena el resultado en ≥ 3 tramos y el encendido walk-forward no supera al azar (1/32 con p < 0,05). No detectable a tiempo. | Holdout futuros 1-oct→13-nov (único): NQ+YM n 12, +0,32 R (ee 0,77; 3/12 positivas): sin potencia, no concluyente.
   - Dónde: 8 índices M1 Dukascopy 2012 → 2026-09
   - Siguiente: No repetir en CFD; si se retoma, en futuros con costos bajos y con una variable de régimen nueva declarada antes.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`, `docs/research/m1_intradia_20261114/RESULTADO_REGIMEN_VWAPB.md`
