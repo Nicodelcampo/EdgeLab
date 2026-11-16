@@ -69,3 +69,14 @@ Se confirma sólo en datos nuevos.
   de T.
 - NO MEDIDO: VP³ (motivos en el pre-registro); variantes de entrada de Franklin (retroceso al VWAP o al nivel de Londres): el reel no las
   define y elegirlas ahora sería mirar; filtros de noticias; versiones con ETH en lugar de RTH para el revisit.
+
+## Mejoras de Franklin (PREREGISTRO_FRANKLIN_MEJORAS.md) — no hay mejora; al holdout va la base
+- Exploración 2020–2022 (NQ, ES): **21 de 32 variantes elegibles** (R > 0 en los dos). El paisaje es una meseta: decidir a las 10:00 con
+  stop en el rango encabeza; el stop por ATR y la decisión a las 09:45 son lo peor (≈ 0,01 R). Finalistas: `1000|rango|vwap_ny` (0,131),
+  `1000|rango|ninguno` (la base, 0,124) y `1000|rango|vwap_ny+sin_gap` (0,121).
+- Confirmación 2023 → 2026-09 (NQ+ES juntos): R +0,073 (p 0,135), base +0,093 (p 0,093), +0,091 (p 0,129). **Ninguna pasa BH sobre 3**, así que
+  no hay ganadora y al holdout va la base congelada (`1000|rango|ninguno`, salida al cierre).
+- **Russell (no visto) no replica**: base 2020–26 −0,02 R (variantes −0,03 a −0,05). YM tampoco (−0,06). La pista queda en NQ y ES.
+- Integridad (causa raíz, 2026-11-16): el CSV de Russell (`USSC2000IDXUSD.csv`) viene en **UTC**, no en hora del servidor (NY + 7) como
+  los `*_M1_dukas`. Se vio porque el pico de volumen caía a las 13:59 NY; leído como UTC cae a las 09:31 en invierno y en verano. Se corrigió
+  `m1_intradia.leer_m1` (`EN_UTC`, test) y se re-midió lo que usaba Russell (tanda 2 L1). Russell entra a esta búsqueda ya corregido.

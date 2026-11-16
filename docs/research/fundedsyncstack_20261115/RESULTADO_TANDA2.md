@@ -48,3 +48,8 @@ canasta) y agregado a la tarea diaria.
 - CVGAP-ES-C: en la réplica, tomadas +0,16 R contra salteadas +0,51 R (n 33/15; p 0,75): el filtro saltea las mejores.
 - Lectura: la capa KNN de T no es transferible tal cual. Una versión con la media de R de los vecinos (no el voto) es una hipótesis nueva para datos no
   usados.
+
+## Corrección 2026-11-16: horario de Russell en L1
+El CSV de Russell venía en UTC y se leyó como hora del servidor (NY + 7): las sesiones de Russell estaban corridas 2–3 horas. Se corrigió el
+lector (`m1_intradia.EN_UTC`) y se re-corrió L1. **La conclusión no cambia**: S y W siguen confirmadas en 3/3 índices (BH). Russell
+corregido: S +0,031 ATR/día (p 0,002), W +0,043 (p 0,0007); A20 y N no. Conjunto S&P+Dow+Russell: S +0,046, W +0,107 (antes +0,121).

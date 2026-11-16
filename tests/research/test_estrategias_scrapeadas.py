@@ -76,3 +76,13 @@ def test_franklin_variantes_causal_y_base_coincide():
     v = R[R.celda.map(tuple) == ("1000", "rango", "ninguno")].set_index("fecha")
     comun = v.index.intersection(base.index)
     assert len(comun) and np.allclose(v.loc[comun, "bruto"], base.loc[comun, "bruto"])
+
+
+def test_leer_m1_russell_en_utc_y_resto_en_hora_servidor(tmp_path):
+    """2026-11-16: el CSV de Russell viene en UTC; los *_M1_dukas en NY + 7. Las 14:30 UTC de enero son las 09:30 NY; las 13:30 UTC de julio también."""
+    from edgelab.research import m1_intradia as M
+    txt = "Date,Time,Open,High,Low,Close,Volume\n20240110,14:30:00,1,2,0.5,1.5,10\n20240710,13:30:00,1,2,0.5,1.5,10\n"
+    (tmp_path / "USSC2000IDXUSD.csv").write_text(txt); (tmp_path / "SP_M1_dukas.csv").write_text(txt.replace("14:30", "16:30").replace("13:30", "16:30"))
+    r = M.leer_m1(tmp_path / "USSC2000IDXUSD.csv"); s = M.leer_m1(tmp_path / "SP_M1_dukas.csv")
+    assert [(t.hour, t.minute) for t in r.index] == [(9, 30), (9, 30)]
+    assert [(t.hour, t.minute) for t in s.index] == [(9, 30), (9, 30)]

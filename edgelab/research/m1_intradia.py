@@ -22,10 +22,17 @@ ORB_STOP = ("OPUESTO", "MITAD")
 ORB_OBJ = (1.0, 2.0, 0.0)                     # 0 = sin objetivo (sale al cierre)
 
 
+EN_UTC = ("USSC2000IDXUSD",)          # 2026-11-16: el CSV de Russell viene en UTC (pico de volumen a las 09:31 NY sólo así), no en hora del servidor
+
+
 def leer_m1(path) -> pd.DataFrame:
+    """M1 de Dukascopy → índice en hora de NY sin zona. Los CSV `*_M1_dukas` vienen en hora del servidor (NY + 7); los de `EN_UTC`, en UTC."""
+    from pathlib import Path
     D = pd.read_csv(path)
     D.columns = [c.strip().lower() for c in D.columns]
-    t = pd.to_datetime(D["date"].astype(str) + " " + D["time"].astype(str), format="%Y%m%d %H:%M:%S") - pd.Timedelta(hours=SERVIDOR_MENOS_NY)
+    t = pd.to_datetime(D["date"].astype(str) + " " + D["time"].astype(str), format="%Y%m%d %H:%M:%S")
+    if Path(str(path)).name.startswith(EN_UTC): t = t.dt.tz_localize("UTC").dt.tz_convert("America/New_York").dt.tz_localize(None)
+    else: t = t - pd.Timedelta(hours=SERVIDOR_MENOS_NY)
     return pd.DataFrame(dict(o=D.open.to_numpy(float), h=D.high.to_numpy(float), l=D.low.to_numpy(float), c=D.close.to_numpy(float),
                              v=D.volume.to_numpy(float) if "volume" in D else np.ones(len(D))), index=t)
 

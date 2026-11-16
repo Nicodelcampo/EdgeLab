@@ -30,10 +30,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Filtro 'no operar PREAPERTURA-ES con noche alta' como hipótesis nueva con réplica no mirada (forward/holdout de otra familia); Z necesita N.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **Sesgo de Franklin a las 10:00 NY: cierre arriba del máximo de Londres (03:00–09:30) y del VWAP de sesión → compra (abajo de ambos → venta); stop en el extremo de 09:30–10:00; salida al cierre o 2R** (`F-FRANKLIN-NY-LONDRES-VWAP`, 2026-11-16, humano)
-  - Efecto: 2020→2026-09: NQ +0,10 R (p 0,018; 2R +0,10, p 0,010), ES +0,12 R (p 0,037); 2012–2019 negativo (−0,05 / −0,14); YM negativo. No nominada por BH sobre 18. Como filtro de T: a favor +21,3 pts vs resto +9,4 (p 0,012) en 2020–26; ≈ 0 en 2012–19 (donde T no funciona).
+  - Efecto: 2020→2026-09: NQ +0,10 R (p 0,018; 2R +0,10, p 0,010), ES +0,12 R (p 0,037); 2012–2019 negativo (−0,05 / −0,14); YM negativo. No nominada por BH sobre 18. Como filtro de T: a favor +21,3 pts vs resto +9,4 (p 0,012) en 2020–26; ≈ 0 en 2012–19 (donde T no funciona). | Mejoras: 21/32 variantes elegibles en 2020–22 (meseta), ninguna confirma en 2023–26 (base +0,093 R, p 0,093); Russell no visto no replica (−0,02), YM tampoco. Al holdout va la base.
   - Dónde: NQ, ES (señal M1 de CFD, costos de futuros)
   - Siguiente: Holdout exploratorio de la familia (regla congelada 'cierre', NQ+ES) y filtro de T en el forward; régimen desde 2020 declarado.
-  - Evidencia: `docs/research/reels_20261116/RESULTADO.md`
+  - Evidencia: `docs/research/reels_20261116/RESULTADO.md`, `docs/research/reels_20261116/FRANKLIN_MEJORAS.json`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -85,7 +85,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Diseñar para perder poco los días sin tendencia y mantener hasta el cierre; buscar predictores nuevos de día de tendencia (E0 sin retornos).
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **Salidas técnicas rápidas (giro de SuperTrend, recruce del VWAP, ruptura fallida) frente a mantener hasta el cierre** (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`, 2026-11-16, sesion)
-  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes). | CONFIRMADO fuera de muestra (S&P, Dow, Russell 2012–2026, BH): S +0,046 ATR/día y W +0,121 ATR/día al quitar la salida técnica (3/3 índices); A20 y N no. Sin ella S y W siguen sin ventaja neta fuera del Nasdaq y el peor día empeora. | En cubos propios: SALIDA al cierre gana a 1R/2R en PREAPERTURA NQ 4/4, ES 4/4, YM 2/4; NO en rupturas del rango nocturno (RANGO0100 NQ 0/4, ES 0/4).
+  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes). | CONFIRMADO fuera de muestra (S&P, Dow, Russell 2012–2026, BH): S +0,046 ATR/día y W +0,121 ATR/día al quitar la salida técnica (3/3 índices); A20 y N no. Sin ella S y W siguen sin ventaja neta fuera del Nasdaq y el peor día empeora. | En cubos propios: SALIDA al cierre gana a 1R/2R en PREAPERTURA NQ 4/4, ES 4/4, YM 2/4; NO en rupturas del rango nocturno (RANGO0100 NQ 0/4, ES 0/4). | 2026-11-16: Russell re-medido con el horario corregido (venía en UTC): S p 0,002, W p 0,0007; la confirmación 3/3 se mantiene.
   - Dónde: FundedSync NQ
   - Siguiente: Aplicar en el diseño de reglas de ruptura propias (no salir por señal técnica rápida); no alcanza solo.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
@@ -95,7 +95,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Usar sólo como pronóstico de volatilidad (stops a re-simular, costos); no para dimensionar reglas medidas en R.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
 - **Sumar una canasta descorrelacionada (T+Z+R, corr diaria 0,08) a la cartera al mismo riesgo por regla** (`F-TZR-TAMANO-EN-CARTERA`, 2026-11-16, sesion)
-  - Efecto: Sube ganancia y t (v3+TZR t 6,15), pero la varianza diaria de T+Z+R a ≈200 USD/regla lleva la quema 50K de 3 % a 34 %.
+  - Efecto: Sube ganancia y t (v3+TZR t 6,15), pero la varianza diaria de T+Z+R a ≈200 USD/regla lleva la quema 50K de 3 % a 34 %. | Tanda 5: aun a 1 MNQ por regla la quema 50K queda en 13–16 % (v2 sola 3 %): no entra al forward.
   - Dónde: Cartera v2/v3 + FundedSync T/Z/R en MNQ
   - Siguiente: Combinar sólo con tamaño declarado antes y menor (p. ej. ≈50 USD por regla) y con el drawdown de la cuenta como restricción; hipótesis nueva.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`

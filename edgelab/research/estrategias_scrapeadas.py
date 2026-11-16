@@ -27,6 +27,14 @@ EV_CELDAS = [(s, f) for s in ("mecha", "atr1", "atr2") for f in ("rth", "2h")]
 ORB_CELDAS = [(s, t) for s in ("opuesto", "medio") for t in (1.0, 2.0, 0.0)]          # objetivo 0 = cierre del día
 
 
+def ctx_de_m1(D: pd.DataFrame) -> dict:
+    """Contexto (t = fin de la vela en epoch UTC, o, h, l, c, v) desde un M1 con índice en hora de NY sin zona (m1_intradia.leer_m1)."""
+    t = D.index.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT"); ok = ~t.isna(); D = D[ok]; t = t[ok].tz_convert("UTC")
+    v = D.v.to_numpy(float) if "v" in D else np.ones(len(D))
+    return dict(t=np.asarray((t - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s"), dtype=np.int64) + 60, o=D.o.to_numpy(float),
+                h=D.h.to_numpy(float), l=D.l.to_numpy(float), c=D.c.to_numpy(float), v=v)
+
+
 def _hora(ctx, tz):
     lt = pd.to_datetime(ctx["t"] - 60, unit="s", utc=True).tz_convert(tz)
     return (lt.hour * 60 + lt.minute).to_numpy(), np.asarray(lt.strftime("%Y%m%d"), dtype=np.int64), lt.dayofweek.to_numpy()
@@ -320,7 +328,7 @@ def franklin_variantes(ctx, celdas=None) -> pd.DataFrame:
         gap = abs(d["o"] - prev) / atr if (prev is not None and np.isfinite(atr) and atr > 0) else np.nan
         prev = float(c[ix[-1]]); rangos.append(d["h"] - d["l"])
         if not np.isfinite(atr): continue
-        mm = m[ix]; vwny = np.cumsum(tp[ix] * v[ix]) / np.cumsum(v[ix]); ult = int(ix[-1])
+        mm = m[ix]; vwny = np.cumsum(tp[ix] * v[ix]) / np.cumsum(v[ix]); ult = int(ix[-1]); hecho = {}
         for celda in celdas:
             hora, stop, filtro = celda
             if "sin_gap" in filtro and not (np.isfinite(gap) and gap < 0.5): continue
@@ -332,10 +340,17 @@ def franklin_variantes(ctx, celdas=None) -> pd.DataFrame:
                 dd = 1 if (p > lh[k] and p > vw[k]) else -1 if (p < ll[k] and p < vw[k]) else 0
                 if dd and "vwap_ny" in filtro and not (dd * (p - vwny[q]) > 0): dd = 0
                 if not dd: continue
-                orr = ix[: q + 1]
-                sl = dd * (p - (float(l[orr].min()) if dd == 1 else float(h[orr].max()))) if stop == "rango" else 0.5 * atr
-                if not sl > 0 or k >= ult: break
-                b, mot = _sim_velas(o, h, l, c, k + 1, p, dd, sl, 0.0, None, ult)
+                if k >= ult: break
+                clave = (mdec, stop, dd)
+                if clave not in hecho:                                   # salida al cierre con stop: primer toque del stop (vectorizado)
+                    orr = ix[: q + 1]
+                    sl = dd * (p - (float(l[orr].min()) if dd == 1 else float(h[orr].max()))) if stop == "rango" else 0.5 * atr
+                    if not sl > 0: hecho[clave] = None
+                    else:
+                        st = p - dd * sl; seg = (l[k + 1: ult + 1] <= st) if dd == 1 else (h[k + 1: ult + 1] >= st)
+                        hecho[clave] = (sl, -sl, 1) if seg.any() else (sl, dd * (float(c[ult]) - p), 3)
+                if hecho[clave] is None: break
+                sl, b, mot = hecho[clave]
                 filas.append(dict(fecha=int(d["fecha"]), celda=celda, lado=dd, riesgo=float(sl), bruto=float(b), motivo=mot, minuto=int(mdec)))
                 break
     return pd.DataFrame(filas)

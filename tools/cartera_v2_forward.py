@@ -27,6 +27,9 @@ def _v2(ver="v2"):
     return {r["regla"]: r for r in json.loads((DIR / VERSIONES[ver][0]).read_text(encoding="utf-8"))["reglas"]}
 
 
+SEGUIMIENTO = ("PREAPERTURA-ES",)                                    # PREREGISTRO_TANDA5 T5b: sólo se baja (lo lee franklin_seguimiento)
+
+
 def _todas():
     return {c: r for v in VERSIONES for c, r in _v2(v).items()}
 
@@ -35,7 +38,7 @@ def lanzar(hasta, commit):
     from edgelab.research.embudo_runners import KaggleRunner
     run = KaggleRunner(dataset_sellado=SELLADO, raiz=None); U = {r["cid"]: r for r in universo()}
     FW.mkdir(parents=True, exist_ok=True); hf = FW / f"handles_{hasta}.json"; hs = json.loads(hf.read_text()) if hf.exists() else {}
-    for c in _todas():
+    for c in list(_todas()) + list(SEGUIMIENTO):
         if c in hs: continue
         r = U[c]; sp = dict(r["spec"], cid=f"FW-{c}-{hasta}"[:30], cuenta_kaggle="nicolasbuttaro")
         params = dict(cortes=r["cortes"], celdas=[r["celda"]], tope=r["tope"], operaciones=True,
@@ -73,7 +76,7 @@ def traer(hasta):
     from edgelab.research.embudo_runners import KaggleRunner
     run = KaggleRunner(dataset_sellado=SELLADO, raiz=None); hs = json.loads((FW / f"handles_{hasta}.json").read_text()); U = {r["cid"]: r for r in universo()}
     falta, ops_por = [], {}
-    for c in _todas():
+    for c in list(_todas()) + list(SEGUIMIENTO):
         f = FW / f"{c}__{hasta}.json"
         if not f.exists():
             if c not in hs: falta.append((c, "sin_lanzar")); continue

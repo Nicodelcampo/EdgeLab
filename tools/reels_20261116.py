@@ -18,10 +18,8 @@ from fundedsync_tanda2 import _bh  # noqa: E402
 
 def ctx_de_csv(path):
     from edgelab.research import m1_intradia as M
-    D = M.leer_m1(path); D = D[(D.index >= "2012-01-20") & (D.index < "2026-09-30")]
-    t = D.index.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT"); ok = ~t.isna(); D = D[ok]; t = t[ok].tz_convert("UTC")
-    return dict(t=np.asarray((t - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s"), dtype=np.int64) + 60, o=D.o.to_numpy(float), h=D.h.to_numpy(float),
-                l=D.l.to_numpy(float), c=D.c.to_numpy(float), v=D.v.to_numpy(float))
+    from edgelab.research.estrategias_scrapeadas import ctx_de_m1
+    D = M.leer_m1(path); return ctx_de_m1(D[(D.index >= "2012-01-20") & (D.index < "2026-09-30")])
 
 
 def _boot_media(R, ses, seed=7):

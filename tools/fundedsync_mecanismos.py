@@ -23,7 +23,7 @@ def _tercil(x: pd.Series) -> pd.Series:
 
 def contexto(path) -> pd.DataFrame:
     """Variables diarias causales (conocidas antes de la entrada del día)."""
-    D = M.leer_m1(path); D = D[D.index >= "2010-01-01"]
+    D = path if isinstance(path, pd.DataFrame) else M.leer_m1(path); D = D[D.index >= "2010-01-01"]          # DataFrame: kernel de Franklin
     m = D.index.hour * 60 + D.index.minute
     R = D[(m >= 570) & (m < 960)]; d = R.index.normalize()
     day = pd.DataFrame(dict(o=R.o.groupby(d).first(), h=R.h.groupby(d).max(), l=R.l.groupby(d).min(), c=R.c.groupby(d).last()))

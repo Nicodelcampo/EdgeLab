@@ -54,12 +54,12 @@ def ops_cartera(S):
     return pd.DataFrame(filas)
 
 
-def ops_tzr(carpeta):
+def ops_tzr(carpeta, minimo=False, modulos=("T", "Z", "R")):
     """T, Z, R de fábrica en MNQ (micros fijos ≈ 200 USD de riesgo mediano; Z y R con stop de catástrofe 0,5 × ATR20 vía MAE)."""
     from edgelab.research import fundedsyncstack as F
     import fundedsync_tanda2 as T2
     D = T2.leer(carpeta, "NQ_M1_dukas"); day = T2.diario(D); ms = F.build_multi_series(F.load_m1_data(T2.a_utc(D), end="2026-10-01"), tz_input="UTC"); filas = []
-    for k in ("T", "Z", "R"):
+    for k in modulos:
         x = F.correr_modulo(k, ms); o = T2._ops(x, 1.5455)
         o["t"] = ((pd.to_datetime(x.entry_time_utc, utc=True) - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s")).values
         ppu = (pd.to_numeric(x.pnl_pts, errors="coerce") / pd.to_numeric(x.pnl_usd, errors="coerce")).replace([np.inf, -np.inf], np.nan).median()
@@ -68,7 +68,7 @@ def ops_tzr(carpeta):
             riesgo = (pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().values; rmed = np.nanmedian(riesgo[riesgo >= 4])
         else:
             o["neto"] = np.where(o.mae_pts >= o.stop, -o.stop - 1.5455, o.neto); rmed = np.nanmedian(o.stop)
-        n = max(1, round(USD_R / (rmed * 2.0)))
+        n = 1 if minimo else max(1, round(USD_R / (rmed * 2.0)))
         o = o[(o.dia >= DEV[0]) & (o.dia <= DEV[1])]
         filas += [dict(ses=int(d.strftime("%Y%m%d")), t=t, usd=v * 2.0 * n, regla=k) for d, t, v in zip(o.dia, o.t, o.neto)]
     return pd.DataFrame(filas)
@@ -128,6 +128,25 @@ def c4(carpeta):
     (DIR / "TANDA4_C4.json").write_text(json.dumps(res, indent=1, default=float)); print({k: res[k].get("pasa") for k in res})
 
 
+def t5a(carpeta):
+    """PREREGISTRO_TANDA5 T5a: v2/v3 + T+Z+R a 1 MNQ por regla (y v2 + T sola a 1 MNQ) en la prop 50K."""
+    ep = _ep(); sesiones = [int(d.strftime("%Y%m%d")) for d in pd.bdate_range(*DEV)]
+    v2 = json.loads((DIR / "SELECCION.json").read_text())["futuros"]; v3 = json.loads((DIR / "v3/SELECCION.json").read_text())["futuros"]
+    contr = json.loads((DIR / "PROP.json").read_text())["factor_contraccion"]
+    tzr = ops_tzr(carpeta, minimo=True); b2, b3 = ops_cartera(v2), ops_cartera(v3); res = dict(versiones={})
+    serie = lambda df: np.array([_diario(df, False).get(s, 0.0) for s in sesiones])
+    for nom, df in (("v2", b2), ("v3", b3), ("v2+TZRmin", pd.concat([b2, tzr])), ("v3+TZRmin", pd.concat([b3, tzr])),
+                    ("v2+Tmin", pd.concat([b2, tzr[tzr.regla == "T"]])), ("v3+Tmin", pd.concat([b3, tzr[tzr.regla == "T"]])), ("TZRmin", tzr)):
+        x = serie(df); r = dict(res_dev=ep.res(x))
+        for k, mu in (("media_dev", x.mean()), ("media_contraida", x.mean() * contr), ("azar_0", 0.0)):
+            p, q = ep.sim(x, ep.CUENTAS["50K"], mu=mu); r[k] = dict(pasa=float(p), quema=float(q))
+        res["versiones"][nom] = r; print(nom, r["res_dev"], {k: r[k] for k in ("media_contraida", "azar_0")}, flush=True)
+    for nom in ("v2+TZRmin", "v3+TZRmin", "v2+Tmin", "v3+Tmin"):
+        r = res["versiones"][nom]; solo = res["versiones"][nom.split("+")[0]]
+        r["entra_forward"] = bool(r["media_contraida"]["quema"] <= 0.10 and r["media_contraida"]["pasa"] >= solo["media_contraida"]["pasa"])
+    (DIR / "TANDA5_T5A.json").write_text(json.dumps(res, indent=1, default=float)); print({k: v.get("entra_forward") for k, v in res["versiones"].items()})
+
+
 def operativa_v3():
     """CARTERA_V3_OPERATIVA.json con el formato de la v2 (A1, A2, M1, M3) para el forward."""
     from edgelab import costos as C
@@ -146,4 +165,4 @@ def operativa_v3():
 
 
 if __name__ == "__main__":
-    {"operativa_v3": lambda: operativa_v3(), "c1": lambda: c1(), "c2c5": lambda: c2c5(sys.argv[2]), "c4": lambda: c4(sys.argv[2])}[sys.argv[1]]()
+    {"t5a": lambda: t5a(sys.argv[2]), "operativa_v3": lambda: operativa_v3(), "c1": lambda: c1(), "c2c5": lambda: c2c5(sys.argv[2]), "c4": lambda: c4(sys.argv[2])}[sys.argv[1]]()
