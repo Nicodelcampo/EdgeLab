@@ -1,0 +1,723 @@
+=== FUNDEDSYNCSTACK.IsAtrPhaseStandaloneBlockedSession(DateTime sessionDate) -> bool ===
+  LOCALS: V_0:int
+  IL_0000: ldarga.s     V_0
+  IL_0002: call         DateTime.get_Year(0)
+  IL_0007: ldc.i4       10000
+  IL_000c: mul          
+  IL_000d: ldarga.s     V_0
+  IL_000f: call         DateTime.get_Month(0)
+  IL_0014: ldc.i4.s     100
+  IL_0016: mul          
+  IL_0017: add          
+  IL_0018: ldarga.s     V_0
+  IL_001a: call         DateTime.get_Day(0)
+  IL_001f: add          
+  IL_0020: stloc.0      
+  IL_0021: ldsfld       FUNDEDSYNCSTACK.AtrPhaseStandaloneBlockedEntrySessions
+  IL_0026: ldloc.0      
+  IL_0027: call         Array.BinarySearch(2)
+  IL_002c: ldc.i4.0     
+  IL_002d: clt          
+  IL_002f: ldc.i4.0     
+  IL_0030: ceq          
+  IL_0032: ret
+
+=== FUNDEDSYNCSTACK.ResetAtrPhaseState() -> void ===
+  LOCALS: V_0:bool, V_1:double, V_2:int
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.0      
+  IL_0002: ldarg.0      
+  IL_0003: ldarg.0      
+  IL_0004: ldc.i4.0     
+  IL_0005: dup          
+  IL_0006: stloc.0      
+  IL_0007: stfld        FUNDEDSYNCSTACK.rPrevCloseReady
+  IL_000c: ldloc.0      
+  IL_000d: dup          
+  IL_000e: stloc.0      
+  IL_000f: stfld        FUNDEDSYNCSTACK.rOscReady
+  IL_0014: ldloc.0      
+  IL_0015: dup          
+  IL_0016: stloc.0      
+  IL_0017: stfld        FUNDEDSYNCSTACK.rAtrReady
+  IL_001c: ldloc.0      
+  IL_001d: stfld        FUNDEDSYNCSTACK.rEmaReady
+  IL_0022: ldarg.0      
+  IL_0023: ldarg.0      
+  IL_0024: ldarg.0      
+  IL_0025: ldarg.0      
+  IL_0026: ldarg.0      
+  IL_0027: ldc.r8       0
+  IL_0030: dup          
+  IL_0031: stloc.1      
+  IL_0032: stfld        FUNDEDSYNCSTACK.rTrSeedSum
+  IL_0037: ldloc.1      
+  IL_0038: dup          
+  IL_0039: stloc.1      
+  IL_003a: stfld        FUNDEDSYNCSTACK.rPrevDecisionClose
+  IL_003f: ldloc.1      
+  IL_0040: dup          
+  IL_0041: stloc.1      
+  IL_0042: stfld        FUNDEDSYNCSTACK.rOsc
+  IL_0047: ldloc.1      
+  IL_0048: dup          
+  IL_0049: stloc.1      
+  IL_004a: stfld        FUNDEDSYNCSTACK.rAtr14
+  IL_004f: ldloc.1      
+  IL_0050: stfld        FUNDEDSYNCSTACK.rEma21
+  IL_0055: ldarg.0      
+  IL_0056: ldarg.0      
+  IL_0057: ldarg.0      
+  IL_0058: ldc.i4.0     
+  IL_0059: dup          
+  IL_005a: stloc.2      
+  IL_005b: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_0060: ldloc.2      
+  IL_0061: dup          
+  IL_0062: stloc.2      
+  IL_0063: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_0068: ldloc.2      
+  IL_0069: stfld        FUNDEDSYNCSTACK.rTrSeedCount
+  IL_006e: ldarg.0      
+  IL_006f: ldsfld       DateTime.MinValue
+  IL_0074: stfld        FUNDEDSYNCSTACK.rVwapDate
+  IL_0079: ldarg.0      
+  IL_007a: ldarg.0      
+  IL_007b: ldc.r8       0
+  IL_0084: dup          
+  IL_0085: stloc.1      
+  IL_0086: stfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_008b: ldloc.1      
+  IL_008c: stfld        FUNDEDSYNCSTACK.rVwapPv
+  IL_0091: ret
+
+=== FUNDEDSYNCSTACK.UpdateAtrPhaseIndicator(double high, double low, double close) -> bool ===
+  LOCALS: V_0:double, V_1:double, V_2:double
+  IL_0000: ldc.r8       0,090909090909090912
+  IL_0009: stloc.0      
+  IL_000a: ldarg.0      
+  IL_000b: ldfld        FUNDEDSYNCSTACK.rEmaReady
+  IL_0010: brtrue.s     IL_0022
+  IL_0012: ldarg.0      
+  IL_0013: ldarg.3      
+  IL_0014: stfld        FUNDEDSYNCSTACK.rEma21
+  IL_0019: ldarg.0      
+  IL_001a: ldc.i4.1     
+  IL_001b: stfld        FUNDEDSYNCSTACK.rEmaReady
+  IL_0020: br.s         IL_003e
+  IL_0022: ldarg.0      
+  IL_0023: ldloc.0      
+  IL_0024: ldarg.3      
+  IL_0025: mul          
+  IL_0026: ldc.r8       1
+  IL_002f: ldloc.0      
+  IL_0030: sub          
+  IL_0031: ldarg.0      
+  IL_0032: ldfld        FUNDEDSYNCSTACK.rEma21
+  IL_0037: mul          
+  IL_0038: add          
+  IL_0039: stfld        FUNDEDSYNCSTACK.rEma21
+  IL_003e: ldarg.0      
+  IL_003f: ldfld        FUNDEDSYNCSTACK.rPrevCloseReady
+  IL_0044: brtrue.s     IL_004b
+  IL_0046: ldarg.1      
+  IL_0047: ldarg.2      
+  IL_0048: sub          
+  IL_0049: br.s         IL_0072
+  IL_004b: ldarg.1      
+  IL_004c: ldarg.2      
+  IL_004d: sub          
+  IL_004e: ldarg.1      
+  IL_004f: ldarg.0      
+  IL_0050: ldfld        FUNDEDSYNCSTACK.rPrevDecisionClose
+  IL_0055: sub          
+  IL_0056: call         Math.Abs(1)
+  IL_005b: ldarg.2      
+  IL_005c: ldarg.0      
+  IL_005d: ldfld        FUNDEDSYNCSTACK.rPrevDecisionClose
+  IL_0062: sub          
+  IL_0063: call         Math.Abs(1)
+  IL_0068: call         Math.Max(2)
+  IL_006d: call         Math.Max(2)
+  IL_0072: stloc.1      
+  IL_0073: ldarg.0      
+  IL_0074: ldarg.3      
+  IL_0075: stfld        FUNDEDSYNCSTACK.rPrevDecisionClose
+  IL_007a: ldarg.0      
+  IL_007b: ldc.i4.1     
+  IL_007c: stfld        FUNDEDSYNCSTACK.rPrevCloseReady
+  IL_0081: ldarg.0      
+  IL_0082: ldfld        FUNDEDSYNCSTACK.rAtrReady
+  IL_0087: brtrue.s     IL_00ce
+  IL_0089: ldarg.0      
+  IL_008a: ldarg.0      
+  IL_008b: ldfld        FUNDEDSYNCSTACK.rTrSeedCount
+  IL_0090: ldc.i4.1     
+  IL_0091: add          
+  IL_0092: stfld        FUNDEDSYNCSTACK.rTrSeedCount
+  IL_0097: ldarg.0      
+  IL_0098: ldarg.0      
+  IL_0099: ldfld        FUNDEDSYNCSTACK.rTrSeedSum
+  IL_009e: ldloc.1      
+  IL_009f: add          
+  IL_00a0: stfld        FUNDEDSYNCSTACK.rTrSeedSum
+  IL_00a5: ldarg.0      
+  IL_00a6: ldfld        FUNDEDSYNCSTACK.rTrSeedCount
+  IL_00ab: ldc.i4.s     14
+  IL_00ad: bne.un.s     IL_00f0
+  IL_00af: ldarg.0      
+  IL_00b0: ldarg.0      
+  IL_00b1: ldfld        FUNDEDSYNCSTACK.rTrSeedSum
+  IL_00b6: ldc.r8       14
+  IL_00bf: div          
+  IL_00c0: stfld        FUNDEDSYNCSTACK.rAtr14
+  IL_00c5: ldarg.0      
+  IL_00c6: ldc.i4.1     
+  IL_00c7: stfld        FUNDEDSYNCSTACK.rAtrReady
+  IL_00cc: br.s         IL_00f0
+  IL_00ce: ldarg.0      
+  IL_00cf: ldc.r8       13
+  IL_00d8: ldarg.0      
+  IL_00d9: ldfld        FUNDEDSYNCSTACK.rAtr14
+  IL_00de: mul          
+  IL_00df: ldloc.1      
+  IL_00e0: add          
+  IL_00e1: ldc.r8       14
+  IL_00ea: div          
+  IL_00eb: stfld        FUNDEDSYNCSTACK.rAtr14
+  IL_00f0: ldarg.0      
+  IL_00f1: ldfld        FUNDEDSYNCSTACK.rAtrReady
+  IL_00f6: brfalse.s    IL_0116
+  IL_00f8: ldarg.0      
+  IL_00f9: ldfld        FUNDEDSYNCSTACK.rAtr14
+  IL_00fe: ldc.r8       0
+  IL_0107: ble.s        IL_0116
+  IL_0109: ldarg.0      
+  IL_010a: ldfld        FUNDEDSYNCSTACK.rAtr14
+  IL_010f: call         Double.IsNaN(1)
+  IL_0114: brfalse.s    IL_0118
+  IL_0116: ldc.i4.0     
+  IL_0117: ret          
+  IL_0118: ldc.r8       100
+  IL_0121: ldarg.3      
+  IL_0122: ldarg.0      
+  IL_0123: ldfld        FUNDEDSYNCSTACK.rEma21
+  IL_0128: sub          
+  IL_0129: mul          
+  IL_012a: ldc.r8       3
+  IL_0133: ldarg.0      
+  IL_0134: ldfld        FUNDEDSYNCSTACK.rAtr14
+  IL_0139: mul          
+  IL_013a: div          
+  IL_013b: stloc.2      
+  IL_013c: ldarg.0      
+  IL_013d: ldfld        FUNDEDSYNCSTACK.rOscReady
+  IL_0142: brtrue.s     IL_0154
+  IL_0144: ldarg.0      
+  IL_0145: ldloc.2      
+  IL_0146: stfld        FUNDEDSYNCSTACK.rOsc
+  IL_014b: ldarg.0      
+  IL_014c: ldc.i4.1     
+  IL_014d: stfld        FUNDEDSYNCSTACK.rOscReady
+  IL_0152: br.s         IL_0176
+  IL_0154: ldarg.0      
+  IL_0155: ldc.r8       0,5
+  IL_015e: ldloc.2      
+  IL_015f: mul          
+  IL_0160: ldc.r8       0,5
+  IL_0169: ldarg.0      
+  IL_016a: ldfld        FUNDEDSYNCSTACK.rOsc
+  IL_016f: mul          
+  IL_0170: add          
+  IL_0171: stfld        FUNDEDSYNCSTACK.rOsc
+  IL_0176: ldc.i4.1     
+  IL_0177: ret
+
+=== FUNDEDSYNCSTACK.RunAtrPhase() -> void ===
+  LOCALS: V_0:int, V_1:DateTime, V_2:DateTime, V_3:double, V_4:bool, V_5:bool, V_6:bool, V_7:int, V_8:bool, V_9:bool, V_10:int, V_11:bool, V_12:DateTime, V_13:DateTime, V_14:double, V_15:double
+  IL_0000: ldc.i4.s     9
+  IL_0002: stloc.0      
+  IL_0003: ldarg.0      
+  IL_0004: call         NinjaScriptBase.get_CurrentBars(0)
+  IL_0009: ldloc.0      
+  IL_000a: ldelem.i4    
+  IL_000b: ldc.i4.1     
+  IL_000c: bge.s        IL_000f
+  IL_000e: ret          
+  IL_000f: ldarg.0      
+  IL_0010: ldarg.0      
+  IL_0011: call         NinjaScriptBase.get_Times(0)
+  IL_0016: ldloc.0      
+  IL_0017: ldelem.ref   
+  IL_0018: ldc.i4.0     
+  IL_0019: callvirt     TimeSeries.get_Item(1)
+  IL_001e: call         FUNDEDSYNCSTACK.ToEasternFulcrum(1)
+  IL_0023: stloc.1      
+  IL_0024: ldloca.s     V_1
+  IL_0026: ldc.r8       -10
+  IL_002f: call         DateTime.AddMinutes(1)
+  IL_0034: stloc.2      
+  IL_0035: ldloca.s     V_2
+  IL_0037: call         DateTime.get_Date(0)
+  IL_003c: call         FUNDEDSYNCSTACK.IsAtrPhaseStandaloneBlockedSession(1)
+  IL_0041: brfalse.s    IL_0070
+  IL_0043: ldarg.0      
+  IL_0044: ldc.i4.0     
+  IL_0045: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_004a: ldarg.0      
+  IL_004b: ldc.i4.0     
+  IL_004c: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_0051: ldarg.0      
+  IL_0052: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_0057: ldfld        ModuleState.Net
+  IL_005c: brfalse.s    IL_006f
+  IL_005e: ldarg.0      
+  IL_005f: ldstr        "R"
+  IL_0064: ldstr        "INCOMPLETE_SESSION"
+  IL_0069: ldloc.0      
+  IL_006a: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_006f: ret          
+  IL_0070: nop          
+  IL_0071: ldarg.0      
+  IL_0072: call         NinjaScriptBase.get_Times(0)
+  IL_0077: ldloc.0      
+  IL_0078: ldelem.ref   
+  IL_0079: ldc.i4.0     
+  IL_007a: callvirt     TimeSeries.get_Item(1)
+  IL_007f: stloc.s      V_13
+  IL_0081: ldloca.s     V_13
+  IL_0083: ldc.r8       -10
+  IL_008c: call         DateTime.AddMinutes(1)
+  IL_0091: ldc.i4.0     
+  IL_0092: call         DateTime.SpecifyKind(2)
+  IL_0097: call         Globals.get_GeneralOptions(0)
+  IL_009c: callvirt     GeneralOptions.get_TimeZoneInfo(0)
+  IL_00a1: call         TimeZoneInfo.ConvertTimeToUtc(2)
+  IL_00a6: stloc.s      V_12
+  IL_00a8: ldloca.s     V_12
+  IL_00aa: call         DateTime.get_Hour(0)
+  IL_00af: brtrue.s     IL_011d
+  IL_00b1: ldloca.s     V_12
+  IL_00b3: call         DateTime.get_Minute(0)
+  IL_00b8: brtrue.s     IL_011d
+  IL_00ba: ldarg.0      
+  IL_00bb: ldfld        FUNDEDSYNCSTACK.rPrevCloseReady
+  IL_00c0: brfalse.s    IL_011d
+  IL_00c2: ldarg.0      
+  IL_00c3: call         NinjaScriptBase.get_Opens(0)
+  IL_00c8: ldloc.0      
+  IL_00c9: ldelem.ref   
+  IL_00ca: ldc.i4.0     
+  IL_00cb: callvirt     PriceSeries.get_Item(1)
+  IL_00d0: ldarg.0      
+  IL_00d1: ldfld        FUNDEDSYNCSTACK.rPrevDecisionClose
+  IL_00d6: sub          
+  IL_00d7: call         Math.Abs(1)
+  IL_00dc: ldc.r8       400
+  IL_00e5: ldarg.0      
+  IL_00e6: call         NinjaScriptBase.get_TickSize(0)
+  IL_00eb: mul          
+  IL_00ec: ble.un.s     IL_011d
+  IL_00ee: ldarg.0      
+  IL_00ef: ldfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_00f4: ldc.i4.0     
+  IL_00f5: cgt.un       
+  IL_00f7: ldarg.0      
+  IL_00f8: call         FUNDEDSYNCSTACK.ResetAtrPhaseState(0)
+  IL_00fd: brfalse.s    IL_011d
+  IL_00ff: ldarg.0      
+  IL_0100: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_0105: ldfld        ModuleState.Net
+  IL_010a: brfalse.s    IL_011d
+  IL_010c: ldarg.0      
+  IL_010d: ldstr        "R"
+  IL_0112: ldstr        "ROLL_RESET"
+  IL_0117: ldloc.0      
+  IL_0118: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_011d: leave.s      IL_0122
+  IL_011f: pop          
+  IL_0120: leave.s      IL_0122
+  IL_0122: ldarg.0      
+  IL_0123: ldfld        FUNDEDSYNCSTACK.rOsc
+  IL_0128: stloc.3      
+  IL_0129: ldarg.0      
+  IL_012a: ldfld        FUNDEDSYNCSTACK.rOscReady
+  IL_012f: stloc.s      V_4
+  IL_0131: ldarg.0      
+  IL_0132: ldarg.0      
+  IL_0133: call         NinjaScriptBase.get_Highs(0)
+  IL_0138: ldloc.0      
+  IL_0139: ldelem.ref   
+  IL_013a: ldc.i4.0     
+  IL_013b: callvirt     PriceSeries.get_Item(1)
+  IL_0140: ldarg.0      
+  IL_0141: call         NinjaScriptBase.get_Lows(0)
+  IL_0146: ldloc.0      
+  IL_0147: ldelem.ref   
+  IL_0148: ldc.i4.0     
+  IL_0149: callvirt     PriceSeries.get_Item(1)
+  IL_014e: ldarg.0      
+  IL_014f: call         NinjaScriptBase.get_Closes(0)
+  IL_0154: ldloc.0      
+  IL_0155: ldelem.ref   
+  IL_0156: ldc.i4.0     
+  IL_0157: callvirt     PriceSeries.get_Item(1)
+  IL_015c: call         FUNDEDSYNCSTACK.UpdateAtrPhaseIndicator(3)
+  IL_0161: stloc.s      V_5
+  IL_0163: ldloca.s     V_2
+  IL_0165: call         DateTime.get_Hour(0)
+  IL_016a: ldc.i4.s     60
+  IL_016c: mul          
+  IL_016d: ldloca.s     V_2
+  IL_016f: call         DateTime.get_Minute(0)
+  IL_0174: add          
+  IL_0175: ldc.i4       570
+  IL_017a: blt.s        IL_0197
+  IL_017c: ldloca.s     V_2
+  IL_017e: call         DateTime.get_Hour(0)
+  IL_0183: ldc.i4.s     60
+  IL_0185: mul          
+  IL_0186: ldloca.s     V_2
+  IL_0188: call         DateTime.get_Minute(0)
+  IL_018d: add          
+  IL_018e: ldc.i4       960
+  IL_0193: clt          
+  IL_0195: br.s         IL_0198
+  IL_0197: ldc.i4.0     
+  IL_0198: ldc.i4.0     
+  IL_0199: stloc.s      V_6
+  IL_019b: brfalse      IL_029a
+  IL_01a0: ldarg.0      
+  IL_01a1: ldfld        FUNDEDSYNCSTACK.rVwapDate
+  IL_01a6: ldloca.s     V_2
+  IL_01a8: call         DateTime.get_Date(0)
+  IL_01ad: call         DateTime.op_Inequality(2)
+  IL_01b2: brfalse.s    IL_01db
+  IL_01b4: ldarg.0      
+  IL_01b5: ldloca.s     V_2
+  IL_01b7: call         DateTime.get_Date(0)
+  IL_01bc: stfld        FUNDEDSYNCSTACK.rVwapDate
+  IL_01c1: ldarg.0      
+  IL_01c2: ldarg.0      
+  IL_01c3: ldc.r8       0
+  IL_01cc: dup          
+  IL_01cd: stloc.s      V_15
+  IL_01cf: stfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_01d4: ldloc.s      V_15
+  IL_01d6: stfld        FUNDEDSYNCSTACK.rVwapPv
+  IL_01db: ldarg.0      
+  IL_01dc: call         NinjaScriptBase.get_Highs(0)
+  IL_01e1: ldloc.0      
+  IL_01e2: ldelem.ref   
+  IL_01e3: ldc.i4.0     
+  IL_01e4: callvirt     PriceSeries.get_Item(1)
+  IL_01e9: ldarg.0      
+  IL_01ea: call         NinjaScriptBase.get_Lows(0)
+  IL_01ef: ldloc.0      
+  IL_01f0: ldelem.ref   
+  IL_01f1: ldc.i4.0     
+  IL_01f2: callvirt     PriceSeries.get_Item(1)
+  IL_01f7: add          
+  IL_01f8: ldarg.0      
+  IL_01f9: call         NinjaScriptBase.get_Closes(0)
+  IL_01fe: ldloc.0      
+  IL_01ff: ldelem.ref   
+  IL_0200: ldc.i4.0     
+  IL_0201: callvirt     PriceSeries.get_Item(1)
+  IL_0206: add          
+  IL_0207: ldc.r8       3
+  IL_0210: div          
+  IL_0211: stloc.s      V_14
+  IL_0213: ldarg.0      
+  IL_0214: ldarg.0      
+  IL_0215: ldfld        FUNDEDSYNCSTACK.rVwapPv
+  IL_021a: ldloc.s      V_14
+  IL_021c: ldarg.0      
+  IL_021d: call         NinjaScriptBase.get_Volumes(0)
+  IL_0222: ldloc.0      
+  IL_0223: ldelem.ref   
+  IL_0224: ldc.i4.0     
+  IL_0225: callvirt     VolumeSeries.get_Item(1)
+  IL_022a: mul          
+  IL_022b: add          
+  IL_022c: stfld        FUNDEDSYNCSTACK.rVwapPv
+  IL_0231: ldarg.0      
+  IL_0232: ldarg.0      
+  IL_0233: ldfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_0238: ldarg.0      
+  IL_0239: call         NinjaScriptBase.get_Volumes(0)
+  IL_023e: ldloc.0      
+  IL_023f: ldelem.ref   
+  IL_0240: ldc.i4.0     
+  IL_0241: callvirt     VolumeSeries.get_Item(1)
+  IL_0246: add          
+  IL_0247: stfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_024c: ldarg.0      
+  IL_024d: ldfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_0252: ldc.r8       0
+  IL_025b: ble.un.s     IL_029a
+  IL_025d: ldarg.0      
+  IL_025e: ldfld        FUNDEDSYNCSTACK.rAtrReady
+  IL_0263: brfalse.s    IL_029a
+  IL_0265: ldarg.0      
+  IL_0266: call         NinjaScriptBase.get_Closes(0)
+  IL_026b: ldloc.0      
+  IL_026c: ldelem.ref   
+  IL_026d: ldc.i4.0     
+  IL_026e: callvirt     PriceSeries.get_Item(1)
+  IL_0273: ldarg.0      
+  IL_0274: ldfld        FUNDEDSYNCSTACK.rVwapPv
+  IL_0279: ldarg.0      
+  IL_027a: ldfld        FUNDEDSYNCSTACK.rVwapVol
+  IL_027f: div          
+  IL_0280: sub          
+  IL_0281: call         Math.Abs(1)
+  IL_0286: ldc.r8       2,5
+  IL_028f: ldarg.0      
+  IL_0290: ldfld        FUNDEDSYNCSTACK.rAtr14
+  IL_0295: mul          
+  IL_0296: clt          
+  IL_0298: stloc.s      V_6
+  IL_029a: ldloca.s     V_1
+  IL_029c: call         DateTime.get_Hour(0)
+  IL_02a1: ldc.i4.s     60
+  IL_02a3: mul          
+  IL_02a4: ldloca.s     V_1
+  IL_02a6: call         DateTime.get_Minute(0)
+  IL_02ab: add          
+  IL_02ac: stloc.s      V_7
+  IL_02ae: ldloc.s      V_7
+  IL_02b0: ldc.i4       960
+  IL_02b5: bne.un.s     IL_02e4
+  IL_02b7: ldarg.0      
+  IL_02b8: ldc.i4.0     
+  IL_02b9: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_02be: ldarg.0      
+  IL_02bf: ldc.i4.0     
+  IL_02c0: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_02c5: ldarg.0      
+  IL_02c6: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_02cb: ldfld        ModuleState.Net
+  IL_02d0: brfalse.s    IL_02e3
+  IL_02d2: ldarg.0      
+  IL_02d3: ldstr        "R"
+  IL_02d8: ldstr        "CASH_CLOSE"
+  IL_02dd: ldloc.0      
+  IL_02de: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_02e3: ret          
+  IL_02e4: ldloc.s      V_4
+  IL_02e6: brfalse.s    IL_02ec
+  IL_02e8: ldloc.s      V_5
+  IL_02ea: brtrue.s     IL_02ed
+  IL_02ec: ret          
+  IL_02ed: ldloc.3      
+  IL_02ee: ldc.r8       100
+  IL_02f7: bgt.un.s     IL_030c
+  IL_02f9: ldarg.0      
+  IL_02fa: ldfld        FUNDEDSYNCSTACK.rOsc
+  IL_02ff: ldc.r8       100
+  IL_0308: cgt          
+  IL_030a: br.s         IL_030d
+  IL_030c: ldc.i4.0     
+  IL_030d: stloc.s      V_8
+  IL_030f: ldloc.3      
+  IL_0310: ldc.r8       -100
+  IL_0319: blt.un.s     IL_032e
+  IL_031b: ldarg.0      
+  IL_031c: ldfld        FUNDEDSYNCSTACK.rOsc
+  IL_0321: ldc.r8       -100
+  IL_032a: clt          
+  IL_032c: br.s         IL_032f
+  IL_032e: ldc.i4.0     
+  IL_032f: stloc.s      V_9
+  IL_0331: ldloc.s      V_8
+  IL_0333: brtrue.s     IL_033a
+  IL_0335: ldloc.s      V_9
+  IL_0337: brtrue.s     IL_033a
+  IL_0339: ret          
+  IL_033a: ldloc.s      V_8
+  IL_033c: brtrue.s     IL_0341
+  IL_033e: ldc.i4.m1    
+  IL_033f: br.s         IL_0342
+  IL_0341: ldc.i4.1     
+  IL_0342: stloc.s      V_10
+  IL_0344: ldarg.0      
+  IL_0345: ldfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_034a: ldloc.s      V_10
+  IL_034c: bne.un.s     IL_034f
+  IL_034e: ret          
+  IL_034f: ldloc.s      V_7
+  IL_0351: ldc.i4       570
+  IL_0356: blt.s        IL_0363
+  IL_0358: ldloc.s      V_7
+  IL_035a: ldc.i4       660
+  IL_035f: clt          
+  IL_0361: br.s         IL_0364
+  IL_0363: ldc.i4.0     
+  IL_0364: stloc.s      V_11
+  IL_0366: ldarg.0      
+  IL_0367: ldfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_036c: brtrue.s     IL_03db
+  IL_036e: ldloc.s      V_11
+  IL_0370: brtrue.s     IL_0373
+  IL_0372: ret          
+  IL_0373: ldarg.0      
+  IL_0374: ldloc.s      V_10
+  IL_0376: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_037b: ldloc.s      V_6
+  IL_037d: brfalse.s    IL_03da
+  IL_037f: ldarg.0      
+  IL_0380: ldstr        "R"
+  IL_0385: call         FUNDEDSYNCSTACK.CanEnter(1)
+  IL_038a: brfalse.s    IL_03da
+  IL_038c: ldloc.s      V_10
+  IL_038e: ldc.i4.0     
+  IL_038f: ble.s        IL_03b6
+  IL_0391: ldarg.0      
+  IL_0392: ldstr        "R"
+  IL_0397: ldarg.0      
+  IL_0398: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_039d: ldc.r8       NaN
+  IL_03a6: ldc.r8       NaN
+  IL_03af: ldloc.0      
+  IL_03b0: call         FUNDEDSYNCSTACK.RequestModuleLong(5)
+  IL_03b5: ret          
+  IL_03b6: ldarg.0      
+  IL_03b7: ldstr        "R"
+  IL_03bc: ldarg.0      
+  IL_03bd: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_03c2: ldc.r8       NaN
+  IL_03cb: ldc.r8       NaN
+  IL_03d4: ldloc.0      
+  IL_03d5: call         FUNDEDSYNCSTACK.RequestModuleShort(5)
+  IL_03da: ret          
+  IL_03db: ldloc.s      V_11
+  IL_03dd: brtrue.s     IL_040c
+  IL_03df: ldarg.0      
+  IL_03e0: ldc.i4.0     
+  IL_03e1: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_03e6: ldarg.0      
+  IL_03e7: ldc.i4.0     
+  IL_03e8: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_03ed: ldarg.0      
+  IL_03ee: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_03f3: ldfld        ModuleState.Net
+  IL_03f8: brfalse.s    IL_040b
+  IL_03fa: ldarg.0      
+  IL_03fb: ldstr        "R"
+  IL_0400: ldstr        "OPPOSITE"
+  IL_0405: ldloc.0      
+  IL_0406: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_040b: ret          
+  IL_040c: ldarg.0      
+  IL_040d: ldloc.s      V_10
+  IL_040f: stfld        FUNDEDSYNCSTACK.rShadowSide
+  IL_0414: ldarg.0      
+  IL_0415: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_041a: ldfld        ModuleState.Net
+  IL_041f: brfalse.s    IL_0442
+  IL_0421: ldarg.0      
+  IL_0422: ldloc.s      V_6
+  IL_0424: brtrue.s     IL_0429
+  IL_0426: ldc.i4.0     
+  IL_0427: br.s         IL_042b
+  IL_0429: ldloc.s      V_10
+  IL_042b: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_0430: ldarg.0      
+  IL_0431: ldstr        "R"
+  IL_0436: ldstr        "REVERSAL"
+  IL_043b: ldloc.0      
+  IL_043c: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_0441: ret          
+  IL_0442: ldloc.s      V_6
+  IL_0444: brfalse.s    IL_04a1
+  IL_0446: ldarg.0      
+  IL_0447: ldstr        "R"
+  IL_044c: call         FUNDEDSYNCSTACK.CanEnter(1)
+  IL_0451: brfalse.s    IL_04a1
+  IL_0453: ldloc.s      V_10
+  IL_0455: ldc.i4.0     
+  IL_0456: ble.s        IL_047d
+  IL_0458: ldarg.0      
+  IL_0459: ldstr        "R"
+  IL_045e: ldarg.0      
+  IL_045f: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_0464: ldc.r8       NaN
+  IL_046d: ldc.r8       NaN
+  IL_0476: ldloc.0      
+  IL_0477: call         FUNDEDSYNCSTACK.RequestModuleLong(5)
+  IL_047c: ret          
+  IL_047d: ldarg.0      
+  IL_047e: ldstr        "R"
+  IL_0483: ldarg.0      
+  IL_0484: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_0489: ldc.r8       NaN
+  IL_0492: ldc.r8       NaN
+  IL_049b: ldloc.0      
+  IL_049c: call         FUNDEDSYNCSTACK.RequestModuleShort(5)
+  IL_04a1: ret
+
+=== FUNDEDSYNCSTACK.TrySubmitAtrPhaseReversal() -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_0006: brfalse.s    IL_001d
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_000e: brfalse.s    IL_001d
+  IL_0010: ldarg.0      
+  IL_0011: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_0016: callvirt     ModuleState.get_CanEnter(0)
+  IL_001b: brtrue.s     IL_001e
+  IL_001d: ret          
+  IL_001e: ldarg.0      
+  IL_001f: ldfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_0024: ldarg.0      
+  IL_0025: ldc.i4.0     
+  IL_0026: stfld        FUNDEDSYNCSTACK.rPendingReversalSide
+  IL_002b: ldc.i4.0     
+  IL_002c: ble.s        IL_0053
+  IL_002e: ldarg.0      
+  IL_002f: ldstr        "R"
+  IL_0034: ldarg.0      
+  IL_0035: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_003a: ldc.r8       NaN
+  IL_0043: ldc.r8       NaN
+  IL_004c: ldc.i4.1     
+  IL_004d: call         FUNDEDSYNCSTACK.RequestModuleLong(5)
+  IL_0052: ret          
+  IL_0053: ldarg.0      
+  IL_0054: ldstr        "R"
+  IL_0059: ldarg.0      
+  IL_005a: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_005f: ldc.r8       NaN
+  IL_0068: ldc.r8       NaN
+  IL_0071: ldc.i4.1     
+  IL_0072: call         FUNDEDSYNCSTACK.RequestModuleShort(5)
+  IL_0077: ret
+
+=== FUNDEDSYNCSTACK.get_BaseQtyAtrPhase() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<BaseQtyAtrPhase>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_BaseQtyAtrPhase(int value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<BaseQtyAtrPhase>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_EnableAtrPhase() -> bool ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<EnableAtrPhase>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_EnableAtrPhase(bool value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<EnableAtrPhase>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_ActiveQtyAtrPhase() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: call         FUNDEDSYNCSTACK.get_QtyR(0)
+  IL_0006: ret

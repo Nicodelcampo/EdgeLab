@@ -1,0 +1,770 @@
+=== FUNDEDSYNCSTACK.RunSwas() -> void ===
+  LOCALS: V_0:int, V_1:PriceSeries, V_2:PriceSeries, V_3:PriceSeries, V_4:VolumeSeries, V_5:DateTime, V_6:bool, V_7:double, V_8:bool, V_9:bool, V_10:DateTime, V_11:int, V_12:int, V_13:bool, V_14:int, V_15:bool, V_16:double, V_17:double, V_18:double, V_19:bool, V_20:bool, V_21:bool, V_22:bool, V_23:bool, V_24:bool, V_25:bool, V_26:double, V_27:double, V_28:bool, V_29:bool, V_30:MarketPosition, V_31:bool, V_32:bool, V_33:bool, V_34:int, V_35:double, V_36:double, V_37:int
+  IL_0000: ldc.i4.2     
+  IL_0001: stloc.0      
+  IL_0002: ldarg.0      
+  IL_0003: call         NinjaScriptBase.get_CurrentBars(0)
+  IL_0008: ldloc.0      
+  IL_0009: ldelem.i4    
+  IL_000a: ldarg.0      
+  IL_000b: call         StrategyBase.get_BarsRequiredToTrade(0)
+  IL_0010: bge.s        IL_0013
+  IL_0012: ret          
+  IL_0013: ldarg.0      
+  IL_0014: call         NinjaScriptBase.get_Highs(0)
+  IL_0019: ldloc.0      
+  IL_001a: ldelem.ref   
+  IL_001b: stloc.1      
+  IL_001c: ldarg.0      
+  IL_001d: call         NinjaScriptBase.get_Lows(0)
+  IL_0022: ldloc.0      
+  IL_0023: ldelem.ref   
+  IL_0024: stloc.2      
+  IL_0025: ldarg.0      
+  IL_0026: call         NinjaScriptBase.get_Closes(0)
+  IL_002b: ldloc.0      
+  IL_002c: ldelem.ref   
+  IL_002d: stloc.3      
+  IL_002e: ldarg.0      
+  IL_002f: call         NinjaScriptBase.get_Volumes(0)
+  IL_0034: ldloc.0      
+  IL_0035: ldelem.ref   
+  IL_0036: stloc.s      V_4
+  IL_0038: ldarg.0      
+  IL_0039: call         NinjaScriptBase.get_Times(0)
+  IL_003e: ldloc.0      
+  IL_003f: ldelem.ref   
+  IL_0040: ldc.i4.0     
+  IL_0041: callvirt     TimeSeries.get_Item(1)
+  IL_0046: stloc.s      V_5
+  IL_0048: ldarg.0      
+  IL_0049: ldarg.0      
+  IL_004a: ldfld        FUNDEDSYNCSTACK.moduleS
+  IL_004f: call         FUNDEDSYNCSTACK.ConsumeLossCooldown(1)
+  IL_0054: stloc.s      V_6
+  IL_0056: ldloca.s     V_5
+  IL_0058: call         DateTime.get_Day(0)
+  IL_005d: ldarg.0      
+  IL_005e: ldfld        FUNDEDSYNCSTACK.lastDay_S
+  IL_0063: beq.s        IL_0079
+  IL_0065: ldarg.0      
+  IL_0066: ldloca.s     V_5
+  IL_0068: call         DateTime.get_Day(0)
+  IL_006d: stfld        FUNDEDSYNCSTACK.lastDay_S
+  IL_0072: ldarg.0      
+  IL_0073: ldc.i4.0     
+  IL_0074: stfld        FUNDEDSYNCSTACK.closedToday_S
+  IL_0079: ldarg.0      
+  IL_007a: call         NinjaScriptBase.get_BarsArray(0)
+  IL_007f: ldloc.0      
+  IL_0080: ldelem.ref   
+  IL_0081: callvirt     Bars.get_IsFirstBarOfSession(0)
+  IL_0086: brfalse.s    IL_00a6
+  IL_0088: ldarg.0      
+  IL_0089: ldc.r8       0
+  IL_0092: stfld        FUNDEDSYNCSTACK.cumPV_S
+  IL_0097: ldarg.0      
+  IL_0098: ldc.r8       0
+  IL_00a1: stfld        FUNDEDSYNCSTACK.cumVol_S
+  IL_00a6: ldarg.0      
+  IL_00a7: ldarg.0      
+  IL_00a8: ldfld        FUNDEDSYNCSTACK.cumPV_S
+  IL_00ad: ldloc.3      
+  IL_00ae: ldc.i4.0     
+  IL_00af: callvirt     PriceSeries.get_Item(1)
+  IL_00b4: ldloc.s      V_4
+  IL_00b6: ldc.i4.0     
+  IL_00b7: callvirt     VolumeSeries.get_Item(1)
+  IL_00bc: mul          
+  IL_00bd: add          
+  IL_00be: stfld        FUNDEDSYNCSTACK.cumPV_S
+  IL_00c3: ldarg.0      
+  IL_00c4: ldarg.0      
+  IL_00c5: ldfld        FUNDEDSYNCSTACK.cumVol_S
+  IL_00ca: ldloc.s      V_4
+  IL_00cc: ldc.i4.0     
+  IL_00cd: callvirt     VolumeSeries.get_Item(1)
+  IL_00d2: add          
+  IL_00d3: stfld        FUNDEDSYNCSTACK.cumVol_S
+  IL_00d8: ldarg.0      
+  IL_00d9: ldarg.0      
+  IL_00da: ldfld        FUNDEDSYNCSTACK.cumVol_S
+  IL_00df: ldc.r8       0
+  IL_00e8: bgt.s        IL_00f3
+  IL_00ea: ldloc.3      
+  IL_00eb: ldc.i4.0     
+  IL_00ec: callvirt     PriceSeries.get_Item(1)
+  IL_00f1: br.s         IL_0100
+  IL_00f3: ldarg.0      
+  IL_00f4: ldfld        FUNDEDSYNCSTACK.cumPV_S
+  IL_00f9: ldarg.0      
+  IL_00fa: ldfld        FUNDEDSYNCSTACK.cumVol_S
+  IL_00ff: div          
+  IL_0100: stfld        FUNDEDSYNCSTACK.vwap_S
+  IL_0105: ldarg.0      
+  IL_0106: ldfld        FUNDEDSYNCSTACK.ema9_S
+  IL_010b: ldc.i4.0     
+  IL_010c: callvirt     NinjaScriptBase.get_Item(1)
+  IL_0111: stloc.s      V_7
+  IL_0113: ldarg.0      
+  IL_0114: ldfld        FUNDEDSYNCSTACK.prevEma_S
+  IL_0119: ldarg.0      
+  IL_011a: ldfld        FUNDEDSYNCSTACK.prevVwap_S
+  IL_011f: bgt.un.s     IL_012d
+  IL_0121: ldloc.s      V_7
+  IL_0123: ldarg.0      
+  IL_0124: ldfld        FUNDEDSYNCSTACK.vwap_S
+  IL_0129: cgt          
+  IL_012b: br.s         IL_012e
+  IL_012d: ldc.i4.0     
+  IL_012e: stloc.s      V_8
+  IL_0130: ldarg.0      
+  IL_0131: ldfld        FUNDEDSYNCSTACK.prevEma_S
+  IL_0136: ldarg.0      
+  IL_0137: ldfld        FUNDEDSYNCSTACK.prevVwap_S
+  IL_013c: blt.un.s     IL_014a
+  IL_013e: ldloc.s      V_7
+  IL_0140: ldarg.0      
+  IL_0141: ldfld        FUNDEDSYNCSTACK.vwap_S
+  IL_0146: clt          
+  IL_0148: br.s         IL_014b
+  IL_014a: ldc.i4.0     
+  IL_014b: stloc.s      V_9
+  IL_014d: ldloc.s      V_5
+  IL_014f: stloc.s      V_10
+  IL_0151: ldarg.0      
+  IL_0152: call         NinjaScriptBase.get_BarsPeriods(0)
+  IL_0157: ldloc.0      
+  IL_0158: ldelem.ref   
+  IL_0159: callvirt     BarsPeriod.get_BarsPeriodType(0)
+  IL_015e: ldc.i4.4     
+  IL_015f: bne.un.s     IL_0179
+  IL_0161: ldloca.s     V_5
+  IL_0163: ldarg.0      
+  IL_0164: call         NinjaScriptBase.get_BarsPeriods(0)
+  IL_0169: ldloc.0      
+  IL_016a: ldelem.ref   
+  IL_016b: callvirt     BarsPeriod.get_Value(0)
+  IL_0170: neg          
+  IL_0171: conv.r8      
+  IL_0172: call         DateTime.AddMinutes(1)
+  IL_0177: stloc.s      V_10
+  IL_0179: ldloca.s     V_10
+  IL_017b: call         DateTime.get_Hour(0)
+  IL_0180: ldc.i4.s     60
+  IL_0182: mul          
+  IL_0183: ldloca.s     V_10
+  IL_0185: call         DateTime.get_Minute(0)
+  IL_018a: add          
+  IL_018b: stloc.s      V_11
+  IL_018d: ldarg.0      
+  IL_018e: call         FUNDEDSYNCSTACK.get_S_NyOpenHour(0)
+  IL_0193: ldc.i4.s     60
+  IL_0195: mul          
+  IL_0196: ldarg.0      
+  IL_0197: call         FUNDEDSYNCSTACK.get_S_NyOpenMinute(0)
+  IL_019c: add          
+  IL_019d: stloc.s      V_12
+  IL_019f: ldarg.0      
+  IL_01a0: call         FUNDEDSYNCSTACK.get_S_UseTimeFilter(0)
+  IL_01a5: brfalse.s    IL_01c3
+  IL_01a7: ldloc.s      V_11
+  IL_01a9: ldloc.s      V_12
+  IL_01ab: ldarg.0      
+  IL_01ac: call         FUNDEDSYNCSTACK.get_S_PreBlockMin(0)
+  IL_01b1: sub          
+  IL_01b2: blt.s        IL_01c3
+  IL_01b4: ldloc.s      V_11
+  IL_01b6: ldloc.s      V_12
+  IL_01b8: ldarg.0      
+  IL_01b9: call         FUNDEDSYNCSTACK.get_S_PostBlockMin(0)
+  IL_01be: add          
+  IL_01bf: clt          
+  IL_01c1: br.s         IL_01c4
+  IL_01c3: ldc.i4.0     
+  IL_01c4: stloc.s      V_13
+  IL_01c6: ldarg.0      
+  IL_01c7: call         FUNDEDSYNCSTACK.get_S_CloseHour(0)
+  IL_01cc: ldc.i4.s     60
+  IL_01ce: mul          
+  IL_01cf: ldarg.0      
+  IL_01d0: call         FUNDEDSYNCSTACK.get_S_CloseMinute(0)
+  IL_01d5: add          
+  IL_01d6: stloc.s      V_14
+  IL_01d8: ldloc.s      V_11
+  IL_01da: ldloc.s      V_14
+  IL_01dc: clt          
+  IL_01de: ldc.i4.0     
+  IL_01df: ceq          
+  IL_01e1: stloc.s      V_15
+  IL_01e3: ldarg.0      
+  IL_01e4: call         FUNDEDSYNCSTACK.get_S_UseEODClose(0)
+  IL_01e9: ldloc.s      V_15
+  IL_01eb: and          
+  IL_01ec: brfalse.s    IL_01f1
+  IL_01ee: ldc.i4.1     
+  IL_01ef: stloc.s      V_13
+  IL_01f1: ldarg.0      
+  IL_01f2: call         FUNDEDSYNCSTACK.get_S_UseRegimeFilter(0)
+  IL_01f7: brfalse      IL_02aa
+  IL_01fc: ldarg.0      
+  IL_01fd: ldfld        FUNDEDSYNCSTACK.atrRegime_S
+  IL_0202: ldarg.0      
+  IL_0203: ldfld        FUNDEDSYNCSTACK.atrRegimeIdx_S
+  IL_0208: ldarg.0      
+  IL_0209: ldfld        FUNDEDSYNCSTACK.atrRegime_S
+  IL_020e: ldlen        
+  IL_020f: conv.i4      
+  IL_0210: rem          
+  IL_0211: ldarg.0      
+  IL_0212: ldfld        FUNDEDSYNCSTACK.atr_S
+  IL_0217: ldc.i4.0     
+  IL_0218: callvirt     NinjaScriptBase.get_Item(1)
+  IL_021d: stelem.r8    
+  IL_021e: ldarg.0      
+  IL_021f: ldarg.0      
+  IL_0220: ldfld        FUNDEDSYNCSTACK.atrRegimeIdx_S
+  IL_0225: ldc.i4.1     
+  IL_0226: add          
+  IL_0227: stfld        FUNDEDSYNCSTACK.atrRegimeIdx_S
+  IL_022c: ldarg.0      
+  IL_022d: ldfld        FUNDEDSYNCSTACK.atrRegimeIdx_S
+  IL_0232: ldarg.0      
+  IL_0233: ldfld        FUNDEDSYNCSTACK.atrRegime_S
+  IL_0238: ldlen        
+  IL_0239: conv.i4      
+  IL_023a: call         Math.Min(2)
+  IL_023f: stloc.s      V_34
+  IL_0241: ldc.r8       0
+  IL_024a: stloc.s      V_35
+  IL_024c: ldc.i4.0     
+  IL_024d: stloc.s      V_37
+  IL_024f: br.s         IL_0265
+  IL_0251: ldloc.s      V_35
+  IL_0253: ldarg.0      
+  IL_0254: ldfld        FUNDEDSYNCSTACK.atrRegime_S
+  IL_0259: ldloc.s      V_37
+  IL_025b: ldelem.r8    
+  IL_025c: add          
+  IL_025d: stloc.s      V_35
+  IL_025f: ldloc.s      V_37
+  IL_0261: ldc.i4.1     
+  IL_0262: add          
+  IL_0263: stloc.s      V_37
+  IL_0265: ldloc.s      V_37
+  IL_0267: ldloc.s      V_34
+  IL_0269: blt.s        IL_0251
+  IL_026b: ldloc.s      V_34
+  IL_026d: ldc.i4.0     
+  IL_026e: bgt.s        IL_027b
+  IL_0270: ldc.r8       0
+  IL_0279: br.s         IL_0281
+  IL_027b: ldloc.s      V_35
+  IL_027d: ldloc.s      V_34
+  IL_027f: conv.r8      
+  IL_0280: div          
+  IL_0281: stloc.s      V_36
+  IL_0283: ldloc.s      V_36
+  IL_0285: ldc.r8       0
+  IL_028e: ble.un.s     IL_02aa
+  IL_0290: ldarg.0      
+  IL_0291: ldfld        FUNDEDSYNCSTACK.atr_S
+  IL_0296: ldc.i4.0     
+  IL_0297: callvirt     NinjaScriptBase.get_Item(1)
+  IL_029c: ldloc.s      V_36
+  IL_029e: ldarg.0      
+  IL_029f: call         FUNDEDSYNCSTACK.get_S_RegimeATRMultiplier(0)
+  IL_02a4: mul          
+  IL_02a5: ble.un.s     IL_02aa
+  IL_02a7: ldc.i4.1     
+  IL_02a8: stloc.s      V_13
+  IL_02aa: ldarg.0      
+  IL_02ab: ldfld        FUNDEDSYNCSTACK.atrST_S
+  IL_02b0: ldc.i4.0     
+  IL_02b1: callvirt     NinjaScriptBase.get_Item(1)
+  IL_02b6: stloc.s      V_16
+  IL_02b8: ldloc.1      
+  IL_02b9: ldc.i4.0     
+  IL_02ba: callvirt     PriceSeries.get_Item(1)
+  IL_02bf: ldloc.2      
+  IL_02c0: ldc.i4.0     
+  IL_02c1: callvirt     PriceSeries.get_Item(1)
+  IL_02c6: add          
+  IL_02c7: ldc.r8       2
+  IL_02d0: div          
+  IL_02d1: dup          
+  IL_02d2: ldarg.0      
+  IL_02d3: call         FUNDEDSYNCSTACK.get_S_STMult(0)
+  IL_02d8: ldloc.s      V_16
+  IL_02da: mul          
+  IL_02db: add          
+  IL_02dc: stloc.s      V_17
+  IL_02de: ldarg.0      
+  IL_02df: call         FUNDEDSYNCSTACK.get_S_STMult(0)
+  IL_02e4: ldloc.s      V_16
+  IL_02e6: mul          
+  IL_02e7: sub          
+  IL_02e8: stloc.s      V_18
+  IL_02ea: ldarg.0      
+  IL_02eb: ldfld        FUNDEDSYNCSTACK.stInit_S
+  IL_02f0: brtrue.s     IL_0330
+  IL_02f2: ldarg.0      
+  IL_02f3: ldloc.s      V_17
+  IL_02f5: stfld        FUNDEDSYNCSTACK.fUp_S
+  IL_02fa: ldarg.0      
+  IL_02fb: ldloc.s      V_18
+  IL_02fd: stfld        FUNDEDSYNCSTACK.fLo_S
+  IL_0302: ldarg.0      
+  IL_0303: ldloc.3      
+  IL_0304: ldc.i4.0     
+  IL_0305: callvirt     PriceSeries.get_Item(1)
+  IL_030a: stfld        FUNDEDSYNCSTACK.pClose_S
+  IL_030f: ldarg.0      
+  IL_0310: ldloc.3      
+  IL_0311: ldc.i4.0     
+  IL_0312: callvirt     PriceSeries.get_Item(1)
+  IL_0317: ldloc.s      V_18
+  IL_0319: bge.s        IL_031e
+  IL_031b: ldc.i4.m1    
+  IL_031c: br.s         IL_031f
+  IL_031e: ldc.i4.1     
+  IL_031f: stfld        FUNDEDSYNCSTACK.tr_S
+  IL_0324: ldarg.0      
+  IL_0325: ldc.i4.1     
+  IL_0326: stfld        FUNDEDSYNCSTACK.stInit_S
+  IL_032b: br           IL_03ce
+  IL_0330: ldarg.0      
+  IL_0331: ldloc.s      V_17
+  IL_0333: ldarg.0      
+  IL_0334: ldfld        FUNDEDSYNCSTACK.pfUp_S
+  IL_0339: blt.s        IL_0351
+  IL_033b: ldarg.0      
+  IL_033c: ldfld        FUNDEDSYNCSTACK.pClose_S
+  IL_0341: ldarg.0      
+  IL_0342: ldfld        FUNDEDSYNCSTACK.pfUp_S
+  IL_0347: bgt.s        IL_0351
+  IL_0349: ldarg.0      
+  IL_034a: ldfld        FUNDEDSYNCSTACK.pfUp_S
+  IL_034f: br.s         IL_0353
+  IL_0351: ldloc.s      V_17
+  IL_0353: stfld        FUNDEDSYNCSTACK.fUp_S
+  IL_0358: ldarg.0      
+  IL_0359: ldloc.s      V_18
+  IL_035b: ldarg.0      
+  IL_035c: ldfld        FUNDEDSYNCSTACK.pfLo_S
+  IL_0361: bgt.s        IL_0379
+  IL_0363: ldarg.0      
+  IL_0364: ldfld        FUNDEDSYNCSTACK.pClose_S
+  IL_0369: ldarg.0      
+  IL_036a: ldfld        FUNDEDSYNCSTACK.pfLo_S
+  IL_036f: blt.s        IL_0379
+  IL_0371: ldarg.0      
+  IL_0372: ldfld        FUNDEDSYNCSTACK.pfLo_S
+  IL_0377: br.s         IL_037b
+  IL_0379: ldloc.s      V_18
+  IL_037b: stfld        FUNDEDSYNCSTACK.fLo_S
+  IL_0380: ldarg.0      
+  IL_0381: ldfld        FUNDEDSYNCSTACK.ptr_S
+  IL_0386: ldc.i4.m1    
+  IL_0387: bne.un.s     IL_03a1
+  IL_0389: ldloc.3      
+  IL_038a: ldc.i4.0     
+  IL_038b: callvirt     PriceSeries.get_Item(1)
+  IL_0390: ldarg.0      
+  IL_0391: ldfld        FUNDEDSYNCSTACK.pfUp_S
+  IL_0396: ble.un.s     IL_03a1
+  IL_0398: ldarg.0      
+  IL_0399: ldc.i4.1     
+  IL_039a: stfld        FUNDEDSYNCSTACK.tr_S
+  IL_039f: br.s         IL_03ce
+  IL_03a1: ldarg.0      
+  IL_03a2: ldfld        FUNDEDSYNCSTACK.ptr_S
+  IL_03a7: ldc.i4.1     
+  IL_03a8: bne.un.s     IL_03c2
+  IL_03aa: ldloc.3      
+  IL_03ab: ldc.i4.0     
+  IL_03ac: callvirt     PriceSeries.get_Item(1)
+  IL_03b1: ldarg.0      
+  IL_03b2: ldfld        FUNDEDSYNCSTACK.pfLo_S
+  IL_03b7: bge.un.s     IL_03c2
+  IL_03b9: ldarg.0      
+  IL_03ba: ldc.i4.m1    
+  IL_03bb: stfld        FUNDEDSYNCSTACK.tr_S
+  IL_03c0: br.s         IL_03ce
+  IL_03c2: ldarg.0      
+  IL_03c3: ldarg.0      
+  IL_03c4: ldfld        FUNDEDSYNCSTACK.ptr_S
+  IL_03c9: stfld        FUNDEDSYNCSTACK.tr_S
+  IL_03ce: ldarg.0      
+  IL_03cf: ldfld        FUNDEDSYNCSTACK.tr_S
+  IL_03d4: ldc.i4.1     
+  IL_03d5: bne.un.s     IL_03e2
+  IL_03d7: ldarg.0      
+  IL_03d8: ldfld        FUNDEDSYNCSTACK.ptr_S
+  IL_03dd: ldc.i4.m1    
+  IL_03de: ceq          
+  IL_03e0: br.s         IL_03e3
+  IL_03e2: ldc.i4.0     
+  IL_03e3: stloc.s      V_19
+  IL_03e5: ldarg.0      
+  IL_03e6: ldfld        FUNDEDSYNCSTACK.tr_S
+  IL_03eb: ldc.i4.m1    
+  IL_03ec: bne.un.s     IL_03f9
+  IL_03ee: ldarg.0      
+  IL_03ef: ldfld        FUNDEDSYNCSTACK.ptr_S
+  IL_03f4: ldc.i4.1     
+  IL_03f5: ceq          
+  IL_03f7: br.s         IL_03fa
+  IL_03f9: ldc.i4.0     
+  IL_03fa: stloc.s      V_20
+  IL_03fc: ldarg.0      
+  IL_03fd: call         FUNDEDSYNCSTACK.get_S_RequireSuperTrendEntryAlignment(0)
+  IL_0402: brfalse.s    IL_040f
+  IL_0404: ldarg.0      
+  IL_0405: ldfld        FUNDEDSYNCSTACK.tr_S
+  IL_040a: ldc.i4.1     
+  IL_040b: ceq          
+  IL_040d: br.s         IL_0410
+  IL_040f: ldc.i4.1     
+  IL_0410: stloc.s      V_21
+  IL_0412: ldarg.0      
+  IL_0413: call         FUNDEDSYNCSTACK.get_S_RequireSuperTrendEntryAlignment(0)
+  IL_0418: brfalse.s    IL_0425
+  IL_041a: ldarg.0      
+  IL_041b: ldfld        FUNDEDSYNCSTACK.tr_S
+  IL_0420: ldc.i4.m1    
+  IL_0421: ceq          
+  IL_0423: br.s         IL_0426
+  IL_0425: ldc.i4.1     
+  IL_0426: stloc.s      V_22
+  IL_0428: ldarg.0      
+  IL_0429: call         FUNDEDSYNCSTACK.get_S_UseADXFilter(0)
+  IL_042e: brfalse.s    IL_0449
+  IL_0430: ldarg.0      
+  IL_0431: ldfld        FUNDEDSYNCSTACK.adx_S
+  IL_0436: ldc.i4.0     
+  IL_0437: callvirt     NinjaScriptBase.get_Item(1)
+  IL_043c: ldarg.0      
+  IL_043d: call         FUNDEDSYNCSTACK.get_S_ADXThreshold(0)
+  IL_0442: clt.un       
+  IL_0444: ldc.i4.0     
+  IL_0445: ceq          
+  IL_0447: br.s         IL_044a
+  IL_0449: ldc.i4.1     
+  IL_044a: stloc.s      V_23
+  IL_044c: ldarg.0      
+  IL_044d: call         FUNDEDSYNCSTACK.get_S_UseVwapEmaBias(0)
+  IL_0452: brfalse.s    IL_0475
+  IL_0454: ldarg.0      
+  IL_0455: ldfld        FUNDEDSYNCSTACK.biasEma_S
+  IL_045a: brfalse.s    IL_0472
+  IL_045c: ldarg.0      
+  IL_045d: ldfld        FUNDEDSYNCSTACK.vwap_S
+  IL_0462: ldarg.0      
+  IL_0463: ldfld        FUNDEDSYNCSTACK.biasEma_S
+  IL_0468: ldc.i4.0     
+  IL_0469: callvirt     NinjaScriptBase.get_Item(1)
+  IL_046e: cgt          
+  IL_0470: br.s         IL_0476
+  IL_0472: ldc.i4.0     
+  IL_0473: br.s         IL_0476
+  IL_0475: ldc.i4.1     
+  IL_0476: stloc.s      V_24
+  IL_0478: ldarg.0      
+  IL_0479: call         FUNDEDSYNCSTACK.get_S_UseVwapEmaBias(0)
+  IL_047e: brfalse.s    IL_04a1
+  IL_0480: ldarg.0      
+  IL_0481: ldfld        FUNDEDSYNCSTACK.biasEma_S
+  IL_0486: brfalse.s    IL_049e
+  IL_0488: ldarg.0      
+  IL_0489: ldfld        FUNDEDSYNCSTACK.vwap_S
+  IL_048e: ldarg.0      
+  IL_048f: ldfld        FUNDEDSYNCSTACK.biasEma_S
+  IL_0494: ldc.i4.0     
+  IL_0495: callvirt     NinjaScriptBase.get_Item(1)
+  IL_049a: clt          
+  IL_049c: br.s         IL_04a2
+  IL_049e: ldc.i4.0     
+  IL_049f: br.s         IL_04a2
+  IL_04a1: ldc.i4.1     
+  IL_04a2: stloc.s      V_25
+  IL_04a4: ldloc.s      V_7
+  IL_04a6: ldarg.0      
+  IL_04a7: ldfld        FUNDEDSYNCSTACK.ema9_S
+  IL_04ac: ldc.i4.1     
+  IL_04ad: callvirt     NinjaScriptBase.get_Item(1)
+  IL_04b2: sub          
+  IL_04b3: stloc.s      V_26
+  IL_04b5: ldarg.0      
+  IL_04b6: ldfld        FUNDEDSYNCSTACK.atr_S
+  IL_04bb: ldc.i4.0     
+  IL_04bc: callvirt     NinjaScriptBase.get_Item(1)
+  IL_04c1: stloc.s      V_27
+  IL_04c3: ldarg.0      
+  IL_04c4: call         FUNDEDSYNCSTACK.get_S_MinEmaSlopeATR(0)
+  IL_04c9: ldc.r8       0
+  IL_04d2: ble.s        IL_04f6
+  IL_04d4: ldloc.s      V_27
+  IL_04d6: ldc.r8       0
+  IL_04df: ble.un.s     IL_04f3
+  IL_04e1: ldloc.s      V_26
+  IL_04e3: ldarg.0      
+  IL_04e4: call         FUNDEDSYNCSTACK.get_S_MinEmaSlopeATR(0)
+  IL_04e9: ldloc.s      V_27
+  IL_04eb: mul          
+  IL_04ec: clt.un       
+  IL_04ee: ldc.i4.0     
+  IL_04ef: ceq          
+  IL_04f1: br.s         IL_04f7
+  IL_04f3: ldc.i4.0     
+  IL_04f4: br.s         IL_04f7
+  IL_04f6: ldc.i4.1     
+  IL_04f7: stloc.s      V_28
+  IL_04f9: ldarg.0      
+  IL_04fa: call         FUNDEDSYNCSTACK.get_S_MinEmaSlopeATR(0)
+  IL_04ff: ldc.r8       0
+  IL_0508: ble.s        IL_052d
+  IL_050a: ldloc.s      V_27
+  IL_050c: ldc.r8       0
+  IL_0515: ble.un.s     IL_052a
+  IL_0517: ldloc.s      V_26
+  IL_0519: neg          
+  IL_051a: ldarg.0      
+  IL_051b: call         FUNDEDSYNCSTACK.get_S_MinEmaSlopeATR(0)
+  IL_0520: ldloc.s      V_27
+  IL_0522: mul          
+  IL_0523: clt.un       
+  IL_0525: ldc.i4.0     
+  IL_0526: ceq          
+  IL_0528: br.s         IL_052e
+  IL_052a: ldc.i4.0     
+  IL_052b: br.s         IL_052e
+  IL_052d: ldc.i4.1     
+  IL_052e: stloc.s      V_29
+  IL_0530: ldarg.0      
+  IL_0531: ldstr        "S"
+  IL_0536: call         FUNDEDSYNCSTACK.PosOf(1)
+  IL_053b: stloc.s      V_30
+  IL_053d: ldloc.s      V_30
+  IL_053f: ldc.i4.0     
+  IL_0540: ceq          
+  IL_0542: ldloc.s      V_20
+  IL_0544: and          
+  IL_0545: brfalse.s    IL_055a
+  IL_0547: ldarg.0      
+  IL_0548: ldstr        "S"
+  IL_054d: ldstr        "ST"
+  IL_0552: ldloc.0      
+  IL_0553: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_0558: br.s         IL_0575
+  IL_055a: ldloc.s      V_30
+  IL_055c: ldc.i4.1     
+  IL_055d: ceq          
+  IL_055f: ldloc.s      V_19
+  IL_0561: and          
+  IL_0562: brfalse.s    IL_0575
+  IL_0564: ldarg.0      
+  IL_0565: ldstr        "S"
+  IL_056a: ldstr        "ST"
+  IL_056f: ldloc.0      
+  IL_0570: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_0575: ldarg.0      
+  IL_0576: call         FUNDEDSYNCSTACK.get_S_BlockLongEntryHourEnabled(0)
+  IL_057b: brfalse.s    IL_0591
+  IL_057d: ldloca.s     V_5
+  IL_057f: call         DateTime.get_Hour(0)
+  IL_0584: ldarg.0      
+  IL_0585: call         FUNDEDSYNCSTACK.get_S_BlockedLongEntryHour(0)
+  IL_058a: ceq          
+  IL_058c: ldc.i4.0     
+  IL_058d: ceq          
+  IL_058f: br.s         IL_0592
+  IL_0591: ldc.i4.1     
+  IL_0592: stloc.s      V_31
+  IL_0594: ldarg.0      
+  IL_0595: call         FUNDEDSYNCSTACK.get_S_BlockShortEntryHourEnabled(0)
+  IL_059a: brfalse.s    IL_05b0
+  IL_059c: ldloca.s     V_5
+  IL_059e: call         DateTime.get_Hour(0)
+  IL_05a3: ldarg.0      
+  IL_05a4: call         FUNDEDSYNCSTACK.get_S_BlockedShortEntryHour(0)
+  IL_05a9: ceq          
+  IL_05ab: ldc.i4.0     
+  IL_05ac: ceq          
+  IL_05ae: br.s         IL_05b1
+  IL_05b0: ldc.i4.1     
+  IL_05b1: stloc.s      V_32
+  IL_05b3: ldarg.0      
+  IL_05b4: call         FUNDEDSYNCSTACK.get_S_AllowLongs(0)
+  IL_05b9: ldloc.s      V_8
+  IL_05bb: and          
+  IL_05bc: brfalse.s    IL_05c5
+  IL_05be: ldloc.s      V_13
+  IL_05c0: ldc.i4.0     
+  IL_05c1: ceq          
+  IL_05c3: br.s         IL_05c6
+  IL_05c5: ldc.i4.0     
+  IL_05c6: ldloc.s      V_23
+  IL_05c8: and          
+  IL_05c9: ldloc.s      V_24
+  IL_05cb: and          
+  IL_05cc: ldloc.s      V_21
+  IL_05ce: and          
+  IL_05cf: ldloc.s      V_28
+  IL_05d1: and          
+  IL_05d2: ldloc.s      V_31
+  IL_05d4: and          
+  IL_05d5: ldarg.0      
+  IL_05d6: call         FUNDEDSYNCSTACK.get_S_AllowShorts(0)
+  IL_05db: ldloc.s      V_9
+  IL_05dd: and          
+  IL_05de: brfalse.s    IL_05e7
+  IL_05e0: ldloc.s      V_13
+  IL_05e2: ldc.i4.0     
+  IL_05e3: ceq          
+  IL_05e5: br.s         IL_05e8
+  IL_05e7: ldc.i4.0     
+  IL_05e8: ldloc.s      V_23
+  IL_05ea: and          
+  IL_05eb: ldloc.s      V_25
+  IL_05ed: and          
+  IL_05ee: ldloc.s      V_22
+  IL_05f0: and          
+  IL_05f1: ldloc.s      V_29
+  IL_05f3: and          
+  IL_05f4: ldloc.s      V_32
+  IL_05f6: and          
+  IL_05f7: stloc.s      V_33
+  IL_05f9: ldloc.s      V_6
+  IL_05fb: and          
+  IL_05fc: brfalse.s    IL_0656
+  IL_05fe: ldarg.0      
+  IL_05ff: ldstr        "S"
+  IL_0604: call         FUNDEDSYNCSTACK.CanEnter(1)
+  IL_0609: brfalse.s    IL_0656
+  IL_060b: ldarg.0      
+  IL_060c: ldstr        "S"
+  IL_0611: ldarg.0      
+  IL_0612: call         FUNDEDSYNCSTACK.get_QtyS(0)
+  IL_0617: ldarg.0      
+  IL_0618: call         FUNDEDSYNCSTACK.get_S_UseHardStop(0)
+  IL_061d: brtrue.s     IL_062a
+  IL_061f: ldc.r8       NaN
+  IL_0628: br.s         IL_0645
+  IL_062a: ldloc.3      
+  IL_062b: ldc.i4.0     
+  IL_062c: callvirt     PriceSeries.get_Item(1)
+  IL_0631: ldarg.0      
+  IL_0632: call         FUNDEDSYNCSTACK.get_S_HardStopATRMult(0)
+  IL_0637: ldarg.0      
+  IL_0638: ldfld        FUNDEDSYNCSTACK.atr_S
+  IL_063d: ldc.i4.0     
+  IL_063e: callvirt     NinjaScriptBase.get_Item(1)
+  IL_0643: mul          
+  IL_0644: sub          
+  IL_0645: ldc.r8       NaN
+  IL_064e: ldloc.0      
+  IL_064f: call         FUNDEDSYNCSTACK.RequestModuleLong(5)
+  IL_0654: br.s         IL_06b3
+  IL_0656: ldloc.s      V_33
+  IL_0658: ldloc.s      V_6
+  IL_065a: and          
+  IL_065b: brfalse.s    IL_06b3
+  IL_065d: ldarg.0      
+  IL_065e: ldstr        "S"
+  IL_0663: call         FUNDEDSYNCSTACK.CanEnter(1)
+  IL_0668: brfalse.s    IL_06b3
+  IL_066a: ldarg.0      
+  IL_066b: ldstr        "S"
+  IL_0670: ldarg.0      
+  IL_0671: call         FUNDEDSYNCSTACK.get_QtyS(0)
+  IL_0676: ldarg.0      
+  IL_0677: call         FUNDEDSYNCSTACK.get_S_UseHardStop(0)
+  IL_067c: brtrue.s     IL_0689
+  IL_067e: ldc.r8       NaN
+  IL_0687: br.s         IL_06a4
+  IL_0689: ldloc.3      
+  IL_068a: ldc.i4.0     
+  IL_068b: callvirt     PriceSeries.get_Item(1)
+  IL_0690: ldarg.0      
+  IL_0691: call         FUNDEDSYNCSTACK.get_S_HardStopATRMult(0)
+  IL_0696: ldarg.0      
+  IL_0697: ldfld        FUNDEDSYNCSTACK.atr_S
+  IL_069c: ldc.i4.0     
+  IL_069d: callvirt     NinjaScriptBase.get_Item(1)
+  IL_06a2: mul          
+  IL_06a3: add          
+  IL_06a4: ldc.r8       NaN
+  IL_06ad: ldloc.0      
+  IL_06ae: call         FUNDEDSYNCSTACK.RequestModuleShort(5)
+  IL_06b3: ldarg.0      
+  IL_06b4: call         FUNDEDSYNCSTACK.get_S_UseEODClose(0)
+  IL_06b9: ldloc.s      V_15
+  IL_06bb: and          
+  IL_06bc: brfalse.s    IL_06e3
+  IL_06be: ldarg.0      
+  IL_06bf: ldfld        FUNDEDSYNCSTACK.closedToday_S
+  IL_06c4: brtrue.s     IL_06e3
+  IL_06c6: ldloc.s      V_30
+  IL_06c8: ldc.i4.2     
+  IL_06c9: beq.s        IL_06e3
+  IL_06cb: ldarg.0      
+  IL_06cc: ldstr        "S"
+  IL_06d1: ldstr        "EOD"
+  IL_06d6: ldloc.0      
+  IL_06d7: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_06dc: ldarg.0      
+  IL_06dd: ldc.i4.1     
+  IL_06de: stfld        FUNDEDSYNCSTACK.closedToday_S
+  IL_06e3: ldarg.0      
+  IL_06e4: ldloc.s      V_7
+  IL_06e6: stfld        FUNDEDSYNCSTACK.prevEma_S
+  IL_06eb: ldarg.0      
+  IL_06ec: ldarg.0      
+  IL_06ed: ldfld        FUNDEDSYNCSTACK.vwap_S
+  IL_06f2: stfld        FUNDEDSYNCSTACK.prevVwap_S
+  IL_06f7: ldarg.0      
+  IL_06f8: ldarg.0      
+  IL_06f9: ldfld        FUNDEDSYNCSTACK.fUp_S
+  IL_06fe: stfld        FUNDEDSYNCSTACK.pfUp_S
+  IL_0703: ldarg.0      
+  IL_0704: ldarg.0      
+  IL_0705: ldfld        FUNDEDSYNCSTACK.fLo_S
+  IL_070a: stfld        FUNDEDSYNCSTACK.pfLo_S
+  IL_070f: ldarg.0      
+  IL_0710: ldloc.3      
+  IL_0711: ldc.i4.0     
+  IL_0712: callvirt     PriceSeries.get_Item(1)
+  IL_0717: stfld        FUNDEDSYNCSTACK.pClose_S
+  IL_071c: ldarg.0      
+  IL_071d: ldarg.0      
+  IL_071e: ldfld        FUNDEDSYNCSTACK.tr_S
+  IL_0723: stfld        FUNDEDSYNCSTACK.ptr_S
+  IL_0728: ret
+
+=== FUNDEDSYNCSTACK.get_BaseQtySwas() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<BaseQtySwas>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_BaseQtySwas(int value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<BaseQtySwas>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_EnableSwas() -> bool ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<EnableSwas>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_EnableSwas(bool value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<EnableSwas>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_ActiveQtySwas() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: call         FUNDEDSYNCSTACK.get_QtyS(0)
+  IL_0006: ret

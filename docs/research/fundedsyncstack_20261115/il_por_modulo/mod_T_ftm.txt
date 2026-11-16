@@ -1,0 +1,5636 @@
+=== FtmEngine..ctor(FUNDEDSYNCSTACK owner) -> .ctor ===
+  IL_0000: ldarg.0      
+  IL_0001: ldsfld       String.Empty
+  IL_0006: stfld        FtmEngine.activeEntrySignal
+  IL_000b: ldarg.0      
+  IL_000c: ldsfld       String.Empty
+  IL_0011: stfld        FtmEngine.activeExitSignal
+  IL_0016: ldarg.0      
+  IL_0017: call         Object..ctor(0)
+  IL_001c: ldarg.0      
+  IL_001d: ldarg.1      
+  IL_001e: stfld        FtmEngine.owner
+  IL_0023: ldarg.0      
+  IL_0024: call         Globals.get_GeneralOptions(0)
+  IL_0029: callvirt     GeneralOptions.get_TimeZoneInfo(0)
+  IL_002e: stfld        FtmEngine.platformTimeZone
+  IL_0033: ldarg.0      
+  IL_0034: ldarg.0      
+  IL_0035: call         FtmEngine.ResolveEasternTimeZone(0)
+  IL_003a: stfld        FtmEngine.easternTimeZone
+  IL_003f: ldarg.0      
+  IL_0040: ldarg.1      
+  IL_0041: callvirt     NinjaScriptBase.get_BarsArray(0)
+  IL_0046: ldc.i4.1     
+  IL_0047: ldelem.ref   
+  IL_0048: newobj       SessionIterator..ctor(1)
+  IL_004d: stfld        FtmEngine.sessionIterator
+  IL_0052: ldarg.0      
+  IL_0053: newobj       List`1..ctor(0)
+  IL_0058: stfld        FtmEngine.eligibleOrbHistoryBps
+  IL_005d: ldarg.0      
+  IL_005e: newobj       List`1..ctor(0)
+  IL_0063: stfld        FtmEngine.eligibleRthCloseHistory
+  IL_0068: ldarg.0      
+  IL_0069: newobj       List`1..ctor(0)
+  IL_006e: stfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_0073: ldarg.0      
+  IL_0074: newobj       List`1..ctor(0)
+  IL_0079: stfld        FtmEngine.currentRthMinuteCloses
+  IL_007e: ldarg.0      
+  IL_007f: newobj       List`1..ctor(0)
+  IL_0084: stfld        FtmEngine.directionTrainingRows
+  IL_0089: ldarg.0      
+  IL_008a: ldsfld       DateTime.MinValue
+  IL_008f: stfld        FtmEngine.currentCashDate
+  IL_0094: ldarg.0      
+  IL_0095: ldc.i4.1     
+  IL_0096: stfld        FtmEngine.dayBlocked
+  IL_009b: ldarg.0      
+  IL_009c: ldc.i4       570
+  IL_00a1: stfld        FtmEngine.expectedNextOrbOpenMinute
+  IL_00a6: ldarg.0      
+  IL_00a7: ldc.r8       -1,7976931348623157E+308
+  IL_00b0: stfld        FtmEngine.orbHigh
+  IL_00b5: ldarg.0      
+  IL_00b6: ldc.r8       1,7976931348623157E+308
+  IL_00bf: stfld        FtmEngine.orbLow
+  IL_00c4: ldarg.0      
+  IL_00c5: ldc.i4       2012
+  IL_00ca: ldc.i4.1     
+  IL_00cb: ldc.i4.1     
+  IL_00cc: newobj       DateTime..ctor(3)
+  IL_00d1: stfld        FtmEngine.portfolioStartCashDate
+  IL_00d6: ldarg.0      
+  IL_00d7: ldarg.0      
+  IL_00d8: call         FtmEngine.ValidateTimeZoneContract(0)
+  IL_00dd: stfld        FtmEngine.timeZoneContractValidated
+  IL_00e2: ret
+
+=== FtmEngine..cctor() -> .ctor ===
+  IL_0000: ldc.i4.s     14
+  IL_0002: newarr       String
+  IL_0007: dup          
+  IL_0008: ldc.i4.0     
+  IL_0009: ldstr        "aligned_gap_bps"
+  IL_000e: stelem.ref   
+  IL_000f: dup          
+  IL_0010: ldc.i4.1     
+  IL_0011: ldstr        "aligned_prior_session_open_to_rth_close_bps"
+  IL_0016: stelem.ref   
+  IL_0017: dup          
+  IL_0018: ldc.i4.2     
+  IL_0019: ldstr        "aligned_prior_ret_5_bps"
+  IL_001e: stelem.ref   
+  IL_001f: dup          
+  IL_0020: ldc.i4.3     
+  IL_0021: ldstr        "aligned_prior_ret_20_bps"
+  IL_0026: stelem.ref   
+  IL_0027: dup          
+  IL_0028: ldc.i4.4     
+  IL_0029: ldstr        "aligned_vwap_distance_bps"
+  IL_002e: stelem.ref   
+  IL_002f: dup          
+  IL_0030: ldc.i4.5     
+  IL_0031: ldstr        "aligned_ret_30m_bps"
+  IL_0036: stelem.ref   
+  IL_0037: dup          
+  IL_0038: ldc.i4.6     
+  IL_0039: ldstr        "breakout_side"
+  IL_003e: stelem.ref   
+  IL_003f: dup          
+  IL_0040: ldc.i4.7     
+  IL_0041: ldstr        "signal_elapsed_15m"
+  IL_0046: stelem.ref   
+  IL_0047: dup          
+  IL_0048: ldc.i4.8     
+  IL_0049: ldstr        "orb_bps"
+  IL_004e: stelem.ref   
+  IL_004f: dup          
+  IL_0050: ldc.i4.s     9
+  IL_0052: ldstr        "touch_count"
+  IL_0057: stelem.ref   
+  IL_0058: dup          
+  IL_0059: ldc.i4.s     10
+  IL_005b: ldstr        "weekday_sin"
+  IL_0060: stelem.ref   
+  IL_0061: dup          
+  IL_0062: ldc.i4.s     11
+  IL_0064: ldstr        "weekday_cos"
+  IL_0069: stelem.ref   
+  IL_006a: dup          
+  IL_006b: ldc.i4.s     12
+  IL_006d: ldstr        "month_sin"
+  IL_0072: stelem.ref   
+  IL_0073: dup          
+  IL_0074: ldc.i4.s     13
+  IL_0076: ldstr        "month_cos"
+  IL_007b: stelem.ref   
+  IL_007c: stsfld       FtmEngine.ModelFeatureNames
+  IL_0081: ldc.i4.8     
+  IL_0082: newarr       Int32
+  IL_0087: dup          
+  IL_0088: ldtoken      <PrivateImplementationDetails>.6271F64FBA47F8194C4E6D4A8173C08044349FD7048F20C33C5ED76DDFB27815
+  IL_008d: call         RuntimeHelpers.InitializeArray(2)
+  IL_0092: stsfld       FtmEngine.ContractRollExclusionDateKeys
+  IL_0097: ldc.i4.s     20
+  IL_0099: newarr       Int32
+  IL_009e: dup          
+  IL_009f: ldtoken      <PrivateImplementationDetails>.727D68B9459CBC51AC23BD7B3EC090E55D1EF1CE04C2D6F1AFED6E65DAE19705
+  IL_00a4: call         RuntimeHelpers.InitializeArray(2)
+  IL_00a9: stsfld       FtmEngine.DegradedDataExclusionDateKeys
+  IL_00ae: ldc.i4.s     26
+  IL_00b0: newarr       Int32
+  IL_00b5: dup          
+  IL_00b6: ldtoken      <PrivateImplementationDetails>.C2D098B492D1776397118D021B16EA671CA2B2EB0E50F3EB24229A0B78E65555
+  IL_00bb: call         RuntimeHelpers.InitializeArray(2)
+  IL_00c0: stsfld       FtmEngine.StoredIncomingContractKeys
+  IL_00c5: ldc.i4.s     26
+  IL_00c7: newarr       Int32
+  IL_00cc: dup          
+  IL_00cd: ldtoken      <PrivateImplementationDetails>.D2C393F74854621F3B9D1441A6EB2A57C761F20FC34D746D725BF0895121A7B6
+  IL_00d2: call         RuntimeHelpers.InitializeArray(2)
+  IL_00d7: stsfld       FtmEngine.StoredRolloverDateKeys
+  IL_00dc: ldc.i4.s     26
+  IL_00de: newarr       Double
+  IL_00e3: dup          
+  IL_00e4: ldtoken      <PrivateImplementationDetails>.5C261DDEC4488D4E3F0A2B488F6EB8D5709A620C9BFA1079C548BA0AC12E066F
+  IL_00e9: call         RuntimeHelpers.InitializeArray(2)
+  IL_00ee: stsfld       FtmEngine.StoredRolloverOffsets
+  IL_00f3: ret
+
+=== FtmEngine.get_SignalBars() -> Bars ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_BarsArray(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ret
+
+=== FtmEngine.get_CurrentBarIndex() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_CurrentBars(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.i4    
+  IL_000d: ret
+
+=== FtmEngine.OpenAt(int barsAgo) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Opens(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     PriceSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.HighAt(int barsAgo) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Highs(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     PriceSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.LowAt(int barsAgo) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Lows(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     PriceSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.CloseAt(int barsAgo) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Closes(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     PriceSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.VolumeAt(int barsAgo) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Volumes(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     VolumeSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.TimeAt(int barsAgo) -> DateTime ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Times(0)
+  IL_000b: ldc.i4.1     
+  IL_000c: ldelem.ref   
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     TimeSeries.get_Item(1)
+  IL_0013: ret
+
+=== FtmEngine.WriteLog(string message, LogLevel level) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: ldstr        "FLAT MOON SOCIETY "
+  IL_000b: ldarga.s     V_2
+  IL_000d: constrained. LogLevel
+  IL_0013: callvirt     Object.ToString(0)
+  IL_0018: ldstr        ": "
+  IL_001d: ldarg.1      
+  IL_001e: call         String.Concat(4)
+  IL_0023: callvirt     NinjaScript.Print(1)
+  IL_0028: ret
+
+=== FtmEngine.Run() -> void ===
+  LOCALS: V_0:DateTime, V_1:DateTime, V_2:DateTime, V_3:DateTime, V_4:DateTime, V_5:DateTime, V_6:DateTime, V_7:int, V_8:int, V_9:bool, V_10:bool, V_11:bool, V_12:double, V_13:bool, V_14:bool, V_15:double
+  IL_0000: ldarg.0      
+  IL_0001: call         FtmEngine.get_CurrentBarIndex(0)
+  IL_0006: ldc.i4.s     15
+  IL_0008: blt.s        IL_0012
+  IL_000a: ldarg.0      
+  IL_000b: ldfld        FtmEngine.timeZoneContractValidated
+  IL_0010: brtrue.s     IL_0013
+  IL_0012: ret          
+  IL_0013: ldarg.0      
+  IL_0014: call         FtmEngine.RefreshSessionSchedule(0)
+  IL_0019: ldarg.0      
+  IL_001a: ldfld        FtmEngine.scheduleKnown
+  IL_001f: brtrue.s     IL_0022
+  IL_0021: ret          
+  IL_0022: ldarg.0      
+  IL_0023: ldc.i4.0     
+  IL_0024: call         FtmEngine.TimeAt(1)
+  IL_0029: ldc.i4.0     
+  IL_002a: call         DateTime.SpecifyKind(2)
+  IL_002f: stloc.0      
+  IL_0030: ldarg.0      
+  IL_0031: ldloc.0      
+  IL_0032: call         FtmEngine.ToUtc(1)
+  IL_0037: stloc.1      
+  IL_0038: ldloca.s     V_1
+  IL_003a: ldc.r8       -1
+  IL_0043: call         DateTime.AddMinutes(1)
+  IL_0048: stloc.2      
+  IL_0049: ldloc.2      
+  IL_004a: ldarg.0      
+  IL_004b: ldfld        FtmEngine.platformTimeZone
+  IL_0050: call         TimeZoneInfo.ConvertTimeFromUtc(2)
+  IL_0055: ldc.i4.0     
+  IL_0056: call         DateTime.SpecifyKind(2)
+  IL_005b: stloc.3      
+  IL_005c: ldarg.0      
+  IL_005d: ldloc.2      
+  IL_005e: call         FtmEngine.FromUtcToEastern(1)
+  IL_0063: stloc.s      V_4
+  IL_0065: ldarg.0      
+  IL_0066: ldloc.1      
+  IL_0067: call         FtmEngine.FromUtcToEastern(1)
+  IL_006c: stloc.s      V_5
+  IL_006e: ldarg.0      
+  IL_006f: ldloc.3      
+  IL_0070: ldloc.2      
+  IL_0071: ldloc.s      V_4
+  IL_0073: ldloc.0      
+  IL_0074: ldloc.1      
+  IL_0075: ldloc.s      V_5
+  IL_0077: call         FtmEngine.CaptureBarClockContext(6)
+  IL_007c: ldarg.0      
+  IL_007d: ldflda       FtmEngine.actualTradingDayExchange
+  IL_0082: call         DateTime.get_Date(0)
+  IL_0087: stloc.s      V_6
+  IL_0089: ldarg.0      
+  IL_008a: ldfld        FtmEngine.currentCashDate
+  IL_008f: ldsfld       DateTime.MinValue
+  IL_0094: call         DateTime.op_Equality(2)
+  IL_0099: brtrue.s     IL_00aa
+  IL_009b: ldloc.s      V_6
+  IL_009d: ldarg.0      
+  IL_009e: ldfld        FtmEngine.currentCashDate
+  IL_00a3: call         DateTime.op_Inequality(2)
+  IL_00a8: br.s         IL_00ab
+  IL_00aa: ldc.i4.1     
+  IL_00ab: brfalse.s    IL_00b5
+  IL_00ad: ldarg.0      
+  IL_00ae: ldloc.s      V_6
+  IL_00b0: call         FtmEngine.BeginCashDate(1)
+  IL_00b5: ldarg.0      
+  IL_00b6: ldloc.s      V_4
+  IL_00b8: ldloc.2      
+  IL_00b9: call         FtmEngine.CaptureReferenceSessionOpen(2)
+  IL_00be: ldarg.0      
+  IL_00bf: ldloc.s      V_4
+  IL_00c1: call         FtmEngine.MinuteOfDay(1)
+  IL_00c6: stloc.s      V_7
+  IL_00c8: ldarg.0      
+  IL_00c9: ldloc.s      V_5
+  IL_00cb: call         FtmEngine.MinuteOfDay(1)
+  IL_00d0: stloc.s      V_8
+  IL_00d2: ldloca.s     V_4
+  IL_00d4: call         DateTime.get_Date(0)
+  IL_00d9: ldarg.0      
+  IL_00da: ldfld        FtmEngine.currentCashDate
+  IL_00df: call         DateTime.op_Equality(2)
+  IL_00e4: brfalse.s    IL_00fa
+  IL_00e6: ldloca.s     V_5
+  IL_00e8: call         DateTime.get_Date(0)
+  IL_00ed: ldarg.0      
+  IL_00ee: ldfld        FtmEngine.currentCashDate
+  IL_00f3: call         DateTime.op_Equality(2)
+  IL_00f8: br.s         IL_00fb
+  IL_00fa: ldc.i4.0     
+  IL_00fb: stloc.s      V_9
+  IL_00fd: ldarg.0      
+  IL_00fe: ldloc.s      V_4
+  IL_0100: call         FtmEngine.IsExactMinute(1)
+  IL_0105: brfalse.s    IL_012a
+  IL_0107: ldarg.0      
+  IL_0108: ldloc.s      V_5
+  IL_010a: call         FtmEngine.IsExactMinute(1)
+  IL_010f: brfalse.s    IL_012a
+  IL_0111: ldloc.s      V_5
+  IL_0113: ldloca.s     V_4
+  IL_0115: ldc.r8       1
+  IL_011e: call         DateTime.AddMinutes(1)
+  IL_0123: call         DateTime.op_Equality(2)
+  IL_0128: br.s         IL_012b
+  IL_012a: ldc.i4.0     
+  IL_012b: stloc.s      V_10
+  IL_012d: ldloc.s      V_9
+  IL_012f: brfalse.s    IL_0170
+  IL_0131: ldloc.s      V_7
+  IL_0133: ldc.i4       570
+  IL_0138: blt.s        IL_0170
+  IL_013a: ldloc.s      V_8
+  IL_013c: ldc.i4       960
+  IL_0141: bgt.s        IL_0170
+  IL_0143: ldloc.s      V_10
+  IL_0145: brtrue.s     IL_0170
+  IL_0147: ldarg.0      
+  IL_0148: ldstr        "A New York cash bar was not aligned to one exact completed minute."
+  IL_014d: call         FtmEngine.BlockCashDate(1)
+  IL_0152: ldarg.0      
+  IL_0153: ldstr        "misaligned one-minute cash bar"
+  IL_0158: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_015d: ldarg.0      
+  IL_015e: ldc.i4.1     
+  IL_015f: stfld        FtmEngine.sessionEnding
+  IL_0164: ldarg.0      
+  IL_0165: ldstr        "CashTimeAlignment"
+  IL_016a: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_016f: ret          
+  IL_0170: ldloc.s      V_9
+  IL_0172: brfalse      IL_0244
+  IL_0177: ldloc.s      V_7
+  IL_0179: ldc.i4       570
+  IL_017e: blt          IL_0244
+  IL_0183: ldloc.s      V_8
+  IL_0185: ldc.i4       960
+  IL_018a: bgt          IL_0244
+  IL_018f: ldarg.0      
+  IL_0190: ldfld        FtmEngine.lastCashBarCloseEt
+  IL_0195: ldsfld       DateTime.MinValue
+  IL_019a: call         DateTime.op_Inequality(2)
+  IL_019f: brfalse.s    IL_01d9
+  IL_01a1: ldloc.s      V_4
+  IL_01a3: ldarg.0      
+  IL_01a4: ldfld        FtmEngine.lastCashBarCloseEt
+  IL_01a9: call         DateTime.op_Inequality(2)
+  IL_01ae: brfalse.s    IL_01d9
+  IL_01b0: ldarg.0      
+  IL_01b1: ldstr        "A one-minute data gap was detected inside the New York cash window."
+  IL_01b6: call         FtmEngine.BlockCashDate(1)
+  IL_01bb: ldarg.0      
+  IL_01bc: ldstr        "cash-window data gap"
+  IL_01c1: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_01c6: ldarg.0      
+  IL_01c7: ldc.i4.1     
+  IL_01c8: stfld        FtmEngine.sessionEnding
+  IL_01cd: ldarg.0      
+  IL_01ce: ldstr        "CashDataGap"
+  IL_01d3: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_01d8: ret          
+  IL_01d9: ldarg.0      
+  IL_01da: ldloc.s      V_5
+  IL_01dc: stfld        FtmEngine.lastCashBarCloseEt
+  IL_01e1: ldarg.0      
+  IL_01e2: ldfld        FtmEngine.dayBlocked
+  IL_01e7: brtrue.s     IL_0244
+  IL_01e9: ldarg.0      
+  IL_01ea: ldc.i4.0     
+  IL_01eb: call         FtmEngine.VolumeAt(1)
+  IL_01f0: stloc.s      V_15
+  IL_01f2: ldarg.0      
+  IL_01f3: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_01f8: ldarg.0      
+  IL_01f9: ldc.i4.0     
+  IL_01fa: call         FtmEngine.CloseAt(1)
+  IL_01ff: callvirt     List`1.Add(1)
+  IL_0204: ldarg.0      
+  IL_0205: ldarg.0      
+  IL_0206: ldfld        FtmEngine.currentRthTypicalVolumeSum
+  IL_020b: ldarg.0      
+  IL_020c: ldc.i4.0     
+  IL_020d: call         FtmEngine.HighAt(1)
+  IL_0212: ldarg.0      
+  IL_0213: ldc.i4.0     
+  IL_0214: call         FtmEngine.LowAt(1)
+  IL_0219: add          
+  IL_021a: ldarg.0      
+  IL_021b: ldc.i4.0     
+  IL_021c: call         FtmEngine.CloseAt(1)
+  IL_0221: add          
+  IL_0222: ldc.r8       3
+  IL_022b: div          
+  IL_022c: ldloc.s      V_15
+  IL_022e: mul          
+  IL_022f: add          
+  IL_0230: stfld        FtmEngine.currentRthTypicalVolumeSum
+  IL_0235: ldarg.0      
+  IL_0236: ldarg.0      
+  IL_0237: ldfld        FtmEngine.currentRthVolumeSum
+  IL_023c: ldloc.s      V_15
+  IL_023e: add          
+  IL_023f: stfld        FtmEngine.currentRthVolumeSum
+  IL_0244: ldloc.s      V_9
+  IL_0246: brfalse.s    IL_025c
+  IL_0248: ldarg.0      
+  IL_0249: ldfld        FtmEngine.activeShadowPair
+  IL_024e: brfalse.s    IL_025c
+  IL_0250: ldarg.0      
+  IL_0251: ldloc.s      V_4
+  IL_0253: ldloc.s      V_5
+  IL_0255: ldloc.s      V_8
+  IL_0257: call         FtmEngine.ProcessShadowPair(3)
+  IL_025c: ldloc.s      V_9
+  IL_025e: brfalse.s    IL_027a
+  IL_0260: ldarg.0      
+  IL_0261: ldfld        FtmEngine.pendingEntryDecision
+  IL_0266: brfalse.s    IL_027a
+  IL_0268: ldarg.0      
+  IL_0269: ldfld        FtmEngine.dayBlocked
+  IL_026e: brtrue.s     IL_027a
+  IL_0270: ldarg.0      
+  IL_0271: ldloc.s      V_4
+  IL_0273: ldloc.s      V_5
+  IL_0275: call         FtmEngine.ProcessPendingEntryDecision(2)
+  IL_027a: ldloc.s      V_9
+  IL_027c: brfalse.s    IL_0298
+  IL_027e: ldarg.0      
+  IL_027f: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0284: brfalse.s    IL_0298
+  IL_0286: ldarg.0      
+  IL_0287: ldfld        FtmEngine.dayBlocked
+  IL_028c: brtrue.s     IL_0298
+  IL_028e: ldarg.0      
+  IL_028f: ldloc.s      V_4
+  IL_0291: ldloc.s      V_5
+  IL_0293: call         FtmEngine.ProcessPendingFinalEntryDecision(2)
+  IL_0298: ldloc.s      V_9
+  IL_029a: brfalse.s    IL_02d9
+  IL_029c: ldloc.s      V_8
+  IL_029e: ldc.i4       960
+  IL_02a3: blt.s        IL_02d9
+  IL_02a5: ldarg.0      
+  IL_02a6: ldarg.0      
+  IL_02a7: ldc.i4.0     
+  IL_02a8: call         FtmEngine.CloseAt(1)
+  IL_02ad: call         FtmEngine.FinalizeShadowPairAtCashClose(1)
+  IL_02b2: ldarg.0      
+  IL_02b3: ldarg.0      
+  IL_02b4: ldc.i4.0     
+  IL_02b5: call         FtmEngine.CloseAt(1)
+  IL_02ba: call         FtmEngine.RecordCompletedSessionHistory(1)
+  IL_02bf: ldarg.0      
+  IL_02c0: ldc.i4.1     
+  IL_02c1: stfld        FtmEngine.cashExitTriggered
+  IL_02c6: ldarg.0      
+  IL_02c7: ldc.i4.1     
+  IL_02c8: stfld        FtmEngine.dayBlocked
+  IL_02cd: ldarg.0      
+  IL_02ce: ldstr        "CashClose1600ET"
+  IL_02d3: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_02d8: ret          
+  IL_02d9: ldarg.0      
+  IL_02da: call         FtmEngine.get_SignalBars(0)
+  IL_02df: callvirt     Bars.get_IsLastBarOfSession(0)
+  IL_02e4: brfalse.s    IL_0312
+  IL_02e6: ldarg.0      
+  IL_02e7: ldc.i4.0     
+  IL_02e8: stfld        FtmEngine.cashWindowIntegrity
+  IL_02ed: ldarg.0      
+  IL_02ee: ldstr        "native session ended before cash completion"
+  IL_02f3: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_02f8: ldarg.0      
+  IL_02f9: ldc.i4.1     
+  IL_02fa: stfld        FtmEngine.sessionEnding
+  IL_02ff: ldarg.0      
+  IL_0300: ldc.i4.1     
+  IL_0301: stfld        FtmEngine.dayBlocked
+  IL_0306: ldarg.0      
+  IL_0307: ldstr        "NativeSessionEnd"
+  IL_030c: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_0311: ret          
+  IL_0312: ldarg.0      
+  IL_0313: ldfld        FtmEngine.cashExitTriggered
+  IL_0318: brfalse.s    IL_0326
+  IL_031a: ldarg.0      
+  IL_031b: ldstr        "CashExitFollowup"
+  IL_0320: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_0325: ret          
+  IL_0326: ldloc.s      V_9
+  IL_0328: brfalse.s    IL_0346
+  IL_032a: ldloc.s      V_8
+  IL_032c: ldc.i4       600
+  IL_0331: blt.s        IL_0346
+  IL_0333: ldloc.s      V_8
+  IL_0335: ldc.i4       960
+  IL_033a: bge.s        IL_0346
+  IL_033c: ldloc.s      V_8
+  IL_033e: ldc.i4.s     15
+  IL_0340: rem          
+  IL_0341: ldc.i4.0     
+  IL_0342: ceq          
+  IL_0344: br.s         IL_0347
+  IL_0346: ldc.i4.0     
+  IL_0347: stloc.s      V_11
+  IL_0349: ldarg.0      
+  IL_034a: ldfld        FtmEngine.owner
+  IL_034f: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0354: callvirt     ModuleState.get_Position(0)
+  IL_0359: ldc.i4.2     
+  IL_035a: beq.s        IL_037a
+  IL_035c: ldloc.s      V_11
+  IL_035e: brfalse.s    IL_0366
+  IL_0360: ldarg.0      
+  IL_0361: call         FtmEngine.ManageProtectiveStopAtQuarterHour(0)
+  IL_0366: ldloc.s      V_9
+  IL_0368: brfalse.s    IL_0379
+  IL_036a: ldloc.s      V_8
+  IL_036c: ldc.i4       930
+  IL_0371: bne.un.s     IL_0379
+  IL_0373: ldarg.0      
+  IL_0374: call         FtmEngine.ManageConditionalExit1530(0)
+  IL_0379: ret          
+  IL_037a: ldarg.0      
+  IL_037b: ldfld        FtmEngine.dayBlocked
+  IL_0380: brtrue.s     IL_0395
+  IL_0382: ldarg.0      
+  IL_0383: ldarg.0      
+  IL_0384: ldflda       FtmEngine.currentCashDate
+  IL_0389: call         DateTime.get_DayOfWeek(0)
+  IL_038e: call         FtmEngine.IsWeekday(1)
+  IL_0393: brtrue.s     IL_0396
+  IL_0395: ret          
+  IL_0396: ldarg.0      
+  IL_0397: ldloc.s      V_4
+  IL_0399: ldloc.s      V_5
+  IL_039b: ldloc.s      V_7
+  IL_039d: ldloc.s      V_8
+  IL_039f: call         FtmEngine.CaptureOpeningRange(4)
+  IL_03a4: ldarg.0      
+  IL_03a5: ldfld        FtmEngine.dayBlocked
+  IL_03aa: brtrue.s     IL_03c0
+  IL_03ac: ldarg.0      
+  IL_03ad: ldfld        FtmEngine.orbFinalized
+  IL_03b2: brfalse.s    IL_03c0
+  IL_03b4: ldarg.0      
+  IL_03b5: ldfld        FtmEngine.breakoutConsumed
+  IL_03ba: brtrue.s     IL_03c0
+  IL_03bc: ldloc.s      V_11
+  IL_03be: brtrue.s     IL_03c1
+  IL_03c0: ret          
+  IL_03c1: ldc.r8       1
+  IL_03ca: ldarg.0      
+  IL_03cb: ldfld        FtmEngine.owner
+  IL_03d0: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_03d5: mul          
+  IL_03d6: stloc.s      V_12
+  IL_03d8: ldarg.0      
+  IL_03d9: ldc.i4.0     
+  IL_03da: call         FtmEngine.CloseAt(1)
+  IL_03df: ldarg.0      
+  IL_03e0: ldarg.0      
+  IL_03e1: ldfld        FtmEngine.orbHigh
+  IL_03e6: ldloc.s      V_12
+  IL_03e8: add          
+  IL_03e9: call         FtmEngine.RoundPrice(1)
+  IL_03ee: clt.un       
+  IL_03f0: ldc.i4.0     
+  IL_03f1: ceq          
+  IL_03f3: stloc.s      V_13
+  IL_03f5: ldarg.0      
+  IL_03f6: ldc.i4.0     
+  IL_03f7: call         FtmEngine.CloseAt(1)
+  IL_03fc: ldarg.0      
+  IL_03fd: ldarg.0      
+  IL_03fe: ldfld        FtmEngine.orbLow
+  IL_0403: ldloc.s      V_12
+  IL_0405: sub          
+  IL_0406: call         FtmEngine.RoundPrice(1)
+  IL_040b: cgt.un       
+  IL_040d: ldc.i4.0     
+  IL_040e: ceq          
+  IL_0410: stloc.s      V_14
+  IL_0412: ldloc.s      V_13
+  IL_0414: brtrue.s     IL_041b
+  IL_0416: ldloc.s      V_14
+  IL_0418: brtrue.s     IL_041b
+  IL_041a: ret          
+  IL_041b: ldarg.0      
+  IL_041c: ldloc.s      V_13
+  IL_041e: brtrue.s     IL_0423
+  IL_0420: ldc.i4.m1    
+  IL_0421: br.s         IL_0424
+  IL_0423: ldc.i4.1     
+  IL_0424: ldloc.s      V_5
+  IL_0426: call         FtmEngine.EvaluateAdmissionAndDirection(2)
+  IL_042b: ret
+
+=== FtmEngine.CancelWorkingEntry() -> void ===
+  IL_0000: ret
+
+=== FtmEngine.RequestAdministrativeExit(string reason) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_000b: ldfld        ModuleState.Net
+  IL_0010: brfalse.s    IL_0024
+  IL_0012: ldarg.0      
+  IL_0013: ldfld        FtmEngine.owner
+  IL_0018: ldstr        "T"
+  IL_001d: ldarg.1      
+  IL_001e: ldc.i4.1     
+  IL_001f: callvirt     FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_0024: ret
+
+=== FtmEngine.SubmitEntry(int side, string directionSource, string refinementPath) -> void ===
+  LOCALS: V_0:bool, V_1:double, V_2:int, V_3:double, V_4:double, V_5:double, V_6:string
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_000b: callvirt     ModuleState.get_CanEnter(0)
+  IL_0010: brfalse.s    IL_0020
+  IL_0012: ldarg.0      
+  IL_0013: ldfld        FtmEngine.owner
+  IL_0018: callvirt     FUNDEDSYNCSTACK.get_QtyT(0)
+  IL_001d: ldc.i4.0     
+  IL_001e: bgt.s        IL_0021
+  IL_0020: ret          
+  IL_0021: ldarg.1      
+  IL_0022: ldc.i4.1     
+  IL_0023: ceq          
+  IL_0025: stloc.0      
+  IL_0026: ldc.r8       2
+  IL_002f: ldc.r8       100
+  IL_0038: ldarg.0      
+  IL_0039: ldfld        FtmEngine.orbHigh
+  IL_003e: ldarg.0      
+  IL_003f: ldfld        FtmEngine.orbLow
+  IL_0044: sub          
+  IL_0045: ldc.r8       1,25
+  IL_004e: mul          
+  IL_004f: call         Math.Min(2)
+  IL_0054: call         Math.Max(2)
+  IL_0059: stloc.1      
+  IL_005a: ldarg.0      
+  IL_005b: ldloc.1      
+  IL_005c: ldloc.0      
+  IL_005d: call         FtmEngine.RoundPriceOffsetTicks(2)
+  IL_0062: stloc.2      
+  IL_0063: ldarg.0      
+  IL_0064: ldarg.1      
+  IL_0065: ldarg.0      
+  IL_0066: ldfld        FtmEngine.currentPriorTrendAvailable
+  IL_006b: ldarg.0      
+  IL_006c: ldfld        FtmEngine.currentPriorTrendBps
+  IL_0071: ldloca.s     V_3
+  IL_0073: ldloca.s     V_4
+  IL_0075: ldloca.s     V_5
+  IL_0077: ldloca.s     V_6
+  IL_0079: call         FtmEngine.SelectManagementPlan(7)
+  IL_007e: ldarg.0      
+  IL_007f: ldloc.2      
+  IL_0080: stfld        FtmEngine.activeInitialStopTicks
+  IL_0085: ldarg.0      
+  IL_0086: ldloc.s      V_4
+  IL_0088: stfld        FtmEngine.activeManagedStopTriggerR
+  IL_008d: ldarg.0      
+  IL_008e: ldloc.s      V_5
+  IL_0090: stfld        FtmEngine.activeManagedStopLockR
+  IL_0095: ldarg.0      
+  IL_0096: ldloc.s      V_6
+  IL_0098: stfld        FtmEngine.activeManagementRegime
+  IL_009d: ldarg.0      
+  IL_009e: ldc.i4.0     
+  IL_009f: stfld        FtmEngine.managedStopActivated
+  IL_00a4: ldarg.0      
+  IL_00a5: ldc.i4.0     
+  IL_00a6: stfld        FtmEngine.conditionalExitRequested
+  IL_00ab: ldarg.0      
+  IL_00ac: ldstr        "T"
+  IL_00b1: stfld        FtmEngine.activeEntrySignal
+  IL_00b6: ldarg.0      
+  IL_00b7: ldfld        FtmEngine.owner
+  IL_00bc: ldstr        "T"
+  IL_00c1: ldarg.1      
+  IL_00c2: ldarg.0      
+  IL_00c3: ldfld        FtmEngine.owner
+  IL_00c8: callvirt     FUNDEDSYNCSTACK.get_QtyT(0)
+  IL_00cd: mul          
+  IL_00ce: ldarg.0      
+  IL_00cf: ldfld        FtmEngine.owner
+  IL_00d4: callvirt     FUNDEDSYNCSTACK.get_QtyT(0)
+  IL_00d9: ldc.i4.1     
+  IL_00da: ldc.r8       0
+  IL_00e3: ldc.r8       0
+  IL_00ec: ldloc.2      
+  IL_00ed: conv.r8      
+  IL_00ee: ldarg.0      
+  IL_00ef: ldfld        FtmEngine.owner
+  IL_00f4: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_00f9: mul          
+  IL_00fa: ldarg.0      
+  IL_00fb: ldloc.1      
+  IL_00fc: ldloc.3      
+  IL_00fd: mul          
+  IL_00fe: ldloc.0      
+  IL_00ff: ldc.i4.0     
+  IL_0100: ceq          
+  IL_0102: call         FtmEngine.RoundPriceOffsetTicks(2)
+  IL_0107: conv.r8      
+  IL_0108: ldarg.0      
+  IL_0109: ldfld        FtmEngine.owner
+  IL_010e: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0113: mul          
+  IL_0114: callvirt     FUNDEDSYNCSTACK.SubmitModuleEntryWithDistances(8)
+  IL_0119: ret
+
+=== FtmEngine.RefreshSessionSchedule() -> void ===
+  LOCALS: V_0:DateTime, V_1:DateTime, V_2:DateTime, V_3:DateTime, V_4:DateTime, V_5:DateTime, V_6:DateTime, V_7:string, V_8:Exception
+  IL_0000: ldarg.0      
+  IL_0001: call         FtmEngine.get_SignalBars(0)
+  IL_0006: callvirt     Bars.get_IsFirstBarOfSession(0)
+  IL_000b: brtrue.s     IL_0016
+  IL_000d: ldarg.0      
+  IL_000e: ldfld        FtmEngine.scheduleKnown
+  IL_0013: brfalse.s    IL_0016
+  IL_0015: ret          
+  IL_0016: ldarg.0      
+  IL_0017: call         FtmEngine.ClearSessionSchedule(0)
+  IL_001c: ldarg.0      
+  IL_001d: ldfld        FtmEngine.sessionIterator
+  IL_0022: ldarg.0      
+  IL_0023: ldc.i4.0     
+  IL_0024: call         FtmEngine.TimeAt(1)
+  IL_0029: ldc.i4.1     
+  IL_002a: callvirt     SessionIterator.GetNextSession(2)
+  IL_002f: brtrue.s     IL_0042
+  IL_0031: ldarg.0      
+  IL_0032: ldstr        "FLAT MOON SOCIETY could not resolve a Trading Hours session for the current NinjaTrader timestamp; this session is blocked."
+  IL_0037: ldc.i4.3     
+  IL_0038: call         FtmEngine.WriteLog(2)
+  IL_003d: leave        IL_0218
+  IL_0042: ldarg.0      
+  IL_0043: ldarg.0      
+  IL_0044: ldfld        FtmEngine.sessionIterator
+  IL_0049: callvirt     SessionIterator.get_ActualSessionBegin(0)
+  IL_004e: stfld        FtmEngine.actualSessionBeginPlatform
+  IL_0053: ldarg.0      
+  IL_0054: ldarg.0      
+  IL_0055: ldfld        FtmEngine.sessionIterator
+  IL_005a: callvirt     SessionIterator.get_ActualSessionEnd(0)
+  IL_005f: stfld        FtmEngine.actualSessionEndPlatform
+  IL_0064: ldarg.0      
+  IL_0065: ldarg.0      
+  IL_0066: ldfld        FtmEngine.sessionIterator
+  IL_006b: callvirt     SessionIterator.get_ActualTradingDayExchange(0)
+  IL_0070: stfld        FtmEngine.actualTradingDayExchange
+  IL_0075: ldarg.0      
+  IL_0076: ldc.i4.0     
+  IL_0077: call         FtmEngine.TimeAt(1)
+  IL_007c: ldc.i4.0     
+  IL_007d: call         DateTime.SpecifyKind(2)
+  IL_0082: stloc.0      
+  IL_0083: ldarg.0      
+  IL_0084: ldfld        FtmEngine.platformTimeZone
+  IL_0089: ldloc.0      
+  IL_008a: callvirt     TimeZoneInfo.IsInvalidTime(1)
+  IL_008f: brtrue.s     IL_009f
+  IL_0091: ldarg.0      
+  IL_0092: ldfld        FtmEngine.platformTimeZone
+  IL_0097: ldloc.0      
+  IL_0098: callvirt     TimeZoneInfo.IsAmbiguousTime(1)
+  IL_009d: brfalse.s    IL_00aa
+  IL_009f: ldstr        "The first processed session timestamp is invalid or ambiguous in the configured NinjaTrader time zone."
+  IL_00a4: newobj       InvalidOperationException..ctor(1)
+  IL_00a9: throw        
+  IL_00aa: ldarg.0      
+  IL_00ab: ldfld        FtmEngine.actualSessionBeginPlatform
+  IL_00b0: ldc.i4.0     
+  IL_00b1: call         DateTime.SpecifyKind(2)
+  IL_00b6: stloc.1      
+  IL_00b7: ldarg.0      
+  IL_00b8: ldfld        FtmEngine.actualSessionEndPlatform
+  IL_00bd: ldc.i4.0     
+  IL_00be: call         DateTime.SpecifyKind(2)
+  IL_00c3: stloc.2      
+  IL_00c4: ldloc.2      
+  IL_00c5: ldloc.1      
+  IL_00c6: call         DateTime.op_LessThanOrEqual(2)
+  IL_00cb: brtrue.s     IL_00df
+  IL_00cd: ldloc.0      
+  IL_00ce: ldloc.1      
+  IL_00cf: call         DateTime.op_LessThan(2)
+  IL_00d4: brtrue.s     IL_00df
+  IL_00d6: ldloc.0      
+  IL_00d7: ldloc.2      
+  IL_00d8: call         DateTime.op_GreaterThan(2)
+  IL_00dd: brfalse.s    IL_00ea
+  IL_00df: ldstr        "The NinjaTrader bar timestamp is outside the SessionIterator bounds."
+  IL_00e4: newobj       InvalidOperationException..ctor(1)
+  IL_00e9: throw        
+  IL_00ea: ldarg.0      
+  IL_00eb: ldloc.0      
+  IL_00ec: call         FtmEngine.ToUtc(1)
+  IL_00f1: stloc.3      
+  IL_00f2: ldloc.3      
+  IL_00f3: ldarg.0      
+  IL_00f4: ldfld        FtmEngine.platformTimeZone
+  IL_00f9: call         TimeZoneInfo.ConvertTimeFromUtc(2)
+  IL_00fe: ldc.i4.0     
+  IL_00ff: call         DateTime.SpecifyKind(2)
+  IL_0104: ldloc.0      
+  IL_0105: call         DateTime.op_Inequality(2)
+  IL_010a: brfalse.s    IL_0117
+  IL_010c: ldstr        "The NinjaTrader bar timestamp failed its configured-zone UTC round trip."
+  IL_0111: newobj       InvalidOperationException..ctor(1)
+  IL_0116: throw        
+  IL_0117: ldarg.0      
+  IL_0118: ldc.i4.1     
+  IL_0119: stfld        FtmEngine.scheduleKnown
+  IL_011e: ldarg.0      
+  IL_011f: ldarg.0      
+  IL_0120: ldfld        FtmEngine.actualSessionBeginPlatform
+  IL_0125: call         FtmEngine.ToEastern(1)
+  IL_012a: stloc.s      V_4
+  IL_012c: ldarg.0      
+  IL_012d: ldarg.0      
+  IL_012e: ldfld        FtmEngine.actualSessionEndPlatform
+  IL_0133: call         FtmEngine.ToEastern(1)
+  IL_0138: stloc.s      V_5
+  IL_013a: ldarg.0      
+  IL_013b: ldloc.0      
+  IL_013c: call         FtmEngine.ToEastern(1)
+  IL_0141: stloc.s      V_6
+  IL_0143: ldarg.0      
+  IL_0144: call         FtmEngine.get_SignalBars(0)
+  IL_0149: brfalse.s    IL_016a
+  IL_014b: ldarg.0      
+  IL_014c: call         FtmEngine.get_SignalBars(0)
+  IL_0151: callvirt     Bars.get_TradingHours(0)
+  IL_0156: brfalse.s    IL_016a
+  IL_0158: ldarg.0      
+  IL_0159: call         FtmEngine.get_SignalBars(0)
+  IL_015e: callvirt     Bars.get_TradingHours(0)
+  IL_0163: callvirt     TradingHours.get_TimeZoneInfo(0)
+  IL_0168: brtrue.s     IL_0171
+  IL_016a: ldstr        "(unavailable)"
+  IL_016f: br.s         IL_0186
+  IL_0171: ldarg.0      
+  IL_0172: call         FtmEngine.get_SignalBars(0)
+  IL_0177: callvirt     Bars.get_TradingHours(0)
+  IL_017c: callvirt     TradingHours.get_TimeZoneInfo(0)
+  IL_0181: callvirt     TimeZoneInfo.get_Id(0)
+  IL_0186: stloc.s      V_7
+  IL_0188: ldarg.0      
+  IL_0189: call         CultureInfo.get_InvariantCulture(0)
+  IL_018e: ldstr        "SESSION SCHEDULE: barPlatform={0:yyyy-MM-dd HH:mm}, barUTC={1:yyyy-MM-dd HH:mm}, barET={2:yyyy-MM-dd HH:mm}, beginET={3:yyyy-MM-dd HH:mm}, endET={4:yyyy-MM-dd HH:mm}, exchangeTradingDay={5:yyyy-MM-dd}, platformZone={6}, tradingHoursZone={7}."
+  IL_0193: ldc.i4.8     
+  IL_0194: newarr       Object
+  IL_0199: dup          
+  IL_019a: ldc.i4.0     
+  IL_019b: ldloc.0      
+  IL_019c: box          DateTime
+  IL_01a1: stelem.ref   
+  IL_01a2: dup          
+  IL_01a3: ldc.i4.1     
+  IL_01a4: ldloc.3      
+  IL_01a5: box          DateTime
+  IL_01aa: stelem.ref   
+  IL_01ab: dup          
+  IL_01ac: ldc.i4.2     
+  IL_01ad: ldloc.s      V_6
+  IL_01af: box          DateTime
+  IL_01b4: stelem.ref   
+  IL_01b5: dup          
+  IL_01b6: ldc.i4.3     
+  IL_01b7: ldloc.s      V_4
+  IL_01b9: box          DateTime
+  IL_01be: stelem.ref   
+  IL_01bf: dup          
+  IL_01c0: ldc.i4.4     
+  IL_01c1: ldloc.s      V_5
+  IL_01c3: box          DateTime
+  IL_01c8: stelem.ref   
+  IL_01c9: dup          
+  IL_01ca: ldc.i4.5     
+  IL_01cb: ldarg.0      
+  IL_01cc: ldfld        FtmEngine.actualTradingDayExchange
+  IL_01d1: box          DateTime
+  IL_01d6: stelem.ref   
+  IL_01d7: dup          
+  IL_01d8: ldc.i4.6     
+  IL_01d9: ldarg.0      
+  IL_01da: ldfld        FtmEngine.platformTimeZone
+  IL_01df: callvirt     TimeZoneInfo.get_Id(0)
+  IL_01e4: stelem.ref   
+  IL_01e5: dup          
+  IL_01e6: ldc.i4.7     
+  IL_01e7: ldloc.s      V_7
+  IL_01e9: stelem.ref   
+  IL_01ea: call         String.Format(3)
+  IL_01ef: call         FtmEngine.Diagnostic(1)
+  IL_01f4: leave.s      IL_0218
+  IL_01f6: stloc.s      V_8
+  IL_01f8: ldarg.0      
+  IL_01f9: call         FtmEngine.ClearSessionSchedule(0)
+  IL_01fe: ldarg.0      
+  IL_01ff: ldstr        "FLAT MOON SOCIETY could not resolve the Trading Hours session; this session is blocked: "
+  IL_0204: ldloc.s      V_8
+  IL_0206: callvirt     Exception.get_Message(0)
+  IL_020b: call         String.Concat(2)
+  IL_0210: ldc.i4.3     
+  IL_0211: call         FtmEngine.WriteLog(2)
+  IL_0216: leave.s      IL_0218
+  IL_0218: ret
+
+=== FtmEngine.ClearSessionSchedule() -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldc.i4.0     
+  IL_0002: stfld        FtmEngine.scheduleKnown
+  IL_0007: ldarg.0      
+  IL_0008: ldsfld       DateTime.MinValue
+  IL_000d: stfld        FtmEngine.actualSessionBeginPlatform
+  IL_0012: ldarg.0      
+  IL_0013: ldsfld       DateTime.MinValue
+  IL_0018: stfld        FtmEngine.actualSessionEndPlatform
+  IL_001d: ldarg.0      
+  IL_001e: ldsfld       DateTime.MinValue
+  IL_0023: stfld        FtmEngine.actualTradingDayExchange
+  IL_0028: ret
+
+=== FtmEngine.BeginCashDate(DateTime cashDate) -> void ===
+  LOCALS: V_0:bool, V_1:bool, V_2:int, V_3:DateTime, V_4:string
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_000b: callvirt     ModuleState.get_Position(0)
+  IL_0010: ldc.i4.2     
+  IL_0011: ceq          
+  IL_0013: ldc.i4.0     
+  IL_0014: ceq          
+  IL_0016: stloc.0      
+  IL_0017: ldc.i4.0     
+  IL_0018: stloc.1      
+  IL_0019: ldarg.0      
+  IL_001a: ldfld        FtmEngine.activeShadowPair
+  IL_001f: brtrue.s     IL_0031
+  IL_0021: ldarg.0      
+  IL_0022: ldfld        FtmEngine.pendingEntryDecision
+  IL_0027: brtrue.s     IL_0031
+  IL_0029: ldarg.0      
+  IL_002a: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_002f: brfalse.s    IL_003c
+  IL_0031: ldarg.0      
+  IL_0032: ldstr        "new trading day reached before prior state completed"
+  IL_0037: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_003c: ldarg.0      
+  IL_003d: ldarga.s     V_1
+  IL_003f: call         DateTime.get_Date(0)
+  IL_0044: stfld        FtmEngine.currentCashDate
+  IL_0049: ldarg.0      
+  IL_004a: ldc.i4.1     
+  IL_004b: stfld        FtmEngine.sessionDateEligible
+  IL_0050: ldarg.0      
+  IL_0051: ldc.i4.0     
+  IL_0052: stfld        FtmEngine.referenceSessionOpenCaptured
+  IL_0057: ldarg.0      
+  IL_0058: ldc.r8       0
+  IL_0061: stfld        FtmEngine.referenceSessionOpen
+  IL_0066: ldarg.0      
+  IL_0067: ldloc.0      
+  IL_0068: ldloc.1      
+  IL_0069: or           
+  IL_006a: stfld        FtmEngine.dayBlocked
+  IL_006f: ldarg.0      
+  IL_0070: ldloc.0      
+  IL_0071: ldloc.1      
+  IL_0072: or           
+  IL_0073: stfld        FtmEngine.sessionEnding
+  IL_0078: ldarg.0      
+  IL_0079: ldc.i4.0     
+  IL_007a: stfld        FtmEngine.orbFinalized
+  IL_007f: ldarg.0      
+  IL_0080: ldc.i4.0     
+  IL_0081: stfld        FtmEngine.missingOrbLogged
+  IL_0086: ldarg.0      
+  IL_0087: ldloc.0      
+  IL_0088: ldloc.1      
+  IL_0089: or           
+  IL_008a: stfld        FtmEngine.breakoutConsumed
+  IL_008f: ldarg.0      
+  IL_0090: ldc.i4.0     
+  IL_0091: stfld        FtmEngine.cashExitTriggered
+  IL_0096: ldarg.0      
+  IL_0097: ldc.i4.0     
+  IL_0098: stfld        FtmEngine.cashWindowIntegrity
+  IL_009d: ldarg.0      
+  IL_009e: ldc.i4.0     
+  IL_009f: stfld        FtmEngine.orbHistoryRecorded
+  IL_00a4: ldarg.0      
+  IL_00a5: ldc.i4.0     
+  IL_00a6: stfld        FtmEngine.rthCloseHistoryRecorded
+  IL_00ab: ldarg.0      
+  IL_00ac: ldc.i4.0     
+  IL_00ad: stfld        FtmEngine.activeInitialStopTicks
+  IL_00b2: ldarg.0      
+  IL_00b3: ldc.i4.0     
+  IL_00b4: stfld        FtmEngine.managedStopActivated
+  IL_00b9: ldarg.0      
+  IL_00ba: ldc.i4.0     
+  IL_00bb: stfld        FtmEngine.conditionalExitRequested
+  IL_00c0: ldarg.0      
+  IL_00c1: ldc.i4.0     
+  IL_00c2: stfld        FtmEngine.orbBarCount
+  IL_00c7: ldarg.0      
+  IL_00c8: ldc.i4       570
+  IL_00cd: stfld        FtmEngine.expectedNextOrbOpenMinute
+  IL_00d2: ldarg.0      
+  IL_00d3: ldc.r8       -1,7976931348623157E+308
+  IL_00dc: stfld        FtmEngine.orbHigh
+  IL_00e1: ldarg.0      
+  IL_00e2: ldc.r8       1,7976931348623157E+308
+  IL_00eb: stfld        FtmEngine.orbLow
+  IL_00f0: ldarg.0      
+  IL_00f1: ldc.r8       0
+  IL_00fa: stfld        FtmEngine.orbOpen
+  IL_00ff: ldarg.0      
+  IL_0100: ldc.r8       0
+  IL_0109: stfld        FtmEngine.orbClose
+  IL_010e: ldarg.0      
+  IL_010f: ldc.r8       0
+  IL_0118: stfld        FtmEngine.currentOrbBps
+  IL_011d: ldarg.0      
+  IL_011e: ldc.r8       0
+  IL_0127: stfld        FtmEngine.currentPriorOrbQ75Bps
+  IL_012c: ldarg.0      
+  IL_012d: ldc.i4.0     
+  IL_012e: stfld        FtmEngine.currentPriorOrbQ75Available
+  IL_0133: ldarg.0      
+  IL_0134: ldc.r8       0
+  IL_013d: stfld        FtmEngine.currentPriorTrendBps
+  IL_0142: ldarg.0      
+  IL_0143: ldarg.0      
+  IL_0144: ldarg.0      
+  IL_0145: ldflda       FtmEngine.currentPriorTrendBps
+  IL_014a: call         FtmEngine.TryGetPriorTrendReturn(1)
+  IL_014f: stfld        FtmEngine.currentPriorTrendAvailable
+  IL_0154: ldarg.0      
+  IL_0155: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_015a: callvirt     List`1.Clear(0)
+  IL_015f: ldarg.0      
+  IL_0160: ldc.r8       0
+  IL_0169: stfld        FtmEngine.currentRthTypicalVolumeSum
+  IL_016e: ldarg.0      
+  IL_016f: ldc.r8       0
+  IL_0178: stfld        FtmEngine.currentRthVolumeSum
+  IL_017d: ldarg.0      
+  IL_017e: ldsfld       DateTime.MinValue
+  IL_0183: stfld        FtmEngine.lastCashBarCloseEt
+  IL_0188: ldarg.0      
+  IL_0189: ldc.r8       0
+  IL_0192: stfld        FtmEngine.activeManagedStopTriggerR
+  IL_0197: ldarg.0      
+  IL_0198: ldc.r8       0
+  IL_01a1: stfld        FtmEngine.activeManagedStopLockR
+  IL_01a6: ldarg.0      
+  IL_01a7: ldsfld       String.Empty
+  IL_01ac: stfld        FtmEngine.activeManagementRegime
+  IL_01b1: ldloc.0      
+  IL_01b2: ldloc.1      
+  IL_01b3: or           
+  IL_01b4: brfalse.s    IL_01d4
+  IL_01b6: ldarg.0      
+  IL_01b7: ldstr        "FLAT MOON SOCIETY reached a new New York cash date with inherited exposure or a working entry. The new date is blocked and reconciliation is requested."
+  IL_01bc: ldc.i4.3     
+  IL_01bd: call         FtmEngine.WriteLog(2)
+  IL_01c2: ldarg.0      
+  IL_01c3: call         FtmEngine.CancelWorkingEntry(0)
+  IL_01c8: ldarg.0      
+  IL_01c9: ldstr        "OvernightExposureOrEntry"
+  IL_01ce: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_01d3: ret          
+  IL_01d4: ldarg.0      
+  IL_01d5: ldc.i4.0     
+  IL_01d6: stfld        FtmEngine.administrativeExitAttempts
+  IL_01db: ldarg.0      
+  IL_01dc: ldsfld       String.Empty
+  IL_01e1: stfld        FtmEngine.activeEntrySignal
+  IL_01e6: ldarg.0      
+  IL_01e7: ldsfld       String.Empty
+  IL_01ec: stfld        FtmEngine.activeExitSignal
+  IL_01f1: ldarg.0      
+  IL_01f2: ldarg.0      
+  IL_01f3: ldflda       FtmEngine.currentCashDate
+  IL_01f8: call         DateTime.get_DayOfWeek(0)
+  IL_01fd: call         FtmEngine.IsWeekday(1)
+  IL_0202: brtrue.s     IL_0213
+  IL_0204: ldarg.0      
+  IL_0205: ldc.i4.0     
+  IL_0206: stfld        FtmEngine.sessionDateEligible
+  IL_020b: ldarg.0      
+  IL_020c: ldc.i4.1     
+  IL_020d: stfld        FtmEngine.dayBlocked
+  IL_0212: ret          
+  IL_0213: ldarg.0      
+  IL_0214: ldarg.0      
+  IL_0215: ldfld        FtmEngine.currentCashDate
+  IL_021a: call         FtmEngine.DateKey(1)
+  IL_021f: stloc.2      
+  IL_0220: ldarg.0      
+  IL_0221: ldsfld       FtmEngine.DegradedDataExclusionDateKeys
+  IL_0226: ldloc.2      
+  IL_0227: call         FtmEngine.ContainsDateKey(2)
+  IL_022c: brtrue.s     IL_023c
+  IL_022e: ldarg.0      
+  IL_022f: ldsfld       FtmEngine.ContractRollExclusionDateKeys
+  IL_0234: ldloc.2      
+  IL_0235: call         FtmEngine.ContainsDateKey(2)
+  IL_023a: brfalse.s    IL_026b
+  IL_023c: ldarg.0      
+  IL_023d: ldc.i4.0     
+  IL_023e: stfld        FtmEngine.sessionDateEligible
+  IL_0243: ldarg.0      
+  IL_0244: ldc.i4.1     
+  IL_0245: stfld        FtmEngine.dayBlocked
+  IL_024a: ldarg.0      
+  IL_024b: call         CultureInfo.get_InvariantCulture(0)
+  IL_0250: ldstr        "CASH DATE {0:yyyy-MM-dd}: excluded by the embedded data-quality calendar."
+  IL_0255: ldarg.0      
+  IL_0256: ldfld        FtmEngine.currentCashDate
+  IL_025b: box          DateTime
+  IL_0260: call         String.Format(3)
+  IL_0265: call         FtmEngine.Diagnostic(1)
+  IL_026a: ret          
+  IL_026b: ldarg.0      
+  IL_026c: ldarg.0      
+  IL_026d: ldfld        FtmEngine.currentCashDate
+  IL_0272: call         FtmEngine.ScheduleContainsFullCashWindow(1)
+  IL_0277: brtrue.s     IL_02d7
+  IL_0279: ldarg.0      
+  IL_027a: ldc.i4.0     
+  IL_027b: stfld        FtmEngine.sessionDateEligible
+  IL_0280: ldarg.0      
+  IL_0281: ldc.i4.1     
+  IL_0282: stfld        FtmEngine.dayBlocked
+  IL_0287: ldarg.0      
+  IL_0288: ldarg.0      
+  IL_0289: ldfld        FtmEngine.actualSessionEndPlatform
+  IL_028e: call         FtmEngine.ToEastern(1)
+  IL_0293: stloc.3      
+  IL_0294: call         CultureInfo.get_InvariantCulture(0)
+  IL_0299: ldstr        "FLAT MOON SOCIETY skips {0:yyyy-MM-dd}: Trading Hours session ends at {1:yyyy-MM-dd HH:mm} ET, before the required 16:00 ET cash close or outside the cash date."
+  IL_029e: ldarg.0      
+  IL_029f: ldfld        FtmEngine.currentCashDate
+  IL_02a4: box          DateTime
+  IL_02a9: ldloc.3      
+  IL_02aa: box          DateTime
+  IL_02af: call         String.Format(4)
+  IL_02b4: stloc.s      V_4
+  IL_02b6: ldarg.0      
+  IL_02b7: ldfld        FtmEngine.owner
+  IL_02bc: callvirt     NinjaScript.get_State(0)
+  IL_02c1: ldc.i4.7     
+  IL_02c2: bne.un.s     IL_02ce
+  IL_02c4: ldarg.0      
+  IL_02c5: ldloc.s      V_4
+  IL_02c7: ldc.i4.2     
+  IL_02c8: call         FtmEngine.WriteLog(2)
+  IL_02cd: ret          
+  IL_02ce: ldarg.0      
+  IL_02cf: ldloc.s      V_4
+  IL_02d1: call         FtmEngine.Diagnostic(1)
+  IL_02d6: ret          
+  IL_02d7: ldarg.0      
+  IL_02d8: ldc.i4.1     
+  IL_02d9: stfld        FtmEngine.cashWindowIntegrity
+  IL_02de: ldarg.0      
+  IL_02df: ldstr        "CASH DATE "
+  IL_02e4: ldarg.0      
+  IL_02e5: ldflda       FtmEngine.currentCashDate
+  IL_02ea: ldstr        "yyyy-MM-dd"
+  IL_02ef: call         CultureInfo.get_InvariantCulture(0)
+  IL_02f4: call         DateTime.ToString(2)
+  IL_02f9: ldstr        ": ready."
+  IL_02fe: call         String.Concat(3)
+  IL_0303: call         FtmEngine.Diagnostic(1)
+  IL_0308: ret
+
+=== FtmEngine.ScheduleContainsFullCashWindow(DateTime cashDate) -> bool ===
+  LOCALS: V_0:DateTime, V_1:DateTime, V_2:DateTime, V_3:DateTime
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.scheduleKnown
+  IL_0006: brtrue.s     IL_000a
+  IL_0008: ldc.i4.0     
+  IL_0009: ret          
+  IL_000a: ldarg.0      
+  IL_000b: ldarg.0      
+  IL_000c: ldfld        FtmEngine.actualSessionBeginPlatform
+  IL_0011: call         FtmEngine.ToEastern(1)
+  IL_0016: ldarg.0      
+  IL_0017: ldarg.0      
+  IL_0018: ldfld        FtmEngine.actualSessionEndPlatform
+  IL_001d: call         FtmEngine.ToEastern(1)
+  IL_0022: stloc.0      
+  IL_0023: ldarga.s     V_1
+  IL_0025: call         DateTime.get_Date(0)
+  IL_002a: stloc.3      
+  IL_002b: ldloca.s     V_3
+  IL_002d: ldc.r8       570
+  IL_0036: call         DateTime.AddMinutes(1)
+  IL_003b: stloc.1      
+  IL_003c: ldarga.s     V_1
+  IL_003e: call         DateTime.get_Date(0)
+  IL_0043: stloc.3      
+  IL_0044: ldloca.s     V_3
+  IL_0046: ldc.r8       960
+  IL_004f: call         DateTime.AddMinutes(1)
+  IL_0054: stloc.2      
+  IL_0055: ldloc.1      
+  IL_0056: call         DateTime.op_LessThanOrEqual(2)
+  IL_005b: brfalse.s    IL_0065
+  IL_005d: ldloc.0      
+  IL_005e: ldloc.2      
+  IL_005f: call         DateTime.op_GreaterThanOrEqual(2)
+  IL_0064: ret          
+  IL_0065: ldc.i4.0     
+  IL_0066: ret
+
+=== FtmEngine.CaptureOpeningRange(DateTime barOpenEt, DateTime barCloseEt, int openMinuteEt, int closeMinuteEt) -> void ===
+  LOCALS: V_0:bool, V_1:double
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.orbFinalized
+  IL_0006: brtrue.s     IL_0010
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.dayBlocked
+  IL_000e: brfalse.s    IL_0011
+  IL_0010: ret          
+  IL_0011: ldarga.s     V_1
+  IL_0013: call         DateTime.get_Date(0)
+  IL_0018: ldarg.0      
+  IL_0019: ldfld        FtmEngine.currentCashDate
+  IL_001e: call         DateTime.op_Equality(2)
+  IL_0023: brfalse.s    IL_0039
+  IL_0025: ldarga.s     V_2
+  IL_0027: call         DateTime.get_Date(0)
+  IL_002c: ldarg.0      
+  IL_002d: ldfld        FtmEngine.currentCashDate
+  IL_0032: call         DateTime.op_Equality(2)
+  IL_0037: br.s         IL_003a
+  IL_0039: ldc.i4.0     
+  IL_003a: stloc.0      
+  IL_003b: ldloc.0      
+  IL_003c: brfalse.s    IL_0050
+  IL_003e: ldarg.3      
+  IL_003f: ldc.i4       570
+  IL_0044: blt.s        IL_0050
+  IL_0046: ldarg.3      
+  IL_0047: ldc.i4       585
+  IL_004c: clt          
+  IL_004e: br.s         IL_0051
+  IL_0050: ldc.i4.0     
+  IL_0051: brfalse      IL_0270
+  IL_0056: ldarg.3      
+  IL_0057: ldarg.0      
+  IL_0058: ldfld        FtmEngine.expectedNextOrbOpenMinute
+  IL_005d: bne.un.s     IL_0066
+  IL_005f: ldarg.s      V_4
+  IL_0061: ldarg.3      
+  IL_0062: ldc.i4.1     
+  IL_0063: add          
+  IL_0064: beq.s        IL_0072
+  IL_0066: ldarg.0      
+  IL_0067: ldstr        "Opening-range one-minute bars are missing, duplicated, or misaligned."
+  IL_006c: call         FtmEngine.BlockCashDate(1)
+  IL_0071: ret          
+  IL_0072: ldarg.0      
+  IL_0073: ldfld        FtmEngine.orbBarCount
+  IL_0078: brtrue.s     IL_0087
+  IL_007a: ldarg.0      
+  IL_007b: ldarg.0      
+  IL_007c: ldc.i4.0     
+  IL_007d: call         FtmEngine.OpenAt(1)
+  IL_0082: stfld        FtmEngine.orbOpen
+  IL_0087: ldarg.0      
+  IL_0088: ldarg.0      
+  IL_0089: ldfld        FtmEngine.orbBarCount
+  IL_008e: brfalse.s    IL_00a4
+  IL_0090: ldarg.0      
+  IL_0091: ldfld        FtmEngine.orbHigh
+  IL_0096: ldarg.0      
+  IL_0097: ldc.i4.0     
+  IL_0098: call         FtmEngine.HighAt(1)
+  IL_009d: call         Math.Max(2)
+  IL_00a2: br.s         IL_00ab
+  IL_00a4: ldarg.0      
+  IL_00a5: ldc.i4.0     
+  IL_00a6: call         FtmEngine.HighAt(1)
+  IL_00ab: stfld        FtmEngine.orbHigh
+  IL_00b0: ldarg.0      
+  IL_00b1: ldarg.0      
+  IL_00b2: ldfld        FtmEngine.orbBarCount
+  IL_00b7: brfalse.s    IL_00cd
+  IL_00b9: ldarg.0      
+  IL_00ba: ldfld        FtmEngine.orbLow
+  IL_00bf: ldarg.0      
+  IL_00c0: ldc.i4.0     
+  IL_00c1: call         FtmEngine.LowAt(1)
+  IL_00c6: call         Math.Min(2)
+  IL_00cb: br.s         IL_00d4
+  IL_00cd: ldarg.0      
+  IL_00ce: ldc.i4.0     
+  IL_00cf: call         FtmEngine.LowAt(1)
+  IL_00d4: stfld        FtmEngine.orbLow
+  IL_00d9: ldarg.0      
+  IL_00da: ldarg.0      
+  IL_00db: ldc.i4.0     
+  IL_00dc: call         FtmEngine.CloseAt(1)
+  IL_00e1: stfld        FtmEngine.orbClose
+  IL_00e6: ldarg.0      
+  IL_00e7: ldarg.0      
+  IL_00e8: ldfld        FtmEngine.orbBarCount
+  IL_00ed: ldc.i4.1     
+  IL_00ee: add          
+  IL_00ef: stfld        FtmEngine.orbBarCount
+  IL_00f4: ldarg.0      
+  IL_00f5: ldarg.0      
+  IL_00f6: ldfld        FtmEngine.expectedNextOrbOpenMinute
+  IL_00fb: ldc.i4.1     
+  IL_00fc: add          
+  IL_00fd: stfld        FtmEngine.expectedNextOrbOpenMinute
+  IL_0102: ldarg.s      V_4
+  IL_0104: ldc.i4       585
+  IL_0109: bne.un       IL_026f
+  IL_010e: ldarg.0      
+  IL_010f: ldfld        FtmEngine.orbBarCount
+  IL_0114: ldc.i4.s     15
+  IL_0116: bne.un.s     IL_0126
+  IL_0118: ldarg.0      
+  IL_0119: ldfld        FtmEngine.orbHigh
+  IL_011e: ldarg.0      
+  IL_011f: ldfld        FtmEngine.orbLow
+  IL_0124: bge.un.s     IL_0132
+  IL_0126: ldarg.0      
+  IL_0127: ldstr        "The 09:30-09:45 ET opening range is incomplete or invalid."
+  IL_012c: call         FtmEngine.BlockCashDate(1)
+  IL_0131: ret          
+  IL_0132: ldarg.0      
+  IL_0133: ldc.i4.1     
+  IL_0134: stfld        FtmEngine.orbFinalized
+  IL_0139: ldarg.0      
+  IL_013a: ldfld        FtmEngine.orbHigh
+  IL_013f: ldarg.0      
+  IL_0140: ldfld        FtmEngine.orbLow
+  IL_0145: add          
+  IL_0146: ldc.r8       2
+  IL_014f: div          
+  IL_0150: stloc.1      
+  IL_0151: ldarg.0      
+  IL_0152: ldloc.1      
+  IL_0153: ldc.r8       0
+  IL_015c: bgt.s        IL_0169
+  IL_015e: ldc.r8       0
+  IL_0167: br.s         IL_0182
+  IL_0169: ldarg.0      
+  IL_016a: ldfld        FtmEngine.orbHigh
+  IL_016f: ldarg.0      
+  IL_0170: ldfld        FtmEngine.orbLow
+  IL_0175: sub          
+  IL_0176: ldloc.1      
+  IL_0177: div          
+  IL_0178: ldc.r8       10000
+  IL_0181: mul          
+  IL_0182: stfld        FtmEngine.currentOrbBps
+  IL_0187: ldarg.0      
+  IL_0188: ldarg.0      
+  IL_0189: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_018e: callvirt     List`1.get_Count(0)
+  IL_0193: ldc.i4.s     120
+  IL_0195: ceq          
+  IL_0197: stfld        FtmEngine.currentPriorOrbQ75Available
+  IL_019c: ldarg.0      
+  IL_019d: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_01a2: brfalse.s    IL_01bf
+  IL_01a4: ldarg.0      
+  IL_01a5: ldarg.0      
+  IL_01a6: ldarg.0      
+  IL_01a7: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_01ac: ldc.r8       0,75
+  IL_01b5: call         FtmEngine.LinearPercentile(2)
+  IL_01ba: stfld        FtmEngine.currentPriorOrbQ75Bps
+  IL_01bf: ldarg.0      
+  IL_01c0: call         CultureInfo.get_InvariantCulture(0)
+  IL_01c5: ldstr        "ORB {0:yyyy-MM-dd}: high={1:F2}, low={2:F2}, range={3:F2}, bps={4:F3}, bars={5}, priorHistory={6}, priorQ75={7}."
+  IL_01ca: ldc.i4.8     
+  IL_01cb: newarr       Object
+  IL_01d0: dup          
+  IL_01d1: ldc.i4.0     
+  IL_01d2: ldarg.0      
+  IL_01d3: ldfld        FtmEngine.currentCashDate
+  IL_01d8: box          DateTime
+  IL_01dd: stelem.ref   
+  IL_01de: dup          
+  IL_01df: ldc.i4.1     
+  IL_01e0: ldarg.0      
+  IL_01e1: ldfld        FtmEngine.orbHigh
+  IL_01e6: box          Double
+  IL_01eb: stelem.ref   
+  IL_01ec: dup          
+  IL_01ed: ldc.i4.2     
+  IL_01ee: ldarg.0      
+  IL_01ef: ldfld        FtmEngine.orbLow
+  IL_01f4: box          Double
+  IL_01f9: stelem.ref   
+  IL_01fa: dup          
+  IL_01fb: ldc.i4.3     
+  IL_01fc: ldarg.0      
+  IL_01fd: ldfld        FtmEngine.orbHigh
+  IL_0202: ldarg.0      
+  IL_0203: ldfld        FtmEngine.orbLow
+  IL_0208: sub          
+  IL_0209: box          Double
+  IL_020e: stelem.ref   
+  IL_020f: dup          
+  IL_0210: ldc.i4.4     
+  IL_0211: ldarg.0      
+  IL_0212: ldfld        FtmEngine.currentOrbBps
+  IL_0217: box          Double
+  IL_021c: stelem.ref   
+  IL_021d: dup          
+  IL_021e: ldc.i4.5     
+  IL_021f: ldarg.0      
+  IL_0220: ldfld        FtmEngine.orbBarCount
+  IL_0225: box          Int32
+  IL_022a: stelem.ref   
+  IL_022b: dup          
+  IL_022c: ldc.i4.6     
+  IL_022d: ldarg.0      
+  IL_022e: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_0233: callvirt     List`1.get_Count(0)
+  IL_0238: box          Int32
+  IL_023d: stelem.ref   
+  IL_023e: dup          
+  IL_023f: ldc.i4.7     
+  IL_0240: ldarg.0      
+  IL_0241: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_0246: brtrue.s     IL_024f
+  IL_0248: ldstr        "warmup"
+  IL_024d: br.s         IL_0264
+  IL_024f: ldarg.0      
+  IL_0250: ldflda       FtmEngine.currentPriorOrbQ75Bps
+  IL_0255: ldstr        "F3"
+  IL_025a: call         CultureInfo.get_InvariantCulture(0)
+  IL_025f: call         Double.ToString(2)
+  IL_0264: stelem.ref   
+  IL_0265: call         String.Format(3)
+  IL_026a: call         FtmEngine.Diagnostic(1)
+  IL_026f: ret          
+  IL_0270: ldloc.0      
+  IL_0271: brfalse.s    IL_028f
+  IL_0273: ldarg.s      V_4
+  IL_0275: ldc.i4       585
+  IL_027a: ble.s        IL_028f
+  IL_027c: ldarg.0      
+  IL_027d: ldfld        FtmEngine.orbFinalized
+  IL_0282: brtrue.s     IL_028f
+  IL_0284: ldarg.0      
+  IL_0285: ldstr        "The exact 09:30-09:45 ET opening range was not available."
+  IL_028a: call         FtmEngine.BlockCashDate(1)
+  IL_028f: ret
+
+=== FtmEngine.BlockCashDate(string reason) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldc.i4.0     
+  IL_0002: stfld        FtmEngine.cashWindowIntegrity
+  IL_0007: ldarg.0      
+  IL_0008: ldc.i4.1     
+  IL_0009: stfld        FtmEngine.dayBlocked
+  IL_000e: ldarg.0      
+  IL_000f: ldc.i4.1     
+  IL_0010: stfld        FtmEngine.breakoutConsumed
+  IL_0015: ldarg.0      
+  IL_0016: ldfld        FtmEngine.missingOrbLogged
+  IL_001b: brtrue.s     IL_0050
+  IL_001d: ldarg.0      
+  IL_001e: ldc.i4.1     
+  IL_001f: stfld        FtmEngine.missingOrbLogged
+  IL_0024: ldarg.0      
+  IL_0025: ldstr        "FLAT MOON SOCIETY blocks "
+  IL_002a: ldarg.0      
+  IL_002b: ldflda       FtmEngine.currentCashDate
+  IL_0030: ldstr        "yyyy-MM-dd"
+  IL_0035: call         CultureInfo.get_InvariantCulture(0)
+  IL_003a: call         DateTime.ToString(2)
+  IL_003f: ldstr        ": "
+  IL_0044: ldarg.1      
+  IL_0045: call         String.Concat(4)
+  IL_004a: ldc.i4.3     
+  IL_004b: call         FtmEngine.WriteLog(2)
+  IL_0050: ret
+
+=== FtmEngine.ManageProtectiveStopAtQuarterHour() -> void ===
+  LOCALS: V_0:double, V_1:int, V_2:double, V_3:double
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.managedStopActivated
+  IL_0006: brtrue.s     IL_0031
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.activeInitialStopTicks
+  IL_000e: ldc.i4.1     
+  IL_000f: blt.s        IL_0031
+  IL_0011: ldarg.0      
+  IL_0012: ldfld        FtmEngine.activeEntrySignal
+  IL_0017: call         String.IsNullOrEmpty(1)
+  IL_001c: brtrue.s     IL_0031
+  IL_001e: ldarg.0      
+  IL_001f: ldfld        FtmEngine.owner
+  IL_0024: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0029: callvirt     ModuleState.get_Position(0)
+  IL_002e: ldc.i4.2     
+  IL_002f: bne.un.s     IL_0032
+  IL_0031: ret          
+  IL_0032: ldarg.0      
+  IL_0033: ldfld        FtmEngine.activeInitialStopTicks
+  IL_0038: conv.r8      
+  IL_0039: ldarg.0      
+  IL_003a: ldfld        FtmEngine.owner
+  IL_003f: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0044: mul          
+  IL_0045: stloc.0      
+  IL_0046: ldloc.0      
+  IL_0047: ldc.r8       0
+  IL_0050: ble.un.s     IL_006d
+  IL_0052: ldarg.0      
+  IL_0053: ldfld        FtmEngine.owner
+  IL_0058: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_005d: ldfld        ModuleState.AverageEntryPrice
+  IL_0062: ldc.r8       0
+  IL_006b: bgt.s        IL_006e
+  IL_006d: ret          
+  IL_006e: ldarg.0      
+  IL_006f: ldfld        FtmEngine.owner
+  IL_0074: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0079: callvirt     ModuleState.get_Position(0)
+  IL_007e: brfalse.s    IL_0083
+  IL_0080: ldc.i4.m1    
+  IL_0081: br.s         IL_0084
+  IL_0083: ldc.i4.1     
+  IL_0084: stloc.1      
+  IL_0085: ldloc.1      
+  IL_0086: conv.r8      
+  IL_0087: ldarg.0      
+  IL_0088: ldc.i4.0     
+  IL_0089: call         FtmEngine.CloseAt(1)
+  IL_008e: ldarg.0      
+  IL_008f: ldfld        FtmEngine.owner
+  IL_0094: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0099: ldfld        ModuleState.AverageEntryPrice
+  IL_009e: sub          
+  IL_009f: mul          
+  IL_00a0: ldloc.0      
+  IL_00a1: div          
+  IL_00a2: stloc.2      
+  IL_00a3: ldloc.2      
+  IL_00a4: ldarg.0      
+  IL_00a5: ldfld        FtmEngine.activeManagedStopTriggerR
+  IL_00aa: bge.un.s     IL_00ad
+  IL_00ac: ret          
+  IL_00ad: ldarg.0      
+  IL_00ae: ldarg.0      
+  IL_00af: ldfld        FtmEngine.owner
+  IL_00b4: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_00b9: ldfld        ModuleState.AverageEntryPrice
+  IL_00be: ldloc.1      
+  IL_00bf: conv.r8      
+  IL_00c0: ldloc.0      
+  IL_00c1: mul          
+  IL_00c2: ldarg.0      
+  IL_00c3: ldfld        FtmEngine.activeManagedStopLockR
+  IL_00c8: mul          
+  IL_00c9: add          
+  IL_00ca: call         FtmEngine.RoundPrice(1)
+  IL_00cf: stloc.3      
+  IL_00d0: ldarg.0      
+  IL_00d1: ldfld        FtmEngine.owner
+  IL_00d6: ldarg.0      
+  IL_00d7: ldfld        FtmEngine.owner
+  IL_00dc: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_00e1: ldloc.3      
+  IL_00e2: callvirt     FUNDEDSYNCSTACK.ChangeModuleStopFromNq(2)
+  IL_00e7: ldarg.0      
+  IL_00e8: ldc.i4.1     
+  IL_00e9: stfld        FtmEngine.managedStopActivated
+  IL_00ee: ldarg.0      
+  IL_00ef: call         CultureInfo.get_InvariantCulture(0)
+  IL_00f4: ldstr        "MANAGED STOP: regime={0}, closeR={1:F3}, trigger={2:F2}, lock={3:F2}, fill={4:F2}, stop={5:F2}; active next one-minute bar."
+  IL_00f9: ldc.i4.6     
+  IL_00fa: newarr       Object
+  IL_00ff: dup          
+  IL_0100: ldc.i4.0     
+  IL_0101: ldarg.0      
+  IL_0102: ldfld        FtmEngine.activeManagementRegime
+  IL_0107: stelem.ref   
+  IL_0108: dup          
+  IL_0109: ldc.i4.1     
+  IL_010a: ldloc.2      
+  IL_010b: box          Double
+  IL_0110: stelem.ref   
+  IL_0111: dup          
+  IL_0112: ldc.i4.2     
+  IL_0113: ldarg.0      
+  IL_0114: ldfld        FtmEngine.activeManagedStopTriggerR
+  IL_0119: box          Double
+  IL_011e: stelem.ref   
+  IL_011f: dup          
+  IL_0120: ldc.i4.3     
+  IL_0121: ldarg.0      
+  IL_0122: ldfld        FtmEngine.activeManagedStopLockR
+  IL_0127: box          Double
+  IL_012c: stelem.ref   
+  IL_012d: dup          
+  IL_012e: ldc.i4.4     
+  IL_012f: ldarg.0      
+  IL_0130: ldfld        FtmEngine.owner
+  IL_0135: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_013a: ldfld        ModuleState.AverageEntryPrice
+  IL_013f: box          Double
+  IL_0144: stelem.ref   
+  IL_0145: dup          
+  IL_0146: ldc.i4.5     
+  IL_0147: ldloc.3      
+  IL_0148: box          Double
+  IL_014d: stelem.ref   
+  IL_014e: call         String.Format(3)
+  IL_0153: call         FtmEngine.Diagnostic(1)
+  IL_0158: ret
+
+=== FtmEngine.ManageConditionalExit1530() -> void ===
+  LOCALS: V_0:double, V_1:double
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.conditionalExitRequested
+  IL_0006: brtrue.s     IL_0031
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.activeInitialStopTicks
+  IL_000e: ldc.i4.1     
+  IL_000f: blt.s        IL_0031
+  IL_0011: ldarg.0      
+  IL_0012: ldfld        FtmEngine.activeEntrySignal
+  IL_0017: call         String.IsNullOrEmpty(1)
+  IL_001c: brtrue.s     IL_0031
+  IL_001e: ldarg.0      
+  IL_001f: ldfld        FtmEngine.owner
+  IL_0024: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0029: callvirt     ModuleState.get_Position(0)
+  IL_002e: ldc.i4.2     
+  IL_002f: bne.un.s     IL_0032
+  IL_0031: ret          
+  IL_0032: ldarg.0      
+  IL_0033: ldfld        FtmEngine.activeInitialStopTicks
+  IL_0038: conv.r8      
+  IL_0039: ldarg.0      
+  IL_003a: ldfld        FtmEngine.owner
+  IL_003f: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0044: mul          
+  IL_0045: stloc.0      
+  IL_0046: ldloc.0      
+  IL_0047: ldc.r8       0
+  IL_0050: ble.un.s     IL_006d
+  IL_0052: ldarg.0      
+  IL_0053: ldfld        FtmEngine.owner
+  IL_0058: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_005d: ldfld        ModuleState.AverageEntryPrice
+  IL_0062: ldc.r8       0
+  IL_006b: bgt.s        IL_006e
+  IL_006d: ret          
+  IL_006e: ldarg.0      
+  IL_006f: ldfld        FtmEngine.owner
+  IL_0074: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0079: callvirt     ModuleState.get_Position(0)
+  IL_007e: brfalse.s    IL_0083
+  IL_0080: ldc.i4.m1    
+  IL_0081: br.s         IL_0084
+  IL_0083: ldc.i4.1     
+  IL_0084: conv.r8      
+  IL_0085: ldarg.0      
+  IL_0086: ldc.i4.0     
+  IL_0087: call         FtmEngine.CloseAt(1)
+  IL_008c: ldarg.0      
+  IL_008d: ldfld        FtmEngine.owner
+  IL_0092: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_0097: ldfld        ModuleState.AverageEntryPrice
+  IL_009c: sub          
+  IL_009d: mul          
+  IL_009e: ldloc.0      
+  IL_009f: div          
+  IL_00a0: stloc.1      
+  IL_00a1: ldloc.1      
+  IL_00a2: ldc.r8       0
+  IL_00ab: blt.un.s     IL_00ba
+  IL_00ad: ldloc.1      
+  IL_00ae: ldc.r8       1
+  IL_00b7: bge.un.s     IL_00ba
+  IL_00b9: ret          
+  IL_00ba: ldarg.0      
+  IL_00bb: ldc.i4.1     
+  IL_00bc: stfld        FtmEngine.conditionalExitRequested
+  IL_00c1: ldarg.0      
+  IL_00c2: call         CultureInfo.get_InvariantCulture(0)
+  IL_00c7: ldstr        "CONDITIONAL 15:30 EXIT: closeR={0:F3}, fill={1:F2}."
+  IL_00cc: ldloc.1      
+  IL_00cd: box          Double
+  IL_00d2: ldarg.0      
+  IL_00d3: ldfld        FtmEngine.owner
+  IL_00d8: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_00dd: ldfld        ModuleState.AverageEntryPrice
+  IL_00e2: box          Double
+  IL_00e7: call         String.Format(4)
+  IL_00ec: call         FtmEngine.Diagnostic(1)
+  IL_00f1: ldarg.0      
+  IL_00f2: ldstr        "Conditional1530ET"
+  IL_00f7: call         FtmEngine.RequestAdministrativeExit(1)
+  IL_00fc: ret
+
+=== FtmEngine.CaptureReferenceSessionOpen(DateTime barOpenEt, DateTime barOpenUtc) -> void ===
+  LOCALS: V_0:DateTime
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.sessionDateEligible
+  IL_0006: brfalse.s    IL_0010
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.referenceSessionOpenCaptured
+  IL_000e: brfalse.s    IL_0011
+  IL_0010: ret          
+  IL_0011: ldarga.s     V_2
+  IL_0013: call         DateTime.get_Hour(0)
+  IL_0018: ldc.i4.s     23
+  IL_001a: bne.un.s     IL_0025
+  IL_001c: ldarga.s     V_2
+  IL_001e: call         DateTime.get_Minute(0)
+  IL_0023: brfalse.s    IL_0026
+  IL_0025: ret          
+  IL_0026: ldarga.s     V_2
+  IL_0028: call         DateTime.get_Date(0)
+  IL_002d: ldarg.0      
+  IL_002e: ldflda       FtmEngine.currentCashDate
+  IL_0033: ldc.r8       -1
+  IL_003c: call         DateTime.AddDays(1)
+  IL_0041: stloc.0      
+  IL_0042: ldloca.s     V_0
+  IL_0044: call         DateTime.get_Date(0)
+  IL_0049: call         DateTime.op_Inequality(2)
+  IL_004e: brfalse.s    IL_0051
+  IL_0050: ret          
+  IL_0051: ldarg.0      
+  IL_0052: ldarg.2      
+  IL_0053: call         FtmEngine.IsExactMinute(1)
+  IL_0058: brfalse.s    IL_0063
+  IL_005a: ldarg.0      
+  IL_005b: ldarg.1      
+  IL_005c: call         FtmEngine.IsExactMinute(1)
+  IL_0061: brtrue.s     IL_006f
+  IL_0063: ldarg.0      
+  IL_0064: ldstr        "The required 23:00 UTC reference opening bar is not aligned to an exact minute."
+  IL_0069: call         FtmEngine.BlockCashDate(1)
+  IL_006e: ret          
+  IL_006f: ldarg.0      
+  IL_0070: ldc.i4.0     
+  IL_0071: call         FtmEngine.OpenAt(1)
+  IL_0076: ldc.r8       0
+  IL_007f: ble.un.s     IL_009d
+  IL_0081: ldarg.0      
+  IL_0082: ldc.i4.0     
+  IL_0083: call         FtmEngine.OpenAt(1)
+  IL_0088: call         Double.IsNaN(1)
+  IL_008d: brtrue.s     IL_009d
+  IL_008f: ldarg.0      
+  IL_0090: ldc.i4.0     
+  IL_0091: call         FtmEngine.OpenAt(1)
+  IL_0096: call         Double.IsInfinity(1)
+  IL_009b: brfalse.s    IL_00a9
+  IL_009d: ldarg.0      
+  IL_009e: ldstr        "The required 23:00 UTC reference open is invalid."
+  IL_00a3: call         FtmEngine.BlockCashDate(1)
+  IL_00a8: ret          
+  IL_00a9: ldarg.0      
+  IL_00aa: ldarg.0      
+  IL_00ab: ldc.i4.0     
+  IL_00ac: call         FtmEngine.OpenAt(1)
+  IL_00b1: stfld        FtmEngine.referenceSessionOpen
+  IL_00b6: ldarg.0      
+  IL_00b7: ldc.i4.1     
+  IL_00b8: stfld        FtmEngine.referenceSessionOpenCaptured
+  IL_00bd: ldarg.0      
+  IL_00be: call         CultureInfo.get_InvariantCulture(0)
+  IL_00c3: ldstr        "REFERENCE OPEN {0:yyyy-MM-dd}: utc=23:00, et={1:yyyy-MM-dd HH:mm}, price={2:F2}."
+  IL_00c8: ldarg.0      
+  IL_00c9: ldfld        FtmEngine.currentCashDate
+  IL_00ce: box          DateTime
+  IL_00d3: ldarg.1      
+  IL_00d4: box          DateTime
+  IL_00d9: ldarg.0      
+  IL_00da: ldfld        FtmEngine.referenceSessionOpen
+  IL_00df: box          Double
+  IL_00e4: call         String.Format(5)
+  IL_00e9: call         FtmEngine.Diagnostic(1)
+  IL_00ee: ret
+
+=== FtmEngine.EvaluateAdmissionAndDirection(int baselineSide, DateTime signalCloseEt) -> void ===
+  LOCALS: V_0:double, V_1:double, V_2:double, V_3:double, V_4:double, V_5:double, V_6:double, V_7:double, V_8:int, V_9:Double[], V_10:double, V_11:bool, V_12:double, V_13:int, V_14:int, V_15:bool, V_16:bool, V_17:int, V_18:string, V_19:bool, V_20:bool, V_21:double, V_22:double, V_23:bool, V_24:bool, V_25:double, V_26:int, V_27:bool
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.2      
+  IL_0002: ldloca.s     V_0
+  IL_0004: ldloca.s     V_1
+  IL_0006: ldloca.s     V_2
+  IL_0008: ldloca.s     V_3
+  IL_000a: call         FtmEngine.TryGetExactSignalState(5)
+  IL_000f: brtrue.s     IL_002f
+  IL_0011: ldarg.0      
+  IL_0012: ldc.i4.1     
+  IL_0013: stfld        FtmEngine.breakoutConsumed
+  IL_0018: ldarg.0      
+  IL_0019: ldstr        "A raw breakout did not have 15 exact one-minute constituents."
+  IL_001e: call         FtmEngine.BlockCashDate(1)
+  IL_0023: ldarg.0      
+  IL_0024: ldstr        "inexact admission constituents"
+  IL_0029: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_002e: ret          
+  IL_002f: ldloc.1      
+  IL_0030: ldloc.2      
+  IL_0031: sub          
+  IL_0032: stloc.s      V_4
+  IL_0034: ldloc.s      V_4
+  IL_0036: ldc.r8       0
+  IL_003f: bgt.s        IL_004c
+  IL_0041: ldc.r8       0
+  IL_004a: br.s         IL_0055
+  IL_004c: ldarg.1      
+  IL_004d: conv.r8      
+  IL_004e: ldloc.3      
+  IL_004f: ldloc.0      
+  IL_0050: sub          
+  IL_0051: mul          
+  IL_0052: ldloc.s      V_4
+  IL_0054: div          
+  IL_0055: stloc.s      V_5
+  IL_0057: ldloc.s      V_4
+  IL_0059: ldc.r8       0
+  IL_0062: bgt.s        IL_006f
+  IL_0064: ldc.r8       0
+  IL_006d: br.s         IL_0081
+  IL_006f: ldarg.1      
+  IL_0070: ldc.i4.1     
+  IL_0071: beq.s        IL_007b
+  IL_0073: ldloc.1      
+  IL_0074: ldloc.3      
+  IL_0075: sub          
+  IL_0076: ldloc.s      V_4
+  IL_0078: div          
+  IL_0079: br.s         IL_0081
+  IL_007b: ldloc.3      
+  IL_007c: ldloc.2      
+  IL_007d: sub          
+  IL_007e: ldloc.s      V_4
+  IL_0080: div          
+  IL_0081: stloc.s      V_6
+  IL_0083: ldloc.s      V_5
+  IL_0085: ldc.r8       0,14999999999999999
+  IL_008e: blt.s        IL_009d
+  IL_0090: ldloc.s      V_6
+  IL_0092: ldc.r8       0,59999999999999998
+  IL_009b: bge.un.s     IL_00ed
+  IL_009d: ldarg.0      
+  IL_009e: ldarg.0      
+  IL_009f: ldfld        FtmEngine.geometryRejectCount
+  IL_00a4: ldc.i4.1     
+  IL_00a5: add          
+  IL_00a6: stfld        FtmEngine.geometryRejectCount
+  IL_00ab: ldarg.0      
+  IL_00ac: call         CultureInfo.get_InvariantCulture(0)
+  IL_00b1: ldstr        "ADMISSION GEOMETRY REJECT {0:yyyy-MM-dd HH:mm}: side={1}, body={2:F4}, closeLocation={3:F4}; scanning continues."
+  IL_00b6: ldc.i4.4     
+  IL_00b7: newarr       Object
+  IL_00bc: dup          
+  IL_00bd: ldc.i4.0     
+  IL_00be: ldarg.2      
+  IL_00bf: box          DateTime
+  IL_00c4: stelem.ref   
+  IL_00c5: dup          
+  IL_00c6: ldc.i4.1     
+  IL_00c7: ldarg.1      
+  IL_00c8: box          Int32
+  IL_00cd: stelem.ref   
+  IL_00ce: dup          
+  IL_00cf: ldc.i4.2     
+  IL_00d0: ldloc.s      V_5
+  IL_00d2: box          Double
+  IL_00d7: stelem.ref   
+  IL_00d8: dup          
+  IL_00d9: ldc.i4.3     
+  IL_00da: ldloc.s      V_6
+  IL_00dc: box          Double
+  IL_00e1: stelem.ref   
+  IL_00e2: call         String.Format(3)
+  IL_00e7: call         FtmEngine.Diagnostic(1)
+  IL_00ec: ret          
+  IL_00ed: ldarg.1      
+  IL_00ee: ldc.i4.1     
+  IL_00ef: beq.s        IL_010f
+  IL_00f1: ldarg.0      
+  IL_00f2: ldfld        FtmEngine.orbLow
+  IL_00f7: ldc.r8       1
+  IL_0100: ldarg.0      
+  IL_0101: ldfld        FtmEngine.owner
+  IL_0106: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_010b: mul          
+  IL_010c: sub          
+  IL_010d: br.s         IL_012b
+  IL_010f: ldarg.0      
+  IL_0110: ldfld        FtmEngine.orbHigh
+  IL_0115: ldc.r8       1
+  IL_011e: ldarg.0      
+  IL_011f: ldfld        FtmEngine.owner
+  IL_0124: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0129: mul          
+  IL_012a: add          
+  IL_012b: stloc.s      V_7
+  IL_012d: ldarg.0      
+  IL_012e: ldarg.1      
+  IL_012f: ldloc.s      V_7
+  IL_0131: call         FtmEngine.CountSignalTouches(2)
+  IL_0136: stloc.s      V_8
+  IL_0138: ldloc.s      V_8
+  IL_013a: ldc.i4.3     
+  IL_013b: bge.s        IL_0193
+  IL_013d: ldarg.0      
+  IL_013e: ldc.i4.1     
+  IL_013f: stfld        FtmEngine.breakoutConsumed
+  IL_0144: ldarg.0      
+  IL_0145: ldarg.0      
+  IL_0146: ldfld        FtmEngine.touchVetoCount
+  IL_014b: ldc.i4.1     
+  IL_014c: add          
+  IL_014d: stfld        FtmEngine.touchVetoCount
+  IL_0152: ldarg.0      
+  IL_0153: call         CultureInfo.get_InvariantCulture(0)
+  IL_0158: ldstr        "ADMISSION TOUCH VETO {0:yyyy-MM-dd HH:mm}: side={1}, touches={2}, required={3}."
+  IL_015d: ldc.i4.4     
+  IL_015e: newarr       Object
+  IL_0163: dup          
+  IL_0164: ldc.i4.0     
+  IL_0165: ldarg.2      
+  IL_0166: box          DateTime
+  IL_016b: stelem.ref   
+  IL_016c: dup          
+  IL_016d: ldc.i4.1     
+  IL_016e: ldarg.1      
+  IL_016f: box          Int32
+  IL_0174: stelem.ref   
+  IL_0175: dup          
+  IL_0176: ldc.i4.2     
+  IL_0177: ldloc.s      V_8
+  IL_0179: box          Int32
+  IL_017e: stelem.ref   
+  IL_017f: dup          
+  IL_0180: ldc.i4.3     
+  IL_0181: ldc.i4.3     
+  IL_0182: box          Int32
+  IL_0187: stelem.ref   
+  IL_0188: call         String.Format(3)
+  IL_018d: call         FtmEngine.Diagnostic(1)
+  IL_0192: ret          
+  IL_0193: ldarg.0      
+  IL_0194: ldarg.1      
+  IL_0195: ldloc.s      V_8
+  IL_0197: ldarg.2      
+  IL_0198: ldloc.3      
+  IL_0199: ldloca.s     V_9
+  IL_019b: call         FtmEngine.TryBuildDirectionFeatures(5)
+  IL_01a0: brtrue.s     IL_01c0
+  IL_01a2: ldarg.0      
+  IL_01a3: ldc.i4.1     
+  IL_01a4: stfld        FtmEngine.breakoutConsumed
+  IL_01a9: ldarg.0      
+  IL_01aa: ldstr        "The admitted signal could not form the exact 14-feature direction vector."
+  IL_01af: call         FtmEngine.BlockCashDate(1)
+  IL_01b4: ldarg.0      
+  IL_01b5: ldstr        "direction feature construction failed"
+  IL_01ba: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_01bf: ret          
+  IL_01c0: ldarg.0      
+  IL_01c1: ldc.i4.1     
+  IL_01c2: stfld        FtmEngine.breakoutConsumed
+  IL_01c7: ldarg.0      
+  IL_01c8: ldarg.0      
+  IL_01c9: ldfld        FtmEngine.admittedSignalCount
+  IL_01ce: ldc.i4.1     
+  IL_01cf: add          
+  IL_01d0: stfld        FtmEngine.admittedSignalCount
+  IL_01d5: ldarg.0      
+  IL_01d6: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_01db: callvirt     List`1.get_Count(0)
+  IL_01e0: ldc.i4.0     
+  IL_01e1: bgt.s        IL_01ee
+  IL_01e3: ldc.r8       0
+  IL_01ec: br.s         IL_0206
+  IL_01ee: ldarg.0      
+  IL_01ef: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_01f4: ldarg.0      
+  IL_01f5: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_01fa: callvirt     List`1.get_Count(0)
+  IL_01ff: ldc.i4.1     
+  IL_0200: sub          
+  IL_0201: callvirt     List`1.get_Item(1)
+  IL_0206: stloc.s      V_10
+  IL_0208: ldarg.1      
+  IL_0209: conv.r8      
+  IL_020a: ldloc.s      V_10
+  IL_020c: mul          
+  IL_020d: ldc.r8       -300
+  IL_0216: clt          
+  IL_0218: stloc.s      V_11
+  IL_021a: ldloc.s      V_11
+  IL_021c: brfalse.s    IL_022c
+  IL_021e: ldarg.0      
+  IL_021f: ldarg.0      
+  IL_0220: ldfld        FtmEngine.priorDayOverrideCount
+  IL_0225: ldc.i4.1     
+  IL_0226: add          
+  IL_0227: stfld        FtmEngine.priorDayOverrideCount
+  IL_022c: ldarg.0      
+  IL_022d: ldarg.0      
+  IL_022e: ldfld        FtmEngine.currentCashDate
+  IL_0233: ldloc.s      V_9
+  IL_0235: ldloca.s     V_12
+  IL_0237: ldloca.s     V_13
+  IL_0239: ldloca.s     V_14
+  IL_023b: call         FtmEngine.TryPredictDirection(5)
+  IL_0240: stloc.s      V_15
+  IL_0242: ldloc.s      V_15
+  IL_0244: brfalse.s    IL_0255
+  IL_0246: ldloc.s      V_12
+  IL_0248: ldc.r8       0,65000000000000002
+  IL_0251: cgt          
+  IL_0253: br.s         IL_0256
+  IL_0255: ldc.i4.0     
+  IL_0256: stloc.s      V_16
+  IL_0258: ldloc.s      V_16
+  IL_025a: brfalse.s    IL_026a
+  IL_025c: ldarg.0      
+  IL_025d: ldarg.0      
+  IL_025e: ldfld        FtmEngine.knnOverrideCount
+  IL_0263: ldc.i4.1     
+  IL_0264: add          
+  IL_0265: stfld        FtmEngine.knnOverrideCount
+  IL_026a: ldloc.s      V_11
+  IL_026c: ldloc.s      V_16
+  IL_026e: or           
+  IL_026f: brtrue.s     IL_0274
+  IL_0271: ldarg.1      
+  IL_0272: br.s         IL_0276
+  IL_0274: ldarg.1      
+  IL_0275: neg          
+  IL_0276: stloc.s      V_17
+  IL_0278: ldloc.s      V_11
+  IL_027a: ldloc.s      V_16
+  IL_027c: and          
+  IL_027d: brtrue.s     IL_029c
+  IL_027f: ldloc.s      V_11
+  IL_0281: brtrue.s     IL_0295
+  IL_0283: ldloc.s      V_16
+  IL_0285: brtrue.s     IL_028e
+  IL_0287: ldstr        "breakout"
+  IL_028c: br.s         IL_02a1
+  IL_028e: ldstr        "quarterly_knn"
+  IL_0293: br.s         IL_02a1
+  IL_0295: ldstr        "prior_session"
+  IL_029a: br.s         IL_02a1
+  IL_029c: ldstr        "prior_session_and_quarterly_knn"
+  IL_02a1: stloc.s      V_18
+  IL_02a3: ldarg.0      
+  IL_02a4: ldarg.0      
+  IL_02a5: ldfld        FtmEngine.currentCashDate
+  IL_02aa: ldarg.2      
+  IL_02ab: ldarg.1      
+  IL_02ac: ldloc.s      V_9
+  IL_02ae: ldarg.0      
+  IL_02af: ldfld        FtmEngine.currentPriorTrendAvailable
+  IL_02b4: ldarg.0      
+  IL_02b5: ldfld        FtmEngine.currentPriorTrendBps
+  IL_02ba: call         FtmEngine.StartShadowPair(6)
+  IL_02bf: ldarg.0      
+  IL_02c0: ldfld        FtmEngine.dayBlocked
+  IL_02c5: brfalse.s    IL_02c8
+  IL_02c7: ret          
+  IL_02c8: ldarg.0      
+  IL_02c9: ldfld        FtmEngine.currentCashDate
+  IL_02ce: ldarg.0      
+  IL_02cf: ldfld        FtmEngine.portfolioStartCashDate
+  IL_02d4: call         DateTime.op_GreaterThanOrEqual(2)
+  IL_02d9: ldarg.0      
+  IL_02da: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_02df: brfalse.s    IL_02e9
+  IL_02e1: ldarg.0      
+  IL_02e2: ldfld        FtmEngine.currentPriorTrendAvailable
+  IL_02e7: br.s         IL_02ea
+  IL_02e9: ldc.i4.0     
+  IL_02ea: stloc.s      V_19
+  IL_02ec: dup          
+  IL_02ed: ldloc.s      V_19
+  IL_02ef: and          
+  IL_02f0: stloc.s      V_20
+  IL_02f2: brfalse.s    IL_033c
+  IL_02f4: ldloc.s      V_19
+  IL_02f6: brtrue.s     IL_033c
+  IL_02f8: ldarg.0      
+  IL_02f9: ldarg.0      
+  IL_02fa: ldfld        FtmEngine.contextWarmupSkipCount
+  IL_02ff: ldc.i4.1     
+  IL_0300: add          
+  IL_0301: stfld        FtmEngine.contextWarmupSkipCount
+  IL_0306: ldarg.0      
+  IL_0307: call         CultureInfo.get_InvariantCulture(0)
+  IL_030c: ldstr        "CONTEXT WARM-UP SKIP {0:yyyy-MM-dd}: priorORB120={1}, priorTrend21={2}; shadow/model/session state continues."
+  IL_0311: ldarg.0      
+  IL_0312: ldfld        FtmEngine.currentCashDate
+  IL_0317: box          DateTime
+  IL_031c: ldarg.0      
+  IL_031d: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_0322: box          Boolean
+  IL_0327: ldarg.0      
+  IL_0328: ldfld        FtmEngine.currentPriorTrendAvailable
+  IL_032d: box          Boolean
+  IL_0332: call         String.Format(5)
+  IL_0337: call         FtmEngine.Diagnostic(1)
+  IL_033c: ldloc.s      V_9
+  IL_033e: ldc.i4.4     
+  IL_033f: ldelem.r8    
+  IL_0340: stloc.s      V_21
+  IL_0342: ldloc.s      V_9
+  IL_0344: ldc.i4.7     
+  IL_0345: ldelem.r8    
+  IL_0346: stloc.s      V_22
+  IL_0348: ldloc.s      V_22
+  IL_034a: ldc.r8       1
+  IL_0353: bne.un.s     IL_0367
+  IL_0355: ldloc.s      V_21
+  IL_0357: ldc.r8       20
+  IL_0360: cgt.un       
+  IL_0362: ldc.i4.0     
+  IL_0363: ceq          
+  IL_0365: br.s         IL_0368
+  IL_0367: ldc.i4.0     
+  IL_0368: brfalse.s    IL_03d7
+  IL_036a: ldarg.0      
+  IL_036b: ldarg.0      
+  IL_036c: ldfld        FtmEngine.rc1DirectDecisionCount
+  IL_0371: ldc.i4.1     
+  IL_0372: add          
+  IL_0373: stfld        FtmEngine.rc1DirectDecisionCount
+  IL_0378: ldarg.0      
+  IL_0379: call         CultureInfo.get_InvariantCulture(0)
+  IL_037e: ldstr        "ENTRY ROUTE {0:yyyy-MM-dd HH:mm}: action={1}, elapsed15={2:F1}, alignedVwapBps={3:F6}, baselineSide={4}; integrated refinement not evaluated."
+  IL_0383: ldc.i4.5     
+  IL_0384: newarr       Object
+  IL_0389: dup          
+  IL_038a: ldc.i4.0     
+  IL_038b: ldarg.2      
+  IL_038c: box          DateTime
+  IL_0391: stelem.ref   
+  IL_0392: dup          
+  IL_0393: ldc.i4.1     
+  IL_0394: ldstr        "direct_first_signal_near_vwap"
+  IL_0399: stelem.ref   
+  IL_039a: dup          
+  IL_039b: ldc.i4.2     
+  IL_039c: ldloc.s      V_22
+  IL_039e: box          Double
+  IL_03a3: stelem.ref   
+  IL_03a4: dup          
+  IL_03a5: ldc.i4.3     
+  IL_03a6: ldloc.s      V_21
+  IL_03a8: box          Double
+  IL_03ad: stelem.ref   
+  IL_03ae: dup          
+  IL_03af: ldc.i4.4     
+  IL_03b0: ldarg.1      
+  IL_03b1: box          Int32
+  IL_03b6: stelem.ref   
+  IL_03b7: call         String.Format(3)
+  IL_03bc: call         FtmEngine.Diagnostic(1)
+  IL_03c1: ldloc.s      V_20
+  IL_03c3: brfalse.s    IL_03d6
+  IL_03c5: ldarg.0      
+  IL_03c6: ldarg.1      
+  IL_03c7: ldstr        "rc1_breakout_shadow"
+  IL_03cc: ldstr        "direct_first_signal_near_vwap"
+  IL_03d1: call         FtmEngine.SubmitEntry(3)
+  IL_03d6: ret          
+  IL_03d7: ldarg.0      
+  IL_03d8: ldarg.0      
+  IL_03d9: ldfld        FtmEngine.rc1ParentDecisionCount
+  IL_03de: ldc.i4.1     
+  IL_03df: add          
+  IL_03e0: stfld        FtmEngine.rc1ParentDecisionCount
+  IL_03e5: ldloc.s      V_17
+  IL_03e7: conv.r8      
+  IL_03e8: ldloc.3      
+  IL_03e9: ldloc.0      
+  IL_03ea: sub          
+  IL_03eb: mul          
+  IL_03ec: ldloc.s      V_4
+  IL_03ee: div          
+  IL_03ef: ldc.r8       0,20000000000000001
+  IL_03f8: cgt.un       
+  IL_03fa: ldc.i4.0     
+  IL_03fb: ceq          
+  IL_03fd: stloc.s      V_23
+  IL_03ff: ldarg.0      
+  IL_0400: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_0405: brfalse.s    IL_0417
+  IL_0407: ldarg.0      
+  IL_0408: ldfld        FtmEngine.currentOrbBps
+  IL_040d: ldarg.0      
+  IL_040e: ldfld        FtmEngine.currentPriorOrbQ75Bps
+  IL_0413: cgt          
+  IL_0415: br.s         IL_0418
+  IL_0417: ldc.i4.0     
+  IL_0418: stloc.s      V_24
+  IL_041a: ldloc.s      V_17
+  IL_041c: ldc.i4.1     
+  IL_041d: beq.s        IL_043d
+  IL_041f: ldarg.0      
+  IL_0420: ldfld        FtmEngine.orbLow
+  IL_0425: ldc.r8       1
+  IL_042e: ldarg.0      
+  IL_042f: ldfld        FtmEngine.owner
+  IL_0434: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0439: mul          
+  IL_043a: sub          
+  IL_043b: br.s         IL_0459
+  IL_043d: ldarg.0      
+  IL_043e: ldfld        FtmEngine.orbHigh
+  IL_0443: ldc.r8       1
+  IL_044c: ldarg.0      
+  IL_044d: ldfld        FtmEngine.owner
+  IL_0452: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0457: mul          
+  IL_0458: add          
+  IL_0459: stloc.s      V_25
+  IL_045b: ldarg.0      
+  IL_045c: ldloc.s      V_17
+  IL_045e: ldloc.s      V_25
+  IL_0460: call         FtmEngine.CountSignalTouches(2)
+  IL_0465: stloc.s      V_26
+  IL_0467: ldloc.s      V_24
+  IL_0469: brfalse.s    IL_0475
+  IL_046b: ldloc.s      V_26
+  IL_046d: ldc.i4.3     
+  IL_046e: cgt          
+  IL_0470: ldc.i4.0     
+  IL_0471: ceq          
+  IL_0473: br.s         IL_0476
+  IL_0475: ldc.i4.0     
+  IL_0476: stloc.s      V_27
+  IL_0478: ldloc.s      V_23
+  IL_047a: ldloc.s      V_27
+  IL_047c: or           
+  IL_047d: brfalse      IL_0561
+  IL_0482: ldarg.0      
+  IL_0483: newobj       PendingEntryDecision..ctor(0)
+  IL_0488: stfld        FtmEngine.pendingEntryDecision
+  IL_048d: ldarg.0      
+  IL_048e: ldfld        FtmEngine.pendingEntryDecision
+  IL_0493: ldarg.2      
+  IL_0494: stfld        PendingEntryDecision.ExpectedObservationOpenEt
+  IL_0499: ldarg.0      
+  IL_049a: ldfld        FtmEngine.pendingEntryDecision
+  IL_049f: ldloc.s      V_17
+  IL_04a1: stfld        PendingEntryDecision.DirectionSide
+  IL_04a6: ldarg.0      
+  IL_04a7: ldfld        FtmEngine.pendingEntryDecision
+  IL_04ac: ldloc.s      V_23
+  IL_04ae: brtrue.s     IL_04b3
+  IL_04b0: ldc.i4.3     
+  IL_04b1: br.s         IL_04b4
+  IL_04b3: ldc.i4.1     
+  IL_04b4: stfld        PendingEntryDecision.RequiredObservationBars
+  IL_04b9: ldarg.0      
+  IL_04ba: ldfld        FtmEngine.pendingEntryDecision
+  IL_04bf: ldc.i4.0     
+  IL_04c0: stfld        PendingEntryDecision.ObservedBars
+  IL_04c5: ldarg.0      
+  IL_04c6: ldfld        FtmEngine.pendingEntryDecision
+  IL_04cb: ldc.r8       0
+  IL_04d4: stfld        PendingEntryDecision.FirstObservationOpen
+  IL_04d9: ldarg.0      
+  IL_04da: ldfld        FtmEngine.pendingEntryDecision
+  IL_04df: ldloc.s      V_20
+  IL_04e1: stfld        PendingEntryDecision.SubmitActualOrder
+  IL_04e6: ldarg.0      
+  IL_04e7: ldfld        FtmEngine.pendingEntryDecision
+  IL_04ec: ldloc.s      V_23
+  IL_04ee: brtrue.s     IL_04f7
+  IL_04f0: ldstr        "high_vol_touch_vote"
+  IL_04f5: br.s         IL_04fc
+  IL_04f7: ldstr        "weak_signal_delay_keep"
+  IL_04fc: stfld        PendingEntryDecision.Branch
+  IL_0501: ldarg.0      
+  IL_0502: ldfld        FtmEngine.pendingEntryDecision
+  IL_0507: ldloc.s      V_18
+  IL_0509: stfld        PendingEntryDecision.DirectionSource
+  IL_050e: ldarg.0      
+  IL_050f: ldfld        FtmEngine.pendingEntryDecision
+  IL_0514: ldarg.1      
+  IL_0515: stfld        PendingEntryDecision.BaselineSide
+  IL_051a: ldarg.0      
+  IL_051b: ldfld        FtmEngine.pendingEntryDecision
+  IL_0520: ldloc.s      V_9
+  IL_0522: callvirt     Array.Clone(0)
+  IL_0527: castclass    Double[]
+  IL_052c: stfld        PendingEntryDecision.Features
+  IL_0531: ldarg.0      
+  IL_0532: ldfld        FtmEngine.pendingEntryDecision
+  IL_0537: ldloc.3      
+  IL_0538: stfld        PendingEntryDecision.SignalClose
+  IL_053d: ldloc.s      V_23
+  IL_053f: brfalse.s    IL_0551
+  IL_0541: ldarg.0      
+  IL_0542: ldarg.0      
+  IL_0543: ldfld        FtmEngine.weakDelayCount
+  IL_0548: ldc.i4.1     
+  IL_0549: add          
+  IL_054a: stfld        FtmEngine.weakDelayCount
+  IL_054f: br.s         IL_0577
+  IL_0551: ldarg.0      
+  IL_0552: ldarg.0      
+  IL_0553: ldfld        FtmEngine.highVolVoteCount
+  IL_0558: ldc.i4.1     
+  IL_0559: add          
+  IL_055a: stfld        FtmEngine.highVolVoteCount
+  IL_055f: br.s         IL_0577
+  IL_0561: ldarg.0      
+  IL_0562: ldloc.s      V_17
+  IL_0564: ldarg.2      
+  IL_0565: ldloc.s      V_18
+  IL_0567: ldstr        "condition_not_met"
+  IL_056c: ldloc.s      V_20
+  IL_056e: ldarg.1      
+  IL_056f: ldloc.s      V_9
+  IL_0571: ldloc.3      
+  IL_0572: call         FtmEngine.ApplyFinalEntryRefinementOrSubmit(8)
+  IL_0577: ldarg.0      
+  IL_0578: call         CultureInfo.get_InvariantCulture(0)
+  IL_057d: ldstr        "DIRECTION {0:yyyy-MM-dd HH:mm}: baseline={1}, selected={2}, source={3}, priorSessionBps={4:F3}, priorOverride={5}, modelAvailable={6}, modelRows={7}, flipNeighbors={8}, flipProbability={9:F6}, knnOverride={10}, admissionTouches={11}, body={12:F4}, closeLocation={13:F4}, weak={14}, highVol={15}, directionTouches={16}, branch={17}."
+  IL_0582: ldc.i4.s     18
+  IL_0584: newarr       Object
+  IL_0589: dup          
+  IL_058a: ldc.i4.0     
+  IL_058b: ldarg.2      
+  IL_058c: box          DateTime
+  IL_0591: stelem.ref   
+  IL_0592: dup          
+  IL_0593: ldc.i4.1     
+  IL_0594: ldarg.1      
+  IL_0595: box          Int32
+  IL_059a: stelem.ref   
+  IL_059b: dup          
+  IL_059c: ldc.i4.2     
+  IL_059d: ldloc.s      V_17
+  IL_059f: box          Int32
+  IL_05a4: stelem.ref   
+  IL_05a5: dup          
+  IL_05a6: ldc.i4.3     
+  IL_05a7: ldloc.s      V_18
+  IL_05a9: stelem.ref   
+  IL_05aa: dup          
+  IL_05ab: ldc.i4.4     
+  IL_05ac: ldloc.s      V_10
+  IL_05ae: box          Double
+  IL_05b3: stelem.ref   
+  IL_05b4: dup          
+  IL_05b5: ldc.i4.5     
+  IL_05b6: ldloc.s      V_11
+  IL_05b8: box          Boolean
+  IL_05bd: stelem.ref   
+  IL_05be: dup          
+  IL_05bf: ldc.i4.6     
+  IL_05c0: ldloc.s      V_15
+  IL_05c2: box          Boolean
+  IL_05c7: stelem.ref   
+  IL_05c8: dup          
+  IL_05c9: ldc.i4.7     
+  IL_05ca: ldloc.s      V_14
+  IL_05cc: box          Int32
+  IL_05d1: stelem.ref   
+  IL_05d2: dup          
+  IL_05d3: ldc.i4.8     
+  IL_05d4: ldloc.s      V_13
+  IL_05d6: box          Int32
+  IL_05db: stelem.ref   
+  IL_05dc: dup          
+  IL_05dd: ldc.i4.s     9
+  IL_05df: ldloc.s      V_12
+  IL_05e1: box          Double
+  IL_05e6: stelem.ref   
+  IL_05e7: dup          
+  IL_05e8: ldc.i4.s     10
+  IL_05ea: ldloc.s      V_16
+  IL_05ec: box          Boolean
+  IL_05f1: stelem.ref   
+  IL_05f2: dup          
+  IL_05f3: ldc.i4.s     11
+  IL_05f5: ldloc.s      V_8
+  IL_05f7: box          Int32
+  IL_05fc: stelem.ref   
+  IL_05fd: dup          
+  IL_05fe: ldc.i4.s     12
+  IL_0600: ldloc.s      V_5
+  IL_0602: box          Double
+  IL_0607: stelem.ref   
+  IL_0608: dup          
+  IL_0609: ldc.i4.s     13
+  IL_060b: ldloc.s      V_6
+  IL_060d: box          Double
+  IL_0612: stelem.ref   
+  IL_0613: dup          
+  IL_0614: ldc.i4.s     14
+  IL_0616: ldloc.s      V_23
+  IL_0618: box          Boolean
+  IL_061d: stelem.ref   
+  IL_061e: dup          
+  IL_061f: ldc.i4.s     15
+  IL_0621: ldloc.s      V_24
+  IL_0623: box          Boolean
+  IL_0628: stelem.ref   
+  IL_0629: dup          
+  IL_062a: ldc.i4.s     16
+  IL_062c: ldloc.s      V_26
+  IL_062e: box          Int32
+  IL_0633: stelem.ref   
+  IL_0634: dup          
+  IL_0635: ldc.i4.s     17
+  IL_0637: ldloc.s      V_23
+  IL_0639: brtrue.s     IL_064d
+  IL_063b: ldloc.s      V_27
+  IL_063d: brtrue.s     IL_0646
+  IL_063f: ldstr        "none"
+  IL_0644: br.s         IL_0652
+  IL_0646: ldstr        "high_vol_touch_vote"
+  IL_064b: br.s         IL_0652
+  IL_064d: ldstr        "weak_signal"
+  IL_0652: stelem.ref   
+  IL_0653: call         String.Format(3)
+  IL_0658: call         FtmEngine.Diagnostic(1)
+  IL_065d: ret
+
+=== FtmEngine.TryGetExactSignalState(DateTime signalCloseEt, Double& signalOpen, Double& signalHigh, Double& signalLow, Double& signalClose) -> bool ===
+  LOCALS: V_0:int, V_1:DateTime
+  IL_0000: ldarg.2      
+  IL_0001: ldc.r8       0
+  IL_000a: stind.r8     
+  IL_000b: ldarg.3      
+  IL_000c: ldc.r8       -1,7976931348623157E+308
+  IL_0015: stind.r8     
+  IL_0016: ldarg.s      V_4
+  IL_0018: ldc.r8       1,7976931348623157E+308
+  IL_0021: stind.r8     
+  IL_0022: ldarg.s      V_5
+  IL_0024: ldc.r8       0
+  IL_002d: stind.r8     
+  IL_002e: ldarg.0      
+  IL_002f: call         FtmEngine.get_CurrentBarIndex(0)
+  IL_0034: ldc.i4.s     14
+  IL_0036: bge.s        IL_003a
+  IL_0038: ldc.i4.0     
+  IL_0039: ret          
+  IL_003a: ldc.i4.0     
+  IL_003b: stloc.0      
+  IL_003c: br.s         IL_0086
+  IL_003e: ldarg.0      
+  IL_003f: ldarg.0      
+  IL_0040: ldloc.0      
+  IL_0041: call         FtmEngine.TimeAt(1)
+  IL_0046: call         FtmEngine.ToEastern(1)
+  IL_004b: ldarga.s     V_1
+  IL_004d: ldloc.0      
+  IL_004e: neg          
+  IL_004f: conv.r8      
+  IL_0050: call         DateTime.AddMinutes(1)
+  IL_0055: stloc.1      
+  IL_0056: ldloc.1      
+  IL_0057: call         DateTime.op_Inequality(2)
+  IL_005c: brfalse.s    IL_0060
+  IL_005e: ldc.i4.0     
+  IL_005f: ret          
+  IL_0060: ldarg.3      
+  IL_0061: ldarg.3      
+  IL_0062: ldind.r8     
+  IL_0063: ldarg.0      
+  IL_0064: ldloc.0      
+  IL_0065: call         FtmEngine.HighAt(1)
+  IL_006a: call         Math.Max(2)
+  IL_006f: stind.r8     
+  IL_0070: ldarg.s      V_4
+  IL_0072: ldarg.s      V_4
+  IL_0074: ldind.r8     
+  IL_0075: ldarg.0      
+  IL_0076: ldloc.0      
+  IL_0077: call         FtmEngine.LowAt(1)
+  IL_007c: call         Math.Min(2)
+  IL_0081: stind.r8     
+  IL_0082: ldloc.0      
+  IL_0083: ldc.i4.1     
+  IL_0084: add          
+  IL_0085: stloc.0      
+  IL_0086: ldloc.0      
+  IL_0087: ldc.i4.s     15
+  IL_0089: blt.s        IL_003e
+  IL_008b: ldarg.2      
+  IL_008c: ldarg.0      
+  IL_008d: ldc.i4.s     14
+  IL_008f: call         FtmEngine.OpenAt(1)
+  IL_0094: stind.r8     
+  IL_0095: ldarg.s      V_5
+  IL_0097: ldarg.0      
+  IL_0098: ldc.i4.0     
+  IL_0099: call         FtmEngine.CloseAt(1)
+  IL_009e: stind.r8     
+  IL_009f: ldarg.3      
+  IL_00a0: ldind.r8     
+  IL_00a1: ldarg.s      V_4
+  IL_00a3: ldind.r8     
+  IL_00a4: cgt          
+  IL_00a6: ret
+
+=== FtmEngine.CountSignalTouches(int side, double confirmationLevel) -> int ===
+  LOCALS: V_0:int, V_1:int
+  IL_0000: ldc.i4.0     
+  IL_0001: stloc.0      
+  IL_0002: ldc.i4.0     
+  IL_0003: stloc.1      
+  IL_0004: br.s         IL_002a
+  IL_0006: ldarg.1      
+  IL_0007: ldc.i4.1     
+  IL_0008: bne.un.s     IL_0014
+  IL_000a: ldarg.0      
+  IL_000b: ldloc.1      
+  IL_000c: call         FtmEngine.HighAt(1)
+  IL_0011: ldarg.2      
+  IL_0012: bge.s        IL_0022
+  IL_0014: ldarg.1      
+  IL_0015: ldc.i4.m1    
+  IL_0016: bne.un.s     IL_0026
+  IL_0018: ldarg.0      
+  IL_0019: ldloc.1      
+  IL_001a: call         FtmEngine.LowAt(1)
+  IL_001f: ldarg.2      
+  IL_0020: bgt.un.s     IL_0026
+  IL_0022: ldloc.0      
+  IL_0023: ldc.i4.1     
+  IL_0024: add          
+  IL_0025: stloc.0      
+  IL_0026: ldloc.1      
+  IL_0027: ldc.i4.1     
+  IL_0028: add          
+  IL_0029: stloc.1      
+  IL_002a: ldloc.1      
+  IL_002b: ldc.i4.s     15
+  IL_002d: blt.s        IL_0006
+  IL_002f: ldloc.0      
+  IL_0030: ret
+
+=== FtmEngine.TryBuildDirectionFeatures(int baselineSide, int admissionTouches, DateTime signalCloseEt, double signalClose, Double[]& features) -> bool ===
+  LOCALS: V_0:double, V_1:double, V_2:double, V_3:double, V_4:double, V_5:double, V_6:double, V_7:double, V_8:double, V_9:double, V_10:int, V_11:int, V_12:int
+  IL_0000: ldarg.s      V_5
+  IL_0002: ldnull       
+  IL_0003: stind.ref    
+  IL_0004: ldarg.0      
+  IL_0005: ldfld        FtmEngine.orbOpen
+  IL_000a: ldc.r8       0
+  IL_0013: ble.un.s     IL_0037
+  IL_0015: ldarg.0      
+  IL_0016: ldfld        FtmEngine.orbClose
+  IL_001b: ldc.r8       0
+  IL_0024: ble.un.s     IL_0037
+  IL_0026: ldarg.0      
+  IL_0027: ldfld        FtmEngine.currentRthVolumeSum
+  IL_002c: ldc.r8       0
+  IL_0035: bgt.s        IL_0039
+  IL_0037: ldc.i4.0     
+  IL_0038: ret          
+  IL_0039: ldarg.0      
+  IL_003a: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_003f: callvirt     List`1.get_Count(0)
+  IL_0044: brtrue.s     IL_0048
+  IL_0046: ldc.i4.0     
+  IL_0047: ret          
+  IL_0048: ldarg.0      
+  IL_0049: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_004e: callvirt     List`1.get_Count(0)
+  IL_0053: ldc.i4.0     
+  IL_0054: bgt.s        IL_005e
+  IL_0056: ldarg.0      
+  IL_0057: ldfld        FtmEngine.orbOpen
+  IL_005c: br.s         IL_0076
+  IL_005e: ldarg.0      
+  IL_005f: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_0064: ldarg.0      
+  IL_0065: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_006a: callvirt     List`1.get_Count(0)
+  IL_006f: ldc.i4.1     
+  IL_0070: sub          
+  IL_0071: callvirt     List`1.get_Item(1)
+  IL_0076: stloc.0      
+  IL_0077: ldarg.0      
+  IL_0078: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_007d: callvirt     List`1.get_Count(0)
+  IL_0082: ldc.i4.0     
+  IL_0083: bgt.s        IL_0090
+  IL_0085: ldc.r8       0
+  IL_008e: br.s         IL_00a8
+  IL_0090: ldarg.0      
+  IL_0091: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_0096: ldarg.0      
+  IL_0097: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_009c: callvirt     List`1.get_Count(0)
+  IL_00a1: ldc.i4.1     
+  IL_00a2: sub          
+  IL_00a3: callvirt     List`1.get_Item(1)
+  IL_00a8: stloc.1      
+  IL_00a9: ldarg.0      
+  IL_00aa: ldarg.0      
+  IL_00ab: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_00b0: ldc.i4.5     
+  IL_00b1: call         FtmEngine.LagReturnBps(2)
+  IL_00b6: stloc.2      
+  IL_00b7: ldarg.0      
+  IL_00b8: ldarg.0      
+  IL_00b9: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_00be: ldc.i4.s     20
+  IL_00c0: call         FtmEngine.LagReturnBps(2)
+  IL_00c5: stloc.3      
+  IL_00c6: ldarg.0      
+  IL_00c7: ldfld        FtmEngine.currentRthTypicalVolumeSum
+  IL_00cc: ldarg.0      
+  IL_00cd: ldfld        FtmEngine.currentRthVolumeSum
+  IL_00d2: div          
+  IL_00d3: stloc.s      V_4
+  IL_00d5: ldarg.0      
+  IL_00d6: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_00db: callvirt     List`1.get_Count(0)
+  IL_00e0: ldc.i4.s     30
+  IL_00e2: bgt.s        IL_00ec
+  IL_00e4: ldarg.0      
+  IL_00e5: ldfld        FtmEngine.orbClose
+  IL_00ea: br.s         IL_0105
+  IL_00ec: ldarg.0      
+  IL_00ed: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_00f2: ldarg.0      
+  IL_00f3: ldfld        FtmEngine.currentRthMinuteCloses
+  IL_00f8: callvirt     List`1.get_Count(0)
+  IL_00fd: ldc.i4.s     31
+  IL_00ff: sub          
+  IL_0100: callvirt     List`1.get_Item(1)
+  IL_0105: stloc.s      V_5
+  IL_0107: ldarg.0      
+  IL_0108: ldarg.0      
+  IL_0109: ldfld        FtmEngine.orbOpen
+  IL_010e: ldloc.0      
+  IL_010f: call         FtmEngine.SafeReturnBps(2)
+  IL_0114: stloc.s      V_6
+  IL_0116: ldarg.0      
+  IL_0117: ldarg.s      V_4
+  IL_0119: ldloc.s      V_4
+  IL_011b: call         FtmEngine.SafeReturnBps(2)
+  IL_0120: stloc.s      V_7
+  IL_0122: ldarg.0      
+  IL_0123: ldarg.s      V_4
+  IL_0125: ldloc.s      V_5
+  IL_0127: call         FtmEngine.SafeReturnBps(2)
+  IL_012c: stloc.s      V_8
+  IL_012e: ldarg.0      
+  IL_012f: ldarg.3      
+  IL_0130: call         FtmEngine.MinuteOfDay(1)
+  IL_0135: ldc.i4       585
+  IL_013a: sub          
+  IL_013b: conv.r8      
+  IL_013c: ldc.r8       15
+  IL_0145: div          
+  IL_0146: stloc.s      V_9
+  IL_0148: ldarg.0      
+  IL_0149: ldflda       FtmEngine.currentCashDate
+  IL_014e: call         DateTime.get_DayOfWeek(0)
+  IL_0153: ldc.i4.6     
+  IL_0154: add          
+  IL_0155: ldc.i4.7     
+  IL_0156: rem          
+  IL_0157: stloc.s      V_10
+  IL_0159: ldarg.0      
+  IL_015a: ldflda       FtmEngine.currentCashDate
+  IL_015f: call         DateTime.get_Month(0)
+  IL_0164: stloc.s      V_11
+  IL_0166: ldarg.s      V_5
+  IL_0168: ldc.i4.s     14
+  IL_016a: newarr       Double
+  IL_016f: dup          
+  IL_0170: ldc.i4.0     
+  IL_0171: ldarg.1      
+  IL_0172: conv.r8      
+  IL_0173: ldloc.s      V_6
+  IL_0175: mul          
+  IL_0176: stelem.r8    
+  IL_0177: dup          
+  IL_0178: ldc.i4.1     
+  IL_0179: ldarg.1      
+  IL_017a: conv.r8      
+  IL_017b: ldloc.1      
+  IL_017c: mul          
+  IL_017d: stelem.r8    
+  IL_017e: dup          
+  IL_017f: ldc.i4.2     
+  IL_0180: ldarg.1      
+  IL_0181: conv.r8      
+  IL_0182: ldloc.2      
+  IL_0183: mul          
+  IL_0184: stelem.r8    
+  IL_0185: dup          
+  IL_0186: ldc.i4.3     
+  IL_0187: ldarg.1      
+  IL_0188: conv.r8      
+  IL_0189: ldloc.3      
+  IL_018a: mul          
+  IL_018b: stelem.r8    
+  IL_018c: dup          
+  IL_018d: ldc.i4.4     
+  IL_018e: ldarg.1      
+  IL_018f: conv.r8      
+  IL_0190: ldloc.s      V_7
+  IL_0192: mul          
+  IL_0193: stelem.r8    
+  IL_0194: dup          
+  IL_0195: ldc.i4.5     
+  IL_0196: ldarg.1      
+  IL_0197: conv.r8      
+  IL_0198: ldloc.s      V_8
+  IL_019a: mul          
+  IL_019b: stelem.r8    
+  IL_019c: dup          
+  IL_019d: ldc.i4.6     
+  IL_019e: ldarg.1      
+  IL_019f: conv.r8      
+  IL_01a0: stelem.r8    
+  IL_01a1: dup          
+  IL_01a2: ldc.i4.7     
+  IL_01a3: ldloc.s      V_9
+  IL_01a5: stelem.r8    
+  IL_01a6: dup          
+  IL_01a7: ldc.i4.8     
+  IL_01a8: ldarg.0      
+  IL_01a9: ldfld        FtmEngine.currentOrbBps
+  IL_01ae: stelem.r8    
+  IL_01af: dup          
+  IL_01b0: ldc.i4.s     9
+  IL_01b2: ldarg.2      
+  IL_01b3: conv.r8      
+  IL_01b4: stelem.r8    
+  IL_01b5: dup          
+  IL_01b6: ldc.i4.s     10
+  IL_01b8: ldc.r8       6,2831853071795862
+  IL_01c1: ldloc.s      V_10
+  IL_01c3: conv.r8      
+  IL_01c4: mul          
+  IL_01c5: ldc.r8       5
+  IL_01ce: div          
+  IL_01cf: call         Math.Sin(1)
+  IL_01d4: stelem.r8    
+  IL_01d5: dup          
+  IL_01d6: ldc.i4.s     11
+  IL_01d8: ldc.r8       6,2831853071795862
+  IL_01e1: ldloc.s      V_10
+  IL_01e3: conv.r8      
+  IL_01e4: mul          
+  IL_01e5: ldc.r8       5
+  IL_01ee: div          
+  IL_01ef: call         Math.Cos(1)
+  IL_01f4: stelem.r8    
+  IL_01f5: dup          
+  IL_01f6: ldc.i4.s     12
+  IL_01f8: ldc.r8       6,2831853071795862
+  IL_0201: ldloc.s      V_11
+  IL_0203: ldc.i4.1     
+  IL_0204: sub          
+  IL_0205: conv.r8      
+  IL_0206: mul          
+  IL_0207: ldc.r8       12
+  IL_0210: div          
+  IL_0211: call         Math.Sin(1)
+  IL_0216: stelem.r8    
+  IL_0217: dup          
+  IL_0218: ldc.i4.s     13
+  IL_021a: ldc.r8       6,2831853071795862
+  IL_0223: ldloc.s      V_11
+  IL_0225: ldc.i4.1     
+  IL_0226: sub          
+  IL_0227: conv.r8      
+  IL_0228: mul          
+  IL_0229: ldc.r8       12
+  IL_0232: div          
+  IL_0233: call         Math.Cos(1)
+  IL_0238: stelem.r8    
+  IL_0239: stind.ref    
+  IL_023a: ldarg.s      V_5
+  IL_023c: ldind.ref    
+  IL_023d: ldlen        
+  IL_023e: conv.i4      
+  IL_023f: ldc.i4.s     14
+  IL_0241: beq.s        IL_0245
+  IL_0243: ldc.i4.0     
+  IL_0244: ret          
+  IL_0245: ldc.i4.0     
+  IL_0246: stloc.s      V_12
+  IL_0248: br.s         IL_026c
+  IL_024a: ldarg.s      V_5
+  IL_024c: ldind.ref    
+  IL_024d: ldloc.s      V_12
+  IL_024f: ldelem.r8    
+  IL_0250: call         Double.IsNaN(1)
+  IL_0255: brtrue.s     IL_0264
+  IL_0257: ldarg.s      V_5
+  IL_0259: ldind.ref    
+  IL_025a: ldloc.s      V_12
+  IL_025c: ldelem.r8    
+  IL_025d: call         Double.IsInfinity(1)
+  IL_0262: brfalse.s    IL_0266
+  IL_0264: ldc.i4.0     
+  IL_0265: ret          
+  IL_0266: ldloc.s      V_12
+  IL_0268: ldc.i4.1     
+  IL_0269: add          
+  IL_026a: stloc.s      V_12
+  IL_026c: ldloc.s      V_12
+  IL_026e: ldarg.s      V_5
+  IL_0270: ldind.ref    
+  IL_0271: ldlen        
+  IL_0272: conv.i4      
+  IL_0273: blt.s        IL_024a
+  IL_0275: ldc.i4.1     
+  IL_0276: ret
+
+=== FtmEngine.TryPredictDirection(DateTime session, Double[] features, Double& flipProbability, Int32& flipNeighbors, Int32& trainingCount) -> bool ===
+  LOCALS: V_0:DateTime, V_1:int, V_2:List`1, V_3:int, V_4:DirectionTrainingRow, V_5:double, V_6:NeighborMatch, V_7:int, V_8:double, V_9:double, V_10:int
+  IL_0000: ldarg.3      
+  IL_0001: ldc.r8       0
+  IL_000a: stind.r8     
+  IL_000b: ldarg.s      V_4
+  IL_000d: ldc.i4.0     
+  IL_000e: stind.i4     
+  IL_000f: ldarg.s      V_5
+  IL_0011: ldc.i4.0     
+  IL_0012: stind.i4     
+  IL_0013: ldarg.0      
+  IL_0014: ldarg.1      
+  IL_0015: call         FtmEngine.DateKey(1)
+  IL_001a: ldc.i4       20120101
+  IL_001f: bge.s        IL_0023
+  IL_0021: ldc.i4.0     
+  IL_0022: ret          
+  IL_0023: ldarg.0      
+  IL_0024: ldarg.1      
+  IL_0025: call         FtmEngine.QuarterStart(1)
+  IL_002a: stloc.0      
+  IL_002b: ldloca.s     V_0
+  IL_002d: call         DateTime.get_Year(0)
+  IL_0032: ldc.i4.s     10
+  IL_0034: mul          
+  IL_0035: ldloca.s     V_0
+  IL_0037: call         DateTime.get_Month(0)
+  IL_003c: ldc.i4.1     
+  IL_003d: sub          
+  IL_003e: ldc.i4.3     
+  IL_003f: div          
+  IL_0040: ldc.i4.1     
+  IL_0041: add          
+  IL_0042: add          
+  IL_0043: stloc.1      
+  IL_0044: ldarg.0      
+  IL_0045: ldfld        FtmEngine.activeQuarterKey
+  IL_004a: ldloc.1      
+  IL_004b: beq.s        IL_0061
+  IL_004d: ldarg.0      
+  IL_004e: ldarg.0      
+  IL_004f: ldloc.0      
+  IL_0050: call         FtmEngine.FitQuarterModel(1)
+  IL_0055: stfld        FtmEngine.activeQuarterModel
+  IL_005a: ldarg.0      
+  IL_005b: ldloc.1      
+  IL_005c: stfld        FtmEngine.activeQuarterKey
+  IL_0061: ldarg.0      
+  IL_0062: ldfld        FtmEngine.activeQuarterModel
+  IL_0067: brtrue.s     IL_006b
+  IL_0069: ldc.i4.0     
+  IL_006a: ret          
+  IL_006b: ldarg.s      V_5
+  IL_006d: ldarg.0      
+  IL_006e: ldfld        FtmEngine.activeQuarterModel
+  IL_0073: ldfld        QuarterDirectionModel.Rows
+  IL_0078: callvirt     List`1.get_Count(0)
+  IL_007d: stind.i4     
+  IL_007e: newobj       List`1..ctor(0)
+  IL_0083: stloc.2      
+  IL_0084: ldc.i4.0     
+  IL_0085: stloc.3      
+  IL_0086: br           IL_013f
+  IL_008b: ldarg.0      
+  IL_008c: ldfld        FtmEngine.activeQuarterModel
+  IL_0091: ldfld        QuarterDirectionModel.Rows
+  IL_0096: ldloc.3      
+  IL_0097: callvirt     List`1.get_Item(1)
+  IL_009c: stloc.s      V_4
+  IL_009e: ldc.r8       0
+  IL_00a7: stloc.s      V_5
+  IL_00a9: ldc.i4.0     
+  IL_00aa: stloc.s      V_7
+  IL_00ac: br.s         IL_010f
+  IL_00ae: ldarg.2      
+  IL_00af: ldloc.s      V_7
+  IL_00b1: ldelem.r8    
+  IL_00b2: ldarg.0      
+  IL_00b3: ldfld        FtmEngine.activeQuarterModel
+  IL_00b8: ldfld        QuarterDirectionModel.Means
+  IL_00bd: ldloc.s      V_7
+  IL_00bf: ldelem.r8    
+  IL_00c0: sub          
+  IL_00c1: ldarg.0      
+  IL_00c2: ldfld        FtmEngine.activeQuarterModel
+  IL_00c7: ldfld        QuarterDirectionModel.Scales
+  IL_00cc: ldloc.s      V_7
+  IL_00ce: ldelem.r8    
+  IL_00cf: div          
+  IL_00d0: stloc.s      V_8
+  IL_00d2: ldloc.s      V_4
+  IL_00d4: ldfld        DirectionTrainingRow.Features
+  IL_00d9: ldloc.s      V_7
+  IL_00db: ldelem.r8    
+  IL_00dc: ldarg.0      
+  IL_00dd: ldfld        FtmEngine.activeQuarterModel
+  IL_00e2: ldfld        QuarterDirectionModel.Means
+  IL_00e7: ldloc.s      V_7
+  IL_00e9: ldelem.r8    
+  IL_00ea: sub          
+  IL_00eb: ldarg.0      
+  IL_00ec: ldfld        FtmEngine.activeQuarterModel
+  IL_00f1: ldfld        QuarterDirectionModel.Scales
+  IL_00f6: ldloc.s      V_7
+  IL_00f8: ldelem.r8    
+  IL_00f9: div          
+  IL_00fa: ldloc.s      V_8
+  IL_00fc: sub          
+  IL_00fd: stloc.s      V_9
+  IL_00ff: ldloc.s      V_5
+  IL_0101: ldloc.s      V_9
+  IL_0103: ldloc.s      V_9
+  IL_0105: mul          
+  IL_0106: add          
+  IL_0107: stloc.s      V_5
+  IL_0109: ldloc.s      V_7
+  IL_010b: ldc.i4.1     
+  IL_010c: add          
+  IL_010d: stloc.s      V_7
+  IL_010f: ldloc.s      V_7
+  IL_0111: ldc.i4.s     14
+  IL_0113: blt.s        IL_00ae
+  IL_0115: newobj       NeighborMatch..ctor(0)
+  IL_011a: stloc.s      V_6
+  IL_011c: ldloc.s      V_6
+  IL_011e: ldloc.s      V_4
+  IL_0120: stfld        NeighborMatch.Row
+  IL_0125: ldloc.s      V_6
+  IL_0127: ldloc.s      V_5
+  IL_0129: call         Math.Sqrt(1)
+  IL_012e: stfld        NeighborMatch.Distance
+  IL_0133: ldloc.2      
+  IL_0134: ldloc.s      V_6
+  IL_0136: callvirt     List`1.Add(1)
+  IL_013b: ldloc.3      
+  IL_013c: ldc.i4.1     
+  IL_013d: add          
+  IL_013e: stloc.3      
+  IL_013f: ldloc.3      
+  IL_0140: ldarg.0      
+  IL_0141: ldfld        FtmEngine.activeQuarterModel
+  IL_0146: ldfld        QuarterDirectionModel.Rows
+  IL_014b: callvirt     List`1.get_Count(0)
+  IL_0150: blt          IL_008b
+  IL_0155: ldloc.2      
+  IL_0156: ldsfld       <>c.<>9__195_0
+  IL_015b: dup          
+  IL_015c: brtrue.s     IL_0175
+  IL_015e: pop          
+  IL_015f: ldsfld       <>c.<>9
+  IL_0164: ldftn        <>c.<TryPredictDirection>b__195_0(2)
+  IL_016a: newobj       Comparison`1..ctor(2)
+  IL_016f: dup          
+  IL_0170: stsfld       <>c.<>9__195_0
+  IL_0175: callvirt     List`1.Sort(1)
+  IL_017a: ldc.i4.0     
+  IL_017b: stloc.s      V_10
+  IL_017d: br.s         IL_01a1
+  IL_017f: ldloc.2      
+  IL_0180: ldloc.s      V_10
+  IL_0182: callvirt     List`1.get_Item(1)
+  IL_0187: ldfld        NeighborMatch.Row
+  IL_018c: ldfld        DirectionTrainingRow.FlipWins
+  IL_0191: brfalse.s    IL_019b
+  IL_0193: ldarg.s      V_4
+  IL_0195: ldarg.s      V_4
+  IL_0197: ldind.i4     
+  IL_0198: ldc.i4.1     
+  IL_0199: add          
+  IL_019a: stind.i4     
+  IL_019b: ldloc.s      V_10
+  IL_019d: ldc.i4.1     
+  IL_019e: add          
+  IL_019f: stloc.s      V_10
+  IL_01a1: ldloc.s      V_10
+  IL_01a3: ldc.i4.s     15
+  IL_01a5: blt.s        IL_017f
+  IL_01a7: ldarg.3      
+  IL_01a8: ldarg.s      V_4
+  IL_01aa: ldind.i4     
+  IL_01ab: conv.r8      
+  IL_01ac: ldc.r8       2
+  IL_01b5: add          
+  IL_01b6: ldc.r8       19
+  IL_01bf: div          
+  IL_01c0: stind.r8     
+  IL_01c1: ldarg.0      
+  IL_01c2: ldarg.0      
+  IL_01c3: ldfld        FtmEngine.knnPredictionCount
+  IL_01c8: ldc.i4.1     
+  IL_01c9: add          
+  IL_01ca: stfld        FtmEngine.knnPredictionCount
+  IL_01cf: ldc.i4.1     
+  IL_01d0: ret
+
+=== FtmEngine.FitQuarterModel(DateTime quarter) -> QuarterDirectionModel ===
+  LOCALS: V_0:DateTime, V_1:List`1, V_2:QuarterDirectionModel, V_3:int, V_4:DirectionTrainingRow, V_5:int, V_6:double, V_7:double, V_8:double, V_9:double, V_10:int, V_11:int, V_12:double
+  IL_0000: ldarga.s     V_1
+  IL_0002: ldc.r8       -1
+  IL_000b: call         DateTime.AddDays(1)
+  IL_0010: stloc.0      
+  IL_0011: newobj       List`1..ctor(0)
+  IL_0016: stloc.1      
+  IL_0017: ldc.i4.0     
+  IL_0018: stloc.3      
+  IL_0019: br.s         IL_005d
+  IL_001b: ldarg.0      
+  IL_001c: ldfld        FtmEngine.directionTrainingRows
+  IL_0021: ldloc.3      
+  IL_0022: callvirt     List`1.get_Item(1)
+  IL_0027: stloc.s      V_4
+  IL_0029: ldarg.0      
+  IL_002a: ldloc.s      V_4
+  IL_002c: ldfld        DirectionTrainingRow.Session
+  IL_0031: call         FtmEngine.DateKey(1)
+  IL_0036: ldc.i4       20100101
+  IL_003b: blt.s        IL_0059
+  IL_003d: ldloc.s      V_4
+  IL_003f: ldflda       DirectionTrainingRow.Session
+  IL_0044: call         DateTime.get_Date(0)
+  IL_0049: ldloc.0      
+  IL_004a: call         DateTime.op_LessThanOrEqual(2)
+  IL_004f: brfalse.s    IL_0059
+  IL_0051: ldloc.1      
+  IL_0052: ldloc.s      V_4
+  IL_0054: callvirt     List`1.Add(1)
+  IL_0059: ldloc.3      
+  IL_005a: ldc.i4.1     
+  IL_005b: add          
+  IL_005c: stloc.3      
+  IL_005d: ldloc.3      
+  IL_005e: ldarg.0      
+  IL_005f: ldfld        FtmEngine.directionTrainingRows
+  IL_0064: callvirt     List`1.get_Count(0)
+  IL_0069: blt.s        IL_001b
+  IL_006b: ldloc.1      
+  IL_006c: callvirt     List`1.get_Count(0)
+  IL_0071: ldc.i4.s     100
+  IL_0073: ldc.i4.s     15
+  IL_0075: call         Math.Max(2)
+  IL_007a: bge.s        IL_00de
+  IL_007c: ldarg.0      
+  IL_007d: call         CultureInfo.get_InvariantCulture(0)
+  IL_0082: ldstr        "KNN REFIT {0}Q{1}: unavailable, cutoff={2:yyyy-MM-dd}, rows={3}, minimum={4}."
+  IL_0087: ldc.i4.5     
+  IL_0088: newarr       Object
+  IL_008d: dup          
+  IL_008e: ldc.i4.0     
+  IL_008f: ldarga.s     V_1
+  IL_0091: call         DateTime.get_Year(0)
+  IL_0096: box          Int32
+  IL_009b: stelem.ref   
+  IL_009c: dup          
+  IL_009d: ldc.i4.1     
+  IL_009e: ldarga.s     V_1
+  IL_00a0: call         DateTime.get_Month(0)
+  IL_00a5: ldc.i4.1     
+  IL_00a6: sub          
+  IL_00a7: ldc.i4.3     
+  IL_00a8: div          
+  IL_00a9: ldc.i4.1     
+  IL_00aa: add          
+  IL_00ab: box          Int32
+  IL_00b0: stelem.ref   
+  IL_00b1: dup          
+  IL_00b2: ldc.i4.2     
+  IL_00b3: ldloc.0      
+  IL_00b4: box          DateTime
+  IL_00b9: stelem.ref   
+  IL_00ba: dup          
+  IL_00bb: ldc.i4.3     
+  IL_00bc: ldloc.1      
+  IL_00bd: callvirt     List`1.get_Count(0)
+  IL_00c2: box          Int32
+  IL_00c7: stelem.ref   
+  IL_00c8: dup          
+  IL_00c9: ldc.i4.4     
+  IL_00ca: ldc.i4.s     100
+  IL_00cc: box          Int32
+  IL_00d1: stelem.ref   
+  IL_00d2: call         String.Format(3)
+  IL_00d7: call         FtmEngine.Diagnostic(1)
+  IL_00dc: ldnull       
+  IL_00dd: ret          
+  IL_00de: newobj       QuarterDirectionModel..ctor(0)
+  IL_00e3: stloc.2      
+  IL_00e4: ldloc.2      
+  IL_00e5: ldloc.1      
+  IL_00e6: stfld        QuarterDirectionModel.Rows
+  IL_00eb: ldloc.2      
+  IL_00ec: ldc.i4.s     14
+  IL_00ee: newarr       Double
+  IL_00f3: stfld        QuarterDirectionModel.Means
+  IL_00f8: ldloc.2      
+  IL_00f9: ldc.i4.s     14
+  IL_00fb: newarr       Double
+  IL_0100: stfld        QuarterDirectionModel.Scales
+  IL_0105: ldc.i4.0     
+  IL_0106: stloc.s      V_5
+  IL_0108: br           IL_01d2
+  IL_010d: ldc.r8       0
+  IL_0116: stloc.s      V_6
+  IL_0118: ldc.i4.0     
+  IL_0119: stloc.s      V_10
+  IL_011b: br.s         IL_0138
+  IL_011d: ldloc.s      V_6
+  IL_011f: ldloc.1      
+  IL_0120: ldloc.s      V_10
+  IL_0122: callvirt     List`1.get_Item(1)
+  IL_0127: ldfld        DirectionTrainingRow.Features
+  IL_012c: ldloc.s      V_5
+  IL_012e: ldelem.r8    
+  IL_012f: add          
+  IL_0130: stloc.s      V_6
+  IL_0132: ldloc.s      V_10
+  IL_0134: ldc.i4.1     
+  IL_0135: add          
+  IL_0136: stloc.s      V_10
+  IL_0138: ldloc.s      V_10
+  IL_013a: ldloc.1      
+  IL_013b: callvirt     List`1.get_Count(0)
+  IL_0140: blt.s        IL_011d
+  IL_0142: ldloc.s      V_6
+  IL_0144: ldloc.1      
+  IL_0145: callvirt     List`1.get_Count(0)
+  IL_014a: conv.r8      
+  IL_014b: div          
+  IL_014c: stloc.s      V_7
+  IL_014e: ldc.r8       0
+  IL_0157: stloc.s      V_8
+  IL_0159: ldc.i4.0     
+  IL_015a: stloc.s      V_11
+  IL_015c: br.s         IL_0183
+  IL_015e: ldloc.1      
+  IL_015f: ldloc.s      V_11
+  IL_0161: callvirt     List`1.get_Item(1)
+  IL_0166: ldfld        DirectionTrainingRow.Features
+  IL_016b: ldloc.s      V_5
+  IL_016d: ldelem.r8    
+  IL_016e: ldloc.s      V_7
+  IL_0170: sub          
+  IL_0171: stloc.s      V_12
+  IL_0173: ldloc.s      V_8
+  IL_0175: ldloc.s      V_12
+  IL_0177: ldloc.s      V_12
+  IL_0179: mul          
+  IL_017a: add          
+  IL_017b: stloc.s      V_8
+  IL_017d: ldloc.s      V_11
+  IL_017f: ldc.i4.1     
+  IL_0180: add          
+  IL_0181: stloc.s      V_11
+  IL_0183: ldloc.s      V_11
+  IL_0185: ldloc.1      
+  IL_0186: callvirt     List`1.get_Count(0)
+  IL_018b: blt.s        IL_015e
+  IL_018d: ldloc.s      V_8
+  IL_018f: ldloc.1      
+  IL_0190: callvirt     List`1.get_Count(0)
+  IL_0195: conv.r8      
+  IL_0196: div          
+  IL_0197: call         Math.Sqrt(1)
+  IL_019c: stloc.s      V_9
+  IL_019e: ldloc.2      
+  IL_019f: ldfld        QuarterDirectionModel.Means
+  IL_01a4: ldloc.s      V_5
+  IL_01a6: ldloc.s      V_7
+  IL_01a8: stelem.r8    
+  IL_01a9: ldloc.2      
+  IL_01aa: ldfld        QuarterDirectionModel.Scales
+  IL_01af: ldloc.s      V_5
+  IL_01b1: ldloc.s      V_9
+  IL_01b3: ldc.r8       0
+  IL_01bc: bgt.s        IL_01c9
+  IL_01be: ldc.r8       1
+  IL_01c7: br.s         IL_01cb
+  IL_01c9: ldloc.s      V_9
+  IL_01cb: stelem.r8    
+  IL_01cc: ldloc.s      V_5
+  IL_01ce: ldc.i4.1     
+  IL_01cf: add          
+  IL_01d0: stloc.s      V_5
+  IL_01d2: ldloc.s      V_5
+  IL_01d4: ldc.i4.s     14
+  IL_01d6: blt          IL_010d
+  IL_01db: ldarg.0      
+  IL_01dc: call         CultureInfo.get_InvariantCulture(0)
+  IL_01e1: ldstr        "KNN REFIT {0}Q{1}: cutoff={2:yyyy-MM-dd}, rows={3}, neighbors={4}, scaler=population-standard-deviation."
+  IL_01e6: ldc.i4.5     
+  IL_01e7: newarr       Object
+  IL_01ec: dup          
+  IL_01ed: ldc.i4.0     
+  IL_01ee: ldarga.s     V_1
+  IL_01f0: call         DateTime.get_Year(0)
+  IL_01f5: box          Int32
+  IL_01fa: stelem.ref   
+  IL_01fb: dup          
+  IL_01fc: ldc.i4.1     
+  IL_01fd: ldarga.s     V_1
+  IL_01ff: call         DateTime.get_Month(0)
+  IL_0204: ldc.i4.1     
+  IL_0205: sub          
+  IL_0206: ldc.i4.3     
+  IL_0207: div          
+  IL_0208: ldc.i4.1     
+  IL_0209: add          
+  IL_020a: box          Int32
+  IL_020f: stelem.ref   
+  IL_0210: dup          
+  IL_0211: ldc.i4.2     
+  IL_0212: ldloc.0      
+  IL_0213: box          DateTime
+  IL_0218: stelem.ref   
+  IL_0219: dup          
+  IL_021a: ldc.i4.3     
+  IL_021b: ldloc.1      
+  IL_021c: callvirt     List`1.get_Count(0)
+  IL_0221: box          Int32
+  IL_0226: stelem.ref   
+  IL_0227: dup          
+  IL_0228: ldc.i4.4     
+  IL_0229: ldc.i4.s     15
+  IL_022b: box          Int32
+  IL_0230: stelem.ref   
+  IL_0231: call         String.Format(3)
+  IL_0236: call         FtmEngine.Diagnostic(1)
+  IL_023b: ldloc.2      
+  IL_023c: ret
+
+=== FtmEngine.QuarterStart(DateTime value) -> DateTime ===
+  LOCALS: V_0:int
+  IL_0000: ldarga.s     V_1
+  IL_0002: call         DateTime.get_Month(0)
+  IL_0007: ldc.i4.1     
+  IL_0008: sub          
+  IL_0009: ldc.i4.3     
+  IL_000a: div          
+  IL_000b: ldc.i4.3     
+  IL_000c: mul          
+  IL_000d: ldc.i4.1     
+  IL_000e: add          
+  IL_000f: stloc.0      
+  IL_0010: ldarga.s     V_1
+  IL_0012: call         DateTime.get_Year(0)
+  IL_0017: ldloc.0      
+  IL_0018: ldc.i4.1     
+  IL_0019: newobj       DateTime..ctor(3)
+  IL_001e: ret
+
+=== FtmEngine.SafeReturnBps(double numerator, double denominator) -> double ===
+  IL_0000: ldarg.2      
+  IL_0001: ldc.r8       0
+  IL_000a: bne.un.s     IL_0016
+  IL_000c: ldc.r8       0
+  IL_0015: ret          
+  IL_0016: ldarg.1      
+  IL_0017: ldarg.2      
+  IL_0018: div          
+  IL_0019: ldc.r8       1
+  IL_0022: sub          
+  IL_0023: ldc.r8       10000
+  IL_002c: mul          
+  IL_002d: ret
+
+=== FtmEngine.LagReturnBps(List`1 values, int periods) -> double ===
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_0027
+  IL_0003: ldarg.1      
+  IL_0004: callvirt     List`1.get_Count(0)
+  IL_0009: ldarg.2      
+  IL_000a: ble.s        IL_0027
+  IL_000c: ldarg.1      
+  IL_000d: ldarg.1      
+  IL_000e: callvirt     List`1.get_Count(0)
+  IL_0013: ldc.i4.1     
+  IL_0014: sub          
+  IL_0015: ldarg.2      
+  IL_0016: sub          
+  IL_0017: callvirt     List`1.get_Item(1)
+  IL_001c: ldc.r8       0
+  IL_0025: bne.un.s     IL_0031
+  IL_0027: ldc.r8       0
+  IL_0030: ret          
+  IL_0031: ldarg.0      
+  IL_0032: ldarg.1      
+  IL_0033: ldarg.1      
+  IL_0034: callvirt     List`1.get_Count(0)
+  IL_0039: ldc.i4.1     
+  IL_003a: sub          
+  IL_003b: callvirt     List`1.get_Item(1)
+  IL_0040: ldarg.1      
+  IL_0041: ldarg.1      
+  IL_0042: callvirt     List`1.get_Count(0)
+  IL_0047: ldc.i4.1     
+  IL_0048: sub          
+  IL_0049: ldarg.2      
+  IL_004a: sub          
+  IL_004b: callvirt     List`1.get_Item(1)
+  IL_0050: call         FtmEngine.SafeReturnBps(2)
+  IL_0055: ret
+
+=== FtmEngine.StartShadowPair(DateTime session, DateTime signalCloseEt, int baselineSide, Double[] features, bool priorTrendAvailable, double priorTrendBps) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: call         FtmEngine.DateKey(1)
+  IL_0007: ldc.i4       20100101
+  IL_000c: bge.s        IL_000f
+  IL_000e: ret          
+  IL_000f: ldarg.0      
+  IL_0010: ldfld        FtmEngine.activeShadowPair
+  IL_0015: brfalse.s    IL_002a
+  IL_0017: ldarg.0      
+  IL_0018: ldstr        "a second shadow pair was requested before the first completed"
+  IL_001d: call         FtmEngine.InvalidatePendingSessionState(1)
+  IL_0022: ldarg.0      
+  IL_0023: ldc.i4.1     
+  IL_0024: stfld        FtmEngine.dayBlocked
+  IL_0029: ret          
+  IL_002a: ldarg.0      
+  IL_002b: newobj       ShadowPairState..ctor(0)
+  IL_0030: stfld        FtmEngine.activeShadowPair
+  IL_0035: ldarg.0      
+  IL_0036: ldfld        FtmEngine.activeShadowPair
+  IL_003b: ldarga.s     V_1
+  IL_003d: call         DateTime.get_Date(0)
+  IL_0042: stfld        ShadowPairState.Session
+  IL_0047: ldarg.0      
+  IL_0048: ldfld        FtmEngine.activeShadowPair
+  IL_004d: ldarg.2      
+  IL_004e: stfld        ShadowPairState.ExpectedParentFillOpenEt
+  IL_0053: ldarg.0      
+  IL_0054: ldfld        FtmEngine.activeShadowPair
+  IL_0059: ldarg.3      
+  IL_005a: stfld        ShadowPairState.BaselineSide
+  IL_005f: ldarg.0      
+  IL_0060: ldfld        FtmEngine.activeShadowPair
+  IL_0065: ldarg.s      V_4
+  IL_0067: callvirt     Array.Clone(0)
+  IL_006c: castclass    Double[]
+  IL_0071: stfld        ShadowPairState.Features
+  IL_0076: ldarg.0      
+  IL_0077: ldfld        FtmEngine.activeShadowPair
+  IL_007c: ldarg.s      V_5
+  IL_007e: stfld        ShadowPairState.PriorTrendAvailable
+  IL_0083: ldarg.0      
+  IL_0084: ldfld        FtmEngine.activeShadowPair
+  IL_0089: ldarg.s      V_6
+  IL_008b: stfld        ShadowPairState.PriorTrendBps
+  IL_0090: ret
+
+=== FtmEngine.ProcessShadowPair(DateTime barOpenEt, DateTime barCloseEt, int closeMinuteEt) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.activeShadowPair
+  IL_0006: brfalse.s    IL_0022
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.activeShadowPair
+  IL_000e: ldfld        ShadowPairState.Invalid
+  IL_0013: brtrue.s     IL_0022
+  IL_0015: ldarg.0      
+  IL_0016: ldfld        FtmEngine.activeShadowPair
+  IL_001b: ldfld        ShadowPairState.LabelRecorded
+  IL_0020: brfalse.s    IL_0023
+  IL_0022: ret          
+  IL_0023: ldarg.0      
+  IL_0024: ldfld        FtmEngine.activeShadowPair
+  IL_0029: ldfld        ShadowPairState.Initialized
+  IL_002e: brtrue       IL_00ff
+  IL_0033: ldarg.1      
+  IL_0034: ldarg.0      
+  IL_0035: ldfld        FtmEngine.activeShadowPair
+  IL_003a: ldfld        ShadowPairState.ExpectedParentFillOpenEt
+  IL_003f: call         DateTime.op_LessThan(2)
+  IL_0044: brfalse.s    IL_0047
+  IL_0046: ret          
+  IL_0047: ldarg.1      
+  IL_0048: ldarg.0      
+  IL_0049: ldfld        FtmEngine.activeShadowPair
+  IL_004e: ldfld        ShadowPairState.ExpectedParentFillOpenEt
+  IL_0053: call         DateTime.op_Inequality(2)
+  IL_0058: brfalse.s    IL_0080
+  IL_005a: ldarg.0      
+  IL_005b: ldfld        FtmEngine.activeShadowPair
+  IL_0060: ldc.i4.1     
+  IL_0061: stfld        ShadowPairState.Invalid
+  IL_0066: ldarg.0      
+  IL_0067: ldarg.0      
+  IL_0068: ldfld        FtmEngine.failClosedCount
+  IL_006d: ldc.i4.1     
+  IL_006e: add          
+  IL_006f: stfld        FtmEngine.failClosedCount
+  IL_0074: ldarg.0      
+  IL_0075: ldstr        "MODEL LABEL SKIP: exact parent next-minute open was unavailable."
+  IL_007a: call         FtmEngine.Diagnostic(1)
+  IL_007f: ret          
+  IL_0080: ldarg.0      
+  IL_0081: ldfld        FtmEngine.activeShadowPair
+  IL_0086: ldarg.0      
+  IL_0087: ldarg.0      
+  IL_0088: ldfld        FtmEngine.activeShadowPair
+  IL_008d: ldfld        ShadowPairState.BaselineSide
+  IL_0092: ldarg.0      
+  IL_0093: ldc.i4.0     
+  IL_0094: call         FtmEngine.OpenAt(1)
+  IL_0099: ldarg.0      
+  IL_009a: ldfld        FtmEngine.activeShadowPair
+  IL_009f: ldfld        ShadowPairState.PriorTrendAvailable
+  IL_00a4: ldarg.0      
+  IL_00a5: ldfld        FtmEngine.activeShadowPair
+  IL_00aa: ldfld        ShadowPairState.PriorTrendBps
+  IL_00af: call         FtmEngine.CreateShadowTrade(4)
+  IL_00b4: stfld        ShadowPairState.Breakout
+  IL_00b9: ldarg.0      
+  IL_00ba: ldfld        FtmEngine.activeShadowPair
+  IL_00bf: ldarg.0      
+  IL_00c0: ldarg.0      
+  IL_00c1: ldfld        FtmEngine.activeShadowPair
+  IL_00c6: ldfld        ShadowPairState.BaselineSide
+  IL_00cb: neg          
+  IL_00cc: ldarg.0      
+  IL_00cd: ldc.i4.0     
+  IL_00ce: call         FtmEngine.OpenAt(1)
+  IL_00d3: ldarg.0      
+  IL_00d4: ldfld        FtmEngine.activeShadowPair
+  IL_00d9: ldfld        ShadowPairState.PriorTrendAvailable
+  IL_00de: ldarg.0      
+  IL_00df: ldfld        FtmEngine.activeShadowPair
+  IL_00e4: ldfld        ShadowPairState.PriorTrendBps
+  IL_00e9: call         FtmEngine.CreateShadowTrade(4)
+  IL_00ee: stfld        ShadowPairState.Fade
+  IL_00f3: ldarg.0      
+  IL_00f4: ldfld        FtmEngine.activeShadowPair
+  IL_00f9: ldc.i4.1     
+  IL_00fa: stfld        ShadowPairState.Initialized
+  IL_00ff: ldarg.0      
+  IL_0100: ldarg.0      
+  IL_0101: ldfld        FtmEngine.activeShadowPair
+  IL_0106: ldfld        ShadowPairState.Breakout
+  IL_010b: ldarg.3      
+  IL_010c: call         FtmEngine.ProcessShadowTradeBar(2)
+  IL_0111: ldarg.0      
+  IL_0112: ldarg.0      
+  IL_0113: ldfld        FtmEngine.activeShadowPair
+  IL_0118: ldfld        ShadowPairState.Fade
+  IL_011d: ldarg.3      
+  IL_011e: call         FtmEngine.ProcessShadowTradeBar(2)
+  IL_0123: ldarg.0      
+  IL_0124: call         FtmEngine.TryRecordCompletedModelLabel(0)
+  IL_0129: ret
+
+=== FtmEngine.CreateShadowTrade(int side, double parentFillOpen, bool priorTrendAvailable, double priorTrendBps) -> ShadowTradeState ===
+  LOCALS: V_0:double, V_1:double, V_2:double, V_3:double, V_4:double, V_5:double, V_6:double, V_7:string, V_8:ShadowTradeState
+  IL_0000: ldarg.2      
+  IL_0001: ldarg.1      
+  IL_0002: conv.r8      
+  IL_0003: ldarg.0      
+  IL_0004: ldfld        FtmEngine.owner
+  IL_0009: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_000e: mul          
+  IL_000f: add          
+  IL_0010: stloc.0      
+  IL_0011: ldc.r8       2
+  IL_001a: ldc.r8       100
+  IL_0023: ldarg.0      
+  IL_0024: ldfld        FtmEngine.orbHigh
+  IL_0029: ldarg.0      
+  IL_002a: ldfld        FtmEngine.orbLow
+  IL_002f: sub          
+  IL_0030: ldc.r8       1,25
+  IL_0039: mul          
+  IL_003a: call         Math.Min(2)
+  IL_003f: call         Math.Max(2)
+  IL_0044: stloc.1      
+  IL_0045: ldarg.0      
+  IL_0046: ldloc.0      
+  IL_0047: ldarg.1      
+  IL_0048: conv.r8      
+  IL_0049: ldloc.1      
+  IL_004a: mul          
+  IL_004b: sub          
+  IL_004c: call         FtmEngine.RoundPrice(1)
+  IL_0051: stloc.2      
+  IL_0052: ldarg.1      
+  IL_0053: conv.r8      
+  IL_0054: ldloc.0      
+  IL_0055: ldloc.2      
+  IL_0056: sub          
+  IL_0057: mul          
+  IL_0058: stloc.3      
+  IL_0059: ldarg.0      
+  IL_005a: ldarg.1      
+  IL_005b: ldarg.3      
+  IL_005c: ldarg.s      V_4
+  IL_005e: ldloca.s     V_4
+  IL_0060: ldloca.s     V_5
+  IL_0062: ldloca.s     V_6
+  IL_0064: ldloca.s     V_7
+  IL_0066: call         FtmEngine.SelectManagementPlan(7)
+  IL_006b: newobj       ShadowTradeState..ctor(0)
+  IL_0070: stloc.s      V_8
+  IL_0072: ldloc.s      V_8
+  IL_0074: ldarg.1      
+  IL_0075: stfld        ShadowTradeState.Side
+  IL_007a: ldloc.s      V_8
+  IL_007c: ldloc.0      
+  IL_007d: stfld        ShadowTradeState.Entry
+  IL_0082: ldloc.s      V_8
+  IL_0084: ldloc.2      
+  IL_0085: stfld        ShadowTradeState.ActiveStop
+  IL_008a: ldloc.s      V_8
+  IL_008c: ldarg.0      
+  IL_008d: ldloc.0      
+  IL_008e: ldarg.1      
+  IL_008f: conv.r8      
+  IL_0090: ldloc.1      
+  IL_0091: mul          
+  IL_0092: ldloc.s      V_4
+  IL_0094: mul          
+  IL_0095: add          
+  IL_0096: call         FtmEngine.RoundPrice(1)
+  IL_009b: stfld        ShadowTradeState.Target
+  IL_00a0: ldloc.s      V_8
+  IL_00a2: ldloc.3      
+  IL_00a3: stfld        ShadowTradeState.RiskPoints
+  IL_00a8: ldloc.s      V_8
+  IL_00aa: ldloc.s      V_5
+  IL_00ac: stfld        ShadowTradeState.ManagedTriggerR
+  IL_00b1: ldloc.s      V_8
+  IL_00b3: ldloc.s      V_6
+  IL_00b5: stfld        ShadowTradeState.ManagedLockR
+  IL_00ba: ldloc.3      
+  IL_00bb: ldc.r8       0
+  IL_00c4: bgt.s        IL_00d6
+  IL_00c6: ldloc.s      V_8
+  IL_00c8: ldc.i4.1     
+  IL_00c9: stfld        ShadowTradeState.Complete
+  IL_00ce: ldloc.s      V_8
+  IL_00d0: ldloc.0      
+  IL_00d1: stfld        ShadowTradeState.ExitPrice
+  IL_00d6: ldloc.s      V_8
+  IL_00d8: ret
+
+=== FtmEngine.ProcessShadowTradeBar(ShadowTradeState state, int closeMinuteEt) -> void ===
+  LOCALS: V_0:bool, V_1:double, V_2:double, V_3:double, V_4:double
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_000b
+  IL_0003: ldarg.1      
+  IL_0004: ldfld        ShadowTradeState.Complete
+  IL_0009: brfalse.s    IL_000c
+  IL_000b: ret          
+  IL_000c: ldarg.1      
+  IL_000d: ldfld        ShadowTradeState.PendingConditionalExit
+  IL_0012: brfalse.s    IL_0037
+  IL_0014: ldarg.0      
+  IL_0015: ldarg.1      
+  IL_0016: ldarg.0      
+  IL_0017: ldc.i4.0     
+  IL_0018: call         FtmEngine.OpenAt(1)
+  IL_001d: ldarg.1      
+  IL_001e: ldfld        ShadowTradeState.Side
+  IL_0023: conv.r8      
+  IL_0024: ldarg.0      
+  IL_0025: ldfld        FtmEngine.owner
+  IL_002a: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_002f: mul          
+  IL_0030: sub          
+  IL_0031: call         FtmEngine.CompleteShadowTrade(2)
+  IL_0036: ret          
+  IL_0037: ldarg.1      
+  IL_0038: ldfld        ShadowTradeState.Side
+  IL_003d: ldc.i4.1     
+  IL_003e: beq.s        IL_0054
+  IL_0040: ldarg.0      
+  IL_0041: ldc.i4.0     
+  IL_0042: call         FtmEngine.HighAt(1)
+  IL_0047: ldarg.1      
+  IL_0048: ldfld        ShadowTradeState.ActiveStop
+  IL_004d: clt.un       
+  IL_004f: ldc.i4.0     
+  IL_0050: ceq          
+  IL_0052: br.s         IL_0066
+  IL_0054: ldarg.0      
+  IL_0055: ldc.i4.0     
+  IL_0056: call         FtmEngine.LowAt(1)
+  IL_005b: ldarg.1      
+  IL_005c: ldfld        ShadowTradeState.ActiveStop
+  IL_0061: cgt.un       
+  IL_0063: ldc.i4.0     
+  IL_0064: ceq          
+  IL_0066: ldarg.1      
+  IL_0067: ldfld        ShadowTradeState.Side
+  IL_006c: ldc.i4.1     
+  IL_006d: beq.s        IL_0083
+  IL_006f: ldarg.0      
+  IL_0070: ldc.i4.0     
+  IL_0071: call         FtmEngine.LowAt(1)
+  IL_0076: ldarg.1      
+  IL_0077: ldfld        ShadowTradeState.Target
+  IL_007c: cgt.un       
+  IL_007e: ldc.i4.0     
+  IL_007f: ceq          
+  IL_0081: br.s         IL_0095
+  IL_0083: ldarg.0      
+  IL_0084: ldc.i4.0     
+  IL_0085: call         FtmEngine.HighAt(1)
+  IL_008a: ldarg.1      
+  IL_008b: ldfld        ShadowTradeState.Target
+  IL_0090: clt.un       
+  IL_0092: ldc.i4.0     
+  IL_0093: ceq          
+  IL_0095: stloc.0      
+  IL_0096: brfalse.s    IL_00e5
+  IL_0098: ldarg.1      
+  IL_0099: ldfld        ShadowTradeState.Side
+  IL_009e: ldc.i4.1     
+  IL_009f: beq.s        IL_00b5
+  IL_00a1: ldarg.1      
+  IL_00a2: ldfld        ShadowTradeState.ActiveStop
+  IL_00a7: ldarg.0      
+  IL_00a8: ldc.i4.0     
+  IL_00a9: call         FtmEngine.OpenAt(1)
+  IL_00ae: call         Math.Max(2)
+  IL_00b3: br.s         IL_00c7
+  IL_00b5: ldarg.1      
+  IL_00b6: ldfld        ShadowTradeState.ActiveStop
+  IL_00bb: ldarg.0      
+  IL_00bc: ldc.i4.0     
+  IL_00bd: call         FtmEngine.OpenAt(1)
+  IL_00c2: call         Math.Min(2)
+  IL_00c7: stloc.1      
+  IL_00c8: ldarg.0      
+  IL_00c9: ldarg.1      
+  IL_00ca: ldloc.1      
+  IL_00cb: ldarg.1      
+  IL_00cc: ldfld        ShadowTradeState.Side
+  IL_00d1: conv.r8      
+  IL_00d2: ldarg.0      
+  IL_00d3: ldfld        FtmEngine.owner
+  IL_00d8: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_00dd: mul          
+  IL_00de: sub          
+  IL_00df: call         FtmEngine.CompleteShadowTrade(2)
+  IL_00e4: ret          
+  IL_00e5: ldloc.0      
+  IL_00e6: brfalse.s    IL_0121
+  IL_00e8: ldarg.1      
+  IL_00e9: ldfld        ShadowTradeState.Side
+  IL_00ee: ldc.i4.1     
+  IL_00ef: beq.s        IL_0105
+  IL_00f1: ldarg.1      
+  IL_00f2: ldfld        ShadowTradeState.Target
+  IL_00f7: ldarg.0      
+  IL_00f8: ldc.i4.0     
+  IL_00f9: call         FtmEngine.OpenAt(1)
+  IL_00fe: call         Math.Min(2)
+  IL_0103: br.s         IL_0117
+  IL_0105: ldarg.1      
+  IL_0106: ldfld        ShadowTradeState.Target
+  IL_010b: ldarg.0      
+  IL_010c: ldc.i4.0     
+  IL_010d: call         FtmEngine.OpenAt(1)
+  IL_0112: call         Math.Max(2)
+  IL_0117: stloc.2      
+  IL_0118: ldarg.0      
+  IL_0119: ldarg.1      
+  IL_011a: ldloc.2      
+  IL_011b: call         FtmEngine.CompleteShadowTrade(2)
+  IL_0120: ret          
+  IL_0121: ldarg.2      
+  IL_0122: ldc.i4       960
+  IL_0127: bge          IL_01d2
+  IL_012c: ldarg.2      
+  IL_012d: ldc.i4.s     15
+  IL_012f: rem          
+  IL_0130: brtrue       IL_01d2
+  IL_0135: ldarg.1      
+  IL_0136: ldfld        ShadowTradeState.Side
+  IL_013b: conv.r8      
+  IL_013c: ldarg.0      
+  IL_013d: ldc.i4.0     
+  IL_013e: call         FtmEngine.CloseAt(1)
+  IL_0143: ldarg.1      
+  IL_0144: ldfld        ShadowTradeState.Entry
+  IL_0149: sub          
+  IL_014a: mul          
+  IL_014b: ldarg.1      
+  IL_014c: ldfld        ShadowTradeState.RiskPoints
+  IL_0151: div          
+  IL_0152: stloc.3      
+  IL_0153: ldloc.3      
+  IL_0154: ldarg.1      
+  IL_0155: ldfld        ShadowTradeState.ManagedTriggerR
+  IL_015a: blt.un.s     IL_01ab
+  IL_015c: ldarg.0      
+  IL_015d: ldarg.1      
+  IL_015e: ldfld        ShadowTradeState.Entry
+  IL_0163: ldarg.1      
+  IL_0164: ldfld        ShadowTradeState.Side
+  IL_0169: conv.r8      
+  IL_016a: ldarg.1      
+  IL_016b: ldfld        ShadowTradeState.RiskPoints
+  IL_0170: mul          
+  IL_0171: ldarg.1      
+  IL_0172: ldfld        ShadowTradeState.ManagedLockR
+  IL_0177: mul          
+  IL_0178: add          
+  IL_0179: call         FtmEngine.RoundPrice(1)
+  IL_017e: stloc.s      V_4
+  IL_0180: ldarg.1      
+  IL_0181: ldarg.1      
+  IL_0182: ldfld        ShadowTradeState.Side
+  IL_0187: ldc.i4.1     
+  IL_0188: beq.s        IL_0199
+  IL_018a: ldarg.1      
+  IL_018b: ldfld        ShadowTradeState.ActiveStop
+  IL_0190: ldloc.s      V_4
+  IL_0192: call         Math.Min(2)
+  IL_0197: br.s         IL_01a6
+  IL_0199: ldarg.1      
+  IL_019a: ldfld        ShadowTradeState.ActiveStop
+  IL_019f: ldloc.s      V_4
+  IL_01a1: call         Math.Max(2)
+  IL_01a6: stfld        ShadowTradeState.ActiveStop
+  IL_01ab: ldarg.2      
+  IL_01ac: ldc.i4       930
+  IL_01b1: bne.un.s     IL_01d2
+  IL_01b3: ldloc.3      
+  IL_01b4: ldc.r8       0
+  IL_01bd: blt.s        IL_01cb
+  IL_01bf: ldloc.3      
+  IL_01c0: ldc.r8       1
+  IL_01c9: blt.un.s     IL_01d2
+  IL_01cb: ldarg.1      
+  IL_01cc: ldc.i4.1     
+  IL_01cd: stfld        ShadowTradeState.PendingConditionalExit
+  IL_01d2: ret
+
+=== FtmEngine.CompleteShadowTrade(ShadowTradeState state, double exitPrice) -> void ===
+  IL_0000: ldarg.1      
+  IL_0001: ldarg.2      
+  IL_0002: stfld        ShadowTradeState.ExitPrice
+  IL_0007: ldarg.1      
+  IL_0008: ldc.i4.1     
+  IL_0009: stfld        ShadowTradeState.Complete
+  IL_000e: ldarg.1      
+  IL_000f: ldc.i4.0     
+  IL_0010: stfld        ShadowTradeState.PendingConditionalExit
+  IL_0015: ret
+
+=== FtmEngine.FinalizeShadowPairAtCashClose(double closePrice) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.activeShadowPair
+  IL_0006: brtrue.s     IL_0009
+  IL_0008: ret          
+  IL_0009: ldarg.0      
+  IL_000a: ldfld        FtmEngine.activeShadowPair
+  IL_000f: ldfld        ShadowPairState.Invalid
+  IL_0014: brtrue.s     IL_0023
+  IL_0016: ldarg.0      
+  IL_0017: ldfld        FtmEngine.activeShadowPair
+  IL_001c: ldfld        ShadowPairState.Initialized
+  IL_0021: brtrue.s     IL_002b
+  IL_0023: ldarg.0      
+  IL_0024: ldnull       
+  IL_0025: stfld        FtmEngine.activeShadowPair
+  IL_002a: ret          
+  IL_002b: ldarg.0      
+  IL_002c: ldfld        FtmEngine.activeShadowPair
+  IL_0031: ldfld        ShadowPairState.Breakout
+  IL_0036: ldfld        ShadowTradeState.Complete
+  IL_003b: brtrue.s     IL_006d
+  IL_003d: ldarg.0      
+  IL_003e: ldarg.0      
+  IL_003f: ldfld        FtmEngine.activeShadowPair
+  IL_0044: ldfld        ShadowPairState.Breakout
+  IL_0049: ldarg.1      
+  IL_004a: ldarg.0      
+  IL_004b: ldfld        FtmEngine.activeShadowPair
+  IL_0050: ldfld        ShadowPairState.Breakout
+  IL_0055: ldfld        ShadowTradeState.Side
+  IL_005a: conv.r8      
+  IL_005b: ldarg.0      
+  IL_005c: ldfld        FtmEngine.owner
+  IL_0061: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_0066: mul          
+  IL_0067: sub          
+  IL_0068: call         FtmEngine.CompleteShadowTrade(2)
+  IL_006d: ldarg.0      
+  IL_006e: ldfld        FtmEngine.activeShadowPair
+  IL_0073: ldfld        ShadowPairState.Fade
+  IL_0078: ldfld        ShadowTradeState.Complete
+  IL_007d: brtrue.s     IL_00af
+  IL_007f: ldarg.0      
+  IL_0080: ldarg.0      
+  IL_0081: ldfld        FtmEngine.activeShadowPair
+  IL_0086: ldfld        ShadowPairState.Fade
+  IL_008b: ldarg.1      
+  IL_008c: ldarg.0      
+  IL_008d: ldfld        FtmEngine.activeShadowPair
+  IL_0092: ldfld        ShadowPairState.Fade
+  IL_0097: ldfld        ShadowTradeState.Side
+  IL_009c: conv.r8      
+  IL_009d: ldarg.0      
+  IL_009e: ldfld        FtmEngine.owner
+  IL_00a3: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_00a8: mul          
+  IL_00a9: sub          
+  IL_00aa: call         FtmEngine.CompleteShadowTrade(2)
+  IL_00af: ldarg.0      
+  IL_00b0: call         FtmEngine.TryRecordCompletedModelLabel(0)
+  IL_00b5: ret
+
+=== FtmEngine.TryRecordCompletedModelLabel() -> void ===
+  LOCALS: V_0:double, V_1:double, V_2:bool, V_3:bool, V_4:DirectionTrainingRow, V_5:int
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.activeShadowPair
+  IL_0006: brfalse.s    IL_0053
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.activeShadowPair
+  IL_000e: ldfld        ShadowPairState.Invalid
+  IL_0013: brtrue.s     IL_0053
+  IL_0015: ldarg.0      
+  IL_0016: ldfld        FtmEngine.activeShadowPair
+  IL_001b: ldfld        ShadowPairState.LabelRecorded
+  IL_0020: brtrue.s     IL_0053
+  IL_0022: ldarg.0      
+  IL_0023: ldfld        FtmEngine.activeShadowPair
+  IL_0028: ldfld        ShadowPairState.Initialized
+  IL_002d: brfalse.s    IL_0053
+  IL_002f: ldarg.0      
+  IL_0030: ldfld        FtmEngine.activeShadowPair
+  IL_0035: ldfld        ShadowPairState.Breakout
+  IL_003a: ldfld        ShadowTradeState.Complete
+  IL_003f: brfalse.s    IL_0053
+  IL_0041: ldarg.0      
+  IL_0042: ldfld        FtmEngine.activeShadowPair
+  IL_0047: ldfld        ShadowPairState.Fade
+  IL_004c: ldfld        ShadowTradeState.Complete
+  IL_0051: brtrue.s     IL_0054
+  IL_0053: ret          
+  IL_0054: ldarg.0      
+  IL_0055: ldfld        FtmEngine.activeShadowPair
+  IL_005a: ldfld        ShadowPairState.Breakout
+  IL_005f: ldfld        ShadowTradeState.Side
+  IL_0064: conv.r8      
+  IL_0065: ldarg.0      
+  IL_0066: ldfld        FtmEngine.activeShadowPair
+  IL_006b: ldfld        ShadowPairState.Breakout
+  IL_0070: ldfld        ShadowTradeState.ExitPrice
+  IL_0075: ldarg.0      
+  IL_0076: ldfld        FtmEngine.activeShadowPair
+  IL_007b: ldfld        ShadowPairState.Breakout
+  IL_0080: ldfld        ShadowTradeState.Entry
+  IL_0085: sub          
+  IL_0086: mul          
+  IL_0087: ldc.r8       20
+  IL_0090: mul          
+  IL_0091: ldc.r8       2,5
+  IL_009a: sub          
+  IL_009b: stloc.0      
+  IL_009c: ldarg.0      
+  IL_009d: ldfld        FtmEngine.activeShadowPair
+  IL_00a2: ldfld        ShadowPairState.Fade
+  IL_00a7: ldfld        ShadowTradeState.Side
+  IL_00ac: conv.r8      
+  IL_00ad: ldarg.0      
+  IL_00ae: ldfld        FtmEngine.activeShadowPair
+  IL_00b3: ldfld        ShadowPairState.Fade
+  IL_00b8: ldfld        ShadowTradeState.ExitPrice
+  IL_00bd: ldarg.0      
+  IL_00be: ldfld        FtmEngine.activeShadowPair
+  IL_00c3: ldfld        ShadowPairState.Fade
+  IL_00c8: ldfld        ShadowTradeState.Entry
+  IL_00cd: sub          
+  IL_00ce: mul          
+  IL_00cf: ldc.r8       20
+  IL_00d8: mul          
+  IL_00d9: ldc.r8       2,5
+  IL_00e2: sub          
+  IL_00e3: stloc.1      
+  IL_00e4: ldloc.0      
+  IL_00e5: ldc.r8       0
+  IL_00ee: cgt          
+  IL_00f0: ldloc.1      
+  IL_00f1: ldc.r8       0
+  IL_00fa: cgt          
+  IL_00fc: stloc.2      
+  IL_00fd: ldloc.2      
+  IL_00fe: ceq          
+  IL_0100: ldc.i4.0     
+  IL_0101: ceq          
+  IL_0103: stloc.3      
+  IL_0104: ldloc.3      
+  IL_0105: brfalse.s    IL_017a
+  IL_0107: newobj       DirectionTrainingRow..ctor(0)
+  IL_010c: stloc.s      V_4
+  IL_010e: ldloc.s      V_4
+  IL_0110: ldarg.0      
+  IL_0111: ldfld        FtmEngine.activeShadowPair
+  IL_0116: ldfld        ShadowPairState.Session
+  IL_011b: stfld        DirectionTrainingRow.Session
+  IL_0120: ldloc.s      V_4
+  IL_0122: ldarg.0      
+  IL_0123: ldfld        FtmEngine.activeShadowPair
+  IL_0128: ldfld        ShadowPairState.Features
+  IL_012d: callvirt     Array.Clone(0)
+  IL_0132: castclass    Double[]
+  IL_0137: stfld        DirectionTrainingRow.Features
+  IL_013c: ldloc.s      V_4
+  IL_013e: ldloc.2      
+  IL_013f: stfld        DirectionTrainingRow.FlipWins
+  IL_0144: ldloc.s      V_4
+  IL_0146: ldarg.0      
+  IL_0147: ldarg.0      
+  IL_0148: ldfld        FtmEngine.trainingSequence
+  IL_014d: stloc.s      V_5
+  IL_014f: ldloc.s      V_5
+  IL_0151: ldc.i4.1     
+  IL_0152: add          
+  IL_0153: stfld        FtmEngine.trainingSequence
+  IL_0158: ldloc.s      V_5
+  IL_015a: stfld        DirectionTrainingRow.Sequence
+  IL_015f: ldarg.0      
+  IL_0160: ldfld        FtmEngine.directionTrainingRows
+  IL_0165: ldloc.s      V_4
+  IL_0167: callvirt     List`1.Add(1)
+  IL_016c: ldarg.0      
+  IL_016d: ldarg.0      
+  IL_016e: ldfld        FtmEngine.modelLabelCount
+  IL_0173: ldc.i4.1     
+  IL_0174: add          
+  IL_0175: stfld        FtmEngine.modelLabelCount
+  IL_017a: ldarg.0      
+  IL_017b: ldfld        FtmEngine.activeShadowPair
+  IL_0180: ldc.i4.1     
+  IL_0181: stfld        ShadowPairState.LabelRecorded
+  IL_0186: ldarg.0      
+  IL_0187: call         CultureInfo.get_InvariantCulture(0)
+  IL_018c: ldstr        "MODEL LABEL {0:yyyy-MM-dd}: breakoutNet={1:F2}, fadeNet={2:F2}, exclusive={3}, included={4}, flipWins={5}."
+  IL_0191: ldc.i4.6     
+  IL_0192: newarr       Object
+  IL_0197: dup          
+  IL_0198: ldc.i4.0     
+  IL_0199: ldarg.0      
+  IL_019a: ldfld        FtmEngine.activeShadowPair
+  IL_019f: ldfld        ShadowPairState.Session
+  IL_01a4: box          DateTime
+  IL_01a9: stelem.ref   
+  IL_01aa: dup          
+  IL_01ab: ldc.i4.1     
+  IL_01ac: ldloc.0      
+  IL_01ad: box          Double
+  IL_01b2: stelem.ref   
+  IL_01b3: dup          
+  IL_01b4: ldc.i4.2     
+  IL_01b5: ldloc.1      
+  IL_01b6: box          Double
+  IL_01bb: stelem.ref   
+  IL_01bc: dup          
+  IL_01bd: ldc.i4.3     
+  IL_01be: ldloc.3      
+  IL_01bf: box          Boolean
+  IL_01c4: stelem.ref   
+  IL_01c5: dup          
+  IL_01c6: ldc.i4.4     
+  IL_01c7: ldloc.3      
+  IL_01c8: box          Boolean
+  IL_01cd: stelem.ref   
+  IL_01ce: dup          
+  IL_01cf: ldc.i4.5     
+  IL_01d0: ldloc.3      
+  IL_01d1: ldloc.2      
+  IL_01d2: and          
+  IL_01d3: box          Boolean
+  IL_01d8: stelem.ref   
+  IL_01d9: call         String.Format(3)
+  IL_01de: call         FtmEngine.Diagnostic(1)
+  IL_01e3: ldarg.0      
+  IL_01e4: ldnull       
+  IL_01e5: stfld        FtmEngine.activeShadowPair
+  IL_01ea: ret
+
+=== FtmEngine.ProcessPendingEntryDecision(DateTime barOpenEt, DateTime barCloseEt) -> void ===
+  LOCALS: V_0:int, V_1:string, V_2:bool, V_3:string, V_4:int, V_5:Double[], V_6:double, V_7:double, V_8:double
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.pendingEntryDecision
+  IL_0006: brtrue.s     IL_0009
+  IL_0008: ret          
+  IL_0009: ldarg.1      
+  IL_000a: ldarg.0      
+  IL_000b: ldfld        FtmEngine.pendingEntryDecision
+  IL_0010: ldfld        PendingEntryDecision.ExpectedObservationOpenEt
+  IL_0015: call         DateTime.op_LessThan(2)
+  IL_001a: brfalse.s    IL_001d
+  IL_001c: ret          
+  IL_001d: ldarg.1      
+  IL_001e: ldarg.0      
+  IL_001f: ldfld        FtmEngine.pendingEntryDecision
+  IL_0024: ldfld        PendingEntryDecision.ExpectedObservationOpenEt
+  IL_0029: call         DateTime.op_Inequality(2)
+  IL_002e: brtrue.s     IL_0048
+  IL_0030: ldarg.2      
+  IL_0031: ldarga.s     V_1
+  IL_0033: ldc.r8       1
+  IL_003c: call         DateTime.AddMinutes(1)
+  IL_0041: call         DateTime.op_Inequality(2)
+  IL_0046: brfalse.s    IL_0091
+  IL_0048: ldarg.0      
+  IL_0049: ldarg.0      
+  IL_004a: ldfld        FtmEngine.failClosedCount
+  IL_004f: ldc.i4.1     
+  IL_0050: add          
+  IL_0051: stfld        FtmEngine.failClosedCount
+  IL_0056: ldarg.0      
+  IL_0057: call         CultureInfo.get_InvariantCulture(0)
+  IL_005c: ldstr        "FLAT MOON SOCIETY blocks {0:yyyy-MM-dd}: entry-refinement branch {1} did not receive the exact next observation minute; no late substitute order is allowed."
+  IL_0061: ldarg.0      
+  IL_0062: ldfld        FtmEngine.currentCashDate
+  IL_0067: box          DateTime
+  IL_006c: ldarg.0      
+  IL_006d: ldfld        FtmEngine.pendingEntryDecision
+  IL_0072: ldfld        PendingEntryDecision.Branch
+  IL_0077: call         String.Format(4)
+  IL_007c: ldc.i4.3     
+  IL_007d: call         FtmEngine.WriteLog(2)
+  IL_0082: ldarg.0      
+  IL_0083: ldnull       
+  IL_0084: stfld        FtmEngine.pendingEntryDecision
+  IL_0089: ldarg.0      
+  IL_008a: ldc.i4.1     
+  IL_008b: stfld        FtmEngine.dayBlocked
+  IL_0090: ret          
+  IL_0091: ldarg.0      
+  IL_0092: ldfld        FtmEngine.pendingEntryDecision
+  IL_0097: ldfld        PendingEntryDecision.ObservedBars
+  IL_009c: brtrue.s     IL_00b0
+  IL_009e: ldarg.0      
+  IL_009f: ldfld        FtmEngine.pendingEntryDecision
+  IL_00a4: ldarg.0      
+  IL_00a5: ldc.i4.0     
+  IL_00a6: call         FtmEngine.OpenAt(1)
+  IL_00ab: stfld        PendingEntryDecision.FirstObservationOpen
+  IL_00b0: ldarg.0      
+  IL_00b1: ldfld        FtmEngine.pendingEntryDecision
+  IL_00b6: dup          
+  IL_00b7: ldfld        PendingEntryDecision.ObservedBars
+  IL_00bc: ldc.i4.1     
+  IL_00bd: add          
+  IL_00be: stfld        PendingEntryDecision.ObservedBars
+  IL_00c3: ldarg.0      
+  IL_00c4: ldfld        FtmEngine.pendingEntryDecision
+  IL_00c9: ldarg.2      
+  IL_00ca: stfld        PendingEntryDecision.ExpectedObservationOpenEt
+  IL_00cf: ldarg.0      
+  IL_00d0: ldfld        FtmEngine.pendingEntryDecision
+  IL_00d5: ldfld        PendingEntryDecision.ObservedBars
+  IL_00da: ldarg.0      
+  IL_00db: ldfld        FtmEngine.pendingEntryDecision
+  IL_00e0: ldfld        PendingEntryDecision.RequiredObservationBars
+  IL_00e5: bge.s        IL_00e8
+  IL_00e7: ret          
+  IL_00e8: ldarg.0      
+  IL_00e9: ldfld        FtmEngine.pendingEntryDecision
+  IL_00ee: ldfld        PendingEntryDecision.DirectionSide
+  IL_00f3: stloc.0      
+  IL_00f4: ldarg.0      
+  IL_00f5: ldfld        FtmEngine.pendingEntryDecision
+  IL_00fa: ldfld        PendingEntryDecision.Branch
+  IL_00ff: stloc.1      
+  IL_0100: ldarg.0      
+  IL_0101: ldfld        FtmEngine.pendingEntryDecision
+  IL_0106: ldfld        PendingEntryDecision.Branch
+  IL_010b: ldstr        "high_vol_touch_vote"
+  IL_0110: call         String.op_Equality(2)
+  IL_0115: brfalse      IL_01d8
+  IL_011a: ldloc.0      
+  IL_011b: conv.r8      
+  IL_011c: ldarg.0      
+  IL_011d: ldc.i4.0     
+  IL_011e: call         FtmEngine.CloseAt(1)
+  IL_0123: ldarg.0      
+  IL_0124: ldfld        FtmEngine.pendingEntryDecision
+  IL_0129: ldfld        PendingEntryDecision.FirstObservationOpen
+  IL_012e: sub          
+  IL_012f: mul          
+  IL_0130: stloc.s      V_7
+  IL_0132: ldarg.0      
+  IL_0133: ldfld        FtmEngine.orbHigh
+  IL_0138: ldarg.0      
+  IL_0139: ldfld        FtmEngine.orbLow
+  IL_013e: sub          
+  IL_013f: ldc.r8       0
+  IL_0148: bgt.s        IL_0155
+  IL_014a: ldc.r8       0
+  IL_0153: br.s         IL_0165
+  IL_0155: ldloc.s      V_7
+  IL_0157: ldarg.0      
+  IL_0158: ldfld        FtmEngine.orbHigh
+  IL_015d: ldarg.0      
+  IL_015e: ldfld        FtmEngine.orbLow
+  IL_0163: sub          
+  IL_0164: div          
+  IL_0165: stloc.s      V_8
+  IL_0167: ldloc.s      V_8
+  IL_0169: ldc.r8       0
+  IL_0172: bgt.un.s     IL_018d
+  IL_0174: ldloc.0      
+  IL_0175: neg          
+  IL_0176: stloc.0      
+  IL_0177: ldstr        "high_vol_vote_flip"
+  IL_017c: stloc.1      
+  IL_017d: ldarg.0      
+  IL_017e: ldarg.0      
+  IL_017f: ldfld        FtmEngine.highVolVoteFlipCount
+  IL_0184: ldc.i4.1     
+  IL_0185: add          
+  IL_0186: stfld        FtmEngine.highVolVoteFlipCount
+  IL_018b: br.s         IL_0193
+  IL_018d: ldstr        "high_vol_vote_keep"
+  IL_0192: stloc.1      
+  IL_0193: ldarg.0      
+  IL_0194: call         CultureInfo.get_InvariantCulture(0)
+  IL_0199: ldstr        "ENTRY REFINEMENT VOTE {0:yyyy-MM-dd HH:mm}: move={1:F4}, orbFraction={2:F6}, finalSide={3}, path={4}."
+  IL_019e: ldc.i4.5     
+  IL_019f: newarr       Object
+  IL_01a4: dup          
+  IL_01a5: ldc.i4.0     
+  IL_01a6: ldarg.2      
+  IL_01a7: box          DateTime
+  IL_01ac: stelem.ref   
+  IL_01ad: dup          
+  IL_01ae: ldc.i4.1     
+  IL_01af: ldloc.s      V_7
+  IL_01b1: box          Double
+  IL_01b6: stelem.ref   
+  IL_01b7: dup          
+  IL_01b8: ldc.i4.2     
+  IL_01b9: ldloc.s      V_8
+  IL_01bb: box          Double
+  IL_01c0: stelem.ref   
+  IL_01c1: dup          
+  IL_01c2: ldc.i4.3     
+  IL_01c3: ldloc.0      
+  IL_01c4: box          Int32
+  IL_01c9: stelem.ref   
+  IL_01ca: dup          
+  IL_01cb: ldc.i4.4     
+  IL_01cc: ldloc.1      
+  IL_01cd: stelem.ref   
+  IL_01ce: call         String.Format(3)
+  IL_01d3: call         FtmEngine.Diagnostic(1)
+  IL_01d8: ldarg.0      
+  IL_01d9: ldfld        FtmEngine.pendingEntryDecision
+  IL_01de: ldfld        PendingEntryDecision.SubmitActualOrder
+  IL_01e3: stloc.2      
+  IL_01e4: ldarg.0      
+  IL_01e5: ldfld        FtmEngine.pendingEntryDecision
+  IL_01ea: ldfld        PendingEntryDecision.DirectionSource
+  IL_01ef: stloc.3      
+  IL_01f0: ldarg.0      
+  IL_01f1: ldfld        FtmEngine.pendingEntryDecision
+  IL_01f6: ldfld        PendingEntryDecision.BaselineSide
+  IL_01fb: stloc.s      V_4
+  IL_01fd: ldarg.0      
+  IL_01fe: ldfld        FtmEngine.pendingEntryDecision
+  IL_0203: ldfld        PendingEntryDecision.Features
+  IL_0208: stloc.s      V_5
+  IL_020a: ldarg.0      
+  IL_020b: ldfld        FtmEngine.pendingEntryDecision
+  IL_0210: ldfld        PendingEntryDecision.SignalClose
+  IL_0215: stloc.s      V_6
+  IL_0217: ldarg.0      
+  IL_0218: ldnull       
+  IL_0219: stfld        FtmEngine.pendingEntryDecision
+  IL_021e: ldarg.0      
+  IL_021f: ldloc.0      
+  IL_0220: ldarg.2      
+  IL_0221: ldloc.3      
+  IL_0222: ldloc.1      
+  IL_0223: ldloc.2      
+  IL_0224: ldloc.s      V_4
+  IL_0226: ldloc.s      V_5
+  IL_0228: ldloc.s      V_6
+  IL_022a: call         FtmEngine.ApplyFinalEntryRefinementOrSubmit(8)
+  IL_022f: ret
+
+=== FtmEngine.ApplyFinalEntryRefinementOrSubmit(int refinedSide, DateTime refinementFillOpenEt, string directionSource, string refinementPath, bool submitActual, int baselineSide, Double[] features, double signalClose) -> void ===
+  LOCALS: V_0:double, V_1:double, V_2:double, V_3:double, V_4:double, V_5:double, V_6:bool, V_7:bool, V_8:string
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.orbHigh
+  IL_0006: ldarg.0      
+  IL_0007: ldfld        FtmEngine.orbLow
+  IL_000c: sub          
+  IL_000d: stloc.0      
+  IL_000e: ldloc.0      
+  IL_000f: ldc.r8       0
+  IL_0018: ble.un.s     IL_0026
+  IL_001a: ldarg.s      V_7
+  IL_001c: brfalse.s    IL_0026
+  IL_001e: ldarg.s      V_7
+  IL_0020: ldlen        
+  IL_0021: conv.i4      
+  IL_0022: ldc.i4.s     14
+  IL_0024: beq.s        IL_0048
+  IL_0026: ldarg.0      
+  IL_0027: ldarg.0      
+  IL_0028: ldfld        FtmEngine.failClosedCount
+  IL_002d: ldc.i4.1     
+  IL_002e: add          
+  IL_002f: stfld        FtmEngine.failClosedCount
+  IL_0034: ldarg.0      
+  IL_0035: ldc.i4.1     
+  IL_0036: stfld        FtmEngine.dayBlocked
+  IL_003b: ldarg.0      
+  IL_003c: ldstr        "FLAT MOON SOCIETY could not form the final entry conditions; the day is blocked."
+  IL_0041: ldc.i4.3     
+  IL_0042: call         FtmEngine.WriteLog(2)
+  IL_0047: ret          
+  IL_0048: ldarg.1      
+  IL_0049: ldarg.s      V_6
+  IL_004b: mul          
+  IL_004c: conv.r8      
+  IL_004d: dup          
+  IL_004e: ldarg.s      V_7
+  IL_0050: ldc.i4.1     
+  IL_0051: ldelem.r8    
+  IL_0052: mul          
+  IL_0053: stloc.1      
+  IL_0054: ldarg.s      V_7
+  IL_0056: ldc.i4.5     
+  IL_0057: ldelem.r8    
+  IL_0058: mul          
+  IL_0059: stloc.2      
+  IL_005a: ldarg.1      
+  IL_005b: conv.r8      
+  IL_005c: ldarg.0      
+  IL_005d: ldfld        FtmEngine.orbClose
+  IL_0062: ldarg.0      
+  IL_0063: ldfld        FtmEngine.orbOpen
+  IL_0068: sub          
+  IL_0069: mul          
+  IL_006a: ldloc.0      
+  IL_006b: div          
+  IL_006c: stloc.3      
+  IL_006d: ldarg.1      
+  IL_006e: ldc.i4.1     
+  IL_006f: beq.s        IL_0079
+  IL_0071: ldarg.0      
+  IL_0072: ldfld        FtmEngine.orbLow
+  IL_0077: br.s         IL_007f
+  IL_0079: ldarg.0      
+  IL_007a: ldfld        FtmEngine.orbHigh
+  IL_007f: stloc.s      V_4
+  IL_0081: ldarg.1      
+  IL_0082: conv.r8      
+  IL_0083: ldarg.s      V_8
+  IL_0085: ldloc.s      V_4
+  IL_0087: sub          
+  IL_0088: mul          
+  IL_0089: ldloc.0      
+  IL_008a: div          
+  IL_008b: stloc.s      V_5
+  IL_008d: ldloc.1      
+  IL_008e: ldc.r8       100
+  IL_0097: ble.un.s     IL_00aa
+  IL_0099: ldloc.3      
+  IL_009a: ldc.r8       0
+  IL_00a3: cgt.un       
+  IL_00a5: ldc.i4.0     
+  IL_00a6: ceq          
+  IL_00a8: br.s         IL_00ab
+  IL_00aa: ldc.i4.0     
+  IL_00ab: stloc.s      V_6
+  IL_00ad: ldloc.2      
+  IL_00ae: ldc.r8       25
+  IL_00b7: ble.un.s     IL_00cb
+  IL_00b9: ldloc.s      V_5
+  IL_00bb: ldc.r8       0,25
+  IL_00c4: cgt.un       
+  IL_00c6: ldc.i4.0     
+  IL_00c7: ceq          
+  IL_00c9: br.s         IL_00cc
+  IL_00cb: ldc.i4.0     
+  IL_00cc: stloc.s      V_7
+  IL_00ce: ldloc.s      V_6
+  IL_00d0: brfalse.s    IL_00e0
+  IL_00d2: ldarg.0      
+  IL_00d3: ldarg.0      
+  IL_00d4: ldfld        FtmEngine.priorSessionConditionCount
+  IL_00d9: ldc.i4.1     
+  IL_00da: add          
+  IL_00db: stfld        FtmEngine.priorSessionConditionCount
+  IL_00e0: ldloc.s      V_7
+  IL_00e2: brfalse.s    IL_00f2
+  IL_00e4: ldarg.0      
+  IL_00e5: ldarg.0      
+  IL_00e6: ldfld        FtmEngine.intradayConditionCount
+  IL_00eb: ldc.i4.1     
+  IL_00ec: add          
+  IL_00ed: stfld        FtmEngine.intradayConditionCount
+  IL_00f2: ldloc.s      V_6
+  IL_00f4: ldloc.s      V_7
+  IL_00f6: and          
+  IL_00f7: brfalse.s    IL_0107
+  IL_00f9: ldarg.0      
+  IL_00fa: ldarg.0      
+  IL_00fb: ldfld        FtmEngine.entryConditionOverlapCount
+  IL_0100: ldc.i4.1     
+  IL_0101: add          
+  IL_0102: stfld        FtmEngine.entryConditionOverlapCount
+  IL_0107: ldloc.s      V_6
+  IL_0109: brtrue.s     IL_011d
+  IL_010b: ldloc.s      V_7
+  IL_010d: brtrue.s     IL_0116
+  IL_010f: ldstr        "none"
+  IL_0114: br.s         IL_0122
+  IL_0116: ldstr        "intraday_continuation"
+  IL_011b: br.s         IL_0122
+  IL_011d: ldstr        "prior_session_disagreement"
+  IL_0122: stloc.s      V_8
+  IL_0124: ldarg.0      
+  IL_0125: call         CultureInfo.get_InvariantCulture(0)
+  IL_012a: ldstr        "FINAL ENTRY CONDITION {0:yyyy-MM-dd HH:mm}: policy={1}, refinedSide={2}, alignedPrior={3:F3}, orbBody={4:F6}, priorSession={5}, alignedRet30={6:F3}, signalExtension={7:F6}, intraday={8}, overlap={9}, selected={10}."
+  IL_012f: ldc.i4.s     11
+  IL_0131: newarr       Object
+  IL_0136: dup          
+  IL_0137: ldc.i4.0     
+  IL_0138: ldarg.2      
+  IL_0139: box          DateTime
+  IL_013e: stelem.ref   
+  IL_013f: dup          
+  IL_0140: ldc.i4.1     
+  IL_0141: ldstr        "prior_session_disagreement_then_intraday_continuation"
+  IL_0146: stelem.ref   
+  IL_0147: dup          
+  IL_0148: ldc.i4.2     
+  IL_0149: ldarg.1      
+  IL_014a: box          Int32
+  IL_014f: stelem.ref   
+  IL_0150: dup          
+  IL_0151: ldc.i4.3     
+  IL_0152: ldloc.1      
+  IL_0153: box          Double
+  IL_0158: stelem.ref   
+  IL_0159: dup          
+  IL_015a: ldc.i4.4     
+  IL_015b: ldloc.3      
+  IL_015c: box          Double
+  IL_0161: stelem.ref   
+  IL_0162: dup          
+  IL_0163: ldc.i4.5     
+  IL_0164: ldloc.s      V_6
+  IL_0166: box          Boolean
+  IL_016b: stelem.ref   
+  IL_016c: dup          
+  IL_016d: ldc.i4.6     
+  IL_016e: ldloc.2      
+  IL_016f: box          Double
+  IL_0174: stelem.ref   
+  IL_0175: dup          
+  IL_0176: ldc.i4.7     
+  IL_0177: ldloc.s      V_5
+  IL_0179: box          Double
+  IL_017e: stelem.ref   
+  IL_017f: dup          
+  IL_0180: ldc.i4.8     
+  IL_0181: ldloc.s      V_7
+  IL_0183: box          Boolean
+  IL_0188: stelem.ref   
+  IL_0189: dup          
+  IL_018a: ldc.i4.s     9
+  IL_018c: ldloc.s      V_6
+  IL_018e: ldloc.s      V_7
+  IL_0190: and          
+  IL_0191: box          Boolean
+  IL_0196: stelem.ref   
+  IL_0197: dup          
+  IL_0198: ldc.i4.s     10
+  IL_019a: ldloc.s      V_8
+  IL_019c: stelem.ref   
+  IL_019d: call         String.Format(3)
+  IL_01a2: call         FtmEngine.Diagnostic(1)
+  IL_01a7: ldloc.s      V_8
+  IL_01a9: ldstr        "none"
+  IL_01ae: call         String.op_Equality(2)
+  IL_01b3: brfalse.s    IL_01ce
+  IL_01b5: ldarg.s      V_5
+  IL_01b7: brfalse.s    IL_01cd
+  IL_01b9: ldarg.0      
+  IL_01ba: ldarg.1      
+  IL_01bb: ldarg.3      
+  IL_01bc: ldarg.s      V_4
+  IL_01be: ldstr        "->entry_condition_not_met"
+  IL_01c3: call         String.Concat(2)
+  IL_01c8: call         FtmEngine.SubmitEntry(3)
+  IL_01cd: ret          
+  IL_01ce: ldarg.0      
+  IL_01cf: newobj       PendingFinalEntryDecision..ctor(0)
+  IL_01d4: stfld        FtmEngine.pendingFinalEntryDecision
+  IL_01d9: ldarg.0      
+  IL_01da: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_01df: ldarg.2      
+  IL_01e0: stfld        PendingFinalEntryDecision.ExpectedObservationOpenEt
+  IL_01e5: ldarg.0      
+  IL_01e6: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_01eb: ldarg.1      
+  IL_01ec: stfld        PendingFinalEntryDecision.RefinedSide
+  IL_01f1: ldarg.0      
+  IL_01f2: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_01f7: ldloc.s      V_8
+  IL_01f9: ldstr        "prior_session_disagreement"
+  IL_01fe: call         String.op_Equality(2)
+  IL_0203: brtrue.s     IL_0208
+  IL_0205: ldc.i4.1     
+  IL_0206: br.s         IL_0209
+  IL_0208: ldc.i4.2     
+  IL_0209: stfld        PendingFinalEntryDecision.RequiredObservationBars
+  IL_020e: ldarg.0      
+  IL_020f: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0214: ldc.i4.0     
+  IL_0215: stfld        PendingFinalEntryDecision.ObservedBars
+  IL_021a: ldarg.0      
+  IL_021b: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0220: ldc.r8       0
+  IL_0229: stfld        PendingFinalEntryDecision.FirstObservationOpen
+  IL_022e: ldarg.0      
+  IL_022f: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0234: ldarg.s      V_5
+  IL_0236: stfld        PendingFinalEntryDecision.SubmitActualOrder
+  IL_023b: ldarg.0      
+  IL_023c: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0241: ldloc.s      V_8
+  IL_0243: stfld        PendingFinalEntryDecision.Branch
+  IL_0248: ldarg.0      
+  IL_0249: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_024e: ldarg.3      
+  IL_024f: stfld        PendingFinalEntryDecision.DirectionSource
+  IL_0254: ldarg.0      
+  IL_0255: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_025a: ldarg.s      V_4
+  IL_025c: stfld        PendingFinalEntryDecision.RefinementPath
+  IL_0261: ret
+
+=== FtmEngine.ProcessPendingFinalEntryDecision(DateTime barOpenEt, DateTime barCloseEt) -> void ===
+  LOCALS: V_0:int, V_1:double, V_2:int, V_3:string, V_4:bool, V_5:string, V_6:string, V_7:string
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0006: brtrue.s     IL_0009
+  IL_0008: ret          
+  IL_0009: ldarg.1      
+  IL_000a: ldarg.0      
+  IL_000b: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0010: ldfld        PendingFinalEntryDecision.ExpectedObservationOpenEt
+  IL_0015: call         DateTime.op_LessThan(2)
+  IL_001a: brfalse.s    IL_001d
+  IL_001c: ret          
+  IL_001d: ldarg.1      
+  IL_001e: ldarg.0      
+  IL_001f: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0024: ldfld        PendingFinalEntryDecision.ExpectedObservationOpenEt
+  IL_0029: call         DateTime.op_Inequality(2)
+  IL_002e: brtrue.s     IL_0048
+  IL_0030: ldarg.2      
+  IL_0031: ldarga.s     V_1
+  IL_0033: ldc.r8       1
+  IL_003c: call         DateTime.AddMinutes(1)
+  IL_0041: call         DateTime.op_Inequality(2)
+  IL_0046: brfalse.s    IL_0091
+  IL_0048: ldarg.0      
+  IL_0049: ldarg.0      
+  IL_004a: ldfld        FtmEngine.failClosedCount
+  IL_004f: ldc.i4.1     
+  IL_0050: add          
+  IL_0051: stfld        FtmEngine.failClosedCount
+  IL_0056: ldarg.0      
+  IL_0057: call         CultureInfo.get_InvariantCulture(0)
+  IL_005c: ldstr        "FLAT MOON SOCIETY blocks {0:yyyy-MM-dd}: final entry branch {1} did not receive the exact next observation minute; no late substitute order is allowed."
+  IL_0061: ldarg.0      
+  IL_0062: ldfld        FtmEngine.currentCashDate
+  IL_0067: box          DateTime
+  IL_006c: ldarg.0      
+  IL_006d: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0072: ldfld        PendingFinalEntryDecision.Branch
+  IL_0077: call         String.Format(4)
+  IL_007c: ldc.i4.3     
+  IL_007d: call         FtmEngine.WriteLog(2)
+  IL_0082: ldarg.0      
+  IL_0083: ldnull       
+  IL_0084: stfld        FtmEngine.pendingFinalEntryDecision
+  IL_0089: ldarg.0      
+  IL_008a: ldc.i4.1     
+  IL_008b: stfld        FtmEngine.dayBlocked
+  IL_0090: ret          
+  IL_0091: ldarg.0      
+  IL_0092: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0097: ldfld        PendingFinalEntryDecision.ObservedBars
+  IL_009c: brtrue.s     IL_00b0
+  IL_009e: ldarg.0      
+  IL_009f: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00a4: ldarg.0      
+  IL_00a5: ldc.i4.0     
+  IL_00a6: call         FtmEngine.OpenAt(1)
+  IL_00ab: stfld        PendingFinalEntryDecision.FirstObservationOpen
+  IL_00b0: ldarg.0      
+  IL_00b1: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00b6: dup          
+  IL_00b7: ldfld        PendingFinalEntryDecision.ObservedBars
+  IL_00bc: ldc.i4.1     
+  IL_00bd: add          
+  IL_00be: stfld        PendingFinalEntryDecision.ObservedBars
+  IL_00c3: ldarg.0      
+  IL_00c4: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00c9: ldarg.2      
+  IL_00ca: stfld        PendingFinalEntryDecision.ExpectedObservationOpenEt
+  IL_00cf: ldarg.0      
+  IL_00d0: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00d5: ldfld        PendingFinalEntryDecision.ObservedBars
+  IL_00da: ldarg.0      
+  IL_00db: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00e0: ldfld        PendingFinalEntryDecision.RequiredObservationBars
+  IL_00e5: bge.s        IL_00e8
+  IL_00e7: ret          
+  IL_00e8: ldarg.0      
+  IL_00e9: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_00ee: ldfld        PendingFinalEntryDecision.RefinedSide
+  IL_00f3: stloc.0      
+  IL_00f4: ldloc.0      
+  IL_00f5: conv.r8      
+  IL_00f6: ldarg.0      
+  IL_00f7: ldc.i4.0     
+  IL_00f8: call         FtmEngine.CloseAt(1)
+  IL_00fd: ldarg.0      
+  IL_00fe: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0103: ldfld        PendingFinalEntryDecision.FirstObservationOpen
+  IL_0108: sub          
+  IL_0109: mul          
+  IL_010a: stloc.1      
+  IL_010b: ldarg.0      
+  IL_010c: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0111: ldfld        PendingFinalEntryDecision.Branch
+  IL_0116: ldstr        "prior_session_disagreement"
+  IL_011b: call         String.op_Equality(2)
+  IL_0120: brfalse.s    IL_013b
+  IL_0122: ldloc.0      
+  IL_0123: neg          
+  IL_0124: stloc.2      
+  IL_0125: ldstr        "prior_session_disagreement_reverse"
+  IL_012a: stloc.3      
+  IL_012b: ldarg.0      
+  IL_012c: ldarg.0      
+  IL_012d: ldfld        FtmEngine.priorSessionReversalCount
+  IL_0132: ldc.i4.1     
+  IL_0133: add          
+  IL_0134: stfld        FtmEngine.priorSessionReversalCount
+  IL_0139: br.s         IL_0176
+  IL_013b: ldloc.1      
+  IL_013c: ldc.r8       0
+  IL_0145: ble.un.s     IL_0160
+  IL_0147: ldloc.0      
+  IL_0148: neg          
+  IL_0149: stloc.2      
+  IL_014a: ldstr        "intraday_continuation_reverse"
+  IL_014f: stloc.3      
+  IL_0150: ldarg.0      
+  IL_0151: ldarg.0      
+  IL_0152: ldfld        FtmEngine.intradayReversalCount
+  IL_0157: ldc.i4.1     
+  IL_0158: add          
+  IL_0159: stfld        FtmEngine.intradayReversalCount
+  IL_015e: br.s         IL_0176
+  IL_0160: ldloc.0      
+  IL_0161: stloc.2      
+  IL_0162: ldstr        "intraday_continuation_keep"
+  IL_0167: stloc.3      
+  IL_0168: ldarg.0      
+  IL_0169: ldarg.0      
+  IL_016a: ldfld        FtmEngine.intradayKeepCount
+  IL_016f: ldc.i4.1     
+  IL_0170: add          
+  IL_0171: stfld        FtmEngine.intradayKeepCount
+  IL_0176: ldarg.0      
+  IL_0177: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_017c: ldfld        PendingFinalEntryDecision.SubmitActualOrder
+  IL_0181: stloc.s      V_4
+  IL_0183: ldarg.0      
+  IL_0184: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0189: ldfld        PendingFinalEntryDecision.DirectionSource
+  IL_018e: ldstr        "+"
+  IL_0193: ldarg.0      
+  IL_0194: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_0199: ldfld        PendingFinalEntryDecision.Branch
+  IL_019e: call         String.Concat(3)
+  IL_01a3: stloc.s      V_5
+  IL_01a5: ldarg.0      
+  IL_01a6: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_01ab: ldfld        PendingFinalEntryDecision.RefinementPath
+  IL_01b0: ldstr        "->"
+  IL_01b5: ldloc.3      
+  IL_01b6: call         String.Concat(3)
+  IL_01bb: stloc.s      V_6
+  IL_01bd: ldarg.0      
+  IL_01be: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_01c3: ldfld        PendingFinalEntryDecision.Branch
+  IL_01c8: stloc.s      V_7
+  IL_01ca: ldarg.0      
+  IL_01cb: ldnull       
+  IL_01cc: stfld        FtmEngine.pendingFinalEntryDecision
+  IL_01d1: ldarg.0      
+  IL_01d2: call         CultureInfo.get_InvariantCulture(0)
+  IL_01d7: ldstr        "FINAL ENTRY ACTION {0:yyyy-MM-dd HH:mm}: branch={1}, observedMove={2:F4}, refinedSide={3}, finalSide={4}, path={5}."
+  IL_01dc: ldc.i4.6     
+  IL_01dd: newarr       Object
+  IL_01e2: dup          
+  IL_01e3: ldc.i4.0     
+  IL_01e4: ldarg.2      
+  IL_01e5: box          DateTime
+  IL_01ea: stelem.ref   
+  IL_01eb: dup          
+  IL_01ec: ldc.i4.1     
+  IL_01ed: ldloc.s      V_7
+  IL_01ef: stelem.ref   
+  IL_01f0: dup          
+  IL_01f1: ldc.i4.2     
+  IL_01f2: ldloc.1      
+  IL_01f3: box          Double
+  IL_01f8: stelem.ref   
+  IL_01f9: dup          
+  IL_01fa: ldc.i4.3     
+  IL_01fb: ldloc.0      
+  IL_01fc: box          Int32
+  IL_0201: stelem.ref   
+  IL_0202: dup          
+  IL_0203: ldc.i4.4     
+  IL_0204: ldloc.2      
+  IL_0205: box          Int32
+  IL_020a: stelem.ref   
+  IL_020b: dup          
+  IL_020c: ldc.i4.5     
+  IL_020d: ldloc.s      V_6
+  IL_020f: stelem.ref   
+  IL_0210: call         String.Format(3)
+  IL_0215: call         FtmEngine.Diagnostic(1)
+  IL_021a: ldloc.s      V_4
+  IL_021c: brfalse.s    IL_0229
+  IL_021e: ldarg.0      
+  IL_021f: ldloc.2      
+  IL_0220: ldloc.s      V_5
+  IL_0222: ldloc.s      V_6
+  IL_0224: call         FtmEngine.SubmitEntry(3)
+  IL_0229: ret
+
+=== FtmEngine.SelectManagementPlan(int side, bool priorTrendAvailable, double priorTrendBps, Double& targetR, Double& managedTriggerR, Double& managedLockR, String& regime) -> void ===
+  LOCALS: V_0:bool
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.currentPriorOrbQ75Available
+  IL_0006: brfalse.s    IL_0018
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.currentOrbBps
+  IL_000e: ldarg.0      
+  IL_000f: ldfld        FtmEngine.currentPriorOrbQ75Bps
+  IL_0014: cgt          
+  IL_0016: br.s         IL_0019
+  IL_0018: ldc.i4.0     
+  IL_0019: ldarg.2      
+  IL_001a: brfalse.s    IL_002d
+  IL_001c: ldarg.1      
+  IL_001d: conv.r8      
+  IL_001e: ldarg.3      
+  IL_001f: mul          
+  IL_0020: ldc.r8       0
+  IL_0029: clt          
+  IL_002b: br.s         IL_002e
+  IL_002d: ldc.i4.0     
+  IL_002e: stloc.0      
+  IL_002f: brfalse.s    IL_005e
+  IL_0031: ldarg.s      V_4
+  IL_0033: ldc.r8       1,25
+  IL_003c: stind.r8     
+  IL_003d: ldarg.s      V_5
+  IL_003f: ldc.r8       1,25
+  IL_0048: stind.r8     
+  IL_0049: ldarg.s      V_6
+  IL_004b: ldc.r8       0
+  IL_0054: stind.r8     
+  IL_0055: ldarg.s      V_7
+  IL_0057: ldstr        "high_orb_short_target"
+  IL_005c: stind.ref    
+  IL_005d: ret          
+  IL_005e: ldloc.0      
+  IL_005f: brfalse.s    IL_008e
+  IL_0061: ldarg.s      V_4
+  IL_0063: ldc.r8       3
+  IL_006c: stind.r8     
+  IL_006d: ldarg.s      V_5
+  IL_006f: ldc.r8       0,75
+  IL_0078: stind.r8     
+  IL_0079: ldarg.s      V_6
+  IL_007b: ldc.r8       0,10000000000000001
+  IL_0084: stind.r8     
+  IL_0085: ldarg.s      V_7
+  IL_0087: ldstr        "countertrend_early_guard"
+  IL_008c: stind.ref    
+  IL_008d: ret          
+  IL_008e: ldarg.s      V_4
+  IL_0090: ldc.r8       3
+  IL_0099: stind.r8     
+  IL_009a: ldarg.s      V_5
+  IL_009c: ldc.r8       1,25
+  IL_00a5: stind.r8     
+  IL_00a6: ldarg.s      V_6
+  IL_00a8: ldc.r8       0
+  IL_00b1: stind.r8     
+  IL_00b2: ldarg.s      V_7
+  IL_00b4: ldstr        "baseline"
+  IL_00b9: stind.ref    
+  IL_00ba: ret
+
+=== FtmEngine.InvalidatePendingSessionState(string reason) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.pendingEntryDecision
+  IL_0006: brtrue.s     IL_001b
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.pendingFinalEntryDecision
+  IL_000e: brtrue.s     IL_001b
+  IL_0010: ldarg.0      
+  IL_0011: ldfld        FtmEngine.activeShadowPair
+  IL_0016: ldnull       
+  IL_0017: cgt.un       
+  IL_0019: br.s         IL_001c
+  IL_001b: ldc.i4.1     
+  IL_001c: ldarg.0      
+  IL_001d: ldnull       
+  IL_001e: stfld        FtmEngine.pendingEntryDecision
+  IL_0023: ldarg.0      
+  IL_0024: ldnull       
+  IL_0025: stfld        FtmEngine.pendingFinalEntryDecision
+  IL_002a: ldarg.0      
+  IL_002b: ldnull       
+  IL_002c: stfld        FtmEngine.activeShadowPair
+  IL_0031: brfalse.s    IL_0057
+  IL_0033: ldarg.0      
+  IL_0034: ldarg.0      
+  IL_0035: ldfld        FtmEngine.failClosedCount
+  IL_003a: ldc.i4.1     
+  IL_003b: add          
+  IL_003c: stfld        FtmEngine.failClosedCount
+  IL_0041: ldarg.0      
+  IL_0042: ldstr        "FAIL CLOSED: "
+  IL_0047: ldarg.1      
+  IL_0048: ldstr        "."
+  IL_004d: call         String.Concat(3)
+  IL_0052: call         FtmEngine.Diagnostic(1)
+  IL_0057: ret
+
+=== FtmEngine.RecordCompletedSessionHistory(double closePrice) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.rthCloseHistoryRecorded
+  IL_0006: brtrue.s     IL_0028
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.sessionDateEligible
+  IL_000e: brfalse.s    IL_0028
+  IL_0010: ldarg.0      
+  IL_0011: ldfld        FtmEngine.cashWindowIntegrity
+  IL_0016: brfalse.s    IL_0028
+  IL_0018: ldarg.0      
+  IL_0019: ldfld        FtmEngine.orbFinalized
+  IL_001e: brfalse.s    IL_0028
+  IL_0020: ldarg.0      
+  IL_0021: ldfld        FtmEngine.referenceSessionOpenCaptured
+  IL_0026: brtrue.s     IL_0029
+  IL_0028: ret          
+  IL_0029: ldarg.0      
+  IL_002a: call         FtmEngine.RecordCompletedOrbHistory(0)
+  IL_002f: ldarg.0      
+  IL_0030: ldarg.1      
+  IL_0031: call         FtmEngine.RecordCompletedRthCloseHistory(1)
+  IL_0036: ldarg.0      
+  IL_0037: ldarg.0      
+  IL_0038: ldfld        FtmEngine.eligibleSessionCount
+  IL_003d: ldc.i4.1     
+  IL_003e: add          
+  IL_003f: stfld        FtmEngine.eligibleSessionCount
+  IL_0044: ret
+
+=== FtmEngine.RecordCompletedRthCloseHistory(double closePrice) -> void ===
+  LOCALS: V_0:double
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.rthCloseHistoryRecorded
+  IL_0006: brtrue.s     IL_003c
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.cashWindowIntegrity
+  IL_000e: brfalse.s    IL_003c
+  IL_0010: ldarg.0      
+  IL_0011: ldfld        FtmEngine.orbFinalized
+  IL_0016: brfalse.s    IL_003c
+  IL_0018: ldarg.0      
+  IL_0019: ldfld        FtmEngine.referenceSessionOpenCaptured
+  IL_001e: brfalse.s    IL_003c
+  IL_0020: ldarg.1      
+  IL_0021: ldc.r8       0
+  IL_002a: ble.un.s     IL_003c
+  IL_002c: ldarg.1      
+  IL_002d: call         Double.IsNaN(1)
+  IL_0032: brtrue.s     IL_003c
+  IL_0034: ldarg.1      
+  IL_0035: call         Double.IsInfinity(1)
+  IL_003a: brfalse.s    IL_003d
+  IL_003c: ret          
+  IL_003d: ldarg.0      
+  IL_003e: ldarg.1      
+  IL_003f: ldarg.0      
+  IL_0040: ldfld        FtmEngine.referenceSessionOpen
+  IL_0045: call         FtmEngine.SafeReturnBps(2)
+  IL_004a: stloc.0      
+  IL_004b: ldarg.0      
+  IL_004c: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_0051: ldarg.1      
+  IL_0052: callvirt     List`1.Add(1)
+  IL_0057: br.s         IL_0065
+  IL_0059: ldarg.0      
+  IL_005a: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_005f: ldc.i4.0     
+  IL_0060: callvirt     List`1.RemoveAt(1)
+  IL_0065: ldarg.0      
+  IL_0066: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_006b: callvirt     List`1.get_Count(0)
+  IL_0070: ldc.i4.s     21
+  IL_0072: bgt.s        IL_0059
+  IL_0074: ldarg.0      
+  IL_0075: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_007a: ldloc.0      
+  IL_007b: callvirt     List`1.Add(1)
+  IL_0080: br.s         IL_008e
+  IL_0082: ldarg.0      
+  IL_0083: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_0088: ldc.i4.0     
+  IL_0089: callvirt     List`1.RemoveAt(1)
+  IL_008e: ldarg.0      
+  IL_008f: ldfld        FtmEngine.eligibleSessionReturnHistoryBps
+  IL_0094: callvirt     List`1.get_Count(0)
+  IL_0099: ldc.i4.1     
+  IL_009a: bgt.s        IL_0082
+  IL_009c: ldarg.0      
+  IL_009d: ldc.i4.1     
+  IL_009e: stfld        FtmEngine.rthCloseHistoryRecorded
+  IL_00a3: ldarg.0      
+  IL_00a4: call         CultureInfo.get_InvariantCulture(0)
+  IL_00a9: ldstr        "SESSION HISTORY {0:yyyy-MM-dd}: rthClose={1:F2}, sessionOpen={2:F2}, sessionReturnBps={3:F3}, closeRows={4}, orbRows={5}."
+  IL_00ae: ldc.i4.6     
+  IL_00af: newarr       Object
+  IL_00b4: dup          
+  IL_00b5: ldc.i4.0     
+  IL_00b6: ldarg.0      
+  IL_00b7: ldfld        FtmEngine.currentCashDate
+  IL_00bc: box          DateTime
+  IL_00c1: stelem.ref   
+  IL_00c2: dup          
+  IL_00c3: ldc.i4.1     
+  IL_00c4: ldarg.1      
+  IL_00c5: box          Double
+  IL_00ca: stelem.ref   
+  IL_00cb: dup          
+  IL_00cc: ldc.i4.2     
+  IL_00cd: ldarg.0      
+  IL_00ce: ldfld        FtmEngine.referenceSessionOpen
+  IL_00d3: box          Double
+  IL_00d8: stelem.ref   
+  IL_00d9: dup          
+  IL_00da: ldc.i4.3     
+  IL_00db: ldloc.0      
+  IL_00dc: box          Double
+  IL_00e1: stelem.ref   
+  IL_00e2: dup          
+  IL_00e3: ldc.i4.4     
+  IL_00e4: ldarg.0      
+  IL_00e5: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_00ea: callvirt     List`1.get_Count(0)
+  IL_00ef: box          Int32
+  IL_00f4: stelem.ref   
+  IL_00f5: dup          
+  IL_00f6: ldc.i4.5     
+  IL_00f7: ldarg.0      
+  IL_00f8: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_00fd: callvirt     List`1.get_Count(0)
+  IL_0102: box          Int32
+  IL_0107: stelem.ref   
+  IL_0108: call         String.Format(3)
+  IL_010d: call         FtmEngine.Diagnostic(1)
+  IL_0112: ret
+
+=== FtmEngine.TryGetPriorTrendReturn(Double& value) -> bool ===
+  LOCALS: V_0:double, V_1:double
+  IL_0000: ldarg.1      
+  IL_0001: ldc.r8       0
+  IL_000a: stind.r8     
+  IL_000b: ldarg.0      
+  IL_000c: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_0011: brfalse.s    IL_0022
+  IL_0013: ldarg.0      
+  IL_0014: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_0019: callvirt     List`1.get_Count(0)
+  IL_001e: ldc.i4.s     21
+  IL_0020: bge.s        IL_0024
+  IL_0022: ldc.i4.0     
+  IL_0023: ret          
+  IL_0024: ldarg.0      
+  IL_0025: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_002a: ldc.i4.0     
+  IL_002b: callvirt     List`1.get_Item(1)
+  IL_0030: stloc.0      
+  IL_0031: ldarg.0      
+  IL_0032: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_0037: ldarg.0      
+  IL_0038: ldfld        FtmEngine.eligibleRthCloseHistory
+  IL_003d: callvirt     List`1.get_Count(0)
+  IL_0042: ldc.i4.1     
+  IL_0043: sub          
+  IL_0044: callvirt     List`1.get_Item(1)
+  IL_0049: stloc.1      
+  IL_004a: ldloc.0      
+  IL_004b: ldc.r8       0
+  IL_0054: ble.un.s     IL_0062
+  IL_0056: ldloc.1      
+  IL_0057: ldc.r8       0
+  IL_0060: bgt.s        IL_0064
+  IL_0062: ldc.i4.0     
+  IL_0063: ret          
+  IL_0064: ldarg.1      
+  IL_0065: ldloc.1      
+  IL_0066: ldloc.0      
+  IL_0067: div          
+  IL_0068: ldc.r8       1
+  IL_0071: sub          
+  IL_0072: ldc.r8       10000
+  IL_007b: mul          
+  IL_007c: stind.r8     
+  IL_007d: ldc.i4.1     
+  IL_007e: ret
+
+=== FtmEngine.RecordCompletedOrbHistory() -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.orbHistoryRecorded
+  IL_0006: brtrue.s     IL_0020
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.sessionDateEligible
+  IL_000e: brfalse.s    IL_0020
+  IL_0010: ldarg.0      
+  IL_0011: ldfld        FtmEngine.cashWindowIntegrity
+  IL_0016: brfalse.s    IL_0020
+  IL_0018: ldarg.0      
+  IL_0019: ldfld        FtmEngine.orbFinalized
+  IL_001e: brtrue.s     IL_0021
+  IL_0020: ret          
+  IL_0021: ldarg.0      
+  IL_0022: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_0027: ldarg.0      
+  IL_0028: ldfld        FtmEngine.currentOrbBps
+  IL_002d: callvirt     List`1.Add(1)
+  IL_0032: br.s         IL_0040
+  IL_0034: ldarg.0      
+  IL_0035: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_003a: ldc.i4.0     
+  IL_003b: callvirt     List`1.RemoveAt(1)
+  IL_0040: ldarg.0      
+  IL_0041: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_0046: callvirt     List`1.get_Count(0)
+  IL_004b: ldc.i4.s     120
+  IL_004d: bgt.s        IL_0034
+  IL_004f: ldarg.0      
+  IL_0050: ldc.i4.1     
+  IL_0051: stfld        FtmEngine.orbHistoryRecorded
+  IL_0056: ldarg.0      
+  IL_0057: call         CultureInfo.get_InvariantCulture(0)
+  IL_005c: ldstr        "ORB HISTORY {0:yyyy-MM-dd}: appended={1:F3}, retained={2}."
+  IL_0061: ldarg.0      
+  IL_0062: ldfld        FtmEngine.currentCashDate
+  IL_0067: box          DateTime
+  IL_006c: ldarg.0      
+  IL_006d: ldfld        FtmEngine.currentOrbBps
+  IL_0072: box          Double
+  IL_0077: ldarg.0      
+  IL_0078: ldfld        FtmEngine.eligibleOrbHistoryBps
+  IL_007d: callvirt     List`1.get_Count(0)
+  IL_0082: box          Int32
+  IL_0087: call         String.Format(5)
+  IL_008c: call         FtmEngine.Diagnostic(1)
+  IL_0091: ret
+
+=== FtmEngine.LinearPercentile(List`1 values, double quantile) -> double ===
+  LOCALS: V_0:Double[], V_1:double, V_2:int, V_3:int, V_4:double
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_000b
+  IL_0003: ldarg.1      
+  IL_0004: callvirt     List`1.get_Count(0)
+  IL_0009: brtrue.s     IL_0016
+  IL_000b: ldstr        "Cannot calculate a percentile from empty ORB history."
+  IL_0010: newobj       InvalidOperationException..ctor(1)
+  IL_0015: throw        
+  IL_0016: ldarg.1      
+  IL_0017: callvirt     List`1.ToArray(0)
+  IL_001c: stloc.0      
+  IL_001d: ldloc.0      
+  IL_001e: call         Array.Sort(1)
+  IL_0023: ldloc.0      
+  IL_0024: ldlen        
+  IL_0025: conv.i4      
+  IL_0026: ldc.i4.1     
+  IL_0027: sub          
+  IL_0028: conv.r8      
+  IL_0029: ldarg.2      
+  IL_002a: mul          
+  IL_002b: stloc.1      
+  IL_002c: ldloc.1      
+  IL_002d: call         Math.Floor(1)
+  IL_0032: conv.i4      
+  IL_0033: stloc.2      
+  IL_0034: ldloc.1      
+  IL_0035: call         Math.Ceiling(1)
+  IL_003a: conv.i4      
+  IL_003b: stloc.3      
+  IL_003c: ldloc.2      
+  IL_003d: ldloc.3      
+  IL_003e: bne.un.s     IL_0044
+  IL_0040: ldloc.0      
+  IL_0041: ldloc.2      
+  IL_0042: ldelem.r8    
+  IL_0043: ret          
+  IL_0044: ldloc.1      
+  IL_0045: ldloc.2      
+  IL_0046: conv.r8      
+  IL_0047: sub          
+  IL_0048: stloc.s      V_4
+  IL_004a: ldloc.0      
+  IL_004b: ldloc.2      
+  IL_004c: ldelem.r8    
+  IL_004d: ldloc.0      
+  IL_004e: ldloc.3      
+  IL_004f: ldelem.r8    
+  IL_0050: ldloc.0      
+  IL_0051: ldloc.2      
+  IL_0052: ldelem.r8    
+  IL_0053: sub          
+  IL_0054: ldloc.s      V_4
+  IL_0056: mul          
+  IL_0057: add          
+  IL_0058: ret
+
+=== FtmEngine.ResolveEasternTimeZone() -> TimeZoneInfo ===
+  LOCALS: V_0:TimeZoneInfo
+  IL_0000: ldstr        "Eastern Standard Time"
+  IL_0005: call         TimeZoneInfo.FindSystemTimeZoneById(1)
+  IL_000a: stloc.0      
+  IL_000b: leave.s      IL_001b
+  IL_000d: pop          
+  IL_000e: ldstr        "America/New_York"
+  IL_0013: call         TimeZoneInfo.FindSystemTimeZoneById(1)
+  IL_0018: stloc.0      
+  IL_0019: leave.s      IL_001b
+  IL_001b: ldloc.0      
+  IL_001c: ret
+
+=== FtmEngine.ValidateTimeZoneContract() -> bool ===
+  LOCALS: V_0:bool, V_1:Exception
+  IL_0000: ldarg.0      
+  IL_0001: ldc.i4       2024
+  IL_0006: ldc.i4.1     
+  IL_0007: ldc.i4.s     16
+  IL_0009: ldc.i4.s     9
+  IL_000b: ldc.i4.s     30
+  IL_000d: ldc.i4.0     
+  IL_000e: ldc.i4.0     
+  IL_000f: newobj       DateTime..ctor(7)
+  IL_0014: ldc.i4       2024
+  IL_0019: ldc.i4.1     
+  IL_001a: ldc.i4.s     16
+  IL_001c: ldc.i4.s     14
+  IL_001e: ldc.i4.s     30
+  IL_0020: ldc.i4.0     
+  IL_0021: ldc.i4.1     
+  IL_0022: newobj       DateTime..ctor(7)
+  IL_0027: call         FtmEngine.ValidateTimeZoneSample(2)
+  IL_002c: brfalse      IL_00f0
+  IL_0031: ldarg.0      
+  IL_0032: ldc.i4       2024
+  IL_0037: ldc.i4.3     
+  IL_0038: ldc.i4.s     15
+  IL_003a: ldc.i4.s     9
+  IL_003c: ldc.i4.s     30
+  IL_003e: ldc.i4.0     
+  IL_003f: ldc.i4.0     
+  IL_0040: newobj       DateTime..ctor(7)
+  IL_0045: ldc.i4       2024
+  IL_004a: ldc.i4.3     
+  IL_004b: ldc.i4.s     15
+  IL_004d: ldc.i4.s     13
+  IL_004f: ldc.i4.s     30
+  IL_0051: ldc.i4.0     
+  IL_0052: ldc.i4.1     
+  IL_0053: newobj       DateTime..ctor(7)
+  IL_0058: call         FtmEngine.ValidateTimeZoneSample(2)
+  IL_005d: brfalse      IL_00f0
+  IL_0062: ldarg.0      
+  IL_0063: ldc.i4       2024
+  IL_0068: ldc.i4.7     
+  IL_0069: ldc.i4.s     15
+  IL_006b: ldc.i4.s     9
+  IL_006d: ldc.i4.s     30
+  IL_006f: ldc.i4.0     
+  IL_0070: ldc.i4.0     
+  IL_0071: newobj       DateTime..ctor(7)
+  IL_0076: ldc.i4       2024
+  IL_007b: ldc.i4.7     
+  IL_007c: ldc.i4.s     15
+  IL_007e: ldc.i4.s     13
+  IL_0080: ldc.i4.s     30
+  IL_0082: ldc.i4.0     
+  IL_0083: ldc.i4.1     
+  IL_0084: newobj       DateTime..ctor(7)
+  IL_0089: call         FtmEngine.ValidateTimeZoneSample(2)
+  IL_008e: brfalse.s    IL_00f0
+  IL_0090: ldarg.0      
+  IL_0091: ldc.i4       2024
+  IL_0096: ldc.i4.s     10
+  IL_0098: ldc.i4.s     28
+  IL_009a: ldc.i4.s     9
+  IL_009c: ldc.i4.s     30
+  IL_009e: ldc.i4.0     
+  IL_009f: ldc.i4.0     
+  IL_00a0: newobj       DateTime..ctor(7)
+  IL_00a5: ldc.i4       2024
+  IL_00aa: ldc.i4.s     10
+  IL_00ac: ldc.i4.s     28
+  IL_00ae: ldc.i4.s     13
+  IL_00b0: ldc.i4.s     30
+  IL_00b2: ldc.i4.0     
+  IL_00b3: ldc.i4.1     
+  IL_00b4: newobj       DateTime..ctor(7)
+  IL_00b9: call         FtmEngine.ValidateTimeZoneSample(2)
+  IL_00be: brfalse.s    IL_00f0
+  IL_00c0: ldarg.0      
+  IL_00c1: ldc.i4       2024
+  IL_00c6: ldc.i4.s     11
+  IL_00c8: ldc.i4.s     15
+  IL_00ca: ldc.i4.s     9
+  IL_00cc: ldc.i4.s     30
+  IL_00ce: ldc.i4.0     
+  IL_00cf: ldc.i4.0     
+  IL_00d0: newobj       DateTime..ctor(7)
+  IL_00d5: ldc.i4       2024
+  IL_00da: ldc.i4.s     11
+  IL_00dc: ldc.i4.s     15
+  IL_00de: ldc.i4.s     14
+  IL_00e0: ldc.i4.s     30
+  IL_00e2: ldc.i4.0     
+  IL_00e3: ldc.i4.1     
+  IL_00e4: newobj       DateTime..ctor(7)
+  IL_00e9: call         FtmEngine.ValidateTimeZoneSample(2)
+  IL_00ee: br.s         IL_00f1
+  IL_00f0: ldc.i4.0     
+  IL_00f1: stloc.0      
+  IL_00f2: leave.s      IL_0110
+  IL_00f4: stloc.1      
+  IL_00f5: ldarg.0      
+  IL_00f6: ldstr        "FLAT MOON SOCIETY time-zone conversion self-test failed: "
+  IL_00fb: ldloc.1      
+  IL_00fc: callvirt     Exception.get_Message(0)
+  IL_0101: call         String.Concat(2)
+  IL_0106: ldc.i4.3     
+  IL_0107: call         FtmEngine.WriteLog(2)
+  IL_010c: ldc.i4.0     
+  IL_010d: stloc.0      
+  IL_010e: leave.s      IL_0110
+  IL_0110: ldloc.0      
+  IL_0111: ret
+
+=== FtmEngine.ValidateTimeZoneSample(DateTime expectedEastern, DateTime expectedUtc) -> bool ===
+  LOCALS: V_0:DateTime, V_1:DateTime, V_2:DateTime, V_3:DateTime, V_4:bool
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.easternTimeZone
+  IL_0006: ldarg.1      
+  IL_0007: callvirt     TimeZoneInfo.IsInvalidTime(1)
+  IL_000c: brtrue.s     IL_001c
+  IL_000e: ldarg.0      
+  IL_000f: ldfld        FtmEngine.easternTimeZone
+  IL_0014: ldarg.1      
+  IL_0015: callvirt     TimeZoneInfo.IsAmbiguousTime(1)
+  IL_001a: brfalse.s    IL_001e
+  IL_001c: ldc.i4.0     
+  IL_001d: ret          
+  IL_001e: ldarg.1      
+  IL_001f: ldarg.0      
+  IL_0020: ldfld        FtmEngine.easternTimeZone
+  IL_0025: call         TimeZoneInfo.ConvertTimeToUtc(2)
+  IL_002a: stloc.0      
+  IL_002b: ldarg.2      
+  IL_002c: ldarg.0      
+  IL_002d: ldfld        FtmEngine.platformTimeZone
+  IL_0032: call         TimeZoneInfo.ConvertTimeFromUtc(2)
+  IL_0037: ldc.i4.0     
+  IL_0038: call         DateTime.SpecifyKind(2)
+  IL_003d: stloc.1      
+  IL_003e: ldarg.0      
+  IL_003f: ldfld        FtmEngine.platformTimeZone
+  IL_0044: ldloc.1      
+  IL_0045: callvirt     TimeZoneInfo.IsInvalidTime(1)
+  IL_004a: brtrue.s     IL_005a
+  IL_004c: ldarg.0      
+  IL_004d: ldfld        FtmEngine.platformTimeZone
+  IL_0052: ldloc.1      
+  IL_0053: callvirt     TimeZoneInfo.IsAmbiguousTime(1)
+  IL_0058: brfalse.s    IL_005c
+  IL_005a: ldc.i4.0     
+  IL_005b: ret          
+  IL_005c: ldarg.0      
+  IL_005d: ldloc.1      
+  IL_005e: call         FtmEngine.ToEastern(1)
+  IL_0063: stloc.2      
+  IL_0064: ldarg.0      
+  IL_0065: ldloc.1      
+  IL_0066: call         FtmEngine.ToUtc(1)
+  IL_006b: stloc.3      
+  IL_006c: ldloc.0      
+  IL_006d: ldarg.2      
+  IL_006e: call         DateTime.op_Equality(2)
+  IL_0073: brfalse.s    IL_0087
+  IL_0075: ldloc.2      
+  IL_0076: ldarg.1      
+  IL_0077: call         DateTime.op_Equality(2)
+  IL_007c: brfalse.s    IL_0087
+  IL_007e: ldloc.3      
+  IL_007f: ldarg.2      
+  IL_0080: call         DateTime.op_Equality(2)
+  IL_0085: br.s         IL_0088
+  IL_0087: ldc.i4.0     
+  IL_0088: stloc.s      V_4
+  IL_008a: ldloc.s      V_4
+  IL_008c: brtrue.s     IL_00d7
+  IL_008e: ldarg.0      
+  IL_008f: call         CultureInfo.get_InvariantCulture(0)
+  IL_0094: ldstr        "FLAT MOON SOCIETY time-zone sample mismatch: expectedET={0:yyyy-MM-dd HH:mm}, expectedUTC={1:yyyy-MM-dd HH:mm}, platform={2:yyyy-MM-dd HH:mm}, observedET={3:yyyy-MM-dd HH:mm}, observedUTC={4:yyyy-MM-dd HH:mm}."
+  IL_0099: ldc.i4.5     
+  IL_009a: newarr       Object
+  IL_009f: dup          
+  IL_00a0: ldc.i4.0     
+  IL_00a1: ldarg.1      
+  IL_00a2: box          DateTime
+  IL_00a7: stelem.ref   
+  IL_00a8: dup          
+  IL_00a9: ldc.i4.1     
+  IL_00aa: ldarg.2      
+  IL_00ab: box          DateTime
+  IL_00b0: stelem.ref   
+  IL_00b1: dup          
+  IL_00b2: ldc.i4.2     
+  IL_00b3: ldloc.1      
+  IL_00b4: box          DateTime
+  IL_00b9: stelem.ref   
+  IL_00ba: dup          
+  IL_00bb: ldc.i4.3     
+  IL_00bc: ldloc.2      
+  IL_00bd: box          DateTime
+  IL_00c2: stelem.ref   
+  IL_00c3: dup          
+  IL_00c4: ldc.i4.4     
+  IL_00c5: ldloc.3      
+  IL_00c6: box          DateTime
+  IL_00cb: stelem.ref   
+  IL_00cc: call         String.Format(3)
+  IL_00d1: ldc.i4.3     
+  IL_00d2: call         FtmEngine.WriteLog(2)
+  IL_00d7: ldloc.s      V_4
+  IL_00d9: ret
+
+=== FtmEngine.ToEastern(DateTime platformTime) -> DateTime ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.0      
+  IL_0002: ldarg.1      
+  IL_0003: call         FtmEngine.ToUtc(1)
+  IL_0008: call         FtmEngine.FromUtcToEastern(1)
+  IL_000d: ret
+
+=== FtmEngine.FromUtcToEastern(DateTime utcTime) -> DateTime ===
+  IL_0000: ldarg.1      
+  IL_0001: ldc.i4.1     
+  IL_0002: call         DateTime.SpecifyKind(2)
+  IL_0007: ldarg.0      
+  IL_0008: ldfld        FtmEngine.easternTimeZone
+  IL_000d: call         TimeZoneInfo.ConvertTimeFromUtc(2)
+  IL_0012: ret
+
+=== FtmEngine.ToUtc(DateTime platformTime) -> DateTime ===
+  IL_0000: ldarg.1      
+  IL_0001: ldc.i4.0     
+  IL_0002: call         DateTime.SpecifyKind(2)
+  IL_0007: ldarg.0      
+  IL_0008: ldfld        FtmEngine.platformTimeZone
+  IL_000d: call         TimeZoneInfo.ConvertTimeToUtc(2)
+  IL_0012: ret
+
+=== FtmEngine.RoundPriceOffsetTicks(double points, bool priceBelowEntry) -> int ===
+  LOCALS: V_0:double
+  IL_0000: ldarg.1      
+  IL_0001: ldarg.0      
+  IL_0002: ldfld        FtmEngine.owner
+  IL_0007: callvirt     NinjaScriptBase.get_TickSize(0)
+  IL_000c: div          
+  IL_000d: stloc.0      
+  IL_000e: ldarg.2      
+  IL_000f: brtrue.s     IL_0023
+  IL_0011: ldloc.0      
+  IL_0012: ldc.r8       0,5
+  IL_001b: add          
+  IL_001c: call         Math.Floor(1)
+  IL_0021: conv.i4      
+  IL_0022: ret          
+  IL_0023: ldloc.0      
+  IL_0024: ldc.r8       0,5
+  IL_002d: sub          
+  IL_002e: call         Math.Ceiling(1)
+  IL_0033: conv.i4      
+  IL_0034: ret
+
+=== FtmEngine.RoundPrice(double price) -> double ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.owner
+  IL_0006: callvirt     NinjaScriptBase.get_Instrument(0)
+  IL_000b: callvirt     Instrument.get_MasterInstrument(0)
+  IL_0010: ldarg.1      
+  IL_0011: callvirt     MasterInstrument.RoundToTickSize(1)
+  IL_0016: ret
+
+=== FtmEngine.MinuteOfDay(DateTime value) -> int ===
+  IL_0000: ldarga.s     V_1
+  IL_0002: call         DateTime.get_Hour(0)
+  IL_0007: ldc.i4.s     60
+  IL_0009: mul          
+  IL_000a: ldarga.s     V_1
+  IL_000c: call         DateTime.get_Minute(0)
+  IL_0011: add          
+  IL_0012: ret
+
+=== FtmEngine.IsExactMinute(DateTime value) -> bool ===
+  IL_0000: ldarga.s     V_1
+  IL_0002: call         DateTime.get_Ticks(0)
+  IL_0007: ldc.i4       600000000
+  IL_000c: conv.i8      
+  IL_000d: rem          
+  IL_000e: ldc.i4.0     
+  IL_000f: conv.i8      
+  IL_0010: ceq          
+  IL_0012: ret
+
+=== FtmEngine.CaptureBarClockContext(DateTime barOpenPlatform, DateTime barOpenUtc, DateTime barOpenEt, DateTime barClosePlatform, DateTime barCloseUtc, DateTime barCloseEt) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: ldc.i4.0     
+  IL_0003: call         DateTime.SpecifyKind(2)
+  IL_0008: stfld        FtmEngine.lastBarOpenPlatform
+  IL_000d: ldarg.0      
+  IL_000e: ldarg.2      
+  IL_000f: ldc.i4.1     
+  IL_0010: call         DateTime.SpecifyKind(2)
+  IL_0015: stfld        FtmEngine.lastBarOpenUtc
+  IL_001a: ldarg.0      
+  IL_001b: ldarg.3      
+  IL_001c: ldc.i4.0     
+  IL_001d: call         DateTime.SpecifyKind(2)
+  IL_0022: stfld        FtmEngine.lastBarOpenEt
+  IL_0027: ldarg.0      
+  IL_0028: ldarg.s      V_4
+  IL_002a: ldc.i4.0     
+  IL_002b: call         DateTime.SpecifyKind(2)
+  IL_0030: stfld        FtmEngine.lastBarClosePlatform
+  IL_0035: ldarg.0      
+  IL_0036: ldarg.s      V_5
+  IL_0038: ldc.i4.1     
+  IL_0039: call         DateTime.SpecifyKind(2)
+  IL_003e: stfld        FtmEngine.lastBarCloseUtc
+  IL_0043: ldarg.0      
+  IL_0044: ldarg.s      V_6
+  IL_0046: ldc.i4.0     
+  IL_0047: call         DateTime.SpecifyKind(2)
+  IL_004c: stfld        FtmEngine.lastBarCloseEt
+  IL_0051: ldarg.0      
+  IL_0052: ldc.i4.1     
+  IL_0053: stfld        FtmEngine.barClockContextAvailable
+  IL_0058: ret
+
+=== FtmEngine.BarClockContext() -> string ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FtmEngine.barClockContextAvailable
+  IL_0006: brfalse.s    IL_0010
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FtmEngine.platformTimeZone
+  IL_000e: brtrue.s     IL_0016
+  IL_0010: ldstr        "strategyBarClock=unavailable"
+  IL_0015: ret          
+  IL_0016: call         CultureInfo.get_InvariantCulture(0)
+  IL_001b: ldstr        "barOpenPlatform={0:yyyy-MM-dd HH:mm:ss} [{1}], barOpenUTC={2:yyyy-MM-dd HH:mm:ss}Z, barOpenET={3:yyyy-MM-dd HH:mm:ss}, barClosePlatform={4:yyyy-MM-dd HH:mm:ss} [{1}], barCloseUTC={5:yyyy-MM-dd HH:mm:ss}Z, barCloseET={6:yyyy-MM-dd HH:mm:ss}"
+  IL_0020: ldc.i4.7     
+  IL_0021: newarr       Object
+  IL_0026: dup          
+  IL_0027: ldc.i4.0     
+  IL_0028: ldarg.0      
+  IL_0029: ldfld        FtmEngine.lastBarOpenPlatform
+  IL_002e: box          DateTime
+  IL_0033: stelem.ref   
+  IL_0034: dup          
+  IL_0035: ldc.i4.1     
+  IL_0036: ldarg.0      
+  IL_0037: ldfld        FtmEngine.platformTimeZone
+  IL_003c: callvirt     TimeZoneInfo.get_Id(0)
+  IL_0041: stelem.ref   
+  IL_0042: dup          
+  IL_0043: ldc.i4.2     
+  IL_0044: ldarg.0      
+  IL_0045: ldfld        FtmEngine.lastBarOpenUtc
+  IL_004a: box          DateTime
+  IL_004f: stelem.ref   
+  IL_0050: dup          
+  IL_0051: ldc.i4.3     
+  IL_0052: ldarg.0      
+  IL_0053: ldfld        FtmEngine.lastBarOpenEt
+  IL_0058: box          DateTime
+  IL_005d: stelem.ref   
+  IL_005e: dup          
+  IL_005f: ldc.i4.4     
+  IL_0060: ldarg.0      
+  IL_0061: ldfld        FtmEngine.lastBarClosePlatform
+  IL_0066: box          DateTime
+  IL_006b: stelem.ref   
+  IL_006c: dup          
+  IL_006d: ldc.i4.5     
+  IL_006e: ldarg.0      
+  IL_006f: ldfld        FtmEngine.lastBarCloseUtc
+  IL_0074: box          DateTime
+  IL_0079: stelem.ref   
+  IL_007a: dup          
+  IL_007b: ldc.i4.6     
+  IL_007c: ldarg.0      
+  IL_007d: ldfld        FtmEngine.lastBarCloseEt
+  IL_0082: box          DateTime
+  IL_0087: stelem.ref   
+  IL_0088: call         String.Format(3)
+  IL_008d: ret
+
+=== FtmEngine.IsWeekday(DayOfWeek day) -> bool ===
+  IL_0000: ldarg.1      
+  IL_0001: ldc.i4.1     
+  IL_0002: blt.s        IL_000c
+  IL_0004: ldarg.1      
+  IL_0005: ldc.i4.5     
+  IL_0006: cgt          
+  IL_0008: ldc.i4.0     
+  IL_0009: ceq          
+  IL_000b: ret          
+  IL_000c: ldc.i4.0     
+  IL_000d: ret
+
+=== FtmEngine.DateKey(DateTime value) -> int ===
+  IL_0000: ldarga.s     V_1
+  IL_0002: call         DateTime.get_Year(0)
+  IL_0007: ldc.i4       10000
+  IL_000c: mul          
+  IL_000d: ldarga.s     V_1
+  IL_000f: call         DateTime.get_Month(0)
+  IL_0014: ldc.i4.s     100
+  IL_0016: mul          
+  IL_0017: add          
+  IL_0018: ldarga.s     V_1
+  IL_001a: call         DateTime.get_Day(0)
+  IL_001f: add          
+  IL_0020: ret
+
+=== FtmEngine.ContainsDateKey(Int32[] values, int value) -> bool ===
+  IL_0000: ldarg.1      
+  IL_0001: ldarg.2      
+  IL_0002: call         Array.BinarySearch(2)
+  IL_0007: ldc.i4.0     
+  IL_0008: clt          
+  IL_000a: ldc.i4.0     
+  IL_000b: ceq          
+  IL_000d: ret
+
+=== FtmEngine.DateKeysStrictlyIncreasing(Int32[] values) -> bool ===
+  LOCALS: V_0:int
+  IL_0000: ldarg.1      
+  IL_0001: brtrue.s     IL_0005
+  IL_0003: ldc.i4.0     
+  IL_0004: ret          
+  IL_0005: ldc.i4.1     
+  IL_0006: stloc.0      
+  IL_0007: br.s         IL_0019
+  IL_0009: ldarg.1      
+  IL_000a: ldloc.0      
+  IL_000b: ldelem.i4    
+  IL_000c: ldarg.1      
+  IL_000d: ldloc.0      
+  IL_000e: ldc.i4.1     
+  IL_000f: sub          
+  IL_0010: ldelem.i4    
+  IL_0011: bgt.s        IL_0015
+  IL_0013: ldc.i4.0     
+  IL_0014: ret          
+  IL_0015: ldloc.0      
+  IL_0016: ldc.i4.1     
+  IL_0017: add          
+  IL_0018: stloc.0      
+  IL_0019: ldloc.0      
+  IL_001a: ldarg.1      
+  IL_001b: ldlen        
+  IL_001c: conv.i4      
+  IL_001d: blt.s        IL_0009
+  IL_001f: ldc.i4.1     
+  IL_0020: ret
+
+=== FtmEngine.Diagnostic(string message) -> void ===
+  IL_0000: ret
+
+=== DirectionTrainingRow..ctor() -> .ctor ===
+  IL_0000: ldarg.0      
+  IL_0001: call         Object..ctor(0)
+  IL_0006: ret
+
+=== QuarterDirectionModel..ctor() -> .ctor ===
+  IL_0000: ldarg.0      
+  IL_0001: call         Object..ctor(0)
+  IL_0006: ret
+
+=== ShadowTradeState..ctor() -> .ctor ===
+  IL_0000: ldarg.0      
+  IL_0001: call         Object..ctor(0)
+  IL_0006: ret
