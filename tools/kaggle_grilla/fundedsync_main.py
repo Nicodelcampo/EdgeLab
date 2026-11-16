@@ -23,7 +23,8 @@ def operaciones(D):
         out[k] = pd.DataFrame(dict(dia=tt.dt.tz_localize(None).dt.normalize(), t=tt.astype("int64") // 10**9, side=x.side.values,
                                    neto=pd.to_numeric(x.pnl_pts, errors="coerce").values - FR,
                                    riesgo=(pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().astype(float).values,
-                                   salida=x.exit_name.values))
+                                   salida=x.exit_name.values,
+                                   mae_pts=(pd.to_numeric(x.mae_usd, errors="coerce") * (pd.to_numeric(x.pnl_pts, errors="coerce") / pd.to_numeric(x.pnl_usd, errors="coerce")).replace([np.inf, -np.inf], np.nan).median()).values))
     return out
 
 
@@ -57,7 +58,10 @@ if os.environ.get("SELLADO") == "1":                                    # apertu
     H = pd.DataFrame(dict(o=B.open, h=B.high, l=B.low, c=B.close, v=B.vol), index=B.index)
     D = pd.concat([D[D.index < H.index.min()], H]); print(f"holdout: {len(H)} velas M1 sellladas", flush=True)
     F.MODULOS = {k: F.MODULOS[k] for k in ("T", "Z", "R")}
-    ops = operaciones(D); ops = {k: v[v.dia >= "2026-10-01"] for k, v in ops.items() if v is not None}
+    ops = operaciones(D); ops = {k: v[v.dia >= os.environ.get("FW_DESDE", "2026-10-01")] for k, v in ops.items() if v is not None}
+    mm = D.index.hour * 60 + D.index.minute; RR = D[(mm >= 570) & (mm < 960)]; dd = RR.index.normalize()
+    atr20 = (RR.h.groupby(dd).max() - RR.l.groupby(dd).min()).rolling(20).mean().shift(1)          # stop de catástrofe (PREREGISTRO_TANDA2 L2)
+    ops = {k: v.assign(atr20=atr20.reindex(v.dia).values) for k, v in ops.items()}
     pd.concat([v.assign(modulo=k) for k, v in ops.items()]).to_csv("FUNDEDSYNC_HOLDOUT_OPS.csv", index=False)
     json.dump({k: dict(n=int(len(v)), neto_pts=float(v.neto.mean()) if len(v) else None, ee=float(v.neto.std(ddof=1) / np.sqrt(len(v))) if len(v) > 1 else None)
                for k, v in ops.items()}, open("RESULTADO_HOLDOUT.json", "w"), indent=1); print("listo holdout"); raise SystemExit(0)

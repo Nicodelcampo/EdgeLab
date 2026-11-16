@@ -54,3 +54,11 @@ mecanismos distintos y descorrelacionados; refutación: R forward ≤ 0. L3: el 
 volumen, eficiencia); refutación: AUC < 0,60 fuera de A. L4: la volatilidad es antipersistente y pronosticable; refutación: sin mejora contra la
 caminata aleatoria o sin uso en L3/sizing. L4bis: las operaciones de una regla se parecen a sus vecinas; refutación: el filtro no mejora la réplica.
 Contador global total: 4 + 1 + 16 + 2 = 23 pruebas (familias FUNDEDSYNC, EL-DIA-TENDENCIA, PREAPERTURA y CVGAP).
+
+## Enmienda 1 (2026-11-16, antes de correrla; Nico: «seguí intentando anticipar los días de tendencia»): decisión a las 12:00
+L3 a las 10:30 dio AUC ≈ 0,50 para el resto del día (E2) en los 4 índices. Se agrega UNA prueba más, con la mañana ya vista:
+- Etiqueta **E3**: la tarde (12:00 → 16:00) se mueve en la dirección de la mañana (09:30 → 12:00) y con eficiencia ≥ 0,5 (|cierre − p12:00| / rango de
+  la tarde).
+- Predictores a las 12:00: eficiencia de la mañana; rango de la mañana / ATR20; posición del precio respecto del VWAP de la mañana (en desvíos);
+  volumen de la mañana / media de 20 días; pronóstico rugoso del día / ATR20; fracción del rango pronosticado ya recorrida a las 12:00.
+- Misma partición A/B/C, mismos 4 índices, misma lectura (AUC ≥ 0,60 en B y C en ≥ 3 de 4). Contador: 6 + 1 combinado = 7.

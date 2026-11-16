@@ -53,6 +53,35 @@ def holdout(commit):
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
 
 
+def forward(hasta, commit=""):
+    """Forward diario de la canasta T+Z+R (PREREGISTRO_TANDA2 L2): desarrollo + USATECH sellado hasta HASTA; sólo sesiones >= 2026-11-14."""
+    import json, datetime as dt
+    fin = (dt.date(int(hasta[:4]), int(hasta[4:6]), int(hasta[6:])) + dt.timedelta(days=1)).isoformat()
+    acta = dict(acta="docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md", commit=commit, familia="FUNDEDSYNC", cid="FUNDEDSYNC::forward_TZR")
+    k = construir(); txt = k.read_text(encoding="utf-8")
+    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA=" + repr(hasta) + ", FIN=" + repr(fin) + ", FW_DESDE='2026-11-14', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", f"{KS}-fw{hasta}", "--title", f"edgelab fundedsync fw {hasta}", "--script", str(k),
+                    "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
+
+
+def traer_forward(hasta):
+    """Baja el forward y actualiza los e-procesos de T, Z, R (Z y R con stop de catástrofe 0,5 × ATR20 vía MAE) y de la canasta."""
+    import json
+    import pandas as pd
+    sys.path.insert(0, str(ROOT)); from edgelab.funnel.secuencial import EProceso
+    d = OUT / "forward"; d.mkdir(parents=True, exist_ok=True); f = d / f"OPS_{hasta}.csv"
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", f"{KS}-fw{hasta}", "--file", "FUNDEDSYNC_HOLDOUT_OPS.csv", "--out", str(f)], cwd=ROOT, check=True)
+    o = pd.read_csv(f, parse_dates=["dia"]); fr = 1.5455
+    stop = 0.5 * o.atr20; corta = o.modulo.isin(["Z", "R"]) & (o.mae_pts >= stop)
+    o["neto_v"] = o.neto.where(~corta, -stop - fr)
+    res = {}
+    for k, g in list(o.groupby("modulo")) + [("CANASTA", o)]:
+        E = EProceso(mu0=0.0, piso=-400.0, techo=1200.0); serie = g.groupby("dia").neto_v.sum() if k == "CANASTA" else g.sort_values("t").neto_v
+        for x in serie: E.agregar(float(min(max(x, -400.0), 1200.0)))
+        res[k] = dict(n=int(len(serie)), neto_total=float(serie.sum()), e=float(E.e_valor), estado="EDGE" if E.e_valor >= 10 else "SIN_DECIDIR")
+    (d / "FORWARD_TZR.json").write_text(json.dumps(dict(hasta=hasta, resultado=res), indent=1)); print(json.dumps(res, indent=1))
+
+
 def traer_holdout():
     OUT.mkdir(parents=True, exist_ok=True)
     for f in ("RESULTADO_HOLDOUT.json", "FUNDEDSYNC_HOLDOUT_OPS.csv"):
