@@ -30,7 +30,16 @@ def _ops(cid, tramo):
     ses = np.array(o.get("ses", []), int); neto = np.array(o.get("neto", []), float)
     rg = np.array([np.nan if x is None else x for x in o.get("riesgo", [np.nan] * len(neto))], float)
     ok = np.isfinite(neto) & np.isfinite(rg) & (rg > 0)
-    return dict(ses=ses[ok], R=neto[ok] / rg[ok], riesgo=rg[ok])
+    en_R = _en_R(cid)                                  # campañas con "estadistico": "R": el motor ya devuelve el neto en R (etapas.py)
+    return dict(ses=ses[ok], R=neto[ok] if en_R else neto[ok] / rg[ok], riesgo=rg[ok])
+
+
+_ESTAD = {}
+
+
+def _en_R(cid):
+    if not _ESTAD: _ESTAD.update({r["cid"]: r["spec"].get("estadistico") == "R" for r in universo()})
+    return _ESTAD.get(cid, False)
 
 
 def _validas_hold(sp):
