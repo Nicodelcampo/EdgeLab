@@ -139,3 +139,20 @@ Finalistas (noche, sin_1530, stop_x1.5 y la combinación): todas **peores** que 
 SOM `sin_finde` a **1 MNQ** (stop mediano ≈ 8 × ATR M5) junto a la v2 (A1, A2, M1, M3), ventana común 2025-08-05 → 2026-09-29 (la de la
 cartera): USD, t, drawdown y prop (50K arrastrada, fija 3.500, fija 5.000) con media contraída y media 0. Regla de uso: la combinación entra
 al forward como versión paralela si en la 50K su quema ≤ 10 % y su probabilidad de pasar ≥ la v2 sola. Contador: 1.
+
+## 13. Resultado cartera v2 + SOM (`CARTERA_V2_SOM.json`; ago-25 → sep-26, 301 sesiones; pasa / quema con media contraída)
+| | USD | t diario | DD | 50K arrastrada | fija 3.500 | fija 5.000 |
+|---|---|---|---|---|---|---|
+| v2 | 24.210 | 5,35 | −1.214 | 63 % / 3 % | 91 % / 0,1 % | 91 % / 0 % |
+| SOM 1 MNQ | 15.094 | 1,96 | −2.967 | 43 % / 52 % | 70 % / 15 % | 72 % / 6 % |
+| **v2 + SOM** | **39.305** | 4,32 | −2.295 | 68 % / **30 %** | **94 % / 3,6 %** | **96 % / 0,9 %** |
+Por la regla declarada (50K) **no entra**: la quema sube a 30 %. En cuenta de drawdown fijo la suma sí mejora (pasar 91 → 94–96 % con quema
+≤ 3,6 %), igual que con la Cartera B: el límite es el tipo de cuenta, no la combinación. SOM a 1 MNQ en USD es mucho más ruidoso que en R
+(t 1,96 vs t mensual ≈ 3 en R) porque el riesgo en dólares varía con el ATR: el tamaño por R constante es la hipótesis siguiente (no corrida).
+
+## 14. Balance del programa
+- Criterios y método quedan como estándar para mejorar reglas (este documento).
+- **SOM y T: sin mejora** dentro de la regla (meseta, L1/L7); salir del diseño de fábrica empeora (L2, L3, L6).
+- **Lo que sí mejora la rentabilidad es la cartera en la cuenta correcta**: v2 + SOM y v2 + Cartera B en cuentas de drawdown fijo. La elección de
+  firma/cuenta es de Nico; con sus reglas reales se repite la simulación.
+- Pistas abiertas: noche no baja como filtro de riesgo (SOM, T); SOM con tamaño por R constante.

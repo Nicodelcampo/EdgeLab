@@ -105,9 +105,9 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Cartera B aparte (PREREGISTRO_CARTERA_B.md), cuenta de drawdown fijo; seguimiento bajo demanda con tools/seguimiento_forward.py.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`, `docs/research/fundedsyncstack_20261115/PREREGISTRO_CARTERA_B.md`
 - **Una regla que ya pasó su validación de fábrica suele estar en una meseta: mover una perilla (EMA, stop, trailing, hora) no mejora la rentabilidad fuera de la muestra de elección** (`F-AJUSTE-FINO-NO-PAGA`, 2026-11-16, sesion)
-  - Efecto: SOM: 14 variantes de una perilla, todas positivas pero ninguna supera a la base en la confirmación; rotar para ganar frecuencia baja el t y duplica el drawdown; entrar 25 min más tarde mata el efecto.
+  - Efecto: SOM: 14 variantes de una perilla, todas positivas pero ninguna supera a la base en la confirmación; rotar para ganar frecuencia baja el t y duplica el drawdown; entrar 25 min más tarde mata el efecto. | T (6 variantes): ninguna mejora; quitar objetivo o la salida de las 15:30 la empeora (la palanca de salida no es universal).
   - Dónde: SOM NQ 2012–2026 (pares/impares)
-  - Siguiente: Mejorar por mecanismos no explorados (salida, contexto, cartera), no por parámetros; medir R por mes, no por operación.
+  - Siguiente: Subir rentabilidad por cartera (reglas descorrelacionadas) en la cuenta adecuada; v2+SOM en drawdown fijo pasa 94–96 % con quema ≤ 3,6 %.
   - Evidencia: `docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
