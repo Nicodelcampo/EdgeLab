@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_20261105_PARA_ANTIGRAVITY.md` (2026-11-05)
+`docs/research/HANDOFF_2026-11-16_CARTERA_FUNDEDSYNC_SQX.md` (2026-11-16)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -30,7 +30,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1314 |
+| `docs/research` | 1315 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,10 +39,10 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| HANDOFF | 19 | `HANDOFF_2026-11-16_CARTERA_FUNDEDSYNC_SQX.md` | 2026-11-16 | VIGENTE (punto de entrada de lo hecho del 14 al 16-nov en la sesión en la nube;  |
 | PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |
-| HANDOFF | 18 | `HANDOFF_20261105_PARA_ANTIGRAVITY.md` | 2026-11-05 | VIGENTE. Rama claude/vibrant-clarke-s9z6e2 (la rama gemini/filtros-20261104 ya e |
 | REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |
 | PREREGISTRO | 1 | `PREREGISTRO_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Regis |
 | MAPA | 1 | `MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md` | 2026-11-03 | DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autor |
