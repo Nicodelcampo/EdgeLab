@@ -117,3 +117,25 @@ Variantes (una perilla, `correr_modulo("T", ..., **cfg)`): `sin_objetivo` (objet
 1,25), `noche_no_baja` (L4). Elección en años pares (t de los puntos netos por mes; elegible si no tiene menos años positivos que la base),
 3 finalistas + combinación de categorías distintas; confirmación en impares (diferencia mensual vs base, bootstrap por mes, BH q 0,10).
 Contador: 6 + 4.
+
+## 11. Resultado T (`T_MEJORAS.json`, `tools/mejora_t.py`): **ninguna variante mejora a la base**
+| Variante | t mes pares | t mes impares | pts/mes impares | años + | ops/mes | DD (pts) |
+|---|---|---|---|---|---|---|
+| **base** | **4,08** | **4,19** | **129** | 5/7 · 4/6 | 18,8 | −840 |
+| noche_no_baja | 4,28 | 2,87 | 69 | 6/7 · 4/6 | 12,7 | −722 |
+| sin_1530 | 4,01 | 3,41 | 108 | 5/7 · 3/6 | 18,8 | −912 |
+| stop_x1.5 / x1.0 | 3,76 / 3,53 | 3,59 / 2,96 | 108 / 85 | 5/7 | 18,8 | −1.020 / −951 |
+| sin_objetivo | 3,58 | 3,61 | 96 | 5/7 | 18,8 | −1.095 |
+| salida_libre | 3,47 | 2,75 | 88 | 5/7 | 18,8 | −1.008 |
+| noche_no_baja + sin_1530 | 4,18 | 2,05 | 49 | 6/7 | 12,7 | −841 |
+Finalistas (noche, sin_1530, stop_x1.5 y la combinación): todas **peores** que la base en impares (p ≥ 0,97). T se queda con la de fábrica.
+
+- **L6 La palanca de salida no es universal**: sirve donde la salida técnica es rápida (S, W de FundedSync), pero en T el objetivo y la salida de
+  las 15:30 son parte del diseño: quitarlos baja la ganancia y sube el drawdown.
+- **L7** (con L1): en las dos reglas confirmadas, las vecinas de una perilla son peores o iguales. Lo que queda para subir la rentabilidad
+  **no está dentro de cada regla sino en la cartera** (criterio C5): sumar reglas descorrelacionadas.
+
+## 12. Cartera (C5): v2 + SOM (pre-registro, descriptivo; decide el forward)
+SOM `sin_finde` a **1 MNQ** (stop mediano ≈ 8 × ATR M5) junto a la v2 (A1, A2, M1, M3), ventana común 2025-08-05 → 2026-09-29 (la de la
+cartera): USD, t, drawdown y prop (50K arrastrada, fija 3.500, fija 5.000) con media contraída y media 0. Regla de uso: la combinación entra
+al forward como versión paralela si en la 50K su quema ≤ 10 % y su probabilidad de pasar ≥ la v2 sola. Contador: 1.
