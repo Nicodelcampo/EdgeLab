@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-258 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+260 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -66,6 +66,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `DOBLE_RETROCESO_XAU` | 2026-11-04 | — | 1493012 | 1 | DRC-XAU-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `DOBLE_RETROCESO_YM` | 2026-11-04 | — | 1493012 | 1 | DRC-YM-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `EJEMPLO_ANALIZADOR` |  | — | 8 | — | — | — | — |
+| `EL_DIA_TENDENCIA` | 2026-11-16 | FUNDEDSYNC | 23 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-DIA-TENDENCIA-NO-ANTICIPABLE (NO_REPETIR); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-KNN-VOTO-NO-TRANSFIERE (NO_REPETIR); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PALANCA_DE_DISENO); F-VOL-RUGOSA-PRONOSTICO (PALANCA_DE_DISENO) | `fundedsyncstack_20261115` |
 | `EMA_CROSS_CONTROL` |  | — | 42 | — | — | — | — |
 | `EMA_VWAP` | 2026-11-08 | — | 36 | — | — | F-ORB-EMA20-NQ-STOP-OPUESTO (NO_REPETIR); F-REELS-20261108 (NO_REPETIR) | `estrategias_scrapeadas_20261108` |
 | `EOD_MOM_ES` | 2026-10-31 | — | 977 | 2 | EOD-ES-R: PISTAS_VIVAS; EOD-ES: PISTAS_VIVAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
@@ -104,7 +105,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EURUSD_ESCALONADAS` |  | — | 655 | — | — | — | — |
 | `EXECUTION_VARIANTS` |  | — | 3 | — | — | — | — |
 | `EXPANSION_ZONAS` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, AREAS_EXP_1_CRUZADO | 1866376 | 4 | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | — | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
-| `FUNDEDSYNC` | 2026-11-16 | — | 393 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PISTA_VIVA) | `fundedsyncstack_20261115` |
+| `FUNDEDSYNC` | 2026-11-16 | — | 398 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-DIA-TENDENCIA-NO-ANTICIPABLE (NO_REPETIR); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-KNN-VOTO-NO-TRANSFIERE (NO_REPETIR); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PALANCA_DE_DISENO); F-VOL-RUGOSA-PRONOSTICO (PALANCA_DE_DISENO) | `fundedsyncstack_20261115` |
 | `GAP_CONTINUACION` | 2026-11-08 | GAP_RTH | 240 | — | — | — | `gap_continuacion_20261108` |
 | `GAP_RTH` | 2026-10-25 | C_TICKS_MULTI | 480 | — | — | — | — |
 | `GC_CELL_0415_SPOT_DIRECTION_NULL` |  | — | 4 | — | — | — | — |
@@ -132,6 +133,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `KALMAN_FADE_ES` | 2026-10-31 | — | 864 | 2 | KALMAN-FADE-ES-R: SIN_CANDIDATAS; KALMAN-FADE-ES: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `KALMAN_FADE_GC` | 2026-10-31 | — | 869 | 2 | KALMAN-FADE-GC-R: PISTAS_VIVAS; KALMAN-FADE-GC: PISTAS_VIVAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `KALMAN_FADE_NQ` | 2026-10-30 | — | 865 | 2 | KALMAN-FADE-NQ-R: SIN_CANDIDATAS; KALMAN-FADE-NQ: PISTAS_VIVAS | — | `kalman_fade_20261030`, `paquete_20261031`, `relanzamiento_R_20261102` |
+| `KNN_SOMBRA` | 2026-11-16 | FUNDEDSYNC, RANGO_PREAPERTURA, CORREDOR_VOL_GAPS_ES | 2 | — | — | — | — |
 | `L2_CLIMAS_ESTABILIDAD` |  | — | 4 | — | — | — | — |
 | `L2_TOXIC_ESTABILIDAD` |  | — | 1 | — | — | — | — |
 | `LEAD_LAG_GC_EUR` | 2026-11-03 | — | 432 | 1 | LEADLAG-GC-EUR-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |

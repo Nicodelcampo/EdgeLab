@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (11)
+## PISTA_VIVA (10)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,13 +19,8 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ (USATECH M1 con costos de NQ)
   - Siguiente: T a papel/forward con e-proceso junto a la cartera v2 (pre-registro nuevo); Z con stop agregado como hipótesis nueva.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
-- **Salidas técnicas rápidas (giro de SuperTrend, recruce del VWAP, ruptura fallida) frente a mantener hasta el cierre** (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`, 2026-11-16, sesion)
-  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes).
-  - Dónde: FundedSync NQ
-  - Siguiente: Variante salida al cierre + stop duro contra la original en M1 de S&P, Dow y Russell (no usados), pre-registrada.
-  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **Canasta FundedSync T + Z + R (correlación diaria −0,12 / 0,29 / −0,04)** (`F-CANASTA-TZR`, 2026-11-16, sesion)
-  - Efecto: Desarrollo por día: 2020–2023 t 5,2; 2024–2026 t 6,5; holdout: las tres positivas.
+  - Efecto: Desarrollo por día: 2020–2023 t 5,2; 2024–2026 t 6,5; holdout: las tres positivas. | Stop de catástrofe 0,5×ATR20: Z peor op −344→−198 con −2 a −4 pts/op; R mixto. Forward armado desde 2026-11-14.
   - Dónde: NQ
   - Siguiente: Forward con e-proceso junto a la cartera v2; Z y R con stop de catástrofe como hipótesis nueva.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
@@ -65,7 +60,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (11)
+## PALANCA_DE_DISENO (13)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -79,6 +74,16 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ M1, 15 módulos de FundedSync
   - Siguiente: Diseñar para perder poco los días sin tendencia y mantener hasta el cierre; buscar predictores nuevos de día de tendencia (E0 sin retornos).
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
+- **Salidas técnicas rápidas (giro de SuperTrend, recruce del VWAP, ruptura fallida) frente a mantener hasta el cierre** (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`, 2026-11-16, sesion)
+  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes). | CONFIRMADO fuera de muestra (S&P, Dow, Russell 2012–2026, BH): S +0,046 ATR/día y W +0,121 ATR/día al quitar la salida técnica (3/3 índices); A20 y N no. Sin ella S y W siguen sin ventaja neta fuera del Nasdaq y el peor día empeora.
+  - Dónde: FundedSync NQ
+  - Siguiente: Aplicar en el diseño de reglas de ruptura propias (no salir por señal técnica rápida); no alcanza solo.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
+- **Volatilidad rugosa (H de la log-vol ≈ 0,06–0,08) y pronóstico rugoso/HAR del rango del día** (`F-VOL-RUGOSA-PRONOSTICO`, 2026-11-16, sesion)
+  - Efecto: H estable 2012–2026 en NQ/S&P/Dow/Russell (también con lags 5–50); pronóstico del log-rango: error 0,66–0,69 (rugoso) y 0,67–0,70 (HAR) relativo a la caminata aleatoria.
+  - Dónde: Índices M1
+  - Siguiente: Usar el pronóstico de volatilidad para stops y tamaño (fricción en R estable); no para dirección.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
   - Dónde: NQ y USATECH, 2025-08 → 2026-09
@@ -170,7 +175,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (23)
+## NO_REPETIR (25)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -184,6 +189,16 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ
   - Siguiente: No usar tal cual.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
+- **Anticipar la continuación intradía (resto del día desde las 10:30, tarde desde las 12:00) con precio, volumen, gap, noche, vol20 y pronóstico de volatilidad** (`F-DIA-TENDENCIA-NO-ANTICIPABLE`, 2026-11-16, sesion)
+  - Efecto: 4 índices M1 2012–2026: AUC 0,45–0,55 en B y C para todos los predictores y el combinado; H del precio 0,53–0,56.
+  - Dónde: NQ, S&P, Dow, Russell
+  - Siguiente: No volver a buscar predictores simples; la palanca es perder poco cuando no hay tendencia.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
+- **Capa KNN por voto mayoritario de vecinos (≥ 50 % ganadores) sobre reglas propias** (`F-KNN-VOTO-NO-TRANSFIERE`, 2026-11-16, sesion)
+  - Efecto: PREAPERTURA-NQ: no toma nada (baja tasa de acierto); CVGAP-ES-C: tomadas +0,16 R vs salteadas +0,51 R en réplica.
+  - Dónde: PREAPERTURA-NQ, CVGAP-ES-C
+  - Siguiente: Si se reintenta, con media de R de los vecinos y en datos no usados.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
   - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
   - Dónde: CFD Dukascopy D1/H1, 27 activos

@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 9, "sqx": 2, "practicante": 9}, "clase": {"tendencia": 5, "carry_macro": 1, "estacionalidad": 3, "evento": 2, "reversion": 5, "ruptura": 3, "volatilidad": 2, "microestructura": 3, "cartera": 2}, "prior": {"alto": 4, "medio": 14, "bajo": 8}, "estado": {"EN_DISENO": 2, "PROPUESTA": 16, "REFUTADA": 4, "EN_PRUEBA": 1, "PISTA_VIVA": 3}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 15, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 7, "edgelab": 9, "sqx": 2, "practicante": 9}, "clase": {"tendencia": 5, "carry_macro": 1, "estacionalidad": 3, "evento": 2, "reversion": 5, "ruptura": 3, "volatilidad": 3, "microestructura": 3, "cartera": 2}, "prior": {"alto": 4, "medio": 15, "bajo": 8}, "estado": {"EN_DISENO": 2, "PROPUESTA": 17, "REFUTADA": 4, "EN_PRUEBA": 1, "PISTA_VIVA": 3}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 16, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -203,6 +203,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 9, "sqx": 2, "practicante
 - Cómo podría refutarse: Aplicado como filtro a LIT-TSMOM, el veto no mejora el R neto ni en bruto (si sólo mejora en neto es fricción).
 - Traducción: Filtro en SQX: rango de las últimas N barras en contra > k·ATR → no entrar.
 - Fuentes: FACTORES: F-HUIDA-CONTINUACION (PISTA_VIVA)
+
+## EL-STOP-POR-VOL-PRONOSTICADA — Stops y tamaño por la volatilidad pronosticada (rugoso/HAR) en vez del ATR de ayer
+- Clase: volatilidad · fuente: literatura · prior: medio · estado: PROPUESTA · horizonte: intradía · activos: NQ, ES, YM, RTY
+- Mecanismo: La volatilidad diaria es rugosa y pronosticable (−30 % de error vs caminata aleatoria); el stop/tamaño ajustado al rango esperado mantiene la fricción en R y el riesgo en USD estables
+- Justificación económica: Fricción fija en puntos: un stop proporcional al rango esperado evita los stops cortos que sólo pagan fricción
+- Cómo podría refutarse: La cartera v2 con stops/tamaño por vol pronosticada no mejora R ni drawdown frente a micros fijos en datos no usados
+- Traducción: Capa de dimensionamiento sobre la cartera v2 y las reglas de ruptura
+- Fuentes: Gatheral, Jaisson, Rosenbaum (2014) Volatility is Rough; Corsi (2009) HAR-RV; docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md
 
 ## FS-R-ATRPHASE — Fase de ATR en 10 min (expansión tras compresión)
 - Clase: volatilidad · fuente: practicante · prior: medio · estado: PISTA_VIVA · horizonte: intradía · activos: NQ

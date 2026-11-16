@@ -200,6 +200,41 @@ def tendencia(carpeta):
     (OUT / "L3_L4_TENDENCIA_RUGOSA.json").write_text(json.dumps(res, indent=1, default=float)); print(json.dumps(sirve, indent=1))
 
 
+PRED12 = ("ef_m", "r_m", "z_vwap", "v_m", "pron_rug", "frac_rec")
+
+
+def mediodia(carpeta):
+    """Enmienda 1: ¿la tarde continúa la mañana? Predictores conocidos a las 12:00 (AUC en A/B/C, 4 índices)."""
+    res = {}
+    for sim in INST:
+        D = leer(carpeta, sim); m = D.index.hour * 60 + D.index.minute
+        day, lv, pr = tabla_dia(D, sim)
+        Mn = D[(m >= 570) & (m < 720)]; dm = Mn.index.normalize(); Tn = D[(m >= 720) & (m < 960)]; dt_ = Tn.index.normalize()
+        pv = (Mn.h + Mn.l + Mn.c) / 3
+        g = pd.DataFrame(dict(o=Mn.o.groupby(dm).first(), p12=Mn.c.groupby(dm).last(), hm=Mn.h.groupby(dm).max(), lm=Mn.l.groupby(dm).min(),
+                              vm=Mn.v.groupby(dm).sum(), vw=(pv * Mn.v).groupby(dm).sum() / Mn.v.groupby(dm).sum().replace(0, np.nan),
+                              sd=pv.groupby(dm).std(), c=Tn.c.groupby(dt_).last(), hit=Tn.h.groupby(dt_).max(), lot=Tn.l.groupby(dt_).min())).dropna()
+        g = g.join(day[["atr20", "pron_rug"]], how="inner")
+        mov_m = g.p12 - g.o; mov_t = g.c - g.p12
+        g["E3"] = (np.sign(mov_t) == np.sign(mov_m)) & ((mov_t.abs() / (g.hit - g.lot)) >= 0.5)
+        g["ef_m"] = mov_m.abs() / (g.hm - g.lm); g["r_m"] = (g.hm - g.lm) / g.atr20
+        g["z_vwap"] = np.sign(mov_m) * (g.p12 - g.vw) / g.sd.replace(0, np.nan)
+        g["v_m"] = g.vm / g.vm.rolling(20).mean().shift(1); g["frac_rec"] = (g.hm - g.lm) / (g.pron_rug * g.atr20)
+        fila = {"tasa": {n: float(g[(g.index >= x) & (g.index <= y)].E3.mean()) for n, x, y in CORTES}}
+        A_ = g[(g.index >= "2012-01-01") & (g.index <= "2019-12-31")].dropna(subset=list(PRED12))
+        usados = [p for p in PRED12 if g[p].notna().sum() > 200]
+        for p in usados:
+            sgn = 1.0 if (_auc(A_[p].values, A_.E3.values) or 0.5) >= 0.5 else -1.0
+            fila[p] = {n: _auc(sgn * T[p].values, T.E3.values) for n, x, y in CORTES for T in [g[(g.index >= x) & (g.index <= y)].dropna(subset=[p])]}
+        if len(A_) > 200:
+            mu, sd = A_[usados].mean(), A_[usados].std(); b = _logit(((A_[usados] - mu) / sd).values, A_.E3.values.astype(float))
+            fila["combinado"] = {n: _auc(np.c_[np.ones(len(T)), ((T[usados] - mu) / sd).values] @ b, T.E3.values)
+                                 for n, x, y in CORTES for T in [g[(g.index >= x) & (g.index <= y)].dropna(subset=usados)]}
+        res[sim] = fila; print(sim, {p: fila[p]["B"] and round(fila[p]["B"], 3) for p in fila if p != "tasa"}, flush=True)
+    sirve = {p: sum(1 for s in res if p in res[s] and (res[s][p]["B"] or 0) >= 0.60 and (res[s][p]["C"] or 0) >= 0.60) for p in PRED12 + ("combinado",)}
+    (OUT / "L3_MEDIODIA.json").write_text(json.dumps(dict(por_indice=res, indices_ok=sirve), indent=1, default=float)); print(sirve)
+
+
 # ---------------------------------------------------------------- L4bis: capa KNN sombra
 REGLAS_KNN = {"PREAPERTURA-NQ": ("NQ_M1_dukas", "docs/research/cartera_20261116/ops/PREAPERTURA-NQ__{t}.json", False),
               "CVGAP-ES-C": ("SP_M1_dukas", "docs/research/canasta_7_20261030/desarrollo_en_r/CVGAP-ES-C__{t}.json", False)}
