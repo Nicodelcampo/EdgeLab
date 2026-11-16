@@ -95,10 +95,10 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Usar sólo como pronóstico de volatilidad (stops a re-simular, costos); no para dimensionar reglas medidas en R.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
 - **Sumar una canasta descorrelacionada (T+Z+R, corr diaria 0,08) a la cartera al mismo riesgo por regla** (`F-TZR-TAMANO-EN-CARTERA`, 2026-11-16, sesion)
-  - Efecto: Sube ganancia y t (v3+TZR t 6,15), pero la varianza diaria de T+Z+R a ≈200 USD/regla lleva la quema 50K de 3 % a 34 %. | Tanda 5: aun a 1 MNQ por regla la quema 50K queda en 13–16 % (v2 sola 3 %): no entra al forward.
+  - Efecto: Sube ganancia y t (v3+TZR t 6,15), pero la varianza diaria de T+Z+R a ≈200 USD/regla lleva la quema 50K de 3 % a 34 %. | Tanda 5: aun a 1 MNQ por regla la quema 50K queda en 13–16 % (v2 sola 3 %): no entra al forward. | Sola a 1 MNQ (2020–26): +80k USD, t 7,9, DD −2.256, todos los años positivos; drawdown fijo 3.500/5.000: quema 0,9 %/0,1 %. El problema era el tipo de cuenta.
   - Dónde: Cartera v2/v3 + FundedSync T/Z/R en MNQ
-  - Siguiente: Combinar sólo con tamaño declarado antes y menor (p. ej. ≈50 USD por regla) y con el drawdown de la cuenta como restricción; hipótesis nueva.
-  - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
+  - Siguiente: Cartera B aparte (PREREGISTRO_CARTERA_B.md), cuenta de drawdown fijo; seguimiento bajo demanda con tools/seguimiento_forward.py.
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`, `docs/research/fundedsyncstack_20261115/PREREGISTRO_CARTERA_B.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
   - Dónde: NQ y USATECH, 2025-08 → 2026-09

@@ -82,6 +82,30 @@ def traer_forward(hasta):
     (d / "FORWARD_TZR.json").write_text(json.dumps(dict(hasta=hasta, resultado=res), indent=1)); print(json.dumps(res, indent=1))
 
 
+def cartera_b(hasta):
+    """PREREGISTRO_CARTERA_B.md: la canasta en USD a 1 MNQ por regla, drawdown, distancia a la cuenta de referencia y vista conjunta con la v2."""
+    import json
+    import numpy as np, pandas as pd
+    fic = json.loads((OUT.parent / "CARTERA_B_OPERATIVA.json").read_text(encoding="utf-8")); cu = fic["cuenta_referencia"]; al = fic["alertas"]
+    o = pd.read_csv(OUT / f"forward/OPS_{hasta}.csv", parse_dates=["dia"]); fr = 1.5455
+    stop = 0.5 * o.atr20; corta = o.modulo.isin(["Z", "R"]) & (o.mae_pts >= stop); o["usd"] = o.neto.where(~corta, -stop - fr) * fic["usd_por_punto"]
+    d = o.groupby(o.dia.dt.strftime("%Y%m%d").astype(int)).usd.sum().sort_index(); ac = d.cumsum(); dd = float((ac - np.maximum.accumulate(np.r_[0.0, ac.values])[1:]).min()) if len(d) else 0.0
+    res = dict(hasta=int(hasta), sesiones=int(len(d)), usd_total=float(d.sum()), por_regla={k: float(g.usd.sum()) for k, g in o.groupby("modulo")},
+               dd_max=dd, distancia_limite=float(cu["dd"] + min(0.0, ac.min() if len(ac) else 0.0)), falta_objetivo=float(cu["objetivo"] - (ac.iloc[-1] if len(ac) else 0.0)),
+               usd_por_sesion={str(k): float(v) for k, v in d.items()})
+    v2f = OUT.parents[1] / "cartera_20261116/FORWARD.json"
+    if v2f.exists():
+        a = pd.Series(json.loads(v2f.read_text()).get("usd_por_sesion", {}), dtype=float); a.index = a.index.astype(int)
+        ix = sorted(set(a.index) | set(d.index)); x, y = a.reindex(ix, fill_value=0.0), d.reindex(ix, fill_value=0.0)
+        res["conjunta_v2"] = dict(sesiones=len(ix), correlacion=float(np.corrcoef(x, y)[0, 1]) if len(ix) >= 3 and x.std() > 0 and y.std() > 0 else None,
+                                  dias_ambas_bajo_300=int(((x < -300) & (y < -300)).sum()), peor_dia_suma=float((x + y).min()) if len(ix) else None)
+    c = res.get("conjunta_v2", {})
+    res["alertas"] = [m for m, ok in (("drawdown forward mayor al de desarrollo", dd < -al["dd_forward_mayor_a"]),
+                                      ("cerca del límite de la cuenta", res["distancia_limite"] < al["distancia_limite_menor_a"]),
+                                      ("correlación con la v2 ≥ 0,3", (c.get("correlacion") or 0) >= al["correlacion_v2_max"] and c.get("sesiones", 0) >= 20)) if ok]
+    (OUT / "forward/CARTERA_B.json").write_text(json.dumps(res, indent=1, default=float)); print(json.dumps({k: v for k, v in res.items() if k != "usd_por_sesion"}, indent=1, default=float))
+
+
 def traer_holdout():
     OUT.mkdir(parents=True, exist_ok=True)
     for f in ("RESULTADO_HOLDOUT.json", "FUNDEDSYNC_HOLDOUT_OPS.csv"):

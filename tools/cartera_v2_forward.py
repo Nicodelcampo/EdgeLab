@@ -93,7 +93,8 @@ def traer(hasta):
             for s, x in ops: ses_tot[s] = ses_tot.get(s, 0.0) + x
         ses = sorted(ses_tot); xs = [ses_tot[s] for s in ses]
         out = dict(version=ver, hasta=int(hasta), desde=DESDE_FW, actualizado=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), por_regla=por_regla,
-                   cartera=dict(sesiones_con_ops=len(ses), R_total=float(sum(xs)), usd=float(sum(xs) * USD_R), e=_eproceso(xs, COTAS_SES)))
+                   cartera=dict(sesiones_con_ops=len(ses), R_total=float(sum(xs)), usd=float(sum(xs) * USD_R), e=_eproceso(xs, COTAS_SES)),
+                   usd_por_sesion={str(s_): float(x * USD_R) for s_, x in zip(ses, xs)})                  # vista conjunta con la cartera B
         (DIR / salida).write_text(json.dumps(out, indent=1, default=float))
         with (FW / "historial.jsonl").open("a", encoding="utf-8") as fh: fh.write(json.dumps(dict(version=ver, hasta=int(hasta), cartera=out["cartera"]), default=float) + "\n")
         print(ver, json.dumps(out["cartera"], indent=1, default=float))
