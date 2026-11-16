@@ -16,7 +16,8 @@ import numpy as np
 import pandas as pd
 
 _TZ_UTC = ZoneInfo("UTC")
-DEFAULT_PRE_HOLDOUT_END = "2026-10-01"
+from edgelab.holdout import HOLDOUT_APERTURA_UTC_ISO  # noqa: E402  (frontera única; 2026-11-16: antes "2026-10-01" UTC dejaba pasar 2 h del holdout)
+DEFAULT_PRE_HOLDOUT_END = HOLDOUT_APERTURA_UTC_ISO
 
 
 def check_anti_holdout(path: str | Path, allow_sellado: bool = False) -> Path:
@@ -82,7 +83,7 @@ def _normalize_frame_columns(df: pd.DataFrame, tz_input: str | ZoneInfo) -> pd.D
 def load_ohlc_data(
     path: str | Path,
     start: Optional[str] = None,
-    end: Optional[str] = DEFAULT_PRE_HOLDOUT_END,
+    end: Optional[str] = None,
     tz_input: str | ZoneInfo = "UTC",
     allow_sellado: bool = False,
     enforce_pre_holdout: bool = True,
