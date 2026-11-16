@@ -80,3 +80,15 @@ Se confirma sólo en datos nuevos.
 - Integridad (causa raíz, 2026-11-16): el CSV de Russell (`USSC2000IDXUSD.csv`) viene en **UTC**, no en hora del servidor (NY + 7) como
   los `*_M1_dukas`. Se vio porque el pico de volumen caía a las 13:59 NY; leído como UTC cae a las 09:31 en invierno y en verano. Se corrigió
   `m1_intradia.leer_m1` (`EN_UTC`, test) y se re-midió lo que usaba Russell (tanda 2 L1). Russell entra a esta búsqueda ya corregido.
+
+## Holdout de FRANKLIN (apertura única, `ACTA_HOLDOUT_FRANKLIN.md`, 2026-10-01 → 2026-11-13): NO_CONCLUYENTE, a favor
+| | n | R por operación |
+|---|---|---|
+| NQ | 16 | +0,11 |
+| ES | 12 | +0,48 |
+| Total | 28 (18 sesiones) | **+0,27** (por sesión +0,42; t 0,73; p 0,23) |
+
+Fisher con el desarrollo (p 0,093): **0,104** → no llega a 0,05: **NO_CONCLUYENTE** por la regla del acta, con el signo a favor y del
+tamaño del desarrollo o más (la potencia declarada era 0,15–0,25). Filtro de T en el holdout de FUNDEDSYNC (descriptivo): a favor del sesgo
+16 operaciones +18,6 pts, resto 10 operaciones +7,2 pts (la misma dirección que en 2020–26). Cifras: `seguimiento/RESULTADO_HOLDOUT.json`.
+**Decide el forward** (desde 2026-11-14, e-proceso con cotas −6/+6 R, `tools/franklin_seguimiento.py forward|traer_forward`).
