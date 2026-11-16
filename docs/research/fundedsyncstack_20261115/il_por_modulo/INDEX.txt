@@ -1,0 +1,964 @@
+   33  ﻿=== FundedSyncLicenseGate..ctor(string productCode, string licenseKey) -> .ctor ===
+    4  === FundedSyncLicenseGate.get_Status() -> string ===
+   80  === FundedSyncLicenseGate.AllowNewEntries(String& reason) -> bool ===
+  245  === FundedSyncLicenseGate.RefreshLicense(DateTime now, String& reason) -> bool ===
+   48  === FundedSyncLicenseGate.ReadServerError(HttpWebResponse response) -> string ===
+  152  === FundedSyncLicenseGate.ValidateToken(string token, DateTime now, String& reason) -> bool ===
+   21  === FundedSyncLicenseGate.LoadCachedLicense() -> void ===
+   21  === FundedSyncLicenseGate.SaveCachedLicense(string token) -> void ===
+   11  === FundedSyncLicenseGate.CachePath() -> string ===
+   32  === FundedSyncLicenseGate.DeviceFingerprint() -> string ===
+   16  === FundedSyncLicenseGate.UnixToUtc(long value) -> DateTime ===
+    8  === FundedSyncLicenseGate.UrlEncode(string value) -> string ===
+   17  === FundedSyncLicenseGate.ToBase64Url(Byte[] value) -> string ===
+   34  === FundedSyncLicenseGate.FromBase64Url(string value) -> Byte[] ===
+    6  === FundedSyncStackSizingProfileConverter..ctor() -> .ctor ===
+    8  === FundedSyncStackSizingProfileConverter..cctor() -> .ctor ===
+   25  === FundedSyncStackSizingProfileConverter.GetDisplayName(FundedSyncStackSizingProfile profile) -> string ===
+    3  === FundedSyncStackSizingProfileConverter.GetStandardValuesSupported(ITypeDescriptorContext context) -> bool ===
+    3  === FundedSyncStackSizingProfileConverter.GetStandardValuesExclusive(ITypeDescriptorContext context) -> bool ===
+    4  === FundedSyncStackSizingProfileConverter.GetStandardValues(ITypeDescriptorContext context) -> StandardValuesCollection ===
+   20  === FundedSyncStackSizingProfileConverter.ConvertTo(ITypeDescriptorContext context, CultureInfo culture, Object value, Type destinationType) -> Object ===
+   40  === FundedSyncStackSizingProfileConverter.ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, Object value) -> Object ===
+  118  === FUNDEDSYNCSTACK..ctor() -> .ctor ===
+   14  === FUNDEDSYNCSTACK..cctor() -> .ctor ===
+  583  === FUNDEDSYNCSTACK.OnExecutionUpdate(Execution execution, string executionId, double price, int quantity, MarketPosition marketPosition, string orderId, DateTime time) -> void ===
+  557  === FUNDEDSYNCSTACK.OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled, double averageFillPrice, OrderState orderState, DateTime time, ErrorCode error, string comment) -> void ===
+   91  === FUNDEDSYNCSTACK.ModuleHasUnsettledExecutions(ModuleState module) -> bool ===
+   70  === FUNDEDSYNCSTACK.RunAbsorb1m() -> void ===
+   70  === FUNDEDSYNCSTACK.RunAbsorb20m() -> void ===
+ 1576  === FUNDEDSYNCSTACK.RunAbsorb(int bip, string tag, ATR atrInd, ATR atrSuperTrend, Double[] volumeAtPrice, Double[] deltaHistory, Int32& deltaIdx, Double& prevSmoothDeltaValue, Int32& absorptionCount, Boolean[] absUpHist, Boolean[] absDownHist, Int32& absHistIdx, Double[] rangeHistory, Int32& rangeIdx, Double[] atrBaselineHistory, Int32& atrBaselineIdx, Double& orbHigh, Double& orbLow, Boolean& orbDefined, Int32& sessionBarsCount, Int32& dailyLosses, Double& finalUpperBand, Double& finalLowerBand, Double& prevFinalUpperBand, Double& prevFinalLowerBand, Double& prevClose, Int32& trend, Int32& prevTrend, Boolean& stInit, Double& cumPV, Double& cumVol, Int32& lastTradeCount, double superTrendMultiplier, int qty) -> void ===
+  453  === FUNDEDSYNCSTACK.RunFabio() -> void ===
+  743  === FUNDEDSYNCSTACK.RunSwas() -> void ===
+  351  === FUNDEDSYNCSTACK.RunPullback() -> void ===
+   58  === FUNDEDSYNCSTACK.UpdatePullbackOrb(bool inOrb, bool priorInOrb, int bip) -> void ===
+   77  === FUNDEDSYNCSTACK.UpdatePullbackVwap(bool inVwap, bool priorInVwap, int bip) -> void ===
+   34  === FUNDEDSYNCSTACK.PullbackPivotHigh(int strength, int bip) -> bool ===
+   34  === FUNDEDSYNCSTACK.PullbackPivotLow(int strength, int bip) -> bool ===
+   74  === FUNDEDSYNCSTACK.UpdatePullbackPivots(int bip) -> void ===
+   79  === FUNDEDSYNCSTACK.UpdatePullbackExtremes(int bip) -> void ===
+  143  === FUNDEDSYNCSTACK.TryEnterPullback(bool longSignal, bool shortSignal, int bip) -> void ===
+   57  === FUNDEDSYNCSTACK.PullbackLongValid(double stop, double target, double close) -> bool ===
+   57  === FUNDEDSYNCSTACK.PullbackShortValid(double stop, double target, double close) -> bool ===
+  101  === FUNDEDSYNCSTACK.GetPullbackNativeQuantity(double stopDistance, double close) -> int ===
+   45  === FUNDEDSYNCSTACK.ResetPullbackLatches() -> void ===
+  380  === FUNDEDSYNCSTACK.RunCapstone() -> void ===
+   25  === FUNDEDSYNCSTACK.LowestPriorBars_C(int count, int bip) -> double ===
+   25  === FUNDEDSYNCSTACK.HighestPriorBars_C(int count, int bip) -> double ===
+  180  === FUNDEDSYNCSTACK.RunVault() -> void ===
+  123  === FUNDEDSYNCSTACK.StartVaultSession(int bip) -> void ===
+   70  === FUNDEDSYNCSTACK.UpdateVaultVwap(int bip) -> void ===
+  200  === FUNDEDSYNCSTACK.RunOvernight() -> void ===
+  177  === FUNDEDSYNCSTACK.TryOvernightSignal(Int32& contracts, Double& dailyClose, Double& volatility, Boolean& trendOn) -> bool ===
+   28  === FUNDEDSYNCSTACK.OvernightCurrentDailyAverage(int length, double currentClose) -> double ===
+  135  === FUNDEDSYNCSTACK.PassesOvernightRegime(double dailyClose, DateTime barEnd) -> bool ===
+  170  === FUNDEDSYNCSTACK.RunVwapCross() -> void ===
+   20  === FUNDEDSYNCSTACK.TryVwapLong(int boundary, int bip) -> void ===
+  103  === FUNDEDSYNCSTACK.PassesVwapFilters(int boundary, int bip) -> bool ===
+   56  === FUNDEDSYNCSTACK.VwapHasConfirmedCloses(int bip) -> bool ===
+   46  === FUNDEDSYNCSTACK.PassesVwapRangeFilter() -> bool ===
+  111  === FUNDEDSYNCSTACK.BeginOrUpdateVwapRange(int bip) -> void ===
+   86  === FUNDEDSYNCSTACK.UpdateCrossVwap(int bip) -> void ===
+  232  === FUNDEDSYNCSTACK.RunNDay() -> void ===
+  109  === FUNDEDSYNCSTACK.UpdateNDayVwap(int chartTime, int bip) -> void ===
+   31  === FUNDEDSYNCSTACK.PriorNDayHigh() -> double ===
+   98  === FUNDEDSYNCSTACK.PassesNDayFilters(int chartTime, double dayHi, int bip) -> bool ===
+   70  === FUNDEDSYNCSTACK.NDayPositiveEfficiency() -> bool ===
+   91  === FUNDEDSYNCSTACK.NDayChoppyRegime() -> bool ===
+   37  === FUNDEDSYNCSTACK.NDayAverageRange(int start, int length) -> double ===
+   48  === FUNDEDSYNCSTACK.TryNDayQuantity(double priorRange, Int32& quantity) -> bool ===
+   47  === FUNDEDSYNCSTACK.ManageNDayFailedExit(int bip) -> void ===
+    6  === FUNDEDSYNCSTACK.ToEasternFulcrum(DateTime time) -> DateTime ===
+   17  === FUNDEDSYNCSTACK.PushHistory(Double[] values, Int32& nextIndex, double value) -> void ===
+   31  === FUNDEDSYNCSTACK.HistoryValue(Double[] values, int nextIndex, int barsAgo) -> double ===
+   23  === FUNDEDSYNCSTACK.IsAtrPhaseStandaloneBlockedSession(DateTime sessionDate) -> bool ===
+   68  === FUNDEDSYNCSTACK.ResetAtrPhaseState() -> void ===
+  141  === FUNDEDSYNCSTACK.UpdateAtrPhaseIndicator(double high, double low, double close) -> bool ===
+  423  === FUNDEDSYNCSTACK.RunAtrPhase() -> void ===
+   37  === FUNDEDSYNCSTACK.TrySubmitAtrPhaseReversal() -> void ===
+   19  === FUNDEDSYNCSTACK.ZetaDateKey(DateTime t) -> long ===
+   21  === FUNDEDSYNCSTACK.ZetaDate(long key) -> DateTime ===
+   38  === FUNDEDSYNCSTACK.IsFullZetaSession(long key) -> bool ===
+   41  === FUNDEDSYNCSTACK.NextFullZetaSession(long key) -> long ===
+   28  === FUNDEDSYNCSTACK.ResetZetaBucket() -> void ===
+   32  === FUNDEDSYNCSTACK.ResetZetaEma() -> void ===
+   23  === FUNDEDSYNCSTACK.ResetZetaState() -> void ===
+   70  === FUNDEDSYNCSTACK.UpdateZetaEma(double close) -> void ===
+   42  === FUNDEDSYNCSTACK.StartZetaSession(long key, double open, double high, double low, double close) -> void ===
+   89  === FUNDEDSYNCSTACK.FinalizeZetaSession() -> void ===
+  139  === FUNDEDSYNCSTACK.UpdateZetaBucket(int minuteOffset, double high, double low, double close) -> bool ===
+   22  === FUNDEDSYNCSTACK.RoundZetaTarget(int side, double price) -> double ===
+  395  === FUNDEDSYNCSTACK.RunZeta() -> void ===
+   21  === FUNDEDSYNCSTACK.EmaStep(double previous, double value, int period, bool seed) -> double ===
+   65  === FUNDEDSYNCSTACK.EmaAbsorptionAllows() -> bool ===
+   57  === FUNDEDSYNCSTACK.EmaCvdAllows(int direction) -> bool ===
+   35  === FUNDEDSYNCSTACK.SubmitOrQueueEmaLongEntry() -> void ===
+   44  === FUNDEDSYNCSTACK.TrySubmitHistoricalEmaEntry() -> void ===
+  329  === FUNDEDSYNCSTACK.RunEmaDivergence() -> void ===
+   17  === FUNDEDSYNCSTACK.ResetRampartSession() -> void ===
+   25  === FUNDEDSYNCSTACK.RampartToEastern(DateTime platformTime) -> DateTime ===
+   14  === FUNDEDSYNCSTACK.RampartSessionKey(DateTime time) -> int ===
+   43  === FUNDEDSYNCSTACK.RampartQuantity(double stopDistancePoints) -> int ===
+  453  === FUNDEDSYNCSTACK.RunRampart() -> void ===
+   29  === FUNDEDSYNCSTACK.LookupAbs(Boolean[] history, int barsBack, int absHistIdx) -> bool ===
+   25  === FUNDEDSYNCSTACK.GetThirdFriday(int year, int month) -> DateTime ===
+   68  === FUNDEDSYNCSTACK.IsNearRollover(DateTime date, int daysBefore, int daysAfter) -> bool ===
+    4  === FUNDEDSYNCSTACK.get_N_AcceptanceBufferPoints() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_AcceptanceBufferPoints(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_AcceptanceConfirmationBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_AcceptanceConfirmationBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseVolatilityScaledLossExit() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseVolatilityScaledLossExit(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MaximumLossPriorRangeFraction() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_MaximumLossPriorRangeFraction(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseDollarRiskGate() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseDollarRiskGate(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MaximumEstimatedLossUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_MaximumEstimatedLossUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseVolatilityPositionSizing() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseVolatilityPositionSizing(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_TargetRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_TargetRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MaximumContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_MaximumContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseFailedBreakoutExit() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseFailedBreakoutExit(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_FailureBufferPoints() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_FailureBufferPoints(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_FailureConfirmationBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_FailureConfirmationBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseChoppyHighVolatilityFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseChoppyHighVolatilityFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_RegimeShortRangeLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_RegimeShortRangeLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_RegimeLongRangeLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_RegimeLongRangeLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MinimumVolatilityExpansionRatio() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_MinimumVolatilityExpansionRatio(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MaximumRegimeEfficiency() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_MaximumRegimeEfficiency(double value) -> void ===
+ 2077  === FUNDEDSYNCSTACK.OnStateChange() -> void ===
+   39  === FUNDEDSYNCSTACK.get_StartupAllowsOrders() -> bool ===
+   16  === FUNDEDSYNCSTACK.get_StartupAllowsRiskReducingOrders() -> bool ===
+   45  === FUNDEDSYNCSTACK.ExecutionContractMonthMatchesPrimary() -> bool ===
+   23  === FUNDEDSYNCSTACK.BlockFreshLiveStart(string reason) -> void ===
+  158  === FUNDEDSYNCSTACK.FreshStartAccountIsClear(String& reason) -> bool ===
+  349  === FUNDEDSYNCSTACK.InitializeFreshLiveStart() -> void ===
+   46  === FUNDEDSYNCSTACK.PrintVirtualLedgerLine(ModuleState module) -> void ===
+   38  === FUNDEDSYNCSTACK.PrintPortfolioRiskLedgerLine() -> void ===
+  425  === FUNDEDSYNCSTACK.OnBarUpdate() -> void ===
+  108  === FUNDEDSYNCSTACK.ModuleOf(string tag) -> ModuleState ===
+  113  === FUNDEDSYNCSTACK.ModuleFromOrderName(string name) -> ModuleState ===
+   13  === FUNDEDSYNCSTACK.PosOf(string tag) -> MarketPosition ===
+   95  === FUNDEDSYNCSTACK.StrategySelectionAllows(string tag) -> bool ===
+   31  === FUNDEDSYNCSTACK.IsBundleA(string tag) -> bool ===
+   31  === FUNDEDSYNCSTACK.IsBundleB(string tag) -> bool ===
+  126  === FUNDEDSYNCSTACK.LicenseAllowsEntry(string tag) -> bool ===
+   25  === FUNDEDSYNCSTACK.CanEnter(string tag) -> bool ===
+   17  === FUNDEDSYNCSTACK.ConsumeLossCooldown(ModuleState module) -> bool ===
+   39  === FUNDEDSYNCSTACK.ConfiguredLossCooldown(ModuleState module) -> int ===
+   27  === FUNDEDSYNCSTACK.AdvancePortfolioRiskDay(DateTime time) -> void ===
+  122  === FUNDEDSYNCSTACK.RecordPortfolioClosedTrade(double netTradeProfit, DateTime time) -> void ===
+    8  === FUNDEDSYNCSTACK.ActionForDelta(int signedDelta) -> OrderAction ===
+   61  === FUNDEDSYNCSTACK.VirtualAggregateNet() -> int ===
+  317  === FUNDEDSYNCSTACK.AuditInternalOrderLedger(string context) -> bool ===
+   19  === FUNDEDSYNCSTACK.SignedPositionQuantity(Position position) -> int ===
+  250  === FUNDEDSYNCSTACK.AuditLiveNetInvariant(string context) -> bool ===
+  198  === FUNDEDSYNCSTACK.AuditLiveProtectionInvariant(string context) -> bool ===
+  141  === FUNDEDSYNCSTACK.LiveAccountContainsOnlyPortfolioState(String& reason) -> bool ===
+   56  === FUNDEDSYNCSTACK.BlockLiveSafety(string reason, bool cancelUnfilledEntries) -> void ===
+   18  === FUNDEDSYNCSTACK.IsTerminalOrder(Order order) -> bool ===
+   19  === FUNDEDSYNCSTACK.CanRequestCancellation(Order order) -> bool ===
+   30  === FUNDEDSYNCSTACK.CancelTrackedOrder(Order order) -> void ===
+   28  === FUNDEDSYNCSTACK.SafeChangeOrder(Order order, int quantity, double limitPrice, double stopPrice) -> void ===
+   35  === FUNDEDSYNCSTACK.get_ActiveLucidMicroContractCap() -> int ===
+   73  === FUNDEDSYNCSTACK.ChangeModuleStopFromNq(ModuleState module, double nqStopPrice) -> void ===
+   73  === FUNDEDSYNCSTACK.ChangeModuleTargetFromNq(ModuleState module, double nqTargetPrice) -> void ===
+  109  === FUNDEDSYNCSTACK.CancelAllTrackedEntryOrders() -> void ===
+   21  === FUNDEDSYNCSTACK.ToPortfolioCentralTime(DateTime platformTime) -> DateTime ===
+   31  === FUNDEDSYNCSTACK.FundedSyncStackResolveNewsCalendarPath() -> string ===
+   35  === FUNDEDSYNCSTACK.FundedSyncStackSetNewsCalendarError(string message) -> void ===
+  252  === FUNDEDSYNCSTACK.FundedSyncStackLoadRestrictedNewsCalendar() -> void ===
+   79  === FUNDEDSYNCSTACK.FundedSyncStackTryResolveLegacyNewsTime(DateTime date, string eventName, TimeSpan& centralEventTime) -> bool ===
+   68  === FUNDEDSYNCSTACK.FundedSyncStackIsRestrictedNewsEntryBlocked(DateTime platformTime) -> bool ===
+   62  === FUNDEDSYNCSTACK.FundedSyncStackClearQueuedEntries() -> void ===
+   73  === FUNDEDSYNCSTACK.FundedSyncStackEnforceRestrictedNewsDay(DateTime platformTime) -> void ===
+   45  === FUNDEDSYNCSTACK.IsDailyFuturesCloseBlocked(DateTime centralTime) -> bool ===
+  117  === FUNDEDSYNCSTACK.ClearQueuedPortfolioEntries() -> void ===
+  107  === FUNDEDSYNCSTACK.ExitAllModulesForDailyFuturesClose() -> void ===
+   60  === FUNDEDSYNCSTACK.EnforceDailyFuturesClose(DateTime platformTime) -> void ===
+  105  === FUNDEDSYNCSTACK.OnConnectionStatusUpdate(ConnectionStatusEventArgs connectionStatusUpdate) -> void ===
+   51  === FUNDEDSYNCSTACK.TryResumeAfterConnectionRecovery() -> void ===
+   11  === FUNDEDSYNCSTACK.RoundExecutionPrice(double price) -> double ===
+   58  === FUNDEDSYNCSTACK.TryGetLiveExecutionQuote(Double& bid, Double& ask) -> bool ===
+   89  === FUNDEDSYNCSTACK.ProtectionRequiresImmediateExit(ModuleState module, string context, String& reason) -> bool ===
+   98  === FUNDEDSYNCSTACK.ProtectionBreachReason(int net, double stop, double target, double bid, double ask, string context) -> string ===
+   47  === FUNDEDSYNCSTACK.BeginProtectionEmergencyExit(ModuleState module, string reason) -> void ===
+   89  === FUNDEDSYNCSTACK.SubmitProtectionEmergencyExit(ModuleState module) -> void ===
+   50  === FUNDEDSYNCSTACK.FailClosedAfterEmergencyExitFailure(ModuleState module, string reason) -> void ===
+   13  === FUNDEDSYNCSTACK.CloseStrategy(string signalName) -> void ===
+   40  === FUNDEDSYNCSTACK.UpdateNqToExecutionPriceOffset() -> void ===
+  106  === FUNDEDSYNCSTACK.TryUpdateNqToExecutionPriceOffset(DateTime timestamp) -> bool ===
+   22  === FUNDEDSYNCSTACK.TranslateNqLevelToExecution(double nqPrice) -> double ===
+  226  === FUNDEDSYNCSTACK.SubmitModuleOrder(ModuleState module, int signedDelta, OrderType orderType, int quantity, double limitPrice, double stopPrice, string oco, string role, bool affectsPending) -> Order ===
+   22  === FUNDEDSYNCSTACK.RollBackPendingOrder(ModuleState module, string name) -> void ===
+    8  === FUNDEDSYNCSTACK.LiveOrderReference(Order order) -> Order ===
+   38  === FUNDEDSYNCSTACK.ResetUnfilledEntryState(ModuleState module) -> void ===
+   35  === FUNDEDSYNCSTACK.TryGetCurrentSignalBarTime(DateTime& signalBarTime) -> bool ===
+   50  === FUNDEDSYNCSTACK.MustQueueForMnqExecutionBoundary(DateTime& signalBarTime) -> bool ===
+   22  === FUNDEDSYNCSTACK.QueueExecutionIntent(ExecutionIntent intent) -> bool ===
+  154  === FUNDEDSYNCSTACK.DrainExecutionIntents() -> void ===
+   23  === FUNDEDSYNCSTACK.UsesHalfDrawdownEntryRotation(string tag) -> bool ===
+   27  === FUNDEDSYNCSTACK.HalfDrawdownRotationOffset(string tag) -> int ===
+   36  === FUNDEDSYNCSTACK.AdmitHalfDrawdownEntry(string tag) -> bool ===
+  355  === FUNDEDSYNCSTACK.SubmitModuleEntryOrder(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopPrice, double targetPrice, double stopDistance, double targetDistance) -> void ===
+   14  === FUNDEDSYNCSTACK.SubmitModuleEntry(string tag, int signedQuantity, int quantity, double stopPrice, double targetPrice) -> void ===
+   14  === FUNDEDSYNCSTACK.SubmitModuleEntryWithDistances(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopDistance, double targetDistance) -> void ===
+  175  === FUNDEDSYNCSTACK.MaintainModuleEntryWithDistances(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopDistance, double targetDistance) -> void ===
+   34  === FUNDEDSYNCSTACK.CancelModuleEntry(ModuleState module) -> void ===
+   45  === FUNDEDSYNCSTACK.QueueOrSubmitModuleExit(ModuleState module, string reason) -> void ===
+   71  === FUNDEDSYNCSTACK.RequestModuleEntry(string tag, int signedQuantity, int quantity, double stopPrice, double targetPrice, int signalBip) -> void ===
+   10  === FUNDEDSYNCSTACK.RequestModuleLong(string tag, int quantity, double stopPrice, double targetPrice, int signalBip) -> void ===
+   11  === FUNDEDSYNCSTACK.RequestModuleShort(string tag, int quantity, double stopPrice, double targetPrice, int signalBip) -> void ===
+   62  === FUNDEDSYNCSTACK.ProcessQueuedEntries() -> void ===
+   61  === FUNDEDSYNCSTACK.RequestModuleExit(string tag, string reason, int signalBip) -> void ===
+   62  === FUNDEDSYNCSTACK.ProcessQueuedExits() -> void ===
+   56  === FUNDEDSYNCSTACK.ProcessQueuedExit(ModuleState module) -> void ===
+   59  === FUNDEDSYNCSTACK.ProcessQueuedEntry(ModuleState module) -> void ===
+   95  === FUNDEDSYNCSTACK.ExitModule(string tag, string reason) -> void ===
+   81  === FUNDEDSYNCSTACK.TrySubmitDeferredExit(ModuleState module) -> void ===
+  169  === FUNDEDSYNCSTACK.ArmProtection(ModuleState module) -> void ===
+   19  === FUNDEDSYNCSTACK.CanRequestChange(Order order) -> bool ===
+  229  === FUNDEDSYNCSTACK.SyncLiveProtection(ModuleState module) -> void ===
+   13  === FUNDEDSYNCSTACK.CancelProtection(ModuleState module) -> void ===
+   88  === FUNDEDSYNCSTACK.RecordClosedModuleTradeOnce(ModuleState module, DateTime time) -> void ===
+  118  === FUNDEDSYNCSTACK.TryFinalizeClosedModule(ModuleState module) -> void ===
+    4  === FUNDEDSYNCSTACK.get_C_StopLossAmount() -> double ===
+    5  === FUNDEDSYNCSTACK.set_C_StopLossAmount(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_C_ProfitTargetAmount() -> double ===
+    5  === FUNDEDSYNCSTACK.set_C_ProfitTargetAmount(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_C_MinimumGapPoints() -> double ===
+    5  === FUNDEDSYNCSTACK.set_C_MinimumGapPoints(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_C_EnableLongEntries() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_C_EnableLongEntries(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_C_EnableShortEntries() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_C_EnableShortEntries(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_NoiseMultiplier() -> double ===
+    5  === FUNDEDSYNCSTACK.set_V_NoiseMultiplier(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_DailyAtrLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_DailyAtrLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_EarliestEntryEastern() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_EarliestEntryEastern(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_LatestEntryEastern() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_LatestEntryEastern(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_FlattenTimeEastern() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_FlattenTimeEastern(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_MaximumTradesPerDay() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_MaximumTradesPerDay(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_VwapExitBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_VwapExitBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_ProfitTargetUsdPerContract() -> double ===
+    5  === FUNDEDSYNCSTACK.set_V_ProfitTargetUsdPerContract(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_StopLossUsdPerContract() -> double ===
+    5  === FUNDEDSYNCSTACK.set_V_StopLossUsdPerContract(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MovingAverageLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_MovingAverageLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_UseTrendFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_UseTrendFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_EntryTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_EntryTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_ExitTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_ExitTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_UsePostMaintenanceEntry() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_UsePostMaintenanceEntry(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_PostMaintenanceEntryTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_PostMaintenanceEntryTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_VolatilityLookback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_VolatilityLookback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_TargetRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_TargetRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MinimumContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_MinimumContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MaximumContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_MaximumContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_CapitalUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_CapitalUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MaximumMarginPercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_MaximumMarginPercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MarginPerContractUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_MarginPerContractUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MarginRatePercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_MarginRatePercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_UseDownRthDayFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_UseDownRthDayFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_UseRisingMaSlopeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_UseRisingMaSlopeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MaSlopeLookback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_MaSlopeLookback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_UseRthRangeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_UseRthRangeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_RangeAtrLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_O_RangeAtrLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_MaximumRthRangeToAtr() -> double ===
+    5  === FUNDEDSYNCSTACK.set_O_MaximumRthRangeToAtr(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_O_AllowFridayEntries() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_O_AllowFridayEntries(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_VwapStartTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_VwapStartTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_VwapEndTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_VwapEndTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_InitialEntryBoundaryCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_InitialEntryBoundaryCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UseLastEntryTimeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UseLastEntryTimeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_LastEntryTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_LastEntryTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_AllowReentries() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_AllowReentries(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UseVwapSlopeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UseVwapSlopeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_VwapSlopeLookbackBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_VwapSlopeLookbackBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_MinimumVwapSlopeTicks() -> double ===
+    5  === FUNDEDSYNCSTACK.set_W_MinimumVwapSlopeTicks(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UseVwapDistanceFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UseVwapDistanceFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_MinimumVwapDistanceTicks() -> double ===
+    5  === FUNDEDSYNCSTACK.set_W_MinimumVwapDistanceTicks(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UseConfirmationFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UseConfirmationFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_ConfirmationBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_ConfirmationBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UseCooldownFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UseCooldownFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_CooldownBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_CooldownBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_UsePriorRthRangeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_W_UsePriorRthRangeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_RthRangeLookbackSessions() -> int ===
+    5  === FUNDEDSYNCSTACK.set_W_RthRangeLookbackSessions(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_MinimumPriorRangeRatio() -> double ===
+    5  === FUNDEDSYNCSTACK.set_W_MinimumPriorRangeRatio(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_W_MaximumPriorRangeRatio() -> double ===
+    5  === FUNDEDSYNCSTACK.set_W_MaximumPriorRangeRatio(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_NumDays() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_NumDays(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_LastEntryTime() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_LastEntryTime(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_FlattenTime() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_FlattenTime(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_TreatMarketableStopAsMarket() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_TreatMarketableStopAsMarket(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseDailyEfficiencyFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseDailyEfficiencyFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_EfficiencyLookbackDays() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_EfficiencyLookbackDays(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_MinimumDailyEfficiency() -> double ===
+    5  === FUNDEDSYNCSTACK.set_N_MinimumDailyEfficiency(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseRthVwapAcceptanceFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseRthVwapAcceptanceFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_VwapSlopeLookbackMinutes() -> int ===
+    5  === FUNDEDSYNCSTACK.set_N_VwapSlopeLookbackMinutes(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_N_UseBreakoutAcceptanceFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_N_UseBreakoutAcceptanceFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_PostBlockMin() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_PostBlockMin(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseEODClose() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseEODClose(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_CloseHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_CloseHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_CloseMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_CloseMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_STPeriod() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_STPeriod(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_STMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_S_STMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseHardStop() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseHardStop(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_HardStopATRMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_S_HardStopATRMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseADXFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseADXFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_ADXPeriod() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_ADXPeriod(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_ADXThreshold() -> double ===
+    5  === FUNDEDSYNCSTACK.set_S_ADXThreshold(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseVwapEmaBias() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseVwapEmaBias(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_BiasEMAPeriod() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_BiasEMAPeriod(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseRegimeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseRegimeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_RegimeATRLookback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_RegimeATRLookback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_RegimeATRMultiplier() -> double ===
+    5  === FUNDEDSYNCSTACK.set_S_RegimeATRMultiplier(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_AllowLongs() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_AllowLongs(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_AllowShorts() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_AllowShorts(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_RequireSuperTrendEntryAlignment() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_RequireSuperTrendEntryAlignment(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_MinEmaSlopeATR() -> double ===
+    5  === FUNDEDSYNCSTACK.set_S_MinEmaSlopeATR(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_LossCooldownBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_LossCooldownBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_RangeStartHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_RangeStartHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_RangeStartMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_RangeStartMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_RangeEndHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_RangeEndHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_RangeEndMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_RangeEndMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_BreakMarginTicks() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_BreakMarginTicks(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_StopBufferTicks() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_StopBufferTicks(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_RiskReward() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Q_RiskReward(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_LastEntryHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_LastEntryHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_LastEntryMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_LastEntryMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_ForceCloseHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_ForceCloseHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_ForceCloseMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_ForceCloseMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_OneTradePerSide() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Q_OneTradePerSide(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Q_MinBarsBetweenTrades() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Q_MinBarsBetweenTrades(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_UseVolatilitySizing() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_P_UseVolatilitySizing(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_PositionSize() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_PositionSize(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_CapitalUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_CapitalUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_RiskPercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_RiskPercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_RiskFilterPercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_RiskFilterPercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_SlippageTicks() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_SlippageTicks(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_MaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MaxMarginPercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_MaxMarginPercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MarginPerContractUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_MarginPerContractUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MarginRatePercent() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_MarginRatePercent(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_TradeLongs() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_P_TradeLongs(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_TradeShorts() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_P_TradeShorts(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MinimumRewardRisk() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_MinimumRewardRisk(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MaxStopPoints() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_MaxStopPoints(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_RetestMode() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_RetestMode(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_StopMode() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_StopMode(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_MaxTradesPerDay() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_MaxTradesPerDay(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_StopSwingLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_StopSwingLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_TargetSwingLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_TargetSwingLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_BufferMode() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_BufferMode(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_BufferAmount() -> double ===
+    5  === FUNDEDSYNCSTACK.set_P_BufferAmount(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_OpeningRangeStart() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_OpeningRangeStart(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_OpeningRangeEnd() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_OpeningRangeEnd(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_VwapStart() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_VwapStart(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_VwapEnd() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_VwapEnd(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_EntryStart() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_EntryStart(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_EntryEnd() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_EntryEnd(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_DayResetTime() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_DayResetTime(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_UseEndOfDayFlat() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_P_UseEndOfDayFlat(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_P_EndOfDayFlatTime() -> int ===
+    5  === FUNDEDSYNCSTACK.set_P_EndOfDayFlatTime(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_VpLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_VpLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_VpResolution() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_VpResolution(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_AbsorbVolMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Ab_AbsorbVolMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_AbsorbPriceThresh() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Ab_AbsorbPriceThresh(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_DeltaLookback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_DeltaLookback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_UseVWAP() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_UseVWAP(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_VwapBand() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Ab_VwapBand(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_MaxDailyLosses() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_MaxDailyLosses(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_OrbMinutes() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_OrbMinutes(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_UseORB() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_UseORB(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_UseRolloverFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_UseRolloverFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_RolloverDaysBefore() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_RolloverDaysBefore(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_RolloverDaysAfter() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_RolloverDaysAfter(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_UseVolatilityFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_UseVolatilityFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_VolBaselineLookback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_VolBaselineLookback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_VolRegimeMultiplier() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Ab_VolRegimeMultiplier(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_UseHardStop() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_UseHardStop(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_HardStopATRMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Ab_HardStopATRMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_FlattenAtSessionEnd() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_FlattenAtSessionEnd(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_SessionStartHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_SessionStartHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_SessionStartMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_SessionStartMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_SessionEndHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_SessionEndHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_SessionEndMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ab_SessionEndMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_STPeriod() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_STPeriod(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_STMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_A1_STMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_AllowLongs() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A1_AllowLongs(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_AllowShorts() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A1_AllowShorts(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_UseEarlyEntryBlock() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A1_UseEarlyEntryBlock(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_BlockStartHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_BlockStartHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_BlockStartMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_BlockStartMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_BlockEndHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_BlockEndHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_BlockEndMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_BlockEndMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_BlockMondayEntries() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A20_BlockMondayEntries(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_BlockEntryHourEnabled() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_V_BlockEntryHourEnabled(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_V_BlockedEntryHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_V_BlockedEntryHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_BlockLongEntryHourEnabled() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_BlockLongEntryHourEnabled(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_BlockedLongEntryHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_BlockedLongEntryHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_BlockShortEntryHourEnabled() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_BlockShortEntryHourEnabled(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_BlockedShortEntryHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_BlockedShortEntryHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_STPeriod() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A20_STPeriod(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_STMult() -> double ===
+    5  === FUNDEDSYNCSTACK.set_A20_STMult(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_AllowLongs() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A20_AllowLongs(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_AllowShorts() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_A20_AllowShorts(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ab_RequireSuperTrendEntryAlignment() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_Ab_RequireSuperTrendEntryAlignment(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A1_LossCooldownBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A1_LossCooldownBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_A20_LossCooldownBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_A20_LossCooldownBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_StartH() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_StartH(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_StartM() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_StartM(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_DurMin() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_DurMin(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_EndH() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_EndH(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_EndM() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_EndM(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_TPRR() -> double ===
+    5  === FUNDEDSYNCSTACK.set_F_TPRR(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_DeltaThreshold() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_DeltaThreshold(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_UseCumDelta() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_F_UseCumDelta(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_CumDeltaThreshold() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_CumDeltaThreshold(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_DisableDeltaFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_F_DisableDeltaFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_MaxInitialRiskATR() -> double ===
+    5  === FUNDEDSYNCSTACK.set_F_MaxInitialRiskATR(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_MaxInitialRiskPoints() -> double ===
+    5  === FUNDEDSYNCSTACK.set_F_MaxInitialRiskPoints(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_F_LossCooldownBars() -> int ===
+    5  === FUNDEDSYNCSTACK.set_F_LossCooldownBars(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_AtrLength() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_AtrLength(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_UseTimeFilter() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_S_UseTimeFilter(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_NyOpenHour() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_NyOpenHour(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_NyOpenMinute() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_NyOpenMinute(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_S_PreBlockMin() -> int ===
+    5  === FUNDEDSYNCSTACK.set_S_PreBlockMin(int value) -> void ===
+   55  === FUNDEDSYNCSTACK.get_ActivePropSelection() -> string ===
+    3  === FUNDEDSYNCSTACK.get_ActiveZeroSizeBehavior() -> string ===
+   96  === FUNDEDSYNCSTACK.get_ActiveAllocation() -> string ===
+    4  === FUNDEDSYNCSTACK.get_Lucid25KEvaluationTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid25KEvaluationTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid25KBelowBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid25KBelowBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid25KAboveBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid25KAboveBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid25KHowToUse() -> string ===
+    5  === FUNDEDSYNCSTACK.set_Lucid25KHowToUse(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid50KEvaluationTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid50KEvaluationTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid50KBelowBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid50KBelowBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid50KAboveBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid50KAboveBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid50KHowToUse() -> string ===
+    5  === FUNDEDSYNCSTACK.set_Lucid50KHowToUse(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid100KEvaluationTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid100KEvaluationTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid100KBelowBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid100KBelowBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid100KAboveBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid100KAboveBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid100KHowToUse() -> string ===
+    5  === FUNDEDSYNCSTACK.set_Lucid100KHowToUse(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid150KEvaluationTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid150KEvaluationTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid150KBelowBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid150KBelowBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid150KAboveBufferTier() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Lucid150KAboveBufferTier(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Lucid150KHowToUse() -> string ===
+    5  === FUNDEDSYNCSTACK.set_Lucid150KHowToUse(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm25KEvaluationQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm25KEvaluationQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm25KBelowQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm25KBelowQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm25KAboveQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm25KAboveQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm50KEvaluationQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm50KEvaluationQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm50KBelowQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm50KBelowQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm50KAboveQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm50KAboveQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm100KEvaluationQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm100KEvaluationQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm100KBelowQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm100KBelowQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm100KAboveQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm100KAboveQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm150KEvaluationQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm150KEvaluationQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm150KBelowQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm150KBelowQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Ftm150KAboveQty() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Ftm150KAboveQty(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart25KRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Rampart25KRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart25KMaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Rampart25KMaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart50KRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Rampart50KRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart50KMaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Rampart50KMaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart100KRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Rampart100KRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart100KMaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Rampart100KMaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart150KRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_Rampart150KRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_Rampart150KMaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_Rampart150KMaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_PortfolioDailyLossLimit() -> double ===
+    5  === FUNDEDSYNCSTACK.set_PortfolioDailyLossLimit(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FlattenOnPortfolioDailyLoss() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_FlattenOnPortfolioDailyLoss(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_PrintPortfolioRiskLedger() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_PrintPortfolioRiskLedger(bool value) -> void ===
+   28  === FUNDEDSYNCSTACK.get_IsLucidSizingProfile() -> bool ===
+    6  === FUNDEDSYNCSTACK.get_IsFastPass50KProfile() -> bool ===
+    6  === FUNDEDSYNCSTACK.get_IsMinimumParticipationProfile() -> bool ===
+   14  === FUNDEDSYNCSTACK.get_FastPass50KMultiplier() -> int ===
+   37  === FUNDEDSYNCSTACK.FastPass50KBaseQuantity(string tag) -> int ===
+    9  === FUNDEDSYNCSTACK.get_ActiveSizeLevel() -> int ===
+   28  === FUNDEDSYNCSTACK.get_IsExplicitOptimizedEvaluationProfile() -> bool ===
+   16  === FUNDEDSYNCSTACK.get_IsFastOptimizedEvaluationProfile() -> bool ===
+   16  === FUNDEDSYNCSTACK.get_IsOptimized25KProfile() -> bool ===
+   16  === FUNDEDSYNCSTACK.get_IsOptimized50KProfile() -> bool ===
+   16  === FUNDEDSYNCSTACK.get_IsOptimized150KProfile() -> bool ===
+   29  === FUNDEDSYNCSTACK.get_UsesOptimizedEvaluationLayout() -> bool ===
+  236  === FUNDEDSYNCSTACK.TryGetOptimizedEvaluationQuantity(string tag, Int32& quantity) -> bool ===
+   55  === FUNDEDSYNCSTACK.get_ActiveLucidTier() -> int ===
+   21  === FUNDEDSYNCSTACK.SelectedStageTier(int evaluationTier, int belowBufferTier, int aboveBufferTier) -> int ===
+  115  === FUNDEDSYNCSTACK.ProfileBaseQuantity(string tag, int customValue) -> int ===
+   49  === FUNDEDSYNCSTACK.SmoothBaseQuantity(string tag) -> int ===
+  238  === FUNDEDSYNCSTACK.NormalLucidQuantity(string tag) -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseA1() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseA20() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseF() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseS() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseP() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseC() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseV() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseO() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseW() -> int ===
+    7  === FUNDEDSYNCSTACK.get_BaseN() -> int ===
+   21  === FUNDEDSYNCSTACK.SelectedFtmStageQuantity(int evaluation, int belowBuffer, int aboveBuffer) -> int ===
+   77  === FUNDEDSYNCSTACK.get_QtyT() -> int ===
+   65  === FUNDEDSYNCSTACK.NewModuleLucidQuantity(string tag, int qty25K, int qty50K, int qty100K, int qty150K, int customBase) -> int ===
+   11  === FUNDEDSYNCSTACK.get_QtyR() -> int ===
+   11  === FUNDEDSYNCSTACK.get_QtyZ() -> int ===
+   11  === FUNDEDSYNCSTACK.get_QtyE() -> int ===
+   57  === FUNDEDSYNCSTACK.get_ActiveRampartRiskUsd() -> double ===
+   56  === FUNDEDSYNCSTACK.get_ActiveRampartMaxContracts() -> int ===
+    9  === FUNDEDSYNCSTACK.get_QtyA1() -> int ===
+    9  === FUNDEDSYNCSTACK.get_QtyA20() -> int ===
+    9  === FUNDEDSYNCSTACK.get_QtyF() -> int ===
+    9  === FUNDEDSYNCSTACK.get_QtyS() -> int ===
+    9  === FUNDEDSYNCSTACK.get_MultP() -> int ===
+    6  === FUNDEDSYNCSTACK.get_QtyC() -> int ===
+    6  === FUNDEDSYNCSTACK.get_QtyV() -> int ===
+    9  === FUNDEDSYNCSTACK.get_MultO() -> int ===
+    6  === FUNDEDSYNCSTACK.get_QtyW() -> int ===
+    6  === FUNDEDSYNCSTACK.get_QtyN() -> int ===
+   15  === FUNDEDSYNCSTACK.AddedExecutionQuantity(int plannedMnqBaseQuantity) -> int ===
+    4  === FUNDEDSYNCSTACK.get_FreshLiveStart() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_FreshLiveStart(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncLicenseKey() -> string ===
+    5  === FUNDEDSYNCSTACK.set_FundedSyncLicenseKey(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncLicenseStatus() -> string ===
+    4  === FUNDEDSYNCSTACK.get_MinimalLiveSafety() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_MinimalLiveSafety(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FreshLiveStartStatus() -> string ===
+    3  === FUNDEDSYNCSTACK.get_FreshLiveStartNotes() -> string ===
+    4  === FUNDEDSYNCSTACK.get_FlattenBeforeDailyFuturesClose() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_FlattenBeforeDailyFuturesClose(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_DailyFuturesFlattenTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_DailyFuturesFlattenTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_DailyFuturesResumeTimeCentral() -> int ===
+    5  === FUNDEDSYNCSTACK.set_DailyFuturesResumeTimeCentral(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncStackBlockRestrictedNewsDays() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_FundedSyncStackBlockRestrictedNewsDays(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncStackRestrictedNewsCsvPath() -> string ===
+    5  === FUNDEDSYNCSTACK.set_FundedSyncStackRestrictedNewsCsvPath(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncStackMinutesBeforeNews() -> int ===
+    5  === FUNDEDSYNCSTACK.set_FundedSyncStackMinutesBeforeNews(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncStackMinutesAfterNews() -> int ===
+    5  === FUNDEDSYNCSTACK.set_FundedSyncStackMinutesAfterNews(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_FundedSyncStackRestrictedNewsCalendarStatus() -> string ===
+    4  === FUNDEDSYNCSTACK.get_ExecMode() -> FundedSyncStackExecMode ===
+    5  === FUNDEDSYNCSTACK.set_ExecMode(FundedSyncStackExecMode value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_MnqContract() -> string ===
+    5  === FUNDEDSYNCSTACK.set_MnqContract(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_SizingProfile() -> FundedSyncStackSizingProfile ===
+    5  === FUNDEDSYNCSTACK.set_SizingProfile(FundedSyncStackSizingProfile value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_LucidAccountStage() -> FundedSyncStackAccountStage ===
+    5  === FUNDEDSYNCSTACK.set_LucidAccountStage(FundedSyncStackAccountStage value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_LucidEvaluationSizing() -> FundedSyncStackEvaluationSizingMode ===
+    5  === FUNDEDSYNCSTACK.set_LucidEvaluationSizing(FundedSyncStackEvaluationSizingMode value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EntryTiming() -> FundedSyncStackEntryTiming ===
+    5  === FUNDEDSYNCSTACK.set_EntryTiming(FundedSyncStackEntryTiming value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_SizeLevel() -> int ===
+    5  === FUNDEDSYNCSTACK.set_SizeLevel(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_StrategySelection() -> FundedSyncStackStrategySelection ===
+    5  === FUNDEDSYNCSTACK.set_StrategySelection(FundedSyncStackStrategySelection value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BundleGroups() -> FundedSyncStackBundleSelection ===
+    5  === FUNDEDSYNCSTACK.set_BundleGroups(FundedSyncStackBundleSelection value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyAbsorb1m() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyAbsorb1m(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyAbsorb20m() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyAbsorb20m(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyFabio() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyFabio(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtySwas() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtySwas(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyPullback() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyPullback(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyCapstone() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyCapstone(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyVault() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyVault(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyOvernight() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyOvernight(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyVwapCross() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyVwapCross(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyNDay() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyNDay(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyFtm() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyFtm(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyAtrPhase() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyAtrPhase(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyZeta() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyZeta(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseQtyEmaDivergence() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseQtyEmaDivergence(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseRampartRiskUsd() -> double ===
+    5  === FUNDEDSYNCSTACK.set_BaseRampartRiskUsd(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_BaseRampartMaxContracts() -> int ===
+    5  === FUNDEDSYNCSTACK.set_BaseRampartMaxContracts(int value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableAbsorb1m() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableAbsorb1m(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableAbsorb20m() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableAbsorb20m(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableFabio() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableFabio(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableSwas() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableSwas(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnablePullback() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnablePullback(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableCapstone() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableCapstone(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableVault() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableVault(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableOvernight() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableOvernight(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableVwapCross() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableVwapCross(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableNDay() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableNDay(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableFtm() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableFtm(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableAtrPhase() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableAtrPhase(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableZeta() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableZeta(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableEmaDivergence() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableEmaDivergence(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_EnableRampart() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_EnableRampart(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_CustomStockHoursTemplate() -> string ===
+    5  === FUNDEDSYNCSTACK.set_CustomStockHoursTemplate(string value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_ConvertAddedMnqSizingInNqMode() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_ConvertAddedMnqSizingInNqMode(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_VirtualRoundTurnCommission() -> double ===
+    5  === FUNDEDSYNCSTACK.set_VirtualRoundTurnCommission(double value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_PrintVirtualLedger() -> bool ===
+    5  === FUNDEDSYNCSTACK.set_PrintVirtualLedger(bool value) -> void ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyAbsorb1m() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyAbsorb20m() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyFabio() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtySwas() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveMultiplierPullback() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyCapstone() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyVault() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveMultiplierOvernight() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyVwapCross() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyNDay() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyFtm() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyAtrPhase() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyZeta() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveQtyEmaDivergence() -> int ===
+    4  === FUNDEDSYNCSTACK.get_ActiveRampartRiskDisplay() -> double ===
+    4  === FUNDEDSYNCSTACK.get_ActiveRampartMaxDisplay() -> int ===
+   10  === RollingValues..ctor(int size) -> .ctor ===
+    4  === RollingValues.get_Count() -> int ===
+    6  === RollingValues.get_Capacity() -> int ===
+   26  === RollingValues.get_Item(int barsAgo) -> double ===
+   32  === RollingValues.Push(double value) -> void ===
+   32  === RollingValues.Mean() -> double ===
+   45  === RollingValues.StandardDeviation() -> double ===
+   37  === ModuleState..ctor(string tag) -> .ctor ===
+   44  === ModuleState.get_CanEnter() -> bool ===
+   15  === ModuleState.get_Position() -> MarketPosition ===
+    7  === ExecutionIntent..ctor() -> .ctor ===
+    4  === TerminalOrderUpdate..ctor() -> .ctor ===
+   68  === FtmEngine..ctor(FUNDEDSYNCSTACK owner) -> .ctor ===
+   91  === FtmEngine..cctor() -> .ctor ===
+    7  === FtmEngine.get_SignalBars() -> Bars ===
+    7  === FtmEngine.get_CurrentBarIndex() -> int ===
+    9  === FtmEngine.OpenAt(int barsAgo) -> double ===
+    9  === FtmEngine.HighAt(int barsAgo) -> double ===
+    9  === FtmEngine.LowAt(int barsAgo) -> double ===
+    9  === FtmEngine.CloseAt(int barsAgo) -> double ===
+    9  === FtmEngine.VolumeAt(int barsAgo) -> double ===
+    9  === FtmEngine.TimeAt(int barsAgo) -> DateTime ===
+   12  === FtmEngine.WriteLog(string message, LogLevel level) -> void ===
+  404  === FtmEngine.Run() -> void ===
+    2  === FtmEngine.CancelWorkingEntry() -> void ===
+   13  === FtmEngine.RequestAdministrativeExit(string reason) -> void ===
+  101  === FtmEngine.SubmitEntry(int side, string directionSource, string refinementPath) -> void ===
+  198  === FtmEngine.RefreshSessionSchedule() -> void ===
+   14  === FtmEngine.ClearSessionSchedule() -> void ===
+  256  === FtmEngine.BeginCashDate(DateTime cashDate) -> void ===
+   39  === FtmEngine.ScheduleContainsFullCashWindow(DateTime cashDate) -> bool ===
+  241  === FtmEngine.CaptureOpeningRange(DateTime barOpenEt, DateTime barCloseEt, int openMinuteEt, int closeMinuteEt) -> void ===
+   29  === FtmEngine.BlockCashDate(string reason) -> void ===
+  134  === FtmEngine.ManageProtectiveStopAtQuarterHour() -> void ===
+   85  === FtmEngine.ManageConditionalExit1530() -> void ===
+   82  === FtmEngine.CaptureReferenceSessionOpen(DateTime barOpenEt, DateTime barOpenUtc) -> void ===
+  648  === FtmEngine.EvaluateAdmissionAndDirection(int baselineSide, DateTime signalCloseEt) -> void ===
+   78  === FtmEngine.TryGetExactSignalState(DateTime signalCloseEt, Double& signalOpen, Double& signalHigh, Double& signalLow, Double& signalClose) -> bool ===
+   36  === FtmEngine.CountSignalTouches(int side, double confirmationLevel) -> int ===
+  276  === FtmEngine.TryBuildDirectionFeatures(int baselineSide, int admissionTouches, DateTime signalCloseEt, double signalClose, Double[]& features) -> bool ===
+  195  === FtmEngine.TryPredictDirection(DateTime session, Double[] features, Double& flipProbability, Int32& flipNeighbors, Int32& trainingCount) -> bool ===
+  233  === FtmEngine.FitQuarterModel(DateTime quarter) -> QuarterDirectionModel ===
+   19  === FtmEngine.QuarterStart(DateTime value) -> DateTime ===
+   14  === FtmEngine.SafeReturnBps(double numerator, double denominator) -> double ===
+   36  === FtmEngine.LagReturnBps(List`1 values, int periods) -> double ===
+   48  === FtmEngine.StartShadowPair(DateTime session, DateTime signalCloseEt, int baselineSide, Double[] features, bool priorTrendAvailable, double priorTrendBps) -> void ===
+   98  === FtmEngine.ProcessShadowPair(DateTime barOpenEt, DateTime barCloseEt, int closeMinuteEt) -> void ===
+   91  === FtmEngine.CreateShadowTrade(int side, double parentFillOpen, bool priorTrendAvailable, double priorTrendBps) -> ShadowTradeState ===
+  194  === FtmEngine.ProcessShadowTradeBar(ShadowTradeState state, int closeMinuteEt) -> void ===
+   11  === FtmEngine.CompleteShadowTrade(ShadowTradeState state, double exitPrice) -> void ===
+   62  === FtmEngine.FinalizeShadowPairAtCashClose(double closePrice) -> void ===
+  169  === FtmEngine.TryRecordCompletedModelLabel() -> void ===
+  203  === FtmEngine.ProcessPendingEntryDecision(DateTime barOpenEt, DateTime barCloseEt) -> void ===
+  256  === FtmEngine.ApplyFinalEntryRefinementOrSubmit(int refinedSide, DateTime refinementFillOpenEt, string directionSource, string refinementPath, bool submitActual, int baselineSide, Double[] features, double signalClose) -> void ===
+  207  === FtmEngine.ProcessPendingFinalEntryDecision(DateTime barOpenEt, DateTime barCloseEt) -> void ===
+   65  === FtmEngine.SelectManagementPlan(int side, bool priorTrendAvailable, double priorTrendBps, Double& targetR, Double& managedTriggerR, Double& managedLockR, String& regime) -> void ===
+   36  === FtmEngine.InvalidatePendingSessionState(string reason) -> void ===
+   29  === FtmEngine.RecordCompletedSessionHistory(double closePrice) -> void ===
+  105  === FtmEngine.RecordCompletedRthCloseHistory(double closePrice) -> void ===
+   48  === FtmEngine.TryGetPriorTrendReturn(Double& value) -> bool ===
+   48  === FtmEngine.RecordCompletedOrbHistory() -> void ===
+   58  === FtmEngine.LinearPercentile(List`1 values, double quantile) -> double ===
+   13  === FtmEngine.ResolveEasternTimeZone() -> TimeZoneInfo ===
+  113  === FtmEngine.ValidateTimeZoneContract() -> bool ===
+   97  === FtmEngine.ValidateTimeZoneSample(DateTime expectedEastern, DateTime expectedUtc) -> bool ===
+    7  === FtmEngine.ToEastern(DateTime platformTime) -> DateTime ===
+    8  === FtmEngine.FromUtcToEastern(DateTime utcTime) -> DateTime ===
+    8  === FtmEngine.ToUtc(DateTime platformTime) -> DateTime ===
+   22  === FtmEngine.RoundPriceOffsetTicks(double points, bool priceBelowEntry) -> int ===
+    8  === FtmEngine.RoundPrice(double price) -> double ===
+    9  === FtmEngine.MinuteOfDay(DateTime value) -> int ===
+   10  === FtmEngine.IsExactMinute(DateTime value) -> bool ===
+   35  === FtmEngine.CaptureBarClockContext(DateTime barOpenPlatform, DateTime barOpenUtc, DateTime barOpenEt, DateTime barClosePlatform, DateTime barCloseUtc, DateTime barCloseEt) -> void ===
+   57  === FtmEngine.BarClockContext() -> string ===
+   12  === FtmEngine.IsWeekday(DayOfWeek day) -> bool ===
+   14  === FtmEngine.DateKey(DateTime value) -> int ===
+    9  === FtmEngine.ContainsDateKey(Int32[] values, int value) -> bool ===
+   31  === FtmEngine.DateKeysStrictlyIncreasing(Int32[] values) -> bool ===
+    2  === FtmEngine.Diagnostic(string message) -> void ===
+    4  === DirectionTrainingRow..ctor() -> .ctor ===
+    4  === NeighborMatch..ctor() -> .ctor ===
+    4  === QuarterDirectionModel..ctor() -> .ctor ===
+    4  === ShadowTradeState..ctor() -> .ctor ===
+    4  === ShadowPairState..ctor() -> .ctor ===
+    4  === PendingEntryDecision..ctor() -> .ctor ===
+    4  === PendingFinalEntryDecision..ctor() -> .ctor ===
+    4  === <>c..cctor() -> .ctor ===
+    4  === <>c..ctor() -> .ctor ===
+   20  === <>c.<TryPredictDirection>b__195_0(NeighborMatch left, NeighborMatch right) -> int ===

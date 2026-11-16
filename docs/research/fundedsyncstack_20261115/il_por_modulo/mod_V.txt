@@ -1,0 +1,402 @@
+=== FUNDEDSYNCSTACK.RunVault() -> void ===
+  LOCALS: V_0:int, V_1:int, V_2:DateTime
+  IL_0000: ldc.i4.6     
+  IL_0001: stloc.0      
+  IL_0002: ldarg.0      
+  IL_0003: call         NinjaScriptBase.get_Bars(0)
+  IL_0008: callvirt     Bars.get_IsFirstBarOfSession(0)
+  IL_000d: brfalse.s    IL_0018
+  IL_000f: ldarg.0      
+  IL_0010: ldloc.0      
+  IL_0011: call         FUNDEDSYNCSTACK.StartVaultSession(1)
+  IL_0016: br.s         IL_0021
+  IL_0018: ldarg.0      
+  IL_0019: ldfld        FUNDEDSYNCSTACK.hasSession_V
+  IL_001e: brtrue.s     IL_0021
+  IL_0020: ret          
+  IL_0021: ldarg.0      
+  IL_0022: ldarg.0      
+  IL_0023: ldfld        FUNDEDSYNCSTACK.sessionHigh_V
+  IL_0028: ldarg.0      
+  IL_0029: call         NinjaScriptBase.get_Highs(0)
+  IL_002e: ldloc.0      
+  IL_002f: ldelem.ref   
+  IL_0030: ldc.i4.0     
+  IL_0031: callvirt     PriceSeries.get_Item(1)
+  IL_0036: call         Math.Max(2)
+  IL_003b: stfld        FUNDEDSYNCSTACK.sessionHigh_V
+  IL_0040: ldarg.0      
+  IL_0041: ldarg.0      
+  IL_0042: ldfld        FUNDEDSYNCSTACK.sessionLow_V
+  IL_0047: ldarg.0      
+  IL_0048: call         NinjaScriptBase.get_Lows(0)
+  IL_004d: ldloc.0      
+  IL_004e: ldelem.ref   
+  IL_004f: ldc.i4.0     
+  IL_0050: callvirt     PriceSeries.get_Item(1)
+  IL_0055: call         Math.Min(2)
+  IL_005a: stfld        FUNDEDSYNCSTACK.sessionLow_V
+  IL_005f: ldarg.0      
+  IL_0060: ldloc.0      
+  IL_0061: call         FUNDEDSYNCSTACK.UpdateVaultVwap(1)
+  IL_0066: ldarg.0      
+  IL_0067: call         NinjaScriptBase.get_Closes(0)
+  IL_006c: ldloc.0      
+  IL_006d: ldelem.ref   
+  IL_006e: ldc.i4.0     
+  IL_006f: callvirt     PriceSeries.get_Item(1)
+  IL_0074: ldarg.0      
+  IL_0075: ldfld        FUNDEDSYNCSTACK.sessionVwap_V
+  IL_007a: bge.un.s     IL_008c
+  IL_007c: ldarg.0      
+  IL_007d: ldarg.0      
+  IL_007e: ldfld        FUNDEDSYNCSTACK.barsBelowVwap_V
+  IL_0083: ldc.i4.1     
+  IL_0084: add          
+  IL_0085: stfld        FUNDEDSYNCSTACK.barsBelowVwap_V
+  IL_008a: br.s         IL_0093
+  IL_008c: ldarg.0      
+  IL_008d: ldc.i4.0     
+  IL_008e: stfld        FUNDEDSYNCSTACK.barsBelowVwap_V
+  IL_0093: ldarg.0      
+  IL_0094: call         NinjaScriptBase.get_Times(0)
+  IL_0099: ldloc.0      
+  IL_009a: ldelem.ref   
+  IL_009b: ldc.i4.0     
+  IL_009c: callvirt     TimeSeries.get_Item(1)
+  IL_00a1: call         TimeZoneInfo.get_Local(0)
+  IL_00a6: ldarg.0      
+  IL_00a7: ldfld        FUNDEDSYNCSTACK.easternTimeZone_V
+  IL_00ac: call         TimeZoneInfo.ConvertTime(3)
+  IL_00b1: call         NinjaScriptBase.ToTime(1)
+  IL_00b6: stloc.1      
+  IL_00b7: ldarg.0      
+  IL_00b8: ldstr        "V"
+  IL_00bd: call         FUNDEDSYNCSTACK.PosOf(1)
+  IL_00c2: brtrue.s     IL_00ff
+  IL_00c4: ldloc.1      
+  IL_00c5: ldarg.0      
+  IL_00c6: call         FUNDEDSYNCSTACK.get_V_FlattenTimeEastern(0)
+  IL_00cb: blt.s        IL_00df
+  IL_00cd: ldarg.0      
+  IL_00ce: ldstr        "V"
+  IL_00d3: ldstr        "TIME"
+  IL_00d8: ldloc.0      
+  IL_00d9: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_00de: ret          
+  IL_00df: ldarg.0      
+  IL_00e0: ldfld        FUNDEDSYNCSTACK.barsBelowVwap_V
+  IL_00e5: ldarg.0      
+  IL_00e6: call         FUNDEDSYNCSTACK.get_V_VwapExitBars(0)
+  IL_00eb: blt.s        IL_00ff
+  IL_00ed: ldarg.0      
+  IL_00ee: ldstr        "V"
+  IL_00f3: ldstr        "VWAP"
+  IL_00f8: ldloc.0      
+  IL_00f9: call         FUNDEDSYNCSTACK.RequestModuleExit(3)
+  IL_00fe: ret          
+  IL_00ff: ldarg.0      
+  IL_0100: ldstr        "V"
+  IL_0105: call         FUNDEDSYNCSTACK.CanEnter(1)
+  IL_010a: brfalse.s    IL_012b
+  IL_010c: ldarg.0      
+  IL_010d: ldfld        FUNDEDSYNCSTACK.dailyAtr_V
+  IL_0112: ldc.r8       0
+  IL_011b: ble.s        IL_012b
+  IL_011d: ldarg.0      
+  IL_011e: ldfld        FUNDEDSYNCSTACK.tradesToday_V
+  IL_0123: ldarg.0      
+  IL_0124: call         FUNDEDSYNCSTACK.get_V_MaximumTradesPerDay(0)
+  IL_0129: blt.s        IL_012c
+  IL_012b: ret          
+  IL_012c: ldarg.0      
+  IL_012d: call         FUNDEDSYNCSTACK.get_V_BlockEntryHourEnabled(0)
+  IL_0132: brfalse.s    IL_0153
+  IL_0134: ldarg.0      
+  IL_0135: call         NinjaScriptBase.get_Times(0)
+  IL_013a: ldloc.0      
+  IL_013b: ldelem.ref   
+  IL_013c: ldc.i4.0     
+  IL_013d: callvirt     TimeSeries.get_Item(1)
+  IL_0142: stloc.2      
+  IL_0143: ldloca.s     V_2
+  IL_0145: call         DateTime.get_Hour(0)
+  IL_014a: ldarg.0      
+  IL_014b: call         FUNDEDSYNCSTACK.get_V_BlockedEntryHour(0)
+  IL_0150: bne.un.s     IL_0153
+  IL_0152: ret          
+  IL_0153: ldloc.1      
+  IL_0154: ldarg.0      
+  IL_0155: call         FUNDEDSYNCSTACK.get_V_EarliestEntryEastern(0)
+  IL_015a: blt.s        IL_0165
+  IL_015c: ldloc.1      
+  IL_015d: ldarg.0      
+  IL_015e: call         FUNDEDSYNCSTACK.get_V_LatestEntryEastern(0)
+  IL_0163: ble.s        IL_0166
+  IL_0165: ret          
+  IL_0166: ldarg.0      
+  IL_0167: call         NinjaScriptBase.get_Closes(0)
+  IL_016c: ldloc.0      
+  IL_016d: ldelem.ref   
+  IL_016e: ldc.i4.0     
+  IL_016f: callvirt     PriceSeries.get_Item(1)
+  IL_0174: ldarg.0      
+  IL_0175: ldfld        FUNDEDSYNCSTACK.noiseUp_V
+  IL_017a: ble.s        IL_0192
+  IL_017c: ldarg.0      
+  IL_017d: call         NinjaScriptBase.get_Closes(0)
+  IL_0182: ldloc.0      
+  IL_0183: ldelem.ref   
+  IL_0184: ldc.i4.0     
+  IL_0185: callvirt     PriceSeries.get_Item(1)
+  IL_018a: ldarg.0      
+  IL_018b: ldfld        FUNDEDSYNCSTACK.sessionVwap_V
+  IL_0190: bgt.un.s     IL_0193
+  IL_0192: ret          
+  IL_0193: ldarg.0      
+  IL_0194: ldstr        "V"
+  IL_0199: ldarg.0      
+  IL_019a: call         FUNDEDSYNCSTACK.get_QtyV(0)
+  IL_019f: ldarg.0      
+  IL_01a0: call         FUNDEDSYNCSTACK.get_QtyV(0)
+  IL_01a5: ldc.i4.1     
+  IL_01a6: ldc.r8       0
+  IL_01af: ldc.r8       0
+  IL_01b8: ldarg.0      
+  IL_01b9: call         FUNDEDSYNCSTACK.get_V_StopLossUsdPerContract(0)
+  IL_01be: ldc.r8       20
+  IL_01c7: div          
+  IL_01c8: ldarg.0      
+  IL_01c9: call         FUNDEDSYNCSTACK.get_V_ProfitTargetUsdPerContract(0)
+  IL_01ce: ldc.r8       20
+  IL_01d7: div          
+  IL_01d8: call         FUNDEDSYNCSTACK.SubmitModuleEntryWithDistances(8)
+  IL_01dd: ldarg.0      
+  IL_01de: ldarg.0      
+  IL_01df: ldfld        FUNDEDSYNCSTACK.tradesToday_V
+  IL_01e4: ldc.i4.1     
+  IL_01e5: add          
+  IL_01e6: stfld        FUNDEDSYNCSTACK.tradesToday_V
+  IL_01eb: ret
+
+=== FUNDEDSYNCSTACK.StartVaultSession(int bip) -> void ===
+  LOCALS: V_0:double, V_1:double, V_2:int
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.hasSession_V
+  IL_0006: brfalse.s    IL_0067
+  IL_0008: ldarg.0      
+  IL_0009: ldfld        FUNDEDSYNCSTACK.sessionHigh_V
+  IL_000e: ldarg.0      
+  IL_000f: ldfld        FUNDEDSYNCSTACK.sessionLow_V
+  IL_0014: sub          
+  IL_0015: stloc.0      
+  IL_0016: ldloc.0      
+  IL_0017: ldc.r8       0
+  IL_0020: ble.un.s     IL_0067
+  IL_0022: ldarg.0      
+  IL_0023: ldfld        FUNDEDSYNCSTACK.completedSessionRanges_V
+  IL_0028: ldloc.0      
+  IL_0029: callvirt     Queue`1.Enqueue(1)
+  IL_002e: ldarg.0      
+  IL_002f: ldarg.0      
+  IL_0030: ldfld        FUNDEDSYNCSTACK.rollingRangeSum_V
+  IL_0035: ldloc.0      
+  IL_0036: add          
+  IL_0037: stfld        FUNDEDSYNCSTACK.rollingRangeSum_V
+  IL_003c: ldarg.0      
+  IL_003d: ldfld        FUNDEDSYNCSTACK.completedSessionRanges_V
+  IL_0042: callvirt     Queue`1.get_Count(0)
+  IL_0047: ldarg.0      
+  IL_0048: call         FUNDEDSYNCSTACK.get_V_DailyAtrLength(0)
+  IL_004d: ble.s        IL_0067
+  IL_004f: ldarg.0      
+  IL_0050: ldarg.0      
+  IL_0051: ldfld        FUNDEDSYNCSTACK.rollingRangeSum_V
+  IL_0056: ldarg.0      
+  IL_0057: ldfld        FUNDEDSYNCSTACK.completedSessionRanges_V
+  IL_005c: callvirt     Queue`1.Dequeue(0)
+  IL_0061: sub          
+  IL_0062: stfld        FUNDEDSYNCSTACK.rollingRangeSum_V
+  IL_0067: ldarg.0      
+  IL_0068: ldarg.0      
+  IL_0069: ldfld        FUNDEDSYNCSTACK.completedSessionRanges_V
+  IL_006e: callvirt     Queue`1.get_Count(0)
+  IL_0073: ldarg.0      
+  IL_0074: call         FUNDEDSYNCSTACK.get_V_DailyAtrLength(0)
+  IL_0079: bge.s        IL_0086
+  IL_007b: ldc.r8       0
+  IL_0084: br.s         IL_0099
+  IL_0086: ldarg.0      
+  IL_0087: ldfld        FUNDEDSYNCSTACK.rollingRangeSum_V
+  IL_008c: ldarg.0      
+  IL_008d: ldfld        FUNDEDSYNCSTACK.completedSessionRanges_V
+  IL_0092: callvirt     Queue`1.get_Count(0)
+  IL_0097: conv.r8      
+  IL_0098: div          
+  IL_0099: stfld        FUNDEDSYNCSTACK.dailyAtr_V
+  IL_009e: ldarg.0      
+  IL_009f: ldarg.0      
+  IL_00a0: call         NinjaScriptBase.get_Opens(0)
+  IL_00a5: ldarg.1      
+  IL_00a6: ldelem.ref   
+  IL_00a7: ldc.i4.0     
+  IL_00a8: callvirt     PriceSeries.get_Item(1)
+  IL_00ad: stfld        FUNDEDSYNCSTACK.sessionOpen_V
+  IL_00b2: ldarg.0      
+  IL_00b3: ldarg.0      
+  IL_00b4: call         NinjaScriptBase.get_Highs(0)
+  IL_00b9: ldarg.1      
+  IL_00ba: ldelem.ref   
+  IL_00bb: ldc.i4.0     
+  IL_00bc: callvirt     PriceSeries.get_Item(1)
+  IL_00c1: stfld        FUNDEDSYNCSTACK.sessionHigh_V
+  IL_00c6: ldarg.0      
+  IL_00c7: ldarg.0      
+  IL_00c8: call         NinjaScriptBase.get_Lows(0)
+  IL_00cd: ldarg.1      
+  IL_00ce: ldelem.ref   
+  IL_00cf: ldc.i4.0     
+  IL_00d0: callvirt     PriceSeries.get_Item(1)
+  IL_00d5: stfld        FUNDEDSYNCSTACK.sessionLow_V
+  IL_00da: ldarg.0      
+  IL_00db: ldarg.0      
+  IL_00dc: ldfld        FUNDEDSYNCSTACK.dailyAtr_V
+  IL_00e1: ldc.r8       0
+  IL_00ea: bgt.s        IL_00f7
+  IL_00ec: ldc.r8       0
+  IL_00f5: br.s         IL_010b
+  IL_00f7: ldarg.0      
+  IL_00f8: ldfld        FUNDEDSYNCSTACK.sessionOpen_V
+  IL_00fd: ldarg.0      
+  IL_00fe: call         FUNDEDSYNCSTACK.get_V_NoiseMultiplier(0)
+  IL_0103: ldarg.0      
+  IL_0104: ldfld        FUNDEDSYNCSTACK.dailyAtr_V
+  IL_0109: mul          
+  IL_010a: add          
+  IL_010b: stfld        FUNDEDSYNCSTACK.noiseUp_V
+  IL_0110: ldarg.0      
+  IL_0111: ldarg.0      
+  IL_0112: ldc.r8       0
+  IL_011b: dup          
+  IL_011c: stloc.1      
+  IL_011d: stfld        FUNDEDSYNCSTACK.cumulativeVolume_V
+  IL_0122: ldloc.1      
+  IL_0123: stfld        FUNDEDSYNCSTACK.cumulativePriceVolume_V
+  IL_0128: ldarg.0      
+  IL_0129: ldarg.0      
+  IL_012a: call         NinjaScriptBase.get_Closes(0)
+  IL_012f: ldarg.1      
+  IL_0130: ldelem.ref   
+  IL_0131: ldc.i4.0     
+  IL_0132: callvirt     PriceSeries.get_Item(1)
+  IL_0137: stfld        FUNDEDSYNCSTACK.sessionVwap_V
+  IL_013c: ldarg.0      
+  IL_013d: ldarg.0      
+  IL_013e: ldc.i4.0     
+  IL_013f: dup          
+  IL_0140: stloc.2      
+  IL_0141: stfld        FUNDEDSYNCSTACK.tradesToday_V
+  IL_0146: ldloc.2      
+  IL_0147: stfld        FUNDEDSYNCSTACK.barsBelowVwap_V
+  IL_014c: ldarg.0      
+  IL_014d: ldc.i4.1     
+  IL_014e: stfld        FUNDEDSYNCSTACK.hasSession_V
+  IL_0153: ret
+
+=== FUNDEDSYNCSTACK.UpdateVaultVwap(int bip) -> void ===
+  LOCALS: V_0:double, V_1:double
+  IL_0000: ldc.r8       0
+  IL_0009: ldarg.0      
+  IL_000a: call         NinjaScriptBase.get_Volumes(0)
+  IL_000f: ldarg.1      
+  IL_0010: ldelem.ref   
+  IL_0011: ldc.i4.0     
+  IL_0012: callvirt     VolumeSeries.get_Item(1)
+  IL_0017: call         Math.Max(2)
+  IL_001c: stloc.0      
+  IL_001d: ldloc.0      
+  IL_001e: ldc.r8       0
+  IL_0027: ble.un.s     IL_007e
+  IL_0029: ldarg.0      
+  IL_002a: call         NinjaScriptBase.get_Highs(0)
+  IL_002f: ldarg.1      
+  IL_0030: ldelem.ref   
+  IL_0031: ldc.i4.0     
+  IL_0032: callvirt     PriceSeries.get_Item(1)
+  IL_0037: ldarg.0      
+  IL_0038: call         NinjaScriptBase.get_Lows(0)
+  IL_003d: ldarg.1      
+  IL_003e: ldelem.ref   
+  IL_003f: ldc.i4.0     
+  IL_0040: callvirt     PriceSeries.get_Item(1)
+  IL_0045: add          
+  IL_0046: ldarg.0      
+  IL_0047: call         NinjaScriptBase.get_Closes(0)
+  IL_004c: ldarg.1      
+  IL_004d: ldelem.ref   
+  IL_004e: ldc.i4.0     
+  IL_004f: callvirt     PriceSeries.get_Item(1)
+  IL_0054: add          
+  IL_0055: ldc.r8       3
+  IL_005e: div          
+  IL_005f: stloc.1      
+  IL_0060: ldarg.0      
+  IL_0061: ldarg.0      
+  IL_0062: ldfld        FUNDEDSYNCSTACK.cumulativePriceVolume_V
+  IL_0067: ldloc.1      
+  IL_0068: ldloc.0      
+  IL_0069: mul          
+  IL_006a: add          
+  IL_006b: stfld        FUNDEDSYNCSTACK.cumulativePriceVolume_V
+  IL_0070: ldarg.0      
+  IL_0071: ldarg.0      
+  IL_0072: ldfld        FUNDEDSYNCSTACK.cumulativeVolume_V
+  IL_0077: ldloc.0      
+  IL_0078: add          
+  IL_0079: stfld        FUNDEDSYNCSTACK.cumulativeVolume_V
+  IL_007e: ldarg.0      
+  IL_007f: ldarg.0      
+  IL_0080: ldfld        FUNDEDSYNCSTACK.cumulativeVolume_V
+  IL_0085: ldc.r8       0
+  IL_008e: bgt.s        IL_00a0
+  IL_0090: ldarg.0      
+  IL_0091: call         NinjaScriptBase.get_Closes(0)
+  IL_0096: ldarg.1      
+  IL_0097: ldelem.ref   
+  IL_0098: ldc.i4.0     
+  IL_0099: callvirt     PriceSeries.get_Item(1)
+  IL_009e: br.s         IL_00ad
+  IL_00a0: ldarg.0      
+  IL_00a1: ldfld        FUNDEDSYNCSTACK.cumulativePriceVolume_V
+  IL_00a6: ldarg.0      
+  IL_00a7: ldfld        FUNDEDSYNCSTACK.cumulativeVolume_V
+  IL_00ac: div          
+  IL_00ad: stfld        FUNDEDSYNCSTACK.sessionVwap_V
+  IL_00b2: ret
+
+=== FUNDEDSYNCSTACK.get_BaseQtyVault() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<BaseQtyVault>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_BaseQtyVault(int value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<BaseQtyVault>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_EnableVault() -> bool ===
+  IL_0000: ldarg.0      
+  IL_0001: ldfld        FUNDEDSYNCSTACK.<EnableVault>k__BackingField
+  IL_0006: ret
+
+=== FUNDEDSYNCSTACK.set_EnableVault(bool value) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: stfld        FUNDEDSYNCSTACK.<EnableVault>k__BackingField
+  IL_0007: ret
+
+=== FUNDEDSYNCSTACK.get_ActiveQtyVault() -> int ===
+  IL_0000: ldarg.0      
+  IL_0001: call         FUNDEDSYNCSTACK.get_QtyV(0)
+  IL_0006: ret
