@@ -72,3 +72,11 @@ punto óptimo**: casi todo es dimensionable y la ventaja contra el azar es máxi
 ## Qué falta
 Sellar noviembre del spot (USATECH, USA500, XAU) y de GC para medir las 3 reglas con señal de CFD y las demás de octubre solamente.
 Ejecución en vivo: las de señal CFD necesitan el feed de Dukascopy/MT5 además de NT8.
+
+## Anexo (2026-11-16 04:2x UTC): noviembre con el spot sellado (versión 7 del dataset)
+Antigravity selló el spot de Dukascopy hasta el 15-nov. Re-corridas las reglas con señal de spot (la primera re-corrida montó la versión 6 y
+devolvió sólo octubre; se detectó por la cantidad de velas leídas y se relanzó con otro nombre de kernel). Selección sin cambios.
+- Cartera en noviembre (10 sesiones): **+0,56 R por sesión** (antes +0,73 sin las 3 de spot; t 0,67, p 0,26). Holdout completo:
+  **+0,47 R por sesión** (t 1,17, p 0,13). Lectura pre-registrada: sigue **VERDE**, más débil.
+- Las nuevas en noviembre: CONF-CVR-CFD-NQ-R −1,0 R (1 operación), CVGAP-CFD-ES-C −0,7 R (9 operaciones). U1-ORO-GRILLA sin operaciones:
+  se ejecuta en GC y el GC de noviembre todavía no está sellado. El resultado anterior quedó en `NOVIEMBRE_solo_futuros.json`.

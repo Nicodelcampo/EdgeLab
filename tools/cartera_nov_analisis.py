@@ -199,7 +199,9 @@ def noviembre():
     por_regla = {}
     for c in json.loads(S.read_text())["futuros"] + json.loads(S.read_text())["cfd"] + [r["cid"] for r in universo()]:
         if c in por_regla: continue
-        h = _ops(c, "hold"); ok = _validas_hold(U[c]["spec"]); m = np.array([ok(s) and s >= NOV0 for s in h["ses"]], bool) if len(h["ses"]) else np.zeros(0, bool)
+        h = _ops(c, "hold")
+        if h is None: continue
+        ok = _validas_hold(U[c]["spec"]); m = np.array([ok(s) and s >= NOV0 for s in h["ses"]], bool) if len(h["ses"]) else np.zeros(0, bool)
         por_regla[c] = dict(n=int(m.sum()), R_total=float(h["R"][m].sum()), R_op=float(h["R"][m].mean()) if m.any() else None)
     out = dict(seleccion=sel, sesiones_nov=nov_ses, noviembre=pn, holdout_completo=pa, lectura=color, por_regla_nov=por_regla,
                e_procesos=e_procesos(sel))
