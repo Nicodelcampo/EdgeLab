@@ -115,6 +115,7 @@ def correr_session_open_momentum(
     instrument: str | InstrumentSpec = "EURUSD",
     adaptive_overrides: Optional[Dict[int, float]] = None,
     return_diagnostics: bool = False,
+    permitir=None,
 ) -> pd.DataFrame | tuple[pd.DataFrame, Dict[str, Any]]:
     """Simula SessionOpenMomentum.ex5 sobre barras OHLC (resampleadas causalmente a M5)."""
     cfg = config or SessionOpenMomentumConfig()
@@ -162,6 +163,11 @@ def correr_session_open_momentum(
         cur_min = int(minutes_of_day[i])
         cur_day = int(day_keys[i])
         o, h, l, c = float(opens[i]), float(highs[i]), float(lows[i]), float(closes[i])
+
+        # 0. Rotación (mejora EdgeLab 2026-11-16): a la hora de entrada se cierra la posición a la apertura y se evalúa la señal del día
+        if pos is not None and cfg.rotar and cur_min == entry_min and not halted and i >= warmup:
+            rec, pnl = _finalize_som_trade(pos, cur_ts, o, "ROTACION", i - pos["entry_idx"] + 1, spec)
+            trades.append(rec); balance += pnl; pos = None
 
         # 1. Protecciones de equidad / cierre de posicion activa
         if pos is not None:
@@ -212,7 +218,7 @@ def correr_session_open_momentum(
                 continue
 
             # Regla verificada at NY open (16:30): si hay posicion abierta, bloquea entrada hoy
-            if cur_min == open_ny_min and blocked_day != cur_day:
+            if cur_min == open_ny_min and blocked_day != cur_day and not cfg.rotar:
                 blocked_day = cur_day
                 skipped_still_open += 1
 
@@ -250,6 +256,9 @@ def correr_session_open_momentum(
         elif c_sig < e12:
             side = -1
         else:
+            continue
+        if permitir is not None and not permitir(cur_ts, side):      # filtro de contexto externo (mejora EdgeLab); causal: lo decide el llamador
+            blocked_day = cur_day
             continue
 
         sl_dist = spec.round_price(cfg.sl_atr_mult * a14)
