@@ -35,7 +35,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Forward con e-proceso (Franklin NQ+ES y T filtrado) desde 2026-11-14 en la tarea diaria.
   - Evidencia: `docs/research/reels_20261116/RESULTADO.md`, `docs/research/reels_20261116/FRANKLIN_MEJORAS.json`
 - **SessionOpenMomentum (EA QuantLab MT5, de fábrica): a las 09:35 NY compra/vende según el cierre de la vela M5 de las 09:30 vs EMA12; stop 8 × ATR14 M5; trailing a la EMA120 M5 desde +0,5 R; con o sin cierre diario** (`F-SOM-QUANTLAB-NQ`, 2026-11-16, humano)
-  - Efecto: NQ pasa (BH sobre 6, positivo en los dos tramos): sin_eod +0,043 / +0,089 R (2012–19 / 2020–26), eod +0,022 / +0,064; reciente +0,15–0,17; fricción 0,011 R; 11/15 años positivos. ES sólo desde 2020 (+0,04/+0,02); YM negativo. Motor corregido (gaps) antes de mirar la corrida válida. | sin_finde (cierra el viernes): NQ +0,046 / +0,075 R (p 0,039 / 0,001). Correlación diaria: v2 0,03, Cartera B 0,30, Franklin 0,42. | Holdout oct–nov (única apertura): +0,16 R/op, n 29, acierto 66 %, Fisher 0,053 → NO_CONCLUYENTE a favor.
+  - Efecto: NQ pasa (BH sobre 6, positivo en los dos tramos): sin_eod +0,043 / +0,089 R (2012–19 / 2020–26), eod +0,022 / +0,064; reciente +0,15–0,17; fricción 0,011 R; 11/15 años positivos. ES sólo desde 2020 (+0,04/+0,02); YM negativo. Motor corregido (gaps) antes de mirar la corrida válida. | sin_finde (cierra el viernes): NQ +0,046 / +0,075 R (p 0,039 / 0,001). Correlación diaria: v2 0,03, Cartera B 0,30, Franklin 0,42. | Holdout oct–nov (única apertura): +0,16 R/op, n 29, acierto 66 %, Fisher 0,053 → NO_CONCLUYENTE a favor. | Mejora (14 variantes de una perilla, pares→impares): ninguna mejora; meseta (todas positivas, t 1,8–3,5). Noche no baja: misma ganancia con 35 % menos ops y menos DD.
   - Dónde: NQ (señal M1 USATECH, costos de futuros)
   - Siguiente: Forward bajo demanda (tools/seguimiento_forward.py); candidata a cartera junto a la v2 (correlación 0,03).
   - Evidencia: `docs/research/quantlab_mt5_eas_20261116/RESULTADO_SOM.md`
@@ -75,7 +75,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (14)
+## PALANCA_DE_DISENO (15)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -104,6 +104,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Cartera v2/v3 + FundedSync T/Z/R en MNQ
   - Siguiente: Cartera B aparte (PREREGISTRO_CARTERA_B.md), cuenta de drawdown fijo; seguimiento bajo demanda con tools/seguimiento_forward.py.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`, `docs/research/fundedsyncstack_20261115/PREREGISTRO_CARTERA_B.md`
+- **Una regla que ya pasó su validación de fábrica suele estar en una meseta: mover una perilla (EMA, stop, trailing, hora) no mejora la rentabilidad fuera de la muestra de elección** (`F-AJUSTE-FINO-NO-PAGA`, 2026-11-16, sesion)
+  - Efecto: SOM: 14 variantes de una perilla, todas positivas pero ninguna supera a la base en la confirmación; rotar para ganar frecuencia baja el t y duplica el drawdown; entrar 25 min más tarde mata el efecto.
+  - Dónde: SOM NQ 2012–2026 (pares/impares)
+  - Siguiente: Mejorar por mecanismos no explorados (salida, contexto, cartera), no por parámetros; medir R por mes, no por operación.
+  - Evidencia: `docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
   - Dónde: NQ y USATECH, 2025-08 → 2026-09

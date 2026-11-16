@@ -72,3 +72,48 @@ Se aplica donde el valor esperado lo justifica: (a) la regla tiene ventaja confi
 y (c) hay datos para elegir y confirmar por separado. Triage previsto: **T de FundedSync** (la más sólida; sus salidas por objetivo y a las
 15:30 son la palanca de salida sin probar), **Franklin** (ya pasó por 32 variantes sin mejora: sólo se le prueba lo nuevo que aprenda SOM),
 **Cartera B / v2** (mejoras de cartera ya hechas; sólo si SOM deja una palanca transferible).
+
+## 7. Resultado SOM (`SOM_MEJORAS.json`, `tools/mejora_som.py`): **ninguna variante mejora a la base**
+| Variante | t mes pares | t mes impares | R/mes impares | años + (pares / impares) | ops/mes | DD (R) |
+|---|---|---|---|---|---|---|
+| **base (sin_finde)** | **3,26** | **2,05** | **0,93** | 8/8 · 5/7 | 18,8 | −20,9 |
+| noche_no_baja | 3,55 | 2,74 | 0,90 | 7/7 · 5/7 | 12,1 | −16,4 |
+| trail_ema60 | 3,39 | 1,90 | 0,76 | 7/8 · 5/7 | 19,4 | −17,2 |
+| stop_6atr | 2,80 | 1,54 | 0,83 | 7/8 · 6/7 | 19,8 | −24,2 |
+| ema6 / ema24 | 2,83 / 2,43 | 1,86 / 2,00 | 0,92 / 0,90 | 7/8 | 18,8 | −21 / −25 |
+| rotar | 2,56 | 1,45 | 0,64 | 7/8 · 4/7 | 21,1 | −32,7 |
+| trail_desde_0 / 1R | 2,87 / 2,45 | 1,79 / 0,85 | 0,69 / 0,44 | 7/8 | 20,4 / 16,4 | −16 / −29 |
+| trail_ema240 | 2,04 | 1,41 | 0,61 | 6/8 | 17,3 | −22,5 |
+| stop_10atr | 2,26 | 1,30 | 0,49 | 6/8 | 17,4 | −25,5 |
+| sin_gap_grande | 3,02 | 1,47 | 0,58 | 6/8 | 14,2 | −23,9 |
+| entrada_1000 | 1,78 | −0,22 | −0,07 | 6/8 | 15,9 | −29,2 |
+| cierre_diario (ref.) | 3,00 | 1,27 | 0,51 | 7/8 | 21,0 | −28,4 |
+
+Por la regla declarada la única elegible fue `franklin_no_en_contra`, que resultó **idéntica** a la base: el filtro nunca actúa porque
+cuando NY está arriba del máximo de Londres y del VWAP a las 09:34, el cierre M5 siempre está arriba de la EMA12 (crosstab 0 conflictos en
+3.282 operaciones). No es un error del código: las dos señales están anidadas. Sin ganadora: **SOM sigue con la base de fábrica**.
+
+## 8. Lecciones (alimentan la repetición)
+- **L1 Meseta**: las 14 vecinas de una perilla siguen positivas (t mensual 1,8–3,5 en pares): la base no es un pico. La configuración de
+  fábrica ya está cerca del óptimo; **ajustar parámetros no paga**.
+- **L2 Dejar correr gana a la frecuencia**: rotar (más operaciones) baja el t y duplica el drawdown: cortar la posición vieja corta tendencias.
+- **L3 El efecto está en los primeros 5 minutos**: entrar a las 10:00 lo mata (impares −0,07 R/mes).
+- **L4 La noche movida no agrega ganancia pero baja el riesgo**: misma ganancia mensual con 35 % menos operaciones y menos drawdown (−16 vs
+  −21 R). Es una mejora de **eficiencia de riesgo** (útil en prop), no de rentabilidad; queda como pista, no se elige (no estaba en los criterios
+  de elección, que priorizan R/mes).
+- **L5 Señales anidadas**: SOM y Franklin miran la misma información de la apertura; apilar uno como filtro del otro no agrega nada.
+
+## 9. Repetición: triage con las lecciones
+| Estrategia | ¿Vale? | Por qué |
+|---|---|---|
+| **T (FundedSync)** | **Sí** | Ventaja confirmada (holdout por regla del acta); 1.143 de 2.703 salidas son STOP pero 339 TARGET y 652 «Conditional 15:30»: la palanca de salida (L2, F-SALIDA-TECNICA) nunca se le probó. Perillas de mecanismo no exploradas. |
+| Franklin | No | Ya pasó 32 variantes sin mejora; L5 dice que su información es la de SOM; la única transferencia nueva (L4) baja frecuencia en una regla de pocas operaciones. |
+| Cartera B (Z, R) | No | Evidencia fuera de muestra mínima (R 5 operaciones); mejorar lo que no está confirmado es optimizar ruido. |
+| Cartera v2 | No | Ya se mejoró (M1, M3, A1, A2); sus reglas corren en Kaggle sobre ticks y la palanca de salida ya se midió en los cubos. |
+
+## 10. Plan T (pre-registro, misma metodología; puntaje en puntos por mes porque T usa su propio stop y 1 contrato)
+Variantes (una perilla, `correr_modulo("T", ..., **cfg)`): `sin_objetivo` (objetivos a 100 R: se mantiene hasta su stop/cierre), `sin_1530`
+(sin la salida condicional de las 15:30), `salida_libre` (las dos), `stop_x1.0` y `stop_x1.5` (multiplicador del rango de apertura; base
+1,25), `noche_no_baja` (L4). Elección en años pares (t de los puntos netos por mes; elegible si no tiene menos años positivos que la base),
+3 finalistas + combinación de categorías distintas; confirmación en impares (diferencia mensual vs base, bootstrap por mes, BH q 0,10).
+Contador: 6 + 4.
