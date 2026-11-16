@@ -46,6 +46,21 @@ def resumen(ops):
     return R
 
 
+if os.environ.get("SELLADO") == "1":                                    # apertura única (ACTA_HOLDOUT.md): desarrollo + USATECH sellado a M1
+    from edgelab.research import fuentes_ticks as FT
+    acta = os.path.abspath("ACTA_HOLDOUT.json"); json.dump(json.loads(os.environ["ACTA_JSON"]), open(acta, "w"))
+    raiz = os.path.dirname(glob.glob(ent + "/**/SELLADO.txt", recursive=True)[0])
+    T = pd.concat(list(FT.bloques_spot_sellado("USATECHIDXUSD", 20261001, int(os.environ.get("HASTA", "20261113")), raiz)), ignore_index=True)
+    tt = pd.to_datetime(T.ts_ns.to_numpy(), utc=True).tz_convert("America/New_York").tz_localize(None)
+    S = pd.DataFrame(dict(px=T.px.to_numpy(float), vol=T.vol.to_numpy(float)), index=tt).sort_index()
+    B = S.px.resample("1min").ohlc().join(S.vol.resample("1min").sum()).dropna(subset=["open"])
+    H = pd.DataFrame(dict(o=B.open, h=B.high, l=B.low, c=B.close, v=B.vol), index=B.index)
+    D = pd.concat([D[D.index < H.index.min()], H]); print(f"holdout: {len(H)} velas M1 sellladas", flush=True)
+    F.MODULOS = {k: F.MODULOS[k] for k in ("T", "Z", "R")}
+    ops = operaciones(D); ops = {k: v[v.dia >= "2026-10-01"] for k, v in ops.items() if v is not None}
+    pd.concat([v.assign(modulo=k) for k, v in ops.items()]).to_csv("FUNDEDSYNC_HOLDOUT_OPS.csv", index=False)
+    json.dump({k: dict(n=int(len(v)), neto_pts=float(v.neto.mean()) if len(v) else None, ee=float(v.neto.std(ddof=1) / np.sqrt(len(v))) if len(v) > 1 else None)
+               for k, v in ops.items()}, open("RESULTADO_HOLDOUT.json", "w"), indent=1); print("listo holdout"); raise SystemExit(0)
 real = operaciones(D); Rr = resumen(real); print(f"[{time.time() - t0:6.0f}s] real listo", flush=True)
 pd.concat([v.assign(modulo=k) for k, v in real.items() if v is not None and len(v)]).to_csv("FUNDEDSYNC_OPS.csv.gz", index=False)
 nulo = []

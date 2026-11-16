@@ -15,7 +15,8 @@ ORDEN = ("contracts", "base_series", "modulos_a1_a20_f_s", "modulos_p_c_v_o", "m
 def construir() -> Path:
     pre = "import sys, types\n"
     for nom, ruta in (("edgelab", None), ("edgelab.research", None), ("edgelab.holdout", "edgelab/holdout.py"),
-                      ("edgelab.research.ema_zones", "edgelab/research/ema_zones.py"), ("m1_intradia", "edgelab/research/m1_intradia.py")):
+                      ("edgelab.research.ema_zones", "edgelab/research/ema_zones.py"), ("edgelab.research.fuentes_ticks", "edgelab/research/fuentes_ticks.py"),
+                      ("m1_intradia", "edgelab/research/m1_intradia.py")):
         pre += f"_m = types.ModuleType({nom!r}); _m.__path__ = []; sys.modules[{nom!r}] = _m\n"
         if ruta: pre += f"exec(compile({(ROOT / ruta).read_text()!r}, {ruta!r}, 'exec'), _m.__dict__)\n"
         if "." in nom: pre += f"setattr(sys.modules[{nom.rsplit('.', 1)[0]!r}], {nom.rsplit('.', 1)[1]!r}, _m)\n"
@@ -37,6 +38,26 @@ def lanzar():
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1"], cwd=ROOT, check=True)
 
 
+def holdout(commit):
+    """Apertura única (ACTA_HOLDOUT.md): registra la ventana y lanza T, Z y R sobre desarrollo + USATECH sellado."""
+    import json, os
+    sys.path.insert(0, str(ROOT)); from edgelab.research import holdout_ventanas as HV
+    cid = "FUNDEDSYNC::holdout_TZR_20261116"
+    if (pr := HV.problemas("FUNDEDSYNC", 20261001, cid)): raise SystemExit("no se abre: " + "; ".join(pr))
+    HV.registrar_apertura("FUNDEDSYNC", cid, 20261001, n_fijo=0)
+    acta = dict(acta="docs/research/fundedsyncstack_20261115/ACTA_HOLDOUT.md", commit=commit, familia="FUNDEDSYNC", cid=cid)
+    k = construir(); txt = k.read_text(encoding="utf-8")
+    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA='20261113', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", KS + "-h", "--title", "edgelab fundedsync cadena h", "--script", str(k),
+                    "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
+
+
+def traer_holdout():
+    OUT.mkdir(parents=True, exist_ok=True)
+    for f in ("RESULTADO_HOLDOUT.json", "FUNDEDSYNC_HOLDOUT_OPS.csv"):
+        subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", KS + "-h", "--file", f, "--out", str(OUT / f)], cwd=ROOT, check=True)
+
+
 def traer():
     OUT.mkdir(parents=True, exist_ok=True)
     for f in ("RESULTADO.json", "FUNDEDSYNC_OPS.csv.gz"):
@@ -44,4 +65,4 @@ def traer():
 
 
 if __name__ == "__main__":
-    globals()[sys.argv[1]]()
+    globals()[sys.argv[1]](*sys.argv[2:])
