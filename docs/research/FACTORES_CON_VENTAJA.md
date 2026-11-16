@@ -5,15 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (10)
+## PISTA_VIVA (11)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
-  - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar.
+  - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar. | Tanda 4: re-elegir con el filtro de fricción antes da la v3 (sale BT2-ES/NQ y ORO, entra DRC-NQ-R y AVCL-ES/NQ): dev 43k vs 24k USD, t igual, prop 50K pasa 80 % vs 63 % pero quema 14 % vs 3 %. Forward paralelo.
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)
   - Siguiente: Operar la v2 (CARTERA_V2_OPERATIVA.json): comisión mínima, PREAPERTURA-NQ ×0,5, piso de fricción 0,08 R, micros fijos; quema 50K 21 % → 3 %. Forward con e-proceso.
-  - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`, `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **FUNDEDSYNC T (FtmEngine: ORB 15 min + KNN sobre operaciones sombra), valores de fábrica, NQ** (`F-FUNDEDSYNC-T-KNN`, 2026-11-16, sesion)
   - Efecto: NQ M1 2020–2023 +13,2 pts/op neto, t 4,37 contra p95 del nulo de 15 módulos 1,92; 2024-01→2025-07 +17,2; 2025-08→2026-09 +22,6; 19 ops/mes, stop mediano 36 pts; causal por prefijo. Z y R también superan al nulo pero sin stop y 2–3 ops/mes. | Holdout 1-oct→13-nov (única apertura): T +14,2 pts/op (n 26, t 0,54), Fisher con desarrollo 0,020 → CONFIRMADA por la regla del acta (descansa en el desarrollo); Z 7/7 ganadoras +137 pts; R 5 ops no concluyente.
   - Dónde: NQ (USATECH M1 con costos de NQ)
@@ -24,6 +24,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ
   - Siguiente: Forward con e-proceso junto a la cartera v2; Z y R con stop de catástrofe como hipótesis nueva.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
+- **Noche movida (tercil alto del rango 18:00→09:30 relativo, causal) como contexto** (`F-NOCHE-MOVIDA-Z-Y-PREAPERTURA-ES`, 2026-11-16, sesion)
+  - Efecto: No pasa BH sobre 4. Descriptivo: Z rinde más con noche alta en las dos mitades (p 0,04 / 0,07, n alta 31/18); PREAPERTURA-ES pierde con noche alta en las dos (t −2,96 en DESC, −1,2 en REP), dirección opuesta a la hipótesis.
+  - Dónde: FundedSync Z (NQ), PREAPERTURA-ES
+  - Siguiente: Filtro 'no operar PREAPERTURA-ES con noche alta' como hipótesis nueva con réplica no mirada (forward/holdout de otra familia); Z necesita N.
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -60,7 +65,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (13)
+## PALANCA_DE_DISENO (14)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -84,6 +89,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Índices M1
   - Siguiente: Usar sólo como pronóstico de volatilidad (stops a re-simular, costos); no para dimensionar reglas medidas en R.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
+- **Sumar una canasta descorrelacionada (T+Z+R, corr diaria 0,08) a la cartera al mismo riesgo por regla** (`F-TZR-TAMANO-EN-CARTERA`, 2026-11-16, sesion)
+  - Efecto: Sube ganancia y t (v3+TZR t 6,15), pero la varianza diaria de T+Z+R a ≈200 USD/regla lleva la quema 50K de 3 % a 34 %.
+  - Dónde: Cartera v2/v3 + FundedSync T/Z/R en MNQ
+  - Siguiente: Combinar sólo con tamaño declarado antes y menor (p. ej. ≈50 USD por regla) y con el drawdown de la cuenta como restricción; hipótesis nueva.
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
   - Dónde: NQ y USATECH, 2025-08 → 2026-09
@@ -175,7 +185,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (25)
+## NO_REPETIR (26)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -199,6 +209,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: PREAPERTURA-NQ, CVGAP-ES-C
   - Siguiente: Si se reintenta, con media de R de los vecinos y en datos no usados.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
+- **Freno diario de cartera (no operar más ese día tras −500 USD ≈ 2,5 R)** (`F-FRENO-DIARIO-NO`, 2026-11-16, sesion)
+  - Efecto: No baja la quema de la 50K en ninguna versión (v2 3→3 %, v3 14→17 %, v2+TZR 34→38 %): corta días que se recuperan.
+  - Dónde: Cartera v2/v3 ± T+Z+R, futuros
+  - Siguiente: No proponer frenos diarios por P&L como control de quema; el control efectivo es el tamaño.
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
   - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
   - Dónde: CFD Dukascopy D1/H1, 27 activos
