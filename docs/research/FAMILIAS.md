@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-260 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+263 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -65,6 +65,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `DOBLE_RETROCESO_USATECH` | 2026-11-04 | — | 1493012 | 1 | DRC-USATECH-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `DOBLE_RETROCESO_XAU` | 2026-11-04 | — | 1493012 | 1 | DRC-XAU-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `DOBLE_RETROCESO_YM` | 2026-11-04 | — | 1493012 | 1 | DRC-YM-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
+| `DOS_VELAS` | 2026-11-16 | ORB_EMA20, M1_INTRADIA | 6 | — | — | — | — |
 | `EJEMPLO_ANALIZADOR` |  | — | 8 | — | — | — | — |
 | `EL_DIA_TENDENCIA` | 2026-11-16 | FUNDEDSYNC | 23 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-DIA-TENDENCIA-NO-ANTICIPABLE (NO_REPETIR); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-KNN-VOTO-NO-TRANSFIERE (NO_REPETIR); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PALANCA_DE_DISENO); F-VOL-RUGOSA-PRONOSTICO (PALANCA_DE_DISENO) | `fundedsyncstack_20261115` |
 | `EMA_CROSS_CONTROL` |  | — | 42 | — | — | — | — |
@@ -105,6 +106,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EURUSD_ESCALONADAS` |  | — | 655 | — | — | — | — |
 | `EXECUTION_VARIANTS` |  | — | 3 | — | — | — | — |
 | `EXPANSION_ZONAS` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, AREAS_EXP_1_CRUZADO | 1866376 | 4 | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | — | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
+| `FRANKLIN` | 2026-11-16 | EMA_VWAP, LONDRES_IMPULSO_NQ, FUNDEDSYNC | 7 | — | — | — | — |
 | `FUNDEDSYNC` | 2026-11-16 | — | 398 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-DIA-TENDENCIA-NO-ANTICIPABLE (NO_REPETIR); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-KNN-VOTO-NO-TRANSFIERE (NO_REPETIR); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PALANCA_DE_DISENO); F-VOL-RUGOSA-PRONOSTICO (PALANCA_DE_DISENO) | `fundedsyncstack_20261115` |
 | `GAP_CONTINUACION` | 2026-11-08 | GAP_RTH | 240 | — | — | — | `gap_continuacion_20261108` |
 | `GAP_RTH` | 2026-10-25 | C_TICKS_MULTI | 480 | — | — | — | — |
@@ -260,6 +262,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `U1_ZONAS_GRILLA_YM` | 2026-10-26 | U1_RACIMOS_GRILLA_YM, U1_YM_GRILLA, AREAS_EXP_1_CRUZADO | 23340 | 3 | U1-ZONAS-GRILLA-YM-C-R: PISTAS_VIVAS; U1-ZONAS-GRILLA-YM-C: PISTAS_VIVAS; U1-ZONAS-GRILLA-YM: SIN_REGLA_OPERABLE | — | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102`, `u1_zonas_20261025` |
 | `U1_ZONAS_NQ` | 2026-10-25 | U1_ORO_GRILLA, AREAS_EXP_1_CRUZADO | 17915936 | 2 | U1-ZONAS-NQ-R: SIN_REGLA_OPERABLE | — | `relanzamiento_R_20261102`, `zonas_gaps_20261025` |
 | `VARIANTE_TAU_ACTAS` |  | — | 30 | — | — | — | — |
+| `VIERNES_LUNES` | 2026-11-16 | M1_INTRADIA | 6 | — | — | — | — |
 | `VWAP_REV_ES` | 2026-11-03 | — | 144 | 1 | VWAP-ES-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `VWAP_REV_NQ` | 2026-11-03 | — | 144 | 1 | VWAP-NQ-R: INTEGRIDAD_FALLA | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `WM_FIXING_6B` | 2026-11-03 | — | 216 | 1 | WM-FIXING-6B-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |

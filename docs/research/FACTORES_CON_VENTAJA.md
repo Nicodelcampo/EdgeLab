@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (11)
+## PISTA_VIVA (12)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,6 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: FundedSync Z (NQ), PREAPERTURA-ES
   - Siguiente: Filtro 'no operar PREAPERTURA-ES con noche alta' como hipótesis nueva con réplica no mirada (forward/holdout de otra familia); Z necesita N.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
+- **Sesgo de Franklin a las 10:00 NY: cierre arriba del máximo de Londres (03:00–09:30) y del VWAP de sesión → compra (abajo de ambos → venta); stop en el extremo de 09:30–10:00; salida al cierre o 2R** (`F-FRANKLIN-NY-LONDRES-VWAP`, 2026-11-16, humano)
+  - Efecto: 2020→2026-09: NQ +0,10 R (p 0,018; 2R +0,10, p 0,010), ES +0,12 R (p 0,037); 2012–2019 negativo (−0,05 / −0,14); YM negativo. No nominada por BH sobre 18. Como filtro de T: a favor +21,3 pts vs resto +9,4 (p 0,012) en 2020–26; ≈ 0 en 2012–19 (donde T no funciona).
+  - Dónde: NQ, ES (señal M1 de CFD, costos de futuros)
+  - Siguiente: Holdout exploratorio de la familia (regla congelada 'cierre', NQ+ES) y filtro de T en el forward; régimen desde 2020 declarado.
+  - Evidencia: `docs/research/reels_20261116/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -185,7 +190,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (26)
+## NO_REPETIR (27)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -214,6 +219,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Cartera v2/v3 ± T+Z+R, futuros
   - Siguiente: No proponer frenos diarios por P&L como control de quema; el control efectivo es el tamaño.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
+- **Revisit del mínimo del viernes tras máximo menor con venta del lunes (Hougaard/AlphaZone) y dos velas iguales de 5 min desde las 09:35 con stop desde las 09:00 y 1:1 (Olave), tal como en los reels** (`F-REELS-20261116-NO`, 2026-11-16, humano)
+  - Efecto: VIERNES_LUNES: R neto ≤ 0 en NQ/ES/YM y en mie_jue (n 40–80 por tramo, MDE 0,4–1,0). La 'visita' del mínimo es 50 % con máximo menor vs 35 % sin él, en cualquier par de días: no 24/25. DOS_VELAS: acierto ≈ 50 % con 1:1; NQ +0,02 R en 2020–26 (MDE 0,06), ES −0,04, YM −0,09; 2012–19 negativo en los tres.
+  - Dónde: M1 Dukascopy USATECH/USA500/USA30 → NQ/ES/YM, 2012–2026
+  - Siguiente: No reproponer. El rasgo 'máximo menor → visita del mínimo +15 pp' puede ir al banco de eventos como contexto.
+  - Evidencia: `docs/research/reels_20261116/RESULTADO.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
   - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
   - Dónde: CFD Dukascopy D1/H1, 27 activos

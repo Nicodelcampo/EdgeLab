@@ -13,13 +13,14 @@ OUT = ROOT / "docs/research/reels_20261116"
 FUENTES = {"NQ": "NQ_M1_dukas", "ES": "SP_M1_dukas", "YM": "DJ_M1_dukas"}
 A, B, REC = ("2012-01-20", "2019-12-31"), ("2020-01-01", "2026-09-29"), ("2025-08-05", "2026-09-29")
 NB = 20000
+from fundedsync_tanda2 import _bh  # noqa: E402
 
 
 def ctx_de_csv(path):
     from edgelab.research import m1_intradia as M
     D = M.leer_m1(path); D = D[(D.index >= "2012-01-20") & (D.index < "2026-09-30")]
     t = D.index.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT"); ok = ~t.isna(); D = D[ok]; t = t[ok].tz_convert("UTC")
-    return dict(t=np.asarray(t.astype("int64") // 10**9, dtype=np.int64) + 60, o=D.o.to_numpy(float), h=D.h.to_numpy(float),
+    return dict(t=np.asarray((t - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s"), dtype=np.int64) + 60, o=D.o.to_numpy(float), h=D.h.to_numpy(float),
                 l=D.l.to_numpy(float), c=D.c.to_numpy(float), v=D.v.to_numpy(float))
 
 
@@ -35,13 +36,6 @@ def tramo(df, x0, x1):
     if len(g) < 30: return dict(n=int(len(g)), R=float(g.R.mean()) if len(g) else None, no_evaluable=True)
     return dict(n=int(len(g)), R=float(g.R.mean()), R_bruto=float(g.Rb.mean()), fric_med=float(g.fricR.median()), acierto=float((g.R > 0).mean()),
                 pts_neto=float(g.neto.mean()), **_boot_media(g.R.values, g.fecha.values))
-
-
-def _bh(ps, q=0.10):
-    ps = np.asarray(ps); o = np.argsort(ps); k = 0
-    for j, idx in enumerate(o, 1):
-        if ps[idx] <= q * j / len(ps): k = j
-    nom = np.zeros(len(ps), bool); nom[o[:k]] = True; return nom.tolist()
 
 
 def e0(V):

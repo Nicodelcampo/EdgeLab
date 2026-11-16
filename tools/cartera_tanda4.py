@@ -61,7 +61,7 @@ def ops_tzr(carpeta):
     D = T2.leer(carpeta, "NQ_M1_dukas"); day = T2.diario(D); ms = F.build_multi_series(F.load_m1_data(T2.a_utc(D), end="2026-10-01"), tz_input="UTC"); filas = []
     for k in ("T", "Z", "R"):
         x = F.correr_modulo(k, ms); o = T2._ops(x, 1.5455)
-        o["t"] = pd.to_datetime(x.entry_time_utc, utc=True).astype("int64").values // 10**9
+        o["t"] = ((pd.to_datetime(x.entry_time_utc, utc=True) - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s")).values
         ppu = (pd.to_numeric(x.pnl_pts, errors="coerce") / pd.to_numeric(x.pnl_usd, errors="coerce")).replace([np.inf, -np.inf], np.nan).median()
         o["mae_pts"] = o.mae * ppu; o["stop"] = 0.5 * day.atr20.reindex(o.dia).values
         if k == "T":
