@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 9}, "clase": {"tendencia": 4, "carry_macro": 1, "estacionalidad": 3, "evento": 2, "reversion": 5, "ruptura": 2, "volatilidad": 2, "microestructura": 3, "cartera": 1}, "prior": {"alto": 4, "medio": 11, "bajo": 8}, "estado": {"EN_DISENO": 2, "PROPUESTA": 13, "REFUTADA": 4, "EN_PRUEBA": 1, "PISTA_VIVA": 3}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 12, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 9, "sqx": 2, "practicante": 9}, "clase": {"tendencia": 5, "carry_macro": 1, "estacionalidad": 3, "evento": 2, "reversion": 5, "ruptura": 3, "volatilidad": 2, "microestructura": 3, "cartera": 2}, "prior": {"alto": 4, "medio": 14, "bajo": 8}, "estado": {"EN_DISENO": 2, "PROPUESTA": 16, "REFUTADA": 4, "EN_PRUEBA": 1, "PISTA_VIVA": 3}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 15, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -11,6 +11,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: Con swaps reales de la cuenta objetivo, la canasta de carry 2013-2026 no tiene retorno neto > 0 o su cola izquierda rompe las reglas de drawdown de la prop.
 - Traducción: SQX/MT5 D1: posición en pares según el signo del swap (dato del bróker); filtro de tendencia opcional; requiere tenencia de varios días (cuenta swing).
 - Fuentes: Lustig, Roussanov, Verdelhan (2011), Common Risk Factors in Currency Markets, RFS; Koijen, Moskowitz, Pedersen, Vrugt (2018), Carry, JFE
+
+## EL-KNN-SOMBRA — Capa KNN sobre las operaciones pasadas de una regla propia (como T de FundedSync)
+- Clase: cartera · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: intradía · activos: NQ, ES, YM, RTY
+- Mecanismo: Capa KNN sobre las operaciones pasadas de una regla propia (como T de FundedSync)
+- Justificación económica: Ver RESULTADO_MECANISMOS.md §2
+- Cómo podría refutarse: T: única que gana también fuera de días de tendencia
+- Traducción: Probar sobre PREAPERTURA-NQ y CVGAP-ES-C (desarrollo → réplica no mirada)
+- Fuentes: docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md
 
 ## PRAC-VOL-TARGET — Cartera con volatilidad objetivo y tendencia simple (Carver)
 - Clase: cartera · fuente: practicante · prior: medio · estado: PROPUESTA · horizonte: días-meses · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD, XAGUSD, WTI, BRENT, COBRE, GAS, EURUSD, USDJPY, GBPUSD, AUDUSD, USDCAD
@@ -140,6 +148,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Traducción: SQX H1/H4: orden stop en el máximo/mínimo del día o semana previa; objetivo y stop en ATR.
 - Fuentes: FACTORES: F-HFT-CLUSTER-GRANDE-NO-DEFIENDE (A-D), F-HFT-ZONAS-NO-SON-SOPORTE
 
+## FS-SALIDA-AL-CIERRE — Mantener la ruptura hasta el cierre con stop duro, sin salidas técnicas
+- Clase: ruptura · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: intradía · activos: NQ, ES, YM, RTY
+- Mecanismo: Mantener la ruptura hasta el cierre con stop duro, sin salidas técnicas
+- Justificación económica: Ver RESULTADO_MECANISMOS.md §2
+- Cómo podría refutarse: Descriptivo FundedSync: salidas técnicas pierden, las que llegan al cierre ganan mucho
+- Traducción: Variante en ORB/PREAPERTURA/CVGAP de EdgeLab y en S/W/N/A20 sobre otros índices
+- Fuentes: docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md
+
 ## LIT-TSMOM — Momentum de serie de tiempo multi-activo
 - Clase: tendencia · fuente: literatura · prior: alto · estado: EN_DISENO · horizonte: días-meses · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD, XAGUSD, WTI, BRENT, COBRE, GAS, EURUSD, USDJPY, GBPUSD, AUDUSD, USDCAD
 - Mecanismo: El retorno de los últimos 1-12 meses de un activo predice el signo del próximo mes en índices, bonos, monedas y materias primas.
@@ -147,6 +163,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: La canasta 2013-2026 (posterior a la publicación) en CFD no supera a la misma canasta con señales de signo aleatorio, después de costos y swap. | 2026-11-15: forma semanal sin fin de semana ≈ 0 en bruto (RESULTADO.md); la forma mensual sigue sin medir. Sigue en SQX (lote 1).
 - Traducción: SQX D1/H4: largo/corto según el retorno de N días (N 20-250) o cruce de medias lentas; stop ATR largo; tamaño por volatilidad; fitness sobre la canasta.
 - Fuentes: Moskowitz, Ooi, Pedersen (2012), Time Series Momentum, JFE; Hurst, Ooi, Pedersen (2017), A Century of Evidence on Trend-Following Investing, JPM
+
+## EL-PREDECIR-DIA-TENDENCIA — Predecir días de tendencia (rango temprano, volumen relativo de apertura, amplitud)
+- Clase: tendencia · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: intradía · activos: NQ, ES, YM, RTY
+- Mecanismo: Predecir días de tendencia (rango temprano, volumen relativo de apertura, amplitud)
+- Justificación económica: Ver RESULTADO_MECANISMOS.md §2
+- Cómo podría refutarse: Noche/gap/vol20/tend60 no los anticipan (13–19 % vs 15,6 %)
+- Traducción: Filtro común para toda regla de ruptura; familia E0 sin retornos
+- Fuentes: docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md
 
 ## FS-Z-TRENDDAY — Día de tendencia por buckets de 15 min en RTH
 - Clase: tendencia · fuente: practicante · prior: medio · estado: PISTA_VIVA · horizonte: intradía · activos: NQ

@@ -104,7 +104,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EURUSD_ESCALONADAS` |  | — | 655 | — | — | — | — |
 | `EXECUTION_VARIANTS` |  | — | 3 | — | — | — | — |
 | `EXPANSION_ZONAS` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, AREAS_EXP_1_CRUZADO | 1866376 | 4 | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | — | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
-| `FUNDEDSYNC` | 2026-11-16 | — | 18 | — | — | F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA) | `fundedsyncstack_20261115` |
+| `FUNDEDSYNC` | 2026-11-16 | — | 393 | — | — | F-CANASTA-TZR (PISTA_VIVA); F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA); F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA (PALANCA_DE_DISENO); F-SALIDA-TECNICA-REGALA-LA-GANANCIA (PISTA_VIVA) | `fundedsyncstack_20261115` |
 | `GAP_CONTINUACION` | 2026-11-08 | GAP_RTH | 240 | — | — | — | `gap_continuacion_20261108` |
 | `GAP_RTH` | 2026-10-25 | C_TICKS_MULTI | 480 | — | — | — | — |
 | `GC_CELL_0415_SPOT_DIRECTION_NULL` |  | — | 4 | — | — | — | — |

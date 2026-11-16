@@ -51,6 +51,7 @@ def _hora(t):
 
 def operaciones(V) -> pd.DataFrame:
     o = pd.read_csv(DIR / "cadena/FUNDEDSYNC_OPS.csv.gz", parse_dates=["dia"])
+    o["salida"] = o.salida.astype(str).str.replace(r"_\d+$", "", regex=True)       # C_STOP_1032 -> C_STOP
     o["hora"], mm = _hora(o.t); o["lado"] = np.where(o.side > 0, "L", "S"); o["dow"] = o.dia.dt.day_name().str[:3]
     o = o.join(V, on="dia")
     o.loc[mm.values < 585, "orb15"] = np.nan                                   # ORB15 sólo se conoce desde las 09:45

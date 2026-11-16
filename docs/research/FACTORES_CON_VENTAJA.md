@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (9)
+## PISTA_VIVA (11)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ (USATECH M1 con costos de NQ)
   - Siguiente: T a papel/forward con e-proceso junto a la cartera v2 (pre-registro nuevo); Z con stop agregado como hipótesis nueva.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
+- **Salidas técnicas rápidas (giro de SuperTrend, recruce del VWAP, ruptura fallida) frente a mantener hasta el cierre** (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`, 2026-11-16, sesion)
+  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes).
+  - Dónde: FundedSync NQ
+  - Siguiente: Variante salida al cierre + stop duro contra la original en M1 de S&P, Dow y Russell (no usados), pre-registrada.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
+- **Canasta FundedSync T + Z + R (correlación diaria −0,12 / 0,29 / −0,04)** (`F-CANASTA-TZR`, 2026-11-16, sesion)
+  - Efecto: Desarrollo por día: 2020–2023 t 5,2; 2024–2026 t 6,5; holdout: las tres positivas.
+  - Dónde: NQ
+  - Siguiente: Forward con e-proceso junto a la cartera v2; Z y R con stop de catástrofe como hipótesis nueva.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -55,7 +65,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (10)
+## PALANCA_DE_DISENO (11)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -64,6 +74,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Todas las familias con holdout abierto
   - Siguiente: Diseñar y filtrar por fricción en R por operación (costo/riesgo) con corte causal pre-registrado; tamaño por contrato fijo o ∝1/√riesgo como alternativa.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`, `docs/research/cartera_20261116/PERDIDAS_CONCENTRADAS.json`
+- **Las reglas de ruptura/tendencia intradía ganan en los días de tendencia y pierden el resto; noche, gap, vol20 y tendencia 60d NO anticipan esos días** (`F-RUPTURA-VIVE-DEL-DIA-DE-TENDENCIA`, 2026-11-16, sesion)
+  - Efecto: FundedSync 2020–2026: R +152 vs −6,6; A20 +85 vs −7,6; N +64 vs −6,7; F +50 vs −2,3; S +36 vs −3,9 (T +79 vs +3,9 es la excepción). Días de tendencia 13–19 % en todos los terciles de noche/gap/vol (base 15,6 %).
+  - Dónde: NQ M1, 15 módulos de FundedSync
+  - Siguiente: Diseñar para perder poco los días sin tendencia y mantener hasta el cierre; buscar predictores nuevos de día de tendencia (E0 sin retornos).
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
   - Dónde: NQ y USATECH, 2025-08 → 2026-09
