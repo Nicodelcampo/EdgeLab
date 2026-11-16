@@ -314,5 +314,61 @@ def catastrofe(carpeta):
     OUT.mkdir(parents=True, exist_ok=True); (OUT / "L2_CATASTROFE.json").write_text(json.dumps(res, indent=1, default=float))
 
 
+# ---------------------------------------------------------------- Tanda 3 (PREREGISTRO_TANDA3.md)
+FUENTE_EJEC = {"NQ": "NQ_M1_dukas", "ES": "SP_M1_dukas", "YM": "DJ_M1_dukas"}
+
+
+def tamano_vol(carpeta):
+    """V1: t diario en USD con micros fijos vs micros escalados por la volatilidad pronosticada (rugosa), en reglas fuera de la cartera v2."""
+    sys.path.insert(0, str(ROOT / "tools"))
+    from cartera_nov import universo, DIR as CDIR
+    from cartera_nov_analisis import _ops, MICRO
+    from edgelab import costos as C
+    sel = set(json.loads((CDIR / "SELECCION.json").read_text())["futuros"]); F = {}
+    for ej, sim in FUENTE_EJEC.items():
+        day, lv, pr = tabla_dia(leer(carpeta, sim), sim); f = np.exp(pr.rugoso)
+        F[ej] = pd.DataFrame(dict(F=f, med=f.rolling(250, min_periods=60).median().shift(1)))
+    res = {}
+    for r in universo():
+        sp = r["spec"]; ej = sp.get("ejecucion") or sp["sensor"]
+        if r["cid"] in sel or ej not in FUENTE_EJEC: continue
+        o = [x for x in (_ops(r["cid"], "desc"), _ops(r["cid"], "rep")) if x is not None]
+        if not o: continue
+        ses = np.r_[o[0]["ses"], o[1]["ses"]] if len(o) > 1 else o[0]["ses"]; R = np.r_[o[0]["R"], o[1]["R"]] if len(o) > 1 else o[0]["R"]
+        rg = np.r_[o[0]["riesgo"], o[1]["riesgo"]] if len(o) > 1 else o[0]["riesgo"]
+        m = MICRO[ej]; usd_pt = C.tick_value_usd(m) / C.tick_size(m); n_fix = max(1, round(200.0 / (np.median(rg) * usd_pt)))
+        dias = pd.to_datetime(pd.Series(ses).astype(str)); FF = F[ej].reindex(dias.values)
+        esc = (FF.med / FF.F).values; ok = np.isfinite(esc)
+        n_vol = np.maximum(1, np.round(n_fix * esc[ok])); usd = R * rg * usd_pt
+        df = pd.DataFrame(dict(ses=ses[ok], fijo=usd[ok] * n_fix, vol=usd[ok] * n_vol))
+        dd = df.groupby("ses")[["fijo", "vol"]].sum()
+        if len(dd) < 20: continue
+        t = {k: float(dd[k].mean() / dd[k].std(ddof=1) * np.sqrt(len(dd))) for k in ("fijo", "vol")}
+        def dmax(x): e = np.cumsum(x / np.abs(x).mean()); return float((e - np.maximum.accumulate(np.r_[0, e])[1:]).min())
+        res[r["cid"]] = dict(ejec=ej, dias=int(len(dd)), t_fijo=t["fijo"], t_vol=t["vol"], dt=t["vol"] - t["fijo"], dd_fijo=dmax(dd.fijo.values), dd_vol=dmax(dd.vol.values),
+                             usd_dia_fijo=float(dd.fijo.mean()), usd_dia_vol=float(dd.vol.mean()))
+        print(r["cid"], {k: round(v, 2) if isinstance(v, float) else v for k, v in res[r["cid"]].items()}, flush=True)
+    from math import comb
+    pos = sum(v["dt"] > 0 for v in res.values()); n = len(res)
+    p = sum(comb(n, k) for k in range(pos, n + 1)) / 2 ** n if n else None
+    out = dict(reglas=res, n=n, dt_positivo=pos, frac=pos / n if n else None, p_signo=p, pasa=bool(n and pos / n >= 0.6 and p < 0.05))
+    OUT.mkdir(parents=True, exist_ok=True); (OUT / "T3_V1_TAMANO_VOL.json").write_text(json.dumps(out, indent=1, default=float))
+    print({k: out[k] for k in ("n", "dt_positivo", "frac", "p_signo", "pasa")})
+
+
+def cubos_salida(_=None):
+    """V2: R medio por ejecución (1R / 2R / SALIDA al cierre) a igual entrada y stop, en los cubos de PREAPERTURA y RANGO0100."""
+    from edgelab.research import regimen_offline as RO
+    EJ = {0: ("MID", "1R"), 1: ("MID", "2R"), 2: ("MID", "SALIDA"), 3: ("OPUESTO", "1R"), 4: ("OPUESTO", "2R"), 5: ("OPUESTO", "SALIDA")}
+    res = {}
+    for nom in ("PREAPERTURA-NQ-R", "PREAPERTURA-ES-R", "PREAPERTURA-YM-R", "RANGO0100-NQ-R", "RANGO0100-ES-R", "RANGO0100-GC-R"):
+        d = json.loads((ROOT / f"data/cubos/{nom}.json").read_text()); c = RO.decodificar(d.get("cubo", d), nom); j = c.idx.shape[1] - 1; res[nom] = {}
+        for tr, (a, b) in {"DESC": (20250801, 20260331), "REP": (20260401, 20260930)}.items():
+            mm = (c.ses >= a) & (c.ses <= b)
+            res[nom][tr] = {f"{EJ[e][0]}|{EJ[e][1]}": dict(n=int(((c.idx[:, j] == e) & mm).sum()), R=float(c.net[(c.idx[:, j] == e) & mm].mean())) for e in EJ}
+    gana = {nom: sum(1 for tr in v for st in ("MID", "OPUESTO") if v[tr][f"{st}|SALIDA"]["R"] > max(v[tr][f"{st}|1R"]["R"], v[tr][f"{st}|2R"]["R"])) for nom, v in res.items()}
+    (OUT / "T3_V2_CUBOS_SALIDA.json").write_text(json.dumps(dict(cubos=res, salida_gana_de_4=gana), indent=1, default=float)); print(gana)
+
+
 if __name__ == "__main__":
-    globals()[sys.argv[1]](sys.argv[2])
+    globals()[sys.argv[1]](*(sys.argv[2:] or [None]))

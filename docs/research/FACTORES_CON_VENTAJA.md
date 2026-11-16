@@ -75,14 +75,14 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Diseñar para perder poco los días sin tendencia y mantener hasta el cierre; buscar predictores nuevos de día de tendencia (E0 sin retornos).
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **Salidas técnicas rápidas (giro de SuperTrend, recruce del VWAP, ruptura fallida) frente a mantener hasta el cierre** (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`, 2026-11-16, sesion)
-  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes). | CONFIRMADO fuera de muestra (S&P, Dow, Russell 2012–2026, BH): S +0,046 ATR/día y W +0,121 ATR/día al quitar la salida técnica (3/3 índices); A20 y N no. Sin ella S y W siguen sin ventaja neta fuera del Nasdaq y el peor día empeora.
+  - Efecto: S: SuperTrend −7,2 (2.585 ops) vs cierre +84; W: VWAP −6,3 (8.579) vs cierre +131; N: fallida −41 vs cierre +76 (descriptivo; las salidas al cierre son sobrevivientes). | CONFIRMADO fuera de muestra (S&P, Dow, Russell 2012–2026, BH): S +0,046 ATR/día y W +0,121 ATR/día al quitar la salida técnica (3/3 índices); A20 y N no. Sin ella S y W siguen sin ventaja neta fuera del Nasdaq y el peor día empeora. | En cubos propios: SALIDA al cierre gana a 1R/2R en PREAPERTURA NQ 4/4, ES 4/4, YM 2/4; NO en rupturas del rango nocturno (RANGO0100 NQ 0/4, ES 0/4).
   - Dónde: FundedSync NQ
   - Siguiente: Aplicar en el diseño de reglas de ruptura propias (no salir por señal técnica rápida); no alcanza solo.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **Volatilidad rugosa (H de la log-vol ≈ 0,06–0,08) y pronóstico rugoso/HAR del rango del día** (`F-VOL-RUGOSA-PRONOSTICO`, 2026-11-16, sesion)
-  - Efecto: H estable 2012–2026 en NQ/S&P/Dow/Russell (también con lags 5–50); pronóstico del log-rango: error 0,66–0,69 (rugoso) y 0,67–0,70 (HAR) relativo a la caminata aleatoria.
+  - Efecto: H estable 2012–2026 en NQ/S&P/Dow/Russell (también con lags 5–50); pronóstico del log-rango: error 0,66–0,69 (rugoso) y 0,67–0,70 (HAR) relativo a la caminata aleatoria. | Tamaño por vol pronosticada REFUTADO en 12 reglas no usadas (peor en 9/12, p 0,98): el stop estructural ya normaliza la vol.
   - Dónde: Índices M1
-  - Siguiente: Usar el pronóstico de volatilidad para stops y tamaño (fricción en R estable); no para dirección.
+  - Siguiente: Usar sólo como pronóstico de volatilidad (stops a re-simular, costos); no para dimensionar reglas medidas en R.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
 - **El nodo de volumen más allá de B medido como «franja de medio impulso con ≥ x veces el volumen de cada vecina» casi nunca ocurre** (`F-LUXIMB-HVN-DEFINICION`, 2026-11-11, sesion)
   - Efecto: hvn_1440 en eventos del visor: mediana 0,45, percentil 99 1,59; ≥ 2 en 3 de 925 eventos: H-HVN-1 y H-HVN-2 quedan SIN POTENCIA (no medibles), no refutadas. En el control (9.624 extendidos) hvn ≥ 2 toca A MENOS (0,46 contra 0,54): dirección opuesta a la esperada, exploratorio.
