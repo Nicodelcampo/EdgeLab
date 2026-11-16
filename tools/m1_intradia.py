@@ -26,6 +26,36 @@ def lanzar_vwapb():
     subprocess.run(a, cwd=ROOT, check=True)
 
 
+def _incrustar(main: str) -> str:
+    """Kernel autocontenido: el paquete edgelab mínimo (holdout, ema_zones, fuentes_ticks) + m1_intradia + el main."""
+    pre = "import sys, types\n"
+    for nom, ruta in (("edgelab", None), ("edgelab.research", None), ("edgelab.holdout", "edgelab/holdout.py"),
+                      ("edgelab.research.ema_zones", "edgelab/research/ema_zones.py"), ("edgelab.research.fuentes_ticks", "edgelab/research/fuentes_ticks.py"),
+                      ("m1_intradia", "edgelab/research/m1_intradia.py")):
+        pre += f"_m = types.ModuleType({nom!r}); _m.__path__ = []; sys.modules[{nom!r}] = _m\n"
+        if ruta: pre += f"exec(compile({(ROOT / ruta).read_text()!r}, {ruta!r}, 'exec'), _m.__dict__)\n"
+        if "." in nom: pre += f"setattr(sys.modules[{nom.rsplit('.', 1)[0]!r}], {nom.rsplit('.', 1)[1]!r}, _m)\n"
+    return pre + (ROOT / main).read_text()
+
+
+def lanzar_vwapb_holdout(acta_json, desde="20261001", hasta="20261231"):
+    """Holdout de VWAPB-3 (ACTA_HOLDOUT_VWAPB3.md): sólo después de registrar la apertura. Fricción canónica de cada futuro (edgelab/costos.py)."""
+    import json, os
+    sys.path.insert(0, str(ROOT)); from edgelab.research.embudo_runners import friccion
+    fr = {i: friccion(i)[0] for i in ("NQ", "YM", "ES")}
+    k = ROOT / "data/vwapb_holdout_kernel.py"; k.parent.mkdir(exist_ok=True)
+    env = dict(ACTA_JSON=acta_json, FRICCION_JSON=json.dumps(fr), DESDE=desde, HASTA=hasta)
+    k.write_text("import os\n" + "".join(f"os.environ[{a!r}] = {b!r}\n" for a, b in env.items()) + _incrustar("tools/kaggle_grilla/vwapb_holdout_main.py"))
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", "nicolasbuttaro/edgelab-vwapb3-holdout", "--title", "edgelab vwapb3 holdout",
+                    "--script", str(k), "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
+
+
+def traer_vwapb_holdout():
+    o = ROOT / "docs/research/m1_intradia_20261114"
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", "nicolasbuttaro/edgelab-vwapb3-holdout", "--file", "RESULTADO.json",
+                    "--out", str(o / "RESULTADO_HOLDOUT_VWAPB3.json")], cwd=ROOT, check=True)
+
+
 def traer_vwapb():
     o = ROOT / "data/vwapb"; o.mkdir(parents=True, exist_ok=True)
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", "nicolasbuttaro/edgelab-vwapb-ops", "--file", "VWAPB_OPS.csv.gz", "--out", str(o / "VWAPB_OPS.csv.gz")], cwd=ROOT, check=True)
