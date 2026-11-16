@@ -1,0 +1,58 @@
+"""Kernel: los 15 módulos de FUNDEDSYNCSTACK (valores de fábrica, 1 contrato) sobre M1 del Nasdaq 2012 → 2026-09 con costos de NQ y el
+nulo intradía de m1_intradia (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). Lo arma tools/fundedsync_cadena.py."""
+import glob, json, os, time
+import numpy as np, pandas as pd
+M = __import__("m1_intradia"); from edgelab.research import fundedsyncstack as F
+t0 = time.time(); ent = os.environ.get("ENTRADA", "/kaggle/input"); FR = float(os.environ.get("FRICCION", "1.5455")); REPS = int(os.environ.get("REPS", "20"))
+D = M.leer_m1(glob.glob(ent + "/**/NQ_M1_dukas-M1-*.csv", recursive=True)[0])
+D = D[(D.index >= "2012-01-20") & (D.index < "2026-09-30")]
+
+
+def a_utc(D):
+    t = D.index.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert("UTC"); ok = ~t.isna()
+    return pd.DataFrame(dict(t=t[ok], o=D.o.values[ok], h=D.h.values[ok], l=D.l.values[ok], c=D.c.values[ok], v=(D.v.values if "v" in D else np.ones(len(D)))[ok]))   # el nulo no trae volumen
+
+
+def operaciones(D):
+    ms = F.build_multi_series(F.load_m1_data(a_utc(D), end="2026-10-01"), tz_input="UTC"); out = {}
+    for k in F.MODULOS:
+        try: x = F.correr_modulo(k, ms)
+        except Exception as ex: print("ERROR", k, str(ex)[:200], flush=True); out[k] = None; continue
+        if not len(x): out[k] = pd.DataFrame(columns=["dia", "neto", "riesgo", "side"]); continue
+        tt = pd.to_datetime(x.entry_time_utc, utc=True).dt.tz_convert("America/New_York")
+        out[k] = pd.DataFrame(dict(dia=tt.dt.tz_localize(None).dt.normalize(), t=tt.astype("int64") // 10**9, side=x.side.values,
+                                   neto=pd.to_numeric(x.pnl_pts, errors="coerce").values - FR,
+                                   riesgo=(pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().astype(float).values,
+                                   salida=x.exit_name.values))
+    return out
+
+
+def t_ses(df):
+    if df is None or len(df) < 3: return None
+    s = df.groupby("dia").neto.sum(); return float(s.mean() / s.std(ddof=1) * np.sqrt(len(s))) if s.std(ddof=1) > 0 else None
+
+
+def resumen(ops):
+    R = {}
+    for k, df in ops.items():
+        if df is None: R[k] = None; continue
+        R[k] = {}
+        for nom, a, b in M.PERIODOS:
+            x = df[(df.dia >= a) & (df.dia <= b)]
+            rg = pd.to_numeric(x.riesgo, errors="coerce").astype(float); con = x[np.isfinite(rg) & (rg > 0)]
+            R[k][nom] = dict(n=int(len(x)), neto_pts=float(x.neto.mean()) if len(x) else None, t_ses=t_ses(x),
+                             R=float((con.neto / rg[con.index]).mean()) if len(con) else None, n_con_stop=int(len(con)),
+                             ganadoras=float((x.neto > 0).mean()) if len(x) else None)
+    return R
+
+
+real = operaciones(D); Rr = resumen(real); print(f"[{time.time() - t0:6.0f}s] real listo", flush=True)
+pd.concat([v.assign(modulo=k) for k, v in real.items() if v is not None and len(v)]).to_csv("FUNDEDSYNC_OPS.csv.gz", index=False)
+nulo = []
+for s in range(REPS):
+    Rs = resumen(operaciones(M.sintetica_m1(D, 5000 + s)))
+    nulo.append(max((v["OOS"]["t_ses"] for v in Rs.values() if v and v["OOS"]["t_ses"] is not None), default=float("nan")))   # tramo principal: 2020–2023
+    print(f"[{time.time() - t0:6.0f}s] nulo {s} tmax {nulo[-1]:.2f}", flush=True)
+json.dump(dict(modulos=Rr, nulo_tmax_oos=nulo, umbral_p95=float(np.nanpercentile(nulo, 95)) if nulo else None, friccion_pts=FR,
+               segundos=round(time.time() - t0)), open("RESULTADO.json", "w"), indent=1, default=float)
+print("listo")

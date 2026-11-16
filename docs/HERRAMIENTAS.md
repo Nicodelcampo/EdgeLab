@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-651 scripts.
+653 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -270,6 +270,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/familias.py` | Índice de FAMILIAS de investigación: un renglón por familia con su linaje, pruebas contadas, campañas, último desenlace del embudo |
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
+| `tools/fundedsync_cadena.py` | FUNDEDSYNCSTACK por la cadena (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
 | `tools/gc_exact4_prepare.py` | Local metadata capture / exact4 target-free census. Never computes outcomes. |
 | `tools/gc_exact4_review.py` | Audit private exact4 census; bind layers to the original chart bundle. |
@@ -355,6 +356,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_grilla/construir_kernel_u1_cruzado.py` | python tools/kaggle_grilla/construir_kernel_u1_cruzado.py tools/kaggle_grilla/kernel_u1_cruzado.py |
 | `tools/kaggle_grilla/embudo_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/estrategias_scrapeadas_main.py` | (sin docstring) |
+| `tools/kaggle_grilla/fundedsync_main.py` | Kernel: los 15 módulos de FUNDEDSYNCSTACK (valores de fábrica, 1 contrato) sobre M1 del Nasdaq 2012 → 2026-09 con costos de NQ y el |
 | `tools/kaggle_grilla/gap_continuacion_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/gap_rth_main.py` | (sin docstring) |
 | `tools/kaggle_grilla/grilla_main.py` | (sin docstring) |
