@@ -41,3 +41,8 @@ decide más el forward. Antes: correlación con la v2, la Cartera B y Franklin (
 
 Correlación diaria (ago-25 → sep-26) de SOM sin_finde NQ con: v2 0,03 · Cartera B 0,30 · Franklin 0,42 (misma dirección el 63 % de los días
 en que operan los dos). Mensual: −0,09 a 0,18. Diversifica a la v2; con la B y Franklin comparte la apertura de NY.
+
+## Holdout (apertura única, `ACTA_HOLDOUT_SOM.md`, 2026-10-01 → 2026-11-13): NO_CONCLUYENTE, a favor
+29 operaciones NQ, **R +0,16 por operación**, acierto 66 % (18 por trailing, 6 en el stop inicial, 5 cierres de viernes); t 0,70, p 0,24.
+Fisher con el desarrollo (0,039): **0,053** — queda justo arriba de 0,05: NO_CONCLUYENTE por la regla del acta, con el signo a favor y el
+doble del efecto de desarrollo. Decide el forward (`tools/seguimiento_forward.py`). Cifras: `seguimiento/RESULTADO_HOLDOUT.json`.
