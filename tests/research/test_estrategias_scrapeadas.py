@@ -60,3 +60,19 @@ def test_viernes_lunes_solo_ventas_y_e0():
     assert len(R) and (R.lado == -1).all() and (R.bruto >= -R.riesgo - 1e-9).all()
     V = X.visitas_hougaard(_ctx(60, 7))
     assert {"menor", "dentro", "visita"} <= set(V.columns) and V.visita.dtype == bool
+
+
+def test_franklin_variantes_causal_y_base_coincide():
+    ctx = _ctx(140, 9)
+    R = X.franklin_variantes(ctx)
+    assert len(R) and set(map(tuple, R.celda)) <= set(X.FRV_CELDAS) and (R.riesgo > 0).all()
+    corte = ctx["t"][len(ctx["t"]) // 2]
+    pre = {k: (v[ctx["t"] <= corte] if isinstance(v, np.ndarray) else v) for k, v in ctx.items()}
+    dia = int(pd.to_datetime(corte - 60, unit="s", utc=True).tz_convert("America/New_York").strftime("%Y%m%d"))
+    a = R[R.fecha < dia].reset_index(drop=True); b = X.franklin_variantes(pre); b = b[b.fecha < dia].reset_index(drop=True)
+    pd.testing.assert_frame_equal(a, b)
+    # la celda (1000, rango, ninguno) es la regla base FRANKLIN «cierre» (salvo los primeros 20 días sin ATR)
+    base = X.franklin(ctx); base = base[base.celda.map(tuple) == ("cierre",)].set_index("fecha")
+    v = R[R.celda.map(tuple) == ("1000", "rango", "ninguno")].set_index("fecha")
+    comun = v.index.intersection(base.index)
+    assert len(comun) and np.allclose(v.loc[comun, "bruto"], base.loc[comun, "bruto"])

@@ -89,5 +89,39 @@ def correr(carpeta):
     print({k: (v["pasa"], v["nominada_bh"], v["regimen_reciente"]) for k, v in res["pruebas"].items()})
 
 
+def _en_r(R, fr):
+    g = R.copy(); g["dia"] = pd.to_datetime(g.fecha.astype(str)); g["neto"] = g.bruto - fr; g["R"] = g.neto / g.riesgo
+    g["Rb"] = g.bruto / g.riesgo; g["fricR"] = fr / g.riesgo; g["clave"] = g.celda.map(lambda x: "|".join(x)); return g
+
+
+def franklin_mejoras(carpeta):
+    """PREREGISTRO_FRANKLIN_MEJORAS.md: 32 variantes, exploración 2020–2022 (NQ, ES), 3 finalistas, confirmación 2023 → 2026-09."""
+    from edgelab.research import estrategias_scrapeadas as X
+    from edgelab.research.embudo_runners import friccion
+    E, C = ("2020-01-01", "2022-12-31"), ("2023-01-01", "2026-09-29"); ops = {}
+    for inst, arch in dict(FUENTES, RTY="USSC2000IDXUSD").items():
+        ops[inst] = _en_r(X.franklin_variantes(ctx_de_csv(Path(carpeta) / f"{arch}.csv")), friccion(inst)[0]); print(inst, len(ops[inst]), flush=True)
+    base = "1000|rango|ninguno"; expl = {}
+    for cl in sorted(ops["NQ"].clave.unique()):
+        r = {i: tramo(ops[i][ops[i].clave == cl], *E) for i in ("NQ", "ES")}
+        ok = all(not r[i].get("no_evaluable") and r[i]["n"] >= 60 and r[i]["R"] > 0 and r[i]["fric_med"] <= 0.08 for i in r)
+        expl[cl] = dict(NQ=r["NQ"], ES=r["ES"], puntaje=float(np.mean([r[i]["R"] or 0 for i in r])), elegible=bool(ok))
+    fin = [k for k, v in sorted(expl.items(), key=lambda kv: -kv[1]["puntaje"]) if v["elegible"]][:3]
+    def pool(cl, x0, x1):
+        g = pd.concat([ops[i][ops[i].clave == cl] for i in ("NQ", "ES")])          # mismo día en NQ y ES = mismo bloque del bootstrap
+        return tramo(g, x0, x1)
+    conf = {cl: pool(cl, *C) for cl in fin + [base]}
+    bh = _bh([conf[cl].get("p", 1.0) for cl in fin]) if fin else []
+    for cl, b in zip(fin, bh): conf[cl]["nominada_bh"] = bool(b); conf[cl]["confirma"] = bool(b and conf[cl]["R"] > conf[base]["R"])
+    gan = next((cl for cl in fin if conf[cl].get("confirma")), None)
+    desc = {cl: {i: dict(A=tramo(ops[i][ops[i].clave == cl], *A), B=tramo(ops[i][ops[i].clave == cl], *B)) for i in ops} for cl in fin + [base]}
+    out = dict(preregistro="docs/research/reels_20261116/PREREGISTRO_FRANKLIN_MEJORAS.md", exploracion=expl, finalistas=fin, confirmacion=conf,
+               ganadora=gan, al_holdout=gan or base, descriptivo=desc)
+    (OUT / "FRANKLIN_MEJORAS.json").write_text(json.dumps(out, indent=1, default=float))
+    for cl in fin + [base]: print(cl, "E", round(expl[cl]["puntaje"], 3), "C", conf[cl]["n"], round(conf[cl]["R"], 3), round(conf[cl].get("p", 1), 3), conf[cl].get("confirma"),
+                                  {i: (round(desc[cl][i]["B"]["R"], 3), round(desc[cl][i]["A"]["R"], 3)) for i in ops}, flush=True)
+    print("ganadora", gan, "al holdout", gan or base)
+
+
 if __name__ == "__main__":
-    {"correr": lambda: correr(sys.argv[2])}[sys.argv[1]]()
+    {"correr": lambda: correr(sys.argv[2]), "franklin_mejoras": lambda: franklin_mejoras(sys.argv[2])}[sys.argv[1]]()

@@ -297,3 +297,46 @@ def franklin(ctx) -> pd.DataFrame:
 
 
 FAMILIAS.update({"VIERNES_LUNES": (viernes_lunes, VL_CELDAS), "DOS_VELAS": (dos_velas, DV_CELDAS), "FRANKLIN": (franklin, FR_CELDAS)})
+
+
+# ---------------------------------------------------------------- FRANKLIN: variantes (PREREGISTRO docs/research/reels_20261116/PREREGISTRO_FRANKLIN_MEJORAS.md)
+FRV_HORAS = ("0945", "1000", "1030", "primera")            # primera = el primer cierre alineado de 09:59, 10:29, 10:59, 11:29
+FRV_STOPS = ("rango", "atr")                               # extremo opuesto 09:30 → decisión | 0,5 × ATR20 diario (RTH) desde la entrada
+FRV_FILTROS = ("ninguno", "vwap_ny", "sin_gap", "vwap_ny+sin_gap")
+FRV_CELDAS = [(h, s, f) for h in FRV_HORAS for s in FRV_STOPS for f in FRV_FILTROS]
+_FRV_MIN = {"0945": (584,), "1000": (599,), "1030": (629,), "primera": (599, 629, 659, 689)}
+
+
+def franklin_variantes(ctx, celdas=None) -> pd.DataFrame:
+    """Franklin con hora de decisión, stop y filtro variables; salida siempre al cierre 16:00. Filtros: `vwap_ny` exige además el lado
+    correcto del VWAP anclado a las 09:30 (dos VWAP, RobotEdge); `sin_gap` excluye días con |apertura 09:30 − cierre RTH previo| ≥ 0,5 ×
+    ATR20 (el sesgo puede ser sólo el gap, Kemet). Causal: todo con datos hasta el cierre de la vela de decisión; ATR20 y gap del día previo."""
+    celdas = celdas or FRV_CELDAS
+    o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; m, f, _ = _hora(ctx, "America/New_York"); vw, lh, ll = _sesgo_franklin(ctx)
+    v = np.maximum(np.asarray(ctx["v"], float), 1e-9); tp = (h + l + c) / 3
+    D, _, _ = _dias_rth(ctx); filas = []; prev = None; rangos = []
+    for d in D:
+        ix = d["ix"]; atr = np.mean(rangos[-20:]) if len(rangos) >= 20 else np.nan
+        gap = abs(d["o"] - prev) / atr if (prev is not None and np.isfinite(atr) and atr > 0) else np.nan
+        prev = float(c[ix[-1]]); rangos.append(d["h"] - d["l"])
+        if not np.isfinite(atr): continue
+        mm = m[ix]; vwny = np.cumsum(tp[ix] * v[ix]) / np.cumsum(v[ix]); ult = int(ix[-1])
+        for celda in celdas:
+            hora, stop, filtro = celda
+            if "sin_gap" in filtro and not (np.isfinite(gap) and gap < 0.5): continue
+            for mdec in _FRV_MIN[hora]:
+                q = np.flatnonzero(mm == mdec)
+                if not len(q): continue
+                q = int(q[0]); k = int(ix[q]); p = float(c[k])
+                if not (np.isfinite(lh[k]) and np.isfinite(vw[k])): continue
+                dd = 1 if (p > lh[k] and p > vw[k]) else -1 if (p < ll[k] and p < vw[k]) else 0
+                if dd and "vwap_ny" in filtro and not (dd * (p - vwny[q]) > 0): dd = 0
+                if not dd: continue
+                orr = ix[: q + 1]
+                sl = dd * (p - (float(l[orr].min()) if dd == 1 else float(h[orr].max()))) if stop == "rango" else 0.5 * atr
+                if not sl > 0 or k >= ult: break
+                b, mot = _sim_velas(o, h, l, c, k + 1, p, dd, sl, 0.0, None, ult)
+                filas.append(dict(fecha=int(d["fecha"]), celda=celda, lado=dd, riesgo=float(sl), bruto=float(b), motivo=mot, minuto=int(mdec)))
+                break
+    return pd.DataFrame(filas)
+
