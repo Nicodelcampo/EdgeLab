@@ -156,3 +156,29 @@ Por la regla declarada (50K) **no entra**: la quema sube a 30 %. En cuenta de dr
 - **Lo que sí mejora la rentabilidad es la cartera en la cuenta correcta**: v2 + SOM y v2 + Cartera B en cuentas de drawdown fijo. La elección de
   firma/cuenta es de Nico; con sus reglas reales se repite la simulación.
 - Pistas abiertas: noche no baja como filtro de riesgo (SOM, T); SOM con tamaño por R constante.
+
+## 15. Ronda 2 (pre-registro, 2026-11-16): «aplicalo a las otras que lo valgan»
+Con L1–L7 la mejora ya no se busca en las perillas de la señal sino en **cómo se arriesga** (tamaño) y **cómo se combinan** (cartera).
+Triage completo:
+| Estrategia | ¿Vale? | Qué se le aplica / por qué no |
+|---|---|---|
+| SOM | Sí | **Tamaño** (pista abierta): su stop va de 5 a 813 pts (mediana 68); a 1 contrato el riesgo en USD varía ×100 y el t en USD (1,96) queda muy por debajo del t en R. |
+| T | Sí | **Tamaño**: stop variable (rango de apertura × 1,25). |
+| Franklin | Sí (sólo tamaño) | Señal ya explorada (32 variantes); su stop (rango 09:30–10:00) es variable. |
+| Z, R (Cartera B) | No | 2–3 operaciones por mes y evidencia fuera de muestra mínima; el contexto de noche de Z ya se miró en estos datos (tanda 4) → sólo forward. |
+| Reglas de la v2/v3 | No | Su celda salió de una grilla ya medida (cambiar la celda es re-elegir); tamaño (M3), fricción (M1), comisión (A1) y pesos (A2) ya se probaron. |
+| PREAPERTURA-ES, noche como filtro | No acá | Su dato ya se vio: lo decide el forward (T5b). |
+| **Cartera SOM + T + Franklin** | Sí | Criterio C5: son las tres reglas con historia 2012–2026; se prueba cómo pesarlas. |
+
+### R2-A. Tamaño por regla (SOM NQ, T NQ, Franklin NQ+ES)
+Variantes: `fijo` (1 contrato, base) · `R_const` (contratos ∝ 1/riesgo: todas las operaciones arriesgan lo mismo) · `raiz` (∝ 1/√riesgo,
+intermedio; F-STOP-CORTO-ES-FRICCION halló que el contrato fijo superaba al riesgo fijo en la cartera v2). Tamaño continuo (el t es
+invariante a la escala; la conversión a micros enteros se hace al operar). Puntaje: t del resultado mensual; también drawdown en múltiplos
+del riesgo medio y años positivos. Elección en años pares, confirmación en impares: diferencia mensual de t no se testea directo, se exige
+**t mensual mayor que el de `fijo` en impares y años positivos ≥**; con 3 reglas × 2 variantes = 6 pruebas, BH q 0,10 sobre la diferencia
+mensual normalizada (cada serie dividida por su desvío en pares).
+### R2-B. Pesos de la cartera SOM + T + Franklin (con el tamaño que gane en R2-A, o `fijo`)
+`igual_contrato` (1 de cada una) · `igual_riesgo` (cada regla al mismo riesgo medio por operación) · `paridad_vol` (peso ∝ 1/desvío mensual,
+estimado en pares). Puntaje: t mensual de la suma y drawdown; confirmación en impares; correlaciones mensuales informadas. Descriptivo con
+regla de uso: la mejor en impares pasa como propuesta de pesos para el forward (no reemplaza nada).
+Contador: R2-A 6, R2-B 2.
