@@ -22,8 +22,11 @@ def operaciones(carpeta):
     ops = {"SOM": pd.DataFrame(dict(fecha=S.fecha, usd=(S.bruto - FR["NQ"]) * 2.0, riesgo=S.riesgo * 2.0))}
     D = T2.leer(carpeta, "NQ_M1_dukas"); ms = F.build_multi_series(F.load_m1_data(T2.a_utc(D), end="2026-10-01"), tz_input="UTC")
     x = F.correr_modulo("T", ms); o = T2._ops(x, FR["NQ"])
-    rg = (pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().to_numpy(float)
-    ops["T"] = pd.DataFrame(dict(fecha=o.dia.dt.strftime("%Y%m%d").astype(int).values, usd=o.neto.values * 2.0, riesgo=np.maximum(rg, 4.0) * 2.0))   # riesgo ≥ 4 pts (T a veces ≈ 0)
+    # Riesgo INICIAL de T: el motor devuelve el stop activo al salir (movido a la entrada al activarse el stop administrado), no el inicial.
+    # submit_entry fija stop = clip(rango 09:30–09:45 × 1,25, 2, 100) pts (FtmConfig): se reconstruye del M1 (2026-11-16).
+    mm = D.index.hour * 60 + D.index.minute; orb = D[(mm >= 570) & (mm < 585)]; dd = orb.index.normalize()
+    rango = (orb.h.groupby(dd).max() - orb.l.groupby(dd).min()); r0 = (rango * 1.25).clip(2.0, 100.0)
+    ops["T"] = pd.DataFrame(dict(fecha=o.dia.dt.strftime("%Y%m%d").astype(int).values, usd=o.neto.values * 2.0, riesgo=r0.reindex(o.dia).to_numpy(float) * 2.0))
     fr = []
     for inst, arch in (("NQ", "NQ_M1_dukas"), ("ES", "SP_M1_dukas")):
         R = X.franklin(RR.ctx_de_csv(Path(carpeta) / f"{arch}.csv")); R = R[R.celda.map(tuple) == ("cierre",)]

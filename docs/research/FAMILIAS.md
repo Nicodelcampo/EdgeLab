@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-264 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+265 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -161,6 +161,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `MEDIODIA_SUBASTA_NQ` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `MEDIODIA_SUBASTA_YM` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `MEJORAS_CARTERA_20261116` | 2026-11-16 | CARTERA_20261116, PERDIDAS_STOP_CORTO | 3 | — | — | F-CARTERA-8-NOV (PISTA_VIVA); F-FIN-DE-RUEDA-NO (NO_REPETIR); F-FRENO-DIARIO-NO (NO_REPETIR); F-NOCHE-MOVIDA-Z-Y-PREAPERTURA-ES (PISTA_VIVA); F-STOP-CORTO-ES-FRICCION (PALANCA_DE_DISENO); F-TZR-TAMANO-EN-CARTERA (PALANCA_DE_DISENO) | `cartera_20261116` |
+| `MEJORA_20261116` | 2026-11-16 | SOM, FUNDEDSYNC, FRANKLIN | 8 | — | — | F-AJUSTE-FINO-NO-PAGA (PALANCA_DE_DISENO) | `mejora_estrategias_20261116` |
 | `MGC_EMA_200_500_2000_SPOT_T2` |  | — | 5 | — | — | — | — |
 | `MODELO_ASIA_CFD_NQ` | 2026-11-01 | ASIA_BOS_GAPS_CFD_NQ | 2160 | 2 | MODELO-ASIA-V2-CFD-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-CFD-NQ: SIN_CANDIDATAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |
 | `MODELO_ASIA_NQ` | 2026-11-01 | ASIA_BOS_GAPS_NQ | 2161 | 2 | MODELO-ASIA-V2-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-NQ: PISTAS_VIVAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |

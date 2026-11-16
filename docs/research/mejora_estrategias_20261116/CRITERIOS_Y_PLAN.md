@@ -182,3 +182,40 @@ mensual normalizada (cada serie dividida por su desvío en pares).
 estimado en pares). Puntaje: t mensual de la suma y drawdown; confirmación en impares; correlaciones mensuales informadas. Descriptivo con
 regla de uso: la mejor en impares pasa como propuesta de pesos para el forward (no reemplaza nada).
 Contador: R2-A 6, R2-B 2.
+
+### Enmienda R2-1 (2026-11-16): primera corrida de T DESCARTADA (sesgo de futuro en el riesgo)
+El motor de T devuelve en `stop_price` el stop ACTIVO al salir, que se mueve a la entrada cuando la operación llega a su disparador: las
+ganadoras parecían de riesgo ≈ 0 (piso 4 pts) y el tamaño ∝ 1/riesgo las sobreponderaba a posteriori (t mensual 4 → 9, falso). Se reconstruye el
+riesgo inicial exacto de `submit_entry`: clip(rango 09:30–09:45 × 1,25, 2, 100) pts, y se relanza. Es también la causa de la «métrica R absurda»
+de T vista en la cadena de FundedSync. SOM y Franklin no cambian (sus stops son los iniciales); sus cifras de la corrida descartada coinciden.
+Efecto colateral: el tamaño de T a 200 USD de la tanda 4 (C2) usó la mediana de ese riesgo sesgado (T sobredimensionada en esa versión); la
+Cartera B (1 MNQ fijo) no se afecta.
+
+## 16. Resultado ronda 2 (`RONDA2.json`, `tools/mejora_ronda2.py`, con el riesgo inicial de T corregido)
+**R2-A Tamaño: el contrato fijo gana en las tres.**
+| Regla | fijo: t mes pares / impares | R_const | raíz | p (vs fijo, impares) |
+|---|---|---|---|---|
+| SOM | 2,83 / **2,98** | 3,38 / 2,05 | 3,28 / 2,64 | 0,77 / 0,55 |
+| T | 3,98 / **4,13** | 2,99 / 2,59 | 3,76 / 3,65 | 0,92 / 0,76 |
+| Franklin | 1,38 / **1,94** | 0,07 / 0,84 | 1,09 / 1,64 | 0,89 / 0,85 |
+Confirma F-STOP-CORTO-ES-FRICCION en tres reglas nuevas: igualar el riesgo por operación pone más contratos en los stops chicos, que es donde la
+fricción y el ruido pesan más. **Se queda el contrato fijo** (en SOM la pista de la ronda 1 queda refutada).
+
+**R2-B Pesos de SOM + T + Franklin (contrato fijo):** igual_contrato t impares 3,80 (654 USD/mes por micro), igual_riesgo 3,75, paridad_vol
+3,74: **los pesos no importan** (las tres reglas ya tienen riesgos parecidos a 1 micro). La suma **no supera el t de T sola** (4,13): SOM y
+Franklin tienen menos t y correlación mensual 0,20–0,35 con T. Suman ganancia (más USD por mes con drawdown de la misma escala), no eficiencia.
+
+## 17. Balance final del programa (rondas 1 y 2)
+| Palanca | SOM | T | Franklin | Lección |
+|---|---|---|---|---|
+| Perillas de señal/entrada | no | — | no (32 var.) | L1, L3, L5 |
+| Salida | no | no (empeora) | no | L2, L6 |
+| Stop | no | no | — | L1 |
+| Contexto (noche) | baja riesgo, no gana | baja riesgo, pierde | — | L4 |
+| Tamaño | fijo | fijo | fijo | L8 |
+| Pesos de cartera | indistintos | | | L9 |
+- **L8**: el contrato fijo le gana al riesgo constante en todas las reglas medidas (cartera v2 y ahora SOM, T, Franklin).
+- **L9**: entre reglas de riesgo parecido, los pesos no mueven el t; lo que mueve la rentabilidad es **qué reglas** se suman y en **qué cuenta**.
+- **Integridad**: el `stop_price` de T es el stop final, no el inicial (corregido en el análisis; el motor de FundedSync no se tocó).
+- Conclusión para la siguiente etapa: las reglas confirmadas ya están en su forma eficiente; el aumento de rentabilidad viene de **sumar reglas
+  nuevas descorrelacionadas que confirmen en forward** y de la **cuenta** (pendiente con Nico). El método queda escrito para la próxima regla.

@@ -15,7 +15,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Operar la v2 (CARTERA_V2_OPERATIVA.json): comisión mínima, PREAPERTURA-NQ ×0,5, piso de fricción 0,08 R, micros fijos; quema 50K 21 % → 3 %. Forward con e-proceso.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`, `docs/research/cartera_20261116/RESULTADO_TANDA4.md`
 - **FUNDEDSYNC T (FtmEngine: ORB 15 min + KNN sobre operaciones sombra), valores de fábrica, NQ** (`F-FUNDEDSYNC-T-KNN`, 2026-11-16, sesion)
-  - Efecto: NQ M1 2020–2023 +13,2 pts/op neto, t 4,37 contra p95 del nulo de 15 módulos 1,92; 2024-01→2025-07 +17,2; 2025-08→2026-09 +22,6; 19 ops/mes, stop mediano 36 pts; causal por prefijo. Z y R también superan al nulo pero sin stop y 2–3 ops/mes. | Holdout 1-oct→13-nov (única apertura): T +14,2 pts/op (n 26, t 0,54), Fisher con desarrollo 0,020 → CONFIRMADA por la regla del acta (descansa en el desarrollo); Z 7/7 ganadoras +137 pts; R 5 ops no concluyente.
+  - Efecto: NQ M1 2020–2023 +13,2 pts/op neto, t 4,37 contra p95 del nulo de 15 módulos 1,92; 2024-01→2025-07 +17,2; 2025-08→2026-09 +22,6; 19 ops/mes, stop mediano 36 pts; causal por prefijo. Z y R también superan al nulo pero sin stop y 2–3 ops/mes. | Holdout 1-oct→13-nov (única apertura): T +14,2 pts/op (n 26, t 0,54), Fisher con desarrollo 0,020 → CONFIRMADA por la regla del acta (descansa en el desarrollo); Z 7/7 ganadoras +137 pts; R 5 ops no concluyente. | Integridad 2026-11-16: el stop_price de T es el stop activo al salir (movido a la entrada), no el inicial; riesgo inicial = clip(rango 09:30–09:45 × 1,25, 2, 100).
   - Dónde: NQ (USATECH M1 con costos de NQ)
   - Siguiente: T a papel/forward con e-proceso junto a la cartera v2 (pre-registro nuevo); Z con stop agregado como hipótesis nueva.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
@@ -80,7 +80,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
-  - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026).
+  - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto
   - Siguiente: Diseñar y filtrar por fricción en R por operación (costo/riesgo) con corte causal pre-registrado; tamaño por contrato fijo o ∝1/√riesgo como alternativa.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`, `docs/research/cartera_20261116/PERDIDAS_CONCENTRADAS.json`
@@ -105,7 +105,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Cartera B aparte (PREREGISTRO_CARTERA_B.md), cuenta de drawdown fijo; seguimiento bajo demanda con tools/seguimiento_forward.py.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_TANDA4.md`, `docs/research/fundedsyncstack_20261115/PREREGISTRO_CARTERA_B.md`
 - **Una regla que ya pasó su validación de fábrica suele estar en una meseta: mover una perilla (EMA, stop, trailing, hora) no mejora la rentabilidad fuera de la muestra de elección** (`F-AJUSTE-FINO-NO-PAGA`, 2026-11-16, sesion)
-  - Efecto: SOM: 14 variantes de una perilla, todas positivas pero ninguna supera a la base en la confirmación; rotar para ganar frecuencia baja el t y duplica el drawdown; entrar 25 min más tarde mata el efecto. | T (6 variantes): ninguna mejora; quitar objetivo o la salida de las 15:30 la empeora (la palanca de salida no es universal).
+  - Efecto: SOM: 14 variantes de una perilla, todas positivas pero ninguna supera a la base en la confirmación; rotar para ganar frecuencia baja el t y duplica el drawdown; entrar 25 min más tarde mata el efecto. | T (6 variantes): ninguna mejora; quitar objetivo o la salida de las 15:30 la empeora (la palanca de salida no es universal). | Ronda 2: tamaño fijo gana en las tres; pesos de cartera indistintos; la suma SOM+T+Franklin no supera el t de T sola.
   - Dónde: SOM NQ 2012–2026 (pares/impares)
   - Siguiente: Subir rentabilidad por cartera (reglas descorrelacionadas) en la cuenta adecuada; v2+SOM en drawdown fijo pasa 94–96 % con quema ≤ 3,6 %.
   - Evidencia: `docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md`
