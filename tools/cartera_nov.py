@@ -47,7 +47,7 @@ def lanzar(commit):
         for tramo, per in tramos(r).items():
             clave = f"{r['cid']}__{tramo}"
             if clave in hs: continue
-            sp = dict(r["spec"], cid=f"CN-{r['cid']}-{tramo}"[:30], cuenta_kaggle=("nicolasbuttaro" if tramo == "hold" else cs[(len(hs) + i) % len(cs)]))
+            sp = dict(r["spec"], cid=f"CN{os.environ.get('CN_SUFIJO', '')}-{r['cid']}-{tramo}"[:30], cuenta_kaggle=("nicolasbuttaro" if tramo == "hold" else cs[(len(hs) + i) % len(cs)]))
             params = dict(cortes=r["cortes"], celdas=[r["celda"]], tope=r["tope"], operaciones=True)
             if tramo == "hold": params["acta"] = dict(tipo="holdout_continuacion_20261116", acta=ACTA, commit=commit, cid=r["cid"], acta_regla=r["acta"])
             try: h = (sel if tramo == "hold" else dev).lanzar(sp, "ANALIZAR_REGLA", params, per)
