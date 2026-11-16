@@ -111,6 +111,7 @@ class SessionOpenMomentumConfig:
     randomizer: bool = False
     close_eod: bool = False
     eod_time: str = "22:55"
+    close_weekend: bool = False   # EdgeLab (2026-11-16, regla de Nico): cierra el viernes a eod_time; las noches de semana se mantienen
     max_equity_dd_pct: float = 0.0
     close_at_equity: float = 0.0
     stop_at_equity: float = 0.0

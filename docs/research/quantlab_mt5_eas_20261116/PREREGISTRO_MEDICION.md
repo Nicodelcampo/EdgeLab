@@ -36,3 +36,9 @@ La primera corrida se miró y se descarta: el motor traducido llenaba el stop a 
 sobre todo en `sin_eod`, que cruza noches y fines de semana) y no revisaba el stop en la vela de entrada. Se corrige el motor (llenado a la
 apertura si hay gap; stop válido en la vela de entrada; los tests contra el Tester siguen pasando) y se relanza con la misma regla, celdas y
 decisión. Cifras descartadas, para que consten: NQ sin_eod A +0,059 / B +0,093 R; eod +0,023 / +0,065; ES B +0,048 / +0,021; YM ≤ 0.
+
+## Enmienda 2 (2026-11-16, regla de operación de Nico, antes de medirla): celda `sin_finde`
+«Si se come el gap está bien siempre que no sea el del domingo»: se agrega la celda **`sin_finde`** = la de fábrica (mantiene la posición de
+noche) pero **cierra el viernes a las 15:55 NY** (22:55 servidor). No sale de mirar resultados sino de la regla de no tener nada abierto el fin
+de semana. Feriados de mitad de semana no se tratan. Se mide igual (NQ/ES/YM, A/B, R neto) y **es la celda que va al holdout** si NQ pasa con
+la misma regla de decisión (R > 0 en A y B, p_B < 0,10 y fricción ≤ 0,08 R; prueba única, contador +3).

@@ -128,6 +128,7 @@ def correr_session_open_momentum(
     ts_ns = m5["ts_ns"].to_numpy(dtype=np.int64)
     times = pd.to_datetime(ts_ns, unit="ns", utc=True)
     minutes_of_day = (times.hour.to_numpy(dtype=np.int32) * 60 + times.minute.to_numpy(dtype=np.int32))
+    weekdays = times.dayofweek.to_numpy(dtype=np.int32)
     day_keys = (times.year.to_numpy(dtype=np.int32) * 1000 + times.dayofyear.to_numpy(dtype=np.int32))
 
     opens = m5["open"].to_numpy(dtype=np.float64)
@@ -192,7 +193,7 @@ def correr_session_open_momentum(
                 continue
 
             # Cierre EOD opcional
-            if cfg.close_eod and cur_min >= eod_min:
+            if (cfg.close_eod or (cfg.close_weekend and weekdays[i] == 4)) and cur_min >= eod_min:
                 rec, pnl = _finalize_som_trade(pos, cur_ts, o, "EOD_CLOSE", i - pos["entry_idx"] + 1, spec)
                 trades.append(rec)
                 balance += pnl
