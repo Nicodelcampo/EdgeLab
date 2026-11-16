@@ -60,7 +60,7 @@ def forward(hasta, commit=""):
     acta = dict(acta="docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md", commit=commit, familia="FUNDEDSYNC", cid="FUNDEDSYNC::forward_TZR")
     k = construir(); txt = k.read_text(encoding="utf-8")
     k.write_text("import os\nos.environ.update(SELLADO='1', HASTA=" + repr(hasta) + ", FIN=" + repr(fin) + ", FW_DESDE='2026-11-14', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
-    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", f"{KS}-fw{hasta}", "--title", f"edgelab fundedsync fw {hasta}", "--script", str(k),
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", f"{KS}-fw{hasta}", "--title", f"edgelab fundedsync cadena fw{hasta}", "--script", str(k),
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
 
 
