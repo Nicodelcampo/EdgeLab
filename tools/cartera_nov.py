@@ -66,10 +66,24 @@ def traer():
         if e != "complete": falta.append((clave, e)); continue
         f.write_text(json.dumps(run.traer(x["handle"]), indent=1, default=float)); print("traída", clave, flush=True)
     print("faltan", len(falta), falta)
+    return falta
+
+
+def relanzar(commit, tanda=4):
+    """Los kernels que Kaggle no arrancó (tope de corridas simultáneas: «no_encontrado» más de 20 min después) se relanzan de a `tanda`,
+    sólo cuando hay menos de `tanda` corriendo. Misma regla, mismo período: no cambia nada de lo pre-registrado."""
+    falta = traer(); hs = json.loads(HF.read_text())
+    corriendo = sum(e == "running" for _, e in falta)
+    viejos = [c for c, e in falta if e in ("no_encontrado", "error") and time.time() - hs[c].get("ts", 0) > 1200]
+    for c in viejos[:max(0, tanda - corriendo)]: hs.pop(c)
+    HF.write_text(json.dumps(hs, indent=1))
+    if viejos[:max(0, tanda - corriendo)]: lanzar(commit)
+    return len(falta)
 
 
 if __name__ == "__main__":
-    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("universo", "lanzar", "traer")); ap.add_argument("--commit", default=""); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("cmd", choices=("universo", "lanzar", "traer", "relanzar")); ap.add_argument("--commit", default=""); a = ap.parse_args()
     if a.cmd == "universo":
         for r in universo(): print(r["cid"], r["spec"]["sensor"], r["spec"].get("ejecucion"), sorted(tramos(r)))
+    elif a.cmd == "relanzar": relanzar(a.commit)
     else: lanzar(a.commit) if a.cmd == "lanzar" else traer()
