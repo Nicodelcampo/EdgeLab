@@ -55,6 +55,7 @@ _THIRD_FRIDAY_CACHE: Dict[Tuple[int, int], date] = {}
 class _AbsorbBaseConfig:
     """Parametros compartidos de Absorb (`Ab_*`) y especificos por instancia."""
 
+    exit_on_st_flip: bool = True   # EdgeLab 2026-11-16 (PREREGISTRO_TANDA2 L1): False = sin salida por giro de SuperTrend (variante)
     vp_length: int = 10
     vp_resolution: int = 24
     absorb_vol_mult: float = 2.5
@@ -152,6 +153,7 @@ class FabioConfig:
 class SwasConfig:
     """Configuracion exacta de Swas (`RunSwas`, BIP 2 = 3m ETH)."""
 
+    exit_on_st_flip: bool = True   # EdgeLab 2026-11-16 (PREREGISTRO_TANDA2 L1): False = sin salida por giro de SuperTrend (variante)
     atr_length: int = 14
     ema_period: int = 9
     use_time_filter: bool = True
@@ -944,9 +946,9 @@ def _run_absorb(
         )
 
         pos = tracker.pos
-        if pos == _POS_LONG and st_flip_down:
+        if cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
             tracker.request_exit("ST", e_j)
-        elif pos == _POS_SHORT and st_flip_up:
+        elif cfg.exit_on_st_flip and pos == _POS_SHORT and st_flip_up:
             tracker.request_exit("ST", e_j)
 
         if (
@@ -1319,9 +1321,9 @@ def run_s(
             slope_short = True
 
         pos = tracker.pos
-        if pos == _POS_LONG and st_flip_down:
+        if cfg.exit_on_st_flip and pos == _POS_LONG and st_flip_down:
             tracker.request_exit("ST", e_j)
-        elif pos == _POS_SHORT and st_flip_up:
+        elif cfg.exit_on_st_flip and pos == _POS_SHORT and st_flip_up:
             tracker.request_exit("ST", e_j)
 
         allow_long_hour = (bar_hour != cfg.blocked_long_entry_hour) if cfg.block_long_entry_hour_enabled else True

@@ -93,6 +93,7 @@ FTM_DEGRADED_DATA_EXCLUSION_DATE_KEYS: frozenset[int] = frozenset(
 class VwapCrossConfig:
     """Parametros de `RunVwapCross` (modulo W) segun defaults del IL."""
 
+    exit_on_vwap_cross: bool = True   # EdgeLab 2026-11-16 (PREREGISTRO_TANDA2 L1): False = sin salida por recruce del VWAP (variante)
     enable: bool = True
     vwap_start_time_central: int = 83000
     vwap_end_time_central: int = 150000
@@ -580,7 +581,7 @@ def run_w(
 
         if signal_side == 1 and below:
             signal_side = 2
-            if in_pos and pending_exit_reason is None:
+            if in_pos and pending_exit_reason is None and cfg.exit_on_vwap_cross:
                 pending_exit_reason = "VWAP"
                 last_long_exit_bar = i
             continue
