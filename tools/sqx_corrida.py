@@ -2,7 +2,7 @@
 """Corridas de StrategyQuant X gobernadas por EdgeLab (2026-11-14). Docs: docs/infra/SQX_MT5_EDGELAB_INFRA.md.
 
   python tools/sqx_corrida.py preparar IDEA SIMBOLO TF [--base Builder] [--plantilla TrendFollowing]
-                              [--desde 2011.01.01] [--hasta 2019.12.31] [--oos 2017.01.01] [--nulo-de ID_REAL]
+                              [--desde 2011.01.01] [--hasta 2019.12.31] [--oos 2017.01.01] [--nulo-de ID_REAL] [--intradia]
       clona el proyecto base, (opcional) aplica la plantilla del Builder, fija los datos del Build (costos del instrumento,
       rango que NUNCA pasa del 2026-09-29) y escribe sqx/corridas/<id>/manifest.json. No lanza nada.
   python tools/sqx_corrida.py lanzar ID          # run_project (exige el manifiesto committeado: pre-registro antes de correr)
@@ -82,10 +82,12 @@ def diseno_macro(wtb: str) -> str:
     return re.sub(r'generationType="[^"]+"', 'generationType="random-generation"', wtb)
 
 
-def opciones_macro(op: str) -> str:
+def opciones_macro(op: str, intradia: bool = False) -> str:
     """Macro de días, pero NADA abierto el fin de semana (decisión de Nico, 2026-11-14): cierre obligatorio el viernes a las 23:00 hora
-    del servidor de datos (EST+07 = 16:00 de Nueva York); sí puede quedar abierta de noche (sin cierre de fin de día)."""
-    op = re.sub(r'(<Param key="ExitAtEndOfDay" className="ExitAtEndOfDay">)(true|false)(</Param>)', r"\1false\3", op)
+    del servidor de datos (EST+07 = 16:00 de Nueva York); sí puede quedar abierta de noche (sin cierre de fin de día).
+    `intradia` (2026-11-16, props de futuros: plano al cierre): cierre de fin de día a las 22:55 del servidor = 15:55 NY."""
+    op = re.sub(r'(<Param key="ExitAtEndOfDay" className="ExitAtEndOfDay">)(true|false)(</Param>)', r"\1" + ("true" if intradia else "false") + r"\3", op)
+    if intradia: op = re.sub(r'(<Param key="EODExitTime" className="ExitAtEndOfDay">)\d+(</Param>)', r"\g<1>2255\2", op)
     op = re.sub(r'(<Param key="ExitOnFriday" className="ExitOnFriday">)(true|false)(</Param>)', r"\1true\3", op)
     op = re.sub(r'(<Param key="FridayExitTime" className="ExitOnFriday">)\d+(</Param>)', r"\g<1>2300\2", op)
     # Gap del domingo (y de noticias): el stop/límite atravesado por un gap se llena al precio DESPUÉS del gap, como en real
@@ -128,7 +130,7 @@ def preparar(idea, simbolo, tf):
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Data", "xml": xml})
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "RiskMoneyManagement", "xml": MM_R})
     op = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Options"})["xml"]
-    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Options", "xml": opciones_macro(op)})
+    c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Options", "xml": opciones_macro(op, "--intradia" in sys.argv)})
     rk = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings"})["xml"]
     c.llamar("set_task_config", {"name": nombre, "taskFile": build.group(2), "section": "Rankings", "xml": parada(rk, int(_arg("--horas", "2")))})
     wtb = c.llamar("get_project_config", {"name": nombre, "taskFile": build.group(2), "section": "WhatToBuild"})["xml"]

@@ -27,3 +27,17 @@ activo y marco.
 
 ## Justificación económica y cómo podría refutarse
 Fichas LIT-TSMOM y SQX-PLANTILLA-REVERSION (`docs/research/ideas/BANCO_IDEAS.md`). Refutación: ninguna real supera al máximo de su nulo.
+
+## Enmienda 1 (2026-11-16, antes de lanzar nada; pregunta de Nico «¿conviene medir en temporalidades tan altas?»): el lote pasa a INTRADÍA
+Para el referente (prop de futuros) H4/D1 rinde poco: (1) la mayoría de las prop de futuros exigen estar planos al cierre de la sesión, y una
+regla de tendencia diaria vive de quedarse días; (2) son 2–8 operaciones por mes por activo: una evaluación de 30–60 días no llega al objetivo
+y la evidencia tarda años. Los 8 proyectos H4/D1 quedan preparados y SIN LANZAR (sirven para una cuenta CFD swing si algún día hace falta).
+Cola nueva (1 h cada proyecto; real y nulo igual; **cierre obligatorio 15:55 NY** con `--intradia`, además del cierre del viernes):
+| # | Idea | Activo | TF | Plantilla | Nulo |
+|---|---|---|---|---|---|
+| 1–2 | SQX-PLANTILLA-TENDENCIA | Nasdaq (USATECH) | M30 | TrendFollowing | NULO_NQ_M1_dukas_M30_s1 |
+| 3–4 | SQX-PLANTILLA-REVERSION | Nasdaq | M30 | Mean-Reversal | NULO_NQ_M1_dukas_M30_s1 |
+| 5–6 | SQX-PLANTILLA-TENDENCIA | S&P (USA500) | M30 | TrendFollowing | NULO_SP_M1_dukas_M30_s1 |
+| 7–8 | SQX-PLANTILLA-TENDENCIA | Oro | M30 | TrendFollowing | NULO_XAUUSD_M1_dukas_M30_s1 |
+Nulos M30 por semanas re-encadenadas (conservan hora del día y día de la semana). Lección del intradía en EdgeLab: la fricción se come la
+mayor parte de la ventaja bruta; por eso, además del umbral del nulo, una candidata necesita fricción ≤ 0,08 R por operación (contrato).
