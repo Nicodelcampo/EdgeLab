@@ -11,13 +11,8 @@ from pathlib import Path
 import sys
 from typing import Any, Dict
 
-try:
-    from . import CONFIG_CLASSES, MODULOS, correr_modulo, correr_todos, load_m1_data, build_multi_series
-    from .modulos_p_c_v_o import VaultConfig
-except ImportError:
-    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-    from python import CONFIG_CLASSES, MODULOS, correr_modulo, correr_todos, load_m1_data, build_multi_series  # type: ignore
-    from python.modulos_p_c_v_o import VaultConfig  # type: ignore
+from . import CONFIG_CLASSES, MODULOS, correr_modulo, correr_todos, load_m1_data, build_multi_series   # en el repo: siempre como paquete
+from .modulos_p_c_v_o import VaultConfig
 
 
 def main(argv: list[str] | None = None) -> int:

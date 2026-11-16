@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (8)
+## PISTA_VIVA (9)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)
   - Siguiente: Operar la v2 (CARTERA_V2_OPERATIVA.json): comisión mínima, PREAPERTURA-NQ ×0,5, piso de fricción 0,08 R, micros fijos; quema 50K 21 % → 3 %. Forward con e-proceso.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`
+- **FUNDEDSYNC T (FtmEngine: ORB 15 min + KNN sobre operaciones sombra), valores de fábrica, NQ** (`F-FUNDEDSYNC-T-KNN`, 2026-11-16, sesion)
+  - Efecto: NQ M1 2020–2023 +13,2 pts/op neto, t 4,37 contra p95 del nulo de 15 módulos 1,92; 2024-01→2025-07 +17,2; 2025-08→2026-09 +22,6; 19 ops/mes, stop mediano 36 pts; causal por prefijo. Z y R también superan al nulo pero sin stop y 2–3 ops/mes.
+  - Dónde: NQ (USATECH M1 con costos de NQ)
+  - Siguiente: Apertura única del holdout (T, Z, R) con acta; idea transferible: filtro KNN sobre operaciones sombra para nuestras reglas.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -105,10 +110,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (7)
+## EN_SEGUIMIENTO (8)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Plantillas del Builder de SQX (TrendFollowing) en M30 con cierre al final del día** (`F-SQX-INTRADIA-PLANTILLA`, 2026-11-16, sesion)
+  - Efecto: Nasdaq M30: 3 aceptadas de 14.000 (nulo 11 de 24.000), 52–75 operaciones en 2012–2016 y 0 en 2017–2019: el par no mide nada.
+  - Dónde: SQX lote 2
+  - Siguiente: Rediseñar: generación sin plantilla y filtro de aceptación ≥ 200 operaciones antes de seguir la cola.
+  - Evidencia: `docs/research/sqx_lote2_20261116/RESULTADO_PAR1_NQ_M30_TENDENCIA.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-15, sesion)
   - Efecto: NQ M1 2012→2025-07 negativa (−0,8 a −3,0 pts/sesión), positiva sólo 2025-08→2026-09; Dow M1 negativa en los 4 tramos; ninguna variable de régimen la ordena.
   - Dónde: NQ y Dow M1
@@ -145,7 +155,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (22)
+## NO_REPETIR (23)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -154,6 +164,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Cartera de 27 reglas
   - Siguiente: No podar por hora sin un mecanismo propio de cada regla.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO_MEJORAS.md`
+- **FUNDEDSYNC A1, W, Q, V (absorción 1m, cruce de VWAP, Rampart, VaultBreak) de fábrica** (`F-FUNDEDSYNC-SIN-VENTAJA`, 2026-11-16, sesion)
+  - Efecto: ≈ 0 o negativos neto en 2012–2026; A1 y W operan 60–110 veces por mes y la fricción se los come.
+  - Dónde: NQ
+  - Siguiente: No usar tal cual.
+  - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
   - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
   - Dónde: CFD Dukascopy D1/H1, 27 activos

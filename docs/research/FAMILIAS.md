@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-256 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+258 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -28,7 +28,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `CANASTA_ORB` | 2026-11-08 | ORB_VARIANTES | 1 | — | — | F-REELS-20261108 (NO_REPETIR); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `orb_nq_20261108` |
 | `CANASTA_REGIMEN_U1` | 2026-10-26 | U1_ES_GRILLA, U1_YM_GRILLA, U1_ORO_GRILLA, AREAS_EXP_1_CRUZADO | 64 | — | — | — | `canasta_regimen_20261026` |
 | `CANASTA_V3` |  | — | 1 | — | — | — | — |
-| `CARTERA_20261116` | 2026-11-16 | CORREDOR_VOL_GAPS_NQ, CORREDOR_VOL_GAPS_CFD_NQ, CVGAP2_CFD_NQ, CORREDOR_VOL_GAPS_ES, CORREDOR_VOL_GAPS_CFD_ES, U1_ZONAS_NQ, U1_ZONAS_ES, U1_ZONAS_BT2_NQ, U1_ZONAS_BT2_ES, U1_ZONAS_AVCL_NQ, U1_ZONAS_AVCL_ES, U1_RACIMOS_GRILLA_NQ, U1_RACIMOS_GRILLA_ES, U1_ES_GRILLA, U1_YM_GRILLA, U1_ORO_GRILLA, TORI_TREND_TOQUE3_NQ, CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ, DOBLE_RETROCESO, RANGO_PREAPERTURA | 1 | — | — | F-CARTERA-8-NOV (PISTA_VIVA); F-FIN-DE-RUEDA-NO (NO_REPETIR); F-STOP-CORTO-ES-FRICCION (PALANCA_DE_DISENO) | `cartera_20261116` |
+| `CARTERA_20261116` | 2026-11-16 | CORREDOR_VOL_GAPS_NQ, CORREDOR_VOL_GAPS_CFD_NQ, CVGAP2_CFD_NQ, CORREDOR_VOL_GAPS_ES, CORREDOR_VOL_GAPS_CFD_ES, U1_ZONAS_NQ, U1_ZONAS_ES, U1_ZONAS_BT2_NQ, U1_ZONAS_BT2_ES, U1_ZONAS_AVCL_NQ, U1_ZONAS_AVCL_ES, U1_RACIMOS_GRILLA_NQ, U1_RACIMOS_GRILLA_ES, U1_ES_GRILLA, U1_YM_GRILLA, U1_ORO_GRILLA, TORI_TREND_TOQUE3_NQ, CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ, DOBLE_RETROCESO, RANGO_PREAPERTURA | 2 | — | — | F-CARTERA-8-NOV (PISTA_VIVA); F-FIN-DE-RUEDA-NO (NO_REPETIR); F-STOP-CORTO-ES-FRICCION (PALANCA_DE_DISENO) | `cartera_20261116` |
 | `CARTERA_CANASTA` |  | — | 1 | — | — | — | — |
 | `CARTERA_FORWARD` |  | — | 8 | — | — | — | — |
 | `COMEX_CIERRE_ORO_GC` | 2026-11-03 | — | 217 | 1 | COMEX-CIERRE-GC-R: PISTAS_VIVAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
@@ -104,6 +104,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EURUSD_ESCALONADAS` |  | — | 655 | — | — | — | — |
 | `EXECUTION_VARIANTS` |  | — | 3 | — | — | — | — |
 | `EXPANSION_ZONAS` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, AREAS_EXP_1_CRUZADO | 1866376 | 4 | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | — | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
+| `FUNDEDSYNC` | 2026-11-16 | — | 15 | — | — | F-FUNDEDSYNC-SIN-VENTAJA (NO_REPETIR); F-FUNDEDSYNC-T-KNN (PISTA_VIVA) | `fundedsyncstack_20261115` |
 | `GAP_CONTINUACION` | 2026-11-08 | GAP_RTH | 240 | — | — | — | `gap_continuacion_20261108` |
 | `GAP_RTH` | 2026-10-25 | C_TICKS_MULTI | 480 | — | — | — | — |
 | `GC_CELL_0415_SPOT_DIRECTION_NULL` |  | — | 4 | — | — | — | — |
@@ -223,6 +224,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `SLOT_COND_HOLD_STOP_TARGET_GRID` |  | — | 2108 | — | — | — | — |
 | `SQX_LIT-TSMOM` | 2026-11-14 | — | 549026 | — | — | F-SQX-REVERSION-SP-H4 (NO_REPETIR); F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
 | `SQX_SQX-PLANTILLA-REVERSION` | 2026-11-14 | — | 31685 | — | — | F-SQX-REVERSION-SP-H4 (NO_REPETIR); F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
+| `SQX_SQX-PLANTILLA-TENDENCIA` |  | — | 37869 | — | — | — | — |
 | `TAU_TENDENCIA_ES` | 2026-10-31 | TORI_TREND_TOQUE3_ES | 2592 | 2 | TAU-ES-R: SIN_CANDIDATAS; TAU-ES: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `TAU_TENDENCIA_GC` | 2026-10-31 | TORI_TREND_TOQUE3_GC | 2592 | 2 | TAU-GC-R: SIN_CANDIDATAS; TAU-GC: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `TAU_TENDENCIA_NQ` | 2026-10-31 | TORI_TREND_TOQUE3_NQ | 2596 | 2 | TAU-NQ-R: PISTAS_VIVAS; TAU-NQ: PISTAS_VIVAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |

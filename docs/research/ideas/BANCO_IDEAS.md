@@ -2,7 +2,7 @@
 
 Estado: VIGENTE. Fuente: `docs/research/ideas/BANCO_IDEAS.jsonl` (`edgelab/research/ideas.py`).
 
-Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 1}, "clase": {"tendencia": 3, "carry_macro": 1, "estacionalidad": 2, "evento": 1, "reversion": 4, "ruptura": 1, "volatilidad": 1, "microestructura": 1, "cartera": 1}, "prior": {"alto": 3, "medio": 9, "bajo": 3}, "estado": {"EN_DISENO": 2, "PROPUESTA": 8, "REFUTADA": 4, "EN_PRUEBA": 1}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 4, "overnight": 1, "horas-días": 4}}`
+Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante": 9}, "clase": {"tendencia": 4, "carry_macro": 1, "estacionalidad": 3, "evento": 2, "reversion": 5, "ruptura": 2, "volatilidad": 2, "microestructura": 3, "cartera": 1}, "prior": {"alto": 4, "medio": 11, "bajo": 8}, "estado": {"EN_DISENO": 2, "PROPUESTA": 13, "REFUTADA": 4, "EN_PRUEBA": 1, "PISTA_VIVA": 3}, "horizonte": {"días-meses": 2, "semanas": 1, "días": 2, "horas": 1, "intradía": 12, "overnight": 1, "horas-días": 4}}`
 
 ## LIT-CARRY-FX — Carry de monedas
 - Clase: carry_macro · fuente: literatura · prior: alto · estado: PROPUESTA · horizonte: semanas · activos: AUDUSD, NZDUSD, USDJPY, EURJPY, GBPJPY, USDCAD, USDCHF
@@ -36,6 +36,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Traducción: SQX H1: largo al cierre RTH, salida a la apertura; requiere tenencia overnight.
 - Fuentes: Cliff, Cooper, Gulen (2008), Return Differences between Trading and Non-trading Hours
 
+## FS-O-OVERNIGHT — Tenencia overnight con filtro diario
+- Clase: estacionalidad · fuente: practicante · prior: bajo · estado: PROPUESTA · horizonte: intradía · activos: NQ
+- Mecanismo: Tenencia overnight con filtro diario
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: Positivo débil en todos los tramos | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Overnight en futuros con filtro; cruzar con LIT-NOCHE
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
+
 ## LIT-PRE-FOMC — Deriva antes del FOMC
 - Clase: evento · fuente: literatura · prior: medio · estado: PROPUESTA · horizonte: horas · activos: USA500, USATECH, USA30
 - Mecanismo: El S&P sube en las 24 horas previas a los anuncios del FOMC más que en cualquier otro día.
@@ -44,6 +52,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Traducción: Calendario FOMC como indicador externo en SQX (o regla de fecha); largo H1 desde 24 h antes hasta el anuncio.
 - Fuentes: Lucca, Moench (2015), The Pre-FOMC Announcement Drift, JF
 
+## FS-C-GAP — Gap de apertura en 1 min
+- Clase: evento · fuente: practicante · prior: bajo · estado: PROPUESTA · horizonte: intradía · activos: NQ
+- Mecanismo: Gap de apertura en 1 min
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: Régimen: OOS +10 pts, 2024–2025 −4 | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Gap con confirmación intradía (nuestros gaps M1 ≈ 0)
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
+
 ## EL-DELTASWEEP-SEQ — Secuencias de disparos de barrido de delta (NQ)
 - Clase: microestructura · fuente: edgelab · prior: bajo · estado: EN_PRUEBA · horizonte: intradía · activos: NQ
 - Mecanismo: Dos o más barridos de delta con flip en el mismo sentido en poco tiempo marcan absorción insistente y resuelven a favor del que absorbe.
@@ -51,6 +67,22 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: Forward congelado en NQ con n ≥ 30 no da R > 0; DELTASWEEP-PAT sin celdas sobre el nulo. | 2026-11-14: patrones (DELTASWEEP-PAT, ≈79.000 celdas) refutados; queda sólo S2 V4W AM en forward.
 - Traducción: No traducible a barras de SQX (necesita ticks con bid/ask): sigue en EdgeLab; en MT5 sólo si el bróker da ticks reales.
 - Fuentes: docs/research/deltasweep_20261114/MEDIDO_Y_NO_MEDIDO.md (S2 V4W AM: +0,26/+0,28 R, bajo el nulo)
+
+## FS-A-ABSORB — Absorción por delta en 1 y 20 min
+- Clase: microestructura · fuente: practicante · prior: bajo · estado: PROPUESTA · horizonte: intradía · activos: NQ
+- Mecanismo: Absorción por delta en 1 y 20 min
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: A1 sin ventaja (fricción); A20 sólo reciente | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Probar con delta real de ticks, no proxy
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
+
+## FS-S-SWEEP — Barrido de liquidez en 3 min
+- Clase: microestructura · fuente: practicante · prior: bajo · estado: PROPUESTA · horizonte: intradía · activos: NQ
+- Mecanismo: Barrido de liquidez en 3 min
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: Sólo 2024–2026 positivo | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Buscar variable de régimen; relacionar con DeltaSweep
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
 
 ## EL-CAJA-AMARILLA-MACRO — Reversión tras extensión fallida (caja amarilla) en escala macro
 - Clase: reversion · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: horas-días · activos: USA500, USATECH, USA30, DAX, XAUUSD, WTI, EURUSD
@@ -76,6 +108,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Traducción: SQX H1: VWAP y sus bandas (bloque nativo), entrada hacia el VWAP, objetivo el VWAP, stop ATR.
 - Fuentes: docs/research/luximb_amarilla_20261111/r2/EXPLORACION.md (todas las celdas sobre el nulo tenían VWAP lejos)
 
+## FS-N-NDAY — Varios días a la baja → largo
+- Clase: reversion · fuente: practicante · prior: bajo · estado: PROPUESTA · horizonte: intradía · activos: NQ
+- Mecanismo: Varios días a la baja → largo
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: Sólo el último año | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Reversión multi-día en índices
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
+
 ## SQX-PLANTILLA-REVERSION — Línea de base: plantilla de reversión de SQX
 - Clase: reversion · fuente: sqx · prior: bajo · estado: EN_DISENO · horizonte: días · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD
 - Mecanismo: Builder con la plantilla estándar de reversión (señales contrarias, órdenes límite) sobre la canasta.
@@ -83,6 +123,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: Si las ideas de reversión con mecanismo no le ganan, no agregan nada.
 - Traducción: apply_build_template Mean-Reversal + Data con la canasta; proyecto nulo hermano.
 - Fuentes: SQX internal/web/BUILDER/simpleTemplates: Mean-Reversal
+
+## FS-T-KNN-ORB — ORB de 15 min filtrado por KNN de 14 rasgos entrenado con operaciones sombra
+- Clase: ruptura · fuente: practicante · prior: alto · estado: PISTA_VIVA · horizonte: intradía · activos: NQ
+- Mecanismo: ORB de 15 min filtrado por KNN de 14 rasgos entrenado con operaciones sombra
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: OOS 2020–2023 +13,2 pts t 4,37 (> 1,92 nulo); positiva 2024–2026; 19 ops/mes con stop | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Filtro KNN sobre operaciones sombra aplicable a ORB/VWAP/zonas de EdgeLab
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
 
 ## EL-NIVELES-NO-DEFIENDEN — Los niveles con actividad no defienden: continuación al romperlos
 - Clase: ruptura · fuente: edgelab · prior: medio · estado: PROPUESTA · horizonte: horas-días · activos: USA500, USATECH, USA30, DAX, USTBOND, BUND, GILT, XAUUSD
@@ -99,6 +147,14 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: La canasta 2013-2026 (posterior a la publicación) en CFD no supera a la misma canasta con señales de signo aleatorio, después de costos y swap. | 2026-11-15: forma semanal sin fin de semana ≈ 0 en bruto (RESULTADO.md); la forma mensual sigue sin medir. Sigue en SQX (lote 1).
 - Traducción: SQX D1/H4: largo/corto según el retorno de N días (N 20-250) o cruce de medias lentas; stop ATR largo; tamaño por volatilidad; fitness sobre la canasta.
 - Fuentes: Moskowitz, Ooi, Pedersen (2012), Time Series Momentum, JFE; Hurst, Ooi, Pedersen (2017), A Century of Evidence on Trend-Following Investing, JPM
+
+## FS-Z-TRENDDAY — Día de tendencia por buckets de 15 min en RTH
+- Clase: tendencia · fuente: practicante · prior: medio · estado: PISTA_VIVA · horizonte: intradía · activos: NQ
+- Mecanismo: Día de tendencia por buckets de 15 min en RTH
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: OOS +26,6 pts t 3,19, sin stop, 2 ops/mes | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Detectar día de tendencia temprano; cruzar con noche movida (ASIA)
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
 
 ## LIT-INTRADAY-MOM — Momentum intradía de la primera media hora
 - Clase: tendencia · fuente: literatura · prior: medio · estado: REFUTADA · horizonte: intradía · activos: USA500, USATECH, USA30, Russell
@@ -123,3 +179,11 @@ Balance: `{"fuente_tipo": {"literatura": 6, "edgelab": 6, "sqx": 2, "practicante
 - Cómo podría refutarse: Aplicado como filtro a LIT-TSMOM, el veto no mejora el R neto ni en bruto (si sólo mejora en neto es fricción).
 - Traducción: Filtro en SQX: rango de las últimas N barras en contra > k·ATR → no entrar.
 - Fuentes: FACTORES: F-HUIDA-CONTINUACION (PISTA_VIVA)
+
+## FS-R-ATRPHASE — Fase de ATR en 10 min (expansión tras compresión)
+- Clase: volatilidad · fuente: practicante · prior: medio · estado: PISTA_VIVA · horizonte: intradía · activos: NQ
+- Mecanismo: Fase de ATR en 10 min (expansión tras compresión)
+- Justificación económica: La del vendedor (docs/research/fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md)
+- Cómo podría refutarse: OOS +28,1 pts t 2,46, sin stop, 3 ops/mes | medido 2026-11-16 (RESULTADO_CADENA.md)
+- Traducción: Gatillo por régimen de volatilidad; stop relativo al ATR
+- Fuentes: FUNDEDSYNCSTACK 1.0.0.5 (traducción en edgelab/research/fundedsyncstack)
