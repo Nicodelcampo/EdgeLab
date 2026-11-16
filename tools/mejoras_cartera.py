@@ -51,7 +51,7 @@ def _serie_tam(F, modo, B=10000, seed=11):
     from edgelab import costos as C
     U = {r["cid"]: r for r in universo()}; por = {}
     for c, f in F.items():
-        sp = U[c]["spec"]; ej = sp.get("ejecucion") or sp["sensor"]
+        sp = U[c.split(":")[-1]]["spec"]; ej = sp.get("ejecucion") or sp["sensor"]
         if ej not in MICRO: continue
         usd_pt = C.tick_value_usd(MICRO[ej]) / C.tick_size(MICRO[ej]); rmed = np.median([x["riesgo"] for x in f]) if f else 1
         for x in f:
@@ -95,7 +95,8 @@ def _usd_ops(cids, tramos, filtros, a1, pesos, tam="R"):
     for c in cids:
         sp = U[c]["spec"]; ej = sp.get("ejecucion") or sp["sensor"]; m = MICRO[ej]; usd_pt = C.tick_value_usd(m) / C.tick_size(m)
         dfr = C.friccion_rt_puntos(m, criterio="max") - C.friccion_rt_puntos(m, criterio="min")
-        f = [x for x in marcar(clasificar(c, sp)) if x["tramo"] in tramos]; rmed = np.median([x["riesgo"] for x in f if x["tramo"] != "hold"] or [1])
+        todas = marcar(clasificar(c, sp)); f = [x for x in todas if x["tramo"] in tramos]
+        rmed = np.median([x["riesgo"] for x in todas if x["tramo"] != "hold"])          # micros fijos: riesgo mediano de DESARROLLO
         for x in f:
             if ("m1" in filtros and x["m1"]) or ("m2" in filtros and x["m2"]): continue
             R = x["R"] + (dfr / x["riesgo"] if a1 else 0.0); r1 = x["riesgo"] * usd_pt; objetivo = USD_R * pesos.get(c, 1.0)

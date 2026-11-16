@@ -12,7 +12,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
   - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar.
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)
-  - Siguiente: Forward con e-proceso; sellar noviembre del spot y de GC; evaluación prop sólo con decisión humana, micros y 200 USD/R.
+  - Siguiente: Operar la v2 (CARTERA_V2_OPERATIVA.json): comisión mínima, PREAPERTURA-NQ ×0,5, piso de fricción 0,08 R, micros fijos; quema 50K 21 % → 3 %. Forward con e-proceso.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-15, sesion)
   - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
@@ -55,7 +55,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
-  - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77.
+  - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026).
   - Dónde: Todas las familias con holdout abierto
   - Siguiente: Diseñar y filtrar por fricción en R por operación (costo/riesgo) con corte causal pre-registrado; tamaño por contrato fijo o ∝1/√riesgo como alternativa.
   - Evidencia: `docs/research/cartera_20261116/RESULTADO.md`, `docs/research/cartera_20261116/PERDIDAS_CONCENTRADAS.json`
@@ -145,10 +145,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (21)
+## NO_REPETIR (22)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Saltear entradas 14:00–16:15 NY** (`F-FIN-DE-RUEDA-NO`, 2026-11-16, sesion)
+  - Efecto: Descriptivo de 24 reglas sugería R ≈ 0 en esa franja; en generadoras + holdout Δ −0,06 R (p 0,16) y en el holdout va al revés (+0,08).
+  - Dónde: Cartera de 27 reglas
+  - Siguiente: No podar por hora sin un mecanismo propio de cada regla.
+  - Evidencia: `docs/research/cartera_20261116/RESULTADO_MEJORAS.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
   - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
   - Dónde: CFD Dukascopy D1/H1, 27 activos
