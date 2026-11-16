@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-656 scripts.
+657 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -524,6 +524,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/recortar_spot_holdout.py` | Recorta un dataset SPOT de Dukascopy en la frontera del holdout (HOLDOUT-A4) y deja la carpeta lista para subirla como |
 | `tools/rectify_kaggle_manifest.py` | Rectify the Kaggle manifest from records plus captured remote inventory. |
 | `tools/recut_holdout.py` | Re-corte fisico del holdout sobre los parquets que lo contienen (P-18). |
+| `tools/reels_20261116.py` | Reels del 2026-11-16 (pre-registro docs/research/reels_20261116/PREREGISTRO.md): VIERNES_LUNES, DOS_VELAS, FRANKLIN y E0 de visitas. |
 | `tools/refresh_decisions.py` | Recalcula las decisiones por sesión de una release YA escrita (p. ej. tras corregir el calendario derivado) SIN reescribir |
 | `tools/regimen_escala_m1.py` | Etapa 0 en escala mayor (decisión de Nico, 2026-10-06): ¿persiste la tendencia (eficiencia) o la dirección en barras |
 | `tools/regimen_estructural_diagnostico.py` | Diagnóstico estructural de regímenes cortos (1M–2M) sin lookahead frente a Nulo A (signo por sesión) y Nulo B (permutación temporal con fricción real). |

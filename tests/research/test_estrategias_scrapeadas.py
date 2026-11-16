@@ -39,3 +39,24 @@ def test_memoria_ideas_rota_y_entra_en_el_paquete():
 def test_orb_ema20_vela_de_entrada_solo_stop():
     ctx = _ctx(30, 3); R = X.orb_ema20(ctx)
     assert len(R) and (R[R.motivo == 2].bruto > 0).all() and (R[R.motivo == 1].bruto < 0).all()
+
+
+def test_reels_20261116_causal_por_prefijo():
+    """Las operaciones de un día no cambian si se corta el feed al terminar ese día (nada mira el futuro)."""
+    ctx = _ctx(140, 5); corte = ctx["t"][len(ctx["t"]) // 2]
+    pre = {k: (v[ctx["t"] <= corte] if isinstance(v, np.ndarray) else v) for k, v in ctx.items()}
+    dia_corte = int(pd.to_datetime(corte - 60, unit="s", utc=True).tz_convert("America/New_York").strftime("%Y%m%d"))
+    for fn in (X.viernes_lunes, X.dos_velas, X.franklin):
+        a, b = fn(ctx), fn(pre)
+        assert len(a), fn.__name__
+        a = a[a.fecha < dia_corte].reset_index(drop=True)
+        if not len(b): assert not len(a), fn.__name__; continue
+        b = b[b.fecha < dia_corte].reset_index(drop=True)
+        pd.testing.assert_frame_equal(a, b)
+
+
+def test_viernes_lunes_solo_ventas_y_e0():
+    R = X.viernes_lunes(_ctx(200, 7))
+    assert len(R) and (R.lado == -1).all() and (R.bruto >= -R.riesgo - 1e-9).all()
+    V = X.visitas_hougaard(_ctx(60, 7))
+    assert {"menor", "dentro", "visita"} <= set(V.columns) and V.visita.dtype == bool
