@@ -52,3 +52,13 @@ concentra órdenes que se liberan en la ruptura o el barrido del rango (ver `SPE
   holdout (`edgelab/autopilot/holdout_apertura.py`) antes de la primera revisión.
 - No se cambia nada del objeto después de este commit. Un cambio de código que altere las operaciones invalida la prueba.
 - Conteo en `docs/research/TRIAL_REGISTRY_GLOBAL.jsonl` (1 prueba, la canasta).
+
+## Enmienda 1 (2026-11-16, ANTES de mirar ninguna sesión de la ventana; pedido de Nico): H2 secundaria, noche movida
+Desarrollo posterior al pre-registro (docs/research/papel_m1_20261115/LARGO.md): la canasta gana con noche movida y pierde con noche
+quieta en 12 años de M1 de NQ, en ticks reales de NQ, en M1 del Dow y en ticks reales de YM (−8,4 / −4,3 / +15,4 pts por sesión).
+- **H2**: media de la canasta en las sesiones con noche en el tercil ALTO. Noche = rango (máximo − mínimo) de NQ de 18:00 a 09:30 NY
+  dividido por el cierre previo; tercil contra las 250 sesiones previas de la misma serie (ticks de NQ; causal, conocido a las 09:30).
+- No cambia nada de H1 (la canasta en todas las sesiones), que sigue decidiendo con sus límites. H2 se lee en las mismas revisiones,
+  con prueba t unilateral al nivel 0,05 (exploratoria, sin reserva LORD: informa la decisión de operar, no promueve).
+- Potencia: ≈ 1/3 de las sesiones; con 60 sesiones ≈ 20 con noche alta → error estándar ≈ 28/√20 ≈ 6 pts: detecta ≈ +15 con ≈ 0,7.
+- Conteo: 1 prueba más en el contador global.
