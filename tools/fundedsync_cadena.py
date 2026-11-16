@@ -43,11 +43,12 @@ def holdout(commit):
     import json, os
     sys.path.insert(0, str(ROOT)); from edgelab.research import holdout_ventanas as HV
     cid = "FUNDEDSYNC::holdout_TZR_20261116"
-    if (pr := HV.problemas("FUNDEDSYNC", 20261001, cid)): raise SystemExit("no se abre: " + "; ".join(pr))
-    HV.registrar_apertura("FUNDEDSYNC", cid, 20261001, n_fijo=0)
+    if os.environ.get("REINTENTO_SIN_MIRAR") != "1":                 # 2026-11-16: el 1.er intento devolvió 0 operaciones (corte por defecto en 10-01)
+        if (pr := HV.problemas("FUNDEDSYNC", 20261001, cid)): raise SystemExit("no se abre: " + "; ".join(pr))
+        HV.registrar_apertura("FUNDEDSYNC", cid, 20261001, n_fijo=0)
     acta = dict(acta="docs/research/fundedsyncstack_20261115/ACTA_HOLDOUT.md", commit=commit, familia="FUNDEDSYNC", cid=cid)
     k = construir(); txt = k.read_text(encoding="utf-8")
-    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA='20261113', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
+    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA='20261113', FIN='2026-11-14', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", KS + "-h", "--title", "edgelab fundedsync cadena h", "--script", str(k),
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
 

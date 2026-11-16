@@ -16,3 +16,8 @@ Familia `FUNDEDSYNC`, sin aperturas previas. North Star sha256 `16a108dfce2671b7
   después, forward con e-proceso. Contador global: 3 pruebas.
 
 Justificación económica / cómo podría refutarse: las de `PREREGISTRO_CADENA.md`.
+
+## Nota (2026-11-16 08:2x UTC): primer intento sin datos del holdout
+El primer kernel devolvió **0 operaciones** en T, Z y R: `load_m1_data` del paquete corta por defecto en `end="2026-10-01"` (guarda anti-holdout
+de la traducción), así que no entró ninguna vela sellada. No se vio ninguna operación del holdout. Se corrige pasando `FIN=2026-11-14` y se
+relanza dentro de la MISMA apertura (sin registrar otra); regla, datos y lectura sin cambios.

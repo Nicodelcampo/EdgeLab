@@ -14,7 +14,7 @@ def a_utc(D):
 
 
 def operaciones(D):
-    ms = F.build_multi_series(F.load_m1_data(a_utc(D), end="2026-10-01"), tz_input="UTC"); out = {}
+    ms = F.build_multi_series(F.load_m1_data(a_utc(D), end=os.environ.get("FIN", "2026-10-01")), tz_input="UTC"); out = {}   # holdout: FIN posterior
     for k in F.MODULOS:
         try: x = F.correr_modulo(k, ms)
         except Exception as ex: print("ERROR", k, str(ex)[:200], flush=True); out[k] = None; continue
