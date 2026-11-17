@@ -64,12 +64,12 @@ def serie_v(version, usd_R):
     return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=S, saltadas=f"{salt}/{tot}")
 
 
-def serie_b(micros=1, desde=20200101):
+def serie_b(micros=1, desde=20200101, modulos=("T", "Z", "R")):
     o = pd.read_csv(ROOT / "docs/research/fundedsyncstack_20261115/cadena/FUNDEDSYNC_OPS.csv.gz", usecols=["dia", "neto", "modulo"])
-    o = o[o.modulo.isin(["T", "Z", "R"])]; o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int); o = o[(o.ses >= desde) & (o.ses <= 20260929)]
+    o = o[o.modulo.isin(list(modulos))]; o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int); o = o[(o.ses >= desde) & (o.ses <= 20260929)]
     d = (o.neto * 2.0 * micros).groupby(o.ses).sum()
     ses = [int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(desde), "2026-09-29")]
-    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=["T", "Z", "R"], micros=micros)
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(modulos), micros=micros)
 
 
 def evaluar(x, contr, N=20000, max_dias=250):
@@ -99,6 +99,11 @@ def main():
     for mic in (1, 2):
         x, info = serie_b(mic); r = evaluar(x.to_numpy(), 0.5); r.update(info, factor_contraccion=0.5, nota="contracción declarada 0,5 (no hay batería)")
         res["canastas"][f"B|{mic}MNQ"] = r; _imprimir(f"B|{mic}MNQ", r)
+    for mods in (("T",), ("Z",), ("R",), ("T", "Z"), ("T", "R"), ("Z", "R")):                    # B por componentes (Nico: «¿probaste T+Z+R?»)
+        x, info = serie_b(1, modulos=mods); r = evaluar(x.to_numpy(), 0.5); r.update(info, factor_contraccion=0.5)
+        res["canastas"][f"B[{'+'.join(mods)}]|1MNQ"] = r; _imprimir(f"B[{'+'.join(mods)}]|1MNQ", r)
+    for desde, nom in ((20250805, "B|1MNQ|desde-2025-08"),):                                      # mismo tramo que la v2
+        x, info = serie_b(1, desde=desde); r = evaluar(x.to_numpy(), 0.5); r.update(info, factor_contraccion=0.5); res["canastas"][nom] = r; _imprimir(nom, r)
     xv, _ = serie_v("v2", 200); xb, _ = serie_b(1, 20250805); ix = xv.index.intersection(xb.index)
     xc = xv.reindex(ix) + xb.reindex(ix); r = evaluar(xc.to_numpy(), 0.5)
     r.update(correlacion=float(np.corrcoef(xv.reindex(ix), xb.reindex(ix))[0, 1]), nota="v2 a 200 USD + B a 1 MNQ, sesiones comunes 2025-08 → 2026-09")

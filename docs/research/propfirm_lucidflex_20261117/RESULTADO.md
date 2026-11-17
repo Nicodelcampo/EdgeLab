@@ -107,3 +107,17 @@ MNQ, 2020 → 2026-09, sin el stop de catástrofe de Z/R), bootstrap por bloques
 5. **Límites del cálculo**: el DLL se aproxima cortando la pérdida del día en −$600 (no ve el recorrido intradía); el escalado de contratos
    de la fondeada 25K y la política de algoritmos de Lucid («condicional» en el catálogo, no verificado) pueden limitar el tamaño; las medias
    de desarrollo vienen de reglas elegidas (por eso manda la contraída) y el forward todavía no confirmó ninguna canasta.
+
+### La cartera B (T+Z+R) por componentes (Nico: «¿probaste T+Z+R?»; DLL $600 + 50 %, 1 MNQ por regla, 2020 → 2026-09)
+| Combinación | USD/sesión (t) | EV desarrollo | **EV contraída** | Cobra (contraída) | Días por cuenta | EV contraída por mes de cuenta |
+|---|---|---|---|---|---|---|
+| **T+Z+R** | +47 (8,2) | +2.104 | **+654** | 25 % | 58 | **+239** |
+| T+Z+R desde 2025-08 (mismo tramo que la v2) | +77 (4,6) | +2.537 | **+746** | 26 % | 43 | **+363** |
+| T sola | +27 (6,3) | +1.642 | +516 | 22 % | 74 | +147 |
+| T+R | +41 (7,2) | +1.825 | +566 | 22 % | 58 | +204 |
+| T+Z | +34 (7,4) | +2.067 | +638 | 25 % | 74 | +182 |
+| Z+R | +20 (6,4) | +2.195 | +680 | 34 % | 189 | +76 |
+| R sola | +13 (5,0) | +1.225 | +365 | 27 % | 219 | +35 |
+| Z sola | +6 (4,0) | +210 | +5 | 6 % | 279 | +0 |
+T sostiene la canasta; Z sola opera tan poco (≈ 2 por mes) que en la cuenta no llega a cobrar; las tres juntas son la mejor combinación
+por mes. Z y R sin su stop de catástrofe en estas series.
