@@ -254,6 +254,13 @@ def ops_necesarias(efecto: float, se_actual: float, n_actual: int, alfa: float =
     return int(math.ceil(n_actual * (z * se_actual / efecto) ** 2))
 
 
+def separar_por_n(n_por_prueba: dict, n_min: int = 30) -> tuple:
+    """K29 (2026-11-17): las pruebas con menos de `n_min` operaciones (conteo SIN P&L) no entran a la familia de BH/FDR: no pueden
+    rechazar y sólo agrandan el denominador de las que sí. Quedan como SIN_POTENCIA_PREVIA (no refutadas). Devuelve (dentro, fuera)."""
+    dentro = sorted(k for k, n in n_por_prueba.items() if n >= n_min); fuera = sorted(k for k in n_por_prueba if k not in dentro)
+    return dentro, fuera
+
+
 def potencia(efecto: float, se: float, alfa: float = ALFA_CONFIRMACION) -> float:
     if not math.isfinite(se) or se <= 0: return float("nan")
     return float(1 - _N.cdf(_N.inv_cdf(1 - alfa) - efecto / se))

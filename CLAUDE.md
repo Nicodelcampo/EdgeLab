@@ -183,6 +183,11 @@ muestre calibración sana en datos reales.
 - **Cadena estándar de una corrida (Nico, 2026-11-11):** `tools/antecedentes.py` → módulo con el contrato de `edgelab/research/tablas.py`
   (motor único `ejecucion.py`, calibrado) → `tools/tablas.py preflight|lanzar|traer|explorar|congelar|confirmar` → `tools/cierre.py`.
   Nada de simuladores ni kernels propios (`docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`).
+- **Potencia y frecuencia antes de invertir (Nico, 2026-11-17, «opera demasiado poco»):** antes de mejorar, abrir un holdout o
+  mandar al forward cualquier regla —también de afuera o medida con una herramienta ad hoc— `python tools/potencia_previa.py <ops>`; su
+  línea «Potencia previa:» va al pre-registro (test). `holdout_ventanas.registrar_apertura` exige un plan de potencia (lectura de N fijo
+  con potencia ≥ 0,8; forward con ≥ 4 operaciones por mes y ≤ 60 meses para decidir); las pruebas con n < 30 no entran a la familia de BH;
+  ningún simulador nuevo sin calibración registrada. Ver K27–K31 en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` §E5.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

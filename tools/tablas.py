@@ -9,7 +9,7 @@
   python tools/tablas.py congelar <modulo> <hipotesis.json> --familia F FUENTE:DESDE:HASTA [...]   # congela y lanza la confirmación
   python tools/tablas.py confirmar <modulo> <CONGELADAS_*.json>               # UNA vez → RESULTADO_CONFIRMACION_<hash>.md/json
   python tools/tablas.py curva <modulo> <definición|-> <ejecución> [filtro]   # curva de capital IS / OOS / confirmación / holdout (SVG)
-  python tools/tablas.py holdout <modulo> <CONGELADAS_*.json> FUENTE:DESDE:HASTA --acta <md committeado> --p <p1,p2,...>
+  python tools/tablas.py holdout <modulo> <CONGELADAS_*.json> FUENTE:DESDE:HASTA --acta <md committeado> --p <p1,p2,...> --plan <efecto,sd_op,n_esperado>
                                                                                # apertura exploratoria de la familia (una sola): registra y lanza
   python tools/tablas.py confirmar_holdout <modulo> <CONGELADAS_*.json>       # UNA vez: veredicto + Fisher con las p de desarrollo
 
@@ -171,7 +171,7 @@ def confirmar(modulo, cong):
     out.with_suffix(".md").write_text(AT.informe_confirmacion(res), encoding="utf-8"); print("escrito", out.with_suffix(".md").relative_to(ROOT))
 
 
-def holdout(modulo, cong, ventana, acta, ps):
+def holdout(modulo, cong, ventana, acta, ps, plan_args):
     """Apertura exploratoria (modo 2026-11-08): congeladas con hash, acta committeada, una p de desarrollo por hipótesis, y la familia
     sin apertura previa. Registra la apertura en HOLDOUT_VENTANAS.jsonl ANTES de lanzar."""
     from edgelab.research import analizar_tabla as AT, holdout_ventanas as HV
@@ -183,7 +183,8 @@ def holdout(modulo, cong, ventana, acta, ps):
     if (pr := HV.problemas(fam, d0, cid)): raise SystemExit("no se abre: " + "; ".join(pr))
     reg = carpeta(modulo) / f"HOLDOUT_{C['sha256'][:8]}.json"
     reg.write_text(json.dumps(dict(cid=cid, congeladas=str(cong), acta=acta, commit=commit, p_desarrollo=ps, ventana=[f, d0, d1]), indent=1), encoding="utf-8")
-    HV.registrar_apertura(fam, cid, d0, n_fijo=0); print("apertura registrada", cid)
+    plan = HV.plan_potencia("fijo", *plan_args[:2], n=int(plan_args[2]), fuente_efecto="--plan efecto,sd_op,n_esperado (n: conteo sin P&L)")
+    HV.registrar_apertura(fam, cid, d0, n_fijo=int(plan_args[2]), plan=plan); print("apertura registrada", cid, plan)
     lanzar(modulo, ventana, uso="holdout", congeladas=str(cong), env_extra=dict(SELLADO="1", ACTA_JSON=json.dumps(dict(acta=acta, commit=commit, familia=fam, cid=cid))))
 
 
@@ -235,7 +236,9 @@ def main():
     elif op == "curva": curva(*a[1:5])
     elif op == "holdout":
         acta = sys.argv[sys.argv.index("--acta") + 1]; ps = [float(x) for x in sys.argv[sys.argv.index("--p") + 1].split(",")]
-        holdout(a[1], a[2], _ventanas([x for x in a[3:] if ":" in x]), acta, ps)
+        if "--plan" not in sys.argv: raise SystemExit("holdout exige --plan efecto,sd_op,n_esperado (K27: potencia >= 0,8 antes de abrir)")
+        plan_args = [float(x) for x in sys.argv[sys.argv.index("--plan") + 1].split(",")]
+        holdout(a[1], a[2], _ventanas([x for x in a[3:] if ":" in x]), acta, ps, plan_args)
     elif op == "confirmar_holdout": confirmar_holdout(a[1], a[2])
     else: raise SystemExit(__doc__)
 

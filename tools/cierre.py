@@ -14,7 +14,8 @@ REGENERAR = [["tools/docs_index.py", "--write"], ["tools/existente.py", "catalog
              ["tools/check_modules.py", "--write"]]
 TESTS = ["tests/test_existente.py", "tests/test_verify_indices.py", "tests/research/test_factores.py", "tests/test_holdout_unico.py",
          "tests/test_dependencias_lock.py", "tests/test_parametros_por_defecto.py", "tests/test_cadena_accesible.py",
-         "tests/test_auditoria_patrones.py"]                       # auditoría de corridas 2026-11-16
+         "tests/test_auditoria_patrones.py",                       # auditoría de corridas 2026-11-16
+         "tests/test_guardas_principiante_20261117.py"]            # K27–K31: potencia/frecuencia, simuladores, pre-registros
 
 
 def main() -> int:

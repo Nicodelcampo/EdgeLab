@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM, TURTLES-ORO.
+"""Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM. (TURTLES-ORO salió el 2026-11-17: 0,4 operaciones por mes, no pasa K27; su seguimiento queda a mano en tools/turtles_oro_seguimiento.py.)
 
   python tools/seguimiento_forward.py <HASTA AAAAMMDD> [commit]   # lanza los tres kernels, espera, trae y resume
 Orquesta, sin lógica propia: tools/cartera_v2_forward.py, tools/fundedsync_cadena.py (forward, traer_forward, cartera_b) y
@@ -29,10 +29,8 @@ def main(hasta, commit=""):
     _run("tools/fundedsync_cadena.py", "forward", hasta, commit)
     _run("tools/franklin_seguimiento.py", "forward", hasta, commit)
     _run("tools/som_seguimiento.py", "forward", hasta, commit)
-    _run("tools/turtles_oro_seguimiento.py", "forward", hasta, commit)
     print("fundedsync:", _esperar(f"nicolasbuttaro/edgelab-fundedsync-cadena-fw{hasta}")); print("franklin:", _esperar(f"nicolasbuttaro/edgelab-franklin-seg-fw{hasta}"))
     print("som:", _esperar(f"nicolasbuttaro/edgelab-som-seg-fw{hasta}"))
-    print("turtles oro:", _esperar(f"nicolasbuttaro/edgelab-turtles-oro-seg-fw{hasta}"))
     for _ in range(180):                                                       # la cartera v2/v3 son varios kernels: traer hasta que no falte nada
         r = _run("tools/cartera_v2_forward.py", "traer", "--hasta", hasta, check=False)
         if "faltan" not in r.stdout: print(r.stdout[-1500:]); break
@@ -41,7 +39,6 @@ def main(hasta, commit=""):
     print(_run("tools/fundedsync_cadena.py", "cartera_b", hasta).stdout)
     print(_run("tools/franklin_seguimiento.py", "traer_forward", hasta).stdout)
     print(_run("tools/som_seguimiento.py", "traer_forward", hasta).stdout)
-    print(_run("tools/turtles_oro_seguimiento.py", "traer_forward", hasta).stdout)
 
 
 if __name__ == "__main__":

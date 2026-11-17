@@ -3,6 +3,8 @@ import json
 import sys
 from pathlib import Path
 
+PLAN = dict(tipo="fijo", potencia=0.9, problemas=[])   # K27: toda apertura declara su plan
+
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT / "tools"))
 import holdout_exploratorio as HE  # noqa: E402
 from edgelab.research import holdout_ventanas as HV  # noqa: E402
@@ -19,7 +21,7 @@ def test_flujo_completo(tmp_path):
               spec=dict(familia="F", experimento="e", sensor="DK:X", holdout=dict(desde=20261001)), reglas=dict(holdout=dict(desde=20261001)),
               acta=dict(n_fijo=150))
     (d / "estado.json").write_text(json.dumps(st)); (d / "ACTA_HOLDOUT.json").write_text("{}"); (d / "MEDIDO.md").write_text("")
-    HV.registrar_apertura("F", "C", 20261001, 150, lib)
+    HV.registrar_apertura("F", "C", 20261001, 150, lib, plan=PLAN)
     HE.preparar(raiz, "C", 20261025, ventanas=lib)
     assert not HV.aperturas_vigentes("F", lib) and HV.ultima_consumida("F", lib) == 20261025
     run = Fake(); out = HE.correr(raiz, "C", {}, runner=run)

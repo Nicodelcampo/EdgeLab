@@ -57,7 +57,7 @@ def acta(raiz: Path, cid: str, n_sesiones: int, libro=None, ventanas=None, regis
                        f"reservado ({res['nivel']:.5f}) y media > 0; REFUTADA si media <= 0; si no, SIN_POTENCIA"),
              origen="docs/research/auditoria_filtro_20261026/AUDITORIA_FILTRO_PISTAS.md (propuesta 4, aprobada por Nico)")
     destino.write_text(json.dumps(a, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
-    HV.registrar_apertura(fam, id_, h_desde, int(n_sesiones), libro_v)
+    HV.registrar_apertura(fam, id_, h_desde, int(n_sesiones), libro_v, plan=dict(tipo="canasta", n=int(n_sesiones), potencia=pot, forzada=bool(forzar), problemas=[]))
     if registro is not None: registro.ensure(f"embudo/{cid}/holdout_canasta", fam, 1, f"apertura de holdout: canasta de pistas de {cid}")
     return a
 

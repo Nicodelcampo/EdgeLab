@@ -613,7 +613,8 @@ class Embudo:
         if pot_h is not None and pot_h < 0.5:
             self._medido(spec, f"- AVISO ACTA: potencia del holdout {pot_h:.2f} < 0,5 con N {h['n_fijo']}: lo más probable es SIN_POTENCIA "
                                "(docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)")
-        HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v)
+        HV.registrar_apertura(spec["familia"], spec["cid"], h["desde"], h["n_fijo"], libro_v,
+                              plan=dict(tipo=f"embudo_{est}", **(plan or {}), problemas=[]))   # el embudo ya decidió la potencia (E8; canasta_regimen: Nico 2026-10-27)
         if self.registro: self.registro.ensure(f"embudo/{spec['cid']}/holdout", spec["familia"], 1, "apertura de holdout por acta")
         st["acta"] = acta; return self._siguiente(spec, st, "CONTEO")
 

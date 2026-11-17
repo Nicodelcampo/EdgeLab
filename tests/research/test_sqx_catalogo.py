@@ -85,3 +85,28 @@ def test_turtle_v_de_fabrica_igual_a_turtle_y_causal():
                 s = S.turtle_v(**kw)(Bx, ctx); s = S.con_reentrada(Bx, s) if reent else s
                 T = S.simular(Bx, s, True); return T[(T.motivo != "FIN") & (T.fecha < fc - 100)].drop(columns="i0").reset_index(drop=True)
             pd.testing.assert_frame_equal(corre(B), corre(B.iloc[:corte + 1]), check_dtype=False)
+
+
+def _caminata_m1(seed, dias=120):
+    rng = np.random.default_rng(seed); t = pd.date_range("2024-01-01 18:00", periods=60 * 24 * dias, freq="1min"); t = t[t.dayofweek < 5]
+    c = 100 + np.cumsum(rng.normal(0, 0.3, len(t))); o = np.r_[c[0], c[:-1]]
+    h = np.maximum(o, c) + np.abs(rng.normal(0, 0.1, len(t))); l = np.minimum(o, c) - np.abs(rng.normal(0, 0.1, len(t)))
+    return pd.DataFrame(dict(o=o, h=h, l=l, c=c, v=1.0), index=t), rng
+
+
+def _r_al_azar(D, rng, k, con_m1):
+    B = S.barras_desde_m1(D, "M15"); m = S.indices_m1(B, D, "M15") if con_m1 else None; n = len(B)
+    on = rng.random(n) < 0.3; a = (B.h - B.l).rolling(20).mean().to_numpy()
+    sig = dict(lado_l=np.where(on, 1, 0), lado_s=np.where(on, -1, 0), tipo_l="stop", tipo_s="stop", px_l=B.h.to_numpy(), px_s=B.l.to_numpy(),
+               valida=1, sl=k * a, tp=k * a)
+    T = S.simular(B, sig, True, m1=m); return (T.lado * (T.salida_px - T.entrada) / (T.entrada - T.stop0).abs()).to_numpy()
+
+
+def test_calibracion_motor_barras():
+    """K28: OCO de rupturas al azar sobre una caminata sin deriva. Con el M1 y stops de 1 rango medio de barra, R medio ≈ 0; sin M1 y con
+    stops chicos el motor es PESIMISTA (el extremo previo al llenado cuenta como posterior: −0,5 R), el sesgo de la corrida v1 del catálogo."""
+    medias = []
+    for seed in (3, 4, 5):
+        D, rng = _caminata_m1(seed); medias.append(_r_al_azar(D, rng, 1.0, True).mean())
+    assert abs(np.mean(medias)) < 0.05, medias
+    D, rng = _caminata_m1(3); assert _r_al_azar(D, rng, 0.3, False).mean() < -0.3

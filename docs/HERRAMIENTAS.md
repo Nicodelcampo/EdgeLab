@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-671 scripts.
+672 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -513,6 +513,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/peaks_rule.py` | Detector de «picos consecutivos» v2 — regla de Nico: **cada pico no supera al anterior**. |
 | `tools/perdidas_concentradas.py` | Dónde se concentran las pérdidas: stop corto relativo (pre-registro docs/research/cartera_20261116/PREREGISTRO_PERDIDAS_CONCENTRADAS.md). |
 | `tools/pivotes_barrido.py` | PIVOTES-BARRIDO-MES — OK de Nico 28/09. Manifiesto: docs/research/MANIFIESTO_PIVOTES_BARRIDO_MES_20260928.md |
+| `tools/potencia_previa.py` | Potencia y frecuencia ANTES de invertir en una estrategia (mejora, holdout o forward): K27–K29 de |
 | `tools/pred004_analyze.py` | pred004_analyze.py — el instrumento que mide PRED-004 COMO FUE ESCRITA. |
 | `tools/propfirm_ev_report.py` | Reporte de prop firms: para cada cuenta del catálogo, (1) el EV del participante sin ventaja (control de Hall), |
 | `tools/propfirm_match.py` | La cuenta que mejor le calza a una estrategia (camino inverso del universo): dado instrumento, σ de la operación (ticks) y z bruto por operación (esperanza bruta / σ), |
@@ -596,7 +597,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/sandbox/l3_power.py` | Potencia de la carrera simetrica L3, con la aritmetica exacta del spec. |
 | `tools/sandbox/l3_touch_rule_bias.py` | L3 audit: cuando la regla de toque rompe el nulo de la carrera simetrica. |
 | `tools/sandbox_pqread.py` | Lector minimo de parquet para ambientes sin pyarrow/duckdb (sandbox de auditoria). |
-| `tools/seguimiento_forward.py` | Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM, TURTLES-ORO. |
+| `tools/seguimiento_forward.py` | Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM. (TURTLES-ORO salió el 2026-11-17: 0,4 operaciones por mes, no pasa K27; su segui |
 | `tools/select_canonical_visual_sessions.py` | Target-free reproducible session selection script for HP007-CAMP-002. |
 | `tools/senales_nt8.py` | Señales de una regla congelada para NT8 Market Replay (`nt8/strategies/EdgeLabSignalReplay.cs`) y comparación de llenados. |
 | `tools/simulador_challenges_propfirm.py` | Simulador y Optimizador Monte Carlo de Challenges de Cuentas Fondeadas (`tools/simulador_challenges_propfirm.py`, 2026-10-29). |
