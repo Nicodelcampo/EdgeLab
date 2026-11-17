@@ -270,7 +270,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (29)
+## NO_REPETIR (30)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -284,6 +284,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Futuros operables en Topstep (CME/NYMEX/COMEX/CBOT)
   - Siguiente: No repetir estas reglas igual. Inside bar sólo con stop más ancho como hipótesis nueva; COT sólo con razón económica para otros umbrales.
   - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
+- **Reglas elegidas por el embudo en 14 meses de ticks (ago-25 → sep-26) no tenían ventaja en los años limpios anteriores: «atrás» sobre M1 real de futuros, calibrado contra ticks (corr 0,89–0,998)** (`F-ATRAS-M1-V2V4-REFUTADA`, 2026-11-17, sesion)
+  - Efecto: Canasta de 5 (CVGAP2-GC#11, COMEX, IF-LUX-NQ de la v4; CVGAP-ES-C, PREAPERTURA-NQ de la v2): −386 R en 1.453 sesiones, 0/8 años positivos → REFUTADA_ATRAS. 3 EN_CONTRA con potencia ≥ 0,97; el bruto también ≈ 0 o negativo (no es fricción ni escala).
+  - Dónde: NQ, ES, GC (2006/2008 → 2025)
+  - Siguiente: No elegir reglas en 14 meses de datos: descubrimiento y holdout con la partición A5 sobre 18 años de M1; las canastas v2/v4 no habilitan tamaño real; próxima versión sin las reglas EN_CONTRA.
+  - Evidencia: `docs/research/atras_m1_20261117/RESULTADO.md`, `docs/research/atras_m1_20261117/ATRAS.json`, `docs/research/atras_m1_20261117/CALIBRACION.json`
 - **Saltear entradas 14:00–16:15 NY** (`F-FIN-DE-RUEDA-NO`, 2026-11-16, sesion)
   - Efecto: Descriptivo de 24 reglas sugería R ≈ 0 en esa franja; en generadoras + holdout Δ −0,06 R (p 0,16) y en el holdout va al revés (+0,08).
   - Dónde: Cartera de 27 reglas
