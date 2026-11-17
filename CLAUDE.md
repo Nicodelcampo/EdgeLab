@@ -45,6 +45,7 @@ Recordatorios:
 
 ### Estado al 2026-11-17
 
+> **Handoff completo de esta etapa (sin depender del chat): `docs/research/HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md`.**
 > **Qué se opera y con qué evidencia: `docs/cartera/CANASTAS_VIGENTES.md`** (generado de los archivos operativos; un test lo exige al día)
 > y su página auditable https://claude.ai/artifact/UKHJZyWZH1L8tr2cWtWo2s (privada; se comparte desde su menú). Canastas v2/v3 y B en papel y
 > forward; 0 edges promovidos. **Cuenta**: LucidFlex 25K con DLL $600 + 50 % rinde más por cuenta (`docs/research/propfirm_lucidflex_20261117/`);

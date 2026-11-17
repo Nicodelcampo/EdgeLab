@@ -1,0 +1,228 @@
+<meta name="dash-one-writer">
+<style>
+  .cv { display: flex; flex-direction: column; gap: var(--cds-gap-xl); font-family: var(--font-anthropic-sans); color: var(--color-fg); }
+  .cv h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .cv h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+  .cv p { margin: 0; max-width: 72ch; line-height: 1.5; }
+  .cv-muted { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .cv-sec { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .cv-controls { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); align-items: end; }
+  .cv-controls label { display: flex; flex-direction: column; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cv-scroll { overflow-x: auto; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); background: var(--color-panel); }
+  .cv-table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .cv-table th, .cv-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); text-align: right; white-space: nowrap; }
+  .cv-table th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .cv-table th:first-child, .cv-table td:first-child, .cv-table .cv-txt { text-align: left; }
+  .cv-pos { color: var(--color-ok); } .cv-neg { color: var(--color-bad); } .cv-warn { color: var(--color-warn); }
+  .cv-chart { position: relative; min-height: 260px; }
+  .cv-chart svg text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); }
+  .cv-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover);
+            border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .cv-note { border-left: 3px solid var(--color-warn); padding-left: var(--cds-pad-md); }
+  .cv details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+  .cv details ul { margin: var(--cds-gap-sm) 0 0; padding-left: 1.2em; line-height: 1.6; }
+  .cv code { font-size: 0.92em; overflow-wrap: anywhere; }
+</style>
+<div class="cv">
+  <header class="cv-sec" id="cabecera">
+    <h1>Canastas EdgeLab</h1>
+    <p>Qué se opera en papel y forward, con qué evidencia de desarrollo, y cuánto valdría cada canasta en una cuenta LucidFlex 25K. Ninguna está confirmada fuera de muestra y nada opera con dinero real.</p>
+    <p id="resumen">Con la media contraída y la cuenta DLL $600 + 50 % ($55,30), el mayor valor esperado por cuenta lo da <b data-draw="mejor-canasta" data-source="mejor" data-field="canasta" data-row="0">—</b> con <b data-draw="mejor-ev" data-source="mejor" data-field="ev" data-row="0">—</b> por cuenta comprada, frente a <b data-draw="cero-ev" data-source="mejor" data-field="ev_cero" data-row="0">—</b> operando sin ventaja.</p>
+  </header>
+
+  <section class="cv-sec" id="reglas">
+    <h2>Reglas de la cartera v2 y v3</h2>
+    <p class="cv-muted">R neto por operación (riesgo inicial = 1 R) en descubrimiento (ago-2025 → mar-2026), réplica (abr → sep-2026) y octubre (holdout ya abierto). t por sesión entre paréntesis. La fricción es la mediana antes del filtro que no opera con stops chicos.</p>
+    <div class="cv-controls">
+      <label for="sel-canasta">Canasta
+        <select class="dash-select" id="sel-canasta" aria-label="Canasta">
+          <option value="v2">Cartera v2</option>
+          <option value="v3">Cartera v3</option>
+        </select>
+      </label>
+    </div>
+    <div class="cv-scroll">
+      <table class="cv-table" data-source="reglas" data-row-key="canasta,regla" id="tabla-reglas">
+        <thead><tr>
+          <th data-field="regla">Regla</th><th data-field="senal" class="cv-txt">Señal</th><th data-field="ejecuta" class="cv-txt">Ejecuta</th>
+          <th data-field="micros">Micros</th><th data-field="riesgo_usd">Riesgo USD</th><th data-field="R_desc">R desc.</th><th data-field="t_desc">t</th>
+          <th data-field="R_rep">R réplica</th><th data-field="t_rep">t</th><th data-field="R_oct">R oct.</th><th data-field="friccion_R">Fricción R</th>
+          <th data-field="meses_positivos">Meses +</th><th data-field="ops_mes">Ops/mes</th>
+        </tr></thead>
+        <tbody data-draw="filas-reglas"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cv-sec" id="cartera-b">
+    <h2>Cartera B: T + Z + R de FundedSync en MNQ</h2>
+    <p class="cv-muted">Puntos netos de fricción por operación, 1 micro por regla. El desarrollo no trae el stop de catástrofe de Z y R, que sí usa la regla operativa.</p>
+    <div class="cv-scroll">
+      <table class="cv-table" data-source="reglas_b" data-row-key="regla" id="tabla-b">
+        <thead><tr>
+          <th data-field="regla">Regla</th><th data-field="modulo" class="cv-txt">Módulo</th><th data-field="stop" class="cv-txt">Stop</th>
+          <th data-field="pts_op_2020_23">Pts/op 2020–23</th><th data-field="t_2020_23">t</th><th data-field="pts_op_2024_26">Pts/op 2024–26</th><th data-field="t_2024_26">t</th>
+          <th data-field="ops_mes">Ops/mes</th>
+        </tr></thead>
+        <tbody data-draw="filas-b"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="cv-sec" id="lucid">
+    <h2>Valor esperado por cuenta en LucidFlex 25K</h2>
+    <p class="cv-muted">Simulación de 20.000 cuentas por variante con las reglas oficiales de Lucid y las series diarias de desarrollo de cada canasta, recentradas a la media elegida. «Contraída» corrige que las reglas se eligieron entre muchas (James-Stein, cerca de la mitad), pero resultó optimista: medido sobre todo el embudo, lo elegido no conservó nada en su réplica. Hasta que decida el forward, la expectativa honesta está entre «cero» y «contraída». Valor esperado = cobrado al 90 % menos el precio de la cuenta.</p>
+    <div class="cv-controls">
+      <label for="sel-config">Configuración
+        <select class="dash-select" id="sel-config" aria-label="Configuración de la cuenta">
+          <option value="DLL600|50%">DLL $600 + 50 % ($55,30)</option>
+          <option value="DLL600|40%">DLL $600 + 40 % ($45,50)</option>
+          <option value="sinDLL|50%">Sin DLL + 50 % ($70,00)</option>
+          <option value="sinDLL|40%">Sin DLL + 40 % ($60,20)</option>
+        </select>
+      </label>
+      <label for="sel-media">Media
+        <select class="dash-select" id="sel-media" aria-label="Media supuesta">
+          <option value="contraida">Contraída (optimista)</option>
+          <option value="dev">Desarrollo</option>
+          <option value="cero">Cero (sin ventaja)</option>
+        </select>
+      </label>
+      <label for="sel-retiro">Retiro
+        <select class="dash-select" id="sel-retiro" aria-label="Política de retiro">
+          <option value="max">Esperar a retirar $1.000</option>
+          <option value="min">Retirar en cuanto se puede</option>
+        </select>
+      </label>
+    </div>
+    <div class="cv-chart" data-draw="grafico-ev" data-source="lucid" id="grafico-ev"></div>
+    <div class="cv-scroll">
+      <table class="cv-table" data-source="lucid" data-row-key="canasta,configuracion,media,retiro" id="tabla-lucid">
+        <thead><tr>
+          <th data-field="canasta">Canasta</th><th data-field="usd_sesion">USD/sesión</th><th data-field="pasa">Pasa</th><th data-field="cobra">Cobra</th>
+          <th data-field="retiros">Retiros</th><th data-field="ev">Valor esperado</th><th data-field="dias_por_cuenta">Días por cuenta</th><th data-field="ev_por_mes">Por mes de cuenta</th>
+        </tr></thead>
+        <tbody data-draw="filas-lucid"></tbody>
+      </table>
+    </div>
+    <p class="cv-note">El límite diario se aproxima cortando la pérdida del día en −$600. No están verificados con Lucid la política de algoritmos ni el escalado de contratos de la fondeada 25K, que pueden limitar el tamaño. Varias cuentas con la misma canasta ganan y pierden juntas.</p>
+  </section>
+
+  <details id="auditar">
+    <summary>Cómo auditar estos números</summary>
+    <ul>
+      <li>Repositorio <code>nicodelcampo/edgelab</code>, rama <code>claude/vibrant-clarke-s9z6e2</code>, commit <code>2414acd9</code>. Documento generado: <code>docs/cartera/CANASTAS_VIGENTES.md</code> (un test falla si se desactualiza).</li>
+      <li>Reglas y evidencia: <code>docs/research/cartera_20261116/CARTERA_V2_OPERATIVA.json</code>, <code>CARTERA_V3_OPERATIVA.json</code>, <code>BATERIA.json</code>; operaciones por regla en <code>docs/research/canasta_7_20261030/desarrollo_en_r/</code> y <code>docs/research/cartera_20261116/ops/</code>.</li>
+      <li>Cartera B: <code>docs/research/fundedsyncstack_20261115/CARTERA_B_OPERATIVA.json</code> y <code>cadena/FUNDEDSYNC_OPS.csv.gz</code>.</li>
+      <li>Lucid: reglas leídas en support.lucidtrading.com (17-nov-2026), cálculo en <code>tools/lucid_canastas.py</code> con calibración en <code>tests/research/test_lucid_canastas.py</code>; resultado en <code>docs/research/propfirm_lucidflex_20261117/CANASTAS_LUCID.json</code>.</li>
+      <li>Pre-registros escritos antes de mirar: <code>docs/research/cartera_20261116/PREREGISTRO.md</code>, <code>PREREGISTRO_TANDA4.md</code>, <code>PREREGISTRO_FORWARD_V2.md</code> y <code>docs/research/fundedsyncstack_20261115/PREREGISTRO_CARTERA_B.md</code>. Costos: sólo <code>config/costos/costos_canonicos.json</code>.</li>
+    </ul>
+  </details>
+</div>
+<script>
+  window.cvNum = (x) => (x === null || x === undefined || x === '' ? NaN : +x);
+  window.cvFmt = { r: d3.format('+.2f'), t: d3.format('.1f'), usd: (x) => (x < 0 ? '−$' : '+$') + d3.format(',.0f')(Math.abs(x)), pct: d3.format('.0%'), n1: d3.format('.1f') };
+  window.cvSel = () => {
+    const v = (id, def) => { const el = document.getElementById(id); return el ? el.value : def; };
+    return { canasta: v('sel-canasta', 'v2'), config: v('sel-config', 'DLL600|50%'), media: v('sel-media', 'contraida'), retiro: v('sel-retiro', 'max') };
+  };
+  for (const id of ['sel-canasta', 'sel-config', 'sel-media', 'sel-retiro']) {
+    for (const el of document.querySelectorAll('#' + id)) {
+      el.addEventListener('change', () => { for (const n of ['filas-reglas', 'filas-lucid', 'grafico-ev']) dash.draw(n); });
+    }
+  }
+  window.cvCelda = (tr, txt, cls) => { const td = document.createElement('td'); td.textContent = txt; if (cls) td.className = cls; tr.appendChild(td); return td; };
+  window.cvSigno = (x) => (x > 0 ? 'cv-pos' : x < 0 ? 'cv-neg' : '');
+</script>
+<script>
+  dash.draw('filas-reglas', (tb) => {
+    const d = dash.data('reglas'); tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    const s = cvSel(), F = cvFmt;
+    for (const r of d.data.filter((r) => r.canasta === s.canasta)) {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.canasta) + ',' + encodeURIComponent(r.regla);
+      cvCelda(tr, r.regla); cvCelda(tr, r.senal, 'cv-txt'); cvCelda(tr, r.ejecuta, 'cv-txt'); cvCelda(tr, F.n1(cvNum(r.micros)).replace('.0', ''));
+      cvCelda(tr, d3.format(',.0f')(cvNum(r.riesgo_usd)));
+      for (const [k, f] of [['R_desc', F.r], ['t_desc', F.t], ['R_rep', F.r], ['t_rep', F.t], ['R_oct', F.r]]) {
+        const x = cvNum(r[k]); cvCelda(tr, f(x), k.startsWith('R_') ? cvSigno(x) : '');
+      }
+      const fr = cvNum(r.friccion_R); cvCelda(tr, d3.format('.3f')(fr), fr > 0.08 ? 'cv-warn' : '');
+      cvCelda(tr, F.pct(cvNum(r.meses_positivos))); cvCelda(tr, F.n1(cvNum(r.ops_mes)));
+      tb.appendChild(tr);
+    }
+  });
+  dash.draw('filas-b', (tb) => {
+    const d = dash.data('reglas_b'); tb.replaceChildren();
+    if (d.status !== 'ok') return;
+    for (const r of d.data) {
+      const tr = document.createElement('tr'); tr.dataset.key = encodeURIComponent(r.regla);
+      cvCelda(tr, r.regla); cvCelda(tr, r.modulo, 'cv-txt'); cvCelda(tr, r.stop, 'cv-txt');
+      for (const k of ['pts_op_2020_23', 't_2020_23', 'pts_op_2024_26', 't_2024_26']) {
+        const x = cvNum(r[k]); cvCelda(tr, k.startsWith('t') ? cvFmt.t(x) : d3.format('+.1f')(x), k.startsWith('pts') ? cvSigno(x) : '');
+      }
+      cvCelda(tr, cvFmt.n1(cvNum(r.ops_mes))); tb.appendChild(tr);
+    }
+  });
+  window.cvLucid = () => {
+    const d = dash.data('lucid'); if (d.status !== 'ok') return null;
+    const s = cvSel();
+    return d.data.filter((r) => r.configuracion === s.config && r.media === s.media && r.retiro === s.retiro);
+  };
+  dash.draw('filas-lucid', (tb) => {
+    tb.replaceChildren(); const rows = cvLucid(); if (!rows) return;
+    for (const r of rows) {
+      const tr = document.createElement('tr');
+      tr.dataset.key = [r.canasta, r.configuracion, r.media, r.retiro].map(encodeURIComponent).join(',');
+      const ev = cvNum(r.ev);
+      cvCelda(tr, r.canasta); cvCelda(tr, cvFmt.usd(cvNum(r.usd_sesion))); cvCelda(tr, cvFmt.pct(cvNum(r.pasa))); cvCelda(tr, cvFmt.pct(cvNum(r.cobra)));
+      cvCelda(tr, d3.format('.2f')(cvNum(r.retiros))); cvCelda(tr, cvFmt.usd(ev), cvSigno(ev)); cvCelda(tr, d3.format('.0f')(cvNum(r.dias_por_cuenta)));
+      const pm = cvNum(r.ev_por_mes); cvCelda(tr, cvFmt.usd(pm), cvSigno(pm)); tb.appendChild(tr);
+    }
+  });
+  dash.draw('grafico-ev', (el) => {
+    el.replaceChildren(); const d = dash.data('lucid');
+    if (d.status === 'error') { el.textContent = 'No se pudo cargar'; return; }
+    const rows = cvLucid(); if (!rows || !rows.length) { el.textContent = '—'; return; }
+    const W = Math.max(280, el.clientWidth || 600), bh = 26, H = rows.length * bh + 30, s = cvSel();
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${W} ${H}`).attr('role', 'img')
+      .attr('aria-label', 'Valor esperado por cuenta comprada, por canasta');
+    const lab = svg.append('g'); let mw = 0;
+    rows.forEach((r, i) => { const t = lab.append('text').attr('x', 0).attr('y', 20 + i * bh + bh / 2).attr('dominant-baseline', 'middle').text(r.canasta); mw = Math.max(mw, t.node().getComputedTextLength()); });
+    const x0 = mw + 10, vals = rows.map((r) => cvNum(r.ev)), lo = Math.min(0, d3.min(vals)), hi = Math.max(0, d3.max(vals));
+    const x = d3.scaleLinear().domain([lo, hi]).nice().range([x0, W - 70]);
+    svg.append('line').attr('x1', x(0)).attr('x2', x(0)).attr('y1', 14).attr('y2', H - 10).style('stroke', 'var(--cds-chart-axis)');
+    const tip = d3.select(el).append('div').attr('class', 'cv-tip').attr('hidden', true);
+    rows.forEach((r, i) => {
+      const v = cvNum(r.ev), y = 20 + i * bh + 4;
+      svg.append('rect').attr('x', Math.min(x(0), x(v))).attr('y', y).attr('height', bh - 8).attr('width', Math.max(1, Math.abs(x(v) - x(0))))
+        .style('fill', v < 0 ? 'var(--cds-chart-status-critical)' : dash.colors[0])
+        .attr('data-source', 'lucid').attr('data-field', 'ev')
+        .attr('data-where', `canasta=${encodeURIComponent(r.canasta)}&configuracion=${encodeURIComponent(s.config)}&media=${s.media}&retiro=${s.retiro}`)
+        .on('pointerenter pointermove', (e) => {
+          const [mx, my] = d3.pointer(e, el);
+          tip.attr('hidden', null).style('left', Math.min(mx + 12, W - 180) + 'px').style('top', (my + 12) + 'px')
+            .text(`${r.canasta}: ${cvFmt.usd(v)} por cuenta · cobra ${cvFmt.pct(cvNum(r.cobra))}`);
+        })
+        .on('pointerleave', () => tip.attr('hidden', true));
+      svg.append('text').attr('x', x(Math.max(v, 0)) + 6).attr('y', y + (bh - 8) / 2).attr('dominant-baseline', 'middle').text(cvFmt.usd(v));
+    });
+  });
+  dash.calc('mejor', {
+    title: 'Canasta de mayor valor esperado (DLL $600 + 50 %, media contraída, retiro $1.000)',
+    description: 'La fila de mayor valor esperado entre las canastas, y el valor sin ventaja de esa misma canasta.',
+    inputs: ['lucid'],
+    fn: (lucid) => {
+      const ok = (r, m) => r.configuracion === 'DLL600|50%' && r.media === m && r.retiro === 'max';
+      const c = lucid.filter((r) => ok(r, 'contraida')).sort((a, b) => +b.ev - +a.ev)[0];
+      if (!c) return [];
+      const z = lucid.find((r) => ok(r, 'cero') && r.canasta === c.canasta);
+      return [{ canasta: c.canasta, ev: +c.ev, ev_cero: z ? +z.ev : null }];
+    },
+  });
+  for (const [n, k, f] of [['mejor-canasta', 'canasta', (x) => x], ['mejor-ev', 'ev', (x) => cvFmt.usd(x)], ['cero-ev', 'ev_cero', (x) => cvFmt.usd(x)]]) {
+    dash.draw(n, (el) => {
+      const d = dash.data('mejor');
+      el.textContent = d.status === 'ok' && d.data && d.data.length ? f(d.data[0][k]) : '—';
+    });
+  }
+</script>
