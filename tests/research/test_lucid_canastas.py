@@ -24,4 +24,4 @@ def test_K28_calibracion_reglas_de_la_cuenta():
     cob, pas, pg, de, df = _corre([-900.0] * 10, dll=600.0)                 # DLL blando: cada día pierde 600, se pierde la cuenta al 2.º
     assert pas == 0 and de == 2
     cob_min, _, pg_min, _, df_min = _corre([300.0] * 40, pol_max=False)    # retirar en cuanto se puede: 750 el día 5, después 1.000 cada 5 días
-    assert pg_min == 5 and df_min == 25 and abs(cob_min - 0.9 * (750 + 4 * 1000)) < 1e-6 and df_min < df
+    assert pg_min == 5 and df_min == 25 and abs(cob_min - 0.9 * (750 + 4 * 1000)) < 1e-6 and df_min < 27          # la política «máximo» termina el día 27 (7, 12, 17, 22, 27)

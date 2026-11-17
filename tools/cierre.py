@@ -19,7 +19,8 @@ TESTS = ["tests/test_existente.py", "tests/test_verify_indices.py", "tests/resea
          # K34 (2026-11-17): lo que se rompió sin que el cierre lo viera (kernels embebidos, costos, embudo, promoción, índice de docs)
          "tests/research/test_kernel_areas_al_dia.py", "tests/research/test_luximb_grilla.py::test_kernel_e0_al_dia", "tests/test_costos_canonicos.py",
          "tests/research/test_embudo_runners.py", "tests/test_autopilot_promocion.py", "tests/research/test_holdout_ventanas.py",
-         "tests/foundation/test_product_registry.py", "tests/research/test_canastas_vigentes.py"]
+         "tests/foundation/test_product_registry.py", "tests/research/test_canastas_vigentes.py",
+         "tests/research/test_lucid_canastas.py", "tests/research/test_vida_ventaja.py"]
 
 
 def main() -> int:
