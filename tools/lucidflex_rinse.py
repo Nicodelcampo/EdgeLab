@@ -57,7 +57,7 @@ def dia(rng, dias, objetivo, stop, edge_usd=0.0):
     return bruto - f + edge_usd
 
 
-def cuenta(rng, dias, consistencia=0.4, lectura="A", politica="max", edge_usd=0.0, max_dias=400):
+def cuenta(rng, dias, consistencia=0.4, lectura="A", politica="max", edge_usd=0.0, max_dias=400, dll=None):
     """Una cuenta de punta a punta. Devuelve (USD cobrados por el trader, días usados, pasó la evaluación, payouts)."""
     # --- evaluación: días iguales de objetivo/3 (40 %) o /2 (50 %), stop = colchón hasta el piso
     bal, piso, maxc, mayor, d = START, START - MLL, START, 0.0, 0
@@ -65,7 +65,7 @@ def cuenta(rng, dias, consistencia=0.4, lectura="A", politica="max", edge_usd=0.
     while d < max_dias:
         falta = START + TARGET - bal; obj = min(TARGET / k, falta) if falta > 1 else TARGET / k
         if mayor > 0 and (bal - START) > 0 and mayor / (bal - START) > consistencia: obj = TARGET / k   # sigue sumando días chicos
-        pnl = dia(rng, dias, obj, bal - piso - 1, edge_usd); d += 1
+        pnl = dia(rng, dias, obj, min(bal - piso - 1, dll or 1e9), edge_usd); d += 1   # DLL: corte blando, el día termina
         bal += pnl; mayor = max(mayor, pnl)
         if bal <= piso: return 0.0, d, False, 0
         maxc = max(maxc, bal); piso = max(piso, min(maxc - MLL, LOCK))
@@ -80,7 +80,7 @@ def cuenta(rng, dias, consistencia=0.4, lectura="A", politica="max", edge_usd=0.
         if politica == "min" and lectura == "A": meta = max(START + 2 * PAY_MIN, piso + 1)
         if bal < meta: obj, stop = meta - bal, bal - piso - 1                       # tramo grande: ir al nivel o al piso
         else: obj, stop = PAY_DAY + 1, min(PAY_DAY, bal - piso - 1)                # días chicos de +$100 neto (Ari: arriesgar 100 por 100)
-        pnl = dia(rng, dias, obj, max(stop, 1.0), edge_usd); d += 1; bal += pnl
+        pnl = dia(rng, dias, obj, max(min(stop, dll or 1e9), 1.0), edge_usd); d += 1; bal += pnl
         if pnl >= PAY_DAY: dias_ok += 1
         if bal <= piso: return cobrado, d, True, pagos
         maxc = max(maxc, bal)
@@ -96,8 +96,12 @@ def main(carpeta, n=20000):
     global FRIC_MNQ
     FRIC_MNQ = friccion_usd("MNQ"); dias = dias_rth(carpeta); res = dict(fuente_reglas="support.lucidtrading.com (2026-11-17)",
                                                                        friccion_mnq_usd=FRIC_MNQ, dias=len(dias), escenarios={})
-    for nom, kw in {"40%|A|max": dict(), "40%|B|max": dict(lectura="B"), "50%|A|max": dict(consistencia=0.5),
-                    "40%|A|min": dict(politica="min"), "40%|A|max|sin_costos": dict()}.items():
+    # 4 configuraciones oficiales (LucidFlex Customization) con el precio con cupón de la página (2026-11-17): DLL ON baja el precio
+    PRECIOS = {"DLL600|40%": 45.50, "DLL600|50%": 55.30, "sinDLL|40%": 60.20, "sinDLL|50%": 70.00}
+    for nom, kw in {"DLL600|40%|A": dict(dll=600.0), "DLL600|50%|A": dict(dll=600.0, consistencia=0.5), "sinDLL|40%|A": dict(),
+                    "sinDLL|50%|A": dict(consistencia=0.5), "DLL600|40%|B": dict(dll=600.0, lectura="B"), "sinDLL|50%|B": dict(consistencia=0.5, lectura="B"),
+                    "DLL600|40%|A|min": dict(dll=600.0, politica="min"), "sinDLL|40%|A|sin_costos": dict()}.items():
+        precio = PRECIOS["|".join(nom.split("|")[:2])]
         fr0 = FRIC_MNQ
         if "sin_costos" in nom: FRIC_MNQ = 0.0
         rng = np.random.default_rng(7); r = [cuenta(rng, dias, **kw) for _ in range(int(n))]; FRIC_MNQ = fr0
@@ -106,8 +110,10 @@ def main(carpeta, n=20000):
                                       cobrado_medio=float(cob.mean()), ee_cobrado=float(cob.std(ddof=1) / np.sqrt(len(cob))),
                                       cobrado_si_payout=float(cob[pg > 0].mean()) if (pg > 0).any() else 0.0, dias_medios=float(dd.mean()),
                                       dias_si_payout=float(dd[pg > 0].mean()) if (pg > 0).any() else 0.0,
-                                      ev_65=float(cob.mean() - 65), ev_45=float(cob.mean() - 45.5), ev_65_por_dia=float((cob.mean() - 65) / dd.mean()),
-                                      p_ganar_dinero=float((cob > 65).mean()))
+                                      precio=precio, ev=float(cob.mean() - precio), ev_por_dia=float((cob.mean() - precio) / dd.mean()),
+                                      p_ganar_dinero=float((cob > precio).mean()), compradas_por_fondeada=float(1 / max(pas.mean(), 1e-9)),
+                                      cobrado_por_fondeada=float(cob[pas].mean()) if pas.any() else 0.0,
+                                      dias_fondeada=float(dd[pas].mean()) if pas.any() else 0.0)
         print(nom, {k: round(v, 3) for k, v in res["escenarios"][nom].items()}, flush=True)
     OUT.mkdir(parents=True, exist_ok=True); (OUT / "RESULTADO.json").write_text(json.dumps(res, indent=1))
 

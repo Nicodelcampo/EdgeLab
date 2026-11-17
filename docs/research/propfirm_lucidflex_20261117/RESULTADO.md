@@ -61,3 +61,20 @@ días operados. Ganar plata con una cuenta: 6,7–8,7 % de las veces; la cuenta 
 La cuenta limita la pérdida al precio y paga hasta 5 retiros: una opción con valor positivo aun sin edge si las reglas lo permiten. Se
 refuta con reglas distintas a las leídas (precio, tope de payout), con costos de ejecución mayores a los canónicos, o si Lucid aplica la
 cláusula de mala fe.
+
+## Las 4 configuraciones de LucidFlex 25K (Nico mandó capturas de la página; reglas en «LucidFlex Customization», 2026-11-17)
+El límite diario de $600 (DLL) es un corte **blando** (bloquea hasta la sesión siguiente, no pierde la cuenta) y vale en evaluación y
+fondeada; trae los payouts a demanda (retiro intradía de la ganancia de la sesión, pausa hasta el día siguiente). Sin DLL, payouts al
+cierre. Precio con cupón: DLL+40 % $45,50; DLL+50 % $55,30; sin DLL+40 % $60,20; sin DLL+50 % $70,00 (lista $65 base; reset = precio).
+Modelo: con DLL, el stop del día es el menor entre el colchón y $600. Lectura A del tope de payout; 20.000 cuentas cada una (ee ≈ $3,3).
+
+| Configuración | Precio | Pasa | Cobra | EV por cuenta | EV por día operado | Neto por fondeada | ≈ USD/mes con 5 fondeadas (orden de magnitud) | Evaluaciones/mes |
+|---|---|---|---|---|---|---|---|---|
+| DLL $600 + 40 % | $45,50 | 26 % | 6,8 % | +$60 | +$8,6 | $228 | ≈ 3.300 | ≈ 56 |
+| **DLL $600 + 50 %** | $55,30 | 32 % | 8,4 % | **+$74** | +$11,9 | $232 | **≈ 3.800** | ≈ 51 |
+| sin DLL + 40 % | $60,20 | 26 % | 6,7 % | +$43 | +$9,6 | $169 | ≈ 2.700 | ≈ 64 |
+| sin DLL + 50 % | $70,00 | 32 % | 8,7 % | +$64 | **+$14,7** | $199 | ≈ 3.500 | ≈ 55 |
+Lectura B (tope sobre el beneficio del ciclo): −$10 a −$15 por cuenta, mismo orden. Las diferencias entre configuraciones son de 1–4
+errores estándar: **el 50 % vale lo que cuesta** (sube el pase de 26 a 32 % por $9,80) y el **DLL no estorba** a esta política (su stop ya
+era el colchón) y abarata la cuenta. Lo mensual es una cota gruesa (días de fondeada aproximados), siempre con cuentas que pierden juntas y el
+riesgo de la cláusula de mala fe.
