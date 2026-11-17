@@ -205,10 +205,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (8)
+## EN_SEGUIMIENTO (9)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Cosecha del pozo de pistas vivas sin acta con la regla de la cartera: 330 pistas de 20 familias con holdout libre → 76 elegibles → canasta «v4» de 10 reglas en 7 familias (oro al almuerzo, CVGAP2 NQ/GC, U1 en YM, intento fallido Lux NQ/CFD, cierre COMEX)** (`F-COSECHA-POZO-V4`, 2026-11-17, sesion)
+  - Efecto: Desarrollo (elegido, sin contraer): 700 operaciones, 50 ops/mes; plan e-proceso con la mitad del efecto: 0,16 R/op, sd 1,16, 6,3 meses para decidir. Integridad: 10,7 % de pistas cambian de signo en la réplica re-medida (tope 20 %). Seleccionada antes de mirar el holdout.
+  - Dónde: GC (5 reglas), NQ (4), YM (1)
+  - Siguiente: Aperturas por familia con plan e-proceso, holdout sellado oct → última sesión sellada y forward; EDGE si e ≥ 10, futilidad a 60 sesiones con R ≤ 0. Expectativa honesta: media de partida ≈ 0 (paso 2).
+  - Evidencia: `docs/research/cosecha_pozo_20261117/PREREGISTRO.md`, `docs/research/cosecha_pozo_20261117/SELECCION.json`, `docs/research/cosecha_pozo_20261117/PLAN_POTENCIA.json`
 - **Plantillas del Builder de SQX (TrendFollowing) en M30 con cierre al final del día** (`F-SQX-INTRADIA-PLANTILLA`, 2026-11-16, sesion)
   - Efecto: Nasdaq M30: 3 aceptadas de 14.000 (nulo 11 de 24.000), 52–75 operaciones en 2012–2016 y 0 en 2017–2019: el par no mide nada.
   - Dónde: SQX lote 2
