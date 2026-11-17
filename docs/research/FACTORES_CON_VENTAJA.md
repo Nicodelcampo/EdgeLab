@@ -210,7 +210,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (9)
+## EN_SEGUIMIENTO (10)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -219,6 +219,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: GC (5 reglas), NQ (4), YM (1)
   - Siguiente: Aperturas por familia con plan e-proceso, holdout sellado oct → última sesión sellada y forward; EDGE si e ≥ 10, futilidad a 60 sesiones con R ≤ 0. Expectativa honesta: media de partida ≈ 0 (paso 2).
   - Evidencia: `docs/research/cosecha_pozo_20261117/PREREGISTRO.md`, `docs/research/cosecha_pozo_20261117/SELECCION.json`, `docs/research/cosecha_pozo_20261117/PLAN_POTENCIA.json`
+- **Holdout sellado de la canasta v4 (cosecha del pozo, 10 reglas) del 1-oct al 13-nov** (`F-COSECHA-POZO-V4-HOLDOUT`, 2026-11-17, sesion)
+  - Efecto: 27 sesiones, 73 operaciones (≈ 52/mes, la frecuencia del plan), R total −4,55, −0,17 R/sesión, t −0,45, e-proceso 0,93: SIN_DECIDIR. 1,6 desvíos por debajo del plan (mitad del efecto de desarrollo) y 0,5 por debajo de cero: coincide con media de partida ≈ 0 (paso 2).
+  - Dónde: GC, NQ, YM
+  - Siguiente: Forward con el mismo e-proceso (futilidad a 60 sesiones con R ≤ 0); «atrás» con M1 de futuros de NT8 2018 → jul-2025 calibrado por regla si Nico sube los datos.
+  - Evidencia: `docs/research/cosecha_pozo_20261117/RESULTADO_HOLDOUT.md`, `docs/research/cosecha_pozo_20261117/HOLDOUT.json`
 - **Plantillas del Builder de SQX (TrendFollowing) en M30 con cierre al final del día** (`F-SQX-INTRADIA-PLANTILLA`, 2026-11-16, sesion)
   - Efecto: Nasdaq M30: 3 aceptadas de 14.000 (nulo 11 de 24.000), 52–75 operaciones en 2012–2016 y 0 en 2017–2019: el par no mide nada.
   - Dónde: SQX lote 2
