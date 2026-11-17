@@ -13,6 +13,11 @@ def a_utc(D):
     return pd.DataFrame(dict(t=t[ok], o=D.o.values[ok], h=D.h.values[ok], l=D.l.values[ok], c=D.c.values[ok], v=(D.v.values if "v" in D else np.ones(len(D)))[ok]))   # el nulo no trae volumen
 
 
+def _orb_t(D):
+    mm = D.index.hour * 60 + D.index.minute; orb = D[(mm >= 570) & (mm < 585)]; dd = orb.index.normalize()
+    return ((orb.h.groupby(dd).max() - orb.l.groupby(dd).min()) * 1.25).clip(2.0, 100.0)
+
+
 def operaciones(D):
     ms = F.build_multi_series(F.load_m1_data(a_utc(D), end=os.environ.get("FIN", "2026-10-01")), tz_input="UTC"); out = {}   # holdout: FIN posterior
     for k in F.MODULOS:
@@ -20,9 +25,12 @@ def operaciones(D):
         except Exception as ex: print("ERROR", k, str(ex)[:200], flush=True); out[k] = None; continue
         if not len(x): out[k] = pd.DataFrame(columns=["dia", "neto", "riesgo", "side"]); continue
         tt = pd.to_datetime(x.entry_time_utc, utc=True).dt.tz_convert("America/New_York")
-        out[k] = pd.DataFrame(dict(dia=tt.dt.tz_localize(None).dt.normalize(), t=tt.astype("int64") // 10**9, side=x.side.values,
+        rg_k = (pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().astype(float).values
+        if k == "T":       # auditoría 2026-11-16: stop_price es el stop ACTIVO al salir; el riesgo inicial de T = clip(rango 09:30–09:45 × 1,25, 2, 100)
+            rg_k = _orb_t(D).reindex(tt.dt.tz_localize(None).dt.normalize()).to_numpy(float)
+        out[k] = pd.DataFrame(dict(dia=tt.dt.tz_localize(None).dt.normalize(), t=((tt - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s")).values, side=x.side.values,
                                    neto=pd.to_numeric(x.pnl_pts, errors="coerce").values - FR,
-                                   riesgo=(pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs().astype(float).values,
+                                   riesgo=rg_k,
                                    salida=x.exit_name.values,
                                    mae_pts=(pd.to_numeric(x.mae_usd, errors="coerce") * (pd.to_numeric(x.pnl_pts, errors="coerce") / pd.to_numeric(x.pnl_usd, errors="coerce")).replace([np.inf, -np.inf], np.nan).median()).values))
     return out

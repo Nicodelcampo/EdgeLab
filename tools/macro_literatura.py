@@ -26,13 +26,14 @@ def dataset():
     cmd = "version" if "edgelab-sqx-barras" in subprocess.run(["curl", "-sS", f"https://www.kaggle.com/api/v1/datasets/view/{DS}"], capture_output=True, text=True).stdout else "create"
     _py("tools/kaggle_dataset.py", cmd, "--slug", DS, "--dir", str(DIR), *(["--title", "edgelab sqx barras"] if cmd == "create" else ["--notes", "barras D1/H1 hasta 2026-09-29"]))
 
-def lanzar():
+def lanzar(sufijo=""):
     k = ROOT / "data/macro_literatura_kernel.py"
     k.write_text("import sys, types\n_m = types.ModuleType('macro_literatura')\nexec(compile(" + repr((ROOT / "edgelab/research/macro_literatura.py").read_text()) +
                  ", 'macro_literatura.py', 'exec'), _m.__dict__)\nsys.modules['macro_literatura'] = _m\n" + (ROOT / "tools/kaggle_grilla/macro_literatura_main.py").read_text())
-    _py("tools/kaggle_kernel.py", "push", "--slug", KS, "--title", "edgelab macro literatura", "--script", str(k), "--dataset", DS)
+    _py("tools/kaggle_kernel.py", "push", "--slug", KS + sufijo, "--title", "edgelab macro literatura" + sufijo.replace("-", " "), "--script", str(k), "--dataset", DS)
 
-def traer():
-    OUT.mkdir(parents=True, exist_ok=True); _py("tools/kaggle_kernel.py", "output", "--slug", KS, "--file", "RESULTADO.json", "--out", str(OUT / "RESULTADO.json"))
+def traer(sufijo=""):          # sufijo "-tz": re-corrida con la zona horaria corregida (auditoría 2026-11-16)
+    OUT.mkdir(parents=True, exist_ok=True)
+    _py("tools/kaggle_kernel.py", "output", "--slug", KS + sufijo, "--file", "RESULTADO.json", "--out", str(OUT / f"RESULTADO{sufijo.replace('-', '_').upper()}.json"))
 
-if __name__ == "__main__": globals()[sys.argv[1]]()
+if __name__ == "__main__": globals()[sys.argv[1]](*sys.argv[2:])

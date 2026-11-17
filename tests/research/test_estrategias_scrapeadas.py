@@ -86,3 +86,12 @@ def test_leer_m1_russell_en_utc_y_resto_en_hora_servidor(tmp_path):
     r = M.leer_m1(tmp_path / "USSC2000IDXUSD.csv"); s = M.leer_m1(tmp_path / "SP_M1_dukas.csv")
     assert [(t.hour, t.minute) for t in r.index] == [(9, 30), (9, 30)]
     assert [(t.hour, t.minute) for t in s.index] == [(9, 30), (9, 30)]
+
+
+def test_zona_m1_declarada_y_listas_iguales():
+    """Auditoría 2026-11-16: toda fuente M1 declara su zona; las dos listas de archivos en UTC son la misma."""
+    import pytest
+    from edgelab.research import m1_intradia as M, fuentes_ticks as FT
+    assert tuple(M.EN_UTC) == tuple(FT.M1_EN_UTC)
+    assert M.zona_m1("DEUIDXEUR-M1-.csv") == "UTC" and M.zona_m1("NQ_M1_dukas-M1-.csv") == "SERVIDOR"
+    with pytest.raises(ValueError): M.zona_m1("CUALQUIERA.csv")

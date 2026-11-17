@@ -150,6 +150,7 @@ def _spot_df(t, td, desde, hasta, red):
 M1DK_FUTURO = {"NQ_M1_dukas": "NQ", "SP_M1_dukas": "ES", "DJ_M1_dukas": "YM", "USSC2000IDXUSD": "RTY", "XAUUSD_M1_dukas": "GC"}
 M1DK_DATASET = "nicolasbuttaro/edgelab-sqx-m1"
 SERVIDOR_MENOS_NY_H = 7                                          # hora del servidor de datos de SQX (EST+07, sigue el horario de NY)
+M1_EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD")   # 2026-11-16: = m1_intradia.EN_UTC (test)
 
 
 def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
@@ -159,7 +160,10 @@ def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
     _check(desde, hasta)
     f = sorted(glob.glob(entrada + f"/**/{simbolo}-M1-*.csv", recursive=True))[0]; tk = TICK_FUTURO[M1DK_FUTURO[simbolo]]
     D = pd.read_csv(f, dtype={"Date": str, "Time": str})
-    ny = pd.to_datetime(D.Date + " " + D.Time, format="%Y%m%d %H:%M:%S") - pd.Timedelta(hours=SERVIDOR_MENOS_NY_H)
+    raw = pd.to_datetime(D.Date + " " + D.Time, format="%Y%m%d %H:%M:%S")
+    if simbolo.startswith(M1_EN_UTC): ny = raw.dt.tz_localize("UTC").dt.tz_convert("America/New_York").dt.tz_localize(None)   # 2026-11-16
+    elif "_M1_dukas" in simbolo: ny = raw - pd.Timedelta(hours=SERVIDOR_MENOS_NY_H)
+    else: raise ValueError(f"{simbolo}: zona horaria del M1 no declarada")
     utc = ny.dt.tz_localize("America/New_York", ambiguous="NaT", nonexistent="shift_forward").dt.tz_convert("UTC")
     ok = utc.notna().to_numpy(); D, ny, utc = D[ok], ny[ok], utc[ok]
     td = (ny + pd.Timedelta(hours=6)).dt.strftime("%Y%m%d").astype(np.int64).to_numpy()   # 18:00 NY → sesión del día siguiente

@@ -56,6 +56,25 @@ def traer_vwapb_holdout():
                     "--out", str(o / "RESULTADO_HOLDOUT_VWAPB3.json")], cwd=ROOT, check=True)
 
 
+def relanzar_tz():
+    """Auditoría 2026-11-16: re-corre con la zona horaria corregida SÓLO los índices que venían en UTC (lote 1: los 5; lote 2: DAX; VWAPB: todos)."""
+    pre = "import sys, types\n_m = types.ModuleType('m1_intradia')\nexec(compile(" + repr((ROOT / "edgelab/research/m1_intradia.py").read_text()) + ", 'm1_intradia.py', 'exec'), _m.__dict__)\nsys.modules['m1_intradia'] = _m\n"
+    for ks, env, main in ((KS + "-tz", "import os\nos.environ.update(IDX='USSC2000IDXUSD,DEUIDXEUR,JPNIDXJPY,GBRIDXGBP,EUSIDXEUR', REPS='10')\n", "m1_intradia_main.py"),
+                          (KS + "-lote2-tz", "import os\nos.environ.update(LOTE='2', IDX='DEUIDXEUR', REPS='10')\n", "m1_intradia_main.py"),
+                          ("nicolasbuttaro/edgelab-vwapb-ops-tz", "", "vwapb_ops_main.py")):
+        k = ROOT / f"data/{ks.split('/')[1]}.py"; k.write_text(env + pre + (ROOT / f"tools/kaggle_grilla/{main}").read_text())
+        a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", ks, "--title", ks.split("/")[1].replace("-", " "), "--script", str(k)]
+        for d in DS: a += ["--dataset", d]
+        subprocess.run(a, cwd=ROOT, check=True)
+
+
+def traer_tz():
+    o = ROOT / "docs/research/auditoria_corridas_20261116"; o.mkdir(parents=True, exist_ok=True)
+    for ks, f, out in ((KS + "-tz", "RESULTADO.json", "M1_INTRADIA_LOTE1_TZ.json"), (KS + "-lote2-tz", "RESULTADO.json", "M1_INTRADIA_LOTE2_TZ.json"),
+                       ("nicolasbuttaro/edgelab-vwapb-ops-tz", "VWAPB_OPS.csv.gz", "VWAPB_OPS_TZ.csv.gz")):
+        subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", ks, "--file", f, "--out", str(o / out)], cwd=ROOT, check=True)
+
+
 def traer_vwapb():
     o = ROOT / "data/vwapb"; o.mkdir(parents=True, exist_ok=True)
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", "nicolasbuttaro/edgelab-vwapb-ops", "--file", "VWAPB_OPS.csv.gz", "--out", str(o / "VWAPB_OPS.csv.gz")], cwd=ROOT, check=True)

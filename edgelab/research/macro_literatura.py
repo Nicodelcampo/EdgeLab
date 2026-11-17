@@ -26,7 +26,13 @@ LOOKBACKS = (20, 60, 120, 250)
 
 
 def leer(path) -> pd.DataFrame:
-    D = pd.read_csv(path); D["t"] = pd.to_datetime(D.fecha, format="%Y.%m.%d %H:%M:%S")
+    """Barras de SQX: las `*_M1_dukas` vienen en hora del servidor (NY + 7); el resto, en UTC (auditoría 2026-11-16: aperturas de cada mercado
+    en UTC en invierno y verano). Se llevan todas a hora del servidor para que `_hora_ny` (− 7 h) dé hora de NY."""
+    from pathlib import Path
+    D = pd.read_csv(path); t = pd.to_datetime(D.fecha, format="%Y.%m.%d %H:%M:%S")
+    if "_M1_dukas" not in Path(str(path)).name:
+        t = t.dt.tz_localize("UTC").dt.tz_convert("America/New_York").dt.tz_localize(None) + pd.Timedelta(hours=SERVIDOR_MENOS_NY)
+    D["t"] = t
     return D.drop(columns="fecha").set_index("t").astype(float)
 
 

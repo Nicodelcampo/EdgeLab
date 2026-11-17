@@ -22,7 +22,17 @@ ORB_STOP = ("OPUESTO", "MITAD")
 ORB_OBJ = (1.0, 2.0, 0.0)                     # 0 = sin objetivo (sale al cierre)
 
 
-EN_UTC = ("USSC2000IDXUSD",)          # 2026-11-16: el CSV de Russell viene en UTC (pico de volumen a las 09:31 NY sólo así), no en hora del servidor
+# 2026-11-16 (auditoría de zona horaria, docs/research/auditoria_corridas_20261116/): en edgelab-sqx-m1 sólo los `*_M1_dukas` vienen en hora del
+# servidor (NY + 7); Russell, DAX, EuroStoxx, FTSE, Nikkei y petróleo vienen en UTC (aperturas de cada mercado en UTC, invierno y verano).
+# Igual en edgelab/research/fuentes_ticks.py::M1_EN_UTC (test). Un archivo que no esté en ninguna de las dos listas no se lee.
+EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD")
+
+
+def zona_m1(nombre: str) -> str:
+    """'UTC' o 'SERVIDOR' según el nombre del CSV; error si no se conoce (no se adivina la zona horaria)."""
+    if nombre.startswith(EN_UTC): return "UTC"
+    if "_M1_dukas" in nombre: return "SERVIDOR"
+    raise ValueError(f"{nombre}: zona horaria del M1 no declarada (agregarla a m1_intradia.EN_UTC o usar el nombre *_M1_dukas)")
 
 
 def leer_m1(path) -> pd.DataFrame:
@@ -31,7 +41,7 @@ def leer_m1(path) -> pd.DataFrame:
     D = pd.read_csv(path)
     D.columns = [c.strip().lower() for c in D.columns]
     t = pd.to_datetime(D["date"].astype(str) + " " + D["time"].astype(str), format="%Y%m%d %H:%M:%S")
-    if Path(str(path)).name.startswith(EN_UTC): t = t.dt.tz_localize("UTC").dt.tz_convert("America/New_York").dt.tz_localize(None)
+    if zona_m1(Path(str(path)).name) == "UTC": t = t.dt.tz_localize("UTC").dt.tz_convert("America/New_York").dt.tz_localize(None)
     else: t = t - pd.Timedelta(hours=SERVIDOR_MENOS_NY)
     return pd.DataFrame(dict(o=D.open.to_numpy(float), h=D.high.to_numpy(float), l=D.low.to_numpy(float), c=D.close.to_numpy(float),
                              v=D.volume.to_numpy(float) if "volume" in D else np.ones(len(D))), index=t)
