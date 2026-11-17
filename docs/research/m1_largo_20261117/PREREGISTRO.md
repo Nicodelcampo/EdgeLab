@@ -63,3 +63,10 @@ Z y de R.
   SOM: impulso de la apertura de NY). Si son ventajas estables deben aparecer en años no usados; si son de régimen, deben aparecer en los
   meses de estado análogo.
 - **Cómo podría refutarse:** EN_CONTRA en años limpios y REGIMEN_RECHAZADO en los análogos.
+
+## Enmienda 1 (2026-11-17, antes de ver ningún resultado de T en 2006–2011: con los valores de fábrica T no opera antes de 2012)
+T trae fechas de arranque fijas del backtest del vendedor: acumula etiquetas «sombra» desde 2010 y entrena el KNN y opera desde 2012
+(2 años de calentamiento). Para medirlo en años limpios se corren las tres fechas 6 años: sombra desde 2006, KNN y operación desde 2008.
+La ventana limpia de T es **2008-01-02 → 2011-12-30**, con el mismo calentamiento que el diseño. El literal 2010 del entrenamiento del KNN
+pasa a ser el parámetro `shadow_min_session_date`, que de fábrica vale lo mismo, así que el comportamiento por defecto no cambia
+(`tools/m1_largo.py correr … t2008`). El resto del pre-registro no cambia.

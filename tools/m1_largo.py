@@ -55,6 +55,24 @@ def correr_fs(inst, datos):
     out.to_csv(DIR / f"FS_OPS_{inst}.csv.gz", index=False); print(inst, out.groupby("modulo").size().to_dict(), flush=True)
 
 
+T_FECHAS = dict(shadow_min_session_date=20060101, knn_min_session_date=20080101, portfolio_start_cash_date=20080101)   # enmienda 1
+LIMPIO_T = (20080102, 20111230)
+
+
+def correr_t2008(inst, datos):
+    """Enmienda 1: T con sus fechas de arranque corridas 6 años (sombra desde 2006, KNN y operación desde 2008): mismo calentamiento de 2 años
+    que el diseño de fábrica (2010 → 2012). Mismas funciones del kernel; sólo T y con esas tres fechas."""
+    from types import SimpleNamespace
+    from edgelab.research import fundedsyncstack as F
+    from edgelab.research.embudo_runners import friccion
+    ns = _kernel_fs(friccion(inst)[0])
+    ns["F"] = SimpleNamespace(MODULOS={"T": F.MODULOS["T"]}, build_multi_series=F.build_multi_series, load_m1_data=F.load_m1_data,
+                              correr_modulo=lambda k, ms, **kw: F.correr_modulo(k, ms, **{**T_FECHAS, **kw}))
+    D = cargar(inst, datos); v = ns["operaciones"](D)["T"]; a = atr20(D)
+    v = v.assign(modulo="T", atr20=a.reindex(_sesion(pd.DatetimeIndex(v.dia))).to_numpy())
+    v.to_csv(DIR / f"FS_OPS_T2008_{inst}.csv.gz", index=False); print(inst, "T2008", len(v), flush=True)
+
+
 def correr_som(inst, datos):
     from dataclasses import replace
     from edgelab.research.embudo_runners import friccion
@@ -90,7 +108,7 @@ def _unidades_fs(g):
     return g.assign(u=u, ses=pd.to_datetime(g.dia).dt.strftime("%Y%m%d").astype(int))
 
 
-def ops_estrategia(nombre):
+def ops_estrategia(nombre, limpio_t=False):
     """[(sesión, instrumento, unidad)] de una estrategia en futuros (las 3 confirmatorias pooled en NQ, ES, YM)."""
     out = []
     for inst in INST:
@@ -98,7 +116,8 @@ def ops_estrategia(nombre):
             g = pd.read_csv(DIR / f"SOM_OPS_{inst}.csv.gz"); g = g[g.celda == "sin_finde"]
             out += [(int(s), inst, float(r)) for s, r in zip(g.fecha, g.R)]
         else:
-            g = _unidades_fs(pd.read_csv(DIR / f"FS_OPS_{inst}.csv.gz")); g = g[(g.modulo == nombre) & np.isfinite(g.u)]
+            arch = DIR / (f"FS_OPS_T2008_{inst}.csv.gz" if nombre == "T" and limpio_t else f"FS_OPS_{inst}.csv.gz")
+            g = _unidades_fs(pd.read_csv(arch)); g = g[(g.modulo == nombre) & np.isfinite(g.u)]
             out += [(int(s), inst, float(r)) for s, r in zip(g.ses, g.u)]
     return out
 
@@ -161,7 +180,8 @@ def analizar():
                                            s_fut[s_fut.fecha.between(*CALIB)].groupby("fecha").R.sum().to_dict())
     # §3b años limpios 2006–2011 (confirmatorio para T, Z, R, SOM; NQ+ES+YM pooled) y descriptivo por módulo e instrumento
     for n in CONFIRMATORIAS:
-        o = ops_estrategia(n); ref, _ = _resumen(o, *REF_EXT); res, R = _resumen(o, *LIMPIO)
+        o = ops_estrategia(n); ref, _ = _resumen(o, *REF_EXT)
+        res, R = _resumen(ops_estrategia(n, limpio_t=True), *LIMPIO_T) if n == "T" else _resumen(o, *LIMPIO)
         out["limpio"][n] = dict(referencia_2020_2025=ref, limpio_2006_2011=_veredicto(res, R, ref["u_op"] or 0.0))
     for inst in INST:
         g = _unidades_fs(pd.read_csv(DIR / f"FS_OPS_{inst}.csv.gz"))
@@ -183,5 +203,5 @@ def analizar():
 
 if __name__ == "__main__":
     c = sys.argv[1]
-    if c == "correr": {"fs": correr_fs, "som": correr_som, "estado": correr_estado}[sys.argv[3]](sys.argv[4], sys.argv[2])
+    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado}[sys.argv[3]](sys.argv[4], sys.argv[2])
     elif c == "analizar": analizar()

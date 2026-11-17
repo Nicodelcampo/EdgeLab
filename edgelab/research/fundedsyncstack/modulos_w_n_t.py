@@ -1106,7 +1106,7 @@ def _ftm_fit_quarter_model(
     cutoff_key: int,
     cfg: FtmConfig,
 ) -> Optional[_QuarterDirectionModel]:
-    elig = [r for r in rows if 20100101 <= r.session_key <= cutoff_key]
+    elig = [r for r in rows if cfg.shadow_min_session_date <= r.session_key <= cutoff_key]   # = 20100101 de fábrica (2026-11-17: parámetro, no literal)
     min_rows = max(cfg.knn_min_training_rows, cfg.knn_k)
     if len(elig) < min_rows:
         return None
