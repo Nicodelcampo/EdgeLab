@@ -53,7 +53,7 @@ def _lucid():
     if not p.exists(): return ["(sin simulación de Lucid todavía: `python tools/lucid_canastas.py`)"]
     d = _j(p)["canastas"]
     out = ["Valor esperado por cuenta comprada (USD), LucidFlex 25K con **DLL $600 + 50 % ($55,30)**, retirando $1.000; media de desarrollo / "
-           "**contraída** (honesta: corrige la selección) / cero (sin edge). Detalle de las 4 configuraciones y las dos políticas en "
+           "**contraída** (James-Stein ≈ mitad; el paso 2 de `urgencia_vs_evidencia_20261117` mostró que es OPTIMISTA: lo elegido no conservó nada en réplica, así que la expectativa honesta hoy está entre «cero» y «contraída» hasta que decida el forward) / cero (sin edge). Detalle de las 4 configuraciones y las dos políticas en "
            "`docs/research/propfirm_lucidflex_20261117/CANASTAS_LUCID.json`.", "",
            "| Canasta | USD/sesión (t) | Pasa (contraída) | Cobra (contraída) | EV dev | **EV contraída** | EV cero | Días por cuenta | EV contraída por mes y cuenta |",
            "|---|---|---|---|---|---|---|---|---|"]

@@ -1,7 +1,8 @@
 # Urgencia (el régimen se apaga) contra evidencia (pocos días de forward): cómo balancearlas
 
 Estado: VIGENTE — ACEPTADA por Nico el 2026-11-17 («dale con la propuesta»). Avance: paso 1 hecho (`RESULTADO_PASO1.md`); paso 1b hecho
-(`RESULTADO_PASO1B.md`: sin régimen de mercado en el dominio de la cartera; la urgencia temporal no tiene sustento); pasos 2–4 pendientes. Pedido original de Nico (2026-11-17): «balancear el riesgo de que se apaguen los regímenes (urgencia) con el riesgo de
+(`RESULTADO_PASO1B.md`: sin régimen de mercado en el dominio de la cartera; la urgencia temporal no tiene sustento); paso 2 hecho
+(`RESULTADO_PASO2.md`: media de partida ≈ 0 para lo elegido en una criba); pasos 3–4 pendientes. Pedido original de Nico (2026-11-17): «balancear el riesgo de que se apaguen los regímenes (urgencia) con el riesgo de
 operar una cartera con pocos días de operación, y encontrar un equilibrio y una forma de estimar que considere los dos». No mide nada
 todavía; lo que mide va con su pre-registro. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 

@@ -51,7 +51,8 @@ Recordatorios:
 > con la media contraída, las canastas dan +$440 a +$1.900 por cuenta contra +$35 a +$100 sin edge. **Urgencia contra evidencia** (propuesta
 > ACEPTADA por Nico): `docs/research/urgencia_vs_evidencia_20261117/` — paso 1 (catálogo): no hay regímenes que se apaguen en meses, sólo
 > deriva lenta y mayormente fricción; paso 1b (M1 intradía de índices, el dominio de la cartera): lo mismo, sin régimen de mercado en NQ/ES/YM
-> (bruto p 0,11) — confirmar antes de escalar no llega tarde; el tamaño se gobierna por fricción en R y evidencia. Sigue el paso 2. **Guardas nuevas K27–K34**
+> (bruto p 0,11) — confirmar antes de escalar no llega tarde; el tamaño se gobierna por fricción en R y evidencia. Paso 2: lo elegido por el
+> embudo no conservó nada en réplica (b −0,26, un solo par de períodos) → media de partida ≈ 0; la columna «contraída» de Lucid es optimista. **Guardas nuevas K27–K34**
 > (potencia antes de abrir, todo por EdgeLab, simuladores calibrados, costos estimados sólo declarados): ver Rituales.
 
 ### Estado al 2026-11-09

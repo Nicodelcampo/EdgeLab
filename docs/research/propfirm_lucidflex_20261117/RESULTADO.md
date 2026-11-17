@@ -108,6 +108,10 @@ MNQ, 2020 → 2026-09, sin el stop de catástrofe de Z/R), bootstrap por bloques
    de la fondeada 25K y la política de algoritmos de Lucid («condicional» en el catálogo, no verificado) pueden limitar el tamaño; las medias
    de desarrollo vienen de reglas elegidas (por eso manda la contraída) y el forward todavía no confirmó ninguna canasta.
 
+> **Corrección del 2026-11-17 (paso 2 de urgencia_vs_evidencia):** la «media contraída» (James-Stein, ≈ mitad) resultó optimista: lo
+> elegido por el embudo no conservó nada en su réplica. Hasta que el forward acumule evidencia, la expectativa por cuenta está entre la
+> columna «sin edge» y la «contraída»; el paso 3 la recalcula con la evidencia forward.
+
 ### La cartera B (T+Z+R) por componentes (Nico: «¿probaste T+Z+R?»; DLL $600 + 50 %, 1 MNQ por regla, 2020 → 2026-09)
 | Combinación | USD/sesión (t) | EV desarrollo | **EV contraída** | Cobra (contraída) | Días por cuenta | EV contraída por mes de cuenta |
 |---|---|---|---|---|---|---|

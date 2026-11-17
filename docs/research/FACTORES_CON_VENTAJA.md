@@ -95,7 +95,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (19)
+## PALANCA_DE_DISENO (20)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -119,6 +119,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: CFD de índices (Dukascopy), M1 intradía
   - Siguiente: Paso 3: P(viva) y tamaño gobernados por la fricción en R del estado de volatilidad y por la evidencia acumulada, no por una vida en el tiempo; paso 2 (contracción empírica) para la media de partida.
   - Evidencia: `docs/research/urgencia_vs_evidencia_20261117/RESULTADO_PASO1B.md`
+- **Lo elegido por el embudo en descubrimiento no conserva nada en su réplica no mirada: la media de partida para algo elegido en una sola criba es ≈ 0, no la mitad** (`F-CONTRACCION-EMPIRICA-EMBUDO`, 2026-11-17, sesion)
+  - Efecto: 1.704 pistas de 135 campañas: b = −0,26 [−0,32, −0,20], réplica media −0,08 desvíos por operación, 37 % positivas, parejo en toda multiplicidad; pero 104 campañas comparten la misma ventana de réplica (abr–sep 2026): es un solo par de períodos, el signo negativo no se usa como constante.
+  - Dónde: Todas las campañas del embudo con réplica (mayormente NQ/ES/YM intradía)
+  - Siguiente: Paso 3: tamaño desde media de partida ≈ 0 actualizada con la evidencia forward (Kalman), no con un factor fijo; la columna «contraída» de Lucid es optimista.
+  - Evidencia: `docs/research/urgencia_vs_evidencia_20261117/RESULTADO_PASO2.md`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto
