@@ -95,7 +95,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (21)
+## PALANCA_DE_DISENO (22)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -129,6 +129,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Embudo (futuros NQ/ES/YM/GC y CFD como señal)
   - Siguiente: Cosechar el pozo con la misma regla de selección y una acta de holdout de canasta con potencia; reencender el embudo en tandas semanales con K4/E0; decidir reanudar el Debian.
   - Evidencia: `docs/research/INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md`
+- **Reservar el último mes de desarrollo antes de la frontera (sep-2026) en las campañas nuevas y leerlo como el primer tramo de su holdout** (`F-RESERVA-PREFRONTERA`, 2026-11-17, nico)
+  - Efecto: ≈ 1 mes menos de forward por familia a cambio de 1/6 menos de réplica; sólo si se declara antes del DESC. El «atrás» de la v4 no se corrió: linaje U1 ya usó USATECH 2023–2025 y XAU 2023–2025; al oro le quedan 6 meses de 2022 con potencia 0,43.
+  - Dónde: Toda campaña nueva del embudo
+  - Siguiente: Implementar el campo `reserva` en el embudo con la próxima campaña; conseguir futuros anteriores a 2025-08 para un «atrás» con potencia.
+  - Evidencia: `docs/research/DECISION_RESERVA_PREFRONTERA_20261117.md`, `docs/research/cosecha_pozo_20261117/ATRAS_EVALUACION.md`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto
