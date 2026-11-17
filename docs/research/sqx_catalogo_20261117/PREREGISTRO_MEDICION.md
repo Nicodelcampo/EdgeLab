@@ -49,3 +49,15 @@ tendencia en commodities y FX (prima de momentum de series de tiempo). Reversió
 
 ## Contador y linaje
 `sqx_catalogo_20261117/CATALOGO`: 136. Linaje SQX_CATALOGO (sin padre medido; las de índices diarios no repiten ninguna regla probada).
+
+## Enmienda 1 (2026-11-17, después de la primera corrida): orden dentro de la barra por M1
+**Qué pasó.** La corrida v1 (commit `7523a967`) no dejó ninguna nominada. Al revisarla apareció un sesgo **pesimista** del motor: en las
+órdenes stop la barra de entrada abre del otro lado del precio de entrada, y su mínimo (o máximo) suele ocurrir **antes** del llenado; el motor
+lo contaba como posterior. Salidas por stop en la propia barra de entrada: INSIDE_BAR 28–41 % (H4), RANGE_1300 17–20 % (M15), ≤ 3 % en el resto.
+Lo mismo, en menor medida, con stop y objetivo dentro de una misma barra (siempre stop primero).
+**Cambio.** Donde hay M1 (todo salvo HG, ZB y 6B, que vienen en D1 de SQX), el motor resuelve con el M1 de la barra: el minuto de llenado, y
+stop/objetivo minuto a minuto después (dentro del minuto de llenado y de cualquier minuto ambiguo sigue asumiendo lo peor). Test:
+`test_m1_resuelve_vela_de_entrada_y_ambiguedad`. **No cambia ninguna regla, parámetro, instrumento ni el criterio de decisión**; se aplica a las
+136 pruebas por igual. La v1 queda como descartada (`RESULTADO_V1_DESCARTADA.json`, `ops_v1_descartada/`) y se relanza todo.
+**Honestidad sobre el disparador.** La corrección se encontró mirando resultados de la v1; por eso se aplica sin excepción a todo, se informan
+v1 y v2 lado a lado, y lo que pase en v2 sólo por este cambio se señala como tal en el resultado.

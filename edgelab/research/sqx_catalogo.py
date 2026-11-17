@@ -68,11 +68,46 @@ def dmi_minus(h, l, c, n):
 
 
 # ----------------------------------------------------------------------------------------------------------------- motor
-def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000) -> pd.DataFrame:
+def indices_m1(B: pd.DataFrame, D: pd.DataFrame, tf: str) -> dict:
+    """Minutos M1 de cada barra de `barras_desde_m1` (rango [a, b) en `D`) para resolver el orden dentro de la barra."""
+    dur = pd.Timedelta(minutes={"M15": 15, "H1": 60, "H4": 240, "D1": 1440}[tf]); t = D.index.values
+    return dict(o=D.o.to_numpy(float), h=D.h.to_numpy(float), l=D.l.to_numpy(float),
+                a=np.searchsorted(t, B.index.values), b=np.searchsorted(t, (B.index + dur).values))
+
+
+def _camino_m1(m, j0, j1, lado, st, tp):
+    """Primer evento minuto a minuto en [j0, j1): hueco a la apertura, stop antes que objetivo dentro del mismo minuto."""
+    o, h, l = m["o"], m["h"], m["l"]; hay_tp = np.isfinite(tp)
+    for j in range(j0, j1):
+        if (o[j] <= st) if lado == 1 else (o[j] >= st): return o[j], "STOP_GAP"
+        if hay_tp and ((o[j] >= tp) if lado == 1 else (o[j] <= tp)): return o[j], "OBJ_GAP"
+        if (l[j] <= st) if lado == 1 else (h[j] >= st): return st, "STOP"
+        if hay_tp and ((h[j] >= tp) if lado == 1 else (l[j] <= tp)): return tp, "OBJ"
+    return None
+
+
+def _llenado_m1(m, i, cand):
+    """Primer minuto de la barra i en que se llena alguna orden pendiente: (lado, fill, sl, tp, j) o None."""
+    o, h, l = m["o"], m["h"], m["l"]; mejor = None
+    for (lado, tipo, px, sl, tp) in cand:
+        for j in range(m["a"][i], m["b"][i]):
+            if tipo == "mkt": f = o[j]
+            elif tipo == "stop": f = (max(o[j], px) if h[j] >= px else np.nan) if lado == 1 else (min(o[j], px) if l[j] <= px else np.nan)
+            else: f = (min(o[j], px) if l[j] <= px else np.nan) if lado == 1 else (max(o[j], px) if h[j] >= px else np.nan)
+            if np.isfinite(f):
+                if mejor is None or j < mejor[4] or (j == mejor[4] and abs(f - o[j]) < abs(mejor[1] - o[j])): mejor = (lado, f, sl, tp, j)
+                break
+    return mejor
+
+
+def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000, m1: dict | None = None) -> pd.DataFrame:
     """`sig` (arrays por barra i, evaluados al cierre de i): `lado` (+1/−1/0, o `lado_l`/`lado_s` para pares OCO), `tipo` ('mkt', 'stop',
     'limit'), `px` (precio de la orden; pares: `px_l`/`px_s`), `valida` (barras), `sl`/`tp` (distancias en precio; tp NaN = sin objetivo),
     opcionales: `be` (distancia a favor que activa break even), `trail` (función (i, lado, stop) → nuevo stop o NaN), `salida` (función (i, lado)
-    → bool al cierre), `tope` (barras). Devuelve operaciones: fecha, lado, entrada, stop0, salida, motivo, barras."""
+    → bool al cierre), `tope` (barras). Devuelve operaciones: fecha, lado, entrada, stop0, salida, motivo, barras.
+    `m1` (de `indices_m1`, enmienda 1 del pre-registro): resuelve con el M1 la barra de entrada (minuto de llenado; stop y objetivo después) y
+    las barras donde stop y objetivo caben juntos. Sin `m1` (barras D1 de SQX) se asume lo peor: stop en la barra de entrada si su rango lo
+    toca, y stop antes que objetivo."""
     o, h, l, c = (B[k].to_numpy(float) for k in "ohlc"); dow = B.dow.to_numpy(); fecha = B.fecha.to_numpy(); n = len(c)
     ult_viernes = np.zeros(n, bool)
     if viernes:
@@ -90,7 +125,16 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000)
                 else:
                     fill = (min(o[i], px) if l[i] <= px else np.nan) if lado == 1 else (max(o[i], px) if h[i] >= px else np.nan)
                 if np.isfinite(fill): vivas.append((lado, fill, sl, tp))
-            if vivas:
+            if vivas and m1 is not None and m1["b"][i] > m1["a"][i]:
+                lado, fill, sl, tp, j = _llenado_m1(m1, i, cand)
+                pos = dict(lado=lado, e=fill, st=fill - lado * sl, st0=fill - lado * sl, tp=(fill + lado * tp) if np.isfinite(tp) else np.nan, i0=i, be_ok=False)
+                orden = None
+                if (m1["l"][j] <= pos["st"]) if lado == 1 else (m1["h"][j] >= pos["st"]):  # minuto de llenado: stop si lo toca (lo peor)
+                    ops.append((fecha[i], lado, fill, pos["st0"], pos["st"], "STOP", 1)); pos = None; continue
+                ev = _camino_m1(m1, j + 1, m1["b"][i], lado, pos["st"], pos["tp"])
+                if ev is not None:
+                    ops.append((fecha[i], lado, fill, pos["st0"], ev[0], ev[1], 1)); pos = None; continue
+            elif vivas:
                 lado, fill, sl, tp = vivas[0] if len(vivas) == 1 else min(vivas, key=lambda x: abs(x[1] - o[i]))
                 pos = dict(lado=lado, e=fill, st=fill - lado * sl, st0=fill - lado * sl, tp=(fill + lado * tp) if np.isfinite(tp) else np.nan, i0=i, be_ok=False)
                 orden = None
@@ -102,6 +146,8 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000)
             lado, st, tp = pos["lado"], pos["st"], pos["tp"]; sal = None
             if (o[i] <= st) if lado == 1 else (o[i] >= st): sal = (o[i], "STOP_GAP")
             elif np.isfinite(tp) and ((o[i] >= tp) if lado == 1 else (o[i] <= tp)): sal = (o[i], "OBJ_GAP")
+            elif (m1 is not None and np.isfinite(tp) and m1["b"][i] > m1["a"][i] and ((l[i] <= st and h[i] >= tp) if lado == 1 else (h[i] >= st and l[i] <= tp))):
+                sal = _camino_m1(m1, m1["a"][i], m1["b"][i], lado, st, tp) or (st, "STOP")  # stop y objetivo en la misma barra: orden por M1
             elif (l[i] <= st) if lado == 1 else (h[i] >= st): sal = (st, "STOP")
             elif np.isfinite(tp) and ((h[i] >= tp) if lado == 1 else (l[i] <= tp)): sal = (tp, "OBJ")
             elif salida is not None and salida(i, lado): sal = (c[i], "REGLA")

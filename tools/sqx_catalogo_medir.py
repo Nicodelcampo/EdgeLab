@@ -52,9 +52,9 @@ def main(carpeta, *solo):
                 if es_d1 is None: es_d1, _ = cargar("ES", "D1", carpeta, cache)
                 f = pd.Series((es_d1.c > es_d1.c.rolling(200).mean().shift(1)).values, index=es_d1.fecha.values)
                 ctx["filtro_mercado"] = f.reindex(Bx.fecha.values).fillna(False).to_numpy(bool)
-            sig = fn(Bx, ctx)
+            sig = fn(Bx, ctx); m1 = S.indices_m1(Bx, D, tf) if D is not None else None   # enmienda 1: orden dentro de la barra por M1
             for var in ("original", "viernes"):
-                T = S.simular(Bx, sig, viernes=(var == "viernes"))
+                T = S.simular(Bx, sig, viernes=(var == "viernes"), m1=m1)
                 if not len(T): res["pruebas"][f"{nom}|{inst}|{var}"] = dict(n=0); continue
                 frx = fr if inst != "6J" else fr * T.entrada.to_numpy() ** 2             # 6J operado como USDJPY: costo en yenes
                 g = T.assign(riesgo=(T.entrada - T.stop0).abs(), bruto=T.lado * (T.salida_px - T.entrada))

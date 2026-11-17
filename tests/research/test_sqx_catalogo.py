@@ -44,3 +44,29 @@ def test_motor_stop_antes_que_objetivo_y_gap():
     sig2 = dict(lado=np.array([0, 0, 0, 1, 0, 0, 0]), tipo="mkt", sl=np.full(7, 3.0), tp=np.full(7, 50.0))
     T2 = S.simular(B, sig2, False)                     # entra 100 (vela 4), stop 97; la vela 5 abre 90 → sale a 90 (hueco)
     assert T2.motivo.iloc[0] == "STOP_GAP" and T2.salida_px.iloc[0] == 90.0
+
+
+def _escenario(minutos):
+    """Barras de 4 minutos M1: barra 0 y 1 planas (la señal va al cierre de la 1), después los minutos dados."""
+    filas = [[100, 101, 99, 100]] * 8 + minutos; t = pd.date_range("2024-01-02 02:00", periods=len(filas), freq="1min")
+    D = pd.DataFrame(filas, columns=list("ohlc"), index=t, dtype=float); D["v"] = 1.0
+    g = np.arange(len(D)) // 4; B = D.groupby(g).agg(o=("o", "first"), h=("h", "max"), l=("l", "min"), c=("c", "last"), v=("v", "sum"))
+    B.index = t[::4]; B["fecha"] = 20240102; B["dow"] = 1
+    m = dict(o=D.o.to_numpy(), h=D.h.to_numpy(), l=D.l.to_numpy(), a=np.arange(len(B)) * 4, b=np.arange(len(B)) * 4 + 4)
+    return B, m
+
+
+def test_m1_resuelve_vela_de_entrada_y_ambiguedad():
+    # barra 2: baja a 96 ANTES de tocar el stop de compra 105 y no vuelve; barra 3 llega al objetivo 115
+    B, m = _escenario([[100, 100, 96, 97], [97, 101, 97, 101], [101, 104, 101, 104], [104, 106, 104, 105],
+                       [105, 107, 104, 106], [106, 109, 105, 108], [108, 112, 107, 112], [112, 116, 111, 115]])
+    n = len(B); sig = dict(lado=np.r_[0, 1, np.zeros(n - 2)], tipo="stop", px=np.full(n, 105.0), sl=np.full(n, 8.0), tp=np.full(n, 10.0), valida=3)
+    sin = S.simular(B, sig, False); con = S.simular(B, sig, False, m1=m)
+    assert sin.motivo.iloc[0] == "STOP" and sin.barras.iloc[0] == 1          # OHLC: el mínimo 96 cuenta como posterior (lo peor)
+    assert con.motivo.iloc[0] == "OBJ" and con.salida_px.iloc[0] == 115.0   # M1: entra 105 en el último minuto de la barra 2, objetivo en la 3
+    # barra que toca stop y objetivo: el M1 decide el orden (primero el objetivo)
+    B2, m2 = _escenario([[100, 100, 99.5, 100], [100, 104.5, 100, 104], [104, 104, 96, 97], [97, 101, 97, 100]])
+    sig2 = dict(lado=np.r_[0, 1, np.zeros(len(B2) - 2)], tipo="mkt", sl=np.full(len(B2), 4.0), tp=np.full(len(B2), 4.0))
+    assert S.simular(B2, sig2, False).motivo.iloc[0] == "STOP"               # sin M1: stop (lo peor)
+    T = S.simular(B2, sig2, False, m1=m2)                                    # entra 100 a la apertura de la barra 2: objetivo 104 en su 2.º minuto
+    assert T.motivo.iloc[0] == "OBJ" and T.salida_px.iloc[0] == 104.0 and T.barras.iloc[0] == 1
