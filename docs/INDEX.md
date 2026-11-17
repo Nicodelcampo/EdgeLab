@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1370 |
+| `docs/research` | 1371 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
 | HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
 | PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
@@ -70,7 +71,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
-| INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
