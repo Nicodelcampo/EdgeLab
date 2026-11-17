@@ -50,5 +50,5 @@ p de desarrollo 0,32 = 0,68). No hubo señal en seis semanas; no se usa para nad
 
 ## 4. Fuera del forward (2026-11-17, K27)
 Nico: «opera demasiado poco». Con la compuerta nueva (`tools/potencia_previa.py`, `holdout_ventanas.plan_potencia`): 0,4 operaciones por
-mes y 196 meses para decidir → no pasa (mínimo 4 por mes, máximo 60 meses). Sale de `tools/seguimiento_forward.py`; el holdout de arriba
+mes y 196 meses para decidir → no pasa (máximo 60 meses: junta 4 veces menos información por mes que SOM). Sale de `tools/seguimiento_forward.py`; el holdout de arriba
 se abrió sin potencia (K27, registrado como error). Sigue como pista sólo dentro de una canasta que junte frecuencia.

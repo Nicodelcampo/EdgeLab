@@ -185,9 +185,13 @@ muestre calibración sana en datos reales.
   Nada de simuladores ni kernels propios (`docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`).
 - **Potencia y frecuencia antes de invertir (Nico, 2026-11-17, «opera demasiado poco»):** antes de mejorar, abrir un holdout o
   mandar al forward cualquier regla —también de afuera o medida con una herramienta ad hoc— `python tools/potencia_previa.py <ops>`; su
-  línea «Potencia previa:» va al pre-registro (test). `holdout_ventanas.registrar_apertura` exige un plan de potencia (lectura de N fijo
-  con potencia ≥ 0,8; forward con ≥ 4 operaciones por mes y ≤ 60 meses para decidir); las pruebas con n < 30 no entran a la familia de BH;
-  ningún simulador nuevo sin calibración registrada. Ver K27–K31 en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` §E5.
+  línea «Potencia previa:» va al pre-registro. `holdout_ventanas.registrar_apertura` exige un plan de potencia (lectura de N fijo con
+  potencia ≥ 0,8; forward que decida en ≤ 60 meses: información por mes, no un piso de frecuencia); las pruebas con n < 30 no entran a la
+  familia de BH; ningún simulador nuevo sin calibración registrada.
+- **Toda corrida usa EdgeLab, también la ad hoc (Nico, 2026-11-17, K32):** `antecedentes.py` → `potencia_previa.py` → pre-registro
+  (hash del North Star, Estado, justificación económica, cómo podría refutarse, etapa EF, «Antecedentes:», «Potencia previa:») → commit →
+  `python tools/registro_global.py preregistrado <campaña> <FAMILIA> <n> <PREREGISTRO.md>` → correr. El CI rechaza pruebas contadas por
+  fuera (`tests/test_guardas_principiante_20261117.py`). Ver K27–K32 en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` §E5.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

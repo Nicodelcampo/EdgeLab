@@ -84,6 +84,9 @@ def ficha(q: str, familia: str | None = None) -> str:
     md += [f"- {r['familia']}: {r['desde']} → {r['hasta']} (relacionadas: {', '.join(r.get('relacionadas', []))})" for r in _jsonl(R / "HOLDOUT_VENTANAS.jsonl")
            if r.get("tipo") == "consumida" and _puntaje(r["familia"] + " " + " ".join(r.get("relacionadas", [])), ws)]
     if familia: md += [""] + presupuesto(familia)
+    nr = [e["id"] for s, e in fac[:12] if s > 0 and e["estado"] == "NO_REPETIR"]
+    md += ["", f"Antecedentes: «{q}» — familias parecidas: {', '.join(f['familia'] for s, f in fam[:3] if s > 0) or 'ninguna'}; "
+               f"NO_REPETIR: {', '.join(nr[:4]) or 'ninguno'}; código: {', '.join(r['ref'] for r in buscar(q, k=3)) or '—'}"]
     return "\n".join(md) + "\n"
 
 

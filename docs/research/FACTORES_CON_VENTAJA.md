@@ -19,10 +19,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: GC (XAUUSD M1, costos de GC)
   - Siguiente: Forward no mirado con la regla congelada; posible régimen del oro, no transferir.
   - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
-- **Turtles 55/20 en oro con cierre del viernes (base de fábrica): réplica 2004–2010, 8 variantes, holdout** (`F-TURTLES-ORO-MESETA-B`, 2026-11-17, sesion)
-  - Efecto: 5,3 ops/año, R/op +0,22 en 2011–2026 (p 0,0006); réplica 2004–2010 +0,03 (p 0,36, MDE 0,24): no replica, sin potencia. Ninguna variante confirma; H4, re-entrada del lunes y canal 20 suben N pero bajan R/op; plata no acompaña. Holdout 1-oct→13-nov: 0 operaciones (NO_CONCLUYENTE; abierto sin potencia, K27). Fuera del forward por frecuencia (K27).
+- **Turtles 55/20 en oro con cierre del viernes (base de fábrica): réplica 2004–2010, 8 variantes, holdout** (`F-TURTLES-ORO-MESETA-C`, 2026-11-17, sesion)
+  - Efecto: 5,3 ops/año, R/op +0,22 en 2011–2026 (p 0,0006); réplica 2004–2010 +0,03 (p 0,36, MDE 0,24): no replica, sin potencia. Ninguna variante confirma; H4, re-entrada del lunes y canal 20 suben N pero bajan R/op; plata no acompaña. Holdout 1-oct→13-nov: 0 operaciones (abierto sin potencia, K27). Fuera del forward: 196 meses para decidir (K27).
   - Dónde: GC/MGC (XAUUSD M1, costos de GC)
-  - Siguiente: Sólo como miembro de una canasta de rupturas semanales de varios activos que junte ≥ 4 operaciones por mes; sola, no.
+  - Siguiente: Sólo como miembro de una canasta de rupturas semanales de varios activos cuyo forward decida en ≤ 60 meses; sola, no.
   - Evidencia: `docs/research/turtles_oro_20261117/RESULTADO.md`, `docs/research/turtles_oro_20261117/seguimiento/RESULTADO_HOLDOUT.json`
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
   - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar. | Tanda 4: re-elegir con el filtro de fricción antes da la v3 (sale BT2-ES/NQ y ORO, entra DRC-NQ-R y AVCL-ES/NQ): dev 43k vs 24k USD, t igual, prop 50K pasa 80 % vs 63 % pero quema 14 % vs 3 %. Forward paralelo.
@@ -94,10 +94,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
-- **Una regla que opera menos de 4 veces por mes, o cuyo forward tarda más de 60 meses en decidir, no se lleva sola a mejora, holdout ni forward: se le sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA`, 2026-11-17, sesion)
-  - Efecto: Turtles en oro (5,3/año): 196 meses para decidir; Double 7 NQ 101; buy dips ES 50 con 0,5/mes; SOM 2020+ 49 (pasa). Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
+- **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
+  - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia
-  - Siguiente: tools/potencia_previa.py antes de invertir; holdout_ventanas.registrar_apertura ya lo exige.
+  - Siguiente: tools/potencia_previa.py antes de invertir; holdout_ventanas.registrar_apertura y el test del contador global lo exigen.
   - Evidencia: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.

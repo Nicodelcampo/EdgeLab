@@ -5,6 +5,8 @@ Toda campaña nueva debe registrarse también acá (discovery_scan usa este arch
 
     python tools/registro_global.py            # consolida
     python tools/registro_global.py --total    # imprime el total de pruebas del proyecto
+    python tools/registro_global.py preregistrado <campaña> <FAMILIA> <n_pruebas> <PREREGISTRO.md>
+        # la ÚNICA forma de contar una campaña fuera de la maquinaria estándar (K32): valida el pre-registro antes de registrar
 """
 import json
 import sys
@@ -17,7 +19,18 @@ from edgelab.funnel.multiplicity import TrialRegistry  # noqa: E402
 GLOBAL = REPO / "docs" / "research" / "TRIAL_REGISTRY_GLOBAL.jsonl"
 
 
+PREFIJOS_MAQUINARIA = ("embudo/", "banco/", "analizador/", "analizador_embudo/", "atras/", "autopilot/", "cartera_forward/", "sqx/",
+                       "discovery_", "variante_tau/")          # registran ellas mismas, con su propio preflight (embudo, banco, autopilot…)
+
+
+def preregistrado(campania, familia, n, prereg):
+    from edgelab.research.preflight import validar_preregistro
+    if (mal := validar_preregistro(prereg)): raise SystemExit(f"no se cuenta {campania}: " + "; ".join(mal))
+    nuevo = TrialRegistry(GLOBAL).ensure(campania, familia, int(n), str(prereg)); print("registrada" if nuevo else "ya estaba", campania, n)
+
+
 def main():
+    if sys.argv[1:2] == ["preregistrado"]: return preregistrado(*sys.argv[2:6])
     g = TrialRegistry(GLOBAL)
     if "--total" not in sys.argv:
         for f in sorted((REPO / "docs" / "research").glob("*/trial_registry.jsonl")):

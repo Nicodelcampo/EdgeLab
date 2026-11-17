@@ -178,3 +178,43 @@ def certificar_causalidad(modulo: str, guardar: bool = True) -> list:
         cert[modulo] = dict(huella=huella, ok=not err, errores=err[:3], ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
         CERTIFICADOS.write_text(json.dumps(cert, indent=1, ensure_ascii=False, sort_keys=True), encoding="utf-8")
     return err
+
+
+# ----------------------------------------------------------------------------------------------------------------- pre-registro (K32)
+def north_star_sha256(repo: Path | None = None) -> str:
+    """sha256 del cuerpo de docs/NORTH_STAR.md hasta el marcador (la misma cuenta que tests/test_north_star_hash.py)."""
+    import hashlib
+    repo = ROOT if repo is None else Path(repo)
+    raw = (repo / "docs/NORTH_STAR.md").read_bytes()
+    return hashlib.sha256(raw.split(b"<!-- SHA256-BODY-ABOVE -->", 1)[0].replace(b"\r\n", b"\n")).hexdigest()
+
+
+REQUISITOS_PREREGISTRO = (      # (descripción, regex sobre el texto, de dónde sale la regla)
+    ("encabezado «Estado:»", r"^Estado:", "DOCUMENTATION_PROTOCOL"),
+    ("justificación económica", r"justificaci[oó]n econ[oó]mica", "CLAUDE.md, rituales"),
+    ("cómo podría refutarse", r"c[oó]mo podr[ií]a refutarse", "CLAUDE.md, rituales"),
+    ("etapa EF del embudo", r"\bEF[2-5]\b", "CLAUDE.md, contador global"),
+    ("línea «Antecedentes:» (tools/antecedentes.py)", r"^Antecedentes:", "CLAUDE.md, reutilizar antes de construir (C1/K26)"),
+    ("línea «Potencia previa:» (tools/potencia_previa.py)", r"Potencia previa:", "K27–K30"),
+)
+
+
+def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = True) -> list:
+    """K32 (Nico, 2026-11-17: «salteártela demuestra que hay que cambiarlo: tiene que usarse todo EdgeLab, y bien»): lo que CLAUDE.md
+    pide de un pre-registro, verificado en código. Vacío = válido. Lo usan `tools/registro_global.py preregistrado` (antes de contar
+    pruebas) y el test del contador global (toda fila nueva fuera de la maquinaria estándar)."""
+    import subprocess
+    repo = ROOT if repo is None else Path(repo)
+    p = Path(path); p = p if p.is_absolute() else repo / p
+    if not p.exists(): return [f"el pre-registro {path} no existe"]
+    t = p.read_text(encoding="utf-8", errors="ignore"); e = []
+    if north_star_sha256(repo) not in t: e.append("no cita el sha256 vigente de docs/NORTH_STAR.md")
+    for desc, rx, fuente in REQUISITOS_PREREGISTRO:
+        if not re.search(rx, t, re.M | re.I): e.append(f"falta {desc} ({fuente})")
+    if exigir_commit:
+        rel = str(p.relative_to(repo))
+        if not subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=repo, capture_output=True, text=True).stdout.strip():
+            e.append("no está committeado (se escribe y committea ANTES de contar y correr)")
+        elif subprocess.run(["git", "diff", "--quiet", "HEAD", "--", rel], cwd=repo).returncode:
+            e.append("tiene cambios sin commitear: lo que se registra tiene que ser lo committeado")
+    return e

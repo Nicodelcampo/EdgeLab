@@ -24,8 +24,10 @@ def test_K27_ninguna_apertura_sin_plan_de_potencia(tmp_path):
 
 
 def test_K27_frecuencia_minima_y_horizonte_del_forward():
-    turtles = HV.plan_potencia("e_proceso", 0.166, 0.62, ops_por_mes=0.44)    # Turtles en oro: 5,3 operaciones por año
+    turtles = HV.plan_potencia("e_proceso", 0.166, 0.62, ops_por_mes=0.44)    # Turtles en oro: 5,3 operaciones por año, 196 meses
     assert any("demasiado poco" in p for p in turtles["problemas"])
+    rara_y_fuerte = HV.plan_potencia("e_proceso", 1.0, 1.0, ops_por_mes=0.5)  # poca frecuencia pero mucho efecto: decide en 13 meses
+    assert not rara_y_fuerte["problemas"]
     som = HV.plan_potencia("e_proceso", 0.079, 0.98, ops_por_mes=19.7)       # SOM 2020+: 49 meses, pasa
     assert not som["problemas"] and som["meses_para_decidir"] <= HV.MESES_MAX_DECISION
     assert HV.plan_potencia("e_proceso", 0.1, 1.0)["problemas"]              # sin frecuencia declarada no se abre
@@ -51,8 +53,40 @@ def test_K28_ningun_simulador_nuevo_sin_calibracion():
             assert (ROOT / archivo).exists() and f"def {test}(" in (ROOT / archivo).read_text(encoding="utf-8"), f"{k}: calibración {v} no existe"
 
 
-def test_K30_preregistros_nuevos_declaran_potencia_previa():
+def test_K30_K32_preregistros_nuevos_cumplen_lo_que_pide_edgelab():
+    """Todo PREREGISTRO*.md nuevo: hash del North Star, Estado, justificación económica, cómo podría refutarse, etapa EF, Antecedentes y
+    Potencia previa (preflight.validar_preregistro). Línea base: config/preregistros_baseline.json."""
+    from edgelab.research.preflight import validar_preregistro
     base = set(json.loads((ROOT / "config/preregistros_baseline.json").read_text(encoding="utf-8")))
-    faltan = [p.relative_to(ROOT).as_posix() for p in ROOT.glob("docs/research/**/PREREGISTRO*.md")
-              if p.relative_to(ROOT).as_posix() not in base and "Potencia previa:" not in p.read_text(encoding="utf-8")]
-    assert not faltan, f"pre-registros sin la línea «Potencia previa:» de tools/potencia_previa.py (K30): {faltan}"
+    mal = {p.relative_to(ROOT).as_posix(): validar_preregistro(p, ROOT, exigir_commit=False) for p in ROOT.glob("docs/research/**/PREREGISTRO*.md")
+           if p.relative_to(ROOT).as_posix() not in base}
+    assert not {k: v for k, v in mal.items() if v}, mal
+
+
+def test_K32_toda_prueba_nueva_del_contador_pasa_por_edgelab():
+    """Filas nuevas del contador global: o las escribió la maquinaria estándar (embudo, banco, analizador, autopilot…, con su preflight), o
+    citan un pre-registro válido (tools/registro_global.py preregistrado). Una corrida ad hoc sin eso no se puede commitear."""
+    import sys; sys.path.insert(0, str(ROOT / "tools"))
+    from registro_global import PREFIJOS_MAQUINARIA
+    from edgelab.research.preflight import validar_preregistro
+    n0 = json.loads((ROOT / "config/registro_global_baseline.json").read_text(encoding="utf-8"))["filas"]
+    filas = [json.loads(x) for x in (ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl").read_text(encoding="utf-8").splitlines() if x.strip()][n0:]
+    mal = {}
+    for r in filas:
+        if r["campaign_id"].startswith(PREFIJOS_MAQUINARIA) or "/confirmacion_" in r["campaign_id"]: continue
+        nota = r.get("note", "")
+        e = validar_preregistro(nota, ROOT, exigir_commit=False) if nota.endswith(".md") else ["la nota no es un pre-registro (.md)"]
+        if e: mal[r["campaign_id"]] = e
+    assert not mal, f"pruebas contadas por fuera de EdgeLab (K32): {mal}"
+
+
+def test_K32_el_validador_pide_lo_de_claude_md(tmp_path):
+    from edgelab.research.preflight import north_star_sha256, validar_preregistro
+    (tmp_path / "docs").mkdir(); (tmp_path / "docs/NORTH_STAR.md").write_bytes((ROOT / "docs/NORTH_STAR.md").read_bytes())
+    malo = tmp_path / "P.md"; malo.write_text("# x\n\nEstado: PRE-REGISTRO\n")
+    e = validar_preregistro(malo, tmp_path, exigir_commit=False)
+    assert len(e) == 6 and any("NORTH_STAR" in x for x in e)
+    bueno = tmp_path / "Q.md"
+    bueno.write_text(f"# x\nEstado: PRE-REGISTRO\nNorth Star {north_star_sha256(ROOT)}. Etapa EF3.\nAntecedentes: «x» — ...\n"
+                     "Potencia previa: ops.csv: 20 ops/mes ... OK\n## Justificación económica / cómo podría refutarse\n")
+    assert validar_preregistro(bueno, tmp_path, exigir_commit=False) == []

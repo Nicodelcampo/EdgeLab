@@ -70,9 +70,10 @@ def anular_apertura(familia: str, cid: str, motivo: str, n_mirado: int = 0, libr
 
 
 POTENCIA_MIN = 0.8          # E8 (decisión de Nico, 2026-10-26): una lectura de N fijo no se abre sin potencia 0,8
-# K27 (Nico, 2026-11-17: «opera demasiado poco»): umbrales del seguimiento secuencial (forward). Ajustables sólo por decisión de Nico.
-OPS_MES_MIN = 4.0           # ≈ una por semana: menos no aporta a pasar una evaluación de prop ni junta evidencia
-MESES_MAX_DECISION = 60     # con el efecto completo del desarrollo; SOM (20 ops/mes, +0,08 R) necesita 49
+# K27 (Nico, 2026-11-17: «opera demasiado poco»; «mínimo 4 por mes es arbitrario, la idea es que no opere tan poco»): un solo criterio,
+# los meses que tarda el forward en decidir = z² / (operaciones por mes × (R/desvío)²), o sea la INFORMACIÓN que junta por mes. Una regla que
+# gana mucho por operación pero opera poco y una que opera mucho con poco efecto se miden con la misma vara. Ajustable sólo por Nico.
+MESES_MAX_DECISION = 60     # con el efecto completo del desarrollo; SOM 2020+ (20 ops/mes, +0,08 R) necesita 49; Turtles en oro 196
 
 
 def plan_potencia(tipo: str, efecto: float, sd_op: float, *, n: int | None = None, ops_por_mes: float | None = None,
@@ -98,12 +99,12 @@ def plan_potencia(tipo: str, efecto: float, sd_op: float, *, n: int | None = Non
     if tipo == "e_proceso":
         if not ops_por_mes or ops_por_mes <= 0: pl["problemas"].append("plan 'e_proceso' sin frecuencia (operaciones por mes)")
         else:
-            pl.update(ops_por_mes=float(ops_por_mes), meses_para_decidir=round(pl["n_necesarias"] / ops_por_mes, 1))
-            if ops_por_mes < OPS_MES_MIN:
-                pl["problemas"].append(f"{ops_por_mes:.1f} operaciones por mes (< {OPS_MES_MIN}): opera demasiado poco (K27)")
+            pl.update(ops_por_mes=float(ops_por_mes), meses_para_decidir=round(pl["n_necesarias"] / ops_por_mes, 1),
+                      informacion_mes=round(ops_por_mes * (efecto / sd_op) ** 2, 4))
             if pl["meses_para_decidir"] > MESES_MAX_DECISION:
                 pl["problemas"].append(f"tarda {pl['meses_para_decidir']} meses en decidir (> {MESES_MAX_DECISION}): opera demasiado poco "
-                                       "para el forward; subir frecuencia (canasta, más instrumentos) antes de abrir (K27)")
+                                       f"para su efecto (información por mes {pl['informacion_mes']}); subir frecuencia (canasta, más instrumentos, "
+                                       "otra temporalidad) antes de abrir (K27)")
     return pl
 
 

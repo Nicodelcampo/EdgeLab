@@ -5,7 +5,7 @@ docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md. Usa holdout_ventanas.
   python tools/potencia_previa.py <ops.csv[.gz]> [...]        # columnas R y dia/fecha: frecuencia, meses para decidir el forward, veredicto
   python tools/potencia_previa.py <ops> --fijo N              # además: potencia de una lectura de N operaciones (holdout)
   python tools/potencia_previa.py --conteo <json {prueba: n}> # qué pruebas entran a la familia BH (n >= 30) y cuáles quedan SIN_POTENCIA_PREVIA
-La línea «Potencia previa: …» que imprime se copia al pre-registro (tests/test_guardas_principiante_20261117.py lo exige en los nuevos).
+La línea «Potencia previa: …» que imprime se copia al pre-registro (lo exigen preflight.validar_preregistro y tests/test_guardas_principiante_20261117.py, K32).
 """
 import json, sys
 from pathlib import Path
