@@ -58,11 +58,10 @@ def traer_vwapb_holdout():
 
 def relanzar_tz():
     """Auditoría 2026-11-16: re-corre con la zona horaria corregida SÓLO los índices que venían en UTC (lote 1: los 5; lote 2: DAX; VWAPB: todos)."""
-    pre = "import sys, types\n_m = types.ModuleType('m1_intradia')\nexec(compile(" + repr((ROOT / "edgelab/research/m1_intradia.py").read_text()) + ", 'm1_intradia.py', 'exec'), _m.__dict__)\nsys.modules['m1_intradia'] = _m\n"
     for ks, env, main in ((KS + "-tz", "import os\nos.environ.update(IDX='USSC2000IDXUSD,DEUIDXEUR,JPNIDXJPY,GBRIDXGBP,EUSIDXEUR', REPS='10')\n", "m1_intradia_main.py"),
                           (KS + "-lote2-tz", "import os\nos.environ.update(LOTE='2', IDX='DEUIDXEUR', REPS='10')\n", "m1_intradia_main.py"),
                           ("nicolasbuttaro/edgelab-vwapb-ops-tz", "", "vwapb_ops_main.py")):
-        k = ROOT / f"data/{ks.split('/')[1]}.py"; k.write_text(env + pre + (ROOT / f"tools/kaggle_grilla/{main}").read_text())
+        k = ROOT / f"data/{ks.split('/')[1]}.py"; k.write_text(env + _incrustar(f"tools/kaggle_grilla/{main}"))     # paquete edgelab mínimo incluido
         a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", ks, "--title", ks.split("/")[1].replace("-", " "), "--script", str(k)]
         for d in DS: a += ["--dataset", d]
         subprocess.run(a, cwd=ROOT, check=True)

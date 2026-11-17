@@ -55,6 +55,7 @@ def _sim_velas(o, h, l, c, i0, entrada, d, sl, tp, salida_ok, ult):
     """Desde la vela i0 (inclusive) con entrada al precio `entrada`. Devuelve (bruto, motivo 1 stop / 2 objetivo / 3 regla o tiempo)."""
     st = entrada - d * sl; ob = entrada + d * tp if tp > 0 else None
     for i in range(i0, ult + 1):
+        if (o[i] <= st) if d == 1 else (o[i] >= st): return d * (o[i] - entrada), 1        # auditoría 2026-11-16: gap más allá del stop → apertura
         if (l[i] <= st) if d == 1 else (h[i] >= st): return d * (st - entrada), 1
         if ob is not None and ((h[i] >= ob) if d == 1 else (l[i] <= ob)): return d * (ob - entrada), 2
         if i == ult or (salida_ok is not None and salida_ok(i)): return d * (c[i] - entrada), 3
@@ -348,7 +349,10 @@ def franklin_variantes(ctx, celdas=None) -> pd.DataFrame:
                     if not sl > 0: hecho[clave] = None
                     else:
                         st = p - dd * sl; seg = (l[k + 1: ult + 1] <= st) if dd == 1 else (h[k + 1: ult + 1] >= st)
-                        hecho[clave] = (sl, -sl, 1) if seg.any() else (sl, dd * (float(c[ult]) - p), 3)
+                        if seg.any():                                            # auditoría 2026-11-16: con gap, a la apertura
+                            j = k + 1 + int(np.argmax(seg)); px = min(float(o[j]), st) if dd == 1 else max(float(o[j]), st)
+                            hecho[clave] = (sl, dd * (px - p), 1)
+                        else: hecho[clave] = (sl, dd * (float(c[ult]) - p), 3)
                 if hecho[clave] is None: break
                 sl, b, mot = hecho[clave]
                 filas.append(dict(fecha=int(d["fecha"]), celda=celda, lado=dd, riesgo=float(sl), bruto=float(b), motivo=mot, minuto=int(mdec)))
