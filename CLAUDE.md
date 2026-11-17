@@ -43,6 +43,16 @@ Recordatorios:
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
 
+### Estado al 2026-11-17
+
+> **Qué se opera y con qué evidencia: `docs/cartera/CANASTAS_VIGENTES.md`** (generado de los archivos operativos; un test lo exige al día)
+> y su página auditable https://claude.ai/artifact/UKHJZyWZH1L8tr2cWtWo2s (privada; se comparte desde su menú). Canastas v2/v3 y B en papel y
+> forward; 0 edges promovidos. **Cuenta**: LucidFlex 25K con DLL $600 + 50 % rinde más por cuenta (`docs/research/propfirm_lucidflex_20261117/`);
+> con la media contraída, las canastas dan +$440 a +$1.900 por cuenta contra +$35 a +$100 sin edge. **Urgencia contra evidencia** (propuesta
+> ACEPTADA por Nico): `docs/research/urgencia_vs_evidencia_20261117/` — paso 1 (catálogo): no hay regímenes que se apaguen en meses, sólo
+> deriva lenta y mayormente fricción; paso 1b (M1 intradía de índices, el dominio de la cartera) en curso. **Guardas nuevas K27–K34**
+> (potencia antes de abrir, todo por EdgeLab, simuladores calibrados, costos estimados sólo declarados): ver Rituales.
+
 ### Estado al 2026-11-09
 
 > **0 edges promovidos.** Lo más valioso descubierto y qué indagar primero: `docs/research/FACTORES_CON_VENTAJA.md` (2 pistas vivas,

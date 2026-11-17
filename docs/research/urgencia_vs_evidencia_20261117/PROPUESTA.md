@@ -1,6 +1,7 @@
 # Urgencia (el régimen se apaga) contra evidencia (pocos días de forward): cómo balancearlas
 
-Estado: PROPUESTA — pedido de Nico (2026-11-17): «balancear el riesgo de que se apaguen los regímenes (urgencia) con el riesgo de
+Estado: VIGENTE — ACEPTADA por Nico el 2026-11-17 («dale con la propuesta»). Avance: paso 1 hecho (`RESULTADO_PASO1.md`); paso 1b en
+curso (`PREREGISTRO_PASO1B.md`); pasos 2–4 pendientes. Pedido original de Nico (2026-11-17): «balancear el riesgo de que se apaguen los regímenes (urgencia) con el riesgo de
 operar una cartera con pocos días de operación, y encontrar un equilibrio y una forma de estimar que considere los dos». No mide nada
 todavía; lo que mide va con su pre-registro. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 

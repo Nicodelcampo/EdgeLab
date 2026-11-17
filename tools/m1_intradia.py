@@ -2,6 +2,7 @@
 """ORB y pre-rango 08:12 sobre M1 de Dukascopy en Kaggle (edgelab/research/m1_intradia.py).
   python tools/m1_intradia.py lanzar   # kernel con el módulo incrustado; monta edgelab-sqx-m1 (M1, lo sube Antigravity) y edgelab-sqx-barras (spreads)
   python tools/m1_intradia.py traer    # baja RESULTADO.json a docs/research/m1_intradia_20261114/
+  python tools/m1_intradia.py lanzar_vida / traer_vida   # paso 1b de urgencia_vs_evidencia_20261117 (agregados mensuales de toda la grilla)
 """
 import subprocess, sys
 from pathlib import Path
@@ -24,6 +25,20 @@ def lanzar_vwapb():
     a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", "nicolasbuttaro/edgelab-vwapb-ops", "--title", "edgelab vwapb ops", "--script", str(k)]
     for d in DS: a += ["--dataset", d]
     subprocess.run(a, cwd=ROOT, check=True)
+
+
+def lanzar_vida():
+    """Paso 1b (docs/research/urgencia_vs_evidencia_20261117/PREREGISTRO_PASO1B.md): agregados mensuales de toda la grilla."""
+    k = ROOT / "data/m1_vida_kernel.py"; k.parent.mkdir(exist_ok=True); k.write_text(_incrustar("tools/kaggle_grilla/m1_vida_main.py"))
+    a = [sys.executable, "tools/kaggle_kernel.py", "push", "--slug", "nicolasbuttaro/edgelab-m1-vida", "--title", "edgelab m1 vida", "--script", str(k)]
+    for d in DS: a += ["--dataset", d]
+    subprocess.run(a, cwd=ROOT, check=True)
+
+
+def traer_vida():
+    o = ROOT / "docs/research/urgencia_vs_evidencia_20261117"
+    subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", "nicolasbuttaro/edgelab-m1-vida", "--file", "M1_VIDA.json",
+                    "--out", str(o / "M1_VIDA.json")], cwd=ROOT, check=True)
 
 
 def _incrustar(main: str) -> str:
