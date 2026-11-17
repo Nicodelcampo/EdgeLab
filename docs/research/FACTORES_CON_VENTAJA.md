@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (17)
+## PISTA_VIVA (18)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,6 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: LucidFlex 25K; series de desarrollo de las canastas (cartera_20261116, fundedsyncstack_20261115)
   - Siguiente: Verificar con Lucid la política de algoritmos y el escalado de la fondeada 25K; decide el forward de las canastas antes de dinero real (decisión de Nico).
   - Evidencia: `docs/research/propfirm_lucidflex_20261117/RESULTADO.md`, `docs/cartera/CANASTAS_VIGENTES.md`
+- **El «antes no, ahora sí» de las estrategias externas es fricción relativa: fija en puntos, cayó de ≈ 0,045 a 0,006 ATR por operación en NQ (2006 → 2025). SOM y el módulo R tienen señal BRUTA estable en 20 años y en años nunca usados** (`F-FRICCION-RELATIVA-REGIMEN`, 2026-11-17, sesion)
+  - Efecto: Años limpios 2006–2011, NQ+ES+YM, bruto: SOM +0,064 R (IC90 +0,033/+0,095, 4.218 ops), R AtrPhase +0,097 ATR (IC90 +0,04/+0,15); T ≈ 0 (sin señal antes de 2020); controles A1 y W ≈ 0. Pre-registrado en neto: todo NO_CONCLUYENTE. Análisis bruto posterior (descriptivo).
+  - Dónde: NQ, ES, YM futuros (M1 NT8)
+  - Siguiente: Confirmar SOM y R en un índice no mirado (RTY/MidCap de NT8) en neto con la fricción actual, y forward; tamaño gobernado por fricción en R; revisar el peso de T en la cartera B con pre-registro nuevo.
+  - Evidencia: `docs/research/m1_largo_20261117/RESULTADO.md`, `docs/research/m1_largo_20261117/RESULTADO.json`
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
   - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar. | Tanda 4: re-elegir con el filtro de fricción antes da la v3 (sale BT2-ES/NQ y ORO, entra DRC-NQ-R y AVCL-ES/NQ): dev 43k vs 24k USD, t igual, prop 50K pasa 80 % vs 63 % pero quema 14 % vs 3 %. Forward paralelo.
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)
