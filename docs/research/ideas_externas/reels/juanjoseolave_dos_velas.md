@@ -1,5 +1,7 @@
 # Reel @juanjose.olave - Dfu2jA8NfGz - La Estrategia Más Ridícula del Mundo - 2 Velas Iguales - Documento Completo
 
+Estado: ARCHIVO — transcripción de un reel externo (insumo de docs/research/reels_20261116/), no es evidencia de EdgeLab.
+
 **URL:** https://www.instagram.com/reel/Dfu2jA8NfGz/?psln=MTU1cnltM2NrMDc1OQ==
 **Post ID:** 948801135485811964940
 **Fecha:** 2026-11-14

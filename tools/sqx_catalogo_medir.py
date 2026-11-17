@@ -79,4 +79,6 @@ def main(carpeta, *solo):
 
 
 if __name__ == "__main__":
-    (OUT / "ops").mkdir(parents=True, exist_ok=True); main(*sys.argv[1:])
+    from edgelab.costos import estimados_permitidos
+    (OUT / "ops").mkdir(parents=True, exist_ok=True)
+    with estimados_permitidos("docs/research/sqx_catalogo_20261117/PREREGISTRO_MEDICION.md (spreads estimados 6J, ZB, CL, HG)"): main(*sys.argv[1:])

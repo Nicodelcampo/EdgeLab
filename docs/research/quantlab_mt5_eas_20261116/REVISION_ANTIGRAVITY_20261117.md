@@ -1,5 +1,7 @@
 # Revisión independiente con MT5 Strategy Tester, SQX y DLL de EdgeLab (2026-11-17)
 
+Estado: VIGENTE — revisión cruzada de Antigravity (MT5 Tester como árbitro), incorporada en `RESULTADO_SOM.md` y `CRITERIOS_AUDITORIA.md`.
+
 **Rama:** `claude/vibrant-clarke-s9z6e2` (comparado `74e1cdb7` vs `2c08a2c3`)  
 **Árbitro principal:** MetaTrader 5 Build 5956 (`MetaTester 5`, modo *1 minute OHLC*, inputs de fábrica)  
 **Datos de referencia nuevos generados:** [`som_tester_usatech_2024_2026.csv`](file:///C:/Users/nicoc/.gemini/antigravity/brain/79352924-80c3-409e-9be9-296eeef88676/scratch/wt_claude/docs/research/quantlab_mt5_eas_20261116/reference_data/som_tester_usatech_2024_2026.csv) (`617` operaciones en `USATECH` M5, `2024-01-02` → `2026-09-28`, corte estricto `< 2026-09-30 22:00 UTC`)

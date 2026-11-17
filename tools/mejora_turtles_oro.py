@@ -119,4 +119,5 @@ def main(carpeta):
 
 
 if __name__ == "__main__":
-    main(*sys.argv[1:])
+    from edgelab.costos import estimados_permitidos
+    with estimados_permitidos("docs/research/turtles_oro_20261117/PREREGISTRO.md (SI con spread estimado)"): main(*sys.argv[1:])

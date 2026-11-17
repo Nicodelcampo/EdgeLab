@@ -1,5 +1,7 @@
 # Reel @tradershubpodcast / @soyfranklinaraujo - DdWqIdKRGfg - La Estrategia Más Fácil - Lógica Completa Documentada
 
+Estado: ARCHIVO — transcripción de un reel externo (insumo de docs/research/reels_20261116/), no es evidencia de EdgeLab.
+
 **URL:** https://www.instagram.com/reel/DdWqIdKRGfg/?cplk=MXNqMG1sMnM5YzkxYg==
 **Post ID:** 057238601818579205683
 **Fecha:** 2026-09-16

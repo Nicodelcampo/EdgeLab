@@ -90,3 +90,14 @@ def test_K32_el_validador_pide_lo_de_claude_md(tmp_path):
     bueno.write_text(f"# x\nEstado: PRE-REGISTRO\nNorth Star {north_star_sha256(ROOT)}. Etapa EF3.\nAntecedentes: «x» — ...\n"
                      "Potencia previa: ops.csv: 20 ops/mes ... OK\n## Justificación económica / cómo podría refutarse\n")
     assert validar_preregistro(bueno, tmp_path, exigir_commit=False) == []
+
+
+def test_K33_spread_estimado_no_es_medido():
+    from edgelab import costos
+    with pytest.raises(costos.CostoNoMedido, match="ESTIMADO"):
+        costos.friccion_rt_puntos("ZB")
+    with costos.estimados_permitidos("pre-registro de prueba"):
+        assert costos.friccion_rt_puntos("ZB") > 0
+    with pytest.raises(costos.CostoNoMedido):
+        costos.friccion_rt_puntos("ZB")                                          # fuera del bloque vuelve a frenar
+    assert costos.friccion_rt_puntos("GC") > 0                                   # lo medido no cambia

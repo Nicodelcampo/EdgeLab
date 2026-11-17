@@ -1,5 +1,7 @@
 # Reel @mylestradesnq - DfnnmnhjO-g - VP³ Volume Profile Cubed - Documento Completo
 
+Estado: ARCHIVO — transcripción de un reel externo (insumo de docs/research/reels_20261116/), no es evidencia de EdgeLab.
+
 **URL:** https://www.instagram.com/reel/DfnnmnhjO-g/?obrf=cWVqd2VzMGcxcjN2
 **Post ID:** 547489767343916173030
 **Fecha:** 2026-11-11

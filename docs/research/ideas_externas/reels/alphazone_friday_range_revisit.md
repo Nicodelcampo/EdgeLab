@@ -1,5 +1,7 @@
 # Reel @alphazone.ai - Dfucgz-AUjJ - Friday Range Revisit - Monday Short - Tom Hougaard Situational Analysis - Documento Completo
 
+Estado: ARCHIVO — transcripción de un reel externo (insumo de docs/research/reels_20261116/), no es evidencia de EdgeLab.
+
 **URL:** https://www.instagram.com/reel/Dfucgz-AUjJ/?rpxt=emR6ZWVvMmIwbjRj
 **Post ID:** 556777490893089034704
 **Fecha:** 2026-11-14
