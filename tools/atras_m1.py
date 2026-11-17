@@ -78,7 +78,7 @@ def lanzar(fase):
         clave = f"{nombre}__{fase}"
         if clave in hs: continue
         cid, inst, prim, d0 = REGLAS[nombre]; sp, celda, cortes, tope = _regla(nombre)
-        sp = dict(sp, sensor=f"M1NT8:{inst}", ejecucion=f"M1NT8:{inst}", datasets_extra=[], cuenta_kaggle=cs[(len(hs) + k) % len(cs)],
+        sp = dict(sp, sensor=f"M1NT8:{inst}", ejecucion=f"M1NT8:{inst}", datasets_extra=[], cuenta_kaggle="nicolasbuttaro",                # dueña del dataset M1 (privado): las otras cuentas no lo ven
                   cid=f"M1{'C' if fase == 'calibracion' else 'A'}-{nombre.replace('#', '-')}"[:30])
         per = list(CALIB) if fase == "calibracion" else [d0, prim[1]]
         h = run.lanzar(sp, "ANALIZAR_REGLA", dict(cortes=cortes, celdas=[celda], tope=tope, operaciones=True), per)

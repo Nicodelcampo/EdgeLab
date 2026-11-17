@@ -211,8 +211,9 @@ def bloques_m1nt8(simbolo, desde, hasta, entrada="/kaggle/input"):
     import pyarrow.parquet as pq
     _check(desde, hasta)
     if simbolo not in M1NT8_INSTRUMENTOS: raise ValueError(f"{simbolo}: sin M1 de NT8")
-    f = sorted(glob.glob(entrada + f"/**/{simbolo}_M1_nonadj_utc.parquet", recursive=True))[0]
-    D = pq.read_table(f).to_pandas()
+    fs = sorted(glob.glob(entrada + f"/**/{simbolo}_M1_nonadj_utc.parquet", recursive=True))
+    if not fs: raise FileNotFoundError(f"sin {simbolo}_M1_nonadj_utc.parquet en {entrada}: ¿se lanzó con la cuenta dueña de {M1NT8_DATASET}?")
+    D = pq.read_table(fs[0]).to_pandas()
     t0 = (D.index.to_numpy() if "datetime" not in D else D["datetime"].to_numpy()).astype("datetime64[ns]").astype(np.int64)
     ok = t0 < HOLDOUT_APERTURA_UTC_NS; D, t0 = D[ok], t0[ok]
     ny = pd.to_datetime(t0).tz_localize("UTC").tz_convert("America/New_York").tz_localize(None)
