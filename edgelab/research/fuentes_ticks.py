@@ -184,9 +184,51 @@ def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
                                 segmento=np.zeros(int(keep.sum()), np.int64)))
 
 
+# M1 REAL de futuros CME exportado de NinjaTrader 8 (2026-11-17, dataset privado `edgelab-nt8-m1-futuros`): NQ/ES/YM desde 2006-01, GC
+# desde 2008-01; MergeNonBackAdjusted (precios reales), índice `datetime` = APERTURA de la vela en UTC (manifest.json). El archivo llega
+# hasta la fecha del export, holdout incluido: este lector corta SIEMPRE en la frontera única (nunca entrega nada desde su apertura).
+M1NT8_DATASET = "nicolasbuttaro/edgelab-nt8-m1-futuros"
+M1NT8_INSTRUMENTOS = ("NQ", "ES", "YM", "GC")
+
+
+def _velas_a_ticks(t0, o, h, l, c, v, td, desde, hasta, tk):
+    """4 ticks por vela (apertura; mínimo y máximo en el orden conservador; cierre) a +0/15/30/45 s: la misma convención calibrada de
+    `bloques_m1dk` (papel_m1_20261115/VALIDACION.md)."""
+    sube = c >= o; p1 = np.where(sube, l, h); p2 = np.where(sube, h, l)
+    for d in np.unique(td[(td >= desde) & (td <= hasta)]):
+        m = np.flatnonzero(td == d)
+        ts = (t0[m][:, None] + np.array([0, 15, 30, 45]) * 1_000_000_000).ravel()
+        px = np.column_stack([o[m], p1[m], p2[m], c[m]]).ravel(); px = np.round(px / tk) * tk
+        vv = np.repeat(v[m] / 4.0, 4); keep = ts < HOLDOUT_APERTURA_UTC_NS
+        if keep.any():
+            yield pd.DataFrame(dict(ts_ns=ts[keep], px=px[keep], vol=vv[keep], sesion=np.full(int(keep.sum()), int(d), np.int64),
+                                    segmento=np.zeros(int(keep.sum()), np.int64)))
+
+
+def bloques_m1nt8(simbolo, desde, hasta, entrada="/kaggle/input"):
+    """M1 de futuros de NT8 como ticks (misma convención que `bloques_m1dk`). Sesión CME: desde las 18:00 de NY es el día siguiente.
+    Doble corte del holdout: `_check` sobre la ventana pedida y descarte de toda vela con apertura >= HOLDOUT_APERTURA_UTC_NS."""
+    import pyarrow.parquet as pq
+    _check(desde, hasta)
+    if simbolo not in M1NT8_INSTRUMENTOS: raise ValueError(f"{simbolo}: sin M1 de NT8")
+    f = sorted(glob.glob(entrada + f"/**/{simbolo}_M1_nonadj_utc.parquet", recursive=True))[0]
+    D = pq.read_table(f).to_pandas()
+    t0 = (D.index.to_numpy() if "datetime" not in D else D["datetime"].to_numpy()).astype("datetime64[ns]").astype(np.int64)
+    ok = t0 < HOLDOUT_APERTURA_UTC_NS; D, t0 = D[ok], t0[ok]
+    ny = pd.to_datetime(t0).tz_localize("UTC").tz_convert("America/New_York").tz_localize(None)
+    td = (ny + pd.Timedelta(hours=6)).strftime("%Y%m%d").astype(np.int64).to_numpy()
+    ok = pd.to_datetime(td.astype(str), format="%Y%m%d").dayofweek.to_numpy() < 5
+    D, t0, td = D[ok], t0[ok], td[ok]
+    yield from _velas_a_ticks(t0, *(D[k].to_numpy(float) for k in ("open", "high", "low", "close", "volume")), td, desde, hasta,
+                              TICK_FUTURO[simbolo])
+
+
 def resolver(nombre: str, libro: bool = False):
     """'NQ' -> futuro del release; 'DK:USATECHIDXUSD' -> spot de Dukascopy. Devuelve (lector(desde, hasta, entrada), tick).
     `libro=True` (módulos con `LIBRO = True`, p. ej. DeltaSweep): los futuros traen bid/ask para clasificar el agresor."""
+    if nombre.startswith("M1NT8:"):
+        sym = nombre[6:]
+        return (lambda d0, d1, e="/kaggle/input": bloques_m1nt8(sym, d0, d1, e)), TICK_FUTURO[sym]
     if nombre.startswith("M1DK:"):
         sym = nombre[5:]
         return (lambda d0, d1, e="/kaggle/input": bloques_m1dk(sym, d0, d1, e)), TICK_FUTURO[M1DK_FUTURO[sym]]

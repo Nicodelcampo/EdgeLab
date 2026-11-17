@@ -23,7 +23,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/data_catalog` | 11 |
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
-| `docs/incidents` | 17 |
+| `docs/incidents` | 18 |
 | `docs/indicadores` | 1 |
 | `docs/infra` | 26 |
 | `docs/notion` | 2 |
