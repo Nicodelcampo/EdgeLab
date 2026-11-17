@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-673 scripts.
+674 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -670,6 +670,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/verify_parity_gc0226.py` | Harness forense de paridad BigTrap2Absorption <-> export NT8 sobre calendario irregular. |
 | `tools/verify_release.py` | Verifica una release ya escrita, de forma independiente del escritor. |
 | `tools/verify_tree.py` | tools/verify_tree.py@v1 |
+| `tools/vida_ventaja_medir.py` | Paso 1 de docs/research/urgencia_vs_evidencia_20261117/PROPUESTA.md: vida de una ventaja (edgelab/research/vida_ventaja.py) sobre la |
 | `tools/vio1_zones.py` | VIO-1 — zonas VIOLETA (lógica de aVolClusterPOI v0.5) aplicadas a las zonas de aVolZonePOI2 (paridad NT8 verificada, config 25T) en MGC 25 ticks. |
 | `tools/vrev.py` | VREV: reversión al VWAP desde un alejamiento X·ATR, con confirmaciones. E1 con economía incluida. |
 | `tools/vrev2.py` | VREV-A (reversión al VWAP tras agotamiento) y VCONT (continuación tras el primer alejamiento). E1. |
