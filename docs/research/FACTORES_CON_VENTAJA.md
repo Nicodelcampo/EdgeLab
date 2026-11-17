@@ -200,10 +200,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (27)
+## NO_REPETIR (28)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
+  - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
+  - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
+  - Siguiente: No trasladar SOM a otras aperturas; DAX/FTSE/Nikkei/petróleo/bonos sin costo medido.
+  - Evidencia: `docs/research/som_transfer_20261117/RESULTADO.md`
 - **Saltear entradas 14:00–16:15 NY** (`F-FIN-DE-RUEDA-NO`, 2026-11-16, sesion)
   - Efecto: Descriptivo de 24 reglas sugería R ≈ 0 en esa franja; en generadoras + holdout Δ −0,06 R (p 0,16) y en el holdout va al revés (+0,08).
   - Dónde: Cartera de 27 reglas
