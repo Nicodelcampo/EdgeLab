@@ -169,6 +169,12 @@ def correr_session_open_momentum(
             rec, pnl = _finalize_som_trade(pos, cur_ts, o, "ROTACION", i - pos["entry_idx"] + 1, spec)
             trades.append(rec); balance += pnl; pos = None
 
+        # Regla del EA (revisión Antigravity 2026-11-17, 7 casos en USATECH 2024–26): si a la apertura de la vela de las 16:30 hay una
+        # posición abierta, el día queda bloqueado aunque esa posición cierre por stop dentro de esa misma vela.
+        if pos is not None and cur_min == open_ny_min and blocked_day != cur_day and not cfg.rotar:
+            blocked_day = cur_day
+            skipped_still_open += 1
+
         # 1. Protecciones de equidad / cierre de posicion activa
         if pos is not None:
             side = int(pos["side"])
@@ -218,9 +224,6 @@ def correr_session_open_momentum(
                 continue
 
             # Regla verificada at NY open (16:30): si hay posicion abierta, bloquea entrada hoy
-            if cur_min == open_ny_min and blocked_day != cur_day and not cfg.rotar:
-                blocked_day = cur_day
-                skipped_still_open += 1
 
             # Activacion de Trailing Stop (+trail_start_r * init_R) y actualizacion con EMA120(shift=1)
             init_r = float(pos["init_r"])
@@ -306,6 +309,7 @@ def correr_session_open_momentum(
             "entry_name": f"SOM_{'BUY' if side > 0 else 'SELL'}_x{adapt_f:.2f}",
         }
         if (l <= init_sl) if side > 0 else (h >= init_sl):           # 2026-11-16: el stop también vale en la vela de entrada
+            pos["mae_pts"] = abs(entry_px - init_sl); pos["mfe_pts"] = max(0.0, (h - entry_px) if side > 0 else (entry_px - l))   # 2026-11-17
             rec, pnl = _finalize_som_trade(pos, cur_ts, init_sl, "INIT_SL", 1, spec)
             trades.append(rec); balance += pnl; pos = None
 

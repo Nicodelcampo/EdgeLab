@@ -25,7 +25,9 @@ ORB_OBJ = (1.0, 2.0, 0.0)                     # 0 = sin objetivo (sale al cierre
 # 2026-11-16 (auditoría de zona horaria, docs/research/auditoria_corridas_20261116/): en edgelab-sqx-m1 sólo los `*_M1_dukas` vienen en hora del
 # servidor (NY + 7); Russell, DAX, EuroStoxx, FTSE, Nikkei y petróleo vienen en UTC (aperturas de cada mercado en UTC, invierno y verano).
 # Igual en edgelab/research/fuentes_ticks.py::M1_EN_UTC (test). Un archivo que no esté en ninguna de las dos listas no se lee.
-EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD")
+EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD",
+          "AUDUSD", "BRENTCMDUSD", "BUNDTREUR", "COPPERCMDUSD", "DOLLARIDXUSD", "GASCMDUSD", "NZDUSD", "UKGILTTRGBP", "USDCAD",
+          "USTBONDTRUSD", "XAGUSD")      # 2026-11-17: confirmado en SQX (list_data) por Antigravity
 
 
 def zona_m1(nombre: str) -> str:

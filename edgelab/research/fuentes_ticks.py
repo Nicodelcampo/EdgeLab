@@ -150,7 +150,9 @@ def _spot_df(t, td, desde, hasta, red):
 M1DK_FUTURO = {"NQ_M1_dukas": "NQ", "SP_M1_dukas": "ES", "DJ_M1_dukas": "YM", "USSC2000IDXUSD": "RTY", "XAUUSD_M1_dukas": "GC"}
 M1DK_DATASET = "nicolasbuttaro/edgelab-sqx-m1"
 SERVIDOR_MENOS_NY_H = 7                                          # hora del servidor de datos de SQX (EST+07, sigue el horario de NY)
-M1_EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD")   # 2026-11-16: = m1_intradia.EN_UTC (test)
+M1_EN_UTC = ("USSC2000IDXUSD", "DEUIDXEUR", "EUSIDXEUR", "GBRIDXGBP", "JPNIDXJPY", "LIGHTCMDUSD",
+          "AUDUSD", "BRENTCMDUSD", "BUNDTREUR", "COPPERCMDUSD", "DOLLARIDXUSD", "GASCMDUSD", "NZDUSD", "UKGILTTRGBP", "USDCAD",
+          "USTBONDTRUSD", "XAGUSD")      # 2026-11-17: confirmado en SQX (list_data) por Antigravity   # 2026-11-16: = m1_intradia.EN_UTC (test)
 
 
 def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):

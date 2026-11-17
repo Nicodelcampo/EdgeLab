@@ -46,3 +46,14 @@ en que operan los dos). Mensual: −0,09 a 0,18. Diversifica a la v2; con la B y
 29 operaciones NQ, **R +0,16 por operación**, acierto 66 % (18 por trailing, 6 en el stop inicial, 5 cierres de viernes); t 0,70, p 0,24.
 Fisher con el desarrollo (0,039): **0,053** — queda justo arriba de 0,05: NO_CONCLUYENTE por la regla del acta, con el signo a favor y el
 doble del efecto de desarrollo. Decide el forward (`tools/seguimiento_forward.py`). Cifras: `seguimiento/RESULTADO_HOLDOUT.json`.
+
+## Revisión de Antigravity contra el MT5 Tester (2026-11-17, `REVISION_ANTIGRAVITY_20261117.md`) y correcciones
+- Fidelidad: USATECH M5 2024-01 → 2026-09, 616/623 operaciones comunes con 100 % de lado, entrada, SL inicial y motivo de salida.
+- **Corregido**: el EA bloquea el día si a las 16:30:00 hay posición abierta, aunque cierre por SL dentro de esa vela; la traducción cerraba y
+  entraba igual (7 casos). Con la corrección: **617/617 operaciones del Tester presentes** (la única extra es el 29-sep, fuera de la corrida del
+  Tester). Re-medido: `sin_finde` NQ A +0,046 (p 0,04) / B **+0,079** (antes +0,075) / reciente +0,169; sigue pasando. Holdout re-ejecutado en la
+  misma apertura: idéntico (29 ops, +0,16 R, Fisher 0,053, NO_CONCLUYENTE).
+- Se mantiene a propósito: llenado del stop a la apertura cuando hay gap. El Tester llena al SL exacto (simula CFD); para futuros la orden
+  stop se ejecuta al primer precio → regla conservadora y realista para lo que operamos. Diferencias menores no corregidas: trailing activado
+  dentro de la vela de entrada en 30/617 operaciones (M5 no tiene el orden intravela).
+- Confirmado: 11 símbolos más de SQX en UTC (agregados a `EN_UTC`/`M1_EN_UTC`); `stop_price` de T es el stop activo (consistente con H2).
