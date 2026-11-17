@@ -1,0 +1,63 @@
+# LucidFlex 25K «rinse» sin edge: verificación propia (2026-11-17)
+
+Estado: VIGENTE — cálculo descriptivo, pedido de Nico («quiero que hagas tu propia investigación y cálculos» sobre el reel de @la.tradez
+y el documento de verificación que lo acompaña). No es búsqueda de edge: dirección al azar por construcción, sin selección; no cuenta
+pruebas. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Código: `tools/lucidflex_rinse.py`;
+datos: `RESULTADO.json`.
+
+## Reglas verificadas en la fuente (support.lucidtrading.com, leídas el 2026-11-17)
+| Regla | Valor oficial | Página |
+|---|---|---|
+| Evaluación 25K | objetivo $1.250; pérdida máxima $1.000; **consistencia 40 % (50 % con el adicional pago)**; 2 minis o 20 micros | LucidFlex Evaluation Account; Consistency Percentage |
+| Consistencia | mayor día / beneficio de la cuenta ≤ 40 % (o 50 %) **al llegar al objetivo**; si no, se sigue operando | Consistency Percentage |
+| Drawdown | EOD: sube con el mejor cierre hasta el piso **$25.100**; se bloquea al superar $26.100 o **al pedir el primer payout** | LucidFlex Drawdown |
+| Payout | 5 días con ≥ $100 en el ciclo + neto del ciclo > 0; **50 % del beneficio hasta $1.000**; mínimo $500; 90/10; **máximo 5 payouts** y pasa a live; los días se reinician en cada payout | LucidFlex Payouts |
+| Fondeada | sin consistencia, sin buffer | LucidFlex Funded Account |
+| Precio | **no figura** en las páginas de Lucid que se pudieron leer; se usa $65 de lista (terceros) y se informa el precio de equilibrio | — |
+«50 % del beneficio» admite dos lecturas: **A** beneficio total de la cuenta (la página dice también «50 % of their account balance») y **B**
+beneficio del ciclo (la lectura del documento, que exige +$2.000 nuevos por cada $1.000). Se miden las dos.
+
+## Modelo
+Recorridos reales del Nasdaq (USATECH M1, RTH 09:30–15:59, 1.700 días de 2020-01 a 2026-09; nada del holdout), dirección al azar cada día,
+bracket en USD neto (la fricción canónica MNQ con comisión de Lucid, $3,06 por micro ida y vuelta, se suma al objetivo y se resta del stop),
+micros para que el bracket sea ≈ 25 puntos (tope 20 micros), stop antes que objetivo en el mismo minuto, salida 15:59 sin toque.
+Evaluación: 3 días de $417 (40 %) o 2 de $625 (50 %), stop = colchón hasta el piso. Fondeada (política de Ari): ir al saldo que da el payout
+máximo arriesgando el colchón, después días de +$100 arriesgando $100 hasta juntar 5, pedir el payout. 20.000 cuentas por escenario.
+
+## Resultado (por cuenta comprada)
+| Escenario | Pasa la evaluación | Llega a un payout | Cobrado medio (ee) | Si cobra | EV a $65 | EV por día operado |
+|---|---|---|---|---|---|---|
+| Ari (moneda, sin costos ni topes, teórico) | 38 % | 12,6 % | $227 | $1.800 | **+$157** | — |
+| **40 %, lectura A, payout de $1.000** | 25,5 % | 6,7 % | $103 (3) | $1.548 | **+$38** | +$8,6 |
+| 40 %, lectura B (la del documento) | 25,6 % | 6,7 % | $93 (3) | $1.388 | +$28 | +$6,5 |
+| 50 % (con el adicional; su precio no restado) | 32,1 % | 8,7 % | $134 (4) | $1.539 | +$69 | +$15,8 |
+| 40 %, A, payout mínimo de $500 | 25,3 % | 7,9 % | $62 (2) | $790 | −$3 | −$0,6 |
+| 40 %, A, sin costos de operación | 30,4 % | 8,9 % | $153 (4) | $1.720 | +$88 | +$17,5 |
+Cuentas compradas por cada una que llega a fondeada: 4,05 (40 %) / 3,16 (50 %); cobrado medio por fondeada ≈ $410–420; la fondeada dura ≈ 6–7
+días operados. Ganar plata con una cuenta: 6,7–8,7 % de las veces; la cuenta típica pierde el precio.
+
+## Lectura
+1. **La aritmética de Ari es correcta en su modelo, y el signo también**: con las reglas reales y costos reales el EV sin edge sigue
+   positivo, pero ≈ 4 veces menor (+$28 a +$69 por cuenta, no +$157). Viene de la asimetría de la cuenta (pérdida acotada al precio,
+   payouts sin tope de pérdida para el trader), no de los precios.
+2. **El documento de verificación se equivoca en el signo**: cobra $200–$350 de costos a TODAS las cuentas, como si cada una llegara a 14
+   operaciones; en el modelo la cuenta media dura 4,5 días y los costos le restan ≈ $50, no $200–350. También da por segura la lectura B
+   del tope de payout, que la propia página contradice («50 % of their account balance»); con B el EV baja $10, no cambia de signo.
+   Acierta en la consistencia (40 % sin adicional), el bloqueo del piso, los 5 payouts y el límite de cuentas.
+3. **$10.000 por mes no**: el límite es de 5 fondeadas activas, que duran ≈ 6,5 días y dejan ≈ $415 cada una. Con los 5 lugares siempre
+   llenos son ≈ 16 fondeadas por mes: ≈ $6.700 brutos menos ≈ 65 evaluaciones compradas (≈ $4.200) → **del orden de $2.500 por mes de
+   esperanza**, con una varianza enorme.
+4. **Riesgos que el número no incluye**:
+   - Para tener 65 evaluaciones por mes hay que operar muchas a la vez, y Lucid prohíbe la cobertura entre cuentas: todas van en la
+     misma dirección, así que pierden juntas (no hay ley de los grandes números dentro del mes).
+   - Las condiciones de Lucid permiten quitar ganancias por operar «evitando los objetivos» o de mala fe; operar a moneda con brackets
+     calibrados a las reglas es exactamente eso. Es un riesgo de perderlo todo que no se puede modelar.
+   - El paso a live después de 5 payouts no se valoró (podría sumar).
+5. **Para EdgeLab**: confirma que en una prop la geometría de las reglas pesa tanto como la ventaja. Una regla con edge real (la cartera v2
+   o la B) se apalanca en esa misma asimetría; el siguiente paso útil es correr la cartera con estas reglas de Lucid en el simulador de
+   prop (`cartera_20261116/PROP.json` usa otra firma) en vez de operar a moneda.
+
+## Justificación económica / cómo podría refutarse
+La cuenta limita la pérdida al precio y paga hasta 5 retiros: una opción con valor positivo aun sin edge si las reglas lo permiten. Se
+refuta con reglas distintas a las leídas (precio, tope de payout), con costos de ejecución mayores a los canónicos, o si Lucid aplica la
+cláusula de mala fe.

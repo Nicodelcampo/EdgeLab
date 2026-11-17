@@ -90,7 +90,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (16)
+## PALANCA_DE_DISENO (17)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -99,6 +99,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Toda regla candidata, de afuera o propia
   - Siguiente: tools/potencia_previa.py antes de invertir; holdout_ventanas.registrar_apertura y el test del contador global lo exigen.
   - Evidencia: `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md`
+- **Las reglas de una prop (pérdida acotada al precio, hasta 5 payouts) tienen valor esperado positivo aun sin edge: LucidFlex 25K a moneda sobre recorridos reales de NQ, con costos canónicos y reglas oficiales** (`F-PROP-ASIMETRIA-LUCIDFLEX`, 2026-11-17, sesion)
+  - Efecto: EV por cuenta +$28 a +$69 (Ari decía +$157; el documento de verificación, −$90 a −$240 por cobrar costos a todas las cuentas); pasa 25–32 %, cobra 6,7–8,7 %; con 5 fondeadas como límite ≈ $2.500/mes de esperanza, no $10.000, con cuentas correlacionadas (cobertura prohibida) y riesgo de la cláusula de mala fe.
+  - Dónde: LucidFlex 25K, NQ/MNQ (USATECH M1 2020–2026-09)
+  - Siguiente: No operar a moneda (riesgo de términos). Correr la cartera v2/B con las reglas de Lucid en el simulador de prop: la misma asimetría con edge real.
+  - Evidencia: `docs/research/propfirm_lucidflex_20261117/RESULTADO.md`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto
