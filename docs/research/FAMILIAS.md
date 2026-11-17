@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-266 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+267 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -229,6 +229,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `SLOT_COND_HOLD_STOP_TARGET_GRID` |  | — | 2108 | — | — | — | — |
 | `SOM` | 2026-11-16 | DOS_VELAS, ORB_EMA20 | 27 | — | — | — | — |
 | `SOM_TRANSFER` | 2026-11-17 | SOM | 3 | — | — | — | — |
+| `SQX_CATALOGO` | 2026-11-17 | — | 136 | — | — | — | — |
 | `SQX_LIT-TSMOM` | 2026-11-14 | — | 549026 | — | — | F-SQX-REVERSION-SP-H4 (NO_REPETIR); F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
 | `SQX_SQX-PLANTILLA-REVERSION` | 2026-11-14 | — | 31685 | — | — | F-SQX-REVERSION-SP-H4 (NO_REPETIR); F-SQX-TSMOM-SP-D1 (NO_REPETIR) | `sqx_lote1_20261114` |
 | `SQX_SQX-PLANTILLA-TENDENCIA` |  | — | 37869 | — | — | — | — |
