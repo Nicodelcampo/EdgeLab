@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-269 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+270 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -45,6 +45,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `CORREDOR_VOL_GAPS_CFD_NQ` | 2026-10-28 | CORREDOR_VOL_GAPS_NQ, ZONAS_GAPS, AREAS_EXP_1_CRUZADO | 1866261 | 2 | CVGAP-CFD-NQ-R: BLOQUEADA | — | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102` |
 | `CORREDOR_VOL_GAPS_ES` | 2026-10-28 | ZONAS_GAPS, U1_ZONAS_ES, AREAS_EXP_1_CRUZADO | 3732520 | 3 | CVGAP-ES-C-R: PISTAS_VIVAS; CVGAP-ES-C: PISTAS_VIVAS; CVGAP-ES: PISTAS_VIVAS | — | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102`, `relanzamiento_causal_20261102` |
 | `CORREDOR_VOL_GAPS_NQ` | 2026-10-28 | ZONAS_GAPS, AREAS_EXP_1_CRUZADO | 1866260 | 2 | CVGAP-NQ-R: PISTAS_VIVAS | — | `corredor_vol_gaps_20261028`, `relanzamiento_R_20261102` |
+| `COSECHA_POZO_20261117` | 2026-11-17 | COMEX_CIERRE_ORO_GC, CONFLUENCIA_CVGAP_RACIMOS_CFD_ES, CONFLUENCIA_CVGAP_RACIMOS_NQ, CVGAP2_CFD_ES, CVGAP2_GC, CVGAP2_NQ, HFT_GC_P10, IF_HACIA_RACIMOS_NQ, INTENTO_FALLIDO_LUX_CFD_NQ, INTENTO_FALLIDO_LUX_NQ, INTENTO_FALLIDO_RACIMOS_NQ, KALMAN_FADE_NQ, MODELO_ASIA_NQ, ORO_ALMUERZO_RUPTURA_CFD, ORO_ALMUERZO_RUPTURA_GC, OVERNIGHT_INVENTARIO_NQ, TAU_TENDENCIA_NQ, TORI_TREND_TOQUE3_CFD_NQ, TORI_TREND_TOQUE3_GC, U1_ZONAS_GRILLA_YM | — | — | — | — | `cosecha_pozo_20261117` |
 | `CVGAP2_CFD_ES` | 2026-11-04 | CORREDOR_VOL_GAPS_CFD_ES | 933140 | 1 | CVGAP2-CFD-ES: PISTAS_VIVAS | — | `cvgap2_20261104` |
 | `CVGAP2_CFD_NQ` | 2026-11-04 | CORREDOR_VOL_GAPS_CFD_NQ | 933128 | 1 | — | — | `cvgap2_20261104` |
 | `CVGAP2_ES` | 2026-11-04 | CORREDOR_VOL_GAPS_ES | 933140 | 1 | CVGAP2-ES: PISTAS_VIVAS | — | `cvgap2_20261104` |
