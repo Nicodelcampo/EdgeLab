@@ -39,3 +39,9 @@ Se refuta la urgencia (en este dominio) si τ no se distingue de 0 con potencia;
 
 ## Contador
 `urgencia_vs_evidencia_20261117/PASO1`, familia VIDA_VENTAJA, 6 pruebas (2 deciden, 4 descriptivas). Linaje: VIDA_VENTAJA ← SQX_CATALOGO.
+
+## Enmienda 1 (2026-11-17, después de ver el resultado; no cambia la decisión)
+ρ quedó en el borde de la grilla (0,99), así que L era sólo una cota. Se agregan, como DIAGNÓSTICO (`tools/vida_ventaja_medir.py
+diagnostico`, `DIAGNOSTICO_PASO1.json`): grilla de ρ extendida hasta 0,999; la misma medición sobre R **bruto** (¿régimen de mercado o
+fricción que cambia con la volatilidad? lección K2); innovaciones estandarizadas (refutación declarada del modelo). Las dos pruebas que
+deciden y su BH quedan como estaban.

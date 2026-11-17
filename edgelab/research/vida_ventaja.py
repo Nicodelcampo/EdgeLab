@@ -79,3 +79,17 @@ def generar_series(n_ops_mes, rho: float, tau: float, m=0.0, seed: int = 0):
         n = np.asarray(nm, float); suma = np.where(n > 0, rng.normal((m + d) * n, np.sqrt(np.maximum(n, 1e-9))), 0.0)
         out.append((suma, n))
     return out
+
+
+def innovaciones(suma, n, rho: float, tau: float, p_m: float = 100.0):
+    """Innovaciones estandarizadas v/√S del filtro (diagnóstico del pre-registro: ≈ N(0,1) si el modelo describe la serie)."""
+    q = tau ** 2 * (1 - rho ** 2); x0 = x1 = 0.0; p00, p01, p11 = p_m, 0.0, tau ** 2; out = []; primero = True
+    for t in range(len(n)):
+        if t: x1 = rho * x1; p01 = rho * p01; p11 = rho * rho * p11 + q
+        if n[t] <= 0: continue
+        S = p00 + 2 * p01 + p11 + 1.0 / n[t]; v = suma[t] / n[t] - x0 - x1
+        if not primero: out.append(v / math.sqrt(S))
+        primero = False
+        k0, k1, c0, c1 = (p00 + p01) / S, (p01 + p11) / S, p00 + p01, p01 + p11
+        x0 += k0 * v; x1 += k1 * v; p00 -= k0 * c0; p01 -= k0 * c1; p11 -= k1 * c1
+    return np.asarray(out)

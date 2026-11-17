@@ -90,7 +90,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (17)
+## PALANCA_DE_DISENO (18)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -104,6 +104,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: LucidFlex 25K, NQ/MNQ (USATECH M1 2020–2026-09)
   - Siguiente: No operar a moneda (riesgo de términos). Correr la cartera v2/B con las reglas de Lucid en el simulador de prop: la misma asimetría con edge real.
   - Evidencia: `docs/research/propfirm_lucidflex_20261117/RESULTADO.md`
+- **La media verdadera de reglas fijas no elegidas (catálogo SQX, 65 reglas × instrumento, 2004–2026) no prende y apaga en meses: deriva muy lenta (ρ ≈ 0,99–0,999), y en su mayor parte es fricción que cambia con la volatilidad** (`F-VIDA-VENTAJA-DERIVA-LENTA`, 2026-11-17, sesion)
+  - Efecto: Modelo de espacio de estados: R neto τ 0,05–0,07 con p 0,002–0,004 (ruptura corta y conjunto), ρ en el borde; en R bruto p 0,06–0,11. Innovaciones ≈ N(0,1). Grupos de baja frecuencia sin potencia.
+  - Dónde: 6E, CL, GC, 6J, índices diarios (no NQ/ES intradía)
+  - Siguiente: En la política de tamaño, P(viva) = fricción en R según la volatilidad actual, no una vida en el tiempo; paso 1b en las grillas M1 intradía de índices antes de aplicarlo a la cartera.
+  - Evidencia: `docs/research/urgencia_vs_evidencia_20261117/RESULTADO_PASO1.md`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto

@@ -5,6 +5,7 @@ Pre-registro: docs/research/urgencia_vs_evidencia_20261117/PREREGISTRO_PASO1.md.
 
   python tools/vida_ventaja_medir.py potencia     # SÓLO operaciones por mes (sin R): qué τ se detecta con esta estructura
   python tools/vida_ventaja_medir.py medir        # ajuste por familia y conjunto + nulo paramétrico (τ = 0) + BH -> RESULTADO_PASO1.json
+  python tools/vida_ventaja_medir.py diagnostico  # enmienda 1: grilla de ρ extendida, R BRUTO (¿régimen o fricción?), residuos
 """
 import json, sys
 from pathlib import Path
@@ -17,7 +18,7 @@ FAMILIAS = {"tendencia": ("TURTLE_55_20", "TURTLE_20_10", "ADX_TRAIL"), "reversi
 B_NULO, SEMILLA, FIN = 500, 20261117, pd.Period("2026-09", "M")
 
 
-def series(con_R: bool):
+def series(con_R: bool, col: str = "R"):
     """{familia: [(nombre, suma, n)]}. Sin R (potencia): suma = 0. Cada serie va de su primer mes con operaciones a 2026-09."""
     from edgelab.research.vida_ventaja import mensual
     out = {f: [] for f in FAMILIAS}
@@ -25,10 +26,10 @@ def series(con_R: bool):
         nom = f.name.replace("_original.csv.gz", ""); est = nom.rsplit("_", 1)[0]
         fam = next((k for k, v in FAMILIAS.items() if est in v), None)
         if fam is None: continue
-        g = pd.read_csv(f, usecols=["dia", "R"] if con_R else ["dia"]); p = pd.to_datetime(g.dia).dt.to_period("M")
+        g = pd.read_csv(f, usecols=["dia", col] if con_R else ["dia"]); p = pd.to_datetime(g.dia).dt.to_period("M")
         if not len(g): continue
         ini = p.min(); m = np.asarray((p - ini).apply(lambda x: x.n)); T = (FIN - ini).n + 1
-        if con_R: s, n = mensual(g.R.to_numpy(float), m, T)
+        if con_R: s, n = mensual(g[col].to_numpy(float), m, T)
         else: n = np.bincount(m, minlength=T).astype(float); s = np.zeros(T)
         out[fam].append((nom, s, n))
     return out
@@ -66,5 +67,24 @@ def medir():
     (OUT / "RESULTADO_PASO1.json").write_text(json.dumps(res, indent=1, default=float))
 
 
+def diagnostico():
+    """Enmienda 1 (después de ver ρ en el borde de la grilla, 0,99): no cambia la decisión del pre-registro; precisa L y prueba si el
+    régimen es de mercado o de fricción (la fricción fija pesa más en R cuando la volatilidad baja y el stop se achica: K2)."""
+    from edgelab.research import vida_ventaja as V
+    rho_ext = V.GRILLA_RHO + (0.993, 0.995, 0.997, 0.998, 0.999); res = {}
+    for col in ("R", "Rb"):
+        S = series(con_R=True, col=col); grupos = dict(ruptura_corta=S["ruptura_corta"], conjunto=[x for v in S.values() for x in v])
+        for g, lst in grupos.items():
+            sr = [(s, n) for _, s, n in lst]; a = V.ajustar(sr, grilla_rho=rho_ext)
+            nulo = [V.ajustar(V.generar_series([n for _, n in sr], 0.9, 0.0, seed=SEMILLA + b), grilla_rho=rho_ext)["lr_tau0"] for b in range(300)]
+            a["p_tau0"] = float((1 + sum(x >= a["lr_tau0"] for x in nulo)) / 301)
+            z = np.concatenate([V.innovaciones(s, n, a["rho"], a["tau"]) for s, n in sr])
+            a["innovaciones"] = dict(n=int(len(z)), media=float(z.mean()), sd=float(z.std()), p01=float(np.quantile(z, 0.01)), p99=float(np.quantile(z, 0.99)),
+                                     frac_abs_mayor_3=float((np.abs(z) > 3).mean()))
+            res[f"{g}|{col}"] = a
+            print(g, col, {k: a[k] for k in ("rho", "tau", "lr_tau0", "p_tau0", "vida_media_meses", "ic_rho", "ic_tau")}, a["innovaciones"], flush=True)
+    (OUT / "DIAGNOSTICO_PASO1.json").write_text(json.dumps(res, indent=1, default=float))
+
+
 if __name__ == "__main__":
-    {"potencia": potencia, "medir": medir}[sys.argv[1]]()
+    {"potencia": potencia, "medir": medir, "diagnostico": diagnostico}[sys.argv[1]]()
