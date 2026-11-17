@@ -70,3 +70,18 @@ def test_m1_resuelve_vela_de_entrada_y_ambiguedad():
     assert S.simular(B2, sig2, False).motivo.iloc[0] == "STOP"               # sin M1: stop (lo peor)
     T = S.simular(B2, sig2, False, m1=m2)                                    # entra 100 a la apertura de la barra 2: objetivo 104 en su 2.º minuto
     assert T.motivo.iloc[0] == "OBJ" and T.salida_px.iloc[0] == 104.0 and T.barras.iloc[0] == 1
+
+
+def test_turtle_v_de_fabrica_igual_a_turtle_y_causal():
+    B = _B(n=1400); ctx = {}
+    for var in (False, True):
+        a = S.simular(B, S.turtle(55, 20, True)(B, ctx), var).drop(columns="i0")
+        b = S.simular(B, S.turtle_v()(B, ctx), var).drop(columns="i0")
+        pd.testing.assert_frame_equal(a, b, check_dtype=False)
+    corte = 900; fc = B.fecha.iloc[corte]
+    for kw in (dict(entrada="stop"), dict(tend=False), dict(vol=False, n_in=20), dict(cortos=False)):
+        for reent in (False, True):
+            def corre(Bx):
+                s = S.turtle_v(**kw)(Bx, ctx); s = S.con_reentrada(Bx, s) if reent else s
+                T = S.simular(Bx, s, True); return T[(T.motivo != "FIN") & (T.fecha < fc - 100)].drop(columns="i0").reset_index(drop=True)
+            pd.testing.assert_frame_equal(corre(B), corre(B.iloc[:corte + 1]), check_dtype=False)

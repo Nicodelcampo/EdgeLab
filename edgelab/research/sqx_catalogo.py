@@ -130,16 +130,16 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000,
                 pos = dict(lado=lado, e=fill, st=fill - lado * sl, st0=fill - lado * sl, tp=(fill + lado * tp) if np.isfinite(tp) else np.nan, i0=i, be_ok=False)
                 orden = None
                 if (m1["l"][j] <= pos["st"]) if lado == 1 else (m1["h"][j] >= pos["st"]):  # minuto de llenado: stop si lo toca (lo peor)
-                    ops.append((fecha[i], lado, fill, pos["st0"], pos["st"], "STOP", 1)); pos = None; continue
+                    ops.append((fecha[i], lado, fill, pos["st0"], pos["st"], "STOP", 1, i)); pos = None; continue
                 ev = _camino_m1(m1, j + 1, m1["b"][i], lado, pos["st"], pos["tp"])
                 if ev is not None:
-                    ops.append((fecha[i], lado, fill, pos["st0"], ev[0], ev[1], 1)); pos = None; continue
+                    ops.append((fecha[i], lado, fill, pos["st0"], ev[0], ev[1], 1, i)); pos = None; continue
             elif vivas:
                 lado, fill, sl, tp = vivas[0] if len(vivas) == 1 else min(vivas, key=lambda x: abs(x[1] - o[i]))
                 pos = dict(lado=lado, e=fill, st=fill - lado * sl, st0=fill - lado * sl, tp=(fill + lado * tp) if np.isfinite(tp) else np.nan, i0=i, be_ok=False)
                 orden = None
                 if (l[i] <= pos["st"]) if lado == 1 else (h[i] >= pos["st"]):              # stop en la barra de entrada (objetivo no: orden incierto)
-                    ops.append((fecha[i], lado, fill, pos["st0"], pos["st"], "STOP", 1)); pos = None; continue
+                    ops.append((fecha[i], lado, fill, pos["st0"], pos["st"], "STOP", 1, i)); pos = None; continue
             elif i - k0 >= int(sig_val(sig, "valida", k0, 1)): orden = None
         # 2) posición abierta
         if pos is not None and i > pos["i0"]:
@@ -154,7 +154,7 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000,
             elif i - pos["i0"] + 1 >= tope: sal = (c[i], "TOPE")
             elif ult_viernes[i]: sal = (c[i], "VIERNES")
             if sal is not None:
-                ops.append((fecha[pos["i0"]], lado, pos["e"], pos["st0"], sal[0], sal[1], i - pos["i0"] + 1)); pos = None
+                ops.append((fecha[pos["i0"]], lado, pos["e"], pos["st0"], sal[0], sal[1], i - pos["i0"] + 1, pos["i0"])); pos = None
             else:
                 if be is not None and not pos["be_ok"] and np.isfinite(be[pos["i0"] - 1]) and lado * (c[i] - pos["e"]) >= be[pos["i0"] - 1]:
                     pos["st"] = max(pos["st"], pos["e"]) if lado == 1 else min(pos["st"], pos["e"]); pos["be_ok"] = True
@@ -163,7 +163,7 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000,
                     if np.isfinite(nv): pos["st"] = max(pos["st"], nv) if lado == 1 else min(pos["st"], nv)
         # 3) señal al cierre de i (sólo sin posición ni orden)
         if pos is not None and pos["i0"] == i and ult_viernes[i]:                     # entró el viernes: también sale al cierre del viernes
-            ops.append((fecha[i], pos["lado"], pos["e"], pos["st0"], c[i], "VIERNES", 1)); pos = None
+            ops.append((fecha[i], pos["lado"], pos["e"], pos["st0"], c[i], "VIERNES", 1, i)); pos = None
         if pos is None and orden is None and i < n - 1:
             cand = []
             for suf in ("", "_l", "_s"):
@@ -175,8 +175,8 @@ def simular(B: pd.DataFrame, sig: dict, viernes: bool, max_barras: int = 10_000,
                 cand.append((lado, sig.get("tipo" + suf, sig.get("tipo", "mkt")), px, sl, tp))
             if cand: orden = (i, cand)
     if pos is not None:
-        ops.append((fecha[pos["i0"]], pos["lado"], pos["e"], pos["st0"], c[n - 1], "FIN", n - pos["i0"]))
-    return pd.DataFrame(ops, columns=["fecha", "lado", "entrada", "stop0", "salida_px", "motivo", "barras"])
+        ops.append((fecha[pos["i0"]], pos["lado"], pos["e"], pos["st0"], c[n - 1], "FIN", n - pos["i0"], pos["i0"]))
+    return pd.DataFrame(ops, columns=["fecha", "lado", "entrada", "stop0", "salida_px", "motivo", "barras", "i0"])
 
 
 def sig_val(sig, k, i, defecto):
@@ -258,6 +258,43 @@ def turtle(n_in, n_out, filtro_atr):
         return dict(lado=np.where(lo, 1, np.where(so, -1, 0)), tipo="mkt", sl=2 * a20, tp=np.nan,
                     salida=lambda i, lado: (c[i] < mn[i]) if lado == 1 else (c[i] > mx[i]))
     return f
+
+
+def turtle_v(n_in=55, n_out=20, vol=True, tend=True, largos=True, cortos=True, entrada="mkt"):
+    """Turtle de la ficha #5 con una perilla por mecanismo (mejora de 2026-11-17, docs/research/turtles_oro_20261117/PREREGISTRO.md).
+    Siempre como par OCO de órdenes stop: `entrada='mkt'` = ruptura al cierre y entrada a la apertura siguiente (precio ∓inf: llena a la
+    apertura; con los parámetros de fábrica es idéntica a `turtle(55, 20, True)`, test); `entrada='stop'` = orden stop en el borde del canal,
+    vigente la barra siguiente (entra en la ruptura, no al cierre). `tend=False` deja los dos lados; `vol=False` quita ATR10 < ATR200."""
+    def f(B, ctx):
+        o, h, l, c = (B[k].to_numpy(float) for k in "ohlc"); n = len(c); a20 = atr(h, l, c, 20); uno = np.ones(n, bool)
+        t_up = sh(ema(c, 20)) > sh(ema(c, 350)) if tend else uno
+        t_dn = ~t_up if tend else uno
+        quieto = (sh(atr(h, l, c, 10)) < sh(atr(h, l, c, 200))) if vol else uno
+        mn, mx = sh(roll_min(l, n_out)), sh(roll_max(h, n_out))
+        if entrada == "mkt":
+            lo = (c > sh(roll_max(h, n_in))) & t_up & quieto & largos; so = (c < sh(roll_min(l, n_in))) & t_dn & quieto & cortos
+            px_l, px_s = np.full(n, -np.inf), np.full(n, np.inf)
+        else:                                                         # filtros con la barra i cerrada = [1] respecto de la barra de entrada
+            ok = np.isfinite(sh(roll_max(h, n_in))) & np.isfinite(a20)
+            t_up2 = (ema(c, 20) > ema(c, 350)) if tend else uno; t_dn2 = ~t_up2 if tend else uno
+            q2 = (atr(h, l, c, 10) < atr(h, l, c, 200)) if vol else uno
+            lo = ok & t_up2 & q2 & largos; so = ok & t_dn2 & q2 & cortos
+            px_l, px_s = roll_max(h, n_in), roll_min(l, n_in)
+        return dict(lado_l=np.where(lo, 1, 0), lado_s=np.where(so, -1, 0), tipo_l="stop", tipo_s="stop", px_l=px_l, px_s=px_s, valida=1,
+                    sl=2 * a20, tp=np.nan, salida=lambda i, lado: (c[i] < mn[i]) if lado == 1 else (c[i] > mx[i]))
+    return f
+
+
+def con_reentrada(B, sig, m1=None):
+    """Re-entrada del lunes: al cierre de la última barra del viernes, si el turtle SIN cierre semanal seguiría adentro (misma señal, mismo
+    motor, causal: decide con barras ya cerradas), se pide la misma dirección a la apertura de la sesión siguiente (stop nuevo de 2 ATR20)."""
+    T = simular(B, sig, viernes=False, m1=m1); n = len(B); vivo = np.zeros(n, int)
+    for i0, b, lado in zip(T.i0, T.barras, T.lado):
+        vivo[int(i0): int(i0) + int(b) - 1] = int(lado)                 # vivo al cierre de j si i0 <= j < barra de salida
+    f = pd.Series(B.fecha.to_numpy()); ult_v = ((B.dow.to_numpy() == 4) & (f.shift(-1).to_numpy() != B.fecha.to_numpy()))
+    s = dict(sig); s["lado_l"] = np.where(ult_v & (vivo == 1), 1, sig["lado_l"]); s["lado_s"] = np.where(ult_v & (vivo == -1), -1, sig["lado_s"])
+    s["px_l"] = np.where(ult_v & (vivo == 1), -np.inf, sig["px_l"]); s["px_s"] = np.where(ult_v & (vivo == -1), np.inf, sig["px_s"])
+    return s
 
 
 def range_1300(B, ctx):

@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-267 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+268 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -245,6 +245,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `TORI_TREND_TOQUE3_GC` | 2026-10-29 | U1_ORO_GRILLA | 2239508 | 2 | TORI-GC-R: PISTAS_VIVAS; TORI-GC: PISTAS_VIVAS | — | `relanzamiento_R_20261102`, `tori_trend_20261029` |
 | `TORI_TREND_TOQUE3_NQ` | 2026-10-29 | ZONAS_GAPS, CORREDOR_VOL_GAPS_NQ | 2239508 | 2 | TORI-NQ-R: PISTAS_VIVAS; TORI-NQ: PISTAS_VIVAS | — | `relanzamiento_R_20261102`, `tori_trend_20261029` |
 | `TRANSFERENCIA_MULTIACTIVO` | 2026-11-08 | ASIA_BOS_GAPS_GC, ASIA_BOS_GAPS_NQ, CORREDOR_VOL_GAPS_NQ, RANGO_PREAPERTURA_ES, RANGO_PREAPERTURA_NQ | 1 | — | — | F-FRECUENCIA-POR-SELECCION (NO_REPETIR) | `transferencia_multiactivo_20261108` |
+| `TURTLES-ORO` | 2026-11-17 | SQX_CATALOGO | 10 | — | — | — | — |
 | `U1_6B_FUT_GRILLA` | 2026-10-26 | U1_6E_GRILLA, U1_ES_GRILLA, AREAS_EXP_1_CRUZADO | 26873859 | 3 | U1-6B-FUT-GRILLA-C-R: SIN_CANDIDATAS; U1-6B-FUT-GRILLA-C: PISTAS_VIVAS; U1-6B-FUT-GRILLA: PISTAS_VIVAS | — | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102`, `u1_cfd_20261025` |
 | `U1_6B_GRILLA` | 2026-10-26 | U1_6E_GRILLA, U1_ES_GRILLA, AREAS_EXP_1_CRUZADO | 26873935 | 3 | U1-6B-GRILLA-C-R: SIN_CANDIDATAS; U1-6B-GRILLA-C: SIN_CANDIDATAS; U1-6B-GRILLA: SIN_CANDIDATAS | — | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102`, `u1_cfd_20261025` |
 | `U1_6E_CONFIRMA_GBP` | 2026-10-26 | U1_6E_GRILLA, U1_ES_GRILLA, AREAS_EXP_1_CRUZADO | 107495504 | 3 | U1-6E-CONFIRMA-GBP-C-R: SIN_CANDIDATAS; U1-6E-CONFIRMA-GBP-C: SIN_CANDIDATAS; U1-6E-CONFIRMA-GBP: SIN_CANDIDATAS | — | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102`, `u1_cfd_20261025` |

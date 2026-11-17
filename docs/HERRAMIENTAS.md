@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-668 scripts.
+669 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -459,6 +459,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/mejora_ronda2.py` | Mejora ronda 2 (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §15): tamaño por regla (fijo / R constante / raíz) en SOM, |
 | `tools/mejora_som.py` | Mejora de SOM (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §5): 14 variantes de una perilla, elección en años pares por |
 | `tools/mejora_t.py` | Mejora de T de FundedSync (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §10): 6 variantes de una perilla, elección en |
+| `tools/mejora_turtles_oro.py` | Turtles 55/20 en oro con cierre del viernes: réplica en 2004–2010 (no mirado) y mejora con el método de |
 | `tools/mejoras_cartera.py` | Mejoras de la cartera (pre-registro docs/research/cartera_20261116/PREREGISTRO_MEJORAS.md). |
 | `tools/metaanalisis_embudo.py` | Meta-análisis entre instrumentos de UNA regla congelada a partir de los estados del embudo (2026-10-26). |
 | `tools/mgc_direction_diagnostic.py` | MGC EMA headline: long/short split, random-direction nulls, concentration, D0/D1/D2. Pre-registered in |
