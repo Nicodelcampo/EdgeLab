@@ -34,7 +34,7 @@ que la tanda 2 vio en el CFD (S +0,046, W +0,107 ATR por día).
 - **Perfiles:** el de fábrica (Lucid50K) y Lucid25K, la cuenta de Nico.
 - **Noticias APAGADO:** el calendario del vendedor no está, y con el valor por defecto el motor bloquearía todas las entradas.
 - **T** con las fechas de la enmienda 1.
-- **Qué se reporta:** USD por año con la fricción canónica sobre el bruto (puntos × contratos × 20), años positivos, máximo drawdown
+- **Qué se reporta:** USD por año con la fricción canónica sobre el bruto (puntos × contratos × valor del punto del instrumento de ejecución; corrección de UNIDADES hecha después de una primera lectura con 20 USD/pt: el motor ejecuta en MNQ por defecto, 2 USD/pt; no cambia ninguna regla ni decisión), años positivos, máximo drawdown
   cerrado y contribución por módulo.
 - No hay prueba: la cartera combina lo ya medido.
 

@@ -62,6 +62,8 @@ Recordatorios:
 > −386 R en 1.453 sesiones de años limpios, 0/8 años positivos, bruto ≈ 0: **REFUTADA_ATRAS** (`docs/research/atras_m1_20261117/RESULTADO.md`).
 > Elegir entre miles de celdas con 14 meses de datos produce ganadoras de ruido. Por eso Nico firmó **HOLDOUT-A5** (holdout intercalado
 > por meses sobre 18 años): toda campaña nueva descubre y confirma sobre M1 largo. Ninguna canasta habilita tamaño real.
+> **Veredicto de todas las reglas: `docs/research/VEREDICTO_M1_20261117.md`.** El «antes no, ahora sí» es fricción relativa (fricción/ATR en NQ
+> 0,045 → 0,006), no régimen. SOM tiene la única señal bruta estable en 20 años (años limpios +0,064 R); R AtrPhase en NQ, pista; T frágil.
 
 ### Estado al 2026-11-09
 

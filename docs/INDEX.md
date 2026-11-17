@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1380 |
+| `docs/research` | 1382 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
 | HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
 | DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | SUPERADA por HOLDOUT-A5 (2026-11-17, docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11 |
@@ -99,7 +100,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | EXPLO | 1 | `EXPLO_ASIMETRIA_EXCURSION_20261006.md` | 2026-10-06 | - |
 | ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
 | EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
-| AVCL | 25 | `AVCL_VOL3_ROBUSTEZ_MANIFIESTO_20261006.md` | 2026-10-06 | - |
 
 ## Superados (7)
 

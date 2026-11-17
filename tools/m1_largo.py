@@ -174,10 +174,10 @@ def analizar_capa2():
                                                           peor_pts=float(g.neto[(s >= x) & (s <= y)].min()), peor_cat_pts=float(g.neto_cat[(s >= x) & (s <= y)].min()))
                                                 for nom, x, y in tramos}
     # §4 cartera completa (descriptivo): USD por año con la fricción canónica sobre el bruto (puntos × contratos × 20)
-    fr = friccion("NQ")[0]
+    fr = friccion("MNQ")[0]                                   # el motor ejecuta en MNQ por defecto (ExecMode.MNQ): qty = micros, 2 USD/pt
     for nom in PERFILES:
         t = pd.read_csv(DIR / f"CARTERA_{nom}_NQ.csv.gz"); t["anio"] = pd.to_datetime(t.entry_time_utc, unit="ns").dt.year
-        t["usd_canon"] = (t.pnl_pts - fr) * t.qty * 20.0
+        t["usd_canon"] = (t.pnl_pts - fr) * t.qty * 2.0
         por = t.groupby("anio").usd_canon.sum(); eq = t.sort_values("exit_time_utc").usd_canon.cumsum()
         out["cartera"][nom] = dict(operaciones=int(len(t)), usd_por_anio={int(k): float(v) for k, v in por.items()},
                                    anios_pos=float((por > 0).mean()), usd_total=float(t.usd_canon.sum()),

@@ -100,7 +100,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (23)
+## PALANCA_DE_DISENO (24)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -144,6 +144,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Campañas nuevas con particion A5 (mecanismos medibles en barras; footprint sigue dependiendo de ticks)
   - Siguiente: Integrar particion A5 en el embudo con la primera campaña nueva; calibrar M1 contra ticks por familia.
   - Evidencia: `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`, `edgelab/holdout.py`, `tests/test_holdout_a5.py`
+- **Veredicto de todas las reglas con el M1 real de futuros: refutadas CVGAP-ES-C, CVGAP2-GC#11 y COMEX; T frágil (sin señal antes de 2020); SOM y R (NQ) con señal bruta estable; la cartera completa del vendedor pierde 2006–2018 y gana 2019+ (fricción relativa); las variantes W y N mejoran sin volverse rentables** (`F-FUNDEDSYNC-CAPA2-Y-VEREDICTO`, 2026-11-17, sesion)
+  - Efecto: Variantes en años limpios: W +0,224 ATR/día (IC90 +0,198/+0,250), N +0,026 (IC90 +0,010/+0,041), S y A20 NO_CONCLUYENTE. Stop de catástrofe 0,5×ATR20: R NQ 2020–25 peor −415→−169 pts con neto +0,185→+0,171. Cartera vendedor Lucid25K: +67,9 k USD 2006–2026, negativa todos los años hasta 2018, DD −127,7 k.
+  - Dónde: NQ, ES, YM futuros (M1 NT8)
+  - Siguiente: Pre-registrar v2.1, v4.1, B' (R + Z con stop, sin T) y canasta SOM + R en papel; confirmar SOM y R en RTY/MidCap; medir Franklin en M1; filtro de fricción en R en toda regla operable.
+  - Evidencia: `docs/research/VEREDICTO_M1_20261117.md`, `docs/research/m1_largo_20261117/RESULTADO_CAPA2.md`, `docs/research/m1_largo_20261117/RESULTADO_CAPA2.json`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto
