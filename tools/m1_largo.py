@@ -100,6 +100,94 @@ def correr_estado(inst, datos):
     e.index = e.index.astype(str); e.to_csv(DIR / f"ESTADO_{inst}.csv"); print(inst, "estado", len(e), flush=True)
 
 
+# ------------------------------------------------------------------------------------------------- capa 2 (PREREGISTRO_CAPA2.md)
+def _ms(D):
+    from edgelab.research import fundedsyncstack as F
+    return F.build_multi_series(F.load_m1_data(_kernel_fs(0.0)["a_utc"](D), end="2026-10-01"), tz_input="UTC")
+
+
+def correr_variantes(inst, datos):
+    """Variantes de salida de la tanda 2 (`fundedsync_tanda2.VARIANTES`: S, A20, W, N) contra el original, mismo motor, en futuros; y el ATR20
+    de la sesión regular (`fundedsync_tanda2.diario`) para el stop de catástrofe de Z y R (0,5 × ATR20 sobre la MAE)."""
+    from edgelab.research import fundedsyncstack as F
+    from edgelab.research.embudo_runners import friccion
+    from fundedsync_tanda2 import VARIANTES, _ops, diario
+    D = cargar(inst, datos); ms = _ms(D); fr = friccion(inst)[0]; partes = []
+    for k, kw in VARIANTES.items():
+        partes += [_ops(F.correr_modulo(k, ms), fr).assign(modulo=k, version="original"),
+                   _ops(F.correr_modulo(k, ms, **kw), fr).assign(modulo=k, version="variante")]
+    pd.concat(partes).to_csv(DIR / f"FS_VAR_{inst}.csv.gz", index=False)
+    diario(D)[["atr20"]].to_csv(DIR / f"ATR_RTH_{inst}.csv"); print(inst, "variantes", flush=True)
+
+
+PERFILES = {"Lucid50K_fabrica": 3, "Lucid25K": 2}
+
+
+def correr_cartera(inst, datos):
+    """Cartera completa con el motor del vendedor (`motor_cartera.simular_cartera`): netting, tamaño por perfil, rotación, enfriamiento y
+    cierre diario; filtro de noticias APAGADO (el calendario del vendedor no está: con el valor por defecto bloquearía todo). Sólo NQ (la
+    estrategia exige NQ en 1 minuto). T con las fechas de la enmienda 1 (opera desde 2008)."""
+    from edgelab.research import fundedsyncstack as F
+    from edgelab.research.fundedsyncstack.motor_cartera import PortfolioConfig, simular_cartera
+    D = cargar(inst, datos); ms = _ms(D); runners = {}
+    for k in F.MODULOS:
+        runners[k] = F.correr_modulo(k, ms, **(T_FECHAS if k == "T" else {}))
+    for nom, perfil in PERFILES.items():
+        cfg = PortfolioConfig(FundedSyncStackBlockRestrictedNewsDays=False, SizingProfile=perfil)
+        r = simular_cartera(ms, runners, cfg); t = r["trades_df"]
+        t.to_csv(DIR / f"CARTERA_{nom}_{inst}.csv.gz", index=False)
+        print(inst, nom, len(t), "operaciones", {k: r.get(k) for k in ("virtual_net_pnl_usd", "broker_net_pnl_usd", "virtual_max_closed_dd_usd")}, flush=True)
+
+
+def analizar_capa2():
+    from cartera_nov_analisis import _boot_ic
+    from edgelab.research.embudo_runners import friccion
+    out = dict(preregistro="docs/research/m1_largo_20261117/PREREGISTRO_CAPA2.md", variantes={}, catastrofe={}, cartera={})
+    tramos = (("2006-2011", 20060106, 20111230), ("2012-2019", 20120101, 20191231), ("2020-2025", 20200101, 20250731))
+    # §2 variantes de salida: diferencia por día (variante − original) / ATR20 RTH; confirmatorio en años limpios, 3 índices juntos
+    for k in ("S", "A20", "W", "N"):
+        S_, Dl = [], []
+        for inst in INST:
+            v = pd.read_csv(DIR / f"FS_VAR_{inst}.csv.gz"); a = pd.read_csv(DIR / f"ATR_RTH_{inst}.csv", index_col=0).atr20
+            a.index = pd.to_datetime(a.index); v["dia"] = pd.to_datetime(v.dia); v = v[v.modulo == k]
+            sa = v[v.version == "original"].groupby("dia").neto.sum(); sb = v[v.version == "variante"].groupby("dia").neto.sum()
+            dias = sa.index.union(sb.index); d = (sb.reindex(dias, fill_value=0) - sa.reindex(dias, fill_value=0)) / a.reindex(dias)
+            d = d[np.isfinite(d)]; S_ += list(d.index.strftime("%Y%m%d").astype(int)); Dl += list(d.values)
+        S_, Dl = np.array(S_), np.array(Dl); res = {}
+        for nom, x, y in tramos:
+            m = (S_ >= x) & (S_ <= y); res[nom] = dict(dias=int(m.sum()), dif_atr=float(Dl[m].mean()) if m.any() else None,
+                                                       ic90=_boot_ic(S_[m], Dl[m]) if m.sum() > 2 else None)
+        ic = res["2006-2011"]["ic90"] or [None, None]
+        res["veredicto_limpio"] = ("CONFIRMA_MEJORA" if ic[0] is not None and ic[0] > 0 else ("EN_CONTRA" if ic[1] is not None and ic[1] < 0 else "NO_CONCLUYENTE"))
+        out["variantes"][k] = res
+    # §3 catástrofe de Z y R (descriptivo): stop 0,5 × ATR20 RTH sobre la MAE en puntos
+    for k in ("Z", "R"):
+        for inst in INST:
+            g = pd.read_csv(DIR / f"FS_OPS_{inst}.csv.gz"); g = g[g.modulo == k].copy(); fr = friccion(inst)[0]
+            a = pd.read_csv(DIR / f"ATR_RTH_{inst}.csv", index_col=0).atr20; a.index = pd.to_datetime(a.index)
+            g["dia"] = pd.to_datetime(g.dia); g["stop"] = 0.5 * a.reindex(g.dia).to_numpy()
+            g["neto_cat"] = np.where(pd.to_numeric(g.mae_pts, errors="coerce").abs() >= g.stop, -g.stop - fr, g.neto)
+            s = g.dia.dt.strftime("%Y%m%d").astype(int)
+            out["catastrofe"][f"{k}|{inst}"] = {nom: dict(n=int(((s >= x) & (s <= y)).sum()),
+                                                          neto_atr=float((g.neto / g.stop * 0.5)[(s >= x) & (s <= y)].mean()),
+                                                          neto_cat_atr=float((g.neto_cat / g.stop * 0.5)[(s >= x) & (s <= y)].mean()),
+                                                          peor_pts=float(g.neto[(s >= x) & (s <= y)].min()), peor_cat_pts=float(g.neto_cat[(s >= x) & (s <= y)].min()))
+                                                for nom, x, y in tramos}
+    # §4 cartera completa (descriptivo): USD por año con la fricción canónica sobre el bruto (puntos × contratos × 20)
+    fr = friccion("NQ")[0]
+    for nom in PERFILES:
+        t = pd.read_csv(DIR / f"CARTERA_{nom}_NQ.csv.gz"); t["anio"] = pd.to_datetime(t.entry_time_utc, unit="ns").dt.year
+        t["usd_canon"] = (t.pnl_pts - fr) * t.qty * 20.0
+        por = t.groupby("anio").usd_canon.sum(); eq = t.sort_values("exit_time_utc").usd_canon.cumsum()
+        out["cartera"][nom] = dict(operaciones=int(len(t)), usd_por_anio={int(k): float(v) for k, v in por.items()},
+                                   anios_pos=float((por > 0).mean()), usd_total=float(t.usd_canon.sum()),
+                                   max_dd_usd=float((eq - eq.cummax()).min()), por_modulo={m: float(v) for m, v in t.groupby("module").usd_canon.sum().items()},
+                                   contratos_max=int(t.qty.max()))
+    (DIR / "RESULTADO_CAPA2.json").write_text(json.dumps(out, indent=1, default=float))
+    for k, v in out["variantes"].items(): print("VAR", k, v["veredicto_limpio"], {n: v[n]["dif_atr"] for n in ("2006-2011", "2012-2019", "2020-2025")})
+    for k, v in out["cartera"].items(): print("CARTERA", k, v["usd_total"], v["anios_pos"], v["max_dd_usd"])
+
+
 # ------------------------------------------------------------------------------------------------------------- análisis (§3–§5)
 def _unidades_fs(g):
     """Todos los módulos en neto / ATR20 diario (PREREGISTRO §3): comparable entre épocas (NQ ≈ 1.700 → 21.000 puntos) y entre módulos con y
@@ -203,5 +291,6 @@ def analizar():
 
 if __name__ == "__main__":
     c = sys.argv[1]
-    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado}[sys.argv[3]](sys.argv[4], sys.argv[2])
+    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado, "variantes": correr_variantes, "cartera": correr_cartera}[sys.argv[3]](sys.argv[4], sys.argv[2])
     elif c == "analizar": analizar()
+    elif c == "analizar_capa2": analizar_capa2()
