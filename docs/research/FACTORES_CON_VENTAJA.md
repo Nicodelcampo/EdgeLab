@@ -95,7 +95,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Aplicar en el diseño de reglas de ruptura propias (no salir por señal técnica rápida); no alcanza solo.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_MECANISMOS.md`
 - **Volatilidad rugosa (H de la log-vol ≈ 0,06–0,08) y pronóstico rugoso/HAR del rango del día** (`F-VOL-RUGOSA-PRONOSTICO`, 2026-11-16, sesion)
-  - Efecto: H estable 2012–2026 en NQ/S&P/Dow/Russell (también con lags 5–50); pronóstico del log-rango: error 0,66–0,69 (rugoso) y 0,67–0,70 (HAR) relativo a la caminata aleatoria. | Tamaño por vol pronosticada REFUTADO en 12 reglas no usadas (peor en 9/12, p 0,98): el stop estructural ya normaliza la vol.
+  - Efecto: H estable 2012–2026 en NQ/S&P/Dow/Russell (también con lags 5–50); pronóstico del log-rango: error 0,66–0,69 (rugoso) y 0,67–0,70 (HAR) relativo a la caminata aleatoria. | Tamaño por vol pronosticada REFUTADO en 12 reglas no usadas (peor en 9/12, p 0,98): el stop estructural ya normaliza la vol. | Auditoría 2026-11-16: re-medido con la zona horaria corregida (Russell, DAX, EuroStoxx, FTSE, Nikkei venían en UTC): sin cambio de conclusión.
   - Dónde: Índices M1
   - Siguiente: Usar sólo como pronóstico de volatilidad (stops a re-simular, costos); no para dimensionar reglas medidas en R.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
@@ -215,7 +215,7 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: No usar tal cual.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_CADENA.md`
 - **Anticipar la continuación intradía (resto del día desde las 10:30, tarde desde las 12:00) con precio, volumen, gap, noche, vol20 y pronóstico de volatilidad** (`F-DIA-TENDENCIA-NO-ANTICIPABLE`, 2026-11-16, sesion)
-  - Efecto: 4 índices M1 2012–2026: AUC 0,45–0,55 en B y C para todos los predictores y el combinado; H del precio 0,53–0,56.
+  - Efecto: 4 índices M1 2012–2026: AUC 0,45–0,55 en B y C para todos los predictores y el combinado; H del precio 0,53–0,56. | Auditoría 2026-11-16: re-medido con la zona horaria corregida (Russell, DAX, EuroStoxx, FTSE, Nikkei venían en UTC): sin cambio de conclusión.
   - Dónde: NQ, S&P, Dow, Russell
   - Siguiente: No volver a buscar predictores simples; la palanca es perder poco cuando no hay tendencia.
   - Evidencia: `docs/research/fundedsyncstack_20261115/RESULTADO_TANDA2.md`
@@ -235,7 +235,7 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: No reproponer. El rasgo 'máximo menor → visita del mínimo +15 pp' puede ir al banco de eventos como contexto.
   - Evidencia: `docs/research/reels_20261116/RESULTADO.md`
 - **Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin fin de semana, cambio de mes, deriva nocturna y momentum intradía en H1** (`F-LIT-MACRO-CFD`, 2026-11-15, sesion)
-  - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h.
+  - Efecto: 148 variantes, 27 activos, 2003/2012 → 2026-09: ninguna supera el nulo (t máx 1,9 vs 4,02). Bruto ≈ 0 salvo NOCHE (+0,03 R) que el spread se come; IMOM pierde 0,1 R por costo de operaciones de 1 h. | Auditoría 2026-11-16: re-medido con la zona horaria corregida (Russell, DAX, EuroStoxx, FTSE, Nikkei venían en UTC): sin cambio de conclusión.
   - Dónde: CFD Dukascopy D1/H1, 27 activos
   - Siguiente: No repetir estas formas. Si se retoma TSMOM, en su forma mensual (requiere fin de semana abierto: decisión de Nico) o como filtro de régimen de otras reglas.
   - Evidencia: `docs/research/macro_literatura_20261114/RESULTADO.md`
@@ -245,17 +245,17 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: Los filtros de SQX no separan señal de ruido: toda corrida de SQX se juzga sólo contra su nulo. Seguir con los pares de otras clases (oro, crudo).
   - Evidencia: `docs/research/sqx_lote1_20261114/RESULTADO_PAR1_SP_D1.md`, `docs/research/sqx_lote1_20261114/RESULTADO_PAR_ORO_D1.md`
 - **Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las 09:30 NY), objetivo VWAP, stop extremo + 0,5σ o banda 4** (`F-VWAP-BANDA3-REVERSION`, 2026-11-15, sesion)
-  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto. | Régimen (2026-11-15): ninguna variable ordena el resultado en ≥ 3 tramos y el encendido walk-forward no supera al azar (1/32 con p < 0,05). No detectable a tiempo. | Holdout futuros 1-oct→13-nov (único): NQ+YM n 12, +0,32 R (ee 0,77; 3/12 positivas): sin potencia, no concluyente.
+  - Efecto: Bruto: banda 3 > banda 2 en DESC (+0,16 vs +0,09 R, t 4,5) y en 2025-08→2026-09 (+0,16 a +0,24 vs ≤ +0,09); negativa 2020–2023 y ≈ 0 2024→2025-07: régimen. Neto en PSEUDO: Nasdaq +0,13, Dow +0,11, DAX +0,14 R; en CFD los costos se comen el resto. | Régimen (2026-11-15): ninguna variable ordena el resultado en ≥ 3 tramos y el encendido walk-forward no supera al azar (1/32 con p < 0,05). No detectable a tiempo. | Holdout futuros 1-oct→13-nov (único): NQ+YM n 12, +0,32 R (ee 0,77; 3/12 positivas): sin potencia, no concluyente. | Auditoría 2026-11-16: el DAX estaba con 2–3 h de desfase; re-medido, su tramo reciente pasa de +0,47 a −0,09 R bruto (afirmación retirada); NQ/S&P/Dow sin cambio.
   - Dónde: 8 índices M1 Dukascopy 2012 → 2026-09
   - Siguiente: No repetir en CFD; si se retoma, en futuros con costos bajos y con una variable de régimen nueva declarada antes.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`, `docs/research/m1_intradia_20261114/RESULTADO_REGIMEN_VWAPB.md`
 - **Pre-rango 08:12–09:12 NY: barrido de un extremo y vuelta hacia el opuesto (H-SWEEP-1)** (`F-PRERANGO-0812`, 2026-11-15, sesion)
-  - Efecto: 8 índices M1 2012–2026: bruto −0,03 / +0,02 / +0,04 / −0,02 R por tramo; doble toque ≈ 63 % de las sesiones sin ventaja operable.
+  - Efecto: 8 índices M1 2012–2026: bruto −0,03 / +0,02 / +0,04 / −0,02 R por tramo; doble toque ≈ 63 % de las sesiones sin ventaja operable. | Auditoría 2026-11-16: re-medido con la zona horaria corregida (Russell, DAX, EuroStoxx, FTSE, Nikkei venían en UTC): sin cambio de conclusión.
   - Dónde: 8 índices M1
   - Siguiente: No repetir esta forma.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO.md`
 - **Gap de apertura (relleno/continuación por tamaño en ATR) y ruptura del máximo/mínimo del día previo (continuación y falsa) intradía en NQ, S&P, Dow, DAX** (`F-GAP-Y-RUPTURA-PREVIO-M1`, 2026-11-15, sesion)
-  - Efecto: M1 2012–2026: ninguna supera el nulo; bruto ≈ 0 sin signo estable entre tramos; neto negativo en CFD.
+  - Efecto: M1 2012–2026: ninguna supera el nulo; bruto ≈ 0 sin signo estable entre tramos; neto negativo en CFD. | Auditoría 2026-11-16: re-medido con la zona horaria corregida (Russell, DAX, EuroStoxx, FTSE, Nikkei venían en UTC): sin cambio de conclusión.
   - Dónde: 4 índices M1 Dukascopy
   - Siguiente: No repetir estas formas intradía.
   - Evidencia: `docs/research/m1_intradia_20261114/RESULTADO_LOTE2.md`

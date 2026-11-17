@@ -47,10 +47,16 @@ resultados inválidos». North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aa
 | M1 intradía lote 2 (DAX) | el DAX tenía **18 gaps** en 14 años (ventana equivocada) → 253; ninguna variante pasa, bruto ≈ 0 | No (ahora bien medido) |
 | Régimen VWAPB (DAX) | reciente bruto **+0,47 → −0,09**; 2020–23 +0,05 → +0,20 | **Sí, en lo descriptivo del DAX** (frase retirada); el holdout (NQ+YM) no lo usó |
 | Franklin (gap en el stop) | 2020–26 NQ +0,100 → +0,097, ES +0,116 → +0,115; holdout +0,268 → +0,267 R, Fisher 0,104 → 0,105 | No |
-| M1 intradía lote 1 (5 índices en UTC) | pendiente (kernel `edgelab-m1-intradia-tz`) | — |
+| M1 intradía lote 1 (5 índices en UTC) | ninguna variante pasa (mejor t neto −2,4); bruto DESC por familia e índice: ORB −0,06…−0,01, pre-rango −0,06…+0,07, VWAPB +0,01…+0,05 (antes +0,04…+0,08) | No |
 
 ## 5. Guardas que quedan
 - `tests/test_auditoria_patrones.py` (en `tools/cierre.py`): prohíbe convertir fechas dividiendo el int64 por 1e9 y la frontera del holdout a
   medianoche UTC.
 - `m1_intradia.zona_m1` y `fuentes_ticks.M1_EN_UTC` (test): un CSV sin zona horaria declarada no se lee.
 - Simuladores: `_sim_velas`, `franklin_variantes` y SOM llenan el stop a la apertura cuando hay gap.
+
+## 6. Balance de esta vuelta
+Cinco clases de error confirmadas y cerradas en código (H1–H5). De ocho re-mediciones, **ninguna cambia una decisión**: sólo se retira una
+afirmación descriptiva (DAX reciente en VWAPB). Los NO_REPETIR afectados (pre-rango 08:12, ORB, gap/ruptura del día previo, banda 3 del VWAP,
+literatura macro) quedan sostenidos con los datos bien leídos. Pendiente para la próxima vuelta: inventario de A8 (salidas viejas de Kaggle) y
+A9/A10 sobre las campañas del embudo anteriores al 2026-11-14.
