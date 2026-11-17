@@ -1,6 +1,6 @@
 # Reserva pre-frontera en las próximas campañas (decisión de Nico, 2026-11-17)
 
-Estado: VIGENTE — decisión de diseño para campañas NUEVAS (no aplica a la cosecha v4 ni a nada ya medido). North Star sha256
+Estado: SUPERADA por HOLDOUT-A5 (2026-11-17, `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`: septiembre 2026 es mes HOLDOUT en la asignación). Era: decisión de diseño para campañas NUEVAS (no aplica a la cosecha v4 ni a nada ya medido). North Star sha256
 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 Texto de Nico: «con hacia atrás me refiero a que empiece un mes antes, por ejemplo septiembre de 2026 … para las próximas corridas, no

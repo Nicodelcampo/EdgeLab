@@ -42,7 +42,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 |---|---:|---|---|---|
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
 | HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
-| DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | VIGENTE — decisión de diseño para campañas NUEVAS (no aplica a la cosecha v4 ni  |
+| DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | SUPERADA por HOLDOUT-A5 (2026-11-17, docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11 |
 | PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |

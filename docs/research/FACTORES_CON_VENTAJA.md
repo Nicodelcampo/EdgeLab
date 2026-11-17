@@ -95,7 +95,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (22)
+## PALANCA_DE_DISENO (23)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -134,6 +134,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Toda campaña nueva del embudo
   - Siguiente: Implementar el campo `reserva` en el embudo con la próxima campaña; conseguir futuros anteriores a 2025-08 para un «atrás» con potencia.
   - Evidencia: `docs/research/DECISION_RESERVA_PREFRONTERA_20261117.md`, `docs/research/cosecha_pozo_20261117/ATRAS_EVALUACION.md`
+- **Holdout intercalado por meses (7 DESC / 2 REP / 3 HOLDOUT por año, embargo de 1 día hábil) sobre M1 real de futuros desde 2006/2008: una regla nueva se confirma el mismo día con cientos de operaciones fuera de muestra** (`F-HOLDOUT-A5-INTERCALADO`, 2026-11-17, nico)
+  - Efecto: Una regla de 4 ops/mes tiene ≈ 220 operaciones de holdout (≈ 155 hacen falta con efecto/desvío 0,2); el terminal (desde 2026-10-01, sin cambios) vigila y gobierna el tamaño. Firmada por Nico.
+  - Dónde: Campañas nuevas con particion A5 (mecanismos medibles en barras; footprint sigue dependiendo de ticks)
+  - Siguiente: Integrar particion A5 en el embudo con la primera campaña nueva; calibrar M1 contra ticks por familia.
+  - Evidencia: `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`, `edgelab/holdout.py`, `tests/test_holdout_a5.py`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
   - Dónde: Todas las familias con holdout abierto

@@ -1,7 +1,7 @@
-# Propuesta de enmienda HOLDOUT-A5: holdout intercalado por bloques para las campañas nuevas (2026-11-17)
+# Enmienda HOLDOUT-A5: holdout intercalado por bloques para las campañas nuevas (2026-11-17)
 
-Estado: PROPUESTA — requiere la firma de Nico (cambia el firewall del holdout: decisión sólo humana, CLAUDE.md). No se aplica a nada ya
-medido. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+Estado: VIGENTE — FIRMADA por Nico el 2026-11-17 («sí, lo firmo»). Rige para las campañas NUEVAS que declaren `"particion": "A5"`;
+no se aplica a nada ya medido. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 Pedido de Nico: «definí si para las próximas corridas conviene organizar el holdout de otra manera, para no tener que esperar forward y
 validar hoy mismo las nuevas estrategias; podría haber holdouts en ventanas internas de 1 mes separadas entre sí».
@@ -70,3 +70,39 @@ confirmación de espera.
   de la asignación.
 - **Hasta la firma** nada cambia: el lector de M1 de NT8 corta en la frontera del 1-oct, y las reglas ya congeladas (v2, v4) usan el M1
   sólo para su «atrás» confirmatorio.
+
+## 6. Asignación publicada (fuente: `edgelab/holdout.py::a5_meses`, semilla `EdgeLab-HOLDOUT-A5-v1`)
+El holdout terminal NO cambia: la sesión CME del 2026-10-01, que abre el 30-sep a las 22:00 UTC (17:00 CT). Desde ahí, TERMINAL.
+
+| Año | DESC | REP | HOLDOUT |
+|---|---|---|---|
+| 2006 | 1, 2, 3, 4, 5, 6, 9 | 11, 12 | 7, 8, 10 |
+| 2007 | 2, 3, 5, 6, 8, 10, 12 | 7, 9 | 1, 4, 11 |
+| 2008 | 2, 3, 4, 7, 9, 10, 11 | 1, 8 | 5, 6, 12 |
+| 2009 | 3, 4, 7, 9, 10, 11, 12 | 5, 8 | 1, 2, 6 |
+| 2010 | 3, 5, 7, 8, 9, 11, 12 | 1, 10 | 2, 4, 6 |
+| 2011 | 1, 2, 3, 4, 6, 7, 8 | 11, 12 | 5, 9, 10 |
+| 2012 | 1, 3, 5, 6, 7, 11, 12 | 2, 8 | 4, 9, 10 |
+| 2013 | 3, 6, 7, 8, 9, 10, 12 | 1, 4 | 2, 5, 11 |
+| 2014 | 1, 5, 6, 9, 10, 11, 12 | 2, 4 | 3, 7, 8 |
+| 2015 | 1, 2, 4, 5, 6, 7, 11 | 8, 10 | 3, 9, 12 |
+| 2016 | 1, 3, 5, 6, 8, 9, 10 | 4, 12 | 2, 7, 11 |
+| 2017 | 1, 4, 5, 6, 7, 8, 12 | 3, 11 | 2, 9, 10 |
+| 2018 | 1, 3, 6, 7, 8, 10, 12 | 2, 5 | 4, 9, 11 |
+| 2019 | 2, 3, 4, 6, 7, 10, 11 | 8, 12 | 1, 5, 9 |
+| 2020 | 1, 3, 5, 6, 8, 9, 10 | 2, 7 | 4, 11, 12 |
+| 2021 | 1, 3, 5, 6, 8, 9, 11 | 4, 10 | 2, 7, 12 |
+| 2022 | 1, 2, 3, 5, 6, 7, 11 | 9, 10 | 4, 8, 12 |
+| 2023 | 3, 5, 7, 8, 9, 10, 12 | 4, 11 | 1, 2, 6 |
+| 2024 | 1, 2, 5, 7, 10, 11, 12 | 3, 8 | 4, 6, 9 |
+| 2025 | 2, 3, 4, 6, 7, 8, 11 | 1, 5 | 9, 10, 12 |
+| 2026 | 2, 3, 5, 7, 10, 11, 12 | 6, 8 | 1, 4, 9 |
+
+En 2026, los meses posteriores a la frontera son TERMINAL aunque la tabla los asigne. Embargo: `a5_bloque` devuelve EMBARGO para el día
+hábil anterior y el posterior a cada mes HOLDOUT. Tests: `tests/test_holdout_a5.py`.
+
+## 7. Implementación pendiente (con la primera campaña A5)
+- `embudo`: con `particion: A5`, DESC/REP/PISTAS sólo en sesiones de su bloque (máscara por sesión, no ventanas) y la etapa
+  HOLDOUT abre todos los meses HOLDOUT (lector de desarrollo con el acta) + TERMINAL (sellado);
+- `holdout_ventanas`: una apertura A5 consume los meses HOLDOUT de la familia y de su linaje;
+- las miradas confirmatorias de reglas ya congeladas (el «atrás» de v2/v4 con M1) se registran como consumidas para su linaje.

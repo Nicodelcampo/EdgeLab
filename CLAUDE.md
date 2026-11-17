@@ -234,6 +234,11 @@ muestre calibración sana en datos reales.
 > desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
 > por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
+- **HOLDOUT-A5 (firmada por Nico el 2026-11-17): holdout intercalado para campañas nuevas.** Cada año 7 meses DESC, 2 REP y 3 HOLDOUT
+  (permutación fija, `edgelab/holdout.py::a5_bloque`), embargo de 1 día hábil a cada lado, una apertura por familia de todos los meses
+  HOLDOUT a N fijo con plan de potencia y estabilidad; el terminal (desde la sesión del 2026-10-01, sin cambios) vigila y da tamaño.
+  Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` y `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`. Datos: M1 real de
+  futuros de NT8 desde 2006/2008 (`M1NT8:`, `edgelab-nt8-m1-futuros`).
 - **Sesiones excluidas (2026-11-02):** las sesiones incompletas del sellado están declaradas en `edgelab/holdout.py`
   (`SESIONES_EXCLUIDAS_HOLDOUT`, p. ej. el 7-oct en CME, ES 29 y 30-oct) y los lectores sellados las descartan siempre. Ningún
   análisis las lee por otro camino; una sesión sale de la tabla sólo con datos completos re-sellados y re-medidos.
