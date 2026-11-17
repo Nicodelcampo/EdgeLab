@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-680 scripts.
+681 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -452,6 +452,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/luximb_parity/parity_luximb.py` | Paridad NT8 -> Python del ImbalanceDetectorLuxAlgoMTF (OG/VI sobre velas M1), en tres capas. |
 | `tools/luximb_parity/vi_coincidentes_reaccion_rep.py` | Prueba pre-registrada (`docs/research/luximb_parity_20261020/PREREGISTRO_VI_COINCIDENTES_REACCION_20261022.md`): ¿los VI del |
 | `tools/m1_intradia.py` | ORB y pre-rango 08:12 sobre M1 de Dukascopy en Kaggle (edgelab/research/m1_intradia.py). |
+| `tools/m1_largo.py` | M1 real de futuros (NT8, 2006 → frontera) sobre las estrategias externas y prueba de régimen análogo |
 | `tools/m1_speed_check.py` | Compara `edgelab_data.load_m1` (rápida) con `_load_m1_slow` (original): tiempo y igualdad exacta. Uso: EDGELAB_DATA_ROOTS=/data/fakeroot python tools/m1_speed_check.py GC 2026-04-01 2026-06-30 |
 | `tools/macro_literatura.py` | Ideas de la literatura en Kaggle (edgelab/research/macro_literatura.py). |
 | `tools/make_agent_readme.py` | Escribe README_AGENTES.md de la release con tablas calculadas a partir de las partes por activo. |

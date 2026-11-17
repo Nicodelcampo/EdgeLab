@@ -49,6 +49,18 @@ def leer_m1(path) -> pd.DataFrame:
                              v=D.volume.to_numpy(float) if "volume" in D else np.ones(len(D))), index=t)
 
 
+def leer_m1nt8(path) -> pd.DataFrame:
+    """M1 REAL de futuros de NT8 (`edgelab-nt8-m1-futuros`, índice = apertura de la vela en UTC) → índice en hora de NY sin zona, como
+    `leer_m1`. Corta en la frontera del holdout (nunca devuelve velas desde su apertura)."""
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS
+    D = pd.read_parquet(path)
+    t = pd.DatetimeIndex(D.index if "datetime" not in D else D["datetime"]).astype("datetime64[ns]")
+    ok = t.asi8 < HOLDOUT_APERTURA_UTC_NS; D, t = D[ok], t[ok]
+    ny = t.tz_localize("UTC").tz_convert("America/New_York").tz_localize(None)
+    return pd.DataFrame(dict(o=D.open.to_numpy(float), h=D.high.to_numpy(float), l=D.low.to_numpy(float), c=D.close.to_numpy(float),
+                             v=D.volume.to_numpy(float)), index=ny)
+
+
 @njit(cache=False)
 def _simular(o, h, l, c, i0, lado, tipo, precio, stop, obj, i_fin):
     """tipo 0 = mercado a la apertura de i0; 1 = stop en `precio` desde i0; 2 = límite en `precio` desde i0 (llena si atraviesa).

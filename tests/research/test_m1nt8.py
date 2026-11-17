@@ -45,3 +45,11 @@ def test_fin_de_semana_y_resolver(tmp_path):
     from edgelab.research.embudo_runners import datasets, friccion
     assert datasets("M1NT8:NQ", 20250101, 20250131) == ([], [F.M1NT8_DATASET])
     assert friccion("M1NT8:NQ") == friccion("NQ")
+
+
+def test_leer_m1nt8_hora_ny_y_frontera(tmp_path):
+    from edgelab.research.m1_intradia import leer_m1nt8
+    frontera = pd.Timestamp(HOLDOUT_APERTURA_UTC_NS)
+    _parquet(tmp_path, [pd.Timestamp("2025-07-15 13:30"), frontera, frontera + pd.Timedelta(hours=1)])
+    D = leer_m1nt8(tmp_path / "NQ_M1_nonadj_utc.parquet")
+    assert list(D.index) == [pd.Timestamp("2025-07-15 09:30")]                 # 13:30 UTC = 09:30 NY (verano); nada desde la frontera
