@@ -11,3 +11,9 @@ S&P y DAX, 2012 → 2026-09; kernel `edgelab-vwapb-ops`).
   después de 2020 por el horario del CFD en H1).
 - Lectura: la dosis banda 3 > banda 2 en bruto existe en 2012–2019 y en el último año, pero el cambio de signo de 2020–2025 no se explica
   con estas variables: no hay forma de saber a tiempo cuándo encenderla. Neta, en CFD, no paga.
+
+## Corrección (auditoría 2026-11-16): el DAX estaba leído con 2–3 h de desfase
+El CSV del DAX viene en UTC y se leyó como hora del servidor: sus «09:30–15:55 NY» eran otra ventana. Re-medido (`auditoria_corridas_20261116/
+VWAPB_OPS_TZ.csv.gz`, banda 3, reversión): 2012–2019 bruto +0,106 · 2020–2023 **+0,197** · 2024→2025-07 +0,048 · **2025-08→2026-09 −0,092**
+(antes +0,472). La frase «DAX positivo en bruto en 2025-08→2026-09 en todos los estados» queda **retirada**. NQ, S&P y Dow no cambian. El holdout
+de la familia (NQ + YM) no usó el DAX.

@@ -36,3 +36,21 @@ resultados inválidos». North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aa
 | H3 | A2 | Guardas de holdout en 2026-10-01 00:00 UTC (QuantLab, bundle de LuxImb). | QuantLab: corregido antes de medir SOM. LuxImb: **sin fuga real** (el bundle filtra por fecha de sesión CME; la del 1-oct queda fuera salvo pedido explícito, y entonces la guarda dispara) | Guardas desde `edgelab.holdout` |
 | H4 | A1 | `t = tt.astype("int64") // 10**9` en el kernel de FundedSync: depende de la resolución de pandas. Hoy da segundos en Kaggle (verificado en las operaciones), pero es el mismo error de unidades que falló en local. | Ninguno medido | Corregido a conversión independiente de la resolución |
 | H5 | A4 | Motor de SOM: stop llenado a su precio con gap en contra y vela de entrada sin stop. | Primera medición de SOM (descartada) | Corregido antes de la medición válida |
+
+## 4. Re-mediciones (resultado)
+| Estudio | Antes → después | ¿Cambia la conclusión? |
+|---|---|---|
+| Tanda 2 L1 (Russell, salida al cierre) | S y W 3/3 → 3/3 (W conjunto +0,121 → +0,107) | No |
+| Tanda 2 L3/L4 (días de tendencia, vol rugosa; Russell) | anticipación 0 índices → 0; H ≈ 0,05 → ≈ 0,05 | No |
+| Tanda 2 L3 mediodía | 0 índices → 0 | No |
+| Literatura macro (6 activos en UTC) | mejor t 1,90 → 1,90 (umbral 4,02); NOCHE bruta DESC +0,032 → +0,024; 14 variantes cambian, todas peores | No |
+| M1 intradía lote 2 (DAX) | el DAX tenía **18 gaps** en 14 años (ventana equivocada) → 253; ninguna variante pasa, bruto ≈ 0 | No (ahora bien medido) |
+| Régimen VWAPB (DAX) | reciente bruto **+0,47 → −0,09**; 2020–23 +0,05 → +0,20 | **Sí, en lo descriptivo del DAX** (frase retirada); el holdout (NQ+YM) no lo usó |
+| Franklin (gap en el stop) | 2020–26 NQ +0,100 → +0,097, ES +0,116 → +0,115; holdout +0,268 → +0,267 R, Fisher 0,104 → 0,105 | No |
+| M1 intradía lote 1 (5 índices en UTC) | pendiente (kernel `edgelab-m1-intradia-tz`) | — |
+
+## 5. Guardas que quedan
+- `tests/test_auditoria_patrones.py` (en `tools/cierre.py`): prohíbe convertir fechas dividiendo el int64 por 1e9 y la frontera del holdout a
+  medianoche UTC.
+- `m1_intradia.zona_m1` y `fuentes_ticks.M1_EN_UTC` (test): un CSV sin zona horaria declarada no se lee.
+- Simuladores: `_sim_velas`, `franklin_variantes` y SOM llenan el stop a la apertura cuando hay gap.
