@@ -20,10 +20,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Forward no mirado con la regla congelada; posible régimen del oro, no transferir.
   - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
 - **Turtles 55/20 en oro con cierre del viernes (base de fábrica): réplica 2004–2010 y 8 variantes de potencia/rentabilidad** (`F-TURTLES-ORO-MESETA`, 2026-11-17, sesion)
-  - Efecto: 5,3 ops/año, R/op +0,22 en 2011–2026 (p 0,0006), pares t 1,88 / impares t 1,86. Réplica 2004–2010 no mirada: +0,03 (p 0,36, MDE 0,24): no replica, sin potencia. Ninguna variante confirma (entrada_stop +0,011 R/mes, p 0,38); H4, re-entrada del lunes y canal 20 suben N pero bajan R/op; plata no acompaña.
+  - Efecto: 5,3 ops/año, R/op +0,22 en 2011–2026 (p 0,0006), pares t 1,88 / impares t 1,86. Réplica 2004–2010 no mirada: +0,03 (p 0,36, MDE 0,24): no replica, sin potencia. Ninguna variante confirma (entrada_stop +0,011 R/mes, p 0,38); H4, re-entrada del lunes y canal 20 suben N pero bajan R/op; plata no acompaña. | Holdout 1-oct→13-nov (única apertura, sellado leído hasta el 13-nov): 0 operaciones, NO_CONCLUYENTE; forward bajo demanda.
   - Dónde: GC/MGC (XAUUSD M1, costos de GC)
   - Siguiente: Base congelada a holdout (una apertura) y forward bajo demanda; valor como diversificación. No volver a mover perillas (meseta).
-  - Evidencia: `docs/research/turtles_oro_20261117/RESULTADO.md`
+  - Evidencia: `docs/research/turtles_oro_20261117/RESULTADO.md`, `docs/research/turtles_oro_20261117/seguimiento/RESULTADO_HOLDOUT.json`
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
   - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar. | Tanda 4: re-elegir con el filtro de fricción antes da la v3 (sale BT2-ES/NQ y ORO, entra DRC-NQ-R y AVCL-ES/NQ): dev 43k vs 24k USD, t igual, prop 50K pasa 80 % vs 63 % pero quema 14 % vs 3 %. Forward paralelo.
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)

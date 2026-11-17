@@ -42,3 +42,8 @@ Confirmación en impares: entrada_stop − base = +0,011 R/mes (p 0,38); sin_fil
 ## Qué sigue
 Holdout (apertura única) y forward de la **base congelada**: `ACTA_HOLDOUT.md`, `tools/turtles_oro_seguimiento.py`, incluida en
 `tools/seguimiento_forward.py`.
+
+## 3. Holdout (apertura única, 2026-10-01 → 2026-11-13; acta `ACTA_HOLDOUT.md`, regla de `1f5e3e79`)
+**0 operaciones** (el kernel leyó el XAUUSD sellado hasta la barra del 13-nov; se esperaban ≈ 0,6). Lectura: **NO_CONCLUYENTE** (Fisher con
+p de desarrollo 0,32 = 0,68). No hubo señal en seis semanas; no se usa para nada más. Sigue el **forward** desde el 2026-11-14, incluido en
+`tools/seguimiento_forward.py` (`edgelab-turtles-oro-seg-fw<HASTA>`). Operaciones: `seguimiento/holdout/`.
