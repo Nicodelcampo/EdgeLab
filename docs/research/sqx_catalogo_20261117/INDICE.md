@@ -1,5 +1,8 @@
 # Catálogo StrategyQuant X (Marketplace Oficial + Instalación Local) — Inventario y Candidatas para EdgeLab (2026-11-17)
 
+> **Medido (2026-11-17):** 136 pruebas sobre las 10 candidatas, 0 pasan, 0 nominadas por BH. Pistas: Connors en índices y Turtles en oro con cierre del viernes. Ver `RESULTADO.md`.
+
+
 **Fuentes oficiales auditadas (excluyendo estrategias propias del usuario en `C:\StrategyQuantX145\user\projects\`):**
 1. **Marketplace / Shared Hub oficial de StrategyQuant:** las **59 publicaciones completas** (`pages 1–6`) de [`https://strategyquant.com/shared/`](https://strategyquant.com/shared/), descargando e inspeccionando sus `.sqx`, `.cfx`, `.zip` y `.mq4`. Además se verificó [`https://strategyquant.com/codebase-category/algowizard/`](https://strategyquant.com/codebase-category/algowizard/) (`6` utilidades/plugins, sin estrategias completas).
    - *Nota transparente sobre el panel `Marketplace` dentro de SQX Desktop (`AppMarketplace` / `https://portal.strategyquant.com/`):* Según `MarketplaceService.js` dentro de `C:\StrategyQuantX145\internal\web\MARKETPLACE\`, el marketplace integrado de *Klaudie* se autentica mediante la sesión propia del miembro en el cliente SQX y devuelve `403 Forbidden` al acceso externo sin sesión; no se eludió ningún control de acceso.

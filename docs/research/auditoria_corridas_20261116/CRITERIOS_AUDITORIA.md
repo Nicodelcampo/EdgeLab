@@ -36,6 +36,7 @@ resultados inválidos». North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aa
 | H3 | A2 | Guardas de holdout en 2026-10-01 00:00 UTC (QuantLab, bundle de LuxImb). | QuantLab: corregido antes de medir SOM. LuxImb: **sin fuga real** (el bundle filtra por fecha de sesión CME; la del 1-oct queda fuera salvo pedido explícito, y entonces la guarda dispara) | Guardas desde `edgelab.holdout` |
 | H4 | A1 | `t = tt.astype("int64") // 10**9` en el kernel de FundedSync: depende de la resolución de pandas. Hoy da segundos en Kaggle (verificado en las operaciones), pero es el mismo error de unidades que falló en local. | Ninguno medido | Corregido a conversión independiente de la resolución |
 | H5 | A4 | Motor de SOM: stop llenado a su precio con gap en contra y vela de entrada sin stop. | Primera medición de SOM (descartada) | Corregido antes de la medición válida |
+| H6 | A4 (al revés) | Motor del catálogo SQX: en órdenes stop, el extremo de la barra de entrada se tomaba como posterior al llenado (lo peor), aunque la barra abre del otro lado; 17–41 % de stops en la barra de entrada en M15/H4. Sesgo **pesimista**: mata candidatas. | Catálogo SQX v1 (descartada) | Orden por M1 dentro de la barra (`sqx_catalogo.simular(m1=…)`, test); v2 sin cambio de veredicto |
 
 ## 4. Re-mediciones (resultado)
 | Estudio | Antes → después | ¿Cambia la conclusión? |

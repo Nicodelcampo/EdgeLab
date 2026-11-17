@@ -5,10 +5,20 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (13)
+## PISTA_VIVA (15)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
+  - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
+  - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)
+  - Siguiente: Confirmar sólo en forward (no mirado), variante sin fin de semana, una hipótesis por familia; canasta de índices para ganar N.
+  - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
+- **Turtles 55/20 y 20/10 (con filtros de la ficha SQX) en oro, cerrando el viernes** (`F-TURTLES-ORO-VIERNES`, 2026-11-17, sesion)
+  - Efecto: 55/20 viernes: A +0,08 R (p 0,19), B +0,33 (p 0,002), 13/16 años, fricción 0,016 R; 20/10 B +0,15…+0,43. No sobrevive BH sobre 136; CL, 6E, 6J, ZB ≈ 0 o negativos (no es tendencia general, es el oro 2020–2026).
+  - Dónde: GC (XAUUSD M1, costos de GC)
+  - Siguiente: Forward no mirado con la regla congelada; posible régimen del oro, no transferir.
+  - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
 - **Cartera de 8 reglas elegida con regla fija (R>0 DESC y REP, fricción ≤0,08 R, estabilidad, octubre no en contra, ≤2 por familia, corr ≤0,5): CVGAP-ES-C, U1-RACIMOS-GRILLA-NQ, CONF-CVR-CFD-NQ-R, U1-ZONAS-BT2-ES, PREAPERTURA-NQ, U1-ORO-GRILLA, U1-ZONAS-BT2-NQ, CVGAP-CFD-ES-C** (`F-CARTERA-8-NOV`, 2026-11-16, sesion)
   - Efecto: Noviembre 2–13 (no mirado): +0,73 R/sesión (t 0,95, p 0,19); oct+nov +0,53 R/sesión (t 1,36, p 0,10); lectura pre-registrada VERDE, pero sin PREAPERTURA-NQ noviembre da −2,2 R. Prop 50K a 200 USD/R: pasa 67 % con media contraída vs 25 % azar. | Tanda 4: re-elegir con el filtro de fricción antes da la v3 (sale BT2-ES/NQ y ORO, entra DRC-NQ-R y AVCL-ES/NQ): dev 43k vs 24k USD, t igual, prop 50K pasa 80 % vs 63 % pero quema 14 % vs 3 %. Forward paralelo.
   - Dónde: Futuros NQ/ES/GC (3 con señal de CFD)
@@ -200,7 +210,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (28)
+## NO_REPETIR (29)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -209,6 +219,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
   - Siguiente: No trasladar SOM a otras aperturas; DAX/FTSE/Nikkei/petróleo/bonos sin costo medido.
   - Evidencia: `docs/research/som_transfer_20261117/RESULTADO.md`
+- **Catálogo SQX tal cual: range breakout 13:00 (6E, CL), inside bar H4 (GC, CL, 6E, 6J), ADX+trailing H4, VP POC USDJPY, Turtles fuera del oro** (`F-SQX-CATALOGO-NO`, 2026-11-17, sesion)
+  - Efecto: 136 pruebas, 0 nominadas. Rango 13:00: B −0,23 (6E) / −0,05 (CL), fricción 0,10–0,11 R. Inside bar: neto −0,01…−0,10 con bruto positivo; el stop (media vela interna) deja la fricción en 0,083 R. ADX y POC ≈ 0. COT y mean reversion sin potencia (≈ 1 op/año), no refutadas.
+  - Dónde: Futuros operables en Topstep (CME/NYMEX/COMEX/CBOT)
+  - Siguiente: No repetir estas reglas igual. Inside bar sólo con stop más ancho como hipótesis nueva; COT sólo con razón económica para otros umbrales.
+  - Evidencia: `docs/research/sqx_catalogo_20261117/RESULTADO.md`
 - **Saltear entradas 14:00–16:15 NY** (`F-FIN-DE-RUEDA-NO`, 2026-11-16, sesion)
   - Efecto: Descriptivo de 24 reglas sugería R ≈ 0 en esa franja; en generadoras + holdout Δ −0,06 R (p 0,16) y en el holdout va al revés (+0,08).
   - Dónde: Cartera de 27 reglas
