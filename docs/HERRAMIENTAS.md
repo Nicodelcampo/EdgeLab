@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-674 scripts.
+676 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -161,6 +161,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/canasta_global.py` | CANASTA-GLOBAL en tandas paralelas (docs/research/canasta_global_20261108/PREREGISTRO.md). |
 | `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
+| `tools/canastas_vigentes.py` | Documento único y auditable de las canastas vigentes (pedido de Nico, 2026-11-17: «subí las canastas a donde se lean y puedan auditar»). |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
 | `tools/cartera_nov.py` | Cartera con el período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md, 2026-11-16). |
 | `tools/cartera_nov_analisis.py` | Análisis de la cartera del período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md). |
@@ -413,6 +414,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/l2_phase2_info.py` | L2 Fase 2 — informacion condicional del libro tras la latencia (GC 08-26, pre-holdout). |
 | `tools/l2_public_pilot.py` | P0: exploratory BTC minute-flow proxies; no strategy or fill simulation. |
 | `tools/literatura.py` | Búsqueda de literatura para EdgeLab con APIs oficiales y gratuitas (no Google Scholar: sus términos prohíben el |
+| `tools/lucid_canastas.py` | Las canastas vigentes (cartera v2, v3, B y v2+B) en LucidFlex 25K con sus 4 configuraciones oficiales y variantes de tamaño y de retiro. |
 | `tools/lucidflex_rinse.py` | LucidFlex 25K «rinse» (reel @la.tradez, 2026-11-17, pedido de Nico: «hacé tu propia investigación y cálculos»). |
 | `tools/luximb_hvn.py` | LUXIMB-HVN (docs/research/luximb_hvn_20261111/PREREGISTRO.md): construir, lanzar y traer las tablas de Kaggle. |
 | `tools/luximb_hvn_analisis.py` | Análisis EXPLORATORIO de LUXIMB-HVN sobre las tablas de DESARROLLO (docs/research/luximb_hvn_20261111/PREREGISTRO.md §5). |

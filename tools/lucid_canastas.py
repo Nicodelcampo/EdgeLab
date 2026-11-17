@@ -1,0 +1,117 @@
+#!/usr/bin/env python3
+"""Las canastas vigentes (cartera v2, v3, B y v2+B) en LucidFlex 25K con sus 4 configuraciones oficiales y variantes de tamaño y de retiro.
+Pedido de Nico (2026-11-17): «simulá Lucid con las canastas, distintas variantes». Descriptivo (no elige reglas ni toca el holdout).
+
+Series: USD por sesión de desarrollo. v2/v3: `tools/cartera_nov_analisis._usd_diario` (micros enteros a `usd_R` por operación, DESC+REP,
+2025-08 → 2026-09, sesiones sin operaciones = 0). B: T+Z+R a 1 MNQ por regla desde `fundedsyncstack_20261115/cadena/FUNDEDSYNC_OPS.csv.gz`
+(2020-01 → 2026-09; SIN el stop de catástrofe de Z y R porque el desarrollo no trae ATR20/MAE: colas más pesadas que la regla operativa).
+Cuenta: reglas oficiales (ver docs/research/propfirm_lucidflex_20261117/RESULTADO.md): objetivo $1.250, piso EOD a $1.000 que sube con el
+mejor cierre y se fija en +$100 (al superar +$1.100 o al primer retiro), consistencia 40/50 % (mayor día / beneficio al llegar al objetivo;
+si no, se sigue), DLL $600 blando (aprox.: la pérdida del día se corta en −$600), retiro con 5 días ≥ $100 y neto del ciclo > 0, 50 % del
+beneficio total hasta $1.000, mínimo $500, 90 %, hasta 5 retiros. Bootstrap por bloques de 5 sesiones recentrado a la media declarada.
+  python tools/lucid_canastas.py      # -> docs/research/propfirm_lucidflex_20261117/CANASTAS_LUCID.json
+"""
+import json, sys
+from pathlib import Path
+import numpy as np, pandas as pd
+from numba import njit
+
+ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
+OUT = ROOT / "docs/research/propfirm_lucidflex_20261117"
+CONFIG = {"DLL600|40%": (600.0, 0.4, 45.50), "DLL600|50%": (600.0, 0.5, 55.30), "sinDLL|40%": (0.0, 0.4, 60.20), "sinDLL|50%": (0.0, 0.5, 70.00)}
+
+
+@njit(cache=False)
+def _sim(x, mu, N, seed, dll, cons, pol_max, max_dias):
+    np.random.seed(seed); y = x - x.mean() + mu; L = len(y)
+    cob = np.zeros(N); pasa = np.zeros(N); pagos = np.zeros(N); de = np.zeros(N); df = np.zeros(N)
+    for k in range(N):
+        pos = np.random.randint(L); paso = 0
+        bal = 0.0; piso = -1000.0; maxc = 0.0; mayor = 0.0; d = 0; ok = False
+        while d < max_dias:                                          # evaluación
+            if paso % 5 == 0: pos = np.random.randint(L)
+            p = y[(pos + paso % 5) % L]; paso += 1
+            if dll > 0 and p < -dll: p = -dll
+            bal += p; d += 1; mayor = max(mayor, p)
+            if bal <= piso: break
+            maxc = max(maxc, bal); piso = min(max(piso, maxc - 1000.0), 100.0)
+            if bal >= 1250.0 and mayor / bal <= cons: ok = True; break
+        de[k] = d
+        if not ok: continue
+        pasa[k] = 1.0; bal = 0.0; piso = -1000.0; maxc = 0.0; c0 = 0.0; dok = 0; f = 0; npg = 0; tot = 0.0
+        while f < max_dias and npg < 5:                               # fondeada
+            if paso % 5 == 0: pos = np.random.randint(L)
+            p = y[(pos + paso % 5) % L]; paso += 1
+            if dll > 0 and p < -dll: p = -dll
+            bal += p; f += 1
+            if p >= 100.0: dok += 1
+            if bal <= piso: break
+            maxc = max(maxc, bal)
+            if piso < 100.0: piso = 100.0 if maxc > 1100.0 else max(piso, maxc - 1000.0)
+            monto = min(1000.0, 0.5 * bal)
+            if dok >= 5 and bal > c0 and monto >= 500.0 and (monto >= 1000.0 or not pol_max):
+                tot += 0.9 * monto; bal -= monto; npg += 1; piso = 100.0; c0 = bal; dok = 0
+        cob[k] = tot; pagos[k] = npg; df[k] = f
+    return cob, pasa, pagos, de, df
+
+
+def serie_v(version, usd_R):
+    import cartera_nov_analisis as CA
+    S = json.loads((ROOT / ("docs/research/cartera_20261116/SELECCION.json" if version == "v2" else "docs/research/cartera_20261116/v3/SELECCION.json")).read_text())["futuros"]
+    d, salt, tot = CA._usd_diario(S, ("desc", "rep"), usd_R)
+    con = sorted({int(s) for c in S for t in ("desc", "rep") for s in (CA._ops(c, t) or {"ses": []})["ses"]})
+    ses = [int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(max(con[0], 20250805)), str(min(con[-1], 20260929)))]
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=S, saltadas=f"{salt}/{tot}")
+
+
+def serie_b(micros=1, desde=20200101):
+    o = pd.read_csv(ROOT / "docs/research/fundedsyncstack_20261115/cadena/FUNDEDSYNC_OPS.csv.gz", usecols=["dia", "neto", "modulo"])
+    o = o[o.modulo.isin(["T", "Z", "R"])]; o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int); o = o[(o.ses >= desde) & (o.ses <= 20260929)]
+    d = (o.neto * 2.0 * micros).groupby(o.ses).sum()
+    ses = [int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(desde), "2026-09-29")]
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=["T", "Z", "R"], micros=micros)
+
+
+def evaluar(x, contr, N=20000, max_dias=250):
+    out = dict(sesiones=len(x), usd_sesion_media=float(x.mean()), usd_sesion_sd=float(x.std(ddof=1)), peor_dia=float(x.min()),
+               t=float(x.mean() / x.std(ddof=1) * np.sqrt(len(x))), variantes={})
+    for nom, (dll, cons, precio) in CONFIG.items():
+        for mu_nom, mu in (("dev", x.mean()), ("contraida", x.mean() * contr), ("cero", 0.0)):
+            for pol in ("max", "min"):
+                cob, pas, pg, de, df = _sim(np.asarray(x, np.float64), float(mu), N, 7, dll, cons, pol == "max", max_dias)
+                dias = de + df
+                out["variantes"][f"{nom}|{mu_nom}|{pol}"] = dict(precio=precio, pasa=float(pas.mean()), cobra=float((pg > 0).mean()), retiros=float(pg.mean()),
+                    cobrado=float(cob.mean()), ev=float(cob.mean() - precio), p_ganar=float((cob > precio).mean()), dias_eval=float(de.mean()),
+                    dias_fondeada=float(df[pas > 0].mean()) if pas.any() else 0.0, dias_total=float(dias.mean()),
+                    ev_por_mes=float((cob.mean() - precio) / max(dias.mean(), 1) * 21), quema_eval=float(1 - pas.mean()))
+    return out
+
+
+def main():
+    BAT = json.loads((ROOT / "docs/research/cartera_20261116/BATERIA.json").read_text())["reglas"]; B = {b["cid"]: b for b in BAT}
+    res = dict(reglas_lucid="docs/research/propfirm_lucidflex_20261117/RESULTADO.md", canastas={})
+    for version in ("v2", "v3"):
+        S = json.loads((ROOT / ("docs/research/cartera_20261116/SELECCION.json" if version == "v2" else "docs/research/cartera_20261116/v3/SELECCION.json")).read_text())["futuros"]
+        contr = float(np.mean([B[c]["R_contraido"] / max(B[c]["dev"]["R_op"], 1e-9) for c in S if c in B]))
+        for usd in (100, 200, 300):
+            x, info = serie_v(version, usd); r = evaluar(x.to_numpy(), contr); r.update(info, factor_contraccion=contr)
+            res["canastas"][f"{version}|usd{usd}"] = r; _imprimir(f"{version}|usd{usd}", r)
+    for mic in (1, 2):
+        x, info = serie_b(mic); r = evaluar(x.to_numpy(), 0.5); r.update(info, factor_contraccion=0.5, nota="contracción declarada 0,5 (no hay batería)")
+        res["canastas"][f"B|{mic}MNQ"] = r; _imprimir(f"B|{mic}MNQ", r)
+    xv, _ = serie_v("v2", 200); xb, _ = serie_b(1, 20250805); ix = xv.index.intersection(xb.index)
+    xc = xv.reindex(ix) + xb.reindex(ix); r = evaluar(xc.to_numpy(), 0.5)
+    r.update(correlacion=float(np.corrcoef(xv.reindex(ix), xb.reindex(ix))[0, 1]), nota="v2 a 200 USD + B a 1 MNQ, sesiones comunes 2025-08 → 2026-09")
+    res["canastas"]["v2+B"] = r; _imprimir("v2+B", r)
+    (OUT / "CANASTAS_LUCID.json").write_text(json.dumps(res, indent=1, default=float))
+
+
+def _imprimir(nom, r):
+    v = r["variantes"]
+    print(nom, f"ses {r['sesiones']} media {r['usd_sesion_media']:.0f} sd {r['usd_sesion_sd']:.0f} t {r['t']:.2f}", flush=True)
+    for k in ("DLL600|50%|dev|max", "DLL600|50%|contraida|max", "DLL600|50%|cero|max", "sinDLL|50%|contraida|max", "DLL600|40%|contraida|min"):
+        e = v[k]; print("   ", k, {q: round(e[q], 3) for q in ("pasa", "cobra", "retiros", "ev", "ev_por_mes", "dias_total")}, flush=True)
+
+
+if __name__ == "__main__":
+    main()

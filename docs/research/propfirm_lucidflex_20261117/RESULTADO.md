@@ -78,3 +78,32 @@ Lectura B (tope sobre el beneficio del ciclo): −$10 a −$15 por cuenta, mismo
 errores estándar: **el 50 % vale lo que cuesta** (sube el pase de 26 a 32 % por $9,80) y el **DLL no estorba** a esta política (su stop ya
 era el colchón) y abarata la cuenta. Lo mensual es una cota gruesa (días de fondeada aproximados), siempre con cuentas que pierden juntas y el
 riesgo de la cláusula de mala fe.
+
+## Las canastas en LucidFlex 25K (`tools/lucid_canastas.py`, `CANASTAS_LUCID.json`; pedido de Nico, 2026-11-17)
+Series diarias en USD de desarrollo (v2/v3: DESC+REP 2025-08 → 2026-09 con micros enteros a 100/200/300 USD por operación; B: T+Z+R a 1–2
+MNQ, 2020 → 2026-09, sin el stop de catástrofe de Z/R), bootstrap por bloques de 5 sesiones recentrado a la media de desarrollo, a la
+**contraída** (× factor de selección de la batería; 0,5 en B) o a cero. Las 4 configuraciones × retirar $1.000 o el mínimo; 20.000 cuentas.
+
+| Canasta (DLL $600 + 50 %, $55,30) | USD/sesión (t) | Pasa | Cobra | EV desarrollo | **EV contraída** | EV sin edge | Días por cuenta | EV contraída por mes de cuenta |
+|---|---|---|---|---|---|---|---|---|
+| v2 a 100 USD | +49 (4,1) | 73 % | 52 % | +3.299 | **+1.912** | +55 | 114 | +352 |
+| v2 a 200 USD | +98 (4,3) | 56 % | 33 % | +2.305 | **+1.127** | +36 | 51 | +464 |
+| v2 a 300 USD | +150 (4,3) | 48 % | 24 % | +1.774 | **+832** | +34 | 34 | +507 |
+| v3 a 200 USD | +110 (3,9) | 46 % | 22 % | +1.466 | **+679** | +70 | 30 | +476 |
+| v3 a 300 USD | +167 (3,9) | 43 % | 20 % | +1.280 | **+676** | +100 | 25 | +579 |
+| B a 1 MNQ | +47 (8,2) | 52 % | 25 % | +2.104 | **+654** | +69 | 58 | +239 |
+| B a 2 MNQ | +94 (8,2) | 41 % | 17 % | +1.276 | **+442** | +72 | 25 | +368 |
+| v2 200 + B 1 MNQ | +175 (5,7) | 46 % | 22 % | +2.401 | **+708** | +53 | 29 | +519 |
+(Pasa/cobra con la media contraída.) Lectura:
+1. **Con la media contraída, cualquier canasta tiene un EV por cuenta 10 a 35 veces el de operar a moneda** (+$440 a +$1.900 contra +$35 a
+   +$100): la ventaja se monta sobre la misma asimetría de la cuenta.
+2. **Tamaño: chico rinde más por cuenta, grande más por mes.** A 100 USD por operación se cobra en el 52 % de las cuentas pero tarda ≈ 5
+   meses; a 300 USD, en un mes y medio con la mitad de probabilidad. Con 5 fondeadas como límite, conviene el tamaño medio-alto
+   (200–300 USD) y varias cuentas en paralelo con la misma canasta (sin cobertura entre cuentas).
+3. **Configuración**: DLL $600 + 50 % es la mejor o empata en todas (más barata, el corte blando casi no cuesta); retirar el máximo
+   ($1.000) gana a retirar el mínimo.
+4. **La B sola rinde menos por mes** que la v2/v3 aunque su t es el más alto (pocas operaciones por día, desvío alto sin el stop de
+   catástrofe); **sumada a la v2** no mejora a la v2 sola a 300 USD en EV por mes (correlación positiva en el tramo común).
+5. **Límites del cálculo**: el DLL se aproxima cortando la pérdida del día en −$600 (no ve el recorrido intradía); el escalado de contratos
+   de la fondeada 25K y la política de algoritmos de Lucid («condicional» en el catálogo, no verificado) pueden limitar el tamaño; las medias
+   de desarrollo vienen de reglas elegidas (por eso manda la contraída) y el forward todavía no confirmó ninguna canasta.
