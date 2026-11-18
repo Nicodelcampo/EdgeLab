@@ -109,7 +109,7 @@ def test_indice_de_lectura_obligatorio_existe_y_la_exencion_es_cerrada():
     """Nico, 2026-11-18: un índice obligatorio de lectura por corrida. Los pre-registros anteriores quedan exentos sólo de esa línea; la
     lista no crece (todo pre-registro nuevo la lleva)."""
     idx = (ROOT / "docs/research/LEER_ANTES_DE_CADA_CORRIDA.md").read_text(encoding="utf-8")
-    assert "Estado: VIGENTE" in idx and "v1" in idx
+    assert "Estado: VIGENTE" in idx and re.search(r"\(v\d+, ", idx)
     for ref in re.findall(r"`(docs/[^`]+\.(?:md|jsonl|json))`", idx):
         assert (ROOT / ref).exists(), f"el índice cita un documento que no existe: {ref}"
     exentos = json.loads((ROOT / "config/preregistros_sin_lectura_previa.json").read_text(encoding="utf-8"))

@@ -1,10 +1,10 @@
-# Leer antes de cada corrida — índice obligatorio (v1, 2026-11-18)
+# Leer antes de cada corrida — índice obligatorio (v2, 2026-11-18)
 
 Estado: VIGENTE — pedido de Nico: «un documento que sea obligatorio leer para cada corrida, que sea un índice de todos los otros
 documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 **Cómo se cumple:**
-- Todo pre-registro nuevo lleva una línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v1 — …» que diga qué secciones aplican.
+- Todo pre-registro nuevo lleva una línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v2 — …» que diga qué secciones aplican.
 - `edgelab/research/preflight.py::validar_preregistro` la exige; sin ella, `tools/registro_global.py preregistrado` no cuenta la corrida y
   el CI la rechaza.
 - Este índice se versiona: si cambia, sube la versión y los pre-registros nuevos citan la nueva.
@@ -33,6 +33,8 @@ documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7d
   - antes de usarlo, calibrar la regla contra ticks (`docs/research/papel_m1_20261115/VALIDACION.md`,
     `docs/research/atras_m1_20261117/CALIBRACION.json`);
   - no se usa para reglas de footprint, de velas de ticks o con señal en un CFD.
+  - **K40:** con stops chicos frente al rango de la vela, el simulador cobra el stop en el extremo de la vela. Usar el nivel del stop salvo
+    un hueco en la apertura (`luximb_hvn._e0_nb`, `ctx["m1_sintetico"]`), y calibrar.
 - **Datasets privados de Kaggle:** lanzar con la cuenta dueña (`docs/research/atras_m1_20261117/FALLIDAS.jsonl`).
 
 ## 3. Medición (dónde más nos equivocamos)
