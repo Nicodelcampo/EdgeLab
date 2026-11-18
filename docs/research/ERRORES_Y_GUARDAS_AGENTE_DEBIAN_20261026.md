@@ -182,6 +182,10 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
 - **Operaciones sin riesgo inicial en una canasta en R (2026-11-18).** Con `neto / riesgo`, una operación con stop en la entrada da
   NaN y arrastra a toda su sesión. **Práctica:** filtrar por operación (`riesgo > 0`, como `k > 0` en el motor) antes de agregar, y
   publicar cuántas quedaron afuera.
+- **K48 en el atlas de FundedSync (auditoría del 2026-11-18).** `fundedsync_mecanismos` usaba noche/gap/orb15 con módulos que entran
+  antes de que se conozcan. Las 7 «elegidas» en A de esos ejes eran la fuga (ninguna replicó). **Guarda:** `CONOCIDA_EJE` en el
+  atlas, con `papel_regimen.horas_de_sesion`. **Regla general:** toda variable de contexto declara su hora de conocimiento, y se
+  compara con la hora de entrada de CADA módulo, no de la familia.
 - **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
   nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
 - **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y

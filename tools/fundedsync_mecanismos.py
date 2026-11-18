@@ -59,6 +59,10 @@ def operaciones(V) -> pd.DataFrame:
 
 
 EJES = ("lado", "hora", "dow", "vol20", "tend60", "noche", "gap", "orb15")
+# K48 (2026-11-18): hora (desde las 18:00 NY de la sesión) en que se conoce cada eje. `noche` (18:00→09:30), `gap` (apertura 09:30) y
+# `orb15` (09:30–09:45) NO son causales para módulos que entran antes (A1, A20, E, S y O operan de noche; Z, W y N antes de las 09:45).
+# El atlas del 2026-11-15 los usó con todos: las «elegidas» en A de A1/A20/E por noche/gap/orb15 eran esa fuga (ninguna replicó en B).
+CONOCIDA_EJE = {"lado": 0.0, "hora": 0.0, "dow": 0.0, "vol20": 0.0, "tend60": 0.0, "noche": 15.5, "gap": 15.5, "orb15": 15.75}
 
 
 def _boot(x_cel, d_cel, x_res, d_res, seed):
@@ -83,9 +87,12 @@ def _bh(ps, q=0.10):
 
 def celdas(o):
     a = o[(o.dia >= A[0]) & (o.dia <= A[1])]; b = o[(o.dia >= B[0]) & (o.dia <= B[1])]; filas = []
+    from edgelab.research.papel_regimen import horas_de_sesion
     for k, g in a.groupby("modulo"):
-        gb = b[b.modulo == k]
+        gb = b[b.modulo == k]; h = horas_de_sesion(pd.to_numeric(g.t, errors="coerce").to_numpy(float))
         for eje in EJES:
+            if (h < CONOCIDA_EJE[eje]).any():
+                filas.append(dict(modulo=k, eje=eje, nivel="NO_CAUSAL", elegida=False)); continue
             for nivel in sorted(g[eje].dropna().unique()):
                 c = g[g[eje] == nivel]; r = g[g[eje] != nivel]
                 fila = dict(modulo=k, eje=eje, nivel=str(nivel), nA=int(len(c)), netoA=float(c.neto.mean()) if len(c) else None, netoA_modulo=float(g.neto.mean()))

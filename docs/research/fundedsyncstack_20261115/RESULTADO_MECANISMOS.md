@@ -57,7 +57,7 @@ En el holdout (una apertura, `RESULTADO_HOLDOUT.md`) las tres fueron positivas. 
    datos no usados**: el M1 de S&P, Dow y Russell (los módulos de SuperTrend/ATR no dependen de puntos fijos), 2012–2026.
 2. **Canasta T+Z+R a forward** junto a la cartera v2 (e-proceso), con Z y R con un stop duro de catástrofe (hipótesis nueva: el stop sólo
    tiene que cortar la cola, Z salió por objetivo en el 93 % de los casos).
-3. **Contextos que conservaron dirección** (A20 y A1 con gap alto; R con tendencia de 60 días a la baja y en la primera hora): a forward como
+3. **[RETIRADO 2026-11-18, K48: gap y noche se conocen a las 09:30 y A1/A20 entran mayormente de noche; ver la nota al pie]** **Contextos que conservaron dirección** (A20 y A1 con gap alto; R con tendencia de 60 días a la baja y en la primera hora): a forward como
    filtros, sin tocar las reglas ya en papel.
 4. **Predecir días de tendencia** es el problema de fondo para cualquier regla de ruptura: buscar predictores nuevos (rango de los primeros
    30–60 min, volumen relativo de la apertura, amplitud de mercado) como familia propia, sin retornos de estrategia (E0: ¿predicen la etiqueta?).
@@ -68,3 +68,14 @@ En el holdout (una apertura, `RESULTADO_HOLDOUT.md`) las tres fueron positivas. 
   (desarrollo → réplica no mirada).
 - Z demuestra que en días de tendencia **tomar un objetivo temprano** también paga, al revés que las rupturas: combinarlo con ASIA (noche movida)
   es una hipótesis natural.
+
+
+## Nota de auditoría K48 (2026-11-18)
+El atlas condicionó todos los módulos por `noche` (18:00→09:30), `gap` (apertura 09:30) y `orb15` (09:30–09:45), pero A1, A20, E, S y O
+entran mayormente de noche y Z, W, N y R antes de las 09:45. Para esos módulos esas variables miraban el futuro.
+- **Arreglo:** `tools/fundedsync_mecanismos.py` (`CONOCIDA_EJE`) marca NO_CAUSAL cada eje que se conoce después de alguna entrada del
+  módulo. Se volvió a correr (`mecanismos/MECANISMOS.json`).
+- **Efecto:** las elegidas en A bajan de 19 a 12 (salen A1 noche/gap, A20 noche/gap, E noche/gap/orb15) y siguen siendo 0 las que
+  pasan en B.
+- **Alcance:** ninguna conclusión vigente dependía de esas celdas. La propuesta 3 (A20/A1 con gap alto) queda retirada. Los nulos
+  sobre el día de tendencia (medidos a las 10:30 y 12:00) no cambian.

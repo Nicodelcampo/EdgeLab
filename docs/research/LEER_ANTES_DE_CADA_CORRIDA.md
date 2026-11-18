@@ -128,6 +128,7 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Factor vivo apoyado en evidencia descartada (K46) | ASIA «noche movida» siguió viva citando un largo DESCARTADO | código | `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada` |
 | Agregaciones distintas en una validación (K47) | ASIA «duplicaba» a los ticks; se culpó al motor M1, que coincidía operación por operación | código | `papel_m1.validacion` con `canasta_por_sesion` y su test |
 | Variable de régimen conocida después de la entrada (K48) | la «noche movida» de ASIA usaba el rango de la misma noche en que opera | código | `papel_regimen.CONOCIDA_H`, `mapa`/`encendido` con `t_entradas` |
+| K48 en el atlas de FundedSync | noche/gap/orb15 con módulos que entran de noche: 7 «elegidas» falsas | código | `fundedsync_mecanismos.CONOCIDA_EJE` |
 | Ranking móvil con huecos | `rolling(250)` dejaba sin estado medio año tras un feriado | código | ranking sobre sesiones con dato |
 | Registro global sin commitear antes de correr | ASIA-NOCHE-PREVIA se contó antes, pero el registro entró recién después del resultado | guía | §5: commit del registro inmediatamente después de contar |
 | Contraste neto con 0 al no entrar | el «neto» favorecía no entrar hasta con gatillos al azar | guía | decidir por R absoluto por gatillo y contra el placebo (§3) |
