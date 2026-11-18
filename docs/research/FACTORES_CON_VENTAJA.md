@@ -295,7 +295,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (31)
+## NO_REPETIR (32)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -304,6 +304,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: FundedSync NQ/ES/YM; NQ (EdgeReplica); GC (oro 04:15)
   - Siguiente: Medir cada estrategia en su unidad de riesgo y dentro de la época en que sus parámetros fijos son razonables; probar el ajuste de un vendedor en instrumentos que no usó; LuxImb impulsos-25 % como primera campaña A5.
   - Evidencia: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`, `docs/research/m1_largo_20261117/RESULTADO_VIEJAS.json`
+- **Escalera plana de picos (escalonadas_det PLANAS) detectada en M1 y operada a favor de la ruptura en NQ, ES y YM** (`F-ESCALONADAS-M1-SIN-SENAL`, 2026-11-18, humano)
+  - Efecto: A5 DESC 2006–2025, 38.011 series: bruto −0,05 a +0,03 R en 18/18 celdas (MDE80 0,02–0,03), ninguna sobre su placebo causal; NQ ≈ 0, ES −0,04/−0,06, YM ≈ 0; neto −0,4 a −2 R. 0 nominadas; holdout sin abrir.
+  - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5, 2006-01 → 2025-07; calibrado contra ticks 25/30
+  - Siguiente: No repetir la escalera como señal en barras de minuto. La idea de Nico (esperar picos como filtro de entrada de otra regla) es una hipótesis distinta: se mide como capa de ejecución con comparación pareada y placebo.
+  - Evidencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`, `docs/research/escalonadas_m1_20261118/DESC.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)

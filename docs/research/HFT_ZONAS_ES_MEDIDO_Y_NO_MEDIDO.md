@@ -1151,3 +1151,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   para nominación forzada. `doble_retroceso_20261104/RESULTADO_DOBLE_RETROCESO.md`.
 - **NO MEDIDO:** 25 o 500 ticks, entrada límite en P4, y paridad con el indicador de NT8.
 
+
+## 2026-11-18 — ESCALONADAS-M1 (escalera plana en M1 de NQ/ES/YM 2006–2025, partición A5)
+- **MEDIDO (DESC):** bruto ≈ 0 en 18/18 celdas (MDE80 0,02–0,03 R, 38.011 series); ninguna definición supera a su placebo. REFUTADA con
+  potencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la escalera en ticks (escala de segundos) con años;
+  - la escalera como filtro de entrada de otras reglas (propuesta del 2026-11-18);
+  - el holdout A5 (sin abrir, nada que confirmar).

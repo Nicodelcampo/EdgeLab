@@ -76,7 +76,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EOD_MOM_NQ` | 2026-10-31 | — | 972 | 2 | EOD-NQ-R: SIN_CANDIDATAS; EOD-NQ: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `EOD_MOM_YM` | 2026-10-31 | — | 972 | 2 | EOD-YM-R: SIN_CANDIDATAS; EOD-YM: SIN_CANDIDATAS | — | `paquete_20261031`, `relanzamiento_R_20261102` |
 | `ESCALONADAS_6ENTRADAS_3ESCALAS_MAXT` |  | — | 648 | — | — | — | — |
-| `ESCALONADAS_M1_A5` | 2026-11-18 | MNQ_ESCALONADAS_ESCALAS, ES_ESCALONADAS, EURUSD_ESCALONADAS | 36 | — | — | — | `escalonadas_m1_20261118` |
+| `ESCALONADAS_M1_A5` | 2026-11-18 | MNQ_ESCALONADAS_ESCALAS, ES_ESCALONADAS, EURUSD_ESCALONADAS | 36 | — | — | F-ESCALONADAS-M1-SIN-SENAL (NO_REPETIR) | `escalonadas_m1_20261118` |
 | `ESCALONADAS_STOPS_VSHAPE_BE_TREND_MAXT` |  | — | 180 | — | — | — | — |
 | `ESCALONADAS_TP_SL_MAXT` |  | — | 32 | — | — | — | — |
 | `ESPEJO_CRUCE25_X_CLIMA_MAXT` |  | — | 12 | — | — | — | — |
@@ -172,7 +172,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `MODELO_ASIA_CFD_NQ` | 2026-11-01 | ASIA_BOS_GAPS_CFD_NQ | 2160 | 2 | MODELO-ASIA-V2-CFD-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-CFD-NQ: SIN_CANDIDATAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |
 | `MODELO_ASIA_NQ` | 2026-11-01 | ASIA_BOS_GAPS_NQ | 2161 | 2 | MODELO-ASIA-V2-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-NQ: PISTAS_VIVAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |
 | `ORB0100` |  | — | 78 | — | — | — | — |
-| `ORB_A5` | 2026-11-18 | — | — | — | — | — | `orb_a5_20261118` |
+| `ORB_A5` | 2026-11-18 | — | 11 | — | — | — | `orb_a5_20261118` |
 | `ORB_EMA20` | 2026-11-08 | ORB_NQ | 24 | — | — | F-ORB-EMA20-NQ-STOP-OPUESTO (NO_REPETIR); F-REELS-20261108 (NO_REPETIR) | `estrategias_scrapeadas_20261108` |
 | `ORB_HORARIOS` |  | — | 705 | — | — | — | — |
 | `ORB_NQ_FILTROS` | 2026-11-08 | ORB_HORARIOS, ORB0100 | 720 | — | — | — | — |
