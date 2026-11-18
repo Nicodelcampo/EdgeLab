@@ -127,6 +127,44 @@ def analizar_franklin():
     for k, x in out["periodos"].items(): print(k, "neto", round(x["neto"]["u_op"] or 0, 3), x["neto"]["ic90"], "bruto", round(x["bruto"]["u_op"] or 0, 3), x["bruto"]["ic90"], "fricR", round(x["friccion_R"], 3))
 
 
+FRANKLIN_NUEVOS = {"YM": (20060106, 20250731), "EMD": (20060109, 20250731), "RTY": (20170710, 20250731), "GC": (20080102, 20250731)}
+PRE_FR_NUEVOS = "docs/research/franklin_confirmacion_20261118/PREREGISTRO.md"
+
+
+def analizar_franklin_nuevos():
+    """franklin_confirmacion_20261118/PREREGISTRO.md: R BRUTO de Franklin en YM, EMD, RTY y GC (nunca medidos), una vez, LORD++."""
+    from edgelab.research import a5 as A5
+    from edgelab.funnel.libro_lord import LibroLord
+    from edgelab.research.embudo_runners import friccion
+    from edgelab import costos as C
+    partes = []
+    for inst, (a, b) in FRANKLIN_NUEVOS.items():
+        g = pd.read_csv(DIR / f"FRANKLIN_OPS_{inst}.csv.gz"); g = g[(g.fecha >= a) & (g.fecha <= b) & (g.riesgo > 0)].assign(inst=inst)
+        partes.append(g)
+    G = pd.concat(partes, ignore_index=True); ses = G.fecha.to_numpy(np.int64); rb = G.Rb.to_numpy(float)
+    m, se, p = A5.cluster(ses, rb)
+    res = LibroLord().reservar("FRANKLIN", "CONF_NUEVOS_20261118", "Franklin bruto en YM/EMD/RTY/GC")
+    dec = LibroLord().resolver("FRANKLIN", "CONF_NUEVOS_20261118", [("franklin_nuevos", p)])
+    G["anio"] = G.fecha // 10000; ia = G.groupby(["inst", "anio"]).Rb.mean(); frac = float((ia > 0).mean())
+    if dec.get("rechazo") and m > 0 and frac >= 0.6: ver = "CONFIRMADA"
+    elif m <= 0 or m + 1.645 * se < 0.04: ver = "REFUTADA"
+    else: ver = "NO_CONFIRMADA"
+    micro = {"YM": "MYM", "GC": "MGC"}; por = {}
+    with C.estimados_permitidos(PRE_FR_NUEVOS):
+        for inst, g in G.groupby("inst"):
+            fr_mi = friccion(micro[inst])[0] if inst in micro else None
+            mi, si, pi = A5.cluster(g.fecha.to_numpy(np.int64), g.Rb.to_numpy(float))
+            por[inst] = dict(n=int(len(g)), R_bruto=mi, se=si, p=pi, R_neto_mini=float(g.R.mean()),
+                             R_neto_micro=float((g.Rb - fr_mi / g.riesgo).mean()) if fr_mi else None, fric_R_mediana=float(g.fricR.median()),
+                             epocas={e: dict(n=int(len(x)), bruto=float(x.Rb.mean()), neto=float(x.R.mean()), fricR=float(x.fricR.mean()))
+                                     for e, (x0, x1) in (("2006-2011", (20060101, 20111231)), ("2012-2019", (20120101, 20191231)), ("2020-2025", (20200101, 20251231)))
+                                     for x in [g[g.fecha.between(x0, x1)]] if len(x)},
+                             operable=dict(n=int((g.fricR <= 0.08).sum()), neto=float(g[g.fricR <= 0.08].R.mean()) if (g.fricR <= 0.08).any() else None))
+    out = dict(preregistro=PRE_FR_NUEVOS, n=int(len(G)), R_bruto=m, se=se, p=p, reserva=res, lord=dec, frac_inst_anio_pos=frac, veredicto=ver, por_instrumento=por)
+    (ROOT / "docs/research/franklin_confirmacion_20261118/RESULTADO.json").write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps({k: out[k] for k in ("n", "R_bruto", "se", "p", "frac_inst_anio_pos", "veredicto")}, default=float))
+
+
 NUEVOS = {"EMD": (20060109, 20250731), "RTY": (20170710, 20250731)}       # PREREGISTRO_INDICES.md
 SOM_RTY_LIMPIO = (20170710, 20190228)                                         # SOM ya miró el Russell (CFD) desde 2019-03 (som_transfer)
 
@@ -134,8 +172,8 @@ SOM_RTY_LIMPIO = (20170710, 20190228)                                         # 
 def _con_costos(inst, fn, *a):
     """EMD tiene spread ESTIMADO (costos_canonicos.json): sólo se usa dentro del permiso declarado (K33)."""
     from edgelab import costos as C
-    if inst == "EMD":
-        with C.estimados_permitidos("docs/research/m1_largo_20261117/PREREGISTRO_INDICES.md"): return fn(*a)
+    if inst == "EMD":                                                     # el permiso es del pre-registro de la corrida (M1LARGO_PREREG)
+        with C.estimados_permitidos(os.environ.get("M1LARGO_PREREG", "docs/research/m1_largo_20261117/PREREGISTRO_INDICES.md")): return fn(*a)
     return fn(*a)
 
 
@@ -393,4 +431,5 @@ if __name__ == "__main__":
     elif c == "analizar_capa2": analizar_capa2()
     elif c == "analizar_franklin": analizar_franklin()
     elif c == "analizar_indices": analizar_indices()
+    elif c == "analizar_franklin_nuevos": analizar_franklin_nuevos()
     elif c == "viejas": (viejas_edgereplica(sys.argv[2]), viejas_oro415(sys.argv[2]))
