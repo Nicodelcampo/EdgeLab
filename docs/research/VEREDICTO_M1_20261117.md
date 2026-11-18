@@ -46,12 +46,17 @@ sigue siendo decisión de Nico.
 | **R** AtrPhase (FundedSync) | bruto positivo en NQ en los 3 períodos; años limpios +0,097 ATR bruto (3 índices); en ES y YM decae después de 2011; **no transfiere con fuerza a EMD + RTY (+0,011 ATR, NO_CONCLUYENTE con potencia 0,93)**; sin stop | **PISTA SÓLO NQ** | sólo NQ y con el stop de catástrofe (0,5 × ATR20): baja la peor operación de −415 a −169 pts y casi no cambia el neto |
 | **Z** ZetaTrend (FundedSync) | bruto positivo en NQ y ES, más débil en YM; años limpios +0,028 (IC cruza 0) | **PISTA DÉBIL** | con stop de catástrofe; como complemento, no como pilar |
 | **T** FtmEngine (FundedSync) | **revisado 2026-11-18** (`m1_largo_20261117/RESULTADO_T_2020.md`): en R (su unidad) tiene bruto positivo en NQ en 13 de 14 años desde 2012 y crece desde 2020 en NQ, ES y YM; el tope de 100 pts no lo explica; en MidCap + Russell 2020–2025 NO_CONCLUYENTE (+0,033 R); neto NQ 2020–2025 ≈ +0,15 R; holdout +14 pts | **PISTA FUERTE EN NQ** (la versión anterior, «frágil», salió de medir en ATR) | vuelve a ser pilar de la B; B' sólo como comparación; se suma a la canasta de señales estables |
-| O, V, A20, C (FundedSync) | bruto ≈ 0 o chico; netos positivos sólo con la fricción reciente | sin ventaja demostrada | no se operan |
+| A20, E, F, V, C (FundedSync) | **revisado 2026-11-18 en R** (`AUDITORIA_Y_VIEJAS.md`): señal en NQ 2020–2025 (A20 +0,083 R neto, E +0,045, F +0,050, V +0,021); ≈ 0 antes de 2020 y en ES/YM (salvo E, débil): compatible con ajuste del vendedor a NQ reciente | **PISTAS NQ, por debajo de T** | forward, no tamaño |
+| O (FundedSync) | bruto chico; positivo sólo con la fricción reciente | sin ventaja demostrada | no se opera |
 | W, N (FundedSync) | la variante de salida mejora (confirmado en años limpios) pero sigue ≈ 0 o negativa | **SIN VENTAJA** | no se operan |
 | A1, P, Q, E, F, S (FundedSync) | negativos o ≈ 0 | **SIN VENTAJA** | no se operan |
 | **Cartera completa de FundedSync** (motor del vendedor) | pierde todos los años 2006–2018, gana desde 2019–2020; drawdown −128 k USD con el perfil 25K | **NO OPERABLE tal cual** | no se usa el motor de cartera del vendedor ni sus perfiles de tamaño |
 | **Franklin** | años limpios 2006–2011 en futuros: bruto +0,195 R (IC90 +0,095/+0,296, 83 % de años), A_FAVOR; neto 2020–2025 +0,082 R (fricción 0,04 R); holdout +0,27 R | **SEÑAL BRUTA ESTABLE (confirmada 2026-11-18)** | junto a SOM, la candidata con mejor base; operar sólo con fricción en R baja; forward |
 | QLB (EA de oro) | gatillos compilados, sin fuente | **NO MEDIBLE** | se descarta como candidata |
+| EdgeReplica (60 reglas NQ) | NQ 2006–2022 ≈ 0 (potencia 1,0); señal sólo 2024–2026, donde se eligió | **DESCARTADA: ajuste, no patrón** | no se opera |
+| Oro, corto 04:15 CT | GC 2008–2022: sesgo bruto +1,62 ticks confirmado; neto −4,4 (costo ≈ 6 ticks) | **SESGO REAL, NO OPERABLE SOLO** | como información de horario para otras operaciones de oro |
+| MGC EMA 200/500/2000 | barras de 25 operaciones: no medible con M1 | sin cambios («no se valida») | haría falta ticks viejos |
+| LuxImb impulsos con zonas en el 25 % | grilla en M1 nunca corrida | **LANZABLE** | primera campaña A5 sobre NQ 2006–2025 |
 | TURTLES-ORO | 0,4 operaciones por mes (K27) | fuera | — |
 
 ## 3. Cómo cambian las decisiones de aquí en adelante

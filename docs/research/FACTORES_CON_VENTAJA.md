@@ -290,10 +290,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (30)
+## NO_REPETIR (31)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Errores de unidad y escala: medir en ATR módulos que arriesgan mucho menos que un ATR (diluye la señal 3–10×), comparar épocas con parámetros en puntos fijos y medir puntos/op entre años con precios distintos. EdgeReplica era ajuste; el corto de las 04:15 del oro tiene sesgo real no operable solo** (`F-AUDITORIA-UNIDADES-Y-VIEJAS`, 2026-11-18, nico)
+  - Efecto: En R, A20/E/F/V con señal en NQ 2020–2025 (no en ES/YM salvo E débil; posible ajuste del vendedor); T pasa ES/YM. EdgeReplica NQ 2006–2022 +0,0002 ATR (potencia 1,0) contra +0,015 en 2023–2025. Oro 04:15 GC 2008–2022 bruto +1,62 ticks (IC90 +1,25/+1,99), neto −4,4. Régimen análogo de T en R: sin diferencia.
+  - Dónde: FundedSync NQ/ES/YM; NQ (EdgeReplica); GC (oro 04:15)
+  - Siguiente: Medir cada estrategia en su unidad de riesgo y dentro de la época en que sus parámetros fijos son razonables; probar el ajuste de un vendedor en instrumentos que no usó; LuxImb impulsos-25 % como primera campaña A5.
+  - Evidencia: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`, `docs/research/m1_largo_20261117/RESULTADO_VIEJAS.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
