@@ -34,7 +34,11 @@ def _commiteado(p):
 
 
 def _ctx(inst, datos, d0, d1):
+    """`datos` None: la copia local verificada de `tools/datos.py` (acceso estándar; una carpeta a mano ya no hace falta)."""
     from edgelab.research.fuentes_ticks import bloques_m1nt8, TICK_FUTURO, TICK_M1NT8_EXTRA
+    if datos is None:
+        from datos import ruta
+        datos = ruta("M1NT8")
     from edgelab.research.grilla_generica import contexto_m1
     return contexto_m1(bloques_m1nt8(inst, int(d0), int(d1), str(datos)), TICK_FUTURO.get(inst) or TICK_M1NT8_EXTRA[inst])
 
@@ -167,5 +171,5 @@ def rep(carpeta):
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"calibrar_m1": lambda: calibrar_m1(a[1], a[2]), "lanzar_ticks": lambda: lanzar_ticks(a[1]), "traer_ticks": lambda: traer_ticks(a[1]),
-     "calibracion": lambda: calibracion(a[1]), "correr": lambda: correr(a[1], a[2]), "desc": lambda: desc(a[1]), "rep": lambda: rep(a[1])}[a[0]]()
+    {"calibrar_m1": lambda: calibrar_m1(a[1], a[2] if len(a) > 2 else None), "lanzar_ticks": lambda: lanzar_ticks(a[1]), "traer_ticks": lambda: traer_ticks(a[1]),
+     "calibracion": lambda: calibracion(a[1]), "correr": lambda: correr(a[1], a[2] if len(a) > 2 else None), "desc": lambda: desc(a[1]), "rep": lambda: rep(a[1])}[a[0]]()

@@ -219,7 +219,8 @@ muestre calibración sana en datos reales.
   fuera (`tests/test_guardas_principiante_20261117.py`). Ver K27–K32 en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` §E5.
 - **Índice obligatorio antes de cada corrida (Nico, 2026-11-18):** `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` (qué leer según el tipo
   de corrida, y los errores de unidad y escala K35–K39). Todo pre-registro nuevo lleva «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …»;
-  `preflight.validar_preregistro` la exige.
+  `preflight.validar_preregistro` la exige. Desde la v3 (2026-11-18) su §6 lista cada error de la etapa con la guarda en código que lo
+  impide, y los datos fuera de Kaggle se obtienen sólo con `python tools/datos.py traer <NOMBRE>` (copia local verificada).
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

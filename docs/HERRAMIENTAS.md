@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-685 scripts.
+686 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -205,6 +205,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/data_find.py` | Responde «¿qué datos hay de X entre estas fechas y de dónde los saco?» usando docs/data_catalog/catalog.json. |
 | `tools/data_inventory.py` | Inventario crudo de TODOS los datasets propios de Kaggle: lista de archivos, textos pequeños (README, manifiestos) y un escaneo de cada parquet de ticks |
 | `tools/data_resolver.py` | Genera docs/data_catalog/RESOLVER.json: UNA respuesta por (instrumento, sesión) — qué dataset/archivo/contrato leer y |
+| `tools/datos.py` | Acceso estándar a los datos de research fuera de Kaggle: un nombre, una ruta canónica local, verificación contra el origen. |
 | `tools/deep_falsification_probe.py` | tools/deep_falsification_probe.py |
 | `tools/demo_vectorbt_zones.py` | Demo end-to-end (F8): estrategia vectorbt que combina zonas de 2+ indicadores |
 | `tools/deploy_nq_25t_bundle.py` | Deploy NQ 25-tick candles and HFT certified zones (5,438 zones) to viewer bundles. |
@@ -505,7 +506,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/orb0100/orb0100_v2.py` | ORB0100 V2: variantes alrededor de 1,5R/rango/mercado/VWAP en 8 activos (descubrimiento). |
 | `tools/orb0100/orb_franjas.py` | ORB0100 NQ + franjas OG/VI. Reglas: docs/research/orb0100_20261021/MANIFIESTO_ORB0100_FRANJAS_OGVI_20261021.md |
 | `tools/orb0100/orb_horarios.py` | ORB-HORARIOS: barrido de 44 ventanas x 2 reglas x 8 activos + embudo de confirmacion. |
-| `tools/orb_confirmacion_o1.py` | (sin docstring) |
+| `tools/orb_confirmacion_o1.py` | Confirmación de ORB-A5 O1 (ORB de 5 min) en una sola lectura: holdout A5 de NQ/ES/YM + MidCap (EMD) y Russell (RTY) completos. |
 | `tools/ou1_study.py` | OU-1 — diagnóstico de reversión (Ornstein-Uhlenbeck) por activo × escala, y chequeo de mecanismo en las celdas de GC. |
 | `tools/ou2_mid.py` | OU-2 — ¿la reversión de ZB a 5-15 min sobrevive con el precio medio bid/ask? (descarta el rebote bid-ask). SOLO información. |
 | `tools/papel_m1.py` | Reglas de papel (config/cartera/altas.json) CONGELADAS, re-medidas sobre M1 de Dukascopy 2012–2026 (fuente M1DK, 2026-11-15). |

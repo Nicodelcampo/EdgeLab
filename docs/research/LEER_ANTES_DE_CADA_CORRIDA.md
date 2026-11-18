@@ -1,13 +1,18 @@
-# Leer antes de cada corrida — índice obligatorio (v2, 2026-11-18)
+# Leer antes de cada corrida — índice obligatorio (v3, 2026-11-18)
 
 Estado: VIGENTE — pedido de Nico: «un documento que sea obligatorio leer para cada corrida, que sea un índice de todos los otros
-documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+documentos que se deberían leer». La v3 responde a su segundo pedido: «asegurate que la cadena estándar no te permita cometerlos […] no
+debe ser falta de información, seguramente es falta de gobernabilidad, estandarización y acceso a los datos».
+North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 **Cómo se cumple:**
-- Todo pre-registro nuevo lleva una línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v2 — …» que diga qué secciones aplican.
-- `edgelab/research/preflight.py::validar_preregistro` la exige; sin ella, `tools/registro_global.py preregistrado` no cuenta la corrida y
-  el CI la rechaza.
-- Este índice se versiona: si cambia, sube la versión y los pre-registros nuevos citan la nueva.
+- **Línea obligatoria:** todo pre-registro nuevo lleva «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v3 — …», diciendo qué secciones
+  aplican.
+- **Quién la exige:** `edgelab/research/preflight.py::validar_preregistro`. Sin ella, `tools/registro_global.py preregistrado` no
+  cuenta la corrida y el CI la rechaza.
+- **Versiones:** este índice se versiona; si cambia, sube la versión.
+- **Principio de la v3:** lo que se puede impedir en código se impide (§6, columna «guarda»). Este documento queda para lo que no se
+  puede.
 
 ## 0. Dónde estamos (siempre)
 - `CLAUDE.md` (estado vigente y rituales) y `docs/research/VEREDICTO_M1_20261117.md` (qué regla está viva, refutada o sin medir).
@@ -16,6 +21,8 @@ documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7d
 - `python tools/antecedentes.py "<idea>"`: su línea va al pre-registro.
 
 ## 1. Antes de diseñar
+- **Cadena estándar:** `docs/research/CADENA_DE_CORRIDA.md`. Un módulo con el contrato de `tablas`, motor único y comandos fijos; nada
+  de simuladores, kernels ni análisis propios.
 - **Reutilizar:** `python tools/existente.py buscar "<qué>"`, `docs/MODULES.md`, `docs/HERRAMIENTAS.md`.
 - **Según el tipo de corrida:**
   - grilla grande: `docs/research/GUIA_GRILLA_MASIVA.md` (K4: más de 500 celdas con retornos exige un E0 antes);
@@ -23,42 +30,91 @@ documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7d
   - régimen: `docs/research/GUIA_REGIMEN_PARA_AGENTE_20261107.md`;
   - estrategia de afuera: medir la regla exacta primero (ritual del visor, CLAUDE.md).
 - **Población y espacio de eventos declarados** (CLAUDE.md, reglas permanentes).
+- **Causalidad:** todo lo que decide en la vela k usa velas ≤ k COMPLETAS. Una vela de 5 min «armada» con los minutos que hay todavía
+  no cerró. `tools/tablas.py preflight` lo prueba sobre datos reales (disparos y cortes arbitrarios).
 
 ## 2. Datos, holdout y ventanas
+**Acceso a datos (estándar desde la v3):**
+
+| Dato | Cómo se obtiene | Dónde queda | Lector |
+|---|---|---|---|
+| M1 de futuros de NT8 (NQ, ES, YM, GC, EMD, RTY; 2006/2008 → hoy) | `python tools/datos.py traer M1NT8` (o `importar` de una copia que coincida con el origen) | `data/m1nt8/` con `PROCEDENCIA.json` (sha256 y tamaño por archivo) | `fuentes_ticks.bloques_m1nt8` (corta en la frontera) |
+| Ticks del release y CFD | Kaggle, dentro del kernel (`tools/tablas.py lanzar`) | `/kaggle/input` | `fuentes_ticks.resolver` |
+| Costos | `edgelab/costos.py` (`config/costos/costos_canonicos.json`) | — | `embudo_runners.friccion` |
+
+- `python tools/datos.py estado` dice qué está local y si coincide con el origen.
+- Las herramientas leen `datos.ruta("M1NT8")` por defecto; una carpeta bajada a mano ya no hace falta ni se acepta como evidencia.
 - **Holdout:**
   - frontera única y partición A5: `edgelab/holdout.py`, `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` y
     `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`;
-  - ventanas ya consumidas por la familia o su linaje: `docs/research/HOLDOUT_VENTANAS.jsonl` (incluye `consumida_atras`).
-- **M1 de futuros de NT8** (`M1NT8:`, 2006/2008 → frontera):
-  - antes de usarlo, calibrar la regla contra ticks (`docs/research/papel_m1_20261115/VALIDACION.md`,
-    `docs/research/atras_m1_20261117/descartada_v1/CALIBRACION.json`, v1 con K40: M1 sistemáticamente bajo);
-  - no se usa para reglas de footprint, de velas de ticks o con señal en un CFD.
-  - **K40:** con stops chicos frente al rango de la vela, el simulador cobra el stop en el extremo de la vela. Usar el nivel del stop salvo
-    un hueco en la apertura (`luximb_hvn._e0_nb`, `ctx["m1_sintetico"]`), y calibrar.
-- **Datasets privados de Kaggle:** lanzar con la cuenta dueña (`docs/research/atras_m1_20261117/FALLIDAS.jsonl`).
+  - ventanas ya consumidas por la familia o su linaje: `docs/research/HOLDOUT_VENTANAS.jsonl`.
+- **M1 como pseudo-ticks:**
+  - **K40:** el stop sale en su nivel salvo hueco en la apertura (`ctx["m1_sintetico"]`, motor único y de grilla).
+  - **K30:** M1 no ve saltos dentro de la vela. Toda familia en M1 se calibra contra ticks reales ANTES de correr: `a5_campana.py
+    calibracion`, con el criterio único `a5.calibrar_por_sesion`.
+  - No se usa para footprint, velas de ticks ni señal en un CFD.
+- **Kaggle:**
+  - un dataset privado se lanza con la cuenta dueña (`docs/research/atras_m1_20261117/FALLIDAS.jsonl`);
+  - con el tope de cola o un 429, `tablas.py traer` relanza lo que quedó en cola: no lanzar a mano;
+  - consultar cada ≥ 5 min.
 
 ## 3. Medición (dónde más nos equivocamos)
 - **Medir en R** (`docs/research/MEDIR_EN_R_20261102.md`), con el riesgo INICIAL de la propia regla. Verificar en el código que la
-  columna de riesgo sea el stop inicial y no el activo al salir (T guardaba el activo).
-- **K35, la unidad de riesgo:** comparar estrategias o épocas en la unidad de riesgo de cada regla. El ATR diario diluye 3–10 veces a las
-  reglas que arriesgan mucho menos que un ATR (`docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`).
-- **K36, parámetros en puntos fijos** (topes de stop, objetivos, filtros): antes de comparar épocas, listar los parámetros en puntos y
-  verificar si cambian la regla entre épocas. T y E cambian por completo entre 2008 y 2025.
-- **K37, puntos por operación entre años:** no se comparan entre años con precios distintos (EdgeReplica). Usar R o ATR.
-- **Bruto y neto siempre juntos, con la fricción en R por época** (`docs/research/m1_largo_20261117/RESULTADO.md` §3): el «antes no, ahora
-  sí» suele ser fricción relativa.
-- **Costos** sólo de `edgelab/costos.py`. Los estimados, únicamente dentro de `costos.estimados_permitidos(<pre-registro>)` (K33).
+  columna de riesgo sea el stop inicial.
+- **K35–K37:** unidad de riesgo propia, parámetros en puntos fijos entre épocas y puntos entre años
+  (`docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`).
+- **Bruto y neto siempre juntos**, con la fricción en R por época. El «antes no, ahora sí» suele ser fricción relativa.
+- **Neto con el mini y con el micro**, los dos, por instrumento (`a5.evaluar` acepta la fricción por fila `f_<ejec>`). El micro tiene
+  más fricción por punto; una prop firm suele operar micros.
+- **Costos:** sólo de `edgelab/costos.py`. Los estimados, sólo dentro de `costos.estimados_permitidos(<pre-registro>)` (K33).
+- **K39, unidad monetaria:** multiplicador del contrato que se opera de verdad.
 
-## 4. Inferencia y decisión
-- `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (A, E2, E3, E5 y E6), y `docs/research_funnel_playbook.md` (ATJ).
-- `python tools/potencia_previa.py <ops>`: su línea va al pre-registro (K27). Las pruebas con n < 30 quedan fuera de BH (K29). Todo nulo
-  publica su MDE.
-- `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md`: el OOS mata sólo con potencia; FDR; LORD++.
-- **K38, ajuste de quien diseñó la regla:** probar fuera de lo que el diseñador pudo haber usado (otros instrumentos u otros años). Los
-  módulos de FundedSync sólo «funcionan» en NQ 2020+; T es la excepción porque también pasa ES/YM.
-- Lo elegido entre muchas variantes con poca historia arranca con media ≈ 0 (paso 2 de `urgencia_vs_evidencia_20261117`, `atras_m1_20261117`).
+## 4. Inferencia, confirmación y decisión
+- **Errores y guardas:** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (A, E2, E3, E5 y E6) y
+  `docs/research_funnel_playbook.md` (ATJ).
+- **Potencia antes de abrir:** `python tools/potencia_previa.py <ops>` (K27), y la potencia calculada **al nivel LORD++ reservado**,
+  no a 0,05 (K42).
+- **BH:** las pruebas con n < 30 quedan fuera (K29). Todo nulo publica su MDE.
+- **Decisiones de validación:** `docs/research/revision_20261024/DECISIONES_VALIDACION_20261024.md` (el OOS mata sólo con potencia;
+  FDR; LORD++).
+- **K38:** la regla de un tercero se prueba fuera de lo que su autor pudo usar.
+- **Selección:** lo elegido entre muchas variantes con poca historia arranca con media ≈ 0. ORB O1 lo volvió a mostrar: el «+0,16 neto
+  en NQ 2020–25» de DESC+REP dio −0,03 bruto en el holdout.
+- **Árbol para confirmar algo nominado** (en este orden; el forward es lo último, no lo primero):
+  1. **Réplica** (meses REP de A5), con su nivel LORD++.
+  2. **Holdout A5 del instrumento** (meses HOLDOUT, apertura única por familia), si la potencia al nivel reservado llega a 0,8.
+  3. **Instrumentos que la familia nunca usó** (EMD, RTY, GC… con M1 de NT8), sumados al 2 en una sola lectura si hace falta
+     potencia.
+  4. **Forward desde la frontera terminal**: vigila y da tamaño; no reemplaza a 2–3.
+- **Canastas y prop firms:** una simulación de cuenta sólo usa reglas confirmadas o las marca SIN CONFIRMAR en la misma tabla. Un
+  subgrupo de DESC+REP (instrumento × época) no es una regla confirmada.
 
 ## 5. Proceso (K32) y cierre
 `antecedentes.py` → `potencia_previa.py` → pre-registro con «Antecedentes:», «Potencia previa:» y «Lectura previa:» → commit →
-`python tools/registro_global.py preregistrado …` → correr → resultado con su entrada en FACTORES en el mismo commit →
+`python tools/registro_global.py preregistrado …` → correr → resultado con su entrada en FACTORES y su línea MEDIDO en el mismo commit →
 `python tools/cierre.py` sin tubos → `git show --stat` → push.
+
+**Corrida con código que después se corrigió:**
+- se aparta (`descartada_vN/`, `*.NO_VIGENTE.*`) y se relanza;
+- su documento se marca DESCARTADA;
+- lo que la citaba (FACTORES, VEREDICTO, CLAUDE.md, carteras) se actualiza en el mismo commit.
+
+## 6. Errores de la etapa 15–18 nov y su guarda
+Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = depende de leer esto.
+
+| Error | Qué pasó | Guarda | Dónde |
+|---|---|---|---|
+| Stop de M1 al extremo de la vela (K40) | LuxImb no calibró (12/12); el «atrás» del 17-nov y papel M1 del 15-nov sesgados (−0,16 R) | código | `ejecucion._stop_m1`, `areas_expansion.simular_cierre_m1`, tests de `test_ejecucion`; simulador registrado (K28) |
+| Velas de 5 min incompletas (IB, ORB) | decidía en el minuto 2 con un «cierre» que no era tal | código | `tablas.py preflight` (causalidad sobre datos reales); certificado por huella en `config/causalidad_certificados.json` |
+| Controles y requisitos que miraban el futuro (ESCALONADAS) | el placebo se ubicaba según eventos posteriores; k+1 sin cerrar | código | el mismo preflight; control por hash del minuto |
+| Tabla de ticks de código viejo (K41) | la calibración de ESCALONADAS comparó tablas viejas; `traer` salteaba lo ya bajado | código | `tablas.traer`/`_tablas`, `a5_campana._ticks` |
+| Contraste perdido en `a5.evaluar` | el control que no era definición no se evaluaba | código | test `test_a5_evalua_contraste_…` |
+| Veredicto de calibración a mano (K43) | ASIA se aprobó con «≈ 1 ee» usando otro EE | código | `a5.calibrar_por_sesion`; `tools/papel_m1.py validacion` → JSON |
+| Potencia a α 0,05 (K42) | se dijo 0,9; al nivel reservado 0,0036 era ≈ 0,5 | código | `holdout_ventanas._exigir_alfa_reservado` |
+| Script que no compilaba (K44) | paréntesis de más en una herramienta sin test | código | `test_todo_el_codigo_compila` |
+| Datos en una carpeta temporal pasada a mano | no reproducible, sin verificación contra el origen | código | `tools/datos.py` (ruta verificada por defecto) |
+| Forward propuesto antes que el holdout disponible | se iba a esperar meses teniendo holdout A5 e índices sin usar | guía | §4 árbol; `CADENA_DE_CORRIDA.md` |
+| Neto sólo con micro | la fricción «alta» era la del micro | guía | §3; los resultados nuevos reportan mini y micro |
+| Subgrupo sin confirmar en una canasta de prop firm | ORB5 en Lucid por el neto de NQ 2020–25 | guía | §4 canastas; aviso en `SENALES_ESTABLES_LUCID_20261118.md` |
+| Lanzamientos que no salieron (cola de Kaggle, 429) | ORB YM y filtro ES/YM quedaron sin lanzar | código | `tablas.reintentar_cola` (dentro de `traer`) |
+| Presupuesto de contexto de los agentes | el cierre falla cuando FACTORES crece | humano | decisión de Nico (`config/autopilot/AGENTES.json`); mientras, entradas compactas |

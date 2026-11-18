@@ -140,13 +140,10 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   escala. Usar R o ATR.
 - **K38, ajuste de quien diseñó la regla.** Una regla de un tercero se prueba fuera de lo que su autor pudo usar: otro instrumento u otros
   años. Los módulos de FundedSync sólo funcionan en NQ 2020+; T es la excepción porque también pasa ES y YM.
-- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con pseudo-ticks de M1, «salir al tick que cruza el stop» cobra el extremo de
-  la vela. Con stops chicos es pesimista: en LUXIMB-A5 la calibración falló 12/12.
-  - **Corrección:** con `m1_sintetico` (lo marcan los lectores M1), el stop sale en su nivel, salvo un hueco en la apertura. Está en
-    `ejecucion.py` y en `luximb_hvn._e0_nb`.
-  - **Riesgo:** M1 no ve saltos dentro de la vela. Por eso toda familia en M1 se calibra contra ticks (K30); en NQ dio igual o más
-    pesimista.
-  - **Sigue con la convención vieja:** `areas_expansion.simular_cierre_linea`, que usó el «atrás» del 17-nov.
+- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con velas M1 como pseudo-ticks el stop sale en su nivel salvo hueco
+  (`m1_sintetico`, motor único y de grilla); M1 no ve saltos: toda familia en M1 se calibra contra ticks (K30).
+- **K41–K44 (2026-11-18):** tabla vieja, α de la potencia, veredicto a mano, script que no compila y datos a mano: guardas en
+  código; tabla error → guarda en `LEER_ANTES_DE_CADA_CORRIDA.md` §6.
 - **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de
   drawdown y de tamaño.
 

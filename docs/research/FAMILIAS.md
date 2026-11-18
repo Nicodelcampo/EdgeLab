@@ -173,7 +173,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `MODELO_ASIA_CFD_NQ` | 2026-11-01 | ASIA_BOS_GAPS_CFD_NQ | 2160 | 2 | MODELO-ASIA-V2-CFD-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-CFD-NQ: SIN_CANDIDATAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |
 | `MODELO_ASIA_NQ` | 2026-11-01 | ASIA_BOS_GAPS_NQ | 2161 | 2 | MODELO-ASIA-V2-NQ-R: SIN_CANDIDATAS; MODELO-ASIA-V2-NQ: PISTAS_VIVAS | — | `modelo_asia_20261101`, `relanzamiento_R_20261102` |
 | `ORB0100` |  | — | 78 | — | — | — | — |
-| `ORB_A5` | 2026-11-18 | — | 11 | — | — | F-ORB5-BRUTO-ESTABLE (PISTA_VIVA) | `orb_a5_20261118` |
+| `ORB_A5` | 2026-11-18 | — | 12 | — | — | F-ORB5-BRUTO-ESTABLE (NO_REPETIR) | `orb_a5_20261118` |
 | `ORB_EMA20` | 2026-11-08 | ORB_NQ | 24 | — | — | F-ORB-EMA20-NQ-STOP-OPUESTO (NO_REPETIR); F-REELS-20261108 (NO_REPETIR) | `estrategias_scrapeadas_20261108` |
 | `ORB_HORARIOS` |  | — | 705 | — | — | — | — |
 | `ORB_NQ_FILTROS` | 2026-11-08 | ORB_HORARIOS, ORB0100 | 720 | — | — | — | — |

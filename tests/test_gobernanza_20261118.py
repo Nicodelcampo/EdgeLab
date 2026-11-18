@@ -1,0 +1,87 @@
+"""Guardas K41–K44 (2026-11-18): errores de la sesión del 18-nov convertidos en chequeos que la cadena estándar no deja pasar.
+Índice: docs/research/LEER_ANTES_DE_CADA_CORRIDA.md (v3) y docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md §E6."""
+import json, py_compile, subprocess, sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+
+def _py_versionados():
+    r = subprocess.run(["git", "ls-files", "tools/*.py", "edgelab/*.py", "edgelab/**/*.py"], cwd=ROOT, capture_output=True, text=True)
+    return [ROOT / x for x in r.stdout.split() if x.endswith(".py") and (ROOT / x).exists()]
+
+
+def test_todo_el_codigo_compila(tmp_path):
+    """K44: `orb_confirmacion_o1.py` llegó a commitearse con un paréntesis de más (no tenía test). Ningún script versionado puede no
+    compilar, tenga tests o no."""
+    malos = []
+    for f in _py_versionados():
+        try: py_compile.compile(str(f), cfile=str(tmp_path / "x.pyc"), doraise=True)
+        except py_compile.PyCompileError as e: malos.append(f"{f.relative_to(ROOT)}: {str(e)[:120]}")
+    assert not malos, malos
+
+
+def test_apertura_exige_potencia_al_alfa_reservado(monkeypatch):
+    """K42: potencia declarada a α 0,05 con un nivel LORD++ reservado de 0,0036."""
+    from edgelab.research import holdout_ventanas as HV
+    from edgelab.funnel import libro_lord
+
+    class Falso:
+        estado = dict(reservas={"FAM::R1": dict(familia="FAM", reserva_id="R1", t=2, nivel=0.0036, resuelta=False)})
+    monkeypatch.setattr(libro_lord, "LibroLord", lambda *a, **k: Falso())
+    with pytest.raises(ValueError, match="K42"):
+        HV._exigir_alfa_reservado("FAM", dict(tipo="fijo", alfa=0.05, potencia=0.9))
+    HV._exigir_alfa_reservado("FAM", dict(tipo="fijo", alfa=0.0036, potencia=0.8))       # al nivel: pasa
+    HV._exigir_alfa_reservado("OTRA", dict(tipo="fijo", alfa=0.05, potencia=0.9))        # otra familia sin reserva: pasa
+
+
+def test_datos_ruta_exige_copia_verificada(tmp_path, monkeypatch):
+    """Acceso a datos: una carpeta bajada a mano no alcanza; hace falta la PROCEDENCIA y que cada archivo tenga su tamaño."""
+    import datos
+    monkeypatch.setattr(datos, "BASE", tmp_path)
+    with pytest.raises(SystemExit, match="traer M1NT8"):
+        datos.ruta("M1NT8")
+    d = tmp_path / "m1nt8"; d.mkdir(); (d / "NQ.parquet").write_bytes(b"abc")
+    (d / "PROCEDENCIA.json").write_text(json.dumps(dict(archivos={"NQ.parquet": dict(bytes=3)})))
+    assert datos.ruta("M1NT8") == str(d)
+    (d / "NQ.parquet").write_bytes(b"abcd")                                               # alterada o a medio bajar
+    with pytest.raises(SystemExit, match="alterada"):
+        datos.ruta("M1NT8")
+
+
+def test_tablas_no_interpreta_tablas_de_codigo_viejo(tmp_path, monkeypatch):
+    """K41: `tablas.py traer` salteaba tablas ya bajadas sin revisar su código, y explorar/congelar/confirmar las leía igual."""
+    import pandas as pd
+    import tablas
+    monkeypatch.setattr(tablas, "carpeta", lambda m: tmp_path)
+    (tmp_path / "tablas").mkdir()
+    pd.DataFrame(dict(ses=[1], x=[1.0])).to_csv(tmp_path / "tablas/TABLA_X_NQ_1_2.csv.gz", index=False)
+    (tmp_path / "tablas/TABLA_X_NQ_1_2.json").write_text(json.dumps(dict(fuente="NQ", modulos={"tools/tablas.py": "0" * 64})))
+    with pytest.raises(SystemExit, match="NO VIGENTE"):
+        tablas._tablas("x", "tablas")
+    (tmp_path / "tablas/TABLA_X_NQ_1_2.json").write_text(json.dumps(dict(fuente="NQ", modulos={})))
+    assert len(tablas._tablas("x", "tablas")) == 1
+
+
+def test_validacion_de_fuente_por_criterio_unico():
+    """K43: el veredicto de una validación de fuente sale de `a5.calibrar_por_sesion`, no de una tabla a mano."""
+    from edgelab.research import a5 as A5
+    t = {s: 1.0 + (s % 3) for s in range(40)}; m = {s: v + 0.1 for s, v in t.items()}
+    assert A5.calibrar_por_sesion(t, m)["calibra"]
+    assert not A5.calibrar_por_sesion(t, {s: -v for s, v in t.items()})["calibra"]
+    assert "validacion" in (ROOT / "tools/papel_m1.py").read_text(encoding="utf-8")
+
+
+def test_a5_evalua_contraste_con_control_que_no_es_definicion():
+    """Error del 18-nov: `a5.evaluar` perdía el contraste «definición − control» cuando el control no estaba entre las definiciones
+    probadas (ESCALONADAS-M1 y su placebo)."""
+    import numpy as np, pandas as pd
+    from edgelab.research import a5 as A5
+    rng = np.random.default_rng(0); n = 400
+    T = pd.DataFrame(dict(ses=20100104 + np.arange(n) // 2, bloque="DESC", d=np.arange(n) % 2 == 0, pl=np.arange(n) % 2 == 1,
+                          r_e=rng.normal(0.1, 1, n), k_e=1.0))
+    res = A5.evaluar(T, "DESC", ["d"], ["e"], 0.0, control={"d": "pl"})
+    assert "d|e" in res and "d-pl|e" in res and "pl|e" not in res

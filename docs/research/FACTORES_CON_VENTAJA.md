@@ -319,10 +319,10 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5; calibrado 13/16
   - Siguiente: No hacer fade del borde del IB. Pista: a favor de la ruptura tras el rechazo (pre-registro propio).
   - Evidencia: `docs/research/ib_madonna_20261118/RESULTADO.md`
-- **ORB de 5 min (Zarattini-Aziz) en índices de EE. UU.: el bruto existe y es chico; no paga la fricción** (`F-ORB5-BRUTO-ESTABLE`, 2026-11-18, humano)
-  - Efecto: Holdout A5 NQ/ES/YM + EMD/RTY completos (n 10.082): +0,073 R bruto, p 0,009 contra nivel 0,0036, NO_CONFIRMADA; neto < 0 en todo instrumento y época; operable 2020–25 −0,03; NQ 2020–25 −0,03 bruto (el +0,16 de DESC+REP era selección).
-  - Dónde: NQ/ES/YM/EMD/RTY M1 (NT8), 2006–2025
-  - Siguiente: No operar ni proponer en canastas. Sólo como hipótesis nueva con menos fricción en R, en el forward terminal.
+- **ORB de 5 min (Zarattini-Aziz) en índices: bruto chico que no paga la fricción** (`F-ORB5-BRUTO-ESTABLE`, 2026-11-18, humano)
+  - Efecto: Holdout A5 + EMD/RTY (n 10.082): +0,073 R bruto, p 0,009 > nivel 0,0036; neto < 0 en todo; NQ 2020–25 −0,03 (el +0,16 de DESC+REP era selección).
+  - Dónde: NQ/ES/YM/EMD/RTY M1, 2006–2025
+  - Siguiente: No operar ni usar en canastas.
   - Evidencia: `docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.

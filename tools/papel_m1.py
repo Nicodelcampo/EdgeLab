@@ -4,6 +4,7 @@ Pre-registro: docs/research/papel_m1_20261115/PREREGISTRO.md. Etapa ANALIZAR_REG
 
   python tools/papel_m1.py lanzar VALIDACION|LARGO [FICHA ...]   # VALIDACION = 2025-08 → 2026-09 (comparable con ticks reales de NQ)
   python tools/papel_m1.py traer                                  # baja lo terminado a docs/research/papel_m1_20261115/resultados/
+  python tools/papel_m1.py validacion                             # criterio de la fuente POR CÓDIGO (a5.calibrar_por_sesion) -> VALIDACION.json
 """
 import json, sys
 from pathlib import Path
@@ -42,6 +43,24 @@ def traer():
         if e == "complete": dst.write_text(json.dumps(run.traer(L["handle"]), indent=1, default=float), encoding="utf-8")
 
 
+def validacion():
+    """K43 (2026-11-18): el veredicto de la fuente lo da el criterio único `a5.calibrar_por_sesion` (≥ 30 sesiones comunes, mismo signo,
+    |diferencia| ≤ 1 EE combinado, corr > 0,5), no una tabla escrita a mano. La v1 aprobó ASIA leyendo «≈ 1 ee» con otro EE."""
+    import pandas as pd
+    from edgelab.research import a5 as A5
+    out = {}
+    for fid in FICHAS:
+        f = _ficha(fid); od = f["ops_desarrollo"]; od = json.loads(od) if isinstance(od, str) else od
+        t = pd.DataFrame(od, columns=["ses", "v"]).groupby("ses").v.sum(); t = t[(t.index >= 20250801) & (t.index <= 20260929)]
+        r = OUT / "resultados" / f"{fid}_20250801_20260929.json"
+        if not r.exists(): out[fid] = dict(calibra=False, motivo="sin resultado M1"); continue
+        O = pd.DataFrame(json.loads(r.read_text(encoding="utf-8"))["operaciones"]); O["celda"] = O.celda.astype(str)
+        m = O.groupby(["ses", "celda"]).neto.sum().unstack().mean(axis=1)              # media de las celdas que operan la sesión
+        out[fid] = A5.calibrar_por_sesion({int(k): float(v) for k, v in t.items()}, {int(k): float(v) for k, v in m.items()})
+    (OUT / "VALIDACION.json").write_text(json.dumps(dict(criterio="a5.calibrar_por_sesion", fichas=out), indent=1, default=float), encoding="utf-8")
+    for k, v in out.items(): print(k, "CALIBRA" if v["calibra"] else "NO", {a: round(b, 3) if isinstance(b, float) else b for a, b in v.items()})
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
-    lanzar(a[1], a[2:]) if a[0] == "lanzar" else traer()
+    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": validacion}[a[0]]()

@@ -116,7 +116,13 @@ def traer(modulo=None):
         if modulo and L["modulo"] != modulo: continue
         nom = f"TABLA_{TB.cargar(L['modulo']).NOMBRE}_{L['fuente'].replace('DK:', '')}_{L['desde']}_{L['hasta']}"
         dest = carpeta(L["modulo"]) / {"confirmacion": "confirmacion", "holdout": "holdout"}.get(L["uso"], "tablas"); dest.mkdir(parents=True, exist_ok=True)
-        if (dest / f"{nom}.json").exists(): continue
+        if (dest / f"{nom}.json").exists():
+            # K41 (2026-11-18): una tabla ya bajada se revisa igual; antes se salteaba y una tabla de código viejo quedaba como vigente
+            viejo = codigo_vigente(json.loads((dest / f"{nom}.json").read_text(encoding="utf-8")), ROOT)
+            if not viejo: continue
+            for ext in ("json", "csv.gz"):
+                if (dest / f"{nom}.{ext}").exists(): (dest / f"{nom}.{ext}").replace(dest / f"{nom}.NO_VIGENTE.{ext}")
+            pend.append((L["slug"], f"tabla local NO VIGENTE ({viejo[:3]}): apartada; relanzar")); continue
         st = _estado(L["slug"])
         if st != "complete": pend.append((L["slug"], st)); continue
         for ext in ("json", "csv.gz"):
@@ -138,7 +144,12 @@ def _tablas(modulo, sub):
     fs = sorted((carpeta(modulo) / sub).glob("TABLA_*.csv.gz"))
     if not fs: raise SystemExit(f"sin tablas en {carpeta(modulo) / sub}")
     partes = []
+    from edgelab.research.preflight import codigo_vigente
+    fs = [f for f in fs if ".NO_VIGENTE." not in f.name]
     for f in fs:
+        js = json.loads(f.with_name(f.name.replace(".csv.gz", ".json")).read_text())
+        if (viejo := codigo_vigente(js, ROOT)):                                 # K41: nada se interpreta con código que cambió después
+            raise SystemExit(f"{f.name}: tabla NO VIGENTE ({viejo[:3]}): python tools/tablas.py traer {modulo} y relanzar")
         T = pd.read_csv(f); T["fuente"] = json.loads(f.with_name(f.name.replace(".csv.gz", ".json")).read_text())["fuente"].replace("DK:", ""); partes.append(T)
     return pd.concat(partes, ignore_index=True)
 

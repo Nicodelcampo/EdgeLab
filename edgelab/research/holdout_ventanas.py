@@ -117,6 +117,18 @@ def plan_desde_ops(R, dias, tipo: str = "e_proceso", n: int | None = None, fracc
                          n=n, ops_por_mes=len(R) / meses, fuente_efecto=f"desarrollo × {fraccion_efecto}")
 
 
+def _exigir_alfa_reservado(familia: str, plan: dict) -> None:
+    """K42 (2026-11-18): la potencia de una apertura se calcula al α que la prueba va a usar. Se declaró potencia 0,9 a α 0,05 cuando el
+    nivel LORD++ reservado de la familia era 0,0036 (potencia real ≈ 0,5). Si la familia tiene una reserva sin resolver en el libro
+    único, el `alfa` del plan no puede ser mayor que su nivel."""
+    if plan.get("tipo") != "fijo" or "alfa" not in plan: return
+    from edgelab.funnel.libro_lord import LibroLord
+    abiertas = [r for r in (LibroLord().estado.get("reservas") or {}).values() if r["familia"] == familia and not r["resuelta"]]
+    if abiertas and float(plan["alfa"]) > min(r["nivel"] for r in abiertas) * (1 + 1e-9):
+        raise ValueError(f"{familia}: plan de potencia a α {plan['alfa']:.4g}, mayor que el nivel LORD++ reservado "
+                         f"{min(r['nivel'] for r in abiertas):.4g}: recalcular con alfa=nivel (K42)")
+
+
 def registrar_apertura(familia: str, cid: str, desde: int, n_fijo: int, libro: Path = LIBRO, ahora=None, *, plan: dict | None = None) -> dict:
     """Registra la ÚNICA apertura de la familia. Exige `plan` de `plan_potencia` sin problemas (K27): ninguna ruta, ad hoc o del embudo,
     abre sin potencia."""
@@ -124,6 +136,7 @@ def registrar_apertura(familia: str, cid: str, desde: int, n_fijo: int, libro: P
         return {}
     if plan is None: raise ValueError(f"{cid}: apertura sin plan de potencia (holdout_ventanas.plan_potencia, K27)")
     if plan.get("problemas"): raise ValueError(f"{cid}: no se abre: " + "; ".join(plan["problemas"]))
+    if Path(libro).resolve() == LIBRO.resolve(): _exigir_alfa_reservado(familia, plan)
     row = dict(tipo="apertura", familia=familia, cid=cid, desde=int(desde), n_fijo=int(n_fijo), ts=ahora or time.time(),
                plan={k: v for k, v in plan.items() if k != "problemas"})
     Path(libro).parent.mkdir(parents=True, exist_ok=True)

@@ -3,7 +3,7 @@
 Pre-registro: docs/research/orb_a5_20261118/PREREGISTRO_CONFIRMACION_O1.md (la apertura y la reserva de α se registran ANTES de correr).
 
   python tools/orb_confirmacion_o1.py abrir                  # exige el pre-registro commiteado; reserva LORD++ y registra la apertura
-  python tools/orb_confirmacion_o1.py correr <datos M1 NT8>  # desenlaces SÓLO de lo declarado (O1 en HOLDOUT de NQ/ES/YM; EMD y RTY completos)
+  python tools/orb_confirmacion_o1.py correr [datos M1 NT8]  # desenlaces SÓLO de lo declarado (O1 en HOLDOUT de NQ/ES/YM; EMD y RTY completos)
   python tools/orb_confirmacion_o1.py analizar               # decisión pre-registrada → CONFIRMACION_O1.json
 """
 import json, sys
@@ -97,4 +97,4 @@ def analizar():
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"abrir": abrir, "correr": lambda: correr(a[1]), "analizar": analizar}[a[0]]()
+    {"abrir": abrir, "correr": lambda: correr(a[1] if len(a) > 1 else None), "analizar": analizar}[a[0]]()
