@@ -93,19 +93,27 @@ def limites(ctx, k):
 
 
 @njit(cache=False)
+def _stop_m1(fav, nivel, aper, j):
+    """K40 (2026-11-18): con pseudo-ticks de M1 (`aper` marca los de apertura) un stop cruzado dentro de la vela sale en su nivel
+    (el extremo de la vela no es un precio de ejecución); en la apertura (hueco), al precio real. Con ticks reales `aper` está vacío."""
+    if len(aper) > 0 and not aper[j]: return nivel
+    return fav
+
+
+@njit(cache=False)
 def _fin_operacion(ts, fin, j):
     kb = np.searchsorted(ts, j, side="right") - 1
     return ts[min(min(kb + 1 + 240, fin[kb]), len(ts) - 1)]
 
 
 @njit(cache=False)
-def _mercado_nb(tpx, j0, jw, lado, ref, sl, tp, pt, be):
+def _mercado_nb(tpx, aper, j0, jw, lado, ref, sl, tp, pt, be):
     e = tpx[j0]; D = lado * (ref - e)
     if D <= 0: return np.nan, np.nan
     risk = sl * D; stop = -risk; pos = 1.0; real = 0.0; hp = pt <= 0; hb = be <= 0; fav = 0.0
     for j in range(j0 + 1, jw):
         fav = lado * (tpx[j] - e)
-        if fav <= stop: return (real + pos * fav) / risk, risk            # stop a mercado: al tick que lo cruza
+        if fav <= stop: return (real + pos * _stop_m1(fav, stop, aper, j)) / risk, risk   # stop a mercado: al tick que lo cruza
         if fav >= tp * D: return (real + pos * tp * D) / risk, risk       # objetivo límite: en su nivel
         if not hp and fav >= pt * D:
             real += 0.5 * pt * D; pos = 0.5; hp = True
@@ -115,7 +123,7 @@ def _mercado_nb(tpx, j0, jw, lado, ref, sl, tp, pt, be):
 
 
 @njit(cache=False)
-def _vuelta_nb(tpx, ts, fin, j0, jw, lado, ref, ext, rg, e, r, b, obj, c):
+def _vuelta_nb(tpx, aper, ts, fin, j0, jw, lado, ref, ext, rg, e, r, b, obj, c):
     deep = ext; armado = False; je = -1
     for j in range(j0, jw):
         p = tpx[j]
@@ -132,34 +140,34 @@ def _vuelta_nb(tpx, ts, fin, j0, jw, lado, ref, ext, rg, e, r, b, obj, c):
     jend = _fin_operacion(ts, fin, je); fav = 0.0
     for j in range(je + 1, jend):
         fav = lado * (tpx[j] - ent)
-        if fav <= -risk: return fav / risk, risk
+        if fav <= -risk: return _stop_m1(fav, -risk, aper, j) / risk, risk
         if fav >= rew: return rew / risk, risk
     return fav / risk, risk
 
 
 @njit(cache=False)
-def _precios_nb(tpx, j0, jw, lado, obj, stop):
+def _precios_nb(tpx, aper, j0, jw, lado, obj, stop):
     e = tpx[j0]; risk = lado * (e - stop); rew = lado * (obj - e)
     if not (risk > 0 and rew > 0): return np.nan, np.nan                   # la entrada real ya pasó el stop o el objetivo
     fav = 0.0
     for j in range(j0 + 1, jw):
         fav = lado * (tpx[j] - e)
-        if fav <= -risk: return fav / risk, risk
+        if fav <= -risk: return _stop_m1(fav, -risk, aper, j) / risk, risk
         if fav >= rew: return rew / risk, risk
     return fav / risk, risk
 
 
 @njit(cache=False)
-def _lote_precios(tpx, j0, jw, ok, lado, obj, stop):
+def _lote_precios(tpx, aper, j0, jw, ok, lado, obj, stop):
     n = len(j0); out = np.full((n, 2), np.nan)
     for q in range(n):
         if ok[q] and np.isfinite(obj[q]) and np.isfinite(stop[q]):
-            r, k = _precios_nb(tpx, j0[q], jw[q], lado[q], obj[q], stop[q]); out[q, 0] = r; out[q, 1] = k
+            r, k = _precios_nb(tpx, aper, j0[q], jw[q], lado[q], obj[q], stop[q]); out[q, 0] = r; out[q, 1] = k
     return out
 
 
 @njit(cache=False)
-def _limite_nb(tpx, ts, fin, j0, jw, lado, ext, rg, tick, x, sl, tp):
+def _limite_nb(tpx, aper, ts, fin, j0, jw, lado, ext, rg, tick, x, sl, tp):
     lim = ext - lado * x * rg; jf = -1
     for j in range(j0, jw):                                                # «atraviesa»: un tick más allá del límite
         if lado * (tpx[j] - (lim - lado * tick)) <= 1e-12:
@@ -168,7 +176,7 @@ def _limite_nb(tpx, ts, fin, j0, jw, lado, ext, rg, tick, x, sl, tp):
     risk = sl * rg; rew = tp * rg; jend = _fin_operacion(ts, fin, jf); fav = 0.0
     for j in range(jf + 1, jend):
         fav = lado * (tpx[j] - lim)
-        if fav <= -risk: return fav / risk, risk
+        if fav <= -risk: return _stop_m1(fav, -risk, aper, j) / risk, risk
         if fav >= rew: return rew / risk, risk
     return fav / risk, risk
 
@@ -198,30 +206,39 @@ def _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg):
 
 
 @njit(cache=False)
-def _lote_mercado(tpx, j0, jw, ok, lado, ref, sl, tp, pt, be):
+def _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, sl, tp, pt, be):
     n = len(j0); out = np.full((n, 2), np.nan)
     for q in range(n):
         if ok[q]:
-            r, k = _mercado_nb(tpx, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be); out[q, 0] = r; out[q, 1] = k
+            r, k = _mercado_nb(tpx, aper, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be); out[q, 0] = r; out[q, 1] = k
     return out
 
 
 @njit(cache=False)
-def _lote_vuelta(tpx, ts, fin, j0, jw, ok, lado, ref, ext, rg, e, r, b, obj, c):
+def _lote_vuelta(tpx, aper, ts, fin, j0, jw, ok, lado, ref, ext, rg, e, r, b, obj, c):
     n = len(j0); out = np.full((n, 2), np.nan)
     for q in range(n):
         if ok[q]:
-            x, k = _vuelta_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q], e, r, b, obj, c); out[q, 0] = x; out[q, 1] = k
+            x, k = _vuelta_nb(tpx, aper, ts, fin, j0[q], jw[q], lado[q], ref[q], ext[q], rg[q], e, r, b, obj, c); out[q, 0] = x; out[q, 1] = k
     return out
 
 
 @njit(cache=False)
-def _lote_limite(tpx, ts, fin, j0, jw, ok, lado, ext, rg, tick, x, sl, tp):
+def _lote_limite(tpx, aper, ts, fin, j0, jw, ok, lado, ext, rg, tick, x, sl, tp):
     n = len(j0); out = np.full((n, 2), np.nan)
     for q in range(n):
         if ok[q]:
-            v, k = _limite_nb(tpx, ts, fin, j0[q], jw[q], lado[q], ext[q], rg[q], tick, x, sl, tp); out[q, 0] = v; out[q, 1] = k
+            v, k = _limite_nb(tpx, aper, ts, fin, j0[q], jw[q], lado[q], ext[q], rg[q], tick, x, sl, tp); out[q, 0] = v; out[q, 1] = k
     return out
+
+
+def aperturas(ctx) -> np.ndarray:
+    """K40: vacío con ticks reales; con `ctx["m1_sintetico"]` (velas M1 como pseudo-ticks: lector `M1NT8:`/`M1DK:`) marca el
+    pseudo-tick de apertura de cada vela, para que un stop cruzado dentro de la vela salga en su nivel."""
+    if not ctx.get("m1_sintetico"): return np.zeros(0, np.bool_)
+    tpx = np.asarray(ctx["tpx"]); ts = np.asarray(ctx["tstart"], np.int64)[:-1]
+    a = np.zeros(len(tpx), np.bool_); a[ts[ts < len(tpx)]] = True
+    return a
 
 
 def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
@@ -233,17 +250,17 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
     tpx = np.asarray(ctx["tpx"], float); ts = np.asarray(ctx["tstart"], np.int64); tick = float(ctx["tick"])
     j0, jw, fin = limites(ctx, E.k.to_numpy(np.int64))
     lado = E.lado.to_numpy(np.int64); ref = E.ref.to_numpy(float); ext = E.ext.to_numpy(float); rg = E.rg.to_numpy(float)
-    ok = jw > j0 + 1; cols = {}
+    ok = jw > j0 + 1; cols = {}; aper = aperturas(ctx)
     mec = _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg)
     cols.update(mec_ext_antes_ref=mec[:, 0], mec_ext_antes_mitad=mec[:, 1], mec_toca_ref=mec[:, 2], mec_toca_mitad=mec[:, 3])
     for s in specs:
         if s[0] == "PRECIOS":
-            o = _lote_precios(tpx, j0, jw, ok, lado, E[s[1]].to_numpy(float), E[s[2]].to_numpy(float))
+            o = _lote_precios(tpx, aper, j0, jw, ok, lado, E[s[1]].to_numpy(float), E[s[2]].to_numpy(float))
             cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]; continue
         p = [float(v) for v in s[1:]]
-        if s[0] == "MERCADO": o = _lote_mercado(tpx, j0, jw, ok, lado, ref, *p)
-        elif s[0] == "VUELTA": o = _lote_vuelta(tpx, ts, fin, j0, jw, ok, lado, ref, ext, rg, p[0], p[1], p[2], int(p[3]), p[4])
-        else: o = _lote_limite(tpx, ts, fin, j0, jw, ok, lado, ext, rg, tick, *p)
+        if s[0] == "MERCADO": o = _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, *p)
+        elif s[0] == "VUELTA": o = _lote_vuelta(tpx, aper, ts, fin, j0, jw, ok, lado, ref, ext, rg, p[0], p[1], p[2], int(p[3]), p[4])
+        else: o = _lote_limite(tpx, aper, ts, fin, j0, jw, ok, lado, ext, rg, tick, *p)
         cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]
     return pd.concat([E.reset_index(drop=True), pd.DataFrame(cols)], axis=1)
 
@@ -258,6 +275,16 @@ def huella_motor() -> str:
     return hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
 
 
+def _como_m1(ctx):
+    """Las mismas velas como pseudo-ticks de M1 (apertura, extremos en orden conservador, cierre), con el lector de M1 real
+    (`fuentes_ticks._velas_a_ticks`): el contexto queda marcado `m1_sintetico` (K40)."""
+    from edgelab.research import grilla_generica as GG
+    from edgelab.research.fuentes_ticks import _velas_a_ticks
+    t0 = ((np.asarray(ctx["t"], np.int64) - 60) * NS).astype(np.int64); ses = np.asarray(ctx["ses"], np.int64)
+    bl = _velas_a_ticks(t0, *(np.asarray(ctx[x], float) for x in ("o", "h", "l", "c", "v")), ses, int(ses.min()), int(ses.max()), float(ctx["tick"]))
+    return GG.contexto_m1(bl, float(ctx["tick"]))
+
+
 def calibrar(specs=None, n=3000, dias=40, seeds=(21, 22), escala=60.0, umbral_t=3.0) -> dict:
     """Entradas al azar (lado al azar, ref a `escala` puntos a favor, ext = cierre, rg = escala) sobre caminatas sintéticas sin
     deriva, con y sin saltos. Un motor honesto no puede dar R medio positivo y significativo en ninguna ejecución: `optimistas`
@@ -265,20 +292,25 @@ def calibrar(specs=None, n=3000, dias=40, seeds=(21, 22), escala=60.0, umbral_t=
     El t es por SESIÓN (suma de R de cada día como unidad): las entradas al azar del mismo día se superponen y un t por evento
     sale inflado (daba ±3–4,6 en caminatas sin efecto). Devuelve el detalle por ejecución y la huella del motor."""
     from edgelab.research import grilla_generica as GG, sintetico
-    specs = list(specs or CALIBRACION_BASE); res = {}; malas = set()
+    specs = list(specs or CALIBRACION_BASE); res = {}; malas = set(); m1_saltos = set()
     for seed in seeds:
         for saltos in (0.0, 0.005):
-            ctx = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=seed, prob_salto=saltos), tick=0.25)
-            rng = np.random.default_rng(seed); m = len(ctx["c"]); k = rng.integers(50, m - TOPE - 5, n); lado = rng.choice([-1, 1], n)
-            c = np.asarray(ctx["c"])[k]
+            ctx_t = GG.contexto_m1(sintetico.bloques(dias=dias, planta=False, seed=seed, prob_salto=saltos), tick=0.25)
+            rng = np.random.default_rng(seed); m = len(ctx_t["c"]); k = rng.integers(50, m - TOPE - 5, n); lado = rng.choice([-1, 1], n)
+            c = np.asarray(ctx_t["c"])[k]
             E = pd.DataFrame(dict(k=k, lado=lado, ref=c + lado * escala, ext=c, rg=escala, obj_cal=c + lado * escala, stop_cal=c - lado * escala / 2))
-            T = desenlaces(E, ctx, specs)
-            ses = np.asarray(ctx["ses"])[k]
-            for s in specs:
-                y = T[f"r_{nombre(s)}"].to_numpy(float); m = np.isfinite(y)
-                if m.sum() < 30: continue
-                g = pd.Series(y[m]).groupby(ses[m]).sum().to_numpy()            # t por sesión: las entradas de un día se pisan
-                y = y[m]; t = float(g.sum() / np.sqrt((g ** 2).sum())) if (g ** 2).sum() > 0 else 0.0
-                res.setdefault(nombre(s), []).append(dict(seed=seed, saltos=saltos, n=int(len(y)), media=round(float(y.mean()), 4), t=round(t, 2)))
-                if t > umbral_t: malas.add(nombre(s))
-    return dict(huella=huella_motor(), optimistas=sorted(malas), detalle=res)
+            ses = np.asarray(ctx_t["ses"])[k]
+            for modo, ctx in (("ticks", ctx_t), ("m1", _como_m1(ctx_t))):         # K40: también las velas M1 como pseudo-ticks
+                T = desenlaces(E, ctx, specs)
+                for s in specs:
+                    y = T[f"r_{nombre(s)}"].to_numpy(float); m = np.isfinite(y)
+                    if m.sum() < 30: continue
+                    g = pd.Series(y[m]).groupby(ses[m]).sum().to_numpy()        # t por sesión: las entradas de un día se pisan
+                    y = y[m]; t = float(g.sum() / np.sqrt((g ** 2).sum())) if (g ** 2).sum() > 0 else 0.0
+                    res.setdefault(nombre(s), []).append(dict(seed=seed, saltos=saltos, modo=modo, n=int(len(y)), media=round(float(y.mean()), 4),
+                                                              t=round(t, 2)))
+                    # K40: M1 no ve los saltos dentro de la vela (acreditar el stop en su nivel es optimista con saltos). El modo m1 se
+                    # vigila sin saltos, y toda familia medida en M1 se calibra contra ticks reales (K30); con saltos se reporta.
+                    if t > umbral_t and (modo == "ticks" or saltos == 0.0): malas.add(f"{nombre(s)}@{modo}")
+                    elif t > umbral_t: m1_saltos.add(nombre(s))
+    return dict(huella=huella_motor(), optimistas=sorted(malas), m1_optimistas_con_saltos=sorted(m1_saltos), detalle=res)

@@ -140,13 +140,13 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   escala. Usar R o ATR.
 - **K38, ajuste de quien diseñó la regla.** Una regla de un tercero se prueba fuera de lo que su autor pudo usar: otro instrumento u otros
   años. Los módulos de FundedSync sólo funcionan en NQ 2020+; T es la excepción porque también pasa ES y YM.
-- **K40, stop en M1 al extremo de la vela (2026-11-18, LUXIMB-A5).** Con pseudo-ticks de M1 (apertura, extremos, cierre), «salir al precio
-  del tick que cruza el stop» cobra el extremo de la vela. Correcto con ticks reales, pesimista con M1 cuando el stop es chico frente al
-  rango de la vela. En LUXIMB-A5 la pérdida media era −1,53 R contra −1,01 R en ticks, con la misma frecuencia de stop, y la calibración
-  falló en 12/12 celdas.
-  - **Corrección:** en M1, el stop sale en su nivel, salvo un hueco en la apertura (`luximb_hvn._e0_nb`, parámetro `aper`).
-  - **Pendiente:** el motor común (`areas_expansion.simular_cierre_linea`) usa la misma convención. Las mediciones en M1 de reglas con
-    stops cortos (incluido el «atrás» del 17-nov) se revisan con este sesgo en mente; la calibración contra ticks es la guarda.
+- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con pseudo-ticks de M1, «salir al tick que cruza el stop» cobra el extremo de
+  la vela. Con stops chicos es pesimista: en LUXIMB-A5 la calibración falló 12/12.
+  - **Corrección:** con `m1_sintetico` (lo marcan los lectores M1), el stop sale en su nivel, salvo un hueco en la apertura. Está en
+    `ejecucion.py` y en `luximb_hvn._e0_nb`.
+  - **Riesgo:** M1 no ve saltos dentro de la vela. Por eso toda familia en M1 se calibra contra ticks (K30); en NQ dio igual o más
+    pesimista.
+  - **Sigue con la convención vieja:** `areas_expansion.simular_cierre_linea`, que usó el «atrás» del 17-nov.
 - **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de
   drawdown y de tamaño.
 

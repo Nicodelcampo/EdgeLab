@@ -94,8 +94,14 @@ def contexto_m1(bloques, tick, ticks_por_barra=None):
     """Contexto de velas M1 (por defecto) o de velas de `ticks_por_barra` ticks (2026-11-07): mismas claves, el motor de la grilla y el
     simulador no cambian. Con velas de ticks, «barra» = vela de n ticks en todo el motor (TOPE_BARRAS, límite de 120 barras, etc.)."""
     from edgelab.research.areas_expansion_run import m1_y_perfil, ticks_y_perfil
-    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(bloques, int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(bloques)
-    return dict(t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
+    marca = dict(sint=False)
+
+    def _vigilar(bl):                                   # K40 (2026-11-18): bloques de velas M1 como pseudo-ticks (lectores M1NT8/M1DK)
+        for b in bl:
+            if "sintetico" in getattr(b, "columns", ()): marca["sint"] = True
+            yield b
+    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(_vigilar(bloques), int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(_vigilar(bloques))
+    return dict(m1_sintetico=marca["sint"], t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
                 ses=M.ses.to_numpy().astype(np.int64), seg=M.seg.to_numpy(), vp_px=vpp, vp_vol=vpv, vp_start=vps, tpx=tpx, tstart=tstart,
                 tick=float(tick), ticks_por_barra=int(ticks_por_barra) if ticks_por_barra else None)
 

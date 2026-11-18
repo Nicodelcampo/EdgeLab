@@ -181,7 +181,7 @@ def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
         px = np.column_stack([o[m], p1[m], p2[m], c[m]]).ravel(); px = np.round(px / tk) * tk
         vv = np.repeat(v[m] / 4.0, 4); keep = ts < HOLDOUT_APERTURA_UTC_NS
         yield pd.DataFrame(dict(ts_ns=ts[keep], px=px[keep], vol=vv[keep], sesion=np.full(int(keep.sum()), int(d), np.int64),
-                                segmento=np.zeros(int(keep.sum()), np.int64)))
+                                segmento=np.zeros(int(keep.sum()), np.int64), sintetico=np.ones(int(keep.sum()), np.bool_)))   # K40
 
 
 # M1 REAL de futuros CME exportado de NinjaTrader 8 (2026-11-17, dataset privado `edgelab-nt8-m1-futuros`): NQ/ES/YM desde 2006-01, GC
@@ -202,7 +202,7 @@ def _velas_a_ticks(t0, o, h, l, c, v, td, desde, hasta, tk):
         vv = np.repeat(v[m] / 4.0, 4); keep = ts < HOLDOUT_APERTURA_UTC_NS
         if keep.any():
             yield pd.DataFrame(dict(ts_ns=ts[keep], px=px[keep], vol=vv[keep], sesion=np.full(int(keep.sum()), int(d), np.int64),
-                                    segmento=np.zeros(int(keep.sum()), np.int64)))
+                                    segmento=np.zeros(int(keep.sum()), np.int64), sintetico=np.ones(int(keep.sum()), np.bool_)))   # K40
 
 
 def bloques_m1nt8(simbolo, desde, hasta, entrada="/kaggle/input"):

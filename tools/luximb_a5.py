@@ -17,6 +17,7 @@ from pathlib import Path
 import numpy as np, pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
+from edgelab.research import a5 as A5  # noqa: E402  (capa común de la partición A5, extraída de esta herramienta)
 DIR = ROOT / "docs/research/luximb_a5_20261118"
 FAMILIA = "LUXIMB_A5_ZONAS25"
 VENTANA = (20060106, 20221230)                       # 2023-01 → 2026-09 lo usó el linaje (H-ZONAS en USATECH, desarrollo en ticks)
@@ -73,9 +74,7 @@ def calibrar(datos):
 
 
 def _bloques(ses):
-    from edgelab.holdout import a5_bloque
-    u = np.unique(ses); m = {int(s): a5_bloque(int(s)) for s in u}
-    return np.array([m[int(s)] for s in ses])
+    return A5.bloques(ses)
 
 
 def correr(datos):
@@ -97,30 +96,7 @@ def correr(datos):
     print(json.dumps(cnt), flush=True)
 
 
-def _sf(z):
-    """Cola superior de la normal (sin scipy, que no está en el entorno)."""
-    from math import erfc, sqrt
-    return float(0.5 * erfc(z / sqrt(2)))
-
-
-def _cluster(ses, r):
-    """Media por operación y p unilateral (H1: media > 0) con error estándar agrupado por sesión."""
-    df = pd.DataFrame(dict(s=ses, r=r)); g = df.groupby("s").r.agg(["sum", "count"]); n = g["count"].sum()
-    m = g["sum"].sum() / n; se = float(np.sqrt(((g["sum"] - m * g["count"]) ** 2).sum()) / n)
-    return float(m), se, _sf(m / se) if se > 0 else 1.0
-
-
-def _dif(ses_a, r_a, ses_b, r_b, B=2000, seed=7):
-    """Zonas − control: bootstrap por sesión (las dos celdas comparten impulsos, no son independientes)."""
-    a = pd.DataFrame(dict(s=ses_a, r=r_a)).groupby("s").r.agg(["sum", "count"])
-    b = pd.DataFrame(dict(s=ses_b, r=r_b)).groupby("s").r.agg(["sum", "count"])
-    S = np.array(sorted(set(a.index) | set(b.index))); a = a.reindex(S, fill_value=0); b = b.reindex(S, fill_value=0)
-    obs = a["sum"].sum() / a["count"].sum() - b["sum"].sum() / b["count"].sum()
-    rng = np.random.default_rng(seed); A = a.to_numpy(float); Bm = b.to_numpy(float); bs = np.empty(B)
-    for i in range(B):
-        ix = rng.integers(0, len(S), len(S)); sa, sb = A[ix].sum(0), Bm[ix].sum(0); bs[i] = sa[0] / sa[1] - sb[0] / sb[1]
-    se = float(bs.std(ddof=1))
-    return float(obs), se, _sf(obs / se) if se > 0 else 1.0
+_cluster, _dif = (lambda ses, r: A5.cluster(ses, r)), (lambda *a: A5.diferencia(*a))
 
 
 def _celdas(T, bloque, fr):
@@ -143,7 +119,7 @@ def _celdas(T, bloque, fr):
 
 
 def desc():
-    from edgelab.research.banco_eventos import bh
+    bh = A5.bh
     from edgelab.research.embudo_runners import friccion
     T = pd.read_csv(DIR / "OPS_DESC_REP.csv.gz"); res = _celdas(T, "DESC", friccion("NQ")[0])
     cal = json.loads((DIR / "CALIBRACION.json").read_text())["celdas"]
