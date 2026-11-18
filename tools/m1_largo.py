@@ -85,7 +85,7 @@ def correr_som(inst, datos):
     fr = friccion(inst)[0]; partes = []
     for celda, cfg in (("sin_eod", SessionOpenMomentumConfig()), ("eod", replace(SessionOpenMomentumConfig(), close_eod=True)),
                        ("sin_finde", replace(SessionOpenMomentumConfig(), close_weekend=True))):
-        partes.append(ops_som(df, cfg, FUENTES[inst][1], fr).assign(celda=celda))
+        partes.append(ops_som(df, cfg, FUENTES.get(inst, (None, "USA500"))[1], fr).assign(celda=celda))   # RTY/EMD: preset de redondeo del S&P (no cambia R)
     pd.concat(partes).to_csv(DIR / f"SOM_OPS_{inst}.csv.gz", index=False); print(inst, "SOM", len(partes[-1]), flush=True)
 
 
@@ -125,6 +125,44 @@ def analizar_franklin():
     (DIR / "RESULTADO_FRANKLIN.json").write_text(json.dumps(out, indent=1, default=float))
     v = out["limpio_2006_2011"]; print("FRANKLIN limpio", v["veredicto"], v["ops"], v["u_op"], v["ic90"], v["frac_anios_pos"], v["potencia_mitad_ref"])
     for k, x in out["periodos"].items(): print(k, "neto", round(x["neto"]["u_op"] or 0, 3), x["neto"]["ic90"], "bruto", round(x["bruto"]["u_op"] or 0, 3), x["bruto"]["ic90"], "fricR", round(x["friccion_R"], 3))
+
+
+NUEVOS = {"EMD": (20060109, 20250731), "RTY": (20170710, 20250731)}       # PREREGISTRO_INDICES.md
+SOM_RTY_LIMPIO = (20170710, 20190228)                                         # SOM ya miró el Russell (CFD) desde 2019-03 (som_transfer)
+
+
+def _con_costos(inst, fn, *a):
+    """EMD tiene spread ESTIMADO (costos_canonicos.json): sólo se usa dentro del permiso declarado (K33)."""
+    from edgelab import costos as C
+    if inst == "EMD":
+        with C.estimados_permitidos("docs/research/m1_largo_20261117/PREREGISTRO_INDICES.md"): return fn(*a)
+    return fn(*a)
+
+
+def analizar_indices():
+    """PREREGISTRO_INDICES.md: SOM (R) y R AtrPhase (ATR) en EMD y RTY, BRUTO, ventana limpia de cada uno; descriptivo neto y por período."""
+    from edgelab.research.embudo_runners import friccion
+    out = dict(preregistro="docs/research/m1_largo_20261117/PREREGISTRO_INDICES.md", pruebas={}, descriptivo={})
+    o_som, o_r, d_som, d_r = [], [], [], []
+    for inst, (a, b) in NUEVOS.items():
+        s = pd.read_csv(DIR / f"SOM_OPS_{inst}.csv.gz"); s = s[s.celda == "sin_finde"]
+        lim = SOM_RTY_LIMPIO if inst == "RTY" else (a, b)
+        o_som += [(int(f), inst, float(r)) for f, r in zip(s.fecha, s.Rb) if lim[0] <= f <= lim[1]]
+        d_som += [(int(f), inst, float(r), float(rn)) for f, r, rn in zip(s.fecha, s.Rb, s.R)]
+        fr = _con_costos(inst, lambda: friccion(inst)[0])
+        g = pd.read_csv(DIR / f"FS_OPS_{inst}.csv.gz"); g = g[(g.modulo == "R") & np.isfinite(g.atr20)]
+        ses = pd.to_datetime(g.dia).dt.strftime("%Y%m%d").astype(int); bruto = (g.neto + fr) / g.atr20; neto = g.neto / g.atr20
+        o_r += [(int(x), inst, float(u)) for x, u in zip(ses, bruto) if a <= x <= b]; d_r += [(int(x), inst, float(u), float(n)) for x, u, n in zip(ses, bruto, neto)]
+    for nom, o, ref in (("SOM", o_som, 0.064), ("R", o_r, 0.097)):           # efecto de referencia: bruto de los años limpios de NQ/ES/YM
+        res, R = _resumen(o, 20060101, 20250731); out["pruebas"][nom] = _veredicto(res, R, ref)
+    for nom, d in (("SOM", d_som), ("R", d_r)):
+        for inst in NUEVOS:
+            for per, (x, y) in (("2006-2011", (20060101, 20111231)), ("2012-2019", (20120101, 20191231)), ("2020-2025", REF_EXT)):
+                b = [(s, i, u) for s, i, u, n in d if i == inst]; n_ = [(s, i, n) for s, i, u, n in d if i == inst]
+                out["descriptivo"][f"{nom}|{inst}|{per}"] = dict(bruto=_resumen(b, x, y)[0], neto=_resumen(n_, x, y)[0])
+    (DIR / "RESULTADO_INDICES.json").write_text(json.dumps(out, indent=1, default=float))
+    for k, v in out["pruebas"].items(): print("PRUEBA", k, v["veredicto"], v["ops"], v["u_op"], v["ic90"], v["frac_anios_pos"], v["potencia_mitad_ref"])
+    for k, v in out["descriptivo"].items(): print(k, "bruto", v["bruto"]["u_op"] and round(v["bruto"]["u_op"], 3), v["bruto"]["ops"], "neto", v["neto"]["u_op"] and round(v["neto"]["u_op"], 3))
 
 
 # ------------------------------------------------------------------------------------------------- capa 2 (PREREGISTRO_CAPA2.md)
@@ -318,7 +356,8 @@ def analizar():
 
 if __name__ == "__main__":
     c = sys.argv[1]
-    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado, "variantes": correr_variantes, "cartera": correr_cartera, "franklin": correr_franklin}[sys.argv[3]](sys.argv[4], sys.argv[2])
+    if c == "correr": _con_costos(sys.argv[4], {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado, "variantes": correr_variantes, "cartera": correr_cartera, "franklin": correr_franklin}[sys.argv[3]], sys.argv[4], sys.argv[2])
     elif c == "analizar": analizar()
     elif c == "analizar_capa2": analizar_capa2()
     elif c == "analizar_franklin": analizar_franklin()
+    elif c == "analizar_indices": analizar_indices()
