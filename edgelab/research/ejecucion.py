@@ -22,6 +22,9 @@ Ejecuciones (tuplas; `nombre(spec)` da la columna):
                                      (obj 1); se cancela si se extiende más de c·rg, si toca ref antes o al vencer la espera
   ("PRECIOS", "col_obj", "col_stop") entrada a mercado; objetivo y stop en PRECIOS por fila (columnas de la tabla): para reglas con
                                      stop estructural (detrás de un extremo) y objetivos en niveles del impulso
+  ("RESCATE", sl, tp, d, x)          (Nico, 2026-11-18) entrada y stop/objetivo como MERCADO; si el precio se adentra d·riesgo hacia el
+                                     stop, se arma una salida límite a −x·riesgo de la entrada (x = 0: salir en la entrada) y se
+                                     cierra si el precio vuelve ahí; stop y objetivo siguen activos. La salida límite se cobra en su nivel
   ("LIMITE", x, sl, tp)              orden límite x·rg más allá de `ext` (en contra), viva durante la espera; stop sl·rg y
                                      objetivo tp·rg desde el límite (fill «atraviesa», `fill_pasivo.operar`)
 Salida por ejecución: `r_<nombre>` (R bruto, NaN = sin operación) y `k_<nombre>` (riesgo inicial en precio, para restar la
@@ -56,6 +59,9 @@ def nombre(spec) -> str:
     if t == "VUELTA":
         e, r, b, obj, c = p
         return f"V_e{e}_r{r}_b{b}_{'R' if obj == 0 else 'M'}_c{c}"
+    if t == "RESCATE":
+        sl, tp, d, x = p
+        return f"RS_sl{sl}_tp{tp}_d{d}_x{x}"
     if t == "LIMITE":
         x, sl, tp = p
         return f"L_x{x}_sl{sl}_tp{tp}"
@@ -76,6 +82,8 @@ def validar(specs) -> list:
         if s[0] == "MERCADO" and (s[1] <= 0 or s[2] <= 0 or max(s[3], s[4]) >= s[2]): e.append(f"{n}: stop y objetivo > 0; parcial/BE antes del objetivo")
         if s[0] == "VUELTA" and not (0 < s[2] and s[1] < s[5] and s[3] > 0): e.append(f"{n}: r > 0, b > 0 y c > e")
         if s[0] == "LIMITE" and not (s[2] > 0 and s[3] > 0): e.append(f"{n}: stop y objetivo > 0")
+        if s[0] == "RESCATE" and not (s[1] > 0 and s[2] > 0 and 0 < s[3] < 1 and 0 <= s[4] < s[3]):
+            e.append(f"{n}: stop y objetivo > 0; 0 < d < 1 y 0 <= x < d (el rescate sale más cerca de la entrada que el armado)")
         if s[0] == "PRECIOS" and not (len(s) in (3, 4) and all(isinstance(x, str) for x in s[1:])):
             e.append(f"{n}: (\"PRECIOS\", columna objetivo, columna stop[, columna vela de salida])")
     return e
@@ -122,6 +130,20 @@ def _mercado_nb(tpx, aper, j0, jw, lado, ref, sl, tp, pt, be):
         if not hb and fav >= be * D:
             stop = max(stop, 0.0); hb = True
     return (real + pos * fav) / risk, risk
+
+
+@njit(cache=False)
+def _rescate_nb(tpx, aper, j0, jw, lado, ref, sl, tp, d, x):
+    e = tpx[j0]; D = lado * (ref - e)
+    if D <= 0: return np.nan, np.nan
+    risk = sl * D; armado = False; fav = 0.0
+    for j in range(j0 + 1, jw):
+        fav = lado * (tpx[j] - e)
+        if fav <= -risk: return _stop_m1(fav, -risk, aper, j) / risk, risk   # stop a mercado: al tick que lo cruza
+        if fav >= tp * D: return tp * D / risk, risk                         # objetivo límite: en su nivel
+        if not armado and fav <= -d * risk: armado = True; continue           # se adentró d·riesgo hacia el stop
+        if armado and fav >= -x * risk: return -x, risk                       # volvió a −x·riesgo: salida límite en su nivel
+    return fav / risk, risk
 
 
 @njit(cache=False)
@@ -208,11 +230,14 @@ def _lote_mec(tpx, j0, jw, ok, lado, ref, ext, rg):
 
 
 @njit(cache=False)
-def _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, sl, tp, pt, be):
+def _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, sl, tp, pt, be, d=0.0, x=0.0):
+    """MERCADO; con d > 0, RESCATE (`_rescate_nb`: la misma entrada, stop y objetivo, más la salida de rescate)."""
     n = len(j0); out = np.full((n, 2), np.nan)
     for q in range(n):
         if ok[q]:
-            r, k = _mercado_nb(tpx, aper, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be); out[q, 0] = r; out[q, 1] = k
+            if d > 0: r, k = _rescate_nb(tpx, aper, j0[q], jw[q], lado[q], ref[q], sl, tp, d, x)
+            else: r, k = _mercado_nb(tpx, aper, j0[q], jw[q], lado[q], ref[q], sl, tp, pt, be)
+            out[q, 0] = r; out[q, 1] = k
     return out
 
 
@@ -266,6 +291,7 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
             cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]; continue
         p = [float(v) for v in s[1:]]
         if s[0] == "MERCADO": o = _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, *p)
+        elif s[0] == "RESCATE": o = _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, p[0], p[1], 0.0, 0.0, p[2], p[3])
         elif s[0] == "VUELTA": o = _lote_vuelta(tpx, aper, ts, fin, j0, jw, ok, lado, ref, ext, rg, p[0], p[1], p[2], int(p[3]), p[4])
         else: o = _lote_limite(tpx, aper, ts, fin, j0, jw, ok, lado, ext, rg, tick, *p)
         cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]
@@ -275,7 +301,8 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
 # ------------------------------------------------------------------------------------------------- calibración (V3)
 CALIBRACION_BASE = [("MERCADO", sl, tp, pt, be) for sl in (0.2, 0.5) for tp in (0.5, 1.0) for pt, be in ((0, 0), (0.25, 0), (0, 0.25))] + \
                    [("VUELTA", e, r, 0.1, o, e + 0.5) for e in (0.1, 0.25) for r in (0.05, 0.1) for o in (0, 1)] + \
-                   [("LIMITE", x, 0.5, 1.0) for x in (0.1, 0.25)] + [("PRECIOS", "obj_cal", "stop_cal")]
+                   [("LIMITE", x, 0.5, 1.0) for x in (0.1, 0.25)] + [("PRECIOS", "obj_cal", "stop_cal")] + \
+                   [("RESCATE", sl, 1.0, d, x) for sl in (0.5, 1.5) for d, x in ((0.5, 0.0), (0.75, 0.25))]
 
 
 def huella_motor() -> str:

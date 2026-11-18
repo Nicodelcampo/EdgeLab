@@ -128,3 +128,28 @@ def test_motor_grilla_m1_calibrado():
         t = g.sum() / np.sqrt((g ** 2).sum())
         assert t < 3.0, (seed, Rm.mean(), t)                                                     # sin optimismo
         assert abs(Rm.mean() - Rt.mean()) < 0.05, (seed, Rm.mean(), Rt.mean())                 # cerca de los ticks
+
+
+def test_rescate_de_nico():
+    """RESCATE (Nico, 2026-11-18): adentrarse d·riesgo hacia el stop arma una salida límite a −x·riesgo; si vuelve, sale ahí."""
+    # compra en 100, ref 110 (D = 10), stop sl 0.5 -> 95 (riesgo 5); d 0.5 arma en 97.5; x 0 -> sale en 100
+    assert X._rescate_nb(_p(100, 99, 97, 98, 100.5, 104), _NA, 0, 6, 1, 110.0, 0.5, 1.0, 0.5, 0.0)[0] == 0.0
+    # x 0.25 -> sale en 98.75 (−0,25 R)
+    assert X._rescate_nb(_p(100, 99, 97, 98, 99, 104), _NA, 0, 6, 1, 110.0, 0.5, 1.0, 0.5, 0.25)[0] == -0.25
+    # sin armar (nunca baja a 97.5): llega al objetivo 110 (+2 R)
+    assert X._rescate_nb(_p(100, 98, 99, 105, 110, 111), _NA, 0, 6, 1, 110.0, 0.5, 1.0, 0.5, 0.0)[0] == 2.0
+    # armado y sigue cayendo: stop al tick que lo cruza (94 -> −1,2 R)
+    assert X._rescate_nb(_p(100, 97, 96, 94), _NA, 0, 4, 1, 110.0, 0.5, 1.0, 0.5, 0.0)[0] == -1.2
+    # venta simétrica: venta en 100, ref 90, stop 105; sube a 103 (arma), vuelve a 100 -> 0
+    assert X._rescate_nb(_p(100, 103, 101, 100, 95), _NA, 0, 5, -1, 90.0, 0.5, 1.0, 0.5, 0.0)[0] == 0.0
+    assert X.validar([("RESCATE", 1.0, 1.0, 0.5, 0.0)]) == [] and X.validar([("RESCATE", 1.0, 1.0, 0.5, 0.6)]) != []
+    assert X.nombre(("RESCATE", 1.5, 1.0, 0.75, 0.25)) == "RS_sl1.5_tp1.0_d0.75_x0.25"
+
+
+def test_rescate_por_desenlaces():
+    """RESCATE pasa por `desenlaces` (despacho de `_lote_mercado` con d > 0) y da lo mismo que `_rescate_nb`."""
+    px = _p(100, 100, 99, 97, 98, 100.5, 104, 104, 104); n = len(px)
+    ctx = dict(t=np.arange(n) * 60.0, ses=np.full(n, 20250102), tstart=np.arange(n + 1, dtype=np.int64), tpx=px, tick=0.25)
+    E = pd.DataFrame(dict(k=[0], lado=[1], ref=[110.0], ext=[0.0], rg=[1.0]))
+    T = X.desenlaces(E, ctx, [("RESCATE", 0.5, 1.0, 0.5, 0.0), ("MERCADO", 0.5, 1.0, 0.0, 0.0)])
+    assert T["r_RS_sl0.5_tp1.0_d0.5_x0.0"][0] == 0.0 and T["r_M_sl0.5_tp1.0_N"][0] != 0.0
