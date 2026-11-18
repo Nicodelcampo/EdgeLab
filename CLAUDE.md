@@ -63,7 +63,8 @@ Recordatorios:
 > Elegir entre miles de celdas con 14 meses de datos produce ganadoras de ruido. Por eso Nico firmó **HOLDOUT-A5** (holdout intercalado
 > por meses sobre 18 años): toda campaña nueva descubre y confirma sobre M1 largo. Ninguna canasta habilita tamaño real.
 > **Veredicto de todas las reglas: `docs/research/VEREDICTO_M1_20261117.md`.** El «antes no, ahora sí» es fricción relativa (fricción/ATR en NQ
-> 0,045 → 0,006), no régimen. SOM tiene la única señal bruta estable en 20 años (años limpios +0,064 R); R AtrPhase en NQ, pista; T frágil.
+> 0,045 → 0,006), no régimen. Señales brutas estables en 20 años y en datos no usados: SOM (también MidCap y Russell) y Franklin (años limpios
+> +0,195 R); R AtrPhase sólo NQ; T frágil.
 
 ### Estado al 2026-11-09
 

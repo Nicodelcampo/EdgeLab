@@ -19,7 +19,7 @@ sigue siendo decisión de Nico.
    fricción/ATR en NQ bajó de ≈ 0,045 (2006–2011) a 0,006 (2020–2025). Una señal bruta chica y estable sólo es rentable hoy.
 3. **El régimen de mercado (volatilidad y tendencia) no explica nada de forma significativa** (9 pruebas NO_CONCLUYENTE). Sólo dejó una
    sospecha en PREAPERTURA-NQ e IF-LUX-NQ.
-4. **Hay una señal estable en 20 años y en años nunca usados: SOM** (bruto +0,064 R, IC90 [+0,033, +0,095], 3 índices). El módulo R de
+4. **Hay señales estables en 20 años y en años nunca usados: SOM (también en el MidCap y el Russell) y Franklin** (bruto +0,064 R, IC90 [+0,033, +0,095], 3 índices). El módulo R de
    FundedSync la tiene en NQ.
 
 ## 2. Veredicto por regla y qué cambia
@@ -42,26 +42,26 @@ sigue siendo decisión de Nico.
 ### Externas
 | Regla | Evidencia | Veredicto | Decisión futura |
 |---|---|---|---|
-| **SOM** (sin_finde) | señal bruta estable 2006–2025 en NQ, ES y YM; años limpios +0,064 R bruto; neto hoy en NQ ≈ +0,04 R; holdout +0,16 R | **LA MEJOR PISTA DEL PROYECTO** (bruto confirmado; neto chico y dependiente de la fricción) | confirmar en un índice no mirado (RTY/MidCap de NT8) en neto con la fricción actual, y forward; operarla sólo cuando la fricción en R de la operación sea baja (filtro declarado antes) |
-| **R** AtrPhase (FundedSync) | bruto positivo en NQ en los 3 períodos; años limpios +0,097 ATR bruto (3 índices); en ES y YM decae después de 2011; sin stop | **PISTA en NQ** | sólo NQ y con el stop de catástrofe (0,5 × ATR20): baja la peor operación de −415 a −169 pts y casi no cambia el neto |
+| **SOM** (sin_finde) | señal bruta estable 2006–2025 en NQ, ES y YM; años limpios +0,064 R bruto; **transfiere al MidCap y al Russell (bruto +0,030 R, IC90 +0,006/+0,055, A_FAVOR, 2026-11-18)**; neto hoy en NQ ≈ +0,04 R; holdout +0,16 R | **LA MEJOR PISTA DEL PROYECTO** (bruto confirmado; neto chico y dependiente de la fricción) | confirmar en un índice no mirado (RTY/MidCap de NT8) en neto con la fricción actual, y forward; operarla sólo cuando la fricción en R de la operación sea baja (filtro declarado antes) |
+| **R** AtrPhase (FundedSync) | bruto positivo en NQ en los 3 períodos; años limpios +0,097 ATR bruto (3 índices); en ES y YM decae después de 2011; **no transfiere con fuerza a EMD + RTY (+0,011 ATR, NO_CONCLUYENTE con potencia 0,93)**; sin stop | **PISTA SÓLO NQ** | sólo NQ y con el stop de catástrofe (0,5 × ATR20): baja la peor operación de −415 a −169 pts y casi no cambia el neto |
 | **Z** ZetaTrend (FundedSync) | bruto positivo en NQ y ES, más débil en YM; años limpios +0,028 (IC cruza 0) | **PISTA DÉBIL** | con stop de catástrofe; como complemento, no como pilar |
 | **T** FtmEngine (FundedSync) | sin señal bruta antes de 2020 (+0,007 ATR en 2008–2011); régimen análogo no la apoya; la cartera de fábrica del vendedor ni la incluye | **FRÁGIL** | deja de ser el pilar de la cartera B: pre-registrar una B' sin T (R + Z con stop) y comparar en forward; T queda en papel |
 | O, V, A20, C (FundedSync) | bruto ≈ 0 o chico; netos positivos sólo con la fricción reciente | sin ventaja demostrada | no se operan |
 | W, N (FundedSync) | la variante de salida mejora (confirmado en años limpios) pero sigue ≈ 0 o negativa | **SIN VENTAJA** | no se operan |
 | A1, P, Q, E, F, S (FundedSync) | negativos o ≈ 0 | **SIN VENTAJA** | no se operan |
 | **Cartera completa de FundedSync** (motor del vendedor) | pierde todos los años 2006–2018, gana desde 2019–2020; drawdown −128 k USD con el perfil 25K | **NO OPERABLE tal cual** | no se usa el motor de cartera del vendedor ni sus perfiles de tamaño |
-| Franklin | holdout +0,27 R (no concluyente); desarrollo 2020+ | **sin medir en M1** | siguiente: la misma medición de 20 años, bruto y neto |
+| **Franklin** | años limpios 2006–2011 en futuros: bruto +0,195 R (IC90 +0,095/+0,296, 83 % de años), A_FAVOR; neto 2020–2025 +0,082 R (fricción 0,04 R); holdout +0,27 R | **SEÑAL BRUTA ESTABLE (confirmada 2026-11-18)** | junto a SOM, la candidata con mejor base; operar sólo con fricción en R baja; forward |
 | QLB (EA de oro) | gatillos compilados, sin fuente | **NO MEDIBLE** | se descarta como candidata |
 | TURTLES-ORO | 0,4 operaciones por mes (K27) | fuera | — |
 
 ## 3. Cómo cambian las decisiones de aquí en adelante
 1. **Dinero real:** ninguna regla del embudo, y ninguna canasta, habilita tamaño real hoy. La única candidata con base para proponerlo es SOM,
-   después de confirmarse en un índice no mirado y en forward.
+   y Franklin: el bruto ya se confirmó en datos no usados; falta el forward con el filtro de fricción.
 2. **Versiones nuevas en papel** (cada una con su pre-registro):
    - v2.1 sin CVGAP-ES-C;
    - v4.1 sin CVGAP2-GC#11 ni COMEX;
    - B' = R + Z con stop de catástrofe, sin T;
-   - una canasta «señal estable» con SOM + R (NQ) que se siga en forward.
+   - una canasta «señal estable» con SOM + R (NQ) que se siga en forward; a sumar Franklin con su propio pre-registro.
 3. **Filtro de fricción en R antes de entrar:** pasa a ser parte de toda regla operable (paso 3 de urgencia/evidencia), con umbral
    declarado.
 4. **Búsqueda nueva:**
