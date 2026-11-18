@@ -117,4 +117,4 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Neto sólo con micro | la fricción «alta» era la del micro | guía | §3; los resultados nuevos reportan mini y micro |
 | Subgrupo sin confirmar en una canasta de prop firm | ORB5 en Lucid por el neto de NQ 2020–25 | guía | §4 canastas; aviso en `SENALES_ESTABLES_LUCID_20261118.md` |
 | Lanzamientos que no salieron (cola de Kaggle, 429) | ORB YM y filtro ES/YM quedaron sin lanzar | código | `tablas.reintentar_cola` (dentro de `traer`) |
-| Presupuesto de contexto de los agentes | el cierre falla cuando FACTORES crece | humano | decisión de Nico (`config/autopilot/AGENTES.json`); mientras, entradas compactas |
+| Presupuesto de contexto de los agentes | el cierre fallaba cuando FACTORES crecía y se compactaban entradas para entrar | humano + código | Nico lo elevó el 18-nov (juez y auditor 260.000, arquitecto 400.000, `config/autopilot/AGENTES.json`); `test_agentes` exige ≥ 25 % libre. No se achica contenido para entrar: se sube el tope |
