@@ -56,7 +56,7 @@ sigue siendo decisión de Nico.
 | EdgeReplica (60 reglas NQ) | NQ 2006–2022 ≈ 0 (potencia 1,0); señal sólo 2024–2026, donde se eligió | **DESCARTADA: ajuste, no patrón** | no se opera |
 | Oro, corto 04:15 CT | GC 2008–2022: sesgo bruto +1,62 ticks confirmado; neto −4,4 (costo ≈ 6 ticks) | **SESGO REAL, NO OPERABLE SOLO** | como información de horario para otras operaciones de oro |
 | MGC EMA 200/500/2000 | barras de 25 operaciones: no medible con M1 | sin cambios («no se valida») | haría falta ticks viejos |
-| LuxImb impulsos con zonas en el 25 % | grilla en M1 nunca corrida | **LANZABLE** | primera campaña A5 sobre NQ 2006–2025 |
+| LuxImb impulsos con zonas en el 25 % | **medida 2026-11-18 (A5, `luximb_a5_20261118/RESULTADO.md`)**: reversión bruta real en 17 años (REP confirma), zonas suman en DESC; neto refutado por fricción | **PISTA BRUTA, NO OPERABLE** | holdout A5 sin abrir; sólo un hijo con stop amplio o como filtro de contexto |
 | TURTLES-ORO | 0,4 operaciones por mes (K27) | fuera | — |
 
 ## 3. Cómo cambian las decisiones de aquí en adelante

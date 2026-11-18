@@ -48,4 +48,5 @@
 - **MEDIDO (DESC):** reversión bruta del fade hacia A en todas las celdas (control +0,017/+0,038/+0,059 R con stop 0,5/0,35/0,2·D); zonas − control
   +0,026 a +0,050 R, BH en 8/9. Neto negativo por fricción (0,6–1,6 R); subconjunto operable negativo. `docs/research/luximb_a5_20261118/DESC.json`.
 - **MEDIDO (calibración):** M1 contra ticks 11/12 celdas después de la enmienda 1 (stop de M1 en su nivel, K40).
-- **NO MEDIDO todavía:** REP (meses REP), holdout A5 (4.006 marcas con ≥ 3 zonas, 42.862 de control, sin desenlace), ES/YM, 2023 → 2026 (linaje).
+- **MEDIDO (REP):** confirman z0|sl0.2 y z1|sl0.35 en bruto (LORD++); contrastes de zonas sin nivel. Compuerta económica: REFUTADA_ECONOMICA.
+- **NO MEDIDO (a propósito):** holdout A5 (4.006 marcas con ≥ 3 zonas, 42.862 de control, sin desenlace), ES/YM, 2023 → 2026 (linaje).
