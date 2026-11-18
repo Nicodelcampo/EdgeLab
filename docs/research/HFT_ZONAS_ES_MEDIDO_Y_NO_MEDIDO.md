@@ -1217,3 +1217,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - Canasta en NQ (descriptivo): neta positiva sólo desde 2020; el forward tarda 88 meses con la mitad del efecto. Acta:
     `docs/research/franklin_confirmacion_20261118/RESULTADO.md`.
 - **NO MEDIDO:** costo medido de EMD; SOM y T en aperturas de índices no estadounidenses (sin costos canónicos).
+
+## 2026-11-18 — Punto 4: predictores nuevos del día de tendencia (E0 sin retornos)
+- **MEDIDO:** 21 pruebas en REP de A5 (NQ/ES/YM/RTY). Ninguna pasa BH. GEX bajo → más días de tendencia (AUC 0,55, 4/4 índices,
+  dosis-respuesta en DESC y REP): NO_CONCLUYENTE por potencia. Acta: `docs/research/dia_tendencia_20261118/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 de la familia (potencia ≈ 0,6 < 0,8: no se abre); GEX como filtro económico de T/ORB/Franklin; FOMC/CPI/NFP
+  (sin calendario histórico propio antes de 2023).

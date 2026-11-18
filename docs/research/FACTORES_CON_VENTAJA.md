@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (21)
+## PISTA_VIVA (22)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,6 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: YM, EMD, RTY, GC futuros M1 (NT8), 2006/2008/2017 → 2025-07
   - Siguiente: Franklin en la canasta sólo en NQ (y EMD si se mide su costo). El holdout A5 de T/Franklin/SOM ya está mirado: su confirmación depende del forward (canasta NQ: 88 meses con la mitad del efecto) o de subir el R neto (ejecución).
   - Evidencia: `docs/research/franklin_confirmacion_20261118/RESULTADO.md`, `docs/research/franklin_confirmacion_20261118/RESULTADO.json`
+- **Gamma de los dealers baja (GEX del cierre previo, tercil bajo contra sus 250 previos) anticipa días de tendencia en índices de EE. UU.** (`F-GEX-DIA-TENDENCIA`, 2026-11-18, humano)
+  - Efecto: A5 2011–2025, NQ/ES/YM/RTY M1: AUC REP 0,553 (E1) y 0,555 (E3), 4/4 índices con el mismo signo, dosis-respuesta en DESC y REP (E1 bajo 14–16 % vs alto 11 %; E3 20 % vs 15 %); no pasa BH sobre 21 (p 0,013–0,031) por potencia (EE 0,025 por fecha, 614 días REP).
+  - Dónde: NQ, ES, YM, RTY futuros M1 (NT8) con GEX/DIX de SqueezeMetrics
+  - Siguiente: Confirmar con días nuevos (forward con GEX diario, e-proceso sobre la etiqueta). Hipótesis económica aparte: GEX bajo como filtro de T/ORB/Franklin (va al forward). El holdout A5 de la familia no se abre (potencia ≈ 0,6).
+  - Evidencia: `docs/research/dia_tendencia_20261118/RESULTADO.md`, `docs/research/dia_tendencia_20261118/RESULTADO.json`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
   - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)
@@ -295,7 +300,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (36)
+## NO_REPETIR (37)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -334,6 +339,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES/YM M1 (NT8) calibrado contra ticks (90/110), meses DESC/REP de A5, 2006–2022
   - Siguiente: No repetir como capa de entrada sobre bases sin ventaja neta. Lo que ayuda es cancelar gatillos malos esperando, no los picos; no rescata una regla que pierde.
   - Evidencia: `docs/research/filtro_picos_20261118/RESULTADO.md`, `docs/research/filtro_picos_20261118/DESC.json`, `docs/research/filtro_picos_20261118/REP.json`
+- **Calendario (vencimiento mensual, vuelta de mes), NR7, día interior, ubicación del cierre previo, día de tendencia previo, DIX, eficiencia de Europa 03–09 NY, open drive y amplitud entre índices como predictores del día de tendencia** (`F-DIA-TENDENCIA-CLASES-NUEVAS-NULAS`, 2026-11-18, humano)
+  - Efecto: A5 2006–2025 (REP): AUC 0,49–0,53 para E1 y E3; ninguno pasa BH (21 pruebas). Sólo GEX se separa (ver F-GEX-DIA-TENDENCIA).
+  - Dónde: NQ, ES, YM, RTY futuros M1
+  - Siguiente: No repetir estos predictores para el día de tendencia; se suma a F-DIA-TENDENCIA-NO-ANTICIPABLE.
+  - Evidencia: `docs/research/dia_tendencia_20261118/RESULTADO.md`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
