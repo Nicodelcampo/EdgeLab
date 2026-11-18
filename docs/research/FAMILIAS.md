@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-281 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+282 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -11,6 +11,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `ABSORCION_CLIMAX_ES` | 2026-11-03 | — | 216 | 1 | ABSORCION-CLIMAX-ES-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `ABSORCION_CLIMAX_GC` | 2026-11-03 | — | 216 | 1 | ABSORCION-CLIMAX-GC-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `ABSORCION_CLIMAX_NQ` | 2026-11-03 | — | 216 | 1 | ABSORCION-CLIMAX-NQ-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
+| `ANCLAJE_PROXY` |  | DIA_TENDENCIA_A5, FUNDEDSYNC, FRANKLIN, SOM | 2 | — | — | — | — |
 | `APERTURA_EUROPA_ORO_GC` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `APERTURA_EUROPA_ORO_XAU` | 2026-11-03 | — | — | 1 | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `AREAS_EXP_1_CRUZADO` | 2026-10-24 | AREAS_EXP_1_NQ, AREAS_EXP_1_USATECH | 68 | 1 | — | — | — |

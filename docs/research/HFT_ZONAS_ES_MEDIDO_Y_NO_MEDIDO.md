@@ -1246,3 +1246,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - la exclusión de gamma alta no confirma en EMD/RTY (p 0,24) y no hay efecto en ORB O1 (p 0,48);
   - el fade LUX-IMB con signo opuesto da +0,018 R (p 0,026, 75 % de años);
   - mecanismo NO confirmado: filtro acotado a T/Franklin/SOM en NQ/ES/YM.
+
+## 2026-11-18 — Proxy de gamma desde 2006 (ANCLAJE-PROXY)
+- **MEDIDO:**
+  - el percentil del VIX reproduce a GEX (Spearman −0,63) y su filtro da −0,48 R/día en DESC 2011+;
+  - la lectura 2006–2011 se bloqueó por K49 (potencia 0,09, harían falta 15.633 días). Acta:
+    `docs/research/anclaje_proxy_20261118/RESULTADO.md`.
+- **NO MEDIDO:** la lectura 2006–2011 (quedó sin gastar).
