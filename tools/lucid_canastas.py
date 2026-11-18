@@ -93,6 +93,20 @@ def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200
     return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(reglas), usd_riesgo=usd_riesgo, micros_medio=float(mic.mean()))
 
 
+def serie_orb5(usd_riesgo=100.0, desde=20200101, hasta=20250731, tope_micros=20, fric_max=0.08):
+    """ORB de 5 min (ORB-A5 O1) en MNQ, sólo el subconjunto operable declarado (fricción de micro ≤ 0,08 R) y sólo sesiones DESC/REP de A5
+    (los meses HOLDOUT siguen sellados). Devuelve la serie diaria y las sesiones disponibles (para recortar otras series igual)."""
+    from edgelab.research.embudo_runners import friccion
+    from edgelab.holdout import a5_bloque
+    O = pd.read_csv(ROOT / "docs/research/orb_a5_20261118/OPS_DESC_REP.csv.gz"); e = "P_obj_stop_fin"
+    O = O[O.O1.astype(bool) & (O.inst == "NQ") & O[f"r_{e}"].notna() & (O[f"k_{e}"] > 0) & (O.ses >= desde) & (O.ses <= hasta)]
+    fr_pts = float(friccion("MNQ")[0]); O = O[fr_pts / O[f"k_{e}"] <= fric_max]
+    mic = np.clip(np.floor(usd_riesgo / (O[f"k_{e}"] * 2.0)), 1, tope_micros)
+    d = (mic * (O[f"r_{e}"] * O[f"k_{e}"] * 2.0 - fr_pts * 2.0)).groupby(O.ses).sum()
+    ses = [s for s in (int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(desde), str(hasta))) if a5_bloque(s) in ("DESC", "REP")]
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(regla="ORB5 O1 NQ→MNQ operable", usd_riesgo=usd_riesgo, ops=int(len(O)))
+
+
 def senales():
     res = dict(nota="Canasta de señales estables en MNQ con tamaño por riesgo; contracción declarada 0,5 (efecto 2020–2025 elegido después de "
                     "ver el salto de T; SOM y Franklin con bruto estable desde 2006)", canastas={})
@@ -100,6 +114,11 @@ def senales():
         for reglas in (("SOM", "FRANKLIN", "T"), ("SOM", "FRANKLIN"), ("T",)):
             x, info = serie_senales(usd, reglas); r = evaluar(x.to_numpy(), 0.5); r.update(info)
             nom = f"{'+'.join(reglas)}|usd{usd}"; res["canastas"][nom] = r; _imprimir(nom, r)
+    xo, info_o = serie_orb5(100.0); xt, _ = serie_senales(100.0, ("T",)); xt = xt.reindex(xo.index).fillna(0.0)    # mismas sesiones (DESC/REP)
+    res["correlacion_T_ORB5"] = float(np.corrcoef(xo, xt)[0, 1])
+    for nom, x in (("ORB5|usd100|DESC+REP", xo), ("T|usd100|DESC+REP", xt), ("T+ORB5|usd100|DESC+REP", xo + xt)):
+        r = evaluar(x.to_numpy(), 0.5); r.update(info_o if "ORB5" in nom else {}); res["canastas"][nom] = r; _imprimir(nom, r)
+    print("correlación diaria T vs ORB5:", round(res["correlacion_T_ORB5"], 3))
     (OUT / "CANASTA_SENALES_LUCID.json").write_text(json.dumps(res, indent=1, default=float))
 
 

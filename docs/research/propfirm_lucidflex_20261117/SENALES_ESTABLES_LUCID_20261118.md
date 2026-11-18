@@ -39,3 +39,19 @@ grande). Reglas oficiales de Lucid. La media está contraída a la mitad (declar
   real puede ser distinto.
 - **Nada de esto habilita dinero real** (decisión de Nico). El paso que falta es el forward con el e-proceso. T ya está en la cartera B en
   papel.
+
+## 4. ORB de 5 min (ORB-A5 O1) en la cuenta (agregado 2026-11-18)
+**Condiciones:** subconjunto operable (fricción de micro ≤ 0,08 R), NQ → MNQ, sólo sesiones DESC/REP de A5 (el holdout sigue sellado), con T
+recortado a las mismas sesiones (2020–25).
+
+| Canasta (USD 100 de riesgo) | t | Pasa | Cobra | EV/cuenta contraída | EV/mes contraído |
+|---|---|---|---|---|---|
+| ORB5 sola | 1,7 | 33 % | 9 % | +$128 | +$41 |
+| T sola | 4,0 | 50 % | 19 % | +$399 | +$110 |
+| T + ORB5 (corr. diaria 0,31) | 3,5 | 36 % | 11 % | +$205 | +$120 |
+
+**Lectura:**
+- **Por cuenta comprada, T sola sigue siendo la mejor.**
+- **El ORB de 5 min es ruidoso dentro de la cuenta:** su objetivo de 10R deja muchas pérdidas chicas y pocas ganancias grandes, y con un
+  drawdown de $1.000 eso pesa.
+- **Una salida más cercana para la cuenta** sería una hipótesis nueva, con pre-registro propio. No se elige acá.
