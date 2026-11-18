@@ -6,7 +6,7 @@ reglas que entran después de las 09:00 (OTR930), pero NO para ASIA, que entra e
 futuro. La versión causal es la noche ANTERIOR (`noche_previa` = noche de la sesión d−1, conocida a las 09:00 de d−1).
 
   python tools/asia_noche.py dev       # descriptivo en el desarrollo (ticks reales, ago-25 → sep-26): efecto y desvío para la potencia
-  python tools/asia_noche.py correr    # ASIA congelada sobre M1 de futuros (NT8) en los datos no mirados (local, tools/datos.py)
+  python tools/asia_noche.py correr [INST ...]  # ASIA congelada sobre M1 de futuros (NT8) en los datos no mirados (local, tools/datos.py)
   python tools/asia_noche.py analizar  # prueba única pre-registrada -> docs/research/asia_noche_20261118/RESULTADO.json
 """
 import json, sys
@@ -74,13 +74,14 @@ def dev():
     (DIR / "DEV.json").write_text(json.dumps(out, indent=1, default=float)); print(json.dumps(out, default=float, indent=1))
 
 
-def correr():
+def correr(solo=None):
     from a5_campana import _commiteado
     from edgelab import costos as C
     import papel_m1 as PM
     if not _commiteado(PRE): raise SystemExit("el pre-registro no está commiteado")
     with C.estimados_permitidos(str(PRE.relative_to(ROOT))):                    # EMD: costo estimado declarado (K33)
         for inst, (a, b) in LIMPIOS.items():
+            if solo and inst not in solo: continue
             dst = RES / f"{PM._pref('M1NT8:' + inst)}{FICHA}_{a}_{b}.json"
             if dst.exists(): print("ya está", dst.name); continue
             PM.local(FICHA, "M1NT8:" + inst, [f"{a}-{b}"])
@@ -113,4 +114,4 @@ MDE = 0.04   # efecto mínimo útil del contraste (R por sesión), fijado en el 
 
 
 if __name__ == "__main__":
-    {"dev": dev, "correr": correr, "analizar": analizar}[sys.argv[1]]()
+    {"dev": dev, "correr": lambda: correr(sys.argv[2:]), "analizar": analizar}[sys.argv[1]]()
