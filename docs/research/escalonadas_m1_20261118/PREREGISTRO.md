@@ -103,3 +103,14 @@ Potencia previa: plan de `holdout_ventanas.plan_potencia` (sin operaciones de de
   `tools/registro_global.py preregistrado ESCALONADAS-M1 ESCALONADAS_M1_A5 36 docs/research/escalonadas_m1_20261118/PREREGISTRO.md`.
 - **Linaje (`LINAJES.jsonl`):** padres MNQ_ESCALONADAS_ESCALAS, ES_ESCALONADAS y EURUSD_ESCALONADAS (sin entrada propia: anteriores
   al registro de linajes). Heredan el conteo bruto.
+
+## Enmienda 1 (2026-11-18, en la calibración, antes de cualquier desenlace de 2006–2025)
+- **Qué pasó:** la calibración v0 (`CALIBRACION_v0.json`) dio 13/18 celdas reales calibradas.
+  - Las que fallan son las de stop 1·D: M1 sale más optimista que los ticks por los saltos dentro de la vela (K40). Quedan sin nominar,
+    como prevé el protocolo.
+  - Los controles daban correlación ≈ 0,05.
+- **Causa raíz:** el placebo se elegía con un hash del ÍNDICE de la vela, y el índice difiere entre el contexto armado con ticks y el M1
+  de NT8. Cada fuente tomaba minutos distintos.
+- **Corrección:** el hash es del minuto (t // 60), sigue siendo causal y elige el mismo minuto en las dos fuentes. Se relanza la
+  calibración completa (ticks y M1).
+- **Qué no cambia:** la regla, las celdas y la decisión.

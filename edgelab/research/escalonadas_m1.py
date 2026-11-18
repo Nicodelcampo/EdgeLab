@@ -11,7 +11,7 @@ Definiciones (columnas booleanas):
   ESC       toda serie detectada
   ESC4      detectada con ≥ 4 picos (escalera más larga)
   ESC_VWAP  operación del lado del VWAP de la sesión: venta sólo con cierre < VWAP, compra sólo con cierre > VWAP
-  CTRL / CTRL_VWAP   control placebo causal: velas elegidas por un hash de su índice (≈ 1 de cada 250, como la frecuencia de las
+  CTRL / CTRL_VWAP   control placebo causal: velas elegidas por un hash de su minuto (≈ 1 de cada 250, como la frecuencia de las
                      series), lado ±1 por el hash, la unidad de su sesión (CTRL_VWAP: además alineado con el VWAP de su sesión)
 Ejecución (motor único): a mercado en el primer tick de la vela siguiente; ref = cierre + lado·rg con rg = rango medio M1 (D ≈ rg);
 stop sl·D, objetivo tp·D.
@@ -69,7 +69,9 @@ def eventos(ctx) -> pd.DataFrame:
     # control CAUSAL (placebo): velas elegidas por un hash del índice de la vela (no depende de nada más), con probabilidad P_CTRL por
     # vela (≈ la frecuencia de las series reales), lado ±1 por otro bit del hash y la unidad de su propia sesión. (La versión anterior,
     # «una vela de una sesión pasada por cada serie», ponía filas en velas pasadas decididas en el futuro: la falló la causalidad.)
-    kk = np.arange(len(c), dtype=np.uint64); hsh = (kk * np.uint64(2654435761) + np.uint64(SEMILLA)) % np.uint64(2 ** 32)
+    # hash del MINUTO (t // 60), no del índice: el mismo minuto se elige con ticks y con M1 (enmienda 1: con el índice, cada fuente
+    # elegía velas distintas y la calibración del control no podía comparar nada)
+    kk = (t.astype(np.int64) // 60).astype(np.uint64); hsh = (kk * np.uint64(2654435761) + np.uint64(SEMILLA)) % np.uint64(2 ** 32)
     elegidas = np.flatnonzero(hsh.astype(np.float64) / 2 ** 32 < P_CTRL)
     ctrl = [(int(q), 1 if (int(hsh[q]) >> 7) & 1 else -1, rg_s.get(ses[q], np.nan), 0) for q in elegidas]
     ctrl = [x for x in ctrl if x[2] > 0]
