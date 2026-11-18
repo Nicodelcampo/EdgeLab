@@ -71,6 +71,12 @@ def _ticks(cfg, inst, d0, d1):
     mod = importlib.import_module(cfg["modulo"]); d = Path(getattr(mod, "CARPETA", ROOT / f"docs/research/tablas/{mod.NOMBRE}")) / "tablas"
     f = sorted(d.glob(f"TABLA_{mod.NOMBRE}_{inst}_{d0}_{d1}*.csv.gz"))
     if not f: raise SystemExit(f"falta la tabla de ticks de {inst} {d0}-{d1} en {d} (tools/a5_campana.py traer_ticks)")
+    # una tabla de ticks que corrió con OTRO código no calibra nada (2026-11-18: `tablas.py traer` no re-descarga si el archivo ya
+    # existe, y la calibración de ESCALONADAS-M1 comparó tablas viejas contra M1 nuevo)
+    from edgelab.research.preflight import codigo_vigente
+    js = Path(str(f[0]).replace(".csv.gz", ".json"))
+    viejo = codigo_vigente(json.loads(js.read_text()), ROOT) if js.exists() else ["sin json de procedencia"]
+    if viejo: raise SystemExit(f"tabla de ticks NO VIGENTE ({f[0].name}: {viejo}); moverla y volver a traer")
     return pd.read_csv(f[0])
 
 
