@@ -22,7 +22,7 @@ PRUEBAS = [("E1", p) for p in PRE_0930] + [("E3", p) for p in PRE_0930 + A_LAS_1
 
 def _rank(x: pd.Series, n=250) -> pd.Series:
     """Percentil del valor contra los n anteriores con dato (causal: incluye el propio valor sólo como el que se rankea)."""
-    x = x.dropna(); return x.rolling(n, min_periods=120).apply(lambda a: (a[:-1] < a[-1]).mean(), raw=True)
+    x = x.dropna(); return x.rolling(n, min_periods=min(120, n)).apply(lambda a: (a[:-1] < a[-1]).mean(), raw=True)
 
 
 def _dia(inst):

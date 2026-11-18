@@ -1230,3 +1230,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   `docs/research/luximb_ejecucion_20261118/RESULTADO.md`.
 - **NO MEDIDO:** rescate sobre reglas con stop estructural (ORB, `PRECIOS`) y sobre reglas con ventaja neta (T, Franklin), que sólo se
   podrían confirmar en forward.
+
+## 2026-11-18 — GEX a fondo (exploración DESC, EF2)
+- **MEDIDO (exploratorio):**
+  - la gamma anticipa la magnitud del día más allá de la volatilidad (parcial 0,23);
+  - con gamma alta, T, Franklin, SOM y ORB pierden y con baja ganan: la canasta pasa de −0,077 a +0,169 R/día sin gamma alta;
+  - las reglas direccionales con gamma no pagan neto.
+  - Acta: `docs/research/gex_tendencia_20261118/RESULTADO_EXPLORACION.md`.
+- **NO MEDIDO:** la confirmación (holdout A5 sin potencia; REP + HOLDOUT, pendiente de decisión de Nico; forward con GEX diario).
