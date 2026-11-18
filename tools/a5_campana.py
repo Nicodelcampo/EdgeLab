@@ -124,7 +124,9 @@ def correr(carpeta, datos):
         print(inst, json.dumps(cnt[inst]), flush=True)
     pd.concat(ev, ignore_index=True).to_csv(cfg["dir"] / "EVENTOS.csv.gz", index=False)
     O = pd.concat(ops, ignore_index=True)
-    keep = ["k", "ses", "t", "inst", "bloque", "lado", "rg"] + [d for d in O.columns if d in cfg["definiciones"] or d in cfg.get("control", {}).values()] + \
+    # `conservar` (CAMPANA.json): columnas de identidad que el análisis necesita (p. ej. trig/base/conf del filtro de picos, 2026-11-18:
+    # se perdían y el análisis pareado no podía emparejar gatillos)
+    keep = ["k", "ses", "t", "inst", "bloque", "lado", "rg"] + [c for c in cfg.get("conservar", []) if c in O.columns] + [d for d in O.columns if d in cfg["definiciones"] or d in cfg.get("control", {}).values()] + \
            [c for c in O.columns if c.startswith(("r_", "k_")) and c[2:] in cfg["ejecuciones"]]
     O[keep].to_csv(cfg["dir"] / "OPS_DESC_REP.csv.gz", index=False)
     (cfg["dir"] / "CORRIDA.json").write_text(json.dumps(dict(ventana=cfg["ventana"], instrumentos=cfg["instrumentos"], marcas_por_bloque=cnt), indent=1))

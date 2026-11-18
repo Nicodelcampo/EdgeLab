@@ -19,6 +19,20 @@ DIR = ROOT / "docs/research/filtro_picos_20261118"
 EJ, EJ_B = "P_obj_stop_fin", "P_obj_stop_b_fin"
 
 
+def _ops():
+    """OPS con trig/base/conf. Si la corrida no los conservó (a5_campana anterior al 2026-11-18), se toman de EVENTOS por posición:
+    `correr` escribe OPS con las filas DESC/REP de EVENTOS en el mismo orden por instrumento. Se verifica fila por fila; si algo no
+    coincide, no se analiza."""
+    O = pd.read_csv(DIR / "OPS_DESC_REP.csv.gz")
+    if {"trig", "base", "conf"} <= set(O.columns): return O
+    E = pd.read_csv(DIR / "EVENTOS.csv.gz", usecols=["k", "ses", "lado", "inst", "bloque", "trig", "base", "conf"])
+    E = E[E.bloque.isin(["DESC", "REP"])].reset_index(drop=True)
+    if len(E) != len(O): raise SystemExit(f"EVENTOS ({len(E)}) y OPS ({len(O)}) no alinean: relanzar `correr` con `conservar`")
+    for c in ("k", "ses", "lado", "inst", "bloque"):
+        if not (E[c].to_numpy() == O[c].to_numpy()).all(): raise SystemExit(f"columna {c} no alinea: relanzar `correr` con `conservar`")
+    return O.assign(trig=E.trig.to_numpy(), base=E.base.to_numpy(), conf=E.conf.to_numpy())
+
+
 def _valores(O, bloque):
     from edgelab.research.embudo_runners import friccion
     O = O[O.bloque == bloque].copy(); fr = {i: float(friccion(i)[0]) for i in O.inst.unique()}
@@ -40,7 +54,7 @@ def _pares(O, base, conf, contra):
 
 
 def evaluar(bloque):
-    O = _valores(pd.read_csv(DIR / "OPS_DESC_REP.csv.gz"), bloque); res = {}
+    O = _valores(_ops(), bloque); res = {}
     for base in F.BASES:
         for cf in F.CONFIGS:
             conf = F.nombre_conf(cf); pl = f"PL{cf[1]}"
