@@ -1,10 +1,10 @@
 # Veredicto de todas las reglas con la evidencia del M1 real de futuros (2026-11-17)
 
-Estado: VIGENTE — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso afecta las decisiones futuras sobre esas reglas».
+Estado: VIGENTE (con una corrección pendiente: el «atrás» de las reglas del embudo, la fuente de sus filas REFUTADA, se DESCARTÓ el 2026-11-18 por el sesgo K40 del motor de la grilla y se está relanzando; hasta la v2 esas refutaciones no cuentan) — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso afecta las decisiones futuras sobre esas reglas».
 North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 Fuentes:
-- `docs/research/atras_m1_20261117/RESULTADO.md` (el «atrás» de 5 reglas del embudo);
+- `docs/research/atras_m1_20261117/descartada_v1/RESULTADO.md` (el «atrás» de 5 reglas del embudo; v1 DESCARTADA por K40, se relanza);
 - `docs/research/m1_largo_20261117/RESULTADO.md` y `RESULTADO_CAPA2.md` (FundedSync, SOM, régimen, variantes, cartera);
 - `docs/research/cosecha_pozo_20261117/RESULTADO_HOLDOUT.md`;
 - `urgencia_vs_evidencia_20261117` (pasos 1, 1b y 2).

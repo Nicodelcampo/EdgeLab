@@ -31,7 +31,7 @@ documentos que se deberían leer». North Star sha256 `16a108dfce2671b7a7c502d7d
   - ventanas ya consumidas por la familia o su linaje: `docs/research/HOLDOUT_VENTANAS.jsonl` (incluye `consumida_atras`).
 - **M1 de futuros de NT8** (`M1NT8:`, 2006/2008 → frontera):
   - antes de usarlo, calibrar la regla contra ticks (`docs/research/papel_m1_20261115/VALIDACION.md`,
-    `docs/research/atras_m1_20261117/CALIBRACION.json`);
+    `docs/research/atras_m1_20261117/descartada_v1/CALIBRACION.json`, v1 con K40: M1 sistemáticamente bajo);
   - no se usa para reglas de footprint, de velas de ticks o con señal en un CFD.
   - **K40:** con stops chicos frente al rango de la vela, el simulador cobra el stop en el extremo de la vela. Usar el nivel del stop salvo
     un hueco en la apertura (`luximb_hvn._e0_nb`, `ctx["m1_sintetico"]`), y calibrar.

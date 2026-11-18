@@ -40,7 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso |
+| VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (con una corrección pendiente: el «atrás» de las reglas del embudo, la f |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
 | HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
 | DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | SUPERADA por HOLDOUT-A5 (2026-11-17, docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11 |

@@ -110,3 +110,21 @@ def test_motor_grilla_stop_m1_en_su_nivel_K40():
     assert AX._primero_en_ticks(tpx, 1, 4, 1, 100.5, 110.0, 0.25, np.zeros(0, np.bool_)) == (1, 99.0)   # ticks: al tick que cruza
     assert AX._primero_en_ticks(tpx, 1, 4, 1, 100.5, 110.0, 0.25, ap) == (1, 100.5)                      # M1: en el stop
     assert AX._primero_en_ticks(_p(99, 98, 103, 101), 0, 4, 1, 100.5, 110.0, 0.25, ap) == (1, 99.0)      # hueco: abre bajo el stop
+
+
+def test_motor_grilla_m1_calibrado():
+    """K28/K40: el modo M1 del motor de la grilla (`areas_expansion.simular_cierre_m1`) en caminatas sin deriva ni saltos no es optimista y
+    queda cerca de los ticks. (Con saltos dentro de la vela M1 no los ve: por eso toda familia en M1 se calibra contra ticks reales, K30.)"""
+    from edgelab.research import areas_expansion as AX, grilla_generica as GG, sintetico
+    for seed in (21, 22):
+        ct = GG.contexto_m1(sintetico.bloques(dias=30, planta=False, seed=seed, prob_salto=0.0), tick=0.25); cm = X._como_m1(ct)
+        rng = np.random.default_rng(seed); n = len(ct["c"]); k = rng.integers(50, n - 300, 1500).astype(np.int64)
+        s = rng.choice([-1, 1], len(k)).astype(np.int64); c = np.asarray(ct["c"]); d = 12.0
+        args = (k, s, np.full(len(k), 2, np.int64), c[k], c[k] - s * d, c[k] + s * d, np.zeros(len(k), np.int64))
+        rt, _, _, _ = AX.simular_cierre(*args, ct["o"], ct["h"], ct["l"], ct["c"], ct["ses"], 0.25, ct["tpx"], ct["tstart"])
+        rm, _, _, _ = AX.simular_cierre_m1(*args, cm["o"], cm["h"], cm["l"], cm["c"], cm["ses"], 0.25, cm["tpx"], cm["tstart"], X.aperturas(cm))
+        ok = np.isfinite(rt) & np.isfinite(rm); Rt, Rm = rt[ok] / d, rm[ok] / d
+        ses = np.asarray(ct["ses"])[k[ok]]; g = pd.Series(Rm).groupby(ses).sum().to_numpy()
+        t = g.sum() / np.sqrt((g ** 2).sum())
+        assert t < 3.0, (seed, Rm.mean(), t)                                                     # sin optimismo
+        assert abs(Rm.mean() - Rt.mean()) < 0.05, (seed, Rm.mean(), Rt.mean())                 # cerca de los ticks
