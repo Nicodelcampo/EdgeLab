@@ -1223,3 +1223,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   dosis-respuesta en DESC y REP): NO_CONCLUYENTE por potencia. Acta: `docs/research/dia_tendencia_20261118/RESULTADO.md`.
 - **NO MEDIDO:** holdout A5 de la familia (potencia ≈ 0,6 < 0,8: no se abre); GEX como filtro económico de T/ORB/Franklin; FOMC/CPI/NFP
   (sin calendario histórico propio antes de 2023).
+
+## 2026-11-18 — Punto 2: rediseño de ejecución del fade LUX-IMB (con el rescate de Nico)
+- **MEDIDO:** 22 ejecuciones × 2 definiciones en DESC (NQ 2006–2022). El bruto cae a la par de la fricción al ensanchar el stop; neto
+  < 0 en todas. El rescate suma +0,004 a +0,010 R en DESC y no replica en REP. **REFUTADA_ECONOMICA**; holdout no abierto. Acta:
+  `docs/research/luximb_ejecucion_20261118/RESULTADO.md`.
+- **NO MEDIDO:** rescate sobre reglas con stop estructural (ORB, `PRECIOS`) y sobre reglas con ventaja neta (T, Franklin), que sólo se
+  podrían confirmar en forward.

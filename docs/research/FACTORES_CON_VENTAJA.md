@@ -300,7 +300,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (37)
+## NO_REPETIR (38)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -344,6 +344,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ, ES, YM, RTY futuros M1
   - Siguiente: No repetir estos predictores para el día de tendencia; se suma a F-DIA-TENDENCIA-NO-ANTICIPABLE.
   - Evidencia: `docs/research/dia_tendencia_20261118/RESULTADO.md`
+- **Rediseñar la ejecución del fade de impulsos LUX-IMB (stop 0,5–2·D, objetivo 1,5·D, BE, parcial, rescate de Nico) para bajar la fricción en R** (`F-LUXIMB-EJECUCION-TIMING`, 2026-11-18, humano)
+  - Efecto: DESC NQ 2006–2022: el bruto cae a la par de la fricción al ensanchar (z1 +0,043 → ≈ 0 de 0,5 a 2·D); neto negativo en 44/44 celdas (mejor −0,14), operable −0,04 a −0,07. Rescate − mercado +0,004 a +0,010 R en DESC, no replica en REP.
+  - Dónde: NQ futuros M1 (NT8), meses DESC/REP de A5
+  - Siguiente: Cerrada en lo económico; holdout A5 del linaje sigue sellado. Antes de ensanchar un stop para bajar fricción, medir la curva bruto–stop: si el bruto cae a la par, la señal es de timing.
+  - Evidencia: `docs/research/luximb_ejecucion_20261118/RESULTADO.md`, `docs/research/luximb_ejecucion_20261118/DESC.json`, `docs/research/luximb_ejecucion_20261118/RESCATE_PAREADO.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
