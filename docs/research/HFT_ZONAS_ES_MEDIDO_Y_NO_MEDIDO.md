@@ -1176,3 +1176,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   `docs/research/orb_a5_20261118/RESULTADO.md`.
 - **ORB (NO MEDIDO):** holdout A5 (E8) y forward de O1.
 - **IB-MADONNA relanzada** (código corregido): idéntica a la v1, V0 −0,128 R, 0 nominadas.
+
+## 2026-11-18 — ORB-A5 O1: confirmación (apertura única del holdout de la familia)
+- **MEDIDO:** holdout A5 de NQ/ES/YM + EMD y RTY completos, n 10.082. +0,073 R bruto, p 0,009 contra nivel LORD 0,0036:
+  **NO_CONFIRMADA (sin potencia)**. Neto < 0 en todo instrumento y época; NQ 2020–25 −0,03 bruto. Acta:
+  `docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`.
+- **NO MEDIDO:** ORB con ejecución de menor fricción en R; forward terminal (desde 2026-10-01). Ninguno tiene pre-registro.

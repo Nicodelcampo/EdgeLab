@@ -1,7 +1,11 @@
 # Señales estables (SOM, Franklin, T) en LucidFlex 25K con MNQ y tamaño por riesgo (descriptivo, 2026-11-18)
 
 Estado: VIGENTE — descriptivo sobre operaciones ya medidas (`docs/research/m1_largo_20261117/`, M1 de NT8, 2020-01 → 2025-07). No elige
-reglas ni cuenta pruebas. North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
+reglas ni cuenta pruebas.
+- **Aviso (2026-11-18, después):** las filas con ORB5 quedan SIN BASE: la confirmación de ORB O1 en el holdout dio neto < 0 y NQ
+  2020–25 −0,03 bruto (`docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`). No usar ORB5 en canastas.
+
+North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 - **Pedido de Nico:** «trabajá para encontrar edges que pueda usar en las propfirms».
 - **Código:** `python tools/lucid_canastas.py senales`. **Datos:** `CANASTA_SENALES_LUCID.json`.
 

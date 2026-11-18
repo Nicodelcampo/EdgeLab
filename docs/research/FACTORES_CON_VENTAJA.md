@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (22)
+## PISTA_VIVA (21)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,11 +24,6 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ futuros M1 (NT8) calibrado contra ticks 11/12, meses DESC/REP de A5, 2006-01 → 2022-12
   - Siguiente: No repetir con stops de 0,2–0,5·D. Hijo operable: stop amplio (fricción ≤ 0,08 R) o zonas como filtro de contexto; sólo ese hijo abre el holdout A5.
   - Evidencia: `docs/research/luximb_a5_20261118/RESULTADO.md`, `docs/research/luximb_a5_20261118/DESC.json`, `docs/research/luximb_a5_20261118/REP.json`
-- **ORB de 5 min (Zarattini-Aziz: dirección de la vela 9:30–9:35, stop al otro lado, 10R o cierre) en NQ/ES/YM** (`F-ORB5-BRUTO-ESTABLE`, 2026-11-18, humano)
-  - Efecto: A5: DESC +0,118 R bruto (p 0,001, 85 % de años), REP +0,090 (p 0,10, sin potencia); ≈ +0,1 en 2006–11, 2012–19 y 2020–25. Neto micro operable 2020–25 +0,095 R (1.138 ops).
-  - Dónde: NQ/ES/YM M1 (NT8), meses DESC/REP de A5, 2006–2025
-  - Siguiente: Forward en MNQ con fricción ≤ 0,08 R (e-proceso); holdout sin potencia (E8).
-  - Evidencia: `docs/research/orb_a5_20261118/RESULTADO.md`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
   - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)
@@ -305,7 +300,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (32)
+## NO_REPETIR (33)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -324,6 +319,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5; calibrado 13/16
   - Siguiente: No hacer fade del borde del IB. Pista: a favor de la ruptura tras el rechazo (pre-registro propio).
   - Evidencia: `docs/research/ib_madonna_20261118/RESULTADO.md`
+- **ORB de 5 min (Zarattini-Aziz) en índices de EE. UU.: el bruto existe y es chico; no paga la fricción** (`F-ORB5-BRUTO-ESTABLE`, 2026-11-18, humano)
+  - Efecto: Holdout A5 NQ/ES/YM + EMD/RTY completos (n 10.082): +0,073 R bruto, p 0,009 contra nivel 0,0036, NO_CONFIRMADA; neto < 0 en todo instrumento y época; operable 2020–25 −0,03; NQ 2020–25 −0,03 bruto (el +0,16 de DESC+REP era selección).
+  - Dónde: NQ/ES/YM/EMD/RTY M1 (NT8), 2006–2025
+  - Siguiente: No operar ni proponer en canastas. Sólo como hipótesis nueva con menos fricción en R, en el forward terminal.
+  - Evidencia: `docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
