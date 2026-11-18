@@ -20,9 +20,9 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: T vuelve a pilar de la cartera B (B' sólo comparación); sumar T a la canasta de señales estables (SOM, Franklin, R-NQ); regla de proceso: medir cada estrategia en su propia unidad de riesgo antes de concluir.
   - Evidencia: `docs/research/m1_largo_20261117/RESULTADO_T_2020.md`, `docs/research/m1_largo_20261117/RESULTADO_T_2020.json`
 - **Fade hacia A después de un impulso fuerte (D3_20, amplitud ≥ p60 causal) en NQ: reversión bruta estable 2006–2022; las zonas OG/VI en el 25 % inicial la aumentan en DESC** (`F-LUXIMB-A5-REVERSION-BRUTA-B`, 2026-11-18, humano)
-  - Efecto: A5: DESC bruto +0,02 a +0,11 R en 21/21 celdas (71–88 % de años +); REP confirma z0|sl0.2 (+0,053, p 1e-5) y z1|sl0.35 (+0,076, p 3e-4) con LORD++; zonas − control +0,03/+0,05 en DESC (BH 8/9), en REP mismo signo sin nivel (p 0,11–0,35). Neto: REFUTADA_ECONOMICA (fricción 0,1–2,2 R > bruto; neto operable z1|sl0.35 −0,156 IC90 entero < 0). Holdout A5 NO abierto (sellado para el linaje).
+  - Efecto: A5 NQ 2006–2022: DESC bruto +0,02 a +0,11 R en 21/21 celdas; REP confirma z0|sl0.2 (+0,053) y z1|sl0.35 (+0,076) con LORD++; zonas − control +0,03/+0,05 en DESC, sin nivel en REP. REFUTADA_ECONOMICA (fricción 0,1–2,2 R > bruto). Holdout sin abrir.
   - Dónde: NQ futuros M1 (NT8) calibrado contra ticks 11/12, meses DESC/REP de A5, 2006-01 → 2022-12
-  - Siguiente: No repetir con stops de 0,2–0,5·D (fricción). Hijo operable: stop amplio frente a la fricción (≤ 0,08 R) u objetivo/tenencia más largos, o la condición de zonas como filtro de contexto en fades con stop grande; abre el holdout A5 de 2006–2022 sólo ese hijo, con su compuerta económica antes.
+  - Siguiente: No repetir con stops de 0,2–0,5·D. Hijo operable: stop amplio (fricción ≤ 0,08 R) o zonas como filtro de contexto; sólo ese hijo abre el holdout A5.
   - Evidencia: `docs/research/luximb_a5_20261118/RESULTADO.md`, `docs/research/luximb_a5_20261118/DESC.json`, `docs/research/luximb_a5_20261118/REP.json`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
@@ -305,9 +305,9 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: Medir cada estrategia en su unidad de riesgo y dentro de la época en que sus parámetros fijos son razonables; probar el ajuste de un vendedor en instrumentos que no usó; LuxImb impulsos-25 % como primera campaña A5.
   - Evidencia: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`, `docs/research/m1_largo_20261117/RESULTADO_VIEJAS.json`
 - **Escalera plana de picos (escalonadas_det PLANAS) detectada en M1 y operada a favor de la ruptura en NQ, ES y YM** (`F-ESCALONADAS-M1-SIN-SENAL`, 2026-11-18, humano)
-  - Efecto: A5 DESC 2006–2025, 38.011 series: bruto −0,05 a +0,03 R en 18/18 celdas (MDE80 0,02–0,03), ninguna sobre su placebo causal; NQ ≈ 0, ES −0,04/−0,06, YM ≈ 0; neto −0,4 a −2 R. 0 nominadas; holdout sin abrir.
+  - Efecto: A5 DESC 2006–2025, 38.011 series: bruto −0,05 a +0,03 R en 18/18 celdas (MDE80 0,02–0,03), ninguna sobre su placebo; neto −0,4 a −2 R. Holdout sin abrir.
   - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5, 2006-01 → 2025-07; calibrado contra ticks 25/30
-  - Siguiente: No repetir la escalera como señal en barras de minuto. La idea de Nico (esperar picos como filtro de entrada de otra regla) es una hipótesis distinta: se mide como capa de ejecución con comparación pareada y placebo.
+  - Siguiente: No repetir como señal en M1. Esperar picos como filtro de entrada de otra regla es otra hipótesis (capa de ejecución, pareada y con placebo).
   - Evidencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`, `docs/research/escalonadas_m1_20261118/DESC.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
