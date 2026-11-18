@@ -77,3 +77,42 @@ def calibrar_por_sesion(t: dict, m: dict) -> dict:
 def frac_anios_positivos(ses, r) -> float:
     s = pd.Series(np.asarray(r, float)).groupby(np.asarray(ses) // 10000).sum()
     return float((s > 0).mean()) if len(s) else float("nan")
+
+
+# ------------------------------------------------------------------------------------- evaluación de celdas (DESC / REP)
+FRIC_R_MAX = 0.08                                       # subconjunto operable (fricción / riesgo inicial)
+
+
+def evaluar(T: pd.DataFrame, bloque: str, defs, ejecs, fric_pts: float, control: dict | None = None, limpios=None) -> dict:
+    """Por (definición, ejecución): n, R bruto (EE por sesión, p unilateral), años positivos, neto, fricción en R media, neto del
+    subconjunto operable; y por (definición − su control, ejecución): diferencia con bootstrap por sesión. `T` trae `ses`, `bloque`,
+    una columna booleana por definición y `r_<ejec>`/`k_<ejec>` del motor (`ejecucion.desenlaces`). Con varios instrumentos, la
+    fricción en R de cada fila va en `f_<ejec>` (si no, `fric_pts / k_<ejec>`)."""
+    T = T[T.bloque == bloque]; out = {}; control = control or {}
+    for e in ejecs:
+        base = {}
+        for d in defs:
+            g = T[T[d].astype(bool) & T[f"r_{e}"].notna() & (T[f"k_{e}"] > 0)]
+            r = g[f"r_{e}"].to_numpy(float); ses = g.ses.to_numpy(np.int64)
+            fr = g[f"f_{e}"].to_numpy(float) if f"f_{e}" in g else fric_pts / g[f"k_{e}"].to_numpy(float)   # f_: fricción en R por fila
+            m, se, p = cluster(ses, r); op = fr <= FRIC_R_MAX
+            v = dict(n=int(len(r)), R_bruto=m, se=se, p=p, frac_anios_pos=frac_anios_positivos(ses, r),
+                     R_neto=float((r - fr).mean()) if len(r) else None, fric_R_media=float(fr.mean()) if len(r) else None,
+                     n_operable=int(op.sum()), R_neto_operable=float((r - fr)[op].mean()) if op.any() else None)
+            if limpios: v["R_bruto_limpios"] = float(r[(ses >= limpios[0]) & (ses <= limpios[1])].mean()) if ((ses >= limpios[0]) & (ses <= limpios[1])).any() else None
+            out[f"{d}|{e}"] = v; base[d] = (ses, r)
+        for d, c in control.items():
+            if d in base and c in base and len(base[d][1]) and len(base[c][1]):
+                dif, se, p = diferencia(*base[d], *base[c]); out[f"{d}-{c}|{e}"] = dict(dif_bruto=dif, se=se, p=p)
+    return out
+
+
+def nominar(res: dict, q: float = 0.10, calibra=None, min_frac_anios: float = 0.6) -> list:
+    """BH q sobre todas las pruebas; nominada = BH + media > 0 + (absolutas) ≥ 60 % de años positivos + calibra (si se da)."""
+    nombres = list(res); rech = bh([res[k]["p"] for k in nombres], q); nom = []
+    for k, rj in zip(nombres, rech):
+        v = res[k]; v["bh"] = bool(rj); v["calibra"] = True if calibra is None else bool(calibra(k))
+        efecto = v.get("R_bruto", v.get("dif_bruto"))
+        v["nominada"] = bool(rj and v["calibra"] and efecto is not None and efecto > 0 and v.get("frac_anios_pos", 1.0) >= min_frac_anios)
+        if v["nominada"]: nom.append(k)
+    return nom
