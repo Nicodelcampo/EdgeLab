@@ -1238,3 +1238,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - las reglas direccionales con gamma no pagan neto.
   - Acta: `docs/research/gex_tendencia_20261118/RESULTADO_EXPLORACION.md`.
 - **NO MEDIDO:** la confirmación (holdout A5 sin potencia; REP + HOLDOUT, pendiente de decisión de Nico; forward con GEX diario).
+- **MEDIDO (confirmación única, REP + HOLDOUT A5):** filtro de gamma en T + Franklin + SOM. Contraste +0,65 R/día, p 0,0102 (LORD
+  rechaza), 8/15 años → NO_CONFIRMADA. La gamma alta es negativa en las 3 reglas en ambos bloques. Acta:
+  `docs/research/gex_tendencia_20261118/RESULTADO.md`.
+- **NO MEDIDO:** regla de exclusión de gamma alta en forward (pre-registro pendiente; requiere GEX diario).
