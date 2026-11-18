@@ -1194,3 +1194,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   régimen detectable (p 0,41–0,95). Actas: `docs/research/papel_m1_20261115/VALIDACION.md` y `LARGO_V2.md`.
 - **NO MEDIDO:** ASIA-NQ, TORI-NQ y RANGO0100-NQ en el largo (no pasan la validación). La «noche movida» de ASIA queda como hipótesis
   de desarrollo sin confirmar.
+
+## 2026-11-18 — FILTRO-PICOS (capa de entrada de Nico)
+- **MEDIDO:** DESC (80 pruebas) y REP (LORD++) en NQ/ES/YM M1 2006–2022. La capa sólo mejora a bases que pierden y por esperar o
+  cancelar, no por los picos. Ninguna combinación con R positivo. **REFUTADA como capa de edge.** Acta:
+  `docs/research/filtro_picos_20261118/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 (no se abre: la compuerta económica falla); la capa sobre bases con ventaja neta (hoy no hay en M1 de
+  índices); picos estrictos, entrada límite en el pico y escala de segundos (fuera del pre-registro).
