@@ -2650,3 +2650,8 @@ Informe: `docs/research/auditoria_kaggle_20261024/AUDITORIA_CORRIDAS_KAGGLE_Y_EM
 - **P6** MES y MNQ dentro de la partición A3.
 - **P7** Romano-Wolf con +1 y B ≥ 500 cerca del umbral.
 - **P8** Costo de AREAS desde `edgelab.costos`; corregir en `CLAUDE.md` que la release v4 está aprobada desde el 2026-10-14.
+
+## P-97 — T (FundedSync) como edge de régimen 2021+: pruebas de sobreajuste (2026-11-18, abierta)
+Pedido de Nico: no descartar lo que funciona desde 2020; distinguir régimen real de sobreajuste. Literatura, quiebre medido
+(2021-02-10, p 0,003), años 2021–2026 todos positivos y las 4 pruebas a pre-registrar: `docs/research/t_regimen_20261118/PROPUESTA.md`.
+Pendiente por pedido de Nico («dentro de unas horas»). Falta de Nico: fecha en que fijó/compró la versión de FundedSync (prueba 2).
