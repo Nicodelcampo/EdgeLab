@@ -117,3 +117,20 @@ riesgo en puntos.
 - **Linaje:** padres LUXIMB_HVN, LUXIMB_GRILLA y LUXIMB_FADE_VISOR (`LINAJES.jsonl`).
 - **Integración en el embudo:** pendiente. Esta campaña aplica A5 con `holdout.a5_bloque` desde la herramienta, y la integración general
   queda como tarea aparte.
+
+## Enmienda 1 (2026-11-18, antes de cualquier desenlace de 2006–2022): modelo de stop en M1
+- **Qué pasó:** la fase 0 falló en las 12 celdas (`CALIBRACION_v0.json`).
+  - La correlación por sesión fue alta (0,71–0,96), pero M1 resultó sistemáticamente más negativo. En el control con stop 0,2·D, M1 da
+    −10 R por sesión contra +0,15 en ticks.
+- **Causa raíz** (medida en ago–oct 2025):
+  - Los stops saltan con la misma frecuencia en M1 y en ticks (82 %).
+  - La pérdida media en M1 es −1,53 R contra −1,01 R en ticks, con un mínimo de −7,8 R.
+  - `_e0_nb` sale al precio del tick que cruza el stop, y con pseudo-ticks de M1 (apertura, extremos, cierre) ese tick es el extremo de
+    la vela.
+  - El motor común (`areas_expansion.simular_cierre_linea`, error 27) usa la misma convención. Con stops anchos no se nota; con stops de
+    0,2–0,5·D sí.
+- **Corrección** (modelo de llenado, no tolerancia; con datos reales no cambia nada): con `ctx["m1_sintetico"]`, un stop cruzado por un
+  pseudo-tick que no es apertura sale en el nivel del stop, y uno cruzado en la apertura (hueco) sale al precio de la apertura.
+  - Test: `tests/research/test_luximb_hvn.py::test_e0_m1_stop_en_su_nivel_salvo_hueco_en_la_apertura`.
+- **Qué no cambia:** criterios de calibración, celdas, ventanas y decisión.
+- **Si la recalibración vuelve a fallar:** la familia no se corre en M1 y queda para ticks.

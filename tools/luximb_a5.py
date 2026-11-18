@@ -38,7 +38,9 @@ def _hvn():
 def _ctx(datos, d0, d1):
     from edgelab.research.fuentes_ticks import bloques_m1nt8
     from edgelab.research.grilla_generica import contexto_m1
-    return contexto_m1(bloques_m1nt8("NQ", int(d0), int(d1), str(datos)), 0.25)
+    ctx = contexto_m1(bloques_m1nt8("NQ", int(d0), int(d1), str(datos)), 0.25)
+    ctx["m1_sintetico"] = True                                        # enmienda 1: stop dentro de la vela en su nivel, no en el extremo
+    return ctx
 
 
 def _ej(x):
