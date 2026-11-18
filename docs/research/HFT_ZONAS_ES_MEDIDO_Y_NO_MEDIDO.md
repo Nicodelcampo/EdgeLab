@@ -1253,3 +1253,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - la lectura 2006–2011 se bloqueó por K49 (potencia 0,09, harían falta 15.633 días). Acta:
     `docs/research/anclaje_proxy_20261118/RESULTADO.md`.
 - **NO MEDIDO:** la lectura 2006–2011 (quedó sin gastar).
+
+## 2026-11-18 — Option Alpha en futuros (OPTION-ALPHA)
+- **MEDIDO:** las 8 reglas del Top 20 Live de Option Alpha y 5 contrastes contra control, DESC A5 2006–2025 en ES, NQ y YM: 0/13 pasan
+  BH q 0,10 y las 8 tienen R neto negativo. Acta: `docs/research/option_alpha_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP y holdout A5 (sin nominadas), los filtros macro (VIX, IVR, FOMC, cierre anticipado: fuera por pre-registro), RTY/EMD.

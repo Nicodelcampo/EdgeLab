@@ -295,7 +295,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (39)
+## NO_REPETIR (40)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -349,6 +349,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ futuros M1 (NT8), meses DESC/REP de A5
   - Siguiente: Cerrada en lo económico; holdout A5 del linaje sigue sellado. Antes de ensanchar un stop para bajar fricción, medir la curva bruto–stop: si el bruto cae a la par, la señal es de timing.
   - Evidencia: `docs/research/luximb_ejecucion_20261118/RESULTADO.md`, `docs/research/luximb_ejecucion_20261118/DESC.json`, `docs/research/luximb_ejecucion_20261118/RESCATE_PAREADO.json`
+- **Reglas del Top 20 Live de Option Alpha (Taco/Sandwich 13:45, ORB 60 con días y Daily Bias, HA+MACD 10 m, compra del retroceso, Theta Fly) llevadas a futuros lineales** (`F-OPTION-ALPHA-FUTUROS`, 2026-11-18, humano)
+  - Efecto: DESC A5 2006–2025 ES+NQ+YM: 0/13 pasan BH q 0,10; R neto negativo en las 8 (−0,03 a −0,20); mejores brutos OA6 +0,055 (p 0,04) y OA5 +0,052 (no calibra), con fricción 0,15–0,18 R; contrastes contra control ≈ 0.
+  - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
+  - Siguiente: Cerrada en futuros: la ventaja de esas estrategias es la prima de opciones, no la dirección. Holdout A5 sellado.
+  - Evidencia: `docs/research/option_alpha_20261118/RESULTADO.md`, `docs/research/option_alpha_20261118/DESC.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
