@@ -146,5 +146,51 @@ def confirmar():
     print(json.dumps({k: out[k] for k in ("contraste", "se", "p", "frac_anios", "veredicto", "canasta_por_tercil", "canasta_todos", "canasta_sin_alto")}, default=float))
 
 
+# ------------------------------------------------------------------------------- apéndice 2: tres pruebas del mecanismo
+def _alto(fechas):
+    g = gamma(); g.index = g.index.strftime("%Y%m%d").astype(int); c = json.loads((DIR / "CORTES_DESC.json").read_text())["cortes_g_rank250"]
+    v = pd.Series(fechas).map(g["g_rank250"]).to_numpy(float)
+    return np.where(np.isfinite(v), v >= c[1], np.nan)
+
+
+def _contraste(fechas, r, signo):
+    """(alto − resto, EE, p unilateral en la dirección `signo`, fracción de años con ese signo); bootstrap por día."""
+    from edgelab.research.a5 import diferencia
+    a = _alto(fechas); ok = np.isfinite(a) & np.isfinite(r); f, r, a = np.asarray(fechas)[ok].astype(np.int64), np.asarray(r, float)[ok], a[ok].astype(bool)
+    d, se, p = diferencia(f[a], r[a], f[~a], r[~a]); p = p if signo > 0 else 1 - p
+    yy = pd.DataFrame(dict(y=f // 10000, r=r, a=a)).groupby("y").apply(lambda x: x[x.a].r.mean() - x[~x.a].r.mean()).dropna()
+    return dict(contraste=d, se=se, p=p, n=int(ok.sum()), n_alto=int(a.sum()), frac_anios_signo=float((np.sign(yy) == signo).mean()), anios=int(len(yy)),
+                media_alto=float(r[a].mean()), media_resto=float(r[~a].mean()))
+
+
+def mecanismo():
+    from edgelab.funnel.libro_lord import LibroLord
+    D = ROOT / "docs/research/m1_largo_20261117"; R = {}
+    # P1: canasta T + Franklin + SOM en EMD y RTY (R neto por día)
+    partes = []
+    for i in ("EMD", "RTY"):
+        t = pd.read_csv(D / f"FS_OPS_{i}.csv.gz"); t = t[(t.modulo == "T") & (t.riesgo > 0)]; t["R"] = t.neto / t.riesgo
+        t["fecha"] = pd.to_datetime(t.dia).dt.strftime("%Y%m%d").astype(int); partes.append(t[["fecha", "R"]])
+        f = pd.read_csv(D / f"FRANKLIN_OPS_{i}.csv.gz"); partes.append(f[f.riesgo > 0][["fecha", "R"]])
+        s = pd.read_csv(D / f"SOM_OPS_{i}.csv.gz"); partes.append(s[(s.celda == "sin_finde") & (s.riesgo > 0)][["fecha", "R"]])
+    X = pd.concat(partes); X = X[(X.fecha <= 20250731) & (X.fecha >= 20111101)]; dia = X.groupby("fecha").R.sum()
+    R["P1_exclusion_EMD_RTY"] = _contraste(dia.index.values, dia.values, -1)
+    # P2: fade LUX-IMB (predicción opuesta)
+    L = pd.read_csv(ROOT / "docs/research/luximb_ejecucion_20261118/OPS_DESC_REP.csv.gz", usecols=["ses", "z0", "r_M_sl0.5_tp1.0_N"])
+    L = L[L.z0.astype(bool) & L["r_M_sl0.5_tp1.0_N"].notna() & (L.ses >= 20111101)]
+    R["P2_fade_luximb"] = _contraste(L.ses.values, L["r_M_sl0.5_tp1.0_N"].values, +1)
+    # P3: ORB O1 (operaciones de confirmación)
+    O = pd.read_csv(ROOT / "docs/research/orb_a5_20261118/OPS_CONFIRMACION_O1.csv.gz"); O = O[O["r_P_obj_stop_fin"].notna() & (O["k_P_obj_stop_fin"] > 0)]
+    R["P3_orb_o1"] = _contraste(O.ses.values, O["r_P_obj_stop_fin"].values, -1)
+    dec = LibroLord().probar(FAMILIA, "GEX_MECANISMO_20261118", [(k, v["p"]) for k, v in R.items()])
+    conf = {c["test"] for c in dec.get("confirmadas", [])}
+    for k, v in R.items(): v["confirmada"] = bool(k in conf and v["frac_anios_signo"] >= 0.6)
+    mec = bool((R["P1_exclusion_EMD_RTY"]["confirmada"] or R["P3_orb_o1"]["confirmada"]) and R["P2_fade_luximb"]["confirmada"])
+    out = dict(preregistro="docs/research/gex_tendencia_20261118/PREREGISTRO.md (apéndice 2)", pruebas=R, lord=dec, mecanismo_confirmado=mec)
+    (DIR / "MECANISMO.json").write_text(json.dumps(out, indent=1, default=float))
+    for k, v in R.items(): print(k, {a: (round(b, 4) if isinstance(b, float) else b) for a, b in v.items()})
+    print("nivel", dec.get("nivel"), "mecanismo confirmado:", mec)
+
+
 if __name__ == "__main__":
-    {"tabla": tabla, "explorar": explorar, "abrir": abrir, "confirmar": confirmar}[sys.argv[1]]()
+    {"tabla": tabla, "explorar": explorar, "abrir": abrir, "confirmar": confirmar, "mecanismo": mecanismo}[sys.argv[1]]()

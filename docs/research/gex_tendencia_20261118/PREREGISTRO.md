@@ -101,3 +101,31 @@ bootstrap por día y p unilateral.
 - con 0,75 del efecto la potencia es 0,56; está declarado.
 
 **Contador:** 1 prueba (`GEX-FILTRO-CONF`). Una sola lectura: no se vuelve a abrir.
+
+## Apéndice 2 (2026-11-18, antes de mirar): tres pruebas nuevas del mecanismo de la gamma
+**Pedido de Nico:** «profundizá una vez más». Lo que replicó en la confirmación es el extremo: con gamma ALTA las reglas de tendencia
+pierden. Se prueba la forma operable (exclusión) en datos cuyo cruce con la gamma nunca se calculó, más una predicción opuesta del
+mismo mecanismo.
+
+**Variable:** `alto` = `g_rank250` del cierre previo ≥ 0,7390 (corte congelado de DESC, `CORTES_DESC.json`); `resto` = los demás días
+con GEX (desde 2011-11). Contraste = media en `alto` − media en `resto`, con bootstrap por día.
+- **P1, exclusión en otros índices:** canasta T + Franklin + SOM (R neto por día) en EMD y RTY, todos los meses hasta 2025-07.
+  **H1: contraste < 0.**
+- **P2, predicción opuesta (reversión):** fade de impulsos LUX-IMB en NQ (`luximb_ejecucion`, z0, stop 0,5·D, R bruto por operación),
+  meses DESC y REP. **H1: contraste > 0** (con gamma alta el precio se ancla y revierte más).
+- **P3, ORB O1** (R bruto por operación) en sus operaciones de confirmación (holdout A5 de NQ/ES/YM, más EMD y RTY). **H1: contraste
+  < 0.**
+
+**Declaración:** en estos datos ya se miró el R AGREGADO de cada regla; el cruce con la gamma nunca.
+
+**Decisión:**
+- `LibroLord().probar("DIA_TENDENCIA_A5", "GEX_MECANISMO_20261118", [P1, P2, P3])`, con p unilaterales en la dirección de cada H1.
+- **Confirmada cada una** si la rechaza LORD y ≥ 60 % de sus años tienen el signo de H1.
+- **El mecanismo queda confirmado** si P1 o P3 y P2 confirman (efecto en las dos direcciones).
+
+**Potencia previa:**
+- P1: en NQ/ES/YM el efecto alto − resto fue ≈ −0,6 R/día. En EMD/RTY las reglas son más chicas en R y la potencia es menor (≈ 0,5
+  con la mitad del efecto). Declarado.
+- P2 y P3: N grande (≈ 60.000 fades desde 2011; ≈ 6.000 ORB), con potencia alta para 0,02 R.
+
+**Contador:** 3 pruebas (`GEX-MECANISMO`).
