@@ -98,7 +98,7 @@ North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e
 
 ## 5. Proceso (K32) y cierre
 `antecedentes.py` → `potencia_previa.py` → pre-registro con «Antecedentes:», «Potencia previa:» y «Lectura previa:» → commit →
-`python tools/registro_global.py preregistrado …` → correr → resultado con su entrada en FACTORES y su línea MEDIDO en el mismo commit →
+`python tools/registro_global.py preregistrado …` → **commit de `TRIAL_REGISTRY_GLOBAL.jsonl`** → correr → resultado con su entrada en FACTORES y su línea MEDIDO en el mismo commit →
 `python tools/cierre.py` sin tubos → `git show --stat` → push.
 
 **Corrida con código que después se corrigió:**
@@ -129,6 +129,7 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Agregaciones distintas en una validación (K47) | ASIA «duplicaba» a los ticks; se culpó al motor M1, que coincidía operación por operación | código | `papel_m1.validacion` con `canasta_por_sesion` y su test |
 | Variable de régimen conocida después de la entrada (K48) | la «noche movida» de ASIA usaba el rango de la misma noche en que opera | código | `papel_regimen.CONOCIDA_H`, `mapa`/`encendido` con `t_entradas` |
 | Ranking móvil con huecos | `rolling(250)` dejaba sin estado medio año tras un feriado | código | ranking sobre sesiones con dato |
+| Registro global sin commitear antes de correr | ASIA-NOCHE-PREVIA se contó antes, pero el registro entró recién después del resultado | guía | §5: commit del registro inmediatamente después de contar |
 | Contraste neto con 0 al no entrar | el «neto» favorecía no entrar hasta con gatillos al azar | guía | decidir por R absoluto por gatillo y contra el placebo (§3) |
 | `git add -A` en un commit de campaña | entraron resultados de otras campañas | guía | rutas explícitas y `git show --stat` |
 | Presupuesto de contexto de los agentes | el cierre fallaba cuando FACTORES crecía y se compactaban entradas para entrar | humano + código | Nico lo elevó el 18-nov (juez y auditor 260.000, arquitecto 400.000, `config/autopilot/AGENTES.json`); `test_agentes` exige ≥ 25 % libre. No se achica contenido para entrar: se sube el tope |
