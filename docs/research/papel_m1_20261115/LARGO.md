@@ -1,5 +1,5 @@
 # Papel M1 — el largo con régimen (2026-11-15)
-Estado: RESULTADO (EF4 + régimen, enmienda 1: el largo NO da de baja). Código: `edgelab/research/papel_regimen.py`. Datos: `resultados/`,
+Estado: DESCARTADA (2026-11-18, K40) — mismo motor sesgado que VALIDACION; se relanza. Antes:  RESULTADO (EF4 + régimen, enmienda 1: el largo NO da de baja). Código: `edgelab/research/papel_regimen.py`. Datos: `resultados/`,
 `LARGO_parcial.json`. Variables de régimen causales (día previo) fijadas antes: vol20, tend60, noche (rango 18:00→09:30 NY), dst.
 
 ## ASIA-NQ (regla congelada, canasta por sesión, pts netos)

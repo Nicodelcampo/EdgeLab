@@ -1,5 +1,5 @@
 # Papel M1 — validación de la fuente (2026-11-15)
-Estado: RESULTADO. Criterio (PREREGISTRO punto 1): media y signo dentro de ~1 error estándar y correlación del P&L por sesión > 0,5,
+Estado: DESCARTADA (2026-11-18, K40) — medida con el motor de la grilla, que cobraba el stop en el extremo de la vela M1 (pesimista con stops chicos; TORI «signo opuesto» es candidato a este sesgo). Se relanza con el motor corregido; resultados viejos en `descartada_v1/`. Antes:  RESULTADO. Criterio (PREREGISTRO punto 1): media y signo dentro de ~1 error estándar y correlación del P&L por sesión > 0,5,
 M1DK:NQ_M1_dukas (CFD USATECH, 4 ticks por barra) contra ticks reales de NQ (`ops_desarrollo` de cada ficha), ago-2025 → sep-2026.
 | Regla | M1 (pts/sesión, ee, n) | Ticks NQ (pts/sesión, ee, n) | Sesiones comunes | Corr | Veredicto |
 |---|---|---|---|---|---|

@@ -51,3 +51,9 @@ Los cortes están en puntos de NQ: en S&P y Dow las celdas que dependen de magni
   tercil superior del rango nocturno 18:00→09:30 NY contra los 250 días previos (`edgelab/research/papel_regimen.py::variables`).
 - OTR930-NQ congelada en Dow M1 2012 → 2026-09 (otros mercados y mapa de régimen).
 - 2 pruebas más en el contador.
+
+## Enmienda K40 (2026-11-18)
+- **Qué pasó:** VALIDACION y LARGO se midieron con el motor de la grilla, que cobraba el stop en el pseudo-tick extremo de la vela M1.
+- **Corrección:** se relanzan las mismas fichas, tramos y criterios con el motor corregido (stop en su nivel salvo un hueco en la apertura;
+  test de calibración `tests/research/test_ejecucion.py::test_motor_grilla_m1_calibrado`).
+- **La v1:** queda en `descartada_v1/`.
