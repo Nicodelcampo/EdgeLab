@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (19)
+## PISTA_VIVA (20)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
   - Siguiente: Pre-registrar una canasta SOM + Franklin (+ R sólo NQ) con filtro de fricción en R y forward; operar sólo donde la fricción relativa es baja (NQ).
   - Evidencia: `docs/research/m1_largo_20261117/RESULTADO_FRANKLIN_E_INDICES.md`, `docs/research/m1_largo_20261117/RESULTADO_FRANKLIN.json`, `docs/research/m1_largo_20261117/RESULTADO_INDICES.json`
+- **T (FundedSync) revisado en su unidad natural (R): bruto positivo en NQ en 13 de 14 años desde 2012 y salto desde 2020 en NQ, ES y YM; el tope de 100 pts del stop no lo explica; no transfiere con fuerza a MidCap y Russell. Medir en ATR lo diluía por ≈ 3 y llevó a llamarlo «frágil»** (`F-T-REVISADO-EN-R`, 2026-11-18, nico)
+  - Efecto: NQ bruto 2008–2019 +0,036 R → 2020–2025 +0,18 R (igual con y sin tope); ES +0,015 → +0,10; YM ≈ 0 → +0,11. EMD+RTY 2020–2025 +0,033 R (IC90 −0,002/+0,069, NO_CONCLUYENTE, potencia 0,97). Neto NQ 2020–2025 ≈ +0,15 R.
+  - Dónde: NQ (principal), ES, YM; no EMD/RTY
+  - Siguiente: T vuelve a pilar de la cartera B (B' sólo comparación); sumar T a la canasta de señales estables (SOM, Franklin, R-NQ); regla de proceso: medir cada estrategia en su propia unidad de riesgo antes de concluir.
+  - Evidencia: `docs/research/m1_largo_20261117/RESULTADO_T_2020.md`, `docs/research/m1_largo_20261117/RESULTADO_T_2020.json`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
   - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)

@@ -64,7 +64,8 @@ Recordatorios:
 > por meses sobre 18 años): toda campaña nueva descubre y confirma sobre M1 largo. Ninguna canasta habilita tamaño real.
 > **Veredicto de todas las reglas: `docs/research/VEREDICTO_M1_20261117.md`.** El «antes no, ahora sí» es fricción relativa (fricción/ATR en NQ
 > 0,045 → 0,006), no régimen. Señales brutas estables en 20 años y en datos no usados: SOM (también MidCap y Russell) y Franklin (años limpios
-> +0,195 R); R AtrPhase sólo NQ; T frágil.
+> +0,195 R); R AtrPhase sólo NQ; T, revisado en su unidad (R): pista fuerte en NQ, bruto + en 13/14 años desde 2012, salto desde 2020 en
+> NQ/ES/YM (no en MidCap/Russell) — `docs/research/m1_largo_20261117/RESULTADO_T_2020.md`.
 
 ### Estado al 2026-11-09
 

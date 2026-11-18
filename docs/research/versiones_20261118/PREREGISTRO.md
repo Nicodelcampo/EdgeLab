@@ -38,3 +38,7 @@ también es evidencia: el forward decide entre B y B' y entre cada versión y su
   sin señal. SEÑAL_ESTABLE junta las dos únicas señales brutas estables de la historia larga.
 - **Cómo podría refutarse:** e-proceso sin cruzar y futilidad (R total ≤ 0 tras 60 sesiones con operaciones), o que la versión rinda menos
   que su original en la comparación pareada.
+
+## Nota (2026-11-18, después de commitear; no cambia el diseño)
+La premisa «T sin señal bruta antes de 2020» se corrigió (`docs/research/m1_largo_20261117/RESULTADO_T_2020.md`): medida en R, T es pista fuerte
+en NQ. B (con T) es la principal y B' queda como comparación pareada en el forward, como ya estaba previsto.

@@ -45,7 +45,7 @@ sigue siendo decisión de Nico.
 | **SOM** (sin_finde) | señal bruta estable 2006–2025 en NQ, ES y YM; años limpios +0,064 R bruto; **transfiere al MidCap y al Russell (bruto +0,030 R, IC90 +0,006/+0,055, A_FAVOR, 2026-11-18)**; neto hoy en NQ ≈ +0,04 R; holdout +0,16 R | **LA MEJOR PISTA DEL PROYECTO** (bruto confirmado; neto chico y dependiente de la fricción) | confirmar en un índice no mirado (RTY/MidCap de NT8) en neto con la fricción actual, y forward; operarla sólo cuando la fricción en R de la operación sea baja (filtro declarado antes) |
 | **R** AtrPhase (FundedSync) | bruto positivo en NQ en los 3 períodos; años limpios +0,097 ATR bruto (3 índices); en ES y YM decae después de 2011; **no transfiere con fuerza a EMD + RTY (+0,011 ATR, NO_CONCLUYENTE con potencia 0,93)**; sin stop | **PISTA SÓLO NQ** | sólo NQ y con el stop de catástrofe (0,5 × ATR20): baja la peor operación de −415 a −169 pts y casi no cambia el neto |
 | **Z** ZetaTrend (FundedSync) | bruto positivo en NQ y ES, más débil en YM; años limpios +0,028 (IC cruza 0) | **PISTA DÉBIL** | con stop de catástrofe; como complemento, no como pilar |
-| **T** FtmEngine (FundedSync) | sin señal bruta antes de 2020 (+0,007 ATR en 2008–2011); régimen análogo no la apoya; la cartera de fábrica del vendedor ni la incluye | **FRÁGIL** | deja de ser el pilar de la cartera B: pre-registrar una B' sin T (R + Z con stop) y comparar en forward; T queda en papel |
+| **T** FtmEngine (FundedSync) | **revisado 2026-11-18** (`m1_largo_20261117/RESULTADO_T_2020.md`): en R (su unidad) tiene bruto positivo en NQ en 13 de 14 años desde 2012 y crece desde 2020 en NQ, ES y YM; el tope de 100 pts no lo explica; en MidCap + Russell 2020–2025 NO_CONCLUYENTE (+0,033 R); neto NQ 2020–2025 ≈ +0,15 R; holdout +14 pts | **PISTA FUERTE EN NQ** (la versión anterior, «frágil», salió de medir en ATR) | vuelve a ser pilar de la B; B' sólo como comparación; se suma a la canasta de señales estables |
 | O, V, A20, C (FundedSync) | bruto ≈ 0 o chico; netos positivos sólo con la fricción reciente | sin ventaja demostrada | no se operan |
 | W, N (FundedSync) | la variante de salida mejora (confirmado en años limpios) pero sigue ≈ 0 o negativa | **SIN VENTAJA** | no se operan |
 | A1, P, Q, E, F, S (FundedSync) | negativos o ≈ 0 | **SIN VENTAJA** | no se operan |
@@ -60,7 +60,7 @@ sigue siendo decisión de Nico.
 2. **Versiones nuevas en papel** (cada una con su pre-registro):
    - v2.1 sin CVGAP-ES-C;
    - v4.1 sin CVGAP2-GC#11 ni COMEX;
-   - B' = R + Z con stop de catástrofe, sin T;
+   - B' = R + Z con stop de catástrofe, sin T, sólo como comparación (corrección del 2026-11-18: T es pista fuerte en NQ, B con T es la principal);
    - una canasta «señal estable» con SOM + R (NQ) que se siga en forward; a sumar Franklin con su propio pre-registro.
 3. **Filtro de fricción en R antes de entrar:** pasa a ser parte de toda regla operable (paso 3 de urgencia/evidencia), con umbral
    declarado.
