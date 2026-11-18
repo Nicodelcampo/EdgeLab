@@ -1165,7 +1165,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - el fade del primer rechazo del borde del IB pierde en bruto (V0 −0,128 R, n 3.334);
   - ningún filtro lo da vuelta;
   - sólo la aceptación → continuación es positiva (V3 +0,044, sin BH, neto ≈ 0).
-  - Acta: `docs/research/ib_madonna_20261118/RESULTADO.md`.
+  - Acta v1 (DESCARTADA, se relanza): `docs/research/ib_madonna_20261118/descartada_v1/RESULTADO.md`.
 - **NO MEDIDO:**
   - la «Madonna inversa» (a favor de la ruptura tras el rechazo; pista a pre-registrar en los meses REP);
   - la SMT NQ/ES;

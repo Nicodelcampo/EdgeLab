@@ -85,6 +85,8 @@ def eventos(ctx) -> pd.DataFrame:
         g5 = (mm - IB_INI) // 5; G = []
         for g in np.unique(g5[(mm >= IB_FIN) & (mm < VENT_FIN + V4_ESPERA)]):
             ii = np.flatnonzero(g5 == g); idx = m[ii]
+            if mm[ii[-1]] != IB_INI + 5 * g + 4: continue                       # sólo velas de 5 min COMPLETAS (2026-11-18: con datos
+                                                                                 # cortados se decidía con una vela a medio formar)
             G.append(dict(k=int(idx[-1]), H=h[idx].max(), L=l[idx].min(), C=c[idx[-1]], V=v[idx].sum(), fin=int(mm[ii[-1]]) + 1,
                           vw=pv[ii[-1]] / vv[ii[-1]] if vv[ii[-1]] > 0 else np.nan))
         en_vent = [x for x in G if x["fin"] <= VENT_FIN]

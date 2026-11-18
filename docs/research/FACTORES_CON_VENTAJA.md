@@ -240,10 +240,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (10)
+## EN_SEGUIMIENTO (11)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Fade del primer rechazo en el borde del Initial Balance (Madonna) y 10 variantes, NQ/ES/YM M1 2006–2025** (`F-IB-MADONNA-NO-DEFIENDE`, 2026-11-18, humano)
+  - Efecto: Corrida v1 DESCARTADA (decidía con velas de 5 min incompletas si los datos se cortaban; corregido, se relanza). v1: V0 bruto −0,128 R (n 3.334, 20 % de años +); sólo V3 + (+0,044, sin BH).
+  - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5; calibrado 13/16
+  - Siguiente: Esperar la corrida relanzada; recién ahí NO_REPETIR o no.
+  - Evidencia: `docs/research/ib_madonna_20261118/descartada_v1/RESULTADO.md`
 - **Cosecha del pozo de pistas vivas sin acta con la regla de la cartera: 330 pistas de 20 familias con holdout libre → 76 elegibles → canasta «v4» de 10 reglas en 7 familias (oro al almuerzo, CVGAP2 NQ/GC, U1 en YM, intento fallido Lux NQ/CFD, cierre COMEX)** (`F-COSECHA-POZO-V4`, 2026-11-17, sesion)
   - Efecto: Desarrollo (elegido, sin contraer): 700 operaciones, 50 ops/mes; plan e-proceso con la mitad del efecto: 0,16 R/op, sd 1,16, 6,3 meses para decidir. Integridad: 10,7 % de pistas cambian de signo en la réplica re-medida (tope 20 %). Seleccionada antes de mirar el holdout.
   - Dónde: GC (5 reglas), NQ (4), YM (1)
@@ -295,7 +300,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (33)
+## NO_REPETIR (32)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -309,11 +314,6 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5, 2006-01 → 2025-07; calibrado contra ticks 25/30
   - Siguiente: No repetir como señal en M1. Esperar picos como filtro de entrada de otra regla es otra hipótesis (capa de ejecución, pareada y con placebo).
   - Evidencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`, `docs/research/escalonadas_m1_20261118/DESC.json`
-- **Fade del primer rechazo en el borde del Initial Balance (Madonna) y 10 variantes, NQ/ES/YM M1 2006–2025** (`F-IB-MADONNA-NO-DEFIENDE`, 2026-11-18, humano)
-  - Efecto: A5 DESC: V0 bruto −0,128 R (EE 0,031, n 3.334, 20 % de años +); los filtros no lo dan vuelta; sólo la aceptación → continuación es + (V3 +0,044, p 0,007, sin BH; neto ≈ 0). 0 nominadas.
-  - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5; calibrado 13/16
-  - Siguiente: No hacer fade del borde del IB. Pista a pre-registrar: a favor de la ruptura tras el rechazo, probada en meses REP.
-  - Evidencia: `docs/research/ib_madonna_20261118/RESULTADO.md`, `docs/research/ib_madonna_20261118/DESC.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)

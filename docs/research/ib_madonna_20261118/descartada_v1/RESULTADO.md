@@ -1,6 +1,6 @@
 # IB-MADONNA: resultado (2026-11-18)
 
-Estado: RESULTADO — pre-registro `PREREGISTRO.md`, diseño `DISENO.md`. North Star sha256
+Estado: DESCARTADA (2026-11-18) — el módulo decidía con velas de 5 min incompletas cuando los datos se cortaban; corregido y relanzado (`../RESULTADO.md`). En la historia completa las velas se evaluaban al cerrar, así que los números de abajo no deberían cambiar mucho, pero por regla no se interpretan. Antes: pre-registro `PREREGISTRO.md`, diseño `DISENO.md`. North Star sha256
 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Datos: `CALIBRACION.json` (13/16), `DESC.json`, `CORRIDA.json` y
 `OPS_DESC_REP.csv.gz`.
 

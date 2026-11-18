@@ -54,7 +54,7 @@ def eventos(ctx) -> pd.DataFrame:
         ATR = np.mean(atr) if len(atr) >= 10 else np.nan
         # ---------- O1: vela de 5 min ----------
         i5 = m[mm < RTH0 + 5]
-        if len(i5) >= 3 and prev is not None:
+        if len(i5) >= 3 and prev is not None and mo[i5[-1]] == RTH0 + 4:          # vela de 5 min COMPLETA (decide a las 9:34)
             O5, C5, H5, L5 = o[i5[0]], c[i5[-1]], h[i5].max(), l[i5].min()
             if H5 > L5 and abs(C5 - O5) >= 0.05 * (H5 - L5):
                 lado = 1 if C5 > O5 else -1; stop = L5 if lado == 1 else H5
