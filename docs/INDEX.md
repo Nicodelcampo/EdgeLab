@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1434 |
+| `docs/research` | 1438 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| REPORTE | 4 | `REPORTE_PARA_CLAUDE_EXTERNAS_A5_20261118.md` | 2026-11-18 | REPORTE — documento de coordinación entre agentes (Antigravity $\leftrightarrow$ |
 | AUDITORIA | 16 | `AUDITORIA_K48_CONTEXTO_20261118.md` | 2026-11-18 | RESULTADO — las pistas vivas no tienen fuga. La fuga estaba en un atlas descript |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
@@ -57,7 +58,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | APERTURA | 1 | `APERTURA_HOLDOUT_CONJUNTA_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «cuando termine todo abrimos el holdout con las nominad |
 | RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
 | LECTURA | 3 | `LECTURA_ROBOTEDGE_20261101.md` | 2026-11-01 | VIGENTE. Fecha: 2026-11-01. Insumos (subidos por Nico): |
-| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
