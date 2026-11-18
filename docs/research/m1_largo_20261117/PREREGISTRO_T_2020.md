@@ -5,7 +5,7 @@ esos índices (`FS_OPS_EMD/RTY.csv.gz`), pero T no se analizó ni se imprimió n
 Nico: «indagá más en T, pasó de estar en una cartera a no estar sin tanto motivo». North Star sha256
 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Etapa EF4.
 
-Antecedentes (exploratorio de hoy, sobre datos ya vistos de NQ/ES/YM, medido en R = neto / riesgo propio de T):
+Antecedentes: exploratorio de hoy, sobre datos ya vistos de NQ/ES/YM, medido en R = neto / riesgo propio de T:
 - El tope de 100 puntos del stop de T no se activaba antes de 2018 en NQ y recorta el 25–72 % de las operaciones desde 2020. Pero no es la
   explicación: en NQ 2020–2025, T rinde lo mismo con y sin tope (bruto +0,175 y +0,178 R).
 - Bruto en R:
