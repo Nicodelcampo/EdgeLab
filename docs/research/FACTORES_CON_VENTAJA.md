@@ -235,10 +235,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (10)
+## EN_SEGUIMIENTO (11)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Impulsos LUX-IMB (D3_20, amplitud ≥ p60 causal): el fade hacia A a mercado tiene reversión bruta en NQ 2006–2022, y las zonas OG/VI en el 25 % inicial la aumentan; la fricción la vuelve negativa en neto** (`F-LUXIMB-A5-REVERSION-BRUTA`, 2026-11-18, humano)
+  - Efecto: DESC A5 (meses DESC 2006–2022, M1 calibrado contra ticks 11/12): bruto +0,017 a +0,059 R en el control y +0,04 a +0,11 R con zonas; zonas − control +0,026 a +0,050 R (BH en 8/9), 71–88 % de años positivos. Neto −0,5 a −1,5 R (fricción 0,6–1,6 R: impulsos chicos en puntos antes de 2016); subconjunto operable (fricción ≤ 0,08 R) neto −0,03 a −0,26 R (n 37–6.742).
+  - Dónde: NQ futuros M1 (NT8), meses DESC de la partición A5, 2006-01 → 2022-12
+  - Siguiente: REP con un paso de LORD++ y, si la potencia alcanza, la apertura A5 del holdout para el mecanismo bruto (zonas − control). Como regla sola no es operable: usar la condición de zonas como filtro de contexto en fades con stop grande.
+  - Evidencia: `docs/research/luximb_a5_20261118/DESC.json`, `docs/research/luximb_a5_20261118/PREREGISTRO.md`, `docs/research/luximb_a5_20261118/CALIBRACION.json`
 - **Cosecha del pozo de pistas vivas sin acta con la regla de la cartera: 330 pistas de 20 familias con holdout libre → 76 elegibles → canasta «v4» de 10 reglas en 7 familias (oro al almuerzo, CVGAP2 NQ/GC, U1 en YM, intento fallido Lux NQ/CFD, cierre COMEX)** (`F-COSECHA-POZO-V4`, 2026-11-17, sesion)
   - Efecto: Desarrollo (elegido, sin contraer): 700 operaciones, 50 ops/mes; plan e-proceso con la mitad del efecto: 0,16 R/op, sd 1,16, 6,3 meses para decidir. Integridad: 10,7 % de pistas cambian de signo en la réplica re-medida (tope 20 %). Seleccionada antes de mirar el holdout.
   - Dónde: GC (5 reglas), NQ (4), YM (1)

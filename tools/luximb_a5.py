@@ -97,12 +97,17 @@ def correr(datos):
     print(json.dumps(cnt), flush=True)
 
 
+def _sf(z):
+    """Cola superior de la normal (sin scipy, que no está en el entorno)."""
+    from math import erfc, sqrt
+    return float(0.5 * erfc(z / sqrt(2)))
+
+
 def _cluster(ses, r):
     """Media por operación y p unilateral (H1: media > 0) con error estándar agrupado por sesión."""
     df = pd.DataFrame(dict(s=ses, r=r)); g = df.groupby("s").r.agg(["sum", "count"]); n = g["count"].sum()
     m = g["sum"].sum() / n; se = float(np.sqrt(((g["sum"] - m * g["count"]) ** 2).sum()) / n)
-    from scipy.stats import norm
-    return float(m), se, float(norm.sf(m / se)) if se > 0 else 1.0
+    return float(m), se, _sf(m / se) if se > 0 else 1.0
 
 
 def _dif(ses_a, r_a, ses_b, r_b, B=2000, seed=7):
@@ -114,8 +119,8 @@ def _dif(ses_a, r_a, ses_b, r_b, B=2000, seed=7):
     rng = np.random.default_rng(seed); A = a.to_numpy(float); Bm = b.to_numpy(float); bs = np.empty(B)
     for i in range(B):
         ix = rng.integers(0, len(S), len(S)); sa, sb = A[ix].sum(0), Bm[ix].sum(0); bs[i] = sa[0] / sa[1] - sb[0] / sb[1]
-    se = float(bs.std(ddof=1)); from scipy.stats import norm
-    return float(obs), se, float(norm.sf(obs / se)) if se > 0 else 1.0
+    se = float(bs.std(ddof=1))
+    return float(obs), se, _sf(obs / se) if se > 0 else 1.0
 
 
 def _celdas(T, bloque, fr):
@@ -141,10 +146,14 @@ def desc():
     from edgelab.research.banco_eventos import bh
     from edgelab.research.embudo_runners import friccion
     T = pd.read_csv(DIR / "OPS_DESC_REP.csv.gz"); res = _celdas(T, "DESC", friccion("NQ")[0])
+    cal = json.loads((DIR / "CALIBRACION.json").read_text())["celdas"]
+    def calibra(k):                                   # un contraste necesita que calibren sus dos celdas (PREREGISTRO §5.0)
+        z, e = k.split("|"); return all(cal[f"D3_20_a0_{x}|{e}"]["calibra"] for x in z.split("-"))
     nombres = list(res); ps = [res[k]["p"] for k in nombres]; rech = bh(ps, 0.10)
     for k, rj in zip(nombres, rech):
         v = res[k]; v["bh"] = bool(rj)
-        v["nominada"] = bool(rj and (v.get("R_bruto", v.get("dif_bruto")) > 0) and v.get("frac_anios_pos", 1.0) >= MIN_FRAC_ANIOS)
+        v["calibra"] = calibra(k)
+        v["nominada"] = bool(rj and v["calibra"] and (v.get("R_bruto", v.get("dif_bruto")) > 0) and v.get("frac_anios_pos", 1.0) >= MIN_FRAC_ANIOS)
     out = dict(preregistro="docs/research/luximb_a5_20261118/PREREGISTRO.md", pruebas=len(nombres), resultados=res,
                nominadas=[k for k in nombres if res[k]["nominada"]])
     (DIR / "DESC.json").write_text(json.dumps(out, indent=1, default=float)); print(json.dumps(out["nominadas"]))
