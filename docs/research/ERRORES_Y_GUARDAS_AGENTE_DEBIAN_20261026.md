@@ -140,10 +140,30 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   escala. Usar R o ATR.
 - **K38, ajuste de quien diseñó la regla.** Una regla de un tercero se prueba fuera de lo que su autor pudo usar: otro instrumento u otros
   años. Los módulos de FundedSync sólo funcionan en NQ 2020+; T es la excepción porque también pasa ES y YM.
-- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con velas M1 como pseudo-ticks el stop sale en su nivel salvo hueco
-  (`m1_sintetico`, motor único y de grilla); M1 no ve saltos: toda familia en M1 se calibra contra ticks (K30).
-- **K41–K44 (2026-11-18):** tabla vieja, α de la potencia, veredicto a mano, script que no compila y datos a mano: guardas en
-  código; tabla error → guarda en `LEER_ANTES_DE_CADA_CORRIDA.md` §6.
+- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con pseudo-ticks de M1, «salir al tick que cruza el stop» cobra el extremo de
+  la vela. Con stops chicos es pesimista: en LUXIMB-A5 la calibración falló 12/12.
+  - **Corrección:** con `m1_sintetico` (lo marcan los lectores M1), el stop sale en su nivel, salvo un hueco en la apertura. Está en
+    `ejecucion.py`, `luximb_hvn._e0_nb` y el motor de grilla (`areas_expansion.simular_cierre_m1`, `grilla_generica.simular_ops`).
+  - **Riesgo:** M1 no ve saltos dentro de la vela. Por eso toda familia en M1 se calibra contra ticks (K30); en NQ dio igual o más
+    pesimista.
+  - **Corridas descartadas:** el «atrás» del 17-nov y papel M1 del 15-nov (motor de grilla con la convención vieja), relanzados.
+- **K41, tabla de código viejo (2026-11-18).** `tablas.py traer` salteaba las tablas ya bajadas sin revisar con qué código corrieron, y
+  la calibración de ESCALONADAS-M1 comparó tablas viejas contra M1 nuevo. **Guarda:** `traer` revisa también lo ya bajado y lo aparta
+  como `*.NO_VIGENTE.*`; `_tablas` (explorar, congelar, confirmar) y `a5_campana._ticks` se niegan a leer una tabla de código viejo.
+- **K42, potencia a un α más laxo que el reservado (2026-11-18).** Se declaró potencia 0,9 a α 0,05 para ORB O1 cuando el nivel
+  LORD++ reservado de la familia era 0,0036 (potencia real ≈ 0,5). **Guarda:** `holdout_ventanas.registrar_apertura` rechaza un plan
+  «fijo» con `alfa` mayor que el nivel de una reserva abierta de la familia (`_exigir_alfa_reservado`).
+- **K43, veredicto de calibración escrito a mano (2026-11-18).** La validación de papel M1 aprobó ASIA con «≈ 1 ee» usando el EE de
+  M1, cuando el pre-registro decía «< 1 error estándar» sin precisar cuál. **Guarda:** el veredicto de una calibración o validación
+  de fuente sale de `a5.calibrar_por_sesion` (criterio único) y queda en JSON (`tools/papel_m1.py validacion`, `a5_campana.py
+  calibracion`).
+- **K44, script que no compila (2026-11-18).** `tools/orb_confirmacion_o1.py` se commiteó con un paréntesis de más: no tenía test.
+  **Guarda:** `tests/test_gobernanza_20261118.py::test_todo_el_codigo_compila` compila todo `tools/` y `edgelab/`.
+- **Acceso a datos (2026-11-18).** El M1 de NT8 vivía en una carpeta temporal bajada a mano y pasada como argumento: no reproducible ni
+  verificado. **Guarda:** `python tools/datos.py traer|importar M1NT8` deja `data/m1nt8/` con `PROCEDENCIA.json` (sha256 y tamaño
+  contra el origen); las herramientas leen `datos.ruta("M1NT8")` por defecto.
+- **Guía (no se puede impedir en código):** confirmar en réplica → holdout A5 → instrumentos no usados antes que pedir forward; neto
+  con mini y micro; ninguna canasta de prop firm con un subgrupo sin confirmar. Tabla completa: `LEER_ANTES_DE_CADA_CORRIDA.md` §6.
 - **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de
   drawdown y de tamaño.
 
