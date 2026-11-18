@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-689 scripts.
+690 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -19,6 +19,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/analizar.py` | Analizador de estrategias (como el Strategy Analyzer de NT8) sobre el simulador sellado y los costos canónicos. |
 | `tools/analizar_embudo.py` | Reporte del analizador (estilo Strategy Analyzer) de las celdas que dieron positivo en el backtest y no confirmaron en el embudo. |
 | `tools/analizar_hft_gc_cluster_p10.py` | Análisis estructurado en EdgeLab para HFTZonesGCClusterP10 (SQLite Logger NT8). |
+| `tools/anclaje_proxy.py` | Proxy de gamma desde 2006 y el filtro de exclusión en T + Franklin + SOM (pre-registro docs/research/anclaje_proxy_20261118/PREREGISTRO.md). |
 | `tools/antecedentes.py` | Ficha de antecedentes de una idea y presupuesto de datos de su linaje, en una página (AUTOMATIZACION_PROCESOS_20261111 R1/R2). |
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
 | `tools/asia_noche.py` | ASIA-NQ y la «noche movida», versión causal (pre-registro docs/research/asia_noche_20261118/PREREGISTRO.md). |
