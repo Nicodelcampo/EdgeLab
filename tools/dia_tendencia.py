@@ -64,7 +64,8 @@ def _externos(fechas):
     gex = _rank(G.gex).shift(1); dix = _rank(G.dix).shift(1)             # dato del cierre de d−1 para el día d
     H = ML.leer(ROOT / "data/sqx_barras/DEUIDXEUR_H1.csv"); H.index = H.index - pd.Timedelta(hours=ML.SERVIDOR_MENOS_NY)
     hh = H.index.hour; X = H[(hh >= 3) & (hh < 9)]; dX = X.index.normalize()
-    ef = (X.close.groupby(dX).last() - X.open.groupby(dX).first()).abs() / X.close.diff().abs().groupby(dX).sum().replace(0, np.nan)
+    prev = X.close.groupby(dX).shift(1).fillna(X.open)                     # el primer paso de cada día parte de su apertura
+    ef = (X.close.groupby(dX).last() - X.open.groupby(dX).first()).abs() / (X.close - prev).abs().groupby(dX).sum().replace(0, np.nan)
     return pd.DataFrame(dict(gex=gex, dix=dix)).reindex(fechas, method=None), ef.reindex(fechas)
 
 
