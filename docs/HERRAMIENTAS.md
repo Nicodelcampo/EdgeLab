@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-686 scripts.
+687 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -21,6 +21,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/analizar_hft_gc_cluster_p10.py` | Análisis estructurado en EdgeLab para HFTZonesGCClusterP10 (SQLite Logger NT8). |
 | `tools/antecedentes.py` | Ficha de antecedentes de una idea y presupuesto de datos de su linaje, en una página (AUTOMATIZACION_PROCESOS_20261111 R1/R2). |
 | `tools/apply_hft_v2_headless_patch.py` | Fail-closed source patch for HFTZonesNQPureV4_V2 export mode. |
+| `tools/asia_noche.py` | ASIA-NQ y la «noche movida», versión causal (pre-registro docs/research/asia_noche_20261118/PREREGISTRO.md). |
 | `tools/atlas_asimetrico.py` | Atlas nulo — grilla ASIMÉTRICA P/N y horizontes finos. **NULL / DESCRIPTIVO.** |
 | `tools/atlas_barreras_hft_r.py` | Atlas transversal de Barreras HFT frontales en R (Vía 2, 2026-11-05). |
 | `tools/atlas_contexto_r.py` | Atlas de Contexto Causal Común y Vetos Estructurales en R (2026-11-04). |

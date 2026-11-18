@@ -18,6 +18,9 @@ def variables(D1: pd.DataFrame, H1: pd.DataFrame) -> pd.DataFrame:
     ses = (X.index + pd.Timedelta(hours=6)).normalize()                     # 18:00 NY → sesión del día siguiente
     noche_m = (X.index.hour >= 18) | (X.index.hour < 9)
     rn = (X.high[noche_m].groupby(ses[noche_m]).max() - X.low[noche_m].groupby(ses[noche_m]).min()) / X.close.groupby(ses).last().shift(1)
+    # 2026-11-18: el ranking se calcula sobre las sesiones CON dato. Con una sola sesión sin barras nocturnas (feriado), rolling(250)
+    # devolvía NaN las 250 sesiones siguientes y la mitad de algunos años quedaba sin estado.
+    rn = rn.replace([np.inf, -np.inf], np.nan).dropna()
     rn_rank = rn.rolling(250).apply(lambda x: (x[:-1] < x[-1]).mean(), raw=True)
     V = pd.DataFrame(dict(vol20=pd.cut(vol_rank.shift(1), [-.01, 1/3, 2/3, 1.01], labels=[0, 1, 2]),
                           tend60=tend.shift(1)), index=D1.index)

@@ -5,7 +5,7 @@ Pre-registro: docs/research/papel_m1_20261115/PREREGISTRO.md. Etapa ANALIZAR_REG
   python tools/papel_m1.py lanzar VALIDACION|LARGO [FICHA ...]   # VALIDACION = 2025-08 → 2026-09 (comparable con ticks reales de NQ)
   python tools/papel_m1.py traer                                  # baja lo terminado a docs/research/papel_m1_20261115/resultados/
   python tools/papel_m1.py local FICHA SENSOR D0-D1 [D0-D1 ...]  # en la máquina con M1 real de futuros (SENSOR M1NT8:NQ, datos de tools/datos.py)
-  python tools/papel_m1.py validacion                             # criterio de la fuente POR CÓDIGO (a5.calibrar_por_sesion) -> VALIDACION.json
+  python tools/papel_m1.py validacion [SENSOR]                    # criterio de la fuente POR CÓDIGO (a5.calibrar_por_sesion) -> VALIDACION*.json
 """
 import json, sys
 from pathlib import Path
@@ -67,24 +67,30 @@ def local(fid, sensor, periodos):
         dst.write_text(json.dumps(dict(run.traer(h), sensor=sensor, desde=a, hasta=b, local=True), indent=1, default=float), encoding="utf-8"); print("local", dst.name)
 
 
-def validacion():
+def validacion(sensor="M1DK:NQ_M1_dukas"):
     """K43 (2026-11-18): el veredicto de la fuente lo da el criterio único `a5.calibrar_por_sesion` (≥ 30 sesiones comunes, mismo signo,
-    |diferencia| ≤ 1 EE combinado, corr > 0,5), no una tabla escrita a mano. La v1 aprobó ASIA leyendo «≈ 1 ee» con otro EE."""
+    |diferencia| ≤ 1 EE combinado, corr > 0,5), no una tabla escrita a mano.
+    K47 (2026-11-18): la serie de M1 se agrega con LA MISMA función que la ficha (`cartera.papel.canasta_por_sesion`: suma de las
+    celdas / número de celdas). La v1 y la primera v2 promediaban sólo las celdas que operan y comparaban unidades distintas: ASIA
+    «duplicaba» a los ticks sin que el motor tuviera nada que ver (en ticks reales, agregada igual que M1, también da el doble)."""
     import pandas as pd
     from edgelab.research import a5 as A5
+    from edgelab.cartera.papel import canasta_por_sesion
     out = {}
     for fid in FICHAS:
         f = _ficha(fid); od = f["ops_desarrollo"]; od = json.loads(od) if isinstance(od, str) else od
         t = pd.DataFrame(od, columns=["ses", "v"]).groupby("ses").v.sum(); t = t[(t.index >= 20250801) & (t.index <= 20260929)]
-        r = OUT / "resultados" / f"{fid}_20250801_20260929.json"
-        if not r.exists(): out[fid] = dict(calibra=False, motivo="sin resultado M1"); continue
-        O = pd.DataFrame(json.loads(r.read_text(encoding="utf-8"))["operaciones"]); O["celda"] = O.celda.astype(str)
-        m = O.groupby(["ses", "celda"]).neto.sum().unstack().mean(axis=1)              # media de las celdas que operan la sesión
-        out[fid] = A5.calibrar_por_sesion({int(k): float(v) for k, v in t.items()}, {int(k): float(v) for k, v in m.items()})
-    (OUT / "VALIDACION.json").write_text(json.dumps(dict(criterio="a5.calibrar_por_sesion", fichas=out), indent=1, default=float), encoding="utf-8")
+        r = OUT / "resultados" / f"{_pref(sensor)}{fid}_20250801_20260929.json"
+        if not r.exists(): out[fid] = dict(calibra=False, motivo=f"sin resultado {sensor}"); continue
+        O = json.loads(r.read_text(encoding="utf-8"))["operaciones"]
+        m = dict(canasta_por_sesion(zip(O["ses"], O["neto"]), len(f["regla"].get("celdas") or [1])))
+        out[fid] = A5.calibrar_por_sesion({int(k): float(v) for k, v in t.items()}, m)
+    dst = OUT / ("VALIDACION.json" if sensor.endswith("NQ_M1_dukas") else f"VALIDACION_{_pref(sensor).strip('_')}.json")
+    dst.write_text(json.dumps(dict(criterio="a5.calibrar_por_sesion", agregacion="cartera.papel.canasta_por_sesion", sensor=sensor, fichas=out),
+                              indent=1, default=float), encoding="utf-8")
     for k, v in out.items(): print(k, "CALIBRA" if v["calibra"] else "NO", {a: round(b, 3) if isinstance(b, float) else b for a, b in v.items()})
 
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": validacion, "local": lambda: local(a[1], a[2], a[3:])}[a[0]]()
+    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": lambda: validacion(*a[1:2]), "local": lambda: local(a[1], a[2], a[3:])}[a[0]]()
