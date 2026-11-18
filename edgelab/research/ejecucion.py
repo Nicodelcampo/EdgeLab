@@ -60,7 +60,8 @@ def nombre(spec) -> str:
         x, sl, tp = p
         return f"L_x{x}_sl{sl}_tp{tp}"
     if t == "PRECIOS":
-        return f"P_{p[0]}_{p[1]}"
+        if len(p) < 2: raise ValueError(f"PRECIOS necesita columnas de objetivo y stop: {spec!r}")
+        return f"P_{p[0]}_{p[1]}" + (f"_{p[2]}" if len(p) > 2 else "")
     raise ValueError(f"ejecución desconocida: {spec!r}")
 
 
@@ -75,7 +76,8 @@ def validar(specs) -> list:
         if s[0] == "MERCADO" and (s[1] <= 0 or s[2] <= 0 or max(s[3], s[4]) >= s[2]): e.append(f"{n}: stop y objetivo > 0; parcial/BE antes del objetivo")
         if s[0] == "VUELTA" and not (0 < s[2] and s[1] < s[5] and s[3] > 0): e.append(f"{n}: r > 0, b > 0 y c > e")
         if s[0] == "LIMITE" and not (s[2] > 0 and s[3] > 0): e.append(f"{n}: stop y objetivo > 0")
-        if s[0] == "PRECIOS" and not (len(s) == 3 and all(isinstance(x, str) for x in s[1:])): e.append(f"{n}: (\"PRECIOS\", columna objetivo, columna stop)")
+        if s[0] == "PRECIOS" and not (len(s) in (3, 4) and all(isinstance(x, str) for x in s[1:])):
+            e.append(f"{n}: (\"PRECIOS\", columna objetivo, columna stop[, columna vela de salida])")
     return e
 
 
@@ -255,7 +257,12 @@ def desenlaces(E: pd.DataFrame, ctx, specs) -> pd.DataFrame:
     cols.update(mec_ext_antes_ref=mec[:, 0], mec_ext_antes_mitad=mec[:, 1], mec_toca_ref=mec[:, 2], mec_toca_mitad=mec[:, 3])
     for s in specs:
         if s[0] == "PRECIOS":
-            o = _lote_precios(tpx, aper, j0, jw, ok, lado, E[s[1]].to_numpy(float), E[s[2]].to_numpy(float))
+            jw_s, ok_s = jw, ok
+            if len(s) == 4:                                    # salida por hora (2026-11-18, ORB-A5): vela de salida por fila; reemplaza
+                n_v = len(ts) - 1; kk = E.k.to_numpy(np.int64)  # al tope de TOPE velas pero nunca pasa el fin del tramo continuo
+                vf = E[s[3]].to_numpy(float); vf = np.where(np.isfinite(vf), vf, kk + TOPE).astype(np.int64)
+                jw_s = ts[np.minimum(np.minimum(np.maximum(vf, kk) + 1, fin[np.minimum(kk, n_v - 1)]), n_v)]; ok_s = jw_s > j0 + 1
+            o = _lote_precios(tpx, aper, j0, jw_s, ok_s, lado, E[s[1]].to_numpy(float), E[s[2]].to_numpy(float))
             cols[f"r_{nombre(s)}"] = o[:, 0]; cols[f"k_{nombre(s)}"] = o[:, 1]; continue
         p = [float(v) for v in s[1:]]
         if s[0] == "MERCADO": o = _lote_mercado(tpx, aper, j0, jw, ok, lado, ref, *p)

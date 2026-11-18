@@ -88,3 +88,15 @@ def test_m1_stop_en_su_nivel_salvo_hueco_K40():
     ctx = dict(m1_sintetico=True, tpx=np.zeros(8), tstart=np.array([0, 4, 8], np.int64))
     assert X.aperturas(ctx).tolist() == [True, False, False, False, True, False, False, False]
     assert len(X.aperturas(dict(tpx=np.zeros(8), tstart=np.array([0, 4, 8])))) == 0
+
+
+def test_precios_con_vela_de_salida_por_fila():
+    """ORB-A5: («PRECIOS», obj, stop, fin) sale en la vela `fin` aunque pase de TOPE; sin `fin`, a las TOPE velas."""
+    n = 400; px = 100.0 + np.arange(n) * 0.25                                     # una vela = un tick, precio que sube
+    ctx = dict(t=np.arange(n) * 60.0, ses=np.full(n, 20250102), tstart=np.arange(n + 1, dtype=np.int64), tpx=px, tick=0.25)
+    E = pd.DataFrame(dict(k=[0], lado=[1], ref=[1e6], ext=[0.0], rg=[1.0], obj=[1e6], stop=[50.0], fin=[350]))
+    T = X.desenlaces(E, ctx, [("PRECIOS", "obj", "stop", "fin"), ("PRECIOS", "obj", "stop")])
+    e = px[1]; risk = e - 50.0
+    assert np.isclose(T["r_P_obj_stop_fin"][0], (px[350] - e) / risk)               # sostiene hasta la vela 350 (> TOPE = 240)
+    assert np.isclose(T["r_P_obj_stop"][0], (px[X.TOPE] - e) / risk)                # sin columna: tope de TOPE velas
+    assert X.validar([("PRECIOS", "a", "b", "c")]) == [] and X.validar([("PRECIOS", "a")]) != []
