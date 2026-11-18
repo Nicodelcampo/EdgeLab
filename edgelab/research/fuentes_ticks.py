@@ -188,7 +188,8 @@ def bloques_m1dk(simbolo, desde, hasta, entrada="/kaggle/input"):
 # desde 2008-01; MergeNonBackAdjusted (precios reales), índice `datetime` = APERTURA de la vela en UTC (manifest.json). El archivo llega
 # hasta la fecha del export, holdout incluido: este lector corta SIEMPRE en la frontera única (nunca entrega nada desde su apertura).
 M1NT8_DATASET = "nicolasbuttaro/edgelab-nt8-m1-futuros"
-M1NT8_INSTRUMENTOS = ("NQ", "ES", "YM", "GC")
+M1NT8_INSTRUMENTOS = ("NQ", "ES", "YM", "GC", "EMD", "RTY")             # EMD y RTY: subidos por Nico el 2026-11-17 (m1_largo, índices)
+TICK_M1NT8_EXTRA = {"EMD": 0.1}                                            # fuera del catálogo de ticks del release (RESOLVER.json)
 
 
 def _velas_a_ticks(t0, o, h, l, c, v, td, desde, hasta, tk):
@@ -221,7 +222,7 @@ def bloques_m1nt8(simbolo, desde, hasta, entrada="/kaggle/input"):
     ok = pd.to_datetime(td.astype(str), format="%Y%m%d").dayofweek.to_numpy() < 5
     D, t0, td = D[ok], t0[ok], td[ok]
     yield from _velas_a_ticks(t0, *(D[k].to_numpy(float) for k in ("open", "high", "low", "close", "volume")), td, desde, hasta,
-                              TICK_FUTURO[simbolo])
+                              TICK_FUTURO.get(simbolo) or TICK_M1NT8_EXTRA[simbolo])
 
 
 def resolver(nombre: str, libro: bool = False):
@@ -229,7 +230,7 @@ def resolver(nombre: str, libro: bool = False):
     `libro=True` (módulos con `LIBRO = True`, p. ej. DeltaSweep): los futuros traen bid/ask para clasificar el agresor."""
     if nombre.startswith("M1NT8:"):
         sym = nombre[6:]
-        return (lambda d0, d1, e="/kaggle/input": bloques_m1nt8(sym, d0, d1, e)), TICK_FUTURO[sym]
+        return (lambda d0, d1, e="/kaggle/input": bloques_m1nt8(sym, d0, d1, e)), TICK_FUTURO.get(sym) or TICK_M1NT8_EXTRA[sym]
     if nombre.startswith("M1DK:"):
         sym = nombre[5:]
         return (lambda d0, d1, e="/kaggle/input": bloques_m1dk(sym, d0, d1, e)), TICK_FUTURO[M1DK_FUTURO[sym]]

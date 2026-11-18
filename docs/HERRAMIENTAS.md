@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-684 scripts.
+685 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -505,6 +505,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/orb0100/orb0100_v2.py` | ORB0100 V2: variantes alrededor de 1,5R/rango/mercado/VWAP en 8 activos (descubrimiento). |
 | `tools/orb0100/orb_franjas.py` | ORB0100 NQ + franjas OG/VI. Reglas: docs/research/orb0100_20261021/MANIFIESTO_ORB0100_FRANJAS_OGVI_20261021.md |
 | `tools/orb0100/orb_horarios.py` | ORB-HORARIOS: barrido de 44 ventanas x 2 reglas x 8 activos + embudo de confirmacion. |
+| `tools/orb_confirmacion_o1.py` | (sin docstring) |
 | `tools/ou1_study.py` | OU-1 — diagnóstico de reversión (Ornstein-Uhlenbeck) por activo × escala, y chequeo de mecanismo en las celdas de GC. |
 | `tools/ou2_mid.py` | OU-2 — ¿la reversión de ZB a 5-15 min sobrevive con el precio medio bid/ask? (descarta el rebote bid-ask). SOLO información. |
 | `tools/papel_m1.py` | Reglas de papel (config/cartera/altas.json) CONGELADAS, re-medidas sobre M1 de Dukascopy 2012–2026 (fuente M1DK, 2026-11-15). |

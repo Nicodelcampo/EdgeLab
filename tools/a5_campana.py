@@ -34,9 +34,9 @@ def _commiteado(p):
 
 
 def _ctx(inst, datos, d0, d1):
-    from edgelab.research.fuentes_ticks import bloques_m1nt8, TICK_FUTURO
+    from edgelab.research.fuentes_ticks import bloques_m1nt8, TICK_FUTURO, TICK_M1NT8_EXTRA
     from edgelab.research.grilla_generica import contexto_m1
-    return contexto_m1(bloques_m1nt8(inst, int(d0), int(d1), str(datos)), TICK_FUTURO[inst])
+    return contexto_m1(bloques_m1nt8(inst, int(d0), int(d1), str(datos)), TICK_FUTURO.get(inst) or TICK_M1NT8_EXTRA[inst])
 
 
 def _tabla(cfg, ctx):
