@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (22)
+## PISTA_VIVA (21)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,11 +29,6 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: YM, EMD, RTY, GC futuros M1 (NT8), 2006/2008/2017 → 2025-07
   - Siguiente: Franklin en la canasta sólo en NQ (y EMD si se mide su costo). El holdout A5 de T/Franklin/SOM ya está mirado: su confirmación depende del forward (canasta NQ: 88 meses con la mitad del efecto) o de subir el R neto (ejecución).
   - Evidencia: `docs/research/franklin_confirmacion_20261118/RESULTADO.md`, `docs/research/franklin_confirmacion_20261118/RESULTADO.json`
-- **Gamma de los dealers (GEX del cierre previo): baja → días de más magnitud y reglas de tendencia que ganan; alta → reglas de tendencia que pierden** (`F-GEX-DIA-TENDENCIA`, 2026-11-18, humano)
-  - Efecto: A5 2011–2025, NQ/ES/YM/RTY M1: AUC REP 0,553 (E1) y 0,555 (E3), 4/4 índices con el mismo signo, dosis-respuesta en DESC y REP (E1 bajo 14–16 % vs alto 11 %; E3 20 % vs 15 %); no pasa BH sobre 21 (p 0,013–0,031) por potencia (EE 0,025 por fecha, 614 días REP). | Exploración DESC (EF2): magnitud del día Spearman 0,35 (g_z20 vs rango/ATR), parcial 0,23 controlando vol; filtro en reglas: T −0,110 vs +0,035 R, Franklin −0,106 vs +0,099, SOM −0,05 vs +0,01, ORB +0,07 vs +0,18 (alta vs baja); canasta T+FR+SOM −0,077 → +0,169 R/día sin gamma alta (12/15 años). Direccional (Baltussen, continuación 10:00) no paga neto. | Confirmación única REP+HOLDOUT A5 (1.428 días): contraste baja−alta +0,65 R/día, p 0,0102 < LORD 0,0109, pero 8/15 años → NO_CONFIRMADA; gamma ALTA negativa en las 3 reglas en ambos bloques (canasta −0,52 R/día); sin gamma alta +0,199 R/día (p 0,09). | Apéndice 2 (nivel 0,0145): exclusión en EMD/RTY no confirma (−0,07 R/día, p 0,24); ORB O1 sin efecto (p 0,48); fade LUX-IMB con signo opuesto +0,018 R (p 0,026, 75 % años). Mecanismo NO confirmado; el filtro vale, como hipótesis, sólo para T/Franklin/SOM en NQ/ES/YM.
-  - Dónde: NQ, ES, YM, RTY futuros M1 (NT8) con GEX/DIX de SqueezeMetrics
-  - Siguiente: Forward (pre-registro nuevo) de 'no operar T/Franklin/SOM en NQ/ES/YM el día después de gamma alta' con GEX diario; no extender a otros índices ni a ORB; sin tamaño real hasta que decida.
-  - Evidencia: `docs/research/gex_tendencia_20261118/MECANISMO.json`, `docs/research/gex_tendencia_20261118/RESULTADO.md`, `docs/research/gex_tendencia_20261118/CONFIRMACION_FILTRO.json`, `docs/research/gex_tendencia_20261118/RESULTADO_EXPLORACION.md`, `docs/research/dia_tendencia_20261118/RESULTADO.md`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
   - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)
@@ -245,7 +240,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (10)
+## EN_SEGUIMIENTO (11)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -254,6 +249,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: NQ y Dow M1
   - Siguiente: Sigue en papel (el pasado no mata) pero sin respaldo: la decide el forward.
   - Evidencia: `docs/research/papel_m1_20261115/LARGO_V2.md`, `docs/research/papel_m1_20261115/LARGO_v2.json`, `docs/research/papel_m1_20261115/VALIDACION.md`
+- **Gamma de los dealers (GEX del cierre previo): baja → días de más magnitud y reglas de tendencia que ganan; alta → reglas de tendencia que pierden** (`F-GEX-DIA-TENDENCIA`, 2026-11-18, humano)
+  - Efecto: A5 2011–2025, NQ/ES/YM/RTY M1: AUC REP 0,553 (E1) y 0,555 (E3), 4/4 índices con el mismo signo, dosis-respuesta en DESC y REP (E1 bajo 14–16 % vs alto 11 %; E3 20 % vs 15 %); no pasa BH sobre 21 (p 0,013–0,031) por potencia (EE 0,025 por fecha, 614 días REP). | Exploración DESC (EF2): magnitud del día Spearman 0,35 (g_z20 vs rango/ATR), parcial 0,23 controlando vol; filtro en reglas: T −0,110 vs +0,035 R, Franklin −0,106 vs +0,099, SOM −0,05 vs +0,01, ORB +0,07 vs +0,18 (alta vs baja); canasta T+FR+SOM −0,077 → +0,169 R/día sin gamma alta (12/15 años). Direccional (Baltussen, continuación 10:00) no paga neto. | Confirmación única REP+HOLDOUT A5 (1.428 días): contraste baja−alta +0,65 R/día, p 0,0102 < LORD 0,0109, pero 8/15 años → NO_CONFIRMADA; gamma ALTA negativa en las 3 reglas en ambos bloques (canasta −0,52 R/día); sin gamma alta +0,199 R/día (p 0,09). | Apéndice 2 (nivel 0,0145): exclusión en EMD/RTY no confirma (−0,07 R/día, p 0,24); ORB O1 sin efecto (p 0,48); fade LUX-IMB con signo opuesto +0,018 R (p 0,026, 75 % años). Mecanismo NO confirmado; el filtro vale, como hipótesis, sólo para T/Franklin/SOM en NQ/ES/YM.
+  - Dónde: NQ, ES, YM, RTY futuros M1 (NT8) con GEX/DIX de SqueezeMetrics
+  - Siguiente: Decidido con datos históricos: NO confirmado como edge (significativo al nivel LORD pero inestable por año; no transfiere a EMD/RTY ni a ORB). No se usa como filtro operativo. Sólo vuelve con datos realmente nuevos (otra serie de gamma, o una prueba diseñada completa antes de mirar). Lección K49.
+  - Evidencia: `docs/research/gex_tendencia_20261118/MECANISMO.json`, `docs/research/gex_tendencia_20261118/RESULTADO.md`, `docs/research/gex_tendencia_20261118/CONFIRMACION_FILTRO.json`, `docs/research/gex_tendencia_20261118/RESULTADO_EXPLORACION.md`, `docs/research/dia_tendencia_20261118/RESULTADO.md`
 - **Cosecha del pozo de pistas vivas sin acta con la regla de la cartera: 330 pistas de 20 familias con holdout libre → 76 elegibles → canasta «v4» de 10 reglas en 7 familias (oro al almuerzo, CVGAP2 NQ/GC, U1 en YM, intento fallido Lux NQ/CFD, cierre COMEX)** (`F-COSECHA-POZO-V4`, 2026-11-17, sesion)
   - Efecto: Desarrollo (elegido, sin contraer): 700 operaciones, 50 ops/mes; plan e-proceso con la mitad del efecto: 0,16 R/op, sd 1,16, 6,3 meses para decidir. Integridad: 10,7 % de pistas cambian de signo en la réplica re-medida (tope 20 %). Seleccionada antes de mirar el holdout.
   - Dónde: GC (5 reglas), NQ (4), YM (1)
