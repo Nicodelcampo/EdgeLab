@@ -100,6 +100,33 @@ def correr_estado(inst, datos):
     e.index = e.index.astype(str); e.to_csv(DIR / f"ESTADO_{inst}.csv"); print(inst, "estado", len(e), flush=True)
 
 
+def correr_franklin(inst, datos):
+    """Franklin (celda llevada al holdout, `reels_20261116/FRANKLIN_MEJORAS.json`) con su motor (`estrategias_scrapeadas.franklin_variantes`)
+    sobre futuros; R con la fricción canónica (`reels_20261116._en_r`)."""
+    from edgelab.research import estrategias_scrapeadas as X
+    from edgelab.research.embudo_runners import friccion
+    from reels_20261116 import _en_r
+    celda = json.loads((ROOT / "docs/research/reels_20261116/FRANKLIN_MEJORAS.json").read_text())["al_holdout"].split("|")
+    R = X.franklin_variantes(X.ctx_de_m1(cargar(inst, datos)), celdas=[celda])
+    g = _en_r(R, friccion(inst)[0]).drop(columns=["celda"], errors="ignore"); g.to_csv(DIR / f"FRANKLIN_OPS_{inst}.csv.gz", index=False)
+    print(inst, "Franklin", len(g), flush=True)
+
+
+def analizar_franklin():
+    """PREREGISTRO_FRANKLIN.md: años limpios 2006–2011 (NQ + ES) confirmatorio en neto; bruto y neto por período (descriptivo)."""
+    out = dict(preregistro="docs/research/m1_largo_20261117/PREREGISTRO_FRANKLIN.md", periodos={})
+    g = pd.concat([pd.read_csv(DIR / f"FRANKLIN_OPS_{i}.csv.gz").assign(inst=i) for i in ("NQ", "ES")])
+    o = [(int(s), i, float(r)) for s, i, r in zip(g.fecha, g.inst, g.R)]; ob = [(int(s), i, float(r)) for s, i, r in zip(g.fecha, g.inst, g.Rb)]
+    ref, _ = _resumen(ob, *REF_EXT); res, R = _resumen(ob, *LIMPIO)                 # §2: la prueba principal es el BRUTO
+    out["limpio_2006_2011"] = _veredicto(res, R, ref["u_op"] or 0.0); out["referencia_2020_2025_bruto"] = ref
+    for nom, (a, b) in (("2006-2011", LIMPIO), ("2012-2019", (20120101, 20191231)), ("2020-2025", REF_EXT)):
+        out["periodos"][nom] = dict(neto=_resumen(o, a, b)[0], bruto=_resumen(ob, a, b)[0],
+                                    friccion_R=float(g[g.fecha.between(a, b)].fricR.mean()))
+    (DIR / "RESULTADO_FRANKLIN.json").write_text(json.dumps(out, indent=1, default=float))
+    v = out["limpio_2006_2011"]; print("FRANKLIN limpio", v["veredicto"], v["ops"], v["u_op"], v["ic90"], v["frac_anios_pos"], v["potencia_mitad_ref"])
+    for k, x in out["periodos"].items(): print(k, "neto", round(x["neto"]["u_op"] or 0, 3), x["neto"]["ic90"], "bruto", round(x["bruto"]["u_op"] or 0, 3), x["bruto"]["ic90"], "fricR", round(x["friccion_R"], 3))
+
+
 # ------------------------------------------------------------------------------------------------- capa 2 (PREREGISTRO_CAPA2.md)
 def _ms(D):
     from edgelab.research import fundedsyncstack as F
@@ -291,6 +318,7 @@ def analizar():
 
 if __name__ == "__main__":
     c = sys.argv[1]
-    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado, "variantes": correr_variantes, "cartera": correr_cartera}[sys.argv[3]](sys.argv[4], sys.argv[2])
+    if c == "correr": {"fs": correr_fs, "t2008": correr_t2008, "som": correr_som, "estado": correr_estado, "variantes": correr_variantes, "cartera": correr_cartera, "franklin": correr_franklin}[sys.argv[3]](sys.argv[4], sys.argv[2])
     elif c == "analizar": analizar()
     elif c == "analizar_capa2": analizar_capa2()
+    elif c == "analizar_franklin": analizar_franklin()

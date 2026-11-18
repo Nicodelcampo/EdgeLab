@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-272 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+273 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -270,6 +270,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `U1_ZONAS_GRILLA_YM` | 2026-10-26 | U1_RACIMOS_GRILLA_YM, U1_YM_GRILLA, AREAS_EXP_1_CRUZADO | 23340 | 3 | U1-ZONAS-GRILLA-YM-C-R: PISTAS_VIVAS; U1-ZONAS-GRILLA-YM-C: PISTAS_VIVAS; U1-ZONAS-GRILLA-YM: SIN_REGLA_OPERABLE | — | `relanzamiento_R_20261102`, `relanzamiento_causal_20261102`, `u1_zonas_20261025` |
 | `U1_ZONAS_NQ` | 2026-10-25 | U1_ORO_GRILLA, AREAS_EXP_1_CRUZADO | 17915936 | 2 | U1-ZONAS-NQ-R: SIN_REGLA_OPERABLE | — | `relanzamiento_R_20261102`, `zonas_gaps_20261025` |
 | `VARIANTE_TAU_ACTAS` |  | — | 30 | — | — | — | — |
+| `VERSIONES_20261118` | 2026-11-18 | CARTERA_20261116, FUNDEDSYNC, SOM, COSECHA_POZO_20261117 | — | — | — | — | `versiones_20261118` |
 | `VIDA_VENTAJA` | 2026-11-17 | SQX_CATALOGO | 12 | — | — | F-CONTRACCION-EMPIRICA-EMBUDO (PALANCA_DE_DISENO); F-VIDA-VENTAJA-DERIVA-LENTA (PALANCA_DE_DISENO); F-VIDA-VENTAJA-INTRADIA-FRICCION (PALANCA_DE_DISENO) | `urgencia_vs_evidencia_20261117` |
 | `VIERNES_LUNES` | 2026-11-16 | M1_INTRADIA | 6 | — | — | — | — |
 | `VWAP_REV_ES` | 2026-11-03 | — | 144 | 1 | VWAP-ES-R: SIN_CANDIDATAS | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
