@@ -1,10 +1,10 @@
 # Veredicto de todas las reglas con la evidencia del M1 real de futuros (2026-11-17)
 
-Estado: VIGENTE (con una corrección pendiente: el «atrás» de las reglas del embudo, la fuente de sus filas REFUTADA, se DESCARTÓ el 2026-11-18 por el sesgo K40 del motor de la grilla y se está relanzando; hasta la v2 esas refutaciones no cuentan) — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso afecta las decisiones futuras sobre esas reglas».
+Estado: VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; mismos veredictos, pérdidas la mitad, PREAPERTURA-NQ ≈ 0) — pedido de Nico: «emití un veredicto de todos los resultados y cómo eso afecta las decisiones futuras sobre esas reglas».
 North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`.
 
 Fuentes:
-- `docs/research/atras_m1_20261117/descartada_v1/RESULTADO.md` (el «atrás» de 5 reglas del embudo; v1 DESCARTADA por K40, se relanza);
+- `docs/research/atras_m1_20261117/RESULTADO.md` (el «atrás» de 5 reglas del embudo, v2 con el motor corregido; la v1 está en `descartada_v1/`);
 - `docs/research/m1_largo_20261117/RESULTADO.md` y `RESULTADO_CAPA2.md` (FundedSync, SOM, régimen, variantes, cartera);
 - `docs/research/cosecha_pozo_20261117/RESULTADO_HOLDOUT.md`;
 - `urgencia_vs_evidencia_20261117` (pasos 1, 1b y 2).
@@ -27,11 +27,11 @@ sigue siendo decisión de Nico.
 ### Embudo: cartera v2 (8 reglas), v3 (+3) y v4 (10)
 | Regla | Canasta | Evidencia | Veredicto | Decisión futura |
 |---|---|---|---|---|
-| CVGAP-ES-C | v2, v3 | atrás EN_CONTRA (potencia 1,0), bruto ≈ 0 | **REFUTADA** | sale en la próxima versión |
-| CVGAP2-GC#11 | v4 | atrás EN_CONTRA (0,99); holdout −1,45 R | **REFUTADA** | sale |
-| COMEX-CIERRE-GC-R#0 | v4 | atrás EN_CONTRA (0,97); holdout −0,63 R | **REFUTADA** | sale |
-| PREAPERTURA-NQ | v2, v3 | atrás IC90 entero < 0 sin potencia; régimen análogo +0,35 contra −0,34 (no significativo) | **EN CONTRA, con sospecha de régimen** | papel sin tamaño; la prueba de régimen se repite con datos nuevos (forward en meses análogos) |
-| IF-LUX-NQ-R2#1 | v4 | atrás NO_CONCLUYENTE; régimen +0,19 contra −0,38 | **DÉBIL** | papel sin tamaño |
+| CVGAP-ES-C | v2, v3 | atrás v2 EN_CONTRA (potencia 1,0; −0,04 R/op, IC90 cruza 0) | **REFUTADA** | sale en la próxima versión |
+| CVGAP2-GC#11 | v4 | atrás v2 EN_CONTRA (0,99; −0,13 R/op); holdout −1,45 R | **REFUTADA** | sale |
+| COMEX-CIERRE-GC-R#0 | v4 | atrás v2 EN_CONTRA (0,97; −0,18 R/op); holdout −0,63 R | **REFUTADA** | sale |
+| PREAPERTURA-NQ | v2, v3 | atrás v2 ≈ 0 (−0,002 R/op, IC90 [−0,16, +0,17], potencia 0,57; el «IC90 entero < 0» de la v1 era K40); régimen análogo +0,35 contra −0,34 (no significativo) | **SIN VENTAJA DEMOSTRADA, con sospecha de régimen** | papel sin tamaño; la prueba de régimen se repite con datos nuevos (forward en meses análogos) |
+| IF-LUX-NQ-R2#1 | v4 | atrás v2 NO_CONCLUYENTE (−0,09 R/op); régimen +0,19 contra −0,38 | **DÉBIL** | papel sin tamaño |
 | U1-RACIMOS-GRILLA-NQ, U1-ZONAS-BT2-ES/NQ, U1-ORO-GRILLA, CONF-CVR-CFD-NQ-R, CVGAP-CFD-ES-C (v2); DRC-NQ-R, U1-ZONAS-AVCL-ES-C/NQ (v3); ORO-ALM-CFD#4/#18, CVGAP2-NQ#18/#3, CVGAP2-GC#5, U1-ZONAS-GRILLA-YM, IF-LUX-CFD-NQ (v4) | — | no medibles en M1 (footprint, ticks o señal CFD); mismo proceso de selección; holdout de la v4 −4,6 R | **SIN EVIDENCIA PROPIA, expectativa ≈ 0** | papel con e-proceso; ningún tamaño real; se confirman sólo con la partición A5 cuando haya ticks largos, o con el forward |
 
 - **Para las canastas:**

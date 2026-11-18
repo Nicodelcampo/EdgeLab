@@ -59,8 +59,8 @@ Recordatorios:
 ### Estado al 2026-11-17 (noche): el «atrás» refutó lo elegido por el embudo
 
 > M1 real de futuros de NT8 desde 2006 (`M1NT8:`, calibrado contra ticks, corr 0,89–0,998). Las 5 reglas de v2/v4 medibles en M1 dieron
-> −386 R en 1.453 sesiones de años limpios, 0/8 años positivos, bruto ≈ 0: **REFUTADA_ATRAS** — v1 DESCARTADA el 18-nov (motor de la grilla con
-> el stop al extremo de la vela M1, K40) y relanzada: hasta la v2 no cuenta (`docs/research/atras_m1_20261117/`).
+> −193 R en 1.453 sesiones de años limpios (v2 del 18-nov, motor corregido por K40; la v1 daba −386), 1/8 años positivos: **REFUTADA_ATRAS**;
+> CVGAP-ES-C, CVGAP2-GC#11 y COMEX EN_CONTRA, PREAPERTURA-NQ ≈ 0 (`docs/research/atras_m1_20261117/RESULTADO.md`).
 > Elegir entre miles de celdas con 14 meses de datos produce ganadoras de ruido. Por eso Nico firmó **HOLDOUT-A5** (holdout intercalado
 > por meses sobre 18 años): toda campaña nueva descubre y confirma sobre M1 largo. Ninguna canasta habilita tamaño real.
 > **Veredicto de todas las reglas: `docs/research/VEREDICTO_M1_20261117.md`.** El «antes no, ahora sí» es fricción relativa (fricción/ATR en NQ

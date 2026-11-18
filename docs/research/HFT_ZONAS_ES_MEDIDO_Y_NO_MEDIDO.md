@@ -1182,3 +1182,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   **NO_CONFIRMADA (sin potencia)**. Neto < 0 en todo instrumento y época; NQ 2020–25 −0,03 bruto. Acta:
   `docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`.
 - **NO MEDIDO:** ORB con ejecución de menor fricción en R; forward terminal (desde 2026-10-01). Ninguno tiene pre-registro.
+
+## 2026-11-18 — «Atrás» M1 v2 (motor corregido por K40)
+- **MEDIDO:** 5 reglas de la v2/v4 en años limpios: canasta −193 R (v1 −386), 1/8 años positivos, **REFUTADA_ATRAS**. EN_CONTRA:
+  CVGAP2-GC#11, COMEX, CVGAP-ES-C. NO_CONCLUYENTE: IF-LUX-NQ-R2#1, PREAPERTURA-NQ (≈ 0). Acta:
+  `docs/research/atras_m1_20261117/RESULTADO.md`.
+- **NO MEDIDO:** reglas de la v2/v3/v4 no medibles en M1 (footprint, ticks o señal CFD).
