@@ -60,6 +60,7 @@ def eventos(ctx) -> pd.DataFrame:
         rg = rg_s.get(s, np.nan)
         if not rg > 0: continue
         m = np.flatnonzero(ses == s); u = rg / VELA_MEDIA_U
+        if len(m) <= 2 * ED.FAMILIAS["planas"]["w"] + 1: continue           # sesión con menos velas que el pivote (peaks_rule.pivots)
         for z in ED.detectar_px(dict(h=h[m] / u * 0.25, l=l[m] / u * 0.25, t=t[m]), f):
             k = int(m[0] + z["det_i"])
             filas.append((k, -1 if z["kind"] == "H" else 1, rg, int(z["det_pico"])))
