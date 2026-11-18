@@ -85,3 +85,28 @@ def test_a5_evalua_contraste_con_control_que_no_es_definicion():
                           r_e=rng.normal(0.1, 1, n), k_e=1.0))
     res = A5.evaluar(T, "DESC", ["d"], ["e"], 0.0, control={"d": "pl"})
     assert "d|e" in res and "d-pl|e" in res and "pl|e" not in res
+
+
+def test_ops_conserva_columnas_de_identidad():
+    """K45: `a5_campana.correr` descartaba trig/base/conf y el análisis pareado del filtro de picos no podía emparejar gatillos."""
+    import pandas as pd
+    import a5_campana as AC
+    O = pd.DataFrame(dict(k=[1], ses=[2], t=[3.0], inst=["NQ"], bloque=["DESC"], lado=[1], rg=[1.0], trig=["LUX:1:1"], base=["LUX"],
+                          conf=["INM"], X__INM=[True], r_e=[0.1], k_e=[1.0], basura=[0.0]))
+    c = AC.columnas_ops(O, dict(definiciones=["X__INM"], ejecuciones=["e"]))
+    assert {"trig", "base", "conf", "X__INM", "r_e", "k_e"} <= set(c) and "basura" not in c and len(c) == len(set(c))
+
+
+def test_ningun_factor_vivo_se_apoya_en_evidencia_descartada():
+    """K46: F-ASIA-NQ-NOCHE-MOVIDA siguió como PISTA_VIVA apoyada en un largo DESCARTADO hasta que se revisó a mano. Una pista o
+    palanca no puede citar como evidencia un documento cuyo Estado sea DESCARTADA."""
+    import re
+    malos = []
+    for l in (ROOT / "docs/research/FACTORES.jsonl").read_text(encoding="utf-8").splitlines():
+        e = json.loads(l)
+        if e["estado"] not in ("PISTA_VIVA", "PALANCA_DE_DISENO"): continue
+        for ev in e.get("evidencia", []):
+            f = ROOT / ev
+            if f.suffix == ".md" and f.exists() and re.search(r"^Estado:\s*DESCARTAD", f.read_text(encoding="utf-8")[:2000], re.M):
+                malos.append((e["id"], ev))
+    assert not malos, f"factor vivo con evidencia DESCARTADA (bajarlo o citar la versión vigente): {malos}"

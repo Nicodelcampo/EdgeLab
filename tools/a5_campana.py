@@ -107,6 +107,15 @@ def calibracion(carpeta):
     (cfg["dir"] / "CALIBRACION.json").write_text(json.dumps(out, indent=1, default=float)); print(out["calibran"], "/", out["total"], "calibran")
 
 
+def columnas_ops(O, cfg) -> list:
+    """Columnas de OPS_DESC_REP, sin repetir. K45 (2026-11-18): se conservan SIEMPRE las columnas de identidad (texto: trig/base/conf
+    del filtro de picos se perdían y el análisis pareado no podía emparejar gatillos), más las que CAMPANA.json declare en `conservar`."""
+    c = ["k", "ses", "t", "inst", "bloque", "lado", "rg"] + [x for x in O.columns if pd.api.types.is_string_dtype(O[x]) or pd.api.types.is_object_dtype(O[x]) or x in cfg.get("conservar", [])] + \
+        [d for d in O.columns if d in cfg["definiciones"] or d in cfg.get("control", {}).values()] + \
+        [x for x in O.columns if x.startswith(("r_", "k_")) and x[2:] in cfg["ejecuciones"]]
+    return list(dict.fromkeys(x for x in c if x in O.columns))
+
+
 def correr(carpeta, datos):
     cfg = _cfg(carpeta)
     if not _commiteado(cfg["dir"] / "CALIBRACION.json"): raise SystemExit("CALIBRACION.json sin commitear: la corrida va después")
@@ -124,10 +133,7 @@ def correr(carpeta, datos):
         print(inst, json.dumps(cnt[inst]), flush=True)
     pd.concat(ev, ignore_index=True).to_csv(cfg["dir"] / "EVENTOS.csv.gz", index=False)
     O = pd.concat(ops, ignore_index=True)
-    # `conservar` (CAMPANA.json): columnas de identidad que el análisis necesita (p. ej. trig/base/conf del filtro de picos, 2026-11-18:
-    # se perdían y el análisis pareado no podía emparejar gatillos)
-    keep = ["k", "ses", "t", "inst", "bloque", "lado", "rg"] + [c for c in cfg.get("conservar", []) if c in O.columns] + [d for d in O.columns if d in cfg["definiciones"] or d in cfg.get("control", {}).values()] + \
-           [c for c in O.columns if c.startswith(("r_", "k_")) and c[2:] in cfg["ejecuciones"]]
+    keep = columnas_ops(O, cfg)
     O[keep].to_csv(cfg["dir"] / "OPS_DESC_REP.csv.gz", index=False)
     (cfg["dir"] / "CORRIDA.json").write_text(json.dumps(dict(ventana=cfg["ventana"], instrumentos=cfg["instrumentos"], marcas_por_bloque=cnt), indent=1))
 

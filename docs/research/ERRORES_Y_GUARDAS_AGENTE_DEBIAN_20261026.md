@@ -162,6 +162,18 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
 - **Acceso a datos (2026-11-18).** El M1 de NT8 vivía en una carpeta temporal bajada a mano y pasada como argumento: no reproducible ni
   verificado. **Guarda:** `python tools/datos.py traer|importar M1NT8` deja `data/m1nt8/` con `PROCEDENCIA.json` (sha256 y tamaño
   contra el origen); las herramientas leen `datos.ruta("M1NT8")` por defecto.
+- **K45, columnas de identidad perdidas (2026-11-18).** `a5_campana.correr` escribía OPS sin `trig`, `base` ni `conf`, y el análisis
+  pareado del filtro de picos no podía emparejar gatillos. **Guarda:** `a5_campana.columnas_ops` conserva siempre las columnas de texto
+  y las que declare `conservar` en CAMPANA.json (`test_ops_conserva_columnas_de_identidad`).
+- **K46, factor vivo apoyado en evidencia descartada (2026-11-18).** F-ASIA-NQ-NOCHE-MOVIDA siguió como PISTA_VIVA citando un largo
+  DESCARTADO hasta que se revisó a mano. **Guarda:** `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada`: una pista o palanca
+  no puede citar un documento con `Estado: DESCARTADA`.
+- **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y
+  no paga fricción: el contraste neto favorece siempre a la configuración que menos entra, incluso con gatillos al azar (AZAR dio
+  +0,2 a +1,5 R «neto»). **Práctica:** decidir con el R absoluto de cada configuración por gatillo (bruto y neto) y con el placebo de
+  la misma espera, no con la diferencia neta contra la entrada inmediata.
+- **Commits con rutas explícitas (2026-11-18).** Un `git add -A docs` metió en el commit del «atrás» resultados de otras campañas.
+  **Práctica:** agregar las rutas de la campaña, y revisar `git show --stat` antes de pushear.
 - **Guía (no se puede impedir en código):** confirmar en réplica → holdout A5 → instrumentos no usados antes que pedir forward; neto
   con mini y micro; ninguna canasta de prop firm con un subgrupo sin confirmar. Tabla completa: `LEER_ANTES_DE_CADA_CORRIDA.md` §6.
 - **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de

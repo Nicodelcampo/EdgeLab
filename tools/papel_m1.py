@@ -4,6 +4,7 @@ Pre-registro: docs/research/papel_m1_20261115/PREREGISTRO.md. Etapa ANALIZAR_REG
 
   python tools/papel_m1.py lanzar VALIDACION|LARGO [FICHA ...]   # VALIDACION = 2025-08 → 2026-09 (comparable con ticks reales de NQ)
   python tools/papel_m1.py traer                                  # baja lo terminado a docs/research/papel_m1_20261115/resultados/
+  python tools/papel_m1.py local FICHA SENSOR D0-D1 [D0-D1 ...]  # en la máquina con M1 real de futuros (SENSOR M1NT8:NQ, datos de tools/datos.py)
   python tools/papel_m1.py validacion                             # criterio de la fuente POR CÓDIGO (a5.calibrar_por_sesion) -> VALIDACION.json
 """
 import json, sys
@@ -43,6 +44,29 @@ def traer():
         if e == "complete": dst.write_text(json.dumps(run.traer(L["handle"]), indent=1, default=float), encoding="utf-8")
 
 
+def _pref(sen):
+    return "" if sen.endswith("NQ_M1_dukas") else (sen[5:].split("_")[0] + "__" if sen.startswith("M1DK:") else "FUT" + sen.replace(":", "_") + "__")
+
+
+def local(fid, sensor, periodos):
+    """La regla congelada en la máquina sobre M1 real de futuros de NT8 (`M1NT8:<inst>`), con la copia local verificada de
+    `tools/datos.py` y el mismo `etapas.ejecutar` que el kernel (LocalRunner). Escribe resultados/<pref><ficha>_<d0>_<d1>.json."""
+    from edgelab.research.embudo_runners import LocalRunner
+    from edgelab.research.fuentes_ticks import bloques_m1nt8, TICK_FUTURO, TICK_M1NT8_EXTRA
+    from datos import ruta
+    if not sensor.startswith("M1NT8:"): raise SystemExit("local: sólo M1NT8:<inst>")
+    inst = sensor[6:]; d = ruta("M1NT8")
+    run = LocalRunner({sensor: lambda a, b, spec: bloques_m1nt8(inst, int(a), int(b), d)}, {sensor: TICK_FUTURO.get(inst) or TICK_M1NT8_EXTRA[inst]},
+                      acta_requerida=False)
+    f = _ficha(fid); r = f["regla"]; spec = dict(r["spec"], sensor=sensor, ejecucion=sensor, cid=f"PF{sensor}-{fid}"[:30], datasets_extra=[])
+    params = dict(celdas=r.get("celdas") or [r["celda"]], cortes=r.get("cortes") or {}, tope=r.get("tope"), operaciones=True)
+    (OUT / "resultados").mkdir(parents=True, exist_ok=True)
+    for p in periodos:
+        a, b = map(int, p.split("-")); h = run.lanzar(spec, "ANALIZAR_REGLA", params, (a, b))
+        dst = OUT / "resultados" / f"{_pref(sensor)}{fid}_{a}_{b}.json"
+        dst.write_text(json.dumps(dict(run.traer(h), sensor=sensor, desde=a, hasta=b, local=True), indent=1, default=float), encoding="utf-8"); print("local", dst.name)
+
+
 def validacion():
     """K43 (2026-11-18): el veredicto de la fuente lo da el criterio único `a5.calibrar_por_sesion` (≥ 30 sesiones comunes, mismo signo,
     |diferencia| ≤ 1 EE combinado, corr > 0,5), no una tabla escrita a mano. La v1 aprobó ASIA leyendo «≈ 1 ee» con otro EE."""
@@ -63,4 +87,4 @@ def validacion():
 
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": validacion}[a[0]]()
+    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": validacion, "local": lambda: local(a[1], a[2], a[3:])}[a[0]]()

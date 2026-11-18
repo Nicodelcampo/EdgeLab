@@ -66,6 +66,9 @@ North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e
 - **Bruto y neto siempre juntos**, con la fricción en R por época. El «antes no, ahora sí» suele ser fricción relativa.
 - **Neto con el mini y con el micro**, los dos, por instrumento (`a5.evaluar` acepta la fricción por fila `f_<ejec>`). El micro tiene
   más fricción por punto; una prop firm suele operar micros.
+- **Capas de entrada** (esperar, filtrar o confirmar un gatillo): el valor de no entrar es 0 y no paga fricción, así que el contraste
+  neto contra la entrada inmediata favorece siempre al que menos entra. Se decide con el R absoluto por gatillo y contra un placebo
+  de la misma espera.
 - **Costos:** sólo de `edgelab/costos.py`. Los estimados, sólo dentro de `costos.estimados_permitidos(<pre-registro>)` (K33).
 - **K39, unidad monetaria:** multiplicador del contrato que se opera de verdad.
 
@@ -117,4 +120,8 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Neto sólo con micro | la fricción «alta» era la del micro | guía | §3; los resultados nuevos reportan mini y micro |
 | Subgrupo sin confirmar en una canasta de prop firm | ORB5 en Lucid por el neto de NQ 2020–25 | guía | §4 canastas; aviso en `SENALES_ESTABLES_LUCID_20261118.md` |
 | Lanzamientos que no salieron (cola de Kaggle, 429) | ORB YM y filtro ES/YM quedaron sin lanzar | código | `tablas.reintentar_cola` (dentro de `traer`) |
+| Columnas de identidad perdidas en OPS (K45) | el análisis pareado del filtro de picos no podía emparejar gatillos | código | `a5_campana.columnas_ops` |
+| Factor vivo apoyado en evidencia descartada (K46) | ASIA «noche movida» siguió viva citando un largo DESCARTADO | código | `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada` |
+| Contraste neto con 0 al no entrar | el «neto» favorecía no entrar hasta con gatillos al azar | guía | decidir por R absoluto por gatillo y contra el placebo (§3) |
+| `git add -A` en un commit de campaña | entraron resultados de otras campañas | guía | rutas explícitas y `git show --stat` |
 | Presupuesto de contexto de los agentes | el cierre fallaba cuando FACTORES crecía y se compactaban entradas para entrar | humano + código | Nico lo elevó el 18-nov (juez y auditor 260.000, arquitecto 400.000, `config/autopilot/AGENTES.json`); `test_agentes` exige ≥ 25 % libre. No se achica contenido para entrar: se sube el tope |
