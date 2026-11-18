@@ -1170,3 +1170,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - la «Madonna inversa» (a favor de la ruptura tras el rechazo; pista a pre-registrar en los meses REP);
   - la SMT NQ/ES;
   - el holdout A5.
+
+## 2026-11-18 — ORB-A5 e IB-MADONNA relanzada
+- **ORB (MEDIDO):** DESC nomina O1 (5 min, +0,118 R), O4, O6 y O7; REP confirma 0 (sin potencia, mismo signo). Acta:
+  `docs/research/orb_a5_20261118/RESULTADO.md`.
+- **ORB (NO MEDIDO):** holdout A5 (E8) y forward de O1.
+- **IB-MADONNA relanzada** (código corregido): idéntica a la v1, V0 −0,128 R, 0 nominadas.
