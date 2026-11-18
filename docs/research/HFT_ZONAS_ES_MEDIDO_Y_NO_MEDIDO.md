@@ -1188,3 +1188,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   CVGAP2-GC#11, COMEX, CVGAP-ES-C. NO_CONCLUYENTE: IF-LUX-NQ-R2#1, PREAPERTURA-NQ (≈ 0). Acta:
   `docs/research/atras_m1_20261117/RESULTADO.md`.
 - **NO MEDIDO:** reglas de la v2/v3/v4 no medibles en M1 (footprint, ticks o señal CFD).
+
+## 2026-11-18 — Papel M1 v2 (validación de la fuente y largo de OTR930)
+- **MEDIDO:** validación M1 contra ticks con el criterio único: sólo OTR930-NQ pasa. Largo de OTR930: negativo en 2012–2025-07 y sin
+  régimen detectable (p 0,41–0,95). Actas: `docs/research/papel_m1_20261115/VALIDACION.md` y `LARGO_V2.md`.
+- **NO MEDIDO:** ASIA-NQ, TORI-NQ y RANGO0100-NQ en el largo (no pasan la validación). La «noche movida» de ASIA queda como hipótesis
+  de desarrollo sin confirmar.
