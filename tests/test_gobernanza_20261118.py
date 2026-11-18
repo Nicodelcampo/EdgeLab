@@ -140,3 +140,18 @@ def test_variable_de_regimen_que_se_conoce_despues_de_la_entrada_no_se_usa():
     s = pd.Series([1.0, -1.0], index=pd.to_datetime(["2025-08-04", "2025-08-05"]))
     V = pd.DataFrame(dict(vol20=[0, 1], tend60=[1.0, -1.0], noche=[0, 2], dst=[1, 1]), index=s.index)
     assert PR.mapa(s, V, t_entradas=asia[:2])["noche"] == "NO_CAUSAL"
+
+
+def test_k49_potencia_de_la_lectura_en_dias():
+    """K49: la potencia de una lectura se calcula con sesiones (días), y una lectura sin potencia se rechaza."""
+    import numpy as np
+    import pytest
+    from edgelab.research import a5 as A5
+    rng = np.random.default_rng(0)
+    ses = np.repeat(np.arange(2000), 4); r = rng.normal(0.05, 1.0, len(ses)) + np.repeat(rng.normal(0, 1.0, 2000), 4)   # 4 filas por día, correlacionadas
+    chico = A5.plan_lectura("FAM_TEST", ses, r, n_dias=100, nivel=0.01)
+    grande = A5.plan_lectura("FAM_TEST", ses, r, n_dias=20000, nivel=0.01)
+    assert chico["potencia"] < 0.8 <= grande["potencia"] and chico["n_dias"] == 100
+    with pytest.raises(ValueError, match="K49"): A5.exigir_potencia(chico, "REP de prueba")
+    A5.exigir_potencia(grande, "REP de prueba")
+    assert "plan_lectura" in (ROOT / "tools/a5_campana.py").read_text(encoding="utf-8")

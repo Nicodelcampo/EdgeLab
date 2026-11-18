@@ -171,8 +171,19 @@ def rep(carpeta):
     from edgelab.funnel.libro_lord import LibroLord
     cfg = _cfg(carpeta)
     if not _commiteado(cfg["dir"] / "DESC.json"): raise SystemExit("DESC.json sin commitear: la réplica va después")
-    nom = json.loads((cfg["dir"] / "DESC.json").read_text())["nominadas"]; res, pi = _evaluar(cfg, "REP"); res = {k: res[k] for k in nom}
-    dec = LibroLord().probar(cfg["familia"], f"REP_{cfg['dir'].name}", [(k, res[k]["p"]) for k in nom]) if nom else None
+    nom = json.loads((cfg["dir"] / "DESC.json").read_text())["nominadas"]
+    # K49: potencia en días ANTES de leer REP; las celdas sin potencia no gastan la réplica (quedan SIN_POTENCIA_PREVIA)
+    O = pd.read_csv(cfg["dir"] / "OPS_DESC_REP.csv.gz"); planes = {}
+    for k in nom:
+        dd, e = k.split("|"); d0 = dd.split("-")[0]
+        desc = O[(O.bloque == "DESC") & O[d0].astype(bool) & O[f"r_{e}"].notna()]
+        n_rep = int(O[(O.bloque == "REP") & O[d0].astype(bool)].ses.nunique())            # sólo cuenta sesiones, no lee desenlaces
+        planes[k] = A5.plan_lectura(cfg["familia"], desc.ses.to_numpy(), desc[f"r_{e}"].to_numpy(float), n_rep)
+    con = [k for k in nom if planes[k].get("potencia", 0) >= A5.POTENCIA_LECTURA_MIN]
+    if nom and not con: raise SystemExit(f"K49: ninguna nominada llega a potencia {A5.POTENCIA_LECTURA_MIN} en REP: {json.dumps({k: planes[k].get('potencia') for k in nom})}")
+    res, pi = _evaluar(cfg, "REP"); res = {k: res[k] for k in con}
+    dec = LibroLord().probar(cfg["familia"], f"REP_{cfg['dir'].name}", [(k, res[k]["p"]) for k in con]) if con else None
+    res.update({k: dict(estado="SIN_POTENCIA_PREVIA", plan=planes[k]) for k in nom if k not in con})
     (cfg["dir"] / "REP.json").write_text(json.dumps(dict(nominadas=nom, resultados=res, por_instrumento=pi, lord=dec), indent=1, default=float))
     print(json.dumps(dec))
 

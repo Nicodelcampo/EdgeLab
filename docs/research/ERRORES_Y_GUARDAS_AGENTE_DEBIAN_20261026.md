@@ -190,7 +190,10 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   etiqueta binaria con potencia real ≈ 0,3 (filas no independientes); la variable y la forma útiles salieron después, en DESC, y para
   confirmarlas hubo que juntar REP + HOLDOUT ya contaminados. **Regla:** con datos cortos se pre-registra TODA la cadena antes de tocar
   REP (variable, desenlace continuo si se puede, forma operable). La potencia se calcula en DÍAS al nivel LORD, y no se abre REP ni
-  HOLDOUT con potencia < 0,8: se sigue explorando en DESC. El forward no reemplaza a un diseño que gastó los datos.
+  HOLDOUT con potencia < 0,8: se sigue explorando en DESC. El forward no reemplaza a un diseño que gastó los datos. **Guarda:**
+  `a5.plan_lectura` / `a5.exigir_potencia` (potencia en días al nivel LORD); `a5_campana rep` no lee REP para las celdas sin
+  potencia (SOLO las con ≥ 0,8 entran a LORD) y se niega si ninguna llega; las herramientas ad hoc llaman a `exigir_potencia` antes
+  de abrir una lectura (`test_k49_potencia_de_la_lectura_en_dias`).
 - **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
   nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
 - **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y

@@ -120,3 +120,29 @@ def nominar(res: dict, q: float = 0.10, calibra=None, min_frac_anios: float = 0.
         v["nominada"] = bool(rj and v["calibra"] and efecto is not None and efecto > 0 and v.get("frac_anios_pos", 1.0) >= min_frac_anios)
         if v["nominada"]: nom.append(k)
     return nom
+
+
+# ------------------------------------------------------------------------------------- K49: potencia antes de gastar REP/HOLDOUT
+def plan_lectura(familia: str, ses_desc, r_desc, n_dias: int, factor: float = 0.5, nivel: float | None = None) -> dict:
+    """K49 (2026-11-18): potencia de UNA lectura (REP u holdout) calculada en DÍAS, no en filas: efecto = `factor` × la media por
+    sesión de DESC (suma por sesión), desvío por sesión de DESC, N = sesiones de la lectura, α = nivel LORD++ de la familia. GEX gastó
+    REP con potencia ≈ 0,3 porque se contaron filas instrumento × día como independientes."""
+    from edgelab.research import holdout_ventanas as HV
+    if nivel is None:
+        from edgelab.funnel.libro_lord import LibroLord
+        nivel = LibroLord().nivel(familia)
+    s = pd.Series(np.asarray(r_desc, float)).groupby(np.asarray(ses_desc)).sum()
+    ef = factor * float(s.mean()); sd = float(s.std(ddof=1)) if len(s) > 1 else float("nan")
+    if not (ef > 0 and sd > 0): return dict(potencia=0.0, efecto=ef, sd_dia=sd, n_dias=int(n_dias), alfa=nivel, problemas=["efecto de DESC ≤ 0"])
+    pl = HV.plan_potencia("fijo", ef, sd, n=int(n_dias), alfa=nivel, fuente_efecto=f"{factor} × media por sesión de DESC (K49)")
+    return dict(pl, sd_dia=sd, n_dias=int(n_dias))
+
+
+POTENCIA_LECTURA_MIN = 0.8
+
+
+def exigir_potencia(plan: dict, que: str) -> None:
+    if plan.get("potencia", 0.0) < POTENCIA_LECTURA_MIN:
+        raise ValueError(f"K49: {que}: potencia {plan.get('potencia', 0):.2f} < {POTENCIA_LECTURA_MIN} en días "
+                         f"(efecto {plan.get('efecto'):.4g}, sd/día {plan.get('sd_dia'):.4g}, días {plan.get('n_dias')}): seguir explorando en DESC "
+                         "o juntar más N antes de gastar la lectura")
