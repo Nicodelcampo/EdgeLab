@@ -10,6 +10,7 @@ mejor cierre y se fija en +$100 (al superar +$1.100 o al primer retiro), consist
 si no, se sigue), DLL $600 blando (aprox.: la pérdida del día se corta en −$600), retiro con 5 días ≥ $100 y neto del ciclo > 0, 50 % del
 beneficio total hasta $1.000, mínimo $500, 90 %, hasta 5 retiros. Bootstrap por bloques de 5 sesiones recentrado a la media declarada.
   python tools/lucid_canastas.py      # -> docs/research/propfirm_lucidflex_20261117/CANASTAS_LUCID.json
+  python tools/lucid_canastas.py senales   # SOM + Franklin + T en MNQ por riesgo -> CANASTA_SENALES_LUCID.json
 """
 import json, sys
 from pathlib import Path
@@ -72,6 +73,36 @@ def serie_b(micros=1, desde=20200101, modulos=("T", "Z", "R")):
     return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(modulos), micros=micros)
 
 
+def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200101, hasta=20250731, tope_micros=20):
+    """Canasta de señales estables (SOM sin_finde, Franklin, T) en MNQ con tamaño por riesgo (2026-11-18, «edges para prop firms»):
+    micros = piso(usd_riesgo / (riesgo en puntos × 2 USD)), entre 1 y `tope_micros`; P&L = micros × (bruto en puntos × 2 − fricción
+    canónica de MNQ en USD). Operaciones del M1 de NT8 ya medidas (docs/research/m1_largo_20261117/); descriptivo, no elige reglas."""
+    from edgelab.research.embudo_runners import friccion
+    D = ROOT / "docs/research/m1_largo_20261117"; fr_usd = float(friccion("MNQ")[0]) * 2.0; fr_nq = float(friccion("NQ")[0]); partes = []
+    if "SOM" in reglas:
+        o = pd.read_csv(D / "SOM_OPS_NQ.csv.gz"); o = o[o.celda == "sin_finde"]; partes.append(o[["dia", "bruto", "riesgo"]])
+    if "FRANKLIN" in reglas:
+        partes.append(pd.read_csv(D / "FRANKLIN_OPS_NQ.csv.gz")[["dia", "bruto", "riesgo"]])
+    if "T" in reglas:
+        o = pd.read_csv(D / "FS_OPS_T2008_NQ.csv.gz"); o = o[o.riesgo > 0]; o["bruto"] = o.neto + fr_nq; partes.append(o[["dia", "bruto", "riesgo"]])
+    o = pd.concat(partes, ignore_index=True); o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int)
+    o = o[(o.ses >= desde) & (o.ses <= hasta)]
+    mic = np.clip(np.floor(usd_riesgo / (o.riesgo * 2.0)), 1, tope_micros)
+    d = (mic * (o.bruto * 2.0 - fr_usd)).groupby(o.ses).sum()
+    ses = [int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(desde), str(hasta))]
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(reglas), usd_riesgo=usd_riesgo, micros_medio=float(mic.mean()))
+
+
+def senales():
+    res = dict(nota="Canasta de señales estables en MNQ con tamaño por riesgo; contracción declarada 0,5 (efecto 2020–2025 elegido después de "
+                    "ver el salto de T; SOM y Franklin con bruto estable desde 2006)", canastas={})
+    for usd in (100, 150, 250):
+        for reglas in (("SOM", "FRANKLIN", "T"), ("SOM", "FRANKLIN"), ("T",)):
+            x, info = serie_senales(usd, reglas); r = evaluar(x.to_numpy(), 0.5); r.update(info)
+            nom = f"{'+'.join(reglas)}|usd{usd}"; res["canastas"][nom] = r; _imprimir(nom, r)
+    (OUT / "CANASTA_SENALES_LUCID.json").write_text(json.dumps(res, indent=1, default=float))
+
+
 def evaluar(x, contr, N=20000, max_dias=250):
     out = dict(sesiones=len(x), usd_sesion_media=float(x.mean()), usd_sesion_sd=float(x.std(ddof=1)), peor_dia=float(x.min()),
                t=float(x.mean() / x.std(ddof=1) * np.sqrt(len(x))), variantes={})
@@ -119,4 +150,4 @@ def _imprimir(nom, r):
 
 
 if __name__ == "__main__":
-    main()
+    senales() if sys.argv[1:] == ["senales"] else main()
