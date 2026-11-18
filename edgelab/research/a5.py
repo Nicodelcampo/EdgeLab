@@ -83,15 +83,17 @@ def frac_anios_positivos(ses, r) -> float:
 FRIC_R_MAX = 0.08                                       # subconjunto operable (fricción / riesgo inicial)
 
 
-def evaluar(T: pd.DataFrame, bloque: str, defs, ejecs, fric_pts: float, control: dict | None = None, limpios=None) -> dict:
+def evaluar(T: pd.DataFrame, bloque: str, defs, ejecs, fric_pts: float, control: dict | None = None, limpios=None, pares=None) -> dict:
     """Por (definición, ejecución): n, R bruto (EE por sesión, p unilateral), años positivos, neto, fricción en R media, neto del
     subconjunto operable; y por (definición − su control, ejecución): diferencia con bootstrap por sesión. `T` trae `ses`, `bloque`,
     una columna booleana por definición y `r_<ejec>`/`k_<ejec>` del motor (`ejecucion.desenlaces`). Con varios instrumentos, la
-    fricción en R de cada fila va en `f_<ejec>` (si no, `fric_pts / k_<ejec>`)."""
+    fricción en R de cada fila va en `f_<ejec>` (si no, `fric_pts / k_<ejec>`). `pares` [(definición, ejecución)] limita las pruebas a
+    esos pares (cada variante con su propia salida); los controles se evalúan con la ejecución de su definición."""
     T = T[T.bloque == bloque]; out = {}; control = control or {}
     for e in ejecs:
         base = {}
-        for d in defs:
+        for d in list(defs) + sorted(set(control.values()) - set(defs)):          # los controles se evalúan siempre (son la base)
+            if pares and (d, e) not in pares and not any((dd, e) in pares for dd, cc in control.items() if cc == d): continue
             g = T[T[d].astype(bool) & T[f"r_{e}"].notna() & (T[f"k_{e}"] > 0)]
             r = g[f"r_{e}"].to_numpy(float); ses = g.ses.to_numpy(np.int64)
             fr = g[f"f_{e}"].to_numpy(float) if f"f_{e}" in g else fric_pts / g[f"k_{e}"].to_numpy(float)   # f_: fricción en R por fila
@@ -100,8 +102,10 @@ def evaluar(T: pd.DataFrame, bloque: str, defs, ejecs, fric_pts: float, control:
                      R_neto=float((r - fr).mean()) if len(r) else None, fric_R_media=float(fr.mean()) if len(r) else None,
                      n_operable=int(op.sum()), R_neto_operable=float((r - fr)[op].mean()) if op.any() else None)
             if limpios: v["R_bruto_limpios"] = float(r[(ses >= limpios[0]) & (ses <= limpios[1])].mean()) if ((ses >= limpios[0]) & (ses <= limpios[1])).any() else None
-            out[f"{d}|{e}"] = v; base[d] = (ses, r)
+            if d in defs and (not pares or (d, e) in pares): out[f"{d}|{e}"] = v
+            base[d] = (ses, r)
         for d, c in control.items():
+            if pares and (d, e) not in pares: continue
             if d in base and c in base and len(base[d][1]) and len(base[c][1]):
                 dif, se, p = diferencia(*base[d], *base[c]); out[f"{d}-{c}|{e}"] = dict(dif_bruto=dif, se=se, p=p)
     return out

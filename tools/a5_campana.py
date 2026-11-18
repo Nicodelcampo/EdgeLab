@@ -82,8 +82,11 @@ def _por_sesion(T, d, e):
 def calibracion(carpeta):
     cfg = _cfg(carpeta); res = {}
     defs = list(cfg["definiciones"]) + sorted(set(cfg.get("control", {}).values()))
+    pares = {tuple(x) for x in cfg["pares"]} if cfg.get("pares") else None
+    ctrl_ej = {c: e for (d, e) in (pares or []) for dd, c in cfg.get("control", {}).items() if dd == d}
     for d in defs:
         for e in cfg["ejecuciones"]:
+            if pares and (d, e) not in pares and ctrl_ej.get(d) != e: continue
             t, m = {}, {}
             for inst in cfg["instrumentos"]:
                 for d0, d1 in cfg["calibracion"]:
@@ -122,11 +125,13 @@ def _evaluar(cfg, bloque):
     fr = {i: _fric(i) for i in cfg["instrumentos"]}
     for e in cfg["ejecuciones"]:                                   # fricción en R de cada fila con la de SU instrumento
         O[f"f_{e}"] = O.inst.map(fr) / O[f"k_{e}"]
-    res = A5.evaluar(O, bloque, cfg["definiciones"], cfg["ejecuciones"], None, cfg.get("control"), cfg.get("limpios"))
+    pares = {tuple(x) for x in cfg["pares"]} if cfg.get("pares") else None
+    res = A5.evaluar(O, bloque, cfg["definiciones"], cfg["ejecuciones"], None, cfg.get("control"), cfg.get("limpios"), pares)
     por_inst = {}
     for inst in cfg["instrumentos"]:
         for e in cfg["ejecuciones"]:
             for d in cfg["definiciones"]:
+                if pares and (d, e) not in pares: continue
                 g = O[(O.inst == inst) & (O.bloque == bloque) & O[d].astype(bool) & O[f"r_{e}"].notna()]
                 por_inst[f"{inst}|{d}|{e}"] = dict(n=int(len(g)), R_bruto=float(g[f"r_{e}"].mean()) if len(g) else None)
     return res, por_inst
