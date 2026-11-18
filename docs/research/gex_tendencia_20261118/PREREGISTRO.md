@@ -67,3 +67,37 @@ Potencia previa:
 ## 5. Contador
 - **Fase 1:** `tools/registro_global.py preregistrado GEX-TENDENCIA-DESC DIA_TENDENCIA_A5 54 docs/research/gex_tendencia_20261118/PREREGISTRO.md`.
 - **Fase 2:** se cuenta aparte al congelar.
+
+## Apéndice 1 (fase 2, 2026-11-18, antes de mirar): confirmación del filtro de gamma en las reglas de tendencia, REP + HOLDOUT A5
+**Decisión de Nico:** «REP+HOLDOUT, una vez». La exploración (fase 1, `RESULTADO_EXPLORACION.md`) eligió UNA hipótesis.
+- **Hipótesis:** «con gamma alta (cierre previo) las reglas de tendencia rinden menos que con gamma baja».
+- **Declaración obligatoria:** en los meses REP y HOLDOUT ya se había mirado el R AGREGADO de T, Franklin y SOM (mediciones de M1
+  largo). El cruce con la gamma nunca se calculó fuera de DESC.
+
+**Datos:**
+- R neto por operación de T (NQ/ES/YM), Franklin (NQ/ES) y SOM `sin_finde` (NQ/ES/YM), de `docs/research/m1_largo_20261117/`;
+- sólo días de meses REP y HOLDOUT de A5 (sin EMBARGO), 2011-11 → 2025-07;
+- GEX de SqueezeMetrics (dato de d−1).
+
+**Variable:** `g_rank250` del cierre previo, con los cortes CONGELADOS de DESC (por día): bajo < 0,3655 ≤ medio < 0,7390 ≤ alto
+(`CORTES_DESC.json`).
+
+**Estadístico:** canasta = suma del R neto de las tres reglas por día. Contraste = media en gamma baja − media en gamma alta, con
+bootstrap por día y p unilateral.
+
+**Decisión:**
+- **CONFIRMADA:** p ≤ nivel LORD++ reservado (`DIA_TENDENCIA_A5::GEX_FILTRO_CONF_20261118`), contraste > 0 y ≥ 60 % de los años con el
+  contraste positivo.
+- **REFUTADA:** contraste ≤ 0, o cota superior unilateral al 95 % < 0,25 R/día (un cuarto del efecto de DESC).
+- **NO_CONFIRMADA:** cualquier otro caso.
+
+**Económico (no decide la confirmación, sí el uso):**
+- canasta «sin gamma alta» con R/día > 0 (p ≤ 0,05);
+- por regla y por instrumento; ORB O1 bruto (`orb_a5_20261118/OPS_DESC_REP.csv.gz`, sólo REP) como descriptivo.
+
+**Potencia:**
+- `plan_potencia("fijo", efecto DESC completo 0,874, sd·√2, n = días por tercil, alfa = nivel reservado)`; la apertura se registra
+  con ese plan (K27/K42);
+- con 0,75 del efecto la potencia es 0,56; está declarado.
+
+**Contador:** 1 prueba (`GEX-FILTRO-CONF`). Una sola lectura: no se vuelve a abrir.

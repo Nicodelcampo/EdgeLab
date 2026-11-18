@@ -89,5 +89,62 @@ def explorar():
     for k, v in out.items(): print(k, {a: (round(b, 4) if isinstance(b, float) else (None if b is None else (b if not isinstance(b, (list, dict)) else "…"))) for a, b in v.items() if a != "por_inst"})
 
 
+
+# ------------------------------------------------------------------------------- fase 2: confirmación del filtro (apéndice 1)
+RESERVA = "GEX_FILTRO_CONF_20261118"; FAMILIA = "DIA_TENDENCIA_A5"; CID = f"{FAMILIA}::{RESERVA}"
+
+
+def _canasta_dia(bloques):
+    from edgelab.holdout import a5_bloque
+    D = ROOT / "docs/research/m1_largo_20261117"
+    T = pd.concat([pd.read_csv(D / f"FS_OPS_T2008_{i}.csv.gz").assign(inst=i) for i in ("NQ", "ES", "YM")]); T = T[T.riesgo > 0]
+    T["R"] = T.neto / T.riesgo; T["fecha"] = pd.to_datetime(T.dia).dt.strftime("%Y%m%d").astype(int)
+    F = pd.concat([pd.read_csv(D / f"FRANKLIN_OPS_{i}.csv.gz").assign(inst=i) for i in ("NQ", "ES")]); F = F[F.riesgo > 0]
+    S = pd.concat([pd.read_csv(D / f"SOM_OPS_{i}.csv.gz").assign(inst=i) for i in ("NQ", "ES", "YM")]); S = S[(S.celda == "sin_finde") & (S.riesgo > 0)]
+    X = pd.concat([T[["fecha", "R", "inst"]].assign(regla="T"), F[["fecha", "R", "inst"]].assign(regla="FR"), S[["fecha", "R", "inst"]].assign(regla="SOM")])
+    X = X[X.fecha <= 20250731]; X["bloque"] = [a5_bloque(int(f)) for f in X.fecha]; X = X[X.bloque.isin(bloques)]
+    g = gamma(); g.index = g.index.strftime("%Y%m%d").astype(int); X["g"] = X.fecha.map(g["g_rank250"]); X = X.dropna(subset=["g"])
+    c = json.loads((DIR / "CORTES_DESC.json").read_text())["cortes_g_rank250"]
+    X["t"] = np.where(X.g < c[0], "bajo", np.where(X.g < c[1], "medio", "alto"))
+    return X, X.groupby(["fecha", "t"]).R.sum().reset_index()
+
+
+def abrir():
+    from a5_campana import _commiteado
+    from edgelab.funnel.libro_lord import LibroLord
+    from edgelab.research import holdout_ventanas as HV
+    if not _commiteado(DIR / "PREREGISTRO.md"): raise SystemExit("pre-registro sin commitear")
+    _, dd = _canasta_dia(("DESC",)); lo, hi = dd[dd.t == "bajo"].R, dd[dd.t == "alto"].R
+    efecto = float(lo.mean() - hi.mean()); sd = float(np.sqrt((lo.var() + hi.var()) / 2) * np.sqrt(2))
+    _, dc = _canasta_dia(("REP", "HOLDOUT")); n = int(dc.fecha.nunique() // 3)               # sólo CUENTA días (sin desenlaces)
+    res = LibroLord().reservar(FAMILIA, RESERVA, "filtro de gamma en T+Franklin+SOM, REP+HOLDOUT")
+    plan = HV.plan_potencia("fijo", efecto, sd, n=n, alfa=res["nivel"], fuente_efecto="contraste DESC completo (decisión de Nico, apéndice 1)")
+    fila = HV.registrar_apertura(FAMILIA, CID, 20111101, n, plan=plan)
+    (DIR / "APERTURA_FILTRO.json").write_text(json.dumps(dict(reserva=res, plan=plan, apertura=fila), indent=1, default=float))
+    print(json.dumps(dict(nivel=res["nivel"], potencia=plan["potencia"], efecto=efecto, n=n)))
+
+
+def confirmar():
+    from a5_campana import _commiteado
+    from edgelab.funnel.libro_lord import LibroLord
+    from edgelab.research.a5 import diferencia, cluster
+    if not _commiteado(DIR / "APERTURA_FILTRO.json"): raise SystemExit("apertura sin commitear")
+    X, dc = _canasta_dia(("REP", "HOLDOUT"))
+    lo, hi = dc[dc.t == "bajo"], dc[dc.t == "alto"]
+    d, se, p = diferencia(lo.fecha.values, lo.R.values, hi.fecha.values, hi.R.values)
+    dec = LibroLord().resolver(FAMILIA, RESERVA, [("gex_filtro", p)])
+    dc["anio"] = dc.fecha // 10000
+    yy = dc.groupby("anio").apply(lambda x: x[x.t == "bajo"].R.mean() - x[x.t == "alto"].R.mean()).dropna(); frac = float((yy > 0).mean())
+    ver = "CONFIRMADA" if (dec.get("rechazo") and d > 0 and frac >= 0.6) else ("REFUTADA" if (d <= 0 or d + 1.645 * se < 0.25) else "NO_CONFIRMADA")
+    sin_alto = dc[dc.t != "alto"]; m, s2, p2 = cluster(sin_alto.fecha.values, sin_alto.R.values)
+    por_regla = {r: {t: float(g[g.t == t].R.mean()) for t in ("bajo", "medio", "alto")} for r, g in X.groupby("regla")}
+    out = dict(contraste=d, se=se, p=p, lord=dec, frac_anios=frac, anios=int(len(yy)), veredicto=ver,
+               canasta_por_tercil={t: float(dc[dc.t == t].R.mean()) for t in ("bajo", "medio", "alto")},
+               dias_por_tercil={t: int((dc.t == t).sum()) for t in ("bajo", "medio", "alto")},
+               canasta_todos=float(dc.R.mean()), canasta_sin_alto=dict(R_dia=m, se=s2, p=p2), por_regla=por_regla)
+    (DIR / "CONFIRMACION_FILTRO.json").write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps({k: out[k] for k in ("contraste", "se", "p", "frac_anios", "veredicto", "canasta_por_tercil", "canasta_todos", "canasta_sin_alto")}, default=float))
+
+
 if __name__ == "__main__":
-    {"tabla": tabla, "explorar": explorar}[sys.argv[1]]()
+    {"tabla": tabla, "explorar": explorar, "abrir": abrir, "confirmar": confirmar}[sys.argv[1]]()
