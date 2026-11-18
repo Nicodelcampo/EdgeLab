@@ -1159,3 +1159,14 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - la escalera en ticks (escala de segundos) con años;
   - la escalera como filtro de entrada de otras reglas (propuesta del 2026-11-18);
   - el holdout A5 (sin abrir, nada que confirmar).
+
+## 2026-11-18 — IB-MADONNA (Initial Balance + Madonna y 10 variantes, NQ/ES/YM M1 2006–2025, A5)
+- **MEDIDO (DESC):**
+  - el fade del primer rechazo del borde del IB pierde en bruto (V0 −0,128 R, n 3.334);
+  - ningún filtro lo da vuelta;
+  - sólo la aceptación → continuación es positiva (V3 +0,044, sin BH, neto ≈ 0).
+  - Acta: `docs/research/ib_madonna_20261118/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la «Madonna inversa» (a favor de la ruptura tras el rechazo; pista a pre-registrar en los meses REP);
+  - la SMT NQ/ES;
+  - el holdout A5.

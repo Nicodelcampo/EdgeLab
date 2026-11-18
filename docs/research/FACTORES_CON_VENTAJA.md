@@ -159,10 +159,10 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Campañas nuevas con particion A5 (mecanismos medibles en barras; footprint sigue dependiendo de ticks)
   - Siguiente: Integrar particion A5 en el embudo con la primera campaña nueva; calibrar M1 contra ticks por familia.
   - Evidencia: `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`, `edgelab/holdout.py`, `tests/test_holdout_a5.py`
-- **Veredicto de todas las reglas con el M1 real de futuros: refutadas CVGAP-ES-C, CVGAP2-GC#11 y COMEX; T frágil (sin señal antes de 2020); SOM y R (NQ) con señal bruta estable; la cartera completa del vendedor pierde 2006–2018 y gana 2019+ (fricción relativa); las variantes W y N mejoran sin volverse rentables** (`F-FUNDEDSYNC-CAPA2-Y-VEREDICTO`, 2026-11-17, sesion)
-  - Efecto: Variantes en años limpios: W +0,224 ATR/día (IC90 +0,198/+0,250), N +0,026 (IC90 +0,010/+0,041), S y A20 NO_CONCLUYENTE. Stop de catástrofe 0,5×ATR20: R NQ 2020–25 peor −415→−169 pts con neto +0,185→+0,171. Cartera vendedor Lucid25K: +67,9 k USD 2006–2026, negativa todos los años hasta 2018, DD −127,7 k.
+- **Veredicto con M1 real de futuros: refutadas CVGAP-ES-C, CVGAP2-GC#11 y COMEX; SOM y R (NQ) con señal bruta estable; cartera del vendedor pierde 2006–2018 y gana 2019+ (fricción relativa); W y N mejoran sin volverse rentables** (`F-FUNDEDSYNC-CAPA2-Y-VEREDICTO`, 2026-11-17, sesion)
+  - Efecto: Años limpios: W +0,224 ATR/día, N +0,026. Stop de catástrofe 0,5×ATR20 en R NQ: peor −415→−169 pts, neto casi igual. Cartera Lucid25K +67,9 k USD 2006–26, negativa hasta 2018, DD −127,7 k.
   - Dónde: NQ, ES, YM futuros (M1 NT8)
-  - Siguiente: Pre-registrar v2.1, v4.1, B' (R + Z con stop, sin T) y canasta SOM + R en papel; confirmar SOM y R en RTY/MidCap; medir Franklin en M1; filtro de fricción en R en toda regla operable.
+  - Siguiente: Versiones v2.1/v4.1/B' y canasta SOM + R en papel; filtro de fricción en R en toda regla operable.
   - Evidencia: `docs/research/VEREDICTO_M1_20261117.md`, `docs/research/m1_largo_20261117/RESULTADO_CAPA2.md`, `docs/research/m1_largo_20261117/RESULTADO_CAPA2.json`
 - **Las operaciones con stop corto relativo a la propia regla (tercil causal de las 60 previas) rinden menos sólo por fricción** (`F-STOP-CORTO-ES-FRICCION`, 2026-11-16, sesion)
   - Efecto: 24 reglas, 3.626 ops de desarrollo: Δ neto −0,11 R (p 0,015, 16/24, BH) y Δ bruto 0,000 (p 0,50). La fricción se come el 58 % del R bruto (+0,197 → +0,083). Contrato fijo sube el t medio por regla de 1,38 a 1,77. | Confirmado en generadoras + holdout (PREREGISTRO_MEJORAS): saltear fricción > 0,08 R Δ −0,33 R (p 0,05, BH) y micros fijos t 1,46 → 2,42 (p 0,026). | 2026-11-16 (mejora ronda 2): contrato fijo > riesgo constante también en SOM (t 2,98 vs 2,05), T (4,13 vs 2,59) y Franklin (1,94 vs 0,84), años impares.
@@ -295,20 +295,25 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (32)
+## NO_REPETIR (33)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
-- **Errores de unidad y escala: medir en ATR módulos que arriesgan mucho menos que un ATR (diluye la señal 3–10×), comparar épocas con parámetros en puntos fijos y medir puntos/op entre años con precios distintos. EdgeReplica era ajuste; el corto de las 04:15 del oro tiene sesgo real no operable solo** (`F-AUDITORIA-UNIDADES-Y-VIEJAS`, 2026-11-18, nico)
-  - Efecto: En R, A20/E/F/V con señal en NQ 2020–2025 (no en ES/YM salvo E débil; posible ajuste del vendedor); T pasa ES/YM. EdgeReplica NQ 2006–2022 +0,0002 ATR (potencia 1,0) contra +0,015 en 2023–2025. Oro 04:15 GC 2008–2022 bruto +1,62 ticks (IC90 +1,25/+1,99), neto −4,4. Régimen análogo de T en R: sin diferencia.
+- **Errores de unidad y escala (K35–K37): ATR diluye módulos de stop chico 3–10×, parámetros en puntos fijos cambian la regla entre épocas, puntos/op no se comparan entre años. EdgeReplica era ajuste; oro 04:15 sesgo real no operable solo** (`F-AUDITORIA-UNIDADES-Y-VIEJAS`, 2026-11-18, nico)
+  - Efecto: En R: A20/E/F/V con señal NQ 2020–25 (no ES/YM); T pasa ES/YM. EdgeReplica NQ 2006–22 +0,0002 ATR (pot. 1,0). Oro 04:15 GC 2008–22 bruto +1,62 ticks, neto −4,4.
   - Dónde: FundedSync NQ/ES/YM; NQ (EdgeReplica); GC (oro 04:15)
-  - Siguiente: Medir cada estrategia en su unidad de riesgo y dentro de la época en que sus parámetros fijos son razonables; probar el ajuste de un vendedor en instrumentos que no usó; LuxImb impulsos-25 % como primera campaña A5.
+  - Siguiente: Medir cada regla en su unidad de riesgo y época; probar el ajuste de un vendedor fuera de lo que usó (K38).
   - Evidencia: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`, `docs/research/m1_largo_20261117/RESULTADO_VIEJAS.json`
 - **Escalera plana de picos (escalonadas_det PLANAS) detectada en M1 y operada a favor de la ruptura en NQ, ES y YM** (`F-ESCALONADAS-M1-SIN-SENAL`, 2026-11-18, humano)
   - Efecto: A5 DESC 2006–2025, 38.011 series: bruto −0,05 a +0,03 R en 18/18 celdas (MDE80 0,02–0,03), ninguna sobre su placebo; neto −0,4 a −2 R. Holdout sin abrir.
   - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5, 2006-01 → 2025-07; calibrado contra ticks 25/30
   - Siguiente: No repetir como señal en M1. Esperar picos como filtro de entrada de otra regla es otra hipótesis (capa de ejecución, pareada y con placebo).
   - Evidencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`, `docs/research/escalonadas_m1_20261118/DESC.json`
+- **Fade del primer rechazo en el borde del Initial Balance (Madonna) y 10 variantes, NQ/ES/YM M1 2006–2025** (`F-IB-MADONNA-NO-DEFIENDE`, 2026-11-18, humano)
+  - Efecto: A5 DESC: V0 bruto −0,128 R (EE 0,031, n 3.334, 20 % de años +); los filtros no lo dan vuelta; sólo la aceptación → continuación es + (V3 +0,044, p 0,007, sin BH; neto ≈ 0). 0 nominadas.
+  - Dónde: NQ/ES/YM futuros M1 (NT8), meses DESC de A5; calibrado 13/16
+  - Siguiente: No hacer fade del borde del IB. Pista a pre-registrar: a favor de la ruptura tras el rechazo, probada en meses REP.
+  - Evidencia: `docs/research/ib_madonna_20261118/RESULTADO.md`, `docs/research/ib_madonna_20261118/DESC.json`
 - **SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de otros mercados: Russell 09:30, oro 08:20 (COMEX), euro 03:00 (Londres)** (`F-SOM-TRANSFER-NO`, 2026-11-17, sesion)
   - Efecto: R neto 2020–2026: RTY −0,02, GC −0,02, 6E −0,04 (p ≥ 0,80); 2012–2019 GC −0,08, 6E −0,06; años positivos 3–5 de 8–16. La ventaja de SOM es del Nasdaq en la apertura de NY.
   - Dónde: RTY, GC, 6E (M1 Dukascopy con zona horaria corregida, costos de futuros)
