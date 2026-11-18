@@ -126,6 +126,23 @@ ahora es que la guarda esté en el punto por el que pasan TODAS las rutas.
 | K31 | Se commiteó con `tools/cierre.py` en rojo: el comando iba en un tubo a `grep` y el `&&` siguiente miró el código de `grep`. | CI rojo y un commit que dice más de lo que hay. | Regla. | `python tools/cierre.py && git commit …` sin tubos en el medio (o `set -o pipefail`). |
 | — | Reconocido como ya cubierto y salteado: `tools/antecedentes.py` y `tools/existente.py buscar` no se corrieron antes de construir el motor del catálogo (C1/K26); habrían mostrado el motor único (K23). | — | Regla existente. | Correrlos SIEMPRE antes de escribir un módulo de medición, también en las rutas ad hoc. |
 
+## E6. Errores de unidad y escala (2026-11-18, auditoría pedida por Nico: «revisá otros errores de ese estilo»)
+
+Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lectura por corrida: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md`
+(su línea «Lectura previa:» la exige `preflight.validar_preregistro`).
+
+- **K35, unidad de riesgo.** Cada regla se mide en su propio R (neto / stop INICIAL). Medir en ATR diario diluye 3–10 veces a las reglas que
+  arriesgan mucho menos que un ATR: así T, A20, E, F y V parecieron «sin ventaja» o «frágiles». Hay que verificar en el código que la columna
+  de riesgo sea el stop inicial (T guardaba el activo al salir).
+- **K36, parámetros en puntos fijos.** Topes de stop, objetivos y filtros en puntos convierten la regla en otra cuando el precio y el rango
+  cambian. Antes de comparar épocas, listarlos y decidir en qué épocas la regla es la misma (T tope 100 pts, E 30/45, F 125).
+- **K37, puntos por operación entre años.** No se comparan entre años con precios distintos: el «crecimiento» de EdgeReplica era en parte
+  escala. Usar R o ATR.
+- **K38, ajuste de quien diseñó la regla.** Una regla de un tercero se prueba fuera de lo que su autor pudo usar: otro instrumento u otros
+  años. Los módulos de FundedSync sólo funcionan en NQ 2020+; T es la excepción porque también pasa ES y YM.
+- **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de
+  drawdown y de tamaño.
+
 ## D. Lo que el agente del Debian tiene que vigilar siempre (checklist por ciclo)
 1. `tools/autopilot_protect.py check` → OK.
 2. Ninguna campaña en CORRIENDO hace más de 14 h sin kernel vivo.

@@ -199,6 +199,15 @@ REQUISITOS_PREREGISTRO = (      # (descripción, regex sobre el texto, de dónde
 )
 
 
+LECTURA_PREVIA_RX = r"^Lectura previa:.*LEER_ANTES_DE_CADA_CORRIDA v\d+"
+
+
+def _sin_lectura_previa(repo: Path) -> set:
+    """Pre-registros anteriores al índice obligatorio (2026-11-18): exentos sólo de «Lectura previa:». Lista cerrada; no se agrega nada."""
+    f = Path(repo) / "config/preregistros_sin_lectura_previa.json"
+    return set(json.loads(f.read_text(encoding="utf-8"))) if f.exists() else set()
+
+
 def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = True) -> list:
     """K32 (Nico, 2026-11-17: «salteártela demuestra que hay que cambiarlo: tiene que usarse todo EdgeLab, y bien»): lo que CLAUDE.md
     pide de un pre-registro, verificado en código. Vacío = válido. Lo usan `tools/registro_global.py preregistrado` (antes de contar
@@ -211,6 +220,11 @@ def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = Tr
     if north_star_sha256(repo) not in t: e.append("no cita el sha256 vigente de docs/NORTH_STAR.md")
     for desc, rx, fuente in REQUISITOS_PREREGISTRO:
         if not re.search(rx, t, re.M | re.I): e.append(f"falta {desc} ({fuente})")
+    try: rel_p = p.relative_to(repo).as_posix()
+    except ValueError: rel_p = p.as_posix()
+    if rel_p not in _sin_lectura_previa(repo) and not re.search(LECTURA_PREVIA_RX, t, re.M):
+        e.append("falta la línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …» (docs/research/LEER_ANTES_DE_CADA_CORRIDA.md, "
+                 "Nico 2026-11-18)")
     if exigir_commit:
         rel = str(p.relative_to(repo))
         if not subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=repo, capture_output=True, text=True).stdout.strip():

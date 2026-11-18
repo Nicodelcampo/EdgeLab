@@ -1,6 +1,7 @@
 """Guardas K27–K31 (2026-11-17, pedido de Nico: «opera demasiado poco; revisá los errores de principiante y estandarizá que no se
 cometan»). Ver docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md §E5."""
-import json, re
+import json
+import re, re
 from pathlib import Path
 
 import pytest
@@ -85,10 +86,11 @@ def test_K32_el_validador_pide_lo_de_claude_md(tmp_path):
     (tmp_path / "docs").mkdir(); (tmp_path / "docs/NORTH_STAR.md").write_bytes((ROOT / "docs/NORTH_STAR.md").read_bytes())
     malo = tmp_path / "P.md"; malo.write_text("# x\n\nEstado: PRE-REGISTRO\n")
     e = validar_preregistro(malo, tmp_path, exigir_commit=False)
-    assert len(e) == 6 and any("NORTH_STAR" in x for x in e)
+    assert len(e) == 7 and any("NORTH_STAR" in x for x in e) and any("Lectura previa" in x for x in e)
     bueno = tmp_path / "Q.md"
     bueno.write_text(f"# x\nEstado: PRE-REGISTRO\nNorth Star {north_star_sha256(ROOT)}. Etapa EF3.\nAntecedentes: «x» — ...\n"
-                     "Potencia previa: ops.csv: 20 ops/mes ... OK\n## Justificación económica / cómo podría refutarse\n")
+                     "Potencia previa: ops.csv: 20 ops/mes ... OK\nLectura previa: LEER_ANTES_DE_CADA_CORRIDA v1 — §0–§5\n"
+                     "## Justificación económica / cómo podría refutarse\n")
     assert validar_preregistro(bueno, tmp_path, exigir_commit=False) == []
 
 
@@ -101,3 +103,14 @@ def test_K33_spread_estimado_no_es_medido():
     with pytest.raises(costos.CostoNoMedido):
         costos.friccion_rt_puntos("ZB")                                          # fuera del bloque vuelve a frenar
     assert costos.friccion_rt_puntos("GC") > 0                                   # lo medido no cambia
+
+
+def test_indice_de_lectura_obligatorio_existe_y_la_exencion_es_cerrada():
+    """Nico, 2026-11-18: un índice obligatorio de lectura por corrida. Los pre-registros anteriores quedan exentos sólo de esa línea; la
+    lista no crece (todo pre-registro nuevo la lleva)."""
+    idx = (ROOT / "docs/research/LEER_ANTES_DE_CADA_CORRIDA.md").read_text(encoding="utf-8")
+    assert "Estado: VIGENTE" in idx and "v1" in idx
+    for ref in re.findall(r"`(docs/[^`]+\.(?:md|jsonl|json))`", idx):
+        assert (ROOT / ref).exists(), f"el índice cita un documento que no existe: {ref}"
+    exentos = json.loads((ROOT / "config/preregistros_sin_lectura_previa.json").read_text(encoding="utf-8"))
+    assert len(exentos) <= 139, "la exención es cerrada: un pre-registro nuevo lleva «Lectura previa:»"
