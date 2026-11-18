@@ -88,7 +88,7 @@ def analizar():
         epoca[nom] = dict(n=int(len(g)), R_bruto=float(g[f"r_{EJ}"].mean()), neto_mini=float(g.n_mini.mean()), neto_micro=float(g.n_micro.mean()),
                           operable_n=int(len(op)), operable_neto_mini=float(op.n_mini.mean()) if len(op) else None)
     fuente = {k: dict(n=int(len(g)), R_bruto=float(g[f"r_{EJ}"].mean())) for k, g in
-              (("holdout_A5_NQ_ES_YM", O[O.inst.isin(["NQ", "ES", "YM"])]), ("indices_nuevos_EMD_RTY", O[O.inst.isin(["EMD", "RTY"])])))}
+              (("holdout_A5_NQ_ES_YM", O[O.inst.isin(["NQ", "ES", "YM"])]), ("indices_nuevos_EMD_RTY", O[O.inst.isin(["EMD", "RTY"])]))}
     out = dict(preregistro=str(PRE.relative_to(ROOT)), n=int(len(O)), R_bruto=m, se=se, p=p, lord=dec, frac_anios_pos=anios, terciles=ter,
                tercil_en_contra=contra, veredicto=veredicto, por_instrumento=por, por_fuente=fuente, por_epoca=epoca,
                mde80=float(2.49 * se) if se == se else None)
