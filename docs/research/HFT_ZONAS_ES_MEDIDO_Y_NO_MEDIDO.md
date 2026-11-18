@@ -1210,3 +1210,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - ASIA pierde en bruto en NQ/ES/YM 2006–2011, EMD y RTY. Acta: `docs/research/asia_noche_20261118/RESULTADO.md`.
 - **NO MEDIDO:** ASIA en NQ 2012–2025 con futuros M1 (mirado en CFD por el largo v1); filtros intradía conocidos a la hora de entrada
   (p. ej. el rango asiático hasta la entrada), que no tienen pre-registro.
+
+## 2026-11-18 — Punto 1: Franklin en instrumentos nuevos y la canasta T + SOM + Franklin
+- **MEDIDO:**
+  - Franklin en YM, EMD, RTY y GC (nunca medidos): +0,075 R bruto, NO_CONFIRMADA (59,7 % de instrumento-año positivos); EMD +0,12.
+  - Canasta en NQ (descriptivo): neta positiva sólo desde 2020; el forward tarda 88 meses con la mitad del efecto. Acta:
+    `docs/research/franklin_confirmacion_20261118/RESULTADO.md`.
+- **NO MEDIDO:** costo medido de EMD; SOM y T en aperturas de índices no estadounidenses (sin costos canónicos).

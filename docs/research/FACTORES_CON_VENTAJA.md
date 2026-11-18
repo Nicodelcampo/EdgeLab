@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (20)
+## PISTA_VIVA (21)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,6 +24,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ futuros M1 (NT8) calibrado contra ticks 11/12, meses DESC/REP de A5, 2006-01 → 2022-12
   - Siguiente: No repetir con stops de 0,2–0,5·D (fricción). Hijo operable: stop amplio frente a la fricción (≤ 0,08 R) u objetivo/tenencia más largos, o la condición de zonas como filtro de contexto en fades con stop grande; abre el holdout A5 de 2006–2022 sólo ese hijo, con su compuerta económica antes.
   - Evidencia: `docs/research/luximb_a5_20261118/RESULTADO.md`, `docs/research/luximb_a5_20261118/DESC.json`, `docs/research/luximb_a5_20261118/REP.json`
+- **Franklin (sesgo a las 10:00 NY: arriba del máximo de Londres y del VWAP → compra) en instrumentos nunca medidos: YM, MidCap, Russell y oro** (`F-FRANKLIN-OTROS-INDICES`, 2026-11-18, humano)
+  - Efecto: 5.640 ops, +0,075 R bruto/op (p 0,0004, LORD rechaza) pero 59,7 % de instrumento-año positivos (< 60 %) → NO_CONFIRMADA. EMD +0,123 en las tres épocas (neto +0,05 con costo estimado); YM sólo 2006–2011; RTY +0,05; GC ≈ 0. Neto fuera de NQ/EMD ≤ 0.
+  - Dónde: YM, EMD, RTY, GC futuros M1 (NT8), 2006/2008/2017 → 2025-07
+  - Siguiente: Franklin en la canasta sólo en NQ (y EMD si se mide su costo). El holdout A5 de T/Franklin/SOM ya está mirado: su confirmación depende del forward (canasta NQ: 88 meses con la mitad del efecto) o de subir el R neto (ejecución).
+  - Evidencia: `docs/research/franklin_confirmacion_20261118/RESULTADO.md`, `docs/research/franklin_confirmacion_20261118/RESULTADO.json`
 - **Reversión corta en índices del catálogo SQX (Buy dips RSI5 con límite, Double 7 de Connors), D1, sin optimizar** (`F-CONNORS-INDICES-SQX`, 2026-11-17, sesion)
   - Efecto: Buy dips ES: A +0,28 R (p 0,003), B +0,31 (p 0,002), 11/14 años; Double 7 NQ: A +0,22 (p 0,002), B +0,12 (p 0,055), 12/14; YM B +0,13. No sobrevive BH sobre 136. Con cierre del viernes cae (buy dips ES +0,09): buena parte vive en el fin de semana. 5–12 ops/año por índice.
   - Dónde: ES, NQ, YM (M1 Dukascopy, costos de futuros, R)
