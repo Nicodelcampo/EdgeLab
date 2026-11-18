@@ -221,6 +221,8 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
     pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8); fb = np.full(len(O), -1, np.int64); xb = fb.copy()
     if ok.any():
+        from edgelab.research.ejecucion import aperturas
+        aper = aperturas(sim)                                                   # K40: vacío con ticks reales; marcas de apertura con M1
         st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
         args = (st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
                 sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
@@ -230,9 +232,9 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
                 raise ValueError("LINEAS_SOLO_TIEMPO con líneas de precio finito")
             if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
             p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
-                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))
+                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)), aper)
         else:
-            p_, a_, f_, x_ = AX.simular_cierre(*args)
+            p_, a_, f_, x_ = AX.simular_cierre_m1(*args, aper)
         pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_
     out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
     return out + ((O,) if devolver_O else ()) + ((fb, xb) if devolver_barras else ())

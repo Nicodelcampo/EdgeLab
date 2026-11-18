@@ -1,6 +1,6 @@
 # «Atrás» de 5 reglas congeladas de la v2 y la v4 sobre M1 real de futuros: REFUTADA_ATRAS (2026-11-17)
 
-Estado: RESULTADO — decisión pre-registrada (`PREREGISTRO.md` §4), calibración commiteada antes (`CALIBRACION.json`). North Star sha256
+Estado: DESCARTADA (2026-11-18) — el motor de la grilla cobraba el stop en el extremo de la vela M1 (K40): pesimista con stops chicos. En la calibración, M1 dio menos que ticks en las 5 reglas (−0,01 a −0,16 R por sesión), dentro de 1 EE pero siempre del mismo lado. Corregido y relanzado (`../RESULTADO.md`). Antes: RESULTADO — decisión pre-registrada (`PREREGISTRO.md` §4), calibración commiteada antes (`CALIBRACION.json`). North Star sha256
 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Datos: `ATRAS.json`, `resultados/`; fallidas (cuenta sin acceso al
 dataset, sin datos producidos) en `FALLIDAS.jsonl`.
 

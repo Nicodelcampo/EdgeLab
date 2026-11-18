@@ -63,3 +63,13 @@ INTENTO_FALLIDO_LUX_NQ, CORREDOR_VOL_GAPS_ES, RANGO_PREAPERTURA_NQ). La calibrac
   años que nadie usó para elegirlo.
 - **Cómo podría refutarse:** media ≤ 0 con potencia en 2018 → 2022/2025 (EN_CONTRA_ATRAS / REFUTADA_ATRAS); o que ninguna calibre (el M1
   no sirve para estas reglas).
+
+## Enmienda 1 (2026-11-18): relanzamiento con el motor de la grilla corregido (K40)
+- **Qué pasó:** el motor de la grilla (`areas_expansion.simular_cierre_linea`) cobraba el stop en el pseudo-tick extremo de la vela M1, no
+  en su nivel.
+- **Evidencia:** la calibración v1 dio M1 < ticks en las 5 reglas (−0,007 a −0,162 R por sesión), dentro de 1 EE pero siempre del mismo
+  lado.
+- **Corrección:** con `m1_sintetico` el stop sale en su nivel, salvo un hueco en la apertura. Hay test.
+- **Relanzamiento:** se relanza todo (calibración y «atrás»), con las mismas reglas, ventanas, criterios y pruebas. No se cuentan pruebas
+  nuevas.
+- **La v1:** queda en `descartada_v1/`.

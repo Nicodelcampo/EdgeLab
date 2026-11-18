@@ -100,3 +100,13 @@ def test_precios_con_vela_de_salida_por_fila():
     assert np.isclose(T["r_P_obj_stop_fin"][0], (px[350] - e) / risk)               # sostiene hasta la vela 350 (> TOPE = 240)
     assert np.isclose(T["r_P_obj_stop"][0], (px[X.TOPE] - e) / risk)                # sin columna: tope de TOPE velas
     assert X.validar([("PRECIOS", "a", "b", "c")]) == [] and X.validar([("PRECIOS", "a")]) != []
+
+
+def test_motor_grilla_stop_m1_en_su_nivel_K40():
+    """areas_expansion._primero_en_ticks: con pseudo-ticks de M1 el stop sale en su nivel salvo un hueco en la apertura."""
+    from edgelab.research import areas_expansion as AX
+    tpx = _p(100, 99, 103, 101)                                                          # compra, stop 100,5: la vela llega a 99
+    ap = np.array([True, False, False, False])
+    assert AX._primero_en_ticks(tpx, 1, 4, 1, 100.5, 110.0, 0.25, np.zeros(0, np.bool_)) == (1, 99.0)   # ticks: al tick que cruza
+    assert AX._primero_en_ticks(tpx, 1, 4, 1, 100.5, 110.0, 0.25, ap) == (1, 100.5)                      # M1: en el stop
+    assert AX._primero_en_ticks(_p(99, 98, 103, 101), 0, 4, 1, 100.5, 110.0, 0.25, ap) == (1, 99.0)      # hueco: abre bajo el stop
