@@ -57,7 +57,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `CVGAP2_XAU` | 2026-11-04 | CORREDOR_VOL_GAPS_NQ | 933140 | 1 | CVGAP2-XAU: PISTAS_VIVAS | — | `cvgap2_20261104` |
 | `CVGAP2_YM` | 2026-11-04 | CORREDOR_VOL_GAPS_ES | 933120 | 1 | CVGAP2-YM: INTEGRIDAD_FALLA | — | `cvgap2_20261104` |
 | `DELTASWEEP_NQ` | 2026-11-14 | — | 111840 | — | — | F-DELTASWEEP-PATRONES (NO_REPETIR); F-DELTASWEEP-SEQ2-AM (EN_SEGUIMIENTO) | `deltasweep_20261114` |
-| `DIA_TENDENCIA_A5` |  | FUNDEDSYNC, GEX | 76 | — | — | — | — |
+| `DIA_TENDENCIA_A5` |  | FUNDEDSYNC, GEX | 79 | — | — | — | — |
 | `DISCOVERY_GRID_SIGN_FLIP_MAXNULL` |  | — | 143579 | — | — | — | — |
 | `DOBLE_RETROCESO_ES` | 2026-11-04 | — | 1493000 | 1 | DRC-ES-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |
 | `DOBLE_RETROCESO_EURUSD` | 2026-11-04 | — | 1492999 | 1 | DRC-EURUSD-R: PISTAS_VIVAS | — | `doble_retroceso_20261104` |

@@ -41,3 +41,22 @@ DESC y en REP + HOLDOUT.**
 2. **No darle tamaño real** hasta que el forward decida.
 3. **En una prop firm**, el filtro reduce días de pérdida (−0,5 R/día con gamma alta): candidato a simulación Lucid una vez
    confirmado.
+
+## Apéndice 2: tres pruebas más del mecanismo (2026-11-18, `MECANISMO.json`)
+LORD++ nivel 0,0145, tres pruebas pre-registradas. Corte congelado de DESC: gamma alta = `g_rank250` ≥ 0,739.
+
+| Prueba | Alta | Resto | Contraste (EE) | p | Años con el signo de H1 | Veredicto |
+|---|---|---|---|---|---|---|
+| P1 exclusión en EMD + RTY (T + Franklin + SOM, R/día) | −0,040 | +0,029 | −0,069 (0,099) | 0,24 | 40 % | no confirma |
+| P2 fade LUX-IMB NQ (signo opuesto, R/op bruto) | +0,024 | +0,005 | **+0,018** (0,009) | 0,026 | **75 %** | dirección correcta, no llega al nivel |
+| P3 ORB O1 (confirmación, R/op bruto) | +0,075 | +0,079 | −0,005 (0,075) | 0,48 | 53 % | sin efecto |
+
+**Lectura:**
+- **El filtro de gamma es más angosto de lo que sugería DESC.** Su evidencia sigue concentrada en T, Franklin y SOM en NQ/ES/YM (DESC
+  y REP + HOLDOUT). No aparece en EMD/RTY, donde esas reglas además son débiles, ni en ORB O1.
+- **La predicción opuesta va en la dirección del mecanismo:** con gamma alta el fade de impulsos revierte algo más, +0,018 R, en el
+  75 % de los años. Es chica y no pasa el nivel.
+- **Mecanismo (anclaje con gamma alta, amplificación con baja): NO confirmado.** Hay señales consistentes en DESC, REP + HOLDOUT y el
+  fade, pero no transfiere a otros índices ni al ORB.
+- **Lo que queda operable como hipótesis de forward:** excluir los días de gamma alta en T, Franklin y SOM en NQ/ES/YM. Con eso, el
+  historial pasa de perder a ganar en dos muestras. Alcance acotado a esas reglas e índices.

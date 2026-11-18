@@ -1242,3 +1242,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   rechaza), 8/15 años → NO_CONFIRMADA. La gamma alta es negativa en las 3 reglas en ambos bloques. Acta:
   `docs/research/gex_tendencia_20261118/RESULTADO.md`.
 - **NO MEDIDO:** regla de exclusión de gamma alta en forward (pre-registro pendiente; requiere GEX diario).
+- **MEDIDO (apéndice 2, mecanismo de gamma):**
+  - la exclusión de gamma alta no confirma en EMD/RTY (p 0,24) y no hay efecto en ORB O1 (p 0,48);
+  - el fade LUX-IMB con signo opuesto da +0,018 R (p 0,026, 75 % de años);
+  - mecanismo NO confirmado: filtro acotado a T/Franklin/SOM en NQ/ES/YM.
