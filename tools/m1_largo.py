@@ -165,6 +165,38 @@ def analizar_indices():
     for k, v in out["descriptivo"].items(): print(k, "bruto", v["bruto"]["u_op"] and round(v["bruto"]["u_op"], 3), v["bruto"]["ops"], "neto", v["neto"]["u_op"] and round(v["neto"]["u_op"], 3))
 
 
+def viejas_edgereplica(datos):
+    """PREREGISTRO_VIEJAS.md §1: las 60 reglas con el motor de tools/edgereplica_usatech.py (`run`) sobre NQ futuros M1 (sin bid/ask:
+    entrada y salida a la apertura de la vela), fricción canónica de NQ y puntos / ATR20 diario."""
+    import edgereplica_usatech as E
+    from edgelab.research.embudo_runners import friccion
+    D = cargar("NQ", datos); a = atr20(D)
+    t_close = (D.index + pd.Timedelta(minutes=1)).tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert(E.CT)
+    ok = ~t_close.isna()
+    b = pd.DataFrame(dict(open=D.o.to_numpy()[ok], close=D.c.to_numpy()[ok], bo=D.o.to_numpy()[ok], ao=D.o.to_numpy()[ok]), index=t_close[ok])
+    b = b[~b.index.duplicated()].sort_index()
+    t, sk = E.run(b, 0.0); fr = friccion("NQ")[0]
+    t["ses_d"] = pd.to_datetime(t.ses); t["atr20"] = a.reindex(t.ses_d).to_numpy()
+    t["bruto_atr"] = t.pts / t.atr20; t["neto_atr"] = (t.pts - fr) / t.atr20
+    t[["rule", "dir", "ses", "pts", "atr20", "bruto_atr", "neto_atr"]].to_csv(DIR / "EDGEREPLICA_NQ.csv.gz", index=False); print("EdgeReplica", len(t), sk, flush=True)
+
+
+def viejas_oro415(datos):
+    """PREREGISTRO_VIEJAS.md §2: corto al cierre de la vela de las 04:15 CT, salida 15 minutos después (aperturas de las velas siguientes);
+    H1 = sólo si los 15 minutos previos subieron. GC futuros, sesiones hasta 2022-06-30."""
+    D = cargar("GC", datos); a = atr20(D)
+    ct = pd.DatetimeIndex(D.index).tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert("America/Chicago")
+    S = pd.DataFrame(dict(o=D.o.to_numpy(), c=D.c.to_numpy()), index=ct); S = S[~S.index.isna()]; S = S[~S.index.duplicated()]
+    filas = []
+    for dia, g in S.groupby(S.index.date):
+        g = g.set_index(g.index.strftime("%H:%M"))
+        if not {"04:14", "03:59", "04:15", "04:30"} <= set(g.index): continue          # vela que cierra 04:15 = abre 04:14
+        ent, sal = g.at["04:15", "o"], g.at["04:30", "o"]; previo = g.at["04:14", "c"] - g.at["03:59", "c"]
+        filas.append(dict(dia=pd.Timestamp(dia), bruto_ticks=(ent - sal) / 0.1, subida=bool(previo > 0)))
+    t = pd.DataFrame(filas); t["atr20"] = a.reindex(t.dia + pd.Timedelta(0)).to_numpy()
+    t.to_csv(DIR / "ORO415_GC.csv.gz", index=False); print("oro 04:15", len(t), flush=True)
+
+
 # ------------------------------------------------------------------------------------------------- capa 2 (PREREGISTRO_CAPA2.md)
 def _ms(D):
     from edgelab.research import fundedsyncstack as F
@@ -361,3 +393,4 @@ if __name__ == "__main__":
     elif c == "analizar_capa2": analizar_capa2()
     elif c == "analizar_franklin": analizar_franklin()
     elif c == "analizar_indices": analizar_indices()
+    elif c == "viejas": (viejas_edgereplica(sys.argv[2]), viejas_oro415(sys.argv[2]))
