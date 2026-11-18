@@ -1201,3 +1201,12 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   `docs/research/filtro_picos_20261118/RESULTADO.md`.
 - **NO MEDIDO:** holdout A5 (no se abre: la compuerta económica falla); la capa sobre bases con ventaja neta (hoy no hay en M1 de
   índices); picos estrictos, entrada límite en el pico y escala de segundos (fuera del pre-registro).
+
+## 2026-11-18 — ASIA-NQ: validación M1 corregida y «noche movida» con veredicto
+- **MEDIDO:**
+  - ASIA en futuros M1 coincide con ticks reales operación por operación; la validación anterior comparaba agregaciones distintas (K47).
+  - La variable `noche` no era causal para ASIA (K48). Prueba única de la noche anterior en datos no mirados: +0,035 R/sesión,
+    NO_CONFIRMADA (7/20 años).
+  - ASIA pierde en bruto en NQ/ES/YM 2006–2011, EMD y RTY. Acta: `docs/research/asia_noche_20261118/RESULTADO.md`.
+- **NO MEDIDO:** ASIA en NQ 2012–2025 con futuros M1 (mirado en CFD por el largo v1); filtros intradía conocidos a la hora de entrada
+  (p. ej. el rango asiático hasta la entrada), que no tienen pre-registro.

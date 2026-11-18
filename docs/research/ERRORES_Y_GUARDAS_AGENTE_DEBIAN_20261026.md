@@ -168,6 +168,22 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
 - **K46, factor vivo apoyado en evidencia descartada (2026-11-18).** F-ASIA-NQ-NOCHE-MOVIDA siguió como PISTA_VIVA citando un largo
   DESCARTADO hasta que se revisó a mano. **Guarda:** `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada`: una pista o palanca
   no puede citar un documento con `Estado: DESCARTADA`.
+- **K47, comparar agregaciones distintas (2026-11-18).** La validación de papel M1 promediaba sólo las celdas que operan; la ficha suma
+  y divide por el número de celdas. ASIA parecía duplicar a los ticks, se dio por no medible y se culpó al motor M1. El motor coincidía
+  con los ticks operación por operación (1.804 en común, mediana de la diferencia 0). **Guarda:** `papel_m1.validacion` usa
+  `canasta_por_sesion`, la misma función que la ficha (`test_validacion_de_papel_usa_la_agregacion_de_la_ficha`). **Práctica:** antes
+  de culpar a un motor, comparar operación por operación contra la fuente de verdad. Una diferencia en un agregado puede ser la
+  agregación.
+- **K48, variable de régimen que se conoce después de la entrada (2026-11-18).** `papel_regimen` define la `noche` de la sesión d como
+  el rango 18:00→09:00 de esa misma sesión, y ASIA entra entre las 18:00 y las 09:00. La «noche movida» (dosis-respuesta, encendido
+  p 0,007) usaba el futuro: en desarrollo, la misma noche da +0,19 R alto − bajo y la noche anterior, +0,08. **Guarda:**
+  `papel_regimen.CONOCIDA_H` declara a qué hora de la sesión se conoce cada variable; `mapa` y `encendido` exigen las horas de entrada
+  y marcan NO_CAUSAL lo que se conoce después (`test_variable_de_regimen_que_se_conoce_despues_de_la_entrada_no_se_usa`).
+- **Operaciones sin riesgo inicial en una canasta en R (2026-11-18).** Con `neto / riesgo`, una operación con stop en la entrada da
+  NaN y arrastra a toda su sesión. **Práctica:** filtrar por operación (`riesgo > 0`, como `k > 0` en el motor) antes de agregar, y
+  publicar cuántas quedaron afuera.
+- **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
+  nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
 - **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y
   no paga fricción: el contraste neto favorece siempre a la configuración que menos entra, incluso con gatillos al azar (AZAR dio
   +0,2 a +1,5 R «neto»). **Práctica:** decidir con el R absoluto de cada configuración por gatillo (bruto y neto) y con el placebo de

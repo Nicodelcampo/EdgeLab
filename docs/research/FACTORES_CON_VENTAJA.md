@@ -235,15 +235,10 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (11)
+## EN_SEGUIMIENTO (10)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
-- **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
-  - Efecto: Dosis-respuesta noche baja < media < alta en los 4 tramos de 12 años (M1 USATECH) y en ticks reales de NQ (−3,2 / +3,7 / +12,9 pts por sesión); encendido walk-forward por esa variable +646 pts vs −1.544 siempre y −264 al azar (p 0,007, 39 trimestres). Sin filtro la regla pierde en 2012–2025. Se repite en el Dow con la misma forma (alta noche +7,63 en 2025-08→2026-09 vs baja −8,24; encendido walk-forward p 0,007); en el S&P los cortes en puntos de NQ no son equivalentes (no concluyente). | Ticks REALES de YM (ago-2025→sep-2026, mercado no usado para elegir el filtro): noche baja −8,4 / media −4,3 / alta +15,4 pts por sesión.
-  - Dónde: NQ / USATECH M1, 2012 → 2026-09
-  - Siguiente: (2026-11-18) El respaldo de 12 años en M1 queda sin valor: el largo v1 usó el motor sesgado (K40) y ASIA no pasa la validación de la fuente en la v2 (M1 duplica a los ticks, 1,28 EE). Queda sólo lo medido en ticks reales de NQ (tramo de desarrollo): hipótesis a confirmar en forward o en ticks largos (docs/research/papel_m1_20261115/LARGO_V2.md).
-  - Evidencia: `docs/research/papel_m1_20261115/LARGO.md`, `docs/research/papel_m1_20261115/LARGO_otros.json`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1
@@ -295,10 +290,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (35)
+## NO_REPETIR (36)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
+  - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
+  - Dónde: NQ / USATECH M1, 2012 → 2026-09
+  - Siguiente: Cerrada. No repetir filtros de contexto diario en reglas nocturnas sin verificar a qué hora se conoce la variable (K48). ASIA-NQ-CANASTA sin respaldo histórico: sin tamaño; sacarla en la próxima versión (pre-registro nuevo).
+  - Evidencia: `docs/research/asia_noche_20261118/RESULTADO.md`, `docs/research/asia_noche_20261118/RESULTADO.json`, `docs/research/papel_m1_20261115/VALIDACION.md`
 - **Reglas elegidas por el embudo en 14 meses de ticks (ago-25 → sep-26) no tenían ventaja en los años limpios anteriores: «atrás» sobre M1 real de futuros, calibrado contra ticks (corr 0,89–0,998)** (`F-ATRAS-M1-V2V4-REFUTADA`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido por K40): canasta de 5 (CVGAP2-GC#11, COMEX, IF-LUX-NQ de la v4; CVGAP-ES-C, PREAPERTURA-NQ de la v2) −193 R en 1.453 sesiones, 1/8 años positivos → REFUTADA_ATRAS. EN_CONTRA con potencia ≥ 0,97: CVGAP2-GC#11 (−0,13 R/op), COMEX (−0,18), CVGAP-ES-C (−0,04); IF-LUX −0,09 y PREAPERTURA-NQ ≈ 0 (−0,002) NO_CONCLUYENTE. La v1 exageraba la pérdida (−386 R) pero daba el mismo veredicto.
   - Dónde: NQ, ES, GC (2006/2008 → 2025)

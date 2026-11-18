@@ -5,6 +5,7 @@ Pre-registro: docs/research/papel_m1_20261115/PREREGISTRO.md. Etapa ANALIZAR_REG
   python tools/papel_m1.py lanzar VALIDACION|LARGO [FICHA ...]   # VALIDACION = 2025-08 → 2026-09 (comparable con ticks reales de NQ)
   python tools/papel_m1.py traer                                  # baja lo terminado a docs/research/papel_m1_20261115/resultados/
   python tools/papel_m1.py local FICHA SENSOR D0-D1 [D0-D1 ...]  # en la máquina con M1 real de futuros (SENSOR M1NT8:NQ, datos de tools/datos.py)
+  python tools/papel_m1.py largo FICHA [SENSOR]                    # mapa y encendido por régimen (enmienda 1), con la guarda K48
   python tools/papel_m1.py validacion [SENSOR]                    # criterio de la fuente POR CÓDIGO (a5.calibrar_por_sesion) -> VALIDACION*.json
 """
 import json, sys
@@ -91,6 +92,28 @@ def validacion(sensor="M1DK:NQ_M1_dukas"):
     for k, v in out.items(): print(k, "CALIBRA" if v["calibra"] else "NO", {a: round(b, 3) if isinstance(b, float) else b for a, b in v.items()})
 
 
+def largo(fid, sensor="M1DK:NQ_M1_dukas"):
+    """Enmienda 1 del pre-registro (mapa y encendido por régimen) como comando, no como script suelto. Canasta con la función de la
+    ficha (K47), variables de `papel_regimen` con D1/H1 del CFD de Dukascopy (las de la v1) y la guarda de causalidad K48 con las horas
+    reales de entrada. Escribe LARGO_<ficha>.json."""
+    import glob, pandas as pd
+    from edgelab.research import macro_literatura as ML, papel_regimen as PR
+    from edgelab.cartera.papel import canasta_por_sesion
+    f = _ficha(fid); k = len(f["regla"].get("celdas") or [1]); filas, t = [], []
+    for x in sorted(glob.glob(str(OUT / "resultados" / f"{_pref(sensor)}{fid}_*.json"))):
+        O = json.loads(Path(x).read_text(encoding="utf-8")).get("operaciones") or {}
+        filas += list(zip(O.get("ses", []), O.get("neto", []))); t += list(O.get("t", []))
+    s = pd.Series(dict(canasta_por_sesion(filas, k))); s.index = pd.to_datetime(s.index.astype(str), format="%Y%m%d")
+    V = PR.variables(ML.leer(str(ROOT / "data/sqx_barras/NQ_M1_dukas_D1.csv")), ML.leer(str(ROOT / "data/sqx_barras/NQ_M1_dukas_H1.csv")))
+    tramos = {n: s[(s.index >= a) & (s.index <= b)] for n, a, b in (("2012-2019", "2012", "2019-12-31"), ("2020-2023", "2020", "2023-12-31"),
+              ("2024-2025.07", "2024", "2025-07-31"), ("2025.08-2026.09", "2025-08", "2026-09-30"))}
+    out = dict(ficha=fid, sensor=sensor, causales=PR.causales(t),
+               tramos={n: dict(n=int(len(x)), media=round(float(x.mean()), 2) if len(x) else None,
+                               ee=round(float(x.std(ddof=1) / len(x) ** .5), 2) if len(x) > 1 else None) for n, x in tramos.items()},
+               mapa=PR.mapa(s, V, t_entradas=t), encendido=PR.encendido(s, V, t_entradas=t))
+    (OUT / f"LARGO_{fid}.json").write_text(json.dumps(out, indent=1, default=float), encoding="utf-8"); print(json.dumps(out, default=float))
+
+
 if __name__ == "__main__":
     a = sys.argv[1:]
-    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": lambda: validacion(*a[1:2]), "local": lambda: local(a[1], a[2], a[3:])}[a[0]]()
+    {"lanzar": lambda: lanzar(a[1], a[2:]), "traer": traer, "validacion": lambda: validacion(*a[1:2]), "local": lambda: local(a[1], a[2], a[3:]), "largo": lambda: largo(*a[1:3])}[a[0]]()

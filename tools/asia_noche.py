@@ -40,8 +40,8 @@ def variables(inst: str) -> pd.DataFrame:
 def _canasta_R(ops: dict, k: int) -> pd.Series:
     """R neto por sesión con la agregación de la ficha (`canasta_por_sesion`: suma / número de celdas), R = neto / riesgo inicial."""
     from edgelab.cartera.papel import canasta_por_sesion
-    r = np.asarray(ops["neto"], float) / np.asarray(ops["riesgo"], float)
-    s = pd.Series(dict(canasta_por_sesion(zip(ops["ses"], r), k)))
+    r = np.asarray(ops["neto"], float) / np.asarray(ops["riesgo"], float); ok = np.isfinite(r)    # riesgo inicial indefinido: fuera la OPERACIÓN (k > 0)
+    s = pd.Series(dict(canasta_por_sesion(zip(np.asarray(ops["ses"])[ok], r[ok]), k)))
     s.index = pd.to_datetime(s.index.astype(str), format="%Y%m%d"); return s
 
 

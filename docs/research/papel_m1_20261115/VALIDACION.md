@@ -1,32 +1,38 @@
-# Papel M1 — validación de la fuente, v2 con el motor corregido (K40) (2026-11-18)
+# Papel M1: validación de la fuente, v3 (2026-11-18)
 
-Estado: RESULTADO. Reemplaza a la v1 del 2026-11-15 (`descartada_v1/VALIDACION.md`), medida con el motor que cobraba el stop en el
-extremo de la vela M1.
-- **Criterio** (PREREGISTRO punto 1, sin cambios): diferencia de medias < 1 error estándar, mismo signo y correlación del P&L por sesión
-  > 0,5.
-- **Fuente:** M1DK:NQ_M1_dukas (CFD USATECH, 4 ticks por barra) contra ticks reales de NQ (`ops_desarrollo` de cada ficha), ago-2025 →
-  sep-2026.
-- **Unidad:** puntos por sesión; media de las celdas que operan esa sesión, igual que la v1.
+Estado: RESULTADO. Reemplaza a la v2 de la misma fecha, que comparaba agregaciones distintas (K47); la v1 está en
+`descartada_v1/VALIDACION.md`.
+- **Veredicto por código:** `python tools/papel_m1.py validacion [SENSOR]` → `VALIDACION.json` (CFD) y `VALIDACION_FUTM1NT8_NQ.json`
+  (futuros M1 de NT8).
+- **Criterio único:** `a5.calibrar_por_sesion` (≥ 30 sesiones comunes, mismo signo, diferencia ≤ 1 EE combinado, corr > 0,5).
+- **Agregación:** la de la ficha, `cartera.papel.canasta_por_sesion` (suma de las celdas / número de celdas).
+- **Tramo:** ago-2025 → sep-2026, contra la serie en ticks reales de NQ de cada ficha (`ops_desarrollo`).
 
-| Regla | M1 (pts/sesión, ee, n) | Ticks NQ (pts/sesión, ee, n) | Sesiones comunes (M1 / ticks) | Corr | Veredicto |
-|---|---|---|---|---|---|
-| ASIA-NQ | +11,52 (4,15; 235) | +5,39 (1,79; 247) | 214 (+12,28 / +5,86) | 0,74 | **NO PASA**: diferencia 1,5 ee; M1 duplica |
-| OTR930-NQ | +10,90 (5,61; 243) | +7,07 (2,14; 225) | 214 (+15,12 / +7,28) | 0,63 | PASA (0,7 ee) |
-| RANGO0100-NQ | +5,20 (7,99; 27) | +13,61 (6,42; 58) | 18 (+6,82 / +10,11) | 0,95 | NO PASA: M1 genera la mitad de las operaciones |
-| TORI-NQ | −0,88 (4,35; 88) | +10,71 (3,82; 70) | 34 (+8,69 / +9,41) | 0,65 | NO PASA: sólo 34 sesiones en común |
+| Regla | Fuente | M1 (pts/sesión) | Ticks NQ | Sesiones comunes | Corr | Veredicto |
+|---|---|---|---|---|---|---|
+| ASIA-NQ | CFD USATECH (M1DK) | +3,16 | +4,96 | 214 | 0,86 | **CALIBRA** |
+| ASIA-NQ | futuros NQ (M1NT8) | +5,32 | +5,20 | 245 | 0,985 | **CALIBRA** |
+| OTR930-NQ | CFD USATECH (M1DK) | +3,70 | +6,27 | 214 | 0,88 | **CALIBRA** |
+| TORI-NQ | CFD USATECH (M1DK) | −0,62 | +6,04 | 34 | 0,65 | NO (cobertura) |
+| RANGO0100-NQ | CFD USATECH (M1DK) | +2,09 | +11,79 | 18 | 0,95 | NO (cobertura) |
 
-## Qué cambia respecto de la v1
-- **ASIA-NQ pasa a NO PASA.** El veredicto ahora lo da el código (`python tools/papel_m1.py validacion` → `VALIDACION.json`, criterio
-  único `a5.calibrar_por_sesion`: unión de sesiones con 0 donde una fuente no opera y EE combinado), no la tabla escrita a mano. Con ese
-  criterio, ASIA da 1,28 EE en la v2 (NO) y daba 0,98 en la v1 (SÍ, por poco). La tabla de arriba usa el EE de M1 sobre las sesiones de
-  cada fuente: 1,5 en la v2 y 1,14 en la v1, que la v1 dio por buena con «≈ 1 ee». Las dos lecturas coinciden en la v2.
-- **Causa raíz:** el pre-registro decía «< 1 error estándar» sin decir cuál, y la tabla se armó a mano. Desde ahora el criterio es una
-  sola función y el veredicto sale de su salida (K43). El largo v1 de ASIA (descartado por K40) no se relanza.
-- **TORI no tenía signo opuesto por K40.** En las 34 sesiones comunes, M1 y ticks coinciden (+8,69 contra +9,41, corr 0,65). La
-  diferencia del total es de cobertura: M1 genera operaciones en otras sesiones (88 contra 70 y sólo 34 en común), por los cortes de
-  ángulo y el volumen proxy del CFD. Sigue sin medirse en M1.
-- **M1 tiende a ser optimista.** En las sesiones comunes, M1 ≥ ticks en ASIA y OTR930. Es el sesgo conocido de los saltos dentro de la
-  vela (`ejecucion.calibrar`, `m1_optimistas_con_saltos`). El largo de OTR930 se lee como cota optimista.
+## Qué pasó (K47): el motor M1 no estaba mal; la comparación sí
+- **El síntoma:** la v1 y la primera v2 dijeron que en ASIA «M1 duplica a los ticks».
+- **Lo que se buscó:** para encontrar la causa en el motor se corrió ASIA en ticks reales de NQ (Kaggle) y en futuros M1 de NT8
+  (local), y se compararon operación por operación. Coinciden:
+  - 1.804 operaciones en común, con la mediana de la diferencia en 0;
+  - +14,16 contra +14,27 puntos netos por operación.
+- **La causa:** la serie de la ficha agrega con `canasta_por_sesion` (suma / 20 celdas, y las que no operan cuentan 0). La validación
+  promediaba sólo las celdas que operan. Con la misma agregación, la serie en ticks reproduce la de la ficha exactamente (corr 1,000)
+  y M1 calibra.
+- **Guardas:**
+  - `papel_m1.validacion` usa `canasta_por_sesion`;
+  - `test_validacion_de_papel_usa_la_agregacion_de_la_ficha` lo exige;
+  - el criterio es único (K43).
 
-## Siguiente
-Largo (enmienda 1: mapa y encendido por régimen; el largo no da de baja) **sólo para OTR930-NQ**.
+## Consecuencias
+- **ASIA-NQ es medible en M1**, en el CFD y sobre todo en futuros NT8 (corr 0,985). Su largo se puede medir. Ver
+  `docs/research/asia_noche_20261118/` para la «noche movida», que además tenía una fuga propia (K48).
+- **OTR930-NQ** sigue validada; su largo no cambia (`LARGO_V2.md`).
+- **TORI-NQ y RANGO0100-NQ** siguen sin medirse en M1. El motivo es cobertura: M1 genera operaciones en otras sesiones. No es la
+  agregación.

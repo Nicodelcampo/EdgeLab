@@ -66,6 +66,10 @@ North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e
 - **Bruto y neto siempre juntos**, con la fricción en R por época. El «antes no, ahora sí» suele ser fricción relativa.
 - **Neto con el mini y con el micro**, los dos, por instrumento (`a5.evaluar` acepta la fricción por fila `f_<ejec>`). El micro tiene
   más fricción por punto; una prop firm suele operar micros.
+- **Un agregado que no cuadra con otra fuente:** antes de culpar al motor, comparar operación por operación y usar la MISMA función de
+  agregación que la serie de referencia (K47).
+- **Variables de régimen o contexto:** se declara a qué hora se conocen y se comparan con la hora de cada entrada (K48). «Del día» no
+  alcanza: para una regla nocturna, el día empieza a las 18:00 del anterior.
 - **Capas de entrada** (esperar, filtrar o confirmar un gatillo): el valor de no entrar es 0 y no paga fricción, así que el contraste
   neto contra la entrada inmediata favorece siempre al que menos entra. Se decide con el R absoluto por gatillo y contra un placebo
   de la misma espera.
@@ -122,6 +126,9 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Lanzamientos que no salieron (cola de Kaggle, 429) | ORB YM y filtro ES/YM quedaron sin lanzar | código | `tablas.reintentar_cola` (dentro de `traer`) |
 | Columnas de identidad perdidas en OPS (K45) | el análisis pareado del filtro de picos no podía emparejar gatillos | código | `a5_campana.columnas_ops` |
 | Factor vivo apoyado en evidencia descartada (K46) | ASIA «noche movida» siguió viva citando un largo DESCARTADO | código | `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada` |
+| Agregaciones distintas en una validación (K47) | ASIA «duplicaba» a los ticks; se culpó al motor M1, que coincidía operación por operación | código | `papel_m1.validacion` con `canasta_por_sesion` y su test |
+| Variable de régimen conocida después de la entrada (K48) | la «noche movida» de ASIA usaba el rango de la misma noche en que opera | código | `papel_regimen.CONOCIDA_H`, `mapa`/`encendido` con `t_entradas` |
+| Ranking móvil con huecos | `rolling(250)` dejaba sin estado medio año tras un feriado | código | ranking sobre sesiones con dato |
 | Contraste neto con 0 al no entrar | el «neto» favorecía no entrar hasta con gatillos al azar | guía | decidir por R absoluto por gatillo y contra el placebo (§3) |
 | `git add -A` en un commit de campaña | entraron resultados de otras campañas | guía | rutas explícitas y `git show --stat` |
 | Presupuesto de contexto de los agentes | el cierre fallaba cuando FACTORES crecía y se compactaban entradas para entrar | humano + código | Nico lo elevó el 18-nov (juez y auditor 260.000, arquitecto 400.000, `config/autopilot/AGENTES.json`); `test_agentes` exige ≥ 25 % libre. No se achica contenido para entrar: se sube el tope |

@@ -32,6 +32,8 @@ sigue siendo decisión de Nico.
 | COMEX-CIERRE-GC-R#0 | v4 | atrás v2 EN_CONTRA (0,97; −0,18 R/op); holdout −0,63 R | **REFUTADA** | sale |
 | PREAPERTURA-NQ | v2, v3 | atrás v2 ≈ 0 (−0,002 R/op, IC90 [−0,16, +0,17], potencia 0,57; el «IC90 entero < 0» de la v1 era K40); régimen análogo +0,35 contra −0,34 (no significativo) | **SIN VENTAJA DEMOSTRADA, con sospecha de régimen** | papel sin tamaño; la prueba de régimen se repite con datos nuevos (forward en meses análogos) |
 | IF-LUX-NQ-R2#1 | v4 | atrás v2 NO_CONCLUYENTE (−0,09 R/op); régimen +0,19 contra −0,38 | **DÉBIL** | papel sin tamaño |
+| ASIA-NQ-CANASTA | papel | M1 de futuros = ticks (corr 0,985, K47); bruto −0,02 a −0,11 R/op en NQ/ES/YM 2006–2011, EMD y RTY; «noche movida» era fuga (K48), la causal +0,035 R NO_CONFIRMADA (`asia_noche_20261118`) | **SIN VENTAJA HISTÓRICA** | sin tamaño; sacarla en la próxima versión |
+| OTR930-NQ-CANASTA | papel | validada en M1; negativa 2012 → 2025-07, sin régimen (p 0,40–0,96; `papel_m1_20261115/LARGO_V2.md`) | **SIN RESPALDO HISTÓRICO** | papel sin tamaño; la decide el forward |
 | U1-RACIMOS-GRILLA-NQ, U1-ZONAS-BT2-ES/NQ, U1-ORO-GRILLA, CONF-CVR-CFD-NQ-R, CVGAP-CFD-ES-C (v2); DRC-NQ-R, U1-ZONAS-AVCL-ES-C/NQ (v3); ORO-ALM-CFD#4/#18, CVGAP2-NQ#18/#3, CVGAP2-GC#5, U1-ZONAS-GRILLA-YM, IF-LUX-CFD-NQ (v4) | — | no medibles en M1 (footprint, ticks o señal CFD); mismo proceso de selección; holdout de la v4 −4,6 R | **SIN EVIDENCIA PROPIA, expectativa ≈ 0** | papel con e-proceso; ningún tamaño real; se confirman sólo con la partición A5 cuando haya ticks largos, o con el forward |
 
 - **Para las canastas:**

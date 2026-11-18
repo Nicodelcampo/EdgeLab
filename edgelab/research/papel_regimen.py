@@ -30,9 +30,30 @@ def variables(D1: pd.DataFrame, H1: pd.DataFrame) -> pd.DataFrame:
     return V
 
 
-def mapa(ses_pnl: pd.Series, V: pd.DataFrame) -> dict:
-    X = V.reindex(ses_pnl.index).assign(p=ses_pnl.values); out = {}
+# K48 (2026-11-18): hora en que se conoce cada variable, en horas desde el inicio de la sesión CME (18:00 NY del día anterior).
+# `noche` (18:00→09:00 de la misma sesión) se conoce recién a las 09:00 = 15 h: para ASIA, que entra entre las 18:00 y las 09:00, miraba
+# el futuro y fabricó la «noche movida». vol20, tend60 y noche_previa salen del día anterior (0 h); dst se conoce siempre.
+CONOCIDA_H = {"vol20": 0.0, "tend60": 0.0, "noche": 15.0, "noche_previa": 0.0, "dst": 0.0}
+
+
+def horas_de_sesion(t_unix) -> np.ndarray:
+    """Horas desde el inicio de la sesión CME (18:00 NY) de cada entrada (segundos unix)."""
+    ny = pd.to_datetime(np.asarray(t_unix, float), unit="s", utc=True).tz_convert("America/New_York")
+    return ((ny.hour + ny.minute / 60 - 18) % 24).to_numpy(float)
+
+
+def causales(t_entradas, variables=("vol20", "tend60", "noche", "dst")) -> dict:
+    """{variable: True si se conoce antes de TODAS las entradas}. Una variable no causal no se usa para mapa ni encendido."""
+    h = horas_de_sesion(t_entradas)
+    return {v: bool(len(h) and (h >= CONOCIDA_H[v]).all()) for v in variables}
+
+
+def mapa(ses_pnl: pd.Series, V: pd.DataFrame, *, t_entradas) -> dict:
+    """K48: `t_entradas` (segundos unix de las entradas) es obligatorio; las variables que se conocen después de alguna entrada
+    salen como NO_CAUSAL en vez de medirse."""
+    X = V.reindex(ses_pnl.index).assign(p=ses_pnl.values); out = {}; ok = causales(t_entradas)
     for v in ("vol20", "tend60", "noche", "dst"):
+        if not ok[v]: out[v] = "NO_CAUSAL"; continue
         g = X.groupby(v, observed=True).p
         out[v] = {str(k): dict(n=int(x.count()), media=round(float(x.mean()), 2), ee=round(float(x.std(ddof=1) / np.sqrt(max(x.count(), 1))), 2)) for k, x in g}
     q = X.p.groupby(X.index.to_period("Q")).agg(["count", "mean"]).round(2)
@@ -40,10 +61,11 @@ def mapa(ses_pnl: pd.Series, V: pd.DataFrame) -> dict:
     return out
 
 
-def encendido(ses_pnl: pd.Series, V: pd.DataFrame, n_azar: int = 2000, semilla: int = 0) -> dict:
+def encendido(ses_pnl: pd.Series, V: pd.DataFrame, n_azar: int = 2000, semilla: int = 0, *, t_entradas) -> dict:
     rng = np.random.default_rng(semilla); X = V.reindex(ses_pnl.index).assign(p=ses_pnl.values)
-    Q = X.index.to_period("Q"); trims = sorted(Q.unique()); out = {}
+    Q = X.index.to_period("Q"); trims = sorted(Q.unique()); out = {}; ok = causales(t_entradas)
     for v in ("vol20", "tend60", "noche", "dst"):
+        if not ok[v]: out[v] = "NO_CAUSAL"; continue
         tot_on, tot_all, azar = [], [], []
         estados = [s for s in X[v].dropna().unique()]
         for qi in trims[4:]:

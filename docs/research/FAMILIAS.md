@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-278 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+279 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -20,6 +20,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `ASIA_BOS_GAPS_ES` | 2026-10-29 | OTR_930_SWEEP_ES, ZONAS_GAPS | 2239508 | 2 | ASIA-ES-R: PISTAS_VIVAS; ASIA-ES: PISTAS_VIVAS | — | `asia_bos_20261029`, `relanzamiento_R_20261102` |
 | `ASIA_BOS_GAPS_GC` | 2026-10-29 | ORO_ALMUERZO_RUPTURA_GC, U1_ORO_GRILLA | 2239508 | 2 | ASIA-GC-R: PISTAS_VIVAS; ASIA-GC: PISTAS_VIVAS | — | `asia_bos_20261029`, `relanzamiento_R_20261102` |
 | `ASIA_BOS_GAPS_NQ` | 2026-10-29 | OTR_930_SWEEP_NQ, ZONAS_GAPS | 2239510 | 2 | ASIA-NQ-R: PISTAS_VIVAS; ASIA-NQ: PISTAS_VIVAS | — | `asia_bos_20261029`, `relanzamiento_R_20261102` |
+| `ASIA_NOCHE_PREVIA` |  | ASIA_BOS_GAPS_NQ | 1 | — | — | — | — |
 | `ATLAS_BARRERAS_HFT_R` | 2026-11-05 | HFT_GC_P10, ATLAS_CONTEXTO_VETOS_R | — | — | — | — | `hft_gc_p10_20261105` |
 | `ATLAS_CONTEXTO_VETOS_R` | 2026-11-04 | ATLAS_IDEAS_R, PROGRAMA_R_SALIDAS | 231 | — | — | F-ATLAS-CONTEXTO-ES-FRICCION (NO_REPETIR); F-HUIDA-CONTINUACION (PISTA_VIVA); F-STOP-GRANDE-FRENTE-A-FRICCION (PALANCA_DE_DISENO) | `programa_r_20261103` |
 | `ATLAS_IDEAS_R` |  | — | 200 | — | — | — | — |

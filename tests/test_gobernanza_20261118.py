@@ -110,3 +110,33 @@ def test_ningun_factor_vivo_se_apoya_en_evidencia_descartada():
             if f.suffix == ".md" and f.exists() and re.search(r"^Estado:\s*DESCARTAD", f.read_text(encoding="utf-8")[:2000], re.M):
                 malos.append((e["id"], ev))
     assert not malos, f"factor vivo con evidencia DESCARTADA (bajarlo o citar la versión vigente): {malos}"
+
+
+def test_validacion_de_papel_usa_la_agregacion_de_la_ficha():
+    """K47: la validación de papel M1 promediaba sólo las celdas que operan y la ficha suma y divide por el número de celdas; ASIA
+    «duplicaba» a los ticks sin que el motor tuviera nada que ver. La serie de la ficha sale EXACTA de `canasta_por_sesion` sobre las
+    operaciones en ticks, y `papel_m1.validacion` usa esa función."""
+    from edgelab.cartera.papel import canasta_por_sesion
+    F = {x["id"]: x for x in json.loads((ROOT / "config/cartera/altas.json").read_text(encoding="utf-8"))["fichas"]}["ASIA-NQ-CANASTA"]
+    od = F["ops_desarrollo"]; od = json.loads(od) if isinstance(od, str) else od
+    ficha = {}
+    for s, v in od:
+        if 20250801 <= int(s) <= 20260929: ficha[int(s)] = ficha.get(int(s), 0.0) + float(v)
+    O = json.loads((ROOT / "docs/research/papel_m1_20261115/resultados/FUTNQ__ASIA-NQ-CANASTA_20250801_20260929.json").read_text())["operaciones"]
+    mio = dict(canasta_por_sesion(zip(O["ses"], O["neto"]), len(F["regla"]["celdas"])))
+    comunes = set(ficha) & set(mio)
+    assert len(comunes) > 200 and max(abs(ficha[s] - mio[s]) for s in comunes) < 1e-3
+    assert "canasta_por_sesion" in (ROOT / "tools/papel_m1.py").read_text(encoding="utf-8")
+
+
+def test_variable_de_regimen_que_se_conoce_despues_de_la_entrada_no_se_usa():
+    """K48: `noche` (18:00→09:00 de la misma sesión) se conoce a las 09:00; ASIA entra de noche y la variable miraba el futuro."""
+    from edgelab.research import papel_regimen as PR
+    asia = json.loads((ROOT / "docs/research/papel_m1_20261115/resultados/FUTNQ__ASIA-NQ-CANASTA_20250801_20260929.json").read_text())["operaciones"]["t"]
+    otr = json.loads((ROOT / "docs/research/papel_m1_20261115/resultados/OTR930-NQ-CANASTA_20250801_20260929.json").read_text())["operaciones"]["t"]
+    assert PR.causales(asia)["noche"] is False and PR.causales(asia)["vol20"] is True
+    assert PR.causales(otr)["noche"] is True
+    import pandas as pd
+    s = pd.Series([1.0, -1.0], index=pd.to_datetime(["2025-08-04", "2025-08-05"]))
+    V = pd.DataFrame(dict(vol20=[0, 1], tend60=[1.0, -1.0], noche=[0, 2], dst=[1, 1]), index=s.index)
+    assert PR.mapa(s, V, t_entradas=asia[:2])["noche"] == "NO_CAUSAL"
