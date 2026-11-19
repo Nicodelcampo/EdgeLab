@@ -380,7 +380,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (44)
+## NO_REPETIR (45)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -404,6 +404,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: ES, NQ, YM, RTY, GC
   - Siguiente: No repetir este filtro ni ajustar el umbral después de mirar.
   - Evidencia: `docs/research/carril2_20261119/RESULTADO_CRASH.md`
+- **Pureza del día de tendencia (1 − retroceso máximo / rango, percentil causal de 250 días) → continuación apertura-cierre del día siguiente** (`F-SELECTIVIDAD-INVERSA`, 2026-11-19, humano)
+  - Efecto: DESC NQ+ES+YM+RTY: dosis-respuesta INVERSA: pendiente −0,037 R por banda (p 0,997); banda 95–100 −0,196 R (bruto −0,089). Por época 2018+: B1 +0,045 → B5 −0,024. La continuación apertura-cierre del día siguiente no existe; los días más limpios tienden a revertir.
+  - Dónde: NQ, ES, YM, RTY
+  - Siguiente: No repetir la continuación; el fade de días limpios sería una hipótesis nueva sobre datos no mirados.
+  - Evidencia: `docs/research/selectividad_20261119/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

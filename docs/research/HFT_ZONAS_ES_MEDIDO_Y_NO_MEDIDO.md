@@ -1356,3 +1356,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** DESC 2011–2017: invertida +0,240 R, normal −0,043, contraste −0,284 (p 0,99): refutado con el signo contrario. Acta:
   `docs/research/carril2_20261119/RESULTADO_CRASH.md`.
 - **NO MEDIDO:** REP (sin nominada); otros umbrales (no se ajustan después de mirar).
+
+## 2026-11-19 — SELECTIVIDAD (regla propia de una perilla)
+- **MEDIDO:** pureza del día → continuación al día siguiente: dosis-respuesta inversa (−0,037 R por banda, p 0,997; banda superior −0,196).
+  Acta: `docs/research/selectividad_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP (sin nominadas); el fade de días limpios (no pre-registrado).
