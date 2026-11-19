@@ -600,7 +600,7 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Siguiente: No proponerlos como filtros de mercado ni citar la sección «Qué funcionó» del ciclo 2026-11-04 de APRENDIZAJES_ESPIRAL sin su corrección. Lo aprovechable está en F-STOP-GRANDE-FRENTE-A-FRICCION.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## SIN_FACTOR (1)
+## SIN_FACTOR (2)
 
 _Campaña cerrada sin nada aprovechable (queda asentado que se miró)._
 
@@ -609,3 +609,8 @@ _Campaña cerrada sin nada aprovechable (queda asentado que se miró)._
   - Dónde: NQ, ES, YM
   - Siguiente: Ninguno; la fricción relativa sólo baja con stops/objetivos más grandes en puntos o menos operaciones.
   - Evidencia: `docs/research/spread_hora_20261119/RESULTADO.md`
+- **Entrada al cierre RTH (15:56) en lugar de las 18:00 para IBS, Double Seven, Turnaround Tuesday y cambio de mes** (`F-CARRIL2-CIERRE-SIN-DIFERENCIA`, 2026-11-19, humano)
+  - Efecto: DESC: contrastes 15:56 − 18:00 +0,022 / −0,015 / −0,056 / −0,018 R (ninguno significativo; 0/8 en BH). El desvío del lote 1 no mató el efecto.
+  - Dónde: ES, NQ, YM, RTY (+GC en D7)
+  - Siguiente: No repetir; la hora de entrada no es la palanca.
+  - Evidencia: `docs/research/carril2_20261119/RESULTADO_CIERRE.md`

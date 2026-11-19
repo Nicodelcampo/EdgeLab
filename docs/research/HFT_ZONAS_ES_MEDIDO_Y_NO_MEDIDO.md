@@ -1347,3 +1347,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** DESC NQ+ES: contraste +0,021 (p 0,09), confirmadas −0,004; señales casi redundantes (Franklin = FM1 en dirección el 100 % de los
   días). Acta: `docs/research/confluencia_20261119/RESULTADO.md`.
 - **NO MEDIDO:** REP (sin nominadas); Dual Thrust (sin operaciones guardadas).
+
+## 2026-11-19 — CARRIL2-CIERRE (entrada 15:56 vs 18:00)
+- **MEDIDO:** 0/8 en BH; contrastes −0,056 a +0,022 R: la hora de entrada no explica la debilidad del lote 1. Acta:
+  `docs/research/carril2_20261119/RESULTADO_CIERRE.md`.
