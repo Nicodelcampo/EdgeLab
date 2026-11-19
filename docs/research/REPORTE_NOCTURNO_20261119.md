@@ -77,6 +77,9 @@ Tablero de frentes: `FRENTES_ABIERTOS_20261119.md`. Lo más valioso y qué indag
 - **Re-indagación por época** (`RE_INDAGACION_PISTAS_20261119.md`): la reversión corta clásica se apagó desde 2018; la compresión de
   volatilidad crece pero necesita días (no Lucid) y décadas de forward para confirmarse; Z es un pico de fábrica sin datos limpios con potencia.
 
+- **Transferencia a datos nunca medidos (TRANSFER-RTY-EMD, 2 pruebas):** Z en Russell da +0,146 R desde 2018 (p 0,085; negativa antes,
+  como en NQ) y la compresión de VIX +0,035 R (p 0,21): mismo signo, sin significancia. REP de RTY sigue sellado para confirmarlas.
+
 Aporte al referente: se cerraron con evidencia y potencia publicada los frentes del catálogo nuevo, se descartó para Lucid todo lo que no es
 operable allí, se corrigieron dos errores que podían dar falsos positivos, y la canasta T + R quedó como la única candidata con vigilancia
 forward pre-registrada.
