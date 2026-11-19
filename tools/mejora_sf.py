@@ -8,6 +8,7 @@ de `cboe_volatility_daily.parquet`.
   python tools/mejora_sf.py tabla     # operaciones con lado y estados causales (sin desenlaces nuevos) → TABLA.csv.gz
   python tools/mejora_sf.py desc      # 9 contrastes en DESC, BH q 0,10 → DESC.json (commitear antes de rep)
   python tools/mejora_sf.py rep       # nominadas con potencia en días ≥ 0,8, una vez con LORD++ → REP.json
+  python tools/mejora_sf.py conf      # Franklin M3/M6 en YM+EMD+RTY (PREREGISTRO_CONF.md): potencia primero, después la prueba → CONF.json
 """
 import json, sys
 from dataclasses import replace
@@ -120,5 +121,51 @@ def rep():
     for x, v in out.items(): print(x, v.get("estado", ""), "potencia", round(v["plan"].get("potencia") or 0, 3), v.get("rep", {}).get("dif"), v.get("confirmada"))
 
 
+def _plan(T, est, m, n_dias, fam):
+    from edgelab.research import holdout_ventanas as HV
+    from edgelab.funnel.libro_lord import LibroLord
+    r, g, a = _contraste(T, est, m, "DESC")
+    dd = pd.DataFrame(dict(f=g.fecha.to_numpy(), R=g.R.to_numpy(), a=a))
+    ins, fue = dd[dd.a].groupby("f").R.mean(), dd[~dd.a].groupby("f").R.mean(); q = len(ins) / (len(ins) + len(fue))
+    sd = float(np.sqrt(ins.var(ddof=1) / q + fue.var(ddof=1) / (1 - q)))
+    return HV.plan_potencia("fijo", 0.5 * r["dif"], sd, n=n_dias, alfa=LibroLord().nivel(fam), fuente_efecto="mitad del contraste de DESC (K49)")
+
+
+def conf():
+    from registro_global import exigir_contada
+    from datos import ruta
+    from m1_largo import cargar
+    from edgelab.holdout import a5_bloque
+    from edgelab.funnel.libro_lord import LibroLord
+    exigir_contada("docs/research/mejora_sf_20261119/PREREGISTRO_CONF.md")
+    V = pd.read_parquet(Path(ruta("M1NT8")) / "cboe_volatility_daily.parquet"); V.index = pd.to_datetime(V.index).normalize()
+    partes = []
+    for inst in ("YM", "EMD", "RTY"):
+        D = cargar(inst, ruta("M1NT8")); E = _estados(inst, D)
+        g = pd.read_csv(M1L / f"FRANKLIN_OPS_{inst}.csv.gz"); g = g[g.riesgo > 0].copy(); d = pd.to_datetime(g.fecha.astype(str))
+        g["atr_pct"] = E.atr_pct.reindex(d).to_numpy(); g["vix_ivp"] = V.vix_ivp_252_prev_close.reindex(d).to_numpy()
+        g["inst"], g["estrategia"] = inst, "FRANKLIN"; partes.append(g[["fecha", "inst", "estrategia", "lado", "R", "fricR", "atr_pct", "vix_ivp"]])
+    C = pd.concat(partes, ignore_index=True); C["bloque"] = [a5_bloque(int(x)) for x in C.fecha]
+    C = C[(C.fecha <= FIN) & C.bloque.isin(["DESC", "REP"])].copy(); C["bloque_orig"] = C.bloque; C["bloque"] = "CONF"
+    T = pd.read_csv(DIR / "TABLA.csv.gz")
+    n_dias = int(C.fecha.nunique())                                            # sólo cuenta sesiones: no lee desenlaces
+    planes = {m: _plan(T, "FRANKLIN", m, n_dias, "FRANKLIN") for m in ("M3", "M6")}
+    out = dict(preregistro="docs/research/mejora_sf_20261119/PREREGISTRO_CONF.md", n_dias=n_dias, planes=planes)
+    con = [m for m in planes if (planes[m].get("potencia") or 0) >= 0.8]
+    for m in planes:
+        if m not in con: out[f"FRANKLIN|{m}"] = dict(estado="SIN_POTENCIA_PREVIA")
+    if con:
+        res = {m: _contraste(C, "FRANKLIN", m, "CONF")[0] for m in con}
+        sin_emd = {m: _contraste(C[C.inst != "EMD"], "FRANKLIN", m, "CONF")[0] for m in con}
+        dec = LibroLord().probar("FRANKLIN", "CONF_MEJORA_SF_YM_EMD_RTY", [(f"FRANKLIN|{m}", res[m]["p"]) for m in con])
+        for m in con:
+            rech = bool(dec.get("rechazos", {}).get(f"FRANKLIN|{m}")) if isinstance(dec.get("rechazos"), dict) else None
+            out[f"FRANKLIN|{m}"] = dict(conf=res[m], sin_emd=sin_emd[m], rechazo=rech)
+        out["lord"] = dec
+    (DIR / "CONF.json").write_text(json.dumps(out, indent=1, default=float))
+    print(json.dumps({k: (v if k != "planes" else {m: v[m].get("potencia") for m in v}) for k, v in out.items() if k != "lord"}, default=float)[:1500])
+    print("LORD", json.dumps(out.get("lord"), default=float)[:600])
+
+
 if __name__ == "__main__":
-    {"tabla": tabla, "desc": desc, "rep": rep}[sys.argv[1]]()
+    {"tabla": tabla, "desc": desc, "rep": rep, "conf": conf}[sys.argv[1]]()
