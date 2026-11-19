@@ -29,3 +29,8 @@ Estado: RESULTADO — pre-registro `PREREGISTRO.md` (4 pruebas en `SOM`, 5 en `F
 - **No están confirmadas.** Los meses limpios que quedan no tienen potencia para un contraste de este tamaño con este ruido. Vías válidas,
   a pre-registrar aparte: (a) el mismo contraste VIX/ATR de Franklin en YM, EMD, RTY y GC (sus operaciones existen y el contraste nunca se
   miró ahí: más días y otra muestra); (b) el forward desde la frontera A4 con vigilancia secuencial.
+
+## 4. Confirmación en YM + EMD + RTY (`PREREGISTRO_CONF.md`, 2 pruebas en FRANKLIN)
+- Potencia calculada antes de leer, con la mitad del efecto de DESC y 2.165 sesiones: M3 0,18 y M6 0,23 (< 0,8) → **no se leyó**
+  (`SIN_POTENCIA_PREVIA`, `CONF.json`). Ni REP ni otros índices tienen datos suficientes para confirmar un contraste de este tamaño con este
+  ruido. La pista queda viva sólo para forward con vigilancia secuencial; no se usa para dar tamaño.
