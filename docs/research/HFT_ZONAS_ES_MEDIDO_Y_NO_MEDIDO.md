@@ -1287,3 +1287,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   pico); A20 SOBREAJUSTE_PROBABLE en la ventana completa y meseta positiva sólo desde 2017-11 (descriptivo); prefijo idéntico en las tres;
   esquemas de tamaño S0–S4 de Franklin y SOM sin confirmación en EMD+RTY. Acta: `docs/research/neto_pistas_20261119/RESULTADO.md`.
 - **NO MEDIDO:** k < 0,25 en R, R/Z/A20 desde la fecha de la versión del vendedor, A20 con ventana desde el quiebre pre-registrada.
+
+## 2026-11-19 — SOM y Franklin con los procedimientos de T (REGIMEN-SOM-FRANKLIN)
+- **MEDIDO:** grillas de 81 (SOM) y 32 (Franklin): bruto en meseta (SENAL_ROBUSTA las dos), régimen neto no (SOM PBO 0,84 desde 2017-11;
+  Franklin sin quiebre y 7/32 netas positivas); prefijo idéntico. Acta: `docs/research/regimen_som_franklin_20261119/RESULTADO.md`.
+- **NO MEDIDO:** curva bruto–stop en puntos de SOM y Franklin, EMD/RTY en la grilla.
