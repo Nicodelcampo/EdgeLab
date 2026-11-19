@@ -1332,3 +1332,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** T y R en NQ con las listas de fechas del vendedor desactivadas: T SESGO_VENDEDOR chico (+0,186 → +0,181 R/op 2021–26), R inocua.
   Acta: `docs/research/auditoria_exclusiones_fs_20261119/RESULTADO.md`.
 - **NO MEDIDO:** el mismo control en los demás módulos de FundedSync (Z usa `ZETA_NON_FULL_NYSE`, una lista de días no completos de NYSE).
+
+## 2026-11-19 — Transferencia de Z y VZ a RTY/EMD (sólo DESC)
+- **MEDIDO:** Z +0,146 R (p 0,085, n 97, casi todo RTY) y VZ +0,035 R (p 0,21) en meses DESC: mismo signo que en NQ/ES, sin significancia.
+  Acta: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP de RTY/EMD para estas reglas (sellado, sin potencia K49); Z en EMD (M1 incompleto).

@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (24)
+## PISTA_VIVA (25)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -20,10 +20,15 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Pre-registrar la confirmación en YM+EMD+RTY+GC (contraste nunca mirado ahí) y/o forward con vigilancia; ATR y VIX cuentan como una sola mejora.
   - Evidencia: `docs/research/mejora_sf_20261119/RESULTADO.md`, `docs/research/mejora_sf_20261119/DESC.json`
 - **Compresión de volatilidad implícita (z-score de 6 barras de VIX/VXN y VIX9D < −1) → largo en índice 2–4 días; también eVRP>0 con contango** (`F-COMPRESION-VOL-CRECE`, 2026-11-19, humano)
-  - Efecto: DESC A5: compresión −0,01 / +0,05 / +0,13 R por época (crece); eVRP −0,01 / +0,04 / +0,10. La versión intradía (FM7N) da ≈ 0: el efecto necesita días. Confirmar con la mitad del efecto pide ≈ 1.100 operaciones (≈ 12 años de forward).
+  - Efecto: DESC A5: compresión −0,01 / +0,05 / +0,13 R por época (crece); eVRP −0,01 / +0,04 / +0,10. La versión intradía (FM7N) da ≈ 0: el efecto necesita días. Confirmar con la mitad del efecto pide ≈ 1.100 operaciones (≈ 12 años de forward). En RTY+EMD (DESC, nunca medida): +0,035 R (p 0,21; control −0,066): mismo signo, más débil.
   - Dónde: ES, NQ
   - Siguiente: Sólo cuenta de broker y en canasta; no operable en Lucid. No hay confirmación histórica con potencia.
-  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/carril2_20261119/RESULTADO_LOTE2.md`
+  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/carril2_20261119/RESULTADO_LOTE2.md`, `docs/research/transfer_rty_emd_20261119/RESULTADO.md`
+- **Z (ZetaTrend de FundedSync, fábrica, stop 0,25 × ATR20) en Russell (RTY) y MidCap (EMD), nunca medida ahí** (`F-Z-TRANSFER-RTY`, 2026-11-19, humano)
+  - Efecto: DESC A5 2018–2025: +0,146 R neto (p 0,085, n 97; bruto +0,197), antes de 2018 −0,05: mismo patrón que NQ. EMD casi no dispara (M1 con menos de la mitad de los minutos). MDE 0,26.
+  - Dónde: RTY (EMD sin datos suficientes)
+  - Siguiente: Confirmación sólo con REP de RTY (sellado) cuando la potencia K49 lo permita o en forward; no elegir variante sobre esto.
+  - Evidencia: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
