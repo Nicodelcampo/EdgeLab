@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (27)
+## PISTA_VIVA (28)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -39,6 +39,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, RTY (ES débil)
   - Siguiente: Pre-registrar 'Z-banda' (o la fábrica, su centro) como serie separada de REGIMEN-FORWARD; confirmación en REP de RTY con potencia K49.
   - Evidencia: `docs/research/z_pico_20261119/RESULTADO_RAPIDA_Y_SEVERIDAD.md`
+- **Canasta T+R+Z-banda en LucidFlex (frecuencia y rendimiento en la cuenta)** (`F-CANASTA-T-R-ZBANDA-PROP`, 2026-11-19, humano)
+  - Efecto: 2018–2025: 24,5 ops/mes, +4,09 R/mes, t mensual 6,30, 71 % meses positivos (T+R: 22,1, +3,41, 5,55, 68 %). Lucid (contraída): EV +489/cuenta y +167/mes (T+R +441/+144). Sumar SOM sube el EV/mes a +184 pero baja el EV/cuenta a +252 y el % que pasa de 49 % a 36 % (el sd diario casi se duplica).
+  - Dónde: NQ, LucidFlex 25K
+  - Siguiente: Z-banda en vigilancia forward como serie separada; decidir si la canasta operable suma Z-banda y si SOM entra con tamaño menor (sd).
+  - Evidencia: `docs/research/FRECUENCIA_PROP_20261119.md`, `docs/research/FRECUENCIA_PROP_LUCID.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
@@ -385,7 +390,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (45)
+## NO_REPETIR (46)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -414,6 +419,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ, ES, YM, RTY
   - Siguiente: No repetir la continuación; el fade de días limpios sería una hipótesis nueva sobre datos no mirados.
   - Evidencia: `docs/research/selectividad_20261119/RESULTADO.md`
+- **Franklin sólo en días de ATR alto (mejora de MEJORA-SF) medido por mes en el régimen actual** (`F-FRANKLIN-FILTRO-ATR-NO-SIRVE-POR-MES`, 2026-11-19, humano)
+  - Efecto: 2018–2025: con el filtro 4,8 ops/mes, +0,24 R/mes, t 0,69; sin el filtro 12,8 ops/mes, +0,65 R/mes, t 1,19 (el R/op es igual, +0,051). El filtro sólo servía cuando la fricción era alta; hoy recorta operaciones sin mejorar cada una.
+  - Dónde: NQ, ES
+  - Siguiente: Con la vara por mes, Franklin va sin el filtro de ATR; el filtro de fricción de SOM tampoco cambia nada desde 2018 (14,9 vs 14,8 ops/mes).
+  - Evidencia: `docs/research/FRECUENCIA_PROP_20261119.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

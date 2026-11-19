@@ -88,6 +88,12 @@ def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200
     if "R" in reglas:        # R AtrPhase de fábrica con stop de catástrofe 0,25 × ATR20 previo aplicado con el MAE (NETO-PISTAS; pnl_pts es bruto)
         o = pd.read_csv(ROOT / "docs/research/neto_pistas_20261119/RZ_OPS.csv.gz"); o = o[(o.modulo == "R") & (o.inst == "NQ") & (o.variante == "R_21_100_2.5_660")]
         rg = 0.25 * o.atr20; o = o.assign(dia=o.ses, riesgo=rg, bruto=np.where(o.mae_pts >= rg, -rg, o.pnl_pts)); partes.append(o[["dia", "bruto", "riesgo"]])
+    if "ZB" in reglas:       # Z-banda (9 configuraciones de severidad moderada, promedio diario; regimen_forward_20261119/PREREGISTRO_ZBANDA.md)
+        o = pd.read_csv(ROOT / "docs/research/neto_pistas_20261119/RZ_OPS.csv.gz")
+        banda = [f"Z_{a}_{b}_{e}" for (a, b) in ((10, 30), (15, 20), (30, 10)) for e in (35, 45, 55)]
+        o = o[(o.modulo == "Z") & (o.inst == "NQ") & o.variante.isin(banda)]; rg = 0.25 * o.atr20
+        o = o.assign(bruto=np.where(o.mae_pts >= rg, -rg, o.pnl_pts), riesgo=rg).groupby("ses")[["bruto", "riesgo"]].mean().reset_index().rename(columns={"ses": "dia"})
+        partes.append(o[["dia", "bruto", "riesgo"]])
     o = pd.concat(partes, ignore_index=True); o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int)
     o = o[(o.ses >= desde) & (o.ses <= hasta)]
     mic = np.clip(np.floor(usd_riesgo / (o.riesgo * 2.0)), 1, tope_micros)
