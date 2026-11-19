@@ -1342,3 +1342,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** NQ: fábrica 6.ª de 27, exceso dentro del ruido de selección (p 0,55) pero grilla 2018+ +0,146 R/op (23/27, p 0,001). RTY (DESC):
   sin pico (fábrica 15.ª) y meseta (26/27 positivas, mediana +0,15). Acta: `docs/research/z_pico_20261119/RESULTADO.md`.
 - **NO MEDIDO:** REP de RTY (sellado); Z como grilla promediada en forward.
+
+## 2026-11-19 — CONFLUENCIA (señales intradía con bruto real)
+- **MEDIDO:** DESC NQ+ES: contraste +0,021 (p 0,09), confirmadas −0,004; señales casi redundantes (Franklin = FM1 en dirección el 100 % de los
+  días). Acta: `docs/research/confluencia_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP (sin nominadas); Dual Thrust (sin operaciones guardadas).
