@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (22)
+## PISTA_VIVA (23)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ (principal), ES
   - Siguiente: Canasta con T-NQ (baja frecuencia sola); confirmar con datos que el vendedor no vio (misma fecha que la prueba 2 de T) y vigilancia secuencial como T.
   - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`, `docs/research/neto_pistas_20261119/RZ_RESULTADO.json`
+- **Franklin (10:00 NY, NQ+ES) operado sólo en días volátiles: tercio superior del ATR20 previo o del percentil del VIX al cierre previo** (`F-FRANKLIN-DIAS-VOLATILES`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025: R neto dentro +0,120 (ATR alto, contraste +0,172, p 0,017) y +0,152 (VIX alto, contraste +0,211, p 0,009) contra ≈ 0 de la regla base; pasan BH q 0,10 junto con SOM-fricción (+0,089). REP sin leer: K49, potencia en días 0,05–0,06.
+  - Dónde: NQ, ES
+  - Siguiente: Pre-registrar la confirmación en YM+EMD+RTY+GC (contraste nunca mirado ahí) y/o forward con vigilancia; ATR y VIX cuentan como una sola mejora.
+  - Evidencia: `docs/research/mejora_sf_20261119/RESULTADO.md`, `docs/research/mejora_sf_20261119/DESC.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

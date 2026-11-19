@@ -1292,3 +1292,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** grillas de 81 (SOM) y 32 (Franklin): bruto en meseta (SENAL_ROBUSTA las dos), régimen neto no (SOM PBO 0,84 desde 2017-11;
   Franklin sin quiebre y 7/32 netas positivas); prefijo idéntico. Acta: `docs/research/regimen_som_franklin_20261119/RESULTADO.md`.
 - **NO MEDIDO:** curva bruto–stop en puntos de SOM y Franklin, EMD/RTY en la grilla.
+
+## 2026-11-19 — Filtros causales para SOM y Franklin (MEJORA-SF)
+- **MEDIDO:** 9 contrastes en DESC: nominadas SOM-fricción (+0,089), Franklin-ATR alto (+0,172) y Franklin-VIX alto (+0,211); REP bloqueado
+  por K49 (potencia 0,05–0,06). Acta: `docs/research/mejora_sf_20261119/RESULTADO.md`.
+- **NO MEDIDO:** el contraste VIX/ATR de Franklin en YM/EMD/RTY/GC, forward.
