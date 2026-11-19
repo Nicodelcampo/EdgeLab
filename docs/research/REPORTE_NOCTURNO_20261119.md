@@ -64,6 +64,19 @@ Tablero de frentes: `FRENTES_ABIERTOS_20261119.md`. Lo más valioso y qué indag
 4. **Decisiones tuyas:** si se quiere una cuenta de broker (sin la regla de las 16:45) para las estrategias de varios días; y operar T+R en
    micro cuando el vigilante dé EDGE (dinero real es sólo tuyo).
 
+## 6. Auditoría de la canasta T + R (segunda parte de la noche)
+- **Fechas fijas del vendedor (AUDITORIA-EXCLUSIONES, 1 prueba contada):** T excluía 24 días (20 «datos degradados», 8 vencimientos) que en
+  nuestros datos rinden −0,22 R por día (percentil 4,7 % contra días al azar): sesgo del vendedor, pero chico. **T operable 2021–2026 =
+  +0,181 R/op** (antes +0,186). R: inocua (los 3 días normales bloqueados eran ganadores).
+- **R no se puede operar tal cual con el DLL:** el DLL no tiene stop para R; la R validada usa un stop de catástrofe 0,25 × ATR20. Sin stop
+  la media es parecida pero la peor operación pierde ≈ 1,6 ATR20, del orden del límite diario de Lucid con 1 MNQ. Hace falta un stop externo
+  o una estrategia NT8 propia; mientras tanto, en Lucid sólo T.
+- **El forward tarda más de lo que escribí:** ≈ 15 meses hasta EDGE con la media de desarrollo y ≈ 33 con la mitad (no 4–8). Las reglas no
+  cambian (`regimen_forward_20261119/ADENDA_POTENCIA.md`).
+- **Archivos viejos del CFD con riesgo de T roto** (anteriores a la corrección del 16-nov): no usar su R; el forward vigente sale corregido.
+- **Re-indagación por época** (`RE_INDAGACION_PISTAS_20261119.md`): la reversión corta clásica se apagó desde 2018; la compresión de
+  volatilidad crece pero necesita días (no Lucid) y décadas de forward para confirmarse; Z es un pico de fábrica sin datos limpios con potencia.
+
 Aporte al referente: se cerraron con evidencia y potencia publicada los frentes del catálogo nuevo, se descartó para Lucid todo lo que no es
 operable allí, se corrigieron dos errores que podían dar falsos positivos, y la canasta T + R quedó como la única candidata con vigilancia
 forward pre-registrada.
