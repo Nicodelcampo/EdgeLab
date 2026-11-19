@@ -19,7 +19,8 @@ DIR = ROOT / "docs/research/neto_pistas_20261119"; PRE = "docs/research/neto_pis
 PARCIAL = ROOT / "data/neto_pistas"; M1L = ROOT / "docs/research/m1_largo_20261117"
 FIN = "2026-09-29"; KS = (0.25, 0.5, 0.75, 1.0)
 GRILLAS = {"R": dict(ema_period=[14, 21, 30], umbral=[80.0, 100.0, 120.0], vwap_atr_mult=[2.0, 2.5, 3.0], entry_end_min_et=[630, 660, 720]),
-           "Z": dict(bucket_minutes=[10, 15, 30], ema_period=[10, 20, 30], min_efficiency_pct=[35.0, 45.0, 55.0])}
+           "Z": dict(bucket_minutes=[10, 15, 30], ema_period=[10, 20, 30], min_efficiency_pct=[35.0, 45.0, 55.0]),
+           "A20": dict(st_period=[5, 7, 10], st_mult=[1.5, 2.0, 2.5], absorb_vol_mult=[2.0, 2.5, 3.0], hard_stop_atr_mult=[1.0, 1.5, 2.0])}
 FABRICA = {"R": (21, 100.0, 2.5, 660), "Z": (15, 20, 45.0), "A20": (7, 2.0, 2.5, 1.5)}
 MODS = ("R", "Z", "A20")
 
