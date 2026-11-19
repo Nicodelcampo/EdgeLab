@@ -33,4 +33,4 @@ Potencia previa: estimación conservadora previa a mirar desenlaces en **DÍAS**
 
 ## 4. Contador y linaje
 - **Pruebas en exploración DESC (`a5_campana.py`):** `8` reglas absolutas + `8` contrastes contra control = **`16` hipótesis** en `BH (q = 0,10)`. **Los filtros secundarios de tabla (`vix_contango`, `vix_alto`, `no_opex`, `no_fomc`, `sin_early_close`) NO se evalúan ni nominan en esta corrida.**
-- **Linaje:** familia nueva `FLUJOS_MACRO_A5`, hija declarada de `BAJA_FRICCION_A5` (hereda el marco de stops estructurales amplios sobre `ES/NQ/YM/GC`). Sensibilidad obligatoria reportada en años limpios `2006–2011`.
+- **Linaje (enmienda de Claude, 2026-11-19, antes de calibrar y de correr):** `BAJA_FRICCION_A5` no existe en `LINAJES.jsonl` (no heredaría multiplicidad de nadie). Padres reales: `ORB_A5` y `ROBOQUANT_A5` (FM2 es la banda de ruido desde la apertura, ya medida como Noise Area y RQ5), `RANGO_ASIA0100_GC` y `EXTERNAS_A5` (FM6, caja Asia→Londres en oro), `DIA_TENDENCIA_A5` (FM8, días de desplazamiento fuerte). Sensibilidad obligatoria reportada en años limpios `2006–2011`.
