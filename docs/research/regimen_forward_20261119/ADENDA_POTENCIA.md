@@ -30,3 +30,13 @@ Código: `tools/regimen_forward_tiempo.py` (descriptivo, sobre desarrollo ya mir
   para la cuenta**.
 - Opciones (decisión de ejecución de Nico): (a) estrategia NT8 propia de R con el stop (la traducción en Python es la especificación); (b)
   correr el DLL con R y una orden de stop manual o del bróker a 0,25 × ATR20 del precio de entrada; (c) T sola en Lucid hasta resolverlo.
+
+## Estrategia NT8 propia para R con stop (agregado 2026-11-19)
+- `nt8/strategies/EdgeLabAtrPhaseStop.cs`: traducción de `run_r`/`_AtrPhaseEngine` (oscilador de fase en 10 min, VWAP, ventana 09:30–11:00,
+  reversa, cierre 16:00 ET, reinicio por vencimiento) con el stop de catástrofe 0,25 × ATR20 de sesión (parámetro `MultiploStop`) y la lista
+  de fechas del vendedor desactivada por defecto. Cierra antes de las 16:45 ET (Lucid).
+- **No está compilada ni probada** (el contenedor no tiene NinjaTrader ni compilador C#). Antes de usarla: compilar en NT8 y correr el
+  protocolo de paridad (`docs/nt8_indicator_parity_contract.md`) contra `R_REFERENCIA_PARIDAD.csv` (56 operaciones del simulador en Python,
+  NQ 2024-01 → 2025-07, con la lista del vendedor ACTIVADA, como el simulador: poner `UsarFechasVendedor = true` para la paridad).
+  Columnas: sesión, minuto de entrada ET (= apertura de la vela de 1 min siguiente al cierre de 10 min), lado, resultado en puntos sin
+  stop, MAE, ATR20, distancia del stop y si el stop se habría tocado.
