@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-704 scripts.
+705 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -712,3 +712,4 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/vtd_stage1.py` | VTD-VOL-1 etapa 1 (manifiesto docs/research/VTD_VOL1_MANIFIESTO_20261006.md): VolTicksDef 150t/50t + AVCL base 50t. |
 | `tools/vtd_vela_test.py` | VTD-VELA — prueba única pre-registrada (docs/research/VTD_VELA_PREREGISTRO_20261006.md, commit 074b8461). |
 | `tools/vtd_vol1.py` | AVCL-VOL-2 A+B — etapa 2 (manifiesto docs/research/AVCL_VOL2_AB_MANIFIESTO_20261006.md). |
+| `tools/z_pico.py` | Z-PICO: ¿el pico de fábrica de Z (ZetaTrend, FundedSync) es sobreajuste? ¿Russell tiene el mismo pico? |
