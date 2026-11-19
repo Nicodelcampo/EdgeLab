@@ -22,7 +22,8 @@ def ops_som(df, cfg, spec, fr) -> pd.DataFrame:
     T = correr_session_open_momentum(df, config=cfg, instrument=spec)
     rg = (T.entry_price - T.stop_price).abs().to_numpy(float)                 # stop_price = stop inicial (1 R) en el motor
     g = pd.DataFrame(dict(fecha=pd.to_datetime(T.entry_time_utc, unit="ns").dt.strftime("%Y%m%d").astype(int), riesgo=rg, bruto=T.pnl_pts.to_numpy(float),
-                          salida=T.exit_name.values, horas=(T.exit_time_utc - T.entry_time_utc).to_numpy(float) / 3.6e12))
+                          salida=T.exit_name.values, horas=(T.exit_time_utc - T.entry_time_utc).to_numpy(float) / 3.6e12,
+                          lado=T.side.values))                                   # 2026-11-19 (MEJORA-SF): lado, para filtros por dirección
     g = g[g.riesgo > 0]; g["dia"] = pd.to_datetime(g.fecha.astype(str)); g["neto"] = g.bruto - fr; g["R"] = g.neto / g.riesgo; g["Rb"] = g.bruto / g.riesgo; g["fricR"] = fr / g.riesgo
     return g
 

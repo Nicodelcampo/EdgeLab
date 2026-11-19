@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-696 scripts.
+697 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -477,6 +477,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/mcpt_mgc_ema.py` | Full-pipeline intraday permutation test for the MGC EMA headline. |
 | `tools/medir_spread_main.py` | Kernel de Kaggle: spread MEDIDO de un futuro del release con el criterio del atlas v4 (para instrumentos sin spread en costos). |
 | `tools/mejora_ronda2.py` | Mejora ronda 2 (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §15): tamaño por regla (fijo / R constante / raíz) en SOM, |
+| `tools/mejora_sf.py` | MEJORA-SF: filtros causales con mecanismo para SOM y Franklin, DESC → REP con K49 (pre-registro docs/research/mejora_sf_20261119/PREREGISTRO.md). |
 | `tools/mejora_som.py` | Mejora de SOM (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §5): 14 variantes de una perilla, elección en años pares por |
 | `tools/mejora_t.py` | Mejora de T de FundedSync (docs/research/mejora_estrategias_20261116/CRITERIOS_Y_PLAN.md §10): 6 variantes de una perilla, elección en |
 | `tools/mejora_turtles_oro.py` | Turtles 55/20 en oro con cierre del viernes: réplica en 2004–2010 (no mirado) y mejora con el método de |
