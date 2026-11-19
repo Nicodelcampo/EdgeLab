@@ -33,3 +33,6 @@ M1 real de futuros 2012-01 → 2026-09-29 — el motor de T arranca por defecto 
 - Corregido: la grilla empieza en 2012-01, no en 2008-01.
 - Con `orb_bars` 10 y 20 la ruta rápida `direct_first_signal_near_vwap` no se activa (exige que el ORB termine en un cuarto de hora): esas variantes pierden una forma de entrada y aun así son todas positivas, lo que refuerza la meseta.
 - Las 81 variantes están muy correladas (mediana 0,70; primer autovalor 72 %): la grilla descarta el ajuste fino de esos cuatro parámetros, no el de salidas y multiplicadores (1,25; 3 R; 15:30). La prueba 2 (datos que el vendedor no vio) sigue siendo la que cierra la duda.
+
+## 5. Prueba 2 (datos que el vendedor no vio) — fecha resuelta (2026-11-19)
+- El DLL analizado es el build `2026-10-29.1-FUNDEDSYNCSTACK` (`fundedsyncstack_20261115/INGENIERIA_INVERSA_FUNDEDSYNCSTACK.md`): el vendedor pudo ver toda la historia hasta el 2026-10-29. Fuera de muestra para él sólo hay ≈ 2 semanas del holdout ya abierto (30-oct → 13-nov, muy pocas operaciones) y el forward desde el 2026-11-14, que vigila `regimen_forward_20261119/` (canasta T+R, e-procesos de edge, futilidad y drawdown). La prueba 2 es, por lo tanto, el forward: no hay historia limpia que medir antes.
