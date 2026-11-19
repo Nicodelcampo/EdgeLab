@@ -5,9 +5,9 @@ del 2026-10-01, frontera A4). Sustento: `RESULTADO.md` (REGIMEN_ROBUSTO). Herram
 
 ## Regla (R neto por operación de T de fábrica en NQ, riesgo inicial = clip(ORB15 × 1,25, 2, 100))
 1. **Corte por drawdown:** si el R acumulado cae **20 R** desde su máximo, T se suspende (peor caída 2021–2026: −9,1 R).
-2. **Futilidad (válida mirando cuando sea):** `EProceso(mu0=0,075, piso=−2, techo=+3,5, lado="menor")`; si el e-valor llega a
+2. **Futilidad (válida mirando cuando sea):** `EProceso(mu0=0,075, piso=−4, techo=+3,5, lado="menor")`; si el e-valor llega a
    **10** (α 0,10), la media dejó de ser ≥ la mitad de la mediana de la grilla y T se suspende. Cotas estructurales: el stop está a 1 R y el
-   objetivo de T a 3 R (`baseline_target_r = 3,0`); en 2008–2026 el R observado estuvo en [−1,34, +2,99]. Un valor fuera de [−2, +3,5]
+   objetivo de T a 3 R (`baseline_target_r = 3,0`); en 2008–2026 el R observado estuvo en [−1,34, +2,99]. Un valor fuera de [−4, +3,5] (piso bajado de −2 a −4 por la auditoría de Antigravity: el mínimo real 2008–2026 fue −1,47 R y, en la prueba de futilidad, el piso no entra en la apuesta, así que bajarlo no cuesta potencia)
    detiene el monitor con LIMITE_VIOLADO (no se recorta).
 3. Suspender no es refutar: se revisa el mecanismo antes de volver.
 
