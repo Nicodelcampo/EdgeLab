@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1474 |
+| `docs/research` | 1477 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,7 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
-| REPORTE | 5 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
+| REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
 | FRENTES | 1 | `FRENTES_ABIERTOS_20261119.md` | 2026-11-19 | VIGENTE — tablero de frentes de la sesión de Claude; pedido de Nico: «no olvides |
 | AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
