@@ -255,7 +255,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (12)
+## EN_SEGUIMIENTO (13)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -269,6 +269,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: NQ
   - Siguiente: Sólo forward con vigilancia; no candidata.
   - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`, `docs/research/a20_regimen_20261119/RESULTADO.md`
+- **Swing/calendario en índices sobre el motor de barras calibrado: IBS+VIX, Double Seven, Turnaround Tuesday, cambio de mes** (`F-CARRIL2-LOTE1-SIN-EVIDENCIA`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025: 0/8 en BH; R neto +0,017 / +0,079 (p 0,047) / +0,059 / +0,034 con fricción ≈ 0,015 R; MDE ≈ 0,14–0,21 R → SIN_EVIDENCIA, no refutación.
+  - Dónde: ES, NQ, YM, RTY (+GC en Double Seven)
+  - Siguiente: Sólo con más N por mecanismo (canasta pre-registrada), no eligiendo la mejor de las cuatro.
+  - Evidencia: `docs/research/carril2_20261119/RESULTADO_LOTE1.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1

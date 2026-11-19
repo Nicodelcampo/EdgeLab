@@ -1301,3 +1301,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-19 — A20 desde su quiebre (A20-REGIMEN)
 - **MEDIDO:** procedimiento de T desde 2017-11: 81/81 positivas pero PBO 0,39, 0/81 en 2017–2021 y ES negativo → INTERMEDIO. Acta:
   `docs/research/a20_regimen_20261119/RESULTADO.md`.
+
+## 2026-11-19 — Carril 2, lote 1 (CARRIL2-LOTE1)
+- **MEDIDO:** IBS+VIX, Double Seven, Turnaround Tuesday y cambio de mes en DESC (motor de barras K28, salidas en holdout descartadas): 0/8 en
+  BH, fricción ≈ 0,015 R, MDE ≈ 0,14–0,21 R → SIN_EVIDENCIA. Acta: `docs/research/carril2_20261119/RESULTADO_LOTE1.md`.
+- **NO MEDIDO:** entrada a las 15:55 (el motor entra 18:00), resto del Carril 2 (eVRP, VIX alto, pre-FOMC, Dynamic Breakout II, rotación ES/GC, overnight).
