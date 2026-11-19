@@ -85,6 +85,9 @@ def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200
         partes.append(pd.read_csv(D / "FRANKLIN_OPS_NQ.csv.gz")[["dia", "bruto", "riesgo"]])
     if "T" in reglas:
         o = pd.read_csv(D / "FS_OPS_T2008_NQ.csv.gz"); o = o[o.riesgo > 0]; o["bruto"] = o.neto + fr_nq; partes.append(o[["dia", "bruto", "riesgo"]])
+    if "R" in reglas:        # R AtrPhase de fábrica con stop de catástrofe 0,25 × ATR20 previo aplicado con el MAE (NETO-PISTAS; pnl_pts es bruto)
+        o = pd.read_csv(ROOT / "docs/research/neto_pistas_20261119/RZ_OPS.csv.gz"); o = o[(o.modulo == "R") & (o.inst == "NQ") & (o.variante == "R_21_100_2.5_660")]
+        rg = 0.25 * o.atr20; o = o.assign(dia=o.ses, riesgo=rg, bruto=np.where(o.mae_pts >= rg, -rg, o.pnl_pts)); partes.append(o[["dia", "bruto", "riesgo"]])
     o = pd.concat(partes, ignore_index=True); o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int)
     o = o[(o.ses >= desde) & (o.ses <= hasta)]
     mic = np.clip(np.floor(usd_riesgo / (o.riesgo * 2.0)), 1, tope_micros)
@@ -111,7 +114,7 @@ def senales():
     res = dict(nota="Canasta de señales estables en MNQ con tamaño por riesgo; contracción declarada 0,5 (efecto 2020–2025 elegido después de "
                     "ver el salto de T; SOM y Franklin con bruto estable desde 2006)", canastas={})
     for usd in (100, 150, 250):
-        for reglas in (("SOM", "FRANKLIN", "T"), ("SOM", "FRANKLIN"), ("T",)):
+        for reglas in (("SOM", "FRANKLIN", "T"), ("SOM", "FRANKLIN"), ("T",), ("R",), ("T", "R")):
             x, info = serie_senales(usd, reglas); r = evaluar(x.to_numpy(), 0.5); r.update(info)
             nom = f"{'+'.join(reglas)}|usd{usd}"; res["canastas"][nom] = r; _imprimir(nom, r)
     xo, info_o = serie_orb5(100.0); xt, _ = serie_senales(100.0, ("T",)); xt = xt.reindex(xo.index).fillna(0.0)    # mismas sesiones (DESC/REP)

@@ -59,3 +59,18 @@ recortado a las mismas sesiones (2020–25).
 - **El ORB de 5 min es ruidoso dentro de la cuenta:** su objetivo de 10R deja muchas pérdidas chicas y pocas ganancias grandes, y con un
   drawdown de $1.000 eso pesa.
 - **Una salida más cercana para la cuenta** sería una hipótesis nueva, con pre-registro propio. No se elige acá.
+
+## 4. Agregado 2026-11-19: R (AtrPhase con stop 0,25 × ATR20) y la canasta T+R
+R de fábrica con el stop de catástrofe de NETO-PISTAS (`neto_pistas_20261119/RZ_OPS.csv.gz`, bruto con el stop aplicado por MAE), 1 MNQ
+(USD 100 de riesgo: el riesgo de R en NQ casi siempre supera 1 micro), 2020-01 → 2025-07, misma contracción declarada 0,5. Descriptivo.
+
+| Canasta (USD 100) | Media/día | sd/día | t | Pasa | Cobra | EV/cuenta contraída | EV/mes contraída | EV sin ventaja |
+|---|---|---|---|---|---|---|---|---|
+| T sola | $22 | $177 | 4,8 | 51 % | 20 % | +$425 | +$113 | +$49 |
+| R sola | $9 | $87 | 3,9 | 51 % | 16 % | +$142 | +$12 | −$21 |
+| **T + R** | $31 | $218 | 5,5 | 48 % | 19 % | **+$440** | **+$143** | +$39 |
+
+(DLL $600, consistencia 50 %, retiro máximo; resto en `CANASTA_SENALES_LUCID.json`.)
+- R sola es lenta en la cuenta (≈ 3 operaciones por mes: tarda ≈ 250 días). Sumada a T casi no cambia el valor por cuenta pero lo cobra
+  ≈ 25 % más rápido por mes, con t diario mayor (5,5 contra 4,8). La canasta T+R es la que vigila REGIMEN-FORWARD.
+- Ejecutabilidad: T y R cierran dentro de la sesión (Lucid exige plano a las 16:45 ET y permite operar con noticias).
