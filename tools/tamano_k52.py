@@ -76,7 +76,8 @@ def desc():
 
 
 def rep():
-    from scipy.stats import norm
+    from statistics import NormalDist
+    norm = NormalDist()
     from a5_campana import _commiteado
     from edgelab.funnel.libro_lord import LibroLord
     if not _commiteado(DIR / "DESC.json"): raise SystemExit("DESC.json sin commitear")
@@ -84,7 +85,7 @@ def rep():
     for est in D["nominadas"]:
         d = D["resultados"][est]; n_rep = int(T[(T.estrategia == est) & (T.bloque == "REP")].fecha.nunique())      # sólo cuenta sesiones
         se_rep = d["se"] * np.sqrt(d["n_dias_desc"] / max(n_rep, 1)); a = LibroLord().nivel(FAM[est])
-        pot = float(1 - norm.cdf(norm.ppf(1 - a) - 0.5 * d["dif"] / se_rep)); out[est] = dict(potencia=pot, n_dias_rep=n_rep, alfa=a)
+        pot = float(1 - norm.cdf(norm.inv_cdf(1 - a) - 0.5 * d["dif"] / se_rep)); out[est] = dict(potencia=pot, n_dias_rep=n_rep, alfa=a)
         if pot < 0.8: out[est]["estado"] = "SIN_POTENCIA_PREVIA"; continue
         g = T[(T.estrategia == est) & (T.bloque == "REP")]; dif, se, p, _ = _contraste(g, d["mejor"])
         dec = LibroLord().probar(FAM[est], f"REP_TAMANO_K52_{est}", [(est, p)])
