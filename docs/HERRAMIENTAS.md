@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-712 scripts.
+713 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -543,6 +543,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/peaks_learn_v1.py` | Detector de «picos consecutivos» v1: candidatos amplios + rasgos por zona + clasificador validado entre sesiones. |
 | `tools/peaks_rule.py` | Detector de «picos consecutivos» v2 — regla de Nico: **cada pico no supera al anterior**. |
 | `tools/perdidas_concentradas.py` | Dónde se concentran las pérdidas: stop corto relativo (pre-registro docs/research/cartera_20261116/PREREGISTRO_PERDIDAS_CONCENTRADAS.md). |
+| `tools/picos_robustos_visor.py` | Capa del visor «Picos robustos» (diseño de Nico 2026-11-19): pares de picos y grupos con puntaje, por variante. M1. |
 | `tools/pivotes_barrido.py` | PIVOTES-BARRIDO-MES — OK de Nico 28/09. Manifiesto: docs/research/MANIFIESTO_PIVOTES_BARRIDO_MES_20260928.md |
 | `tools/potencia_previa.py` | Potencia y frecuencia ANTES de invertir en una estrategia (mejora, holdout o forward): K27–K29 de |
 | `tools/pred004_analyze.py` | pred004_analyze.py — el instrumento que mide PRED-004 COMO FUE ESCRITA. |
