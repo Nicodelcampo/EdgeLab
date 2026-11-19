@@ -194,6 +194,8 @@ Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lect
   `a5.plan_lectura` / `a5.exigir_potencia` (potencia en días al nivel LORD); `a5_campana rep` no lee REP para las celdas sin
   potencia (SOLO las con ≥ 0,8 entran a LORD) y se niega si ninguna llega; las herramientas ad hoc llaman a `exigir_potencia` antes
   de abrir una lectura (`test_k49_potencia_de_la_lectura_en_dias`).
+- **K50, registro .jsonl malformado (2026-11-19, LINAJES).** Un commit de otro agente agregó a `LINAJES.jsonl` una línea vacía y un objeto sin salto de línea final; el alta siguiente (ROBOQUANT) quedó pegada en la misma línea y `tools/antecedentes.py` dejó de funcionar para todos. Ningún test leía los registros. Guarda: `test_jsonl_de_registros_parsean_linea_por_linea` (todo `docs/research/*.jsonl` versionado parsea línea por línea). Práctica: escribir los registros con su herramienta (`registro_global.py`, `factores.py agregar`) o con `json.dumps(obj) + "\n"`, nunca a mano.
+
 - **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
   nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
 - **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y

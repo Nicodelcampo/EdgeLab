@@ -155,3 +155,15 @@ def test_k49_potencia_de_la_lectura_en_dias():
     with pytest.raises(ValueError, match="K49"): A5.exigir_potencia(chico, "REP de prueba")
     A5.exigir_potencia(grande, "REP de prueba")
     assert "plan_lectura" in (ROOT / "tools/a5_campana.py").read_text(encoding="utf-8")
+
+
+def test_jsonl_de_registros_parsean_linea_por_linea():
+    """K50 (2026-11-19): un commit dejó LINAJES.jsonl con una línea vacía y dos objetos pegados en una línea; `antecedentes.py` se
+    cayó y el alta siguiente quedó pegada a la anterior. Todo .jsonl versionado de docs/research parsea línea por línea."""
+    r = subprocess.run(["git", "ls-files", "docs/research/*.jsonl"], cwd=ROOT, capture_output=True, text=True)
+    malos = []
+    for f in r.stdout.split():
+        for i, l in enumerate((ROOT / f).read_text(encoding="utf-8").splitlines(), 1):
+            try: json.loads(l)
+            except Exception as e: malos.append(f"{f}:{i}: {str(e)[:60]}")
+    assert not malos, malos[:10]
