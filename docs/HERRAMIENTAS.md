@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-693 scripts.
+694 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -284,6 +284,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
+| `tools/friccion_rq.py` | FRICCION-RQ: curva bruto–stop y palancas de fricción de RQ2, RQ5 y RQ6 en DESC (pre-registro docs/research/friccion_rq_20261119/PREREGISTRO.md). |
 | `tools/fundedsync_cadena.py` | FUNDEDSYNCSTACK por la cadena (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). |
 | `tools/fundedsync_mecanismos.py` | FundedSync: mecanismos, contextos y combinaciones (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_MECANISMOS.md). |
 | `tools/fundedsync_tanda2.py` | FundedSync tanda 2 (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md). |
