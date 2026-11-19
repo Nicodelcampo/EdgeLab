@@ -159,7 +159,7 @@ def conf():
         sin_emd = {m: _contraste(C[C.inst != "EMD"], "FRANKLIN", m, "CONF")[0] for m in con}
         dec = LibroLord().probar("FRANKLIN", "CONF_MEJORA_SF_YM_EMD_RTY", [(f"FRANKLIN|{m}", res[m]["p"]) for m in con])
         for m in con:
-            rech = bool(dec.get("rechazos", {}).get(f"FRANKLIN|{m}")) if isinstance(dec.get("rechazos"), dict) else None
+            rech = f"FRANKLIN|{m}" in (dec.get("confirmadas") or [])
             out[f"FRANKLIN|{m}"] = dict(conf=res[m], sin_emd=sin_emd[m], rechazo=rech)
         out["lord"] = dec
     (DIR / "CONF.json").write_text(json.dumps(out, indent=1, default=float))
