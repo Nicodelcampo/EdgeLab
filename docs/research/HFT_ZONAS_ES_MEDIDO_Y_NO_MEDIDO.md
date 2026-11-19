@@ -1379,3 +1379,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   la vez y tres medias; reproducción de los planes A y B sobre las operaciones del holdout de FUNDEDSYNC publicadas el 16-nov. Acta:
   `docs/research/lucid_plan_20261119/RESULTADO.md`.
 - **NO MEDIDO:** R y Z con su stop en el holdout (sin MAE en esos archivos); Z-banda en el holdout; tamaño de la fondeada si escala.
+
+## 2026-11-19 — PICOS-DEFENDIDOS (auditoría del PR #200 y versión A5)
+- **MEDIDO:** nada con desenlaces. Auditoría contra los aprendizajes de la semana (`docs/research/agente/AUDITORIA_PICOS_DEFENDIDOS_20261119.md`);
+  preflight de la versión A5 en verde.
+- **NO MEDIDO:** la campaña A5 (`docs/research/picos_defendidos_a5_20261119/`: calibración M1 contra ticks, DESC, REP); la grilla del PR
+  (no se lanza).
