@@ -4,3 +4,7 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 968985 pruebas de ['DOBLE_RETROCESO_NQ']; régimen actual desde 20250805
+- Evaluables: 239972 de 414720 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 137804 (m del FDR 137804 de 207360 celdas), FDR 20 (informativo), maxT 8, RW umbral 4.933863639831543 (diagnóstico), linaje 968985 como informacion, pistas sin nominación 40, candidatas 1
+- Potencia prevista (informativa): [1, 0, 0, 0, 1, 3, 0, 7, 0]: OOS n 62.0 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas

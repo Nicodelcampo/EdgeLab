@@ -4,3 +4,6 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 1087043 pruebas de ['DOBLE_RETROCESO_ES']; régimen actual desde 20250805
+- Evaluables: 246596 de 414720 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 141668 (m del FDR 141668 de 207360 celdas), FDR 0 (informativo), maxT 0, RW umbral 5.027217864990234 (diagnóstico), linaje 1087043 como informacion, pistas sin nominación 40, candidatas 0
+- PISTAS a réplica (ATJ-25): 20 congeladas de 40 (k 20), ventana [20260401, 20260930], un paso de LORD++ por lote; celdas [[2, 2, 1, 1, 0, 1, 2, 2, 7], [3, 1, 1, 1, 0, 0, 0, 3, 7], [3, 0, 1, 0, 1, 1, 3, 3, 11], [3, 0, 0, 0, 0, 3, 0, 6, 5], [3, 1, 1, 1, 1, 1, 2, 3, 9], [2, 0, 1, 0, 1, 0, 0, 5, 0], [3, 0, 1, 0, 1, 3, 3, 3, 10], [3, 1, 0, 1, 0, 1, 1, 0, 11], [3, 0, 0, 0, 1, 1, 2, 3, 11], [3, 1, 1, 1, 0, 1, 2, 3, 10], [3, 1, 0, 1, 1, 1, 2, 3, 10], [3, 1, 0, 1, 0, 1, 2, 3, 5], [3, 0, 1, 1, 1, 1, 3, 8, 9], [4, 0, 1, 1, 1, 2, 1, 8, 11], [3, 0, 1, 1, 1, 2, 3, 8, 8], [4, 0, 1, 1, 0, 2, 1, 8, 10], [3, 1, 1, 1, 0, 2, 3, 3, 7], [3, 1, 1, 0, 0, 1, 3, 3, 7], [3, 1, 1, 1, 0, 2, 1, 0, 11], [3, 1, 0, 1, 0, 2, 1, 0, 10]]
