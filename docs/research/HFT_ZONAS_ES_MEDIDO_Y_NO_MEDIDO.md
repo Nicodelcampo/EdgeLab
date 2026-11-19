@@ -1391,3 +1391,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   canasta −0,141 R, IC90 [−0,207; −0,074], potencia 0,9999 → FIN SIN_CANDIDATAS, en contra con potencia. Estado:
   `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/`; auditoría: `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`.
 - **NO MEDIDO:** la versión A5 (18 años de M1), que es la que mide la regla de la captura.
+
+## 2026-11-19 — Revisión de lo descartado (épocas de fricción) y frecuencia de PICOS-DEFENDIDOS
+- **MEDIDO:** RQ5, RQ6, FM1, FM2 y A20 por época (2006–2017 contra 2018–2025) en DESC y REP; conteo de eventos de PICOS-DEFENDIDOS por diseño e
+  instrumento (sin desenlaces). Acta: `docs/research/REVISION_DESCARTADAS_20261119.md`.
+- **NO MEDIDO:** Dual Thrust (EXTERNAS-28) por época; holdout A5 de RQ5; A20 en forward.

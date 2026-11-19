@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (31)
+## PISTA_VIVA (33)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -59,6 +59,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/MNQ, LucidFlex
   - Siguiente: Decisión de Nico (dinero real es sólo humano). Forward de la canasta antes de escalar; R necesita su stop en ejecución.
   - Evidencia: `docs/research/lucid_plan_20261119/RESULTADO.md`, `docs/research/lucid_plan_20261119/PLANES.json`, `docs/research/lucid_plan_20261119/HOLDOUT_REPLAY.json`
+- **RQ5 (Noise-Band Momentum, Zarattini) en NQ+ES+YM, régimen 2018–2025** (`F-RQ5-REGIMEN-ACTUAL`, 2026-11-19, humano)
+  - Efecto: DESC +0,051 R/op y REP +0,054 R/op (≈ 40 ops/mes, fricción/R 0,03); 7/8 años positivos; control (ruptura tardía) −0,05/−0,13. Se había descartado por el promedio 2006–2025 (2006–2017: −0,05).
+  - Dónde: NQ/ES/YM M1 A5
+  - Siguiente: Decisión de Nico: holdout A5 de ROBOQUANT (potencia 0,42 / 0,18) y forward.
+  - Evidencia: `docs/research/REVISION_DESCARTADAS_20261119.md`, `docs/research/roboquant_20261118/OPS_DESC_REP.csv.gz`
+- **A20 (FundedSync, NQ): veredicto «sólo forward» sin estar en la vigilancia forward** (`F-A20-FUERA-DEL-FORWARD`, 2026-11-19, humano)
+  - Efecto: 2022–2025-07 +0,185 R/op, 20 ops/mes, R/mes +3,69 t 2,43; 2025-08→2026-09 +0,19. Sumada a T sube R/mes (2,27→3,30) pero baja t mensual (4,67→2,46).
+  - Dónde: NQ M1
+  - Siguiente: Sumar A20 como serie separada en REGIMEN-FORWARD (pre-registro).
+  - Evidencia: `docs/research/REVISION_DESCARTADAS_20261119.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

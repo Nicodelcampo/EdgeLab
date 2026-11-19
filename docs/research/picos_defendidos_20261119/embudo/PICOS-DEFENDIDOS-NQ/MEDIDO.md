@@ -11,3 +11,5 @@
 - INTEGRIDAD [1, 0, 0, 0, 1, 3, 0, 7, 0]: regla 0.020054114749981505, placebo -2.51, latencia 1 vela 0.08291918144726831 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-0.04]; veredictos ['NO_CONCLUYENTE']; potencias [0.21]; LORD++ sin rechazo
 - TOPES: elegida {'celda': [1, 0, 0, 0, 1, 3, 0, 7, 0], 'tope': ['pts', 50.0], 'puntaje': 1.038314037127757, 'peor': -1.0657659574468086}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 0, 0, 1, 3, 0, 7, 0] tope ['pts', 50.0]; plan {'n_fijo': 150, 'n_necesario': 15, 'potencia': 1.0, 'efecto': 0.04108158688478352, 'sd_op': 0.044795996627568786, 'fuente': 'fracción del DESC', 'nivel': 0.003607974489558189}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)
