@@ -1276,3 +1276,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   (exploratorio). Acta: `docs/research/friccion_rq_20261119/RESULTADO.md`.
 - **NO MEDIDO:** entrada con orden límite en estas reglas, spread por hora del día, comisión de una firma concreta (el canónico usa la
   máxima), tamaño ∝1/√riesgo pre-registrado.
+
+## 2026-11-19 — Spread por hora (target-free)
+- **MEDIDO:** spread ask − bid por hora CT en NQ (2,7–3,6 ticks), ES (≈ 1,1, 95 % a 1 tick) e YM (1,7–2,1), ago-2025 → mar-2026: el
+  canónico es correcto y la hora ahorra ≈ 4 % de la fricción de NQ. Acta: `docs/research/spread_hora_20261119/RESULTADO.md`.
+- **NO MEDIDO:** slippage real por lado (sigue siendo el supuesto de 1 tick), spread antes de 2025.
