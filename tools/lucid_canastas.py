@@ -73,12 +73,13 @@ def serie_b(micros=1, desde=20200101, modulos=("T", "Z", "R")):
     return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(modulos), micros=micros)
 
 
-def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200101, hasta=20250731, tope_micros=20):
+def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200101, hasta=20250731, tope_micros=20, contrato="MNQ"):
     """Canasta de señales estables (SOM sin_finde, Franklin, T) en MNQ con tamaño por riesgo (2026-11-18, «edges para prop firms»):
     micros = piso(usd_riesgo / (riesgo en puntos × 2 USD)), entre 1 y `tope_micros`; P&L = micros × (bruto en puntos × 2 − fricción
     canónica de MNQ en USD). Operaciones del M1 de NT8 ya medidas (docs/research/m1_largo_20261117/); descriptivo, no elige reglas."""
     from edgelab.research.embudo_runners import friccion
-    D = ROOT / "docs/research/m1_largo_20261117"; fr_usd = float(friccion("MNQ")[0]) * 2.0; fr_nq = float(friccion("NQ")[0]); partes = []
+    mult = {"MNQ": 2.0, "NQ": 20.0}[contrato]       # contrato de ejecución (2026-11-19: minis); tope_micros = tope de contratos de ese tipo
+    D = ROOT / "docs/research/m1_largo_20261117"; fr_usd = float(friccion(contrato)[0]) * mult; fr_nq = float(friccion("NQ")[0]); partes = []
     if "SOM" in reglas:
         o = pd.read_csv(D / "SOM_OPS_NQ.csv.gz"); o = o[o.celda == "sin_finde"]; partes.append(o[["dia", "bruto", "riesgo"]])
     if "SOMEOD" in reglas:   # SOM que cierra a las 15:55 de NY (celda «eod»): la única que respeta el «plano a las 16:45» de Lucid (2026-11-19)
@@ -98,10 +99,12 @@ def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200
         partes.append(o[["dia", "bruto", "riesgo"]])
     o = pd.concat(partes, ignore_index=True); o["ses"] = pd.to_datetime(o.dia).dt.strftime("%Y%m%d").astype(int)
     o = o[(o.ses >= desde) & (o.ses <= hasta)]
-    mic = np.clip(np.floor(usd_riesgo / (o.riesgo * 2.0)), 1, tope_micros)
-    d = (mic * (o.bruto * 2.0 - fr_usd)).groupby(o.ses).sum()
+    mic = np.clip(np.floor(usd_riesgo / (o.riesgo * mult)), 1, tope_micros)
+    d = (mic * (o.bruto * mult - fr_usd)).groupby(o.ses).sum()
     ses = [int(x.strftime("%Y%m%d")) for x in pd.bdate_range(str(desde), str(hasta))]
-    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(reglas), usd_riesgo=usd_riesgo, micros_medio=float(mic.mean()))
+    return pd.Series([d.get(s, 0.0) for s in ses], index=ses), dict(reglas=list(reglas), usd_riesgo=usd_riesgo, micros_medio=float(mic.mean()),
+        contrato=contrato, riesgo_usd_real_p10_50_90=[float(np.quantile(mic * o.riesgo * mult, q)) for q in (0.1, 0.5, 0.9)] if len(o) else None,
+        ops=int(len(o)))
 
 
 def serie_orb5(usd_riesgo=100.0, desde=20200101, hasta=20250731, tope_micros=20, fric_max=0.08):

@@ -198,5 +198,71 @@ def main():
     (OUT / "LUCID_GUIA.json").write_text(json.dumps(res, indent=1, default=float) + "\n")
 
 
+
+
+def _ops_reglas():
+    """Operaciones por regla (T, R, ZB) en NQ con R neto con la fricción canónica de NQ: para comparar períodos (2026-11-19)."""
+    import pandas as pd
+    from edgelab.research.embudo_runners import friccion
+    fr = float(friccion("NQ")[0]); D = ROOT / "docs/research"
+    t = pd.read_csv(D / "m1_largo_20261117/FS_OPS_T2008_NQ.csv.gz"); t = t[t.riesgo > 0]
+    t = pd.DataFrame(dict(regla="T", ses=t.dia, bruto=t.neto + fr, riesgo=t.riesgo))
+    o = pd.read_csv(D / "neto_pistas_20261119/RZ_OPS.csv.gz"); o = o[o.inst == "NQ"]; rg = 0.25 * o.atr20
+    o = o.assign(bruto=np.where(o.mae_pts >= rg, -rg, o.pnl_pts), riesgo=rg)
+    r = o[o.variante == "R_21_100_2.5_660"]; r = pd.DataFrame(dict(regla="R", ses=r.ses, bruto=r.bruto, riesgo=r.riesgo))
+    banda = [f"Z_{a}_{b}_{e}" for (a, b) in ((10, 30), (15, 20), (30, 10)) for e in (35, 45, 55)]
+    z = o[(o.modulo == "Z") & o.variante.isin(banda)].groupby("ses")[["bruto", "riesgo"]].mean().reset_index().assign(regla="ZB")
+    x = pd.concat([t, r, z[["regla", "ses", "bruto", "riesgo"]]], ignore_index=True)
+    x["fecha"] = pd.to_datetime(x.ses); x["R"] = (x.bruto - fr) / x.riesgo; x["mes"] = x.fecha.dt.to_period("M").astype(str)
+    return x[x.riesgo > 0]
+
+
+def _tabla_periodo(x, desde, hasta):
+    import pandas as pd
+    s = x[(x.fecha >= desde) & (x.fecha <= hasta)]; meses = pd.period_range(desde, hasta, freq="M").astype(str); out = {}
+    for g, d in list(s.groupby("regla")) + [("T+R+ZB", s)]:
+        m = d.groupby("mes").R.sum().reindex(meses, fill_value=0.0)
+        out[g] = dict(ops=int(len(d)), ops_mes=len(d) / len(meses), R_op=float(d.R.mean()), R_mes=float(m.mean()),
+                      t_mensual=float(m.mean() / m.std(ddof=1) * np.sqrt(len(m))), meses_pos=float((m > 0).mean()), meses=len(meses))
+    return out
+
+
+def extra():
+    """Pedido de Nico (2026-11-19): «¿qué pasa después del desarrollo de 2025-07? ¿gana menos? ¿qué pasa si se operan minis en vez de micros?»
+    Período 2025-08 → 2026-09 (lo último antes del terminal sellado del 2026-10-01; datos ya vistos al elegir las reglas, no fuera de muestra)."""
+    from lucid_canastas import serie_senales
+    x = _ops_reglas(); res = dict(periodos={}, por_anio={}, lucid_periodo={}, minis={})
+    for nom, (a, b) in (("2020-01_2025-07", ("2020-01-01", "2025-07-31")), ("2025-08_2026-09", ("2025-08-01", "2026-09-30"))):
+        res["periodos"][nom] = _tabla_periodo(x, a, b)
+    for y in range(2018, 2027):
+        res["por_anio"][str(y)] = _tabla_periodo(x, f"{y}-01-01", f"{y}-12-31" if y < 2026 else "2026-09-30")
+    reglas = ("T", "R", "ZB")
+    for tam in ("25K", "50K"):                                      # Lucid con la media propia de cada período (realizada, sin contraer)
+        r = TAMANOS[tam]; esc = r["mll"] / 1000.0
+        for nom, (a, b) in (("2020-01_2025-07", (20200101, 20250731)), ("2025-08_2026-09", (20250801, 20260930))):
+            s, info = serie_senales(100.0 * esc, reglas, desde=a, hasta=b, tope_micros=r["micros"] // 3); y = s.to_numpy(np.float64)
+            acc = por_cuenta(y, r, 0.5); pr = precio(tam, True, 0.5)
+            acc.update(precio=pr, ev_examen=acc["cobrado_medio"] - pr, usd_dia=float(y.mean()), sd_dia=float(y.std()), sesiones=len(y))
+            res["lucid_periodo"][f"{tam}|{nom}|media_propia"] = acc
+    for tam, r in TAMANOS.items():                                   # micros (tamaño por riesgo) vs 1 mini por regla vs 10 micros por regla
+        esc = r["mll"] / 1000.0; maxm = r["micros"] // 10
+        casos = (("micros_por_riesgo", dict(usd_riesgo=100.0 * esc, tope_micros=r["micros"] // 3, contrato="MNQ")),
+                 ("1_mini", dict(usd_riesgo=1.0, tope_micros=1, contrato="NQ")),
+                 ("10_micros", dict(usd_riesgo=1e9, tope_micros=10, contrato="MNQ")))
+        if maxm // 3 >= 2: casos += (("2_minis", dict(usd_riesgo=1e9, tope_micros=2, contrato="NQ")),)
+        for nc, kw in casos:
+            s, info = serie_senales(reglas=reglas, **kw); xx = s.to_numpy(np.float64)
+            for mu_nom, mu in (("contraida", 0.5 * xx.mean()), ("cero", 0.0)):
+                y = xx - xx.mean() + mu; acc = por_cuenta(y, r, 0.5); pr = precio(tam, True, 0.5)
+                acc.update(precio=pr, ev_examen=acc["cobrado_medio"] - pr, ev_por_mes_cuenta=(acc["cobrado_medio"] - pr) / max(acc["dias_cuenta_media"], 1) * 21,
+                           usd_dia=float(y.mean()), sd_dia=float(y.std()), peor_dia=float(y.min()), riesgo_usd_real_p10_50_90=info["riesgo_usd_real_p10_50_90"],
+                           contratos_medio=info["micros_medio"], max_contratos_tamano=r["micros"] if kw["contrato"] == "MNQ" else maxm)
+                k = f"{tam}|{nc}|{mu_nom}"; res["minis"][k] = acc
+                if mu_nom == "contraida" and tam in ("25K", "50K", "150K"):
+                    res["minis"][k]["cartera_eval10"] = cartera(y, r, 0.5, pr, 10, N=2000)
+                print(k, round(acc["pasa"], 3), round(acc["ev_examen"]), acc["dias_pasar_p10_50_90"], flush=True)
+    (OUT / "LUCID_GUIA_EXTRA.json").write_text(json.dumps(res, indent=1, default=float) + "\n")
+
+
 if __name__ == "__main__":
-    main()
+    extra() if sys.argv[1:] == ["extra"] else main()

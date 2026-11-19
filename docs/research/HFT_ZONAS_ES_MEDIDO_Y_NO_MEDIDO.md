@@ -1368,3 +1368,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   `docs/research/lucid_guia_20261119/RESULTADO.md` y `CUMPLIMIENTO.md`.
 - **NO MEDIDO:** valor de la cuenta live; consistencia de 40 %; solapamiento horario de las operaciones opuestas (sin hora de salida);
   tamaño máximo de la fondeada si escala; coordinación entre usuarios de FundedSync.
+
+## 2026-11-19 — LUCID-GUIA extra (tramo 2025-08 → 2026-09 y minis)
+- **MEDIDO:** R/mes por regla y por año hasta 2026-09; Lucid con la media de cada período; micros vs 1–2 minis vs 10 micros en los cuatro
+  tamaños. Acta: `docs/research/lucid_guia_20261119/RESULTADO_PERIODO_Y_MINIS.md`.
+- **NO MEDIDO:** piso y DLL intradía (pesan con minis); después del 2026-10-01 (terminal sellado).

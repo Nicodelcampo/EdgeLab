@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (29)
+## PISTA_VIVA (30)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -49,6 +49,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/MNQ, LucidFlex 25K–150K
   - Siguiente: Decisión de Nico: tamaño, riesgo por operación y cantidad de evaluaciones; forward de la canasta antes de escalar; SOM sólo como SOMEOD.
   - Evidencia: `docs/research/lucid_guia_20261119/RESULTADO.md`, `docs/research/lucid_guia_20261119/CUMPLIMIENTO.md`, `docs/research/lucid_guia_20261119/LUCID_GUIA.json`
+- **Canasta T+R+ZB: tramo 2025-08 → 2026-09 y tamaño en minis en LucidFlex** (`F-LUCID-PERIODO-MINIS`, 2026-11-19, humano)
+  - Efecto: 2025-08→2026-09 (no fuera de muestra): T+R+ZB +5,59 R/mes (antes +5,08), t mensual 2,34, 64 % meses + (antes 76 %); Z-banda baja (+0,37 R/mes; 2026 −0,111 R/op). 1 mini = 10 micros en resultado; con 1 mini el riesgo real es 1.661 USD (25K: más que la pérdida máxima) y el EV sin ventaja ya es +889/examen: el EV con minis es mayormente varianza; el modelo (DLL y piso al cierre) lo sobrestima.
+  - Dónde: NQ/MNQ, LucidFlex 25K–150K
+  - Siguiente: Si se consideran minis: simulación intradía del piso y del DLL antes de decidir.
+  - Evidencia: `docs/research/lucid_guia_20261119/RESULTADO_PERIODO_Y_MINIS.md`, `docs/research/lucid_guia_20261119/LUCID_GUIA_EXTRA.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
