@@ -20,7 +20,8 @@ PARCIAL = ROOT / "data/neto_pistas"; M1L = ROOT / "docs/research/m1_largo_202611
 FIN = "2026-09-29"; KS = (0.25, 0.5, 0.75, 1.0)
 GRILLAS = {"R": dict(ema_period=[14, 21, 30], umbral=[80.0, 100.0, 120.0], vwap_atr_mult=[2.0, 2.5, 3.0], entry_end_min_et=[630, 660, 720]),
            "Z": dict(bucket_minutes=[10, 15, 30], ema_period=[10, 20, 30], min_efficiency_pct=[35.0, 45.0, 55.0])}
-FABRICA = {"R": (21, 100.0, 2.5, 660), "Z": (15, 20, 45.0)}
+FABRICA = {"R": (21, 100.0, 2.5, 660), "Z": (15, 20, 45.0), "A20": (7, 2.0, 2.5, 1.5)}
+MODS = ("R", "Z", "A20")
 
 
 def _cfg(mod, v):
@@ -41,7 +42,8 @@ def _ops(F, mod, ms, D, cfg):
     pp = pd.to_numeric(x.pnl_pts, errors="coerce"); pu = pd.to_numeric(x.pnl_usd, errors="coerce")
     pv = float((pu / pp).replace([np.inf, -np.inf], np.nan).dropna().median())            # usd por punto de la posición
     ses = _sesion(pd.DatetimeIndex(tt)); a = atr20(D)                                      # ATR20 de las 20 sesiones PREVIAS (shift(1))
-    return pd.DataFrame(dict(ses=ses, t=tt.values, side=x.side.values, pnl_pts=pp.values,
+    rg = (pd.to_numeric(x.entry_price, errors="coerce") - pd.to_numeric(x.stop_price, errors="coerce")).abs()   # A20: stop duro fijo al entrar
+    return pd.DataFrame(dict(ses=ses, t=tt.values, side=x.side.values, pnl_pts=pp.values, riesgo=rg.values,
                              mae_pts=(pd.to_numeric(x.mae_usd, errors="coerce").abs() / pv).values, atr20=a.reindex(ses).to_numpy(float)))
 
 
@@ -59,7 +61,7 @@ def rz_grilla():
     exigir_contada(PRE); PARCIAL.mkdir(parents=True, exist_ok=True)
     for inst in ("NQ", "ES"):
         F, D, ms = _ms(inst)
-        for mod in ("R", "Z"):
+        for mod in MODS:
             for v in itertools.product(*GRILLAS[mod].values()):
                 f = PARCIAL / f"{inst}_{_nombre(mod, v)}.csv"
                 if f.exists(): continue
@@ -70,7 +72,7 @@ def rz_grilla():
 
 def rz_prefijo():
     out = {}
-    for mod in ("R", "Z"):
+    for mod in MODS:
         F, D, ms = _ms("NQ"); full = _ops(F, mod, ms, D, _cfg(mod, FABRICA[mod]))
         F, Dc, msc = _ms("NQ", hasta="2015-07-01"); cut = _ops(F, mod, msc, Dc, _cfg(mod, FABRICA[mod]))
         a = full[pd.to_datetime(full.t) < "2015-06-30"].reset_index(drop=True); b = cut[pd.to_datetime(cut.t) < "2015-06-30"].reset_index(drop=True)
@@ -92,6 +94,8 @@ def _supf(r, perm=300, seed=1, meses=None):
 
 
 def _r_neto(G, k, fr):
+    if k is None:                                                     # A20: su propio stop duro
+        return (G.pnl_pts - fr) / G.riesgo, G.pnl_pts / G.riesgo
     s = k * G.atr20; res = np.where(G.mae_pts >= s, -s, G.pnl_pts)
     return (res - fr) / s, (res) / s
 
@@ -99,16 +103,18 @@ def _r_neto(G, k, fr):
 def rz_decidir():
     from edgelab.research import g2
     from edgelab.research.embudo_runners import friccion
-    G = pd.read_csv(DIR / "RZ_OPS.csv.gz", parse_dates=["ses", "t"]); G = G[np.isfinite(G.atr20) & (G.atr20 > 0) & (G.ses <= FIN)]
+    G = pd.read_csv(DIR / "RZ_OPS.csv.gz", parse_dates=["ses", "t"]); G = G[(G.ses <= FIN) & ((G.modulo == "A20") | (np.isfinite(G.atr20) & (G.atr20 > 0)))]
     out = {}
-    for mod in ("R", "Z"):
+    for mod in MODS:
+        ks = (None,) if mod == "A20" else KS
         nombres = [_nombre(mod, v) for v in itertools.product(*GRILLAS[mod].values())]; fab = _nombre(mod, FABRICA[mod])
         porinst = {}
         for inst in ("NQ", "ES"):
             g = G[(G.modulo == mod) & (G.inst == inst)].copy(); fr = float(friccion(inst)[0])
-            porinst[inst] = {k: g.assign(R=_r_neto(g, k, fr)[0], Rb=_r_neto(g, k, fr)[1]) for k in KS}
-        med = {k: float(porinst["NQ"][k].groupby("variante").R.mean().reindex(nombres).median()) for k in KS}
-        k_el = max(KS, key=lambda k: med[k]); W = porinst["NQ"][k_el]
+            if mod == "A20": g = g[np.isfinite(g.riesgo) & (g.riesgo > 0)]
+            porinst[inst] = {k: g.assign(R=_r_neto(g, k, fr)[0], Rb=_r_neto(g, k, fr)[1]) for k in ks}
+        med = {k: float(porinst["NQ"][k].groupby("variante").R.mean().reindex(nombres).median()) for k in ks}
+        k_el = max(ks, key=lambda k: med[k] if med[k] == med[k] else -9); W = porinst["NQ"][k_el]
         f_ = W[W.variante == fab].sort_values("t"); kq, pq = _supf(f_.R.to_numpy(), meses=f_.ses.dt.to_period("M").to_numpy())
         quiebre = str(f_.ses.iloc[kq].date())
         rv = W.groupby("variante").R.mean().reindex(nombres); rf = float(rv[fab])
@@ -124,13 +130,13 @@ def rz_decidir():
         meseta = frac >= 0.70 and mediana >= 0.5 * rf and (mv or 0) > 0
         ver = "SOBREAJUSTE_PROBABLE" if (pbo > 0.5 or frac < 0.5) else ("REGIMEN_ROBUSTO" if (meseta and pbo < 0.3) else "INTERMEDIO")
         anio = f_.groupby(f_.ses.dt.year).R.mean()
-        out[mod] = dict(k_elegido=k_el, mediana_grilla_por_k=med, R_fabrica=rf, Rb_fabrica=float(W[W.variante == fab].Rb.mean()),
+        out[mod] = dict(k_elegido=k_el, mediana_grilla_por_k={str(k): v for k, v in med.items()}, R_fabrica=rf, Rb_fabrica=float(W[W.variante == fab].Rb.mean()),
                         frac_variantes_positivas=frac, mediana_grilla=mediana, vecinos=dict(mediana=mv, positivos=pv_, n=nv), pbo=float(pbo),
                         meseta=bool(meseta), veredicto=ver, quiebre_fabrica=quiebre, p_quiebre=pq,
                         R_fabrica_antes=float(f_[f_.ses < quiebre].R.mean()), R_fabrica_despues=float(f_[f_.ses >= quiebre].R.mean()),
                         anios_positivos=f"{int((anio > 0).sum())}/{len(anio)}", R_fabrica_por_anio=anio.round(3).to_dict(),
                         n_fabrica=int(len(f_)), ops_por_mes=float(len(f_) / max(f_.ses.dt.to_period("M").nunique(), 1)),
-                        ES_fabrica_por_k={k: float(porinst["ES"][k].query("variante == @fab").R.mean()) for k in KS})
+                        ES_fabrica_por_k={str(k): float(porinst["ES"][k].query("variante == @fab").R.mean()) for k in ks})
     (DIR / "RZ_RESULTADO.json").write_text(json.dumps(out, indent=1, default=str))
     for m, v in out.items(): print(m, {x: v[x] for x in ("k_elegido", "R_fabrica", "Rb_fabrica", "frac_variantes_positivas", "mediana_grilla", "vecinos", "pbo", "veredicto", "quiebre_fabrica", "p_quiebre", "R_fabrica_antes", "R_fabrica_despues", "anios_positivos", "ops_por_mes")})
 

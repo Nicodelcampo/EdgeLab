@@ -47,6 +47,14 @@ comparar esquemas.
 - **Sin look-ahead:** prueba de causalidad por prefijo — las operaciones de la fábrica con datos cortados en 2015-06-30 coinciden con las de
   la corrida completa hasta esa fecha (entrada, lado y resultado), y el ATR20 usado es de la sesión anterior.
 
+## A2. A20 (Absorb 20 min, sólo cortos) — enmienda de Nico del 2026-11-19, antes de correr A20
+- «También A20 … son grandes ganadoras desde 2020». A20 tiene stop duro a `hard_stop_atr_mult` × ATR14 (velas de 20 min) fijado al entrar:
+  R neto = (resultado − fricción) / |entrada − stop|; no necesita stop de catástrofe.
+- **Grilla (cerrada):** `st_period` {5, 7, 10} × `st_mult` {1,5; 2,0; 2,5} × `absorb_vol_mult` {2,0; 2,5; 3,0} × `hard_stop_atr_mult`
+  {1,0; 1,5; 2,0} = 81 (fábrica 7 / 2,0 / 2,5 / 1,5). NQ decide, ES descriptivo.
+- **Controles y veredicto:** los mismos de A (meseta, vecinos, PBO, quiebre propio con sup-F, años positivos, prefijo). Se cuenta 1 prueba
+  más en `FUNDEDSYNC`.
+
 ## B. Neto de Franklin (NQ + ES) y SOM (NQ + ES + YM, celda `sin_finde`)
 - **Esquemas (cerrados), sobre las operaciones versionadas:** S0 riesgo constante (R medio, la medida actual); S1 contrato fijo (R como
   cociente de sumas Σ neto / Σ riesgo); S2 tamaño ∝ 1/√riesgo; S3 = S0 salteando fricción > 0,08 R (conocida al entrar); S4 = S2 salteando
