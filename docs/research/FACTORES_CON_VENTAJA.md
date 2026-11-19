@@ -265,10 +265,10 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Pre-registrar RQ5+RQ6 en ES+NQ con tamaño fijo o ∝1/√riesgo (R como cociente de sumas) y plan K49 para REP+holdout antes de abrir.
   - Evidencia: `docs/research/roboquant_20261118/RESULTADO.md`, `docs/research/roboquant_20261118/DESC.json`, `docs/research/friccion_rq_20261119/RESULTADO.md`
 - **A20 (Absorb 20 min, cortos, FundedSync): negativo en la ventana completa y meseta positiva sólo desde su quiebre de 2017-11** (`F-A20-DESDE-2017`, 2026-11-19, humano)
-  - Efecto: 0/81 variantes positivas 2008–2026 (fábrica −0,123 R neto); quiebre 2017-11-10 p 0,003; desde ahí 81/81 positivas (mediana +0,065), desde 2020 mediana +0,084; fricción mediana 0,13 R; 2019–2021 negativos.
+  - Efecto: 0/81 variantes positivas 2008–2026 (fábrica −0,123 R neto); quiebre 2017-11-10 p 0,003; desde ahí 81/81 positivas (mediana +0,065), desde 2020 mediana +0,084; fricción mediana 0,13 R; 2019–2021 negativos. | A20-REGIMEN 2026-11-19: INTERMEDIO — PBO 0,39, 2017-11→2021 0/81 positivas, 2022→2026 81/81, ES −0,079.
   - Dónde: NQ
-  - Siguiente: Si se quiere probar como régimen, pre-registrar la ventana desde el quiebre (como T) y confirmar con datos que el vendedor no vio.
-  - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`
+  - Siguiente: Sólo forward con vigilancia; no candidata.
+  - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`, `docs/research/a20_regimen_20261119/RESULTADO.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1

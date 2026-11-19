@@ -1297,3 +1297,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** 9 contrastes en DESC: nominadas SOM-fricción (+0,089), Franklin-ATR alto (+0,172) y Franklin-VIX alto (+0,211); REP bloqueado
   por K49 (potencia 0,05–0,06). Acta: `docs/research/mejora_sf_20261119/RESULTADO.md`.
 - **NO MEDIDO:** el contraste VIX/ATR de Franklin en YM/EMD/RTY/GC, forward.
+
+## 2026-11-19 — A20 desde su quiebre (A20-REGIMEN)
+- **MEDIDO:** procedimiento de T desde 2017-11: 81/81 positivas pero PBO 0,39, 0/81 en 2017–2021 y ES negativo → INTERMEDIO. Acta:
+  `docs/research/a20_regimen_20261119/RESULTADO.md`.
