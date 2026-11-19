@@ -1385,3 +1385,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   preflight de la versión A5 en verde.
 - **NO MEDIDO:** la campaña A5 (`docs/research/picos_defendidos_a5_20261119/`: calibración M1 contra ticks, DESC, REP); la grilla del PR
   (no se lanza).
+
+## 2026-11-19 — PICOS-DEFENDIDOS-ES (embudo, réplica de pistas)
+- **MEDIDO:** DESC 2025-08 → 2026-03: 0 nominadas (maxT t máx. 2,28). Réplica 2026-04 → 09 de las 20 pistas: 0/20 confirmadas (Simes p 0,999);
+  canasta −0,141 R, IC90 [−0,207; −0,074], potencia 0,9999 → FIN SIN_CANDIDATAS, en contra con potencia. Estado:
+  `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/`; auditoría: `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`.
+- **NO MEDIDO:** la versión A5 (18 años de M1), que es la que mide la regla de la captura.
