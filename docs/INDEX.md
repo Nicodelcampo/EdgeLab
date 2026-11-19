@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1477 |
+| `docs/research` | 1478 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -41,6 +41,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
+| RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |
 | FRENTES | 1 | `FRENTES_ABIERTOS_20261119.md` | 2026-11-19 | VIGENTE — tablero de frentes de la sesión de Claude; pedido de Nico: «no olvides |
 | AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
@@ -99,7 +100,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
 | GEX | 3 | `GEX_FUENTES_Y_EVIDENCIA_20261006.md` | 2026-10-06 | INVESTIGACIÓN, nada ejecutado sobre retornos. Complementa la información que Nic |
 | EXPLO | 1 | `EXPLO_ASIMETRIA_EXCURSION_20261006.md` | 2026-10-06 | - |
-| ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
 
 ## Superados (7)
 

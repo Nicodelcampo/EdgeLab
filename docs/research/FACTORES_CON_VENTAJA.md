@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (23)
+## PISTA_VIVA (24)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, ES
   - Siguiente: Pre-registrar la confirmación en YM+EMD+RTY+GC (contraste nunca mirado ahí) y/o forward con vigilancia; ATR y VIX cuentan como una sola mejora.
   - Evidencia: `docs/research/mejora_sf_20261119/RESULTADO.md`, `docs/research/mejora_sf_20261119/DESC.json`
+- **Compresión de volatilidad implícita (z-score de 6 barras de VIX/VXN y VIX9D < −1) → largo en índice 2–4 días; también eVRP>0 con contango** (`F-COMPRESION-VOL-CRECE`, 2026-11-19, humano)
+  - Efecto: DESC A5: compresión −0,01 / +0,05 / +0,13 R por época (crece); eVRP −0,01 / +0,04 / +0,10. La versión intradía (FM7N) da ≈ 0: el efecto necesita días. Confirmar con la mitad del efecto pide ≈ 1.100 operaciones (≈ 12 años de forward).
+  - Dónde: ES, NQ
+  - Siguiente: Sólo cuenta de broker y en canasta; no operable en Lucid. No hay confirmación histórica con potencia.
+  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/carril2_20261119/RESULTADO_LOTE2.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
@@ -125,7 +130,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (26)
+## PALANCA_DE_DISENO (27)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -139,6 +144,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: cuenta LucidFlex 25K
   - Siguiente: Verificar horario/tenencia/noticias de la cuenta objetivo antes de abrir cualquier familia; Carril 2 sólo si se decide una cuenta de broker (decisión de Nico).
   - Evidencia: `docs/research/carril2_20261119/DISENO.md`
+- **La confirmabilidad (potencia 0,8 a α≈0,01 con la mitad del efecto) depende del efecto por operación × frecuencia** (`F-CONFIRMABILIDAD-EFECTO-POR-OP`, 2026-11-19, humano)
+  - Efecto: Reglas de +0,10–0,15 R con ≈ 4 ops/mes necesitan décadas de forward (Franklin días volátiles ≈ 620 meses, compresión ≈ 145, SOM filtrado ≈ 1.400); T (+0,15 R, ≈ 19/mes) y R (+0,27–0,45 R) se confirman en meses.
+  - Dónde: todas
+  - Siguiente: Priorizar mecanismos de efecto grande por operación o alta frecuencia; calcular meses de forward antes de invertir en una mejora de +0,05 R.
+  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia
@@ -340,7 +350,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (41)
+## NO_REPETIR (42)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -349,6 +359,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: ES, NQ, YM, GC
   - Siguiente: Nada en esta forma; el stop estructural resuelve la fricción pero no hay bruto.
   - Evidencia: `docs/research/externas_estructurales_a5_20261118/RESULTADO.md`
+- **Reversión de corto plazo en índices de varios días (IBS+VIX, Double Seven, Turnaround Tuesday, cambio de mes, pico de VIX BB 2σ)** (`F-REVERSION-CORTA-APAGADA-2018`, 2026-11-19, humano)
+  - Efecto: DESC A5: positivas en 2006–2011 y 2012–2017 (+0,07 a +0,31 R) y ≈ 0 o negativas en 2018–2025 (−0,10 a +0,001). El promedio de 20 años las hacía parecer vivas: apagadas en el régimen actual, no refutadas.
+  - Dónde: ES, NQ, YM, RTY
+  - Siguiente: No perseguir en el régimen actual; además no son operables en Lucid (varios días).
+  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
