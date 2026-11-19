@@ -40,3 +40,8 @@ Código: `tools/regimen_forward_tiempo.py` (descriptivo, sobre desarrollo ya mir
   NQ 2024-01 → 2025-07, con la lista del vendedor ACTIVADA, como el simulador: poner `UsarFechasVendedor = true` para la paridad).
   Columnas: sesión, minuto de entrada ET (= apertura de la vela de 1 min siguiente al cierre de 10 min), lado, resultado en puntos sin
   stop, MAE, ATR20, distancia del stop y si el stop se habría tocado.
+- **Paridad del algoritmo (verificada, 2026-11-19):** `tools/paridad_atrphase_nt8.py` reimplementa línea a línea la lógica del C# (velas de
+  10 min armadas como NT8 desde el M1, llenado en el minuto siguiente, reversa un minuto después) y la compara con el simulador: **56/56
+  entradas idénticas (minuto y lado), 0 sobrantes, 0 faltantes** (NQ 2024-01 → 2025-07, `PARIDAD_ALGORITMO.json`). El primer intento dio 0 %
+  por la convención de sello (NT8 y el simulador sellan la vela de 1 min con su CIERRE); se corrigió la etiqueta, no la lógica. Queda la
+  paridad dentro de NT8 (compilación, plantilla ETH, zona horaria de la PC, eventos de órdenes).

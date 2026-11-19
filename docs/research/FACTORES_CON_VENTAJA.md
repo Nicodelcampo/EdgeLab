@@ -162,8 +162,8 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
 - **Ejecutabilidad de R (AtrPhase): el DLL del vendedor no tiene stop; la R validada usa stop de catástrofe 0,25 × ATR20** (`F-R-SIN-STOP-EN-DLL`, 2026-11-19, humano)
   - Efecto: Sin stop la media es parecida (+0,275 vs +0,269 R) pero la cola llega a −6,3 unidades (−1,6 ATR20): con 1 MNQ una operación se acerca al DLL de $600 de Lucid. Con stop, peor ≈ −1 unidad.
   - Dónde: NQ, LucidFlex
-  - Siguiente: Estrategia NT8 propia escrita (nt8/strategies/EdgeLabAtrPhaseStop.cs, sin compilar): compilar y pasar la paridad contra R_REFERENCIA_PARIDAD.csv antes de operar R; mientras tanto, T sola en Lucid.
-  - Evidencia: `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`
+  - Siguiente: Estrategia NT8 propia escrita (nt8/strategies/EdgeLabAtrPhaseStop.cs): su algoritmo da 56/56 entradas idénticas al simulador (tools/paridad_atrphase_nt8.py). Falta compilar en NT8 y repetir la paridad allí antes de operar R; mientras tanto, T sola en Lucid.
+  - Evidencia: `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`, `docs/research/regimen_forward_20261119/PARIDAD_ALGORITMO.json`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia
