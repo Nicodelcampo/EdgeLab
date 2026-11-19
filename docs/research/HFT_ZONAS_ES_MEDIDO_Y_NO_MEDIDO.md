@@ -1351,3 +1351,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-19 — CARRIL2-CIERRE (entrada 15:56 vs 18:00)
 - **MEDIDO:** 0/8 en BH; contrastes −0,056 a +0,022 R: la hora de entrada no explica la debilidad del lote 1. Acta:
   `docs/research/carril2_20261119/RESULTADO_CIERRE.md`.
+
+## 2026-11-19 — CARRIL2-CRASH (filtro de curva de VIX invertida)
+- **MEDIDO:** DESC 2011–2017: invertida +0,240 R, normal −0,043, contraste −0,284 (p 0,99): refutado con el signo contrario. Acta:
+  `docs/research/carril2_20261119/RESULTADO_CRASH.md`.
+- **NO MEDIDO:** REP (sin nominada); otros umbrales (no se ajustan después de mirar).
