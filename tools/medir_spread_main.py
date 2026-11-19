@@ -19,6 +19,7 @@ def main():
     f = glob.glob(ent + f"/**/{inst}_ticks.parquet", recursive=True)[0]; pf = pq.ParquetFile(f)
     cols = [c for c in ("ts_utc_ns", "bid_ticks", "ask_ticks", "trade_date") if c in pf.schema_arrow.names]
     sumas, n, por_ses = 0.0, 0, []
+    hora = {}                                                    # 2026-11-19: también por hora CT (media, mediana aprox. y % a 1 tick)
     for g in range(pf.num_row_groups):
         t = pf.read_row_group(g, columns=cols).to_pandas()
         t = t[t.ts_utc_ns < HOLDOUT_APERTURA_UTC_NS]
@@ -27,8 +28,14 @@ def main():
         ok = (t.bid_ticks > 0) & (t.ask_ticks >= t.bid_ticks) & (m >= 510) & (m < 900)
         s = (t.ask_ticks - t.bid_ticks)[ok].to_numpy(float)
         if len(s): sumas += s.sum(); n += len(s); por_ses.append(float(np.median(s)))
+        hh = ct.dt.hour[ok].to_numpy()
+        for h in np.unique(hh):
+            x = s[hh == h]; a = hora.setdefault(int(h), [0.0, 0, 0, np.zeros(21)])
+            a[0] += x.sum(); a[1] += len(x); a[2] += int((x <= 1).sum()); a[3] += np.bincount(np.clip(x.astype(int), 0, 20), minlength=21)
     out = dict(instrumento=inst, criterio="media ask-bid en ticks, libro válido, 08:30-15:00 CT, desarrollo", spread_ticks_media=sumas / max(n, 1),
-               n_ticks=n, sesiones=len(por_ses), p50_mediana_por_sesion=float(np.median(por_ses)) if por_ses else None, archivo=os.path.basename(f))
+               n_ticks=n, sesiones=len(por_ses), p50_mediana_por_sesion=float(np.median(por_ses)) if por_ses else None, archivo=os.path.basename(f),
+               por_hora_ct={h: dict(media=v[0] / max(v[1], 1), n=v[1], frac_1tick=v[2] / max(v[1], 1),
+                                    mediana=int(np.searchsorted(np.cumsum(v[3]), v[1] / 2))) for h, v in sorted(hora.items())})
     json.dump(out, open(f"SPREAD_{inst}.json", "w"), indent=1); print(json.dumps(out))
 
 
