@@ -145,10 +145,10 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: Verificar horario/tenencia/noticias de la cuenta objetivo antes de abrir cualquier familia; Carril 2 sólo si se decide una cuenta de broker (decisión de Nico).
   - Evidencia: `docs/research/carril2_20261119/DISENO.md`
 - **La confirmabilidad (potencia 0,8 a α≈0,01 con la mitad del efecto) depende del efecto por operación × frecuencia** (`F-CONFIRMABILIDAD-EFECTO-POR-OP`, 2026-11-19, humano)
-  - Efecto: Reglas de +0,10–0,15 R con ≈ 4 ops/mes necesitan décadas de forward (Franklin días volátiles ≈ 620 meses, compresión ≈ 145, SOM filtrado ≈ 1.400); T (+0,15 R, ≈ 19/mes) y R (+0,27–0,45 R) se confirman en meses.
+  - Efecto: Reglas de +0,10–0,15 R con ≈ 4 ops/mes necesitan décadas de forward (Franklin días volátiles ≈ 620 meses, compresión ≈ 145, SOM filtrado ≈ 1.400); Aun la canasta T+R (+0,27 R por día operado) tarda ≈ 15 meses de forward con su media de desarrollo y ≈ 33 con la mitad (adenda de REGIMEN-FORWARD).
   - Dónde: todas
   - Siguiente: Priorizar mecanismos de efecto grande por operación o alta frecuencia; calcular meses de forward antes de invertir en una mejora de +0,05 R.
-  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`
+  - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia

@@ -56,7 +56,8 @@ Tablero de frentes: `FRENTES_ABIERTOS_20261119.md`. Lo más valioso y qué indag
 ## 5. Qué queda vivo y qué haría después
 1. **Forward de la canasta T + R** (y SOM/Franklin como regímenes) con `tools/seguimiento_forward.py <HASTA>` cuando haya datos sellados nuevos
    (el dataset sellado se actualizó por última vez el 16-nov; no había sesiones forward para leer). El vigilante decide solo: EDGE con e ≥ 20,
-   suspender por futilidad o drawdown.
+   suspender por futilidad o drawdown. **Corrección:** tarda ≈ 15 meses con la media de desarrollo y ≈ 33 con la mitad, no 4–8
+   (`regimen_forward_20261119/ADENDA_POTENCIA.md`).
 2. **Reversión de volatilidad implícita** (pico + compresión) como una sola hipótesis en datos no mirados: sólo sirve para una cuenta de broker
    (es de varios días). Con RTY/EMD la potencia histórica no llega a 0,8 (≈ 0,3): forward o nada.
 3. **Franklin en días volátiles**: forward con vigilancia; ATR y VIX cuentan como una sola mejora.

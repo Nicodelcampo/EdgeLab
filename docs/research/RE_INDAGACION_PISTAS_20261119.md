@@ -51,8 +51,8 @@ OPS_DESC_REP.csv.gz` (FM7/FM7N). Potencia: n necesario para 0,8 con la mitad del
    ≈ 0 o negativo desde 2018: el promedio de 20 años las hacía parecer vivas. Con el criterio «edges actuales» (Nico, 2026-10-22) no se
    persiguen. No se dan por refutadas (el efecto viejo fue real), sino por **apagadas en el régimen actual**.
 2. **La confirmabilidad depende del efecto por operación.** Con α ≈ 0,01 y la mitad del efecto reciente, una regla de +0,10–0,15 R por
-   operación con ≈ 4 operaciones por mes necesita décadas de forward. Sólo T (+0,15 R, ≈ 19/mes) y R (+0,27–0,45 R) son confirmables en
-   meses. **La búsqueda debería priorizar mecanismos de efecto grande por operación o de alta frecuencia con efecto medio**, no filtros que
+   operación con ≈ 4 operaciones por mes necesita décadas de forward. Ni la canasta T + R decide rápido: ≈ 15 meses de forward con su media de
+   desarrollo y ≈ 33 con la mitad (`regimen_forward_20261119/ADENDA_POTENCIA.md`). **La búsqueda debería priorizar mecanismos de efecto grande por operación o de alta frecuencia con efecto medio**, no filtros que
    suben +0,05 R.
 3. **eVRP y compresión** (las únicas que suben) quedan como pistas para una cuenta de broker y sólo en canasta: solas no se confirman.
 
