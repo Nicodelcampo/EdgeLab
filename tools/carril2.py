@@ -9,6 +9,7 @@ Reusa `sqx_catalogo.simular` (calibración K28 registrada en config/simuladores_
   python tools/carril2.py correr     # operaciones de las 8 definiciones (4 reglas + 4 controles) → OPS.csv.gz (sólo DESC/REP, salidas fuera de HOLDOUT)
   python tools/carril2.py desc       # 8 pruebas en DESC, BH q 0,10 → DESC.json (commitear antes de rep)
   python tools/carril2.py rep        # nominadas con potencia en días ≥ 0,8 (K49), una vez con LORD++ → REP.json
+  python tools/carril2.py correr|desc|rep 2   # LOTE 2 (PREREGISTRO_LOTE2.md): régimen de volatilidad, Dynamic Breakout II, rotación ES/GC
 """
 import json, sys
 from pathlib import Path
@@ -19,6 +20,77 @@ DIR = ROOT / "docs/research/carril2_20261119"; PRE = "docs/research/carril2_2026
 FAM = "CARRIL2_A5"; FIN = 20250731
 INST = {"C2_IBS": ("ES", "NQ", "YM", "RTY"), "C2_D7": ("ES", "NQ", "YM", "RTY", "GC"), "C2_TT": ("ES", "NQ", "YM", "RTY"), "C2_TOM": ("ES", "NQ", "YM", "RTY")}
 REGLAS = ("C2_IBS", "C2_D7", "C2_TT", "C2_TOM")
+LOTE = dict(pre=PRE, ops="OPS.csv.gz", desc="DESC.json", rep="REP.json", etiqueta="REP_CARRIL2_LOTE1")
+INST2 = {"C2_VBB": ("ES", "NQ", "YM"), "C2_P80": ("ES", "NQ", "YM"), "C2_EVRP": ("ES", "NQ"), "C2_VZ": ("ES", "NQ"), "C2_DBO": ("GC", "ES", "NQ"),
+         "C2_ROT": ("ES", "GC")}
+
+
+def _lote2():
+    global PRE, INST, REGLAS
+    PRE = "docs/research/carril2_20261119/PREREGISTRO_LOTE2.md"; INST = INST2; REGLAS = tuple(INST2)
+    LOTE.update(pre=PRE, ops="OPS_LOTE2.csv.gz", desc="DESC_LOTE2.json", rep="REP_LOTE2.json", etiqueta="REP_CARRIL2_LOTE2")
+
+
+def _vol(V, B, col):
+    x = V[col].copy(); x.index = pd.to_datetime(x.index).normalize()
+    x = x.reindex(x.index.union(pd.to_datetime(B.fecha.astype(str)))).ffill()     # último cierre CBOE conocido (sesiones CME sin CBOE)
+    return x.reindex(pd.to_datetime(B.fecha.astype(str))).to_numpy(float)          # cierre CBOE del día t (16:15 NY < cierre de la barra 17:00)
+
+
+def _dbo_lookback(c, fijo=None):
+    n = len(c); sd = pd.Series(c).rolling(30).std().to_numpy(); lb = np.full(n, 20, int)
+    if fijo: return np.full(n, fijo, int)
+    for i in range(1, n):
+        lb[i] = lb[i - 1]
+        if np.isfinite(sd[i]) and np.isfinite(sd[i - 1]) and sd[i - 1] > 0:
+            lb[i] = int(np.clip(round(lb[i - 1] * (1 + (sd[i] - sd[i - 1]) / sd[i - 1])), 20, 60))
+    return lb
+
+
+def _dbo(B, fijo=None):
+    from edgelab.research import sqx_catalogo as Q
+    h, l, c = (B[k].to_numpy(float) for k in "hlc"); n = len(c); a20 = Q.atr(h, l, c, 20); lb = _dbo_lookback(c, fijo)
+    lado = np.zeros(n, int); media = np.full(n, np.nan)
+    for i in range(61, n):
+        k = lb[i]; w = c[i - k + 1:i + 1]; m, s = w.mean(), w.std(ddof=0); media[i] = m
+        if c[i] > m + 2 * s and c[i] > h[i - k:i].max(): lado[i] = 1
+        elif c[i] < m - 2 * s and c[i] < l[i - k:i].min(): lado[i] = -1
+    return dict(lado=lado, tipo="mkt", sl=1.50 * a20, tp=np.nan, salida=lambda i, ld: (c[i] < media[i]) if ld == 1 else (c[i] > media[i]))
+
+
+def _senales2(B, inst, V, mens):
+    """Lote 2 (largos salvo DBO). VIX para ES/YM, VXN para NQ (pre-registro §1)."""
+    from edgelab.research import sqx_catalogo as Q
+    h, l, c = (B[k].to_numpy(float) for k in "hlc"); a20 = Q.atr(h, l, c, 20); n = len(c); f = B.fecha.to_numpy()
+    iv = _vol(V, B, "vxn_close" if inst == "NQ" else "vix_close"); v9 = _vol(V, B, "vix9d_close"); vx = _vol(V, B, "vix_close")
+    S = pd.Series(iv); m20, s20 = S.rolling(20).mean().to_numpy(), S.rolling(20).std().to_numpy()
+    p80, p10 = S.rolling(504).quantile(0.80).to_numpy(), S.rolling(504).quantile(0.10).to_numpy()
+    rv10 = pd.Series(np.log(c)).diff().rolling(10).std().to_numpy() * np.sqrt(252) * 100; evrp = iv - rv10; cont = v9 / vx
+    z = lambda x: ((pd.Series(x) - pd.Series(x).rolling(6).mean()) / pd.Series(x).rolling(6).std()).to_numpy()
+    cz = (z(iv) + z(v9)) / 2
+    with np.errstate(invalid="ignore"):
+        dos_alzas = lambda i, ld: c[i] > c[i - 1] > c[i - 2]
+        out = {
+            "C2_VBB": dict(lado=(iv > m20 + 2 * s20).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan, salida=dos_alzas, tope=10),
+            "C2_VBBN": dict(lado=(iv < m20 - 1 * s20).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan, salida=dos_alzas, tope=10),
+            "C2_P80": dict(lado=(iv > p80).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan, salida=lambda i, ld: not iv[i] > p80[i], tope=10),
+            "C2_P80N": dict(lado=(iv < p10).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan, salida=lambda i, ld: not iv[i] < p10[i], tope=10),
+            "C2_EVRP": dict(lado=((evrp > 0) & (cont < 1)).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan,
+                            salida=lambda i, ld: not (evrp[i] > 0 and cont[i] < 1), tope=20),
+            "C2_EVRPN": dict(lado=((evrp > 0) & (cont >= 1)).astype(int), tipo="mkt", sl=2.0 * a20, tp=np.nan,
+                             salida=lambda i, ld: not (evrp[i] > 0 and cont[i] >= 1), tope=20),
+            "C2_VZ": dict(lado=(cz < -1).astype(int), tipo="mkt", sl=1.25 * a20, tp=np.nan, salida=lambda i, ld: not cz[i] < -1, tope=10),
+            "C2_VZN": dict(lado=(cz > 1).astype(int), tipo="mkt", sl=1.25 * a20, tp=np.nan, salida=lambda i, ld: not cz[i] > 1, tope=10),
+            "C2_DBO": _dbo(B), "C2_DBON": _dbo(B, fijo=20),
+        }
+    mes = f // 100; ultimo = np.r_[mes[1:] != mes[:-1], True]           # última barra del mes (calendario conocido de antemano)
+    r = mens.reindex(mes).to_numpy(float)                                 # razón ES/GC y su SMA de 20 meses, al cierre de ese mes
+    es_arriba = r > mens.attrs["sma"].reindex(mes).to_numpy(float)
+    quiere = es_arriba if inst == "ES" else ~es_arriba; ok = np.isfinite(r) & np.isfinite(mens.attrs["sma"].reindex(mes).to_numpy(float))
+    sal_mes = lambda i, ld: bool(ultimo[i])
+    out["C2_ROT"] = dict(lado=(ultimo & ok & quiere).astype(int), tipo="mkt", sl=3.0 * a20, tp=np.nan, salida=sal_mes, tope=30)
+    out["C2_ROTN"] = dict(lado=(ultimo & ok & ~quiere).astype(int), tipo="mkt", sl=3.0 * a20, tp=np.nan, salida=sal_mes, tope=30)
+    return out
 
 
 def _senales(B, vix_ok):
@@ -53,13 +125,17 @@ def correr():
     from edgelab.research.embudo_runners import friccion
     from edgelab.holdout import a5_bloque
     exigir_contada(PRE)
+    lote2 = PRE.endswith("LOTE2.md"); bars, mens = {}, None
     V = pd.read_parquet(Path(ruta("M1NT8")) / "cboe_volatility_daily.parquet"); vc = V.vix_close.copy(); vc.index = pd.to_datetime(vc.index).normalize()
     vix_reg = (vc > vc.rolling(100).mean()).shift(1)                    # VIX(t−1) > SMA100(t−1)
     partes = []
+    if lote2:                                        # razón mensual ES/GC (último cierre del mes de cada uno) y su SMA de 20 meses
+        cm = {k: Q.barras_desde_m1(cargar(k, ruta("M1NT8")), "D1").assign(mes=lambda b: b.fecha // 100).groupby("mes").c.last() for k in ("ES", "GC")}
+        mens = (cm["ES"] / cm["GC"]).dropna(); mens.attrs["sma"] = mens.rolling(20).mean()
     for inst in sorted({i for v in INST.values() for i in v}):
         D = cargar(inst, ruta("M1NT8")); B = Q.barras_desde_m1(D, "D1"); m1 = Q.indices_m1(B, D, "D1")
         vix_ok = vix_reg.reindex(pd.to_datetime(B.fecha.astype(str))).fillna(False).to_numpy(bool)
-        S = _senales(B, vix_ok); fr = float(friccion(inst)[0]); f = B.fecha.to_numpy()
+        S = _senales2(B, inst, V, mens) if lote2 else _senales(B, vix_ok); fr = float(friccion(inst)[0]); f = B.fecha.to_numpy()
         for d, sig in S.items():
             regla = d[:-1] if d.endswith("N") and d[:-1] in REGLAS else d
             if inst not in INST[regla]: continue
@@ -74,7 +150,9 @@ def correr():
     T["bloque"] = T.fecha.map(bl); T["bloque_salida"] = T.fecha_salida.map(bl)
     T = T[(T.fecha_salida <= FIN) & T.bloque.isin(["DESC", "REP"]) & ~T.bloque_salida.isin(["HOLDOUT", "EMBARGO"])]
     assert not T.bloque_salida.isin(["HOLDOUT", "EMBARGO"]).any()        # ninguna operación evaluada lee precios sellados
-    T.to_csv(DIR / "OPS.csv.gz", index=False); print(T.groupby(["definicion", "bloque"]).size().unstack().to_string())
+    vacias = [d for r in REGLAS for d in (r, r + "N") if not (T.definicion == d).any()]
+    if vacias: raise SystemExit(f"K53: definiciones sin disparos {vacias}")
+    T.to_csv(DIR / LOTE["ops"], index=False); print(T.groupby(["definicion", "bloque"]).size().unstack().to_string())
 
 
 def _media(f, r, B=2000, seed=7):
@@ -99,10 +177,10 @@ def _pruebas(T, bloque):
 
 def desc():
     from edgelab.research.a5 import bh
-    T = pd.read_csv(DIR / "OPS.csv.gz"); res = _pruebas(T, "DESC"); k = list(res); rech = bh([res[x]["p"] for x in k], 0.10)
+    T = pd.read_csv(DIR / LOTE["ops"]); res = _pruebas(T, "DESC"); k = list(res); rech = bh([res[x]["p"] for x in k], 0.10)
     for x, b in zip(k, rech): res[x]["bh"] = bool(b)
     nom = [x for x in k if res[x]["bh"] and ("-" in x or (res[x]["R"] > 0 and res[x]["fricR_med"] <= 0.08))]
-    (DIR / "DESC.json").write_text(json.dumps(dict(preregistro=PRE, resultados=res, nominadas=nom), indent=1, default=float))
+    (DIR / LOTE["desc"]).write_text(json.dumps(dict(preregistro=PRE, resultados=res, nominadas=nom), indent=1, default=float))
     for x in k: print(x, {y: round(v, 3) if isinstance(v, float) else v for y, v in res[x].items()})
     print("nominadas", nom)
 
@@ -111,8 +189,8 @@ def rep():
     from a5_campana import _commiteado
     from edgelab.research import a5 as A5
     from edgelab.funnel.libro_lord import LibroLord
-    if not _commiteado(DIR / "DESC.json"): raise SystemExit("DESC.json sin commitear")
-    T = pd.read_csv(DIR / "OPS.csv.gz"); nom = json.loads((DIR / "DESC.json").read_text())["nominadas"]; planes = {}
+    if not _commiteado(DIR / LOTE["desc"]): raise SystemExit(f"{LOTE['desc']} sin commitear")
+    T = pd.read_csv(DIR / LOTE["ops"]); nom = json.loads((DIR / LOTE["desc"]).read_text())["nominadas"]; planes = {}
     for x in nom:
         r = x.split("-")[0]; g = T[(T.definicion == r) & (T.bloque == "DESC")]
         n_rep = int(T[(T.definicion == r) & (T.bloque == "REP")].fecha.nunique())              # sólo cuenta sesiones
@@ -120,13 +198,14 @@ def rep():
     con = [x for x in nom if (planes[x].get("potencia") or 0) >= A5.POTENCIA_LECTURA_MIN]
     out = {x: dict(plan=planes[x], estado="SIN_POTENCIA_PREVIA") for x in nom if x not in con}
     if con:
-        res = _pruebas(T, "REP"); dec = LibroLord().probar(FAM, "REP_CARRIL2_LOTE1", [(x, res[x]["p"]) for x in con])
+        res = _pruebas(T, "REP"); dec = LibroLord().probar(FAM, LOTE["etiqueta"], [(x, res[x]["p"]) for x in con])
         for x in con: out[x] = dict(plan=planes[x], rep=res[x], confirmada=x in (dec.get("confirmadas") or []))
         out["lord"] = dec
-    (DIR / "REP.json").write_text(json.dumps(out, indent=1, default=float))
+    (DIR / LOTE["rep"]).write_text(json.dumps(out, indent=1, default=float))
     for x, v in out.items():
         if x != "lord": print(x, v.get("estado", ""), "potencia", round(v["plan"].get("potencia") or 0, 3), v.get("confirmada"))
 
 
 if __name__ == "__main__":
+    if len(sys.argv) > 2 and sys.argv[2] == "2": _lote2()
     {"correr": correr, "desc": desc, "rep": rep}[sys.argv[1]]()
