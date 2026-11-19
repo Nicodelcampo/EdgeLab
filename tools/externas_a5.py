@@ -9,7 +9,7 @@ sesiones DESC; ningún desenlace.
   python tools/externas_a5.py fase0 <INST>     # por instrumento -> FASE0_<INST>.json (se pueden correr en paralelo)
   python tools/externas_a5.py juntar           # mediana agrupada por variante, regla ≤ 0,08 R y ≥ 30 sesiones -> FASE0.json
 """
-import json, sys
+import json, os, sys
 from pathlib import Path
 import numpy as np, pandas as pd
 
@@ -29,7 +29,9 @@ def fase0(inst):
     B = pd.DataFrame(dict(ts=ts, o=ctx["o"], h=ctx["h"], l=ctx["l"], c=ctx["c"], v=ctx["v"], ses=ses))
     blo = {int(s): a5_bloque(int(s)) for s in np.unique(ses)}; out, crudo = {}, {}
     CRUDO.mkdir(parents=True, exist_ok=True)
-    for d, (m, p) in zip(X.DEFINICIONES, X.VARIANTES):
+    pares = list(zip(X.DEFINICIONES, X.VARIANTES))
+    if os.environ.get("EXTERNAS_REVERSO") == "1": pares = pares[::-1]     # segundo proceso desde el final (sólo cambia el orden; resultados idénticos)
+    for d, (m, p) in pares:
         hecho = CRUDO / f"{inst}_{d}.json"
         if hecho.exists():                                   # reanudar tras un reinicio del contenedor
             out[d] = json.loads(hecho.read_text()); crudo[d] = np.load(CRUDO / f"{inst}_{d}.npy"); continue
