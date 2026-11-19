@@ -10,3 +10,4 @@
 - INDAGA: marginales de 1 candidatas guardadas
 - INTEGRIDAD [1, 0, 0, 0, 1, 3, 0, 7, 0]: regla 0.020054114749981505, placebo -2.51, latencia 1 vela 0.08291918144726831 -> pasa
 - OOS [20260401, 20260930] (régimen actual): medias [-0.04]; veredictos ['NO_CONCLUYENTE']; potencias [0.21]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 0, 0, 0, 1, 3, 0, 7, 0], 'tope': ['pts', 50.0], 'puntaje': 1.038314037127757, 'peor': -1.0657659574468086}
