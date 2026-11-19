@@ -167,3 +167,15 @@ def test_jsonl_de_registros_parsean_linea_por_linea():
             try: json.loads(l)
             except Exception as e: malos.append(f"{f}:{i}: {str(e)[:60]}")
     assert not malos, malos[:10]
+
+
+def test_k51_corrida_ad_hoc_exige_estar_contada(tmp_path, monkeypatch):
+    """K51 (2026-11-19): FRICCION-RQ arrancó aunque la guarda se había negado a contarla. `exigir_contada` frena antes de leer datos."""
+    import registro_global as RG
+    f = tmp_path / "g.jsonl"; f.write_text(json.dumps(dict(campaign_id="X", note="docs/research/x/PREREGISTRO.md")) + "\n")
+    monkeypatch.setattr(RG, "GLOBAL", f)
+    RG.exigir_contada("docs/research/x/PREREGISTRO.md")
+    with pytest.raises(SystemExit, match="K51"):
+        RG.exigir_contada("docs/research/y/PREREGISTRO.md")
+    for t in ("tools/friccion_rq.py", "tools/t_regimen.py"):
+        assert "exigir_contada" in (ROOT / t).read_text(encoding="utf-8")

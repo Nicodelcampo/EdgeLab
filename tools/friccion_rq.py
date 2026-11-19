@@ -37,6 +37,8 @@ def _columnas(E):
 
 
 def correr():
+    from registro_global import exigir_contada
+    exigir_contada("docs/research/friccion_rq_20261119/PREREGISTRO.md")
     from datos import ruta
     from externas_estructurales_a5 import cargar_ctx_m1nt8_rapido
     from edgelab.research import ejecucion as X

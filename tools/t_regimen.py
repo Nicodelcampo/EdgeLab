@@ -29,6 +29,8 @@ def _nombre(v):
 
 
 def grilla():
+    from registro_global import exigir_contada
+    exigir_contada("docs/research/t_regimen_20261118/PREREGISTRO.md")
     from datos import ruta
     from m1_largo import cargar, _kernel_fs
     from edgelab.research import fundedsyncstack as F

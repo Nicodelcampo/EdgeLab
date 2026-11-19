@@ -29,6 +29,15 @@ def preregistrado(campania, familia, n, prereg):
     nuevo = TrialRegistry(GLOBAL).ensure(campania, familia, int(n), str(prereg)); print("registrada" if nuevo else "ya estaba", campania, n)
 
 
+def exigir_contada(prereg) -> None:
+    """K51 (2026-11-19): una corrida ad hoc arrancó aunque `preregistrado` se había negado a contarla (la cadena de comandos siguió).
+    Toda herramienta que mide desenlaces llama a esto antes de leer datos: se niega si el pre-registro no figura en el registro global."""
+    p = str(Path(prereg).resolve().relative_to(REPO)) if Path(prereg).is_absolute() else str(prereg)
+    for l in GLOBAL.read_text(encoding="utf-8").splitlines():
+        if l.strip() and json.loads(l).get("note") == p: return
+    raise SystemExit(f"K51: {p} no está contado en TRIAL_REGISTRY_GLOBAL.jsonl (python tools/registro_global.py preregistrado …); no se corre")
+
+
 def main():
     if sys.argv[1:2] == ["preregistrado"]: return preregistrado(*sys.argv[2:6])
     g = TrialRegistry(GLOBAL)
