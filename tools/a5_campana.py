@@ -89,9 +89,23 @@ def _por_sesion(T, d, e):
     return {int(s): float(v) for s, v in g.groupby(g.ses.astype(int))[f"r_{e}"].sum().items()}
 
 
+def insumos_distintos(K: pd.DataFrame, M: pd.DataFrame, defs) -> list:
+    """K54 (2026-11-19): columnas de contexto (no desenlaces ni definiciones) que el M1 trae y la tabla de ticks no (p. ej. VIX: el kernel de
+    Kaggle no tenía el parquet de CBOE y el módulo cayó en silencio a un respaldo) → ticks y M1 midieron reglas distintas."""
+    out = []
+    for c in sorted(set(K.columns) & set(M.columns)):
+        if c in defs or c.startswith(("r_", "k_")) or not (pd.api.types.is_numeric_dtype(K[c]) and pd.api.types.is_numeric_dtype(M[c])): continue
+        if M[c].notna().mean() > 0.5 and K[c].notna().mean() < 0.05: out.append(c)
+    return out
+
+
 def calibracion(carpeta):
     cfg = _cfg(carpeta); res = {}
     defs = list(cfg["definiciones"]) + sorted(set(cfg.get("control", {}).values()))
+    for inst in cfg["instrumentos"]:
+        for d0, d1 in cfg["calibracion"]:
+            M = pd.read_csv(cfg["dir"] / "calibracion_m1" / f"M1_{inst}_{d0}_{d1}.csv.gz"); dif = insumos_distintos(_ticks(cfg, inst, d0, d1), M, defs)
+            if dif: raise SystemExit(f"K54: la tabla de ticks de {inst} no tiene {dif} y el M1 sí (insumo externo ausente en Kaggle): no calibra nada")
     pares = {tuple(x) for x in cfg["pares"]} if cfg.get("pares") else None
     ctrl_ej = {c: e for (d, e) in (pares or []) for dd, c in cfg.get("control", {}).items() if dd == d}
     for d in defs:

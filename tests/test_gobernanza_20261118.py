@@ -179,3 +179,16 @@ def test_k51_corrida_ad_hoc_exige_estar_contada(tmp_path, monkeypatch):
         RG.exigir_contada("docs/research/y/PREREGISTRO.md")
     for t in ("tools/friccion_rq.py", "tools/t_regimen.py"):
         assert "exigir_contada" in (ROOT / t).read_text(encoding="utf-8")
+
+
+def test_k54_ticks_sin_insumo_externo_no_calibran():
+    """K54: FLUJOS-MACRO calibró FM7 con ticks sin VIX (el kernel de Kaggle no tenía el parquet de CBOE) contra M1 con VIX."""
+    import sys
+    from pathlib import Path
+    import pandas as pd
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+    from a5_campana import insumos_distintos
+    M = pd.DataFrame(dict(ses=[1, 2, 3], vix_prev=[17.0, 18.0, 19.0], FM7=[True, False, True], r_P=[0.1, 0.2, 0.3]))
+    K = M.assign(vix_prev=float("nan"), r_P=float("nan"))
+    assert insumos_distintos(K, M, ["FM7"]) == ["vix_prev"]
+    assert insumos_distintos(M, M, ["FM7"]) == []

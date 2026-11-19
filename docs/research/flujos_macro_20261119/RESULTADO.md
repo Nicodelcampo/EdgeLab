@@ -11,7 +11,10 @@ sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`. Datos
   definición no dispara en la calibración.
 - Calibración v2: 12/16. No calibran FM5, FM7, FM6N y FM7N (no pueden nominarse). **Pendiente de revisar:** en FM7/FM7N sólo 42 de 209
   sesiones coinciden entre M1 y ticks, una discrepancia de generación de eventos (no sólo de desenlaces) que conviene investigar antes de
-  cualquier uso de FM7.
+  cualquier uso de FM7. **Causa raíz (2026-11-19, K54):** el kernel de ticks no tenía el parquet de CBOE (vix_prev vacío en las 4 tablas
+  de ticks) y el módulo cayó en silencio al respaldo RV5 (FM7) y ATR/cierre (stop de FM1). La calibración de las reglas que usan VIX
+  (FM1, FM7) comparó reglas distintas y no vale; no cambia ningún veredicto (FM1/FM2 neto negativo, FM7 no nominable). Guardas en
+  `a5_campana.insumos_distintos` y `tablas.insumos_externos`.
 
 ## 1. DESC (ES+NQ+YM+GC, meses DESC de A5)
 | | R bruto | p | años + | R neto | fricción R | neto operable | Nominada |

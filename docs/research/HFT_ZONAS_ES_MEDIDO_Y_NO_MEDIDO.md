@@ -1315,3 +1315,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** FM1–FM8 y controles en DESC (calibración v2 post-K53): FM1, FM2 y FM1−FM1N nominadas por bruto, neto negativo; REP sin potencia.
   Acta: `docs/research/flujos_macro_20261119/RESULTADO.md`.
 - **NO MEDIDO:** causa de la discrepancia M1↔ticks de FM7 (42/209 sesiones comunes), filtros macro (fuera por pre-registro).
+
+## 2026-11-19 — Carril 2, lote 2 (régimen de volatilidad, Dynamic Breakout II, rotación ES/GC)
+- **MEDIDO:** 6 reglas + 6 controles en DESC A5: 0/12 en BH; pico de VIX y compresión z con p ≈ 0,02 sin pasar multiplicidad; P80 y DBO
+  negativos. Acta: `docs/research/carril2_20261119/RESULTADO_LOTE2.md`.
+- **NO MEDIDO:** overnight largo de Concretum (motor sin entrada a hora fija entre sesiones) y pre-FOMC (sin potencia sola).
+- **CAUSA RAÍZ FM7 (K54):** el kernel de ticks de Kaggle no tenía el parquet de CBOE; FLUJOS-MACRO y OPTION-ALPHA cayeron en silencio al
+  respaldo (RV5 / ATR) y ticks y M1 midieron reglas distintas. Guardas: `a5_campana.insumos_distintos` y `tablas.insumos_externos`.

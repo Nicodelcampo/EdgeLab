@@ -18,7 +18,7 @@ en los lectores de desarrollo; la apertura (`holdout`) exige congeladas con hash
 la familia no haya usado su apertura (edgelab/research/holdout_ventanas.py); la registra ANTES de lanzar.
 Carpeta de cada módulo: `CARPETA` del módulo o docs/research/tablas/<NOMBRE>/ (tablas/ = desarrollo, confirmacion/ = confirmación).
 """
-import json
+import importlib, json
 import os
 import subprocess
 import sys
@@ -65,12 +65,22 @@ def preflight(modulo):
 DATASET_SELLADO = "nicolasbuttaro/edgelab-holdout-sellado"
 
 
+def insumos_externos(modulo) -> list:
+    """K54 (2026-11-19): un módulo que lee los parquets de CBOE o del calendario (viven en el dataset M1NT8) los necesita también en el kernel
+    de ticks; sin ellos cae a su respaldo en silencio y ticks y M1 miden reglas distintas (FM7 de FLUJOS-MACRO: 42/209 sesiones comunes)."""
+    from edgelab.research.fuentes_ticks import M1NT8_DATASET
+    src = Path(importlib.import_module(modulo).__file__).read_text(encoding="utf-8")
+    return [M1NT8_DATASET] if ("cboe_volatility_daily" in src or "us_market_events_calendar" in src) else []
+
+
 def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None):
     if preflight(modulo): raise SystemExit("no se lanza: el preflight falla")
     from edgelab.research.embudo_runners import datasets
     k = TB.construir_kernel(modulo); owner = os.environ.get("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro"); LANZADAS.parent.mkdir(parents=True, exist_ok=True)
     for f, d0, d1 in ventanas:
-        needs, extra = ([], [DATASET_SELLADO]) if uso == "holdout" else datasets(f, d0, d1); sl = slug(modulo, f, d0, d1, owner) + ("-h" if uso == "holdout" else "")
+        needs, extra = ([], [DATASET_SELLADO]) if uso == "holdout" else datasets(f, d0, d1)
+        extra = list(dict.fromkeys(extra + insumos_externos(modulo)))     # K54: parquets de CBOE/calendario que el módulo lee
+        sl = slug(modulo, f, d0, d1, owner) + ("-h" if uso == "holdout" else "")
         a = [sys.executable, str(ROOT / "tools/kaggle_launch.py"), "--slug", sl, "--script", str(k), "--title", sl.split("/")[1],
              "--env", f"MODULO={modulo}", "--env", f"FUENTE={f}", "--env", f"DESDE={d0}", "--env", f"HASTA={d1}"]
         for n in needs: a += ["--need", n]

@@ -255,7 +255,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (14)
+## EN_SEGUIMIENTO (15)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -279,6 +279,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ES, NQ, YM, GC
   - Siguiente: Mismo grupo que RQ5/SOM/Franklin: bruto real sin neto con ejecución intradía; investigar la discrepancia M1↔ticks de FM7 antes de usarla.
   - Evidencia: `docs/research/flujos_macro_20261119/RESULTADO.md`
+- **Swing en índices por régimen de volatilidad implícita (pico BB 2σ, P80, eVRP, z-score de compresión), Dynamic Breakout II y rotación ES/GC sobre el motor de barras calibrado** (`F-CARRIL2-LOTE2-VOL`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025: 0/12 en BH. Pico de VIX +0,136 R (p 0,018), compresión z < −1 +0,089 R (p 0,016; contra control +0,120, p 0,029), eVRP +0,066, rotación +0,080: SIN_EVIDENCIA (MDE 0,12–0,36 R). P80 −0,094 y DBO −0,368 (falsas rupturas): más cerca de refutadas.
+  - Dónde: ES, NQ, YM, GC
+  - Siguiente: Hipótesis única de reversión de volatilidad implícita pre-registrada en datos no mirados (RTY/EMD con RVX, forward); no elegir sobre este DESC.
+  - Evidencia: `docs/research/carril2_20261119/RESULTADO_LOTE2.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1
@@ -330,10 +335,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (40)
+## NO_REPETIR (41)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakout II, RSI2, FTLT, QFL, FVG H1, PMax) — trabajo de Gemini/Antigravity** (`F-EXTERNAS-ESTRUCTURALES-REFUTADA`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: 0/16 en BH; las 8 con R neto negativo (−0,05 a −0,12 R) pese a fricción ≤ 0,08 R; potencia de REP 0 (efecto ≤ 0).
+  - Dónde: ES, NQ, YM, GC
+  - Siguiente: Nada en esta forma; el stop estructural resuelve la fricción pero no hay bruto.
+  - Evidencia: `docs/research/externas_estructurales_a5_20261118/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09
@@ -534,3 +544,13 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: Atlas de contexto, 212 corridas, futuro + CFD
   - Siguiente: No proponerlos como filtros de mercado ni citar la sección «Qué funcionó» del ciclo 2026-11-04 de APRENDIZAJES_ESPIRAL sin su corrección. Lo aprovechable está en F-STOP-GRANDE-FRENTE-A-FRICCION.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
+
+## SIN_FACTOR (1)
+
+_Campaña cerrada sin nada aprovechable (queda asentado que se miró)._
+
+- **Hora del día como palanca de fricción (spread real por hora CT en NQ, ES, YM)** (`F-SPREAD-HORA-NO-PALANCA`, 2026-11-19, humano)
+  - Efecto: Spread canónico coincide con lo medido (NQ 3,03, ES 1,09, YM 1,90 ticks); operar después de las 10:00 CT ahorra ≈ 0,2–0,3 ticks en NQ (≈ 4 % de su fricción) y nada en ES. No es palanca.
+  - Dónde: NQ, ES, YM
+  - Siguiente: Ninguno; la fricción relativa sólo baja con stops/objetivos más grandes en puntos o menos operaciones.
+  - Evidencia: `docs/research/spread_hora_20261119/RESULTADO.md`
