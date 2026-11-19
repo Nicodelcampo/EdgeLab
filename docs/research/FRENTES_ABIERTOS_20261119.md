@@ -6,7 +6,7 @@ en los controles y que pasen por toda la cadena, sin falsos positivos». Se actu
 | # | Frente | Estado | Próximo paso | Bloqueo |
 |---|---|---|---|---|
 | 1 | EXTERNAS_A5 (114 variantes del catálogo externo) | fase 0 de fricción en curso (NQ completo; ES, YM, GC reanudados tras reinicios) | DESC de las que pasen; cruce con la auditoría de Dual Thrust de Gemini | reinicios del contenedor (reanudable) |
-| 2 | FLUJOS-MACRO (FM1–FM8, Carril 1) | linaje enmendado, 16 pruebas contadas; bug K53 (FM6 sin disparos) corregido con test; recalibración en curso | calibración → correr → DESC → REP (K49) | — |
+| 2 | FLUJOS-MACRO (FM1–FM8, Carril 1) | HECHO: FM1/FM2 bruto real, neto negativo; REP sin potencia (K49); K53 corregido | revisar discrepancia M1↔ticks de FM7 | — |
 | 3 | Carril 2 (11 estrategias multi-sesión: IBS, Double Seven, overnight, Turnaround Tuesday, cambio de mes, eVRP, VIX alto, pre-FOMC, Dynamic Breakout II, rotación ES/GC) | motor existente y calibrado (`sqx_catalogo.simular`, K28); diseño en `carril2_20261119/DISENO.md` con regla de partición para posiciones largas | lote 1 (IBS+VIX, Double Seven, Turnaround Tuesday, cambio de mes): 0/8 en DESC, SIN_EVIDENCIA (MDE 0,14–0,21 R); faltan eVRP, VIX alto, pre-FOMC, Dynamic Breakout II, rotación ES/GC, overnight | — |
 | 4 | T-NQ + R (AtrPhase) como canasta candidata | T REGIMEN_ROBUSTO; R REGIMEN_ROBUSTO en R; vigilancia de T escrita | prueba 2 (datos posteriores a la versión del vendedor) y vigilancia de R | **fecha de la versión de FundedSync (Nico)** |
 | 5 | A20 desde 2017 | A20-REGIMEN: INTERMEDIO (PBO 0,39; 2017–2021 0/81; ES negativo): efecto sólo 2022+ | sólo forward con vigilancia | — |

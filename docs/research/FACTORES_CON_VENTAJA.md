@@ -255,7 +255,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (13)
+## EN_SEGUIMIENTO (14)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -274,6 +274,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ES, NQ, YM, RTY (+GC en Double Seven)
   - Siguiente: Sólo con más N por mecanismo (canasta pre-registrada), no eligiendo la mejor de las cuatro.
   - Evidencia: `docs/research/carril2_20261119/RESULTADO_LOTE1.md`
+- **Carril 1 del catálogo de Antigravity (FM1 canal VIX9D/VIX a las 10:00, FM2 banda ATR desde la apertura, FM3–FM8)** (`F-FLUJOS-MACRO-C1`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: nominadas por bruto FM1 (+0,022, p 0,0008), FM2 (+0,057, p 0,003) y FM1−FM1N (+0,044); neto negativo en todas (fricción 0,04–0,07 R); REP sin potencia (K49, 0,06–0,07). FM6 corregido (K53) bruto −0,019.
+  - Dónde: ES, NQ, YM, GC
+  - Siguiente: Mismo grupo que RQ5/SOM/Franklin: bruto real sin neto con ejecución intradía; investigar la discrepancia M1↔ticks de FM7 antes de usarla.
+  - Evidencia: `docs/research/flujos_macro_20261119/RESULTADO.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1

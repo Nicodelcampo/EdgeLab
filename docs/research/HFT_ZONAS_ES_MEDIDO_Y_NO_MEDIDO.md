@@ -1310,3 +1310,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-19 — Tamaño sin sesgo de nivel de precio (TAMANO-K52)
 - **MEDIDO:** contratos ∝ 1/ATR20 y variante raíz contra riesgo constante en RQ5, RQ6, SOM y Franklin (DESC): Δ ≈ 0 en las cuatro. Acta:
   `docs/research/tamano_k52_20261119/RESULTADO.md`.
+
+## 2026-11-19 — Carril 1 del catálogo de Antigravity (FLUJOS-MACRO)
+- **MEDIDO:** FM1–FM8 y controles en DESC (calibración v2 post-K53): FM1, FM2 y FM1−FM1N nominadas por bruto, neto negativo; REP sin potencia.
+  Acta: `docs/research/flujos_macro_20261119/RESULTADO.md`.
+- **NO MEDIDO:** causa de la discrepancia M1↔ticks de FM7 (42/209 sesiones comunes), filtros macro (fuera por pre-registro).
