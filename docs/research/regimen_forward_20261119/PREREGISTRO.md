@@ -15,7 +15,7 @@ robustas; SOM con quiebre 2017-11 y neto +0,03; Franklin sin quiebre, +0,078 des
 
 Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v3 — §0–§6 (K27 potencia del forward, K42 alfa, K48, K49, K51).
 
-Potencia previa (meses para decidir, con la media de desarrollo del régimen): canasta T+R ≈ 1,0 sesión con operación por día hábil a
+Potencia previa: meses para decidir, con la media de desarrollo del régimen — canasta T+R ≈ 1,0 sesión con operación por día hábil a
 +0,27 R/día (sd ≈ 1,6): e ≥ 20 en ≈ 4–8 meses; T sola (+0,15 R/op, sd 1,16, ≈ 19/mes) ≈ 10–15 meses; R sola (+0,45 R/op, ≈ 3/mes) ≈ 12–20 meses;
 SOM NQ (+0,054, ≈ 17/mes) > 60 meses (no decide sola: sólo vigilancia); Franklin NQ+ES (+0,078, ≈ 17/mes) ≈ 30–40 meses.
 
