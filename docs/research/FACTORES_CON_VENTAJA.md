@@ -25,10 +25,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Sólo cuenta de broker y en canasta; no operable en Lucid. No hay confirmación histórica con potencia.
   - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/carril2_20261119/RESULTADO_LOTE2.md`, `docs/research/transfer_rty_emd_20261119/RESULTADO.md`
 - **Z (ZetaTrend de FundedSync, fábrica, stop 0,25 × ATR20) en Russell (RTY) y MidCap (EMD), nunca medida ahí** (`F-Z-TRANSFER-RTY`, 2026-11-19, humano)
-  - Efecto: DESC A5 2018–2025: +0,146 R neto (p 0,085, n 97; bruto +0,197), antes de 2018 −0,05: mismo patrón que NQ. EMD casi no dispara (M1 con menos de la mitad de los minutos). MDE 0,26.
+  - Efecto: DESC A5 2018–2025: +0,146 R neto (p 0,085, n 97; bruto +0,197), antes de 2018 −0,05: mismo patrón que NQ. EMD casi no dispara (M1 con menos de la mitad de los minutos). MDE 0,26. Z-PICO: en RTY la fábrica es 15.ª de 27 (sin pico) pero 26/27 variantes son positivas (mediana +0,15–0,17 R; grilla 2018+ p 0,06): meseta. En NQ el exceso de la fábrica (+0,115) es del tamaño del ruido de elegir la mejor de 27 (p 0,55), pero la grilla desde 2018 da +0,146 R/op, 23/27 positivas, p 0,001.
   - Dónde: RTY (EMD sin datos suficientes)
-  - Siguiente: Confirmación sólo con REP de RTY (sellado) cuando la potencia K49 lo permita o en forward; no elegir variante sobre esto.
-  - Evidencia: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`
+  - Siguiente: Esperar Z como grilla promediada, no como fábrica (≈ +0,15 R/op); confirmar con REP de RTY (sellado) o forward de una versión pre-registrada de grilla promediada o variante central.
+  - Evidencia: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`, `docs/research/z_pico_20261119/RESULTADO.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

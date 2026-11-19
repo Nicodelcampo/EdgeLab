@@ -81,7 +81,7 @@ def rty_grilla():
             o = NP._ops(F, "Z", ms, D, NP._cfg("Z", v)); o["variante"] = nom; o.to_csv(f, index=False); print(nom, len(o), flush=True)
         partes.append(pd.read_csv(f))
     T = pd.concat(partes, ignore_index=True); T["fecha"] = pd.to_datetime(T.ses).dt.strftime("%Y%m%d").astype(int)
-    T = T[[a5_bloque(int(x)) == "DESC" for x in T.fecha] & (T.fecha <= 20250731)]; T.to_csv(DIR / "RTY_OPS.csv.gz", index=False); print("RTY DESC", len(T))
+    T = T[np.array([a5_bloque(int(x)) == "DESC" for x in T.fecha]) & (T.fecha <= 20250731).to_numpy()]; T.to_csv(DIR / "RTY_OPS.csv.gz", index=False); print("RTY DESC", len(T))
 
 
 def rty():

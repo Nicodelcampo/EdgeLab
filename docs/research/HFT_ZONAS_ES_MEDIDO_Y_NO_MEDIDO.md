@@ -1337,3 +1337,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** Z +0,146 R (p 0,085, n 97, casi todo RTY) y VZ +0,035 R (p 0,21) en meses DESC: mismo signo que en NQ/ES, sin significancia.
   Acta: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`.
 - **NO MEDIDO:** REP de RTY/EMD para estas reglas (sellado, sin potencia K49); Z en EMD (M1 incompleto).
+
+## 2026-11-19 — Z-PICO (¿el pico de fábrica de Z es sobreajuste? ¿Russell tiene pico?)
+- **MEDIDO:** NQ: fábrica 6.ª de 27, exceso dentro del ruido de selección (p 0,55) pero grilla 2018+ +0,146 R/op (23/27, p 0,001). RTY (DESC):
+  sin pico (fábrica 15.ª) y meseta (26/27 positivas, mediana +0,15). Acta: `docs/research/z_pico_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP de RTY (sellado); Z como grilla promediada en forward.
