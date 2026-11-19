@@ -125,7 +125,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (25)
+## PALANCA_DE_DISENO (26)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -134,6 +134,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: ES, NQ futuros M1; intradía de momentum
   - Siguiente: Ni el stop ni el tamaño son palanca en estas reglas; sólo cambiar la señal o el horizonte.
   - Evidencia: `docs/research/friccion_rq_20261119/RESULTADO.md`, `docs/research/regimen_som_franklin_20261119/OPS.csv.gz`, `docs/research/tamano_k52_20261119/RESULTADO.md`
+- **Ejecutabilidad en la cuenta objetivo: LucidFlex/Pro/Direct cierran todo a las 16:45 ET y no permiten tenencia nocturna ni de fin de semana** (`F-LUCID-SIN-OVERNIGHT`, 2026-11-19, humano)
+  - Efecto: Las estrategias multi-sesión (Carril 2: IBS, Double Seven, Turnaround Tuesday, cambio de mes, régimen de VIX, DBO, rotación, overnight) no son operables en Lucid; sólo en cuenta de broker. Las intradía (T, R, SOM, Franklin) sí (cierran antes de las 16:00).
+  - Dónde: cuenta LucidFlex 25K
+  - Siguiente: Verificar horario/tenencia/noticias de la cuenta objetivo antes de abrir cualquier familia; Carril 2 sólo si se decide una cuenta de broker (decisión de Nico).
+  - Evidencia: `docs/research/carril2_20261119/DISENO.md`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia

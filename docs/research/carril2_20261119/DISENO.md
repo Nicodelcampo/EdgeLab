@@ -32,3 +32,15 @@ Estado: PROPUESTA — diseño previo a los pre-registros por estrategia; no mide
 2. Régimen de volatilidad: eVRP + VIX9D/VIX, VIX alto (P80–P90), picos de VIX: una familia, con su potencia en días.
 3. Oro: Dynamic Breakout II contra el canal fijo 55/20 de Turtles (control natural), rotación ES/GC mensual (baja frecuencia: canasta).
 4. Pre-FOMC con filtro de VIX: ≈ 8 eventos por año → sólo como parte de una canasta de calendario; sola no tiene potencia.
+
+## 4. Ejecutabilidad en la cuenta objetivo (agregado 2026-11-19, después de los lotes 1 y 2)
+- **LucidFlex (y LucidPro/LucidDirect) no permite posiciones de un día al otro ni de fin de semana:** todo se cierra a las 16:45 ET de lunes a
+  viernes (Lucid lo cierra solo) y se reabre a las 18:00 ET (soporte de Lucid «Allowed Trading Times», support.lucidtrading.com/en/articles/
+  11404729; FAQ general lucidtrading.com/general-faq). Las reglas de este carril **no son operables en la cuenta objetivo**: sólo en una cuenta
+  propia de broker (otro capital, otro margen) o en LucidLive.
+- Consecuencia: no se invierte más en Carril 2 para Lucid (overnight largo y pre-FOMC que cruzan el cierre quedan fuera). Lo medido (lote 1 y 2)
+  queda como evidencia para una eventual cuenta de broker. Lección general: verificar la ejecutabilidad en la cuenta objetivo (horario, tenencia,
+  noticias, instrumentos) **antes** de abrir una familia (North Star, objetivo 4).
+- Noticias: en LucidFlex/Pro/Direct se puede entrar y salir alrededor de noticias programadas («Other Trading Activities», support.lucidtrading.com/
+  en/articles/11404728): T, R, SOM y Franklin (09:30–10:00, días de datos macro) no tienen restricción. Ojo: Lucid escribe «4:45 PM EST» todo el
+  año; con horario de verano conviene tomarlo como 16:45 de Nueva York (lo más temprano). Las intradía cierran antes de las 16:00.
