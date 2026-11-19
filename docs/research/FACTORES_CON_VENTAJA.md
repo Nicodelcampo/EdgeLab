@@ -240,10 +240,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (10)
+## EN_SEGUIMIENTO (11)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Reglas del Marketplace de Roboquant en futuros: RQ5 banda de ruido de Zarattini, RQ6 retroceso al VWAP en día de tendencia, RQ2 reversión al mínimo previo, RQ1 ORB 10:00 con salida a 8 min** (`F-ROBOQUANT-BRUTO-SIN-NETO`, 2026-11-19, humano)
+  - Efecto: DESC A5 2006–2025 ES+NQ+YM: 5/15 nominadas (RQ1 +0,039, RQ2 +0,073, RQ5 +0,062, RQ6 +0,054 R bruto, p ≤ 0,03, 70–75 % de años, parejo en 3 índices; RQ2−RQ2N +0,136). R neto negativo en las 4 (fricción 0,07–0,18 R); neto operable RQ5 +0,035, RQ6 +0,036. REP sin leer: K49, potencia en días 0,04–0,07.
+  - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
+  - Siguiente: No operable tal cual. Curva bruto–stop en DESC para RQ5/RQ6 (si el bruto no cae al ensanchar, rediseño de ejecución pre-registrado) antes de tocar REP + holdout con potencia; mismo grupo que SOM/Franklin (bruto estable, sin neto).
+  - Evidencia: `docs/research/roboquant_20261118/RESULTADO.md`, `docs/research/roboquant_20261118/DESC.json`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1

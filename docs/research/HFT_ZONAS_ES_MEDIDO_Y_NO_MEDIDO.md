@@ -1264,3 +1264,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   PBO 0,17, 0/81 positivas antes → REGIMEN_ROBUSTO. Acta: `docs/research/t_regimen_20261118/RESULTADO.md`.
 - **NO MEDIDO:** T desde la fecha de la versión del vendedor (falta la fecha), vigilancia secuencial, mecanismo (gamma: ya medido en la
   canasta y NO_REPETIR).
+
+## 2026-11-19 — Roboquant en futuros (ROBOQUANT)
+- **MEDIDO:** RQ1–RQ8 y 7 contrastes en DESC A5 2006–2025 (ES, NQ, YM): 5 nominadas por bruto (RQ1, RQ2, RQ5, RQ6, RQ2−RQ2N), neto
+  negativo en todas. Acta: `docs/research/roboquant_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP y holdout (K49: potencia en días 0,04–0,07), filtros macro, curva bruto–stop de RQ5/RQ6, RTY/EMD.
