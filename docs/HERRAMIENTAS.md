@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-714 scripts.
+715 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -616,6 +616,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/review_avzvol_exposed_o5.py` | AVZVOL exposed-export descriptive review, not a market/certification runner. |
 | `tools/review_avzvol_indicator_screen.py` | Reproduce a descriptive screen of already-exposed export labels. |
 | `tools/review_avzvol_o5_robustness.py` | Descriptive robustness of exposed O5, not new endpoints or certified research. |
+| `tools/rq5_regimen.py` | RQ5-REGIMEN: lectura pre-registrada (docs/research/rq5_regimen_20261119/PREREGISTRO.md) sobre OPS_DESC_REP.csv.gz de `a5_campana correr`. |
 | `tools/run_batch_gc_jun26.py` | Batch converter para todas las sesiones de GC JUN26 excepto la sellada 20260618.csv. |
 | `tools/run_campaign.py` | run_campaign.py — runner de campañas de fuerza bruta (F6.4). |
 | `tools/run_edge_factory_census.py` | (sin docstring) |
