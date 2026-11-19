@@ -208,7 +208,7 @@ La tendencia es la perilla de régimen, declarada antes de correr. No hay régim
 1. `python tools/estado.py`, árbol limpio y al día.
 2. `python -m pytest tests/agente/test_picos_defendidos.py -q` y `python -m edgelab.research.preflight edgelab.research.agente.picos_defendidos`,
    los dos en verde. El preflight tarda ~6 min.
-3. En la campaña: `"activa": true` y una línea en `decisiones` con «se lanza» y la fecha. La conduce el `conductor` declarado.
+3. En la campaña: `"activa": true` y una línea en `decisiones` con «se lanza» y la fecha. La conduce el `conductor` declarado. **2026-11-19: lanzada con conductor `local`** (el Debian está en PAUSE); estado en `docs/research/picos_defendidos_20261119/embudo/`.
 4. El embudo registra las pruebas en el contador global antes del DESC.
    - No mirar una corrida lanzada con código que después se corrigió.
    - La regla de selección y las compuertas son las del embudo; no se cambian.
