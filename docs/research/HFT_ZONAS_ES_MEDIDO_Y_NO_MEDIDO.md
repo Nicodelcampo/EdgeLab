@@ -1373,3 +1373,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** R/mes por regla y por año hasta 2026-09; Lucid con la media de cada período; micros vs 1–2 minis vs 10 micros en los cuatro
   tamaños. Acta: `docs/research/lucid_guia_20261119/RESULTADO_PERIODO_Y_MINIS.md`.
 - **NO MEDIDO:** piso y DLL intradía (pesan con minis); después del 2026-10-01 (terminal sellado).
+
+## 2026-11-19 — LUCID-PLAN (elección del plan y reproducción en el holdout ya abierto)
+- **MEDIDO:** 872 planes (tamaño, canasta, contratos, DLL, consistencia, retiro) con piso y DLL intradía; 300 combinaciones con evaluaciones a
+  la vez y tres medias; reproducción de los planes A y B sobre las operaciones del holdout de FUNDEDSYNC publicadas el 16-nov. Acta:
+  `docs/research/lucid_plan_20261119/RESULTADO.md`.
+- **NO MEDIDO:** R y Z con su stop en el holdout (sin MAE en esos archivos); Z-banda en el holdout; tamaño de la fondeada si escala.

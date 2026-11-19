@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (30)
+## PISTA_VIVA (31)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -54,6 +54,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/MNQ, LucidFlex 25K–150K
   - Siguiente: Si se consideran minis: simulación intradía del piso y del DLL antes de decidir.
   - Evidencia: `docs/research/lucid_guia_20261119/RESULTADO_PERIODO_Y_MINIS.md`, `docs/research/lucid_guia_20261119/LUCID_GUIA_EXTRA.json`
+- **Plan de LucidFlex con piso y DLL intradía: tamaño, contratos, evaluaciones a la vez** (`F-LUCID-PLAN`, 2026-11-19, humano)
+  - Efecto: Ningún plan con P(neto 12 m > 0) ≥ 0,8 con la media contraída (máx. 0,7997). A (150K, T+R+ZB 9 MNQ, 10 evals): +28,2k medio 12 m, P 0,76, caja mín p10 −38k, media cero −7,4k. B (50K, T+R 5 MNQ, 10 evals): +20,7k, P 0,80, caja mín p10 −15k, media cero +2,9k. Holdout ya abierto (32 sesiones, T sola): A −3,9k a −4,4k; B −2,2k a −2,7k; A con R y Z de fábrica sin stop +10,9k.
+  - Dónde: NQ/MNQ, LucidFlex
+  - Siguiente: Decisión de Nico (dinero real es sólo humano). Forward de la canasta antes de escalar; R necesita su stop en ejecución.
+  - Evidencia: `docs/research/lucid_plan_20261119/RESULTADO.md`, `docs/research/lucid_plan_20261119/PLANES.json`, `docs/research/lucid_plan_20261119/HOLDOUT_REPLAY.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

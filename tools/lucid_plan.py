@@ -187,7 +187,17 @@ def elegir():
 def holdout():
     """Reproduce el plan elegido sobre las operaciones del holdout de FUNDEDSYNC ya publicadas el 2026-11-16 (USATECH sellado, costos de NQ;
     T con la misma regla; R y Z de fábrica SIN stop y sin MAE: no son las reglas del plan). Una trayectoria, sin bootstrap."""
-    plan = json.loads((OUT / "PLANES.json").read_text())["elegido"]; tam, canasta, s, dl, co, pol, me, _ = plan.split("|")
+    out = dict(nota="El criterio pre-registrado (P(neto 12 m > 0) ≥ 0,8) no lo cumplió ningún plan (máximo 0,7997); se reproducen los dos "
+               "planes fijados antes de mirar: A = mayor neto medio a 12 m, B = mayor P(neto 12 m > 0).", planes={})
+    for etiqueta, plan in (("A", "150K|T+R+ZB|s9|DLL|50%|max|eval10|contraida"), ("B", "50K|T+R|s5|DLL|50%|min|eval10|contraida")):
+        out["planes"][etiqueta] = _holdout_plan(plan)
+    (OUT / "HOLDOUT_REPLAY.json").write_text(json.dumps(out, indent=1, default=str) + "\n")
+    for e, v in out["planes"].items():
+        print(e, v["plan"], {k: (w["caja_final"], w["comprado"], w["cobrado"], [(c["estado"], c.get("pasó"), c.get("fin"), c["retiros"]) for c in w["cuentas"]]) for k, w in v["escenarios"].items()})
+
+
+def _holdout_plan(plan):
+    tam, canasta, s, dl, co, pol, me, _ = plan.split("|")
     s = int(s[1:]); r = TAMANOS[tam]; dll = r["dll"] if dl == "DLL" else 0.0; cons = int(co[:-1]) / 100; me = int(me[4:]); pr = precio(tam, dl == "DLL", cons)
     frn, frm = _fr()
     o = pd.read_csv(ROOT / "docs/research/fundedsyncstack_20261115/cadena/FUNDEDSYNC_HOLDOUT_OPS.csv")
@@ -205,7 +215,7 @@ def holdout():
         g = x.groupby("ses").agg(p=("usd", "sum"), lo=("lo", "min")).reindex(ses, fill_value=0.0)
         P = g.p.to_numpy(np.float64); LO = np.minimum(np.minimum(g.lo.to_numpy(), 0), P).astype(np.float64)
         res["escenarios"][nom] = _replay(P, LO, ses, r, dll, cons, pr, me, pol == "max")
-    (OUT / "HOLDOUT_REPLAY.json").write_text(json.dumps(res, indent=1, default=str) + "\n"); print(json.dumps(res, indent=1, default=str)[:3000])
+    return res
 
 
 def _replay(P, LO, ses, r, dll, cons, pr, max_eval, pol_max):
@@ -220,14 +230,18 @@ def _replay(P, LO, ses, r, dll, cons, pr, max_eval, pol_max):
             if a["estado"] == "eval":
                 a["piso"] = min(max(a["piso"], a["maxc"] - r["mll"]), 100.0)
                 if a["bal"] >= r["objetivo"] and a["mayor"] / a["bal"] <= cons:
-                    a["estado"] = "fondeada"; a["pasó"] = str(fecha.date()); a.update(bal=0.0, piso=-r["mll"], maxc=0.0, dok=0, c0=0.0)
+                    a["estado"] = "aprobada"; a["pasó"] = str(fecha.date())
             else:
                 if p >= r["dia_min"]: a["dok"] += 1
                 if a["piso"] < 100: a["piso"] = 100.0 if a["maxc"] > r["mll"] + 100 else max(a["piso"], a["maxc"] - r["mll"])
                 m = min(r["tope"], 0.5 * a["bal"])
                 if a["dok"] >= 5 and a["bal"] > a["c0"] and m >= 500 and (m >= r["tope"] or not pol_max):
                     caja += 0.9 * m; a["retiros"].append((str(fecha.date()), round(0.9 * m, 2))); a["bal"] -= m; a["piso"] = 100.0; a["c0"] = a["bal"]; a["dok"] = 0
-        ne = sum(a["estado"] == "eval" for a in cuentas); nf = sum(a["estado"] == "fondeada" for a in cuentas)
+        nf = sum(a["estado"] == "fondeada" for a in cuentas)
+        for a in cuentas:                                     # máximo 5 fondeadas: la aprobada espera lugar (como en _cartera)
+            if a["estado"] == "aprobada" and nf < 5:
+                a["estado"] = "fondeada"; a["fondeada_desde"] = str(fecha.date()); a.update(bal=0.0, piso=-r["mll"], maxc=0.0, dok=0, c0=0.0); nf += 1
+        ne = sum(a["estado"] in ("eval", "aprobada") for a in cuentas)
         if ne < max_eval and ne + nf < 10:
             cuentas.append(dict(id=len(cuentas) + 1, compra=str(fecha.date()), estado="eval", bal=0.0, piso=-r["mll"], maxc=0.0, mayor=0.0, retiros=[], dok=0, c0=0.0))
             caja -= pr
