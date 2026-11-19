@@ -1258,3 +1258,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** las 8 reglas del Top 20 Live de Option Alpha y 5 contrastes contra control, DESC A5 2006–2025 en ES, NQ y YM: 0/13 pasan
   BH q 0,10 y las 8 tienen R neto negativo. Acta: `docs/research/option_alpha_20261118/RESULTADO.md`.
 - **NO MEDIDO:** REP y holdout A5 (sin nominadas), los filtros macro (VIX, IVR, FOMC, cierre anticipado: fuera por pre-registro), RTY/EMD.
+
+## 2026-11-19 — T de FundedSync: régimen o sobreajuste (T-REGIMEN)
+- **MEDIDO:** grilla de 81 variantes de T en NQ 2008–2026-09: 81/81 positivas desde el quiebre 2021-02-10 (mediana +0,149 R/op neto),
+  PBO 0,17, 0/81 positivas antes → REGIMEN_ROBUSTO. Acta: `docs/research/t_regimen_20261118/RESULTADO.md`.
+- **NO MEDIDO:** T desde la fecha de la versión del vendedor (falta la fecha), vigilancia secuencial, mecanismo (gamma: ya medido en la
+  canasta y NO_REPETIR).

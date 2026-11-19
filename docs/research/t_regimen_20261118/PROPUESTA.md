@@ -1,6 +1,6 @@
 # T (FundedSync) como edge de régimen: ¿vale descartar lo que sólo funciona desde 2020? (propuesta, 2026-11-18)
 
-Estado: PROPUESTA — pendiente por pedido de Nico («lo dejamos pendiente para dentro de unas horas»). Nada de esto se corrió
+Estado: VIGENTE — prueba 1 corrida (`RESULTADO.md`: REGIMEN_ROBUSTO); pruebas 2 y 4 pendientes.
 como campaña; las cifras de §2 son exploración sobre desarrollo ya mirado (sin holdout).
 - **Pedido de Nico:** «Investiga en Internet para determinar si realmente es válido descartar estrategias que sólo funcionan desde
   2020. Para mí no, y 6 años que funcione me parece un tiempo decente … Otra cosa sería que esté sobreajustada desde 2020.»
