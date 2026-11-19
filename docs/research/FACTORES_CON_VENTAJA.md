@@ -415,7 +415,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (47)
+## NO_REPETIR (48)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -454,6 +454,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: ES ticks, 2025-08 → 2026-09
   - Siguiente: No repetir la grilla en ES; la regla de la captura se mide en la versión A5 (picos_defendidos_a5_20261119).
   - Evidencia: `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/MEDIDO.md`, `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`
+- **A20 (FundedSync) en YM, RTY y EMD** (`F-A20-NO-TRANSFIERE`, 2026-11-19, humano)
+  - Efecto: 2018–2025 DESC: fábrica −0,074 / −0,034 / −0,080 R (19–20 ops/mes; fricción/R ≈ 0,08 contra ≈ 0,03 en NQ); 0/24 vecinos positivos; MDE80 0,18–0,20. NO_TRANSFIERE.
+  - Dónde: YM, RTY, EMD M1 A5
+  - Siguiente: A20 sólo NQ y sólo en forward.
+  - Evidencia: `docs/research/a20_multiactivo_20261119/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

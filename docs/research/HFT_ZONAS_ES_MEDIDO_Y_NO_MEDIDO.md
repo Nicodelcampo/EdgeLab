@@ -1396,3 +1396,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** RQ5, RQ6, FM1, FM2 y A20 por época (2006–2017 contra 2018–2025) en DESC y REP; conteo de eventos de PICOS-DEFENDIDOS por diseño e
   instrumento (sin desenlaces). Acta: `docs/research/REVISION_DESCARTADAS_20261119.md`.
 - **NO MEDIDO:** Dual Thrust (EXTERNAS-28) por época; holdout A5 de RQ5; A20 en forward.
+
+## 2026-11-19 — A20-MULTIACTIVO
+- **MEDIDO:** A20 (fábrica + 8 vecinos) en YM, RTY y EMD, DESC 2018–2025: negativa en los tres, 0/24 vecinos positivos → NO_TRANSFIERE.
+  Acta: `docs/research/a20_multiactivo_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP y HOLDOUT de estos índices (REP guardado sin leer; HOLDOUT descartado).
