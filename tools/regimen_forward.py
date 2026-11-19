@@ -17,7 +17,8 @@ DIR = ROOT / "docs/research/regimen_forward_20261119"; PRE = "docs/research/regi
 DESDE = 20261114; FR_NQ = 1.5455
 REGLAS = {"T": dict(mu=0.075, dd=-20.0, cotas=(-4.0, 3.5)), "R": dict(mu=0.10, dd=-15.0, cotas=(-2.0, 12.0)),
           "CANASTA_TR": dict(mu=0.13, dd=-26.0, cotas=(-6.0, 16.0)), "SOM": dict(mu=0.027, dd=-40.0, cotas=(-4.0, 8.0)),
-          "FRANKLIN": dict(mu=0.04, dd=-44.0, cotas=(-3.0, 18.0))}
+          "FRANKLIN": dict(mu=0.04, dd=-44.0, cotas=(-3.0, 18.0)),
+          "Z_BANDA": dict(mu=0.13, dd=-13.0, cotas=(-3.0, 8.0))}                  # PREREGISTRO_ZBANDA.md (serie separada, no entra en la canasta)
 
 
 def vigilar(serie, mu, dd, cotas):
@@ -41,10 +42,15 @@ def series(hasta):
         t = o[o.modulo == "T"].sort_values("t")
         if len(t) and (t.riesgo < 2).any(): raise SystemExit("riesgo de T < 2: no es el riesgo inicial clip(ORB15·1,25, 2, 100) (auditoría 2026-11-16)")
         t = t.assign(R=t.neto / t.riesgo)
-        r = o[o.modulo == "R"].sort_values("t").copy(); s = 0.25 * r.atr20; bruto = r.neto + FR_NQ
+        if "atr20_ses" not in o: raise SystemExit("el forward no trae atr20_ses (ATR20 de sesión CME, el validado): relanzar con el kernel vigente")
+        r = o[o.modulo == "R"].sort_values("t").copy(); s = 0.25 * r.atr20_ses; bruto = r.neto + FR_NQ
         r["R"] = (np.where(r.mae_pts >= s, -s, bruto) - FR_NQ) / s
         out["T"], out["R"] = t.R.tolist(), r.R.tolist()
         d = pd.concat([t[["dia", "R"]], r[["dia", "R"]]]).groupby("dia").R.sum().sort_index(); out["CANASTA_TR"] = d.tolist()
+        zb = o[o.modulo.astype(str).str.startswith("ZB_")].copy()
+        if len(zb):
+            s2 = 0.25 * zb.atr20_ses; zb["R"] = (np.where(zb.mae_pts >= s2, -s2, zb.neto + FR_NQ) - FR_NQ) / s2
+            out["Z_BANDA"] = zb.groupby("dia").R.mean().sort_index().tolist()      # promedio de las 9 configuraciones por día con operación
     s = ROOT / f"docs/research/quantlab_mt5_eas_20261116/seguimiento/fw{hasta}/SOM_OPS.csv"
     if s.exists():
         S = pd.read_csv(s); out["SOM"] = S.sort_values("entry_time_utc").R.tolist() if "entry_time_utc" in S else S.R.tolist()

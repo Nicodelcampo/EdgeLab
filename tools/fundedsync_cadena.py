@@ -59,7 +59,7 @@ def forward(hasta, commit=""):
     fin = (dt.date(int(hasta[:4]), int(hasta[4:6]), int(hasta[6:])) + dt.timedelta(days=1)).isoformat()
     acta = dict(acta="docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md", commit=commit, familia="FUNDEDSYNC", cid="FUNDEDSYNC::forward_TZR")
     k = construir(); txt = k.read_text(encoding="utf-8")
-    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA=" + repr(hasta) + ", FIN=" + repr(fin) + ", FW_DESDE='2026-11-14', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
+    k.write_text("import os\nos.environ.update(SELLADO='1', HASTA=" + repr(hasta) + ", FIN=" + repr(fin) + ", FW_DESDE='2026-11-14', FW_ZBANDA='1', ACTA_JSON=" + repr(json.dumps(acta)) + ")\n" + txt, encoding="utf-8")
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", f"{KS}-fw{hasta}", "--title", f"edgelab fundedsync cadena fw{hasta}", "--script", str(k),
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1", "--dataset", "nicolasbuttaro/edgelab-holdout-sellado"], cwd=ROOT, check=True)
 
@@ -72,6 +72,7 @@ def traer_forward(hasta):
     d = OUT / "forward"; d.mkdir(parents=True, exist_ok=True); f = d / f"OPS_{hasta}.csv"
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "output", "--slug", f"{KS}-fw{hasta}", "--file", "FUNDEDSYNC_HOLDOUT_OPS.csv", "--out", str(f)], cwd=ROOT, check=True)
     o = pd.read_csv(f, parse_dates=["dia"]); fr = 1.5455
+    o = o[~o.modulo.astype(str).str.startswith("ZB_")]                    # Z-banda es otra serie (regimen_forward); la cartera B no cambia
     stop = 0.5 * o.atr20; corta = o.modulo.isin(["Z", "R"]) & (o.mae_pts >= stop)
     o["neto_v"] = o.neto.where(~corta, -stop - fr)
     res = {}
@@ -88,6 +89,7 @@ def cartera_b(hasta):
     import numpy as np, pandas as pd
     fic = json.loads((OUT.parent / "CARTERA_B_OPERATIVA.json").read_text(encoding="utf-8")); cu = fic["cuenta_referencia"]; al = fic["alertas"]
     o = pd.read_csv(OUT / f"forward/OPS_{hasta}.csv", parse_dates=["dia"]); fr = 1.5455
+    o = o[~o.modulo.astype(str).str.startswith("ZB_")]
     stop = 0.5 * o.atr20; corta = o.modulo.isin(["Z", "R"]) & (o.mae_pts >= stop); o["usd"] = o.neto.where(~corta, -stop - fr) * fic["usd_por_punto"]
     d = o.groupby(o.dia.dt.strftime("%Y%m%d").astype(int)).usd.sum().sort_index(); ac = d.cumsum(); dd = float((ac - np.maximum.accumulate(np.r_[0.0, ac.values])[1:]).min()) if len(d) else 0.0
     res = dict(hasta=int(hasta), sesiones=int(len(d)), usd_total=float(d.sum()), por_regla={k: float(g.usd.sum()) for k, g in o.groupby("modulo")},

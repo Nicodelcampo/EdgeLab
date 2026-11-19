@@ -36,6 +36,22 @@ def operaciones(D):
     return out
 
 
+ZBANDA = [(a, b, e) for (a, b) in ((10, 30), (15, 20), (30, 10)) for e in (35.0, 45.0, 55.0)]   # Z-banda (regimen_forward_20261119/PREREGISTRO_ZBANDA.md)
+
+
+def operaciones_zbanda(D):
+    """Las 9 configuraciones de severidad moderada de Z (misma conversión que `operaciones`); modulo = ZB_<cubeta>_<ema>_<eficiencia>."""
+    ms = F.build_multi_series(F.load_m1_data(a_utc(D), end=os.environ.get("FIN", "2026-10-01")), tz_input="UTC"); out = {}
+    for bk, em, ef in ZBANDA:
+        x = F.correr_modulo("Z", ms, bucket_minutes=bk, ema_period=em, min_efficiency_pct=ef); k = f"ZB_{bk}_{em}_{ef:g}"
+        if not len(x): out[k] = pd.DataFrame(columns=["dia", "neto", "riesgo", "side"]); continue
+        tt = pd.to_datetime(x.entry_time_utc, utc=True).dt.tz_convert("America/New_York")
+        out[k] = pd.DataFrame(dict(dia=tt.dt.tz_localize(None).dt.normalize(), t=((tt - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s")).values, side=x.side.values,
+                                   neto=pd.to_numeric(x.pnl_pts, errors="coerce").values - FR, riesgo=np.nan, salida=x.exit_name.values,
+                                   mae_pts=(pd.to_numeric(x.mae_usd, errors="coerce") * (pd.to_numeric(x.pnl_pts, errors="coerce") / pd.to_numeric(x.pnl_usd, errors="coerce")).replace([np.inf, -np.inf], np.nan).median()).values))
+    return out
+
+
 def t_ses(df):
     if df is None or len(df) < 3: return None
     s = df.groupby("dia").neto.sum(); return float(s.mean() / s.std(ddof=1) * np.sqrt(len(s))) if s.std(ddof=1) > 0 else None
@@ -66,10 +82,14 @@ if os.environ.get("SELLADO") == "1":                                    # apertu
     H = pd.DataFrame(dict(o=B.open, h=B.high, l=B.low, c=B.close, v=B.vol), index=B.index)
     D = pd.concat([D[D.index < H.index.min()], H]); print(f"holdout: {len(H)} velas M1 sellladas", flush=True)
     F.MODULOS = {k: F.MODULOS[k] for k in ("T", "Z", "R")}
-    ops = operaciones(D); ops = {k: v[v.dia >= os.environ.get("FW_DESDE", "2026-10-01")] for k, v in ops.items() if v is not None}
+    ops = operaciones(D)
+    if os.environ.get("FW_ZBANDA") == "1": ops.update(operaciones_zbanda(D))
+    ops = {k: v[v.dia >= os.environ.get("FW_DESDE", "2026-10-01")] for k, v in ops.items() if v is not None}
     mm = D.index.hour * 60 + D.index.minute; RR = D[(mm >= 570) & (mm < 960)]; dd = RR.index.normalize()
     atr20 = (RR.h.groupby(dd).max() - RR.l.groupby(dd).min()).rolling(20).mean().shift(1)          # stop de catástrofe (PREREGISTRO_TANDA2 L2)
-    ops = {k: v.assign(atr20=atr20.reindex(v.dia).values) for k, v in ops.items()}
+    ses = (D.index + pd.Timedelta(hours=6)).normalize()                                           # sesión CME (18:00 NY → día siguiente)
+    atr20_ses = (D.h.groupby(ses).max() - D.l.groupby(ses).min()).rolling(20).mean().shift(1)      # = tools/m1_largo.py::atr20 (R y Z validados)
+    ops = {k: v.assign(atr20=atr20.reindex(v.dia).values, atr20_ses=atr20_ses.reindex(v.dia).values) for k, v in ops.items()}
     pd.concat([v.assign(modulo=k) for k, v in ops.items()]).to_csv("FUNDEDSYNC_HOLDOUT_OPS.csv", index=False)
     json.dump({k: dict(n=int(len(v)), neto_pts=float(v.neto.mean()) if len(v) else None, ee=float(v.neto.std(ddof=1) / np.sqrt(len(v))) if len(v) > 1 else None)
                for k, v in ops.items()}, open("RESULTADO_HOLDOUT.json", "w"), indent=1); print("listo holdout"); raise SystemExit(0)
