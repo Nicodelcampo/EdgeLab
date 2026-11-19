@@ -39,6 +39,7 @@ def main(hasta, commit=""):
     print(_run("tools/fundedsync_cadena.py", "cartera_b", hasta).stdout)
     print(_run("tools/franklin_seguimiento.py", "traer_forward", hasta).stdout)
     print(_run("tools/som_seguimiento.py", "traer_forward", hasta).stdout)
+    print(_run("tools/regimen_forward.py", hasta, check=False).stdout)      # REGIMEN-FORWARD (2026-11-19): canasta T+R, SOM y Franklin como regímenes
 
 
 if __name__ == "__main__":
