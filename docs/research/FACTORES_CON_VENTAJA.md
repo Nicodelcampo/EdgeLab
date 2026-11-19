@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (21)
+## PISTA_VIVA (22)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
+  - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
+  - Dónde: NQ (principal), ES
+  - Siguiente: Canasta con T-NQ (baja frecuencia sola); confirmar con datos que el vendedor no vio (misma fecha que la prueba 2 de T) y vigilancia secuencial como T.
+  - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`, `docs/research/neto_pistas_20261119/RZ_RESULTADO.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93).
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
@@ -245,7 +250,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (11)
+## EN_SEGUIMIENTO (12)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -254,6 +259,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
   - Siguiente: Pre-registrar RQ5+RQ6 en ES+NQ con tamaño fijo o ∝1/√riesgo (R como cociente de sumas) y plan K49 para REP+holdout antes de abrir.
   - Evidencia: `docs/research/roboquant_20261118/RESULTADO.md`, `docs/research/roboquant_20261118/DESC.json`, `docs/research/friccion_rq_20261119/RESULTADO.md`
+- **A20 (Absorb 20 min, cortos, FundedSync): negativo en la ventana completa y meseta positiva sólo desde su quiebre de 2017-11** (`F-A20-DESDE-2017`, 2026-11-19, humano)
+  - Efecto: 0/81 variantes positivas 2008–2026 (fábrica −0,123 R neto); quiebre 2017-11-10 p 0,003; desde ahí 81/81 positivas (mediana +0,065), desde 2020 mediana +0,084; fricción mediana 0,13 R; 2019–2021 negativos.
+  - Dónde: NQ
+  - Siguiente: Si se quiere probar como régimen, pre-registrar la ventana desde el quiebre (como T) y confirmar con datos que el vendedor no vio.
+  - Evidencia: `docs/research/neto_pistas_20261119/RESULTADO.md`
 - **OTR930-NQ (papel): sin régimen detectable y negativa fuera del Nasdaq** (`F-OTR930-SIN-REGIMEN`, 2026-11-18, sesion)
   - Efecto: v2 (motor corregido, validación de fuente aprobada): NQ M1 2012→2025-07 negativa (−0,82 / −1,00 / −3,01 pts por sesión), positiva sólo en 2025-08→2026-09 (+3,86); 12/54 trimestres positivos; ningún encendido por régimen supera al azar (p 0,41–0,95). Dow M1 negativa en los 4 tramos (v1).
   - Dónde: NQ y Dow M1

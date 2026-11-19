@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1449 |
+| `docs/research` | 1456 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -41,7 +41,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
 | REPORTE | 5 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
-| AUDITORIA | 16 | `AUDITORIA_K48_CONTEXTO_20261118.md` | 2026-11-18 | RESULTADO — las pistas vivas no tienen fuga. La fuga estaba en un atlas descript |
+| AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
 | HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |

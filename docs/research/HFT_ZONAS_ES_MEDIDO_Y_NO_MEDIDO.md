@@ -1281,3 +1281,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** spread ask − bid por hora CT en NQ (2,7–3,6 ticks), ES (≈ 1,1, 95 % a 1 tick) e YM (1,7–2,1), ago-2025 → mar-2026: el
   canónico es correcto y la hora ahorra ≈ 4 % de la fricción de NQ. Acta: `docs/research/spread_hora_20261119/RESULTADO.md`.
 - **NO MEDIDO:** slippage real por lado (sigue siendo el supuesto de 1 tick), spread antes de 2025.
+
+## 2026-11-19 — R, Z y A20 en R; tamaño en Franklin y SOM (NETO-PISTAS)
+- **MEDIDO:** R (AtrPhase) con stop 0,25 × ATR20: REGIMEN_ROBUSTO (81/81, PBO 0,23, 16/19 años, +0,27 R neto); Z INTERMEDIO (fábrica en
+  pico); A20 SOBREAJUSTE_PROBABLE en la ventana completa y meseta positiva sólo desde 2017-11 (descriptivo); prefijo idéntico en las tres;
+  esquemas de tamaño S0–S4 de Franklin y SOM sin confirmación en EMD+RTY. Acta: `docs/research/neto_pistas_20261119/RESULTADO.md`.
+- **NO MEDIDO:** k < 0,25 en R, R/Z/A20 desde la fecha de la versión del vendedor, A20 con ventana desde el quiebre pre-registrada.
