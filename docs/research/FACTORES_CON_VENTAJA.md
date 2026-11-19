@@ -380,7 +380,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (42)
+## NO_REPETIR (43)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -394,6 +394,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: ES, NQ, YM, GC
   - Siguiente: Nada en esta forma; Dual Thrust es del grupo bruto real sin neto intradía.
   - Evidencia: `docs/research/externas_a5_20261118/RESULTADO.md`
+- **Confluencia causal de señales intradía con bruto real (SOM, Franklin, FM1, FM2, RQ5, RQ6) en NQ+ES** (`F-CONFLUENCIA-MISMA-INFORMACION`, 2026-11-19, humano)
+  - Efecto: DESC: confirmadas − no confirmadas +0,021 R (p 0,09); confirmadas neto −0,004. Las señales no son independientes: Franklin coincide con FM1 el 100 % de los días, RQ5 90 %, RQ6 86 %.
+  - Dónde: NQ, ES
+  - Siguiente: No repetir confluencias entre señales de la primera media hora; si se insiste, con señales de información distinta (otra hora, otro activo, opciones).
+  - Evidencia: `docs/research/confluencia_20261119/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

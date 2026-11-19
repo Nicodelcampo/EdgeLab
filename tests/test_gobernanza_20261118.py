@@ -163,7 +163,9 @@ def test_jsonl_de_registros_parsean_linea_por_linea():
     r = subprocess.run(["git", "ls-files", "docs/research/*.jsonl"], cwd=ROOT, capture_output=True, text=True)
     malos = []
     for f in r.stdout.split():
-        for i, l in enumerate((ROOT / f).read_text(encoding="utf-8").splitlines(), 1):
+        t = (ROOT / f).read_text(encoding="utf-8")
+        if t and not t.endswith("\n"): malos.append(f"{f}: no termina en salto de línea (el próximo alta queda pegado; 2026-11-19 en FACTORES.jsonl)")
+        for i, l in enumerate(t.splitlines(), 1):
             try: json.loads(l)
             except Exception as e: malos.append(f"{f}:{i}: {str(e)[:60]}")
     assert not malos, malos[:10]
