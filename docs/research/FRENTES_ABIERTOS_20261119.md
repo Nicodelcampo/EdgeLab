@@ -5,7 +5,7 @@ en los controles y que pasen por toda la cadena, sin falsos positivos». Se actu
 
 | # | Frente | Estado | Próximo paso | Bloqueo |
 |---|---|---|---|---|
-| 1 | EXTERNAS_A5 (114 variantes del catálogo externo) | fase 0 de fricción en curso (NQ completo; ES, YM, GC reanudados tras reinicios) | DESC de las que pasen; cruce con la auditoría de Dual Thrust de Gemini | reinicios del contenedor (reanudable) |
+| 1 | EXTERNAS_A5 (114 variantes del catálogo externo) | CERRADO: 110/114 descartadas por fricción; 4 Dual Thrust con bruto real y neto ≈ 0 (DESC de Gemini), REP sin potencia (0,01) | — | — |
 | 2 | FLUJOS-MACRO (FM1–FM8, Carril 1) | HECHO: FM1/FM2 bruto real, neto negativo; REP sin potencia (K49); K53 corregido | FM7: causa raíz K54 (sin VIX en el kernel de ticks); guardas en código; sin cambio de veredicto | — |
 | 3 | Carril 2 (11 estrategias multi-sesión; **no operables en LucidFlex: cierre obligatorio 16:45 ET, sin overnight**: IBS, Double Seven, overnight, Turnaround Tuesday, cambio de mes, eVRP, VIX alto, pre-FOMC, Dynamic Breakout II, rotación ES/GC) | motor existente y calibrado (`sqx_catalogo.simular`, K28); diseño en `carril2_20261119/DISENO.md` con regla de partición para posiciones largas | lote 1: 0/8 (SIN_EVIDENCIA); lote 2 (pico de VIX, P80, eVRP, z-score, DBO, rotación): 0/12, pico y compresión de vol con p ≈ 0,02 sin pasar BH; faltan overnight (motor) y pre-FOMC (potencia) | CERRADO para Lucid (sin overnight); sólo cuenta de broker |
 | 4 | T-NQ + R (AtrPhase) como canasta candidata | T REGIMEN_ROBUSTO; R REGIMEN_ROBUSTO en R; vigilancia de T escrita | REGIMEN-FORWARD pre-registrado (canasta T+R, vigilancia); prueba 2 resuelta: build del vendedor 2026-10-29 → sólo el forward es limpio | esperar datos sellados nuevos |

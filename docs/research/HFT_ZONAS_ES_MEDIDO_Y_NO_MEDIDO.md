@@ -1322,3 +1322,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:** overnight largo de Concretum (motor sin entrada a hora fija entre sesiones) y pre-FOMC (sin potencia sola).
 - **CAUSA RAÍZ FM7 (K54):** el kernel de ticks de Kaggle no tenía el parquet de CBOE; FLUJOS-MACRO y OPTION-ALPHA cayeron en silencio al
   respaldo (RV5 / ATR) y ticks y M1 midieron reglas distintas. Guardas: `a5_campana.insumos_distintos` y `tablas.insumos_externos`.
+
+## 2026-11-19 — EXTERNAS-28 cerrado
+- **MEDIDO:** fase 0 en NQ, ES, YM y GC: 4/114 pasan la fricción (Dual Thrust); DESC de esas 4 (auditoría de Gemini): neto ≈ 0. Acta:
+  `docs/research/externas_a5_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP (potencia 0,01) y las 110 descartadas con otro stop o en otra escala.
