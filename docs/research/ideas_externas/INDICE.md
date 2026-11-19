@@ -9,3 +9,7 @@ se mide sólo con pre-registro, registro global, costos canónicos y R; nunca se
 - reels/alphazone_ema_vwap.md · mecha que cruza el VWAP + salida por EMA9 en 3 min · EMA_VWAP REFUTADA (−0,19 R, MDE 0,06)
 - reels/flexingjoe_orb_ema20.md · ORB 09:30–10:00 + retroceso a EMA20 en 2 min · ORB_EMA20 sin efecto detectado (NQ stop opuesto ≈ +0,02–0,07 R, IC cruza cero; ORB directo refutado 2026-11-08)
 - reels/davidtrades_bias_tracker.md · Bias Tracker multi-factor + Gao et al. (primera media hora → última); réplicas externas dicen que el efecto es el gap · NO MEDIDO (pendiente)
+- reels/alphazone_friday_range_revisit.md · Hougaard: viernes con máximo menor que el jueves → el lunes visita el mínimo del viernes; venta si abre dentro · VIERNES_LUNES REFUTADA (R ≤ 0 en NQ/ES/YM); la visita es 50 % (no 24/25) y pasa en cualquier día con máximo menor (reels_20261116)
+- reels/juanjoseolave_dos_velas.md · US100 5 min: primera pareja de velas del mismo color desde las 09:35, stop en el extremo desde las 09:00, 1:1 · DOS_VELAS REFUTADA en ES/YM, ≈ 0 en NQ (acierto 50 % con 1:1; reels_20261116)
+- reels/franklin_vwap_londres.md · NY arriba de Londres y del VWAP → sólo compras (y al revés) · FRANKLIN pista de régimen desde 2020 en NQ/ES (+0,10/+0,12 R, sin BH); como filtro de T pasa (2020–26); a holdout/forward (reels_20261116)
+- reels/myles_vp3.md · VP³: 3 perfiles de volumen + VWAP, «layup» = 2+ líneas juntas, RR 0,75 · NO MEDIDO a propósito (tolerancia/entrada sin definir, volumen de CFD, toques que se atraviesan); posible generador del banco

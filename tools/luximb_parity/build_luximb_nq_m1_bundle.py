@@ -21,10 +21,11 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent)); sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 import parity_luximb as P  # noqa: E402
+from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS  # noqa: E402  (auditoría 2026-11-16: antes 2026-10-01 00:00 UTC, 2 h tarde)
+HOLDOUT_MS = HOLDOUT_APERTURA_UTC_NS // 1_000_000
 
-HOLDOUT_MS = int(pd.Timestamp("2026-10-01", tz="UTC").value // 1_000_000)
 EXTEND_MIN = 500
 COLORS = {"bull": "#2157f3", "bear": "#ff1100"}
 
@@ -47,7 +48,7 @@ def main():
             parts.append(tb[["ts_utc_ns", "price_ticks", "volume"]])
     tk = pd.concat(parts).sort_values("ts_utc_ns", kind="stable")
     sellado = os.environ.get("HOLDOUT_SELLADO") == "1" and "HOLDOUT_SELLADO" in str(out_dir).upper()   # 21/10: modo sellado explicito
-    if sellado and int(tk.ts_utc_ns.min()) // 1_000_000 < HOLDOUT_MS - 7 * 3600 * 1000:
+    if sellado and int(tk.ts_utc_ns.min()) // 1_000_000 < HOLDOUT_MS:
         raise SystemExit("modo sellado: hay ticks anteriores a la sesion del 2026-10-01 (no se mezclan)")
     if int(tk.ts_utc_ns.max()) // 1_000_000 >= HOLDOUT_MS and not sellado:
         raise SystemExit("ticks del holdout en la ventana pedida (usar HOLDOUT_SELLADO=1 y carpeta HOLDOUT_SELLADO)")

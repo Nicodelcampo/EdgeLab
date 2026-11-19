@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_20261105_PARA_ANTIGRAVITY.md` (2026-11-05)
+`docs/research/HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` (2026-11-17)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -19,18 +19,19 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/autopilot` | 16 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
+| `docs/cartera` | 1 |
 | `docs/data_catalog` | 11 |
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
-| `docs/incidents` | 17 |
+| `docs/incidents` | 18 |
 | `docs/indicadores` | 1 |
-| `docs/infra` | 24 |
+| `docs/infra` | 26 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1272 |
+| `docs/research` | 1510 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -39,10 +40,19 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
+| RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |
+| MIRADA | 1 | `MIRADA_HUMANA_20261119.md` | 2026-11-19 | VIGENTE — revisión descriptiva sobre operaciones ya medidas (no cuenta pruebas). |
+| FRENTES | 1 | `FRENTES_ABIERTOS_20261119.md` | 2026-11-19 | VIGENTE — tablero de frentes de la sesión de Claude; pedido de Nico: «no olvides |
+| FRECUENCIA | 1 | `FRECUENCIA_PROP_20261119.md` | 2026-11-19 | VIGENTE — directiva de Nico y datos descriptivos sobre operaciones ya medidas (n |
+| AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
+| VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
+| INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
+| HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
+| DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | SUPERADA por HOLDOUT-A5 (2026-11-17, docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11 |
 | PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |
-| HANDOFF | 18 | `HANDOFF_20261105_PARA_ANTIGRAVITY.md` | 2026-11-05 | VIGENTE. Rama claude/vibrant-clarke-s9z6e2 (la rama gemini/filtros-20261104 ya e |
 | REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |
 | PREREGISTRO | 1 | `PREREGISTRO_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Regis |
 | MAPA | 1 | `MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md` | 2026-11-03 | DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autor |
@@ -52,8 +62,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | APERTURA | 1 | `APERTURA_HOLDOUT_CONJUNTA_20261102.md` | 2026-11-02 | VIGENTE. Pedido de Nico: «cuando termine todo abrimos el holdout con las nominad |
 | RUNBOOK | 1 | `RUNBOOK_SV1_ACTUALIZAR_Y_LANZAR_20261101.md` | 2026-11-01 | VIGENTE. Lo ejecuta una persona con acceso root a SV1 (Gonza) o el Claude Code d |
 | LECTURA | 3 | `LECTURA_ROBOTEDGE_20261101.md` | 2026-11-01 | VIGENTE. Fecha: 2026-11-01. Insumos (subidos por Nico): |
-| AUDITORIA | 15 | `AUDITORIA_T_NS_AVZP2_20261031.md` | 2026-10-31 | VIGENTE. Heredado de gonzasib-claude (pedido de Nico: «encargate del trabajo que |
-| REPORTE | 3 | `REPORTE_SEMANAL_Y_HOJA_DE_RUTA_PROXIMO_MES_DEBIAN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | ARQUITECTURA | 1 | `ARQUITECTURA_EJECUCION_NT8_Y_CANASTAS_REGIMEN_20261029.md` | 2026-10-29 | PROPUESTA (sesión en la nube, 2026-10-29; ver docs/research/REVISION_SV1_2026103 |
 | TRASPASO | 1 | `TRASPASO_CONDUCTORES_DEBIAN_20261027.md` | 2026-10-27 | VIGENTE. Los conductores locales (sesión en la nube de Nico) están FRENADOS desd |
 | POTENCIA | 1 | `POTENCIA_MISMOS_DATOS_20261026.md` | 2026-10-26 | VIGENTE |
@@ -69,7 +77,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
-| INVESTIGACION | 3 | `INVESTIGACION_IA_GRILLA_PRECIO_VOLUMEN_REVERSION_20261015.md` | 2026-10-15 | PROPUESTA (investigación bibliográfica y de diseño; nada entrenado ni medido) |
 | ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
@@ -93,12 +100,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PENDIENTE | 1 | `PENDIENTE_AVCL_SIM_NQ5T_20261006.md` | 2026-10-06 | OBSERVACIÓN VISUAL, no evidencia. Registrada para no perderla; requiere prueba f |
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
-| GEX | 3 | `GEX_FUENTES_Y_EVIDENCIA_20261006.md` | 2026-10-06 | INVESTIGACIÓN, nada ejecutado sobre retornos. Complementa la información que Nic |
-| EXPLO | 1 | `EXPLO_ASIMETRIA_EXCURSION_20261006.md` | 2026-10-06 | - |
-| ESTADOS | 1 | `ESTADOS_MERCADO_LITERATURA_Y_DISENO_20261006.md` | 2026-10-06 | - |
-| EDGEREPLICA | 1 | `EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` | 2026-10-06 | SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de  |
-| AVCL | 25 | `AVCL_VOL3_ROBUSTEZ_MANIFIESTO_20261006.md` | 2026-10-06 | - |
-| GEX1B | 2 | `GEX1B_RESULTADO_20261005.md` | 2026-10-05 | - |
 
 ## Superados (7)
 

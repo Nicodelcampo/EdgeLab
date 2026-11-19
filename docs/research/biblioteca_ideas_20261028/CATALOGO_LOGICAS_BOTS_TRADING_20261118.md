@@ -1,6 +1,6 @@
 # Catálogo Maestro de Lógicas y Parámetros de Bots de Trading
 
-Estado: VIGENTE (catálogo de referencia del 2026-11-18; no es evidencia de edge)
+Estado: REFERENCIA — catálogo de ideas externas (commit c8d0e912); encabezado agregado el 2026-11-18 para el protocolo de documentación.
 
 > **Fecha de actualización:** 2026-11-18  
 > **Cobertura:** 7 plataformas profundizadas en navegador e investigación web (**Option Alpha, TradingView, QuantConnect LEAN, Composer, WunderTrading, Coinrule, Gainium**) + 4 ecosistemas adicionales de navegador (**Altrady, Pionex, TradersPost, Cryptohopper**) + 4 ecosistemas algorítmicos open-source / mecánicas (**Freqtrade, Hummingbot, Mecánicas QFL/Grid/DCA/TWAP, MQL5/cTrader**).  

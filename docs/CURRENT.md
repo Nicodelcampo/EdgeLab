@@ -12,21 +12,26 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 
 ## Estado al 2026-11-19 (leer primero)
 
-- **PICOS-DEFENDIDOS lista para lanzar** (PR #200, zona PROPUESTA): un nivel de picos al que el precio se acerca sin tomarlo y
+- **0 edges promovidos.** Única candidata con vigilancia forward pre-registrada: **canasta T + R en NQ** (T de FundedSync; R AtrPhase con
+  stop 0,25 × ATR20), ambas REGIMEN_ROBUSTO (`docs/research/regimen_forward_20261119/`). En LucidFlex: +$440/cuenta y +$143/mes con la media
+  contraída a la mitad (`docs/research/propfirm_lucidflex_20261117/SENALES_ESTABLES_LUCID_20261118.md` §4).
+- Informe de la noche: `docs/research/REPORTE_NOCTURNO_20261119.md`; re-indagación por época de Z y de las pistas sin evidencia:
+  `docs/research/RE_INDAGACION_PISTAS_20261119.md`; tablero: `docs/research/FRENTES_ABIERTOS_20261119.md`.
+- Cerrados: Carril 2 (no operable en Lucid: sin overnight), EXTERNAS-28, FLUJOS-MACRO, RoboQuant, Option Alpha, ESTRUCTURALES. Guardas
+  nuevas K50–K54 (K54: insumo externo ausente en el kernel de ticks).
+- **PICOS-DEFENDIDOS lanzada el 19-nov (NQ y ES, conductor local)** — auditoría posterior: `docs/research/agente/AUDITORIA_PICOS_DEFENDIDOS_20261119.md` recomienda detenerla y medir la versión A5 (`docs/research/picos_defendidos_a5_20261119/`); decide Nico. (PR #200): un nivel de picos al que el precio se acerca sin tomarlo y
   del que se vuelve a alejar, ¿se toma después?
   - Pre-registro: `docs/research/agente/PICOS_DEFENDIDOS_20261119.md`.
   - Módulo: `edgelab/research/agente/picos_defendidos.py`.
-  - Campañas NQ/ES con `activa: false`, 207.360 celdas por canal, en R.
+  - Campañas NQ/ES activas, 207.360 celdas por canal, en R.
   - Linaje: padre DOBLE_RETROCESO.
   - IPC-NIVEL (nivel visitado resiste más que un pivote suelto) queda citado como evidencia en contra.
-  - Sin desenlaces corridos.
 - **Picos robustos M1** (target-free): puntaje de pares y grupos de picos con 6 variantes y capa ⛰ del visor, para elegir mirando
   en ene–mar 2026.
   - Diseño: `docs/research/picos_robustos_20261119/DISENO.md`.
   - Módulo: `edgelab/research/picos_robustos.py`.
 - **2026-11-18:** 28 estrategias externas traducidas al analizador y catálogo maestro de lógicas de bots.
 - **2026-11-11:** LUXIMB-AMARILLA. El holdout dio +0,086 R con objetivo al 50 % (n 11) y en contra con objetivo al 75 %; R3 lanzada.
-- **Edges promovidos: 0.**
 
 ## Estado al 2026-11-10
 

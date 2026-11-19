@@ -27,6 +27,14 @@ EV_CELDAS = [(s, f) for s in ("mecha", "atr1", "atr2") for f in ("rth", "2h")]
 ORB_CELDAS = [(s, t) for s in ("opuesto", "medio") for t in (1.0, 2.0, 0.0)]          # objetivo 0 = cierre del día
 
 
+def ctx_de_m1(D: pd.DataFrame) -> dict:
+    """Contexto (t = fin de la vela en epoch UTC, o, h, l, c, v) desde un M1 con índice en hora de NY sin zona (m1_intradia.leer_m1)."""
+    t = D.index.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT"); ok = ~t.isna(); D = D[ok]; t = t[ok].tz_convert("UTC")
+    v = D.v.to_numpy(float) if "v" in D else np.ones(len(D))
+    return dict(t=np.asarray((t - pd.Timestamp(0, tz="UTC")) // pd.Timedelta("1s"), dtype=np.int64) + 60, o=D.o.to_numpy(float),
+                h=D.h.to_numpy(float), l=D.l.to_numpy(float), c=D.c.to_numpy(float), v=v)
+
+
 def _hora(ctx, tz):
     lt = pd.to_datetime(ctx["t"] - 60, unit="s", utc=True).tz_convert(tz)
     return (lt.hour * 60 + lt.minute).to_numpy(), np.asarray(lt.strftime("%Y%m%d"), dtype=np.int64), lt.dayofweek.to_numpy()
@@ -47,6 +55,7 @@ def _sim_velas(o, h, l, c, i0, entrada, d, sl, tp, salida_ok, ult):
     """Desde la vela i0 (inclusive) con entrada al precio `entrada`. Devuelve (bruto, motivo 1 stop / 2 objetivo / 3 regla o tiempo)."""
     st = entrada - d * sl; ob = entrada + d * tp if tp > 0 else None
     for i in range(i0, ult + 1):
+        if (o[i] <= st) if d == 1 else (o[i] >= st): return d * (o[i] - entrada), 1        # auditoría 2026-11-16: gap más allá del stop → apertura
         if (l[i] <= st) if d == 1 else (h[i] >= st): return d * (st - entrada), 1
         if ob is not None and ((h[i] >= ob) if d == 1 else (l[i] <= ob)): return d * (ob - entrada), 2
         if i == ult or (salida_ok is not None and salida_ok(i)): return d * (c[i] - entrada), 3
@@ -175,3 +184,178 @@ def orb_ema20(ctx) -> pd.DataFrame:
 
 FAMILIAS = {"ORO_RANGO": (oro_rango, ORO_CELDAS), "MARTES_DEBIL": (martes_debil, MARTES_CELDAS),
             "EMA_VWAP": (ema_vwap, EV_CELDAS), "ORB_EMA20": (orb_ema20, ORB_CELDAS)}
+
+# ---------------------------------------------------------------- reels del 2026-11-16 (PREREGISTRO docs/research/reels_20261116/PREREGISTRO.md)
+VL_CELDAS = [("vie_lun",), ("mie_jue",)]
+DV_CELDAS = [("11h",), ("16h",)]
+FR_CELDAS = [("cierre",), ("2R",)]
+
+
+def _dias_rth(ctx):
+    """Índices M1 de la RTH (09:30–16:00 NY) por fecha, con máximo, mínimo, apertura y día de la semana; sólo días con ≥ 380 velas."""
+    m, f, dw = _hora(ctx, "America/New_York"); rth = (m >= 570) & (m < 960); out = []
+    for dia in np.unique(f[rth]):
+        ix = np.flatnonzero(rth & (f == dia))
+        if len(ix) < 380 or m[ix[0]] > 574: continue
+        out.append(dict(fecha=int(dia), dow=int(dw[ix[0]]), ix=ix, h=float(ctx["h"][ix].max()), l=float(ctx["l"][ix].min()), o=float(ctx["o"][ix[0]])))
+    return out, m, f
+
+
+def _pares_semana(D, dow_ref, dow_cmp, salto_cmp):
+    """(ref, cmp, sig): día de referencia de semana `dow_ref`, el que se compara (`salto_cmp` días hábiles antes, con semana `dow_cmp`)
+    y el día hábil siguiente; todos consecutivos en el calendario de datos (sin feriados en el medio)."""
+    for i in range(salto_cmp, len(D) - 1):
+        r, c, s = D[i], D[i - salto_cmp], D[i + 1]
+        if r["dow"] != dow_ref or c["dow"] != dow_cmp: continue
+        if (r["dow"] - c["dow"]) != salto_cmp or (s["dow"] - r["dow"]) % 7 not in (1, 3): continue
+        if dow_ref == 4 and s["dow"] != 0: continue
+        if dow_ref != 4 and s["dow"] != r["dow"] + 1: continue
+        yield r, c, s
+
+
+def viernes_lunes(ctx) -> pd.DataFrame:
+    """Hougaard / AlphaZone: si el máximo RTH del viernes < el del jueves (o el del miércoles < el del lunes) y el lunes (jueves) abre
+    DENTRO del rango del día de referencia → venta a la apertura 09:30, objetivo el mínimo de referencia, stop el máximo de referencia,
+    salida al cierre 16:00. Velas M1; stop antes que objetivo dentro de la vela."""
+    D, _, _ = _dias_rth(ctx); o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; filas = []
+    for celda, (dr, dc, k) in (("vie_lun", (4, 3, 1)), ("mie_jue", (2, 0, 2))):
+        for r, cmp_, s in _pares_semana(D, dr, dc, k):
+            if not r["h"] < cmp_["h"]: continue
+            ent = s["o"]
+            if not (r["l"] < ent < r["h"]): continue
+            sl = r["h"] - ent; tp = ent - r["l"]
+            b, mot = _sim_velas(o, h, l, c, int(s["ix"][0]), ent, -1, sl, tp, None, int(s["ix"][-1]))
+            filas.append(dict(fecha=int(s["fecha"]), celda=(celda,), lado=-1, riesgo=float(sl), bruto=float(b), motivo=mot))
+    return pd.DataFrame(filas)
+
+
+def visitas_hougaard(ctx) -> pd.DataFrame:
+    """E0 (sin P&L): para cada par de días hábiles consecutivos, si el día de referencia hizo máximo menor que el comparado (día previo,
+    o dos antes en mie/lun) y si el día siguiente visitó en RTH el mínimo de referencia; con apertura dentro o fuera del rango."""
+    D, _, _ = _dias_rth(ctx); filas = []
+    for i in range(2, len(D) - 1):
+        r, s = D[i], D[i + 1]
+        for k in (1, 2):
+            c_ = D[i - k]
+            filas.append(dict(fecha=int(s["fecha"]), dow_ref=r["dow"], dow_cmp=c_["dow"], salto=k, menor=bool(r["h"] < c_["h"]),
+                              dentro=bool(r["l"] < s["o"] < r["h"]), visita=bool(s["l"] <= r["l"])))
+    return pd.DataFrame(filas)
+
+
+def dos_velas(ctx) -> pd.DataFrame:
+    """Juan José Olave: velas de 5 min desde la de las 09:35; la primera pareja de velas seguidas del mismo color (cierre > apertura las
+    dos = compra; < = venta; un doji corta) → entrada al cierre de la segunda; stop en el mínimo (compra) / máximo (venta) desde las
+    09:00; objetivo 1:1; una por día; salida al cierre 16:00. Celda = hora límite del cierre de la segunda vela (11:00 o 15:55)."""
+    o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; m, f, _ = _hora(ctx, "America/New_York"); filas = []
+    for dia in np.unique(f):
+        ix = np.flatnonzero(f == dia); mm = m[ix]
+        rth = ix[(mm >= 570) & (mm < 960)]
+        if len(rth) < 380 or m[rth[0]] > 574: continue
+        g = (m[rth] - 570) // 5
+        O5, H5, L5, C5, _, fin = _agregar(o[rth], h[rth], l[rth], c[rth], np.ones(len(rth)), g)
+        slot = g[fin]; col = np.sign(C5 - O5)
+        j = next((q for q in range(1, len(slot)) if slot[q - 1] >= 1 and col[q] != 0 and col[q] == col[q - 1]), None)
+        if j is None: continue
+        d = int(col[j]); ent = float(C5[j]); i_fin = int(rth[fin[j]]); fin_min = int(m[i_fin]) + 1
+        pre = ix[(mm >= 540) & (ix <= i_fin)]
+        st = float(l[pre].min()) if d == 1 else float(h[pre].max()); sl = d * (ent - st)
+        if not sl > 0 or i_fin >= rth[-1]: continue
+        b, mot = _sim_velas(o, h, l, c, i_fin + 1, ent, d, sl, sl, None, int(rth[-1]))
+        for celda in DV_CELDAS:
+            if celda[0] == "11h" and fin_min > 660: continue
+            filas.append(dict(fecha=int(dia), celda=celda, lado=d, riesgo=sl, bruto=float(b), motivo=mot))
+    return pd.DataFrame(filas)
+
+
+def _sesgo_franklin(ctx):
+    """Por minuto: VWAP de la sesión (ancla 18:00 NY, volumen de tick, precio típico) y máximo/mínimo de Londres (03:00–09:30 NY) de la
+    fecha; NaN fuera de lo conocido. Causal: el VWAP de la vela i incluye la vela i (se usa con su cierre)."""
+    m, f, _ = _hora(ctx, "America/New_York")
+    lt = pd.to_datetime(ctx["t"] - 60, unit="s", utc=True).tz_convert("America/New_York")
+    ses = np.asarray((lt + pd.Timedelta(hours=6)).strftime("%Y%m%d"), dtype=np.int64)
+    tp = (ctx["h"] + ctx["l"] + ctx["c"]) / 3; v = np.maximum(np.asarray(ctx["v"], float), 1e-9)
+    df = pd.DataFrame(dict(ses=ses, pv=tp * v, v=v)); g = df.groupby("ses")
+    vwap = (g.pv.cumsum() / g.v.cumsum()).to_numpy()
+    lon = (m >= 180) & (m < 570); L = pd.DataFrame(dict(f=f[lon], h=ctx["h"][lon], l=ctx["l"][lon])).groupby("f")
+    lh = np.array(pd.Series(f).map(L.h.max()), dtype=float); ll = np.array(pd.Series(f).map(L.l.min()), dtype=float)
+    lh[m < 570] = np.nan; ll[m < 570] = np.nan
+    return vwap, lh, ll
+
+
+def franklin(ctx) -> pd.DataFrame:
+    """Franklin (Traders Hub): a las 10:00 NY, con el cierre de la vela 09:59: arriba del máximo de Londres y del VWAP → compra; abajo del
+    mínimo de Londres y del VWAP → venta. Stop en el mínimo (compra) / máximo (venta) de las dos velas de 15 min de NY (09:30–10:00);
+    salida al cierre 16:00 o objetivo 2R. Una por día."""
+    o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; m, f, _ = _hora(ctx, "America/New_York"); vw, lh, ll = _sesgo_franklin(ctx); filas = []
+    for dia in np.unique(f):
+        ix = np.flatnonzero(f == dia); mm = m[ix]
+        rth = ix[(mm >= 570) & (mm < 960)]
+        if len(rth) < 380 or m[rth[0]] > 574: continue
+        k = ix[mm == 599]
+        if not len(k): continue
+        k = int(k[0]); p = float(c[k]); orr = rth[m[rth] < 600]
+        if not (np.isfinite(lh[k]) and np.isfinite(vw[k])): continue
+        d = 1 if (p > lh[k] and p > vw[k]) else -1 if (p < ll[k] and p < vw[k]) else 0
+        if not d: continue
+        st = float(l[orr].min()) if d == 1 else float(h[orr].max()); sl = d * (p - st)
+        if not sl > 0: continue
+        for celda in FR_CELDAS:
+            b, mot = _sim_velas(o, h, l, c, k + 1, p, d, sl, 2 * sl if celda[0] == "2R" else 0.0, None, int(rth[-1]))
+            filas.append(dict(fecha=int(dia), celda=celda, lado=d, riesgo=sl, bruto=float(b), motivo=mot))
+    return pd.DataFrame(filas)
+
+
+FAMILIAS.update({"VIERNES_LUNES": (viernes_lunes, VL_CELDAS), "DOS_VELAS": (dos_velas, DV_CELDAS), "FRANKLIN": (franklin, FR_CELDAS)})
+
+
+# ---------------------------------------------------------------- FRANKLIN: variantes (PREREGISTRO docs/research/reels_20261116/PREREGISTRO_FRANKLIN_MEJORAS.md)
+FRV_HORAS = ("0945", "1000", "1030", "primera")            # primera = el primer cierre alineado de 09:59, 10:29, 10:59, 11:29
+FRV_STOPS = ("rango", "atr")                               # extremo opuesto 09:30 → decisión | 0,5 × ATR20 diario (RTH) desde la entrada
+FRV_FILTROS = ("ninguno", "vwap_ny", "sin_gap", "vwap_ny+sin_gap")
+FRV_CELDAS = [(h, s, f) for h in FRV_HORAS for s in FRV_STOPS for f in FRV_FILTROS]
+_FRV_MIN = {"0945": (584,), "1000": (599,), "1030": (629,), "primera": (599, 629, 659, 689)}
+
+
+def franklin_variantes(ctx, celdas=None) -> pd.DataFrame:
+    """Franklin con hora de decisión, stop y filtro variables; salida siempre al cierre 16:00. Filtros: `vwap_ny` exige además el lado
+    correcto del VWAP anclado a las 09:30 (dos VWAP, RobotEdge); `sin_gap` excluye días con |apertura 09:30 − cierre RTH previo| ≥ 0,5 ×
+    ATR20 (el sesgo puede ser sólo el gap, Kemet). Causal: todo con datos hasta el cierre de la vela de decisión; ATR20 y gap del día previo."""
+    celdas = celdas or FRV_CELDAS
+    o, h, l, c = ctx["o"], ctx["h"], ctx["l"], ctx["c"]; m, f, _ = _hora(ctx, "America/New_York"); vw, lh, ll = _sesgo_franklin(ctx)
+    v = np.maximum(np.asarray(ctx["v"], float), 1e-9); tp = (h + l + c) / 3
+    D, _, _ = _dias_rth(ctx); filas = []; prev = None; rangos = []
+    for d in D:
+        ix = d["ix"]; atr = np.mean(rangos[-20:]) if len(rangos) >= 20 else np.nan
+        gap = abs(d["o"] - prev) / atr if (prev is not None and np.isfinite(atr) and atr > 0) else np.nan
+        prev = float(c[ix[-1]]); rangos.append(d["h"] - d["l"])
+        if not np.isfinite(atr): continue
+        mm = m[ix]; vwny = np.cumsum(tp[ix] * v[ix]) / np.cumsum(v[ix]); ult = int(ix[-1]); hecho = {}
+        for celda in celdas:
+            hora, stop, filtro = celda
+            if "sin_gap" in filtro and not (np.isfinite(gap) and gap < 0.5): continue
+            for mdec in _FRV_MIN[hora]:
+                q = np.flatnonzero(mm == mdec)
+                if not len(q): continue
+                q = int(q[0]); k = int(ix[q]); p = float(c[k])
+                if not (np.isfinite(lh[k]) and np.isfinite(vw[k])): continue
+                dd = 1 if (p > lh[k] and p > vw[k]) else -1 if (p < ll[k] and p < vw[k]) else 0
+                if dd and "vwap_ny" in filtro and not (dd * (p - vwny[q]) > 0): dd = 0
+                if not dd: continue
+                if k >= ult: break
+                clave = (mdec, stop, dd)
+                if clave not in hecho:                                   # salida al cierre con stop: primer toque del stop (vectorizado)
+                    orr = ix[: q + 1]
+                    sl = dd * (p - (float(l[orr].min()) if dd == 1 else float(h[orr].max()))) if stop == "rango" else 0.5 * atr
+                    if not sl > 0: hecho[clave] = None
+                    else:
+                        st = p - dd * sl; seg = (l[k + 1: ult + 1] <= st) if dd == 1 else (h[k + 1: ult + 1] >= st)
+                        if seg.any():                                            # auditoría 2026-11-16: con gap, a la apertura
+                            j = k + 1 + int(np.argmax(seg)); px = min(float(o[j]), st) if dd == 1 else max(float(o[j]), st)
+                            hecho[clave] = (sl, dd * (px - p), 1)
+                        else: hecho[clave] = (sl, dd * (float(c[ult]) - p), 3)
+                if hecho[clave] is None: break
+                sl, b, mot = hecho[clave]
+                filas.append(dict(fecha=int(d["fecha"]), celda=celda, lado=dd, riesgo=float(sl), bruto=float(b), motivo=mot, minuto=int(mdec)))
+                break
+    return pd.DataFrame(filas)
+

@@ -1,0 +1,1339 @@
+=== FUNDEDSYNCSTACK.ConsumeLossCooldown(ModuleState module) -> bool ===
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_000c
+  IL_0003: ldarg.1      
+  IL_0004: ldfld        ModuleState.LossCooldownBarsRemaining
+  IL_0009: ldc.i4.0     
+  IL_000a: bgt.s        IL_000e
+  IL_000c: ldc.i4.1     
+  IL_000d: ret          
+  IL_000e: ldarg.1      
+  IL_000f: dup          
+  IL_0010: ldfld        ModuleState.LossCooldownBarsRemaining
+  IL_0015: ldc.i4.1     
+  IL_0016: sub          
+  IL_0017: stfld        ModuleState.LossCooldownBarsRemaining
+  IL_001c: ldc.i4.0     
+  IL_001d: ret
+
+
+=== FUNDEDSYNCSTACK.ConfiguredLossCooldown(ModuleState module) -> int ===
+  IL_0000: ldarg.1      
+  IL_0001: brtrue.s     IL_0005
+  IL_0003: ldc.i4.0     
+  IL_0004: ret          
+  IL_0005: ldarg.1      
+  IL_0006: ldfld        ModuleState.Tag
+  IL_000b: ldstr        "A1"
+  IL_0010: call         String.op_Equality(2)
+  IL_0015: brfalse.s    IL_001e
+  IL_0017: ldarg.0      
+  IL_0018: call         FUNDEDSYNCSTACK.get_A1_LossCooldownBars(0)
+  IL_001d: ret          
+  IL_001e: ldarg.1      
+  IL_001f: ldfld        ModuleState.Tag
+  IL_0024: ldstr        "A20"
+  IL_0029: call         String.op_Equality(2)
+  IL_002e: brfalse.s    IL_0037
+  IL_0030: ldarg.0      
+  IL_0031: call         FUNDEDSYNCSTACK.get_A20_LossCooldownBars(0)
+  IL_0036: ret          
+  IL_0037: ldarg.1      
+  IL_0038: ldfld        ModuleState.Tag
+  IL_003d: ldstr        "F"
+  IL_0042: call         String.op_Equality(2)
+  IL_0047: brfalse.s    IL_0050
+  IL_0049: ldarg.0      
+  IL_004a: call         FUNDEDSYNCSTACK.get_F_LossCooldownBars(0)
+  IL_004f: ret          
+  IL_0050: ldarg.1      
+  IL_0051: ldfld        ModuleState.Tag
+  IL_0056: ldstr        "S"
+  IL_005b: call         String.op_Equality(2)
+  IL_0060: brfalse.s    IL_0069
+  IL_0062: ldarg.0      
+  IL_0063: call         FUNDEDSYNCSTACK.get_S_LossCooldownBars(0)
+  IL_0068: ret          
+  IL_0069: ldc.i4.0     
+  IL_006a: ret
+
+
+=== FUNDEDSYNCSTACK.SubmitModuleEntryOrder(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopPrice, double targetPrice, double stopDistance, double targetDistance) -> void ===
+  LOCALS: V_0:ModuleState, V_1:int, V_2:DateTime, V_3:double, V_4:double, V_5:double, V_6:double, V_7:Order, V_8:int, V_9:double
+  IL_0000: ldarg.0      
+  IL_0001: call         FUNDEDSYNCSTACK.get_StartupAllowsOrders(0)
+  IL_0006: brfalse.s    IL_0011
+  IL_0008: ldarg.0      
+  IL_0009: ldarg.1      
+  IL_000a: call         FUNDEDSYNCSTACK.StrategySelectionAllows(1)
+  IL_000f: brtrue.s     IL_0012
+  IL_0011: ret          
+  IL_0012: ldarg.0      
+  IL_0013: ldarg.1      
+  IL_0014: call         FUNDEDSYNCSTACK.ModuleOf(1)
+  IL_0019: stloc.0      
+  IL_001a: ldloc.0      
+  IL_001b: brfalse.s    IL_0031
+  IL_001d: ldloc.0      
+  IL_001e: callvirt     ModuleState.get_CanEnter(0)
+  IL_0023: brfalse.s    IL_0031
+  IL_0025: ldarg.3      
+  IL_0026: ldc.i4.0     
+  IL_0027: ble.s        IL_0031
+  IL_0029: ldarg.0      
+  IL_002a: ldfld        FUNDEDSYNCSTACK.portfolioDailyLocked
+  IL_002f: brfalse.s    IL_0032
+  IL_0031: ret          
+  IL_0032: ldarg.0      
+  IL_0033: call         FUNDEDSYNCSTACK.get_ActiveLucidMicroContractCap(0)
+  IL_0038: stloc.1      
+  IL_0039: ldloc.1      
+  IL_003a: ldc.i4       2147483647
+  IL_003f: bge          IL_0132
+  IL_0044: ldarg.0      
+  IL_0045: ldfld        FUNDEDSYNCSTACK.moduleA1
+  IL_004a: ldfld        ModuleState.PendingDelta
+  IL_004f: ldarg.0      
+  IL_0050: ldfld        FUNDEDSYNCSTACK.moduleA20
+  IL_0055: ldfld        ModuleState.PendingDelta
+  IL_005a: add          
+  IL_005b: ldarg.0      
+  IL_005c: ldfld        FUNDEDSYNCSTACK.moduleF
+  IL_0061: ldfld        ModuleState.PendingDelta
+  IL_0066: add          
+  IL_0067: ldarg.0      
+  IL_0068: ldfld        FUNDEDSYNCSTACK.moduleS
+  IL_006d: ldfld        ModuleState.PendingDelta
+  IL_0072: add          
+  IL_0073: ldarg.0      
+  IL_0074: ldfld        FUNDEDSYNCSTACK.moduleP
+  IL_0079: ldfld        ModuleState.PendingDelta
+  IL_007e: add          
+  IL_007f: ldarg.0      
+  IL_0080: ldfld        FUNDEDSYNCSTACK.moduleC
+  IL_0085: ldfld        ModuleState.PendingDelta
+  IL_008a: add          
+  IL_008b: ldarg.0      
+  IL_008c: ldfld        FUNDEDSYNCSTACK.moduleV
+  IL_0091: ldfld        ModuleState.PendingDelta
+  IL_0096: add          
+  IL_0097: ldarg.0      
+  IL_0098: ldfld        FUNDEDSYNCSTACK.moduleO
+  IL_009d: ldfld        ModuleState.PendingDelta
+  IL_00a2: add          
+  IL_00a3: ldarg.0      
+  IL_00a4: ldfld        FUNDEDSYNCSTACK.moduleW
+  IL_00a9: ldfld        ModuleState.PendingDelta
+  IL_00ae: add          
+  IL_00af: ldarg.0      
+  IL_00b0: ldfld        FUNDEDSYNCSTACK.moduleN
+  IL_00b5: ldfld        ModuleState.PendingDelta
+  IL_00ba: add          
+  IL_00bb: ldarg.0      
+  IL_00bc: ldfld        FUNDEDSYNCSTACK.moduleT
+  IL_00c1: ldfld        ModuleState.PendingDelta
+  IL_00c6: add          
+  IL_00c7: ldarg.0      
+  IL_00c8: ldfld        FUNDEDSYNCSTACK.moduleR
+  IL_00cd: ldfld        ModuleState.PendingDelta
+  IL_00d2: add          
+  IL_00d3: ldarg.0      
+  IL_00d4: ldfld        FUNDEDSYNCSTACK.moduleZ
+  IL_00d9: ldfld        ModuleState.PendingDelta
+  IL_00de: add          
+  IL_00df: ldarg.0      
+  IL_00e0: ldfld        FUNDEDSYNCSTACK.moduleE
+  IL_00e5: ldfld        ModuleState.PendingDelta
+  IL_00ea: add          
+  IL_00eb: ldarg.0      
+  IL_00ec: ldfld        FUNDEDSYNCSTACK.moduleQ
+  IL_00f1: ldfld        ModuleState.PendingDelta
+  IL_00f6: add          
+  IL_00f7: stloc.s      V_8
+  IL_00f9: ldarg.0      
+  IL_00fa: call         FUNDEDSYNCSTACK.VirtualAggregateNet(0)
+  IL_00ff: ldloc.s      V_8
+  IL_0101: add          
+  IL_0102: ldarg.2      
+  IL_0103: add          
+  IL_0104: call         Math.Abs(1)
+  IL_0109: ldloc.1      
+  IL_010a: ble.s        IL_0132
+  IL_010c: ldloc.0      
+  IL_010d: call         FUNDEDSYNCSTACK.ResetUnfilledEntryState(1)
+  IL_0112: ldarg.0      
+  IL_0113: call         FUNDEDSYNCSTACK.get_PrintVirtualLedger(0)
+  IL_0118: brfalse.s    IL_0131
+  IL_011a: ldarg.0      
+  IL_011b: ldstr        "{0} entry skipped: projected MNQ net exceeds Lucid {1}-contract ceiling."
+  IL_0120: ldarg.1      
+  IL_0121: ldloc.1      
+  IL_0122: box          Int32
+  IL_0127: call         String.Format(3)
+  IL_012c: call         NinjaScript.Print(1)
+  IL_0131: ret          
+  IL_0132: ldarg.0      
+  IL_0133: ldloca.s     V_2
+  IL_0135: call         FUNDEDSYNCSTACK.MustQueueForMnqExecutionBoundary(1)
+  IL_013a: brfalse.s    IL_01a4
+  IL_013c: ldarg.0      
+  IL_013d: newobj       ExecutionIntent..ctor(0)
+  IL_0142: dup          
+  IL_0143: ldc.i4.0     
+  IL_0144: stfld        ExecutionIntent.Kind
+  IL_0149: dup          
+  IL_014a: ldloc.0      
+  IL_014b: stfld        ExecutionIntent.Module
+  IL_0150: dup          
+  IL_0151: ldloc.2      
+  IL_0152: stfld        ExecutionIntent.SignalBarTime
+  IL_0157: dup          
+  IL_0158: ldarg.2      
+  IL_0159: stfld        ExecutionIntent.SignedQuantity
+  IL_015e: dup          
+  IL_015f: ldarg.3      
+  IL_0160: stfld        ExecutionIntent.Quantity
+  IL_0165: dup          
+  IL_0166: ldarg.s      V_4
+  IL_0168: stfld        ExecutionIntent.OrderType
+  IL_016d: dup          
+  IL_016e: ldarg.s      V_5
+  IL_0170: stfld        ExecutionIntent.LimitPrice
+  IL_0175: dup          
+  IL_0176: ldarg.s      V_6
+  IL_0178: stfld        ExecutionIntent.EntryStopPrice
+  IL_017d: dup          
+  IL_017e: ldarg.s      V_7
+  IL_0180: stfld        ExecutionIntent.StopPrice
+  IL_0185: dup          
+  IL_0186: ldarg.s      V_8
+  IL_0188: stfld        ExecutionIntent.TargetPrice
+  IL_018d: dup          
+  IL_018e: ldarg.s      V_9
+  IL_0190: stfld        ExecutionIntent.StopDistance
+  IL_0195: dup          
+  IL_0196: ldarg.s      V_10
+  IL_0198: stfld        ExecutionIntent.TargetDistance
+  IL_019d: call         FUNDEDSYNCSTACK.QueueExecutionIntent(1)
+  IL_01a2: pop          
+  IL_01a3: ret          
+  IL_01a4: ldloc.0      
+  IL_01a5: ldarg.3      
+  IL_01a6: stfld        ModuleState.ExpectedEntryQuantity
+  IL_01ab: ldloc.0      
+  IL_01ac: ldc.i4.0     
+  IL_01ad: stfld        ModuleState.EntryFilledQuantity
+  IL_01b2: ldloc.0      
+  IL_01b3: ldc.r8       0
+  IL_01bc: stfld        ModuleState.AverageEntryPrice
+  IL_01c1: ldloc.0      
+  IL_01c2: ldc.r8       0
+  IL_01cb: stfld        ModuleState.CurrentTradeProfit
+  IL_01d0: ldloc.0      
+  IL_01d1: ldc.i4.0     
+  IL_01d2: stfld        ModuleState.CloseSettlementPending
+  IL_01d7: ldloc.0      
+  IL_01d8: ldc.i4.0     
+  IL_01d9: stfld        ModuleState.ClosedTradeAccounted
+  IL_01de: ldarg.s      V_5
+  IL_01e0: ldc.r8       0
+  IL_01e9: bgt.s        IL_01f6
+  IL_01eb: ldc.r8       0
+  IL_01f4: br.s         IL_01fe
+  IL_01f6: ldarg.0      
+  IL_01f7: ldarg.s      V_5
+  IL_01f9: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_01fe: stloc.3      
+  IL_01ff: ldarg.s      V_6
+  IL_0201: ldc.r8       0
+  IL_020a: bgt.s        IL_0217
+  IL_020c: ldc.r8       0
+  IL_0215: br.s         IL_021f
+  IL_0217: ldarg.0      
+  IL_0218: ldarg.s      V_6
+  IL_021a: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_021f: stloc.s      V_4
+  IL_0221: ldarg.0      
+  IL_0222: ldarg.s      V_7
+  IL_0224: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_0229: stloc.s      V_5
+  IL_022b: ldarg.0      
+  IL_022c: ldarg.s      V_8
+  IL_022e: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_0233: stloc.s      V_6
+  IL_0235: ldarg.s      V_5
+  IL_0237: ldc.r8       0
+  IL_0240: ble.un.s     IL_024a
+  IL_0242: ldloc.3      
+  IL_0243: call         Double.IsNaN(1)
+  IL_0248: brtrue.s     IL_02a1
+  IL_024a: ldarg.s      V_6
+  IL_024c: ldc.r8       0
+  IL_0255: ble.un.s     IL_0260
+  IL_0257: ldloc.s      V_4
+  IL_0259: call         Double.IsNaN(1)
+  IL_025e: brtrue.s     IL_02a1
+  IL_0260: ldarg.s      V_7
+  IL_0262: call         Double.IsNaN(1)
+  IL_0267: brtrue.s     IL_027f
+  IL_0269: ldarg.s      V_7
+  IL_026b: ldc.r8       0
+  IL_0274: ble.un.s     IL_027f
+  IL_0276: ldloc.s      V_5
+  IL_0278: call         Double.IsNaN(1)
+  IL_027d: brtrue.s     IL_02a1
+  IL_027f: ldarg.s      V_8
+  IL_0281: call         Double.IsNaN(1)
+  IL_0286: brtrue.s     IL_029e
+  IL_0288: ldarg.s      V_8
+  IL_028a: ldc.r8       0
+  IL_0293: ble.un.s     IL_029e
+  IL_0295: ldloc.s      V_6
+  IL_0297: call         Double.IsNaN(1)
+  IL_029c: br.s         IL_02a2
+  IL_029e: ldc.i4.0     
+  IL_029f: br.s         IL_02a2
+  IL_02a1: ldc.i4.1     
+  IL_02a2: brfalse.s    IL_02c4
+  IL_02a4: ldloc.0      
+  IL_02a5: call         FUNDEDSYNCSTACK.ResetUnfilledEntryState(1)
+  IL_02aa: ldarg.0      
+  IL_02ab: call         FUNDEDSYNCSTACK.get_PrintVirtualLedger(0)
+  IL_02b0: brfalse.s    IL_02c3
+  IL_02b2: ldarg.0      
+  IL_02b3: ldarg.1      
+  IL_02b4: ldstr        " entry skipped: no timestamp-matched NQ/MNQ price basis."
+  IL_02b9: call         String.Concat(2)
+  IL_02be: call         NinjaScript.Print(1)
+  IL_02c3: ret          
+  IL_02c4: ldarg.0      
+  IL_02c5: ldarg.1      
+  IL_02c6: call         FUNDEDSYNCSTACK.AdmitHalfDrawdownEntry(1)
+  IL_02cb: brtrue.s     IL_02ed
+  IL_02cd: ldloc.0      
+  IL_02ce: call         FUNDEDSYNCSTACK.ResetUnfilledEntryState(1)
+  IL_02d3: ldarg.0      
+  IL_02d4: call         FUNDEDSYNCSTACK.get_PrintVirtualLedger(0)
+  IL_02d9: brfalse.s    IL_02ec
+  IL_02db: ldarg.0      
+  IL_02dc: ldarg.1      
+  IL_02dd: ldstr        " entry skipped by Safety Size (Recommended) 3-of-5 participation rotation."
+  IL_02e2: call         String.Concat(2)
+  IL_02e7: call         NinjaScript.Print(1)
+  IL_02ec: ret          
+  IL_02ed: ldloc.0      
+  IL_02ee: ldloc.s      V_5
+  IL_02f0: stfld        ModuleState.PendingStop
+  IL_02f5: ldloc.0      
+  IL_02f6: ldloc.s      V_6
+  IL_02f8: stfld        ModuleState.PendingTarget
+  IL_02fd: ldloc.0      
+  IL_02fe: ldarg.s      V_9
+  IL_0300: stfld        ModuleState.PendingStopDistance
+  IL_0305: ldloc.0      
+  IL_0306: ldarg.s      V_10
+  IL_0308: stfld        ModuleState.PendingTargetDistance
+  IL_030d: ldloc.0      
+  IL_030e: ldc.i4.0     
+  IL_030f: stfld        ModuleState.EntryCounted
+  IL_0314: ldloc.0      
+  IL_0315: ldc.i4.0     
+  IL_0316: stfld        ModuleState.EntryCancelRequested
+  IL_031b: ldarg.s      V_4
+  IL_031d: ldc.i4.4     
+  IL_031e: bne.un.s     IL_0367
+  IL_0320: ldarg.0      
+  IL_0321: call         NinjaScriptBase.get_CurrentBars(0)
+  IL_0326: ldarg.0      
+  IL_0327: ldfld        FUNDEDSYNCSTACK.execIdx
+  IL_032c: ldelem.i4    
+  IL_032d: ldc.i4.0     
+  IL_032e: blt.s        IL_0367
+  IL_0330: ldarg.0      
+  IL_0331: call         NinjaScriptBase.get_Closes(0)
+  IL_0336: ldarg.0      
+  IL_0337: ldfld        FUNDEDSYNCSTACK.execIdx
+  IL_033c: ldelem.ref   
+  IL_033d: ldc.i4.0     
+  IL_033e: callvirt     PriceSeries.get_Item(1)
+  IL_0343: stloc.s      V_9
+  IL_0345: ldarg.2      
+  IL_0346: ldc.i4.0     
+  IL_0347: ble.s        IL_034f
+  IL_0349: ldloc.s      V_4
+  IL_034b: ldloc.s      V_9
+  IL_034d: ble.s        IL_0359
+  IL_034f: ldarg.2      
+  IL_0350: ldc.i4.0     
+  IL_0351: bge.s        IL_0367
+  IL_0353: ldloc.s      V_4
+  IL_0355: ldloc.s      V_9
+  IL_0357: blt.un.s     IL_0367
+  IL_0359: ldc.i4.1     
+  IL_035a: starg.s      V_4
+  IL_035c: ldc.r8       0
+  IL_0365: stloc.s      V_4
+  IL_0367: ldarg.0      
+  IL_0368: ldloc.0      
+  IL_0369: ldarg.2      
+  IL_036a: ldarg.s      V_4
+  IL_036c: ldarg.3      
+  IL_036d: ldloc.3      
+  IL_036e: ldc.r8       0
+  IL_0377: bgt.s        IL_0384
+  IL_0379: ldc.r8       0
+  IL_0382: br.s         IL_038b
+  IL_0384: ldarg.0      
+  IL_0385: ldloc.3      
+  IL_0386: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_038b: ldloc.s      V_4
+  IL_038d: ldc.r8       0
+  IL_0396: bgt.s        IL_03a3
+  IL_0398: ldc.r8       0
+  IL_03a1: br.s         IL_03ab
+  IL_03a3: ldarg.0      
+  IL_03a4: ldloc.s      V_4
+  IL_03a6: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_03ab: ldsfld       String.Empty
+  IL_03b0: ldarg.2      
+  IL_03b1: ldc.i4.0     
+  IL_03b2: bgt.s        IL_03bb
+  IL_03b4: ldstr        "E_S"
+  IL_03b9: br.s         IL_03c0
+  IL_03bb: ldstr        "E_L"
+  IL_03c0: ldc.i4.1     
+  IL_03c1: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_03c6: stloc.s      V_7
+  IL_03c8: ldloc.0      
+  IL_03c9: ldloc.s      V_7
+  IL_03cb: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_03d0: stfld        ModuleState.EntryOrder
+  IL_03d5: ldloc.s      V_7
+  IL_03d7: brtrue.s     IL_03df
+  IL_03d9: ldloc.0      
+  IL_03da: call         FUNDEDSYNCSTACK.ResetUnfilledEntryState(1)
+  IL_03df: ret
+
+
+=== FUNDEDSYNCSTACK.SubmitModuleEntry(string tag, int signedQuantity, int quantity, double stopPrice, double targetPrice) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: ldarg.2      
+  IL_0003: ldarg.3      
+  IL_0004: ldc.i4.1     
+  IL_0005: ldc.r8       0
+  IL_000e: ldc.r8       0
+  IL_0017: ldarg.s      V_4
+  IL_0019: ldarg.s      V_5
+  IL_001b: ldc.r8       NaN
+  IL_0024: ldc.r8       NaN
+  IL_002d: call         FUNDEDSYNCSTACK.SubmitModuleEntryOrder(10)
+  IL_0032: ret
+
+
+=== FUNDEDSYNCSTACK.SubmitModuleEntryWithDistances(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopDistance, double targetDistance) -> void ===
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: ldarg.2      
+  IL_0003: ldarg.3      
+  IL_0004: ldarg.s      V_4
+  IL_0006: ldarg.s      V_5
+  IL_0008: ldarg.s      V_6
+  IL_000a: ldc.r8       NaN
+  IL_0013: ldc.r8       NaN
+  IL_001c: ldarg.s      V_7
+  IL_001e: ldarg.s      V_8
+  IL_0020: call         FUNDEDSYNCSTACK.SubmitModuleEntryOrder(10)
+  IL_0025: ret
+
+
+=== FUNDEDSYNCSTACK.MaintainModuleEntryWithDistances(string tag, int signedQuantity, int quantity, OrderType orderType, double limitPrice, double entryStopPrice, double stopDistance, double targetDistance) -> void ===
+  LOCALS: V_0:ModuleState, V_1:int, V_2:bool, V_3:double, V_4:double, V_5:bool, V_6:bool
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: call         FUNDEDSYNCSTACK.ModuleOf(1)
+  IL_0007: stloc.0      
+  IL_0008: ldloc.0      
+  IL_0009: brfalse.s    IL_000f
+  IL_000b: ldarg.3      
+  IL_000c: ldc.i4.0     
+  IL_000d: bgt.s        IL_0010
+  IL_000f: ret          
+  IL_0010: ldloc.0      
+  IL_0011: ldfld        ModuleState.EntryOrder
+  IL_0016: brtrue.s     IL_0044
+  IL_0018: ldloc.0      
+  IL_0019: callvirt     ModuleState.get_CanEnter(0)
+  IL_001e: brfalse.s    IL_0043
+  IL_0020: ldarg.0      
+  IL_0021: call         FUNDEDSYNCSTACK.get_StartupAllowsOrders(0)
+  IL_0026: brfalse.s    IL_0043
+  IL_0028: ldarg.0      
+  IL_0029: ldfld        FUNDEDSYNCSTACK.portfolioDailyLocked
+  IL_002e: brtrue.s     IL_0043
+  IL_0030: ldarg.0      
+  IL_0031: ldarg.1      
+  IL_0032: ldarg.2      
+  IL_0033: ldarg.3      
+  IL_0034: ldarg.s      V_4
+  IL_0036: ldarg.s      V_5
+  IL_0038: ldarg.s      V_6
+  IL_003a: ldarg.s      V_7
+  IL_003c: ldarg.s      V_8
+  IL_003e: call         FUNDEDSYNCSTACK.SubmitModuleEntryWithDistances(8)
+  IL_0043: ret          
+  IL_0044: ldloc.0      
+  IL_0045: ldfld        ModuleState.Net
+  IL_004a: brtrue.s     IL_0068
+  IL_004c: ldloc.0      
+  IL_004d: ldfld        ModuleState.EntryOrder
+  IL_0052: callvirt     Order.get_Filled(0)
+  IL_0057: ldc.i4.0     
+  IL_0058: bgt.s        IL_0068
+  IL_005a: ldloc.0      
+  IL_005b: ldfld        ModuleState.EntryOrder
+  IL_0060: callvirt     Order.get_OrderState(0)
+  IL_0065: ldc.i4.4     
+  IL_0066: bne.un.s     IL_0069
+  IL_0068: ret          
+  IL_0069: ldarg.0      
+  IL_006a: ldfld        FUNDEDSYNCSTACK.intendedDirectionByOrder
+  IL_006f: ldloc.0      
+  IL_0070: ldfld        ModuleState.EntryOrder
+  IL_0075: callvirt     Order.get_Name(0)
+  IL_007a: ldloca.s     V_1
+  IL_007c: callvirt     Dictionary`2.TryGetValue(2)
+  IL_0081: brfalse.s    IL_008e
+  IL_0083: ldloc.1      
+  IL_0084: ldarg.2      
+  IL_0085: call         Math.Sign(1)
+  IL_008a: ceq          
+  IL_008c: br.s         IL_008f
+  IL_008e: ldc.i4.0     
+  IL_008f: ldloc.0      
+  IL_0090: ldfld        ModuleState.EntryOrder
+  IL_0095: callvirt     Order.get_OrderType(0)
+  IL_009a: ldarg.s      V_4
+  IL_009c: ceq          
+  IL_009e: stloc.2      
+  IL_009f: brfalse.s    IL_00a4
+  IL_00a1: ldloc.2      
+  IL_00a2: brtrue.s     IL_00ac
+  IL_00a4: ldarg.0      
+  IL_00a5: ldloc.0      
+  IL_00a6: call         FUNDEDSYNCSTACK.CancelModuleEntry(1)
+  IL_00ab: ret          
+  IL_00ac: ldloc.0      
+  IL_00ad: ldarg.s      V_7
+  IL_00af: stfld        ModuleState.PendingStopDistance
+  IL_00b4: ldloc.0      
+  IL_00b5: ldarg.s      V_8
+  IL_00b7: stfld        ModuleState.PendingTargetDistance
+  IL_00bc: ldloc.0      
+  IL_00bd: ldfld        ModuleState.EntryOrder
+  IL_00c2: callvirt     Order.get_OrderState(0)
+  IL_00c7: brfalse.s    IL_00d9
+  IL_00c9: ldloc.0      
+  IL_00ca: ldfld        ModuleState.EntryOrder
+  IL_00cf: callvirt     Order.get_OrderState(0)
+  IL_00d4: ldc.i4.s     10
+  IL_00d6: beq.s        IL_00d9
+  IL_00d8: ret          
+  IL_00d9: ldarg.s      V_5
+  IL_00db: ldc.r8       0
+  IL_00e4: bgt.s        IL_00f1
+  IL_00e6: ldc.r8       0
+  IL_00ef: br.s         IL_00ff
+  IL_00f1: ldarg.0      
+  IL_00f2: ldarg.0      
+  IL_00f3: ldarg.s      V_5
+  IL_00f5: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_00fa: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_00ff: stloc.3      
+  IL_0100: ldarg.s      V_6
+  IL_0102: ldc.r8       0
+  IL_010b: bgt.s        IL_0118
+  IL_010d: ldc.r8       0
+  IL_0116: br.s         IL_0126
+  IL_0118: ldarg.0      
+  IL_0119: ldarg.0      
+  IL_011a: ldarg.s      V_6
+  IL_011c: call         FUNDEDSYNCSTACK.TranslateNqLevelToExecution(1)
+  IL_0121: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_0126: stloc.s      V_4
+  IL_0128: ldarg.s      V_5
+  IL_012a: ldc.r8       0
+  IL_0133: ble.un.s     IL_013d
+  IL_0135: ldloc.3      
+  IL_0136: call         Double.IsNaN(1)
+  IL_013b: brtrue.s     IL_0153
+  IL_013d: ldarg.s      V_6
+  IL_013f: ldc.r8       0
+  IL_0148: ble.un.s     IL_0154
+  IL_014a: ldloc.s      V_4
+  IL_014c: call         Double.IsNaN(1)
+  IL_0151: brfalse.s    IL_0154
+  IL_0153: ret          
+  IL_0154: ldloc.0      
+  IL_0155: ldfld        ModuleState.EntryOrder
+  IL_015a: callvirt     Order.get_Quantity(0)
+  IL_015f: ldarg.3      
+  IL_0160: ceq          
+  IL_0162: ldc.i4.0     
+  IL_0163: ceq          
+  IL_0165: ldloc.0      
+  IL_0166: ldfld        ModuleState.EntryOrder
+  IL_016b: callvirt     Order.get_LimitPrice(0)
+  IL_0170: ldloc.3      
+  IL_0171: sub          
+  IL_0172: call         Math.Abs(1)
+  IL_0177: ldarg.0      
+  IL_0178: call         NinjaScriptBase.get_TickSize(0)
+  IL_017d: ldc.r8       0,5
+  IL_0186: mul          
+  IL_0187: clt.un       
+  IL_0189: ldc.i4.0     
+  IL_018a: ceq          
+  IL_018c: stloc.s      V_5
+  IL_018e: ldloc.0      
+  IL_018f: ldfld        ModuleState.EntryOrder
+  IL_0194: callvirt     Order.get_StopPrice(0)
+  IL_0199: ldloc.s      V_4
+  IL_019b: sub          
+  IL_019c: call         Math.Abs(1)
+  IL_01a1: ldarg.0      
+  IL_01a2: call         NinjaScriptBase.get_TickSize(0)
+  IL_01a7: ldc.r8       0,5
+  IL_01b0: mul          
+  IL_01b1: clt.un       
+  IL_01b3: ldc.i4.0     
+  IL_01b4: ceq          
+  IL_01b6: stloc.s      V_6
+  IL_01b8: ldloc.s      V_5
+  IL_01ba: or           
+  IL_01bb: ldloc.s      V_6
+  IL_01bd: or           
+  IL_01be: brfalse.s    IL_01d0
+  IL_01c0: ldarg.0      
+  IL_01c1: ldloc.0      
+  IL_01c2: ldfld        ModuleState.EntryOrder
+  IL_01c7: ldarg.3      
+  IL_01c8: ldloc.3      
+  IL_01c9: ldloc.s      V_4
+  IL_01cb: call         FUNDEDSYNCSTACK.SafeChangeOrder(4)
+  IL_01d0: ret
+
+
+=== FUNDEDSYNCSTACK.QueueOrSubmitModuleExit(ModuleState module, string reason) -> void ===
+  LOCALS: V_0:DateTime
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_001b
+  IL_0003: ldarg.1      
+  IL_0004: ldfld        ModuleState.Net
+  IL_0009: brfalse.s    IL_001b
+  IL_000b: ldarg.1      
+  IL_000c: ldfld        ModuleState.ExitOrder
+  IL_0011: brtrue.s     IL_001b
+  IL_0013: ldarg.1      
+  IL_0014: ldfld        ModuleState.HasExecutionIntent
+  IL_0019: brfalse.s    IL_001c
+  IL_001b: ret          
+  IL_001c: ldarg.0      
+  IL_001d: ldloca.s     V_0
+  IL_001f: call         FUNDEDSYNCSTACK.MustQueueForMnqExecutionBoundary(1)
+  IL_0024: brfalse.s    IL_0058
+  IL_0026: ldarg.0      
+  IL_0027: newobj       ExecutionIntent..ctor(0)
+  IL_002c: dup          
+  IL_002d: ldc.i4.1     
+  IL_002e: stfld        ExecutionIntent.Kind
+  IL_0033: dup          
+  IL_0034: ldarg.1      
+  IL_0035: stfld        ExecutionIntent.Module
+  IL_003a: dup          
+  IL_003b: ldloc.0      
+  IL_003c: stfld        ExecutionIntent.SignalBarTime
+  IL_0041: dup          
+  IL_0042: ldarg.2      
+  IL_0043: dup          
+  IL_0044: brtrue.s     IL_004c
+  IL_0046: pop          
+  IL_0047: ldstr        "SIGNAL"
+  IL_004c: stfld        ExecutionIntent.Reason
+  IL_0051: call         FUNDEDSYNCSTACK.QueueExecutionIntent(1)
+  IL_0056: pop          
+  IL_0057: ret          
+  IL_0058: ldarg.0      
+  IL_0059: ldarg.1      
+  IL_005a: ldfld        ModuleState.Tag
+  IL_005f: ldarg.2      
+  IL_0060: call         FUNDEDSYNCSTACK.ExitModule(2)
+  IL_0065: ret
+
+
+=== FUNDEDSYNCSTACK.RequestModuleExit(string tag, string reason, int signalBip) -> void ===
+  LOCALS: V_0:ModuleState, V_1:int
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: call         FUNDEDSYNCSTACK.ModuleOf(1)
+  IL_0007: stloc.0      
+  IL_0008: ldloc.0      
+  IL_0009: brfalse.s    IL_0023
+  IL_000b: ldloc.0      
+  IL_000c: ldfld        ModuleState.Net
+  IL_0011: brfalse.s    IL_0023
+  IL_0013: ldloc.0      
+  IL_0014: ldfld        ModuleState.ExitOrder
+  IL_0019: brtrue.s     IL_0023
+  IL_001b: ldloc.0      
+  IL_001c: ldfld        ModuleState.HasQueuedExit
+  IL_0021: brfalse.s    IL_0024
+  IL_0023: ret          
+  IL_0024: ldarg.0      
+  IL_0025: call         NinjaScriptBase.get_BarsPeriods(0)
+  IL_002a: ldarg.3      
+  IL_002b: ldelem.ref   
+  IL_002c: callvirt     BarsPeriod.get_BarsPeriodType(0)
+  IL_0031: ldc.i4.4     
+  IL_0032: beq.s        IL_0037
+  IL_0034: ldc.i4.1     
+  IL_0035: br.s         IL_0044
+  IL_0037: ldarg.0      
+  IL_0038: call         NinjaScriptBase.get_BarsPeriods(0)
+  IL_003d: ldarg.3      
+  IL_003e: ldelem.ref   
+  IL_003f: callvirt     BarsPeriod.get_Value(0)
+  IL_0044: stloc.1      
+  IL_0045: ldarg.0      
+  IL_0046: call         FUNDEDSYNCSTACK.get_EntryTiming(0)
+  IL_004b: ldc.i4.1     
+  IL_004c: beq.s        IL_0052
+  IL_004e: ldloc.1      
+  IL_004f: ldc.i4.1     
+  IL_0050: bgt.s        IL_005b
+  IL_0052: ldarg.0      
+  IL_0053: ldloc.0      
+  IL_0054: ldarg.2      
+  IL_0055: call         FUNDEDSYNCSTACK.QueueOrSubmitModuleExit(2)
+  IL_005a: ret          
+  IL_005b: ldloc.0      
+  IL_005c: ldc.i4.1     
+  IL_005d: stfld        ModuleState.HasQueuedExit
+  IL_0062: ldloc.0      
+  IL_0063: ldloc.1      
+  IL_0064: ldc.i4.1     
+  IL_0065: sub          
+  IL_0066: stfld        ModuleState.QueuedExitMinuteBarsRemaining
+  IL_006b: ldloc.0      
+  IL_006c: ldarg.2      
+  IL_006d: dup          
+  IL_006e: brtrue.s     IL_0076
+  IL_0070: pop          
+  IL_0071: ldstr        "SIGNAL"
+  IL_0076: stfld        ModuleState.QueuedExitReason
+  IL_007b: ret
+
+
+=== FUNDEDSYNCSTACK.ExitModule(string tag, string reason) -> void ===
+  LOCALS: V_0:ModuleState, V_1:int
+  IL_0000: ldarg.0      
+  IL_0001: ldarg.1      
+  IL_0002: call         FUNDEDSYNCSTACK.ModuleOf(1)
+  IL_0007: stloc.0      
+  IL_0008: ldloc.0      
+  IL_0009: brfalse.s    IL_001b
+  IL_000b: ldloc.0      
+  IL_000c: ldfld        ModuleState.Net
+  IL_0011: brfalse.s    IL_001b
+  IL_0013: ldloc.0      
+  IL_0014: ldfld        ModuleState.ExitOrder
+  IL_0019: brfalse.s    IL_001c
+  IL_001b: ret          
+  IL_001c: ldarg.0      
+  IL_001d: call         NinjaScript.get_State(0)
+  IL_0022: ldc.i4.7     
+  IL_0023: bne.un.s     IL_0096
+  IL_0025: ldarg.0      
+  IL_0026: ldloc.0      
+  IL_0027: call         FUNDEDSYNCSTACK.ModuleHasUnsettledExecutions(1)
+  IL_002c: brtrue.s     IL_0055
+  IL_002e: ldloc.0      
+  IL_002f: ldfld        ModuleState.EntryOrder
+  IL_0034: call         FUNDEDSYNCSTACK.IsTerminalOrder(1)
+  IL_0039: brfalse.s    IL_0055
+  IL_003b: ldloc.0      
+  IL_003c: ldfld        ModuleState.StopOrder
+  IL_0041: call         FUNDEDSYNCSTACK.IsTerminalOrder(1)
+  IL_0046: brfalse.s    IL_0055
+  IL_0048: ldloc.0      
+  IL_0049: ldfld        ModuleState.TargetOrder
+  IL_004e: call         FUNDEDSYNCSTACK.IsTerminalOrder(1)
+  IL_0053: brtrue.s     IL_0096
+  IL_0055: ldloc.0      
+  IL_0056: ldc.i4.1     
+  IL_0057: stfld        ModuleState.DeferredExitAfterProtectionCancel
+  IL_005c: ldloc.0      
+  IL_005d: ldarg.2      
+  IL_005e: dup          
+  IL_005f: brtrue.s     IL_0067
+  IL_0061: pop          
+  IL_0062: ldstr        "SIGNAL"
+  IL_0067: stfld        ModuleState.DeferredExitReason
+  IL_006c: ldloc.0      
+  IL_006d: ldfld        ModuleState.EntryOrder
+  IL_0072: brfalse.s    IL_007b
+  IL_0074: ldloc.0      
+  IL_0075: ldc.i4.1     
+  IL_0076: stfld        ModuleState.EntryCancelRequested
+  IL_007b: ldarg.0      
+  IL_007c: ldloc.0      
+  IL_007d: ldfld        ModuleState.EntryOrder
+  IL_0082: call         FUNDEDSYNCSTACK.CancelTrackedOrder(1)
+  IL_0087: ldarg.0      
+  IL_0088: ldloc.0      
+  IL_0089: call         FUNDEDSYNCSTACK.CancelProtection(1)
+  IL_008e: ldarg.0      
+  IL_008f: ldloc.0      
+  IL_0090: call         FUNDEDSYNCSTACK.TrySubmitDeferredExit(1)
+  IL_0095: ret          
+  IL_0096: ldarg.0      
+  IL_0097: ldloc.0      
+  IL_0098: call         FUNDEDSYNCSTACK.CancelProtection(1)
+  IL_009d: ldloc.0      
+  IL_009e: ldfld        ModuleState.ProtectionEmergencyExitPending
+  IL_00a3: brfalse.s    IL_00ad
+  IL_00a5: ldarg.0      
+  IL_00a6: ldloc.0      
+  IL_00a7: call         FUNDEDSYNCSTACK.SubmitProtectionEmergencyExit(1)
+  IL_00ac: ret          
+  IL_00ad: ldloc.0      
+  IL_00ae: ldfld        ModuleState.Net
+  IL_00b3: neg          
+  IL_00b4: stloc.1      
+  IL_00b5: ldloc.0      
+  IL_00b6: ldarg.0      
+  IL_00b7: ldloc.0      
+  IL_00b8: ldloc.1      
+  IL_00b9: ldc.i4.1     
+  IL_00ba: ldloc.0      
+  IL_00bb: ldfld        ModuleState.Net
+  IL_00c0: call         Math.Abs(1)
+  IL_00c5: ldc.r8       0
+  IL_00ce: ldc.r8       0
+  IL_00d7: ldsfld       String.Empty
+  IL_00dc: ldstr        "X_"
+  IL_00e1: ldarg.2      
+  IL_00e2: call         String.Concat(2)
+  IL_00e7: ldc.i4.1     
+  IL_00e8: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_00ed: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_00f2: stfld        ModuleState.ExitOrder
+  IL_00f7: ret
+
+
+=== FUNDEDSYNCSTACK.ArmProtection(ModuleState module) -> void ===
+  LOCALS: V_0:string, V_1:int, V_2:int, V_3:int
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_001b
+  IL_0003: ldarg.1      
+  IL_0004: ldfld        ModuleState.Net
+  IL_0009: brfalse.s    IL_001b
+  IL_000b: ldarg.1      
+  IL_000c: ldfld        ModuleState.StopOrder
+  IL_0011: brtrue.s     IL_001b
+  IL_0013: ldarg.1      
+  IL_0014: ldfld        ModuleState.TargetOrder
+  IL_0019: brfalse.s    IL_001c
+  IL_001b: ret          
+  IL_001c: ldarg.0      
+  IL_001d: ldarg.1      
+  IL_001e: call         FUNDEDSYNCSTACK.ModuleHasUnsettledExecutions(1)
+  IL_0023: brfalse.s    IL_0026
+  IL_0025: ret          
+  IL_0026: ldarg.1      
+  IL_0027: ldfld        ModuleState.ProtectionEmergencyExitPending
+  IL_002c: brfalse.s    IL_002f
+  IL_002e: ret          
+  IL_002f: ldarg.1      
+  IL_0030: ldfld        ModuleState.PendingStop
+  IL_0035: call         Double.IsNaN(1)
+  IL_003a: brfalse.s    IL_004a
+  IL_003c: ldarg.1      
+  IL_003d: ldfld        ModuleState.PendingTarget
+  IL_0042: call         Double.IsNaN(1)
+  IL_0047: brfalse.s    IL_004a
+  IL_0049: ret          
+  IL_004a: ldarg.0      
+  IL_004b: ldarg.1      
+  IL_004c: ldstr        "ARM"
+  IL_0051: ldloca.s     V_0
+  IL_0053: call         FUNDEDSYNCSTACK.ProtectionRequiresImmediateExit(3)
+  IL_0058: brfalse.s    IL_0063
+  IL_005a: ldarg.0      
+  IL_005b: ldarg.1      
+  IL_005c: ldloc.0      
+  IL_005d: call         FUNDEDSYNCSTACK.BeginProtectionEmergencyExit(2)
+  IL_0062: ret          
+  IL_0063: ldarg.1      
+  IL_0064: ldfld        ModuleState.ProtectionMutationInProgress
+  IL_0069: brfalse.s    IL_0073
+  IL_006b: ldarg.1      
+  IL_006c: ldc.i4.1     
+  IL_006d: stfld        ModuleState.ProtectionResyncRequested
+  IL_0072: ret          
+  IL_0073: ldarg.1      
+  IL_0074: ldc.i4.1     
+  IL_0075: stfld        ModuleState.ProtectionMutationInProgress
+  IL_007a: ldarg.1      
+  IL_007b: ldfld        ModuleState.Net
+  IL_0080: neg          
+  IL_0081: stloc.1      
+  IL_0082: ldarg.1      
+  IL_0083: ldfld        ModuleState.Net
+  IL_0088: call         Math.Abs(1)
+  IL_008d: stloc.2      
+  IL_008e: ldarg.1      
+  IL_008f: ldarg.1      
+  IL_0090: ldfld        ModuleState.PendingStop
+  IL_0095: call         Double.IsNaN(1)
+  IL_009a: brtrue.s     IL_00a9
+  IL_009c: ldarg.1      
+  IL_009d: ldfld        ModuleState.PendingTarget
+  IL_00a2: call         Double.IsNaN(1)
+  IL_00a7: brfalse.s    IL_00b0
+  IL_00a9: ldsfld       String.Empty
+  IL_00ae: br.s         IL_00f7
+  IL_00b0: ldc.i4.5     
+  IL_00b1: newarr       String
+  IL_00b6: dup          
+  IL_00b7: ldc.i4.0     
+  IL_00b8: ldarg.1      
+  IL_00b9: ldfld        ModuleState.Tag
+  IL_00be: stelem.ref   
+  IL_00bf: dup          
+  IL_00c0: ldc.i4.1     
+  IL_00c1: ldstr        "_OCO_"
+  IL_00c6: stelem.ref   
+  IL_00c7: dup          
+  IL_00c8: ldc.i4.2     
+  IL_00c9: ldarg.0      
+  IL_00ca: ldfld        FUNDEDSYNCSTACK.unmanagedRunTag
+  IL_00cf: stelem.ref   
+  IL_00d0: dup          
+  IL_00d1: ldc.i4.3     
+  IL_00d2: ldstr        "_"
+  IL_00d7: stelem.ref   
+  IL_00d8: dup          
+  IL_00d9: ldc.i4.4     
+  IL_00da: ldarg.0      
+  IL_00db: ldarg.0      
+  IL_00dc: ldfld        FUNDEDSYNCSTACK.unmanagedSequence
+  IL_00e1: ldc.i4.1     
+  IL_00e2: add          
+  IL_00e3: stloc.3      
+  IL_00e4: ldloc.3      
+  IL_00e5: stfld        FUNDEDSYNCSTACK.unmanagedSequence
+  IL_00ea: ldloca.s     V_3
+  IL_00ec: call         Int32.ToString(0)
+  IL_00f1: stelem.ref   
+  IL_00f2: call         String.Concat(1)
+  IL_00f7: stfld        ModuleState.Oco
+  IL_00fc: ldarg.1      
+  IL_00fd: ldfld        ModuleState.PendingStop
+  IL_0102: call         Double.IsNaN(1)
+  IL_0107: brtrue.s     IL_013f
+  IL_0109: ldarg.1      
+  IL_010a: ldarg.0      
+  IL_010b: ldarg.1      
+  IL_010c: ldloc.1      
+  IL_010d: ldc.i4.4     
+  IL_010e: ldloc.2      
+  IL_010f: ldc.r8       0
+  IL_0118: ldarg.0      
+  IL_0119: ldarg.1      
+  IL_011a: ldfld        ModuleState.PendingStop
+  IL_011f: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_0124: ldarg.1      
+  IL_0125: ldfld        ModuleState.Oco
+  IL_012a: ldstr        "STOP"
+  IL_012f: ldc.i4.0     
+  IL_0130: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_0135: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_013a: stfld        ModuleState.StopOrder
+  IL_013f: ldarg.1      
+  IL_0140: ldfld        ModuleState.ProtectionEmergencyExitPending
+  IL_0145: brtrue.s     IL_018a
+  IL_0147: ldarg.1      
+  IL_0148: ldfld        ModuleState.PendingTarget
+  IL_014d: call         Double.IsNaN(1)
+  IL_0152: brtrue.s     IL_018a
+  IL_0154: ldarg.1      
+  IL_0155: ldarg.0      
+  IL_0156: ldarg.1      
+  IL_0157: ldloc.1      
+  IL_0158: ldc.i4.0     
+  IL_0159: ldloc.2      
+  IL_015a: ldarg.0      
+  IL_015b: ldarg.1      
+  IL_015c: ldfld        ModuleState.PendingTarget
+  IL_0161: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_0166: ldc.r8       0
+  IL_016f: ldarg.1      
+  IL_0170: ldfld        ModuleState.Oco
+  IL_0175: ldstr        "TARGET"
+  IL_017a: ldc.i4.0     
+  IL_017b: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_0180: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_0185: stfld        ModuleState.TargetOrder
+  IL_018a: leave.s      IL_0194
+  IL_018c: ldarg.1      
+  IL_018d: ldc.i4.0     
+  IL_018e: stfld        ModuleState.ProtectionMutationInProgress
+  IL_0193: endfinally   
+  IL_0194: ldarg.1      
+  IL_0195: ldfld        ModuleState.ProtectionResyncRequested
+  IL_019a: brfalse.s    IL_01aa
+  IL_019c: ldarg.1      
+  IL_019d: ldc.i4.0     
+  IL_019e: stfld        ModuleState.ProtectionResyncRequested
+  IL_01a3: ldarg.0      
+  IL_01a4: ldarg.1      
+  IL_01a5: call         FUNDEDSYNCSTACK.SyncLiveProtection(1)
+  IL_01aa: ret
+
+
+=== FUNDEDSYNCSTACK.SyncLiveProtection(ModuleState module) -> void ===
+  LOCALS: V_0:string, V_1:int, V_2:int, V_3:int, V_4:double, V_5:int, V_6:double
+  IL_0000: ldarg.0      
+  IL_0001: call         NinjaScript.get_State(0)
+  IL_0006: ldc.i4.7     
+  IL_0007: bne.un.s     IL_002c
+  IL_0009: ldarg.1      
+  IL_000a: brfalse.s    IL_002c
+  IL_000c: ldarg.1      
+  IL_000d: ldfld        ModuleState.Net
+  IL_0012: brfalse.s    IL_002c
+  IL_0014: ldarg.1      
+  IL_0015: ldfld        ModuleState.DeferredExitAfterProtectionCancel
+  IL_001a: brtrue.s     IL_002c
+  IL_001c: ldarg.1      
+  IL_001d: ldfld        ModuleState.ExitOrder
+  IL_0022: brtrue.s     IL_002c
+  IL_0024: ldarg.1      
+  IL_0025: ldfld        ModuleState.ProtectionEmergencyExitPending
+  IL_002a: brfalse.s    IL_002d
+  IL_002c: ret          
+  IL_002d: ldarg.0      
+  IL_002e: ldarg.1      
+  IL_002f: call         FUNDEDSYNCSTACK.ModuleHasUnsettledExecutions(1)
+  IL_0034: brfalse.s    IL_0037
+  IL_0036: ret          
+  IL_0037: ldarg.1      
+  IL_0038: ldfld        ModuleState.PendingStop
+  IL_003d: call         Double.IsNaN(1)
+  IL_0042: brfalse.s    IL_0052
+  IL_0044: ldarg.1      
+  IL_0045: ldfld        ModuleState.PendingTarget
+  IL_004a: call         Double.IsNaN(1)
+  IL_004f: brfalse.s    IL_0052
+  IL_0051: ret          
+  IL_0052: ldarg.0      
+  IL_0053: ldarg.1      
+  IL_0054: ldstr        "SYNC"
+  IL_0059: ldloca.s     V_0
+  IL_005b: call         FUNDEDSYNCSTACK.ProtectionRequiresImmediateExit(3)
+  IL_0060: brfalse.s    IL_006b
+  IL_0062: ldarg.0      
+  IL_0063: ldarg.1      
+  IL_0064: ldloc.0      
+  IL_0065: call         FUNDEDSYNCSTACK.BeginProtectionEmergencyExit(2)
+  IL_006a: ret          
+  IL_006b: ldarg.1      
+  IL_006c: ldfld        ModuleState.ProtectionMutationInProgress
+  IL_0071: brfalse.s    IL_007b
+  IL_0073: ldarg.1      
+  IL_0074: ldc.i4.1     
+  IL_0075: stfld        ModuleState.ProtectionResyncRequested
+  IL_007a: ret          
+  IL_007b: ldarg.1      
+  IL_007c: ldfld        ModuleState.StopOrder
+  IL_0081: brtrue.s     IL_0093
+  IL_0083: ldarg.1      
+  IL_0084: ldfld        ModuleState.TargetOrder
+  IL_0089: brtrue.s     IL_0093
+  IL_008b: ldarg.0      
+  IL_008c: ldarg.1      
+  IL_008d: call         FUNDEDSYNCSTACK.ArmProtection(1)
+  IL_0092: ret          
+  IL_0093: ldc.i4.0     
+  IL_0094: stloc.1      
+  IL_0095: ldarg.1      
+  IL_0096: ldc.i4.0     
+  IL_0097: stfld        ModuleState.ProtectionResyncRequested
+  IL_009c: ldarg.1      
+  IL_009d: ldc.i4.1     
+  IL_009e: stfld        ModuleState.ProtectionMutationInProgress
+  IL_00a3: ldarg.1      
+  IL_00a4: ldfld        ModuleState.Net
+  IL_00a9: call         Math.Abs(1)
+  IL_00ae: stloc.2      
+  IL_00af: ldarg.1      
+  IL_00b0: ldfld        ModuleState.PendingStop
+  IL_00b5: call         Double.IsNaN(1)
+  IL_00ba: brtrue.s     IL_0102
+  IL_00bc: ldarg.1      
+  IL_00bd: ldfld        ModuleState.StopOrder
+  IL_00c2: brtrue.s     IL_0102
+  IL_00c4: ldarg.1      
+  IL_00c5: ldarg.0      
+  IL_00c6: ldarg.1      
+  IL_00c7: ldarg.1      
+  IL_00c8: ldfld        ModuleState.Net
+  IL_00cd: neg          
+  IL_00ce: ldc.i4.4     
+  IL_00cf: ldloc.2      
+  IL_00d0: ldc.r8       0
+  IL_00d9: ldarg.0      
+  IL_00da: ldarg.1      
+  IL_00db: ldfld        ModuleState.PendingStop
+  IL_00e0: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_00e5: ldarg.1      
+  IL_00e6: ldfld        ModuleState.Oco
+  IL_00eb: ldstr        "STOP"
+  IL_00f0: ldc.i4.0     
+  IL_00f1: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_00f6: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_00fb: stfld        ModuleState.StopOrder
+  IL_0100: br.s         IL_0176
+  IL_0102: ldarg.1      
+  IL_0103: ldfld        ModuleState.StopOrder
+  IL_0108: call         FUNDEDSYNCSTACK.CanRequestChange(1)
+  IL_010d: brfalse.s    IL_0176
+  IL_010f: ldarg.1      
+  IL_0110: ldfld        ModuleState.StopOrder
+  IL_0115: callvirt     Order.get_Filled(0)
+  IL_011a: ldloc.2      
+  IL_011b: add          
+  IL_011c: stloc.3      
+  IL_011d: ldarg.0      
+  IL_011e: ldarg.1      
+  IL_011f: ldfld        ModuleState.PendingStop
+  IL_0124: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_0129: stloc.s      V_4
+  IL_012b: ldarg.1      
+  IL_012c: ldfld        ModuleState.StopOrder
+  IL_0131: callvirt     Order.get_Quantity(0)
+  IL_0136: ldloc.3      
+  IL_0137: bne.un.s     IL_015e
+  IL_0139: ldarg.1      
+  IL_013a: ldfld        ModuleState.StopOrder
+  IL_013f: callvirt     Order.get_StopPrice(0)
+  IL_0144: ldloc.s      V_4
+  IL_0146: sub          
+  IL_0147: call         Math.Abs(1)
+  IL_014c: ldarg.0      
+  IL_014d: call         NinjaScriptBase.get_TickSize(0)
+  IL_0152: ldc.r8       0,5
+  IL_015b: mul          
+  IL_015c: blt.un.s     IL_0176
+  IL_015e: ldarg.0      
+  IL_015f: ldarg.1      
+  IL_0160: ldfld        ModuleState.StopOrder
+  IL_0165: ldloc.3      
+  IL_0166: ldc.r8       0
+  IL_016f: ldloc.s      V_4
+  IL_0171: call         FUNDEDSYNCSTACK.SafeChangeOrder(4)
+  IL_0176: ldarg.1      
+  IL_0177: ldfld        ModuleState.ProtectionEmergencyExitPending
+  IL_017c: brtrue       IL_024e
+  IL_0181: ldarg.1      
+  IL_0182: ldfld        ModuleState.PendingTarget
+  IL_0187: call         Double.IsNaN(1)
+  IL_018c: brtrue.s     IL_01d7
+  IL_018e: ldarg.1      
+  IL_018f: ldfld        ModuleState.TargetOrder
+  IL_0194: brtrue.s     IL_01d7
+  IL_0196: ldarg.1      
+  IL_0197: ldarg.0      
+  IL_0198: ldarg.1      
+  IL_0199: ldarg.1      
+  IL_019a: ldfld        ModuleState.Net
+  IL_019f: neg          
+  IL_01a0: ldc.i4.0     
+  IL_01a1: ldloc.2      
+  IL_01a2: ldarg.0      
+  IL_01a3: ldarg.1      
+  IL_01a4: ldfld        ModuleState.PendingTarget
+  IL_01a9: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_01ae: ldc.r8       0
+  IL_01b7: ldarg.1      
+  IL_01b8: ldfld        ModuleState.Oco
+  IL_01bd: ldstr        "TARGET"
+  IL_01c2: ldc.i4.0     
+  IL_01c3: call         FUNDEDSYNCSTACK.SubmitModuleOrder(9)
+  IL_01c8: call         FUNDEDSYNCSTACK.LiveOrderReference(1)
+  IL_01cd: stfld        ModuleState.TargetOrder
+  IL_01d2: leave        IL_0258
+  IL_01d7: ldarg.1      
+  IL_01d8: ldfld        ModuleState.TargetOrder
+  IL_01dd: call         FUNDEDSYNCSTACK.CanRequestChange(1)
+  IL_01e2: brfalse.s    IL_024e
+  IL_01e4: ldarg.1      
+  IL_01e5: ldfld        ModuleState.TargetOrder
+  IL_01ea: callvirt     Order.get_Filled(0)
+  IL_01ef: ldloc.2      
+  IL_01f0: add          
+  IL_01f1: stloc.s      V_5
+  IL_01f3: ldarg.0      
+  IL_01f4: ldarg.1      
+  IL_01f5: ldfld        ModuleState.PendingTarget
+  IL_01fa: call         FUNDEDSYNCSTACK.RoundExecutionPrice(1)
+  IL_01ff: stloc.s      V_6
+  IL_0201: ldarg.1      
+  IL_0202: ldfld        ModuleState.TargetOrder
+  IL_0207: callvirt     Order.get_Quantity(0)
+  IL_020c: ldloc.s      V_5
+  IL_020e: bne.un.s     IL_0235
+  IL_0210: ldarg.1      
+  IL_0211: ldfld        ModuleState.TargetOrder
+  IL_0216: callvirt     Order.get_LimitPrice(0)
+  IL_021b: ldloc.s      V_6
+  IL_021d: sub          
+  IL_021e: call         Math.Abs(1)
+  IL_0223: ldarg.0      
+  IL_0224: call         NinjaScriptBase.get_TickSize(0)
+  IL_0229: ldc.r8       0,5
+  IL_0232: mul          
+  IL_0233: blt.un.s     IL_024e
+  IL_0235: ldarg.0      
+  IL_0236: ldarg.1      
+  IL_0237: ldfld        ModuleState.TargetOrder
+  IL_023c: ldloc.s      V_5
+  IL_023e: ldloc.s      V_6
+  IL_0240: ldc.r8       0
+  IL_0249: call         FUNDEDSYNCSTACK.SafeChangeOrder(4)
+  IL_024e: leave.s      IL_0258
+  IL_0250: ldarg.1      
+  IL_0251: ldc.i4.0     
+  IL_0252: stfld        ModuleState.ProtectionMutationInProgress
+  IL_0257: endfinally   
+  IL_0258: ldloc.1      
+  IL_0259: ldc.i4.1     
+  IL_025a: add          
+  IL_025b: stloc.1      
+  IL_025c: ldarg.1      
+  IL_025d: ldfld        ModuleState.ProtectionResyncRequested
+  IL_0262: brfalse.s    IL_0273
+  IL_0264: ldloc.1      
+  IL_0265: ldc.i4.3     
+  IL_0266: bge.s        IL_0273
+  IL_0268: ldarg.0      
+  IL_0269: ldfld        FUNDEDSYNCSTACK.liveNetInvariantBlocked
+  IL_026e: brfalse      IL_0095
+  IL_0273: ret
+
+
+=== FUNDEDSYNCSTACK.CancelProtection(ModuleState module) -> void ===
+  IL_0000: ldarg.1      
+  IL_0001: brtrue.s     IL_0004
+  IL_0003: ret          
+  IL_0004: ldarg.0      
+  IL_0005: ldarg.1      
+  IL_0006: ldfld        ModuleState.StopOrder
+  IL_000b: call         FUNDEDSYNCSTACK.CancelTrackedOrder(1)
+  IL_0010: ldarg.0      
+  IL_0011: ldarg.1      
+  IL_0012: ldfld        ModuleState.TargetOrder
+  IL_0017: call         FUNDEDSYNCSTACK.CancelTrackedOrder(1)
+  IL_001c: ret
+
+
+=== FUNDEDSYNCSTACK.RecordClosedModuleTradeOnce(ModuleState module, DateTime time) -> void ===
+  LOCALS: V_0:double, V_1:int
+  IL_0000: ldarg.1      
+  IL_0001: brfalse.s    IL_000b
+  IL_0003: ldarg.1      
+  IL_0004: ldfld        ModuleState.ClosedTradeAccounted
+  IL_0009: brfalse.s    IL_000c
+  IL_000b: ret          
+  IL_000c: ldarg.1      
+  IL_000d: ldc.i4.1     
+  IL_000e: stfld        ModuleState.ClosedTradeAccounted
+  IL_0013: ldarg.1      
+  IL_0014: ldc.i4.1     
+  IL_0015: stfld        ModuleState.CloseSettlementPending
+  IL_001a: ldarg.1      
+  IL_001b: ldfld        ModuleState.CurrentTradeProfit
+  IL_0020: ldarg.0      
+  IL_0021: call         FUNDEDSYNCSTACK.get_VirtualRoundTurnCommission(0)
+  IL_0026: ldarg.1      
+  IL_0027: ldfld        ModuleState.EntryFilledQuantity
+  IL_002c: conv.r8      
+  IL_002d: mul          
+  IL_002e: sub          
+  IL_002f: stloc.0      
+  IL_0030: ldarg.1      
+  IL_0031: dup          
+  IL_0032: ldfld        ModuleState.VirtualNetProfit
+  IL_0037: ldloc.0      
+  IL_0038: add          
+  IL_0039: stfld        ModuleState.VirtualNetProfit
+  IL_003e: ldarg.1      
+  IL_003f: dup          
+  IL_0040: ldfld        ModuleState.VirtualClosedTradeCount
+  IL_0045: ldc.i4.1     
+  IL_0046: add          
+  IL_0047: stfld        ModuleState.VirtualClosedTradeCount
+  IL_004c: ldarg.0      
+  IL_004d: ldloc.0      
+  IL_004e: ldarg.2      
+  IL_004f: call         FUNDEDSYNCSTACK.RecordPortfolioClosedTrade(2)
+  IL_0054: ldloc.0      
+  IL_0055: ldc.r8       0
+  IL_005e: bge.un.s     IL_0081
+  IL_0060: ldarg.1      
+  IL_0061: dup          
+  IL_0062: ldfld        ModuleState.PendingDailyLosses
+  IL_0067: ldc.i4.1     
+  IL_0068: add          
+  IL_0069: stfld        ModuleState.PendingDailyLosses
+  IL_006e: ldarg.0      
+  IL_006f: ldarg.1      
+  IL_0070: call         FUNDEDSYNCSTACK.ConfiguredLossCooldown(1)
+  IL_0075: stloc.1      
+  IL_0076: ldloc.1      
+  IL_0077: ldc.i4.0     
+  IL_0078: ble.s        IL_0081
+  IL_007a: ldarg.1      
+  IL_007b: ldloc.1      
+  IL_007c: stfld        ModuleState.LossCooldownBarsRemaining
+  IL_0081: ldarg.0      
+  IL_0082: ldarg.1      
+  IL_0083: ldfld        ModuleState.EntryOrder
+  IL_0088: call         FUNDEDSYNCSTACK.CancelTrackedOrder(1)
+  IL_008d: ldarg.1      
+  IL_008e: ldfld        ModuleState.EntryOrder
+  IL_0093: brfalse.s    IL_009c
+  IL_0095: ldarg.1      
+  IL_0096: ldc.i4.1     
+  IL_0097: stfld        ModuleState.EntryCancelRequested
+  IL_009c: ldarg.0      
+  IL_009d: ldarg.1      
+  IL_009e: call         FUNDEDSYNCSTACK.CancelProtection(1)
+  IL_00a3: ldarg.1      
+  IL_00a4: ldc.i4.0     
+  IL_00a5: stfld        ModuleState.HasQueuedExit
+  IL_00aa: ldarg.1      
+  IL_00ab: ldc.i4.0     
+  IL_00ac: stfld        ModuleState.QueuedExitMinuteBarsRemaining
+  IL_00b1: ldarg.1      
+  IL_00b2: ldsfld       String.Empty
+  IL_00b7: stfld        ModuleState.QueuedExitReason
+  IL_00bc: ldarg.1      
+  IL_00bd: ldc.i4.0     
+  IL_00be: stfld        ModuleState.DeferredExitAfterProtectionCancel
+  IL_00c3: ldarg.1      
+  IL_00c4: ldsfld       String.Empty
+  IL_00c9: stfld        ModuleState.DeferredExitReason
+  IL_00ce: ret
+

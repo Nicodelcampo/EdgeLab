@@ -1,6 +1,8 @@
 import json
 from edgelab.research import holdout_ventanas as HV
 
+PLAN = dict(tipo="fijo", potencia=0.9, problemas=[])   # K27: toda apertura declara su plan
+
 
 def _libro(tmp):
     p = tmp / "v.jsonl"
@@ -16,8 +18,8 @@ def test_ventana_consumida_bloquea_a_la_familia_y_a_las_derivadas(tmp_path):
 
 def test_una_sola_apertura_por_familia(tmp_path):
     p = _libro(tmp_path)
-    HV.registrar_apertura("B", "camp-1", 20261023, 150, p)
-    assert HV.registrar_apertura("B", "camp-1", 20261023, 150, p) == {}                # idempotente
+    HV.registrar_apertura("B", "camp-1", 20261023, 150, p, plan=PLAN)
+    assert HV.registrar_apertura("B", "camp-1", 20261023, 150, p, plan=PLAN) == {}                # idempotente
     assert HV.problemas("B", 20261023, "camp-1", p) == []
     assert any("única apertura" in e for e in HV.problemas("B", 20261023, "camp-2", p))
 

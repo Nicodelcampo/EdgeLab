@@ -51,3 +51,43 @@ SESIONES_EXCLUIDAS_HOLDOUT = {
 def sesion_excluida(instrumento: str, trade_date) -> bool:
     """True si la sesión `trade_date` (YYYYMMDD) del `instrumento` (futuro o símbolo Dukascopy) no se usa en ningún análisis."""
     return int(str(trade_date).replace("-", "")[:8]) in SESIONES_EXCLUIDAS_HOLDOUT.get(str(instrumento).upper().replace("DK:", ""), set())
+
+
+# ---------------------------------------------------------------------------------------------------------------------------------
+# HOLDOUT-A5 (firmada por Nico el 2026-11-17): holdout INTERCALADO por bloques mensuales para las campañas NUEVAS que lo declaren
+# (`"particion": "A5"` en la spec). Ver `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`. No cambia nada de A3/A4: el holdout
+# terminal sigue empezando en la sesión CME del 2026-10-01 y, para A5, pasa a vigilar y a dar tamaño.
+# Cada año, una permutación fija de sus 12 meses: 7 DESC, 2 REP, 3 HOLDOUT. Embargo: el día hábil anterior y el posterior a cada mes
+# HOLDOUT no pertenecen a ninguna partición. Desde la frontera A4, TERMINAL.
+A5_SEMILLA = "EdgeLab-HOLDOUT-A5-v1"
+A5_REPARTO = (("DESC", 7), ("REP", 2), ("HOLDOUT", 3))
+
+
+def a5_meses(anio: int) -> dict:
+    """{mes: 'DESC'|'REP'|'HOLDOUT'} del año (determinista: sha256 de la semilla y el año)."""
+    import hashlib
+    import numpy as np
+    sem = int.from_bytes(hashlib.sha256(f"{A5_SEMILLA}:{int(anio)}".encode()).digest()[:8], "little")
+    perm = np.random.default_rng(sem).permutation(np.arange(1, 13)); out, i = {}, 0
+    for nombre, k in A5_REPARTO:
+        for m in perm[i:i + k]: out[int(m)] = nombre
+        i += k
+    return out
+
+
+def _dia_habil(td: int, paso: int) -> int:
+    import datetime as dt
+    d = dt.date(td // 10000, td // 100 % 100, td % 100) + dt.timedelta(days=paso)
+    while d.weekday() >= 5: d += dt.timedelta(days=paso)
+    return int(d.strftime("%Y%m%d"))
+
+
+def a5_bloque(trade_date) -> str:
+    """'DESC' | 'REP' | 'HOLDOUT' | 'EMBARGO' | 'TERMINAL' de una sesión (YYYYMMDD) en la partición A5."""
+    td = int(str(trade_date).replace("-", "")[:8])
+    if td >= HOLDOUT_PRIMERA_SESION_INT: return "TERMINAL"
+    b = a5_meses(td // 10000)[td // 100 % 100]
+    if b != "HOLDOUT":
+        for v in (_dia_habil(td, 1), _dia_habil(td, -1)):
+            if v < HOLDOUT_PRIMERA_SESION_INT and a5_meses(v // 10000)[v // 100 % 100] == "HOLDOUT": return "EMBARGO"
+    return b

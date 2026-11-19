@@ -1,6 +1,8 @@
 """Compuerta de potencia del ACTA y anulación de aperturas sin mirar (decisión de Nico, 2026-10-26; error E8)."""
 import json
 
+PLAN = dict(tipo="fijo", potencia=0.9, problemas=[])   # K27: toda apertura declara su plan
+
 import pytest
 
 from edgelab.funnel.libro_lord import LibroLord
@@ -29,10 +31,10 @@ def test_plan_sube_n_o_espera(tmp_path):
 
 def test_anulacion_sin_mirar_devuelve_la_apertura(tmp_path):
     lib = tmp_path / "v.jsonl"
-    HV.registrar_apertura("F", "A", 20261001, 150, lib)
+    HV.registrar_apertura("F", "A", 20261001, 150, lib, plan=PLAN)
     assert HV.problemas("F", 20261001, "B", lib)                                              # la familia ya tiene su apertura
     with pytest.raises(ValueError): HV.anular_apertura("F", "A", "x", n_mirado=3, libro=lib)    # mirado: no se anula
     HV.anular_apertura("F", "A", "registrada sin potencia", libro=lib)
     assert not HV.problemas("F", 20261001, "B", lib) and not HV.aperturas_vigentes("F", lib)
-    assert HV.registrar_apertura("F", "A", 20261001, 300, lib)["n_fijo"] == 300                # se puede volver a registrar
+    assert HV.registrar_apertura("F", "A", 20261001, 300, lib, plan=PLAN)["n_fijo"] == 300                # se puede volver a registrar
     assert len(HV.leer(lib)) == 3                                                               # nada se borró

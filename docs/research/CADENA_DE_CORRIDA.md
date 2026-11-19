@@ -19,7 +19,8 @@ def eventos(ctx) -> DataFrame               # k, lado (+1/−1), ref (objetivo),
 DEFINICIONES = ["def_a", ...]               # opcional: columnas booleanas; CONTROL = {"def_a": "def_control"}
 FILTROS = {"nombre": ("columna", ">=", 2.0)} # opcional: se aplican en el análisis; PERIODOS, FUENTE_COSTO, CARPETA opcionales
 ```
-Motor único `edgelab/research/ejecucion.py`: stop a mercado al tick que lo cruza; objetivo/parcial límite en su nivel; tope 240
+Motor único `edgelab/research/ejecucion.py`: stop a mercado al tick que lo cruza (con velas M1 como pseudo-ticks, en su nivel salvo
+hueco: K40); objetivo/parcial límite en su nivel; tope 240
 velas, fin de sesión o hueco; límite con fill «atraviesa». Salidas `r_<ejecución>` (R bruto) y `k_<ejecución>` (riesgo en precio).
 
 ## 3. Lanzar, traer, analizar
@@ -34,6 +35,12 @@ velas, fin de sesión o hueco; límite con fill «atraviesa». Salidas `r_<ejecu
 | confirmar | `python tools/tablas.py confirmar <modulo> CONGELADAS_*.json` | UNA vez: BH q 0,10, sub-bloques, MDE, veredicto por regla |
 | holdout | `python tools/tablas.py holdout <modulo> CONGELADAS_*.json NQ:20261023:20261231 --acta <md> --p p1,…` y `confirmar_holdout` | una apertura por familia, registrada antes; Fisher con las p de desarrollo |
 
+**Campañas A5 sobre M1 largo** (HOLDOUT-A5, mismo módulo): datos con `python tools/datos.py traer M1NT8` (copia local verificada;
+nunca una carpeta bajada a mano) → `tools/a5_campana.py calibrar_m1|lanzar_ticks|traer_ticks|calibracion` (M1 contra ticks con el
+criterio único `a5.calibrar_por_sesion`, commiteado antes de mirar) → `correr` → `desc` → `rep`. Holdout: apertura con
+`LibroLord().reservar` y `plan_potencia(alfa=nivel reservado)`; confirmar en meses HOLDOUT de A5 o instrumentos no usados antes que
+pedir forward (`LEER_ANTES_DE_CADA_CORRIDA.md` §4).
+
 ## 4. Cierre
 `python tools/cierre.py` antes de cada commit: regenera índices (catálogo, docs, familias, factores, remediciones, agentes) y corre
 sus tests. Tests que vigilan la cadena: `test_ejecucion`, `test_tablas`, `test_dependencias_lock` (imports fuera del entorno),
@@ -41,5 +48,6 @@ sus tests. Tests que vigilan la cadena: `test_ejecucion`, `test_tablas`, `test_d
 
 ## 5. Lo que la cadena ya impide (no hace falta acordarse)
 Stop acreditado en su nivel (sesgo ≈ +0,3 R) · eventos que miran el futuro · kernel que falla en Kaggle por un import · slug con «_»
-· tabla traída de código viejo · confirmación con hipótesis tocadas después (hash) · segunda confirmación · celda elegida por debajo
+· tabla de código viejo, traída o ya bajada (K41) · potencia a un α más laxo que el reservado (K42) · veredicto de
+calibración escrito a mano (K43) · script que no compila (K44) · datos locales sin verificar contra el origen · confirmación con hipótesis tocadas después (hash) · segunda confirmación · celda elegida por debajo
 del nulo de la búsqueda presentada como hallazgo · import fuera del entorno · fricción mayor a 0,08 R elegida.

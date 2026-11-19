@@ -1,0 +1,118 @@
+{
+ "version": "v2",
+ "fecha": "2026-11-16",
+ "base": "SELECCION.json (8 reglas congeladas)",
+ "mejoras": [
+  "A1 comisión mínima (firma más barata que admite algoritmos)",
+  "A2 PREAPERTURA-NQ a la mitad",
+  "M1 no operar si fricción > 0,08 R (stop menor que el piso)",
+  "M3 micros fijos por regla (riesgo mediano de desarrollo ≈ 200 USD)"
+ ],
+ "reglas": [
+  {
+   "regla": "CVGAP-ES-C",
+   "senal": "ES",
+   "ejecuta": "MES",
+   "micros": 2,
+   "riesgo_mediano_pts": 19.25,
+   "usd_riesgo_mediano": 192,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 11.1,
+   "friccion_canonica_pts": 0.888,
+   "friccion_micro_min_pts": 0.975,
+   "pct_ops_salteadas_dev": 0.18
+  },
+  {
+   "regla": "U1-RACIMOS-GRILLA-NQ",
+   "senal": "NQ",
+   "ejecuta": "MNQ",
+   "micros": 1,
+   "riesgo_mediano_pts": 99.75,
+   "usd_riesgo_mediano": 200,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 19.31,
+   "friccion_canonica_pts": 1.545,
+   "friccion_micro_min_pts": 1.527,
+   "pct_ops_salteadas_dev": 0.0
+  },
+  {
+   "regla": "CONF-CVR-CFD-NQ-R",
+   "senal": "DK:USATECHIDXUSD",
+   "ejecuta": "MNQ",
+   "micros": 2,
+   "riesgo_mediano_pts": 52.62,
+   "usd_riesgo_mediano": 210,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 19.31,
+   "friccion_canonica_pts": 1.545,
+   "friccion_micro_min_pts": 1.527,
+   "pct_ops_salteadas_dev": 0.07
+  },
+  {
+   "regla": "U1-ZONAS-BT2-ES",
+   "senal": "ES",
+   "ejecuta": "MES",
+   "micros": 2,
+   "riesgo_mediano_pts": 23.33,
+   "usd_riesgo_mediano": 233,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 11.1,
+   "friccion_canonica_pts": 0.888,
+   "friccion_micro_min_pts": 0.975,
+   "pct_ops_salteadas_dev": 0.06
+  },
+  {
+   "regla": "PREAPERTURA-NQ",
+   "senal": "NQ",
+   "ejecuta": "MNQ",
+   "micros": 1,
+   "riesgo_mediano_pts": 49.62,
+   "usd_riesgo_mediano": 99,
+   "peso": 0.5,
+   "no_operar_si_stop_menor_a_pts": 19.31,
+   "friccion_canonica_pts": 1.545,
+   "friccion_micro_min_pts": 1.527,
+   "pct_ops_salteadas_dev": 0.05
+  },
+  {
+   "regla": "U1-ORO-GRILLA",
+   "senal": "DK:XAUUSD",
+   "ejecuta": "MGC",
+   "micros": 1,
+   "riesgo_mediano_pts": 17.75,
+   "usd_riesgo_mediano": 177,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 7.56,
+   "friccion_canonica_pts": 0.605,
+   "friccion_micro_min_pts": 0.632,
+   "pct_ops_salteadas_dev": 0.18
+  },
+  {
+   "regla": "U1-ZONAS-BT2-NQ",
+   "senal": "NQ",
+   "ejecuta": "MNQ",
+   "micros": 2,
+   "riesgo_mediano_pts": 50.0,
+   "usd_riesgo_mediano": 200,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 19.31,
+   "friccion_canonica_pts": 1.545,
+   "friccion_micro_min_pts": 1.527,
+   "pct_ops_salteadas_dev": 0.01
+  },
+  {
+   "regla": "CVGAP-CFD-ES-C",
+   "senal": "DK:USA500IDXUSD",
+   "ejecuta": "MES",
+   "micros": 2,
+   "riesgo_mediano_pts": 25.62,
+   "usd_riesgo_mediano": 256,
+   "peso": 1.0,
+   "no_operar_si_stop_menor_a_pts": 11.1,
+   "friccion_canonica_pts": 0.888,
+   "friccion_micro_min_pts": 0.975,
+   "pct_ops_salteadas_dev": 0.07
+  }
+ ],
+ "nota": "Piso de stop = fricción canónica del instrumento de ejecución / 0,08 (la regla probada en M1). Micros fijos por regla: riesgo mediano de desarrollo ≈ 200 USD (100 en PREAPERTURA-NQ). Operar en real lo decide Nico."
+}

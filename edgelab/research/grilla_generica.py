@@ -94,8 +94,14 @@ def contexto_m1(bloques, tick, ticks_por_barra=None):
     """Contexto de velas M1 (por defecto) o de velas de `ticks_por_barra` ticks (2026-11-07): mismas claves, el motor de la grilla y el
     simulador no cambian. Con velas de ticks, «barra» = vela de n ticks en todo el motor (TOPE_BARRAS, límite de 120 barras, etc.)."""
     from edgelab.research.areas_expansion_run import m1_y_perfil, ticks_y_perfil
-    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(bloques, int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(bloques)
-    return dict(t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
+    marca = dict(sint=False)
+
+    def _vigilar(bl):                                   # K40 (2026-11-18): bloques de velas M1 como pseudo-ticks (lectores M1NT8/M1DK)
+        for b in bl:
+            if "sintetico" in getattr(b, "columns", ()): marca["sint"] = True
+            yield b
+    t, M, vpp, vpv, vps, tpx, tstart = ticks_y_perfil(_vigilar(bloques), int(ticks_por_barra)) if ticks_por_barra else m1_y_perfil(_vigilar(bloques))
+    return dict(m1_sintetico=marca["sint"], t=t, o=M.o.to_numpy(float), h=M.h.to_numpy(float), l=M.l.to_numpy(float), c=M.c.to_numpy(float), v=M.v.to_numpy(float),
                 ses=M.ses.to_numpy().astype(np.int64), seg=M.seg.to_numpy(), vp_px=vpp, vp_vol=vpv, vp_start=vps, tpx=tpx, tstart=tstart,
                 tick=float(tick), ticks_por_barra=int(ticks_por_barra) if ticks_por_barra else None)
 
@@ -215,6 +221,8 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
         O, ok = _trasladar(O, ctx, cx_ej if cx_ej is not None else ctx, retraso); sim = cx_ej if cx_ej is not None else ctx
     pnl = np.full(len(O), np.nan); amb = np.zeros(len(O), np.int8); fb = np.full(len(O), -1, np.int64); xb = fb.copy()
     if ok.any():
+        from edgelab.research.ejecucion import aperturas
+        aper = aperturas(sim)                                                   # K40: vacío con ticks reales; marcas de apertura con M1
         st0, lim, s, e, sl, tp, be = (O[ok, j] for j in range(2, 9))
         args = (st0.astype(np.int64), s.astype(np.int64), lim.astype(np.int64), e, sl, tp, be.astype(np.int64),
                 sim["o"], sim["h"], sim["l"], sim["c"], sim["ses"], sim["tick"], sim["tpx"], sim["tstart"])
@@ -224,9 +232,9 @@ def simular_ops(exp, D, ctx, cx_ej=None, retraso: int = 0, tope=None, devolver_O
                 raise ValueError("LINEAS_SOLO_TIEMPO con líneas de precio finito")
             if lin.ndim != 2 or lin.shape[1] != len(sim["c"]): raise ValueError("lineas_salida debe devolver (filas, velas)")
             p_, a_, f_, x_ = AX.simular_cierre_linea(*args, lin, O[ok, 9].astype(np.int64), O[ok, 10].astype(float),
-                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)))
+                                                     int(getattr(exp, "TOPE_BARRAS", AX.TOPE_OPERACION)), aper)
         else:
-            p_, a_, f_, x_ = AX.simular_cierre(*args)
+            p_, a_, f_, x_ = AX.simular_cierre_m1(*args, aper)
         pnl[ok], amb[ok], fb[ok], xb[ok] = p_, a_, f_, x_
     out = (O[:, 0].astype(int), O[:, 1].astype(int), pnl, amb, np.abs(O[:, 7] - O[:, 5]))
     return out + ((O,) if devolver_O else ()) + ((fb, xb) if devolver_barras else ())

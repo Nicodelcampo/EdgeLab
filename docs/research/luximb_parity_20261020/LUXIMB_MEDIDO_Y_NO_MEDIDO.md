@@ -43,3 +43,10 @@
 - **Holdout:** la mirada exploratoria (n=14, 14 SL y 0 TP) se hizo fuera del protocolo de aperturas. Quedó registrada retroactivamente como ventana consumida del 10-01 al 10-21 en `docs/research/HOLDOUT_VENTANAS.jsonl`. Una confirmación arranca el 2026-10-22 o después; las familias derivadas (EXPANSION_ZONAS) arrancan el 2026-10-23.
 - 2026-10-24 NULO GEOMÉTRICO (ruina del jugador) sobre los conteos del recálculo canónico: tasa de TP 104/495 = 0,210 contra p0 = 1/6 → z 2,59, p 0,007 (información). Contra el umbral económico (≈ 0,179 con D medio ≈ 108 pts) da z ≈ 1,8, igual que el P&L: el límite es el margen, no el método. Se calculó antes de registrarla (1 prueba, registrada después). `docs/research/potencia_20261024/POTENCIA_CON_LOS_MISMOS_DATOS.md`.
 - 2026-10-25 Ventanas de noticia (target-free, sólo tiempos): 208 de 42.743 decisiones de M8/M10 (0,49 %) caen en ±1 min de una noticia USD tier1; 552 (1,29 %) con ±5. No medido: operaciones de la regla del visor (no hay CSV con entrada y salida). `docs/research/noticias_20261025/IMPACTO_FILTRO_NOTICIAS.md`.
+
+## 2026-11-18 — LUXIMB-A5 (impulsos con zonas en el 25 % inicial, NQ M1 2006–2022, partición A5)
+- **MEDIDO (DESC):** reversión bruta del fade hacia A en todas las celdas (control +0,017/+0,038/+0,059 R con stop 0,5/0,35/0,2·D); zonas − control
+  +0,026 a +0,050 R, BH en 8/9. Neto negativo por fricción (0,6–1,6 R); subconjunto operable negativo. `docs/research/luximb_a5_20261118/DESC.json`.
+- **MEDIDO (calibración):** M1 contra ticks 11/12 celdas después de la enmienda 1 (stop de M1 en su nivel, K40).
+- **MEDIDO (REP):** confirman z0|sl0.2 y z1|sl0.35 en bruto (LORD++); contrastes de zonas sin nivel. Compuerta económica: REFUTADA_ECONOMICA.
+- **NO MEDIDO (a propósito):** holdout A5 (4.006 marcas con ≥ 3 zonas, 42.862 de control, sin desenlace), ES/YM, 2023 → 2026 (linaje).

@@ -15,6 +15,7 @@ Regla dura: un instrumento sin un componente medido NO recibe el de otro (CostoN
 from __future__ import annotations
 
 import json
+from contextlib import contextmanager
 from functools import lru_cache
 from pathlib import Path
 
@@ -55,10 +56,26 @@ def tick_size(instrumento: str) -> float:
     return float(_inst(instrumento)["tick_size"])
 
 
+_ESTIMADOS: list = []          # pila de motivos declarados (K33): sólo dentro de `estimados_permitidos` cuenta un spread estimado
+
+
+@contextmanager
+def estimados_permitidos(motivo: str):
+    """K33 (2026-11-17): un spread ESTIMADO (`spread_estimado: true`, p. ej. buscado en Internet por pedido de Nico) NO es un costo medido:
+    fuera de este bloque cuenta como sin medir (CostoNoMedido), así el embudo, el autopilot y la promoción siguen frenando. Se usa sólo en
+    una medición cuyo pre-registro declara los spreads estimados; `motivo` cita ese pre-registro."""
+    if not motivo: raise ValueError("estimados_permitidos exige el motivo (el pre-registro que declara los spreads estimados)")
+    _ESTIMADOS.append(motivo)
+    try: yield
+    finally: _ESTIMADOS.pop()
+
+
 def spread_ticks(instrumento: str) -> float:
-    s = _inst(instrumento)["spread_ticks"]
+    d = _inst(instrumento); s = d["spread_ticks"]
     if s is None:
         raise CostoNoMedido(f"{instrumento}: spread sin medir; medirlo antes (no se presta de otro instrumento)")
+    if d.get("spread_estimado") and not _ESTIMADOS:
+        raise CostoNoMedido(f"{instrumento}: spread ESTIMADO, no medido; sólo vale dentro de costos.estimados_permitidos(<pre-registro>) (K33)")
     return float(s)
 
 
