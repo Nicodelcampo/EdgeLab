@@ -130,7 +130,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (27)
+## PALANCA_DE_DISENO (28)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -149,6 +149,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: todas
   - Siguiente: Priorizar mecanismos de efecto grande por operación o alta frecuencia; calcular meses de forward antes de invertir en una mejora de +0,05 R.
   - Evidencia: `docs/research/RE_INDAGACION_PISTAS_20261119.md`, `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`
+- **Listas de fechas fijas en estrategias compradas (FundedSync: T excluye 20 días de 'datos degradados' y 8 vencimientos; R bloquea 8 sesiones)** (`F-FUNDEDSYNC-FECHAS-FIJAS`, 2026-11-19, humano)
+  - Efecto: T: los días excluidos rinden −0,22 R/día (percentil 4,7 % vs azar) → sesgo del vendedor, pero chico: T 2021–2026 +0,186 → +0,181 R/op con los días incluidos (versión operable). R: inocua (los 3 días normales bloqueados eran ganadores).
+  - Dónde: NQ
+  - Siguiente: Auditar así toda estrategia externa con calendarios fijos antes de confiar en su backtest; usar la versión operable (sin exclusiones no aplicables en vivo).
+  - Evidencia: `docs/research/auditoria_exclusiones_fs_20261119/RESULTADO.md`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia

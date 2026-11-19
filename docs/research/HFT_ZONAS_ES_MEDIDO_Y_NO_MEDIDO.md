@@ -1327,3 +1327,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** fase 0 en NQ, ES, YM y GC: 4/114 pasan la fricción (Dual Thrust); DESC de esas 4 (auditoría de Gemini): neto ≈ 0. Acta:
   `docs/research/externas_a5_20261118/RESULTADO.md`.
 - **NO MEDIDO:** REP (potencia 0,01) y las 110 descartadas con otro stop o en otra escala.
+
+## 2026-11-19 — Auditoría de fechas fijas de FundedSync
+- **MEDIDO:** T y R en NQ con las listas de fechas del vendedor desactivadas: T SESGO_VENDEDOR chico (+0,186 → +0,181 R/op 2021–26), R inocua.
+  Acta: `docs/research/auditoria_exclusiones_fs_20261119/RESULTADO.md`.
+- **NO MEDIDO:** el mismo control en los demás módulos de FundedSync (Z usa `ZETA_NON_FULL_NYSE`, una lista de días no completos de NYSE).
