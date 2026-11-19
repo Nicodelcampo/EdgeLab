@@ -226,6 +226,7 @@ muestre calibración sana en datos reales.
   El pre-registro lleva «Diagnóstico de mecanismo:» (lo exige `preflight.validar_preregistro`) y el RESULTADO las líneas «Diagnóstico de grilla:» /
   «Episodios:» (lo exige `tests/test_diagnostico_obligatorio.py`). Caso de referencia: la «variante rápida» de Z tenía 4 operaciones
   (`docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` §7).
+- **Frecuencia en las prop (Nico, 2026-11-19):** preferir más operaciones siempre que el resultado POR MES sea igual o mejor (R neto por mes y consistencia: t de la serie mensual y % de meses positivos); operar poco sólo si es la única manera de que funcione. Las variantes se comparan por R/mes y consistencia, no por R por operación. La elección entre variantes sigue las reglas de selección (pre-registrada, nunca la mejor sobre datos ya mirados). Datos de referencia: `docs/research/FRECUENCIA_PROP_20261119.md`.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

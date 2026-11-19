@@ -145,7 +145,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (30)
+## PALANCA_DE_DISENO (31)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -179,6 +179,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: todas las grillas y veredictos por época
   - Siguiente: K55/K56 antes de leer mesetas o declarar apagadas; pre-registrar filtro de crash ex ante y la confluencia de señales con bruto real.
   - Evidencia: `docs/research/MIRADA_HUMANA_20261119.md`
+- **En prop firms importa el R neto por mes y su consistencia, no el R por operación: preferir más operaciones si el resultado por mes no empeora (directiva de Nico)** (`F-FRECUENCIA-PROP-R-POR-MES`, 2026-11-19, humano)
+  - Efecto: NQ 2018+: en R (AtrPhase) más operaciones bajan el R/op (+0,41 → +0,22) pero el R/mes sube o se mantiene (+0,86 → +1,17; Spearman frecuencia vs R/mes +0,80; fábrica 2,9 op/mes +1,23 R/mes, t 4,2). En Z más operaciones empeoran (variantes laxas: +0,23 R/mes, t 0,9).
+  - Dónde: todas las reglas para LucidFlex
+  - Siguiente: Comparar variantes por R/mes y consistencia; una versión más frecuente de R (umbral más laxo) sería una versión nueva pre-registrada, no una elección sobre estos datos.
+  - Evidencia: `docs/research/FRECUENCIA_PROP_20261119.md`
 - **«Opera demasiado poco» se mide como información por mes (operaciones por mes × (R/desvío)²) = meses que tarda el forward en decidir; más de 60 no se lleva sola a mejora, holdout ni forward: se sube la frecuencia (canasta, más instrumentos, otra temporalidad) o queda como pista** (`F-FRECUENCIA-MINIMA-B`, 2026-11-17, sesion)
   - Efecto: Turtles en oro (5,3/año): 196 meses; Double 7 NQ 101; buy dips ES 50 (rara pero fuerte: pasaría); SOM 2020+ 49. Cuatro holdouts ad hoc (SOM, Franklin, FundedSync, Turtles) se abrieron con potencia 0,05–0,15 y no decidieron nada.
   - Dónde: Toda regla candidata, de afuera o propia

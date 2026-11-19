@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1497 |
+| `docs/research` | 1498 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -44,6 +44,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |
 | MIRADA | 1 | `MIRADA_HUMANA_20261119.md` | 2026-11-19 | VIGENTE — revisión descriptiva sobre operaciones ya medidas (no cuenta pruebas). |
 | FRENTES | 1 | `FRENTES_ABIERTOS_20261119.md` | 2026-11-19 | VIGENTE — tablero de frentes de la sesión de Claude; pedido de Nico: «no olvides |
+| FRECUENCIA | 1 | `FRECUENCIA_PROP_20261119.md` | 2026-11-19 | VIGENTE — directiva de Nico y datos descriptivos sobre operaciones ya medidas (n |
 | AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
@@ -99,7 +100,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PENDIENTE | 1 | `PENDIENTE_AVCL_SIM_NQ5T_20261006.md` | 2026-10-06 | OBSERVACIÓN VISUAL, no evidencia. Registrada para no perderla; requiere prueba f |
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
-| GEX | 3 | `GEX_FUENTES_Y_EVIDENCIA_20261006.md` | 2026-10-06 | INVESTIGACIÓN, nada ejecutado sobre retornos. Complementa la información que Nic |
 
 ## Superados (7)
 
