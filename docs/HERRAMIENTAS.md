@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-701 scripts.
+702 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -52,6 +52,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/auditar_canasta.py` | Experimento 4 (canasta_7_20261030/auditoria_vela_a_vela/PREREGISTRO.md): auditoría vela a vela de las 7 reglas de la canasta |
 | `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
 | `tools/auditar_procedencia.py` | Barre un directorio temporal y busca evidencia que sostenga afirmaciones vivas. |
+| `tools/auditoria_exclusiones_fs.py` | AUDITORIA-EXCLUSIONES (pre-registro docs/research/auditoria_exclusiones_fs_20261119/PREREGISTRO.md): T y R de FundedSync en NQ con las |
 | `tools/autopilot_activar_escalera.py` | Activa la regla de decisión `escalera_v1` en el autopilot del Debian, en dos pasos (decisión de Nico, 2026-10-22: «hacé lo que |
 | `tools/autopilot_doctor.py` | Chequeo previo al arranque del autopilot en el Debian (solo lectura). Sale con 0 si todo lo imprescindible está bien. |
 | `tools/autopilot_generate.py` | Genera candidatas (borradores) a partir de la evidencia propia, la literatura y los resultados vivos; las ordena por valor esperado de información. |
