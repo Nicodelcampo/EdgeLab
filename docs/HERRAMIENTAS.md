@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-709 scripts.
+710 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -631,6 +631,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/sandbox_pqread.py` | Lector minimo de parquet para ambientes sin pyarrow/duckdb (sandbox de auditoria). |
 | `tools/seguimiento_forward.py` | Seguimiento forward bajo demanda (cuando Nico sube datos sellados nuevos): cartera v2/v3, cartera B (T+Z+R), Franklin, PREAPERTURA-ES, SOM. (TURTLES-ORO salió el 2026-11-17: 0,4 operaciones por mes, no pasa K27; su segui |
 | `tools/select_canonical_visual_sessions.py` | Target-free reproducible session selection script for HP007-CAMP-002. |
+| `tools/selectividad.py` | SELECTIVIDAD (pre-registro docs/research/selectividad_20261119/PREREGISTRO.md): pureza del día de tendencia → continuación al día siguiente, |
 | `tools/senales_nt8.py` | Señales de una regla congelada para NT8 Market Replay (`nt8/strategies/EdgeLabSignalReplay.cs`) y comparación de llenados. |
 | `tools/simulador_challenges_propfirm.py` | Simulador y Optimizador Monte Carlo de Challenges de Cuentas Fondeadas (`tools/simulador_challenges_propfirm.py`, 2026-10-29). |
 | `tools/som_seguimiento.py` | SessionOpenMomentum (celda sin_finde) en datos no vistos: holdout (ACTA_HOLDOUT_SOM.md) y forward bajo demanda. |
