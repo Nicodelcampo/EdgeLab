@@ -145,7 +145,7 @@ def eventos(ctx: dict) -> pd.DataFrame:
             })
 
         # ---------- FM6 / FM6N: Pre-COMEX / London Box (05:00-08:00 ET) -> 15m breakout (08:15-13:30 ET) ----------
-        idx_495 = np.flatnonzero(mo[m_ses] >= 495)
+        idx_495 = np.flatnonzero((mo[m_ses] >= 495) & (mo[m_ses] < 1020))   # 2026-11-19 (K53): la sesión CME empieza 18:00 del día previo; sin el tope, la vela de las 18:00 pasaba como «≥ 08:15» y la caja quedaba vacía
         if has_atr and len(idx_495):
             k_495 = int(m_ses[int(idx_495[0])])
             box_idx = m_ses[(m_ses < k_495) & (mo[m_ses] >= 300) & (mo[m_ses] < 480)]

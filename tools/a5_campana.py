@@ -103,6 +103,9 @@ def calibracion(carpeta):
                     M = pd.read_csv(cfg["dir"] / "calibracion_m1" / f"M1_{inst}_{d0}_{d1}.csv.gz"); K = _ticks(cfg, inst, d0, d1)
                     t.update({(inst, s): v for s, v in _por_sesion(K, d, e).items()}); m.update({(inst, s): v for s, v in _por_sesion(M, d, e).items()})
             res[f"{d}|{e}"] = A5.calibrar_por_sesion(t, m)
+    sin = [k for k, v in res.items() if not v.get("sesiones")]
+    if sin:   # K53 (2026-11-19): una definición que no dispara en toda la ventana de calibración es un posible error de código, no «no calibra»
+        raise SystemExit(f"K53: sin disparos en la calibración: {sin}. Revisar el módulo (p. ej. sesiones que cruzan la medianoche) antes de seguir")
     out = dict(preregistro=cfg["preregistro"], celdas=res, calibran=sum(v["calibra"] for v in res.values()), total=len(res))
     (cfg["dir"] / "CALIBRACION.json").write_text(json.dumps(out, indent=1, default=float)); print(out["calibran"], "/", out["total"], "calibran")
 

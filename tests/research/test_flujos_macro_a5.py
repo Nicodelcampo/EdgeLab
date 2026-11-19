@@ -48,3 +48,15 @@ def test_preregistro_y_campana_flujos_macro_validos():
     assert camp["modulo"] == "edgelab.research.flujos_macro_a5"
     assert set(camp["definiciones"]) == set(FM.DEFINICIONES)
     assert camp["control"] == FM.CONTROL
+
+
+def test_fm6_dispara_con_sesiones_reales_que_cruzan_medianoche():
+    """K53 (2026-11-19): FM6/FM6N no disparaban nunca en datos reales (la sesión CME empieza 18:00 del día previo y `mo >= 495` tomaba esa
+    vela). El sintético no cruza la medianoche, así que el test usa M1 real si está la copia local."""
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    if not (ROOT / "data/m1nt8/GC_M1_nonadj_utc.parquet").exists():
+        return
+    from a5_campana import _ctx
+    E = FM.eventos(_ctx("GC", None, 20240102, 20240329))
+    assert int(E["FM6"].sum() + E["FM6N"].sum()) > 0
