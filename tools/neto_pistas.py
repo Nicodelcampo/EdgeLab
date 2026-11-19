@@ -185,5 +185,36 @@ def tamano():
         for e, x in v["esquemas"].items(): print("  ", e, {k: {kk: round(vv, 3) for kk, vv in x[k].items() if kk != "n"} for k in x})
 
 
+def a20_regimen():
+    """A20-REGIMEN (docs/research/a20_regimen_20261119/PREREGISTRO.md): procedimiento de T en la ventana desde el quiebre 2017-11-10."""
+    from registro_global import exigir_contada
+    from edgelab.research import g2
+    from edgelab.research.embudo_runners import friccion
+    exigir_contada("docs/research/a20_regimen_20261119/PREREGISTRO.md")
+    G = pd.read_csv(DIR / "RZ_OPS.csv.gz", parse_dates=["ses", "t"]); G = G[(G.modulo == "A20") & (G.riesgo > 0) & (G.ses <= FIN)]
+    nombres = [_nombre("A20", v) for v in itertools.product(*GRILLAS["A20"].values())]; fab = _nombre("A20", FABRICA["A20"])
+    def r_inst(inst, a, b):
+        g = G[(G.inst == inst) & (G.ses >= a) & (G.ses <= b)].copy(); g["R"] = (g.pnl_pts - float(friccion(inst)[0])) / g.riesgo; return g
+    W = r_inst("NQ", "2017-11-10", FIN); rv = W.groupby("variante").R.mean().reindex(nombres)
+    M = W.assign(mes=W.ses.dt.to_period("M")).pivot_table(index="mes", columns="variante", values="R", aggfunc="sum").reindex(columns=nombres).fillna(0.0)
+    pbo = g2.pbo_cscv(M.to_numpy().tolist(), s=16)[0]
+    vec = []
+    for i, b in enumerate(FABRICA["A20"]):
+        vals = list(GRILLAS["A20"].values())[i]; j = vals.index(b)
+        for jj in (j - 1, j + 1):
+            if 0 <= jj < len(vals): v = list(FABRICA["A20"]); v[i] = vals[jj]; vec.append(_nombre("A20", tuple(v)))
+    mv, pv, nv = g2.parameter_sensitivity(rv.to_dict(), fab, vec)
+    frac, med, rf = float((rv > 0).mean()), float(rv.median()), float(rv[fab])
+    m1 = float((r_inst("NQ", "2017-11-10", "2021-12-31").groupby("variante").R.mean() > 0).mean())
+    m2 = float((r_inst("NQ", "2022-01-01", FIN).groupby("variante").R.mean() > 0).mean())
+    es = float(r_inst("ES", "2017-11-10", FIN).query("variante == @fab").R.mean())
+    meseta = frac >= 0.70 and med >= 0.5 * rf and (mv or 0) > 0
+    ver = "SOBREAJUSTE_PROBABLE" if (pbo > 0.5 or frac < 0.5) else ("REGIMEN_ROBUSTO" if (meseta and pbo < 0.3) else "INTERMEDIO")
+    if ver == "REGIMEN_ROBUSTO" and not (m1 >= 0.70 and m2 >= 0.70 and es > 0): ver = "INTERMEDIO"
+    out = dict(R_fabrica=rf, frac_positivas=frac, mediana=med, vecinos=dict(mediana=mv, positivos=pv, n=nv), pbo=float(pbo),
+               mitad1_frac_positivas=m1, mitad2_frac_positivas=m2, ES_fabrica=es, veredicto=ver, n_fabrica=int((W.variante == fab).sum()))
+    (ROOT / "docs/research/a20_regimen_20261119/RESULTADO.json").write_text(json.dumps(out, indent=1, default=float)); print(json.dumps(out, default=float))
+
+
 if __name__ == "__main__":
-    {"rz_grilla": rz_grilla, "rz_prefijo": rz_prefijo, "rz_decidir": rz_decidir, "tamano": tamano}[sys.argv[1]]()
+    {"rz_grilla": rz_grilla, "rz_prefijo": rz_prefijo, "rz_decidir": rz_decidir, "tamano": tamano, "a20_regimen": a20_regimen}[sys.argv[1]]()
