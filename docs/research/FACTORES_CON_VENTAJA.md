@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (25)
+## PISTA_VIVA (26)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,6 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: RTY (EMD sin datos suficientes)
   - Siguiente: Esperar Z como grilla promediada, no como fábrica (≈ +0,15 R/op); confirmar con REP de RTY (sellado) o forward de una versión pre-registrada de grilla promediada o variante central.
   - Evidencia: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`, `docs/research/z_pico_20261119/RESULTADO.md`
+- **Z (ZetaTrend): severidad del filtro de día de tendencia (ninguna cubeta toca la EMA de cubetas + eficiencia) → continuación al día siguiente** (`F-Z-SEVERIDAD-DOSIS-RESPUESTA`, 2026-11-19, humano)
+  - Efecto: Más estricto → mejor: Spearman(n_ops, R) −0,63 a −0,89 en NQ (dos épocas), ES y RTY. La fábrica está en una banda de 9 configuraciones equivalentes (≈ 230 op. en NQ) con NQ 2018+ +0,32 R/op (p < 0,001), RTY DESC +0,24 (p 0,014, banda vista mirando), ES +0,09. Correlación diaria con T y R ≈ 0: T+R Sharpe 2,11 → T+R+Z 2,38. La 'variante rápida' (cubeta 10/EMA 10) es degenerada (4 operaciones): retirada.
+  - Dónde: NQ, RTY (ES débil)
+  - Siguiente: Pre-registrar 'Z-banda' (o la fábrica, su centro) como serie separada de REGIMEN-FORWARD; confirmación en REP de RTY con potencia K49.
+  - Evidencia: `docs/research/z_pico_20261119/RESULTADO_RAPIDA_Y_SEVERIDAD.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

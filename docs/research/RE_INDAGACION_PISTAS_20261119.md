@@ -58,3 +58,6 @@ OPS_DESC_REP.csv.gz` (FM7/FM7N). Potencia: n necesario para 0,8 con la mitad del
 
 Aporte al referente: separa lo que se apagó de lo que crece, descarta para el régimen actual cinco pistas que el promedio largo hacía
 parecer vivas, y fija una regla de priorización (efecto por operación × frecuencia) que dice dónde sí se puede llegar a un edge confirmado.
+
+
+> **Corrección (2026-11-19, después):** la «variante rápida» (cubeta 10, EMA 10) que recomienda §1 es degenerada (4 operaciones en NQ en 18 años); los promedios marginales incluían celdas casi vacías. Recomendación retirada; ver `z_pico_20261119/RESULTADO_RAPIDA_Y_SEVERIDAD.md` (el parámetro real es la severidad del filtro y la fábrica está en una meseta de 9 configuraciones).
