@@ -16,3 +16,11 @@ Estado: RESULTADO — pre-registro `PREREGISTRO.md` (1 prueba en `FUNDEDSYNC`). 
 - **Forward:** las listas no tienen fechas posteriores a 2026-07-31; REGIMEN-FORWARD no se ve afectado.
 - **Lección:** toda estrategia externa con listas de fechas fijas se audita así antes de confiar en su backtest (posible selección del
   vendedor con el diario del lunes).
+
+## Anexo: riesgo de T en los archivos del CFD (verificación, 2026-11-19)
+- `cadena/FUNDEDSYNC_OPS.csv.gz` (desarrollo en USATECH) y `cadena/FUNDEDSYNC_HOLDOUT_OPS.csv` traen operaciones de T con riesgo ≈ 0 (p. ej.
+  2024-01-08: 0,009 contra 90,6 en futuros): son anteriores a la corrección de la auditoría del 16-nov (`stop_price` era el stop activo al
+  salir). Con ellos el R de T en el CFD sale +0,65 / +1,97 (2012–20 / 2021–26) contra −0,04 / +0,18 en futuros: **no usar el R de T de esos
+  archivos**. El kernel vigente (`tools/kaggle_grilla/fundedsync_main.py::operaciones`) ya usa clip(rango 09:30–09:45 × 1,25, 2, 100), así que el
+  forward de REGIMEN-FORWARD sale corregido, y `regimen_forward.py` frena si aparece un riesgo de T < 2. Los análisis de Lucid usan USD, no ese
+  riesgo. Lado y P&L en puntos coinciden con futuros en 94 % de los días comunes desde 2021 (correlación de R 0,63 por el riesgo roto).
