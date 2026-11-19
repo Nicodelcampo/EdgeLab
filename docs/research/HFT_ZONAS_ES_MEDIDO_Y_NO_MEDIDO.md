@@ -1269,3 +1269,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** RQ1–RQ8 y 7 contrastes en DESC A5 2006–2025 (ES, NQ, YM): 5 nominadas por bruto (RQ1, RQ2, RQ5, RQ6, RQ2−RQ2N), neto
   negativo en todas. Acta: `docs/research/roboquant_20261118/RESULTADO.md`.
 - **NO MEDIDO:** REP y holdout (K49: potencia en días 0,04–0,07), filtros macro, curva bruto–stop de RQ5/RQ6, RTY/EMD.
+
+## 2026-11-19 — Fricción de RQ2/RQ5/RQ6 (FRICCION-RQ)
+- **MEDIDO:** curva bruto–stop (m 1–3 y salida al cierre) en DESC: RQ5 TIMING, RQ6 y RQ2 MEJORA_SIN_NETO; bruto en puntos constante;
+  una por día sin efecto; juntar RQ5+RQ6 empeora; salida límite ≤ +0,012 R. Con contrato fijo RQ5/RQ6 positivos en ES y NQ
+  (exploratorio). Acta: `docs/research/friccion_rq_20261119/RESULTADO.md`.
+- **NO MEDIDO:** entrada con orden límite en estas reglas, spread por hora del día, comisión de una firma concreta (el canónico usa la
+  máxima), tamaño ∝1/√riesgo pre-registrado.
