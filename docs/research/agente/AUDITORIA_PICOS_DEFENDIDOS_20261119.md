@@ -42,11 +42,17 @@ Nicodelcampo/EdgeLab#201 (la semana a `foundation`).
   - objetivos P + 0,5 A y P + 1 A.
 - `docs/research/picos_defendidos_a5_20261119/CAMPANA.json` y `PREREGISTRO.md`: NQ, ES e YM sobre M1 de NT8 2006 → 2025-07, con la
   partición A5.
-- Las campañas `PICOS-DEFENDIDOS-NQ/ES` del PR quedan con `activa: false` y una decisión «reemplazada por PICOS_DEFENDIDOS_A5; no se lanza».
-  Así nadie las lanza por error con la partición vieja.
+- **Las campañas `PICOS-DEFENDIDOS-NQ/ES` ya estaban lanzadas cuando se escribió esto.** El otro agente las activó el 2026-11-19 a las
+  19:37 UTC por la instrucción de Nico «Mergea todo y lanzalo», con conductor local porque el Debian está en PAUSE. Fue 7 minutos antes
+  del comentario de esta auditoría en el PR #200.
+- Siguen activas. Se agregó a cada una una decisión con la recomendación de detenerlas; no se desactivan desde acá porque las conduce otra
+  sesión.
+- Ningún resultado de esas campañas se promueve sin pasar por la versión A5.
 
 ## 3. ¿Quién la lanza?
-**Esta sesión.** Razones:
+- **Versión vieja:** está corriendo en la otra sesión. Detenerla o dejarla terminar lo decide Nico. Si termina, sus resultados se leen
+  como exploración en 8 meses, nunca como confirmación.
+- **Versión A5: esta sesión.** Razones:
 - **Guardas:** la cadena A5 (`tools/a5_campana.py`, calibración M1 contra ticks y lectura DESC/REP con LORD++) y las guardas existen hoy sólo
   en esta rama, hasta que se mergee #201.
 - **Experiencia:** esta sesión corrió esta semana las campañas A5 (EXTERNAS-28, ROBOQUANT, OPTION-ALPHA, FLUJOS-MACRO, ESCALONADAS-M1).
