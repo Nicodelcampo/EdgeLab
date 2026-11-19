@@ -19,6 +19,15 @@ Potencia previa: DESC tiene 1.500–6.700 operaciones por regla (1.000–2.200 s
 medio por celda es 0,015–0,03 R. Alcanza para ver si el bruto cae a la par de la fricción (diferencias de ~0,05 R). No habilita REP: si una
 celda mejora, su lectura en REP + holdout se planifica después con K49 (potencia en días) y se pre-registra aparte.
 
+## 0. Justificación económica
+- RQ5 y RQ6 capturan momentum intradía (continuación a favor del día, Baltussen et al. 2021; banda de ruido de Zarattini) y RQ2 una
+  reversión inter-día. Si el desplazamiento que explotan dura más que su objetivo actual, un riesgo y un objetivo más grandes cobran la
+  misma ventaja en R pagando la fricción fija sobre una base mayor: el neto sube. Si su ventaja es de timing (se agota en minutos), el
+  bruto cae al ensanchar y no hay palanca.
+- **Registro de un lanzamiento descartado (2026-11-19):** la primera ejecución de `friccion_rq.py correr` arrancó antes de que este
+  pre-registro se contara (la guarda pidió esta sección y la cadena de comandos siguió igual). Se mató a mano después de procesar ES; no
+  escribió `OPS.csv.gz` ni `RESULTADO.json` y no se miró ningún desenlace. Se relanza completa después del conteo.
+
 ## 1. De qué está hecha la fricción (costos canónicos, viaje redondo)
 | | spread | comisión | slippage (supuesto) | total |
 |---|---|---|---|---|
