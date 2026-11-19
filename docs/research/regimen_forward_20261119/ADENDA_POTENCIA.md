@@ -19,3 +19,14 @@ Código: `tools/regimen_forward_tiempo.py` (descriptivo, sobre desarrollo ya mir
   (p. ej. percentiles 0,5–99,5 % de desarrollo) o un e-proceso de mezcla por operación en lugar de por día acelerarían la decisión.
 - Las demás series (T, R, SOM, Franklin) tienen frecuencias y efectos menores: sus tiempos del pre-registro también son optimistas; se
   reportan pero la decisión es la de la canasta.
+
+## Ejecutabilidad de R (agregado 2026-11-19, auditoría)
+- El DLL de FundedSync **no tiene stop para R** (AtrPhase sólo sale por cierre de contado a las 16:00; `defaults_dump.txt` y
+  `AtrPhaseConfig`). La R vigilada acá lleva el stop de catástrofe 0,25 × ATR20 que agregó NETO-PISTAS: medirla sobre las operaciones del
+  vendedor está bien (el stop se aplica con la MAE), pero **operarla así exige implementar el stop por fuera del DLL**.
+- Diferencia medida (NQ, fábrica): sin stop la media es parecida o mejor (+0,275 R contra +0,269 en 2008–2026; +0,67 contra +0,51 desde
+  2021, en unidades de 0,25 × ATR20), pero la cola es mucho más pesada (peor operación −6,3 unidades ≈ −1,6 ATR20; percentil 1 % ≈ −4,5). Con
+  1 MNQ y el ATR actual de NQ, una sola operación de la cola se acerca al límite diario de Lucid (DLL $600): **sin el stop, R no es apta
+  para la cuenta**.
+- Opciones (decisión de ejecución de Nico): (a) estrategia NT8 propia de R con el stop (la traducción en Python es la especificación); (b)
+  correr el DLL con R y una orden de stop manual o del bróker a 0,25 × ATR20 del precio de entrada; (c) T sola en Lucid hasta resolverlo.
