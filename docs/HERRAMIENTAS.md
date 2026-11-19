@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-691 scripts.
+693 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -276,6 +276,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/explo_edgereplica_mgc_20261006.py` | Exploración (decisión de Nico 2026-10-06, sin custodia de holdout): EdgeReplica en MNQ 12-26 y celda MGC 04:15 |
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |
 | `tools/externas_a5.py` | EXTERNAS-28, fase 0 (EF2, sin retornos): fricción en R de cada una de las 114 variantes (pre-registro |
+| `tools/externas_estructurales_a5.py` | Conductor vectorizado para EXTERNAS-ESTRUCTURALES-A5 y auditoría rápida de |
 | `tools/factores.py` | Registro de factores con ventaja (edgelab/research/factores.py). |
 | `tools/falsification_battery.py` | tools/falsification_battery.py |
 | `tools/familias.py` | Índice de FAMILIAS de investigación: un renglón por familia con su linaje, pruebas contadas, campañas, último desenlace del embudo |
@@ -634,6 +635,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/study_slot_effect.py` | Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y Holm. La configuración llega por STUDY_CFG (JSON) y debe figurar TEXTUALMENTE en el pre-registro |
 | `tools/summarize_mgc_tick_stability.py` | (sin docstring) |
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
+| `tools/t_regimen.py` | T-REGIMEN: meseta de parámetros y PBO del T de FundedSync en NQ (pre-registro docs/research/t_regimen_20261118/PREREGISTRO.md). |
 | `tools/tabla_decision_pnk.py` | TABLA DE DECISIÓN P/N/K — para elegir la geometría ANTES de mirar zonas. |
 | `tools/tablas.py` | Tablas de eventos de punta a punta con UNA herramienta (edgelab/research/tablas.py; AUTOMATIZACION_PROCESOS_20261111). |
 | `tools/tbz_e2.py` | TBZ-E2: la expansión como área de patinaje. Diseño y enmiendas: docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md |
