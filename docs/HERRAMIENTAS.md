@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-698 scripts.
+699 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -643,6 +643,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/t_regimen.py` | T-REGIMEN: meseta de parámetros y PBO del T de FundedSync en NQ (pre-registro docs/research/t_regimen_20261118/PREREGISTRO.md). |
 | `tools/tabla_decision_pnk.py` | TABLA DE DECISIÓN P/N/K — para elegir la geometría ANTES de mirar zonas. |
 | `tools/tablas.py` | Tablas de eventos de punta a punta con UNA herramienta (edgelab/research/tablas.py; AUTOMATIZACION_PROCESOS_20261111). |
+| `tools/tamano_k52.py` | TAMANO-K52: tamaño ∝ 1/ATR20 (W1) o intermedio (W2) contra riesgo constante (S0) en RQ5, RQ6, SOM y Franklin |
 | `tools/tbz_e2.py` | TBZ-E2: la expansión como área de patinaje. Diseño y enmiendas: docs/research/TBZ_E2_PARAMETRIZACION_HOLISTICA_20260924.md |
 | `tools/tbz_stage1.py` | Familia TBZ, etapa E1 target-free (protocolo: docs/research/FAMILIA_TBZ_FRANJAS_BAJA_PERMANENCIA_20260924.md). |
 | `tools/tbzx_espejo.py` | TBZX: impulsos de poco volumen por tick; qué hace el precio AFUERA de la franja y cómo REINGRESA. |
