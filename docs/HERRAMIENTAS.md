@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-695 scripts.
+696 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -560,6 +560,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/regimen_escala_m1.py` | Etapa 0 en escala mayor (decisión de Nico, 2026-10-06): ¿persiste la tendencia (eficiencia) o la dirección en barras |
 | `tools/regimen_estructural_diagnostico.py` | Diagnóstico estructural de regímenes cortos (1M–2M) sin lookahead frente a Nulo A (signo por sesión) y Nulo B (permutación temporal con fricción real). |
 | `tools/regimen_etapa0.py` | Etapa 0 de VTD-DIR: validación target-free del detector de régimen (edgelab/regimes/state.py). |
+| `tools/regimen_som_franklin.py` | REGIMEN-SOM-FRANKLIN: meseta, PBO y quiebre (procedimientos de T-REGIMEN) para SOM y Franklin |
 | `tools/regimes_6e_stage1.py` | Familia 6E-REGIMES, etapa 1 target-free (protocolo: docs/research/FAMILIA_6E_REGIMENES_LIQUIDEZ_20260924.md). |
 | `tools/registrar_campanias_20261020.py` | Registro retroactivo en el contador GLOBAL de las campanias con desenlaces corridas entre 2026-10-20 y 2026-10-22 |
 | `tools/registrar_resultado_h2_65s.py` | Registra los resultados de la corrida de 65 sesiones de H2 + Escalon 5 en documentacion y git. |
