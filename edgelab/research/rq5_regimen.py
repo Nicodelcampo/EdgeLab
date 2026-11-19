@@ -51,7 +51,6 @@ def eventos(ctx: dict) -> pd.DataFrame:
         mm = mo[m_]; ab = float(o[m_[0]]); hi, lo, cl = float(h[m_].max()), float(l[m_].min()), float(c[m_[-1]])
         ATR = float(np.mean(atr20)) if len(atr20) >= 3 else (prev_hi - prev_lo if prev_hi is not None else np.nan)
         tp_ = (h[m_] + l[m_] + c[m_]) / 3.0; vwap = np.cumsum(tp_) / np.arange(1, len(m_) + 1)
-        fin = int(m_[-1])
         hechos = set()
         for sm in SLOTS:
             pos = np.flatnonzero(mm == sm)
@@ -66,6 +65,7 @@ def eventos(ctx: dict) -> pd.DataFrame:
                     band = float(np.mean(hs[-L:]))
                     if band > 0 and mv >= mult * band and vw_ok:
                         hechos.add(nd)
+                        fin = k + int(RTH1 - 1 - mo[k])            # salida por reloj (como `hasta_cierre` de roboquant): causal
                         f = filas.setdefault(k, dict(k=k, lado=lado, fin=fin, band=band, atr=ATR))
                         if f["band"] != band:                    # mismo k con otra banda (otro L): fila aparte
                             f = filas.setdefault((k, L), dict(k=k, lado=lado, fin=fin, band=band, atr=ATR))
