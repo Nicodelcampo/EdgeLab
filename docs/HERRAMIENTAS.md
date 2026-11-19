@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-705 scripts.
+706 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -217,6 +217,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/dia_tendencia.py` | Día de tendencia: predictores causales NUEVOS, E0 sin retornos de estrategia (pre-registro docs/research/dia_tendencia_20261118/PREREGISTRO.md). |
 | `tools/diagnose_es_context_intervals_20260929.py` | (sin docstring) |
 | `tools/diagnostico_decaimiento_temporal.py` | tools/diagnostico_decaimiento_temporal.py |
+| `tools/diagnostico_grilla.py` | Diagnóstico de mecanismo de una grilla y de episodios (K55/K56): imprime las líneas «Diagnóstico de grilla:» y «Episodios:» que todo |
 | `tools/discovery_audit_report.py` | Convierte los JSON de auditoría (artifacts/discovery/audit/audit_*.json) en tablas Markdown. Descriptivo: no excluye nada. |
 | `tools/discovery_cache.py` | Arma el caché (barras + filas de ejecución) y la auditoría de datos de uno o más activos. Una sola lectura de ticks para todas las familias. |
 | `tools/discovery_scan.py` | Barrido de descubrimiento sobre un activo o un grupo de activos pre-fijado. Pasos: tensores -> (calibrar) -> barrer en D0 -> replicar en D1 (D2 sellado) -> registrar. |

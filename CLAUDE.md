@@ -221,6 +221,11 @@ muestre calibración sana en datos reales.
   de corrida, y los errores de unidad y escala K35–K39). Todo pre-registro nuevo lleva «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …»;
   `preflight.validar_preregistro` la exige. Desde la v3 (2026-11-18) su §6 lista cada error de la etapa con la guarda en código que lo
   impide, y los datos fuera de Kaggle se obtienen sólo con `python tools/datos.py traer <NOMBRE>` (copia local verificada).
+- **Diagnóstico de mecanismo antes de leer una grilla o una época (Nico, 2026-11-19, K55/K56):** operaciones por celda, qué mueve cada perilla,
+  número efectivo de variantes, dosis-respuesta y episodios por mes, con `edgelab/research/diagnostico_grilla.py` (`tools/diagnostico_grilla.py`).
+  El pre-registro lleva «Diagnóstico de mecanismo:» (lo exige `preflight.validar_preregistro`) y el RESULTADO las líneas «Diagnóstico de grilla:» /
+  «Episodios:» (lo exige `tests/test_diagnostico_obligatorio.py`). Caso de referencia: la «variante rápida» de Z tenía 4 operaciones
+  (`docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` §7).
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`

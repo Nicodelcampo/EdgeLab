@@ -86,10 +86,11 @@ def test_K32_el_validador_pide_lo_de_claude_md(tmp_path):
     (tmp_path / "docs").mkdir(); (tmp_path / "docs/NORTH_STAR.md").write_bytes((ROOT / "docs/NORTH_STAR.md").read_bytes())
     malo = tmp_path / "P.md"; malo.write_text("# x\n\nEstado: PRE-REGISTRO\n")
     e = validar_preregistro(malo, tmp_path, exigir_commit=False)
-    assert len(e) == 7 and any("NORTH_STAR" in x for x in e) and any("Lectura previa" in x for x in e)
+    assert len(e) == 8 and any("NORTH_STAR" in x for x in e) and any("Lectura previa" in x for x in e) and any("Diagnóstico de mecanismo" in x for x in e)
     bueno = tmp_path / "Q.md"
     bueno.write_text(f"# x\nEstado: PRE-REGISTRO\nNorth Star {north_star_sha256(ROOT)}. Etapa EF3.\nAntecedentes: «x» — ...\n"
                      "Potencia previa: ops.csv: 20 ops/mes ... OK\nLectura previa: LEER_ANTES_DE_CADA_CORRIDA v1 — §0–§5\n"
+                     "Diagnóstico de mecanismo: no aplica — una sola regla\n"
                      "## Justificación económica / cómo podría refutarse\n")
     assert validar_preregistro(bueno, tmp_path, exigir_commit=False) == []
 

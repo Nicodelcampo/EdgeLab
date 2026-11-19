@@ -200,6 +200,13 @@ REQUISITOS_PREREGISTRO = (      # (descripción, regex sobre el texto, de dónde
 
 
 LECTURA_PREVIA_RX = r"^Lectura previa:.*LEER_ANTES_DE_CADA_CORRIDA v\d+"
+DIAGNOSTICO_RX = r"^Diagn[oó]stico de mecanismo:"      # K55/K56 (2026-11-19): ver edgelab/research/diagnostico_grilla.py
+
+
+def _sin_diagnostico(repo: Path) -> set:
+    """Pre-registros anteriores a K55/K56 (2026-11-19): exentos sólo de «Diagnóstico de mecanismo:». Lista cerrada; no se agrega nada."""
+    f = Path(repo) / "config/preregistros_sin_diagnostico.json"
+    return set(json.loads(f.read_text(encoding="utf-8"))) if f.exists() else set()
 
 
 def _sin_lectura_previa(repo: Path) -> set:
@@ -225,6 +232,9 @@ def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = Tr
     if rel_p not in _sin_lectura_previa(repo) and not re.search(LECTURA_PREVIA_RX, t, re.M):
         e.append("falta la línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …» (docs/research/LEER_ANTES_DE_CADA_CORRIDA.md, "
                  "Nico 2026-11-18)")
+    if rel_p not in _sin_diagnostico(repo) and not re.search(DIAGNOSTICO_RX, t, re.M):
+        e.append("falta la línea «Diagnóstico de mecanismo: …» (K55/K56): qué mueve cada perilla y cómo se va a leer la grilla con "
+                 "edgelab.research.diagnostico_grilla (operaciones por celda, número efectivo de variantes, episodios), o «no aplica — motivo»")
     if exigir_commit:
         rel = str(p.relative_to(repo))
         if not subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=repo, capture_output=True, text=True).stdout.strip():

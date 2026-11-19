@@ -1,4 +1,4 @@
-# Leer antes de cada corrida — índice obligatorio (v3, 2026-11-18)
+# Leer antes de cada corrida — índice obligatorio (v4, 2026-11-19)
 
 Estado: VIGENTE — pedido de Nico: «un documento que sea obligatorio leer para cada corrida, que sea un índice de todos los otros
 documentos que se deberían leer». La v3 responde a su segundo pedido: «asegurate que la cadena estándar no te permita cometerlos […] no
@@ -140,3 +140,28 @@ Columna «guarda»: **código** = la cadena no deja pasar el error; **guía** = 
 | Contraste neto con 0 al no entrar | el «neto» favorecía no entrar hasta con gatillos al azar | guía | decidir por R absoluto por gatillo y contra el placebo (§3) |
 | `git add -A` en un commit de campaña | entraron resultados de otras campañas | guía | rutas explícitas y `git show --stat` |
 | Presupuesto de contexto de los agentes | el cierre fallaba cuando FACTORES crecía y se compactaban entradas para entrar | humano + código | Nico lo elevó el 18-nov (juez y auditor 260.000, arquitecto 400.000, `config/autopilot/AGENTES.json`); `test_agentes` exige ≥ 25 % libre. No se achica contenido para entrar: se sube el tope |
+
+
+## 7. Cómo se hace bien: el caso Z (v4, 2026-11-19 — K55/K56, obligatorio)
+**Lo que salió mal.** La noche del 18 al 19-nov recomendé la «variante rápida» de Z (cubeta 10, EMA 10) porque los promedios marginales de la
+grilla la favorecían. Tenía **4 operaciones en 18 años**. A20 se presentó con «81/81 variantes positivas» y tenía **1,2 variantes efectivas**
+(3 de 4 perillas no cambiaban nada). La reversión corta se declaró «apagada desde 2018» cuando el signo lo hacían **3 meses de crisis**. Ningún
+gate lo vio: lo encontró la pregunta de Nico («tiene una curva parecida a R, ¿por qué no entra?»).
+
+**Lo que hay que hacer, en este orden, antes de leer cualquier grilla o veredicto por época:**
+1. **Operaciones por celda** antes que su R: una celda con pocas operaciones no es una variante.
+2. **Qué hace cada perilla en el mecanismo** (leer el código del módulo): en Z, cubeta y EMA mueven lo mismo (la severidad del filtro «ninguna
+   cubeta toca la EMA»); en A20, tres perillas son inertes.
+3. **Número efectivo de variantes** (participación de autovalores de las series mensuales): 81 casi-copias no son evidencia de meseta.
+4. **Eje de severidad / dosis-respuesta:** correlación de rango entre operaciones y R. Si existe, la lectura correcta es la dosis-respuesta y
+   la banda de configuraciones equivalentes, no «la mejor variante» (Z: la fábrica estaba en una meseta de 9 configuraciones).
+5. **Episodios:** un promedio por época se descompone por meses antes de llamar «apagada» a una regla.
+
+**Cómo se cumple (en código, no de memoria):**
+- Pre-registro: línea obligatoria `Diagnóstico de mecanismo: …` (qué mueve cada perilla y cómo se va a leer la grilla, o «no aplica — motivo»).
+  `preflight.validar_preregistro` la exige; sin ella `registro_global.py preregistrado` no cuenta y la corrida no arranca.
+- Resultado: `python tools/diagnostico_grilla.py <ops> --variante … --valor R` imprime las líneas `Diagnóstico de grilla: …` y
+  `Episodios: …`. `tests/test_diagnostico_obligatorio.py` hace fallar el CI si un RESULTADO nuevo lee meseta/PBO/«N/N variantes» sin la
+  primera o declara una regla apagada sin la segunda.
+- Ejemplo completo bien hecho: `docs/research/z_pico_20261119/RESULTADO_RAPIDA_Y_SEVERIDAD.md`; el error y su revisión:
+  `docs/research/MIRADA_HUMANA_20261119.md`.
