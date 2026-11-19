@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.p
 DIR = ROOT / "docs/research/externas_a5_20261118"
 INST = ("NQ", "ES", "YM", "GC")
 UMBRAL, MIN_SES = 0.08, 30
-CRUDO = Path("/tmp/claude-0/externas_a5_fase0")      # fricción por señal (millones de valores): no se versiona; el resumen sí
+CRUDO = ROOT / "data/externas_a5_fase0"     # fricción por señal (millones de valores; data/ no se versiona) y avance por variante: reanudable
 
 
 def fase0(inst):
@@ -28,9 +28,15 @@ def fase0(inst):
     t = np.asarray(ctx["t"], float); ts = (t * 1000).astype(np.int64); ses = np.asarray(ctx["ses"])
     B = pd.DataFrame(dict(ts=ts, o=ctx["o"], h=ctx["h"], l=ctx["l"], c=ctx["c"], v=ctx["v"], ses=ses))
     blo = {int(s): a5_bloque(int(s)) for s in np.unique(ses)}; out, crudo = {}, {}
+    CRUDO.mkdir(parents=True, exist_ok=True)
     for d, (m, p) in zip(X.DEFINICIONES, X.VARIANTES):
+        hecho = CRUDO / f"{inst}_{d}.json"
+        if hecho.exists():                                   # reanudar tras un reinicio del contenedor
+            out[d] = json.loads(hecho.read_text()); crudo[d] = np.load(CRUDO / f"{inst}_{d}.npy"); continue
         S = m.senales(B, **p)
-        if not S: out[d] = dict(n=0, sesiones=0); crudo[d] = np.zeros(0, np.float32); continue
+        if not S:
+            out[d] = dict(n=0, sesiones=0); crudo[d] = np.zeros(0, np.float32)
+            np.save(CRUDO / f"{inst}_{d}.npy", crudo[d]); hecho.write_text(json.dumps(out[d])); continue
         k = np.searchsorted(ts, np.array([s["available_at"] for s in S], np.int64), side="right") - 1
         sl = np.array([s["stop_pts"] for s in S], float); ok = (k >= 0) & (sl > 0); k, sl = k[ok], sl[ok]
         des = np.array([blo[int(x)] == "DESC" for x in ses[k]], bool)
@@ -38,8 +44,9 @@ def fase0(inst):
         out[d] = dict(n=int(des.sum()), sesiones=int(len(np.unique(ses[k][des]))), mediana=float(np.median(fr)) if len(fr) else None,
                       cuantiles=[float(x) for x in np.quantile(fr, [0.1, 0.25, 0.5, 0.75, 0.9])] if len(fr) else [],
                       ); crudo[d] = fr.astype(np.float32)
+        np.save(CRUDO / f"{inst}_{d}.npy", crudo[d]); hecho.write_text(json.dumps(out[d]))
         print(inst, d, m.NOMBRE, out[d]["n"], out[d]["mediana"], flush=True)
-    CRUDO.mkdir(parents=True, exist_ok=True); np.savez_compressed(CRUDO / f"FR_{inst}.npz", **crudo)
+    np.savez_compressed(CRUDO / f"FR_{inst}.npz", **crudo)
     (DIR / f"FASE0_{inst}.json").write_text(json.dumps(dict(instrumento=inst, friccion_pts=f, variantes=out), indent=1))
 
 

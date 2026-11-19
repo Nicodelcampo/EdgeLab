@@ -9,7 +9,7 @@ Estado: PRE-REGISTRO — se commitea antes de calibrar y de correr.
 
 Antecedentes: «roboquant nq precision bot noise band zarattini vwap pullback orb retest ivb» — familias parecidas: OPTION_ALPHA_A5, ORB_RR_MENOR, ORB_VARIANTES; NO_REPETIR: F-REELS-20261108, F-ORB-EMA20-NQ-STOP-OPUESTO, F-ORB5-BRUTO-ESTABLE; código: edgelab/stats/fixed_b.py:145, edgelab/discovery/features.py:20, tools/sandbox/l3_power.py:36
 
-Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v3 — §0–§5.
+Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v3 — §0–§6 (incluidas K40–K49: stop M1 en su nivel, columnas de identidad, variables conocidas antes de entrar, potencia en días).
 - §1: cadena estándar (`tablas.py` + `a5_campana.py`), población declarada y causalidad verificada en `preflight`.
 - §2: datos locales `M1NT8` verificados con `PROCEDENCIA.json` (`ES`, `NQ`, `YM`, `cboe_volatility_daily.parquet`, `us_market_events_calendar_2006_2026.parquet`), partición A5 y calibración obligatoria M1↔ticks (K30/K40) antes de correr DESC.
 - §3: R neto con costos canónicos de `edgelab/costos.py` (mini y micro reportados; umbral de fricción operable ≤ 0,08 R) y unidades normalizadas por `ATR20` / `R15` / `R30` (K36).
@@ -34,5 +34,7 @@ Potencia previa: estimación conservadora previa a mirar desenlaces (efecto supu
 - Cualquier regla queda refutada si su `R` bruto o neto es `<= 0` con potencia suficiente en DESC/REP/HOLDOUT, si su fricción mediana excede `0,08 R`, o si su contraste frente al control (`RQk - RQkN`) es `<= 0` demostrando que el filtro de régimen/contexto (`ATR14/50`, `Prev_High <= Prev2_High`, sesión roja previa, `VWAP`, `Inside PDH/PDL` o contracción de IB) no aporta ventaja real.
 
 ## 4. Contador y linaje
-- **Pruebas en exploración DESC (`a5_campana.py`):** `8` reglas absolutas + `7` contrastes contra control = **`15` hipótesis** en la familia BH (`q = 0,10`), más filtros macro (`vix_bajo`, `no_fomc`, `sin_early_close`, `ivr_20`) como evaluación secundaria.
+- **Pruebas en exploración DESC (`a5_campana.py`):** `8` reglas absolutas + `7` contrastes contra control = **`15` hipótesis** en la familia BH (`q = 0,10`), **Los filtros macro (`vix_bajo`, `no_fomc`, `sin_early_close`, `ivr_20`) NO se evalúan en esta corrida** (enmienda de Claude, 2026-11-19, antes de calibrar y de correr): mirarlos serían pruebas fuera de la familia; si una regla sobrevive REP se pre-registran como familia hija.
+- **Enmienda K49 (2026-11-19, antes de correr):** la potencia de arriba cuenta operaciones; con tres índices el mismo día no son independientes. REP se lee sólo para nominadas con potencia ≥ 0,80 en DÍAS al nivel LORD++ (`a5.plan_lectura`, automático en `tools/a5_campana.py rep`); las demás quedan `SIN_POTENCIA_PREVIA`.
+- **Linaje (enmienda 2026-11-19):** hija de `ORB_A5` (RQ1, RQ7 y RQ8 son rupturas del rango de apertura y RQ5 es la banda de ruido de Zarattini, ya medida en ORB_A5 como «Noise Area»): hereda su multiplicidad.
 - **Linaje:** familia nueva `ROBOQUANT_A5` (complementaria a `OPTION_ALPHA_A5`). Sensibilidad reportada en años limpios `2006–2011`.
