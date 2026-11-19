@@ -81,6 +81,8 @@ def serie_senales(usd_riesgo=150.0, reglas=("SOM", "FRANKLIN", "T"), desde=20200
     D = ROOT / "docs/research/m1_largo_20261117"; fr_usd = float(friccion("MNQ")[0]) * 2.0; fr_nq = float(friccion("NQ")[0]); partes = []
     if "SOM" in reglas:
         o = pd.read_csv(D / "SOM_OPS_NQ.csv.gz"); o = o[o.celda == "sin_finde"]; partes.append(o[["dia", "bruto", "riesgo"]])
+    if "SOMEOD" in reglas:   # SOM que cierra a las 15:55 de NY (celda «eod»): la única que respeta el «plano a las 16:45» de Lucid (2026-11-19)
+        o = pd.read_csv(D / "SOM_OPS_NQ.csv.gz"); o = o[o.celda == "eod"]; partes.append(o[["dia", "bruto", "riesgo"]])
     if "FRANKLIN" in reglas:
         partes.append(pd.read_csv(D / "FRANKLIN_OPS_NQ.csv.gz")[["dia", "bruto", "riesgo"]])
     if "T" in reglas:

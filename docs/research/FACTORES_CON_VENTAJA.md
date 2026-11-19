@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (28)
+## PISTA_VIVA (29)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -44,6 +44,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, LucidFlex 25K
   - Siguiente: Z-banda en vigilancia forward como serie separada; decidir si la canasta operable suma Z-banda y si SOM entra con tamaño menor (sd).
   - Evidencia: `docs/research/FRECUENCIA_PROP_20261119.md`, `docs/research/FRECUENCIA_PROP_LUCID.json`
+- **LucidFlex por tamaño con el marco de la guía (EV por examen, tiempos, cartera con 5 fondeadas y cierre al pasar a live)** (`F-LUCID-GUIA-TAMANOS`, 2026-11-19, humano)
+  - Efecto: Contraída, 25K T+R+ZB 100 USD: pasa 49 %, mediana 26 días hábiles a pasar y 22 a quemar, 39 al 1.er retiro, EV +501/examen. Riesgo chico en cuentas grandes = lentas (50K T con 200 USD: 125 días a pasar). Cartera 24 m con 10 evaluaciones: 25K +18,5k (sin ventaja +2,8k), 150K con 900 USD +56k (sin ventaja +4,5k), caja mínima p10 −3,6k a −19k; live en 24 m 34–68 %. Cumplimiento: SOM sin_finde deja posiciones de noche (incumple); reglas distintas por cuenta generan días opuestos en NQ (cobertura prohibida); T/R/Z de un producto comercial: riesgo de coordinación entre usuarios.
+  - Dónde: NQ/MNQ, LucidFlex 25K–150K
+  - Siguiente: Decisión de Nico: tamaño, riesgo por operación y cantidad de evaluaciones; forward de la canasta antes de escalar; SOM sólo como SOMEOD.
+  - Evidencia: `docs/research/lucid_guia_20261119/RESULTADO.md`, `docs/research/lucid_guia_20261119/CUMPLIMIENTO.md`, `docs/research/lucid_guia_20261119/LUCID_GUIA.json`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)

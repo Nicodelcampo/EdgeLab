@@ -1361,3 +1361,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** pureza del día → continuación al día siguiente: dosis-respuesta inversa (−0,037 R por banda, p 0,997; banda superior −0,196).
   Acta: `docs/research/selectividad_20261119/RESULTADO.md`.
 - **NO MEDIDO:** REP (sin nominadas); el fade de días limpios (no pre-registrado).
+
+## 2026-11-19 — LUCID-GUIA (cuatro tamaños, tiempos, cartera con 5 fondeadas, cumplimiento)
+- **MEDIDO:** EV por examen y tiempos (pasar, quemar, primer retiro) en 25K–150K para T, T+R, T+R+ZB y T+R+ZB+SOMEOD; cartera de 24 meses con
+  los límites de Lucid y el cierre al pasar a live; días con direcciones opuestas entre reglas (cobertura). Actas:
+  `docs/research/lucid_guia_20261119/RESULTADO.md` y `CUMPLIMIENTO.md`.
+- **NO MEDIDO:** valor de la cuenta live; consistencia de 40 %; solapamiento horario de las operaciones opuestas (sin hora de salida);
+  tamaño máximo de la fondeada si escala; coordinación entre usuarios de FundedSync.
