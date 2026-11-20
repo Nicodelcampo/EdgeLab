@@ -19,7 +19,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/autopilot` | 16 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
-| `docs/cartera` | 1 |
+| `docs/cartera` | 2 |
 | `docs/data_catalog` | 11 |
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
