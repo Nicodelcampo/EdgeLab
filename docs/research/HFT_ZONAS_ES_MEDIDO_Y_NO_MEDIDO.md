@@ -1411,3 +1411,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** fábrica, cinco índices, meses HOLDOUT 2018-01 → 2026-09: n 1.871, +0,027 R (p 0,23; Fisher 0,057) → NO_CONCLUYENTE.
   Acta: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`.
 - **NO MEDIDO:** terminal desde 2026-10-01 (sellado); forward.
+
+## 2026-11-20 — A20 en NQ: holdout A5 no limpio
+- **MEDIDO:** desglose descriptivo por bloque A5 de la fábrica en NQ 2018–2026-09 (DESC +0,080, REP −0,038, HOLDOUT +0,128). No es un holdout:
+  esos meses ya los usó A20-REGIMEN. Nota: `docs/research/a20_regimen_20261119/NOTA_HOLDOUT_A5.md`.
+- **NO MEDIDO:** forward de A20 (única confirmación limpia).
