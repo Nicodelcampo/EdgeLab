@@ -902,6 +902,7 @@ def run_c(
     lows = s.low
     closes = s.close
     ts_ns = s.ts_ns
+    hhmmss_ct = s.hhmmss_ct
     hhmmss_et = s.hhmmss_et
     cal_date_et = s.cal_date_et
     hhmmss_ct = s.hhmmss_ct
@@ -1248,6 +1249,7 @@ def run_v(
     closes = s.close
     volumes = s.volume
     ts_ns = s.ts_ns
+    hhmmss_ct = s.hhmmss_ct
     hhmmss_et = s.hhmmss_et
     is_new_sess = s.is_new_session
     tick = ms.tick_size
@@ -1376,7 +1378,8 @@ def run_v(
         # 5) Entrada Long
         if daily_atr <= 0.0 or trades_today >= cfg.maximum_trades_per_day:
             continue
-        if cfg.block_entry_hour_enabled and (t_et // 10000) == cfg.blocked_entry_hour:
+        # IL mod_V.txt IL_0134-0152: V_BlockedEntryHour usa Times[6][0].Hour (hora plataforma CT, NO V_1 ET)
+        if cfg.block_entry_hour_enabled and (int(hhmmss_ct[i]) // 10000) == cfg.blocked_entry_hour:
             continue
         if t_et < cfg.earliest_entry_eastern or t_et > cfg.latest_entry_eastern:
             continue
