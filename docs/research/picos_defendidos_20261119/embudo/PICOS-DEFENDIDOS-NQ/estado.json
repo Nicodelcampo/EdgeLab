@@ -1,5 +1,5 @@
 {
- "etapa": "ATRAS",
+ "etapa": "CONTEO",
  "fase": "PENDIENTE",
  "historial": [
   {
@@ -38,6 +38,22 @@
   {
    "ts": 1795121900.2562945,
    "etapa": "OOS",
+   "fin": true
+  },
+  {
+   "ts": 1795122200.2590456,
+   "etapa": "ATRAS",
+   "fin": true,
+   "nota": "sin período hacia atrás declarado"
+  },
+  {
+   "ts": 1795130177.405925,
+   "etapa": "TOPES",
+   "fin": true
+  },
+  {
+   "ts": 1795130477.6010747,
+   "etapa": "ACTA",
    "fin": true
   }
  ],
@@ -144,7 +160,7 @@
   "ts": 1795117473.8097858,
   "desde": "PREFLIGHT"
  },
- "handle": null,
+ "handle": "nicolasbuttaro/embudo-picos-defendidos-nq-holdout-conteo-2026100",
  "fallas": 0,
  "params": {
   "cortes": {
@@ -171,16 +187,117 @@
     0
    ]
   ],
-  "resolucion": {
-   "nivel": 0.010937333410740489,
-   "m": 1
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "acta": {
+   "cid": "PICOS-DEFENDIDOS-NQ",
+   "familia": "PICOS_DEFENDIDOS_NQ",
+   "experimento": "edgelab.research.agente.picos_defendidos",
+   "sensor": "NQ",
+   "ejecucion": "NQ",
+   "regla": {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ],
+    "tope": [
+     "pts",
+     50.0
+    ],
+    "puntaje": 1.038314037127757,
+    "peor": -1.0657659574468086
+   },
+   "cortes": {
+    "alej1": [
+     3.171875
+    ],
+    "cerca": [
+     0.6345609065155807
+    ],
+    "alej2": [
+     2.3282275711159737
+    ]
+   },
+   "holdout_desde": 20261001,
+   "n_fijo": 150,
+   "alfa": 0.003607974489558189,
+   "registrada": 1795130477.5950632,
+   "reserva_lord": {
+    "familia": "PICOS_DEFENDIDOS_NQ",
+    "reserva_id": "PICOS-DEFENDIDOS-NQ/holdout",
+    "t": 2,
+    "nivel": 0.003607974489558189,
+    "resuelta": false
+   },
+   "multiplicidad": {
+    "linaje": {
+     "familia": "PICOS_DEFENDIDOS_NQ",
+     "declarada": true,
+     "padres": [
+      "DOBLE_RETROCESO_NQ"
+     ],
+     "propias": 0,
+     "bruto_heredado": 968985,
+     "n_heredado": 968985,
+     "total": 968985,
+     "justificacion": "Comparte con DOBLE_RETROCESO_NQ la población «acercamiento al nivel sin tomarlo» con la lectura opuesta (hacia y a través del nivel); IPC-NIVEL-MES citado como evidencia previa en contra (sin familia en el contador). docs/research/agente/PICOS_DEFENDIDOS_20261119.md",
+     "metodo_n": "bruto",
+     "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+     "como": "informacion"
+    },
+    "total": 968985,
+    "linaje_como": "informacion",
+    "metodo_n": "bruto",
+    "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+    "via": "nominada_fdr",
+    "q_linaje": 0.00017252145586484544,
+    "recorte": {
+     "t": 3.2906673652085683,
+     "t_ajustado": 0.0,
+     "p_ajustada": 1.0,
+     "conservado": 0.0,
+     "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+    },
+    "efecto_esperado": 0.0,
+    "potencia_holdout": 0.0
+   },
+   "regimen": {
+    "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+    "actual_desde": 20250805,
+    "fraccion_efecto": 0.5,
+    "potencia_min": 0.8
+   },
+   "oos": [
+    "NO_CONCLUYENTE"
+   ],
+   "atras": [],
+   "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
+   "plan_holdout": {
+    "n_fijo": 150,
+    "n_necesario": 15,
+    "potencia": 1.0,
+    "efecto": 0.04108158688478352,
+    "sd_op": 0.044795996627568786,
+    "fuente": "fracción del DESC",
+    "nivel": 0.003607974489558189
+   }
   }
  },
  "periodo": [
-  20260401,
-  20260930
+  20261001,
+  20261118
  ],
- "lanzada": 1795121599.0651934,
+ "lanzada": 1795130784.747024,
  "cortes": {
   "alej1": [
    3.171875
@@ -1042,5 +1159,136 @@
     "mismo_regimen": true
    }
   ]
- }
+ },
+ "regla": {
+  "celda": [
+   1,
+   0,
+   0,
+   0,
+   1,
+   3,
+   0,
+   7,
+   0
+  ],
+  "tope": [
+   "pts",
+   50.0
+  ],
+  "puntaje": 1.038314037127757,
+  "peor": -1.0657659574468086
+ },
+ "plan_holdout": {
+  "n_fijo": 150,
+  "n_necesario": 15,
+  "potencia": 1.0,
+  "efecto": 0.04108158688478352,
+  "sd_op": 0.044795996627568786,
+  "fuente": "fracción del DESC",
+  "nivel": 0.003607974489558189
+ },
+ "acta": {
+  "cid": "PICOS-DEFENDIDOS-NQ",
+  "familia": "PICOS_DEFENDIDOS_NQ",
+  "experimento": "edgelab.research.agente.picos_defendidos",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "regla": {
+   "celda": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    3,
+    0,
+    7,
+    0
+   ],
+   "tope": [
+    "pts",
+    50.0
+   ],
+   "puntaje": 1.038314037127757,
+   "peor": -1.0657659574468086
+  },
+  "cortes": {
+   "alej1": [
+    3.171875
+   ],
+   "cerca": [
+    0.6345609065155807
+   ],
+   "alej2": [
+    2.3282275711159737
+   ]
+  },
+  "holdout_desde": 20261001,
+  "n_fijo": 150,
+  "alfa": 0.003607974489558189,
+  "registrada": 1795130477.5950632,
+  "reserva_lord": {
+   "familia": "PICOS_DEFENDIDOS_NQ",
+   "reserva_id": "PICOS-DEFENDIDOS-NQ/holdout",
+   "t": 2,
+   "nivel": 0.003607974489558189,
+   "resuelta": false
+  },
+  "multiplicidad": {
+   "linaje": {
+    "familia": "PICOS_DEFENDIDOS_NQ",
+    "declarada": true,
+    "padres": [
+     "DOBLE_RETROCESO_NQ"
+    ],
+    "propias": 0,
+    "bruto_heredado": 968985,
+    "n_heredado": 968985,
+    "total": 968985,
+    "justificacion": "Comparte con DOBLE_RETROCESO_NQ la población «acercamiento al nivel sin tomarlo» con la lectura opuesta (hacia y a través del nivel); IPC-NIVEL-MES citado como evidencia previa en contra (sin familia en el contador). docs/research/agente/PICOS_DEFENDIDOS_20261119.md",
+    "metodo_n": "bruto",
+    "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+    "como": "informacion"
+   },
+   "total": 968985,
+   "linaje_como": "informacion",
+   "metodo_n": "bruto",
+   "aviso_n": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "nota": "información (Harvey-Liu, efecto esperado, potencia): la decisión es el paso de LORD++ en datos nuevos",
+   "via": "nominada_fdr",
+   "q_linaje": 0.00017252145586484544,
+   "recorte": {
+    "t": 3.2906673652085683,
+    "t_ajustado": 0.0,
+    "p_ajustada": 1.0,
+    "conservado": 0.0,
+    "metodo": "Harvey-Liu, Bonferroni sobre N_eff"
+   },
+   "efecto_esperado": 0.0,
+   "potencia_holdout": 0.0
+  },
+  "regimen": {
+   "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+   "actual_desde": 20250805,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "oos": [
+   "NO_CONCLUYENTE"
+  ],
+  "atras": [],
+  "decision": "primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA",
+  "plan_holdout": {
+   "n_fijo": 150,
+   "n_necesario": 15,
+   "potencia": 1.0,
+   "efecto": 0.04108158688478352,
+   "sd_op": 0.044795996627568786,
+   "fuente": "fracción del DESC",
+   "nivel": 0.003607974489558189
+  }
+ },
+ "ultimo_conteo": 1795131086.1058588,
+ "n_holdout": 16
 }
