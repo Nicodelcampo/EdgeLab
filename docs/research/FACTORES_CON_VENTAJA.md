@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (36)
+## PISTA_VIVA (37)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,6 +24,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ M1 de NT8, holdout terminal
   - Siguiente: Apertura gastada; sólo forward. Antes de combinarla con T/R/Z, medir la correlación de la canasta (A20 cubre la beta larga de las otras). En una cuenta prop, los meses fuertes al alza son su riesgo.
   - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO_HOLDOUT_TERMINAL_A20.md`, `docs/research/filtros_contexto_20261120/A20_TERMINAL.json`
+- **Correlación y canasta de las fábricas A20, T, R, Z-banda y RQ5 (1 R por operación)** (`F-CANASTA-T-R-Z-RQ5-DIVERSIFICA`, 2026-11-20, humano)
+  - Efecto: Mensual: T, R, Z-banda y RQ5 entre −0,05 y 0,27 entre sí. A20 −0,51 con NQ pero +0,25 a +0,38 con las demás. T+R+ZB+RQ5 NQ: +4,98 R/mes, t 5,17, 71 % meses +, caída máx. −23 R. Sumar A20: +5,58 R/mes, t 3,0, caída −90 R (desde 2022: −14 → −36).
+  - Dónde: NQ (y RQ5 en ES/YM/RTY), DESC+REP de A5 2018-01 → 2025-07
+  - Siguiente: Forward de la canasta T+R+ZB+RQ5 NQ; A20 sólo con tamaño reducido (no medido) o fuera. Estrategias NT8 en nt8/strategies (paridad pendiente).
+  - Evidencia: `docs/research/canasta_correlacion_20261120/RESULTADO.md`, `docs/research/canasta_correlacion_20261120/RESULTADO.json`
 - **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
   - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
   - Dónde: NQ (principal), ES

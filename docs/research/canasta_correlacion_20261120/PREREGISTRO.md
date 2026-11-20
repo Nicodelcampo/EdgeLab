@@ -17,7 +17,7 @@ Antecedentes:
 
 Lectura previa: LEER_ANTES_DE_CADA_CORRIDA v4 — §0–§7 (K36 escalas: todo en R; K52 tamaño fijo de 1 R por operación; K56 episodios).
 
-Potencia previa: no aplica a una prueba. Es una descripción de 91 meses (DESC + REP, 2018-01 → 2025-07) con entre 170 y 3.860 operaciones
+Potencia previa: no aplica a una prueba. Es una descripción de los meses DESC y REP de 2018-01 → 2025-07 con entre 170 y 3.860 operaciones
 por estrategia. Se publica el t mensual de la canasta. No se abre holdout ni se decide tamaño con esto.
 
 Diagnóstico de mecanismo: no aplica (sin grilla). Las reglas son las fábricas ya congeladas. Se publican los episodios: el peor mes, la

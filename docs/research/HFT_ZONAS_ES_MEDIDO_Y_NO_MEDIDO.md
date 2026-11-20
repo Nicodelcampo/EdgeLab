@@ -1433,3 +1433,14 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - la correlación de A20 con T, R y Z y la canasta conjunta;
   - el forward de A20.
+
+## 2026-11-20 — CANASTA-CORRELACION (A20, T, R, Z-banda, RQ5)
+- **MEDIDO:**
+  - Correlaciones diarias y mensuales de las fábricas y canastas a 1 R, en DESC + REP 2018-01 → 2025-07.
+  - T + R + Z-banda + RQ5 NQ: t 5,17, caída −23 R.
+  - A20 no cubre.
+  - `docs/research/canasta_correlacion_20261120/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el tamaño reducido de A20;
+  - la canasta en el forward;
+  - la paridad NT8 de las estrategias nuevas.
