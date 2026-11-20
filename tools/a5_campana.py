@@ -23,6 +23,12 @@ ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.p
 from edgelab.research import a5 as A5  # noqa: E402
 
 
+def _calib(cfg):
+    """Instrumentos que se calibran contra ticks (2026-11-19): `instrumentos_calibracion` si la campaña lo declara (p. ej. EMD no tiene ticks en el
+    release), si no todos. Los que no calibran se informan aparte y no votan."""
+    return cfg.get("instrumentos_calibracion") or cfg["instrumentos"]
+
+
 def _cfg(carpeta):
     c = json.loads((Path(carpeta) / "CAMPANA.json").read_text(encoding="utf-8")); c["dir"] = Path(carpeta); return c
 
@@ -55,14 +61,14 @@ def _fric(inst):
 
 def calibrar_m1(carpeta, datos):
     cfg = _cfg(carpeta); out = cfg["dir"] / "calibracion_m1"; out.mkdir(exist_ok=True)
-    for inst in cfg["instrumentos"]:
+    for inst in _calib(cfg):
         for d0, d1 in cfg["calibracion"]:
             ctx = _ctx(inst, datos, d0, d1); assert ctx.get("m1_sintetico"), "el contexto M1 no quedó marcado (K40)"
             T = _tabla(cfg, ctx); T.to_csv(out / f"M1_{inst}_{d0}_{d1}.csv.gz", index=False); print("M1", inst, d0, d1, len(T), flush=True)
 
 
 def lanzar_ticks(carpeta):
-    cfg = _cfg(carpeta); v = [f"{i}:{a}:{b}" for i in cfg["instrumentos"] for a, b in cfg["calibracion"]]
+    cfg = _cfg(carpeta); v = [f"{i}:{a}:{b}" for i in _calib(cfg) for a, b in cfg["calibracion"]]
     subprocess.run([sys.executable, str(ROOT / "tools/tablas.py"), "lanzar", cfg["modulo"], *v], check=True)
 
 
@@ -102,7 +108,7 @@ def insumos_distintos(K: pd.DataFrame, M: pd.DataFrame, defs) -> list:
 def calibracion(carpeta):
     cfg = _cfg(carpeta); res = {}
     defs = list(cfg["definiciones"]) + sorted(set(cfg.get("control", {}).values()))
-    for inst in cfg["instrumentos"]:
+    for inst in _calib(cfg):
         for d0, d1 in cfg["calibracion"]:
             M = pd.read_csv(cfg["dir"] / "calibracion_m1" / f"M1_{inst}_{d0}_{d1}.csv.gz"); dif = insumos_distintos(_ticks(cfg, inst, d0, d1), M, defs)
             if dif: raise SystemExit(f"K54: la tabla de ticks de {inst} no tiene {dif} y el M1 sí (insumo externo ausente en Kaggle): no calibra nada")
@@ -112,7 +118,7 @@ def calibracion(carpeta):
         for e in cfg["ejecuciones"]:
             if pares and (d, e) not in pares and ctrl_ej.get(d) != e: continue
             t, m = {}, {}
-            for inst in cfg["instrumentos"]:
+            for inst in _calib(cfg):
                 for d0, d1 in cfg["calibracion"]:
                     M = pd.read_csv(cfg["dir"] / "calibracion_m1" / f"M1_{inst}_{d0}_{d1}.csv.gz"); K = _ticks(cfg, inst, d0, d1)
                     t.update({(inst, s): v for s, v in _por_sesion(K, d, e).items()}); m.update({(inst, s): v for s, v in _por_sesion(M, d, e).items()})

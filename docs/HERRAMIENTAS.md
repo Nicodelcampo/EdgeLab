@@ -4,11 +4,13 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-713 scripts.
+718 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
 | `tools/_manifiesto_comun.py` | Lógica compartida de los manifiestos de identidad. **Un solo lugar.** |
+| `tools/a20_multiactivo.py` | A20-MULTIACTIVO (2026-11-19): A20 de FundedSync (fábrica + 8 vecinos a un paso) en índices donde nunca se midió (YM, RTY, EMD), con el |
+| `tools/a20_terminal.py` | A20 NQ en el holdout terminal (desde la sesión CME del 2026-10-01), apertura pedida por Nico el 2026-11-20. |
 | `tools/a5_campana.py` | Campaña con la partición HOLDOUT-A5 sobre M1 real de futuros (NT8) para un módulo con el contrato de `edgelab/research/tablas.py`. |
 | `tools/actualizar_y_arrancar_debian_v2.py` | Bootstrap de un solo paso para que el Agente del Debian se actualice a la troncal y arranque en Modo Multi-Agente Espiral v2. |
 | `tools/agentes.py` | Tabla de agentes del Debian (config/autopilot/AGENTES.json): imprime o regenera docs/autopilot/AGENTES.md. |
@@ -162,6 +164,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/campaign_ticks_multi.py` | Campaña multi-instrumento sobre ticks (5 familias x 4 variantes x 5 instrumentos = 100 pruebas). |
 | `tools/campaign_ticks_multi_rerun.py` | Re-corrida CORREGIDA de F3/F4 de la campaña multi-instrumento (bug de apertura RTH, 2026-09-23). |
 | `tools/canasta.py` | Canasta de estrategias de régimen (edgelab/funnel/canasta.py): estado, altas desde el embudo, operaciones forward y retiros. |
+| `tools/canasta_correlacion.py` | CANASTA-CORRELACION (2026-11-20): correlación diaria y mensual entre A20, T, R, Z-banda y RQ5 (fábricas, R neto) y la canasta |
 | `tools/canasta_estatica_ledger.py` | Libro de la canasta estática PREAPERTURA-ES, PREAPERTURA-NQ, DRC-YM-4. |
 | `tools/canasta_global.py` | CANASTA-GLOBAL en tandas paralelas (docs/research/canasta_global_20261108/PREREGISTRO.md). |
 | `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
@@ -287,6 +290,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/falsification_battery.py` | tools/falsification_battery.py |
 | `tools/familias.py` | Índice de FAMILIAS de investigación: un renglón por familia con su linaje, pruebas contadas, campañas, último desenlace del embudo |
 | `tools/filtro_picos_a5.py` | FILTRO-PICOS con la partición A5 (pre-registro docs/research/filtro_picos_20261118/PREREGISTRO.md): análisis PAREADO por gatillo. |
+| `tools/filtros_contexto.py` | FILTROS-CONTEXTO (2026-11-20): ¿algún indicador de contexto diario (VIX, VVIX, GEX, DIX, SKEW, estructura VIX9D/VIX, COT) separa |
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
@@ -615,6 +619,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/review_avzvol_exposed_o5.py` | AVZVOL exposed-export descriptive review, not a market/certification runner. |
 | `tools/review_avzvol_indicator_screen.py` | Reproduce a descriptive screen of already-exposed export labels. |
 | `tools/review_avzvol_o5_robustness.py` | Descriptive robustness of exposed O5, not new endpoints or certified research. |
+| `tools/rq5_regimen.py` | RQ5-REGIMEN: lectura pre-registrada (docs/research/rq5_regimen_20261119/PREREGISTRO.md) sobre OPS_DESC_REP.csv.gz de `a5_campana correr`. |
 | `tools/run_batch_gc_jun26.py` | Batch converter para todas las sesiones de GC JUN26 excepto la sellada 20260618.csv. |
 | `tools/run_campaign.py` | run_campaign.py — runner de campañas de fuerza bruta (F6.4). |
 | `tools/run_edge_factory_census.py` | (sin docstring) |
