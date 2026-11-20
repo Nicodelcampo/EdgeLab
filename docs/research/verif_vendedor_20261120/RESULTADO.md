@@ -74,3 +74,27 @@ terminal. En EdgeLab estos meses ya estaban vistos.
 
 Lectura: en los 13 meses de producto, 13 de 15 módulos son positivos. Sólo R tiene t > 2, y con 13 meses el MDE es grande: un nulo no mata.
 Gráfico por módulo: `MODULOS_POR_SEPARADO.png`.
+
+## Adenda 2: comparación visual con la foto del vendedor (ventana 2022-01 → 2026-03, bruto y neto)
+Gráfico: `BRUTO_NETO_VENTANA_VENDEDOR.png`. La foto del vendedor no tiene unidades, así que se comparan formas y orden, no niveles.
+
+| Módulo | Vendedor | EdgeLab bruto | EdgeLab neto | Lectura |
+|---|---|---|---|---|
+| T | sube parejo, de las más altas | sube parejo | igual | coincide |
+| A20 | volátil, salto en 2022, sube en 2024–26 | igual | igual | coincide |
+| R | sube moderado | sube | igual | coincide (cambia el tamaño) |
+| **W** | **de las mejores, sube fuerte** | **sube fuerte (+16k)** | **≈ 0** | **el vendedor coincide con el bruto: la fricción de 5.236 operaciones se come todo** |
+| **Q** | sube parejo | sube parejo (+5,8k) | plano hasta 2025 | coincide con el bruto |
+| A1 | casi plano, sube al final | sube (+14,5k) | plano/negativo hasta 2025 | entre el bruto y el neto |
+| **S** | **negativa 2022–24, vuelve a ≈ 0** | positiva, salto en 2025 | igual | **NO coincide** |
+| **O** | **positiva desde 2022, de las más altas** | negativa hasta 2024 | igual | **NO coincide** |
+| P | sube fuerte | sube moderado | igual | parcial |
+| Z, E, F | ≈ planas | Z y F suben, E con joroba | igual | escala o tamaño distintos |
+| N | no está en la foto | — | — | — |
+
+**Conclusión:**
+- En W, Q y A1 la curva del vendedor se parece a nuestro **bruto**, es decir sin fricción o con costos de broker barato. Netas de la
+  fricción canónica de una cuenta prop, esas tres no tienen ventaja.
+- S y O difieren en la forma, no sólo en los costos: o nuestra traducción de esos módulos no calca el original, o el vendedor usa otros
+  parámetros o datos.
+- Para resolverlo hace falta la lista de operaciones del producto original de esos módulos.
