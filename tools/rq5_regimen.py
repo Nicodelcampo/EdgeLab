@@ -102,5 +102,46 @@ def main():
     print("P2", res["P2"]); print("P3", res["P3"]); print(res["P1"]["diagnostico"]["linea"]); print(res["P1"]["episodios_fabrica"])
 
 
+
+
+def holdout():
+    """Apertura única del holdout A5 (ADENDA_APERTURA_HOLDOUT.md; registrada en HOLDOUT_VENTANAS antes de calcular): regla congelada = fábrica,
+    meses HOLDOUT 2018-01-01 → 2026-09-30, cinco índices. -> HOLDOUT.json"""
+    import edgelab.research.rq5_regimen as M
+    from edgelab.research import a5 as A5, ejecucion as X, rasgos_comunes as RC
+    from edgelab.research import holdout_ventanas as HV
+    from edgelab import costos as C
+    from edgelab.research.embudo_runners import friccion
+    from edgelab.research.diagnostico_grilla import episodios
+    from a5_campana import _ctx
+    from math import log
+    from statistics import NormalDist
+    if not HV.aperturas_vigentes("RQ5_REGIMEN"): raise SystemExit("sin apertura registrada: no se calcula el holdout")
+    ej = [e for e in M.EJECUCIONES if X.nombre(e).endswith(f"_{M.EJ_FABRICA}_fin") and f"obj_{M.EJ_FABRICA}" in X.nombre(e)]
+    en = X.nombre(ej[0]); partes = []
+    with C.estimados_permitidos(PRE):
+        fr = {i: float(friccion(i)[0]) for i in ("NQ", "ES", "YM", "RTY", "EMD")}
+    for inst in fr:
+        ctx = _ctx(inst, None, 20170901, 20260930); E = M.eventos(ctx); k = E.k.to_numpy(np.int64)
+        E["ses"] = np.asarray(ctx["ses"])[k]; E["t"] = np.asarray(ctx["t"], float)[k]; E["bloque"] = A5.bloques(E.ses.to_numpy())
+        E = E[E[M.DEF_FABRICA].astype(bool) & (E.bloque == "HOLDOUT") & (E.ses >= 20180101) & (E.ses <= 20260930)].reset_index(drop=True)
+        O = X.desenlaces(RC.agregar(E, ctx), ctx, ej); O["inst"] = inst; partes.append(O)
+    O = pd.concat(partes, ignore_index=True); O = O[O[f"r_{en}"].notna() & (O[f"k_{en}"] > 0)]
+    O["R"] = O[f"r_{en}"] - O.inst.map(fr) / O[f"k_{en}"]; O["mes"] = pd.to_datetime(O.ses.astype(str)).dt.to_period("M").astype(str)
+    O[["ses", "t", "inst", "lado", "R", f"r_{en}", f"k_{en}"]].to_csv(DIR / "HOLDOUT_OPS.csv.gz", index=False)
+    p = _p_boot(O); pdev = 0.0445
+    chi = -2 * (log(max(p, 1e-6)) + log(pdev))                       # Fisher, 4 g.l.: P(χ²₄ > x) = e^(−x/2)(1 + x/2)
+    pf = float(np.exp(-chi / 2) * (1 + chi / 2))
+    sd = float(O.R.std()); mde = 2.486 * sd / np.sqrt(len(O))
+    res = dict(n=int(len(O)), R=float(O.R.mean()), sd=sd, p=p, p_desarrollo=pdev, p_fisher=pf, mde80=float(mde),
+               por_inst={i: dict(n=int((O.inst == i).sum()), R=float(O[O.inst == i].R.mean()), p=_p_boot(O[O.inst == i])) for i in fr},
+               cuatro_votantes=dict(n=int(O.inst.isin(VOTAN).sum()), R=float(O[O.inst.isin(VOTAN)].R.mean()), p=_p_boot(O[O.inst.isin(VOTAN)])),
+               tramo_2025_09_2026_09=dict(n=int((O.ses >= 20250901).sum()), R=float(O[O.ses >= 20250901].R.mean()) if (O.ses >= 20250901).any() else None),
+               episodios=episodios(O, "R", "mes")["linea"])
+    m = O.groupby("mes").R.sum(); res["mensual"] = dict(meses=int(m.size), R_mes=float(m.mean()), pos=float((m > 0).mean()))
+    res["lectura"] = ("CONFIRMA" if p < 0.05 else "APOYA" if pf < 0.05 else "NO_CONCLUYENTE" if res["R"] > 0 else "EN_CONTRA")
+    (DIR / "HOLDOUT.json").write_text(json.dumps(res, indent=1, default=float) + "\n"); print(json.dumps(res, indent=1, default=float))
+
+
 if __name__ == "__main__":
-    main()
+    holdout() if sys.argv[1:] == ["holdout"] else main()
