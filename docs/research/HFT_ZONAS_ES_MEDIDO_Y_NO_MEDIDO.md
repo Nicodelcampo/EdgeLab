@@ -1424,3 +1424,12 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - el put/call de CBOE (la serie local termina en 2019);
   - el COT de YM y RTY;
   - R y Z-banda con potencia (MDE 0,6–1,0 R).
+
+## 2026-11-20 — A20 NQ, holdout terminal (apertura pedida por Nico)
+- **MEDIDO:**
+  - Fábrica en las sesiones del 2026-10-01 al 2026-11-16: n 29, +1,10 R/op, p 0,072, potencia 0,08 → NO_CONCLUYENTE.
+  - A20 es sólo corta. Su R mensual depende del retorno de NQ (−1 R por cada 1 %), con un intercepto positivo (descriptivo).
+  - `docs/research/filtros_contexto_20261120/RESULTADO_HOLDOUT_TERMINAL_A20.md`.
+- **NO MEDIDO:**
+  - la correlación de A20 con T, R y Z y la canasta conjunta;
+  - el forward de A20.

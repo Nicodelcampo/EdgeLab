@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (35)
+## PISTA_VIVA (36)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/ES/YM/RTY/EMD M1, meses HOLDOUT A5
   - Siguiente: Apertura usada. Sólo forward (≈ 103 meses con el efecto encogido; ≈ 26 con el de desarrollo). Decide Nico si entra al forward o a una canasta.
   - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`, `docs/research/rq5_regimen_20261119/HOLDOUT.json`
+- **A20 NQ fábrica (sólo cortos) en el holdout terminal 2026-10-01 → 2026-11-16 y su beta corta** (`F-A20-SOLO-CORTA-HOLDOUT-TERMINAL`, 2026-11-20, humano)
+  - Efecto: Holdout: n 29, +1,10 R/op (+31,9 R), p 0,072, potencia 0,08 → NO_CONCLUYENTE; 2 operaciones dan casi todo y NQ cayó 11 %. A20 es 100 % corta. Regresión mensual descriptiva (2018–2026-09): ≈ +3 R/mes con NQ plano (t 3,5) y −1 R por cada 1 % de NQ (t −7); desde 2022, +5 R/mes (t 5,2) y +3,7 R/mes aunque NQ subió 1,3 %/mes.
+  - Dónde: NQ M1 de NT8, holdout terminal
+  - Siguiente: Apertura gastada; sólo forward. Antes de combinarla con T/R/Z, medir la correlación de la canasta (A20 cubre la beta larga de las otras). En una cuenta prop, los meses fuertes al alza son su riesgo.
+  - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO_HOLDOUT_TERMINAL_A20.md`, `docs/research/filtros_contexto_20261120/A20_TERMINAL.json`
 - **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
   - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
   - Dónde: NQ (principal), ES
