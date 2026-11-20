@@ -19,6 +19,8 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+import pandas as pd
+
 from edgelab.funnel.secuencial import MonitorCandidato
 from edgelab.research import holdout_ventanas as HV
 
@@ -105,7 +107,14 @@ class Cartera:
             raise ValueError("ALTA rechazada: cotas estructurales, desvío y efecto útil positivos, declarados antes")
         pb = HV.problemas(f.familia, f.desde, f.cid, self.libro_ventanas, estadistico="e_proceso")
         if pb: raise ValueError(f"ALTA rechazada por el libro de ventanas: {pb}")
-        HV.registrar_apertura(f.familia, f.cid, f.desde, 0, self.libro_ventanas)
+        ses = pd.to_datetime(pd.Series(sorted({str(int(s)) for s, _ in f.ops_desarrollo}), dtype=str), format="%Y%m%d", errors="coerce").dropna()
+        meses = max(1.0, (ses.iloc[-1] - ses.iloc[0]).days / 30.44) if len(ses) else 0
+        plan = HV.plan_potencia("e_proceso", f.mu_util, f.sd_desarrollo, ops_por_mes=(len(f.ops_desarrollo) / meses) if meses else None,
+                                fuente_efecto="mu_util de la ficha; frecuencia de ops_desarrollo")
+        # K27: en la cartera la unidad que decide es la canasta (las fichas se evalúan agregadas por sesión): el plan de la ficha se
+        # registra como AVISO, no frena el alta. La compuerta dura vale para las aperturas de familias (holdout_ventanas.registrar_apertura).
+        plan = dict(plan, tipo="e_proceso_ficha", avisos=plan["problemas"], problemas=[])
+        HV.registrar_apertura(f.familia, f.cid, f.desde, 0, self.libro_ventanas, plan=plan)
         f.monitor(self.reglas["alfa_real"], self.reglas["alfa_futilidad"])            # valida las cotas
         f.alta_ts, f.estado = self.ahora(), "ACTIVA"
         if f.confirmada_por_embudo: f.nivel = "REAL"

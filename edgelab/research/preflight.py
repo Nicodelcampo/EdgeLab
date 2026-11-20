@@ -178,3 +178,67 @@ def certificar_causalidad(modulo: str, guardar: bool = True) -> list:
         cert[modulo] = dict(huella=huella, ok=not err, errores=err[:3], ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
         CERTIFICADOS.write_text(json.dumps(cert, indent=1, ensure_ascii=False, sort_keys=True), encoding="utf-8")
     return err
+
+
+# ----------------------------------------------------------------------------------------------------------------- pre-registro (K32)
+def north_star_sha256(repo: Path | None = None) -> str:
+    """sha256 del cuerpo de docs/NORTH_STAR.md hasta el marcador (la misma cuenta que tests/test_north_star_hash.py)."""
+    import hashlib
+    repo = ROOT if repo is None else Path(repo)
+    raw = (repo / "docs/NORTH_STAR.md").read_bytes()
+    return hashlib.sha256(raw.split(b"<!-- SHA256-BODY-ABOVE -->", 1)[0].replace(b"\r\n", b"\n")).hexdigest()
+
+
+REQUISITOS_PREREGISTRO = (      # (descripción, regex sobre el texto, de dónde sale la regla)
+    ("encabezado «Estado:»", r"^Estado:", "DOCUMENTATION_PROTOCOL"),
+    ("justificación económica", r"justificaci[oó]n econ[oó]mica", "CLAUDE.md, rituales"),
+    ("cómo podría refutarse", r"c[oó]mo podr[ií]a refutarse", "CLAUDE.md, rituales"),
+    ("etapa EF del embudo", r"\bEF[2-5]\b", "CLAUDE.md, contador global"),
+    ("línea «Antecedentes:» (tools/antecedentes.py)", r"^Antecedentes:", "CLAUDE.md, reutilizar antes de construir (C1/K26)"),
+    ("línea «Potencia previa:» (tools/potencia_previa.py)", r"Potencia previa:", "K27–K30"),
+)
+
+
+LECTURA_PREVIA_RX = r"^Lectura previa:.*LEER_ANTES_DE_CADA_CORRIDA v\d+"
+DIAGNOSTICO_RX = r"^Diagn[oó]stico de mecanismo:"      # K55/K56 (2026-11-19): ver edgelab/research/diagnostico_grilla.py
+
+
+def _sin_diagnostico(repo: Path) -> set:
+    """Pre-registros anteriores a K55/K56 (2026-11-19): exentos sólo de «Diagnóstico de mecanismo:». Lista cerrada; no se agrega nada."""
+    f = Path(repo) / "config/preregistros_sin_diagnostico.json"
+    return set(json.loads(f.read_text(encoding="utf-8"))) if f.exists() else set()
+
+
+def _sin_lectura_previa(repo: Path) -> set:
+    """Pre-registros anteriores al índice obligatorio (2026-11-18): exentos sólo de «Lectura previa:». Lista cerrada; no se agrega nada."""
+    f = Path(repo) / "config/preregistros_sin_lectura_previa.json"
+    return set(json.loads(f.read_text(encoding="utf-8"))) if f.exists() else set()
+
+
+def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = True) -> list:
+    """K32 (Nico, 2026-11-17: «salteártela demuestra que hay que cambiarlo: tiene que usarse todo EdgeLab, y bien»): lo que CLAUDE.md
+    pide de un pre-registro, verificado en código. Vacío = válido. Lo usan `tools/registro_global.py preregistrado` (antes de contar
+    pruebas) y el test del contador global (toda fila nueva fuera de la maquinaria estándar)."""
+    import subprocess
+    repo = ROOT if repo is None else Path(repo)
+    p = Path(path); p = p if p.is_absolute() else repo / p
+    if not p.exists(): return [f"el pre-registro {path} no existe"]
+    t = p.read_text(encoding="utf-8", errors="ignore"); e = []
+    if north_star_sha256(repo) not in t: e.append("no cita el sha256 vigente de docs/NORTH_STAR.md")
+    for desc, rx, fuente in REQUISITOS_PREREGISTRO:
+        if not re.search(rx, t, re.M | re.I): e.append(f"falta {desc} ({fuente})")
+    try: rel_p = p.relative_to(repo).as_posix()
+    except ValueError: rel_p = p.as_posix()
+    if rel_p not in _sin_lectura_previa(repo) and not re.search(LECTURA_PREVIA_RX, t, re.M):
+        e.append("falta la línea «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …» (docs/research/LEER_ANTES_DE_CADA_CORRIDA.md, "
+                 "Nico 2026-11-18)")
+    if rel_p not in _sin_diagnostico(repo) and not re.search(DIAGNOSTICO_RX, t, re.M):
+        e.append("falta la línea «Diagnóstico de mecanismo: …» (K55/K56): qué mueve cada perilla y cómo se va a leer la grilla con "
+                 "edgelab.research.diagnostico_grilla (operaciones por celda, número efectivo de variantes, episodios), o «no aplica — motivo»")
+    if exigir_commit:
+        rel = str(p.relative_to(repo))
+        if not subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=repo, capture_output=True, text=True).stdout.strip():
+            e.append("no está committeado (se escribe y committea ANTES de contar y correr)")
+        elif subprocess.run(["git", "diff", "--quiet", "HEAD", "--", rel], cwd=repo).returncode:
+            e.append("tiene cambios sin commitear: lo que se registra tiene que ser lo committeado")
+    return e

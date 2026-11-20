@@ -1,0 +1,75 @@
+{
+ "id": "LIT-TSMOM_NULO_XAUUSD_M1_dukas_H1_s1_D1_202611142223",
+ "proyecto": "EL LIT-TSMOM_NULO_XAUUSD_M1_dukas_H1_s1_D1_202611142223",
+ "idea": "LIT-TSMOM",
+ "base": "Builder",
+ "plantilla": "TrendFollowing",
+ "simbolo": "NULO_XAUUSD_M1_dukas_H1_s1",
+ "instrumento": "XAUUSD_dukascopy",
+ "timeframe": "D1",
+ "build": {
+  "desde": "2012.01.20",
+  "hasta": "2019.12.31",
+  "oos_desde": "2017.01.01"
+ },
+ "tope_datos": "2026.09.29",
+ "servidor": {
+  "name": "StrategyQuant X",
+  "version": "1.0.0"
+ },
+ "datos": {
+  "rango": [
+   "2012-01-02",
+   "2019-12-31"
+  ],
+  "filas": 47984
+ },
+ "costos": {
+  "spread": 361,
+  "swap": "<Swap use=\"true\" type=\"points\" long=\"-460.53\" short=\"247.5\" tripleSwapOn=\"NEVER\" rolloutHour=\"23:00\"/>",
+  "comision": "<Method type=\"SizeBased\" use=\"true\"><Params><Param key=\"Commission\" className=\"SizeBased\">0.00</Param></Params></Method>"
+ },
+ "diseno": {
+  "max_condiciones": 3,
+  "max_salidas": 2,
+  "max_periodo": 200,
+  "sl_atr": [
+   2.0,
+   5.0
+  ],
+  "pt_atr": [
+   2.0,
+   8.0
+  ],
+  "atr_periodo": [
+   14,
+   50
+  ]
+ },
+ "riesgo_usd": 1000.0,
+ "config_build": "<WhatToBuild>\r\n  <StrategyType type=\"simple\" additionalCharts=\"1\" templateFile=\"SQ3StrategyTemplateExample.sq4\" improveType=\"strategy\" strategyFile=\"C:\\Users\\tnickel\\Google Drive\\SQ tnickel private\\EA�s von SQ\\bei Thomas Installiert\\i7_JfdBrokerLife02\\P01 EURUSD M15 37.21.str\" architecture=\"sq4\" minTrue=\"40\" maxTrue=\"90\" />\r\n  <RulesComplexity useDifferentSettings=\"false\">\r\n    <Chart name=\"Main chart\" minConditions=\"1\" maxConditions=\"3\" minExitConditions=\"1\" maxExitConditions=\"2\" minPeriod=\"15\" maxPeriod=\"200\" minShift=\"1\" maxShift=\"3\" />\r\n  </RulesComplexity>\r\n  <MarketSides type=\"both\">\r\n    <EntrySymmetry>true</EntrySymmetry>\r\n    <ExitSymmetry>true</ExitSymmetry>\r\n  </MarketSides>\r\n  <SLPTOptions>\r\n    <SLRequired>true</SLRequired>\r\n    <SLFixedPips>false</SLFixedPips>\r\n    <MinSLInPips>40</MinSLInPips>\r\n    <MaxSLInPips>200</MaxSLInPips>\r\n    <MinSLInMoney>40</MinSLInMoney>\r\n    <MaxSLInMoney>200</MaxSLInMoney>\r\n    <SLATR>true</SLATR>\r\n    <MinSLATRMultiple>2.0</MinSLATRMultiple>\r\n    <MaxSLATRMultiple>5.0</MaxSLATRMultiple>\r\n    <MinSLATRPeriod>14</MinSLATRPeriod>\r\n    <MaxSLATRPeriod>50</MaxSLATRPeriod>\r\n    <PTRequired>true</PTRequired>\r\n    <SeparatedSettings>false</SeparatedSettings>\r\n    <PTFixedPips>false</PTFixedPips>\r\n    <MinPTInPips>1</MinPTInPips>\r\n    <MaxPTInPips>10</MaxPTInPips>\r\n    <MinPTInMoney>1</MinPTInMoney>\r\n    <MaxPTInMoney>10</MaxPTInMoney>\r\n    <PTATR>true</PTATR>\r\n    <MinPTATRMultiple>2.0</MinPTATRMultiple>\r\n    <MaxPTATRMultiple>8.0</MaxPTATRMultiple>\r\n    <MinPTATRPeriod>14</MinPTATRPeriod>\r\n    <MaxPTATRPeriod>50</MaxPTATRPeriod>\r\n    <LimitSLPTRRR>false</LimitSLPTRRR>\r\n    <LimitSLPTRRRFrom>50</LimitSLPTRRRFrom>\r\n    <LimitSLPTRRRTo>80</LimitSLPTRRRTo>\r\n    <SLValueType>pips</SLValueType>\r\n    <PTValueType>pips</PTValueType>\r\n  </SLPTOptions>\r\n  <BuildMode generationType=\"random-generation\">\r\n    <PopulationSize>50</PopulationSize>\r\n    <MaxGenerations>10</MaxGenerations>\r\n    <CrossoverProbability>50</CrossoverProbability>\r\n    <MutationProbability>20</MutationProbability>\r\n    <ShowAdvancedGeneticSettings>false</ShowAdvancedGeneticSettings>\r\n    <Islands>5</Islands>\r\n    <MigrationModulo>50</MigrationModulo>\r\n    <MigrationRate>20</MigrationRate>\r\n    <ShowLastGenerationDatabank>false</ShowLastGenerationDatabank>\r\n    <InitGenerationType>1</InitGenerationType>\r\n    <DecimationCoef>1</DecimationCoef>\r\n    <Conditions>\r\n      <Condition use=\"true\">\r\n        <Left-Side valueType=\"column\">\r\n          <Column-Value column=\"NumberOfTrades\" columnType=\"0\" name=\"# of trades\" dataType=\"Integer\" direction=\"0\" sampleType=\"127\" resultType=\"main\" chartSetup=\"10\" chartSetupValue=\"1\" confidenceLevel=\"null\" plType=\"10\" class=\"NumberOfTrades\" />\r\n        </Left-Side>\r\n        <Comparator value=\"&gt;\" />\r\n        <Right-Side valueType=\"numeric\">\r\n          <Numeric-Value value=\"100\" />\r\n        </Right-Side>\r\n      </Condition>\r\n      <Condition use=\"false\">\r\n        <Left-Side valueType=\"column\">\r\n          <Column-Value column=\"NetProfit\" columnType=\"0\" name=\"Net profit\" dataType=\"Decimal2PL\" direction=\"0\" sampleType=\"10\" resultType=\"main\" chartSetup=\"10\" chartSetupValue=\"1\" confidenceLevel=\"null\" plType=\"10\" class=\"NetProfit\" />\r\n        </Left-Side>\r\n        <Comparator value=\"&gt;\" />\r\n        <Right-Side valueType=\"numeric\">\r\n          <Numeric-Value value=\"-5000\" />\r\n        </Right-Side>\r\n      </Condition>\r\n    </Conditions>\r\n    <EvoRestartOnFinish status=\"true\" />\r\n    <EvoRestartOnStagnation status=\"true\" fitnessType=\"0\" generations=\"5\" />\r\n  </BuildMode>\r\n</WhatToBuild>",
+ "nulo_de": null,
+ "es_nulo": true,
+ "creado": "2026-11-14T22:24:37.525140Z",
+ "estado": "TERMINADA",
+ "lanzada": "2026-11-15T02:18:42.398673Z",
+ "ultimo_estado": {
+  "jobsRunning": 1,
+  "acceptedStrategiesPerHour": 443.5839552153376,
+  "runningTimeSeconds": 7209,
+  "strategiesPassed": 0,
+  "estimatedSecondsToFinish": 0,
+  "project": "EL LIT-TSMOM_NULO_XAUUSD_M1_dukas_H1_s1_D1_202611142223",
+  "strategiesAccepted": 888,
+  "strategiesGenerated": 13258,
+  "strategiesPerHour": 6622.788376401966,
+  "running": false,
+  "strategiesRejected": 12369,
+  "jobsWaiting": 15,
+  "backtestsPerformed": 541164,
+  "jobsDone": 13258,
+  "strategiesFailed": 0,
+  "status": "Stopped",
+  "statusCode": 4
+ }
+}

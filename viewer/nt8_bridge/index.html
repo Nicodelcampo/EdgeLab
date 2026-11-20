@@ -999,6 +999,22 @@
       <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Caja = zona de agotamiento (roja: agotamiento arriba → venta; verde: abajo → compra). Línea violeta = último extremo participante; ● violeta = barrido. Línea negra = tramo de reversión confirmada; ● negro = entrada (apertura siguiente) con SL/TP. Clic en una zona = sus valores; Esc cierra. Sólo diseño: sin desenlaces.</div>
     </div>
 
+    <!-- EDGELAB_PICOS_ROBUSTOS_V1 -->
+    <div style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
+      <div style="font-weight: 700; font-size: 11px; margin-bottom: 6px;">⛰ Picos robustos (pares y grupos, M1)</div>
+      <label style="display:flex;align-items:center;gap:6px;font-size:10.5px;"><input type="checkbox" id="chk-pr"><b>Mostrar</b></label>
+      <div style="display:flex;flex-direction:column;gap:3px;font-size:10px;margin-top:5px;">
+        <label>Variante <select id="sel-pr-var" style="font-size:10px;max-width:150px;"></select></label>
+        <label>Puntaje <select id="sel-pr-sc" style="font-size:10px;"><option value="Sf">final (pierna derecha completa: mirar)</option><option value="Sc">causal (en la confirmación de P2)</option></select></label>
+        <label>Mín. percentil <input type="range" id="rng-pr-min" min="0" max="99" value="85" style="width:90px;vertical-align:middle;"> <span id="lbl-pr-min">85</span></label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-pr-legs"> piernas (T0→P1→V→P2→T2)</label>
+        <label style="display:flex;align-items:center;gap:6px;"><input type="checkbox" id="chk-pr-grp" checked> grupos (percentil causal del grupo)</label>
+      </div>
+      <div id="lbl-pr-desc" style="font-size:9.5px;color:#444;margin-top:4px;line-height:1.3;"></div>
+      <div id="lbl-pr-status" style="font-size:9.5px;color:#666;margin-top:2px;"></div>
+      <div style="font-size:9px;color:#888;line-height:1.3;margin-top:4px;">Línea P1–P2 (naranja = techos, verde = pisos): grosor y opacidad = percentil del puntaje en la variante. ● azul = vela donde se confirma P2 (desde ahí se conoce). Etiqueta: S (puntaje) · q (percentil) · δ = d/C · ρ = C/piernas. Banda punteada = grupo, «G pct · n picos». Target-free: elegir la variante por forma, no por lo que pasó después.</div>
+    </div>
+
     <!-- EDGELAB_LABELER_V1 -->
     <div id="lab-anchor"></div>
     <div id="lab-panel" style="background: var(--tb-bg); padding: 8px 10px; border-radius: 4px; border: 1px solid var(--tb-border);">
@@ -3043,6 +3059,79 @@
         requestDraw(); })
       .catch(function () { var el = document.getElementById("lbl-det-status"); if (el) el.textContent = "Sin detecciones para este activo (tools/peaks_learn.py)."; });
   }
+  // Picos robustos (edgelab/research/picos_robustos.py, tools/picos_robustos_visor.py): pares de picos con puntaje y grupos.
+  var picosRob = { on: false, data: null, idx: null, aid: null, v: null, sc: "Sf", min: 85, legs: false, grp: true };
+  function picosRobLoad(aid) {
+    picosRob.data = null; picosRob.aid = aid;
+    var sel = document.getElementById("sel-pr-var"); if (!sel) return;
+    fetch("bundles/picos_rob/index.json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (ix) {
+      picosRob.idx = ix; var vs = ix[aid] ? Object.keys(ix[aid]) : [];
+      sel.innerHTML = vs.map(function (v) { return "<option value='" + v + "'>" + v + "</option>"; }).join("");
+      var want = new URLSearchParams(window.location.search).get("pr");
+      if (want && vs.indexOf(want) >= 0) { picosRob.on = true; var c = document.getElementById("chk-pr"); if (c) c.checked = true; }
+      picosRob.v = (want && vs.indexOf(want) >= 0) ? want : (vs.indexOf(picosRob.v) >= 0 ? picosRob.v : vs[0]);
+      if (!picosRob.v) { document.getElementById("lbl-pr-status").textContent = "Sin capa para este activo (tools/picos_robustos_visor.py --asset " + aid + ")."; return; }
+      sel.value = picosRob.v; picosRobLoadVar(picosRob.v);
+    }).catch(function () { var el = document.getElementById("lbl-pr-status"); if (el) el.textContent = "Sin capa de picos robustos."; });
+  }
+  function picosRobLoadVar(v) {
+    picosRob.v = v; picosRob.data = null;
+    fetch("bundles/picos_rob/" + picosRob.aid + "__" + v + ".json", { cache: "reload" }).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (d) {
+      var sc = d.pares.map(function (p) { return p.Sc; }).sort(function (a, b) { return a - b; });
+      d.pares.forEach(function (p) {                          // qc = percentil de Sc (búsqueda binaria, lado derecho)
+        var lo = 0, hi = sc.length; while (lo < hi) { var m = (lo + hi) >> 1; if (sc[m] <= p.Sc) lo = m + 1; else hi = m; }
+        p.qc = Math.round(100 * lo / sc.length);
+      });
+      picosRob.data = d;
+      document.getElementById("lbl-pr-desc").textContent = v + ": " + d.descripcion;
+      document.getElementById("lbl-pr-status").textContent = d.n_pares + " pares (" + d.pares_por_dia + "/día) · " + d.n_grupos + " grupos · Sf p50/p90/p95 = " + d.sf_percentiles["50"] + "/" + d.sf_percentiles["90"] + "/" + d.sf_percentiles["95"];
+      requestDraw();
+    }).catch(function () { document.getElementById("lbl-pr-status").textContent = "No se pudo cargar " + v + "."; });
+  }
+  function drawPicosRob(ctx, cd, vr, X, Y) {
+    if (!picosRob.on || !picosRob.data) return;
+    var d = picosRob.data, qk = picosRob.sc === "Sc" ? "qc" : "q", mn = picosRob.min, marg = 6 * 3600;
+    var vis = d.pares.filter(function (p) { return p[qk] >= mn && p.b[1] >= vr.from - marg && p.a[1] <= vr.to + marg; });
+    var conTexto = vis.length <= 120;
+    ctx.save(); ctx.font = "9px sans-serif";
+    vis.forEach(function (p) {
+      var col = p.k === "H" ? "234,88,12" : "13,148,136", s = (p[qk] - mn) / Math.max(1, 100 - mn), al = 0.35 + 0.6 * s, o = p.k === "H" ? -1 : 1;
+      var xa = X(p.a[0], p.a[1]), ya = Y(p.a[2]), xb = X(p.b[0], p.b[1]), yb = Y(p.b[2]);
+      if (![xa, ya, xb, yb].every(isFinite)) return;
+      if (picosRob.legs) {
+        var pts = [p.o, p.a, p.v, p.b, p.e].map(function (q) { return [X(q[0], q[1]), Y(q[2])]; });
+        if (pts.every(function (q) { return isFinite(q[0]) && isFinite(q[1]); })) {
+          ctx.strokeStyle = "rgba(100,116,139," + (0.3 + 0.5 * s) + ")"; ctx.lineWidth = 1; ctx.setLineDash([3, 2]); ctx.beginPath();
+          pts.forEach(function (q, i) { if (i) ctx.lineTo(q[0], q[1]); else ctx.moveTo(q[0], q[1]); }); ctx.stroke(); ctx.setLineDash([]);
+        }
+      }
+      ctx.strokeStyle = "rgba(" + col + "," + al + ")"; ctx.lineWidth = 1 + 3 * s; ctx.beginPath(); ctx.moveTo(xa, ya); ctx.lineTo(xb, yb); ctx.stroke();
+      [[xa, ya], [xb, yb]].forEach(function (q) {
+        ctx.fillStyle = "rgba(" + col + "," + Math.min(1, al + 0.1) + ")"; ctx.beginPath();
+        ctx.moveTo(q[0], q[1]); ctx.lineTo(q[0] - 4, q[1] + o * 7); ctx.lineTo(q[0] + 4, q[1] + o * 7); ctx.closePath(); ctx.fill();
+      });
+      var xc = X(p.cf[0], p.cf[1]);
+      if (isFinite(xc)) { ctx.fillStyle = "rgba(37,99,235,0.85)"; ctx.beginPath(); ctx.arc(xc, yb, 2.5, 0, 6.2832); ctx.fill(); }
+      if (conTexto) {
+        ctx.fillStyle = "rgba(" + col + ",0.95)";
+        ctx.fillText((picosRob.sc === "Sc" ? p.Sc : p.Sf) + " · q" + p[qk] + " · δ" + p.dl + " · ρ" + p.rho, Math.min(xa, xb), (p.k === "H" ? Math.min(ya, yb) - 10 : Math.max(ya, yb) + 16));
+      }
+    });
+    if (picosRob.grp) {
+      d.grupos.forEach(function (g) {
+        if (g.pct == null || g.pct < mn) return;
+        var f = g.picos[0], l = g.picos[g.picos.length - 1];
+        if (l[1] < vr.from - marg || f[1] > vr.to + marg) return;
+        var x0 = X(f[0], f[1]), x1 = X(l[0], l[1]), y = Y(g.nivel); if (![x0, x1, y].every(isFinite)) return;
+        var col = g.k === "H" ? "194,65,12" : "15,118,110", al = 0.4 + 0.6 * (g.pct - mn) / Math.max(1, 100 - mn);
+        ctx.strokeStyle = "rgba(" + col + "," + al + ")"; ctx.lineWidth = 2; ctx.setLineDash([6, 3]);
+        ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(" + col + ",0.95)"; ctx.font = "bold 10px sans-serif";
+        ctx.fillText("G" + g.pct + " · n" + g.n, x1 + 4, y + (g.k === "H" ? -4 : 12)); ctx.font = "9px sans-serif";
+      });
+    }
+    ctx.restore();
+  }
   // Impulsos amplios + rápidos que atravesaron zonas LUX-IMB vivas (tools/luximb_parity/luximb_impulsos.py). Sólo dibuja.
   var luxImp = { data: null };
   function luxImpLoad(aid) {
@@ -4602,7 +4691,7 @@
     labSave(); rev.k++; revShow();
   }
   function drawLabels(ctx, w, h) {
-    if ((!lab.data && !peaksDet.on && !luxImp.data && new URLSearchParams(window.location.search).get("cz") !== "1") || !series) return;
+    if ((!lab.data && !peaksDet.on && !luxImp.data && !picosRob.on && new URLSearchParams(window.location.search).get("cz") !== "1") || !series) return;
     if (!lab.data) lab.data = labEmpty();
     var cd = activeCandlesArr(); if (!cd) return;
     var vr = realVisibleRange(); if (!vr) return;
@@ -4614,6 +4703,7 @@
     function Y(p) { var c = series.priceToCoordinate(p); return c === null ? NaN : c; }
     ctx.save();
     drawPeaksDet(ctx, cd, vr, XI, Y);
+    drawPicosRob(ctx, cd, vr, XI, Y);
     drawConc(ctx, vr, XI, Y);
     drawLuxImp(ctx, vr, XI, Y);
     (lab.data.judgments || []).forEach(function (j) {
@@ -5664,6 +5754,15 @@
       });
     })();
 
+    (function () {                                          // controles de picos robustos
+      if (!document.getElementById("chk-pr")) return;
+      document.getElementById("chk-pr").addEventListener("change", function () { picosRob.on = this.checked; requestDraw(); });
+      document.getElementById("sel-pr-var").addEventListener("change", function () { picosRobLoadVar(this.value); });
+      document.getElementById("sel-pr-sc").addEventListener("change", function () { picosRob.sc = this.value; requestDraw(); });
+      document.getElementById("rng-pr-min").addEventListener("input", function () { picosRob.min = +this.value; document.getElementById("lbl-pr-min").textContent = this.value; requestDraw(); });
+      document.getElementById("chk-pr-legs").addEventListener("change", function () { picosRob.legs = this.checked; requestDraw(); });
+      document.getElementById("chk-pr-grp").addEventListener("change", function () { picosRob.grp = this.checked; requestDraw(); });
+    })();
     (function () {
       if (!document.getElementById("btn-lab-range")) return;
       labInit();
@@ -6192,6 +6291,7 @@
         if (evx.on) evxCompute();
         labLoad(aid);
         peaksDetLoad(aid);
+        picosRobLoad(aid);
         luxImpLoad(aid);
         hlinesLoad(aid);
         var qGo = new URLSearchParams(window.location.search), tGo = parseInt(qGo.get("t"), 10), tfGo = qGo.get("tf");

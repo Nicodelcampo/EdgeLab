@@ -1,0 +1,42 @@
+{
+ "cid": "PICOS-DEFENDIDOS-NQ",
+ "familia": "PICOS_DEFENDIDOS_NQ",
+ "experimento": "edgelab.research.agente.picos_defendidos",
+ "sensor": "NQ",
+ "ejecucion": "NQ",
+ "n_celdas_por_canal": 207360,
+ "justificacion_economica": "Un nivel de picos defendido dos veces (acercamiento que no lo toma y nuevo alejamiento) acumula stops de quienes operan el rebote y órdenes de ruptura detrás; con la tendencia empujando hacia el nivel, la próxima llegada ejecuta esa liquidez y sigue más allá. Pierde quien opera el rebote con el stop pegado al nivel.",
+ "como_podria_refutarse": "0 nominadas por la criba y canasta de pistas <= 0 con potencia en réplica; tendencia a favor sin ventaja sobre en contra; el signo de IPC-NIVEL (nivel con visitas resiste) reproducido; falla de INTEGRIDAD; refutación con potencia en OOS/holdout. Un nulo sin potencia no mata (publica MDE).",
+ "cuenta_kaggle": "auto",
+ "desc": [
+  20250805,
+  20260331
+ ],
+ "oos": [
+  20260401,
+  20260930
+ ],
+ "embudo": true,
+ "conductor": "local",
+ "activa": true,
+ "estadistico": "R",
+ "spec": "docs/research/agente/PICOS_DEFENDIDOS_20261119.md",
+ "linaje_como": "informacion",
+ "seleccion": {
+  "max_candidatas": 3
+ },
+ "regimen": {
+  "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+  "actual_desde": 20250805
+ },
+ "holdout": {
+  "desde": 20261001,
+  "n_fijo": 150,
+  "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+ },
+ "decisiones": [
+  "2026-11-19: diseñada por pedido de Nico y dejada lista (preflight y controles en verde); activa=false hasta que el agente que la lance registre «se lanza» con la fecha.",
+  "2026-11-19: se lanza (Nico: «Mergea todo y lanzalo»). Conductor local: el Debian está en PAUSE (alerta pausa_larga del watchdog; último ciclo hace ~20 días). Estado del embudo en docs/research/picos_defendidos_20261119/embudo.",
+  "2026-11-19 (después del lanzamiento): auditoría contra los aprendizajes de la semana (docs/research/agente/AUDITORIA_PICOS_DEFENDIDOS_20261119.md, PR #201): partición previa a HOLDOUT-A5, 207.360 celdas en 8 meses, velas de 1–3 min con fricción ≈ 0,3–0,4 R. Recomendación: detenerla y medir la versión PICOS_DEFENDIDOS_A5. Decide Nico; mientras tanto ningún resultado de esta campaña se promueve sin pasar por la versión A5."
+ ]
+}

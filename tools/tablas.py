@@ -9,7 +9,7 @@
   python tools/tablas.py congelar <modulo> <hipotesis.json> --familia F FUENTE:DESDE:HASTA [...]   # congela y lanza la confirmación
   python tools/tablas.py confirmar <modulo> <CONGELADAS_*.json>               # UNA vez → RESULTADO_CONFIRMACION_<hash>.md/json
   python tools/tablas.py curva <modulo> <definición|-> <ejecución> [filtro]   # curva de capital IS / OOS / confirmación / holdout (SVG)
-  python tools/tablas.py holdout <modulo> <CONGELADAS_*.json> FUENTE:DESDE:HASTA --acta <md committeado> --p <p1,p2,...>
+  python tools/tablas.py holdout <modulo> <CONGELADAS_*.json> FUENTE:DESDE:HASTA --acta <md committeado> --p <p1,p2,...> --plan <efecto,sd_op,n_esperado>
                                                                                # apertura exploratoria de la familia (una sola): registra y lanza
   python tools/tablas.py confirmar_holdout <modulo> <CONGELADAS_*.json>       # UNA vez: veredicto + Fisher con las p de desarrollo
 
@@ -18,7 +18,7 @@ en los lectores de desarrollo; la apertura (`holdout`) exige congeladas con hash
 la familia no haya usado su apertura (edgelab/research/holdout_ventanas.py); la registra ANTES de lanzar.
 Carpeta de cada módulo: `CARPETA` del módulo o docs/research/tablas/<NOMBRE>/ (tablas/ = desarrollo, confirmacion/ = confirmación).
 """
-import json
+import importlib, json
 import os
 import subprocess
 import sys
@@ -65,12 +65,22 @@ def preflight(modulo):
 DATASET_SELLADO = "nicolasbuttaro/edgelab-holdout-sellado"
 
 
+def insumos_externos(modulo) -> list:
+    """K54 (2026-11-19): un módulo que lee los parquets de CBOE o del calendario (viven en el dataset M1NT8) los necesita también en el kernel
+    de ticks; sin ellos cae a su respaldo en silencio y ticks y M1 miden reglas distintas (FM7 de FLUJOS-MACRO: 42/209 sesiones comunes)."""
+    from edgelab.research.fuentes_ticks import M1NT8_DATASET
+    src = Path(importlib.import_module(modulo).__file__).read_text(encoding="utf-8")
+    return [M1NT8_DATASET] if ("cboe_volatility_daily" in src or "us_market_events_calendar" in src) else []
+
+
 def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None):
     if preflight(modulo): raise SystemExit("no se lanza: el preflight falla")
     from edgelab.research.embudo_runners import datasets
     k = TB.construir_kernel(modulo); owner = os.environ.get("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro"); LANZADAS.parent.mkdir(parents=True, exist_ok=True)
     for f, d0, d1 in ventanas:
-        needs, extra = ([], [DATASET_SELLADO]) if uso == "holdout" else datasets(f, d0, d1); sl = slug(modulo, f, d0, d1, owner) + ("-h" if uso == "holdout" else "")
+        needs, extra = ([], [DATASET_SELLADO]) if uso == "holdout" else datasets(f, d0, d1)
+        extra = list(dict.fromkeys(extra + insumos_externos(modulo)))     # K54: parquets de CBOE/calendario que el módulo lee
+        sl = slug(modulo, f, d0, d1, owner) + ("-h" if uso == "holdout" else "")
         a = [sys.executable, str(ROOT / "tools/kaggle_launch.py"), "--slug", sl, "--script", str(k), "--title", sl.split("/")[1],
              "--env", f"MODULO={modulo}", "--env", f"FUENTE={f}", "--env", f"DESDE={d0}", "--env", f"HASTA={d1}"]
         for n in needs: a += ["--need", n]
@@ -116,7 +126,13 @@ def traer(modulo=None):
         if modulo and L["modulo"] != modulo: continue
         nom = f"TABLA_{TB.cargar(L['modulo']).NOMBRE}_{L['fuente'].replace('DK:', '')}_{L['desde']}_{L['hasta']}"
         dest = carpeta(L["modulo"]) / {"confirmacion": "confirmacion", "holdout": "holdout"}.get(L["uso"], "tablas"); dest.mkdir(parents=True, exist_ok=True)
-        if (dest / f"{nom}.json").exists(): continue
+        if (dest / f"{nom}.json").exists():
+            # K41 (2026-11-18): una tabla ya bajada se revisa igual; antes se salteaba y una tabla de código viejo quedaba como vigente
+            viejo = codigo_vigente(json.loads((dest / f"{nom}.json").read_text(encoding="utf-8")), ROOT)
+            if not viejo: continue
+            for ext in ("json", "csv.gz"):
+                if (dest / f"{nom}.{ext}").exists(): (dest / f"{nom}.{ext}").replace(dest / f"{nom}.NO_VIGENTE.{ext}")
+            pend.append((L["slug"], f"tabla local NO VIGENTE ({viejo[:3]}): apartada; relanzar")); continue
         st = _estado(L["slug"])
         if st != "complete": pend.append((L["slug"], st)); continue
         for ext in ("json", "csv.gz"):
@@ -138,7 +154,12 @@ def _tablas(modulo, sub):
     fs = sorted((carpeta(modulo) / sub).glob("TABLA_*.csv.gz"))
     if not fs: raise SystemExit(f"sin tablas en {carpeta(modulo) / sub}")
     partes = []
+    from edgelab.research.preflight import codigo_vigente
+    fs = [f for f in fs if ".NO_VIGENTE." not in f.name]
     for f in fs:
+        js = json.loads(f.with_name(f.name.replace(".csv.gz", ".json")).read_text())
+        if (viejo := codigo_vigente(js, ROOT)):                                 # K41: nada se interpreta con código que cambió después
+            raise SystemExit(f"{f.name}: tabla NO VIGENTE ({viejo[:3]}): python tools/tablas.py traer {modulo} y relanzar")
         T = pd.read_csv(f); T["fuente"] = json.loads(f.with_name(f.name.replace(".csv.gz", ".json")).read_text())["fuente"].replace("DK:", ""); partes.append(T)
     return pd.concat(partes, ignore_index=True)
 
@@ -171,7 +192,7 @@ def confirmar(modulo, cong):
     out.with_suffix(".md").write_text(AT.informe_confirmacion(res), encoding="utf-8"); print("escrito", out.with_suffix(".md").relative_to(ROOT))
 
 
-def holdout(modulo, cong, ventana, acta, ps):
+def holdout(modulo, cong, ventana, acta, ps, plan_args):
     """Apertura exploratoria (modo 2026-11-08): congeladas con hash, acta committeada, una p de desarrollo por hipótesis, y la familia
     sin apertura previa. Registra la apertura en HOLDOUT_VENTANAS.jsonl ANTES de lanzar."""
     from edgelab.research import analizar_tabla as AT, holdout_ventanas as HV
@@ -183,7 +204,8 @@ def holdout(modulo, cong, ventana, acta, ps):
     if (pr := HV.problemas(fam, d0, cid)): raise SystemExit("no se abre: " + "; ".join(pr))
     reg = carpeta(modulo) / f"HOLDOUT_{C['sha256'][:8]}.json"
     reg.write_text(json.dumps(dict(cid=cid, congeladas=str(cong), acta=acta, commit=commit, p_desarrollo=ps, ventana=[f, d0, d1]), indent=1), encoding="utf-8")
-    HV.registrar_apertura(fam, cid, d0, n_fijo=0); print("apertura registrada", cid)
+    plan = HV.plan_potencia("fijo", *plan_args[:2], n=int(plan_args[2]), fuente_efecto="--plan efecto,sd_op,n_esperado (n: conteo sin P&L)")
+    HV.registrar_apertura(fam, cid, d0, n_fijo=int(plan_args[2]), plan=plan); print("apertura registrada", cid, plan)
     lanzar(modulo, ventana, uso="holdout", congeladas=str(cong), env_extra=dict(SELLADO="1", ACTA_JSON=json.dumps(dict(acta=acta, commit=commit, familia=fam, cid=cid))))
 
 
@@ -235,7 +257,9 @@ def main():
     elif op == "curva": curva(*a[1:5])
     elif op == "holdout":
         acta = sys.argv[sys.argv.index("--acta") + 1]; ps = [float(x) for x in sys.argv[sys.argv.index("--p") + 1].split(",")]
-        holdout(a[1], a[2], _ventanas([x for x in a[3:] if ":" in x]), acta, ps)
+        if "--plan" not in sys.argv: raise SystemExit("holdout exige --plan efecto,sd_op,n_esperado (K27: potencia >= 0,8 antes de abrir)")
+        plan_args = [float(x) for x in sys.argv[sys.argv.index("--plan") + 1].split(",")]
+        holdout(a[1], a[2], _ventanas([x for x in a[3:] if ":" in x]), acta, ps, plan_args)
     elif op == "confirmar_holdout": confirmar_holdout(a[1], a[2])
     else: raise SystemExit(__doc__)
 

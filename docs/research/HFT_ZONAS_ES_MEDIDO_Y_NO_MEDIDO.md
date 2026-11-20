@@ -1151,3 +1151,243 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   para nominación forzada. `doble_retroceso_20261104/RESULTADO_DOBLE_RETROCESO.md`.
 - **NO MEDIDO:** 25 o 500 ticks, entrada límite en P4, y paridad con el indicador de NT8.
 
+
+## 2026-11-18 — ESCALONADAS-M1 (escalera plana en M1 de NQ/ES/YM 2006–2025, partición A5)
+- **MEDIDO (DESC):** bruto ≈ 0 en 18/18 celdas (MDE80 0,02–0,03 R, 38.011 series); ninguna definición supera a su placebo. REFUTADA con
+  potencia: `docs/research/escalonadas_m1_20261118/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la escalera en ticks (escala de segundos) con años;
+  - la escalera como filtro de entrada de otras reglas (propuesta del 2026-11-18);
+  - el holdout A5 (sin abrir, nada que confirmar).
+
+## 2026-11-18 — IB-MADONNA (Initial Balance + Madonna y 10 variantes, NQ/ES/YM M1 2006–2025, A5)
+- **MEDIDO (DESC):**
+  - el fade del primer rechazo del borde del IB pierde en bruto (V0 −0,128 R, n 3.334);
+  - ningún filtro lo da vuelta;
+  - sólo la aceptación → continuación es positiva (V3 +0,044, sin BH, neto ≈ 0).
+  - Acta v1 (DESCARTADA, se relanza): `docs/research/ib_madonna_20261118/descartada_v1/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la «Madonna inversa» (a favor de la ruptura tras el rechazo; pista a pre-registrar en los meses REP);
+  - la SMT NQ/ES;
+  - el holdout A5.
+
+## 2026-11-18 — ORB-A5 e IB-MADONNA relanzada
+- **ORB (MEDIDO):** DESC nomina O1 (5 min, +0,118 R), O4, O6 y O7; REP confirma 0 (sin potencia, mismo signo). Acta:
+  `docs/research/orb_a5_20261118/RESULTADO.md`.
+- **ORB (NO MEDIDO):** holdout A5 (E8) y forward de O1.
+- **IB-MADONNA relanzada** (código corregido): idéntica a la v1, V0 −0,128 R, 0 nominadas.
+
+## 2026-11-18 — ORB-A5 O1: confirmación (apertura única del holdout de la familia)
+- **MEDIDO:** holdout A5 de NQ/ES/YM + EMD y RTY completos, n 10.082. +0,073 R bruto, p 0,009 contra nivel LORD 0,0036:
+  **NO_CONFIRMADA (sin potencia)**. Neto < 0 en todo instrumento y época; NQ 2020–25 −0,03 bruto. Acta:
+  `docs/research/orb_a5_20261118/RESULTADO_CONFIRMACION_O1.md`.
+- **NO MEDIDO:** ORB con ejecución de menor fricción en R; forward terminal (desde 2026-10-01). Ninguno tiene pre-registro.
+
+## 2026-11-18 — «Atrás» M1 v2 (motor corregido por K40)
+- **MEDIDO:** 5 reglas de la v2/v4 en años limpios: canasta −193 R (v1 −386), 1/8 años positivos, **REFUTADA_ATRAS**. EN_CONTRA:
+  CVGAP2-GC#11, COMEX, CVGAP-ES-C. NO_CONCLUYENTE: IF-LUX-NQ-R2#1, PREAPERTURA-NQ (≈ 0). Acta:
+  `docs/research/atras_m1_20261117/RESULTADO.md`.
+- **NO MEDIDO:** reglas de la v2/v3/v4 no medibles en M1 (footprint, ticks o señal CFD).
+
+## 2026-11-18 — Papel M1 v2 (validación de la fuente y largo de OTR930)
+- **MEDIDO:** validación M1 contra ticks con el criterio único: sólo OTR930-NQ pasa. Largo de OTR930: negativo en 2012–2025-07 y sin
+  régimen detectable (p 0,41–0,95). Actas: `docs/research/papel_m1_20261115/VALIDACION.md` y `LARGO_V2.md`.
+- **NO MEDIDO:** ASIA-NQ, TORI-NQ y RANGO0100-NQ en el largo (no pasan la validación). La «noche movida» de ASIA queda como hipótesis
+  de desarrollo sin confirmar.
+
+## 2026-11-18 — FILTRO-PICOS (capa de entrada de Nico)
+- **MEDIDO:** DESC (80 pruebas) y REP (LORD++) en NQ/ES/YM M1 2006–2022. La capa sólo mejora a bases que pierden y por esperar o
+  cancelar, no por los picos. Ninguna combinación con R positivo. **REFUTADA como capa de edge.** Acta:
+  `docs/research/filtro_picos_20261118/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 (no se abre: la compuerta económica falla); la capa sobre bases con ventaja neta (hoy no hay en M1 de
+  índices); picos estrictos, entrada límite en el pico y escala de segundos (fuera del pre-registro).
+
+## 2026-11-18 — ASIA-NQ: validación M1 corregida y «noche movida» con veredicto
+- **MEDIDO:**
+  - ASIA en futuros M1 coincide con ticks reales operación por operación; la validación anterior comparaba agregaciones distintas (K47).
+  - La variable `noche` no era causal para ASIA (K48). Prueba única de la noche anterior en datos no mirados: +0,035 R/sesión,
+    NO_CONFIRMADA (7/20 años).
+  - ASIA pierde en bruto en NQ/ES/YM 2006–2011, EMD y RTY. Acta: `docs/research/asia_noche_20261118/RESULTADO.md`.
+- **NO MEDIDO:** ASIA en NQ 2012–2025 con futuros M1 (mirado en CFD por el largo v1); filtros intradía conocidos a la hora de entrada
+  (p. ej. el rango asiático hasta la entrada), que no tienen pre-registro.
+
+## 2026-11-18 — Punto 1: Franklin en instrumentos nuevos y la canasta T + SOM + Franklin
+- **MEDIDO:**
+  - Franklin en YM, EMD, RTY y GC (nunca medidos): +0,075 R bruto, NO_CONFIRMADA (59,7 % de instrumento-año positivos); EMD +0,12.
+  - Canasta en NQ (descriptivo): neta positiva sólo desde 2020; el forward tarda 88 meses con la mitad del efecto. Acta:
+    `docs/research/franklin_confirmacion_20261118/RESULTADO.md`.
+- **NO MEDIDO:** costo medido de EMD; SOM y T en aperturas de índices no estadounidenses (sin costos canónicos).
+
+## 2026-11-18 — Punto 4: predictores nuevos del día de tendencia (E0 sin retornos)
+- **MEDIDO:** 21 pruebas en REP de A5 (NQ/ES/YM/RTY). Ninguna pasa BH. GEX bajo → más días de tendencia (AUC 0,55, 4/4 índices,
+  dosis-respuesta en DESC y REP): NO_CONCLUYENTE por potencia. Acta: `docs/research/dia_tendencia_20261118/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 de la familia (potencia ≈ 0,6 < 0,8: no se abre); GEX como filtro económico de T/ORB/Franklin; FOMC/CPI/NFP
+  (sin calendario histórico propio antes de 2023).
+
+## 2026-11-18 — Punto 2: rediseño de ejecución del fade LUX-IMB (con el rescate de Nico)
+- **MEDIDO:** 22 ejecuciones × 2 definiciones en DESC (NQ 2006–2022). El bruto cae a la par de la fricción al ensanchar el stop; neto
+  < 0 en todas. El rescate suma +0,004 a +0,010 R en DESC y no replica en REP. **REFUTADA_ECONOMICA**; holdout no abierto. Acta:
+  `docs/research/luximb_ejecucion_20261118/RESULTADO.md`.
+- **NO MEDIDO:** rescate sobre reglas con stop estructural (ORB, `PRECIOS`) y sobre reglas con ventaja neta (T, Franklin), que sólo se
+  podrían confirmar en forward.
+
+## 2026-11-18 — GEX a fondo (exploración DESC, EF2)
+- **MEDIDO (exploratorio):**
+  - la gamma anticipa la magnitud del día más allá de la volatilidad (parcial 0,23);
+  - con gamma alta, T, Franklin, SOM y ORB pierden y con baja ganan: la canasta pasa de −0,077 a +0,169 R/día sin gamma alta;
+  - las reglas direccionales con gamma no pagan neto.
+  - Acta: `docs/research/gex_tendencia_20261118/RESULTADO_EXPLORACION.md`.
+- **NO MEDIDO:** la confirmación (holdout A5 sin potencia; REP + HOLDOUT, pendiente de decisión de Nico; forward con GEX diario).
+- **MEDIDO (confirmación única, REP + HOLDOUT A5):** filtro de gamma en T + Franklin + SOM. Contraste +0,65 R/día, p 0,0102 (LORD
+  rechaza), 8/15 años → NO_CONFIRMADA. La gamma alta es negativa en las 3 reglas en ambos bloques. Acta:
+  `docs/research/gex_tendencia_20261118/RESULTADO.md`.
+- **NO MEDIDO:** regla de exclusión de gamma alta en forward (pre-registro pendiente; requiere GEX diario).
+- **MEDIDO (apéndice 2, mecanismo de gamma):**
+  - la exclusión de gamma alta no confirma en EMD/RTY (p 0,24) y no hay efecto en ORB O1 (p 0,48);
+  - el fade LUX-IMB con signo opuesto da +0,018 R (p 0,026, 75 % de años);
+  - mecanismo NO confirmado: filtro acotado a T/Franklin/SOM en NQ/ES/YM.
+
+## 2026-11-18 — Proxy de gamma desde 2006 (ANCLAJE-PROXY)
+- **MEDIDO:**
+  - el percentil del VIX reproduce a GEX (Spearman −0,63) y su filtro da −0,48 R/día en DESC 2011+;
+  - la lectura 2006–2011 se bloqueó por K49 (potencia 0,09, harían falta 15.633 días). Acta:
+    `docs/research/anclaje_proxy_20261118/RESULTADO.md`.
+- **NO MEDIDO:** la lectura 2006–2011 (quedó sin gastar).
+
+## 2026-11-18 — Option Alpha en futuros (OPTION-ALPHA)
+- **MEDIDO:** las 8 reglas del Top 20 Live de Option Alpha y 5 contrastes contra control, DESC A5 2006–2025 en ES, NQ y YM: 0/13 pasan
+  BH q 0,10 y las 8 tienen R neto negativo. Acta: `docs/research/option_alpha_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP y holdout A5 (sin nominadas), los filtros macro (VIX, IVR, FOMC, cierre anticipado: fuera por pre-registro), RTY/EMD.
+
+## 2026-11-19 — T de FundedSync: régimen o sobreajuste (T-REGIMEN)
+- **MEDIDO:** grilla de 81 variantes de T en NQ 2008–2026-09: 81/81 positivas desde el quiebre 2021-02-10 (mediana +0,149 R/op neto),
+  PBO 0,17, 0/81 positivas antes → REGIMEN_ROBUSTO. Acta: `docs/research/t_regimen_20261118/RESULTADO.md`.
+- **NO MEDIDO:** T desde la fecha de la versión del vendedor (falta la fecha), vigilancia secuencial, mecanismo (gamma: ya medido en la
+  canasta y NO_REPETIR).
+
+## 2026-11-19 — Roboquant en futuros (ROBOQUANT)
+- **MEDIDO:** RQ1–RQ8 y 7 contrastes en DESC A5 2006–2025 (ES, NQ, YM): 5 nominadas por bruto (RQ1, RQ2, RQ5, RQ6, RQ2−RQ2N), neto
+  negativo en todas. Acta: `docs/research/roboquant_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP y holdout (K49: potencia en días 0,04–0,07), filtros macro, curva bruto–stop de RQ5/RQ6, RTY/EMD.
+
+## 2026-11-19 — Fricción de RQ2/RQ5/RQ6 (FRICCION-RQ)
+- **MEDIDO:** curva bruto–stop (m 1–3 y salida al cierre) en DESC: RQ5 TIMING, RQ6 y RQ2 MEJORA_SIN_NETO; bruto en puntos constante;
+  una por día sin efecto; juntar RQ5+RQ6 empeora; salida límite ≤ +0,012 R. Con contrato fijo RQ5/RQ6 positivos en ES y NQ
+  (exploratorio). Acta: `docs/research/friccion_rq_20261119/RESULTADO.md`.
+- **NO MEDIDO:** entrada con orden límite en estas reglas, spread por hora del día, comisión de una firma concreta (el canónico usa la
+  máxima), tamaño ∝1/√riesgo pre-registrado.
+
+## 2026-11-19 — Spread por hora (target-free)
+- **MEDIDO:** spread ask − bid por hora CT en NQ (2,7–3,6 ticks), ES (≈ 1,1, 95 % a 1 tick) e YM (1,7–2,1), ago-2025 → mar-2026: el
+  canónico es correcto y la hora ahorra ≈ 4 % de la fricción de NQ. Acta: `docs/research/spread_hora_20261119/RESULTADO.md`.
+- **NO MEDIDO:** slippage real por lado (sigue siendo el supuesto de 1 tick), spread antes de 2025.
+
+## 2026-11-19 — R, Z y A20 en R; tamaño en Franklin y SOM (NETO-PISTAS)
+- **MEDIDO:** R (AtrPhase) con stop 0,25 × ATR20: REGIMEN_ROBUSTO (81/81, PBO 0,23, 16/19 años, +0,27 R neto); Z INTERMEDIO (fábrica en
+  pico); A20 SOBREAJUSTE_PROBABLE en la ventana completa y meseta positiva sólo desde 2017-11 (descriptivo); prefijo idéntico en las tres;
+  esquemas de tamaño S0–S4 de Franklin y SOM sin confirmación en EMD+RTY. Acta: `docs/research/neto_pistas_20261119/RESULTADO.md`.
+- **NO MEDIDO:** k < 0,25 en R, R/Z/A20 desde la fecha de la versión del vendedor, A20 con ventana desde el quiebre pre-registrada.
+
+## 2026-11-19 — SOM y Franklin con los procedimientos de T (REGIMEN-SOM-FRANKLIN)
+- **MEDIDO:** grillas de 81 (SOM) y 32 (Franklin): bruto en meseta (SENAL_ROBUSTA las dos), régimen neto no (SOM PBO 0,84 desde 2017-11;
+  Franklin sin quiebre y 7/32 netas positivas); prefijo idéntico. Acta: `docs/research/regimen_som_franklin_20261119/RESULTADO.md`.
+- **NO MEDIDO:** curva bruto–stop en puntos de SOM y Franklin, EMD/RTY en la grilla.
+
+## 2026-11-19 — Filtros causales para SOM y Franklin (MEJORA-SF)
+- **MEDIDO:** 9 contrastes en DESC: nominadas SOM-fricción (+0,089), Franklin-ATR alto (+0,172) y Franklin-VIX alto (+0,211); REP bloqueado
+  por K49 (potencia 0,05–0,06). Acta: `docs/research/mejora_sf_20261119/RESULTADO.md`.
+- **NO MEDIDO:** el contraste VIX/ATR de Franklin en YM/EMD/RTY/GC, forward.
+
+## 2026-11-19 — A20 desde su quiebre (A20-REGIMEN)
+- **MEDIDO:** procedimiento de T desde 2017-11: 81/81 positivas pero PBO 0,39, 0/81 en 2017–2021 y ES negativo → INTERMEDIO. Acta:
+  `docs/research/a20_regimen_20261119/RESULTADO.md`.
+
+## 2026-11-19 — Carril 2, lote 1 (CARRIL2-LOTE1)
+- **MEDIDO:** IBS+VIX, Double Seven, Turnaround Tuesday y cambio de mes en DESC (motor de barras K28, salidas en holdout descartadas): 0/8 en
+  BH, fricción ≈ 0,015 R, MDE ≈ 0,14–0,21 R → SIN_EVIDENCIA. Acta: `docs/research/carril2_20261119/RESULTADO_LOTE1.md`.
+- **NO MEDIDO:** entrada a las 15:55 (el motor entra 18:00), resto del Carril 2 (eVRP, VIX alto, pre-FOMC, Dynamic Breakout II, rotación ES/GC, overnight).
+
+## 2026-11-19 — Tamaño sin sesgo de nivel de precio (TAMANO-K52)
+- **MEDIDO:** contratos ∝ 1/ATR20 y variante raíz contra riesgo constante en RQ5, RQ6, SOM y Franklin (DESC): Δ ≈ 0 en las cuatro. Acta:
+  `docs/research/tamano_k52_20261119/RESULTADO.md`.
+
+## 2026-11-19 — Carril 1 del catálogo de Antigravity (FLUJOS-MACRO)
+- **MEDIDO:** FM1–FM8 y controles en DESC (calibración v2 post-K53): FM1, FM2 y FM1−FM1N nominadas por bruto, neto negativo; REP sin potencia.
+  Acta: `docs/research/flujos_macro_20261119/RESULTADO.md`.
+- **NO MEDIDO:** causa de la discrepancia M1↔ticks de FM7 (42/209 sesiones comunes), filtros macro (fuera por pre-registro).
+
+## 2026-11-19 — Carril 2, lote 2 (régimen de volatilidad, Dynamic Breakout II, rotación ES/GC)
+- **MEDIDO:** 6 reglas + 6 controles en DESC A5: 0/12 en BH; pico de VIX y compresión z con p ≈ 0,02 sin pasar multiplicidad; P80 y DBO
+  negativos. Acta: `docs/research/carril2_20261119/RESULTADO_LOTE2.md`.
+- **NO MEDIDO:** overnight largo de Concretum (motor sin entrada a hora fija entre sesiones) y pre-FOMC (sin potencia sola).
+- **CAUSA RAÍZ FM7 (K54):** el kernel de ticks de Kaggle no tenía el parquet de CBOE; FLUJOS-MACRO y OPTION-ALPHA cayeron en silencio al
+  respaldo (RV5 / ATR) y ticks y M1 midieron reglas distintas. Guardas: `a5_campana.insumos_distintos` y `tablas.insumos_externos`.
+
+## 2026-11-19 — EXTERNAS-28 cerrado
+- **MEDIDO:** fase 0 en NQ, ES, YM y GC: 4/114 pasan la fricción (Dual Thrust); DESC de esas 4 (auditoría de Gemini): neto ≈ 0. Acta:
+  `docs/research/externas_a5_20261118/RESULTADO.md`.
+- **NO MEDIDO:** REP (potencia 0,01) y las 110 descartadas con otro stop o en otra escala.
+
+## 2026-11-19 — Auditoría de fechas fijas de FundedSync
+- **MEDIDO:** T y R en NQ con las listas de fechas del vendedor desactivadas: T SESGO_VENDEDOR chico (+0,186 → +0,181 R/op 2021–26), R inocua.
+  Acta: `docs/research/auditoria_exclusiones_fs_20261119/RESULTADO.md`.
+- **NO MEDIDO:** el mismo control en los demás módulos de FundedSync (Z usa `ZETA_NON_FULL_NYSE`, una lista de días no completos de NYSE).
+
+## 2026-11-19 — Transferencia de Z y VZ a RTY/EMD (sólo DESC)
+- **MEDIDO:** Z +0,146 R (p 0,085, n 97, casi todo RTY) y VZ +0,035 R (p 0,21) en meses DESC: mismo signo que en NQ/ES, sin significancia.
+  Acta: `docs/research/transfer_rty_emd_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP de RTY/EMD para estas reglas (sellado, sin potencia K49); Z en EMD (M1 incompleto).
+
+## 2026-11-19 — Z-PICO (¿el pico de fábrica de Z es sobreajuste? ¿Russell tiene pico?)
+- **MEDIDO:** NQ: fábrica 6.ª de 27, exceso dentro del ruido de selección (p 0,55) pero grilla 2018+ +0,146 R/op (23/27, p 0,001). RTY (DESC):
+  sin pico (fábrica 15.ª) y meseta (26/27 positivas, mediana +0,15). Acta: `docs/research/z_pico_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP de RTY (sellado); Z como grilla promediada en forward.
+
+## 2026-11-19 — CONFLUENCIA (señales intradía con bruto real)
+- **MEDIDO:** DESC NQ+ES: contraste +0,021 (p 0,09), confirmadas −0,004; señales casi redundantes (Franklin = FM1 en dirección el 100 % de los
+  días). Acta: `docs/research/confluencia_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP (sin nominadas); Dual Thrust (sin operaciones guardadas).
+
+## 2026-11-19 — CARRIL2-CIERRE (entrada 15:56 vs 18:00)
+- **MEDIDO:** 0/8 en BH; contrastes −0,056 a +0,022 R: la hora de entrada no explica la debilidad del lote 1. Acta:
+  `docs/research/carril2_20261119/RESULTADO_CIERRE.md`.
+
+## 2026-11-19 — CARRIL2-CRASH (filtro de curva de VIX invertida)
+- **MEDIDO:** DESC 2011–2017: invertida +0,240 R, normal −0,043, contraste −0,284 (p 0,99): refutado con el signo contrario. Acta:
+  `docs/research/carril2_20261119/RESULTADO_CRASH.md`.
+- **NO MEDIDO:** REP (sin nominada); otros umbrales (no se ajustan después de mirar).
+
+## 2026-11-19 — SELECTIVIDAD (regla propia de una perilla)
+- **MEDIDO:** pureza del día → continuación al día siguiente: dosis-respuesta inversa (−0,037 R por banda, p 0,997; banda superior −0,196).
+  Acta: `docs/research/selectividad_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP (sin nominadas); el fade de días limpios (no pre-registrado).
+
+## 2026-11-19 — LUCID-GUIA (cuatro tamaños, tiempos, cartera con 5 fondeadas, cumplimiento)
+- **MEDIDO:** EV por examen y tiempos (pasar, quemar, primer retiro) en 25K–150K para T, T+R, T+R+ZB y T+R+ZB+SOMEOD; cartera de 24 meses con
+  los límites de Lucid y el cierre al pasar a live; días con direcciones opuestas entre reglas (cobertura). Actas:
+  `docs/research/lucid_guia_20261119/RESULTADO.md` y `CUMPLIMIENTO.md`.
+- **NO MEDIDO:** valor de la cuenta live; consistencia de 40 %; solapamiento horario de las operaciones opuestas (sin hora de salida);
+  tamaño máximo de la fondeada si escala; coordinación entre usuarios de FundedSync.
+
+## 2026-11-19 — LUCID-GUIA extra (tramo 2025-08 → 2026-09 y minis)
+- **MEDIDO:** R/mes por regla y por año hasta 2026-09; Lucid con la media de cada período; micros vs 1–2 minis vs 10 micros en los cuatro
+  tamaños. Acta: `docs/research/lucid_guia_20261119/RESULTADO_PERIODO_Y_MINIS.md`.
+- **NO MEDIDO:** piso y DLL intradía (pesan con minis); después del 2026-10-01 (terminal sellado).
+
+## 2026-11-19 — LUCID-PLAN (elección del plan y reproducción en el holdout ya abierto)
+- **MEDIDO:** 872 planes (tamaño, canasta, contratos, DLL, consistencia, retiro) con piso y DLL intradía; 300 combinaciones con evaluaciones a
+  la vez y tres medias; reproducción de los planes A y B sobre las operaciones del holdout de FUNDEDSYNC publicadas el 16-nov. Acta:
+  `docs/research/lucid_plan_20261119/RESULTADO.md`.
+- **NO MEDIDO:** R y Z con su stop en el holdout (sin MAE en esos archivos); Z-banda en el holdout; tamaño de la fondeada si escala.
+
+## 2026-11-19 — PICOS-DEFENDIDOS (auditoría del PR #200 y versión A5)
+- **MEDIDO:** nada con desenlaces. Auditoría contra los aprendizajes de la semana (`docs/research/agente/AUDITORIA_PICOS_DEFENDIDOS_20261119.md`);
+  preflight de la versión A5 en verde.
+- **NO MEDIDO:** la campaña A5 (`docs/research/picos_defendidos_a5_20261119/`: calibración M1 contra ticks, DESC, REP); la grilla del PR
+  (no se lanza).
+
+## 2026-11-19 — PICOS-DEFENDIDOS-ES (embudo, réplica de pistas)
+- **MEDIDO:** DESC 2025-08 → 2026-03: 0 nominadas (maxT t máx. 2,28). Réplica 2026-04 → 09 de las 20 pistas: 0/20 confirmadas (Simes p 0,999);
+  canasta −0,141 R, IC90 [−0,207; −0,074], potencia 0,9999 → FIN SIN_CANDIDATAS, en contra con potencia. Estado:
+  `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/`; auditoría: `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`.
+- **NO MEDIDO:** la versión A5 (18 años de M1), que es la que mide la regla de la captura.

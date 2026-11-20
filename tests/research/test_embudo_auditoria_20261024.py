@@ -2,6 +2,8 @@
 tests/research/test_embudo_auditoria_debian.py (PR #130): registro obligatorio, A3, un solo conductor, slug, libro de ventanas."""
 import json
 
+PLAN = dict(tipo="fijo", potencia=0.9, problemas=[])   # K27: toda apertura declara su plan
+
 import pytest
 
 from edgelab.research import embudo as EM, embudo_runners as R, holdout_ventanas as HV
@@ -86,6 +88,6 @@ def test_slug_sin_guion_bajo(tmp_path):
 def test_libro_de_ventanas_del_estado_se_une_al_del_repo(tmp_path):
     repo, est = tmp_path / "repo.jsonl", tmp_path / "estado.jsonl"
     repo.write_text(json.dumps(dict(tipo="consumida", familia="A", desde=20261001, hasta=20261022, relacionadas=[])) + "\n")
-    HV.registrar_apertura("B", "c1", 20261023, 150, est)
+    HV.registrar_apertura("B", "c1", 20261023, 150, est, plan=PLAN)
     assert HV.sincronizar(repo, est) == 1 and HV.sincronizar(repo, est) == 0
     assert {r["tipo"] for r in HV.leer(est)} == {"consumida", "apertura"} and HV.problemas("A", 20261010, "c9", est)

@@ -1,0 +1,36 @@
+{
+ "cartera": "B_prima",
+ "fecha": "2026-11-18",
+ "preregistro": "docs/research/versiones_20261118/PREREGISTRO.md",
+ "instrumento": "MNQ",
+ "usd_por_punto": 2.0,
+ "reglas": [
+  {
+   "regla": "Z",
+   "modulo": "ZetaTrendDay",
+   "micros": 1,
+   "stop": "catástrofe 0,5 × ATR20 (vía MAE)"
+  },
+  {
+   "regla": "R",
+   "modulo": "AtrPhase",
+   "micros": 1,
+   "stop": "catástrofe 0,5 × ATR20 (vía MAE)"
+  }
+ ],
+ "variante_paralela": null,
+ "cuenta_referencia": {
+  "tipo": "drawdown fijo",
+  "dd": 3500,
+  "objetivo": 3500,
+  "dias": 120,
+  "nota": "hasta que Nico fije la cuenta real"
+ },
+ "alertas": {
+  "dd_forward_mayor_a": 2256,
+  "distancia_limite_menor_a": 1000,
+  "correlacion_v2_max": 0.3
+ },
+ "nota": "Operar con dinero real lo decide Nico.",
+ "motivo": "T sin señal bruta antes de 2020 (docs/research/m1_largo_20261117/RESULTADO.md); B sigue en paralelo con T"
+}

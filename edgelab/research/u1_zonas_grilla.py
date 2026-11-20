@@ -58,8 +58,13 @@ def _cargar(inst):
     import glob
     ent = os.environ.get("ENTRADA", "/kaggle/input")
     f = glob.glob(f"{ent}/**/ZONAS_{FUENTE}_{inst}.parquet", recursive=True)
+    if os.environ.get("SELLADO") == "1":                 # 2026-11-17: como u1_racimos_grilla (2026-11-02): con el almacén de desarrollo montado
+        Zs = _zonas_avzg_selladas(inst, ent)              # se devolvía SÓLO el desarrollo y el holdout quedaba sin zonas (0 disparos en YM)
+        if not f: return Zs
+        from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS
+        Zd = pd.read_parquet(f[0], columns=["t_ns", "lo", "hi", "zona"]); Zd = Zd[Zd.t_ns < HOLDOUT_APERTURA_UTC_NS]
+        return pd.concat([Zd, Zs[["t_ns", "lo", "hi", "zona"]]], ignore_index=True).sort_values("t_ns", kind="stable", ignore_index=True)
     if not f:
-        if os.environ.get("SELLADO") == "1": return _zonas_avzg_selladas(inst, ent)
         raise FileNotFoundError(f"sin almacén {FUENTE}/{inst}: nunca se cae a otra fuente")
     return pd.read_parquet(f[0], columns=["t_ns", "lo", "hi", "zona"])
 

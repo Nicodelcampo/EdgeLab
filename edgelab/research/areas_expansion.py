@@ -283,16 +283,18 @@ def perfiles_volumen(m, k, lado, borde, A, vp_min_start, vp_px, vp_vol):
 
 # ----------------------------------------------------------------------------------------------- simulación (desenlaces)
 @njit(cache=False)
-def _primero_en_ticks(tpx, a, b, d, st, tp, tick):
+def _primero_en_ticks(tpx, a, b, d, st, tp, tick, aper):
     """Orden real dentro de una vela: primer tick que toca el stop (1) o atraviesa el objetivo por 1 tick (2), desde el
-    índice de tick a hasta b. Devuelve (código, precio). Código 0 si ninguno (no debería, la vela los tocó)."""
+    índice de tick a hasta b. Devuelve (código, precio). Código 0 si ninguno (no debería, la vela los tocó).
+    `aper` (K40, 2026-11-18): vacío con ticks reales; con velas M1 como pseudo-ticks marca los de apertura: un stop cruzado por un
+    pseudo-tick que NO es apertura sale en su nivel (el extremo de la vela no es un precio de ejecución); en la apertura, al precio real."""
     for i in range(a, b):
         x = tpx[i]
         if d == 1:
-            if x <= st: return 1, min(st, x)
+            if x <= st: return 1, (st if (len(aper) > 0 and not aper[i]) else min(st, x))
             if x >= tp + tick: return 2, tp
         else:
-            if x >= st: return 1, max(st, x)
+            if x >= st: return 1, (st if (len(aper) > 0 and not aper[i]) else max(st, x))
             if x <= tp - tick: return 2, tp
     return 0, np.nan
 
@@ -302,11 +304,19 @@ def simular_cierre(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, t
     """Sin salida por línea (la regla de siempre). La documentación del simulador está en `simular_cierre_linea`."""
     T = len(start)
     return simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart,
-                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T), TOPE_OPERACION)
+                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T), TOPE_OPERACION, np.zeros(0, np.bool_))
 
 
 @njit(cache=False)
-def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl, tope_barras):
+def simular_cierre_m1(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, aper):
+    """`simular_cierre` con velas M1 como pseudo-ticks (K40): `aper` = `ejecucion.aperturas(ctx)`."""
+    T = len(start)
+    return simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart,
+                                np.full((1, 1), np.nan), np.full(T, -1, np.int64), np.zeros(T), TOPE_OPERACION, aper)
+
+
+@njit(cache=False)
+def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, sesion, tick, tpx, tstart, lin, kl, dl, tope_barras, aper):
     """SALIDA POR TIEMPO DE PARADA (2026-10-31, paper de Tori Trades, ec. (1): τ = inf{t > t0 : C_t < y(t) − δ}): `lin` son líneas
     por vela (filas; NaN donde no hay línea) que la experiencia calcula sólo con el pasado de cada vela; `kl[t]` es la fila que sigue
     la operación t (−1 = sin salida por línea) y `dl[t]` el margen δ en precio. Con la operación abierta, al CIERRE de la vela j
@@ -333,7 +343,7 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
             if f >= n or sesion[f] != sesion[k]: continue
             e = o[f]; fb[t] = f; xb[t] = f
             if tstart[f + 1] > tstart[f]:
-                cod, px = _primero_en_ticks(tpx, tstart[f] + 1, tstart[f + 1], d, st, obj, tick)
+                cod, px = _primero_en_ticks(tpx, tstart[f] + 1, tstart[f + 1], d, st, obj, tick, aper)
                 if cod == 1: pnl[t] = (px - e) * d; amb[t] = 1; continue
                 if cod == 2: pnl[t] = (obj - e) * d; amb[t] = 1; continue
             elif (d == 1 and l[f] <= st) or (d == -1 and h[f] >= st):
@@ -351,7 +361,7 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
             fb[t] = f; xb[t] = f
             # resto de la vela del llenado, en orden de ticks
             if tstart[f + 1] > tstart[f]:
-                cod, px = _primero_en_ticks(tpx, ia, tstart[f + 1], d, st, obj, tick)
+                cod, px = _primero_en_ticks(tpx, ia, tstart[f + 1], d, st, obj, tick, aper)
                 if cod == 1: pnl[t] = (px - e) * d; amb[t] = 1; continue
                 if cod == 2: pnl[t] = (obj - e) * d; amb[t] = 1; continue
             elif (d == 1 and l[f] <= st) or (d == -1 and h[f] >= st):
@@ -363,7 +373,7 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
             else: ts_, tt_ = h[j] >= st, l[j] <= obj - tick
             if ts_ and tt_:                                                         # ambigua en M1: orden de los ticks
                 if tstart[j + 1] > tstart[j]:
-                    cod, px = _primero_en_ticks(tpx, tstart[j], tstart[j + 1], d, st, obj, tick)
+                    cod, px = _primero_en_ticks(tpx, tstart[j], tstart[j + 1], d, st, obj, tick, aper)
                     amb[t] = 1
                     if cod == 2: x = (obj - e) * d
                     else: x = ((px if cod == 1 else st) - e) * d
@@ -372,7 +382,7 @@ def simular_cierre_linea(start, s, limite, nivel, stop0, tp, be, o, h, l, c, ses
                 break
             if ts_:                                                                 # stop: al precio REAL del primer tick que lo cruza
                 if tstart[j + 1] > tstart[j]:                                       # (error 27, 2026-10-23: dentro de la vela se llenaba
-                    cod, px = _primero_en_ticks(tpx, tstart[j], tstart[j + 1], d, st, obj, tick)   # en el stop exacto aunque el precio
+                    cod, px = _primero_en_ticks(tpx, tstart[j], tstart[j + 1], d, st, obj, tick, aper)   # en el stop exacto aunque el precio
                     if cod == 1: x = (px - e) * d; amb[t] = max(amb[t], 3); break   # lo saltara: optimista con stops cortos)
                 x = ((min(st, o[j]) if d == 1 else max(st, o[j])) - e) * d; break
             if tt_: x = (obj - e) * d; break

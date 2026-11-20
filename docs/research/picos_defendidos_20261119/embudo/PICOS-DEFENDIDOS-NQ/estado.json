@@ -1,0 +1,1046 @@
+{
+ "etapa": "ATRAS",
+ "fase": "PENDIENTE",
+ "historial": [
+  {
+   "ts": 1795117473.81179,
+   "etapa": "PREFLIGHT",
+   "fin": true
+  },
+  {
+   "ts": 1795118468.4109762,
+   "etapa": "DESC",
+   "fin": true,
+   "candidatas": [
+    [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ]
+   ]
+  },
+  {
+   "ts": 1795119084.0477064,
+   "etapa": "INDAGA",
+   "fin": true
+  },
+  {
+   "ts": 1795121291.6426504,
+   "etapa": "INTEGRIDAD",
+   "fin": true
+  },
+  {
+   "ts": 1795121900.2562945,
+   "etapa": "OOS",
+   "fin": true
+  }
+ ],
+ "spec": {
+  "cid": "PICOS-DEFENDIDOS-NQ",
+  "familia": "PICOS_DEFENDIDOS_NQ",
+  "experimento": "edgelab.research.agente.picos_defendidos",
+  "sensor": "NQ",
+  "ejecucion": "NQ",
+  "n_celdas_por_canal": 207360,
+  "justificacion_economica": "Un nivel de picos defendido dos veces (acercamiento que no lo toma y nuevo alejamiento) acumula stops de quienes operan el rebote y órdenes de ruptura detrás; con la tendencia empujando hacia el nivel, la próxima llegada ejecuta esa liquidez y sigue más allá. Pierde quien opera el rebote con el stop pegado al nivel.",
+  "como_podria_refutarse": "0 nominadas por la criba y canasta de pistas <= 0 con potencia en réplica; tendencia a favor sin ventaja sobre en contra; el signo de IPC-NIVEL (nivel con visitas resiste) reproducido; falla de INTEGRIDAD; refutación con potencia en OOS/holdout. Un nulo sin potencia no mata (publica MDE).",
+  "cuenta_kaggle": "auto",
+  "desc": [
+   20250805,
+   20260331
+  ],
+  "oos": [
+   20260401,
+   20260930
+  ],
+  "embudo": true,
+  "conductor": "local",
+  "activa": true,
+  "estadistico": "R",
+  "spec": "docs/research/agente/PICOS_DEFENDIDOS_20261119.md",
+  "linaje_como": "informacion",
+  "seleccion": {
+   "max_candidatas": 3
+  },
+  "regimen": {
+   "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+   "actual_desde": 20250805
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  },
+  "decisiones": [
+   "2026-11-19: diseñada por pedido de Nico y dejada lista (preflight y controles en verde); activa=false hasta que el agente que la lance registre «se lanza» con la fecha.",
+   "2026-11-19: se lanza (Nico: «Mergea todo y lanzalo»). Conductor local: el Debian está en PAUSE (alerta pausa_larga del watchdog; último ciclo hace ~20 días). Estado del embudo en docs/research/picos_defendidos_20261119/embudo."
+  ]
+ },
+ "reglas": {
+  "seleccion": {
+   "max_candidatas": 3,
+   "min_sesiones": 20,
+   "ratio_mov_friccion": 3.0,
+   "exigir_meseta": true,
+   "min_dif": 2,
+   "min_ops_oos": 30
+  },
+  "pistas_replica": {
+   "activa": true,
+   "k": 20,
+   "ventana": [
+    20260401,
+    20260930
+   ]
+  },
+  "integridad": {
+   "placebo_max_frac": 0.25,
+   "latencia_1_positiva": false
+  },
+  "topes": {
+   "lista": null,
+   "min_frac_sin_tope": 0.5
+  },
+  "holdout": {
+   "desde": 20261001,
+   "n_fijo": 150,
+   "conteo_cada_s": 86400,
+   "n_max": 500,
+   "potencia_min": 0.8,
+   "nota": "frontera HOLDOUT-A4; no se abre para elegir"
+  },
+  "regimen": {
+   "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+   "actual_desde": 20250805,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "criba": {
+   "metodo": "maxt"
+  },
+  "linaje": {
+   "familia": "PICOS_DEFENDIDOS_NQ",
+   "declarada": true,
+   "padres": [
+    "DOBLE_RETROCESO_NQ"
+   ],
+   "propias": 0,
+   "bruto_heredado": 968985,
+   "n_heredado": 968985,
+   "total": 968985,
+   "justificacion": "Comparte con DOBLE_RETROCESO_NQ la población «acercamiento al nivel sin tomarlo» con la lectura opuesta (hacia y a través del nivel); IPC-NIVEL-MES citado como evidencia previa en contra (sin familia en el contador). docs/research/agente/PICOS_DEFENDIDOS_20261119.md",
+   "metodo_n": "bruto",
+   "aviso": "sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)",
+   "como": "informacion"
+  }
+ },
+ "decisiones_20261024": {
+  "ts": 1795117473.8097858,
+  "desde": "PREFLIGHT"
+ },
+ "handle": null,
+ "fallas": 0,
+ "params": {
+  "cortes": {
+   "alej1": [
+    3.171875
+   ],
+   "cerca": [
+    0.6345609065155807
+   ],
+   "alej2": [
+    2.3282275711159737
+   ]
+  },
+  "celdas": [
+   [
+    1,
+    0,
+    0,
+    0,
+    1,
+    3,
+    0,
+    7,
+    0
+   ]
+  ],
+  "resolucion": {
+   "nivel": 0.010937333410740489,
+   "m": 1
+  }
+ },
+ "periodo": [
+  20260401,
+  20260930
+ ],
+ "lanzada": 1795121599.0651934,
+ "cortes": {
+  "alej1": [
+   3.171875
+  ],
+  "cerca": [
+   0.6345609065155807
+  ],
+  "alej2": [
+   2.3282275711159737
+  ]
+ },
+ "candidatas": [
+  [
+   1,
+   0,
+   0,
+   0,
+   1,
+   3,
+   0,
+   7,
+   0
+  ]
+ ],
+ "desc": {
+  "pistas": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ],
+    "n": 31,
+    "media_neta": 0.08216317376956704,
+    "sesiones": 26,
+    "ic90": [
+     0.06869553471570575,
+     0.09516319804224507
+    ],
+    "p_sesiones": 0.0004997501249375312,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": true,
+     "sin_top5_positivo": true,
+     "ningun_periodo_80pct": true,
+     "sin_colapso_adverso": true
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 4.37,
+    "pasa": false,
+    "n_pruebas": 137804.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": 0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones",
+    "t_rw": 9.876670837402344,
+    "canal": "reciente",
+    "q_fdr": 1.645532627253019e-05,
+    "nominada_fdr": true,
+    "pi0_fdr": 1.0,
+    "m_fdr": 102168,
+    "m_fdr_sobre": "evaluables",
+    "celdas_canal": 207360,
+    "criba": "maxt",
+    "t_maxt": 4.319566001018923,
+    "p_maxt": 0.03396603396603397,
+    "nominada_maxt": true,
+    "q_linaje": 0.00017252145586484544
+   }
+  ]
+ },
+ "potencia_prevista": [
+  {
+   "celda": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    3,
+    0,
+    7,
+    0
+   ],
+   "n_desc": 31,
+   "ops_mes": 10.33,
+   "efecto": 0.04108158688478352,
+   "oos": {
+    "n": 62.0,
+    "mde": 0.014145797318060682,
+    "potencia": 0.9999999877123893
+   },
+   "holdout": {
+    "n": 150,
+    "mde": 0.0090944752714112,
+    "potencia": 1.0
+   }
+  }
+ ],
+ "indagacion": [
+  {
+   "base": [
+    1,
+    0,
+    0,
+    0,
+    1,
+    3,
+    0,
+    7,
+    0
+   ],
+   "indagacion": {
+    "base": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ],
+    "por_perilla": {
+     "tf": [
+      {
+       "nivel": 0,
+       "n": 325,
+       "media_neta": -0.05427923149626219,
+       "sesiones": 144,
+       "ic90": [
+        -0.08505514009470821,
+        -0.022144411415436792
+       ],
+       "p_sesiones": 0.9920159680638723,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 51,
+       "media_neta": 0.05049761526718217,
+       "sesiones": 47,
+       "ic90": [
+        0.023294491765744475,
+        0.07611204965349144
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 23,
+       "media_neta": -0.019251068499013237,
+       "sesiones": 21,
+       "ic90": [
+        -0.12089059586999884,
+        0.0743703141439183
+       ],
+       "p_sesiones": 0.6706586826347305,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 9
+      }
+     ],
+     "pico": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 23,
+       "media_neta": 0.06704623601081695,
+       "sesiones": 23,
+       "ic90": [
+        0.05361478935468042,
+        0.07880843451895826
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 29,
+       "media_neta": 0.01515568785203277,
+       "sesiones": 26,
+       "ic90": [
+        -0.06454102754039683,
+        0.0641890067585922
+       ],
+       "p_sesiones": 0.3972055888223553,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "alej1": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 25,
+       "media_neta": 0.07232501657137991,
+       "sesiones": 24,
+       "ic90": [
+        0.05621723125198313,
+        0.08933130546068196
+       ],
+       "p_sesiones": 0.001996007984031936,
+       "chica": true,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "cerca": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 273,
+       "media_neta": -0.037166696262798976,
+       "sesiones": 139,
+       "ic90": [
+        -0.07489232068859142,
+        0.0035836532974245295
+       ],
+       "p_sesiones": 0.9441117764471058,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "alej2": [
+      {
+       "nivel": 0,
+       "n": 178,
+       "media_neta": 0.008645134100665475,
+       "sesiones": 113,
+       "ic90": [
+        -0.032678669411656314,
+        0.05108630036731939
+       ],
+       "p_sesiones": 0.35728542914171657,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "def_tend": [
+      {
+       "nivel": 0,
+       "n": 123,
+       "media_neta": -0.013303242050999755,
+       "sesiones": 84,
+       "ic90": [
+        -0.05558400679572895,
+        0.026633805290636175
+       ],
+       "p_sesiones": 0.7305389221556886,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 110,
+       "media_neta": -0.0249273627939436,
+       "sesiones": 79,
+       "ic90": [
+        -0.07704959748816269,
+        0.02105393922391104
+       ],
+       "p_sesiones": 0.7864271457085829,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 123,
+       "media_neta": -0.02364001672760176,
+       "sesiones": 84,
+       "ic90": [
+        -0.07251471277032118,
+        0.015976171009687092
+       ],
+       "p_sesiones": 0.810379241516966,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "tendencia": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 71,
+       "media_neta": -0.07263028050494012,
+       "sesiones": 55,
+       "ic90": [
+        -0.14945322814512346,
+        -0.005693259022570946
+       ],
+       "p_sesiones": 0.9441117764471058,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 0
+      },
+      {
+       "nivel": 3,
+       "n": 145,
+       "media_neta": -0.025329278788635282,
+       "sesiones": 95,
+       "ic90": [
+        -0.06935812083034067,
+        0.012651982465257786
+       ],
+       "p_sesiones": 0.8502994011976048,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "disparador": [
+      {
+       "nivel": 0,
+       "n": 174,
+       "media_neta": -0.16383113235341454,
+       "sesiones": 112,
+       "ic90": [
+        -0.4077450709132284,
+        0.06611526017812502
+       ],
+       "p_sesiones": 0.8522954091816367,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 409,
+       "media_neta": -0.09298555246269467,
+       "sesiones": 153,
+       "ic90": [
+        -0.1794218578086401,
+        -0.0194910825494272
+       ],
+       "p_sesiones": 0.9600798403193613,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 394,
+       "media_neta": -0.018426025573708964,
+       "sesiones": 149,
+       "ic90": [
+        -0.0881355815491506,
+        0.04279946477385066
+       ],
+       "p_sesiones": 0.6686626746506986,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 415,
+       "media_neta": -0.26856635339824997,
+       "sesiones": 156,
+       "ic90": [
+        -0.4565363750911651,
+        -0.07570320099508768
+       ],
+       "p_sesiones": 0.9920159680638723,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 248,
+       "media_neta": -0.06439827033763146,
+       "sesiones": 128,
+       "ic90": [
+        -0.17253729595325448,
+        0.03825430426164794
+       ],
+       "p_sesiones": 0.8283433133732535,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 212,
+       "media_neta": -0.05284213875298101,
+       "sesiones": 110,
+       "ic90": [
+        -0.13224548167847625,
+        0.029227779697463985
+       ],
+       "p_sesiones": 0.8622754491017964,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 274,
+       "media_neta": -0.024507629872932483,
+       "sesiones": 139,
+       "ic90": [
+        -0.07577649181954142,
+        0.02522707690217723
+       ],
+       "p_sesiones": 0.7884231536926147,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 259,
+       "media_neta": 0.002843723673332563,
+       "sesiones": 136,
+       "ic90": [
+        -0.07848946452645372,
+        0.07349848410266113
+       ],
+       "p_sesiones": 0.4550898203592814,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ],
+     "ejecución": [
+      {
+       "nivel": 0,
+       "n": 74,
+       "media_neta": 0.020054114749981505,
+       "sesiones": 61,
+       "ic90": [
+        -0.02460011056831399,
+        0.05823557343283329
+       ],
+       "p_sesiones": 0.21357285429141717,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 1,
+       "n": 74,
+       "media_neta": 0.0017957712149378874,
+       "sesiones": 61,
+       "ic90": [
+        -0.09655872444000904,
+        0.08283942669980705
+       ],
+       "p_sesiones": 0.500998003992016,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 2,
+       "n": 74,
+       "media_neta": 0.03970423606529202,
+       "sesiones": 61,
+       "ic90": [
+        -0.0793392714399062,
+        0.14550494832631905
+       ],
+       "p_sesiones": 0.26147704590818366,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 3,
+       "n": 74,
+       "media_neta": 0.050954744366467845,
+       "sesiones": 61,
+       "ic90": [
+        -0.08708418519195488,
+        0.20196349750147607
+       ],
+       "p_sesiones": 0.2994011976047904,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 4,
+       "n": 74,
+       "media_neta": -0.08828960674517485,
+       "sesiones": 61,
+       "ic90": [
+        -0.1962130972597122,
+        0.018232180228017713
+       ],
+       "p_sesiones": 0.8982035928143712,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 5,
+       "n": 74,
+       "media_neta": -0.12721786375248256,
+       "sesiones": 61,
+       "ic90": [
+        -0.3062136566233206,
+        0.04825419722460883
+       ],
+       "p_sesiones": 0.8842315369261478,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 6,
+       "n": 74,
+       "media_neta": -0.08864790676242965,
+       "sesiones": 61,
+       "ic90": [
+        -0.2795462126507925,
+        0.10237435475714593
+       ],
+       "p_sesiones": 0.7664670658682635,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 7,
+       "n": 74,
+       "media_neta": -0.10782968702843546,
+       "sesiones": 61,
+       "ic90": [
+        -0.366473377414889,
+        0.16063165149124908
+       ],
+       "p_sesiones": 0.7305389221556886,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 8,
+       "n": 74,
+       "media_neta": -0.02790871837916714,
+       "sesiones": 61,
+       "ic90": [
+        -0.10271278651815673,
+        0.04081822396771774
+       ],
+       "p_sesiones": 0.7425149700598802,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 9,
+       "n": 74,
+       "media_neta": -0.0401648200105355,
+       "sesiones": 61,
+       "ic90": [
+        -0.1585494018091802,
+        0.060733297018418106
+       ],
+       "p_sesiones": 0.7305389221556886,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 10,
+       "n": 74,
+       "media_neta": -0.027282472230335093,
+       "sesiones": 61,
+       "ic90": [
+        -0.16508892902394529,
+        0.10516403586935139
+       ],
+       "p_sesiones": 0.6387225548902196,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      },
+      {
+       "nivel": 11,
+       "n": 74,
+       "media_neta": -0.008088308983101039,
+       "sesiones": 61,
+       "ic90": [
+        -0.20456105536551175,
+        0.2191057975122937
+       ],
+       "p_sesiones": 0.5249500998003992,
+       "chica": false,
+       "n_boot": 500,
+       "piso_p": 0.001996007984031936,
+       "metodo_p": "bootstrap por sesiones"
+      }
+     ]
+    },
+    "agregado_sobre": []
+   }
+  }
+ ],
+ "oos": {
+  "replica": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ],
+    "n": 62,
+    "media_neta": -0.04103851525221668,
+    "sesiones": 52,
+    "ic90": [
+     -0.126047005503649,
+     0.034901556689358126
+    ],
+    "p_sesiones": 0.7891054472763618,
+    "meseta": false,
+    "economico": {
+     "neto_base_positivo": false,
+     "sin_top5_positivo": false,
+     "ningun_periodo_80pct": false,
+     "sin_colapso_adverso": false
+    },
+    "regimen_reciente": false,
+    "ratio_mov_friccion": 4.85,
+    "pasa": false,
+    "n_pruebas": 1.0,
+    "n_pruebas_metodo": "bruto",
+    "conservado": 0.0,
+    "media_esperada_fuera": -0.0,
+    "n_boot": 2000,
+    "piso_p": 0.0004997501249375312,
+    "metodo_p": "bootstrap por sesiones"
+   }
+  ],
+  "lord": {
+   "nivel": 0.010937333410740489,
+   "p_simes": 0.7891054472763618,
+   "rechazo": false,
+   "confirmadas": [],
+   "m": 1,
+   "t": 1,
+   "familia": "PICOS_DEFENDIDOS_NQ",
+   "run_id": "PICOS-DEFENDIDOS-NQ/oos"
+  },
+  "regimen": {
+   "definicion": "tendencia como perilla declarada en el módulo (def_tend x tendencia: E20, E50, X9_21, X20_50; a favor / en contra / neutra / cualquiera); sin régimen de calendario",
+   "actual_desde": 20250805,
+   "fraccion_efecto": 0.5,
+   "potencia_min": 0.8
+  },
+  "mismo_regimen": true,
+  "veredictos": [
+   {
+    "celda": [
+     1,
+     0,
+     0,
+     0,
+     1,
+     3,
+     0,
+     7,
+     0
+    ],
+    "veredicto": "NO_CONCLUYENTE",
+    "media": -0.04103851525221668,
+    "ic90": [
+     -0.126047005503649,
+     0.034901556689358126
+    ],
+    "efecto_para_potencia": 0.04108158688478352,
+    "potencia": 0.21036172444592505,
+    "mismo_regimen": true
+   }
+  ]
+ }
+}

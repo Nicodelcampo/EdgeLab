@@ -43,6 +43,31 @@ Recordatorios:
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
 
+### Estado al 2026-11-17
+
+> **Handoff completo de esta etapa (sin depender del chat): `docs/research/HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md`.**
+> **Qué se opera y con qué evidencia: `docs/cartera/CANASTAS_VIGENTES.md`** (generado de los archivos operativos; un test lo exige al día)
+> y su página auditable https://claude.ai/artifact/UKHJZyWZH1L8tr2cWtWo2s (privada; se comparte desde su menú). Canastas v2/v3 y B en papel y
+> forward; 0 edges promovidos. **Cuenta**: LucidFlex 25K con DLL $600 + 50 % rinde más por cuenta (`docs/research/propfirm_lucidflex_20261117/`);
+> con la media contraída, las canastas dan +$440 a +$1.900 por cuenta contra +$35 a +$100 sin edge. **Urgencia contra evidencia** (propuesta
+> ACEPTADA por Nico): `docs/research/urgencia_vs_evidencia_20261117/` — paso 1 (catálogo): no hay regímenes que se apaguen en meses, sólo
+> deriva lenta y mayormente fricción; paso 1b (M1 intradía de índices, el dominio de la cartera): lo mismo, sin régimen de mercado en NQ/ES/YM
+> (bruto p 0,11) — confirmar antes de escalar no llega tarde; el tamaño se gobierna por fricción en R y evidencia. Paso 2: lo elegido por el
+> embudo no conservó nada en réplica (b −0,26, un solo par de períodos) → media de partida ≈ 0; la columna «contraída» de Lucid es optimista. **Guardas nuevas K27–K34**
+> (potencia antes de abrir, todo por EdgeLab, simuladores calibrados, costos estimados sólo declarados): ver Rituales.
+
+### Estado al 2026-11-17 (noche): el «atrás» refutó lo elegido por el embudo
+
+> M1 real de futuros de NT8 desde 2006 (`M1NT8:`, calibrado contra ticks, corr 0,89–0,998). Las 5 reglas de v2/v4 medibles en M1 dieron
+> −193 R en 1.453 sesiones de años limpios (v2 del 18-nov, motor corregido por K40; la v1 daba −386), 1/8 años positivos: **REFUTADA_ATRAS**;
+> CVGAP-ES-C, CVGAP2-GC#11 y COMEX EN_CONTRA, PREAPERTURA-NQ ≈ 0 (`docs/research/atras_m1_20261117/RESULTADO.md`).
+> Elegir entre miles de celdas con 14 meses de datos produce ganadoras de ruido. Por eso Nico firmó **HOLDOUT-A5** (holdout intercalado
+> por meses sobre 18 años): toda campaña nueva descubre y confirma sobre M1 largo. Ninguna canasta habilita tamaño real.
+> **Veredicto de todas las reglas: `docs/research/VEREDICTO_M1_20261117.md`.** El «antes no, ahora sí» es fricción relativa (fricción/ATR en NQ
+> 0,045 → 0,006), no régimen. Señales brutas estables en 20 años y en datos no usados: SOM (también MidCap y Russell) y Franklin (años limpios
+> +0,195 R); R AtrPhase sólo NQ; T, revisado en su unidad (R): pista fuerte en NQ, bruto + en 13/14 años desde 2012, salto desde 2020 en
+> NQ/ES/YM (no en MidCap/Russell) — `docs/research/m1_largo_20261117/RESULTADO_T_2020.md`.
+
 ### Estado al 2026-11-09
 
 > **0 edges promovidos.** Lo más valioso descubierto y qué indagar primero: `docs/research/FACTORES_CON_VENTAJA.md` (2 pistas vivas,
@@ -183,6 +208,25 @@ muestre calibración sana en datos reales.
 - **Cadena estándar de una corrida (Nico, 2026-11-11):** `tools/antecedentes.py` → módulo con el contrato de `edgelab/research/tablas.py`
   (motor único `ejecucion.py`, calibrado) → `tools/tablas.py preflight|lanzar|traer|explorar|congelar|confirmar` → `tools/cierre.py`.
   Nada de simuladores ni kernels propios (`docs/autopilot/AUTOMATIZACION_PROCESOS_20261111.md`).
+- **Potencia y frecuencia antes de invertir (Nico, 2026-11-17, «opera demasiado poco»):** antes de mejorar, abrir un holdout o
+  mandar al forward cualquier regla —también de afuera o medida con una herramienta ad hoc— `python tools/potencia_previa.py <ops>`; su
+  línea «Potencia previa:» va al pre-registro. `holdout_ventanas.registrar_apertura` exige un plan de potencia (lectura de N fijo con
+  potencia ≥ 0,8; forward que decida en ≤ 60 meses: información por mes, no un piso de frecuencia); las pruebas con n < 30 no entran a la
+  familia de BH; ningún simulador nuevo sin calibración registrada.
+- **Toda corrida usa EdgeLab, también la ad hoc (Nico, 2026-11-17, K32):** `antecedentes.py` → `potencia_previa.py` → pre-registro
+  (hash del North Star, Estado, justificación económica, cómo podría refutarse, etapa EF, «Antecedentes:», «Potencia previa:») → commit →
+  `python tools/registro_global.py preregistrado <campaña> <FAMILIA> <n> <PREREGISTRO.md>` → correr. El CI rechaza pruebas contadas por
+  fuera (`tests/test_guardas_principiante_20261117.py`). Ver K27–K32 en `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` §E5.
+- **Índice obligatorio antes de cada corrida (Nico, 2026-11-18):** `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` (qué leer según el tipo
+  de corrida, y los errores de unidad y escala K35–K39). Todo pre-registro nuevo lleva «Lectura previa: LEER_ANTES_DE_CADA_CORRIDA vN — …»;
+  `preflight.validar_preregistro` la exige. Desde la v3 (2026-11-18) su §6 lista cada error de la etapa con la guarda en código que lo
+  impide, y los datos fuera de Kaggle se obtienen sólo con `python tools/datos.py traer <NOMBRE>` (copia local verificada).
+- **Diagnóstico de mecanismo antes de leer una grilla o una época (Nico, 2026-11-19, K55/K56):** operaciones por celda, qué mueve cada perilla,
+  número efectivo de variantes, dosis-respuesta y episodios por mes, con `edgelab/research/diagnostico_grilla.py` (`tools/diagnostico_grilla.py`).
+  El pre-registro lleva «Diagnóstico de mecanismo:» (lo exige `preflight.validar_preregistro`) y el RESULTADO las líneas «Diagnóstico de grilla:» /
+  «Episodios:» (lo exige `tests/test_diagnostico_obligatorio.py`). Caso de referencia: la «variante rápida» de Z tenía 4 operaciones
+  (`docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` §7).
+- **Frecuencia en las prop (Nico, 2026-11-19):** preferir más operaciones siempre que el resultado POR MES sea igual o mejor (R neto por mes y consistencia: t de la serie mensual y % de meses positivos); operar poco sólo si es la única manera de que funcione. Las variantes se comparan por R/mes y consistencia, no por R por operación. La elección entre variantes sigue las reglas de selección (pre-registrada, nunca la mejor sobre datos ya mirados). Datos de referencia: `docs/research/FRECUENCIA_PROP_20261119.md`.
 - **Errores que no se repiten (2026-10-26):** `docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md` (inferencia, operación,
   construcción, checklist por ciclo). Un nulo sin potencia no cierra una familia en NINGUNA etapa (tampoco en pistas: PISTAS_VIVAS).
 - **Preflight obligatorio (2026-10-23):** ningún experimento de grilla se lanza sin pasar `edgelab.research.preflight`
@@ -212,6 +256,11 @@ muestre calibración sana en datos reales.
 > desarrollo; para **ES y NQ** sigue la partición de A3 (descubrimiento jul-2025 → 31-mar-2026, réplica abr–sep una vez
 > por familia). Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md`.
 
+- **HOLDOUT-A5 (firmada por Nico el 2026-11-17): holdout intercalado para campañas nuevas.** Cada año 7 meses DESC, 2 REP y 3 HOLDOUT
+  (permutación fija, `edgelab/holdout.py::a5_bloque`), embargo de 1 día hábil a cada lado, una apertura por familia de todos los meses
+  HOLDOUT a N fijo con plan de potencia y estabilidad; el terminal (desde la sesión del 2026-10-01, sin cambios) vigila y da tamaño.
+  Ver `docs/incidents/AMENDMENT_HOLDOUT-A4_2026-10-22.md` y `docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11-17.md`. Datos: M1 real de
+  futuros de NT8 desde 2006/2008 (`M1NT8:`, `edgelab-nt8-m1-futuros`).
 - **Sesiones excluidas (2026-11-02):** las sesiones incompletas del sellado están declaradas en `edgelab/holdout.py`
   (`SESIONES_EXCLUIDAS_HOLDOUT`, p. ej. el 7-oct en CME, ES 29 y 30-oct) y los lectores sellados las descartan siempre. Ningún
   análisis las lee por otro camino; una sesión sale de la tabla sólo con datos completos re-sellados y re-medidos.

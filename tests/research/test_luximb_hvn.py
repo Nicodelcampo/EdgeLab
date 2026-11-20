@@ -9,19 +9,22 @@ def _p(*xs):
     return np.array(xs, float)
 
 
+_NA = np.zeros(0, np.bool_)                                                               # ticks reales (sin marcas de apertura)
+
+
 def test_e0_objetivo_stop_parcial_y_be():
     # impulso alcista (d=1) con A = 90; entrada (venta) en 100: D = 10; stop 0,2·D = 2, objetivo 1,0·D = 10
     tpx = _p(100, 99, 95, 90.5, 90)
-    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0) == 5.0                 # objetivo: 10 / 2
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0, _NA) == 5.0                 # objetivo: 10 / 2
     tpx = _p(100, 101, 103)
-    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0) == -1.5                # stop a mercado: sale en 103 (−3 / 2)
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0, _NA) == -1.5                # stop a mercado: sale en 103 (−3 / 2)
     tpx = _p(100, 97.5, 101, 103)                                                          # parcial 50 % a 0,25·D = 2,5 y después stop
-    assert np.isclose(H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.25, 0.0), (0.5 * 2.5 + 0.5 * -3) / 2)
+    assert np.isclose(H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.25, 0.0, _NA), (0.5 * 2.5 + 0.5 * -3) / 2)
     tpx = _p(100, 97.5, 100, 103)                                                          # BE a 0,25·D: vuelve a la entrada → 0
-    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.25) == 0.0
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.25, _NA) == 0.0
     tpx = _p(100, 97.5, 100.25)                                                            # parcial + BE: medio cobrado, medio a ~0
-    assert np.isclose(H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.25, 0.25), (0.5 * 2.5 + 0.5 * -0.25) / 2)
-    assert np.isnan(H._e0_nb(_p(89, 88), 0, 2, 1, 90.0, 0.2, 1.0, 0.0, 0.0))             # entrada ya pasada de A: D <= 0
+    assert np.isclose(H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.25, 0.25, _NA), (0.5 * 2.5 + 0.5 * -0.25) / 2)
+    assert np.isnan(H._e0_nb(_p(89, 88), 0, 2, 1, 90.0, 0.2, 1.0, 0.0, 0.0, _NA))             # entrada ya pasada de A: D <= 0
 
 
 def test_ext_espera_extension_y_vuelta():
@@ -62,3 +65,15 @@ def test_tabla_completa_y_nombres():
     for x in H.E0: assert f"r_{H.nombre_e0(x)}" in T and f"k_{H.nombre_e0(x)}" in T
     for x in H.EXT: assert f"r_{H.nombre_ext(x)}" in T
     assert len({H.nombre_e0(x) for x in H.E0}) == len(H.E0) and len({H.nombre_ext(x) for x in H.EXT}) == len(H.EXT)
+
+
+def test_e0_m1_stop_en_su_nivel_salvo_hueco_en_la_apertura():
+    """Enmienda 1 de LUXIMB-A5: con pseudo-ticks de M1 el extremo de la vela no es un precio de ejecución."""
+    # venta en 100, A = 90, D = 10, stop 2 (en 102). Velas M1 como 4 pseudo-ticks: apertura, máximo, mínimo, cierre.
+    tpx = _p(100, 100, 106, 99, 104)                                                       # vela 1 abre en 100 y llega a 106
+    aper = np.array([True, True, False, False, False])
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0, _NA) == -3.0            # ticks: sale en 106 (−6 / 2)
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0, aper) == -1.0           # M1: sale en el stop (−2 / 2)
+    tpx = _p(100, 105, 106, 104, 105)                                                      # la vela abre en 105: hueco sobre el stop
+    aper = np.array([True, True, False, False, False])
+    assert H._e0_nb(tpx, 0, len(tpx), 1, 90.0, 0.2, 1.0, 0.0, 0.0, aper) == -2.5           # paga el hueco de la apertura

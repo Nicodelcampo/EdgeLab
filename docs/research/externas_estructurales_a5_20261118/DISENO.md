@@ -1,0 +1,31 @@
+# EXTERNAS-ESTRUCTURALES-A5: Diseño de la traducción estructural H1 / D1 / Sesión (2026-11-18)
+
+Estado: DISENO — acompaña a `PREREGISTRO.md`.
+
+## 1. Problema estructural diagnosticado en `EXTERNAS-28` (`edgelab/research/externas_a5.py`)
+
+En `EXTERNAS-28` (`docs/research/externas_a5_20261118/PREREGISTRO.md`), se conectaron las 28 estrategias del catálogo externo (`114` variantes `X000`–`X113`) directamente sobre barras de **1 minuto (M1)**. En la prueba de Fase 0 sobre `NQ` 2010:
+- **110 de las 114 variantes** tuvieron **fricción mediana $\ge 1,17\text{ R}$** (contra el umbral canónico operable de $\le 0,08\text{ R}$).
+- **Causa física (`F-VIDA-VENTAJA-INTRADIA-FRICCION`):** cuando una lógica diseñada para barras `H1`, `H4` o `D1` (Supertrend, PMax, Squeeze Momentum, Connors RSI(2), Dynamic Breakout II, QFL Base Scanner, SMC FVG) se corre sobre M1 crudo con `stop = 1,0–1,5 × ATR(14)_M1` (~2–4 puntos de NQ), el costo redondo canónico de ejecución (`mini`/`micro`) equivale a más de 1 R completo por operación.
+- **Única excepción en `EXTERNAS-28`:** las 4 variantes de `Dual Thrust` (`X036`–`X039`), que justamente calculan su rango sobre **4 sesiones diarias completas** (`rng4 = max(HH4 - LC4, HC4 - LL4)`), tuvieron fricción mediana $\le 0,08\text{ R}$.
+
+## 2. Solución de diseño: `EXTERNAS-ESTRUCTURALES-A5` (`ES1`–`ES8` + controles `ES1N`–`ES8N`)
+
+Sin modificar ni un solo byte de los 28 módulos de `edgelab/research/estrategias/*.py` (para preservar intactos sus hashes SHA256 y la invariante `K41` `codigo_vigente` de la campaña `EXTERNAS-28` de Claude), construimos el módulo hermano `edgelab/research/externas_estructurales_a5.py` bajo el contrato de `edgelab/research/tablas.py`:
+
+1. **Escala estructural (`rg >= 0,40 * ATR20_D1`):** todas las distancias de stop y umbrales de activación están normalizadas por el `ATR20` de sesiones RTH diarias completas previas (`ATR20_D1`, K36). En `NQ`, `0,40–0,50 × ATR20_D1` equivale a ~`60–130` puntos (`fricción mediana ≈ 0,015–0,035 R`, cumpliendo holgadamente `<= 0,08 R` en `ES`, `NQ`, `YM` y `GC`).
+2. **Salidas al cierre RTH (`F-SALIDA-TECNICA-REGALA-LA-GANANCIA`):** las reglas tendenciales y de ruptura (`ES1`, `ES2`, `ES3`, `ES5`, `ES8`) mantienen hasta el cierre RTH (`15:59 NY`) salvo stop estructural, evitando regalar la cola derecha en salidas técnicas prematuras. Las reglas de reversión a la media (`ES4`, `ES6`, `ES7`) tienen objetivo estructural definido (`1,0 R`, retorno a la base H1, o `1,5 R`).
+3. **Controles directos pareados (`ES1N`–`ES8N`):** cada regla tiene un control con la misma ventana horaria, el mismo instrumento y el mismo tamaño de stop (`d_sl`), pero donde la condición económica o estructural está ausente o invertida.
+
+## 3. Especificación de las 8 familias y sus controles
+
+| ID | Control | Familia / Fuente | Regla (`ESk`) | Control (`ESkN`) | Stop (`rg`) | Salida (`obj` / `fin`) |
+|---|---|---|---|---|---|---|
+| `ES1` | `ES1N` | **Gao, Han, Li & Zhou (2017, JFE)** (`intraday_first_last_momentum.py`) | A las `15:00 NY` (`mo=899`), si `\|C_1000 - Open_0930\| >= 0,25·ATR20_D1`, entra en dirección de `ret_30m` con confirmación de signo a las `15:00 NY` (`ret_1500 · ret_30m > 0`). | Mismo impulso `\|ret_30m\| >= 0,25·ATR20_D1`, pero a las `15:00 NY` el retorno del día ya revirtió de signo (`ret_1500 · ret_30m <= 0`). | `0,40 · ATR20_D1` | Cierre RTH (`15:59 NY`) |
+| `ES2` | `ES2N` | **Michael Chalek Dual Thrust** (`dual_thrust_chalek.py`) | Primer cierre M1 (`09:35–14:30 NY`) que rompe `Open_0930 ± max(0,45·rng4, 0,40·ATR20_D1)` tras **compresión de rango** (`rng4 <= mediana_60d(rng4)`). | Misma ruptura Dual Thrust tras **expansión de rango** (`rng4 > mediana_60d(rng4)`). | `max(0,45·rng4, 0,40·ATR20_D1)` | Cierre RTH (`15:59 NY`) |
+| `ES3` | `ES3N` | **George Pruitt Dynamic Breakout II** (`dynamic_breakout_ii.py`) | Primer cierre M1 (`09:35–14:30 NY`) que rompe el canal Donchian de `L_t in [15, 50]` sesiones previas (adaptado por `deltavol`), con cierre previo fuera de `BB(L_t, 0,75 SD)`. | Misma ruptura del canal Donchian adaptativo `L_t`, pero con cierre diario previo dentro de `BB(L_t, 0,75 SD)`. | `0,50 · ATR20_D1` | Cierre RTH (`15:59 NY`) |
+| `ES4` | `ES4N` | **Connors RSI(2) + Zen ATR Pullback** (`connors_rsi2_atr_mr.py`, `F-CONNORS-INDICES-SQX`) | Con `RSI(2)_{d-1} < 25` (o `> 75`), primer cierre M1 (`09:35–14:30 NY`) que retrocede `0,35·ATR20_D1` adicional contra `C_{d-1}`, **a favor de `SMA100_D1`**. | Mismo `RSI(2)_{d-1}` extremo y mismo pullback intradía de `0,35·ATR20_D1`, pero **en contra de `SMA100_D1`**. | `0,50 · ATR20_D1` | `1,0 R` o cierre RTH |
+| `ES5` | `ES5N` | **Composer FTLT / Deez RSI(10) Regime** (`composer_ftlt_rsi_regime.py`) | A las `10:00 NY` (`mo=599`), con `\|ret_30m\| >= 0,12·ATR20_D1`, opera fade bajista si `RSI(10)_{d-1} >= 65` y `ret_30m < 0`, o rebote alcista si `RSI(10)_{d-1} <= 38` y `ret_30m > 0`. | Mismo disparo a las `10:00 NY` con `\|ret_30m\| >= 0,12·ATR20_D1`, pero en régimen `RSI(10)_{d-1}` neutro (`40..60`). | `0,45 · ATR20_D1` | Cierre RTH (`15:59 NY`) |
+| `ES6` | `ES6N` | **QFL / Altrady Base Scanner H1** (`qfl_base_scanner.py`) | Al cierre de barra H1 RTH, ruptura ("crack") de `>= 0,20·ATR20_D1` más allá de la última base H1 confirmada, **con mecha de rechazo H1 >= 25%**. | Misma ruptura H1 de la base por `>= 0,20·ATR20_D1`, pero **sin mecha de rechazo (`< 25%`)**. | `0,50 · ATR20_D1` | Retorno a la base H1 (mín `0,5 R`) o cierre RTH |
+| `ES7` | `ES7N` | **LuxAlgo SMC H1 FVG Retest** (`smc_fvg_ob_retest.py`) | Al cierre de barra H1 RTH, retesteo (dentro de 12 barras H1) de un **Fair Value Gap de 3 barras H1** (`Low_H1[t] > High_H1[t-2]` o `High_H1[t] < Low_H1[t-2]`) tras vela H1 impulsiva (`cuerpo >= 0,25·ATR20_D1`). | Retesteo H1 equivalente al 50% de una vela H1 impulsiva (`cuerpo >= 0,25·ATR20_D1`) que **NO dejó gap de 3 barras**. | `0,50 · ATR20_D1` | `1,5 R` o cierre RTH |
+| `ES8` | `ES8N` | **Kivanc PMax H1 + Squeeze Release** (`pmax_profit_maximizer.py`, `squeeze_momentum_lazybear.py`) | Al cierre de barra H1 RTH, giro de tendencia de `PMax(EMA8_H1, 1,8·ATR10_H1)` saliendo de **compresión H1 (`BB_width_H1 <= mediana_20_H1`)**. | Mismo giro de tendencia de `PMax` H1 pero **sin compresión previa (`BB_width_H1 > mediana_20_H1`)**. | `0,50 · ATR20_D1` | Cierre RTH (`15:59 NY`) |

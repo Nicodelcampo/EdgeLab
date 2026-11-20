@@ -140,14 +140,19 @@ def limites(ctx, k):
 
 
 @njit(cache=False)
-def _e0_nb(tpx, j0, jend, d, pa, sl, tp, pt, be):
-    """Entrada a mercado en el primer tick de la vela k+1, hacia A. Devuelve R bruto (NaN si no hay ticks o D <= 0)."""
+def _e0_nb(tpx, j0, jend, d, pa, sl, tp, pt, be, aper):
+    """Entrada a mercado en el primer tick de la vela k+1, hacia A. Devuelve R bruto (NaN si no hay ticks o D <= 0).
+    `aper` (2026-11-18, LUXIMB-A5 enmienda 1): vacío con ticks reales; con velas M1 (4 pseudo-ticks: apertura, extremos, cierre) marca
+    los pseudo-ticks de APERTURA. Un stop cruzado por un pseudo-tick que no es apertura sale en el nivel del stop (el extremo de la vela
+    no es un precio de ejecución); cruzado en la apertura (hueco), al precio de la apertura."""
     s = -d; e = tpx[j0]; D = s * (pa - e)
     if D <= 0: return np.nan
     risk = sl * D; stop = -risk; pos = 1.0; real = 0.0; hecho_p = pt <= 0; hecho_b = be <= 0; fav = 0.0
     for j in range(j0 + 1, jend):
         fav = s * (tpx[j] - e)
-        if fav <= stop: return (real + pos * fav) / risk               # stop a mercado: sale al tick que lo cruza (con el salto)
+        if fav <= stop:                                                # stop a mercado: sale al tick que lo cruza (con el salto)
+            if len(aper) and not aper[j]: fav = stop                   # M1: dentro de la vela, en el nivel del stop
+            return (real + pos * fav) / risk
         if fav >= tp * D: return (real + pos * tp * D) / risk
         if not hecho_p and fav >= pt * D:
             real += 0.5 * pt * D; pos = 0.5; hecho_p = True
@@ -206,11 +211,14 @@ def desenlaces(E: pd.DataFrame, ctx) -> pd.DataFrame:
     k = E.k.to_numpy(np.int64); j0, jw, fin = limites(ctx, k)
     d = E.d.to_numpy(np.int64); pa = E.pa.to_numpy(float); B = E.ext.to_numpy(float); rg = E.rg.to_numpy(float)
     n = len(E); cols = {}
+    aper = np.zeros(0, np.bool_)
+    if ctx.get("m1_sintetico"):                                       # pseudo-ticks de M1: marcar las aperturas (enmienda 1 de LUXIMB-A5)
+        aper = np.zeros(len(tpx), np.bool_); aper[ts[:-1][ts[:-1] < len(tpx)]] = True
     mec = np.array([_mec_nb(tpx, j0[q], jw[q], d[q], pa[q], B[q], rg[q]) if jw[q] > j0[q] else (np.nan,) * 4 for q in range(n)], float)
     cols.update(ext_antes_A=mec[:, 0], ext_antes_mid=mec[:, 1], toca_A=mec[:, 2], toca_mid=mec[:, 3])
     for x in E0:
         sl, tp, pt, be = x
-        r = np.array([_e0_nb(tpx, j0[q], jw[q], d[q], pa[q], sl, tp, pt, be) if jw[q] > j0[q] + 1 else np.nan for q in range(n)])
+        r = np.array([_e0_nb(tpx, j0[q], jw[q], d[q], pa[q], sl, tp, pt, be, aper) if jw[q] > j0[q] + 1 else np.nan for q in range(n)])
         D = np.where(jw > j0, np.abs(pa - tpx[np.minimum(j0, len(tpx) - 1)]), np.nan)
         cols[f"r_{nombre_e0(x)}"] = r; cols[f"k_{nombre_e0(x)}"] = sl * D
     for x in EXT:

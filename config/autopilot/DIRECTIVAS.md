@@ -106,3 +106,5 @@ Detalle y contexto: docs/research/MENSAJES_AL_AGENTE_DEBIAN.md (lo más nuevo, a
    de `edgelab/research/tablas.py` (plantilla `edgelab/research/plantilla_tabla.py`); nunca un simulador ni un kernel propio: el
    motor único `edgelab/research/ejecucion.py` (stop al tick que lo cruza, calibrado sin optimismo) y `python tools/tablas.py
    preflight → lanzar → traer → explorar → congelar → confirmar`. Cierre: `python tools/cierre.py` antes de cada commit.
+
+- **Frecuencia en las prop (Nico, 2026-11-19):** preferir más operaciones siempre que el resultado POR MES sea igual o mejor (R neto por mes y consistencia: t de la serie mensual y % de meses positivos); operar poco sólo si es la única manera de que funcione. Las variantes se comparan por R/mes y consistencia, no por R por operación. La elección entre variantes sigue las reglas de selección (pre-registrada, nunca la mejor sobre datos ya mirados). Datos de referencia: `docs/research/FRECUENCIA_PROP_20261119.md`.

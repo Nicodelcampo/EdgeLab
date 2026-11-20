@@ -1,0 +1,12 @@
+## PICOS-DEFENDIDOS-NQ — edgelab.research.agente.picos_defendidos · señal NQ · ejecución NQ
+- Justificación: Un nivel de picos defendido dos veces (acercamiento que no lo toma y nuevo alejamiento) acumula stops de quienes operan el rebote y órdenes de ruptura detrás; con la tendencia empujando hacia el nivel, la próxima llegada ejecuta esa liquidez y sigue más allá. Pierde quien opera el rebote con el stop pegado al nivel.
+- Refutación: 0 nominadas por la criba y canasta de pistas <= 0 con potencia en réplica; tendencia a favor sin ventaja sobre en contra; el signo de IPC-NIVEL (nivel con visitas resiste) reproducido; falla de INTEGRIDAD; refutación con potencia en OOS/holdout. Un nulo sin potencia no mata (publica MDE).
+- PREFLIGHT: ok
+- Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
+- Linaje: hereda 968985 pruebas de ['DOBLE_RETROCESO_NQ']; régimen actual desde 20250805
+- Evaluables: 239972 de 414720 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 137804 (m del FDR 137804 de 207360 celdas), FDR 20 (informativo), maxT 8, RW umbral 4.933863639831543 (diagnóstico), linaje 968985 como informacion, pistas sin nominación 40, candidatas 1
+- Potencia prevista (informativa): [1, 0, 0, 0, 1, 3, 0, 7, 0]: OOS n 62.0 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [1, 0, 0, 0, 1, 3, 0, 7, 0]: regla 0.020054114749981505, placebo -2.51, latencia 1 vela 0.08291918144726831 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-0.04]; veredictos ['NO_CONCLUYENTE']; potencias [0.21]; LORD++ sin rechazo

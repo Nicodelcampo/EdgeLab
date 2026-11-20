@@ -1,4 +1,5 @@
 window.ASSET_CATALOG = [
+  {"id": "EURUSD_DUKAS_M1_LUXIMB", "name": "EURUSD Dukascopy · M1/25t · LUX-IMB (OG+VI) · 2026-03-17..06-17", "group": "EURUSD (LUX-IMB M1)", "instrument": "EURUSD", "contract": "EURUSD (Dukascopy mid)", "tick_size": 1e-05, "precision": 5, "candles": 96069, "zones": 5188, "rolls": 0, "parity_status": "PARITY_ABSTAIN", "kind": "M1_LUX_IMB"},
   {"id": "MNQ_12-26_AVCL_25T", "name": "MNQ 12-26 \u00b7 aVolClusterPOI (25t, \u00faltimas 5 sesiones)", "group": "MNQ (aVolClusterPOI en vivo)", "instrument": "MNQ", "contract": "MNQ 12-26", "tick_size": 0.25, "precision": 2, "candles": 438178, "zones": 0, "rolls": 0, "parity_status": "PARITY_PASS_50T"},
   {"id": "ES_09-26_GEX", "name": "ES 09-26 \u00b7 GEX (1m / 5m)", "group": "ES (GEX)", "instrument": "ES", "contract": "ES 09-26", "tick_size": 0.25, "precision": 2, "candles": 76417, "zones": 0, "rolls": 0, "parity_status": "PARITY_ABSTAIN"},
   {

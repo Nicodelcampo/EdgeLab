@@ -107,6 +107,112 @@ el agente del Debian**.
 | O23 | `sync_state.sh` copia los manifiestos con `cp -u`: después de un checkout, la versión del repo (más nueva) pisa en el estado la de SV1 de los 6 CONTEO del 26/27-oct. | Se pierde la custodia local de lo que lanzó el Debian. | Copia aparte en `state/autopilot_runs/launches_sv1_conteo_20261101/` antes del update. | Conservar y reportar los manifiestos de conteo locales (handoff 30-oct). |
 | O24 | `git merge` como `edgelab` falla sin `user.name`, y un script encadenado siguió sobre la rama sin mergear (el TRIAL quedó encadenado sobre un head viejo; se descartó antes de commitear). | Commits sobre una base equivocada. | `git -c user.name='Agente Debian SV1' -c user.email=...` y `set -e` con comprobación de MERGE_HEAD y de ancestro. | Cortar ante el primer fallo de git. |
 
+## E5. Errores «de principiante» en rutas ad hoc (2026-11-17, pedido de Nico: «opera demasiado poco; revisá los errores de principiante y estandarizá que no se cometan»)
+
+Causa común: entre el 2026-11-15 y el 17 se midieron estrategias de afuera (FundedSync, reels/Franklin, QuantLab/SOM, catálogo SQX,
+Turtles) con herramientas propias (`tools/*_seguimiento.py`, `tools/sqx_catalogo_medir.py`, `tools/mejora_*.py`) en vez de la cadena
+estándar. Las guardas existían (E8, C5, K23) pero vivían en el embudo y en `tablas.py`: **la ruta ad hoc no pasaba por ellas**. La regla
+ahora es que la guarda esté en el punto por el que pasan TODAS las rutas.
+
+| # | Qué pasó | Por qué importa | Guarda | Qué hace el agente |
+|---|---|---|---|---|
+| K27 | Se abrió el holdout de cuatro familias sin potencia: SOM (N 29, potencia ≈ 0,08), Franklin (28, ≈ 0,07), FundedSync T (26) y TURTLES-ORO (≈ 0,6 operaciones esperadas; salió 0). Es E8 otra vez: `registrar_apertura` no pedía nada. Y se invirtió en mejorar y llevar al forward una regla de **5,3 operaciones por año** (Turtles: 196 meses para decidir). | Se gastó la única apertura de 4 familias; el forward de una regla lenta no decide nunca y no ayuda a pasar una evaluación de prop. | **Código**: `holdout_ventanas.registrar_apertura` exige `plan` de `plan_potencia` sin problemas: lectura de N fijo con potencia ≥ 0,8; seguimiento secuencial que decida en ≤ `MESES_MAX_DECISION` (60) meses con el efecto de desarrollo. Un solo criterio de «opera poco»: los meses para decidir = z² / (operaciones por mes × (R/desvío)²), la **información por mes** (Nico: un piso fijo de operaciones es arbitrario; una regla rara pero muy fuerte puede pasar, una frecuente con efecto mínimo no). `tablas.py holdout` exige `--plan`. Embudo y `holdout_canasta` registran su propio plan (ya lo decidían). En la cartera viva la unidad es la canasta: el plan de cada ficha queda como aviso. **Test**: `tests/test_guardas_principiante_20261117.py::test_K27_*`. | Antes de mejorar, abrir o mandar al forward: `python tools/potencia_previa.py <ops>` (y `--fijo N` para un holdout). Si dice NO: subir frecuencia (canasta, más instrumentos, otra temporalidad) o dejarla como pista; nunca abrir. |
+| K28 | Simulador de barras propio (`sqx_catalogo.simular`) sin calibrar: en las órdenes stop el extremo de la barra de entrada contaba como posterior al llenado. Pesimista: −0,5 R en una caminata al azar; mató la corrida v1 del catálogo (INSIDE_BAR −0,42 → −0,05 con el M1). | Un motor sesgado (para cualquier lado) cambia veredictos; K23 ya lo había prohibido. | **Test**: `test_K28_ningun_simulador_nuevo_sin_calibracion` (línea base `config/simuladores_baseline.json`: todo `def simular*/_sim*` nuevo falla salvo que se registre con su test de calibración) y `test_calibracion_motor_barras` (con M1: R ≈ 0; sin M1: −0,5). | Usar `edgelab/research/ejecucion.py`. Si hace falta un motor de barras (D1 de 20 años), resolver el orden intrabarra con M1 y registrar la calibración antes de medir. Límite conocido: con el M1 sólo, stops de 2–3 rangos de minuto siguen sesgados en contra (≈ −0,1 R). |
+| K29 | El catálogo midió 136 pruebas y ≈ 60 tenían menos de 30 operaciones (COT, MR, price dip: ≈ 1 por año). No podían rechazar y duplicaron el denominador de BH de las que sí. | Multiplicidad gastada en pruebas imposibles: hace más difícil nominar las buenas (exigía p ≤ 0,0007). | **Código**: `escalera.separar_por_n` (n ≥ 30, conteo SIN P&L) y `potencia_previa.py --conteo`. **Test**: `test_K29_*`. | Contar operaciones de cada prueba sin mirar resultados ANTES del pre-registro; las de n < 30 se declaran SIN_POTENCIA_PREVIA y no entran a la familia. |
+| K30 | Se pre-registró y midió sin mirar la frecuencia ni la potencia; recién al final se vio que «Turtles viernes» era otra estrategia (78 de 83 salidas por el viernes, mediana 3 velas) y que operaba 5 veces por año. | Lo que define la estrategia y su potencia se descubre tarde, después de gastar pruebas. | **Test**: `test_K30_preregistros_nuevos_declaran_potencia_previa` (todo `PREREGISTRO*.md` nuevo lleva la línea «Potencia previa:» de `potencia_previa.py`; línea base `config/preregistros_baseline.json`). | En el pre-registro: frecuencia, meses para decidir y distribución de salidas (motivo, mediana de barras) de la regla tal cual, antes de cualquier variante. |
+| K32 | Las guardas K27–K30 y las de CLAUDE.md (hash del North Star, justificación económica, cómo podría refutarse, etapa EF, antecedentes) eran texto: la ruta ad hoc contó pruebas en el registro global con `TrialRegistry.ensure` a mano y nadie verificó el pre-registro. Nico: «salteártela demuestra que hay que cambiarlo: tiene que usarse todo EdgeLab, y bien». | Una regla escrita sin su línea de código no corre (K12); el atajo es siempre el camino de menor resistencia. | **Código**: `preflight.validar_preregistro` (cada requisito con su fuente); `tools/registro_global.py preregistrado` es la única forma de contar una campaña fuera de la maquinaria estándar; **test de CI** `test_K32_toda_prueba_nueva_del_contador_pasa_por_edgelab` (toda fila nueva del contador global o viene del embudo/banco/analizador/autopilot o cita un pre-registro válido) y `test_K30_K32_preregistros_nuevos_cumplen_lo_que_pide_edgelab`. | Orden de una corrida ad hoc: `antecedentes.py` → `potencia_previa.py` → pre-registro con sus dos líneas → commit → `registro_global.py preregistrado` → correr. Si algo no está en EdgeLab, se agrega a EdgeLab; no se mide por fuera. |
+| K33 | Para medir el catálogo se cargaron spreads **estimados por Internet** (6J, ZB, CL, ZN, HG, NKD, SI) en la tabla canónica: `costos.py` dejó de lanzar `CostoNoMedido` y la guarda «sin componente medido no se lanza» quedó apagada para TODO EdgeLab (embudo, autopilot, promoción). Lo detectaron 3 tests que el cierre no corría. | Una estimación pedida para una medición se volvió costo canónico para todos. | **Código**: `costos.spread_ticks` rechaza `spread_estimado` salvo dentro de `costos.estimados_permitidos(<pre-registro>)`; las dos mediciones que lo declararon lo usan explícito. **Test**: `test_K33_spread_estimado_no_es_medido`. | Un dato estimado se marca y se habilita sólo en la medición que lo declara; nunca se vuelve el default. |
+| K34 | `tools/cierre.py` pasaba en verde con 4 tests rotos por cambios del día (kernels embebidos desactualizados por `escalera.py`, costos, embudo, promoción) y 5 documentos sin `Estado:`: corría 8 tests y la suite completa tarda 30 min. | «Cierre verde» se lee como «no rompí nada». | **Código**: el cierre reconstruye los kernels (`reconstruir_kernels.py`, O6) y corre también los tests de kernels al día, costos, embudo, promoción, ventanas e índice de documentos (≈ 50 s). | Si un cambio toca un módulo con consumidores fuera de esa lista, correr la suite completa antes de pushear (`pytest tests -m "not vectorbt"`, en segundo plano). |
+| K31 | Se commiteó con `tools/cierre.py` en rojo: el comando iba en un tubo a `grep` y el `&&` siguiente miró el código de `grep`. | CI rojo y un commit que dice más de lo que hay. | Regla. | `python tools/cierre.py && git commit …` sin tubos en el medio (o `set -o pipefail`). |
+| — | Reconocido como ya cubierto y salteado: `tools/antecedentes.py` y `tools/existente.py buscar` no se corrieron antes de construir el motor del catálogo (C1/K26); habrían mostrado el motor único (K23). | — | Regla existente. | Correrlos SIEMPRE antes de escribir un módulo de medición, también en las rutas ad hoc. |
+
+## E6. Errores de unidad y escala (2026-11-18, auditoría pedida por Nico: «revisá otros errores de ese estilo»)
+
+Fuente: `docs/research/m1_largo_20261117/AUDITORIA_Y_VIEJAS.md`. Índice de lectura por corrida: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md`
+(su línea «Lectura previa:» la exige `preflight.validar_preregistro`).
+
+- **K35, unidad de riesgo.** Cada regla se mide en su propio R (neto / stop INICIAL). Medir en ATR diario diluye 3–10 veces a las reglas que
+  arriesgan mucho menos que un ATR: así T, A20, E, F y V parecieron «sin ventaja» o «frágiles». Hay que verificar en el código que la columna
+  de riesgo sea el stop inicial (T guardaba el activo al salir).
+- **K36, parámetros en puntos fijos.** Topes de stop, objetivos y filtros en puntos convierten la regla en otra cuando el precio y el rango
+  cambian. Antes de comparar épocas, listarlos y decidir en qué épocas la regla es la misma (T tope 100 pts, E 30/45, F 125).
+- **K37, puntos por operación entre años.** No se comparan entre años con precios distintos: el «crecimiento» de EdgeReplica era en parte
+  escala. Usar R o ATR.
+- **K38, ajuste de quien diseñó la regla.** Una regla de un tercero se prueba fuera de lo que su autor pudo usar: otro instrumento u otros
+  años. Los módulos de FundedSync sólo funcionan en NQ 2020+; T es la excepción porque también pasa ES y YM.
+- **K40, stop de M1 al extremo de la vela (2026-11-18).** Con pseudo-ticks de M1, «salir al tick que cruza el stop» cobra el extremo de
+  la vela. Con stops chicos es pesimista: en LUXIMB-A5 la calibración falló 12/12.
+  - **Corrección:** con `m1_sintetico` (lo marcan los lectores M1), el stop sale en su nivel, salvo un hueco en la apertura. Está en
+    `ejecucion.py`, `luximb_hvn._e0_nb` y el motor de grilla (`areas_expansion.simular_cierre_m1`, `grilla_generica.simular_ops`).
+  - **Riesgo:** M1 no ve saltos dentro de la vela. Por eso toda familia en M1 se calibra contra ticks (K30); en NQ dio igual o más
+    pesimista.
+  - **Corridas descartadas:** el «atrás» del 17-nov y papel M1 del 15-nov (motor de grilla con la convención vieja), relanzados.
+- **K41, tabla de código viejo (2026-11-18).** `tablas.py traer` salteaba las tablas ya bajadas sin revisar con qué código corrieron, y
+  la calibración de ESCALONADAS-M1 comparó tablas viejas contra M1 nuevo. **Guarda:** `traer` revisa también lo ya bajado y lo aparta
+  como `*.NO_VIGENTE.*`; `_tablas` (explorar, congelar, confirmar) y `a5_campana._ticks` se niegan a leer una tabla de código viejo.
+- **K42, potencia a un α más laxo que el reservado (2026-11-18).** Se declaró potencia 0,9 a α 0,05 para ORB O1 cuando el nivel
+  LORD++ reservado de la familia era 0,0036 (potencia real ≈ 0,5). **Guarda:** `holdout_ventanas.registrar_apertura` rechaza un plan
+  «fijo» con `alfa` mayor que el nivel de una reserva abierta de la familia (`_exigir_alfa_reservado`).
+- **K43, veredicto de calibración escrito a mano (2026-11-18).** La validación de papel M1 aprobó ASIA con «≈ 1 ee» usando el EE de
+  M1, cuando el pre-registro decía «< 1 error estándar» sin precisar cuál. **Guarda:** el veredicto de una calibración o validación
+  de fuente sale de `a5.calibrar_por_sesion` (criterio único) y queda en JSON (`tools/papel_m1.py validacion`, `a5_campana.py
+  calibracion`).
+- **K44, script que no compila (2026-11-18).** `tools/orb_confirmacion_o1.py` se commiteó con un paréntesis de más: no tenía test.
+  **Guarda:** `tests/test_gobernanza_20261118.py::test_todo_el_codigo_compila` compila todo `tools/` y `edgelab/`.
+- **Acceso a datos (2026-11-18).** El M1 de NT8 vivía en una carpeta temporal bajada a mano y pasada como argumento: no reproducible ni
+  verificado. **Guarda:** `python tools/datos.py traer|importar M1NT8` deja `data/m1nt8/` con `PROCEDENCIA.json` (sha256 y tamaño
+  contra el origen); las herramientas leen `datos.ruta("M1NT8")` por defecto.
+- **K45, columnas de identidad perdidas (2026-11-18).** `a5_campana.correr` escribía OPS sin `trig`, `base` ni `conf`, y el análisis
+  pareado del filtro de picos no podía emparejar gatillos. **Guarda:** `a5_campana.columnas_ops` conserva siempre las columnas de texto
+  y las que declare `conservar` en CAMPANA.json (`test_ops_conserva_columnas_de_identidad`).
+- **K46, factor vivo apoyado en evidencia descartada (2026-11-18).** F-ASIA-NQ-NOCHE-MOVIDA siguió como PISTA_VIVA citando un largo
+  DESCARTADO hasta que se revisó a mano. **Guarda:** `test_ningun_factor_vivo_se_apoya_en_evidencia_descartada`: una pista o palanca
+  no puede citar un documento con `Estado: DESCARTADA`.
+- **K47, comparar agregaciones distintas (2026-11-18).** La validación de papel M1 promediaba sólo las celdas que operan; la ficha suma
+  y divide por el número de celdas. ASIA parecía duplicar a los ticks, se dio por no medible y se culpó al motor M1. El motor coincidía
+  con los ticks operación por operación (1.804 en común, mediana de la diferencia 0). **Guarda:** `papel_m1.validacion` usa
+  `canasta_por_sesion`, la misma función que la ficha (`test_validacion_de_papel_usa_la_agregacion_de_la_ficha`). **Práctica:** antes
+  de culpar a un motor, comparar operación por operación contra la fuente de verdad. Una diferencia en un agregado puede ser la
+  agregación.
+- **K48, variable de régimen que se conoce después de la entrada (2026-11-18).** `papel_regimen` define la `noche` de la sesión d como
+  el rango 18:00→09:00 de esa misma sesión, y ASIA entra entre las 18:00 y las 09:00. La «noche movida» (dosis-respuesta, encendido
+  p 0,007) usaba el futuro: en desarrollo, la misma noche da +0,19 R alto − bajo y la noche anterior, +0,08. **Guarda:**
+  `papel_regimen.CONOCIDA_H` declara a qué hora de la sesión se conoce cada variable; `mapa` y `encendido` exigen las horas de entrada
+  y marcan NO_CAUSAL lo que se conoce después (`test_variable_de_regimen_que_se_conoce_despues_de_la_entrada_no_se_usa`).
+- **Operaciones sin riesgo inicial en una canasta en R (2026-11-18).** Con `neto / riesgo`, una operación con stop en la entrada da
+  NaN y arrastra a toda su sesión. **Práctica:** filtrar por operación (`riesgo > 0`, como `k > 0` en el motor) antes de agregar, y
+  publicar cuántas quedaron afuera.
+- **K48 en el atlas de FundedSync (auditoría del 2026-11-18).** `fundedsync_mecanismos` usaba noche/gap/orb15 con módulos que entran
+  antes de que se conozcan. Las 7 «elegidas» en A de esos ejes eran la fuga (ninguna replicó). **Guarda:** `CONOCIDA_EJE` en el
+  atlas, con `papel_regimen.horas_de_sesion`. **Regla general:** toda variable de contexto declara su hora de conocimiento, y se
+  compara con la hora de entrada de CADA módulo, no de la familia.
+- **K49, gastar REP en una prueba sin potencia (2026-11-18, GEX).** GEX existe desde 2011 (≈ 3.500 días). Se usó REP para una
+  etiqueta binaria con potencia real ≈ 0,3 (filas no independientes); la variable y la forma útiles salieron después, en DESC, y para
+  confirmarlas hubo que juntar REP + HOLDOUT ya contaminados. **Regla:** con datos cortos se pre-registra TODA la cadena antes de tocar
+  REP (variable, desenlace continuo si se puede, forma operable). La potencia se calcula en DÍAS al nivel LORD, y no se abre REP ni
+  HOLDOUT con potencia < 0,8: se sigue explorando en DESC. El forward no reemplaza a un diseño que gastó los datos. **Guarda:**
+  `a5.plan_lectura` / `a5.exigir_potencia` (potencia en días al nivel LORD); `a5_campana rep` no lee REP para las celdas sin
+  potencia (SOLO las con ≥ 0,8 entran a LORD) y se niega si ninguna llega; las herramientas ad hoc llaman a `exigir_potencia` antes
+  de abrir una lectura (`test_k49_potencia_de_la_lectura_en_dias`).
+- **K50, registro .jsonl malformado (2026-11-19, LINAJES).** Un commit de otro agente agregó a `LINAJES.jsonl` una línea vacía y un objeto sin salto de línea final; el alta siguiente (ROBOQUANT) quedó pegada en la misma línea y `tools/antecedentes.py` dejó de funcionar para todos. Ningún test leía los registros. Guarda: `test_jsonl_de_registros_parsean_linea_por_linea` (todo `docs/research/*.jsonl` versionado parsea línea por línea). Práctica: escribir los registros con su herramienta (`registro_global.py`, `factores.py agregar`) o con `json.dumps(obj) + "\n"`, nunca a mano.
+- **K51, correr sin estar contada (2026-11-19, FRICCION-RQ).** `registro_global.py preregistrado` se negó a contar (faltaba la sección de justificación económica) pero el lanzamiento estaba encadenado con `;` y arrancó igual; se mató antes de escribir resultados y quedó registrado como descartado. **Guarda:** `registro_global.exigir_contada(prereg)` al inicio de cada herramienta ad hoc que mide desenlaces (`test_k51_corrida_ad_hoc_exige_estar_contada`); el lanzamiento va en un comando aparte, nunca después de un `;`.
+- **K53, definición que nunca dispara en datos reales (2026-11-19, FLUJOS-MACRO FM6).** La sesión CME arranca 18:00 del día previo; un umbral de minuto sin tope superior (`mo >= 495`) tomó la vela de las 18:00 y la caja de la mañana quedó vacía: FM6/FM6N con 0 disparos en 8 meses. El test sintético pasaba porque sus sesiones no cruzan la medianoche. **Guarda:** `a5_campana.calibracion` frena (SystemExit K53) si una definición o control no tiene disparos en la calibración; `test_fm6_dispara_con_sesiones_reales_que_cruzan_medianoche` con M1 real. Las tablas calculadas con el código viejo se descartan (K41).
+- **K54, insumo externo ausente en un entorno (2026-11-19, FLUJOS-MACRO FM7).** El módulo busca `cboe_volatility_daily.parquet` y, si no lo encuentra, usa un respaldo (RV5, ATR/cierre). El kernel de ticks de Kaggle no tenía el dataset M1NT8: la tabla de ticks salió con `vix_prev` vacío y la de M1 con VIX real, y la calibración comparó dos reglas distintas (FM7: 42/209 sesiones comunes; FM1 con otro stop). Ningún veredicto cambia (FM1/FM2 tenían neto negativo, FM7 no calibraba), pero la calibración de FLUJOS-MACRO y OPTION-ALPHA no vale para las reglas que usan VIX. **Guardas:** `a5_campana.insumos_distintos` (columna de contexto presente en M1 y ausente en ticks → SystemExit) y `tablas.insumos_externos` (adjunta el dataset M1NT8 a los kernels de módulos que lean CBOE o el calendario). Test: `tests/test_gobernanza_20261118.py::test_k54_ticks_sin_insumo_externo_no_calibran`. Regla: un respaldo silencioso es un cambio de regla; el respaldo sólo vale en tests sintéticos.
+- **K55/K56, grillas leídas sin mecanismo y épocas leídas sin episodios (2026-11-19).** La «variante rápida» de Z (cubeta 10/EMA 10) que recomendé tenía 4 operaciones en 18 años (las perillas cortas hacen el filtro casi imposible); A20 tiene 1,2 variantes efectivas entre 81 (sus «81/81 positivas» no valen como meseta); el «apagado» de la reversión corta lo explicaban 3 meses de crisis. Regla: antes de leer una grilla, operaciones por celda y número efectivo de variantes; antes de declarar una regla apagada, descomposición por meses. Lo encontró la pregunta de Nico, no un gate: `docs/research/MIRADA_HUMANA_20261119.md`.
+
+- **Ranking móvil con huecos (2026-11-18).** `rolling(250).apply` devolvía NaN las 250 sesiones siguientes a cada sesión sin barras
+  nocturnas: la mitad de algunos años quedaba sin estado. **Arreglo:** el ranking se calcula sobre las sesiones con dato.
+- **Contraste pareado con 0 al no entrar (2026-11-18).** En una capa de entrada que a veces no entra, el valor de «no entrar» es 0 y
+  no paga fricción: el contraste neto favorece siempre a la configuración que menos entra, incluso con gatillos al azar (AZAR dio
+  +0,2 a +1,5 R «neto»). **Práctica:** decidir con el R absoluto de cada configuración por gatillo (bruto y neto) y con el placebo de
+  la misma espera, no con la diferencia neta contra la entrada inmediata.
+- **Commits con rutas explícitas (2026-11-18).** Un `git add -A docs` metió en el commit del «atrás» resultados de otras campañas.
+  **Práctica:** agregar las rutas de la campaña, y revisar `git show --stat` antes de pushear.
+- **Guía (no se puede impedir en código):** confirmar en réplica → holdout A5 → instrumentos no usados antes que pedir forward; neto
+  con mini y micro; ninguna canasta de prop firm con un subgrupo sin confirmar. Tabla completa: `LEER_ANTES_DE_CADA_CORRIDA.md` §6.
+- **K39, unidad monetaria.** Multiplicador del contrato que se opera de verdad (MNQ ×2, no ×20): un error ×10 cambia cualquier lectura de
+  drawdown y de tamaño.
+
 ## D. Lo que el agente del Debian tiene que vigilar siempre (checklist por ciclo)
 1. `tools/autopilot_protect.py check` → OK.
 2. Ninguna campaña en CORRIENDO hace más de 14 h sin kernel vivo.
@@ -122,3 +228,6 @@ el agente del Debian**.
 12. Antes de una indagación por rasgos o estratos: lista K10–K18 (cortes con empates, réplica con la misma función, pre-registro frase
     por frase contra el código, horario desde la apertura, NaN para «no aplica», un caso a mano por rasgo, regla de selección sobre
     ruido puro = 0, `traer` con código vigente, costos contra `costos.py`).
+13. Antes de mejorar, abrir un holdout o mandar al forward cualquier regla (también de afuera o ad hoc): `tools/potencia_previa.py`
+    (K27–K32): `antecedentes.py` → `potencia_previa.py` → pre-registro → commit → `registro_global.py preregistrado` → correr. Una regla
+    que tarda más de 60 meses en decidir (poca información por mes) no se abre: se le sube la frecuencia o queda como pista.

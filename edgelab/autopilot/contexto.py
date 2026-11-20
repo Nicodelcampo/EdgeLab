@@ -148,6 +148,11 @@ def memoria_ideas(semilla: int = 0, root=None, n_hallazgos: int = 3) -> dict:
     if h.exists():
         ls = [l for l in h.read_text(encoding="utf-8").splitlines() if l.startswith("- **[alta]**")]
         if ls: out["hallazgos_ssrn"] = [ls[(semilla * 7 + k * 101) % len(ls)][:350] for k in range(n_hallazgos)]
+    try:                                                                  # banco de ideas multi-fuente (2026-11-14): balance + próximo lote
+        from edgelab.research import ideas as IDEAS
+        if (r / "docs/research/ideas/BANCO_IDEAS.jsonl").exists(): out["banco_ideas"] = IDEAS.resumen_para_agente()
+    except Exception as e:                                                # nunca rompe el ciclo del agente
+        out["banco_ideas"] = dict(error=str(e)[:200])
     return out
 
 
