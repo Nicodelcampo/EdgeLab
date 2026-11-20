@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (33)
+## PISTA_VIVA (34)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025** (`F-RQ5-REGIMEN-ROBUSTO`, 2026-11-20, humano)
+  - Efecto: DESC 2018–2025 NQ+ES+YM+RTY: +0,050 R/op (p 0,045), 54,7 ops/mes, +2,71 R/mes, t mensual 1,94; 310/310 celdas calibradas y 10/10 vecinos positivos (n efectivo 1,47); NQ +0,082, ES +0,093, RTY +0,046, YM −0,022, EMD +0,044; quiebre sup-F 2017-08; salida al cierre no mejora. Holdout A5 N 1.454: potencia 0,60 / 0,24.
+  - Dónde: NQ/ES/YM/RTY/EMD M1 A5
+  - Siguiente: Decisión de Nico: abrir el holdout sin potencia (cambio de compuerta), forward secuencial (~26 meses con el efecto de desarrollo) o sumar más instrumentos/temporalidades.
+  - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO.md`, `docs/research/rq5_regimen_20261119/RESULTADO.json`
 - **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
   - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
   - Dónde: NQ (principal), ES

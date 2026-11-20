@@ -1401,3 +1401,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** A20 (fábrica + 8 vecinos) en YM, RTY y EMD, DESC 2018–2025: negativa en los tres, 0/24 vecinos positivos → NO_TRANSFIERE.
   Acta: `docs/research/a20_multiactivo_20261119/RESULTADO.md`.
 - **NO MEDIDO:** REP y HOLDOUT de estos índices (REP guardado sin leer; HOLDOUT descartado).
+
+## 2026-11-20 — RQ5-REGIMEN
+- **MEDIDO:** fábrica y 324 celdas en NQ/ES/YM/RTY/EMD, DESC 2018–2025: REGIMEN_ROBUSTO (+0,050 R, p 0,045; 10/10 vecinos; 3/4 índices);
+  salida al cierre no mejora; sup-F 2017-08. Acta: `docs/research/rq5_regimen_20261119/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 (potencia 0,60 / 0,24 < 0,8: no se abre sin decisión de Nico); forward.
