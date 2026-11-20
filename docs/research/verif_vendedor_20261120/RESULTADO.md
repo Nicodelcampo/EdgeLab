@@ -49,3 +49,28 @@ En puntos netos, 14 de los 15 módulos suben en 2022-01 → 2026-09, igual que e
   porque esos meses ya están todos vistos.
 - **Lo que no se puede verificar:** el eje del vendedor no tiene unidad ni costos declarados, y sus curvas A/B no dicen tamaño. No podemos
   saber si son con o sin fricción.
+
+## Adenda: desde el 1-sep-2025, fecha en que el vendedor empezó a vender (fuera de su muestra)
+Dato de Nico. Asumimos 2025, porque el gráfico del vendedor llega a 2026. Ventana: 2025-09-01 → 2026-09-30, todavía antes del holdout
+terminal. En EdgeLab estos meses ya estaban vistos.
+
+| Módulo | Ops | Neto (pts) | t mensual | % meses + |
+|---|---|---|---|---|
+| R | 31 | +3.494 | 3,57 | 100 % |
+| T | 238 | +4.163 | 1,90 | 54 % |
+| N | 116 | +2.590 | 1,79 | 64 % |
+| A1 | 989 | +2.325 | 1,71 | 69 % |
+| C | 62 | +922 | 1,48 | 77 % |
+| P | 131 | +1.362 | 1,32 | 77 % |
+| Z | 31 | +1.630 | 1,23 | 73 % |
+| A20 | 240 | +2.858 | 1,11 | 62 % |
+| Q | 306 | +735 | 1,09 | 62 % |
+| S | 423 | +2.795 | 0,98 | 62 % |
+| F | 45 | +543 | 0,91 | 64 % |
+| V | 264 | +751 | 0,86 | 69 % |
+| O | 15 | +230 | 0,29 | 50 % |
+| E | 254 | −204 | −0,45 | 38 % |
+| W | 1.317 | −1.024 | −0,54 | 31 % |
+
+Lectura: en los 13 meses de producto, 13 de 15 módulos son positivos. Sólo R tiene t > 2, y con 13 meses el MDE es grande: un nulo no mata.
+Gráfico por módulo: `MODULOS_POR_SEPARADO.png`.
