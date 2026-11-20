@@ -1416,3 +1416,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** desglose descriptivo por bloque A5 de la fábrica en NQ 2018–2026-09 (DESC +0,080, REP −0,038, HOLDOUT +0,128). No es un holdout:
   esos meses ya los usó A20-REGIMEN. Nota: `docs/research/a20_regimen_20261119/NOTA_HOLDOUT_A5.md`.
 - **NO MEDIDO:** forward de A20 (única confirmación limpia).
+
+## 2026-11-20 — FILTROS-CONTEXTO (VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX, COT)
+- **MEDIDO:** 35 contrastes de tercil (7 indicadores × A20, T, R, Z-banda en NQ y RQ5 en cuatro índices) en DESC 2018-01 → 2025-07. 0
+  nominadas por BH q 0,10 → SIN_FILTRO. `docs/research/filtros_contexto_20261120/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el put/call de CBOE (la serie local termina en 2019);
+  - el COT de YM y RTY;
+  - R y Z-banda con potencia (MDE 0,6–1,0 R).

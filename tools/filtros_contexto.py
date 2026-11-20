@@ -129,7 +129,7 @@ def conteo() -> dict:
 def correr() -> dict:
     sys.path.insert(0, str(ROOT / "tools")); from registro_global import exigir_contada
     exigir_contada(DIR / "PREREGISTRO.md")
-    from statsmodels.stats.multitest import multipletests
+    from edgelab.discovery.scan import benjamini_hochberg
     X = asignar(operaciones(), indicadores()); rng = np.random.default_rng(SEMILLA); filas = []
     for e in ESTRATEGIAS:
         for k in INDICADORES:
@@ -139,7 +139,7 @@ def correr() -> dict:
             sd = float(D.R.std()); n0, n2 = ter["0"]["n"], ter["2"]["n"]
             filas.append(dict(est=e, ind=k, dif=d, p=p, terciles=ter, mde80=float(2.8 * sd * np.sqrt(1 / max(n0, 1) + 1 / max(n2, 1))),
                               monotono=bool((ter["0"]["R"] - ter["1"]["R"]) * (ter["1"]["R"] - ter["2"]["R"]) > 0), _D=D, _R=R_, _k=k))
-    rej, padj, _, _ = multipletests([f["p"] for f in filas], alpha=Q, method="fdr_bh")
+    padj = benjamini_hochberg([f["p"] for f in filas]); rej = padj <= Q
     for f, r_, pa in zip(filas, rej, padj):
         f["p_bh"] = float(pa); f["nominada"] = bool(r_); D, R_, k = f.pop("_D"), f.pop("_R"), f.pop("_k")
         peor = 0 if f["terciles"]["0"]["R"] < f["terciles"]["2"]["R"] else 2; f["tercil_excluido"] = peor

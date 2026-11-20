@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-295 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+296 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -117,6 +117,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `EXPANSION_ZONAS` | 2026-10-24 | LUXIMB_FADE_VISOR, LUXIMB_IMPULSOS, AREAS_EXP_1_CRUZADO | 1866376 | 4 | EXPZ-CFD-R: PISTAS_VIVAS; EXPZ-NQ-R: PISTAS_VIVAS | — | `expansion_zonas_20261023`, `relanzamiento_R_20261102` |
 | `EXTERNAS_A5` |  | — | 114 | — | — | F-EXTERNAS28-DUAL-THRUST (NO_REPETIR) | `externas_a5_20261118` |
 | `EXTERNAS_ESTRUCTURALES_A5` |  | EXTERNAS_A5 | 16 | — | — | F-EXTERNAS-ESTRUCTURALES-REFUTADA (NO_REPETIR) | `externas_estructurales_a5_20261118` |
+| `FILTROS_CONTEXTO` | 2026-11-20 | FUNDEDSYNC, RQ5_REGIMEN, GEX, DIA_TENDENCIA_A5 | 35 | — | — | F-FILTROS-CONTEXTO-SIN-FILTRO (NO_REPETIR) | `filtros_contexto_20261120` |
 | `FILTRO_PICOS_A5` | 2026-11-18 | LUXIMB_A5_ZONAS25, IB_MADONNA_A5, ESCALONADAS_M1_A5, LUXIMB_HVN | 80 | — | — | F-FILTRO-PICOS-NO-AGREGA (NO_REPETIR) | `filtro_picos_20261118` |
 | `FLUJOS_MACRO_A5` |  | ORB_A5, ROBOQUANT_A5, RANGO_ASIA0100_GC, EXTERNAS_A5, DIA_TENDENCIA_A5 | 16 | — | — | F-FLUJOS-MACRO-C1 (EN_SEGUIMIENTO) | `flujos_macro_20261119` |
 | `FRANKLIN` | 2026-11-16 | EMA_VWAP, LONDRES_IMPULSO_NQ, FUNDEDSYNC | 91 | — | — | — | — |

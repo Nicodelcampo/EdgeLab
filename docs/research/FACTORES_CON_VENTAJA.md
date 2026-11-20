@@ -425,10 +425,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (48)
+## NO_REPETIR (49)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX y COT (percentil móvil causal, terciles) como filtro de A20, T, R, Z-banda (NQ) y RQ5 fábrica** (`F-FILTROS-CONTEXTO-SIN-FILTRO`, 2026-11-20, humano)
+  - Efecto: 0/35 nominadas por BH q 0,10 en DESC 2018-01 → 2025-07 (p mín 0,023, ajustada 0,59). T y RQ5 planos (|alto − bajo| ≤ 0,05 y ≤ 0,10 con MDE 0,24 y 0,13). Única pista: A20 peor en días calmos de gamma larga (VIX9D/VIX bajo, GEX alto; p 0,03–0,06, MDE 0,49), un solo eje.
+  - Dónde: NQ (A20, T, R, Z-banda), NQ/ES/YM/RTY (RQ5), meses DESC de A5
+  - Siguiente: No repetir estos indicadores como filtro de T ni de RQ5. A20 × gamma, sólo como variante paralela en el forward si Nico lo pide. R y Z-banda sin potencia: no concluye.
+  - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO.md`, `docs/research/filtros_contexto_20261120/RESULTADO.json`
 - **8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakout II, RSI2, FTLT, QFL, FVG H1, PMax) — trabajo de Gemini/Antigravity** (`F-EXTERNAS-ESTRUCTURALES-REFUTADA`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: 0/16 en BH; las 8 con R neto negativo (−0,05 a −0,12 R) pese a fricción ≤ 0,08 R; potencia de REP 0 (efecto ≤ 0).
   - Dónde: ES, NQ, YM, GC
