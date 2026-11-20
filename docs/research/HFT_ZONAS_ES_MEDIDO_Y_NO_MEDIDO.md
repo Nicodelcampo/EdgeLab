@@ -1406,3 +1406,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** fábrica y 324 celdas en NQ/ES/YM/RTY/EMD, DESC 2018–2025: REGIMEN_ROBUSTO (+0,050 R, p 0,045; 10/10 vecinos; 3/4 índices);
   salida al cierre no mejora; sup-F 2017-08. Acta: `docs/research/rq5_regimen_20261119/RESULTADO.md`.
 - **NO MEDIDO:** holdout A5 (potencia 0,60 / 0,24 < 0,8: no se abre sin decisión de Nico); forward.
+
+## 2026-11-20 — RQ5-REGIMEN, holdout A5 (apertura autorizada por Nico, hasta 2026-09-30)
+- **MEDIDO:** fábrica, cinco índices, meses HOLDOUT 2018-01 → 2026-09: n 1.871, +0,027 R (p 0,23; Fisher 0,057) → NO_CONCLUYENTE.
+  Acta: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`.
+- **NO MEDIDO:** terminal desde 2026-10-01 (sellado); forward.

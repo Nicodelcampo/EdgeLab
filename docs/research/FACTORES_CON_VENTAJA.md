@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (34)
+## PISTA_VIVA (35)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/ES/YM/RTY/EMD M1 A5
   - Siguiente: Decisión de Nico: abrir el holdout sin potencia (cambio de compuerta), forward secuencial (~26 meses con el efecto de desarrollo) o sumar más instrumentos/temporalidades.
   - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO.md`, `docs/research/rq5_regimen_20261119/RESULTADO.json`
+- **RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)** (`F-RQ5-HOLDOUT-NO-CONCLUYENTE`, 2026-11-20, humano)
+  - Efecto: n 1.871, +0,027 R/op (p 0,23; Fisher con desarrollo 0,057); NQ +0,077 (p 0,06), YM +0,047, RTY +0,024, ES +0,007, EMD −0,019; +1,86 R/mes, 59 % meses +; sin los 3 mejores meses ≈ 0. NO_CONCLUYENTE (potencia 0,69/0,28).
+  - Dónde: NQ/ES/YM/RTY/EMD M1, meses HOLDOUT A5
+  - Siguiente: Apertura usada. Sólo forward (≈ 103 meses con el efecto encogido; ≈ 26 con el de desarrollo). Decide Nico si entra al forward o a una canasta.
+  - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`, `docs/research/rq5_regimen_20261119/HOLDOUT.json`
 - **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
   - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
   - Dónde: NQ (principal), ES
