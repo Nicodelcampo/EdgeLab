@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-715 scripts.
+716 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -288,6 +288,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/falsification_battery.py` | tools/falsification_battery.py |
 | `tools/familias.py` | Índice de FAMILIAS de investigación: un renglón por familia con su linaje, pruebas contadas, campañas, último desenlace del embudo |
 | `tools/filtro_picos_a5.py` | FILTRO-PICOS con la partición A5 (pre-registro docs/research/filtro_picos_20261118/PREREGISTRO.md): análisis PAREADO por gatillo. |
+| `tools/filtros_contexto.py` | FILTROS-CONTEXTO (2026-11-20): ¿algún indicador de contexto diario (VIX, VVIX, GEX, DIX, SKEW, estructura VIX9D/VIX, COT) separa |
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
