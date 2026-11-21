@@ -1444,3 +1444,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - el tamaño reducido de A20;
   - la canasta en el forward;
   - la paridad NT8 de las estrategias nuevas.
+
+## 2026-11-20 — Curvas del vendedor de FundedSync
+- **MEDIDO:** los 15 módulos en NQ 2022–2026 y 2010–2021 (t mensual, bruto y neto). `docs/research/verif_vendedor_20261120/RESULTADO.md`.
+- **NO MEDIDO:** con qué unidades y costos grafica el vendedor.
+
+## 2026-11-21 — REMEDICION-FS-IL
+- **MEDIDO:** los 15 módulos con la traducción corregida; V pasa a t 2,87 desde 2022. `docs/research/remedicion_fs_il_20261121/RESULTADO.md`.
+- **NO MEDIDO:** la correlación de V con la canasta; A20-REGIMEN, FILTROS-CONTEXTO y CANASTA-CORRELACION con la A20 nueva.
