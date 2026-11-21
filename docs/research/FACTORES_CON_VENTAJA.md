@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (37)
+## PISTA_VIVA (38)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
+  - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
+  - Dónde: NQ M1 de NT8, 2010 → 2026-09
+  - Siguiente: V a la lista de candidatas: medir su correlación con T+R+ZB+RQ5 y si suma a la canasta. Re-hacer los números de A20 si entra a una decisión.
+  - Evidencia: `docs/research/remedicion_fs_il_20261121/RESULTADO.md`, `docs/research/remedicion_fs_il_20261121/COMPARACION.csv`
 - **RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025** (`F-RQ5-REGIMEN-ROBUSTO`, 2026-11-20, humano)
   - Efecto: DESC 2018–2025 NQ+ES+YM+RTY: +0,050 R/op (p 0,045), 54,7 ops/mes, +2,71 R/mes, t mensual 1,94; 310/310 celdas calibradas y 10/10 vecinos positivos (n efectivo 1,47); NQ +0,082, ES +0,093, RTY +0,046, YM −0,022, EMD +0,044; quiebre sup-F 2017-08; salida al cierre no mejora. Holdout A5 N 1.454: potencia 0,60 / 0,24.
   - Dónde: NQ/ES/YM/RTY/EMD M1 A5
