@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 KS = "nicolasbuttaro/edgelab-fundedsync-cadena"; OUT = ROOT / "docs/research/fundedsyncstack_20261115/cadena"
 PKG = "edgelab.research.fundedsyncstack"
-ORDEN = ("contracts", "base_series", "modulos_a1_a20_f_s", "modulos_p_c_v_o", "modulos_r_z_e_q", "modulos_w_n_t", "motor_cartera", "__init__")
+ORDEN = ("contracts", "base_series", "modulos_a1_a20_f_s", "modulos_p_c_v_o", "modulos_r_z_e_q", "modulos_w_n_t", "motor_cartera", "paridad_vendedor", "__init__")
 
 
 def construir() -> Path:
@@ -33,7 +33,14 @@ def construir() -> Path:
 
 
 def lanzar():
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from edgelab.research.puerta_kernel import validar_script_kernel
+
     k = construir(); print("kernel", k.stat().st_size, "bytes")
+    errs = validar_script_kernel(k.read_text(encoding="utf-8"), require_canonical=True)
+    if errs:
+        raise SystemExit("puerta_kernel bloqueo push en fundedsync_cadena: " + "; ".join(errs))
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", KS, "--title", "edgelab fundedsync cadena", "--script", str(k),
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1"], cwd=ROOT, check=True)
 

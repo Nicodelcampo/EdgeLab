@@ -16,7 +16,7 @@ _DATA_RX = re.compile(
     r"(read_parquet|read_csv|/kaggle/input|fuentes_ticks|edgelab\.research|duckdb|polars|\bpandas\b|\bpd\.)",
     re.M,
 )
-_SELLADO_RX = re.compile(r"(edgelab-holdout-sellado|allow_sellado\s*=\s*True)", re.I)
+_SELLADO_RX = re.compile(r"edgelab-holdout-sellado", re.I)
 _HOLDOUT_GUARD_RX = re.compile(
     r"(edgelab\.holdout|holdout_guard|HOLDOUT_PRIMERA_SESION|HOLDOUT_FIRST_TRADE_DATE|edgelab_data|#\s*Kernel generado por)",
     re.M,
@@ -29,6 +29,36 @@ _LOCAL_ABS_RX = re.compile(r"(^|[\s'\"])(/(etc|home|var|root)/|[A-Za-z]:\\\\?Use
 _POST_OCT_DATE_RX = re.compile(r"(2026-(?:10|11|12)-\d{2}|2026(?:10|11|12)\d{2})")
 
 
+def _contiene_llamada_allow_sellado_true(tree: ast.AST) -> bool:
+    """Detecta llamadas o asignaciones reales `allow_sellado=True`, incluso dentro de `compile('...', ...)`."""
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            if (
+                isinstance(node.value, ast.Constant)
+                and node.value.value is True
+                and any(isinstance(t, ast.Name) and t.id == "allow_sellado" for t in node.targets)
+            ):
+                return True
+        elif isinstance(node, ast.Call):
+            for kw in node.keywords:
+                if kw.arg == "allow_sellado" and isinstance(kw.value, ast.Constant) and kw.value.value is True:
+                    return True
+            if (
+                isinstance(node.func, ast.Name)
+                and node.func.id == "compile"
+                and node.args
+                and isinstance(node.args[0], ast.Constant)
+                and isinstance(node.args[0].value, str)
+            ):
+                try:
+                    sub = ast.parse(node.args[0].value)
+                    if _contiene_llamada_allow_sellado_true(sub):
+                        return True
+                except SyntaxError:
+                    pass
+    return False
+
+
 def es_kernel_de_datos(script_text: str) -> bool:
     """True si el script carga datos de mercado o ejecuta logica cuantitativa de research."""
     return bool(_DATA_RX.search(script_text or ""))
@@ -39,11 +69,11 @@ def validar_script_kernel(script_text: str, *, require_canonical: bool = False) 
     errs: list[str] = []
     txt = str(script_text or "")
     try:
-        ast.parse(txt)
+        tree = ast.parse(txt)
     except SyntaxError as exc:
         return [f"error de sintaxis Python (linea {exc.lineno}): {exc.msg}"]
 
-    if _SELLADO_RX.search(txt):
+    if _SELLADO_RX.search(txt) or _contiene_llamada_allow_sellado_true(tree):
         errs.append("firewall HOLDOUT-A4: referencia al dataset sellado o allow_sellado=True prohibida en push_kernel")
     if SECRET.search(txt):
         errs.append("seguridad: posible credencial/secreto detectado en el script del kernel")

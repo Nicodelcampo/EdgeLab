@@ -142,3 +142,19 @@ def test_limpiar_segmentos_v2_elimina_picos() -> None:
     clean = vv._limpiar_segmentos_y_saltos(df_raw)
     assert len(clean) == 19
     assert clean["y_grid_unidades"].max() < 0.60
+
+
+def test_fundedsync_cadena_construir_embebe_paridad_y_pasa_puerta_kernel() -> None:
+    import ast
+    import importlib
+    from edgelab.research.puerta_kernel import validar_script_kernel
+
+    fc = importlib.import_module("tools.fundedsync_cadena")
+    assert "paridad_vendedor" in fc.ORDEN
+    assert fc.ORDEN.index("paridad_vendedor") < fc.ORDEN.index("__init__")
+
+    kernel_path = fc.construir()
+    txt = kernel_path.read_text(encoding="utf-8")
+    ast.parse(txt)
+    assert "edgelab.research.fundedsyncstack.paridad_vendedor" in txt
+    assert validar_script_kernel(txt, require_canonical=True) == []
