@@ -79,12 +79,17 @@ def asegurar_compuerta() -> None:
         raise SystemExit("puerta_corrida bloqueo ejecucion: " + "; ".join(rep["errores"]))
 
 
-def friccion_instrumento_puntos(inst: str) -> tuple[float, float | None]:
+def friccion_instrumento_puntos(
+    inst: str,
+    *,
+    prereg_rel: str = PREREG_REL,
+    micro_equiv: Mapping[str, str] = MICRO_EQUIV,
+) -> tuple[float, float | None]:
     """Devuelve `(friccion_mini_pts, friccion_micro_pts_o_None)` usando `edgelab/costos.py` + K33."""
     sym = inst.upper()
-    with costos.estimados_permitidos(PREREG_REL):
+    with costos.estimados_permitidos(prereg_rel):
         fric_mini = float(costos.friccion_rt_puntos(sym, "base"))
-        mic = MICRO_EQUIV.get(sym)
+        mic = micro_equiv.get(sym)
         fric_micro = float(costos.friccion_rt_puntos(mic, "base")) if mic else None
     return fric_mini, fric_micro
 
