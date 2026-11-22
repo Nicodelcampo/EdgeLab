@@ -20,6 +20,7 @@ Sub-estrategias incluidas:
 """
 from __future__ import annotations
 
+import dataclasses
 from typing import Any, Callable, Dict, Mapping, Optional
 
 import pandas as pd
@@ -207,6 +208,7 @@ def correr_modulo(
     qty: Optional[int] = None,
     cfg: Any = None,
     *,
+    perfil: str = "il_fabrica",
     start: Any = None,
     end: Any = "2026-10-01",
     tz_input: str = "UTC",
@@ -214,6 +216,8 @@ def correr_modulo(
     **cfg_overrides: Any,
 ) -> pd.DataFrame:
     """Ejecuta un modulo individual (`A1`..`Q`) sobre `MultiSeriesContext` o datos M1."""
+    from .paridad_vendedor import obtener_config_modulo
+
     key = tag.strip().upper()
     if key not in MODULOS:
         raise ValueError(f"Modulo desconocido '{tag}'. Disponibles: {list(MODULOS.keys())}")
@@ -221,8 +225,9 @@ def correr_modulo(
         data_or_ms, start=start, end=end, tz_input=tz_input, allow_sellado=allow_sellado
     )
     runner = MODULOS[key]
-    if cfg is None and cfg_overrides:
-        cfg = CONFIG_CLASSES[key](**cfg_overrides)
+    if cfg is None:
+        cfg_base = obtener_config_modulo(key, perfil=perfil)
+        cfg = dataclasses.replace(cfg_base, **cfg_overrides) if cfg_overrides else cfg_base
     if qty is None:
         return runner(ms, cfg=cfg) if cfg is not None else runner(ms)
     return runner(ms, qty=qty, cfg=cfg) if cfg is not None else runner(ms, qty=qty)
@@ -231,6 +236,7 @@ def correr_modulo(
 def correr_todos(
     data_or_ms: Any,
     *,
+    perfil: str = "il_fabrica",
     incluir_cartera: bool = True,
     portfolio_config: Optional[PortfolioConfig] = None,
     module_configs: Optional[Mapping[str, Any]] = None,
@@ -240,13 +246,16 @@ def correr_todos(
     allow_sellado: bool = False,
 ) -> Dict[str, Any]:
     """Ejecuta los 15 modulos individualmente y opcionalmente la cartera consolidada."""
+    from .paridad_vendedor import obtener_configs_perfil
+
     ms = _ensure_ms(
         data_or_ms, start=start, end=end, tz_input=tz_input, allow_sellado=allow_sellado
     )
+    configs_resueltas = obtener_configs_perfil(perfil=perfil, overrides=module_configs)
     por_modulo: Dict[str, pd.DataFrame] = {}
     resumen_rows = []
     for tag, fn in MODULOS.items():
-        m_cfg = module_configs.get(tag) if module_configs else None
+        m_cfg = configs_resueltas.get(tag)
         df_t = fn(ms, cfg=m_cfg) if m_cfg is not None else fn(ms)
         por_modulo[tag] = df_t
         n_tr = len(df_t)

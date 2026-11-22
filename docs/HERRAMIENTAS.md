@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-713 scripts.
+716 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -192,6 +192,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/compile_emacorridortrendvol.py` | (sin docstring) |
 | `tools/confirmar_no_defiende.py` | Análisis CONGELADO de la confirmación «el cluster HFT grande no defiende» (docs/research/hft_clusters_u1_20261110/CONFIRMACION_NO_DEFIENDE.md). |
 | `tools/confluencia.py` | CONFLUENCIA (pre-registro docs/research/confluencia_20261119/PREREGISTRO.md): señales intradía con bruto real (SOM, Franklin, FM1, FM2, |
+| `tools/contexto_vivo.py` | Genera o verifica `docs/ESTADO_VIVO.md`, el snapshot compacto de contexto (<= 150 lineas). |
 | `tools/contraccion_empirica.py` | Paso 2 de docs/research/urgencia_vs_evidencia_20261117/PROPUESTA.md: contracción empírica por selección (edgelab/research/contraccion.py) |
 | `tools/convert_l2_to_parquet.py` | Batch conversion script for CME Level 2 depth CSV files to compressed Parquets. |
 | `tools/correlacion_nominadas.py` | Correlación entre las 12 nominadas al holdout + U1-CRUZADO, con su P&L CAUSAL de DESC + réplica (nunca el holdout). |
@@ -293,6 +294,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/friccion_rq.py` | FRICCION-RQ: curva bruto–stop y palancas de fricción de RQ2, RQ5 y RQ6 en DESC (pre-registro docs/research/friccion_rq_20261119/PREREGISTRO.md). |
 | `tools/fundedsync_cadena.py` | FUNDEDSYNCSTACK por la cadena (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). |
 | `tools/fundedsync_mecanismos.py` | FundedSync: mecanismos, contextos y combinaciones (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_MECANISMOS.md). |
+| `tools/fundedsync_parity_sweep.py` | Barrido ordenado de paridad (Etapas 0 -> 1 -> 2) y graficado OOS de `fundedsyncstack`. |
 | `tools/fundedsync_tanda2.py` | FundedSync tanda 2 (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md). |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
 | `tools/gc_exact4_prepare.py` | Local metadata capture / exact4 target-free census. Never computes outcomes. |
@@ -552,6 +554,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/propfirm_refresh.py` | Refresca las reglas públicas de Lucid con el crawler existente (`edgelab.propfirm.crawl`) y avisa si cambió alguna página respecto de la línea base. |
 | `tools/propfirm_reglas_cruce.py` | Cruce de las reglas detalladas por firma (incluidas las «escondidas»: topes por número de retiro, colchón, días |
 | `tools/propfirm_thresholds.py` | Umbrales por cuenta, independientes del instrumento: σ de la operación (USD, ya con el tamaño) × costo/σ → z bruto mínimo y ρ requerido (ρ = z/0,8). |
+| `tools/puerta_corrida.py` | Puerta unica pre-corrida (Capas 1-4): valida estado vivo, modulo, memoria activa, pre-registro y script antes de ejecutar. |
 | `tools/quantlab_mt5_medir.py` | SessionOpenMomentum (traducción QuantLab MT5) en NQ/ES/YM con costos canónicos y en R (docs/research/quantlab_mt5_eas_20261116/PREREGISTRO_MEDICION.md). |
 | `tools/query_remote_kaggle.py` | (sin docstring) |
 | `tools/r2_recorrido_vs_friccion.py` | R2: recorrido bruto disponible vs friccion de viaje redondo. Manifiesto: docs/research/R2_RECORRIDO_VS_FRICCION_MANIFIESTO_20261014.md |

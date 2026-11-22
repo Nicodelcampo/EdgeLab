@@ -7,12 +7,13 @@ Ejemplos de uso:
 from __future__ import annotations
 
 import argparse
+import dataclasses
 from pathlib import Path
 import sys
 from typing import Any, Dict
 
 from . import CONFIG_CLASSES, MODULOS, correr_modulo, correr_todos, load_m1_data, build_multi_series   # en el repo: siempre como paquete
-from .modulos_p_c_v_o import VaultConfig
+from .paridad_vendedor import PERFILES_DISPONIBLES, obtener_config_modulo
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,6 +35,12 @@ def main(argv: list[str] | None = None) -> int:
         default=None,
         help="Override opcional para V_DailyAtrLength en VaultBreak (default IL: 252)",
     )
+    ap.add_argument(
+        "--perfil",
+        choices=PERFILES_DISPONIBLES,
+        default="il_fabrica",
+        help="Perfil de configuracion: il_fabrica (1:1 DLL) o vendedor_calibrado (validado OOS)",
+    )
     ap.add_argument("--out-csv", default=None, help="Ruta opcional para exportar la lista de trades en CSV")
     args = ap.parse_args(argv)
 
@@ -45,8 +52,8 @@ def main(argv: list[str] | None = None) -> int:
     if mod == "TODOS":
         mod_cfgs: Dict[str, Any] = {}
         if args.v_atr_days is not None:
-            mod_cfgs["V"] = VaultConfig(daily_atr_length=args.v_atr_days)
-        res = correr_todos(ms, incluir_cartera=True, module_configs=mod_cfgs)
+            mod_cfgs["V"] = dataclasses.replace(obtener_config_modulo("V", perfil=args.perfil), daily_atr_length=args.v_atr_days)
+        res = correr_todos(ms, perfil=args.perfil, incluir_cartera=True, module_configs=mod_cfgs)
         print("\n=== RESUMEN POR MODULO (STANDALONE) ===")
         print(res["resumen_df"].to_string(index=False))
         if res["cartera"] is not None:
@@ -61,7 +68,7 @@ def main(argv: list[str] | None = None) -> int:
         kwargs = {}
         if mod == "V" and args.v_atr_days is not None:
             kwargs["daily_atr_length"] = args.v_atr_days
-        df_t = correr_modulo(mod, ms, **kwargs)
+        df_t = correr_modulo(mod, ms, perfil=args.perfil, **kwargs)
         print(f"\n=== MODULO {mod}: {len(df_t)} TRADES ===")
         if len(df_t) > 0:
             print(
