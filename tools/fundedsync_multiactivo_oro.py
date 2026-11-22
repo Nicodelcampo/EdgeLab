@@ -1015,8 +1015,10 @@ def graficar_iter3(
         for sp in ax_h.spines.values():
             sp.set_color("#29363c")
     fig1.suptitle("Etapa A — Matriz 15 Modulos x 6 Futuros en R (*EMD spread estimado K33)", color="#e6eef2", fontsize=12)
-    fig1.colorbar(im, ax=[ax1, ax2], fraction=0.02, pad=0.02)
-    fig1.tight_layout(rect=[0, 0, 0.96, 0.95])
+    fig1.subplots_adjust(left=0.045, right=0.905, top=0.90, bottom=0.06, wspace=0.14)
+    cax = fig1.add_axes([0.922, 0.12, 0.015, 0.74])
+    cb = fig1.colorbar(im, cax=cax)
+    cb.ax.tick_params(colors="#d0dce2", labelsize=8.5)
     p1 = OUT_DIR / "multiactivo_matriz_base_15x6.png"
     fig1.savefig(p1, dpi=150, facecolor=fig1.get_facecolor())
     plt.close(fig1)
@@ -1054,6 +1056,8 @@ def graficar_iter3(
                 bx2.text(float(rr["DESC"]) + 0.005, float(rr["REP"]) + 0.005, str(vn), color="#d2dce1", fontsize=7.0)
             bx2.axhline(0.0, color="#9ab0ba", linewidth=0.8, linestyle="--")
             bx2.axvline(0.0, color="#9ab0ba", linewidth=0.8, linestyle="--")
+            x_lo, x_hi = bx2.get_xlim()
+            bx2.set_xlim(x_lo, x_hi + 0.025)
     bx2.set_xlabel("R_neto DESC (POST_2020)", color="#c8d4da")
     bx2.set_ylabel("R_neto REP congelado (POST_2020)", color="#c8d4da")
     bx2.set_title("Oro (GC): Consistencia DESC vs REP congelado", color="#e6eef2", fontsize=10.5)
