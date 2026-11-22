@@ -235,6 +235,13 @@ def validar_preregistro(path, repo: Path | None = None, exigir_commit: bool = Tr
     if rel_p not in _sin_diagnostico(repo) and not re.search(DIAGNOSTICO_RX, t, re.M):
         e.append("falta la línea «Diagnóstico de mecanismo: …» (K55/K56): qué mueve cada perilla y cómo se va a leer la grilla con "
                  "edgelab.research.diagnostico_grilla (operaciones por celda, número efectivo de variantes, episodios), o «no aplica — motivo»")
+    base_f = repo / "config/preregistros_baseline.json"
+    base_pre = set(json.loads(base_f.read_text(encoding="utf-8"))) if base_f.exists() else set()
+    ex_ma_f = repo / "config/preregistros_sin_memoria_activa.json"
+    ex_ma = set(json.loads(ex_ma_f.read_text(encoding="utf-8"))) if ex_ma_f.exists() else set()
+    if rel_p not in base_pre and rel_p not in ex_ma:
+        from edgelab.research.memoria_activa import verificar_memoria_activa
+        e.extend(verificar_memoria_activa(t, familia=None, root=repo))
     if exigir_commit:
         rel = str(p.relative_to(repo))
         if not subprocess.run(["git", "log", "-1", "--format=%H", "--", rel], cwd=repo, capture_output=True, text=True).stdout.strip():

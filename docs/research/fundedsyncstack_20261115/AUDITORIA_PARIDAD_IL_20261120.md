@@ -1,5 +1,9 @@
 # Auditoría de Paridad IL vs EdgeLab — `FUNDEDSYNCSTACK` (2026-11-20)
 
+Estado: VIGENTE  
+Fecha: 2026-11-20  
+Familia / módulo: fundedsyncstack  
+
 Auditoría forense instrucción por instrucción de los **15 módulos** de `edgelab/research/fundedsyncstack/` contra el desensamblado IL de `FUNDEDSYNCSTACK5.dll` (`2026-10-29.1-FUNDEDSYNCSTACK`, `il_por_modulo/*.txt`), el parquet M1 real de futuros de NT8 (`NQ_M1_nonadj_utc.parquet`) y corridas reales del binario en NinjaTrader 8.
 
 ---

@@ -4,7 +4,8 @@
 > versionado es **`docs/NORTH_STAR.md`** — sha256 del cuerpo anterior al
 > marcador `SHA256-BODY-ABOVE`: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 > (no es el hash del archivo completo; el archivo se autocita a su propio pie,
-> ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Punto
+> ver `tests/test_north_star_hash.py`). Si hay conflicto, manda ese doc. Snapshot
+> vivo compacto de arranque (`<= 150` líneas): `docs/ESTADO_VIVO.md`. Punto
 > de entrada operativo vigente: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`;
 > producto, módulos y protocolo de documentación: `docs/PRODUCT.md`, `docs/MODULES.md`, `docs/DOCUMENTATION_PROTOCOL.md`.
 
