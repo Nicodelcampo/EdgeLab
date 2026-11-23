@@ -137,20 +137,73 @@ def test_multiprop_intraday_sin_doble_conteo_y_billing_y_cero():
     assert arq["retiros_12m"] == 1.5
 
 
-def test_someod_m1_paridad_y_cs_nt8_valido():
-    cs_path = ROOT / "nt8/strategies/EdgeLabFundedSyncPortfolio.cs"
-    assert cs_path.exists()
-    raw_bytes = cs_path.read_bytes()
-    assert b"\n" not in raw_bytes.replace(b"\r\n", b""), "Se requiere formato CRLF estricto"
-    txt = raw_bytes.decode("ascii")
-    assert "#region NinjaScript generated code" not in txt
-    assert "public class EdgeLabFundedSyncPortfolio : Strategy" in txt
-    assert txt.count("{") == txt.count("}")
-    assert txt.count("(") == txt.count(")")
+def test_someod_m1_paridad_y_cs_nt8_valido(tmp_path):
+    import subprocess
+
+    strat_dir = ROOT / "nt8/strategies"
+    expected_classes = {
+        "EdgeLabFundedSyncCore.cs": "public sealed class PortfolioCoordinator",
+        "EdgeLabFundedSyncPortfolio.cs": "public class EdgeLabFundedSyncPortfolio : Strategy",
+        "EdgeLabFundedSyncCore6.cs": "public class EdgeLabFundedSyncCore6 : Strategy",
+        "EdgeLabFundedSyncCore5AltaConv.cs": "public class EdgeLabFundedSyncCore5AltaConv : Strategy",
+        "EdgeLabFundedSyncSnipersRZ.cs": "public class EdgeLabFundedSyncSnipersRZ : Strategy",
+        "EdgeLabFundedSyncSingleModule.cs": "public class EdgeLabFundedSyncSingleModule : Strategy",
+    }
+
+    cs_paths = []
+    for fname, sig in expected_classes.items():
+        p = strat_dir / fname
+        assert p.exists(), f"Falta archivo NT8: {p}"
+        raw_bytes = p.read_bytes()
+        assert b"\n" not in raw_bytes.replace(b"\r\n", b""), f"Se requiere formato CRLF estricto en {fname}"
+        txt = raw_bytes.decode("ascii")
+        assert "#region NinjaScript generated code" not in txt
+        assert sig in txt
+        assert txt.count("{") == txt.count("}")
+        assert txt.count("(") == txt.count(")")
+        cs_paths.append(str(p))
+
+    portfolio_txt = (strat_dir / "EdgeLabFundedSyncPortfolio.cs").read_text(encoding="ascii")
     for req in (
         "R_osc30_end660_ATR50", "Z_b15_e20_eff40_ATR50", "T_stop100_BE15R_calFalse",
         "V_nm25_noCap_mae30", "W_slope_allowReFalse_ATR25", "N_d5_fbTrue_ATR25", "SOMEOD_ext_NQ",
         "HardFlattenHHMM_ET", "MaxOpenR", "CollisionPolicy", "EvalDailyCapUSD", "DailyLossLimitUSD",
         "SMA of True Range", "500 trading days",
     ):
-        assert req in txt
+        assert req in portfolio_txt
+
+    core_txt = (strat_dir / "EdgeLabFundedSyncCore.cs").read_text(encoding="ascii")
+    for preset in (
+        "P_OPT_SF_v2", "P_OPT_Core6", "P_OPT_SF_SinW",
+        "Core5_AltaConv", "Tier1_Snipers_RZ", "Tier23_Flow_TVNS",
+    ):
+        assert preset in core_txt
+
+    csc = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe")
+    nt_core = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Core.dll")
+    nt_gui = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Gui.dll")
+    nt_cust = Path.home() / "OneDrive/Documentos/NinjaTrader 8/bin/Custom/NinjaTrader.Custom.dll"
+    wpf_dir = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF")
+    if csc.exists() and nt_core.exists() and nt_gui.exists() and nt_cust.exists():
+        out_dll = tmp_path / "EdgeLabFundedSyncNt8Test.dll"
+        cmd = [
+            str(csc),
+            "/nologo",
+            "/target:library",
+            "/warnaserror",
+            f"/out:{out_dll}",
+            "/r:System.dll",
+            "/r:System.Core.dll",
+            "/r:System.ComponentModel.DataAnnotations.dll",
+            "/r:System.Xml.dll",
+            f"/r:{wpf_dir / 'PresentationCore.dll'}",
+            f"/r:{wpf_dir / 'PresentationFramework.dll'}",
+            f"/r:{wpf_dir / 'WindowsBase.dll'}",
+            f"/r:{nt_core}",
+            f"/r:{nt_gui}",
+            f"/r:{nt_cust}",
+            *cs_paths,
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True, check=False)
+        assert res.returncode == 0, f"csc /warnaserror fallo:\n{res.stdout}\n{res.stderr}"
+        assert out_dll.exists()
