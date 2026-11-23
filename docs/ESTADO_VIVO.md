@@ -8,7 +8,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `732` campanas / `538,653,225` pruebas registradas
+- Contador global: `733` campanas / `538,653,264` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
