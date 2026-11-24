@@ -26,7 +26,10 @@ namespace EdgeLabFundedSyncCfd
         Core5_AltaConv = 3,
         Tier1_Snipers_RZ = 4,
         Tier23_Flow_TVNS = 5,
-        CustomWeights = 6
+        CustomWeights = 6,
+        Core5_R25 = 7,
+        SpeedEval_TOnly = 8,
+        ES_Core_US500 = 9
     }
 
     public enum FundedSyncCfdPropProfile
@@ -104,65 +107,65 @@ namespace EdgeLabFundedSyncCfd
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.75, FundedRiskPct = 0.75,
-                        EvalRiskUsd = 750.0, FundedRiskUsd = 750.0,
+                        EvalRiskPct = 0.45, FundedRiskPct = 0.45,
+                        EvalRiskUsd = 450.0, FundedRiskUsd = 450.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 3.80,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = true, NewsBlackoutMinutes = 2,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 5.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 4.5, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncCfdPropProfile.The5ers_HighStakes_100K:
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.65, FundedRiskPct = 0.65,
-                        EvalRiskUsd = 650.0, FundedRiskUsd = 650.0,
+                        EvalRiskPct = 0.40, FundedRiskPct = 0.40,
+                        EvalRiskUsd = 400.0, FundedRiskUsd = 400.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 3.00,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = true, NewsBlackoutMinutes = 2,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 4.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 4.5, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncCfdPropProfile.The5ers_Summer_200K:
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.50, FundedRiskPct = 0.50,
-                        EvalRiskUsd = 1000.0, FundedRiskUsd = 1000.0,
+                        EvalRiskPct = 0.40, FundedRiskPct = 0.40,
+                        EvalRiskUsd = 800.0, FundedRiskUsd = 800.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 2.20,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = false, NewsBlackoutMinutes = 2,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 5.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 4.5, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncCfdPropProfile.FundingPips_Std_100K:
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.75, FundedRiskPct = 0.75,
-                        EvalRiskUsd = 750.0, FundedRiskUsd = 750.0,
+                        EvalRiskPct = 0.45, FundedRiskPct = 0.45,
+                        EvalRiskUsd = 450.0, FundedRiskUsd = 450.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 3.80,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = true, NewsBlackoutMinutes = 5,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 5.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 4.5, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncCfdPropProfile.E8_Pro_100K:
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.45, FundedRiskPct = 0.45,
-                        EvalRiskUsd = 450.0, FundedRiskUsd = 450.0,
+                        EvalRiskPct = 0.35, FundedRiskPct = 0.35,
+                        EvalRiskUsd = 350.0, FundedRiskUsd = 350.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 1.80,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = false, NewsBlackoutMinutes = 2,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 3.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 3.0, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncCfdPropProfile.Personal_Custom:
@@ -183,13 +186,13 @@ namespace EdgeLabFundedSyncCfd
                     return new CfdPropProfileDefaults
                     {
                         SizingMode = FundedSyncRiskSizingMode.PercentOfInitialBalance,
-                        EvalRiskPct = 0.75, FundedRiskPct = 0.75,
-                        EvalRiskUsd = 750.0, FundedRiskUsd = 750.0,
+                        EvalRiskPct = 0.45, FundedRiskPct = 0.45,
+                        EvalRiskUsd = 450.0, FundedRiskUsd = 450.0,
                         MaxOpenR = 3.0, DailyLossLimitPct = 3.80,
                         EvalDailyCapPct = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640,
                         EnableNewsGuard = false, NewsBlackoutMinutes = 2,
-                        EnableFundedDdBrake = false, FundedDdBrakeThresholdPct = 5.0, FundedDdBrakeScale = 0.50,
+                        EnableFundedDdBrake = true, FundedDdBrakeThresholdPct = 4.5, FundedDdBrakeScale = 0.50,
                         CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
             }
@@ -233,11 +236,23 @@ namespace EdgeLabFundedSyncCfd
                     d["SOMEOD_ext_NQ"] = 0.875168;
                     break;
                 case FundedSyncPortfolioPreset.Core5_AltaConv:
+                case FundedSyncPortfolioPreset.Core5_R25:
                     d["R_osc30_end660_ATR50"] = 1.802134;
                     d["Z_b15_e20_eff40_ATR50"] = 2.277168;
                     d["T_stop100_BE15R_calFalse"] = 0.709531;
                     d["N_d5_fbTrue_ATR25"] = 1.261968;
                     d["SOMEOD_ext_NQ"] = 0.848629;
+                    break;
+                case FundedSyncPortfolioPreset.SpeedEval_TOnly:
+                    d["T_stop100_BE15R_calFalse"] = 1.0;
+                    break;
+                case FundedSyncPortfolioPreset.ES_Core_US500:
+                    d["R_osc30_end660_ATR50"] = 1.0 / 6.0;
+                    d["Z_b15_e20_eff40_ATR50"] = 1.0 / 6.0;
+                    d["T_stop100_BE15R_calFalse"] = 1.0 / 6.0;
+                    d["V_nm25_noCap_mae30"] = 1.0 / 6.0;
+                    d["W_slope_allowReFalse_ATR25"] = 1.0 / 6.0;
+                    d["N_d5_fbTrue_ATR25"] = 1.0 / 6.0;
                     break;
                 case FundedSyncPortfolioPreset.Tier1_Snipers_RZ:
                     d["R_osc30_end660_ATR50"] = 0.732985;
@@ -970,6 +985,8 @@ namespace EdgeLabFundedSyncCfd
 
         private readonly double _beTriggerR;
         private readonly double _stopOrbMult;
+        private readonly double _stopMinPts;
+        private readonly double _stopMaxPts;
         private readonly List<double> _eligOrbHistBps = new List<double>();
         private readonly List<double> _eligRthCloseHist = new List<double>();
         private readonly List<double> _eligSesRetHistBps = new List<double>();
@@ -1004,10 +1021,12 @@ namespace EdgeLabFundedSyncCfd
 
         public int KnnTrainRowsCount { get { return _trainRows.Count; } }
 
-        public FtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5) : base("T_stop100_BE15R_calFalse")
+        public FtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5, double stopMinPts = 2.0, double stopMaxPts = 100.0) : base("T_stop100_BE15R_calFalse")
         {
             _stopOrbMult = stopOrbMult;
             _beTriggerR = beTriggerR;
+            _stopMinPts = stopMinPts;
+            _stopMaxPts = stopMaxPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1414,8 +1433,8 @@ namespace EdgeLabFundedSyncCfd
         {
             if (sl.IsOpen || sl.HasPendingEntry) return;
             double orbRng = _orbHigh - _orbLow;
-            double stopPts = Math.Max(2.0, Math.Min(100.0, _stopOrbMult * orbRng));
-            double ilRiskPts = Math.Max(2.0, Math.Min(100.0, 1.25 * orbRng));
+            double stopPts = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, _stopOrbMult * orbRng));
+            double ilRiskPts = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, 1.25 * orbRng));
             double tgtR, trigR, lockR;
             SelectPlan(side, _curPriorTrendAvail, _curPriorTrendBps, out tgtR, out trigR, out lockR);
             int tgtTicks = RoundOffsetTicks(ilRiskPts * tgtR, side > 0);
@@ -1433,7 +1452,7 @@ namespace EdgeLabFundedSyncCfd
         private ShadowTrade CreateShadowTrade(int side, double parentOpen, bool ptAvail, double ptBps)
         {
             double epx = parentOpen + side * TickSize;
-            double rawD = Math.Max(2.0, Math.Min(100.0, (_orbHigh - _orbLow) * 1.25));
+            double rawD = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, (_orbHigh - _orbLow) * 1.25));
             double stopP = FundedSyncMath.RoundTick(epx - side * rawD, TickSize);
             double rPts = side * (epx - stopP);
             double tgtR, trigR, lockR;
@@ -1561,6 +1580,7 @@ namespace EdgeLabFundedSyncCfd
     {
         private readonly double _noiseMult;
         private readonly double _slAtrK;
+        private readonly double _tpPts;
         private readonly Queue<double> _rthRanges252 = new Queue<double>();
         private double _rthSum, _dailyAtr, _sesOpen, _sesHi, _sesLo, _noiseUp, _cumVol, _cumPv, _sesVwap;
         private int _curRthDateCt = -1, _tradesToday, _belowVwap;
@@ -1571,10 +1591,11 @@ namespace EdgeLabFundedSyncCfd
 
         public int RthRangesCount { get { return _rthRanges252.Count; } }
 
-        public VaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30) : base("V_nm25_noCap_mae30")
+        public VaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30, double tpPts = 0.0) : base("V_nm25_noCap_mae30")
         {
             _noiseMult = noiseMult;
             _slAtrK = slAtrK;
+            _tpPts = tpPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1649,7 +1670,10 @@ namespace EdgeLabFundedSyncCfd
             if (_b5C <= _noiseUp || _b5C <= _sesVwap) return;
             if (double.IsNaN(atr20Session) || atr20Session <= 0) return;
 
-            if (host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session))
+            bool enteredV = _tpPts > 0.0
+                ? host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session, double.NaN, _tpPts)
+                : host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session);
+            if (enteredV)
                 _tradesToday++;
         }
     }
@@ -1661,14 +1685,16 @@ namespace EdgeLabFundedSyncCfd
     {
         private readonly double _slAtrK;
         private readonly bool _enableTrail;
+        private readonly bool _useSlopeFilter;
         private readonly List<double> _vwapHist = new List<double>();
         private double _cumPv, _cumVol, _sesVwap;
         private int _sigSide;
 
-        public VwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false) : base("W_slope_allowReFalse_ATR25")
+        public VwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false, bool useSlopeFilter = true) : base("W_slope_allowReFalse_ATR25")
         {
             _slAtrK = slAtrK;
             _enableTrail = enableTrail;
+            _useSlopeFilter = useSlopeFilter;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1722,7 +1748,7 @@ namespace EdgeLabFundedSyncCfd
                 if (above)
                 {
                     _sigSide = 1;
-                    bool slopeOk = _vwapHist.Count > 20 && (_sesVwap - _vwapHist[_vwapHist.Count - 21]) >= 0.0;
+                    bool slopeOk = !_useSlopeFilter || (_vwapHist.Count > 20 && (_sesVwap - _vwapHist[_vwapHist.Count - 21]) >= 0.0);
                     if (slopeOk && !double.IsNaN(atr20Session) && atr20Session > 0)
                         host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session);
                 }
@@ -1741,6 +1767,7 @@ namespace EdgeLabFundedSyncCfd
     {
         private readonly int _numDays;
         private readonly double _slAtrK;
+        private readonly double _acceptBufPts;
         private readonly Queue<double> _dHighs = new Queue<double>();
         private double _priorRange = double.NaN;
         private double _dayHi = double.NaN;
@@ -1750,10 +1777,11 @@ namespace EdgeLabFundedSyncCfd
         private bool _wasLong;
         private double _lastBreakoutLvl;
 
-        public NDayLongEngine(int numDays = 5, double slAtrK = 0.25) : base("N_d5_fbTrue_ATR25")
+        public NDayLongEngine(int numDays = 5, double slAtrK = 0.25, double acceptBufPts = 4.0) : base("N_d5_fbTrue_ATR25")
         {
             _numDays = numDays;
             _slAtrK = slAtrK;
+            _acceptBufPts = acceptBufPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1)
@@ -1828,7 +1856,7 @@ namespace EdgeLabFundedSyncCfd
             double vPrev = _rthVwapHist[_rthVwapHist.Count - 16];
             if (!(bar.Close > vVal && vVal > vPrev)) return;
 
-            if (bar.Close > _dayHi + 4.0) _acceptCloses++; else _acceptCloses = 0;
+            if (bar.Close > _dayHi + _acceptBufPts) _acceptCloses++; else _acceptCloses = 0;
             if (_acceptCloses < 2) return;
 
             if (double.IsNaN(atr20Session) || atr20Session <= 0) return;
@@ -2009,15 +2037,17 @@ namespace EdgeLabFundedSyncCfd
             int zBucketMin = 15, int zEmaPeriod = 20, double zMinEffPct = 40.0, double zSlAtr = 0.50,
             double tStopOrbMult = 1.0, double tBeTrigR = 1.5,
             double vNoiseMult = 0.25, double vSlAtr = 0.30,
-            double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25)
+            double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
+            double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
+            double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
         {
             Atr20Session = double.NaN;
             _engines.Add(new AtrPhaseEngine(rOscMult, rEndEt, rSlAtr));
             _engines.Add(new ZetaEngine(zBucketMin, zEmaPeriod, zMinEffPct, zSlAtr));
-            _engines.Add(new FtmOrbEngine(tStopOrbMult, tBeTrigR));
-            _engines.Add(new VaultBreakEngine(vNoiseMult, vSlAtr));
-            _engines.Add(new VwapCrossEngine(wSlAtr, enableWTrail));
-            _engines.Add(new NDayLongEngine(nDays, nSlAtr));
+            _engines.Add(new FtmOrbEngine(tStopOrbMult, tBeTrigR, tStopMinPts, tStopMaxPts));
+            _engines.Add(new VaultBreakEngine(vNoiseMult, vSlAtr, vTpPts));
+            _engines.Add(new VwapCrossEngine(wSlAtr, enableWTrail, wUseSlopeFilter));
+            _engines.Add(new NDayLongEngine(nDays, nSlAtr, nAcceptBufPts));
             _engines.Add(new SessionOpenMomentumEngine());
 
             for (int i = 0; i < FundedSyncMath.ModuleOrder.Length; i++)

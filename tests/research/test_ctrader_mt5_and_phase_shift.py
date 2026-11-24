@@ -33,6 +33,7 @@ BOT_NAMES = [
     "EdgeLabFundedSyncCore6",
     "EdgeLabFundedSyncSnipersRZ",
     "EdgeLabFundedSyncSingleModule",
+    "EdgeLabFundedSyncESCoreUS500",
 ]
 
 
@@ -145,6 +146,18 @@ public static class SmokeCfdCore
         if (slTest.IsOpen || !slTest.HasPendingEntry) return 15;
         coord.EvaluateTick(30479.5, 30480.5, new DateTime(2026, 10, 1, 14, 5, 30, DateTimeKind.Utc), nyTz);
         if (!slTest.IsOpen || slTest.Side != -1) return 16;
+
+        // 7. Roadmap CFD profile defaults (0.45% FTMO, 0.40% The5ers HS, FundedDdBrake @ 4.5%) & new presets
+        var ftmo = CfdPropProfileDefaults.For(FundedSyncCfdPropProfile.FTMO_Swing_100K);
+        if (Math.Abs(ftmo.EvalRiskPct - 0.45) > 1e-9 || !ftmo.EnableFundedDdBrake || Math.Abs(ftmo.FundedDdBrakeThresholdPct - 4.5) > 1e-9) return 17;
+        var hs = CfdPropProfileDefaults.For(FundedSyncCfdPropProfile.The5ers_HighStakes_100K);
+        if (Math.Abs(hs.EvalRiskPct - 0.40) > 1e-9 || !hs.EnableFundedDdBrake || Math.Abs(hs.FundedDdBrakeThresholdPct - 4.5) > 1e-9) return 18;
+        var wC5R25 = FundedSyncMath.GetPresetWeights(FundedSyncPortfolioPreset.Core5_R25);
+        if (Math.Abs(wC5R25["R_osc30_end660_ATR50"] - 1.802134) > 1e-6) return 19;
+        var wSp = FundedSyncMath.GetPresetWeights(FundedSyncPortfolioPreset.SpeedEval_TOnly);
+        if (Math.Abs(wSp["T_stop100_BE15R_calFalse"] - 1.0) > 1e-9 || wSp["R_osc30_end660_ATR50"] > 1e-9) return 20;
+        var wEs = FundedSyncMath.GetPresetWeights(FundedSyncPortfolioPreset.ES_Core_US500);
+        if (Math.Abs(wEs["N_d5_fbTrue_ATR25"] - (1.0 / 6.0)) > 1e-6 || wEs["SOMEOD_ext_NQ"] > 1e-9) return 21;
 
         Console.WriteLine("SMOKE_OK");
         return 0;

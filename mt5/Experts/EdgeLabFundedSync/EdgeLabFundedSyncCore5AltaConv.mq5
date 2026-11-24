@@ -11,10 +11,10 @@ input group "01. Prop Account & Risk"
 input ENUM_FS_PROP_PROFILE     InpPropProfile        = FS_PROP_FTMO_SWING_100K;
 input ENUM_FS_ACCOUNT_MODE     InpAccountMode        = FS_MODE_EVALUATION;
 input ENUM_FS_RISK_SIZING_MODE InpCustomSizingMode   = FS_SIZE_PCT_INITIAL;
-input double                   InpEvalRiskPct        = 0.75;
-input double                   InpFundedRiskPct      = 0.75;
-input double                   InpEvalRisk1R_USD     = 750.0;
-input double                   InpFundedRisk1R_USD   = 750.0;
+input double                   InpEvalRiskPct        = 0.45;
+input double                   InpFundedRiskPct      = 0.45;
+input double                   InpEvalRisk1R_USD     = 450.0;
+input double                   InpFundedRisk1R_USD   = 450.0;
 input double                   InpMaxOpenR           = 3.0;
 input double                   InpMaxLotsPerSleeve   = 50.0;
 input double                   InpMaxTotalNetLots    = 100.0;
@@ -25,12 +25,13 @@ input int                      InpHardFlattenHHMM_ET = 1640;
 input bool                     InpEnforceEvalDailyCap= false;
 input double                   InpEvalDailyCapPct    = 0.0;
 input double                   InpDailyLossLimitPct  = 3.80;
-input bool                     InpEnableFundedDdBrake= false;
-input double                   InpDdBrakeThreshPct   = 5.0;
+input bool                     InpEnableFundedDdBrake= true;
+input double                   InpDdBrakeThreshPct   = 4.5;
 input double                   InpDdBrakeScale       = 0.50;
 input bool                     InpEnableNewsGuard    = false;
 input int                      InpNewsBlackoutMin    = 2;
 input string                   InpNewsHoursEtCsv     = "0830,1000,1400";
+input double                   InpRSlAtrK            = 0.25;
 
 input group "03. Broker Timezone, Execution & Warmup"
 input ENUM_FS_TZ_MODE          InpTzMode             = FS_TZ_NY_PLUS_7_ALL_YEAR;
@@ -62,7 +63,8 @@ int OnInit()
       InpTzMode, InpFixedUtcOffsetHrs, InpOverrideUsdPerPtLot, InpFrictionPts, InpSignalTickSize,
       InpCheckStopsOnTick, InpUseBrokerProtSL, InpWarmupBars, InpAllowMidSyncOnStart,
       false, InpEnableCsvLog, InpCsvFileName,
-      dummyEn, dummyW, false);
+      dummyEn, dummyW, false,
+      3.0, 660, InpRSlAtrK);
 }
 
 void OnTick()   { g_adapter.OnTick(); }

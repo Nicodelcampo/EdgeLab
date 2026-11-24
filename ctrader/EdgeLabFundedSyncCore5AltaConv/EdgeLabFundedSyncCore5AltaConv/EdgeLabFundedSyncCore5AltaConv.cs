@@ -16,16 +16,16 @@ namespace cAlgo.Robots
         [Parameter("Custom Sizing Mode", Group = "01. Prop Account", DefaultValue = FundedSyncRiskSizingMode.PercentOfInitialBalance)]
         public FundedSyncRiskSizingMode CustomSizingMode { get; set; }
 
-        [Parameter("Custom Eval Risk 1R (%)", Group = "01. Prop Account", DefaultValue = 0.75, MinValue = 0.05, MaxValue = 5.0)]
+        [Parameter("Custom Eval Risk 1R (%)", Group = "01. Prop Account", DefaultValue = 0.45, MinValue = 0.05, MaxValue = 5.0)]
         public double EvalRiskPct { get; set; }
 
-        [Parameter("Custom Funded Risk 1R (%)", Group = "01. Prop Account", DefaultValue = 0.75, MinValue = 0.05, MaxValue = 5.0)]
+        [Parameter("Custom Funded Risk 1R (%)", Group = "01. Prop Account", DefaultValue = 0.45, MinValue = 0.05, MaxValue = 5.0)]
         public double FundedRiskPct { get; set; }
 
-        [Parameter("Custom Eval Risk 1R (USD)", Group = "01. Prop Account", DefaultValue = 750.0, MinValue = 10.0, MaxValue = 25000.0)]
+        [Parameter("Custom Eval Risk 1R (USD)", Group = "01. Prop Account", DefaultValue = 450.0, MinValue = 10.0, MaxValue = 25000.0)]
         public double EvalRisk1R_USD { get; set; }
 
-        [Parameter("Custom Funded Risk 1R (USD)", Group = "01. Prop Account", DefaultValue = 750.0, MinValue = 10.0, MaxValue = 25000.0)]
+        [Parameter("Custom Funded Risk 1R (USD)", Group = "01. Prop Account", DefaultValue = 450.0, MinValue = 10.0, MaxValue = 25000.0)]
         public double FundedRisk1R_USD { get; set; }
 
         [Parameter("Custom Max Open R", Group = "01. Prop Account", DefaultValue = 3.0, MinValue = 0.5, MaxValue = 15.0)]
@@ -52,14 +52,17 @@ namespace cAlgo.Robots
         [Parameter("Custom Daily Loss Limit (%)", Group = "02. Compliance", DefaultValue = 3.80, MinValue = 0.0, MaxValue = 20.0)]
         public double DailyLossLimitPct { get; set; }
 
-        [Parameter("Enable Funded DD Brake", Group = "02. Compliance", DefaultValue = false)]
+        [Parameter("Enable Funded DD Brake", Group = "02. Compliance", DefaultValue = true)]
         public bool EnableFundedDdBrake { get; set; }
 
-        [Parameter("Funded DD Brake Threshold (%)", Group = "02. Compliance", DefaultValue = 5.0, MinValue = 0.5, MaxValue = 20.0)]
+        [Parameter("Funded DD Brake Threshold (%)", Group = "02. Compliance", DefaultValue = 4.5, MinValue = 0.5, MaxValue = 20.0)]
         public double FundedDdBrakeThresholdPct { get; set; }
 
         [Parameter("Funded DD Brake Scale", Group = "02. Compliance", DefaultValue = 0.50, MinValue = 0.10, MaxValue = 1.0)]
         public double FundedDdBrakeScale { get; set; }
+
+        [Parameter("R SL ATR K (0.25=Roadmap, 0.50=Base)", Group = "02. Compliance", DefaultValue = 0.25, MinValue = 0.05, MaxValue = 2.0)]
+        public double RSlAtrK { get; set; }
 
         [Parameter("Custom Enable News Guard", Group = "02. Compliance", DefaultValue = false)]
         public bool EnableNewsGuard { get; set; }
@@ -115,7 +118,8 @@ namespace cAlgo.Robots
                 CheckStopsOnTick, UseBrokerProtectiveStop,
                 WarmupTargetBars, AutoLoadWarmupHistory, AllowMidSessionSyncOnStart,
                 false, ShowHudInBacktest, EnableParityLog,
-                null, null);
+                null, null,
+                rSlAtr: RSlAtrK);
         }
 
         protected override void OnBar()

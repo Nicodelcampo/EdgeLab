@@ -37,6 +37,22 @@ BOT_NAMES = [
     "EdgeLabFundedSyncCore6",
     "EdgeLabFundedSyncSnipersRZ",
     "EdgeLabFundedSyncSingleModule",
+    "EdgeLabFundedSyncESCoreUS500",
+]
+
+NT8_DIR = ROOT / "nt8" / "strategies"
+NT8_USER_STRAT = Path(r"C:\Users\nicoc\OneDrive\Documentos\NinjaTrader 8\bin\Custom\Strategies")
+NT8_CORE_DLL = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Core.dll")
+NT8_GUI_DLL = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Gui.dll")
+NT8_CUSTOM_DLL = Path(r"C:\Users\nicoc\OneDrive\Documentos\NinjaTrader 8\bin\Custom\NinjaTrader.Custom.dll")
+WPF_DIR = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF")
+NT8_FILES = [
+    "EdgeLabFundedSyncCore.cs",
+    "EdgeLabFundedSyncPortfolio.cs",
+    "EdgeLabFundedSyncCore6.cs",
+    "EdgeLabFundedSyncCore5AltaConv.cs",
+    "EdgeLabFundedSyncSnipersRZ.cs",
+    "EdgeLabFundedSyncSingleModule.cs",
 ]
 
 
@@ -203,13 +219,57 @@ def sync_and_compile_mt5(install: bool = True, compile_check: bool = True) -> No
                     print(f"[MT5:{label}] Compiled clean (0 errors, 0 warnings) -> {ex5_path.name}")
 
 
+def sync_and_compile_nt8(install: bool = True, compile_check: bool = True) -> None:
+    cs_paths = []
+    for fname in NT8_FILES:
+        src = NT8_DIR / fname
+        if not src.exists():
+            raise FileNotFoundError(f"Missing NT8 strategy file: {src}")
+        txt = src.read_text(encoding="utf-8")
+        write_crlf_ascii(src, txt)
+        cs_paths.append(str(src))
+        if install and NT8_USER_STRAT.exists():
+            write_crlf_ascii(NT8_USER_STRAT / fname, txt)
+            print(f"[NT8] Installed -> {NT8_USER_STRAT / fname}")
+
+    if compile_check and CSC_EXE.exists() and NT8_CORE_DLL.exists() and NT8_GUI_DLL.exists() and NT8_CUSTOM_DLL.exists():
+        with tempfile.TemporaryDirectory() as tmp:
+            out_dll = Path(tmp) / "EdgeLabFundedSyncNt8.dll"
+            cmd = [
+                str(CSC_EXE),
+                "/nologo",
+                "/target:library",
+                "/warnaserror",
+                f"/out:{out_dll}",
+                "/r:System.dll",
+                "/r:System.Core.dll",
+                "/r:System.ComponentModel.DataAnnotations.dll",
+                "/r:System.Xml.dll",
+                f"/r:{WPF_DIR / 'PresentationCore.dll'}",
+                f"/r:{WPF_DIR / 'PresentationFramework.dll'}",
+                f"/r:{WPF_DIR / 'WindowsBase.dll'}",
+                f"/r:{NT8_CORE_DLL}",
+                f"/r:{NT8_GUI_DLL}",
+                f"/r:{NT8_CUSTOM_DLL}",
+                *cs_paths,
+            ]
+            res = subprocess.run(cmd, capture_output=True, check=False)
+            if res.returncode != 0:
+                out_s = res.stdout.decode("cp850", errors="replace") if res.stdout else ""
+                err_s = res.stderr.decode("cp850", errors="replace") if res.stderr else ""
+                raise RuntimeError(f"NT8 compile failed:\n{out_s}\n{err_s}")
+            print(f"[NT8] Compiled clean (0 errors, 0 warnings) -> {len(NT8_FILES)} files")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--target", choices=("ctrader", "mt5", "all"), default="all")
+    parser.add_argument("--target", choices=("ctrader", "mt5", "nt8", "all"), default="all")
     parser.add_argument("--no-install", action="store_true")
     parser.add_argument("--no-compile", action="store_true")
     args = parser.parse_args()
 
+    if args.target in ("nt8", "all"):
+        sync_and_compile_nt8(install=not args.no_install, compile_check=not args.no_compile)
     if args.target in ("ctrader", "all"):
         sync_and_compile_ctrader(install=not args.no_install, compile_check=not args.no_compile)
     if args.target in ("mt5", "all"):

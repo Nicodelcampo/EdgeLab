@@ -28,7 +28,10 @@ enum ENUM_FS_PORTFOLIO_PRESET
    FS_PRESET_CORE5_ALTACONV   = 3, // Core5_AltaConv (R+Z+T+N+SOMEOD)
    FS_PRESET_TIER1_SNIPERS_RZ = 4, // Tier1_Snipers_RZ (R+Z)
    FS_PRESET_TIER23_FLOW_TVNS = 5, // Tier23_Flow_TVNS (T+V+N+SOMEOD)
-   FS_PRESET_CUSTOM_WEIGHTS   = 6  // CustomWeights
+   FS_PRESET_CUSTOM_WEIGHTS   = 6, // CustomWeights
+   FS_PRESET_CORE5_R25        = 7, // Core5_R25 (Core5 with R ATR25 stop)
+   FS_PRESET_SPEEDEVAL_TONLY  = 8, // SpeedEval_TOnly (T ORB15 only)
+   FS_PRESET_ES_CORE_US500    = 9  // ES_Core_US500 (US500 CFD 6-mod satellite)
 };
 
 enum ENUM_FS_PROP_PROFILE
@@ -197,8 +200,16 @@ void FsGetPresetWeights(ENUM_FS_PORTFOLIO_PRESET preset, double &w[])
          w[3] = 1.003434; w[5] = 1.256155; w[6] = 0.875168;
          break;
       case FS_PRESET_CORE5_ALTACONV:
+      case FS_PRESET_CORE5_R25:
          w[0] = 1.802134; w[1] = 2.277168; w[2] = 0.709531;
          w[5] = 1.261968; w[6] = 0.848629;
+         break;
+      case FS_PRESET_SPEEDEVAL_TONLY:
+         w[2] = 1.0;
+         break;
+      case FS_PRESET_ES_CORE_US500:
+         w[0] = 1.0 / 6.0; w[1] = 1.0 / 6.0; w[2] = 1.0 / 6.0;
+         w[3] = 1.0 / 6.0; w[4] = 1.0 / 6.0; w[5] = 1.0 / 6.0;
          break;
       case FS_PRESET_TIER1_SNIPERS_RZ:
          w[0] = 0.732985; w[1] = 1.613336;
@@ -217,10 +228,10 @@ void FsGetPresetWeights(ENUM_FS_PORTFOLIO_PRESET preset, double &w[])
 void FsGetPropProfileDefaults(ENUM_FS_PROP_PROFILE prof, FsPropDefaults &out)
 {
    out.sizingMode             = FS_SIZE_PCT_INITIAL;
-   out.evalRiskPct            = 0.75;
-   out.fundedRiskPct          = 0.75;
-   out.evalRiskUsd            = 750.0;
-   out.fundedRiskUsd          = 750.0;
+   out.evalRiskPct            = 0.45;
+   out.fundedRiskPct          = 0.45;
+   out.evalRiskUsd            = 450.0;
+   out.fundedRiskUsd          = 450.0;
    out.maxOpenR               = 3.0;
    out.dailyLossLimitPct      = 3.80;
    out.evalDailyCapPct        = 0.0;
@@ -228,8 +239,8 @@ void FsGetPropProfileDefaults(ENUM_FS_PROP_PROFILE prof, FsPropDefaults &out)
    out.hardFlattenHHMM_ET     = 1640;
    out.enableNewsGuard        = false;
    out.newsBlackoutMin        = 2;
-   out.enableFundedDdBrake    = false;
-   out.fundedDdBrakeThreshPct = 5.0;
+   out.enableFundedDdBrake    = true;
+   out.fundedDdBrakeThreshPct = 4.5;
    out.fundedDdBrakeScale     = 0.50;
    out.collisionPolicy        = FS_COL_NETTING;
 
@@ -239,38 +250,42 @@ void FsGetPropProfileDefaults(ENUM_FS_PROP_PROFILE prof, FsPropDefaults &out)
          out.enableNewsGuard = true;
          break;
       case FS_PROP_THE5ERS_HS_100K:
-         out.evalRiskPct       = 0.65;
-         out.fundedRiskPct     = 0.65;
-         out.evalRiskUsd       = 650.0;
-         out.fundedRiskUsd     = 650.0;
-         out.dailyLossLimitPct = 3.00;
-         out.enableNewsGuard   = true;
-         out.fundedDdBrakeThreshPct = 4.0;
+         out.evalRiskPct            = 0.40;
+         out.fundedRiskPct          = 0.40;
+         out.evalRiskUsd            = 400.0;
+         out.fundedRiskUsd          = 400.0;
+         out.dailyLossLimitPct      = 3.00;
+         out.enableNewsGuard        = true;
+         out.fundedDdBrakeThreshPct = 4.5;
          break;
       case FS_PROP_THE5ERS_SUM_200K:
-         out.evalRiskPct       = 0.50;
-         out.fundedRiskPct     = 0.50;
-         out.evalRiskUsd       = 1000.0;
-         out.fundedRiskUsd     = 1000.0;
-         out.dailyLossLimitPct = 2.20;
+         out.evalRiskPct            = 0.40;
+         out.fundedRiskPct          = 0.40;
+         out.evalRiskUsd            = 800.0;
+         out.fundedRiskUsd          = 800.0;
+         out.dailyLossLimitPct      = 2.20;
          break;
       case FS_PROP_FUNDINGPIPS_STD:
          out.enableNewsGuard = true;
          out.newsBlackoutMin = 5;
          break;
       case FS_PROP_E8_PRO_100K:
-         out.evalRiskPct       = 0.45;
-         out.fundedRiskPct     = 0.45;
-         out.evalRiskUsd       = 450.0;
-         out.fundedRiskUsd     = 450.0;
-         out.dailyLossLimitPct = 1.80;
+         out.evalRiskPct            = 0.35;
+         out.fundedRiskPct          = 0.35;
+         out.evalRiskUsd            = 350.0;
+         out.fundedRiskUsd          = 350.0;
+         out.dailyLossLimitPct      = 1.80;
          out.fundedDdBrakeThreshPct = 3.0;
          break;
       case FS_PROP_PERSONAL_CUSTOM:
-         out.sizingMode        = FS_SIZE_FIXED_USD;
-         out.evalRiskUsd       = 450.0;
-         out.fundedRiskUsd     = 450.0;
-         out.dailyLossLimitPct = 0.0;
+         out.sizingMode             = FS_SIZE_FIXED_USD;
+         out.evalRiskPct            = 0.75;
+         out.fundedRiskPct          = 0.75;
+         out.evalRiskUsd            = 450.0;
+         out.fundedRiskUsd          = 450.0;
+         out.dailyLossLimitPct      = 0.0;
+         out.enableFundedDdBrake    = false;
+         out.fundedDdBrakeThreshPct = 5.0;
          break;
       case FS_PROP_FTMO_SWING_100K:
       default:

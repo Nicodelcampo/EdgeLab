@@ -499,6 +499,8 @@ class CFtmOrbEngine : public CFsModuleEngineBase
 private:
    double m_beTriggerR;
    double m_stopOrbMult;
+   double m_stopMinPts;
+   double m_stopMaxPts;
 
    double m_eligOrbHistBps[];
    double m_eligRthCloseHist[];
@@ -624,7 +626,7 @@ private:
    void CreateShadowTrade(int side, double parentOpen, bool ptAvail, double ptBps, FsTShadowTrade &st)
    {
       double epx = parentOpen + side * tickSize;
-      double rawD = MathMax(2.0, MathMin(100.0, (m_orbHigh - m_orbLow) * 1.25));
+      double rawD = MathMax(m_stopMinPts, MathMin(m_stopMaxPts, (m_orbHigh - m_orbLow) * 1.25));
       double stopP = FsRoundTick(epx - side * rawD, tickSize);
       double rPts = side * (epx - stopP);
       double tgtR, trigR, lockR;
@@ -773,8 +775,8 @@ private:
    {
       if(sl.isOpen || sl.hasPendingEntry) return;
       double orbRng = m_orbHigh - m_orbLow;
-      double stopPts = MathMax(2.0, MathMin(100.0, m_stopOrbMult * orbRng));
-      double ilRiskPts = MathMax(2.0, MathMin(100.0, 1.25 * orbRng));
+      double stopPts = MathMax(m_stopMinPts, MathMin(m_stopMaxPts, m_stopOrbMult * orbRng));
+      double ilRiskPts = MathMax(m_stopMinPts, MathMin(m_stopMaxPts, 1.25 * orbRng));
       double tgtR, trigR, lockR;
       SelectPlan(side, m_curPriorTrendAvail, m_curPriorTrendBps, tgtR, trigR, lockR);
       int tgtTicks = RoundOffsetTicks(ilRiskPts * tgtR, side > 0);
@@ -934,9 +936,9 @@ private:
    }
 
 public:
-   CFtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5)
+   CFtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5, double stopMinPts = 2.0, double stopMaxPts = 100.0)
       : CFsModuleEngineBase("T_stop100_BE15R_calFalse"),
-        m_beTriggerR(beTriggerR), m_stopOrbMult(stopOrbMult), m_m1BufCount(0),
+        m_beTriggerR(beTriggerR), m_stopOrbMult(stopOrbMult), m_stopMinPts(stopMinPts), m_stopMaxPts(stopMaxPts), m_m1BufCount(0),
         m_trainSeq(0), m_activeQuarterKey(0), m_knnRowsCount(0),
         m_curCashDate(-1), m_prevDayOfCash(-1),
         m_sesElig(false), m_refOpenCap(false), m_dayBlocked(true), m_orbFinalized(false),
@@ -1194,6 +1196,7 @@ class CVaultBreakEngine : public CFsModuleEngineBase
 private:
    double m_noiseMult;
    double m_slAtrK;
+   double m_tpPts;
    double m_rthRanges252[];
    double m_rthSum, m_dailyAtr, m_sesOpen, m_sesHi, m_sesLo, m_noiseUp, m_cumVol, m_cumPv, m_sesVwap;
    int    m_curRthDateCt, m_tradesToday, m_belowVwap;
@@ -1259,14 +1262,17 @@ private:
       if(m_b5C <= m_noiseUp || m_b5C <= m_sesVwap) return;
       if(!FsIsValidPos(atr20Session)) return;
 
-      if(host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE))
+      bool enteredV = (m_tpPts > 0.0)
+         ? host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, m_tpPts)
+         : host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
+      if(enteredV)
          m_tradesToday++;
    }
 
 public:
-   CVaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30)
+   CVaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30, double tpPts = 0.0)
       : CFsModuleEngineBase("V_nm25_noCap_mae30"),
-        m_noiseMult(noiseMult), m_slAtrK(slAtrK),
+        m_noiseMult(noiseMult), m_slAtrK(slAtrK), m_tpPts(tpPts),
         m_rthSum(0.0), m_dailyAtr(0.0), m_sesOpen(0.0), m_sesHi(0.0), m_sesLo(0.0), m_noiseUp(0.0),
         m_cumVol(0.0), m_cumPv(0.0), m_sesVwap(0.0),
         m_curRthDateCt(-1), m_tradesToday(0), m_belowVwap(0),
@@ -1311,14 +1317,15 @@ class CVwapCrossEngine : public CFsModuleEngineBase
 private:
    double m_slAtrK;
    bool   m_enableTrail;
+   bool   m_useSlopeFilter;
    double m_vwapHist[];
    double m_cumPv, m_cumVol, m_sesVwap;
    int    m_sigSide;
 
 public:
-   CVwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false)
+   CVwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false, bool useSlopeFilter = true)
       : CFsModuleEngineBase("W_slope_allowReFalse_ATR25"),
-        m_slAtrK(slAtrK), m_enableTrail(enableTrail),
+        m_slAtrK(slAtrK), m_enableTrail(enableTrail), m_useSlopeFilter(useSlopeFilter),
         m_cumPv(0.0), m_cumVol(0.0), m_sesVwap(0.0), m_sigSide(0) {}
 
    virtual void UpdateM1OverlayProtectionsOnClose(FsVirtualSleeve &sl, const FsBarContext &bar) override
@@ -1374,7 +1381,7 @@ public:
          {
             m_sigSide = 1;
             int vn = ArraySize(m_vwapHist);
-            bool slopeOk = (vn > 20 && (m_sesVwap - m_vwapHist[vn - 21]) >= 0.0);
+            bool slopeOk = !m_useSlopeFilter || (vn > 20 && (m_sesVwap - m_vwapHist[vn - 21]) >= 0.0);
             if(slopeOk && FsIsValidPos(atr20Session))
                host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
          }
@@ -1394,6 +1401,7 @@ class CNDayLongEngine : public CFsModuleEngineBase
 private:
    int    m_numDays;
    double m_slAtrK;
+   double m_acceptBufPts;
    double m_dHighs[];
    double m_priorRange, m_dayHi;
    double m_rthVwapHist[];
@@ -1403,9 +1411,9 @@ private:
    double m_lastBreakoutLvl;
 
 public:
-   CNDayLongEngine(int numDays = 5, double slAtrK = 0.25)
+   CNDayLongEngine(int numDays = 5, double slAtrK = 0.25, double acceptBufPts = 4.0)
       : CFsModuleEngineBase("N_d5_fbTrue_ATR25"),
-        m_numDays(numDays), m_slAtrK(slAtrK),
+        m_numDays(numDays), m_slAtrK(slAtrK), m_acceptBufPts(acceptBufPts),
         m_priorRange(EMPTY_VALUE), m_dayHi(EMPTY_VALUE),
         m_cumPv(0.0), m_cumVol(0.0), m_acceptCloses(0), m_closesBelowDayHi(0),
         m_wasLong(false), m_lastBreakoutLvl(0.0) {}
@@ -1498,7 +1506,7 @@ public:
       double vPrev = m_rthVwapHist[vn - 16];
       if(!(bar.close > vVal && vVal > vPrev)) return;
 
-      if(bar.close > m_dayHi + 4.0) m_acceptCloses++; else m_acceptCloses = 0;
+      if(bar.close > m_dayHi + m_acceptBufPts) m_acceptCloses++; else m_acceptCloses = 0;
       if(m_acceptCloses < 2) return;
 
       if(!FsIsValidPos(atr20Session)) return;

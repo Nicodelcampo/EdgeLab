@@ -381,7 +381,9 @@ public:
       int zBucketMin = 15, int zEmaPeriod = 20, double zMinEffPct = 40.0, double zSlAtr = 0.50,
       double tStopOrbMult = 1.0, double tBeTrigR = 1.5,
       double vNoiseMult = 0.25, double vSlAtr = 0.30,
-      double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25)
+      double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
+      double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
+      double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
       : signalTickSize(0.25), usdPerPointPerLot(1.0), lotStep(0.01), minLots(0.01),
         maxLotsPerSleeve(50.0), maxTotalNetLots(100.0), frictionPts(1.50),
         accountMode(FS_MODE_EVALUATION), sizingMode(FS_SIZE_PCT_INITIAL),
@@ -399,10 +401,10 @@ public:
    {
       m_engines[0] = new CAtrPhaseEngine(rOscMult, rEndEt, rSlAtr);
       m_engines[1] = new CZetaEngine(zBucketMin, zEmaPeriod, zMinEffPct, zSlAtr);
-      m_engines[2] = new CFtmOrbEngine(tStopOrbMult, tBeTrigR);
-      m_engines[3] = new CVaultBreakEngine(vNoiseMult, vSlAtr);
-      m_engines[4] = new CVwapCrossEngine(wSlAtr, enableWTrail);
-      m_engines[5] = new CNDayLongEngine(nDays, nSlAtr);
+      m_engines[2] = new CFtmOrbEngine(tStopOrbMult, tBeTrigR, tStopMinPts, tStopMaxPts);
+      m_engines[3] = new CVaultBreakEngine(vNoiseMult, vSlAtr, vTpPts);
+      m_engines[4] = new CVwapCrossEngine(wSlAtr, enableWTrail, wUseSlopeFilter);
+      m_engines[5] = new CNDayLongEngine(nDays, nSlAtr, nAcceptBufPts);
       m_engines[6] = new CSessionOpenMomentumEngine();
 
       for(int i = 0; i < 7; i++)
@@ -1056,7 +1058,9 @@ public:
       int zBucketMin = 15, int zEmaPeriod = 20, double zMinEffPct = 40.0, double zSlAtr = 0.50,
       double tStopOrbMult = 1.0, double tBeTrigR = 1.5,
       double vNoiseMult = 0.25, double vSlAtr = 0.30,
-      double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25)
+      double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
+      double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
+      double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
    {
       m_label                   = label;
       m_magic                   = magic;
@@ -1102,6 +1106,27 @@ public:
       double dlPctEff     = useProf ? prof.dailyLossLimitPct : dailyLossLimitPct;
       double evCapPctEff  = useProf ? prof.evalDailyCapPct : evalDailyCapPct;
       bool   enfCapEff    = useProf ? prof.enforceEvalDailyCap : enforceEvalDailyCap;
+      double esSatScale   = 1.0;
+
+      if(preset == FS_PRESET_CORE5_R25)
+      {
+         rSlAtr = 0.25;
+      }
+      else if(preset == FS_PRESET_SPEEDEVAL_TONLY)
+      {
+         maxOpenREff = MathMin(maxOpenREff, 1.5);
+      }
+      else if(preset == FS_PRESET_ES_CORE_US500)
+      {
+         rOscMult = 2.0; rEndEt = 660; rSlAtr = 0.50;
+         zBucketMin = 15; zEmaPeriod = 20; zMinEffPct = 35.0; zSlAtr = 0.50;
+         tStopOrbMult = 1.0; tBeTrigR = 0.0; tStopMinPts = 0.6; tStopMaxPts = 29.0;
+         vNoiseMult = 0.30; vSlAtr = 0.35; vTpPts = 15.7;
+         wSlAtr = 0.35; wUseSlopeFilter = false; enableWTrail = false;
+         nDays = 5; nSlAtr = 0.25; nAcceptBufPts = 0.9;
+         maxOpenREff = MathMin(maxOpenREff, 1.5);
+         esSatScale = 2.0 / 3.0;
+      }
 
       m_coord = new CFundedSyncCoordinator(
          w, flags, enableWTrail,
@@ -1109,7 +1134,8 @@ public:
          zBucketMin, zEmaPeriod, zMinEffPct, zSlAtr,
          tStopOrbMult, tBeTrigR,
          vNoiseMult, vSlAtr,
-         wSlAtr, nDays, nSlAtr);
+         wSlAtr, nDays, nSlAtr,
+         tStopMinPts, tStopMaxPts, vTpPts, wUseSlopeFilter, nAcceptBufPts);
 
       m_coord.signalTickSize            = (signalTickSize > 0.0) ? signalTickSize : 0.25;
       m_coord.usdPerPointPerLot         = ResolveUsdPerPointPerLot(overrideUsdPerPtPerLot);
@@ -1125,10 +1151,10 @@ public:
       m_coord.initialBalanceUsd         = initBal;
       m_coord.currentBalanceUsd         = initBal;
       m_coord.highWaterBalanceUsd       = initBal;
-      m_coord.evalRiskPct               = useProf ? prof.evalRiskPct : evalRiskPct;
-      m_coord.fundedRiskPct             = useProf ? prof.fundedRiskPct : fundedRiskPct;
-      m_coord.evalRisk1R_USD            = useProf ? prof.evalRiskUsd : evalRiskUsd;
-      m_coord.fundedRisk1R_USD          = useProf ? prof.fundedRiskUsd : fundedRiskUsd;
+      m_coord.evalRiskPct               = useProf ? (prof.evalRiskPct * esSatScale) : evalRiskPct;
+      m_coord.fundedRiskPct             = useProf ? (prof.fundedRiskPct * esSatScale) : fundedRiskPct;
+      m_coord.evalRisk1R_USD            = useProf ? (prof.evalRiskUsd * esSatScale) : evalRiskUsd;
+      m_coord.fundedRisk1R_USD          = useProf ? (prof.fundedRiskUsd * esSatScale) : fundedRiskUsd;
       m_coord.maxOpenR                  = maxOpenREff;
       m_coord.collisionPolicy           = useProf ? prof.collisionPolicy : collisionPolicy;
 

@@ -11,11 +11,13 @@
 ## 1. Estado Técnico Certificado (Verificado Antes del Commit)
 
 ```text
-CTRADER_COMPILATION            = 5/5 cBots compilados (0 errors, 0 warnings) via csc.exe /warnaserror /nowarn:1685
+CTRADER_COMPILATION            = 6/6 cBots compilados (0 errors, 0 warnings) via csc.exe /warnaserror /nowarn:1685 (incl. EdgeLabFundedSyncESCoreUS500)
 CTRADER_VS_NT8_CORE_PARITY     = 1763 / 1763 trades INDEP (2025-2026), +197.100405 R vs +197.100405 R, max_diff=0.0, 0 unmatched
-MT5_COMPILATION                = 5/5 EAs (.mq5) + 3 .mqh -> 10 .ex5 compilados (0 errors, 0 warnings) en MT5_Generic y MT5_The5ers
+MT5_COMPILATION                = 6/6 EAs (.mq5) + 3 .mqh -> 12 .ex5 compilados (0 errors, 0 warnings) en MT5_Generic y MT5_The5ers
+NT8_COMPILATION                = 6/6 estrategias EdgeLabFundedSync*.cs instaladas y compiladas (0 errors, 0 warnings) via csc.exe /warnaserror
 MT5_NUMERICAL_BACKTEST_PARITY  = VERIFICADA_100_PORCIENTO_EN_TESTER (INDEP 1763/1763 +197.100404R, CORE5 1111/1111 +175.444567R, P7 1531/1531 +166.146542R; max_entry_diff=0.0, max_R_diff=1e-6)
-AUDITORIA_BUGS_CORREGIDOS_ARGON= (1) MQL5 EMPTY_VALUE==DBL_MAX guard FsIsValidPos/FsIsValidFinite; (2) CopyRates O(1) incremental (~200x); (3) PendingEntryIsStopOrder direccional en cortos (C# + MQL5); (4) LoadMoreHistory(300) en cTrader y auto-heal tickValue en MT5
+ROADMAP_PATCH_ALINEACION       = Presets Core5_R25 / SpeedEval_TOnly / ES_Core_US500; perfiles Tradeify/FundedNext 50K en NT8; FundedDdBrake 4.5% (0.45% FTMO / 0.40% The5ers) activo por defecto en CFD; satelite EdgeLabFundedSyncESCoreUS500 en cTrader y MT5
+AUDITORIA_BUGS_CORREGIDOS_ARGON= (1) MQL5 EMPTY_VALUE==DBL_MAX guard FsIsValidPos/FsIsValidFinite; (2) CopyRates O(1) incremental (~200x); (3) PendingEntryIsStopOrder direccional en cortos (NT8 + C# + MQL5); (4) LoadMoreHistory(300) en cTrader y auto-heal tickValue en MT5
 BAR_PHASE_SHIFT_SUBMIN_322D    = Core5 12/12 fases >0 (d0=+152.07R, med=+105.06R, ret=71.5%); T sensible (35.9% ret); R/Z/N/SOMEOD 90.2%..108.0%
 CFD_USATECH_SPREAD_AUDIT       = 14,127,594 ticks (2026-10-01..2026-11-15); RTH mediana=0.981 pts vs ETH=1.481 pts vs Fut=1.545 pts
 OVERNIGHT_O_Y_SWAPS_CFD_2026   = Desbloqueado hasta 2026-11-17 (qty=1); swap CFD 8% anual + 3x miercoles absorbe ~90% del edge en CFD (REP +0.006 R/op, HOLDOUT -1.41R) -> O excluido de CFD y reservado a Futuros MNQ personales (0 swap)
@@ -31,14 +33,15 @@ ROADMAP_MULTIFRENTE_MC_SYNCED  = N=2000 x H=504d respetando topes legales por ho
 - Shared C# 5.0 core & adapter:
   - `ctrader/Shared/EdgeLabFundedSyncCfdCore.cs` (`EdgeLabFundedSyncCfd`: los 7 motores causales `R, Z, T, V, W, N, SOMEOD`, `PortfolioCoordinator`, `PercentOfInitialBalance` / `PercentOfCurrentBalance` / `FixedUsd`, `FundedDdBrake`, `NewsGuard`, `FeedHistoricalBar`, `FeedClosedBarAndFillAtNextOpen`, `EvaluateTick`)
   - `ctrader/Shared/FundedSyncCTraderAdapter.cs`
-- 5 wrappers cBot (`.sln`, `.csproj`, `.cs` + copias sincronizadas):
+- 6 wrappers cBot (`.sln`, `.csproj`, `.cs` + copias sincronizadas):
   - `ctrader/EdgeLabFundedSyncPortfolio/`
   - `ctrader/EdgeLabFundedSyncCore5AltaConv/`
   - `ctrader/EdgeLabFundedSyncCore6/`
   - `ctrader/EdgeLabFundedSyncSnipersRZ/`
   - `ctrader/EdgeLabFundedSyncSingleModule/`
+  - `ctrader/EdgeLabFundedSyncESCoreUS500/`
 - Tooling & harness C#:
-  - `tools/sync_ctrader_mt5_bots.py`
+  - `tools/sync_ctrader_mt5_bots.py` (`--target nt8|ctrader|mt5|all`)
   - `tools/VerifyCfdCoreParity.cs` (harness CLI usado para validar paridad exacta vs NT8 y correr el barrido de fases sub-minuto y multi-minuto directamente contra el core C# de cTrader)
 
 ### B. Bots MetaTrader 5 (MQL5)
@@ -46,12 +49,13 @@ ROADMAP_MULTIFRENTE_MC_SYNCED  = N=2000 x H=504d respetando topes legales por ho
   - `FS_TypesAndTime.mqh` (conversión DST US/EU pura en MQL5, `FS_TZ_NY_PLUS_7_ALL_YEAR`, `FS_TZ_EU_DST_EET`, calendario NYSE y tabla `NonFullNyse` para `Z`)
   - `FS_ModuleEngines.mqh` (motores `R, Z, T, V, W, N, SOMEOD`)
   - `FS_CoordinatorAndAdapter.mqh` (`CFundedSyncCoordinator`, `CFundedSyncMt5Adapter`, detección automática `ORDER_FILLING_*`, warmup `CopyRates` M1, reconciliador Hedging/Netting, SL de emergencia, `OnTester()`)
-- 5 EAs en `mt5/Experts/EdgeLabFundedSync/`:
+- 6 EAs en `mt5/Experts/EdgeLabFundedSync/`:
   - `EdgeLabFundedSyncPortfolio.mq5`
   - `EdgeLabFundedSyncCore5AltaConv.mq5`
   - `EdgeLabFundedSyncCore6.mq5`
   - `EdgeLabFundedSyncSnipersRZ.mq5`
   - `EdgeLabFundedSyncSingleModule.mq5`
+  - `EdgeLabFundedSyncESCoreUS500.mq5`
 - Nota de Git: los binarios `.ex5` y `.dll` compilados quedan instalados en las rutas locales de MT5 / cAlgo fuera del repo; en Git se trackean los fuentes `.mqh`, `.mq5`, `.cs`, `.csproj`, `.sln`.
 
 ### C. Análisis Bar-Open Phase Shift (CME NQ y CFD `USATECHIDXUSD`)
