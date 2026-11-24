@@ -85,7 +85,14 @@ namespace NinjaTrader.NinjaScript.Strategies
             bool enableCsvLog,
             string csvFileName,
             bool[] enableOverrides,
-            double[] weightOverrides)
+            double[] weightOverrides,
+            double rOscMult = 3.0, int rEndEt = 660, double rSlAtr = 0.50,
+            int zBucketMin = 15, int zEmaPeriod = 20, double zMinEffPct = 40.0, double zSlAtr = 0.50,
+            double tStopOrbMult = 1.0, double tBeTrigR = 1.5,
+            double vNoiseMult = 0.25, double vSlAtr = 0.30,
+            double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
+            double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
+            double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
         {
             Dictionary<string, double> weights;
             bool[] flags = new bool[7];
@@ -114,15 +121,47 @@ namespace NinjaTrader.NinjaScript.Strategies
 
             PropProfileDefaults prof = PropProfileDefaults.For(propProfile);
             bool useProfile = propProfile != FundedSyncPropProfile.Personal_Custom;
+            double maxOpenREff = maxOpenR;
+            double microPv = 2.0;
+            double fricMini = 1.545;
 
-            var coord = new PortfolioCoordinator(weights, flags, enableWTrail: enableWTrail)
+            if (preset == FundedSyncPortfolioPreset.Core5_R25)
             {
-                MicroPointValue = 2.0,
-                FrictionMiniPts = 1.545,
+                rSlAtr = 0.25;
+            }
+            else if (preset == FundedSyncPortfolioPreset.SpeedEval_TOnly)
+            {
+                maxOpenREff = Math.Min(maxOpenREff, 1.5);
+            }
+            else if (preset == FundedSyncPortfolioPreset.ES_Core_US500)
+            {
+                rOscMult = 2.0; rEndEt = 660; rSlAtr = 0.50;
+                zBucketMin = 15; zEmaPeriod = 20; zMinEffPct = 35.0; zSlAtr = 0.50;
+                tStopOrbMult = 1.0; tBeTrigR = 0.0; tStopMinPts = 0.6; tStopMaxPts = 29.0;
+                vNoiseMult = 0.30; vSlAtr = 0.35; vTpPts = 15.7;
+                wSlAtr = 0.35; wUseSlopeFilter = false; enableWTrail = false;
+                nDays = 5; nSlAtr = 0.25; nAcceptBufPts = 0.9;
+                maxOpenREff = Math.Min(maxOpenREff, 1.5);
+                microPv = 5.0;
+                fricMini = 0.55;
+            }
+
+            var coord = new PortfolioCoordinator(
+                weights, flags, enableWTrail: enableWTrail,
+                rOscMult: rOscMult, rEndEt: rEndEt, rSlAtr: rSlAtr,
+                zBucketMin: zBucketMin, zEmaPeriod: zEmaPeriod, zMinEffPct: zMinEffPct, zSlAtr: zSlAtr,
+                tStopOrbMult: tStopOrbMult, tBeTrigR: tBeTrigR,
+                vNoiseMult: vNoiseMult, vSlAtr: vSlAtr,
+                wSlAtr: wSlAtr, nDays: nDays, nSlAtr: nSlAtr,
+                tStopMinPts: tStopMinPts, tStopMaxPts: tStopMaxPts,
+                vTpPts: vTpPts, wUseSlopeFilter: wUseSlopeFilter, nAcceptBufPts: nAcceptBufPts)
+            {
+                MicroPointValue = microPv,
+                FrictionMiniPts = fricMini,
                 AccountMode = mode,
                 EvalRisk1R_USD = useProfile ? prof.EvalRisk1R : evalRisk1R,
                 FundedRisk1R_USD = useProfile ? prof.FundedRisk1R : fundedRisk1R,
-                MaxOpenR = maxOpenR,
+                MaxOpenR = maxOpenREff,
                 MaxMicroContracts = useProfile ? prof.MaxMicros : maxMicros,
                 CollisionPolicy = useProfile ? prof.CollisionPolicy : collisionPolicy,
                 HardFlattenHHMM_ET = useProfile ? prof.HardFlattenHHMM_ET : hardFlattenHhmmEt,
@@ -295,6 +334,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 EvalDailyCapUSD = 3420.0;
                 DailyLossLimitUSD = 2700.0;
                 EnableWTrail = false;
+                RSlAtrK = 0.50;
 
                 EnableR = true;
                 EnableZ = true;
@@ -344,7 +384,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                     EnableParityCsvLog,
                     ParityCsvFileName,
                     enables,
-                    customW);
+                    customW,
+                    rSlAtr: RSlAtrK);
                 Print("EdgeLabFundedSyncPortfolio initialized. Preset=" + Preset + " Profile=" + PropProfile + " (>= 500 trading days M1 ETH required).");
             }
         }
@@ -418,6 +459,11 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty]
         [Display(Name = "Enable W Trailing (default false)", Order = 14, GroupName = "02. Compliance")]
         public bool EnableWTrail { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0.05, 2.0)]
+        [Display(Name = "R SL ATR K (0.25=R25, 0.50=Base)", Order = 15, GroupName = "02. Compliance")]
+        public double RSlAtrK { get; set; }
 
         [NinjaScriptProperty] [Display(Name = "Enable R", Order = 20, GroupName = "03. Modules & Custom Weights")] public bool EnableR { get; set; }
         [NinjaScriptProperty] [Display(Name = "Enable Z", Order = 21, GroupName = "03. Modules & Custom Weights")] public bool EnableZ { get; set; }

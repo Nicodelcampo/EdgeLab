@@ -52,6 +52,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 EnforceEvalDailyCap = true;
                 EvalDailyCapUSD = 3420.0;
                 DailyLossLimitUSD = 2700.0;
+                RSlAtrK = 0.25;
                 EnableParityCsvLog = false;
                 ParityCsvFileName = "EdgeLab_Core5AltaConv_ParityTrades.csv";
             }
@@ -82,8 +83,9 @@ namespace NinjaTrader.NinjaScript.Strategies
                     EnableParityCsvLog,
                     ParityCsvFileName,
                     null,
-                    null);
-                Print("EdgeLabFundedSyncCore5AltaConv initialized (>= 500 trading days M1 ETH required).");
+                    null,
+                    rSlAtr: RSlAtrK);
+                Print("EdgeLabFundedSyncCore5AltaConv initialized (RSlAtrK=" + RSlAtrK + ", >= 500 trading days M1 ETH required).");
             }
         }
 
@@ -107,6 +109,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty] [Display(Name = "Enforce Eval Daily Cap (Custom)", Order = 11, GroupName = "02. Compliance")] public bool EnforceEvalDailyCap { get; set; }
         [NinjaScriptProperty] [Range(0.0, 50000.0)] [Display(Name = "Eval Daily Cap USD (Custom)", Order = 12, GroupName = "02. Compliance")] public double EvalDailyCapUSD { get; set; }
         [NinjaScriptProperty] [Range(0.0, 50000.0)] [Display(Name = "Daily Loss Limit USD (Custom)", Order = 13, GroupName = "02. Compliance")] public double DailyLossLimitUSD { get; set; }
+        [NinjaScriptProperty] [Range(0.05, 2.0)] [Display(Name = "R SL ATR K (0.25=Roadmap, 0.50=Base)", Order = 14, GroupName = "02. Compliance")] public double RSlAtrK { get; set; }
 
         [NinjaScriptProperty] [Display(Name = "Enable Parity CSV Log", Order = 20, GroupName = "03. Parity Logger")] public bool EnableParityCsvLog { get; set; }
         [NinjaScriptProperty] [Display(Name = "Parity CSV File Name", Order = 21, GroupName = "03. Parity Logger")] public string ParityCsvFileName { get; set; }

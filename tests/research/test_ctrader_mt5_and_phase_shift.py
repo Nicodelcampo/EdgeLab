@@ -17,24 +17,13 @@ if str(REPO / "tools") not in sys.path:
     sys.path.insert(0, str(REPO / "tools"))
 
 import fundedsync_bar_phase_shift as BPS
+import sync_ctrader_mt5_bots as SYNC
 
-CSC_EXE = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe")
-CALGO_API_DLL = Path(r"C:\Users\nicoc\OneDrive\Documentos\cAlgo\API\cAlgo.API.dll")
-CALGO_ROBOTS_DIR = Path(r"C:\Users\nicoc\OneDrive\Documentos\cAlgo\Sources\Robots")
-
-MT5_TERMINALS = [
-    Path(r"C:\Users\nicoc\AppData\Roaming\MetaQuotes\Terminal\D0E8209F77C8CF37AD8BF550E51FF075\MQL5"),
-    Path(r"C:\Users\nicoc\AppData\Roaming\MetaQuotes\Terminal\10CE948A1DFC9A8C27E56E827008EBD4\MQL5"),
-]
-
-BOT_NAMES = [
-    "EdgeLabFundedSyncPortfolio",
-    "EdgeLabFundedSyncCore5AltaConv",
-    "EdgeLabFundedSyncCore6",
-    "EdgeLabFundedSyncSnipersRZ",
-    "EdgeLabFundedSyncSingleModule",
-    "EdgeLabFundedSyncESCoreUS500",
-]
+CSC_EXE = SYNC.CSC_EXE
+CALGO_API_DLL = SYNC.CALGO_API_DLL
+CALGO_ROBOTS_DIR = SYNC.CALGO_ROBOTS
+MT5_TERMINALS = [mql5_root for _, mql5_root, _ in SYNC.MT5_TERMINALS]
+BOT_NAMES = list(SYNC.BOT_NAMES)
 
 
 def test_ctrader_sources_synced_and_compile(tmp_path: Path) -> None:
@@ -179,13 +168,14 @@ public static class SmokeCfdCore
 
 
 def test_mt5_sources_headers_and_compiled_ex5_present() -> None:
-    """All 5 MQL5 EAs, 3 shared headers, and 10 compiled .ex5 binaries exist across both terminals."""
+    """All 6 MQL5 EAs, 3 shared headers, and compiled .ex5 binaries exist across discovered terminals."""
     headers = ["FS_TypesAndTime.mqh", "FS_ModuleEngines.mqh", "FS_CoordinatorAndAdapter.mqh"]
     for h in headers:
         assert (REPO / "mt5" / "Include" / "EdgeLabFundedSync" / h).exists(), f"Missing repo header {h}"
     for bot in BOT_NAMES:
         assert (REPO / "mt5" / "Experts" / "EdgeLabFundedSync" / f"{bot}.mq5").exists(), f"Missing repo EA {bot}"
 
+    assert len(MT5_TERMINALS) >= 1, "Expected at least one discovered MT5 terminal MQL5 directory"
     for term_mql5 in MT5_TERMINALS:
         for h in headers:
             assert (term_mql5 / "Include" / "EdgeLabFundedSync" / h).exists(), f"Missing synced header {h} in {term_mql5}"

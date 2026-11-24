@@ -14,6 +14,7 @@ if str(ROOT / "tools") not in sys.path:
     sys.path.insert(0, str(ROOT / "tools"))
 
 import fundedsync_integracion_multiprop as IMP
+import sync_ctrader_mt5_bots as SYNC
 
 
 def test_simular_trade_en_ticks_be_causal_y_duracion():
@@ -179,11 +180,11 @@ def test_someod_m1_paridad_y_cs_nt8_valido(tmp_path):
     ):
         assert preset in core_txt
 
-    csc = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\csc.exe")
-    nt_core = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Core.dll")
-    nt_gui = Path(r"C:\Program Files\NinjaTrader 8\bin\NinjaTrader.Gui.dll")
-    nt_cust = Path.home() / "OneDrive/Documentos/NinjaTrader 8/bin/Custom/NinjaTrader.Custom.dll"
-    wpf_dir = Path(r"C:\Windows\Microsoft.NET\Framework64\v4.0.30319\WPF")
+    csc = SYNC.CSC_EXE
+    nt_core = SYNC.NT8_CORE_DLL
+    nt_gui = SYNC.NT8_GUI_DLL
+    nt_cust = SYNC.NT8_CUSTOM_DLL
+    wpf_dir = SYNC.WPF_DIR
     if csc.exists() and nt_core.exists() and nt_gui.exists() and nt_cust.exists():
         out_dll = tmp_path / "EdgeLabFundedSyncNt8Test.dll"
         cmd = [

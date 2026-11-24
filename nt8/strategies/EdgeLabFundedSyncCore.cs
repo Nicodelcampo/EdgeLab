@@ -27,7 +27,10 @@ namespace NinjaTrader.NinjaScript.Strategies
         Core5_AltaConv = 3,
         Tier1_Snipers_RZ = 4,
         Tier23_Flow_TVNS = 5,
-        CustomWeights = 6
+        CustomWeights = 6,
+        Core5_R25 = 7,
+        SpeedEval_TOnly = 8,
+        ES_Core_US500 = 9
     }
 
     public enum FundedSyncPropProfile
@@ -38,7 +41,9 @@ namespace NinjaTrader.NinjaScript.Strategies
         Tradeify_SelectFlex_150K = 3,
         Topstep_NoAct_50K = 4,
         FundedNext_Flex_150K = 5,
-        Personal_Custom = 6
+        Personal_Custom = 6,
+        Tradeify_SelectFlex_50K = 7,
+        FundedNext_Flex_50K = 8
     }
 
     public enum FundedSyncModuleId
@@ -126,6 +131,20 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                         EvalDailyCapUsd = 3040.0, DailyLossLimitUsd = 0.0, EnforceEvalDailyCap = true,
                         HardFlattenHHMM_ET = 1640, CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
+                case FundedSyncPropProfile.Tradeify_SelectFlex_50K:
+                    return new PropProfileDefaults
+                    {
+                        EvalRisk1R = 300.0, FundedRisk1R = 200.0, MaxMicros = 40,
+                        EvalDailyCapUsd = 1140.0, DailyLossLimitUsd = 0.0, EnforceEvalDailyCap = true,
+                        HardFlattenHHMM_ET = 1640, CollisionPolicy = FundedSyncCollisionPolicy.Netting
+                    };
+                case FundedSyncPropProfile.FundedNext_Flex_50K:
+                    return new PropProfileDefaults
+                    {
+                        EvalRisk1R = 250.0, FundedRisk1R = 175.0, MaxMicros = 30,
+                        EvalDailyCapUsd = 950.0, DailyLossLimitUsd = 0.0, EnforceEvalDailyCap = true,
+                        HardFlattenHHMM_ET = 1640, CollisionPolicy = FundedSyncCollisionPolicy.Netting
+                    };
                 case FundedSyncPropProfile.Personal_Custom:
                     return new PropProfileDefaults
                     {
@@ -182,11 +201,23 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                     d["SOMEOD_ext_NQ"] = 0.875168;
                     break;
                 case FundedSyncPortfolioPreset.Core5_AltaConv:
+                case FundedSyncPortfolioPreset.Core5_R25:
                     d["R_osc30_end660_ATR50"] = 1.802134;
                     d["Z_b15_e20_eff40_ATR50"] = 2.277168;
                     d["T_stop100_BE15R_calFalse"] = 0.709531;
                     d["N_d5_fbTrue_ATR25"] = 1.261968;
                     d["SOMEOD_ext_NQ"] = 0.848629;
+                    break;
+                case FundedSyncPortfolioPreset.SpeedEval_TOnly:
+                    d["T_stop100_BE15R_calFalse"] = 1.0;
+                    break;
+                case FundedSyncPortfolioPreset.ES_Core_US500:
+                    d["R_osc30_end660_ATR50"] = 1.0 / 6.0;
+                    d["Z_b15_e20_eff40_ATR50"] = 1.0 / 6.0;
+                    d["T_stop100_BE15R_calFalse"] = 1.0 / 6.0;
+                    d["V_nm25_noCap_mae30"] = 1.0 / 6.0;
+                    d["W_slope_allowReFalse_ATR25"] = 1.0 / 6.0;
+                    d["N_d5_fbTrue_ATR25"] = 1.0 / 6.0;
                     break;
                 case FundedSyncPortfolioPreset.Tier1_Snipers_RZ:
                     d["R_osc30_end660_ATR50"] = 0.732985;
@@ -903,6 +934,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 
         private readonly double _beTriggerR;
         private readonly double _stopOrbMult;
+        private readonly double _stopMinPts;
+        private readonly double _stopMaxPts;
         private readonly List<double> _eligOrbHistBps = new List<double>();
         private readonly List<double> _eligRthCloseHist = new List<double>();
         private readonly List<double> _eligSesRetHistBps = new List<double>();
@@ -936,10 +969,12 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private double _liveTrigR, _liveLockR, _liveIlRiskPts;
         private bool _liveIlActivated, _condExitReq;
 
-        public FtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5) : base("T_stop100_BE15R_calFalse")
+        public FtmOrbEngine(double stopOrbMult = 1.0, double beTriggerR = 1.5, double stopMinPts = 2.0, double stopMaxPts = 100.0) : base("T_stop100_BE15R_calFalse")
         {
             _stopOrbMult = stopOrbMult;
             _beTriggerR = beTriggerR;
+            _stopMinPts = stopMinPts;
+            _stopMaxPts = stopMaxPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1350,8 +1385,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         {
             if (sl.IsOpen || sl.HasPendingEntry) return;
             double orbRng = _orbHigh - _orbLow;
-            double stopPts = Math.Max(2.0, Math.Min(100.0, _stopOrbMult * orbRng));
-            double ilRiskPts = Math.Max(2.0, Math.Min(100.0, 1.25 * orbRng));
+            double stopPts = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, _stopOrbMult * orbRng));
+            double ilRiskPts = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, 1.25 * orbRng));
             double tgtR, trigR, lockR;
             SelectPlan(side, _curPriorTrendAvail, _curPriorTrendBps, out tgtR, out trigR, out lockR);
             int tgtTicks = RoundOffsetTicks(ilRiskPts * tgtR, side > 0);
@@ -1369,7 +1404,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private ShadowTrade CreateShadowTrade(int side, double parentOpen, bool ptAvail, double ptBps)
         {
             double epx = parentOpen + side * TickSize;
-            double rawD = Math.Max(2.0, Math.Min(100.0, (_orbHigh - _orbLow) * 1.25));
+            double rawD = Math.Max(_stopMinPts, Math.Min(_stopMaxPts, (_orbHigh - _orbLow) * 1.25));
             double stopP = FundedSyncMath.RoundTick(epx - side * rawD, TickSize);
             double rPts = side * (epx - stopP);
             double tgtR, trigR, lockR;
@@ -1493,6 +1528,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     {
         private readonly double _noiseMult;
         private readonly double _slAtrK;
+        private readonly double _tpPts;
         private readonly Queue<double> _rthRanges252 = new Queue<double>();
         private double _rthSum, _dailyAtr, _sesOpen, _sesHi, _sesLo, _noiseUp, _cumVol, _cumPv, _sesVwap;
         private int _curRthDateCt = -1, _tradesToday, _belowVwap;
@@ -1501,10 +1537,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private int _b5Bucket = -1, _b5DateCt = -1;
         private double _b5O, _b5H, _b5L, _b5C, _b5V;
 
-        public VaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30) : base("V_nm25_noCap_mae30")
+        public VaultBreakEngine(double noiseMult = 0.25, double slAtrK = 0.30, double tpPts = 0.0) : base("V_nm25_noCap_mae30")
         {
             _noiseMult = noiseMult;
             _slAtrK = slAtrK;
+            _tpPts = tpPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1579,7 +1616,10 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             if (_b5C <= _noiseUp || _b5C <= _sesVwap) return;
             if (double.IsNaN(atr20Session) || atr20Session <= 0) return;
 
-            if (host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session))
+            bool enteredV = _tpPts > 0.0
+                ? host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session, double.NaN, _tpPts)
+                : host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session);
+            if (enteredV)
                 _tradesToday++;
         }
     }
@@ -1591,14 +1631,16 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     {
         private readonly double _slAtrK;
         private readonly bool _enableTrail;
+        private readonly bool _useSlopeFilter;
         private readonly List<double> _vwapHist = new List<double>();
         private double _cumPv, _cumVol, _sesVwap;
         private int _sigSide;
 
-        public VwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false) : base("W_slope_allowReFalse_ATR25")
+        public VwapCrossEngine(double slAtrK = 0.25, bool enableTrail = false, bool useSlopeFilter = true) : base("W_slope_allowReFalse_ATR25")
         {
             _slAtrK = slAtrK;
             _enableTrail = enableTrail;
+            _useSlopeFilter = useSlopeFilter;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
@@ -1652,7 +1694,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                 if (above)
                 {
                     _sigSide = 1;
-                    bool slopeOk = _vwapHist.Count > 20 && (_sesVwap - _vwapHist[_vwapHist.Count - 21]) >= 0.0;
+                    bool slopeOk = !_useSlopeFilter || (_vwapHist.Count > 20 && (_sesVwap - _vwapHist[_vwapHist.Count - 21]) >= 0.0);
                     if (slopeOk && !double.IsNaN(atr20Session) && atr20Session > 0)
                         host.QueueMarketEntry(sl, 1, _slAtrK * atr20Session);
                 }
@@ -1671,6 +1713,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     {
         private readonly int _numDays;
         private readonly double _slAtrK;
+        private readonly double _acceptBufPts;
         private readonly Queue<double> _dHighs = new Queue<double>();
         private double _priorRange = double.NaN;
         private double _dayHi = double.NaN;
@@ -1680,10 +1723,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private bool _wasLong;
         private double _lastBreakoutLvl;
 
-        public NDayLongEngine(int numDays = 5, double slAtrK = 0.25) : base("N_d5_fbTrue_ATR25")
+        public NDayLongEngine(int numDays = 5, double slAtrK = 0.25, double acceptBufPts = 4.0) : base("N_d5_fbTrue_ATR25")
         {
             _numDays = numDays;
             _slAtrK = slAtrK;
+            _acceptBufPts = acceptBufPts;
         }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1)
@@ -1758,7 +1802,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             double vPrev = _rthVwapHist[_rthVwapHist.Count - 16];
             if (!(bar.Close > vVal && vVal > vPrev)) return;
 
-            if (bar.Close > _dayHi + 4.0) _acceptCloses++; else _acceptCloses = 0;
+            if (bar.Close > _dayHi + _acceptBufPts) _acceptCloses++; else _acceptCloses = 0;
             if (_acceptCloses < 2) return;
 
             if (double.IsNaN(atr20Session) || atr20Session <= 0) return;
@@ -1918,15 +1962,17 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             int zBucketMin = 15, int zEmaPeriod = 20, double zMinEffPct = 40.0, double zSlAtr = 0.50,
             double tStopOrbMult = 1.0, double tBeTrigR = 1.5,
             double vNoiseMult = 0.25, double vSlAtr = 0.30,
-            double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25)
+            double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
+            double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
+            double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
         {
             Atr20Session = double.NaN;
             _engines.Add(new AtrPhaseEngine(rOscMult, rEndEt, rSlAtr));
             _engines.Add(new ZetaEngine(zBucketMin, zEmaPeriod, zMinEffPct, zSlAtr));
-            _engines.Add(new FtmOrbEngine(tStopOrbMult, tBeTrigR));
-            _engines.Add(new VaultBreakEngine(vNoiseMult, vSlAtr));
-            _engines.Add(new VwapCrossEngine(wSlAtr, enableWTrail));
-            _engines.Add(new NDayLongEngine(nDays, nSlAtr));
+            _engines.Add(new FtmOrbEngine(tStopOrbMult, tBeTrigR, tStopMinPts, tStopMaxPts));
+            _engines.Add(new VaultBreakEngine(vNoiseMult, vSlAtr, vTpPts));
+            _engines.Add(new VwapCrossEngine(wSlAtr, enableWTrail, wUseSlopeFilter));
+            _engines.Add(new NDayLongEngine(nDays, nSlAtr, nAcceptBufPts));
             _engines.Add(new SessionOpenMomentumEngine());
 
             for (int i = 0; i < FundedSyncMath.ModuleOrder.Length; i++)
@@ -2055,10 +2101,20 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                     double fillPx = bar.Open;
                     if (sl.PendingEntryIsStopOrder)
                     {
-                        if (bar.High >= sl.PendingEntryStopPrice)
-                            fillPx = Math.Max(bar.Open, sl.PendingEntryStopPrice);
+                        if (sl.PendingEntrySide > 0)
+                        {
+                            if (bar.High >= sl.PendingEntryStopPrice)
+                                fillPx = Math.Max(bar.Open, sl.PendingEntryStopPrice);
+                            else
+                                trigger = false;
+                        }
                         else
-                            trigger = false;
+                        {
+                            if (bar.Low <= sl.PendingEntryStopPrice)
+                                fillPx = Math.Min(bar.Open, sl.PendingEntryStopPrice);
+                            else
+                                trigger = false;
+                        }
                     }
                     if (trigger)
                     {
