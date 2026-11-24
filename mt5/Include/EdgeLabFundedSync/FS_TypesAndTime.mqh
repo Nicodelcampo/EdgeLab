@@ -280,10 +280,20 @@ void FsGetPropProfileDefaults(ENUM_FS_PROP_PROFILE prof, FsPropDefaults &out)
 
 double FsRoundTick(double price, double tickSize)
 {
-   if(!MathIsValidNumber(price) || tickSize <= 0.0) return price;
+   if(!MathIsValidNumber(price) || price == EMPTY_VALUE || tickSize <= 0.0) return price;
    double units = price / tickSize;
    double rounded = (units >= 0.0) ? MathFloor(units + 0.5) : MathCeil(units - 0.5);
    return rounded * tickSize;
+}
+
+bool FsIsValidPos(double v)
+{
+   return (v != EMPTY_VALUE && MathIsValidNumber(v) && v > 0.0 && v < 1e100);
+}
+
+bool FsIsValidFinite(double v)
+{
+   return (v != EMPTY_VALUE && MathIsValidNumber(v) && MathAbs(v) < 1e100);
 }
 
 double FsRoundZetaTarget(int side, double price, double tickSize)

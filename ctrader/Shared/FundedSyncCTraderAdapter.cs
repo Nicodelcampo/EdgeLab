@@ -207,7 +207,7 @@ namespace cAlgo.Robots
             if (autoLoadWarmupHistory && warmupTargetBars > 0 && _m1Bars.Count < warmupTargetBars)
             {
                 int guard = 0;
-                while (_m1Bars.Count < warmupTargetBars && guard < 45)
+                while (_m1Bars.Count < warmupTargetBars && guard < 300)
                 {
                     int loaded = _m1Bars.LoadMoreHistory();
                     guard++;

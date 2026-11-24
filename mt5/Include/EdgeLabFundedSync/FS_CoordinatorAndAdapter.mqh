@@ -151,7 +151,7 @@ private:
       sl.riskPts           = riskPts;
       sl.initialStopPrice  = fillPx - side * riskPts;
       sl.stopPrice         = sl.initialStopPrice;
-      sl.targetPrice       = (relMarker != EMPTY_VALUE && MathIsValidNumber(relMarker)) ? (fillPx + side * relMarker) : tgtPx;
+      sl.targetPrice       = FsIsValidFinite(relMarker) ? (fillPx + side * relMarker) : tgtPx;
       sl.maxFavPts         = 0.0;
       sl.overlayBeActivated= false;
       sl.entryNy           = barNy;
@@ -246,10 +246,20 @@ private:
             double fillPx = (m_sleeves[i].pendingEntrySide > 0) ? askFill : bidFill;
             if(m_sleeves[i].pendingEntryIsStopOrder)
             {
-               if(bar.high >= m_sleeves[i].pendingEntryStopPrice)
-                  fillPx = MathMax(bar.open, m_sleeves[i].pendingEntryStopPrice);
+               if(m_sleeves[i].pendingEntrySide > 0)
+               {
+                  if(bar.high >= m_sleeves[i].pendingEntryStopPrice)
+                     fillPx = MathMax(bar.open, m_sleeves[i].pendingEntryStopPrice);
+                  else
+                     trigger = false;
+               }
                else
-                  trigger = false;
+               {
+                  if(bar.low <= m_sleeves[i].pendingEntryStopPrice)
+                     fillPx = MathMin(bar.open, m_sleeves[i].pendingEntryStopPrice);
+                  else
+                     trigger = false;
+               }
             }
             if(trigger)
             {
@@ -270,8 +280,8 @@ private:
       for(int i = 0; i < 7; i++)
       {
          if(!m_sleeves[i].isOpen) continue;
-         bool hasStop = (m_sleeves[i].stopPrice != EMPTY_VALUE && MathIsValidNumber(m_sleeves[i].stopPrice));
-         bool hasTgt  = (m_sleeves[i].targetPrice != EMPTY_VALUE && MathIsValidNumber(m_sleeves[i].targetPrice));
+         bool hasStop = FsIsValidFinite(m_sleeves[i].stopPrice);
+         bool hasTgt  = FsIsValidFinite(m_sleeves[i].targetPrice);
 
          if(m_sleeves[i].side > 0)
          {
@@ -506,7 +516,7 @@ public:
       for(int i = 0; i < 7; i++)
       {
          if(!m_sleeves[i].isOpen || m_sleeves[i].side != netSide) continue;
-         if(m_sleeves[i].stopPrice == EMPTY_VALUE || !MathIsValidNumber(m_sleeves[i].stopPrice)) continue;
+         if(!FsIsValidFinite(m_sleeves[i].stopPrice)) continue;
          if(bestStop == EMPTY_VALUE) bestStop = m_sleeves[i].stopPrice;
          else if(netSide > 0) bestStop = MathMin(bestStop, m_sleeves[i].stopPrice);
          else bestStop = MathMax(bestStop, m_sleeves[i].stopPrice);
@@ -584,23 +594,27 @@ public:
       {
          if(m_sleeves[i].hasPendingEntry && m_sleeves[i].pendingEntryIsStopOrder && !m_sleeves[i].isOpen && entriesAllowedNow)
          {
-            if(ask >= m_sleeves[i].pendingEntryStopPrice)
+            bool stopHit = (m_sleeves[i].pendingEntrySide > 0)
+               ? (ask >= m_sleeves[i].pendingEntryStopPrice)
+               : (bid <= m_sleeves[i].pendingEntryStopPrice);
+            if(stopHit)
             {
                int side = m_sleeves[i].pendingEntrySide;
+               double fillPx = (side > 0) ? ask : bid;
                double riskPts = m_sleeves[i].pendingStopPts;
                double marker = m_sleeves[i].pendingFixedStopMarker;
                double tgtPx = m_sleeves[i].pendingTargetPrice;
                m_sleeves[i].hasPendingEntry = false;
                m_sleeves[i].pendingEntryIsStopOrder = false;
-               OpenSleeveNow(m_sleeves[i], side, ask, riskPts, marker, tgtPx, nyNow);
+               OpenSleeveNow(m_sleeves[i], side, fillPx, riskPts, marker, tgtPx, nyNow);
                changed = true;
             }
             continue;
          }
 
          if(!m_sleeves[i].isOpen) continue;
-         bool hasStop = (m_sleeves[i].stopPrice != EMPTY_VALUE && MathIsValidNumber(m_sleeves[i].stopPrice));
-         bool hasTgt  = (m_sleeves[i].targetPrice != EMPTY_VALUE && MathIsValidNumber(m_sleeves[i].targetPrice));
+         bool hasStop = FsIsValidFinite(m_sleeves[i].stopPrice);
+         bool hasTgt  = FsIsValidFinite(m_sleeves[i].targetPrice);
 
          if(m_sleeves[i].side > 0)
          {
@@ -657,8 +671,17 @@ public:
       sl.pendingEntryIsStopOrder  = false;
       sl.pendingEntrySide         = side;
       sl.pendingStopPts           = riskPts;
-      sl.pendingFixedStopMarker   = (targetDistPts != EMPTY_VALUE && MathIsValidNumber(targetDistPts)) ? targetDistPts : EMPTY_VALUE;
-      sl.pendingTargetPrice       = (targetDistPts != EMPTY_VALUE && MathIsValidNumber(targetDistPts)) ? (side * targetDistPts) : fixedTargetPx;
+      sl.pendingFixedStopMarker   = FsIsValidFinite(targetDistPts) ? targetDistPts : EMPTY_VALUE;
+      sl.pendingTargetPrice       = FsIsValidFinite(targetDistPts) ? (side * targetDistPts) : fixedTargetPx;
+      return true;
+   }
+
+   int CompletedTradesCount() const { return ArraySize(m_completedTrades); }
+
+   bool GetCompletedTrade(int idx, FsCompletedTrade &out) const
+   {
+      if(idx < 0 || idx >= ArraySize(m_completedTrades)) return false;
+      out = m_completedTrades[idx];
       return true;
    }
 
@@ -709,6 +732,7 @@ private:
    ulong                  m_magic;
    ENUM_FS_TZ_MODE        m_tzMode;
    double                 m_fixedUtcOffsetHours;
+   double                 m_overrideUsdPerPtLot;
    bool                   m_checkStopsOnTick;
    bool                   m_useBrokerProtectiveStop;
    datetime               m_lastFedBarOpenSec;
@@ -740,6 +764,13 @@ private:
       return (cSize > 0.0) ? cSize : 1.0;
    }
 
+   int VolumeDigitsFromStep(double step)
+   {
+      if(step >= 1.0 || step <= 0.0) return 0;
+      int d = (int)MathRound(-MathLog10(step));
+      return (int)MathMax(0.0, MathMin(6.0, (double)d));
+   }
+
    double NormalizeVolumeLots(double vol)
    {
       double step   = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
@@ -751,7 +782,7 @@ private:
       double norm = MathRound(vol / step) * step;
       if(norm < minLot) return 0.0;
       if(norm > maxLot) norm = maxLot;
-      return NormalizeDouble(norm, 2);
+      return NormalizeDouble(norm, VolumeDigitsFromStep(step));
    }
 
    void ClosePositionsOnSide(ENUM_POSITION_TYPE targetSide, double volToClose)
@@ -760,6 +791,7 @@ private:
       double step   = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
       if(minLot <= 0.0) minLot = 0.01;
       if(step <= 0.0) step = 0.01;
+      int vDig = VolumeDigitsFromStep(step);
       double rem = volToClose;
 
       for(int i = PositionsTotal() - 1; i >= 0 && rem >= minLot * 0.5; i--)
@@ -779,7 +811,7 @@ private:
          else
          {
             double part = MathFloor(rem / step) * step;
-            part = NormalizeDouble(part, 2);
+            part = NormalizeDouble(part, vDig);
             if(part >= minLot)
             {
                if(pVol - part < minLot) m_trade.PositionClose(ticket);
@@ -907,15 +939,25 @@ private:
       m_coord.currentBalanceUsd = AccountInfoDouble(ACCOUNT_BALANCE);
       double eq = AccountInfoDouble(ACCOUNT_EQUITY);
       if(eq > m_coord.highWaterBalanceUsd) m_coord.highWaterBalanceUsd = eq;
+      if(m_overrideUsdPerPtLot <= 0.0)
+      {
+         double liveUsdPt = ResolveUsdPerPointPerLot(0.0);
+         if(liveUsdPt > 0.0) m_coord.usdPerPointPerLot = liveUsdPt;
+      }
 
       int totalAvail = iBars(_Symbol, PERIOD_M1);
       if(totalAvail < 2) return;
 
-      // Find up to 2000 latest bars starting after m_lastFedBarOpenSec
-      int fetchCnt = (m_lastFedBarOpenSec == 0) ? totalAvail : (int)MathMin((double)totalAvail, 2000.0);
+      // Fast O(1) fetch of latest 5 bars first; expand only if multiple bars arrived at once
+      int quickCnt = (m_lastFedBarOpenSec == 0) ? (int)MathMin((double)totalAvail, 10000.0) : (int)MathMin((double)totalAvail, 5.0);
       MqlRates rates[];
       ArraySetAsSeries(rates, false);
-      int copied = CopyRates(_Symbol, PERIOD_M1, 0, fetchCnt, rates);
+      int copied = CopyRates(_Symbol, PERIOD_M1, 0, quickCnt, rates);
+      if(copied >= 2 && m_lastFedBarOpenSec > 0 && rates[0].time > m_lastFedBarOpenSec)
+      {
+         int bigCnt = (int)MathMin((double)totalAvail, 10000.0);
+         copied = CopyRates(_Symbol, PERIOD_M1, 0, bigCnt, rates);
+      }
       if(copied < 2) return;
 
       bool anyFed = false;
@@ -958,7 +1000,7 @@ private:
 
 public:
    CFundedSyncMt5Adapter() : m_coord(NULL), m_magic(910001), m_tzMode(FS_TZ_NY_PLUS_7_ALL_YEAR),
-      m_fixedUtcOffsetHours(2.0), m_checkStopsOnTick(true), m_useBrokerProtectiveStop(true),
+      m_fixedUtcOffsetHours(2.0), m_overrideUsdPerPtLot(0.0), m_checkStopsOnTick(true), m_useBrokerProtectiveStop(true),
       m_lastFedBarOpenSec(0), m_lastBar0Sec(0), m_initialized(false) {}
 
    ~CFundedSyncMt5Adapter()
@@ -1020,6 +1062,7 @@ public:
       m_magic                   = magic;
       m_tzMode                  = tzMode;
       m_fixedUtcOffsetHours     = fixedUtcOffsetHours;
+      m_overrideUsdPerPtLot     = overrideUsdPerPtPerLot;
       m_checkStopsOnTick        = checkStopsOnTick;
       m_useBrokerProtectiveStop = useBrokerProtectiveStop;
 

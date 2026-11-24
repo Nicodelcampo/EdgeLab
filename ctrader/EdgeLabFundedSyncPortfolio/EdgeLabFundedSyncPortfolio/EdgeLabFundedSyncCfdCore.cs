@@ -2237,15 +2237,19 @@ namespace EdgeLabFundedSyncCfd
                 var sl = Sleeves[id];
                 if (sl.HasPendingEntry && sl.PendingEntryIsStopOrder && !sl.IsOpen && EntriesAllowedNow)
                 {
-                    if (ask >= sl.PendingEntryStopPrice)
+                    bool stopHit = sl.PendingEntrySide > 0
+                        ? (ask >= sl.PendingEntryStopPrice)
+                        : (bid <= sl.PendingEntryStopPrice);
+                    if (stopHit)
                     {
                         int side = sl.PendingEntrySide;
+                        double fillPx = side > 0 ? ask : bid;
                         double riskPts = sl.PendingStopPts;
                         double relMarker = sl.PendingFixedStopPrice;
                         double tgtPx = sl.PendingTargetPrice;
                         sl.HasPendingEntry = false;
                         sl.PendingEntryIsStopOrder = false;
-                        OpenSleeveNow(sl, side, ask, riskPts, relMarker, tgtPx, nyNow);
+                        OpenSleeveNow(sl, side, fillPx, riskPts, relMarker, tgtPx, nyNow);
                         changed = true;
                     }
                     continue;
@@ -2402,10 +2406,20 @@ namespace EdgeLabFundedSyncCfd
                     double fillPx = sl.PendingEntrySide > 0 ? askFill : bidFill;
                     if (sl.PendingEntryIsStopOrder)
                     {
-                        if (bar.High >= sl.PendingEntryStopPrice)
-                            fillPx = Math.Max(bar.Open, sl.PendingEntryStopPrice);
+                        if (sl.PendingEntrySide > 0)
+                        {
+                            if (bar.High >= sl.PendingEntryStopPrice)
+                                fillPx = Math.Max(bar.Open, sl.PendingEntryStopPrice);
+                            else
+                                trigger = false;
+                        }
                         else
-                            trigger = false;
+                        {
+                            if (bar.Low <= sl.PendingEntryStopPrice)
+                                fillPx = Math.Min(bar.Open, sl.PendingEntryStopPrice);
+                            else
+                                trigger = false;
+                        }
                     }
                     if (trigger)
                     {

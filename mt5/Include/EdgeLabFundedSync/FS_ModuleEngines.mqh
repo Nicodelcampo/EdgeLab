@@ -154,7 +154,7 @@ private:
       {
          if(!inWin) return;
          m_shadowSide = newSide;
-         if(vwapOk && !sl.isOpen && MathIsValidNumber(atr20Session) && atr20Session > 0.0)
+         if(vwapOk && !sl.isOpen && FsIsValidPos(atr20Session))
             host.QueueMarketEntry(sl, newSide, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
          return;
       }
@@ -173,7 +173,7 @@ private:
          host.QueueMarketExit(sl, "REVERSAL");
          return;
       }
-      if(vwapOk && MathIsValidNumber(atr20Session) && atr20Session > 0.0)
+      if(vwapOk && FsIsValidPos(atr20Session))
          host.QueueMarketEntry(sl, newSide, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
    }
 
@@ -194,7 +194,7 @@ public:
       {
          int rSide = m_pendingRevSide;
          m_pendingRevSide = 0;
-         if(MathIsValidNumber(atr20Session) && atr20Session > 0.0)
+         if(FsIsValidPos(atr20Session))
             host.QueueMarketEntry(sl, rSide, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
       }
 
@@ -415,7 +415,7 @@ public:
       if(m_pendEntry && minCt == 510 && key == m_pendEntrySesKey)
       {
          bool stillValid = (m_pendEntryDir <= 0) ? (bar.close > m_pendEntryTarget) : (bar.close < m_pendEntryTarget);
-         if(stillValid && !sl.isOpen && MathIsValidNumber(atr20Session) && atr20Session > 0.0)
+         if(stillValid && !sl.isOpen && FsIsValidPos(atr20Session))
          {
             double tgt = FsRoundZetaTarget(m_pendEntryDir, m_pendEntryTarget, tickSize);
             host.QueueMarketEntry(sl, m_pendEntryDir, m_slAtrK * atr20Session, tgt, EMPTY_VALUE);
@@ -430,7 +430,7 @@ public:
       if(bucketClosed && sl.isOpen)
       {
          double newTgt = FsRoundZetaTarget(sl.side, m_emaValue, tickSize);
-         if(MathIsValidNumber(newTgt)) sl.targetPrice = newTgt;
+         if(FsIsValidFinite(newTgt)) sl.targetPrice = newTgt;
       }
 
       if(minCt >= 899 && sl.isOpen) host.QueueMarketExit(sl, "EOD");
@@ -1257,7 +1257,7 @@ private:
       if(mCt.hour == 9) return;
       if(hhmmEt < 945 || hhmmEt > 1500) return;
       if(m_b5C <= m_noiseUp || m_b5C <= m_sesVwap) return;
-      if(!MathIsValidNumber(atr20Session) || atr20Session <= 0.0) return;
+      if(!FsIsValidPos(atr20Session)) return;
 
       if(host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE))
          m_tradesToday++;
@@ -1375,7 +1375,7 @@ public:
             m_sigSide = 1;
             int vn = ArraySize(m_vwapHist);
             bool slopeOk = (vn > 20 && (m_sesVwap - m_vwapHist[vn - 21]) >= 0.0);
-            if(slopeOk && MathIsValidNumber(atr20Session) && atr20Session > 0.0)
+            if(slopeOk && FsIsValidPos(atr20Session))
                host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);
          }
          else if(below) m_sigSide = 2;
@@ -1501,7 +1501,7 @@ public:
       if(bar.close > m_dayHi + 4.0) m_acceptCloses++; else m_acceptCloses = 0;
       if(m_acceptCloses < 2) return;
 
-      if(!MathIsValidNumber(atr20Session) || atr20Session <= 0.0) return;
+      if(!FsIsValidPos(atr20Session)) return;
       m_lastBreakoutLvl = m_dayHi;
       if(m_dayHi <= bar.close)
          host.QueueMarketEntry(sl, 1, m_slAtrK * atr20Session, EMPTY_VALUE, EMPTY_VALUE);

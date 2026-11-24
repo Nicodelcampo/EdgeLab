@@ -136,6 +136,16 @@ public static class SmokeCfdCore
         coord.FeedClosedBarAndFillAtNextOpen(bOff, 30506.0, 30507.0, bOff.CloseNy);
         if (coord.NewsBlockedNow) return 14;
 
+        // 6. Directional short stop-entry does NOT fill prematurely when price stays above trigger
+        var slTest = coord.Sleeves["V_nm25_noCap_mae30"];
+        slTest.Enabled = true;
+        slTest.WeightW5 = 1.0;
+        coord.QueueStopEntry(slTest, -1, 30480.0, 20.0);
+        coord.EvaluateTick(30500.0, 30501.0, new DateTime(2026, 10, 1, 14, 5, 20, DateTimeKind.Utc), nyTz);
+        if (slTest.IsOpen || !slTest.HasPendingEntry) return 15;
+        coord.EvaluateTick(30479.5, 30480.5, new DateTime(2026, 10, 1, 14, 5, 30, DateTimeKind.Utc), nyTz);
+        if (!slTest.IsOpen || slTest.Side != -1) return 16;
+
         Console.WriteLine("SMOKE_OK");
         return 0;
     }
@@ -239,3 +249,32 @@ def test_research_deliverables_present_and_nonempty() -> None:
     for f in expected_sat:
         p = sat_dir / f
         assert p.exists() and p.stat().st_size > 100, f"Missing/empty satellites file: {p}"
+
+    rm_dir = REPO / "docs" / "research" / "fundedsync_roadmap_ecosistema_20261123"
+    expected_rm = [
+        "RESULTADO.md",
+        "ROADMAP_OPERATIVO_MULTIFRENTE.md",
+        "etapa1_overnight_y_swaps_2026.csv",
+        "etapa2_frecuencia_estructural_anti_overfit.csv",
+        "etapa3_validacion_cruzada_ciclo_vida.csv",
+        "etapa4_ecosistema_multifrente_mc.csv",
+        "frecuencia_estructural_y_overnight_2026.png",
+        "ecosistema_paralelo_roadmap_frontera.png",
+    ]
+    for f in expected_rm:
+        p = rm_dir / f
+        assert p.exists() and p.stat().st_size > 100, f"Missing/empty roadmap file: {p}"
+
+    hft_dir = REPO / "docs" / "research" / "auditoria_bots_hftcode_20261124"
+    for f in [
+        "RESULTADO.md",
+        "resumen_particiones_hftcode.csv",
+        "defectos_codigo_auditoria.csv",
+        "auditoria_bots_hftcode_curvas.png",
+    ]:
+        p = hft_dir / f
+        assert p.exists() and p.stat().st_size > 100, f"Missing/empty HFTCode audit file: {p}"
+
+    # Verify MQL5 EMPTY_VALUE (DBL_MAX) guard exists in FS_TypesAndTime.mqh
+    types_mqh = (REPO / "mt5" / "Include" / "EdgeLabFundedSync" / "FS_TypesAndTime.mqh").read_text(encoding="utf-8")
+    assert "FsIsValidPos" in types_mqh and "EMPTY_VALUE" in types_mqh
