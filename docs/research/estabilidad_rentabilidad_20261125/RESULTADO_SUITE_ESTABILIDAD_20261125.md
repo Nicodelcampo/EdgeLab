@@ -1,6 +1,6 @@
 # Resultados Suite de Rentabilidad y Estabilidad (`EXP-1` a `EXP-5`, `2026-11-25`)
 
-Estado: RESULTADO (`EXP-1`..`EXP-5` completados y verificados; `EXP-6C` en ejecución final; `EXP-6A/6B` pendientes de datos L1/ticks)  
+Estado: RESULTADO (`EXP-1`..`EXP-5` y `EXP-6C` completados y verificados; `EXP-6A/6B` pendientes de datos L1/ticks)  
 Fecha: 2026-11-25  
 North Star sha256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`  
 Runner: [`tools/run_suite_estabilidad_20261125.py`](../../../tools/run_suite_estabilidad_20261125.py) (`K51` verificado vía `exigir_contada`; `DESC` `2020-01 → 2026-09` y `REP` congelado; `HOLDOUT >= 2026-10-01` intacto; costos canónicos `edgelab/costos.py` + `veto_noticias` tier-1 activo).
@@ -64,6 +64,13 @@ Runner: [`tools/run_suite_estabilidad_20261125.py`](../../../tools/run_suite_est
 | `S2_VOLTARGET_20D` | `+5,79` / `1,71` / `-28,35` | `+4,32` / `1,31` / `-20,28` | `+$811 (44,4%)` / `+$610 (39,1%)` |
 | **`S3_DD_STEP`** (`0,5R` bajo `-8R`) | `+3,80` / `1,56` / **`-14,36`** | `+2,89` / `1,20` / **`-11,36`** | **`+$1.013 (48,8%)`** / **`+$778 (41,6%)`** |
 | `S4_VOLTARGET_DD` | `+3,77` / `1,58` / `-14,36` | `+2,33` / `1,08` / `-11,01` | `+$1.088 (49,9%)` / `+$699 (41,3%)` |
+
+### EXP-6C — Satélite Puro `ES / MES` (`EXP-6A/6B`: `PENDIENTE_DATOS_L1`)
+| Cartera `ES` | `DESC` `R/mes` / `Sh` / `DD` / `Calmar` | `REP` `R/mes` / `Sh` / `DD` / `Calmar` | Corr. diaria vs `NQ_CORE` |
+|---|---|---|---|
+| **`ES_SAT_1`** (`RQ5_ES + C2_VZ_ES`) | **`+1,41` / `1,23` / `-14,29` / `1,18`** | **`+1,14` / `1,04` / `-8,49` / `1,61`** | **`0,368`** |
+| `ES_SAT_2` (`+ES5N_ES`) | `+1,97` / `1,23` / `-18,63` / `1,27` | `+0,84` / `0,59` / `-11,61` / `0,87` | `0,423` |
+| `ES_SAT_3` (`+T_ES + R_ES`) | `+1,92` / `0,60` / `-68,69` / `0,34` | `+2,37` / `0,73` / `-26,28` / `1,08` | `0,494` |
 
 ---
 
