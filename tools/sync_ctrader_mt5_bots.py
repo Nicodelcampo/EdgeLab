@@ -38,6 +38,9 @@ NT8_FILES = [
     "EdgeLabCandidataFranklin.cs",
     "EdgeLabCandidataES5N.cs",
     "EdgeLabCandidataCarril2.cs",
+    "EdgeLabCarteraEngines.cs",
+    "EdgeLabCarteraBook.cs",
+    "EdgeLabCartera.cs",
 ]
 
 

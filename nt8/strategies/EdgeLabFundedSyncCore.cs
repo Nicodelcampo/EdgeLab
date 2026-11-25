@@ -407,6 +407,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public double Low;
         public double Close;
         public double Volume;
+        public bool IsLastBarOfSession;            // lo completa el host (EdgeLabCartera); false en los demas
     }
 
     public sealed class VirtualSleeve
@@ -438,6 +439,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public double PendingEntryStopPrice;
 
         public string PendingExitReason;
+
+        // EdgeLabCartera (2026-11-25): contratos fijos por estrategia y stop/objetivo en precio absoluto
+        public int FixedContracts;                       // > 0: cantidad fija de ESTA estrategia (manda sobre la del coordinador)
+        public double PendingAbsStop = double.NaN;       // stop en precio (RQ5, Franklin); NaN = relativo a la entrada
+        public double PendingAbsTarget = double.NaN;     // objetivo en precio; NaN = sin objetivo absoluto
     }
 
     internal abstract class ModuleEngineBase
@@ -2045,6 +2051,13 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     {
         public readonly Dictionary<string, VirtualSleeve> Sleeves = new Dictionary<string, VirtualSleeve>();
         private readonly List<ModuleEngineBase> _engines = new List<ModuleEngineBase>();
+        private readonly List<string> _ids = new List<string>(FundedSyncMath.ModuleOrder);
+        public IList<string> SleeveIds { get { return _ids; } }
+        // true (EdgeLabCartera): las entradas, stops y objetivos los ejecuta el broker con ordenes reales por estrategia;
+        // el coordinador solo genera senales y registra los fills que le confirma el host. false: simulacion virtual.
+        public bool BrokerDriven;
+        // Bloqueo externo de entradas (guardas de cuenta del host: perdida diaria/maxima, fin de sesion)
+        public bool ExternalBlock;
         private readonly Queue<double> _sesAtrQueue = new Queue<double>();
         public readonly List<CompletedTradeRecord> CompletedTrades = new List<CompletedTradeRecord>();
 
@@ -2111,6 +2124,15 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             }
         }
 
+        internal void AddEngine(ModuleEngineBase eng, double weight, int fixedContracts)
+        {
+            _engines.Add(eng);
+            if (!_ids.Contains(eng.ModuleId)) _ids.Add(eng.ModuleId);
+            Sleeves[eng.ModuleId] = new VirtualSleeve { ModuleId = eng.ModuleId, WeightW5 = weight, Enabled = weight > 1e-6, FixedContracts = fixedContracts };
+        }
+
+        public void SetSleeveFixedContracts(string id, int qty) { if (Sleeves.ContainsKey(id)) Sleeves[id].FixedContracts = qty; }
+
         public double CurrentRisk1RUsd { get { return AccountMode == FundedSyncAccountMode.Evaluation ? EvalRisk1R_USD : FundedRisk1R_USD; } }
 
         public int TargetNetMicros
@@ -2119,7 +2141,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             {
                 if (HardFlattenedToday || DailyCapTriggeredToday || DailyLossTriggeredToday) return 0;
                 int net = 0;
-                foreach (string id in FundedSyncMath.ModuleOrder)
+                foreach (string id in _ids)
                 {
                     var sl = Sleeves[id];
                     if (sl.IsOpen) net += sl.Side * sl.Contracts;
@@ -2133,7 +2155,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             get
             {
                 double u = 0;
-                foreach (string id in FundedSyncMath.ModuleOrder)
+                foreach (string id in _ids)
                 {
                     var sl = Sleeves[id];
                     if (sl.IsOpen) u += sl.AppliedW;
@@ -2168,11 +2190,25 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             if (bar.Low < _curSesLo) _curSesLo = bar.Low;
             _curSesClose = bar.Close;
 
-            // 1. Fill pending Market/Stop entries and Market exits at Open[i]
-            ProcessPendingFillsAtBarOpen(bar);
+            if (!BrokerDriven)
+            {
+                // 1. Fill pending Market/Stop entries and Market exits at Open[i]
+                ProcessPendingFillsAtBarOpen(bar);
 
-            // 2. Evaluate intrabar STOP (prioritized) & TARGET on [Low[i], High[i]]
-            ProcessIntrabarStopsAndTargets(bar);
+                // 2. Evaluate intrabar STOP (prioritized) & TARGET on [Low[i], High[i]]
+                ProcessIntrabarStopsAndTargets(bar);
+            }
+            else
+            {
+                // modo broker: los stops/objetivos los ejecuta el broker; aca solo se lleva la maxima excursion favorable
+                foreach (string id in _ids)
+                {
+                    var sb = Sleeves[id];
+                    if (!sb.IsOpen) continue;
+                    double fav = sb.Side > 0 ? bar.High - sb.EntryPrice : sb.EntryPrice - bar.Low;
+                    if (fav > sb.MaxFavPts) sb.MaxFavPts = fav;
+                }
+            }
 
             // 3. Causal M1-close protection promotion for NEXT bar i+1
             for (int i = 0; i < _engines.Count; i++)
@@ -2206,7 +2242,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             if (newsVeto) FlattenAllImmediate(bar.Close, bar.CloseNy, "NEWS_VETO");
             NewsVetoActiveNow = newsVeto;
 
-            EntriesAllowedNow = !HardFlattenedToday && !DailyCapTriggeredToday && !DailyLossTriggeredToday && !inPreBreakFlattenWindow && !newsVeto;
+            EntriesAllowedNow = !HardFlattenedToday && !DailyCapTriggeredToday && !DailyLossTriggeredToday && !inPreBreakFlattenWindow && !newsVeto && !ExternalBlock;
 
             // 5. Run all 7 module signal engines on bar close
             for (int i = 0; i < _engines.Count; i++)
@@ -2218,7 +2254,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 
         private void ProcessPendingFillsAtBarOpen(BarTimeContext bar)
         {
-            foreach (string id in FundedSyncMath.ModuleOrder)
+            foreach (string id in _ids)
             {
                 var sl = Sleeves[id];
                 if (sl.PendingExitReason != null && sl.IsOpen)
@@ -2263,7 +2299,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 
         private void ProcessIntrabarStopsAndTargets(BarTimeContext bar)
         {
-            foreach (string id in FundedSyncMath.ModuleOrder)
+            foreach (string id in _ids)
             {
                 var sl = Sleeves[id];
                 if (!sl.IsOpen) continue;
@@ -2331,14 +2367,81 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             return true;
         }
 
+        internal bool QueueMarketEntryAbs(VirtualSleeve sl, int side, double absStopPx, double absTargetPx)
+        {
+            if (!sl.Enabled || !EntriesAllowedNow || sl.IsOpen || sl.HasPendingEntry || double.IsNaN(absStopPx)) return false;
+            sl.HasPendingEntry = true;
+            sl.PendingEntryIsStopOrder = false;
+            sl.PendingEntrySide = side;
+            sl.PendingStopPts = 1.0;                       // marcador (> 0); el riesgo real sale del fill contra el stop absoluto
+            sl.PendingFixedStopPrice = double.NaN;
+            sl.PendingTargetPrice = double.NaN;
+            sl.PendingAbsStop = absStopPx;
+            sl.PendingAbsTarget = absTargetPx;
+            return true;
+        }
+
+        // ---- Modo broker (EdgeLabCartera) ----------------------------------------------------------------------
+        /// <summary>Cantidad que tendria la entrada pendiente si se llenara a refPx (0 = no se manda).</summary>
+        public int PlanEntryQty(VirtualSleeve sl, double refPx)
+        {
+            if (!sl.Enabled || !EntriesAllowedNow || sl.IsOpen || !sl.HasPendingEntry) return 0;
+            int side = sl.PendingEntrySide;
+            double riskPts = !double.IsNaN(sl.PendingAbsStop) ? side * (refPx - sl.PendingAbsStop) : sl.PendingStopPts;
+            if (!(riskPts > 0)) return 0;
+            double remR = Math.Max(0.0, MaxOpenR - CurrentOpenRUsed);
+            double wEff = Math.Min(sl.WeightW5, remR);
+            if (wEff <= 1e-6) return 0;
+            double r1Mic = Math.Max(riskPts * MicroPointValue, 1e-6);
+            double tgtUsd = CurrentRisk1RUsd * wEff;
+            int qty = (int)Math.Min(MaxMicroContracts, Math.Max(0, Math.Round(tgtUsd / r1Mic)));
+            if (qty == 0 && tgtUsd >= 0.55 * r1Mic) qty = 1;
+            if (FixedContracts > 0) qty = FixedContracts;
+            if (sl.FixedContracts > 0) qty = sl.FixedContracts;
+            return Math.Max(0, qty);
+        }
+
+        /// <summary>El broker lleno la entrada de esta estrategia: abre la posicion virtual con precio y cantidad reales.</summary>
+        public void ConfirmEntry(VirtualSleeve sl, double fillPx, int qty, DateTime ny)
+        {
+            if (sl.IsOpen || qty <= 0) return;
+            int side = sl.PendingEntrySide;
+            double riskPts = sl.PendingStopPts, fixStop = sl.PendingFixedStopPrice, tgtPx = sl.PendingTargetPrice;
+            sl.HasPendingEntry = false; sl.PendingEntryIsStopOrder = false;
+            OpenSleeveNow(sl, side, fillPx, riskPts, fixStop, tgtPx, ny, qty);
+        }
+
+        /// <summary>El broker cerro la posicion de esta estrategia (stop, objetivo o salida a mercado).</summary>
+        public void ConfirmExit(VirtualSleeve sl, double fillPx, DateTime ny, string reason)
+        {
+            sl.PendingExitReason = null;
+            CloseSleeve(sl, fillPx, ny, reason);
+        }
+
+        public double OpenPnlUsdAt(double px) { return ComputeOpenPnlUsd(px); }
+
+        /// <summary>Cierra todas las estrategias del libro (guardas del host). En modo broker deja la salida pendiente.</summary>
+        public void ForceFlattenAll(double px, DateTime ny, string reason) { FlattenAllImmediate(px, ny, reason); }
+
         internal void QueueMarketExit(VirtualSleeve sl, string reason)
         {
             if (sl.IsOpen && sl.PendingExitReason == null) sl.PendingExitReason = reason;
         }
 
-        private void OpenSleeveNow(VirtualSleeve sl, int side, double fillPx, double riskPts, double relTgtMarker, double tgtPx, DateTime barNy)
+        private void OpenSleeveNow(VirtualSleeve sl, int side, double fillPx, double riskPts, double relTgtMarker, double tgtPx, DateTime barNy, int qtyOverride = 0)
         {
-            if (!EntriesAllowedNow || sl.IsOpen) return;
+            double absStop = sl.PendingAbsStop, absTgt = sl.PendingAbsTarget;
+            sl.PendingAbsStop = double.NaN; sl.PendingAbsTarget = double.NaN;
+            if (sl.IsOpen) return;
+            if (qtyOverride <= 0 && !EntriesAllowedNow) return;
+            if (!double.IsNaN(absStop))
+            {
+                riskPts = side * (fillPx - absStop);
+                if (!(riskPts > 0) && qtyOverride <= 0) return;          // entrada invalida (el precio ya paso el stop)
+                if (!(riskPts > 0)) riskPts = TickSize;
+                tgtPx = absTgt;
+                relTgtMarker = double.NaN;
+            }
             if (CollisionPolicy == FundedSyncCollisionPolicy.VetoOpposite)
             {
                 int curNet = TargetNetMicros;
@@ -2346,18 +2449,20 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             }
             double remR = Math.Max(0.0, MaxOpenR - CurrentOpenRUsed);
             double wEff = Math.Min(sl.WeightW5, remR);
-            if (wEff <= 1e-6) return;
+            if (wEff <= 1e-6 && qtyOverride <= 0) return;
 
             double tgtUsd = CurrentRisk1RUsd * wEff;
             double r1Mic = Math.Max(riskPts * MicroPointValue, 1e-6);
             int qty = (int)Math.Min(MaxMicroContracts, Math.Max(0, Math.Round(tgtUsd / r1Mic)));
             if (qty == 0 && tgtUsd >= 0.55 * r1Mic) qty = 1;
             if (FixedContracts > 0) qty = FixedContracts;
+            if (sl.FixedContracts > 0) qty = sl.FixedContracts;
             if (MaxNetContracts > 0)
             {
                 int sameDir = Math.Max(0, side * TargetNetMicros);
                 qty = Math.Min(qty, MaxNetContracts - sameDir);
             }
+            if (qtyOverride > 0) { qty = qtyOverride; wEff = Math.Max(wEff, Math.Min(sl.WeightW5, MaxOpenR)); }
             if (qty <= 0) return;
 
             sl.IsOpen = true;
@@ -2366,7 +2471,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             sl.AppliedW = wEff;
             sl.EntryPrice = fillPx;
             sl.RiskPts = riskPts;
-            sl.InitialStopPrice = fillPx - side * riskPts;
+            sl.InitialStopPrice = !double.IsNaN(absStop) ? absStop : fillPx - side * riskPts;
             sl.StopPrice = sl.InitialStopPrice;
             sl.TargetPrice = !double.IsNaN(relTgtMarker) ? (fillPx + side * relTgtMarker) : tgtPx;
             sl.MaxFavPts = 0;
@@ -2416,7 +2521,18 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 
         private void FlattenAllImmediate(double price, DateTime barNy, string reason)
         {
-            foreach (string id in FundedSyncMath.ModuleOrder)
+            if (BrokerDriven)
+            {
+                foreach (string id in _ids)
+                {
+                    var b = Sleeves[id];
+                    b.HasPendingEntry = false; b.PendingEntryIsStopOrder = false;
+                    b.PendingAbsStop = double.NaN; b.PendingAbsTarget = double.NaN;
+                    if (b.IsOpen) b.PendingExitReason = reason;
+                }
+                return;
+            }
+            foreach (string id in _ids)
             {
                 var sl = Sleeves[id];
                 sl.HasPendingEntry = false;
@@ -2428,7 +2544,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private double ComputeOpenPnlUsd(double px)
         {
             double tot = 0;
-            foreach (string id in FundedSyncMath.ModuleOrder)
+            foreach (string id in _ids)
             {
                 var sl = Sleeves[id];
                 if (sl.IsOpen) tot += sl.Side * (px - sl.EntryPrice) * sl.Contracts * MicroPointValue;
