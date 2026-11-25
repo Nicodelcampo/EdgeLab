@@ -22,9 +22,6 @@ import time
 from pathlib import Path
 from typing import Iterable, Sequence
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import pyarrow as pa
@@ -70,7 +67,6 @@ ACCENT_CORAL = "#e76f51"
 ACCENT_BLUE = "#5fa8d3"
 ACCENT_GREEN = "#80ed99"
 
-plt.rcParams["text.parse_math"] = False
 
 
 class StreamingShiftResampler:
@@ -192,6 +188,14 @@ class StreamingShiftResampler:
                 "v": np.concatenate([p[5] for p in parts]),
             })
         return out
+
+
+def _plt():                                   # matplotlib sólo al graficar: el cálculo y los tests no lo necesitan
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    plt.rcParams["text.parse_math"] = False
+    return plt
 
 
 def resample_ticks_to_shifted_m1(
@@ -892,6 +896,7 @@ def _plot_exp_a(res_a: dict[str, object]) -> None:
     mod_df: pd.DataFrame = res_a["mod_df"]
     daily_curves: dict[str, dict[int, pd.Series]] = res_a["daily_curves"]
 
+    plt = _plt()
     fig, axes = plt.subplots(2, 2, figsize=(15, 9.5), facecolor=BG_FIG)
     fig.subplots_adjust(hspace=0.34, wspace=0.22, top=0.90, bottom=0.07, left=0.06, right=0.97)
     fig.suptitle(
@@ -994,6 +999,7 @@ def _plot_exp_b_c(res_b: dict[str, object], res_c: dict[str, object]) -> None:
     sp_df: pd.DataFrame = res_c["spread_df"]
     comp_df: pd.DataFrame = res_c["comp_df"]
 
+    plt = _plt()
     fig, axes = plt.subplots(2, 2, figsize=(15, 9.5), facecolor=BG_FIG)
     fig.subplots_adjust(hspace=0.35, wspace=0.22, top=0.90, bottom=0.08, left=0.06, right=0.97)
     fig.suptitle(

@@ -1,14 +1,14 @@
 # Estado vivo de EdgeLab (snapshot maestro de contexto)
 
 Estado: VIGENTE
-Fecha: 2026-11-19
+Fecha: 2026-11-24
 Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 
 ## 1. Anclas e Invariantes (fail-closed)
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `733` campanas / `538,653,264` pruebas registradas
+- Contador global: `741` campanas / `538,656,924` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
@@ -21,22 +21,39 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 31 | Palancas (`PALANCA_DE_DISENO`): 31
+- Pistas vivas (`PISTA_VIVA`): 37 | Palancas (`PALANCA_DE_DISENO`): 31
+  - `F-RQ5-REGIMEN-ROBUSTO` (2026-11-20): RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025
+  - `F-RQ5-HOLDOUT-NO-CONCLUYENTE` (2026-11-20): RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)
+  - `F-CANASTA-T-R-Z-RQ5-DIVERSIFICA` (2026-11-20): Correlación y canasta de las fábricas A20, T, R, Z-banda y RQ5 (1 R por operación)
+  - `F-A20-SOLO-CORTA-HOLDOUT-TERMINAL` (2026-11-20): A20 NQ fábrica (sólo cortos) en el holdout terminal 2026-10-01 → 2026-11-16 y su beta corta
   - `F-Z-TRANSFER-RTY` (2026-11-19): Z (ZetaTrend de FundedSync, fábrica, stop 0,25 × ATR20) en Russell (RTY) y MidCap (EMD), nu…
   - `F-Z-SEVERIDAD-DOSIS-RESPUESTA` (2026-11-19): Z (ZetaTrend): severidad del filtro de día de tendencia (ninguna cubeta toca la EMA de cube…
-  - `F-REVERSION-CORTA-APAGADA-2018` (2026-11-19): Reversión de corto plazo en índices de varios días (IBS+VIX, Double Seven, Turnaround Tuesd…
-  - `F-R-ATRPHASE-EN-R` (2026-11-19): R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previ…
-  - `F-LUCID-PLAN` (2026-11-19): Plan de LucidFlex con piso y DLL intradía: tamaño, contratos, evaluaciones a la vez
-  - `F-LUCID-PERIODO-MINIS` (2026-11-19): Canasta T+R+ZB: tramo 2025-08 → 2026-09 y tamaño en minis en LucidFlex
 - Canastas papel: Cartera v2 (2026-11-16) — 8 reglas, base de `SELECCION… | Cartera v3 (2026-11-16) — 8 reglas (forward en paralel… | Cartera B (2026-11-16) — T + Z + R de FundedSync en MN…
 
-## 4. Bloqueado / NO_REPETIR (46 vigentes en FACTORES.jsonl)
+## 4. Bloqueado / NO_REPETIR (63 vigentes en FACTORES.jsonl)
+- `F-Z-RTY-REP-COLAPSA` (2026-11-24): Z (ZetaTrend) en Russell M2K — supera a F-Z-TRANSFER-RTY
+- `F-RQ6-ES-NQ` (2026-11-24): RQ6 ES/NQ
+- `F-RQ2-ES-NQ` (2026-11-24): RQ2 ES/NQ
+- `F-PREAPERTURA-NQ-INTENTO1-SUBMINUTO` (2026-11-24): PREAPERTURA-NQ Intento 1
+- `F-PREAPERTURA-INTENTO0` (2026-11-24): PREAPERTURA Intento 0 (NQ_OP_SAL, GC_OP_SAL, ES/YM)
+- `F-HOBBIECODE-SUPERTREND-ORO` (2026-11-24): HobbieCode Supertrend Oro H1
+- `F-HOBBIECODE-GANN-HILO-ORO` (2026-11-24): HobbieCode Gann HiLo Oro H1
+- `F-FM2-CONCRETUM-NO-REPLICA` (2026-11-24): FM2 (Concretum Band)
+- `F-ES5N-NQ` (2026-11-24): ES5N en NQ (10:00 NY)
+- `F-DUAL-THRUST-GC-X038` (2026-11-24): Dual Thrust GC (X038)
+- `F-DRC-TORI-FRICCION` (2026-11-24): DRC-NQ-R, TORI-NQ-R, U1-ZONAS-AVCL-ES/NQ, CVGAP-CFD-NQ (ejecución)
+- `F-CVGAP-COMEX-CIERRE-ATRAS` (2026-11-24): CVGAP-ES-C, CVGAP2-GC#11, COMEX-CIERRE-GC-R#0
+- `F-C2-VBB-DBO-P80` (2026-11-24): CARRIL2 variantes VBB, DBO, P80 (y D7, IBS, TT, TOM en 2020–25)
+- `F-BAJA-FRICCION-A5-BF1-BF8` (2026-11-24): BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)
+- `F-FILTROS-CONTEXTO-SIN-FILTRO` (2026-11-20): VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX y COT (percentil móvil causal, terciles)…
 - `F-SELECTIVIDAD-INVERSA` (2026-11-19): Pureza del día de tendencia (1 − retroceso máximo / rango, percentil causal d…
+- `F-PICOS-DEFENDIDOS-ES-REFUTADA` (2026-11-19): PICOS-DEFENDIDOS en ES con la grilla de 207.360 celdas (8 meses de DESC)
 - `F-FRANKLIN-FILTRO-ATR-NO-SIRVE-POR-MES` (2026-11-19): Franklin sólo en días de ATR alto (mejora de MEJORA-SF) medido por mes en el…
 - `F-EXTERNAS28-DUAL-THRUST` (2026-11-19): Catálogo externo de 28 estrategias (114 variantes) en M1 de futuros con A5
 - `F-EXTERNAS-ESTRUCTURALES-REFUTADA` (2026-11-19): 8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakou…
 - `F-CRASH-VIX-INVERTIDA-REFUTADO` (2026-11-19): Filtro de crash 'no comprar la reversión corta con VIX9D/VIX ≥ 1' (IBS, Doubl…
 - `F-CONFLUENCIA-MISMA-INFORMACION` (2026-11-19): Confluencia causal de señales intradía con bruto real (SOM, Franklin, FM1, FM…
+- `F-A20-NO-TRANSFIERE` (2026-11-19): A20 (FundedSync) en YM, RTY y EMD
 - `F-ORB5-BRUTO-ESTABLE` (2026-11-18): ORB de 5 min (Zarattini-Aziz) en índices de EE. UU.: el bruto existe y es chi…
 - `F-OPTION-ALPHA-FUTUROS` (2026-11-18): Reglas del Top 20 Live de Option Alpha (Taco/Sandwich 13:45, ORB 60 con días…
 - `F-LUXIMB-EJECUCION-TIMING` (2026-11-18): Rediseñar la ejecución del fade de impulsos LUX-IMB (stop 0,5–2·D, objetivo 1…
@@ -50,23 +67,11 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - `F-ASIA-NQ-NOCHE-MOVIDA` (2026-11-18): ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (ter…
 - `F-SQX-CATALOGO-NO` (2026-11-17): Catálogo SQX tal cual: range breakout 13:00 (6E, CL), inside bar H4 (GC, CL,…
 - `F-SOM-TRANSFER-NO` (2026-11-17): SessionOpenMomentum (de fábrica, cierre del viernes) en la apertura propia de…
-- `F-REELS-20261116-NO` (2026-11-16): Revisit del mínimo del viernes tras máximo menor con venta del lunes (Hougaar…
-- `F-KNN-VOTO-NO-TRANSFIERE` (2026-11-16): Capa KNN por voto mayoritario de vecinos (≥ 50 % ganadores) sobre reglas prop…
-- `F-FUNDEDSYNC-SIN-VENTAJA` (2026-11-16): FUNDEDSYNC A1, W, Q, V (absorción 1m, cruce de VWAP, Rampart, VaultBreak) de…
-- `F-FRENO-DIARIO-NO` (2026-11-16): Freno diario de cartera (no operar más ese día tras −500 USD ≈ 2,5 R)
-- `F-FIN-DE-RUEDA-NO` (2026-11-16): Saltear entradas 14:00–16:15 NY
-- `F-DIA-TENDENCIA-NO-ANTICIPABLE` (2026-11-16): Anticipar la continuación intradía (resto del día desde las 10:30, tarde desd…
-- `F-VWAP-BANDA3-REVERSION` (2026-11-15): Reversión al VWAP desde el primer cierre fuera de ±3 desvíos (VWAP desde las…
-- `F-SQX-TSMOM-SP-D1` (2026-11-15): Builder de SQX (plantilla de tendencia, aleatorio, ≤ 3 condiciones, SL/TP en…
-- `F-SQX-REVERSION-SP-H4` (2026-11-15): Plantilla de reversión del Builder de SQX sobre S&P CFD H4
-- `F-PRERANGO-0812` (2026-11-15): Pre-rango 08:12–09:12 NY: barrido de un extremo y vuelta hacia el opuesto (H-…
-- `F-LIT-MACRO-CFD` (2026-11-15): Ideas publicadas en su forma simple sobre CFD de Dukascopy: TSMOM semanal sin…
-- `F-GAP-Y-RUPTURA-PREVIO-M1` (2026-11-15): Gap de apertura (relleno/continuación por tamaño en ATR) y ruptura del máximo…
-- Ver lista completa `NO_REPETIR` (46) en `docs/research/FACTORES.jsonl`
+- Ver lista completa `NO_REPETIR` (63) en `docs/research/FACTORES.jsonl`
 
 ## 5. Holdout Consumido y Aperturas
 - Familias con sesiones miradas: `AREAS_EXP_1_CRUZADO`<=20261022, `LUXIMB_FADE_VISOR`<=20261021
-- Aperturas confirmatorias activas: 28 (ZONAS_GAPS:ZGAP-NQ-CANASTA, U1_RACIMOS_GRILLA_NQ:U1-RACIMOS-GRILLA-NQ, U1_ZONAS_BT2_NQ:U1-ZONAS-BT2-NQ, U1_ZONAS_BT2_ES:U1-ZONAS-BT2-ES, U1_RACIMOS_GRILLA_ES:U1-RACIMOS-GRILLA-ES)
+- Aperturas confirmatorias activas: 32 (ZONAS_GAPS:ZGAP-NQ-CANASTA, U1_RACIMOS_GRILLA_NQ:U1-RACIMOS-GRILLA-NQ, U1_ZONAS_BT2_NQ:U1-ZONAS-BT2-NQ, U1_ZONAS_BT2_ES:U1-ZONAS-BT2-ES, U1_RACIMOS_GRILLA_ES:U1-RACIMOS-GRILLA-ES)
 
 ## 6. Arranque y Cierre Obligatorios (4 comandos)
 1. `python tools/estado.py`  2. `python tools/antecedentes.py "<idea>" --familia <FAM>`
