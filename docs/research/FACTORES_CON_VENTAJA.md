@@ -5,10 +5,30 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (31)
+## PISTA_VIVA (37)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025** (`F-RQ5-REGIMEN-ROBUSTO`, 2026-11-20, humano)
+  - Efecto: DESC 2018–2025 NQ+ES+YM+RTY: +0,050 R/op (p 0,045), 54,7 ops/mes, +2,71 R/mes, t mensual 1,94; 310/310 celdas calibradas y 10/10 vecinos positivos (n efectivo 1,47); NQ +0,082, ES +0,093, RTY +0,046, YM −0,022, EMD +0,044; quiebre sup-F 2017-08; salida al cierre no mejora. Holdout A5 N 1.454: potencia 0,60 / 0,24.
+  - Dónde: NQ/ES/YM/RTY/EMD M1 A5
+  - Siguiente: Decisión de Nico: abrir el holdout sin potencia (cambio de compuerta), forward secuencial (~26 meses con el efecto de desarrollo) o sumar más instrumentos/temporalidades.
+  - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO.md`, `docs/research/rq5_regimen_20261119/RESULTADO.json`
+- **RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)** (`F-RQ5-HOLDOUT-NO-CONCLUYENTE`, 2026-11-20, humano)
+  - Efecto: n 1.871, +0,027 R/op (p 0,23; Fisher con desarrollo 0,057); NQ +0,077 (p 0,06), YM +0,047, RTY +0,024, ES +0,007, EMD −0,019; +1,86 R/mes, 59 % meses +; sin los 3 mejores meses ≈ 0. NO_CONCLUYENTE (potencia 0,69/0,28).
+  - Dónde: NQ/ES/YM/RTY/EMD M1, meses HOLDOUT A5
+  - Siguiente: Apertura usada. Sólo forward (≈ 103 meses con el efecto encogido; ≈ 26 con el de desarrollo). Decide Nico si entra al forward o a una canasta.
+  - Evidencia: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`, `docs/research/rq5_regimen_20261119/HOLDOUT.json`
+- **A20 NQ fábrica (sólo cortos) en el holdout terminal 2026-10-01 → 2026-11-16 y su beta corta** (`F-A20-SOLO-CORTA-HOLDOUT-TERMINAL`, 2026-11-20, humano)
+  - Efecto: Holdout: n 29, +1,10 R/op (+31,9 R), p 0,072, potencia 0,08 → NO_CONCLUYENTE; 2 operaciones dan casi todo y NQ cayó 11 %. A20 es 100 % corta. Regresión mensual descriptiva (2018–2026-09): ≈ +3 R/mes con NQ plano (t 3,5) y −1 R por cada 1 % de NQ (t −7); desde 2022, +5 R/mes (t 5,2) y +3,7 R/mes aunque NQ subió 1,3 %/mes.
+  - Dónde: NQ M1 de NT8, holdout terminal
+  - Siguiente: Apertura gastada; sólo forward. Antes de combinarla con T/R/Z, medir la correlación de la canasta (A20 cubre la beta larga de las otras). En una cuenta prop, los meses fuertes al alza son su riesgo.
+  - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO_HOLDOUT_TERMINAL_A20.md`, `docs/research/filtros_contexto_20261120/A20_TERMINAL.json`
+- **Correlación y canasta de las fábricas A20, T, R, Z-banda y RQ5 (1 R por operación)** (`F-CANASTA-T-R-Z-RQ5-DIVERSIFICA`, 2026-11-20, humano)
+  - Efecto: Mensual: T, R, Z-banda y RQ5 entre −0,05 y 0,27 entre sí. A20 −0,51 con NQ pero +0,25 a +0,38 con las demás. T+R+ZB+RQ5 NQ: +4,98 R/mes, t 5,17, 71 % meses +, caída máx. −23 R. Sumar A20: +5,58 R/mes, t 3,0, caída −90 R (desde 2022: −14 → −36).
+  - Dónde: NQ (y RQ5 en ES/YM/RTY), DESC+REP de A5 2018-01 → 2025-07
+  - Siguiente: Forward de la canasta T+R+ZB+RQ5 NQ; A20 sólo con tamaño reducido (no medido) o fuera. Estrategias NT8 en nt8/strategies (paridad pendiente).
+  - Evidencia: `docs/research/canasta_correlacion_20261120/RESULTADO.md`, `docs/research/canasta_correlacion_20261120/RESULTADO.json`
 - **R (AtrPhase, FundedSync) llevado a R con stop de catástrofe 0,25 × ATR20 de la sesión previa (aplicado con el MAE): régimen robusto con los controles de T** (`F-R-ATRPHASE-EN-R`, 2026-11-19, humano)
   - Efecto: NQ 2008–2026-09: fábrica +0,269 R neto (bruto +0,364), 81/81 variantes de la grilla del motor positivas (mediana +0,206), vecinos 8/8, PBO 0,23, 16/19 años positivos, sin look-ahead (prefijo idéntico); ES +0,15 con el mismo k. 3,1 operaciones por mes.
   - Dónde: NQ (principal), ES
@@ -59,6 +79,16 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/MNQ, LucidFlex
   - Siguiente: Decisión de Nico (dinero real es sólo humano). Forward de la canasta antes de escalar; R necesita su stop en ejecución.
   - Evidencia: `docs/research/lucid_plan_20261119/RESULTADO.md`, `docs/research/lucid_plan_20261119/PLANES.json`, `docs/research/lucid_plan_20261119/HOLDOUT_REPLAY.json`
+- **RQ5 (Noise-Band Momentum, Zarattini) en NQ+ES+YM, régimen 2018–2025** (`F-RQ5-REGIMEN-ACTUAL`, 2026-11-19, humano)
+  - Efecto: DESC +0,051 R/op y REP +0,054 R/op (≈ 40 ops/mes, fricción/R 0,03); 7/8 años positivos; control (ruptura tardía) −0,05/−0,13. Se había descartado por el promedio 2006–2025 (2006–2017: −0,05).
+  - Dónde: NQ/ES/YM M1 A5
+  - Siguiente: Decisión de Nico: holdout A5 de ROBOQUANT (potencia 0,42 / 0,18) y forward.
+  - Evidencia: `docs/research/REVISION_DESCARTADAS_20261119.md`, `docs/research/roboquant_20261118/OPS_DESC_REP.csv.gz`
+- **A20 (FundedSync, NQ): veredicto «sólo forward» sin estar en la vigilancia forward** (`F-A20-FUERA-DEL-FORWARD`, 2026-11-19, humano)
+  - Efecto: 2022–2025-07 +0,185 R/op, 20 ops/mes, R/mes +3,69 t 2,43; 2025-08→2026-09 +0,19. Sumada a T sube R/mes (2,27→3,30) pero baja t mensual (4,67→2,46).
+  - Dónde: NQ M1
+  - Siguiente: Sumar A20 como serie separada en REGIMEN-FORWARD (pre-registro).
+  - Evidencia: `docs/research/REVISION_DESCARTADAS_20261119.md`
 - **Dos señales brutas estables confirmadas en datos no usados: Franklin (años limpios 2006–2011, NQ+ES) y SOM (transfiere al MidCap y al Russell); R AtrPhase no transfiere fuera del NQ** (`F-SENALES-ESTABLES-SOM-FRANKLIN`, 2026-11-18, sesion)
   - Efecto: Franklin bruto 2006–2011 +0,195 R (IC90 +0,095/+0,296, 991 ops, 83 % de años), neto 2020–2025 +0,082 R con fricción 0,04 R. SOM en EMD+RTY bruto +0,030 R (IC90 +0,006/+0,055, 4.801 ops), neto ≈ 0 allí. R AtrPhase en EMD+RTY +0,011 ATR (NO_CONCLUYENTE, potencia 0,93). | REGIMEN-SOM-FRANKLIN 2026-11-19: SENAL_ROBUSTA las dos (bruto 81/81 y 32/32 positivas, PBO 0,08 y 0,009, prefijo idéntico); régimen neto NO: SOM quiebre 2017-11 con 81/81 neto>0 pero +0,03 y PBO 0,84; Franklin sin quiebre (p 0,27) y 7/32 netas positivas.
   - Dónde: NQ, ES, EMD, RTY futuros (M1 NT8)
@@ -405,10 +435,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (46)
+## NO_REPETIR (49)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX y COT (percentil móvil causal, terciles) como filtro de A20, T, R, Z-banda (NQ) y RQ5 fábrica** (`F-FILTROS-CONTEXTO-SIN-FILTRO`, 2026-11-20, humano)
+  - Efecto: 0/35 nominadas por BH q 0,10 en DESC 2018-01 → 2025-07 (p mín 0,023, ajustada 0,59). T y RQ5 planos (|alto − bajo| ≤ 0,05 y ≤ 0,10 con MDE 0,24 y 0,13). Única pista: A20 peor en días calmos de gamma larga (VIX9D/VIX bajo, GEX alto; p 0,03–0,06, MDE 0,49), un solo eje.
+  - Dónde: NQ (A20, T, R, Z-banda), NQ/ES/YM/RTY (RQ5), meses DESC de A5
+  - Siguiente: No repetir estos indicadores como filtro de T ni de RQ5. A20 × gamma, sólo como variante paralela en el forward si Nico lo pide. R y Z-banda sin potencia: no concluye.
+  - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO.md`, `docs/research/filtros_contexto_20261120/RESULTADO.json`
 - **8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakout II, RSI2, FTLT, QFL, FVG H1, PMax) — trabajo de Gemini/Antigravity** (`F-EXTERNAS-ESTRUCTURALES-REFUTADA`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: 0/16 en BH; las 8 con R neto negativo (−0,05 a −0,12 R) pese a fricción ≤ 0,08 R; potencia de REP 0 (efecto ≤ 0).
   - Dónde: ES, NQ, YM, GC
@@ -439,6 +474,16 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ, ES
   - Siguiente: Con la vara por mes, Franklin va sin el filtro de ATR; el filtro de fricción de SOM tampoco cambia nada desde 2018 (14,9 vs 14,8 ops/mes).
   - Evidencia: `docs/research/FRECUENCIA_PROP_20261119.md`
+- **PICOS-DEFENDIDOS en ES con la grilla de 207.360 celdas (8 meses de DESC)** (`F-PICOS-DEFENDIDOS-ES-REFUTADA`, 2026-11-19, humano)
+  - Efecto: DESC 0 nominadas; réplica abr–sep 2026 de 20 pistas: 0 confirmadas, canasta −0,141 R IC90 [−0,207; −0,074], potencia 0,9999. Bruto ≤ 0 en velas de 1, 3, 5 y 15 min.
+  - Dónde: ES ticks, 2025-08 → 2026-09
+  - Siguiente: No repetir la grilla en ES; la regla de la captura se mide en la versión A5 (picos_defendidos_a5_20261119).
+  - Evidencia: `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/MEDIDO.md`, `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`
+- **A20 (FundedSync) en YM, RTY y EMD** (`F-A20-NO-TRANSFIERE`, 2026-11-19, humano)
+  - Efecto: 2018–2025 DESC: fábrica −0,074 / −0,034 / −0,080 R (19–20 ops/mes; fricción/R ≈ 0,08 contra ≈ 0,03 en NQ); 0/24 vecinos positivos; MDE80 0,18–0,20. NO_TRANSFIERE.
+  - Dónde: YM, RTY, EMD M1 A5
+  - Siguiente: A20 sólo NQ y sólo en forward.
+  - Evidencia: `docs/research/a20_multiactivo_20261119/RESULTADO.md`
 - **ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (tercil superior contra los 250 días previos, conocido antes de la apertura)** (`F-ASIA-NQ-NOCHE-MOVIDA`, 2026-11-18, sesion)
   - Efecto: Veredicto 2026-11-18: la variable noche miraba el futuro (rango 18:00→09:00 de la misma sesión en que ASIA opera; K48). En datos nunca mirados (NQ/ES/YM 2006–2011, EMD, RTY; 9.261 sesiones; futuros M1 calibrados contra ticks, corr 0,985): misma noche alta − baja +0,153 R/sesión, noche ANTERIOR (causal) +0,035 (p 0,003, LORD rechaza, pero 7/20 años → NO_CONFIRMADA). ASIA pierde en todos los estados (noche previa alta −0,12 R/sesión) y en bruto en los 5 índices (−0,02 a −0,11 R/op).
   - Dónde: NQ / USATECH M1, 2012 → 2026-09

@@ -4,3 +4,12 @@
 - PREFLIGHT: ok
 - Linaje (informacion; bruto; sin matriz de P&L: se cobra el número bruto (Li-Ji no aplicable)); pistas a réplica k 20 en [20260401, 20260930]
 - Linaje: hereda 968985 pruebas de ['DOBLE_RETROCESO_NQ']; régimen actual desde 20250805
+- Evaluables: 239972 de 414720 celdas registradas heredan multiplicidad (el resto no llegó a 30 operaciones)
+- DESC [20250805, 20260331]: evaluables 137804 (m del FDR 137804 de 207360 celdas), FDR 20 (informativo), maxT 8, RW umbral 4.933863639831543 (diagnóstico), linaje 968985 como informacion, pistas sin nominación 40, candidatas 1
+- Potencia prevista (informativa): [1, 0, 0, 0, 1, 3, 0, 7, 0]: OOS n 62.0 potencia 1.00, holdout n 150 potencia 1.00
+- INDAGA: marginales de 1 candidatas guardadas
+- INTEGRIDAD [1, 0, 0, 0, 1, 3, 0, 7, 0]: regla 0.020054114749981505, placebo -2.51, latencia 1 vela 0.08291918144726831 -> pasa
+- OOS [20260401, 20260930] (régimen actual): medias [-0.04]; veredictos ['NO_CONCLUYENTE']; potencias [0.21]; LORD++ sin rechazo
+- TOPES: elegida {'celda': [1, 0, 0, 0, 1, 3, 0, 7, 0], 'tope': ['pts', 50.0], 'puntaje': 1.038314037127757, 'peor': -1.0657659574468086}
+- ACTA registrada antes de mirar: primeras 150 operaciones desde 20261001: el paso RESERVADO de LORD++ de la familia (α=0.00361); CONFIRMADA si rechaza y media > 0; REFUTADA si media ≤ 0; si no, SIN_POTENCIA; regla [1, 0, 0, 0, 1, 3, 0, 7, 0] tope ['pts', 50.0]; plan {'n_fijo': 150, 'n_necesario': 15, 'potencia': 1.0, 'efecto': 0.04108158688478352, 'sd_op': 0.044795996627568786, 'fuente': 'fracción del DESC', 'nivel': 0.003607974489558189}
+- AVISO ACTA: potencia del holdout 0.00 < 0,5 con N 150: lo más probable es SIN_POTENCIA (docs/research/ERRORES_Y_GUARDAS_AGENTE_DEBIAN_20261026.md, E8)

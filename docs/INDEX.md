@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` (2026-11-17)
+`docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md` (2026-11-25)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -12,14 +12,14 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 114 |
+| `docs` | 116 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
 | `docs/autopilot` | 16 |
 | `docs/bridge` | 1 |
 | `docs/campaigns` | 9 |
-| `docs/cartera` | 1 |
+| `docs/cartera` | 2 |
 | `docs/data_catalog` | 11 |
 | `docs/decisions` | 1 |
 | `docs/foundation` | 2 |
@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1523 |
+| `docs/research` | 1547 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,8 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| HANDOFF | 21 | `HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` | 2026-11-20 | VIGENTE — punto de entrada de esta etapa, escrito para seguir sin la conversació |
+| REVISION | 10 | `REVISION_DESCARTADAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas. No abre holdout ni  |
 | REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
 | RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |
 | MIRADA | 1 | `MIRADA_HUMANA_20261119.md` | 2026-11-19 | VIGENTE — revisión descriptiva sobre operaciones ya medidas (no cuenta pruebas). |
@@ -48,12 +50,10 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | AUDITORIA | 17 | `AUDITORIA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — respuesta formal de auditoría a [REPORTE_PARA_ANTIGRAVITY_20261119.md] |
 | VEREDICTO | 1 | `VEREDICTO_M1_20261117.md` | 2026-11-17 | VIGENTE (actualizado el 2026-11-18 con el «atrás» v2: motor corregido por K40; m |
 | INVESTIGACION | 4 | `INVESTIGACION_ORIGEN_CARTERA_V2_20261117.md` | 2026-11-17 | VIGENTE — pedido de Nico: «las estrategias de la cartera v2 aparecieron todas en |
-| HANDOFF | 20 | `HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md` | 2026-11-17 | VIGENTE — escrito para continuar SIN acceso a la conversación que lo produjo (pe |
 | DECISION | 5 | `DECISION_RESERVA_PREFRONTERA_20261117.md` | 2026-11-17 | SUPERADA por HOLDOUT-A5 (2026-11-17, docs/incidents/AMENDMENT_HOLDOUT-A5_2026-11 |
 | PRACTICAS | 1 | `PRACTICAS_DE_TRABAJO_20261110.md` | 2026-11-10 | VIGENTE. Va en el núcleo de contexto de todos los roles (edgelab/autopilot/conte |
 | ORB | 4 | `ORB_NQ_FILTROS_MANIFIESTO_20261108.md` | 2026-11-08 | VIGENTE — APROBADO POR NICO, LANZAMIENTO CONDICIONADO A GUARDAS |
 | GUIA | 2 | `GUIA_REGIMEN_PARA_AGENTE_20261107.md` | 2026-11-07 | VIGENTE — directiva de Nico (07/11): «que el agente trabaje sobre el estado actu |
-| REVISION | 9 | `REVISION_GEMINI_12_FAMILIAS_20261103.md` | 2026-11-03 | REVISIÓN — no autoriza lanzamientos; correcciones propuestas, no aplicadas. Fech |
 | PREREGISTRO | 1 | `PREREGISTRO_NOMINACION_FORZADA_R_20261103.md` | 2026-11-03 | VIGENTE — OK de Nico el 03/11 («Sí, y luego al holdout»): puntos 1, 2 y 3. Regis |
 | MAPA | 1 | `MAPA_OBJETIVOS_ZONAS_INTENTO_FALLIDO_20261103.md` | 2026-11-03 | DISEÑO EXPLORATORIO — sin desenlaces nuevos, sin parámetros elegidos y sin autor |
 | AVANCES | 1 | `AVANCES_Y_RELANZAMIENTOS_20261103.md` | 2026-11-03 | INFORME — fotografía del trabajo, no habilita corridas. Referente docs/NORTH_STA |
@@ -111,6 +111,11 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (0)
+## Documentos nuevos sin `Estado:` (6)
 
-Ninguno.
+- docs/HANDOFF_AUDITOR_20261123_FUNDEDSYNC.md: falta `Estado:` en el encabezado
+- docs/research/auditoria_bots_hftcode_20261124/RESULTADO.md: falta `Estado:` en el encabezado
+- docs/research/fundedsync_roadmap_ecosistema_20261123/RESULTADO.md: falta `Estado:` en el encabezado
+- docs/research/validacion_maestra_20261124/AUDIT_ESTRATEGIAS_ORTOGONALES_20261124.md: falta `Estado:` en el encabezado
+- docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md: falta `Estado:` en el encabezado
+- docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md: falta `Estado:` en el encabezado

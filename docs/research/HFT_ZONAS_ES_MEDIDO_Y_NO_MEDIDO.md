@@ -1385,3 +1385,62 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   preflight de la versión A5 en verde.
 - **NO MEDIDO:** la campaña A5 (`docs/research/picos_defendidos_a5_20261119/`: calibración M1 contra ticks, DESC, REP); la grilla del PR
   (no se lanza).
+
+## 2026-11-19 — PICOS-DEFENDIDOS-ES (embudo, réplica de pistas)
+- **MEDIDO:** DESC 2025-08 → 2026-03: 0 nominadas (maxT t máx. 2,28). Réplica 2026-04 → 09 de las 20 pistas: 0/20 confirmadas (Simes p 0,999);
+  canasta −0,141 R, IC90 [−0,207; −0,074], potencia 0,9999 → FIN SIN_CANDIDATAS, en contra con potencia. Estado:
+  `docs/research/picos_defendidos_20261119/embudo/PICOS-DEFENDIDOS-ES/`; auditoría: `docs/research/picos_defendidos_20261119/AUDITORIA_DESC.md`.
+- **NO MEDIDO:** la versión A5 (18 años de M1), que es la que mide la regla de la captura.
+
+## 2026-11-19 — Revisión de lo descartado (épocas de fricción) y frecuencia de PICOS-DEFENDIDOS
+- **MEDIDO:** RQ5, RQ6, FM1, FM2 y A20 por época (2006–2017 contra 2018–2025) en DESC y REP; conteo de eventos de PICOS-DEFENDIDOS por diseño e
+  instrumento (sin desenlaces). Acta: `docs/research/REVISION_DESCARTADAS_20261119.md`.
+- **NO MEDIDO:** Dual Thrust (EXTERNAS-28) por época; holdout A5 de RQ5; A20 en forward.
+
+## 2026-11-19 — A20-MULTIACTIVO
+- **MEDIDO:** A20 (fábrica + 8 vecinos) en YM, RTY y EMD, DESC 2018–2025: negativa en los tres, 0/24 vecinos positivos → NO_TRANSFIERE.
+  Acta: `docs/research/a20_multiactivo_20261119/RESULTADO.md`.
+- **NO MEDIDO:** REP y HOLDOUT de estos índices (REP guardado sin leer; HOLDOUT descartado).
+
+## 2026-11-20 — RQ5-REGIMEN
+- **MEDIDO:** fábrica y 324 celdas en NQ/ES/YM/RTY/EMD, DESC 2018–2025: REGIMEN_ROBUSTO (+0,050 R, p 0,045; 10/10 vecinos; 3/4 índices);
+  salida al cierre no mejora; sup-F 2017-08. Acta: `docs/research/rq5_regimen_20261119/RESULTADO.md`.
+- **NO MEDIDO:** holdout A5 (potencia 0,60 / 0,24 < 0,8: no se abre sin decisión de Nico); forward.
+
+## 2026-11-20 — RQ5-REGIMEN, holdout A5 (apertura autorizada por Nico, hasta 2026-09-30)
+- **MEDIDO:** fábrica, cinco índices, meses HOLDOUT 2018-01 → 2026-09: n 1.871, +0,027 R (p 0,23; Fisher 0,057) → NO_CONCLUYENTE.
+  Acta: `docs/research/rq5_regimen_20261119/RESULTADO_HOLDOUT.md`.
+- **NO MEDIDO:** terminal desde 2026-10-01 (sellado); forward.
+
+## 2026-11-20 — A20 en NQ: holdout A5 no limpio
+- **MEDIDO:** desglose descriptivo por bloque A5 de la fábrica en NQ 2018–2026-09 (DESC +0,080, REP −0,038, HOLDOUT +0,128). No es un holdout:
+  esos meses ya los usó A20-REGIMEN. Nota: `docs/research/a20_regimen_20261119/NOTA_HOLDOUT_A5.md`.
+- **NO MEDIDO:** forward de A20 (única confirmación limpia).
+
+## 2026-11-20 — FILTROS-CONTEXTO (VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX, COT)
+- **MEDIDO:** 35 contrastes de tercil (7 indicadores × A20, T, R, Z-banda en NQ y RQ5 en cuatro índices) en DESC 2018-01 → 2025-07. 0
+  nominadas por BH q 0,10 → SIN_FILTRO. `docs/research/filtros_contexto_20261120/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el put/call de CBOE (la serie local termina en 2019);
+  - el COT de YM y RTY;
+  - R y Z-banda con potencia (MDE 0,6–1,0 R).
+
+## 2026-11-20 — A20 NQ, holdout terminal (apertura pedida por Nico)
+- **MEDIDO:**
+  - Fábrica en las sesiones del 2026-10-01 al 2026-11-16: n 29, +1,10 R/op, p 0,072, potencia 0,08 → NO_CONCLUYENTE.
+  - A20 es sólo corta. Su R mensual depende del retorno de NQ (−1 R por cada 1 %), con un intercepto positivo (descriptivo).
+  - `docs/research/filtros_contexto_20261120/RESULTADO_HOLDOUT_TERMINAL_A20.md`.
+- **NO MEDIDO:**
+  - la correlación de A20 con T, R y Z y la canasta conjunta;
+  - el forward de A20.
+
+## 2026-11-20 — CANASTA-CORRELACION (A20, T, R, Z-banda, RQ5)
+- **MEDIDO:**
+  - Correlaciones diarias y mensuales de las fábricas y canastas a 1 R, en DESC + REP 2018-01 → 2025-07.
+  - T + R + Z-banda + RQ5 NQ: t 5,17, caída −23 R.
+  - A20 no cubre.
+  - `docs/research/canasta_correlacion_20261120/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el tamaño reducido de A20;
+  - la canasta en el forward;
+  - la paridad NT8 de las estrategias nuevas.

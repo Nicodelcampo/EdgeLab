@@ -44,6 +44,13 @@ Recordatorios:
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
 
+### Estado al 2026-11-20
+
+> **Handoff: `docs/research/HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md`.** 0 edges promovidos. RQ5-REGIMEN robusta en desarrollo
+> (+0,050 R) y holdout A5 NO_CONCLUYENTE (+0,027). Filtros VIX/VVIX/GEX/DIX/SKEW/VIX9D/COT: SIN_FILTRO (0/35). A20 es sólo corta; su holdout
+> terminal (n 29, +1,10 R/op, potencia 0,08) es NO_CONCLUYENTE. La mejor canasta medida es T+R+Z-banda+RQ5 NQ (t 5,17, caída −23 R); A20 no
+> cubre. NT8: `EdgeLabRQ5.cs` y `EdgeLabCanasta.cs` (RQ5 + guarda de cuenta); T/Z/A20 no se portan (lógica de un producto con licencia).
+
 ### Estado al 2026-11-17
 
 > **Handoff completo de esta etapa (sin depender del chat): `docs/research/HANDOFF_2026-11-17_SESION_CARTERAS_LUCID_URGENCIA.md`.**
