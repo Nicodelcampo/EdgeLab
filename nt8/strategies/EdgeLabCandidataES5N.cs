@@ -254,7 +254,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 if (_activeSide == 1) ExitLongStopMarket(0, true, _activeQty, _activeStopPx, "ES5N_stop", SigL);
                 else ExitShortStopMarket(0, true, _activeQty, _activeStopPx, "ES5N_stop", SigS);
             }
-            else if (marketPosition == MarketPosition.Flat && _activeQty > 0)
+            else if (Position.MarketPosition == MarketPosition.Flat && _activeQty > 0)
             {
                 double exPx = execution.Order.AverageFillPrice;
                 double pnlPts = _activeSide * (exPx - _entryPx);

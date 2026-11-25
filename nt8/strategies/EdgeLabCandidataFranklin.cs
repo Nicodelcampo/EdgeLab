@@ -305,7 +305,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                         ExitShortLimit(0, true, _activeQty, FundedSyncMath.RoundTick(_activeTargetPx, _spec.Tick), "FR_obj", SigS);
                 }
             }
-            else if (marketPosition == MarketPosition.Flat && _activeQty > 0)
+            else if (Position.MarketPosition == MarketPosition.Flat && _activeQty > 0)
             {
                 double exPx = execution.Order.AverageFillPrice;
                 double pnlPts = _activeSide * (exPx - _entryPx);

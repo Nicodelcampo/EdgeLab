@@ -345,7 +345,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 _activeStopPx = FundedSyncMath.RoundTick(_entryPx - _activeRiskPts, _spec.Tick);
                 ExitLongStopMarket(0, true, _activeQty, _activeStopPx, "C2_stop", SigL);
             }
-            else if (marketPosition == MarketPosition.Flat && _activeQty > 0)
+            else if (Position.MarketPosition == MarketPosition.Flat && _activeQty > 0)
             {
                 double exPx = execution.Order.AverageFillPrice;
                 double pnlPts = exPx - _entryPx;
