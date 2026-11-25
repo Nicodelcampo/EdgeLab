@@ -18,14 +18,15 @@ Operar con dinero real es decisión humana: el agente prepara, verifica y docume
   - Colchón al piso <= $270,10 si nunca cerró EOD por encima de $25.000: verificar en el dashboard.
   - Con DailyLoss $120, dos días malos seguidos consumen casi todo el colchón.
   - Evitar 08:30 ET (CPI/NFP) y 14:00 ET (FOMC) por slippage con este colchón.
+  - Configuración congelada hasta probar todas las estrategias en NT8 y que Nico vea sus curvas (2026-11-25). ES_Core_US500 está BAJO_REVISION (sin evidencia de los módulos en ES).
 - **Demo de servidor NT8**: NT8 `EdgeLabExecutionProbe` en MES 1m y MNQ 1m; NO ACTIVO (pendiente de correr).
   Parámetros: Mode=MarketOnBarClose (luego PassiveLimitThenCross), Quantity=1, IntervalBars=3, HoldBars=1, MaxRoundTrips=15.
   - No usar Sim101 ni Playback101 para medir ejecución real.
 
 ## Planificadas
 
-- FTMO Swing 100K: C2_VZ + C2_EVRP + Turtles_GC_CFD + Core + RQ5_ES_CFD (swing) (sin abrir).
-- The5ers HS 100K: SOM_ES_CFD + ES5N_ES_CFD (intradía CFD) (sin abrir).
+- FTMO Swing 100K: C2_VZ + C2_EVRP + Turtles_GC_CFD + Core + RQ5_ES_CFD (swing) (sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales).
+- The5ers HS 100K: SOM_ES_CFD + ES5N_ES_CFD (intradía CFD) (sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales).
 
 ## Auditorías de ejecución real
 

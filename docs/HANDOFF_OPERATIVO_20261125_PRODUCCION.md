@@ -1,5 +1,7 @@
 # Handoff Operativo y Continuidad — Paso a Producción / Cashflow (`2026-11-25`)
 
+> **ENMIENDA 2026-11-25:** las estrategias marcadas VALIDADA/CONFIRMADA en este handoff y en el veredicto del 24-nov pasan a BAJO_REVISION (Turtles fuera de las pruebas); ver `docs/research/validacion_maestra_20261124/ENMIENDA_ESTADOS_20261125.md`. Estado de cuentas: `docs/ESTADO_PRODUCCION.md`.
+
 > **Estado:** `VIGENTE`
 > **Rama activa:** `fix/fundedsync-il-parity` (base heredada: `c523d256`)
 > **Lectura obligatoria al retomar:**

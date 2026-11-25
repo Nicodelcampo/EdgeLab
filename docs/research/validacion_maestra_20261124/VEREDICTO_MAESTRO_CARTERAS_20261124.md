@@ -1,6 +1,6 @@
 # Veredicto Maestro de Estrategias y Colocación en Carteras (`2026-11-24`)
 
-Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+Estado: ENMENDADO el 2026-11-25 — las etiquetas VALIDADA/CONFIRMADA pasan a BAJO_REVISION y las carteras del §4 quedan sin efecto: ver `ENMIENDA_ESTADOS_20261125.md`  
 
 > [!IMPORTANT]
 > **Integridad A5 / A4 y Cobertura Completa Verificada:**
