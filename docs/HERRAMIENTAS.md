@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-740 scripts.
+742 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -171,6 +171,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
 | `tools/canastas_vigentes.py` | Documento único y auditable de las canastas vigentes (pedido de Nico, 2026-11-17: «subí las canastas a donde se lean y puedan auditar»). |
+| `tools/candidata_referencia.py` | Referencia Python de una variante FundedSync tal como la corre `EdgeLabCandidataFS` en NT8 (para la paridad). |
 | `tools/carril2.py` | CARRIL2-LOTE1: IBS+VIX, Double Seven, Turnaround Tuesday y cambio de mes sobre el motor de barras calibrado |
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
@@ -191,6 +192,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/check_research_data_gate.py` | Check pinned eligibility metadata only. Never opens market-data source files. |
 | `tools/cierre.py` | Cierre de un turno de trabajo en UN comando (AUTOMATIZACION_PROCESOS_20261111 C3): regenera todos los archivos generados y |
 | `tools/cobertura_release_preholdout.py` | Cobertura por activo del release líquido de Kaggle hasta la apertura del holdout, desde su índice de sesiones (sin ticks). |
+| `tools/comparar_candidata.py` | Compara una corrida de `EdgeLabCandidataFS` en NT8 contra la referencia Python (`tools/candidata_referencia.py`). |
 | `tools/compare_session_parity.py` | Comparador de paridad por sesion CME, con veredictos separados por capa. |
 | `tools/compilar_nt8_cs.py` | T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader. |
 | `tools/compile_emacorridortrendvol.py` | (sin docstring) |
