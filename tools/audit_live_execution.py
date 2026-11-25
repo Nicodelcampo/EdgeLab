@@ -13,25 +13,23 @@ import pandas as pd
 
 DEFAULT_AUDIT_DIR = Path.home() / "Documents" / "NinjaTrader 8" / "EdgeLab" / "exec_audit"
 
-CANONICAL_RT_PTS = {
-    "MNQ": 1.5455,
-    "NQ": 1.5455,
-    "MES": 0.8877,
-    "ES": 0.8877,
-    "MGC": 0.6050,
-    "GC": 0.6050,
-    "MYM": 7.4900,
-    "YM": 5.0520,
-}
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from edgelab import costos  # noqa: E402  (costos sólo de la fuente canónica)
 
-DEFAULT_COMM_RT_USD = {
-    "MNQ": 1.24,
-    "NQ": 4.28,
-    "MES": 1.24,
-    "ES": 4.28,
-    "MGC": 1.24,
-    "GC": 4.28,
-}
+
+def _canon_rt_pts(root: str) -> float:
+    """Fricción canónica de ida y vuelta en puntos (spread + comisión + slippage base de edgelab/costos.py)."""
+    try:
+        return costos.friccion_rt_ticks(root) * costos.tick_size(root)
+    except KeyError:
+        return float("nan")
+
+
+def _comm_rt_usd(root: str) -> float:
+    try:
+        return costos.comision_rt_usd(root)
+    except KeyError:
+        return float("nan")
 
 
 def _symbol_root(inst: str) -> str:
@@ -131,13 +129,13 @@ def evaluate_execution_df(df: pd.DataFrame, comm_rt_usd_override: float | None =
             comm_rt_usd = 2.0 * per_contract_one_side
             comm_src = "NT8 CSV"
         else:
-            comm_rt_usd = DEFAULT_COMM_RT_USD.get(root, 1.24)
+            comm_rt_usd = _comm_rt_usd(root)
             comm_src = "default proxy (check Tradovate statement!)"
 
         comm_rt_pts = comm_rt_usd / pv
         mean_slip_close = float(pd.to_numeric(gf["slip_vs_close_pts"], errors="coerce").dropna().mean()) if len(gf) else float("nan")
         implied_rt_pts = (2.0 * mean_slip_close + comm_rt_pts) if not np.isnan(mean_slip_close) else float("nan")
-        canon_rt = CANONICAL_RT_PTS.get(root, float("nan"))
+        canon_rt = _canon_rt_pts(root)
         ratio = (implied_rt_pts / canon_rt) if (not np.isnan(implied_rt_pts) and canon_rt > 0) else float("nan")
 
         inst_summaries.append({

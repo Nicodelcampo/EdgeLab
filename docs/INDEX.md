@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 116 |
+| `docs` | 117 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
@@ -25,7 +25,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/foundation` | 2 |
 | `docs/incidents` | 18 |
 | `docs/indicadores` | 1 |
-| `docs/infra` | 26 |
+| `docs/infra` | 27 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |

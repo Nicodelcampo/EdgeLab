@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-735 scripts.
+738 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -221,6 +221,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/deep_falsification_probe.py` | tools/deep_falsification_probe.py |
 | `tools/demo_vectorbt_zones.py` | Demo end-to-end (F8): estrategia vectorbt que combina zonas de 2+ indicadores |
 | `tools/deploy_nq_25t_bundle.py` | Deploy NQ 25-tick candles and HFT certified zones (5,438 zones) to viewer bundles. |
+| `tools/deriva_bots.py` | Deriva entre los bots del repo y lo instalado en NT8, MT5 y cTrader de esta PC. |
 | `tools/desarrollo_en_r.py` | Desarrollo en R (Nico 2026-11-02): las 16 reglas del holdout (12 nominadas + U1-CRUZADO + 3 forzadas) re-corridas sobre DESC y réplica |
 | `tools/dia_tendencia.py` | Día de tendencia: predictores causales NUEVOS, E0 sin retornos de estrategia (pre-registro docs/research/dia_tendencia_20261118/PREREGISTRO.md). |
 | `tools/diagnose_es_context_intervals_20260929.py` | (sin docstring) |
@@ -277,6 +278,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_semejanza_nico.py` | Semejanza «a lo Nico» entre la ida A→B y la vuelta, validada contra sus órdenes por tandas de a tres (target-free). |
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
+| `tools/estado_produccion.py` | Estado de producción: cuentas prop/demo, bot de cada una, reglas y auditorías de ejecución. |
 | `tools/eurusd_escalonadas_grid.py` | EURUSD-ESCALONADAS-ESCALAS — docs/research/eurusd_escalonadas_20261021/MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md |
 | `tools/evaluar_bots_descargas_hftcode.py` | Forensic Code Audit & Full EdgeLab Validation Chain for the 3 Downloaded HFTCode Bots: |
 | `tools/eventos_desde_noticias.py` | Genera `edgelab/research/eventos_datos.py` desde el calendario canónico de noticias (`edgelab/noticias.py`, |
@@ -570,6 +572,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/propfirm_reglas_cruce.py` | Cruce de las reglas detalladas por firma (incluidas las «escondidas»: topes por número de retiro, colchón, días |
 | `tools/propfirm_thresholds.py` | Umbrales por cuenta, independientes del instrumento: σ de la operación (USD, ya con el tamaño) × costo/σ → z bruto mínimo y ρ requerido (ρ = z/0,8). |
 | `tools/puerta_corrida.py` | Puerta unica pre-corrida (Capas 1-4): valida estado vivo, modulo, memoria activa, pre-registro y script antes de ejecutar. |
+| `tools/puerta_despliegue.py` | Puerta de despliegue: ¿se puede habilitar el bot de una cuenta prop/real tal como está configurado? |
 | `tools/quantlab_mt5_medir.py` | SessionOpenMomentum (traducción QuantLab MT5) en NQ/ES/YM con costos canónicos y en R (docs/research/quantlab_mt5_eas_20261116/PREREGISTRO_MEDICION.md). |
 | `tools/query_remote_kaggle.py` | (sin docstring) |
 | `tools/r2_recorrido_vs_friccion.py` | R2: recorrido bruto disponible vs friccion de viaje redondo. Manifiesto: docs/research/R2_RECORRIDO_VS_FRICCION_MANIFIESTO_20261014.md |

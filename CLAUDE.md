@@ -37,6 +37,17 @@ Recordatorios:
   probabilidad de detectar edges reales y rechazar falsos antes de arriesgar
   capital.
 
+## Producción y operación (2026-11-25)
+
+> **Entrada para bots, cuentas prop y payouts: `docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md`** (y su veredicto
+> `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`). La línea de producción
+> (`fix/fundedsync-il-parity`) se integró en `foundation` el 2026-11-25: no hay otra rama de trabajo. Ramas viejas
+> con trabajo fuera de `foundation`, archivadas con etiqueta `archivo/20261125/<rama>`: `docs/infra/INVENTARIO_RAMAS_20261125.md`.
+> Operar con dinero real sigue siendo decisión humana: el agente prepara, verifica y documenta; Nico activa.
+> Al arrancar una sesión de bots/cuentas: `python tools/estado_produccion.py --check` (estado de cuentas, desde
+> `config/cuentas_activas.json`), `python tools/deriva_bots.py --check` (repo vs NT8/MT5/cTrader instalados) y, antes de
+> habilitar un bot en una cuenta, `python tools/puerta_despliegue.py --cuenta <id>`.
+
 ## Estado vigente (2026-10-14)
 
 > **Entrada operativa: `docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md`.** Producto y roadmap: `docs/PRODUCT.md`. Mapa de módulos (generado de `config/modules.json`, verificado por `tools/check_modules.py`): `docs/MODULES.md`. Dónde va cada documento y el encabezado `Estado:` obligatorio: `docs/DOCUMENTATION_PROTOCOL.md`. Índice: `docs/INDEX.md`.
