@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Windows.Media;
 using System.Xml.Serialization;
 using NinjaTrader.Cbi;
@@ -29,6 +31,27 @@ namespace NinjaTrader.NinjaScript.Strategies
     /// </summary>
     internal sealed class FundedSyncNt8Adapter
     {
+        private sealed class PendingExecMeta
+        {
+            public long SubmitTimestamp;
+            public DateTime SubmitUtc;
+            public DateTime BarCloseUtc;
+            public double BarDelayMs;
+            public string OrderName;
+            public int Side;
+            public int QtyReq;
+            public double SignalPx;
+            public double BidAtSignal;
+            public double AskAtSignal;
+            public double TickSize;
+            public double PointValue;
+            public string InstrumentName;
+            public string SessionWindow;
+            public double AckMs = double.NaN;
+            public int LoggedFilled;
+            public bool TerminalLogged;
+        }
+
         private readonly Strategy _strat;
         private readonly PortfolioCoordinator _coord;
         private readonly string _label;
@@ -37,24 +60,38 @@ namespace NinjaTrader.NinjaScript.Strategies
         private TimeZoneInfo _nyTz;
         private TimeZoneInfo _ctTz;
 
+        private readonly bool _enableExecAuditLog;
+        private readonly string _execAuditPath;
+        private bool _execAuditHeaderWritten;
+        private readonly object _auditLock = new object();
+        private readonly Dictionary<string, PendingExecMeta> _orderById = new Dictionary<string, PendingExecMeta>();
+        private readonly Dictionary<string, Queue<PendingExecMeta>> _pendingByName = new Dictionary<string, Queue<PendingExecMeta>>();
+        private static readonly double TickMs = 1000.0 / Stopwatch.Frequency;
+
+        private DateTime _lastBarCloseUtc = DateTime.MinValue;
+        private double _lastBarDelayMs = double.NaN;
+
         public FundedSyncNt8Adapter(
             Strategy strat,
             PortfolioCoordinator coord,
             string label,
             bool hasSecondaryMnq,
             bool enableCsvLog,
-            string csvFileName)
+            string csvFileName,
+            bool enableExecAuditLog = true,
+            string execAuditFileName = "")
         {
             _strat = strat;
             _coord = coord;
             _label = label;
             _hasSecondaryMnq = hasSecondaryMnq;
+            _enableExecAuditLog = enableExecAuditLog;
 
             _nyTz = FundedSyncMath.ResolveTz("Eastern Standard Time");
             _ctTz = FundedSyncMath.ResolveTz("Central Standard Time");
-            _chartTz = (strat.Bars != null && strat.Bars.TradingHours != null && strat.Bars.TradingHours.TimeZoneInfo != null)
-                ? strat.Bars.TradingHours.TimeZoneInfo
-                : (Core.Globals.GeneralOptions.TimeZoneInfo ?? TimeZoneInfo.Local);
+            // In NT8, Time[0] is always in Core.Globals.GeneralOptions.TimeZoneInfo (user/display timezone),
+            // never in Bars.TradingHours.TimeZoneInfo (exchange market timezone, e.g. Central Time).
+            _chartTz = Core.Globals.GeneralOptions.TimeZoneInfo ?? TimeZoneInfo.Local;
 
             double tick = (strat.Instrument != null && strat.Instrument.MasterInstrument != null && strat.Instrument.MasterInstrument.TickSize > 0)
                 ? strat.Instrument.MasterInstrument.TickSize
@@ -63,6 +100,14 @@ namespace NinjaTrader.NinjaScript.Strategies
             _coord.EnableCsvLog = enableCsvLog;
             string fname = string.IsNullOrWhiteSpace(csvFileName) ? "EdgeLab_FundedSync_ParityTrades.csv" : csvFileName.Trim();
             _coord.CsvLogPath = Path.Combine(NinjaTrader.Core.Globals.UserDataDir, fname);
+
+            string auditDir = Path.Combine(NinjaTrader.Core.Globals.UserDataDir, "EdgeLab", "exec_audit");
+            string acctName = strat.Account != null ? SanitizeToken(strat.Account.Name) : "UnknownAcct";
+            string instName = strat.Instrument != null ? SanitizeToken(strat.Instrument.FullName) : "UnknownInst";
+            string defaultAudit = string.Format(CultureInfo.InvariantCulture,
+                "EdgeLab_LiveExecution_Audit_{0}_{1}_{2:yyyyMMdd}.csv", acctName, instName, DateTime.Now);
+            string auditFile = string.IsNullOrWhiteSpace(execAuditFileName) ? defaultAudit : execAuditFileName.Trim();
+            _execAuditPath = Path.IsPathRooted(auditFile) ? auditFile : Path.Combine(auditDir, auditFile);
         }
 
         public static FundedSyncNt8Adapter CreateFromPreset(
@@ -92,7 +137,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             double vNoiseMult = 0.25, double vSlAtr = 0.30,
             double wSlAtr = 0.25, int nDays = 5, double nSlAtr = 0.25,
             double tStopMinPts = 2.0, double tStopMaxPts = 100.0,
-            double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0)
+            double vTpPts = 0.0, bool wUseSlopeFilter = true, double nAcceptBufPts = 4.0,
+            bool enableExecAuditLog = true, string execAuditFileName = "")
         {
             Dictionary<string, double> weights;
             bool[] flags = new bool[7];
@@ -146,6 +192,17 @@ namespace NinjaTrader.NinjaScript.Strategies
                 fricMini = 0.55;
             }
 
+            if (propProfile == FundedSyncPropProfile.LucidFlex_25K_Rescate)
+                maxOpenREff = Math.Min(maxOpenREff, 1.0);
+
+            double resolvedEvalRisk = useProfile ? prof.EvalRisk1R : evalRisk1R;
+            double resolvedFundedRisk = useProfile ? prof.FundedRisk1R : fundedRisk1R;
+            if (propProfile == FundedSyncPropProfile.LucidFlex_25K_Rescate && preset == FundedSyncPortfolioPreset.ES_Core_US500)
+            {
+                resolvedEvalRisk = prof.EvalRisk1R * 6.0;
+                resolvedFundedRisk = prof.FundedRisk1R * 6.0;
+            }
+
             var coord = new PortfolioCoordinator(
                 weights, flags, enableWTrail: enableWTrail,
                 rOscMult: rOscMult, rEndEt: rEndEt, rSlAtr: rSlAtr,
@@ -159,8 +216,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                 MicroPointValue = microPv,
                 FrictionMiniPts = fricMini,
                 AccountMode = mode,
-                EvalRisk1R_USD = useProfile ? prof.EvalRisk1R : evalRisk1R,
-                FundedRisk1R_USD = useProfile ? prof.FundedRisk1R : fundedRisk1R,
+                EvalRisk1R_USD = resolvedEvalRisk,
+                FundedRisk1R_USD = resolvedFundedRisk,
                 MaxOpenR = maxOpenREff,
                 MaxMicroContracts = useProfile ? prof.MaxMicros : maxMicros,
                 CollisionPolicy = useProfile ? prof.CollisionPolicy : collisionPolicy,
@@ -171,7 +228,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             };
 
             bool hasSec = !string.IsNullOrWhiteSpace(secondaryMnqSymbol);
-            return new FundedSyncNt8Adapter(strat, coord, label, hasSec, enableCsvLog, csvFileName);
+            return new FundedSyncNt8Adapter(strat, coord, label, hasSec, enableCsvLog, csvFileName, enableExecAuditLog, execAuditFileName);
         }
 
         public void OnBarUpdate()
@@ -183,6 +240,8 @@ namespace NinjaTrader.NinjaScript.Strategies
             DateTime closeUtc = _chartTz.Id == TimeZoneInfo.Utc.Id
                 ? DateTime.SpecifyKind(chartLocal, DateTimeKind.Utc)
                 : TimeZoneInfo.ConvertTimeToUtc(chartLocal, _chartTz);
+            _lastBarCloseUtc = closeUtc;
+            _lastBarDelayMs = _strat.State == State.Realtime ? (DateTime.UtcNow - closeUtc).TotalMilliseconds : double.NaN;
 
             BarTimeContext ctx = FundedSyncMath.BuildBarTimeContext(
                 closeUtc,
@@ -244,26 +303,292 @@ namespace NinjaTrader.NinjaScript.Strategies
             int delta = targetSignedQty - curQty;
             if (curQty > 0 && targetSignedQty <= 0)
             {
-                _strat.ExitLong(bip, curQty, tagPrefix + "_FL", tagPrefix + "_L");
+                DispatchManagedOrder(bip, tagPrefix + "_FL", -1, curQty, () => _strat.ExitLong(bip, curQty, tagPrefix + "_FL", tagPrefix + "_L"));
                 if (targetSignedQty < 0)
-                    _strat.EnterShort(bip, Math.Abs(targetSignedQty), tagPrefix + "_S");
+                    DispatchManagedOrder(bip, tagPrefix + "_S", -1, Math.Abs(targetSignedQty), () => _strat.EnterShort(bip, Math.Abs(targetSignedQty), tagPrefix + "_S"));
             }
             else if (curQty < 0 && targetSignedQty >= 0)
             {
-                _strat.ExitShort(bip, Math.Abs(curQty), tagPrefix + "_FL", tagPrefix + "_S");
+                DispatchManagedOrder(bip, tagPrefix + "_FL", +1, Math.Abs(curQty), () => _strat.ExitShort(bip, Math.Abs(curQty), tagPrefix + "_FL", tagPrefix + "_S"));
                 if (targetSignedQty > 0)
-                    _strat.EnterLong(bip, targetSignedQty, tagPrefix + "_L");
+                    DispatchManagedOrder(bip, tagPrefix + "_L", +1, targetSignedQty, () => _strat.EnterLong(bip, targetSignedQty, tagPrefix + "_L"));
             }
             else if (delta > 0)
             {
-                if (curQty >= 0) _strat.EnterLong(bip, delta, tagPrefix + "_L");
-                else _strat.ExitShort(bip, delta, tagPrefix + "_TR", tagPrefix + "_S");
+                if (curQty >= 0)
+                    DispatchManagedOrder(bip, tagPrefix + "_L", +1, delta, () => _strat.EnterLong(bip, delta, tagPrefix + "_L"));
+                else
+                    DispatchManagedOrder(bip, tagPrefix + "_TR", +1, delta, () => _strat.ExitShort(bip, delta, tagPrefix + "_TR", tagPrefix + "_S"));
             }
             else if (delta < 0)
             {
-                if (curQty <= 0) _strat.EnterShort(bip, Math.Abs(delta), tagPrefix + "_S");
-                else _strat.ExitLong(bip, Math.Abs(delta), tagPrefix + "_TR", tagPrefix + "_L");
+                if (curQty <= 0)
+                    DispatchManagedOrder(bip, tagPrefix + "_S", -1, Math.Abs(delta), () => _strat.EnterShort(bip, Math.Abs(delta), tagPrefix + "_S"));
+                else
+                    DispatchManagedOrder(bip, tagPrefix + "_TR", -1, Math.Abs(delta), () => _strat.ExitLong(bip, Math.Abs(delta), tagPrefix + "_TR", tagPrefix + "_L"));
             }
+        }
+
+        private void DispatchManagedOrder(int bip, string orderName, int side, int qtyReq, Func<Order> submitCall)
+        {
+            if (_strat.State != State.Realtime || !_enableExecAuditLog)
+            {
+                submitCall();
+                return;
+            }
+
+            PendingExecMeta meta = CreateSignalMeta(bip, orderName, side, qtyReq);
+            lock (_auditLock)
+            {
+                Queue<PendingExecMeta> q;
+                if (!_pendingByName.TryGetValue(orderName, out q))
+                {
+                    q = new Queue<PendingExecMeta>();
+                    _pendingByName[orderName] = q;
+                }
+                q.Enqueue(meta);
+            }
+
+            Order ord = submitCall();
+            if (ord != null && !string.IsNullOrEmpty(ord.OrderId))
+            {
+                lock (_auditLock)
+                    _orderById[ord.OrderId] = meta;
+            }
+        }
+
+        private PendingExecMeta CreateSignalMeta(int bip, string orderName, int side, int qtyReq)
+        {
+            double sigPx = double.NaN;
+            try
+            {
+                sigPx = (_strat.Closes != null && bip < _strat.Closes.Length && _strat.Closes[bip].Count > 0)
+                    ? _strat.Closes[bip][0]
+                    : _strat.Close[0];
+            }
+            catch { sigPx = double.NaN; }
+
+            double bid = double.NaN, ask = double.NaN;
+            try { bid = _strat.GetCurrentBid(bip); if (bid <= 0) bid = double.NaN; } catch { bid = double.NaN; }
+            try { ask = _strat.GetCurrentAsk(bip); if (ask <= 0) ask = double.NaN; } catch { ask = double.NaN; }
+
+            Instrument inst = null;
+            try
+            {
+                inst = (_strat.BarsArray != null && bip < _strat.BarsArray.Length && _strat.BarsArray[bip] != null)
+                    ? _strat.BarsArray[bip].Instrument
+                    : _strat.Instrument;
+            }
+            catch { inst = _strat.Instrument; }
+
+            double tick = (inst != null && inst.MasterInstrument != null && inst.MasterInstrument.TickSize > 0) ? inst.MasterInstrument.TickSize : _coord.TickSize;
+            double pv = (inst != null && inst.MasterInstrument != null && inst.MasterInstrument.PointValue > 0) ? inst.MasterInstrument.PointValue : _coord.MicroPointValue;
+            string instName = inst != null ? inst.FullName : "UNKNOWN";
+
+            DateTime refUtc = _lastBarCloseUtc != DateTime.MinValue ? _lastBarCloseUtc : DateTime.UtcNow;
+            DateTime refNy = TimeZoneInfo.ConvertTimeFromUtc(refUtc, _nyTz);
+            int hhmm = refNy.Hour * 100 + refNy.Minute;
+            string win = (hhmm >= 930 && hhmm < 1000) ? "OPEN_0930_1000"
+                : (hhmm >= 1000 && hhmm < 1600) ? "RTH_1000_1600"
+                : (hhmm >= 1600 && hhmm < 1645) ? "CLOSE_1600_1645"
+                : "ETH_OVERNIGHT";
+
+            return new PendingExecMeta
+            {
+                SubmitTimestamp = Stopwatch.GetTimestamp(),
+                SubmitUtc = DateTime.UtcNow,
+                BarCloseUtc = _lastBarCloseUtc,
+                BarDelayMs = _lastBarDelayMs,
+                OrderName = orderName ?? "",
+                Side = side,
+                QtyReq = qtyReq,
+                SignalPx = sigPx,
+                BidAtSignal = bid,
+                AskAtSignal = ask,
+                TickSize = tick,
+                PointValue = pv,
+                InstrumentName = instName,
+                SessionWindow = win
+            };
+        }
+
+        private PendingExecMeta ResolveMetaForOrder(Order order)
+        {
+            if (order == null) return null;
+            lock (_auditLock)
+            {
+                PendingExecMeta meta;
+                if (!string.IsNullOrEmpty(order.OrderId) && _orderById.TryGetValue(order.OrderId, out meta))
+                    return meta;
+
+                string name = order.Name ?? "";
+                Queue<PendingExecMeta> q;
+                if (_pendingByName.TryGetValue(name, out q) && q.Count > 0)
+                {
+                    meta = q.Dequeue();
+                    if (!string.IsNullOrEmpty(order.OrderId))
+                        _orderById[order.OrderId] = meta;
+                    return meta;
+                }
+            }
+            return null;
+        }
+
+        public void OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled,
+            double averageFillPrice, OrderState orderState, DateTime time, ErrorCode error, string comment)
+        {
+            if (_strat.State != State.Realtime || !_enableExecAuditLog || order == null)
+                return;
+
+            PendingExecMeta meta = ResolveMetaForOrder(order);
+            if (meta == null)
+                return;
+
+            double elapsedMs = (Stopwatch.GetTimestamp() - meta.SubmitTimestamp) * TickMs;
+            if ((orderState == OrderState.Submitted || orderState == OrderState.Accepted || orderState == OrderState.Working) && double.IsNaN(meta.AckMs))
+                meta.AckMs = elapsedMs;
+
+            bool isReject = orderState == OrderState.Rejected || error != ErrorCode.NoError;
+            bool isCancel = orderState == OrderState.Cancelled && filled == 0;
+            if ((isReject || isCancel) && !meta.TerminalLogged)
+            {
+                meta.TerminalLogged = true;
+                string kind = orderState == OrderState.Rejected ? "REJECTED" : (isCancel ? "CANCELLED" : "ORDER_ERROR");
+                WriteExecAuditRow(meta, kind, order, filled, averageFillPrice, elapsedMs, double.NaN, error.ToString(), comment ?? "");
+                if (!string.IsNullOrEmpty(order.OrderId))
+                {
+                    lock (_auditLock) { _orderById.Remove(order.OrderId); }
+                }
+            }
+        }
+
+        public void OnExecutionUpdate(Execution execution, string executionId, double price, int quantity,
+            MarketPosition marketPosition, string orderId, DateTime time)
+        {
+            if (_strat.State != State.Realtime || !_enableExecAuditLog || execution == null || execution.Order == null)
+                return;
+
+            Order ord = execution.Order;
+            PendingExecMeta meta = ResolveMetaForOrder(ord);
+            if (meta == null)
+            {
+                int sideGuess = (ord.OrderAction == OrderAction.Buy || ord.OrderAction == OrderAction.BuyToCover) ? +1 : -1;
+                meta = CreateSignalMeta(0, ord.Name ?? "", sideGuess, ord.Quantity);
+                meta.SignalPx = double.NaN;
+                meta.SubmitTimestamp = 0;
+            }
+
+            double fillMs = meta.SubmitTimestamp > 0 ? (Stopwatch.GetTimestamp() - meta.SubmitTimestamp) * TickMs : double.NaN;
+            meta.LoggedFilled += quantity;
+            string kind = ord.OrderState == OrderState.PartFilled || meta.LoggedFilled < ord.Quantity ? "PART_FILL" : "FILL";
+            double comm = execution.Commission + execution.Fee;
+            WriteExecAuditRow(meta, kind, ord, quantity, price, fillMs, comm, ErrorCode.NoError.ToString(), executionId ?? "");
+
+            if (kind == "FILL" && !string.IsNullOrEmpty(ord.OrderId))
+            {
+                lock (_auditLock) { _orderById.Remove(ord.OrderId); }
+            }
+        }
+
+        private void WriteExecAuditRow(PendingExecMeta meta, string eventKind, Order ord, int qtyFilled,
+            double fillPx, double fillMs, double commissionUsd, string errorCode, string comment)
+        {
+            try
+            {
+                var ci = CultureInfo.InvariantCulture;
+                string acct = _strat.Account != null ? _strat.Account.Name : "";
+                string conn = (_strat.Account != null && _strat.Account.Connection != null && _strat.Account.Connection.Options != null)
+                    ? _strat.Account.Connection.Options.Name : "";
+
+                double tick = meta.TickSize > 0 ? meta.TickSize : 0.25;
+                double spreadPts = (!double.IsNaN(meta.BidAtSignal) && !double.IsNaN(meta.AskAtSignal))
+                    ? (meta.AskAtSignal - meta.BidAtSignal) : double.NaN;
+                double spreadTicks = !double.IsNaN(spreadPts) ? spreadPts / tick : double.NaN;
+                double expectedTouch = meta.Side > 0 ? meta.AskAtSignal : meta.BidAtSignal;
+
+                double slipClosePts = (!double.IsNaN(fillPx) && !double.IsNaN(meta.SignalPx))
+                    ? (fillPx - meta.SignalPx) * meta.Side : double.NaN;
+                double slipTouchPts = (!double.IsNaN(fillPx) && !double.IsNaN(expectedTouch))
+                    ? (fillPx - expectedTouch) * meta.Side : double.NaN;
+                double slipCloseTicks = !double.IsNaN(slipClosePts) ? slipClosePts / tick : double.NaN;
+                double slipTouchTicks = !double.IsNaN(slipTouchPts) ? slipTouchPts / tick : double.NaN;
+
+                string line = string.Join(",", new[]
+                {
+                    CsvSafe(DateTime.UtcNow.ToString("o", ci)),
+                    CsvSafe(_strat.Name ?? "EdgeLabFundedSync"),
+                    CsvSafe(acct),
+                    CsvSafe(conn),
+                    CsvSafe(meta.InstrumentName),
+                    tick.ToString("G", ci),
+                    meta.PointValue.ToString("G", ci),
+                    CsvSafe(meta.SessionWindow),
+                    CsvSafe(eventKind),
+                    CsvSafe(ord != null ? ord.Name : meta.OrderName),
+                    CsvSafe(ord != null ? ord.OrderId : ""),
+                    meta.Side.ToString(ci),
+                    meta.QtyReq.ToString(ci),
+                    qtyFilled.ToString(ci),
+                    CsvSafe(ord != null ? ord.OrderType.ToString() : ""),
+                    CsvSafe(ord != null ? ord.OrderState.ToString() : ""),
+                    CsvSafe(meta.BarCloseUtc != DateTime.MinValue ? meta.BarCloseUtc.ToString("o", ci) : ""),
+                    FmtNum(meta.BarDelayMs, "F2", ci),
+                    FmtNum(meta.AckMs, "F2", ci),
+                    FmtNum(eventKind == "FILL" || eventKind == "PART_FILL" ? fillMs : double.NaN, "F2", ci),
+                    FmtNum(meta.SignalPx, "F4", ci),
+                    FmtNum(meta.BidAtSignal, "F4", ci),
+                    FmtNum(meta.AskAtSignal, "F4", ci),
+                    FmtNum(spreadPts, "F4", ci),
+                    FmtNum(spreadTicks, "F2", ci),
+                    FmtNum(expectedTouch, "F4", ci),
+                    FmtNum(fillPx, "F4", ci),
+                    FmtNum(slipClosePts, "F4", ci),
+                    FmtNum(slipTouchPts, "F4", ci),
+                    FmtNum(slipCloseTicks, "F2", ci),
+                    FmtNum(slipTouchTicks, "F2", ci),
+                    FmtNum(commissionUsd, "F4", ci),
+                    CsvSafe(errorCode),
+                    CsvSafe(comment)
+                });
+
+                lock (_auditLock)
+                {
+                    if (!_execAuditHeaderWritten)
+                    {
+                        string dir = Path.GetDirectoryName(_execAuditPath);
+                        if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
+                        if (!File.Exists(_execAuditPath) || new FileInfo(_execAuditPath).Length == 0)
+                        {
+                            File.WriteAllText(_execAuditPath,
+                                "utc_iso,strategy,account,connection,instrument,tick_size,point_value,session_window,event_kind,order_name,order_id,side,qty_req,qty_filled,order_type,order_state,bar_close_utc,bar_delay_ms,submit_to_ack_ms,submit_to_fill_ms,signal_px,bid_at_signal,ask_at_signal,spread_pts,spread_ticks,expected_touch_px,fill_px,slip_vs_close_pts,slip_vs_touch_pts,slip_vs_close_ticks,slip_vs_touch_ticks,commission_usd,error_code,comment" + Environment.NewLine,
+                                Encoding.UTF8);
+                        }
+                        _execAuditHeaderWritten = true;
+                    }
+                    File.AppendAllText(_execAuditPath, line + Environment.NewLine, Encoding.UTF8);
+                }
+            }
+            catch { }
+        }
+
+        private static string FmtNum(double val, string fmt, CultureInfo ci)
+        {
+            return (double.IsNaN(val) || double.IsInfinity(val)) ? "" : val.ToString(fmt, ci);
+        }
+
+        private static string CsvSafe(string s)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            return s.Replace(",", ";").Replace("\r", " ").Replace("\n", " ");
+        }
+
+        private static string SanitizeToken(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) return "UNK";
+            var sb = new StringBuilder(s.Length);
+            foreach (char c in s)
+                sb.Append(char.IsLetterOrDigit(c) || c == '-' || c == '_' ? c : '_');
+            return sb.ToString().Trim('_');
         }
 
         private void RenderHud()
@@ -354,6 +679,8 @@ namespace NinjaTrader.NinjaScript.Strategies
 
                 EnableParityCsvLog = false;
                 ParityCsvFileName = "EdgeLab_FundedSync_ParityTrades.csv";
+                EnableExecAuditLog = true;
+                ExecAuditFileName = "";
             }
             else if (State == State.Configure)
             {
@@ -385,7 +712,9 @@ namespace NinjaTrader.NinjaScript.Strategies
                     ParityCsvFileName,
                     enables,
                     customW,
-                    rSlAtr: RSlAtrK);
+                    rSlAtr: RSlAtrK,
+                    enableExecAuditLog: EnableExecAuditLog,
+                    execAuditFileName: ExecAuditFileName);
                 Print("EdgeLabFundedSyncPortfolio initialized. Preset=" + Preset + " Profile=" + PropProfile + " (>= 500 trading days M1 ETH required).");
             }
         }
@@ -394,6 +723,20 @@ namespace NinjaTrader.NinjaScript.Strategies
         {
             if (_adapter != null)
                 _adapter.OnBarUpdate();
+        }
+
+        protected override void OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled,
+            double averageFillPrice, OrderState orderState, DateTime time, ErrorCode error, string comment)
+        {
+            if (_adapter != null)
+                _adapter.OnOrderUpdate(order, limitPrice, stopPrice, quantity, filled, averageFillPrice, orderState, time, error, comment);
+        }
+
+        protected override void OnExecutionUpdate(Execution execution, string executionId, double price, int quantity,
+            MarketPosition marketPosition, string orderId, DateTime time)
+        {
+            if (_adapter != null)
+                _adapter.OnExecutionUpdate(execution, executionId, price, quantity, marketPosition, orderId, time);
         }
 
         #region NinjaScript Properties
@@ -410,17 +753,17 @@ namespace NinjaTrader.NinjaScript.Strategies
         public FundedSyncAccountMode AccountMode { get; set; }
 
         [NinjaScriptProperty]
-        [Range(50.0, 2500.0)]
+        [Range(20.0, 2500.0)]
         [Display(Name = "Eval Risk 1R USD (Custom)", Order = 4, GroupName = "01. Prop Account")]
         public double EvalRisk1R_USD { get; set; }
 
         [NinjaScriptProperty]
-        [Range(50.0, 2500.0)]
+        [Range(20.0, 2500.0)]
         [Display(Name = "Funded Risk 1R USD (Custom)", Order = 5, GroupName = "01. Prop Account")]
         public double FundedRisk1R_USD { get; set; }
 
         [NinjaScriptProperty]
-        [Range(0.5, 10.0)]
+        [Range(0.15, 10.0)]
         [Display(Name = "Max Concurrent Open R", Order = 6, GroupName = "01. Prop Account")]
         public double MaxOpenR { get; set; }
 
@@ -488,6 +831,14 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty]
         [Display(Name = "Parity CSV File Name", Order = 41, GroupName = "04. Parity Logger")]
         public string ParityCsvFileName { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Enable Exec Audit CSV", Order = 50, GroupName = "05. Execution Audit")]
+        public bool EnableExecAuditLog { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Exec Audit CSV File (Optional)", Order = 51, GroupName = "05. Execution Audit")]
+        public string ExecAuditFileName { get; set; }
         #endregion
     }
 }

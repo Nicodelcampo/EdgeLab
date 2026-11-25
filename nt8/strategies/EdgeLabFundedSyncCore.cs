@@ -43,7 +43,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         FundedNext_Flex_150K = 5,
         Personal_Custom = 6,
         Tradeify_SelectFlex_50K = 7,
-        FundedNext_Flex_50K = 8
+        FundedNext_Flex_50K = 8,
+        LucidFlex_25K_Rescate = 9
     }
 
     public enum FundedSyncModuleId
@@ -151,6 +152,13 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                         EvalRisk1R = 450.0, FundedRisk1R = 450.0, MaxMicros = 100,
                         EvalDailyCapUsd = 0.0, DailyLossLimitUsd = 0.0, EnforceEvalDailyCap = false,
                         HardFlattenHHMM_ET = 1640, CollisionPolicy = FundedSyncCollisionPolicy.Netting
+                    };
+                case FundedSyncPropProfile.LucidFlex_25K_Rescate:
+                    return new PropProfileDefaults
+                    {
+                        EvalRisk1R = 60.0, FundedRisk1R = 60.0, MaxMicros = 1,
+                        EvalDailyCapUsd = 470.0, DailyLossLimitUsd = 120.0, EnforceEvalDailyCap = true,
+                        HardFlattenHHMM_ET = 1635, CollisionPolicy = FundedSyncCollisionPolicy.Netting
                     };
                 case FundedSyncPropProfile.LucidFlex_150K_Equilibrado:
                 default:
