@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-739 scripts.
+740 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -720,6 +720,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/vendor/__init__.py` | (sin docstring) |
 | `tools/vendor/notion_phenomena.py` | Bounded target-free clock-window measurements, not a phenomenon classifier. |
 | `tools/verificar_artefactos.py` | Revisión read-only de procedencia: cada artefacto citado en |
+| `tools/verificar_calendario_precio.py` | ¿Coincide el calendario de noticias con el movimiento del precio? Verificación target-free sobre ES M1 de NT8. |
 | `tools/verificar_citas_entrega.py` | Puerta fail-closed: toda ruta citada por un documento de entrega tiene que |
 | `tools/verify_density_parity_real_bundle.py` | Paridad Python <-> JS del campo de densidad sobre bundles REALES del visor. |
 | `tools/verify_discovery_cpu_gpu.py` | Paridad sintética del motor de descubrimiento: CPU sin bloqueo == CPU por bloques == GPU. No lee datos de mercado. |
