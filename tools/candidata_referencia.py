@@ -45,7 +45,7 @@ def main(argv=None) -> int:
     ap.add_argument("--variante", required=True)
     ap.add_argument("--inst", default="NQ")
     ap.add_argument("--desde", default="2008-01-02")
-    ap.add_argument("--hasta", default="2025-09-30")
+    ap.add_argument("--hasta", default="2026-09-30")   # último día antes del holdout (HOLDOUT-A4)
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
     sp = spec(a.variante)
