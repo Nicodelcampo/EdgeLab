@@ -43,6 +43,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                     return nq ? "PISTA_VIVA" : (es ? "BAJO_REVISION" : "SIN_EVIDENCIA");
                 case FundedSyncModuleId.SOMEOD_ext_NQ:
                     return nq ? "BAJO_REVISION" : (es ? "BAJO_REVISION" : "SIN_EVIDENCIA");
+                case FundedSyncModuleId.SOM_sin_finde:
+                    return nq ? "PISTA_VIVA" : (es ? "BAJO_REVISION" : "SIN_EVIDENCIA");
                 case FundedSyncModuleId.W_slope_allowReFalse_ATR25:
                 case FundedSyncModuleId.N_d5_fbTrue_ATR25:
                     return (nq || es) ? "BAJO_REVISION" : "SIN_EVIDENCIA";   // F-FUNDEDSYNC-SIN-VENTAJA: W tal cual NO_REPETIR
@@ -140,7 +142,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 coord.MaxNetContracts = MaxContratosNetos;
                 coord.FixedContracts = ContratosFijos;
                 coord.CollisionPolicy = FundedSyncCollisionPolicy.Independent;
-                coord.HardFlattenHHMM_ET = HardFlattenHHMM_ET;
+                coord.HardFlattenHHMM_ET = (Modulo == FundedSyncModuleId.SOM_sin_finde) ? 0 : HardFlattenHHMM_ET;
                 coord.EnforceEvalDailyCap = false;
                 coord.EvalDailyCapUSD = 0.0;
                 coord.DailyLossLimitUSD = 0.0;

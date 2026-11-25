@@ -145,7 +145,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             bool enableExecAuditLog = true, string execAuditFileName = "")
         {
             Dictionary<string, double> weights;
-            bool[] flags = new bool[7];
+            bool[] flags = new bool[FundedSyncMath.ModuleOrder.Length];
             if (preset == FundedSyncPortfolioPreset.CustomWeights)
             {
                 weights = new Dictionary<string, double>();

@@ -55,7 +55,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         V_nm25_noCap_mae30 = 3,
         W_slope_allowReFalse_ATR25 = 4,
         N_d5_fbTrue_ATR25 = 5,
-        SOMEOD_ext_NQ = 6
+        SOMEOD_ext_NQ = 6,
+        SOM_sin_finde = 7
     }
 }
 
@@ -185,7 +186,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             "V_nm25_noCap_mae30",
             "W_slope_allowReFalse_ATR25",
             "N_d5_fbTrue_ATR25",
-            "SOMEOD_ext_NQ"
+            "SOMEOD_ext_NQ",
+            "SOM_sin_finde"
         };
 
         public static Dictionary<string, double> GetPresetWeights(FundedSyncPortfolioPreset preset)
@@ -1830,10 +1832,12 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     }
 
     // -------------------------------------------------------------------------
-    // Module SOMEOD: SessionOpenMomentum EOD (M5 NY+7h clock, MQL5 SMA ATR14)
+    // Module SOMEOD / SOM_sin_finde: SessionOpenMomentum (M5 NY+7h clock, MQL5 SMA ATR14)
     // -------------------------------------------------------------------------
     internal sealed class SessionOpenMomentumEngine : ModuleEngineBase
     {
+        private readonly bool _closeEod;
+        private readonly bool _closeWeekend;
         private bool _hasB5;
         private long _curBucketId = -1;
         private DateTime _b5OpenNy;
@@ -1843,13 +1847,21 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private readonly Queue<double> _trWin = new Queue<double>();
         private int _blockedDay = -1;
 
-        public SessionOpenMomentumEngine() : base("SOMEOD_ext_NQ") { }
+        public SessionOpenMomentumEngine(string moduleId = "SOMEOD_ext_NQ", bool closeEod = true, bool closeWeekend = true)
+            : base(moduleId)
+        {
+            _closeEod = closeEod;
+            _closeWeekend = closeWeekend;
+        }
 
         public override void OnNewEthSession(int d0, double h, double l, double c, int d1) { }
 
         public override void ProcessBar(BarTimeContext bar, double atr20Session, VirtualSleeve sl, PortfolioCoordinator host)
         {
             DateTime srvOpenNy = bar.OpenNy.AddHours(7);
+            if (sl.IsOpen && bar.OpenNy.Hour == 9 && bar.OpenNy.Minute == 30)
+                _blockedDay = srvOpenNy.Year * 1000 + srvOpenNy.DayOfYear;
+
             long bId = srvOpenNy.Ticks / (TimeSpan.TicksPerMinute * 5L);
             if (_hasB5 && _curBucketId != bId)
                 FlushM5Bar(sl, host);
@@ -1897,7 +1909,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 
             if (sl.IsOpen)
             {
-                if (closeMinNy >= 955) // 15:55 NY EOD close
+                if (closedOpenNy.Hour == 9 && closedOpenNy.Minute == 30)
+                    _blockedDay = curSrvDay;
+
+                bool doEod = (_closeEod || (_closeWeekend && closedCloseNy.DayOfWeek == DayOfWeek.Friday)) && closeMinNy >= 955;
+                if (doEod) // 15:55 NY EOD / Friday weekend close
                 {
                     host.QueueMarketExit(sl, "EOD_CLOSE");
                     return;
@@ -2084,6 +2100,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             _engines.Add(new VwapCrossEngine(wSlAtr, enableWTrail, wUseSlopeFilter));
             _engines.Add(new NDayLongEngine(nDays, nSlAtr, nAcceptBufPts));
             _engines.Add(new SessionOpenMomentumEngine());
+            _engines.Add(new SessionOpenMomentumEngine("SOM_sin_finde", closeEod: false, closeWeekend: true));
 
             for (int i = 0; i < FundedSyncMath.ModuleOrder.Length; i++)
             {

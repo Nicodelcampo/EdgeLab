@@ -16,6 +16,7 @@ import argparse
 import json
 import sys
 import time
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -26,11 +27,85 @@ sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
 import fundedsync_iter2_cartera as IT2  # noqa: E402
 import fundedsync_post_il_cadena as BASE  # noqa: E402
 import fundedsync_prop_opt as PO  # noqa: E402
-from edgelab import veto_noticias as VN  # noqa: E402
+from edgelab import costos, veto_noticias as VN  # noqa: E402
+from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS, a5_bloque  # noqa: E402
 from edgelab.research.fundedsyncstack import correr_modulo  # noqa: E402
 from edgelab.research.fundedsyncstack.base_series import build_multi_series, load_m1_data  # noqa: E402
+from edgelab.research.quantlab_mt5.contracts import SessionOpenMomentumConfig  # noqa: E402
+from edgelab.research.quantlab_mt5.session_open_momentum import correr_session_open_momentum  # noqa: E402
 
 M1_DIR = ROOT / "data" / "m1nt8"
+
+
+def _generar_som(variante: str, inst: str, desde: str, hasta: str, out: Path) -> None:
+    """Genera referencia Python de `SOMEOD_ext_NQ` (cierre diario) o `SOM_sin_finde` (cierre viernes)."""
+    t0 = time.time()
+    pq = M1_DIR / f"{inst}_M1_nonadj_utc.parquet"
+    raw = pd.read_parquet(pq, filters=[("datetime", ">=", pd.Timestamp(desde)),
+                                       ("datetime", "<", pd.Timestamp(hasta) + pd.Timedelta(days=1))]).reset_index()
+    # Reloj del servidor QuantLab: hora NY + 7h rotulada UTC (igual que tools/kaggle_grilla/som_main.py)
+    ny_srv = pd.to_datetime(raw["datetime"], utc=True).dt.tz_convert("America/New_York").dt.tz_localize(None) + pd.Timedelta(hours=7)
+    df_srv = pd.DataFrame({
+        "time": ny_srv.dt.tz_localize("UTC"),
+        "open": raw["open"].to_numpy(float),
+        "high": raw["high"].to_numpy(float),
+        "low": raw["low"].to_numpy(float),
+        "close": raw["close"].to_numpy(float),
+        "volume": raw["volume"].to_numpy(float) if "volume" in raw else np.ones(len(raw), dtype=float),
+    })
+    close_eod = variante == "SOMEOD_ext_NQ"
+    cfg = replace(SessionOpenMomentumConfig(), close_eod=close_eod, close_weekend=True, use_adaptive_risk=False)
+    tr = correr_session_open_momentum(df_srv, config=cfg, instrument=inst)
+
+    def _srv_to_utc_ns(col: pd.Series) -> np.ndarray:
+        ny_naive = pd.to_datetime(col.to_numpy(np.int64), unit="ns", utc=True).tz_convert(None) - pd.Timedelta(hours=7)
+        utc_ts = ny_naive.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT").tz_convert("UTC")
+        return utc_ts.asi8
+
+    en_ns = _srv_to_utc_ns(tr["entry_time_utc"])
+    ex_ns = _srv_to_utc_ns(tr["exit_time_utc"])
+    en_ny = pd.to_datetime(en_ns, unit="ns", utc=True).tz_convert("America/New_York")
+    fecha_int = en_ny.strftime("%Y%m%d").astype(int)
+    mes = en_ny.strftime("%Y-%m")
+    a5 = fecha_int.map(lambda f: a5_bloque(int(f)))
+
+    riesgo_pts = (tr["entry_price"].astype(float) - tr["stop_price"].astype(float)).abs().to_numpy(float)
+    pnl_pts = tr["pnl_pts"].astype(float).to_numpy(float)
+    pv = costos.tick_value_usd(inst) / costos.tick_size(inst)
+    mae_pts = tr["mae_usd"].astype(float).to_numpy(float) / (tr["qty"].astype(float).to_numpy(float) * pv)
+    mfe_pts = tr["mfe_usd"].astype(float).to_numpy(float) / (tr["qty"].astype(float).to_numpy(float) * pv)
+
+    fric_mini = costos.friccion_rt_ticks(inst) * costos.tick_size(inst)
+    micro_root = f"M{inst}" if not inst.startswith("M") else inst
+    try:
+        fric_micro = costos.friccion_rt_ticks(micro_root) * costos.tick_size(micro_root)
+    except KeyError:
+        fric_micro = fric_mini
+
+    o = pd.DataFrame({
+        "fecha_int": fecha_int,
+        "mes": mes,
+        "a5": a5,
+        "en_ns": en_ns,
+        "ex_ns": ex_ns,
+        "dur_min": (ex_ns - en_ns) / 60_000_000_000.0,
+        "pnl_pts": pnl_pts,
+        "mae_pts": mae_pts,
+        "mfe_pts": mfe_pts,
+        "riesgo_pts": riesgo_pts,
+        "R_bruto": pnl_pts / np.maximum(riesgo_pts, 1e-9),
+        "R_neto_mini": (pnl_pts - fric_mini) / np.maximum(riesgo_pts, 1e-9),
+        "R_neto_micro": (pnl_pts - fric_micro) / np.maximum(riesgo_pts, 1e-9),
+        "fric_R": fric_mini / np.maximum(riesgo_pts, 1e-9),
+        "side": tr["side"].astype(int).to_numpy(),
+    })
+    o = o[(o["a5"].isin(["DESC", "REP"])) & (o["ex_ns"] < HOLDOUT_APERTURA_UTC_NS)].reset_index(drop=True)
+    out.mkdir(parents=True, exist_ok=True)
+    o.to_csv(out / f"PY_{variante}_{inst}.csv", index=False)
+    (out / f"PY_{variante}_{inst}.json").write_text(json.dumps(dict(
+        variante=variante, inst=inst, desde=desde, hasta=hasta, close_eod=close_eod, close_weekend=True,
+        use_adaptive_risk=False, n=len(o)), indent=1), encoding="utf-8")
+    print(f"[{time.time() - t0:.1f}s] {variante} ({inst}): {len(o)} ops DESC+REP guardadas en {out}")
 
 
 def spec(variante: str) -> dict:
@@ -48,6 +123,9 @@ def main(argv=None) -> int:
     ap.add_argument("--hasta", default="2026-09-30")   # último día antes del holdout (HOLDOUT-A4)
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
+    if a.variante in ("SOMEOD_ext_NQ", "SOM_sin_finde"):
+        _generar_som(a.variante, a.inst, a.desde, a.hasta, a.out)
+        return 0
     sp = spec(a.variante)
     if sp.get("externa") or sp["overlay"].get("banda_miembros"):
         raise SystemExit("variante externa o de banda: no soportada acá")
