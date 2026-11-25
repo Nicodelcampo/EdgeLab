@@ -33,6 +33,7 @@ NT8_FILES = [
     "EdgeLabFundedSyncCore5AltaConv.cs",
     "EdgeLabFundedSyncSnipersRZ.cs",
     "EdgeLabFundedSyncSingleModule.cs",
+    "EdgeLabCandidataFS.cs",
 ]
 
 

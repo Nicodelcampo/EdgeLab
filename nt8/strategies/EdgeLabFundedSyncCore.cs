@@ -80,6 +80,9 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public double RBruto;
         public double RNetoMini;
         public string ExitName;
+        public double PointValue;
+        public double RiskUsdReal;
+        public double RiskUsdTarget;
     }
 
     public sealed class PropProfileDefaults
@@ -1931,6 +1934,41 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     // (closed) for every tier1 event of config/noticias/calendario_usd_tier1.csv; FOMC_* events use the FOMC window.
     // Inside a window: no new entries and every open position is closed. Fail-closed: if the file is missing or the
     // calendar does not cover the bar date, BlocksAt returns true (no trading) and Status says why.
+    // Asset profiles (EdgeLab, 2026-11-25). Friction = canonical round-trip friction in points from edgelab/costos.py
+    // (GENERATED: tests/test_nt8_activos.py checks this table against costos.py; do not edit by hand).
+    public enum FundedSyncActivo { MNQ = 0, NQ = 1, MES = 2, ES = 3, MYM = 4, YM = 5, RTY = 6 }
+
+    public sealed class FundedSyncAssetSpec
+    {
+        public readonly string Root; public readonly double Tick; public readonly double PointValue; public readonly double FrictionPts;
+        public FundedSyncAssetSpec(string root, double tick, double pointValue, double frictionPts)
+        { Root = root; Tick = tick; PointValue = pointValue; FrictionPts = frictionPts; }
+    }
+
+    public static class FundedSyncAssets
+    {
+        public static FundedSyncAssetSpec Get(FundedSyncActivo a)
+        {
+            switch (a)
+            {
+                case FundedSyncActivo.MNQ: return new FundedSyncAssetSpec("MNQ", 0.25, 2.0, 1.9775);
+                case FundedSyncActivo.NQ: return new FundedSyncAssetSpec("NQ", 0.25, 20.0, 1.5455);
+                case FundedSyncActivo.MES: return new FundedSyncAssetSpec("MES", 0.25, 5.0, 1.155);
+                case FundedSyncActivo.ES: return new FundedSyncAssetSpec("ES", 0.25, 50.0, 0.8877);
+                case FundedSyncActivo.MYM: return new FundedSyncAssetSpec("MYM", 1.0, 0.5, 7.49);
+                case FundedSyncActivo.YM: return new FundedSyncAssetSpec("YM", 1.0, 5.0, 5.052);
+                case FundedSyncActivo.RTY: return new FundedSyncAssetSpec("RTY", 0.1, 50.0, 0.4436);
+                default: throw new ArgumentException("activo sin perfil: " + a);
+            }
+        }
+
+        // True if the chart instrument (MasterInstrument.Name, e.g. "MNQ", "ES") is the selected asset.
+        public static bool ChartMatches(FundedSyncActivo a, string masterName)
+        {
+            return !string.IsNullOrEmpty(masterName) && string.Equals(masterName.Trim(), Get(a).Root, StringComparison.OrdinalIgnoreCase);
+        }
+    }
+
     public sealed class NewsVetoCalendar
     {
         private readonly List<long> _ini = new List<long>();
@@ -2015,6 +2053,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public bool DailyCapTriggeredToday { get; private set; }
         public bool DailyLossTriggeredToday { get; private set; }
         public NewsVetoCalendar NewsVeto;              // null = veto off
+        public int MaxNetContracts = 0;                // 0 = sin tope; > 0: |posicion neta| nunca lo supera
         public bool NewsVetoActiveNow { get; private set; }
 
         public string CsvLogPath;
@@ -2295,6 +2334,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             double r1Mic = Math.Max(riskPts * MicroPointValue, 1e-6);
             int qty = (int)Math.Min(MaxMicroContracts, Math.Max(0, Math.Round(tgtUsd / r1Mic)));
             if (qty == 0 && tgtUsd >= 0.55 * r1Mic) qty = 1;
+            if (MaxNetContracts > 0)
+            {
+                int sameDir = Math.Max(0, side * TargetNetMicros);
+                qty = Math.Min(qty, MaxNetContracts - sameDir);
+            }
             if (qty <= 0) return;
 
             sl.IsOpen = true;
@@ -2318,7 +2362,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             double pnlPts = sl.Side * (exitPx - sl.EntryPrice);
             double rBruto = pnlPts / Math.Max(sl.RiskPts, 1e-6);
             double rNetMini = (pnlPts - FrictionMiniPts) / Math.Max(sl.RiskPts, 1e-6);
-            RealizedSessionUsd += (pnlPts - 0.90) * sl.Contracts * MicroPointValue;
+            RealizedSessionUsd += (pnlPts - FrictionMiniPts) * sl.Contracts * MicroPointValue;
 
             var rec = new CompletedTradeRecord
             {
@@ -2336,7 +2380,10 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                 PnlPts = pnlPts,
                 RBruto = rBruto,
                 RNetoMini = rNetMini,
-                ExitName = reason
+                ExitName = reason,
+                PointValue = MicroPointValue,
+                RiskUsdReal = sl.RiskPts * sl.Contracts * MicroPointValue,
+                RiskUsdTarget = CurrentRisk1RUsd * sl.AppliedW
             };
             CompletedTrades.Add(rec);
             if (EnableCsvLog && !string.IsNullOrEmpty(CsvLogPath)) WriteCsvRow(rec);
@@ -2377,15 +2424,16 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                 if (!_csvHeaderWritten)
                 {
                     if (!File.Exists(CsvLogPath) || new FileInfo(CsvLogPath).Length == 0)
-                        File.WriteAllText(CsvLogPath, "fecha_int,a5,modulo,w_w5,side,en_ny,ex_ny,entry_price,stop_price,exit_price,riesgo_pts,pnl_pts,R_bruto,R_neto_mini,exit_name" + Environment.NewLine, Encoding.UTF8);
+                        File.WriteAllText(CsvLogPath, "fecha_int,a5,modulo,w_w5,side,en_ny,ex_ny,entry_price,stop_price,exit_price,riesgo_pts,pnl_pts,R_bruto,R_neto_mini,exit_name,contratos,valor_punto,riesgo_usd_real,riesgo_usd_objetivo" + Environment.NewLine, Encoding.UTF8);
                     _csvHeaderWritten = true;
                 }
                 string line = string.Format(CultureInfo.InvariantCulture,
-                    "{0},LIVE,{1},{2:F6},{3},{4},{5},{6:F2},{7:F4},{8:F4},{9:F4},{10:F2},{11:F6},{12:F6},{13}",
+                    "{0},LIVE,{1},{2:F6},{3},{4},{5},{6:F2},{7:F4},{8:F4},{9:F4},{10:F2},{11:F6},{12:F6},{13},{14},{15:F2},{16:F2},{17:F2}",
                     r.SessionDate, r.ModuleId, r.WeightW5, r.Side,
                     r.EntryNy.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                     r.ExitNy.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
-                    r.EntryPrice, r.InitialStopPrice, r.ExitPrice, r.RiskPts, r.PnlPts, r.RBruto, r.RNetoMini, r.ExitName);
+                    r.EntryPrice, r.InitialStopPrice, r.ExitPrice, r.RiskPts, r.PnlPts, r.RBruto, r.RNetoMini, r.ExitName,
+                    r.Contracts, r.PointValue, r.RiskUsdReal, r.RiskUsdTarget);
                 File.AppendAllText(CsvLogPath, line + Environment.NewLine, Encoding.UTF8);
             }
             catch { }

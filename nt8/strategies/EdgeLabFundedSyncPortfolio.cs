@@ -55,6 +55,9 @@ namespace NinjaTrader.NinjaScript.Strategies
         private readonly Strategy _strat;
         private readonly PortfolioCoordinator _coord;
         public void SetNewsVeto(NewsVetoCalendar cal) { _coord.NewsVeto = cal; }
+        // true: el coordinador calcula en contratos del instrumento del grafico (MicroPointValue = su valor del punto),
+        // sin conversion micros -> minis (EdgeLabCandidata). false: unidades micro del preset (comportamiento historico).
+        public bool ChartUnits;
         private readonly string _label;
         private readonly bool _hasSecondaryMnq;
         private TimeZoneInfo _chartTz;
@@ -264,6 +267,11 @@ namespace NinjaTrader.NinjaScript.Strategies
             int targetMicros = (_coord.HardFlattenedToday || _coord.DailyCapTriggeredToday || _coord.DailyLossTriggeredToday)
                 ? 0
                 : _coord.TargetNetMicros;
+            if (ChartUnits)
+            {
+                ReconcileBipPosition(0, targetMicros, "FS");
+                return;
+            }
 
             double pvPrimary = (_strat.Instrument != null && _strat.Instrument.MasterInstrument != null)
                 ? _strat.Instrument.MasterInstrument.PointValue
