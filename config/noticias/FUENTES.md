@@ -9,7 +9,7 @@ Procedencia: transcripciones en `config/noticias/crudo/`; el CSV se regenera con
 ## Para qué
 
 Pedido de Nico (2026-10-25): «las operaciones no pueden ser durante noticias, por fricciones y por reglas de prop
-firms». El CSV da el minuto exacto (UTC) de cada publicación USD de alto impacto entre 2023-01-01 y 2026-12-31.
+firms». El CSV da el minuto exacto (UTC) de cada publicación USD de alto impacto entre 2008-01-01 y 2026-12-31.
 Hora ET → UTC con `zoneinfo("America/New_York")` (EST/EDT lo resuelve la zona). Columnas: `ts_utc` (ISO al minuto,
 sufijo Z), `evento`, `fuente_url`, `impacto` (`tier1` / `tier2`).
 
@@ -72,6 +72,20 @@ etiqueta de la estimación del PIB 2025-2026, audiencias de testimonio).
 | INITIAL_JOBLESS_CLAIMS (tier2) | 52 | 52 | 47 | 42 |
 
 Total: 736 filas (543 tier1, 193 tier2).
+
+## Histórico 2008-2022 (agregado el 2026-11-25)
+
+Pedido de Nico (2026-11-25): vetar noticias en los backtests, que van de 2008 a 2025. Mismos eventos tier1; fuentes:
+
+| Evento | Fuente | Hora ET | Notas |
+|---|---|---|---|
+| `FOMC_DECISION`, `FOMC_PRESS_CONFERENCE`, `FOMC_MINUTES` | Fed, `fomchistorical<año>.htm` (2008-2020) y `fomccalendars.htm` (2021-2022); `tools/noticias_fed_historico.py` → `crudo/fed_2008_2022.txt` | comunicado 14:15 hasta 2012 (12:30 en reuniones con conferencia abr-2011 → 2012), 14:00 desde 2013; conferencia 14:15 (2011-2012) / 14:30; minutas 14:00 | La página no trae la hora: convención de la Fed, verificada contra ForexFactory (2008-01-30 19:15Z). No programadas con hora conocida: 2008-01-22 08:20, 2008-10-08 07:00, 2020-03-03 10:00, 2020-03-15 17:00, 2020-03-23 08:00. Las otras no programadas (2008-03-11, 2010-05-09, 2019-10-11, 2020-03-19, 2020-03-31, 2020-08-27) eran anuncios de facilidades o del marco, sin hora verificable: **fuera**. |
+| `CPI`, `NFP_EMPLOYMENT_SITUATION`, `PPI`, `JOLTS`, `RETAIL_SALES`, `PCE_PERSONAL_INCOME_OUTLAYS`, `GDP_RELEASE` | ALFRED (Fed de St. Louis), «Release Dates» (rid 10, 50, 46, 192, 9, 54, 53), vía Firecrawl → `crudo/alfred_2008_2022.txt` | 08:30 (JOLTS 10:00) | **Incluye fechas de revisión** además de las publicaciones (p. ej. factores estacionales del CPI en febrero, revisiones anuales del PIB): se vetan todas, es el lado conservador (sólo quita operaciones). El PIB no distingue avance/segunda/tercera: `GDP_RELEASE`. JOLTS: ALFRED empieza en 2010-08; 2008 del BLS (`schedule/2008`); **hueco 2009-01 → 2010-07**. |
+| `ISM_MANUFACTURING_PMI`, `ISM_SERVICES_PMI` | Regla del ISM: manufactura = 1.er día hábil del mes, servicios = 3.º (`_ism_historico` en `tools/noticias_calendario.py`) | 10:00 | El ISM no publica calendarios pasados. La regla acierta 87/96 en 2023-2026; falla sólo en enero (desde 2023 el ISM corre un día hábil; en 2008 no) y en Viernes Santo. Por eso Viernes Santo no es hábil y **en enero se vetan los dos días candidatos**. |
+| `FED_CHAIR_TESTIMONY`, `FED_CHAIR_JACKSON_HOLE` | Fed `ne-testimony.json` y `ne-speeches.json` (presidente) → `crudo/fed_testimonio_jh_2008_2022.txt` | la del JSON; 10:00 si no trae | Del testimonio se veta también el día hábil siguiente a las 10:00 (la otra cámara; el JSON trae una sola entrada). Jackson Hole 2013 y 2015 sin discurso del presidente. |
+
+Verificación: muestra de ForexFactory `list_events` USD high ene-feb 2008 (consulta 2026-11-25): 18/18 eventos tier1 presentes con su minuto (`tests/test_noticias.py::test_historico_2008_2022`).
+**No hay en 2008-2022:** `INITIAL_JOBLESS_CLAIMS` (tier2, ForexFactory los marcaba medium casi todo el período).
 
 ## Qué faltó (no se inventó)
 

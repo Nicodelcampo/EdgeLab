@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-738 scripts.
+739 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -526,6 +526,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/neto_pistas.py` | NETO-PISTAS: R (AtrPhase) y Z (ZetaTrend) en R con los controles de T, y esquemas de tamaño para Franklin y SOM |
 | `tools/nominacion_forzada.py` | Nominación forzada al holdout (relanzamiento_causal_20261102/PREREGISTRO_NOMINACION_FORZADA.md, decisión de Nico): por familia del |
 | `tools/noticias_calendario.py` | Construye `config/noticias/calendario_usd_tier1.csv` desde las transcripciones de `config/noticias/crudo/`. |
+| `tools/noticias_fed_historico.py` | Transcribe las fechas FOMC 2008-2022 de las páginas oficiales de la Fed a `config/noticias/crudo/fed_2008_2022.txt`. |
 | `tools/noticias_impacto_operaciones.py` | Cuenta (target-free) cuántas operaciones/eventos ya publicados cruzan una ventana de noticia (`edgelab.noticias`). |
 | `tools/nq_cruce25_clima.py` | NQ-CRUCE25-CLIMA — pre-registro docs/research/MANIFIESTO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md (v2, tras Entrada 067). |
 | `tools/nq_l2_explore.py` | Exploración L2 de NQ (manifiesto docs/research/MANIFIESTO_NQ_L2_EXPLORACION_20260924.md, OK de Nico 2026-09-24). |
