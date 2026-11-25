@@ -1,5 +1,7 @@
 # Auditoría de Falsos Negativos, Mesetas, Phase-Shift y Cartera Ortogonal para Acelerar Payouts y Reducir Espera Forward
 
+Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+
 > [!IMPORTANT]
 > **Integridad A5 verificada en todos los scripts:** No se abrió ni calculó P&L en ninguna partición sellada:
 > - `FLUJOS_MACRO` (`FM1–FM8`), `CARRIL2`, `EXTERNAS_ESTRUCTURALES` (`ES5N`, `Dual Thrust`), `MEJORA-SF` y `Z_RTY` se evaluaron **estrictamente en `DESC` (`bloque == "DESC"`)**; su `REP` y `HOLDOUT` permanecen intactos.

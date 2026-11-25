@@ -1,5 +1,7 @@
 # Auditoria Forense y Evaluacion en Cadena EdgeLab — Bots Descargados (`HFTCode`)
 
+Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+
 > **Fecha:** 2026-11-24  
 > **Archivos auditados desde Descargas (`C:\NuevosIngresos\SSRN_Researches\downloaded_files`):**
 > 1. `bot_mbtc_regulatory_momentum_portable.zip` -> `MicroBitcoinRegulatoryMomentumBot` (`MBT` @ CME, `60m -> 5m`, `LONG`)

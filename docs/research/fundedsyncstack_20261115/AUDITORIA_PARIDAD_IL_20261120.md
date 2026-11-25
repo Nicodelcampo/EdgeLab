@@ -1,6 +1,6 @@
 # Auditoría de Paridad IL vs EdgeLab — `FUNDEDSYNCSTACK` (2026-11-20)
 
-Estado: VIGENTE  
+Estado: VIGENTE — auditoría de Antigravity (2026-11-20); corrige la traducción en el commit `7965e7fb`. Re-medición: `docs/research/remedicion_fs_il_20261121/RESULTADO.md`.
 Fecha: 2026-11-20  
 Familia / módulo: fundedsyncstack  
 

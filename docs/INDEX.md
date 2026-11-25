@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1548 |
+| `docs/research` | 1551 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -101,21 +101,17 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
 
-## Superados (7)
+## Superados (8)
 
 - `AUDITOR_START_HERE.md` — SUPERADO parcialmente por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACIO
 - `docs/BRANCH_REGISTRY_2026-08-24.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
 - `docs/BRANCH_REGISTRY_2026-09-02.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
+- `docs/HANDOFF_AUDITOR_20261123_FUNDEDSYNC.md` — HISTÓRICO (superado por docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md)
 - `docs/infra/MANANA_PENDIENTES_20261014.md` — SUPERADO por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md
 - `docs/research/EDGELAB_VIEWER_UNIFICATION_PLAN_20260920.md` — SUPERADO
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
 
-## Documentos nuevos sin `Estado:` (6)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/HANDOFF_AUDITOR_20261123_FUNDEDSYNC.md: falta `Estado:` en el encabezado
-- docs/research/auditoria_bots_hftcode_20261124/RESULTADO.md: falta `Estado:` en el encabezado
-- docs/research/fundedsync_roadmap_ecosistema_20261123/RESULTADO.md: falta `Estado:` en el encabezado
-- docs/research/validacion_maestra_20261124/AUDIT_ESTRATEGIAS_ORTOGONALES_20261124.md: falta `Estado:` en el encabezado
-- docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md: falta `Estado:` en el encabezado
-- docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md: falta `Estado:` en el encabezado
+Ninguno.

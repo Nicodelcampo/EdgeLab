@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (37)
+## PISTA_VIVA (38)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
+  - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
+  - Dónde: NQ M1 de NT8, 2010 → 2026-09
+  - Siguiente: V a la lista de candidatas: medir su correlación con T+R+ZB+RQ5 y si suma a la canasta. Re-hacer los números de A20 si entra a una decisión.
+  - Evidencia: `docs/research/remedicion_fs_il_20261121/RESULTADO.md`, `docs/research/remedicion_fs_il_20261121/COMPARACION.csv`
 - **RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025** (`F-RQ5-REGIMEN-ROBUSTO`, 2026-11-20, humano)
   - Efecto: DESC 2018–2025 NQ+ES+YM+RTY: +0,050 R/op (p 0,045), 54,7 ops/mes, +2,71 R/mes, t mensual 1,94; 310/310 celdas calibradas y 10/10 vecinos positivos (n efectivo 1,47); NQ +0,082, ES +0,093, RTY +0,046, YM −0,022, EMD +0,044; quiebre sup-F 2017-08; salida al cierre no mejora. Holdout A5 N 1.454: potencia 0,60 / 0,24.
   - Dónde: NQ/ES/YM/RTY/EMD M1 A5
@@ -435,7 +440,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (49)
+## NO_REPETIR (50)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -444,6 +449,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ (A20, T, R, Z-banda), NQ/ES/YM/RTY (RQ5), meses DESC de A5
   - Siguiente: No repetir estos indicadores como filtro de T ni de RQ5. A20 × gamma, sólo como variante paralela en el forward si Nico lo pide. R y Z-banda sin potencia: no concluye.
   - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO.md`, `docs/research/filtros_contexto_20261120/RESULTADO.json`
+- **Curvas de los 15 módulos de FundedSync que muestra el vendedor (2022–2026)** (`F-VENDEDOR-FUNDEDSYNC-CURVAS-2022`, 2026-11-20, humano)
+  - Efecto: Se reproducen en forma con nuestros datos (14/15 suben en puntos netos), pero sólo T (t 5,8), R (4,5), Z (2,8) y A20 (2,6) superan t 2,5; las demás tienen t 1,1–1,8 y 7 de ellas eran negativas con t significativo en 2010–21. Fricción: A1 pierde el 70 % del bruto; W y E casi todo.
+  - Dónde: NQ M1 de NT8, 15 módulos
+  - Siguiente: No promover módulos por la curva del vendedor. N, S, F, Q y C quedan como pistas que sólo el forward puede confirmar.
+  - Evidencia: `docs/research/verif_vendedor_20261120/RESULTADO.md`, `docs/research/verif_vendedor_20261120/MODULOS_2022_2026.csv`
 - **8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakout II, RSI2, FTLT, QFL, FVG H1, PMax) — trabajo de Gemini/Antigravity** (`F-EXTERNAS-ESTRUCTURALES-REFUTADA`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: 0/16 en BH; las 8 con R neto negativo (−0,05 a −0,12 R) pese a fricción ≤ 0,08 R; potencia de REP 0 (efecto ≤ 0).
   - Dónde: ES, NQ, YM, GC

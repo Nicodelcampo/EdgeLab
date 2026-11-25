@@ -1,5 +1,7 @@
 # Auditoria Multimodelo, Frecuencia Estructural Anti-Overfit y Ecosistema Multi-Frente
 
+Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+
 > **Fecha:** 2026-11-23  
 > **Universo:** `POST_2020` (`2020-01-01 .. 2026-11-17`) en particiones `DESC`, `REP`, `HOLDOUT` y `TERMINAL` (`2026-10-01 .. 2026-11-17`, excluyendo `2026-10-07`).  
 > **Monte Carlo Sincronizado:** `N = 2,000` trayectorias x `H = 504` sesiones (24 meses) compartiendo exactamente el mismo calendario aleatorio `j_seq(N, H)` entre todos los frentes simultaneos.

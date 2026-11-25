@@ -1,5 +1,7 @@
 # Subida de Ticks NT8, Resultados Forward (`2026-11-23`) y Auditoría A5 de `@hobbiecode` (Gann HiLo y Supertrend Oro H1)
 
+Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+
 > [!IMPORTANT]
 > **Integridad A5 / A4 verificada:**
 > - **Holdout sellado:** Los ticks de NT8 (`E:\DatosNT8\HOLDOUT_SELLADO`) se procesaron estrictamente mediante [`nt8_sellado_diario.py`](file:///E:/EdgeLab-fundedsync/tools/nt8_sellado_diario.py) sin leer retornos ni precios fuera de los runners pre-registrados (`cartera_v2_forward.py`).

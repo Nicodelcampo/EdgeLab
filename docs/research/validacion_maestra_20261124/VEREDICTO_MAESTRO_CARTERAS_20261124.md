@@ -1,5 +1,7 @@
 # Veredicto Maestro de Estrategias y Colocación en Carteras (`2026-11-24`)
 
+Estado: VIGENTE (documento de la validación de producción, 2026-11; encabezado agregado el 2026-11-25)  
+
 > [!IMPORTANT]
 > **Integridad A5 / A4 y Cobertura Completa Verificada:**
 > - **Holdout sellado al `2026-11-23`:** `nicolasbuttaro/edgelab-holdout-sellado` **v8** (`ES/NQ/GC/YM` NT8 100% completos `tarde 0.0 min, temprano 0.0 min`) y **v9** (`USATECHIDXUSD` 17.81M ticks, `USA500IDXUSD` 5.81M ticks, `XAUUSD` 16.58M ticks hasta `2026-11-24T23:59:59Z` vía `JForex4`). Todos los runners preregistrados completaron con `faltan: []`.

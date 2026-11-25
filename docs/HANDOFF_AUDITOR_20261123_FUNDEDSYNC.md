@@ -1,5 +1,7 @@
 # Handoff Auditor — Bots cTrader/MT5, Bar-Open Phase Shift y Satélites Prop
 
+Estado: HISTÓRICO (superado por `docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md`)  
+
 > **Fecha:** 2026-11-23  
 > **Rama:** `fix/fundedsync-il-parity`  
 > **Modelo saliente:** Neon  
