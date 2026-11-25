@@ -360,10 +360,15 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (15)
+## EN_SEGUIMIENTO (16)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
+  - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
+  - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
+  - Siguiente: EXP-7 estabilizadores pre-registrado: reversión de corto plazo en la mañana y captura del movimiento nocturno, evaluados en toda la historia y por correlación condicional con las de la mañana.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_DIAG_CAIDA_2026.md`, `docs/research/caida_2026_20261125/PARTE_B_PERCENTILES.json`
 - **Reglas del Marketplace de Roboquant en futuros: RQ5 banda de ruido de Zarattini, RQ6 retroceso al VWAP en día de tendencia, RQ2 reversión al mínimo previo, RQ1 ORB 10:00 con salida a 8 min** (`F-ROBOQUANT-BRUTO-SIN-NETO`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM: 5/15 nominadas (RQ1 +0,039, RQ2 +0,073, RQ5 +0,062, RQ6 +0,054 R bruto, p ≤ 0,03, 70–75 % de años, parejo en 3 índices; RQ2−RQ2N +0,136). R neto negativo en las 4 (fricción 0,07–0,18 R); neto operable RQ5 +0,035, RQ6 +0,036. REP sin leer: K49, potencia en días 0,04–0,07. | FRICCION-RQ 2026-11-19: ensanchar el stop no sirve en RQ5/RQ6 (bruto en puntos constante: la ventaja es un monto fijo); RQ2 llega a +0,016 R con 2× sin pasar. Con contrato fijo RQ5 NQ +3,6 pts/op neto (t 2,0), RQ6 NQ +2,4 (t 1,8), ES positivos chicos, YM no (exploratorio).
   - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5

@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-744 scripts.
+745 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -226,6 +226,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/deriva_bots.py` | Deriva entre los bots del repo y lo instalado en NT8, MT5 y cTrader de esta PC. |
 | `tools/desarrollo_en_r.py` | Desarrollo en R (Nico 2026-11-02): las 16 reglas del holdout (12 nominadas + U1-CRUZADO + 3 forzadas) re-corridas sobre DESC y réplica |
 | `tools/dia_tendencia.py` | Día de tendencia: predictores causales NUEVOS, E0 sin retornos de estrategia (pre-registro docs/research/dia_tendencia_20261118/PREREGISTRO.md). |
+| `tools/diag_caida_2026.py` | DIAG-CAIDA-2026 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_DIAG_CAIDA_2026.md`, contado: 10 pruebas). |
 | `tools/diagnose_es_context_intervals_20260929.py` | (sin docstring) |
 | `tools/diagnostico_decaimiento_temporal.py` | tools/diagnostico_decaimiento_temporal.py |
 | `tools/diagnostico_grilla.py` | Diagnóstico de mecanismo de una grilla y de episodios (K55/K56): imprime las líneas «Diagnóstico de grilla:» y «Episodios:» que todo |
