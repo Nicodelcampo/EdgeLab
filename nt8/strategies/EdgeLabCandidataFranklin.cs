@@ -72,7 +72,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Calculate = Calculate.OnBarClose;
                 EntriesPerDirection = 1;
                 EntryHandling = EntryHandling.AllEntries;
-                IsExitOnSessionCloseStrategy = false;
+                IsExitOnSessionCloseStrategy = true; ExitOnSessionCloseSeconds = 1200;   // plano 20 min antes del fin de sesion (16:40 ET; 12:40 en cierres tempranos): Lucid no admite noches
                 IsFillLimitOnTouch = false;
                 MaximumBarsLookBack = MaximumBarsLookBack.TwoHundredFiftySix;
                 OrderFillResolution = OrderFillResolution.Standard;

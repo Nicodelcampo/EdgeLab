@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-747 scripts.
+748 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -176,6 +176,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
+| `tools/cartera_lucid.py` | Cartera Lucid inverso-volatilidad (plan `docs/research/cartera_lucid_20261125/PLAN.md`). |
 | `tools/cartera_nov.py` | Cartera con el período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md, 2026-11-16). |
 | `tools/cartera_nov_analisis.py` | Análisis de la cartera del período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md). |
 | `tools/cartera_tanda4.py` | Tanda 4 (pre-registro docs/research/cartera_20261116/PREREGISTRO_TANDA4.md). |

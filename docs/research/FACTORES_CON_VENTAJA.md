@@ -200,7 +200,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (32)
+## PALANCA_DE_DISENO (33)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -209,6 +209,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación
   - Siguiente: Usar como regla de tamaño de la cartera; traducir pesos a riesgo por operación en NT8 (peso × 1R) y verificar con el preset de cuenta.
   - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
+- **Cartera intradía de 8 (T, R, Z, V, RQ5 NQ/ES, ES5N, Franklin) en micros dentro de LucidFlex** (`F-CARTERA-LUCID-150K-1MICRO`, 2026-11-25, sesion)
+  - Efecto: 1 micro c/u: sd diaria ≈ $690, peor día −$2.150. 25K/50K: mejor plan es apostar más grande (p_ganar 0,17–0,18, lotería; 0,12 sin ventaja). 150K a 1 micro: p_ganar 0,27 (media contraída), 0,47 (desarrollo), 0,12 (cero); ev +$561 por intento.
+  - Dónde: LucidFlex 25K/50K/150K, 2020-01 → 2026-09, corridas NT8
+  - Siguiente: Cartera diversificada en Lucid sólo en 150K a tamaño mínimo; para cuentas chicas, menos estrategias o más ventaja por operación.
+  - Evidencia: `docs/research/cartera_lucid_20261125/RESULTADO.md`, `docs/research/cartera_lucid_20261125/PLANES.json`
 - **Antes de ensanchar el stop para bajar la fricción, mirar el bruto en PUNTOS por escala: si es constante, la ventaja es un monto fijo por operación y escalar no cambia el neto; la palanca es el tamaño (contrato fijo o ∝1/√riesgo), no el stop** (`F-VENTAJA-EN-PUNTOS-NO-ESCALA`, 2026-11-19, humano)
   - Efecto: RQ5/RQ6 (Roboquant) en DESC 2006–2025: bruto en puntos ≈ constante de m=1 a m=3 (RQ5 NQ +5,1 a +6,9 pts) mientras el bruto en R cae 0,062 → 0,018; neto en R ≈ −0,01 en toda la curva, pero +3,6 pts/op con contrato fijo en NQ. | 2026-11-19 (grilla de REGIMEN-SOM-FRANKLIN, descriptivo): SOM NQ bruto 5,2/5,6/4,7 pts con stop 6/8/10 ATR (R bruto 0,084→0,056), ES 0,6/0,9/0,85, YM 3,4/3,4/4,6; Franklin stop rango vs 0,5·ATR20 parecido en puntos. El stop tampoco es palanca en SOM ni Franklin. | TAMANO-K52 2026-11-19: con contratos ∝ 1/ATR20 (sin sesgo de nivel de precio) el tamaño NO mejora RQ5, RQ6, SOM ni Franklin (Δ ≈ 0): las mejoras de contrato fijo eran K52.
   - Dónde: ES, NQ futuros M1; intradía de momentum

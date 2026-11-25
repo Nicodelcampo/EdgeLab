@@ -21,7 +21,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 38 | Palancas (`PALANCA_DE_DISENO`): 32
+- Pistas vivas (`PISTA_VIVA`): 38 | Palancas (`PALANCA_DE_DISENO`): 33
   - `F-FS-IL-REMEDICION-V-CANDIDATA` (2026-11-21): Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)
   - `F-RQ5-REGIMEN-ROBUSTO` (2026-11-20): RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025
   - `F-RQ5-HOLDOUT-NO-CONCLUYENTE` (2026-11-20): RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)

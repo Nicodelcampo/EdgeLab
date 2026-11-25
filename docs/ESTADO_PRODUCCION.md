@@ -27,6 +27,7 @@ Operar con dinero real es decisión humana: el agente prepara, verifica y docume
 
 - FTMO Swing 100K: C2_VZ + C2_EVRP + Turtles_GC_CFD + Core + RQ5_ES_CFD (swing) (sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales).
 - The5ers HS 100K: SOM_ES_CFD + ES5N_ES_CFD (intradía CFD) (sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales).
+- LucidFlex 150K (40 % + DLL): Cartera intradía de 8 en micros (MNQ: T, R, Z, V, RQ5, Franklin; MES: RQ5, ES5N), 1 micro c/u, veto de noticias, plano 16:40 (propuesta 2026-11-25 (docs/research/cartera_lucid_20261125/RESULTADO.md); abrir y operar lo decide Nico).
 
 ## Auditorías de ejecución real
 

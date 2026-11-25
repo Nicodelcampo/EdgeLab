@@ -13,7 +13,7 @@ using NinjaTrader.NinjaScript;
 using NinjaTrader.NinjaScript.Strategies;
 #endregion
 
-// EdgeLabRQ5 (version=1.1, 2026-11-25) — banda de ruido intradía (Zarattini, Aziz y Barbon 2024), fábrica de RQ5-REGIMEN.
+// EdgeLabRQ5 (version=1.1, 2026-11-25) - banda de ruido intradia (Zarattini, Aziz y Barbon 2024), fabrica de RQ5-REGIMEN.
 // Actualizada con selector de Activo (FundedSyncActivo), veto de noticias tier-1 (NewsVetoCalendar) y export CSV a EdgeLab\candidatas\.
 namespace NinjaTrader.NinjaScript.Strategies
 {
@@ -21,7 +21,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 
     public class EdgeLabRQ5 : Strategy
     {
-        private static readonly int[] Slots = { 600, 630, 660, 690, 720 };   // minuto ET del CIERRE de la vela (10:00 … 12:00)
+        private static readonly int[] Slots = { 600, 630, 660, 690, 720 };   // minuto ET del CIERRE de la vela (10:00 ... 12:00)
         private TimeZoneInfo _chartTz, et;
         private NewsVetoCalendar _newsCal;
         private FundedSyncAssetSpec _spec;
@@ -56,11 +56,11 @@ namespace NinjaTrader.NinjaScript.Strategies
             if (State == State.SetDefaults)
             {
                 Name = "EdgeLabRQ5";
-                Description = "RQ5 (banda de ruido intradía, fábrica de RQ5-REGIMEN). Selector de activo, veto noticias y log CSV.";
+                Description = "RQ5 (banda de ruido intradia, fabrica de RQ5-REGIMEN). Selector de activo, veto noticias y log CSV.";
                 Calculate = Calculate.OnBarClose;
                 EntriesPerDirection = 1;
                 EntryHandling = EntryHandling.AllEntries;
-                IsExitOnSessionCloseStrategy = false;
+                IsExitOnSessionCloseStrategy = true; ExitOnSessionCloseSeconds = 1200;   // plano 20 min antes del fin de sesion (16:40 ET; 12:40 en cierres tempranos): Lucid no admite noches
                 BarsRequiredToTrade = 1;
                 L = 60; M = 1.0; CorteHHMM = 1130; S = 0.45; Tp = 2.0;
                 Activo = FundedSyncActivo.MNQ;

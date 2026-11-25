@@ -70,7 +70,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Calculate = Calculate.OnBarClose;
                 EntriesPerDirection = 2;
                 EntryHandling = EntryHandling.AllEntries;
-                IsExitOnSessionCloseStrategy = false;
+                IsExitOnSessionCloseStrategy = true; ExitOnSessionCloseSeconds = 1200;   // plano 20 min antes del fin de sesion (16:40 ET; 12:40 en cierres tempranos): Lucid no admite noches
                 IsFillLimitOnTouch = false;
                 MaximumBarsLookBack = MaximumBarsLookBack.TwoHundredFiftySix;
                 OrderFillResolution = OrderFillResolution.Standard;
@@ -91,6 +91,10 @@ namespace NinjaTrader.NinjaScript.Strategies
                 HardFlattenHHMM_ET = 1640;
                 EnableNewsVeto = true;
                 NewsBeforeMin = 2.0; NewsAfterMin = 2.0; FomcBeforeMin = 5.0; FomcAfterMin = 5.0;
+            }
+            else if (State == State.Configure)
+            {
+                if (Modulo == FundedSyncModuleId.SOM_sin_finde) IsExitOnSessionCloseStrategy = false;   // SOM sin_finde mantiene de noche
             }
             else if (State == State.DataLoaded)
             {
