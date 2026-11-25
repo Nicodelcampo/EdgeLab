@@ -440,10 +440,80 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (50)
+## NO_REPETIR (64)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)** (`F-BAJA-FRICCION-A5-BF1-BF8`, 2026-11-24, sesion)
+  - Efecto: 20 años DESC (n 3.007–10.708): 0/8 pasan BH q 0,10; Fut −0,022 a −0,051 R (t −1,33 a −5,47); CFD −0,002 a −0,023 R. BF1 ESNQ 20+ +0,059 (t 2,19) sin fuerza en Full ni BH.
+  - Dónde: ES/NQ fut y CFD, DESC
+  - Siguiente: Sin edge estructural neto tras costos; REP no abierto. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **PREAPERTURA Intento 0 (NQ_OP_SAL, GC_OP_SAL, ES/YM)** (`F-PREAPERTURA-INTENTO0`, 2026-11-24, sesion)
+  - Efecto: ES/YM negativos en DESC; GC_OP_SAL REP −0,061 R_cfd (t −0,53); NQ_OP_SAL Full REP −0,106 (t −1,07), 2020–25 REP +0,072 (n 252, t 0,48).
+  - Dónde: NQ/GC/ES/YM, DESC + REP
+  - Siguiente: GC falla REP; NQ no escalable. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **PREAPERTURA-NQ Intento 1** (`F-PREAPERTURA-NQ-INTENTO1-SUBMINUTO`, 2026-11-24, sesion)
+  - Efecto: Desfase sub-minuto: +48,3 R (00 s) → +0,2 R (15 s) → −20,0 R (45 s); −3,67 R en forward fw20261123.
+  - Dónde: NQ M1 2006–25 + ticks 2025–26
+  - Siguiente: Artefacto de reloj sub-minuto; apagar de cartera v2/v3. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **Z (ZetaTrend) en Russell M2K — supera a F-Z-TRANSFER-RTY** (`F-Z-RTY-REP-COLAPSA`, 2026-11-24, sesion)
+  - Efecto: DESC +0,190 (t 1,56); REP 2018–25 −0,058 (n 33); REP 2020–25 −0,341 (n 27, PF 0,46, t −1,96).
+  - Dónde: RTY, DESC + REP limpia
+  - Siguiente: Colapsa en REP limpia. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **FM2 (Concretum Band)** (`F-FM2-CONCRETUM-NO-REPLICA`, 2026-11-24, sesion)
+  - Efecto: REP: NQ 2020–25 −0,063 (t −0,70); NQ full −0,020; ES_NQ 20+ +0,013; ALL4 full +0,054 (t 1,30, p 0,097); corr_m +0,33 con Core.
+  - Dónde: NQ/ES, DESC + REP
+  - Siguiente: No replica fuera de muestra. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **RQ2 ES/NQ** (`F-RQ2-ES-NQ`, 2026-11-24, sesion)
+  - Efecto: 2020–25 DESC −0,092 (t −1,24) / REP +0,164 (t 1,06); Full DESC +0,016 → REP −0,103 R_cfd (n 281, PF 0,80, t −1,41).
+  - Dónde: ES/NQ
+  - Siguiente: Negativa en 2020–25 DESC y Full REP. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **RQ6 ES/NQ** (`F-RQ6-ES-NQ`, 2026-11-24, sesion)
+  - Efecto: 2020–25 DESC +0,081 (t 2,31) → REP +0,034 (n 383, t 0,59, corrM +0,37 con Core); Full REP −0,017.
+  - Dónde: ES/NQ
+  - Siguiente: Se disuelve en REP y correlaciona con Core. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **CARRIL2 variantes VBB, DBO, P80 (y D7, IBS, TT, TOM en 2020–25)** (`F-C2-VBB-DBO-P80`, 2026-11-24, sesion)
+  - Efecto: REP: VBB −0,108 (t −0,78); P80 DESC −0,094 / REP +0,026; DBO DESC −0,376 / REP −0,371 (t −2,18). D7/IBS/TT/TOM fallan 2020–25 DESC (sólo vivieron 2006–17).
+  - Dónde: ES/NQ CFD, Full DESC + REP
+  - Siguiente: Reversión fallida en REP. NO afecta a C2_VZ ni C2_EVRP (validadas). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **ES5N en NQ (10:00 NY)** (`F-ES5N-NQ`, 2026-11-24, sesion)
+  - Efecto: 20 años REP +0,023 R_cfd (n 218, t 0,32); 2020–25 REP −0,060 (n 62, PF 0,87).
+  - Dónde: NQ
+  - Siguiente: El edge sólo existe en ES (ES5N_ES_CFD sigue como satélite). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **HobbieCode Gann HiLo Oro H1** (`F-HOBBIECODE-GANN-HILO-ORO`, 2026-11-24, sesion)
+  - Efecto: H1 optimista (t 3,07) colapsa en M1 exacto: GC +0,014 R_cfd (PF 1,02, fill 3,4 %), Fut −0,066, estrés −0,50, 1/4 phase-shift +.
+  - Dónde: GC/XAU/FX/IDX, M1 exacto DESC
+  - Siguiente: Espejismo de backtest H1 sin intrabar. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`, `docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md`
+- **HobbieCode Supertrend Oro H1** (`F-HOBBIECODE-SUPERTREND-ORO`, 2026-11-24, sesion)
+  - Efecto: GC baseline +0,029 R_cfd (t 0,19, DD −32 R); 2020–25 −0,186; PBO 0,574 (GC) / 0,523 (XAU).
+  - Dónde: GC/XAU, grilla 6×7
+  - Siguiente: Sobreajuste (PBO > 0,5) y sin significancia. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`, `docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md`
+- **Dual Thrust GC (X038)** (`F-DUAL-THRUST-GC-X038`, 2026-11-24, sesion)
+  - Efecto: Ticks 2025–26: −0,177 R_cfd (0/4 sub-minuto +, n 15) aunque 20 años DESC +0,051.
+  - Dónde: GC
+  - Siguiente: Muerta en el régimen reciente. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **CVGAP-ES-C, CVGAP2-GC#11, COMEX-CIERRE-GC-R#0** (`F-CVGAP-COMEX-CIERRE-ATRAS`, 2026-11-24, sesion)
+  - Efecto: M1 2008–25: −0,044 / −0,128 / −0,181 R/op (−33,6 / −55,1 / −94,4 R); CVGAP-ES-C −5,98 R en forward.
+  - Dónde: ES/GC M1 18 años
+  - Siguiente: Refutadas atrás; retirar de cartera v2/v3. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **DRC-NQ-R, TORI-NQ-R, U1-ZONAS-AVCL-ES/NQ, CVGAP-CFD-NQ (ejecución)** (`F-DRC-TORI-FRICCION`, 2026-11-24, sesion)
+  - Efecto: Fricción 0,090–0,153 R por operación; DRC −8,54 R en fw20261123.
+  - Dónde: NQ/ES
+  - Siguiente: Fricción prohibitiva; retirar de ejecución (no es refutación del sensor). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
 - **VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX y COT (percentil móvil causal, terciles) como filtro de A20, T, R, Z-banda (NQ) y RQ5 fábrica** (`F-FILTROS-CONTEXTO-SIN-FILTRO`, 2026-11-20, humano)
   - Efecto: 0/35 nominadas por BH q 0,10 en DESC 2018-01 → 2025-07 (p mín 0,023, ajustada 0,59). T y RQ5 planos (|alto − bajo| ≤ 0,05 y ≤ 0,10 con MDE 0,24 y 0,13). Única pista: A20 peor en días calmos de gamma larga (VIX9D/VIX bajo, GEX alto; p 0,03–0,06, MDE 0,49), un solo eje.
   - Dónde: NQ (A20, T, R, Z-banda), NQ/ES/YM/RTY (RQ5), meses DESC de A5

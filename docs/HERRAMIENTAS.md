@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-742 scripts.
+744 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -291,6 +291,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/explo_asimetria_excursion.py` | Exploración (descriptiva, sin decisión): asimetría de la excursión posterior a la creación de zonas. |
 | `tools/explo_edgereplica_mgc_20261006.py` | Exploración (decisión de Nico 2026-10-06, sin custodia de holdout): EdgeReplica en MNQ 12-26 y celda MGC 04:15 |
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |
+| `tools/exportar_vix_nt8.py` | Exporta series diarias causales de volatilidad CBOE (VIX, VXN, VIX9D) para `EdgeLabCandidataCarril2` en NT8. |
 | `tools/externas_a5.py` | EXTERNAS-28, fase 0 (EF2, sin retornos): fricción en R de cada una de las 114 variantes (pre-registro |
 | `tools/externas_estructurales_a5.py` | Conductor vectorizado para EXTERNAS-ESTRUCTURALES-A5 y auditoría rápida de |
 | `tools/factores.py` | Registro de factores con ventaja (edgelab/research/factores.py). |
@@ -650,6 +651,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/run_mgc_tick_exact_grid.py` | Tick-exact validation of the immutable 42-cell MGC EMA core registry. |
 | `tools/run_nt8_bridge.py` | CLI del bridge NT8 -> EdgeLab: kernels + paridad + visor multi-run. |
 | `tools/run_overnight_master.py` | Master Overnight Orchestrator for EdgeLab (2026-08-26). |
+| `tools/run_suite_estabilidad_20261125.py` | Runner unificado de la Suite de Rentabilidad y Estabilidad (2026-11-25): EXP-1 a EXP-6C. |
 | `tools/run_synthetic_smoke_census.py` | Reproducible runner for synthetic geometric bands software smoke census. |
 | `tools/run_visual_configurations.py` | Causal configuration runner and density field evaluation script for HP007-CAMP-002. |
 | `tools/salidas_r.py` | Políticas de salida y filtros comunes en R (docs/research/programa_r_20261103/PREREGISTRO_SALIDAS_Y_FILTROS.md), evaluados OFFLINE |
