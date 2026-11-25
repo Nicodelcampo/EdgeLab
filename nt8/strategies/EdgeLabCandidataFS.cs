@@ -85,7 +85,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Risk1R_USD = 200.0;
                 MaxContratosPorModulo = 20;
                 MaxContratosNetos = 20;
-                ContratosFijos = 0;
+                ContratosFijos = 1;                   // por defecto: 1 contrato (paridad en puntos)
                 HardFlattenHHMM_ET = 1640;
                 EnableNewsVeto = true;
                 NewsBeforeMin = 2.0; NewsAfterMin = 2.0; FomcBeforeMin = 5.0; FomcAfterMin = 5.0;
@@ -158,6 +158,10 @@ namespace NinjaTrader.NinjaScript.Strategies
                     _adapter.SetNewsVeto(cal);
                     Print("EdgeLab news veto: " + cal.Status);
                 }
+                if (ContratosFijos == 0)
+                    Print("EdgeLabCandidataFS AVISO: sizing por riesgo con 1R=$" + Risk1R_USD + " y $" + spec.PointValue
+                          + "/punto: una operacion con stop mayor a " + (Risk1R_USD / 0.55 / spec.PointValue).ToString("F1")
+                          + " pts NO entra (0 contratos). En NQ/ES enteros usar 1R >= $2000 o contratos fijos.");
                 Print("EdgeLabCandidataFS " + Modulo + " en " + spec.Root + " (" + ev + "), 1R=$" + Risk1R_USD + ", PV=" + spec.PointValue
                       + ", friccion " + spec.FrictionPts + " pts, CSV " + csv);
             }
