@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-746 scripts.
+747 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -290,6 +290,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/exec_qi_nt8_compare.py` | EXEC-QI, validación de fills: lee los CSV de EdgeLabExecQIProbe (NT8) y compara. |
 | `tools/existente.py` | Antes de construir, buscar lo que ya existe (pedido de Nico, 2026-10-24: «la mayoría de las herramientas ya se encuentran |
 | `tools/exp7_estabilizadores.py` | EXP-7 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP7_ESTABILIZADORES.md`, contado: 12 pruebas). |
+| `tools/exp8_mitigacion.py` | EXP-8 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP8_MITIGACION.md`, contado: 24 pruebas). |
 | `tools/explo_asimetria_excursion.py` | Exploración (descriptiva, sin decisión): asimetría de la excursión posterior a la creación de zonas. |
 | `tools/explo_edgereplica_mgc_20261006.py` | Exploración (decisión de Nico 2026-10-06, sin custodia de holdout): EdgeReplica en MNQ 12-26 y celda MGC 04:15 |
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |

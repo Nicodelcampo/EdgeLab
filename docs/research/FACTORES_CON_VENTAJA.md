@@ -200,10 +200,15 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (31)
+## PALANCA_DE_DISENO (32)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
+  - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
+  - Dónde: Cartera NT8 NQ/ES, 1 R por operación
+  - Siguiente: Usar como regla de tamaño de la cartera; traducir pesos a riesgo por operación en NT8 (peso × 1R) y verificar con el preset de cuenta.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
 - **Antes de ensanchar el stop para bajar la fricción, mirar el bruto en PUNTOS por escala: si es constante, la ventaja es un monto fijo por operación y escalar no cambia el neto; la palanca es el tamaño (contrato fijo o ∝1/√riesgo), no el stop** (`F-VENTAJA-EN-PUNTOS-NO-ESCALA`, 2026-11-19, humano)
   - Efecto: RQ5/RQ6 (Roboquant) en DESC 2006–2025: bruto en puntos ≈ constante de m=1 a m=3 (RQ5 NQ +5,1 a +6,9 pts) mientras el bruto en R cae 0,062 → 0,018; neto en R ≈ −0,01 en toda la curva, pero +3,6 pts/op con contrato fijo en NQ. | 2026-11-19 (grilla de REGIMEN-SOM-FRANKLIN, descriptivo): SOM NQ bruto 5,2/5,6/4,7 pts con stop 6/8/10 ATR (R bruto 0,084→0,056), ES 0,6/0,9/0,85, YM 3,4/3,4/4,6; Franklin stop rango vs 0,5·ATR20 parecido en puntos. El stop tampoco es palanca en SOM ni Franklin. | TAMANO-K52 2026-11-19: con contratos ∝ 1/ATR20 (sin sesgo de nivel de precio) el tamaño NO mejora RQ5, RQ6, SOM ni Franklin (Δ ≈ 0): las mejoras de contrato fijo eran K52.
   - Dónde: ES, NQ futuros M1; intradía de momentum
@@ -450,7 +455,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (65)
+## NO_REPETIR (66)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -459,6 +464,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES, corridas NT8 2020–2025
   - Siguiente: No repetir la entrada en retroceso de rupturas de la mañana; una variante distinta debe atacar la selección adversa (p. ej. condición previa), no el precio de entrada.
   - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
+- **Filtro por estado de la apertura de las 20 sesiones previas (cont_orb, ac5_manana, frac_noche vs mediana expansiva) sobre T, R, Z, V, RQ5 NQ/ES, ES5N, Franklin** (`F-ESTADO-APERTURA-20S-NO-FILTRA`, 2026-11-25, sesion)
+  - Efecto: 0/24 en BH en DESC 2020–2025; el mejor (RQ5_NQ × ac5, p 0,0045) da al revés en REP (−0,20 R/op). MDE 0,16–0,47 R/op.
+  - Dónde: NQ/ES, corridas NT8
+  - Siguiente: No repetir interruptores de régimen de 20 sesiones sobre estas reglas; la caída no se apaga con este tipo de estado.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
 - **BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)** (`F-BAJA-FRICCION-A5-BF1-BF8`, 2026-11-24, sesion)
   - Efecto: 20 años DESC (n 3.007–10.708): 0/8 pasan BH q 0,10; Fut −0,022 a −0,051 R (t −1,33 a −5,47); CFD −0,002 a −0,023 R. BF1 ESNQ 20+ +0,059 (t 2,19) sin fuerza en Full ni BH.
   - Dónde: ES/NQ fut y CFD, DESC
