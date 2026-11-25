@@ -68,7 +68,9 @@ def main(argv=None) -> int:
     nt = leer_nt8(a.nt8)
     py, veto_py = py_con_veto(pd.read_csv(a.py), a.inst)
     t_ini = pd.Timestamp(int(nt.en_ns.min()), unit="ns", tz="UTC") + pd.DateOffset(months=a.calentamiento_meses)
-    t_fin = pd.Timestamp(int(nt.en_ns.max()), unit="ns", tz="UTC")
+    from edgelab.holdout import HOLDOUT_APERTURA_UTC_NS
+    t_fin = min(pd.Timestamp(int(nt.en_ns.max()), unit="ns", tz="UTC"),
+                pd.Timestamp(HOLDOUT_APERTURA_UTC_NS, unit="ns", tz="UTC") - pd.Timedelta(seconds=1))   # nunca el holdout terminal
     win = lambda d: d[(d.en_ns >= t_ini.value) & (d.en_ns <= t_fin.value)]
     ntw, pyw = win(nt), win(py[py.veto != "anulada"])
     # 1. paridad de entradas (minuto + lado). La referencia Python sólo trae sesiones DESC/REP de A5 (su overlay excluye
