@@ -8,7 +8,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `749` campanas / `538,656,978` pruebas registradas
+- Contador global: `750` campanas / `538,656,990` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
@@ -30,7 +30,8 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
   - `F-Z-TRANSFER-RTY` (2026-11-19): Z (ZetaTrend de FundedSync, fábrica, stop 0,25 × ATR20) en Russell (RTY) y MidCap (EMD), nu…
 - Canastas papel: Cartera v2 (2026-11-16) — 8 reglas, base de `SELECCION… | Cartera v3 (2026-11-16) — 8 reglas (forward en paralel… | Cartera B (2026-11-16) — T + Z + R de FundedSync en MN…
 
-## 4. Bloqueado / NO_REPETIR (64 vigentes en FACTORES.jsonl)
+## 4. Bloqueado / NO_REPETIR (65 vigentes en FACTORES.jsonl)
+- `F-ENTRADA-RETROCESO-SELECCION-ADVERSA` (2026-11-25): Entrar en el retroceso (límite a k=0,25/0,50 del riesgo, 30 min) en vez de en…
 - `F-Z-RTY-REP-COLAPSA` (2026-11-24): Z (ZetaTrend) en Russell M2K — supera a F-Z-TRANSFER-RTY
 - `F-RQ6-ES-NQ` (2026-11-24): RQ6 ES/NQ
 - `F-RQ2-ES-NQ` (2026-11-24): RQ2 ES/NQ
@@ -66,8 +67,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - `F-AUDITORIA-UNIDADES-Y-VIEJAS` (2026-11-18): Errores de unidad y escala: medir en ATR módulos que arriesgan mucho menos qu…
 - `F-ATRAS-M1-V2V4-REFUTADA` (2026-11-18): Reglas elegidas por el embudo en 14 meses de ticks (ago-25 → sep-26) no tenía…
 - `F-ASIA-NQ-NOCHE-MOVIDA` (2026-11-18): ASIA-NQ (regla de papel congelada) sólo con rango nocturno relativo ALTO (ter…
-- `F-SQX-CATALOGO-NO` (2026-11-17): Catálogo SQX tal cual: range breakout 13:00 (6E, CL), inside bar H4 (GC, CL,…
-- Ver lista completa `NO_REPETIR` (64) en `docs/research/FACTORES.jsonl`
+- Ver lista completa `NO_REPETIR` (65) en `docs/research/FACTORES.jsonl`
 
 ## 5. Holdout Consumido y Aperturas
 - Familias con sesiones miradas: `AREAS_EXP_1_CRUZADO`<=20261022, `LUXIMB_FADE_VISOR`<=20261021

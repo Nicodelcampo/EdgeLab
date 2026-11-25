@@ -360,7 +360,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (16)
+## EN_SEGUIMIENTO (17)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -369,6 +369,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
   - Siguiente: EXP-7 estabilizadores pre-registrado: reversión de corto plazo en la mañana y captura del movimiento nocturno, evaluados en toda la historia y por correlación condicional con las de la mañana.
   - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_DIAG_CAIDA_2026.md`, `docs/research/caida_2026_20261125/PARTE_B_PERCENTILES.json`
+- **Estabilizadoras de la canasta de la mañana: C2_VZ, SOM sin_finde, OVERNIGHT-INV NQ/ES, KALMAN-FADE NQ** (`F-ESTABILIZADORES-MANANA-SIN-POTENCIA`, 2026-11-25, sesion)
+  - Efecto: 0/6 en BH. C2_VZ con el signo buscado (DESC: meses malos +0,26 NQ / +0,20 ES vs buenos +0,19 / +0,06, corr −0,24 / −0,17; 2026 corr −0,30 / −0,50) pero no en REP y sin potencia. SOM sin_finde pierde en los meses malos (corr +0,30). OVN_ES y KAL_NQ negativas (refutadas como estabilizadoras).
+  - Dónde: Meses A5 2020–2025
+  - Siguiente: C2_VZ es la única candidata a contrapeso; seguirla en forward y medir el efecto en cartera con sizing de riesgo constante.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
 - **Reglas del Marketplace de Roboquant en futuros: RQ5 banda de ruido de Zarattini, RQ6 retroceso al VWAP en día de tendencia, RQ2 reversión al mínimo previo, RQ1 ORB 10:00 con salida a 8 min** (`F-ROBOQUANT-BRUTO-SIN-NETO`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM: 5/15 nominadas (RQ1 +0,039, RQ2 +0,073, RQ5 +0,062, RQ6 +0,054 R bruto, p ≤ 0,03, 70–75 % de años, parejo en 3 índices; RQ2−RQ2N +0,136). R neto negativo en las 4 (fricción 0,07–0,18 R); neto operable RQ5 +0,035, RQ6 +0,036. REP sin leer: K49, potencia en días 0,04–0,07. | FRICCION-RQ 2026-11-19: ensanchar el stop no sirve en RQ5/RQ6 (bruto en puntos constante: la ventaja es un monto fijo); RQ2 llega a +0,016 R con 2× sin pasar. Con contrato fijo RQ5 NQ +3,6 pts/op neto (t 2,0), RQ6 NQ +2,4 (t 1,8), ES positivos chicos, YM no (exploratorio).
   - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
@@ -445,10 +450,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (64)
+## NO_REPETIR (65)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Entrar en el retroceso (límite a k=0,25/0,50 del riesgo, 30 min) en vez de en la ruptura, para T_NQ, RQ5_NQ y RQ5_ES** (`F-ENTRADA-RETROCESO-SELECCION-ADVERSA`, 2026-11-25, sesion)
+  - Efecto: DESC: diferencia mensual −0,6 a −2,3 R (p 0,81–1,00); REP también negativa salvo RQ5_ES k0,25 (+0,11). Se llena sobre las que iban a perder (R original −0,15 a −0,49) y pierde las ganadoras.
+  - Dónde: NQ/ES, corridas NT8 2020–2025
+  - Siguiente: No repetir la entrada en retroceso de rupturas de la mañana; una variante distinta debe atacar la selección adversa (p. ej. condición previa), no el precio de entrada.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
 - **BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)** (`F-BAJA-FRICCION-A5-BF1-BF8`, 2026-11-24, sesion)
   - Efecto: 20 años DESC (n 3.007–10.708): 0/8 pasan BH q 0,10; Fut −0,022 a −0,051 R (t −1,33 a −5,47); CFD −0,002 a −0,023 R. BF1 ESNQ 20+ +0,059 (t 2,19) sin fuerza en Full ni BH.
   - Dónde: ES/NQ fut y CFD, DESC
