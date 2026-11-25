@@ -44,7 +44,7 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--variante", required=True)
     ap.add_argument("--inst", default="NQ")
-    ap.add_argument("--desde", default="2008-01-02")
+    ap.add_argument("--desde", default="2019-01-02")   # mismo inicio que el Strategy Analyzer (2019 = calentamiento)
     ap.add_argument("--hasta", default="2026-09-30")   # último día antes del holdout (HOLDOUT-A4)
     ap.add_argument("--out", type=Path, required=True)
     a = ap.parse_args(argv)
@@ -53,9 +53,9 @@ def main(argv=None) -> int:
         raise SystemExit("variante externa o de banda: no soportada acá")
     t0 = time.time()
     pq = M1_DIR / f"{a.inst}_M1_nonadj_utc.parquet"
-    raw = pd.read_parquet(pq, filters=[("datetime", ">=", pd.Timestamp(a.desde) - pd.Timedelta(days=400)),
+    raw = pd.read_parquet(pq, filters=[("datetime", ">=", pd.Timestamp(a.desde)),   # misma fecha de inicio que la corrida de NT8
                                        ("datetime", "<", pd.Timestamp(a.hasta) + pd.Timedelta(days=1))]).reset_index()
-    df_m1 = load_m1_data(raw, start=None, end=a.hasta, tz_input="UTC", allow_sellado=False)   # 400 días antes: calentamiento
+    df_m1 = load_m1_data(raw, start=None, end=a.hasta, tz_input="UTC", allow_sellado=False)
     ms = build_multi_series(df_m1, tz_input="UTC", allow_sellado=False)
     ops = correr_modulo(sp["modulo"], ms, perfil="il_fabrica", **sp["params"])
     print(f"[{time.time() - t0:.0f}s] módulo {sp['modulo']} de fábrica: {len(ops)} operaciones")

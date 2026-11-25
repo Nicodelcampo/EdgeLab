@@ -85,6 +85,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 Risk1R_USD = 200.0;
                 MaxContratosPorModulo = 20;
                 MaxContratosNetos = 20;
+                ContratosFijos = 0;
                 HardFlattenHHMM_ET = 1640;
                 EnableNewsVeto = true;
                 NewsBeforeMin = 2.0; NewsAfterMin = 2.0; FomcBeforeMin = 5.0; FomcAfterMin = 5.0;
@@ -137,6 +138,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 coord.MaxOpenR = 1.0;
                 coord.MaxMicroContracts = MaxContratosPorModulo;
                 coord.MaxNetContracts = MaxContratosNetos;
+                coord.FixedContracts = ContratosFijos;
                 coord.CollisionPolicy = FundedSyncCollisionPolicy.Independent;
                 coord.HardFlattenHHMM_ET = HardFlattenHHMM_ET;
                 coord.EnforceEvalDailyCap = false;
@@ -173,6 +175,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty] [Range(10.0, 5000.0)] [Display(Name = "Riesgo 1R USD", Order = 3, GroupName = "02. Riesgo")] public double Risk1R_USD { get; set; }
         [NinjaScriptProperty] [Range(1, 200)] [Display(Name = "Max contratos por modulo", Order = 4, GroupName = "02. Riesgo")] public int MaxContratosPorModulo { get; set; }
         [NinjaScriptProperty] [Range(1, 200)] [Display(Name = "Max contratos netos", Order = 5, GroupName = "02. Riesgo")] public int MaxContratosNetos { get; set; }
+        [NinjaScriptProperty] [Range(0, 50)] [Display(Name = "Contratos fijos (0 = por riesgo)", Order = 7, GroupName = "02. Riesgo")] public int ContratosFijos { get; set; }
         [NinjaScriptProperty] [Range(1500, 2400)] [Display(Name = "Cierre forzado HHMM ET", Order = 6, GroupName = "02. Riesgo")] public int HardFlattenHHMM_ET { get; set; }
         [NinjaScriptProperty] [Display(Name = "Veto de noticias", Order = 10, GroupName = "03. Noticias")] public bool EnableNewsVeto { get; set; }
         [NinjaScriptProperty] [Range(0, 60)] [Display(Name = "Minutos antes", Order = 11, GroupName = "03. Noticias")] public double NewsBeforeMin { get; set; }

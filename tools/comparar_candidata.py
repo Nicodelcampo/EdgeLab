@@ -23,6 +23,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from edgelab import veto_noticias as VN  # noqa: E402
+from edgelab.holdout import a5_bloque  # noqa: E402
 
 NY = "America/New_York"
 
@@ -70,9 +71,11 @@ def main(argv=None) -> int:
     t_fin = pd.Timestamp(int(nt.en_ns.max()), unit="ns", tz="UTC")
     win = lambda d: d[(d.en_ns >= t_ini.value) & (d.en_ns <= t_fin.value)]
     ntw, pyw = win(nt), win(py[py.veto != "anulada"])
-    # 1. paridad de entradas (minuto + lado)
+    # 1. paridad de entradas (minuto + lado). La referencia Python sólo trae sesiones DESC/REP de A5 (su overlay excluye
+    #    holdout y embargo): la paridad se mide en esas sesiones; frecuencia y sizing, sobre todo lo que operó NT8.
+    ntp = ntw[ntw.fecha_int.map(lambda f: a5_bloque(int(f)) in ("DESC", "REP"))]
     key = lambda d: set(zip((d.en_ns // 60_000_000_000).astype(np.int64), d.side.astype(int)))
-    kn, kp = key(ntw), key(pyw)
+    kn, kp = key(ntp), key(pyw)
     exactas = kn & kp
     cerca = {x for x in kn - kp if (x[0] - 1, x[1]) in kp or (x[0] + 1, x[1]) in kp}
     # 2. veto
@@ -89,7 +92,7 @@ def main(argv=None) -> int:
     res = dict(
         ventana=[str(t_ini.date()), str(t_fin.date())], calentamiento_meses=a.calentamiento_meses,
         n_nt8=len(ntw), n_python=len(pyw), ops_mes_nt8=round(len(ntw) / meses, 2), ops_mes_python=round(len(pyw) / meses, 2),
-        entradas_exactas=len(exactas), entradas_a_1_min=len(cerca), solo_nt8=len(kn - kp - cerca), solo_python=len(kp - kn),
+        n_nt8_desc_rep=len(ntp), entradas_exactas=len(exactas), entradas_a_1_min=len(cerca), solo_nt8=len(kn - kp - cerca), solo_python=len(kp - kn),
         pct_paridad_exacta=round(100 * len(exactas) / max(1, len(kp)), 2),
         veto_python=veto_py, cierres_news_veto_nt8=veto_nt8,
         pnl_pts_nt8=round(float(ntw.pnl_pts.sum()), 2), pnl_pts_python_con_veto=round(float(pyw.pnl_pts_veto.sum()), 2),

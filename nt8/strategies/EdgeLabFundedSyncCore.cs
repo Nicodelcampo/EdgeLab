@@ -2054,6 +2054,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public bool DailyLossTriggeredToday { get; private set; }
         public NewsVetoCalendar NewsVeto;              // null = veto off
         public int MaxNetContracts = 0;                // 0 = sin tope; > 0: |posicion neta| nunca lo supera
+        public int FixedContracts = 0;                 // 0 = sizing por riesgo; > 0: cantidad fija (paridad en puntos)
         public bool NewsVetoActiveNow { get; private set; }
 
         public string CsvLogPath;
@@ -2334,6 +2335,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             double r1Mic = Math.Max(riskPts * MicroPointValue, 1e-6);
             int qty = (int)Math.Min(MaxMicroContracts, Math.Max(0, Math.Round(tgtUsd / r1Mic)));
             if (qty == 0 && tgtUsd >= 0.55 * r1Mic) qty = 1;
+            if (FixedContracts > 0) qty = FixedContracts;
             if (MaxNetContracts > 0)
             {
                 int sameDir = Math.Max(0, side * TargetNetMicros);
