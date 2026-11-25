@@ -1927,6 +1927,66 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
     // -------------------------------------------------------------------------
     // Coordinator: Virtual Sleeves, MaxOpenR, CollisionPolicy, Compliance, CSV
     // -------------------------------------------------------------------------
+    // News veto (EdgeLab, 2026-11-25). Same rule as edgelab/veto_noticias.py: window [event - before, event + after]
+    // (closed) for every tier1 event of config/noticias/calendario_usd_tier1.csv; FOMC_* events use the FOMC window.
+    // Inside a window: no new entries and every open position is closed. Fail-closed: if the file is missing or the
+    // calendar does not cover the bar date, BlocksAt returns true (no trading) and Status says why.
+    public sealed class NewsVetoCalendar
+    {
+        private readonly List<long> _ini = new List<long>();
+        private readonly List<long> _fin = new List<long>();
+        private DateTime _lastEventUtc = DateTime.MinValue;
+        private DateTime _firstEventUtc = DateTime.MaxValue;
+        public string Status { get; private set; }
+        public int EventCount { get; private set; }
+
+        public NewsVetoCalendar(string csvPath, double beforeMin, double afterMin, double fomcBeforeMin, double fomcAfterMin)
+        {
+            var raw = new List<KeyValuePair<long, long>>();
+            if (string.IsNullOrEmpty(csvPath) || !File.Exists(csvPath))
+            {
+                Status = "NEWS_CALENDAR_MISSING " + csvPath;
+                return;
+            }
+            string[] lines = File.ReadAllLines(csvPath);
+            for (int i = 1; i < lines.Length; i++)
+            {
+                string[] c = lines[i].Split(',');
+                if (c.Length < 4 || c[3].Trim() != "tier1") continue;
+                DateTime t;
+                if (!DateTime.TryParseExact(c[0].Trim(), "yyyy-MM-ddTHH:mmZ", CultureInfo.InvariantCulture,
+                        DateTimeStyles.AdjustToUniversal | DateTimeStyles.AssumeUniversal, out t)) continue;
+                bool fomc = c[1].StartsWith("FOMC_");
+                double b = fomc ? fomcBeforeMin : beforeMin, a = fomc ? fomcAfterMin : afterMin;
+                raw.Add(new KeyValuePair<long, long>(t.AddMinutes(-b).Ticks, t.AddMinutes(a).Ticks));
+                if (t > _lastEventUtc) _lastEventUtc = t;
+                if (t < _firstEventUtc) _firstEventUtc = t;
+            }
+            raw.Sort((x, y) => x.Key.CompareTo(y.Key));
+            foreach (var kv in raw)
+            {
+                int n = _ini.Count;
+                if (n > 0 && kv.Key <= _fin[n - 1]) { if (kv.Value > _fin[n - 1]) _fin[n - 1] = kv.Value; }
+                else { _ini.Add(kv.Key); _fin.Add(kv.Value); }
+            }
+            EventCount = raw.Count;
+            Status = raw.Count > 0 ? "OK " + raw.Count + " events " + _firstEventUtc.ToString("yyyy-MM-dd") + ".." + _lastEventUtc.ToString("yyyy-MM-dd")
+                                   : "NEWS_CALENDAR_EMPTY " + csvPath;
+        }
+
+        public bool Covers(DateTime utc) { return EventCount > 0 && utc >= _firstEventUtc.Date && utc <= _lastEventUtc.Date.AddDays(1); }
+
+        public bool InWindow(DateTime utc)
+        {
+            long t = utc.Ticks;
+            int lo = 0, hi = _ini.Count - 1, k = -1;
+            while (lo <= hi) { int m = (lo + hi) / 2; if (_ini[m] <= t) { k = m; lo = m + 1; } else hi = m - 1; }
+            return k >= 0 && t <= _fin[k];
+        }
+
+        public bool BlocksAt(DateTime utc) { return !Covers(utc) || InWindow(utc); }
+    }
+
     public sealed class PortfolioCoordinator
     {
         public readonly Dictionary<string, VirtualSleeve> Sleeves = new Dictionary<string, VirtualSleeve>();
@@ -1954,6 +2014,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public bool HardFlattenedToday { get; private set; }
         public bool DailyCapTriggeredToday { get; private set; }
         public bool DailyLossTriggeredToday { get; private set; }
+        public NewsVetoCalendar NewsVeto;              // null = veto off
+        public bool NewsVetoActiveNow { get; private set; }
 
         public string CsvLogPath;
         public bool EnableCsvLog;
@@ -2083,7 +2145,11 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                 FlattenAllImmediate(bar.Close, bar.CloseNy, "DAILY_LOSS_LIMIT");
             }
 
-            EntriesAllowedNow = !HardFlattenedToday && !DailyCapTriggeredToday && !DailyLossTriggeredToday && !inPreBreakFlattenWindow;
+            bool newsVeto = NewsVeto != null && NewsVeto.BlocksAt(bar.CloseUtc);
+            if (newsVeto) FlattenAllImmediate(bar.Close, bar.CloseNy, "NEWS_VETO");
+            NewsVetoActiveNow = newsVeto;
+
+            EntriesAllowedNow = !HardFlattenedToday && !DailyCapTriggeredToday && !DailyLossTriggeredToday && !inPreBreakFlattenWindow && !newsVeto;
 
             // 5. Run all 7 module signal engines on bar close
             for (int i = 0; i < _engines.Count; i++)

@@ -54,6 +54,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 
         private readonly Strategy _strat;
         private readonly PortfolioCoordinator _coord;
+        public void SetNewsVeto(NewsVetoCalendar cal) { _coord.NewsVeto = cal; }
         private readonly string _label;
         private readonly bool _hasSecondaryMnq;
         private TimeZoneInfo _chartTz;
@@ -681,6 +682,13 @@ namespace NinjaTrader.NinjaScript.Strategies
                 ParityCsvFileName = "EdgeLab_FundedSync_ParityTrades.csv";
                 EnableExecAuditLog = true;
                 ExecAuditFileName = "";
+
+                EnableNewsVeto = true;
+                NewsBeforeMin = 2.0;
+                NewsAfterMin = 2.0;
+                FomcBeforeMin = 5.0;
+                FomcAfterMin = 5.0;
+                NewsCalendarPath = "";
             }
             else if (State == State.Configure)
             {
@@ -715,6 +723,15 @@ namespace NinjaTrader.NinjaScript.Strategies
                     rSlAtr: RSlAtrK,
                     enableExecAuditLog: EnableExecAuditLog,
                     execAuditFileName: ExecAuditFileName);
+                if (EnableNewsVeto)
+                {
+                    string calPath = string.IsNullOrWhiteSpace(NewsCalendarPath)
+                        ? Path.Combine(NinjaTrader.Core.Globals.UserDataDir, "EdgeLab", "noticias", "calendario_usd_tier1.csv")
+                        : NewsCalendarPath.Trim();
+                    var cal = new NewsVetoCalendar(calPath, NewsBeforeMin, NewsAfterMin, FomcBeforeMin, FomcAfterMin);
+                    _adapter.SetNewsVeto(cal);
+                    Print("EdgeLab news veto: " + cal.Status + " (fail-closed: no trading outside calendar coverage)");
+                }
                 Print("EdgeLabFundedSyncPortfolio initialized. Preset=" + Preset + " Profile=" + PropProfile + " (>= 500 trading days M1 ETH required).");
             }
         }
@@ -839,6 +856,34 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty]
         [Display(Name = "Exec Audit CSV File (Optional)", Order = 51, GroupName = "05. Execution Audit")]
         public string ExecAuditFileName { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "Enable News Veto", Order = 60, GroupName = "06. News Veto")]
+        public bool EnableNewsVeto { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 60)]
+        [Display(Name = "Minutes Before News", Order = 61, GroupName = "06. News Veto")]
+        public double NewsBeforeMin { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 60)]
+        [Display(Name = "Minutes After News", Order = 62, GroupName = "06. News Veto")]
+        public double NewsAfterMin { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 60)]
+        [Display(Name = "Minutes Before FOMC", Order = 63, GroupName = "06. News Veto")]
+        public double FomcBeforeMin { get; set; }
+
+        [NinjaScriptProperty]
+        [Range(0, 60)]
+        [Display(Name = "Minutes After FOMC", Order = 64, GroupName = "06. News Veto")]
+        public double FomcAfterMin { get; set; }
+
+        [NinjaScriptProperty]
+        [Display(Name = "News Calendar CSV (Optional)", Order = 65, GroupName = "06. News Veto")]
+        public string NewsCalendarPath { get; set; }
         #endregion
     }
 }

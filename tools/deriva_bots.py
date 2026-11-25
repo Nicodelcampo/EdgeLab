@@ -28,6 +28,7 @@ def _txt(p: Path) -> str:
 def pares() -> list[tuple[str, Path, Path]]:
     """(plataforma, archivo del repo, copia instalada) para todo lo que el sync instala."""
     out = [("NT8", f, S.NT8_USER_STRAT / f.name) for f in sorted(S.NT8_DIR.glob("*.cs"))]
+    out.append(("NT8", ROOT / "config" / "noticias" / "calendario_usd_tier1.csv", S.NT8_CAL_DST))
     for label, mql5, _ in S.MT5_TERMINALS:
         for sub, pat in (("Include", "*.mqh"), ("Experts", "*.mq5")):
             for f in sorted((S.MT5_DIR / sub / "EdgeLabFundedSync").glob(pat)):

@@ -187,6 +187,7 @@ CSC_EXE, WPF_DIR = discover_csc_and_wpf()
 CALGO_ROBOTS, CALGO_API_DLL = discover_calgo_paths()
 NT8_USER_STRAT, NT8_CORE_DLL, NT8_GUI_DLL, NT8_CUSTOM_DLL = discover_nt8_paths()
 MT5_TERMINALS = discover_mt5_terminals()
+NT8_CAL_DST = NT8_USER_STRAT.parents[2] / "EdgeLab" / "noticias" / "calendario_usd_tier1.csv"
 
 
 def to_crlf_ascii(text: str) -> bytes:
@@ -373,6 +374,14 @@ def sync_and_compile_nt8(install: bool = True, compile_check: bool = True) -> No
             write_crlf_ascii(NT8_USER_STRAT / fname, txt)
             print(f"[NT8] Installed -> {NT8_USER_STRAT / fname}")
 
+    # calendario de noticias que lee el veto (NewsVetoCalendar): Documents/NinjaTrader 8/EdgeLab/noticias/
+    cal_src = ROOT / "config" / "noticias" / "calendario_usd_tier1.csv"
+    if install and NT8_USER_STRAT.exists():
+        cal_dst = NT8_CAL_DST
+        cal_dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(cal_src, cal_dst)
+        print(f"[NT8] Calendario de noticias -> {cal_dst}")
+
     if compile_check:
         if not (CSC_EXE.exists() and NT8_CORE_DLL.exists() and NT8_GUI_DLL.exists() and NT8_CUSTOM_DLL.exists()):
             print(
@@ -386,6 +395,7 @@ def sync_and_compile_nt8(install: bool = True, compile_check: bool = True) -> No
                 "/nologo",
                 "/target:library",
                 "/warnaserror",
+                "/nowarn:0436",   # mismas clases ya compiladas en NinjaTrader.Custom.dll (instalación previa): esperado
                 f"/out:{out_dll}",
                 "/r:System.dll",
                 "/r:System.Core.dll",
