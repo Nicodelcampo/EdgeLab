@@ -61,3 +61,17 @@ Episodios: la cartera CFD swing tuvo su peor tramo en 2022 (de ≈ +35 a +17 R) 
 - La CFD swing es más floja (t 2,6), con DESC casi plano y HOLDOUT positivo sin significancia (t 1,57). Su valor principal es que va al
   revés de la intradía (−0,22).
 - La CFD se midió sobre precios de futuros; los costos y el horario de los CFD pueden cambiarla.
+
+## Adenda 2: corrección de Nico, sin Turtles; las dos carteras del 25-nov (`EdgeLabCartera`, presets Intradía e Interdía)
+Gráfico: `CURVAS_INTRADIA_VS_INTERDIA.png`. Datos: `INTRADIA_VS_INTERDIA.json`. Las dos en USD con 1 micro, de 2019-07 a 2026-09.
+
+| Cartera | DESC | REP | HOLDOUT | Todo | Caída máx. |
+|---|---|---|---|---|---|
+| Intradía (MNQ: T, R, Z, V, RQ5, Franklin; MES: RQ5, ES5N) | +1.622, t 3,48 | +534, t 0,94 | +1.309, t 2,97 | +1.362, t 4,50, 63 % meses + | −13.964 |
+| Interdía / swing (MNQ: SOM sin finde, C2_VZ; MES: C2_VZ) | +501, t 2,09 | +792, t 2,01 | +495, t 1,59 | +574, t 3,31, 70 % meses + | −10.896 |
+
+Correlación mensual: +0,25.
+
+Episodios: la interdía tuvo su peor tramo en 2022; la intradía, desde junio de 2026.
+
+La adenda anterior (con Turtles) queda reemplazada por ésta.
