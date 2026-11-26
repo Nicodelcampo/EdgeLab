@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (41)
+## PISTA_VIVA (42)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,6 +24,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ, meses DESC/REP de A5 (holdout A5 no limpio para FundedSync)
   - Siguiente: O con tamaño fijo de 1 micro como candidata de cartera; N sigue en observación; confirmación limpia: forward.
   - Evidencia: `docs/research/fs_nfco_a5_20261126/RESULTADO.md`
+- **Carril 2 (24 definiciones) extendido a 2025-08 → 2026-09, sólo DESC/REP** (`F-CARRIL2-EXTENSION-2026`, 2026-11-26, humano)
+  - Efecto: C2_VZ NQ +0,104 / ES +0,179 (n 16/17); C2_VBBN NQ −0,29 y C2_TOMN −0,19 a −0,32 (n 7–8); lote 1 −0,033, lote 2 +0,023. Sin potencia.
+  - Dónde: ES/NQ/YM/RTY/GC M1 de NT8
+  - Siguiente: Sólo C2_VZ entra a la cartera; el resto espera forward o apertura del holdout A5 de CARRIL2_A5 con plan de potencia.
+  - Evidencia: `docs/research/carril2_extension_20261126/RESULTADO.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09

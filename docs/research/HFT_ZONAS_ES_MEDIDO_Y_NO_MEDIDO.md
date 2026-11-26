@@ -1473,3 +1473,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - la fracción en el tope de la variante de T (el kernel reporta el riesgo con el tope fijo);
   - O con tamaño fijo;
   - E con stop y objetivo en proporción.
+
+## 2026-11-26 — CARRIL2-EXTENSION
+- **MEDIDO:** 24 definiciones de Carril 2 hasta 2026-09 (DESC/REP). `docs/research/carril2_extension_20261126/RESULTADO.md`.
+- **NO MEDIDO:** el holdout A5 de CARRIL2_A5 (sin abrir).
