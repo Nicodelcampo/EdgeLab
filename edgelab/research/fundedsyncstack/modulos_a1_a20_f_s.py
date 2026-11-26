@@ -146,6 +146,7 @@ class FabioConfig:
     disable_delta_filter: bool = False
     max_initial_risk_atr: float = 0.0
     max_initial_risk_points: float = 125.0
+    escala_precio_ref: float = 0.0   # EdgeLab (ADAPTAR-PRESENTE): > 0 escala el tope en puntos por entry_ref / ref; 0 = vendedor
     loss_cooldown_bars: int = 0
     atr_period: int = 14
     virtual_round_turn_commission: float = 4.36
@@ -1188,7 +1189,8 @@ def run_f(
                     atr_risk_ok = True
 
                 if cfg.max_initial_risk_points > 0.0:
-                    pts_risk_ok = risk <= cfg.max_initial_risk_points
+                    _esc = (entry_ref / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+                    pts_risk_ok = risk <= cfg.max_initial_risk_points * _esc
                 else:
                     pts_risk_ok = True
 

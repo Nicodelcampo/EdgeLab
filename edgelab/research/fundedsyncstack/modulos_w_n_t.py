@@ -195,6 +195,9 @@ class FtmConfig:
     stop_orb_multiplier: float = 1.25
     stop_min_points: float = 2.0
     stop_max_points: float = 100.0
+    # EdgeLab (ADAPTAR-PRESENTE, 2026-11-26): si > 0, los topes en puntos se escalan por precio_actual / escala_precio_ref
+    # (precio actual = medio del rango de apertura, causal). 0 = comportamiento del vendedor.
+    escala_precio_ref: float = 0.0
     high_orb_target_r: float = 1.25
     high_orb_trigger_r: float = 1.25
     high_orb_lock_r: float = 0.0
@@ -1493,7 +1496,8 @@ def run_t(
         side: int, parent_fill_open: float, prior_trend_avail: bool, prior_trend_bps: float
     ) -> _ShadowTradeState:
         entry_px = parent_fill_open + float(side) * float(cfg.shadow_slippage_ticks) * tick_size
-        raw_dist = max(cfg.stop_min_points, min(cfg.stop_max_points, (orb_high - orb_low) * cfg.stop_orb_multiplier))
+        _esc = (0.5 * (orb_high + orb_low) / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+        raw_dist = max(cfg.stop_min_points * _esc, min(cfg.stop_max_points * _esc, (orb_high - orb_low) * cfg.stop_orb_multiplier))
         stop_px = contracts.round_tick(entry_px - float(side) * raw_dist, tick_size)
         risk_pts = float(side) * (entry_px - stop_px)
         t_r, trig_r, lock_r, _ = _ftm_select_management_plan(
@@ -1576,7 +1580,8 @@ def run_t(
         if in_pos or pending_submit is not None:
             return
         is_long = side == 1
-        raw_dist = max(cfg.stop_min_points, min(cfg.stop_max_points, (orb_high - orb_low) * cfg.stop_orb_multiplier))
+        _esc = (0.5 * (orb_high + orb_low) / cfg.escala_precio_ref) if cfg.escala_precio_ref > 0.0 else 1.0
+        raw_dist = max(cfg.stop_min_points * _esc, min(cfg.stop_max_points * _esc, (orb_high - orb_low) * cfg.stop_orb_multiplier))
         stop_ticks = _ftm_round_price_offset_ticks(raw_dist, is_long, tick_size)
         target_r, trig_r, lock_r, _ = _ftm_select_management_plan(
             side=side,
