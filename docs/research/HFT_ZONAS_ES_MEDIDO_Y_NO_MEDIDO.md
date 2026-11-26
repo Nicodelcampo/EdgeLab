@@ -1452,3 +1452,7 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-21 — REMEDICION-FS-IL
 - **MEDIDO:** los 15 módulos con la traducción corregida; V pasa a t 2,87 desde 2022. `docs/research/remedicion_fs_il_20261121/RESULTADO.md`.
 - **NO MEDIDO:** la correlación de V con la canasta; A20-REGIMEN, FILTROS-CONTEXTO y CANASTA-CORRELACION con la A20 nueva.
+
+## 2026-11-26 — CARTERAS-LOCALES-CORRELACION
+- **MEDIDO:** correlación y curvas de INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2 y la canasta TRZQ, por bloque A5. `docs/research/carteras_locales_correlacion_20261126/RESULTADO.md`.
+- **NO MEDIDO:** el terminal de las carteras distintas de P_OPT_SF_v2.

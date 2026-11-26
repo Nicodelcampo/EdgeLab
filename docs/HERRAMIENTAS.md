@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-752 scripts.
+753 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -183,6 +183,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/cartera_nov_analisis.py` | Análisis de la cartera del período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md). |
 | `tools/cartera_tanda4.py` | Tanda 4 (pre-registro docs/research/cartera_20261116/PREREGISTRO_TANDA4.md). |
 | `tools/cartera_v2_forward.py` | Seguimiento forward de la cartera v2 con e-proceso (pre-registro docs/research/cartera_20261116/PREREGISTRO_FORWARD_V2.md). |
+| `tools/carteras_locales_correlacion.py` | CARTERAS-LOCALES-CORRELACION (2026-11-26): correlación y curvas de capital de las carteras de la sesión local (INTRADIA8, INTERDIA3, |
 | `tools/censo_es_nq.py` | CENSO DE INTEGRIDAD para `es_full_ticks` y `nq_ticks_clean`. |
 | `tools/censo_integridad.py` | CENSO DE INTEGRIDAD — todos los días de todos los parquets. |
 | `tools/censo_zonas_nq.py` | Censo target-free de zonas HFT sobre NQ, con barrido de umbrales gratis. |
