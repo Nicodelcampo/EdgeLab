@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-757 scripts.
+758 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -616,6 +616,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/registrar_campanias_20261020.py` | Registro retroactivo en el contador GLOBAL de las campanias con desenlaces corridas entre 2026-10-20 y 2026-10-22 |
 | `tools/registrar_resultado_h2_65s.py` | Registra los resultados de la corrida de 65 sesiones de H2 + Escalon 5 en documentacion y git. |
 | `tools/registro_global.py` | Contador GLOBAL de pruebas del proyecto (revisión 2026-10-04): consolida los registros por familia en un único |
+| `tools/regla_cartera.py` | REGLA-CARTERA (2026-11-26): regla fija de construcción de cartera por suma de estrategias decorrelacionadas (elegible t ≥ 1,5 y ≥ 60 % |
 | `tools/release_io.py` | Lector mínimo y seguro de la release `liquid_tick_v1` para scripts de research del repo de investigación. |
 | `tools/remediciones.py` | Re-mediciones candidatas: cruza los cambios de medición (docs/research/CAMBIOS_DE_MEDICION.jsonl) con el índice de familias y con |
 | `tools/remedir_canasta_causal.py` | Re-medición CAUSAL de las 7 reglas de la canasta del holdout (2026-11-02, Nico: «asegurate de que todas las estrategias sean |

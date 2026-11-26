@@ -1477,3 +1477,9 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-26 — CARRIL2-EXTENSION
 - **MEDIDO:** 24 definiciones de Carril 2 hasta 2026-09 (DESC/REP). `docs/research/carril2_extension_20261126/RESULTADO.md`.
 - **NO MEDIDO:** el holdout A5 de CARRIL2_A5 (sin abrir).
+
+## 2026-11-26 — REGLA-CARTERA
+- **MEDIDO:** regla fija de suma decorrelacionada con validación fuera de tiempo (2023-07 → 2026-09). `docs/research/regla_cartera_20261126/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el forward;
+  - F, C, N y O dentro de EdgeLabCartera en NT8.

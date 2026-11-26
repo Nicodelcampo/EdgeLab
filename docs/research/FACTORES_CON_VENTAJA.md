@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (42)
+## PISTA_VIVA (43)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -29,6 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: ES/NQ/YM/RTY/GC M1 de NT8
   - Siguiente: Sólo C2_VZ entra a la cartera; el resto espera forward o apertura del holdout A5 de CARRIL2_A5 con plan de potencia.
   - Evidencia: `docs/research/carril2_extension_20261126/RESULTADO.md`
+- **Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la cartera y ≤ 0,6 con cada miembro, riesgo parejo** (`F-REGLA-CARTERA-DECORRELACIONADA`, 2026-11-26, humano)
+  - Efecto: Validación fuera de tiempo (selección 2019-07→2023-06, eval 2023-07→2026-09): Intradía Sharpe 2,01 vs 1,46 actual, caída −3.702 vs −13.964, meses + 64 % vs 56 %; Mixto 2,31 vs 1,90, caída −4.041 vs −15.311. Toda la ventana: Intradía = T, Z, F, V, RQ5 NQ, N, C (1 micro c/u).
+  - Dónde: MNQ/MES USD 1 micro, 2019-07 → 2026-09
+  - Siguiente: Forward de la cartera de la regla; preset nuevo en EdgeLabCartera (F, C, N y O necesitan motor NT8: hoy sólo existen en FundedSync).
+  - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09
