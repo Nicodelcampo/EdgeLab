@@ -51,7 +51,6 @@ def main():
     from registro_global import exigir_contada
     exigir_contada(DIR / "PREREGISTRO.md")
     from edgelab.holdout import a5_bloque
-    import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
     D = series(); D.to_csv(DIR / "SERIES_DIARIAS.csv.gz")
     blq = pd.Series([("TERMINAL" if s >= 20261001 else a5_bloque(s)) for s in D.index.strftime("%Y%m%d").astype(int)], index=D.index)
     D = D.T.groupby(level=0).sum(min_count=1).T if False else D
@@ -62,19 +61,7 @@ def main():
                corr_diaria_2025_2026=con.corr().round(3).to_dict(),
                por_bloque={c: {b: _st(D[c][blq == b]) for b in ("DESC", "REP", "HOLDOUT", "TERMINAL") if D[c][blq == b].notna().any()} | {"TODO": _st(D[c])} for c in D})
     (DIR / "RESULTADO.json").write_text(json.dumps(res, indent=1, ensure_ascii=False))
-    fig, axs = plt.subplots(len(D.columns), 1, figsize=(12, 13), sharex=True)
-    col = {"DESC": "#ffffff", "REP": "#e8f0fa", "HOLDOUT": "#fde9dc", "TERMINAL": "#e5e0f5", "EMBARGO": "#ffffff"}
-    for ax, c in zip(axs, D.columns):
-        x = D[c].dropna(); ax.plot(x.index, x.cumsum(), color="#2a6fb0", lw=1.4)
-        for b in ("HOLDOUT", "TERMINAL"):
-            m = (blq == b).reindex(x.index)
-            ax.fill_between(x.index, x.cumsum().min(), x.cumsum().max(), where=m.to_numpy(), color=col[b], lw=0, step="mid")
-        ax.plot(x.index, x.cumsum(), color="#2a6fb0", lw=1.4)
-        s = res["por_bloque"][c]["TODO"]; u = "USD (1 micro)" if c.endswith("usd") else "R"
-        ax.set_title(f"{c[:-4] if c.endswith('_usd') else c[:-2]} — {u}; {s['por_mes']:+.1f}/mes, t {s['t_mes']:.2f}, {s['pct_meses_pos']*100:.0f} % meses +", loc="left", fontsize=10)
-        for sp in ("top", "right"): ax.spines[sp].set_visible(False)
-    fig.suptitle("Curvas de capital (naranja: meses HOLDOUT A5; violeta: TERMINAL desde 1-oct-2026)", x=0.01, ha="left")
-    plt.tight_layout(); plt.savefig(DIR / "CURVAS_CAPITAL.png", dpi=130)
+    # las curvas (CURVAS_*.png) se graficaron aparte desde SERIES_DIARIAS.csv.gz: matplotlib no está en el entorno base del repo
     print(pd.DataFrame(res["corr_mensual_2019_2026"]).round(2)); print(pd.DataFrame(res["corr_mensual_2025_2026"]).round(2))
     for c, v in res["por_bloque"].items(): print(c, {b: (round(x["por_mes"], 2), round(x["t_mes"] or 0, 2), round(x["pct_meses_pos"], 2), x["meses"]) for b, x in v.items()})
 
