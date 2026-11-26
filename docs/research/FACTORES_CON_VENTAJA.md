@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (39)
+## PISTA_VIVA (40)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
   - Siguiente: Repartir cuentas entre una intradía y INTERDIA3; no apilar intradías.
   - Evidencia: `docs/research/carteras_locales_correlacion_20261126/RESULTADO.md`
+- **Caída de may–sep 2026 de la cartera Intradía (INTRADIA8) y mitigaciones/candidatas** (`F-CAIDA-2026-ESTRATEGIAS-DE-LA-MANANA`, 2026-11-26, humano)
+  - Efecto: INTRADIA8 −10.831 USD (percentil 99, 2.ª peor) concentrada en RQ5, Franklin y ES5N (percentil 96–99, ninguna pasa su peor caída); no es factor común (corr media 0,21 vs 0,26); NQ +10,6 % con vol baja. T, R, Z e Interdía ganaron. Mitigaciones: ninguna mejora Sharpe ≥ 0,2; el freno por curva de 3 m corta la caída máx. a la mitad (−13.964 → −7.661) a costa de Sharpe 1,80 → 1,67. Suman estabilidad: C2_VZ NQ/ES, N, F (FundedSync); INTERDIA3 + T+R+Z+F+Franklin+N: Sharpe 2,25, caída −9.101 (descriptivo).
+  - Dónde: MNQ/MES 1 micro, 2019-07 → 2026-09
+  - Siguiente: Re-medir Carril 2 hasta 2026-09; N y F por la cadena A5; vigilancia secuencial de RQ5/Franklin/ES5N; forward de la cartera mixta.
+  - Evidencia: `docs/research/estabilidad_cartera_20261126/RESULTADO.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09

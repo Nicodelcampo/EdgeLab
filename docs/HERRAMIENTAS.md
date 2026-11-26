@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-753 scripts.
+754 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -284,6 +284,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_semejanza_diag.py` | Diagnóstico target-free de la semejanza v1 vs v2 de ESPEJO-IND (2026-09-27). Sin desenlaces ni P&L. |
 | `tools/espejo_semejanza_nico.py` | Semejanza «a lo Nico» entre la ida A→B y la vuelta, validada contra sus órdenes por tandas de a tres (target-free). |
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
+| `tools/estabilidad_cartera.py` | ESTABILIDAD-CARTERA (2026-11-26): caída del final de las carteras INTRADIA8/INTERDIA3, mitigaciones declaradas (inverso de |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
 | `tools/estado_produccion.py` | Estado de producción: cuentas prop/demo, bot de cada una, reglas y auditorías de ejecución. |
 | `tools/eurusd_escalonadas_grid.py` | EURUSD-ESCALONADAS-ESCALAS — docs/research/eurusd_escalonadas_20261021/MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md |

@@ -1456,3 +1456,10 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 ## 2026-11-26 — CARTERAS-LOCALES-CORRELACION
 - **MEDIDO:** correlación y curvas de INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2 y la canasta TRZQ, por bloque A5. `docs/research/carteras_locales_correlacion_20261126/RESULTADO.md`.
 - **NO MEDIDO:** el terminal de las carteras distintas de P_OPT_SF_v2.
+
+## 2026-11-26 — ESTABILIDAD-CARTERA
+- **MEDIDO:** caída may–sep 2026 por estrategia; 3 mitigaciones walk-forward; tamiz de ≈ 60 series por aporte de estabilidad. `docs/research/estabilidad_cartera_20261126/RESULTADO.md`.
+- **NO MEDIDO:**
+  - Carril 2 (salvo C2_VZ/EVRP) después de 2025-07;
+  - N y F por la cadena A5;
+  - forward de la cartera mixta.

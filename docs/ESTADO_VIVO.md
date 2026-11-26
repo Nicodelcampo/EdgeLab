@@ -8,7 +8,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `753` campanas / `538,657,028` pruebas registradas
+- Contador global: `754` campanas / `538,657,029` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
@@ -21,13 +21,13 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 39 | Palancas (`PALANCA_DE_DISENO`): 37
+- Pistas vivas (`PISTA_VIVA`): 40 | Palancas (`PALANCA_DE_DISENO`): 37
   - `F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES` (2026-11-26): Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canast…
+  - `F-CAIDA-2026-ESTRATEGIAS-DE-LA-MANANA` (2026-11-26): Caída de may–sep 2026 de la cartera Intradía (INTRADIA8) y mitigaciones/candidatas
   - `F-FS-IL-REMEDICION-V-CANDIDATA` (2026-11-21): Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)
   - `F-RQ5-REGIMEN-ROBUSTO` (2026-11-20): RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025
   - `F-RQ5-HOLDOUT-NO-CONCLUYENTE` (2026-11-20): RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)
   - `F-CANASTA-T-R-Z-RQ5-DIVERSIFICA` (2026-11-20): Correlación y canasta de las fábricas A20, T, R, Z-banda y RQ5 (1 R por operación)
-  - `F-A20-SOLO-CORTA-HOLDOUT-TERMINAL` (2026-11-20): A20 NQ fábrica (sólo cortos) en el holdout terminal 2026-10-01 → 2026-11-16 y su beta corta
 - Canastas papel: Cartera v2 (2026-11-16) — 8 reglas, base de `SELECCION… | Cartera v3 (2026-11-16) — 8 reglas (forward en paralel… | Cartera B (2026-11-16) — T + Z + R de FundedSync en MN…
 
 ## 4. Bloqueado / NO_REPETIR (67 vigentes en FACTORES.jsonl)
