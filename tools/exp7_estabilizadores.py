@@ -11,12 +11,12 @@ from __future__ import annotations
 import argparse
 import importlib
 import json
+import math
 import sys
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
@@ -114,11 +114,41 @@ def retroceso(o: pd.DataFrame, inst: str, k: float) -> pd.DataFrame:
     return out
 
 
+def _betacf(a: float, b: float, x: float) -> float:
+    """Fracción continua de la beta incompleta (Lentz; Numerical Recipes 6.4). Sin scipy (no está en el entorno de CLAUDE.md)."""
+    tiny = 1e-300; qab = a + b; qap = a + 1.0; qam = a - 1.0
+    c = 1.0; d = 1.0 - qab * x / qap; d = tiny if abs(d) < tiny else d; d = 1.0 / d; h = d
+    for m in range(1, 400):
+        m2 = 2 * m
+        aa = m * (b - m) * x / ((qam + m2) * (a + m2))
+        d = 1.0 + aa * d; d = tiny if abs(d) < tiny else d; c = 1.0 + aa / c; c = tiny if abs(c) < tiny else c; d = 1.0 / d; h *= d * c
+        aa = -(a + m) * (qab + m) * x / ((a + m2) * (qap + m2))
+        d = 1.0 + aa * d; d = tiny if abs(d) < tiny else d; c = 1.0 + aa / c; c = tiny if abs(c) < tiny else c; d = 1.0 / d
+        de = d * c; h *= de
+        if abs(de - 1.0) < 1e-14: break
+    return h
+
+
+def _betainc(a: float, b: float, x: float) -> float:
+    if x <= 0: return 0.0
+    if x >= 1: return 1.0
+    lb = math.lgamma(a + b) - math.lgamma(a) - math.lgamma(b) + a * math.log(x) + b * math.log(1 - x)
+    if x < (a + 1) / (a + b + 2): return math.exp(lb) * _betacf(a, b, x) / a
+    return 1.0 - math.exp(lb) * _betacf(b, a, 1 - x) / b
+
+
+def t_sf(t: float, df: float) -> float:
+    """P(T > t) de la t de Student con df grados de libertad."""
+    if not np.isfinite(t) or df <= 0: return float("nan")
+    p = 0.5 * _betainc(df / 2.0, 0.5, df / (df + t * t))
+    return p if t > 0 else 1.0 - p
+
+
 def t_uni(x) -> tuple:
     x = np.asarray(x, float); x = x[np.isfinite(x)]
     if len(x) < 3 or x.std(ddof=1) == 0: return float("nan"), float("nan")
     t = x.mean() / (x.std(ddof=1) / np.sqrt(len(x)))
-    return float(t), float(stats.t.sf(t, len(x) - 1))
+    return float(t), float(t_sf(t, len(x) - 1))
 
 
 def mde(x) -> float:

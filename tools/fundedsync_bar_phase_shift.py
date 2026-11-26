@@ -191,9 +191,12 @@ class StreamingShiftResampler:
 
 
 def _plt():                                   # matplotlib sólo al graficar: el cálculo y los tests no lo necesitan
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        raise SystemExit("graficar necesita matplotlib (no está en el lock de CLAUDE.md)")
     plt.rcParams["text.parse_math"] = False
     return plt
 

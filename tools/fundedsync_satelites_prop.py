@@ -21,9 +21,12 @@ import time
 from pathlib import Path
 from typing import Any, Mapping
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+try:                                            # dependencia opcional (sólo para graficar; no está en el lock de CLAUDE.md)
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+except ImportError:
+    matplotlib = plt = None
 import numba as nb
 import numpy as np
 import pandas as pd

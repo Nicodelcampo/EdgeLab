@@ -390,6 +390,61 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
+## PROPUESTO_META (10)
+
+_Extraído por el meta-analista de una campaña cerrada; falta revisión._
+
+- **Auditoría forense de bots descargados (HFTCode) con la cadena EdgeLab** (`F-ANTIGRAVITY-AUDITORIA-BOTS-HFTCODE`, 2026-11-25, sesion)
+  - Efecto: Documento de Antigravity; resultado sin asentar en el registro hasta 2026-11-25.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/auditoria_bots_hftcode_20261124/RESULTADO.md`
+- **Suite de rentabilidad y estabilidad EXP-1…EXP-6C (T escala relativa y otras variantes)** (`F-ANTIGRAVITY-SUITE-ESTABILIDAD`, 2026-11-25, sesion)
+  - Efecto: EXP-1: 0/6 superan BH q 0,10; mantener T con techo fijo de 100 pts (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/estabilidad_rentabilidad_20261125/RESULTADO_SUITE_ESTABILIDAD_20261125.md`
+- **Desplazamiento de la apertura de las velas (sub-minuto) en NQ y CFD USATECH** (`F-ANTIGRAVITY-BAR-PHASE-SHIFT`, 2026-11-25, sesion)
+  - Efecto: Core5: 12/12 fases positivas, retención media 71,5 % del resultado a delta 0 (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_bar_phase_shift_20261123/RESULTADO.md`
+- **Despliegue P_OPT_SF_v2: LucidFlex, ticks K30, holdout confirmatorio y multi-prop** (`F-ANTIGRAVITY-DEPLOY-MULTIPROP`, 2026-11-25, sesion)
+  - Efecto: Paridad SOMEOD desde M1 exacta; control negativo (media cero) con mediana negativa 18/18 (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_deploy_multiprop_20261122/RESULTADO.md`
+- **FundedSync iteración 2: robustez V1, rescate V2, permutaciones, transferencia multi-índice, cartera ponderada** (`F-ANTIGRAVITY-ITER2-CARTERA`, 2026-11-25, sesion)
+  - Efecto: Ver el documento; resultados citados en el inventario de estrategias del 2026-11-25.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_iter2_cartera_20261122/RESULTADO.md`
+- **FundedSync iteración 3: matriz 15×6 multiactivo y adaptación para oro** (`F-ANTIGRAVITY-MULTIACTIVO-ORO`, 2026-11-25, sesion)
+  - Efecto: Sólo N, T y R multiactivo (NQ/ES); 0/15 nativos en oro (según el documento; coherente con F-MULTIACTIVO-INDICES-ORO-NO-DIVERSIFICA).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_multiactivo_oro_20261122/RESULTADO.md`
+- **Campaña post-IL FUNDEDSYNCSTACK en unidad R y variantes estructurales** (`F-ANTIGRAVITY-POST-IL`, 2026-11-25, sesion)
+  - Efecto: Ver el documento.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_post_il_20261122/RESULTADO.md`
+- **FundedSync iteración 4: búsqueda de factores y optimización prop (LucidFlex)** (`F-ANTIGRAVITY-PROP-OPT`, 2026-11-25, sesion)
+  - Efecto: Variantes de las que salen las candidatas NT8 (specs_etapa1_iter4).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_prop_opt_20261122/RESULTADO.md`
+- **Auditoría multimodelo, frecuencia estructural y ecosistema multi-frente** (`F-ANTIGRAVITY-ROADMAP-ECOSISTEMA`, 2026-11-25, sesion)
+  - Efecto: Causa raíz del corte 2025-10-13 del módulo O (tope de margen heredado) y costo del swap CFD (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_roadmap_ecosistema_20261123/RESULTADO.md`
+- **Propuestas para monetizar estrategias excluidas de Core5_AltaConv (CFD, overnight)** (`F-ANTIGRAVITY-SATELITES-PROP`, 2026-11-25, sesion)
+  - Efecto: Ver el documento.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
+
 ## EN_SEGUIMIENTO (18)
 
 _Regla congelada que se sigue hacia adelante (papel)._

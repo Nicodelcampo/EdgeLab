@@ -21,9 +21,12 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
+try:                                            # dependencia opcional (sólo para graficar; no está en el lock de CLAUDE.md)
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+except ImportError:
+    matplotlib = plt = None
 import numpy as np
 import pandas as pd
 import pyarrow.csv as pacsv

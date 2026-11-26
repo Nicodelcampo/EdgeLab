@@ -18,8 +18,8 @@ Diagnóstico de grilla: no aplica (sin perillas: un umbral fijo, la mediana expa
 p mínimo en DESC: RQ5_NQ × `ac5_manana` 0,0045 (umbral BH del primero: 0,0042) y **en REP da al revés** (−0,20 R/op, p 0,92).
 Las otras diferencias en DESC son chicas frente a su MDE (0,16–0,47 R/op). En REP aparecen dos positivas (RQ5_ES y ES5N_ES ×
 `frac_noche`, p 0,01) que no estaban en DESC: no se pueden usar (sería elegir mirando la réplica).
-**Lectura**: un estado de 20 sesiones del mercado no anticipa cuándo pagan estas reglas. La caída no se puede apagar con un
-interruptor de régimen de este tipo sin sobreajustar. Tabla completa (R/op encendido, apagado, MDE, por bloque) en el JSON.
+**Lectura**: un estado de 20 sesiones del mercado no anticipa cuándo pagan estas reglas. La caída no se puede frenar con un
+interruptor de régimen de este tipo sin sobreajustar. Tabla completa (R/op con el filtro activo e inactivo, MDE, por bloque) en el JSON.
 
 ## Parte B — Armado de cartera (descriptivo; 11 estrategias, R mensual, 1 R por operación)
 | Esquema | 2020–2025: R/mes | sd | meses < 0 | DD máx | peor semestre | R/mes ÷ DD | 2026: R/mes | DD máx | peor semestre |
@@ -38,6 +38,6 @@ interruptor de régimen de este tipo sin sobreajustar. Tabla completa (R/op ence
 - La canasta de la mañana sola es la peor en 2026: su caída es la caída que se ve en las curvas.
 
 ## Qué se puede usar hoy
-- No hay filtro de régimen que apague la caída: las reglas se dejan como están.
+- No hay filtro de régimen que corte la caída: las reglas se dejan como están.
 - Para la cartera: repartir el riesgo por inverso de la volatilidad mensual de cada estrategia (regla fija, sin parámetros ajustados
   a resultados). Es una regla de tamaño, no de señal; su efecto es en drawdown, no en la media.

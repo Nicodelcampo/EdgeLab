@@ -1,5 +1,7 @@
 # Estabilidad entre épocas (`DESC`) y Matriz Multi-Activo de Pruebas NT8
 
+Estado: VIGENTE (documento de Antigravity del 2026-11-25; encabezado agregado el mismo día)
+
 Fecha: 2026-11-25  
 Restricción de protocolo: toda exploración de estabilidad y diseño de variantes usa **únicamente el bloque `DESC`** (`2012–2025`, `a5_bloque == "DESC"`). **`REP` y `HOLDOUT` (`>= 2026-10-01`) permanecen intactos** para cualquier variante nueva hasta su pre-registro en `K51`.
 

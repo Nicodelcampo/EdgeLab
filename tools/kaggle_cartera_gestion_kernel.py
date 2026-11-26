@@ -46,8 +46,11 @@ CUENTAS = {"25K": (45.5, 1250.0, 1000.0, 1100.0, 600.0, 1000.0, 100.0, 20, 0.4),
 
 # ----------------------------------------------------------------------------------------------- asignacion causal trimestral
 def hrp_pesos(ret: pd.DataFrame) -> np.ndarray:
-    from scipy.cluster.hierarchy import linkage, leaves_list
-    from scipy.spatial.distance import squareform
+    try:                                       # scipy existe en Kaggle; no está en el entorno local de CLAUDE.md
+        from scipy.cluster.hierarchy import linkage, leaves_list
+        from scipy.spatial.distance import squareform
+    except ImportError:
+        raise SystemExit("HRP necesita scipy (correr en Kaggle)")
     c = ret.corr().fillna(0).to_numpy(copy=True); np.fill_diagonal(c, 1.0)
     v = ret.var().to_numpy(copy=True); v[v <= 0] = np.nanmean(v[v > 0]) if (v > 0).any() else 1.0
     d = np.sqrt(np.clip(0.5 * (1 - c), 0, 1)); np.fill_diagonal(d, 0)

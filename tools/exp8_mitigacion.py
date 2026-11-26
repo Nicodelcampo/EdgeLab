@@ -16,7 +16,6 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy import stats
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
@@ -86,10 +85,11 @@ def main(argv=None) -> int:
                     g = g.groupby("ses").agg(R=("R", "sum"), on=("on_" + v, "first")).rename(columns={"on": "on_" + v})
                 on, off = g.R[g["on_" + v] == 1], g.R[g["on_" + v] == 0]
                 if len(on) > 2 and len(off) > 2:
-                    t = stats.ttest_ind(on, off, equal_var=False, alternative="greater")
-                    se = np.sqrt(on.var(ddof=1) / len(on) + off.var(ddof=1) / len(off))
+                    va, vb = on.var(ddof=1) / len(on), off.var(ddof=1) / len(off); se = np.sqrt(va + vb)
+                    dfw = (va + vb) ** 2 / (va ** 2 / (len(on) - 1) + vb ** 2 / (len(off) - 1))   # Welch
+                    pval = E7.t_sf((on.mean() - off.mean()) / se, dfw)
                     r[b] = dict(n_on=len(on), n_off=len(off), frac_on=round(len(on) / len(g), 3), R_on=round(on.mean(), 4),
-                                R_off=round(off.mean(), 4), dif=round(on.mean() - off.mean(), 4), p=round(float(t.pvalue), 4),
+                                R_off=round(off.mean(), 4), dif=round(on.mean() - off.mean(), 4), p=round(float(pval), 4),
                                 mde=round(float(2.49 * se), 4), R_sin=round(g.R.mean(), 4))
                 else:
                     r[b] = dict(n_on=len(on), n_off=len(off))

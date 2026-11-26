@@ -101,7 +101,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
 
-## Superados (8)
+## Superados (9)
 
 - `AUDITOR_START_HERE.md` — SUPERADO parcialmente por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACIO
 - `docs/BRANCH_REGISTRY_2026-08-24.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
@@ -111,7 +111,8 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 - `docs/research/EDGELAB_VIEWER_UNIFICATION_PLAN_20260920.md` — SUPERADO
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
+- `docs/research/cartera_lucid_20261125/RESULTADO.md` — RESULTADO (descriptivo de cuenta, plan PLAN.md con enmienda 1; no suma pruebas).
 
-## Documentos nuevos sin `Estado:` (1)
+## Documentos nuevos sin `Estado:` (0)
 
-- docs/research/candidatas_nt8_20261125/ESTABILIDAD_Y_MATRIZ_ACTIVOS_20261125.md: falta `Estado:` en el encabezado
+Ninguno.

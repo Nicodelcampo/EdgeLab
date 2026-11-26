@@ -25,7 +25,12 @@ CALGO_ROBOTS_DIR = SYNC.CALGO_ROBOTS
 MT5_TERMINALS = [mql5_root for _, mql5_root, _ in SYNC.MT5_TERMINALS]
 BOT_NAMES = list(SYNC.BOT_NAMES)
 
+# Compilan con el csc de .NET Framework y buscan terminales MT5 de la máquina de Nico: en la CI (Linux) no existen.
+necesita_csc = pytest.mark.skipif(not CSC_EXE.exists(), reason="sin csc.exe de .NET Framework (sólo Windows con cTrader/NT8)")
+necesita_mt5 = pytest.mark.skipif(not MT5_TERMINALS, reason="sin terminales MT5 instaladas (sólo la máquina de trading)")
 
+
+@necesita_csc
 def test_ctrader_sources_synced_and_compile(tmp_path: Path) -> None:
     """All 5 cTrader bots exist in repo & cAlgo Robots dir and compile with 0 errors/warnings."""
     assert CSC_EXE.exists(), f"Missing csc.exe at {CSC_EXE}"
@@ -63,6 +68,7 @@ def test_ctrader_sources_synced_and_compile(tmp_path: Path) -> None:
         assert out_dll.exists() and out_dll.stat().st_size > 10_000
 
 
+@necesita_csc
 def test_cfd_core_sizing_news_and_dd_brake_smoke(tmp_path: Path) -> None:
     """Compile standalone C# test exercising PercentOfInitialBalance, FundedDdBrake, NewsGuard, and Tick/Bar feed."""
     shared_core = REPO / "ctrader" / "Shared" / "EdgeLabFundedSyncCfdCore.cs"
@@ -167,6 +173,7 @@ public static class SmokeCfdCore
     assert "SMOKE_OK" in run.stdout
 
 
+@necesita_mt5
 def test_mt5_sources_headers_and_compiled_ex5_present() -> None:
     """All 6 MQL5 EAs, 3 shared headers, and compiled .ex5 binaries exist across discovered terminals."""
     headers = ["FS_TypesAndTime.mqh", "FS_ModuleEngines.mqh", "FS_CoordinatorAndAdapter.mqh"]
