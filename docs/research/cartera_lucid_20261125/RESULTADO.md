@@ -1,5 +1,7 @@
 # Cartera Lucid intradía (8 estrategias, NQ + ES en micros): resultado y armado en NT8
 
+> **Superado en parte (2026-11-25, tarde)**: el armado de 8 instancias quedó reemplazado por una sola estrategia (`EdgeLabCartera`, preset Intradía) y las probabilidades se recalcularon con el mínimo intradía (150K: 0,25 contraída). Ver `docs/research/cartera_nt8_20261125/RESULTADO.md`.
+
 Estado: RESULTADO (descriptivo de cuenta, plan `PLAN.md` con enmienda 1; no suma pruebas). Configuración PROPUESTA: operar con
 dinero real lo decide Nico.  
 Fecha: 2026-11-25  
