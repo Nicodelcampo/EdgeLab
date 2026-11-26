@@ -12,6 +12,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
 {
     public enum CarteraOrderType { Market = 0, Stop = 1, Limit = 2 }
     public enum CarteraRole { Entry = 0, Stop = 1, Target = 2, Exit = 3 }
+    public enum CarteraOrderStatus { Live = 0, Filled = 1, Dead = 2, Unknown = 3 }
 
     public interface ICarteraGateway
     {
@@ -20,6 +21,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         void Change(CarteraBook book, string tag, int qty, double price);
         void Cancel(CarteraBook book, string tag);
         void Log(string msg);
+        /// <summary>Estado real de la orden `tag` en el broker (para no esperar avisos que NT8 puede no mandar).</summary>
+        CarteraOrderStatus Status(string tag);
     }
 
     internal sealed class SleeveExec
@@ -149,6 +152,15 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             foreach (string id in Coord.SleeveIds) SyncSleeve(id);
         }
 
+        /// <summary>Si el broker ya cancelo o rechazo la orden `tag` (o no la conoce), se suelta sin esperar su aviso. Una orden
+        /// llenada NO se suelta: su aviso de fill cierra la posicion (evita sobrellenar con una salida a mercado).</summary>
+        private void PurgarTerminada(ref string tag)
+        {
+            if (tag == null) return;
+            CarteraOrderStatus st = _gw.Status(tag);
+            if (st == CarteraOrderStatus.Dead || st == CarteraOrderStatus.Unknown) { _tags.Remove(tag); tag = null; }
+        }
+
         // la otra pata del OCO: el broker la cancela solo; se deja de seguir para que una reentrada no la confunda
         private void DropTag(ref string tag)
         {
@@ -203,6 +215,9 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                     if (!e.ExitRequested) { e.ExitRequested = true; e.ExitReason = sl.PendingExitReason; }
                     if (e.StopTag != null) _gw.Cancel(this, e.StopTag);
                     if (e.TargetTag != null) _gw.Cancel(this, e.TargetTag);
+                    // 2026-11-26: al cancelar una pata de un OCO, NT8 cancela la otra y puede no avisarlo al libro; se consulta el
+                    // estado real en vez de esperar un aviso que no llega (la salida quedaba trabada: RQ5 0 operaciones, T 3, Z 7)
+                    PurgarTerminada(ref e.StopTag); PurgarTerminada(ref e.TargetTag);
                     // la salida a mercado sale recien cuando el broker confirmo que no queda ninguna orden de proteccion viva:
                     // si el stop se llena mientras tanto, la estrategia ya quedo cerrada y no se manda nada (sin sobrellenado)
                     if (e.StopTag == null && e.TargetTag == null && e.ExitTag == null)
@@ -211,8 +226,9 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                 }
                 if (e.OcoMuerto)
                 {
-                    if (e.StopTag != null) { _gw.Cancel(this, e.StopTag); return; }
-                    if (e.TargetTag != null) { _gw.Cancel(this, e.TargetTag); return; }
+                    PurgarTerminada(ref e.StopTag); PurgarTerminada(ref e.TargetTag);
+                    if (e.StopTag != null) { _gw.Cancel(this, e.StopTag); PurgarTerminada(ref e.StopTag); if (e.StopTag != null) return; }
+                    if (e.TargetTag != null) { _gw.Cancel(this, e.TargetTag); PurgarTerminada(ref e.TargetTag); if (e.TargetTag != null) return; }
                     e.OcoMuerto = false;
                 }
                 // un grupo OCO nuevo por posicion: NT8 rechaza un OCO que ya termino (reusarlo era el bucle del 2026-11-25)

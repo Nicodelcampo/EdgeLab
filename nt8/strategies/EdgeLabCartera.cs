@@ -373,6 +373,15 @@ namespace NinjaTrader.NinjaScript.Strategies
 
         public void Log(string msg) { Print("EdgeLabCartera " + msg); }
 
+        public CarteraOrderStatus Status(string tag)
+        {
+            Order o;
+            if (!_orders.TryGetValue(tag, out o) || o == null) return CarteraOrderStatus.Unknown;
+            if (o.OrderState == OrderState.Filled) return CarteraOrderStatus.Filled;
+            if (o.OrderState == OrderState.Cancelled || o.OrderState == OrderState.Rejected) return CarteraOrderStatus.Dead;
+            return CarteraOrderStatus.Live;
+        }
+
         protected override void OnOrderUpdate(Order order, double limitPrice, double stopPrice, int quantity, int filled, double averageFillPrice,
                                               OrderState orderState, DateTime time, ErrorCode error, string comment)
         {
