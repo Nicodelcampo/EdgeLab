@@ -75,3 +75,46 @@ Correlación mensual: +0,25.
 Episodios: la interdía tuvo su peor tramo en 2022; la intradía, desde junio de 2026.
 
 La adenda anterior (con Turtles) queda reemplazada por ésta.
+
+## Adenda 3: estrategias candidatas en MNQ y las 8 mejores fuera de NQ (`ADENDA_MNQ_Y_OTROS_ACTIVOS.md`)
+Gráficos: `CURVAS_MNQ_POR_ESTRATEGIA.png`, `CORR_MNQ.png` y `CURVAS_TOP8_OTROS_ACTIVOS.png`. Datos: `MNQ_Y_OTROS.json`.
+USD con 1 micro, 2019-07 → 2026-09, todas las particiones.
+
+Episodios: las caídas máximas por estrategia, en las tablas.
+
+| MNQ | USD/mes | t mensual | % meses + | Caída máx. |
+|---|---|---|---|---|
+| T | +404 | 5,12 | 67 % | −2.037 |
+| R | +189 | 3,62 | 60 % | −1.591 |
+| Z | +90 | 2,71 | 61 % | −1.521 |
+| C2_VZ | +204 | 2,67 | 67 % | −4.670 |
+| V | +180 | 2,52 | 61 % | −3.220 |
+| RQ5 | +221 | 2,41 | 63 % | −6.784 |
+| SOM sin finde | +288 | 2,22 | 59 % | −9.088 |
+| Franklin | +147 | 2,20 | 60 % | −4.387 |
+| N | +104 | 2,10 | 53 % | −2.707 |
+| A20 | +194 | 1,92 | 45 % | −6.345 |
+| ES5N | +137 | 1,80 | 52 % | −5.741 |
+| S | +152 | 1,12 | 56 % | −8.659 |
+| C2_EVRP | +86 | 0,63 | 54 % | −9.816 |
+
+**Correlación mensual en MNQ:**
+- La mayoría entre −0,3 y +0,4.
+- Pares más altos: RQ5–ES5N 0,62, RQ5–Franklin 0,58, T–R 0,50 y Franklin–ES5N 0,47.
+- Cubren a las demás: C2_VZ, negativa con T, R y Z (−0,27 a −0,34), y C2_EVRP, −0,45 con A20.
+
+| Fuera de NQ (las 8 primeras por t) | USD/mes | t mensual | % meses + | Caída máx. |
+|---|---|---|---|---|
+| C2_VZ ES | +82 | 2,10 | 62 % | −2.672 |
+| RQ5 ES | +87 | 1,44 | 52 % | −3.285 |
+| ES5N ES | +44 | 1,04 | 53 % | −3.185 |
+| T ES | +52 | 1,03 | 56 % | −3.045 |
+| C2_EVRP ES | +47 | 0,75 | 54 % | −5.438 |
+| Franklin ES | +22 | 0,59 | 53 % | −2.026 |
+| RQ5 GC | +29 | 0,43 | 39 % | −4.968 |
+| RQ5 RTY | −8 | −0,23 | 46 % | −3.217 |
+
+**Lectura:**
+- Fuera de NQ, sólo C2_VZ en ES pasa t 2. Las demás son débiles o nulas.
+- Las de RTY, YM y GC no aparecen en el top salvo RQ5 GC y RQ5 RTY, que son ≈ 0.
+- Lo diversificable está en NQ, entre estrategias, más que en otros activos.
