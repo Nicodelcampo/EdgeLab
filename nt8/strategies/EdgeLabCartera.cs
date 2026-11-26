@@ -48,7 +48,8 @@ namespace NinjaTrader.NinjaScript.Strategies
         private string _auditPath, _dir;
         // diagnostico (2026-11-25): contadores por mes para encontrar el consumo de memoria/tiempo en el Strategy Analyzer
         private long _nBars, _nSub, _nChg, _nCan, _nFill, _nRej, _nUpd;
-        private int _mesDiag = -1;
+        private int _mesDiag = -1, _descuadres;
+        private static bool Coord_Broker(CarteraBook bk) { return bk.Coord.BrokerDriven; }
 
         private sealed class AuditMeta { public DateTime SubmitUtc; public double RefPx; public int Side; public string Book, Sleeve, Role; public double Tick, Pv; }
 
@@ -290,6 +291,13 @@ namespace NinjaTrader.NinjaScript.Strategies
 
             book.Coord.ExternalBlock = _haltedTotal || _dayBlocked || finSesion;
             book.OnBar(ctx);
+            // control: posicion real de NT8 = suma de las estrategias del libro (sin ordenes de entrada/salida en vuelo)
+            if (Coord_Broker(book) && !book.AnyMarketInFlight)
+            {
+                int real = PositionQty(b), esperado = book.ExpectedNet;
+                if (real != esperado && ++_descuadres <= 50)
+                    Print("EdgeLabCartera DESCUADRE " + book.Root + " " + ctx.CloseNy.ToString("yyyy-MM-dd HH:mm") + " NT8 " + real + " libro " + esperado);
+            }
             if (guard != null) { Print("EdgeLabCartera GUARDA " + guard + " " + ctx.CloseNy.ToString("yyyy-MM-dd HH:mm")); foreach (var bk in _books) bk.FlattenAll(guard); }
             else if (finSesion) book.FlattenAll("FIN_SESION");
             else if (_haltedTotal || _dayBlocked) book.FlattenAll(_haltedTotal ? "PERDIDA_TOTAL_MAX" : "BLOQUEO_DIARIO");
@@ -302,8 +310,8 @@ namespace NinjaTrader.NinjaScript.Strategies
                 {
                     if (_mesDiag > 0)
                         Print(string.Format(CultureInfo.InvariantCulture,
-                            "EdgeLabCartera DIAG {0}: velas {1} | ordenes enviadas {2} cambios {3} cancel {4} fills {5} rechazos {6} eventos {7} | ordenes en mapa {8} | memoria {9:F0} MB",
-                            _mesDiag, _nBars, _nSub, _nChg, _nCan, _nFill, _nRej, _nUpd, _orders.Count, GC.GetTotalMemory(false) / 1048576.0));
+                            "EdgeLabCartera DIAG {0}: velas {1} | ordenes enviadas {2} cambios {3} cancel {4} fills {5} rechazos {6} eventos {7} | ordenes en mapa {8} | destrabes {9} | descuadres {10} | memoria {11:F0} MB",
+                            _mesDiag, _nBars, _nSub, _nChg, _nCan, _nFill, _nRej, _nUpd, _orders.Count, _books.Sum(x => x.Destrabes), _descuadres, GC.GetTotalMemory(false) / 1048576.0));
                     _mesDiag = mes;
                 }
             }

@@ -34,6 +34,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public string Oco;                 // grupo OCO vivo (stop + objetivo de la posicion abierta); uno nuevo por posicion
         public bool SinObjetivo;           // el broker rechazo el objetivo: la posicion sigue con el stop y la salida de la estrategia
         public bool OcoMuerto;             // el broker cerro el grupo OCO sin pedirlo: se rearma recien en la vela siguiente
+        public int VelasSalida, VelasEntrada;   // vigilante: velas que lleva una salida o una entrada a mercado sin resolverse
     }
 
     public sealed class CarteraBook
@@ -70,12 +71,63 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             LastClose = bar.Close; LastNy = bar.CloseNy;
             Coord.FeedBar(bar);
             Sync();
+            if (Coord.BrokerDriven) Vigilar();
+        }
+
+        /// <summary>Vigilante (2026-11-26): una salida o una entrada a mercado que no se resuelve en 2 velas se destraba y se avisa.
+        /// En NT8 una estrategia quedaba abierta para siempre esperando la confirmacion de cancelacion de su stop/objetivo.</summary>
+        public int Destrabes;
+        private void Vigilar()
+        {
+            foreach (string id in Coord.SleeveIds)
+            {
+                var sl = Coord.Sleeves[id]; var e = Ex(id);
+                if (sl.IsOpen && (e.ExitRequested || sl.PendingExitReason != null) && e.ExitTag == null)
+                {
+                    if (++e.VelasSalida > 2)
+                    {
+                        Destrabes++;
+                        _gw.Log("DESTRABE salida " + Root + " " + id + " " + LastNy.ToString("yyyy-MM-dd HH:mm") + " stop=" + (e.StopTag ?? "-") + " objetivo=" + (e.TargetTag ?? "-"));
+                        if (!e.ExitRequested) { e.ExitRequested = true; e.ExitReason = sl.PendingExitReason; }
+                        DropTag(ref e.StopTag); DropTag(ref e.TargetTag);
+                        SyncSleeve(id);
+                        e.VelasSalida = 0;
+                    }
+                }
+                else e.VelasSalida = 0;
+                if (!sl.IsOpen && e.EntryTag != null && e.EntryType == CarteraOrderType.Market)
+                {
+                    if (++e.VelasEntrada > 2)
+                    {
+                        Destrabes++;
+                        _gw.Log("DESTRABE entrada " + Root + " " + id + " " + LastNy.ToString("yyyy-MM-dd HH:mm") + " orden " + e.EntryTag);
+                        DropTag(ref e.EntryTag);
+                        sl.HasPendingEntry = false; sl.PendingEntryIsStopOrder = false;
+                        e.VelasEntrada = 0;
+                    }
+                }
+                else e.VelasEntrada = 0;
+            }
         }
 
         /// <summary>Contratos netos que deberia tener la cuenta en este instrumento segun las estrategias abiertas.</summary>
         public int ExpectedNet
         {
             get { int n = 0; foreach (string id in Coord.SleeveIds) { var s = Coord.Sleeves[id]; if (s.IsOpen) n += s.Side * s.Contracts; } return n; }
+        }
+
+        /// <summary>Hay una entrada o salida a mercado enviada y sin confirmar (la posicion real todavia no la refleja).</summary>
+        public bool AnyMarketInFlight
+        {
+            get
+            {
+                foreach (string id in Coord.SleeveIds)
+                {
+                    var e = Ex(id);
+                    if (e.ExitTag != null || (e.EntryTag != null && e.EntryType == CarteraOrderType.Market)) return true;
+                }
+                return false;
+            }
         }
 
         public bool AnyWorkingOrOpen

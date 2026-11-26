@@ -84,3 +84,18 @@ comparar el CSV `Documents\NinjaTrader 8\EdgeLab\cartera\<preset>_<raiz>.csv` co
   al cierre. El arnés no prueba la parte NT8 del host (acciones de orden unmanaged, fin de sesión con SessionIterator, guardas):
   eso se verifica en el Strategy Analyzer y en Sim.
 - Ninguna estrategia de la cartera está confirmada (0 edges promovidos); las probabilidades usan la media contraída a la mitad.
+
+## 7. Estado en NT8 (2026-11-26) — leer antes de usar `EdgeLabCartera`
+- **No usar en cuenta real todavía.** Primera corrida de Nico en el Strategy Analyzer (Intradía, 2025-01 → 2026-11): Franklin, R y ES5N
+  operan como en el arnés, pero **RQ5 0 operaciones (arnés 282), T 3 (379), Z 7 (46), V 221 (390)**. Patrón: fallan las que tienen stop
+  y objetivo OCO o salen por señal propia → una salida queda esperando la confirmación de cancelación de su stop/objetivo y la estrategia
+  queda "abierta" para siempre. El arnés (que no reproduce la semántica OCO/eventos de NT8) no lo muestra.
+- Corregido antes (commit 45bc8c9c): bucle infinito de órdenes (OCO reusado + reenvío dentro del evento de rechazo) que llevaba a NT8 a
+  13 GB; referencias viejas por rechazo/fill sincrónico; arnés con modo `nt8` (rechazos sincrónicos) y control posición broker = libro.
+- Agregado (2026-11-26): **vigilante** en `CarteraBook.Vigilar` (salida o entrada a mercado sin resolver en 2 velas → se destraba y se
+  imprime `DESTRABE …`) y control `DESCUADRE` (posición real de NT8 ≠ suma del libro) en el host; la línea mensual `EdgeLabCartera DIAG`
+  ahora incluye destrabes y descuadres.
+- **Siguiente paso**: Nico corre Intradía 2025-07 → 2026-09 con el Output abierto; las líneas `DESTRABE` dicen qué orden no confirma
+  (stop/objetivo) y en qué estrategia; con eso se corrige la causa (probablemente la cancelación automática del OCO en NT8 o el orden de
+  sus eventos) y se compara el CSV `Documents\NinjaTrader 8\EdgeLab\cartera\Intradia_*.csv` con el arnés (`tools/nt8_cartera_paridad.py`).
+- La investigación (secciones 1–6) no depende de esto: usa el motor en el arnés, verificado contra las corridas NT8 individuales.
