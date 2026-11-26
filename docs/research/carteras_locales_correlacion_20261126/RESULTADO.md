@@ -43,3 +43,21 @@ El TERMINAL sólo está para P_OPT_SF_v2, cuya campaña ya lo había abierto. La
 - **Todas se sostienen en los meses HOLDOUT de A5,** con R o USD por mes parecido al de DESC. La más pareja es CANASTA_TRZQ (t 2,77 en
   HOLDOUT). INTRADIA8 tiene la REP floja (t 0,94).
 - **Para repartir cuentas:** una intradía (cualquiera de las tres) más INTERDIA3 es la combinación que reduce el riesgo conjunto.
+
+## Adenda: futuros intradía contra CFD swing (`ADENDA_FUT_VS_CFD.md`)
+Gráfico: `CURVAS_FUT_VS_CFD.png`. Datos: `FUT_VS_CFD.json`.
+
+| Cartera | DESC | REP | HOLDOUT | Todo | Caída máx. |
+|---|---|---|---|---|---|
+| Futuros intradía (INTRADIA8, USD con 1 micro) | +1.622/mes, t 3,48 | +534, t 0,94 | +1.309, t 2,97 | +1.362, t 4,50, 63 % meses + | −13.964 USD |
+| CFD swing (C2_VZ + C2_EVRP ES/NQ + Turtles GC, R) | +0,34/mes, t 1,00 | +1,73, t 2,46 | +1,13, t 1,57 | +0,76, t 2,60, 58 % meses + | −18,5 R |
+
+Correlación mensual entre las dos: −0,22.
+
+Episodios: la cartera CFD swing tuvo su peor tramo en 2022 (de ≈ +35 a +17 R) y la intradía, en 2026 desde junio.
+
+**Lectura:**
+- La intradía tiene más ventaja (t 4,5) y se sostiene en HOLDOUT (t 2,97).
+- La CFD swing es más floja (t 2,6), con DESC casi plano y HOLDOUT positivo sin significancia (t 1,57). Su valor principal es que va al
+  revés de la intradía (−0,22).
+- La CFD se midió sobre precios de futuros; los costos y el horario de los CFD pueden cambiarla.
