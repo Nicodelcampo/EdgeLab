@@ -46,6 +46,9 @@ namespace NinjaTrader.NinjaScript.Strategies
         private int _dayKey = -1;
         private bool _dayBlocked;
         private string _auditPath, _dir;
+        // diagnostico (2026-11-25): contadores por mes para encontrar el consumo de memoria/tiempo en el Strategy Analyzer
+        private long _nBars, _nSub, _nChg, _nCan, _nFill, _nRej, _nUpd;
+        private int _mesDiag = -1;
 
         private sealed class AuditMeta { public DateTime SubmitUtc; public double RefPx; public int Side; public string Book, Sleeve, Role; public double Tick, Pv; }
 
@@ -78,6 +81,7 @@ namespace NinjaTrader.NinjaScript.Strategies
                 VolCsvPath = "";
                 EnableCsvLog = true;
                 EnableExecAudit = true;
+                Diagnostico = true;
             }
             else if (State == State.Configure)
             {
@@ -290,6 +294,19 @@ namespace NinjaTrader.NinjaScript.Strategies
             else if (finSesion) book.FlattenAll("FIN_SESION");
             else if (_haltedTotal || _dayBlocked) book.FlattenAll(_haltedTotal ? "PERDIDA_TOTAL_MAX" : "BLOQUEO_DIARIO");
 
+            _nBars++;
+            if (Diagnostico && b == 0)
+            {
+                int mes = ctx.CloseNy.Year * 100 + ctx.CloseNy.Month;
+                if (mes != _mesDiag)
+                {
+                    if (_mesDiag > 0)
+                        Print(string.Format(CultureInfo.InvariantCulture,
+                            "EdgeLabCartera DIAG {0}: velas {1} | ordenes enviadas {2} cambios {3} cancel {4} fills {5} rechazos {6} eventos {7} | ordenes en mapa {8} | memoria {9:F0} MB",
+                            _mesDiag, _nBars, _nSub, _nChg, _nCan, _nFill, _nRej, _nUpd, _orders.Count, GC.GetTotalMemory(false) / 1048576.0));
+                    _mesDiag = mes;
+                }
+            }
             if (b == 0) DrawHud();
         }
 
@@ -314,13 +331,14 @@ namespace NinjaTrader.NinjaScript.Strategies
         // ICarteraGateway: ordenes unmanaged
         public void Submit(CarteraBook book, string tag, CarteraRole role, string sleeveId, int side, int qty, CarteraOrderType type, double price, string oco)
         {
+            _nSub++;
             OrderAction act;
             int cur = PositionQty(book.Index);
             if (side > 0) act = cur < 0 && qty <= -cur ? OrderAction.BuyToCover : OrderAction.Buy;
             else act = cur > 0 && qty <= cur ? OrderAction.Sell : OrderAction.SellShort;
             OrderType ot = type == CarteraOrderType.Market ? OrderType.Market : (type == CarteraOrderType.Stop ? OrderType.StopMarket : OrderType.Limit);
             double lim = type == CarteraOrderType.Limit ? price : 0, stp = type == CarteraOrderType.Stop ? price : 0;
-            if (EnableExecAudit)
+            if (EnableExecAudit && State == State.Realtime)
                 _audit[tag] = new AuditMeta { SubmitUtc = DateTime.UtcNow, RefPx = type == CarteraOrderType.Market ? book.LastClose : price, Side = side,
                                               Book = book.Root, Sleeve = sleeveId, Role = role.ToString(), Tick = book.TickSize,
                                               Pv = BarsArray[book.Index].Instrument.MasterInstrument.PointValue };
@@ -333,6 +351,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         {
             Order o;
             if (!_orders.TryGetValue(tag, out o) || o == null || Order.IsTerminalState(o.OrderState)) return;
+            _nChg++;
             if (o.OrderType == OrderType.StopMarket) ChangeOrder(o, qty, 0, price); else ChangeOrder(o, qty, price, 0);
             AuditMeta m; if (_audit.TryGetValue(tag, out m)) m.RefPx = price;
             Audit(tag, "CHANGE", qty, price);
@@ -341,7 +360,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         public void Cancel(CarteraBook book, string tag)
         {
             Order o;
-            if (_orders.TryGetValue(tag, out o) && o != null && !Order.IsTerminalState(o.OrderState)) CancelOrder(o);
+            if (_orders.TryGetValue(tag, out o) && o != null && !Order.IsTerminalState(o.OrderState)) { _nCan++; CancelOrder(o); }
         }
 
         public void Log(string msg) { Print("EdgeLabCartera " + msg); }
@@ -350,10 +369,17 @@ namespace NinjaTrader.NinjaScript.Strategies
                                               OrderState orderState, DateTime time, ErrorCode error, string comment)
         {
             if (_blocked || order == null || string.IsNullOrEmpty(order.Name)) return;
+            _nUpd++;
+            if (orderState == OrderState.Filled) _nFill++;
+            if (orderState == OrderState.Rejected) _nRej++;
             string tag = order.Name;
             CarteraBook book = null;
             foreach (var bk in _books) if (bk.Owns(tag)) { book = bk; break; }
-            if (book == null) return;
+            if (book == null)
+            {
+                if (Order.IsTerminalState(orderState)) _orders.Remove(tag);
+                return;
+            }
             _orders[tag] = order;
             if (orderState == OrderState.Filled)
             {
@@ -428,6 +454,7 @@ namespace NinjaTrader.NinjaScript.Strategies
         [NinjaScriptProperty] [Display(Name = "CSV CBOE (vacio = defecto)", Order = 1, GroupName = "04. Datos y registro")] public string VolCsvPath { get; set; }
         [NinjaScriptProperty] [Display(Name = "CSV de operaciones por libro", Order = 2, GroupName = "04. Datos y registro")] public bool EnableCsvLog { get; set; }
         [NinjaScriptProperty] [Display(Name = "Registro de ejecucion (tiempo real)", Order = 3, GroupName = "04. Datos y registro")] public bool EnableExecAudit { get; set; }
+        [NinjaScriptProperty] [Display(Name = "Diagnostico mensual (Output)", Order = 4, GroupName = "04. Datos y registro")] public bool Diagnostico { get; set; }
         #endregion
     }
 }

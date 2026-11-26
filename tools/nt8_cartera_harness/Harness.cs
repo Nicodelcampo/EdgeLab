@@ -27,18 +27,19 @@ namespace EdgeLabHarness
     {
         public readonly List<SimOrder> Working = new List<SimOrder>();
         public long CurT;                 // sello de la vela que se esta procesando
-        public int Fills, Rejects;
+        public int Fills, Rejects, Subs, Chgs, Cans;
         public void Submit(CarteraBook book, string tag, CarteraRole role, string sleeveId, int side, int qty, CarteraOrderType type, double price, string oco)
         {
+            Subs++;
             Working.Add(new SimOrder { Tag = tag, Book = book, Side = side, Qty = qty, Type = type, Price = price, Oco = oco, ActiveFrom = CurT + 1 });
         }
         public void Change(CarteraBook book, string tag, int qty, double price)
         {
-            var o = Working.FirstOrDefault(x => x.Tag == tag); if (o != null) { o.Qty = qty; o.Price = price; }
+            Chgs++; var o = Working.FirstOrDefault(x => x.Tag == tag); if (o != null) { o.Qty = qty; o.Price = price; }
         }
         public void Cancel(CarteraBook book, string tag)
         {
-            var o = Working.FirstOrDefault(x => x.Tag == tag);
+            Cans++; var o = Working.FirstOrDefault(x => x.Tag == tag);
             if (o == null) return;
             Working.Remove(o);
             o.Book.OnTerminal(tag, false);
@@ -216,7 +217,7 @@ namespace EdgeLabHarness
             diario.Close();
             foreach (var bk in books)
                 Console.WriteLine(bk.Root + " operaciones " + bk.Coord.CompletedTrades.Count + " | neto esperado al final " + bk.ExpectedNet);
-            Console.WriteLine("fills " + gw.Fills + " | ordenes vivas al final " + gw.Working.Count);
+            Console.WriteLine("fills " + gw.Fills + " | envios " + gw.Subs + " | cambios " + gw.Chgs + " | cancelaciones " + gw.Cans + " | ordenes vivas al final " + gw.Working.Count);
             return 0;
         }
     }
