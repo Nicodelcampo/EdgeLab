@@ -28,20 +28,39 @@ namespace EdgeLabHarness
         public readonly List<SimOrder> Working = new List<SimOrder>();
         public long CurT;                 // sello de la vela que se esta procesando
         public int Fills, Rejects, Subs, Chgs, Cans;
+        public readonly Dictionary<string, int> FillsPor = new Dictionary<string, int>();
+        public readonly Dictionary<CarteraBook, int> Net = new Dictionary<CarteraBook, int>();
+        public bool Nt8Sync;                                    // emula rechazos/cancelaciones SINCRONOS de NT8
+        public readonly HashSet<string> OcoUsados = new HashSet<string>();
+        public int SubsEnVela; public long VelaSubs;
         public void Submit(CarteraBook book, string tag, CarteraRole role, string sleeveId, int side, int qty, CarteraOrderType type, double price, string oco)
         {
             Subs++;
+            if (VelaSubs != CurT) { VelaSubs = CurT; SubsEnVela = 0; }
+            if (++SubsEnVela > 200) throw new Exception("BUCLE: mas de 200 ordenes en una vela, " + tag);
+            if (new System.Diagnostics.StackTrace().FrameCount > 200) throw new Exception("RECURSION en " + tag + " tipo " + type + " precio " + price + " cierre " + book.LastClose + " oco " + oco);
+            if (Nt8Sync)
+            {
+                bool malLado = type == CarteraOrderType.Stop && side * (price - book.LastClose) <= 0;
+                bool ocoReusado = !string.IsNullOrEmpty(oco) && OcoUsados.Contains(oco);
+                if (malLado || ocoReusado) { Rejects++; Console.Error.WriteLine("RECHAZO " + tag + (malLado ? " mal lado" : " oco reusado " + oco) + " precio " + price + " cierre " + book.LastClose); book.OnTerminal(tag, true); return; }
+            }
             Working.Add(new SimOrder { Tag = tag, Book = book, Side = side, Qty = qty, Type = type, Price = price, Oco = oco, ActiveFrom = CurT + 1 });
         }
         public void Change(CarteraBook book, string tag, int qty, double price)
         {
-            Chgs++; var o = Working.FirstOrDefault(x => x.Tag == tag); if (o != null) { o.Qty = qty; o.Price = price; }
+            Chgs++; var o = Working.FirstOrDefault(x => x.Tag == tag);
+            if (o == null) return;
+            if (Nt8Sync && o.Type == CarteraOrderType.Stop && o.Side * (price - book.LastClose) <= 0)
+            { Rejects++; Working.Remove(o); if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco); book.OnTerminal(tag, true); return; }
+            o.Qty = qty; o.Price = price;
         }
         public void Cancel(CarteraBook book, string tag)
         {
             Cans++; var o = Working.FirstOrDefault(x => x.Tag == tag);
             if (o == null) return;
             Working.Remove(o);
+            if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco);
             o.Book.OnTerminal(tag, false);
         }
         public void Log(string msg) { Console.Error.WriteLine(msg); }
@@ -73,6 +92,9 @@ namespace EdgeLabHarness
                     }
                     if (!fill) continue;
                     Working.Remove(o); Fills++;
+                    { int n0; Net.TryGetValue(o.Book, out n0); Net[o.Book] = n0 + o.Side * o.Qty; }
+                    { var k2 = o.Tag.Substring(0, o.Tag.LastIndexOf('|')); int c2; FillsPor.TryGetValue(k2, out c2); FillsPor[k2] = c2 + 1; }
+                    if (!string.IsNullOrEmpty(o.Oco)) OcoUsados.Add(o.Oco);
                     if (!string.IsNullOrEmpty(o.Oco))
                         foreach (var s in Working.Where(x => x.Oco == o.Oco).ToList()) { Working.Remove(s); s.Book.OnTerminal(s.Tag, false); }
                     o.Book.OnFilled(o.Tag, px, o.Qty, cNy);
@@ -148,12 +170,19 @@ namespace EdgeLabHarness
 
         private static int Main(string[] a)
         {
+            try { return Run(a); }
+            catch (Exception ex) { Console.Error.WriteLine("ERROR: " + ex.Message); Console.Error.WriteLine(ex.StackTrace.Substring(0, Math.Min(3000, ex.StackTrace.Length))); return 2; }
+        }
+
+        private static int Run(string[] a)
+        {
             string modo = a[0], outDir = a[1], news = a[2], vol = a[3]; bool interdia = a[4] == "1"; string comp = a[5];
             Directory.CreateDirectory(outDir);
             var nyTz = FundedSyncMath.ResolveTz("Eastern Standard Time"); var ctTz = FundedSyncMath.ResolveTz("Central Standard Time");
             NewsVetoCalendar cal = news == "-" ? null : new NewsVetoCalendar(news, 2.0, 2.0, 5.0, 5.0);
             var paths = a.Skip(6).Select(x => x.Split('=')).ToDictionary(x => x[0], x => x[1]);
-            var gw = new SimGateway();
+            var gw = new SimGateway { Nt8Sync = modo == "nt8" };
+            if (modo == "nt8") modo = "broker";
             var books = new List<CarteraBook>(); var bars = new List<List<Bar>>();
             int idx = 0;
             foreach (string blk in comp.Split(';'))
@@ -182,7 +211,7 @@ namespace EdgeLabHarness
                 acc[i].Clear();
             };
             // recorrido en orden de tiempo (a igual sello, libro 0 primero, como NT8 con BarsInProgress)
-            var pos = new int[books.Count];
+            var pos = new int[books.Count]; int descuadres = 0;
             while (true)
             {
                 int k = -1; long best = long.MaxValue;
@@ -196,6 +225,12 @@ namespace EdgeLabHarness
                 ctx.IsLastBarOfSession = last;
                 if (ctx.EthTradeDate != curDay[k]) { flush(k); curDay[k] = ctx.EthTradeDate; }
                 books[k].OnBar(ctx);
+                if (modo == "broker")
+                {
+                    int real; gw.Net.TryGetValue(books[k], out real);
+                    if (real != books[k].ExpectedNet && ++descuadres <= 5)
+                        Console.Error.WriteLine("DESCUADRE " + books[k].Root + " " + ctx.CloseNy.ToString("yyyy-MM-dd HH:mm") + " broker " + real + " libro " + books[k].ExpectedNet);
+                }
                 var co = books[k].Coord; var dk = acc[k];
                 for (; seen[k] < co.CompletedTrades.Count; seen[k]++)
                 {
@@ -217,6 +252,8 @@ namespace EdgeLabHarness
             diario.Close();
             foreach (var bk in books)
                 Console.WriteLine(bk.Root + " operaciones " + bk.Coord.CompletedTrades.Count + " | neto esperado al final " + bk.ExpectedNet);
+            Console.WriteLine("descuadres broker/libro: " + descuadres);
+            foreach (var kv in gw.FillsPor.OrderByDescending(x => x.Value).Take(8)) Console.WriteLine("  fills " + kv.Key + " " + kv.Value);
             Console.WriteLine("fills " + gw.Fills + " | envios " + gw.Subs + " | cambios " + gw.Chgs + " | cancelaciones " + gw.Cans + " | ordenes vivas al final " + gw.Working.Count);
             return 0;
         }

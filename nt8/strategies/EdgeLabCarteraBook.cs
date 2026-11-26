@@ -31,6 +31,9 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public bool ExitRequested;
         public string ExitReason;
         public int Seq;
+        public string Oco;                 // grupo OCO vivo (stop + objetivo de la posicion abierta); uno nuevo por posicion
+        public bool SinObjetivo;           // el broker rechazo el objetivo: la posicion sigue con el stop y la salida de la estrategia
+        public bool OcoMuerto;             // el broker cerro el grupo OCO sin pedirlo: se rearma recien en la vela siguiente
     }
 
     public sealed class CarteraBook
@@ -98,7 +101,8 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         private void DropTag(ref string tag)
         {
             if (tag == null) return;
-            _gw.Cancel(this, tag); _tags.Remove(tag); tag = null;
+            string t = tag; tag = null; _tags.Remove(t);       // primero se suelta: el aviso de cancelacion ya no es de este libro
+            _gw.Cancel(this, t);
         }
 
         /// <summary>Paso de historico (virtual) a tiempo real: arranca plano, sin posiciones ni ordenes heredadas.</summary>
@@ -116,17 +120,27 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
             Coord.BrokerDriven = true;
         }
 
-        private int _seq;
-        private string Submit(string id, CarteraRole role, int side, int qty, CarteraOrderType type, double price, string oco)
+        private int _seq, _ocoSeq, _depth;
+        private void Submit(ref string campo, string id, CarteraRole role, int side, int qty, CarteraOrderType type, double price, string oco)
         {
-            // el nombre se registra ANTES de enviar: si el broker confirma el fill dentro de la misma llamada, el libro ya la conoce
+            // el nombre se registra y se asigna al campo ANTES de enviar: NT8 puede rechazar o llenar dentro de la misma llamada
+            // (2026-11-25: asignarlo despues dejaba referencias viejas y la estrategia no volvia a operar)
             string tag = Root + "|" + id + "|" + role + "|" + (++_seq).ToString(System.Globalization.CultureInfo.InvariantCulture);
             _tags[tag] = new KeyValuePair<string, CarteraRole>(id, role);
+            campo = tag;
             _gw.Submit(this, tag, role, id, side, qty, type, price, oco);
-            return tag;
         }
 
         private void SyncSleeve(string id)
+        {
+            // un rechazo o fill sincrono vuelve a entrar aca; el limite corta cualquier ida y vuelta (2026-11-25: bucle de OCO reusado)
+            if (_depth > 4) { _gw.Log("AVISO sincronizacion anidada cortada en " + Root + " " + id); return; }
+            _depth++;
+            try { SyncSleeveCore(id); }
+            finally { _depth--; }
+        }
+
+        private void SyncSleeveCore(string id)
         {
             var sl = Coord.Sleeves[id];
             var e = Ex(id);
@@ -140,20 +154,27 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                     // la salida a mercado sale recien cuando el broker confirmo que no queda ninguna orden de proteccion viva:
                     // si el stop se llena mientras tanto, la estrategia ya quedo cerrada y no se manda nada (sin sobrellenado)
                     if (e.StopTag == null && e.TargetTag == null && e.ExitTag == null)
-                        e.ExitTag = Submit(id, CarteraRole.Exit, -sl.Side, sl.Contracts, CarteraOrderType.Market, double.NaN, null);
+                        Submit(ref e.ExitTag, id, CarteraRole.Exit, -sl.Side, sl.Contracts, CarteraOrderType.Market, double.NaN, null);
                     return;
                 }
-                string oco = Root + "_" + id + "_" + e.Seq;
+                if (e.OcoMuerto)
+                {
+                    if (e.StopTag != null) { _gw.Cancel(this, e.StopTag); return; }
+                    if (e.TargetTag != null) { _gw.Cancel(this, e.TargetTag); return; }
+                    e.OcoMuerto = false;
+                }
+                // un grupo OCO nuevo por posicion: NT8 rechaza un OCO que ya termino (reusarlo era el bucle del 2026-11-25)
+                if (e.StopTag == null && e.TargetTag == null) e.Oco = Root + "_" + id + "_" + (++_ocoSeq).ToString(System.Globalization.CultureInfo.InvariantCulture);
                 if (!double.IsNaN(sl.StopPrice))
                 {
                     double sp = Rt(sl.StopPrice);
-                    if (e.StopTag == null) { e.StopPx = sp; e.StopTag = Submit(id, CarteraRole.Stop, -sl.Side, sl.Contracts, CarteraOrderType.Stop, sp, oco); }
+                    if (e.StopTag == null) { e.StopPx = sp; Submit(ref e.StopTag, id, CarteraRole.Stop, -sl.Side, sl.Contracts, CarteraOrderType.Stop, sp, e.Oco); }
                     else if (Math.Abs(sp - e.StopPx) > 0.5 * TickSize) { e.StopPx = sp; _gw.Change(this, e.StopTag, sl.Contracts, sp); }
                 }
-                if (!double.IsNaN(sl.TargetPrice))
+                if (!double.IsNaN(sl.TargetPrice) && !e.SinObjetivo && sl.IsOpen && !e.ExitRequested)
                 {
                     double tp = Rt(sl.TargetPrice);
-                    if (e.TargetTag == null) { e.TargetPx = tp; e.TargetTag = Submit(id, CarteraRole.Target, -sl.Side, sl.Contracts, CarteraOrderType.Limit, tp, oco); }
+                    if (e.TargetTag == null) { e.TargetPx = tp; Submit(ref e.TargetTag, id, CarteraRole.Target, -sl.Side, sl.Contracts, CarteraOrderType.Limit, tp, e.Oco); }
                     else if (Math.Abs(tp - e.TargetPx) > 0.5 * TickSize) { e.TargetPx = tp; _gw.Change(this, e.TargetTag, sl.Contracts, tp); }
                 }
                 return;
@@ -178,7 +199,7 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                         else type = CarteraOrderType.Stop;
                     }
                     e.EntrySide = side; e.EntryQty = qty; e.EntryType = type; e.EntryPrice = px;
-                    e.EntryTag = Submit(id, CarteraRole.Entry, side, qty, type, px, null);
+                    Submit(ref e.EntryTag, id, CarteraRole.Entry, side, qty, type, px, null);
                 }
                 else if (isStop && e.EntryType == CarteraOrderType.Stop)
                 {
@@ -208,19 +229,19 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                     if (sl.IsOpen) { _gw.Log("AVISO entrada llenada con la estrategia ya abierta: " + id); break; }
                     sl.PendingEntrySide = e.EntrySide;
                     Coord.ConfirmEntry(sl, avgPx, qty, ny);
-                    e.ExitRequested = false; e.ExitReason = null;
+                    e.ExitRequested = false; e.ExitReason = null; e.SinObjetivo = false; e.OcoMuerto = false;
                     break;
                 case CarteraRole.Stop:
                     e.StopTag = null;
                     DropTag(ref e.TargetTag);
                     if (sl.IsOpen) Coord.ConfirmExit(sl, avgPx, ny, sl.OverlayBeActivated ? "BE_STOP" : "STOP");
-                    e.ExitRequested = false; e.Seq++;
+                    e.ExitRequested = false; e.OcoMuerto = false; e.Seq++;
                     break;
                 case CarteraRole.Target:
                     e.TargetTag = null;
                     DropTag(ref e.StopTag);
                     if (sl.IsOpen) Coord.ConfirmExit(sl, avgPx, ny, "TARGET");
-                    e.ExitRequested = false; e.Seq++;
+                    e.ExitRequested = false; e.OcoMuerto = false; e.Seq++;
                     break;
                 case CarteraRole.Exit:
                     e.ExitTag = null;
@@ -252,13 +273,32 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
                         _gw.Log("STOP RECHAZADO " + Root + " " + id + ": salida a mercado");
                         e.ExitRequested = true; e.ExitReason = "STOP_RECHAZADO";
                     }
+                    else if (!rejected && !e.ExitRequested)
+                    {
+                        // cancelacion no pedida = el broker cerro el grupo OCO (normalmente porque la otra pata se lleno y el aviso
+                        // del fill todavia no llego). No se toca nada ahora: si llega el fill, cierra la posicion; si no, la vela
+                        // siguiente cancela lo que quede y arma un grupo nuevo.
+                        e.OcoMuerto = true;
+                        return;
+                    }
                     break;
                 case CarteraRole.Target:
                     e.TargetTag = null;
+                    if (rejected)
+                    {
+                        // no se reenvia en la misma llamada (bucle): la posicion sigue con su stop y la salida de la estrategia
+                        _gw.Log("OBJETIVO RECHAZADO " + Root + " " + id + ": sigue con el stop");
+                        e.SinObjetivo = true;
+                    }
+                    else if (!e.ExitRequested)
+                    {
+                        e.OcoMuerto = true;
+                        return;
+                    }
                     break;
                 case CarteraRole.Exit:
                     e.ExitTag = null;
-                    if (rejected) _gw.Log("SALIDA RECHAZADA " + Root + " " + id + ": se reintenta");
+                    if (rejected) _gw.Log("SALIDA RECHAZADA " + Root + " " + id + ": se reintenta en la proxima vela");
                     break;
             }
             if (!(m.Value == CarteraRole.Exit && rejected)) SyncSleeve(id);
