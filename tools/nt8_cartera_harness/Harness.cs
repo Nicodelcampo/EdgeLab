@@ -166,6 +166,20 @@ namespace EdgeLabHarness
                 bars.Add(Load(paths[root]));
                 Console.Error.WriteLine(root + ": " + bars.Last().Count + " velas");
             }
+            // resultado diario por estrategia (dia de sesion CME): puntos realizados, minimo intradia (realizado + abierto en el
+            // extremo adverso de cada vela) y operaciones cerradas; 1 contrato. Para simular el piso y la perdida diaria DENTRO del dia.
+            var diario = new StreamWriter(Path.Combine(outDir, modo + "_diario.csv"));
+            diario.WriteLine("dia,raiz,estrategia,real_pts,min_pts,n");
+            var curDay = new int[books.Count]; var seen = new int[books.Count];
+            var acc = new List<Dictionary<string, double[]>>();
+            foreach (var bk in books) acc.Add(new Dictionary<string, double[]>());
+            Action<int> flush = (int i) =>
+            {
+                foreach (var kv in acc[i])
+                    if (kv.Value[2] > 0 || kv.Value[1] < 0)
+                        diario.WriteLine(string.Format(CultureInfo.InvariantCulture, "{0},{1},{2},{3:F4},{4:F4},{5}", curDay[i], books[i].Root, kv.Key, kv.Value[0], kv.Value[1], kv.Value[2]));
+                acc[i].Clear();
+            };
             // recorrido en orden de tiempo (a igual sello, libro 0 primero, como NT8 con BarsInProgress)
             var pos = new int[books.Count];
             while (true)
@@ -179,9 +193,27 @@ namespace EdgeLabHarness
                 if (modo == "broker") gw.ProcessBar(books[k], b, nyTz);
                 var ctx = FundedSyncMath.BuildBarTimeContext(DateTimeOffset.FromUnixTimeSeconds(b.T).UtcDateTime, b.O, b.H, b.L, b.C, b.V, nyTz, ctTz);
                 ctx.IsLastBarOfSession = last;
+                if (ctx.EthTradeDate != curDay[k]) { flush(k); curDay[k] = ctx.EthTradeDate; }
                 books[k].OnBar(ctx);
+                var co = books[k].Coord; var dk = acc[k];
+                for (; seen[k] < co.CompletedTrades.Count; seen[k]++)
+                {
+                    var r = co.CompletedTrades[seen[k]];
+                    double[] v; if (!dk.TryGetValue(r.ModuleId, out v)) { v = new double[3]; dk[r.ModuleId] = v; }
+                    v[0] += r.PnlPts; v[2] += 1; if (v[0] < v[1]) v[1] = v[0];
+                }
+                foreach (var id in co.SleeveIds)
+                {
+                    var sl = co.Sleeves[id];
+                    if (!sl.IsOpen) continue;
+                    double adv = sl.Side > 0 ? b.L - sl.EntryPrice : sl.EntryPrice - b.H;
+                    double[] v; if (!dk.TryGetValue(id, out v)) { v = new double[3]; dk[id] = v; }
+                    if (v[0] + adv < v[1]) v[1] = v[0] + adv;
+                }
                 pos[k]++;
             }
+            for (int i = 0; i < books.Count; i++) flush(i);
+            diario.Close();
             foreach (var bk in books)
                 Console.WriteLine(bk.Root + " operaciones " + bk.Coord.CompletedTrades.Count + " | neto esperado al final " + bk.ExpectedNet);
             Console.WriteLine("fills " + gw.Fills + " | ordenes vivas al final " + gw.Working.Count);

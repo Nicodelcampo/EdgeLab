@@ -25,7 +25,8 @@ namespace NinjaTrader.NinjaScript.Strategies
     /// posicion neta. Presets:
     ///   Intradia   : MNQ T,R,Z,V,RQ5,Franklin + MES RQ5,ES5N (1 micro c/u), plano 16:40 ET y 20 min antes del fin de sesion.
     ///   Interdia   : MNQ SOM sin_finde, C2_VZ + MES C2_VZ (1 micro c/u), mantiene de noche (cuentas que lo permiten).
-    ///   Rescate25K : composicion de docs/research/cartera_lucid_20261125 (rescate) con guardas de perdida diaria y total.
+    ///   Rescate25K : MNQ T (1 micro): perdida maxima por dia ~$200 < colchon de la 25K; registro de ejecucion completo.
+    ///                (docs/research/cartera_nt8_20261125/RESULTADO.md: el freno diario y mas estrategias BAJAN la probabilidad)
     /// Composicion editable: "MNQ:T=1,R=1;MES:RQ5=1" (codigos: T R Z V W N SOMEOD SOM RQ5 FR FRV ES5N C2VZ C2EVRP).
     /// Historico de una corrida en vivo: simulacion virtual (sin ordenes) y arranque plano en tiempo real. Strategy
     /// Analyzer (cuenta Backtest): ordenes reales de NT8 desde la primera vela.
@@ -151,7 +152,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             switch (p)
             {
                 case CarteraPreset.Interdia: return "MNQ:SOM=1,C2VZ=1;MES:C2VZ=1";
-                case CarteraPreset.Rescate25K: return "MES:RQ5=1,ES5N=1";
+                case CarteraPreset.Rescate25K: return "MNQ:T=1";
                 default: return "MNQ:T=1,R=1,Z=1,V=1,RQ5=1,FR=1;MES:RQ5=1,ES5N=1";
             }
         }

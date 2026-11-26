@@ -77,5 +77,32 @@ def main() -> int:
     return 0
 
 
-if __name__ == "__main__":
+
+
+def diario_intradia(carpeta: str = "paridad_intradia") -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Matrices por sesión CME (resultado de cierre y mínimo intradía) a 1 micro, desde `broker_diario.csv.gz` del arnés.
+    Mínimo con TODA la fricción del día descontada (conservador). La suma de mínimos entre estrategias es una cota inferior del
+    mínimo real de la cartera (los mínimos no ocurren a la misma hora): la simulación la usa como escenario conservador."""
+    d = pd.read_csv(D / carpeta / "broker_diario.csv.gz")
+    with costos.estimados_permitidos("docs/research/cartera_nt8_20261125/PREREGISTRO_MULTIACTIVO_Y_GESTION.md (M2K estimado)"):
+        fr = {r: costos.friccion_rt_puntos(MICRO[r], "base") for r in d.raiz.unique()}
+    pv = {r: costos.tick_value_usd(MICRO[r]) / costos.tick_size(MICRO[r]) for r in d.raiz.unique()}
+    d["serie"] = d.estrategia.map(CORTO) + "_" + d.raiz
+    d["usd"] = d.apply(lambda x: (x.real_pts - x.n * fr[x.raiz]) * pv[x.raiz], axis=1)
+    d["min_usd"] = d.apply(lambda x: (x.min_pts - x.n * fr[x.raiz]) * pv[x.raiz], axis=1)
+    d["dia"] = pd.to_datetime(d.dia.astype(str))
+    dias = pd.bdate_range(DESDE, HASTA)
+    C = d.pivot_table(index="dia", columns="serie", values="usd", aggfunc="sum").reindex(dias).fillna(0.0)
+    N = d.pivot_table(index="dia", columns="serie", values="min_usd", aggfunc="sum").reindex(dias).fillna(0.0)
+    N = np.minimum(N, np.minimum(C, 0.0))
+    C.index.name = N.index.name = "dia"
+    C.round(2).to_csv(D / "MATRIZ_DIARIA_CIERRE_1MICRO.csv.gz"); N.round(2).to_csv(D / "MATRIZ_DIARIA_MIN_1MICRO.csv.gz")
+    return C, N
+
+
+if __name__ == "__main__" and len(sys.argv) > 1 and sys.argv[1] == "intradia":
+    C, N = diario_intradia()
+    print(C.describe().T[["mean", "std", "min"]].round(1)); print(N.describe().T[["mean", "min"]].round(1))
+
+if __name__ == "__main__" and len(sys.argv) == 1:
     raise SystemExit(main())

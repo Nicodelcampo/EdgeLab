@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-748 scripts.
+752 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -176,7 +176,9 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
+| `tools/cartera_gestion_analisis.py` | Lectura de RESULTADOS_GESTION.json (kernel Kaggle edgelab-cartera-gestion-20261125) con el criterio pre-registrado |
 | `tools/cartera_lucid.py` | Cartera Lucid inverso-volatilidad (plan `docs/research/cartera_lucid_20261125/PLAN.md`). |
+| `tools/cartera_matriz_diaria.py` | Matriz diaria de P&L por estrategia y activo, 1 micro, costos canónicos de micros (pre-registro |
 | `tools/cartera_nov.py` | Cartera con el período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md, 2026-11-16). |
 | `tools/cartera_nov_analisis.py` | Análisis de la cartera del período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md). |
 | `tools/cartera_tanda4.py` | Tanda 4 (pre-registro docs/research/cartera_20261116/PREREGISTRO_TANDA4.md). |
@@ -377,6 +379,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_areas/areas_main.py` | (sin docstring) |
 | `tools/kaggle_areas/construir_kernel.py` | Kernel de AREAS-EXP-1 con el empaquetador genérico (tools/kaggle_grilla/construir_kernel.py). |
 | `tools/kaggle_auth.py` | Autenticación de curl contra la API de Kaggle, para los dos formatos de credencial. |
+| `tools/kaggle_cartera_gestion_kernel.py` | Kernel de Kaggle: gestión del tamaño de carteras en cuentas LucidFlex (pre-registro |
 | `tools/kaggle_cobertura_preholdout.py` | Cobertura REAL de los datos en Kaggle hasta la apertura del holdout (pedido de Nico, 2026-10-22). Corre DENTRO de un kernel. |
 | `tools/kaggle_data.py` | Baja un archivo de un dataset propio de Kaggle con la credencial que el entorno ya inyecta para www.kaggle.com (reintenta ante 429). |
 | `tools/kaggle_data_entrypoint.py` | Offline Kaggle dataset discovery; no secret handling or research approval. |
@@ -538,6 +541,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/nq_cruce25_clima.py` | NQ-CRUCE25-CLIMA — pre-registro docs/research/MANIFIESTO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md (v2, tras Entrada 067). |
 | `tools/nq_l2_explore.py` | Exploración L2 de NQ (manifiesto docs/research/MANIFIESTO_NQ_L2_EXPLORACION_20260924.md, OK de Nico 2026-09-24). |
 | `tools/nq_l2_synergy.py` | Absorción como amplificador de contexto, NQ L2 (manifiesto docs/research/MANIFIESTO_NQ_L2_SINERGIA_ABSORCION_20260924.md, |
+| `tools/nt8_cartera_paridad.py` | Paridad de EdgeLabCartera fuera de NT8 (2026-11-25). |
 | `tools/nt8_limpiar_csproj.py` | Saca del proyecto de NinjaTrader los artefactos de build que compila como fuente. |
 | `tools/nt8_reexport_merge.py` | Fusiona la re-exportación NT8 del 2026-10-04/05 (AddOn EdgeLab Tick History) con el parquet canónico previo de |
 | `tools/nt8_sellado_diario.py` | Ticks diarios de NT8 -> dataset sellado de Kaggle (2026-11-01, Nico: «para los ticks tengo NT8»; «el SV1 tiene que usar Kaggle»). |

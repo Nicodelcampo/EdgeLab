@@ -200,7 +200,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (33)
+## PALANCA_DE_DISENO (37)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -214,6 +214,26 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: LucidFlex 25K/50K/150K, 2020-01 → 2026-09, corridas NT8
   - Siguiente: Cartera diversificada en Lucid sólo en 150K a tamaño mínimo; para cuentas chicas, menos estrategias o más ventaja por operación.
   - Evidencia: `docs/research/cartera_lucid_20261125/RESULTADO.md`, `docs/research/cartera_lucid_20261125/PLANES.json`
+- **C2_VZ (NQ+ES) junto a la cartera intradía de 8** (`F-C2VZ-ESTABILIZA-CARTERA-INTRADIA`, 2026-11-25, sesion)
+  - Efecto: Correlación ≈ 0; peor semestre −5.992 → −1.571 USD (1 micro c/u), Sharpe 1,48 → 1,70; 2026 1.366 vs 613 USD/mes. Mantiene de noche.
+  - Dónde: NQ/ES micros 2019-07 → 2026-09
+  - Siguiente: Usarla sólo en una cuenta que permita tenencia nocturna (preset Interdía o cartera combinada).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Gestión del tamaño en LucidFlex: 1/N, inverso-vol, HRP; 1–4 micros; dinámico (colchón Grossman–Zhou, escalones); freno diario; tope diario** (`F-GESTION-PROP-SIMPLE-GANA`, 2026-11-25, sesion)
+  - Efecto: Con mínimo intradía: en la 150K lo mejor es 1 micro c/u, 1/N, sin dinámico ni freno (P 0,25 contraída, 0,50 desarrollo); más tamaño o escalar por colchón empeora; ranking estable 2019–23 vs 2024–26 (Spearman 0,98).
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125
+  - Siguiente: No escalar por colchón ni agregar frenos diarios; para subir la probabilidad hace falta más ventaja por unidad de drawdown, no gestión.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Simular reglas de cuentas fondeadas (piso, pérdida diaria) con el resultado de cierre del día** (`F-SIM-PROP-SOLO-CIERRE-SESGADA`, 2026-11-25, sesion)
+  - Efecto: Infla mucho: rescate RQ5+Franklin con freno 120 da 66 % sólo con cierres y 4 % con el mínimo intradía; la cartera en la 25K 0,11 vs 0,009.
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125 iteraciones 1 y 2
+  - Siguiente: Toda simulación de cuenta fondeada usa el mínimo intradía (arnés EdgeLabCartera, broker_diario) o el MAE; nunca sólo cierres.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Ejecución del adaptador FundedSync (posición neta al cierre de vela, stops virtuales)** (`F-NT8-ADAPTADOR-UNA-VELA-TARDE`, 2026-11-25, sesion)
+  - Efecto: Las entradas reales salían una vela después de la registrada y los stops se ejecutaban al cierre de la vela siguiente sin orden en el broker; el CSV mostraba precios virtuales.
+  - Dónde: nt8/strategies/EdgeLabFundedSyncPortfolio.cs (FundedSyncNt8Adapter)
+  - Siguiente: Usar EdgeLabCartera (órdenes reales por estrategia); medir con el registro de ejecución la diferencia en la 25K y migrar el Portfolio.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `nt8/strategies/EdgeLabCarteraBook.cs`
 - **Antes de ensanchar el stop para bajar la fricción, mirar el bruto en PUNTOS por escala: si es constante, la ventaja es un monto fijo por operación y escalar no cambia el neto; la palanca es el tamaño (contrato fijo o ∝1/√riesgo), no el stop** (`F-VENTAJA-EN-PUNTOS-NO-ESCALA`, 2026-11-19, humano)
   - Efecto: RQ5/RQ6 (Roboquant) en DESC 2006–2025: bruto en puntos ≈ constante de m=1 a m=3 (RQ5 NQ +5,1 a +6,9 pts) mientras el bruto en R cae 0,062 → 0,018; neto en R ≈ −0,01 en toda la curva, pero +3,6 pts/op con contrato fijo en NQ. | 2026-11-19 (grilla de REGIMEN-SOM-FRANKLIN, descriptivo): SOM NQ bruto 5,2/5,6/4,7 pts con stop 6/8/10 ATR (R bruto 0,084→0,056), ES 0,6/0,9/0,85, YM 3,4/3,4/4,6; Franklin stop rango vs 0,5·ATR20 parecido en puntos. El stop tampoco es palanca en SOM ni Franklin. | TAMANO-K52 2026-11-19: con contratos ∝ 1/ATR20 (sin sesgo de nivel de precio) el tamaño NO mejora RQ5, RQ6, SOM ni Franklin (Δ ≈ 0): las mejoras de contrato fijo eran K52.
   - Dónde: ES, NQ futuros M1; intradía de momentum
@@ -370,7 +390,7 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (17)
+## EN_SEGUIMIENTO (18)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -384,6 +404,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Meses A5 2020–2025
   - Siguiente: C2_VZ es la única candidata a contrapeso; seguirla en forward y medir el efecto en cartera con sizing de riesgo constante.
   - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
+- **Rescate de la LucidFlex 25K (saldo 24.270, colchón ≤ 270) con subconjuntos de la cartera** (`F-RESCATE-25K-T-SOLA`, 2026-11-25, sesion)
+  - Efecto: T sola en 1 MNQ: pasa 13,6 % contraída (27 % desarrollo, 5,7 % cero), estable en las dos mitades; cartera completa 1 %; el freno diario baja la probabilidad.
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125
+  - Siguiente: Correr preset Rescate25K con registro de ejecución; si cae, resetear la cuenta (decisión de Nico).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
 - **Reglas del Marketplace de Roboquant en futuros: RQ5 banda de ruido de Zarattini, RQ6 retroceso al VWAP en día de tendencia, RQ2 reversión al mínimo previo, RQ1 ORB 10:00 con salida a 8 min** (`F-ROBOQUANT-BRUTO-SIN-NETO`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM: 5/15 nominadas (RQ1 +0,039, RQ2 +0,073, RQ5 +0,062, RQ6 +0,054 R bruto, p ≤ 0,03, 70–75 % de años, parejo en 3 índices; RQ2−RQ2N +0,136). R neto negativo en las 4 (fricción 0,07–0,18 R); neto operable RQ5 +0,035, RQ6 +0,036. REP sin leer: K49, potencia en días 0,04–0,07. | FRICCION-RQ 2026-11-19: ensanchar el stop no sirve en RQ5/RQ6 (bruto en puntos constante: la ventaja es un monto fijo); RQ2 llega a +0,016 R con 2× sin pasar. Con contrato fijo RQ5 NQ +3,6 pts/op neto (t 2,0), RQ6 NQ +2,4 (t 1,8), ES positivos chicos, YM no (exploratorio).
   - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
@@ -460,7 +485,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (66)
+## NO_REPETIR (67)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -474,6 +499,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: NQ/ES, corridas NT8
   - Siguiente: No repetir interruptores de régimen de 20 sesiones sobre estas reglas; la caída no se apaga con este tipo de estado.
   - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
+- **Sumar RQ5/Franklin/ES5N en YM, RTY y GC, y Franklin/T/R en ES (micros) a la cartera intradía como diversificadores** (`F-MULTIACTIVO-INDICES-ORO-NO-DIVERSIFICA`, 2026-11-25, sesion)
+  - Efecto: YM/RTY correlación diaria 0,24–0,39 con la canasta; ninguna con ventaja propia en micros (R/op −0,11 a +0,03); oro sin correlación pero sin ventaja. Cada una baja P(cobro) en la 150K de 0,30 a 0,26–0,29.
+  - Dónde: 2019-07 → 2026-09, motor EdgeLabCartera (broker)
+  - Siguiente: No sumar transferencias de índices como diversificadores; un diversificador necesita ventaja propia en otra clase de activo (no hay hoy).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
 - **BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)** (`F-BAJA-FRICCION-A5-BF1-BF8`, 2026-11-24, sesion)
   - Efecto: 20 años DESC (n 3.007–10.708): 0/8 pasan BH q 0,10; Fut −0,022 a −0,051 R (t −1,33 a −5,47); CFD −0,002 a −0,023 R. BF1 ESNQ 20+ +0,059 (t 2,19) sin fuerza en Full ni BH.
   - Dónde: ES/NQ fut y CFD, DESC
