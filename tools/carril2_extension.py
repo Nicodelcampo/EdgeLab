@@ -15,8 +15,8 @@ DIR = ROOT / "docs/research/carril2_extension_20261126"; PRE = "docs/research/ca
 
 def correr():
     import carril2 as C
-    for lote in (1, 2):
-        if lote == 2: C._lote2()
+    for lote in (sys.argv[2:] and [int(sys.argv[2])] or (1, 2)):
+        if lote == 2: C._lote2(); C.LOTE2 = True
         C.PRE = PRE; C.DIR = DIR; C.FIN = 20260930; C.LOTE = dict(C.LOTE, ops=f"OPS_LOTE{lote}.csv.gz")
         C.correr()
 

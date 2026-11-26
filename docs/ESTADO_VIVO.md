@@ -8,7 +8,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `754` campanas / `538,657,029` pruebas registradas
+- Contador global: `757` campanas / `538,657,040` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
@@ -21,16 +21,17 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 40 | Palancas (`PALANCA_DE_DISENO`): 37
+- Pistas vivas (`PISTA_VIVA`): 41 | Palancas (`PALANCA_DE_DISENO`): 37
+  - `F-FS-O-N-A5` (2026-11-26): O y N de FundedSync (traducción corregida) en R/ATR20 por DESC → REP de A5 (2018 → 2026-09)
   - `F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES` (2026-11-26): Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canast…
   - `F-CAIDA-2026-ESTRATEGIAS-DE-LA-MANANA` (2026-11-26): Caída de may–sep 2026 de la cartera Intradía (INTRADIA8) y mitigaciones/candidatas
   - `F-FS-IL-REMEDICION-V-CANDIDATA` (2026-11-21): Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)
   - `F-RQ5-REGIMEN-ROBUSTO` (2026-11-20): RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025
   - `F-RQ5-HOLDOUT-NO-CONCLUYENTE` (2026-11-20): RQ5 fábrica, holdout A5 2018-01 → 2026-09 (cinco índices)
-  - `F-CANASTA-T-R-Z-RQ5-DIVERSIFICA` (2026-11-20): Correlación y canasta de las fábricas A20, T, R, Z-banda y RQ5 (1 R por operación)
 - Canastas papel: Cartera v2 (2026-11-16) — 8 reglas, base de `SELECCION… | Cartera v3 (2026-11-16) — 8 reglas (forward en paralel… | Cartera B (2026-11-16) — T + Z + R de FundedSync en MN…
 
-## 4. Bloqueado / NO_REPETIR (67 vigentes en FACTORES.jsonl)
+## 4. Bloqueado / NO_REPETIR (68 vigentes en FACTORES.jsonl)
+- `F-ADAPTAR-TOPE-PUNTOS-T-F` (2026-11-26): Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados…
 - `F-MULTIACTIVO-INDICES-ORO-NO-DIVERSIFICA` (2026-11-25): Sumar RQ5/Franklin/ES5N en YM, RTY y GC, y Franklin/T/R en ES (micros) a la c…
 - `F-ESTADO-APERTURA-20S-NO-FILTRA` (2026-11-25): Filtro por estado de la apertura de las 20 sesiones previas (cont_orb, ac5_ma…
 - `F-ENTRADA-RETROCESO-SELECCION-ADVERSA` (2026-11-25): Entrar en el retroceso (límite a k=0,25/0,50 del riesgo, 30 min) en vez de en…
@@ -65,8 +66,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - `F-GEX-DIA-TENDENCIA` (2026-11-18): Gamma de los dealers (GEX del cierre previo): baja → días de más magnitud y r…
 - `F-FILTRO-PICOS-NO-AGREGA` (2026-11-18): Esperar picos o un barrido (pivotes blandos de 1 vela, vuelta 0,25·D, cancela…
 - `F-ESCALONADAS-M1-SIN-SENAL` (2026-11-18): Escalera plana de picos (escalonadas_det PLANAS) detectada en M1 y operada a…
-- `F-DIA-TENDENCIA-CLASES-NUEVAS-NULAS` (2026-11-18): Calendario (vencimiento mensual, vuelta de mes), NR7, día interior, ubicación…
-- Ver lista completa `NO_REPETIR` (67) en `docs/research/FACTORES.jsonl`
+- Ver lista completa `NO_REPETIR` (68) en `docs/research/FACTORES.jsonl`
 
 ## 5. Holdout Consumido y Aperturas
 - Familias con sesiones miradas: `AREAS_EXP_1_CRUZADO`<=20261022, `LUXIMB_FADE_VISOR`<=20261021

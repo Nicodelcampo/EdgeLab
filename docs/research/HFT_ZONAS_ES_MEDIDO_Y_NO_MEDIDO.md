@@ -1463,3 +1463,13 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - Carril 2 (salvo C2_VZ/EVRP) después de 2025-07;
   - N y F por la cadena A5;
   - forward de la cartera mixta.
+
+## 2026-11-26 — ADAPTAR-PRESENTE 1 y FS-NFCO-A5
+- **MEDIDO:**
+  - topes de T y F escalados por precio: no se adoptan;
+  - O confirma en REP de A5 y N queda NO_CONCLUYENTE;
+  - F y C sin nominar.
+- **NO MEDIDO:**
+  - la fracción en el tope de la variante de T (el kernel reporta el riesgo con el tope fijo);
+  - O con tamaño fijo;
+  - E con stop y objetivo en proporción.

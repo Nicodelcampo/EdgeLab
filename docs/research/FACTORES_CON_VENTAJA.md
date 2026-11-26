@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (40)
+## PISTA_VIVA (41)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: MNQ/MES 1 micro, 2019-07 → 2026-09
   - Siguiente: Re-medir Carril 2 hasta 2026-09; N y F por la cadena A5; vigilancia secuencial de RQ5/Franklin/ES5N; forward de la cartera mixta.
   - Evidencia: `docs/research/estabilidad_cartera_20261126/RESULTADO.md`
+- **O y N de FundedSync (traducción corregida) en R/ATR20 por DESC → REP de A5 (2018 → 2026-09)** (`F-FS-O-N-A5`, 2026-11-26, humano)
+  - Efecto: O: DESC +0,028 (q 0,088), REP +0,055 (p 0,025) → CONFIRMA_REP, pero sin operar desde 2025-10 por su techo de margen. N: DESC +0,021 (q 0,088), REP +0,008 (p 0,35) → NO_CONCLUYENTE. F y C sin nominar.
+  - Dónde: NQ, meses DESC/REP de A5 (holdout A5 no limpio para FundedSync)
+  - Siguiente: O con tamaño fijo de 1 micro como candidata de cartera; N sigue en observación; confirmación limpia: forward.
+  - Evidencia: `docs/research/fs_nfco_a5_20261126/RESULTADO.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09
@@ -550,10 +555,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (67)
+## NO_REPETIR (68)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
+  - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
+  - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ
+  - Siguiente: No escalar topes por precio sin medir. Pendientes: O (tamaño fijo) y E (stop/objetivo en puntos). Corregir el riesgo de T en fundedsync_main (_orb_t usa el tope fijo).
+  - Evidencia: `docs/research/adaptar_presente_20261126/RESULTADO.md`
 - **Entrar en el retroceso (límite a k=0,25/0,50 del riesgo, 30 min) en vez de en la ruptura, para T_NQ, RQ5_NQ y RQ5_ES** (`F-ENTRADA-RETROCESO-SELECCION-ADVERSA`, 2026-11-25, sesion)
   - Efecto: DESC: diferencia mensual −0,6 a −2,3 R (p 0,81–1,00); REP también negativa salvo RQ5_ES k0,25 (+0,11). Se llena sobre las que iban a perder (R original −0,15 a −0,49) y pierde las ganadoras.
   - Dónde: NQ/ES, corridas NT8 2020–2025

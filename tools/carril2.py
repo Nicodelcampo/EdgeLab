@@ -17,7 +17,7 @@ import numpy as np, pandas as pd
 
 ROOT = Path(__file__).resolve().parents[1]; sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
 DIR = ROOT / "docs/research/carril2_20261119"; PRE = "docs/research/carril2_20261119/PREREGISTRO_LOTE1.md"
-FAM = "CARRIL2_A5"; FIN = 20250731
+FAM = "CARRIL2_A5"; FIN = 20250731; LOTE2 = False   # LOTE2: fuerza el lote 2 cuando PRE es de otra corrida (carril2_extension)
 INST = {"C2_IBS": ("ES", "NQ", "YM", "RTY"), "C2_D7": ("ES", "NQ", "YM", "RTY", "GC"), "C2_TT": ("ES", "NQ", "YM", "RTY"), "C2_TOM": ("ES", "NQ", "YM", "RTY")}
 REGLAS = ("C2_IBS", "C2_D7", "C2_TT", "C2_TOM")
 LOTE = dict(pre=PRE, ops="OPS.csv.gz", desc="DESC.json", rep="REP.json", etiqueta="REP_CARRIL2_LOTE1")
@@ -125,7 +125,7 @@ def correr():
     from edgelab.research.embudo_runners import friccion
     from edgelab.holdout import a5_bloque
     exigir_contada(PRE)
-    lote2 = PRE.endswith("LOTE2.md"); bars, mens = {}, None
+    lote2 = PRE.endswith("LOTE2.md") or LOTE2; bars, mens = {}, None
     V = pd.read_parquet(Path(ruta("M1NT8")) / "cboe_volatility_daily.parquet"); vc = V.vix_close.copy(); vc.index = pd.to_datetime(vc.index).normalize()
     vix_reg = (vc > vc.rolling(100).mean()).shift(1)                    # VIX(t−1) > SMA100(t−1)
     partes = []
