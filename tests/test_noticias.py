@@ -40,7 +40,7 @@ def test_csv_ordenado_sin_duplicados_y_con_fuente():
     assert (raw["fuente_url"].str.startswith("https://")).all()
     assert set(raw["impacto"]) <= set(noticias.IMPACTOS)
     assert raw["ts_utc"].str.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\dZ").all()
-    assert raw["ts_utc"].min() >= "2023-01-01" and raw["ts_utc"].max() < "2027-01-01"
+    assert raw["ts_utc"].min() >= "2008-01-01" and raw["ts_utc"].max() < "2027-01-01"
 
 
 def test_csv_reproducible_desde_las_transcripciones():
@@ -63,6 +63,7 @@ def test_dst_cpi_marzo_y_noviembre():
 
 def test_horas_locales_por_evento():
     df = noticias.cargar()
+    df = df[df["ts_utc"] >= pd.Timestamp("2023-01-01", tz="UTC")]       # 2008-2022: test aparte (convención de la Fed)
     hora = df["ts_utc"].dt.tz_convert("America/New_York").dt.strftime("%H:%M")
     for ev, h in [("FOMC_DECISION", "14:00"), ("FOMC_PRESS_CONFERENCE", "14:30"), ("FOMC_MINUTES", "14:00"),
                   ("NFP_EMPLOYMENT_SITUATION", "08:30"), ("ISM_MANUFACTURING_PMI", "10:00"),
@@ -122,8 +123,8 @@ def test_acepta_datetime_y_falla_cerrado(chico):
     with pytest.raises(ValueError):
         noticias.cruza_noticia([ns("2024-03-12T13:00")], [ns("2024-03-12T12:00")], ruta=chico)
     with pytest.raises(noticias.FueraDeCobertura):
-        noticias.cruza_noticia([ns("2022-12-30T13:00")], [ns("2022-12-30T14:00")], ruta=chico)
-    assert noticias.cruza_noticia([ns("2022-12-30T13:00")], [ns("2022-12-30T14:00")], ruta=chico,
+        noticias.cruza_noticia([ns("2007-12-28T13:00")], [ns("2007-12-28T14:00")], ruta=chico)
+    assert noticias.cruza_noticia([ns("2007-12-28T13:00")], [ns("2007-12-28T14:00")], ruta=chico,
                                   exigir_cobertura=False).tolist() == [False]
 
 
@@ -133,3 +134,26 @@ def test_minutos_bloqueados_del_dia(chico):
     m_et = noticias.minutos_bloqueados_del_dia("2024-03-12", 0, 0, tz="America/New_York", ruta=chico)
     assert m_et.tolist() == [8 * 60 + 30]
     assert noticias.minutos_bloqueados_del_dia("2024-03-13", ruta=chico).size == 0
+
+
+def test_historico_2008_2022():
+    df = noticias.cargar()
+    h = df[df["ts_utc"] < pd.Timestamp("2023-01-01", tz="UTC")]
+    et = h["ts_utc"].dt.tz_convert("America/New_York")
+    hhmm = et.dt.strftime("%H:%M")
+    # convención de la Fed: 14:15 hasta 2012 (12:30 en reuniones con conferencia 2011-2012), 14:00 desde 2013
+    fomc = h["evento"] == "FOMC_DECISION"
+    assert set(hhmm[fomc & (et.dt.year >= 2013) & ~et.dt.strftime("%Y%m%d").isin(["20200303", "20200315", "20200323"])]) == {"14:00"}
+    assert set(hhmm[fomc & (et.dt.year <= 2012)]) <= {"14:15", "12:30", "08:20", "07:00"}
+    ts = set(zip(h["ts_utc"].dt.strftime("%Y-%m-%dT%H:%MZ"), h["evento"]))
+    # muestra de ForexFactory (list_events USD high, ene-2008), consultada el 2026-11-25
+    for k in [("2008-01-04T13:30Z", "NFP_EMPLOYMENT_SITUATION"), ("2008-01-16T13:30Z", "CPI"),
+              ("2008-01-22T13:20Z", "FOMC_DECISION"), ("2008-01-30T19:15Z", "FOMC_DECISION"),
+              ("2008-01-02T15:00Z", "ISM_MANUFACTURING_PMI"), ("2008-02-13T13:30Z", "RETAIL_SALES")]:
+        assert k in ts, k
+    # cobertura mínima por año (2009-2022; JOLTS tiene hueco declarado 2009-01 → 2010-07)
+    y = et.dt.year
+    for ev, n in [("CPI", 12), ("NFP_EMPLOYMENT_SITUATION", 11), ("FOMC_DECISION", 8), ("RETAIL_SALES", 11),
+                  ("ISM_MANUFACTURING_PMI", 12), ("PPI", 12)]:
+        for anio in range(2009, 2023):
+            assert ((h["evento"] == ev) & (y == anio)).sum() >= n, (ev, anio)

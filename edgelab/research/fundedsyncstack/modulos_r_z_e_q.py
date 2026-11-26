@@ -144,6 +144,9 @@ class EmaDivConfig:
     target_points: float = 45.0
     historical_minute14_delay: bool = True  # True: State.Historical (+14m), False: Realtime
     delay_minutes: int = 14
+    flatten_before_daily_futures_close: bool = True
+    daily_futures_flatten_time_central: int = 154400
+    daily_futures_resume_time_central: int = 170100
 
 
 @dataclass
@@ -1229,6 +1232,17 @@ def run_e(
     while k10 < n10 and int(b10.m1_end_idx[k10]) < 0:
         k10 += 1
 
+    def _is_daily_close_blocked(t_ct: int, d_ct: int) -> bool:
+        if not cfg.flatten_before_daily_futures_close:
+            return False
+        if d_ct == 5:  # Sabado
+            return True
+        if d_ct == 6:  # Domingo antes de 17:01 CT
+            return t_ct < cfg.daily_futures_resume_time_central
+        if d_ct == 4:  # Viernes >= 15:44 CT
+            return t_ct >= cfg.daily_futures_flatten_time_central
+        return cfg.daily_futures_flatten_time_central <= t_ct < cfg.daily_futures_resume_time_central
+
     for m1 in range(n1):
         ts = int(b1.ts_ns[m1])
         op1 = float(b1.open[m1])
@@ -1236,8 +1250,15 @@ def run_e(
         if not closed_open:
             tracker.on_bar_intrabar(m1, ts, op1, float(b1.high[m1]), float(b1.low[m1]))
 
+        daily_blocked = _is_daily_close_blocked(int(b1.hhmmss_ct[m1]), int(b1.dow_ct[m1]))
+        if daily_blocked:
+            if tracker.is_open:
+                tracker.request_exit("DAILY_FUTURES_CLOSE")
+            eng.e_hist_entry_pending = False
+            eng.e_hist_entry_submit_ns = 0
+
         # OnBarUpdate(bip=1): TrySubmitHistoricalEmaEntry() corre antes que bip=10
-        if eng.e_hist_entry_pending and ts >= eng.e_hist_entry_submit_ns:
+        if (not daily_blocked) and eng.e_hist_entry_pending and ts >= eng.e_hist_entry_submit_ns:
             eng.e_hist_entry_pending = False
             eng.e_hist_entry_submit_ns = 0
             if tracker.can_enter:
@@ -1250,6 +1271,9 @@ def run_e(
 
         while k10 < n10 and int(b10.m1_end_idx[k10]) <= m1:
             _on_bip10_bar(k10)
+            if daily_blocked:
+                eng.e_hist_entry_pending = False
+                eng.e_hist_entry_submit_ns = 0
             k10 += 1
 
     return trades_to_df(tracker.trades)
@@ -1318,7 +1342,13 @@ def run_q(
 
     open_date_et, open_min_et, open_dow_et, _, _ = _tz_fields(b3.ts_ns, "America/New_York", -5)
 
-    tracker = _ModuleExecTracker("Q", ms.tick_size, ms.point_value)
+    # IL mod_Q.txt:60-102: RampartQuantity dimensiona en MNQ (pv = point_value / 10 = 2.0)
+    tracker_pv = (
+        (ms.point_value / 10.0 if ms.point_value >= 10.0 else ms.point_value)
+        if qty is None
+        else ms.point_value
+    )
+    tracker = _ModuleExecTracker("Q", ms.tick_size, tracker_pv)
     eng = _RampartEngine()
 
     range_start_min = cfg.range_start_hour * 60 + cfg.range_start_minute

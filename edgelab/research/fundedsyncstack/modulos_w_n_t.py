@@ -148,7 +148,7 @@ class NDayConfig:
     regime_long_range_length: int = 20
     minimum_volatility_expansion_ratio: float = 1.25
     maximum_regime_efficiency: float = 0.25
-    flatten_before_daily_futures_close: bool = False
+    flatten_before_daily_futures_close: bool = True
     daily_futures_flatten_time_central: int = 154400
     daily_futures_resume_time_central: int = 170100
 
@@ -851,6 +851,7 @@ def run_n(
         if int(boundaries[i]) >= cfg.flatten_time:
             working_stop_entry_price = None
             working_stop_entry_qty = 0
+            pending_market_entry_qty = 0
             if in_pos and pending_exit_reason is None:
                 pending_exit_reason = "EOD"
             continue
@@ -1993,9 +1994,12 @@ def run_t(
 
         o_min_et = int(open_min_et[i])
         c_min_et = int(close_min_et[i])
-        in_cash_win = (
+        same_et_date = (
             int(open_date_et[i]) == current_cash_date
             and int(close_date_et[i]) == current_cash_date
+        )
+        in_cash_win = (
+            same_et_date
             and o_min_et >= cfg.orb_start_minute_et
             and c_min_et <= cfg.cash_close_minute_et
         )
@@ -2023,7 +2027,7 @@ def run_t(
                 current_rth_vol_sum += vol_i
 
         # ProcessShadowPair
-        if in_cash_win and active_shadow_pair is not None:
+        if same_et_date and active_shadow_pair is not None:
             sp = active_shadow_pair
             if not sp.invalid and not sp.label_recorded:
                 if not sp.initialized:
@@ -2045,7 +2049,7 @@ def run_t(
                     try_record_completed_model_label()
 
         # ProcessPendingEntryDecision
-        if in_cash_win and pending_entry_decision is not None and not day_blocked:
+        if same_et_date and pending_entry_decision is not None and not day_blocked:
             ped = pending_entry_decision
             if bar_open_ns >= ped.expected_obs_open_utc_ns:
                 if bar_open_ns != ped.expected_obs_open_utc_ns or (bar_close_ns - bar_open_ns) != _NS_PER_MIN:
@@ -2081,7 +2085,7 @@ def run_t(
                         )
 
         # ProcessPendingFinalEntryDecision
-        if in_cash_win and pending_final_entry_decision is not None and not day_blocked:
+        if same_et_date and pending_final_entry_decision is not None and not day_blocked:
             pfed = pending_final_entry_decision
             if bar_open_ns >= pfed.expected_obs_open_utc_ns:
                 if bar_open_ns != pfed.expected_obs_open_utc_ns or (bar_close_ns - bar_open_ns) != _NS_PER_MIN:
@@ -2111,7 +2115,7 @@ def run_t(
                             submit_entry(final_side, d_src, r_path)
 
         # CashClose1600ET
-        if in_cash_win and c_min_et >= cfg.cash_close_minute_et:
+        if same_et_date and c_min_et >= cfg.cash_close_minute_et:
             cl_i = float(closes[i])
             if active_shadow_pair is not None:
                 sp = active_shadow_pair

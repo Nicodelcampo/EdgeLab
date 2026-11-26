@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-718 scripts.
+752 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -50,6 +50,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/audit_kaggle_coverage.py` | Full date/interval diagnostics, never calendar/liquidity certification. |
 | `tools/audit_kaggle_notebook_source.py` | Inspect a saved Kaggle get_notebook_info JSON; NEVER execute its source. |
 | `tools/audit_kaggle_raw_ticks.py` | Structural canonical_tick_v1 QA only, never sanitation/liquidity approval. |
+| `tools/audit_live_execution.py` | Audit live/demo NT8 execution quality CSVs emitted by EdgeLabFundedSyncPortfolio & EdgeLabExecutionProbe. |
 | `tools/audit_mnq_l2_v2_first_session.py` | (sin docstring) |
 | `tools/auditar_canasta.py` | Experimento 4 (canasta_7_20261030/auditoria_vela_a_vela/PREREGISTRO.md): auditoría vela a vela de las 7 reglas de la canasta |
 | `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
@@ -170,10 +171,14 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/canasta_orb.py` | CANASTA-ORB: selección por estabilidad en sub-bloques, correlación y diversificación, con el nulo de la selección completa. |
 | `tools/canasta_v3_holdout.py` | Holdout de la canasta v3 (ACTA_APERTURA_V3_20261102.md). Cada regla con su celda, cortes y tope congelados, sobre el dataset |
 | `tools/canastas_vigentes.py` | Documento único y auditable de las canastas vigentes (pedido de Nico, 2026-11-17: «subí las canastas a donde se lean y puedan auditar»). |
+| `tools/candidata_referencia.py` | Referencia Python de una variante FundedSync tal como la corre `EdgeLabCandidataFS` en NT8 (para la paridad). |
 | `tools/carril2.py` | CARRIL2-LOTE1: IBS+VIX, Double Seven, Turnaround Tuesday y cambio de mes sobre el motor de barras calibrado |
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
+| `tools/cartera_gestion_analisis.py` | Lectura de RESULTADOS_GESTION.json (kernel Kaggle edgelab-cartera-gestion-20261125) con el criterio pre-registrado |
+| `tools/cartera_lucid.py` | Cartera Lucid inverso-volatilidad (plan `docs/research/cartera_lucid_20261125/PLAN.md`). |
+| `tools/cartera_matriz_diaria.py` | Matriz diaria de P&L por estrategia y activo, 1 micro, costos canónicos de micros (pre-registro |
 | `tools/cartera_nov.py` | Cartera con el período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md, 2026-11-16). |
 | `tools/cartera_nov_analisis.py` | Análisis de la cartera del período nuevo (pre-registro docs/research/cartera_20261116/PREREGISTRO.md). |
 | `tools/cartera_tanda4.py` | Tanda 4 (pre-registro docs/research/cartera_20261116/PREREGISTRO_TANDA4.md). |
@@ -190,11 +195,13 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/check_research_data_gate.py` | Check pinned eligibility metadata only. Never opens market-data source files. |
 | `tools/cierre.py` | Cierre de un turno de trabajo en UN comando (AUTOMATIZACION_PROCESOS_20261111 C3): regenera todos los archivos generados y |
 | `tools/cobertura_release_preholdout.py` | Cobertura por activo del release líquido de Kaggle hasta la apertura del holdout, desde su índice de sesiones (sin ticks). |
+| `tools/comparar_candidata.py` | Compara una corrida de `EdgeLabCandidataFS` en NT8 contra la referencia Python (`tools/candidata_referencia.py`). |
 | `tools/compare_session_parity.py` | Comparador de paridad por sesion CME, con veredictos separados por capa. |
 | `tools/compilar_nt8_cs.py` | T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader. |
 | `tools/compile_emacorridortrendvol.py` | (sin docstring) |
 | `tools/confirmar_no_defiende.py` | Análisis CONGELADO de la confirmación «el cluster HFT grande no defiende» (docs/research/hft_clusters_u1_20261110/CONFIRMACION_NO_DEFIENDE.md). |
 | `tools/confluencia.py` | CONFLUENCIA (pre-registro docs/research/confluencia_20261119/PREREGISTRO.md): señales intradía con bruto real (SOM, Franklin, FM1, FM2, |
+| `tools/contexto_vivo.py` | Genera o verifica `docs/ESTADO_VIVO.md`, el snapshot compacto de contexto (<= 150 lineas). |
 | `tools/contraccion_empirica.py` | Paso 2 de docs/research/urgencia_vs_evidencia_20261117/PROPUESTA.md: contracción empírica por selección (edgelab/research/contraccion.py) |
 | `tools/convert_l2_to_parquet.py` | Batch conversion script for CME Level 2 depth CSV files to compressed Parquets. |
 | `tools/correlacion_nominadas.py` | Correlación entre las 12 nominadas al holdout + U1-CRUZADO, con su P&L CAUSAL de DESC + réplica (nunca el holdout). |
@@ -219,8 +226,10 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/deep_falsification_probe.py` | tools/deep_falsification_probe.py |
 | `tools/demo_vectorbt_zones.py` | Demo end-to-end (F8): estrategia vectorbt que combina zonas de 2+ indicadores |
 | `tools/deploy_nq_25t_bundle.py` | Deploy NQ 25-tick candles and HFT certified zones (5,438 zones) to viewer bundles. |
+| `tools/deriva_bots.py` | Deriva entre los bots del repo y lo instalado en NT8, MT5 y cTrader de esta PC. |
 | `tools/desarrollo_en_r.py` | Desarrollo en R (Nico 2026-11-02): las 16 reglas del holdout (12 nominadas + U1-CRUZADO + 3 forzadas) re-corridas sobre DESC y réplica |
 | `tools/dia_tendencia.py` | Día de tendencia: predictores causales NUEVOS, E0 sin retornos de estrategia (pre-registro docs/research/dia_tendencia_20261118/PREREGISTRO.md). |
+| `tools/diag_caida_2026.py` | DIAG-CAIDA-2026 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_DIAG_CAIDA_2026.md`, contado: 10 pruebas). |
 | `tools/diagnose_es_context_intervals_20260929.py` | (sin docstring) |
 | `tools/diagnostico_decaimiento_temporal.py` | tools/diagnostico_decaimiento_temporal.py |
 | `tools/diagnostico_grilla.py` | Diagnóstico de mecanismo de una grilla y de episodios (K55/K56): imprime las líneas «Diagnóstico de grilla:» y «Episodios:» que todo |
@@ -275,15 +284,20 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/espejo_semejanza_nico.py` | Semejanza «a lo Nico» entre la ida A→B y la vuelta, validada contra sus órdenes por tandas de a tres (target-free). |
 | `tools/espejo_vollimp.py` | ESPEJO-VOLLIMP-100T — descubrimiento (OK de Nico 28/09). Manifiesto: docs/research/MANIFIESTO_ESPEJO_VOLUMEN_LIMPIEZA_100T_20260928.md |
 | `tools/estado.py` | estado.py — UN comando que dice dónde estás parado. Correlo al abrir sesión. |
+| `tools/estado_produccion.py` | Estado de producción: cuentas prop/demo, bot de cada una, reglas y auditorías de ejecución. |
 | `tools/eurusd_escalonadas_grid.py` | EURUSD-ESCALONADAS-ESCALAS — docs/research/eurusd_escalonadas_20261021/MANIFIESTO_EURUSD_ESCALONADAS_ESCALAS_20261021.md |
+| `tools/evaluar_bots_descargas_hftcode.py` | Forensic Code Audit & Full EdgeLab Validation Chain for the 3 Downloaded HFTCode Bots: |
 | `tools/eventos_desde_noticias.py` | Genera `edgelab/research/eventos_datos.py` desde el calendario canónico de noticias (`edgelab/noticias.py`, |
 | `tools/evx.py` | EVX: cruces EMA × VWAP de sesión. Etapas E0 (censo) y E1 (información, sin P&L). |
 | `tools/exec_qi.py` | EXEC-QI: costo de entrar pasivo vs agresivo, condicionado al desequilibrio del libro (QI). |
 | `tools/exec_qi_nt8_compare.py` | EXEC-QI, validación de fills: lee los CSV de EdgeLabExecQIProbe (NT8) y compara. |
 | `tools/existente.py` | Antes de construir, buscar lo que ya existe (pedido de Nico, 2026-10-24: «la mayoría de las herramientas ya se encuentran |
+| `tools/exp7_estabilizadores.py` | EXP-7 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP7_ESTABILIZADORES.md`, contado: 12 pruebas). |
+| `tools/exp8_mitigacion.py` | EXP-8 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP8_MITIGACION.md`, contado: 24 pruebas). |
 | `tools/explo_asimetria_excursion.py` | Exploración (descriptiva, sin decisión): asimetría de la excursión posterior a la creación de zonas. |
 | `tools/explo_edgereplica_mgc_20261006.py` | Exploración (decisión de Nico 2026-10-06, sin custodia de holdout): EdgeReplica en MNQ 12-26 y celda MGC 04:15 |
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |
+| `tools/exportar_vix_nt8.py` | Exporta series diarias causales de volatilidad CBOE (VIX, VXN, VIX9D) para `EdgeLabCandidataCarril2` en NT8. |
 | `tools/externas_a5.py` | EXTERNAS-28, fase 0 (EF2, sin retornos): fricción en R de cada una de las 114 variantes (pre-registro |
 | `tools/externas_estructurales_a5.py` | Conductor vectorizado para EXTERNAS-ESTRUCTURALES-A5 y auditoría rápida de |
 | `tools/factores.py` | Registro de factores con ventaja (edgelab/research/factores.py). |
@@ -295,8 +309,17 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
 | `tools/friccion_rq.py` | FRICCION-RQ: curva bruto–stop y palancas de fricción de RQ2, RQ5 y RQ6 en DESC (pre-registro docs/research/friccion_rq_20261119/PREREGISTRO.md). |
+| `tools/fundedsync_bar_phase_shift.py` | Bar-open phase shift sensitivity analysis on real CME NQ and CFD USATECHIDXUSD ticks. |
 | `tools/fundedsync_cadena.py` | FUNDEDSYNCSTACK por la cadena (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). |
+| `tools/fundedsync_frecuencia_y_roadmap.py` | Audit of Overnight O (2020..2026-11 + CFD Swaps), Anti-Overfit Structural Frequency Expansion, |
+| `tools/fundedsync_integracion_multiprop.py` | Despliegue P_OPT_SF_v2 FUNDEDSYNC: Integracion LucidFlex, K30 Ticks, Holdout y Multi-Prop Firm. |
+| `tools/fundedsync_iter2_cartera.py` | Iteracion 2 FUNDEDSYNC: V1 robustez, V2 rescate, bateria de permutaciones y cartera ponderada. |
 | `tools/fundedsync_mecanismos.py` | FundedSync: mecanismos, contextos y combinaciones (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_MECANISMOS.md). |
+| `tools/fundedsync_multiactivo_oro.py` | Iteracion 3 FUNDEDSYNC: matriz 15x6 multi-activo y adaptacion estructural para Oro (GC) e indices. |
+| `tools/fundedsync_parity_sweep.py` | Barrido ordenado de paridad (Etapas 0 -> 1 -> 2) y graficado OOS de `fundedsyncstack`. |
+| `tools/fundedsync_post_il_cadena.py` | Campana post-IL de `FUNDEDSYNCSTACK` sobre M1 real de futuros (NQ, ES, YM, RTY, EMD) en unidad R. |
+| `tools/fundedsync_prop_opt.py` | Iteracion 4 FUNDEDSYNC: busqueda exhaustiva de factores de edge y optimizacion prop firm (LucidFlex). |
+| `tools/fundedsync_satelites_prop.py` | Quantified Monte Carlo & Portfolio proposals to monetize excluded profitable strategies. |
 | `tools/fundedsync_tanda2.py` | FundedSync tanda 2 (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md). |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
 | `tools/gc_exact4_prepare.py` | Local metadata capture / exact4 target-free census. Never computes outcomes. |
@@ -356,6 +379,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/kaggle_areas/areas_main.py` | (sin docstring) |
 | `tools/kaggle_areas/construir_kernel.py` | Kernel de AREAS-EXP-1 con el empaquetador genérico (tools/kaggle_grilla/construir_kernel.py). |
 | `tools/kaggle_auth.py` | Autenticación de curl contra la API de Kaggle, para los dos formatos de credencial. |
+| `tools/kaggle_cartera_gestion_kernel.py` | Kernel de Kaggle: gestión del tamaño de carteras en cuentas LucidFlex (pre-registro |
 | `tools/kaggle_cobertura_preholdout.py` | Cobertura REAL de los datos en Kaggle hasta la apertura del holdout (pedido de Nico, 2026-10-22). Corre DENTRO de un kernel. |
 | `tools/kaggle_data.py` | Baja un archivo de un dataset propio de Kaggle con la credencial que el entorno ya inyecta para www.kaggle.com (reintenta ante 429). |
 | `tools/kaggle_data_entrypoint.py` | Offline Kaggle dataset discovery; no secret handling or research approval. |
@@ -446,6 +470,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/luximb_hvn.py` | LUXIMB-HVN (docs/research/luximb_hvn_20261111/PREREGISTRO.md): construir, lanzar y traer las tablas de Kaggle. |
 | `tools/luximb_hvn_analisis.py` | Análisis EXPLORATORIO de LUXIMB-HVN sobre las tablas de DESARROLLO (docs/research/luximb_hvn_20261111/PREREGISTRO.md §5). |
 | `tools/luximb_hvn_confirmar.py` | Análisis CONGELADO de la confirmación de H-ZONAS (docs/research/luximb_hvn_20261111/CONFIRMACION_H_ZONAS.md). Una sola vez, |
+| `tools/luximb_parity/bandas_concentracion.py` | Bandas de concentración OG+VI sobre un bundle LUX-IMB M1 del visor: lista de bandas y calibración del umbral. |
 | `tools/luximb_parity/build_luximb_fx_bundle.py` | Bundle del visor para FX de Dukascopy (JForex: timestamp UTC, bid, ask, last=mid): velas M1 y 25t + zonas LUX-IMB. |
 | `tools/luximb_parity/build_luximb_nq_m1_bundle.py` | Bundle del visor: NQ (un contrato, sin merge ni back-adjust) en velas M1 + zonas LUX-IMB (OG + VI). |
 | `tools/luximb_parity/build_luximb_spot_m1_bundle.py` | Bundle del visor con velas M1 de Dukascopy (spot/CFD, p. ej. USATECH ~ NQ) + zonas LUX-IMB (OG+VI). Target-free. |
@@ -511,10 +536,12 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/neto_pistas.py` | NETO-PISTAS: R (AtrPhase) y Z (ZetaTrend) en R con los controles de T, y esquemas de tamaño para Franklin y SOM |
 | `tools/nominacion_forzada.py` | Nominación forzada al holdout (relanzamiento_causal_20261102/PREREGISTRO_NOMINACION_FORZADA.md, decisión de Nico): por familia del |
 | `tools/noticias_calendario.py` | Construye `config/noticias/calendario_usd_tier1.csv` desde las transcripciones de `config/noticias/crudo/`. |
+| `tools/noticias_fed_historico.py` | Transcribe las fechas FOMC 2008-2022 de las páginas oficiales de la Fed a `config/noticias/crudo/fed_2008_2022.txt`. |
 | `tools/noticias_impacto_operaciones.py` | Cuenta (target-free) cuántas operaciones/eventos ya publicados cruzan una ventana de noticia (`edgelab.noticias`). |
 | `tools/nq_cruce25_clima.py` | NQ-CRUCE25-CLIMA — pre-registro docs/research/MANIFIESTO_NQ_CRUCE25_POR_CLIMA_L2_20260929.md (v2, tras Entrada 067). |
 | `tools/nq_l2_explore.py` | Exploración L2 de NQ (manifiesto docs/research/MANIFIESTO_NQ_L2_EXPLORACION_20260924.md, OK de Nico 2026-09-24). |
 | `tools/nq_l2_synergy.py` | Absorción como amplificador de contexto, NQ L2 (manifiesto docs/research/MANIFIESTO_NQ_L2_SINERGIA_ABSORCION_20260924.md, |
+| `tools/nt8_cartera_paridad.py` | Paridad de EdgeLabCartera fuera de NT8 (2026-11-25). |
 | `tools/nt8_limpiar_csproj.py` | Saca del proyecto de NinjaTrader los artefactos de build que compila como fuente. |
 | `tools/nt8_reexport_merge.py` | Fusiona la re-exportación NT8 del 2026-10-04/05 (AddOn EdgeLab Tick History) con el parquet canónico previo de |
 | `tools/nt8_sellado_diario.py` | Ticks diarios de NT8 -> dataset sellado de Kaggle (2026-11-01, Nico: «para los ticks tengo NT8»; «el SV1 tiene que usar Kaggle»). |
@@ -556,6 +583,8 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/propfirm_refresh.py` | Refresca las reglas públicas de Lucid con el crawler existente (`edgelab.propfirm.crawl`) y avisa si cambió alguna página respecto de la línea base. |
 | `tools/propfirm_reglas_cruce.py` | Cruce de las reglas detalladas por firma (incluidas las «escondidas»: topes por número de retiro, colchón, días |
 | `tools/propfirm_thresholds.py` | Umbrales por cuenta, independientes del instrumento: σ de la operación (USD, ya con el tamaño) × costo/σ → z bruto mínimo y ρ requerido (ρ = z/0,8). |
+| `tools/puerta_corrida.py` | Puerta unica pre-corrida (Capas 1-4): valida estado vivo, modulo, memoria activa, pre-registro y script antes de ejecutar. |
+| `tools/puerta_despliegue.py` | Puerta de despliegue: ¿se puede habilitar el bot de una cuenta prop/real tal como está configurado? |
 | `tools/quantlab_mt5_medir.py` | SessionOpenMomentum (traducción QuantLab MT5) en NQ/ES/YM con costos canónicos y en R (docs/research/quantlab_mt5_eas_20261116/PREREGISTRO_MEDICION.md). |
 | `tools/query_remote_kaggle.py` | (sin docstring) |
 | `tools/r2_recorrido_vs_friccion.py` | R2: recorrido bruto disponible vs friccion de viaje redondo. Manifiesto: docs/research/R2_RECORRIDO_VS_FRICCION_MANIFIESTO_20261014.md |
@@ -630,6 +659,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/run_mgc_tick_exact_grid.py` | Tick-exact validation of the immutable 42-cell MGC EMA core registry. |
 | `tools/run_nt8_bridge.py` | CLI del bridge NT8 -> EdgeLab: kernels + paridad + visor multi-run. |
 | `tools/run_overnight_master.py` | Master Overnight Orchestrator for EdgeLab (2026-08-26). |
+| `tools/run_suite_estabilidad_20261125.py` | Runner unificado de la Suite de Rentabilidad y Estabilidad (2026-11-25): EXP-1 a EXP-6C. |
 | `tools/run_synthetic_smoke_census.py` | Reproducible runner for synthetic geometric bands software smoke census. |
 | `tools/run_visual_configurations.py` | Causal configuration runner and density field evaluation script for HP007-CAMP-002. |
 | `tools/salidas_r.py` | Políticas de salida y filtros comunes en R (docs/research/programa_r_20261103/PREREGISTRO_SALIDAS_Y_FILTROS.md), evaluados OFFLINE |
@@ -657,6 +687,8 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/study_slot_effect.py` | Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y Holm. La configuración llega por STUDY_CFG (JSON) y debe figurar TEXTUALMENTE en el pre-registro |
 | `tools/summarize_mgc_tick_stability.py` | (sin docstring) |
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
+| `tools/sync_ctrader_mt5_bots.py` | Syncs, installs, and compiles the EdgeLabFundedSync NT8, cTrader (C#), and MT5 (MQL5) bot suites. |
+| `tools/sync_jforex_bin_sellado.py` | Merge JForex4 E:\dukascopy_HOLDOUT_SELLADO\<INST>\ticks\2026-11-16..*.bin into C:\EdgeLab\sellado. |
 | `tools/t_regimen.py` | T-REGIMEN: meseta de parámetros y PBO del T de FundedSync en NQ (pre-registro docs/research/t_regimen_20261118/PREREGISTRO.md). |
 | `tools/tabla_decision_pnk.py` | TABLA DE DECISIÓN P/N/K — para elegir la geometría ANTES de mirar zonas. |
 | `tools/tablas.py` | Tablas de eventos de punta a punta con UNA herramienta (edgelab/research/tablas.py; AUTOMATIZACION_PROCESOS_20261111). |
@@ -700,6 +732,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/vendor/__init__.py` | (sin docstring) |
 | `tools/vendor/notion_phenomena.py` | Bounded target-free clock-window measurements, not a phenomenon classifier. |
 | `tools/verificar_artefactos.py` | Revisión read-only de procedencia: cada artefacto citado en |
+| `tools/verificar_calendario_precio.py` | ¿Coincide el calendario de noticias con el movimiento del precio? Verificación target-free sobre ES M1 de NT8. |
 | `tools/verificar_citas_entrega.py` | Puerta fail-closed: toda ruta citada por un documento de entrega tiene que |
 | `tools/verify_density_parity_real_bundle.py` | Paridad Python <-> JS del campo de densidad sobre bundles REALES del visor. |
 | `tools/verify_discovery_cpu_gpu.py` | Paridad sintética del motor de descubrimiento: CPU sin bloqueo == CPU por bloques == GPU. No lee datos de mercado. |
@@ -709,6 +742,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/verify_layer_parity.py` | Harness canónico de verificación de paridad por capa (Puerta 0) para BigTrap2Absorption. |
 | `tools/verify_lux_imb_vs_6e_oracle.py` | Validacion PARCIAL de LUX-IMB (OG + VI) en Python contra las zonas que NT8 exporto para 6E Continuo. |
 | `tools/verify_mgc_stateful_kernel.py` | (sin docstring) |
+| `tools/verify_mt5_numerical_parity.py` | Runs real MQL5 bytecode in MetaTrader 5 Strategy Tester to verify 100% trade-by-trade parity vs C#. |
 | `tools/verify_parity_by_session.py` | Paridad `.cs` <-> kernel Python con clave **relativa a la sesion**. |
 | `tools/verify_parity_gc0226.py` | Harness forense de paridad BigTrap2Absorption <-> export NT8 sobre calendario irregular. |
 | `tools/verify_release.py` | Verifica una release ya escrita, de forma independiente del escritor. |

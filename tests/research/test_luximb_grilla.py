@@ -189,6 +189,7 @@ def test_kernel_e0_al_dia(tmp_path):
     """El kernel committeado del E0 (SPEC §10) es el que sale de reconstruirlo con los módulos actuales. Si falla:
     python tools/kaggle_grilla/construir_kernel_experimento.py edgelab/research/luximb_grilla.py tools/kaggle_grilla/kernel_luximb_grilla.py --extra edgelab/research/agente/regimen.py --extra edgelab/regimes/state.py --extra edgelab/bridge/indicators/espejo_impulsos.py"""
     sys.path.insert(0, str(REPO / "tools/kaggle_grilla"))
+    for _m in ("construir_kernel", "construir_kernel_experimento"): sys.modules.pop(_m, None)   # hay otro construir_kernel en tools/kaggle_areas
     from construir_kernel_experimento import construir_experimento
     out = tmp_path / "k.py"
     construir_experimento("edgelab/research/luximb_grilla.py", str(out), ["edgelab/research/agente/regimen.py", "edgelab/regimes/state.py", "edgelab/bridge/indicators/espejo_impulsos.py"])

@@ -35,7 +35,41 @@ URL_FF_ISM_SVC = "https://www.forexfactory.com/calendar/253-us-ism-services-pmi"
 URL_FF_CLAIMS = "https://www.forexfactory.com/calendar/11-us-unemployment-claims"
 
 BLS_EVENTO = {"CPI": "CPI", "EMPSIT": "NFP_EMPLOYMENT_SITUATION", "PPI": "PPI", "JOLTS": "JOLTS"}
-DESDE, HASTA = "2023-01-01", "2026-12-31"
+DESDE, HASTA = "2008-01-01", "2026-12-31"
+HIST_HASTA = "2022-12-31"          # 2008-2022: fuentes históricas (Fed, ALFRED, regla del ISM); 2023+: las de arriba
+URL_FED_HIST = "https://www.federalreserve.gov/monetarypolicy/fomchistorical{y}.htm"
+URL_ALFRED = "https://alfred.stlouisfed.org/release/downloaddates?rid={rid}&ff=txt"
+ALFRED = {"RETAIL_RID9": ("RETAIL_SALES", 9, "08:30"), "GDP_RID53": ("GDP_RELEASE", 53, "08:30"),
+          "PIO_RID54": ("PCE_PERSONAL_INCOME_OUTLAYS", 54, "08:30"), "CPI_RID10": ("CPI", 10, "08:30"),
+          "EMPSIT_RID50": ("NFP_EMPLOYMENT_SITUATION", 50, "08:30"), "PPI_RID46": ("PPI", 46, "08:30"),
+          "JOLTS_RID192": ("JOLTS", 192, "10:00")}
+# Reuniones no programadas con hora conocida (ET). Las demás NO_PROGRAMADA no eran decisiones de tasa con hora
+# verificable (anuncios de facilidades/swap) y quedan fuera: ver FUENTES.md.
+FOMC_NO_PROGRAMADA_HORA = {"20080122": "08:20", "20081008": "07:00", "20200303": "10:00", "20200315": "17:00",
+                           "20200323": "08:00"}
+
+
+def _ism_historico() -> list[tuple[str, str]]:
+    """ISM 2008-2022 por la regla del ISM: manufactura = 1.er día hábil del mes, servicios = 3.º (10:00 ET).
+
+    Validada contra las fechas reales 2023-2026: falla sólo en enero (el ISM corre un día hábil desde 2023; en 2008
+    no) y en Viernes Santo. Por eso: Viernes Santo no es hábil, y en enero se vetan los dos días candidatos."""
+    import pandas as pd
+    from pandas.tseries.holiday import GoodFriday, USFederalHolidayCalendar
+    hol = list(USFederalHolidayCalendar().holidays("2007-12-01", "2023-01-31")) + \
+        list(GoodFriday.dates("2007-12-01", "2023-01-31"))
+    bd = pd.offsets.CustomBusinessDay(holidays=hol)
+    out = []
+    for y in range(2008, 2023):
+        for m in range(1, 13):
+            d1 = pd.Timestamp(y, m, 1)
+            if not bd.is_on_offset(d1):
+                d1 = d1 + bd
+            for ev, n in (("ISM_MANUFACTURING_PMI", 1), ("ISM_SERVICES_PMI", 3)):
+                ns = (n, n + 1) if m == 1 else (n,)
+                for k in ns:
+                    out.append(((d1 + bd * (k - 1)).strftime("%Y-%m-%d"), ev))
+    return out
 
 
 def _utc(fecha: str, hhmm: str) -> str:
@@ -67,6 +101,34 @@ def filas() -> list[dict]:
 
     def add(ts, evento, url, impacto="tier1"):
         out.append({"ts_utc": ts, "evento": evento, "fuente_url": url, "impacto": impacto})
+
+    # ---- 2008-2022 (histórico) ----
+    for linea in _lineas("fed_2008_2022.txt"):
+        ev, f, hora = linea.split()
+        if not ("20080101" <= f <= "20221231"):
+            continue
+        if hora == "NO_PROGRAMADA":
+            hora = FOMC_NO_PROGRAMADA_HORA.get(f)
+            if hora is None:
+                continue
+        fecha = f"{f[:4]}-{f[4:6]}-{f[6:]}"
+        add(_utc(fecha, hora), ev, URL_FED_HIST.format(y=f[:4]) if f[:4] <= "2020" else URL_FOMC)
+    for linea in _lineas("alfred_2008_2022.txt"):
+        clave, *fechas = linea.split()
+        if clave in ALFRED:
+            ev, rid, hora = ALFRED[clave]
+            for f in fechas:
+                add(_utc(f, hora), ev, URL_ALFRED.format(rid=rid))
+        elif clave == "JOLTS_BLS2008":
+            for f in fechas:
+                add(_utc(f, "10:00"), "JOLTS", URL_BLS.format(y=2008))
+    for linea in _lineas("fed_testimonio_jh_2008_2022.txt"):
+        clave, f, hora = linea.split()
+        ev = "FED_CHAIR_JACKSON_HOLE" if clave == "JACKSON_HOLE" else "FED_CHAIR_TESTIMONY"
+        add(_utc(f, hora), ev, "https://www.federalreserve.gov/json/ne-testimony.json" if ev == "FED_CHAIR_TESTIMONY"
+            else "https://www.federalreserve.gov/json/ne-speeches.json")
+    for f, ev in _ism_historico():
+        add(_utc(f, "10:00"), ev, URL_ISM + "#regla-dia-habil")
 
     # BLS: CPI, Employment Situation, PPI, JOLTS
     for y in (2023, 2024, 2025, 2026):

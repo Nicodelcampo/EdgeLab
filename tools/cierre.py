@@ -9,10 +9,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REGENERAR = [["tools/reconstruir_kernels.py"], ["tools/docs_index.py", "--write"], ["tools/existente.py", "catalogo", "--write"], ["tools/familias.py", "--write"],
+REGENERAR = [["tools/reconstruir_kernels.py"], ["tools/contexto_vivo.py", "--write"], ["tools/docs_index.py", "--write"], ["tools/existente.py", "catalogo", "--write"], ["tools/familias.py", "--write"],
              ["tools/factores.py", "--write"], ["tools/remediciones.py", "--write"], ["tools/agentes.py", "--write"],
              ["tools/check_modules.py", "--write"]]
-TESTS = ["tests/test_existente.py", "tests/test_holdout_a5.py", "tests/research/test_m1nt8.py", "tests/research/test_u1_zonas_grilla_sellado.py", "tests/test_verify_indices.py", "tests/research/test_factores.py", "tests/test_holdout_unico.py",
+TESTS = ["tests/test_existente.py", "tests/test_persistencia_contexto.py", "tests/test_holdout_a5.py", "tests/research/test_m1nt8.py", "tests/research/test_u1_zonas_grilla_sellado.py", "tests/test_verify_indices.py", "tests/research/test_factores.py", "tests/test_holdout_unico.py",
          "tests/test_dependencias_lock.py", "tests/test_parametros_por_defecto.py", "tests/test_cadena_accesible.py",
          "tests/test_auditoria_patrones.py",                       # auditoría de corridas 2026-11-16
          "tests/test_guardas_principiante_20261117.py",            # K27–K33: potencia, simuladores, pre-registros, contador, costos

@@ -1,8 +1,8 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-19
+**Fecha:** 2026-11-25
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-19
+**Corte:** 2026-11-25
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
@@ -10,7 +10,31 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
 
-## Estado al 2026-11-19 (leer primero)
+## Estado al 2026-11-25 (leer primero)
+
+- **0 edges promovidos.** Estado de producción: `docs/ESTADO_PRODUCCION.md` (cuentas en `config/cuentas_activas.json`).
+- **Una estrategia NT8 para varias** (`nt8/strategies/EdgeLabCartera.cs`, presets Intradía / Interdía / Rescate25K): órdenes reales por
+  estrategia (entrada, stop/objetivo OCO); el adaptador viejo entraba una vela tarde y tenía stops virtuales. Paridad 98–100 % con las
+  corridas NT8 individuales (`tools/nt8_cartera_paridad.py`). Informe: `docs/research/cartera_nt8_20261125/RESULTADO.md`.
+- **Cuentas fondeadas**: la cartera intradía de 8 (1 micro c/u) sólo tiene sentido en una LucidFlex 150K (P cobro 0,25 contraída / 0,50
+  desarrollo); gestión simple (1/N, sin escalado ni freno); el multiactivo de índices y oro no diversifica; C2_VZ es el único
+  estabilizador (mantiene de noche). Rescate de la 25K: T en 1 MNQ (≈ 14 %).
+- **Caída de 2026**: es del precio, no del sizing (`docs/research/caida_2026_20261125/`); ni estabilizadoras (EXP-7) ni filtro de estado
+  de la apertura (EXP-8) la arreglan; inverso-volatilidad baja el drawdown.
+- Noticias: veto ±2 min (FOMC ±5) en Python y NT8, calendario 2008–2026 verificado contra el precio.
+
+## Estado al 2026-11-21
+
+- **0 edges promovidos.** Handoff: `docs/research/HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md`. Índice de candidatas:
+  `docs/cartera/ESTRATEGIAS_CANDIDATAS.md`.
+- **Traducción de FundedSync corregida** (Antigravity, commit `7965e7fb`; `docs/research/fundedsyncstack_20261115/AUDITORIA_PARIDAD_IL_20261120.md`).
+  La re-medición (`docs/research/remedicion_fs_il_20261121/RESULTADO.md`) deja T, R y Z idénticas, A20 casi igual (t 2,77) y V como nueva
+  candidata (t 2,87 desde 2022).
+- **Mejor canasta medida:** T + R + Z-banda + RQ5 NQ (t 5,17, caída −23 R). A20 no cubre.
+- **NT8:** `EdgeLabRQ5.cs` y `EdgeLabCanasta.cs`, con la paridad pendiente en la máquina de Nico.
+- **Curvas del vendedor:** en W, Q y A1 son brutas; con la fricción de una cuenta prop no tienen ventaja (`docs/research/verif_vendedor_20261120/`).
+
+## Estado al 2026-11-19
 
 - **0 edges promovidos.** Única candidata con vigilancia forward pre-registrada: **canasta T + R en NQ** (T de FundedSync; R AtrPhase con
   stop 0,25 × ATR20), ambas REGIMEN_ROBUSTO (`docs/research/regimen_forward_20261119/`). En LucidFlex: +$440/cuenta y +$143/mes con la media

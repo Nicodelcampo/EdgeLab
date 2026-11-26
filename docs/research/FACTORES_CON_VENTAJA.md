@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (37)
+## PISTA_VIVA (38)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
+  - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
+  - Dónde: NQ M1 de NT8, 2010 → 2026-09
+  - Siguiente: V a la lista de candidatas: medir su correlación con T+R+ZB+RQ5 y si suma a la canasta. Re-hacer los números de A20 si entra a una decisión.
+  - Evidencia: `docs/research/remedicion_fs_il_20261121/RESULTADO.md`, `docs/research/remedicion_fs_il_20261121/COMPARACION.csv`
 - **RQ5 banda de ruido (Zarattini), fábrica, régimen 2018–2025** (`F-RQ5-REGIMEN-ROBUSTO`, 2026-11-20, humano)
   - Efecto: DESC 2018–2025 NQ+ES+YM+RTY: +0,050 R/op (p 0,045), 54,7 ops/mes, +2,71 R/mes, t mensual 1,94; 310/310 celdas calibradas y 10/10 vecinos positivos (n efectivo 1,47); NQ +0,082, ES +0,093, RTY +0,046, YM −0,022, EMD +0,044; quiebre sup-F 2017-08; salida al cierre no mejora. Holdout A5 N 1.454: potencia 0,60 / 0,24.
   - Dónde: NQ/ES/YM/RTY/EMD M1 A5
@@ -195,10 +200,40 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (31)
+## PALANCA_DE_DISENO (37)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
+  - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
+  - Dónde: Cartera NT8 NQ/ES, 1 R por operación
+  - Siguiente: Usar como regla de tamaño de la cartera; traducir pesos a riesgo por operación en NT8 (peso × 1R) y verificar con el preset de cuenta.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
+- **Cartera intradía de 8 (T, R, Z, V, RQ5 NQ/ES, ES5N, Franklin) en micros dentro de LucidFlex** (`F-CARTERA-LUCID-150K-1MICRO`, 2026-11-25, sesion)
+  - Efecto: 1 micro c/u: sd diaria ≈ $690, peor día −$2.150. 25K/50K: mejor plan es apostar más grande (p_ganar 0,17–0,18, lotería; 0,12 sin ventaja). 150K a 1 micro: p_ganar 0,27 (media contraída), 0,47 (desarrollo), 0,12 (cero); ev +$561 por intento.
+  - Dónde: LucidFlex 25K/50K/150K, 2020-01 → 2026-09, corridas NT8
+  - Siguiente: Cartera diversificada en Lucid sólo en 150K a tamaño mínimo; para cuentas chicas, menos estrategias o más ventaja por operación.
+  - Evidencia: `docs/research/cartera_lucid_20261125/RESULTADO.md`, `docs/research/cartera_lucid_20261125/PLANES.json`
+- **C2_VZ (NQ+ES) junto a la cartera intradía de 8** (`F-C2VZ-ESTABILIZA-CARTERA-INTRADIA`, 2026-11-25, sesion)
+  - Efecto: Correlación ≈ 0; peor semestre −5.992 → −1.571 USD (1 micro c/u), Sharpe 1,48 → 1,70; 2026 1.366 vs 613 USD/mes. Mantiene de noche.
+  - Dónde: NQ/ES micros 2019-07 → 2026-09
+  - Siguiente: Usarla sólo en una cuenta que permita tenencia nocturna (preset Interdía o cartera combinada).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Gestión del tamaño en LucidFlex: 1/N, inverso-vol, HRP; 1–4 micros; dinámico (colchón Grossman–Zhou, escalones); freno diario; tope diario** (`F-GESTION-PROP-SIMPLE-GANA`, 2026-11-25, sesion)
+  - Efecto: Con mínimo intradía: en la 150K lo mejor es 1 micro c/u, 1/N, sin dinámico ni freno (P 0,25 contraída, 0,50 desarrollo); más tamaño o escalar por colchón empeora; ranking estable 2019–23 vs 2024–26 (Spearman 0,98).
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125
+  - Siguiente: No escalar por colchón ni agregar frenos diarios; para subir la probabilidad hace falta más ventaja por unidad de drawdown, no gestión.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Simular reglas de cuentas fondeadas (piso, pérdida diaria) con el resultado de cierre del día** (`F-SIM-PROP-SOLO-CIERRE-SESGADA`, 2026-11-25, sesion)
+  - Efecto: Infla mucho: rescate RQ5+Franklin con freno 120 da 66 % sólo con cierres y 4 % con el mínimo intradía; la cartera en la 25K 0,11 vs 0,009.
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125 iteraciones 1 y 2
+  - Siguiente: Toda simulación de cuenta fondeada usa el mínimo intradía (arnés EdgeLabCartera, broker_diario) o el MAE; nunca sólo cierres.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **Ejecución del adaptador FundedSync (posición neta al cierre de vela, stops virtuales)** (`F-NT8-ADAPTADOR-UNA-VELA-TARDE`, 2026-11-25, sesion)
+  - Efecto: Las entradas reales salían una vela después de la registrada y los stops se ejecutaban al cierre de la vela siguiente sin orden en el broker; el CSV mostraba precios virtuales.
+  - Dónde: nt8/strategies/EdgeLabFundedSyncPortfolio.cs (FundedSyncNt8Adapter)
+  - Siguiente: Usar EdgeLabCartera (órdenes reales por estrategia); medir con el registro de ejecución la diferencia en la 25K y migrar el Portfolio.
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `nt8/strategies/EdgeLabCarteraBook.cs`
 - **Antes de ensanchar el stop para bajar la fricción, mirar el bruto en PUNTOS por escala: si es constante, la ventaja es un monto fijo por operación y escalar no cambia el neto; la palanca es el tamaño (contrato fijo o ∝1/√riesgo), no el stop** (`F-VENTAJA-EN-PUNTOS-NO-ESCALA`, 2026-11-19, humano)
   - Efecto: RQ5/RQ6 (Roboquant) en DESC 2006–2025: bruto en puntos ≈ constante de m=1 a m=3 (RQ5 NQ +5,1 a +6,9 pts) mientras el bruto en R cae 0,062 → 0,018; neto en R ≈ −0,01 en toda la curva, pero +3,6 pts/op con contrato fijo en NQ. | 2026-11-19 (grilla de REGIMEN-SOM-FRANKLIN, descriptivo): SOM NQ bruto 5,2/5,6/4,7 pts con stop 6/8/10 ATR (R bruto 0,084→0,056), ES 0,6/0,9/0,85, YM 3,4/3,4/4,6; Franklin stop rango vs 0,5·ATR20 parecido en puntos. El stop tampoco es palanca en SOM ni Franklin. | TAMANO-K52 2026-11-19: con contratos ∝ 1/ATR20 (sin sesgo de nivel de precio) el tamaño NO mejora RQ5, RQ6, SOM ni Franklin (Δ ≈ 0): las mejoras de contrato fijo eran K52.
   - Dónde: ES, NQ futuros M1; intradía de momentum
@@ -355,10 +390,80 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Siguiente: En cada pre-registro declarar la fricción en R esperada (fricción / stop mediano); una familia con más de ~0,08 R de fricción por operación se rediseña antes de correr. Todo filtro o variante se juzga también en bruto.
   - Evidencia: `docs/research/programa_r_20261103/REVISION_ATLAS_CONTEXTO_FRICCION_20261104.md`, `docs/research/programa_r_20261103/RESULTADO_PISO_RIESGO_20261104.md`, `docs/research/orb_nq_20261108/RESULTADO_VARIANTES.md`
 
-## EN_SEGUIMIENTO (15)
+## PROPUESTO_META (10)
+
+_Extraído por el meta-analista de una campaña cerrada; falta revisión._
+
+- **Auditoría forense de bots descargados (HFTCode) con la cadena EdgeLab** (`F-ANTIGRAVITY-AUDITORIA-BOTS-HFTCODE`, 2026-11-25, sesion)
+  - Efecto: Documento de Antigravity; resultado sin asentar en el registro hasta 2026-11-25.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/auditoria_bots_hftcode_20261124/RESULTADO.md`
+- **Suite de rentabilidad y estabilidad EXP-1…EXP-6C (T escala relativa y otras variantes)** (`F-ANTIGRAVITY-SUITE-ESTABILIDAD`, 2026-11-25, sesion)
+  - Efecto: EXP-1: 0/6 superan BH q 0,10; mantener T con techo fijo de 100 pts (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/estabilidad_rentabilidad_20261125/RESULTADO_SUITE_ESTABILIDAD_20261125.md`
+- **Desplazamiento de la apertura de las velas (sub-minuto) en NQ y CFD USATECH** (`F-ANTIGRAVITY-BAR-PHASE-SHIFT`, 2026-11-25, sesion)
+  - Efecto: Core5: 12/12 fases positivas, retención media 71,5 % del resultado a delta 0 (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_bar_phase_shift_20261123/RESULTADO.md`
+- **Despliegue P_OPT_SF_v2: LucidFlex, ticks K30, holdout confirmatorio y multi-prop** (`F-ANTIGRAVITY-DEPLOY-MULTIPROP`, 2026-11-25, sesion)
+  - Efecto: Paridad SOMEOD desde M1 exacta; control negativo (media cero) con mediana negativa 18/18 (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_deploy_multiprop_20261122/RESULTADO.md`
+- **FundedSync iteración 2: robustez V1, rescate V2, permutaciones, transferencia multi-índice, cartera ponderada** (`F-ANTIGRAVITY-ITER2-CARTERA`, 2026-11-25, sesion)
+  - Efecto: Ver el documento; resultados citados en el inventario de estrategias del 2026-11-25.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_iter2_cartera_20261122/RESULTADO.md`
+- **FundedSync iteración 3: matriz 15×6 multiactivo y adaptación para oro** (`F-ANTIGRAVITY-MULTIACTIVO-ORO`, 2026-11-25, sesion)
+  - Efecto: Sólo N, T y R multiactivo (NQ/ES); 0/15 nativos en oro (según el documento; coherente con F-MULTIACTIVO-INDICES-ORO-NO-DIVERSIFICA).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_multiactivo_oro_20261122/RESULTADO.md`
+- **Campaña post-IL FUNDEDSYNCSTACK en unidad R y variantes estructurales** (`F-ANTIGRAVITY-POST-IL`, 2026-11-25, sesion)
+  - Efecto: Ver el documento.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_post_il_20261122/RESULTADO.md`
+- **FundedSync iteración 4: búsqueda de factores y optimización prop (LucidFlex)** (`F-ANTIGRAVITY-PROP-OPT`, 2026-11-25, sesion)
+  - Efecto: Variantes de las que salen las candidatas NT8 (specs_etapa1_iter4).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_prop_opt_20261122/RESULTADO.md`
+- **Auditoría multimodelo, frecuencia estructural y ecosistema multi-frente** (`F-ANTIGRAVITY-ROADMAP-ECOSISTEMA`, 2026-11-25, sesion)
+  - Efecto: Causa raíz del corte 2025-10-13 del módulo O (tope de margen heredado) y costo del swap CFD (según el documento).
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_roadmap_ecosistema_20261123/RESULTADO.md`
+- **Propuestas para monetizar estrategias excluidas de Core5_AltaConv (CFD, overnight)** (`F-ANTIGRAVITY-SATELITES-PROP`, 2026-11-25, sesion)
+  - Efecto: Ver el documento.
+  - Dónde: trabajo de Antigravity (2026-11-22…25)
+  - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
+  - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
+
+## EN_SEGUIMIENTO (18)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
+  - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
+  - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
+  - Siguiente: EXP-7 estabilizadores pre-registrado: reversión de corto plazo en la mañana y captura del movimiento nocturno, evaluados en toda la historia y por correlación condicional con las de la mañana.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_DIAG_CAIDA_2026.md`, `docs/research/caida_2026_20261125/PARTE_B_PERCENTILES.json`
+- **Estabilizadoras de la canasta de la mañana: C2_VZ, SOM sin_finde, OVERNIGHT-INV NQ/ES, KALMAN-FADE NQ** (`F-ESTABILIZADORES-MANANA-SIN-POTENCIA`, 2026-11-25, sesion)
+  - Efecto: 0/6 en BH. C2_VZ con el signo buscado (DESC: meses malos +0,26 NQ / +0,20 ES vs buenos +0,19 / +0,06, corr −0,24 / −0,17; 2026 corr −0,30 / −0,50) pero no en REP y sin potencia. SOM sin_finde pierde en los meses malos (corr +0,30). OVN_ES y KAL_NQ negativas (refutadas como estabilizadoras).
+  - Dónde: Meses A5 2020–2025
+  - Siguiente: C2_VZ es la única candidata a contrapeso; seguirla en forward y medir el efecto en cartera con sizing de riesgo constante.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
+- **Rescate de la LucidFlex 25K (saldo 24.270, colchón ≤ 270) con subconjuntos de la cartera** (`F-RESCATE-25K-T-SOLA`, 2026-11-25, sesion)
+  - Efecto: T sola en 1 MNQ: pasa 13,6 % contraída (27 % desarrollo, 5,7 % cero), estable en las dos mitades; cartera completa 1 %; el freno diario baja la probabilidad.
+  - Dónde: Kaggle edgelab-cartera-gestion-20261125
+  - Siguiente: Correr preset Rescate25K con registro de ejecución; si cae, resetear la cuenta (decisión de Nico).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
 - **Reglas del Marketplace de Roboquant en futuros: RQ5 banda de ruido de Zarattini, RQ6 retroceso al VWAP en día de tendencia, RQ2 reversión al mínimo previo, RQ1 ORB 10:00 con salida a 8 min** (`F-ROBOQUANT-BRUTO-SIN-NETO`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM: 5/15 nominadas (RQ1 +0,039, RQ2 +0,073, RQ5 +0,062, RQ6 +0,054 R bruto, p ≤ 0,03, 70–75 % de años, parejo en 3 índices; RQ2−RQ2N +0,136). R neto negativo en las 4 (fricción 0,07–0,18 R); neto operable RQ5 +0,035, RQ6 +0,036. REP sin leer: K49, potencia en días 0,04–0,07. | FRICCION-RQ 2026-11-19: ensanchar el stop no sirve en RQ5/RQ6 (bruto en puntos constante: la ventaja es un monto fijo); RQ2 llega a +0,016 R con 2× sin pasar. Con contrato fijo RQ5 NQ +3,6 pts/op neto (t 2,0), RQ6 NQ +2,4 (t 1,8), ES positivos chicos, YM no (exploratorio).
   - Dónde: ES, NQ, YM futuros M1 (NT8), meses DESC de A5
@@ -435,15 +540,105 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (49)
+## NO_REPETIR (67)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Entrar en el retroceso (límite a k=0,25/0,50 del riesgo, 30 min) en vez de en la ruptura, para T_NQ, RQ5_NQ y RQ5_ES** (`F-ENTRADA-RETROCESO-SELECCION-ADVERSA`, 2026-11-25, sesion)
+  - Efecto: DESC: diferencia mensual −0,6 a −2,3 R (p 0,81–1,00); REP también negativa salvo RQ5_ES k0,25 (+0,11). Se llena sobre las que iban a perder (R original −0,15 a −0,49) y pierde las ganadoras.
+  - Dónde: NQ/ES, corridas NT8 2020–2025
+  - Siguiente: No repetir la entrada en retroceso de rupturas de la mañana; una variante distinta debe atacar la selección adversa (p. ej. condición previa), no el precio de entrada.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP7_ESTABILIZADORES.md`, `docs/research/caida_2026_20261125/exp7/EXP7_corrida2.json`
+- **Filtro por estado de la apertura de las 20 sesiones previas (cont_orb, ac5_manana, frac_noche vs mediana expansiva) sobre T, R, Z, V, RQ5 NQ/ES, ES5N, Franklin** (`F-ESTADO-APERTURA-20S-NO-FILTRA`, 2026-11-25, sesion)
+  - Efecto: 0/24 en BH en DESC 2020–2025; el mejor (RQ5_NQ × ac5, p 0,0045) da al revés en REP (−0,20 R/op). MDE 0,16–0,47 R/op.
+  - Dónde: NQ/ES, corridas NT8
+  - Siguiente: No repetir interruptores de régimen de 20 sesiones sobre estas reglas; la caída no se apaga con este tipo de estado.
+  - Evidencia: `docs/research/caida_2026_20261125/RESULTADO_EXP8_MITIGACION.md`, `docs/research/caida_2026_20261125/exp8/EXP8_corrida2.json`
+- **Sumar RQ5/Franklin/ES5N en YM, RTY y GC, y Franklin/T/R en ES (micros) a la cartera intradía como diversificadores** (`F-MULTIACTIVO-INDICES-ORO-NO-DIVERSIFICA`, 2026-11-25, sesion)
+  - Efecto: YM/RTY correlación diaria 0,24–0,39 con la canasta; ninguna con ventaja propia en micros (R/op −0,11 a +0,03); oro sin correlación pero sin ventaja. Cada una baja P(cobro) en la 150K de 0,30 a 0,26–0,29.
+  - Dónde: 2019-07 → 2026-09, motor EdgeLabCartera (broker)
+  - Siguiente: No sumar transferencias de índices como diversificadores; un diversificador necesita ventaja propia en otra clase de activo (no hay hoy).
+  - Evidencia: `docs/research/cartera_nt8_20261125/RESULTADO.md`, `docs/research/cartera_nt8_20261125/PARTE_A_SERIES.json`, `docs/research/cartera_nt8_20261125/PARTE_A_EFECTO_150K.json`, `docs/research/cartera_nt8_20261125/GESTION_RESUMEN.json`
+- **BAJA_FRICCION_A5, variantes BF1..BF8 (Fut y CFD)** (`F-BAJA-FRICCION-A5-BF1-BF8`, 2026-11-24, sesion)
+  - Efecto: 20 años DESC (n 3.007–10.708): 0/8 pasan BH q 0,10; Fut −0,022 a −0,051 R (t −1,33 a −5,47); CFD −0,002 a −0,023 R. BF1 ESNQ 20+ +0,059 (t 2,19) sin fuerza en Full ni BH.
+  - Dónde: ES/NQ fut y CFD, DESC
+  - Siguiente: Sin edge estructural neto tras costos; REP no abierto. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **PREAPERTURA Intento 0 (NQ_OP_SAL, GC_OP_SAL, ES/YM)** (`F-PREAPERTURA-INTENTO0`, 2026-11-24, sesion)
+  - Efecto: ES/YM negativos en DESC; GC_OP_SAL REP −0,061 R_cfd (t −0,53); NQ_OP_SAL Full REP −0,106 (t −1,07), 2020–25 REP +0,072 (n 252, t 0,48).
+  - Dónde: NQ/GC/ES/YM, DESC + REP
+  - Siguiente: GC falla REP; NQ no escalable. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **PREAPERTURA-NQ Intento 1** (`F-PREAPERTURA-NQ-INTENTO1-SUBMINUTO`, 2026-11-24, sesion)
+  - Efecto: Desfase sub-minuto: +48,3 R (00 s) → +0,2 R (15 s) → −20,0 R (45 s); −3,67 R en forward fw20261123.
+  - Dónde: NQ M1 2006–25 + ticks 2025–26
+  - Siguiente: Artefacto de reloj sub-minuto; apagar de cartera v2/v3. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **Z (ZetaTrend) en Russell M2K — supera a F-Z-TRANSFER-RTY** (`F-Z-RTY-REP-COLAPSA`, 2026-11-24, sesion)
+  - Efecto: DESC +0,190 (t 1,56); REP 2018–25 −0,058 (n 33); REP 2020–25 −0,341 (n 27, PF 0,46, t −1,96).
+  - Dónde: RTY, DESC + REP limpia
+  - Siguiente: Colapsa en REP limpia. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **FM2 (Concretum Band)** (`F-FM2-CONCRETUM-NO-REPLICA`, 2026-11-24, sesion)
+  - Efecto: REP: NQ 2020–25 −0,063 (t −0,70); NQ full −0,020; ES_NQ 20+ +0,013; ALL4 full +0,054 (t 1,30, p 0,097); corr_m +0,33 con Core.
+  - Dónde: NQ/ES, DESC + REP
+  - Siguiente: No replica fuera de muestra. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **RQ2 ES/NQ** (`F-RQ2-ES-NQ`, 2026-11-24, sesion)
+  - Efecto: 2020–25 DESC −0,092 (t −1,24) / REP +0,164 (t 1,06); Full DESC +0,016 → REP −0,103 R_cfd (n 281, PF 0,80, t −1,41).
+  - Dónde: ES/NQ
+  - Siguiente: Negativa en 2020–25 DESC y Full REP. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **RQ6 ES/NQ** (`F-RQ6-ES-NQ`, 2026-11-24, sesion)
+  - Efecto: 2020–25 DESC +0,081 (t 2,31) → REP +0,034 (n 383, t 0,59, corrM +0,37 con Core); Full REP −0,017.
+  - Dónde: ES/NQ
+  - Siguiente: Se disuelve en REP y correlaciona con Core. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **CARRIL2 variantes VBB, DBO, P80 (y D7, IBS, TT, TOM en 2020–25)** (`F-C2-VBB-DBO-P80`, 2026-11-24, sesion)
+  - Efecto: REP: VBB −0,108 (t −0,78); P80 DESC −0,094 / REP +0,026; DBO DESC −0,376 / REP −0,371 (t −2,18). D7/IBS/TT/TOM fallan 2020–25 DESC (sólo vivieron 2006–17).
+  - Dónde: ES/NQ CFD, Full DESC + REP
+  - Siguiente: Reversión fallida en REP. NO afecta a C2_VZ ni C2_EVRP (validadas). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`
+- **ES5N en NQ (10:00 NY)** (`F-ES5N-NQ`, 2026-11-24, sesion)
+  - Efecto: 20 años REP +0,023 R_cfd (n 218, t 0,32); 2020–25 REP −0,060 (n 62, PF 0,87).
+  - Dónde: NQ
+  - Siguiente: El edge sólo existe en ES (ES5N_ES_CFD sigue como satélite). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`
+- **HobbieCode Gann HiLo Oro H1** (`F-HOBBIECODE-GANN-HILO-ORO`, 2026-11-24, sesion)
+  - Efecto: H1 optimista (t 3,07) colapsa en M1 exacto: GC +0,014 R_cfd (PF 1,02, fill 3,4 %), Fut −0,066, estrés −0,50, 1/4 phase-shift +.
+  - Dónde: GC/XAU/FX/IDX, M1 exacto DESC
+  - Siguiente: Espejismo de backtest H1 sin intrabar. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/LOCAL_TIER2_REP.json`, `docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md`
+- **HobbieCode Supertrend Oro H1** (`F-HOBBIECODE-SUPERTREND-ORO`, 2026-11-24, sesion)
+  - Efecto: GC baseline +0,029 R_cfd (t 0,19, DD −32 R); 2020–25 −0,186; PBO 0,574 (GC) / 0,523 (XAU).
+  - Dónde: GC/XAU, grilla 6×7
+  - Siguiente: Sobreajuste (PBO > 0,5) y sin significancia. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`, `docs/research/validacion_maestra_20261124/FULL_VAL_RESUMEN.json`, `docs/research/validacion_maestra_20261124/HOBBIECODE_Y_FORWARD_20261124.md`
+- **Dual Thrust GC (X038)** (`F-DUAL-THRUST-GC-X038`, 2026-11-24, sesion)
+  - Efecto: Ticks 2025–26: −0,177 R_cfd (0/4 sub-minuto +, n 15) aunque 20 años DESC +0,051.
+  - Dónde: GC
+  - Siguiente: Muerta en el régimen reciente. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **CVGAP-ES-C, CVGAP2-GC#11, COMEX-CIERRE-GC-R#0** (`F-CVGAP-COMEX-CIERRE-ATRAS`, 2026-11-24, sesion)
+  - Efecto: M1 2008–25: −0,044 / −0,128 / −0,181 R/op (−33,6 / −55,1 / −94,4 R); CVGAP-ES-C −5,98 R en forward.
+  - Dónde: ES/GC M1 18 años
+  - Siguiente: Refutadas atrás; retirar de cartera v2/v3. Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
+- **DRC-NQ-R, TORI-NQ-R, U1-ZONAS-AVCL-ES/NQ, CVGAP-CFD-NQ (ejecución)** (`F-DRC-TORI-FRICCION`, 2026-11-24, sesion)
+  - Efecto: Fricción 0,090–0,153 R por operación; DRC −8,54 R en fw20261123.
+  - Dónde: NQ/ES
+  - Siguiente: Fricción prohibitiva; retirar de ejecución (no es refutación del sensor). Cerrado en la validación maestra del 2026-11-24 (Antigravity); cargado el 2026-11-25.
+  - Evidencia: `docs/research/validacion_maestra_20261124/VEREDICTO_MAESTRO_CARTERAS_20261124.md`
 - **VIX, VVIX, GEX, DIX, SKEW, VIX9D/VIX y COT (percentil móvil causal, terciles) como filtro de A20, T, R, Z-banda (NQ) y RQ5 fábrica** (`F-FILTROS-CONTEXTO-SIN-FILTRO`, 2026-11-20, humano)
   - Efecto: 0/35 nominadas por BH q 0,10 en DESC 2018-01 → 2025-07 (p mín 0,023, ajustada 0,59). T y RQ5 planos (|alto − bajo| ≤ 0,05 y ≤ 0,10 con MDE 0,24 y 0,13). Única pista: A20 peor en días calmos de gamma larga (VIX9D/VIX bajo, GEX alto; p 0,03–0,06, MDE 0,49), un solo eje.
   - Dónde: NQ (A20, T, R, Z-banda), NQ/ES/YM/RTY (RQ5), meses DESC de A5
   - Siguiente: No repetir estos indicadores como filtro de T ni de RQ5. A20 × gamma, sólo como variante paralela en el forward si Nico lo pide. R y Z-banda sin potencia: no concluye.
   - Evidencia: `docs/research/filtros_contexto_20261120/RESULTADO.md`, `docs/research/filtros_contexto_20261120/RESULTADO.json`
+- **Curvas de los 15 módulos de FundedSync que muestra el vendedor (2022–2026)** (`F-VENDEDOR-FUNDEDSYNC-CURVAS-2022`, 2026-11-20, humano)
+  - Efecto: Se reproducen en forma con nuestros datos (14/15 suben en puntos netos), pero sólo T (t 5,8), R (4,5), Z (2,8) y A20 (2,6) superan t 2,5; las demás tienen t 1,1–1,8 y 7 de ellas eran negativas con t significativo en 2010–21. Fricción: A1 pierde el 70 % del bruto; W y E casi todo.
+  - Dónde: NQ M1 de NT8, 15 módulos
+  - Siguiente: No promover módulos por la curva del vendedor. N, S, F, Q y C quedan como pistas que sólo el forward puede confirmar.
+  - Evidencia: `docs/research/verif_vendedor_20261120/RESULTADO.md`, `docs/research/verif_vendedor_20261120/MODULOS_2022_2026.csv`
 - **8 reglas externas con stop estructural (Gao 30m, Dual Thrust, Dynamic Breakout II, RSI2, FTLT, QFL, FVG H1, PMax) — trabajo de Gemini/Antigravity** (`F-EXTERNAS-ESTRUCTURALES-REFUTADA`, 2026-11-19, humano)
   - Efecto: DESC A5 2006–2025 ES+NQ+YM+GC: 0/16 en BH; las 8 con R neto negativo (−0,05 a −0,12 R) pese a fricción ≤ 0,08 R; potencia de REP 0 (efecto ≤ 0).
   - Dónde: ES, NQ, YM, GC
