@@ -63,6 +63,7 @@ class BridgePolicy:
     allow_push: bool = False
     allow_data_download: bool = False
     allow_git_push: bool = False
+    require_canonical_kernel: bool = False
     max_download_bytes: int = 50_000_000
     text_suffixes: tuple = (".json", ".md", ".csv", ".txt", ".html")
     allowed_source_owners: tuple = field(default_factory=tuple)
@@ -569,7 +570,19 @@ def _check_push_allowed(params: Mapping[str, Any], policy: BridgePolicy) -> dict
         owner = s.split("/")[0]
         if owner not in policy.allowed_source_owners:
             raise KaggleBridgeError(f"source {s!r}: owner no permitido (--allow-source-owner)")
-    return dict(slug=slug, title=str(params["title"])[:100], script_text=str(params["script"]),
+    script_text = str(params["script"])
+    repo_root = Path(__file__).resolve().parents[1]
+    if str(repo_root) not in sys.path:
+        sys.path.insert(0, str(repo_root))
+    from edgelab.research.puerta_kernel import validar_modulo_sintetico, validar_script_kernel
+    gate_errs = validar_script_kernel(script_text, require_canonical=policy.require_canonical_kernel)
+    if gate_errs:
+        raise KaggleBridgeError("push_kernel bloqueado por puerta_kernel: " + "; ".join(gate_errs))
+    if params.get("preflight_module"):
+        mod_errs = validar_modulo_sintetico(str(params["preflight_module"]))
+        if mod_errs:
+            raise KaggleBridgeError("push_kernel bloqueado por preflight sintetico: " + "; ".join(mod_errs))
+    return dict(slug=slug, title=str(params["title"])[:100], script_text=script_text,
                 accelerator=str(params.get("accelerator", "cpu")), dataset_sources=sources,
                 kernel_sources=ksources, enable_internet=False)
 
@@ -1012,6 +1025,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--allow-source-owner", action="append", default=[], help="Owner de Kaggle permitido como dataset_source en push_kernel (repetible)")
     parser.add_argument("--allow-data-download", action="store_true", help="Habilita descargar archivos binarios/de datos a Drive. Apagado por defecto (licencia CME).")
     parser.add_argument("--allow-git-push", action="store_true", help="Habilita git_apply_and_push sobre repos registrados (con guarda L0 y árbol limpio). Apagado por defecto.")
+    parser.add_argument("--strict-kernel-gate", action="store_true", help="Exige contrato canonico de holdout y preregistro incluso en kernels simples.")
     parser.add_argument("--repo", action="append", default=[], metavar="NOMBRE=RUTA", help="Registra un repo git local para git_head_info / git_export_delta / check_patch / git_apply_and_push (repetible)")
     args = parser.parse_args(argv)
 
@@ -1038,7 +1052,7 @@ def main(argv: list[str] | None = None) -> int:
             parser.error(f"--repo debe ser NOMBRE=RUTA a un repo git: {item!r}")
         repos[name] = path
     policy = BridgePolicy(allow_push=args.allow_push, allow_data_download=args.allow_data_download,
-                          allow_git_push=args.allow_git_push,
+                          allow_git_push=args.allow_git_push, require_canonical_kernel=args.strict_kernel_gate,
                           allowed_source_owners=tuple(args.allow_source_owner), repos=repos)
 
     if args.list_my_datasets:

@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 KS = "nicolasbuttaro/edgelab-fundedsync-cadena"; OUT = ROOT / "docs/research/fundedsyncstack_20261115/cadena"
 PKG = "edgelab.research.fundedsyncstack"
-ORDEN = ("contracts", "base_series", "modulos_a1_a20_f_s", "modulos_p_c_v_o", "modulos_r_z_e_q", "modulos_w_n_t", "motor_cartera", "__init__")
+ORDEN = ("contracts", "base_series", "modulos_a1_a20_f_s", "modulos_p_c_v_o", "modulos_r_z_e_q", "modulos_w_n_t", "motor_cartera", "paridad_vendedor", "__init__")
 
 
 def construir() -> Path:
@@ -18,7 +18,7 @@ def construir() -> Path:
                       ("edgelab.research.ema_zones", "edgelab/research/ema_zones.py"), ("edgelab.research.fuentes_ticks", "edgelab/research/fuentes_ticks.py"),
                       ("m1_intradia", "edgelab/research/m1_intradia.py")):
         pre += f"_m = types.ModuleType({nom!r}); _m.__path__ = []; sys.modules[{nom!r}] = _m\n"
-        if ruta: pre += f"exec(compile({(ROOT / ruta).read_text()!r}, {ruta!r}, 'exec'), _m.__dict__)\n"
+        if ruta: pre += f"exec(compile({(ROOT / ruta).read_text(encoding="utf-8")!r}, {ruta!r}, 'exec'), _m.__dict__)\n"
         if "." in nom: pre += f"setattr(sys.modules[{nom.rsplit('.', 1)[0]!r}], {nom.rsplit('.', 1)[1]!r}, _m)\n"
     pre += f"_p = types.ModuleType({PKG!r}); _p.__path__ = []; _p.__package__ = {PKG!r}; sys.modules[{PKG!r}] = _p; sys.modules['edgelab.research'].fundedsyncstack = _p\n"
     for m in ORDEN:
@@ -26,14 +26,21 @@ def construir() -> Path:
         if m == "__init__":
             pre += f"_p.__dict__['__name__'] = {PKG!r}\nexec(compile({src!r}, '{PKG}/__init__.py', 'exec'), _p.__dict__)\n"
         else:
-            pre += (f"_s = types.ModuleType('{PKG}.{m}'); _s.__package__ = {PKG!r}; sys.modules['{PKG}.{m}'] = _s\n"
+            pre += (f"_s = types.ModuleType('{PKG}.{m}'); _s.__package__ = {PKG!r}; _s.__dict__['__file__'] = '/kaggle/src/{PKG.replace(".", "/")}/{m}.py'; sys.modules['{PKG}.{m}'] = _s\n"
                     f"exec(compile({src!r}, '{PKG}/{m}.py', 'exec'), _s.__dict__); setattr(_p, {m!r}, _s)\n")
     k = ROOT / "data/fundedsync_kernel.py"; k.parent.mkdir(exist_ok=True)
     k.write_text(pre + (ROOT / "tools/kaggle_grilla/fundedsync_main.py").read_text(encoding="utf-8"), encoding="utf-8"); return k
 
 
 def lanzar():
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from edgelab.research.puerta_kernel import validar_script_kernel
+
     k = construir(); print("kernel", k.stat().st_size, "bytes")
+    errs = validar_script_kernel(k.read_text(encoding="utf-8"), require_canonical=True)
+    if errs:
+        raise SystemExit("puerta_kernel bloqueo push en fundedsync_cadena: " + "; ".join(errs))
     subprocess.run([sys.executable, "tools/kaggle_kernel.py", "push", "--slug", KS, "--title", "edgelab fundedsync cadena", "--script", str(k),
                     "--dataset", "nicolasbuttaro/edgelab-sqx-m1"], cwd=ROOT, check=True)
 
@@ -97,7 +104,7 @@ def cartera_b(hasta):
                usd_por_sesion={str(k): float(v) for k, v in d.items()})
     v2f = OUT.parents[1] / "cartera_20261116/FORWARD.json"
     if v2f.exists():
-        a = pd.Series(json.loads(v2f.read_text()).get("usd_por_sesion", {}), dtype=float); a.index = a.index.astype(int)
+        a = pd.Series(json.loads(v2f.read_text(encoding="utf-8")).get("usd_por_sesion", {}), dtype=float); a.index = a.index.astype(int)
         ix = sorted(set(a.index) | set(d.index)); x, y = a.reindex(ix, fill_value=0.0), d.reindex(ix, fill_value=0.0)
         res["conjunta_v2"] = dict(sesiones=len(ix), correlacion=float(np.corrcoef(x, y)[0, 1]) if len(ix) >= 3 and x.std() > 0 and y.std() > 0 else None,
                                   dias_ambas_bajo_300=int(((x < -300) & (y < -300)).sum()), peor_dia_suma=float((x + y).min()) if len(ix) else None)

@@ -1,0 +1,108 @@
+{
+  "_doc": "Fuente única del estado de producción (cuentas, bots, reglas). Se edita a mano al cambiar algo en una cuenta; docs/ESTADO_PRODUCCION.md se regenera con `python tools/estado_produccion.py --write`. Montos en USD.",
+  "actualizado": "2026-11-25",
+  "cuentas": [
+    {
+      "id": "LFE02575951920002",
+      "nombre": "LucidFlex 25K",
+      "firma": "LucidFlex (Tradovate / NT8)",
+      "tipo": "eval",
+      "estado": "RESCATE",
+      "dinero_real": true,
+      "inicial": 25000,
+      "balance": 24270.1,
+      "balance_observado": "2026-11-25",
+      "fuente_balance": "Nico, dashboard (HANDOFF_OPERATIVO_20261125)",
+      "reglas": {
+        "max_loss_usd": 1000,
+        "max_loss_tipo": "EOD trailing",
+        "piso_usd": 24000,
+        "piso_verificado": false,
+        "target_usd": 26250,
+        "consistencia_eval": 0.4,
+        "max_micros": 20,
+        "max_minis": 2,
+        "flat_hhmm_et": 1640,
+        "noticias_permitidas": true
+      },
+      "bot": {
+        "plataforma": "NT8",
+        "estrategia": "EdgeLabFundedSyncPortfolio",
+        "fuente_repo": "nt8/strategies/EdgeLabFundedSyncPortfolio.cs",
+        "grafico": "MES 1-Minute ETH (>= 500 días cargados)",
+        "preset": "ES_Core_US500",
+        "perfil": "LucidFlex_25K_Rescate",
+        "max_micros": 1,
+        "daily_loss_bot_usd": 120,
+        "daily_loss_tradovate_usd": "120-130 (a configurar por Nico)",
+        "hard_flatten_hhmm_et": 1635,
+        "exec_audit_log": true,
+        "activo": false,
+        "activo_nota": "configurado en el handoff; Nico confirma si está corriendo",
+        "instrumento": "MES",
+        "riesgo_objetivo_por_operacion_usd": 60,
+        "riesgo_max_por_sleeve_usd": 109.09,
+        "sleeves_simultaneos_max": 6,
+        "tope_neto_micros": null,
+        "riesgo_nota": "Core: tgtUsd = 360 x 1/6 = $60; qty=1 si el stop de 1 micro cuesta <= $60/0,55 = $109; MaxMicros=1 es POR SLEEVE (6 módulos, MaxOpenR 1,0 = 6 x 1/6): sin tope neto global pueden abrirse hasta 6 micros a la vez. Verificado en nt8/strategies/EdgeLabFundedSyncCore.cs OpenSleeveNow/TargetNetMicros el 2026-11-25."
+      },
+      "notas": [
+        "Colchón al piso <= $270,10 si nunca cerró EOD por encima de $25.000: verificar en el dashboard.",
+        "Con DailyLoss $120, dos días malos seguidos consumen casi todo el colchón.",
+        "Evitar 08:30 ET (CPI/NFP) y 14:00 ET (FOMC) por slippage con este colchón.",
+        "Configuración congelada hasta probar todas las estrategias en NT8 y que Nico vea sus curvas (2026-11-25). ES_Core_US500 está BAJO_REVISION (sin evidencia de los módulos en ES).",
+        "2026-11-25: propuesta de rescate = EdgeLabCartera preset Rescate25K (T en 1 MNQ, registro de ejecución): pasa ≈ 14 % (docs/research/cartera_nt8_20261125/RESULTADO.md). Cambiar el bot lo decide Nico."
+      ]
+    },
+    {
+      "id": "DEMO2xy4tfNV",
+      "nombre": "Demo de servidor NT8",
+      "firma": "NT8 / Tradovate demo",
+      "tipo": "demo",
+      "estado": "AUDITORIA_EJECUCION",
+      "dinero_real": false,
+      "balance": null,
+      "balance_observado": null,
+      "bot": {
+        "plataforma": "NT8",
+        "estrategia": "EdgeLabExecutionProbe",
+        "fuente_repo": "nt8/strategies/EdgeLabExecutionProbe.cs",
+        "grafico": "MES 1m y MNQ 1m",
+        "parametros": "Mode=MarketOnBarClose (luego PassiveLimitThenCross), Quantity=1, IntervalBars=3, HoldBars=1, MaxRoundTrips=15",
+        "activo": false,
+        "activo_nota": "pendiente de correr",
+        "instrumento": "MES"
+      },
+      "notas": [
+        "No usar Sim101 ni Playback101 para medir ejecución real."
+      ]
+    }
+  ],
+  "planificadas": [
+    {
+      "nombre": "FTMO Swing 100K",
+      "para": "C2_VZ + C2_EVRP + Turtles_GC_CFD + Core + RQ5_ES_CFD (swing)",
+      "estado": "sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales"
+    },
+    {
+      "nombre": "The5ers HS 100K",
+      "para": "SOM_ES_CFD + ES5N_ES_CFD (intradía CFD)",
+      "estado": "sin abrir; estrategias BAJO_REVISION (enmienda 2026-11-25), carteras sin efecto hasta las pruebas individuales"
+    },
+    {
+      "nombre": "LucidFlex 150K (40 % + DLL)",
+      "para": "EdgeLabCartera preset Intradía (MNQ: T, R, Z, V, RQ5, Franklin; MES: RQ5, ES5N), 1 micro c/u, sin freno diario",
+      "estado": "propuesta 2026-11-25 (docs/research/cartera_nt8_20261125/RESULTADO.md: P cobro 0,25 contraída / 0,50 desarrollo); abrir y operar lo decide Nico"
+    },
+    {
+      "nombre": "Cuenta que permita tenencia nocturna (a definir)",
+      "para": "EdgeLabCartera preset Interdía (SOM sin_finde, C2_VZ NQ/ES) o intradía + C2_VZ",
+      "estado": "propuesta 2026-11-25; C2_VZ es el único estabilizador medido (F-C2VZ-ESTABILIZA-CARTERA-INTRADIA)"
+    }
+  ],
+  "auditorias_ejecucion": [],
+  "umbrales": {
+    "dias_balance_vencido": 3,
+    "dias_auditoria_vencida": 14
+  }
+}

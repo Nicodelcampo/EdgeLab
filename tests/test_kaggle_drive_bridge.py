@@ -493,3 +493,38 @@ def test_git_apply_and_push_aplica_commitea_y_bloquea_archivos_protegidos_l0(tmp
         raise AssertionError("debio bloquearse por guarda L0")
     except KaggleBridgeError:
         pass
+
+
+def test_push_kernel_bloquea_sintaxis_holdout_y_script_de_datos_sin_guarda(tmp_path):
+    cli = _FakeKaggleClient()
+    pol = BridgePolicy(allow_push=True, allowed_source_owners=("nicolasbuttaro",))
+    malos = [
+        ("def roto(:\n", "sintaxis"),
+        ("import pandas as pd\ndf = pd.read_parquet('/kaggle/input/x.parquet')\n", "guarda de holdout"),
+        ("allow_sellado=True\n", "HOLDOUT-A4"),
+        ("token = 'KGAT_secreto_123'\n", "credencial"),
+    ]
+    for i, (script, esperado) in enumerate(malos):
+        with tempfile.TemporaryDirectory() as td:
+            try:
+                process_bridge_request(
+                    {"request_id": f"pk_{i}", "action": "push_kernel", "params": {"slug": "k-bad", "title": "bad", "script": script}},
+                    cli,
+                    Path(td),
+                    policy=pol,
+                )
+                raise AssertionError(f"debio bloquear: {esperado}")
+            except KaggleBridgeError as exc:
+                assert esperado in str(exc)
+
+    pol_strict = BridgePolicy(allow_push=True, require_canonical_kernel=True, allowed_source_owners=("nicolasbuttaro",))
+    try:
+        process_bridge_request(
+            {"request_id": "pk_strict", "action": "push_kernel", "params": {"slug": "k-simple", "title": "t", "script": "print(1)"}},
+            cli,
+            tmp_path,
+            policy=pol_strict,
+        )
+        raise AssertionError("require_canonical_kernel=True debio exigir contrato canonico")
+    except KaggleBridgeError as exc:
+        assert "puerta_kernel" in str(exc)

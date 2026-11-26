@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/research/HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` (2026-11-20)
+`docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md` (2026-11-25)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -12,7 +12,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Area | Documentos |
 |---|---:|
-| `docs` | 113 |
+| `docs` | 117 |
 | `docs/amendments` | 6 |
 | `docs/audit` | 4 |
 | `docs/audits` | 63 |
@@ -25,13 +25,13 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/foundation` | 2 |
 | `docs/incidents` | 18 |
 | `docs/indicadores` | 1 |
-| `docs/infra` | 26 |
+| `docs/infra` | 27 |
 | `docs/notion` | 2 |
 | `docs/parity` | 5 |
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1530 |
+| `docs/research` | 1578 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -101,15 +101,17 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | IDEA | 11 | `IDEA_LUXIMB_TENDENCIA_DESANDADA_20261006.md` | 2026-10-06 | PENDIENTE, no ejecutada. Pertenece a la familia LUX-IMB (H-COND-1_LUX-IMB_PROTOC |
 | HFTV4 | 2 | `HFTV4_RETORNO_RESULTADOS_20261006.md` | 2026-10-06 | - |
 
-## Superados (7)
+## Superados (9)
 
 - `AUDITOR_START_HERE.md` — SUPERADO parcialmente por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACIO
 - `docs/BRANCH_REGISTRY_2026-08-24.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
 - `docs/BRANCH_REGISTRY_2026-09-02.md` — SUPERADO por git branch -r y por docs/research/INVENTARIO_LINEA_MAIN_20261014.md
+- `docs/HANDOFF_AUDITOR_20261123_FUNDEDSYNC.md` — HISTÓRICO (superado por docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md)
 - `docs/infra/MANANA_PENDIENTES_20261014.md` — SUPERADO por docs/research/HANDOFF_2026-10-14_DATOS_L2_Y_INTEGRACION.md
 - `docs/research/EDGELAB_VIEWER_UNIFICATION_PLAN_20260920.md` — SUPERADO
 - `docs/research/EDGEREPLICA_OOS_POST_PUBLICACION_PROTOCOLO_20261006.md` — SUPERADO 2026-10-06. Nico decidió tratar esto como exploración, sin custodia de 
 - `docs/research/PARIDAD_AVOLCLUSTERPOI_ESTADO_2026-09-02.md` — SUPERADO
+- `docs/research/cartera_lucid_20261125/RESULTADO.md` — RESULTADO (descriptivo de cuenta, plan PLAN.md con enmienda 1; no suma pruebas).
 
 ## Documentos nuevos sin `Estado:` (0)
 

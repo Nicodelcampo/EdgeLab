@@ -73,7 +73,12 @@ def insumos_externos(modulo) -> list:
     return [M1NT8_DATASET] if ("cboe_volatility_daily" in src or "us_market_events_calendar" in src) else []
 
 
-def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None):
+def lanzar(modulo, ventanas, uso="desarrollo", congeladas=None, env_extra=None, prereg=None):
+    if prereg:
+        from edgelab.research.puerta_corrida import verificar_corrida
+        ver = verificar_corrida(prereg=prereg, modulo=modulo, exigir_contada=True, verificar_estado=False)
+        if not ver["ok"]:
+            raise SystemExit("puerta_corrida bloquea el lanzamiento:\n- " + "\n- ".join(ver["errores"]))
     if preflight(modulo): raise SystemExit("no se lanza: el preflight falla")
     from edgelab.research.embudo_runners import datasets
     k = TB.construir_kernel(modulo); owner = os.environ.get("EDGELAB_KAGGLE_OWNER", "nicolasbuttaro"); LANZADAS.parent.mkdir(parents=True, exist_ok=True)
@@ -247,7 +252,10 @@ def estado():
 def main():
     a = [x for x in sys.argv[1:] if not x.startswith("--")]; op = a[0]
     if op == "preflight": sys.exit(1 if preflight(a[1]) else 0)
-    elif op == "lanzar": lanzar(a[1], _ventanas(a[2:]))
+    elif op == "lanzar":
+        prereg = sys.argv[sys.argv.index("--prereg") + 1] if "--prereg" in sys.argv else None
+        wins = [x for x in a[2:] if ":" in x]
+        lanzar(a[1], _ventanas(wins), prereg=prereg)
     elif op == "traer": traer(a[1] if len(a) > 1 else None)
     elif op == "estado": estado()
     elif op == "explorar": explorar(a[1])
