@@ -7,6 +7,8 @@ Estado: PRE-REGISTRO — descriptivo, se commitea y se cuenta antes de calcular.
 - **Etapa EF2:** descriptivo sobre series ya calculadas, sin selección.
 - **Familia:** `CANASTA_CORRELACION`.
 
+Cambio respecto a falla previa: no es una prueba de PICOS-DEFENDIDOS ni de ninguna regla NO_REPETIR; sólo correlaciona carteras ya medidas, sin buscar ni elegir reglas.
+
 Antecedentes:
 - `cartera_nt8_20261125/RESULTADO.md`: carteras INTRADIA8, INTERDIA3 y C2VZ_2, a 1 micro, 2019-07 → 2026-09.
 - `fundedsync_deploy_multiprop_20261122/RESULTADO.md`: P_OPT_SF_v2 (pesos W5); su referencia tiene operaciones desde 2025-01 hasta el
