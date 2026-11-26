@@ -10,6 +10,7 @@ DIR = ROOT / "docs/research/fs_nfco_a5_20261126"; MODS = ("N", "F", "C", "O")
 
 
 def _p(g, rng, B=4000):
+    if len(g) < 3: return float("nan"), 1.0
     s = g.groupby("ses").R.sum(); n = g.groupby("ses").size(); m = g.R.mean()
     i = rng.integers(0, len(s), (B, len(s))); bm = s.to_numpy()[i].sum(1) / n.to_numpy()[i].sum(1)
     return float(m), float(((bm - m) >= m).mean() + 1 / B)
@@ -21,8 +22,10 @@ def main():
     from edgelab.holdout import a5_bloque
     from edgelab.discovery.scan import benjamini_hochberg
     O = pd.read_csv(ROOT / "docs/research/remedicion_fs_il_20261121/FS_OPS_NQ_IL.csv.gz", parse_dates=["dia"])
-    O = O[O.modulo.isin(MODS) & (O.riesgo > 0) & (O.dia >= "2018-01-01") & (O.dia <= "2026-09-30")].copy()
-    O["R"] = O.neto / O.riesgo; O["ses"] = O.dia.dt.strftime("%Y%m%d").astype(int); O["bloque"] = O.ses.map(a5_bloque)
+    O = O[O.modulo.isin(MODS) & (O.dia >= "2018-01-01") & (O.dia <= "2026-09-30")].copy()
+    unidad = np.where(O.riesgo.fillna(0) > 0, O.riesgo, O.atr20)          # enmienda: sin stop (N, O) -> ATR20 de la sesión previa
+    O = O[np.isfinite(unidad) & (unidad > 0)]; unidad = unidad[np.isfinite(unidad) & (unidad > 0)]
+    O["R"] = O.neto / unidad; O["ses"] = O.dia.dt.strftime("%Y%m%d").astype(int); O["bloque"] = O.ses.map(a5_bloque)
     rng = np.random.default_rng(20261126); res = {}
     for m in MODS:
         g = O[O.modulo == m]; d, r = g[g.bloque == "DESC"], g[g.bloque == "REP"]

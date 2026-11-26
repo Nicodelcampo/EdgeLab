@@ -42,3 +42,11 @@ Diagnóstico de mecanismo: no aplica (fábricas del vendedor, sin grilla). Se pu
 
 ## Cómo podría refutarse
 Ninguna nominada en DESC, o nominadas que no sostienen el signo en REP con potencia.
+
+## Enmienda (2026-11-26, antes de leer N y O)
+- **Qué pasó:** N y O no tienen stop (riesgo vacío) y la primera corrida los dejó sin operaciones. La herramienta trató el grupo vacío como
+  nominado: era un error, y ese resultado se descarta.
+- **Corrección de la unidad:** para los módulos sin stop, la unidad de R es el ATR20 de la sesión previa (`m1_largo.atr20`, la convención
+  del repo para módulos sin stop). Sus salidas no se cambian: R = neto / ATR20.
+- **Ya visto en la primera corrida:** F y C usan su riesgo propio y sus resultados quedan como salieron (SIN_NOMINAR).
+- **Familia de BH:** sigue con las 4.
