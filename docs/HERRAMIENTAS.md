@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-756 scripts.
+757 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -313,6 +313,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
 | `tools/friccion_rq.py` | FRICCION-RQ: curva bruto–stop y palancas de fricción de RQ2, RQ5 y RQ6 en DESC (pre-registro docs/research/friccion_rq_20261119/PREREGISTRO.md). |
+| `tools/fs_nfco_a5.py` | FS-NFCO-A5 (2026-11-26): N, F, C y O de FundedSync (traducción corregida) en R por bloque A5: DESC (BH q 0,10) → REP. |
 | `tools/fundedsync_bar_phase_shift.py` | Bar-open phase shift sensitivity analysis on real CME NQ and CFD USATECHIDXUSD ticks. |
 | `tools/fundedsync_cadena.py` | FUNDEDSYNCSTACK por la cadena (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_CADENA.md). |
 | `tools/fundedsync_frecuencia_y_roadmap.py` | Audit of Overnight O (2020..2026-11 + CFD Swaps), Anti-Overfit Structural Frequency Expansion, |
