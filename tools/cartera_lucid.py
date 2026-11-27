@@ -146,6 +146,9 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
 
 
 def simular(universo: str = "INTRA8", salida: Path | None = None) -> int:
+    if universo != "INTRA8":
+        from registro_global import exigir_contada
+        exigir_contada(PD / "PREREGISTRO.md")
     ops = cargar(UNIVERSOS[universo]); res = {"plan": "docs/research/cartera_lucid_20261125/PLAN.md (enmienda 1)", "universo": universo, "cuentas": {}}
     for cta, spec in CUENTAS.items():
         tope = spec[7]; R = res["cuentas"][cta] = {"planes": {}}

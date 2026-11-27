@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-766 scripts.
+768 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -221,6 +221,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/corridor_pass2/edgelab_es_corridor_pass2_falsification_v4_sym.py` | EDGELAB — PASADA 2: BATERÍA COMPLETA ANTI-OVERFIT Y FALSACIÓN DE FALSOS EDGES |
 | `tools/corridor_pass2/ema_corridor_trend.py` | EmaCorridorTrend v4.0 — Detector de Zonas y Corredores Tendenciales Estables sobre EMA. |
 | `tools/cosecha_pozo.py` | Cosecha del pozo de pistas vivas (pre-registro docs/research/cosecha_pozo_20261117/PREREGISTRO.md, 2026-11-17). |
+| `tools/cripto_pit.py` | CRIPTO-PIT (2026-11-27): universo punto en el tiempo de perpetuos USDT-M de Binance y réplica de las 3 reglas cripto de la |
 | `tools/cubos_regimen.py` | Cubos de operaciones para buscar regímenes offline (`edgelab/research/regimen_offline.py`). |
 | `tools/daily_data_health.py` | Chequeo diario de datos (R0: captura continua). Detecta que la captura se haya cortado y que el respaldo de L2 este al dia. |
 | `tools/data_catalog_build.py` | Construye el catálogo legible (docs/data_catalog) desde el inventario crudo. |
@@ -714,6 +715,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/tbzx_r3_brain.py` | TBZX-R3 en el cerebro: partición, lecciones de método y una observación por corrida (con auditoría de controles). |
 | `tools/tbzx_r3_macro.py` | TBZX-R3 iteración 4: escenarios macro contra la fricción (manifiesto §10, fijado antes de medir). |
 | `tools/tbzx_reingreso_kaggle.py` | TBZX-R3: se crea la zona -> se aleja D -> vuelve -> se introduce p -> retrocede r -> entrada; TP y SL en {3, 6, 10, 20}. |
+| `tools/tendencia_no_equity.py` | TENDENCIA-NO-EQUITY (2026-11-27): momentum de serie de tiempo mensual (Moskowitz, Ooi y Pedersen 2012) en 14 ETFs de tasas, metales, |
 | `tools/test_corredores_vacio.py` | tools/test_corredores_vacio.py |
 | `tools/test_cortes_sesion_gc0226.py` | Prueba: el kernel Python, corta las sesiones igual que el .cs? |
 | `tools/test_js_match.py` | (sin docstring) |

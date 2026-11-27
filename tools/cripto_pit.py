@@ -99,7 +99,8 @@ def _serie(sym: str, iv: str) -> pd.DataFrame | None:
     f = DATA / iv / f"{sym}.parquet"
     if f.exists():
         return pd.read_parquet(f)
-    partes = [p for ym in _meses_de(sym, iv) if (p := _kline_mes(sym, iv, ym)) is not None]
+    with concurrent.futures.ThreadPoolExecutor(8) as ex:                  # meses en paralelo (2026-11-27: de a uno tardaba ~2 h)
+        partes = [p for p in ex.map(lambda ym: _kline_mes(sym, iv, ym), _meses_de(sym, iv)) if p is not None]
     f.parent.mkdir(parents=True, exist_ok=True)
     if not partes:
         pd.DataFrame().to_parquet(f); return None
@@ -141,7 +142,8 @@ def velas() -> int:
         k = _serie(s, "1h")
         f = DATA / "funding" / f"{s}.parquet"
         if not f.exists():
-            partes = [p for ym in MESES if (p := _download_month_funding(s, ym)) is not None and len(p)]
+            with concurrent.futures.ThreadPoolExecutor(8) as ex2:
+                partes = [p for p in ex2.map(lambda ym: _download_month_funding(s, ym), MESES) if p is not None and len(p)]
             fr = pd.concat(partes).drop_duplicates("calc_time").sort_values("calc_time") if partes else pd.DataFrame(columns=["calc_time", "rate"])
             f.parent.mkdir(parents=True, exist_ok=True); fr.to_parquet(f)
         return s, None if k is None else len(k)

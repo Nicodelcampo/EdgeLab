@@ -8,7 +8,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - North Star SHA-256: `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - Holdout A4/A5: frontera `2026-10-01 (20261001)` (`edgelab/holdout.py`); A5 `7 DESC / 2 REP / 3 HOLDOUT`
 - Indice obligatorio: `docs/research/LEER_ANTES_DE_CADA_CORRIDA.md` v4 (2026-11-19)
-- Contador global: `762` campanas / `538,657,210` pruebas registradas
+- Contador global: `765` campanas / `538,657,216` pruebas registradas
 - Edges promovidos: `ninguno` (`EDGES_DISCOVERED.md`)
 
 ## 2. Guardas y Leyes Empiricas Activas
@@ -21,7 +21,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 44 | Palancas (`PALANCA_DE_DISENO`): 38
+- Pistas vivas (`PISTA_VIVA`): 44 | Palancas (`PALANCA_DE_DISENO`): 39
   - `F-CRIPTO-TENDENCIA-DECORRELACIONADA` (2026-11-27): Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en 8 perpetuos USDT-M de Bin…
   - `F-REGLA-CARTERA-DECORRELACIONADA` (2026-11-26): Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la ca…
   - `F-FS-O-N-A5` (2026-11-26): O y N de FundedSync (traducción corregida) en R/ATR20 por DESC → REP de A5 (2018 → 2026-09)

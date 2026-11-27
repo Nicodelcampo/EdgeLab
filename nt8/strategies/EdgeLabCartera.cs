@@ -17,7 +17,7 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
     using EdgeLabFundedSync;
 
-    public enum CarteraPreset { Intradia = 0, Interdia = 1, Rescate25K = 2, Personalizada = 3 }
+    public enum CarteraPreset { Intradia = 0, Interdia = 1, Rescate25K = 2, Personalizada = 3, Diversificada = 4 }
 
     /// <summary>
     /// EdgeLabCartera (2026-11-25): UNA estrategia NT8 con varias estrategias EdgeLab en uno o mas instrumentos.
@@ -25,6 +25,9 @@ namespace NinjaTrader.NinjaScript.Strategies
     /// posicion neta. Presets:
     ///   Intradia   : MNQ T,R,Z,V,RQ5,Franklin + MES RQ5,ES5N (1 micro c/u), plano 16:40 ET y 20 min antes del fin de sesion.
     ///   Interdia   : MNQ SOM sin_finde, C2_VZ + MES C2_VZ (1 micro c/u), mantiene de noche (cuentas que lo permiten).
+    ///   Diversificada (2026-11-27): Intradia + MNQ N y SOMEOD (10 estrategias, 1 micro c/u), plano 16:40 ET.
+    ///                NO para LucidFlex (baja la P de cobrar: 1 micro minimo suma riesgo); cuenta personal o colchon >= 2x 150K.
+    ///                (docs/research/preset_diversificada_20261127/RESULTADO.md)
     ///   Rescate25K : MNQ T (1 micro): perdida maxima por dia ~$200 < colchon de la 25K; registro de ejecucion completo.
     ///                (docs/research/cartera_nt8_20261125/RESULTADO.md: el freno diario y mas estrategias BAJAN la probabilidad)
     /// Composicion editable: "MNQ:T=1,R=1;MES:RQ5=1" (codigos: T R Z V W N SOMEOD SOM RQ5 FR FRV ES5N C2VZ C2EVRP).
@@ -158,6 +161,7 @@ namespace NinjaTrader.NinjaScript.Strategies
             {
                 case CarteraPreset.Interdia: return "MNQ:SOM=1,C2VZ=1;MES:C2VZ=1";
                 case CarteraPreset.Rescate25K: return "MNQ:T=1";
+                case CarteraPreset.Diversificada: return "MNQ:T=1,R=1,Z=1,V=1,N=1,SOMEOD=1,RQ5=1,FR=1;MES:RQ5=1,ES5N=1";
                 default: return "MNQ:T=1,R=1,Z=1,V=1,RQ5=1,FR=1;MES:RQ5=1,ES5N=1";
             }
         }

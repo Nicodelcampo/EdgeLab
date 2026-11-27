@@ -93,7 +93,7 @@ def medir() -> int:
         r["DESC_mayor_activo"] = {cd.sum().idxmax(): round(100 * float(cd.sum().max()) / tot, 1)} if tot else None
         r["DESC_por_anio_pct"] = {str(a): round(100 * float(v), 2) for a, v in d.groupby(d.index.year).sum().items()}
         pasa = r["DESC"]["t"] >= 1.65
-        r["pasa_DESC"] = pasa
+        r["pasa_DESC"] = bool(pasa)
         if pasa:                                                                         # la réplica se lee sólo si DESC pasa
             r["REP"] = _est(ret[blq == "REP"])
         res[esc] = r
@@ -106,8 +106,8 @@ def medir() -> int:
     tb = pd.read_csv(OUT / "SERIE_MENSUAL_LEIDA.csv", index_col=0).iloc[:, 0]; tb.index = pd.PeriodIndex(tb.index, freq="M")
     comun = tb.dropna().index.intersection(im.index)
     res["corr_mensual_vs_INTRADIA8_meses_leidos"] = round(float(tb[comun].corr(im[comun])), 3)
-    (OUT / "RESULTADO.json").write_text(json.dumps(res, indent=1, ensure_ascii=False), encoding="utf-8")
-    print(json.dumps(res, indent=1, ensure_ascii=False))
+    (OUT / "RESULTADO.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    print(json.dumps(res, indent=1, ensure_ascii=False, default=float))
     return 0
 
 

@@ -230,7 +230,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (38)
+## PALANCA_DE_DISENO (39)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -239,6 +239,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
   - Siguiente: Variantes FUNDEDSYNC sólo se confirman en el terminal y el forward. Los stops ATR van a NT8 como capa de riesgo declarada, no como mejora medida. Preset NT8 sin F/C/O con tamaño por cuenta (simulador calibrado cartera_lucid.py).
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
+- **En cuentas prop con pérdida máxima fija y 1 micro como mínimo por estrategia, sumar estrategias decorrelacionadas suma riesgo** (`F-PROP-UN-MICRO-MINIMO-SUMAR-RESTA`, 2026-11-27, agente)
+  - Efecto: LucidFlex 150K, media contraída: 8 estrategias P(cobrar) 0,269 vs 10 (+N, SOMEOD) 0,224, con el mismo plan (1 micro c/u); Sharpe diario 0,085 vs 0,090 (no es calidad: sd +25 %, peor día −4.685 → −6.246). 25K y 50K: la de 10 no supera a «sin ventaja» por 0,05.
+  - Dónde: MNQ/MES 1 micro, corridas NT8 + arnés, 2020 → 2026-09; simulador calibrado tools/cartera_lucid.py
+  - Siguiente: Diversificar con más estrategias sólo donde el colchón es ≥ 2× el de la 150K o en cuenta personal (preset Diversificada); en Lucid, Intradía 8.
+  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación
@@ -480,10 +485,15 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (18)
+## EN_SEGUIMIENTO (19)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
+- **Momentum de serie de tiempo mensual (signo 12 meses, riesgo inverso a vol 63 d) en 14 ETFs de tasas, metales, energía, granos y divisas** (`F-TENDENCIA-NO-EQUITY-MENSUAL`, 2026-11-27, agente)
+  - Efecto: DESC de A5 (130 meses 2008–2026): +0,29 %/mes, t 0,96, Sharpe 0,29, MDE Sharpe 0,76; energía 40 % y metales 38 % de la ganancia (USO 37 %); pierde en 2021–2024; corr. mensual con Intradía +0,07. SIN_EVIDENCIA, viva (REP no leída, HOLDOUT sellado).
+  - Dónde: ETFs Yahoo ajustados 2005 → 2026-09, partición A5 por mes
+  - Siguiente: Retomar sólo con más información por mes (futuros reales, 40–60 mercados) o como filtro de régimen; nunca eligiendo energía y metales porque ganaron.
+  - Evidencia: `docs/research/tendencia_no_equity_20261127/RESULTADO.md`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato

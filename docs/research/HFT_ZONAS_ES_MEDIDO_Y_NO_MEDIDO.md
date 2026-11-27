@@ -1500,3 +1500,21 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - paridad NT8 de N y SOMEOD;
   - tamaño por cuenta con el simulador calibrado de LucidFlex;
   - variantes FUNDEDSYNC en el terminal y el forward.
+
+## 2026-11-27 — PRESET-DIVERSIFICADA (NT8 + cuentas)
+- **MEDIDO:**
+  - paridad del arnés de la cartera de 10 (≥ 98,8 % emparejadas contra NT8; 0 descuadres), con la zona horaria corregida;
+  - tamaño por cuenta LucidFlex de 8 contra 10: la de 10 baja la P(cobrar) en 25K, 50K y 150K.
+
+  Fuente: `docs/research/preset_diversificada_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - N en el Strategy Analyzer de NT8;
+  - el precio de entrada de Franklin y ES5N en NT8 contra el arnés;
+  - la cartera de 10 en una cuenta personal.
+
+## 2026-11-27 — TENDENCIA-NO-EQUITY
+- **MEDIDO:** TSMOM mensual en 14 ETFs no-equity, DESC de A5 (t 0,96, SIN_EVIDENCIA, MDE Sharpe 0,76).
+  Fuente: `docs/research/tendencia_no_equity_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - la réplica (REP) y el HOLDOUT A5 (DESC no pasó);
+  - futuros reales con más mercados.
