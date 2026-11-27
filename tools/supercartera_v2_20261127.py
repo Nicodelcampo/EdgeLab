@@ -41,6 +41,7 @@ if str(ROOT / "tools") not in sys.path:
 
 from edgelab.holdout import a5_bloque, a5_meses  # noqa: E402
 from registro_global import exigir_contada  # noqa: E402
+from marco_sin_forward import stats_monthly_10vol  # noqa: E402  (misma función; test_existente prohíbe copiarla)
 
 OUT = ROOT / "docs/research/supercartera_v2_20261127"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -59,35 +60,6 @@ def _a5_mes_blq(p: pd.Period) -> str:
 
 def _phi(z: float) -> float:
     return 0.5 * (1.0 + erf(z / sqrt(2.0)))
-
-
-def stats_monthly_10vol(m_s: pd.Series) -> dict:
-    """Estadisticas mensuales y su curva exacta normalizada a 10% de volatilidad anual propia."""
-    m = m_s.dropna()
-    n = len(m)
-    if n < 3 or float(m.std(ddof=1)) == 0.0:
-        return {"meses": int(n), "sharpe": 0.0, "t": 0.0, "p_una_cola": 0.5}
-    mu = float(m.mean())
-    sd = float(m.std(ddof=1))
-    t = mu / (sd / np.sqrt(n))
-    sh = (mu / sd) * np.sqrt(12.0)
-    m10 = m / (sd * np.sqrt(12.0)) * 10.0
-    eq10 = m10.cumsum()
-    mdd10 = float((eq10 - eq10.cummax()).min())
-    ret10 = float(m10.mean() * 12.0)
-    calmar10 = ret10 / abs(mdd10) if mdd10 < 0 else 99.0
-    a = m.groupby(lambda p: p.year).sum()
-    return {
-        "meses": int(n),
-        "sharpe": round(sh, 3),
-        "t": round(t, 2),
-        "p_una_cola": round(1.0 - _phi(t), 4),
-        "pct_meses_pos": round(float((m > 0).mean()), 3),
-        "pct_anios_pos": round(float((a > 0).mean()), 3),
-        "ret_ann_10pct_vol": round(ret10, 2),
-        "mdd_at_10pct_vol": round(mdd10, 2),
-        "calmar_at_10pct_vol": round(calmar10, 2),
-    }
 
 
 def _hrp_weights(ret: pd.DataFrame) -> np.ndarray:

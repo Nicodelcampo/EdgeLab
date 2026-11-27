@@ -58,3 +58,5 @@ Estado: RESULTADO — campaña pre-registrada en [PREREGISTRO.md](PREREGISTRO.md
 | `Super_v2_Core_TRZV_EQ` | `2.631` | `99.6%` | `-4.36%` | `-8.66%` | `5.93` | `0.9997` | `0.9624` |
 
 - **Aporte al referente**: integra 3 frentes limpios (`Carril 2 + CRIPTO-PIT v3 + Global_VolComp_M1DK`) junto con CME descriptivo a volatilidad idéntica `10%`, reporta CSCV limpio sobre 28 reglas no-CME y cuantifica la ganancia estadística de sumar frentes ortogonales.
+
+Diagnóstico de grilla: sin grilla paramétrica. El PBO del CSCV es sobre K reglas ya fijadas (16, 28 y 39); las 4 carteras declaradas son variantes de ponderación, y «HRP_Weekly» dio pesos 0,25 exactos y cifras idénticas a EQ: es la misma cartera, no una variante distinta (causa no verificada; sin `sklearn` la función cae a 1/sd) (ver `auditoria_claude_20261127/REVISION_CLAUDE.md`).

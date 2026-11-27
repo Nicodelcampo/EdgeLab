@@ -1,6 +1,8 @@
 # Auditoría Integral (`PR #203` + Auto-Auditoría It. 1 y 2) y Próximos Frentes (2026-11-27)
 
-> **Custodia estricta verificada**: `0` fechas `>= 2026-10-01` (`HOLDOUT-A4 / TERMINAL`) y `0` celdas leídas en `HOLDOUT A5` sellado (`CARRIL2_A5`, `CRIPTO_BINANCE`, `TENDENCIA_NO_EQUITY`). Todas las mediciones se registraron en [TRIAL_REGISTRY_GLOBAL.jsonl](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/TRIAL_REGISTRY_GLOBAL.jsonl) vía [REGISTRO_POSTERIOR.md](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_claude_20261127/REGISTRO_POSTERIOR.md) (`773` campañas / `538,657,254` pruebas acumuladas).
+Estado: RESULTADO — EF2 exploratorio y registro posterior (`REGISTRO_POSTERIOR.md`, 24 pruebas). Revisión de Claude: `REVISION_CLAUDE.md`.
+
+> **Custodia estricta verificada**: `0` fechas `>= 2026-10-01` (`HOLDOUT-A4 / TERMINAL`) y `0` celdas leídas en `HOLDOUT A5` sellado (`CARRIL2_A5`, `CRIPTO_BINANCE`, `TENDENCIA_NO_EQUITY`). Todas las mediciones se registraron en [TRIAL_REGISTRY_GLOBAL.jsonl](../TRIAL_REGISTRY_GLOBAL.jsonl) vía [REGISTRO_POSTERIOR.md](REGISTRO_POSTERIOR.md) (`773` campañas / `538,657,254` pruebas acumuladas).
 
 ---
 
@@ -24,7 +26,7 @@
 * **Falso negativo en `CRIPTO-PIT`**: la línea 177 (`w.sub(w.where(E1).mean(axis=1), axis=0)`) asignaba peso residual a `~21` monedas planas cada día, y `CR_Trend_4H_EMA` (`-\$165.9/m`) explicó `65.5%` de la pérdida `REP` de `CR_1N` (`-\$84.4/m`).
 * **Motor `Carril 2`, `PRESET-DIVERSIFICADA` y `CANASTA-AMPLIA`**: `canasta_amplia.py verificar_motor` verificado **`IDENTICO`** (`dif_R = 0.0` hasta el 6.º decimal en `DESC/REP` de las 16 reglas selladas); `PRESET-DIVERSIFICADA` (`150k`, `2` micros `ResolveTz`) rinde `+\$217-234/m` neto con paridad `>=98.8%`; `CANASTA-AMPLIA` confirma que `DESC>0` (`HOLDOUT Sh=1.81`) supera a `DESC<=0` (`Sh=0.18`).
 
-![Auditoria Claude K27 y Sesgos](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_claude_20261127/auditoria_claude_k27_y_sesgos.png)
+![Auditoria Claude K27 y Sesgos](auditoria_claude_k27_y_sesgos.png)
 
 ---
 
@@ -43,7 +45,7 @@
 
 * **Descomposición crítica (`Top20_hyst 4L/4S`)**: `Long-Short_Alts` (`Sh=1.08`, `22-26=0.98`, `beta=+0.004`) > `LongAlts-ShortBTC` (`Sh=0.72`, `22-26=0.25`) y `Long-Only_Alts` (`Sh=0.90`, `22-26=0.52`, `beta=+0.575`); `Short-Only_Alts` pierde (`-0.25`) pero aporta cobertura `beta = -0.571` que estabiliza la canasta en mercados bajistas (`+1,826` USD en 2022). `5/5` fases (`Phase 0..4`) son positivas (`Sh = 0.48` a `1.29`).
 
-![Frentes v2 Cripto PIT y Yahoo Roll Glitches](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_claude_20261127/frentes_v2_cripto_pit_y_futuros_no_equity.png)
+![Frentes v2 Cripto PIT y Yahoo Roll Glitches](frentes_v2_cripto_pit_y_futuros_no_equity.png)
 
 ---
 
@@ -66,7 +68,7 @@ Comparación honesta a **exactamente `10%` de volatilidad anual** (`2021-01..202
   - `2_clean_non_cme_21rules` (`16 C2 + 5 Cripto`, `48m`): mejor regla `1.449 -> 0.146` (`PBO = 53.04%`), **`1/N`** logra **`OOS Sh = 0.654`** (`P(OOS > 0) = 86.51%`).
   - **Potencia teórica en holdouts sellados (sin abrirlos)**: `Carril 2 Sell16` (`63m`) = `0.253 / 0.393 / 0.625`; **pooling dinámico `Carril 2 + Cripto_Core_Stag` (`63m`)** sube a **`0.296 (0.5x) / 0.464 (0.7x) / 0.717 (1.0x)`**.
 
-![Marco Sin Forward Igual Vol CSCV Limpio y Estres](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_claude_20261127/marco_sin_forward_cscv_bayes_y_supercanasta.png)
+![Marco Sin Forward Igual Vol CSCV Limpio y Estres](marco_sin_forward_cscv_bayes_y_supercanasta.png)
 
 ---
 
@@ -84,6 +86,9 @@ Comparación honesta a **exactamente `10%` de volatilidad anual** (`2021-01..202
 2. **Índices globales + FX + Oro/WTI en `data/m1dk/` (`DEUIDXEUR`, `EUSIDXEUR`, `GBRIDXGBP`, `JPNIDXJPY`, `EURUSD`, `USDJPY`, `XAUUSD`, `LIGHTCMDUSD`)**: M1 continuos limpios (hasta `2026-09-29`, cero glitches `Yahoo =F`) en **horarios Asia/Europa**, descorrelacionados del bloque NY `09:30–11:30 ET` y sin colisionar con `F-LIT-MACRO-CFD` ni `F-MULTIACTIVO-MECANISMOS` (exige hipótesis económicas específicas por sesión y filtro de fricción `< 0.08 R`, nunca barridos crudos).
 3. **`FundedSync O` a 1 micro fijo + paridad NT8 (`F-FS-O-N-A5`) y compresión de volatilidad `Carril 2` (`F-COMPRESION-VOL-CRECE`)**: `O` confirmó `REP p=0.025` (apagado en vendedor sólo por margen); resolver paridad de `N` (`950` vs `881`), `Franklin` y `ES5N` en NT8; y en `Carril 2` separar reglas de compresión/volatilidad vivas en `2019–2026` antes de una apertura conjunta pre-registrada de `HOLDOUT A5` (`Carril 2 63m + Cripto 18m`, potencia conjunta `0.30 / 0.46 / 0.72`).
 4. **Información nueva no-OHLC (`liquid_tick_v1` y `F-TURTLES-ORO-MESETA`)**: aprobar para research los ticks de `liquid_tick_v1` para atacar `F-HFT-CLUSTER-GRANDE-NO-DEFIENDE` (`z=2.2` en `RTY+YM+6E+6B`) y revisar `F-TURTLES-ORO-MESETA` en oro M1 limpio.
-5. **Futuros No-Equity únicamente con datos back-adjusted reales**: usar continuos back-adjusted verificados (Stooq / Databento / export back-adjusted de NT8) + primas `VIX/VIX3M` de [cboe_volatility_daily.parquet](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/data/m1nt8/cboe_volatility_daily.parquet); **prohibido** re-evaluar sobre Yahoo `=F`.
+5. **Futuros No-Equity únicamente con datos back-adjusted reales**: usar continuos back-adjusted verificados (Stooq / Databento / export back-adjusted de NT8) + primas `VIX/VIX3M` de [cboe_volatility_daily.parquet](../../../data/m1nt8/cboe_volatility_daily.parquet); **prohibido** re-evaluar sobre Yahoo `=F`.
 
 Aporte al referente: quedan corregidos los 7 sesgos de medición e integrados `CRIPTO-PIT v2` escalonado ex-TradFi y el marco a volatilidad idéntica (`10%`) con `CSCV` no contaminado, fijando un roadmap de 5 frentes medidos únicamente por expectativa neta, OOS sellado y ejecutabilidad real por vehículo.
+
+Diagnóstico de grilla: sin grilla paramétrica. El PBO del CSCV se calcula sobre K reglas de mecanismo ya fijado (16 de Carril 2; 21 con cripto), no sobre variantes de una perilla; la sensibilidad publicada es de costos (10–40 pb) y de las 5 fases de rebalanceo.
+Episodios: Carril 2 sellada por época, Sharpe 2006–12 1,24, 2013–18 1,00, 2019–26 0,51 (DESC 2021–26 0,13); FundedSync O sin operaciones desde 2025-10 por el tope de margen, y con 1 MNQ fijo 36 operaciones en 2025-10 → 2026-09 por −3.041 USD.

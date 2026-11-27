@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-770 scripts.
+779 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -58,6 +58,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/auditar_canasta.py` | Experimento 4 (canasta_7_20261030/auditoria_vela_a_vela/PREREGISTRO.md): auditoría vela a vela de las 7 reglas de la canasta |
 | `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
 | `tools/auditar_procedencia.py` | Barre un directorio temporal y busca evidencia que sostenga afirmaciones vivas. |
+| `tools/auditoria_claude_20261127.py` | Auditoria forense de los 33 commits de Claude (8d7706d4 -> 80164f3d, PR #203). |
 | `tools/auditoria_exclusiones_fs.py` | AUDITORIA-EXCLUSIONES (pre-registro docs/research/auditoria_exclusiones_fs_20261119/PREREGISTRO.md): T y R de FundedSync en NQ con las |
 | `tools/autopilot_activar_escalera.py` | Activa la regla de decisión `escalera_v1` en el autopilot del Debian, en dos pasos (decisión de Nico, 2026-10-22: «hacé lo que |
 | `tools/autopilot_doctor.py` | Chequeo previo al arranque del autopilot en el Debian (solo lectura). Sale con 0 si todo lo imprescindible está bien. |
@@ -223,6 +224,8 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/corridor_pass2/ema_corridor_trend.py` | EmaCorridorTrend v4.0 — Detector de Zonas y Corredores Tendenciales Estables sobre EMA. |
 | `tools/cosecha_pozo.py` | Cosecha del pozo de pistas vivas (pre-registro docs/research/cosecha_pozo_20261117/PREREGISTRO.md, 2026-11-17). |
 | `tools/cripto_pit.py` | CRIPTO-PIT (2026-11-27): universo punto en el tiempo de perpetuos USDT-M de Binance y réplica de las 3 reglas cripto de la |
+| `tools/cripto_pit_v2.py` | CRIPTO-PIT v2 (2026-11-27): Universo PIT limpio + correccion del bug de neutralizacion + 5 mecanismos de baja rotacion. |
+| `tools/cripto_pit_v3.py` | CRIPTO-PIT v3 (Pre-registrado): Microestructura Basis (premiumIndexKlines) + Beta-Neutralizacion + 5 Mecanismos Escalonados. |
 | `tools/cubos_regimen.py` | Cubos de operaciones para buscar regímenes offline (`edgelab/research/regimen_offline.py`). |
 | `tools/daily_data_health.py` | Chequeo diario de datos (R0: captura continua). Detecta que la captura se haya cortado y que el respaldo de L2 este al dia. |
 | `tools/data_catalog_build.py` | Construye el catálogo legible (docs/data_catalog) desde el inventario crudo. |
@@ -318,6 +321,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/finalize_release.py` | Ensambla la release a partir de las partes por activo: manifiesto global, metadatos y README para agentes. |
 | `tools/fixture_p0.py` | fixture_p0.py — Fase A del puente NT8 → EdgeLab: selección de fixture + gate P0. |
 | `tools/franklin_seguimiento.py` | FRANKLIN en datos no vistos: apertura del holdout y forward (docs/research/reels_20261116/ACTA_HOLDOUT_FRANKLIN.md, cartera PREREGISTRO_TANDA5). |
+| `tools/frentes_ortogonales_20261127.py` | FRENTES-ORTOGONALES-20261127 (Pre-registrado): |
 | `tools/friccion_rq.py` | FRICCION-RQ: curva bruto–stop y palancas de fricción de RQ2, RQ5 y RQ6 en DESC (pre-registro docs/research/friccion_rq_20261119/PREREGISTRO.md). |
 | `tools/fs_nfco_a5.py` | FS-NFCO-A5 (2026-11-26): N, F, C y O de FundedSync (traducción corregida) en R por bloque A5: DESC (BH q 0,10) → REP. |
 | `tools/fundedsync_bar_phase_shift.py` | Bar-open phase shift sensitivity analysis on real CME NQ and CFD USATECHIDXUSD ticks. |
@@ -332,6 +336,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/fundedsync_prop_opt.py` | Iteracion 4 FUNDEDSYNC: busqueda exhaustiva de factores de edge y optimizacion prop firm (LucidFlex). |
 | `tools/fundedsync_satelites_prop.py` | Quantified Monte Carlo & Portfolio proposals to monetize excluded profitable strategies. |
 | `tools/fundedsync_tanda2.py` | FundedSync tanda 2 (pre-registro docs/research/fundedsyncstack_20261115/PREREGISTRO_TANDA2.md). |
+| `tools/futuros_no_equity_v2.py` | FUTUROS-NO-EQUITY v2 (2026-11-27): 22 futuros continuos reales de 5 clases balanceadas (Energia, Metales, |
 | `tools/gc_current_logic_l2_census.py` | GC May31 current-logic event census; target-free, never mirror.run/outcomes. |
 | `tools/gc_exact4_prepare.py` | Local metadata capture / exact4 target-free census. Never computes outcomes. |
 | `tools/gc_exact4_review.py` | Audit private exact4 census; bind layers to the original chart bundle. |
@@ -343,7 +348,9 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/gc_pressure_atlas_v2.py` | GC: presión, avance y trayectorias — V2 sobre la release canónica (manifiesto docs/research/GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md). |
 | `tools/gc_pressure_panel.py` | C2 and prospective mirror50 pressure panel. No future labels or fitted model. |
 | `tools/gen_avcl_sim.py` | Genera nt8/aVolClusterPOISim.cs a partir de aVolClusterPOI.cs (que NO se modifica: tiene paridad validada). |
+| `tools/generar_graficos_audit_20261127.py` | Genera los 3 graficos dark-mode post-auditoria (Iteraciones 1 y 2) del Marco Sin Forward. |
 | `tools/generar_graficos_cartera.py` | Paso 7: Genera las 4 figuras comparativas dark-mode de la auditoria, expansion, cripto y optimizacion OOS + Multi-Prop. |
+| `tools/generar_graficos_frentes_20261127.py` | Genera 2 graficos dark-mode para CRIPTO-PIT v3 + Frentes Ortogonales y Super-Canasta v2. |
 | `tools/generate_cme_policy_pdf.py` | Generates an official, rigorous 1-page PDF compliance memorandum regarding CME Market Data & Kaggle policies. |
 | `tools/generate_density_field_golden_vectors.py` | Genera los vectores dorados que atan `density_field.js` a `density_field.py`. |
 | `tools/generate_hypothesis_backlog.py` | (sin docstring) |
@@ -523,6 +530,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/manifiesto_oraculos.py` | Manifiesto de identidad de `oracles/` — hashes versionados, contenido afuera. |
 | `tools/mapa_info_costo_analisis.py` | IVC: mapa de información contra costo (manifiesto docs/research/MANIFIESTO_MAPA_INFO_COSTO_20260926.md §5-6). |
 | `tools/mapa_info_costo_kaggle.py` | IVC: grilla de 5 minutos con estados causales y retornos futuros del medio, por sesión (manifiesto |
+| `tools/marco_sin_forward.py` | Paso 3 (Post-Auditoria): Marco Estadistico Sin Forward Corregido + Kernel Kaggle CSCV/DSR/Bayes 20k. |
 | `tools/mcp_cliente.py` | Cliente MCP (HTTP «streamable», JSON-RPC) para StrategyQuant X y MetaTrader 5 desde EdgeLab (2026-11-14). |
 | `tools/mcpt_mgc_ema.py` | Full-pipeline intraday permutation test for the MGC EMA headline. |
 | `tools/medir_spread_main.py` | Kernel de Kaggle: spread MEDIDO de un futuro del release con el criterio del atlas v4 (para instrumentos sin spread en costos). |
@@ -703,6 +711,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/streaming_escalonadas.py` | Causal completed-bar emission of the existing price-confirmed geometry. |
 | `tools/study_slot_effect.py` | Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y Holm. La configuración llega por STUDY_CFG (JSON) y debe figurar TEXTUALMENTE en el pre-registro |
 | `tools/summarize_mgc_tick_stability.py` | (sin docstring) |
+| `tools/supercartera_v2_20261127.py` | SUPERCARTERA v2: Integracion Multi-Frente Ortogonal + Kernel Kaggle CSCV/DSR/Bayes/Boot20k. |
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
 | `tools/sync_ctrader_mt5_bots.py` | Syncs, installs, and compiles the EdgeLabFundedSync NT8, cTrader (C#), and MT5 (MQL5) bot suites. |
 | `tools/sync_jforex_bin_sellado.py` | Merge JForex4 E:\dukascopy_HOLDOUT_SELLADO\<INST>\ticks\2026-11-16..*.bin into C:\EdgeLab\sellado. |

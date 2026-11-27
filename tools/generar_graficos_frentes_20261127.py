@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -17,6 +18,8 @@ except ImportError:
     plt = None
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+from generar_graficos_audit_20261127 import _save_and_copy  # noqa: E402  (no copiar la función)
 OUT = ROOT / "docs/research/supercartera_v2_20261127"
 BRAIN_ART = Path(r"C:\Users\nicoc\.gemini\antigravity\brain\417d395c-1bd7-4157-b782-277352881af1")
 
@@ -42,12 +45,7 @@ def _style(ax):
 
 
 def _save_copy(fig, fname: str) -> None:
-    p = OUT / fname
-    fig.savefig(p, dpi=160, facecolor=BG, bbox_inches="tight")
-    plt.close(fig)
-    if BRAIN_ART.exists():
-        shutil.copy2(p, BRAIN_ART / fname)
-    print("Saved chart:", p)
+    _save_and_copy(fig, fname, out=OUT)
 
 
 def chart_cripto_y_ortogonales() -> None:

@@ -1,5 +1,7 @@
 # Handoff Antigravity -> Claude / Nico (2026-11-27, rama `claude/vibrant-clarke-s9z6e2`)
 
+Estado: VIGENTE — índice del trabajo de Antigravity del 2026-11-27; la revisión de Claude está en `auditoria_claude_20261127/REVISION_CLAUDE.md`.
+
 Este documento indexa todo el trabajo ejecutado y auditado por Antigravity sobre `EdgeLab` hasta el cierre de hoy (`2026-11-27`), para que Claude pueda auditarlo y continuar en la misma rama sin depender de la conversación original.
 
 **Invariante de custodia cumplido:** todas las campañas operaron estrictamente en `DESC + REP` (`< 2026-10-01`). **`HOLDOUT A5` (`CARRIL2_A5`, `CRIPTO_BINANCE`, `GLOBAL_VOLCOMP_M1DK`) y `TERMINAL` (`>= 2026-10-01`) NO fueron leídos en ningún cálculo.** Las series diarias publicadas llevan `NaN` explícito en todo bloque fuera de `DESC`/`REP`.

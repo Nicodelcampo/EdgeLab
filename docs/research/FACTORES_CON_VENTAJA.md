@@ -515,7 +515,7 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (20)
+## EN_SEGUIMIENTO (21)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -529,6 +529,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Binance USDT-M 2021-01 → 2026-09, DESC y REP de A5 (HOLDOUT sellado)
   - Siguiente: No sumar a la cartera ni abrir el HOLDOUT A5. Papel/forward sólo si Nico abre una cuenta cripto; una campaña nueva con reglas pre-registradas en DESC y su propia REP, sin re-optimizar éstas.
   - Evidencia: `docs/research/cripto_pit_20261127/RESULTADO.md`, `docs/research/cripto_pit_20261127/RESULTADO_TOP8.md`
+- **C2_VZ y C2_EVRP (señal del VIX/GVZ de EE. UU.) aplicados a DAX, EuroStoxx, FTSE, Nikkei y oro M1 de Dukascopy: transferencia del mecanismo, no frente independiente** (`F-GLOBAL-VOLCOMP-M1DK-B`, 2026-11-27, sesion)
+  - Efecto: DESC+REP 109 meses: SR 0,45, t 1,37 (el t 2,39 es la subventana 2021–2026). Correlación mensual con C2_VZ+C2_EVRP de ES/NQ 0,48 (2014–2026), 0,37 (2021–2026); el 0,13 informado era contra Carril 2 sin VZ ni EVRP. Costo 8 pb no canónico; EuroStoxx y FTSE negativos a 16 pb.
+  - Dónde: DAX, EuroStoxx, FTSE, Nikkei, XAUUSD M1DK, 2014-07 → 2026-09, DESC y REP de A5
+  - Siguiente: Medir con costos canónicos (NKD, GC; componer FDAX/FESX/Z si se operan) y, si entra a un pozo de apertura, con su correlación real con Carril 2 completa en el plan de potencia.
+  - Evidencia: `docs/research/auditoria_claude_20261127/REVISION_CLAUDE.md`, `docs/research/frentes_ortogonales_20261127/RESULTADO.md`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato

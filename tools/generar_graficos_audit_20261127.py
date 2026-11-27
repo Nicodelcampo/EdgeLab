@@ -41,8 +41,8 @@ def _style_ax(ax):
     ax.grid(True, color=GRID, linestyle="--", linewidth=0.5, alpha=0.6)
 
 
-def _save_and_copy(fig, fname: str) -> None:
-    p = OUT / fname
+def _save_and_copy(fig, fname: str, out: Path = OUT) -> None:
+    p = out / fname
     fig.savefig(p, dpi=160, facecolor=BG, bbox_inches="tight")
     plt.close(fig)
     if BRAIN_ART.exists():
