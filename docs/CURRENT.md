@@ -1,14 +1,22 @@
 # CURRENT — estado vivo
 
-**Fecha:** 2026-11-25
+**Fecha:** 2026-11-27
 **Estado:** VIGENTE (L0, se actualiza en cada cambio de estado)  
-**Corte:** 2026-11-25
+**Corte:** 2026-11-27
 **Rama del PR #48 (head real, la que ve GitHub):** `feat/unified-nt8-viewer-20260920`.
 **Rama de trabajo local (se empuja como fast-forward sobre la de arriba):** `feat/unified-viewer-canonical-20260921`.
 Hallazgo de auditoría 2026-09-21: esta sección llamaba "rama viva" solo a la de trabajo local, sin nombrar cuál es
 el head real que ve el PR — confuso para cualquiera que solo tenga acceso al repo remoto. Corregido acá.  
 **Traspaso de la sesión en la nube del 26/09 (TBZX-R3, IVC, IVC-L; rama `claude/focused-fermat-qjt805`, PR #59):** `docs/research/HANDOFF_2026-09-26_SESION_NUBE.md`.  
 **Referente:** `docs/NORTH_STAR.md` · sha256 del cuerpo `ed4293b5587bb38b3070dba739b2b5f93a949402be0428c98e05ef385593a5f8`
+
+## Estado al 2026-11-27
+
+- **Auditoría de cartera de Antigravity** (`docs/research/auditoria_cartera_20261126/`, EF2 sin pre-registro, 169 pruebas contadas
+  después) y su revisión (`REVISION_CLAUDE.md`): a igual riesgo la regla de cartera del 26-nov no supera a la actual; F/C/O no tienen
+  motor NT8; las variantes FundedSync con stop ATR leyeron el HOLDOUT A5 (sólo se confirman en terminal y forward); cripto Binance es
+  la pista más decorrelacionada (+0,02) y todavía sin evidencia. Orden propuesto: preset NT8 sin F/C/O con tamaño por cuenta → cripto
+  pre-registrado → tendencia no-equity como hipótesis única.
 
 ## Estado al 2026-11-25 (leer primero)
 

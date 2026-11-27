@@ -1,14 +1,16 @@
 # Auditoría Forense, Expansión Multi-Activo, Cartera Cripto y Optimización OOS (2026-11-26)
 
+Estado: EXPLORATORIO (EF2, sin pre-registro; contado después en `REGISTRO_POSTERIOR.md`). Revisión de Claude con lo que se sostiene y lo que no: `REVISION_CLAUDE.md`.
+
 **Rama de trabajo:** `audit/cartera-opt-20261126` (sobre `origin/claude/vibrant-clarke-s9z6e2`, commit `709ef588`)  
-**Roadmap y frentes de continuación:** Ver [ROADMAP_FRENTES_CONTINUACION.md](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/ROADMAP_FRENTES_CONTINUACION.md)  
+**Roadmap y frentes de continuación:** Ver [ROADMAP_FRENTES_CONTINUACION.md](ROADMAP_FRENTES_CONTINUACION.md)  
 **Custodia estricta verificada:** Ninguna lectura ni evaluación utiliza sesiones desde `2026-10-01` (`HOLDOUT-A4 / TERMINAL`). Todos los candidatos nuevos (`ADAPTAR-PRESENTE 2`, `M1DK` / Kaggle `15` mercados, y `Binance Futures USDT-M`) se evaluaron exclusivamente sobre partición `HOLDOUT-A5` (`DESC` y `REP`), manteniendo `HOLDOUT`, `EMBARGO` y `TERMINAL` sellados con `NaN` en las matrices guardadas.
 
 ---
 
 ## 1. Auditoría Forense de la Entrega de Claude (`REGLA-CARTERA`, `ESTABILIDAD-CARTERA`, `EdgeLabCartera`)
 
-Archivo ejecutor: [audit_regla_cartera.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/audit_regla_cartera.py) · Resumen JSON: [AUDITORIA_RESUMEN.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/AUDITORIA_RESUMEN.json)
+Archivo ejecutor: [audit_regla_cartera.py](../../../tools/audit_regla_cartera.py) · Resumen JSON: [AUDITORIA_RESUMEN.json](AUDITORIA_RESUMEN.json)
 
 ![Auditoria forense Claude vs Version Limpia](auditoria_claude_regla_vs_fixes.png)
 
@@ -41,7 +43,7 @@ Archivo ejecutor: [audit_regla_cartera.py](file:///C:/Users/nicoc/.gemini/antigr
 
 ## 2. `ADAPTAR-PRESENTE 2` (`V`, `C`, `N`, `O` en `NQ` `2012-2026`)
 
-Archivo ejecutor: [adaptar_presente_v2.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/adaptar_presente_v2.py) · Resumen JSON: [ADAPTAR_PRESENTE_V2.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/ADAPTAR_PRESENTE_V2.json)
+Archivo ejecutor: [adaptar_presente_v2.py](../../../tools/adaptar_presente_v2.py) · Resumen JSON: [ADAPTAR_PRESENTE_V2.json](ADAPTAR_PRESENTE_V2.json)
 
 | Módulo / Variante | Full `2012-26` Sh (`\$/m`) | `2022-26` Sh (`\$/m`) | `A5 DESC` `\$/m` | `A5 REP` `\$/m` | Stop/Tgt 2026 | Veredicto |
 |---|---:|---:|---:|---:|---|---|
@@ -62,8 +64,8 @@ Archivo ejecutor: [adaptar_presente_v2.py](file:///C:/Users/nicoc/.gemini/antigr
 
 ## 3. Expansión Multi-Activo y Multi-Estrategia (CME + Kaggle `15` Mercados x `6` Mecanismos)
 
-Ejecutores: [expansion_cartera_multiactivo.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/expansion_cartera_multiactivo.py) · [kaggle_m1_expansion.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/kaggle_m1_expansion/kaggle_m1_expansion.py)  
-JSONs: [EXPANSION_MULTIACTIVO.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/EXPANSION_MULTIACTIVO.json) · [KAGGLE_M1_EXPANSION.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/kaggle_m1_out/KAGGLE_M1_EXPANSION.json)
+Ejecutores: [expansion_cartera_multiactivo.py](../../../tools/expansion_cartera_multiactivo.py) · [kaggle_m1_expansion.py](kaggle_m1_expansion/kaggle_m1_expansion.py)  
+JSONs: [EXPANSION_MULTIACTIVO.json](EXPANSION_MULTIACTIVO.json) · [KAGGLE_M1_EXPANSION.json](kaggle_m1_out/KAGGLE_M1_EXPANSION.json)
 
 ![Expansion Multiactivo y Decorrelacion](expansion_multiactivo_y_decorrelacion.png)
 
@@ -95,7 +97,7 @@ JSONs: [EXPANSION_MULTIACTIVO.json](file:///C:/Users/nicoc/.gemini/antigravity/s
 
 ## 4. Nuevo Frente Cripto Binance Futures USDT-M (`2020-09 -> 2026-09-30`, A5 `DESC+REP`)
 
-Ejecutor: [cartera_cripto_binance.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/cartera_cripto_binance.py) · Resumen JSON: [CARTERA_CRIPTO_RESUMEN.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/CARTERA_CRIPTO_RESUMEN.json)
+Ejecutor: [cartera_cripto_binance.py](../../../tools/cartera_cripto_binance.py) · Resumen JSON: [CARTERA_CRIPTO_RESUMEN.json](CARTERA_CRIPTO_RESUMEN.json)
 
 ![Cartera Cripto y Supercartera Multifrente](cartera_cripto_y_supercartera_multifrente.png)
 
@@ -119,8 +121,8 @@ Descarga directa verificada de `8` perpetuos líquidos (`BTC, ETH, SOL, BNB, XRP
 
 ## 5. Optimización OOS (`Walk-Forward 2021-07 -> 2026-09`) y Monte Carlo `20,000` Rutas Multi-Prop
 
-Ejecutores: [optimizar_cartera_v2.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/optimizar_cartera_v2.py) · Kernel Kaggle `nicolasbuttaro/edgelab-cartera-mc20k-20261126`  
-JSONs: [OPTIMIZACION_CARTERAS.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/OPTIMIZACION_CARTERAS.json) · [KAGGLE_MC20K_RESUMEN.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/kaggle_mc20k_out/KAGGLE_MC20K_RESUMEN.json)
+Ejecutores: [optimizar_cartera_v2.py](../../../tools/optimizar_cartera_v2.py) · Kernel Kaggle `nicolasbuttaro/edgelab-cartera-mc20k-20261126`  
+JSONs: [OPTIMIZACION_CARTERAS.json](OPTIMIZACION_CARTERAS.json) · [KAGGLE_MC20K_RESUMEN.json](kaggle_mc20k_out/KAGGLE_MC20K_RESUMEN.json)
 
 ![Optimizacion de Carteras y Props](optimizacion_carteras_oos_y_props.png)
 
@@ -156,7 +158,7 @@ JSONs: [OPTIMIZACION_CARTERAS.json](file:///C:/Users/nicoc/.gemini/antigravity/s
 
 ## 6. Nuevas Fuentes Gratuitas de Ticks Verificadas (Fuera de los Datasets Kaggle Existentes)
 
-Ejecutores: [probe_tick_sources.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/probe_tick_sources.py) · [probe_new_ticks_deep.py](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/tools/probe_new_ticks_deep.py) · [PROBE_NEW_TICKS_DEEP.json](file:///C:/Users/nicoc/.gemini/antigravity/scratch/EdgeLab-cartera/docs/research/auditoria_cartera_20261126/PROBE_NEW_TICKS_DEEP.json)
+Ejecutores: [probe_tick_sources.py](../../../tools/probe_tick_sources.py) · [probe_new_ticks_deep.py](../../../tools/probe_new_ticks_deep.py) · [PROBE_NEW_TICKS_DEEP.json](PROBE_NEW_TICKS_DEEP.json)
 
 Se contrastaron en vivo contra los `20` datasets ya presentes en `kaggle datasets list --mine -v`:
 

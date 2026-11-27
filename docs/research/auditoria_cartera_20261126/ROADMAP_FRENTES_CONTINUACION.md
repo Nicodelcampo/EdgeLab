@@ -1,5 +1,7 @@
 # Roadmap de Frentes de Continuación (Handoff Técnico para Claude y Nico — 2026-11-26)
 
+Estado: PROPUESTA (Antigravity, 2026-11-26). Orden y reparos de Claude: `REVISION_CLAUDE.md` §3.
+
 **Rama:** `audit/cartera-opt-20261126` (base `709ef588`, sin modificar archivos previos del repo)  
 **Principios rectores (North Star + `docs/DECISIONES_20261126.md`):**
 - **Objetivo:** ↑ rentabilidad neta, ↑ estabilidad (`t` mensual, `%` años/meses `+`, Sortino/Calmar), ↑ `n` muestral y cantidad de estrategias activas, ↓ drawdown intradía y colas `P95/P99`, ↑ diversificación efectiva (`N_eff`) y ↑ decorrelación real entre motores, activos y horarios.

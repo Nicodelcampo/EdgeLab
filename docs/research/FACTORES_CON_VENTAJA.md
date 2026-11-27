@@ -5,10 +5,15 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (43)
+## PISTA_VIVA (44)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en 8 perpetuos USDT-M de Binance** (`F-CRIPTO-TENDENCIA-DECORRELACIONADA`, 2026-11-27, agente)
+  - Efecto: 3 de 5 reglas positivas en DESC y REP (t 1,2–1,8 cada una; REP de 12 meses); 1/N t 2,31 en 51 meses; correlación mensual con la cartera CME +0,02. Sin cubrir: supervivencia de las 8 monedas, costo sin deslizamiento (10 pb ida y vuelta), HRP 91 % en una regla.
+  - Dónde: Binance USDT-M 2020-09 → 2026-09, DESC y REP de A5 (HOLDOUT sellado)
+  - Siguiente: Pre-registro con universo punto en el tiempo (20–30 perpetuos), costos ×2 con deslizamiento y plan de potencia; apertura del HOLDOUT A5 de CRIPTO_BINANCE.
+  - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -30,10 +35,10 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Sólo C2_VZ entra a la cartera; el resto espera forward o apertura del holdout A5 de CARRIL2_A5 con plan de potencia.
   - Evidencia: `docs/research/carril2_extension_20261126/RESULTADO.md`
 - **Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la cartera y ≤ 0,6 con cada miembro, riesgo parejo** (`F-REGLA-CARTERA-DECORRELACIONADA`, 2026-11-26, humano)
-  - Efecto: Validación fuera de tiempo (selección 2019-07→2023-06, eval 2023-07→2026-09): Intradía Sharpe 2,01 vs 1,46 actual, caída −3.702 vs −13.964, meses + 64 % vs 56 %; Mixto 2,31 vs 1,90, caída −4.041 vs −15.311. Toda la ventana: Intradía = T, Z, F, V, RQ5 NQ, N, C (1 micro c/u).
+  - Efecto: Validación fuera de tiempo (selección 2019-07→2023-06, eval 2023-07→2026-09): Intradía Sharpe 2,01 vs 1,46 actual, caída −3.702 vs −13.964, meses + 64 % vs 56 %; Mixto 2,31 vs 1,90, caída −4.041 vs −15.311. Toda la ventana: Intradía = T, Z, F, V, RQ5 NQ, N, C (1 micro c/u). Revisión 2026-11-27 (auditoría de Antigravity): esa ventaja era sobre todo tamaño (operaba al 44 % del riesgo base); a igual volatilidad queda empatada con la actual (walk-forward 1,91 vs 1,89) y debajo en cortes tempranos; F, C y O no tienen motor NT8.
   - Dónde: MNQ/MES USD 1 micro, 2019-07 → 2026-09
-  - Siguiente: Forward de la cartera de la regla; preset nuevo en EdgeLabCartera (F, C, N y O necesitan motor NT8: hoy sólo existen en FundedSync).
-  - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`
+  - Siguiente: Queda el criterio (sumar decorrelacionadas a riesgo parejo), no la selección: preset NT8 sin F/C/O con tamaño por cuenta; ver docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md.
+  - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`, `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09
@@ -225,10 +230,15 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (37)
+## PALANCA_DE_DISENO (38)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
+- **Las series FundedSync de los estudios de cartera usan todos los meses, también los HOLDOUT de A5** (`F-FUNDEDSYNC-SIN-HOLDOUT-A5-PARA-VARIANTES`, 2026-11-27, agente)
+  - Efecto: Variantes elegidas en 2019–2026 (stops ATR 0,25/0,50 de R/Z/N/W, V nm30_tp1400, SOM al cierre) y los estudios de cartera de Claude (ESTABILIDAD, REGLA, ADAPTAR-PRESENTE 1) leyeron los 478 días HOLDOUT A5. A igual volatilidad, la regla de cartera de Claude no supera a la cartera actual (walk-forward Sharpe 1,91 vs 1,89; caída −9.364 vs −14.499); su ventaja de caída era tamaño.
+  - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
+  - Siguiente: Variantes FUNDEDSYNC sólo se confirman en el terminal y el forward. Los stops ATR van a NT8 como capa de riesgo declarada, no como mejora medida. Preset NT8 sin F/C/O con tamaño por cuenta (simulador calibrado cartera_lucid.py).
+  - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación
@@ -565,10 +575,15 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (68)
+## NO_REPETIR (69)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
+- **Barrido de 6 mecanismos canónicos (Donchian, ORB, overnight, volbreak, fade, precierre) en 15 mercados M1 + 8 M1DK, eligiendo los positivos en DESC y REP** (`F-MULTIACTIVO-MECANISMOS-AL-NIVEL-DEL-AZAR`, 2026-11-27, agente)
+  - Efecto: 8 de 99 positivos en los dos bloques; ninguno con t ≥ 2 en REP; DK_WTI_DON con 56 operaciones en 14 años. Persistencia algo mayor que el azar (P(REP+|DESC+) 0,33 vs 0,11), mayormente por fricción. No repetir: elegir sobrevivientes de una grilla de mecanismos genéricos.
+  - Dónde: 15 mercados M1 Kaggle + 8 M1DK, 2012 → 2026-09, A5 DESC/REP
+  - Siguiente: Si se sigue, una sola hipótesis pre-registrada de tendencia diversificada en muchos futuros no-equity (energía, metales, tasas), no los 8 sobrevivientes.
+  - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
   - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ

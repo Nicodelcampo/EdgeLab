@@ -1483,3 +1483,20 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - el forward;
   - F, C, N y O dentro de EdgeLabCartera en NT8.
+
+## 2026-11-27 — AUDITORÍA DE CARTERA (Antigravity) y revisión de Claude
+- **MEDIDO (EF2, sin pre-registro, contado después: 169 pruebas):**
+  - auditoría de REGLA-CARTERA a igual volatilidad (la regla no supera a la actual);
+  - variantes FUNDEDSYNC con stop ATR, leyendo los meses HOLDOUT A5;
+  - 6 mecanismos en 15 mercados M1 + 8 M1DK (8/99 positivos en DESC y REP, ninguno con t ≥ 2 en REP);
+  - 5 reglas cripto en 8 perpetuos de Binance (3 positivas en DESC y REP);
+  - 7 asignadores en walk-forward;
+  - Monte Carlo de props (simuladores calibrados K28; reglas de retiro distintas a `cartera_lucid.py`).
+
+  Fuentes: `docs/research/auditoria_cartera_20261126/RESULTADO.md` y `REVISION_CLAUDE.md`.
+- **NO MEDIDO:**
+  - cripto con universo punto en el tiempo, deslizamiento y su HOLDOUT A5;
+  - tendencia diversificada no-equity como hipótesis única pre-registrada;
+  - paridad NT8 de N y SOMEOD;
+  - tamaño por cuenta con el simulador calibrado de LucidFlex;
+  - variantes FUNDEDSYNC en el terminal y el forward.

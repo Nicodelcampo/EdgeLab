@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-758 scripts.
+766 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -14,6 +14,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/a5_campana.py` | Campaña con la partición HOLDOUT-A5 sobre M1 real de futuros (NT8) para un módulo con el contrato de `edgelab/research/tablas.py`. |
 | `tools/actualizar_y_arrancar_debian_v2.py` | Bootstrap de un solo paso para que el Agente del Debian se actualice a la troncal y arranque en Modo Multi-Agente Espiral v2. |
 | `tools/adaptar_presente.py` | ADAPTAR-PRESENTE 1 (2026-11-26): T y F de FundedSync con el tope en puntos escalado por el precio (escala_precio_ref = mediana del |
+| `tools/adaptar_presente_v2.py` | ADAPTAR-PRESENTE 2 (2026-11-26): Auditoria estructural de limites fijos en puntos/USD en V, C, N y O |
 | `tools/agentes.py` | Tabla de agentes del Debian (config/autopilot/AGENTES.json): imprime o regenera docs/autopilot/AGENTES.md. |
 | `tools/aggressor_validate.py` | Valida la columna `aggressor` de research-v2 contra el agresor por cotización del L2 (target-free). |
 | `tools/agotamiento.py` | AGOT-EXT: agotamiento en extremo (divergencia de RSI y de delta). Manifiesto aprobado por Nico el 25/09 |
@@ -53,6 +54,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/audit_kaggle_raw_ticks.py` | Structural canonical_tick_v1 QA only, never sanitation/liquidity approval. |
 | `tools/audit_live_execution.py` | Audit live/demo NT8 execution quality CSVs emitted by EdgeLabFundedSyncPortfolio & EdgeLabExecutionProbe. |
 | `tools/audit_mnq_l2_v2_first_session.py` | (sin docstring) |
+| `tools/audit_regla_cartera.py` | Auditoria forense completa de REGLA-CARTERA / ESTABILIDAD-CARTERA / FS-NFCO-A5 / EdgeLabCartera (Claude 709ef588). |
 | `tools/auditar_canasta.py` | Experimento 4 (canasta_7_20261030/auditoria_vela_a_vela/PREREGISTRO.md): auditoría vela a vela de las 7 reglas de la canasta |
 | `tools/auditar_corridas_nube_20261029.py` | Herramienta ejecutable de auditoría de las corridas cosechadas y preparadas desde la sesión en la nube (Olas 1-10). |
 | `tools/auditar_procedencia.py` | Barre un directorio temporal y busca evidencia que sostenga afirmaciones vivas. |
@@ -177,6 +179,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/carril2_cierre.py` | CARRIL2-CIERRE (pre-registro docs/research/carril2_20261119/PREREGISTRO_CIERRE.md): las reglas del lote 1 entrando a las 15:56 (cierre RTH) |
 | `tools/carril2_crash.py` | CARRIL2-CRASH (pre-registro docs/research/carril2_20261119/PREREGISTRO_CRASH.md): IBS, Double Seven y pico de VIX con el filtro «no comprar con |
 | `tools/carril2_extension.py` | CARRIL2-EXTENSION (2026-11-26): las definiciones de Carril 2 (lotes 1 y 2) hasta 2026-09-30 con `tools/carril2.py::correr` sin |
+| `tools/cartera_cripto_binance.py` | NUEVO FRENTE CRIPTO (2026-11-26): Descarga historica limpia de Binance Futures USDT-M (2020-09 -> 2026-09, |
 | `tools/cartera_diaria.py` | Ciclo diario de la cartera viva (docs/CARTERA_VIVA.md). Lo corre el Debian después del cierre de CME (timer |
 | `tools/cartera_gestion_analisis.py` | Lectura de RESULTADOS_GESTION.json (kernel Kaggle edgelab-cartera-gestion-20261125) con el criterio pre-registrado |
 | `tools/cartera_lucid.py` | Cartera Lucid inverso-volatilidad (plan `docs/research/cartera_lucid_20261125/PLAN.md`). |
@@ -298,6 +301,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/existente.py` | Antes de construir, buscar lo que ya existe (pedido de Nico, 2026-10-24: «la mayoría de las herramientas ya se encuentran |
 | `tools/exp7_estabilizadores.py` | EXP-7 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP7_ESTABILIZADORES.md`, contado: 12 pruebas). |
 | `tools/exp8_mitigacion.py` | EXP-8 (pre-registro `docs/research/caida_2026_20261125/PREREGISTRO_EXP8_MITIGACION.md`, contado: 24 pruebas). |
+| `tools/expansion_cartera_multiactivo.py` | Paso 4: Expansion multi-activo y multi-estrategia (2026-11-26). |
 | `tools/explo_asimetria_excursion.py` | Exploración (descriptiva, sin decisión): asimetría de la excursión posterior a la creación de zonas. |
 | `tools/explo_edgereplica_mgc_20261006.py` | Exploración (decisión de Nico 2026-10-06, sin custodia de holdout): EdgeReplica en MNQ 12-26 y celda MGC 04:15 |
 | `tools/export_head_snapshot.py` | Exporta un snapshot de CÓDIGO del commit HEAD como un .tar.gz chico, para que un auditor externo lo descargue de una vez y corra los tests. |
@@ -337,6 +341,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/gc_pressure_atlas_v2.py` | GC: presión, avance y trayectorias — V2 sobre la release canónica (manifiesto docs/research/GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md). |
 | `tools/gc_pressure_panel.py` | C2 and prospective mirror50 pressure panel. No future labels or fitted model. |
 | `tools/gen_avcl_sim.py` | Genera nt8/aVolClusterPOISim.cs a partir de aVolClusterPOI.cs (que NO se modifica: tiene paridad validada). |
+| `tools/generar_graficos_cartera.py` | Paso 7: Genera las 4 figuras comparativas dark-mode de la auditoria, expansion, cripto y optimizacion OOS + Multi-Prop. |
 | `tools/generate_cme_policy_pdf.py` | Generates an official, rigorous 1-page PDF compliance memorandum regarding CME Market Data & Kaggle policies. |
 | `tools/generate_density_field_golden_vectors.py` | Genera los vectores dorados que atan `density_field.js` a `density_field.py`. |
 | `tools/generate_hypothesis_backlog.py` | (sin docstring) |
@@ -553,6 +558,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/op1_niveles.py` | Análisis CONGELADO de OP-1 (docs/research/hft_clusters_u1_20261110/PREREGISTRO_OP1.md): R neto de la orden límite en el nivel limpio, |
 | `tools/op2_clusters.py` | Análisis CONGELADO de OP-2 (docs/research/hft_clusters_u1_20261110/PREREGISTRO_OP2.md): R neto de la continuación a mercado en el |
 | `tools/op2_holdout.py` | Análisis CONGELADO de la apertura exploratoria del holdout de HFT_RUPTURA |
+| `tools/optimizar_cartera_v2.py` | Paso 6: Optimizacion de Carteras OOS (Walk-Forward Expandido 2021-07 -> 2026-09) + Generacion Kernel Kaggle MC 20K. |
 | `tools/orb0100/gc_nocturno.py` | GC nocturno en abr-jun 2026 (preregistro PREREGISTRO_GC_NOCTURNO_20261021.md). Uso: gc_nocturno.py <out.json> <bundle>... |
 | `tools/orb0100/orb0100.py` | ORB0100: rango 01:00-01:15 NY, ruptura por cierre de vela de 5 min. Grilla del manifiesto |
 | `tools/orb0100/orb0100_replica.py` | Replicacion NQ abr-sep 2026 de la celda congelada (preregistro REPLICACION_NQ_ABR_SEP_PREREGISTRO_20261021.md). |
@@ -583,6 +589,8 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/pivotes_barrido.py` | PIVOTES-BARRIDO-MES — OK de Nico 28/09. Manifiesto: docs/research/MANIFIESTO_PIVOTES_BARRIDO_MES_20260928.md |
 | `tools/potencia_previa.py` | Potencia y frecuencia ANTES de invertir en una estrategia (mejora, holdout o forward): K27–K29 de |
 | `tools/pred004_analyze.py` | pred004_analyze.py — el instrumento que mide PRED-004 COMO FUE ESCRITA. |
+| `tools/probe_new_ticks_deep.py` | Validacion profunda de muestras de ticks NUEVOS (fuera de los datasets Kaggle de Nico): |
+| `tools/probe_tick_sources.py` | Sonda de solo lectura para verificar fuentes gratuitas de datos de tick (Dukascopy, Binance Futures, Exness). |
 | `tools/propfirm_ev_report.py` | Reporte de prop firms: para cada cuenta del catálogo, (1) el EV del participante sin ventaja (control de Hall), |
 | `tools/propfirm_match.py` | La cuenta que mejor le calza a una estrategia (camino inverso del universo): dado instrumento, σ de la operación (ticks) y z bruto por operación (esperanza bruta / σ), |
 | `tools/propfirm_refresh.py` | Refresca las reglas públicas de Lucid con el crawler existente (`edgelab.propfirm.crawl`) y avisa si cambió alguna página respecto de la línea base. |
