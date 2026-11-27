@@ -56,7 +56,8 @@ def _listar(prefix: str) -> list[str]:
     """Prefijos o claves bajo `prefix` en el bucket público (paginado)."""
     out, marker = [], ""
     while True:
-        x = _get(f"{S3}?delimiter=/&prefix={prefix}&marker={marker}")
+        from urllib.parse import quote
+        x = _get(f"{S3}?delimiter=/&prefix={quote(prefix)}&marker={quote(marker)}")
         if x is None:
             raise SystemExit(f"no se pudo listar {prefix}")
         t = x.decode()
@@ -78,7 +79,8 @@ def simbolos() -> list[str]:
 
 
 def _kline_mes(sym: str, iv: str, ym: str) -> pd.DataFrame | None:
-    b = _get(f"{VIS}/data/futures/um/monthly/klines/{sym}/{iv}/{sym}-{iv}-{ym}.zip")
+    from urllib.parse import quote
+    b = _get(quote(f"{VIS}/data/futures/um/monthly/klines/{sym}/{iv}/{sym}-{iv}-{ym}.zip", safe=":/"))
     if b is None:
         return None
     z = zipfile.ZipFile(io.BytesIO(b)); raw = pd.read_csv(z.open(z.namelist()[0]), header=None)
