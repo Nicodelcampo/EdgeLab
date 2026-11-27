@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-790 scripts.
+791 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -114,6 +114,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/bigtrap2_inventory.py` | Inventario TARGET-FREE de BigTrap2 sobre los folds de desarrollo (time:1). |
 | `tools/blind_espejo_eventos.py` | Eventos de espejo para la calibración A CIEGAS «¿hay picos acumulados antes de A?» (idea de Nico, 30/09). |
 | `tools/blind_espejo_outcomes.py` | Exploración pedida por Nico (30/09): ¿los espejos que juzgó «con picos» antes de A tienen ventaja sobre los «sin picos»? |
+| `tools/bonos_masella_grabar.py` | Graba cada día la planilla pública «Arbitraje Ratios» de Martín Masella (Google Sheets), que guarda SÓLO la rueda en curso. |
 | `tools/bonos_ratios.py` | BONOS-RATIOS (pre-registro docs/research/bonos_ratios_20261127/PREREGISTRO.md): ¿el ratio ley NY / ley local de bonos argentinos con |
 | `tools/bonos_rotacion.py` | BONOS-ROTACION (pre-registro docs/research/bonos_rotacion_20261127/PREREGISTRO.md): la versión swing de la técnica de Gus Lucioni |
 | `tools/brain_register_20260928.py` | Registro en el Cerebro (hipocampo) de lo medido y aprendido el 27–28/09/2026. Idempotente por episodio: si un |

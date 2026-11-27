@@ -102,3 +102,24 @@ Notas:
 - Desde la liquidación T+1, 48hs no cotiza: los símbolos son 24HS o CI.
 - Las credenciales de API nunca van al chat ni al repo. Si la descarga corre en este entorno, se cargan con el formulario seguro;
   si corre en la máquina de Nico, quedan ahí.
+
+## 7. La planilla pública de Martín Masella («Arbitraje Ratios», enviada por Nico el 2026-11-27)
+- **Qué es:** la planilla del taller de Masella y Lucioni. Los precios en vivo salen de la API de Primary vía Veta (las credenciales son
+  de Masella); los diarios, de IOL.
+- **Qué guarda:** **sólo la rueda en curso.** Al día siguiente la hoja se reescribe.
+  - «Intraday»: GD30/AL30 en 24hs **cada 10 segundos** (10:30 → 17:00), con el último precio y los dos ratios operables con puntas:
+    GD>AL = bid GD30 / ask AL30 − 1 (rotar de GD a AL) y AL>GD = ask GD30 / bid AL30 − 1 (volver).
+  - «D-C»: lo mismo para AL30D/AL30C.
+  - «MD»: foto de puntas con cantidades de AL29, AL30, GD29 y GD30 (pesos, MEP y cable; CI y 24hs). **AL29 no tiene serie intradía.**
+  - Pestañas por par (GD30/AL30, GD35/AL35, GD38/AE38, GD41/AL41, AE38/GD41) con sus 100 cierres y bandas de Bollinger (21 ruedas,
+    1,5 desvíos), y «DataIOL», con el diario de GD30 y AL30 desde 2024-08.
+- **Cómo se usa:** `python tools/bonos_masella_grabar.py grabar` cada día hábil entre las 17:05 y las 10:30 del día siguiente (no pisa
+  una rueda ya grabada); `resumen` lista lo grabado. Destino: `data/bonos_ar/intradia_masella/<fecha>/`, gitignorado, con sha256.
+  Lee cada hoja como CSV público (`gviz/tq?tqx=out:csv`); no necesita cuenta ni API.
+- **Primera rueda grabada: 2026-11-27** (2.339 fotos). Descriptivo de un solo día, no es una prueba:
+  - el ratio se movió con un desvío de 0,18 pp (rango 2,56–4,80 %, con los extremos en la apertura);
+  - ida y vuelta con puntas costó una mediana de 0,10 pp (p10 0,05; p90 0,19).
+  - La foto de spreads de BONOS-ROTACION se tomó después del cierre y daba 0,31 pp para el mismo par: durante la rueda las puntas son
+    más finas. Esto no cambia ese veredicto (en REP el bruto era ≈ 0), pero la versión intradía necesita el costo de la rueda.
+- **Para que alcance:** hacen falta ≈ 3 meses de ruedas grabadas para medir la regla intradía de la charla en GD30/AL30. Para AL29/AL30
+  (las operaciones del amigo) sigue faltando intradía.
