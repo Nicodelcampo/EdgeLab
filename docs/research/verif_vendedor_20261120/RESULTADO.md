@@ -51,7 +51,7 @@ En puntos netos, 14 de los 15 módulos suben en 2022-01 → 2026-09, igual que e
   saber si son con o sin fricción.
 
 ## Adenda: desde el 1-sep-2025, fecha en que el vendedor empezó a vender (fuera de su muestra)
-Dato de Nico. Asumimos 2025, porque el gráfico del vendedor llega a 2026. Ventana: 2025-09-01 → 2026-09-30, todavía antes del holdout
+Dato de Nico. Asumimos 2025, porque el gráfico del vendedor llega a 2026. **Corrección 2026-11-27 (Nico): es el 1-sep-2026. Esta ventana está DENTRO de la muestra del vendedor; no es fuera de muestra.** Ventana: 2025-09-01 → 2026-09-30, todavía antes del holdout
 terminal. En EdgeLab estos meses ya estaban vistos.
 
 | Módulo | Ops | Neto (pts) | t mensual | % meses + |
