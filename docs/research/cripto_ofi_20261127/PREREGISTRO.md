@@ -6,7 +6,7 @@ Estado: PREREGISTRO — campaña pre-registrada antes de descargar campos de flu
 - **North Star** sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e345`
 - **Etapa EF2.** Familia: `CRIPTO_ORDERFLOW_PIT`. **Pruebas:** `4` (`3` mecanismos de flujo de órdenes escalonados a `5d` + `1` canasta causal `OFI_Canasta_InvVol`).
 
-Cambio respecto a `CRIPTO-PIT v1/v2/v3`: las versiones previas (`v1–v3`) se construyeron con OHLCV (`close`), `funding` y `premiumIndex`, iterando sobre los mismos `51` meses (`DESC+REP`). Esta campaña abre una familia nueva (`CRIPTO_ORDERFLOW_PIT`) usando datos **no-OHLC de microestructura de agresión en Binance USDT-M** (`taker_buy_quote_volume`, `quote_volume`, `count` de operaciones de `data.binance.vision/data/futures/um/monthly/klines/1d`), manteniendo intacto el `HOLDOUT A5` (`18m`).
+Cambio respecto a falla previa: en `CRIPTO-PIT v1` (`w.sub(mean)` derramaba pesos en monedas planas y `EMA 4H` sufría alta rotación, fallando `REP`) y en `v2/v3` la señal dependía exclusivamente de velas OHLC (`close`), `funding` y `premiumIndex`, iterándose sobre los mismos `51` meses de `DESC+REP`. Esta campaña cambia estructuralmente de fuente de información al usar datos **no-OHLC de microestructura de flujo de órdenes agresivas (`taker_buy_quote_volume`, `quote_volume`, `count`)** en Binance USDT-M, abriendo la familia nueva `CRIPTO_ORDERFLOW_PIT` con `HOLDOUT A5` (`18m`) intacto.
 
 Antecedentes:
 - `docs/research/cripto_pit_v3_20261127/RESULTADO.md`
