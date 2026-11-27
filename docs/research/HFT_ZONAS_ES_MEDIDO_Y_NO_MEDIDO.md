@@ -1553,3 +1553,15 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **MEDIDO:** sensibilidad del DLL intradía con la cota optimista (cierre de cada vela) en la 150K (`SENSIBILIDAD_DLL_150K.csv`).
 - **Corregido:** la regla de cartera a igual riesgo baja la caída ≈ 35 % (números de la auditoría, `AUDITORIA_RESUMEN.json`).
 - **NO MEDIDO:** la versión operable de la regla (sin F/C, pesos acotados) en el simulador de cuentas con DLL intradía.
+
+## 2026-11-27 — CANASTA-AMPLIA (el N diluye)
+- **MEDIDO (EF2, registro posterior):**
+  - encogimiento DESC → REP/HOLDOUT en el pozo de 40 series (b 0,43 / 0,70);
+  - canasta por regla fija (DESC > 0);
+  - pozos sellados (Carril 2 replica como canasta: REP t 3,11; Kaggle y cripto no);
+  - la intradía ampliada con más de lo mismo empeora.
+
+  Fuente: `docs/research/canasta_amplia_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - HOLDOUT A5 de la canasta Carril 2 sellada (pre-registrado, bloqueado por K27);
+  - forward de Carril 2.

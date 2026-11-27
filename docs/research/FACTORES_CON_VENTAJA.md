@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (43)
+## PISTA_VIVA (44)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -14,6 +14,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: MNQ/MES USD 1 micro, 2019-07 → 2026-09
   - Siguiente: Medir la versión operable (pesos acotados, sin F/C) en el simulador de cuentas con DLL intradía por ventaja/mes contra 1 y 2 micros iguales.
   - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`, `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/AUDITORIA_RESUMEN.json`
+- **Carril 2 (swing en índices: IBS, Double 7, TT, cambio de mes, DBO, P80, VBB, VZ, EVRP, rotación) como canasta con regla fija (DESC > 0, pesos 1/sd)** (`F-CANASTA-CARRIL2-REPLICA`, 2026-11-27, agente)
+  - Efecto: 20 regla-instrumento: DESC SR 0,86 t 2,98 (143 meses), REP SR 1,66 t 3,11 (42 meses, 79 % meses y 95 % años +); sin cada regla REP t 2,48–3,96; ES 44 % y NQ 40 % del aporte. Ninguna regla sola replicaba. Sellada sin VZ ni EVRP (16): DESC t 2,77, REP t 2,01. Desde 2019 su DESC es débil (SR 0,19–0,40). Corr. mensual con la intradía 0,14.
+  - Dónde: ES, NQ, YM, RTY, GC (M1 NT8, D1), 2006 → 2026-09, DESC y REP de A5
+  - Siguiente: Apertura única del HOLDOUT A5 de la canasta sellada (63 meses) pre-registrada y bloqueada por K27 (potencia 0,25–0,63): decisión de Nico. Si no, forward en una cuenta que mantenga de noche.
+  - Evidencia: `docs/research/canasta_amplia_20261127/RESULTADO.md`, `docs/research/canasta_amplia_20261127/EXPLORACION.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -225,7 +230,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (40)
+## PALANCA_DE_DISENO (41)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -244,6 +249,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ/ES, corridas NT8 2021-01 → 2026-09 (desarrollo); forward desde 2026-11-14
   - Siguiente: Para acercar la confirmación: flujo de datos forward (subida semanal del M1/USATECH sellado), ejecución fiel en NT8, e información nueva (ticks/flujo, opciones) para ventajas nuevas; no más variantes sobre las mismas velas.
   - Evidencia: `docs/research/ESTADO_DEL_EDGE_20261127.md`, `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`
+- **Sumar estrategias a una canasta: el N diluye las exigencias sólo si suma mecanismos distintos y descorrelacionados** (`F-N-DILUYE-SOLO-CON-MECANISMOS-DISTINTOS`, 2026-11-27, agente)
+  - Efecto: Pozo de 40 series CME: elegidas por DESC > 0 conservan el 43 % (REP) y el 70 % (HOLDOUT) del Sharpe; canasta DESC > 0 (27) HOLDOUT SR 1,81 t 2,45. Pero ampliar la intradía con más de lo mismo (16 operables o 23, corr. 0,25) baja la REP (SR 0,81 → 0,10–0,55) y duplica la caída (−14k → −28,5k); Carril 2 (otro mecanismo, corr. 0,14) replica como canasta.
+  - Dónde: NQ, ES, YM, RTY, GC; 2019-07 → 2026-09 (pozo) y 2006 → 2026-09 (Carril 2)
+  - Siguiente: Juzgar estrategias por su aporte a una canasta de mecanismos distintos, no una por una; no ampliar con transferencias de la misma familia intradía.
+  - Evidencia: `docs/research/canasta_amplia_20261127/RESULTADO.md`, `docs/research/canasta_amplia_20261127/EXPLORACION.json`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación

@@ -103,3 +103,11 @@ Lectura:
   - la lista de 12 salió de un pozo mayor (selección de sobrevivientes);
   - el HOLDOUT A5 ya estaba mirado.
 - Es evidencia direccional fuerte de que la canasta tiene ventaja neta, no una confirmación limpia. Esa la da el forward.
+
+## 6. Canasta amplia (2026-11-27, continuación)
+Ver `canasta_amplia_20261127/RESULTADO.md`:
+- el encogimiento fuera de muestra con reglas curadas conserva el 43–70 % del Sharpe;
+- Carril 2 replica como canasta (REP t 3,11) aunque ninguna regla sola lo hacía;
+- ampliar la intradía con más de lo mismo empeora.
+
+La apertura del HOLDOUT A5 de la canasta Carril 2 sellada está lista y bloqueada por K27 hasta que Nico decida.
