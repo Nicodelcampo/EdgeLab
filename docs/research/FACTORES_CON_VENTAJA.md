@@ -225,7 +225,7 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Siguiente: Réplica dirigida: una sola hipótesis (el veto mejora el bruto en continuación) en familias de continuación NO usadas en el atlas y en datos posteriores a la réplica del atlas; K mayor que 13. Si el bruto no mejora, pasa a NO_REPETIR.
   - Evidencia: `docs/research/programa_r_20261103/contexto_bruto_neto/RESULTADO_BRUTO_NETO.md`
 
-## PALANCA_DE_DISENO (39)
+## PALANCA_DE_DISENO (40)
 
 _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercado)._
 
@@ -239,6 +239,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: MNQ/MES 1 micro, corridas NT8 + arnés, 2020 → 2026-09; simulador calibrado tools/cartera_lucid.py
   - Siguiente: 150K: 2 micros por estrategia es el punto robusto (cerca del máximo por mes, P por intento 2–3× la de los planes grandes); 8 o 10 empatan. Decide Nico. Todo simulador de prop con DLL debe usar el mínimo intradía.
   - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES_DLLINTRA.csv`, `docs/research/preset_diversificada_20261127/SENSIBILIDAD_DLL_150K.csv`
+- **La ventaja medible de la cartera está en T, R, V y Z de NQ; el tiempo para confirmarla lo fija su señal/ruido, no el diseño del e-proceso** (`F-CONFIRMACION-LA-FIJA-LA-SENAL`, 2026-11-27, agente)
+  - Efecto: Información/mes: T 0,33, R 0,21, V 0,17, RQ5 NQ 0,11, Z 0,11; N/SOMEOD ≤ 0,06; RQ5 ES, Franklin, ES5N ≤ 0,02. T+R+Z+V 0,50/mes (12 meses a t 2,5) contra las 10 juntas 0,25 (25 meses): sumar estrategias débiles alarga la confirmación. E-proceso T+R vigente: EDGE en ≈ 14,5 meses con el efecto de desarrollo (≈ 33 con la mitad); núcleo T+R+Z ≈ 13,1 (≈ 27), y repartir α entre dos series se come la ganancia. La fracción de apuesta ya está cerca de Kelly (0,083 vs ≈ 0,10).
+  - Dónde: NQ/ES, corridas NT8 2021-01 → 2026-09 (desarrollo); forward desde 2026-11-14
+  - Siguiente: Para acercar la confirmación: flujo de datos forward (subida semanal del M1/USATECH sellado), ejecución fiel en NT8, e información nueva (ticks/flujo, opciones) para ventajas nuevas; no más variantes sobre las mismas velas.
+  - Evidencia: `docs/research/ESTADO_DEL_EDGE_20261127.md`, `docs/research/regimen_forward_20261119/ADENDA_POTENCIA.md`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación

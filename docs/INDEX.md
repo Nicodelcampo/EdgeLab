@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1605 |
+| `docs/research` | 1606 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| ESTADO | 4 | `ESTADO_DEL_EDGE_20261127.md` | 2026-11-27 | VIGENTE — diagnóstico descriptivo sobre datos de desarrollo ya mirados (2021-02  |
 | HANDOFF | 21 | `HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` | 2026-11-20 | VIGENTE — punto de entrada de esta etapa, escrito para seguir sin la conversació |
 | REVISION | 10 | `REVISION_DESCARTADAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas. No abre holdout ni  |
 | REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
@@ -77,7 +78,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | PROPUESTA | 2 | `PROPUESTA_MODELO_REVERSION_GRILLA_MULTIESCALA_20261015.md` | 2026-10-15 | PROPUESTA — NO APROBADA, NO EJECUTADA. Nada de este documento autoriza medir ret |
 | PAUTAS | 1 | `PAUTAS_PARA_GEMINI_CONTINUACION_EXP_REV_GRID_20261015.md` | 2026-10-15 | VIGENTE (instrucciones de trabajo; Claude tiene pocos créditos y delega la conti |
 | MANIFIESTO | 35 | `MANIFIESTO_PASADA3_CONFIRMATORIA_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA AUDITORÍA Y OK DE NICO. NO EJECUTAR. Ninguna medición sobre retorn |
-| ESTADO | 3 | `ESTADO_IDEA_ENTRENAMIENTO_IA_20261015.md` | 2026-10-15 | VIGENTE (se actualiza al cierre de cada hito) |
 | EMACORRIDORTRENDVOL | 2 | `EMACORRIDORTRENDVOL_VARIANTE_20261015.md` | 2026-10-15 | VIGENTE (indicador compilado y verificado con csc; no probado en gráfico) |
 | ADENDA | 1 | `ADENDA_D_DESARROLLO_FILTROS_CORREDOR_20261015.md` | 2026-10-15 | BORRADOR PARA OK DE NICO. NO EJECUTAR. Es una búsqueda sobre retornos: aplica el |
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |

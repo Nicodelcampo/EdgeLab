@@ -21,7 +21,7 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 43 | Palancas (`PALANCA_DE_DISENO`): 39
+- Pistas vivas (`PISTA_VIVA`): 43 | Palancas (`PALANCA_DE_DISENO`): 40
   - `F-REGLA-CARTERA-DECORRELACIONADA-B` (2026-11-27): Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la ca…
   - `F-FS-O-N-A5` (2026-11-26): O y N de FundedSync (traducción corregida) en R/ATR20 por DESC → REP de A5 (2018 → 2026-09)
   - `F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES` (2026-11-26): Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canast…
