@@ -55,6 +55,16 @@ Recordatorios:
 > **Una sola `CLAUDE.md` vigente: ésta (`foundation`).** Un árbol que cite otro hash de North Star está desactualizado: al 2026-10-14 `E:\EdgeLab` (rama `claude/focused-fermat-qjt805`) estaba 376 commits atrás de `foundation` y no incluía las enmiendas HOLDOUT-A1/A2/A3. Trabajar desde un árbol al día de `foundation`.
 > `main` **no** es baseline: se integró en `foundation` y se alineó con ella el 2026-10-14 (mismo commit). Ver `docs/DECISIONES_20261014.md`.
 
+### Estado al 2026-11-27
+
+> **Handoff auditable (sin depender del chat): `docs/research/HANDOFF_2026-11-27_CANASTA_EDGE_AUDITORIA.md`.**
+> - **Edge:** ventaja medible en T, R, V y Z de NQ; su confirmación es el forward (≈ 13–15 meses). El vendedor de FundedSync vende desde
+>   2026-09-01, así que 2020–2026 está dentro de su muestra.
+> - **Canasta:** el N diluye sólo con mecanismos distintos. Carril 2 replica como canasta (REP t 3,11) aunque ninguna regla sola lo
+>   hacía. La apertura de su HOLDOUT A5 sellado está pre-registrada y bloqueada por K27 (decisión de Nico).
+> - **Errores corregidos:** `ResolveTz` caía a UTC en mono; el simulador de cuentas aplicaba el DLL al cierre (K57).
+> - **Cripto y tendencia no-equity:** sin evidencia.
+
 ### Estado al 2026-11-20
 
 > **Handoff: `docs/research/HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md`.** 0 edges promovidos. RQ5-REGIMEN robusta en desarrollo

@@ -4,7 +4,7 @@
 
 ## Entrada vigente
 
-`docs/HANDOFF_OPERATIVO_20261125_PRODUCCION.md` (2026-11-25)
+`docs/research/HANDOFF_2026-11-27_CANASTA_EDGE_AUDITORIA.md` (2026-11-27)
 
 Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) → `PENDIENTE.md` (decisiones abiertas).
 
@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1609 |
+| `docs/research` | 1610 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,8 +40,8 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| HANDOFF | 22 | `HANDOFF_2026-11-27_CANASTA_EDGE_AUDITORIA.md` | 2026-11-27 | VIGENTE — índice para auditar, sin depender del chat, todo el trabajo de Claude  |
 | ESTADO | 4 | `ESTADO_DEL_EDGE_20261127.md` | 2026-11-27 | VIGENTE — diagnóstico descriptivo sobre datos de desarrollo ya mirados (2021-02  |
-| HANDOFF | 21 | `HANDOFF_2026-11-20_FILTROS_HOLDOUTS_CANASTA_NT8.md` | 2026-11-20 | VIGENTE — punto de entrada de esta etapa, escrito para seguir sin la conversació |
 | REVISION | 10 | `REVISION_DESCARTADAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas. No abre holdout ni  |
 | REPORTE | 6 | `REPORTE_PARA_ANTIGRAVITY_20261119.md` | 2026-11-19 | VIGENTE — pedido de auditoría; se supera cuando Antigravity deje su respuesta (a |
 | RE | 1 | `RE_INDAGACION_PISTAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas en DESC (no abre REP |

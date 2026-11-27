@@ -154,7 +154,7 @@ AUTORIZACION_K27 = ""
 CID_C2 = "CARRIL2_A5::holdout_canasta_sellada"
 
 
-def _ops_carril2_holdout() -> pd.DataFrame:
+def _ops_carril2_holdout(bloques=("HOLDOUT",)) -> pd.DataFrame:
     """Operaciones de las 16 regla-instrumento congeladas que ENTRAN en meses HOLDOUT de A5 (antes de 2026-10-01). Mismo motor, señales,
     costos y R que `tools/carril2.py::correr` (sólo cambia el filtro de bloque)."""
     import carril2 as C2
@@ -184,7 +184,21 @@ def _ops_carril2_holdout() -> pd.DataFrame:
     T = pd.concat(partes, ignore_index=True)
     T = T[T.fecha < 20261001]
     T["bloque"] = [a5_bloque(int(x)) for x in T.fecha]
-    return T[T.bloque == "HOLDOUT"]
+    if tuple(bloques) != ("HOLDOUT",):                       # verificación: mismo filtro que carril2.correr (entrada y salida fuera del sellado)
+        bs = [a5_bloque(int(x)) for x in T.fecha_salida]
+        T = T[(T.fecha_salida <= 20260930) & ~pd.Series(bs, index=T.index).isin(["HOLDOUT", "EMBARGO"])]
+    return T[T.bloque.isin(bloques)]
+
+
+def verificar_motor() -> int:
+    """El lector del holdout reproduce exactamente las operaciones DESC/REP de carril2_extension (sin tocar meses sellados)."""
+    T = _ops_carril2_holdout(("DESC", "REP"))
+    ref = pd.concat([pd.read_csv(ROOT / f"docs/research/carril2_extension_20261126/OPS_LOTE{k}.csv.gz") for k in (1, 2)])
+    ref["k"] = ref.definicion + "_" + ref.inst; ref = ref[ref.k.isin(T.k.unique())]
+    a = T.groupby("k").agg(n=("R", "size"), R=("R", "sum")); b = ref.groupby("k").agg(n=("R", "size"), R=("R", "sum"))
+    c = a.join(b, lsuffix="_lector", rsuffix="_ref"); c["dif_R"] = (c.R_lector - c.R_ref).round(6)
+    print(c.to_string()); ok = bool((c.n_lector == c.n_ref).all() and (c.dif_R.abs() < 1e-6).all())
+    print("IDENTICO" if ok else "DIFIERE"); return 0 if ok else 1
 
 
 def holdout_carril2() -> int:
@@ -210,4 +224,4 @@ def holdout_carril2() -> int:
 
 if __name__ == "__main__":
     a = sys.argv[1:] + [""]
-    raise SystemExit({"explorar": explorar, "holdout_carril2": holdout_carril2}.get(a[0], lambda: print(__doc__) or 2)())
+    raise SystemExit({"explorar": explorar, "holdout_carril2": holdout_carril2, "verificar_motor": verificar_motor}.get(a[0], lambda: print(__doc__) or 2)())

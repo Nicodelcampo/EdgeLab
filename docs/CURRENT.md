@@ -12,6 +12,8 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 
 ## Estado al 2026-11-27
 
+- **Handoff auditable de la sesión:** `docs/research/HANDOFF_2026-11-27_CANASTA_EDGE_AUDITORIA.md`; canasta amplia en `docs/research/canasta_amplia_20261127/`.
+
 - **Auditoría de cartera de Antigravity** (`docs/research/auditoria_cartera_20261126/`, EF2 sin pre-registro, 169 pruebas contadas
   después) y su revisión (`REVISION_CLAUDE.md`): a igual riesgo la regla de cartera del 26-nov empata en Sharpe y baja la caída ≈ 35 % (corregido en la segunda revisión); F/C/O no tienen
   motor NT8; las variantes FundedSync con stop ATR leyeron el HOLDOUT A5 (sólo se confirman en terminal y forward); cripto Binance es
