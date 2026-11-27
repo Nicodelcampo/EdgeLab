@@ -147,6 +147,67 @@ def explorar() -> int:
     return 0
 
 
+# ----------------------------------------------------------------------------------------------------------------------------------
+# Apertura del HOLDOUT A5 de la canasta Carril 2 sellada (PREREGISTRO_HOLDOUT_CARRIL2.md). BLOQUEADA por K27 hasta que Nico la autorice
+# por escrito: la cita va en AUTORIZACION_K27 y queda en el libro de aperturas (como `a20_terminal.py`).
+AUTORIZACION_K27 = ""
+CID_C2 = "CARRIL2_A5::holdout_canasta_sellada"
+
+
+def _ops_carril2_holdout() -> pd.DataFrame:
+    """Operaciones de las 16 regla-instrumento congeladas que ENTRAN en meses HOLDOUT de A5 (antes de 2026-10-01). Mismo motor, señales,
+    costos y R que `tools/carril2.py::correr` (sólo cambia el filtro de bloque)."""
+    import carril2 as C2
+    from datos import ruta
+    from m1_largo import cargar
+    from edgelab.research import sqx_catalogo as Q
+    from edgelab.research.embudo_runners import friccion
+    pesos = json.loads((OUT / "PESOS_CARRIL2_SELLADA.json").read_text())
+    V = pd.read_parquet(Path(ruta("M1NT8")) / "cboe_volatility_daily.parquet"); vc = V.vix_close.copy(); vc.index = pd.to_datetime(vc.index).normalize()
+    vix_reg = (vc > vc.rolling(100).mean()).shift(1)
+    cm = {k: Q.barras_desde_m1(cargar(k, ruta("M1NT8")), "D1").assign(mes=lambda b: b.fecha // 100).groupby("mes").c.last() for k in ("ES", "GC")}
+    mens = (cm["ES"] / cm["GC"]).dropna(); mens.attrs["sma"] = mens.rolling(20).mean()
+    partes = []
+    for inst in sorted({k.split("_")[-1] for k in pesos}):
+        D = cargar(inst, ruta("M1NT8")); B = Q.barras_desde_m1(D, "D1"); m1 = Q.indices_m1(B, D, "D1")
+        vix_ok = vix_reg.reindex(pd.to_datetime(B.fecha.astype(str))).fillna(False).to_numpy(bool)
+        sen = {**C2._senales(B, vix_ok), **C2._senales2(B, inst, V, mens)}; fr = float(friccion(inst)[0]); f = B.fecha.to_numpy()
+        for d, sig in sen.items():
+            if f"{d}_{inst}" not in pesos:
+                continue
+            O = Q.simular(B, sig, viernes=False, m1=m1)
+            if not len(O):
+                continue
+            rg = (O.entrada - O.stop0).abs(); O["R"] = (O.lado * (O.salida_px - O.entrada) - fr) / rg
+            O["fecha_salida"] = f[np.minimum(O.i0 + O.barras - 1, len(f) - 1)]; O["k"] = f"{d}_{inst}"
+            partes.append(O[O.stop0.notna() & (rg > 0)])
+    T = pd.concat(partes, ignore_index=True)
+    T = T[T.fecha < 20261001]
+    T["bloque"] = [a5_bloque(int(x)) for x in T.fecha]
+    return T[T.bloque == "HOLDOUT"]
+
+
+def holdout_carril2() -> int:
+    if not AUTORIZACION_K27:
+        raise SystemExit("BLOQUEADO (K27): potencia 0,25–0,63 < 0,8. Hace falta la autorización escrita de Nico en AUTORIZACION_K27 "
+                         "(PREREGISTRO_HOLDOUT_CARRIL2.md). No se lee ningún mes HOLDOUT.")
+    from registro_global import exigir_contada
+    from edgelab.research import holdout_ventanas as HV
+    exigir_contada(OUT / "PREREGISTRO_HOLDOUT_CARRIL2.md")
+    p = HV.plan_potencia("fijo", 1.257 / 2, 5.069, n=63, fuente_efecto="mitad de DESC+REP de la canasta (PREREGISTRO_HOLDOUT_CARRIL2.md)")
+    p["problemas_levantados_por_humano"] = p.pop("problemas"); p.update(problemas=[], autorizacion=AUTORIZACION_K27)
+    HV.registrar_apertura("CARRIL2_A5", CID_C2, 20060101, 63, plan=p)
+    T = _ops_carril2_holdout(); w = json.loads((OUT / "PESOS_CARRIL2_SELLADA.json").read_text())
+    T["Rw"] = T.R * T.k.map(w); T["dia"] = pd.to_datetime(T.fecha.astype(str))
+    d = T.groupby("dia").Rw.sum(); est = _est(d)
+    t = est.get("t", 0.0); veredicto = "CONFIRMA" if t >= 1.645 else ("NO_CONCLUYENTE" if d.mean() > 0 else "EN_CONTRA")
+    res = dict(operaciones=int(len(T)), por_serie=T.groupby("k").R.agg(["count", "mean"]).round(3).to_dict(), canasta=est, veredicto=veredicto,
+               stouffer_REP_HOLDOUT=round((2.01 + t) / sqrt(2), 2), plan=p)
+    (OUT / "HOLDOUT_CARRIL2.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    print(json.dumps(res, indent=1, ensure_ascii=False, default=float))
+    return 0
+
+
 if __name__ == "__main__":
     a = sys.argv[1:] + [""]
-    raise SystemExit({"explorar": explorar}.get(a[0], lambda: print(__doc__) or 2)())
+    raise SystemExit({"explorar": explorar, "holdout_carril2": holdout_carril2}.get(a[0], lambda: print(__doc__) or 2)())
