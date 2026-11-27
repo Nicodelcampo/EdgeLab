@@ -101,11 +101,13 @@ CUENTAS = {  # precio, objetivo, pérdida máx EOD, piso fijo al superar, DLL, r
     "150K": (214.25, 9000.0, 4500.0, 4600.0, 2700.0, 3000.0, 250.0, 100)}
 
 
-def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
+def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250, xmin=None):
+    """xmin (2026-11-27, ADENDA_DLL_INTRADIA): mínimo intradía del día; si toca −DLL el día cierra en −DLL (liquidación de Lucid).
+    Sin xmin, el DLL se aplica al cierre (comportamiento anterior)."""
     from numba import njit
 
     @njit(cache=False)
-    def run(y, N, seed, obj, mll, lock, dll, cap, dmin, cons, max_dias):
+    def run(y, ym, N, seed, obj, mll, lock, dll, cap, dmin, cons, max_dias):
         np.random.seed(seed); L = len(y)
         cob = np.zeros(N); pasa = np.zeros(N); pagos = np.zeros(N); dias = np.zeros(N)
         for k in range(N):
@@ -113,8 +115,8 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
             bal = 0.0; piso = -mll; maxc = 0.0; mayor = 0.0; d = 0; ok = False
             while d < max_dias:
                 if paso % 5 == 0: pos = np.random.randint(L)
-                p = y[(pos + paso % 5) % L]; paso += 1
-                if dll > 0 and p < -dll: p = -dll
+                j = (pos + paso % 5) % L; p = y[j]; paso += 1
+                if dll > 0 and (p < -dll or ym[j] <= -dll): p = -dll
                 bal += p; d += 1; mayor = max(mayor, p)
                 if bal <= piso: break
                 maxc = max(maxc, bal); piso = min(max(piso, maxc - mll), 100.0)
@@ -124,8 +126,8 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
             pasa[k] = 1.0; bal = 0.0; piso = -mll; maxc = 0.0; c0 = 0.0; dok = 0; f = 0; npg = 0; tot = 0.0
             while f < max_dias and npg < 5:
                 if paso % 5 == 0: pos = np.random.randint(L)
-                p = y[(pos + paso % 5) % L]; paso += 1
-                if dll > 0 and p < -dll: p = -dll
+                j = (pos + paso % 5) % L; p = y[j]; paso += 1
+                if dll > 0 and (p < -dll or ym[j] <= -dll): p = -dll
                 bal += p; f += 1
                 if p >= dmin: dok += 1
                 if bal <= piso: break
@@ -138,30 +140,40 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
         return cob, pasa, pagos, dias
 
     precio, obj, mll, lock, dll, cap, dmin, _ = CUENTAS[cuenta]
-    y = np.asarray(x, np.float64); y = y - y.mean() + mu
-    cob, pas, pg, dias = run(y, N, seed, obj, mll, lock, dll, cap, dmin, cons, max_dias)
+    y = np.asarray(x, np.float64); sh = mu - y.mean(); y = y + sh
+    ym = (np.asarray(xmin, np.float64) + sh) if xmin is not None else np.zeros_like(y)   # sin xmin nunca toca (0 > −DLL)
+    cob, pas, pg, dias = run(y, ym, N, seed, obj, mll, lock, dll, cap, dmin, cons, max_dias)
     return dict(pasa=float(pas.mean()), cobra=float((pg > 0).mean()), retiros=float(pg.mean()), cobrado=float(cob.mean()),
                 ev=float(cob.mean() - precio), p_ganar=float((cob > precio).mean()), dias=float(dias.mean()),
                 ev_por_mes=float((cob.mean() - precio) / max(dias.mean(), 1) * 21))
 
 
-def simular(universo: str = "INTRA8", salida: Path | None = None) -> int:
+def simular(universo: str = "INTRA8", salida: Path | None = None, intradia: bool = False) -> int:
     if universo != "INTRA8":
         from registro_global import exigir_contada
         exigir_contada(PD / "PREREGISTRO.md")
+    if intradia:
+        import intradia_min_cartera as IM
+        from registro_global import exigir_contada
+        exigir_contada(PD / "ADENDA_DLL_INTRADIA.md")
+        cam = IM.caminos(UNIVERSOS[universo])
     ops = cargar(UNIVERSOS[universo]); res = {"plan": "docs/research/cartera_lucid_20261125/PLAN.md (enmienda 1)", "universo": universo, "cuentas": {}}
     for cta, spec in CUENTAS.items():
         tope = spec[7]; R = res["cuentas"][cta] = {"planes": {}}
         planes = [(f"UNOx{k}", 0) for k in (1, 2, 3, 4)] + [(e, B) for e in ("RIESGO_IGUAL", "INV_VOL") for B in (100, 200, 300, 400, 600, 800)]
         for e, B in planes:
             x, tabla = serie(ops, B, e, tope=tope)
+            xm = IM.minimo_plan(cam, tabla, x.index).to_numpy() if intradia else None
             c = x.cumsum(); dd = float((c - c.cummax()).min()); xr = x[x.index >= "2024-01-01"]
+            xmr = xm[(x.index >= "2024-01-01")] if intradia else None
             out = dict(usd_dia=round(float(x.mean()), 1), sd_dia=round(float(x.std()), 1), peor_dia=round(float(x.min()), 0), maxDD_usd=round(dd, 0),
                        max_micros_simultaneos=simultaneos(ops, tabla), contratos_ultimo_trimestre=tabla[max(tabla)],
                        usd_mes_por_anio={str(a): round(float(v), 0) for a, v in (x.groupby(x.index.year).mean() * 21).items()})
             for mu_nom, f in (("dev", 1.0), ("contraida", 0.5), ("cero", 0.0)):
-                out[mu_nom] = _sim_cuenta(x.to_numpy(), float(x.mean() * f), 10000, 7, cta)
-            out["contraida_desde_2024"] = _sim_cuenta(xr.to_numpy(), float(xr.mean() * 0.5), 10000, 7, cta)
+                out[mu_nom] = _sim_cuenta(x.to_numpy(), float(x.mean() * f), 10000, 7, cta, xmin=xm)
+            out["contraida_desde_2024"] = _sim_cuenta(xr.to_numpy(), float(xr.mean() * 0.5), 10000, 7, cta, xmin=xmr)
+            if intradia:
+                out["peor_minimo_intradia"] = round(float(xm.min()), 0); out["dias_que_tocan_dll"] = int((xm <= -CUENTAS[cta][4]).sum())
             nom = f"{e}|B{B}"; R["planes"][nom] = out; v = out["contraida"]; v2 = out["contraida_desde_2024"]
             print(f"{cta:5s} {nom:18s} $/d {x.mean():6.1f} sd {x.std():5.0f} peor {x.min():6.0f} DD {dd:7.0f} sim {out['max_micros_simultaneos']:3d} | "
                   f"p_ganar {v['p_ganar']:.3f} ev {v['ev']:6.0f} ret {v['retiros']:.2f} pasa {v['pasa']:.3f} dias {v['dias']:.0f} | 2024+ p {v2['p_ganar']:.3f} ev {v2['ev']:6.0f} | cero p {out['cero']['p_ganar']:.3f}", flush=True)
@@ -178,11 +190,12 @@ def simular(universo: str = "INTRA8", salida: Path | None = None) -> int:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(); ap.add_argument("accion", choices=["simular", "contratos"])
     ap.add_argument("--universo", default="INTRA8", choices=sorted(UNIVERSOS)); ap.add_argument("--salida", type=Path, default=None)
+    ap.add_argument("--intradia", action="store_true")                  # DLL sobre el mínimo intradía (ADENDA_DLL_INTRADIA)
     ap.add_argument("--tope", type=int, default=TOPE)                   # tope de micros de la cuenta (25K 20, 50K 40, 150K 100)
     ap.add_argument("--B", type=float, default=200.0); ap.add_argument("--esquema", default="INV_VOL"); ap.add_argument("--hasta", default="2026-09-30")
     a = ap.parse_args(argv)
     if a.accion == "simular":
-        return simular(a.universo, a.salida)
+        return simular(a.universo, a.salida, a.intradia)
     inicio = (pd.Timestamp(a.hasta) + pd.offsets.QuarterBegin(startingMonth=1)).normalize()
     print(inicio.date(), contratos(cargar(UNIVERSOS[a.universo]), inicio, a.B, a.esquema, a.tope))
     return 0
