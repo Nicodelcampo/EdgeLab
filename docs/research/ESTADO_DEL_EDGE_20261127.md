@@ -84,3 +84,22 @@ la muestra del vendedor y no son evidencia fuera de muestra. Se mantiene la conc
 Aporte al referente: ubica la ventaja medible en T, R, V y Z de NQ, muestra que sumar estrategias débiles alarga su confirmación y que
 el tiempo de confirmación (≈ 13–15 meses) lo fija la señal/ruido, no el diseño. Deja las tres palancas reales: datos forward, ejecución
 fiel e información nueva.
+
+## 5. Evidencia conjunta (Nico: «el n diluye las exigencias»), 2026-11-27
+12 estrategias candidatas (`estabilidad_cartera_20261126/SERIES_DIARIAS.csv.gz`, 1 micro), t mensual por bloque de A5. Descriptivo:
+estos meses ya se habían mirado.
+
+| Bloque | Positivas | Stouffer z (independencia) | Stouffer con ρ ≈ 0,25 | Cartera con riesgo parejo |
+|---|---|---|---|---|
+| DESC (49 meses) | 12/12 | 7,00 | ≈ 3,6 | t 4,01 |
+| REP (16 meses) | 9/12 (signo p 0,07) | 3,35 | ≈ 1,7 | t 2,05 |
+| HOLDOUT A5 (22 meses) | 11/12 (signo p 0,003) | 4,54 | ≈ 2,3 | t 2,71 |
+
+Lectura:
+- Individualmente casi nada pasa los controles. En conjunto, la cartera es positiva en los tres bloques, con t 2,0–2,7 fuera de DESC.
+  La t de la cartera es la cifra honesta, porque ya incluye la correlación.
+- Salvedades:
+  - el vendedor vio todo el período para los módulos FundedSync;
+  - la lista de 12 salió de un pozo mayor (selección de sobrevivientes);
+  - el HOLDOUT A5 ya estaba mirado.
+- Es evidencia direccional fuerte de que la canasta tiene ventaja neta, no una confirmación limpia. Esa la da el forward.
