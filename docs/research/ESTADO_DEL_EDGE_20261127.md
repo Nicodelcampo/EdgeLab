@@ -44,6 +44,29 @@ corridas NT8 de la cartera, 1 R por operación, 2021-01 → 2026-09.
 - **Conclusión:** el tiempo de confirmación (≈ 13–15 meses con el efecto de desarrollo, ≈ 27–33 con la mitad) es una propiedad de los datos
   (señal/ruido de T+R), no del diseño.
 
+## 2b. Corrección (Nico, 2026-11-27): el vendedor vende desde el 2025-09-01
+El 2026-10-29 es la fecha de compilación del DLL analizado, no necesariamente la de sus parámetros. Si los parámetros de fábrica son los
+mismos desde el lanzamiento (2025-09-01), hay **13 meses fuera de la muestra del vendedor**. Esos 13 meses ya se midieron en
+`verif_vendedor_20261120/RESULTADO.md`, adenda: 13 de 15 módulos positivos.
+
+| Módulo | t mensual | Operaciones |
+|---|---|---|
+| R | 3,57 | 31 |
+| T | 1,90 | 238 |
+| N | 1,79 | 116 |
+| Z | 1,23 | 31 |
+| V | 0,86 | 264 |
+
+Salvedades:
+1. **Falta confirmar que los parámetros no cambiaron entre el lanzamiento y la compilación del 29-oct.** Sirve una versión vieja del DLL o
+   el historial de cambios del vendedor.
+2. **Esos meses ya los miró EdgeLab**, así que valen sólo para las configuraciones de fábrica, no para variantes nuestras (stops ATR de
+   `fundedsync_prop_opt_20261122`, pesos de cartera).
+3. **Con 13 meses la MDE es grande:** un nulo no mata.
+
+Si la salvedad 1 se confirma, R de fábrica tiene evidencia fuera de muestra (t 3,57) y T una pista (t 1,90). El forward sigue siendo la
+prueba limpia para las versiones que operamos.
+
 ## 3. Qué ya no sirve para mejorar el edge con historia (registro de FACTORES)
 | Vía | Factor | Resultado |
 |---|---|---|
