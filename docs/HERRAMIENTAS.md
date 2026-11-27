@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-785 scripts.
+786 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -207,6 +207,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/compare_session_parity.py` | Comparador de paridad por sesion CME, con veredictos separados por capa. |
 | `tools/compilar_nt8_cs.py` | T6 — gate REAL de compilación de un NinjaScript. Sin abrir NinjaTrader. |
 | `tools/compile_emacorridortrendvol.py` | (sin docstring) |
+| `tools/confianza_sin_forward.py` | CONFIANZA-SIN-FORWARD (pre-registro docs/research/confianza_sin_forward_20261127/PREREGISTRO.md): subir o bajar la confianza en |
 | `tools/confirmar_no_defiende.py` | Análisis CONGELADO de la confirmación «el cluster HFT grande no defiende» (docs/research/hft_clusters_u1_20261110/CONFIRMACION_NO_DEFIENDE.md). |
 | `tools/confluencia.py` | CONFLUENCIA (pre-registro docs/research/confluencia_20261119/PREREGISTRO.md): señales intradía con bruto real (SOM, Franklin, FM1, FM2, |
 | `tools/contexto_vivo.py` | Genera o verifica `docs/ESTADO_VIVO.md`, el snapshot compacto de contexto (<= 150 lineas). |
