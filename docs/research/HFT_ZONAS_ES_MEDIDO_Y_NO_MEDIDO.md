@@ -1518,3 +1518,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - la réplica (REP) y el HOLDOUT A5 (DESC no pasó);
   - futuros reales con más mercados.
+
+## 2026-11-27 — CRIPTO-PIT
+- **MEDIDO:** 3 reglas cripto congeladas con universo top-25 punto en el tiempo (239 monedas, con dadas de baja) y 20 pb ida y vuelta.
+  El 1/N da DESC+REP t 1,21 y REP negativa: viva sin evidencia, no pasa al holdout.
+  Fuente: `docs/research/cripto_pit_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - HOLDOUT A5 de `CRIPTO_BINANCE` (sigue sellado);
+  - ejecución real (maker contra taker) y forward.

@@ -17,6 +17,11 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   motor NT8; las variantes FundedSync con stop ATR leyeron el HOLDOUT A5 (sólo se confirman en terminal y forward); cripto Binance es
   la pista más decorrelacionada (+0,02) y todavía sin evidencia. Orden propuesto: preset NT8 sin F/C/O con tamaño por cuenta → cripto
   pre-registrado → tendencia no-equity como hipótesis única.
+- **Frentes ejecutados el 2026-11-27** (`preset_diversificada_20261127`, `cripto_pit_20261127`, `tendencia_no_equity_20261127`):
+  - el arnés NT8 tenía el reloj en UTC en Linux (`ResolveTz`, corregido); la cartera de 10 empareja ≥ 98,8 % con NT8;
+  - en LucidFlex sumar N y SOMEOD baja la P(cobrar) (1 micro mínimo suma riesgo): sigue Intradía 8;
+  - cripto con universo punto en el tiempo y deslizamiento: REP negativa, no se abre el holdout;
+  - TSMOM no-equity: DESC t 0,96, sin evidencia.
 
 ## Estado al 2026-11-25 (leer primero)
 

@@ -287,7 +287,7 @@ def medir() -> int:
         df = series_reglas(barras, u, c)
         b = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in df.index], index=df.index)
         assert not b.isin(["TERMINAL"]).any()
-        series[esc] = df.where(b.isin(["DESC", "REP"]).to_numpy()[:, None])          # HOLDOUT y EMBARGO sellados (NaN)
+        series[esc] = df.mask(~b.isin(["DESC", "REP"]), axis=0)                             # HOLDOUT y EMBARGO sellados (NaN)
         res[esc] = {r: {blq: _est(df.loc[b == blq, r]) for blq in ("DESC", "REP")} | {"DESC+REP": _est(df.loc[b.isin(["DESC", "REP"]), r])}
                     for r in df.columns}
     series["base"].to_csv(OUT / "SERIES_DESC_REP_BASE.csv.gz")

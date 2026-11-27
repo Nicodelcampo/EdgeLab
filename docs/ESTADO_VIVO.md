@@ -21,13 +21,13 @@ Fuente: generado por `python tools/contexto_vivo.py --write` (no editar a mano).
 - Puertas de salida: `puerta_kernel.py` (pre-push Kaggle AST/holdout/sintetico) y `tools/puerta_corrida.py`
 
 ## 3. Pistas Vivas y Canastas en Papel
-- Pistas vivas (`PISTA_VIVA`): 44 | Palancas (`PALANCA_DE_DISENO`): 39
-  - `F-CRIPTO-TENDENCIA-DECORRELACIONADA` (2026-11-27): Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en 8 perpetuos USDT-M de Bin…
+- Pistas vivas (`PISTA_VIVA`): 43 | Palancas (`PALANCA_DE_DISENO`): 39
   - `F-REGLA-CARTERA-DECORRELACIONADA` (2026-11-26): Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la ca…
   - `F-FS-O-N-A5` (2026-11-26): O y N de FundedSync (traducción corregida) en R/ATR20 por DESC → REP de A5 (2018 → 2026-09)
   - `F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES` (2026-11-26): Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canast…
   - `F-CARRIL2-EXTENSION-2026` (2026-11-26): Carril 2 (24 definiciones) extendido a 2025-08 → 2026-09, sólo DESC/REP
   - `F-CAIDA-2026-ESTRATEGIAS-DE-LA-MANANA` (2026-11-26): Caída de may–sep 2026 de la cartera Intradía (INTRADIA8) y mitigaciones/candidatas
+  - `F-FS-IL-REMEDICION-V-CANDIDATA` (2026-11-21): Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)
 - Canastas papel: Cartera v2 (2026-11-16) — 8 reglas, base de `SELECCION… | Cartera v3 (2026-11-16) — 8 reglas (forward en paralel… | Cartera B (2026-11-16) — T + Z + R de FundedSync en MN…
 
 ## 4. Bloqueado / NO_REPETIR (69 vigentes en FACTORES.jsonl)

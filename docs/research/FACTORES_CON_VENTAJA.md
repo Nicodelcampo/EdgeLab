@@ -5,15 +5,10 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (44)
+## PISTA_VIVA (43)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
-- **Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en 8 perpetuos USDT-M de Binance** (`F-CRIPTO-TENDENCIA-DECORRELACIONADA`, 2026-11-27, agente)
-  - Efecto: 3 de 5 reglas positivas en DESC y REP (t 1,2–1,8 cada una; REP de 12 meses); 1/N t 2,31 en 51 meses; correlación mensual con la cartera CME +0,02. Sin cubrir: supervivencia de las 8 monedas, costo sin deslizamiento (10 pb ida y vuelta), HRP 91 % en una regla.
-  - Dónde: Binance USDT-M 2020-09 → 2026-09, DESC y REP de A5 (HOLDOUT sellado)
-  - Siguiente: Pre-registro con universo punto en el tiempo (20–30 perpetuos), costos ×2 con deslizamiento y plan de potencia; apertura del HOLDOUT A5 de CRIPTO_BINANCE.
-  - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -485,7 +480,7 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (19)
+## EN_SEGUIMIENTO (20)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -494,6 +489,11 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ETFs Yahoo ajustados 2005 → 2026-09, partición A5 por mes
   - Siguiente: Retomar sólo con más información por mes (futuros reales, 40–60 mercados) o como filtro de régimen; nunca eligiendo energía y metales porque ganaron.
   - Evidencia: `docs/research/tendencia_no_equity_20261127/RESULTADO.md`
+- **Tendencia (Donchian 1D, EMA 4H) y momentum transversal neutral en perpetuos USDT-M, universo top-25 punto en el tiempo (incluye monedas dadas de baja)** (`F-CRIPTO-TENDENCIA-DECORRELACIONADA-B`, 2026-11-27, agente)
+  - Efecto: Con 20 pb ida y vuelta + funding: 1/N DESC+REP +$76/mes sobre $10k (t 1,21, p 0,11); REP −$84 (las 3 reglas negativas en REP). Con las 8 monedas de hoy y sólo comisión la REP daba +$382: la réplica venía de la selección de monedas. Ninguna pasa BH q 0,10. Correlación con CME +0,02 (auditoría).
+  - Dónde: Binance USDT-M 2021-01 → 2026-09, DESC y REP de A5 (HOLDOUT sellado)
+  - Siguiente: No sumar a la cartera ni abrir el HOLDOUT A5. Papel/forward sólo si Nico abre una cuenta cripto; una campaña nueva con reglas pre-registradas en DESC y su propia REP, sin re-optimizar éstas.
+  - Evidencia: `docs/research/cripto_pit_20261127/RESULTADO.md`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
