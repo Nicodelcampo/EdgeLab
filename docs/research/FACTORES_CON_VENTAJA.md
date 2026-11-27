@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (47)
+## PISTA_VIVA (48)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -34,6 +34,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: ETFs Yahoo adjclose + ^TNX/^IRX (2006-01 -> 2026-09 HOLDOUT A5 63m)
   - Siguiente: Operable como pata diversificadora de bajo costo/rotacion junto a Carril 2 (Clean63m CONFIRMA Sh=0.829, t=1.90); evaluar incorporacion de RP2+RP5 solo con pre-registro para TERMINAL/forward.
   - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/macro_risk_premia_20261127/RESULTADO.md`, `docs/research/macro_risk_premia_20261127/RESULTADO.json`
+- **Carril 2 (IBS-VIX, Double 7, Turnaround Tuesday, cambio de mes, VBB) es un mecanismo y no un artefacto de los futuros de EE. UU. 2006–2026, pero su tamaño decae después de su difusión** (`F-CARRIL2-TRANSFIERE-Y-SUPERA-PLACEBO`, 2026-11-27, sesion)
+  - Efecto: 8 índices extranjeros 1990–2026 con reglas sin tocar: Sharpe 0,50, t 3,02 (58 % del de desarrollo; con costos ×2, t 2,19); antes de 2009 0,73, desde 2009 0,24, desde 2019 0,16. EE. UU. 1990–2005: 1,01 (muestra de publicación). Canasta sellada menos placebo N: Sharpe 0,46, t 2,07; en HOLDOUT, regla 1,06 contra control 0,37; en REP el control ganó. Afuera, TOM, TT y D7 se sostienen, IBS débil y VBB negativo (VIX de EE. UU.). Sharpe deflactado de la canasta en DESC+REP: 0,90.
+  - Dónde: DAX, FTSE, CAC, EuroStoxx, Nikkei, Hang Seng, ASX, TSX y S&P, Nasdaq 100, Dow, Russell (diarios de Yahoo); canasta sellada de 16 en M1 NT8
+  - Siguiente: Expectativa en vivo de Carril 2: Sharpe ≈ 0,4–0,6 (no el 1,06 del HOLDOUT); su TERMINAL y su forward deciden. Sin cambiar pesos con estos datos.
+  - Evidencia: `docs/research/confianza_sin_forward_20261127/RESULTADO.md`, `docs/research/confianza_sin_forward_20261127/RESULTADO.json`, `docs/research/confianza_sin_forward_20261127/DSR_HAIRCUT.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)

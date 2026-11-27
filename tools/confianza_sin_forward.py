@@ -65,8 +65,8 @@ def _operar(B: pd.DataFrame, regla_set, costo_bps: float) -> pd.DataFrame:
     from edgelab.research import sqx_catalogo as Q
     V = _vol_df(B); vc = V.vix_close.copy(); vix_reg = (vc > vc.rolling(100).mean()).shift(1)
     vix_ok = vix_reg.reindex(pd.to_datetime(B.fecha.astype(str))).ffill().fillna(False).to_numpy(bool)
-    S = {**C2._senales(B, vix_ok), **{k: v for k, v in C2._senales2(B, "ES", V, pd.Series(dtype=float, attrs={"sma": pd.Series(dtype=float)})).items()
-                                       if k.startswith("C2_VBB")}}
+    mens = pd.Series(dtype=float); mens.attrs["sma"] = pd.Series(dtype=float)      # ROT no se usa: razón ES/GC vacía
+    S = {**C2._senales(B, vix_ok), **{k: v for k, v in C2._senales2(B, "ES", V, mens).items() if k.startswith("C2_VBB")}}
     f = B.fecha.to_numpy(); partes = []
     for d, sig in S.items():
         regla = d[:-1] if d.endswith("N") else d

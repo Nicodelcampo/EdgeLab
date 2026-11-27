@@ -1565,3 +1565,17 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - HOLDOUT A5 de la canasta Carril 2 sellada (pre-registrado, bloqueado por K27);
   - forward de Carril 2.
+
+## 2026-11-27 — CONFIANZA-SIN-FORWARD (Carril 2 fuera de mercado, fuera de período y contra placebo)
+- **MEDIDO:**
+  - **Transferencia:** Carril 2 (5 reglas) en 8 índices extranjeros 1990–2026: Sharpe 0,50, t 3,02. Afuera decae: 0,24 desde 2009
+    y 0,16 desde 2019.
+  - **Período anterior:** EE. UU. 1990–2005: Sharpe 1,01, t 4,05. Es la muestra de publicación de varias de estas reglas.
+  - **Placebo:** canasta sellada menos control N, Sharpe 0,46, t 2,07. En el HOLDOUT, regla 1,06 contra control 0,37.
+  - **Sharpe deflactado:** Carril 2 (DESC+REP) 0,90.
+
+  Fuente: `docs/research/confianza_sin_forward_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - cripto 2019-09 → 2020-12;
+  - T, R y Z en índices extranjeros con M1 de Dukascopy;
+  - TERMINAL y forward de Carril 2.

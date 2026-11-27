@@ -2,7 +2,7 @@
 
 Estado: VIGENTE (GENERADO con `python tools/familias.py --write`; no editar a mano).
 
-309 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
+310 familias. Para saber qué vale la pena de cada una: `docs/research/FACTORES_CON_VENTAJA.md`. Una familia sin desenlace
 no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 
 | Familia | Registrada | Padres | Pruebas contadas | Campañas | Último desenlace del embudo | Factores | Carpetas |
@@ -35,6 +35,7 @@ no pasó por el embudo automático (fue una medición puntual: ver su carpeta).
 | `CANASTA_REGIMEN_U1` | 2026-10-26 | U1_ES_GRILLA, U1_YM_GRILLA, U1_ORO_GRILLA, AREAS_EXP_1_CRUZADO | 64 | — | — | — | `canasta_regimen_20261026` |
 | `CANASTA_V3` |  | — | 1 | — | — | — | — |
 | `CARRIL2_A5` |  | SQX_CATALOGO, FLUJOS_MACRO_A5 | 32 | — | — | F-CARRIL2-CIERRE-SIN-DIFERENCIA (SIN_FACTOR); F-CARRIL2-LOTE1-SIN-EVIDENCIA (EN_SEGUIMIENTO); F-CARRIL2-LOTE2-VOL (EN_SEGUIMIENTO); F-COMPRESION-VOL-CRECE (PISTA_VIVA); F-CRASH-VIX-INVERTIDA-REFUTADO (NO_REPETIR); F-LUCID-SIN-OVERNIGHT (PALANCA_DE_DISENO) | `carril2_20261119` |
+| `CARRIL2_CONFIANZA` | 2026-11-27 | CARRIL2_A5 | 3 | — | — | F-CARRIL2-TRANSFIERE-Y-SUPERA-PLACEBO (PISTA_VIVA) | `confianza_sin_forward_20261127` |
 | `CARTERA_20261116` | 2026-11-16 | CORREDOR_VOL_GAPS_NQ, CORREDOR_VOL_GAPS_CFD_NQ, CVGAP2_CFD_NQ, CORREDOR_VOL_GAPS_ES, CORREDOR_VOL_GAPS_CFD_ES, U1_ZONAS_NQ, U1_ZONAS_ES, U1_ZONAS_BT2_NQ, U1_ZONAS_BT2_ES, U1_ZONAS_AVCL_NQ, U1_ZONAS_AVCL_ES, U1_RACIMOS_GRILLA_NQ, U1_RACIMOS_GRILLA_ES, U1_ES_GRILLA, U1_YM_GRILLA, U1_ORO_GRILLA, TORI_TREND_TOQUE3_NQ, CONFLUENCIA_CVGAP_RACIMOS_CFD_NQ, DOBLE_RETROCESO, RANGO_PREAPERTURA | 10 | — | — | F-CARTERA-8-NOV (PISTA_VIVA); F-FIN-DE-RUEDA-NO (NO_REPETIR); F-FRENO-DIARIO-NO (NO_REPETIR); F-NOCHE-MOVIDA-Z-Y-PREAPERTURA-ES (PISTA_VIVA); F-STOP-CORTO-ES-FRICCION (PALANCA_DE_DISENO); F-TZR-TAMANO-EN-CARTERA (PALANCA_DE_DISENO) | `cartera_20261116` |
 | `CARTERA_CANASTA` |  | — | 1 | — | — | — | — |
 | `CARTERA_FORWARD` |  | — | 8 | — | — | — | — |
