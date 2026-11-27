@@ -123,3 +123,18 @@ Notas:
     más finas. Esto no cambia ese veredicto (en REP el bruto era ≈ 0), pero la versión intradía necesita el costo de la rueda.
 - **Para que alcance:** hacen falta ≈ 3 meses de ruedas grabadas para medir la regla intradía de la charla en GD30/AL30. Para AL29/AL30
   (las operaciones del amigo) sigue faltando intradía.
+
+## 8. Intradía histórico sin esperar a grabar (cuarta búsqueda, 2026-11-27)
+| Fuente | Qué da | Cuánto hacia atrás | Costo | Limitación |
+|---|---|---|---|---|
+| **TradingView, plan pago, «Exportar datos del gráfico»** (`BCBA:GD30`, `BCBA:AL30`, `BCBA:AL29` y sus `.CI`) | Velas OHLCV de 1 a 30 minutos | Barras por plan: 10.000 (Essential/Plus), 20.000 (Premium), 40.000 (Ultimate). Con ≈ 390 velas de 1 minuto por rueda, 20.000 ≈ 2,5 meses de 1 minuto, ≈ 1 año de 5 minutos o varios años de 30 minutos. La página de precios dice además «datos históricos por minuto»: 180 días (Essential), 365 (Plus), todo (Premium) | Premium ≈ USD 60 por un mes alcanza para exportar | Sólo último precio, sin puntas: el costo se estima aparte (abajo). Hay que confirmar en el gráfico que BYMA tenga velas intradía en el plan |
+| **Pedírselo a Martín Masella** | Su planilla graba GD30/AL30 cada 10 s con puntas, por la API de Primary vía Veta, desde 2021 (la planilla se creó el 2021-04-02); puede tener historia guardada | Desconocido | Contacto directo (pide un «cafecito») | Depende de que lo haya guardado |
+| **BYMA, Market Data** (marketdata@byma.com.ar) | Oficial | Producto histórico no publicado: preguntar por operaciones o velas intradía de títulos públicos | Desconocido | — |
+| **La planilla «Juan» / Abbaco–Mercap** que muestra la charla | Ratios en velas de 5 s a 30 min | Desconocida | Pago | Sólo para comparar |
+| `tvDatafeed` (no oficial, hasta 5.000 velas sin cuenta) | Igual que TradingView | 5.000 velas | Gratis | Contra los términos de TradingView: no se usa |
+
+**Plan propuesto:**
+- Señal con las velas exportadas de TradingView. Es la técnica de la charla: ratio contra su media, en velas de 5 a 30 minutos.
+- Costo de cada rotación con las puntas grabadas de la planilla de Masella (§7). Es un costo estimado y declarado (K34), por franja horaria;
+  una regla que sólo gane con ese costo en su p10 no pasa.
+- Es la única combinación que mide hacia atrás sin esperar meses. La grabación sigue, para calibrar el costo y para el forward.
