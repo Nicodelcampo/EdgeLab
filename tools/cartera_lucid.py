@@ -27,13 +27,18 @@ ESTR = {"T_NQ": (C / "T" / "NT8_T_NQ_fijo1.csv", "NQ"), "R_NQ": (C / "R" / "NT8_
         "Z_NQ": (C / "Z" / "NT8_Z_NQ_fijo1.csv", "NQ"), "V_NQ": (C / "V" / "NT8_V_NQ_fijo1.csv", "NQ"),
         "RQ5_NQ": (N / "NT8_RQ5_NQ.csv", "NQ"), "RQ5_ES": (N / "NT8_RQ5_ES.csv", "ES"),
         "ES5N_ES": (N / "NT8_ES5N_ES.csv", "ES"), "Franklin_NQ": (N / "NT8_Franklin_NQ.csv", "NQ")}
+# Preset Diversificada (2026-11-27, docs/research/preset_diversificada_20261127/PREREGISTRO.md): las 8 + N (arnés, sin corrida NT8
+# propia todavía) + SOMEOD (corrida NT8 de Nico).
+PD = ROOT / "docs" / "research" / "preset_diversificada_20261127"
+ESTR10 = {**ESTR, "N_NQ": (PD / "ARNES_N_NQ.csv.gz", "NQ"), "SOMEOD_NQ": (C / "SOMEOD" / "NT8_SOMEOD_NQ_fijo1.csv", "NQ")}
+UNIVERSOS = {"INTRA8": ESTR, "DIVERSIFICADA10": ESTR10}
 MICRO = {"NQ": "MNQ", "ES": "MES"}
 TOPE = 20
 
 
-def cargar() -> dict:
+def cargar(estr: dict | None = None) -> dict:
     out = {}
-    for k, (p, inst) in ESTR.items():
+    for k, (p, inst) in (estr or ESTR).items():
         o = E7.ops_nt8(p, inst)                                  # R neto con la fricción del mini (para los pesos)
         mic = MICRO[inst]; pv = costos.tick_value_usd(mic) / costos.tick_size(mic)
         o = o.assign(pv=pv, usd1=(o.pnl_pts - costos.friccion_rt_puntos(mic, "base")) * pv, stop_usd=o.riesgo_pts * pv,
@@ -140,8 +145,8 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250):
                 ev_por_mes=float((cob.mean() - precio) / max(dias.mean(), 1) * 21))
 
 
-def simular() -> int:
-    ops = cargar(); res = {"plan": "docs/research/cartera_lucid_20261125/PLAN.md (enmienda 1)", "cuentas": {}}
+def simular(universo: str = "INTRA8", salida: Path | None = None) -> int:
+    ops = cargar(UNIVERSOS[universo]); res = {"plan": "docs/research/cartera_lucid_20261125/PLAN.md (enmienda 1)", "universo": universo, "cuentas": {}}
     for cta, spec in CUENTAS.items():
         tope = spec[7]; R = res["cuentas"][cta] = {"planes": {}}
         planes = [(f"UNOx{k}", 0) for k in (1, 2, 3, 4)] + [(e, B) for e in ("RIESGO_IGUAL", "INV_VOL") for B in (100, 200, 300, 400, 600, 800)]
@@ -162,19 +167,20 @@ def simular() -> int:
         R["elegido"] = max(cand, key=lambda k: R["planes"][k]["contraida"]["ev"])
         print(cta, "elegido:", R["elegido"], R["planes"][R["elegido"]]["contratos_ultimo_trimestre"], flush=True)
     res["criterio"] = "por cuenta: max p_ganar con media contraída 0,5 (consistencia 40 %, DLL, retiro máximo); empate a 0,02 -> mayor ev"
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "PLANES.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
+    salida = salida or OUT / "PLANES.json"; salida.parent.mkdir(parents=True, exist_ok=True)
+    salida.write_text(json.dumps(res, indent=1, ensure_ascii=False, default=str), encoding="utf-8")
     return 0
 
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(); ap.add_argument("accion", choices=["simular", "contratos"])
+    ap.add_argument("--universo", default="INTRA8", choices=sorted(UNIVERSOS)); ap.add_argument("--salida", type=Path, default=None)
     ap.add_argument("--B", type=float, default=200.0); ap.add_argument("--esquema", default="INV_VOL"); ap.add_argument("--hasta", default="2026-09-30")
     a = ap.parse_args(argv)
     if a.accion == "simular":
-        return simular()
+        return simular(a.universo, a.salida)
     inicio = (pd.Timestamp(a.hasta) + pd.offsets.QuarterBegin(startingMonth=1)).normalize()
-    print(inicio.date(), contratos(cargar(), inicio, a.B, a.esquema))
+    print(inicio.date(), contratos(cargar(UNIVERSOS[a.universo]), inicio, a.B, a.esquema))
     return 0
 
 
