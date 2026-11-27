@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (48)
+## PISTA_VIVA (51)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -39,6 +39,21 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: CME + M1 NT8 + M1DK Global + Binance PIT Crypto (2006/2014/2021 -> 2026-09 DESC+REP, HOLDOUT A5 sellado)
   - Siguiente: Auditoría cruzada de Claude sobre rama claude/vibrant-clarke-s9z6e2 y decisión de Nico sobre K27/holdout o más frentes no-equity limpios.
   - Evidencia: `docs/research/supercartera_v2_20261127/RESULTADO.md`, `docs/research/supercartera_v2_20261127/SUPERCARTERA_V2.json`
+- **Primas macro multi-clase 2006-2026 sobre 41 ETFs adjclose (^TNX/^IRX, cero =F): RP4 Tasas Curva+Credito y RP2 Sectores BAB LowBeta** (`F-MACRO-RISK-PREMIA-20Y`, 2026-11-27, sesion)
+  - Efecto: Sectores/Paises XSMOM beta-neutros mueren (-0.07/-0.26). Sobreviven RP4_Rates_Curve_Credit (DESC Sh=0.298, REP 42m Sh=0.642, DR 186m Sh=0.365 t=1.44, 71.4% anios+, 21-26 Sh=0.765, beta_SPY=+0.006, corr vs Carril2=0.043) y RP2_Sector_BAB_LowBeta (1.87x/anio, DESC=0.209, REP=0.666, DR=0.306, 2x stress=0.224). HOLDOUT A5 (63m) sellado sin iteracion.
+  - Dónde: 41 ETFs Yahoo adjclose + indices tasas (2006-01 -> 2026-09 DESC+REP, HOLDOUT 63m sellado)
+  - Siguiente: Integrado como frente limpio de 63m junto a Carril 2; pre-registrar inclusion conjunta de RP2_BAB si se busca elevar potencia de tasas+BAB.
+  - Evidencia: `docs/research/macro_risk_premia_20261127/RESULTADO.md`, `docs/research/macro_risk_premia_20261127/RESULTADO.json`
+- **Flujo agresor no-OHLC taker buy/sell (OFI1 21d escalonado 5d) en 226 perpetuos PIT de Binance (20 bps RT + funding)** (`F-CRIPTO-OFI-TAKER-PIT`, 2026-11-27, sesion)
+  - Efecto: OFI1_TakerFlow_21d_Stag5d logra 1.54x/m rotacion, DESC Sh=0.96 (t=1.72), REP Sh=0.77, DR 51m Sh=0.91 (t=1.89) con corr_m=+0.205 vs XSMOM (ortogonal). OFI_Canasta_InvVol (OFI1+OFI3) da DR Sh=0.60, corr_XSMOM=+0.014, corr_BAB=-0.034. OFI2 divergencia (-0.26) y OFI3 whale (+0.10) debiles.
+  - Dónde: Binance USDT-M PIT 226 monedas taker_buy_quote_volume + count (2021-01 -> 2026-09 DESC+REP, HOLDOUT 18m sellado)
+  - Siguiente: Integrado en Super-Canasta v3 como frente crypto no-OHLC independiente de XSMOM; HOLDOUT A5 (18m) sellado.
+  - Evidencia: `docs/research/cripto_ofi_20261127/RESULTADO.md`, `docs/research/cripto_ofi_20261127/RESULTADO.json`
+- **Super-Canasta v3: Pozo Limpio 63m cero-iteracion (Carril 2 + Macro RP), No-CME multi-frente con CRIPTO-OFI y HRP regularizado (0.85*S+0.15*D)** (`F-SUPERCARTERA-V3-CLEAN63M`, 2026-11-27, sesion)
+  - Efecto: HRP corregido asigna pesos reales (NoCME: 0.295/0.268/0.234/0.203), subiendo Super_v3_NoCME_HRP a DR Sh=1.554 (REP=2.980, MDD@10%=-7.57%, Calmar=2.05, Boot 20k Calmar=2.30). En 2006-2026 (186m), Super_v3_Clean63m_EQ (Carril 2 + RP4) da DR Sh=0.847 (21-26=0.878 vs 0.505 de Carril 2), CSCV Clean Long 1/N OOS Sh=0.838; Diag3Pos sube a DR Sh=0.916 (t=3.61, REP=1.155). Potencia sellada 63m (0.7x): 0.387 limpio cero-iteracion / 0.463 con cripto.
+  - Dónde: CME + M1 NT8 + ETFs adjclose 20y + Binance PIT Crypto + OFI taker (HOLDOUT A5 sellado)
+  - Siguiente: Revision cruzada final de Claude y decision de Nico sobre K27 o sumar otro frente no-equity de 20 anos antes de abrir el pozo de 63m.
+  - Evidencia: `docs/research/supercartera_v3_20261127/RESULTADO.md`, `docs/research/supercartera_v3_20261127/SUPERCARTERA_V3.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)

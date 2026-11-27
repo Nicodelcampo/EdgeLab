@@ -80,3 +80,24 @@ Este documento indexa todo el trabajo ejecutado y auditado por Antigravity sobre
 3. **Poda operativa sugerida en los nuevos frentes (pre-registrar antes si se adopta):**
    - En `CRIPTO-PIT v3`: usar solo `XSMOM_21d_Stag5d + BAB_LowVol_Stag5d` (`Sh = 1.467`, elimina `0.947` de solapamiento con `BetaNeut`).
    - En `Global_VolComp_M1DK`: priorizar `DAX`, `Nikkei` y `Oro (EVRP)` que sobreviven a `16 bps RT`.
+
+---
+
+## 5. Revisión de Claude + Iteración Limpia Sin Iteración de `REP` (`MACRO_RISK_PREMIA`, `CRIPTO_OFI_PIT`, `SUPERCARTERA v3`)
+
+- **Respuesta forense a Claude:** [auditoria_claude_20261127/RESPUESTA_REVISION_CLAUDE.md](auditoria_claude_20261127/RESPUESTA_REVISION_CLAUDE.md) y costos canónicos verificados en [COSTOS_CANONICOS_NKD_GC.json](frentes_ortogonales_20261127/COSTOS_CANONICOS_NKD_GC.json).
+  - Aceptadas las `3` objeciones principales: `Global_VolComp` es transferencia VIX (`corr = 0.475` vs `US_VZ_EVRP`, `t = 1.37` en `109m`), `CRIPTO-PIT v1–v3` iteró sobre la misma `REP` (se detiene), e higiene de CI completa.
+  - Causa raíz verificada de `HRP = EQ` en `v2`: `LedoitWolf` aplicó `shrinkage_ = 1.0` (`cov = 0.243 * I_4`), colapsando HRP a `1/N`. Corregido en `v3` con `0.85 * S + 0.15 * diag(S)`.
+  - Costos canónicos `Global_VolComp_M1DK`: `Oro (GC, 0.605 USD/oz ~ 4.1 bps)` mejora `C2_EVRP_Oro_GC` a `REP Sh = 0.919`, `DR Sh = 0.357` (`21–26 = 0.617`); `Nikkei (NKD, 21.064 pts ~ 9.3 bps)` deja `C2_VZ_Nikkei_NKD` en `DR Sh = 0.415` (`21–26 = 0.789`).
+- **`MACRO_RISK_PREMIA` (`2006–2026-09`, `tools/macro_risk_premia_20261127.py`, `41` ETFs `adjclose` + `^TNX/^IRX`, `0` empalmes `=F`):**
+  - Resultado completo en [macro_risk_premia_20261127/RESULTADO.md](macro_risk_premia_20261127/RESULTADO.md).
+  - Sectores/Países `XSMOM` beta-neutrales mueren tras costos+borrow (`Sh = -0.073` / `-0.258`).
+  - Sobreviven **`RP4_Rates_Curve_Credit`** (`DESC Sh = 0.298`, **`REP Sh = 0.642`**, `DR Sh = 0.365 t=1.44`, `71.4%` años+, `beta_SPY = +0.006`) y diagnóstico **`RP2_Sector_BAB_LowBeta`** (`DESC = 0.209`, **`REP = 0.666`**, `DR = 0.306`, `2x = 0.224` con solo `1.87x/año` rotación). Canasta pre-registrada (`RP4`): `21–26 Sh = 0.765`, `corr vs Carril2_Sell16 = 0.043` (`06–26`).
+- **`CRIPTO_OFI_PIT` (`2021–2026-09`, `tools/cripto_ofi_20261127.py`, flujo `taker buy/sell` no-OHLC en `226` monedas):**
+  - Resultado completo en [cripto_ofi_20261127/RESULTADO.md](cripto_ofi_20261127/RESULTADO.md).
+  - **`OFI1_TakerFlow_21d_Stag5d`**: `1.54x/m` rotación, `DESC Sh = 0.96 (t = 1.72)`, `REP Sh = 0.77`, **`DR Sh = 0.91 (t = 1.89)`**, **`corr_m vs XSMOM = +0.205`**. **`OFI_Canasta_InvVol`** (`OFI1 + OFI3`): `DR Sh = 0.60`, `corr_m vs XSMOM = +0.014`.
+- **`SUPERCARTERA v3` (`tools/supercartera_v3_20261127.py` + Kaggle `nicolasbuttaro/edgelab-supercartera-v3-20261127`):**
+  - Resultado completo en [supercartera_v3_20261127/RESULTADO.md](supercartera_v3_20261127/RESULTADO.md).
+  - **Pozo Limpio `63m` Cero-Iteración (`Carril 2 + Macro_RP_Canasta`, `06–26 186m DR`):** `Super_v3_Clean63m_EQ` logra `DR Sh = 0.847` (`REP = 1.048`, `21–26 = 0.878 / REP 2.659`, `CSCV Clean Long 06–26 1/N OOS Sh = 0.838`, potencia `63m` `0.7x = 0.387` vs `0.393` de Carril 2 solo). En diagnóstico `3` primas (`RP2+RP4+RP5` + `Carril 2`), sube a **`DR Sh = 0.916 (t = 3.61, REP = 1.155, MDD = -11.04%)`**.
+  - **`HRP` corregido activo (`NoCME 21–26`):** `Super_v3_NoCME_HRP` (`0.295 / 0.268 / 0.234 / 0.203`) alcanza **`DR Sh = 1.554 (REP = 2.980, MDD@10% = -7.57%, Calmar = 2.05, Boot 20k Calmar = 2.30)`**.
+

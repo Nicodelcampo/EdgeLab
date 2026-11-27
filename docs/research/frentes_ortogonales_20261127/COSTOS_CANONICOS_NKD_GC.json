@@ -1,0 +1,228 @@
+{
+  "fric_pts_canonico": {
+    "Nikkei": 21.064,
+    "Oro": 0.605
+  },
+  "desglose": {
+    "NKD": {
+      "instrumento": "NKD",
+      "tick_size": 5.0,
+      "tick_value_usd": 25.0,
+      "comision_rt_ticks": {
+        "min": 0.21280000000000002,
+        "max": 0.21280000000000002
+      },
+      "fuentes": {
+        "comision": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §1, §2 y §7 (relectura de paginas oficiales 2026-10-14)",
+        "spread": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §3 (atlas-microestructura-14activos-v4, horario regular 08:30-15:00 CT, media)",
+        "slippage": "asuncion declarada de Nico: 1 tick por lado (LEDGER_COSTOS_CAP3_2026-08-18.md); escenarios del contrato G3 (docs/edge_validation_contract.md)",
+        "friccion_base": "REFERENCIA_COSTOS §4: spread medido + comision maxima de la tabla + 2 ticks RT",
+        "spread_estimado": "estimado por Internet 2026-11-17 (pedido de Nico): 1 tick en futuros líquidos (convención de la literatura, p. ej. Da et al., 'one-tick bid-ask spreads'); 2 en los menos líquidos. NO medido: reemplazar por la medición cuando exista."
+      },
+      "schema": "edgelab_costos_canonicos_v1",
+      "spread_ticks": 2.0,
+      "friccion_rt_ticks": {
+        "ideal": 0.0,
+        "base": 4.2128,
+        "adverso": 6.2128,
+        "severo": 8.2128
+      },
+      "friccion_rt_ticks_min_comision": 4.2128
+    },
+    "GC": {
+      "instrumento": "GC",
+      "tick_size": 0.1,
+      "tick_value_usd": 10.0,
+      "comision_rt_ticks": {
+        "min": 0.43200000000000005,
+        "max": 0.62
+      },
+      "fuentes": {
+        "comision": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §1, §2 y §7 (relectura de paginas oficiales 2026-10-14)",
+        "spread": "docs/research/REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md §3 (atlas-microestructura-14activos-v4, horario regular 08:30-15:00 CT, media)",
+        "slippage": "asuncion declarada de Nico: 1 tick por lado (LEDGER_COSTOS_CAP3_2026-08-18.md); escenarios del contrato G3 (docs/edge_validation_contract.md)",
+        "friccion_base": "REFERENCIA_COSTOS §4: spread medido + comision maxima de la tabla + 2 ticks RT",
+        "spread_estimado": "estimado por Internet 2026-11-17 (pedido de Nico): 1 tick en futuros líquidos (convención de la literatura, p. ej. Da et al., 'one-tick bid-ask spreads'); 2 en los menos líquidos. NO medido: reemplazar por la medición cuando exista."
+      },
+      "schema": "edgelab_costos_canonicos_v1",
+      "spread_ticks": 3.43,
+      "friccion_rt_ticks": {
+        "ideal": 0.0,
+        "base": 6.05,
+        "adverso": 8.05,
+        "severo": 10.05
+      },
+      "friccion_rt_ticks_min_comision": 5.862
+    }
+  },
+  "pairs": {
+    "C2_VZ_Nikkei_NKD": {
+      "n_ops_DR": 295,
+      "fric_bps_equiv_med": 9.31,
+      "mean_fricR_canon": 0.0506,
+      "mean_R_canon": 0.0596,
+      "DESC": {
+        "meses": 102,
+        "media_mes": 0.14,
+        "t": 1.18,
+        "p_una_cola": 0.1184,
+        "sharpe": 0.406,
+        "pct_meses_pos": 0.5,
+        "pct_anios_pos": 0.667
+      },
+      "REP": {
+        "meses": 30,
+        "media_mes": 0.12,
+        "t": 0.73,
+        "p_una_cola": 0.2334,
+        "sharpe": 0.46,
+        "pct_meses_pos": 0.567,
+        "pct_anios_pos": 0.467
+      },
+      "DESC_REP": {
+        "meses": 132,
+        "media_mes": 0.13,
+        "t": 1.38,
+        "p_una_cola": 0.0845,
+        "sharpe": 0.415,
+        "pct_meses_pos": 0.515,
+        "pct_anios_pos": 0.533
+      },
+      "DESC_REP_21_26": {
+        "meses": 51,
+        "media_mes": 0.26,
+        "t": 1.63,
+        "p_una_cola": 0.052,
+        "sharpe": 0.789,
+        "pct_meses_pos": 0.529,
+        "pct_anios_pos": 0.667
+      }
+    },
+    "C2_EVRP_Nikkei_NKD": {
+      "n_ops_DR": 171,
+      "fric_bps_equiv_med": 9.13,
+      "mean_fricR_canon": 0.035,
+      "mean_R_canon": 0.0262,
+      "DESC": {
+        "meses": 102,
+        "media_mes": 0.09,
+        "t": 0.94,
+        "p_una_cola": 0.1725,
+        "sharpe": 0.324,
+        "pct_meses_pos": 0.382,
+        "pct_anios_pos": 0.6
+      },
+      "REP": {
+        "meses": 30,
+        "media_mes": -0.15,
+        "t": -1.01,
+        "p_una_cola": 0.844,
+        "sharpe": -0.64,
+        "pct_meses_pos": 0.267,
+        "pct_anios_pos": 0.333
+      },
+      "DESC_REP": {
+        "meses": 132,
+        "media_mes": 0.03,
+        "t": 0.43,
+        "p_una_cola": 0.3349,
+        "sharpe": 0.129,
+        "pct_meses_pos": 0.356,
+        "pct_anios_pos": 0.6
+      },
+      "DESC_REP_21_26": {
+        "meses": 51,
+        "media_mes": 0.23,
+        "t": 1.51,
+        "p_una_cola": 0.0652,
+        "sharpe": 0.734,
+        "pct_meses_pos": 0.392,
+        "pct_anios_pos": 0.833
+      }
+    },
+    "C2_VZ_Oro_GC": {
+      "n_ops_DR": 264,
+      "fric_bps_equiv_med": 3.8,
+      "mean_fricR_canon": 0.0239,
+      "mean_R_canon": 0.037,
+      "DESC": {
+        "meses": 102,
+        "media_mes": 0.01,
+        "t": 0.08,
+        "p_una_cola": 0.4682,
+        "sharpe": 0.027,
+        "pct_meses_pos": 0.451,
+        "pct_anios_pos": 0.533
+      },
+      "REP": {
+        "meses": 30,
+        "media_mes": 0.24,
+        "t": 1.29,
+        "p_una_cola": 0.0994,
+        "sharpe": 0.813,
+        "pct_meses_pos": 0.567,
+        "pct_anios_pos": 0.533
+      },
+      "DESC_REP": {
+        "meses": 132,
+        "media_mes": 0.06,
+        "t": 0.65,
+        "p_una_cola": 0.2583,
+        "sharpe": 0.196,
+        "pct_meses_pos": 0.477,
+        "pct_anios_pos": 0.6
+      },
+      "DESC_REP_21_26": {
+        "meses": 51,
+        "media_mes": 0.03,
+        "t": 0.22,
+        "p_una_cola": 0.4135,
+        "sharpe": 0.106,
+        "pct_meses_pos": 0.431,
+        "pct_anios_pos": 0.667
+      }
+    },
+    "C2_EVRP_Oro_GC": {
+      "n_ops_DR": 256,
+      "fric_bps_equiv_med": 4.1,
+      "mean_fricR_canon": 0.0157,
+      "mean_R_canon": 0.0693,
+      "DESC": {
+        "meses": 102,
+        "media_mes": 0.07,
+        "t": 0.58,
+        "p_una_cola": 0.2815,
+        "sharpe": 0.198,
+        "pct_meses_pos": 0.461,
+        "pct_anios_pos": 0.6
+      },
+      "REP": {
+        "meses": 30,
+        "media_mes": 0.31,
+        "t": 1.45,
+        "p_una_cola": 0.0732,
+        "sharpe": 0.919,
+        "pct_meses_pos": 0.433,
+        "pct_anios_pos": 0.533
+      },
+      "DESC_REP": {
+        "meses": 132,
+        "media_mes": 0.13,
+        "t": 1.18,
+        "p_una_cola": 0.1182,
+        "sharpe": 0.357,
+        "pct_meses_pos": 0.455,
+        "pct_anios_pos": 0.733
+      },
+      "DESC_REP_21_26": {
+        "meses": 51,
+        "media_mes": 0.2,
+        "t": 1.27,
+        "p_una_cola": 0.1017,
+        "sharpe": 0.617,
+        "pct_meses_pos": 0.471,
+        "pct_anios_pos": 1.0
+      }
+    }
+  }
+}

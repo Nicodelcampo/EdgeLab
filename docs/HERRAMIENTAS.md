@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-779 scripts.
+783 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -223,6 +223,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/corridor_pass2/edgelab_es_corridor_pass2_falsification_v4_sym.py` | EDGELAB — PASADA 2: BATERÍA COMPLETA ANTI-OVERFIT Y FALSACIÓN DE FALSOS EDGES |
 | `tools/corridor_pass2/ema_corridor_trend.py` | EmaCorridorTrend v4.0 — Detector de Zonas y Corredores Tendenciales Estables sobre EMA. |
 | `tools/cosecha_pozo.py` | Cosecha del pozo de pistas vivas (pre-registro docs/research/cosecha_pozo_20261117/PREREGISTRO.md, 2026-11-17). |
+| `tools/cripto_ofi_20261127.py` | CRIPTO-OFI-PIT: Flujo de Ordenes Taker Buy/Sell (No-OHLC) en 226 Perpetuos PIT (2021-2026-09). |
 | `tools/cripto_pit.py` | CRIPTO-PIT (2026-11-27): universo punto en el tiempo de perpetuos USDT-M de Binance y réplica de las 3 reglas cripto de la |
 | `tools/cripto_pit_v2.py` | CRIPTO-PIT v2 (2026-11-27): Universo PIT limpio + correccion del bug de neutralizacion + 5 mecanismos de baja rotacion. |
 | `tools/cripto_pit_v3.py` | CRIPTO-PIT v3 (Pre-registrado): Microestructura Basis (premiumIndexKlines) + Beta-Neutralizacion + 5 Mecanismos Escalonados. |
@@ -351,6 +352,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/generar_graficos_audit_20261127.py` | Genera los 3 graficos dark-mode post-auditoria (Iteraciones 1 y 2) del Marco Sin Forward. |
 | `tools/generar_graficos_cartera.py` | Paso 7: Genera las 4 figuras comparativas dark-mode de la auditoria, expansion, cripto y optimizacion OOS + Multi-Prop. |
 | `tools/generar_graficos_frentes_20261127.py` | Genera 2 graficos dark-mode para CRIPTO-PIT v3 + Frentes Ortogonales y Super-Canasta v2. |
+| `tools/generar_graficos_v3_20261127.py` | Genera 2 graficos dark-mode para MACRO_RISK_PREMIA, CRIPTO_OFI_PIT y SUPERCARTERA v3. |
 | `tools/generate_cme_policy_pdf.py` | Generates an official, rigorous 1-page PDF compliance memorandum regarding CME Market Data & Kaggle policies. |
 | `tools/generate_density_field_golden_vectors.py` | Genera los vectores dorados que atan `density_field.js` a `density_field.py`. |
 | `tools/generate_hypothesis_backlog.py` | (sin docstring) |
@@ -523,6 +525,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/m1_largo.py` | M1 real de futuros (NT8, 2006 → frontera) sobre las estrategias externas y prueba de régimen análogo |
 | `tools/m1_speed_check.py` | Compara `edgelab_data.load_m1` (rápida) con `_load_m1_slow` (original): tiempo y igualdad exacta. Uso: EDGELAB_DATA_ROOTS=/data/fakeroot python tools/m1_speed_check.py GC 2026-04-01 2026-06-30 |
 | `tools/macro_literatura.py` | Ideas de la literatura en Kaggle (edgelab/research/macro_literatura.py). |
+| `tools/macro_risk_premia_20261127.py` | MACRO-RISK-PREMIA: 5 Primas de Riesgo y Momentum Multi-Clase sobre ETFs Ajustados (2006-2026-09). |
 | `tools/make_agent_readme.py` | Escribe README_AGENTES.md de la release con tablas calculadas a partir de las partes por activo. |
 | `tools/make_discovery_family_specs.py` | Genera las especificaciones por familia (config/discovery/families/*.json) y los grupos de activos. Cada familia = una hipótesis económica. |
 | `tools/make_release_report.py` | Genera docs/infra/LIQUID_RELEASE_20261014.md y ISSUE_RESOLUTION_LOG_20261014.json desde los metadatos de la release. |
@@ -712,6 +715,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/study_slot_effect.py` | Estudio paramétrico de efectos por franja horaria (CT) con nulo de signos y Holm. La configuración llega por STUDY_CFG (JSON) y debe figurar TEXTUALMENTE en el pre-registro |
 | `tools/summarize_mgc_tick_stability.py` | (sin docstring) |
 | `tools/supercartera_v2_20261127.py` | SUPERCARTERA v2: Integracion Multi-Frente Ortogonal + Kernel Kaggle CSCV/DSR/Bayes/Boot20k. |
+| `tools/supercartera_v3_20261127.py` | SUPERCARTERA v3: Pozo Limpio 63m Cero-Iteracion + CRIPTO-OFI + HRP Corregido + Kaggle CSCV. |
 | `tools/sweep_bigtrap2_tickframes.py` | Barrido de Tickframes para BigTrap2 (10t, 25t, 50t, 100t, 200t) sobre Oro (GC). |
 | `tools/sync_ctrader_mt5_bots.py` | Syncs, installs, and compiles the EdgeLabFundedSync NT8, cTrader (C#), and MT5 (MQL5) bot suites. |
 | `tools/sync_jforex_bin_sellado.py` | Merge JForex4 E:\dukascopy_HOLDOUT_SELLADO\<INST>\ticks\2026-11-16..*.bin into C:\EdgeLab\sellado. |
