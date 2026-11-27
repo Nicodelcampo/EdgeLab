@@ -15,3 +15,10 @@ Estado: REFERENCIA — búsqueda y verificación de acceso, sin descargar series
 1. Bajar el M1 de Dukascopy de 4 a 6 índices desde 2012.
 2. Pre-registrar T, R y Z (reglas congeladas, costos estimados y declarados) en esos índices, con la misma lectura que H1.
 3. Cripto 2019-09 → 2020-12 con `cripto_pit_v3.py` sin cambios: 15 meses que nadie miró.
+
+## Hecho (2026-11-27)
+- **T, R y Z en índices extranjeros:** `trz_extranjeros_20261127/RESULTADO.md`.
+  - Dukascopy bloqueó la descarga desde el entorno; se usó HistData.
+  - T y R: EN_CONTRA (t −4,57).
+  - Z no calibra con CFD.
+- **Cripto 2019-10 → 2020-12:** `cripto_v3_2019_20261127/RESULTADO.md`, t 1,64, NO_CONCLUYENTE.

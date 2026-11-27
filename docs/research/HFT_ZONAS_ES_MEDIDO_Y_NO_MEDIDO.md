@@ -1601,3 +1601,15 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - los meses HOLDOUT de 2019–2020, sellados porque la familia ya usó su apertura;
   - el forward.
+
+## 2026-11-27 — TRZ-EXTRANJEROS (T, R y Z de la cartera en índices europeos)
+- **MEDIDO:**
+  - Calibración del circuito HistData → arnés con el Nasdaq CFD: T y R calibran; Z no.
+  - Canasta T+R en DAX, FTSE, CAC y EuroStoxx (2010–2026): t −4,57, EN_CONTRA.
+  - T bruto ≈ +0,03 R (≤ 0 sin cortes de datos); R bruto ≈ 0.
+
+  Fuente: `docs/research/trz_extranjeros_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - Z (no calibra con CFD);
+  - Nikkei y ASX (hora no confiable);
+  - futuros reales FDAX/FESX/Z/NKD.

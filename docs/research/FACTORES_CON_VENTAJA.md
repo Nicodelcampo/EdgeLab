@@ -655,7 +655,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (70)
+## NO_REPETIR (71)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -669,6 +669,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: 22 futuros continuos Yahoo =F (2004-2026)
   - Siguiente: Re-evaluar futuros no-equity unicamente con series back-adjusted reales (Stooq/Databento/NT8 continuo ajustado) o M1 continuos sin roll
   - Evidencia: `docs/research/auditoria_claude_20261127/RESULTADO.md`, `docs/research/auditoria_claude_20261127/FUTUROS_NO_EQUITY_V2.json`
+- **T (ruptura de apertura) y R (AtrPhase) de la cartera NT8, congelados, en índices europeos (DAX, FTSE, CAC, EuroStoxx) con la apertura local alineada a las 09:30 NY** (`F-TR-NO-TRANSFIERE-EUROPA`, 2026-11-27, sesion)
+  - Efecto: Canasta T+R 2010–2026: Sharpe −1,15, t −4,57 (EN_CONTRA); T t −4,33, R t −1,92. Bruto por operación: T ≈ +0,03 R (≤ 0 en operaciones sin cortes de datos), contra +0,13 R neto en NQ; R ≈ 0. Desde 2020, t −1,31. Calibración del circuito: T y R calibran contra NQ futuros con el Nasdaq CFD; Z no calibra (no medido). La hora de HistData es NY con DST (no EST fijo como dice su documentación).
+  - Dónde: HistData M1 CFD GRXEUR, UKXGBP, FRXEUR, ETXEUR (Nikkei y ASX excluidos por hora no confiable); arnés C# de la cartera
+  - Siguiente: No transferir T y R a otros índices. La ventaja de la intradía queda como propia de NQ (y ES/YM) en 2020–2026, dentro de la muestra del vendedor: su confirmación es el forward, con expectativa previa más baja. Z necesita futuros reales (FDAX/FESX) para medirse.
+  - Evidencia: `docs/research/trz_extranjeros_20261127/RESULTADO.md`, `docs/research/trz_extranjeros_20261127/RESULTADO.json`, `docs/research/trz_extranjeros_20261127/CALIBRACION.json`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
   - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ
