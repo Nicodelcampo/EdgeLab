@@ -277,22 +277,27 @@ def _est(x: pd.Series) -> dict:
                 pct_meses_pos=round(float((m > 0).mean()), 2), caida_max=round(float((eq - eq.cummax()).min()), 0), meses=n)
 
 
-def medir() -> int:
+def medir(top: int | None = None) -> int:
+    """top=None: pre-registro principal. top=8: adenda ADENDA_DIAGNOSTICO_TOP8.md (universo PIT limitado a rango ≤ 8, costos 10 y 20 pb)."""
     from registro_global import exigir_contada
-    exigir_contada(OUT / "PREREGISTRO.md")
+    exigir_contada(OUT / ("ADENDA_DIAGNOSTICO_TOP8.md" if top else "PREREGISTRO.md"))
     u = pd.read_csv(OUT / "UNIVERSO_PIT.csv")
+    costos = COSTOS_RT
+    if top:
+        u = u[u.rango <= top]; costos = {k: COSTOS_RT[k] for k in ("base", "bajo")}
     barras = _barras(sorted(u.simbolo.unique()))
     res, series = {}, {}
-    for esc, c in COSTOS_RT.items():
+    for esc, c in costos.items():
         df = series_reglas(barras, u, c)
         b = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in df.index], index=df.index)
         assert not b.isin(["TERMINAL"]).any()
         series[esc] = df.mask(~b.isin(["DESC", "REP"]), axis=0)                             # HOLDOUT y EMBARGO sellados (NaN)
         res[esc] = {r: {blq: _est(df.loc[b == blq, r]) for blq in ("DESC", "REP")} | {"DESC+REP": _est(df.loc[b.isin(["DESC", "REP"]), r])}
                     for r in df.columns}
-    series["base"].to_csv(OUT / "SERIES_DESC_REP_BASE.csv.gz")
-    (OUT / "RESULTADO.json").write_text(json.dumps(res, indent=1), encoding="utf-8")
-    for esc in COSTOS_RT:
+    suf = f"_TOP{top}" if top else ""
+    series["base"].to_csv(OUT / f"SERIES_DESC_REP_BASE{suf}.csv.gz")
+    (OUT / f"RESULTADO{suf}.json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
+    for esc in costos:
         for r in list(REGLAS) + ["CR_1N"]:
             print(esc, r, res[esc][r])
     return 0
@@ -300,6 +305,8 @@ def medir() -> int:
 
 def main(argv=None) -> int:
     a = (argv or sys.argv[1:]) + [""]
+    if a[0] == "medir" and "--top" in a:
+        return medir(int(a[a.index("--top") + 1]))
     return {"universo": universo, "velas": velas, "medir": medir}.get(a[0], lambda: print(__doc__) or 2)()
 
 
