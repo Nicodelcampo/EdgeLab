@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (44)
+## PISTA_VIVA (45)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -19,6 +19,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: ES, NQ, YM, RTY, GC (M1 NT8, D1), 2006 → 2026-09, DESC y REP de A5
   - Siguiente: Apertura única del HOLDOUT A5 de la canasta sellada (63 meses) pre-registrada y bloqueada por K27 (potencia 0,25–0,63): decisión de Nico. Si no, forward en una cuenta que mantenga de noche.
   - Evidencia: `docs/research/canasta_amplia_20261127/RESULTADO.md`, `docs/research/canasta_amplia_20261127/EXPLORACION.json`
+- **Momentum transversal cripto 21d escalonado en 5 tranches (top-4/bot-4 patas activas, ex-TradFi, vol60>=25%, histeresis<=20/>25) en Binance PIT** (`F-CRIPTO-XSMOM-STAG5D-EX-TRADFI`, 2026-11-27, sesion)
+  - Efecto: DESC+REP (51m, 20 bps+funding): Sh=1.08 (t=2.23, +.7/m), ex-2021 Sh=0.98, 40 bps Sh=0.80, beta_BTC=+0.004, top5=27.7%, delist_hits=0, 5/5 fases positivas; HOLDOUT A5 (18m) sellado
+  - Dónde: Binance USDT-M PIT 226 monedas crypto (1D + funding)
+  - Siguiente: Integrar CRIPTO-PIT v3 con ResidMom y microestructura OI/Basis bajo pre-registro antes de apertura conjunta HOLDOUT A5 (18m)
+  - Evidencia: `docs/research/auditoria_claude_20261127/RESULTADO.md`, `docs/research/auditoria_claude_20261127/CRIPTO_PIT_V2.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -600,7 +605,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (69)
+## NO_REPETIR (70)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -609,6 +614,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: 15 mercados M1 Kaggle + 8 M1DK, 2012 → 2026-09, A5 DESC/REP
   - Siguiente: No elegir sobrevivientes de una grilla de mecanismos genéricos; si se sigue, una hipótesis única con más información por mes (canasta multi-activo pre-registrada).
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
+- **Usar futuros continuos =F de Yahoo Finance (CL=F, NG=F, RB=F, etc.) para medir tendencia o breakouts no-equity** (`F-YAHOO-FUTUROS-ROLL-NO-AJUSTADO`, 2026-11-27, sesion)
+  - Efecto: Empalmes crudos sin back-adjustment generan saltos diarios ficticios (NG=F 208 dias >8% / 31 >15%, CL=F 78 >8%, RB=F 67 >8%; paridad M1 solo 0.76); invalida tanto aprobaciones como rechazos
+  - Dónde: 22 futuros continuos Yahoo =F (2004-2026)
+  - Siguiente: Re-evaluar futuros no-equity unicamente con series back-adjusted reales (Stooq/Databento/NT8 continuo ajustado) o M1 continuos sin roll
+  - Evidencia: `docs/research/auditoria_claude_20261127/RESULTADO.md`, `docs/research/auditoria_claude_20261127/FUTUROS_NO_EQUITY_V2.json`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
   - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ
