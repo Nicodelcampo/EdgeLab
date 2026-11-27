@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-788 scripts.
+789 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -229,6 +229,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/cripto_pit.py` | CRIPTO-PIT (2026-11-27): universo punto en el tiempo de perpetuos USDT-M de Binance y réplica de las 3 reglas cripto de la |
 | `tools/cripto_pit_v2.py` | CRIPTO-PIT v2 (2026-11-27): Universo PIT limpio + correccion del bug de neutralizacion + 5 mecanismos de baja rotacion. |
 | `tools/cripto_pit_v3.py` | CRIPTO-PIT v3 (Pre-registrado): Microestructura Basis (premiumIndexKlines) + Beta-Neutralizacion + 5 Mecanismos Escalonados. |
+| `tools/cripto_v3_2019.py` | CRIPTO-V3-2019 (pre-registro docs/research/cripto_v3_2019_20261127/PREREGISTRO.md): la canasta CRIPTO-PIT v3, sin cambios, en el |
 | `tools/cubos_regimen.py` | Cubos de operaciones para buscar regímenes offline (`edgelab/research/regimen_offline.py`). |
 | `tools/curvas_confirma_forward.py` | Curvas de las canastas que confirman en HOLDOUT A5 o van a forward (lee series ya publicadas; no abre nada). Uso: PYTHONPATH=. python tools/curvas_confirma_forward.py |
 | `tools/daily_data_health.py` | Chequeo diario de datos (R0: captura continua). Detecta que la captura se haya cortado y que el respaldo de L2 este al dia. |

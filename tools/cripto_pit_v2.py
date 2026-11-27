@@ -36,6 +36,7 @@ OUT.mkdir(parents=True, exist_ok=True)
 S3 = "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision"
 VIS = "https://data.binance.vision"
 CORTE = "2026-10-01"
+PER_MIN = "2020-01"          # primer mes de descarga (cripto_v3_2019.py lo adelanta a 2019-09)
 CORTE_TS = pd.Timestamp(CORTE, tz="UTC")
 MESES_ALL = set(pd.period_range("2020-01", "2026-09", freq="M").strftime("%Y-%m").tolist())
 UA = {"User-Agent": "edgelab-research"}
@@ -81,7 +82,7 @@ def _listar(prefix: str) -> list[str]:
 
 def _sym_months_from_pit(u: pd.DataFrame) -> Dict[str, List[str]]:
     out: Dict[str, List[str]] = {}
-    per_min = pd.Period("2020-01", "M")
+    per_min = pd.Period(PER_MIN, "M")
     per_max = pd.Period("2026-09", "M")
     for sym, grp in u.groupby("simbolo"):
         if not str(sym).isascii() or sym in TRADFI_EXCLUDE:

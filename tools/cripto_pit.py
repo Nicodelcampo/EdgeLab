@@ -34,6 +34,7 @@ S3 = "https://s3-ap-northeast-1.amazonaws.com/data.binance.vision"
 VIS = "https://data.binance.vision"
 CORTE = "2026-10-01"
 MESES = pd.period_range("2020-01", "2026-09", freq="M").strftime("%Y-%m").tolist()
+UNIV_DESDE, UNIV_HASTA = "2020-09", "2026-09"   # período del universo (cripto_v3_2019.py lo cambia para 2019-10 → 2020-12)
 K_UNIVERSO = 25           # pre-registrado: top-25 por volumen en USDT de los 30 días previos
 MIN_DIAS = 60             # pre-registrado: al menos 60 días cotizando antes de entrar
 UA = {"User-Agent": "edgelab-research"}
@@ -121,7 +122,7 @@ def universo() -> int:
     qv.index = qv.index.tz_localize(None).normalize()
     primero = qv.apply(lambda c: c.first_valid_index())
     filas = []
-    for m in pd.period_range("2020-09", "2026-09", freq="M"):
+    for m in pd.period_range(UNIV_DESDE, UNIV_HASTA, freq="M"):
         ini = m.start_time
         ven = qv[(qv.index < ini) & (qv.index >= ini - pd.Timedelta(days=30))]
         vol = ven.sum(min_count=20)                                       # ≥ 20 días con datos en la ventana

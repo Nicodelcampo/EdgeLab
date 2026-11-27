@@ -155,9 +155,10 @@ def _residual_2f(r1d: pd.DataFrame, f1: pd.Series, f2: pd.Series, win: int = 30)
     return resid
 
 
-def compute_cripto_v3_daily() -> dict:
-    """Calcula las 5 series diarias de CRIPTO-PIT v3 a 10/20/30/40 bps + funding en < 2026-10-01."""
-    u = pd.read_csv(ROOT / "docs/research/cripto_pit_20261127/UNIVERSO_PIT.csv")
+def compute_cripto_v3_daily(universo_csv: Path | None = None, desde: str = "2021-01-01", hasta: str = CORTE) -> dict:
+    """Calcula las 5 series diarias de CRIPTO-PIT v3 a 10/20/30/40 bps + funding en < 2026-10-01. Por defecto, igual que la corrida
+    pre-registrada; `universo_csv`, `desde` y `hasta` sólo los cambia cripto_v3_2019.py (período 2019-10 → 2020-12)."""
+    u = pd.read_csv(universo_csv or ROOT / "docs/research/cripto_pit_20261127/UNIVERSO_PIT.csv")
     ascii_syms = {s for s in u["simbolo"].unique() if str(s).isascii() and s not in TRADFI_EXCLUDE}
     bars = {s: df for s, df in fetch_all_pit_fast(u).items() if s in ascii_syms}
     basis_map = fetch_all_basis_fast(u, set(bars.keys()))
@@ -239,7 +240,7 @@ def compute_cripto_v3_daily() -> dict:
         "CR3_ResidMom_21d_2F_Stag5d": w5,
     }
 
-    idx_eval = C.index[(C.index >= "2021-01-01") & (C.index < CORTE)]
+    idx_eval = C.index[(C.index >= desde) & (C.index < hasta)]
     blq = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in idx_eval], index=idx_eval)
     assert not blq.isin(["TERMINAL"]).any(), "TERMINAL breach!"
     btc_eval = btc.reindex(idx_eval).fillna(0.0)
