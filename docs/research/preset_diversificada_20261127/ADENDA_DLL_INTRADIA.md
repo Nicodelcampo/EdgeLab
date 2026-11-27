@@ -53,3 +53,17 @@ real no permite. El tamaño grande depende justamente de que esos días no corte
 ## Cómo podría refutarse
 La conclusión «más tamaño rinde más por mes» queda refutada si, con el DLL intradía, la ventaja/mes de 4 micros por estrategia en la 150K
 cae por debajo de la de 1 micro.
+
+## Sensibilidad (agregada 2026-11-27, antes de correrla; revisión «demasiado estricto»)
+Cambio respecto a falla previa: el camino de arriba toma el extremo adverso de cada vela para **todas** las estrategias a la vez. Con
+posiciones opuestas (largo en una, corto en otra) o en NQ y ES a la vez, el bajo y el alto de la misma vela no ocurren en el mismo
+instante: cuenta dos veces el rango y adelanta el DLL. Es una cota pesimista.
+
+La cota optimista es el camino con el **cierre** de cada vela de 1 minuto. Se corren los mismos planes de la 150K con las dos cotas.
+
+Lectura:
+- si el plan robusto (2 micros) y el orden entre planes no cambian entre las dos cotas, la conclusión de `RESULTADO.md` §6 queda firme;
+- si con el cierre los planes grandes vuelven a superar con claridad a 2 micros, la conclusión depende de la cota y se informa como un
+  rango.
+
+Pruebas: 1 (la sensibilidad), familia `CANASTA_CORRELACION`.
