@@ -31,7 +31,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | `docs/parity_coverage` | 13 |
 | `docs/predictions` | 8 |
 | `docs/referencias` | 2 |
-| `docs/research` | 1647 |
+| `docs/research` | 1648 |
 | `docs/spike_in` | 1 |
 | `docs/validation` | 1 |
 | `raiz` | 12 |
@@ -40,6 +40,7 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 
 | Familia | Docs | Ultimo | Fecha | Estado |
 |---|---:|---|---|---|
+| PLAN | 14 | `PLAN_ESPIRAL_20261127.md` | 2026-11-27 | PLAN — propuesta para que Nico elija. No se corrió nada nuevo; cada punto necesi |
 | HANDOFF | 23 | `HANDOFF_ANTIGRAVITY_2026-11-27.md` | 2026-11-27 | VIGENTE — índice del trabajo de Antigravity del 2026-11-27; la revisión de Claud |
 | ESTADO | 4 | `ESTADO_DEL_EDGE_20261127.md` | 2026-11-27 | VIGENTE — diagnóstico descriptivo sobre datos de desarrollo ya mirados (2021-02  |
 | REVISION | 10 | `REVISION_DESCARTADAS_20261119.md` | 2026-11-19 | VIGENTE — análisis descriptivo sobre operaciones ya medidas. No abre holdout ni  |
@@ -83,7 +84,6 @@ Despues: `docs/PRODUCT.md` (producto y roadmap) → `docs/MODULES.md` (modulos) 
 | REFERENCIA | 1 | `REFERENCIA_COSTOS_PROPS_BROKERS_20261014.md` | 2026-10-14 | referencia, no medición. Sin P&L, sin retornos. Insumo para el ledger de costos  |
 | R3 | 3 | `R3_DIRECCION_15_60M_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (partición de descubrimiento; la replicación no se abrió) |
 | R2 | 2 | `R2_RECORRIDO_VS_FRICCION_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL (descriptivo, target-free; release v4 aprobada, purpose=provisional_ |
-| PLAN | 13 | `PLAN_HACIA_EDGE_NETO_20261014.md` | 2026-10-14 | PROPUESTA |
 | INVENTARIO | 1 | `INVENTARIO_LINEA_MAIN_20261014.md` | 2026-10-14 | VIGENTE (unificación ejecutada el 2026-10-14; ver docs/DECISIONES_20261014.md) |
 | GC | 1 | `GC_PRESSURE_PROGRESS_V2_MANIFIESTO_20261014.md` | 2026-10-14 | fase RTH (08:30–15:00 CT) / OTHER, y dirección del flujo previo (±1). Celdas fas |
 | AVZP2 | 10 | `AVZP2_RACIMO_REPLICA_ES_NQ_RESULTADOS_20261014.md` | 2026-10-14 | PROVISIONAL. Todo lo de esta acta se calculó sobre la release liquid_tick_v1 v3, |
