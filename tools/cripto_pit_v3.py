@@ -155,18 +155,12 @@ def _residual_2f(r1d: pd.DataFrame, f1: pd.Series, f2: pd.Series, win: int = 30)
     return resid
 
 
-def main() -> None:
-    from registro_global import exigir_contada
-    exigir_contada("docs/research/cripto_pit_v3_20261127/PREREGISTRO.md")
-
-    t0 = time.time()
+def compute_cripto_v3_daily() -> dict:
+    """Calcula las 5 series diarias de CRIPTO-PIT v3 a 10/20/30/40 bps + funding en < 2026-10-01."""
     u = pd.read_csv(ROOT / "docs/research/cripto_pit_20261127/UNIVERSO_PIT.csv")
     ascii_syms = {s for s in u["simbolo"].unique() if str(s).isascii() and s not in TRADFI_EXCLUDE}
-    print(f"=== CRIPTO-PIT v3: {len(ascii_syms)} monedas crypto PIT + Basis premiumIndexKlines ===", flush=True)
-
     bars = {s: df for s, df in fetch_all_pit_fast(u).items() if s in ascii_syms}
     basis_map = fetch_all_basis_fast(u, set(bars.keys()))
-    print(f"Cargadas {len(bars)} monedas + {len(basis_map)} series de premiumIndex en {time.time() - t0:.1f}s", flush=True)
 
     C = pd.DataFrame({s: df["close"] for s, df in bars.items()}).sort_index()
     H = pd.DataFrame({s: df["high"] for s, df in bars.items()}).reindex(C.index)
@@ -188,7 +182,6 @@ def main() -> None:
     live60 = (C.notna().rolling(60, min_periods=60).sum() >= 60) & (vol60 >= 0.25)
     E_hyst = build_eligibility(C.index, C.columns, u, top_k=20, hysteresis_exit=25) & live60
 
-    # Causal rolling 30d BTC beta (shifted 1d)
     btc = r_safe["BTCUSDT"].fillna(0.0) if "BTCUSDT" in r_safe else r_safe.mean(axis=1)
     eth = r_safe["ETHUSDT"].fillna(0.0) if "ETHUSDT" in r_safe else btc
     btc_var = btc.rolling(30, min_periods=15).var().replace(0.0, np.nan)
@@ -197,10 +190,8 @@ def main() -> None:
         cov_b = r_safe[s].rolling(30, min_periods=15).cov(btc)
         beta_btc_df[s] = (cov_b / btc_var).shift(1).fillna(1.0)
 
-    # ---- 5 MECANISMOS ORTOGONALES ESCALONADOS (5 tranches) ----
     ret_21 = C.pct_change(21, fill_method=None)
 
-    # M1: CR3_XSMOM_21d_Stag5d
     sc21 = (ret_21 / vol1).where(E_hyst)
     rk21 = sc21.rank(axis=1, ascending=False, method="first")
     n21 = sc21.notna().sum(axis=1).to_numpy()[:, None]
@@ -208,11 +199,8 @@ def main() -> None:
     p1[(rk21 <= 4) & (n21 >= 10)] = 1.0
     p1[(rk21 >= n21 - 3) & (n21 >= 10)] = -1.0
     w1 = _stagger_weights(_normalize_active_neutral(p1, inv_vol, max_w=0.20), E_hyst, 5)
-
-    # M2: CR3_XSMOM_BetaNeut_Stag5d (same ranking, causal BTC beta matched legs)
     w2 = _stagger_weights(_beta_scale_legs(p1, inv_vol, beta_btc_df, max_w=0.20), E_hyst, 5)
 
-    # M3: CR3_Basis_Carry_Stag5d (5d basis + 5d funding cross-sectional z-score, short crowded + squeeze veto / long discount)
     b5 = B.rolling(5, min_periods=2).mean().where(E_hyst)
     f5 = F.rolling(5, min_periods=2).mean().where(E_hyst)
     zb = b5.sub(b5.mean(axis=1), axis=0).div(b5.std(axis=1, ddof=1).replace(0.0, np.nan), axis=0).clip(-3.0, 3.0).fillna(0.0)
@@ -226,7 +214,6 @@ def main() -> None:
     p3[(rkc >= nc - 3) & (nc >= 10)] = 1.0
     w3 = _stagger_weights(_normalize_active_neutral(p3, inv_vol, max_w=0.20), E_hyst, 5)
 
-    # M4: CR3_BAB_LowVol_Stag5d (Long 4 lowest 30d vol, Short 4 highest 30d vol, causal beta-BTC matched!)
     v_sc = vol30.where(E_hyst)
     rkv = v_sc.rank(axis=1, ascending=True, method="first")
     nv = v_sc.notna().sum(axis=1).to_numpy()[:, None]
@@ -235,7 +222,6 @@ def main() -> None:
     p4[(rkv >= nv - 3) & (nv >= 10)] = -1.0
     w4 = _stagger_weights(_beta_scale_legs(p4, inv_vol, beta_btc_df, max_w=0.20), E_hyst, 5)
 
-    # M5: CR3_ResidMom_21d_2F_Stag5d (21d residual vs BTC+ETH 30d OLS shifted 1d)
     resid_2f = _residual_2f(r_safe, btc, eth, win=30)
     res21 = (resid_2f.rolling(21, min_periods=12).sum() / vol1).where(E_hyst)
     rkr = res21.rank(axis=1, ascending=False, method="first")
@@ -256,8 +242,43 @@ def main() -> None:
     idx_eval = C.index[(C.index >= "2021-01-01") & (C.index < CORTE)]
     blq = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in idx_eval], index=idx_eval)
     assert not blq.isin(["TERMINAL"]).any(), "TERMINAL breach!"
-    mask_dr = blq.isin(["DESC", "REP"])
     btc_eval = btc.reindex(idx_eval).fillna(0.0)
+
+    daily_by_bps = {bps: pd.DataFrame(index=idx_eval) for bps in (10, 20, 30, 40)}
+    shock30 = pd.DataFrame(index=idx_eval)
+    meta_rules = {}
+    for name, W in w_map.items():
+        meta_rules[name] = {}
+        for bps in (10, 20, 30, 40):
+            s_raw, s_st_raw, turn_m, dh = _pnl(C, W, F, bps / 10_000.0, r_override=r_safe)
+            daily_by_bps[bps][name] = s_raw.reindex(idx_eval).fillna(0.0)
+            if bps == 20:
+                shock30[name] = s_st_raw.reindex(idx_eval).fillna(0.0)
+                meta_rules[name] = {"turnover_x_mes": turn_m, "delist_hits": dh}
+
+    return {
+        "n_coins_loaded": len(bars),
+        "n_basis_series_loaded": len(basis_map),
+        "idx_eval": idx_eval,
+        "blq": blq,
+        "btc_eval": btc_eval,
+        "daily_by_bps": daily_by_bps,
+        "shock30": shock30,
+        "meta_rules": meta_rules,
+    }
+
+
+def main() -> None:
+    from registro_global import exigir_contada
+    exigir_contada("docs/research/cripto_pit_v3_20261127/PREREGISTRO.md")
+
+    t0 = time.time()
+    core = compute_cripto_v3_daily()
+    idx_eval, blq, btc_eval = core["idx_eval"], core["blq"], core["btc_eval"]
+    daily_by_bps, shock30, meta_rules = core["daily_by_bps"], core["shock30"], core["meta_rules"]
+    print(f"=== CRIPTO-PIT v3: {core['n_coins_loaded']} monedas crypto PIT + {core['n_basis_series_loaded']} Basis ({time.time() - t0:.1f}s) ===", flush=True)
+
+    mask_dr = blq.isin(["DESC", "REP"])
 
     def _extras(s: pd.Series, sub_m: pd.Series) -> dict:
         sd_r = s[sub_m]
@@ -274,20 +295,20 @@ def main() -> None:
         }
 
     results = {
-        "n_coins_loaded": len(bars),
-        "n_basis_series_loaded": len(basis_map),
+        "n_coins_loaded": core["n_coins_loaded"],
+        "n_basis_series_loaded": core["n_basis_series_loaded"],
         "costs_tested_bps": [10, 20, 30, 40],
         "rules": {},
     }
     base_df = pd.DataFrame(index=idx_eval)
+    rule_names = list(daily_by_bps[20].columns)
 
     print("\n=== RESULTADOS CRIPTO-PIT v3 (20 bps RT + funding + basis, SOLO DESC & REP; HOLDOUT SELLADO) ===")
-    for name, W in w_map.items():
+    for name in rule_names:
         results["rules"][name] = {}
         for bps in (10, 20, 30, 40):
-            s_raw, s_st_raw, turn_m, dh = _pnl(C, W, F, bps / 10_000.0, r_override=r_safe)
-            s = s_raw.reindex(idx_eval).fillna(0.0)
-            s_st = s_st_raw.reindex(idx_eval).fillna(0.0)
+            s = daily_by_bps[bps][name]
+            s_st = shock30[name]
             entry = {
                 "DESC": stats_serie(s[blq == "DESC"]),
                 "REP": stats_serie(s[blq == "REP"]),
@@ -295,8 +316,8 @@ def main() -> None:
             }
             if bps == 20:
                 base_df[name] = s
-                results["rules"][name]["turnover_x_mes"] = turn_m
-                results["rules"][name]["delist_hits"] = dh
+                results["rules"][name]["turnover_x_mes"] = meta_rules[name]["turnover_x_mes"]
+                results["rules"][name]["delist_hits"] = meta_rules[name]["delist_hits"]
                 desc_tot = float(s[blq == "DESC"].sum())
                 desc_top5 = float(s[blq == "DESC"].nlargest(5).sum())
                 results["rules"][name]["top5_days_share_DESC"] = round(desc_top5 / desc_tot, 3) if desc_tot > 1e-6 else 9.99
@@ -320,7 +341,6 @@ def main() -> None:
     print(m_mat.corr().round(3).to_string())
 
     # Pre-registered basket inclusion rule: DESC usd_mes > 0 AND top5_days_share_DESC < 0.65
-    rule_names = list(w_map.keys())
     alive = [
         c for c in rule_names
         if results["rules"][c]["bps_20"]["DESC"]["usd_mes"] > 0

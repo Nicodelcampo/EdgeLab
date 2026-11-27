@@ -165,31 +165,21 @@ def _eval_weights(R_df: pd.DataFrame, W_sig: pd.DataFrame, tx_bps: float = 10.0,
     return net, net_2x, round(turn_ann, 2)
 
 
-def main() -> None:
-    exigir_contada("docs/research/macro_risk_premia_20261127/PREREGISTRO.md")
-    t0 = time.time()
+def compute_macro_rp_daily() -> dict:
+    """Calcula las 5 series diarias base y estres 2x en < 2026-10-01 con senales shift(1)."""
     P = _fetch_all()
-    print(f"Loaded {P.shape[1]} Macro Risk Premia series ({P.index.min().date()} -> {P.index.max().date()}) in {time.time()-t0:.1f}s", flush=True)
-
-    # Prices vs Yields
     px_cols = [c for c in P.columns if not c.startswith("^")]
     PX = P[px_cols].copy()
     R = PX.pct_change()
     vol63 = R.rolling(63, min_periods=30).std() * np.sqrt(252.0)
 
-    # Rolling 126d causal beta vs SPY
     spy_r = R["SPY"]
     spy_var = spy_r.rolling(126, min_periods=60).var().clip(lower=1e-8)
     betas = pd.DataFrame({c: R[c].rolling(126, min_periods=60).cov(spy_r) / spy_var for c in PX.columns})
-
-    # Momentum 12m-1m normalized by vol63
     mom_12_1 = (PX.shift(21) / PX.shift(252) - 1.0) / vol63
 
-    # RP1: US Sectors XSMOM Beta-Neutral (9 SPDR sectors)
-    w1_raw = _beta_neutralize(_cs_long_short(mom_12_1[SECTORS], vol63[SECTORS], k_side=3, min_n=7), betas[SECTORS])
-    w1 = _stagger_weights(w1_raw, 5)
+    w1 = _stagger_weights(_beta_neutralize(_cs_long_short(mom_12_1[SECTORS], vol63[SECTORS], k_side=3, min_n=7), betas[SECTORS]), 5)
 
-    # RP2: US Sectors + IYR BAB (Long low-beta, Short high-beta, beta-neutral)
     b_sec = betas[SECTORS_PLUS_REIT].where(PX[SECTORS_PLUS_REIT].notna())
     n_b = b_sec.notna().sum(axis=1).to_numpy()[:, None]
     rk_lo_b = b_sec.rank(axis=1, ascending=True, method="first")
@@ -199,33 +189,25 @@ def main() -> None:
     w2_base = lw_b.div(lw_b.sum(axis=1).replace(0, np.nan), axis=0).fillna(0.0) * 0.5 - sw_b.div(sw_b.sum(axis=1).replace(0, np.nan), axis=0).fillna(0.0) * 0.5
     w2 = _stagger_weights(_beta_neutralize(w2_base, b_sec), 5)
 
-    # RP3: Global Countries XSMOM Beta-Neutral (12 iShares country ETFs)
-    w3_raw = _beta_neutralize(_cs_long_short(mom_12_1[COUNTRIES], vol63[COUNTRIES], k_side=3, min_n=8), betas[COUNTRIES])
-    w3 = _stagger_weights(w3_raw, 5)
+    w3 = _stagger_weights(_beta_neutralize(_cs_long_short(mom_12_1[COUNTRIES], vol63[COUNTRIES], k_side=3, min_n=8), betas[COUNTRIES]), 5)
 
-    # RP4: Rates Yield-Curve & Credit Regime (ZERO equity!)
     slope = (P["^TNX"] - P["^IRX"]).ffill()
     slope_ma = slope.rolling(63, min_periods=30).mean()
-    # Credit ratio HYG/LQD if HYG alive, else LQD/IEF
     cr_ratio = (PX["HYG"] / PX["LQD"]).where(PX["HYG"].notna(), PX["LQD"] / PX["IEF"])
     cr_ma = cr_ratio.rolling(63, min_periods=30).mean()
     w4_raw = pd.DataFrame(0.0, index=PX.index, columns=PX.columns)
     steep_up = (slope > 0.0) & (slope > slope_ma)
-    # 50% Curve sleeve
     w4_raw.loc[steep_up, ["IEF", "TLT"]] += np.array([0.125, 0.125])
     w4_raw.loc[steep_up, "SHY"] -= 0.25
     w4_raw.loc[~steep_up, ["SHY", "TIP", "GLD"]] += np.array([0.10, 0.075, 0.075])
     w4_raw.loc[~steep_up, "TLT"] -= 0.25
-    # 50% Credit regime sleeve
     stress_cr = cr_ratio < cr_ma
     w4_raw.loc[stress_cr, ["GLD", "IEF", "UUP"]] += np.array([0.20, 0.20, 0.10])
     w4_raw.loc[~stress_cr, ["LQD", "TIP"]] += np.array([0.125, 0.125])
     w4_raw.loc[~stress_cr, "SHY"] -= 0.25
-    # Normalize each day to gross <= 1.0 and stagger 5d
     gs4 = w4_raw.abs().sum(axis=1).replace(0, np.nan).fillna(1.0)
     w4 = _stagger_weights(w4_raw.div(gs4, axis=0), 5)
 
-    # RP5: Pure Non-Equity Multi-Speed Trend (21d + 63d + 252d)
     sig_ne = pd.DataFrame(0.0, index=PX.index, columns=NON_EQ_ALL)
     for lb in (21, 63, 252):
         z_lb = (PX[NON_EQ_ALL] / PX[NON_EQ_ALL].shift(lb) - 1.0) / (R[NON_EQ_ALL].rolling(max(lb, 42), min_periods=21).std() * np.sqrt(lb))
@@ -245,18 +227,43 @@ def main() -> None:
     idx_eval = PX.index[(PX.index >= "2006-01-01") & (PX.index < CORTE)]
     blq_d = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in idx_eval], index=idx_eval)
     assert not blq_d.isin(["TERMINAL"]).any(), "TERMINAL breach!"
-    mask_dr = blq_d.isin(["DESC", "REP"])
     spy_eval = spy_r.reindex(idx_eval).fillna(0.0)
 
+    raw_1x = pd.DataFrame(index=idx_eval)
+    raw_2x = pd.DataFrame(index=idx_eval)
+    turn_map = {}
+    for name, W in w_map.items():
+        s_raw, s2_raw, turn_ann = _eval_weights(R, W, tx_bps=10.0, eq_borrow_bps=100.0, noneq_borrow_bps=50.0)
+        raw_1x[name] = s_raw.reindex(idx_eval).fillna(0.0)
+        raw_2x[name] = s2_raw.reindex(idx_eval).fillna(0.0)
+        turn_map[name] = turn_ann
+    return {
+        "n_series": int(P.shape[1]),
+        "idx_eval": idx_eval,
+        "blq_d": blq_d,
+        "spy_eval": spy_eval,
+        "raw_1x": raw_1x,
+        "raw_2x": raw_2x,
+        "turn_map": turn_map,
+    }
+
+
+def main() -> None:
+    exigir_contada("docs/research/macro_risk_premia_20261127/PREREGISTRO.md")
+    t0 = time.time()
+    core = compute_macro_rp_daily()
+    idx_eval, blq_d, spy_eval = core["idx_eval"], core["blq_d"], core["spy_eval"]
+    raw_1x, raw_2x, turn_map = core["raw_1x"], core["raw_2x"], core["turn_map"]
+    print(f"Loaded {core['n_series']} Macro Risk Premia series ({idx_eval.min().date()} -> {idx_eval.max().date()}) in {time.time()-t0:.1f}s", flush=True)
+
+    mask_dr = blq_d.isin(["DESC", "REP"])
     daily_dr = pd.DataFrame(index=idx_eval)
     daily_2x_dr = pd.DataFrame(index=idx_eval)
     res_rules = {}
 
     print("\n=== RESULTADOS MACRO-RISK-PREMIA (2006-01..2026-09, SOLO DESC & REP; HOLDOUT 63m SELLADO) ===")
-    for name, W in w_map.items():
-        s_raw, s2_raw, turn_ann = _eval_weights(R, W, tx_bps=10.0, eq_borrow_bps=100.0, noneq_borrow_bps=50.0)
-        s = s_raw.reindex(idx_eval).fillna(0.0)
-        s2 = s2_raw.reindex(idx_eval).fillna(0.0)
+    for name in raw_1x.columns:
+        s, s2, turn_ann = raw_1x[name], raw_2x[name], turn_map[name]
         daily_dr[name] = s.where(mask_dr, np.nan)
         daily_2x_dr[name] = s2.where(mask_dr, np.nan)
 
@@ -295,7 +302,7 @@ def main() -> None:
         )
 
     # Pre-registered DESC selection rule: DESC Sharpe > 0.25 & |corr_DESC vs SPY| < 0.35
-    rule_names = list(w_map.keys())
+    rule_names = list(raw_1x.columns)
     alive = [c for c in rule_names if res_rules[c]["DESC"]["sharpe"] > 0.25 and abs(res_rules[c]["corr_SPY_DESC"]) < 0.35]
     if not alive:
         alive = [c for c in rule_names if res_rules[c]["DESC"]["sharpe"] > 0.0 and abs(res_rules[c]["corr_SPY_DESC"]) < 0.45]

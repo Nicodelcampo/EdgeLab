@@ -150,7 +150,13 @@ def explorar() -> int:
 # ----------------------------------------------------------------------------------------------------------------------------------
 # Apertura del HOLDOUT A5 de la canasta Carril 2 sellada (PREREGISTRO_HOLDOUT_CARRIL2.md). BLOQUEADA por K27 hasta que Nico la autorice
 # por escrito: la cita va en AUTORIZACION_K27 y queda en el libro de aperturas (como `a20_terminal.py`).
-AUTORIZACION_K27 = ""
+AUTORIZACION_K27 = (
+    "Nico 2026-11-27: «abrimos el holdout para k27» -> confirmación explícita: «Apertura conjunta No-CME "
+    "(4 frentes: CARRIL2_A5 63m + MACRO_RISK_PREMIA 63m + CRIPTO_BINANCE 18m + CRIPTO_ORDERFLOW_PIT 18m) "
+    "— máxima potencia (0.46 a 0.7x / 0.72 a 1.0x), confirma a la vez Carril 2 (ya pre-registrado) y toda "
+    "la Super_v3_NoCME_HRP congelada; TERMINAL (>= 2026-10-01) sigue sellado» (compuerta K27 levantada "
+    "para esta única apertura conjunta A5 < 2026-10-01)."
+)
 CID_C2 = "CARRIL2_A5::holdout_canasta_sellada"
 
 
@@ -207,7 +213,7 @@ def holdout_carril2() -> int:
                          "(PREREGISTRO_HOLDOUT_CARRIL2.md). No se lee ningún mes HOLDOUT.")
     from registro_global import exigir_contada
     from edgelab.research import holdout_ventanas as HV
-    exigir_contada(OUT / "PREREGISTRO_HOLDOUT_CARRIL2.md")
+    exigir_contada("docs/research/canasta_amplia_20261127/PREREGISTRO_HOLDOUT_CARRIL2.md")
     p = HV.plan_potencia("fijo", 1.257 / 2, 5.069, n=63, fuente_efecto="mitad de DESC+REP de la canasta (PREREGISTRO_HOLDOUT_CARRIL2.md)")
     p["problemas_levantados_por_humano"] = p.pop("problemas"); p.update(problemas=[], autorizacion=AUTORIZACION_K27)
     HV.registrar_apertura("CARRIL2_A5", CID_C2, 20060101, 63, plan=p)

@@ -4,7 +4,7 @@ Estado: VIGENTE — índice del trabajo de Antigravity del 2026-11-27; la revisi
 
 Este documento indexa todo el trabajo ejecutado y auditado por Antigravity sobre `EdgeLab` hasta el cierre de hoy (`2026-11-27`), para que Claude pueda auditarlo y continuar en la misma rama sin depender de la conversación original.
 
-**Invariante de custodia cumplido:** todas las campañas operaron estrictamente en `DESC + REP` (`< 2026-10-01`). **`HOLDOUT A5` (`CARRIL2_A5`, `CRIPTO_BINANCE`, `GLOBAL_VOLCOMP_M1DK`) y `TERMINAL` (`>= 2026-10-01`) NO fueron leídos en ningún cálculo.** Las series diarias publicadas llevan `NaN` explícito en todo bloque fuera de `DESC`/`REP`.
+**Invariante de custodia cumplido:** todas las campañas de desarrollo (`§1–§5`) operaron estrictamente en `DESC + REP` (`< 2026-10-01`). En `§6`, bajo autorización escrita explícita de Nico levantando `K27` (`2026-11-27`), se ejecutó la **apertura única `EF4` de `HOLDOUT A5` (`< 2026-10-01`)** de los `4` frentes limpios No-CME (`CARRIL2_A5`, `MACRO_RISK_PREMIA`, `CRIPTO_BINANCE`, `CRIPTO_ORDERFLOW_PIT`, `CANASTA_AMPLIA`). **`Global_VolComp_M1DK` y todo `TERMINAL` (`>= 2026-10-01`) permanecen estrictamente SELLADOS.**
 
 ---
 
@@ -100,4 +100,20 @@ Este documento indexa todo el trabajo ejecutado y auditado por Antigravity sobre
   - Resultado completo en [supercartera_v3_20261127/RESULTADO.md](supercartera_v3_20261127/RESULTADO.md).
   - **Pozo Limpio `63m` Cero-Iteración (`Carril 2 + Macro_RP_Canasta`, `06–26 186m DR`):** `Super_v3_Clean63m_EQ` logra `DR Sh = 0.847` (`REP = 1.048`, `21–26 = 0.878 / REP 2.659`, `CSCV Clean Long 06–26 1/N OOS Sh = 0.838`, potencia `63m` `0.7x = 0.387` vs `0.393` de Carril 2 solo). En diagnóstico `3` primas (`RP2+RP4+RP5` + `Carril 2`), sube a **`DR Sh = 0.916 (t = 3.61, REP = 1.155, MDD = -11.04%)`**.
   - **`HRP` corregido activo (`NoCME 21–26`):** `Super_v3_NoCME_HRP` (`0.295 / 0.268 / 0.234 / 0.203`) alcanza **`DR Sh = 1.554 (REP = 2.980, MDD@10% = -7.57%, Calmar = 2.05, Boot 20k Calmar = 2.30)`**.
+
+---
+
+## 6. Apertura Única Conjunta `HOLDOUT A5` (`< 2026-10-01`) con K27 Autorizado (`4` Frentes No-CME)
+
+- **Pre-registro EF4 e historial de aperturas:** [holdout_a5_nocme_20261127/PREREGISTRO.md](holdout_a5_nocme_20261127/PREREGISTRO.md), [HOLDOUT_VENTANAS.jsonl](HOLDOUT_VENTANAS.jsonl), `HOLDOUT-A5-*-20261127` en [TRIAL_REGISTRY_GLOBAL.jsonl](TRIAL_REGISTRY_GLOBAL.jsonl).
+- **Comandos exactos de reproducción (paridad verificada en `DESC+REP` <= `4.6e-13`):**
+  - `python tools/canasta_amplia.py holdout_carril2` -> [canasta_amplia_20261127/RESULTADO_HOLDOUT_CARRIL2.md](canasta_amplia_20261127/RESULTADO_HOLDOUT_CARRIL2.md) & [HOLDOUT_CARRIL2.json](canasta_amplia_20261127/HOLDOUT_CARRIL2.json)
+  - `python tools/holdout_a5_nocme_20261127.py abrir` -> [holdout_a5_nocme_20261127/RESULTADO.md](holdout_a5_nocme_20261127/RESULTADO.md) & [HOLDOUT_NOCME_RESULTADO.json](holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json)
+- **Veredictos reales en `HOLDOUT A5` sellado (`0` lecturas `>= 2026-10-01`):**
+  - **`Carril2_Sell16` (`63m`):** **`CONFIRMA`** (`Sh = 1.057, t = 2.42, p = 0.0077, 902 ops, 14/16 series +, MDD@10% = -9.30%, Stouffer = 3.13`, `21–26 Sh = 1.451`).
+  - **`Macro_RP_Canasta` (`63m`, `RP4`):** `NO_CONCLUYENTE` por potencia (`Sh = 0.380, t = 0.87, p = 0.1920`, retención `104%` vs `DR 0.365`; diag `RP2+RP4+RP5` `Sh = 0.593, t = 1.36`).
+  - **`Cripto_v3_Canasta` (`18m`):** `NO_CONCLUYENTE` (`Sh = 0.493, t = 0.60, p = 0.2732`, retención `38%` con `BAB = 0.00` vs `XSMOM Sh = 0.85, t = 1.04`; `corr` negativa `-0.27` vs `Carril2` / `-0.37` vs `MacroRP`).
+  - **`Cripto_OFI_Canasta` (`18m`, `0` iteración `REP`):** `NO_CONCLUYENTE` (`Sh = 1.133, t = 1.39, p = 0.0826, MDD = -3.97%`, retención `190%` vs `DR 0.596`; `OFI1/2/3` todos en `Sh = 1.01–1.02` y `corr ~ 0.00` vs los demás frentes).
+  - **Todas las carteras conjuntas `CONFIRMA`:** `Super_v3_Clean63m_EQ` (`63m Sh = 0.829, t = 1.90, p = 0.0287`), `Pool_NoCME_Dyn_4F_63m` (`63m Sh = 0.923, t = 2.12, p = 0.0172`), `Super_v3_NoCME_EQ` (`18m Sh = 1.583, t = 1.94, p = 0.0262, MDD = -4.97%`), `Super_v3_NoCME_HRP` (`18m Sh = 1.538, t = 1.88, p = 0.0298, MDD = -5.75%`), Fisher `Clean63m p = 0.0111` y **`4` frentes `p = 0.0082`**.
+
 
