@@ -55,7 +55,7 @@ def bajar() -> int:
                 f.write_bytes(b); time.sleep(2)
             proc[f.name] = hashlib.sha256(f.read_bytes()).hexdigest()
         print(sym, "listo", flush=True)
-    (RAW.parent / "PROCEDENCIA.json").write_text(json.dumps(dict(fuente="histdata.com ASCII M1 (EST fijo, UTC−5)", archivos=proc), indent=1))
+    (RAW.parent / "PROCEDENCIA.json").write_text(json.dumps(dict(fuente="histdata.com ASCII M1 (hora de Nueva York con DST, sello = apertura; verificado contra NQ futuros)", archivos=proc), indent=1))
     return 0
 
 
@@ -73,8 +73,10 @@ def _leer(sym: str):
         d = pd.read_csv(io.BytesIO(z.read(n)), sep=";", header=None, names=["t", "o", "h", "l", "c", "v"])
         partes.append(d)
     d = pd.concat(partes).drop_duplicates("t")
-    t = pd.to_datetime(d.t, format="%Y%m%d %H%M%S") + pd.Timedelta(hours=5)      # EST fijo (UTC−5, sin horario de verano) → UTC
-    d = d.assign(utc=t.dt.tz_localize("UTC")).sort_values("utc")
+    # Hora de Nueva York CON horario de verano y sello = apertura de la vela. La documentación de HistData dice «EST fijo», pero la
+    # calibración contra NQ futuros (2026-11-27) mostró el desfase de 1 h en verano: ver CALIBRACION_DIAGNOSTICO.json.
+    t = pd.to_datetime(d.t, format="%Y%m%d %H%M%S").dt.tz_localize("America/New_York", ambiguous="NaT", nonexistent="NaT")
+    d = d.assign(utc=t.dt.tz_convert("UTC")).dropna(subset=["utc"]).sort_values("utc")
     return d[d.utc < pd.Timestamp(FRONTERA_UTC, tz="UTC")]
 
 
@@ -107,7 +109,7 @@ def _preparar_uno(nombre: str, sym: str):
     d["k"] = d.dia.map(esc); d = d.dropna(subset=["k"])
     d = d.drop_duplicates("t2", keep="first").sort_values("t2")
     d = d[d.t2 < pd.Timestamp(FRONTERA_UTC, tz="UTC")]
-    out = pd.DataFrame({"t": d.t2.astype("int64") // 10**9 + 60, "o": d.o * d.k, "h": d.h * d.k, "l": d.l * d.k, "c": d.c * d.k, "v": 1.0})
+    out = pd.DataFrame({"t": d.t2.dt.as_unit("s").astype("int64") + 60, "o": d.o * d.k, "h": d.h * d.k, "l": d.l * d.k, "c": d.c * d.k, "v": 1.0})
     out = out[(out.h >= out.l)]
     HARN.mkdir(parents=True, exist_ok=True); f = HARN / f"{nombre}.csv"; out.round(4).to_csv(f, index=False)
     return f, len(out), str(d.t2.min()), str(d.t2.max())
@@ -136,5 +138,74 @@ def _r(o, fric):
     return (o.pnl_pts - fric) / o.riesgo_pts
 
 
+EXCLUIDOS = {"Nikkei", "ASX200"}     # adenda del pre-registro: su hora no pasa la verificación de apertura (sin retornos)
+MODS = {"T": "T_stop100_BE15R_calFalse", "R": "R_osc30_end660_ATR50", "Z": "Z_b15_e20_eff40_ATR50"}
+
+
+def _por_sesion(o, mod):
+    g = o[o.modulo == mod]
+    return {int(k.strftime("%Y%m%d")): float(v) for k, v in _r(g, FRIC_NQ).groupby(g.dia).sum().items()}
+
+
+def calibrar() -> int:
+    import pandas as pd
+    from edgelab.research.a5 import calibrar_por_sesion
+    _preparar_uno("Nasdaq100CFD", "NSXUSD"); o = _arnes("Nasdaq100CFD")
+    ref = pd.read_csv(ROOT / "docs/research/cartera_nt8_20261125/paridad_intradia/broker_NQ.csv.gz"); ref["dia"] = pd.to_datetime(ref.ex_ny).dt.normalize()
+    a, b = pd.Timestamp("2019-07-01"), pd.Timestamp("2026-09-29")
+    o = o[(o.dia >= a) & (o.dia <= b)]; ref = ref[(ref.dia >= a) & (ref.dia <= b)]
+    res = {}
+    for k, mod in MODS.items():
+        c = calibrar_por_sesion(_por_sesion(ref, mod), _por_sesion(o, mod))
+        c.update(ops_ref=int((ref.modulo == mod).sum()), ops_cfd=int((o.modulo == mod).sum())); res[k] = c
+        print(k, c, flush=True)
+    OUTD.mkdir(parents=True, exist_ok=True)
+    (OUTD / "CALIBRACION.json").write_text(json.dumps(res, indent=1, default=float), encoding="utf-8")
+    return 0
+
+
+def _stats(x):
+    import numpy as np
+    from math import erf, sqrt
+    x = x.dropna(); n = len(x)
+    if n < 3 or x.std() == 0: return dict(meses=n)
+    t = float(x.mean() / (x.std(ddof=1) / np.sqrt(n)))
+    return dict(meses=n, media_R_mes=round(float(x.mean()), 4), sharpe_anual=round(float(x.mean() / x.std(ddof=1) * np.sqrt(12)), 3),
+                t=round(t, 2), p_una_cola=round(0.5 * (1 - erf(t / sqrt(2))), 4), pct_meses_pos=round(float((x > 0).mean()), 3))
+
+
+def correr() -> int:
+    import pandas as pd
+    from registro_global import exigir_contada
+    exigir_contada(PRE)
+    cal = json.loads((OUTD / "CALIBRACION.json").read_text(encoding="utf-8"))
+    vivos = [k for k, v in cal.items() if v["calibra"]]
+    partes = []
+    for sym, nombre in INDICES.items():
+        if nombre in EXCLUIDOS: continue
+        if not (HARN / f"{nombre}.csv").exists(): _preparar_uno(nombre, sym)
+        o = _arnes(nombre); o["indice"] = nombre; partes.append(o); print(nombre, len(o), flush=True)
+    O = pd.concat(partes, ignore_index=True); inv = {v: k for k, v in MODS.items()}; O["mod"] = O.modulo.map(inv)
+    O["R"] = _r(O, FRIC_NQ); O["R2"] = _r(O, 2 * FRIC_NQ); O["mes"] = O.dia.dt.to_period("M")
+    O.to_csv(OUTD / "OPS.csv.gz", index=False)
+    def canasta(df, col="R"):
+        m = df.pivot_table(index="mes", columns=[df["mod"], df.indice], values=col, aggfunc="sum")
+        return m.fillna(0.0).where(m.notna().cumsum() > 0).mean(axis=1).dropna()
+    V = O[O["mod"].isin(vivos)]
+    c = canasta(V)
+    res = dict(calibracion=cal, modulos_leidos=vivos, operaciones={f"{k}_{i}": int(((O["mod"] == k) & (O.indice == i)).sum()) for k in MODS for i in O.indice.unique()},
+               primaria=_stats(c), estres_2x=_stats(canasta(V, "R2")),
+               antes_2020=_stats(c[c.index < pd.Period("2020-01", "M")]), desde_2020=_stats(c[c.index >= pd.Period("2020-01", "M")]),
+               por_modulo={k: _stats(canasta(O[O["mod"] == k])) for k in vivos},
+               por_indice={i: _stats(canasta(V[V.indice == i])) for i in sorted(V.indice.unique())},
+               por_modulo_indice={f"{k}_{i}": _stats(canasta(O[(O["mod"] == k) & (O.indice == i)])) for k in vivos for i in sorted(O.indice.unique())},
+               R_medio_por_op={k: round(float(O[O["mod"] == k].R.mean()), 4) for k in vivos})
+    res["veredicto"] = "CONFIRMA" if res["primaria"].get("t", 0) >= 1.645 else ("NO_CONCLUYENTE" if res["primaria"].get("media_R_mes", 0) > 0 else "EN_CONTRA")
+    (OUTD / "RESULTADO.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    print(json.dumps({k: res[k] for k in ("modulos_leidos", "primaria", "veredicto", "por_modulo")}, indent=1, default=float))
+    return 0
+
+
 if __name__ == "__main__":
-    sys.exit({"bajar": bajar, "preparar": preparar}[sys.argv[1]]())
+    sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
+    sys.exit({"bajar": bajar, "preparar": preparar, "calibrar": calibrar, "correr": correr}[sys.argv[1]]())
