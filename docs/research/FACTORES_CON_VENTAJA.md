@@ -655,7 +655,7 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Siguiente: Decisión pendiente de Nico: seguirla congelada en papel con seguimiento secuencial hasta tener potencia. Indagar QUÉ tienen en común las 10 reglas (zona U1 como origen, horario, lado, tamaño de stop frente a la fricción) antes de buscar más reglas: si el común es sólo «stop grande», es la palanca de diseño y no una señal.
   - Evidencia: `docs/research/canasta_global_20261108/RESULTADO.md`, `docs/research/canasta_global_20261108/RESULTADO_HOLDOUT.md`, `docs/research/gex_u1_20261108/RESULTADO.md`
 
-## NO_REPETIR (71)
+## NO_REPETIR (72)
 
 _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igual._
 
@@ -674,6 +674,11 @@ _Refutado con potencia o explicado por un artefacto: no volver a proponerlo igua
   - Dónde: HistData M1 CFD GRXEUR, UKXGBP, FRXEUR, ETXEUR (Nikkei y ASX excluidos por hora no confiable); arnés C# de la cartera
   - Siguiente: No transferir T y R a otros índices. La ventaja de la intradía queda como propia de NQ (y ES/YM) en 2020–2026, dentro de la muestra del vendedor: su confirmación es el forward, con expectativa previa más baja. Z necesita futuros reales (FDAX/FESX) para medirse.
   - Evidencia: `docs/research/trz_extranjeros_20261127/RESULTADO.md`, `docs/research/trz_extranjeros_20261127/RESULTADO.json`, `docs/research/trz_extranjeros_20261127/CALIBRACION.json`
+- **Versión swing de la técnica de ratios de bonos de la charla de Lucioni (ratio contra promedio de 15/7 ruedas, rotación en tandas 50/50 → 80/20 con bonos propios, comisión cero VetaFLAT, ejecución al cierre siguiente)** (`F-BONOS-ROTACION-SWING-SPREAD`, 2026-11-27, sesion)
+  - Efecto: Canasta de 4 pares DESC −0,59 %/mes (t −8,1), REP −0,45 % (EN_CONTRA). Bruto positivo en 3/4 pares en DESC (GD30/AL30 +0,37 %, t 2,88), pero la rotación de ≈ 11 %/día por el spread (0,09–0,79 %) lo come; costo de equilibrio por unidad rotada 0,03–0,17 %. GD30/AL30 con un cuarto del spread da +0,29 % en DESC, pero ≈ 0 bruto en REP (+0,01 %).
+  - Dónde: GD30/AL30, GD35/AL35, GD38/AE38, GD41/AL41 en pesos, diario data912, 2021-09 → 2026-11, DESC y REP de A5
+  - Siguiente: No repetir la versión diaria/swing. Si se sigue, es la intradía con puntas grabadas hacia adelante (data912 /live o IOL), medida con spread real y en el régimen actual.
+  - Evidencia: `docs/research/bonos_rotacion_20261127/RESULTADO.md`, `docs/research/bonos_rotacion_20261127/RESULTADO.json`
 - **Topes en puntos fijos de T (stop ≤ 100 pts) y F (riesgo ≤ 125 pts) escalados por precio / mediana 2022-01→2025-08** (`F-ADAPTAR-TOPE-PUNTOS-T-F`, 2026-11-26, humano)
   - Efecto: T: Sharpe 1,26 → 1,09 (2022+: 2,60 → 2,22); F: 0,22 → 0,17 aunque recupera frecuencia (2026: 18 → 77). No se adopta: el tope fijo activo es parte de cómo gana T hoy.
   - Dónde: NQ M1 de NT8, 2012 → 2026-09, USD con 1 MNQ

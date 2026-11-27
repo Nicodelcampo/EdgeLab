@@ -1613,3 +1613,13 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - Z (no calibra con CFD);
   - Nikkei y ASX (hora no confiable);
   - futuros reales FDAX/FESX/Z/NKD.
+
+## 2026-11-27 — BONOS-ROTACION (técnica swing de la charla con comisión cero)
+- **MEDIDO:**
+  - Canasta EN_CONTRA (DESC t −8,1).
+  - El bruto es positivo en 3/4 pares, pero menor que el spread; GD30/AL30 da ≈ 0 bruto en REP.
+  - Condiciones de VetaFLAT relevadas: 0 % de aranceles, cupo de 175–400 %, bonos de aire de un día.
+
+  Fuente: `docs/research/bonos_rotacion_20261127/RESULTADO.md`.
+- **NO MEDIDO:** la versión intradía (velas de 5 s a 30 min). Falta intradía histórico, y el endpoint de Open BYMA Data no fue autorizado
+  desde el entorno.
