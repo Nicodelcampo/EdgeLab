@@ -58,3 +58,19 @@ Decisiones de Nico:
 
 Aporte al referente: deja identificadas las fuentes y los costos medidos (0,01 % de derecho, 0,02 % de préstamo, abono fijo). Muestra que
 el cuello de botella es el intradía histórico, no el análisis.
+
+## 5. Datasets encontrados (segunda búsqueda, 2026-11-27, verificados desde el entorno)
+| Fuente | Qué trae | Historia | Acceso | Verificado |
+|---|---|---|---|---|
+| **data912.com** `/historical/bonds/{ticker}` | Diario OHLCV con volumen nocional (`v`), retorno diario y sigma de AL30, GD30, AL35, GD35, AE38, GD38, AL41, GD41 y las especies D/C | **Desde 2021-09-16** (≈ 1.265 ruedas) hasta el día anterior | Gratis, sin cuenta, 120 pedidos/min | Sí: 8/8 tickers responden (último dato 2026-11-26) |
+| **data912.com** `/live/arg_bonds` | Foto en vivo con **puntas**: cantidad y precio de compra y venta, volumen, último | Sólo el momento (no hay historia) | Gratis | Sí: AL30 compra 82.130 / venta 82.200 (spread ≈ 0,09 %); GD30 85.200 / 85.390 (≈ 0,22 %) |
+| Kaggle `juanfe/bonos-dolar-mep` | Cierres diarios de AL29, AL30, AL35, GD29, GD30, GD35 y GD38 en $ y D | Discontinuado en 2022 | Gratis | Sí, por la API de Kaggle (0,2 MB) |
+| Kaggle, GitHub, Hugging Face | **Intradía histórico de bonos argentinos: no se encontró ninguno** | — | — | Búsquedas «argentina bonds», «AL30», «GD30», «bonos argentinos», «merval intraday», «byma» |
+
+**Qué cambia:**
+1. **Se puede medir ya, sin cuenta ni broker, la primera etapa:** si el ratio diario de cada par vuelve a la media, en cuánto tiempo y por
+   régimen, de 2021-09 a hoy, con los 8 bonos de data912. Es target-free y requiere pre-registro.
+2. **Para el intradía y el spread real, la opción concreta es grabar hacia adelante** con `/live/arg_bonds` (puntas cada pocos
+   segundos, dentro del límite de 120 pedidos/min) o con la API de IOL. Ninguna fuente gratuita tiene intradía histórico.
+3. data912 es un servicio de terceros sin garantía. Antes de usarlo para algo más que exploración, conviene cruzar algunos cierres
+   contra BYMA o IOL.
