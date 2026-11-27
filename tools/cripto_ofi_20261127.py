@@ -115,16 +115,12 @@ def fetch_all_ofi_fast(u_df: pd.DataFrame, syms: set[str]) -> dict[str, pd.DataF
     return out
 
 
-def main() -> None:
-    exigir_contada("docs/research/cripto_ofi_20261127/PREREGISTRO.md")
-    t0 = time.time()
+def compute_cripto_ofi_daily() -> dict:
+    """Calcula las 3 series diarias de CRIPTO-OFI-PIT a 10/20/30/40 bps + funding en < 2026-10-01."""
     u = pd.read_csv(ROOT / "docs/research/cripto_pit_20261127/UNIVERSO_PIT.csv")
     ascii_syms = {s for s in u["simbolo"].unique() if str(s).isascii() and s not in TRADFI_EXCLUDE}
-    print(f"=== CRIPTO-OFI-PIT: {len(ascii_syms)} monedas crypto PIT (taker buy/sell order flow) ===", flush=True)
-
     bars = {s: df for s, df in fetch_all_pit_fast(u).items() if s in ascii_syms}
     ofi_map = fetch_all_ofi_fast(u, set(bars.keys()))
-    print(f"Cargadas {len(bars)} monedas + {len(ofi_map)} series OFI en {time.time() - t0:.1f}s", flush=True)
 
     C = pd.DataFrame({s: df["close"] for s, df in bars.items()}).sort_index()
     F = pd.DataFrame({s: df["funding"] for s, df in bars.items()}).reindex(C.index).fillna(0.0)
@@ -142,7 +138,6 @@ def main() -> None:
     vol30 = r_safe.rolling(30, min_periods=15).std() * np.sqrt(365.0)
     inv_vol = (1.0 / vol30.clip(lower=0.15)).replace([np.inf, -np.inf], np.nan)
 
-    # Dynamic PIT membership with hysteresis (same frozen rule as v2/v3)
     mkey = C.index.to_period("M").astype(str)
     top_map = {m: set(g["simbolo"]) for m, g in u.groupby("mes")}
     pit_m = pd.DataFrame(False, index=C.index, columns=C.columns)
@@ -161,11 +156,9 @@ def main() -> None:
         E_hyst.iloc[i] = cur
         prev = cur
 
-    # Non-OHLC Order-Flow features (all shifted 1d causally!)
     ofi = ((2.0 * TQV - QV) / QV.clip(lower=1e-6)).clip(-1.0, 1.0)
     avg_sz = np.log((QV / CNT.clip(lower=1.0)).clip(lower=1.0))
 
-    # M1: OFI1_TakerFlow_21d_Stag5d
     ofi21 = (ofi.rolling(21, min_periods=10).mean() / ofi.rolling(21, min_periods=10).std().clip(lower=1e-4)).where(E_hyst)
     rk1 = ofi21.rank(axis=1, ascending=False, method="first")
     n1 = ofi21.notna().sum(axis=1).to_numpy()[:, None]
@@ -174,7 +167,6 @@ def main() -> None:
     p1[(rk1 >= n1 - 3) & (n1 >= 10)] = -1.0
     w1 = _stagger_weights(_normalize_active_neutral(p1, inv_vol, max_w=0.20), E_hyst, 5)
 
-    # M2: OFI2_FlowReturn_Div_14d_Stag5d (z_cs(OFI_14d) - z_cs(Ret_14d))
     o14 = ofi.rolling(14, min_periods=8).mean().where(E_hyst)
     r14 = r_safe.rolling(14, min_periods=8).sum().where(E_hyst)
     z_o = o14.sub(o14.mean(axis=1), axis=0).div(o14.std(axis=1).replace(0, np.nan), axis=0)
@@ -187,7 +179,6 @@ def main() -> None:
     p2[(rk2 >= n2 - 3) & (n2 >= 10)] = -1.0
     w2 = _stagger_weights(_normalize_active_neutral(p2, inv_vol, max_w=0.20), E_hyst, 5)
 
-    # M3: OFI3_WhaleFlow_14d_Stag5d (ofi weighted by cross-sectional ticket size rank)
     sz_rk = avg_sz.where(E_hyst).rank(axis=1, pct=True)
     wf14 = ((ofi * sz_rk).rolling(14, min_periods=8).mean() / ofi.rolling(14, min_periods=8).std().clip(lower=1e-4)).where(E_hyst)
     rk3 = wf14.rank(axis=1, ascending=False, method="first")
@@ -202,26 +193,53 @@ def main() -> None:
         "OFI2_FlowReturn_Div_14d_Stag5d": w2,
         "OFI3_WhaleFlow_14d_Stag5d": w3,
     }
-
     idx_eval = C.index[(C.index >= "2021-01-01") & (C.index < CORTE)]
     blq = pd.Series([a5_bloque(int(d.strftime("%Y%m%d"))) for d in idx_eval], index=idx_eval)
     assert not blq.isin(["TERMINAL"]).any(), "TERMINAL breach!"
-    mask_dr = blq.isin(["DESC", "REP"])
     btc_eval = r_safe["BTCUSDT"].reindex(idx_eval).fillna(0.0) if "BTCUSDT" in r_safe else pd.Series(0.0, index=idx_eval)
 
-    # Load CR3_XSMOM & CR3_BAB exclusively on DESC+REP to measure true orthogonality
+    daily_by_bps = {bps: pd.DataFrame(index=idx_eval) for bps in (10, 20, 30, 40)}
+    meta_rules = {}
+    for name, W in w_map.items():
+        for bps in (10, 20, 30, 40):
+            s_raw, _, turn_m, dh = _pnl(C, W, F, bps / 10_000.0, r_override=r_safe)
+            daily_by_bps[bps][name] = s_raw.reindex(idx_eval).fillna(0.0)
+            if bps == 20:
+                meta_rules[name] = {"turnover_x_mes": turn_m, "delist_hits": dh}
+
+    return {
+        "n_coins_loaded": len(bars),
+        "n_ofi_loaded": len(ofi_map),
+        "idx_eval": idx_eval,
+        "blq": blq,
+        "btc_eval": btc_eval,
+        "daily_by_bps": daily_by_bps,
+        "meta_rules": meta_rules,
+    }
+
+
+def main() -> None:
+    exigir_contada("docs/research/cripto_ofi_20261127/PREREGISTRO.md")
+    t0 = time.time()
+    core = compute_cripto_ofi_daily()
+    idx_eval, blq, btc_eval = core["idx_eval"], core["blq"], core["btc_eval"]
+    daily_by_bps, meta_rules = core["daily_by_bps"], core["meta_rules"]
+    print(f"=== CRIPTO-OFI-PIT: {core['n_coins_loaded']} monedas + {core['n_ofi_loaded']} OFI ({time.time() - t0:.1f}s) ===", flush=True)
+
+    mask_dr = blq.isin(["DESC", "REP"])
+
     cr3_p = ROOT / "docs/research/cripto_pit_v3_20261127/SERIES_CRIPTO_PIT_V3_DR.csv.gz"
     cr3_df = pd.read_csv(cr3_p, index_col=0, parse_dates=True).reindex(idx_eval) if cr3_p.exists() else pd.DataFrame(index=idx_eval)
 
-    results = {"n_coins_loaded": len(bars), "n_ofi_loaded": len(ofi_map), "rules": {}}
+    results = {"n_coins_loaded": core["n_coins_loaded"], "n_ofi_loaded": core["n_ofi_loaded"], "rules": {}}
     base_df = pd.DataFrame(index=idx_eval)
+    rule_names = list(daily_by_bps[20].columns)
 
     print("\n=== RESULTADOS CRIPTO-OFI-PIT (20 bps RT + funding, SOLO DESC & REP; HOLDOUT SELLADO) ===")
-    for name, W in w_map.items():
+    for name in rule_names:
         results["rules"][name] = {}
         for bps in (10, 20, 30, 40):
-            s_raw, _, turn_m, dh = _pnl(C, W, F, bps / 10_000.0, r_override=r_safe)
-            s = s_raw.reindex(idx_eval).fillna(0.0)
+            s = daily_by_bps[bps][name]
             entry = {
                 "DESC": stats_serie(s[blq == "DESC"]),
                 "REP": stats_serie(s[blq == "REP"]),
@@ -229,8 +247,8 @@ def main() -> None:
             }
             if bps == 20:
                 base_df[name] = s
-                results["rules"][name]["turnover_x_mes"] = turn_m
-                results["rules"][name]["delist_hits"] = dh
+                results["rules"][name]["turnover_x_mes"] = meta_rules[name]["turnover_x_mes"]
+                results["rules"][name]["delist_hits"] = meta_rules[name]["delist_hits"]
                 desc_tot = float(s[blq == "DESC"].sum())
                 desc_top5 = float(s[blq == "DESC"].nlargest(5).sum())
                 results["rules"][name]["top5_days_share_DESC"] = round(desc_top5 / desc_tot, 3) if desc_tot > 1e-6 else 9.99
@@ -248,7 +266,8 @@ def main() -> None:
             f"DR Sh={b20['DESC_REP']['sharpe']:5.2f} t={b20['DESC_REP']['t_mes']:4.2f} | corr_XSMOM={b20.get('corr_m_CR3_XSMOM_21d_Stag5d', 0):+.3f} | top5_D={results['rules'][name]['top5_days_share_DESC']}"
         )
 
-    rule_names = list(w_map.keys())
+    m_mat = None  # placeholder unused
+    rule_names = list(daily_by_bps[20].columns)
     alive = [c for c in rule_names if results["rules"][c]["bps_20"]["DESC"]["usd_mes"] > 0 and results["rules"][c]["top5_days_share_DESC"] < 0.65]
     if not alive:
         alive = [c for c in rule_names if results["rules"][c]["bps_20"]["DESC"]["usd_mes"] > 0]
