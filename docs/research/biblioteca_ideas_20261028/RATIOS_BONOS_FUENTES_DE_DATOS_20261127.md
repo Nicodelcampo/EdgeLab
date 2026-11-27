@@ -74,3 +74,31 @@ el cuello de botella es el intradía histórico, no el análisis.
    segundos, dentro del límite de 120 pedidos/min) o con la API de IOL. Ninguna fuente gratuita tiene intradía histórico.
 3. data912 es un servicio de terceros sin garantía. Antes de usarlo para algo más que exploración, conviene cruzar algunos cierres
    contra BYMA o IOL.
+
+## 6. Intradía de AL29/AL30 para la versión pasiva (tercera búsqueda, 2026-11-27)
+Motivo: `OPERACIONES_AMIGO_AL29_AL30_MATRIZ_20261127.md`. Para medir la regla hacen falta **operaciones con hora** (y, si se puede, puntas)
+de AL29 y AL30, en 24hs y CI. Nico consigue y descarga los datos; esta lista es para elegir de dónde.
+
+| Fuente | Qué trae | Historia | Acceso y costo | Estado |
+|---|---|---|---|---|
+| **API de Primary del broker** (`api.veta.xoms.com.ar`; pyRofex con entorno LIVE apuntado a ese host) | `getTrades` (operaciones con hora, precio y cantidad), market data con puntas, WebSocket | Con `dateFrom`/`dateTo`; **sin verificar si cubre BYMA** (`MERV - XMEV - AL29 - 24hs`, `external=true`) ni cuánto guarda | El usuario y la contraseña de Matriz suelen servir para la API (lo dice `chuchocoder/pyrofex-to-excel`); si no, se la pide al broker | **La primera prueba que conviene hacer**: un día viejo de AL30 |
+| **Historial de órdenes del amigo** (Matriz: órdenes y operaciones) | Sus órdenes, ejecutadas y no, con hora | Lo que guarde su cuenta | Su consentimiento | La mejor evidencia de ejecución real |
+| **PPI (Portfolio Personal) API** (`itatppi.github.io/ppi-official-api-docs`) | `MarketData/Intraday`: operaciones (fecha, precio, volumen); `MarketData/Book`: profundidad; `MarketData/Search`: diario con fechas | El intradía no tiene parámetro de fecha: **probablemente sólo el día** | Gratis con cuenta PPI (claves en Gestiones → Gestión de servicio API) | Sirve para grabar operaciones y libro cada día |
+| **Grabación propia** (data912 `/live/arg_bonds`, IOL WebSocket, Primary WebSocket o PPI) | Puntas (y operaciones con Primary/PPI/IOL) | Desde que se empieza | Gratis | Siempre posible; tarda meses |
+| **BYMA APIs** (`byma.com.ar/productos/productos-de-datos/market-data/apis`) | Snapshot (tiempo real) USD 120/mes retail, Delay 20 min USD 60, EOD USD 30 | **No listan un producto de intradía histórico**; hay que consultarlo | marketdata@byma.com.ar | Preguntar por operaciones históricas de títulos públicos |
+| **Open BYMA Data** (PyOBD, openbymadata) | 1 minuto con `resolution=1` | `carvalab/openbymadata`: «el intradía gratis devuelve sólo datos con demora, unas pocas barras por día» | Gratis | **Descartado** para esto |
+| **TradingView** (`BCBA:AL29`, `BCBA:AL30`, `.CI`) | Velas | Profundidad según plan; datos de BYMA con demora salvo suscripción | Pago | Sólo velas, sin puntas ni operaciones: no alcanza para fills pasivos |
+| **LSEG Tick History / Bloomberg** | Ticks históricos de muchas bolsas | Años | Muy caro o institucional (a veces por universidad) | Cobertura de BYMA sin verificar |
+| data912 `/historical` | Sólo diario | 2021-09 → | Gratis | Ya en uso |
+
+**Formato que necesita la medición:**
+- Bonos: AL29 y AL30 en pesos, 24hs y CI. Si se puede, también GD29/GD30 y AL30D para controles.
+- Operaciones: hora con segundos (y huso), precio, cantidad y, si viene, lado.
+- Puntas (si hay): hora, compra, venta y sus cantidades.
+- Período: lo más largo posible. Con menos de ≈ 3 meses no hay potencia para decidir.
+- Fechas de pago de amortización y cupón de AL29 y AL30, para ajustar el ratio.
+
+Notas:
+- Desde la liquidación T+1, 48hs no cotiza: los símbolos son 24HS o CI.
+- Las credenciales de API nunca van al chat ni al repo. Si la descarga corre en este entorno, se cargan con el formulario seguro;
+  si corre en la máquina de Nico, quedan ahí.
