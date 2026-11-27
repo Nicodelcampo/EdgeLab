@@ -149,3 +149,37 @@ Linajes nuevos en `docs/research/LINAJES.jsonl`: `MULTIACTIVO_MECANISMOS`, `CRIP
 
 Aporte al referente: deja todo el trabajo del 2026-11-27 auditable por otro agente. Cada resultado tiene su pre-registro o registro
 posterior, su herramienta reproducible y sus correcciones explícitas, y las decisiones que faltan quedan separadas.
+
+## 12. Revisión de Claude del trabajo de Antigravity del 2026-11-27 (tarde)
+Antigravity sumó cinco commits a esta rama; su índice es `HANDOFF_ANTIGRAVITY_2026-11-27.md`. Incluyen:
+- la auditoría del PR;
+- CRIPTO-PIT v2 y v3;
+- los frentes ortogonales (FundedSync O y Global_VolComp en M1 de Dukascopy);
+- SUPERCARTERA-V2 con CSCV en Kaggle.
+
+La revisión de Claude está en `auditoria_claude_20261127/REVISION_CLAUDE.md` (commit `a6c643e4`).
+
+**Se acepta:**
+- la custodia del holdout (verificada sobre las 4 series publicadas);
+- el defecto de neutralización del XSMOM, heredado de la regla del 26-nov;
+- la invalidez de los `=F` de Yahoo (no toca la tendencia en ETF);
+- el decaimiento de Carril 2 después de 2018;
+- que FundedSync O con 1 micro empeora la cartera.
+
+**Se objeta:**
+- Global_VolComp es la misma señal que C2_VZ/EVRP: correlación mensual 0,48 con su versión de ES/NQ, y t 1,37 en la muestra completa;
+- la REP de cripto quedó iterada entre v1, v2 y v3;
+- `HRP_Weekly` es idéntica a EQ;
+- la potencia del pozo sin CME (0,54 con el efecto × 0,7) está sobreestimada.
+
+K27 sigue bloqueando toda apertura.
+
+En ese commit Claude también corrigió las fallas de CI de los commits de Antigravity:
+- funciones copiadas;
+- catálogo de herramientas;
+- líneas K55/K56;
+- `Estado:`;
+- enlaces locales de Windows;
+- índice y `ESTADO_VIVO.md`.
+
+Factor nuevo: `F-GLOBAL-VOLCOMP-M1DK-B`.
