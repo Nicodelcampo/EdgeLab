@@ -14,7 +14,13 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from scipy.stats import chi2
+import math
+
+
+def _chi2_sf_par(x: float, df: int) -> float:
+    """Cola superior de una chi² con df par (Fisher: df = 2k): exp(-x/2)·Σ_{i<k} (x/2)^i / i!. Exacta; evita depender de scipy."""
+    k, h = df // 2, x / 2.0
+    return math.exp(-h) * sum(h ** i / math.factorial(i) for i in range(k))
 
 try:
     import matplotlib
@@ -439,7 +445,7 @@ def abrir() -> int:
     def _fisher(cols: list[str]) -> dict:
         ps = [max(float(primarios[c]["HOLDOUT"]["p_una_cola"]), 1e-12) for c in cols]
         stat = -2.0 * sum(log(p) for p in ps)
-        return {"frentes": cols, "p_individuales": dict(zip(cols, ps)), "chi2": round(stat, 3), "df": 2 * len(cols), "p": round(float(chi2.sf(stat, 2 * len(cols))), 6)}
+        return {"frentes": cols, "p_individuales": dict(zip(cols, ps)), "chi2": round(stat, 3), "df": 2 * len(cols), "p": round(float(_chi2_sf_par(stat, 2 * len(cols))), 6)}
 
     combinaciones = {
         "fisher_clean_63m_HOLDOUT": _fisher(["Carril2_Sell16", "Macro_RP_Canasta"]),

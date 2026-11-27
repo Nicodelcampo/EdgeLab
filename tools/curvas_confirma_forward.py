@@ -1,6 +1,10 @@
 """Curvas de las canastas que confirman en HOLDOUT A5 o van a forward (lee series ya publicadas; no abre nada). Uso: PYTHONPATH=. python tools/curvas_confirma_forward.py"""
-import pandas as pd, numpy as np, matplotlib
-matplotlib.use("Agg"); import matplotlib.pyplot as plt
+import pandas as pd, numpy as np
+try:                                    # opcional: matplotlib no está en el lock del .venv
+    import matplotlib
+    matplotlib.use("Agg"); import matplotlib.pyplot as plt
+except ImportError as e:
+    raise SystemExit("hace falta matplotlib para dibujar las curvas") from e
 from edgelab.holdout import a5_bloque
 R="docs/research/"; OUT=R+"curvas_forward_20261127/"
 M=pd.read_csv(R+"holdout_a5_nocme_20261127/SERIES_HOLDOUT_A5_NOCME_MENSUAL.csv.gz",index_col=0)
