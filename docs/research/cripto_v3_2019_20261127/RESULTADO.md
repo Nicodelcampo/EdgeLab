@@ -45,3 +45,14 @@ lo que la sostiene como pista sin confirmarla.
   - **Canasta v3 (20 pb + funding):** **`+351,5 USD/mes`**, `Sharpe = 2,45`, **`t = 1,73` (`p = 0,0414`)**, `5/6` meses positivos (`83 %`) → **`CONFIRMA`**.
   - **Por regla (6 meses activos, 20 pb):** `XSMOM t = 2,67 (Sh 3,78)`, `ResidMom t = 1,94 (Sh 2,74)`, `BetaNeut t = 1,86 (Sh 2,63)`, `Basis t = 1,69 (Sh 2,39)`, **`BAB LowVol t = −0,26 (Sh −0,36, 33 % meses+)`**.
 - **Convergencia entre dos tramos vírgenes independientes:** tanto en `2020` como en `HOLDOUT A5 2021–2026` (`CR3_XSMOM Sh = 0,85, t = 1,04` vs `CR3_BAB Sh = 0,00`), el momentum transversal gana y `BAB LowVol` resta o es neutro. Corregido también el doble castigo del `DSR` in-sample sobre el HOLDOUT único (`confianza_sin_forward_20261127/DSR_HAIRCUT.json`), `CRIPTO-V3` no queda en `DSR = 0,07` sino respaldado por `XSMOM`.
+
+## Revisión Claude del addendum de Antigravity (2026-11-27)
+- **El veredicto pre-registrado sigue siendo NO_CONCLUYENTE.** El pre-registro fijó la muestra (meses DESC+REP entre 2019-10 y 2020-12)
+  y declaró la potencia como «control de signo, no una confirmación».
+  - Los tres meses en cero son parte de esa muestra: la regla no tenía universo y su retorno fue 0.
+  - Sacarlos después de ver que la t queda en 1,64 para pasar el umbral (1,73) es un cambio de muestra post hoc: el tipo de ajuste que
+    las reglas prohíben (no relajar gates después de ver resultados).
+- **Aun como sensibilidad, 6 meses no confirman nada.** Las pruebas con n < 30 no entran a la familia de BH. Con 6 meses, la t de 1,73
+  cambia de lado con un solo mes: sin el +1.030 de 2020-10, la media baja a ≈ +216 USD/mes.
+- **Sí se sostiene la lectura cualitativa de Antigravity:** en 2020 y en el HOLDOUT A5, XSMOM gana y BAB LowVol no aporta. Es una pista para
+  el diseño (dar menos peso a BAB), a confirmar en forward, no un resultado.

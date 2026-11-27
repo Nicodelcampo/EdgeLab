@@ -217,3 +217,9 @@ Auditoria completa y correcciones en código/registros ejecutadas tras hacer fas
 | `TRZ-EXTRANJEROS` | Fricción fija `1,5455 pts` aplicada a precios `2.200–4.500` de `2010–2019` infló el costo `3,5–5x` (`0,12–0,14 R/op`). | `python tools/trz_extranjeros.py auditar_friccion` → `AUDITORIA_FRICCION.json`: `T+R` neto prop `t=−1,37` (`Sh=−0,34`), bruto `2020–26` sigue `≈0` en Europa (`NO_REPETIR` se sostiene en fondo). Factor `-B`. |
 | `BONOS-ROTACION` / `RATIOS` | Rebalanceo lineal continuo sin banda muerta (`11%/día`) + spreads post-cierre (`19:07` BA) destruyeron un bruto DESC positivo; `GD30/AL30` REP sigue `~0` bruto. | Addenda en ambos `RESULTADO.md`; factor `-B` acota `NO_REPETIR`. |
 | Fuentes intradía bonos AR | Verificación empírica directa + límite de Chrome (`DevToolsActivePort`). | `RATIOS_BONOS_FUENTES_DE_DATOS_20261127.md` §9 (descartado Open BYMA/`PyOBD`, `data912`, Yahoo, TwelveData; documentado BYMADATA y BYMA Market Data + TradingView/Masella). |
+
+**Revisión Claude de §14 (2026-11-27):**
+- Se aceptan las correcciones de fricción de TRZ (sensibilidad: el veredicto no cambia), del DSR sobre un HOLDOUT único, de H1 sin VBB y del
+  alcance de BONOS-ROTACION.
+- **No se acepta el CONFIRMA de CRIPTO-V3-2019:** sale de sacar los meses en cero después de ver el resultado, sobre 6 meses. El veredicto
+  pre-registrado sigue NO_CONCLUYENTE. Detalle en `cripto_v3_2019_20261127/RESULTADO.md` §«Revisión Claude».
