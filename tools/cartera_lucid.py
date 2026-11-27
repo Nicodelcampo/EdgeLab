@@ -178,12 +178,13 @@ def simular(universo: str = "INTRA8", salida: Path | None = None) -> int:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(); ap.add_argument("accion", choices=["simular", "contratos"])
     ap.add_argument("--universo", default="INTRA8", choices=sorted(UNIVERSOS)); ap.add_argument("--salida", type=Path, default=None)
+    ap.add_argument("--tope", type=int, default=TOPE)                   # tope de micros de la cuenta (25K 20, 50K 40, 150K 100)
     ap.add_argument("--B", type=float, default=200.0); ap.add_argument("--esquema", default="INV_VOL"); ap.add_argument("--hasta", default="2026-09-30")
     a = ap.parse_args(argv)
     if a.accion == "simular":
         return simular(a.universo, a.salida)
     inicio = (pd.Timestamp(a.hasta) + pd.offsets.QuarterBegin(startingMonth=1)).normalize()
-    print(inicio.date(), contratos(cargar(UNIVERSOS[a.universo]), inicio, a.B, a.esquema))
+    print(inicio.date(), contratos(cargar(UNIVERSOS[a.universo]), inicio, a.B, a.esquema, a.tope))
     return 0
 
 

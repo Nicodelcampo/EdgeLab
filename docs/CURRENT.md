@@ -22,6 +22,12 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   - en LucidFlex sumar N y SOMEOD baja la P(cobrar) (1 micro mínimo suma riesgo): sigue Intradía 8;
   - cripto con universo punto en el tiempo y deslizamiento: REP negativa, no se abre el holdout;
   - TSMOM no-equity: DESC t 0,96, sin evidencia.
+- **Revisión «demasiado estricto»** (pedida por Nico, 2026-11-27):
+  - los stops ATR de FundedSync vienen de una campaña pre-registrada, no del holdout;
+  - el barrido de Kaggle tiene persistencia (p 0,014), pero sin potencia;
+  - en cuentas prop, por ventaja/mes, la cartera de 10 iguala o supera a la de 8 en la 150K, y más tamaño rinde más por mes (decide Nico;
+    composiciones NT8 en `preset_diversificada_20261127/RESULTADO.md` §5);
+  - cripto: confirmado que era selección de monedas.
 
 ## Estado al 2026-11-25 (leer primero)
 

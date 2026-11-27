@@ -100,3 +100,15 @@ Detalle completo en `VENTAJA_POR_MES.csv`.
   Es una decisión de riesgo y de bolsillo: la toma Nico.
 - El «sin ventaja» por mes da positivo en todos los planes grandes (150K B800: +$313/mes). Es el regalo de la estructura en el modelo; si
   el modelo de retiros es optimista, ese número es el primero que se cae. Por eso la comparación usa la resta, no el valor esperado bruto.
+
+### Cómo cargarlo en NT8 (preset `Personalizada`, campo Composición), si Nico decide subir tamaño en la 150K
+| plan | Composición | micros simultáneos máx. | peor día sin DLL |
+|---|---|---|---|
+| vigente (8, 1 micro) | `MNQ:T=1,R=1,Z=1,V=1,RQ5=1,FR=1;MES:RQ5=1,ES5N=1` | 20 | −$4.685 |
+| 10, 1 micro (`Diversificada`) | `MNQ:T=1,R=1,Z=1,V=1,RQ5=1,FR=1,N=1,SOMEOD=1;MES:RQ5=1,ES5N=1` | 26 | −$6.246 |
+| 10, 4 micros | `MNQ:T=4,R=4,Z=4,V=4,RQ5=4,FR=4,N=4,SOMEOD=4;MES:RQ5=4,ES5N=4` | 40 | −$8.957 |
+| 10, riesgo igual B800 | `MNQ:T=4,R=2,Z=2,V=3,RQ5=2,FR=2,N=3,SOMEOD=2;MES:RQ5=4,ES5N=4` | 89 | −$20.546 |
+
+Todos los planes grandes dependen del límite diario de $2.700 de la 150K (el simulador corta el día ahí, como hace Lucid). Sin él, un
+solo día podría superar la pérdida máxima de $4.500. Los contratos de «riesgo igual» se recalculan cada trimestre:
+`python tools/cartera_lucid.py contratos --universo DIVERSIFICADA10 --esquema RIESGO_IGUAL --B 800 --tope 100`.
