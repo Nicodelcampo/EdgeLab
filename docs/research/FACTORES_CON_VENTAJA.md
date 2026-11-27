@@ -5,7 +5,7 @@ Estado: VIGENTE (GENERADO de `docs/research/FACTORES.jsonl` con `python tools/fa
 Regla de uso: **antes de abrir una familia nueva, indagá una PISTA_VIVA o aplicá una PALANCA_DE_DISENO**; lo que está en NO_REPETIR
 no se vuelve a proponer igual. Un factor ordena la investigación, no es evidencia para promover.
 
-## PISTA_VIVA (45)
+## PISTA_VIVA (48)
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
@@ -24,6 +24,21 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: Binance USDT-M PIT 226 monedas crypto (1D + funding)
   - Siguiente: Integrar CRIPTO-PIT v3 con ResidMom y microestructura OI/Basis bajo pre-registro antes de apertura conjunta HOLDOUT A5 (18m)
   - Evidencia: `docs/research/auditoria_claude_20261127/RESULTADO.md`, `docs/research/auditoria_claude_20261127/CRIPTO_PIT_V2.json`
+- **Canasta ortogonal CRIPTO-PIT v3: XSMOM 21d + XSMOM BetaNeut + BAB LowVol escalonados 5d (226 monedas ex-TradFi, 20 bps+funding)** (`F-CRIPTO-PIT-V3-ORT`, 2026-11-27, sesion)
+  - Efecto: BAB LowVol logra Sh=0.77 (REP 1.04) con corr=-0.217 vs XSMOM y 1.25x/mes; canasta DESC inv-vol (XSMOM+BetaNeut+BAB) sube a DESC+REP 51m Sh=1.29 (t=2.66, p=0.0039, +211.8 USD/m), REP 12m Sh=1.72, beta_BTC=+0.016, top5=22.8%. XSMOM+BAB limpio (2 patas): Sh=1.47 (t=3.02). Basis_Carry Sh=0.34 y ResidMom_2F Sh=0.17 débiles/excluidos.
+  - Dónde: Binance USDT-M PIT 226 monedas + premiumIndexKlines 1D (2021-01 -> 2026-09 DESC+REP, HOLDOUT sellado)
+  - Siguiente: Integrada en Super-Canasta v2; decidir si abrir HOLDOUT A5 (18m) en pool conjunto No-CME con K27 o mantener sellado.
+  - Evidencia: `docs/research/cripto_pit_v3_20261127/RESULTADO.md`, `docs/research/cripto_pit_v3_20261127/RESULTADO.json`
+- **Transferencia global F-COMPRESION-VOL-CRECE (C2_VZ y C2_EVRP + CBOE VIX/VXN/VIX9D) sobre indices no-US y oro M1DK; diagnostico FundedSync O 1 MNQ fijo** (`F-GLOBAL-VOLCOMP-M1DK`, 2026-11-27, sesion)
+  - Efecto: Global_VolComp_M1DK (7 pares causales en DAX, EuroStoxx, FTSE, Nikkei, Oro a 8 bps RT): DESC Sh=0.415, REP Sh=0.562, 19-26 Sh=1.132, 21-26 DR Sh=1.162 (t=2.39, p=0.0083), corr mensual vs Carril2_Sell16=+0.130 y vs CME_TRZV=-0.327. Cautela: EuroStoxx y FTSE caen a negativo con 16 bps. FundedSync O 1 MNQ fijo destraba 36 ops en 25-10..26-09 (-3041 USD; 21-26 Sh=0.263) y empeora carteras.
+  - Dónde: DAX, EuroStoxx, FTSE, Nikkei, XAUUSD M1DK (2014-07 -> 2026-09 DESC+REP, HOLDOUT sellado)
+  - Siguiente: Mantener Global_VolComp_M1DK como 3er frente limpio no-CME; descartar FundedSync O para cartera CME 21-26.
+  - Evidencia: `docs/research/frentes_ortogonales_20261127/RESULTADO.md`, `docs/research/frentes_ortogonales_20261127/RESULTADO.json`
+- **Super-Canasta v2 multi-frente ortogonal a volatilidad identica 10% (W-FRI/M) y CSCV limpio no-CME** (`F-SUPERCARTERA-V2-MULTIFRENTE`, 2026-11-27, sesion)
+  - Efecto: 3 frentes limpios (Carril2_Sell16 + Global_VolComp_M1DK + Cripto_v3) suben en 21-26 DR a Sh=1.563 (t=3.22, REP=3.375, MDD@10%=-5.97%, Calmar=2.62 vs 0.45 de Carril2 solo; Boot 20k Calmar=2.65, Bayes P(>0.5)=0.903); CSCV limpio 28 reglas no-CME OOS med=1.146 (P>0=0.991). Con CME_TRZV (caveat sesgo vendedor): Sh=2.859 (REP=4.93, Calmar=6.27; estres CME 0.5x/Oth 0.7x Sh=1.738). Potencia conjunta holdout No-CME (0.7x): 0.38 en 18m y 0.539 en 63m dinamicos.
+  - Dónde: CME + M1 NT8 + M1DK Global + Binance PIT Crypto (2006/2014/2021 -> 2026-09 DESC+REP, HOLDOUT A5 sellado)
+  - Siguiente: Auditoría cruzada de Claude sobre rama claude/vibrant-clarke-s9z6e2 y decisión de Nico sobre K27/holdout o más frentes no-equity limpios.
+  - Evidencia: `docs/research/supercartera_v2_20261127/RESULTADO.md`, `docs/research/supercartera_v2_20261127/SUPERCARTERA_V2.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
