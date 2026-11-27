@@ -1623,3 +1623,13 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   Fuente: `docs/research/bonos_rotacion_20261127/RESULTADO.md`.
 - **NO MEDIDO:** la versión intradía (velas de 5 s a 30 min). Falta intradía histórico, y el endpoint de Open BYMA Data no fue autorizado
   desde el entorno.
+
+## 2026-11-27 — AL29/AL30: operaciones del amigo en Matriz (descriptivo, sin prueba contada)
+- **MEDIDO (descriptivo):**
+  - Reconstrucción: 2026-11-26, ratio 1,0389 → 1,0274 en 11 minutos, +47.500 $ sobre ≈ 4,3 M; toda la ganancia en la pata AL29.
+  - Liquidez: AL29 ≈ 120× menos volumen que AL30, spread 0,73 % contra 0,085 %, exceso de rango diario mediano 0,65 % desde la salida del cepo.
+  - Ratio al cierre: autocorrelación −0,16 y Roll 0,54 % desde la salida del cepo, probablemente por precios viejos de AL29.
+
+  Fuente: `docs/research/biblioteca_ideas_20261028/OPERACIONES_AMIGO_AL29_AL30_MATRIZ_20261127.md`.
+- **NO MEDIDO:** la regla intradía pasiva (límite en AL29 cubierta en AL30). Falta intradía: historial del amigo, API de Primary vía Veta
+  (cobertura de BYMA sin verificar) o grabación hacia adelante.
