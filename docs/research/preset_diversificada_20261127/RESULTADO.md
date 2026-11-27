@@ -157,3 +157,25 @@ El camino cierra exacto contra la suma de operaciones (`tools/intradia_min_carte
 Composición NT8 del punto robusto (150K), preset `Personalizada`:
 - 8 estrategias: `MNQ:T=2,R=2,Z=2,V=2,RQ5=2,FR=2;MES:RQ5=2,ES5N=2`
 - 10 estrategias: `MNQ:T=2,R=2,Z=2,V=2,RQ5=2,FR=2,N=2,SOMEOD=2;MES:RQ5=2,ES5N=2`
+
+### Sensibilidad del DLL intradía (pre-registrada en `ADENDA_DLL_INTRADIA.md`): cota pesimista contra optimista
+El camino de §6 usa el extremo adverso de cada vela para todas las estrategias a la vez (cota pesimista: con posiciones opuestas cuenta
+dos veces el rango). La cota optimista usa el cierre de cada vela de 1 minuto (`SENSIBILIDAD_DLL_150K.csv`).
+
+| 150K | ventaja/mes, pesimista | ventaja/mes, optimista | P(cobrar), pesimista / optimista |
+|---|---|---|---|
+| 8, 1 micro | +$125 | +$125 | 0,269 / 0,269 |
+| 8, 2 micros | +$222 | +$217 | 0,154 / 0,155 |
+| 8, 4 micros | +$213 | +$309 | 0,053 / 0,073 |
+| 8, riesgo igual B600 | +$267 | +$291 | 0,077 / 0,084 |
+| 10, 2 micros | +$229 | +$234 | 0,106 / 0,110 |
+| 10, 4 micros | +$241 | +$227 | 0,034 / 0,041 |
+
+- **Lectura pre-registrada:**
+  - 2 micros no cambia entre las dos cotas: queda firme como el plan estable;
+  - con 8 estrategias, 4 micros rinde por mes entre +$213 y +$309: la ventaja del tamaño grande depende de la cota y se informa como
+    rango.
+- **Corrección a §6:** «el tamaño grande estaba inflado 35–40 %» era la cota pesimista. Con las dos cotas, la inflación de 4 micros
+  (contra el DLL al cierre, +$330) está entre 6 y 35 %. El error de Monte Carlo es ≈ ±$15–20/mes (10.000 caminos).
+- **Para decidir:** 2 micros da +$217 a +$229 con certeza de modelo y P(cobrar) 0,11–0,15. 4 micros (cartera de 8) puede dar hasta
+  +$309, pero con P 0,05–0,07 por intento y dependiendo de cómo se recorra cada minuto. Es elección de riesgo de Nico.

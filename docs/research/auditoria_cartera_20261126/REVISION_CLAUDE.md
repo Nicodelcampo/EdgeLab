@@ -18,11 +18,21 @@ North Star sha256 `16a108dfce2671b7a7c502d7db3eccdb71aabdca1cd1bd6bb7ea0f847d66e
 >    más fuerte es la de los negativos (overnight de ES, EMD y FTSE pierden en los dos bloques). Ningún sobreviviente tiene t ≥ 2 en REP. El
 >    mejor (overnight del Russell, DESC t 2,17) no tiene potencia: 228 meses para decidir.
 >
+> 4. **(Segunda revisión, 2026-11-27.) Concedí demasiado sobre REGLA-CARTERA.** Con los números de la propia auditoría
+>    (`AUDITORIA_RESUMEN.json`), a igual volatilidad:
+>    - el Sharpe queda igual en walk-forward (1,91 contra 1,89);
+>    - la caída baja de verdad: Calmar intradía 2,03 contra 1,37 en walk-forward 2021–2026, y caída intradía −9.364 contra −14.499 en
+>      2023–2026 (−35 %);
+>    - la versión operable en NT8 (Fix3: sin F ni C, pesos acotados) da Calmar 1,97 y caída −8.470.
+>
+>    El 55–60 % de la baja de caída era tamaño, como dijo Antigravity; el resto es real y es lo que pesa en una cuenta con pérdida máxima.
+>    Sigue en pie que la regla es frágil al corte temprano (2021-12 y 2022-12 quedan debajo de la actual).
+>
 > Lo que **no** cambia, verificado:
 > - La ventaja cripto de la auditoría dependía de las monedas elegidas con información de hoy. El top-8 punto en el tiempo da REP −$28/mes
 >   con 20 pb y ≈ $0 con 10 pb (`cripto_pit_20261127/RESULTADO_TOP8.md`).
 > - F, C y O no son operables en NT8.
-> - La regla de Claude no supera a la actual a igual riesgo.
+> - (La frase «la regla de Claude no supera a la actual a igual riesgo» queda corregida por el punto 4: empata en Sharpe y baja la caída.)
 
 ## 1. Críticas a REGLA-CARTERA que se aceptan
 

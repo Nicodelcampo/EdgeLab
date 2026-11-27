@@ -148,7 +148,8 @@ def _sim_cuenta(x, mu, N, seed, cuenta, cons=0.4, max_dias=250, xmin=None):
                 ev_por_mes=float((cob.mean() - precio) / max(dias.mean(), 1) * 21))
 
 
-def simular(universo: str = "INTRA8", salida: Path | None = None, intradia: bool = False) -> int:
+def simular(universo: str = "INTRA8", salida: Path | None = None, intradia: bool = False, precio: str = "extremo",
+            cuentas: tuple = ()) -> int:
     if universo != "INTRA8":
         from registro_global import exigir_contada
         exigir_contada(PD / "PREREGISTRO.md")
@@ -156,9 +157,11 @@ def simular(universo: str = "INTRA8", salida: Path | None = None, intradia: bool
         import intradia_min_cartera as IM
         from registro_global import exigir_contada
         exigir_contada(PD / "ADENDA_DLL_INTRADIA.md")
-        cam = IM.caminos(UNIVERSOS[universo])
+        cam = IM.caminos(UNIVERSOS[universo], precio=precio)
     ops = cargar(UNIVERSOS[universo]); res = {"plan": "docs/research/cartera_lucid_20261125/PLAN.md (enmienda 1)", "universo": universo, "cuentas": {}}
     for cta, spec in CUENTAS.items():
+        if cuentas and cta not in cuentas:
+            continue
         tope = spec[7]; R = res["cuentas"][cta] = {"planes": {}}
         planes = [(f"UNOx{k}", 0) for k in (1, 2, 3, 4)] + [(e, B) for e in ("RIESGO_IGUAL", "INV_VOL") for B in (100, 200, 300, 400, 600, 800)]
         for e, B in planes:
@@ -191,11 +194,12 @@ def main(argv=None) -> int:
     ap = argparse.ArgumentParser(); ap.add_argument("accion", choices=["simular", "contratos"])
     ap.add_argument("--universo", default="INTRA8", choices=sorted(UNIVERSOS)); ap.add_argument("--salida", type=Path, default=None)
     ap.add_argument("--intradia", action="store_true")                  # DLL sobre el mínimo intradía (ADENDA_DLL_INTRADIA)
+    ap.add_argument("--precio", default="extremo", choices=["extremo", "cierre"]); ap.add_argument("--cuentas", default="")
     ap.add_argument("--tope", type=int, default=TOPE)                   # tope de micros de la cuenta (25K 20, 50K 40, 150K 100)
     ap.add_argument("--B", type=float, default=200.0); ap.add_argument("--esquema", default="INV_VOL"); ap.add_argument("--hasta", default="2026-09-30")
     a = ap.parse_args(argv)
     if a.accion == "simular":
-        return simular(a.universo, a.salida, a.intradia)
+        return simular(a.universo, a.salida, a.intradia, a.precio, tuple(x for x in a.cuentas.split(",") if x))
     inicio = (pd.Timestamp(a.hasta) + pd.offsets.QuarterBegin(startingMonth=1)).normalize()
     print(inicio.date(), contratos(cargar(UNIVERSOS[a.universo]), inicio, a.B, a.esquema, a.tope))
     return 0

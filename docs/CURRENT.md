@@ -13,7 +13,7 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
 ## Estado al 2026-11-27
 
 - **Auditoría de cartera de Antigravity** (`docs/research/auditoria_cartera_20261126/`, EF2 sin pre-registro, 169 pruebas contadas
-  después) y su revisión (`REVISION_CLAUDE.md`): a igual riesgo la regla de cartera del 26-nov no supera a la actual; F/C/O no tienen
+  después) y su revisión (`REVISION_CLAUDE.md`): a igual riesgo la regla de cartera del 26-nov empata en Sharpe y baja la caída ≈ 35 % (corregido en la segunda revisión); F/C/O no tienen
   motor NT8; las variantes FundedSync con stop ATR leyeron el HOLDOUT A5 (sólo se confirman en terminal y forward); cripto Binance es
   la pista más decorrelacionada (+0,02) y todavía sin evidencia. Orden propuesto: preset NT8 sin F/C/O con tamaño por cuenta → cripto
   pre-registrado → tendencia no-equity como hipótesis única.
@@ -33,6 +33,10 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   - el tamaño grande estaba inflado 35–40 %;
   - en la 150K, 2 micros por estrategia es el punto robusto (+$222 a +$229 por mes, P 0,11 a 0,15);
   - 25K y 50K no tienen plan sensato (`preset_diversificada_20261127/RESULTADO.md` §6).
+- **Segunda revisión «demasiado estricto» (2026-11-27):**
+  - el DLL intradía usaba sólo la cota pesimista: 2 micros sigue estable en las dos cotas, y 4 micros con 8 estrategias rinde entre +$213
+    y +$309 por mes;
+  - a igual riesgo, la regla de cartera baja la caída ≈ 35 % con el mismo Sharpe.
 
 ## Estado al 2026-11-25 (leer primero)
 

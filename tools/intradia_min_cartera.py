@@ -29,19 +29,22 @@ MIN_SES = 1441
 MICRO = {"NQ": "MNQ", "ES": "MES"}
 
 
-def _barras(inst: str) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def _barras(inst: str) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     d = pd.read_parquet(ROOT / "data" / "m1nt8" / f"{inst}_M1_nonadj_utc.parquet",
                         filters=[("datetime", ">=", pd.Timestamp("2018-12-01")), ("datetime", "<", pd.Timestamp("2026-10-01"))])
     t_ny = (pd.DatetimeIndex(d.index).tz_localize("UTC") + pd.Timedelta(minutes=1)).tz_convert("America/New_York").tz_localize(None)
-    return t_ny.values.astype("datetime64[m]").astype(np.int64), d.high.to_numpy(float), d.low.to_numpy(float)
+    return t_ny.values.astype("datetime64[m]").astype(np.int64), d.high.to_numpy(float), d.low.to_numpy(float), d.close.to_numpy(float)
 
 
-def camino_estrategia(path: Path, inst: str) -> tuple[np.ndarray, np.ndarray]:
-    """(sesiones yyyymmdd, matriz sesiones × 1441 minutos) del P&L acumulado intradía en USD con 1 micro."""
+def camino_estrategia(path: Path, inst: str, precio: str = "extremo") -> tuple[np.ndarray, np.ndarray]:
+    """(sesiones yyyymmdd, matriz sesiones × 1441 minutos) del P&L acumulado intradía en USD con 1 micro.
+    precio «extremo»: no realizado en el extremo adverso de la vela (cota pesimista); «cierre»: en el cierre de la vela (cota optimista)."""
     o = pd.read_csv(path)
     o = o[o.riesgo_pts > 0]
     mic = MICRO[inst]; pv = costos.tick_value_usd(mic) / costos.tick_size(mic); fr = costos.friccion_rt_puntos(mic, "base")
-    tm, hi, lo = _barras(inst)
+    tm, hi, lo, cl = _barras(inst)
+    if precio == "cierre":
+        hi = lo = cl
     ses = np.array(sorted(o.fecha_int.astype(int).unique()))
     pos = {s: i for i, s in enumerate(ses)}
     M = np.zeros((len(ses), MIN_SES), np.float32)
@@ -69,15 +72,15 @@ def camino_estrategia(path: Path, inst: str) -> tuple[np.ndarray, np.ndarray]:
     return ses, M
 
 
-def caminos(universo: dict, cache: bool = True) -> dict:
+def caminos(universo: dict, cache: bool = True, precio: str = "extremo") -> dict:
     """{estrategia: (sesiones, matriz)} para un universo de cartera_lucid ({nombre: (ruta, inst)})."""
     out = {}
     CACHE.mkdir(parents=True, exist_ok=True)
     for k, (p, inst) in universo.items():
-        f = CACHE / f"{k}.npz"
+        f = CACHE / (f"{k}.npz" if precio == "extremo" else f"{k}_{precio}.npz")
         if cache and f.exists():
             z = np.load(f); out[k] = (z["ses"], z["M"]); continue
-        ses, M = camino_estrategia(p, inst)
+        ses, M = camino_estrategia(p, inst, precio)
         np.savez_compressed(f, ses=ses, M=M); out[k] = (ses, M)
         print(k, len(ses), "sesiones", flush=True)
     return out

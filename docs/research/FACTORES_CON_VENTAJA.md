@@ -9,6 +9,11 @@ no se vuelve a proponer igual. Un factor ordena la investigación, no es evidenc
 
 _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
 
+- **Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la cartera y ≤ 0,6 con cada miembro, riesgo parejo** (`F-REGLA-CARTERA-DECORRELACIONADA-B`, 2026-11-27, agente)
+  - Efecto: A igual volatilidad (números de la auditoría de Antigravity): Sharpe igual en walk-forward 2021–2026 (1,91 vs 1,89) pero Calmar intradía 2,03 vs 1,37 y caída intradía −9.364 vs −14.499 en 2023–2026 (−35 %). La versión operable en NT8 (sin F/C, pesos [0,5; 2]) da Calmar 1,97 y caída −8.470. El 55–60 % de la baja de caída del primer informe era tamaño; el resto es real. Frágil al corte temprano (2021-12, 2022-12 debajo de la actual).
+  - Dónde: MNQ/MES USD 1 micro, 2019-07 → 2026-09
+  - Siguiente: Medir la versión operable (pesos acotados, sin F/C) en el simulador de cuentas con DLL intradía por ventaja/mes contra 1 y 2 micros iguales.
+  - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`, `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/AUDITORIA_RESUMEN.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -29,11 +34,6 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: ES/NQ/YM/RTY/GC M1 de NT8
   - Siguiente: Sólo C2_VZ entra a la cartera; el resto espera forward o apertura del holdout A5 de CARRIL2_A5 con plan de potencia.
   - Evidencia: `docs/research/carril2_extension_20261126/RESULTADO.md`
-- **Regla fija de cartera: elegibles t ≥ 1,5 y ≥ 60 % años +, orden por t, corr ≤ 0,4 con la cartera y ≤ 0,6 con cada miembro, riesgo parejo** (`F-REGLA-CARTERA-DECORRELACIONADA`, 2026-11-26, humano)
-  - Efecto: Validación fuera de tiempo (selección 2019-07→2023-06, eval 2023-07→2026-09): Intradía Sharpe 2,01 vs 1,46 actual, caída −3.702 vs −13.964, meses + 64 % vs 56 %; Mixto 2,31 vs 1,90, caída −4.041 vs −15.311. Toda la ventana: Intradía = T, Z, F, V, RQ5 NQ, N, C (1 micro c/u). Revisión 2026-11-27 (auditoría de Antigravity): esa ventaja era sobre todo tamaño (operaba al 44 % del riesgo base); a igual volatilidad queda empatada con la actual (walk-forward 1,91 vs 1,89) y debajo en cortes tempranos; F, C y O no tienen motor NT8.
-  - Dónde: MNQ/MES USD 1 micro, 2019-07 → 2026-09
-  - Siguiente: Queda el criterio (sumar decorrelacionadas a riesgo parejo), no la selección: preset NT8 sin F/C/O con tamaño por cuenta; ver docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md.
-  - Evidencia: `docs/research/regla_cartera_20261126/RESULTADO.md`, `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`
 - **Re-medición de los 15 módulos de FundedSync con la traducción IL corregida (commit 7965e7fb)** (`F-FS-IL-REMEDICION-V-CANDIDATA`, 2026-11-21, humano)
   - Efecto: T, R, Z, C, F, O, P, Q y W idénticas en puntos. A20 t 2,57 → 2,77. V t 1,09 → 2,87 (2022–26), +5.115 pts, positiva también en 2010–21 (t 1,28) y desde 2025-09 (t 1,53).
   - Dónde: NQ M1 de NT8, 2010 → 2026-09
@@ -234,11 +234,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
   - Siguiente: Confirmar FundedSync sólo en terminal y forward. Llevar Regla_V2_Clean (sin la V re-preciada) a NT8 con micros enteros y medirla con el simulador de cuentas por ventaja/mes.
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
-- **Elegir el plan de una cuenta prop por ventaja por mes (EV/mes con la media contraída menos EV/mes sin ventaja) y no por P(cobrar) por intento; con el límite diario aplicado al mínimo intradía** (`F-PROP-POR-MES-VS-POR-INTENTO-B`, 2026-11-27, agente)
-  - Efecto: Con DLL intradía (Lucid liquida al tocarlo): 150K 1 micro +$125 (8) / +$152 (10); 2 micros +$222 / +$229 (P 0,15 / 0,11; 26–52 días tocan el DLL en 6,7 años); 4 micros +$213 / +$241 (antes +$330 / +$337; P 0,05 / 0,03). El tamaño grande estaba inflado 35–40 % por días que tocaban −$2.700 y se recuperaban. 25K y 50K se desarman (+$75 y +$149/mes, P 1–10 %).
+- **Elegir el plan de una cuenta prop por ventaja por mes (EV/mes con la media contraída menos EV/mes sin ventaja) y no por P(cobrar) por intento; con el límite diario aplicado al mínimo intradía** (`F-PROP-POR-MES-VS-POR-INTENTO-C`, 2026-11-27, agente)
+  - Efecto: Con DLL intradía (Lucid liquida al tocarlo): 150K 1 micro +$125 (8) / +$152 (10); 2 micros +$222 / +$229 (P 0,15 / 0,11; 26–52 días tocan el DLL en 6,7 años); 4 micros +$213 / +$241 (antes +$330 / +$337; P 0,05 / 0,03). Con las dos cotas intradía (extremo adverso / cierre de la vela) 2 micros es estable (+$217–222 con 8, +$229–234 con 10); 4 micros con 8 rinde entre +$213 y +$309: la inflación del tamaño grande está entre 6 y 35 % por días que tocaban −$2.700 y se recuperaban. 25K y 50K se desarman (+$75 y +$149/mes, P 1–10 %).
   - Dónde: MNQ/MES 1 micro, corridas NT8 + arnés, 2020 → 2026-09; simulador calibrado tools/cartera_lucid.py
   - Siguiente: 150K: 2 micros por estrategia es el punto robusto (cerca del máximo por mes, P por intento 2–3× la de los planes grandes); 8 o 10 empatan. Decide Nico. Todo simulador de prop con DLL debe usar el mínimo intradía.
-  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES_DLLINTRA.csv`
+  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES_DLLINTRA.csv`, `docs/research/preset_diversificada_20261127/SENSIBILIDAD_DLL_150K.csv`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación

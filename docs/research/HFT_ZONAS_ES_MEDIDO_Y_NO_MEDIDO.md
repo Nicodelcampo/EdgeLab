@@ -1548,3 +1548,8 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - deslizamiento creciente con el tamaño;
   - el DLL de otras props (Tradeify y Topstep no tienen DLL; sus planes no se recalcularon).
+
+## 2026-11-27 — Segunda revisión «demasiado estricto»
+- **MEDIDO:** sensibilidad del DLL intradía con la cota optimista (cierre de cada vela) en la 150K (`SENSIBILIDAD_DLL_150K.csv`).
+- **Corregido:** la regla de cartera a igual riesgo baja la caída ≈ 35 % (números de la auditoría, `AUDITORIA_RESUMEN.json`).
+- **NO MEDIDO:** la versión operable de la regla (sin F/C, pesos acotados) en el simulador de cuentas con DLL intradía.
