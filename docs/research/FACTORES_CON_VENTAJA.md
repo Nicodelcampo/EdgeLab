@@ -515,7 +515,7 @@ _Extraído por el meta-analista de una campaña cerrada; falta revisión._
   - Siguiente: Revisar el documento y reclasificar (PALANCA_DE_DISENO / NO_REPETIR / SIN_FACTOR); asentado para no dejarlo suelto.
   - Evidencia: `docs/research/fundedsync_satelites_prop_20261123/RESULTADO.md`
 
-## EN_SEGUIMIENTO (25)
+## EN_SEGUIMIENTO (27)
 
 _Regla congelada que se sigue hacia adelante (papel)._
 
@@ -554,6 +554,16 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: Futuros M1 NT8 + ETFs adjclose 20y + Binance PIT Crypto + OFI (< 2026-10-01)
   - Siguiente: Activar arquitectura ejecutable separada (Intradia8 en LucidFlex 150K 2 micros; Carril 2 + Macro RP en IB; XSMOM + OFI1 en Binance) bajo vigilancia continua en TERMINAL >= 2026-10-01 sin tocar parametros.
   - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/HOLDOUT_VENTANAS.jsonl`, `docs/research/supercartera_v3_20261127/RESULTADO.md`, `docs/research/supercartera_v3_20261127/SUPERCARTERA_V3.json`
+- **Ratio ley NY / ley local de bonos soberanos argentinos con el mismo flujo (GD/AL) vuelve a su media de 20 ruedas** (`F-RATIOS-BONOS-AR-PRIMA-LEY`, 2026-11-27, sesion)
+  - Efecto: Diario 2021-09 → 2026-11 (data912), salto de 1 rueda: DESC 4/4 pares nominados (t −1,5 a −2,8), REP replica en GD35/AL35 (t −2,93), GD41/AL41 (−2,26) y GD38/AE38 (−1,90); GD30/AL30 no (t +0,14). Vida media de 7 a 24 ruedas. El efecto se concentra con cepo (2021–2023, desvío de 2 sd 4–6 %); desde 2025-04 el desvío es de 0,8–1,7 % y no hay reversión significativa (t +0,11 a −1,53). Costo de ida y vuelta ≈ 0,36 %.
+  - Dónde: AL30, GD30, AL35, GD35, AE38, GD38, AL41, GD41 en pesos (BYMA, cierres diarios)
+  - Siguiente: La versión operable es intradía: grabar puntas hacia adelante (data912 /live o IOL) y medir en el régimen actual; con cierres diarios hoy no hay evidencia. Decisión de Nico.
+  - Evidencia: `docs/research/bonos_ratios_20261127/RESULTADO.md`, `docs/research/bonos_ratios_20261127/RESULTADO.json`
+- **Canasta CRIPTO-PIT v3 (XSMOM + BetaNeut + BAB, pesos congelados) en el tramo anterior a su muestra (2019-10 → 2020-12)** (`F-CRIPTO-V3-2019-FUERA-DE-MUESTRA`, 2026-11-27, sesion)
+  - Efecto: Meses DESC+REP, 20 pb + funding: +234 USD/mes, t 1,64 (p 0,051), Sharpe 1,89; 6 meses activos (5 positivos). XSMOM t 2,27, BAB t −0,26. Potencia previa ≈ 0,18. Con HOLDOUT A5 t 0,60 y Sharpe deflactado 0,07, queda NO_CONCLUYENTE.
+  - Dónde: Perpetuos USDT-M de Binance, universo PIT top-25 (2020-05 → 2020-10 activos)
+  - Siguiente: Sin pesos nuevos; la confirmación es el forward. El momentum transversal (XSMOM) es la pata con evidencia en los tres tramos; BAB no.
+  - Evidencia: `docs/research/cripto_v3_2019_20261127/RESULTADO.md`, `docs/research/cripto_v3_2019_20261127/RESULTADO.json`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato

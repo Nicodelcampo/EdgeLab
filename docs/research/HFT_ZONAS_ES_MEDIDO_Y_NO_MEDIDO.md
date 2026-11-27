@@ -1579,3 +1579,25 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
   - cripto 2019-09 → 2020-12;
   - T, R y Z en índices extranjeros con M1 de Dukascopy;
   - TERMINAL y forward de Carril 2.
+
+## 2026-11-27 — BONOS-RATIOS (ratio GD/AL de bonos argentinos, diario)
+- **MEDIDO:**
+  - Reversión a la media de 20 ruedas con salto de una rueda: 4/4 pares en DESC; replica en GD35/AL35, GD41/AL41 y GD38/AE38, no en
+    GD30/AL30.
+  - Fuerte con cepo (2021–2023); sin significancia desde 2025-04. Desvío de 2 sd 0,8–1,7 % contra un costo de ≈ 0,36 %.
+
+  Fuente: `docs/research/bonos_ratios_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - el intradía y el spread real, que hay que grabar hacia adelante;
+  - el P&L de cualquier regla;
+  - los meses HOLDOUT de A5.
+
+## 2026-11-27 — CRIPTO-V3-2019 (canasta v3 congelada antes de su muestra)
+- **MEDIDO:**
+  - Meses DESC+REP 2019-10 → 2020-12: +234 USD/mes, t 1,64 (NO_CONCLUYENTE, potencia ≈ 0,18).
+  - XSMOM t 2,27; BAB t −0,26.
+
+  Fuente: `docs/research/cripto_v3_2019_20261127/RESULTADO.md`.
+- **NO MEDIDO:**
+  - los meses HOLDOUT de 2019–2020, sellados porque la familia ya usó su apertura;
+  - el forward.
