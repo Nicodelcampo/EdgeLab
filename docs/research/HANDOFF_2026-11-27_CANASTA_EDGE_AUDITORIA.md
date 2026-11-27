@@ -183,3 +183,26 @@ En ese commit Claude también corrigió las fallas de CI de los commits de Antig
 - índice y `ESTADO_VIVO.md`.
 
 Factor nuevo: `F-GLOBAL-VOLCOMP-M1DK-B`.
+
+## 13. Trabajo de Claude del 2026-11-27 (tarde), después de la §12
+| Tema | Documento | Commit |
+|---|---|---|
+| Revisión de la apertura conjunta HOLDOUT A5 sin CME | `holdout_a5_nocme_20261127/REVISION_CLAUDE.md` | `47bfd37f` |
+| Arreglos de CI sobre commits de Antigravity | `REMEDICIONES_CANDIDATAS.md` regenerado y 4 factores `-B` | `b2a9faef`, `fac1dbc8` |
+| Ratios de bonos argentinos (video de Gus Lucioni) | `biblioteca_ideas_20261028/RATIOS_BONOS_LUCIONI_20261126_RESUMEN.md`, `…_TRANSCRIPCION.md` | `ca8e4375` |
+| Fuentes de datos y costos de los ratios de bonos | `biblioteca_ideas_20261028/RATIOS_BONOS_FUENTES_DE_DATOS_20261127.md` | `54dc28a8` |
+| Curvas de lo que confirma y de lo que va a forward | `curvas_forward_20261127/CURVAS.md`, `tools/curvas_confirma_forward.py` | `62c680a0` |
+
+**Revisión de la apertura conjunta:**
+- Procedimiento conforme: K27 citado, pre-registro anterior al resultado, TERMINAL sellado.
+- Carril 2 confirma limpio: p 0,0077, sobrevive Holm sobre las 5 familias.
+- El pozo confirma por BH q 0,10, pero lo arrastra Carril 2.
+- Macro, cripto v3 y OFI quedan NO_CONCLUYENTE y gastaron su holdout con potencia de 0,10 a 0,21.
+
+**Ratios de bonos:** no se midió nada.
+- Falta el intradía histórico. Open BYMA Data (PyOBD) todavía no se probó: el permiso para instalarlo se denegó en el entorno.
+- Abrir este mercado, las fuentes y el uso de una cuenta propia es decisión de Nico.
+
+**Para auditar con prioridad:**
+1. Si la multiplicidad de la apertura conjunta se lee bien: 9 cortes rotulados CONFIRMA contra 5 familias independientes.
+2. Si el escalado a 10 % de volatilidad con el desvío de DESC de las curvas es el mismo que usa `SERIES_HOLDOUT_A5_NOCME_MENSUAL`.
