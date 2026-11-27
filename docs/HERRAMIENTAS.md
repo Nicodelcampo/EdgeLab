@@ -4,7 +4,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 
 **Antes de escribir un script, módulo o función:** `python tools/existente.py buscar "qué querés hacer"`. Si algo de acá o de `docs/MODULES.md` ya lo hace, se reutiliza (importándolo o reemplazando su lector, como `tools/barrido_horario_etapa_c_parquet.py` hace con `one`). Si se construye igual, el commit dice qué se encontró y por qué no sirve. `tests/test_existente.py` falla si un script nuevo no está acá o si aparece una función copiada.
 
-786 scripts.
+788 scripts.
 
 | script | qué hace (primera línea del docstring) |
 |---|---|
@@ -114,6 +114,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/bigtrap2_inventory.py` | Inventario TARGET-FREE de BigTrap2 sobre los folds de desarrollo (time:1). |
 | `tools/blind_espejo_eventos.py` | Eventos de espejo para la calibración A CIEGAS «¿hay picos acumulados antes de A?» (idea de Nico, 30/09). |
 | `tools/blind_espejo_outcomes.py` | Exploración pedida por Nico (30/09): ¿los espejos que juzgó «con picos» antes de A tienen ventaja sobre los «sin picos»? |
+| `tools/bonos_ratios.py` | BONOS-RATIOS (pre-registro docs/research/bonos_ratios_20261127/PREREGISTRO.md): ¿el ratio ley NY / ley local de bonos argentinos con |
 | `tools/brain_register_20260928.py` | Registro en el Cerebro (hipocampo) de lo medido y aprendido el 27–28/09/2026. Idempotente por episodio: si un |
 | `tools/bruto_neto_pistas.py` | ¿Señal bruta o fricción? Bruto contra neto de las pistas en la réplica (protocolo: docs/research/bruto_neto_pistas_20261108/). |
 | `tools/bt2_absorption_audit_rolls.py` | (sin docstring) |
@@ -745,6 +746,7 @@ Estado: VIGENTE. Generado por `python tools/existente.py catalogo --write`; no e
 | `tools/transferencia_multiactivo.py` | TRANSFERENCIA-MULTIACTIVO (pre-registro docs/research/transferencia_multiactivo_20261108/PREREGISTRO.md): reglas congeladas |
 | `tools/trayectorias_v5.py` | Trayectorias en R por operación (etapa TRAYECTORIAS) de las 8 reglas de la canasta v5, en DESC y réplica (nunca el holdout). |
 | `tools/trend_micro.py` | TREND-MICRO: rupturas con filtro de microestructura. Manifiesto con iteración 1: |
+| `tools/trz_extranjeros.py` | TRZ-EXTRANJEROS (pre-registro docs/research/trz_extranjeros_20261127/PREREGISTRO.md): T, R y Z de la cartera NT8, sin cambios, en |
 | `tools/turtles_oro_seguimiento.py` | TURTLES-ORO (base congelada) en datos no vistos: holdout (ACTA_HOLDOUT.md, una apertura) y forward bajo demanda. |
 | `tools/u1/u1_regimen_mensual_causal.py` | Experimento 1 (regimen_causal/PREREGISTRO_REGIMEN_MENSUAL_CAUSAL.md): U1-CRUZADO causal, media neta mensual (E1A/T3/S3, tope mult:3) |
 | `tools/u1/u1_regimen_rango.py` | U1-CRUZADO: régimen de rango como explicación del nulo 2023-25 (PREREGISTRO_REGIMEN_RANGO_U1.md). Sólo datos ya en el repo. |
