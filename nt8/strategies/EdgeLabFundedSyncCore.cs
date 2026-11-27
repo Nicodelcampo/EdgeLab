@@ -274,10 +274,14 @@ namespace NinjaTrader.NinjaScript.Strategies.EdgeLabFundedSync
         public static int MinOfDay(DateTime dt) { return dt.Hour * 60 + dt.Minute; }
         public static int WeekdayMon0(DateTime dt) { return ((int)dt.DayOfWeek + 6) % 7; }
 
+        // 2026-11-27: antes, si el id de Windows no existia (mono/Linux: el arnes de paridad) caia EN SILENCIO a UTC y la estrategia
+        // operaba con el reloj corrido 4-5 h. Ahora prueba el id IANA equivalente y, si tampoco existe, falla en voz alta.
         public static TimeZoneInfo ResolveTz(string winId)
         {
+            string iana = winId == "Eastern Standard Time" ? "America/New_York" : winId == "Central Standard Time" ? "America/Chicago" : null;
             try { return TimeZoneInfo.FindSystemTimeZoneById(winId); }
-            catch { return TimeZoneInfo.Utc; }
+            catch (Exception) { if (iana == null) throw; }
+            return TimeZoneInfo.FindSystemTimeZoneById(iana);
         }
 
         public static BarTimeContext BuildBarTimeContext(
