@@ -4,8 +4,9 @@
 
   python tools/trz_extranjeros.py bajar      # zips anuales/mensuales de HistData → data/trz_extranjeros/raw/ (sólo hasta 2026-09)
   python tools/trz_extranjeros.py preparar   # velas para el arnés: apertura local → 09:30 NY, escala a nivel NQ, volumen 1
-  python tools/trz_extranjeros.py calibrar   # Nasdaq CFD de HistData por el mismo circuito contra NQ futuros canónico (K28)
-  python tools/trz_extranjeros.py correr     # T, R y Z congelados (arnés C# de la cartera NT8, modo broker) en los 6 índices → RESULTADO.json
+  python tools/trz_extranjeros.py calibrar          # Nasdaq CFD de HistData por el mismo circuito contra NQ futuros canónico (K28)
+  python tools/trz_extranjeros.py correr            # T, R y Z congelados (arnés C# de la cartera NT8, modo broker) en los 6 índices → RESULTADO.json
+  python tools/trz_extranjeros.py auditar_friccion  # auditoría sobre OPS.csv.gz: fricción proporcional en bps vs fija 1,5455 pts (sin abrir datos)
 
 Transformaciones declaradas en el pre-registro (sin mirar retornos):
 - hora: cada día local d se desplaza para que su apertura de contado caiga a las 09:30 de Nueva York de la fecha d;
@@ -206,6 +207,85 @@ def correr() -> int:
     return 0
 
 
+def auditar_friccion() -> int:
+    """Auditoría descriptiva sobre OPS.csv.gz y broker_NQ.csv.gz: separa efecto bruto, fricción proporcional en bps (~1 pb RT)
+    y fricción fija 1,5455 pts (calibrada a NQ 2019–2026 ~15.000 pts) que infló el costo 3,5–5x en 2010–2019."""
+    import pandas as pd
+    O = pd.read_csv(OUTD / "OPS.csv.gz")
+    nq = pd.read_csv(ROOT / "docs/research/cartera_nt8_20261125/paridad_intradia/broker_NQ.csv.gz")
+    nq["mod"] = nq["modulo"].str.split("_").str[0]
+    O["year"] = O["dia"].astype(str).str.slice(0, 4).astype(int)
+
+    nq_ref = {}
+    nq_px_map = {}
+    for m in ("T", "R", "Z"):
+        g = nq[nq["mod"] == m]
+        nq_px_map[m] = float(g["entry_price"].median())
+        nq_ref[m] = dict(
+            ops=int(len(g)),
+            med_entry_px=round(nq_px_map[m], 1),
+            med_riesgo_pts=round(float(g["riesgo_pts"].median()), 1),
+            fric_r_media=round(float((g["R_bruto"] - g["R_neto_mini"]).mean()), 4),
+            R_bruto_medio=round(float(g["R_bruto"].mean()), 4),
+            R_neto_medio=round(float(g["R_neto_mini"].mean()), 4),
+        )
+
+    O["fric_bps_r"] = (O["entry_price"] * (FRIC_NQ / O["mod"].map(nq_px_map))) / O["riesgo_pts"]
+    O["R_prop"] = O["R_bruto"] - O["fric_bps_r"]
+    tr = O[O["mod"].isin(["T", "R"])].copy()
+
+    def _can(df: pd.DataFrame, col: str, inv_sd: bool = False) -> pd.Series:
+        m = df.pivot_table(index="mes", columns=["mod", "indice"], values=col, aggfunc="sum")
+        w = m.fillna(0.0).where(m.notna().cumsum() > 0)
+        if inv_sd:
+            sd = w.std(ddof=1).replace(0, float("nan"))
+            w = w / sd
+        return w.mean(axis=1).dropna()
+
+    canastas = {}
+    for label, col in [("bruto", "R_bruto"), ("neto_prop_bps", "R_prop"), ("neto_fijo_15455", "R")]:
+        canastas[label] = {
+            "raw_T_mas_R": _stats(_can(tr, col, inv_sd=False)),
+            "inv_sd_T_mas_R": _stats(_can(tr, col, inv_sd=True)),
+            "solo_T": _stats(_can(tr[tr["mod"] == "T"], col, inv_sd=False)),
+            "solo_R": _stats(_can(tr[tr["mod"] == "R"], col, inv_sd=False)),
+        }
+
+    por_epoca = {}
+    for (mod, idx), g in O.groupby(["mod", "indice"]):
+        for era, sub in [("ALL", g), ("2010_2019", g[g["year"] < 2020]), ("2020_2026", g[g["year"] >= 2020])]:
+            if not len(sub):
+                continue
+            mb = sub.groupby("mes")["R_bruto"].sum()
+            mn = sub.groupby("mes")["R"].sum()
+            mp = sub.groupby("mes")["R_prop"].sum()
+            por_epoca[f"{mod}_{idx}_{era}"] = dict(
+                ops=int(len(sub)),
+                meses=int(len(mb)),
+                med_entry_px=round(float(sub["entry_price"].median()), 1),
+                med_riesgo_pts=round(float(sub["riesgo_pts"].median()), 1),
+                fric_r_fija=round(float((sub["R_bruto"] - sub["R"]).mean()), 4),
+                fric_r_prop_bps=round(float(sub["fric_bps_r"].mean()), 4),
+                R_bruto_op=round(float(sub["R_bruto"].mean()), 4),
+                R_neto_fijo_op=round(float(sub["R"].mean()), 4),
+                R_neto_prop_op=round(float(sub["R_prop"].mean()), 4),
+                t_mensual_bruto=_stats(mb).get("t", 0.0),
+                t_mensual_prop=_stats(mp).get("t", 0.0),
+                t_mensual_fijo=_stats(mn).get("t", 0.0),
+            )
+
+    out = dict(
+        nq_referencia_canonica=nq_ref,
+        T_EuroStoxx_ops=int(((O["mod"] == "T") & (O["indice"] == "EuroStoxx")).sum()),
+        canastas=canastas,
+        por_modulo_indice_epoca=por_epoca,
+        nota="Con fricción proporcional en bps (~1 pb RT), T+R pasa de t=-4,51 a t=-1,36 (bruto +1,06), pero en 2020-2026 el bruto sigue cerca de 0 en todos los índices europeos.",
+    )
+    (OUTD / "AUDITORIA_FRICCION.json").write_text(json.dumps(out, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    print(json.dumps({"T_EuroStoxx_ops": out["T_EuroStoxx_ops"], "canastas": canastas}, indent=1, ensure_ascii=False, default=float))
+    return 0
+
+
 if __name__ == "__main__":
     sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / "tools"))
-    sys.exit({"bajar": bajar, "preparar": preparar, "calibrar": calibrar, "correr": correr}[sys.argv[1]]())
+    sys.exit({"bajar": bajar, "preparar": preparar, "calibrar": calibrar, "correr": correr, "auditar_friccion": auditar_friccion}[sys.argv[1]]())

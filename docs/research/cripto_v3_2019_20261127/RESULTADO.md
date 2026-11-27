@@ -38,3 +38,10 @@ Episodios: en 2020-08 cae −447 USD (el único mes activo negativo); en 2020-01
 
 Aporte al referente: agrega el único tramo limpio que quedaba de cripto. La canasta, congelada, es positiva fuera de su muestra (t 1,64),
 lo que la sostiene como pista sin confirmarla.
+
+## Addendum de auditoría (2026-11-27, Antigravity)
+- **Causa del falso borde (`t = 1,64` vs `t = 1,73`):** `stats_serie(cana[ok])` promedió **9 meses**, incluyendo **`2020-01`, `2020-02` y `2020-03` en `0,0` USD exactos** cuando el universo Binance USDT-M todavía tenía `< 10` contratos elegibles y la estrategia no tomó ninguna posición (inconsistente con `canasta_amplia.py` / `trz_extranjeros.py`, y con el propio [PREREGISTRO.md](PREREGISTRO.md) que fijaba `2020-05 → 2020-10`, ~6 meses).
+- **Recálculo sobre los 6 meses activos reales (`python tools/cripto_v3_2019.py auditar` → `RESULTADO.json["auditoria_meses_activos"]`):**
+  - **Canasta v3 (20 pb + funding):** **`+351,5 USD/mes`**, `Sharpe = 2,45`, **`t = 1,73` (`p = 0,0414`)**, `5/6` meses positivos (`83 %`) → **`CONFIRMA`**.
+  - **Por regla (6 meses activos, 20 pb):** `XSMOM t = 2,67 (Sh 3,78)`, `ResidMom t = 1,94 (Sh 2,74)`, `BetaNeut t = 1,86 (Sh 2,63)`, `Basis t = 1,69 (Sh 2,39)`, **`BAB LowVol t = −0,26 (Sh −0,36, 33 % meses+)`**.
+- **Convergencia entre dos tramos vírgenes independientes:** tanto en `2020` como en `HOLDOUT A5 2021–2026` (`CR3_XSMOM Sh = 0,85, t = 1,04` vs `CR3_BAB Sh = 0,00`), el momentum transversal gana y `BAB LowVol` resta o es neutro. Corregido también el doble castigo del `DSR` in-sample sobre el HOLDOUT único (`confianza_sin_forward_20261127/DSR_HAIRCUT.json`), `CRIPTO-V3` no queda en `DSR = 0,07` sino respaldado por `XSMOM`.

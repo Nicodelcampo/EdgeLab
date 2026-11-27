@@ -4,7 +4,8 @@ Carril 2 sin esperar forward, con datos que nadie miró para estas reglas.
 
   python tools/confianza_sin_forward.py bajar      # diarios de Yahoo (índices extranjeros, EE. UU. cash, ^VIX) → data/confianza_sf/
   python tools/confianza_sin_forward.py correr     # H1 transferencia a índices extranjeros, H2 EE. UU. 1990–2005, H3 placebo regla − control
-  python tools/confianza_sin_forward.py dsr        # Sharpe deflactado y recorte de Harvey-Liu (descriptivo, sin pruebas nuevas)
+  python tools/confianza_sin_forward.py dsr           # Sharpe deflactado y recorte de Harvey-Liu (descriptivo, sin pruebas nuevas)
+  python tools/confianza_sin_forward.py auditar_h1_h3 # auditoría descriptiva de H1 (sin VBB / DAX TR vs PR / placebo) y H3 (DESC censurado)
 
 Reusa sin cambios las reglas de `tools/carril2.py` (`_senales`, `_senales2`), el motor calibrado `sqx_catalogo.simular` (sin M1: peor caso,
 stop antes que objetivo) y `canasta_amplia` para la canasta sellada. Nada desde 2026-10-01.
@@ -179,9 +180,12 @@ def _placebo() -> dict:
 
 
 def dsr() -> int:
-    """Sharpe deflactado (Bailey y López de Prado 2014) y recorte de Harvey-Liu (Bonferroni) con las pruebas contadas por familia.
+    """Sharpe deflactado (Bailey y López de Prado 2014) y recorte de Harvey-Liu (Bonferroni) con regla simétrica:
+    - En muestra vista / desarrollo ('vista'): N_efectivo = pruebas acumuladas en la familia (corrige selección in-sample).
+    - En HOLDOUT A5 único congelado ('sellada'): N_efectivo = 1 (DSR no penaliza un holdout único pre-registrado con N in-sample),
+      conservando pruebas_familia_is como contexto y agregando p_holm_4frentes sobre las 4 pruebas independientes de HOLDOUT A5.
     Descriptivo: no agrega pruebas; usa Sharpe mensuales ya publicados."""
-    from math import erf, sqrt, log, pi, e
+    from math import erf, sqrt, e
     Phi = lambda z: 0.5 * (1 + erf(z / sqrt(2)))
     reg = [json.loads(l) for l in (ROOT / "docs/research/TRIAL_REGISTRY_GLOBAL.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
     n_fam = {}
@@ -189,27 +193,114 @@ def dsr() -> int:
         if "family_id" in r: n_fam[r["family_id"]] = n_fam.get(r["family_id"], 0) + int(r.get("n_trials", 0))
     filas = [  # (estrategia, familia del contador, Sharpe anual medido, meses, fuente, muestra)
         ("Carril 2 sellada (HOLDOUT A5)", "CARRIL2_A5", 1.057, 63, "holdout_a5_nocme_20261127/RESULTADO.md", "sellada"),
-        ("Carril 2 sellada (DESC+REP)", "CARRIL2_A5", 0.857, 186, "supercartera_v3_20261127/RESULTADO.md", "vista"),
-        ("Macro risk premia (HOLDOUT A5)", "MACRO_RISK_PREMIA", 0.38, 63, "holdout_a5_nocme_20261127/RESULTADO.md", "sellada"),
+        ("Macro risk premia (HOLDOUT A5)", "MACRO_RISK_PREMIA", 0.380, 63, "holdout_a5_nocme_20261127/RESULTADO.md", "sellada"),
         ("Cripto v3 (HOLDOUT A5)", "CRIPTO_BINANCE", 0.493, 18, "holdout_a5_nocme_20261127/RESULTADO.md", "sellada"),
         ("Cripto OFI (HOLDOUT A5)", "CRIPTO_ORDERFLOW_PIT", 1.133, 18, "holdout_a5_nocme_20261127/RESULTADO.md", "sellada"),
+        ("Carril 2 sellada (DESC+REP)", "CARRIL2_A5", 0.857, 186, "supercartera_v3_20261127/RESULTADO.md", "vista"),
+        ("Macro risk premia (DESC+REP)", "MACRO_RISK_PREMIA", 0.365, 186, "holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json", "vista"),
+        ("Cripto v3 (DESC+REP)", "CRIPTO_BINANCE", 1.289, 51, "holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json", "vista"),
+        ("Cripto OFI (DESC+REP)", "CRIPTO_ORDERFLOW_PIT", 0.596, 51, "holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json", "vista"),
         ("T+R+Z+V NQ (2021–2026-09)", "FUNDEDSYNC", 2.494, 51, "supercartera_v2_20261127/RESULTADO.md", "vista por el vendedor"),
     ]
     from statistics import NormalDist
     inv = NormalDist().inv_cdf; g = 0.5772156649
     out = []
     for nom, fam, sr, n, fuente, muestra in filas:
-        N = max(n_fam.get(fam, 1), 1); sr_m = sr / sqrt(12)                      # Sharpe mensual
-        # SR0: máximo esperado de N Sharpe mensuales nulos, con var(SR̂) ≈ 1/(n−1) (retornos normales; Bailey y López de Prado 2014)
+        n_is = max(n_fam.get(fam, 1), 1)
+        N = 1 if muestra == "sellada" else n_is
+        sr_m = sr / sqrt(12)
         sr0 = sqrt(1 / (n - 1)) * ((1 - g) * inv(1 - 1 / N) + g * inv(1 - 1 / (N * e))) if N > 1 else 0.0
         t = sr_m * sqrt(n); p = 1 - Phi(t); p_bonf = min(1.0, p * N)
-        out.append(dict(estrategia=nom, familia=fam, pruebas_familia=N, sharpe_anual=sr, meses=n, muestra=muestra, t=round(t, 2), p=round(p, 5),
-                        p_bonferroni_familia=round(p_bonf, 4), sr0_anual=round(sr0 * sqrt(12), 3), dsr=round(Phi((sr_m - sr0) * sqrt(n - 1)), 3),
-                        fuente=fuente))
+        out.append(dict(estrategia=nom, familia=fam, pruebas_familia_is=n_is, pruebas_efectivas_dsr=N,
+                        sharpe_anual=sr, meses=n, muestra=muestra, t=round(t, 2), p=round(p, 5),
+                        p_bonferroni_familia=round(p_bonf, 4), sr0_anual=round(sr0 * sqrt(12), 3),
+                        dsr=round(Phi((sr_m - sr0) * sqrt(n - 1)), 3), fuente=fuente))
+    # Holm-Bonferroni sobre las 4 pruebas independientes de HOLDOUT A5
+    sell = sorted([(i, o["p"]) for i, o in enumerate(out) if o["muestra"] == "sellada"], key=lambda x: x[1])
+    prev = 0.0
+    for rank, (idx, p_val) in enumerate(sell):
+        adj = min(1.0, max(prev, p_val * (len(sell) - rank)))
+        out[idx]["p_holm_4frentes"] = round(adj, 4)
+        prev = adj
     (OUT / "DSR_HAIRCUT.json").write_text(json.dumps(out, indent=1, ensure_ascii=False), encoding="utf-8")
     for o in out: print(o)
     return 0
 
 
+def auditar_h1_h3() -> int:
+    """Auditoría descriptiva sobre OPS_H1_EXTRANJEROS.csv.gz y OPS_H3_PLACEBO.csv.gz (cero datos nuevos, cero pruebas nuevas)."""
+    h1 = pd.read_csv(OUT / "OPS_H1_EXTRANJEROS.csv.gz")
+    h1["mes_i"] = (h1["fecha"] // 100).astype(int)
+    reg = h1[~h1["definicion"].str.endswith("N")].copy()
+    ctl = h1[h1["definicion"].str.endswith("N")].copy()
+
+    def _serie_h1(sub: pd.DataFrame) -> pd.Series:
+        m = sub.pivot_table(index="mes_i", columns="serie", values="R", aggfunc="sum")
+        return m.fillna(0.0).where(m.notna().cumsum() > 0).mean(axis=1).dropna()
+
+    cuts = [("todo_1990_2026", 0), ("desde_2009", 200901), ("desde_2019", 201901)]
+    h1_sens = {}
+    for label, sub in [
+        ("todas_5_reglas", reg),
+        ("sin_VBB_4_reglas", reg[reg["definicion"] != "C2_VBB"]),
+        ("DAX_TR", reg[reg["indice"] == "DAX"]),
+        ("otros_7_PR", reg[reg["indice"] != "DAX"]),
+        ("DAX_TR_sin_VBB", reg[(reg["indice"] == "DAX") & (reg["definicion"] != "C2_VBB")]),
+    ]:
+        s = _serie_h1(sub)
+        h1_sens[label] = {cname: _t(s[s.index >= c]) for cname, c in cuts}
+
+    # Placebo regla - control N en los 8 índices extranjeros (ya presente en OPS_H1_EXTRANJEROS.csv.gz)
+    h1_placebo = {}
+    for d in REGLAS:
+        mr = reg[reg["definicion"] == d].groupby("mes_i")["R"].sum()
+        mc = ctl[ctl["definicion"] == f"{d}N"].groupby("mes_i")["R"].sum()
+        idx = mr.index.union(mc.index)
+        dif = mr.reindex(idx, fill_value=0.0) - mc.reindex(idx, fill_value=0.0)
+        h1_placebo[d] = {cname: _t(dif[dif.index >= c]) for cname, c in cuts}
+    mr4 = _serie_h1(reg[reg["definicion"] != "C2_VBB"])
+    mc4 = _serie_h1(ctl[ctl["definicion"] != "C2_VBBN"])
+    d4 = mr4 - mc4
+    h1_placebo["canasta_4_sin_VBB"] = {cname: _t(d4[d4.index >= c]) for cname, c in cuts}
+
+    # H3 vs SERIES_HOLDOUT_A5_NOCME_MENSUAL (explicación de DESC 1.072 vs 0.801)
+    h3 = pd.read_csv(OUT / "OPS_H3_PLACEBO.csv.gz")
+    h3_reg = h3[h3["tipo"] == "regla"].copy()
+    m_h3 = h3_reg.groupby("mes")["R"].sum()
+    m_ho = pd.read_csv(ROOT / "docs/research/holdout_a5_nocme_20261127/SERIES_HOLDOUT_A5_NOCME_MENSUAL.csv.gz", index_col=0)
+    c2_ho = m_ho[["bloque", "Carril2_Sell16"]].dropna()
+    com = c2_ho.index.intersection(m_h3.index)
+    df_c = pd.DataFrame({"ho": c2_ho.loc[com, "Carril2_Sell16"], "h3": m_h3.loc[com], "bloque": c2_ho.loc[com, "bloque"]})
+    df_c["diff"] = df_c["h3"] - df_c["ho"]
+    from edgelab.holdout import a5_bloque
+    bl_en = pd.Series([a5_bloque(int(x)) for x in h3_reg["fecha"]], index=h3_reg.index)
+    bl_sal = pd.Series([a5_bloque(int(x)) for x in h3_reg["fecha_sal"]], index=h3_reg.index)
+    h3_cmp = {
+        b: {
+            "meses_comunes": int((df_c["bloque"] == b).sum()),
+            "diff_media": round(float(df_c.loc[df_c["bloque"] == b, "diff"].mean()), 6),
+            "max_abs_diff": round(float(df_c.loc[df_c["bloque"] == b, "diff"].abs().max()), 6),
+            "meses_distintos": int((df_c.loc[df_c["bloque"] == b, "diff"].abs() > 1e-4).sum()),
+        }
+        for b in ("DESC", "REP", "HOLDOUT")
+    }
+    ops_desc_cruzadas = int(((bl_en == "DESC") & bl_sal.isin(["REP", "HOLDOUT", "EMBARGO"])).sum())
+    ops_rep_cruzadas = int(((bl_en == "REP") & bl_sal.isin(["HOLDOUT", "EMBARGO"])).sum())
+
+    res = dict(
+        H1_sensibilidad_reglas=h1_sens,
+        H1_placebo_extranjeros=h1_placebo,
+        H3_vs_HOLDOUT_NOCME=dict(
+            por_bloque=h3_cmp,
+            ops_DESC_cruzando_salida=ops_desc_cruzadas,
+            ops_REP_cruzando_salida=ops_rep_cruzadas,
+            explicacion="canasta_amplia.py censuraba en DESC/REP toda operación cuya salida tocaba HOLDOUT/EMBARGO (o REP desde DESC); H3 y HOLDOUT no censuran bordes y coinciden a 1e-15 en HOLDOUT.",
+        ),
+    )
+    (OUT / "AUDITORIA_H1_H3.json").write_text(json.dumps(res, indent=1, ensure_ascii=False, default=float), encoding="utf-8")
+    print(json.dumps(res, indent=1, ensure_ascii=False, default=float))
+    return 0
+
+
 if __name__ == "__main__":
-    sys.exit({"bajar": bajar, "correr": correr, "dsr": dsr}[sys.argv[1]]())
+    sys.exit({"bajar": bajar, "correr": correr, "dsr": dsr, "auditar_h1_h3": auditar_h1_h3}[sys.argv[1]]())

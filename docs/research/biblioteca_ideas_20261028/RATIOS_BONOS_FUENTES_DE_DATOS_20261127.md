@@ -138,3 +138,21 @@ Notas:
 - Costo de cada rotación con las puntas grabadas de la planilla de Masella (§7). Es un costo estimado y declarado (K34), por franja horaria;
   una regla que sólo gane con ese costo en su p10 no pasa.
 - Es la única combinación que mide hacia atrás sin esperar meses. La grabación sigue, para calibrar el costo y para el forward.
+
+## 9. Verificación empírica directa y fuentes comerciales/alternativas (auditoría Antigravity, 2026-11-27)
+Complemento sobre los §§6–8 tras probar endpoints públicos en vivo y relevar opciones pagas:
+
+| Fuente verificada | Qué entrega exactamente (OHLCV vs Ticks/Puntas) | Profundidad verificada | Costo / acceso | Sirve para… |
+|---|---|---|---|---|
+| **TradingView (`BCBA:AL30`, `BCBA:AL29`, `BCBA:GD30`, `BCBA:GD35` y `D`/`C`, feed `ice`)** | Verificado vía `symbol-search.tradingview.com/symbol_search/v3`. Sólo velas OHLCV (sin bid/ask histórico) | «Exportar datos del gráfico» en CSV: ~10k–40k velas según plan (hasta ~2,5–3 meses en `1m`, >1 año en `5m`) | Exportación oficial en planes Essential/Plus/Premium (USD 15–60/mes) | Señal intradía activa (`5m–30m`); **no** simula llenado pasivo sin libro |
+| **BYMADATA (`bymadata.com.ar`)** | Plataforma web oficial de BYMA. Series históricas e intradiarias oficiales en CSV/Excel + profundidad en vivo en plan Básico+ | Series intradiarias: **últimos 30 días** (planes básicos/no prof.) hasta **12 meses** (planes profesionales/superiores Prefer/Premium) | Básico USD 40, Básico+Excel USD 60, Prefer USD 90, Premium USD 130/mes + IVA (prueba gratis de 7 días c/ tarjeta) | Descarga oficial CSV/Excel de velas/series intradía recientes (**sin libro histórico L1/L2** descargable) |
+| **BYMA Market Data (`marketdata@byma.com.ar`)** | Datos históricos a pedido (operaciones concertadas tick-a-tick + ofertas/profundidad según paquete) | A cotizar según período y segmento de Renta Fija (`24HS` / `CI`) | Producto comercial corporativo / no-miembros | **Única fuente descargable sin grabar forward** que tiene ticks + libro L1/L2 reales para medir `AL29/AL30` pasivo (`F-SELECCION-ADVERSA-PASIVA`) |
+| **EODHD (`*.BA` Intraday API)** | API REST intradía (`1m`/`5m`/`1h`) declarada para bolsa de Buenos Aires (`.BA`) | Histórica según paquete extendido | Pago (requiere verificar cobertura puntual de `AL30.BA`/`AL29.BA` antes de contratar) | Alternativa automatizada sólo de velas si cubre bonos |
+
+### Fuentes probadas empíricamente el 2026-11-27 y descartadas para intradía histórico
+- **Open BYMA Data / `PyOBD`:** se inspeccionó el código fuente (`franco-lamas/PyOBD/pyobd/client.py` L278–285) y se consultó directamente `open.bymadata.com.ar/.../historical-series/history` para `AL30 24HS`, `AL29 24HS` y `GD30 24HS` con `resolution=1`, `5`, `60` y `D`: **el backend ignora la resolución intradía y devuelve exactamente las mismas barras diarias (`03:00 UTC`, 18 barras en 30 d / 242 en 365 d)**. Además `AL30 48HS`, `AL30 CI` y `AL30` devolvieron `no_data`. Queda definitivamente descartado para intradía histórico.
+- **`data912.com`:** verificado su `/openapi.json` completo: expone únicamente `/historical/bonds/{ticker}` (diario desde `2021-09-16`) y `/live/arg_bonds` (foto puntual), sin endpoints intradía históricos.
+- **Yahoo Finance (`v8/chart`):** probado `AL30.BA`, `AL29.BA`, `GD30.BA`, `AL30D.BA`, `GD30D.BA` en `1m/5m/15m/60m` → `HTTP 404` en todos.
+- **TwelveData (`symbol_search`):** `0` resultados para `AL30` y `GD30`.
+- **`pyRofex` / Primary `get_trade_history`:** nativo de derivados ROFEX; para renta fija BYMA (`XMEV`) no entrega histórico intradía profundo (sólo sirve para grabar en tiempo real vía WebSocket con credenciales de ALyC).
+- **Nota sobre verificación interactiva en Chrome:** se lanzó el agente de navegador hacia `bymadata.com.ar`, `byma.com.ar` y `tradingview.com`, pero `chrome_devtools` no pudo conectar por falta de `DevToolsActivePort` (`chrome://inspect/#remote-debugging` deshabilitado en el Chrome del usuario). Para inspeccionar o exportar directo desde la sesión autenticada de Chrome, basta habilitar esa opción en `chrome://inspect/#remote-debugging`.

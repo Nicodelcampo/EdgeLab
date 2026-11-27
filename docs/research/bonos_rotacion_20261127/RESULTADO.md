@@ -57,3 +57,8 @@ Episodios: en REP, el bruto de GD30/AL30 se apaga (+0,01 %/mes) después de dar 
 Aporte al referente: con las técnicas concretas de la charla y las condiciones reales del broker (comisión cero), la versión swing no es
 explotable: la señal bruta existe, pero es más chica que el spread y no replica en el par más líquido. Si hay algo explotable, está en el
 intradía, que hay que grabar.
+
+## Addendum de auditoría (2026-11-27, Antigravity)
+1. **Exceso de rotación por rebalanceo lineal diario sin banda muerta:** la simulación aplicó ajuste continuo diario (`w = 0,5 − 0,3 · clip(z/2, −1, 1)`) sin zona muerta ni histéresis, rotando **`10,5–11,1 %` por rueda (~220 %/mes)**. El bruto en `DESC` fue positivo en `3/4` pares (`GD30/AL30 +0,366 %/mes, t = 2,88, Sh = 1,79, 83,9 % meses +`; `GD35/AL35 +0,223 %/mes, t = 2,48`), de modo que la pérdida neta (`−0,59 %/mes, t = −8,1`) la fabricó el *churn* diario sobre ruido menor.
+2. **Spreads post-cierre BYMA:** `SPREADS_FOTO.json` fue tomado a las `19:07` BA (rueda cerrada, puntas ensanchadas); el grabador de Masella en horario de rueda (`RATIOS_BONOS_FUENTES_DE_DATOS_20261127.md` §7) confirma una mediana de `0,10 pp` para `GD30/AL30` frente a `0,31 pp` post-cierre.
+3. **Alcance acotado del `NO_REPETIR`:** el cierre se mantiene para el **rebalanceo continuo diario sin banda muerta** y para el swing diario de **`GD30/AL30` sin cepo** (cuyo bruto en `REP` sí cayó a `+0,01 %/mes, t = 0,04`), pero **no** invalida una eventual prueba con banda muerta (`|z| >= 1,5`, salida en `z ≈ 0`) y spreads de rueda en `GD35/38/41`, ni la versión intradía en `AL29/AL30`.

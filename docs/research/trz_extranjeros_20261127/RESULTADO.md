@@ -54,3 +54,13 @@ Episodios: T pierde en los tres índices en las dos épocas (antes de 2020, t �
 
 Aporte al referente: con mercados que ni el vendedor ni EdgeLab habían mirado, la intradía T+R no se transfiere. Baja la confianza previa
 de la canasta en forward y separa lo que es propio de NQ de lo que sería un mecanismo general.
+
+## Addendum de auditoría (2026-11-27, Antigravity)
+Ejecutable sin bajar datos con `python tools/trz_extranjeros.py auditar_friccion` → `AUDITORIA_FRICCION.json`.
+
+- **Bug de escala en fricción fija (`1,5455 pts` sobre precios históricos de `2.200–4.500 pts`):** `FRIC_NQ = 1,5455 pts` equivale a `~1,0 pb` RT en `NQ 2019–2026` (`med_px = 14.909`, `0,026 R` en `T` y `0,014 R` en `R`), pero aplicada como constante absoluta sobre `prev_NQ_close` de `2010–2019` (donde `med_rg` de `T` cae a `13–15 pts`) infló el costo a **`0,119–0,137 R` por operación (~3,5x–5x)** y ponderó `T` ~7x sobre `R` por conteo de operaciones sin `1/sd`.
+- **Recálculo limpio (`T+R` Europa, `190` meses):**
+  - Bruto (`R_bruto`): **`t = +1,05`** (`Sh +0,26`; con `1/sd`: `t = +0,80`).
+  - **Neto proporcional (~`1,0 pb` RT):** **`t = −1,37` (`Sh −0,34`)** (con `1/sd`: **`t = −1,11`**; `T`: `−1,35`; `R`: `−0,36`) — frente al **`t = −4,57`** del titular.
+  - **Periodo `2020–2026` (`med_px ~ 15.500`, sin distorsión de escala):** el `R_bruto` por operación sigue en `~0` en Europa (`T DAX −0,0012`, `T CAC +0,0104`, `T FTSE −0,0069`) frente a `+0,164 R` bruto de `T` y `+0,215 R` de `R` en `NQ`.
+- **Conclusión:** la magnitud estaba exagerada ~3,3x por el bug de fricción fija en `2010–2019`, pero **el veredicto cualitativo (`T+R` no transfiere a Europa y `NO_REPETIR`) se sostiene**. Queda pendiente aislar por qué `T_EuroStoxx` produjo `0` operaciones en `2010–2019`.

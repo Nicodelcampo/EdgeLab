@@ -64,3 +64,27 @@ positivos); en la REP 2006–2026 el control superó a la regla.
 
 Aporte al referente: con datos que nadie había usado para estas reglas, la confianza en Carril 2 sube como mecanismo (se transfiere y
 le gana al placebo) y su tamaño esperado baja a 0,4–0,6 de Sharpe. Las demás quedan donde estaban o bajan, con números.
+
+## Addendum de auditoría (2026-11-27, Antigravity)
+Generado sobre los archivos versionados con `python tools/confianza_sin_forward.py dsr && python tools/confianza_sin_forward.py auditar_h1_h3` (`DSR_HAIRCUT.json`, `AUDITORIA_H1_H3.json`).
+
+### 1. Corrección de doble estándar en `DSR_HAIRCUT.json`
+El DSR (Bailey & López de Prado 2014) corrige selección *in-sample* (`N` pruebas); aplicarlo con `N` de toda la familia sobre un **HOLDOUT único congelado** (`N_efectivo = 1`) doble-penalizaba a Cripto v3 (`N=33 → DSR 0,07`) y Macro RP (`N=7 → DSR 0,30`) mientras eximía a Carril 2:
+
+| Estrategia | Muestra | N_IS familia | N_efectivo DSR | Sharpe | t | p Holm (4 frentes HO) | DSR corregido |
+|---|---|---|---|---|---|---|---|
+| Carril 2 sellada (HOLDOUT A5, 63m) | sellada | 32 | **1** | 1,057 | 2,42 | 0,0309 | **0,992** |
+| Cripto OFI (HOLDOUT A5, 18m) | sellada | 5 | **1** | 1,133 | 1,39 | 0,2479 | **0,911** |
+| Macro risk premia (HOLDOUT A5, 63m) | sellada | 7 | **1** | 0,380 | 0,87 | 0,3839 | **0,806** |
+| Cripto v3 (HOLDOUT A5, 18m) | sellada | 33 | **1** | 0,493 | 0,60 | 0,3839 | **0,721** |
+| Carril 2 sellada (DESC+REP, 186m) | vista | 32 | 32 | 0,857 | 3,37 | — | **0,897** |
+| Cripto v3 (DESC+REP, 51m) | vista | 33 | 33 | 1,289 | 2,66 | — | **0,698** |
+| Macro risk premia (DESC+REP, 186m) | vista | 7 | 7 | 0,365 | 1,44 | — | **0,518** |
+| Cripto OFI (DESC+REP, 51m) | vista | 5 | 5 | 0,596 | 1,23 | — | **0,510** |
+| T+R+Z+V NQ (2021–2026-09, 51m) | vista vendedor | 948 | 948 | 2,494 | 5,14 | — | 0,968 |
+
+### 2. Hallazgos en `H1` y `H3` (`AUDITORIA_H1_H3.json`)
+- **`C2_VBB` en H1 usaba `^VIX` de EE. UU. para Europa y Asia:** quitando `VBB`, las 4 reglas de precio en 8 índices suben `+31 %` de Sharpe: **`Sh = 0,635, t = 3,84`** (`1990–2026`), `Sh = 0,314 (t = 1,32)` desde `2009` y `Sh = 0,260 (t = 0,72)` desde `2019`.
+- **La caída post-2009 afuera NO es sesgo ex-dividendos:** `DAX` (*total return*, con dividendos) cae más post-2009 (`Sh = 0,093`, `2019+ 0,040`) que los otros 7 índices *price return* (`Sh = 0,256`, `2019+ 0,183`).
+- **Placebo `regla − control N` afuera:** en `1990–2026` las 4 reglas sin `VBB` superan claro al control (`Sh = 0,568, t = 3,44`, con `TOM t = +2,23` y `TT t = +2,05`); desde `2009` ninguna de las 5 reglas supera al control afuera (`4` sin `VBB`: `t = −1,42`; `2019+ t = −1,80`). Esto respalda calibrar la expectativa en vivo de Carril 2 a `Sharpe ~0,5–0,7`.
+- **Discrepancia `H3 DESC` (`1,072`) vs `SERIES_HOLDOUT_A5_NOCME_MENSUAL` (`0,801`):** en `HOLDOUT` coinciden a `0,0` (`1e-15`); la diferencia en `DESC`/`REP` (`279` ops en `DESC`, `53` en `REP`) proviene de que `canasta_amplia.py` censuraba toda operación cuya salida tocaba otro bloque (`HOLDOUT`/`EMBARGO`), afectando sobre todo a `C2_TOM` de fin de mes (`2016-06`, `2018-12`). Sin censura de borde, la retención real de Carril 2 es `~95 %` (`1,057 / 1,11`).

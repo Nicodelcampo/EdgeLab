@@ -206,3 +206,14 @@ Factor nuevo: `F-GLOBAL-VOLCOMP-M1DK-B`.
 **Para auditar con prioridad:**
 1. Si la multiplicidad de la apertura conjunta se lee bien: 9 cortes rotulados CONFIRMA contra 5 familias independientes.
 2. Si el escalado a 10 % de volatilidad con el desvío de DESC de las curvas es el mismo que usa `SERIES_HOLDOUT_A5_NOCME_MENSUAL`.
+
+## 14. Auditoría forense Antigravity sobre los 22+ commits de Claude (2026-11-27)
+Auditoria completa y correcciones en código/registros ejecutadas tras hacer fast-forward a `2f79ce6d`:
+
+| Frente | Hallazgo verificado | Corrección / Evidencia |
+|---|---|---|
+| `CRIPTO-V3-2019` | `stats_serie(cana[ok])` incluyó 3 meses vacíos (`2020-01..03` = `0,0` por `<10` monedas), bajando `t` de `1,73` a `1,64`. En 2020 y HOLDOUT `XSMOM` gana y `BAB` falla. | `python tools/cripto_v3_2019.py auditar`: 6m activos `t=1,73 (p=0,0414) -> CONFIRMA`. Factor `-B`. |
+| `CONFIANZA-SIN-FORWARD` (`DSR` / H1 / H3) | Doble estándar en `DSR_HAIRCUT.json`: no deflactaba HOLDOUT de Carril 2 pero sí los de Macro (`N=7`) y Cripto v3 (`N=33`). En H1, `C2_VBB` usaba `^VIX` de EE. UU. (sin VBB `t=3,84`); `DAX` TR cae igual post-2009 (`0,093`) que PR (`0,256`); H3 `DESC` difiere de `canasta_amplia` por 279 ops censuradas en frontera. | `python tools/confianza_sin_forward.py dsr && auditar_h1_h3` → `DSR_HAIRCUT.json` simétrico + `AUDITORIA_H1_H3.json`. Factor `-B`. |
+| `TRZ-EXTRANJEROS` | Fricción fija `1,5455 pts` aplicada a precios `2.200–4.500` de `2010–2019` infló el costo `3,5–5x` (`0,12–0,14 R/op`). | `python tools/trz_extranjeros.py auditar_friccion` → `AUDITORIA_FRICCION.json`: `T+R` neto prop `t=−1,37` (`Sh=−0,34`), bruto `2020–26` sigue `≈0` en Europa (`NO_REPETIR` se sostiene en fondo). Factor `-B`. |
+| `BONOS-ROTACION` / `RATIOS` | Rebalanceo lineal continuo sin banda muerta (`11%/día`) + spreads post-cierre (`19:07` BA) destruyeron un bruto DESC positivo; `GD30/AL30` REP sigue `~0` bruto. | Addenda en ambos `RESULTADO.md`; factor `-B` acota `NO_REPETIR`. |
+| Fuentes intradía bonos AR | Verificación empírica directa + límite de Chrome (`DevToolsActivePort`). | `RATIOS_BONOS_FUENTES_DE_DATOS_20261127.md` §9 (descartado Open BYMA/`PyOBD`, `data912`, Yahoo, TwelveData; documentado BYMADATA y BYMA Market Data + TradingView/Masella). |

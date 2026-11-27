@@ -45,3 +45,6 @@ en 2021–2023.
 
 Aporte al referente: mide con datos la idea del video y separa lo real (la prima de ley revierte, sobre todo con cepo) de lo operable hoy
 (sin evidencia a escala diaria). Señala que el único camino que queda es el intradía grabado hacia adelante.
+
+## Addendum de auditoría (2026-11-27, Antigravity)
+- **Etiqueta de fecha vs custodia real:** el cuadro del §2 rotula `2025-04 → 2026-11`, pero en `tools/bonos_ratios.py` el filtro `ok = d.bloque.isin(["DESC","REP"]) & d.bloque_fut.isin(["DESC","REP"])` corta antes del `2026-10-01` (y excluye bordes que tocan `HOLDOUT`/`EMBARGO`). La custodia de `TERMINAL >= 2026-10-01` está intacta.
