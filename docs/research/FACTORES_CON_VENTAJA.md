@@ -29,11 +29,11 @@ _Mostró algo y no está confirmado ni refutado: es lo primero a indagar._
   - Dónde: CME + M1 NT8 + M1DK Global + Binance PIT Crypto (2006/2014/2021 -> 2026-09 DESC+REP, HOLDOUT A5 sellado)
   - Siguiente: Auditoría cruzada de Claude sobre rama claude/vibrant-clarke-s9z6e2 y decisión de Nico sobre K27/holdout o más frentes no-equity limpios.
   - Evidencia: `docs/research/supercartera_v2_20261127/RESULTADO.md`, `docs/research/supercartera_v2_20261127/SUPERCARTERA_V2.json`
-- **MACRO_RISK_PREMIA (41 ETFs adjclose 2006-2026, cero =F): evaluacion unica en HOLDOUT A5 (63m, K27 autorizado por Nico)** (`F-MACRO-RISK-PREMIA-HOLDOUT-A5`, 2026-11-27, nico)
+- **MACRO_RISK_PREMIA (41 ETFs adjclose 2006-2026, cero =F): evaluacion unica en HOLDOUT A5 (63m, K27 autorizado por Nico)** (`F-MACRO-RISK-PREMIA-HOLDOUT-A5-B`, 2026-11-27, sesion)
   - Efecto: RP_Canasta_InvVol (RP4): Sh=0.380, t=0.87, p=0.1920, MDD=-12.73% -> NO_CONCLUYENTE (retencion 104% vs DR 0.365, corr 0.382 vs Carril2 en 63m). Diag RP2+RP4+RP5: Sh=0.593 (t=1.36, corr 0.112 vs Carril2). RP1_Sector_XSMOM Sh=-0.743 (t=-1.70); RP5_NonEq_Trend Sh=0.681 (t=1.56).
   - Dónde: ETFs Yahoo adjclose + ^TNX/^IRX (2006-01 -> 2026-09 HOLDOUT A5 63m)
   - Siguiente: Operable como pata diversificadora de bajo costo/rotacion junto a Carril 2 (Clean63m CONFIRMA Sh=0.829, t=1.90); evaluar incorporacion de RP2+RP5 solo con pre-registro para TERMINAL/forward.
-  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`
+  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/macro_risk_premia_20261127/RESULTADO.md`, `docs/research/macro_risk_premia_20261127/RESULTADO.json`
 - **Correlación de las carteras locales (INTRADIA8, INTERDIA3, C2VZ_2, P_OPT_SF_v2) y la canasta T+R+ZB+RQ5 NQ, con HOLDOUT A5** (`F-CARTERAS-LOCALES-INTRADIA-REDUNDANTES`, 2026-11-26, humano)
   - Efecto: Intradía entre sí 0,6–0,7 mensual (una sola apuesta); INTERDIA3 y C2VZ_2 diversifican (−0,33 a 0,25). Todas positivas en HOLDOUT A5; CANASTA_TRZQ la más pareja (t 2,77 en HOLDOUT, 6,28 total).
   - Dónde: NQ/ES, 2019-07 → 2026-09 (P_OPT desde 2025, con terminal)
@@ -534,21 +534,21 @@ _Regla congelada que se sigue hacia adelante (papel)._
   - Dónde: ES, NQ, YM, RTY, GC (M1 NT8 D1), 2006 -> 2026-09 (HOLDOUT A5 63m)
   - Siguiente: Activar en cuenta de broker personal con margen overnight (no Lucid) junto a Macro RP y vigilar en TERMINAL/forward.
   - Evidencia: `docs/research/canasta_amplia_20261127/RESULTADO_HOLDOUT_CARRIL2.md`, `docs/research/canasta_amplia_20261127/HOLDOUT_CARRIL2.json`
-- **CRIPTO-PIT v3 (226 perpetuos PIT ex-TradFi, 20 bps + funding): evaluacion unica en HOLDOUT A5 (18m, K27 autorizado por Nico)** (`F-CRIPTO-PIT-V3-HOLDOUT-A5`, 2026-11-27, nico)
+- **CRIPTO-PIT v3 (226 perpetuos PIT ex-TradFi, 20 bps + funding): evaluacion unica en HOLDOUT A5 (18m, K27 autorizado por Nico)** (`F-CRIPTO-PIT-V3-HOLDOUT-A5-B`, 2026-11-27, sesion)
   - Efecto: CR3_Canasta_InvVol: Sh=0.493, t=0.60, p=0.2732, MDD=-7.27% -> NO_CONCLUYENTE (retencion 38% vs DR 1.289 inflado por REP iterada v1-v3; corr_H=-0.27 vs Carril2 y -0.37 vs MacroRP). CR3_XSMOM_21d sostuvo Sh=0.85 (t=1.04) mientras CR3_BAB_LowVol dio Sh=0.00.
   - Dónde: Binance USDT-M PIT 226 monedas (2021-01 -> 2026-09 HOLDOUT A5 18m)
   - Siguiente: Mantener CR3_XSMOM_21d como pata principal en Binance; vigilar BAB_LowVol antes de asignarle peso pleno en vivo.
-  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`
-- **CRIPTO-OFI-PIT no-OHLC (taker buy/sell 226 perpetuos PIT, cero iteracion REP): evaluacion unica en HOLDOUT A5 (18m, K27)** (`F-CRIPTO-OFI-HOLDOUT-A5`, 2026-11-27, nico)
+  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/cripto_pit_v3_20261127/RESULTADO.md`, `docs/research/cripto_pit_v3_20261127/RESULTADO.json`
+- **CRIPTO-OFI-PIT no-OHLC (taker buy/sell 226 perpetuos PIT, cero iteracion REP): evaluacion unica en HOLDOUT A5 (18m, K27)** (`F-CRIPTO-OFI-HOLDOUT-A5-B`, 2026-11-27, sesion)
   - Efecto: OFI_Canasta_InvVol: Sh=1.133, t=1.39, p=0.0826, MDD=-3.97%, Calmar=2.86, 83.3% anios+ -> NO_CONCLUYENTE por N=18 (retencion 190% vs DR 0.596). OFI1/2/3 todos Sh=1.01-1.02 a 20 bps (OFI1 Sh=0.94 aun a 40 bps); corr_H -0.02..+0.05 vs los otros 3 frentes.
   - Dónde: Binance USDT-M PIT 226 monedas taker_buy_quote_volume + count (2021 -> 2026-09 HOLDOUT A5 18m)
   - Siguiente: Frente crypto prioritario junto a XSMOM en Binance; seguimiento abierto en TERMINAL >= 2026-10-01.
-  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`
-- **Apertura unica conjunta HOLDOUT A5 No-CME (Carril 2 + Macro RP + Cripto v3 + Cripto OFI) con K27 autorizado por Nico: 5/5 carteras CONFIRMAN (< 2026-10-01)** (`F-HOLDOUT-A5-NOCME-CONJUNTO`, 2026-11-27, nico)
+  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/cripto_ofi_20261127/RESULTADO.md`, `docs/research/cripto_ofi_20261127/RESULTADO.json`
+- **Apertura unica conjunta HOLDOUT A5 No-CME (Carril 2 + Macro RP + Cripto v3 + Cripto OFI) con K27 autorizado por Nico: 5/5 carteras CONFIRMAN (< 2026-10-01)** (`F-HOLDOUT-A5-NOCME-CONJUNTO-B`, 2026-11-27, sesion)
   - Efecto: CONFIRMA Super_v3_Clean63m_EQ (63m Sh=0.829, t=1.90, p=0.0287), Clean63m_HRP (Sh=0.814, t=1.86), Pool_NoCME_Dyn_4F_63m (63m Sh=0.923, t=2.12, p=0.0172, Stouffer=2.84), Super_v3_NoCME_EQ (18m Sh=1.583, t=1.94, p=0.0262, MDD=-4.97%), Super_v3_NoCME_HRP (18m Sh=1.538, t=1.88, p=0.0298, MDD=-5.75%, retencion 99%). Fisher 4F p=0.0082 (Clean63m p=0.0111). Diag3Pos EQ Sh=1.106 (t=2.53). TERMINAL sellado.
   - Dónde: Futuros M1 NT8 + ETFs adjclose 20y + Binance PIT Crypto + OFI (< 2026-10-01)
   - Siguiente: Activar arquitectura ejecutable separada (Intradia8 en LucidFlex 150K 2 micros; Carril 2 + Macro RP en IB; XSMOM + OFI1 en Binance) bajo vigilancia continua en TERMINAL >= 2026-10-01 sin tocar parametros.
-  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/HOLDOUT_VENTANAS.jsonl`
+  - Evidencia: `docs/research/holdout_a5_nocme_20261127/RESULTADO.md`, `docs/research/holdout_a5_nocme_20261127/HOLDOUT_NOCME_RESULTADO.json`, `docs/research/HOLDOUT_VENTANAS.jsonl`, `docs/research/supercartera_v3_20261127/RESULTADO.md`, `docs/research/supercartera_v3_20261127/SUPERCARTERA_V3.json`
 - **Caída 2026Q2-Q3 de las estrategias de la mañana (RQ5, ES5N, Franklin, T_ES): ¿sizing o precio?** (`F-CAIDA-2026-PRECIO-NO-SIZING`, 2026-11-25, sesion)
   - Efecto: La caída está en R/op (independiente del sizing): RQ5_ES +0,086->-0,109, RQ5_NQ +0,115->-0,093, ES5N +0,123->-0,246, Franklin +0,049->-0,065, T_ES +0,194->-0,054; con riesgo constante sigue negativa. Apertura: continuación de la ruptura normal/alta (NQ p55, ES p82); ES eficiencia p99 con autocorrelación 5 min p7,7 (más reversión de corto plazo); NQ movimiento nocturno p94,5. Subieron las que mantienen overnight (SOM sin_finde, C2_VZ) y R.
   - Dónde: NQ y ES M1 NT8 2018-2026-09; corridas NT8 1 contrato
