@@ -1540,3 +1540,11 @@ Pre-registro: `docs/research/modelo_asia_20261101/SPEC_MODELO_ASIA.md` (v2, tres
 - **NO MEDIDO:**
   - el modelo de retiros de Lucid contra las reglas reales;
   - `Regla_V2_Clean` con micros enteros en NT8.
+
+## 2026-11-27 — DLL intradía en el simulador de cuentas
+- **MEDIDO:** camino intradía minuto a minuto de las 10 estrategias de la cartera NT8; planes LucidFlex con el DLL sobre el mínimo
+  intradía. El tamaño grande se infla 35–40 % si el DLL se aplica al cierre; en la 150K, 2 micros es el punto robusto.
+  Fuente: `docs/research/preset_diversificada_20261127/RESULTADO.md` §6.
+- **NO MEDIDO:**
+  - deslizamiento creciente con el tamaño;
+  - el DLL de otras props (Tradeify y Topstep no tienen DLL; sus planes no se recalcularon).

@@ -28,6 +28,11 @@ el head real que ve el PR — confuso para cualquiera que solo tenga acceso al r
   - en cuentas prop, por ventaja/mes, la cartera de 10 iguala o supera a la de 8 en la 150K, y más tamaño rinde más por mes (decide Nico;
     composiciones NT8 en `preset_diversificada_20261127/RESULTADO.md` §5);
   - cripto: confirmado que era selección de monedas.
+- **DLL intradía (2026-11-27):**
+  - el simulador de cuentas aplicaba el límite diario al cierre; Lucid liquida al tocarlo, y ahora se usa el mínimo intradía real;
+  - el tamaño grande estaba inflado 35–40 %;
+  - en la 150K, 2 micros por estrategia es el punto robusto (+$222 a +$229 por mes, P 0,11 a 0,15);
+  - 25K y 50K no tienen plan sensato (`preset_diversificada_20261127/RESULTADO.md` §6).
 
 ## Estado al 2026-11-25 (leer primero)
 

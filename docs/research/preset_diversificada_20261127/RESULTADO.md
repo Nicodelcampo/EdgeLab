@@ -112,3 +112,48 @@ Detalle completo en `VENTAJA_POR_MES.csv`.
 Todos los planes grandes dependen del límite diario de $2.700 de la 150K (el simulador corta el día ahí, como hace Lucid). Sin él, un
 solo día podría superar la pérdida máxima de $4.500. Los contratos de «riesgo igual» se recalculan cada trimestre:
 `python tools/cartera_lucid.py contratos --universo DIVERSIFICADA10 --esquema RIESGO_IGUAL --B 800 --tope 100`.
+
+## 6. Corrección del simulador: el límite diario se dispara intradía (`ADENDA_DLL_INTRADIA.md`, 2026-11-27)
+El simulador aplicaba el DLL sobre el cierre del día; Lucid liquida cuando el P&L del día lo toca. Se rearmó el camino minuto a minuto de
+las 10 estrategias:
+- extremo adverso de cada vela de 1 minuto;
+- fricción al entrar;
+- realizado al salir.
+
+El camino cierra exacto contra la suma de operaciones (`tools/intradia_min_cartera.py`). Calibración K28 nueva en
+`tests/research/test_cartera_lucid_calibracion.py`. Detalle: `VENTAJA_POR_MES_DLLINTRA.csv`, `PLANES_*_DLLINTRA.json`.
+
+| 150K | ventaja/mes, DLL al cierre (§5) | **ventaja/mes, DLL intradía** | P(cobrar) por intento | días que tocan el DLL (2020–2026) |
+|---|---|---|---|---|
+| 8, 1 micro (vigente) | +$125 | **+$125** | 0,269 | 4 |
+| 10, 1 micro | +$153 | **+$152** | 0,222 | 5 |
+| 8, 2 micros | +$220 | **+$222** | 0,154 | 26 |
+| 10, 2 micros | +$245 | **+$229** | 0,106 | 52 |
+| 8, 4 micros | +$330 | +$213 | 0,053 | 253 |
+| 10, 4 micros | +$337 | +$241 | 0,034 | 348 |
+| 8, riesgo igual B800 | +$377 | +$218 | 0,044 | 343 |
+| 8, riesgo igual B600 (máximo con DLL intradía) | — | +$267 | 0,077 | 192 |
+
+- **Lectura pre-registrada:**
+  - el plan de más ventaja/mes sigue siendo grande (riesgo igual B600, +$267);
+  - 4 micros (+$213/+$241) sigue por encima de 1 micro (+$125/+$152).
+
+  «Más tamaño rinde más por mes» no queda refutado.
+- **Pero la ventaja del tamaño grande estaba inflada un 35–40 %,** y su probabilidad por intento cae a 3–8 % (es casi una lotería). El
+  plan grande vivía en parte de días que tocaban −$2.700 y se recuperaban.
+- **El punto robusto es 2 micros por estrategia:**
+  - da +$222 (8) o +$229 (10) por mes, cerca del máximo;
+  - cobra con probabilidad 0,11–0,15, el doble o el triple que los grandes;
+  - casi no depende del DLL (26–52 días en 6,7 años);
+  - desde 2024: +$241 (8) y +$243 (10).
+
+  La cartera de 8 y la de 10 empatan con 2 micros.
+- **25K y 50K se desarman con el DLL intradía:**
+  - 25K, el mejor plan da +$75/mes con P 1–2 % (antes +$142);
+  - 50K, +$149/mes con P 3–10 % (antes +$314).
+
+  En esas cuentas la cartera no tiene un plan sensato.
+
+Composición NT8 del punto robusto (150K), preset `Personalizada`:
+- 8 estrategias: `MNQ:T=2,R=2,Z=2,V=2,RQ5=2,FR=2;MES:RQ5=2,ES5N=2`
+- 10 estrategias: `MNQ:T=2,R=2,Z=2,V=2,RQ5=2,FR=2,N=2,SOMEOD=2;MES:RQ5=2,ES5N=2`

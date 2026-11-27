@@ -234,11 +234,11 @@ _Lección confirmada que se aplica al DISEÑAR reglas (no es un filtro de mercad
   - Dónde: NQ/ES MNQ/MES 1 micro, 2019-07 → 2026-09
   - Siguiente: Confirmar FundedSync sólo en terminal y forward. Llevar Regla_V2_Clean (sin la V re-preciada) a NT8 con micros enteros y medirla con el simulador de cuentas por ventaja/mes.
   - Evidencia: `docs/research/auditoria_cartera_20261126/REVISION_CLAUDE.md`, `docs/research/auditoria_cartera_20261126/RESULTADO.md`
-- **Elegir el plan de una cuenta prop por ventaja por mes (EV/mes con la media contraída menos EV/mes sin ventaja) y no por P(cobrar) por intento** (`F-PROP-POR-MES-VS-POR-INTENTO`, 2026-11-27, agente)
-  - Efecto: LucidFlex 150K: por intento, 8 estrategias 0,269 vs 10 0,224; por mes, 10 ≥ 8 (1 micro +$153 vs +$125; 4 micros +$337 vs +$330; desde 2024 +$510 vs +$503). Más tamaño rinde más por mes en 25K/50K/150K (150K +$125 → +$330–377) con 87–90 % de intentos perdidos y recompra.
+- **Elegir el plan de una cuenta prop por ventaja por mes (EV/mes con la media contraída menos EV/mes sin ventaja) y no por P(cobrar) por intento; con el límite diario aplicado al mínimo intradía** (`F-PROP-POR-MES-VS-POR-INTENTO-B`, 2026-11-27, agente)
+  - Efecto: Con DLL intradía (Lucid liquida al tocarlo): 150K 1 micro +$125 (8) / +$152 (10); 2 micros +$222 / +$229 (P 0,15 / 0,11; 26–52 días tocan el DLL en 6,7 años); 4 micros +$213 / +$241 (antes +$330 / +$337; P 0,05 / 0,03). El tamaño grande estaba inflado 35–40 % por días que tocaban −$2.700 y se recuperaban. 25K y 50K se desarman (+$75 y +$149/mes, P 1–10 %).
   - Dónde: MNQ/MES 1 micro, corridas NT8 + arnés, 2020 → 2026-09; simulador calibrado tools/cartera_lucid.py
-  - Siguiente: Decisión de Nico (tamaño y recompra). Validar el modelo de retiros de Lucid contra las reglas reales antes de subir tamaño: el «sin ventaja» por mes positivo es lo primero que cae si el modelo es optimista.
-  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`
+  - Siguiente: 150K: 2 micros por estrategia es el punto robusto (cerca del máximo por mes, P por intento 2–3× la de los planes grandes); 8 o 10 empatan. Decide Nico. Todo simulador de prop con DLL debe usar el mínimo intradía.
+  - Evidencia: `docs/research/preset_diversificada_20261127/RESULTADO.md`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES.csv`, `docs/research/preset_diversificada_20261127/VENTAJA_POR_MES_DLLINTRA.csv`
 - **Peso por estrategia ∝ 1/sd del R mensual de los 12 meses previos (recorte [0,25; 2]) en la cartera de 11 candidatas** (`F-CARTERA-INV-VOL-BAJA-DD`, 2026-11-25, sesion)
   - Efecto: 2020–2025: DD −22,1 vs −45,5 R (igual peso), peor semestre −9,6 vs −22,6, R/mes÷DD 0,24 vs 0,20; a igual media DD ≈ −36. 2026 (descriptivo): DD −6,7 vs −17,7.
   - Dónde: Cartera NT8 NQ/ES, 1 R por operación
